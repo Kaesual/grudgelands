@@ -1,8 +1,24 @@
 # AGENTS.md — Projekt-Leitfaden
 
 WoW-inspiriertes Luanti-Game (Arbeitstitel „Voxel of Warcraft"). Ziele und
-Scope: **[ROADMAP.md](ROADMAP.md)**. Ausführliche Recherche-Notizen zu den
+Scope: **[ROADMAP.md](ROADMAP.md)**. Arbeitspakete und Status:
+**[BACKLOG.md](BACKLOG.md)**. Ausführliche Recherche-Notizen zu den
 Referenzprojekten: **[docs/research/](docs/research/)**.
+
+## Arbeitsweise (Sessions & Context)
+
+Aller Projektzustand lebt im Repo, nicht im Chat-Verlauf:
+
+1. **Session-Start**: BACKLOG.md lesen, das nächste offene WP nehmen (oder
+   das vom User genannte). Zugehörige docs/research/-Briefings überfliegen.
+2. **Ein WP pro Session** ist der Normalfall — kohärent, testbar, committet.
+   Große Explorationen in Subagents auslagern, Haupt-Context schlank halten.
+3. **WP-Abschluss**: Lua-Syntax-Check (`luajit -e "assert(loadfile(...))"`),
+   `tools/sync_to_luanti.sh`, committen, BACKLOG-Status + ROADMAP-Häkchen
+   aktualisieren. Was künftige Sessions wissen müssen → AGENTS.md/docs, nicht
+   nur Chat.
+4. **Runtime-Tests macht der User** (Flatpak-Luanti, GUI); Fehlerdiagnose
+   über `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 
 ## Projektstruktur
 
