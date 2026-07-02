@@ -17,7 +17,7 @@ Context-Window umsetzbar sind. Regeln:
 | WP | Titel | Status | Hängt ab von |
 |----|-------|--------|--------------|
 | WP0 | Fundament: Skelett, BASE, mobs_redo, wow_core, wow_factions, wow_xp | ✅ | — |
-| WP1 | Startzonen-Mobs: Wildschwein + Zombie, XP bei Kill, Loot-Drops | in Arbeit | WP0 |
+| WP1 | Startzonen-Mobs: Wildschwein + Zombie, XP bei Kill, Loot-Drops | ✅ (Runtime-Test durch User ausstehend) | WP0 |
 | WP2 | Territorien-Mapgen: Nord/Süd, Biome je Fraktion, Schwierigkeits-Gradient, Fraktionslager | offen | WP0 |
 | WP3 | Klassen: Krieger/Magier/Priester, Wahl-Dialog, Stats über Level-Pipeline | offen | WP0 |
 | WP4 | Fähigkeiten: 2–4 pro Klasse, Cooldowns, Mana/Ressource als HUD-Bar | offen | WP3 |

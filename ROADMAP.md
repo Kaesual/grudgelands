@@ -51,8 +51,9 @@ so gut wie möglich in einer Voxel-Welt einfängt — als eigenständiges Game
 
 ### 1.4 Mobs & Kampf
 - [ ] Fraktions-Wachen (greifen gegnerische Fraktion an)
-- [ ] WoW-artige Startzonen-Mobs: z. B. kämpferische Wildschweine, Zombies,
-      Wölfe — wiedererkennbarer WoW-Charakter in den leichten Biomen
+- [x] WoW-artige Startzonen-Mobs: kämpferisches Wildschwein (Tag) und
+      Zombie (Nacht, verbrennt tagsüber) mit XP-Vergabe und Loot; weitere
+      (Wölfe, …) folgen mit WP6
 - [ ] Neutrale/feindliche Mobs in Stufen: Grenze = schwach, Kernland = stark,
       Elite-Mobs die Gruppen erfordern
 - [ ] **Gute Wegfindung** — gefährliche Mobs müssen ihre Ziele zuverlässig
