@@ -23,25 +23,28 @@ so gut wie möglich in einer Voxel-Welt einfängt — als eigenständiges Game
 ## Phase 1 — MVP
 
 ### 1.1 Fundament
-- [ ] Game-Skelett: `game.conf`, Mod-Struktur, Namespace-Konventionen (siehe AGENTS.md)
-- [ ] Basis-Welt: Blöcke/Werkzeuge/Crafting (schlanker Kern, Anleihen bei minetest_game/VoxeLibre)
-- [ ] Mob-Engine integrieren (Fork/Einbettung von mobs_redo, MIT-Lizenz)
+- [x] Game-Skelett: `game.conf`, Mod-Struktur, Namespace-Konventionen (siehe AGENTS.md)
+- [x] Basis-Welt: Blöcke/Werkzeuge/Crafting (BASE-Modpack aus minetest_game)
+- [x] Mob-Engine integrieren (mobs_redo eingebettet; Fraktions-Patch folgt mit 1.4)
 
 ### 1.2 Fraktionen & Welt
-- [ ] Fraktionswahl bei Charaktererstellung (Horde/Allianz), persistent
+- [x] Fraktionswahl bei Charaktererstellung (Horde/Allianz), persistent
 - [ ] Mapgen: zwei große zusammenhängende Fraktionsterritorien (Nord/Süd),
       jeweils aus mehreren Biomen zusammengesetzt
 - [ ] Schwierigkeits-Gradient: leichte Biome nahe Grenze/Spawn, schwere Biome
       im Landesinneren (Mob-Stärke skaliert mit Distanz)
 - [ ] Fraktions-Spawnpunkte (Hauptstadt-Lager je Fraktion nahe der Grenze)
-- [ ] PvP: immer möglich, aber durch Quest-Design getrieben; Grenzgebiete als
-      natürliche Konfliktzone
+      — Platzhalter-Spawns bei z = ±200 existieren, Lager fehlen
+- [x] PvP-Grundlage: Friendly-Fire-Schutz innerhalb der Fraktion;
+      Quest-getriebenes PvP folgt mit 1.5
 
 ### 1.3 Klassen & Progression (MVP: 3 Klassen)
 - [ ] **Krieger** (Melee, simpel — Referenzklasse), **Magier** (Ranged/Caster),
       **Priester** (Heiler/Support)
-- [ ] XP-System: XP durch Mob-Kills und Quests; XP-Verlust beim Tod
-- [ ] Level-System mit Stat-Steigerung (HP, Schaden)
+- [x] XP-System: Level-Kurve 1–60, XP-Verlust beim Tod (25 % des
+      Level-Fortschritts), HUD; XP-Quellen (Mob-Kills, Quests) folgen mit 1.4/1.5
+- [ ] Level-System mit Stat-Steigerung (HP, Schaden) —
+      `register_on_level_change`-Pipeline existiert bereits
 - [ ] Vereinfachte Skill Trees: pro Klasse 2 Bäume à ~5 Talente,
       Talentpunkte pro Level, Formspec-UI
 - [ ] 2–4 aktive Fähigkeiten pro Klasse (Hotbar-/Item-basiert), Cooldowns
