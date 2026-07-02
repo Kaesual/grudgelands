@@ -146,6 +146,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
 	wow_factions.set_faction(player, chosen)
 	wow_factions.teleport_to_spawn(player)
+	core.close_formspec(player:get_player_name(), FORMNAME)
 	local def = wow_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
 		core.colorize(def.color, "Willkommen bei der " .. def.name .. "!"))
