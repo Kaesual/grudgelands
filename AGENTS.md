@@ -172,8 +172,11 @@ Details + Zeilennummern in [docs/research/](docs/research/).
 
 ## Test & Entwicklung
 
-- Lokal testen: Luanti-Client installieren, Game nach
-  `~/.minetest/games/` bzw. `~/.luanti/games/` symlinken, Welt mit
-  `enable_damage=true`, `enable_pvp=true` anlegen.
+- Lokal testen: Luanti ist als **Flatpak** installiert (`org.luanti.luanti`,
+  Sandbox ohne Zugriff auf `~/projects`!). Deshalb `tools/sync_to_luanti.sh`
+  ausführen — kopiert das Game nach
+  `~/.var/app/org.luanti.luanti/.minetest/games/voxel_of_warcraft`.
+  Nach jeder Code-Änderung erneut syncen. Engine-Logs:
+  `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 - `strict.lua`-Warnungen (undeclared global) ernst nehmen — meist Tippfehler.
 - Server-Log via `core.log("action"|"warning"|"error", msg)`.
