@@ -4,7 +4,7 @@ local META_FACTION = "wob_factions:faction"
 local META_KIT = "wob_factions:kit_given"
 local FORMNAME = "wob_factions:select"
 
--- Starterkit je Fraktion; wird genau einmal vergeben.
+-- Starter kit per faction; granted exactly once.
 local starter_kits = {
 	alliance = {"default:sword_stone", "default:torch 10", "default:apple 10"},
 	horde = {"default:sword_stone", "default:torch 10", "default:apple 10"},
@@ -14,7 +14,7 @@ local starter_kits = {
 -- API
 --
 
--- Fraktions-ID eines Spielers oder nil, solange noch keine gewaehlt wurde.
+-- A player's faction id, or nil while none has been chosen yet.
 function wob_factions.get_faction(player)
 	local id = player:get_meta():get_string(META_FACTION)
 	if id == "" then
@@ -28,8 +28,8 @@ function wob_factions.get_faction_def(player)
 	return id and wob_core.factions[id] or nil
 end
 
--- Fraktion eines beliebigen Objekts: Spieler ueber Meta, Mobs ueber das
--- Entity-Feld _wob_faction (wird von wob_mobs gesetzt).
+-- Faction of an arbitrary object: players via meta, mobs via the entity
+-- field _wob_faction (set by wob_mobs).
 function wob_factions.get_object_faction(obj)
 	if not obj then
 		return nil
@@ -47,8 +47,8 @@ function wob_factions.same_faction(obj_a, obj_b)
 	return a ~= nil and a == b
 end
 
--- Feindselig sind nur Objekte, die BEIDE eine Fraktion haben und sich
--- unterscheiden. Fraktionslose (neutrale Mobs) regeln ihr Verhalten selbst.
+-- Hostile are only objects that BOTH have a faction and differ. Factionless
+-- ones (neutral mobs) manage their behavior themselves.
 function wob_factions.hostile(obj_a, obj_b)
 	local a = wob_factions.get_object_faction(obj_a)
 	local b = wob_factions.get_object_faction(obj_b)
@@ -74,7 +74,7 @@ function wob_factions.set_faction(player, id)
 	return true
 end
 
--- Teleportiert (asynchron, nach Emerge) zum Fraktionslager.
+-- Teleports (async, after emerge) to the faction camp.
 function wob_factions.teleport_to_spawn(player)
 	local def = wob_factions.get_faction_def(player)
 	if not def then
@@ -97,18 +97,18 @@ function wob_factions.teleport_to_spawn(player)
 end
 
 --
--- Fraktionswahl-UI
+-- Faction selection UI
 --
 
 local function selection_formspec()
 	return table.concat({
 		"formspec_version[4]",
 		"size[8.6,4.6]",
-		"label[0.5,0.7;", core.formspec_escape("Wähle deine Fraktion!"), "]",
-		"label[0.5,1.3;", core.formspec_escape("Diese Entscheidung ist endgültig."), "]",
+		"label[0.5,0.7;", core.formspec_escape("Choose your faction!"), "]",
+		"label[0.5,1.3;", core.formspec_escape("This decision is final."), "]",
 		"style[choose_alliance;bgcolor=", wob_core.factions.alliance.color, "]",
 		"style[choose_horde;bgcolor=", wob_core.factions.horde.color, "]",
-		"button[0.5,2.1;3.6,1.6;choose_alliance;Allianz]",
+		"button[0.5,2.1;3.6,1.6;choose_alliance;Alliance]",
 		"button[4.5,2.1;3.6,1.6;choose_horde;Horde]",
 	})
 end
@@ -133,7 +133,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	if not chosen then
-		-- Ohne Wahl geschlossen: erneut anzeigen (Wahl ist Pflicht).
+		-- Closed without choosing: show again (choosing is mandatory).
 		local name = player:get_player_name()
 		core.after(1, function()
 			local p = core.get_player_by_name(name)
@@ -149,7 +149,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	core.close_formspec(player:get_player_name(), FORMNAME)
 	local def = wob_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
-		core.colorize(def.color, "Willkommen bei der " .. def.name .. "!"))
+		core.colorize(def.color, "Welcome to the " .. def.name .. "!"))
 	return true
 end)
 
@@ -168,7 +168,7 @@ core.register_on_joinplayer(function(player)
 	end
 end)
 
--- Respawn immer im eigenen Fraktionslager.
+-- Always respawn at the own faction camp.
 core.register_on_respawnplayer(function(player)
 	local def = wob_factions.get_faction_def(player)
 	if not def then
@@ -179,7 +179,7 @@ core.register_on_respawnplayer(function(player)
 	return true
 end)
 
--- Friendly Fire innerhalb der eigenen Fraktion unterbinden.
+-- Prevent friendly fire within the own faction.
 core.register_on_punchplayer(function(player, hitter)
 	if hitter and hitter:is_player() and
 			wob_factions.same_faction(player, hitter) then
@@ -188,36 +188,36 @@ core.register_on_punchplayer(function(player, hitter)
 end)
 
 --
--- Admin-/Info-Kommando
+-- Admin/info command
 --
 
 core.register_chatcommand("faction", {
-	params = "[<spieler>] [horde|alliance]",
-	description = "Fraktion anzeigen oder (als Admin) setzen",
+	params = "[<player>] [horde|alliance]",
+	description = "Show a player's faction or (as admin) set it",
 	func = function(name, param)
 		local target_name, faction_id = param:match("^(%S+)%s+(%S+)$")
 		target_name = target_name or (param ~= "" and param) or name
 
 		local target = core.get_player_by_name(target_name)
 		if not target then
-			return false, "Spieler '" .. target_name .. "' ist nicht online."
+			return false, "Player '" .. target_name .. "' is not online."
 		end
 
 		if faction_id then
 			if not core.check_player_privs(name, {server = true}) then
-				return false, "Dafür brauchst du das 'server'-Privileg."
+				return false, "You need the 'server' privilege for this."
 			end
 			if not wob_factions.set_faction(target, faction_id) then
-				return false, "Unbekannte Fraktion: " .. faction_id
+				return false, "Unknown faction: " .. faction_id
 			end
 			wob_factions.teleport_to_spawn(target)
-			return true, target_name .. " gehört jetzt zur Fraktion " .. faction_id .. "."
+			return true, target_name .. " now belongs to the " .. faction_id .. " faction."
 		end
 
 		local id = wob_factions.get_faction(target)
 		if not id then
-			return true, target_name .. " hat noch keine Fraktion gewählt."
+			return true, target_name .. " has not chosen a faction yet."
 		end
-		return true, target_name .. " gehört zur Fraktion " .. wob_core.factions[id].name .. "."
+		return true, target_name .. " belongs to the " .. wob_core.factions[id].name .. " faction."
 	end,
 })

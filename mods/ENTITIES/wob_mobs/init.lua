@@ -1,10 +1,10 @@
 wob_mobs = {}
 
 --
--- Wrapper um mobs:register_mob mit unseren Erweiterungen:
---   def._wob_xp_reward  — XP fuer den Killer (Spieler)
---   def._wob_faction    — Fraktions-ID; Mob greift eigene Fraktion nie an
---                         und ist fuer wob_factions.get_object_faction lesbar
+-- Wrapper around mobs:register_mob with our extensions:
+--   def._wob_xp_reward  — XP for the killer (player)
+--   def._wob_faction    — faction id; the mob never attacks its own faction
+--                         and is readable via wob_factions.get_object_faction
 --
 function wob_mobs.register_mob(name, def)
 	local xp_reward = def._wob_xp_reward or 0
@@ -25,12 +25,12 @@ function wob_mobs.register_mob(name, def)
 	if faction then
 		local old_do_custom = def.do_custom
 		def.do_custom = function(self, dtime, moveresult)
-			-- Fraktion am Entity hinterlegen (jede Aktivierung, erster Tick),
-			-- damit andere Systeme sie via get_object_faction lesen koennen.
+			-- Store the faction on the entity (every activation, first tick)
+			-- so other systems can read it via get_object_faction.
 			if not self._wob_faction then
 				self._wob_faction = faction
 			end
-			-- Eigene Fraktion nie angreifen (z. B. nach Verhetzen/group_attack).
+			-- Never attack the own faction (e.g. after provoking/group_attack).
 			if self.state == "attack" and self.attack and
 					wob_factions.get_object_faction(self.attack) == faction then
 				self:stop_attack()

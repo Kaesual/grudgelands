@@ -1,8 +1,8 @@
--- Wildschwein: aggressiver Tag-Mob der Startzonen (WoW-Gedaechtnis: die
--- ersten Quest-Mobs). Schwach, aber kaempferisch.
+-- Boar: aggressive daytime mob of the starter zones (WoW memory: the
+-- first quest mobs). Weak, but combative.
 
 wob_mobs.register_mob("wob_mobs:boar", {
-	description = "Wildschwein",
+	description = "Boar",
 	type = "monster",
 	_wob_xp_reward = 15,
 
@@ -51,8 +51,8 @@ wob_mobs.register_mob("wob_mobs:boar", {
 	light_damage = 0,
 })
 
--- Spawnt vorerst ueberall auf Wiese; Territoriums-/Tier-Gating kommt mit
--- WP2/WP6 ueber mobs:spawn_abm_check.
+-- Spawns anywhere on grass for now; territory/tier gating comes with
+-- WP2/WP6 via mobs:spawn_abm_check.
 mobs:spawn({
 	name = "wob_mobs:boar",
 	nodes = {"default:dirt_with_grass"},

@@ -1,15 +1,15 @@
 wob_core = {}
 
--- Welt-Layout: Allianz-Territorium im Sueden (z < 0), Horde im Norden (z > 0).
--- Die Grenze verlaeuft entlang z = 0; Schwierigkeit steigt mit |z| (Distanz
--- zur Grenze). Spawn-Positionen sind Platzhalter, bis der eigene Mapgen
--- Fraktionslager setzt (y wird beim Teleport per Surface-Suche korrigiert).
+-- World layout: Alliance territory in the south (z < 0), Horde in the north
+-- (z > 0). The border runs along z = 0; difficulty grows with |z| (distance
+-- to the border). Spawn positions are placeholders until our own mapgen
+-- places the faction camps (y is corrected via surface search on teleport).
 wob_core.BORDER_Z = 0
 
 wob_core.factions = {
 	alliance = {
 		id = "alliance",
-		name = "Allianz",
+		name = "Alliance",
 		color = "#3f6fce",
 		spawn = vector.new(0, 8, -200),
 	},
@@ -27,8 +27,8 @@ function wob_core.opposing_faction(faction_id)
 	return faction_id == "alliance" and "horde" or "alliance"
 end
 
--- Findet eine sichere Oberflaechen-Position nahe pos (fuer Spawns/Teleports),
--- solange der Mapgen noch keine garantierten Lager-Plattformen setzt.
+-- Finds a safe surface position near pos (for spawns/teleports), until the
+-- mapgen provides guaranteed camp platforms.
 function wob_core.find_surface(pos)
 	for y = 80, -16, -1 do
 		local p = vector.new(pos.x, y, pos.z)

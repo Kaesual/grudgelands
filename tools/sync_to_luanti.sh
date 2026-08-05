@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Kopiert das Game in den Games-Ordner der Luanti-Flatpak-Installation.
-# (Die Flatpak-Sandbox hat keinen Zugriff auf ~/projects, daher kopieren
-# statt symlinken.) Nach Code-Aenderungen einfach erneut ausfuehren.
+# Copies the game into the games folder of the Luanti Flatpak installation.
+# (The Flatpak sandbox has no access to ~/projects, hence copying instead
+# of symlinking.) Simply re-run after code changes.
 #
-# Aufruf: tools/sync_to_luanti.sh [zielordner]
+# Usage: tools/sync_to_luanti.sh [target_dir]
 set -euo pipefail
 
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="${1:-$HOME/.var/app/org.luanti.luanti/.minetest/games/world_of_blockcraft}"
 
-# Reste eines frueheren Symlink-Versuchs entfernen
+# Remove leftovers of an earlier symlink attempt
 if [ -L "$DEST" ]; then
 	rm "$DEST"
 fi
@@ -24,4 +24,4 @@ if [ -d "$SRC/menu" ]; then
 	rsync -a --delete "$SRC/menu/" "$DEST/menu/"
 fi
 
-echo "Game synchronisiert nach: $DEST"
+echo "Game synced to: $DEST"

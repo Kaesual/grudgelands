@@ -3,13 +3,13 @@ wob_xp = {}
 local META_XP = "wob_xp:xp"
 
 wob_xp.MAX_LEVEL = 60
--- Anteil des Fortschritts im aktuellen Level, der beim Tod verloren geht.
--- Es gibt kein De-Leveling: Verlust reicht maximal bis zum Levelanfang.
+-- Share of the progress within the current level that is lost on death.
+-- There is no de-leveling: the loss reaches at most the level floor.
 wob_xp.DEATH_XP_LOSS = 0.25
 
 --
--- Level-Kurve: kumulative XP fuer Level L (Level 1 = 0 XP).
--- Quadratisch: Level 2 = 100, Level 10 = 8100, Level 60 = 348100.
+-- Level curve: cumulative XP for level L (level 1 = 0 XP).
+-- Quadratic: level 2 = 100, level 10 = 8100, level 60 = 348100.
 --
 
 function wob_xp.xp_for_level(level)
@@ -18,7 +18,7 @@ function wob_xp.xp_for_level(level)
 end
 
 function wob_xp.level_from_xp(xp)
-	-- 1e-9: schuetzt vor sqrt-Rundung knapp unter der Levelgrenze
+	-- 1e-9: guards against sqrt rounding just below the level boundary
 	local level = math.floor(math.sqrt(xp / 100) + 1e-9) + 1
 	return math.min(level, wob_xp.MAX_LEVEL)
 end
@@ -29,8 +29,8 @@ end
 
 local level_change_callbacks = {}
 
--- func(player, old_level, new_level) — wird bei Level-Aenderung gerufen
--- (auch beim Join, mit old_level = nil, zum Initialisieren von Stats/HUD).
+-- func(player, old_level, new_level) — called on level change (also on
+-- join, with old_level = nil, to initialize stats/HUD).
 function wob_xp.register_on_level_change(func)
 	table.insert(level_change_callbacks, func)
 end
@@ -49,7 +49,7 @@ function wob_xp.get_level(player)
 	return wob_xp.level_from_xp(wob_xp.get_xp(player))
 end
 
-local hud_update -- forward (unten definiert)
+local hud_update -- forward (defined below)
 
 function wob_xp.set_xp(player, xp)
 	xp = math.max(0, math.floor(xp))
@@ -60,7 +60,7 @@ function wob_xp.set_xp(player, xp)
 		run_level_callbacks(player, old_level, new_level)
 		if new_level > old_level then
 			core.chat_send_player(player:get_player_name(),
-				core.colorize("#ffd100", "Level " .. new_level .. " erreicht!"))
+				core.colorize("#ffd100", "Reached level " .. new_level .. "!"))
 		end
 	end
 	hud_update(player)
@@ -71,7 +71,7 @@ function wob_xp.add_xp(player, amount)
 end
 
 --
--- XP-Verlust beim Tod: Anteil des Fortschritts im aktuellen Level.
+-- XP loss on death: a share of the progress within the current level.
 --
 
 core.register_on_dieplayer(function(player)
@@ -83,12 +83,12 @@ core.register_on_dieplayer(function(player)
 	if loss > 0 then
 		wob_xp.set_xp(player, xp - loss)
 		core.chat_send_player(player:get_player_name(),
-			core.colorize("#ff4444", "Du hast " .. loss .. " XP verloren."))
+			core.colorize("#ff4444", "You lost " .. loss .. " XP."))
 	end
 end)
 
 --
--- HUD: "Level 12  —  3.400 / 12.100 XP" unten mittig ueber der Hotbar.
+-- HUD: "Level 12  |  3400 / 12100 XP" bottom center above the hotbar.
 --
 
 local hud_ids = {}
@@ -97,7 +97,7 @@ local function hud_text(player)
 	local xp = wob_xp.get_xp(player)
 	local level = wob_xp.level_from_xp(xp)
 	if level >= wob_xp.MAX_LEVEL then
-		return "Level " .. level .. " (Max)"
+		return "Level " .. level .. " (max)"
 	end
 	local floor_xp = wob_xp.xp_for_level(level)
 	local next_xp = wob_xp.xp_for_level(level + 1)
@@ -128,12 +128,12 @@ core.register_on_leaveplayer(function(player)
 end)
 
 --
--- Debug-/Admin-Kommando
+-- Debug/admin command
 --
 
 core.register_chatcommand("xp", {
-	params = "[<anzahl>]",
-	description = "Eigene XP anzeigen oder (als Admin) XP hinzufügen",
+	params = "[<amount>]",
+	description = "Show your XP or (as admin) add XP",
 	func = function(name, param)
 		local player = core.get_player_by_name(name)
 		if not player then
@@ -142,10 +142,10 @@ core.register_chatcommand("xp", {
 		if param ~= "" then
 			local amount = tonumber(param)
 			if not amount then
-				return false, "Ungültige Zahl: " .. param
+				return false, "Not a number: " .. param
 			end
 			if not core.check_player_privs(name, {server = true}) then
-				return false, "Dafür brauchst du das 'server'-Privileg."
+				return false, "You need the 'server' privilege for this."
 			end
 			wob_xp.add_xp(player, amount)
 		end

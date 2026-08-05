@@ -1,5 +1,5 @@
--- Zombie: Nacht-Mob der Startzonen. Zaeher und staerker als das
--- Wildschwein, verbrennt bei Tageslicht.
+-- Zombie: night mob of the starter zones. Tougher and stronger than the
+-- boar, burns in daylight.
 
 wob_mobs.register_mob("wob_mobs:zombie", {
 	description = "Zombie",
@@ -44,13 +44,13 @@ wob_mobs.register_mob("wob_mobs:zombie", {
 
 	water_damage = 0,
 	lava_damage = 4,
-	-- Verbrennt tagsueber an der Oberflaeche (klassisches Nacht-Mob-Gefuehl).
+	-- Burns on the surface during the day (classic night-mob feel).
 	light_damage = 2,
 	light_damage_min = 14,
 	light_damage_max = 15,
 })
 
--- Nachts auf Wiese und Stein (Oberflaeche); Territoriums-Gating folgt WP2/WP6.
+-- At night on grass and stone (surface); territory gating follows in WP2/WP6.
 mobs:spawn({
 	name = "wob_mobs:zombie",
 	nodes = {"default:dirt_with_grass", "default:stone"},
