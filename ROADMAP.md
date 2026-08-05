@@ -1,4 +1,4 @@
-# Roadmap — "Voxel of Warcraft" (working title)
+# Roadmap — "World of Blockcraft" (working title)
 
 A Luanti game that captures the game mechanics, story and character of
 World of Warcraft as well as possible in a voxel world — as a standalone

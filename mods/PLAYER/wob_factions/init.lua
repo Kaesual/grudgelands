@@ -1,8 +1,8 @@
-wow_factions = {}
+wob_factions = {}
 
-local META_FACTION = "wow_factions:faction"
-local META_KIT = "wow_factions:kit_given"
-local FORMNAME = "wow_factions:select"
+local META_FACTION = "wob_factions:faction"
+local META_KIT = "wob_factions:kit_given"
+local FORMNAME = "wob_factions:select"
 
 -- Starterkit je Fraktion; wird genau einmal vergeben.
 local starter_kits = {
@@ -15,7 +15,7 @@ local starter_kits = {
 --
 
 -- Fraktions-ID eines Spielers oder nil, solange noch keine gewaehlt wurde.
-function wow_factions.get_faction(player)
+function wob_factions.get_faction(player)
 	local id = player:get_meta():get_string(META_FACTION)
 	if id == "" then
 		return nil
@@ -23,40 +23,40 @@ function wow_factions.get_faction(player)
 	return id
 end
 
-function wow_factions.get_faction_def(player)
-	local id = wow_factions.get_faction(player)
-	return id and wow_core.factions[id] or nil
+function wob_factions.get_faction_def(player)
+	local id = wob_factions.get_faction(player)
+	return id and wob_core.factions[id] or nil
 end
 
 -- Fraktion eines beliebigen Objekts: Spieler ueber Meta, Mobs ueber das
--- Entity-Feld _wow_faction (wird von wow_mobs gesetzt).
-function wow_factions.get_object_faction(obj)
+-- Entity-Feld _wob_faction (wird von wob_mobs gesetzt).
+function wob_factions.get_object_faction(obj)
 	if not obj then
 		return nil
 	end
 	if obj:is_player() then
-		return wow_factions.get_faction(obj)
+		return wob_factions.get_faction(obj)
 	end
 	local ent = obj:get_luaentity()
-	return ent and ent._wow_faction or nil
+	return ent and ent._wob_faction or nil
 end
 
-function wow_factions.same_faction(obj_a, obj_b)
-	local a = wow_factions.get_object_faction(obj_a)
-	local b = wow_factions.get_object_faction(obj_b)
+function wob_factions.same_faction(obj_a, obj_b)
+	local a = wob_factions.get_object_faction(obj_a)
+	local b = wob_factions.get_object_faction(obj_b)
 	return a ~= nil and a == b
 end
 
 -- Feindselig sind nur Objekte, die BEIDE eine Fraktion haben und sich
 -- unterscheiden. Fraktionslose (neutrale Mobs) regeln ihr Verhalten selbst.
-function wow_factions.hostile(obj_a, obj_b)
-	local a = wow_factions.get_object_faction(obj_a)
-	local b = wow_factions.get_object_faction(obj_b)
+function wob_factions.hostile(obj_a, obj_b)
+	local a = wob_factions.get_object_faction(obj_a)
+	local b = wob_factions.get_object_faction(obj_b)
 	return a ~= nil and b ~= nil and a ~= b
 end
 
-function wow_factions.set_faction(player, id)
-	local def = wow_core.factions[id]
+function wob_factions.set_faction(player, id)
+	local def = wob_core.factions[id]
 	if not def then
 		return false
 	end
@@ -75,8 +75,8 @@ function wow_factions.set_faction(player, id)
 end
 
 -- Teleportiert (asynchron, nach Emerge) zum Fraktionslager.
-function wow_factions.teleport_to_spawn(player)
-	local def = wow_factions.get_faction_def(player)
+function wob_factions.teleport_to_spawn(player)
+	local def = wob_factions.get_faction_def(player)
 	if not def then
 		return
 	end
@@ -91,7 +91,7 @@ function wow_factions.teleport_to_spawn(player)
 			end
 			local p = core.get_player_by_name(name)
 			if p then
-				p:set_pos(wow_core.find_surface(spawn))
+				p:set_pos(wob_core.find_surface(spawn))
 			end
 		end)
 end
@@ -106,8 +106,8 @@ local function selection_formspec()
 		"size[8.6,4.6]",
 		"label[0.5,0.7;", core.formspec_escape("Wähle deine Fraktion!"), "]",
 		"label[0.5,1.3;", core.formspec_escape("Diese Entscheidung ist endgültig."), "]",
-		"style[choose_alliance;bgcolor=", wow_core.factions.alliance.color, "]",
-		"style[choose_horde;bgcolor=", wow_core.factions.horde.color, "]",
+		"style[choose_alliance;bgcolor=", wob_core.factions.alliance.color, "]",
+		"style[choose_horde;bgcolor=", wob_core.factions.horde.color, "]",
 		"button[0.5,2.1;3.6,1.6;choose_alliance;Allianz]",
 		"button[4.5,2.1;3.6,1.6;choose_horde;Horde]",
 	})
@@ -121,7 +121,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname ~= FORMNAME then
 		return
 	end
-	if wow_factions.get_faction(player) then
+	if wob_factions.get_faction(player) then
 		return true
 	end
 
@@ -137,31 +137,31 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local name = player:get_player_name()
 		core.after(1, function()
 			local p = core.get_player_by_name(name)
-			if p and not wow_factions.get_faction(p) then
+			if p and not wob_factions.get_faction(p) then
 				show_selection(p)
 			end
 		end)
 		return true
 	end
 
-	wow_factions.set_faction(player, chosen)
-	wow_factions.teleport_to_spawn(player)
+	wob_factions.set_faction(player, chosen)
+	wob_factions.teleport_to_spawn(player)
 	core.close_formspec(player:get_player_name(), FORMNAME)
-	local def = wow_core.factions[chosen]
+	local def = wob_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
 		core.colorize(def.color, "Willkommen bei der " .. def.name .. "!"))
 	return true
 end)
 
 core.register_on_joinplayer(function(player)
-	local def = wow_factions.get_faction_def(player)
+	local def = wob_factions.get_faction_def(player)
 	if def then
 		player:set_nametag_attributes({color = def.color})
 	else
 		local name = player:get_player_name()
 		core.after(1, function()
 			local p = core.get_player_by_name(name)
-			if p and not wow_factions.get_faction(p) then
+			if p and not wob_factions.get_faction(p) then
 				show_selection(p)
 			end
 		end)
@@ -170,19 +170,19 @@ end)
 
 -- Respawn immer im eigenen Fraktionslager.
 core.register_on_respawnplayer(function(player)
-	local def = wow_factions.get_faction_def(player)
+	local def = wob_factions.get_faction_def(player)
 	if not def then
 		return
 	end
 	player:set_pos(def.spawn)
-	wow_factions.teleport_to_spawn(player)
+	wob_factions.teleport_to_spawn(player)
 	return true
 end)
 
 -- Friendly Fire innerhalb der eigenen Fraktion unterbinden.
 core.register_on_punchplayer(function(player, hitter)
 	if hitter and hitter:is_player() and
-			wow_factions.same_faction(player, hitter) then
+			wob_factions.same_faction(player, hitter) then
 		return true
 	end
 end)
@@ -207,17 +207,17 @@ core.register_chatcommand("faction", {
 			if not core.check_player_privs(name, {server = true}) then
 				return false, "Dafür brauchst du das 'server'-Privileg."
 			end
-			if not wow_factions.set_faction(target, faction_id) then
+			if not wob_factions.set_faction(target, faction_id) then
 				return false, "Unbekannte Fraktion: " .. faction_id
 			end
-			wow_factions.teleport_to_spawn(target)
+			wob_factions.teleport_to_spawn(target)
 			return true, target_name .. " gehört jetzt zur Fraktion " .. faction_id .. "."
 		end
 
-		local id = wow_factions.get_faction(target)
+		local id = wob_factions.get_faction(target)
 		if not id then
 			return true, target_name .. " hat noch keine Fraktion gewählt."
 		end
-		return true, target_name .. " gehört zur Fraktion " .. wow_core.factions[id].name .. "."
+		return true, target_name .. " gehört zur Fraktion " .. wob_core.factions[id].name .. "."
 	end,
 })

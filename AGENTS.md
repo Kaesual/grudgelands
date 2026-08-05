@@ -1,6 +1,6 @@
 # AGENTS.md — Project Guide
 
-WoW-inspired Luanti game (working title "Voxel of Warcraft"). Goals and
+WoW-inspired Luanti game (working title "World of Blockcraft"). Goals and
 scope: **[ROADMAP.md](ROADMAP.md)**. Work packages and status:
 **[BACKLOG.md](BACKLOG.md)**. Detailed research notes on the reference
 projects: **[docs/research/](docs/research/)**.
@@ -102,11 +102,11 @@ strictly separated:
 
 ## Project conventions
 
-- **Namespace prefix `wow_`** for all our mods (e.g. `wow_xp`,
-  `wow_factions`, `wow_quests`, `wow_jobs`, `wow_mobs`, `wow_map`).
-- Exactly one global table per mod (`wow_xp = {}`), sub-files via
+- **Namespace prefix `wob_`** for all our mods (e.g. `wob_xp`,
+  `wob_factions`, `wob_quests`, `wob_jobs`, `wob_mobs`, `wob_map`).
+- Exactly one global table per mod (`wob_xp = {}`), sub-files via
   `dofile(core.get_modpath(core.get_current_modname()).."/foo.lua")`.
-- Custom fields in item/node/entity definitions use the `_wow_` prefix
+- Custom fields in item/node/entity definitions use the `_wob_` prefix
   (pattern from VoxeLibre's `_mcl_*`).
 - Dispatch behavior via **groups** instead of name lists (VoxeLibre
   pattern).
@@ -175,7 +175,7 @@ Details + line numbers in [docs/research/](docs/research/).
   tiers, detached inventory `wanted/input/offered/output`) and LotT
   `lottmobs/trader.lua` (faction-dependent stock). Gold as an item +
   counter in player meta; traders buy EVERY mob drop (buy-price field
-  `_wow_sell_price` in item defs).
+  `_wob_sell_price` in item defs).
 - **Quests**: no ready-made framework in the references. Building blocks:
   trigger/counter patterns from `lottachievements` (awards fork), event
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
@@ -218,7 +218,7 @@ Details + line numbers in [docs/research/](docs/research/).
 - Local testing: Luanti is installed as a **Flatpak** (`org.luanti.luanti`,
   sandboxed without access to `~/projects`!). Therefore run
   `tools/sync_to_luanti.sh` — it copies the game to
-  `~/.var/app/org.luanti.luanti/.minetest/games/voxel_of_warcraft`.
+  `~/.var/app/org.luanti.luanti/.minetest/games/world_of_blockcraft`.
   Re-sync after every code change. Engine logs:
   `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.

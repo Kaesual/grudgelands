@@ -7,7 +7,7 @@ villages); housing/Home Stone get their own WPs when scheduled.
 ## 1. Geography & difficulty rings
 
 North = Horde territory, south = Alliance territory, mirrored at z=0.
-`wow_core.difficulty_at(pos)` = distance from the border, mapped to rings:
+`wob_core.difficulty_at(pos)` = distance from the border, mapped to rings:
 
 | Zone | z-range (mirrored N/S) | Mob/guard level |
 |------|------------------------|-----------------|
@@ -46,7 +46,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   your own risk"; the protected build space is your housing plot.
   Revisit only if griefing becomes a real problem.
 
-Implementation: one central `core.is_protected` override in `wow_core`
+Implementation: one central `core.is_protected` override in `wob_core`
 (faction + position check).
 
 ## 3. Capitals

@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SRC="$(cd "$(dirname "$0")/.." && pwd)"
-DEST="${1:-$HOME/.var/app/org.luanti.luanti/.minetest/games/voxel_of_warcraft}"
+DEST="${1:-$HOME/.var/app/org.luanti.luanti/.minetest/games/world_of_blockcraft}"
 
 # Reste eines frueheren Symlink-Versuchs entfernen
 if [ -L "$DEST" ]; then

@@ -41,7 +41,7 @@ work).
 
 - HP/damage per level per class (incl. per-class attribute growth
   rates); mob HP/damage/XP per tier; mapping of
-  `wow_core.difficulty_at` → mob level (ring table in
+  `wob_core.difficulty_at` → mob level (ring table in
   `docs/design/world.md` §1).
 - Next step: one spreadsheet-style proposal (level 1 / 10 / 30 / 60
   anchor values) — attributes are decided, so this is unblocked.
@@ -52,7 +52,7 @@ work).
 
 - Proposal: keep the engine's damage_groups × armor_groups model; add
   crit (×1.5 damage) and dodge (full avoid) as server-side rolls in our
-  own damage pipeline (wow_core, mcl_damage-style, already planned in
+  own damage pipeline (wob_core, mcl_damage-style, already planned in
   AGENTS.md).
 - Diminishing returns on crit/dodge from gear: cap both at e.g. 30% —
   simpler than DR curves.

@@ -1,10 +1,10 @@
 -- Zombie: Nacht-Mob der Startzonen. Zaeher und staerker als das
 -- Wildschwein, verbrennt bei Tageslicht.
 
-wow_mobs.register_mob("wow_mobs:zombie", {
+wob_mobs.register_mob("wob_mobs:zombie", {
 	description = "Zombie",
 	type = "monster",
-	_wow_xp_reward = 35,
+	_wob_xp_reward = 35,
 
 	hp_min = 16,
 	hp_max = 22,
@@ -24,8 +24,8 @@ wow_mobs.register_mob("wow_mobs:zombie", {
 	view_range = 14,
 
 	visual = "mesh",
-	mesh = "wow_mobs_zombie.b3d",
-	textures = {{"wow_mobs_zombie.png"}},
+	mesh = "wob_mobs_zombie.b3d",
+	textures = {{"wob_mobs_zombie.png"}},
 	visual_size = {x = 3, y = 3},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.89, 0.3},
 	makes_footstep_sound = true,
@@ -38,7 +38,7 @@ wow_mobs.register_mob("wow_mobs:zombie", {
 	},
 
 	drops = {
-		{name = "wow_mobs:zombie_flesh", chance = 1, min = 1, max = 2},
+		{name = "wob_mobs:zombie_flesh", chance = 1, min = 1, max = 2},
 		{name = "default:steel_ingot", chance = 10, min = 1, max = 1},
 	},
 
@@ -52,7 +52,7 @@ wow_mobs.register_mob("wow_mobs:zombie", {
 
 -- Nachts auf Wiese und Stein (Oberflaeche); Territoriums-Gating folgt WP2/WP6.
 mobs:spawn({
-	name = "wow_mobs:zombie",
+	name = "wob_mobs:zombie",
 	nodes = {"default:dirt_with_grass", "default:stone"},
 	max_light = 7,
 	day_toggle = false,

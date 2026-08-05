@@ -20,7 +20,7 @@ window. Rules:
 
 | WP | Title | Status | Depends on |
 |----|-------|--------|------------|
-| WP0 | Foundation: skeleton, BASE, mobs_redo, wow_core, wow_factions, wow_xp | ✅ | — |
+| WP0 | Foundation: skeleton, BASE, mobs_redo, wob_core, wob_factions, wob_xp | ✅ | — |
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | open (spec: `docs/design/world.md`) | WP0 |
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open | WP0 |
@@ -38,7 +38,7 @@ window. Rules:
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation adds a selection step (implement with
   WP3's dialog flow or as a small WP of its own).
-- Build/dig restrictions (destructibility rules §2) land in `wow_core`
+- Build/dig restrictions (destructibility rules §2) land in `wob_core`
   alongside WP2.
 - Housing (frontier plots, §5) and the Home Stone (§6) are not yet
   scheduled as WPs — add them once WP2 stands (housing zone needs the
@@ -49,24 +49,24 @@ Notes from the decided world design (`docs/design/world.md`):
 **WP1 — Starter-zone mobs**: Boar (day, meadow) and zombie (night) spawn
 and attack; kills grant XP depending on the mob; drops (meat/leather and
 zombie trash loot as future vendor goods). Models/textures from VoxeLibre
-`mobs_mc` (GPL, attribution). Helper `wow_mobs.register_mob` extends
-mobs_redo with `_wow_faction`, `_wow_xp_reward` and XP awarding via
+`mobs_mc` (GPL, attribution). Helper `wob_mobs.register_mob` extends
+mobs_redo with `_wob_faction`, `_wob_xp_reward` and XP awarding via
 `on_death` (basis for faction targeting via `do_custom`).
 
 **WP2 — Territory mapgen**: New world: only Horde biomes north of z=+64,
 only Alliance biomes south of z=−64, neutral borderland in between; each
 territory has ≥2 distinguishable (race-flavored) biomes; distance function
-`wow_core.difficulty_at(pos)` (0=border … 1=heartland) for mob tiers;
+`wob_core.difficulty_at(pos)` (0=border … 1=heartland) for mob tiers;
 walkable camp platform at both spawns. Zone/ring layout, soft east–west
 border and race regions per `docs/design/world.md` §1/§7; destructibility
-rules §2 (central `core.is_protected` override in wow_core) belong in
+rules §2 (central `core.is_protected` override in wob_core) belong in
 this WP. Decision needed: engine biomes (v7 + biome registration) vs. a
 custom `on_generated` pass (LotT style) — the recommendation will be
 worked out in WP2, criteria in docs/research/ (mind the mapgen env).
 
 **WP3 — Classes**: After the faction choice comes the class choice (same
 dialog flow, mandatory); class in player meta; HP/base damage scale per
-level via `wow_xp.register_on_level_change`; class registry in
-`wow_classes` with room for abilities (WP4) and skill trees (WP11).
+level via `wob_xp.register_on_level_change`; class registry in
+`wob_classes` with room for abilities (WP4) and skill trees (WP11).
 
 (Further WP details are added once the respective WP comes up.)

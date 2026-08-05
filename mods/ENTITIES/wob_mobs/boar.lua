@@ -1,10 +1,10 @@
 -- Wildschwein: aggressiver Tag-Mob der Startzonen (WoW-Gedaechtnis: die
 -- ersten Quest-Mobs). Schwach, aber kaempferisch.
 
-wow_mobs.register_mob("wow_mobs:boar", {
+wob_mobs.register_mob("wob_mobs:boar", {
 	description = "Wildschwein",
 	type = "monster",
-	_wow_xp_reward = 15,
+	_wob_xp_reward = 15,
 
 	hp_min = 8,
 	hp_max = 12,
@@ -25,9 +25,9 @@ wow_mobs.register_mob("wow_mobs:boar", {
 	view_range = 10,
 
 	visual = "mesh",
-	mesh = "wow_mobs_boar.b3d",
+	mesh = "wob_mobs_boar.b3d",
 	textures = {
-		{"wow_mobs_boar.png^[multiply:#9a7a5a", "wow_mobs_blank.png"},
+		{"wob_mobs_boar.png^[multiply:#9a7a5a", "wob_mobs_blank.png"},
 	},
 	visual_size = {x = 2.5, y = 2.5},
 	collisionbox = {-0.45, -0.01, -0.45, 0.45, 0.86, 0.45},
@@ -42,7 +42,7 @@ wow_mobs.register_mob("wow_mobs:boar", {
 
 	drops = {
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 2},
-		{name = "wow_mobs:boar_tusk", chance = 2, min = 1, max = 2},
+		{name = "wob_mobs:boar_tusk", chance = 2, min = 1, max = 2},
 		{name = "mobs:leather", chance = 3, min = 1, max = 1},
 	},
 
@@ -54,7 +54,7 @@ wow_mobs.register_mob("wow_mobs:boar", {
 -- Spawnt vorerst ueberall auf Wiese; Territoriums-/Tier-Gating kommt mit
 -- WP2/WP6 ueber mobs:spawn_abm_check.
 mobs:spawn({
-	name = "wow_mobs:boar",
+	name = "wob_mobs:boar",
 	nodes = {"default:dirt_with_grass"},
 	min_light = 10,
 	interval = 30,
