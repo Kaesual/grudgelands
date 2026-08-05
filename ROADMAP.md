@@ -39,6 +39,11 @@ game (not a mod pack), written in Lua.
 - Item quality tiers **Common/Uncommon/Rare/Unique** (white/blue/yellow/
   orange; Uniques post-MVP); better gear comes from crafting and hard
   bosses, not vendors — "the harder the enemy, the better the loot".
+- **Combat rests on an aggro/threat system** (it shaped WoW's fights):
+  groups play the tank/healer/damage trinity; solo players stay viable
+  via food (out-of-combat recovery) and healing potions. Mobs are
+  slightly faster than players — pulling several same-level mobs solo is
+  dangerous.
 - A light layer of lore and story, delivered through quests, setting and
   environmental storytelling.
 - No guild system (deliberate decision — Luanti is not MMORPG enough for
@@ -89,10 +94,17 @@ game (not a mod pack), written in Lua.
       follow with WP6
 - [ ] Neutral/hostile mobs in tiers: border = weak, heartland = strong,
       elite mobs that require groups
+- [ ] **Aggro/threat system**: mobs pick targets by threat (damage +
+      healing × factor); tank threat tools/taunt follow with class
+      abilities (1.3)
+- [ ] Food & recovery basics: slow natural HP regen, food for
+      out-of-combat recovery, healing potions (alchemy, 1.6) for
+      in-combat emergencies
 - [ ] **Good pathfinding** — dangerous mobs must reliably reach their
       targets (not get stuck in ravines etc.); evaluate and if necessary
       improve the mob engine's pathfinding quality (quality criterion, not
-      a nice-to-have)
+      a nice-to-have). Mobs run slightly faster than players so evading
+      is never trivially easy
 - [ ] Loot drops (trash loot to sell, crafting materials)
 
 ### 1.4b Loot & enchantments
@@ -150,6 +162,9 @@ game (not a mod pack), written in Lua.
 ## Phase 3 — Polish
 
 - [ ] Own textures/sounds/models (WoW character, but original assets!)
+- [ ] Localization via Luanti's translation system (`locale/` files +
+      `core.get_translator`); first target: German translation of all
+      in-game texts
 - [ ] Balancing pass (classes, mob tiers, economy)
 - [ ] Server performance pass (active object limits, ABM budget)
 - [ ] Onboarding/tutorial quests

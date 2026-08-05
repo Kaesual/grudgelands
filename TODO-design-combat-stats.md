@@ -13,6 +13,12 @@ Directions decided in chat (2026-08-06):
   recognizability** (WoW familiarity without WoW complexity).
 - A light layer of **lore/story** is delivered through quests, setting and
   environmental storytelling (content question → progression.md later).
+- **An aggro/threat system is a core combat pillar** — it shaped WoW's
+  fights. Group play follows the trinity (tank + healer + 1–2 damage
+  dealers); solo play stays viable via food and potions (section 4).
+- **Mobs must be slightly faster than players** (or at least fast enough
+  that evading them is not trivially easy); pulling several same-level
+  mobs solo must be dangerous.
 
 ## 1. Attributes — DECIDED (2026-08-06)
 
@@ -58,3 +64,33 @@ work).
   simpler than DR curves.
 
 **Decision:** _pending_
+
+## 4. Aggro, group roles & recovery — DIRECTION DECIDED (2026-08-06), numbers open
+
+Decided direction:
+
+- **Threat system**: mobs choose their target by threat, not by proximity
+  or last hit. Proposal for the simple core: threat = damage dealt +
+  healing done × ~0.5 (healing pulls aggro onto the healer — the classic
+  trinity tension); tank abilities generate bonus threat, plus one taunt
+  skill (forces the mob onto the tank for a few seconds). Per-mob threat
+  table, cleared on leash/reset.
+- **Group trinity**: a good group = tank + healer + 1–2 damage dealers.
+  Class kits must support this (Warrior: threat/taunt tools, Priest:
+  in-combat heals — feeds into classes.md/WP4).
+- **Solo path ("detours")**: **food** is the out-of-combat recovery
+  (eat + short rest, WoW-style). Natural HP regen is slow, so food
+  actually matters. **In-combat healing** comes primarily from a healer
+  or **healing potions** (Alchemist tie-in → economy/jobs).
+- **Mob pressure**: mobs run slightly faster than players, so kiting/
+  evading is not trivially easy; `group_attack` stays on — pulling
+  several same-level mobs solo is dangerous. Note for WP6 tuning: the
+  WP1 mobs are currently *slower* than the player (boar run 3.4,
+  zombie 2.6 vs. player ~4.0) — raise `run_velocity` to ~4.4+ for
+  serious mobs.
+
+Open (numbers, decide with section 2's curve proposal):
+- Threat formula factors (healing factor, tank bonus, taunt duration).
+- Regen/food/potion values (HP/s resting vs. in combat; potion cooldown).
+
+**Decision:** direction decided; numbers _pending_
