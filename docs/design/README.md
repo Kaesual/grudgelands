@@ -16,7 +16,7 @@ also AGENTS.md "Documentation layers"):
 | File | Scope | Status |
 |------|-------|--------|
 | `world.md` | Geography, territory rings, destructibility, capitals, outposts, housing, races | **decided** (2026-08-06) |
-| `combat_stats.md` | Attributes, skill points, HP/damage curves, mob tiers, crit/dodge/armor math | in progress → `TODO-design-combat-stats.md` (before WP3/WP5/WP6) |
+| `combat_stats.md` | Attributes, skill points, HP/damage curves, mob tiers, threat system, recovery | **decided** (2026-08-06) |
 | `items_crafting.md` | Quality tiers, enchant budgets, crafting/upgrades, loot sources | in progress → `TODO-design-items-crafting.md` (before WP5/WP7) |
 | `classes.md` | Class designs: abilities, resources, skill trees | not started (needed before WP3/WP4) |
 | `economy.md` | Gold sources/sinks, price levels, trader rules, jobs | not started, partly seeded in the items TODO (before WP7/WP10) |

@@ -23,10 +23,10 @@ window. Rules:
 | WP0 | Foundation: skeleton, BASE, mobs_redo, wob_core, wob_factions, wob_xp | ✅ | — |
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | open (spec: `docs/design/world.md`) | WP0 |
-| WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open | WP0 |
+| WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open (spec: `docs/design/combat_stats.md`) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | open | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
-| WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs | open | WP1, WP2 |
+| WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs | open (spec: `docs/design/combat_stats.md` §3) | WP1, WP2 |
 | WP7 | Gold & traders: currency, buy-all-drops, selling UI | open | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs | open | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |

@@ -34,9 +34,10 @@ Directions decided in chat (2026-08-06):
   scales with item level and source difficulty (mob tier/boss multiplier
   on the roll ranges — same mechanic everywhere, only the ranges differ).
 - Open: the enchantment pool (strength, intelligence, dexterity, attack
-  speed, HP, mana, crit, dodge, …) — finalize together with attributes
-  (`TODO-design-combat-stats.md`), so item stats and player stats are one
-  system.
+  speed, HP, mana, crit, dodge, …) — attributes and player formulas are
+  now decided (`docs/design/combat_stats.md`), so the pool can be
+  finalized against them; enchant budgets must respect the 30%/30%/60%
+  crit/dodge/armor caps.
 
 **Decision:** _pending_
 
