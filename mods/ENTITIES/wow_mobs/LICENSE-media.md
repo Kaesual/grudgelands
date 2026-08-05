@@ -1,20 +1,20 @@
-# Medien-Herkunft & Lizenzen (wow_mobs)
+# Media Origin & Licenses (wow_mobs)
 
-Aus VoxeLibre (`mods/ENTITIES/mobs_mc`) übernommen:
+Taken from VoxeLibre (`mods/ENTITIES/mobs_mc`):
 
-## Modelle (GPLv3)
-Von [22i](https://github.com/22i), Blender-Quellen:
+## Models (GPLv3)
+By [22i](https://github.com/22i), Blender sources:
 <https://github.com/22i/minecraft-voxel-blender-models>
 
 - `wow_mobs_boar.b3d` (= `mobs_mc_pig.b3d`)
 - `wow_mobs_zombie.b3d` (= `mobs_mc_zombie.b3d`)
 
-## Texturen (CC BY-SA 4.0)
-Basierend auf „Pixel Perfection" von XSSheep, Modifikationen von
-MysticTempest (aus VoxeLibre):
+## Textures (CC BY-SA 4.0)
+Based on "Pixel Perfection" by XSSheep, modifications by
+MysticTempest (from VoxeLibre):
 
 - `wow_mobs_boar.png` (= `mobs_mc_pig.png`)
 - `wow_mobs_zombie.png` (= `mobs_mc_zombie.png`)
 
-## Sonstiges
-- `wow_mobs_blank.png`: 1×1 transparent, aus der Luanti-Engine (LGPL 2.1+).
+## Other
+- `wow_mobs_blank.png`: 1×1 transparent, from the Luanti engine (LGPL 2.1+).

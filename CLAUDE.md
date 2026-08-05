@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Alle Projekt-Konventionen, Architektur-Entscheidungen und Luanti/Lua-Details
-stehen in **[AGENTS.md](AGENTS.md)** — bitte zuerst lesen.
+All project conventions, architecture decisions and Luanti/Lua details live
+in **[AGENTS.md](AGENTS.md)** — read that first.
 
-Die Projektziele und der aktuelle Stand stehen in **[ROADMAP.md](ROADMAP.md)**.
+Project goals and current status: **[ROADMAP.md](ROADMAP.md)**.

@@ -1,198 +1,225 @@
-# AGENTS.md — Projekt-Leitfaden
+# AGENTS.md — Project Guide
 
-WoW-inspiriertes Luanti-Game (Arbeitstitel „Voxel of Warcraft"). Ziele und
-Scope: **[ROADMAP.md](ROADMAP.md)**. Arbeitspakete und Status:
-**[BACKLOG.md](BACKLOG.md)**. Ausführliche Recherche-Notizen zu den
-Referenzprojekten: **[docs/research/](docs/research/)**.
+WoW-inspired Luanti game (working title "Voxel of Warcraft"). Goals and
+scope: **[ROADMAP.md](ROADMAP.md)**. Work packages and status:
+**[BACKLOG.md](BACKLOG.md)**. Detailed research notes on the reference
+projects: **[docs/research/](docs/research/)**.
 
-## Arbeitsweise (Sessions & Context)
+## Language rules
 
-Aller Projektzustand lebt im Repo, nicht im Chat-Verlauf:
+- **All Markdown documentation in this repo is written in English.**
+  Exception: `docs/research/` contains older German reference notes; they
+  may stay German until substantially rewritten.
+- Chat with the user is in **German**; code identifiers and code comments
+  are in English.
 
-1. **Session-Start**: BACKLOG.md lesen, das nächste offene WP nehmen (oder
-   das vom User genannte). Zugehörige docs/research/-Briefings überfliegen.
-2. **Ein WP pro Session** ist der Normalfall — kohärent, testbar, committet.
-   Große Explorationen in Subagents auslagern, Haupt-Context schlank halten.
-3. **WP-Abschluss**: Lua-Syntax-Check (`luajit -e "assert(loadfile(...))"`),
-   `tools/sync_to_luanti.sh`, committen, BACKLOG-Status + ROADMAP-Häkchen
-   aktualisieren. Was künftige Sessions wissen müssen → AGENTS.md/docs, nicht
-   nur Chat.
-4. **Runtime-Tests macht der User** (Flatpak-Luanti, GUI); Fehlerdiagnose
-   über `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
+## Documentation layers
 
-## Projektstruktur
+All project state lives in the repo, not in the chat history. Three layers,
+strictly separated:
 
-- Wir bauen ein **eigenständiges Game** (kein Mod-Pack, kein Fork von
-  minetest_game/VoxeLibre). Das Game lebt später in einem Layout wie
-  `games/<gameid>/` mit `game.conf`, `menu/`, `mods/`, `settingtypes.txt`.
-- `reference_projects/` enthält **nur Referenzen — dort nie etwas ändern**:
-  - `luanti/` — die Engine selbst (C++ + builtin-Lua). API-Referenz:
-    `reference_projects/luanti/doc/lua_api.md` (~12.700 Zeilen, DIE Quelle).
-  - `Lord-of-the-Test/` — beste Fraktions-Referenz (Privileges + Ally-Matrix,
-    fraktionsbewusste Mob-AI, Trader).
-  - `VoxeLibre/` — beste Architektur-Referenz (XP-System, Villager-Trading,
-    Karten-Rendering, Modpack-Struktur).
-  - `minetest_game/` — minimales Basis-Game (Node-/Tool-Palette in `mods/default`).
-  - `mobs_redo/` — Mob-Engine (MIT-Lizenz → dürfen wir forken/einbetten).
+1. **`docs/design/`** — the *decided* game design (living spec: rules,
+   numbers, lists only — no open questions, no discussion).
+2. **`TODO-<topic>.md`** (repo root) — *open* design questions: context,
+   options, recommendation, decision state. When every question in a file
+   is decided, fold the results into `docs/design/` (and update
+   ROADMAP/BACKLOG where affected), then **delete the TODO file**.
+3. **[BACKLOG.md](BACKLOG.md)** — implementation work packages (WPs). WPs
+   reference `docs/design/` instead of inventing design on the fly.
 
-## Lua & Luanti-Umgebung (WICHTIG)
+## Working method (sessions & context)
 
-- **Lua 5.1** (Engine bündelt Lua 5.1.x, bevorzugt aber **LuaJIT**;
-  `USE_LUAJIT` in `reference_projects/luanti/CMakeLists.txt`). Konsequenzen:
-  - **Kein `goto`**, keine Integer-Division `//`, keine Bit-Operatoren-Syntax
-    (`&`, `|`) — stattdessen `bit.*` (LuaJIT BitOp, immer verfügbar).
-  - Zahlen sind C-Doubles, kein Integer-Typ; sicherer Ganzzahlbereich ±(2^53−1).
-  - `unpack` (nicht `table.unpack`), `setfenv`/`getfenv` existieren.
-  - Rückportiert aus 5.4: `string.pack`/`unpack`/`packsize`.
-- Engine-Version der Referenz: **Luanti 5.17.0-dev** (git-Checkout nach 5.16).
-- **Namespace: `core.*` verwenden** — `minetest.*` ist nur ein deprecated Alias.
-- **Alle Game-Logik läuft serverseitig.** Mods laufen nur auf dem Server;
-  Definitionen/Medien werden automatisch an Clients übertragen. SSCSM
-  (server-sent client-side mods) ist in der Engine noch ein Stub — nicht nutzen.
-- **Sandbox** (bei `secure.enable_security`): verfügbar sind `coroutine`,
-  `string`, `table`, `math`, `bit` vollständig; `io`/`os`/`debug` stark
-  beschnitten (kein `os.execute`/`os.exit`); `dofile`/`require` pfadbeschränkt
-  auf den eigenen Mod. `core.request_insecure_environment()` nur über
-  `secure.trusted_mods` — brauchen wir nicht.
-- **Global injizierte Helfer** (builtin): `dump()`, `string.split`,
+1. **Session start**: read BACKLOG.md, pick the next open WP (or the one
+   the user names). Check for `TODO-*.md` files that block it. Skim the
+   relevant docs/research/ briefings.
+2. **One WP per session** is the norm — coherent, testable, committed.
+   Offload large explorations to subagents, keep the main context lean.
+3. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),
+   `tools/sync_to_luanti.sh`, commit, update BACKLOG status + ROADMAP
+   checkboxes. Anything future sessions need to know goes into
+   AGENTS.md/docs — not just the chat.
+4. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
+   errors via `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
+
+## Project structure
+
+- We are building a **standalone game** (not a mod pack, not a fork of
+  minetest_game/VoxeLibre). The game will eventually live in a layout like
+  `games/<gameid>/` with `game.conf`, `menu/`, `mods/`, `settingtypes.txt`.
+- `reference_projects/` contains **references only — never change anything
+  in there**:
+  - `luanti/` — the engine itself (C++ + builtin Lua). API reference:
+    `reference_projects/luanti/doc/lua_api.md` (~12,700 lines, THE source).
+  - `Lord-of-the-Test/` — best faction reference (privileges + ally matrix,
+    faction-aware mob AI, traders).
+  - `VoxeLibre/` — best architecture reference (XP system, villager
+    trading, map rendering, modpack structure).
+  - `minetest_game/` — minimal base game (node/tool palette in
+    `mods/default`).
+  - `mobs_redo/` — mob engine (MIT license → we may fork/embed it).
+
+## Lua & Luanti environment (IMPORTANT)
+
+- **Lua 5.1** (the engine bundles Lua 5.1.x but prefers **LuaJIT**;
+  `USE_LUAJIT` in `reference_projects/luanti/CMakeLists.txt`). Consequences:
+  - **No `goto`**, no integer division `//`, no bitwise operator syntax
+    (`&`, `|`) — use `bit.*` instead (LuaJIT BitOp, always available).
+  - Numbers are C doubles, no integer type; safe integer range ±(2^53−1).
+  - `unpack` (not `table.unpack`); `setfenv`/`getfenv` exist.
+  - Backported from 5.4: `string.pack`/`unpack`/`packsize`.
+- Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
+  checkout after 5.16).
+- **Use the `core.*` namespace** — `minetest.*` is only a deprecated alias.
+- **All game logic runs server-side.** Mods run on the server only;
+  definitions/media are transferred to clients automatically. SSCSM
+  (server-sent client-side mods) is still a stub in the engine — do not use.
+- **Sandbox** (with `secure.enable_security`): fully available are
+  `coroutine`, `string`, `table`, `math`, `bit`; `io`/`os`/`debug` are
+  heavily restricted (no `os.execute`/`os.exit`); `dofile`/`require` are
+  path-restricted to the own mod. `core.request_insecure_environment()`
+  only via `secure.trusted_mods` — we don't need it.
+- **Globally injected helpers** (builtin): `dump()`, `string.split`,
   `string:trim()`, `table.copy/indexof/insert_all/shuffle`,
-  `math.round/sign/hypot`, `vector.*` (Metatable-basiert, Operatoren
-  überladen: `vector.new/add/distance/direction/normalize/...`),
+  `math.round/sign/hypot`, `vector.*` (metatable-based, overloaded
+  operators: `vector.new/add/distance/direction/normalize/...`),
   `core.after(sec, fn)`, `core.serialize/deserialize`,
   `core.parse_json/write_json`.
-- `strict.lua` der Engine warnt bei undeklarierten Globals — Mod-Globals
-  explizit deklarieren (eine globale Tabelle pro Mod, s. Konventionen).
+- The engine's `strict.lua` warns about undeclared globals — declare mod
+  globals explicitly (one global table per mod, see conventions).
 
-## Game-/Mod-Anatomie
+## Game/mod anatomy
 
-- `game.conf`: `title` (Pflicht), `description`, `first_mod`/`last_mod`,
-  `allowed_mapgens`/`default_mapgen`, `disabled_settings` (z. B.
-  `!enable_damage` erzwingt PvE-Schaden), `author`, `textdomain`.
-- Jeder Mod: `mod.conf` (`name`, `depends`, `optional_depends`) + `init.lua`.
-  Medien in `textures/ sounds/ models/ locale/` (Namen: `a-zA-Z0-9_.-`;
-  Modelle `.b3d/.obj/.gltf/.glb`, Sounds `.ogg`).
-- Registrierte Namen immer `modname:name`; `:foo:bar` überschreibt fremde
-  Registrierung (Dependency nötig).
-- Modpacks (Ordner mit `modpack.conf`) nutzen wir zur Gruppierung wie
+- `game.conf`: `title` (required), `description`, `first_mod`/`last_mod`,
+  `allowed_mapgens`/`default_mapgen`, `disabled_settings` (e.g.
+  `!enable_damage` forces PvE damage), `author`, `textdomain`.
+- Every mod: `mod.conf` (`name`, `depends`, `optional_depends`) +
+  `init.lua`. Media in `textures/ sounds/ models/ locale/` (names:
+  `a-zA-Z0-9_.-`; models `.b3d/.obj/.gltf/.glb`, sounds `.ogg`).
+- Registered names are always `modname:name`; `:foo:bar` overrides a
+  foreign registration (requires a dependency).
+- We use modpacks (folders with `modpack.conf`) for grouping like
   VoxeLibre: `CORE/`, `PLAYER/`, `ENTITIES/`, `ITEMS/`, `MAPGEN/`, `HUD/`.
 
-## Projekt-Konventionen
+## Project conventions
 
-- **Namespace-Präfix: `wow_`** für alle unsere Mods (z. B. `wow_xp`,
+- **Namespace prefix `wow_`** for all our mods (e.g. `wow_xp`,
   `wow_factions`, `wow_quests`, `wow_jobs`, `wow_mobs`, `wow_map`).
-- Pro Mod genau eine globale Tabelle (`wow_xp = {}`), Sub-Dateien via
+- Exactly one global table per mod (`wow_xp = {}`), sub-files via
   `dofile(core.get_modpath(core.get_current_modname()).."/foo.lua")`.
-- Custom-Felder in Item-/Node-/Entity-Definitionen mit `_wow_`-Präfix
-  (Muster von VoxeLibre `_mcl_*`).
-- Verhalten über **Groups** dispatchen statt Namenslisten (VoxeLibre-Muster).
-- Persistenz:
-  - Spieler-Daten (Klasse, Fraktion, XP, Level, Talente, Jobs, Gold,
-    Quest-Status, Map-Exploration) → `player:get_meta()` (PlayerMetaRef,
-    auto-persistiert). Komplexe Strukturen via `core.serialize` als String.
-  - Mod-weite Daten → `core.get_mod_storage()` (beim Laden holen).
-  - Node-Daten (Workstations) → `core.get_meta(pos)`.
-- Performance-Regeln (aus VoxeLibre destilliert):
-  - `register_globalstep` **immer** mit dtime-Akkumulator drosseln.
-  - Node-Timer für Maschinen/Workstations (Schmiede, Alchemie).
-  - LBM für einmalige Load-Fixes/Migrationen.
-  - ABM nur für ambiente Zufalls-Events, mit `chance`/`interval` gedrosselt,
-    `catch_up = false` wo möglich.
-  - In Hot Loops `core.get_node_raw`/Content-IDs + VoxelManip statt `get_node`.
+- Custom fields in item/node/entity definitions use the `_wow_` prefix
+  (pattern from VoxeLibre's `_mcl_*`).
+- Dispatch behavior via **groups** instead of name lists (VoxeLibre
+  pattern).
+- Persistence:
+  - Player data (race, class, faction, XP, level, talents, jobs, gold,
+    quest state, map exploration) → `player:get_meta()` (PlayerMetaRef,
+    auto-persisted). Complex structures via `core.serialize` as string.
+  - Mod-wide data → `core.get_mod_storage()` (fetch at load time).
+  - Node data (workstations) → `core.get_meta(pos)`.
+- Performance rules (distilled from VoxeLibre):
+  - **Always** throttle `register_globalstep` with a dtime accumulator.
+  - Node timers for machines/workstations (forge, alchemy).
+  - LBMs for one-shot load fixes/migrations.
+  - ABMs only for ambient random events, throttled via `chance`/`interval`,
+    `catch_up = false` where possible.
+  - In hot loops use `core.get_node_raw`/content IDs + VoxelManip instead
+    of `get_node`.
 
-## Schlüssel-APIs für unsere Features (Kurzreferenz)
+## Key APIs for our features (quick reference)
 
-Details + Zeilennummern in [docs/research/](docs/research/).
+Details + line numbers in [docs/research/](docs/research/).
 
-- **Fraktionen**: Muster aus Lord of the Test `lottclasses` — Fraktion als
-  **Privilege** + Ally-Matrix + Prädikate (`*_same_race_or_ally`), Auswahl-
-  Formspec bei Join (re-prompt bei Abbruch), Starterkit-Dispatch. LotT hat
-  KEINE per-Fraktion-Spawns und kein Spieler-PvP-Gating — bauen wir selbst
-  (`core.register_on_punchplayer` / `register_on_player_hpchange`).
-- **XP/Level**: Vorlage VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP als
-  int in Player-Meta, `level_to_xp`-Kurve, `register_on_add_xp`-Pipeline,
-  HUD-Bar. XP-Loss on Death via `core.register_on_dieplayer`.
-- **Kampf/Klassen**: Schaden = damage_groups × armor_groups (÷100) ×
-  Punch-Interval-Faktor. Fähigkeiten über `core.register_on_punchplayer`,
-  `ObjectRef:punch()`, `set_physics_override` (Buffs), `hud_add`-statbar für
-  Mana/Ressourcen. Einheitliches Damage-Reason-System wie VoxeLibre
-  `mcl_damage` übernehmen.
-- **Mobs**: mobs_redo (MIT) einbetten und patchen. Fraktions-Targeting:
-  Bedingung in `general_attack()` (api.lua:1699ff) nach LotT-Muster
-  (`race`-Feld im Mob-Def + Ally-Check); Territorium-/Tier-Gating über
-  `mobs:spawn_abm_check()`. Tiers über `hp_max`/`armor` (niedriger = zäher)/
-  `damage`/`view_range`/`group_attack`. Dynamischer Loot: `drops` kann
-  Funktion sein. Quest-Kill-Credit: `on_death(self, killer)`.
-  Quest-/Händler-NPCs: `type="npc"`, `passive`, `on_rightclick` → Formspec;
-  Platzierung via `mobs:add_mob(pos, def)`.
-  **Pathfinding ist Qualitätskriterium** (User-Vorgabe: gefährliche Mobs
-  dürfen nicht an Terrain scheitern, sonst sind sie nicht gefährlich):
-  mobs_redo hat `pathfinding = 1|2` (nutzt `core.find_path`, 2 = kann Nodes
-  brechen/bauen) plus `stepheight`/`jump_height`/`fear_height` — beim
-  Mob-Tuning immer aktivieren und testen. VoxeLibre `mcl_mobs` hat ein
-  eigenes, ausgebautes `pathfinding.lua` (+ `gopath` der Villager) — falls
-  mobs_redo-Pathfinding nicht reicht, von dort adaptieren (GPL ok, s. u.).
-  Fallback-Design: Kernland-Mobs zusätzlich schnell machen (`run_velocity`)
-  und mit Ranged-Attacken (`attack_type = "dogshoot"`) ausstatten, damit
-  Terrain-Exploits nicht trivial sind.
-- **Loot/Verzauberungen**: Klassen-Items (Zauberstab, Magier-/Hexerrobe,
-  Eisenrüstung/-schwert, Dolch, …) droppen mit **zufälligen Roll-Ranges**
-  (z. B. Stärke +1..+3, Angriffsgeschwindigkeit +5..+20 %). Umsetzung wie
-  VoxeLibre `mcl_enchanting`: Rolls in **Item-Meta** speichern
-  (`stack:get_meta()`), Beschreibung via Meta-Key `description` mit den
-  gerollten Werten generieren (Muster `_mcl_generate_description`).
-  Wirkung: Attack-Speed über `tool_capabilities.full_punch_interval` im
-  Stack-Meta-Override, Stats beim Anlegen/Wechseln auf Player-Stats
-  anwenden. Drop-Quelle: `drops`-Funktion im Mob-Def rollt bei Kill
-  (Basis-Variante überall, verbesserte Variante mit besseren Ranges nur
-  bei Elite-/Kernland-Mobs).
-- **Händler/Gold**: Vorlagen VoxeLibre `mobs_mc/villager.lua` (Trade-Tiers,
-  detached inventory `wanted/input/offered/output`) und LotT
-  `lottmobs/trader.lua` (fraktionsabhängiges Sortiment). Gold als Item +
-  Zähler in Player-Meta; Händler kauft JEDEN Mob-Drop an (Ankaufspreis-Feld
-  `_wow_sell_price` in Item-Defs).
-- **Quests**: Kein fertiges Framework in den Referenzen. Bausteine:
-  Trigger-/Zähl-Muster aus `lottachievements` (awards-Fork), Event-Stufen aus
-  VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`), Questlog als
-  Formspec, Status in Player-Meta, Questgeber via NPC-`on_rightclick`,
-  HUD-`waypoint`-Elemente für Questziele.
-- **Mapgen/Biome**: `core.register_biome/register_ore/register_decoration`
-  (Mapgen v7) ODER custom `register_on_generated` (LotT-Stil, Perlin-basiert).
-  Für zusammenhängende Fraktionsterritorien (Nord/Süd) brauchen wir eine
-  eigene Lösung: Territorium als Funktion der Z-Koordinate + Schwierigkeit
-  als Funktion der Distanz zur Grenze/zum Spawn — Biome-Noise nur innerhalb
-  des Territoriums. Mapgen-Env (`core.register_mapgen_script`) läuft in
-  eigenen Threads: kein Metadata-Zugriff, dafür schnell.
-  LotT-Trick: Biom-Signatur-Nodes (z. B. Grass-Varianten) steuern
-  Mob-Spawns per Node-Whitelist.
-- **Karte/Fog of War**: VoxeLibre `mcl_maps` rendert explorierte Chunks als
-  PNG (`colors.json`, Height-Shading) und pusht via
-  `core.dynamic_add_media` — beste Basis für unsere globale Karte.
-  Minimap-Gating: `hud_set_flags{minimap=...}` (Muster minetest_game `map`).
-- **UI**: Formspecs (`core.show_formspec` +
-  `register_on_player_receive_fields`), `formspec_version` +
-  `real_coordinates[true]` setzen. 3D-Charaktervorschau: `model[]`-Element.
-  Skill Tree = Formspec mit `image_button`-Grid.
-- **Spielermodell/Skins**: `player:set_properties{visual="mesh", mesh=...,
-  textures={...}}`; Textur-Layering (skin/armor/wielditem) nach
+- **Factions**: pattern from Lord of the Test `lottclasses` — faction as a
+  **privilege** + ally matrix + predicates (`*_same_race_or_ally`),
+  selection formspec on join (re-prompt on abort), starter-kit dispatch.
+  LotT has NO per-faction spawns and no player-PvP gating — we build those
+  ourselves (`core.register_on_punchplayer` /
+  `register_on_player_hpchange`).
+- **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
+  as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
+  pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
+- **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
+  punch-interval factor. Abilities via `core.register_on_punchplayer`,
+  `ObjectRef:punch()`, `set_physics_override` (buffs), `hud_add` statbar
+  for mana/resources. Adopt a unified damage-reason system like VoxeLibre
+  `mcl_damage`.
+- **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
+  in `general_attack()` (api.lua:1699ff) following the LotT pattern
+  (`race` field in the mob def + ally check); territory/tier gating via
+  `mobs:spawn_abm_check()`. Tiers via `hp_max`/`armor` (lower = tougher)/
+  `damage`/`view_range`/`group_attack`. Dynamic loot: `drops` can be a
+  function. Quest kill credit: `on_death(self, killer)`.
+  Quest/trader NPCs: `type="npc"`, `passive`, `on_rightclick` → formspec;
+  placement via `mobs:add_mob(pos, def)`.
+  **Pathfinding is a quality criterion** (user requirement: dangerous mobs
+  must not fail at terrain, otherwise they are not dangerous): mobs_redo
+  has `pathfinding = 1|2` (uses `core.find_path`, 2 = can break/build
+  nodes) plus `stepheight`/`jump_height`/`fear_height` — always enable and
+  test these when tuning mobs. VoxeLibre `mcl_mobs` has its own, more
+  advanced `pathfinding.lua` (+ the villagers' `gopath`) — if mobs_redo
+  pathfinding is not good enough, adapt from there (GPL ok, see below).
+  Fallback design: additionally make heartland mobs fast (`run_velocity`)
+  and give them ranged attacks (`attack_type = "dogshoot"`) so terrain
+  exploits are not trivial.
+- **Loot/enchantments**: class items (wand, mage/warlock robe, iron
+  armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
+  +1..+3, attack speed +5..+20%). Implementation like VoxeLibre
+  `mcl_enchanting`: store the rolls in **item meta** (`stack:get_meta()`),
+  generate the description via meta key `description` with the rolled
+  values (pattern `_mcl_generate_description`). Effect: attack speed via
+  `tool_capabilities.full_punch_interval` in the stack meta override;
+  apply stats to player stats on equip/swap. Drop source: a `drops`
+  function in the mob def rolls on kill (base variant everywhere, improved
+  variant with better ranges only on elite/heartland mobs).
+- **Traders/gold**: templates VoxeLibre `mobs_mc/villager.lua` (trade
+  tiers, detached inventory `wanted/input/offered/output`) and LotT
+  `lottmobs/trader.lua` (faction-dependent stock). Gold as an item +
+  counter in player meta; traders buy EVERY mob drop (buy-price field
+  `_wow_sell_price` in item defs).
+- **Quests**: no ready-made framework in the references. Building blocks:
+  trigger/counter patterns from `lottachievements` (awards fork), event
+  stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
+  quest log as a formspec, state in player meta, quest givers via NPC
+  `on_rightclick`, HUD `waypoint` elements for quest targets.
+- **Mapgen/biomes**: `core.register_biome/register_ore/register_decoration`
+  (mapgen v7) OR a custom `register_on_generated` pass (LotT style,
+  Perlin-based). For contiguous faction territories (north/south) we need
+  our own solution: territory as a function of the Z coordinate +
+  difficulty as a function of distance to the border/spawn — biome noise
+  only within the territory. The mapgen env
+  (`core.register_mapgen_script`) runs in its own threads: no metadata
+  access, but fast.
+  LotT trick: biome signature nodes (e.g. grass variants) drive mob spawns
+  via a node whitelist.
+- **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
+  (`colors.json`, height shading) and pushes them via
+  `core.dynamic_add_media` — the best base for our global map. Minimap
+  gating: `hud_set_flags{minimap=...}` (pattern: minetest_game `map`).
+- **UI**: formspecs (`core.show_formspec` +
+  `register_on_player_receive_fields`), set `formspec_version` +
+  `real_coordinates[true]`. 3D character preview: `model[]` element.
+  Skill tree = formspec with an `image_button` grid.
+- **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
+  textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.
 
-## Lizenzen
+## Licenses
 
-- **Unser Projekt ist GPL** (nicht-kommerziell, Entscheidung vom 2026-07-03).
-  Damit dürfen wir Code aus ALLEN Referenzprojekten übernehmen und anpassen —
-  auch aus VoxeLibre (GPLv3). Bei Übernahmen Copyright-/Lizenz-Hinweise der
-  Quelle im jeweiligen Mod behalten (mobs_redo: MIT-Notice; Assets:
-  CC-Attribution, wenn übernommen).
-- **Keine WoW-Assets/-Namen 1:1 kopieren** — Blizzard-IP. Eigene Assets,
-  eigene Namen mit erkennbarem Charakter („inspiriert von", nicht „kopiert").
+- **Our project is GPL** (non-commercial, decided 2026-07-03). This allows
+  us to adopt and adapt code from ALL reference projects — including
+  VoxeLibre (GPLv3). When adopting, keep the source's copyright/license
+  notices in the respective mod (mobs_redo: MIT notice; assets: CC
+  attribution where adopted).
+- **Never copy WoW assets/names 1:1** — Blizzard IP. Own assets, own names
+  with a recognizable character ("inspired by", not "copied").
 
-## Test & Entwicklung
+## Testing & development
 
-- Lokal testen: Luanti ist als **Flatpak** installiert (`org.luanti.luanti`,
-  Sandbox ohne Zugriff auf `~/projects`!). Deshalb `tools/sync_to_luanti.sh`
-  ausführen — kopiert das Game nach
+- Local testing: Luanti is installed as a **Flatpak** (`org.luanti.luanti`,
+  sandboxed without access to `~/projects`!). Therefore run
+  `tools/sync_to_luanti.sh` — it copies the game to
   `~/.var/app/org.luanti.luanti/.minetest/games/voxel_of_warcraft`.
-  Nach jeder Code-Änderung erneut syncen. Engine-Logs:
+  Re-sync after every code change. Engine logs:
   `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
-- `strict.lua`-Warnungen (undeclared global) ernst nehmen — meist Tippfehler.
-- Server-Log via `core.log("action"|"warning"|"error", msg)`.
+- Take `strict.lua` warnings (undeclared global) seriously — usually typos.
+- Server log via `core.log("action"|"warning"|"error", msg)`.

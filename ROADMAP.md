@@ -1,120 +1,161 @@
-# Roadmap — „Voxel of Warcraft" (Arbeitstitel)
+# Roadmap — "Voxel of Warcraft" (working title)
 
-Ein Luanti-Game, das Spielmechaniken, Story und Charakter von World of Warcraft
-so gut wie möglich in einer Voxel-Welt einfängt — als eigenständiges Game
-(kein Mod-Pack), in Lua geschrieben.
+A Luanti game that captures the game mechanics, story and character of
+World of Warcraft as well as possible in a voxel world — as a standalone
+game (not a mod pack), written in Lua.
 
 ## Vision
 
-- Zwei Fraktionen (**Horde** / **Allianz**) mit eigenen, großen zusammenhängenden
-  Territorien (Multi-Biom-Regionen, z. B. Nord/Süd-Teilung).
-- Klassen mit XP, Leveln und vereinfachten Skill Trees.
-- Quests, die Progression treiben und gezielt PvP und Exploration erzwingen.
-- Berufe („Jobs"), Gold-Ökonomie und Händler-NPCs.
-- Schwierigkeit skaliert räumlich: sichere Startzonen an den Fraktionsgrenzen,
-  tödliche Elite-/Raid-Gebiete im Inneren bzw. weit weg vom Spawn.
-- Globale Karte pro Spieler mit Fog of War (jeder deckt sie selbst auf).
-- Kein Gildensystem (bewusste Entscheidung — Luanti ist dafür nicht MMORPG genug).
-- **Lizenz: GPL** (nicht-kommerzielles Projekt) — damit können wir Code aus allen
-  Referenzprojekten (inkl. VoxeLibre) übernehmen und anpassen.
+- Two factions (**Horde** / **Alliance**), each with a large contiguous
+  territory of its own (multi-biome region, north/south split).
+- **Races, kept deliberately simple**: each faction consists of several
+  races. One shared capital per faction (possibly with race districts);
+  the faction territory is divided into race-flavored regions (e.g.
+  mountains = dwarves, forests = elves) with small race villages.
+  Race perks: vendor discounts among your own race, race-exclusive
+  vendors, race-exclusive professions/recipes (Phase 2). Details:
+  `docs/design/world.md`.
+- Classes with XP, levels and simplified skill trees.
+- Quests that drive progression and deliberately force PvP and exploration.
+- Professions ("jobs"), a gold economy and trader NPCs.
+- Difficulty scales spatially: safe starter zones at the faction border,
+  deadly elite/raid areas in the heartland / far from spawn. **Military
+  outposts** and ambient faction patrols enforce this gating — guard
+  levels effectively limit how deep an enemy player can push.
+- **Controlled destructibility**: digging/building is free only inside
+  your own faction's territory (outside protected zones such as capitals,
+  outposts and quest structures); enemy territory and the border zone
+  cannot be modified. Ores respawn so a persistent world does not run dry.
+- **Player housing**: frontier plots in a safe zone beyond the heartland
+  with paid horizontal/depth expansion and depth treasures — the main
+  outlet for free building and the central gold sink; a capital portal
+  keeps city flair (`docs/design/world.md` §5). A **Home Stone**
+  (teleport to capital/housing, 3–5 s cast, damage interrupts)
+  guarantees nobody is trapped.
+- Class-specific points of interest (trainers, special quest NPCs) in the
+  capitals and out in the world.
+- A global per-player map with fog of war (everyone uncovers it
+  themselves).
+- Item quality tiers **Common/Uncommon/Rare/Unique** (white/blue/yellow/
+  orange; Uniques post-MVP); better gear comes from crafting and hard
+  bosses, not vendors — "the harder the enemy, the better the loot".
+- A light layer of lore and story, delivered through quests, setting and
+  environmental storytelling.
+- No guild system (deliberate decision — Luanti is not MMORPG enough for
+  that).
+- **License: GPL** (non-commercial project) — so we can adopt and adapt
+  code from all reference projects (incl. VoxeLibre).
 
 ---
 
 ## Phase 1 — MVP
 
-### 1.1 Fundament
-- [x] Game-Skelett: `game.conf`, Mod-Struktur, Namespace-Konventionen (siehe AGENTS.md)
-- [x] Basis-Welt: Blöcke/Werkzeuge/Crafting (BASE-Modpack aus minetest_game)
-- [x] Mob-Engine integrieren (mobs_redo eingebettet; Fraktions-Patch folgt mit 1.4)
+### 1.1 Foundation
+- [x] Game skeleton: `game.conf`, mod structure, namespace conventions (see AGENTS.md)
+- [x] Base world: blocks/tools/crafting (BASE modpack from minetest_game)
+- [x] Mob engine integrated (mobs_redo embedded; faction patch follows with 1.4)
 
-### 1.2 Fraktionen & Welt
-- [x] Fraktionswahl bei Charaktererstellung (Horde/Allianz), persistent
-- [ ] Mapgen: zwei große zusammenhängende Fraktionsterritorien (Nord/Süd),
-      jeweils aus mehreren Biomen zusammengesetzt
-- [ ] Schwierigkeits-Gradient: leichte Biome nahe Grenze/Spawn, schwere Biome
-      im Landesinneren (Mob-Stärke skaliert mit Distanz)
-- [ ] Fraktions-Spawnpunkte (Hauptstadt-Lager je Fraktion nahe der Grenze)
-      — Platzhalter-Spawns bei z = ±200 existieren, Lager fehlen
-- [x] PvP-Grundlage: Friendly-Fire-Schutz innerhalb der Fraktion;
-      Quest-getriebenes PvP folgt mit 1.5
+### 1.2 Factions & world
+- [x] Faction choice at character creation (Horde/Alliance), persistent
+- [x] World design spec decided (`docs/design/world.md`): geography/
+      rings, destructibility rules, capitals/outposts, housing, races
+- [ ] Mapgen: two large contiguous faction territories (north/south), each
+      composed of several race-flavored biome regions
+- [ ] Difficulty gradient: easy biomes near border/spawn, hard biomes in
+      the heartland (mob strength scales with distance)
+- [ ] Faction spawn points (capital camp per faction near the border)
+      — placeholder spawns at z = ±200 exist, camps are missing
+- [ ] Build/dig restrictions per territory (own land free, enemy land and
+      border locked; protected zones)
+- [x] PvP basis: friendly-fire protection within the faction;
+      quest-driven PvP follows with 1.5
 
-### 1.3 Klassen & Progression (MVP: 3 Klassen)
-- [ ] **Krieger** (Melee, simpel — Referenzklasse), **Magier** (Ranged/Caster),
-      **Priester** (Heiler/Support)
-- [x] XP-System: Level-Kurve 1–60, XP-Verlust beim Tod (25 % des
-      Level-Fortschritts), HUD; XP-Quellen (Mob-Kills, Quests) folgen mit 1.4/1.5
-- [ ] Level-System mit Stat-Steigerung (HP, Schaden) —
-      `register_on_level_change`-Pipeline existiert bereits
-- [ ] Vereinfachte Skill Trees: pro Klasse 2 Bäume à ~5 Talente,
-      Talentpunkte pro Level, Formspec-UI
-- [ ] 2–4 aktive Fähigkeiten pro Klasse (Hotbar-/Item-basiert), Cooldowns
+### 1.3 Classes & progression (MVP: 3 classes)
+- [ ] **Warrior** (melee, simple — reference class), **Mage**
+      (ranged/caster), **Priest** (healer/support)
+- [x] XP system: level curve 1–60, XP loss on death (25% of level
+      progress), HUD; XP sources (mob kills, quests) follow with 1.4/1.5
+- [ ] Level system with stat growth (HP, damage) —
+      `register_on_level_change` pipeline already exists
+- [ ] Simplified skill trees: 2 trees of ~5 talents per class, talent
+      points per level, formspec UI
+- [ ] 2–4 active abilities per class (hotbar/item based), cooldowns
 
-### 1.4 Mobs & Kampf
-- [ ] Fraktions-Wachen (greifen gegnerische Fraktion an)
-- [x] WoW-artige Startzonen-Mobs: kämpferisches Wildschwein (Tag) und
-      Zombie (Nacht, verbrennt tagsüber) mit XP-Vergabe und Loot; weitere
-      (Wölfe, …) folgen mit WP6
-- [ ] Neutrale/feindliche Mobs in Stufen: Grenze = schwach, Kernland = stark,
-      Elite-Mobs die Gruppen erfordern
-- [ ] **Gute Wegfindung** — gefährliche Mobs müssen ihre Ziele zuverlässig
-      erreichen (nicht in Schluchten hängenbleiben o. ä.); Pathfinding-Qualität
-      der Mob-Engine evaluieren und ggf. verbessern (Qualitätskriterium, kein
-      Nice-to-have)
-- [ ] Loot-Drops (Trash-Loot zum Verkaufen, Crafting-Materialien)
+### 1.4 Mobs & combat
+- [ ] Faction guards (attack the enemy faction), spawned by military
+      outposts + ambient patrols, levels scaling with territory depth
+- [x] WoW-style starter-zone mobs: aggressive boar (day) and zombie
+      (night, burns in daylight) with XP rewards and loot; more (wolves, …)
+      follow with WP6
+- [ ] Neutral/hostile mobs in tiers: border = weak, heartland = strong,
+      elite mobs that require groups
+- [ ] **Good pathfinding** — dangerous mobs must reliably reach their
+      targets (not get stuck in ravines etc.); evaluate and if necessary
+      improve the mob engine's pathfinding quality (quality criterion, not
+      a nice-to-have)
+- [ ] Loot drops (trash loot to sell, crafting materials)
 
-### 1.4b Loot & Verzauberungen
-- [ ] Klassen-Items als Drops: Zauberstab, Magierrobe, Hexerrobe, Eisenrüstung,
-      Eisenschwert, Dolch, … (pro Klasse ein paar Items)
-- [ ] Einfaches Verzauberungs-System mit **Roll Ranges**: Items droppen mit
-      zufällig ausgewürfelten Boni, z. B. Stärke +1 bis +3,
-      Angriffsgeschwindigkeit +5 % bis +20 % (Werte in Item-Meta, sichtbar in
-      der Beschreibung)
-- [ ] Je Klassen-Item eine verbesserte Variante, die nur bei schweren Mobs
-      (Elite/Kernland) droppt — mit besseren Roll Ranges
+### 1.4b Loot & enchantments
+- [ ] Item quality tiers Common/Uncommon/Rare (color-coded; Unique
+      reserved in the architecture, ships post-MVP)
+- [ ] Class items as drops: wand, mage robe, warlock robe, iron armor,
+      iron sword, dagger, … (a few items per class)
+- [ ] Simple enchantment system with **roll ranges**: items drop with
+      randomly rolled bonuses, e.g. strength +1 to +3, attack speed +5% to
+      +20% (values in item meta, visible in the description)
+- [ ] For each class item an improved variant that only drops from hard
+      mobs (elite/heartland) — with better roll ranges
 
-### 1.5 Quests (MVP: erzwungene Progression)
-- [ ] Quest-Framework (Questlog-UI, Quest-Status in Player-Meta)
-- [ ] Questgeber-NPCs in den Fraktionslagern
-- [ ] Pflicht-Questlines für Level-Progression (Level-Gates), darunter:
-  - [ ] „Töte 5 Wachen an der Grenze der gegnerischen Fraktion" (PvP-Trigger)
-  - [ ] „Dringe ins gegnerische Gebiet ein und töte einen Elite-Mob" (Exploration + Risiko)
-  - [ ] Sammel-/Kill-Quests in verschiedenen Biomen (Explorations-Zwang)
+### 1.5 Quests (MVP: forced progression)
+- [ ] Quest framework (quest log UI, quest state in player meta)
+- [ ] Quest-giver NPCs in the faction camps
+- [ ] Mandatory questlines for level progression (level gates), including:
+  - [ ] "Kill 5 guards at the enemy faction's border" (PvP trigger)
+  - [ ] "Push into enemy territory and kill an elite mob" (exploration + risk)
+  - [ ] Gather/kill quests across different biomes (forced exploration)
 
-### 1.6 Berufe & Ökonomie
-- [ ] Job-System: max. 2 Jobs pro Spieler, wählbar bei Job-Lehrern
-- [ ] MVP-Jobs: **Kräuterkunde** (Pflanzen sammeln), **Alchemist** (Tränke),
-      **Schmied** (Waffen/Rüstung), **Juwelensammler** (zufällige Gem-Drops beim
-      Mining — Bergbau selbst kann jeder)
-- [ ] Gold-System (Währung, persistent)
-- [ ] Händler-NPCs: kaufen JEDEN Mob-Drop gegen Gold an, verkaufen Basiswaren
+### 1.6 Professions & economy
+- [ ] Job system: max. 2 jobs per player, chosen at job trainers
+- [ ] MVP jobs: **Herbalism** (gather plants), **Alchemist** (potions),
+      **Blacksmith** (weapons/armor), **Gem Hunter** (random gem drops
+      while mining — mining itself is open to everyone)
+- [ ] Gold system (currency, persistent)
+- [ ] Trader NPCs: buy EVERY mob drop for gold, sell basic goods
 
-### 1.7 Karte
-- [ ] Globale Karte mit Fog of War, pro Spieler freispielbar
-      (vorhandene Map-Mods evaluieren, z. B. mapserver/„map" Mods; sonst eigene
-      Lösung über HUD/Formspec)
+### 1.7 Map
+- [ ] Global map with fog of war, uncovered per player
+      (evaluate existing map mods, e.g. mapserver/"map" mods; otherwise a
+      custom solution via HUD/formspec)
 
 ---
 
-## Phase 2 — Ausbau (nach MVP)
+## Phase 2 — Expansion (after MVP)
 
-- [ ] Weitere Klassen: **Paladin**, **Schurke**, **Hexenmeister**, **Schamane**
-- [ ] Weitere Jobs: **Schneider**, ggf. Verzauberer
-- [ ] Mehr Questlines, Story-Bögen je Fraktion (WoW-inspirierte Lore-Adaption)
-- [ ] Dungeons/Instanzen-artige Strukturen (feste Elite-Areale mit Boss + Loot)
-- [ ] Raid-Bosse im tiefsten Kernland
-- [ ] Reittiere (Mounts)
-- [ ] Ruf-/Reputationssystem (vereinfacht)
-- [ ] Auktionshaus-artiger Handel zwischen Spielern
+- [ ] More classes: **Paladin**, **Rogue**, **Warlock**, **Shaman**
+- [ ] More jobs: **Tailor**, possibly Enchanter
+- [ ] **Player housing** (frontier plots with paid expansion + depth
+      treasures, capital portal; spec: `docs/design/world.md` §5) — may
+      be pulled into Phase 1 since it is the central gold sink; the
+      **Home Stone** teleport may land earlier as a standalone
+      convenience feature
+- [ ] Race perks beyond the basics: race-exclusive professions/recipes,
+      race-restricted classes (decide once more classes exist)
+- [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
+- [ ] Dungeon/instance-like structures (fixed elite areas with boss + loot)
+- [ ] Raid bosses in the deepest heartland
+- [ ] Mounts (incl. class-specific unlock quests as flavor)
+- [ ] Reputation system (simplified)
+- [ ] Auction-house-like trading between players
 
 ## Phase 3 — Polish
 
-- [ ] Eigene Texturen/Sounds/Modelle (WoW-Charakter, aber eigenständige Assets!)
-- [ ] Balancing-Pass (Klassen, Mob-Tiers, Ökonomie)
-- [ ] Server-Performance-Pass (Active Object Limits, ABM-Budget)
-- [ ] Onboarding/Tutorial-Quests
+- [ ] Own textures/sounds/models (WoW character, but original assets!)
+- [ ] Balancing pass (classes, mob tiers, economy)
+- [ ] Server performance pass (active object limits, ABM budget)
+- [ ] Onboarding/tutorial quests
 
-## Bewusst NICHT geplant
+## Deliberately NOT planned
 
-- Gildensystem
-- Battlegrounds/Arenen (evtl. viel später)
-- Flugreittiere
+- Guild system
+- Battlegrounds/arenas (maybe much later)
+- Flying mounts
