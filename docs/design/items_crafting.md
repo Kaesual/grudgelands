@@ -1,11 +1,7 @@
-# Items, Crafting & Loot — Full Design Spec (decision-ready)
+# Items, Crafting & Loot — Full Design Spec
 
-Complete specification authored 2026-08-06 (rewrites the earlier question
-list; every previously decided anchor is preserved in §0 and woven into
-the sections). On approval this file folds into
-`docs/design/items_crafting.md` (+ price numbers into `economy.md`,
-material params into `biomes_mobs.md` cross-refs) and the TODO is
-deleted (AGENTS.md "Documentation layers"). Open points: §10 only.
+**Decided spec** (authored + approved 2026-08-06; the five flagged
+points P1–P5 were all decided per recommendation — resolutions in §10).
 
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
@@ -569,14 +565,14 @@ Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
   the only open questions left are class kit + balance. **Explicitly
   not decided here.**
 
-## 10. Open decision points (each with recommendation)
+## 10. Resolved decision points (2026-08-06)
 
 **P1 — Tier-4 metal.** Gem-tempered steel (steel + gems, no new ore —
 uses Gem Hunter, golem drops, existing depth ores) vs a new deep ore
 with mapgen registration. Recommendation: **gem-tempered steel** (zero
 mapgen risk, strengthens two existing loops); a new ore can still be
 added post-MVP as a T5/Unique hook.
-Decision: pending user review (spec authored 2026-08-06).
+**Decided as recommended (2026-08-06).**
 
 **P2 — Signature-recipe asymmetry.** Troll harness (top leather) and
 Human flask have no cross-faction stat mirror (6 races on 4 crafting
@@ -584,22 +580,22 @@ professions). Recommendation: **accept for the MVP** (leather is not
 worn by MVP classes' endgame sets; the flask is consumable, not
 permanent power) and add mirrored recipes in Phase 2 when the Rogue
 makes top leather PvP-relevant.
-Decision: pending user review (spec authored 2026-08-06).
+**Decided as recommended (2026-08-06).**
 
 **P3 — Potion/elixir exclusivity.** One shared 60 s cooldown for
 instant potions (heal AND mana) + one active elixir + Well Fed stacking
 on top. Recommendation: **as proposed** — keeps consumable pressure
 without a buff-stacking meta.
-Decision: pending user review (spec authored 2026-08-06).
+**Decided as recommended (2026-08-06).**
 
 **P4 — Swiftness Draught.** +8% speed for 15 s brushes the "mobs must
 outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
 PvP chases change). Recommendation: **ship at +8%/15 s**, tag as
 balance-watch in the WP7 playtest.
-Decision: pending user review (spec authored 2026-08-06).
+**Decided as recommended (2026-08-06).**
 
 **P5 — Abyssal-gem bridge.** Until guild housing ships, race
 signatures would be uncraftable. Recommendation: **apex hoards drop 1
 abyssal gem** as interim source; remove (or reduce to 10% chance) once
 housing depths are live.
-Decision: pending user review (spec authored 2026-08-06).
+**Decided as recommended (2026-08-06).**

@@ -56,7 +56,7 @@ generated. Recommendation (makes A cheap):
 
 - Island reserve size + grid cell size, base cube (x/z and y), step
   sizes and prices for build vs. mining rights (gold-income curve first:
-  TODO-design-items-crafting.md §4).
+  items_crafting.md §7).
 - Depth treasure distribution per island.
 - Distance of the housing band: |z| ≈ 4000 as working value (coastal
   ocean ends ~3200 from z=0; leave slack for the deadly sea belt).

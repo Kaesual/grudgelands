@@ -1,7 +1,7 @@
 # Economy — Currency & Money Flow
 
 Decided spec (2026-08-06). Price *numbers* are still open (gold-income
-curve first: TODO-design-items-crafting.md §4); this file fixes the
+curve: items_crafting.md §7); this file fixes the
 currency structure and the qualitative bands.
 
 ## 1. Currency: copper / silver / gold

@@ -2,7 +2,7 @@
 
 Decided 2026-08-06 (design discussion). Crafting mechanics:
 `inventory_equipment.md` §4 (3×3 + recipe unlock + workbench proximity).
-Recipe/material details: `TODO-design-items-crafting.md`.
+Recipe/material details: `items_crafting.md`.
 
 ## 1. Structure
 

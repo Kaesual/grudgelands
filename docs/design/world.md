@@ -201,7 +201,7 @@ contiguous housing shelf, sizes, access — live in
   SEPARATELY, in paid steps** with rising prices; together they define
   the cube the guild may edit — the central long-term gold sink. A fresh
   purchase starts with a small part of a much larger reserved area
-  (numbers with the economy design, TODO-design-items-crafting.md §4).
+  (numbers with the economy design, items_crafting.md §7).
 - **Depth treasures**: greater depths hold exclusive, artificially
   limited gems/materials — ingredient source for high-end recipes. Like
   mining claims: **no respawn** — what is dug is gone (R4).

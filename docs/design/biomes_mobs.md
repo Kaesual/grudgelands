@@ -206,7 +206,7 @@ jungle fringe), stormkelp T3 (coast-zone beaches).
 Per family: ONE verb, level = `mob_level_at(spawn)`, stats from
 formulas, speed per combat_stats. `[leather]` = Leatherworker ×5 hook.
 Drop chances in mobs_redo format (chance N = 1/N). Working item names —
-final naming in TODO-design-items-crafting.md. All aggressive mobs:
+final naming in items_crafting.md. All aggressive mobs:
 `pathfinding = 1`, `group_attack` per verb, soft de-aggro 25 m (WP6).
 
 ### 3.1 Families by biome group

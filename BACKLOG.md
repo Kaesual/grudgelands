@@ -53,8 +53,8 @@ WP20 (party), WP21 (recovery/innkeeper).
 
 **Blocked, by what**:
 - WP18 is design-unblocked (biomes_mobs.md decided) — ready once picked up; WP6 waits on WP18
-- WP5, WP7, WP10, WP22 ← `TODO-design-items-crafting.md` (next design
-  round; WP22 additionally needs WP5 gear to exist)
+- WP5, WP7, WP10 are design-unblocked (`docs/design/items_crafting.md`
+  decided); WP22 additionally needs WP5 gear to exist
 - WP8, WP9 ← `progression.md` §4 (quest structure/level gates)
 - WP12 ← WP17; WP13 ← WP18 + biomes; WP16 ← WP7; WP23 ← WP6
 - Housing WP (unscheduled) ← `TODO-design-housing.md`

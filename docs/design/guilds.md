@@ -49,6 +49,6 @@ rationale (Luanti is not MMORPG enough for that) intact.
 - Guild records (name, faction, roles, property, bank) in
   `core.get_mod_storage()` — cross-player data, not player meta.
 - Plot/claim sizing and pricing are economy parameters
-  (TODO-design-items-crafting.md §4): sized so a guild can grow for a
+  (items_crafting.md §7): sized so a guild can grow for a
   long time, steps small enough that the maximum is practically never
   reached.

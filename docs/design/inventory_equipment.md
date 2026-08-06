@@ -52,4 +52,4 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
 - Workbenches are initially **uncraftable and stand only in the
   capitals/villages** (placement with WP13); job-supply vendors (thread,
   flux, vials) stand next to them (materials design:
-  TODO-design-items-crafting.md §5).
+  items_crafting.md).
