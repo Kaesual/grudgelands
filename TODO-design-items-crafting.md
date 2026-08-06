@@ -61,6 +61,34 @@ Directions decided in chat (2026-08-06):
 
 **Decision:** _pending_
 
+## 5. Material tiers & loot tables — direction decided 2026-08-06, params OPEN
+
+Decided direction (user):
+
+- **Crafting materials come in tiers**; where you get them mirrors WoW:
+  - **Vendor supplies**: cheap consumable ingredients (thread/Garn,
+    flux, vials) sold by job-supply vendors near the workbenches in the
+    capitals — a small steady gold sink.
+  - **World materials**: dropped by mobs or gathered/mined —
+    **tier follows the source's level**: low-level humanoids drop
+    low-tier cloth, high-level humanoids high-tier cloth; ores likewise
+    via mining in high-level areas (heartland).
+- Workbenches (forge, tailor bench, alchemy table) are initially
+  **uncraftable and stand only in the capitals** (placement WP13; recipe
+  list UI see TODO-design-inventory-ui.md).
+- Bags are Tailor products (cloth sink; see TODO-design-inventory-ui.md).
+
+Proposal for the params (open):
+
+- **4 material tiers** aligned to level brackets 1–15 / 15–30 / 30–45 /
+  45–60, matching the difficulty rings; loot tables per mob category
+  (humanoid → cloth, beast → leather/meat, undead → reagents) with the
+  tier picked from the mob's level.
+- Mob loot tables live in the mob def (`drops` as function of mob level
+  — mobs_redo supports function drops, see AGENTS.md).
+
+**Decision (params):** _pending_
+
 ## 4. Vendor pricing & gold flow — OPEN (seeds economy.md)
 
 - Decided direction: gold scarce; vendor gear expensive (early gold
