@@ -9,15 +9,25 @@ grug_mobs = {}
 --                          inner, outer, coast, war_coast, strait, ocean,
 --                          underground) the mob may spawn in; nil = anywhere
 --                          (WP6 replaces this with full level-tier gating)
+--   def._grug_spawn_check — function(pos) -> true if the mob may spawn there;
+--                          for gates the zone vocabulary cannot express (the
+--                          Kraken's open sea is a sub-area of zone "ocean").
+--                          nil = no extra check. Zones and check are ANDed.
 --
 
 local spawn_zones = {} -- mob name -> set of allowed zone names
+local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 
 -- mobs_redo's global hook for additional spawn checks (an empty stub
--- upstream; returning true BLOCKS the spawn).
+-- upstream; returning true BLOCKS the spawn). A mob with neither zones nor
+-- a check spawns wherever its mobs:spawn() row allows.
 function mobs:spawn_abm_check(pos, node, name)
 	local zones = spawn_zones[name]
 	if zones and not zones[grug_core.zone_at(pos)] then
+		return true
+	end
+	local check = spawn_checks[name]
+	if check and not check(pos) then
 		return true
 	end
 end
@@ -121,6 +131,9 @@ function grug_mobs.register_mob(name, def)
 		end
 		spawn_zones[name] = set
 	end
+	if def._grug_spawn_check then
+		spawn_checks[name] = def._grug_spawn_check
+	end
 
 	-- Player punches (auto-attacks AND ability punches) pass through here:
 	-- feeds combat marking + rage generation via grug_core. NB mobs_redo's
@@ -210,3 +223,4 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")
 dofile(modpath .. "/zombie.lua")
+dofile(modpath .. "/kraken.lua")

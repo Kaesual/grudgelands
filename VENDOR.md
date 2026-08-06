@@ -21,6 +21,9 @@ Rules:
    `git log -- <path>`), then update the commit hash here.
 5. Media files copied from other projects are NOT tracked here — they are
    documented per mod in `LICENSE-media.md` (see AGENTS.md "Licenses").
+   Those per-mod tables carry the same provenance data as the rows below:
+   upstream project, the **commit the assets were harvested at**, license,
+   and any local modification (retint, rescale, rename).
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|
