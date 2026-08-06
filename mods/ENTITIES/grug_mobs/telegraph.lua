@@ -96,7 +96,16 @@ local function resolve(self)
 	for i = 1, #players do
 		local p = players[i]
 		local pp = p:get_pos()
-		if pp and p:get_hp() > 0 and vector.distance(pos, pp) <= range then
+		-- Players this mob may not target at all are not collateral either:
+		-- the SAME veto general_attack consumes (init.lua's
+		-- `_grug_ignore_player` — own-faction/factionless players for a
+		-- faction NPC, unprovoked truce players at night). Without it an
+		-- elite GUARD would slam its own faction's players standing next to
+		-- it, which no acquisition path would ever have allowed.
+		if pp and p:get_hp() > 0
+				and not (self._grug_ignore_player and
+					self:_grug_ignore_player(p))
+				and vector.distance(pos, pp) <= range then
 			local dx, dz = pp.x - pos.x, pp.z - pos.z
 			local len = math.sqrt(dx * dx + dz * dz)
 			-- Standing exactly inside the mob has no direction; count it as

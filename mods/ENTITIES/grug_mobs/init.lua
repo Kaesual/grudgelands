@@ -313,6 +313,7 @@ dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/telegraph.lua")
+dofile(modpath .. "/patrol.lua")
 dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")
@@ -350,6 +351,9 @@ dofile(modpath .. "/carrion_crow.lua")
 dofile(modpath .. "/skeleton_raider.lua")
 dofile(modpath .. "/bandit.lua")
 dofile(modpath .. "/mirefolk.lua")
+-- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
+-- come before camps.lua, which names the two guard mobs in its camp types.
+dofile(modpath .. "/guard.lua")
 dofile(modpath .. "/camps.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")

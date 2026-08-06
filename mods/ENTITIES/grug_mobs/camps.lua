@@ -1,7 +1,8 @@
 --
--- Humanoid camps: the camp-fire node and its respawn timer
+-- Camps: the camp-fire node, the guard-banner node and their respawn timer
 -- (docs/design/biomes_mobs.md §4, row "Bandits / Mirefolk | **no ABM** —
--- camp node timer respawns 120-300 s, anchored to camp, 3-5 per camp").
+-- camp node timer respawns 120-300 s, anchored to camp, 3-5 per camp";
+-- docs/design/world.md §4 for the military outposts that reuse it).
 --
 -- Why a node timer and not an ABM: §4's performance justification puts camps
 -- and rares "off the ABM entirely (node timers / scheduled) — zero idle
@@ -27,10 +28,25 @@
 --       (identity for the head count here and for the mirefolk swarm verb)
 --   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp".
 --
+-- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
+-- grug_nodes:guard_banner, and the camp types "guard_accord"/"guard_throng"
+-- at the bottom of this file. Two things differ:
+--   * the banner is placed by MAPGEN (grug_mapgen/structures.lua) via a
+--     VoxelManip, which fires no node callbacks at all — so the timer of a
+--     generated banner is started by the LBM at the bottom instead of by
+--     on_construct;
+--   * the camp type is not chosen by the placer but by the TERRITORY the
+--     banner stands in (grug_core.territory_at), so a post can never fly the
+--     wrong faction's colours;
+--   * a guard camp with `patrol = true` designates ONE of its guards as the
+--     ambient patrol of world.md §4 (see assign_patrol below).
+--
 -- STATE lives in node meta, so a camp survives restarts and world unloads
 -- with zero mod storage:
---   `_grug_camp_type`   string, a key of grug_mobs.registered_camp_types
---   `_grug_camp_target` int, the rolled 3-5 (0/absent = not rolled yet)
+--   `_grug_camp_type`     string, a key of grug_mobs.registered_camp_types
+--   `_grug_camp_target`   int, the rolled 3-5 (0/absent = not rolled yet)
+--   `_grug_camp_patrol_t` int, gametime of the last patrol designation
+--   `_grug_banner_init`   int, LBM idempotency flag (guard banners only)
 --
 
 --
@@ -39,19 +55,27 @@
 
 grug_mobs.registered_camp_types = {}
 
--- id -> {mob = "grug_mobs:bandit", count_min = 3, count_max = 5, radius = 12}
+-- id -> {mob = "grug_mobs:bandit", count_min = 3, count_max = 5, radius = 12,
+--        node = "grug_mobs:camp_fire", patrol = false}
+--   node   — the anchor node grug_mobs.place_camp uses for this type
+--            (guard posts fly a banner, bandits sit around a fire)
+--   patrol — designate one member as an ambient patrol (world.md §4)
 function grug_mobs.register_camp_type(id, def)
 	grug_mobs.registered_camp_types[id] = {
 		mob = def.mob,
 		count_min = def.count_min or 3,
 		count_max = def.count_max or 5,
 		radius = def.radius or 12,
+		node = def.node or "grug_mobs:camp_fire",
+		patrol = def.patrol or false,
 	}
 end
 
 local DEFAULT_TYPE = "bandit"
 local META_TYPE = "_grug_camp_type"
 local META_TARGET = "_grug_camp_target"
+local META_PATROL_T = "_grug_camp_patrol_t"
+local META_BANNER_INIT = "_grug_banner_init"
 
 -- Re-arm delay when the tick had nothing to do (nobody around, camp full, no
 -- free ground). Short on purpose: it is one cheap check, and it decides how
@@ -63,10 +87,16 @@ local RESPAWN_MIN, RESPAWN_MAX = 120, 300
 -- mobs:add_mob's own 128 m requirement, comfortably outside the camp radius.
 local PLAYER_RANGE = 80
 -- Head-count radius margin on top of the camp radius: a defending camp mob
--- may stand up to its leash range (25, mob defs) from the fire, and counting
--- it as gone would let the camp overfill. radius + 16 covers that for both
--- registered camp types.
+-- may stand up to its leash range from the fire, and counting it as gone
+-- would let the camp overfill. radius + 16 covers every registered camp type
+-- (bandit 12 + 16 > leash 25, mirefolk 10 + 16 > 25, guards 15 + 16 > 30).
 local COUNT_MARGIN = 16
+-- Minimum game time between two patrol designations at ONE post. A patroller
+-- walks far outside the head count (that is the point), so the post refills
+-- behind it and the "camp is empty" trigger below could, over a long enough
+-- world, designate one patroller after another. This caps that drift at one
+-- per hour per post while still healing a post whose patrol really died.
+local PATROL_INTERVAL = 3600
 -- Attempts to find open ground for one new mob.
 local SPOT_TRIES = 12
 
@@ -148,6 +178,39 @@ local function free_spot_near(pos, radius)
 	return nil
 end
 
+-- Ambient patrol (docs/design/world.md §4: "between outposts: ambient
+-- patrols — closes the 'just walk around the outpost' hole").
+--
+-- The route is a PLAIN table field on the entity ({points = {{x, z}, {x, z}},
+-- wp = index}), so it persists in staticdata with the mob — never an
+-- ObjectRef, never a function. Both endpoints come from
+-- grug_core.outpost_anchors(): this post, and the adjacent outpost of the
+-- same race band one ring further toward the strait. That shared anchor list
+-- is the ONE source both mapgen and this file read, so a patrol can never
+-- walk to a post that was never built.
+--
+-- A banner that is not on an outpost anchor — the capital watch of world.md
+-- §3 — simply gets no route and every guard holds the platform.
+local function assign_patrol(pos, meta, ent)
+	local now = core.get_gametime()
+	local last = meta:get_int(META_PATROL_T)
+	if last > 0 and now - last < PATROL_INTERVAL then
+		return
+	end
+	local anchor = grug_core.outpost_at(pos)
+	local target = anchor and grug_core.outpost_patrol_target(anchor)
+	if not target then
+		return
+	end
+	ent._grug_patrol_route = {
+		points = {{x = anchor.x, z = anchor.z}, {x = target.x, z = target.z}},
+		wp = 1,
+	}
+	meta:set_int(META_PATROL_T, now)
+	core.log("action", "[grug_mobs] patrol " .. anchor.id .. " -> " ..
+		target.id .. " sent out")
+end
+
 --
 -- The tick. Returns the number of seconds until the next one.
 --
@@ -174,7 +237,8 @@ local function camp_tick(pos)
 	if not player_near(pos, PLAYER_RANGE) then
 		return IDLE_PERIOD
 	end
-	if count_camp_mobs(pos, cfg) >= target then
+	local living = count_camp_mobs(pos, cfg)
+	if living >= target then
 		return IDLE_PERIOD
 	end
 	local spot = free_spot_near(pos, cfg.radius)
@@ -198,6 +262,14 @@ local function camp_tick(pos)
 	local home = {x = pos.x, y = pos.y, z = pos.z}
 	ent._grug_home = home
 	ent._grug_camp_pos = {x = pos.x, y = pos.y, z = pos.z}
+	-- The patroller is the member spawned into an EMPTY post: it leaves
+	-- immediately and the post then fills up behind it with guards that stay.
+	-- Tying the designation to "empty" (instead of to a slot number) keeps the
+	-- post at target + 1 mobs at most and re-sends a patrol after a wipe,
+	-- while PATROL_INTERVAL bounds the drift the head count cannot see.
+	if cfg.patrol and living == 0 then
+		assign_patrol(pos, meta, ent)
+	end
 	return math.random(RESPAWN_MIN, RESPAWN_MAX)
 end
 
@@ -262,25 +334,97 @@ core.register_node("grug_mobs:camp_fire", {
 })
 
 --
+-- The guard post: the same mechanism on grug_nodes:guard_banner
+-- (docs/design/world.md §4)
+--
+
+-- The banner NODE lives in grug_nodes, which must not depend on grug_mobs —
+-- so its behaviour is attached from here, the legal cross-mod way
+-- (core.override_item; grug_mobs declares grug_nodes in mod.conf, so the node
+-- is registered by the time this file runs).
+
+-- Which watch stands here: the TERRITORY decides, never the placer
+-- (world.md §0/§4 — a post cannot fly the wrong faction's colours).
+local function banner_camp_type(pos)
+	local territory = grug_core.territory_at(pos)
+	if territory ~= "accord" and territory ~= "throng" then
+		-- Only reachable for a banner placed by hand in the ocean/strait: the
+		-- outpost anchors are all well inside a continent rectangle. Not an
+		-- error worth refusing over, but worth saying out loud.
+		core.log("warning", "[grug_mobs] guard banner at " ..
+			core.pos_to_string(pos) .. " stands outside both continents" ..
+			" (territory '" .. tostring(territory) ..
+			"'); defaulting to the Accord watch")
+		territory = "accord"
+	end
+	return "guard_" .. territory
+end
+
+-- Shared by on_construct (hand/place_camp placement) and the LBM below
+-- (mapgen placement). Idempotent: the meta flag makes a second call a no-op,
+-- and an already typed banner keeps its type.
+local function init_banner(pos)
+	local meta = core.get_meta(pos)
+	if meta:get_int(META_BANNER_INIT) == 1 then
+		return
+	end
+	meta:set_int(META_BANNER_INIT, 1)
+	if meta:get_string(META_TYPE) == "" then
+		meta:set_string(META_TYPE, banner_camp_type(pos))
+	end
+	meta:set_string("infotext", "Guard Post")
+	core.get_node_timer(pos):start(IDLE_PERIOD)
+end
+
+core.override_item("grug_nodes:guard_banner", {
+	on_construct = init_banner,
+	-- Same re-arm reasoning as the camp fire above: start the next timer
+	-- ourselves and return false, because the period alternates between the
+	-- idle check and the respawn delay.
+	on_timer = function(pos)
+		core.get_node_timer(pos):start(camp_tick(pos))
+		return false
+	end,
+})
+
+-- WHY THIS LBM EXISTS: grug_mapgen writes the outpost banners (and the
+-- capital-watch banner on every spawn platform) straight into the mapchunk's
+-- VoxelManip. A VM write is not set_node — it fires NO node callbacks at all,
+-- so on_construct above never runs for a generated banner and its node timer
+-- would never be armed. The LBM is the init path for exactly those nodes; it
+-- runs once per mapblock (run_at_every_load = false), including on freshly
+-- generated blocks, and init_banner's meta flag makes it idempotent on top.
+core.register_lbm({
+	name = "grug_mobs:guard_banner_init",
+	nodenames = {"grug_nodes:guard_banner"},
+	run_at_every_load = false,
+	action = function(pos)
+		init_banner(pos)
+	end,
+})
+
+--
 -- Placement API
 --
 
 -- Places (or re-types) a camp. This is the entry point for WP13's settlement
 -- pass and for manual testing; placing the bare node by hand also works and
--- defaults to the bandit camp via on_construct.
+-- defaults to the bandit camp (fire) resp. the local faction's watch
+-- (banner) via on_construct.
 --
 -- Returns true on success, false for an unknown camp type — a silent no-op
 -- would hide a typo in a settlement schematic.
 function grug_mobs.place_camp(pos, type_id)
 	type_id = type_id or DEFAULT_TYPE
-	if not grug_mobs.registered_camp_types[type_id] then
+	local cfg = grug_mobs.registered_camp_types[type_id]
+	if not cfg then
 		core.log("warning", "[grug_mobs] place_camp: unknown camp type '" ..
 			tostring(type_id) .. "'")
 		return false
 	end
 	-- set_node fires on_construct, which writes the default type and arms the
 	-- timer; the two lines after it overwrite that default.
-	core.set_node(pos, {name = "grug_mobs:camp_fire"})
+	core.set_node(pos, {name = cfg.node})
 	local meta = core.get_meta(pos)
 	meta:set_string(META_TYPE, type_id)
 	meta:set_int(META_TARGET, 0) -- re-rolled for THIS type on the first tick
@@ -310,4 +454,34 @@ grug_mobs.register_camp_type("mirefolk", {
 	count_min = 3,
 	count_max = 5,
 	radius = 10,
+})
+
+--
+-- The two guard posts (world.md §4/§9)
+--
+-- Deliberately smaller and wider than a bandit camp: 2-3 guards (§9's
+-- "guaranteed minimum" outpost is a picket, not a garrison — the numbers can
+-- grow with WP13's real structures) spread over the 7x7 pad and its
+-- surroundings (radius 15, the pad plus a little patrol ground). Both types
+-- patrol; which of the two a banner uses follows from the territory
+-- (banner_camp_type above), so the posts of one continent are all the same
+-- type and the mob level still varies with the ring via guard_level_at.
+--
+
+grug_mobs.register_camp_type("guard_accord", {
+	mob = "grug_mobs:guard_accord",
+	count_min = 2,
+	count_max = 3,
+	radius = 15,
+	node = "grug_nodes:guard_banner",
+	patrol = true,
+})
+
+grug_mobs.register_camp_type("guard_throng", {
+	mob = "grug_mobs:guard_throng",
+	count_min = 2,
+	count_max = 3,
+	radius = 15,
+	node = "grug_nodes:guard_banner",
+	patrol = true,
 })

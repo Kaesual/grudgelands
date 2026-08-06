@@ -309,55 +309,19 @@ end)
 -- Wired like leash_tick from init.lua's do_custom wrapper (guarded there by
 -- _grug_rare_id, so no normal mob ever enters this function).
 --
--- We do NOT use mobs_redo's mob_class:go_to(pos) (api.lua:1672). It works by
--- spawning a temporary "mobs:_pos" entity and calling do_attack(obj, true)
--- on it — i.e. it puts the mob into state "attack" with a dummy target.
--- Three things break for us: general_attack() bails out entirely while
--- state == "attack" (api.lua:1695), so a patrolling rare would be BLIND to
--- players; our threat/leash logic would see an attack state with a
--- non-player target; and the telegraph would count the dummy as melee
--- combat. A yaw + walk-velocity nudge once a second is all an amble needs.
+-- The walk itself is grug_mobs.route_tick (patrol.lua) — the identical
+-- movement the outpost patrols of WP6/T8 use; the rationale for not using
+-- mobs_redo's go_to() lives there. The current waypoint index stays in the
+-- plain field `_grug_rare_wp`, so the route position survives unload/reload
+-- with the mob exactly as before.
 --
--- The current waypoint index lives in the plain field `_grug_rare_wp`, so
--- the route position survives unload/reload with the mob.
---
-
-local WAYPOINT_REACHED = 4 -- m
 
 function grug_mobs.rare_tick(self, dtime)
 	local spec = grug_mobs.registered_rares[self._grug_rare_id]
-	if not spec or not spec.route or #spec.route < 2 then
+	if not spec then
 		return
 	end
-	self.temp = self.temp or {}
-	local t = self.temp
-	t.grug_rare_acc = (t.grug_rare_acc or 0) + dtime
-	if t.grug_rare_acc < 1 then
-		return
-	end
-	t.grug_rare_acc = 0
-	-- Idle only: fighting, fleeing and flopping all own the movement.
-	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
-		return
-	end
-	local pos = self.object and self.object:get_pos()
-	if not pos then
-		return
-	end
-	local idx = self._grug_rare_wp or 1
-	if idx > #spec.route then
-		idx = 1
-	end
-	local pt = spec.route[idx]
-	local dx, dz = pt.x - pos.x, pt.z - pos.z
-	if dx * dx + dz * dz <= WAYPOINT_REACHED * WAYPOINT_REACHED then
-		idx = idx % #spec.route + 1
-		self._grug_rare_wp = idx
-		pt = spec.route[idx]
-	end
-	self:yaw_to_pos(vector.new(pt.x, pos.y, pt.z), 0, 4)
-	self.state = "walk"
-	self:set_velocity(self.walk_velocity)
+	grug_mobs.route_tick(self, dtime, spec.route, self, "_grug_rare_wp")
 end
 
 --

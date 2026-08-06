@@ -77,6 +77,15 @@ grug_mobs.LEASH_TIMEOUT = 15 -- s without player contact
 -- The contact timeout above still applies, so this widens the leash without
 -- turning rares into world-spanning chasers.
 grug_mobs.RARE_LEASH_RANGE = 300
+-- Floor for OUTPOST PATROLLERS (world.md §4, camps.lua/guard.lua). A patrol
+-- walks 250-850 nodes from the post it spawned at, and `_grug_home` is that
+-- post — with the guard's own 30 m leash it would reset (heal to full, drop
+-- the target) the moment it aggroed anywhere along the route. Effectively "no
+-- distance leash": a patroller leashes by CONTACT TIMEOUT only, and the 15 s
+-- rule below still keeps it from chasing anyone across the continent.
+-- It has to be a floor applied HERE and not a field on the entity, because
+-- apply_aggro_fields re-writes _grug_leash_range from the def on every tick.
+grug_mobs.PATROL_LEASH_RANGE = 2000
 local LEASH_INTERVAL = 1 -- s between checks (performance rule: throttled)
 
 -- Full reset: forget everyone, drop the target, heal up.
@@ -127,6 +136,9 @@ local function leash_check(self)
 	local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
 	if self._grug_rare_id then
 		range = math.max(range, grug_mobs.RARE_LEASH_RANGE)
+	end
+	if self._grug_patrol_route then
+		range = math.max(range, grug_mobs.PATROL_LEASH_RANGE)
 	end
 	if pos and home and vector.distance(pos, home) > range then
 		grug_mobs.leash_reset(self)

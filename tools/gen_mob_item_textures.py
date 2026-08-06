@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generates the 16x16 mob-material item icons of grug_mobs.
+"""Generates the 16x16 mob-material item icons of grug_mobs (plus the few
+node tiles of other mods that are authored the same way).
 
 Grudgelands project, **CC0 1.0** - original pixel art, NOT derived from any
 vendored or third-party asset. Fully deterministic (no randomness), so
@@ -9,9 +10,10 @@ Every icon is authored as a 16x16 ASCII map plus a per-icon palette, which
 makes the art reviewable in the diff instead of only in a binary blob.
 
 Usage:
-    python3 tools/gen_mob_item_textures.py [outdir]
+    python3 tools/gen_mob_item_textures.py [outdir [nodes_outdir]]
 
-Default outdir: mods/ENTITIES/grug_mobs/textures
+Default outdir:       mods/ENTITIES/grug_mobs/textures  (ICONS)
+Default nodes_outdir: mods/ITEMS/grug_nodes/textures    (NODE_ICONS)
 """
 
 import os
@@ -506,6 +508,26 @@ aaaaaaaaaaaaaaaa
 """
 
 
+GUARD_BANNER = """
+......pPPp......
+......pPPpeeeee.
+......pPPpcCccc.
+......pPPpccmcc.
+......pPPpcmmmc.
+......pPPpcmcmc.
+......pPPpccccc.
+......pPPpeeeee.
+......pPPp......
+......pPPp......
+......pPPp......
+......pPPp......
+......pPPp......
+......pPPp......
+......pPPp......
+......pPPp......
+"""
+
+
 # ------------------------------------------------------------------- recipes
 # (file name, art, palette)
 
@@ -570,15 +592,35 @@ ICONS = [
       "E": "#c25a1c", "F": "#f08a2a", "Y": "#ffd45e"}),
 ]
 
+# Node tiles that live in ANOTHER mod but are authored by the same rules
+# (16x16 ASCII art, CC0, deterministic). Kept in this script instead of a
+# near-identical sibling so there is exactly one generator to maintain.
+NODE_ICONS = [
+    # Tile of grug_nodes:guard_banner (WP6/T8 guard post anchor). The node is
+    # a nodebox, and nodebox faces sample the REGION of the tile their box
+    # covers: columns 6..9 are the pole, columns 10..14 / rows 1..7 the flag
+    # board, the rest is never drawn and stays transparent. Faction-neutral
+    # colours on purpose (the faction comes from the territory, not the node).
+    ("grug_nodes_guard_banner.png", GUARD_BANNER,
+     {"p": "#4a3524", "P": "#6b4e33", "e": "#7a6a52", "c": "#d9d2be",
+      "C": "#efe9d8", "m": "#3f4a5a"}),
+]
+
 
 def main():
     outdir = sys.argv[1] if len(sys.argv) > 1 else \
         os.path.join("mods", "ENTITIES", "grug_mobs", "textures")
-    if not os.path.isdir(outdir):
-        raise SystemExit("no such directory: " + outdir)
+    nodes_outdir = sys.argv[2] if len(sys.argv) > 2 else \
+        os.path.join("mods", "ITEMS", "grug_nodes", "textures")
+    for d in (outdir, nodes_outdir):
+        if not os.path.isdir(d):
+            raise SystemExit("no such directory: " + d)
     for name, art, palette in ICONS:
         print(build(name, art, palette, outdir))
-    print("%d icons written to %s" % (len(ICONS), outdir))
+    for name, art, palette in NODE_ICONS:
+        print(build(name, art, palette, nodes_outdir))
+    print("%d icons written to %s, %d to %s"
+          % (len(ICONS), outdir, len(NODE_ICONS), nodes_outdir))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,14 @@
 # Media Origin & Licenses (grug_nodes)
 
-All textures are **derived works** of minetest_game media
+Two groups, listed in their own tables below:
+
+1. **Biome signature tops (WP18)** — derived works of minetest_game
+   textures, CC BY-SA 3.0.
+2. **Own pixel art (WP6)** — original, CC0 1.0.
+
+## 1. Biome signature tops — derived from minetest_game
+
+All textures in this section are **derived works** of minetest_game media
 (`mods/BASE/default/textures`, vendored from
 <https://github.com/luanti-org/minetest_game> at `b5243f3`, see VENDOR.md).
 
@@ -31,3 +39,16 @@ preserved.
 | `grug_nodes_mesa_clay.png` | `default_clay.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (terracotta `#a8563a`) |
 | `grug_nodes_mud.png` | `default_dirt.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (dark brown-green `#3b3e2a`) |
 | `grug_nodes_bone_pile.png` | `default_coral_skeleton.png` | minetest_game contributors | CC BY-SA 3.0 | recolored via ImageMagick (bone white `#ddd8c9`) and masked down to a 16×16 heap silhouette (own alpha mask) |
+
+## 2. Own pixel art — CC0 1.0
+
+Original 16×16 art of this project, **not** derived from any vendored or
+third-party asset. Authored as ASCII maps plus a palette in
+`tools/gen_mob_item_textures.py` (list `NODE_ICONS`) and generated
+deterministically — re-running the script reproduces the PNG byte for byte.
+
+**License: CC0 1.0 Universal** (<https://creativecommons.org/publicdomain/zero/1.0/>).
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `grug_nodes_guard_banner.png` | Grudgelands project | CC0 1.0 | generator, art `GUARD_BANNER`, weathered-wood + linen palette — tile of the nodebox `grug_nodes:guard_banner` (WP6/T8 guard post): columns 6–9 are the pole, columns 10–14 / rows 1–7 the flag board, the unused rest is transparent (`use_texture_alpha = "clip"`) |

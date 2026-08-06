@@ -99,6 +99,57 @@ core.register_node("grug_nodes:mesa_clay", {
 -- Decoration
 --
 
+-- Guard banner / military standard (WP6, docs/design/world.md §4): the
+-- ANCHOR node of a guard post. grug_mapgen places one in the middle of every
+-- military outpost pad and one on every race-capital spawn platform; the
+-- guards themselves are spawned by the camp mechanism in grug_mobs
+-- (camps.lua), which attaches on_construct/on_timer to this node with
+-- core.override_item and starts the timer of mapgen-placed banners from an
+-- LBM (a VoxelManip write fires no node callbacks).
+--
+-- The node carries NO callbacks here on purpose: grug_nodes must not depend
+-- on grug_mobs (it sits below it in the dependency graph), and the node is
+-- perfectly usable content on its own.
+--
+-- Faction-NEUTRAL by design — no per-faction variant and no param2 colour:
+-- which faction a post belongs to follows from WHERE it stands
+-- (grug_core.territory_at), so one node covers both continents and a banner
+-- can never contradict the territory it is in.
+core.register_node("grug_nodes:guard_banner", {
+	description = "Guard Banner",
+	drawtype = "nodebox",
+	tiles = {"grug_nodes_guard_banner.png"},
+	-- The tile is only opaque where a box actually samples it (nodebox faces
+	-- read the region of the tile their box covers); "clip" keeps the unused
+	-- rest transparent instead of black.
+	use_texture_alpha = "clip",
+	paramtype = "light",
+	sunlight_propagates = true,
+	-- Not walkable, like the camp fire: the post is a landmark, never an
+	-- obstacle its own guards can get stuck on.
+	walkable = false,
+	is_ground_content = false, -- caves and the ocean mask must not eat a post
+	light_source = 6, -- a lit standard, visible from a distance at night
+	-- Same dispatch group as the camp fire (AGENTS.md: dispatch on groups,
+	-- not on name lists) — a guard post IS a camp, only with guards in it.
+	groups = {cracky = 3, grug_camp = 1},
+	node_box = {
+		type = "fixed",
+		fixed = {
+			-- Pole, full node height, centred (tile columns 6..9).
+			{-2 / 16, -0.5, -2 / 16, 2 / 16, 0.5, 2 / 16},
+			-- Flag board hanging off the pole (tile columns 10..14, upper
+			-- half), one 16th thin so it reads as cloth.
+			{2 / 16, 0, -1 / 32, 7 / 16, 7 / 16, 1 / 32},
+		},
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = {-2 / 16, -0.5, -2 / 16, 7 / 16, 0.5, 2 / 16},
+	},
+	sounds = default.node_sound_wood_defaults(),
+})
+
 -- Purely decorative bone heap for the blight/bone forest ground cover:
 -- not walkable, replaceable by anything and it drops nothing.
 core.register_node("grug_nodes:bone_pile", {
