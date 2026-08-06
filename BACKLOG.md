@@ -22,7 +22,7 @@ window. Rules:
 |----|-------|--------|------------|
 | WP0 | Foundation: skeleton, BASE, mobs_redo, wob_core, wob_factions, wob_xp | ✅ | — |
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
-| WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | open (spec: `docs/design/world.md`) | WP0 |
+| WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | ✅ engine biomes (v7 + min_pos/max_pos) in `wob_mapgen`; zone/difficulty API + is_protected in `wob_core` (runtime test by user pending) | WP0 |
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open (spec: `docs/design/combat_stats.md`) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | open | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
@@ -53,16 +53,19 @@ zombie trash loot as future vendor goods). Models/textures from VoxeLibre
 mobs_redo with `_wob_faction`, `_wob_xp_reward` and XP awarding via
 `on_death` (basis for faction targeting via `do_custom`).
 
-**WP2 — Territory mapgen**: New world: only Horde biomes north of z=+64,
-only Alliance biomes south of z=−64, neutral borderland in between; each
-territory has ≥2 distinguishable (race-flavored) biomes; distance function
-`wob_core.difficulty_at(pos)` (0=border … 1=heartland) for mob tiers;
-walkable camp platform at both spawns. Zone/ring layout, soft east–west
-border and race regions per `docs/design/world.md` §1/§7; destructibility
-rules §2 (central `core.is_protected` override in wob_core) belong in
-this WP. Decision needed: engine biomes (v7 + biome registration) vs. a
-custom `on_generated` pass (LotT style) — the recommendation will be
-worked out in WP2, criteria in docs/research/ (mind the mapgen env).
+**WP2 — Territory mapgen** (✅ 2026-08-06): Engine biomes on mapgen v7,
+each confined to its territory/race region via the biome definition's
+`min_pos`/`max_pos` cuboids (decision: C++-fast, ores/decorations/dungeons
+keep working; a custom `on_generated` pass would have had to reimplement
+all of that). `wob_mapgen` registers 3 race biomes per faction (+ ocean
+variants, borderland, underground), its own ores/decorations, and a small
+`register_on_generated` pass for the spawn camp platforms (cobble, at
+z=±200) and the mountain wall at x=±2000. `wob_core` gained
+`territory_at/zone_at/difficulty_at/mob_level_at` (ring anchors per
+combat_stats.md §3) and the central `core.is_protected` override (R1–R3;
+faction resolved via `wob_core.get_player_faction`, overridden by
+wob_factions). Deferred: R4 ore respawn → with outposts/mining zones
+(WP6/WP13); housing frontier is fully locked until housing plots ship.
 
 **WP3 — Classes**: After the faction choice comes the class choice (same
 dialog flow, mandatory); class in player meta; HP/base damage scale per

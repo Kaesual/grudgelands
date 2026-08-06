@@ -64,14 +64,14 @@ game (not a mod pack), written in Lua.
 - [x] Faction choice at character creation (Horde/Alliance), persistent
 - [x] World design spec decided (`docs/design/world.md`): geography/
       rings, destructibility rules, capitals/outposts, housing, races
-- [ ] Mapgen: two large contiguous faction territories (north/south), each
+- [x] Mapgen: two large contiguous faction territories (north/south), each
       composed of several race-flavored biome regions
-- [ ] Difficulty gradient: easy biomes near border/spawn, hard biomes in
-      the heartland (mob strength scales with distance)
-- [ ] Faction spawn points (capital camp per faction near the border)
-      — placeholder spawns at z = ±200 exist, camps are missing
-- [ ] Build/dig restrictions per territory (own land free, enemy land and
-      border locked; protected zones)
+- [x] Difficulty gradient: `wob_core.difficulty_at/mob_level_at` ring
+      functions (mobs actually scaling with them lands with 1.4/WP6)
+- [x] Faction spawn points: walkable camp platforms at z = ±200
+      (real capital structures follow with WP13)
+- [x] Build/dig restrictions per territory (own land free, enemy land and
+      border locked; camp protected zones; ore respawn deferred to WP6/13)
 - [x] PvP basis: friendly-fire protection within the faction;
       quest-driven PvP follows with 1.5
 

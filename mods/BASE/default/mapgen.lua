@@ -2488,8 +2488,9 @@ local mg_name = minetest.get_mapgen_setting("mg_name")
 if mg_name == "v6" then
 	default.register_mgv6_ores()
 	default.register_mgv6_decorations()
-else
-	default.register_biomes()
-	default.register_ores()
-	default.register_decorations()
 end
+-- For biome-based mapgens (game.conf forces v7) biomes, ores and
+-- decorations are registered by wob_mapgen (faction territory layout).
+-- Calling the register_* functions above with our biome set would be
+-- wrong anyway: ore/decoration defs whose biome names don't resolve
+-- silently become world-wide.

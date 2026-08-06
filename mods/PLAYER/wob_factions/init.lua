@@ -28,6 +28,13 @@ function wob_factions.get_faction_def(player)
 	return id and wob_core.factions[id] or nil
 end
 
+-- Faction resolver for wob_core (protection rules); only online players can
+-- be resolved, everyone else counts as factionless.
+function wob_core.get_player_faction(name)
+	local player = core.get_player_by_name(name or "")
+	return player and wob_factions.get_faction(player) or nil
+end
+
 -- Faction of an arbitrary object: players via meta, mobs via the entity
 -- field _wob_faction (set by wob_mobs).
 function wob_factions.get_object_faction(obj)

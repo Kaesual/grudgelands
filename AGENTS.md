@@ -181,14 +181,20 @@ Details + line numbers in [docs/research/](docs/research/).
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
   quest log as a formspec, state in player meta, quest givers via NPC
   `on_rightclick`, HUD `waypoint` elements for quest targets.
-- **Mapgen/biomes**: `core.register_biome/register_ore/register_decoration`
-  (mapgen v7) OR a custom `register_on_generated` pass (LotT style,
-  Perlin-based). For contiguous faction territories (north/south) we need
-  our own solution: territory as a function of the Z coordinate +
-  difficulty as a function of distance to the border/spawn — biome noise
-  only within the territory. The mapgen env
-  (`core.register_mapgen_script`) runs in its own threads: no metadata
-  access, but fast.
+- **Mapgen/biomes** (decided + built in WP2): engine biomes on mapgen v7,
+  territory/race-region confinement via the biome definition's
+  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). Bands overlap
+  by 200 nodes; inside the overlap the heat/humidity voronoi picks, which
+  gives organic transitions. `wob_mapgen` owns all biome/ore/decoration
+  registrations; default's `register_biomes/ores/decorations` are NOT
+  called (see tail of `mods/BASE/default/mapgen.lua`).
+  **Landmine**: ore/decoration defs whose `biomes` names don't resolve
+  are silently unrestricted (world-wide) — never register ores/decos
+  against biome names that might not exist. `game.conf` pins
+  `allowed_mapgens = v7`. Camp platforms + the x=±2000 mountain wall are
+  a small `register_on_generated` VoxelManip pass
+  (`wob_mapgen/structures.lua`). Zone/difficulty queries:
+  `wob_core.territory_at/zone_at/difficulty_at/mob_level_at`.
   LotT trick: biome signature nodes (e.g. grass variants) drive mob spawns
   via a node whitelist.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
