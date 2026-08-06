@@ -3,18 +3,22 @@
 Decided 2026-08-06. How a work package (WP) gets implemented
 autonomously. AGENTS.md links here; this file is the detailed contract.
 
-## Roles
+## Roles (revised 2026-08-06: Fable orchestrates only — credit budget)
 
-- **Fable = orchestrator and senior engineer.** Controls the WP's main
-  workflow, implements the hard parts itself (architecture, mapgen
-  math, combat/threat logic, engine API contracts, anything touching
-  vendored-code interfaces) and reviews all delegated results.
-- **Opus subagents = delegates for simple, well-scoped tasks**:
-  boilerplate registrations, texture/asset generation, doc syncing,
-  searches, test sweeps. Every delegated task gets an explicit scope
-  and the relevant spec pointers.
-- **Opus review agents = mandatory quality gate** (see below). Reviews
-  are always Opus, never skipped — also when Fable wrote the code.
+- **Fable = orchestrator, architect and judge — it does NOT implement.**
+  It reads the specs, writes the implementation plan (task
+  decomposition, ordering, interfaces — mandatory for large WPs like
+  mapgen reworks), authors a tight **per-task brief** for every
+  implementation subagent (spec sections, files to touch, engine
+  contracts/gotchas to respect from luanti-lua.md + the checklist
+  below, acceptance criteria), reads every returned diff, decides
+  contested review findings, and does the final integration pass
+  before merge. Exception: trivial glue/one-line fixes where
+  delegation overhead exceeds doing it.
+- **Opus subagents implement everything** from those briefs — features,
+  fixes, assets, doc updates, searches.
+- **Opus review agents = mandatory quality gate** (see below). The
+  reviewer is always a DIFFERENT agent than the implementer.
 
 ## Flow per WP
 
@@ -24,7 +28,9 @@ autonomously. AGENTS.md links here; this file is the detailed contract.
    `TODO-design-*.md`. A WP with an unresolved design blocker is not
    started.
 2. **Branch**: `wp<NN>-<slug>` off current `main` (e.g. `wp18-continents`).
-3. **Implement** on the branch: project conventions (AGENTS.md),
+3. **Implement** on the branch — via Opus subagents working from the
+   orchestrator's briefs (roles above); the orchestrator reviews each
+   returned diff before building on it. Project conventions (AGENTS.md),
    `luajit -e "assert(loadfile(...))"` per changed file, commits in
    coherent steps. Do NOT run `tools/sync_to_luanti.sh` from a branch
    unless the user asked to runtime-test that branch — the sync
