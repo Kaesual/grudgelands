@@ -243,8 +243,10 @@ core.register_biome({
 })
 
 -- Shoreline fringe. The ocean mask carves a wandering coastline INSIDE the
--- continent rectangle (up to ~170 nodes deep), so the beach deliberately
--- covers the whole outer band of the rectangle, not just its edge.
+-- continent rectangle: the coast noise insets the rectangle by 0..150 nodes
+-- and the waterline sits ~30 nodes further in, so the shore wanders up to
+-- ~180 nodes deep and the sand-capped beach band up to ~190. The beach
+-- therefore covers the whole outer band of the rectangle, not just its edge.
 core.register_biome({
 	name = "grug_beach",
 	node_top = "default:sand",

@@ -36,8 +36,11 @@ core.set_mapgen_setting_noiseparams("mgv7_np_terrain_alt", {
 -- are the engine defaults for both noises (spread 1000, octaves 3,
 -- persist 0.5, lacunarity 2.0, eased, seeds 5349/842) with the spec's
 -- offset 50 / scale 35, which keeps the band centres near 50 while the
--- tails still reach the outliers. flags is set explicitly because a Lua
--- noiseparams table without it silently drops the engine's `eased` flag.
+-- tails still reach the outliers. `flags = "eased"` is spelled out only for
+-- readability — it changes nothing: a noiseparams table without flags gets
+-- NOISE_FLAG_DEFAULTS, and 2D noise (heat/humidity are 2D) treats defaults
+-- as eased (noise.cpp: `flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED)`).
+-- Only 3D noise needs the flag spelled out to be eased.
 core.set_mapgen_setting_noiseparams("mg_biome_np_heat", {
 	offset = 50, scale = 35, spread = {x = 1000, y = 1000, z = 1000},
 	seed = 5349, octaves = 3, persist = 0.5, lacunarity = 2.0,
