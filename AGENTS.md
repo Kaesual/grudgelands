@@ -236,7 +236,7 @@ Details + line numbers in [docs/research/](docs/research/).
   Throng coordinates and registered mirrored at z=0 (`register_mirrored`
   in `grug_mapgen/biomes.lua`; the universal swamp/beach/ocean/underground
   are registered once — a biome name may exist only once); the cuboids
-  overlap widely (400–500 nodes)
+  overlap widely (100–500 nodes depending on band)
   and inside an overlap the heat/humidity voronoi picks per position —
   that IS the settled/wild patch mosaic. `grug_mapgen` owns all
   biome/ore/decoration registrations; default's

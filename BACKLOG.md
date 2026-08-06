@@ -132,9 +132,10 @@ Deep sea got its deterrent: **Kraken Guard** L100 (no drops, no XP),
 gated by the new generic `_grug_spawn_check` hook in grug_mobs, assets
 vendored from VoxeLibre. Deferred: mud walk slow-down (marker group
 `mud = 1` only), the §4 spawn-parameter retune and the full mob roster →
-WP6; real capital structures → WP13. **Existing worlds are incompatible
-— the mask, the biomes and the platform anchors all changed: test on a
-FRESH world.**
+WP6; real capital structures and the §2 war-coast battlefield overlay
+(broken carts, bone piles, burnt patches) → WP13. **Existing worlds are
+incompatible — the mask, the biomes and the platform anchors all changed:
+test on a FRESH world.**
 
 **WP3 — Classes** (✅ 2026-08-06): `grug_classes` with class AND race
 registry (races per world.md §7, race perks hook for WP7/WP10). Creation

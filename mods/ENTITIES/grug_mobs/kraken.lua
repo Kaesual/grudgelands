@@ -40,7 +40,9 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	attack_type = "dogfight",
 	attack_players = true,
 	group_attack = false,
-	knock_back = 0, -- an oversized boss must not be pushed around
+	-- false, not 0: mobs_redo only tests truthiness (api.lua:2701), so a 0
+	-- would still knock back. An oversized boss must not be pushed around.
+	knock_back = false,
 
 	-- Swims: mobs_redo treats fly + fly_in as "moves inside this node type",
 	-- so the Kraken stays in water. floats is inert while fly is set

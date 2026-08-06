@@ -45,16 +45,22 @@ grug_trees.silverwood_replacements = {
 	["default:aspen_leaves"] = "grug_trees:silverwood_leaves",
 }
 
+local SILVERWOOD_SCHEMATIC = core.get_modpath("default") ..
+	"/schematics/aspen_tree_from_sapling.mts"
+
 -- Silverwood grows default's aspen schematic with the aspen nodes swapped
 -- for ours -- exactly what the decorations will do as well.
 function grug_trees.grow_silverwood(pos)
-	local path = core.get_modpath("default") ..
-		"/schematics/aspen_tree_from_sapling.mts"
 	core.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
-		path, "0", grug_trees.silverwood_replacements, false)
+		SILVERWOOD_SCHEMATIC, "0", grug_trees.silverwood_replacements, false)
 end
 
 local GRAVEWOOD_TRUNK = "grug_trees:gravewood_tree"
+
+-- Branch offsets, hoisted: the grower picks one or two of these per tree.
+local GRAVEWOOD_BRANCH_DIRS = {
+	{x = 1, z = 0}, {x = -1, z = 0}, {x = 0, z = 1}, {x = 0, z = -1},
+}
 
 local function is_free(pos)
 	local node = core.get_node(pos)
@@ -83,11 +89,8 @@ function grug_trees.grow_gravewood(pos)
 		i = i + 1
 	end
 
-	local dirs = {
-		{x = 1, z = 0}, {x = -1, z = 0}, {x = 0, z = 1}, {x = 0, z = -1},
-	}
 	for _ = 1, math.random(1, 2) do
-		local d = dirs[math.random(#dirs)]
+		local d = GRAVEWOOD_BRANCH_DIRS[math.random(#GRAVEWOOD_BRANCH_DIRS)]
 		local p = {
 			x = pos.x + d.x,
 			y = top - math.random(0, 1),

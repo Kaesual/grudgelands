@@ -10,6 +10,8 @@
 -- herbs (sunleaf/gravemoss/dragonweed/marshbloom/crimson lotus/stormkelp),
 -- food plants, flowers, mushrooms, beach shells and kelp -- are WP10
 -- content and get their nodes and decorations there.
+-- Also deferred: the §2 war-coast battlefield overlay (broken carts, bone
+-- piles, burnt patches) ships with WP13's schematic pass.
 --
 -- LANDMINE (AGENTS.md): every `biomes` entry below must name a biome
 -- registered in biomes.lua, otherwise the decoration silently becomes
@@ -213,10 +215,17 @@ register_tree("emergent_jungle_tree", "emergent_jungle_tree.mts", RAINFOREST,
 	JUNGLE, 0.005, {sidelen = 80, y_max = 32, place_offset_y = -4})
 register_plant("jungle_junglegrass", "default:junglegrass", RAINFOREST,
 	JUNGLE, 0.05)
--- Papyrus stands right at the water line; the schematic brings its own
--- dirt base node.
+-- Papyrus hugs the water line; the schematic brings its own dirt base node.
+-- The engine picks the decoration by the biome at the column surface, so the
+-- y range must stay inside the jungle cuboids (LAND_Y_MIN = 4 in biomes.lua)
+-- -- `spawn_by` keeps the stands at jungle rivers and ponds instead.
 register_tree("jungle_papyrus", "papyrus_on_dirt.mts", RAINFOREST, JUNGLE,
-	0.01, {y_min = 1, y_max = 2})
+	0.01, {
+		y_min = 4,
+		y_max = 6,
+		spawn_by = "default:water_source",
+		num_spawn_by = 1,
+	})
 
 --
 -- grug_swamp (universal): reed pools on mud.

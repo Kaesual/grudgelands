@@ -225,7 +225,7 @@ T1 inner (10–25), T2 outer (25–45), T3 coast/deep (45–60).
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025), papyrus at water | vines/lianas (asset list); crimson lotus `[herb T3]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[herb T2]`; mushrooms `[food]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[herb T3]` | |
-| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided) |
+| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 Herb summary (both continents can gather every tier — see §6):
 sunleaf T1 (meadows, savanna, elf forest, jungle edge), gravemoss T1
