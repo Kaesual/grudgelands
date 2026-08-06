@@ -76,12 +76,14 @@ game (not a mod pack), written in Lua.
       quest-driven PvP follows with 1.5
 
 ### 1.3 Classes & progression (MVP: 3 classes)
-- [ ] **Warrior** (melee, simple — reference class), **Mage**
-      (ranged/caster), **Priest** (healer/support)
+- [x] **Warrior** (melee, simple — reference class), **Mage**
+      (ranged/caster), **Priest** (healer/support) — selection dialog
+      (faction → race → class) and registry in `wob_classes`
 - [x] XP system: level curve 1–60, XP loss on death (25% of level
       progress), HUD; XP sources (mob kills, quests) follow with 1.4/1.5
-- [ ] Level system with stat growth (HP, damage) —
-      `register_on_level_change` pipeline already exists
+- [x] Level system with stat growth: attributes + HP via
+      `register_on_level_change`; damage consumption follows with the
+      WP4 damage pipeline
 - [ ] Simplified skill trees: 2 trees of ~5 talents per class, talent
       points per level, formspec UI
 - [ ] 2–4 active abilities per class (hotbar/item based), cooldowns

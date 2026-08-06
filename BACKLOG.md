@@ -23,7 +23,7 @@ window. Rules:
 | WP0 | Foundation: skeleton, BASE, mobs_redo, wob_core, wob_factions, wob_xp | ✅ | — |
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | ✅ engine biomes (v7 + min_pos/max_pos) in `wob_mapgen`; zone/difficulty API + is_protected in `wob_core` (runtime test by user pending) | WP0 |
-| WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open (spec: `docs/design/combat_stats.md`) | WP0 |
+| WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | ✅ `wob_classes`: class+race registry, creation flow faction→race→class, attribute/HP formulas via level pipeline, /char /class /race commands (runtime test pending) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | open | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
 | WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs; nametags (level+HP), con-color target frame, gray = no XP | open (spec: `docs/design/combat_stats.md` §3/§6) | WP1, WP2 |
@@ -37,8 +37,8 @@ window. Rules:
 | WP14 | Offhand & carried light: wob_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 
 Notes from the decided world design (`docs/design/world.md`):
-- Race choice at character creation adds a selection step (implement with
-  WP3's dialog flow or as a small WP of its own).
+- Race choice at character creation: ✅ shipped with WP3 (race dialog
+  between faction and class; race perks follow with WP7/WP10).
 - Build/dig restrictions (destructibility rules §2) land in `wob_core`
   alongside WP2.
 - Housing (frontier plots, §5) and the Home Stone (§6) are not yet
@@ -68,9 +68,16 @@ faction resolved via `wob_core.get_player_faction`, overridden by
 wob_factions). Deferred: R4 ore respawn → with outposts/mining zones
 (WP6/WP13); housing frontier is fully locked until housing plots ship.
 
-**WP3 — Classes**: After the faction choice comes the class choice (same
-dialog flow, mandatory); class in player meta; HP/base damage scale per
-level via `wob_xp.register_on_level_change`; class registry in
-`wob_classes` with room for abilities (WP4) and skill trees (WP11).
+**WP3 — Classes** (✅ 2026-08-06): `wob_classes` with class AND race
+registry (races per world.md §7, race perks hook for WP7/WP10). Creation
+flow: faction → race → class, chained via
+`wob_factions.register_on_faction_chosen`, every step mandatory/final,
+stored in player meta. Stats per combat_stats.md §1/§2:
+`get_attributes/get_max_hp/get_max_mana/get_melee_bonus/
+get_spell_power_bonus/get_crit_chance/get_dodge_chance` as the single
+source of truth for WP4's damage pipeline; hp_max applied via the level
+pipeline (heal-on-levelup only for real level-ups — join deltas must not
+heal, properties reset every session). Commands: `/char`, `/class`,
+`/race`.
 
 (Further WP details are added once the respective WP comes up.)

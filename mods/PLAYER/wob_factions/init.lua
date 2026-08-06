@@ -62,6 +62,15 @@ function wob_factions.hostile(obj_a, obj_b)
 	return a ~= nil and b ~= nil and a ~= b
 end
 
+local faction_chosen_callbacks = {}
+
+-- func(player, faction_id) — called after the player picked a faction in
+-- the selection dialog (NOT on admin /faction sets). wob_classes chains
+-- the race/class creation steps here.
+function wob_factions.register_on_faction_chosen(func)
+	table.insert(faction_chosen_callbacks, func)
+end
+
 function wob_factions.set_faction(player, id)
 	local def = wob_core.factions[id]
 	if not def then
@@ -157,6 +166,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local def = wob_core.factions[chosen]
 	core.chat_send_player(player:get_player_name(),
 		core.colorize(def.color, "Welcome to the " .. def.name .. "!"))
+	for _, func in ipairs(faction_chosen_callbacks) do
+		func(player, chosen)
+	end
 	return true
 end)
 
