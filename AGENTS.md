@@ -205,11 +205,21 @@ Details + line numbers in [docs/research/](docs/research/).
 
 ## Licenses
 
-- **Our project is GPL** (non-commercial, decided 2026-07-03). This allows
-  us to adopt and adapt code from ALL reference projects — including
-  VoxeLibre (GPLv3). When adopting, keep the source's copyright/license
-  notices in the respective mod (mobs_redo: MIT notice; assets: CC
-  attribution where adopted).
+- **Code: GPL-3.0-or-later** (decided 2026-07-03 as "GPL", made precise
+  2026-08 — full text in `LICENSE.txt`; rationale and compatibility
+  matrix in [docs/research/licensing.md](docs/research/licensing.md)).
+  Compatible code inputs: MIT, Apache-2.0, LGPL-2.1/3.0 (also "-only"),
+  GPL-2.0-or-later, GPL-3.0. **Hard exclusion: GPL-2.0-only code.**
+- **Media: keep each file's original license** (CC0 / CC BY / CC BY-SA /
+  GPL), documented per mod in a `LICENSE-media.md` table: file, author,
+  source URL, exact license + version, modifications made. **Never NC or
+  ND media.** When we accumulate more sources, add a top-level
+  `CREDITS.md` (Mineclonia model).
+- Before importing anything, verify the license **in the source repo**
+  (LICENSE/README files) — ContentDB metadata can be wrong (real case:
+  a CC BY-NC sound hidden inside the otherwise-clean ambience mod).
+- Asset shopping lists with verified licenses:
+  [docs/research/assets/](docs/research/assets/).
 - **Never copy WoW assets/names 1:1** — Blizzard IP. Own assets, own names
   with a recognizable character ("inspired by", not "copied").
 
