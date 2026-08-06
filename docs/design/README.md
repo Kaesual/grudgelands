@@ -11,7 +11,7 @@ also AGENTS.md "Documentation layers"):
 - Keep documents short and factual; "why" belongs in a brief *Rationale*
   line where a decision is surprising.
 
-## Planned documents
+## Documents
 
 | File | Scope | Status |
 |------|-------|--------|
@@ -25,4 +25,4 @@ also AGENTS.md "Documentation layers"):
 | `progression.md` | Leveling pace, reward cadence (talent points/capstones), death rules, quest structure | **partial** (2026-08-06): pace/cadence/death decided; quest structure open (before WP8/WP9) |
 | `story.md` | Main-quest premise (the Nether darkness), mirrored faction questlines, `min_level` gates, environmental storytelling | **decided** (2026-08-06) — premise only; quest content with WP8/WP9 |
 | `guilds.md` | Guilds as pure ownership layer: founding, fixed roles, guild bank, housing area, mining claims, guild chat | **decided** (2026-08-06) — deliberately no guild levels/perks/wars |
-| `biomes_mobs.md` | Full biome & mob catalog: 16 biomes, patch/settlement model, mob rosters, spawn params, race woods, material matrix | **decided** (2026-08-06) — implementation spec for WP18/WP6 |
+| `biomes_mobs.md` | Full biome & mob catalog: 17 biome registrations, patch/settlement model, mob rosters, spawn params, race woods, material matrix | **decided** (2026-08-06) — biome layer built in WP18, mob rosters feed WP6 |
