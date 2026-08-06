@@ -172,7 +172,18 @@ Details + line numbers in [docs/research/](docs/research/).
   them). Crit/dodge accessors are wob_core stubs overridden by
   wob_classes. Abilities = hotbar tools in `wob_abilities` (item `range` =
   targeting range, wear bar = cooldown display); kits/numbers:
-  `docs/design/classes.md`. **mobs_redo `do_punch` gotcha**: any truthy
+  `docs/design/classes.md`. WP19 added: **GCD 1 s** (silent gate in
+  try_cast, deliberately NOT shown via wear — would churn inventory
+  re-sends), **soft target lock** 8 s (separate enemy/ally slots via
+  `wob_abilities.get_target(player, ally)`; fallback re-checks range +
+  LOS), **absorb shields** (`wob_core.set_absorb`, soaked in the central
+  hp modifier after dodge/fall mitigation), **race passives** as a perk
+  table in the wob_classes race registry (`wob_classes.get_race_perk`,
+  stub-mirrored as `wob_core.get_race_perk`; elf range via per-stack
+  meta `range` override) and mob slows (`wob_mobs.slow`, staticdata-safe
+  countdown shared with root). NB a lethal ability punch removes
+  animation-less mobs synchronously — capture mob pos/luaentity BEFORE
+  `deal_ability_damage`. **mobs_redo `do_punch` gotcha**: any truthy
   return cancels the punch (api.lua comment claims the opposite) — hook
   wrappers must return nil; player-hit hook:
   `wob_core.register_on_player_hit_mob` (fired by wob_mobs).
