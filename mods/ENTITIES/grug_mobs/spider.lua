@@ -1,5 +1,5 @@
--- Giant Spider / Bonelurker Spider (docs/design/biomes_mobs.md §3.1, forest
--- pair; the jungle tint is T6 and the cave rows come with T7).
+-- Giant Spider / Bonelurker Spider / Jungle Spider (docs/design/biomes_mobs.md
+-- §3.1, forest pair + jungle group; the cave rows come with T7).
 --
 -- Verb "webs": every landed melee swing slows the victim to 60% speed for
 -- 3 s. Delivered by grug_mobs.melee_rider + grug_mobs.slow_player (verbs.lua)
@@ -81,7 +81,7 @@ grug_mobs.register_mob("grug_mobs:giant_spider", spider)
 
 -- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
 -- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
--- side; rainforest litter belongs to T6's jungle tint.
+-- side; rainforest litter belongs to the jungle tint at the end of this file.
 mobs:spawn({
 	name = "grug_mobs:giant_spider",
 	nodes = {"grug_nodes:dirt_with_forest_litter"}, -- grug_deep_forest
@@ -105,6 +105,35 @@ grug_mobs.register_mob("grug_mobs:pale_spider", bonelurker)
 mobs:spawn({
 	name = "grug_mobs:pale_spider",
 	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
+	max_light = 5,
+	day_toggle = false,
+	interval = 20,
+	chance = 1800,
+	active_object_count = 4,
+	min_height = 0,
+	max_height = 200,
+})
+
+--
+-- Jungle Spider — grug_deep_jungle (Throng) and grug_jungle_fringe (Accord),
+-- added with the jungle group (T6)
+--
+-- ONE registration for both continents, unlike the pair above: §8.4 decided
+-- the Accord jungle fringe reuses the troll jungle nodes 1:1, so
+-- `default:dirt_with_rainforest_litter` is the top node on BOTH sides and a
+-- node split is impossible — and unnecessary, because §3.2 puts every spider
+-- tint on the same table anyway ("spider table | Giant Spider | Giant Spider
+-- (tints)"). Same def factory, same drops, same §4 numbers: only the texture
+-- and the spawn node change.
+--
+
+local jungle_spider = spider_def("Jungle Spider", "grug_mobs_spider_jungle.png")
+grug_mobs.melee_rider(jungle_spider, web_rider)
+grug_mobs.register_mob("grug_mobs:jungle_spider", jungle_spider)
+
+mobs:spawn({
+	name = "grug_mobs:jungle_spider",
+	nodes = {"default:dirt_with_rainforest_litter"}, -- deep jungle / fringe
 	max_light = 5,
 	day_toggle = false,
 	interval = 20,

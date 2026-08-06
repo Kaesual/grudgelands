@@ -325,6 +325,18 @@ dofile(modpath .. "/bear.lua")
 dofile(modpath .. "/stag.lua")
 dofile(modpath .. "/spider.lua")
 dofile(modpath .. "/skeleton_archer.lua")
+-- Mountain pair, savanna extras and jungle group (biomes_mobs.md §3.1,
+-- WP6/T6).
+dofile(modpath .. "/eagle.lua")
+dofile(modpath .. "/golem.lua")
+dofile(modpath .. "/ram.lua")
+dofile(modpath .. "/hyena.lua")
+dofile(modpath .. "/zebra.lua")
+dofile(modpath .. "/jungle_lynx.lua")
+dofile(modpath .. "/panther.lua")
+dofile(modpath .. "/serpent.lua")
+dofile(modpath .. "/jungle_ape.lua")
+dofile(modpath .. "/parrot.lua")
 dofile(modpath .. "/kraken.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")

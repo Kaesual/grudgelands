@@ -460,3 +460,119 @@ grug_mobs.register_rare("marrowclaw", {
 	respawn_min = 7200,
 	respawn_max = 14400,
 })
+
+--
+-- The four mountain/jungle rares (biomes_mobs §3.3, WP6/T6)
+--
+-- Same rule as above: the level is a property of WHERE the route runs, and
+-- the field math is the one quoted before Old Whitefang —
+--
+--   dx = max(|x| - 300, 0) ; dz = | |z| - 900 |
+--   n  = sqrt((dx/1150)^2 + (dz/f)^2)   f = 1000 for |z| < 900, else 775
+--   L  = 25 + (n - 0.55)/0.35 * 20      for 0.55 < n <= 0.90
+--   L  = 45 + (n - 0.90)/0.10 * 15      for 0.90 < n <= 1.00
+--
+-- — plus the second segment above, which the two coast rares need.
+-- Zone reminder (grug_core.zone_at): "coast" is |x| >= 1350 or |z| >= 1550;
+-- everything else with n > 0.55 is "outer". None of the twelve points below
+-- is inside the war-coast cap band (all have |z| > 600).
+--
+
+-- Korgan's Bane — Accord west, high crags (grug_crags cuboid x -1500..-750,
+-- §1.3; all three points also sit WEST of the grug_pine_hills cuboid edge at
+-- x -1250, so the patch mosaic around them is crags, not pine hills).
+--   (-1270,  -880): dx 970, dz  20, f 1000 -> n 0.8437 -> L 41.78 -> 42
+--   (-1260,  -760): dx 960, dz 140, f 1000 -> n 0.8464 -> L 41.94 -> 42
+--   (-1290, -1000): dx 990, dz 100, f  775 -> n 0.8705 -> L 43.31 -> 43
+-- Average ~42, the §3.3 target. Out here the level is driven by the x axis
+-- (same as Marrowclaw): |x| has to reach ~1270 for L42, while |z| only
+-- fine-tunes. All three stay inside |x| < 1350, i.e. zone "outer" as §3.3
+-- asks, not "coast".
+--
+-- NB the base family is the game's only DEF-LEVEL ELITE (golem.lua,
+-- _grug_tier = "elite"). set_tier(ent, "rare") in try_spawn REPLACES that
+-- tier, it does not stack on it: the rare multipliers are applied to the base
+-- formula (x5 HP / x2.2 dmg / x6 XP, armor 70, scale x2), and
+-- apply_tier_visuals scales relative to the tier already APPLIED — which at
+-- that moment is still "normal", because set_tier runs before the mob's first
+-- tick and ensure_init then does level, stats, scale and tint in one go
+-- (levels.lua). So Korgan's Bane is x2 scale and violet, never x1.6 gold or
+-- x3.2 of both. It keeps the golem's telegraph (telegraph.lua fires for
+-- "elite" AND "rare").
+-- No `texture`: grug_mobs:stone_golem already wears the crags skin.
+grug_mobs.register_rare("korgans_bane", {
+	name = "Korgan's Bane",
+	mob = "grug_mobs:stone_golem",
+	route = {{x = -1270, z = -880}, {x = -1260, z = -760}, {x = -1290, z = -1000}},
+	biome_hint = "the high crags",
+	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
+	respawn_max = 14400, -- 4 h
+})
+
+-- Silkfang — Accord east, jungle fringe COAST (grug_jungle_fringe cuboid
+-- x 1150..1500, §1.3).
+--   (1356,  -740): dx 1056, dz 160, f 1000 -> n 0.9321 -> L 49.81 -> 50
+--   (1352, -1043): dx 1052, dz 143, f  775 -> n 0.9332 -> L 49.98 -> 50
+--   (1350, -1060): dx 1050, dz 160, f  775 -> n 0.9361 -> L 50.41 -> 50
+-- Exactly L50 at all three points, the §3.3 target, and all three are zone
+-- "coast" (|x| >= 1350).
+--
+-- DEVIATION worth knowing: "coast" and "~L50" together pin |z| to roughly
+-- 740..1060. At |x| >= 1350 the field already sits at L47 where dz = 0, and
+-- the back-side scale 775 makes it climb fast — (1350, -1300) is L60, so a
+-- route further from the seat cannot be L50 no matter how it is shaped.
+-- The x values are likewise the INNER edge of the coast band on purpose: the
+-- ocean mask insets the shoreline by 0..150 nodes (grug_mapgen/structures.lua
+-- INSET_MAX), so a route point at |x| 1450 would often be open water, where
+-- route_pos returns nil and the rare never spawns. |x| ~1350 needs an inset
+-- close to the clamp before it floods, and the first point sits ~300 nodes
+-- away in z — the coast noise has spread 300, so the two ends of the route do
+-- not share one noise lobe and cannot both be under water for the same reason.
+-- No `texture`: grug_mobs:jungle_spider already wears the jungle skin.
+grug_mobs.register_rare("silkfang", {
+	name = "Silkfang",
+	mob = "grug_mobs:jungle_spider",
+	route = {{x = 1356, z = -740}, {x = 1352, z = -1043}, {x = 1350, z = -1060}},
+	biome_hint = "the jungle fringe",
+	respawn_min = 7200,
+	respawn_max = 14400,
+})
+
+-- Dustwing — Throng centre, badlands back country (grug_badlands cuboid
+-- x -700..700, z 1100..1700, §1.3).
+--   (300, 1500): dx   0, dz 600, f 775 -> n 0.7742 -> L 37.81 -> 38
+--   (400, 1500): dx 100, dz 600, f 775 -> n 0.7791 -> L 38.09 -> 38
+--   (220, 1490): dx   0, dz 590, f 775 -> n 0.7613 -> L 37.07 -> 37
+-- Average ~38, the §3.3 target. Here the z axis does the work: inside the
+-- centre band dx is 0 up to |x| 300, so the level is essentially 20 * (dz/775
+-- - 0.55)/0.35 + 25. The route stops at |z| 1500 — from 1550 on the back
+-- coast band starts (zone "coast", §3.3 says "outer") and the field passes 40.
+-- No `texture`: grug_mobs:vulture already wears the dark badlands retint.
+grug_mobs.register_rare("dustwing", {
+	name = "Dustwing",
+	mob = "grug_mobs:vulture",
+	route = {{x = 300, z = 1500}, {x = 400, z = 1500}, {x = 220, z = 1490}},
+	biome_hint = "the badlands",
+	respawn_min = 7200,
+	respawn_max = 14400,
+})
+
+-- Emerald Coil — Throng east, deep jungle COAST (grug_deep_jungle cuboid
+-- x 750..1500, §1.3).
+--   (1352,  976): dx 1052, dz  76, f 775 -> n 0.9200 -> L 48.00 -> 48
+--   (1355,  800): dx 1055, dz 100, f 1000 -> n 0.9228 -> L 48.42 -> 48
+--   (1350, 1020): dx 1050, dz 120, f  775 -> n 0.9261 -> L 48.91 -> 49
+-- Average ~48, the §3.3 target; all three are zone "coast" (|x| >= 1350).
+-- Same two constraints as Silkfang apply and are handled the same way: the
+-- level pins |z| to ~800..1020, and the x values hug the inner edge of the
+-- coast band so the coast-noise inset cannot drown the whole route (the
+-- middle point is ~200 nodes away in z from the other two).
+-- No `texture`: grug_mobs:serpent has only the one skin.
+grug_mobs.register_rare("emerald_coil", {
+	name = "Emerald Coil",
+	mob = "grug_mobs:serpent",
+	route = {{x = 1352, z = 976}, {x = 1355, z = 800}, {x = 1350, z = 1020}},
+	biome_hint = "the deep jungle",
+	respawn_min = 7200,
+	respawn_max = 14400,
+})

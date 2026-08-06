@@ -206,9 +206,9 @@ All files MIT, author **ElCeejo**.
 re-running the script reproduces the same pixels. |
 | `grug_mobs_blank.png` | Luanti engine | LGPL 2.1+ | 1×1 fully transparent PNG, taken from the engine; used for empty texture slots (skeleton armour/wield slots, sheared-fur slot). |
 
-### 6.1 Item icons + arrow sprite (WP6/T5) — CC0 1.0, Grudgelands project
+### 6.1 Item icons + projectile sprites (WP6/T5, T6) — CC0 1.0, Grudgelands project
 
-All 23 files below are **original 16×16 pixel art of this project**, not
+All 24 files below are **original 16×16 pixel art of this project**, not
 derived from any vendored or third-party asset, and are published under
 **CC0 1.0**. They are produced by one deterministic generator (no randomness
 — re-running reproduces every file byte-for-byte):
@@ -221,8 +221,9 @@ Each icon is authored inside that script as a 16×16 ASCII map plus a hex
 palette, so the art is reviewable in the source instead of only as a binary.
 The `_item_` files are the inventory images of the shared mob materials
 registered in `items.lua` (`docs/design/biomes_mobs.md` §6 base-material
-map); `grug_mobs_arrow.png` is the projectile sprite of
-`grug_mobs:arrow_entity` (skeleton archer).
+map); `grug_mobs_arrow.png` and `grug_mobs_rock.png` are the projectile
+sprites of `grug_mobs:arrow_entity` (skeleton archer) and
+`grug_mobs:rock_entity` (stone/mesa golem).
 
 | File | Author | License | How it was made |
 |------|--------|---------|-----------------|
@@ -249,6 +250,7 @@ map); `grug_mobs_arrow.png` is the projectile sprite of
 | `grug_mobs_item_bone.png` | Grudgelands project | CC0 1.0 | generator, art `BONE`, bone-white palette |
 | `grug_mobs_item_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_BUNDLE` (three bound arrows) |
 | `grug_mobs_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_PROJECTILE`, projectile sprite |
+| `grug_mobs_rock.png` | Grudgelands project | CC0 1.0 | generator, art `ROCK_PROJECTILE`, grey-boulder projectile sprite (WP6/T6, golem "hurls rocks"); **not** derived from `default_cobble.png` or any other vendored tile |
 
 ---
 
