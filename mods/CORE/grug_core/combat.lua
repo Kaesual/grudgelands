@@ -1,7 +1,7 @@
 -- Damage pipeline & combat state (docs/design/classes.md §2,
 -- combat_stats.md §2/§4). Ability damage and heals run through the helpers
--- here so crit/dodge rolls and (later) threat live in one place. The threat
--- functions are WP4 stubs — WP6 replaces them with the real threat table.
+-- here so crit/dodge rolls and threat live in one place. WP6 replaced the
+-- WP4 threat stubs with the real threat table below.
 
 --
 -- Stat accessors. Stubs so grug_core stays free of player-mod dependencies;
@@ -31,6 +31,16 @@ end
 
 grug_core.COMBAT_TIMEOUT = 5
 
+-- Monotonic seconds since server start. ONE clock for every combat timer
+-- shared between grug_core and grug_mobs (taunt force window, leash contact
+-- timer): core.get_us_time() is unaffected by the day/night cycle and by
+-- time-of-day changes, unlike core.get_gametime(). The only deliberate
+-- gametime user is the player drop tag (grug_mobs), which must survive an
+-- unload — see the note there.
+function grug_core.mono_time()
+	return core.get_us_time() / 1e6
+end
+
 local last_combat = {} -- player name -> us timestamp of the last hit
 
 function grug_core.mark_in_combat(player)
@@ -48,22 +58,194 @@ core.register_on_leaveplayer(function(player)
 end)
 
 --
--- Threat stubs (combat_stats §4). Abilities already report their threat;
--- WP6 implements the mob-side threat table on top of these entry points.
+-- Threat table (combat_stats §4). Mobs pick their target by threat, not by
+-- proximity.
+--
+-- Storage: `mob_ent.temp.grug_threat = {[player_name] = amount}`.
+-- `temp` is mobs_redo's runtime-only store (never serialized into
+-- staticdata, api.lua clean_staticdata:2817) — RUNTIME ONLY BY DESIGN: a mob
+-- that gets deactivated (player left the area, server restart) legitimately
+-- forgets who annoyed it, exactly like the leash reset does. Player refs are
+-- stored as NAMES and re-fetched, never as ObjectRefs.
+--
+-- Two more runtime keys live in the same table and are shared with
+-- grug_mobs' leash (aggro.lua):
+--   temp.grug_forced_until  — mono_time until which taunt suppresses
+--                             hysteresis target switches
+--   temp.grug_last_contact  — mono_time of the last player contact; written
+--                             here (player hit the mob, taunt, our own
+--                             target switch), read by the leash
 --
 
--- Extra ability threat against one mob (amount already multiplied, e.g.
--- damage ×3 for tank abilities).
-function grug_core.add_threat(mob_ent, player, amount)
+grug_core.THREAT_SWITCH_FACTOR = 1.2 -- hysteresis: >120% of the target's threat
+grug_core.THREAT_RANGE = 40 -- m; threat entries further out cannot pull the mob
+grug_core.HEAL_THREAT_RANGE = 30 -- m (combat_stats §4)
+grug_core.HEAL_THREAT_FACTOR = 0.5
+grug_core.TAUNT_FORCE_TIME = 3 -- s of forced target after a taunt
+
+local function threat_table(mob_ent)
+	mob_ent.temp = mob_ent.temp or {}
+	mob_ent.temp.grug_threat = mob_ent.temp.grug_threat or {}
+	return mob_ent.temp.grug_threat
 end
 
--- Healing threat: 0.5×healing to all mobs in combat with the group (30 m).
+-- Is this threat entry a legal target right now? Connected, alive and inside
+-- the mob's threat reality (40 m ~ the leash radius, so a stale entry from
+-- across the map can never yank a mob around). Returns the ObjectRef.
+local function valid_target(mob_ent, name)
+	local player = core.get_player_by_name(name)
+	if not player or not player:is_player() or player:get_hp() <= 0 then
+		return nil
+	end
+	local mpos = mob_ent.object and mob_ent.object:get_pos()
+	local ppos = player:get_pos()
+	if not mpos or not ppos then
+		return nil
+	end
+	if vector.distance(mpos, ppos) > grug_core.THREAT_RANGE then
+		return nil
+	end
+	return player
+end
+
+-- Highest threat amount on the table (validity is not checked — the taunt
+-- needs the raw top so it cannot be undercut by an out-of-range rival).
+local function top_amount(threat)
+	local top = 0
+	for _, amount in pairs(threat) do
+		if amount > top then
+			top = amount
+		end
+	end
+	return top
+end
+
+-- Hysteresis check: switch only when the best VALID rival exceeds 120% of
+-- the current target's threat (combat_stats §4 — no ping-pong).
+local function check_switch(mob_ent)
+	local threat = mob_ent.temp and mob_ent.temp.grug_threat
+	if not threat or type(mob_ent.do_attack) ~= "function" then
+		return
+	end
+	if mob_ent.state == "die" or (mob_ent.health or 1) <= 0 then
+		return
+	end
+	-- A FORCED do_attack skips the guards mobs_redo's own retaliation
+	-- respects (api.lua:2771ff), so re-check them here: threat must never
+	-- turn a passive critter, a child or a fleeing mob into an attacker, and
+	-- a mob without an attack_type cannot fight at all.
+	if mob_ent.passive or mob_ent.child or not mob_ent.attack_type or
+			mob_ent.state == "flop" or mob_ent.state == "runaway" then
+		return
+	end
+	if (mob_ent.temp.grug_forced_until or 0) > grug_core.mono_time() then
+		return -- inside a taunt window: the target is locked
+	end
+	local best_name, best, best_obj
+	for name, amount in pairs(threat) do
+		if not best or amount > best then
+			local obj = valid_target(mob_ent, name)
+			if obj then
+				best_name, best, best_obj = name, amount, obj
+			end
+		end
+	end
+	if not best_obj then
+		return
+	end
+	local cur = mob_ent.attack
+	if cur and core.is_player(cur) then
+		local cur_name = cur:get_player_name()
+		if cur_name == best_name then
+			return
+		end
+		if best <= (threat[cur_name] or 0) * grug_core.THREAT_SWITCH_FACTOR then
+			return
+		end
+	end
+	-- force = true: overrides an existing target (mobs/api.lua:213).
+	mob_ent:do_attack(best_obj, true)
+	-- A fresh target means fresh contact — the leash clock restarts.
+	mob_ent.temp.grug_last_contact = grug_core.mono_time()
+end
+
+-- Accumulate threat for one player on one mob, then re-check the target.
+-- Base threat (= damage dealt) is added in exactly ONE place, see
+-- run_player_hit_mob below.
+function grug_core.add_threat(mob_ent, player, amount)
+	if not mob_ent or not mob_ent.object or not amount or amount <= 0 then
+		return
+	end
+	if not player or not core.is_player(player) then
+		return
+	end
+	local threat = threat_table(mob_ent)
+	local name = player:get_player_name()
+	threat[name] = (threat[name] or 0) + amount
+	check_switch(mob_ent)
+end
+
+-- Drops the whole table (leash reset).
+function grug_core.clear_threat(mob_ent)
+	if mob_ent and mob_ent.temp then
+		mob_ent.temp.grug_threat = nil
+		mob_ent.temp.grug_forced_until = nil
+	end
+end
+
+-- Healing threat (combat_stats §4): 0.5×effective healing on the HEALER,
+-- applied to every grug mob within 30 m of the healer that is currently
+-- fighting the healer or the heal target. MVP group = healer + target; real
+-- party membership arrives with WP20 (parties) and replaces this pair.
+-- Event-driven get_objects_inside_radius is fine here: heals are rare
+-- (ability casts), this is not a globalstep.
 function grug_core.add_heal_threat(healer, target, amount)
+	if not healer or not target or not amount or amount <= 0 then
+		return
+	end
+	if not core.is_player(healer) then
+		return
+	end
+	local pos = healer:get_pos()
+	if not pos then
+		return
+	end
+	local hname = healer:get_player_name()
+	local tname = core.is_player(target) and target:get_player_name() or nil
+	local threat = amount * grug_core.HEAL_THREAT_FACTOR
+	local objs = core.get_objects_inside_radius(pos, grug_core.HEAL_THREAT_RANGE)
+	for n = 1, #objs do
+		local ent = objs[n]:get_luaentity()
+		-- _grug_level marks one of our mobs (levels.lua ensure_init).
+		if ent and ent._grug_level and ent.attack and core.is_player(ent.attack) then
+			local aname = ent.attack:get_player_name()
+			if aname == hname or (tname and aname == tname) then
+				grug_core.add_threat(ent, healer, threat)
+			end
+		end
+	end
+end
+
+-- Taunt (combat_stats §4): sets the taunter to top×1.1 and locks the target
+-- for 3 s against hysteresis switches. The forcing do_attack call itself
+-- lives in the ability (grug_abilities/kits.lua) — this is the threat half.
+function grug_core.taunt(mob_ent, player)
+	if not mob_ent or not mob_ent.object or not player or
+			not core.is_player(player) then
+		return
+	end
+	local threat = threat_table(mob_ent)
+	local name = player:get_player_name()
+	local want = top_amount(threat) * 1.1
+	threat[name] = math.max(threat[name] or 0, want)
+	local now = grug_core.mono_time()
+	mob_ent.temp.grug_forced_until = now + grug_core.TAUNT_FORCE_TIME
+	mob_ent.temp.grug_last_contact = now
 end
 
 --
 -- Player hit mob hook: fired by grug_mobs' do_punch wrapper for every player
--- punch that reaches a mob (rage generation, combat marking, later threat).
+-- punch that reaches a mob (rage generation, combat marking, threat).
 -- func(player, mob_ent, damage)
 --
 
@@ -75,6 +257,18 @@ end
 
 function grug_core.run_player_hit_mob(player, mob_ent, damage)
 	grug_core.mark_in_combat(player)
+	-- THE ONE base-threat site. Every player hit on a mob passes through
+	-- here: auto-attacks go player -> object:punch -> grug_mobs' do_punch
+	-- wrapper -> here, and ability damage goes deal_ability_damage ->
+	-- object:punch -> the SAME wrapper -> here. Adding damage-as-threat in
+	-- deal_ability_damage as well would double-count every ability hit;
+	-- that call only adds the tank multiplier BONUS on top (see there).
+	if mob_ent then
+		grug_core.add_threat(mob_ent, player, damage or 0)
+		-- Player contact for the leash (aggro.lua): being hit counts.
+		mob_ent.temp = mob_ent.temp or {}
+		mob_ent.temp.grug_last_contact = grug_core.mono_time()
+	end
 	for _, func in ipairs(hit_mob_callbacks) do
 		func(player, mob_ent, damage)
 	end
@@ -148,9 +342,17 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
 		return 0
 	end
-	local ent = target:get_luaentity()
-	if ent then
-		grug_core.add_threat(ent, attacker, amount * (opts.threat_mult or 1))
+	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
+	-- do_punch wrapper -> run_player_hit_mob, which added the base threat
+	-- (= damage) exactly once. Adding `amount * threat_mult` here would
+	-- double-count the base for every ability, so only the extra factor of a
+	-- tank ability (×3 -> +2×damage) is added on top; ×1 adds nothing.
+	local mult = opts.threat_mult or 1
+	if mult ~= 1 then
+		local ent = target:get_luaentity()
+		if ent then
+			grug_core.add_threat(ent, attacker, amount * (mult - 1))
+		end
 	end
 	return amount
 end

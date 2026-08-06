@@ -247,6 +247,15 @@ function grug_mobs.ensure_init(self)
 	if not cfg then
 		return
 	end
+	if not self._grug_home then
+		-- Leash home (combat_stats.md §4, aggro.lua). Plain field -> the
+		-- home is the FIRST activation position and survives unload; a mob
+		-- reloaded far from home leashes back to where it spawned.
+		local pos = self.object and self.object:get_pos()
+		if pos then
+			self._grug_home = {x = pos.x, y = pos.y, z = pos.z}
+		end
+	end
 	if not self._grug_level then
 		-- Plain fields persist via staticdata, so this runs exactly once
 		-- per mob, not once per activation.

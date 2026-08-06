@@ -21,6 +21,11 @@ grug_mobs = {}
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
 --                          nil = no extra check. Zones and check are ANDed.
+--   def._grug_no_leash    — true: never gives up a player chase and never
+--                          resets/heals (zombie verb "never leashes"; mobs
+--                          with a hand-rolled leash of their own: kraken)
+--   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
+--                          (GRUG PATCH in mobs/api.lua do_states)
 --
 
 local spawn_zones = {} -- mob name -> set of allowed zone names
@@ -129,6 +134,13 @@ function grug_mobs.register_mob(name, def)
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
 	grug_mobs.register_level_cfg(name, def)
+	-- Aggro config kept as an upvalue: mobs_redo does not copy custom def
+	-- fields onto the entity, so the wrappers install them at runtime
+	-- (grug_mobs.apply_aggro_fields, aggro.lua).
+	local aggro_cfg = {
+		no_leash = def._grug_no_leash,
+		soft_deaggro = def._grug_soft_deaggro,
+	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
 	-- as targets at night unless they provoked the mob (undead passive).
@@ -157,6 +169,7 @@ function grug_mobs.register_mob(name, def)
 		-- A mob can be punched before its first do_custom tick, and the XP
 		-- below needs its level: initialize here too (idempotent).
 		grug_mobs.ensure_init(self)
+		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		if hitter and hitter:is_player() then
 			-- Provocation memory (runtime only, self.temp is never
 			-- persisted): the undead night truce below excludes players
@@ -164,6 +177,11 @@ function grug_mobs.register_mob(name, def)
 			self.temp = self.temp or {}
 			self.temp.grug_provoked = self.temp.grug_provoked or {}
 			self.temp.grug_provoked[hitter:get_player_name()] = true
+			-- Loot rights (combat_stats.md §3): every player hit renews the
+			-- 60 s drop tag. Plain field -> survives unload (aggro.lua).
+			grug_mobs.tag_player(self, hitter)
+			-- Base threat + combat marking + rage; also refreshes the leash
+			-- contact clock (grug_core/combat.lua).
 			grug_core.run_player_hit_mob(hitter, self, damage or 0)
 			local xp = grug_mobs.kill_xp(self)
 			if xp > 0 and not self.temp.grug_xp_awarded and
@@ -195,27 +213,47 @@ function grug_mobs.register_mob(name, def)
 				and self.temp.grug_provoked[player:get_player_name()])
 	end
 
+	-- Faction-aware target acquisition (combat_stats.md §4, WP6): a faction
+	-- mob never targets its OWN faction — and never targets factionless
+	-- players either. Those are brand-new characters who have not chosen a
+	-- side yet (still on the spawn platform); letting faction guards hunt
+	-- them would be pure griefing. Monsters have no faction and are
+	-- unaffected.
+	local function faction_veto(player)
+		if not faction then
+			return false
+		end
+		local pf = grug_core.get_player_faction(player:get_player_name())
+		return pf == nil or pf == faction
+	end
+
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
+		-- Runs before do_states/general_attack in the same step (api.lua:
+		-- 3137 vs. 3144/3156), so the aggro fields the api.lua patches read
+		-- are always in place in time.
+		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
-		if night_truce then
-			-- Target-acquisition veto consumed by general_attack (GRUG PATCH
-			-- in mobs/api.lua): the mob skips truce players and picks the
-			-- next-closest viable target instead. A function field is never
-			-- serialized into staticdata; do_custom runs before
+		grug_mobs.leash_tick(self, dtime)
+		if night_truce or faction then
+			-- ONE target-acquisition veto consumed by general_attack (GRUG
+			-- PATCH in mobs/api.lua): the mob skips vetoed players and picks
+			-- the next-closest viable target instead. A function field is
+			-- never serialized into staticdata; do_custom runs before
 			-- general_attack on every step, so it is back after each
 			-- (re)activation in time.
 			if not self._grug_ignore_player then
 				self._grug_ignore_player = function(s, player)
-					return truce_active(s, player)
+					return (night_truce and truce_active(s, player))
+						or faction_veto(player)
 				end
 			end
 			-- Belt and braces for acquisition paths that bypass
 			-- general_attack (group_attack pile-ons, do_attack calls):
 			-- drop unprovoked truce players again.
-			if self.state == "attack" and self.attack
+			if night_truce and self.state == "attack" and self.attack
 					and core.is_player(self.attack)
 					and truce_active(self, self.attack) then
 				self:stop_attack()
@@ -243,6 +281,7 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/levels.lua")
+dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")

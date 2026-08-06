@@ -700,6 +700,19 @@ function mob_class:item_drop()
 
 	if not drops or #drops == 0 then return end
 
+	-- GRUG PATCH: player-tag drop rule + profession drop hooks
+	-- (combat_stats.md §3, WP6). Only for mobs registered through grug_mobs
+	-- (_grug_drop_rule) — vanilla mobs_redo mobs keep vanilla behavior. The
+	-- filter returns the list to roll (a COPY the hooks may have modified)
+	-- or nil when this mob must not drop at all (no tag / expired tag /
+	-- faction NPC not killed by an enemy player). Logic lives in grug_mobs.
+	if self._grug_drop_rule and grug_mobs and grug_mobs._item_drop_filter then
+
+		drops = grug_mobs._item_drop_filter(self, drops)
+
+		if not drops or #drops == 0 then self.drops = {} ; return end
+	end
+
 	-- was mob killed by player?
 	local death_by_player = self.cause_of_death and self.cause_of_death.puncher
 			and is_player(self.cause_of_death.puncher)
@@ -2315,7 +2328,13 @@ function mob_class:do_states(dtime)
 				else
 					self.reach_ext = 0 -- reset
 
-					if self.path.stuck then
+					-- GRUG PATCH: soft de-aggro (combat_stats.md §3, WP6) —
+					-- beyond 25m from its target a chasing mob drops to walk
+					-- speed, so fleeing is hard but not impossible (our mobs
+					-- are faster than players). Per-mob opt-out with
+					-- _grug_soft_deaggro = false (kraken: own leash, swims).
+					if self.path.stuck or (dist > 25
+					and self._grug_soft_deaggro ~= false) then
 						self:set_velocity(self.walk_velocity)
 					else
 						self:set_velocity(self.run_velocity)

@@ -29,6 +29,13 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	-- farm at the world edge.
 	_grug_xp_reward = 0,
 	_grug_spawn_check = grug_core.open_sea_at,
+	-- Both generic aggro rules are off: the Kraken has its own leash (the
+	-- strayed() check below, 200 nodes of slack instead of 40 from a home
+	-- position — a spawn-point leash would make it useless as an open-sea
+	-- deterrent), and it must keep full swim speed while hunting, so the
+	-- 25 m soft de-aggro would let any swimmer stroll away from it.
+	_grug_no_leash = true,
+	_grug_soft_deaggro = false,
 
 	-- The one hand-set level in the game: grug_core.mob_level_at returns
 	-- nil on the open water surface. The level engine derives the same
