@@ -33,7 +33,7 @@ window. Rules:
 | WP10 | Professions: 2 free mains (Herbalism, Alchemist, Blacksmith, Leatherworker, Tailor, Gem Hunter) + universal Cooking/First Aid; recipe-unlock system (craft_predict veto + workbench proximity), recipe book UI, gathering split, Leatherworker ×5-leather loot hook | open (spec: `docs/design/professions.md`, `inventory_equipment.md` §4) | WP7 |
 | WP11 | Skill trees: 2 trees × 5 talents × 3 ranks per class, 1 point per 3 levels (20/30 fillable), 9 numeric talents + 1 capstone per tree = NEW active main skill (e.g. Priest: Renew), respec for gold at the class trainer | open (spec: `docs/design/progression.md` §2) | WP3, WP4 |
 | WP12 | Global map with fog of war (adapt the mcl_maps approach), shows discovered waypoints | open | WP2, WP17 |
-| WP13 | Starter/world content: 3 race capitals per continent (center = faction seat; schematics, per-race build sets, elven treehouses), patch villages/settlements, flavor camps, spawn immunity | open (spec: world.md §3/§9, `docs/design/biomes_mobs.md`) | WP2, WP18 |
+| WP13 | Starter/world content: 3 race capitals per continent (center = faction seat; schematics, per-race build sets, elven treehouses), patch villages/settlements, flavor camps, spawn immunity | open (spec: world.md §2 protection zones, §3/§9, `docs/design/biomes_mobs.md`) | WP2, WP18 |
 | WP14 | Offhand & carried light: grug_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `grug_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
@@ -135,7 +135,15 @@ vendored from VoxeLibre. Deferred: mud walk slow-down (marker group
 WP6; real capital structures and the §2 war-coast battlefield overlay
 (broken carts, bone piles, burnt patches) → WP13. **Existing worlds are
 incompatible — the mask, the biomes and the platform anchors all changed:
-test on a FRESH world.**
+test on a FRESH world.** The user's runtime test produced two follow-up
+fix commits: floating tree canopies over the ocean (decoration overflow in
+the emerged shell, `a7ef34c`) and the spawn platforms (footprint-centered
+platform height instead of a ±40 neighborhood median, and the POI
+protection reshaped to "footprint only, from 30 nodes below the platform
+upward" per world.md §2 — `grug_core.POI_PROTECT_DEPTH` replaces
+`CAMP_PROTECT_RADIUS`); the remaining spawn-safety questions (liquid
+sabotage next to the platform, enclosed-pit detection, own-faction
+griefing) moved to `TODO-design-spawn-safety.md`.
 
 **WP3 — Classes** (✅ 2026-08-06): `grug_classes` with class AND race
 registry (races per world.md §7, race perks hook for WP7/WP10). Creation

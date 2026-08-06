@@ -64,7 +64,15 @@ grug_core.REGION_EAST_MIN = 500 -- east band: x >= 500
 grug_core.CAMP_HALF = 12 -- platform is (2*12+1)^2 nodes
 grug_core.CAMP_PLATFORM_Y = 8 -- fallback/minimum platform y (above water)
 grug_core.CAMP_CLEAR_HEIGHT = 64 -- air cleared this high above the platform
-grug_core.CAMP_PROTECT_RADIUS = 20 -- square radius of the protected zone
+
+-- Vertical reach of every POI protection (world.md §2): a protected zone
+-- starts this far BELOW the POI's base level and then runs upward without a
+-- limit — nobody towers over a capital, nobody tunnels in right underneath
+-- it, and deep mining below stays free. The horizontal extent belongs to the
+-- POI: a spawn platform protects only its own footprint (CAMP_HALF), while
+-- the real villages/outposts/capitals of WP13 also protect >= 10 nodes of
+-- surrounding terrain.
+grug_core.POI_PROTECT_DEPTH = 30
 
 -- Three race capitals per continent (docs/design/world.md §3), all in the
 -- safe-core belt: the central one (human/orc) is the faction seat, the

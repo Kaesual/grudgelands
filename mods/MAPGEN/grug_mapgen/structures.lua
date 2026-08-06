@@ -379,46 +379,83 @@ end
 -- Race capital platforms
 --
 
--- Terrain-adaptive platform height: the first mapchunk that touches a
--- capital measures the mapgen heightmap in a neighborhood around the capital
--- anchor and takes the MEDIAN — the platform sits at the typical local
--- terrain level. (The maximum put the platform on par with nearby peaks:
--- stepping off meant a deadly fall. The old fixed y buried it inside hills.
--- The median bounds both failure modes; remaining slope faces are climbable.)
+-- Terrain-adaptive platform height: the MEDIAN of the mapgen heightmap over
+-- the platform FOOTPRINT plus a small margin — the platform must match ITS
+-- OWN ground, not the average of the region around it. Median, not maximum
+-- or minimum: the maximum put the platform on par with nearby peaks
+-- (stepping off meant a deadly fall), a fixed y buried it inside hills; the
+-- median bounds both failure modes and leaves climbable slope faces.
 -- The result is persisted per race via grug_core (decided once, never shifts).
-local NEIGHBORHOOD = 40 -- Chebyshev radius sampled around the capital anchor
+--
+-- The sampling window used to be a ±40 NEIGHBORHOOD, clipped to whatever
+-- part of it the deciding mapchunk happened to cover. With a capital anchor
+-- up to ~73 nodes deep inside a mapchunk that clip left a biased corner of
+-- the window (roughly 2800–5300 of 6561 samples, possibly an entirely
+-- different landform), so the median could badly under- or overshoot the
+-- terrain at the footprint itself — at the orc capital it landed far below
+-- the surrounding hill and the 64-node clearing dug a 25×25 shaft into it.
+-- Two rules keep the decision honest now:
+--
+--   * only samples within SAMPLE_RADIUS of the anchor count, and
+--   * only a mapchunk that contains the capital's CENTER COLUMN with an
+--     unclamped heightmap value may decide at all — that is the chunk which
+--     actually holds the surface AT the anchor. Any other chunk defers; a
+--     later one of the same column decides.
+--
+-- The center chunk may still cover only part of the ±SAMPLE_RADIUS box if a
+-- chunk edge cuts through it (≥ ~289 samples in the worst case, 33×33 =
+-- 1089 when it covers the box whole — which the default 80-node mapchunks
+-- do for all six capital anchors). Partial coverage is fine: whatever is
+-- sampled is footprint-local, and that is the whole point.
+local SAMPLE_RADIUS = CAMP_HALF + 4 -- footprint + margin, Chebyshev
 local PLATFORM_MIN_Y = grug_core.CAMP_PLATFORM_Y -- keeps it above water
 local PLATFORM_MAX_Y = 100 -- sanity cap (find_surface scans from 120)
+
+-- Values clamped to the chunk edge mean the real surface lies outside this
+-- chunk's y range — not usable for a decision.
+local function valid_height(h, minp, maxp)
+	return h and h > minp.y and h < maxp.y
+end
 
 local function decide_platform_y(capital, minp, maxp)
 	local heightmap = core.get_mapgen_object("heightmap")
 	if not heightmap then
 		return nil
 	end
-	local x1 = math.max(minp.x, capital.x - NEIGHBORHOOD)
-	local x2 = math.min(maxp.x, capital.x + NEIGHBORHOOD)
-	local z1 = math.max(minp.z, capital.z - NEIGHBORHOOD)
-	local z2 = math.min(maxp.z, capital.z + NEIGHBORHOOD)
 	local width = maxp.x - minp.x + 1
+	-- Gate: the anchor's own column must live in this chunk and carry a real
+	-- (unclamped) surface height.
+	if capital.x < minp.x or capital.x > maxp.x or
+			capital.z < minp.z or capital.z > maxp.z then
+		return nil
+	end
+	local center = heightmap[(capital.z - minp.z) * width +
+		(capital.x - minp.x) + 1]
+	if not valid_height(center, minp, maxp) then
+		return nil
+	end
+	local x1 = math.max(minp.x, capital.x - SAMPLE_RADIUS)
+	local x2 = math.min(maxp.x, capital.x + SAMPLE_RADIUS)
+	local z1 = math.max(minp.z, capital.z - SAMPLE_RADIUS)
+	local z2 = math.min(maxp.z, capital.z + SAMPLE_RADIUS)
 	local samples = {}
 	for z = z1, z2 do
 		local row = (z - minp.z) * width
 		for x = x1, x2 do
 			local h = heightmap[row + (x - minp.x) + 1]
-			-- Values clamped to the chunk edge mean the real surface lies
-			-- outside this chunk's y range — not usable for a decision.
-			if h and h > minp.y and h < maxp.y then
+			if valid_height(h, minp, maxp) then
 				samples[#samples + 1] = h
 			end
 		end
 	end
-	if #samples == 0 then
-		return nil
-	end
+	-- Cannot be empty: the center column is a valid sample inside the box.
 	table.sort(samples)
 	local median = samples[math.floor((#samples + 1) / 2)]
 	return math.min(math.max(median, PLATFORM_MIN_Y), PLATFORM_MAX_Y)
 end
+-- Exposed so the placement rule can be exercised with a stub heightmap,
+-- without the engine (same reason as continent_distance/surface_cap above).
+grug_mapgen.decide_platform_y = decide_platform_y
 
 local function build_camp(data, area, minp, maxp, camp)
 	local x1 = math.max(minp.x, camp.x - CAMP_HALF)

@@ -119,6 +119,16 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R1 — Own faction territory**: digging and building allowed at any
   depth, except in protected zones (capital, outposts, villages, quest
   structures, small radius around spawn).
+  - **Shape of a POI protection zone**: vertically it starts **30 nodes
+    below the POI's base level and runs upward without a limit** — nobody
+    towers over a capital, nobody tunnels in from directly beneath it,
+    while deep mining below the POI stays free. Horizontally the zone
+    belongs to the POI: the placeholder **spawn platforms protect only
+    their own footprint** (the terrain right next to them must stay
+    diggable — a terrain-adaptive platform can end up against a hillside
+    and a player has to be able to dig out), while **villages, outposts
+    and the real capitals (WP13 structures) also protect ≥ 10 nodes of
+    surrounding terrain** in x/z.
 - **R2 — Enemy territory**: no digging, no node placement of any kind —
   **including torches, ladders etc.** Items remain usable. Darkness and
   danger in enemy land are a feature.
@@ -161,7 +171,9 @@ The ocean is layered by distance from the coast:
 
 **Three race capitals per continent** (decided 2026-08-06, WoW model):
 each race's capital sits in the safe-core belt of its band, centrally
-in the race's own biome, fully protected (indestructible). The
+in the race's own biome, and is protected (indestructible) per the POI
+rule of §2 — the structure plus ≥ 10 nodes of surrounding terrain, from
+30 nodes below its base level upward. The
 **central race's capital (Humans/Orcs, ~(0, ±900)) doubles as the
 faction seat**: the faction King (raid boss), guild manager, and
 faction-wide services live there. Each capital contains:
