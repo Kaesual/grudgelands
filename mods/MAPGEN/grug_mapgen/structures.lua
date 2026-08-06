@@ -240,7 +240,11 @@ local function build_ocean_mask(data, area, minp, maxp)
 				end
 				local i2d = row + (x - minp.x) + 1
 				local h = heightmap[i2d]
-				if cap and h and h > cap and cap < maxp.y then
+				-- `cap <= maxp.y` (not <): when the cap sits exactly on the
+				-- chunk's top edge the carve ranges come out empty, but the
+				-- re-dress below must still run in THIS chunk -- the chunk
+				-- above starts at cap+1 and can never write the top layers.
+				if cap and h and h > cap and cap <= maxp.y then
 					local y1 = math.max(cap + 1, minp.y)
 					local y2 = math.min(maxp.y, h + DECO_MARGIN)
 					local wet = math.min(y2, WATER_LEVEL)
