@@ -14,6 +14,11 @@
 --    at), so the mask shapes the coast and leaves the hinterland to v7. What
 --    it does cut it re-dresses: sand at beach level, otherwise the column's
 --    own biome surface, so a shaved coastal hill stays walkable land.
+--    The mask also reaches into the 16-node SHELL of the emerged area, not
+--    just the mapchunk: schematic decorations for a tree rooted in this chunk
+--    spill into the neighbouring chunks, which were generated (and masked)
+--    earlier and can no longer remove what arrives after them — that overflow
+--    was left hanging as floating canopy over the water (see clean_shell).
 --
 --  * the RACE CAPITAL PLATFORMS: a walkable, guaranteed flat platform at all
 --    six race capitals (grug_core.capitals) — placeholder until WP13 ships
@@ -50,6 +55,16 @@ local FILLER_DEPTH = 2 -- filler layers under a re-dressed biome top
 -- most this far above the mapgen heightmap; carving stops there, so a
 -- mapchunk high above the terrain costs nothing.
 local DECO_MARGIN = 32
+-- Width of the emerged shell around a mapchunk (the mapgen VM reaches this
+-- far beyond minp..maxp on every side).
+local SHELL = 16
+-- Ceiling for the shell clean. Honest bound, not a proof: the fresh overflow
+-- it removes sits within DECO_MARGIN of this chunk's own terrain (that is the
+-- tighter bound actually used), and coastal canopies live far below this.
+-- A tree on a ramp column whose cap is near the maximum W+114 could in
+-- principle put leaves up to ~147 — not worth a taller loop over every
+-- shell column of every coastal chunk, so it is bounded here on purpose.
+local SHELL_MAX_Y = 120
 
 -- Inland-signed distance to the NEARER continent rectangle: positive inside,
 -- negative outside, in nodes. Only three edges can be the nearest one for a
@@ -183,28 +198,43 @@ end
 -- Chunk-level fast path: true only for mapchunks that can contain a coast
 -- column at all. Pure arithmetic on the chunk box — no mapgen object is
 -- fetched for the (vast majority) fully inland or deep chunks.
+-- The box is the EMERGED one (minp..maxp grown by SHELL): the shell clean
+-- works on those columns, so a chunk whose shell alone reaches the coast band
+-- still has work to do.
 local function chunk_needs_mask(minp, maxp)
 	if maxp.y < MASK_MIN_Y then
 		return false -- pure underground: caves stay caves
 	end
-	local ax = math.max(math.abs(minp.x), math.abs(maxp.x))
-	local az_far = math.max(math.abs(minp.z), math.abs(maxp.z))
+	local ax = math.max(math.abs(minp.x), math.abs(maxp.x)) + SHELL
+	local az_far = math.max(math.abs(minp.z), math.abs(maxp.z)) + SHELL
 	local az_near = 0
 	if minp.z > 0 then
-		az_near = minp.z
+		az_near = math.max(minp.z - SHELL, 0)
 	elseif maxp.z < 0 then
-		az_near = -maxp.z
+		az_near = math.max(-maxp.z - SHELL, 0)
 	end
-	-- Smallest continent_distance anywhere in the chunk box.
+	-- Smallest continent_distance anywhere in the emerged box.
 	local d = math.min(X_HALF - ax, az_near - Z_MIN, Z_MAX - az_far)
 	return d < TAPER + INSET_MAX
 end
 
+-- Cap of a single column — the whole geometry of the mask in one place, used
+-- by the mapchunk pass and by the shell clean alike. nil means "hands off".
+-- Depends on (x, z) only: every mapchunk that ever looks at this column, from
+-- whatever direction and at whatever time, derives exactly the same cap.
+local function column_cap(x, z)
+	local d = continent_distance(x, z)
+	if d >= TAPER + INSET_MAX then
+		return nil -- inland, beyond the reach of the coast band
+	end
+	if d <= -SHELF_WIDTH then
+		return SEA_FLOOR_CAP -- flat shelf: no noise lookup needed
+	end
+	return surface_cap(d - coast_inset(x, z))
+end
+
 -- Column rule (per x/z, run before the camps):
---   d   = continent_distance(x, z)
---   cap = SEA_FLOOR_CAP                       for d <= -SHELF_WIDTH
---         surface_cap(d - coast_inset(x, z))  otherwise; nil (column
---                                             untouched) from TAPER inland
+--   cap = column_cap(x, z), nil -> column untouched
 --   carve when the mapgen heightmap h exceeds cap: water_source for
 --   y <= water level, air above, from cap+1 up to the top of the column,
 --   then re-dress the exposed top (sand at beach level, else the column's
@@ -216,35 +246,36 @@ end
 -- whole chunk, nothing walkable -> nothing to carve. h decides only WHETHER a
 -- column is cut, never WHERE — the cut height is (x, z)-deterministic, so
 -- vertically stacked mapchunks of one column cut at exactly the same y.
--- Returns true if any water was placed (the caller then updates liquids).
+-- Returns whether any water was placed (the caller then updates liquids) and
+-- the highest terrain in the chunk (the shell clean bounds itself by it).
 local function build_ocean_mask(data, area, minp, maxp)
 	local heightmap = core.get_mapgen_object("heightmap")
 	if not heightmap then
-		return false
+		return false, nil
 	end
 	local biomemap = core.get_mapgen_object("biomemap")
 	local width = maxp.x - minp.x + 1
 	local ystride = area.ystride
-	local band = TAPER + INSET_MAX
 	local wrote_water = false
+	local max_h = -31000
+	for i = 1, width * (maxp.z - minp.z + 1) do
+		local h = heightmap[i]
+		if h and h > max_h then
+			max_h = h
+		end
+	end
 	for z = minp.z, maxp.z do
 		local row = (z - minp.z) * width
 		for x = minp.x, maxp.x do
-			local d = continent_distance(x, z)
-			if d < band then
-				local cap
-				if d <= -SHELF_WIDTH then
-					cap = SEA_FLOOR_CAP -- flat shelf: no noise lookup needed
-				else
-					cap = surface_cap(d - coast_inset(x, z))
-				end
+			local cap = column_cap(x, z)
+			if cap then
 				local i2d = row + (x - minp.x) + 1
 				local h = heightmap[i2d]
 				-- `cap <= maxp.y` (not <): when the cap sits exactly on the
 				-- chunk's top edge the carve ranges come out empty, but the
 				-- re-dress below must still run in THIS chunk -- the chunk
 				-- above starts at cap+1 and can never write the top layers.
-				if cap and h and h > cap and cap <= maxp.y then
+				if h and h > cap and cap <= maxp.y then
 					local y1 = math.max(cap + 1, minp.y)
 					local y2 = math.min(maxp.y, h + DECO_MARGIN)
 					local wet = math.min(y2, WATER_LEVEL)
@@ -287,6 +318,54 @@ local function build_ocean_mask(data, area, minp, maxp)
 								data[idx] = (cap - y) < top_depth and top or filler
 							end
 							idx = idx - ystride
+						end
+					end
+				end
+			end
+		end
+	end
+	return wrote_water, max_h
+end
+
+-- Decoration overflow cleanup on the emerged shell (see the file header).
+-- The schematics the engine placed for THIS chunk may have spilled up to
+-- SHELL nodes into the neighbouring chunks; those neighbours ran their own
+-- mask earlier and cannot remove nodes that appear afterwards, which left
+-- floating canopies standing over the water. The overflow is still inside
+-- this VM, so we clean it here, using the very same column_cap — it depends
+-- on (x, z) only, so this chunk cuts the neighbour's column at exactly the
+-- height the neighbour used, and the pass is idempotent: a column the
+-- neighbour already masked is air/water above the cap and nothing matches.
+-- Only solid content is replaced; `ignore` (never-generated volume) and
+-- every water variant are left alone, and nothing below the cap is touched,
+-- so caves and seabeds survive.
+local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
+	-- Fresh overflow can only sit near this chunk's own terrain.
+	local y_top = math.min(emax.y, SHELL_MAX_Y, max_h + DECO_MARGIN)
+	if y_top < emin.y then
+		return false
+	end
+	local ystride = area.ystride
+	local wrote_water = false
+	for z = emin.z, emax.z do
+		local inner_z = z >= minp.z and z <= maxp.z
+		for x = emin.x, emax.x do
+			if not (inner_z and x >= minp.x and x <= maxp.x) then
+				local cap = column_cap(x, z)
+				if cap then
+					local y1 = math.max(cap + 1, emin.y)
+					if y_top >= y1 then
+						local idx = area:index(x, y1, z)
+						for y = y1, y_top do
+							if not not_solid[data[idx]] then
+								if y <= WATER_LEVEL then
+									data[idx] = c_water
+									wrote_water = true
+								else
+									data[idx] = c_air
+								end
+							end
+							idx = idx + ystride
 						end
 					end
 				end
@@ -400,7 +479,16 @@ core.register_on_generated(function(minp, maxp, blockseed)
 
 	local wrote_water = false
 	if need_mask then
-		wrote_water = build_ocean_mask(data, area, minp, maxp)
+		local max_h
+		wrote_water, max_h = build_ocean_mask(data, area, minp, maxp)
+		if max_h then
+			-- After the mapchunk pass: the shell columns belong to already
+			-- finished neighbours, only this chunk's decoration overflow is
+			-- new there.
+			if clean_shell(data, area, minp, maxp, emin, emax, max_h) then
+				wrote_water = true
+			end
+		end
 	end
 	for _, camp in ipairs(camps) do
 		build_camp(data, area, minp, maxp, camp)
