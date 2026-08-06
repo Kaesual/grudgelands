@@ -228,11 +228,13 @@ end
 -- — the safe core is only safe on the surface.
 function grug_core.mob_level_at(pos)
 	local ocean = grug_core.territory_at(pos) == "ocean"
-	if ocean and pos.y >= 0 then
+	local az = math.abs(pos.z)
+	-- Open/coastal sea surface only — the strait (|z| <= Z_MIN) keeps its
+	-- level so its neutral wildlife (gulls/crabs, 1-5) has one.
+	if ocean and az > Z_MIN and pos.y >= 0 then
 		return nil
 	end
 	local level = level_at_n(radial_n(pos))
-	local az = math.abs(pos.z)
 	if not ocean and az > Z_MIN and az <= WAR_COAST_Z then
 		-- War coast: the PvP stage stays mid level (~20-30) even though the
 		-- radial field would put it in elite range.
