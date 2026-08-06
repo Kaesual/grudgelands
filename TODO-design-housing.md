@@ -2,7 +2,7 @@
 
 Context: the continent redesign (2026-08-06, `docs/design/world.md` §1)
 moved housing off-continent into the safe ocean beyond the coastal zone
-(|z| ≳ 5000). The ownership/economy anchors are decided (world.md §5:
+(|z| ≳ 4000). The ownership/economy anchors are decided (world.md §5:
 guild-owned, on-demand allocation, split build/mining rights forming the
 editable cube, depth treasures, no respawn). Open is the **layout and the
 generation mechanics**.
@@ -58,5 +58,5 @@ generated. Recommendation (makes A cheap):
   sizes and prices for build vs. mining rights (gold-income curve first:
   TODO-design-items-crafting.md §4).
 - Depth treasure distribution per island.
-- Distance of the housing band: |z| ≈ 5000 as working value (coastal
-  ocean ends ~4100 from z=0; leave slack for the deadly sea belt).
+- Distance of the housing band: |z| ≈ 4000 as working value (coastal
+  ocean ends ~3200 from z=0; leave slack for the deadly sea belt).

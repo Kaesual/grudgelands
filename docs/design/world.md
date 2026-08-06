@@ -16,18 +16,21 @@ the south, mirrored at z=0. Everything else is ocean.
   continents. Crossing to the enemy continent means crossing the strait
   (swimming; boats later) — the strait itself is NOT extra dangerous
   (section 2b).
-- **Continent gameplay rectangle**: z = ±100 … ±2100, x = −2000 … +2000
-  (4000×2000 per faction). This rectangle is the *legal* bound (build
-  rights, ring math); the **visible coastline is soft/noisy** and wanders
-  inside it, like biome transitions — no straight-edge continents, no
-  mountain wall (the old x=±2000 wall is dropped with WP18).
+- **Continent gameplay rectangle**: z = ±100 … ±1700, x = −1500 … +1500
+  (3000×1600 per faction; shrunk 2026-08-06 from the 4000×2000 draft for
+  a realistic population — the world should FEEL big through content
+  density and travel pacing, not through emptiness). This rectangle is
+  the *legal* bound (build rights, ring math); the **visible coastline
+  is soft/noisy** and wanders inside it, like biome transitions — no
+  straight-edge continents, no mountain wall (the old x=±2000 wall is
+  dropped with WP18).
 - Each continent contains 3 race-flavored biome regions (section 7).
 - **Fixed base layout, randomized within**: which race region lies in
   which compass direction is FIXED per faction (section 7); noise only
   wobbles region borders and coastlines.
 - All anchors (capital position, ring radii, coast caps) derive from the
   continent size constants in `wob_core` — world size is configurable at
-  world creation (4000×2000 default; changing it requires a new world).
+  world creation (3000×1600 default; changing it requires a new world).
 
 ### Difficulty layout: "safe core + war coast"
 
@@ -35,14 +38,17 @@ Decided 2026-08-06. Two **decoupled** level fields, both centralized in
 `wob_core`:
 
 **Mob level** (`mob_level_at` — where you level): radial distance from
-the capital (continent center, ~(0, ±1100)), with a per-direction cap:
+the capital (continent center, ~(0, ±900)), with a per-direction cap.
+Overworld caves add a depth axis on top (combat_stats.md §3: level also
+grows ~+1 per 20 nodes below y=0 — the safe core is only safe on the
+surface):
 
 | Zone | Location | Mob level |
 |------|----------|-----------|
-| Safe core | radius ~300 around the capital (spawn village, race villages) | 1–10 |
-| Inner ring | core edge … ~600 from the capital | 10–25 |
-| Outer ring | ~600 … toward flank/back coasts | 25–45 |
-| Flank & back coasts | shorelines at x≈±2000 / z≈±2100 | 45–60, elites |
+| Safe core | x-elongated belt (≈ ±600 × ±300) around the capital: spawn village + the three race villages | 1–10 |
+| Inner ring | core edge … ~550 from the capital | 10–25 |
+| Outer ring | ~550 … toward flank/back coasts | 25–45 |
+| Flank & back coasts | shorelines at x≈±1500 / z≈±1700 | 45–60, elites |
 | **War coast** (strait-facing band, z ≈ ±100…±300) | capped at | **~20–30**; outposts, first PvP quests (min level ~20) |
 | Strait & beaches | z 0 … ±100 | lvl 1–5 neutral wildlife |
 
@@ -93,7 +99,7 @@ Implementation: one central `core.is_protected` override in `wob_core`
 
 The ocean is layered by distance from the coast:
 
-- **Coastal ocean (~2000 nodes around each continent)**: guaranteed real
+- **Coastal ocean (~1500 nodes around each continent)**: guaranteed real
   ocean — the terrain generates, but it MUST be water, no islands. The
   coast is active gameplay space (e.g. special farmable underwater mobs);
   content lands with its own WPs.
@@ -107,7 +113,7 @@ The ocean is layered by distance from the coast:
 
 ## 3. Capitals
 
-One capital per faction, **in the continent center** (~(0, ±1100), heart
+One capital per faction, **in the continent center** (~(0, ±900), heart
 of the safe core), fully protected (indestructible). Contains:
 
 - The **faction spawn** sits in a small starter village right next to
@@ -141,10 +147,35 @@ Military outposts across each territory enforce the level gating:
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
 
+## 4b. Apex world bosses (dragons & kin)
+
+Decided 2026-08-06 (staged; first stage is a late-Phase-1/early-Phase-2
+WP). Every apex boss shares the same tech — oversized entity
+(`visual_size` 4–6×), fixed lair POI with hoard chest, **stationary
+arena fight** (holds its ledge, hops between ~3 fixed positions; never
+kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
+(the elite wind-up mechanic scaled up), respawn timer — but each has a
+**distinct skill set** so it threatens in its own way.
+
+- **Stage 1 — one dragon per continent**: "the Mountain Wyrm" in the
+  mountain/badlands race region at the outer ring (~lvl 50). Visible
+  from far away — a progression carrot you can see at level 8 and fight
+  at 50. Skill sketch: ranged breath line (`dogshoot` + telegraph) +
+  ground-slam AoE.
+- **Stage 2 (Phase 2) — the enemy's dragon is the flagship PvP raid**:
+  killing it mounts its head in your capital + grants a temporary
+  faction-wide buff — visible prestige that guarantees the retaliation
+  raid.
+- **Stage 3 (Phase 2+) — one apex per race region**, same code, own
+  kits: e.g. jungle giant serpent (poison pools, submerges), blight bone
+  colossus (knockback slam, summons adds). The dragon stays the biggest.
+- **Phase 3 — the Nether dragon lord** as the demonic story capstone
+  (story.md; only if the population supports larger raids).
+
 ## 5. Housing (ocean model, guild-owned)
 
 Housing moves off-continent (continent redesign 2026-08-06): guild
-housing lies **in the safe ocean beyond the coastal zone** (|z| ≳ 5000,
+housing lies **in the safe ocean beyond the coastal zone** (|z| ≳ 4000,
 "behind" the own continent), allocated **on demand** when a guild buys
 land — no mobs, no PvP, effectively unlimited reserve. **Owner is always
 a guild** (`guilds.md`) — a solo player founds a solo guild; groups pool
@@ -220,14 +251,21 @@ small villages, and perks around vendors/professions.
   biomes per territory" mapgen requirement). The compass layout is FIXED
   per faction (e.g. Alliance: dwarves always west) — only region borders
   and coastlines are noise-randomized (section 1).
-- **Each race region holds its race village at the safe-core edge**;
-  since the difficulty rings run ACROSS the x-bands, every band spans
-  the full 1–60 progression — a player can level entirely inside their
-  race's flavor region; changing biomes is an invitation, not a must.
+- **Each race region holds its race village inside the safe core** (the
+  core is x-elongated exactly so the village belt fits, section 1); from
+  its village outward through its band to its coast, every race region
+  spans nearly the full progression — a player can level mostly inside
+  their race's flavor region; changing biomes is an invitation, not a
+  must.
 - Race choice at character creation (after faction, before class), stored
   in player meta. Visuals (skins) can come later.
-- MVP perks: **discount at own-race vendors + one race-exclusive vendor
-  per race**.
+- MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
+  vendor discount is invisible for the first ten hours): **one visible
+  passive per race** + the vendor discount as a bonus. Passives
+  (implementation: WP19, race registry hook): Dwarf −20% fall damage ·
+  Troll +50% out-of-combat regen · Undead ignored by zombies at night ·
+  Orc +1 rage per hit taken · Elf +5 m ability range · Human +10% quest
+  XP. Plus **one race-exclusive vendor per race** (WP7).
 - Race-exclusive professions/recipes (e.g. only elven tailors craft the
   top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.
 - **No class restrictions per race in the MVP** (only 3 classes — locks

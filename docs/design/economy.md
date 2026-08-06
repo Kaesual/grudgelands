@@ -40,5 +40,13 @@ currency structure and the qualitative bands.
 
 - Small/steady: vendor goods, job supplies (thread, flux, vials),
   vendor bags, weak healing potions.
+- **Repair** (decided 2026-08-06, WP22): gear has durability, but a
+  broken item is **never destroyed** — at 0 durability it merely stops
+  working (weapons deal no damage, armor stops protecting, item bonuses
+  turn off) until repaired at an NPC for gold. Cost scales with quality
+  tier: gray starter gear costs a few copper, rare lategame gear real
+  money. The per-character steady sink from hour one.
+- **Talent respec** at the class trainer, price rising with level
+  (progression.md §2, WP11).
 - Big/long-term: guild founding fee, housing expansion, mining claims
   (one-time purchases of finite resources — `guilds.md` §3).

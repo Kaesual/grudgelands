@@ -5,7 +5,8 @@ wob_core = {}
 -- Difficulty grows with |z| (distance to the border).
 wob_core.BORDER_Z = 0
 wob_core.NEUTRAL_HALF_WIDTH = 64 -- neutral borderland: |z| <= 64
-wob_core.WORLD_HALF_WIDTH_X = 2000 -- soft east-west border (mountain wall)
+wob_core.WORLD_HALF_WIDTH_X = 2000 -- east-west border (mountain wall until
+-- WP18 replaces walls + z-rings with the two-continent layout, world.md §1)
 wob_core.HOUSING_Z = 2400 -- housing frontier: |z| > 2400
 
 -- Race region bands along x within each territory (docs/design/world.md §7).

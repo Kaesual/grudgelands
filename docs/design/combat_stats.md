@@ -49,8 +49,8 @@ Anchors (computed):
 | Level | Warrior HP | Priest HP | Mage HP | Mage mana | Warrior Str |
 |-------|-----------|-----------|---------|-----------|-------------|
 | 1 | 30 | 30 | 30 | 30 | 10 |
-| 10 | 75 | 57 | 48 | 82 | 37 |
-| 30 | 175 | 117 | 88 | 242 | 97 |
+| 10 | 75 | 57 | 48 | 84 | 37 |
+| 30 | 175 | 117 | 88 | 204 | 97 |
 | 60 | 325 | 207 | 148 | 384 | 187 |
 
 Crit/dodge are server-side rolls in our own damage pipeline (`wob_core`,
@@ -71,8 +71,23 @@ Normal tier at level L:
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
+- **Soft de-aggro** (with the speed rule, decided 2026-08-06): beyond
+  ~25 m from its target a chasing mob drops to walk speed — fleeing is
+  hard, not impossible (mobs are otherwise faster than players).
+- **Readability rules for mobs** (decided 2026-08-06, land with WP6):
+  elites/rares signal via **scale + tint** (`visual_size` ×1.6 elite /
+  ×2 rare + `^[colorize` + distinct nametag); **elites telegraph**: 2 s
+  wind-up (stop, sound, `!!` nametag, particle burst) then a ×3 cone
+  hit — the same mechanic later scales up to bosses; **one behavior
+  verb per mob family** (boars charge, wolves hunt in packs and flee
+  low to return with friends, zombies never leash, skeleton archers
+  `dogshoot`). **Named rares broadcast** their spawn faction-wide
+  ("Grimtusk has been sighted…") — a meeting point for a low-population
+  server.
 - WP1 retune (do with WP6): boar = L1 (HP 20, dmg 2, XP 10), zombie = L3
-  (HP 30, dmg 3, XP 30).
+  (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
+  `run_velocity` 4.4/4.2 — currently 3.4/2.6, shipped slow on purpose
+  until the soft de-aggro above lands in the same WP).
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|
@@ -91,8 +106,14 @@ from the capital in the continent center — safe core 1–10, inner ring
 **war coast is capped at ~20–30**. The ocean spawns no hostiles except
 the deep-sea guards (world.md §2b). Guards use the SEPARATE inverse
 field `guard_level_at` (world.md §1): elite in the safe core, ~mob
-level +5 at war-coast outposts. NB the code still implements the old
-|z| rings until WP18 lands.
+level +5 at war-coast outposts. **Depth axis** (decided 2026-08-06,
+WP6): overworld caves scale with depth —
+`mob_level_at = max(surface_level(x,z), depth_level(y))`, roughly
++1 level per 20 nodes below y=0, capped at 60; ore tiers follow the
+same depth axis, so mining deep is the alternative progression path to
+travelling out. (The Nether is NOT part of this axis — its y-band is
+unreachable by digging, portals only.) NB the code still implements the
+old |z| rings until WP18 lands.
 
 ## 4. Threat (aggro) system
 

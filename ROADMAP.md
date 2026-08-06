@@ -52,6 +52,16 @@ game (not a mod pack), written in Lua.
   via food (out-of-combat recovery) and healing potions. Mobs are
   slightly faster than players — pulling several same-level mobs solo is
   dangerous.
+- **Scaled for reality, built for headroom** (decided 2026-08-06): a
+  Luanti server handles 100+ concurrent players and our Lua must too
+  (performance rules in AGENTS.md) — but content assumes few: group
+  content is sized for **2–3 players**, everything is **beatable
+  without a healer**, and leveling is fast (**level 60 in ~10–20 h**,
+  `docs/design/progression.md`) — the endgame is the game.
+- **Apex world bosses**: one visible dragon POI per continent first
+  ("see it at level 8, fight it at 50"), the enemy's dragon as the
+  flagship PvP raid, later one apex creature per race region — same
+  tech, distinct skill sets (`docs/design/world.md` §4b).
 - A light layer of lore and story, delivered through quests, setting and
   environmental storytelling. Premise: **"A darkness has befallen the
   land"** — the Alliance–Horde conflict is old, but a new demonic evil
@@ -98,8 +108,9 @@ game (not a mod pack), written in Lua.
 - [x] Level system with stat growth: attributes + HP via
       `register_on_level_change`; damage consumption follows with the
       WP4 damage pipeline
-- [ ] Simplified skill trees: 2 trees of ~5 talents per class, talent
-      points per level, formspec UI
+- [ ] Simplified skill trees: 2 trees × 5 talents × 3 ranks per class,
+      1 point per 3 levels, capstones = new active main skills, respec
+      for gold (`docs/design/progression.md` §2), formspec UI
 - [x] 2–4 active abilities per class (hotbar/item based), cooldowns
       (`wob_abilities`, 3 per class; spec `docs/design/classes.md`)
 
@@ -179,7 +190,9 @@ game (not a mod pack), written in Lua.
       race-restricted classes (decide once more classes exist)
 - [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
 - [ ] Dungeon/instance-like structures (fixed elite areas with boss + loot)
-- [ ] Raid bosses in the deepest heartland
+- [ ] Apex world bosses stage 2/3: enemy-dragon PvP raid (head trophy +
+      faction buff), one apex creature per race region with distinct
+      skill sets (`docs/design/world.md` §4b)
 - [ ] **The Nether**: farmable active zone with its own rules, story
       layer ("the world's magic created connections"), island crossings
       into enemy territory (mirror pairing), later world bosses behind

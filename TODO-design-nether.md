@@ -27,15 +27,35 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
   freely walkable 1:8 shortcut dimension is deliberately NOT planned —
   it would undercut waypoints and mounts.
 
+## Decided 2026-08-06 (design review)
+
+- **Shared-world zone, NOT an instancing mechanism**: Nether lairs are
+  shared with respawn timers. A generic per-party instance service
+  (sealed y-band slots + `delete_area`, feasibility researched and
+  confirmed) is a **Phase 3 option** only if boss contention ever
+  becomes real — until then, author all lair content portable
+  ("schematic + spawn set + entry portal") so the upgrade is a hosting
+  change, not a redesign.
+- **Portals are world-placed only** — never craftable by players; the
+  Nether y-band is not reachable by digging. There are no "normal"
+  free-crossing portals: every crossing is one of the designed island
+  pairs.
+- Zone rules: **no waypoints inside; Home Stone works** (its 60 min
+  cooldown is the escape valve); **no building at all** (R3-style);
+  **heat damage only in specific lava fields**, never globally.
+- **Portal activation**: first portal quest-unlocked (story beat), the
+  rest always on.
+- **Gating hole + fix**: two-way mirror portals bypass the war-coast
+  funnel (world.md §1). Either land exits inside the enemy's war-coast
+  band, or arrivals carry a visible "Rift-Touched" marker (~10 min) so
+  defenders can hunt them (leaning: marker — keeps the mirror pairing
+  intact and manufactures PvP events). Pick in Phase 2 planning.
+
 ## Open (to spec before the Phase 2 WP)
 
-- Portal activation: always open vs. quest-unlocked per portal
-  (leaning: first portal via quest for the story beat, rest always on).
-- "Own rules" of the zone — candidates to pick from: no waypoints
-  inside, Home Stone blocked or not, harsher death penalty or not,
-  environmental damage (heat), night-only surface portals, …
 - Nether materials in the tier table (items TODO §5) + what world
-  bosses drop (ties into boss loot, items TODO §3).
+  bosses drop (ties into boss loot, items TODO §3); the **Nether dragon
+  lord** is the Phase 3 capstone boss (world.md §4b).
 - Challenge design for reaching world bosses (jump/lava puzzles? kill
   gates? key items?).
 - ~~Story framing~~ — decided, see `docs/design/story.md`: a demonic

@@ -20,4 +20,4 @@ also AGENTS.md "Documentation layers"):
 | `items_crafting.md` | Quality tiers, enchant budgets, crafting/upgrades, loot sources | in progress → `TODO-design-items-crafting.md` (before WP5/WP7) |
 | `classes.md` | Class kits: resources, MVP abilities (skill trees follow with WP11) | **decided** (2026-08-06) |
 | `economy.md` | Currency structure, money-flow bands, trader rules | **decided** (2026-08-06); price numbers open in `TODO-design-items-crafting.md` §4 |
-| `progression.md` | Level gates, quest structure, death rules, lore/story | not started (needed before WP8/WP9) |
+| `progression.md` | Leveling pace, reward cadence, death rules, quest structure | **partial** (2026-08-06): pace/cadence/death decided; quest structure open (before WP8/WP9) |

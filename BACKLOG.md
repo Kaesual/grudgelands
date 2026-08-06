@@ -24,30 +24,35 @@ window. Rules:
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | ✅ engine biomes (v7 + min_pos/max_pos) in `wob_mapgen`; zone/difficulty API + is_protected in `wob_core` (runtime test by user pending) | WP0 |
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | ✅ `wob_classes`: class+race registry, creation flow faction→race→class, attribute/HP formulas via level pipeline, /char /class /race commands (runtime test pending) | WP0 |
-| WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | ✅ `wob_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `wob_core` (runtime test pending; spec: `docs/design/classes.md`) | WP3 |
+| WP4 | Abilities: 2–4 per class, cooldowns, mana/resource HUD (text line per classes.md §1) | ✅ `wob_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `wob_core` (runtime test pending; spec: `docs/design/classes.md`; kit tuning → WP19) | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
-| WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs; nametags (level+HP), con-color target frame, gray = no XP | open (spec: `docs/design/combat_stats.md` §3/§6) | WP1, WP2 |
+| WP6 | Faction mobs & mob feel: guards, outposts, mob tiers by distance + DEPTH, elite mobs (scale/tint + 2 s telegraph), one behavior verb per family, named rares with faction broadcast, boar/zombie retune incl. speed-to-spec + soft de-aggro (25 m), taunt force duration, R4 ore respawn, nametags (level+HP), con-color target frame, gray = no XP; **pathfinding quality pass is a blocker of this WP, not polish** | open (spec: `docs/design/combat_stats.md` §3/§6, world.md §1) | WP1, WP2 |
 | WP7 | Money & traders: copper/silver/gold currency (`docs/design/economy.md`), buy-all-drops, selling UI | open | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
 | WP10 | Jobs: Herbalism, Alchemist, Blacksmith, Gem Hunter; max 2 per player | open | WP7 |
-| WP11 | Skill trees: 2 trees/class of ~5 talents, talent points, formspec UI | open | WP3, WP4 |
+| WP11 | Skill trees: 2 trees × 5 talents × 3 ranks per class, 1 point per 3 levels (20/30 fillable), 9 numeric talents + 1 capstone per tree = NEW active main skill (e.g. Priest: Renew), respec for gold at the class trainer | open (spec: `docs/design/progression.md` §2) | WP3, WP4 |
 | WP12 | Global map with fog of war (adapt the mcl_maps approach), shows discovered waypoints | open | WP2, WP17 |
 | WP13 | Starter/world content: capital & camp structures (schematics), race villages, spawn immunity | open | WP2 |
 | WP14 | Offhand & carried light: wob_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `wob_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
-| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts), remove mountain wall, capital/spawn village to continent center, radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b; replaces WP2's wall + z-rings) | WP2 |
+| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via wob_core constants), remove mountain wall, capital/spawn village to continent center, radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b; replaces WP2's wall + z-rings) | WP2 |
+| WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | open (spec: `docs/design/classes.md`, world.md §7) | WP4 |
+| WP20 | Party system: /party (content sized for 2–3), tap rules (first damager's party tags), shared XP/kill/quest credit within 60 m, member HP frames HUD, group loot basics | open (spec: classes.md balance constraints) | WP4 |
+| WP21 | Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper NPC (rested XP + Home Stone rebind), NPC anchor/respawn insurance | open (spec: `docs/design/combat_stats.md` §5, progression.md §1) | WP1 |
+| WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed), NPC repair for gold, tier-scaled costs | open (spec: `docs/design/economy.md` §4) | WP5, WP7 |
+| WP23 | Apex world bosses: one dragon POI per continent (stationary arena fight, telegraphs, hoard + respawn timer); enemy-dragon raid trophy and per-region apex kits follow (Phase 2) | open (spec: `docs/design/world.md` §4b) | WP6 |
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
   between faction and class; race perks follow with WP7/WP10).
 - Build/dig restrictions (destructibility rules §2) land in `wob_core`
   alongside WP2.
-- Housing (frontier plots, §5) and the Home Stone (§6) are not yet
-  scheduled as WPs — add them once WP2 stands (housing zone needs the
-  territory layout).
+- Housing implementation is not yet scheduled as a WP — the layout is
+  still open in `TODO-design-housing.md` (ocean/island model, world.md
+  §5). The Home Stone is covered by WP17.
 
 ### WP details (acceptance criteria)
 

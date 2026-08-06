@@ -20,15 +20,17 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
 - **2 Trinket slots, reserved**: UI + meta support from day one, first
   trinket items post-MVP (same strategy as the Unique quality tier).
 - No ring/neck/shoulder slots in the MVP.
-- Slots are a per-player detached inventory with group-filtered
-  `allow_put` (3d_armor pattern); stat effects recompute on change.
+- Slots are **player-inventory lists** with group-filtered `allow_put`
+  (decided during WP15 — auto-persisted, simpler than the 3d_armor
+  detached-inventory pattern originally sketched here); stat effects
+  recompute on change.
 
 ## 3. Bags (WoW model, LotT implementation pattern)
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
   slots** extend it: small 8 / medium 16 / large 24 slots
-  (`bagslots` group, per-player detached inventory — pattern:
-  `lottinventory`).
+  (`bagslots` group; bag slots + contents are player-inventory lists,
+  see above).
 - **Bags are Tailor products** (+ one small vendor-sold bag) — cloth
   farming feeds the tailor economy.
 - No item drop on death (unchanged; death costs XP, not gear).

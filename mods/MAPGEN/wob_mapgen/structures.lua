@@ -1,8 +1,9 @@
 -- Post-generation pass for the few things biomes cannot express:
 --  * spawn camp platforms (walkable, guaranteed flat ground at both faction
 --    spawns; placeholder until WP13 ships real capital structures)
---  * the soft east-west world border: a mountain wall at |x| ~ 2000 that
---    keeps content density high (docs/design/world.md §1)
+--  * the soft east-west world border: a mountain wall at |x| ~ 2000
+--    (scheduled for removal — the two-continent redesign of world.md §1
+--    replaces walls with ocean; lands with WP18)
 
 local WALL_X = wob_core.WORLD_HALF_WIDTH_X
 local WALL_THICKNESS = 64 -- footprint of the mountain range, outward from |x|=WALL_X

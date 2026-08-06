@@ -30,8 +30,9 @@ rationale (Luanti is not MMORPG enough for that) intact.
 
 - **Guild bank**: shared inventory at the guild manager (capital only).
   Deposit: all members; withdraw: Admiral+.
-- **Housing plot**: one frontier plot per guild (mechanics:
-  `world.md` §5); all members build/dig there.
+- **Housing area**: one ocean housing area per guild (mechanics:
+  `world.md` §5, layout: `TODO-design-housing.md`); all members
+  build/dig there.
 - **Mining claims**: ore-rich zones (the outpost mining zones of
   `world.md` §4) bought as a **one-time purchase** — the price buys the
   **finite** resources inside: **no ore respawn within claims** (unlike

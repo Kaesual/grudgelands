@@ -1,5 +1,5 @@
--- Trash loot: exists only to be sold to traders (WP7) for gold.
--- _wob_sell_price = buy price in gold (read by the trader).
+-- Trash loot: exists only to be sold to traders (WP7).
+-- _wob_sell_price = buy price in COPPER units (economy.md §1).
 
 core.register_craftitem("wob_mobs:zombie_flesh", {
 	description = "Rotting Flesh",
