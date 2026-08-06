@@ -172,3 +172,11 @@ core.register_node("grug_nodes:bone_pile", {
 	groups = {snappy = 3, attached_node = 1},
 	sounds = default.node_sound_gravel_defaults(),
 })
+
+--
+-- Sub-files
+--
+
+-- R4 ore respawn (WP6/T9): the "Depleted Vein" placeholder node plus the
+-- single register_on_dignode hook that grows mined ore back.
+dofile(core.get_modpath(core.get_current_modname()) .. "/ore_respawn.lua")
