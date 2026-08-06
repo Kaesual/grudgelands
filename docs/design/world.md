@@ -100,8 +100,14 @@ means weaker mobs but ever harder guards (classic WoW capitals).
 
 - Invasion is funneled by design: the strait leads to the enemy's
   mid-level war coast (the PvP stage); landings at flank/back coasts
-  fail against lvl 50–60 zones. Nether crossings (Phase 2) are the
-  endgame deep strike into the hinterland.
+  fail against lvl 50–60 zones — scoped to |z| ≳ 450 (decided with
+  WP18): the war-coast cap fades continuously over z 300..600, so the
+  flank corners nearest the strait ramp 30→60 instead of being elite.
+  A landing that comes in slightly wide of the war coast still lands
+  next to the PvP stage, which is the funnel working as intended; any
+  x-dependent cap would reintroduce a level cliff at the band edge.
+  Nether crossings (Phase 2) are the endgame deep strike into the
+  hinterland.
 - Players level 1–15 play deep inland — no forced early PvP; quests
   first send players to the war coast at ~lvl 20+.
 
