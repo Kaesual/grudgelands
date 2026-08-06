@@ -38,13 +38,16 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   danger in enemy land are a feature.
 - **R3 — Neutral borderland**: no digging/placement for anyone (readable,
   fair PvP battlefield).
-- **R4 — Ores/resources respawn** (node timers), at least in mining
-  zones, so a persistent world doesn't run dry. Outpost mining zones are
-  an *additional* rich-resource incentive, not the only source.
-- **R5 — Housing plots**: fully freely buildable by the owner (section 5).
+- **R4 — Ores/resources respawn** (node timers) in the open world, so a
+  persistent world doesn't run dry. **Exception: no respawn inside guild
+  mining claims and housing plots** — a claim's price buys its *finite*
+  resources (`guilds.md` §3).
+- **R5 — Guild property**: housing plots and mining claims are fully
+  usable by all members of the owning guild, locked for everyone else
+  (section 5, `guilds.md`).
 - **No per-player land claims in the MVP**: open-world builds are "at
-  your own risk"; the protected build space is your housing plot.
-  Revisit only if griefing becomes a real problem.
+  your own risk"; the protected build space is your guild's housing
+  plot. Revisit only if griefing becomes a real problem.
 
 Implementation: one central `core.is_protected` override in `wob_core`
 (faction + position check).
@@ -82,24 +85,29 @@ Military outposts across each territory enforce the level gating:
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
 
-## 5. Housing (frontier model)
+## 5. Housing (frontier model, guild-owned)
 
 A safe housing band lies beyond the deep heartland (z beyond ±2400): no
-mobs, no PvP, "infinite" outward expansion.
+mobs, no PvP, "infinite" outward expansion. **Owner is always a guild**
+(`guilds.md`) — a solo player founds a solo guild; groups pool housing.
 
-- Plots on a **128 m tile grid** (ample expansion reserve per player).
-- **Base plot 16×16**, with **mining rights ~16 nodes below the
-  surface**; one plot per player (MVP).
-- **Paid expansion in steps** (+8 per side or −16 depth per step, prices
-  rising per step) — the central long-term gold sink.
+- Plots on a tile grid with ample expansion reserve; **one plot per
+  guild**. Bought is bought — no upkeep, no decay.
+- Base plot with **mining rights below the surface**; **paid expansion
+  in steps** (sides and depth, prices rising per step) — the central
+  long-term gold sink. Tile reserve and step sizes are tuned so a guild
+  can grow for a very long time and practically never reaches the
+  maximum (numbers with the economy design,
+  TODO-design-items-crafting.md §4).
 - **Depth treasures**: greater depths hold exclusive, artificially
-  limited gems/materials — ingredient source for high-end recipes (ties
-  into crafting/economy).
-- Only the owner can build/dig inside the plot.
+  limited gems/materials — ingredient source for high-end recipes. Like
+  mining claims: **no respawn** — what is dug is gone (R4).
+- All guild members build/dig inside the plot; everyone else is locked
+  out.
 - **Untouchable buffer strips** between tiles (nobody can build or dig
   there) — a wall around the plot is truly impenetrable.
-- **Visitors are allowed** (plots can be entered and admired), but only
-  the owner builds/digs; who wants privacy builds a wall.
+- **Visitors are allowed** (plots can be entered and admired); who wants
+  privacy builds a wall.
 - Access from the capital via the housing portal (section 3) or the Home
   Stone.
 

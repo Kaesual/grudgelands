@@ -35,6 +35,8 @@ window. Rules:
 | WP12 | Global map with fog of war (adapt the mcl_maps approach) | open | WP2 |
 | WP13 | Starter/world content: capital & camp structures (schematics), race villages, spawn immunity | open | WP2 |
 | WP14 | Offhand & carried light: wob_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
+| WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | open — **next, before WP4** (spec: `docs/design/inventory_equipment.md`) | WP3 |
+| WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog

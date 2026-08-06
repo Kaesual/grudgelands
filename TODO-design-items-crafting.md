@@ -96,5 +96,10 @@ Proposal for the params (open):
   mob drop (trash-loot income, already planned in WP7).
 - Open: actual price levels — needs the gold-income curve first (gold
   value per mob tier, quest rewards).
+- Open (from the guild decision, `docs/design/guilds.md`): guild
+  founding fee; housing tile reserve + expansion step sizes/prices
+  (requirement: steps small and rising so the maximum is practically
+  never reached); mining claim sizes + one-time prices (price buys the
+  finite resources inside).
 
 **Decision:** _pending_

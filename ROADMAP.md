@@ -46,8 +46,10 @@ game (not a mod pack), written in Lua.
   dangerous.
 - A light layer of lore and story, delivered through quests, setting and
   environmental storytelling.
-- No guild system (deliberate decision — Luanti is not MMORPG enough for
-  that).
+- **Guilds as a pure ownership layer** (bank, housing, mining claims,
+  fixed roles; even solo players found one): `docs/design/guilds.md`.
+  Deliberately NO guild levels/perks/wars — Luanti is not MMORPG enough
+  for that.
 - **License: GPL** (non-commercial project) — so we can adopt and adapt
   code from all reference projects (incl. VoxeLibre).
 
@@ -178,6 +180,7 @@ game (not a mod pack), written in Lua.
 
 ## Deliberately NOT planned
 
-- Guild system
+- Guild progression (levels, perks, guild wars) — guilds stay a pure
+  ownership layer
 - Battlegrounds/arenas (maybe much later)
 - Flying mounts
