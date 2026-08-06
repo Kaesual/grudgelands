@@ -4,15 +4,13 @@
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Zombie",
 	type = "monster",
-	_grug_xp_reward = 35,
 	_grug_spawn_zones = {"core", "inner", "war_coast"},
+	-- HP/damage/XP and armor come from the level engine (levels.lua); the
+	-- floor keeps the zombie above the boar even in the safe core.
+	_grug_min_level = 3,
 	-- Undead race passive (world.md §7): ignored at night unless provoked.
 	_grug_night_truce_perk = "zombie_night_truce",
 
-	hp_min = 16,
-	hp_max = 22,
-	armor = 90,
-	damage = 4,
 	reach = 2,
 	attack_type = "dogfight",
 	attack_players = true,
@@ -20,7 +18,9 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	pathfinding = 1,
 
 	walk_velocity = 1,
-	run_velocity = 2.6,
+	-- Aggressive-mob speed (combat_stats.md §3), a notch under the boar's
+	-- 4.4 but still above the player's 4.0.
+	run_velocity = 4.2,
 	jump = true,
 	stepheight = 1.1,
 	fear_height = 4,

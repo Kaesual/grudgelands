@@ -2,7 +2,15 @@ grug_mobs = {}
 
 --
 -- Wrapper around mobs:register_mob with our extensions:
---   def._grug_xp_reward   — XP for the killer (player)
+--   def._grug_xp_reward   — XP for the killer (player); OVERRIDES the level
+--                          formula (levels.lua), normally left unset
+--   def._grug_min_level   — level floor (default 1) and the fallback level
+--                          where the level field has no value
+--   def._grug_max_level   — level cap (default: the source cap, 60/70)
+--   def._grug_fixed_level — hand-set level, bypasses the field and the cap
+--   def._grug_level_source — "mob" (default, grug_core.mob_level_at) or
+--                          "guard" (grug_core.guard_level_at)
+--   def._grug_tier        — "normal" (default) | "elite" | "rare"
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
 --   def._grug_spawn_zones — list of zone names (grug_core.zone_at: core,
@@ -118,7 +126,9 @@ function grug_mobs.is_night()
 end
 
 function grug_mobs.register_mob(name, def)
-	local xp_reward = def._grug_xp_reward or 0
+	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
+	-- are engine-owned from here on, the def must not hand-set them.
+	grug_mobs.register_level_cfg(name, def)
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
 	-- as targets at night unless they provoked the mob (undead passive).
@@ -144,6 +154,9 @@ function grug_mobs.register_mob(name, def)
 	-- so we must not install one.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		-- A mob can be punched before its first do_custom tick, and the XP
+		-- below needs its level: initialize here too (idempotent).
+		grug_mobs.ensure_init(self)
 		if hitter and hitter:is_player() then
 			-- Provocation memory (runtime only, self.temp is never
 			-- persisted): the undead night truce below excludes players
@@ -152,13 +165,20 @@ function grug_mobs.register_mob(name, def)
 			self.temp.grug_provoked = self.temp.grug_provoked or {}
 			self.temp.grug_provoked[hitter:get_player_name()] = true
 			grug_core.run_player_hit_mob(hitter, self, damage or 0)
-			self.temp = self.temp or {}
-			if xp_reward > 0 and not self.temp.grug_xp_awarded and
+			local xp = grug_mobs.kill_xp(self)
+			if xp > 0 and not self.temp.grug_xp_awarded and
 					self.health - math.floor(damage or 0) <= 0 then
 				self.temp.grug_xp_awarded = true
-				grug_xp.add_xp(hitter, xp_reward)
-				core.chat_send_player(hitter:get_player_name(),
-					core.colorize("#aa66ff", "+" .. xp_reward .. " XP"))
+				-- Gray rule (combat_stats.md §6): a mob at killer level - 10
+				-- or below pays nothing, and says nothing.
+				if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
+					xp = 0
+				end
+				if xp > 0 then
+					grug_xp.add_xp(hitter, xp, "kill")
+					core.chat_send_player(hitter:get_player_name(),
+						core.colorize("#aa66ff", "+" .. xp .. " XP"))
+				end
 			end
 		end
 		if old_do_punch then
@@ -177,6 +197,8 @@ function grug_mobs.register_mob(name, def)
 
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
+		-- First-tick level/stat assignment + per-activation nametag hook.
+		grug_mobs.ensure_init(self)
 		tick_speed_effects(self, dtime)
 		if night_truce then
 			-- Target-acquisition veto consumed by general_attack (GRUG PATCH
@@ -220,6 +242,8 @@ function grug_mobs.register_mob(name, def)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/levels.lua")
+dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")
 dofile(modpath .. "/zombie.lua")

@@ -30,12 +30,14 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	_grug_xp_reward = 0,
 	_grug_spawn_check = grug_core.open_sea_at,
 
-	-- L100 stats from the combat_stats formulas, hand-set for level 100:
-	-- hp 15 + 5*100, damage 2 + 0.4*100. Armor 70 = rare tier.
-	hp_min = 515,
-	hp_max = 515,
+	-- The one hand-set level in the game: grug_core.mob_level_at returns
+	-- nil on the open water surface. The level engine derives the same
+	-- numbers the def used to spell out (515 HP, 42 damage) from it.
+	_grug_fixed_level = 100,
+	-- Tier "normal", but rare-grade armor: the engine only owns armor when
+	-- the tier sets it (elite 80 / rare 70) or the def leaves it nil, so
+	-- this explicit value survives (levels.lua contract).
 	armor = 70,
-	damage = 42,
 	reach = 4, -- huge model, tentacles
 	attack_type = "dogfight",
 	attack_players = true,

@@ -4,13 +4,10 @@
 grug_mobs.register_mob("grug_mobs:boar", {
 	description = "Boar",
 	type = "monster",
-	_grug_xp_reward = 15,
 	_grug_spawn_zones = {"core", "inner"},
+	-- HP/damage/XP and armor come from the level engine (levels.lua):
+	-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.
 
-	hp_min = 8,
-	hp_max = 12,
-	armor = 100,
-	damage = 2,
 	reach = 2,
 	attack_type = "dogfight",
 	attack_players = true,
@@ -18,7 +15,9 @@ grug_mobs.register_mob("grug_mobs:boar", {
 	pathfinding = 1,
 
 	walk_velocity = 1,
-	run_velocity = 3.4,
+	-- Aggressive-mob speed (combat_stats.md §3): faster than the player's
+	-- 4.0, so running away is a decision, not a reflex.
+	run_velocity = 4.4,
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
