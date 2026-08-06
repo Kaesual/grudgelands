@@ -137,11 +137,15 @@ WP6; real capital structures and the §2 war-coast battlefield overlay
 incompatible — the mask, the biomes and the platform anchors all changed:
 test on a FRESH world.** The user's runtime test produced two follow-up
 fix commits: floating tree canopies over the ocean (decoration overflow in
-the emerged shell, `a7ef34c`) and the spawn platforms (footprint-centered
-platform height instead of a ±40 neighborhood median, and the POI
-protection reshaped to "footprint only, from 30 nodes below the platform
-upward" per world.md §2 — `grug_core.POI_PROTECT_DEPTH` replaces
-`CAMP_PROTECT_RADIUS`); the remaining spawn-safety questions (liquid
+the emerged shell, `a7ef34c`) and the spawn platforms — the platform height
+now comes from `core.get_spawn_level` at the anchor (−2 for the engine's
+dust allowance), resolved lazily in `grug_core.get_camp_platform_y` and
+persisted, with a footprint heightmap median in `grug_mapgen` only as the
+fallback for the many positions mgv7 calls "unsuitable"; a heightmap-only
+decision is chunk-order-dependent and could deadlock. The POI protection
+was reshaped to "footprint only, from 30 nodes below the platform upward"
+per world.md §2 (`grug_core.POI_PROTECT_DEPTH` replaces
+`CAMP_PROTECT_RADIUS`). The remaining spawn-safety questions (liquid
 sabotage next to the platform, enclosed-pit detection, own-faction
 griefing) moved to `TODO-design-spawn-safety.md`.
 

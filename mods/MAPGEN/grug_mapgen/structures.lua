@@ -379,83 +379,72 @@ end
 -- Race capital platforms
 --
 
--- Terrain-adaptive platform height: the MEDIAN of the mapgen heightmap over
--- the platform FOOTPRINT plus a small margin — the platform must match ITS
--- OWN ground, not the average of the region around it. Median, not maximum
--- or minimum: the maximum put the platform on par with nearby peaks
--- (stepping off meant a deadly fall), a fixed y buried it inside hills; the
--- median bounds both failure modes and leaves climbable slope faces.
--- The result is persisted per race via grug_core (decided once, never shifts).
+-- Terrain-adaptive platform height. The value comes from grug_core, which
+-- resolves it lazily from the ENGINE'S SPAWN LEVEL at the capital anchor and
+-- persists it. That query is a pure function of (x, z): it does not care
+-- which mapchunk asks, in which order the chunks generate, or how the
+-- chunk's y range cuts the terrain — so every chunk that overlaps the
+-- platform volume can build its own slice of the SAME platform, whenever it
+-- is generated. Rationale and the exact +2 offset: grug_core/init.lua.
 --
--- The sampling window used to be a ±40 NEIGHBORHOOD, clipped to whatever
--- part of it the deciding mapchunk happened to cover. With a capital anchor
--- up to ~73 nodes deep inside a mapchunk that clip left a biased corner of
--- the window (roughly 2800–5300 of 6561 samples, possibly an entirely
--- different landform), so the median could badly under- or overshoot the
--- terrain at the footprint itself — at the orc capital it landed far below
--- the surrounding hill and the 64-node clearing dug a 25×25 shaft into it.
--- Two rules keep the decision honest now:
+-- The trade, honestly: that is the base-terrain level of ONE column instead
+-- of a statistic over the footprint, so local relief inside the 25×25 area
+-- is not averaged out — the 16-node skirt below and the 64-node clearing
+-- above absorb it. The heightmap-median experiment is dead as a PRIMARY
+-- rule: the mapgen heightmap only exists per mapchunk, which made the value
+-- depend on which chunk measured it (a ±40 window clipped to a biased corner
+-- put the orc platform far below its hill and the clearing dug a 25×25 shaft
+-- into it) and, once a "only the chunk holding the anchor surface decides"
+-- rule was added, made earlier chunks lose their platform slice and — worse
+-- — deadlocked completely when the anchor's surface sat exactly on a chunk
+-- y edge (Mapgen::findGroundLevel then returns maxp.y, indistinguishable
+-- from "ground continues above", while the chunk above reports its bottom
+-- sentinel).
 --
---   * only samples within SAMPLE_RADIUS of the anchor count, and
---   * only a mapchunk that contains the capital's CENTER COLUMN with an
---     unclamped heightmap value may decide at all — that is the chunk which
---     actually holds the surface AT the anchor. Any other chunk defers; a
---     later one of the same column decides.
---
--- The center chunk may still cover only part of the ±SAMPLE_RADIUS box if a
--- chunk edge cuts through it (≥ ~289 samples in the worst case, 33×33 =
--- 1089 when it covers the box whole — which the default 80-node mapchunks
--- do for all six capital anchors). Partial coverage is fine: whatever is
--- sampled is footprint-local, and that is the whole point.
+-- It survives as the FALLBACK, because core.get_spawn_level answers nil for
+-- a large share of positions (mgv7: rivers, water, and any terrain above
+-- max(terrain offsets, water_level + 16) = y 17 with our noise offsets — see
+-- grug_core) and that nil is permanent, not transient. Without a fallback
+-- those capitals would get no platform and no spawn clearing at all. It is
+-- the FIRST chunk with a usable heightmap over the footprint that decides
+-- (no anchor-column gate: that is what deadlocked), so at most the chunks
+-- generated before it — with ascending-y emerge, the one holding the lower
+-- part of the skirt — can miss their slice.
 local SAMPLE_RADIUS = CAMP_HALF + 4 -- footprint + margin, Chebyshev
-local PLATFORM_MIN_Y = grug_core.CAMP_PLATFORM_Y -- keeps it above water
-local PLATFORM_MAX_Y = 100 -- sanity cap (find_surface scans from 120)
 
--- Values clamped to the chunk edge mean the real surface lies outside this
--- chunk's y range — not usable for a decision.
-local function valid_height(h, minp, maxp)
-	return h and h > minp.y and h < maxp.y
-end
-
-local function decide_platform_y(capital, minp, maxp)
+-- Median of the mapgen heightmap over the footprint box, or nil if this
+-- chunk cannot see the surface there. Heights equal to a chunk y edge are
+-- dropped: findGroundLevel returns maxp.y when the ground continues above
+-- and -MAX_MAP_GENERATION_LIMIT when the column holds nothing walkable.
+local function fallback_platform_y(capital, minp, maxp)
 	local heightmap = core.get_mapgen_object("heightmap")
 	if not heightmap then
-		return nil
-	end
-	local width = maxp.x - minp.x + 1
-	-- Gate: the anchor's own column must live in this chunk and carry a real
-	-- (unclamped) surface height.
-	if capital.x < minp.x or capital.x > maxp.x or
-			capital.z < minp.z or capital.z > maxp.z then
-		return nil
-	end
-	local center = heightmap[(capital.z - minp.z) * width +
-		(capital.x - minp.x) + 1]
-	if not valid_height(center, minp, maxp) then
 		return nil
 	end
 	local x1 = math.max(minp.x, capital.x - SAMPLE_RADIUS)
 	local x2 = math.min(maxp.x, capital.x + SAMPLE_RADIUS)
 	local z1 = math.max(minp.z, capital.z - SAMPLE_RADIUS)
 	local z2 = math.min(maxp.z, capital.z + SAMPLE_RADIUS)
+	local width = maxp.x - minp.x + 1
 	local samples = {}
 	for z = z1, z2 do
 		local row = (z - minp.z) * width
 		for x = x1, x2 do
 			local h = heightmap[row + (x - minp.x) + 1]
-			if valid_height(h, minp, maxp) then
+			if h and h > minp.y and h < maxp.y then
 				samples[#samples + 1] = h
 			end
 		end
 	end
-	-- Cannot be empty: the center column is a valid sample inside the box.
+	if #samples == 0 then
+		return nil
+	end
 	table.sort(samples)
-	local median = samples[math.floor((#samples + 1) / 2)]
-	return math.min(math.max(median, PLATFORM_MIN_Y), PLATFORM_MAX_Y)
+	return samples[math.floor((#samples + 1) / 2)]
 end
--- Exposed so the placement rule can be exercised with a stub heightmap,
--- without the engine (same reason as continent_distance/surface_cap above).
-grug_mapgen.decide_platform_y = decide_platform_y
+-- Exposed so the fallback can be exercised with a stub heightmap, without
+-- the engine (same reason as continent_distance/surface_cap above).
+grug_mapgen.fallback_platform_y = fallback_platform_y
 
 local function build_camp(data, area, minp, maxp, camp)
 	local x1 = math.max(minp.x, camp.x - CAMP_HALF)
@@ -489,15 +478,15 @@ core.register_on_generated(function(minp, maxp, blockseed)
 				minp.z <= capital.z + CAMP_HALF then
 			local y = grug_core.get_camp_platform_y(race_id)
 			if not y then
-				y = decide_platform_y(capital, minp, maxp)
-				if y then
-					grug_core.set_camp_platform_y(race_id, y)
-					core.log("action", ("[grug_mapgen] %s capital platform " ..
-						"decided at y=%d"):format(race_id, y))
+				-- Engine has no spawn level here (permanent, see above):
+				-- measure the footprint in this chunk instead.
+				local fallback = fallback_platform_y(capital, minp, maxp)
+				if fallback then
+					y = grug_core.set_camp_platform_y(race_id, fallback)
 				end
+				-- Still nothing (chunk fully above/below the surface): skip,
+				-- a chunk that can see the surface decides and builds.
 			end
-			-- No y yet (chunk fully above/below the surface): skip — the
-			-- chunk that actually contains the surface decides and builds.
 			if y and maxp.y >= y - SKIRT_DEPTH and
 					minp.y <= y + CLEAR_HEIGHT then
 				camps[#camps + 1] = {x = capital.x, y = y, z = capital.z}

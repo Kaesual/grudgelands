@@ -253,8 +253,14 @@ Details + line numbers in [docs/research/](docs/research/).
   a coast noise insets them by 0..150 nodes INWARD only — so the strait is
   guaranteed by construction, not by luck — surface cap + flood outside,
   taper inward, chunk-box fast path skips inland/deep chunks) and the
-  **six race-capital camp platforms** (terrain-adaptive height: heightmap
-  median, persisted per race id in mod storage). Zone/level queries:
+  **six race-capital camp platforms** (terrain-adaptive height from
+  `core.get_spawn_level` at the anchor − 2, resolved lazily in
+  `grug_core.get_camp_platform_y` and persisted per race id in mod storage;
+  a footprint heightmap median in `grug_mapgen` covers the many positions
+  where the engine answers nil — mgv7 calls anything above y 17, in a river
+  or in water "unsuitable". NEVER decide a platform y from the mapchunk
+  heightmap alone: it exists per chunk, so the value and the build order
+  become chunk-order-dependent and can deadlock). Zone/level queries:
   `grug_core.territory_at` (accord/throng/ocean), `zone_at`
   (underground/ocean/strait/war_coast/coast/core/inner/outer — the
   `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`
