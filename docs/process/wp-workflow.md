@@ -34,7 +34,11 @@ autonomously. AGENTS.md links here; this file is the detailed contract.
    fallback is a HARD requirement), AGENTS performance rules
    (globalstep throttling, inventory churn, 100-player target).
 5. **Mandatory code review**: at least **one full Opus code review of
-   the WP diff** using the checklist below. Larger WPs: split lenses
+   the WP diff** using the checklist below. **Run review/research
+   subagents SYNCHRONOUSLY** (`run_in_background: false`) — pilot
+   lesson from WP19: background-subagent results can route to the main
+   session instead of the orchestrator, which then stalls waiting for
+   a notification that never arrives. Larger WPs: split lenses
    across 2–3 Opus agents (correctness / Lua+perf / design-adherence)
    and adversarially verify High findings. Findings are fixed on the
    branch; High/Critical fixes get a focused re-review.
