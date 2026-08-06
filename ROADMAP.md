@@ -20,10 +20,13 @@ game (not a mod pack), written in Lua.
 - Classes with XP, levels and simplified skill trees.
 - Quests that drive progression and deliberately force PvP and exploration.
 - Professions ("jobs"), a gold economy and trader NPCs.
-- Difficulty scales spatially: safe starter zones at the faction border,
-  deadly elite/raid areas in the heartland / far from spawn. **Military
-  outposts** and ambient faction patrols enforce this gating — guard
-  levels effectively limit how deep an enemy player can push.
+- Difficulty scales spatially ("safe core + war coast",
+  `docs/design/world.md` §1): capital + starter villages in the safe
+  continent center, mob levels grow toward the coasts; only the
+  strait-facing **war coast is capped mid-level** as the PvP stage
+  (first PvP quests ~lvl 20–30 — no forced early PvP). **Guard strength
+  runs inverse** (elite in the core): military outposts and ambient
+  patrols gate invaders in both directions.
 - **Controlled destructibility**: digging/building is free only inside
   your own faction's territory (outside protected zones such as capitals,
   outposts and quest structures); enemy territory and the border zone
@@ -79,7 +82,8 @@ game (not a mod pack), written in Lua.
 - [x] Difficulty gradient: `wob_core.difficulty_at/mob_level_at` ring
       functions (mobs actually scaling with them lands with 1.4/WP6)
 - [x] Faction spawn points: walkable camp platforms at z = ±200
-      (real capital structures follow with WP13)
+      (moves to the continent-center spawn village with WP18; real
+      capital structures follow with WP13)
 - [x] Build/dig restrictions per territory (own land free, enemy land and
       border locked; camp protected zones; ore respawn deferred to WP6/13)
 - [x] PvP basis: friendly-fire protection within the faction;
@@ -138,7 +142,7 @@ game (not a mod pack), written in Lua.
       hard level gates, `docs/design/story.md` §2)
 - [ ] Quest-giver NPCs in the faction camps
 - [ ] Mandatory questlines for level progression (level gates), including:
-  - [ ] "Kill 5 guards at the enemy faction's border" (PvP trigger)
+  - [ ] "Kill 5 guards at the enemy war coast" (PvP trigger, min level ~20)
   - [ ] "Push into enemy territory and kill an elite mob" (exploration + risk)
   - [ ] Gather/kill quests across different biomes (forced exploration)
 

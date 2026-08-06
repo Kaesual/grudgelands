@@ -38,7 +38,7 @@ window. Rules:
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `wob_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
-| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts), remove mountain wall, re-anchored rings, coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b; replaces WP2's wall + borderland ring) | WP2 |
+| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts), remove mountain wall, capital/spawn village to continent center, radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b; replaces WP2's wall + z-rings) | WP2 |
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog

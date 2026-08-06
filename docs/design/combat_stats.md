@@ -84,10 +84,15 @@ Normal tier at level L:
 ### Position → mob level
 
 `wob_core.difficulty_at(pos)` returns **0..1** (= (mob_level−1)/59);
-helper `wob_core.mob_level_at(pos)` returns the level directly. Linear
-interpolation within each ring of `world.md` §1: borderland 1–5, starter
-1–10, midlands 10–30, heartland 30–50, deep heartland 50–60; housing
-band spawns no hostiles. Guards: ring level +5.
+helper `wob_core.mob_level_at(pos)` returns the level directly. Geometry
+(continent redesign 2026-08-06, single source: `world.md` §1): radial
+from the capital in the continent center — safe core 1–10, inner ring
+10–25, outer ring 25–45, flank/back coasts 45–60; the strait-facing
+**war coast is capped at ~20–30**. The ocean spawns no hostiles except
+the deep-sea guards (world.md §2b). Guards use the SEPARATE inverse
+field `guard_level_at` (world.md §1): elite in the safe core, ~mob
+level +5 at war-coast outposts. NB the code still implements the old
+|z| rings until WP18 lands.
 
 ## 4. Threat (aggro) system
 

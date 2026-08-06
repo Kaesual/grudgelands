@@ -22,22 +22,43 @@ the south, mirrored at z=0. Everything else is ocean.
   inside it, like biome transitions — no straight-edge continents, no
   mountain wall (the old x=±2000 wall is dropped with WP18).
 - Each continent contains 3 race-flavored biome regions (section 7).
-- An invader landing on the enemy coast meets the weak starter zone
-  first; every step deeper means stronger guards/mobs — spatial level
-  gating by design. Coast landings replace the old land-border crossing
-  as the PvP quest hotspot.
+- **Fixed base layout, randomized within**: which race region lies in
+  which compass direction is FIXED per faction (section 7); noise only
+  wobbles region borders and coastlines.
+- All anchors (capital position, ring radii, coast caps) derive from the
+  continent size constants in `wob_core` — world size is configurable at
+  world creation (4000×2000 default; changing it requires a new world).
 
-Difficulty rings (`wob_core.difficulty_at(pos)` = |z| mapped to rings,
-re-anchored to the continent):
+### Difficulty layout: "safe core + war coast"
 
-| Zone | z-range (mirrored N/S) | Mob/guard level |
-|------|------------------------|-----------------|
-| Ocean strait & beaches | 0 … ~100 | lvl 1–5 neutral wildlife, PvP contact zone |
-| Starter ring (capital at ~z=±200) | 100 … 400 | lvl 1–10 |
-| Midlands | 400 … 1000 | lvl 10–30 |
-| Heartland | 1000 … 1700 | lvl 30–50, elites |
-| Deep heartland (raid areas, Phase 2) | 1700 … 2100 | lvl 50–60+, raid bosses |
-| Coastal ocean, then open sea | outward from the coast | section 2b; housing islands: section 5 |
+Decided 2026-08-06. Two **decoupled** level fields, both centralized in
+`wob_core`:
+
+**Mob level** (`mob_level_at` — where you level): radial distance from
+the capital (continent center, ~(0, ±1100)), with a per-direction cap:
+
+| Zone | Location | Mob level |
+|------|----------|-----------|
+| Safe core | radius ~300 around the capital (spawn village, race villages) | 1–10 |
+| Inner ring | core edge … ~600 from the capital | 10–25 |
+| Outer ring | ~600 … toward flank/back coasts | 25–45 |
+| Flank & back coasts | shorelines at x≈±2000 / z≈±2100 | 45–60, elites |
+| **War coast** (strait-facing band, z ≈ ±100…±300) | capped at | **~20–30**; outposts, first PvP quests (min level ~20) |
+| Strait & beaches | z 0 … ±100 | lvl 1–5 neutral wildlife |
+
+**Guard level** (`guard_level_at`, WP6 — anti-invasion gating): runs
+**inverse** to mob level — elite city watch (60+) in the capital, spawn
+village and safe core, solid guards at villages/roads, moderate at the
+war coast (~local mob level +5). Rationale: the safe core must be safe
+against high-level *invaders*, not just low-level mobs; pushing deeper
+means weaker mobs but ever harder guards (classic WoW capitals).
+
+- Invasion is funneled by design: the strait leads to the enemy's
+  mid-level war coast (the PvP stage); landings at flank/back coasts
+  fail against lvl 50–60 zones. Nether crossings (Phase 2) are the
+  endgame deep strike into the hinterland.
+- Players level 1–15 play deep inland — no forced early PvP; quests
+  first send players to the war coast at ~lvl 20+.
 
 ## 2. Destructibility
 
@@ -86,10 +107,11 @@ The ocean is layered by distance from the coast:
 
 ## 3. Capitals
 
-One capital per faction, near the border at ~z=±200, fully protected
-(indestructible). Contains:
+One capital per faction, **in the continent center** (~(0, ±1100), heart
+of the safe core), fully protected (indestructible). Contains:
 
-- Faction spawn point.
+- The **faction spawn** sits in a small starter village right next to
+  the capital (inside the safe core), not in the capital itself.
 - Class trainers + class POIs (e.g. special quest NPCs à la mount
   unlocks).
 - Traders, quest givers, job trainers.
@@ -108,10 +130,12 @@ Military outposts across each territory enforce the level gating:
 - Roles: guard spawner/anchor, quest hub, graveyard/respawn point for the
   own faction, protector of resource-rich mining zones (e.g. a dwarven
   mining camp — resource site + conflict point in one).
-- **Guard level = ring level + 5** — guards beat equal-level intruders;
-  groups or higher-level players can push through.
-- Between outposts: **ambient patrols** whose level also scales with
-  `difficulty_at` — closes the "just walk around the outpost" hole.
+- **Guard level follows the inverse guard field** (`guard_level_at`,
+  section 1): elite garrisons in the core, ~local mob level +5 at the
+  war coast — guards beat equal-level intruders; groups or higher-level
+  players can push through.
+- Between outposts: **ambient patrols** on the same guard field — closes
+  the "just walk around the outpost" hole.
 - Density: roughly one outpost per ring per ~500 m east–west.
 - **Rare patrol mobs**: some areas have hard-to-kill rare mobs with
   limited/low spawn rates and special loot — a deliberate incentive for
@@ -193,7 +217,13 @@ small villages, and perks around vendors/professions.
 (Own names/flavor later — no 1:1 Blizzard copies.)
 
 - 3 races per faction = 3 biome regions per territory (satisfies the "≥2
-  biomes per territory" mapgen requirement).
+  biomes per territory" mapgen requirement). The compass layout is FIXED
+  per faction (e.g. Alliance: dwarves always west) — only region borders
+  and coastlines are noise-randomized (section 1).
+- **Each race region holds its race village at the safe-core edge**;
+  since the difficulty rings run ACROSS the x-bands, every band spans
+  the full 1–60 progression — a player can level entirely inside their
+  race's flavor region; changing biomes is an invitation, not a must.
 - Race choice at character creation (after faction, before class), stored
   in player meta. Visuals (skins) can come later.
 - MVP perks: **discount at own-race vendors + one race-exclusive vendor
