@@ -26,7 +26,7 @@ window. Rules:
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | open (spec: `docs/design/combat_stats.md`) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | open | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
-| WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs | open (spec: `docs/design/combat_stats.md` §3) | WP1, WP2 |
+| WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs; nametags (level+HP), con-color target frame, gray = no XP | open (spec: `docs/design/combat_stats.md` §3/§6) | WP1, WP2 |
 | WP7 | Gold & traders: currency, buy-all-drops, selling UI | open | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs | open | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
@@ -34,6 +34,7 @@ window. Rules:
 | WP11 | Skill trees: 2 trees/class of ~5 talents, talent points, formspec UI | open | WP3, WP4 |
 | WP12 | Global map with fog of war (adapt the mcl_maps approach) | open | WP2 |
 | WP13 | Starter/world content: capital & camp structures (schematics), race villages, spawn immunity | open | WP2 |
+| WP14 | Offhand & carried light: wob_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation adds a selection step (implement with

@@ -143,7 +143,12 @@ game (not a mod pack), written in Lua.
 
 ## Phase 2 — Expansion (after MVP)
 
-- [ ] More classes: **Paladin**, **Rogue**, **Warlock**, **Shaman**
+- [ ] More classes: **Paladin**, **Rogue**, **Warlock**, **Shaman**.
+      Rogue stealth sketch (decided direction, details later): slower
+      movement while stealthed (improvable via talents), opener bonus
+      (crit/stun) only from stealth, no threat until the opener; NB
+      engine visibility is global — no per-viewer invisibility, so
+      stealth is semi-transparent/invisible for everyone
 - [ ] More jobs: **Tailor**, possibly Enchanter
 - [ ] **Player housing** (frontier plots with paid expansion + depth
       treasures, capital portal; spec: `docs/design/world.md` §5) — may

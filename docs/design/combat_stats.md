@@ -69,6 +69,8 @@ Normal tier at level L:
   hunters 4.6, partly with ranged attacks (`dogshoot`).
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
+- **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
+  XP (kills trivial-mob farming).
 - WP1 retune (do with WP6): boar = L1 (HP 20, dmg 2, XP 10), zombie = L3
   (HP 30, dmg 3, XP 30).
 
@@ -117,3 +119,44 @@ design (`group_attack` stays on).
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
   treadmill in the MVP.
+
+## 6. Mob nameplates & con colors
+
+- Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
+  (viewer-independent, updated on damage). The exact level is therefore
+  always readable for everyone.
+- **Con colors are per viewer** and live in a **HUD target frame** (the
+  mob you look at/punch; nametags cannot be colored per viewer). Relative
+  to the viewer's level L:
+
+| Relation | Color | XP |
+|----------|-------|----|
+| mob ≤ L−10 | gray | none |
+| L−10 < mob ≤ L | green | normal |
+| mob > L | red | normal |
+
+- **No skull tier** and no extra damage modifier for high-level mobs —
+  mob damage already scales via the level formulas; the nametag carries
+  the exact level anyway.
+- Implementation: nametags + gray-XP rule in `wob_mobs` (WP6), target
+  frame HUD alongside WP6.
+
+## 7. Offhand & carried light
+
+- The engine has **no native offhand**; we build `wob_offhand` after
+  VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
+  slot).
+- Equip rules (enforced centrally): **two-handed weapons require an empty
+  offhand**; shields = Warrior; Mage focus item (tome/orb) as stat
+  offhand; **dual wield reserved for the Rogue (Phase 2)**.
+- **Torch in the offhand gives a moving light radius** (wielded-light
+  technique: invisible light node at head height, moved only on
+  node-position change, skipped when ambient light is bright; profile
+  before relying on it for crowded servers).
+- Synergy with destructibility R2: torches cannot be *placed* in enemy
+  land but can be *carried* — at the cost of the offhand slot and of
+  being visible at night.
+- Endgame hook: rare items with a built-in light radius (no offhand
+  cost).
+- MVP scope: torch + shield first; class-specific offhands once the
+  items exist.
