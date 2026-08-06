@@ -14,13 +14,15 @@ local starter_kits = {
 -- API
 --
 
--- A player's faction id, or nil while none has been chosen yet.
+-- A player's faction id, or nil while none has been chosen yet. Validated
+-- against the registry (like get_class/get_race): an id from an old save
+-- that no longer exists counts as unset instead of nil-crashing callers.
 function wob_factions.get_faction(player)
 	local id = player:get_meta():get_string(META_FACTION)
-	if id == "" then
-		return nil
+	if wob_core.factions[id] then
+		return id
 	end
-	return id
+	return nil
 end
 
 function wob_factions.get_faction_def(player)
@@ -217,6 +219,10 @@ core.register_chatcommand("faction", {
 	description = "Show a player's faction or (as admin) set it",
 	func = function(name, param)
 		local target_name, faction_id = param:match("^(%S+)%s+(%S+)$")
+		-- Single token: a faction id means "set my own faction".
+		if not target_name and wob_core.factions[param] then
+			target_name, faction_id = name, param
+		end
 		target_name = target_name or (param ~= "" and param) or name
 
 		local target = core.get_player_by_name(target_name)

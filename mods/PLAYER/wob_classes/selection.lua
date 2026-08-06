@@ -151,12 +151,16 @@ core.register_chatcommand("char", {
 	end,
 })
 
-local function register_set_command(cmd, setter, getter_def)
+local function register_set_command(cmd, setter, getter_def, is_id)
 	core.register_chatcommand(cmd, {
 		params = "[<player>] [<" .. cmd .. ">]",
 		description = "Show a player's " .. cmd .. " or (as admin) set it",
 		func = function(name, param)
 			local target_name, id = param:match("^(%S+)%s+(%S+)$")
+			-- Single token: a valid id means "set my own" (e.g. /class mage).
+			if not target_name and is_id(param) then
+				target_name, id = name, param
+			end
 			target_name = target_name or (param ~= "" and param) or name
 
 			local target = core.get_player_by_name(target_name)
@@ -178,5 +182,7 @@ local function register_set_command(cmd, setter, getter_def)
 	})
 end
 
-register_set_command("class", wob_classes.set_class, wob_classes.get_class_def)
-register_set_command("race", wob_classes.set_race, wob_classes.get_race_def)
+register_set_command("class", wob_classes.set_class, wob_classes.get_class_def,
+	function(id) return wob_classes.registered_classes[id] ~= nil end)
+register_set_command("race", wob_classes.set_race, wob_classes.get_race_def,
+	function(id) return wob_classes.registered_races[id] ~= nil end)

@@ -130,6 +130,10 @@ sfinv.register_page("wob_inventory:bags", {
 -- Homepage & nav order: Character first, Bags second, Crafting after.
 --
 
+-- Deliberate override (not a wrapper): the Character page is the homepage
+-- for everyone, including creative players. wob_inventory optionally
+-- depends on creative so the load order — and thus this override — is
+-- deterministic (creative wraps this function; we load after it).
 function sfinv.get_homepage_name(player)
 	return "wob_inventory:character"
 end

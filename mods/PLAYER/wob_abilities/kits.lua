@@ -72,8 +72,9 @@ local function burst(pos, texture, amount)
 	core.add_particlespawner({
 		amount = amount or 12,
 		time = 0.2,
-		pos = vector.offset(pos, 0, 0.5, 0),
-		radius = 0.5,
+		-- NB `radius` is not a particlespawner field — spread via pos range.
+		pos = {min = vector.offset(pos, -0.5, 0, -0.5),
+			max = vector.offset(pos, 0.5, 1, 0.5)},
 		vel = {min = vector.new(-2, 0, -2), max = vector.new(2, 3, 2)},
 		exptime = {min = 0.3, max = 0.7},
 		size = {min = 1.5, max = 3},
@@ -83,34 +84,13 @@ local function burst(pos, texture, amount)
 end
 
 --
--- Root effects (Frost Nova). Mobs: zero out walk/run velocity and restore
--- after the duration; re-rooting refreshes the timer. Players (PvP): a
--- physics override. MVP caveat (documented in classes.md): the override
--- would clobber other speed modifiers — fine while none exist.
+-- Root effects (Frost Nova). Mobs: wob_mobs.root — restore runs as a
+-- reload-safe countdown inside the mob's do_custom (a core.after timer
+-- here once persisted permanently-immobile mobs into the world file).
+-- Players (PvP): a physics override. MVP caveat (documented in
+-- classes.md): the override would clobber other speed modifiers — fine
+-- while none exist.
 --
-
-local function root_mob(ent, duration)
-	local obj = ent.object
-	if not ent._wob_root then
-		ent._wob_root = {walk = ent.walk_velocity, run = ent.run_velocity}
-		ent.walk_velocity = 0
-		ent.run_velocity = 0
-	end
-	local expiry = core.get_us_time() + duration * 1e6
-	ent._wob_root_until = expiry
-	local v = obj:get_velocity()
-	if v then
-		obj:set_velocity(vector.new(0, v.y, 0))
-	end
-	core.after(duration, function()
-		if ent._wob_root and ent._wob_root_until == expiry
-				and obj:get_pos() then
-			ent.walk_velocity = ent._wob_root.walk
-			ent.run_velocity = ent._wob_root.run
-			ent._wob_root = nil
-		end
-	end)
-end
 
 local player_roots = {} -- player name -> expiry (us time)
 
@@ -275,7 +255,7 @@ wob_abilities.register_ability({
 					local ent = mob_ent(obj)
 					if ent and not (ent._wob_faction and
 							ent._wob_faction == wob_factions.get_faction(user)) then
-						root_mob(ent, 4)
+						wob_mobs.root(ent, 4)
 						burst(obj:get_pos(), "mobs_bubble_particle.png^[multiply:#88ccff", 8)
 					end
 				end

@@ -87,8 +87,9 @@ local function crit_particles(pos)
 	core.add_particlespawner({
 		amount = 8,
 		time = 0.15,
-		pos = vector.offset(pos, 0, 1, 0),
-		radius = 0.4,
+		-- NB `radius` is not a particlespawner field — spread via pos range.
+		pos = {min = vector.offset(pos, -0.4, 0.6, -0.4),
+			max = vector.offset(pos, 0.4, 1.4, 0.4)},
 		vel = {min = vector.new(-1, 1, -1), max = vector.new(1, 3, 1)},
 		exptime = {min = 0.3, max = 0.6},
 		size = {min = 2, max = 3},
@@ -97,24 +98,50 @@ local function crit_particles(pos)
 end
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip
--- ability hits (rage comes from auto-attacks only, classes.md §1).
+-- ability hits (rage comes from auto-attacks only, classes.md §1) and the
+-- central dodge modifier skip the roll (abilities pre-roll it below).
 wob_core.in_ability_punch = false
 
 function wob_core.deal_ability_damage(attacker, target, amount, opts)
 	opts = opts or {}
-	-- Player targets: dodge is rolled centrally by the hp change modifier
-	-- below (rolling here too would double-dip).
+	if target:is_player() then
+		-- Friendly fire: defense in depth — the ability kits filter their
+		-- targets already, but never let same-faction damage through here.
+		if attacker:is_player() then
+			local af = wob_core.get_player_faction(attacker:get_player_name())
+			local tf = wob_core.get_player_faction(target:get_player_name())
+			if af and tf and af == tf then
+				return 0
+			end
+		end
+		-- Dodge is pre-rolled here for ability punches so the return value
+		-- and the threat report reflect what actually landed; the central
+		-- modifier skips the roll while in_ability_punch is set.
+		if math.random() < wob_core.get_dodge_chance(target) then
+			core.chat_send_player(target:get_player_name(),
+				core.colorize("#aaaaaa", "You dodge!"))
+			wob_core.mark_in_combat(attacker)
+			wob_core.mark_in_combat(target)
+			return 0
+		end
+	end
 	if math.random() < wob_core.get_crit_chance(attacker) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
 	end
 	wob_core.mark_in_combat(attacker)
+	-- pcall + flag restore: an error mid-punch must not leave the sticky
+	-- flag set (that would silently kill rage generation server-wide).
 	wob_core.in_ability_punch = true
-	target:punch(attacker, 1.4, {
+	local ok, err = pcall(target.punch, target, attacker, 1.4, {
 		full_punch_interval = 1.4,
 		damage_groups = {fleshy = amount},
 	}, nil)
 	wob_core.in_ability_punch = false
+	if not ok then
+		core.log("warning", "[wob_core] ability punch failed: " .. tostring(err))
+		return 0
+	end
 	local ent = target:get_luaentity()
 	if ent then
 		wob_core.add_threat(ent, attacker, amount * (opts.threat_mult or 1))
@@ -154,7 +181,9 @@ end
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change < 0 and reason.type == "punch" then
 		wob_core.mark_in_combat(player)
-		if math.random() < wob_core.get_dodge_chance(player) then
+		-- Ability punches pre-roll dodge in deal_ability_damage.
+		if not wob_core.in_ability_punch and
+				math.random() < wob_core.get_dodge_chance(player) then
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			return 0

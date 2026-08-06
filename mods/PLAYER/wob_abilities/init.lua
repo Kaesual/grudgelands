@@ -155,19 +155,54 @@ function wob_abilities.register_ability(def)
 	})
 end
 
--- Sets the wear of the player's ability item (cooldown display).
+-- Cooldown display via item wear. Inventory writes re-send the whole
+-- player inventory to the client, so this path is deliberately stingy:
+-- slot indices are cached (no full-list scan per tick) and the wear bar is
+-- quantized to WEAR_STEPS — a write happens only when the visible step
+-- changes, not every tick.
+local WEAR_STEPS = 12
+
+local slot_cache = {} -- player name -> {ability id -> main list index}
+local wear_steps = {} -- player name -> {ability id -> last written step}
+
 local function set_item_wear(player, ability_id, wear)
 	local inv = player:get_inventory()
 	local itemname = "wob_abilities:" .. ability_id
+	local name = player:get_player_name()
+	slot_cache[name] = slot_cache[name] or {}
+	local idx = slot_cache[name][ability_id]
+	if idx then
+		local stack = inv:get_stack("main", idx)
+		if stack:get_name() == itemname then
+			stack:set_wear(wear)
+			inv:set_stack("main", idx, stack)
+			return
+		end
+		slot_cache[name][ability_id] = nil
+	end
 	local list = inv:get_list("main") or {}
 	for i, stack in ipairs(list) do
 		if stack:get_name() == itemname then
+			slot_cache[name][ability_id] = i
 			stack:set_wear(wear)
 			inv:set_stack("main", i, stack)
 			return
 		end
 	end
 end
+
+-- Ability items live in the main inventory only — stashing one in a bag
+-- would hide its cooldown and used to confuse the kit sync. NB other
+-- allow callbacks OR-combine (see wob_inventory): return nil when
+-- unconcerned, a number swallows later callbacks.
+core.register_allow_player_inventory_action(function(player, action, inventory, info)
+	if action == "move" and info.to_list ~= "main" then
+		local stack = inventory:get_stack(info.from_list, info.from_index)
+		if item_defs[stack:get_name()] then
+			return 0
+		end
+	end
+end)
 
 function wob_abilities.try_cast(user, def, pointed_thing)
 	if user:get_hp() <= 0 then
@@ -199,6 +234,8 @@ function wob_abilities.try_cast(user, def, pointed_thing)
 	end
 	spend(user, def.cost)
 	cooldowns[name][def.id] = core.get_us_time() + def.cooldown * 1e6
+	wear_steps[name] = wear_steps[name] or {}
+	wear_steps[name][def.id] = WEAR_STEPS
 	set_item_wear(user, def.id, 65534)
 end
 
@@ -212,13 +249,20 @@ local function sync_kit(player)
 	local class = wob_classes.get_class(player)
 	local name = player:get_player_name()
 	cooldowns[name] = {}
+	wear_steps[name] = {}
+	slot_cache[name] = {}
 	local inv = player:get_inventory()
 	local have = {}
 	for listname, list in pairs(inv:get_lists()) do
 		for i, stack in ipairs(list) do
 			local def = item_defs[stack:get_name()]
 			if def then
-				if def.class ~= class or have[stack:get_name()] then
+				-- Only items in "main" count as present: foreign-class
+				-- items, duplicates and strays in other lists (bags from
+				-- old saves) are removed; own-class strays re-granted
+				-- into main below.
+				if def.class ~= class or listname ~= "main" or
+						have[stack:get_name()] then
 					inv:set_stack(listname, i, ItemStack(""))
 				else
 					have[stack:get_name()] = true
@@ -310,19 +354,27 @@ core.register_globalstep(function(dtime)
 				end
 			end
 		end
-		-- cooldown wear display
+		-- cooldown wear display (write only when the visible step changes)
 		local cds = cooldowns[name]
 		if cds then
 			local now = core.get_us_time()
+			local steps = wear_steps[name] or {}
+			wear_steps[name] = steps
 			for id, expiry in pairs(cds) do
 				local remaining = (expiry - now) / 1e6
 				if remaining <= 0 then
 					cds[id] = nil
+					steps[id] = nil
 					set_item_wear(player, id, 0)
 				else
 					local frac = remaining / wob_abilities.registered[id].cooldown
-					set_item_wear(player, id,
-						math.max(1, math.min(65534, math.floor(frac * 65534))))
+					local step = math.max(1,
+						math.min(WEAR_STEPS, math.ceil(frac * WEAR_STEPS)))
+					if step ~= steps[id] then
+						steps[id] = step
+						set_item_wear(player, id,
+							math.floor(step / WEAR_STEPS * 65534))
+					end
 				end
 			end
 		end
@@ -368,6 +420,8 @@ core.register_on_leaveplayer(function(player)
 	mana[name] = nil
 	rage[name] = nil
 	cooldowns[name] = nil
+	wear_steps[name] = nil
+	slot_cache[name] = nil
 	resource_huds[name] = nil
 	flash_huds[name] = nil
 end)

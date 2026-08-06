@@ -112,8 +112,11 @@ end)
 
 core.register_on_player_inventory_action(function(player, action, inventory, info)
 	local touched_bags = {}
+	-- Only BAG SLOT changes can alter a content list's size — moves inside
+	-- a content list must not trigger the resize/refresh, or every item
+	-- move re-sends the formspec and resets the client's drag state.
 	local function note(listname)
-		local i = listname and (bag_slot_index(listname) or content_index(listname))
+		local i = listname and bag_slot_index(listname)
 		if i then
 			touched_bags[i] = true
 		end
