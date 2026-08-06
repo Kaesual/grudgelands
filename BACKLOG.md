@@ -35,7 +35,7 @@ window. Rules:
 | WP12 | Global map with fog of war (adapt the mcl_maps approach), shows discovered waypoints | open | WP2, WP17 |
 | WP13 | Starter/world content: capital & camp structures (schematics), race villages, spawn immunity | open | WP2 |
 | WP14 | Offhand & carried light: wob_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
-| WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | open — **next, before WP4** (spec: `docs/design/inventory_equipment.md`) | WP3 |
+| WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `wob_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
 
@@ -82,5 +82,19 @@ source of truth for WP4's damage pipeline; hp_max applied via the level
 pipeline (heal-on-levelup only for real level-ups — join deltas must not
 heal, properties reset every session). Commands: `/char`, `/class`,
 `/race`.
+
+**WP15 — Character screen & bags** (✅ 2026-08-06): `wob_inventory`.
+Equipment and bags are player-inventory lists (auto-persisted).
+Character sfinv page = homepage (nav reordered Character/Bags/Crafting):
+stat sheet, 3D model preview, slots Head/Chest/Legs/Feet/Offhand +
+2 reserved trinket slots — items declare their slot via group
+(`wob_equip_head` etc., accepted once WP5/WP14 items exist). Bags:
+4 slots, `bagslots` group (8/16/24) sizes the content list; a bag only
+leaves its slot when empty (a shrinking list would destroy items); no
+bags inside bags; no recipes yet (Tailor WP10 / vendor WP7, test via
+`/give`). **Engine gotcha documented in code**: multiple
+`register_allow_player_inventory_action` callbacks combine as
+OR-with-short-circuit — return nil when unconcerned, a number swallows
+all later callbacks.
 
 (Further WP details are added once the respective WP comes up.)
