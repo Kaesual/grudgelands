@@ -50,7 +50,7 @@ surface):
 
 | Zone | Location | Mob level |
 |------|----------|-----------|
-| Safe core | x-elongated belt (≈ ±600 × ±300) around the capital: spawn village + the three race villages | 1–10 |
+| Safe core | x-elongated belt (≈ ±600 × ±300): the three race capitals (§3; the central one is the faction seat) | 1–10 |
 | Inner ring | core edge … ~550 from the capital | 10–25 |
 | Outer ring | ~550 … toward flank/back coasts | 25–45 |
 | Flank & back coasts | shorelines at x≈±1500 / z≈±1700 | 45–60, elites |
@@ -118,21 +118,26 @@ The ocean is layered by distance from the coast:
 
 ## 3. Capitals
 
-One capital per faction, **in the continent center** (~(0, ±900), heart
-of the safe core), fully protected (indestructible). Contains:
+**Three race capitals per continent** (decided 2026-08-06, WoW model):
+each race's capital sits in the safe-core belt of its band, centrally
+in the race's own biome, fully protected (indestructible). The
+**central race's capital (Humans/Orcs, ~(0, ±900)) doubles as the
+faction seat**: the faction King (raid boss), guild manager, and
+faction-wide services live there. Each capital contains:
 
-- The **faction spawn** sits in a small starter village right next to
-  the capital (inside the safe core), not in the capital itself.
+- The **spawn point for characters of its race** — players start (and
+  respawn) in their own race's capital.
 - Class trainers + class POIs (e.g. special quest NPCs à la mount
   unlocks).
 - Traders, quest givers, job trainers.
 - A waypoint of the travel network (section 6).
 - Elite guards — a capital raid is a Phase-2+ group event, not a solo
-  gank. The faction **King** sits here as a heavily guarded raid boss
-  with top-tier loot rolls (see items/crafting design).
-- **Race districts, cosmetic only**: themed vendor/NPC groupings with
-  race flair — no hard borders or district mechanics. Mechanical race
-  perks hang on the individual vendor, not the district.
+  gank. The faction **King** sits in the faction seat as a heavily
+  guarded raid boss with top-tier loot rolls (see items/crafting
+  design).
+- Race flair through architecture and NPCs (per-race wood/build sets,
+  biomes TODO; elven capital = treehouses). Mechanical race perks hang
+  on individual vendors (§7).
 
 ## 4. Outposts & patrols
 
@@ -305,14 +310,20 @@ rosters).
 
 ## 9. Settlements & world life
 
-POI budget **per race band** (deterministic placement, WP13/WP18):
+POI budget **per race band** (deterministic anchors + patch-driven
+extras, WP13/WP18):
 
-- 1 **race village** in the safe core (section 7) — trainers, traders,
-  waypoint.
+- 1 **race capital** in the safe core (section 3) — spawn, trainers,
+  traders, waypoint; the central band's capital is the faction seat.
+- **Race-biome patches across the band** (section 8/biomes TODO): high
+  chance of a small village/settlement with NPCs per patch, lower
+  chance of a military outpost — settlements thin out and level up
+  with the rings.
 - 1 **flavor camp** in the inner ring (e.g. a race-owned miners' camp:
   small building, chests, 2–3 NPCs; doubles as the mining-zone anchor
   of section 4).
-- 1 **military outpost per ring** (section 4).
+- 1 **military outpost per ring** as the guaranteed minimum (section 4;
+  patch outposts come on top).
 - 1 **apex lair** in the outer ring (section 4b, staged).
 
 Life measures (cheap on a voxel budget): named NPCs with one-liner

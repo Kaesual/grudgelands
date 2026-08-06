@@ -11,9 +11,11 @@ game (not a mod pack), written in Lua.
   an ocean strait at z=0; everything beyond the continents is ocean,
   deadly far offshore — `docs/design/world.md` §1/§2b).
 - **Races, kept deliberately simple**: each faction consists of several
-  races. One shared capital per faction (possibly with race districts);
-  the faction territory is divided into race-flavored regions (e.g.
-  mountains = dwarves, forests = elves) with small race villages.
+  races. **Three race capitals per continent** in the safe-core belt
+  (players spawn in their race's capital); the central one doubles as
+  the faction seat (King, guild services). The faction territory is
+  divided into race-flavored regions (mountains = dwarves, forests =
+  elves, …) with additional patch villages and settlements.
   Race perks: vendor discounts among your own race, race-exclusive
   vendors, race-exclusive professions/recipes (Phase 2). Details:
   `docs/design/world.md`.
