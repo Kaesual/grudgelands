@@ -136,7 +136,7 @@ faction-wide services live there. Each capital contains:
   guarded raid boss with top-tier loot rolls (see items/crafting
   design).
 - Race flair through architecture and NPCs (per-race wood/build sets,
-  biomes TODO; elven capital = treehouses). Mechanical race perks hang
+  biomes_mobs.md §5; elven capital = treehouses). Mechanical race perks hang
   on individual vendors (§7).
 
 ## 4. Outposts & patrols
@@ -287,7 +287,7 @@ small villages, and perks around vendors/professions.
 ## 8. Nature biomes (shared wilderness)
 
 Decided 2026-08-06 (ring model); the full biome/mob catalog is being
-specced in `TODO-design-biomes.md` (blocker for WP18 mapgen + WP6 mob
+specced in `biomes_mobs.md` (implementation spec for WP18 mapgen + WP6 mob
 rosters).
 
 - Nature biomes are **unsettled** (no faction NPCs except passing
@@ -315,7 +315,7 @@ extras, WP13/WP18):
 
 - 1 **race capital** in the safe core (section 3) — spawn, trainers,
   traders, waypoint; the central band's capital is the faction seat.
-- **Race-biome patches across the band** (section 8/biomes TODO): high
+- **Race-biome patches across the band** (section 8, catalog: biomes_mobs.md): high
   chance of a small village/settlement with NPCs per patch, lower
   chance of a military outpost — settlements thin out and level up
   with the rings.

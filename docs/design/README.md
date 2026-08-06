@@ -20,5 +20,6 @@ also AGENTS.md "Documentation layers"):
 | `items_crafting.md` | Quality tiers, enchant budgets, crafting/upgrades, loot sources | in progress → `TODO-design-items-crafting.md` (before WP5/WP7) |
 | `classes.md` | Class kits: resources, MVP abilities (skill trees follow with WP11) | **decided** (2026-08-06) |
 | `economy.md` | Currency structure, money-flow bands, trader rules, vendor floor | **decided** (2026-08-06); price numbers open in `TODO-design-items-crafting.md` §4 |
-| `professions.md` | Profession structure, MVP roster, gathering split, vendor floor | **decided** (2026-08-06); recipes/materials open in items TODO; biome catalog: `TODO-design-biomes.md` |
+| `professions.md` | Profession structure, MVP roster, gathering split, vendor floor | **decided** (2026-08-06); recipes/materials open in items TODO; biome catalog: `biomes_mobs.md` |
 | `progression.md` | Leveling pace, reward cadence, death rules, quest structure | **partial** (2026-08-06): pace/cadence/death decided; quest structure open (before WP8/WP9) |
+| `biomes_mobs.md` | Full biome & mob catalog: 16 biomes, patch/settlement model, mob rosters, spawn params, race woods, material matrix | **decided** (2026-08-06) — implementation spec for WP18/WP6 |

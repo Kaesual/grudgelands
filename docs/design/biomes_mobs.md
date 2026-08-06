@@ -1,9 +1,9 @@
-# TODO — Biome & Mob Catalog (implementation spec)
+# Biomes & Mobs — Catalog
 
-Catalog authored 2026-08-06. This file is the full, decision-ready spec
-for **WP18** (biome/mapgen registrations) and **WP6** (mob rosters &
-spawn parameters). When approved, fold into `docs/design/` (new
-`biomes_mobs.md`), update BACKLOG, delete this file.
+**Decided spec** (authored + approved 2026-08-06, incl. the four open
+points — resolutions in §8). This is the implementation spec for
+**WP18** (biome/mapgen registrations) and **WP6** (mob rosters & spawn
+parameters).
 
 ## 0. Decided framework (recap, binding)
 
@@ -77,9 +77,9 @@ flanks/back), `underground` (y < −40).
 | 15 | wob_ocean | both | sand-bottom ocean | y < 1 | — |
 | 16 | wob_underground | both | caves (existing) | y ≤ −256 | depth axis |
 
-War coast is **not** its own biome: it uses the local band's settled
-biome plus a battlefield decoration set (§2, war-coast row). Open point
-OP-1 if a distinct scorched look is wanted later.
+War coast is **not** its own biome (decided 2026-08-06): it uses the
+local band's settled biome plus a battlefield decoration set (§2,
+war-coast row).
 
 ### 1.3 Engine registration table (mapgen v7, min_pos/max_pos cuboids)
 
@@ -193,7 +193,7 @@ T1 inner (10–25), T2 outer (25–45), T3 coast/deep (45–60).
 | wob_deep_jungle / wob_jungle_fringe | jungle + emergent_jungle (0.025), papyrus at water | vines/lianas (asset list); crimson lotus `[herb T3]`; wild melon `[food]` | fringe = same nodes/roster, Alliance side |
 | wob_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[herb T2]`; mushrooms `[food]` | shallow water pools (mud floor) |
 | wob_beach | — | shells (deco); stormkelp on coast-zone beaches only `[herb T3]` | |
-| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (OP-1) |
+| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided) |
 
 Herb summary (both continents can gather every tier — see §6):
 sunleaf T1 (meadows, savanna, elf forest, jungle edge), gravemoss T1
@@ -250,7 +250,7 @@ coast, 38–60) + wob_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Raptor — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.4 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 | paleotest velociraptor (**license verify**, OP-2) |
+| Raptor — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.4 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 | paleotest velociraptor (**verify license per file**; decided fallback: "Jungle Lynx" big-cat retint, same verb/drops) |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.4 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table) | territorial | day | 4.4 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
@@ -263,13 +263,13 @@ coast, 38–60) + wob_jungle_edge inner (10–25):
 |-----|------|-----------|-------|-------|-------|
 | Crocodile | ambushes (lurks still/in water, burst on approach) | 24 h | 4.4 (5.0 in water) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
 | Bog Ooze | engulfs (slow tank: touch damage aura) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
-| Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — OP-3 |
+| Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 
 **wob_beach / strait (L1–5 neutral — attack only when provoked):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | needs sourcing (OP-3) |
+| Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | deferred until a licensed model is sourced (decided); strait launches with Gull only |
 | Gull | flees | day | 3.4 fly | feather 1/1 | animalia song bird retexture |
 
 Coast-zone beaches (45–60) reuse Crab as an **elite** "Reef Lurker"
@@ -433,32 +433,25 @@ deliberately asymmetric (identity); base recipes accept `group:wood`.
 | Spider, Stone Golem | mobs_monster (TenPlus1) | MIT / CC BY 3.0 | drop-in mobs_redo, retint |
 | Hyena, Zebra, Eagle/Vulture, Leopard→Panther, Cobra→Serpent, Crocodile, Monkey→Ape | animalworld (mt-mods) | MIT / MIT (**sounds: verify per file, freesound CC**) | mobs_redo-native; texture pass toward 16px style |
 | Reindeer→Stag, Song bird→Gull/Crow | animalia (ElCeejo) | MIT / MIT | asset harvest, re-register on mobs_redo, remap anim frames |
-| Raptor | paleotest | GPL-3.0-only / **media license unclear — verify per file** | OP-2; fallback below |
+| Raptor | paleotest | GPL-3.0-only / **media license unclear — verify per file** | decided: verify first, Jungle Lynx fallback |
 | Bandit, Mirefolk | character.b3d + skins | LGPL 2.1 mesh; LotT skins CC BY-SA 3.0 | 2D skin work (mirefolk fully custom) |
-| Shore Crab | no verified source yet (check marinara / nssm in-repo) | — | OP-3 |
+| Shore Crab | no verified source yet (check marinara / nssm in-repo) | — | decided: deferred until sourced |
 | Trees/nodes | MTG media retints + 2 hand-built schematics | CC BY-SA 3.0 | see §5 |
 
 Never import without checking LICENSE in the source repo; document
 every file in the mod's LICENSE-media.md.
 
-## 8. Open decision points (few, flagged)
+## 8. Resolved decision points (2026-08-06)
 
-- **OP-1 War-coast look**: catalog ships it as local biome + battle
-  decorations. Alternative: dedicated scorched biome. Recommendation:
-  decorations only (cheaper, keeps band identity) — confirm.
-- **OP-2 Raptor model**: paleotest media license unverified. If it
-  fails verification: replace the Raptor family with "Jungle Lynx"
-  (second animalworld big-cat retint, same pack verb/drops).
-  Recommendation: verify first, lynx fallback.
-- **OP-3 Beach/swamp custom models**: Shore Crab has no verified
-  source; Mirefolk needs a custom skin. Both are low-stakes: strait can
-  launch with Gull only, swamp with Croc+Ooze only. Recommendation:
-  include Mirefolk (cheap 2D work, strong "murloc memory" + redundant
-  cloth source); source or defer the crab.
-- **OP-4 Jungle fringe nodes**: catalog reuses troll jungle nodes 1:1
-  on the Alliance fringe (max drop symmetry, zero new assets).
-  Alternative: pale "elven jungle" retint. Recommendation: 1:1.
+All four flagged points were decided per recommendation:
 
-Everything else above is proposed as final.
-
-**Decision: pending user review (catalog authored 2026-08-06).**
+1. **War coast** = local band biome + battlefield decoration overlay,
+   no separate biome.
+2. **Raptor**: verify the paleotest media license per file; on failure
+   replace the family with "Jungle Lynx" (big-cat retint, same pack
+   verb and drop table).
+3. **Mirefolk is in** (custom 2D skin work); **Shore Crab deferred**
+   until a licensed model is sourced — the strait launches with Gull
+   only.
+4. **Jungle fringe reuses the troll jungle nodes 1:1** on the Alliance
+   side (max drop symmetry, zero new assets).
