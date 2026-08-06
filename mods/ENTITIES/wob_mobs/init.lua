@@ -55,9 +55,12 @@ end
 
 -- Slow to `factor` (e.g. 0.5 = half speed) for `duration` seconds. While
 -- a root is active the slow is queued and its duration starts afterwards.
+-- Overlapping slows: the stronger factor and the longer remaining
+-- duration win (a weaker re-application must not lift a stronger snare).
 function wob_mobs.slow(ent, duration, factor)
 	save_speed_base(ent)
-	ent._wob_slow_factor = factor
+	ent._wob_slow_factor = math.min(ent._wob_slow_factor or factor, factor)
+	factor = ent._wob_slow_factor
 	ent._wob_slow_left = math.max(ent._wob_slow_left or 0, duration)
 	if (ent._wob_root_left or 0) <= 0 then
 		ent.walk_velocity = ent._wob_speed_base.walk * factor
@@ -154,20 +157,38 @@ function wob_mobs.register_mob(name, def)
 		end
 	end
 
+	-- Does the night truce currently protect this player from this mob?
+	-- (truce perk race, night time, and the player has not provoked THIS mob)
+	local function truce_active(self, player)
+		return wob_mobs.is_night()
+			and wob_core.get_race_perk(player, night_truce) ~= nil
+			and not (self.temp and self.temp.wob_provoked
+				and self.temp.wob_provoked[player:get_player_name()])
+	end
+
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
 		tick_speed_effects(self, dtime)
-		-- Undead night truce: drop unprovoked truce-race player targets.
-		-- (general_attack may briefly re-acquire; this runs every tick, so
-		-- the mob never actually closes in — same pattern as the
-		-- own-faction check below.)
-		if night_truce and self.state == "attack" and self.attack
-				and core.is_player(self.attack)
-				and wob_mobs.is_night()
-				and wob_core.get_race_perk(self.attack, night_truce)
-				and not (self.temp and self.temp.wob_provoked
-					and self.temp.wob_provoked[self.attack:get_player_name()]) then
-			self:stop_attack()
+		if night_truce then
+			-- Target-acquisition veto consumed by general_attack (WOB PATCH
+			-- in mobs/api.lua): the mob skips truce players and picks the
+			-- next-closest viable target instead. A function field is never
+			-- serialized into staticdata; do_custom runs before
+			-- general_attack on every step, so it is back after each
+			-- (re)activation in time.
+			if not self._wob_ignore_player then
+				self._wob_ignore_player = function(s, player)
+					return truce_active(s, player)
+				end
+			end
+			-- Belt and braces for acquisition paths that bypass
+			-- general_attack (group_attack pile-ons, do_attack calls):
+			-- drop unprovoked truce players again.
+			if self.state == "attack" and self.attack
+					and core.is_player(self.attack)
+					and truce_active(self, self.attack) then
+				self:stop_attack()
+			end
 		end
 		if faction then
 			-- Store the faction on the entity (every activation, first tick)

@@ -13,7 +13,7 @@ local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
 local cooldowns = {} -- player name -> {ability id -> expiry (us time)}
 local gcd_expiry = {} -- player name -> expiry (us time) of the global cooldown
-local targets = {} -- player name -> {obj, ally, expiry (us time)} soft target lock
+local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
 
@@ -87,33 +87,36 @@ local function affordable(player, cost)
 end
 
 --
--- Soft target lock. `ally` marks friendly targets (heal fallback); the
--- kits re-validate faction/range on every use, this only stores identity
+-- Soft target lock. Enemy and ally are separate slots — a Priest who
+-- Smites a mob must not lose their heal target over it. The kits
+-- re-validate faction/range/LOS on every use; this only stores identity
 -- and freshness.
 --
 
 function wob_abilities.set_target(player, obj, ally)
-	targets[player:get_player_name()] = {
+	local name = player:get_player_name()
+	targets[name] = targets[name] or {}
+	targets[name][ally and "ally" or "enemy"] = {
 		obj = obj,
-		ally = ally or false,
 		expiry = core.get_us_time() + wob_abilities.TARGET_LOCK * 1e6,
 	}
 end
 
--- Returns obj, is_ally — or nil when no lock, expired, or the object is
--- gone (mob died/unloaded, player left; invalid ObjectRefs return nil
--- from get_pos).
-function wob_abilities.get_target(player)
+-- Locked enemy (ally = false) or ally (ally = true) — nil when no lock,
+-- expired, or the object is gone (mob died/unloaded, player left;
+-- invalid ObjectRefs return nil from get_pos).
+function wob_abilities.get_target(player, ally)
 	local name = player:get_player_name()
-	local rec = targets[name]
+	local slot = ally and "ally" or "enemy"
+	local rec = targets[name] and targets[name][slot]
 	if not rec then
 		return nil
 	end
 	if core.get_us_time() > rec.expiry or not rec.obj:get_pos() then
-		targets[name] = nil
+		targets[name][slot] = nil
 		return nil
 	end
-	return rec.obj, rec.ally
+	return rec.obj
 end
 
 -- Effective targeting range of an ability for this player (elf passive:

@@ -273,9 +273,14 @@ small villages, and perks around vendors/professions.
   vendor discount is invisible for the first ten hours): **one visible
   passive per race** + the vendor discount as a bonus. Passives
   (implementation: WP19, race registry hook): Dwarf −20% fall damage ·
-  Troll +50% out-of-combat regen · Undead ignored by zombies at night ·
-  Orc +1 rage per hit taken · Elf +5 m ability range · Human +10% quest
-  XP. Plus **one race-exclusive vendor per race** (WP7).
+  Troll +50% out-of-combat regen · Undead ignored by zombies at night
+  (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
+  Elf +5 m ability range · Human +10% quest XP. Plus **one race-exclusive
+  vendor per race** (WP7). Implementation state (WP19): the troll regen
+  multiplier reaches mana today and MUST be consumed by WP21's HP regen
+  (rage decay is unaffected — a troll warrior only benefits from WP21
+  on); the human bonus is a latent hook (`wob_classes.get_xp_bonus`)
+  that activates when WP8's quests tag their XP with source="quest".
 - Race-exclusive professions/recipes (e.g. only elven tailors craft the
   top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.
 - **No class restrictions per race in the MVP** (only 3 classes — locks

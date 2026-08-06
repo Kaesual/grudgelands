@@ -57,8 +57,8 @@ local function enemy_target(user, pointed, def)
 		wob_abilities.set_target(user, pointed.ref, false)
 		return pointed.ref
 	end
-	local obj, ally = wob_abilities.get_target(user)
-	if obj and not ally and valid_enemy(user, obj)
+	local obj = wob_abilities.get_target(user, false)
+	if obj and valid_enemy(user, obj)
 			and in_lock_range(user, obj, def) and lock_los(user, obj) then
 		wob_abilities.set_target(user, obj, false) -- refresh the lock
 		return obj
@@ -68,15 +68,17 @@ end
 
 -- Friendly target for heals: pointed ally (locks it), otherwise the
 -- soft-locked ally if still valid and in range — this is what makes
--- healing moving allies workable — otherwise self.
+-- healing moving allies workable — otherwise self. Deliberately no LOS
+-- check on the fallback: healing the ally who just kited around a tree
+-- is the point of the lock.
 local function heal_target(user, pointed, def)
 	if pointed and pointed.type == "object" and pointed.ref
 			and valid_ally(user, pointed.ref) then
 		wob_abilities.set_target(user, pointed.ref, true)
 		return pointed.ref
 	end
-	local obj, ally = wob_abilities.get_target(user)
-	if obj and ally and valid_ally(user, obj)
+	local obj = wob_abilities.get_target(user, true)
+	if obj and valid_ally(user, obj)
 			and in_lock_range(user, obj, def) then
 		wob_abilities.set_target(user, obj, true) -- refresh the lock
 		return obj
@@ -133,26 +135,37 @@ end
 -- modifiers — fine while none exist.
 --
 
-local speed_fx_tokens = {} -- player name -> token of the active effect
+local speed_fx = {} -- player name -> {speed = n, expiry = us} of the active stage
 
 -- stages: list of {speed = n, jump = n, time = seconds}; restores to 1/1
--- after the last stage.
+-- after the last stage. A new effect replaces the running one UNLESS the
+-- currently active stage is stronger (lower speed) — a Hamstring must not
+-- lift an ally's Frost Nova root. Chain ownership is tracked by record
+-- identity (not a counter), so orphaned core.after chains from before a
+-- relog can never hijack a later effect.
 local function apply_player_speed_stages(target, stages)
 	local name = target:get_player_name()
-	local token = (speed_fx_tokens[name] or 0) + 1
-	speed_fx_tokens[name] = token
+	local active = speed_fx[name]
+	if active and core.get_us_time() < active.expiry
+			and active.speed < stages[1].speed then
+		return -- a stronger snare stage is running; keep it
+	end
+	local rec = {}
+	speed_fx[name] = rec
 	local run
 	run = function(i)
 		local p = core.get_player_by_name(name)
-		if not p or speed_fx_tokens[name] ~= token then
+		if not p or speed_fx[name] ~= rec then
 			return -- left, or a newer effect took over
 		end
 		local stage = stages[i]
 		if not stage then
 			p:set_physics_override({speed = 1, jump = 1})
-			speed_fx_tokens[name] = nil
+			speed_fx[name] = nil
 			return
 		end
+		rec.speed = stage.speed
+		rec.expiry = core.get_us_time() + stage.time * 1e6
 		p:set_physics_override({speed = stage.speed, jump = stage.jump or 1})
 		core.after(stage.time, function()
 			run(i + 1)
@@ -161,8 +174,11 @@ local function apply_player_speed_stages(target, stages)
 	run(1)
 end
 
+-- NB physics overrides are not persisted: a relog inside the window
+-- clears the root/slow. Accepted MVP caveat — reconnecting takes longer
+-- than any current effect (max 7 s), so it is no practical escape.
 core.register_on_leaveplayer(function(player)
-	speed_fx_tokens[player:get_player_name()] = nil
+	speed_fx[player:get_player_name()] = nil
 end)
 
 --
@@ -248,14 +264,18 @@ wob_abilities.register_ability({
 		if not target then
 			return false, "No target."
 		end
-		local ent = mob_ent(target)
-		if ent then
-			wob_mobs.slow(ent, 5, 0.5)
-		else
-			apply_player_speed_stages(target, {{speed = 0.5, time = 5}})
+		-- Damage first: a dodged Hamstring (player targets) must not snare.
+		local dealt = wob_core.deal_ability_damage(user, target, 2,
+			{threat_mult = 3})
+		if dealt > 0 then
+			local ent = mob_ent(target)
+			if ent then
+				wob_mobs.slow(ent, 5, 0.5)
+			else
+				apply_player_speed_stages(target, {{speed = 0.5, time = 5}})
+			end
+			burst(target:get_pos(), "mobs_blood.png", 4)
 		end
-		wob_core.deal_ability_damage(user, target, 2, {threat_mult = 3})
-		burst(target:get_pos(), "mobs_blood.png", 4)
 		return true
 	end,
 })

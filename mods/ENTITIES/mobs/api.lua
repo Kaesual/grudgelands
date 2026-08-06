@@ -1701,6 +1701,11 @@ function mob_class:general_attack()
 			or (self.type ~= "monster" and self.tamed) -- tamed animals must be provoked
 			or is_invisible(self, objs[n]:get_player_name())
 			or is_peaceful_player(objs[n])
+			-- WOB PATCH: per-entity player-target veto hook, set at runtime by
+			-- wob_mobs (undead night truce, WP19). Filtering here (instead of
+			-- stop_attack in a wrapper) lets the mob pick the next-closest
+			-- viable player instead of re-acquiring the vetoed one forever.
+			or (self._wob_ignore_player and self:_wob_ignore_player(objs[n]))
 			or (self.specific_attack and not check_for("player", self.specific_attack)) then
 				objs[n] = nil
 			end
