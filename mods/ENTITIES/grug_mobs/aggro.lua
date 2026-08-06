@@ -68,6 +68,15 @@ end
 -- _grug_leash_range (installed onto the entity by apply_aggro_fields above).
 grug_mobs.LEASH_RANGE = 40 -- m from the home position
 grug_mobs.LEASH_TIMEOUT = 15 -- s without player contact
+-- Floor for NAMED RARES (rares.lua). A rare walks a 2-3 point patrol route
+-- that is 150-250 m across, but `_grug_home` is only the point it happened to
+-- spawn at — with a family radius it would reset the instant it aggroes at a
+-- far waypoint, and a territorial family makes that fatal: Marrowclaw is a
+-- Plaguehide Bear (radius 20), so every pull more than 20 m from its spawn
+-- point would drop the target and heal it to full, i.e. an unkillable rare.
+-- The contact timeout above still applies, so this widens the leash without
+-- turning rares into world-spanning chasers.
+grug_mobs.RARE_LEASH_RANGE = 300
 local LEASH_INTERVAL = 1 -- s between checks (performance rule: throttled)
 
 -- Full reset: forget everyone, drop the target, heal up.
@@ -116,6 +125,9 @@ local function leash_check(self)
 	-- metatable) — vector.distance reads the components, that is fine, but
 	-- never compare positions with `==` (luanti-lua.md).
 	local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
+	if self._grug_rare_id then
+		range = math.max(range, grug_mobs.RARE_LEASH_RANGE)
+	end
 	if pos and home and vector.distance(pos, home) > range then
 		grug_mobs.leash_reset(self)
 	end

@@ -206,6 +206,50 @@ All files MIT, author **ElCeejo**.
 re-running the script reproduces the same pixels. |
 | `grug_mobs_blank.png` | Luanti engine | LGPL 2.1+ | 1×1 fully transparent PNG, taken from the engine; used for empty texture slots (skeleton armour/wield slots, sheared-fur slot). |
 
+### 6.1 Item icons + arrow sprite (WP6/T5) — CC0 1.0, Grudgelands project
+
+All 23 files below are **original 16×16 pixel art of this project**, not
+derived from any vendored or third-party asset, and are published under
+**CC0 1.0**. They are produced by one deterministic generator (no randomness
+— re-running reproduces every file byte-for-byte):
+
+```sh
+python3 tools/gen_mob_item_textures.py mods/ENTITIES/grug_mobs/textures
+```
+
+Each icon is authored inside that script as a 16×16 ASCII map plus a hex
+palette, so the art is reviewable in the source instead of only as a binary.
+The `_item_` files are the inventory images of the shared mob materials
+registered in `items.lua` (`docs/design/biomes_mobs.md` §6 base-material
+map); `grug_mobs_arrow.png` is the projectile sprite of
+`grug_mobs:arrow_entity` (skeleton archer).
+
+| File | Author | License | How it was made |
+|------|--------|---------|-----------------|
+| `grug_mobs_item_light_leather.png` | Grudgelands project | CC0 1.0 | generator, art `HIDE`, tan palette |
+| `grug_mobs_item_heavy_leather.png` | Grudgelands project | CC0 1.0 | generator, art `HIDE_STACK`, dark-brown palette |
+| `grug_mobs_item_scaled_hide.png` | Grudgelands project | CC0 1.0 | generator, art `SCALED`, green palette |
+| `grug_mobs_item_sleek_pelt.png` | Grudgelands project | CC0 1.0 | generator, art `PELT`, near-black palette |
+| `grug_mobs_item_linen_scrap.png` | Grudgelands project | CC0 1.0 | generator, art `SCRAP`, linen palette |
+| `grug_mobs_item_linen_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `BOLT`, pale-linen palette |
+| `grug_mobs_item_heavy_cloth.png` | Grudgelands project | CC0 1.0 | generator, art `BOLT`, olive-drab palette |
+| `grug_mobs_item_spider_silk.png` | Grudgelands project | CC0 1.0 | generator, art `SKEIN`, white palette |
+| `grug_mobs_item_venom_gland.png` | Grudgelands project | CC0 1.0 | generator, art `ORGAN`, toxic-green palette |
+| `grug_mobs_item_venom_sac.png` | Grudgelands project | CC0 1.0 | generator, art `TEARDROP`, violet palette |
+| `grug_mobs_item_fang.png` | Grudgelands project | CC0 1.0 | generator, art `FANG`, ivory palette |
+| `grug_mobs_item_croc_tooth.png` | Grudgelands project | CC0 1.0 | generator, art `TOOTH`, yellowed-ivory palette |
+| `grug_mobs_item_raptor_claw.png` | Grudgelands project | CC0 1.0 | generator, art `HOOK_CLAW`, black palette |
+| `grug_mobs_item_bear_claw.png` | Grudgelands project | CC0 1.0 | generator, art `FUR_CLAW`, bone claw + brown fur |
+| `grug_mobs_item_feather.png` | Grudgelands project | CC0 1.0 | generator, art `FEATHER`, white palette |
+| `grug_mobs_item_sharp_feather.png` | Grudgelands project | CC0 1.0 | generator, art `FEATHER`, steel-slate palette |
+| `grug_mobs_item_stone_core.png` | Grudgelands project | CC0 1.0 | generator, art `GEODE`, grey rock + amber core |
+| `grug_mobs_item_slime_gel.png` | Grudgelands project | CC0 1.0 | generator, art `BLOB`, bog-green palette |
+| `grug_mobs_item_shiny_scale.png` | Grudgelands project | CC0 1.0 | generator, art `SCALE`, teal palette |
+| `grug_mobs_item_ape_hair.png` | Grudgelands project | CC0 1.0 | generator, art `TUFT`, dark-brown palette |
+| `grug_mobs_item_bone.png` | Grudgelands project | CC0 1.0 | generator, art `BONE`, bone-white palette |
+| `grug_mobs_item_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_BUNDLE` (three bound arrows) |
+| `grug_mobs_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_PROJECTILE`, projectile sprite |
+
 ---
 
 ## 7. Note: paleotest was NOT used (Raptor → Jungle Lynx)

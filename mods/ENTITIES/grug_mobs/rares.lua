@@ -401,3 +401,62 @@ grug_mobs.register_rare("ashmaw", {
 	respawn_min = 7200,
 	respawn_max = 14400,
 })
+
+--
+-- The two forest-pair rares (biomes_mobs §3.3: Old Whitefang ~L32 in the
+-- A-center deep forest / outer, Marrowclaw ~L35 in the T-west bone forest /
+-- outer)
+--
+-- Same rule as above: the level is a property of WHERE the route runs.
+-- Field math from grug_core/init.lua (radial_n + level_at_n):
+--
+--   dx = max(|x| - 300, 0)              CORE_X_HALF = 300
+--   dz = | |z| - 900 |                  SEAT_Z = 900
+--   n  = sqrt((dx/1150)^2 + (dz/f)^2)   FIELD_X = 1150, f = 1000 on the
+--                                       strait side (|z| < 900), 775 behind
+--   L  = 25 + (n - 0.55)/0.35 * 20      for 0.55 < n <= 0.90
+--
+-- Zone check for all six points: n > 0.55 = "outer"; none of them is in the
+-- coast band (needs |x| > 1350 or |z| > 1550) and all have |z| > 600, so the
+-- war-coast cap does not apply either.
+--
+
+-- Old Whitefang — Accord centre, deep-forest back country.
+--   (200, -1400): dx 0, dz 500 -> n 0.6452 -> L 30.4 -> 30
+--   (300, -1440): dx 0, dz 540 -> n 0.6968 -> L 33.4 -> 33
+--   (150, -1425): dx 0, dz 525 -> n 0.6774 -> L 32.3 -> 32
+-- Average ~32, exactly the §3.3 target. The route deliberately sits at
+-- |z| ~1400 rather than nearer the coast: further out the field climbs
+-- past 39. That band is the meadows/deep-forest voronoi overlap (§1.3
+-- "settled inner, patchy middle, wild outer"), i.e. forest patches — which
+-- is what the broadcast hint promises and where grug_mobs:wolf spawns
+-- anyway (forest litter AND grass are in its whitelist).
+-- No `texture`: the base wolf skin is the grey-white one, and levels.lua
+-- lays the rare violet tint over it.
+grug_mobs.register_rare("old_whitefang", {
+	name = "Old Whitefang",
+	mob = "grug_mobs:wolf",
+	route = {{x = 200, z = -1400}, {x = 300, z = -1440}, {x = 150, z = -1425}},
+	biome_hint = "the deep forest",
+	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
+	respawn_max = 14400, -- 4 h
+})
+
+-- Marrowclaw — Throng west, bone forest (grug_bone_forest cuboid
+-- x -1500..-750, §1.3).
+--   (-1050, 1150): dx 750, dz 250 -> n 0.7276 -> L 35.2 -> 35
+--   (-1120, 1060): dx 820, dz 160 -> n 0.7423 -> L 36.0 -> 36
+--   ( -980, 1230): dx 680, dz 330 -> n 0.7287 -> L 35.2 -> 35
+-- Average ~35, the §3.3 target. NB the level out here is driven by the x
+-- axis, not by z: at |z| ~1000 the dz term is small, so the route has to sit
+-- around |x| ~1050 to reach L35 — closer to the capital (|x| ~900) the field
+-- is still ~24, which is why the route is further west than a first guess.
+-- No `texture`: grug_mobs:plaguehide_bear already wears the right skin.
+grug_mobs.register_rare("marrowclaw", {
+	name = "Marrowclaw",
+	mob = "grug_mobs:plaguehide_bear",
+	route = {{x = -1050, z = 1150}, {x = -1120, z = 1060}, {x = -980, z = 1230}},
+	biome_hint = "the bone forest",
+	respawn_min = 7200,
+	respawn_max = 14400,
+})

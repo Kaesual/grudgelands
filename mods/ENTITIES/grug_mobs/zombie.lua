@@ -33,7 +33,10 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	visual = "mesh",
 	mesh = "grug_mobs_zombie.b3d",
 	textures = {{"grug_mobs_zombie.png"}},
-	visual_size = {x = 3, y = 3},
+	-- Mesh scale rule (see boar.lua): the mesh measures 18.0 model units =
+	-- 1.80 nodes at size 1, i.e. exactly the 1.89 box below. The shipped 3
+	-- drew a 5.4-node zombie around a player-sized hitbox.
+	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.89, 0.3},
 	makes_footstep_sound = true,
 
@@ -44,8 +47,11 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 		punch_start = 50, punch_end = 59, punch_speed = 20,
 	},
 
+	-- Zombie table (biomes_mobs.md §3.1): flesh 1/1, linen scrap 1/2,
+	-- steel ingot 1/10.
 	drops = {
 		{name = "grug_mobs:zombie_flesh", chance = 1, min = 1, max = 2},
+		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
 		{name = "default:steel_ingot", chance = 10, min = 1, max = 1},
 	},
 
@@ -57,9 +63,13 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	light_damage_max = 15,
 })
 
--- At night on the six settled biome tops (whitelist matches biomes.lua —
--- see the boar note); zone-gated like the boar. Bare stone is gone from the
--- list: no land biome has a stone surface any more.
+-- At night on the settled biome tops (whitelist matches biomes.lua — see the
+-- boar note); zone-gated like the boar. Bare stone is gone from the list: no
+-- land biome has a stone surface any more.
+--
+-- §4 calibration row: interval 20 / chance 1600 / aoc 4, max light 5.
+-- FIVE tops, not six: grug_nodes:blight_dirt has its own 24 h row below and
+-- would otherwise be covered by two ABMs at night.
 mobs:spawn({
 	name = "grug_mobs:zombie",
 	nodes = {
@@ -67,14 +77,42 @@ mobs:spawn({
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
-		"grug_nodes:blight_dirt", -- grug_blight
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 	},
-	max_light = 7,
+	max_light = 5,
 	day_toggle = false,
-	interval = 30,
-	chance = 3000,
-	active_object_count = 3,
+	interval = 20,
+	chance = 1600,
+	active_object_count = 4,
 	min_height = 0,
-	max_height = 300,
+	max_height = 200,
+})
+
+-- The blight identity (biomes_mobs.md §3.1 "in grug_blight: 24 h — Undead
+-- identity", §4 light column "blight: any"): on grug_nodes:blight_dirt the
+-- zombie spawns around the clock, so NO light gate and NO day_toggle.
+-- Everything else is the same row — same aoc budget (mobs_redo counts the
+-- cap per entity name, so both rows share it), same zone gating via
+-- _grug_spawn_zones above (core, inner, war_coast).
+--
+-- The def's daylight burn would make a 24 h row pointless (spawn at noon,
+-- die at noon), so a blight zombie is exempted from it: mobs_redo reads
+-- `self.light_damage` per entity on every environment tick (api.lua:1056),
+-- and a plain number field persists in staticdata — so this survives
+-- unload/reload with the mob and touches nobody else's zombie.
+mobs:spawn({
+	name = "grug_mobs:zombie",
+	nodes = {"grug_nodes:blight_dirt"}, -- grug_blight
+	interval = 20,
+	chance = 1600,
+	active_object_count = 4,
+	min_height = 0,
+	max_height = 200,
+	-- mobs_redo calls this as on_spawn(luaentity, pos) (api.lua:3686); the
+	-- entity is nil if core.add_entity failed.
+	on_spawn = function(ent)
+		if ent then
+			ent.light_damage = 0
+		end
+	end,
 })
