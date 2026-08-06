@@ -14,7 +14,6 @@ grug_core.CONTINENT_X_HALF = 1500
 grug_core.CONTINENT_Z_MIN = 100 -- strait: |z| < 100 is always water
 grug_core.CONTINENT_Z_MAX = 1700
 
-grug_core.WORLD_HALF_WIDTH_X = 2000 -- TEMP: removed by WP18 T2 (structures.lua rework)
 grug_core.NEUTRAL_HALF_WIDTH = 64 -- TEMP: removed by WP18 T4 (biomes.lua rework)
 
 -- Distance from a continent rectangle at which the coastal ocean ends and
@@ -82,16 +81,12 @@ grug_core.factions = {
 		name = "Accord",
 		color = "#3f6fce",
 		seat_race = "human", -- capital of the faction seat (world.md §3)
-		-- TEMP: removed by WP18 T2 (structures.lua rework)
-		spawn = vector.new(0, grug_core.CAMP_PLATFORM_Y + 1, -SEAT_Z),
 	},
 	throng = {
 		id = "throng",
 		name = "Throng",
 		color = "#c41e3a",
 		seat_race = "orc",
-		-- TEMP: removed by WP18 T2 (structures.lua rework)
-		spawn = vector.new(0, grug_core.CAMP_PLATFORM_Y + 1, SEAT_Z),
 	},
 }
 

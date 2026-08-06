@@ -2,8 +2,9 @@
 -- system on mapgen v7 and confine each biome to its territory/race region
 -- with the biome definition's min_pos/max_pos cuboid limits (C++-side, fast,
 -- ores/decorations/dungeons keep working). A small register_on_generated
--- pass adds only what biomes cannot express: the spawn camp platforms and
--- the east-west border mountain wall.
+-- pass adds only what biomes cannot express: the continent ocean mask (soft
+-- noisy coastlines, everything outside the two continent rectangles forced
+-- to water) and the race capital platforms.
 --
 -- default's own biomes/ores/decorations are NOT registered (see the tail of
 -- mods/BASE/default/mapgen.lua): unresolved biome names in ore/decoration
