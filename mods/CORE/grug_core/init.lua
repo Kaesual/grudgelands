@@ -29,11 +29,19 @@ local SEAT_Z = (Z_MIN + Z_MAX) / 2 -- 900
 -- side by side): inside |x| <= CORE_X_HALF the radial field ignores x.
 local CORE_X_HALF = 300
 -- Radial field scale: n = 1 (level 60) lands just short of the flank and
--- back coastlines, so the outermost land is elite everywhere.
+-- back coastlines, so the outermost land is elite everywhere. The z axis is
+-- ASYMMETRIC: on the strait side of the seat the field must stretch (the
+-- inner ring reaches down to z ~350, biomes_mobs §1.5 — otherwise players
+-- walking to the 20-30 war coast would cross a lvl-35 belt first), while on
+-- the back side the coast at dz = 800 has to reach 60.
 local FIELD_X = 1150
-local FIELD_Z = 775
+local FIELD_Z_FRONT = 1000 -- strait side of the seat (|z| < SEAT_Z)
+local FIELD_Z_BACK = 775 -- back side (|z| >= SEAT_Z)
 -- War coast: the strait-facing band of a continent (world.md §1).
 local WAR_COAST_Z = 300
+-- The war-coast cap fades out as a ramp up to here, so the capped band
+-- joins the radial field without a step (biomes_mobs §1.5: no >5 jumps).
+local WAR_COAST_FADE_Z = 600
 -- Coast band: the last nodes before a flank (|x|) or back (|z|) shoreline.
 local COAST_BAND = 150
 -- Below this depth every position counts as underground (cave content).
@@ -152,11 +160,14 @@ end
 
 -- Radial field value around the faction seat of the nearer continent:
 -- 0 at the seat, ~1 at the flank/back coastlines. The core belt is
--- elongated along x, so the three race capitals share one low-level zone.
+-- elongated along x, so the three race capitals share one low-level zone;
+-- the z axis uses the wider FRONT scale toward the strait (see above).
 local function radial_n(pos)
+	local az = math.abs(pos.z)
 	local dx = math.max(math.abs(pos.x) - CORE_X_HALF, 0)
-	local dz = math.abs(math.abs(pos.z) - SEAT_Z)
-	return math.sqrt((dx / FIELD_X) ^ 2 + (dz / FIELD_Z) ^ 2)
+	local dz = math.abs(az - SEAT_Z)
+	local field_z = az < SEAT_Z and FIELD_Z_FRONT or FIELD_Z_BACK
+	return math.sqrt((dx / FIELD_X) ^ 2 + (dz / field_z) ^ 2)
 end
 
 -- Zone name at pos (the `_grug_spawn_zones` vocabulary, biomes_mobs §1.1):
@@ -214,6 +225,17 @@ local function level_at_n(n)
 	return level_anchors[#level_anchors].level
 end
 
+-- War-coast cap (world.md §1): the strait-facing PvP stage stays at 20-30
+-- up to |z| = WAR_COAST_Z, then the cap RAMPS to 60 until WAR_COAST_FADE_Z,
+-- where it becomes a no-op. Without that ramp the capped band ended in an
+-- 8-30 level step at |z| = 300 (biomes_mobs §1.5: no jumps > 5).
+local function war_coast_cap(az)
+	if az <= WAR_COAST_Z then
+		return 20 + (az - Z_MIN) / (WAR_COAST_Z - Z_MIN) * 10
+	end
+	return 30 + (az - WAR_COAST_Z) / (WAR_COAST_FADE_Z - WAR_COAST_Z) * 30
+end
+
 -- Mob level for a hostile spawned at pos (1..60), or nil on the open water
 -- surface (no leveled hostiles there; the deep-sea guards of world.md §2b
 -- are hand-set). Radial field from the faction seat, then the two caps of
@@ -228,11 +250,8 @@ function grug_core.mob_level_at(pos)
 		return nil
 	end
 	local level = level_at_n(radial_n(pos))
-	if not ocean and az > Z_MIN and az <= WAR_COAST_Z then
-		-- War coast: the PvP stage stays mid level (~20-30) even though the
-		-- radial field would put it in elite range.
-		level = math.min(level,
-			20 + (az - Z_MIN) / (WAR_COAST_Z - Z_MIN) * 10)
+	if not ocean and az > Z_MIN and az <= WAR_COAST_FADE_Z then
+		level = math.min(level, war_coast_cap(az))
 	elseif az <= Z_MIN then
 		level = math.min(level, 5) -- strait & beaches: harmless wildlife
 	end
@@ -252,6 +271,14 @@ function grug_core.guard_level_at(pos)
 	end
 	local level = math.max(65 - 45 * radial_n(pos),
 		(grug_core.mob_level_at(pos) or 0) + 5)
+	-- Elite city watch floor: world.md §1/§3 promise 60+ in ALL three race
+	-- capitals and across the safe core, but the plain inverse field only
+	-- reaches ~55 at the side capitals (x = +-550). zone_at runs on a
+	-- SURFACE copy of pos — underground positions report "underground" and
+	-- would otherwise lose the floor under the capitals.
+	if grug_core.zone_at(vector.new(pos.x, 8, pos.z)) == "core" then
+		level = math.max(level, 60)
+	end
 	return math.round(math.min(70, math.max(20, level)))
 end
 

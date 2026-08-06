@@ -51,6 +51,11 @@ war coast z 100..300. Race bands (fixed compass): west x ≤ −500,
 center −700..700, east ≥ 500 — Accord W/C/E = Dwarf/Human/Elf, Throng
 W/C/E = Undead/Orc/Troll.
 
+The radial level field is **z-asymmetric** (WP18): the strait-facing
+front uses the wider scale 1000, the back side 775, so the approach to
+the capped war coast stays low-level instead of peaking above it —
+measured core belt ≈ x ±645, z 600..1133.
+
 **`_grug_spawn_zones` names (WP18 replaced borderland/starter/
 midlands):** `strait` (beach z 0..±100), `war_coast` (±100..±300),
 `core`, `inner`, `outer`, `coast` (last ~150 nodes before shoreline at
@@ -192,7 +197,7 @@ Walking from the village belt (core, L1–10) in any direction:
 | Dwarf/Undead village → flank coast (west) | core 1–10 → inner pine-hills/blight 10–25 (x −500..−850) → crags/bone-forest 25–45 (−850..−1400) → coast 45–60 | continuous |
 | Human/Orc village → back coast | core 1–10 → inner meadows/savanna 10–25 → deep-forest/badlands 25–45 (z 1250..1550) → coast 45–60 | continuous |
 | Elf/Troll village → flank coast (east) | core 1–10 → inner elf-forest/jungle-edge 10–25 → deep-forest+fringe/deep-jungle 25–45 → jungle coast 45–60 | continuous |
-| any village → strait | core 1–10 → inner 10–25 (z 600..350) → war coast 20–30 (z 300..100) → strait beach 1–5 neutral | continuous (war-coast cap) |
+| any village → strait | core 1–10 (z 900..600) → inner 10–25 (z 600..350) → war coast 27→20, falling toward the strait (cap ramp 600..100) → strait beach 1–5 neutral | continuous down to z 100; the strait step is a DESIGNED break (neutral wildlife, not a difficulty ramp) |
 | lateral (band to band) | same radial field on both sides of a band border | no jump by construction |
 | swamp pockets | low terrain inside outer ring → 25–45 by position | inside band |
 | depth | caves +1 level per 20 nodes below y=0 | combat_stats §3 |

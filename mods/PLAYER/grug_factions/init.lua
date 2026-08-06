@@ -95,15 +95,18 @@ end
 -- Teleports (async, after emerge) to the capital of the player's own race
 -- (world.md §3; the faction seat while no race is chosen yet). The platform
 -- height is decided during generation of the capital chunks, so the spawn
--- position is re-read AFTER the emerge completes.
+-- position is re-read AFTER the emerge completes. The race is re-resolved
+-- inside the callback as well: character creation picks the race right
+-- after the faction, so a slow faction-seat emerge could otherwise finish
+-- after the race-capital emerge and yank the fresh character back to the
+-- seat. Re-resolving makes the LAST information win, whatever the order.
 function grug_factions.teleport_to_spawn(player)
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return
 	end
 	local name = player:get_player_name()
-	local race = grug_core.get_player_race(name)
-	local spawn = grug_core.get_spawn_pos(id, race)
+	local spawn = grug_core.get_spawn_pos(id, grug_core.get_player_race(name))
 	core.emerge_area(
 		vector.offset(spawn, -16, -24, -16),
 		vector.offset(spawn, 16, 80, 16),
@@ -113,6 +116,7 @@ function grug_factions.teleport_to_spawn(player)
 			end
 			local p = core.get_player_by_name(name)
 			if p then
+				local race = grug_core.get_player_race(name)
 				p:set_pos(grug_core.find_surface(
 					grug_core.get_spawn_pos(id, race)))
 			end
