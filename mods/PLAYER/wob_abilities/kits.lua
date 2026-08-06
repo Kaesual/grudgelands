@@ -242,8 +242,10 @@ wob_abilities.register_ability({
 		end
 		local amount = math.floor(weapon_damage * 1.5)
 			+ wob_classes.get_melee_bonus(user)
+		-- Position BEFORE the damage: a lethal punch invalidates mob refs.
+		local tpos = target:get_pos()
 		wob_core.deal_ability_damage(user, target, amount, {threat_mult = 3})
-		burst(target:get_pos(), "mobs_blood.png", 6)
+		burst(tpos, "mobs_blood.png", 6)
 		return true
 	end,
 })
@@ -264,17 +266,20 @@ wob_abilities.register_ability({
 		if not target then
 			return false, "No target."
 		end
+		-- Capture BEFORE the damage: a lethal punch removes a mob without a
+		-- die animation synchronously, invalidating the ObjectRef.
+		local ent = mob_ent(target)
+		local tpos = target:get_pos()
 		-- Damage first: a dodged Hamstring (player targets) must not snare.
 		local dealt = wob_core.deal_ability_damage(user, target, 2,
 			{threat_mult = 3})
 		if dealt > 0 then
-			local ent = mob_ent(target)
 			if ent then
-				wob_mobs.slow(ent, 5, 0.5)
-			else
+				wob_mobs.slow(ent, 5, 0.5) -- harmless no-op on a removed mob
+			elseif target:get_hp() > 0 then
 				apply_player_speed_stages(target, {{speed = 0.5, time = 5}})
 			end
-			burst(target:get_pos(), "mobs_blood.png", 4)
+			burst(tpos, "mobs_blood.png", 4)
 		end
 		return true
 	end,
