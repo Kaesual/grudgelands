@@ -53,17 +53,18 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	light_damage_max = 15,
 })
 
--- At night on every race-region surface plus exposed stone (whitelist
--- matches biomes.lua — see the boar note); zone-gated like the boar.
+-- At night on the six settled biome tops (whitelist matches biomes.lua —
+-- see the boar note); zone-gated like the boar. Bare stone is gone from the
+-- list: no land biome has a stone surface any more.
 mobs:spawn({
 	name = "grug_mobs:zombie",
 	nodes = {
-		"default:dirt_with_grass",
-		"default:dirt_with_coniferous_litter",
-		"default:dirt_with_rainforest_litter",
-		"default:dry_dirt_with_dry_grass",
-		"default:dirt",
-		"default:stone",
+		"default:dirt_with_grass", -- grug_meadows
+		"default:dirt_with_coniferous_litter", -- grug_pine_hills
+		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
+		"default:dry_dirt_with_dry_grass", -- grug_savanna
+		"grug_nodes:blight_dirt", -- grug_blight
+		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 	},
 	max_light = 7,
 	day_toggle = false,

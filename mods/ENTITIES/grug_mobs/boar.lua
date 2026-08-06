@@ -52,19 +52,20 @@ grug_mobs.register_mob("grug_mobs:boar", {
 	light_damage = 0,
 })
 
--- Spawns on every race-region surface (biomes.lua) so ALL low-level areas
--- have day mobs — the old dirt_with_grass-only whitelist left the whole
--- Throng side empty. Bare dirt covers the blight until WP6 brings themed
--- mobs per region; the zone gating above keeps boars in core and inner
--- ring, out of the higher-level outer ring and coasts.
+-- Spawns on the signature top nodes of all six SETTLED biomes (biomes.lua,
+-- docs/design/biomes_mobs.md §4: the whitelist IS the biome gating), so
+-- every low-level area of both continents has day mobs. The zone gating
+-- above keeps boars in the core and inner ring, out of the higher-level
+-- outer ring and coasts.
 mobs:spawn({
 	name = "grug_mobs:boar",
 	nodes = {
-		"default:dirt_with_grass",
-		"default:dirt_with_coniferous_litter",
-		"default:dirt_with_rainforest_litter",
-		"default:dry_dirt_with_dry_grass",
-		"default:dirt",
+		"default:dirt_with_grass", -- grug_meadows
+		"default:dirt_with_coniferous_litter", -- grug_pine_hills
+		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
+		"default:dry_dirt_with_dry_grass", -- grug_savanna
+		"grug_nodes:blight_dirt", -- grug_blight
+		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 	},
 	min_light = 10,
 	interval = 30,

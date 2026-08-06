@@ -14,8 +14,6 @@ grug_core.CONTINENT_X_HALF = 1500
 grug_core.CONTINENT_Z_MIN = 100 -- strait: |z| < 100 is always water
 grug_core.CONTINENT_Z_MAX = 1700
 
-grug_core.NEUTRAL_HALF_WIDTH = 64 -- TEMP: removed by WP18 T4 (biomes.lua rework)
-
 -- Distance from a continent rectangle at which the coastal ocean ends and
 -- the open sea (deadly guards, world.md §2b) begins.
 grug_core.OCEAN_COASTAL_WIDTH = 1500
