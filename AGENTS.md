@@ -34,11 +34,20 @@ strictly separated:
    relevant docs/research/ briefings.
 2. **One WP per session** is the norm — coherent, testable, committed.
    Offload large explorations to subagents, keep the main context lean.
-3. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),
-   `tools/sync_to_luanti.sh`, commit, update BACKLOG status + ROADMAP
-   checkboxes. Anything future sessions need to know goes into
-   AGENTS.md/docs — not just the chat.
-4. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
+3. **WPs run autonomously on their own branch** (`wp<NN>-<slug>`) per
+   the workflow contract in
+   **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**:
+   Fable orchestrates and implements the hard parts, simple tasks go to
+   Opus subagents, and **at least one full Opus code review per WP is
+   mandatory** (checklist in the workflow doc, incl. the
+   `docs/research/luanti-lua.md` rules). Merge to main only after a
+   clean review; every completion message ends with a runtime test plan
+   for the user.
+4. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),
+   `tools/sync_to_luanti.sh` (from main, after merge), commit, update
+   BACKLOG status + ROADMAP checkboxes. Anything future sessions need
+   to know goes into AGENTS.md/docs — not just the chat.
+5. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
    errors via `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 
 ## Project structure

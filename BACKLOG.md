@@ -45,6 +45,20 @@ window. Rules:
 | WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed), NPC repair for gold, tier-scaled costs | open (spec: `docs/design/economy.md` §4) | WP5, WP7 |
 | WP23 | Apex world bosses: one dragon POI per continent (stationary arena fight, telegraphs, hoard + respawn timer); enemy-dragon raid trophy and per-region apex kits follow (Phase 2) | open (spec: `docs/design/world.md` §4b) | WP6 |
 
+### Readiness (2026-08-06)
+
+**Ready now** (no design blockers, deps done): WP11 (talents — spec
+progression.md §2), WP14 (offhand), WP17 (travel), WP19 (kit tuning),
+WP20 (party), WP21 (recovery/innkeeper).
+
+**Blocked, by what**:
+- WP18, WP6 ← `TODO-design-biomes.md` (catalog being authored)
+- WP5, WP7, WP10, WP22 ← `TODO-design-items-crafting.md` (next design
+  round; WP22 additionally needs WP5 gear to exist)
+- WP8, WP9 ← `progression.md` §4 (quest structure/level gates)
+- WP12 ← WP17; WP13 ← WP18 + biomes; WP16 ← WP7; WP23 ← WP6
+- Housing WP (unscheduled) ← `TODO-design-housing.md`
+
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
   between faction and class; race perks follow with WP7/WP10).
