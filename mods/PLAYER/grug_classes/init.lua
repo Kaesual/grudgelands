@@ -92,6 +92,14 @@ function grug_classes.set_race(player, id)
 	return true
 end
 
+-- Race resolver for grug_core (race capitals / spawn points); only online
+-- players can be resolved, everyone else counts as raceless. Stub override,
+-- same pattern as grug_core.get_player_faction.
+function grug_core.get_player_race(name)
+	local player = core.get_player_by_name(name or "")
+	return player and grug_classes.get_race(player) or nil
+end
+
 --
 -- MVP classes (combat_stats.md §1): base 10/10/10, 4 growth points per
 -- level. resource = "mana" | "rage" (HUD/regen lands with WP4).

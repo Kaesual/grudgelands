@@ -5,9 +5,10 @@ grug_mobs = {}
 --   def._grug_xp_reward   — XP for the killer (player)
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
---   def._grug_spawn_zones — list of ring names (grug_core.zone_at) the mob may
---                          spawn in; nil = anywhere (WP6 replaces this with
---                          full level-tier gating)
+--   def._grug_spawn_zones — list of zone names (grug_core.zone_at: core,
+--                          inner, outer, coast, war_coast, strait, ocean,
+--                          underground) the mob may spawn in; nil = anywhere
+--                          (WP6 replaces this with full level-tier gating)
 --
 
 local spawn_zones = {} -- mob name -> set of allowed zone names

@@ -92,16 +92,18 @@ function grug_factions.set_faction(player, id)
 	return true
 end
 
--- Teleports (async, after emerge) to the faction camp. The platform height
--- is decided during generation of the camp chunks, so the spawn position is
--- re-read AFTER the emerge completes.
+-- Teleports (async, after emerge) to the capital of the player's own race
+-- (world.md §3; the faction seat while no race is chosen yet). The platform
+-- height is decided during generation of the capital chunks, so the spawn
+-- position is re-read AFTER the emerge completes.
 function grug_factions.teleport_to_spawn(player)
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return
 	end
-	local spawn = grug_core.get_spawn_pos(id)
 	local name = player:get_player_name()
+	local race = grug_core.get_player_race(name)
+	local spawn = grug_core.get_spawn_pos(id, race)
 	core.emerge_area(
 		vector.offset(spawn, -16, -24, -16),
 		vector.offset(spawn, 16, 80, 16),
@@ -111,7 +113,8 @@ function grug_factions.teleport_to_spawn(player)
 			end
 			local p = core.get_player_by_name(name)
 			if p then
-				p:set_pos(grug_core.find_surface(grug_core.get_spawn_pos(id)))
+				p:set_pos(grug_core.find_surface(
+					grug_core.get_spawn_pos(id, race)))
 			end
 		end)
 end
@@ -191,13 +194,14 @@ core.register_on_joinplayer(function(player)
 	end
 end)
 
--- Always respawn at the own faction camp.
+-- Always respawn in the own race's capital.
 core.register_on_respawnplayer(function(player)
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return
 	end
-	player:set_pos(grug_core.get_spawn_pos(id))
+	local race = grug_core.get_player_race(player:get_player_name())
+	player:set_pos(grug_core.get_spawn_pos(id, race))
 	grug_factions.teleport_to_spawn(player)
 	return true
 end)

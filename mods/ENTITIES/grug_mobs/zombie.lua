@@ -1,11 +1,11 @@
--- Zombie: night mob of the starter zones. Tougher and stronger than the
--- boar, burns in daylight.
+-- Zombie: night mob of the safe core, inner ring and war coast. Tougher
+-- and stronger than the boar, burns in daylight.
 
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Zombie",
 	type = "monster",
 	_grug_xp_reward = 35,
-	_grug_spawn_zones = {"borderland", "starter", "midlands"},
+	_grug_spawn_zones = {"core", "inner", "war_coast"},
 	-- Undead race passive (world.md §7): ignored at night unless provoked.
 	_grug_night_truce_perk = "zombie_night_truce",
 

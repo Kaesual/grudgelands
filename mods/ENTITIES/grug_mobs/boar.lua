@@ -1,11 +1,11 @@
--- Boar: aggressive daytime mob of the starter zones (WoW memory: the
--- first quest mobs). Weak, but combative.
+-- Boar: aggressive daytime mob of the safe core and inner ring (WoW
+-- memory: the first quest mobs). Weak, but combative.
 
 grug_mobs.register_mob("grug_mobs:boar", {
 	description = "Boar",
 	type = "monster",
 	_grug_xp_reward = 15,
-	_grug_spawn_zones = {"borderland", "starter", "midlands"},
+	_grug_spawn_zones = {"core", "inner"},
 
 	hp_min = 8,
 	hp_max = 12,
@@ -52,10 +52,11 @@ grug_mobs.register_mob("grug_mobs:boar", {
 	light_damage = 0,
 })
 
--- Spawns on every race-region surface (biomes.lua) so ALL starter areas
+-- Spawns on every race-region surface (biomes.lua) so ALL low-level areas
 -- have day mobs — the old dirt_with_grass-only whitelist left the whole
 -- Throng side empty. Bare dirt covers the blight until WP6 brings themed
--- mobs per region; the zone gating above keeps boars out of the heartland.
+-- mobs per region; the zone gating above keeps boars in core and inner
+-- ring, out of the higher-level outer ring and coasts.
 mobs:spawn({
 	name = "grug_mobs:boar",
 	nodes = {
