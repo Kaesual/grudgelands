@@ -13,8 +13,8 @@ Rules:
    commit it was taken from, license, and a **complete list of local
    patches**.
 2. Every in-place change to vendored code is marked with a
-   `-- WOB PATCH: <why>` comment at the change site.
-3. Prefer wrapper mods (e.g. `wob_mobs` wraps `mobs`) over in-place edits —
+   `-- GRUG PATCH: <why>` comment at the change site.
+3. Prefer wrapper mods (e.g. `grug_mobs` wraps `mobs`) over in-place edits —
    keep the patch surface minimal.
 4. Updating a vendored tree = copy the new upstream version over, then
    re-apply the patches listed here (find them via the markers /
@@ -24,8 +24,8 @@ Rules:
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|
-| `mods/ENTITIES/mobs` | [mobs_redo](https://codeberg.org/tenplus1/mobs_redo) | `646ba60` | MIT | `api.lua` `general_attack()`: `_wob_ignore_player` per-entity player-target veto hook (WP19 undead night truce — filtering during acquisition lets the mob pick the next-closest player). Also wrapped by `wob_mobs`; `mobs:spawn_abm_check` is overridden there — a documented upstream extension hook, not a patch |
-| `mods/BASE/default` | [minetest_game](https://github.com/luanti-org/minetest_game) `mods/default` | `b5243f3` | LGPL-2.1+ / media CC BY-SA | `mapgen.lua` tail: biome/ore/decoration registration for biome-based mapgens disabled — wob_mapgen owns them (WP2) |
+| `mods/ENTITIES/mobs` | [mobs_redo](https://codeberg.org/tenplus1/mobs_redo) | `646ba60` | MIT | `api.lua` `general_attack()`: `_grug_ignore_player` per-entity player-target veto hook (WP19 undead night truce — filtering during acquisition lets the mob pick the next-closest player). Also wrapped by `grug_mobs`; `mobs:spawn_abm_check` is overridden there — a documented upstream extension hook, not a patch |
+| `mods/BASE/default` | [minetest_game](https://github.com/luanti-org/minetest_game) `mods/default` | `b5243f3` | LGPL-2.1+ / media CC BY-SA | `mapgen.lua` tail: biome/ore/decoration registration for biome-based mapgens disabled — grug_mapgen owns them (WP2) |
 | `mods/BASE/creative` | minetest_game `mods/creative` | `b5243f3` | LGPL-2.1+ | none |
 | `mods/BASE/sfinv` | minetest_game `mods/sfinv` | `b5243f3` | LGPL-2.1+ | none |
 | `mods/BASE/stairs` | minetest_game `mods/stairs` | `b5243f3` | LGPL-2.1+ | none |

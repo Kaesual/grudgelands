@@ -173,7 +173,7 @@ fresh global table and copies only whitelisted names into it
 - Path rules (`:824-897`): **read** access to `builtin/`, the game dir and
   *all* mod dirs (not just your own); **read/write** in the world dir and the
   mod-data dir, except `worldmods/`, the world's `game/`, any `.git/` path and
-  the settings file. So `dofile(core.get_modpath("wob_core").."/x.lua")` is
+  the settings file. So `dofile(core.get_modpath("grug_core").."/x.lua")` is
   fine; reading a sibling mod's file is technically allowed too.
 - `core.request_insecure_environment()` needs `secure.trusted_mods` and only
   works from the mod's main scope at init time (`doc/lua_api.md:8292-8300`).

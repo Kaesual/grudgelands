@@ -2,7 +2,7 @@
 
 Decided spec (2026-08-06). Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
-consumable values). Damage pipeline and threat live in `wob_core`.
+consumable values). Damage pipeline and threat live in `grug_core`.
 
 Core principles:
 
@@ -53,7 +53,7 @@ Anchors (computed):
 | 30 | 175 | 117 | 88 | 204 | 97 |
 | 60 | 325 | 207 | 148 | 384 | 187 |
 
-Crit/dodge are server-side rolls in our own damage pipeline (`wob_core`,
+Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
 
@@ -106,8 +106,8 @@ Normal tier at level L:
 
 ### Position → mob level
 
-`wob_core.difficulty_at(pos)` returns **0..1** (= (mob_level−1)/59);
-helper `wob_core.mob_level_at(pos)` returns the level directly. Geometry
+`grug_core.difficulty_at(pos)` returns **0..1** (= (mob_level−1)/59);
+helper `grug_core.mob_level_at(pos)` returns the level directly. Geometry
 (continent redesign 2026-08-06, single source: `world.md` §1): radial
 from the capital in the continent center — safe core 1–10, inner ring
 10–25, outer ring 25–45, flank/back coasts 45–60; the strait-facing
@@ -172,12 +172,12 @@ design (`group_attack` stays on).
 - **No skull tier** and no extra damage modifier for high-level mobs —
   mob damage already scales via the level formulas; the nametag carries
   the exact level anyway.
-- Implementation: nametags + gray-XP rule in `wob_mobs` (WP6), target
+- Implementation: nametags + gray-XP rule in `grug_mobs` (WP6), target
   frame HUD alongside WP6.
 
 ## 7. Offhand & carried light
 
-- The engine has **no native offhand**; we build `wob_offhand` after
+- The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
   slot).
 - Equip rules (enforced centrally): **two-handed weapons require an empty

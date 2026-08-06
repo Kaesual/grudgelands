@@ -8,7 +8,7 @@ and level gates are still open — they land here before WP8/WP9.
 - **Level 60 in ~10–20 played hours** (2–3 evenings) — deliberately much
   faster than WoW. The endgame (PvP, apex bosses, housing, jobs) is the
   game; leveling is the on-ramp.
-- Current curve (wob_xp: quadratic, ~20 same-level kills per level plus
+- Current curve (grug_xp: quadratic, ~20 same-level kills per level plus
   quests) is roughly on target; tune with playtests, not redesigns.
 - **Rested XP** (WP21): logging out at an innkeeper accrues a rested
   bonus — rewards the irregular play patterns of a small server.
@@ -36,7 +36,7 @@ Priest resurrection) come later with WP6/WP19:
 - Death = **respawn at the own faction spawn** with **full inventory**
   (no corpse run, no item loss, no durability-on-death mechanic).
 - **XP loss: 25% of the progress within the current level, permanent**
-  (never de-levels; wob_xp as shipped).
+  (never de-levels; grug_xp as shipped).
 - The *distance* back is the real penalty: dying far from the spawn
   costs travel time — which scales naturally with how deep you pushed.
 - **Open (decide before WP9):** whether PvP deaths skip the XP loss

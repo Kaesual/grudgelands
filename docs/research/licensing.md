@@ -1,4 +1,4 @@
-# Licensing Research — World of Blockcraft
+# Licensing Research — Grudgelands
 
 Researched 2026-08-06. Sources: gnu.org, creativecommons.org, ContentDB (content.luanti.org),
 minetest_game / Mineclonia / VoxeLibre repositories.

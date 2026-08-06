@@ -1,6 +1,6 @@
 # Research: Plants, Herbs, Farming & Food Mods
 
-Researched 2026-08-06 via ContentDB / GitHub for World of Blockcraft (code GPLv3+;
+Researched 2026-08-06 via ContentDB / GitHub for Grudgelands (code GPLv3+;
 media allowed: GPL-family, LGPL, MIT, Apache, CC0, CC BY, CC BY-SA — no NC/ND).
 
 ## Summary

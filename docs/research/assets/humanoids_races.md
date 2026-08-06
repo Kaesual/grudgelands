@@ -1,7 +1,7 @@
 # Research: Humanoid & Race Models/Skins
 
 Status: 2026-08-06 · Topic: NPC meshes (guards, traders, quest givers) + player race visuals
-for 6 races — Alliance: Humans, Dwarves, Elves · Horde: Orcs, Trolls, Undead.
+for 6 races — Accord: Humans, Dwarves, Elves · Throng: Orcs, Trolls, Undead.
 
 ## Summary
 
@@ -12,7 +12,7 @@ The single most important finding: **Lord-of-the-Test renders ALL of its humanoi
 rigged character mesh (we already ship `mods/BASE/player_api/models/character.b3d`) covers all 6
 races as mobs_redo NPCs *and* as player_api race models; per-race skins do the differentiation.
 Undead get real monster meshes from mobs_mc/22i (GPLv3 — we already use the 22i zombie in
-`mods/ENTITIES/wob_mobs`). Gaps: no ready-made WoW-style green orc, lanky troll, or night-elf
+`mods/ENTITIES/grug_mobs`). Gaps: no ready-made WoW-style green orc, lanky troll, or night-elf
 skins exist — those are recolors/edits of CC BY-SA LOTT skins or new paint jobs on the standard
 skin template (cheap, 2D pixel work only).
 
@@ -29,7 +29,7 @@ directly usable in mobs_redo (`stand_start/walk_start/punch_start`, see lottmobs
 | Elf | lottmobs | character.b3d | `lottmobs_elf.png`, `lottmobs_lorien_elf_*.png`, `lottmobs_elf_trader.png` | CC BY-SA 3.0 |
 | Orc | lottmobs (recolor green) | character.b3d, slight upscale | `lottmobs_orc*.png`, `lottmobs_uruk_hai*.png` | CC BY-SA 3.0 |
 | Troll | lottmobs skins or own paint | character.b3d upscaled; alt: `troll_model.x` (WTFPL, chunky cave troll) | `lottmobs_half_troll.png`, `lottmobs_troll*.png` | CC BY-SA 3.0 / WTFPL |
-| Undead | mobs_mc (22i) — already in wob_mobs | `mobs_mc_zombie.b3d`, `mobs_mc_skeleton.b3d`, `mobs_mc_villager_zombie.b3d` | Pixel-Perfection-based textures | Models GPLv3, textures CC BY-SA 4.0 |
+| Undead | mobs_mc (22i) — already in grug_mobs | `mobs_mc_zombie.b3d`, `mobs_mc_skeleton.b3d`, `mobs_mc_villager_zombie.b3d` | Pixel-Perfection-based textures | Models GPLv3, textures CC BY-SA 4.0 |
 | Guard NPC | lottmobs pattern | character.b3d + weapon wielding | `lottmobs_*_guard*.png` per race | CC BY-SA 3.0 |
 | Trader NPC | lottmobs skins + mobs_npc code | character.b3d | `lottmobs_*_trader.png` per race | CC BY-SA 3.0 |
 

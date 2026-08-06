@@ -37,7 +37,7 @@ rationale (Luanti is not MMORPG enough for that) intact.
   `world.md` §4) bought as a **one-time purchase** — the price buys the
   **finite** resources inside: **no ore respawn within claims** (unlike
   the rest of the world, R4). Non-members cannot dig there (enforced via
-  the central `is_protected` override in wob_core).
+  the central `is_protected` override in grug_core).
 - Purchases (expansions, claims) are made by the Owner from guild funds.
 
 ## 4. Communication

@@ -77,8 +77,8 @@ Point reviewers at this section verbatim.
    ABM/LBM budgets; mod-storage access patterns.
 4. **Design-doc adherence**: numbers/formulas vs `docs/design/*` (the
    docs are the spec — deviations are findings, either fix the code or
-   flag the doc); conventions (wob_ namespace, one global per mod,
-   `_wob_` fields, groups dispatch).
+   flag the doc); conventions (grug_ namespace, one global per mod,
+   `_grug_` fields, groups dispatch).
 5. **Protection/exploits**: `is_protected` paths, ability/resource
    bypasses, PvP flag rules, relog resets.
 6. **Report format**: severity-ranked (Critical/High/Medium/Low),

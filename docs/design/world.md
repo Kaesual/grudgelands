@@ -5,11 +5,44 @@ WP2 (mapgen, difficulty function, build restrictions), WP18 (continent
 rework), WP6 (guards/outposts), WP13 (structures, villages); housing/Home
 Stone get their own WPs when scheduled.
 
+## 0. Canonical names
+
+Decided 2026-08-06 (rename from the placeholder faction names). These
+names are canonical for docs, code and content — do not reintroduce the
+old ones.
+
+| Thing | Display name | Internal id |
+|-------|--------------|-------------|
+| Southern faction | **The Accord** | `accord` |
+| Northern faction | **The Throng** | `throng` |
+| Southern continent (Accord homeland) | **Elandor** | `elandor` * |
+| Northern continent (Throng homeland) | **Kragmar** | `kragmar` * |
+
+\* The two continent ids are **reserved, not yet used in code**: today a
+continent is only the sign of z (`grug_core.territory_at`). Use them if
+and when a continent ever becomes a first-class id.
+
+- In running prose the factions take the article: *the Accord*, *the
+  Throng*; the full form "The Accord" is for titles and UI labels.
+- Continent names are **independent of the faction names** — Elandor and
+  Kragmar are places, and stay correct even if a faction is driven off
+  its homeland in later story content.
+- **Naming philosophy**: the faction names are *semantic* — an Accord is
+  a pact between unlike peoples, a Throng is a mass that moves as one.
+  The continent names are *phonetic* — melodic, vowel-rich Elandor in
+  the south versus harsh, consonantal Kragmar in the north, so the map
+  sounds like its cultures before a player reads a single quest.
+- **Phase 3 (localization) note**: the German display names are "das
+  Bündnis" (The Accord) and "die Meute" (The Throng); continent names
+  stay untranslated. Docs remain English — this is recorded here only so
+  the translation layer has a canonical source.
+
 ## 1. Geography: two continents
 
 The world map is **two huge, separate islands — one continent per
-faction** (WoW's two-continent memory). Horde in the north, Alliance in
-the south, mirrored at z=0. Everything else is ocean.
+faction** (WoW's two-continent memory): **Kragmar** in the north, home
+of the Throng, and **Elandor** in the south, home of the Accord,
+mirrored at z=0. Everything else is ocean.
 
 - **Ocean strait along z=0**: water at least until z=±100; there the
   faction continents begin. Minimum 200 nodes of open water between the
@@ -27,20 +60,20 @@ the south, mirrored at z=0. Everything else is ocean.
 - Each continent contains 3 race-flavored biome regions (section 7).
 - **Fixed base layout, randomized within**: which race region lies in
   which compass direction is FIXED per faction (section 7); noise only
-  wobbles region borders and coastlines.
+  jitters region borders and coastlines.
 - **Civilization gradient** (decided 2026-08-06): the safe core + inner
   ring carry the settled race biomes (villages, roads, fields); outward
   every race band tips into its **wild nature variant** — shared nature
   biomes that exist on BOTH continents with identical base drops
   (section 8).
 - All anchors (capital position, ring radii, coast caps) derive from the
-  continent size constants in `wob_core` — world size is configurable at
+  continent size constants in `grug_core` — world size is configurable at
   world creation (3000×1600 default; changing it requires a new world).
 
 ### Difficulty layout: "safe core + war coast"
 
 Decided 2026-08-06. Two **decoupled** level fields, both centralized in
-`wob_core`:
+`grug_core`:
 
 **Mob level** (`mob_level_at` — where you level): radial distance from
 the capital (continent center, ~(0, ±900)), with a per-direction cap.
@@ -97,7 +130,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   your own risk"; the protected build space is your guild's housing
   plot. Revisit only if griefing becomes a real problem.
 
-Implementation: one central `core.is_protected` override in `wob_core`
+Implementation: one central `core.is_protected` override in `grug_core`
 (faction + position check).
 
 ## 2b. Ocean zones & deep-sea danger
@@ -248,18 +281,18 @@ small villages, and perks around vendors/professions.
 
 | Faction | Race | Region flavor |
 |---------|------|---------------|
-| Alliance | Humans | plains/meadows |
-| Alliance | Dwarves | mountains/hills |
-| Alliance | Elves | forests |
-| Horde | Orcs | savanna/badlands |
-| Horde | Trolls | jungle/swamp |
-| Horde | Undead | dark forest/blight |
+| Accord | Humans | plains/meadows |
+| Accord | Dwarves | mountains/hills |
+| Accord | Elves | forests |
+| Throng | Orcs | savanna/badlands |
+| Throng | Trolls | jungle/swamp |
+| Throng | Undead | dark forest/blight |
 
 (Own names/flavor later — no 1:1 Blizzard copies.)
 
 - 3 races per faction = 3 biome regions per territory (satisfies the "≥2
   biomes per territory" mapgen requirement). The compass layout is FIXED
-  per faction (e.g. Alliance: dwarves always west) — only region borders
+  per faction (e.g. Accord: dwarves always west) — only region borders
   and coastlines are noise-randomized (section 1).
 - **Each race region holds its race village inside the safe core** (the
   core is x-elongated exactly so the village belt fits, section 1); from
@@ -279,7 +312,7 @@ small villages, and perks around vendors/professions.
   vendor per race** (WP7). Implementation state (WP19): the troll regen
   multiplier reaches mana today and MUST be consumed by WP21's HP regen
   (rage decay is unaffected — a troll warrior only benefits from WP21
-  on); the human bonus is a latent hook (`wob_classes.get_xp_bonus`)
+  on); the human bonus is a latent hook (`grug_classes.get_xp_bonus`)
   that activates when WP8's quests tag their XP with source="quest".
 - Race-exclusive professions/recipes (e.g. only elven tailors craft the
   top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.

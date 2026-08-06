@@ -7,9 +7,9 @@ storytelling (per the vision — a light layer, not cutscene opera).
 
 > **"A darkness has befallen the land."**
 
-- The conflict between Alliance and Horde is **old** — a generations-long
-  war over territory and pride. It stays: PvP, border raids, the whole
-  faction game.
+- The conflict between the Accord and the Throng is **old** — a
+  generations-long war over territory and pride. It stays: PvP, border
+  raids, the whole faction game.
 - The **new** threat rises from the flames of the Nether — this world's
   hell, a world of lava and demons. Something **demonic and ancient**
   stretches its dark hands from below into the overworld (genre

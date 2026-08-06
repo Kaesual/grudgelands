@@ -1,7 +1,7 @@
 # AGENTS.md — Project Guide
 
-WoW-inspired Luanti game (working title "World of Blockcraft"). Goals and
-scope: **[ROADMAP.md](ROADMAP.md)**. Work packages and status:
+WoW-inspired Luanti game, titled "Grudgelands". Goals and scope:
+**[ROADMAP.md](ROADMAP.md)**. Work packages and status:
 **[BACKLOG.md](BACKLOG.md)**. Detailed research notes on the reference
 projects: **[docs/research/](docs/research/)**.
 
@@ -59,8 +59,8 @@ strictly separated:
 - **Third-party code is vendored, never a submodule** (decided 2026-08-06):
   every embedded foreign mod is documented in **[VENDOR.md](VENDOR.md)**
   (upstream repo + commit + license + patch list); in-place changes carry a
-  `-- WOB PATCH:` marker at the change site; prefer wrapper mods
-  (`wob_mobs` pattern) over in-place edits. Details/update procedure:
+  `-- GRUG PATCH:` marker at the change site; prefer wrapper mods
+  (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
   in there**:
@@ -128,11 +128,13 @@ strictly separated:
 
 ## Project conventions
 
-- **Namespace prefix `wob_`** for all our mods (e.g. `wob_xp`,
-  `wob_factions`, `wob_quests`, `wob_jobs`, `wob_mobs`, `wob_map`).
-- Exactly one global table per mod (`wob_xp = {}`), sub-files via
+- **Namespace prefix `grug_`** for all our mods (e.g. `grug_xp`,
+  `grug_factions`, `grug_quests`, `grug_jobs`, `grug_mobs`, `grug_map`) —
+  derived from the game title Grudgelands. Vendored code carries
+  `-- GRUG PATCH` markers for the same reason (see VENDOR.md).
+- Exactly one global table per mod (`grug_xp = {}`), sub-files via
   `dofile(core.get_modpath(core.get_current_modname()).."/foo.lua")`.
-- Custom fields in item/node/entity definitions use the `_wob_` prefix
+- Custom fields in item/node/entity definitions use the `_grug_` prefix
   (pattern from VoxeLibre's `_mcl_*`).
 - Dispatch behavior via **groups** instead of name lists (VoxeLibre
   pattern).
@@ -165,29 +167,29 @@ Details + line numbers in [docs/research/](docs/research/).
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
-  punch-interval factor. **Damage pipeline lives in `wob_core/combat.lua`**
+  punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
   (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
   full punch interval so armor/knockback/XP keep working), `heal_player`,
   central dodge roll (hp-change modifier), `mark_in_combat/in_combat`
   (5 s window), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
-  them). Crit/dodge accessors are wob_core stubs overridden by
-  wob_classes. Abilities = hotbar tools in `wob_abilities` (item `range` =
+  them). Crit/dodge accessors are grug_core stubs overridden by
+  grug_classes. Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range, wear bar = cooldown display); kits/numbers:
   `docs/design/classes.md`. WP19 added: **GCD 1 s** (silent gate in
   try_cast, deliberately NOT shown via wear — would churn inventory
   re-sends), **soft target lock** 8 s (separate enemy/ally slots via
-  `wob_abilities.get_target(player, ally)`; fallback re-checks range +
-  LOS), **absorb shields** (`wob_core.set_absorb`, soaked in the central
+  `grug_abilities.get_target(player, ally)`; fallback re-checks range +
+  LOS), **absorb shields** (`grug_core.set_absorb`, soaked in the central
   hp modifier after dodge/fall mitigation), **race passives** as a perk
-  table in the wob_classes race registry (`wob_classes.get_race_perk`,
-  stub-mirrored as `wob_core.get_race_perk`; elf range via per-stack
-  meta `range` override) and mob slows (`wob_mobs.slow`, staticdata-safe
+  table in the grug_classes race registry (`grug_classes.get_race_perk`,
+  stub-mirrored as `grug_core.get_race_perk`; elf range via per-stack
+  meta `range` override) and mob slows (`grug_mobs.slow`, staticdata-safe
   countdown shared with root). NB a lethal ability punch removes
   animation-less mobs synchronously — capture mob pos/luaentity BEFORE
   `deal_ability_damage`. **mobs_redo `do_punch` gotcha**: any truthy
   return cancels the punch (api.lua comment claims the opposite) — hook
   wrappers must return nil; player-hit hook:
-  `wob_core.register_on_player_hit_mob` (fired by wob_mobs).
+  `grug_core.register_on_player_hit_mob` (fired by grug_mobs).
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -221,7 +223,7 @@ Details + line numbers in [docs/research/](docs/research/).
   `lottmobs/trader.lua` (faction-dependent stock). Money is ONE integer
   in copper units in player meta (100c = 1s, 100s = 1g, conversion is
   display-only; `docs/design/economy.md`); traders buy EVERY mob drop
-  (buy-price field `_wob_sell_price` in item defs).
+  (buy-price field `_grug_sell_price` in item defs).
 - **Quests**: no ready-made framework in the references. Building blocks:
   trigger/counter patterns from `lottachievements` (awards fork), event
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
@@ -231,7 +233,7 @@ Details + line numbers in [docs/research/](docs/research/).
   territory/race-region confinement via the biome definition's
   `min_pos`/`max_pos` cuboids (works on x/z, not just y!). Bands overlap
   by 200 nodes; inside the overlap the heat/humidity voronoi picks, which
-  gives organic transitions. `wob_mapgen` owns all biome/ore/decoration
+  gives organic transitions. `grug_mapgen` owns all biome/ore/decoration
   registrations; default's `register_biomes/ores/decorations` are NOT
   called (see tail of `mods/BASE/default/mapgen.lua`).
   **Landmine**: ore/decoration defs whose `biomes` names don't resolve
@@ -240,10 +242,10 @@ Details + line numbers in [docs/research/](docs/research/).
   `allowed_mapgens = v7`. Camp platforms (terrain-adaptive height:
   heightmap median, persisted in mod storage) + the x=±2000 mountain wall
   are a small `register_on_generated` VoxelManip pass
-  (`wob_mapgen/structures.lua`). **NB the wall and the land borderland
+  (`grug_mapgen/structures.lua`). **NB the wall and the land borderland
   are scheduled for removal — continent redesign (two ocean-separated
   continents, world.md §1, WP18).** Zone/difficulty queries:
-  `wob_core.territory_at/zone_at/difficulty_at/mob_level_at`.
+  `grug_core.territory_at/zone_at/difficulty_at/mob_level_at`.
   LotT trick: biome signature nodes (e.g. grass variants) drive mob spawns
   via a node whitelist.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
@@ -283,7 +285,7 @@ Details + line numbers in [docs/research/](docs/research/).
 - Local testing: Luanti is installed as a **Flatpak** (`org.luanti.luanti`,
   sandboxed without access to `~/projects`!). Therefore run
   `tools/sync_to_luanti.sh` — it copies the game to
-  `~/.var/app/org.luanti.luanti/.minetest/games/world_of_blockcraft`.
+  `~/.var/app/org.luanti.luanti/.minetest/games/grudgelands`.
   Re-sync after every code change. Engine logs:
   `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.

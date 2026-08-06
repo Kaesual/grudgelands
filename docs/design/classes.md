@@ -1,7 +1,7 @@
 # Class Kits — Resources & Abilities (MVP)
 
-Decided spec (2026-08-06). Implementation: WP4 (`wob_abilities`, resource
-HUD, damage pipeline hooks in `wob_core`); skill trees extend these kits
+Decided spec (2026-08-06). Implementation: WP4 (`grug_abilities`, resource
+HUD, damage pipeline hooks in `grug_core`); skill trees extend these kits
 in WP11. Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat
 values: `combat_stats.md` §4.
 
@@ -35,24 +35,24 @@ Core principles:
 | Rage | Warrior | 0–100, starts at 0 | +12 per melee hit dealt (auto-attacks, not ability hits), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
 
 - **In combat** = dealt or received damage within the last 5 s. The
-  definition lives in `wob_core` (`mark_in_combat`/`in_combat`) and is
+  definition lives in `grug_core` (`mark_in_combat`/`in_combat`) and is
   shared with recovery (combat_stats §5) and mob leashing (WP6).
 - Resources are runtime state, not persisted: mana is full on join and
   respawn, rage is 0.
 - HUD: a colored resource line (mana blue, rage red) above the XP line.
 
-## 2. Damage pipeline (wob_core)
+## 2. Damage pipeline (grug_core)
 
-- Ability damage/heals go through `wob_core` helpers that roll **crit**
+- Ability damage/heals go through `grug_core` helpers that roll **crit**
   (attacker's chance, ×1.5) and — for player targets — **dodge**
   (combat_stats §2), then apply via `object:punch` so armor groups,
   knockback and mob death handling (XP, loot) keep working.
 - Mob→player punches roll the player's dodge centrally (hp change
-  modifier in `wob_core`).
+  modifier in `grug_core`).
 - Auto-attack integration of melee bonus & crit rides on WP5's
   equip-time stack-meta `tool_capabilities` override (enchant design in
   AGENTS.md) — not part of WP4.
-- **Threat hooks are stubs in WP4** (`wob_core.add_threat`,
+- **Threat hooks are stubs in WP4** (`grug_core.add_threat`,
   `add_heal_threat`): abilities already report their threat values
   (combat_stats §4: tank abilities ×3, healing ×0.5); WP6 replaces the
   stubs with the real threat table. Taunt's forced-target effect works

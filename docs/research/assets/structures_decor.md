@@ -60,5 +60,5 @@ and prune crafting recipes for a from-scratch game.
   (`[combine`/overlay masks), pre-bake 6 static faction crest nodes first; player
   heraldry later.
 - **Strategy:** don't depend on any of these mods at runtime — vendor node
-  definitions + textures into our own `wob_*` mods with per-file attribution
+  definitions + textures into our own `grug_*` mods with per-file attribution
   (media licenses permit this), keeping zero `default` dependency.

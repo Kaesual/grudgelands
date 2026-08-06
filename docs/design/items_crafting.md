@@ -109,7 +109,7 @@ Key implementation patterns we adopt:
   table under one meta key; `set_enchantments` → `load_enchantments`
   re-runs every effect hook idempotently (reset tool_capabilities,
   reapply, regenerate description via the `tt` snippet pipeline →
-  `meta description`). We mirror this: `wob_ench` meta key, §6.
+  `meta description`). We mirror this: `grug_ench` meta key, §6.
 - **Roll logic** (`engine.lua:308-469`): weight-biased pick, power
   ranges per level, halving loop with `(level+1)/50` continuation —
   more machinery than we need; our flat count-per-quality + roll-window
@@ -145,11 +145,11 @@ the recipe book UI) including the recipe for the **next tome**.
 
 ### 2.2 The tome (LotT chain, adapted to our unlock model)
 
-Item: `wob_items:tome_<prof>_<n>` ("Journeyman's Tome of Smithing"),
+Item: `grug_items:tome_<prof>_<n>` ("Journeyman's Tome of Smithing"),
 tool, stack_max 1.
 
 - **Right-click = learn + browse**: writes the unlock (player meta
-  `wob_prof:<prof> = n`, idempotent) and opens the recipe book UI at
+  `grug_prof:<prof> = n`, idempotent) and opens the recipe book UI at
   that profession — the tome IS the physical recipe book (LotT's
   guide-viewer role) and is **not consumed by reading**.
 - **Reading tier n requires learned tier n−1** in that profession (and
@@ -174,14 +174,14 @@ tool, stack_max 1.
 
 | Profession | T2 tome adds | T3 tome adds | T4 tome adds |
 |---|---|---|---|
-| Smithing | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:wob_rare_trophy` |
+| Smithing | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` |
 | Leatherwork | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy |
 | Tailoring | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
 | Alchemy | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
 | Herbalism (3 tiers) | 12 sunleaf + 12 gravemoss | 12 dragonweed + 6 marshbloom | — |
 | Gem Hunter (2 tiers) | 3 gem + 2 stone core | — | — |
 
-`group:wob_rare_trophy` = the signature drop any **named rare** carries
+`group:grug_rare_trophy` = the signature drop any **named rare** carries
 (§5.4) — every named rare on your own continent qualifies; both
 factions always have sources (biomes_mobs §3.3 lists ≥4 per continent).
 Herbalism tiers gate *gathering* (punching a T2 herb without tier 2
@@ -242,7 +242,7 @@ Tier ilvls 12/27/42/57; fpi = full_punch_interval.
 
 2H DPS ≈ 1.07× of 1H — pays for the empty offhand. Wands/orbs stay
 **drop-only** in the MVP (WP5 class items); the Tailor tome (below) is
-the craftable caster offhand. Weapons carry `wob_req_level = ilvl`.
+the craftable caster offhand. Weapons carry `grug_req_level = ilvl`.
 
 ### 3.3 Blacksmith (forge) — metal weapons, metal armor, tools
 
@@ -320,7 +320,7 @@ slot pieces à la mcl_armor + effect hooks à la mcl_potions (both §1.2).
   (thread/flux/vial/parchment/whetstone blank). Everything above:
   player-crafted (floor rule).
 
-Every craft output carries `_wob_sell_price` with the **anti-loop rule:
+Every craft output carries `_grug_sell_price` with the **anti-loop rule:
 vendor value of a crafted item < summed vendor value of its
 ingredients** — vendors are a floor, never a factory profit.
 
@@ -377,7 +377,7 @@ biomes_mobs §6; this table adds the gear/special layer:
 
 2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill:
 guaranteed Uncommon (rare window) + 25% Rare + **100% signature trophy**
-(`group:wob_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): the
+(`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): the
 T4-tome keystone and masterwork ingredient (§2.3, §6.4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
@@ -415,9 +415,9 @@ untouched). Faction NPC kills additionally drop war trophies (vendor
 
 ### 6.1 Meta model
 
-Item meta: `wob_quality` (1 Common / 2 Uncommon / 3 Rare / 4 Unique-
-reserved), `wob_ench` = one serialized `{stat = value, …}` table (mcl
-pattern §1.2), `wob_upgrades` (0–2, §7), `wob_req_level`. Description
+Item meta: `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4 Unique-
+reserved), `grug_ench` = one serialized `{stat = value, …}` table (mcl
+pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`. Description
 regenerated from meta on every change (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant). Attack speed applies via `tool_capabilities.
@@ -487,7 +487,7 @@ imbuing oils = apothecary gear + caster offhands):
   the crafted-fine window. Cost ≈ 1 tier reagent + tier materials.
 - **Temper kit** (T3/T4): re-rolls all enchant VALUES on an Uncommon/
   Rare item; 1st application window 0.50–0.95, 2nd 0.60–1.00, **max 2**
-  (`wob_upgrades` meta). Never changes enchant count or quality tier —
+  (`grug_upgrades` meta). Never changes enchant count or quality tier —
   an imbued Common (now Uncommon, 1–2 enchants) stays strictly below a
   fresh Rare (3–4 enchants): the decided "upgraded mediocre item never
   becomes a top item", enforced structurally, not by caps.

@@ -1,4 +1,4 @@
-# Roadmap — "World of Blockcraft" (working title)
+# Roadmap — Grudgelands
 
 A Luanti game that captures the game mechanics, story and character of
 World of Warcraft as well as possible in a voxel world — as a standalone
@@ -6,10 +6,11 @@ game (not a mod pack), written in Lua.
 
 ## Vision
 
-- Two factions (**Horde** / **Alliance**), each with **its own huge
-  continent** (multi-biome, Horde north / Alliance south, separated by
-  an ocean strait at z=0; everything beyond the continents is ocean,
-  deadly far offshore — `docs/design/world.md` §1/§2b).
+- Two factions — **The Throng** and **The Accord** — each with **its own
+  huge continent** (multi-biome): the Throng holds **Kragmar** in the
+  north, the Accord **Elandor** in the south, separated by an ocean
+  strait at z=0; everything beyond the continents is ocean, deadly far
+  offshore (`docs/design/world.md` §0/§1/§2b).
 - **Races, kept deliberately simple**: each faction consists of several
   races. **Three race capitals per continent** in the safe-core belt
   (players spawn in their race's capital); the central one doubles as
@@ -66,7 +67,7 @@ game (not a mod pack), written in Lua.
   tech, distinct skill sets (`docs/design/world.md` §4b).
 - A light layer of lore and story, delivered through quests, setting and
   environmental storytelling. Premise: **"A darkness has befallen the
-  land"** — the Alliance–Horde conflict is old, but a new demonic evil
+  land"** — the Accord–Throng conflict is old, but a new demonic evil
   rises from the Nether and threatens both factions equally
   (`docs/design/story.md`).
 - **Guilds as a pure ownership layer** (bank, housing, mining claims,
@@ -86,12 +87,12 @@ game (not a mod pack), written in Lua.
 - [x] Mob engine integrated (mobs_redo embedded; faction patch follows with 1.4)
 
 ### 1.2 Factions & world
-- [x] Faction choice at character creation (Horde/Alliance), persistent
+- [x] Faction choice at character creation (Throng/Accord), persistent
 - [x] World design spec decided (`docs/design/world.md`): geography/
       rings, destructibility rules, capitals/outposts, housing, races
 - [x] Mapgen: two large contiguous faction territories (north/south), each
       composed of several race-flavored biome regions
-- [x] Difficulty gradient: `wob_core.difficulty_at/mob_level_at` ring
+- [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` ring
       functions (mobs actually scaling with them lands with 1.4/WP6)
 - [x] Faction spawn points: walkable camp platforms at z = ±200
       (moves to the continent-center spawn village with WP18; real
@@ -104,7 +105,7 @@ game (not a mod pack), written in Lua.
 ### 1.3 Classes & progression (MVP: 3 classes)
 - [x] **Warrior** (melee, simple — reference class), **Mage**
       (ranged/caster), **Priest** (healer/support) — selection dialog
-      (faction → race → class) and registry in `wob_classes`
+      (faction → race → class) and registry in `grug_classes`
 - [x] XP system: level curve 1–60, XP loss on death (25% of level
       progress), HUD; XP sources (mob kills, quests) follow with 1.4/1.5
 - [x] Level system with stat growth: attributes + HP via
@@ -114,7 +115,7 @@ game (not a mod pack), written in Lua.
       1 point per 3 levels, capstones = new active main skills, respec
       for gold (`docs/design/progression.md` §2), formspec UI
 - [x] 2–4 active abilities per class (hotbar/item based), cooldowns
-      (`wob_abilities`, 3–4 per class; spec `docs/design/classes.md`)
+      (`grug_abilities`, 3–4 per class; spec `docs/design/classes.md`)
 - [x] Combat feel (WP19): global cooldown 1 s, soft target lock 8 s,
       kit tuning per classes.md tables (rage dump, Hamstring snare,
       Frost Nova root→slow, Power Word: Shield absorb), one visible

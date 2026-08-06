@@ -1,0 +1,275 @@
+-- Damage pipeline & combat state (docs/design/classes.md §2,
+-- combat_stats.md §2/§4). Ability damage and heals run through the helpers
+-- here so crit/dodge rolls and (later) threat live in one place. The threat
+-- functions are WP4 stubs — WP6 replaces them with the real threat table.
+
+--
+-- Stat accessors. Stubs so grug_core stays free of player-mod dependencies;
+-- grug_classes overrides them at load time (same pattern as
+-- grug_core.get_player_faction).
+--
+
+function grug_core.get_crit_chance(player)
+	return 0
+end
+
+function grug_core.get_dodge_chance(player)
+	return 0
+end
+
+-- Race passive lookup (world.md §7); grug_classes overrides this with the
+-- real registry accessor. Returns the perk value or nil.
+function grug_core.get_race_perk(player, key)
+	return nil
+end
+
+--
+-- Combat state: in combat = dealt or received damage in the last 5 s.
+-- Shared definition for resource regen (WP4), recovery (combat_stats §5)
+-- and mob leashing (WP6).
+--
+
+grug_core.COMBAT_TIMEOUT = 5
+
+local last_combat = {} -- player name -> us timestamp of the last hit
+
+function grug_core.mark_in_combat(player)
+	last_combat[player:get_player_name()] = core.get_us_time()
+end
+
+function grug_core.in_combat(player)
+	local t = last_combat[player:get_player_name()]
+	return t ~= nil and
+		(core.get_us_time() - t) < grug_core.COMBAT_TIMEOUT * 1e6
+end
+
+core.register_on_leaveplayer(function(player)
+	last_combat[player:get_player_name()] = nil
+end)
+
+--
+-- Threat stubs (combat_stats §4). Abilities already report their threat;
+-- WP6 implements the mob-side threat table on top of these entry points.
+--
+
+-- Extra ability threat against one mob (amount already multiplied, e.g.
+-- damage ×3 for tank abilities).
+function grug_core.add_threat(mob_ent, player, amount)
+end
+
+-- Healing threat: 0.5×healing to all mobs in combat with the group (30 m).
+function grug_core.add_heal_threat(healer, target, amount)
+end
+
+--
+-- Player hit mob hook: fired by grug_mobs' do_punch wrapper for every player
+-- punch that reaches a mob (rage generation, combat marking, later threat).
+-- func(player, mob_ent, damage)
+--
+
+local hit_mob_callbacks = {}
+
+function grug_core.register_on_player_hit_mob(func)
+	table.insert(hit_mob_callbacks, func)
+end
+
+function grug_core.run_player_hit_mob(player, mob_ent, damage)
+	grug_core.mark_in_combat(player)
+	for _, func in ipairs(hit_mob_callbacks) do
+		func(player, mob_ent, damage)
+	end
+end
+
+--
+-- Dealing ability damage. Rolls the attacker's crit (×1.5) and — against
+-- players — the target's dodge, then applies the result via object:punch
+-- with a full punch interval (factor 1), so armor groups, knockback and
+-- mob death handling (XP/loot via on_death) keep working.
+-- opts: {threat_mult = n} extra threat factor (tank abilities ×3).
+-- Returns the damage dealt (0 on dodge).
+--
+
+local function crit_particles(pos)
+	core.add_particlespawner({
+		amount = 8,
+		time = 0.15,
+		-- NB `radius` is not a particlespawner field — spread via pos range.
+		pos = {min = vector.offset(pos, -0.4, 0.6, -0.4),
+			max = vector.offset(pos, 0.4, 1.4, 0.4)},
+		vel = {min = vector.new(-1, 1, -1), max = vector.new(1, 3, 1)},
+		exptime = {min = 0.3, max = 0.6},
+		size = {min = 2, max = 3},
+		texture = "default_item_smoke.png^[multiply:#ffd100",
+	})
+end
+
+-- True while an ability punch is running — lets the rage-on-hit hook skip
+-- ability hits (rage comes from auto-attacks only, classes.md §1) and the
+-- central dodge modifier skip the roll (abilities pre-roll it below).
+grug_core.in_ability_punch = false
+
+function grug_core.deal_ability_damage(attacker, target, amount, opts)
+	opts = opts or {}
+	if target:is_player() then
+		-- Friendly fire: defense in depth — the ability kits filter their
+		-- targets already, but never let same-faction damage through here.
+		if attacker:is_player() then
+			local af = grug_core.get_player_faction(attacker:get_player_name())
+			local tf = grug_core.get_player_faction(target:get_player_name())
+			if af and tf and af == tf then
+				return 0
+			end
+		end
+		-- Dodge is pre-rolled here for ability punches so the return value
+		-- and the threat report reflect what actually landed; the central
+		-- modifier skips the roll while in_ability_punch is set.
+		if math.random() < grug_core.get_dodge_chance(target) then
+			core.chat_send_player(target:get_player_name(),
+				core.colorize("#aaaaaa", "You dodge!"))
+			grug_core.mark_in_combat(attacker)
+			grug_core.mark_in_combat(target)
+			return 0
+		end
+	end
+	if math.random() < grug_core.get_crit_chance(attacker) then
+		amount = math.floor(amount * 1.5)
+		crit_particles(target:get_pos())
+	end
+	grug_core.mark_in_combat(attacker)
+	-- pcall + flag restore: an error mid-punch must not leave the sticky
+	-- flag set (that would silently kill rage generation server-wide).
+	grug_core.in_ability_punch = true
+	local ok, err = pcall(target.punch, target, attacker, 1.4, {
+		full_punch_interval = 1.4,
+		damage_groups = {fleshy = amount},
+	}, nil)
+	grug_core.in_ability_punch = false
+	if not ok then
+		core.log("warning", "[grug_core] ability punch failed: " .. tostring(err))
+		return 0
+	end
+	local ent = target:get_luaentity()
+	if ent then
+		grug_core.add_threat(ent, attacker, amount * (opts.threat_mult or 1))
+	end
+	return amount
+end
+
+--
+-- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
+-- reports heal threat. Returns the effective healing done.
+--
+
+function grug_core.heal_player(healer, target, amount)
+	local hp = target:get_hp()
+	if hp <= 0 then
+		return 0
+	end
+	if math.random() < grug_core.get_crit_chance(healer) then
+		amount = math.floor(amount * 1.5)
+		crit_particles(target:get_pos())
+	end
+	local max_hp = target:get_properties().hp_max
+	local effective = math.min(amount, max_hp - hp)
+	if effective > 0 then
+		target:set_hp(hp + effective)
+		grug_core.add_heal_threat(healer, target, effective)
+	end
+	return effective
+end
+
+--
+-- Absorb shields (Power Word: Shield, classes.md §5). One shield per
+-- player; a new one replaces the old (no stacking). Soaked lazily by the
+-- central hp change modifier below — no timer entity, the expiry is
+-- checked whenever the shield would matter.
+--
+
+local absorbs = {} -- player name -> {amount = n, expiry = us time}
+
+function grug_core.set_absorb(player, amount, duration)
+	absorbs[player:get_player_name()] = {
+		amount = amount,
+		expiry = core.get_us_time() + duration * 1e6,
+	}
+end
+
+-- Remaining absorb amount (0 when none/expired).
+function grug_core.get_absorb(player)
+	local name = player:get_player_name()
+	local a = absorbs[name]
+	if not a then
+		return 0
+	end
+	if core.get_us_time() > a.expiry then
+		absorbs[name] = nil
+		return 0
+	end
+	return a.amount
+end
+
+local function absorb_particles(pos)
+	core.add_particlespawner({
+		amount = 6,
+		time = 0.15,
+		-- NB `radius` is not a particlespawner field — spread via pos range.
+		pos = {min = vector.offset(pos, -0.4, 0.4, -0.4),
+			max = vector.offset(pos, 0.4, 1.4, 0.4)},
+		vel = {min = vector.new(-1, 0, -1), max = vector.new(1, 2, 1)},
+		exptime = {min = 0.2, max = 0.5},
+		size = {min = 1.5, max = 2.5},
+		texture = "default_item_smoke.png^[multiply:#ffe9a0",
+	})
+end
+
+core.register_on_dieplayer(function(player)
+	absorbs[player:get_player_name()] = nil
+end)
+
+core.register_on_leaveplayer(function(player)
+	absorbs[player:get_player_name()] = nil
+end)
+
+--
+-- Central damage modifier for players: dodge roll (mob melee, PvP) plus
+-- combat marking, then race mitigation (dwarf fall damage), then the
+-- absorb shield. Runs as an hp change modifier so a dodge cancels the
+-- whole hit before armor/sounds and absorbs are consumed before HP.
+--
+
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change >= 0 then
+		return hp_change
+	end
+	if reason.type == "punch" then
+		grug_core.mark_in_combat(player)
+		-- Ability punches pre-roll dodge in deal_ability_damage.
+		if not grug_core.in_ability_punch and
+				math.random() < grug_core.get_dodge_chance(player) then
+			core.chat_send_player(player:get_player_name(),
+				core.colorize("#aaaaaa", "You dodge!"))
+			return 0
+		end
+	end
+	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so
+	-- the shield only soaks what would actually land.
+	if reason.type == "fall" then
+		local mult = grug_core.get_race_perk(player, "fall_damage_mult")
+		if mult then
+			hp_change = -math.floor(-hp_change * mult)
+		end
+	end
+	-- Absorb shield soaks any remaining damage (all sources).
+	if hp_change < 0 and grug_core.get_absorb(player) > 0 then
+		local name = player:get_player_name()
+		local a = absorbs[name]
+		local soak = math.min(a.amount, -hp_change)
+		a.amount = a.amount - soak
+		hp_change = hp_change + soak
+		absorb_particles(player:get_pos())
+		if a.amount <= 0 then
+			absorbs[name] = nil
+		end
+	end
+	return hp_change
+end, true)
