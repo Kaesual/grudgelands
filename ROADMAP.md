@@ -47,7 +47,10 @@ game (not a mod pack), written in Lua.
   slightly faster than players — pulling several same-level mobs solo is
   dangerous.
 - A light layer of lore and story, delivered through quests, setting and
-  environmental storytelling.
+  environmental storytelling. Premise: **"A darkness has befallen the
+  land"** — the Alliance–Horde conflict is old, but a new demonic evil
+  rises from the Nether and threatens both factions equally
+  (`docs/design/story.md`).
 - **Guilds as a pure ownership layer** (bank, housing, mining claims,
   fixed roles; even solo players found one): `docs/design/guilds.md`.
   Deliberately NO guild levels/perks/wars — Luanti is not MMORPG enough
@@ -126,7 +129,9 @@ game (not a mod pack), written in Lua.
       mobs (elite/heartland) — with better roll ranges
 
 ### 1.5 Quests (MVP: forced progression)
-- [ ] Quest framework (quest log UI, quest state in player meta)
+- [ ] Quest framework (quest log UI, quest state in player meta,
+      **minimum level per quest** — main-questline beats use them as
+      hard level gates, `docs/design/story.md` §2)
 - [ ] Quest-giver NPCs in the faction camps
 - [ ] Mandatory questlines for level progression (level gates), including:
   - [ ] "Kill 5 guards at the enemy faction's border" (PvP trigger)

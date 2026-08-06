@@ -38,6 +38,8 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
   bosses drop (ties into boss loot, items TODO §3).
 - Challenge design for reaching world bosses (jump/lava puzzles? kill
   gates? key items?).
-- Story framing: who/what created the connections (feeds quest lore).
+- ~~Story framing~~ — decided, see `docs/design/story.md`: a demonic
+  evil opened the connections from the other side; Nether world bosses
+  are its lords.
 
 **Decision:** _pending (Phase 2 planning)_

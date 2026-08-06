@@ -28,7 +28,7 @@ window. Rules:
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
 | WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs; nametags (level+HP), con-color target frame, gray = no XP | open (spec: `docs/design/combat_stats.md` §3/§6) | WP1, WP2 |
 | WP7 | Money & traders: copper/silver/gold currency (`docs/design/economy.md`), buy-all-drops, selling UI | open | WP1 |
-| WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs | open | WP1, WP7 |
+| WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
 | WP10 | Jobs: Herbalism, Alchemist, Blacksmith, Gem Hunter; max 2 per player | open | WP7 |
 | WP11 | Skill trees: 2 trees/class of ~5 talents, talent points, formspec UI | open | WP3, WP4 |
