@@ -66,13 +66,21 @@ strictly separated:
 
 ## Lua & Luanti environment (IMPORTANT)
 
-- **Lua 5.1** (the engine bundles Lua 5.1.x but prefers **LuaJIT**;
-  `USE_LUAJIT` in `reference_projects/luanti/CMakeLists.txt`). Consequences:
-  - **No `goto`**, no integer division `//`, no bitwise operator syntax
-    (`&`, `|`) — use `bit.*` instead (LuaJIT BitOp, always available).
+- **Lua 5.1 — and plain-5.1 compatibility is a HARD requirement** (decided
+  2026-08-06): the engine prefers **LuaJIT** but silently falls back to
+  bundled Lua 5.1.5, and our code must run on both. Full reference incl.
+  do-not-write checklist:
+  **[docs/research/luanti-lua.md](docs/research/luanti-lua.md)**. Key rules:
+  - **No `goto`**, no `\u{...}`/`\x..`/`\z` string escapes (LuaJIT-only),
+    no integer division `//`, no bitwise operator syntax (`&`, `|`) —
+    use `bit.*` (engine-injected, both builds, 32-bit).
+  - `unpack` (not `table.unpack`); `table.pack`/`rawlen`/`__len`/`__pairs`
+    are unsafe even on LuaJIT (need a distro compat flag) — avoid.
   - Numbers are C doubles, no integer type; safe integer range ±(2^53−1).
-  - `unpack` (not `table.unpack`); `setfenv`/`getfenv` exist.
-  - Backported from 5.4: `string.pack`/`unpack`/`packsize`.
+  - Vector `==` only works if BOTH operands carry the vector metatable —
+    compare positions with `vector.equals`, never `==`.
+  - Backported from 5.4 (engine-injected, both builds):
+    `string.pack`/`unpack`/`packsize`.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
   checkout after 5.16).
 - **Use the `core.*` namespace** — `minetest.*` is only a deprecated alias.
@@ -81,8 +89,10 @@ strictly separated:
   (server-sent client-side mods) is still a stub in the engine — do not use.
 - **Sandbox** (with `secure.enable_security`): fully available are
   `coroutine`, `string`, `table`, `math`, `bit`; `io`/`os`/`debug` are
-  heavily restricted (no `os.execute`/`os.exit`); `dofile`/`require` are
-  path-restricted to the own mod. `core.request_insecure_environment()`
+  heavily restricted (no `os.execute`/`os.exit`); **`require` is disabled
+  outright**; `dofile`/`loadfile` may READ the game dir and all mod dirs
+  (write access is world dir/mod-data only — details in
+  docs/research/luanti-lua.md). `core.request_insecure_environment()`
   only via `secure.trusted_mods` — we don't need it.
 - **Globally injected helpers** (builtin): `dump()`, `string.split`,
   `string:trim()`, `table.copy/indexof/insert_all/shuffle`,
