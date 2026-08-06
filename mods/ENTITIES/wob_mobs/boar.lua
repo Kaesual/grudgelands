@@ -5,6 +5,7 @@ wob_mobs.register_mob("wob_mobs:boar", {
 	description = "Boar",
 	type = "monster",
 	_wob_xp_reward = 15,
+	_wob_spawn_zones = {"borderland", "starter", "midlands"},
 
 	hp_min = 8,
 	hp_max = 12,
@@ -51,15 +52,23 @@ wob_mobs.register_mob("wob_mobs:boar", {
 	light_damage = 0,
 })
 
--- Spawns anywhere on grass for now; territory/tier gating comes with
--- WP2/WP6 via mobs:spawn_abm_check.
+-- Spawns on every race-region surface (biomes.lua) so ALL starter areas
+-- have day mobs — the old dirt_with_grass-only whitelist left the whole
+-- Horde side empty. Bare dirt covers the blight until WP6 brings themed
+-- mobs per region; the zone gating above keeps boars out of the heartland.
 mobs:spawn({
 	name = "wob_mobs:boar",
-	nodes = {"default:dirt_with_grass"},
+	nodes = {
+		"default:dirt_with_grass",
+		"default:dirt_with_coniferous_litter",
+		"default:dirt_with_rainforest_litter",
+		"default:dry_dirt_with_dry_grass",
+		"default:dirt",
+	},
 	min_light = 10,
 	interval = 30,
-	chance = 6000,
-	active_object_count = 2,
+	chance = 2000,
+	active_object_count = 4,
 	min_height = 0,
 	max_height = 300,
 })

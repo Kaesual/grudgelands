@@ -46,6 +46,12 @@ strictly separated:
 - We are building a **standalone game** (not a mod pack, not a fork of
   minetest_game/VoxeLibre). The game will eventually live in a layout like
   `games/<gameid>/` with `game.conf`, `menu/`, `mods/`, `settingtypes.txt`.
+- **Third-party code is vendored, never a submodule** (decided 2026-08-06):
+  every embedded foreign mod is documented in **[VENDOR.md](VENDOR.md)**
+  (upstream repo + commit + license + patch list); in-place changes carry a
+  `-- WOB PATCH:` marker at the change site; prefer wrapper mods
+  (`wob_mobs` pattern) over in-place edits. Details/update procedure:
+  VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
   in there**:
   - `luanti/` — the engine itself (C++ + builtin Lua). API reference:

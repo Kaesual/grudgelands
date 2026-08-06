@@ -2,13 +2,36 @@ wob_mobs = {}
 
 --
 -- Wrapper around mobs:register_mob with our extensions:
---   def._wob_xp_reward  — XP for the killer (player)
---   def._wob_faction    — faction id; the mob never attacks its own faction
---                         and is readable via wob_factions.get_object_faction
+--   def._wob_xp_reward   — XP for the killer (player)
+--   def._wob_faction     — faction id; the mob never attacks its own faction
+--                          and is readable via wob_factions.get_object_faction
+--   def._wob_spawn_zones — list of ring names (wob_core.zone_at) the mob may
+--                          spawn in; nil = anywhere (WP6 replaces this with
+--                          full level-tier gating)
 --
+
+local spawn_zones = {} -- mob name -> set of allowed zone names
+
+-- mobs_redo's global hook for additional spawn checks (an empty stub
+-- upstream; returning true BLOCKS the spawn).
+function mobs:spawn_abm_check(pos, node, name)
+	local zones = spawn_zones[name]
+	if zones and not zones[wob_core.zone_at(pos)] then
+		return true
+	end
+end
+
 function wob_mobs.register_mob(name, def)
 	local xp_reward = def._wob_xp_reward or 0
 	local faction = def._wob_faction
+
+	if def._wob_spawn_zones then
+		local set = {}
+		for _, zone in ipairs(def._wob_spawn_zones) do
+			set[zone] = true
+		end
+		spawn_zones[name] = set
+	end
 
 	-- Player punches (auto-attacks AND ability punches) pass through here:
 	-- feeds combat marking + rage generation via wob_core. NB mobs_redo's

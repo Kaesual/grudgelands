@@ -118,4 +118,25 @@ wrong — precedence); wrappers must return nil. Deferred: melee bonus/crit
 on auto-attacks ride on WP5's stack-meta tool-caps override; ability
 sounds/icons → Phase 3.
 
+**Playtest fixes (2026-08-06,** after the first WP1/WP2/WP15 runtime
+tests): **(a)** Mob spawn coverage — the WP1 whitelists only knew
+`dirt_with_grass`, so the whole Horde side (savanna/blight/jungle tops)
+and the dwarf hills had NO spawns; now all race-region surfaces spawn
+boar/zombie, rates raised (boar chance 6000→2000/aoc 4, zombie 3000/aoc 3)
+and ring-gated (borderland/starter/midlands) via the new
+`_wob_spawn_zones` + `mobs:spawn_abm_check` override in wob_mobs (WP6
+extends this to level tiers). **(b)** Camp platforms are terrain-adaptive:
+first generated mapchunk near a camp takes the max mapgen heightmap within
+40 nodes, persists the platform y in wob_core mod storage (fixed y=8 had
+buried camps inside hills → players spawned in an inescapable pit); spawn/
+respawn go through `wob_core.get_spawn_pos()` and re-read after emerge.
+**(c)** v7 terrain offsets raised (`mgv7_np_terrain_base` 4→14,
+`terrain_alt` 4→10, override_meta=true) → contiguous landmasses with lakes
+instead of starter archipelagos; **existing worlds get chunk seams — test
+on a fresh world**. **(d)** WP15 character preview fed `""` to `model[]`
+when rendered before player_api set the model (client "Mesh not found"
+spam) — empty properties now fall back to character.b3d/png. **(e)**
+Vendoring policy decided → VENDOR.md (upstream commits + patch inventory,
+`-- WOB PATCH` markers), AGENTS.md section.
+
 (Further WP details are added once the respective WP comes up.)

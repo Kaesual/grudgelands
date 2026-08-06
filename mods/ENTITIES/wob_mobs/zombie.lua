@@ -5,6 +5,7 @@ wob_mobs.register_mob("wob_mobs:zombie", {
 	description = "Zombie",
 	type = "monster",
 	_wob_xp_reward = 35,
+	_wob_spawn_zones = {"borderland", "starter", "midlands"},
 
 	hp_min = 16,
 	hp_max = 22,
@@ -50,15 +51,23 @@ wob_mobs.register_mob("wob_mobs:zombie", {
 	light_damage_max = 15,
 })
 
--- At night on grass and stone (surface); territory gating follows in WP2/WP6.
+-- At night on every race-region surface plus exposed stone (whitelist
+-- matches biomes.lua — see the boar note); zone-gated like the boar.
 mobs:spawn({
 	name = "wob_mobs:zombie",
-	nodes = {"default:dirt_with_grass", "default:stone"},
+	nodes = {
+		"default:dirt_with_grass",
+		"default:dirt_with_coniferous_litter",
+		"default:dirt_with_rainforest_litter",
+		"default:dry_dirt_with_dry_grass",
+		"default:dirt",
+		"default:stone",
+	},
 	max_light = 7,
 	day_toggle = false,
 	interval = 30,
-	chance = 6000,
-	active_object_count = 2,
+	chance = 3000,
+	active_object_count = 3,
 	min_height = 0,
 	max_height = 300,
 })

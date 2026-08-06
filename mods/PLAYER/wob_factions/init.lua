@@ -90,13 +90,15 @@ function wob_factions.set_faction(player, id)
 	return true
 end
 
--- Teleports (async, after emerge) to the faction camp.
+-- Teleports (async, after emerge) to the faction camp. The platform height
+-- is decided during generation of the camp chunks, so the spawn position is
+-- re-read AFTER the emerge completes.
 function wob_factions.teleport_to_spawn(player)
-	local def = wob_factions.get_faction_def(player)
-	if not def then
+	local id = wob_factions.get_faction(player)
+	if not id then
 		return
 	end
-	local spawn = def.spawn
+	local spawn = wob_core.get_spawn_pos(id)
 	local name = player:get_player_name()
 	core.emerge_area(
 		vector.offset(spawn, -16, -24, -16),
@@ -107,7 +109,7 @@ function wob_factions.teleport_to_spawn(player)
 			end
 			local p = core.get_player_by_name(name)
 			if p then
-				p:set_pos(wob_core.find_surface(spawn))
+				p:set_pos(wob_core.find_surface(wob_core.get_spawn_pos(id)))
 			end
 		end)
 end
@@ -189,11 +191,11 @@ end)
 
 -- Always respawn at the own faction camp.
 core.register_on_respawnplayer(function(player)
-	local def = wob_factions.get_faction_def(player)
-	if not def then
+	local id = wob_factions.get_faction(player)
+	if not id then
 		return
 	end
-	player:set_pos(def.spawn)
+	player:set_pos(wob_core.get_spawn_pos(id))
 	wob_factions.teleport_to_spawn(player)
 	return true
 end)

@@ -37,10 +37,20 @@ local function character_content(player)
 			wob_classes.get_dodge_chance(player) * 100),
 	}
 
+	-- On join the page can render before player_api applied the model; the
+	-- properties then hold "" / {} (truthy!), which fed the model[] element
+	-- an empty mesh ("Client::getMesh(): Mesh not found" client errors).
+	local mesh = props.mesh
+	if not mesh or mesh == "" then
+		mesh = "character.b3d"
+	end
+	local textures = props.textures
+	if not textures or #textures == 0 or textures[1] == "" then
+		textures = {"character.png"}
+	end
 	local fs = {
 		("model[0,0.4;2.4,4.4;wob_preview;%s;%s;0,160]"):format(
-			esc(props.mesh or "character.b3d"),
-			esc(table.concat(props.textures or {"character.png"}, ","))),
+			esc(mesh), esc(table.concat(textures, ","))),
 	}
 	for i, line in ipairs(lines) do
 		table.insert(fs, ("label[2.7,%.2f;%s]"):format(0.35 + i * 0.45, esc(line)))
