@@ -1,5 +1,9 @@
 grug_mobs = {}
 
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Currently only the
+-- named-rare spawner writes here (rares.lua).
+grug_mobs.storage = core.get_mod_storage()
+
 --
 -- Wrapper around mobs:register_mob with our extensions:
 --   def._grug_xp_reward   — XP for the killer (player); OVERRIDES the level
@@ -21,6 +25,9 @@ grug_mobs = {}
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
 --                          nil = no extra check. Zones and check are ANDed.
+--   def._grug_leash_range — per-def leash radius in nodes around the home
+--                          position (default grug_mobs.LEASH_RANGE = 40);
+--                          the "territorial" verb of bear/ape uses ~20
 --   def._grug_no_leash    — true: never gives up a player chase and never
 --                          resets/heals (zombie verb "never leashes"; mobs
 --                          with a hand-rolled leash of their own: kraken)
@@ -140,6 +147,7 @@ function grug_mobs.register_mob(name, def)
 	local aggro_cfg = {
 		no_leash = def._grug_no_leash,
 		soft_deaggro = def._grug_soft_deaggro,
+		leash_range = def._grug_leash_range,
 	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
@@ -183,9 +191,20 @@ function grug_mobs.register_mob(name, def)
 			-- Base threat + combat marking + rage; also refreshes the leash
 			-- contact clock (grug_core/combat.lua).
 			grug_core.run_player_hit_mob(hitter, self, damage or 0)
+			-- Lethal? mobs_redo subtracts the damage right after this wrapper
+			-- returns (api.lua:2698ff), so this is the earliest — and only —
+			-- place where killer AND victim are both known.
+			local lethal = self.health - math.floor(damage or 0) <= 0
+			-- Named rare killed by a player: start its respawn timer
+			-- (rares.lua). Deliberately OUTSIDE the XP branch below — the
+			-- gray rule can zero the XP, the kill still counts.
+			if lethal and self._grug_rare_id and
+					not self.temp.grug_rare_death_sent then
+				self.temp.grug_rare_death_sent = true
+				grug_mobs.rare_killed(self._grug_rare_id)
+			end
 			local xp = grug_mobs.kill_xp(self)
-			if xp > 0 and not self.temp.grug_xp_awarded and
-					self.health - math.floor(damage or 0) <= 0 then
+			if xp > 0 and not self.temp.grug_xp_awarded and lethal then
 				self.temp.grug_xp_awarded = true
 				-- Gray rule (combat_stats.md §6): a mob at killer level - 10
 				-- or below pays nothing, and says nothing.
@@ -237,6 +256,16 @@ function grug_mobs.register_mob(name, def)
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
+		-- Elite/rare wind-up (telegraph.lua). Guarded here so a normal mob
+		-- pays one field comparison per step and nothing else.
+		if self._grug_tier and self._grug_tier ~= "normal" then
+			grug_mobs.telegraph_tick(self, dtime)
+		end
+		-- Named-rare patrol (rares.lua); the flag only exists on the handful
+		-- of mobs the rare spawner placed.
+		if self._grug_rare_id then
+			grug_mobs.rare_tick(self, dtime)
+		end
 		if night_truce or faction then
 			-- ONE target-acquisition veto consumed by general_attack (GRUG
 			-- PATCH in mobs/api.lua): the mob skips vetoed players and picks
@@ -282,8 +311,12 @@ end
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/verbs.lua")
+dofile(modpath .. "/telegraph.lua")
 dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")
 dofile(modpath .. "/zombie.lua")
 dofile(modpath .. "/kraken.lua")
+-- After the mob files: a rare spec names an already registered mob.
+dofile(modpath .. "/rares.lua")

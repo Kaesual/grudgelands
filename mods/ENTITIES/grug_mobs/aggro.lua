@@ -56,8 +56,16 @@ function grug_mobs.apply_aggro_fields(self, cfg)
 	if cfg.soft_deaggro == false and self._grug_soft_deaggro ~= false then
 		self._grug_soft_deaggro = false
 	end
+	-- Per-def leash radius (the "territorial" verb of bear/ape, ~20 m —
+	-- biomes_mobs.md §3.1 "guards radius, short chase"). nil keeps the
+	-- global default, so nothing changes for every other mob.
+	if cfg.leash_range and self._grug_leash_range ~= cfg.leash_range then
+		self._grug_leash_range = cfg.leash_range
+	end
 end
 
+-- Default leash radius; a def may override it per mob with
+-- _grug_leash_range (installed onto the entity by apply_aggro_fields above).
 grug_mobs.LEASH_RANGE = 40 -- m from the home position
 grug_mobs.LEASH_TIMEOUT = 15 -- s without player contact
 local LEASH_INTERVAL = 1 -- s between checks (performance rule: throttled)
@@ -107,7 +115,8 @@ local function leash_check(self)
 	-- `home` comes back from staticdata as a plain table (no vector
 	-- metatable) — vector.distance reads the components, that is fine, but
 	-- never compare positions with `==` (luanti-lua.md).
-	if pos and home and vector.distance(pos, home) > grug_mobs.LEASH_RANGE then
+	local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
+	if pos and home and vector.distance(pos, home) > range then
 		grug_mobs.leash_reset(self)
 	end
 end

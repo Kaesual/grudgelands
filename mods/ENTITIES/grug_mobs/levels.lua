@@ -78,7 +78,15 @@ function grug_mobs.tag_text(self)
 		hp_max = prop and prop.hp_max or math.max(1, self.health or 1)
 	end
 	local hp = math.max(0, math.floor(self.health or 0))
-	return tier_def(self._grug_tier).prefix
+	local prefix = tier_def(self._grug_tier).prefix
+	-- Elite/rare wind-up warning (telegraph.lua, combat_stats.md §3): a
+	-- RUNTIME flag in self.temp, so it can never be serialized into a mob's
+	-- staticdata and stick there. telegraph.lua sets/clears it and forces an
+	-- update_tag on both edges.
+	if self.temp and self.temp.grug_telegraph then
+		prefix = "!! " .. prefix
+	end
+	return prefix
 		.. (self.description or self.name or "?")
 		.. " [Lv " .. (self._grug_level or 1) .. "] " .. hp .. "/" .. hp_max
 end
