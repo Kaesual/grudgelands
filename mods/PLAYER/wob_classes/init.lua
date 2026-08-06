@@ -48,6 +48,14 @@ function wob_classes.get_class_def(player)
 	return id and wob_classes.registered_classes[id] or nil
 end
 
+local class_chosen_callbacks = {}
+
+-- func(player, class_id) — called after a class was set (selection dialog
+-- AND admin /class switches). wob_abilities grants the kit here.
+function wob_classes.register_on_class_chosen(func)
+	table.insert(class_chosen_callbacks, func)
+end
+
 function wob_classes.set_class(player, id)
 	if not wob_classes.registered_classes[id] then
 		return false
@@ -55,6 +63,9 @@ function wob_classes.set_class(player, id)
 	player:get_meta():set_string(META_CLASS, id)
 	-- heal_gain: a fresh character starts at full HP; admin switches are rare
 	wob_classes.apply_stats(player, true)
+	for _, func in ipairs(class_chosen_callbacks) do
+		func(player, id)
+	end
 	return true
 end
 

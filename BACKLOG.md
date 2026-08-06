@@ -24,7 +24,7 @@ window. Rules:
 | WP1 | Starter-zone mobs: boar + zombie, XP on kill, loot drops | ✅ (runtime test by user pending) | WP0 |
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | ✅ engine biomes (v7 + min_pos/max_pos) in `wob_mapgen`; zone/difficulty API + is_protected in `wob_core` (runtime test by user pending) | WP0 |
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | ✅ `wob_classes`: class+race registry, creation flow faction→race→class, attribute/HP formulas via level pipeline, /char /class /race commands (runtime test pending) | WP0 |
-| WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | open | WP3 |
+| WP4 | Abilities: 2–4 per class, cooldowns, mana/resource as HUD bar | ✅ `wob_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `wob_core` (runtime test pending; spec: `docs/design/classes.md`) | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
 | WP6 | Faction mobs: guards, outposts, mob tiers by distance, elite mobs; nametags (level+HP), con-color target frame, gray = no XP | open (spec: `docs/design/combat_stats.md` §3/§6) | WP1, WP2 |
 | WP7 | Money & traders: copper/silver/gold currency (`docs/design/economy.md`), buy-all-drops, selling UI | open | WP1 |
@@ -96,5 +96,26 @@ bags inside bags; no recipes yet (Tailor WP10 / vendor WP7, test via
 `register_allow_player_inventory_action` callbacks combine as
 OR-with-short-circuit — return nil when unconcerned, a number swallows
 all later callbacks.
+
+**WP4 — Abilities** (✅ 2026-08-06): Design decided in
+`docs/design/classes.md` (kits, costs, cooldowns — numbers live THERE).
+`wob_abilities`: abilities are indestructible hotbar tools (item `range` =
+targeting range, wear bar = running cooldown, tinted-orb icons via
+`^[multiply` on one CC0 texture); kit auto-granted/purged on join and via
+the new `wob_classes.register_on_class_chosen`. Resources are runtime-only
+(mana full on join/respawn, rage 0); regen/decay + cooldown display run in
+one 0.5 s globalstep. `wob_core/combat.lua` = damage pipeline:
+`deal_ability_damage` (crit ×1.5, applies via `object:punch` so armor/
+knockback/XP-on-death keep working), `heal_player`, central dodge roll as
+hp-change modifier, `mark_in_combat/in_combat` (5 s window, reused by
+WP6 leash + recovery), threat **stubs** (`add_threat`/`add_heal_threat` —
+WP6 fills them; Taunt already forces targets via mobs_redo
+`do_attack(player, force)`). Crit/dodge stubs in wob_core are overridden
+by wob_classes (get_player_faction pattern). **mobs_redo gotcha
+(documented in wob_mobs)**: a truthy return from a mob's `do_punch`
+CANCELS the punch (the "return false to cancel" comment in api.lua is
+wrong — precedence); wrappers must return nil. Deferred: melee bonus/crit
+on auto-attacks ride on WP5's stack-meta tool-caps override; ability
+sounds/icons → Phase 3.
 
 (Further WP details are added once the respective WP comes up.)

@@ -10,6 +10,20 @@ function wob_mobs.register_mob(name, def)
 	local xp_reward = def._wob_xp_reward or 0
 	local faction = def._wob_faction
 
+	-- Player punches (auto-attacks AND ability punches) pass through here:
+	-- feeds combat marking + rage generation via wob_core. NB mobs_redo's
+	-- do_punch handling cancels the punch on any truthy return — return nil
+	-- when unconcerned.
+	local old_do_punch = def.do_punch
+	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		if hitter and hitter:is_player() then
+			wob_core.run_player_hit_mob(hitter, self, damage or 0)
+		end
+		if old_do_punch then
+			return old_do_punch(self, hitter, tflp, tool_capabilities, dir, damage)
+		end
+	end
+
 	local old_on_death = def.on_death
 	def.on_death = function(self, killer)
 		if xp_reward > 0 and killer and killer:is_player() then

@@ -93,7 +93,8 @@ game (not a mod pack), written in Lua.
       WP4 damage pipeline
 - [ ] Simplified skill trees: 2 trees of ~5 talents per class, talent
       points per level, formspec UI
-- [ ] 2–4 active abilities per class (hotbar/item based), cooldowns
+- [x] 2–4 active abilities per class (hotbar/item based), cooldowns
+      (`wob_abilities`, 3 per class; spec `docs/design/classes.md`)
 
 ### 1.4 Mobs & combat
 - [ ] Faction guards (attack the enemy faction), spawned by military

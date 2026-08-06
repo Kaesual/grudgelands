@@ -131,4 +131,6 @@ function wob_core.find_surface(pos)
 	return pos
 end
 
-dofile(core.get_modpath(core.get_current_modname()) .. "/protection.lua")
+local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/protection.lua")
+dofile(modpath .. "/combat.lua")

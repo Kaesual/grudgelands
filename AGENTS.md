@@ -139,10 +139,18 @@ Details + line numbers in [docs/research/](docs/research/).
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. XP loss on death via `core.register_on_dieplayer`.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
-  punch-interval factor. Abilities via `core.register_on_punchplayer`,
-  `ObjectRef:punch()`, `set_physics_override` (buffs), `hud_add` statbar
-  for mana/resources. Adopt a unified damage-reason system like VoxeLibre
-  `mcl_damage`.
+  punch-interval factor. **Damage pipeline lives in `wob_core/combat.lua`**
+  (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
+  full punch interval so armor/knockback/XP keep working), `heal_player`,
+  central dodge roll (hp-change modifier), `mark_in_combat/in_combat`
+  (5 s window), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
+  them). Crit/dodge accessors are wob_core stubs overridden by
+  wob_classes. Abilities = hotbar tools in `wob_abilities` (item `range` =
+  targeting range, wear bar = cooldown display); kits/numbers:
+  `docs/design/classes.md`. **mobs_redo `do_punch` gotcha**: any truthy
+  return cancels the punch (api.lua comment claims the opposite) — hook
+  wrappers must return nil; player-hit hook:
+  `wob_core.register_on_player_hit_mob` (fired by wob_mobs).
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via

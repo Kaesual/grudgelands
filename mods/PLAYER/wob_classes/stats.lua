@@ -68,6 +68,11 @@ function wob_classes.apply_stats(player, heal_gain)
 	end
 end
 
+-- Wire the real rolls into wob_core's damage pipeline (stub override,
+-- same pattern as wob_core.get_player_faction).
+wob_core.get_crit_chance = wob_classes.get_crit_chance
+wob_core.get_dodge_chance = wob_classes.get_dodge_chance
+
 wob_xp.register_on_level_change(function(player, old_level, new_level)
 	wob_classes.apply_stats(player,
 		old_level ~= nil and new_level > old_level)
