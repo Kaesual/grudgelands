@@ -1,29 +1,43 @@
 # World Design
 
-Decided spec (2026-08-05/06). Implementation: WP2 (mapgen, difficulty
-function, build restrictions), WP6 (guards/outposts), WP13 (structures,
-villages); housing/Home Stone get their own WPs when scheduled.
+Decided spec (2026-08-05/06; continent redesign 2026-08-06). Implementation:
+WP2 (mapgen, difficulty function, build restrictions), WP18 (continent
+rework), WP6 (guards/outposts), WP13 (structures, villages); housing/Home
+Stone get their own WPs when scheduled.
 
-## 1. Geography & difficulty rings
+## 1. Geography: two continents
 
-North = Horde territory, south = Alliance territory, mirrored at z=0.
-`wob_core.difficulty_at(pos)` = distance from the border, mapped to rings:
+The world map is **two huge, separate islands — one continent per
+faction** (WoW's two-continent memory). Horde in the north, Alliance in
+the south, mirrored at z=0. Everything else is ocean.
+
+- **Ocean strait along z=0**: water at least until z=±100; there the
+  faction continents begin. Minimum 200 nodes of open water between the
+  continents. Crossing to the enemy continent means crossing the strait
+  (swimming; boats later) — the strait itself is NOT extra dangerous
+  (section 2b).
+- **Continent gameplay rectangle**: z = ±100 … ±2100, x = −2000 … +2000
+  (4000×2000 per faction). This rectangle is the *legal* bound (build
+  rights, ring math); the **visible coastline is soft/noisy** and wanders
+  inside it, like biome transitions — no straight-edge continents, no
+  mountain wall (the old x=±2000 wall is dropped with WP18).
+- Each continent contains 3 race-flavored biome regions (section 7).
+- An invader landing on the enemy coast meets the weak starter zone
+  first; every step deeper means stronger guards/mobs — spatial level
+  gating by design. Coast landings replace the old land-border crossing
+  as the PvP quest hotspot.
+
+Difficulty rings (`wob_core.difficulty_at(pos)` = |z| mapped to rings,
+re-anchored to the continent):
 
 | Zone | z-range (mirrored N/S) | Mob/guard level |
 |------|------------------------|-----------------|
-| Neutral borderland | −64 … +64 | lvl 1–5 neutral wildlife; PvP quest hotspot |
-| Starter ring (capital at ~z=±200) | 64 … 400 | lvl 1–10 |
+| Ocean strait & beaches | 0 … ~100 | lvl 1–5 neutral wildlife, PvP contact zone |
+| Starter ring (capital at ~z=±200) | 100 … 400 | lvl 1–10 |
 | Midlands | 400 … 1000 | lvl 10–30 |
-| Heartland | 1000 … 1800 | lvl 30–50, elites |
-| Deep heartland (raid areas, Phase 2) | 1800 … 2400 | lvl 50–60+, raid bosses |
-| Housing frontier (safe zone) | beyond ±2400 | no mobs, no PvP |
-
-- East–west: **soft world border at ~x=±2000** (ocean/mountains), so
-  content density stays high and outposts can cover the width.
-- Each territory contains 3 race-flavored biome regions (section 7).
-- An invader crossing the border meets the enemy's weak starter zone
-  first; every step deeper means stronger guards/mobs — spatial level
-  gating by design.
+| Heartland | 1000 … 1700 | lvl 30–50, elites |
+| Deep heartland (raid areas, Phase 2) | 1700 … 2100 | lvl 50–60+, raid bosses |
+| Coastal ocean, then open sea | outward from the coast | section 2b; housing islands: section 5 |
 
 ## 2. Destructibility
 
@@ -36,8 +50,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R2 — Enemy territory**: no digging, no node placement of any kind —
   **including torches, ladders etc.** Items remain usable. Darkness and
   danger in enemy land are a feature.
-- **R3 — Neutral borderland**: no digging/placement for anyone (readable,
-  fair PvP battlefield).
+- **R3 — Ocean**: everything outside the two continent rectangles
+  (strait, coastal ocean, open sea) is locked for everyone — no digging,
+  no placement. Each faction can only build INSIDE its own continent
+  rectangle. Sole exception: guild housing cubes (R5, section 5).
 - **R4 — Ores/resources respawn** (node timers) in the open world, so a
   persistent world doesn't run dry. **Exception: no respawn inside guild
   mining claims and housing plots** — a claim's price buys its *finite*
@@ -51,6 +67,22 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 
 Implementation: one central `core.is_protected` override in `wob_core`
 (faction + position check).
+
+## 2b. Ocean zones & deep-sea danger
+
+The ocean is layered by distance from the coast:
+
+- **Coastal ocean (~2000 nodes around each continent)**: guaranteed real
+  ocean — the terrain generates, but it MUST be water, no islands. The
+  coast is active gameplay space (e.g. special farmable underwater mobs);
+  content lands with its own WPs.
+- **Open sea (beyond the coastal ocean)**: deliberately deadly. Massively
+  oversized high-level guard mobs (lvl ~100 — e.g. giant octopuses) that
+  one-shot anything. Sea travel is discouraged by design; players are not
+  meant to reach the world edge or swim to housing islands.
+- **The strait between the continents is NOT extra dangerous** — danger
+  only guards the places players are not supposed to go, never the
+  faction-vs-faction crossing.
 
 ## 3. Capitals
 
@@ -85,30 +117,36 @@ Military outposts across each territory enforce the level gating:
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
 
-## 5. Housing (frontier model, guild-owned)
+## 5. Housing (ocean model, guild-owned)
 
-A safe housing band lies beyond the deep heartland (z beyond ±2400): no
-mobs, no PvP, "infinite" outward expansion. **Owner is always a guild**
-(`guilds.md`) — a solo player founds a solo guild; groups pool housing.
+Housing moves off-continent (continent redesign 2026-08-06): guild
+housing lies **in the safe ocean beyond the coastal zone** (|z| ≳ 5000,
+"behind" the own continent), allocated **on demand** when a guild buys
+land — no mobs, no PvP, effectively unlimited reserve. **Owner is always
+a guild** (`guilds.md`) — a solo player founds a solo guild; groups pool
+housing.
 
-- Plots on a tile grid with ample expansion reserve; **one plot per
-  guild**. Bought is bought — no upkeep, no decay.
-- Base plot with **mining rights below the surface**; **paid expansion
-  in steps** (sides and depth, prices rising per step) — the central
-  long-term gold sink. Tile reserve and step sizes are tuned so a guild
-  can grow for a very long time and practically never reaches the
-  maximum (numbers with the economy design,
-  TODO-design-items-crafting.md §4).
+Decided anchors (the open layout questions — one island per guild vs. a
+contiguous housing shelf, sizes, access — live in
+`TODO-design-housing.md` until settled):
+
+- **One housing area per guild**, generated/allocated when bought.
+  Bought is bought — no upkeep, no decay.
+- **Build rights (x/z extent) and mining rights (y depth) are bought
+  SEPARATELY, in paid steps** with rising prices; together they define
+  the cube the guild may edit — the central long-term gold sink. A fresh
+  purchase starts with a small part of a much larger reserved area
+  (numbers with the economy design, TODO-design-items-crafting.md §4).
 - **Depth treasures**: greater depths hold exclusive, artificially
   limited gems/materials — ingredient source for high-end recipes. Like
   mining claims: **no respawn** — what is dug is gone (R4).
-- All guild members build/dig inside the plot; everyone else is locked
-  out.
-- **Untouchable buffer strips** between tiles (nobody can build or dig
-  there) — a wall around the plot is truly impenetrable.
-- **Visitors are allowed** (plots can be entered and admired); who wants
+- All guild members build/dig inside the cube; everyone else is locked
+  out. The surrounding ocean is unbuildable for everyone (R3), so the
+  safe buffer between guild areas is automatic.
+- **Visitors are allowed** (areas can be entered and admired); who wants
   privacy builds a wall.
-- Access via the plot's own waypoint (section 6).
+- Access via the area's own waypoint (section 6) — the deadly open sea
+  (2b) is not the intended travel path.
 
 ## 6. Travel: waypoints & Home Stone
 
@@ -123,7 +161,8 @@ mobs, no PvP, "infinite" outward expansion. **Owner is always a guild**
   (waypoint → waypoint), instant and free — travel time is the cost;
   mounts stay relevant.
 - **No waypoints in enemy territory** (not claimable or usable there)
-  and **none in the neutral borderland**.
+  and **none in the strait/ocean** (except each guild's housing
+  waypoint, section 5).
 - Phase 2 extension: **Nether crossings** link mirrored points
   (x, z) ↔ (x, −z) into enemy territory
   (TODO-design-nether.md until specced).

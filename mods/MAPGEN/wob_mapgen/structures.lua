@@ -13,9 +13,11 @@ local SKIRT_DEPTH = 16 -- platform base reaches this far below the surface
 
 -- Terrain-adaptive platform height: the first mapchunk that touches a camp
 -- measures the mapgen heightmap in a neighborhood around the camp center
--- and takes the MAXIMUM — the platform must not sit lower than nearby
--- terrain, or the cleared camp square becomes an inescapable pit. The
--- result is persisted via wob_core (decided once, never shifts).
+-- and takes the MEDIAN — the platform sits at the typical local terrain
+-- level. (The maximum put the platform on par with nearby peaks: stepping
+-- off meant a deadly fall. The old fixed y buried it inside hills. The
+-- median bounds both failure modes; remaining slope faces are climbable.)
+-- The result is persisted via wob_core (decided once, never shifts).
 local NEIGHBORHOOD = 40 -- Chebyshev radius sampled around the camp center
 local PLATFORM_MIN_Y = wob_core.CAMP_PLATFORM_Y -- keeps it above water
 local PLATFORM_MAX_Y = 100 -- sanity cap (find_surface scans from 120)
@@ -30,7 +32,7 @@ local function decide_platform_y(spawn, minp, maxp)
 	local z1 = math.max(minp.z, spawn.z - NEIGHBORHOOD)
 	local z2 = math.min(maxp.z, spawn.z + NEIGHBORHOOD)
 	local width = maxp.x - minp.x + 1
-	local best
+	local samples = {}
 	for z = z1, z2 do
 		local row = (z - minp.z) * width
 		for x = x1, x2 do
@@ -38,12 +40,16 @@ local function decide_platform_y(spawn, minp, maxp)
 			-- Values clamped to the chunk edge mean the real surface lies
 			-- outside this chunk's y range — not usable for a decision.
 			if h and h > minp.y and h < maxp.y then
-				best = math.max(best or PLATFORM_MIN_Y, h)
+				samples[#samples + 1] = h
 			end
 		end
 	end
-	return best and math.min(math.max(best, PLATFORM_MIN_Y), PLATFORM_MAX_Y)
-		or nil
+	if #samples == 0 then
+		return nil
+	end
+	table.sort(samples)
+	local median = samples[math.floor((#samples + 1) / 2)]
+	return math.min(math.max(median, PLATFORM_MIN_Y), PLATFORM_MAX_Y)
 end
 
 local c_air = core.get_content_id("air")

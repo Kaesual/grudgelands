@@ -6,8 +6,10 @@ game (not a mod pack), written in Lua.
 
 ## Vision
 
-- Two factions (**Horde** / **Alliance**), each with a large contiguous
-  territory of its own (multi-biome region, north/south split).
+- Two factions (**Horde** / **Alliance**), each with **its own huge
+  continent** (multi-biome, Horde north / Alliance south, separated by
+  an ocean strait at z=0; everything beyond the continents is ocean,
+  deadly far offshore — `docs/design/world.md` §1/§2b).
 - **Races, kept deliberately simple**: each faction consists of several
   races. One shared capital per faction (possibly with race districts);
   the faction territory is divided into race-flavored regions (e.g.
@@ -26,10 +28,11 @@ game (not a mod pack), written in Lua.
   your own faction's territory (outside protected zones such as capitals,
   outposts and quest structures); enemy territory and the border zone
   cannot be modified. Ores respawn so a persistent world does not run dry.
-- **Player housing**: guild-owned frontier plots in a safe zone beyond
-  the heartland with paid horizontal/depth expansion and depth
-  treasures — the main outlet for free building and the central gold
-  sink (`docs/design/world.md` §5).
+- **Player housing**: guild-owned areas in the safe ocean behind the own
+  continent (island model in design), with separately purchasable build
+  (x/z) and mining (depth) rights and depth treasures — the main outlet
+  for free building and the central gold sink (`docs/design/world.md`
+  §5, layout: `TODO-design-housing.md`).
 - **Travel**: waypoint network (Diablo/PoE style — teleport only from
   waypoint to waypoint, unlocked by visiting, none in enemy territory)
   + a Home Stone to the own capital (10 s cast, damage interrupts,
@@ -164,9 +167,10 @@ game (not a mod pack), written in Lua.
       engine visibility is global — no per-viewer invisibility, so
       stealth is semi-transparent/invisible for everyone
 - [ ] More jobs: **Tailor**, possibly Enchanter
-- [ ] **Player housing** (guild-owned frontier plots with paid
-      expansion + depth treasures; spec: `docs/design/world.md` §5) —
-      may be pulled into Phase 1 since it is the central gold sink
+- [ ] **Player housing** (guild-owned ocean areas with separately paid
+      build/mining rights + depth treasures; spec: `docs/design/world.md`
+      §5, layout TODO-design-housing.md) — may be pulled into Phase 1
+      since it is the central gold sink
 - [ ] Race perks beyond the basics: race-exclusive professions/recipes,
       race-restricted classes (decide once more classes exist)
 - [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)

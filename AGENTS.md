@@ -206,9 +206,12 @@ Details + line numbers in [docs/research/](docs/research/).
   **Landmine**: ore/decoration defs whose `biomes` names don't resolve
   are silently unrestricted (world-wide) — never register ores/decos
   against biome names that might not exist. `game.conf` pins
-  `allowed_mapgens = v7`. Camp platforms + the x=±2000 mountain wall are
-  a small `register_on_generated` VoxelManip pass
-  (`wob_mapgen/structures.lua`). Zone/difficulty queries:
+  `allowed_mapgens = v7`. Camp platforms (terrain-adaptive height:
+  heightmap median, persisted in mod storage) + the x=±2000 mountain wall
+  are a small `register_on_generated` VoxelManip pass
+  (`wob_mapgen/structures.lua`). **NB the wall and the land borderland
+  are scheduled for removal — continent redesign (two ocean-separated
+  continents, world.md §1, WP18).** Zone/difficulty queries:
   `wob_core.territory_at/zone_at/difficulty_at/mob_level_at`.
   LotT trick: biome signature nodes (e.g. grass variants) drive mob spawns
   via a node whitelist.
