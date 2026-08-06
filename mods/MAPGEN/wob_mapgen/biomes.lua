@@ -4,6 +4,10 @@
 -- organic transition. z-cuboids keep every biome inside its territory.
 
 local NEUTRAL = wob_core.NEUTRAL_HALF_WIDTH
+-- Territory biomes reach this far into the neutral borderland so the
+-- territory edge is a noisy voronoi blend instead of a straight line.
+-- Gameplay borders (protection, territory_at) stay crisp at +-NEUTRAL.
+local TERRITORY_BIOME_Z = NEUTRAL - 31
 local WEST_MAX = wob_core.REGION_WEST_MAX
 local CENTER_MIN = wob_core.REGION_CENTER_MIN
 local CENTER_MAX = wob_core.REGION_CENTER_MAX
@@ -70,14 +74,14 @@ register_region({
 	top = "default:dirt_with_coniferous_litter",
 	filler = "default:dirt",
 	filler_depth = 3,
-	x_max = WEST_MAX, z_max = -NEUTRAL - 1,
+	x_max = WEST_MAX, z_max = -TERRITORY_BIOME_Z,
 	heat = 25, humidity = 65,
 })
 register_region({
 	name = "wob_alliance_plains", -- Humans: plains/meadows, capital region
 	top = "default:dirt_with_grass",
 	filler = "default:dirt",
-	x_min = CENTER_MIN, x_max = CENTER_MAX, z_max = -NEUTRAL - 1,
+	x_min = CENTER_MIN, x_max = CENTER_MAX, z_max = -TERRITORY_BIOME_Z,
 	heat = 50, humidity = 35,
 })
 register_region({
@@ -85,7 +89,7 @@ register_region({
 	top = "default:dirt_with_grass",
 	filler = "default:dirt",
 	filler_depth = 3,
-	x_min = EAST_MIN, z_max = -NEUTRAL - 1,
+	x_min = EAST_MIN, z_max = -TERRITORY_BIOME_Z,
 	heat = 65, humidity = 70,
 })
 
@@ -95,14 +99,14 @@ register_region({
 	top = "default:dirt",
 	filler = "default:dirt",
 	filler_depth = 2,
-	x_max = WEST_MAX, z_min = NEUTRAL + 1,
+	x_max = WEST_MAX, z_min = TERRITORY_BIOME_Z,
 	heat = 30, humidity = 25,
 })
 register_region({
 	name = "wob_horde_savanna", -- Orcs: savanna/badlands, capital region
 	top = "default:dry_dirt_with_dry_grass",
 	filler = "default:dry_dirt",
-	x_min = CENTER_MIN, x_max = CENTER_MAX, z_min = NEUTRAL + 1,
+	x_min = CENTER_MIN, x_max = CENTER_MAX, z_min = TERRITORY_BIOME_Z,
 	heat = 85, humidity = 40,
 })
 register_region({
@@ -110,7 +114,7 @@ register_region({
 	top = "default:dirt_with_rainforest_litter",
 	filler = "default:dirt",
 	filler_depth = 3,
-	x_min = EAST_MIN, z_min = NEUTRAL + 1,
+	x_min = EAST_MIN, z_min = TERRITORY_BIOME_Z,
 	heat = 80, humidity = 75,
 })
 

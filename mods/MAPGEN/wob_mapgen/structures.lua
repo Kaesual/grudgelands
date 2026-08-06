@@ -5,7 +5,8 @@
 --    keeps content density high (docs/design/world.md §1)
 
 local WALL_X = wob_core.WORLD_HALF_WIDTH_X
-local WALL_THICKNESS = 16
+local WALL_THICKNESS = 64 -- footprint of the mountain range, outward from |x|=WALL_X
+local WALL_CREST = 32 -- crest sits this far into the band
 local CAMP_HALF = wob_core.CAMP_HALF
 local PLATFORM_Y = wob_core.CAMP_PLATFORM_Y
 local CLEAR_TOP = wob_core.CAMP_CLEAR_TOP
@@ -15,29 +16,36 @@ local c_air = core.get_content_id("air")
 local c_stone = core.get_content_id("default:stone")
 local c_cobble = core.get_content_id("default:cobble")
 
--- Jagged wall crest between ~68 and ~108 so it reads as a mountain range.
+-- Mountain range profile: a jagged crest line along z (~72..120) with the
+-- flanks dropping ~2.5 nodes per node of distance from the crest, so the
+-- wall meets the terrain as a slope instead of a 90-degree cliff.
 local wall_noise
-local function wall_top(x, z)
+local function wall_ridge(z)
 	wall_noise = wall_noise or core.get_perlin({
-		offset = 88, scale = 20,
+		offset = 96, scale = 24,
 		spread = {x = 160, y = 160, z = 160},
 		seed = 52731, octaves = 2, persist = 0.6,
 	})
-	return math.floor(wall_noise:get_2d({x = x, y = z}))
+	return wall_noise:get_2d({x = z, y = 0})
 end
 
 local wall_bands = {
-	{x_min = WALL_X, x_max = WALL_X + WALL_THICKNESS - 1},
-	{x_min = -WALL_X - WALL_THICKNESS + 1, x_max = -WALL_X},
+	{x_min = WALL_X, x_max = WALL_X + WALL_THICKNESS - 1,
+		crest = WALL_X + WALL_CREST},
+	{x_min = -WALL_X - WALL_THICKNESS + 1, x_max = -WALL_X,
+		crest = -WALL_X - WALL_CREST},
 }
 
 local function build_wall(data, area, minp, maxp)
 	for _, band in ipairs(wall_bands) do
 		local x1 = math.max(minp.x, band.x_min)
 		local x2 = math.min(maxp.x, band.x_max)
-		for x = x1, x2 do
-			for z = minp.z, maxp.z do
-				local y2 = math.min(maxp.y, wall_top(x, z))
+		for z = minp.z, maxp.z do
+			local ridge = wall_ridge(z)
+			for x = x1, x2 do
+				local dist = math.abs(x - band.crest)
+				local top = math.floor(ridge - dist * 5 / 2)
+				local y2 = math.min(maxp.y, top)
 				if y2 >= minp.y then
 					local idx = area:index(x, minp.y, z)
 					for _ = minp.y, y2 do
