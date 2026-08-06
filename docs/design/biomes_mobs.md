@@ -45,13 +45,21 @@ Stats quick reference (normal tier; compute, don't copy):
 ### 1.1 Geometry anchors (from grug_core / world.md §1)
 
 Per continent (Kragmar coordinates; Elandor = z mirrored): rectangle
-x −1500..1500, z 100..1700; capital ~(0, 900); safe core x −600..600,
-z 600..1200; inner ring ≤ ~550 radial from capital; outer ring beyond;
+x −1500..1500, z 100..1700; capital ~(0, 900); safe core ≈ x ±645,
+z 600..1132 (implemented field, see below); inner ring ≤ ~550 radial
+from capital (front side exact); outer ring beyond;
 war coast z 100..300. Race bands (fixed compass): west x ≤ −500,
 center −700..700, east ≥ 500 — Accord W/C/E = Dwarf/Human/Elf, Throng
 W/C/E = Undead/Orc/Troll.
 
-**New `_grug_spawn_zones` names (WP18 replaces borderland/starter/
+The radial level field is **z-asymmetric** (WP18): the strait-facing
+front uses the wider scale 1000, the back side 775, so the approach to
+the capped war coast stays low-level instead of peaking above it —
+measured core belt ≈ x ±645, z 600..1132. The guard field is floored
+at 60 inside the core (hard step at the core edge — a deliberate
+guarded perimeter, not a continuity bug).
+
+**`_grug_spawn_zones` names (WP18 replaced borderland/starter/
 midlands):** `strait` (beach z 0..±100), `war_coast` (±100..±300),
 `core`, `inner`, `outer`, `coast` (last ~150 nodes before shoreline at
 flanks/back), `underground` (y < −40).
@@ -80,15 +88,20 @@ Continent column: **A** = Elandor (Accord, south), **T** = Kragmar
 | 15 | grug_ocean | both | sand-bottom ocean | y < 1 | — |
 | 16 | grug_underground | both | caves (existing) | y ≤ −256 | depth axis |
 
+`grug_crags` additionally registers an alpine sibling
+**`grug_crags_snowy`** (same cuboid and climate point, y ≥ 80, snowblock
+top — §1.3), so the world holds **17 biome registrations**.
+
 War coast is **not** its own biome (decided 2026-08-06): it uses the
 local band's settled biome plus a battlefield decoration set (§2,
 war-coast row).
 
 ### 1.3 Engine registration table (mapgen v7, min_pos/max_pos cuboids)
 
-All values Throng (z positive); Accord registers the mirrored cuboid
-(z → −z) with the SAME heat/humidity points (the two continents never
-overlap, so point collisions across continents are harmless). Overlaps
+All values Throng (z positive); the Accord half of a row registers the
+same cuboid mirrored (z → −z) under its own name and climate point —
+and a pair MAY share a point, because the two continents never overlap.
+Overlaps
 between settled and wild cuboids are deliberately WIDE (~400–500
 nodes): inside an overlap the heat/humidity voronoi decides per
 position → recurring patches (the patch model, §1.4). `y_max = 31000`,
@@ -96,15 +109,28 @@ position → recurring patches (the patch model, §1.4). `y_max = 31000`,
 
 | Biome | x range | z range | y | heat | humidity | node_top |
 |-------|---------|---------|---|------|----------|----------|
-| grug_savanna / grug_meadows | −700..700 | 160..1500 | ≥4 | 85 / 50 | 35 / 40 | dry_dirt_with_dry_grass / dirt_with_grass |
-| grug_badlands / grug_deep_forest* | −700..700 (*A: −900..1500) | 1100..1700 (*A: 160..1700) | ≥4 | 95 / 60 | 15 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
-| grug_blight / grug_pine_hills | −1250..−500 | 160..1700 | ≥4 | 25 / 30 | 20 / 60 | grug_nodes:blight_dirt / dirt_with_coniferous_litter |
-| grug_bone_forest / grug_crags | −1500..−750 | 160..1700 | ≥4 | 15 / 10 | 45 / 30 | grug_nodes:dirt_with_bone_litter / default:gravel |
-| grug_jungle_edge / grug_elf_forest | 500..1250 | 160..1700 | ≥4 | 80 / 70 | 70 / 60 | dirt_with_rainforest_litter / grug_nodes:dirt_with_silver_litter |
-| grug_deep_jungle / grug_jungle_fringe | 750..1500 (A: 1150..1500) | 160..1700 | ≥4 | 90 / 85 | 90 / 85 | dirt_with_rainforest_litter / dirt_with_rainforest_litter |
-| grug_swamp | full | 160..1700 | 1..6 | 60 | 95 | grug_nodes:mud |
-| grug_beach | full | 100..1700 | 1..4 | 50 | 55 | default:sand |
-| grug_ocean | full | 0..1700 | −255..0 | 50 | 50 | default:sand |
+| grug_savanna / grug_meadows | −700..700 | 100..1500 | ≥4 | 85 / 50 | 35 / 40 | dry_dirt_with_dry_grass / dirt_with_grass |
+| grug_badlands / grug_deep_forest* | −700..700 (*A: −900..1500) | 1100..1700 (*A: 100..1700) | ≥4 | 95 / 60 | 15 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
+| grug_blight / grug_pine_hills | −1250..−500 | 100..1700 | ≥4 | 25 / 30 | 20 / 60 | grug_nodes:blight_dirt / dirt_with_coniferous_litter |
+| grug_bone_forest / grug_crags | −1500..−750 | 100..1700 | ≥4 (crags 4..79) | 15 / 10 | 45 / 30 | grug_nodes:dirt_with_bone_litter / default:gravel |
+| grug_crags_snowy (A only) | −1500..−750 | 100..1700 | ≥80 | 10 | 30 | default:snowblock (dust: default:snow) |
+| grug_jungle_edge / grug_elf_forest | 500..1250 | 100..1700 | ≥4 | 80 / 70 | 70 / 60 | dirt_with_rainforest_litter / grug_nodes:dirt_with_silver_litter |
+| grug_deep_jungle / grug_jungle_fringe | 750..1500 (A: 1150..1500) | 100..1700 | ≥4 | 90 / 85 | 90 / 85 | dirt_with_rainforest_litter / dirt_with_rainforest_litter |
+| grug_swamp † | full | −1700..1700 | 1..6 | 60 | 95 | grug_nodes:mud |
+| grug_beach † | full | −1700..1700 | 1..4 | 50 | 55 | default:sand |
+| grug_ocean † | unlimited | unlimited | −255..3 | 50 | 50 | default:sand |
+
+Land bands start at |z| = **100**, not 160: the war coast (|z| 100..300)
+carries real land above y = 4 wherever the coast-noise inset is small,
+and a band starting at 160 would leave that strip without ANY biome —
+bare stone, no decorations, no spawn surface.
+
+† The three universal biomes are registered **once**, not as a mirrored
+pair — a biome name may exist only once in the engine. Swamp and beach
+therefore use a z-symmetric cuboid, and `grug_ocean` is x/z-**unlimited**:
+the strait, the coastal ocean and the open sea all lie outside every land
+cuboid, and without an unlimited ocean they would have no biome at all
+(no seabed filler, no dungeon nodes, no cave liquid).
 
 Notes:
 - grug_deep_forest (Accord) is ONE biome with a wide cuboid spanning
@@ -113,13 +139,19 @@ Notes:
   and wins uncontested beyond → settled inner, patchy middle, wild
   outer, no hard seams.
 - Extreme points (95/15, 10/30, 90/90) need the climate noise to
-  actually reach them: WP18 sets `np_heat`/`np_humidity` spread
-  (offset 50, scale ~35, persist 0.5) via map_meta/mg params so all
+  actually reach them: WP18 sets `mg_biome_np_heat`/`np_humidity` to
+  offset 50 / scale 35 (engine defaults otherwise; the `eased` flag has
+  to be passed explicitly or a Lua noiseparams table drops it), so all
   points are reachable. Verify in a test world before tuning shares.
-- Every surface biome registers the sand-bottom `_ocean` sibling per
-  the existing `register_region` helper, or the single grug_ocean above
-  replaces them (implementation's choice; one shared ocean is simpler
-  post-WP18).
+- The single shared `grug_ocean` above replaces the per-biome
+  sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
+  one ocean is simpler and the only way to cover the open sea).
+- **Where the beaches really are**: the ocean mask carves the coastline
+  0..150 nodes INSIDE the rectangle, so the strait-facing shoreline sits
+  at |z| ≈ 100..250 — i.e. inside the **war_coast** zone (|z| ≤ 300),
+  not in `strait`. The `strait` zone is open water plus the last nodes
+  of beach; the flank/back beaches fall into `coast`. Shoreline wildlife
+  must therefore list `war_coast` among its zones (§4).
 - **Landmine reminder** (AGENTS.md): never register ores/decos against
   biome names that might not resolve.
 - New signature top nodes (all cheap retints of MTG textures,
@@ -168,7 +200,7 @@ Walking from the village belt (core, L1–10) in any direction:
 | Dwarf/Undead village → flank coast (west) | core 1–10 → inner pine-hills/blight 10–25 (x −500..−850) → crags/bone-forest 25–45 (−850..−1400) → coast 45–60 | continuous |
 | Human/Orc village → back coast | core 1–10 → inner meadows/savanna 10–25 → deep-forest/badlands 25–45 (z 1250..1550) → coast 45–60 | continuous |
 | Elf/Troll village → flank coast (east) | core 1–10 → inner elf-forest/jungle-edge 10–25 → deep-forest+fringe/deep-jungle 25–45 → jungle coast 45–60 | continuous |
-| any village → strait | core 1–10 → inner 10–25 (z 600..350) → war coast 20–30 (z 300..100) → strait beach 1–5 neutral | continuous (war-coast cap) |
+| any village → strait | core 1–10 (z 900..600) → inner 10–25 (z 600..350) → war coast 28–30→20, falling toward the strait (cap ramp 600..100) → strait beach 1–5 neutral | continuous down to z 100; the strait step is a DESIGNED break (neutral wildlife, not a difficulty ramp) |
 | lateral (band to band) | same radial field on both sides of a band border | no jump by construction |
 | swamp pockets | low terrain inside outer ring → 25–45 by position | inside band |
 | depth | caves +1 level per 20 nodes below y=0 | combat_stats §3 |
@@ -193,10 +225,10 @@ T1 inner (10–25), T2 outer (25–45), T3 coast/deep (45–60).
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[herb T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025), papyrus at water | vines/lianas (asset list); crimson lotus `[herb T3]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[herb T2]`; mushrooms `[food]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[herb T3]` | |
-| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided) |
+| war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 Herb summary (both continents can gather every tier — see §6):
 sunleaf T1 (meadows, savanna, elf forest, jungle edge), gravemoss T1
@@ -362,7 +394,7 @@ per 15–20 m target without runaway counts.
 | Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer |
 | Bog Ooze | mud | 20 | 2000 | 3 | any | outer |
 | Shore Crab | sand | 20 | 2200 | 3 | any | strait, war_coast, coast |
-| Gull | sand | 20 | 2500 | 2 | min 10 | strait, coast |
+| Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast |
 | Reef Lurker (elite crab) | sand | 30 | 8000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp node timer respawns 120–300 s, anchored to camp | — | — | 3–5 per camp | — | camp pos |

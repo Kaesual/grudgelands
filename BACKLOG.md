@@ -38,7 +38,7 @@ window. Rules:
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `grug_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
-| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via grug_core constants), remove mountain wall, per-race spawn points at the 3 race capitals (safe-core belt), radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), civilization-gradient biome layer (settled race biomes core/inner, shared nature biomes outward), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b/§8; biome catalog: `docs/design/biomes_mobs.md`; replaces WP2's wall + z-rings) | WP2 |
+| WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via grug_core constants), remove mountain wall, per-race spawn points at the 3 race capitals (safe-core belt), radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), civilization-gradient biome layer (settled race biomes core/inner, shared nature biomes outward), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | ✅ two-continent geometry + radial level/guard fields in `grug_core` (wall and z-rings gone), continent ocean mask + 6 race-capital platforms in `grug_mapgen/structures.lua`, 17 mirrored biomes per biomes_mobs.md §1.3 with new `grug_nodes`/`grug_trees` content, Kraken Guard in the open sea (**needs a fresh world**; runtime test pending) | WP2 |
 | WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | ✅ GCD 1 s (silent gate, no wear churn) + soft target lock (8 s, separate enemy/ally slots, range+LOS re-checks) in `grug_abilities`; kits per classes.md tables (Mighty Blow 25 rage dump, NEW Hamstring w/ mob slow via `grug_mobs.slow` halving speeds, Fireball 8 mana GCD-only, Frost Nova 12 s root→slow, PW:S absorb via `grug_core.set_absorb` in the central hp modifier; Renew `talent_gated` for WP11); race passives via `grug_classes` perk registry (dwarf fall −20%, troll OOC regen — mana today, WP21 reuses perk; undead zombie night truce via `_grug_ignore_player` veto patch in mobs api.lua; orc +1 rage/hit taken, elf +5 m item-meta range, human quest-XP hook latent until WP8). Runtime test pending | WP4 |
 | WP20 | Party system: /party (content sized for 2–3), tap rules (first damager's party tags), shared XP/kill/quest credit within 60 m, member HP frames HUD, group loot basics | open (spec: classes.md balance constraints) | WP4 |
 | WP21 | Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper NPC (rested XP + Home Stone rebind), NPC anchor/respawn insurance | open (spec: `docs/design/combat_stats.md` §5, progression.md §1) | WP1 |
@@ -47,16 +47,16 @@ window. Rules:
 
 ### Readiness (2026-08-06)
 
-**Ready now** (no design blockers, deps done): WP11 (talents — spec
-progression.md §2), WP14 (offhand), WP17 (travel), WP20 (party),
-WP21 (recovery/innkeeper).
+**Ready now** (no design blockers, deps done): WP6 (mobs/guards — the
+WP18 level fields and zone vocabulary ship), WP11 (talents — spec
+progression.md §2), WP13 (structures — mapgen/biomes ship), WP14
+(offhand), WP17 (travel), WP20 (party), WP21 (recovery/innkeeper).
 
 **Blocked, by what**:
-- WP18 is design-unblocked (biomes_mobs.md decided) — ready once picked up; WP6 waits on WP18
 - WP5, WP7, WP10 are design-unblocked (`docs/design/items_crafting.md`
   decided); WP22 additionally needs WP5 gear to exist
 - WP8, WP9 ← `progression.md` §4 (quest structure/level gates)
-- WP12 ← WP17; WP13 ← WP18 + biomes; WP16 ← WP7; WP23 ← WP6
+- WP12 ← WP17; WP16 ← WP7; WP23 ← WP6
 - Housing WP (unscheduled) ← `TODO-design-housing.md`
 
 Notes from the decided world design (`docs/design/world.md`):
@@ -90,6 +90,52 @@ combat_stats.md §3) and the central `core.is_protected` override (R1–R3;
 faction resolved via `grug_core.get_player_faction`, overridden by
 grug_factions). Deferred: R4 ore respawn → with outposts/mining zones
 (WP6/WP13); housing frontier is fully locked until housing plots ship.
+
+**WP18 — Continent mapgen rework** (✅ 2026-08-06): the world is now two
+mirrored continent rectangles (`grug_core.CONTINENT_X_HALF` 1500,
+`CONTINENT_Z_MIN` 100, `CONTINENT_Z_MAX` 1700 — 3000×1600 each, strait
+along z=0). **Continent mask decision**: keep engine biomes on v7 and cut
+the coastline afterwards — a post-generation VoxelManip pass in
+`grug_mapgen/structures.lua` caps and floods every column outside the
+rectangle ("the terrain generates, but it MUST be water", world.md §2b),
+so all of v7's biomes/ores/decorations/dungeons keep working (a custom
+terrain generator would have had to reimplement them, the WP2 argument
+again). The coast noise insets the rectangle by 0..150 nodes INWARD only,
+which guarantees the 200-node strait by construction; 60-node quadratic
+taper, seaward shelf W−6..W−16, carved tops re-sanded near water level,
+and a chunk-box fast path so inland and deep chunks cost nothing. The
+mountain wall (`|x| = 2000`) and the z-ring model are deleted.
+`grug_core` fields: `territory_at` → accord/throng/ocean; `zone_at` →
+underground/ocean/strait/war_coast/coast/core/inner/outer (the
+`_grug_spawn_zones` vocabulary); `mob_level_at` = radial elliptical field
+around the faction seat (anchors n 0/0.30/0.55/0.90/1.0 → level
+1/10/25/45/60) with the war-coast cap 20–30, strait cap 5, depth axis
+(combat_stats.md §3) and nil on the open/coastal sea surface; NEW
+`guard_level_at` (inverse field, 20..70, ≥ local mob level +5 — WP6
+consumes it) and `open_sea_at` (beyond `OCEAN_COASTAL_WIDTH` 1500). Six
+race capitals (`grug_core.capitals`, x = −550/0/550 at z = ±900, the
+central one is the faction seat) get the terrain-adaptive camp platform
+(median height, persisted per race) and are the per-race spawn/respawn
+points via `get_spawn_pos(faction, race)`; the race dialog now teleports,
+because faction join happens before the race is known. Protection: **R3
+is the whole ocean** (replaces WP2's borderland and housing-frontier
+rules), camp zones are the six capitals. Biome layer per biomes_mobs.md
+§1.3: 17 registrations — the 13 band biomes are authored once in Throng
+coordinates and registered mirrored at z=0, swamp/beach/ocean/underground
+are shared (a biome name exists only once) — wide cuboid overlaps as the
+patch mosaic, climate noise (`mg_biome_np_heat`/`np_humidity` offset 50,
+scale 35) so the extreme points are reachable; decorations are trees + ground cover only (herbs/food →
+WP10). New **ITEMS modpack**: `grug_nodes` (signature tops blight_dirt /
+bone-, forest-, silver-litter, mesa_clay, mud, bone_pile — they exist for
+the spawn-whitelist trick) and `grug_trees` (silverwood, gravewood).
+Deep sea got its deterrent: **Kraken Guard** L100 (no drops, no XP),
+gated by the new generic `_grug_spawn_check` hook in grug_mobs, assets
+vendored from VoxeLibre. Deferred: mud walk slow-down (marker group
+`mud = 1` only), the §4 spawn-parameter retune and the full mob roster →
+WP6; real capital structures and the §2 war-coast battlefield overlay
+(broken carts, bone piles, burnt patches) → WP13. **Existing worlds are
+incompatible — the mask, the biomes and the platform anchors all changed:
+test on a FRESH world.**
 
 **WP3 — Classes** (✅ 2026-08-06): `grug_classes` with class AND race
 registry (races per world.md §7, race perks hook for WP7/WP10). Creation

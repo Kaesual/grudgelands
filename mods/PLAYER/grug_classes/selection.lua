@@ -89,6 +89,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local def = grug_classes.get_race_def(player)
 		core.chat_send_player(player:get_player_name(),
 			"You are a " .. def.name .. ".")
+		-- The faction join teleported to the faction seat (race unknown
+		-- then); move the fresh character to their race's own capital.
+		grug_factions.teleport_to_spawn(player)
 		show_class_selection(player)
 		return true
 	elseif formname == CLASS_FORM then

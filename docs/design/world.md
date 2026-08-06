@@ -55,8 +55,8 @@ mirrored at z=0. Everything else is ocean.
   density and travel pacing, not through emptiness). This rectangle is
   the *legal* bound (build rights, ring math); the **visible coastline
   is soft/noisy** and wanders inside it, like biome transitions — no
-  straight-edge continents, no mountain wall (the old x=±2000 wall is
-  dropped with WP18).
+  straight-edge continents, no mountain wall (the old x=±2000 wall was
+  dropped in WP18; a post-generation ocean mask carves the coast instead).
 - Each continent contains 3 race-flavored biome regions (section 7).
 - **Fixed base layout, randomized within**: which race region lies in
   which compass direction is FIXED per faction (section 7); noise only
@@ -90,7 +90,8 @@ surface):
 | **War coast** (strait-facing band, z ≈ ±100…±300) | capped at | **~20–30**; outposts, first PvP quests (min level ~20) |
 | Strait & beaches | z 0 … ±100 | lvl 1–5 neutral wildlife |
 
-**Guard level** (`guard_level_at`, WP6 — anti-invasion gating): runs
+**Guard level** (`guard_level_at` — anti-invasion gating; the field exists
+since WP18, the guards that read it arrive with WP6): runs
 **inverse** to mob level — elite city watch (60+) in the capital, spawn
 village and safe core, solid guards at villages/roads, moderate at the
 war coast (~local mob level +5). Rationale: the safe core must be safe
@@ -99,8 +100,14 @@ means weaker mobs but ever harder guards (classic WoW capitals).
 
 - Invasion is funneled by design: the strait leads to the enemy's
   mid-level war coast (the PvP stage); landings at flank/back coasts
-  fail against lvl 50–60 zones. Nether crossings (Phase 2) are the
-  endgame deep strike into the hinterland.
+  fail against lvl 50–60 zones — scoped to |z| ≳ 450 (decided with
+  WP18): the war-coast cap fades continuously over z 300..600, so the
+  flank corners nearest the strait ramp 30→60 instead of being elite.
+  A landing that comes in slightly wide of the war coast still lands
+  next to the PvP stage, which is the funnel working as intended; any
+  x-dependent cap would reintroduce a level cliff at the band edge.
+  Nether crossings (Phase 2) are the endgame deep strike into the
+  hinterland.
 - Players level 1–15 play deep inland — no forced early PvP; quests
   first send players to the war coast at ~lvl 20+.
 
@@ -142,9 +149,10 @@ The ocean is layered by distance from the coast:
   coast is active gameplay space (e.g. special farmable underwater mobs);
   content lands with its own WPs.
 - **Open sea (beyond the coastal ocean)**: deliberately deadly. Massively
-  oversized high-level guard mobs (lvl ~100 — e.g. giant octopuses) that
-  one-shot anything. Sea travel is discouraged by design; players are not
-  meant to reach the world edge or swim to housing islands.
+  oversized high-level guard mobs that one-shot anything — the **Kraken
+  Guard** (lvl 100, no drops, no XP) ships with WP18, gated on
+  `grug_core.open_sea_at`. Sea travel is discouraged by design; players
+  are not meant to reach the world edge or swim to housing islands.
 - **The strait between the continents is NOT extra dangerous** — danger
   only guards the places players are not supposed to go, never the
   faction-vs-faction crossing.

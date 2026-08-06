@@ -1,11 +1,27 @@
--- Region decorations. Schematics are reused from minetest_game's default
--- mod; densities are per-region flavor: dense elven/troll forests, open
--- plains/savanna, barren undead blight, a readable borderland battlefield.
+-- Biome decorations (docs/design/biomes_mobs.md §2). Schematics come from
+-- minetest_game's default mod; the two race trees that have no .mts
+-- (silverwood, gravewood) are handled without one: silverwood is default's
+-- aspen schematic with node `replacements` (grug_trees), gravewood is a
+-- `simple` trunk decoration -- exactly the bare dead tree the Undead look
+-- wants, and schematic decorations could not call the Lua grower anyway
+-- (it is not VoxelManip-safe).
+--
+-- WP18 places TREES AND GROUND COVER only. The gathering flora of §2 --
+-- herbs (sunleaf/gravemoss/dragonweed/marshbloom/crimson lotus/stormkelp),
+-- food plants, flowers, mushrooms, beach shells and kelp -- are WP10
+-- content and get their nodes and decorations there.
+-- Also deferred: the §2 war-coast battlefield overlay (broken carts, bone
+-- piles, burnt patches) ships with WP13's schematic pass.
+--
+-- LANDMINE (AGENTS.md): every `biomes` entry below must name a biome
+-- registered in biomes.lua, otherwise the decoration silently becomes
+-- world-wide.
 
 local schem = core.get_modpath("default") .. "/schematics/"
 
-local function register_tree(name, schematic, place_on, biomes, fill_ratio)
-	core.register_decoration({
+local function register_tree(name, schematic, place_on, biomes, fill_ratio,
+		extra)
+	local def = {
 		name = "grug_mapgen:" .. name,
 		deco_type = "schematic",
 		place_on = place_on,
@@ -17,10 +33,15 @@ local function register_tree(name, schematic, place_on, biomes, fill_ratio)
 		schematic = schem .. schematic,
 		flags = "place_center_x, place_center_z",
 		rotation = "random",
-	})
+	}
+	for k, v in pairs(extra or {}) do
+		def[k] = v
+	end
+	core.register_decoration(def)
 end
 
-local function register_plant(name, decoration, place_on, biomes, fill_ratio, extra)
+local function register_plant(name, decoration, place_on, biomes, fill_ratio,
+		extra)
 	local def = {
 		name = "grug_mapgen:" .. name,
 		deco_type = "simple",
@@ -38,70 +59,177 @@ local function register_plant(name, decoration, place_on, biomes, fill_ratio, ex
 	core.register_decoration(def)
 end
 
-local grass = "default:dirt_with_grass"
+-- Surface nodes of the biomes (biomes.lua); every place_on below is the
+-- actual node_top of the biomes it is registered for.
+local GRASS = "default:dirt_with_grass"
+local CONIFER = "default:dirt_with_coniferous_litter"
+local SILVER = "grug_nodes:dirt_with_silver_litter"
+local FOREST = "grug_nodes:dirt_with_forest_litter"
+local BONE = "grug_nodes:dirt_with_bone_litter"
+local BLIGHT = "grug_nodes:blight_dirt"
+local RAINFOREST = "default:dirt_with_rainforest_litter"
+local DRY_GRASS = "default:dry_dirt_with_dry_grass"
+local MESA = "grug_nodes:mesa_clay"
+local GRAVEL = "default:gravel"
+local MUD = "grug_nodes:mud"
 
--- Neutral borderland: open field, grass only (sightlines for PvP).
-for length = 1, 3 do
-	register_plant("borderland_grass_" .. length, "default:grass_" .. length,
-		grass, {"grug_borderland"}, 0.04)
-end
+local GRAVEWOOD = "grug_trees:gravewood_tree"
+local JUNGLE = {"grug_deep_jungle", "grug_jungle_fringe"}
 
--- Accord plains (Humans): meadows, scattered trees.
+--
+-- grug_meadows (Human settled): open grassland, a few oaks.
+--
+
+register_tree("meadows_apple_tree", "apple_tree.mts", GRASS,
+	{"grug_meadows"}, 0.0015)
+register_tree("meadows_bush", "bush.mts", GRASS, {"grug_meadows"}, 0.004)
 for length = 1, 5 do
-	register_plant("plains_grass_" .. length, "default:grass_" .. length,
-		grass, {"grug_accord_plains"}, 0.06)
-end
-register_tree("plains_apple_tree", "apple_tree.mts", grass,
-	{"grug_accord_plains"}, 0.0008)
-register_tree("plains_bush", "bush.mts", grass,
-	{"grug_accord_plains"}, 0.004)
-
--- Accord forest (Elves): dense deciduous forest.
-register_tree("forest_apple_tree", "apple_tree.mts", grass,
-	{"grug_accord_forest"}, 0.02)
-register_tree("forest_aspen_tree", "aspen_tree.mts", grass,
-	{"grug_accord_forest"}, 0.012)
-register_tree("forest_bush", "bush.mts", grass,
-	{"grug_accord_forest"}, 0.008)
-for length = 1, 5 do
-	register_plant("forest_grass_" .. length, "default:grass_" .. length,
-		grass, {"grug_accord_forest"}, 0.02)
+	register_plant("meadows_grass_" .. length, "default:grass_" .. length,
+		GRASS, {"grug_meadows"}, 0.06)
 end
 
--- Accord hills (Dwarves): pine forest on rugged ground.
-local litter = "default:dirt_with_coniferous_litter"
-register_tree("hills_pine_tree", "pine_tree.mts", litter,
-	{"grug_accord_hills"}, 0.015)
-register_tree("hills_small_pine_tree", "small_pine_tree.mts", litter,
-	{"grug_accord_hills"}, 0.008)
-register_tree("hills_pine_bush", "pine_bush.mts", litter,
-	{"grug_accord_hills"}, 0.006)
+--
+-- grug_pine_hills (Dwarf settled): pine forest on rugged ground.
+--
+
+register_tree("pine_hills_pine_tree", "pine_tree.mts", CONIFER,
+	{"grug_pine_hills"}, 0.004)
+register_tree("pine_hills_small_pine_tree", "small_pine_tree.mts", CONIFER,
+	{"grug_pine_hills"}, 0.002)
+register_tree("pine_hills_pine_bush", "pine_bush.mts", CONIFER,
+	{"grug_pine_hills"}, 0.006)
+-- Wild berries: the bush and its fruit node both come from default, so the
+-- §2 `[food]` source of the hills already exists -- kept rare, WP10 owns
+-- the gathering rules.
+register_tree("pine_hills_blueberry_bush", "blueberry_bush.mts", CONIFER,
+	{"grug_pine_hills"}, 0.001, {place_offset_y = 1})
 for length = 1, 3 do
-	register_plant("hills_fern_" .. length, "default:fern_" .. length,
-		litter, {"grug_accord_hills"}, 0.02)
+	register_plant("pine_hills_fern_" .. length, "default:fern_" .. length,
+		CONIFER, {"grug_pine_hills"}, 0.02)
 end
 
--- Throng savanna (Orcs): dry grassland with acacias.
-local dry_grass_top = "default:dry_dirt_with_dry_grass"
-register_tree("savanna_acacia_tree", "acacia_tree.mts", dry_grass_top,
-	{"grug_throng_savanna"}, 0.002)
-register_tree("savanna_acacia_bush", "acacia_bush.mts", dry_grass_top,
-	{"grug_throng_savanna"}, 0.004)
+--
+-- grug_elf_forest (Elf settled): silverwood groves on pale litter.
+--
+
+register_tree("elf_forest_silverwood", "aspen_tree.mts", SILVER,
+	{"grug_elf_forest"}, 0.007,
+	{replacements = grug_trees.silverwood_replacements})
+register_tree("elf_forest_apple_tree", "apple_tree.mts", SILVER,
+	{"grug_elf_forest"}, 0.002)
+for length = 1, 3 do
+	register_plant("elf_forest_grass_" .. length, "default:grass_" .. length,
+		SILVER, {"grug_elf_forest"}, 0.02)
+end
+
+--
+-- grug_deep_forest (Accord wilderness): dark, dense, fallen logs.
+--
+
+register_tree("deep_forest_apple_tree", "apple_tree.mts", FOREST,
+	{"grug_deep_forest"}, 0.012)
+register_tree("deep_forest_aspen_tree", "aspen_tree.mts", FOREST,
+	{"grug_deep_forest"}, 0.008)
+-- apple_log.mts also contains flowers:mushroom_brown; the flowers mod is not
+-- part of the game, so the node is replaced instead of silently dropped.
+register_tree("deep_forest_apple_log", "apple_log.mts", FOREST,
+	{"grug_deep_forest"}, 0.001, {
+		flags = "place_center_x",
+		place_offset_y = 1,
+		replacements = {["flowers:mushroom_brown"] = "air"},
+	})
+for length = 1, 3 do
+	register_plant("deep_forest_fern_" .. length, "default:fern_" .. length,
+		FOREST, {"grug_deep_forest"}, 0.02)
+end
+
+--
+-- grug_crags (Accord wilderness): bare gravel, a few snowy pines high up.
+-- Above y = 80 the grug_crags_snowy cap takes over and stays empty (bare
+-- snow) on purpose.
+--
+
+register_tree("crags_snowy_pine_tree", "snowy_pine_tree_from_sapling.mts",
+	GRAVEL, {"grug_crags"}, 0.002, {y_min = 60})
+
+--
+-- grug_savanna (Orc settled): dry grassland with acacias.
+--
+
+register_tree("savanna_acacia_tree", "acacia_tree.mts", DRY_GRASS,
+	{"grug_savanna"}, 0.002)
+register_tree("savanna_acacia_bush", "acacia_bush.mts", DRY_GRASS,
+	{"grug_savanna"}, 0.004)
 for length = 1, 5 do
 	register_plant("savanna_dry_grass_" .. length,
-		"default:dry_grass_" .. length, dry_grass_top,
-		{"grug_throng_savanna"}, 0.06)
+		"default:dry_grass_" .. length, DRY_GRASS, {"grug_savanna"}, 0.06)
 end
 
--- Throng jungle (Trolls): dense rainforest.
-local rainforest = "default:dirt_with_rainforest_litter"
-register_tree("jungle_tree", "jungle_tree.mts", rainforest,
-	{"grug_throng_jungle"}, 0.025)
-register_plant("jungle_grass", "default:junglegrass", rainforest,
-	{"grug_throng_jungle"}, 0.04)
+--
+-- grug_badlands (Throng wilderness): mesa clay, cacti, dead shrubs.
+--
 
--- Throng blight (Undead): barren land, dead trunks and dry shrubs.
-register_plant("blight_dry_shrub", "default:dry_shrub", "default:dirt",
-	{"grug_throng_blight"}, 0.015, {param2 = 4})
-register_plant("blight_dead_trunk", "default:tree", "default:dirt",
-	{"grug_throng_blight"}, 0.0015, {height = 2, height_max = 4})
+register_tree("badlands_large_cactus", "large_cactus.mts", MESA,
+	{"grug_badlands"}, 0.001)
+register_plant("badlands_dry_shrub", "default:dry_shrub", MESA,
+	{"grug_badlands"}, 0.008, {param2 = 4})
+
+--
+-- grug_blight (Undead settled): barren, bare gravewood trunks, bone piles.
+--
+
+register_plant("blight_gravewood", GRAVEWOOD, BLIGHT, {"grug_blight"},
+	0.0015, {height = 2, height_max = 4})
+register_plant("blight_dry_shrub", "default:dry_shrub", BLIGHT,
+	{"grug_blight"}, 0.015, {param2 = 4})
+register_plant("blight_bone_pile", "grug_nodes:bone_pile", BLIGHT,
+	{"grug_blight"}, 0.002)
+
+--
+-- grug_bone_forest (Throng wilderness): a dense forest of dead trunks.
+--
+
+register_plant("bone_forest_gravewood", GRAVEWOOD, BONE,
+	{"grug_bone_forest"}, 0.015, {height = 2, height_max = 4})
+register_plant("bone_forest_bone_pile", "grug_nodes:bone_pile", BONE,
+	{"grug_bone_forest"}, 0.004)
+
+--
+-- grug_jungle_edge (Troll settled): light rainforest.
+--
+
+register_tree("jungle_edge_jungle_tree", "jungle_tree.mts", RAINFOREST,
+	{"grug_jungle_edge"}, 0.008)
+register_plant("jungle_edge_junglegrass", "default:junglegrass", RAINFOREST,
+	{"grug_jungle_edge"}, 0.04)
+
+--
+-- grug_deep_jungle / grug_jungle_fringe: the same nodes on both continents
+-- (§8.4) -- dense canopy plus emergent giants.
+--
+
+register_tree("jungle_tree", "jungle_tree.mts", RAINFOREST, JUNGLE, 0.02)
+-- 37 nodes tall: default limits it to low altitudes and a wide sidelen,
+-- otherwise it cannot fit into a mapchunk.
+register_tree("emergent_jungle_tree", "emergent_jungle_tree.mts", RAINFOREST,
+	JUNGLE, 0.005, {sidelen = 80, y_max = 32, place_offset_y = -4})
+register_plant("jungle_junglegrass", "default:junglegrass", RAINFOREST,
+	JUNGLE, 0.05)
+-- NO jungle papyrus: v7 never places water above sea level, so "papyrus at
+-- water" cannot exist on the jungle cuboids (surface y >= 4) -- any real
+-- waterside ground at y <= 6 belongs to the swamp/beach biomes, and the
+-- swamp registration below covers it. (Review-verified: a jungle papyrus
+-- deco with spawn_by water is structurally dead.)
+
+--
+-- grug_swamp (universal): reed pools on mud.
+--
+
+register_tree("swamp_papyrus", "papyrus_on_dirt.mts", MUD, {"grug_swamp"},
+	0.02, {
+		y_min = 1,
+		y_max = 4,
+		replacements = {["default:dirt"] = "grug_nodes:mud"},
+	})
+register_plant("swamp_dry_shrub", "default:dry_shrub", MUD, {"grug_swamp"},
+	0.004, {param2 = 4})

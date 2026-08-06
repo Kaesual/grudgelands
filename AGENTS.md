@@ -229,25 +229,41 @@ Details + line numbers in [docs/research/](docs/research/).
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),
   quest log as a formspec, state in player meta, quest givers via NPC
   `on_rightclick`, HUD `waypoint` elements for quest targets.
-- **Mapgen/biomes** (decided + built in WP2): engine biomes on mapgen v7,
-  territory/race-region confinement via the biome definition's
-  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). Bands overlap
-  by 200 nodes; inside the overlap the heat/humidity voronoi picks, which
-  gives organic transitions. `grug_mapgen` owns all biome/ore/decoration
-  registrations; default's `register_biomes/ores/decorations` are NOT
-  called (see tail of `mods/BASE/default/mapgen.lua`).
+- **Mapgen/biomes** (decided in WP2, reworked in WP18): engine biomes on
+  mapgen v7, territory/race-region confinement via the biome definition's
+  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **17 biomes**
+  per `docs/design/biomes_mobs.md` §1.3, every band authored ONCE in
+  Throng coordinates and registered mirrored at z=0 (`register_mirrored`
+  in `grug_mapgen/biomes.lua`; the universal swamp/beach/ocean/underground
+  are registered once — a biome name may exist only once); the cuboids
+  overlap widely (100–500 nodes depending on band)
+  and inside an overlap the heat/humidity voronoi picks per position —
+  that IS the settled/wild patch mosaic. `grug_mapgen` owns all
+  biome/ore/decoration registrations; default's
+  `register_biomes/ores/decorations` are NOT called (see tail of
+  `mods/BASE/default/mapgen.lua`); it also overrides the v7 terrain and
+  the climate noise params (`override_meta = true` → **existing worlds get
+  seams; test mapgen work on a FRESH world**).
   **Landmine**: ore/decoration defs whose `biomes` names don't resolve
   are silently unrestricted (world-wide) — never register ores/decos
   against biome names that might not exist. `game.conf` pins
-  `allowed_mapgens = v7`. Camp platforms (terrain-adaptive height:
-  heightmap median, persisted in mod storage) + the x=±2000 mountain wall
-  are a small `register_on_generated` VoxelManip pass
-  (`grug_mapgen/structures.lua`). **NB the wall and the land borderland
-  are scheduled for removal — continent redesign (two ocean-separated
-  continents, world.md §1, WP18).** Zone/difficulty queries:
-  `grug_core.territory_at/zone_at/difficulty_at/mob_level_at`.
-  LotT trick: biome signature nodes (e.g. grass variants) drive mob spawns
-  via a node whitelist.
+  `allowed_mapgens = v7`. The two things biomes cannot express live in one
+  `register_on_generated` VoxelManip pass (`grug_mapgen/structures.lua`):
+  the **continent ocean mask** (two mirrored continent rectangles;
+  a coast noise insets them by 0..150 nodes INWARD only — so the strait is
+  guaranteed by construction, not by luck — surface cap + flood outside,
+  taper inward, chunk-box fast path skips inland/deep chunks) and the
+  **six race-capital camp platforms** (terrain-adaptive height: heightmap
+  median, persisted per race id in mod storage). Zone/level queries:
+  `grug_core.territory_at` (accord/throng/ocean), `zone_at`
+  (underground/ocean/strait/war_coast/coast/core/inner/outer — the
+  `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`
+  (radial field + war-coast/strait caps + depth axis), `guard_level_at`
+  (inverse field, elite in the core — WP6 consumes it) and `open_sea_at`.
+  LotT trick: biome signature nodes drive mob spawns via a node whitelist
+  — those tops live in `grug_nodes` (blight_dirt, bone/forest/silver
+  litter, mesa_clay, mud) and exist FOR the trick; `_grug_spawn_zones`
+  (and the generic `_grug_spawn_check`) do the ring gating on top.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
   (`colors.json`, height shading) and pushes them via
   `core.dynamic_add_media` — the best base for our global map. Minimap

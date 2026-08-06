@@ -59,9 +59,13 @@ core.register_ore({
 		octaves = 1,
 		persist = 0.0
 	},
-	-- Only where dirt is the natural surface material.
-	biomes = {"grug_borderland", "grug_accord_hills", "grug_accord_plains",
-		"grug_accord_forest", "grug_throng_blight", "grug_throng_jungle"},
+	-- Only in the biomes whose ground is dirt (node_top of the dirt family
+	-- over a default:dirt filler, biomes.lua). Left out on purpose: savanna
+	-- (dry dirt, as in minetest_game), badlands (mesa clay), crags (gravel),
+	-- swamp (mud), beach/ocean (sand).
+	biomes = {"grug_meadows", "grug_pine_hills", "grug_elf_forest",
+		"grug_deep_forest", "grug_blight", "grug_bone_forest",
+		"grug_jungle_edge", "grug_deep_jungle", "grug_jungle_fringe"},
 })
 
 core.register_ore({

@@ -92,13 +92,20 @@ game (not a mod pack), written in Lua.
       rings, destructibility rules, capitals/outposts, housing, races
 - [x] Mapgen: two large contiguous faction territories (north/south), each
       composed of several race-flavored biome regions
-- [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` ring
-      functions (mobs actually scaling with them lands with 1.4/WP6)
-- [x] Faction spawn points: walkable camp platforms at z = ±200
-      (moves to the continent-center spawn village with WP18; real
-      capital structures follow with WP13)
-- [x] Build/dig restrictions per territory (own land free, enemy land and
-      border locked; camp protected zones; ore respawn deferred to WP6/13)
+- [x] Continent rework (WP18): two ocean-separated continents with soft
+      noisy coastlines (continent ocean mask instead of the old mountain
+      wall), 17 biomes (mirrored bands) per
+      `docs/design/biomes_mobs.md` §1.3,
+      guaranteed strait and coastal ocean, deep-sea guard mob
+- [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
+      field + `guard_level_at` (mobs actually scaling with them lands
+      with 1.4/WP6)
+- [x] Faction spawn points: walkable camp platforms at the three race
+      capitals per continent (players spawn in their own race's capital;
+      real capital structures follow with WP13)
+- [x] Build/dig restrictions per territory (own continent free, enemy
+      continent and the whole ocean locked; capital protected zones; ore
+      respawn deferred to WP6/13)
 - [x] PvP basis: friendly-fire protection within the faction;
       quest-driven PvP follows with 1.5
 
@@ -127,8 +134,9 @@ game (not a mod pack), written in Lua.
 - [x] WoW-style starter-zone mobs: aggressive boar (day) and zombie
       (night, burns in daylight) with XP rewards and loot; more (wolves, …)
       follow with WP6
-- [ ] Neutral/hostile mobs in tiers: border = weak, heartland = strong,
-      elite mobs that require groups; incl. neutral **bandit camps**
+- [ ] Neutral/hostile mobs in tiers: safe core = weak, outer ring and
+      coasts = strong, elite mobs that require groups; incl. neutral
+      **bandit camps**
       (humanoid loot source — cloth — in both territories)
 - [ ] **Aggro/threat system**: mobs pick targets by threat (damage +
       healing × factor); tank threat tools/taunt follow with class
