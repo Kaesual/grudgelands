@@ -93,3 +93,26 @@ material("stone_core", "Stone Core", 7) -- golem drop, elite-only source
 -- Skeleton-archer drop: pure vendor trash for now (there is no bow/quiver
 -- item yet), hence the bundle framing and the trash-tier price.
 material("arrow", "Bundle of Arrows", 2)
+
+--
+-- Food (WP6/T7)
+--
+-- The Mirefolk drop "fish 1/1" (§3.1 swamp row); §6 lists "meat/fish
+-- everywhere" as a food source for both continents. mobs_redo ships meat but
+-- no fish, so this is our own item. NOT registered through material() above:
+-- it is food, not a crafting material, so it carries neither grug_material
+-- nor a grug_leather flag.
+--
+-- Edibility follows the vendored convention exactly (mobs/crafts.lua): an
+-- `on_use` item_eat plus mobs.add_eatable, which layers the {eatable,
+-- flammable, food} groups on top — that is what makes the item usable by
+-- mobs_redo's own food handling. Cooking (a fried-fish recipe) and the real
+-- food/hunger balance belong to WP7, not here; 3 HP mirrors mobs:meat_raw.
+core.register_craftitem("grug_mobs:raw_fish", {
+	description = "Raw Fish",
+	inventory_image = "grug_mobs_item_raw_fish.png",
+	on_use = core.item_eat(3),
+	groups = {food_fish_raw = 1},
+	_grug_sell_price = 2,
+})
+mobs.add_eatable("grug_mobs:raw_fish", 3)

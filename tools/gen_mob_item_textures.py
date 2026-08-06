@@ -463,6 +463,48 @@ ROCK_PROJECTILE = """
 ................
 """
 
+# Raw fish (Mirefolk drop). Side view, head left, fan tail right.
+FISH = """
+................
+................
+.....ooooo......
+...oobbbbboo..o.
+..obbbbbbbbbo.to
+.obwwbbbbbbbbott
+.obwebbbbbbbbbtt
+.obbbbbbbbbbbbtt
+.obbbbbbbbbbbbtt
+.obbbbbbbbbbbott
+..obbbbbbbbbo.to
+...oobbbbboo..o.
+.....ooooo......
+................
+................
+................
+"""
+
+# Camp fire node tile (grug_mobs:camp_fire), used on every face of the low
+# nodebox: a stone ring around charred logs and a hot core, seen top-down.
+# Fully opaque -- a node tile must not have holes.
+CAMP_FIRE = """
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaooooooooaaaa
+aaaoOooooooOoaaa
+aaoOoaeeeeaoOoaa
+aaooaeEFFEeaooaa
+aoOoaeFYYFeaoOoa
+aooaeEFYYFEeaooa
+aooaeEFYYFEeaooa
+aoOoaeFYYFeaoOoa
+aaooaeEFFEeaooaa
+aaoOoaeeeeaoOoaa
+aaaoOooooooOoaaa
+aaaaooooooooaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+"""
+
 
 # ------------------------------------------------------------------- recipes
 # (file name, art, palette)
@@ -519,6 +561,13 @@ ICONS = [
     # item): a lit-from-the-upper-left grey boulder.
     ("grug_mobs_rock.png", ROCK_PROJECTILE,
      {"o": "#2b2b30", "h": "#9a9aa2", "s": "#6e6e77", "d": "#4a4a52"}),
+    ("grug_mobs_item_raw_fish.png", FISH,
+     {"o": "#2c4a55", "b": "#6fa3b4", "t": "#4b7d8e", "w": "#eef4f6",
+      "e": "#16202a"}),
+    # Node tile of grug_mobs:camp_fire (not an inventory item).
+    ("grug_mobs_camp_fire.png", CAMP_FIRE,
+     {"a": "#3a332c", "o": "#6b6259", "O": "#8a8078", "e": "#7a3a16",
+      "E": "#c25a1c", "F": "#f08a2a", "Y": "#ffd45e"}),
 ]
 
 

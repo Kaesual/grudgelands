@@ -23,6 +23,7 @@
 --   stalker .............. Panther ("stalks": silent approach + pounce)
 --   ambusher ............. Crocodile ("lurks still, burst on approach")
 --   damage_aura .......... Bog Ooze ("engulfs": touch-damage aura)
+--   camp_swarm ........... Mirefolk ("swarms": camp group aggro, all rush)
 --   register_simple_arrow  Skeleton Archer/Raider, Stone/Mesa Golem
 --   _grug_leash_range .... Bear / Jungle Ape ("territorial", aggro.lua)
 --
@@ -394,6 +395,74 @@ function grug_mobs.ambusher(def, opts)
 		end
 		local _, count = players_near(pos, trigger_range)
 		self.order = count > 0 and "" or "stand"
+	end)
+end
+
+--
+-- Camp swarm (Mirefolk: "swarms — camp group aggro, all rush at once")
+--
+-- The pack_hunter alert, re-keyed: pack_hunter calls its neighbours when it
+-- flees at low HP, this one calls them the moment ONE camp member acquires a
+-- player, and it only calls members of the SAME camp (plain-field
+-- `_grug_camp_pos`, set by camps.lua) instead of every same-name mob in
+-- view. A mirefolk camp therefore comes at you as a camp, while the camp
+-- across the swamp keeps fishing.
+--
+-- Fires ONCE per attack episode: `temp.grug_swarm_called` is set on the
+-- alert and cleared as soon as the mob leaves the attack state, so an
+-- ongoing fight costs one state comparison per second and not one radius
+-- scan. self.temp is runtime-only (never serialized), so a reloaded mob
+-- simply re-alerts on its next pull, which is harmless.
+--
+-- opts: range 20 (§3.1 "camp group aggro"), interval 1
+function grug_mobs.camp_swarm(def, opts)
+	opts = opts or {}
+	local range = opts.range or 20
+	local interval = opts.interval or 1
+	-- Camp identity. Positions come back from staticdata as plain tables
+	-- without the vector metatable, so `==` would be silently false
+	-- (luanti-lua.md rule 7) — compare the components. Two camp-less mobs
+	-- count as one group: a hand-placed mirefolk (no camp) still swarms with
+	-- its neighbours, which is the readable behaviour.
+	local function same_camp(a, b)
+		if not a or not b then
+			return a == nil and b == nil
+		end
+		return a.x == b.x and a.y == b.y and a.z == b.z
+	end
+	chain_do_custom(def, function(self, dtime)
+		if not due(self, "grug_swarm_acc", dtime, interval) then
+			return
+		end
+		self.temp = self.temp or {}
+		if self.state ~= "attack" then
+			self.temp.grug_swarm_called = nil
+			return
+		end
+		if self.temp.grug_swarm_called then
+			return
+		end
+		local target = self.attack
+		if not target or not core.is_player(target) or not target:get_pos() then
+			return
+		end
+		local pos = self.object and self.object:get_pos()
+		if not pos then
+			return
+		end
+		self.temp.grug_swarm_called = true
+		local camp = self._grug_camp_pos
+		local objs = core.get_objects_inside_radius(pos, range)
+		for i = 1, #objs do
+			local ent = objs[i]:get_luaentity()
+			if ent and ent._cmi_is_mob and ent ~= self
+					and ent.name == self.name
+					and ent.state ~= "attack" and ent.state ~= "runaway"
+					and same_camp(ent._grug_camp_pos, camp)
+					and type(ent.do_attack) == "function" then
+				ent:do_attack(target)
+			end
+		end
 	end)
 end
 

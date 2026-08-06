@@ -193,3 +193,42 @@ mobs:spawn({
 	min_height = 0,
 	max_height = 300,
 })
+
+--
+-- CAVE ROWS (WP6/T7) — §3.1's cave paragraph, §4 zone column "outer, coast,
+-- underground". Level, height math, day_toggle and the `default:stone`
+-- performance question are explained once at the cave row in zombie.lua.
+--
+-- TWO rows, one per golem, because the mesa/stone split by TERRITORY holds
+-- underground too: caves under the Accord belong to the Stone Golem, caves
+-- under the Throng to the Mesa Golem. That needs no new code — the per-name
+-- _grug_spawn_check installed above (on_continent) is ANDed with the zone
+-- gate by mobs:spawn_abm_check (init.lua) for every row of that mob, so both
+-- rows below are already continent-gated. grug_core.territory_at works on
+-- x/z only, so it answers the same underground as it does on the surface.
+--
+-- The elite tier travels with the def, so a cave golem is an elite golem —
+-- and thanks to the depth axis a deep one is a HIGH-level elite. §4's row
+-- numbers (interval 30 / chance 9000 / aoc 1, any light) are kept verbatim;
+-- with aoc counted per entity name, surface and cave rows share the cap of 1
+-- active golem per area, which is exactly what makes that number safe.
+--
+mobs:spawn({
+	name = "grug_mobs:stone_golem",
+	nodes = {"default:stone"},
+	interval = 30,
+	chance = 9000,
+	active_object_count = 1,
+	min_height = -31000,
+	max_height = -40,
+})
+
+mobs:spawn({
+	name = "grug_mobs:mesa_golem",
+	nodes = {"default:stone"},
+	interval = 30,
+	chance = 9000,
+	active_object_count = 1,
+	min_height = -31000,
+	max_height = -40,
+})

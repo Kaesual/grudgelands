@@ -206,9 +206,9 @@ All files MIT, author **ElCeejo**.
 re-running the script reproduces the same pixels. |
 | `grug_mobs_blank.png` | Luanti engine | LGPL 2.1+ | 1×1 fully transparent PNG, taken from the engine; used for empty texture slots (skeleton armour/wield slots, sheared-fur slot). |
 
-### 6.1 Item icons + projectile sprites (WP6/T5, T6) — CC0 1.0, Grudgelands project
+### 6.1 Item icons, projectile sprites and node tiles (WP6/T5–T7) — CC0 1.0, Grudgelands project
 
-All 24 files below are **original 16×16 pixel art of this project**, not
+All 26 files below are **original 16×16 pixel art of this project**, not
 derived from any vendored or third-party asset, and are published under
 **CC0 1.0**. They are produced by one deterministic generator (no randomness
 — re-running reproduces every file byte-for-byte):
@@ -223,7 +223,8 @@ The `_item_` files are the inventory images of the shared mob materials
 registered in `items.lua` (`docs/design/biomes_mobs.md` §6 base-material
 map); `grug_mobs_arrow.png` and `grug_mobs_rock.png` are the projectile
 sprites of `grug_mobs:arrow_entity` (skeleton archer) and
-`grug_mobs:rock_entity` (stone/mesa golem).
+`grug_mobs:rock_entity` (stone/mesa golem); `grug_mobs_camp_fire.png` is the
+node tile of `grug_mobs:camp_fire` (`camps.lua`).
 
 | File | Author | License | How it was made |
 |------|--------|---------|-----------------|
@@ -251,6 +252,8 @@ sprites of `grug_mobs:arrow_entity` (skeleton archer) and
 | `grug_mobs_item_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_BUNDLE` (three bound arrows) |
 | `grug_mobs_arrow.png` | Grudgelands project | CC0 1.0 | generator, art `ARROW_PROJECTILE`, projectile sprite |
 | `grug_mobs_rock.png` | Grudgelands project | CC0 1.0 | generator, art `ROCK_PROJECTILE`, grey-boulder projectile sprite (WP6/T6, golem "hurls rocks"); **not** derived from `default_cobble.png` or any other vendored tile |
+| `grug_mobs_item_raw_fish.png` | Grudgelands project | CC0 1.0 | generator, art `FISH`, blue-grey palette (WP6/T7, Mirefolk drop `grug_mobs:raw_fish`) |
+| `grug_mobs_camp_fire.png` | Grudgelands project | CC0 1.0 | generator, art `CAMP_FIRE`, ash/stone/ember palette — top-down fire pit, fully opaque (a node tile must not have holes); node tile of `grug_mobs:camp_fire` (WP6/T7 camp anchor), **not** derived from `default_fire*` or any other vendored tile |
 
 ---
 

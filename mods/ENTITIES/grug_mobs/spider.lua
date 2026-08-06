@@ -142,3 +142,31 @@ mobs:spawn({
 	min_height = 0,
 	max_height = 200,
 })
+
+--
+-- CAVE ROW (WP6/T7) — §3.1's cave paragraph, §4 zone column "outer, coast,
+-- underground". Level, height math, day_toggle and the `default:stone`
+-- performance question are all explained once at the cave row in zombie.lua;
+-- read that block before changing anything here.
+--
+-- ONE cave row, and it belongs to grug_mobs:giant_spider (the base tint).
+-- The pale and jungle tints stay surface families: their textures are biome
+-- identity (bone forest, jungle), a cave has neither, and three cave rows
+-- would triple the underground spider budget for no design reason — §3.1
+-- says "reuse Giant Spider", singular. The zone list of spider_def already
+-- carries "underground" (T5 forward declaration), so this row passes
+-- spawn_abm_check for every tint that ever needs one.
+--
+-- The web verb applies underground exactly as above (melee_rider is
+-- installed per def, not per row).
+--
+mobs:spawn({
+	name = "grug_mobs:giant_spider",
+	nodes = {"default:stone"},
+	max_light = 5,
+	interval = 20,
+	chance = 1800,
+	active_object_count = 4,
+	min_height = -31000,
+	max_height = -40,
+})

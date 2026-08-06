@@ -338,5 +338,18 @@ dofile(modpath .. "/serpent.lua")
 dofile(modpath .. "/jungle_ape.lua")
 dofile(modpath .. "/parrot.lua")
 dofile(modpath .. "/kraken.lua")
+-- Swamp, shore and war coast + the humanoid camp mechanism
+-- (biomes_mobs.md §3.1/§4, WP6/T7). skeleton_raider.lua reuses the arrow
+-- entity registered by skeleton_archer.lua above, so it must come after it;
+-- camps.lua registers the camp TYPES and therefore comes after the two camp
+-- families it names.
+dofile(modpath .. "/crocodile.lua")
+dofile(modpath .. "/bog_ooze.lua")
+dofile(modpath .. "/gull.lua")
+dofile(modpath .. "/carrion_crow.lua")
+dofile(modpath .. "/skeleton_raider.lua")
+dofile(modpath .. "/bandit.lua")
+dofile(modpath .. "/mirefolk.lua")
+dofile(modpath .. "/camps.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")

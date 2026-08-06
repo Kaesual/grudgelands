@@ -576,3 +576,88 @@ grug_mobs.register_rare("emerald_coil", {
 	respawn_min = 7200,
 	respawn_max = 14400,
 })
+
+--
+-- Captain Bonerattle x2 (biomes_mobs §3.3, WP6/T7)
+--
+-- §3.3's last row: "Captain Bonerattle (x2, one per continent) | Skeleton
+-- Raider | war coast | 28". Both instances carry the SAME name — they are
+-- the same legend on both shores of the strait, one per continent, exactly
+-- as the row says; only the ids differ.
+--
+-- LEVEL VERIFICATION — the war coast is the one place where the radial field
+-- does NOT decide, the CAP does (grug_core/init.lua):
+--
+--   war_coast_cap(az) = 20 + (az - 100) / (300 - 100) * 10     for az <= 300
+--   mob_level_at      = min(level_at_n(radial_n), cap)         inside the band
+--
+-- so the level is a pure function of |z| as long as the uncapped field stays
+-- ABOVE the cap. Both routes run at |z| = 268 -> cap 28.40 -> **L28** after
+-- math.round (levels.lua). The uncapped field at the six points, for the
+-- record (dx = max(|x|-300, 0), dz = |az - 900| = 632, f = 1000 because
+-- az < 900, n = sqrt((dx/1150)^2 + (dz/f)^2), L = 25 + (n-0.55)/0.35 * 20):
+--   x  285 -> dx   0 -> n 0.6320 -> L 29.7  \
+--   x  410 -> dx 110 -> n 0.6392 -> L 30.1   |  all > 28.40,
+--   x  535 -> dx 235 -> n 0.6642 -> L 31.5   |  so the CAP governs
+--   x  555 -> dx 255 -> n 0.6698 -> L 31.8   |  at every point and
+--   x  680 -> dx 380 -> n 0.7166 -> L 34.5   |  the level is uniform
+--   x  805 -> dx 505 -> n 0.7696 -> L 37.5  /
+-- Zone check: |z| 268 is > CONTINENT_Z_MIN (100) and <= WAR_COAST_Z (300),
+-- so grug_core.zone_at answers "war_coast" for all six; |x| stays well under
+-- 1350, so none of them slips into the "coast" band.
+--
+-- WHY |z| = 268 AND NOT NEARER THE WATER: the ocean mask insets the coastline
+-- 0..150 nodes INTO the rectangle (grug_mapgen/structures.lua INSET_MAX), so
+-- the strait-facing shoreline wanders between |z| 100 and 250 and the dry
+-- beach only starts ~30 nodes further in (§1.5). A route at |z| 150..250
+-- would often be open water, where route_pos returns nil and the rare never
+-- spawns at all. |z| 268 still yields exactly 28 (the cap only reaches 30 at
+-- |z| 300) and sits behind the deepest possible inset.
+--
+-- WHY THESE EXACT x VALUES: the coast noise is WORLD-SEED INDEPENDENT —
+-- LuaValueNoise::l_get_2d evaluates NoiseFractal2D with seed 0, so
+-- coast_inset(x, z) is the same number in every world and the coastline can
+-- be computed offline. All six columns were checked against the real mask
+-- formula (continent_distance -> surface_cap(d - coast_inset)) and come out
+-- ABOVE water level, together with their +-8 node neighbourhood; the ~10% of
+-- the |z| 268 band that the mask floods is avoided by construction instead of
+-- by luck. The two continents needed DIFFERENT x values because the noise is
+-- not mirrored at z = 0 — this is the one rare pair that is not a geometric
+-- mirror, and that is why.
+--
+-- WHY THE ROUTE SPANS ONLY 250 NODES: `_grug_home` is the point a rare
+-- happened to SPAWN at, and the leash check compares against
+-- grug_mobs.RARE_LEASH_RANGE = 300 (aggro.lua). A rare that has ambled to the
+-- far end of a longer route would sit further from its home than the leash
+-- allows and reset — heal to full, drop the target — on every single pull,
+-- i.e. it would be unkillable. 250 keeps the whole route inside the leash
+-- from any spawn point, with room to be pulled a little further.
+--
+-- No `texture`: grug_mobs:skeleton_raider already wears the grimy war-coast
+-- bones, and levels.lua lays the rare violet tint over them.
+--
+
+grug_mobs.register_rare("bonerattle_south", {
+	name = "Captain Bonerattle",
+	mob = "grug_mobs:skeleton_raider",
+	-- Accord is negative z (grug_core.territory_at).
+	route = {{x = 555, z = -268}, {x = 680, z = -268}, {x = 805, z = -268}},
+	biome_hint = "the war coast",
+	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
+	respawn_max = 14400, -- 4 h
+})
+
+-- Same |z|, same span, same level — different x because the coast noise is
+-- not z-symmetric (see above). Two instances of ONE legend: §3.3 lists
+-- "Captain Bonerattle (x2, one per continent)", so both carry the same
+-- `name` and only the registry ids differ. The ids keep them apart where it
+-- matters: find_existing/rare_watch match on `_grug_rare_id`, so the northern
+-- captain can never be mistaken for the southern one.
+grug_mobs.register_rare("bonerattle_north", {
+	name = "Captain Bonerattle",
+	mob = "grug_mobs:skeleton_raider",
+	route = {{x = 285, z = 268}, {x = 410, z = 268}, {x = 535, z = 268}},
+	biome_hint = "the war coast",
+	respawn_min = 7200,
+	respawn_max = 14400,
+})

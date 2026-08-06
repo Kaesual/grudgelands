@@ -4,7 +4,12 @@
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Zombie",
 	type = "monster",
-	_grug_spawn_zones = {"core", "inner", "war_coast"},
+	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,
+	-- Giant Spider and Stone Golem below y -40 with the depth axis supplying
+	-- the level. _grug_spawn_zones is registered per mob NAME (init.lua), so
+	-- the cave row at the end of this file cannot add it per row — without
+	-- the zone here spawn_abm_check would reject every cave spawn.
+	_grug_spawn_zones = {"core", "inner", "war_coast", "underground"},
 	-- HP/damage/XP and armor come from the level engine (levels.lua); the
 	-- floor keeps the zombie above the boar even in the safe core.
 	_grug_min_level = 3,
@@ -115,4 +120,53 @@ mobs:spawn({
 			ent.light_damage = 0
 		end
 	end,
+})
+
+--
+-- CAVE ROW (WP6/T7) — biomes_mobs.md §3.1 "Caves (depth axis, WP6 note):
+-- reuse Zombie, Giant Spider, Stone Golem with `underground` zone gating;
+-- levels come from the depth term of `mob_level_at`. No cave-only families
+-- in this catalog."
+--
+-- This block is the canonical comment for all three cave rows; spider.lua
+-- and golem.lua point back here.
+--
+-- LEVEL: nothing to configure. grug_core.mob_level_at takes
+-- max(surface field, 1 + floor(-y/20)) for every y < 0 (combat_stats.md §3
+-- "depth axis", grug_core/init.lua), so a zombie at y -400 comes out at L21
+-- and one at y -1200 at L60 — the same engine-owned path every surface mob
+-- uses, no _grug_fixed_level, no per-row tuning.
+--
+-- HEIGHTS: min_height -31000 / max_height -40 with the ZONE gate doing the
+-- real work. The two are consistent, but read api.lua before touching them:
+-- mobs_redo calls mobs:spawn_abm_check with the ABM's NODE position
+-- (api.lua:3573) and only THEN moves the spawn position one node up
+-- (api.lua:3616), and the min/max height comparison happens on that raised
+-- position (api.lua:3618). So max_height -40 admits node y <= -41, and
+-- grug_core.zone_at returns "underground" for exactly y < -40 — every node
+-- this row can match is inside the zone, and nothing is silently thrown away
+-- at the boundary.
+--
+-- WHY THE CAVE ROWS MATTER: every surface row in the roster carries
+-- min_height 0 (§4), so before T7 the whole underground was empty. These
+-- three rows are what makes the depth axis real content instead of a number
+-- in a formula.
+--
+-- PERFORMANCE: `default:stone` sounds like "every node in the world", but
+-- the ABM's implicit neighbour list is {"air"} (mobs_redo's default,
+-- api.lua:3729), so only stone with air next to it — cave walls, ceilings
+-- and floors — is ever a candidate. Solid rock costs nothing.
+--
+mobs:spawn({
+	name = "grug_mobs:zombie",
+	nodes = {"default:stone"},
+	max_light = 5,
+	-- No day_toggle: it is always night down there, and the light gate above
+	-- already does the work. Setting day_toggle = false would additionally
+	-- forbid cave spawns during the surface day, which is not the intent.
+	interval = 20,
+	chance = 1600,
+	active_object_count = 4,
+	min_height = -31000,
+	max_height = -40,
 })
