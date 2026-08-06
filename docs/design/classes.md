@@ -110,6 +110,7 @@ moves into the talent tree.
 - Cast times / cast-bar spells, ability sounds, own ability icons
   (MVP: tinted orb icons) → Phase 3 polish.
 - Warrior shield abilities → after WP14 (offhand/shields).
-- Buffs/auras (e.g. Battle Shout, Power Word: Shield absorbs) and party
-  frames → with skill trees (WP11) or later.
+- Buffs/auras (e.g. Battle Shout) and party frames → with skill trees
+  (WP11) or later. (Power Word: Shield moved into the base kit with the
+  WP19 kit tuning, §5.)
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.

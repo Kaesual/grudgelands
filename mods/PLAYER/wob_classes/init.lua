@@ -128,31 +128,47 @@ wob_classes.register_class({
 -- MVP races (world.md §7); own flavor names come later (no 1:1 copies).
 --
 
+-- Each race has ONE visible passive (world.md §7); the perk keys are
+-- documented and consumed via perks.lua.
+
 wob_classes.register_race({
 	id = "human", name = "Human", faction = "alliance",
-	description = "At home on the central plains around the capital.",
+	description = "At home on the central plains around the capital.\n" ..
+		"Passive: +10% quest XP.",
+	perks = {quest_xp_mult = 1.1},
 })
 wob_classes.register_race({
 	id = "dwarf", name = "Dwarf", faction = "alliance",
-	description = "Hardy folk from the pine hills of the west.",
+	description = "Hardy folk from the pine hills of the west.\n" ..
+		"Passive: -20% fall damage.",
+	perks = {fall_damage_mult = 0.8},
 })
 wob_classes.register_race({
 	id = "elf", name = "Elf", faction = "alliance",
-	description = "Keepers of the deep forests in the east.",
+	description = "Keepers of the deep forests in the east.\n" ..
+		"Passive: +5 m ability range.",
+	perks = {ability_range_bonus = 5},
 })
 wob_classes.register_race({
 	id = "orc", name = "Orc", faction = "horde",
-	description = "Raised in the central savanna around the capital.",
+	description = "Raised in the central savanna around the capital.\n" ..
+		"Passive: +1 rage per hit taken.",
+	perks = {rage_per_hit_taken_bonus = 1},
 })
 wob_classes.register_race({
 	id = "troll", name = "Troll", faction = "horde",
-	description = "Jungle hunters from the eastern wilds.",
+	description = "Jungle hunters from the eastern wilds.\n" ..
+		"Passive: +50% regeneration out of combat.",
+	perks = {ooc_regen_mult = 1.5},
 })
 wob_classes.register_race({
 	id = "undead", name = "Undead", faction = "horde",
-	description = "Risen from the blighted lands of the west.",
+	description = "Risen from the blighted lands of the west.\n" ..
+		"Passive: zombies ignore you at night (unless attacked).",
+	perks = {zombie_night_truce = true},
 })
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/stats.lua")
+dofile(modpath .. "/perks.lua")
 dofile(modpath .. "/selection.lua")

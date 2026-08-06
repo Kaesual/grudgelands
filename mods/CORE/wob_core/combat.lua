@@ -17,6 +17,12 @@ function wob_core.get_dodge_chance(player)
 	return 0
 end
 
+-- Race passive lookup (world.md §7); wob_classes overrides this with the
+-- real registry accessor. Returns the perk value or nil.
+function wob_core.get_race_perk(player, key)
+	return nil
+end
+
 --
 -- Combat state: in combat = dealt or received damage in the last 5 s.
 -- Shared definition for resource regen (WP4), recovery (combat_stats §5)
@@ -173,13 +179,69 @@ function wob_core.heal_player(healer, target, amount)
 end
 
 --
--- Central dodge roll for punches against players (mob melee, PvP) plus
--- combat marking. Runs as an hp change modifier so a dodge cancels the
--- whole hit before armor/sounds.
+-- Absorb shields (Power Word: Shield, classes.md §5). One shield per
+-- player; a new one replaces the old (no stacking). Soaked lazily by the
+-- central hp change modifier below — no timer entity, the expiry is
+-- checked whenever the shield would matter.
+--
+
+local absorbs = {} -- player name -> {amount = n, expiry = us time}
+
+function wob_core.set_absorb(player, amount, duration)
+	absorbs[player:get_player_name()] = {
+		amount = amount,
+		expiry = core.get_us_time() + duration * 1e6,
+	}
+end
+
+-- Remaining absorb amount (0 when none/expired).
+function wob_core.get_absorb(player)
+	local name = player:get_player_name()
+	local a = absorbs[name]
+	if not a then
+		return 0
+	end
+	if core.get_us_time() > a.expiry then
+		absorbs[name] = nil
+		return 0
+	end
+	return a.amount
+end
+
+local function absorb_particles(pos)
+	core.add_particlespawner({
+		amount = 6,
+		time = 0.15,
+		-- NB `radius` is not a particlespawner field — spread via pos range.
+		pos = {min = vector.offset(pos, -0.4, 0.4, -0.4),
+			max = vector.offset(pos, 0.4, 1.4, 0.4)},
+		vel = {min = vector.new(-1, 0, -1), max = vector.new(1, 2, 1)},
+		exptime = {min = 0.2, max = 0.5},
+		size = {min = 1.5, max = 2.5},
+		texture = "default_item_smoke.png^[multiply:#ffe9a0",
+	})
+end
+
+core.register_on_dieplayer(function(player)
+	absorbs[player:get_player_name()] = nil
+end)
+
+core.register_on_leaveplayer(function(player)
+	absorbs[player:get_player_name()] = nil
+end)
+
+--
+-- Central damage modifier for players: dodge roll (mob melee, PvP) plus
+-- combat marking, then race mitigation (dwarf fall damage), then the
+-- absorb shield. Runs as an hp change modifier so a dodge cancels the
+-- whole hit before armor/sounds and absorbs are consumed before HP.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
-	if hp_change < 0 and reason.type == "punch" then
+	if hp_change >= 0 then
+		return hp_change
+	end
+	if reason.type == "punch" then
 		wob_core.mark_in_combat(player)
 		-- Ability punches pre-roll dodge in deal_ability_damage.
 		if not wob_core.in_ability_punch and
@@ -187,6 +249,26 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			return 0
+		end
+	end
+	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so
+	-- the shield only soaks what would actually land.
+	if reason.type == "fall" then
+		local mult = wob_core.get_race_perk(player, "fall_damage_mult")
+		if mult then
+			hp_change = -math.floor(-hp_change * mult)
+		end
+	end
+	-- Absorb shield soaks any remaining damage (all sources).
+	if hp_change < 0 and wob_core.get_absorb(player) > 0 then
+		local name = player:get_player_name()
+		local a = absorbs[name]
+		local soak = math.min(a.amount, -hp_change)
+		a.amount = a.amount - soak
+		hp_change = hp_change + soak
+		absorb_particles(player:get_pos())
+		if a.amount <= 0 then
+			absorbs[name] = nil
 		end
 	end
 	return hp_change

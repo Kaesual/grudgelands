@@ -6,6 +6,8 @@ wob_mobs.register_mob("wob_mobs:zombie", {
 	type = "monster",
 	_wob_xp_reward = 35,
 	_wob_spawn_zones = {"borderland", "starter", "midlands"},
+	-- Undead race passive (world.md §7): ignored at night unless provoked.
+	_wob_night_truce_perk = "zombie_night_truce",
 
 	hp_min = 16,
 	hp_max = 22,

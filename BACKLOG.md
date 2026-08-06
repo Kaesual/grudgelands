@@ -39,7 +39,7 @@ window. Rules:
 | WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
 | WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via wob_core constants), remove mountain wall, per-race spawn points at the 3 race capitals (safe-core belt), radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), civilization-gradient biome layer (settled race biomes core/inner, shared nature biomes outward), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | open (spec: `docs/design/world.md` §1/§2/§2b/§8; biome catalog: `docs/design/biomes_mobs.md`; replaces WP2's wall + z-rings) | WP2 |
-| WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | open (spec: `docs/design/classes.md`, world.md §7) | WP4 |
+| WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | ✅ GCD 1 s (silent gate, no wear churn) + soft target lock (8 s, separate enemy/ally slots, range+LOS re-checks) in `wob_abilities`; kits per classes.md tables (Mighty Blow 25 rage dump, NEW Hamstring w/ mob slow via `wob_mobs.slow` halving speeds, Fireball 8 mana GCD-only, Frost Nova 12 s root→slow, PW:S absorb via `wob_core.set_absorb` in the central hp modifier; Renew `talent_gated` for WP11); race passives via `wob_classes` perk registry (dwarf fall −20%, troll OOC regen — mana today, WP21 reuses perk; undead zombie night truce via `_wob_ignore_player` veto patch in mobs api.lua; orc +1 rage/hit taken, elf +5 m item-meta range, human quest-XP hook latent until WP8). Runtime test pending | WP4 |
 | WP20 | Party system: /party (content sized for 2–3), tap rules (first damager's party tags), shared XP/kill/quest credit within 60 m, member HP frames HUD, group loot basics | open (spec: classes.md balance constraints) | WP4 |
 | WP21 | Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper NPC (rested XP + Home Stone rebind), NPC anchor/respawn insurance | open (spec: `docs/design/combat_stats.md` §5, progression.md §1) | WP1 |
 | WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed), NPC repair for gold, tier-scaled costs | open (spec: `docs/design/economy.md` §4) | WP5, WP7 |
@@ -48,8 +48,8 @@ window. Rules:
 ### Readiness (2026-08-06)
 
 **Ready now** (no design blockers, deps done): WP11 (talents — spec
-progression.md §2), WP14 (offhand), WP17 (travel), WP19 (kit tuning),
-WP20 (party), WP21 (recovery/innkeeper).
+progression.md §2), WP14 (offhand), WP17 (travel), WP20 (party),
+WP21 (recovery/innkeeper).
 
 **Blocked, by what**:
 - WP18 is design-unblocked (biomes_mobs.md decided) — ready once picked up; WP6 waits on WP18

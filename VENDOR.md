@@ -24,7 +24,7 @@ Rules:
 
 | Path | Upstream | Vendored commit | License | Local patches |
 |------|----------|-----------------|---------|---------------|
-| `mods/ENTITIES/mobs` | [mobs_redo](https://codeberg.org/tenplus1/mobs_redo) | `646ba60` | MIT | none (wrapped by `wob_mobs`; `mobs:spawn_abm_check` is overridden there — a documented upstream extension hook, not a patch) |
+| `mods/ENTITIES/mobs` | [mobs_redo](https://codeberg.org/tenplus1/mobs_redo) | `646ba60` | MIT | `api.lua` `general_attack()`: `_wob_ignore_player` per-entity player-target veto hook (WP19 undead night truce — filtering during acquisition lets the mob pick the next-closest player). Also wrapped by `wob_mobs`; `mobs:spawn_abm_check` is overridden there — a documented upstream extension hook, not a patch |
 | `mods/BASE/default` | [minetest_game](https://github.com/luanti-org/minetest_game) `mods/default` | `b5243f3` | LGPL-2.1+ / media CC BY-SA | `mapgen.lua` tail: biome/ore/decoration registration for biome-based mapgens disabled — wob_mapgen owns them (WP2) |
 | `mods/BASE/creative` | minetest_game `mods/creative` | `b5243f3` | LGPL-2.1+ | none |
 | `mods/BASE/sfinv` | minetest_game `mods/sfinv` | `b5243f3` | LGPL-2.1+ | none |

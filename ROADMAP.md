@@ -114,7 +114,11 @@ game (not a mod pack), written in Lua.
       1 point per 3 levels, capstones = new active main skills, respec
       for gold (`docs/design/progression.md` §2), formspec UI
 - [x] 2–4 active abilities per class (hotbar/item based), cooldowns
-      (`wob_abilities`, 3 per class; spec `docs/design/classes.md`)
+      (`wob_abilities`, 3–4 per class; spec `docs/design/classes.md`)
+- [x] Combat feel (WP19): global cooldown 1 s, soft target lock 8 s,
+      kit tuning per classes.md tables (rage dump, Hamstring snare,
+      Frost Nova root→slow, Power Word: Shield absorb), one visible
+      passive per race (world.md §7)
 
 ### 1.4 Mobs & combat
 - [ ] Faction guards (attack the enemy faction), spawned by military

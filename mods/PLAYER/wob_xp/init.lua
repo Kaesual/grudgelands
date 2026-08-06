@@ -66,7 +66,15 @@ function wob_xp.set_xp(player, xp)
 	hud_update(player)
 end
 
-function wob_xp.add_xp(player, amount)
+-- `source` (optional) tags where the XP comes from ("kill", "quest", ...)
+-- and lets race passives scale it (world.md §7: human +10% quest XP).
+-- wob_classes loads after wob_xp, hence the runtime global probe. No
+-- caller passes "quest" yet — the quest framework (WP8) gets the bonus
+-- for free by tagging its rewards.
+function wob_xp.add_xp(player, amount, source)
+	if source and core.global_exists("wob_classes") then
+		amount = math.floor(amount * wob_classes.get_xp_bonus(player, source) + 0.5)
+	end
 	wob_xp.set_xp(player, wob_xp.get_xp(player) + amount)
 end
 
