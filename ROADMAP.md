@@ -158,12 +158,20 @@ game (not a mod pack), written in Lua.
   - [ ] Gather/kill quests across different biomes (forced exploration)
 
 ### 1.6 Professions & economy
-- [ ] Job system: max. 2 jobs per player, chosen at job trainers
-- [ ] MVP jobs: **Herbalism** (gather plants), **Alchemist** (potions),
-      **Blacksmith** (weapons/armor), **Gem Hunter** (random gem drops
-      while mining — mining itself is open to everyone)
+- [ ] Job system (`docs/design/professions.md`): 2 main professions per
+      player, freely chosen at job trainers; **Cooking + First Aid as
+      universal secondaries** for everyone; gathering split (food plants
+      for all, alchemy herbs need Herbalism)
+- [ ] MVP jobs: **Herbalism**, **Alchemist**, **Blacksmith**,
+      **Leatherworker** (dex gear; ×5 leather via player-tag loot hook),
+      **Tailor** (bags), **Gem Hunter** (mining/smelting stay open to
+      everyone)
+- [ ] Crafting model: everything in the 3×3 grid, multi-stage,
+      recipe-unlock gated + workbench proximity for profession recipes,
+      recipe book UI (`docs/design/inventory_equipment.md` §4)
 - [ ] Gold system (currency, persistent)
-- [ ] Trader NPCs: buy EVERY mob drop for gold, sell basic goods
+- [ ] Trader NPCs: buy EVERY mob drop for gold; sell only the lowest
+      tier per category (vendor floor rule, economy.md)
 
 ### 1.7 Map
 - [ ] Global map with fog of war, uncovered per player
@@ -181,7 +189,11 @@ game (not a mod pack), written in Lua.
       (crit/stun) only from stealth, no threat until the opener; NB
       engine visibility is global — no per-viewer invisibility, so
       stealth is semi-transparent/invisible for everyone
-- [ ] More jobs: **Tailor**, possibly Enchanter
+- [ ] Profession splits once population supports them: Blacksmith →
+      Weapon-/Armorsmith, Tailor + Enchanter, Leatherworker + Bowyer
+      (`docs/design/professions.md` §5)
+- [ ] **Decide: bow/ranged-weapon system + a Hunter-like class**
+      (prerequisite for Bowyer; not in the current class plan)
 - [ ] **Player housing** (guild-owned ocean areas with separately paid
       build/mining rights + depth treasures; spec: `docs/design/world.md`
       §5, layout TODO-design-housing.md) — may be pulled into Phase 1

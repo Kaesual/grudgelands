@@ -35,16 +35,21 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
   farming feeds the tailor economy.
 - No item drop on death (unchanged; death costs XP, not gear).
 
-## 4. Crafting split
+## 4. Crafting model (revised 2026-08-06 — replaces the workbench-UI split)
 
-- The **3×3 grid** (inventory) keeps general recipes: torches, basic
-  tools, blocks.
-- **Profession recipes never use the 3×3 grid**: workbench nodes
-  (forge, tailor bench, alchemy table) open a **recipe-list UI**
-  (pick recipe → materials auto-consumed). Rationale: the inventory
-  craft grid has no world-position context, workbench formspecs are
-  position-gated for free — and a recipe list is the WoW-familiar UX.
+- **Everything is crafted in the 3×3 grid**, base recipes and profession
+  recipes alike; profession items are **multi-stage** (ore → ingot →
+  component → item).
+- **Recipes are gated by profession progression**: laying the right
+  materials into the grid without having learned the recipe produces
+  nothing (`craft_predict` veto). Learned recipes are browsable in a
+  **recipe book UI** (character screen / trainer) — mandatory, since a
+  3×3 shape you don't know is otherwise undiscoverable.
+- **Profession recipes additionally require the matching workbench
+  nearby** (`find_node_near`: forge, tanning rack, tailor bench, alchemy
+  table) — keeps cities/camps as crafting magnets. Base recipes work
+  anywhere.
 - Workbenches are initially **uncraftable and stand only in the
-  capitals** (placement with WP13); job-supply vendors (thread, flux,
-  vials) stand next to them (materials design:
+  capitals/villages** (placement with WP13); job-supply vendors (thread,
+  flux, vials) stand next to them (materials design:
   TODO-design-items-crafting.md §5).

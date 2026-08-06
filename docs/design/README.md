@@ -19,5 +19,6 @@ also AGENTS.md "Documentation layers"):
 | `combat_stats.md` | Attributes, skill points, HP/damage curves, mob tiers, threat system, recovery | **decided** (2026-08-06) |
 | `items_crafting.md` | Quality tiers, enchant budgets, crafting/upgrades, loot sources | in progress → `TODO-design-items-crafting.md` (before WP5/WP7) |
 | `classes.md` | Class kits: resources, MVP abilities (skill trees follow with WP11) | **decided** (2026-08-06) |
-| `economy.md` | Currency structure, money-flow bands, trader rules | **decided** (2026-08-06); price numbers open in `TODO-design-items-crafting.md` §4 |
+| `economy.md` | Currency structure, money-flow bands, trader rules, vendor floor | **decided** (2026-08-06); price numbers open in `TODO-design-items-crafting.md` §4 |
+| `professions.md` | Profession structure, MVP roster, gathering split, vendor floor | **decided** (2026-08-06); recipes/materials open in items TODO; biome catalog: `TODO-design-biomes.md` |
 | `progression.md` | Leveling pace, reward cadence, death rules, quest structure | **partial** (2026-08-06): pace/cadence/death decided; quest structure open (before WP8/WP9) |

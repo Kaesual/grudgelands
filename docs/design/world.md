@@ -28,6 +28,11 @@ the south, mirrored at z=0. Everything else is ocean.
 - **Fixed base layout, randomized within**: which race region lies in
   which compass direction is FIXED per faction (section 7); noise only
   wobbles region borders and coastlines.
+- **Civilization gradient** (decided 2026-08-06): the safe core + inner
+  ring carry the settled race biomes (villages, roads, fields); outward
+  every race band tips into its **wild nature variant** — shared nature
+  biomes that exist on BOTH continents with identical base drops
+  (section 8).
 - All anchors (capital position, ring radii, coast caps) derive from the
   continent size constants in `wob_core` — world size is configurable at
   world creation (3000×1600 default; changing it requires a new world).
@@ -273,3 +278,50 @@ small villages, and perks around vendors/professions.
   classes.
 - Small race villages in the race regions (traders, flavor, later
   race-specific job trainers) — content for WP13.
+
+## 8. Nature biomes (shared wilderness)
+
+Decided 2026-08-06 (ring model); the full biome/mob catalog is being
+specced in `TODO-design-biomes.md` (blocker for WP18 mapgen + WP6 mob
+rosters).
+
+- Nature biomes are **unsettled** (no faction NPCs except passing
+  patrols), exist on **both continents with identical base drops** (base
+  recipes work everywhere), and are the designated **quest wilderness**
+  ("go into the adjacent jungle and kill a snake").
+- Placement follows the difficulty rings: each race band's outer part IS
+  its nature variant (dwarven pine hills → high crags; elven forest →
+  deep forest; troll jungle edge → deep jungle …). Difficulty and biome
+  reinforce each other: jungle/high mountains are high-level BY
+  POSITION.
+- Working level bands (final in the biome TODO): coast/beach 5–25,
+  deep forest 10–30, swamp 25–40, jungle 35–55, high mountains 40–60.
+- **Nature mobs are aggressive on sight against players AND NPCs**
+  (patrols visibly fight wolves — free world "life").
+- **Mob density is deliberately high**: target ~1 visible mob per
+  15–20 m of travel in wilderness rings (per-biome spawn parameters in
+  the biome TODO; the WP6 pathfinding/performance pass is the blocker
+  for this density).
+
+## 9. Settlements & world life
+
+POI budget **per race band** (deterministic placement, WP13/WP18):
+
+- 1 **race village** in the safe core (section 7) — trainers, traders,
+  waypoint.
+- 1 **flavor camp** in the inner ring (e.g. a race-owned miners' camp:
+  small building, chests, 2–3 NPCs; doubles as the mining-zone anchor
+  of section 4).
+- 1 **military outpost per ring** (section 4).
+- 1 **apex lair** in the outer ring (section 4b, staged).
+
+Life measures (cheap on a voxel budget): named NPCs with one-liner
+barks, visible patrols between outpost ↔ village that really fight
+nature mobs on the way, light/smoke details, a quest board per village.
+**NPC and guard levels always match the surrounding wilderness**
+(`guard_level_at` reflects the local ring).
+
+**Drop rule (anti-litter, decided 2026-08-06)**: mobs and NPCs drop
+loot ONLY when a player was involved — details in combat_stats.md §3
+(player-tag flag). Faction NPCs drop only to ENEMY players (PvP kills);
+a wolf slain by a guard drops nothing.

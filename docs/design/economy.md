@@ -15,6 +15,10 @@ currency structure and the qualitative bands.
   renders `Xg Ys Zc`.
 - **No physical coin items in the MVP** — money is a counter; traders
   and NPCs adjust it. (Coin items as loot flavor: revisit later.)
+- **Vendor floor rule** (decided 2026-08-06): vendors sell only the
+  LOWEST tier of each item category (smallest bag, weak heal potion,
+  basic tools) — everything above is player-crafted
+  (`professions.md` §4).
 
 ## 2. Price bands (qualitative)
 

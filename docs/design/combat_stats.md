@@ -71,6 +71,14 @@ Normal tier at level L:
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
+- **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
+  only if a player damaged it (`do_punch` sets a tag; the tag stores
+  the attacker's professions for loot-table hooks like the
+  Leatherworker ×5, professions.md §3) — **the tag expires after ~60 s
+  without further player contact** (no "seeding" a wolf and letting
+  guards farm it). Faction NPCs drop only when killed by ENEMY players
+  (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
+  problem.
 - **Soft de-aggro** (with the speed rule, decided 2026-08-06): beyond
   ~25 m from its target a chasing mob drops to walk speed — fleeing is
   hard, not impossible (mobs are otherwise faster than players).
