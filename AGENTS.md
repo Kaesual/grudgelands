@@ -173,9 +173,10 @@ Details + line numbers in [docs/research/](docs/research/).
   variant with better ranges only on elite/heartland mobs).
 - **Traders/gold**: templates VoxeLibre `mobs_mc/villager.lua` (trade
   tiers, detached inventory `wanted/input/offered/output`) and LotT
-  `lottmobs/trader.lua` (faction-dependent stock). Gold as an item +
-  counter in player meta; traders buy EVERY mob drop (buy-price field
-  `_wob_sell_price` in item defs).
+  `lottmobs/trader.lua` (faction-dependent stock). Money is ONE integer
+  in copper units in player meta (100c = 1s, 100s = 1g, conversion is
+  display-only; `docs/design/economy.md`); traders buy EVERY mob drop
+  (buy-price field `_wob_sell_price` in item defs).
 - **Quests**: no ready-made framework in the references. Building blocks:
   trigger/counter patterns from `lottachievements` (awards fork), event
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),

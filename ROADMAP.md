@@ -26,12 +26,14 @@ game (not a mod pack), written in Lua.
   your own faction's territory (outside protected zones such as capitals,
   outposts and quest structures); enemy territory and the border zone
   cannot be modified. Ores respawn so a persistent world does not run dry.
-- **Player housing**: frontier plots in a safe zone beyond the heartland
-  with paid horizontal/depth expansion and depth treasures — the main
-  outlet for free building and the central gold sink; a capital portal
-  keeps city flair (`docs/design/world.md` §5). A **Home Stone**
-  (teleport to capital/housing, 3–5 s cast, damage interrupts)
-  guarantees nobody is trapped.
+- **Player housing**: guild-owned frontier plots in a safe zone beyond
+  the heartland with paid horizontal/depth expansion and depth
+  treasures — the main outlet for free building and the central gold
+  sink (`docs/design/world.md` §5).
+- **Travel**: waypoint network (Diablo/PoE style — teleport only from
+  waypoint to waypoint, unlocked by visiting, none in enemy territory)
+  + a Home Stone to the own capital (10 s cast, damage interrupts,
+  60 min cooldown) as emergency valve (`docs/design/world.md` §6).
 - Class-specific points of interest (trainers, special quest NPCs) in the
   capitals and out in the world.
 - A global per-player map with fog of war (everyone uncovers it
@@ -97,7 +99,8 @@ game (not a mod pack), written in Lua.
       (night, burns in daylight) with XP rewards and loot; more (wolves, …)
       follow with WP6
 - [ ] Neutral/hostile mobs in tiers: border = weak, heartland = strong,
-      elite mobs that require groups
+      elite mobs that require groups; incl. neutral **bandit camps**
+      (humanoid loot source — cloth — in both territories)
 - [ ] **Aggro/threat system**: mobs pick targets by threat (damage +
       healing × factor); tank threat tools/taunt follow with class
       abilities (1.3)
@@ -141,7 +144,8 @@ game (not a mod pack), written in Lua.
 ### 1.7 Map
 - [ ] Global map with fog of war, uncovered per player
       (evaluate existing map mods, e.g. mapserver/"map" mods; otherwise a
-      custom solution via HUD/formspec)
+      custom solution via HUD/formspec); shows discovered waypoints
+      (travel: `docs/design/world.md` §6)
 
 ---
 
@@ -154,16 +158,18 @@ game (not a mod pack), written in Lua.
       engine visibility is global — no per-viewer invisibility, so
       stealth is semi-transparent/invisible for everyone
 - [ ] More jobs: **Tailor**, possibly Enchanter
-- [ ] **Player housing** (frontier plots with paid expansion + depth
-      treasures, capital portal; spec: `docs/design/world.md` §5) — may
-      be pulled into Phase 1 since it is the central gold sink; the
-      **Home Stone** teleport may land earlier as a standalone
-      convenience feature
+- [ ] **Player housing** (guild-owned frontier plots with paid
+      expansion + depth treasures; spec: `docs/design/world.md` §5) —
+      may be pulled into Phase 1 since it is the central gold sink
 - [ ] Race perks beyond the basics: race-exclusive professions/recipes,
       race-restricted classes (decide once more classes exist)
 - [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
 - [ ] Dungeon/instance-like structures (fixed elite areas with boss + loot)
 - [ ] Raid bosses in the deepest heartland
+- [ ] **The Nether**: farmable active zone with its own rules, story
+      layer ("the world's magic created connections"), island crossings
+      into enemy territory (mirror pairing), later world bosses behind
+      challenges (spec in progress: TODO-design-nether.md)
 - [ ] Mounts (incl. class-specific unlock quests as flavor)
 - [ ] Reputation system (simplified)
 - [ ] Auction-house-like trading between players

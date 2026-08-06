@@ -61,7 +61,7 @@ One capital per faction, near the border at ~z=±200, fully protected
 - Class trainers + class POIs (e.g. special quest NPCs à la mount
   unlocks).
 - Traders, quest givers, job trainers.
-- Housing portal building (door/NPC teleports to the player's own plot).
+- A waypoint of the travel network (section 6).
 - Elite guards — a capital raid is a Phase-2+ group event, not a solo
   gank. The faction **King** sits here as a heavily guarded raid boss
   with top-tier loot rolls (see items/crafting design).
@@ -108,19 +108,33 @@ mobs, no PvP, "infinite" outward expansion. **Owner is always a guild**
   there) — a wall around the plot is truly impenetrable.
 - **Visitors are allowed** (plots can be entered and admired); who wants
   privacy builds a wall.
-- Access from the capital via the housing portal (section 3) or the Home
-  Stone.
+- Access via the plot's own waypoint (section 6).
 
-## 6. Home Stone
+## 6. Travel: waypoints & Home Stone
 
-Teleport item/skill, so nobody is ever trapped (e.g. deep in enemy
-territory):
+**Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
-- Two targets: a) the faction capital, b) the own housing plot.
-- **3–5 s cast time; taking damage interrupts the cast** — it is not a
-  combat escape.
-- **No cooldown** — usable as often as desired (convenience decision,
-  2026-08-06).
+- Waypoints: spawn camp, capital, the own guild's housing plot, plus
+  **~1 waypoint per ring per race region** across each territory
+  (density is the tuning knob for how relaxed world travel feels).
+- **Unlocked by visiting, per character** (player meta); the fog-of-war
+  world map (section on WP12) shows discovered waypoints.
+- Teleporting works **only while standing at a waypoint**
+  (waypoint → waypoint), instant and free — travel time is the cost;
+  mounts stay relevant.
+- **No waypoints in enemy territory** (not claimable or usable there)
+  and **none in the neutral borderland**.
+- Phase 2 extension: **Nether crossings** link mirrored points
+  (x, z) ↔ (x, −z) into enemy territory
+  (TODO-design-nether.md until specced).
+
+**Home Stone** (kept as the emergency/return valve):
+
+- Teleport to the **own faction capital only**.
+- **10 s cast time; taking damage interrupts** — not a combat escape.
+- **60 min cooldown.**
+- `/unstuck` (suicide command) remains the last resort for hard stuck
+  states.
 
 ## 7. Races
 
