@@ -12,8 +12,22 @@ local item_defs = {} -- item name -> ability def
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
 local cooldowns = {} -- player name -> {ability id -> expiry (us time)}
+local gcd_expiry = {} -- player name -> expiry (us time) of the global cooldown
+local targets = {} -- player name -> {obj, ally, expiry (us time)} soft target lock
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
+
+-- Global cooldown across all abilities of a class (classes.md core
+-- principles): turns button mashing into a rotation. Deliberately NOT
+-- displayed via item wear — 1 s of wear flicker on every kit item would
+-- multiply inventory re-sends for zero information (AGENTS performance
+-- rules); try_cast just gates silently.
+wob_abilities.GCD = 1.0
+
+-- Soft target lock (classes.md core principles): the last punched/pointed
+-- enemy or ally stays the implicit target this long; abilities fall back
+-- to it when pointed_thing has no valid target.
+wob_abilities.TARGET_LOCK = 8
 
 local function resource_of(player)
 	local def = wob_classes.get_class_def(player)
@@ -70,6 +84,44 @@ local function affordable(player, cost)
 	local name = player:get_player_name()
 	return (not cost.mana or (mana[name] or 0) >= cost.mana)
 		and (not cost.rage or (rage[name] or 0) >= cost.rage)
+end
+
+--
+-- Soft target lock. `ally` marks friendly targets (heal fallback); the
+-- kits re-validate faction/range on every use, this only stores identity
+-- and freshness.
+--
+
+function wob_abilities.set_target(player, obj, ally)
+	targets[player:get_player_name()] = {
+		obj = obj,
+		ally = ally or false,
+		expiry = core.get_us_time() + wob_abilities.TARGET_LOCK * 1e6,
+	}
+end
+
+-- Returns obj, is_ally — or nil when no lock, expired, or the object is
+-- gone (mob died/unloaded, player left; invalid ObjectRefs return nil
+-- from get_pos).
+function wob_abilities.get_target(player)
+	local name = player:get_player_name()
+	local rec = targets[name]
+	if not rec then
+		return nil
+	end
+	if core.get_us_time() > rec.expiry or not rec.obj:get_pos() then
+		targets[name] = nil
+		return nil
+	end
+	return rec.obj, rec.ally
+end
+
+-- Effective targeting range of an ability for this player (elf passive:
+-- +5 m on everything, world.md §7). The granted item's meta `range`
+-- override (sync_kit) keeps pointed_thing in step with this.
+function wob_abilities.get_range(player, def)
+	return (def.range or 4)
+		+ (wob_classes.get_race_perk(player, "ability_range_bonus") or 0)
 end
 
 --
@@ -133,12 +185,14 @@ function wob_abilities.register_ability(def)
 	local class_def = wob_classes.registered_classes[def.class]
 	local cost_line = def.cost.mana and (def.cost.mana .. " mana")
 		or def.cost.rage and (def.cost.rage .. " rage") or "free"
+	local cd_line = def.cooldown > 0 and (def.cooldown .. " s cooldown")
+		or "no cooldown"
 	local itemname = "wob_abilities:" .. def.id
 	item_defs[itemname] = def
 
 	core.register_tool(itemname, {
 		description = def.name .. " (" .. class_def.name .. ")\n" ..
-			cost_line .. ", " .. def.cooldown .. " s cooldown\n" ..
+			cost_line .. ", " .. cd_line .. "\n" ..
 			def.description,
 		inventory_image = "wob_abilities_orb.png^[multiply:" .. def.color,
 		wield_image = "wob_abilities_orb.png^[multiply:" .. def.color,
@@ -214,9 +268,15 @@ function wob_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	local name = user:get_player_name()
+	local now = core.get_us_time()
+	-- Global cooldown: silent gate (mashing during the GCD is normal, a
+	-- flash per blocked click would be pure noise).
+	if gcd_expiry[name] and now < gcd_expiry[name] then
+		return
+	end
 	cooldowns[name] = cooldowns[name] or {}
 	local expiry = cooldowns[name][def.id]
-	if expiry and core.get_us_time() < expiry then
+	if expiry and now < expiry then
 		wob_abilities.flash(user, def.name .. " is not ready.")
 		return
 	end
@@ -226,48 +286,74 @@ function wob_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
-	-- cooldown.
-	local ok, err = def.cast(user, pointed_thing)
+	-- cooldown, no GCD. def is passed through for the target-lock helpers
+	-- (range checks).
+	local ok, err = def.cast(user, pointed_thing, def)
 	if not ok then
 		wob_abilities.flash(user, err or "Invalid target.")
 		return
 	end
 	spend(user, def.cost)
-	cooldowns[name][def.id] = core.get_us_time() + def.cooldown * 1e6
-	wear_steps[name] = wear_steps[name] or {}
-	wear_steps[name][def.id] = WEAR_STEPS
-	set_item_wear(user, def.id, 65534)
+	gcd_expiry[name] = core.get_us_time() + wob_abilities.GCD * 1e6
+	if def.cooldown > 0 then
+		cooldowns[name][def.id] = core.get_us_time() + def.cooldown * 1e6
+		wear_steps[name] = wear_steps[name] or {}
+		wear_steps[name][def.id] = WEAR_STEPS
+		set_item_wear(user, def.id, 65534)
+	end
 end
 
 --
 -- Kit granting: exactly one item per class ability, foreign class items are
 -- purged, wear resets with the (runtime) cooldowns. Runs on join and on
--- class pick/switch.
+-- class pick/switch. Talent-gated abilities (def.talent_gated, e.g. Renew)
+-- stay registered but are NOT part of the base kit — WP11's talent system
+-- will grant them. The elf range passive lands here as a per-stack meta
+-- `range` override (engine 5.9+: overrides the pointing range), so
+-- pointed_thing reaches as far as wob_abilities.get_range allows.
 --
 
 local function sync_kit(player)
 	local class = wob_classes.get_class(player)
 	local name = player:get_player_name()
 	cooldowns[name] = {}
+	gcd_expiry[name] = nil
 	wear_steps[name] = {}
 	slot_cache[name] = {}
+	local range_bonus = wob_classes.get_race_perk(player, "ability_range_bonus") or 0
 	local inv = player:get_inventory()
 	local have = {}
 	for listname, list in pairs(inv:get_lists()) do
 		for i, stack in ipairs(list) do
 			local def = item_defs[stack:get_name()]
 			if def then
-				-- Only items in "main" count as present: foreign-class
-				-- items, duplicates and strays in other lists (bags from
+				-- Only granted items in "main" count as present:
+				-- foreign-class items, talent-gated items (not granted
+				-- yet), duplicates and strays in other lists (bags from
 				-- old saves) are removed; own-class strays re-granted
 				-- into main below.
-				if def.class ~= class or listname ~= "main" or
-						have[stack:get_name()] then
+				if def.class ~= class or def.talent_gated or
+						listname ~= "main" or have[stack:get_name()] then
 					inv:set_stack(listname, i, ItemStack(""))
 				else
 					have[stack:get_name()] = true
+					local changed = false
 					if stack:get_wear() ~= 0 then
 						stack:set_wear(0)
+						changed = true
+					end
+					local meta = stack:get_meta()
+					local desired = range_bonus > 0
+						and (def.range or 4) + range_bonus or 0
+					if meta:get_float("range") ~= desired then
+						if desired > 0 then
+							meta:set_float("range", desired)
+						else
+							meta:set_string("range", "") -- remove override
+						end
+						changed = true
+					end
+					if changed then
 						inv:set_stack(listname, i, stack)
 					end
 				end
@@ -276,8 +362,13 @@ local function sync_kit(player)
 	end
 	for _, def in ipairs(wob_abilities.by_class[class] or {}) do
 		local itemname = "wob_abilities:" .. def.id
-		if not have[itemname] then
-			inv:add_item("main", itemname)
+		if not def.talent_gated and not have[itemname] then
+			local stack = ItemStack(itemname)
+			if range_bonus > 0 then
+				stack:get_meta():set_float("range",
+					(def.range or 4) + range_bonus)
+			end
+			inv:add_item("main", stack)
 		end
 	end
 end
@@ -292,26 +383,41 @@ end)
 --
 -- Rage generation (classes.md §1): +12 per melee auto-attack hit dealt
 -- (ability punches excluded via wob_core.in_ability_punch), +4 per hit
--- taken. Charge's +15 lives in the ability itself.
+-- taken (+1 with the orc passive, world.md §7). Charge's +15 lives in the
+-- ability itself. Punches also refresh the soft target lock ("last
+-- punched enemy or ally").
 --
 
 wob_core.register_on_player_hit_mob(function(player, mob_ent, damage)
+	if mob_ent.object and (mob_ent.health or 0) > 0 then
+		wob_abilities.set_target(player, mob_ent.object, false)
+	end
 	if not wob_core.in_ability_punch and damage > 0 then
 		wob_abilities.add_rage(player, 12)
 	end
 end)
 
 core.register_on_punchplayer(function(player, hitter)
-	if hitter and hitter:is_player() and not wob_core.in_ability_punch
-			and wob_factions.hostile(hitter, player) then
-		wob_core.mark_in_combat(hitter)
-		wob_abilities.add_rage(hitter, 12)
+	if not (hitter and hitter:is_player()) then
+		return
+	end
+	if wob_factions.hostile(hitter, player) then
+		wob_abilities.set_target(hitter, player, false)
+		if not wob_core.in_ability_punch then
+			wob_core.mark_in_combat(hitter)
+			wob_abilities.add_rage(hitter, 12)
+		end
+	elseif wob_factions.same_faction(hitter, player) then
+		-- Friendly fire deals no damage (wob_factions), but punching an
+		-- ally targets them for heals.
+		wob_abilities.set_target(hitter, player, true)
 	end
 end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change < 0 and reason.type == "punch" then
-		wob_abilities.add_rage(player, 4)
+		wob_abilities.add_rage(player, 4
+			+ (wob_classes.get_race_perk(player, "rage_per_hit_taken_bonus") or 0))
 	end
 end, false)
 
@@ -336,7 +442,16 @@ core.register_globalstep(function(dtime)
 		if res == "mana" then
 			local max = wob_classes.get_max_mana(player)
 			local cur = math.min(mana[name] or 0, max)
-			local rate = wob_core.in_combat(player) and 0.005 or 0.02
+			-- Troll passive (world.md §7): +50% out-of-combat regen. Today
+			-- this multiplier only reaches mana (HP regen does not exist
+			-- yet); WP21's HP regen must consume the same perk.
+			local rate
+			if wob_core.in_combat(player) then
+				rate = 0.005
+			else
+				rate = 0.02
+					* (wob_classes.get_race_perk(player, "ooc_regen_mult") or 1)
+			end
 			local new = math.min(max, cur + max * rate * elapsed)
 			if math.floor(new) ~= math.floor(mana[name] or 0) then
 				mana[name] = new
@@ -420,6 +535,8 @@ core.register_on_leaveplayer(function(player)
 	mana[name] = nil
 	rage[name] = nil
 	cooldowns[name] = nil
+	gcd_expiry[name] = nil
+	targets[name] = nil
 	wear_steps[name] = nil
 	slot_cache[name] = nil
 	resource_huds[name] = nil
