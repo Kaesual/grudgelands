@@ -497,13 +497,20 @@ end
 -- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
 -- reports heal threat. Returns the effective healing done.
 --
+-- opts.no_crit skips the crit roll for sources that must heal a FLAT amount:
+-- consumables are specified as a percentage of max HP (items_crafting.md
+-- §3.6 — the vendor's weak potion is exactly 15%), so letting the drinker's
+-- crit chance multiply it would make the number in the tooltip a lie.
+-- WP10's alchemy potions want the same flag.
+--
 
-function grug_core.heal_player(healer, target, amount)
+function grug_core.heal_player(healer, target, amount, opts)
+	opts = opts or {}
 	local hp = target:get_hp()
 	if hp <= 0 then
 		return 0
 	end
-	if math.random() < grug_core.get_crit_chance(healer) then
+	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
 	end

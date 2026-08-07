@@ -10,11 +10,13 @@ Every icon is authored as a 16x16 ASCII map plus a per-icon palette, which
 makes the art reviewable in the diff instead of only in a binary blob.
 
 Usage:
-    python3 tools/gen_mob_item_textures.py [outdir [nodes_outdir [gear_outdir]]]
+    python3 tools/gen_mob_item_textures.py \\
+        [outdir [nodes_outdir [gear_outdir [traders_outdir]]]]
 
-Default outdir:       mods/ENTITIES/grug_mobs/textures  (ICONS)
-Default nodes_outdir: mods/ITEMS/grug_nodes/textures    (NODE_ICONS)
-Default gear_outdir:  mods/ITEMS/grug_gear/textures     (GEAR_ICONS)
+Default outdir:         mods/ENTITIES/grug_mobs/textures    (ICONS)
+Default nodes_outdir:   mods/ITEMS/grug_nodes/textures      (NODE_ICONS)
+Default gear_outdir:    mods/ITEMS/grug_gear/textures       (GEAR_ICONS)
+Default traders_outdir: mods/ENTITIES/grug_traders/textures (TRADER_ICONS)
 """
 
 import os
@@ -777,6 +779,32 @@ ARMOR_METAL = {"o": "#20222a", "b": "#9aa3ad", "h": "#d6dde4", "d": "#12141a"}
 ARMOR_CLOTH = {"o": "#332b3d", "b": "#6f5f8c", "h": "#a394c0", "d": "#221c2a"}
 
 
+# --------------------------------------------------------------- trader art
+# Vendor consumables (grug_traders, items_crafting.md §3.6/§8.2). A round
+# flask with a corked neck: the silhouette has to read as "potion" at 16px
+# next to the tool and armor icons, so the body is deliberately wider than
+# anything else in this file.
+
+POTION_FLASK = """
+................
+......oooo......
+......occo......
+......ohgo......
+......ohgo......
+.....ohgggo.....
+....ohgggggo....
+...ohgggggggo...
+...oRrrrrrrro...
+..oRrrrrrrrrro..
+..oRrrrrrrrrro..
+..oRrrrrrrrrro..
+..orrrrrrrrrro..
+...orrrrrrrro...
+....oooooooo....
+................
+"""
+
+
 # ------------------------------------------------------------------- recipes
 # (file name, art, palette)
 
@@ -873,6 +901,16 @@ GEAR_ICONS = [
     ("grug_gear_item_feet_cloth.png", ARMOR_FEET, ARMOR_CLOTH),
 ]
 
+# Vendor consumables (mods/ENTITIES/grug_traders). One file today: the weak
+# healing potion of items_crafting.md §3.6, the only potion the vendor floor
+# sells. WP10's alchemy potions get their own palettes on the SAME flask art
+# (the FEATHER / armor-line trick above) when they land.
+TRADER_ICONS = [
+    ("grug_traders_item_potion_healing_weak.png", POTION_FLASK,
+     {"o": "#20222a", "c": "#8a5f38", "g": "#cfe0ea", "h": "#ffffff",
+      "r": "#c0303c", "R": "#e8626c"}),
+]
+
 # Node tiles that live in ANOTHER mod but are authored by the same rules
 # (16x16 ASCII art, CC0, deterministic). Kept in this script instead of a
 # near-identical sibling so there is exactly one generator to maintain.
@@ -900,7 +938,9 @@ def main():
         os.path.join("mods", "ITEMS", "grug_nodes", "textures")
     gear_outdir = sys.argv[3] if len(sys.argv) > 3 else \
         os.path.join("mods", "ITEMS", "grug_gear", "textures")
-    for d in (outdir, nodes_outdir, gear_outdir):
+    traders_outdir = sys.argv[4] if len(sys.argv) > 4 else \
+        os.path.join("mods", "ENTITIES", "grug_traders", "textures")
+    for d in (outdir, nodes_outdir, gear_outdir, traders_outdir):
         if not os.path.isdir(d):
             raise SystemExit("no such directory: " + d)
     for name, art, palette in ICONS:
@@ -909,9 +949,12 @@ def main():
         print(build(name, art, palette, nodes_outdir))
     for name, art, palette in GEAR_ICONS:
         print(build(name, art, palette, gear_outdir))
-    print("%d icons written to %s, %d to %s, %d to %s"
+    for name, art, palette in TRADER_ICONS:
+        print(build(name, art, palette, traders_outdir))
+    print("%d icons written to %s, %d to %s, %d to %s, %d to %s"
           % (len(ICONS), outdir, len(NODE_ICONS), nodes_outdir,
-             len(GEAR_ICONS), gear_outdir))
+             len(GEAR_ICONS), gear_outdir,
+             len(TRADER_ICONS), traders_outdir))
 
 
 if __name__ == "__main__":
