@@ -44,7 +44,8 @@ local lynx = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_panther.b3d",
-	textures = {{"grug_mobs_jungle_lynx.png"}},
+	-- grug_mobs_panther.b3d is 17 cubes = 17 material slots on one atlas PNG.
+	textures = {grug_mobs.atlas_textures("grug_mobs_jungle_lynx.png", 17)},
 	-- Mesh scale rule (boar.lua): 8.41 units = 0.84 nodes at size 1 against
 	-- the 0.95 box; upstream (animalworld) uses 1.
 	visual_size = {x = 1, y = 1},

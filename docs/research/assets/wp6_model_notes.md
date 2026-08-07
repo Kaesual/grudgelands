@@ -59,16 +59,27 @@ inside `punch`), that is upstream's own data — noted, not corrected.
 
 ### 0.3 Texture slots
 
-Some meshes have more than one material. A def must fill **all** slots or the
-missing ones render untextured:
+A slot is one **mesh buffer** (one `TRIS` chunk in the b3d), and a def must
+fill **all** of them: `GenericCAO::addToScene` logs `Model X is missing N more
+texture(s), this is deprecated` once per model and then copies the previous
+slot's texture into the empty ones. Counts below are measured from the files,
+not guessed:
 
-| Mesh | Slots |
-|------|-------|
-| `grug_mobs_boar.b3d` | 1 = body, 2 = saddle layer → `grug_mobs_blank.png` (see `boar.lua`) |
-| `grug_mobs_ram.b3d` | 1 = fleece (`grug_mobs_ram_fur.png`), 2 = body/face (`grug_mobs_ram.png`) |
-| `grug_mobs_skeleton.b3d` | 1 = armour, 2 = bones (`grug_mobs_skeleton.png`), 3 = wielded item — use `grug_mobs_blank.png` for 1 and 3 until a bow texture is sourced |
-| `grug_mobs_bog_ooze.b3d` | 1 = inner cube, 2 = outer shell — upstream passes the same texture twice |
-| all others | single slot |
+| Mesh | Slots | Meaning |
+|------|-------|---------|
+| `grug_mobs_boar.b3d` | 2 | 1 = body, 2 = saddle layer → `grug_mobs_blank.png` (see `boar.lua`) |
+| `grug_mobs_zombie.b3d` | 2 | 1 = armour overlay → `grug_mobs_blank.png`, 2 = skin (upstream `mobs_mc/zombie.lua` order) |
+| `grug_mobs_ram.b3d` | 2 | 1 = fleece (`grug_mobs_ram_fur.png`), 2 = body/face (`grug_mobs_ram.png`) |
+| `grug_mobs_bog_ooze.b3d` | 2 | 1 = inner cube, 2 = outer shell — upstream passes the same texture twice |
+| `grug_mobs_skeleton.b3d` | 3 | 1 = armour, 2 = bones (`grug_mobs_skeleton.png`), 3 = wielded item — use `grug_mobs_blank.png` for 1 and 3 until a bow texture is sourced |
+| `grug_mobs_zebra.b3d` | 12 | ⬐ |
+| `grug_mobs_crocodile.b3d` | 15 | the animalworld meshes (§2) are built from |
+| `grug_mobs_serpent.b3d` | 15 | one cube per body part, so every part is its |
+| `grug_mobs_hyena.b3d` | 16 | own material slot — but all of them are |
+| `grug_mobs_panther.b3d` | 17 | UV-mapped into the SAME atlas PNG, so the def |
+| `grug_mobs_eagle.b3d` | 18 | repeats that one texture across every slot |
+| `grug_mobs_jungle_ape.b3d` | 20 | (`grug_mobs.atlas_textures`, `init.lua`) |
+| all others | 1 | bear, gull, kraken, parrot, rabbit, spider, stag, stone_golem, wolf, `character.b3d` |
 
 ### 0.4 Runtime tints vs. baked textures
 

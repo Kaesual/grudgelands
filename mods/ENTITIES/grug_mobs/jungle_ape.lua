@@ -43,7 +43,8 @@ local ape = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_jungle_ape.b3d",
-	textures = {{"grug_mobs_jungle_ape.png"}},
+	-- grug_mobs_jungle_ape.b3d is 20 cubes = 20 material slots on one atlas.
+	textures = {grug_mobs.atlas_textures("grug_mobs_jungle_ape.png", 20)},
 	-- Mesh scale rule (boar.lua): 8.58 units = 0.86 nodes at size 1 and
 	-- upstream (animalworld) uses 1 — but the design wants the monkey mesh
 	-- "upscaled" into an ape (§3.1 model column), and wp6_model_notes §2.7

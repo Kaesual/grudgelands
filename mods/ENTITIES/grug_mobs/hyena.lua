@@ -35,7 +35,8 @@ local hyena = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_hyena.b3d",
-	textures = {{"grug_mobs_hyena.png"}},
+	-- grug_mobs_hyena.b3d is 16 cubes = 16 material slots on one atlas PNG.
+	textures = {grug_mobs.atlas_textures("grug_mobs_hyena.png", 16)},
 	-- Mesh scale rule (boar.lua): 8.89 units = 0.89 nodes at size 1, matching
 	-- the box below; upstream (animalworld, already a mobs_redo def) uses 1.
 	visual_size = {x = 1, y = 1},

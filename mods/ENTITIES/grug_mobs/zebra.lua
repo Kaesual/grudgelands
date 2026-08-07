@@ -29,7 +29,8 @@ local zebra = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_zebra.b3d",
-	textures = {{"grug_mobs_zebra.png"}},
+	-- grug_mobs_zebra.b3d is 12 cubes = 12 material slots on one atlas PNG.
+	textures = {grug_mobs.atlas_textures("grug_mobs_zebra.png", 12)},
 	-- Mesh scale rule (boar.lua): 17.46 units = 1.75 nodes at size 1 against
 	-- the 1.4 box; upstream (animalworld) has no visual_size, i.e. 1.
 	visual_size = {x = 1, y = 1},

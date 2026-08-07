@@ -61,7 +61,9 @@ local function eagle_def(description, texture)
 
 		visual = "mesh",
 		mesh = "grug_mobs_eagle.b3d",
-		textures = {{texture}},
+		-- grug_mobs_eagle.b3d is 18 cubes = 18 material slots on one atlas
+		-- PNG; both skins (eagle, vulture) need the full count.
+		textures = {grug_mobs.atlas_textures(texture, 18)},
 		-- wp6_model_notes §2.3: 11.43 units = 1.14 nodes at size 1 (wings
 		-- spread), upstream uses 1 and the box below is upstream's.
 		visual_size = {x = 1, y = 1},

@@ -68,7 +68,8 @@ local crocodile = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_crocodile.b3d",
-	textures = {{"grug_mobs_crocodile.png"}},
+	-- grug_mobs_crocodile.b3d is 15 cubes = 15 material slots on one atlas PNG.
+	textures = {grug_mobs.atlas_textures("grug_mobs_crocodile.png", 15)},
 	-- Mesh scale rule (boar.lua): 3.65 units high / 38.6 long = 0.36 x 3.86
 	-- nodes at size 1 (wp6_model_notes §2.6); upstream uses 1 and the box
 	-- below is upstream's. A crocodile is long, not tall — the box only has

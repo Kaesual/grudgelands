@@ -37,7 +37,10 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 
 	visual = "mesh",
 	mesh = "grug_mobs_zombie.b3d",
-	textures = {{"grug_mobs_zombie.png"}},
+	-- TWO material slots, in mesh-buffer order: 1 = armour overlay, 2 = skin
+	-- (upstream mobs_mc/zombie.lua passes mobs_mc_empty.png first, same as
+	-- boar.lua's saddle slot). A one-entry list put the skin on the armour.
+	textures = {{"grug_mobs_blank.png", "grug_mobs_zombie.png"}},
 	-- Mesh scale rule (see boar.lua): the mesh measures 18.0 model units =
 	-- 1.80 nodes at size 1, i.e. exactly the 1.89 box below. The shipped 3
 	-- drew a 5.4-node zombie around a player-sized hitbox.

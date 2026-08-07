@@ -37,7 +37,8 @@ local serpent = {
 
 	visual = "mesh",
 	mesh = "grug_mobs_serpent.b3d",
-	textures = {{"grug_mobs_serpent.png"}},
+	-- grug_mobs_serpent.b3d is 15 cubes = 15 material slots on one atlas PNG.
+	textures = {grug_mobs.atlas_textures("grug_mobs_serpent.png", 15)},
 	-- Mesh scale rule (boar.lua): 36.5 units = 3.65 nodes at size 1, which is
 	-- why upstream (animalworld) scales this one DOWN to 0.3 (~1.1 rendered
 	-- nodes) to match the box below. Copied verbatim.

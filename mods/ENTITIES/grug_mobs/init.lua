@@ -4,6 +4,25 @@ grug_mobs = {}
 -- named-rare spawner writes here (rares.lua).
 grug_mobs.storage = core.get_mod_storage()
 
+-- Builds one texture entry per MATERIAL SLOT of a mesh (wp6_model_notes §0.3).
+-- Several imported meshes are assembled from many separate cubes, so the b3d
+-- carries one mesh buffer per body part (eagle 18, ape 20, ...) while all of
+-- them are UV-mapped into ONE atlas PNG. Luanti wants object_properties
+-- .textures to cover every buffer (content_cao.cpp, GenericCAO::addToScene)
+-- and otherwise logs "Model X is missing N more texture(s), this is
+-- deprecated" once per model, then copies the previous slot's texture into
+-- the empty ones. Handing it the atlas `slots` times is that fallback, minus
+-- the warning. Meshes whose slots are DIFFERENT materials (boar skin+saddle,
+-- ram fleece+body, skeleton armour/bones/item, zombie armour+skin) spell
+-- their list out by hand instead.
+function grug_mobs.atlas_textures(texture, slots)
+	local list = {}
+	for i = 1, slots do
+		list[i] = texture
+	end
+	return list
+end
+
 --
 -- Wrapper around mobs:register_mob with our extensions:
 --   def._grug_xp_reward   — XP for the killer (player); OVERRIDES the level
