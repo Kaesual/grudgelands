@@ -5,12 +5,52 @@ local function esc(text)
 	return core.formspec_escape(text)
 end
 
+-- model[] takes a COMMA-SEPARATED texture list, so the list separators must
+-- stay raw while each texture name is escaped on its own.
+-- Trap: core.formspec_escape() escapes commas too (builtin/common/
+-- misc_helpers.lua:304-315 maps "," -> "\\,"), so escaping the already
+-- joined string turns the whole list into ONE texture literally named
+-- `character.png\,character_back.png` -> client "generateImagePart" error
+-- and an untextured model. Never escape a joined list.
+local function esc_texture_list(textures)
+	local escaped = {}
+	for i, texture in ipairs(textures) do
+		escaped[i] = esc(texture)
+	end
+	return table.concat(escaped, ",")
+end
+
+-- The player model as it should be previewed.
+--
+-- Race: sfinv builds the inventory formspec in its own register_on_joinplayer
+-- (sfinv/api.lua:149-153) and player_api applies the model in its own
+-- (player_api/init.lua:24-26). Both are dependency-free BASE mods, so their
+-- callback order is nondeterministic and the page can render before the model
+-- exists. get_properties() then returns the engine PlayerSAO defaults
+-- (src/server/player_sao.cpp:32-36): visual "upright_sprite" with textures
+-- {"player.png", "player_back.png"} -- NON-empty, so emptiness checks miss it.
+-- `visual ~= "mesh"` is the reliable "player_api has not run yet" signal.
+-- (grug_inventory additionally rebuilds the formspec from its own join
+-- callback at the end of this file, which closes the race for real.)
+local DEFAULT_MODEL = "character.b3d"
+
+local function preview_model(player)
+	local props = player:get_properties()
+	if props.visual == "mesh" and props.mesh and props.mesh ~= "" and
+			props.textures and #props.textures > 0 then
+		return props.mesh, props.textures
+	end
+	-- Fall back to what player_api will apply moments later, read from its
+	-- own registry instead of hardcoding the texture name.
+	local model = player_api.registered_models[DEFAULT_MODEL]
+	return DEFAULT_MODEL, (model and model.textures) or {"character.png"}
+end
+
 --
 -- Character page
 --
 
 local function character_content(player)
-	local props = player:get_properties()
 	local class = grug_classes.get_class_def(player)
 	local race = grug_classes.get_race_def(player)
 	local faction = grug_factions.get_faction_def(player)
@@ -37,20 +77,10 @@ local function character_content(player)
 			grug_classes.get_dodge_chance(player) * 100),
 	}
 
-	-- On join the page can render before player_api applied the model; the
-	-- properties then hold "" / {} (truthy!), which fed the model[] element
-	-- an empty mesh ("Client::getMesh(): Mesh not found" client errors).
-	local mesh = props.mesh
-	if not mesh or mesh == "" then
-		mesh = "character.b3d"
-	end
-	local textures = props.textures
-	if not textures or #textures == 0 or textures[1] == "" then
-		textures = {"character.png"}
-	end
+	local mesh, textures = preview_model(player)
 	local fs = {
 		("model[0,0.4;2.4,4.4;grug_preview;%s;%s;0,160]"):format(
-			esc(mesh), esc(table.concat(textures, ","))),
+			esc(mesh), esc_texture_list(textures)),
 	}
 	for i, line in ipairs(lines) do
 		table.insert(fs, ("label[2.7,%.2f;%s]"):format(0.35 + i * 0.45, esc(line)))
@@ -169,5 +199,19 @@ end
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	if old_level ~= nil then
 		grug_inventory.refresh(player)
+	end
+end)
+
+-- Rebuild the inventory formspec once more on join. sfinv already built one
+-- from its own join callback, but sfinv and player_api are dependency-free
+-- BASE mods whose callback order is undefined, so that first build may have
+-- captured the engine's default player appearance (see preview_model above).
+-- grug_inventory depends on BOTH (mod.conf), and this file is dofile'd last,
+-- so this callback is guaranteed to run after player_api applied the model
+-- and after equipment.lua/bags.lua sized their inventory lists.
+-- Cheap: exactly one extra formspec build per join, no repeated work.
+core.register_on_joinplayer(function(player)
+	if sfinv.enabled then
+		sfinv.set_player_inventory_formspec(player)
 	end
 end)

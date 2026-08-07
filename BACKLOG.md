@@ -11,8 +11,8 @@ window. Rules:
   folded into [docs/design/](docs/design/) — WPs implement the design,
   they don't invent it (see AGENTS.md "Documentation layers").
 - After finishing: update the status here (✅ + one-liner of what was
-  built), keep the ROADMAP checkboxes in sync, run
-  `tools/sync_to_luanti.sh`, commit.
+  built), keep the ROADMAP checkboxes and the README's "Current State"
+  section in sync, run `tools/sync_to_luanti.sh`, commit.
 - Insights that future sessions need belong in AGENTS.md (conventions) or
   docs/ (details) — not just in the chat.
 

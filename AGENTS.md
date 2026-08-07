@@ -27,6 +27,21 @@ strictly separated:
 3. **[BACKLOG.md](BACKLOG.md)** — implementation work packages (WPs). WPs
    reference `docs/design/` instead of inventing design on the fly.
 
+On top of those three sits **[README.md](README.md)** — the human-facing
+entry point (story, design tour with links to every `docs/design/` file,
+current state). It is **derived, never authoritative**:
+
+- **Rule: whenever a WP is completed (or its status in BACKLOG.md
+  changes), update the README's "Current State" section in the same
+  commit** — shipped count, the shipped/not-yet/ready-next lists, the
+  caveats, and the *Last updated* date. Keep it short: three to five
+  sentences per list, no WP-by-WP retelling (BACKLOG.md is that).
+- When a `docs/design/` file is added, removed or substantially changed,
+  check the README's design tour for the same edit (it links and
+  summarizes every design doc).
+- Never put design decisions or WP detail in the README that does not
+  already live in `docs/design/`, ROADMAP or BACKLOG.
+
 ## Working method (sessions & context)
 
 1. **Session start**: read BACKLOG.md, pick the next open WP (or the one
@@ -46,7 +61,8 @@ strictly separated:
    for the user.
 4. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),
    `tools/sync_to_luanti.sh` (from main, after merge), commit, update
-   BACKLOG status + ROADMAP checkboxes. Anything future sessions need
+   BACKLOG status + ROADMAP checkboxes + the README "Current State"
+   section (see "Documentation layers"). Anything future sessions need
    to know goes into AGENTS.md/docs — not just the chat.
 5. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
    errors via `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
