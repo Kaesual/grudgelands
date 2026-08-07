@@ -1,7 +1,8 @@
 # Biomes & Mobs — Catalog
 
-**Decided spec** (authored + approved 2026-08-06, incl. the four open
-points — resolutions in §8). This is the implementation spec for
+**Decided spec** (authored + approved 2026-08-06, incl. the flagged open
+points — resolutions in §8; WP6 outcomes folded in 2026-08-07). This is
+the implementation spec for
 **WP18** (biome/mapgen registrations) and **WP6** (mob rosters & spawn
 parameters).
 
@@ -19,13 +20,17 @@ parameters).
   XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
   (×5 / ×2.2 / ×6). Speeds: aggressive 4.4, heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
-  elites telegraph (2 s wind-up); named rares broadcast.
+  elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
+  rares broadcast.
 - **Player-tag drop rule** (combat_stats §3) applies to every drop
   table below; the tag carries professions → **Leatherworker ×5** on
   every mob flagged `[leather]`.
 - Identical base drops cross-continent: universal biomes are literally
   shared; race-flavored mirror biomes share drop tables ("same loot,
-  different look" via trees/woods/tints — §3.2 lists the pairs).
+  different look" via trees/woods/tints — §3.2 lists the pairs). "Shared
+  table" means the **base materials** (meat, the leather tier, the cloth
+  tier) are the same item and the same chance on both sides; the **third
+  slot is family-flavored** by design (§3.2).
 - Nature mobs aggro on sight vs players AND NPCs; density target ~1
   visible mob per 15–20 m of wilderness travel.
 - Patch model: race biomes recur as patches across their band; patches
@@ -250,7 +255,7 @@ final naming in items_crafting.md. All aggressive mobs:
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges | day | 4.4 (WP6 retune) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
+| Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.4 (WP6 retune) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (critter) | day | 3.4 | meat 1/1; light leather 1/3 `[leather]` | mobs_mc_rabbit |
 | Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.2 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; camps placed by §1.4, inner+outer, both continents) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (inner camps) / heavy cloth (outer camps); copper coins | character.b3d + bandit skins (LotT-derived) |
@@ -261,7 +266,7 @@ final naming in items_crafting.md. All aggressive mobs:
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.4 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
-| Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale | territorial (guards radius, short chase) | day | 4.4 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
+| Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.4 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.4 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | flees (critter) | day | 3.4 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 walk | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
@@ -270,10 +275,16 @@ final naming in items_crafting.md. All aggressive mobs:
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Crag Eagle (Vulture) | dive-bombs (dogshoot swoop) | day | 4.6 heartland | sharp feather 1/1 ×1–2; meat 1/2 | animalworld eagle (+tint) |
+| Crag Eagle (Vulture) | dive-bombs — a real **flier** (`fly` in air) on `dogfight`, whose vertical tracking drives it down onto a grounded target and back up: that IS the swoop, and it needs no projectile asset | day | 4.6 heartland | sharp feather 1/1 ×1–2; meat 1/2 | animalworld eagle (+tint) |
 | Stone Golem (Mesa Golem) — **elite** (armor 80, telegraphed slam) | hurls rocks (dogshoot) | 24 h | 3.0 | stone core 1/1; iron lump 1/2; gem 1/8 | mobs_monster stone monster |
-| Mountain Ram (Dust Hare) | flees (critter) | day | 3.4 | meat 1/1; light leather 1/2 `[leather]` (ram: heavy leather 1/4) | mobs_mc sheepfur retexture / mobs_mc_rabbit |
+| Mountain Ram | flees (critter) | day | 3.4 | meat 1/1; **heavy** leather 1/4 `[leather]` — a ram substitutes heavy leather for the critter's light leather, it has no light-leather slot | mobs_mc sheepfur retexture |
 | Hyena — savanna+badlands (Throng's wolf-mirror, wolf drop table) | hunts in packs | 24 h | 4.4 | wolf table | animalworld hyena |
+
+The Ram's Throng mirror, the **Dust Hare**, is not a badlands critter of
+its own: it is the dust-tinted variant of the settled Rabbit/Hare row
+above (dry grass, blight, rainforest litter) and shares that row's
+numbers and drops. The badlands therefore carry no critter — Hyena,
+Vulture and Mesa Golem only.
 
 **Savanna extras (grug_savanna inner, L10–25):** Hyena (above, from
 L10); Zebra — flees, meat ×2 + leather 1/2 `[leather]`, animalworld
@@ -285,10 +296,10 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Raptor — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.4 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 | paleotest velociraptor (**verify license per file**; decided fallback: "Jungle Lynx" big-cat retint, same verb/drops) |
+| **Jungle Lynx** (the Raptor slot) — jungle_edge from L10, deep jungle | hunts in packs (wolf drop table) | day | 4.4 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.4 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
-| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table) | territorial | day | 4.4 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
+| Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.4 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
 | Giant Spider (jungle tint) | webs | night | 4.4 | spider table | mobs_monster spider |
 | Parrot — jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2 | mobs_mc_parrot |
 
@@ -296,19 +307,21 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Crocodile | ambushes (lurks still/in water, burst on approach) | 24 h | 4.4 (5.0 in water) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
-| Bog Ooze | engulfs (slow tank: touch damage aura) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
+| Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.4, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
+| Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
 | Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 
 **grug_beach / strait (L1–5 neutral — attack only when provoked):**
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| Shore Crab | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | deferred until a licensed model is sourced (decided); strait launches with Gull only |
+| Shore Crab — **deferred (§8.3), not shipped** | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | deferred until a licensed model is sourced (decided); strait launches with Gull only |
 | Gull | flees | day | 3.4 fly | feather 1/1 | animalia song bird retexture |
 
 Coast-zone beaches (45–60) reuse Crab as an **elite** "Reef Lurker"
-(scale ×1.6, armor 80) — same table ×3 quantity.
+(scale ×1.6, armor 80) — same table ×3 quantity. **Deferred with the
+Crab (§8.3)**: neither is registered, so the beach cells currently carry
+the Gull alone.
 
 **War coast (20–30, both continents):** local settled-biome roster
 continues; plus Skeleton Raider (dogshoot, night — battlefield dead;
@@ -328,7 +341,7 @@ of `mob_level_at`. No cave-only families in this catalog.
 
 | Shared table | Accord family | Throng family |
 |---|---|---|
-| wolf table | Wolf (forest/hills) | Blightfang Wolf, Hyena, Raptor* |
+| wolf table | Wolf (forest/hills) | Blightfang Wolf, Hyena, Jungle Lynx* |
 | bear table | Bear/Elder Bear | Plaguehide Bear, Jungle Ape/Silverback |
 | spider table | Giant Spider | Giant Spider (tints) |
 | stag table | Stag, Zebra-mirror | Gaunt Stag, Zebra |
@@ -337,14 +350,26 @@ of `mob_level_at`. No cave-only families in this catalog.
 | jungle tables (panther/serpent) | jungle fringe (east flank) | deep jungle |
 | swamp/beach/boar/zombie/bandit/skeleton | identical biomes both sides | identical |
 
-*Raptor also exists Throng-side inner (jungle edge) — the Accord inner
-pack hunter is the Wolf; base drops match via the shared wolf table.
+*The Jungle Lynx also exists Throng-side inner (jungle edge) — the
+Accord inner pack hunter is the Wolf; base drops match via the shared
+wolf table.
+
+**What "shared table" binds** (resolved in WP6): the first two slots —
+the food/meat drop and the leather tier with its chance — are identical
+item-for-item across a pair. The **third slot carries the family's own
+flavor**: wolf/hyena → *fang* 1/3, Jungle Lynx → *raptor claw* 1/3;
+bear → *bear claw* 1/4, jungle ape → *ape hair* 1/4. The economic value
+of the pair stays equal (same tier, same chance), the trophy does not —
+"same loot, different look" applies to the trophy too, and a literally
+identical third item would erase the flavor for no balance gain.
 
 ### 3.3 Named rares (rare tier: armor 70, ×5 HP, ×2.2 dmg, ×6 XP, ×2 scale + tint, faction-wide spawn broadcast)
 
 One per band + one shared war-coast rare per continent. Spawned by a
 scheduled spawner (not ABM): respawn 2–4 h after kill, patrol route
-between 2–3 fixed points. Special loot rolls: items TODO.
+between 2–3 fixed points. They inherit their base family's drop table
+(×6 XP and the rare multipliers are the reward WP6 ships); the special
+loot ROLLS ride on WP5's item/enchantment tables.
 
 | Name | Base family | Where (band, ring) | ~L |
 |------|-------------|--------------------|----|
@@ -364,14 +389,29 @@ Mechanism: mobs_redo `mobs:spawn` + our `spawn_abm_check` override
 (`_grug_spawn_zones`). Spawn `nodes` = the biome signature tops of §1.3
 (LotT whitelist trick) — this alone confines most families; zones do
 the ring gating. `min_height 0, max_height 200` on all surface entries
-(golems/crags: 300). Day mobs `min_light 10`; night mobs `max_light 5`
+(golems and the crags rows — Ram, Crag Eagle — 300; the **Vulture
+shares that 300 exception**, its mesa-clay badlands run just as high).
+Day mobs `min_light 10`; night mobs `max_light 5`
 + `day_toggle = false` where mobs_redo supports it.
+
+**`aoc` is per entity NAME, not per family** (mobs_redo counts objects
+of that one name inside a 128-node sphere). Two spawn rows of the same
+name — the Skeleton Archer's two node lists, a family's surface + cave
+rows — share ONE budget; the per-biome tints are separate entities and
+each carries the full row of its family, so a jungle spider and a pale
+spider are two budgets of 4, not one.
 
 Calibration: current baseline boar interval 30 / chance 2000 / aoc 4
 on 5 node types = "sparse-to-ok" → common mobs get roughly **2× the
-attempt rate** (interval 20, chance 1500) on 1–2 node types, and the
-per-biome aoc SUM is capped at ~14 (day) — that lands at the ~1 mob
-per 15–20 m target without runaway counts.
+attempt rate** (interval 20, chance 1500) on 1–2 node types. The
+per-biome aoc SUM is a soft ~14 (day); the rows below actually **peak
+at 16 by day** (meadows/inner and savanna/inner) **and 12 at night**
+(bone forest/outer) — a deliberate ~15 % overshoot of the soft cap,
+because those are precisely the cells that hit the ~1 mob per 15–20 m
+target, while the median cell lands nearer 28–35 m. The full per-cell
+arithmetic, the density model and the calibration knobs (reach for
+`chance` before `aoc`) are the audit trail in
+**[docs/research/wp6_spawn_budget.md](../research/wp6_spawn_budget.md)**.
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
@@ -380,30 +420,47 @@ per 15–20 m target without runaway counts.
 | Zombie | settled tops | 20 | 1600 | 4 | max 5 (blight: any) | core, inner, war_coast |
 | Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1500 | 5 | any | inner, outer |
 | Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer |
-| Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner, outer |
+| Jungle Lynx (Raptor slot) | rainforest litter | 20 | 1500 | 5 | min 10 | inner, outer |
 | Bear/Plaguehide | forest litter, bone litter | 20 | 2800 | 2 | min 10 | outer, coast |
 | Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer, coast |
 | Giant Spider (all) | forest litter, bone litter, rainforest litter | 20 | 1800 | 4 | max 5 | outer, coast, underground |
 | Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1800 | 3 | min 10 | inner, outer |
 | Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 2000 | 3 | max 5 | outer, war_coast |
+| Skeleton Raider | settled tops, blight_dirt, sand | 20 | 2000 | 3 | max 5 | war_coast |
 | Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 | outer, coast |
 | Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
 | Ram | gravel | 20 | 2200 | 2 | min 10 | outer |
 | Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer, coast |
 | Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer, coast |
-| Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer |
+| Crocodile | mud (only) | 20 | 1800 | 3 | any | outer |
 | Bog Ooze | mud | 20 | 2000 | 3 | any | outer |
-| Shore Crab | sand | 20 | 2200 | 3 | any | strait, war_coast, coast |
+| Parrot | rainforest litter | 20 | 2500 | 2 | min 10 | core, inner |
+| Carrion Crow | settled tops, blight_dirt | 20 | 2500 | 2 | min 10 | war_coast |
+| Shore Crab — *deferred (§8.3)* | sand | 20 | 2200 | 3 | any | strait, war_coast, coast |
 | Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast |
-| Reef Lurker (elite crab) | sand | 30 | 8000 | 1 | any | coast |
+| Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 8000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp node timer respawns 120–300 s, anchored to camp | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
+Row notes:
+- **Crocodile spawns on mud only.** "Water at mud" is not expressible:
+  the spawn ABM's `nodes` list is the node it spawns ON and `neighbors`
+  is an OR set, so "water AND mud" cannot be written. The lurking-in-
+  water half of the verb is delivered by `floats` instead — the croc
+  spawns on the mud bank and drifts into the pool.
+- The **Skeleton Raider** reuses the Skeleton Archer's numbers
+  (20 / 2000 / 3, night); it is the war-coast family, so its
+  `war_coast`-only zone does all the gating and it needs no extra
+  check. Its table is the skeleton table **plus heavy cloth 1/3**.
+- **Parrot** and **Carrion Crow** are priced like the Gull, the other
+  "flees" bird: 20 / 2500 / 2. Neither creates a new peak.
+
 Performance justification (AGENTS.md rules, 100-player scale):
-- aoc caps are per mob type in the spawn area, so co-located players
-  SHARE the local budget; worst case Σaoc ≈ 14 day / 11 night per
-  biome around a lone traveler. 100 dispersed players ≈ low thousands
+- aoc caps are per mob NAME in the spawn area, so co-located players
+  SHARE the local budget; measured worst case Σaoc = 16 day / 12 night
+  per biome around a lone traveler (wp6_spawn_budget.md §2, against the
+  ~14 the rows were sized for). 100 dispersed players ≈ low thousands
   of candidate checks but capped actives: additionally set mobs_redo
   `mob_active_limit = 600` (global hard cap) in game settings.
 - interval ≥ 20 s keeps the spawn ABM cheap; signature-node whitelists
@@ -442,10 +499,11 @@ license-clean, keep attribution.
 | Material | Tier | Accord sources | Throng sources |
 |----------|------|------------------|---------------|
 | Light leather `[leather]` | 1–15 | boars, rabbits, rams | plague boars, hares |
-| Leather `[leather]` | 10–45 | wolves, stags | hyenas, raptors, blightfang wolves, zebras, panthers* (*fringe gives A access too) |
+| Leather `[leather]` | 10–45 | wolves, stags | hyenas, jungle lynxes, blightfang wolves, zebras, panthers* (*fringe gives A access too) |
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
-| Linen cloth | 10–30 | bandit camps, zombies, mirefolk | bandit camps, zombies, skeletons, mirefolk |
+| Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
+| Linen cloth | 10–30 | **bandit camps** (core/inner), mirefolk | same |
 | Heavy cloth | 25–45 | outer bandit camps, war-coast raiders | same |
 | Spider silk (Tailor T3) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, mushrooms (forest/swamp), melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), mushrooms (bone forest/swamp), berries via forest patches, meat/fish |
@@ -459,6 +517,18 @@ license-clean, keep attribution.
 Every row has at least one source per continent. Race woods are
 deliberately asymmetric (identity); base recipes accept `group:wood`.
 
+**Cloth supply, precisely** (resolved in WP6): zombies and skeletons
+drop **linen scrap**, which is vendor trash, *not* the tailoring
+material. The cloth line comes from **humanoids** — bandit camps for
+linen (core/inner) and heavy cloth (everything further out), mirefolk
+camps for linen. The camp supply is therefore the whole cloth economy,
+and WP6 ships it as **12 deterministic bandit camps, two per race band**
+(one inner at |z| ≈ 550, one outer at |z| ≈ 1350, offset from the
+capital's x so they never collide with the outpost column). The
+patch-driven camps of §1.4 — the ones rolled per settlement candidate —
+land with WP13's structure pass and thicken that supply; they do not
+create it.
+
 ## 7. Asset shopping list (models; licenses per docs/research/assets/mobs_animals.md — re-verify in source repo before import, AGENTS.md rule)
 
 | Mob(s) | Source | License (code/media) | Work needed |
@@ -468,7 +538,7 @@ deliberately asymmetric (identity); base recipes accept `group:wood`.
 | Spider, Stone Golem | mobs_monster (TenPlus1) | MIT / CC BY 3.0 | drop-in mobs_redo, retint |
 | Hyena, Zebra, Eagle/Vulture, Leopard→Panther, Cobra→Serpent, Crocodile, Monkey→Ape | animalworld (mt-mods) | MIT / MIT (**sounds: verify per file, freesound CC**) | mobs_redo-native; texture pass toward 16px style |
 | Reindeer→Stag, Song bird→Gull/Crow | animalia (ElCeejo) | MIT / MIT | asset harvest, re-register on mobs_redo, remap anim frames |
-| Raptor | paleotest | GPL-3.0-only / **media license unclear — verify per file** | decided: verify first, Jungle Lynx fallback |
+| ~~Raptor~~ → **Jungle Lynx** | paleotest media unverifiable per file → big-cat retint of the panther mesh (animalworld, MIT) | MIT / MIT | fallback executed in WP6, retint only |
 | Bandit, Mirefolk | character.b3d + skins | LGPL 2.1 mesh; LotT skins CC BY-SA 3.0 | 2D skin work (mirefolk fully custom) |
 | Shore Crab | no verified source yet (check marinara / nssm in-repo) | — | decided: deferred until sourced |
 | Trees/nodes | MTG media retints + 2 hand-built schematics | CC BY-SA 3.0 | see §5 |
@@ -478,15 +548,25 @@ every file in the mod's LICENSE-media.md.
 
 ## 8. Resolved decision points (2026-08-06)
 
-All four flagged points were decided per recommendation:
+All four flagged points were decided per recommendation; points 2, 3
+and 5 record what WP6 then actually shipped.
 
 1. **War coast** = local band biome + battlefield decoration overlay,
    no separate biome.
 2. **Raptor**: verify the paleotest media license per file; on failure
    replace the family with "Jungle Lynx" (big-cat retint, same pack
-   verb and drop table).
+   verb and drop table). **The fallback was executed** — the paleotest
+   media could not be verified per file, so the family ships as the
+   Jungle Lynx (same verb, same drops, `raptor_claw` item id kept).
 3. **Mirefolk is in** (custom 2D skin work); **Shore Crab deferred**
    until a licensed model is sourced — the strait launches with Gull
-   only.
+   only. WP6 confirmed the deferral: neither Shore Crab nor its elite
+   Reef Lurker is registered, and the §3.1/§4 rows for both stay in
+   this catalog as the spec to implement once a model exists.
 4. **Jungle fringe reuses the troll jungle nodes 1:1** on the Accord
    side (max drop symmetry, zero new assets).
+5. **The boar's "charges"** is implemented as a **mid-range rush**, not
+   a wind-up gallop: the same impulse the panther's pounce uses,
+   flattened horizontally, fired at 4–10 m with an 8 s cooldown. One
+   verb helper serves both families, and the boar reads as a charger
+   without a second state machine.

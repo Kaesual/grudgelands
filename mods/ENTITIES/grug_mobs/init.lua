@@ -1,8 +1,20 @@
 grug_mobs = {}
 
+-- Mod-wide persistence (AGENTS.md: fetch at load time). Currently only the
+-- named-rare spawner writes here (rares.lua).
+grug_mobs.storage = core.get_mod_storage()
+
 --
 -- Wrapper around mobs:register_mob with our extensions:
---   def._grug_xp_reward   — XP for the killer (player)
+--   def._grug_xp_reward   — XP for the killer (player); OVERRIDES the level
+--                          formula (levels.lua), normally left unset
+--   def._grug_min_level   — level floor (default 1) and the fallback level
+--                          where the level field has no value
+--   def._grug_max_level   — level cap (default: the source cap, 60/70)
+--   def._grug_fixed_level — hand-set level, bypasses the field and the cap
+--   def._grug_level_source — "mob" (default, grug_core.mob_level_at) or
+--                          "guard" (grug_core.guard_level_at)
+--   def._grug_tier        — "normal" (default) | "elite" | "rare"
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
 --   def._grug_spawn_zones — list of zone names (grug_core.zone_at: core,
@@ -13,6 +25,15 @@ grug_mobs = {}
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
 --                          nil = no extra check. Zones and check are ANDed.
+--   def._grug_leash_range — per-def leash radius in nodes: how far this mob
+--                          may be DRAGGED from the point where the current
+--                          chase began (default grug_mobs.LEASH_RANGE = 40);
+--                          the "territorial" verb of bear/ape uses ~20
+--   def._grug_no_leash    — true: never gives up a player chase and never
+--                          resets/heals (zombie verb "never leashes"; mobs
+--                          with a hand-rolled leash of their own: kraken)
+--   def._grug_soft_deaggro — false: opt out of the 25 m walk-speed rule
+--                          (GRUG PATCH in mobs/api.lua do_states)
 --
 
 local spawn_zones = {} -- mob name -> set of allowed zone names
@@ -117,8 +138,70 @@ function grug_mobs.is_night()
 	return tod <= 0.1875 or tod >= 0.8125
 end
 
+--
+-- Put an object down so its FEET land on `pos`, not its origin.
+--
+-- An entity's position IS its collisionbox origin, and several of our meshes
+-- have a box that reaches BELOW it: the Stone/Mesa Golem's floor is -1
+-- (golem.lua — the mesh spans -10..+7.24 model units around its origin) and
+-- the Giant Spider's is -0.4. Dropped at a ground position as-is, those mobs
+-- stand buried up to the waist and mobs_redo's own stuck handling has to dig
+-- them out. mobs_redo's ABM spawner does the same correction inline before
+-- core.add_entity (spawn_action: `pos.y = pos.y + _y` with
+-- `_y = -collisionbox[2]`); mobs:add_mob does not, and neither does a bare
+-- set_pos, so every hand placement in this mod goes through here.
+--
+-- Reads the box off the LIVE OBJECT, never off the def, because only the
+-- object reflects the entity's ACTUAL size right now: mob_activate applies
+-- base_colbox, a child mob is scaled to half, and a tier promotion
+-- (levels.lua set_tier: elite x1.6, rare x2) rescales it again. NB the tier
+-- scale is NOT yet applied when grug_mobs.add_mob below runs — set_tier is
+-- called by the CALLER afterwards — which is exactly why rares.lua calls this
+-- a second time once the rare has been promoted.
+--
+-- Idempotent and absolute: it computes from the GROUND position it is handed,
+-- not from where the object currently is, so calling it twice (or after a
+-- rescale) always lands the same way.
+--
+function grug_mobs.place_on_ground(obj, pos)
+	if not obj or not pos then
+		return
+	end
+	local props = obj:get_properties()
+	local box = props and props.collisionbox
+	local lift = (box and box[2] and box[2] < 0) and -box[2] or 0
+	obj:set_pos({x = pos.x, y = pos.y + lift, z = pos.z})
+end
+
+--
+-- Hand placement of a mob (rares.lua, camps.lua): mobs:add_mob plus the
+-- ground correction above, which add_mob skips.
+--
+-- Returns the luaentity, or nil when mobs:add_mob declined (no player in
+-- range, active mob limit, unknown entity) — never an error, both callers
+-- treat a decline as "try again next tick".
+--
+function grug_mobs.add_mob(pos, def)
+	local ent = mobs:add_mob(pos, def)
+	if not ent or not ent.object then
+		return nil
+	end
+	grug_mobs.place_on_ground(ent.object, pos)
+	return ent
+end
+
 function grug_mobs.register_mob(name, def)
-	local xp_reward = def._grug_xp_reward or 0
+	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
+	-- are engine-owned from here on, the def must not hand-set them.
+	grug_mobs.register_level_cfg(name, def)
+	-- Aggro config kept as an upvalue: mobs_redo does not copy custom def
+	-- fields onto the entity, so the wrappers install them at runtime
+	-- (grug_mobs.apply_aggro_fields, aggro.lua).
+	local aggro_cfg = {
+		no_leash = def._grug_no_leash,
+		soft_deaggro = def._grug_soft_deaggro,
+		leash_range = def._grug_leash_range,
+	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
 	-- as targets at night unless they provoked the mob (undead passive).
@@ -144,6 +227,10 @@ function grug_mobs.register_mob(name, def)
 	-- so we must not install one.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		-- A mob can be punched before its first do_custom tick, and the XP
+		-- below needs its level: initialize here too (idempotent).
+		grug_mobs.ensure_init(self)
+		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		if hitter and hitter:is_player() then
 			-- Provocation memory (runtime only, self.temp is never
 			-- persisted): the undead night truce below excludes players
@@ -151,14 +238,42 @@ function grug_mobs.register_mob(name, def)
 			self.temp = self.temp or {}
 			self.temp.grug_provoked = self.temp.grug_provoked or {}
 			self.temp.grug_provoked[hitter:get_player_name()] = true
+			-- Loot rights (combat_stats.md §3): every player hit renews the
+			-- 60 s drop tag. Plain field -> survives unload (aggro.lua).
+			grug_mobs.tag_player(self, hitter)
+			-- Base threat + combat marking + rage; also refreshes the leash
+			-- contact clock (grug_core/combat.lua).
 			grug_core.run_player_hit_mob(hitter, self, damage or 0)
-			self.temp = self.temp or {}
-			if xp_reward > 0 and not self.temp.grug_xp_awarded and
-					self.health - math.floor(damage or 0) <= 0 then
+			-- Lethal? mobs_redo subtracts the damage right after this wrapper
+			-- returns (api.lua:2698ff), so this is the earliest — and only —
+			-- place where killer AND victim are both known.
+			local lethal = self.health - math.floor(damage or 0) <= 0
+			-- Named rare killed by a player: start its respawn timer
+			-- (rares.lua). Deliberately OUTSIDE the XP branch below — the
+			-- gray rule can zero the XP, the kill still counts.
+			if lethal and self._grug_rare_id and
+					not self.temp.grug_rare_death_sent then
+				self.temp.grug_rare_death_sent = true
+				grug_mobs.rare_killed(self._grug_rare_id)
+			end
+			-- Kill XP. The kill_xp() lookup lives INSIDE the lethal branch on
+			-- purpose: it is a level_cfg lookup plus a stats_for()
+			-- computation, and this wrapper runs on EVERY player punch in the
+			-- game — paying for it on the ~99 % of punches that kill nothing
+			-- was pure waste.
+			if lethal and not self.temp.grug_xp_awarded then
 				self.temp.grug_xp_awarded = true
-				grug_xp.add_xp(hitter, xp_reward)
-				core.chat_send_player(hitter:get_player_name(),
-					core.colorize("#aa66ff", "+" .. xp_reward .. " XP"))
+				local xp = grug_mobs.kill_xp(self)
+				-- Gray rule (combat_stats.md §6): a mob at killer level - 10
+				-- or below pays nothing, and says nothing.
+				if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
+					xp = 0
+				end
+				if xp > 0 then
+					grug_xp.add_xp(hitter, xp, "kill")
+					core.chat_send_player(hitter:get_player_name(),
+						core.colorize("#aa66ff", "+" .. xp .. " XP"))
+				end
 			end
 		end
 		if old_do_punch then
@@ -175,25 +290,57 @@ function grug_mobs.register_mob(name, def)
 				and self.temp.grug_provoked[player:get_player_name()])
 	end
 
+	-- Faction-aware target acquisition (combat_stats.md §4, WP6): a faction
+	-- mob never targets its OWN faction — and never targets factionless
+	-- players either. Those are brand-new characters who have not chosen a
+	-- side yet (still on the spawn platform); letting faction guards hunt
+	-- them would be pure griefing. Monsters have no faction and are
+	-- unaffected.
+	local function faction_veto(player)
+		if not faction then
+			return false
+		end
+		local pf = grug_core.get_player_faction(player:get_player_name())
+		return pf == nil or pf == faction
+	end
+
 	local old_do_custom = def.do_custom
 	def.do_custom = function(self, dtime, moveresult)
+		-- First-tick level/stat assignment + per-activation nametag hook.
+		grug_mobs.ensure_init(self)
+		-- Runs before do_states/general_attack in the same step (api.lua:
+		-- 3137 vs. 3144/3156), so the aggro fields the api.lua patches read
+		-- are always in place in time.
+		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
-		if night_truce then
-			-- Target-acquisition veto consumed by general_attack (GRUG PATCH
-			-- in mobs/api.lua): the mob skips truce players and picks the
-			-- next-closest viable target instead. A function field is never
-			-- serialized into staticdata; do_custom runs before
+		grug_mobs.leash_tick(self, dtime)
+		-- Elite/rare wind-up (telegraph.lua). Guarded here so a normal mob
+		-- pays one field comparison per step and nothing else.
+		if self._grug_tier and self._grug_tier ~= "normal" then
+			grug_mobs.telegraph_tick(self, dtime)
+		end
+		-- Named-rare patrol (rares.lua); the flag only exists on the handful
+		-- of mobs the rare spawner placed.
+		if self._grug_rare_id then
+			grug_mobs.rare_tick(self, dtime)
+		end
+		if night_truce or faction then
+			-- ONE target-acquisition veto consumed by general_attack (GRUG
+			-- PATCH in mobs/api.lua): the mob skips vetoed players and picks
+			-- the next-closest viable target instead. A function field is
+			-- never serialized into staticdata; do_custom runs before
 			-- general_attack on every step, so it is back after each
 			-- (re)activation in time.
 			if not self._grug_ignore_player then
 				self._grug_ignore_player = function(s, player)
-					return truce_active(s, player)
+					return (night_truce and truce_active(s, player))
+						or faction_veto(player)
 				end
 			end
 			-- Belt and braces for acquisition paths that bypass
 			-- general_attack (group_attack pile-ons, do_attack calls):
 			-- drop unprovoked truce players again.
-			if self.state == "attack" and self.attack
+			if night_truce and self.state == "attack" and self.attack
 					and core.is_player(self.attack)
 					and truce_active(self, self.attack) then
 				self:stop_attack()
@@ -220,7 +367,51 @@ function grug_mobs.register_mob(name, def)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/levels.lua")
+dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/verbs.lua")
+dofile(modpath .. "/telegraph.lua")
+dofile(modpath .. "/patrol.lua")
+dofile(modpath .. "/target_frame.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/boar.lua")
 dofile(modpath .. "/zombie.lua")
+-- Settled + forest-pair roster (biomes_mobs.md §3.1, WP6/T5).
+dofile(modpath .. "/boar_variants.lua")
+dofile(modpath .. "/rabbit.lua")
+dofile(modpath .. "/wolf.lua")
+dofile(modpath .. "/bear.lua")
+dofile(modpath .. "/stag.lua")
+dofile(modpath .. "/spider.lua")
+dofile(modpath .. "/skeleton_archer.lua")
+-- Mountain pair, savanna extras and jungle group (biomes_mobs.md §3.1,
+-- WP6/T6).
+dofile(modpath .. "/eagle.lua")
+dofile(modpath .. "/golem.lua")
+dofile(modpath .. "/ram.lua")
+dofile(modpath .. "/hyena.lua")
+dofile(modpath .. "/zebra.lua")
+dofile(modpath .. "/jungle_lynx.lua")
+dofile(modpath .. "/panther.lua")
+dofile(modpath .. "/serpent.lua")
+dofile(modpath .. "/jungle_ape.lua")
+dofile(modpath .. "/parrot.lua")
 dofile(modpath .. "/kraken.lua")
+-- Swamp, shore and war coast + the humanoid camp mechanism
+-- (biomes_mobs.md §3.1/§4, WP6/T7). skeleton_raider.lua reuses the arrow
+-- entity registered by skeleton_archer.lua above, so it must come after it;
+-- camps.lua registers the camp TYPES and therefore comes after the two camp
+-- families it names.
+dofile(modpath .. "/crocodile.lua")
+dofile(modpath .. "/bog_ooze.lua")
+dofile(modpath .. "/gull.lua")
+dofile(modpath .. "/carrion_crow.lua")
+dofile(modpath .. "/skeleton_raider.lua")
+dofile(modpath .. "/bandit.lua")
+dofile(modpath .. "/mirefolk.lua")
+-- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
+-- come before camps.lua, which names the two guard mobs in its camp types.
+dofile(modpath .. "/guard.lua")
+dofile(modpath .. "/camps.lua")
+-- After the mob files: a rare spec names an already registered mob.
+dofile(modpath .. "/rares.lua")

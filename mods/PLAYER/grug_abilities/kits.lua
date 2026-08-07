@@ -304,8 +304,9 @@ grug_abilities.register_ability({
 			return false, "Cannot be taunted."
 		end
 		ent:do_attack(user, true)
-		-- Threat part (top×1.1, forced 3 s) lands with WP6's threat table.
-		grug_core.add_threat(ent, user, 0)
+		-- Threat part (combat_stats.md §4): sets the taunter to top×1.1 and
+		-- suppresses hysteresis target switches for 3 s.
+		grug_core.taunt(ent, user)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#e07b39", 6)
 		return true
 	end,

@@ -1,8 +1,9 @@
 -- Destructibility rules (docs/design/world.md §2) as one central
 -- core.is_protected override:
 --   R1 — own faction continent: free digging/building except protected
---        zones (currently the six race-capital spawn platforms; villages and
---        outposts follow with WP13/WP6).
+--        zones (the six race-capital spawn platforms and every POI in the
+--        registry below — military outposts today, villages/real capitals
+--        with WP13).
 --   R2 — enemy continent: nothing may be dug or placed (torches included).
 --   R3 — ocean: everything outside the two continent rectangles (strait,
 --        coastal ocean, open sea) is locked for everyone. Sole exception
@@ -12,6 +13,98 @@
 local old_is_protected = core.is_protected
 
 local CAMP_HALF = grug_core.CAMP_HALF
+local DEPTH = grug_core.POI_PROTECT_DEPTH
+
+-- Literally the same store the platform heights use: builtin caches one
+-- StorageRef per mod name (builtin/common/mod_storage.lua), and this file is
+-- dofile'd from grug_core/init.lua, so core.get_current_modname() still says
+-- grug_core here. init.lua's handle is a local of another chunk and cannot be
+-- reached from this one — asking again is the cheap, correct way. Fetched at
+-- load time as the AGENTS.md persistence rule demands.
+local storage = core.get_mod_storage()
+
+--
+-- POI registry (world.md §2 "villages, outposts and the real capitals also
+-- protect >= 10 nodes of surrounding terrain")
+--
+-- Deliberately concrete instead of a register_poi_KIND framework: a POI is
+-- an axis-aligned x/z square with a base level, and that is all the
+-- protection shape of §2 needs. Kinds/roles belong to whoever places them.
+--
+--   grug_core.add_poi({id = "outpost:accord:dwarf:inner",
+--                      x = -550, z = -500, half = 14, y_base = 12})
+--
+-- `half` is the FINAL horizontal half-extent the caller wants protected,
+-- surround included — the registry does not add anything to it. Mapgen
+-- therefore passes grug_core.OUTPOST_HALF + 10 (§2's ">= 10 nodes of
+-- surrounding terrain"), and a future village passes its own structure half
+-- plus the same 10.
+--
+-- Persistence: ONE serialized table under the key "pois", mirrored in the
+-- in-memory list below at load time. A few dozen entries is what the §9 POI
+-- budget produces (24 outposts today; the bandit camps of the same pass are
+-- deliberately NOT registered — they are raidable), so one string is cheaper
+-- than a key per POI.
+--
+-- Idempotent by id: mapgen may look at the same anchor from up to four
+-- neighbouring mapchunks, so add_poi has to be a no-op when nothing changed
+-- (in particular it must not rewrite mod storage on every mapchunk).
+--
+
+local pois = {} -- array of {id, x, z, half, y_base}
+local poi_by_id = {} -- id -> the SAME record (not an index)
+
+do
+	local raw = storage:get_string("pois")
+	local loaded = raw ~= "" and core.deserialize(raw) or nil
+	if type(loaded) == "table" then
+		for i = 1, #loaded do
+			local p = loaded[i]
+			if type(p) == "table" and p.id and p.x and p.z and p.half
+					and p.y_base then
+				pois[#pois + 1] = p
+				poi_by_id[p.id] = p
+			end
+		end
+	end
+end
+
+local function save_pois()
+	storage:set_string("pois", core.serialize(pois))
+end
+
+-- Adds or updates a protected POI. Returns the stored record.
+function grug_core.add_poi(def)
+	if not (def and def.id and def.x and def.z and def.half
+			and def.y_base) then
+		core.log("error", "[grug_core] add_poi: incomplete POI definition")
+		return nil
+	end
+	local x = math.floor(def.x)
+	local z = math.floor(def.z)
+	local half = math.floor(def.half)
+	local y_base = math.floor(def.y_base)
+	local rec = poi_by_id[def.id]
+	if rec then
+		if rec.x == x and rec.z == z and rec.half == half
+				and rec.y_base == y_base then
+			return rec -- unchanged: no storage write at all
+		end
+		rec.x, rec.z, rec.half, rec.y_base = x, z, half, y_base
+	else
+		rec = {id = def.id, x = x, z = z, half = half, y_base = y_base}
+		pois[#pois + 1] = rec
+		poi_by_id[def.id] = rec
+	end
+	save_pois()
+	core.log("action", ("[grug_core] POI %s protected: %d,%d half %d, from " ..
+		"y=%d up"):format(rec.id, rec.x, rec.z, rec.half, rec.y_base - DEPTH))
+	return rec
+end
+
+function grug_core.get_poi(id)
+	return poi_by_id[id]
+end
 
 -- Protected zone of a race capital's spawn platform (world.md §2):
 --   * horizontally ONLY the platform footprint (|dx|, |dz| <= CAMP_HALF).
@@ -21,9 +114,8 @@ local CAMP_HALF = grug_core.CAMP_HALF
 --   * vertically from POI_PROTECT_DEPTH below the platform upward without a
 --     limit: no towers over the capital, no tunnel sabotage from directly
 --     below, while mining deeper down stays free.
--- The WP13 structures (real capitals, villages, outposts) will reuse the
--- vertical rule with a LARGER horizontal zone that includes >= 10 nodes of
--- surrounding terrain — spec'd in docs/design/world.md §2.
+-- The registry above uses the same vertical rule with a LARGER horizontal
+-- zone that includes the >= 10 nodes of surrounding terrain §2 asks for.
 -- Footprints never overlap (capitals are 550+ nodes apart), so the first
 -- matching capital decides.
 local function in_capital_zone(pos)
@@ -34,7 +126,29 @@ local function in_capital_zone(pos)
 			-- what get_spawn_pos would use too.
 			local platform_y = grug_core.get_camp_platform_y(race_id)
 				or grug_core.CAMP_PLATFORM_Y
-			return pos.y >= platform_y - grug_core.POI_PROTECT_DEPTH
+			return pos.y >= platform_y - DEPTH
+		end
+	end
+	return false
+end
+
+-- Linear scan over the registry. Budget: is_protected runs on every dig/place
+-- ATTEMPT (not per node per step), and the §9 POI budget keeps this list well
+-- under 100 entries, so a scan of four number comparisons per POI is far
+-- cheaper than an AreaStore. It is deliberately allocation-free — no
+-- vector.new, no closures, nothing the GC has to collect per dig.
+local function in_poi_zone(pos)
+	local x, y, z = pos.x, pos.y, pos.z
+	for i = 1, #pois do
+		local p = pois[i]
+		local dx = x - p.x
+		if dx < 0 then dx = -dx end
+		if dx <= p.half then
+			local dz = z - p.z
+			if dz < 0 then dz = -dz end
+			if dz <= p.half and y >= p.y_base - DEPTH then
+				return true
+			end
 		end
 	end
 	return false
@@ -55,7 +169,7 @@ function core.is_protected(pos, name)
 	if grug_core.get_player_faction(name) ~= territory then
 		return true -- R2
 	end
-	if in_capital_zone(pos) then
+	if in_capital_zone(pos) or in_poi_zone(pos) then
 		return true -- protected zone inside the own continent
 	end
 	return old_is_protected(pos, name) -- R1, other mods may still object

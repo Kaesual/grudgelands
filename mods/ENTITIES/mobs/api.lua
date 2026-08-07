@@ -215,6 +215,19 @@ function mob_class:do_attack(player, force)
 	if (self.state == "attack" or self.state == "die" or self.state == "runaway")
 	and not force then return end
 
+	-- GRUG PATCH: a CHANGED target invalidates the whole path state (WP6
+	-- review B1). `path.way`/`path.following` describe a route to the OLD
+	-- target and `path.stuck` is the walk-speed penalty earned while chasing
+	-- it — carrying either into the new chase (threat switch, taunt, retaliate
+	-- via do_punch) makes the mob crawl after a target it never failed to
+	-- reach. Same target = same chase, so nothing is reset then (apply_path
+	-- re-calls us with self.attack on every path application).
+	if self.path and self.attack ~= player then
+		self.path.stuck = false
+		self.path.following = false
+		self.path.stuck_timer = 0
+	end
+
 	self.attack = player ; self.state = "attack"
 
 	if random(100) < 90 then self:mob_sound(self.sounds.war_cry) end
@@ -699,6 +712,19 @@ function mob_class:item_drop()
 	if type(drops) == "function" then drops = self.drops(pos) end
 
 	if not drops or #drops == 0 then return end
+
+	-- GRUG PATCH: player-tag drop rule + profession drop hooks
+	-- (combat_stats.md §3, WP6). Only for mobs registered through grug_mobs
+	-- (_grug_drop_rule) — vanilla mobs_redo mobs keep vanilla behavior. The
+	-- filter returns the list to roll (a COPY the hooks may have modified)
+	-- or nil when this mob must not drop at all (no tag / expired tag /
+	-- faction NPC not killed by an enemy player). Logic lives in grug_mobs.
+	if self._grug_drop_rule and grug_mobs and grug_mobs._item_drop_filter then
+
+		drops = grug_mobs._item_drop_filter(self, drops)
+
+		if not drops or #drops == 0 then self.drops = {} ; return end
+	end
 
 	-- was mob killed by player?
 	local death_by_player = self.cause_of_death and self.cause_of_death.puncher
@@ -1464,6 +1490,29 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 
 		self.path.following = false
 
+		-- GRUG PATCH: give `self.path.stuck` a meaning (WP6-T10). The field is
+		-- READ in do_states (walk instead of run) and cleared when
+		-- the mob reaches its target, but NOTHING in mobs_redo ever sets it —
+		-- dead code here and in the mcl_mobs fork of the same rnd code.
+		-- Meaning chosen: "wedged with NO usable path", i.e. the mob is about
+		-- to blunder straight at its target through whatever is in the way;
+		-- walking that stretch kills the ram-the-wall jitter and the mob keeps
+		-- pushing instead of bouncing. Deliberately NOT set while a path IS
+		-- being followed: walk_velocity is 1 for most grug_mobs defs, so a
+		-- chaser would crawl every detour at 1 m/s and terrain would become
+		-- the free escape hatch that AGENTS.md "Mobs" explicitly forbids.
+		--
+		-- WP6 REVIEW (B1): setting the flag was only half a mechanic — every
+		-- clear site T10 added is unreachable for a mob that is MOVING (the
+		-- smart_mobs ones sit behind a stuck_timer that is zeroed at >= 0.5
+		-- m/s; the two do_states abandon exits need path.following, which the
+		-- branch we are in has just set false; the in-reach clear needs a melee
+		-- reach a 1 m/s mob never closes). Three unconditional clears were
+		-- added since — stop_attack(), do_attack() on a target change, and
+		-- do_states the moment its already-computed line_of_sight comes back
+		-- true — so the penalty now lasts exactly as long as the wedge does.
+		self.path.stuck = true
+
 		 -- lets make a way by digging/building
 		if self.pathfinding == 2 and mobs_griefing then
 
@@ -1516,6 +1565,7 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 
 		self:do_jump() --add jump to pathfinding
 		self.path.following = true
+		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
 
 	else -- yay i found path
 
@@ -1526,6 +1576,7 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 		end
 
 		self.path.following = true -- now follow path
+		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
 	end
 end
 
@@ -1539,7 +1590,23 @@ local function path_height_blocked(self)
 
 		node = get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name
 
-		if core.registered_nodes[node].walkable then return true end
+		-- GRUG PATCH: treat unknown AND unloaded as BLOCKED (WP6-T10, comment
+		-- corrected in the WP6 review, M12). Two different cases, and the
+		-- original comment here conflated them:
+		--   * "ignore" (unloaded/unemerged block — routine while a path reaches
+		--     toward the edge of the active area) IS a registered node and it
+		--     is walkable = false (builtin/game/register.lua), so upstream
+		--     silently read unloaded volume as CLEAR headroom and sent 2-node
+		--     mobs through clearance nobody had verified. No crash, a wrong
+		--     answer — which is the worse of the two.
+		--   * a node whose mod is gone has no definition at all; THAT is the
+		--     only case where the bare `.walkable` index errors out of the
+		--     mob's step.
+		-- Both now count as blocked: a 2-node-high mob must not be routed
+		-- through clearance we cannot verify.
+		local ndef = core.registered_nodes[node]
+
+		if not ndef or node == "ignore" or ndef.walkable then return true end
 	end
 end
 
@@ -1559,7 +1626,22 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 
 	self.path.lastpos = {x = s.x, y = s.y, z = s.z}
 
-	if self.path.stuck_timer <= pathfinding_stuck_timeout then return end
+	-- GRUG PATCH: actually USE mob_pathfinding_stuck_path_timeout (WP6-T10).
+	-- Upstream reads the setting at load time (line ~89) and then never
+	-- references it — mobs kept re-planning on the short timeout, and the
+	-- setting was a lie. Intent verified against the sibling fork of the same
+	-- rnd code (VoxeLibre mcl_mobs/combat.lua:90-106), which branches exactly
+	-- like this: a mob that is ALREADY following a path gets the longer
+	-- stuck_path_timeout of no-progress patience, a mob without one re-plans
+	-- after the short stuck_timeout. Reaching this point IS "give up on the
+	-- path": below, either line_of_sight clears path.following or find_path
+	-- replaces path.way outright. Two effects we want — a wedged path-follower
+	-- stops rubber-banding against its own bad path, and a moving one does not
+	-- pay for an A* search every stuck_timeout seconds.
+	local timeout = self.path.following and pathfinding_stuck_path_timeout
+			or pathfinding_stuck_timeout
+
+	if self.path.stuck_timer <= timeout then return end
 
 	local has_lineofsight = core.line_of_sight(
 			{x = s.x, y = s.y + 0.5, z = s.z},
@@ -1568,6 +1650,11 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 	self.path.stuck_timer = 0
 
 	if has_lineofsight then
+		-- GRUG PATCH: the target is visible again, so the detour is over —
+		-- clear the wedged flag with it (WP6-T10, see apply_path). Without
+		-- this a mob that was walled in once would keep walking instead of
+		-- running for the rest of the chase.
+		self.path.stuck = false
 		self.path.following = false ; return
 	end
 
@@ -1959,7 +2046,21 @@ function mob_class:stop_attack()
 	self.attack = nil
 	self.following = nil
 	self.v_start = false ; self.timer = 0 ; self.blinktimer = 0
-	self.path.way = nil
+	-- GRUG PATCH: reset the FULL path state, not only the way (WP6 review B1).
+	-- Upstream cleared `path.way` and left `path.stuck`/`path.following`
+	-- standing, so the walk-speed penalty and a dead path-follow flag survived
+	-- every de-aggro, leash reset and target switch. `path.stuck` in
+	-- particular has no reachable clear site for a MOVING mob (smart_mobs
+	-- zeroes stuck_timer at >= 0.5 m/s, so its timeout gate never opens), which
+	-- turned one wedged moment into a permanent 1 m/s crawl for the rest of the
+	-- entity's life. Guarded: stop_attack can run before mob_activate's path
+	-- init in exotic paths (wrapper mods calling it from on_activate).
+	if self.path then
+		self.path.way = nil
+		self.path.stuck = false
+		self.path.following = false
+		self.path.stuck_timer = 0
+	end
 	self:set_velocity(0)
 	self.state = "stand"
 	self:set_animation("stand", true)
@@ -2117,8 +2218,22 @@ function mob_class:do_states(dtime)
 		local p = self.attack and self.attack:get_pos()
 		local dist = p and get_distance(p, s) or 500
 
+		-- GRUG PATCH: give-up distance (WP6 review B2). Vanilla mobs_redo drops
+		-- a target the moment it is further away than `view_range`, which for
+		-- our ground mobs is <= 16 m — so `dist` could never exceed 25 and BOTH
+		-- the soft de-aggro below and combat_stats.md §3/§4's chase model were
+		-- unreachable code: the spec wants the chase to PERSIST (at walk speed)
+		-- past 25 m and the 40 m / 15 s leash of grug_mobs/aggro.lua to own the
+		-- reset. `_grug_chase_range` is installed on every grug_mobs mob at
+		-- runtime (45 = leash 40 + hysteresis margin, apply_aggro_fields);
+		-- vanilla mobs_redo mobs have no such field and keep view_range exactly.
+		-- NB this also bounds mob-vs-NPC chases at 45 for our mobs (the leash
+		-- only governs player chases) — intended: it caps the "guard chases the
+		-- wolf across the continent" drift that view_range used to cap.
+		local give_up = self._grug_chase_range or self.view_range
+
 		-- stop attacking if player out of range or invisible
-		if dist > self.view_range
+		if dist > give_up
 		or not self.attack or not self.attack:get_pos() or self.attack:get_hp() <= 0
 		or (is_player(self.attack)
 		and is_invisible(self, self.attack:get_player_name())) then
@@ -2142,6 +2257,15 @@ function mob_class:do_states(dtime)
 			end
 		else
 			self.target_time_lost = 0
+			-- GRUG PATCH: the target is visible again, so whatever wedged the
+			-- mob is behind it — drop the walk-speed penalty here (WP6 review
+			-- B1, see apply_path/stop_attack). This REUSES the line_of_sight
+			-- result the branch above already computed; do not add a second ray
+			-- per step. smart_mobs has the same clear, but it sits behind the
+			-- stuck_timer timeout, and that timer is zeroed on every step in
+			-- which the mob moves faster than 0.5 m/s — i.e. exactly the mob we
+			-- need to un-stick can never reach it.
+			if self.path then self.path.stuck = false end
 		end
 
 		local ds_var = 0
@@ -2277,13 +2401,18 @@ function mob_class:do_states(dtime)
 			and self.attack_type ~= "dogshoot" then
 
 				-- no paths longer than 60
+				-- GRUG PATCH: clear the wedged flag together with the path on
+				-- both abandon exits (WP6-T10, see apply_path) — otherwise the
+				-- walk-speed penalty outlives the detour that caused it.
 				if #self.path.way > 60 or dist < self.reach then
+					self.path.stuck = false
 					self.path.following = false ; return
 				end
 
 				local p1 = self.path.way[1]
 
 				if not p1 then
+					self.path.stuck = false
 					self.path.following = false ; return
 				end
 
@@ -2300,7 +2429,18 @@ function mob_class:do_states(dtime)
 			if dist > (self.reach + (self.reach_ext or 0)) then
 
 				-- path finding by rnd (only when enabled in setting and mob)
-				if self.pathfinding and pathfinding_enable then
+				-- GRUG PATCH: never run A* for a dogshoot mob (WP6-T10). The
+				-- path CONSUMPTION block ~40 lines up already excludes
+				-- attack_type == "dogshoot", so every core.find_path call for
+				-- one of them was computed and thrown away — pure cost, plus a
+				-- stray war_cry and a walk_velocity write from apply_path.
+				-- Losing nothing: a ranged family answers terrain by shooting
+				-- over it, which is exactly why biomes_mobs §3.1 gives the
+				-- archer/raider/golem `dogshoot` in the first place. Our defs
+				-- keep `pathfinding = 1` (§3 says all aggressive mobs do), it
+				-- simply costs nothing now.
+				if self.pathfinding and pathfinding_enable
+				and self.attack_type ~= "dogshoot" then
 					self:smart_mobs(s, p, dist, dtime)
 				end
 
@@ -2315,7 +2455,22 @@ function mob_class:do_states(dtime)
 				else
 					self.reach_ext = 0 -- reset
 
-					if self.path.stuck then
+					-- GRUG PATCH: soft de-aggro (combat_stats.md §3, WP6) —
+					-- beyond 25m from its target a chasing mob drops to walk
+					-- speed, so fleeing is hard but not impossible (our mobs
+					-- are faster than players). Per-mob opt-out with
+					-- _grug_soft_deaggro = false (kraken: own leash, swims).
+					-- REACHABLE since the WP6 review (B2): with the give-up
+					-- distance at 45 for our mobs, `dist` can now actually
+					-- exceed 25 — under the old view_range give-up (<= 16) this
+					-- whole branch was dead. It composes with the path.stuck
+					-- clears of B1 exactly as the spec reads: a mob that is not
+					-- wedged and is more than 25 m behind its target walks,
+					-- keeps following, and is dropped by the leash (40 m from
+					-- where the chase began, or 15 s without contact) — not by
+					-- the mob's eyesight.
+					if self.path.stuck or (dist > 25
+					and self._grug_soft_deaggro ~= false) then
 						self:set_velocity(self.walk_velocity)
 					else
 						self:set_velocity(self.run_velocity)
@@ -2957,7 +3112,22 @@ function mob_class:mob_activate(staticdata, def, dtime)
 	self.object:set_texture_mod(self.texture_mods) -- apply texture mods
 
 	-- set flag to remove monsters when map area unloaded
-	if remove_far and self.type == "monster" and not self.tamed then
+	-- GRUG PATCH: honour the lifetimer exemption HERE as well (WP6 review B3).
+	-- mob_staticdata() exempts a mob with `lifetimer >= 20000` from the
+	-- unload-delete, and grug_mobs/rares.lua relies on exactly that (named
+	-- rares get lifetimer = 30000). But get_staticdata — and therefore
+	-- mob_staticdata — is NEVER called for an object with static_save = false:
+	-- the engine simply drops it. So the unconditional clear below deleted
+	-- every named rare the instant its mapblock unloaded, before its own
+	-- exemption could ever be read, and the rares watchdog then locked the
+	-- respawn out for up to respawn_max. Same predicate as mob_staticdata now.
+	-- ORDER IS SAFE: the staticdata deserialize loop at the top of
+	-- mob_activate has already copied every plain field — `lifetimer`
+	-- included — back onto `self`, so a reactivated rare reads 30000 here and
+	-- not the def default. (180 is that def default, api.lua:128; the `or`
+	-- only covers a def that leaves the field unset entirely.)
+	if remove_far and self.type == "monster" and not self.tamed
+	and (self.lifetimer or 180) < 20000 then
 		self.object:set_properties({static_save = false})
 	end
 
