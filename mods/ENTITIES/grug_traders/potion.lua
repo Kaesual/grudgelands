@@ -16,7 +16,16 @@ grug_traders.POTION_HEAL_FRACTION = 0.15 -- §3.6 "vendor's weak 15%"
 -- (The "one elixir buff at a time" half of §3.6 is a WP10 concern — an elixir
 -- is not an instant potion and must not touch this cooldown.)
 --
--- Stored as an ABSOLUTE os.time() expiry in PLAYER META, not in a Lua table:
+-- Stored as an ABSOLUTE os.time() expiry in PLAYER META, as a STRING:
+--   * `PlayerMetaRef:set_int` is a genuine 32-bit signed store
+--     (l_metadata.cpp l_set_int -> luaL_checkint), so an absolute unix
+--     expiry would wrap in January 2038 and the shared cooldown would
+--     silently disappear for good. set_string has no such ceiling.
+--   * meta is a string map underneath (set_int writes itos(value), same
+--     file), so a value written by the old set_int reads back through
+--     get_string unchanged — no migration needed, the key name is the same.
+--
+-- Why an absolute expiry in meta at all, not a Lua table:
 --   * player meta is auto-persisted, so a relog cannot wipe the cooldown —
 --     relogging to chain-chug potions is exactly the exploit the shared
 --     cooldown exists to prevent;
@@ -36,7 +45,11 @@ function grug_traders.potion_cooldown_left(player)
 	if not player or not player.is_player or not player:is_player() then
 		return 0
 	end
-	local expiry = player:get_meta():get_int(META_POTION_CD)
+	-- Empty (never set), garbage or NaN all mean "ready".
+	local expiry = tonumber(player:get_meta():get_string(META_POTION_CD))
+	if not expiry or expiry ~= expiry then
+		return 0
+	end
 	local left = expiry - os.time()
 	if left <= 0 then
 		return 0
@@ -50,7 +63,8 @@ function grug_traders.start_potion_cooldown(player, seconds)
 		return
 	end
 	seconds = tonumber(seconds) or grug_traders.POTION_COOLDOWN
-	player:get_meta():set_int(META_POTION_CD, os.time() + math.floor(seconds))
+	player:get_meta():set_string(META_POTION_CD,
+		tostring(os.time() + math.floor(seconds)))
 end
 
 --
@@ -96,12 +110,9 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 		end
 		local amount = math.max(1,
 			math.floor(max_hp * grug_traders.POTION_HEAL_FRACTION + 0.5))
-		-- The central heal path (grug_core/combat.lua:499): clamps to max HP
-		-- and reports heal threat. NB it also rolls the DRINKER's crit chance
-		-- (x1.5) because its first argument is the healer — a potion crit is
-		-- not in §3.6; see the WP7 report.
-		-- no_crit: §3.6 specifies a flat 15% of max HP. A drinker's crit
-		-- chance must not turn that into 22.5%.
+		-- The central heal path: clamps to max HP and reports heal threat.
+		-- no_crit because its first argument is the healer, so without the flag
+		-- the DRINKER's crit chance would turn §3.6's flat 15% into 22.5%.
 		grug_core.heal_player(user, user, amount, {no_crit = true})
 		grug_traders.start_potion_cooldown(user)
 		-- ItemStack copy semantics: on_use gets a COPY, so the modified stack

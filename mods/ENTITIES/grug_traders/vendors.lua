@@ -124,16 +124,24 @@ function grug_traders.has_discount(player, vendor)
 		player:is_player() and grug_classes.get_race(player) == vendor.race
 end
 
--- The buy price a specific player pays a specific vendor for a base price.
-function grug_traders.price_for(player, vendor, base_price)
+-- A base price with an ALREADY DECIDED discount flag. Pure function: the
+-- trade formspec resolves has_discount once per render (two player-meta
+-- reads) and feeds the boolean in here for every one of its ~12 offer rows.
+function grug_traders.apply_discount(base_price, discount)
 	base_price = math.floor(tonumber(base_price) or 0)
 	if base_price <= 0 then
 		return 0
 	end
-	if grug_traders.has_discount(player, vendor) then
+	if discount then
 		return grug_traders.discounted_price(base_price)
 	end
 	return base_price
+end
+
+-- The buy price a specific player pays a specific vendor for a base price.
+function grug_traders.price_for(player, vendor, base_price)
+	return grug_traders.apply_discount(base_price,
+		grug_traders.has_discount(player, vendor))
 end
 
 --
@@ -317,17 +325,41 @@ for _, race_id in ipairs(race_ids) do
 end
 
 local CHECK_INTERVAL = 5 -- s (AGENTS.md performance rule: dtime accumulator)
-local PLAYER_RANGE = 48 -- only slots a player could actually see are checked
+-- Only slots a player could actually see are checked — and the number is
+-- COUPLED to object activation, it is not a taste decision. vendor_present
+-- below asks core.get_objects_inside_radius, which only ever sees ACTIVATED
+-- objects, and activation reaches `active_block_range * 16` nodes around a
+-- player. `active_block_range` defaults to 4 on desktop but to 2 in other
+-- platform profiles and is user-tunable down to 1. At 2 the activation radius
+-- is 32 nodes: a gate any wider than that would look at a slot whose existing
+-- vendor is loaded but INACTIVE, conclude "nobody here", and spawn a second
+-- one — every 5 s, forever, because `type = "npc"` entities never expire.
+-- 24 keeps the slot inside the activation radius with margin at 2 (and the
+-- PRESENCE_RADIUS 8 sphere around it too: 24 + 8 = 32). The only visible
+-- consequence is that vendors appear at 24 m instead of 48 m, and vendors are
+-- stationary. active_block_range = 1 (16 nodes) is out of scope: at that
+-- setting the engine deactivates a mob standing next to the player.
+local PLAYER_RANGE = 24
 local PRESENCE_RADIUS = 8 -- "is a vendor of this kind already standing here"
 
-local function player_near(players, x, y, z)
-	for i = 1, #players do
-		local p = players[i]:get_pos()
-		if p then
-			local dx, dy, dz = p.x - x, p.y - y, p.z - z
-			if dx * dx + dy * dy + dz * dz <= PLAYER_RANGE * PLAYER_RANGE then
-				return true
-			end
+-- `positions` is the hoisted per-interval array from the globalstep below —
+-- get_pos() is a C call per player, and calling it inside the 12-slot loop
+-- would mean 12 x 100 of them every interval instead of 100.
+--
+-- y = nil runs the check HORIZONTALLY only. That form is the pre-filter used
+-- before the capital's platform y is resolved: it can only be more permissive
+-- than the full 3D check that follows, so no slot is lost by it.
+local function player_near(positions, x, y, z)
+	for i = 1, #positions do
+		local p = positions[i]
+		local dx, dz = p.x - x, p.z - z
+		local d2 = dx * dx + dz * dz
+		if y then
+			local dy = p.y - y
+			d2 = d2 + dy * dy
+		end
+		if d2 <= PLAYER_RANGE * PLAYER_RANGE then
+			return true
 		end
 	end
 	return false
@@ -358,15 +390,30 @@ core.register_globalstep(function(dtime)
 	if #players == 0 then
 		return
 	end
+	-- Hoisted once per interval instead of once per (slot, player): get_pos()
+	-- is a C call, and the loop below runs 12 slots x every player.
+	local positions = {}
+	for i = 1, #players do
+		local p = players[i]:get_pos()
+		if p then
+			positions[#positions + 1] = p
+		end
+	end
+	if #positions == 0 then
+		return
+	end
 	for i = 1, #slots do
 		local slot = slots[i]
-		-- nil = the capital platform has not been resolved yet (the chunks
-		-- were never generated). Skip the slot this round rather than guess a
-		-- y — grug_core persists the value the moment mapgen decides it.
-		local ground_y = grug_core.get_camp_platform_y(slot.race)
-		if ground_y then
-			local y = ground_y + 1
-			if player_near(players, slot.x, y, slot.z) then
+		-- The horizontal player filter runs FIRST: it needs no y, and it keeps
+		-- a capital nobody has ever visited from running its platform lookup
+		-- (a mod-storage/spawn-level resolve) 12 times every 5 s.
+		if player_near(positions, slot.x, nil, slot.z) then
+			-- nil = the capital platform has not been resolved yet (the chunks
+			-- were never generated). Skip the slot this round rather than guess
+			-- a y — grug_core persists the value the moment mapgen decides it.
+			local ground_y = grug_core.get_camp_platform_y(slot.race)
+			local y = ground_y and (ground_y + 1)
+			if y and player_near(positions, slot.x, y, slot.z) then
 				local pos = {x = slot.x, y = y, z = slot.z}
 				local node = core.get_node_or_nil(pos)
 				local ndef = node and core.registered_nodes[node.name]

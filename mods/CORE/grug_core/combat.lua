@@ -607,10 +607,22 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	-- pre-mitigation damage.
 	-- math.ceil is deliberate: armor alone can never reduce a landed hit to
 	-- 0 damage, however much of it a tank stacks.
+	--
+	-- The 60% clamp is applied HERE as well, not only in grug_inventory's
+	-- override: this modifier is registered with `true` (it may raise HP), so
+	-- an override that ever forgot the cap and returned pct > 100 would turn
+	-- a punch into a heal. Cheap invariant, catastrophic failure mode
+	-- (WP14's shields are already slated to extend that override).
+	--
+	-- (100 - pct) / 100, NOT (1 - pct / 100): the latter double-rounds,
+	-- because 1 - pct/100 is not exactly representable as a double (e.g.
+	-- pct 42, dmg 50 gave 30 instead of 29). -hp_change and pct are whole
+	-- numbers and their product stays far inside the exact-integer range, so
+	-- this division is exact whenever the true result is an integer.
 	if reason.type == "punch" then
-		local pct = grug_core.get_armor_percent(player)
+		local pct = math.min(60, grug_core.get_armor_percent(player) or 0)
 		if pct > 0 then
-			hp_change = -math.ceil(-hp_change * (1 - pct / 100))
+			hp_change = -math.ceil(-hp_change * (100 - pct) / 100)
 		end
 	end
 	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so

@@ -72,6 +72,15 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --   grug_traders.register_stock({item = "grug_jobs:parchment",  price = 5, category = "goods"})
 --   grug_traders.register_stock({item = "grug_jobs:whetstone",  price = 4, category = "goods"})
 --
+-- WP10 also owns the profession tomes of §8.2 — the Apprentice tome at 25c
+-- (any profession) and the replacement tomes T2/T3/T4 at 1s / 3s / 10s
+-- (= 100c / 300c / 1000c, economy.md §1: prices are ALWAYS copper here):
+--
+--   grug_traders.register_stock({item = "grug_jobs:tome_apprentice", price = 25,   category = "goods"})
+--   grug_traders.register_stock({item = "grug_jobs:tome_t2",         price = 100,  category = "goods"})
+--   grug_traders.register_stock({item = "grug_jobs:tome_t3",         price = 300,  category = "goods"})
+--   grug_traders.register_stock({item = "grug_jobs:tome_t4",         price = 1000, category = "goods"})
+--
 -- and WP24 the housing tool of world.md §5.4 / §8.2:
 --
 --   grug_traders.register_stock({item = "grug_housing:dowsing_rod", price = 15, category = "tools"})
@@ -87,11 +96,18 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 -- kind, bracket) the offer is:
 --   * the 9 FIXED items of grug_gear.catalog[b].fixed (sword + 4 metal + 4
 --     cloth) — §3.8's guaranteed floor, always on sale;
---   * 3 ROTATING slots filled from grug_gear.catalog[b].extras (dagger,
---     greataxe, staff) in a rotation-dependent ORDER;
---   * one rotation in five, one of those three slots is replaced by a single
+--   * 2 ROTATING slots drawn from the 3 items of grug_gear.catalog[b].extras
+--     (dagger, greataxe, staff): two weapon families are on sale each hour,
+--     the third is WITHHELD and rotates back in next hour. Withholding is
+--     what makes it a rotation at all — with one slot per extra the whole
+--     catalog would be on the shelf every hour and the roll would only
+--     permute the display order. §3.8's "guaranteed, but expensive … the
+--     floor, not the ceiling" is a promise about the 9-item floor above,
+--     which is untouched by this;
+--   * one rotation in five, one of those two slots is replaced by a single
 --     UNCOMMON item drawn from grug_gear.catalog[b].all and priced x3 —
---     "today the trader had something good".
+--     "today the trader had something good". Until WP5's enchant roller
+--     exists, no Uncommon is offered at all (see the WP5 SEAM below).
 --
 -- DETERMINISM IS THE POINT. Two players standing at the same vendor in the
 -- same hour must see the same shelf, and a server restart must not re-roll it.
@@ -101,7 +117,10 @@ grug_traders.register_stock({item = "default:pick_bronze", price = 40, category 
 --
 
 local ROTATION_SECONDS = 3600 -- §3.8 "re-rolled hourly"; real hours
-local ROTATING_SLOTS = 3
+-- STRICTLY BELOW #extras (3 today), or nothing is ever withheld and the
+-- hourly re-roll degenerates into a reshuffle of the same shelf. If §3.2 ever
+-- grows a fourth extra weapon family, raise this to 3 — never to #extras.
+local ROTATING_SLOTS = 2
 local UNCOMMON_EVERY = 5 -- "roughly one rotation in five"
 local UNCOMMON_PRICE_FACTOR = 3 -- §3.8 "priced x3"
 local UNCOMMON_COLOR = "#4A90FF"
@@ -146,15 +165,28 @@ end
 --
 -- The Uncommon stack.
 --
--- WP5 SEAM — WP7 rolls NO enchants. §6.3's world window (frac 0.00-0.60) is
--- grug_items' job; until WP5 ships, the Uncommon is a blue-named Common with a
--- x3 price tag, and that is the accepted WP7 state. The call below is written
--- so WP5 needs no edit in here: the moment grug_items.roll_enchants exists,
--- the rolls appear.
+-- WP5 SEAM — WP7 has no enchant roller of its own. §6.3's world window
+-- (frac 0.00-0.60) is grug_items' job, and an Uncommon WITHOUT enchants is
+-- mechanically identical to the Common next to it (Common is enchant-free by
+-- definition, §3.8) while costing x3. So the whole Uncommon offer is gated on
+-- the roller EXISTING: while it does not, the rotating slots simply hold the
+-- normal extras and nothing is sold at a x3 premium for nothing.
+--
+-- Every line of the Uncommon machinery stays in place — the x3 price, the
+-- grug_quality = 2 meta, the blue description, the roll call. The moment
+-- grug_items.roll_enchants exists, Uncommons light up automatically: WP5
+-- needs NO edit in this file.
 --
 -- core.global_exists is the only way to probe a global without tripping
 -- strict.lua (docs/research/luanti-lua.md).
 --
+local function enchant_roller()
+	if core.global_exists("grug_items") and grug_items.roll_enchants then
+		return grug_items.roll_enchants
+	end
+	return nil
+end
+
 function grug_traders.make_stack(entry)
 	local stack = ItemStack(entry.item)
 	if not entry.uncommon then
@@ -165,8 +197,9 @@ function grug_traders.make_stack(entry)
 	local def = core.registered_items[entry.item]
 	local desc = (def and def.description) or entry.item
 	meta:set_string("description", core.colorize(UNCOMMON_COLOR, desc))
-	if core.global_exists("grug_items") and grug_items.roll_enchants then
-		grug_items.roll_enchants(stack, entry.ilvl, "world") -- §6.3 world window
+	local roll = enchant_roller()
+	if roll then
+		roll(stack, entry.ilvl, "world") -- §6.3 world window
 	end
 	return stack
 end
@@ -196,8 +229,10 @@ local function compute(salt, bracket, rotation)
 	local pool = shuffled(cat.extras, rng)
 	local rotating = {}
 	for i = 1, ROTATING_SLOTS do
-		-- extras holds exactly ROTATING_SLOTS items today; the modulo keeps
-		-- the loop correct if §3.2 ever grows a fifth weapon family.
+		-- The shuffle decides WHICH extras are on the shelf: taking the first
+		-- ROTATING_SLOTS of the shuffled pool leaves the rest withheld until
+		-- the next hour. The modulo only guards the degenerate case of a pool
+		-- SMALLER than the slot count (never today: 3 extras, 2 slots).
 		local itemname = pool[((i - 1) % #pool) + 1]
 		rotating[i] = {
 			item = itemname,
@@ -213,7 +248,10 @@ local function compute(salt, bracket, rotation)
 	local uncommon_roll = rng:next(1, UNCOMMON_EVERY)
 	local slot = rng:next(1, ROTATING_SLOTS)
 	local pick = rng:next(1, #cat.all)
-	if uncommon_roll == 1 then
+	-- The WP5 seam (see make_stack): no roller, no Uncommon. Drawing the three
+	-- rolls above unconditionally keeps this gate out of the RNG stream, so
+	-- WP5 changes WHAT is on the shelf, not the rotation of everything else.
+	if uncommon_roll == 1 and enchant_roller() then
 		local itemname = cat.all[pick]
 		rotating[slot] = {
 			item = itemname,

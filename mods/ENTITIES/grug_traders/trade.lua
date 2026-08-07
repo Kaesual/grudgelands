@@ -61,14 +61,18 @@ end
 
 -- The buy list of the current tab, with the price THIS player pays THIS
 -- vendor (i.e. the same-race discount already applied).
-local function current_offer(player, session, vendor)
+--
+-- `discount` is the has_discount boolean, resolved ONCE by the caller: it is
+-- two player-meta reads, and resolving it per entry would run it ~12 times
+-- per render and again per click.
+local function current_offer(player, session, vendor, discount)
 	local offer = {}
 	if session.tab == "general" then
 		for _, entry in ipairs(grug_traders.stock) do
 			offer[#offer + 1] = {
 				item = entry.item,
 				base = entry.price,
-				price = grug_traders.price_for(player, vendor, entry.price),
+				price = grug_traders.apply_discount(entry.price, discount),
 			}
 		end
 		return offer
@@ -81,7 +85,7 @@ local function current_offer(player, session, vendor)
 		offer[#offer + 1] = {
 			item = entry.item,
 			base = entry.price,
-			price = grug_traders.price_for(player, vendor, entry.price),
+			price = grug_traders.apply_discount(entry.price, discount),
 			ilvl = entry.ilvl,
 			uncommon = entry.uncommon,
 		}
@@ -118,11 +122,11 @@ end
 -- Rendering
 --
 
-local function header(parts, player, session, vendor)
+local function header(parts, player, session, vendor, discount)
 	parts[#parts + 1] = "label[0.5,0.6;" .. esc(vendor.nametag) .. "]"
 	parts[#parts + 1] = "label[0.5,1.2;Your money: " ..
 		esc(grug_money.format(grug_money.get(player))) .. "]"
-	if grug_traders.has_discount(player, vendor) then
+	if discount then
 		local pct = math.floor(grug_traders.RACE_DISCOUNT * 100 + 0.5)
 		parts[#parts + 1] = "label[5.0,1.2;" .. esc(core.colorize("#7ee081",
 			"Kinship discount: -" .. pct .. "% on every purchase")) .. "]"
@@ -135,7 +139,7 @@ local function header(parts, player, session, vendor)
 	parts[#parts + 1] = "button[12.0,0.3;1.5,0.8;mode_sell;Sell]"
 end
 
-local function render_buy(parts, player, session, vendor)
+local function render_buy(parts, player, session, vendor, discount)
 	-- Tab row: the level-independent core stock plus every bracket the player
 	-- has unlocked (items_crafting.md §3.8: own bracket and every one below).
 	local max_bracket = grug_traders.max_bracket(player)
@@ -151,7 +155,7 @@ local function render_buy(parts, player, session, vendor)
 			x, tab.id, esc(tab.label))
 	end
 
-	local offer = current_offer(player, session, vendor)
+	local offer = current_offer(player, session, vendor, discount)
 	session.offer = offer
 	for i, entry in ipairs(offer) do
 		local col = (i - 1) % GRID_COLS
@@ -175,9 +179,10 @@ local function render_buy(parts, player, session, vendor)
 	if #offer == 0 then
 		parts[#parts + 1] = "label[0.6,3.0;The vendor has nothing on this shelf.]"
 	end
-	-- Required form height. Today every shelf is 12 entries = 2 rows and this
-	-- stays below FORM_H, but WP10's job supplies extend the General tab and a
-	-- third row must grow the window instead of falling out of it.
+	-- Required form height. Today every bracket shelf is 11 entries (9 fixed
+	-- + 2 rotating) = 2 rows and stays below FORM_H, but WP10's job supplies
+	-- extend the General tab and a third row must grow the window instead of
+	-- falling out of it.
 	local grid_rows = math.ceil(#offer / GRID_COLS)
 	return 2.9 + grid_rows * 2.5 + 1.2
 end
@@ -225,12 +230,15 @@ local function build(player, session, vendor, status)
 	-- The body is rendered FIRST because the buy grid decides the window
 	-- height; size[] is prepended afterwards.
 	local body = {}
-	header(body, player, session, vendor)
+	-- Once per render, for the header label AND every offer row (see
+	-- current_offer).
+	local discount = grug_traders.has_discount(player, vendor)
+	header(body, player, session, vendor, discount)
 	local needed
 	if session.mode == "sell" then
 		render_sell(body, player, session)
 	else
-		needed = render_buy(body, player, session, vendor)
+		needed = render_buy(body, player, session, vendor, discount)
 	end
 	local height = math.max(FORM_H, needed or 0)
 	if status and status ~= "" then
@@ -340,7 +348,8 @@ local function do_buy(player, session, vendor, index)
 	-- against the snapshot the player was shown. The hourly rotation can flip
 	-- between the render and the click; buying "slot 11" must never silently
 	-- become a different, more expensive item.
-	local offer = current_offer(player, session, vendor)
+	local offer = current_offer(player, session, vendor,
+		grug_traders.has_discount(player, vendor))
 	local entry = offer[index]
 	local shown = session.offer and session.offer[index]
 	if not entry or not shown or entry.item ~= shown.item or
@@ -401,8 +410,13 @@ local function do_sell(player, session, index, sell_all)
 		show(player)
 		return
 	end
-	if grug_money.get(player) >= grug_money.MAX then
-		show(player, "You cannot carry any more money.")
+	-- The money ceiling is checked BEFORE anything is removed, against the
+	-- full proceeds: grug_money.add clamps at MAX, so a sale that CROSSES the
+	-- ceiling would take the items and silently pay only part of the price.
+	-- Refuse the whole sale instead — never sell a partial stack behind the
+	-- player's back either.
+	if grug_money.get(player) + count * unit > grug_money.MAX then
+		show(player, "You cannot carry that much money.")
 		return
 	end
 	local taken = stack:take_item(count)
@@ -412,6 +426,8 @@ local function do_sell(player, session, index, sell_all)
 		return
 	end
 	inv:set_stack("main", shown.index, stack)
+	-- sold == count today (count <= available); recomputed from what was
+	-- actually taken so the credit can never exceed what the check cleared.
 	local total = sold * unit
 	grug_money.add(player, total)
 	show(player, "Sold " .. sold .. "x " .. short_desc(shown.item) .. " for " ..
@@ -458,34 +474,46 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 
-	for field in pairs(fields) do
-		local tab = field:match("^tab_(.+)$")
-		if tab then
-			if tab == "general" then
-				session.tab = "general"
-			else
-				local bracket = tonumber(tab)
-				if bracket and bracket >= 1 and
-						bracket <= grug_traders.max_bracket(player) then
-					session.tab = tostring(math.floor(bracket))
-				end
-			end
+	-- The remaining actions carry an index in the field NAME. They are tested
+	-- against `fields` in a FIXED, written-down order — never by iterating the
+	-- table: a client may submit two action fields in one packet, and `pairs`
+	-- would then pick the winner by hash order, which differs between LuaJIT
+	-- and the bundled PUC Lua 5.1.5 (this game must behave identically on
+	-- both, AGENTS.md). Every branch below re-validates from scratch and
+	-- performs exactly one action, so this is about specified behaviour, not
+	-- about a hole. The candidate names are bounded by what was actually
+	-- rendered: tabs the player has unlocked, the offer snapshot, the sell
+	-- rows. Anything outside those ranges could not pass do_buy/do_sell's
+	-- snapshot cross-check anyway and is ignored.
+	if fields.tab_general then
+		session.tab = "general"
+		show(player)
+		return true
+	end
+	local max_bracket = grug_traders.max_bracket(player)
+	for b = 1, max_bracket do
+		if fields["tab_" .. b] then
+			session.tab = tostring(b)
 			show(player)
 			return true
 		end
-		local buy_index = tonumber(field:match("^buy_(%d+)$") or "")
-		if buy_index then
-			do_buy(player, session, vendor, math.floor(buy_index))
+	end
+	for i = 1, (session.offer and #session.offer or 0) do
+		if fields["buy_" .. i] then
+			do_buy(player, session, vendor, i)
 			return true
 		end
-		local sell_one = tonumber(field:match("^sell1_(%d+)$") or "")
-		if sell_one then
-			do_sell(player, session, math.floor(sell_one), false)
+	end
+	local row_count = session.rows and #session.rows or 0
+	for i = 1, row_count do
+		if fields["sell1_" .. i] then
+			do_sell(player, session, i, false)
 			return true
 		end
-		local sell_all = tonumber(field:match("^sellall_(%d+)$") or "")
-		if sell_all then
-			do_sell(player, session, math.floor(sell_all), true)
+	end
+	for i = 1, row_count do
+		if fields["sellall_" .. i] then
+			do_sell(player, session, i, true)
 			return true
 		end
 	end
