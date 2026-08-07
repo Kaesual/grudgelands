@@ -19,8 +19,49 @@
 
 local schem = core.get_modpath("default") .. "/schematics/"
 
+-- LANDMINE: Luanti caches file-loaded schematics BY FULL PATH. A string
+-- `schematic` goes through get_or_load_schematic() -> get_objdef() ->
+-- SchematicManager::getByName(path) (l_mapgen.cpp), and
+-- Schematic::loadSchematicFromFile() sets that name to the file path
+-- (mg_schematic.cpp). So the SECOND registration of the same .mts silently
+-- reuses the FIRST Schematic object -- WITH the first one's `replacements`
+-- and WITHOUT its own, which are never even looked at. clear_registered_
+-- decorations() does not help: it clears decorations, not the schematic
+-- cache.
+--
+-- That bug shipped once: elf_forest_silverwood registered aspen_tree.mts
+-- with the silverwood replacements first, so deep_forest_aspen_tree got
+-- silverwood trees instead of aspens -- all over the map, far outside the
+-- elf band.
+--
+-- read_mts() below hands register_decoration a Lua TABLE instead. Tables
+-- take the load_schematic_from_def() path, which builds a fresh Schematic
+-- per registration and applies THAT registration's replacements, so the
+-- same .mts can be used any number of times. The engine only reads the
+-- table, so one parse per file is shared by all its decorations.
+--
+-- NEVER pass a bare path string as `schematic` again -- always read_mts().
+local mts_cache = {}
+
+local function read_mts(filename)
+	local schematic = mts_cache[filename]
+	if not schematic then
+		schematic = core.read_schematic(schem .. filename, {})
+		if not schematic then
+			error("grug_mapgen: cannot read schematic " .. filename)
+		end
+		mts_cache[filename] = schematic
+	end
+	return schematic
+end
+
 local function register_tree(name, schematic, place_on, biomes, fill_ratio,
 		extra)
+	if extra and extra.schematic then
+		-- Would reintroduce the path cache bug above.
+		error("grug_mapgen: " .. name .. " overrides `schematic`; pass the "
+			.. ".mts file name instead")
+	end
 	local def = {
 		name = "grug_mapgen:" .. name,
 		deco_type = "schematic",
@@ -30,7 +71,7 @@ local function register_tree(name, schematic, place_on, biomes, fill_ratio,
 		biomes = biomes,
 		y_max = 31000,
 		y_min = 1,
-		schematic = schem .. schematic,
+		schematic = read_mts(schematic),
 		flags = "place_center_x, place_center_z",
 		rotation = "random",
 	}
@@ -112,6 +153,8 @@ end
 -- grug_elf_forest (Elf settled): silverwood groves on pale litter.
 --
 
+-- aspen_tree.mts is ALSO used by deep_forest_aspen_tree below, unreplaced.
+-- Only correct because read_mts() passes a table -- see the note at the top.
 register_tree("elf_forest_silverwood", "aspen_tree.mts", SILVER,
 	{"grug_elf_forest"}, 0.007,
 	{replacements = grug_trees.silverwood_replacements})
@@ -128,6 +171,8 @@ end
 
 register_tree("deep_forest_apple_tree", "apple_tree.mts", FOREST,
 	{"grug_deep_forest"}, 0.012)
+-- Real aspen (§2): the same .mts as elf_forest_silverwood, but WITHOUT its
+-- replacements. Keep it that way -- silverwood belongs to the elf band only.
 register_tree("deep_forest_aspen_tree", "aspen_tree.mts", FOREST,
 	{"grug_deep_forest"}, 0.008)
 -- apple_log.mts also contains flowers:mushroom_brown; the flowers mod is not

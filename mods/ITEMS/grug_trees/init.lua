@@ -45,14 +45,33 @@ grug_trees.silverwood_replacements = {
 	["default:aspen_leaves"] = "grug_trees:silverwood_leaves",
 }
 
-local SILVERWOOD_SCHEMATIC = core.get_modpath("default") ..
-	"/schematics/aspen_tree_from_sapling.mts"
-
 -- Silverwood grows default's aspen schematic with the aspen nodes swapped
--- for ours -- exactly what the decorations will do as well.
+-- for ours -- exactly what the decorations do as well.
+--
+-- LANDMINE (same one as in grug_mapgen/decorations.lua): Luanti caches
+-- file-loaded schematics BY FULL PATH, so place_schematic(pos, "<path>",
+-- rot, replacements) only applies those replacements on the FIRST load of
+-- that path; every later call reuses the cached object and its replacements.
+-- default.grow_new_aspen_tree() places this very same
+-- aspen_tree_from_sapling.mts with NO replacements, so whichever sapling
+-- happened to grow first in a session would decide for both -- silver aspens
+-- or green silverwoods, at random per server run.
+--
+-- Reading the file into a table and registering it once gives us a private
+-- schematic handle with the replacements baked in: no path in the cache, no
+-- collision with default, and no per-growth re-load either.
+local SILVERWOOD_SCHEMATIC = core.register_schematic(
+	core.read_schematic(core.get_modpath("default") ..
+		"/schematics/aspen_tree_from_sapling.mts", {}),
+	grug_trees.silverwood_replacements)
+
+if not SILVERWOOD_SCHEMATIC then
+	error("grug_trees: cannot register the silverwood schematic")
+end
+
 function grug_trees.grow_silverwood(pos)
 	core.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
-		SILVERWOOD_SCHEMATIC, "0", grug_trees.silverwood_replacements, false)
+		SILVERWOOD_SCHEMATIC, "0", nil, false)
 end
 
 local GRAVEWOOD_TRUNK = "grug_trees:gravewood_tree"
