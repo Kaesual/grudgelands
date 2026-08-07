@@ -23,13 +23,16 @@
 --       no player within 80 m?          -> re-arm short, do nothing
 --       enough living camp mobs?        -> re-arm short, do nothing
 --       otherwise spawn exactly ONE mob near the fire and re-arm 120-300 s
---   the spawned mob gets `_grug_home = camp pos` (the point it returns to and
---       is identified by) and `_grug_camp_pos = camp pos` (identity for the
---       head count here and for the mirefolk swarm verb)
+--   the spawned mob gets `_grug_home = camp pos` (WHERE it belongs: aggro.lua
+--       snaps it back there when it evades further out than its radius) and
+--       `_grug_camp_pos = camp pos` (WHO it belongs to — the identity the head
+--       count below and the mirefolk swarm verb match on; `_grug_home` is not
+--       an identity, a hand-placed mob has one too)
 --   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp": a
 --       camp mob may be dragged 25 nodes from wherever the fight started
---       before it resets and heals (aggro.lua; the leash measures drag, not
---       distance from `_grug_home`).
+--       before it drops the target, heals and returns to the fire (aggro.lua
+--       — the leash measures DRAG from the pull, the evade snap uses
+--       `_grug_home`).
 --
 -- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
 -- grug_nodes:guard_banner, and the camp types "guard_accord"/"guard_throng"
@@ -99,6 +102,13 @@ local PLAYER_RANGE = 80
 -- may stand up to its leash range from the fire, and counting it as gone
 -- would let the camp overfill. radius + 16 covers every registered camp type
 -- (bandit 12 + 16 > leash 25, mirefolk 10 + 16 > 25, guards 15 + 16 > 30).
+--
+-- That "> leash" comparison is only a sound bound because a defender CANNOT
+-- park itself outside it: aggro.lua's leash_reset snaps a mob that ends a
+-- chase further than its own radius from `_grug_home` straight back to the
+-- fire (the evade). Without that snap the margin bounded nothing — a guard
+-- walked off its post stayed off it, was counted as dead here, and the post
+-- refilled behind it, one stray per pull, forever (WP6 re-review F1).
 local COUNT_MARGIN = 16
 -- Minimum game time between two patrol designations at ONE post. A patroller
 -- walks far outside the head count (that is the point), so the post refills
@@ -269,9 +279,11 @@ local function camp_tick(pos)
 		return IDLE_PERIOD
 	end
 	-- Plain-table copy, never the caller's table and never an ObjectRef.
-	-- `_grug_home` is what aggro.lua leashes to (and heals at); levels.lua's
-	-- ensure_init only fills it in if it is still unset, and we are ahead of
-	-- the mob's first tick here, so this wins.
+	-- `_grug_home` is where aggro.lua's evade snaps this mob back to when it
+	-- ends a chase too far out — i.e. what makes it a CAMP member and not just
+	-- a mob that happens to stand here. levels.lua's ensure_init only fills the
+	-- field in if it is still unset, and we are ahead of the mob's first tick
+	-- here, so this wins.
 	local home = {x = pos.x, y = pos.y, z = pos.z}
 	ent._grug_home = home
 	ent._grug_camp_pos = {x = pos.x, y = pos.y, z = pos.z}

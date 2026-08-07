@@ -139,23 +139,43 @@ function grug_mobs.is_night()
 end
 
 --
--- Hand placement of a mob (rares.lua, camps.lua) — mobs:add_mob with the
--- y-offset the ABM spawner applies and add_mob does not.
+-- Put an object down so its FEET land on `pos`, not its origin.
 --
--- mobs_redo's spawn_action lifts the candidate position by the mob's
--- collisionbox floor before core.add_entity (api.lua: `pos.y = pos.y + _y`
--- with `_y = -collisionbox[2]`), because an entity's origin is its box origin,
--- not its feet. mobs:add_mob skips that step entirely and adds the entity AT
--- the position it was given. For a mob whose box floor is 0 (or the usual
--- -0.01) that is invisible; for the ones with a genuinely negative floor it is
--- not — the Stone/Mesa Golem sits at -1 (golem.lua: the mesh spans -10..+7.24
--- units around its origin) and the Giant Spider at -0.4, so both spawned
--- buried up to the waist in the ground, from which mobs_redo's own
--- do_env_damage/stuck handling then has to dig them out.
+-- An entity's position IS its collisionbox origin, and several of our meshes
+-- have a box that reaches BELOW it: the Stone/Mesa Golem's floor is -1
+-- (golem.lua — the mesh spans -10..+7.24 model units around its origin) and
+-- the Giant Spider's is -0.4. Dropped at a ground position as-is, those mobs
+-- stand buried up to the waist and mobs_redo's own stuck handling has to dig
+-- them out. mobs_redo's ABM spawner does the same correction inline before
+-- core.add_entity (spawn_action: `pos.y = pos.y + _y` with
+-- `_y = -collisionbox[2]`); mobs:add_mob does not, and neither does a bare
+-- set_pos, so every hand placement in this mod goes through here.
 --
--- Reads the box off the LIVE object rather than the def: levels.lua has
--- already applied the tier scale (rare x2, elite x1.6) by the time a rare is
--- placed, so the def's box would be the wrong size.
+-- Reads the box off the LIVE OBJECT, never off the def, because only the
+-- object reflects the entity's ACTUAL size right now: mob_activate applies
+-- base_colbox, a child mob is scaled to half, and a tier promotion
+-- (levels.lua set_tier: elite x1.6, rare x2) rescales it again. NB the tier
+-- scale is NOT yet applied when grug_mobs.add_mob below runs — set_tier is
+-- called by the CALLER afterwards — which is exactly why rares.lua calls this
+-- a second time once the rare has been promoted.
+--
+-- Idempotent and absolute: it computes from the GROUND position it is handed,
+-- not from where the object currently is, so calling it twice (or after a
+-- rescale) always lands the same way.
+--
+function grug_mobs.place_on_ground(obj, pos)
+	if not obj or not pos then
+		return
+	end
+	local props = obj:get_properties()
+	local box = props and props.collisionbox
+	local lift = (box and box[2] and box[2] < 0) and -box[2] or 0
+	obj:set_pos({x = pos.x, y = pos.y + lift, z = pos.z})
+end
+
+--
+-- Hand placement of a mob (rares.lua, camps.lua): mobs:add_mob plus the
+-- ground correction above, which add_mob skips.
 --
 -- Returns the luaentity, or nil when mobs:add_mob declined (no player in
 -- range, active mob limit, unknown entity) — never an error, both callers
@@ -166,11 +186,7 @@ function grug_mobs.add_mob(pos, def)
 	if not ent or not ent.object then
 		return nil
 	end
-	local props = ent.object:get_properties()
-	local box = props and props.collisionbox
-	if box and box[2] and box[2] < 0 then
-		ent.object:set_pos({x = pos.x, y = pos.y - box[2], z = pos.z})
-	end
+	grug_mobs.place_on_ground(ent.object, pos)
 	return ent
 end
 

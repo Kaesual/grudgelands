@@ -98,9 +98,14 @@ local function guard_def(faction, description, texture)
 		_grug_min_level = 20,
 
 		-- Outpost defender (world.md §4): an intruder may drag a guard 30
-		-- nodes from where the fight started before it gives up, walks back
-		-- and heals, instead of following them into the wilderness. The camp's
-		-- patroller is exempt — see PATROL_LEASH_RANGE in aggro.lua.
+		-- nodes from where the fight started before it gives up, heals and
+		-- SNAPS BACK to the banner (aggro.lua leash_reset's evade, which uses
+		-- `_grug_home` — camps.lua wrote the banner position there), instead of
+		-- following them into the wilderness. The snap is what keeps a post
+		-- manned: a guard is type npc and never despawns, so one walked off its
+		-- post would otherwise be gone for good. The camp's designated
+		-- patroller is exempt from both halves — see PATROL_LEASH_RANGE and the
+		-- evade block in aggro.lua.
 		_grug_leash_range = 30,
 
 		reach = 2,

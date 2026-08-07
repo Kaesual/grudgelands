@@ -24,9 +24,17 @@
 -- forever. That mob was literally unkillable. Measuring against a per-chase
 -- anchor (temp.grug_chase_anchor, seeded with the contact clock and dropped
 -- with the chase) makes the rule mean what it says and makes it impossible
--- for a mob to out-drift its own leash while idle. `_grug_home` stays: camps
--- still return-to and identify by it (camps.lua), it just no longer decides
--- the leash.
+-- for a mob to out-drift its own leash while idle.
+--
+-- THE TWO POSITIONS DO DIFFERENT JOBS, and both are load-bearing:
+--   * `temp.grug_chase_anchor` governs the DRAG DISTANCE — how far a player
+--     may pull this mob before it gives up. Per chase, runtime only.
+--   * `_grug_home` governs WHERE AN EVADED MOB ENDS UP — leash_reset snaps it
+--     back there when it has strayed further than its own radius (see the
+--     evade block there). Persistent, one per mob, set at first activation
+--     (levels.lua ensure_init) or by the camp that spawned it (camps.lua).
+-- What `_grug_home` is NOT is an identity: a camp counts its members by
+-- `_grug_camp_pos`, which camps.lua sets alongside it.
 --
 -- "Player contact" reading (decided WP6-T2): contact is a hit BETWEEN the
 -- mob and its target — grug_core.run_player_hit_mob (player hits mob), a
@@ -153,6 +161,56 @@ function grug_mobs.leash_reset(self)
 			self:update_tag()
 		end
 	end
+	--
+	-- EVADE: snap back to `_grug_home`.
+	--
+	-- This is the MVP of WoW's evade-walk, and it is what puts the DISTANCE
+	-- bound back that the chase-anchor rewrite took out. The anchor governs how
+	-- far a mob may be DRAGGED; nothing governed where it ends up, so a garrison
+	-- could be walked off its post one pull at a time:
+	--   * a guard is `type = "npc"` — it never despawns and never expires, so a
+	--     stray guard is stray FOREVER;
+	--   * count_camp_mobs (camps.lua) only counts within radius + 16, so the post
+	--     counts the stray as dead and refills behind it — strays accumulate
+	--     without bound, one per pull, and the same holds for bandit/mirefolk
+	--     camps;
+	--   * for a named rare the drift also widens the duplicate window: the
+	--     spawner's find_existing scan is SCAN_RADIUS = 100 around the route
+	--     points, so a rare parked further out than that reads as gone. A reset
+	--     rare returning to its spawn point — which is on its route — closes
+	--     that on its own.
+	-- Teleport rather than walk-home because the alternative is a second
+	-- pathfinding state machine (mobs_redo has none: go_to() fakes an attack
+	-- target, which our threat/leash/telegraph code all mis-reads — see
+	-- patrol.lua). A mob that has just dropped its target, healed to full and
+	-- gone idle is exactly the moment where a snap is invisible in practice.
+	--
+	-- Threshold is the DEF radius: 25 for a camp mob, 30 for a guard, the 40 m
+	-- default otherwise — i.e. "further from your post than your post reaches".
+	-- Horizontal only (a mob on a ledge above its home is not stray).
+	-- The RARE/PATROL floors of leash_check are deliberately NOT applied here:
+	-- they widen how far a mob may be dragged, which is a different question
+	-- from where it belongs.
+	--
+	-- The designated PATROLLER is the one exemption: being far from its post is
+	-- its entire job (world.md §4), and snapping it home after every timed-out
+	-- fight would delete the ambient-patrol feature. Its drift is bounded
+	-- instead by PATROL_INTERVAL in camps.lua.
+	--
+	-- Zombie and Kraken carry `_grug_no_leash` and therefore never reach this
+	-- function at all — unchanged for them.
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if home and pos and not self._grug_patrol_route then
+		local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
+		local dx, dz = pos.x - home.x, pos.z - home.z
+		if dx * dx + dz * dz > range * range then
+			-- Same ground correction every hand placement uses (init.lua):
+			-- `_grug_home` is a FEET position (the camp node, the spawn point),
+			-- and an entity's position is its collisionbox origin.
+			grug_mobs.place_on_ground(self.object, home)
+		end
+	end
 end
 
 local function leash_check(self)
@@ -202,11 +260,10 @@ local function leash_check(self)
 	end
 end
 
--- Called on every do_custom tick; does real work once a second.
+-- Called on every do_custom tick; does real work once a second. This IS the
+-- per-mob 1 Hz slot, so the threat-switch drain rides along in it rather than
+-- opening a second accumulator.
 function grug_mobs.leash_tick(self, dtime)
-	if self._grug_no_leash then
-		return
-	end
 	self.temp = self.temp or {}
 	local t = self.temp
 	t.grug_leash_acc = (t.grug_leash_acc or 0) + dtime
@@ -214,6 +271,15 @@ function grug_mobs.leash_tick(self, dtime)
 		return
 	end
 	t.grug_leash_acc = 0
+	-- Trailing edge of grug_core's 0.25 s check_switch throttle: run a target
+	-- re-evaluation that the throttle parked, so the last (heaviest) hit of a
+	-- burst cannot lose a legitimate switch. Deliberately BEFORE the no-leash
+	-- early return — threat targeting has nothing to do with leashing, and the
+	-- zombie and the kraken have threat tables like everyone else.
+	grug_core.recheck_switch(self)
+	if self._grug_no_leash then
+		return
+	end
 	leash_check(self)
 end
 

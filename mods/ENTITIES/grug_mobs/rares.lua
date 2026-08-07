@@ -27,8 +27,19 @@ local CHECK_INTERVAL = 10 -- s between spawner passes
 -- make and the check add_mob makes agree.
 local PLAYER_RANGE = 120
 -- Anti-duplicate / "is it still out there" scan radius around each route
--- point. Comfortably larger than the 40 m leash (aggro.lua), so a rare
--- chasing a player cannot hide from the scan.
+-- point.
+--
+-- It does NOT cover the full drag allowance: a rare may be pulled up to
+-- RARE_LEASH_RANGE = 300 from where the fight started (aggro.lua), so a rare
+-- in a long running fight can be outside every route point's 100 m sphere and
+-- read as gone. What keeps that from turning into a duplicate is the other
+-- half of the leash: when the chase does end, leash_reset's evade snaps a rare
+-- that strayed further than its family radius straight back to `_grug_home` —
+-- its spawn point, which is ON the route. So the blind window lasts as long as
+-- one over-long fight and closes by itself, and rare_watch additionally
+-- requires a FULL respawn_max (2-4 h) of no sighting before it releases a
+-- respawn. Raising this to 300 instead would mean scanning a 300 m sphere
+-- three times per pass per rare, for a window that already closes.
 local SCAN_RADIUS = 100
 -- find_surface() returns the position it was GIVEN when it finds nothing
 -- (grug_core/init.lua:388) — an impossible input y makes that detectable.
@@ -265,6 +276,15 @@ local function try_spawn(id, spec, now)
 	-- every later activation is covered by the patch.
 	ent.object:set_properties({static_save = true})
 	grug_mobs.set_tier(ent, "rare")
+	-- ... and NOW the ground correction, a second time and deliberately AFTER
+	-- the promotion. set_tier scales a rare by x2 (levels.lua
+	-- apply_tier_visuals), which doubles the collisionbox — including its
+	-- negative floor. The lift add_mob already did used the NORMAL-tier box, so
+	-- a Korgan's Bane (golem, floor -1 -> -2) or a Silkfang (spider, -0.4 ->
+	-- -0.8) still ended up sunk by the difference. place_on_ground computes
+	-- from the ground position, not from where the mob stands, so this second
+	-- call simply lands it correctly with the box it actually has now.
+	grug_mobs.place_on_ground(ent.object, pos)
 	mark_alive(id, now)
 	broadcast(spec, pos)
 	core.log("action", "[grug_mobs] rare " .. spec.name .. " spawned at " ..

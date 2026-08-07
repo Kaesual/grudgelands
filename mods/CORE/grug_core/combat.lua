@@ -133,18 +133,29 @@ local SWITCH_INTERVAL = 0.25
 
 -- Hysteresis check: switch only when the best VALID rival exceeds 120% of
 -- the current target's threat (combat_stats §4 — no ping-pong).
-local function check_switch(mob_ent)
+-- `force` skips the throttle; only recheck_switch below passes it.
+local function check_switch(mob_ent, force)
 	local threat = mob_ent.temp and mob_ent.temp.grug_threat
 	if not threat or type(mob_ent.do_attack) ~= "function" then
 		return
 	end
-	-- Throttle (see above). Runtime-only key in the same temp table the
-	-- threat lives in, so it dies with the mob's activation.
+	-- Throttle (see above). Runtime-only keys in the same temp table the
+	-- threat lives in, so they die with the mob's activation.
 	local now = grug_core.mono_time()
-	if now - (mob_ent.temp.grug_switch_at or -math.huge) < SWITCH_INTERVAL then
+	if not force and
+			now - (mob_ent.temp.grug_switch_at or -math.huge) < SWITCH_INTERVAL then
+		-- The throttle is LEADING EDGE, so a suppressed call is not
+		-- necessarily a redundant one: the last hit of a burst is the one that
+		-- carries the most threat, and it is exactly the hit that can push a
+		-- rival past the 120 % hysteresis. Dropping it outright lost the switch
+		-- until whenever the next hit happened to land — which for a finished
+		-- cast sequence can be never. Park it instead; grug_mobs' 1 Hz mob tick
+		-- drains the flag through recheck_switch (aggro.lua leash_tick).
+		mob_ent.temp.grug_switch_pending = true
 		return
 	end
 	mob_ent.temp.grug_switch_at = now
+	mob_ent.temp.grug_switch_pending = nil
 	if mob_ent.state == "die" or (mob_ent.health or 1) <= 0 then
 		return
 	end
@@ -185,6 +196,21 @@ local function check_switch(mob_ent)
 	mob_ent:do_attack(best_obj, true)
 	-- A fresh target means fresh contact — the leash clock restarts.
 	mob_ent.temp.grug_last_contact = now
+end
+
+-- Trailing edge of the throttle above: run the parked target check once,
+-- ignoring the 0.25 s gate. Called once a second per mob from grug_mobs'
+-- do_custom tick (aggro.lua leash_tick), which is where our per-mob 1 Hz
+-- budget already lives — a mob with nothing parked pays one field read.
+-- The flag is cleared HERE and not only inside check_switch, so a mob that
+-- bails at check_switch's first guard (threat table cleared by a leash reset
+-- in the meantime) does not keep a stale flag forever.
+function grug_core.recheck_switch(mob_ent)
+	if not mob_ent or not mob_ent.temp or not mob_ent.temp.grug_switch_pending then
+		return
+	end
+	mob_ent.temp.grug_switch_pending = nil
+	check_switch(mob_ent, true)
 end
 
 -- Accumulate threat for one player on one mob, then re-check the target.
