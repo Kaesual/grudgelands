@@ -15,14 +15,22 @@ currency structure and the qualitative bands.
   renders `Xg Ys Zc`.
 - **No physical coin items in the MVP** — money is a counter; traders
   and NPCs adjust it. (Coin items as loot flavor: revisit later.)
-- **Vendor floor rule** (decided 2026-08-06): vendors sell only the
-  LOWEST tier of each item category (smallest bag, weak heal potion,
-  basic tools) — everything above is player-crafted
-  (`professions.md` §4).
+- **Vendor floor rule** (decided 2026-08-06, revised 2026-08-07):
+  vendors sell only the LOWEST tier of each item category (smallest bag,
+  weak heal potion, basic tools) — everything above is player-crafted
+  (`professions.md` §4). Revision: **the floor moves with the player**.
+  Gear comes in six **bracket catalogs** of 10 levels each, every
+  bracket offering what a normal mob of that bracket drops — Common, no
+  enchants, 10–15 % behind crafted gear of the same era
+  (`items_crafting.md` §3.8).
 
 ## 2. Price bands (qualitative)
 
 - Starter-zone items and trash loot: **a few copper**.
+- **Vendor gear rises ×1.4 per level bracket** (50c for the first
+  weapon, 269c for the last — `items_crafting.md` §8.2): buying the one
+  piece you are missing is affordable, outfitting fully at every bracket
+  costs about a quarter of the lifetime income and is meant to hurt.
 - High-tier weapons/armor pieces: **a few silver**.
 - Valuable rare items: **several silver — never a full gold**.
 - **A full gold is a fortune**, reserved for the big sinks: the deepest

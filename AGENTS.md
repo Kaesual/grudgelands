@@ -52,11 +52,12 @@ current state). It is **derived, never authoritative**:
 3. **WPs run autonomously on their own branch** (`wp<NN>-<slug>`) per
    the workflow contract in
    **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**:
-   Fable ONLY orchestrates (plan, per-task briefs, diff reads, final
-   integration gate — no implementing); Opus subagents build
-   everything, and **at least one full Opus code review per WP is
-   mandatory** (different agent than the implementer; checklist in the
-   workflow doc, incl. the `docs/research/luanti-lua.md` rules). Merge to main only after a
+   the orchestrator (Fable or Opus) ONLY orchestrates (plan, per-task
+   briefs, diff reads, final integration gate — no implementing); Opus
+   subagents build everything, and **at least one full Opus code review
+   per WP is mandatory** (different agent than the implementer;
+   checklist in the workflow doc, incl. the
+   `docs/research/luanti-lua.md` rules). Merge to main only after a
    clean review; every completion message ends with a runtime test plan
    for the user.
 4. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),

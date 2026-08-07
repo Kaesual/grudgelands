@@ -24,6 +24,11 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
   detached-inventory pattern originally sketched here); stat effects
   recompute on change.
+- **Level requirement enforced here** (2026-08-07): the same `allow_put`
+  filter rejects any item whose `grug_req_level` exceeds the character's
+  level and says so in chat (items_crafting.md §6.1). Rejecting the
+  equip is deliberate — letting the item sit in the slot without effect
+  would be an invisible failure.
 
 ## 3. Bags (WoW model, LotT implementation pattern)
 

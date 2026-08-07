@@ -46,6 +46,14 @@ bag, weak heal potion, basic tools); everything above is
 player-crafted. The harder the tier, the more social the supply chain.
 (Also anchored in economy.md §2/§3.)
 
+Revised 2026-08-07: the floor is not frozen at the starter set — it
+**moves with the player** through six bracket catalogs, each offering
+what a normal mob of that bracket drops (Common, no enchants, 10–15 %
+behind crafted gear of the same era, `items_crafting.md` §3.8). This
+does not weaken the crafting economy, it defines its lower edge: a
+player without access to a Tailor is clothed but visibly worse off, and
+every enchanted piece in the game still comes from a crafter or a boss.
+
 ## 5. Phase 2+
 
 - **Splits** (when population supports specialization): Blacksmith →

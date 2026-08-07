@@ -138,8 +138,12 @@ Two freely chosen main professions per character (Blacksmith,
 Leatherworker, Tailor, Alchemist, Herbalism, Gem Hunter) plus Cooking and
 First Aid for everyone. Currency is copper/silver/gold stored as one
 integer; **a full gold is a fortune**, reserved for guild founding,
-housing and mining claims. Vendors buy every mob drop but sell only the
-lowest tier of each category — everything above is player-crafted.
+housing and mining claims. Vendors buy every mob drop, but what they
+sell is a floor rather than a shop: six catalogs of ten levels each,
+offering roughly what a normal mob of that bracket drops — unenchanted
+and a step behind crafted gear, so nobody goes naked and nobody skips
+the crafters. Every item carries a level requirement, so gear you cannot
+use yet is loot to trade, not to wear.
 
 ### Guilds — [`guilds.md`](docs/design/guilds.md)
 

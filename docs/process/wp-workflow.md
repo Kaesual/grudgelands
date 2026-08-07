@@ -3,9 +3,12 @@
 Decided 2026-08-06. How a work package (WP) gets implemented
 autonomously. AGENTS.md links here; this file is the detailed contract.
 
-## Roles (revised 2026-08-06: Fable orchestrates only — credit budget)
+## Roles (revised 2026-08-06: the orchestrator orchestrates only)
 
-- **Fable = orchestrator, architect and judge — it does NOT implement.**
+The orchestrator may be Fable (cheaper) or Opus (stronger judgment on
+contested findings) — the role is the same either way; pick per WP.
+
+- **The orchestrator is architect and judge — it does NOT implement.**
   It reads the specs, writes the implementation plan (task
   decomposition, ordering, interfaces — mandatory for large WPs like
   mapgen reworks), authors a tight **per-task brief** for every

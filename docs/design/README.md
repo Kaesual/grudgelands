@@ -17,10 +17,10 @@ also AGENTS.md "Documentation layers"):
 |------|-------|--------|
 | `world.md` | Canonical names, two continents & ring difficulty, destructibility, ocean zones, capitals, outposts & apex bosses, housing isles, travel/Home Stone, races, settlements | **decided** (2026-08-07, housing rework; 2026-08-06 continent redesign) |
 | `combat_stats.md` | Attributes, player formulas, HP/damage curves, mob tiers & con colors, threat system, recovery, offhand & carried light | **decided** (2026-08-06) |
-| `items_crafting.md` | Full items/loot/crafting spec: tome chain, tier catalogs, race-exclusive recipes, loot zones, quality/enchant rolls, upgrades, prices | **decided** (2026-08-06) — feeds WP5/WP7/WP10/WP22 |
+| `items_crafting.md` | Full items/loot/crafting spec: tome chain, tier catalogs, race-exclusive recipes, loot zones, quality/enchant rolls, level requirements, vendor bracket catalogs, upgrades, prices | **decided** (2026-08-07: vendor brackets + `grug_req_level` scope; 2026-08-06 base) — feeds WP5/WP7/WP10/WP22 |
 | `inventory_equipment.md` | Character screen (sfinv pages), equipment slots, bags, and the 3×3 crafting model (recipe unlock + workbench proximity) | **decided** (2026-08-06) — feeds WP15/WP10/WP14 |
 | `classes.md` | Class kits: resources, damage pipeline, GCD & soft target lock, MVP abilities (skill trees follow with WP11) | **decided** (2026-08-06) |
-| `economy.md` | Currency structure, price bands, income streams, sinks (repair, respec), vendor floor | **decided** (2026-08-06); price tables: `items_crafting.md` §7 |
+| `economy.md` | Currency structure, price bands, income streams, sinks (housing depth ladder, repair, respec), moving vendor floor | **decided** (2026-08-07: housing sink + vendor brackets; 2026-08-06 base); price tables: `items_crafting.md` §8 |
 | `professions.md` | Profession structure, MVP roster, gathering split, leatherworker supply mechanic, vendor floor | **decided** (2026-08-06); recipes/materials: `items_crafting.md`; biome catalog: `biomes_mobs.md` |
 | `progression.md` | Leveling pace, reward cadence (talent points/capstones), death rules, quest structure | **partial** (2026-08-06): pace/cadence/death decided; quest structure open (before WP8/WP9) |
 | `story.md` | Main-quest premise (the Nether darkness), mirrored faction questlines, `min_level` gates, environmental storytelling | **decided** (2026-08-06) — premise only; quest content with WP8/WP9 |

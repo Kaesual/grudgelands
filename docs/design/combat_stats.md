@@ -41,8 +41,10 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor (gear) reduces incoming damage via armor_groups; endgame
   plate reaches the **60% reduction cap**, cloth ~15%.
-- Weapons carry a level requirement; weapon base damage ≈ 4 + 0.35×level
-  (level-60 weapon ≈ 25; itemization details → items/crafting design).
+- **Every equippable item carries a level requirement** (`grug_req_level`
+  = its ilvl; equipping below it is blocked — items_crafting.md §6.1);
+  weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
+  details → items/crafting design).
 - **Auto-attacks vs MOBS run this pipeline as of 2026-08-07**: holding
   the attack key is an auto-attack at the weapon's attack speed
   (`full_punch_interval`) — each accepted swing deals the full weapon

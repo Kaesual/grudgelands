@@ -314,11 +314,50 @@ slot pieces à la mcl_armor + effect hooks à la mcl_potions (both §1.2).
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.
-- **Vendor floor stock** (Common, ilvl ≤ 5): worn shortsword (dmg 4),
-  padded shirt set pieces (armor 2/1/1/1), small bag (8), weak healing
-  potion (15%), wooden/stone tools, bronze pick, torches, job supplies
-  (thread/flux/vial/parchment/whetstone blank). Everything above:
-  player-crafted (floor rule).
+- **Vendor stock**: the level-independent core (small bag, weak healing
+  potion, wooden/stone tools, bronze pick, torches, job supplies —
+  thread/flux/vial/parchment/whetstone blank) plus the **bracket
+  catalogs** of §3.8.
+
+### 3.8 Vendor bracket catalogs (decided 2026-08-07)
+
+Revises the old "one floor at ilvl ≤ 5" model. The vendor floor rule
+stands — vendors sell the lowest tier of each category — but **the floor
+moves with the player** instead of freezing at the starter set.
+
+- **Six catalogs, one per 10 levels**: 1–10, 11–20, 21–30, 31–40, 41–50,
+  51–60. A player sees their own bracket **and every bracket below**
+  (tabs in the trade formspec), so starter goods stay buyable and a new
+  shelf opens every 10 levels — a deliberate reward beat on a level
+  curve that otherwise only pays out talent points (progression.md §2).
+- **Binding strength rule**: *a bracket's gear is exactly what a normal
+  mob of that bracket drops — guaranteed, but expensive.* The floor, not
+  the ceiling. Item level per bracket **3 / 10 / 20 / 30 / 40 / 50**,
+  always **Common**, therefore always without enchants (§6.1).
+
+| Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
+|---|---|---|---|---|---|---|
+| ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
+| 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
+| vs. crafted tier of that era | — | T1 = 8 | T2 = 13 | T2 = 13 | T3 = 19 | T4 = 24 |
+
+  Vendor gear therefore sits **10–15 % behind crafted gear of the same
+  era and carries no enchants at all**, which keeps "better gear comes
+  from crafting or hard bosses" (§0) literally true. Rationale for
+  having the ladder at all: on a small server the crafter for your armor
+  class may simply not exist — the floor stops a player from going
+  naked, it does not compete.
+- **Rotation**: the core stock is fixed; each bracket additionally shows
+  a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
+  rotation in five carries a single Uncommon item**, rolled in the
+  **world window** (frac 0.00–0.60, §6.3 — the weakest rolls in the
+  game, strictly below crafted-fine's 0.30–0.80) and priced ×3. That is
+  the "today the trader had something good" moment, without a second
+  gear source.
+- Catalogs are **generated from the curves** of §3.1/§3.2, not authored
+  by hand — six brackets cost the same as three.
+- Race-exclusive vendors and the same-race discount (world.md §7) layer
+  on top of this unchanged.
 
 Every craft output carries `_grug_sell_price` with the **anti-loop rule:
 vendor value of a crafted item < summed vendor value of its
@@ -422,7 +461,17 @@ untouched). Faction NPC kills additionally drop war trophies (vendor
 
 Item meta: `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4 Unique-
 reserved), `grug_ench` = one serialized `{stat = value, …}` table (mcl
-pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`. Description
+pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`.
+
+**`grug_req_level` scope** (sharpened 2026-08-07): **every equippable
+item** carries it — weapons, armor, offhands, later trinkets — and it
+equals the item's ilvl. Equipping below the requirement is **blocked
+with a chat message**, enforced in the slots' group-filtered `allow_put`
+(inventory_equipment.md §2); "equips but grants nothing" was rejected as
+an invisible failure. Drops keep `ilvl = mob level` (§5), so gear above
+your level is lootable and tradeable, just not wearable yet — that is
+intended, and it is also what stops one level-60 friend from outfitting
+a level-5 character and flattening the entire ring progression. Description
 regenerated from meta on every change (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant). Attack speed applies via `tool_capabilities.
@@ -528,6 +577,24 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
 | Wood & stone tools / bronze pick | 5–15c / 40c |
 | Apprentice tome (any profession) | 25c |
 | Replacement tome T2 / T3 / T4 | 1s / 3s / 10s |
+| Dowsing Rod (housing cluster finder, world.md §5.4) | 15c |
+
+**Bracket gear ladder** (§3.8, decided 2026-08-07): the bracket-1 prices
+above are the anchor and every further bracket costs **×1.4**; chest =
+0.8 × weapon, every other piece = 0.5 × weapon.
+
+| Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
+|---|---|---|---|---|---|---|
+| Weapon | 50c | 70c | 98c | 137c | 192c | 269c |
+| Chest | 40c | 56c | 78c | 110c | 154c | 215c |
+| Other piece | 25c | 35c | 49c | 69c | 96c | 134c |
+| Full set | 165c | 231c | 323c | 454c | 634c | 886c |
+
+Outfitting completely from vendors in **every** bracket costs ≈ **27s**,
+about a quarter of the lifetime income to 60 (§8) — affordable
+selectively, deliberately painful as a habit. That pressure is what
+keeps drops and crafting primary; the rotating Uncommon at ×3 is priced
+as a luxury, not as an upgrade path.
 
 ### 8.3 Recurring sinks
 
