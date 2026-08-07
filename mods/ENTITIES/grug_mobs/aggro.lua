@@ -271,6 +271,11 @@ function grug_mobs.leash_tick(self, dtime)
 		return
 	end
 	t.grug_leash_acc = 0
+	-- Nametag proximity gate (levels.lua, combat_stats §6). First in the slot
+	-- and BEFORE every early return below: it has nothing to do with leashing
+	-- or threat, and a no-leash mob (zombie, kraken) needs the same culling as
+	-- everyone else.
+	grug_mobs.tag_gate_tick(self)
 	-- Trailing edge of grug_core's 0.25 s check_switch throttle: run a target
 	-- re-evaluation that the throttle parked, so the last (heaviest) hit of a
 	-- burst cannot lose a legitimate switch. Deliberately BEFORE the no-leash

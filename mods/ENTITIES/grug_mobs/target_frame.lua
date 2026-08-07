@@ -3,12 +3,23 @@
 --
 -- The global nametag (levels.lua) is viewer-independent and cannot be
 -- colored per player, so the "how dangerous is this to ME" signal lives in
--- a HUD line instead: the mob the player is LOOKING at, colored relative to
--- the viewer's own level.
+-- a HUD line instead: the thing the player is LOOKING at, colored relative
+-- to the viewer.
 --
+-- MOBS — con color against the viewer's own level:
 --   mob <= L-10  gray   (gray kill: no XP)
 --   L-10 < mob <= L  green
 --   mob > L      red
+--
+-- PLAYERS — "<Name> — <The Faction>", colored by RELATION to the viewer:
+--   same faction   green
+--   enemy faction  red
+--   either side factionless  gray
+-- This is not a bonus feature: player nametags are hidden entirely
+-- (grug_factions, combat_stats §6 — any floating name is a PvP tell through
+-- walls), so the frame IS the identification mechanism for players. The
+-- colors are the same three, deliberately: one palette, one meaning
+-- ("green = safe for me, red = a problem, gray = nothing at stake").
 --
 -- Being punched by a mob deliberately does not open the frame (MVP:
 -- looking is enough).
@@ -38,11 +49,25 @@ local function con_color(mob_level, player_level)
 	return COLOR_RED
 end
 
--- First grug mob on the player's look ray. Walkable nodes block the view
--- (no targeting through walls); plants/grass do not, so a mob standing in
--- tall grass stays targetable. Non-mob objects (arrows, item drops) are
--- skipped rather than blocking.
-local function looked_at_mob(player)
+-- Relation of a framed PLAYER to the viewer. Factionless on either side is
+-- gray: a character who has not picked a side yet is neither friend nor foe
+-- (the same reading grug_factions.hostile/same_faction use).
+local function relation_color(viewer_faction, target_faction)
+	if not viewer_faction or not target_faction then
+		return COLOR_GRAY
+	elseif viewer_faction == target_faction then
+		return COLOR_GREEN
+	end
+	return COLOR_RED
+end
+
+-- First framable thing on the player's look ray: one of our mobs (returns the
+-- luaentity) or another player (returns the ObjectRef — tell them apart with
+-- core.is_player, which is safe on a plain table). Walkable nodes block the
+-- view (no targeting through walls); plants/grass do not, so a target standing
+-- in tall grass stays framable. Everything else on the ray (arrows, item
+-- drops, dead things) is skipped rather than blocking.
+local function looked_at_target(player)
 	local pos = player:get_pos()
 	if not pos then
 		return nil
@@ -58,10 +83,17 @@ local function looked_at_mob(player)
 				return nil
 			end
 		elseif pointed.type == "object" and pointed.ref ~= player then
-			local ent = pointed.ref:get_luaentity()
-			-- _grug_level marks an initialized mob of ours (levels.lua).
-			if ent and ent._grug_level and (ent.health or 0) > 0 then
-				return ent
+			local ref = pointed.ref
+			if ref:is_player() then
+				if ref:get_hp() > 0 then
+					return ref
+				end
+			else
+				local ent = ref:get_luaentity()
+				-- _grug_level marks an initialized mob of ours (levels.lua).
+				if ent and ent._grug_level and (ent.health or 0) > 0 then
+					return ent
+				end
 			end
 		end
 	end
@@ -69,9 +101,23 @@ local function looked_at_mob(player)
 end
 
 local function update(player, frame)
-	local mob = looked_at_mob(player)
+	local target = looked_at_target(player)
 	local text, color = "", COLOR_RED
-	if mob then
+	if target and core.is_player(target) then
+		-- Name plus faction, because the name alone no longer tells you
+		-- whether you are looking at an ally. A factionless target gets the
+		-- bare name — there is no faction to print, and gray already says it.
+		local faction = grug_factions.get_faction(target)
+		color = relation_color(grug_factions.get_faction(player), faction)
+		text = target:get_player_name()
+		local label = grug_factions.display_name(faction)
+		if label then
+			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
+			-- (luanti-lua.md).
+			text = text .. " — " .. label
+		end
+	elseif target then
+		local mob = target
 		color = con_color(mob._grug_level, grug_xp.get_level(player))
 		text = grug_mobs.tag_text(mob)
 		if color == COLOR_GRAY then

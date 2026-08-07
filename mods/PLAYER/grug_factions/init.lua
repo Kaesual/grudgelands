@@ -30,6 +30,32 @@ function grug_factions.get_faction_def(player)
 	return id and grug_core.factions[id] or nil
 end
 
+-- Canonical UI form of a faction id: "The Accord" / "The Throng". world.md §0
+-- keeps the bare noun for prose and reserves the full form for titles and UI
+-- labels, and `grug_core.factions[id].name` stores the bare noun — so every
+-- label builds the article here instead of concatenating it locally.
+-- Returns nil for nil/unknown ids (factionless is a valid state).
+function grug_factions.display_name(id)
+	local def = id and grug_core.factions[id]
+	return def and ("The " .. def.name) or nil
+end
+
+--
+-- Player nametags are hidden ENTIRELY (combat_stats.md §6): unlike an entity
+-- tag there is no distance at which a floating player name is acceptable — it
+-- renders through walls and darkness out to the object-send range and is a
+-- free PvP tell. Identification is the target frame's job (grug_mobs).
+--
+-- Alpha 0 is the ONLY mechanism that works for players: an empty nametag
+-- string falls back to the player's name for player objects
+-- (lua_api.md:10109-10111 — "a nil or empty nametag is replaced by the
+-- player's name ... To hide a nametag, set its color alpha to zero"), and
+-- nametag_bgcolor's alpha would only drop the plate behind the text.
+-- Precedent: Lord-of-the-Test lottother/rings/rings.lua:246 (the One Ring).
+local function hide_nametag(player)
+	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}})
+end
+
 -- Faction resolver for grug_core (protection rules); only online players can
 -- be resolved, everyone else counts as factionless.
 function grug_core.get_player_faction(name)
@@ -79,7 +105,10 @@ function grug_factions.set_faction(player, id)
 		return false
 	end
 	player:get_meta():set_string(META_FACTION, id)
-	player:set_nametag_attributes({color = def.color})
+	-- Not a faction COLOR on the nametag any more (see hide_nametag): a
+	-- colored tag is still a tag. Re-asserted here so an admin /faction set
+	-- can never bring a visible name back.
+	hide_nametag(player)
 
 	local meta = player:get_meta()
 	if meta:get_int(META_KIT) == 0 then
@@ -184,10 +213,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 core.register_on_joinplayer(function(player)
+	-- Unconditionally, factionless included: nametag attributes are per
+	-- session, not persisted, so this is the one place that has to run.
+	hide_nametag(player)
 	local def = grug_factions.get_faction_def(player)
-	if def then
-		player:set_nametag_attributes({color = def.color})
-	else
+	if not def then
 		local name = player:get_player_name()
 		core.after(1, function()
 			local p = core.get_player_by_name(name)

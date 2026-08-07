@@ -70,6 +70,77 @@ end
 -- Nametag (combat_stats.md §6): global, viewer-independent, neutral white.
 -- Con colors are per viewer and live in the HUD target frame instead.
 --
+-- PROXIMITY GATE (combat_stats.md §6, decided 2026-08-07): the engine has no
+-- distance cull for nametags — every active object's tag is rendered out to
+-- the ~128 m object-send range, which over a dense mob field is pure clutter.
+-- So we cull ourselves: a mob's tag is applied only while a player is within
+-- SHOW_RANGE and dropped again beyond HIDE_RANGE. The 4 m band is hysteresis:
+-- without it a mob loitering exactly at the edge would flip the property once
+-- a second, and a property write is a client resend for every observer.
+--
+-- The gate is GLOBAL (nearest player), not per viewer — the engine cannot do
+-- per-viewer nametags at all. 20 m matches the target frame's reach: what you
+-- can frame, you can read.
+--
+
+local TAG_SHOW_D2 = 20 * 20
+local TAG_HIDE_D2 = 24 * 24
+
+--
+-- Cached player positions: ONE globalstep for the entire mob population.
+--
+-- Every mob's 1 Hz gate check reads this array instead of calling
+-- core.get_connected_players() itself (which builds a fresh table of
+-- ObjectRefs per call — with a few hundred active mobs that is hundreds of
+-- table allocations a second for a question that has the same answer for all
+-- of them). Slots are reused, so a steady player count allocates nothing.
+--
+-- Refreshed at the same 1 Hz cadence as the gate; the hysteresis band above
+-- absorbs the staleness (a sprinting player covers well under 4 m/s).
+--
+local player_pos = {} -- reused position slots, valid up to player_count
+local player_count = 0
+
+local SNAPSHOT_INTERVAL = 1 -- s (AGENTS performance rule: accumulator)
+local snapshot_acc = 0
+
+core.register_globalstep(function(dtime)
+	snapshot_acc = snapshot_acc + dtime
+	if snapshot_acc < SNAPSHOT_INTERVAL then
+		return
+	end
+	snapshot_acc = 0
+	local players = core.get_connected_players()
+	local n = 0
+	for i = 1, #players do
+		local pos = players[i]:get_pos()
+		if pos then
+			n = n + 1
+			local slot = player_pos[n]
+			if slot then
+				slot.x, slot.y, slot.z = pos.x, pos.y, pos.z
+			else
+				player_pos[n] = {x = pos.x, y = pos.y, z = pos.z}
+			end
+		end
+	end
+	player_count = n
+end)
+
+-- Squared distance to the nearest cached player, or nil when nobody is
+-- connected. Squared throughout — no sqrt in a per-mob-per-second loop.
+local function nearest_player_d2(pos)
+	local best
+	for i = 1, player_count do
+		local p = player_pos[i]
+		local dx, dy, dz = pos.x - p.x, pos.y - p.y, pos.z - p.z
+		local d2 = dx * dx + dy * dy + dz * dz
+		if not best or d2 < best then
+			best = d2
+		end
+	end
+	return best
+end
 
 function grug_mobs.tag_text(self)
 	local hp_max = self.hp_max or 0
@@ -97,6 +168,18 @@ end
 -- reach us: check_for_death (api.lua:830) calls update_tag on EVERY health
 -- change, which is exactly the "update on damage" requirement — no polling
 -- and no throttle needed, and no write happens unless the text changed.
+--
+-- TWO SEPARATE THINGS, and mixing them up is the bug to avoid here:
+--   * `_grug_tag` is the DESIRED text. It is kept current on every health
+--     change, telegraph edge and tier promotion, whether or not anyone can
+--     see the mob — that is what makes the tag correct the instant the gate
+--     opens, with no polling.
+--   * `temp.grug_tag_shown` is what is actually APPLIED to the object.
+--     While it is false the property is left alone: a mob being fought out
+--     of tag range costs zero property writes no matter how much damage it
+--     takes.
+-- tag_gate_tick below is the only place that flips the second one, and it
+-- re-applies the current desired text on the rising edge.
 local function update_tag(self)
 	if not self.object then
 		return
@@ -106,9 +189,59 @@ local function update_tag(self)
 		return
 	end
 	self._grug_tag = text
+	if not (self.temp and self.temp.grug_tag_shown) then
+		return -- hidden: cache the desired text, touch no property
+	end
 	self.object:set_properties({nametag = text, nametag_color = "#ffffff"})
 end
 grug_mobs.update_tag = update_tag
+
+-- Proximity gate, called once a second per mob from grug_mobs.leash_tick
+-- (aggro.lua) — THE per-mob 1 Hz slot, deliberately reused instead of opening
+-- a second accumulator. Exactly one set_properties per state flip and none in
+-- between; a mob that never comes near a player never writes at all.
+--
+-- The shown flag lives in self.temp, i.e. runtime only: a freshly activated
+-- mob starts out "hidden", which is also the truth for its fresh object (the
+-- nametag property defaults to ""), and the next tick re-evaluates.
+function grug_mobs.tag_gate_tick(self)
+	local obj = self.object
+	if not obj then
+		return
+	end
+	local t = self.temp
+	local shown = t.grug_tag_shown == true
+	local pos = obj:get_pos()
+	local d2 = pos and nearest_player_d2(pos)
+	local visible
+	if not d2 then
+		visible = false -- nobody connected
+	elseif d2 < TAG_SHOW_D2 then
+		visible = true
+	elseif d2 > TAG_HIDE_D2 then
+		visible = false
+	else
+		return -- inside the hysteresis band: keep whatever state we are in
+	end
+	if visible == shown then
+		return
+	end
+	t.grug_tag_shown = visible
+	if visible then
+		-- Rising edge: the desired text may have changed any number of times
+		-- while hidden (update_tag kept `_grug_tag` current without writing),
+		-- and the property may hold a stale text or "" — so write it out
+		-- unconditionally rather than going through update_tag's change guard.
+		local text = grug_mobs.tag_text(self)
+		self._grug_tag = text
+		obj:set_properties({nametag = text, nametag_color = "#ffffff"})
+	else
+		-- An empty nametag removes the tag for non-player objects
+		-- (lua_api.md:10110). Players need the alpha-0 trick instead — see
+		-- grug_factions.
+		obj:set_properties({nametag = ""})
+	end
+end
 
 --
 -- Stat application
@@ -279,7 +412,10 @@ function grug_mobs.ensure_init(self)
 		-- Function fields never reach staticdata -> re-install on every
 		-- activation. The cached tag text IS a plain field and survives,
 		-- while the fresh object's nametag property does not: drop the
-		-- cache so the tag is written once for the new object.
+		-- cache so the desired text is recomputed for the new object.
+		-- Nothing is written here — the fresh object starts out hidden
+		-- (temp is empty) and the first tag_gate_tick within a second
+		-- decides whether anyone is close enough to see it.
 		self.update_tag = update_tag
 		self._grug_tag = nil
 		update_tag(self)
