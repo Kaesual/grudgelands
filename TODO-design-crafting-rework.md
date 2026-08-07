@@ -342,73 +342,83 @@ before WP5 writes it.
 
 ### B7 — Rock-stratum node names and textures (six strata)
 
-`items_crafting.md` §3.0.4 and `world.md` §2 R6 decide the **mechanism**
-(six strata, boundaries −100 / −300 / −500 / −700 / −1000 / bedrock, node
-group `level` against the tool's `groupcaps.<group>.maxlevel`, a hard
-engine refusal per `lua_api.md:2722`) and point here for the **content**.
+**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.4
+(the stratum table with names, bands, `level`s and textures, the
+re-parameterised pick `maxlevel`s, the placement rule, the cobble drop,
+the `grug_stratum` group and `cracky = 3`) and `world.md` §2 R6 (the
+world rule: node names, cobble drop, cave walls). The reasoning stays
+here; the rules and numbers live there.
 
-Open: six node names, six textures, how they are placed, and what they
-drop.
+What the decision actually turned on, and would be expensive to
+re-derive:
 
-Sub-questions that have to be answered together:
+- **`default:stone` is kept as the T1 stratum**, so there are six strata
+  but only five new nodes. A separate T1 node would have had to be
+  dragged through the mapgen filler, the cobble source, the `wherein` of
+  every ore registration and several recipes — for nothing.
+- **Placement is `register_ore{ore_type = "stratum"}`, not a
+  `grug_mapgen` y-band VoxelManip pass**, and the strata are registered
+  **last**. In mgv7 the ore stage runs *after* cave generation and
+  before the dungeons (`mapgen_v7.cpp:335/355/359`) and registration
+  order is placement order — so **cave walls inherit their stratum for
+  free**. That was the real question in this item: plain-stone cave
+  walls would have made every deep cave a bypass for a level-10 player.
+  The VoxelManip route would have had to re-solve the cave problem by
+  hand.
+- **Six `level` steps need six `maxlevel` steps**, and `default` ships
+  only three — hence the `core.override_item` pass over the vendored
+  picks (`default` stays unpatched, VENDOR.md). Accepted side effect:
+  bronze stops breaking obsidian. **T2 has no tool of its own until
+  WP26/WP29**; the steel pick spans T2+T3 and iron lies in the T1 band,
+  so the ladder is walkable to −500 with today's item set.
+- The isle generator cannot ride on the ore stage (`register_ore` only
+  runs in the mapgen), so it asks `grug_materials.stratum_node_for(y)`
+  instead — that is the WP24 interface (`world.md` §5.3).
 
-- **Placement.** A `level` group is part of a node *definition*, so one
-  `default:stone` cannot be tier-1 at −50 and tier-4 at −600 — the six
-  strata must be six distinct nodes. Placement is then either a y-band
-  pass in `grug_mapgen` (the WP18 VoxelManip pattern in
-  `structures.lua`) or six `register_ore` "stratum"/"sheet" layers.
-- **Drops.** Every stratum must still drop ordinary cobble, or the
-  build economy of `world.md` §2 dies at −100. The gate is meant to be
-  about *access*, not about building material.
-- **Caves, dungeons and the mgv7 stratum machinery** cut through these
-  bands; decide whether cave walls inherit the stratum node (consistent,
-  and it gates deep cave mining the same way) or stay plain stone (a
-  free bypass — a level-10 player walking a deep cave would mine T5
-  ore).
-- **Isles**: `world.md` §5.3 makes the isle's rock the same six layers,
-  so whatever is chosen has to work in the isle generator too (WP24).
+Rejected: a separate T1 stratum node; the y-band VoxelManip pass; six
+hand-made 16px textures (Phase 3 work — `^[colorize` on
+`default_stone.png` was taken instead); and reusing `default`'s existing
+stone family (stone / desert_stone / sandstone), which already carries
+biome meaning and would have made depth and biome say the same thing.
 
-Options for textures: **(a)** six colourised variants of
-`default_stone.png` via `^[colorize` — no art, and the depth shift reads
-immediately; **(b)** six hand-made 16px textures in `grug_nodes`
-(Phase 3 work); **(c)** reuse `default`'s existing stone family
-(stone / desert_stone / sandstone / …) — rejected: they carry biome
-meaning already and would make depth and biome say the same thing.
-
-Recommendation: six nodes in `grug_nodes`, placed by a y-band pass,
-dropping `default:cobble` uniformly, cave walls **inheriting** the
-stratum, and **(a)** for textures until Phase 3.
-
-*Lands in*: `items_crafting.md` §3.0.4 (name table), `world.md` §2 R6.
-**Decision:** _open_ — **blocks the material-ladder WP** and, through
-`world.md` §5.3, part of WP24.
+*Landed in*: `items_crafting.md` §3.0.4, `world.md` §2 R6/§5.3.
 
 ### B8 — Quartz and Garnet: depth placement and scarcity
 
-`items_crafting.md` §3.0.1 places **Quartz** in T2 (−100 … −300,
-"new, common") and **Garnet** in T4 (−500 … −700), and points here for
-the exact numbers. **Silver** (T4 lead metal) needs the same treatment
-and should be authored in the same pass.
+**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.1
+(the ore placement table — bands, `clust_scarcity`, `clust_num_ores`,
+`clust_size` — plus the band rule, the ore `level` rule and the Abyssal
+Crystal placement). Silver, iron and Emberstone were authored in the
+same pass. The reasoning stays here; the numbers live there.
 
-Open: `register_ore` parameters per gem — `clust_scarcity`,
-`clust_num_ores`, `clust_size`, `y_min`/`y_max`, and whether they follow
-the existing pattern in `mods/MAPGEN/grug_mapgen/ores.lua`.
+What the decision turned on:
 
-The constraint that decides the numbers: **gems are a reagent, not a
-rarity.** §6.4 makes "+1 cut gem" the cost of every *fine* recipe in the
-game, across all six professions, and §2.3's T4 keystone costs 3 gems.
-Quartz therefore has to be common enough that a Journeyman can put an
-affix on something without a mining expedition per item; Garnet sits one
-band deeper and can be scarcer.
+- **The band rule**: a lead metal lies one band *above* its own tier, a
+  gem in its own band — otherwise a tier-n tool would be needed to reach
+  the material a tier-n tool is made of. It also settles how §3.0.1's
+  "Digging depth" column reads: it is a *tool* depth, not a find depth.
+- **The iron deadlock**, found while checking the rule against the
+  vendored ores: iron starts at −128, i.e. *below* the T2 stratum that
+  already demands an iron or steel pick. The new −1 … −100 iron band is
+  a deadlock fix, not tuning.
+- **The ore `level` leak**, found while checking B7's cave-wall
+  inheritance: if an ore carried the `level` of its own tier, a cave at
+  −600 would expose Silver to any bronze pick. Fixed by giving an ore
+  the `level` of the *band* it lies in — an ore is exactly as hard as
+  the rock around it — which does not deadlock anything, because the
+  band rule already put the metal one tier shallower.
+- **Calibration** stays what it was: gems are a reagent, not a rarity
+  (§6.4 spends one on every fine recipe), so Quartz sits at iron's
+  density and Garnet at copper's. Re-tune against §2.4 after the first
+  runtime test rather than on paper (pattern:
+  `docs/research/wp6_spawn_budget.md`).
+- **Abyssal Crystal gets no continental deposit at all** — WP25
+  registers node and item, WP24 (isle treasure clusters) and WP23 (the
+  10 % dragon hoard) place them. That keeps §3.0.2's binding statement
+  literally true: Grudgesteel needs the level-30 isle grant and its
+  deepest depth step.
 
-Recommendation: Quartz at roughly iron's scarcity inside its band,
-Garnet at roughly copper's inside its band (i.e. clearly rarer than the
-tier's lead metal but not diamond-rare), Silver at its band's iron-like
-rate. Verify against §2.4's pacing after the first runtime test rather
-than deriving it on paper.
-
-*Lands in*: `items_crafting.md` §3.0.1 (a scarcity column).
-**Decision:** _open_ — **blocks the material-ladder WP**.
+*Landed in*: `items_crafting.md` §3.0.1.
 
 ### B9 — `grug_core.open_sea_at` starts open sea 3200 nodes out
 
@@ -895,8 +905,8 @@ reachable on both continents (`biomes_mobs.md` §6).
 | A4 | T5/T6 keystones + Woodcarver/Goldsmith rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
-| B7 | Rock-stratum node names & textures | **material ladder**, WP24 |
-| B8 | Quartz/Garnet/Silver depth & scarcity | **material ladder** |
+| B7 | ~~Rock-stratum node names & textures~~ — **decided 2026-08-08**: five new nodes below `default:stone`, placed as stratum ores registered last (`items_crafting.md` §3.0.4, `world.md` §2 R6) | — (WP25 and WP24's isle rock are design-unblocked) |
+| B8 | ~~Quartz/Garnet/Silver depth & scarcity~~ — **decided 2026-08-08**: ore bands, scarcities and the ore `level` rule (`items_crafting.md` §3.0.1) | — |
 | B9 | `open_sea_at` boundary fix | **WP24**, mounts WP |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |

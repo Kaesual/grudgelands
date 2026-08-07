@@ -174,6 +174,16 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   isles**: on the continent the tool tier alone gates you, on an isle
   you need the tool tier **and** the purchased depth step (§5.3). The
   six tiers and their materials live in `items_crafting.md`.
+  - The strata are, top to bottom, **`default:stone` (T1 — the ordinary
+    world stone *is* the first stratum, no new node), then
+    `grug_materials:slate`, `:basalt`, `:granite`, `:emberrock` and
+    `:abyssal_rock`** down to bedrock.
+  - **Every stratum drops ordinary cobble.** The gate is about *access*,
+    not about building material — the build economy of this section does
+    not end at −100.
+  - **Cave walls inherit their stratum**, so a deep cave is not a free
+    bypass: walking into a cave at −600 does not hand a low-level
+    character rock or ore they could not have dug from above.
 - **No per-player land claims in the MVP**: open-world builds are "at
   your own risk"; the protected build space is your own housing isle
   (§5). Revisit only if griefing becomes a real problem.
@@ -432,6 +442,12 @@ cap. Bought steps are permanent.
 
 This price table is the same one in `economy.md` §4.1 and
 `items_crafting.md` §8.4 — the three must not drift apart.
+
+The isle is built by a VoxelManip pass, which does not get the strata
+for free the way the continent does (they ride on the mapgen's ore
+stage, §2 R6) — the generator asks
+`grug_materials.stratum_node_for(y)` for the rock of a depth and places
+it itself, so the two ladders cannot drift apart.
 
 ### 5.4 What is down there: treasure clusters, not a mine
 

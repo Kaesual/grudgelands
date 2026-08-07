@@ -390,9 +390,64 @@ because under §3.0.3 they are the same items.
   P5), so Grudgesteel needs the level-30 isle grant and its deepest depth
   step (§8.4). That is intended: T6 is the endgame tier and the depth
   ladder is the endgame sink; the five tiers below it are entirely
-  continental.
-- **Exact depth placement and scarcity of Quartz and Garnet** inside
-  their bands are in `TODO-design-crafting-rework.md`.
+  continental. **Abyssal Crystal therefore has no continental deposit at
+  all**: the ore node (`level = 5`) and its item exist, but the only
+  things that place them are the isle treasure clusters of the purchased
+  depth step (`world.md` §5.4, WP24) and the 10 % dragon hoard (§10 P5,
+  WP23). WP25 only registers the node
+  (`grug_materials:abyssal_crystal_ore`) and the item
+  (`grug_materials:abyssal_crystal`).
+- **The "Digging depth" column is a *tool* depth, not a find depth.** It
+  names the band that this tier's own pick unlocks (§3.0.4), not the band
+  its material lies in. Where the ores actually sit is the placement
+  table below.
+- **Binding: a lead metal lies one band *above* its own tier, a gem lies
+  in its own band.** Otherwise a tier-n tool would be needed to reach the
+  material a tier-n tool is made of. Iron (T2 metal) is mined in the T1
+  band, Silver (T4) in the T3 band, Emberstone (T5) in the T4 band; the
+  gems Quartz, Garnet and Diamond sit in the T2, T4 and T6 bands they
+  belong to, and a gem is always reachable by the pick of its own tier.
+
+Ore placement (decided 2026-08-08). `clust_scarcity` is the
+`register_ore` volume, i.e. one cluster per that many nodes:
+
+| Ore | Role | Band (y) | `clust_scarcity` | `clust_num_ores` | `clust_size` |
+|---|---|---|---|---|---|
+| Iron (new shallow band) | T2 metal | −1 … −100 | 10³ | 5 | 3 |
+| Quartz | T2 gem | −101 … −300 | 8³ | 6 | 3 |
+| Silver | T4 metal | −301 … −500 | 9³ | 5 | 3 |
+| Garnet | T4 gem | −501 … −700 | 10³ | 4 | 3 |
+| Emberstone | T5 metal | −501 … −700 | 12³ | 4 | 3 |
+| Emberstone (deep) | T5 metal | −701 … −31000 | 14³ | 5 | 3 |
+| Diamond | T6 gem | −1001 … −31000 | 15³ | 4 | 3 |
+
+- Copper, tin, coal and gold keep their vendored `default` placement
+  unchanged.
+- The three new ore nodes are `grug_materials:stone_with_quartz`,
+  `:stone_with_silver` and `:stone_with_garnet`, dropping
+  `grug_materials:quartz_crystal`, `:silver_lump` and `:garnet_crystal`.
+  Emberstone stays the vendored `default:stone_with_mese` (renamed, not
+  re-registered) and Diamond stays `default:stone_with_diamond`. WP26's
+  alloy recipes consume exactly these names.
+- **The iron band is a deadlock fix, not tuning.** Vendored iron starts
+  at −128, i.e. *below* the T2 stratum that already demands an iron or
+  steel pick. Without an iron deposit above −100 the ladder is blocked
+  shut at T2.
+- **Calibration** ("reagent calibration"): Quartz at iron's density,
+  Garnet at copper's, Silver denser than Garnet — because §6.4 makes one
+  cut gem the cost of *every* fine recipe, a gem is a reagent, not a
+  rarity. Re-tune against §2.4 after the first runtime test rather than
+  deriving it on paper (pattern: `docs/research/wp6_spawn_budget.md`).
+- **An ore node carries the `level` of the band it lies in, not of its
+  own tier** — an ore is exactly as hard as the rock around it. This
+  closes the cave leak (a cave at −600 would otherwise expose Silver to
+  any bronze pick) without creating a deadlock: Silver is a T4 metal but
+  lies in the T3 band, carries `level = 2` and is therefore the steel
+  pick's prey, exactly as intended. Concretely: Quartz `level = 1`,
+  Silver `2`, Garnet `3`, Emberstone (`default:stone_with_mese`) `3`,
+  Diamond `5`, Abyssal Crystal `5`. Copper, tin, coal, iron and gold get **no** `level` — they are not
+  gate-relevant and the rock around them is the gate. **An ore may never
+  carry a higher `level` than the stratum it lies in.**
 
 #### 3.0.2 Alloys and the two-slot furnace
 
@@ -467,9 +522,75 @@ The vendored `default` already uses the mechanism in both directions —
 its tools declare `maxlevel` 1/1/2/2/3/3 up the ladder
 (`mods/BASE/default/tools.lua`) and its hardest nodes carry
 `groups = {cracky = 1, level = 2}` — so the six strata are a
-re-parameterisation of a live system, not new engine work. Six strata,
-one per tier, their node names and textures listed in
-`TODO-design-crafting-rework.md`.
+re-parameterisation of a live system, not new engine work.
+
+Six strata, one per tier — but only **five new nodes**, because
+**`default:stone` *is* the T1 stratum** (`level` 0, unchanged). It is the
+mapgen filler, the cobble source, the `wherein` of every ore
+registration and an ingredient in several recipes; a separate T1 node
+would have had to drag all of that along for no gain.
+
+| Tier | Band (y, inclusive) | Node | Description | `level` | Texture |
+|---|---|---|---|---|---|
+| T1 | ≥ −100 | `default:stone` | Stone | 0 | unchanged |
+| T2 | −101 … −300 | `grug_materials:slate` | Slate | 1 | `default_stone.png^[colorize:#4a5a6e:70` |
+| T3 | −301 … −500 | `grug_materials:basalt` | Basalt | 2 | `default_stone.png^[colorize:#2a2a2e:90` |
+| T4 | −501 … −700 | `grug_materials:granite` | Granite | 3 | `default_stone.png^[colorize:#8a5a52:60` |
+| T5 | −701 … −1000 | `grug_materials:emberrock` | Emberrock | 4 | `default_stone.png^[colorize:#7a2a10:90` |
+| T6 | −1001 … −31000 | `grug_materials:abyssal_rock` | Abyssal Rock | 5 | `default_stone.png^[colorize:#241830:150` |
+
+- **Naming**: real rock up to T4, flavour for T5/T6 — the two deepest
+  strata are named after the resource that lives in them (Emberstone T5,
+  Abyssal Crystal T6), so a player can read the tier off the wall.
+- **Textures** are engine texture modifiers (`^[colorize`) on
+  `default_stone.png`, no own art. Hand-made 16px textures stay Phase-3
+  work.
+- **Every stratum drops `default:cobble`.** The gate is *access*, not
+  building material (`world.md` §2).
+- **Placement**: five `core.register_ore{ore_type = "stratum",
+  clust_scarcity = 1, wherein = "default:stone"}` without noise
+  parameters, registered **last of all ores**. In mgv7 ores run after
+  cave generation and before the dungeons
+  (`mapgen_v7.cpp:335/355/359`), and registration order is placement
+  order.
+- **Cave walls inherit their stratum** — they fall out of that order for
+  free, and that was the actual question: otherwise every deep cave
+  would be a free bypass for a level-10 player.
+- **Group `grug_stratum = <tier>`** on every stratum as the dispatch
+  group. `stone = 1` is deliberately absent: `default:furnace` and the
+  stone-tool recipes take `group:stone`, and an abyssal-rock wall must
+  not be furnace material.
+- **`cracky = 3` on all six** — the gate is the hard refusal via `level`,
+  not a slower dig.
+- **Isles**: the same ladder applies on the housing isles (`world.md`
+  §5.3). The stratum node for a depth is obtained through
+  `grug_materials.stratum_node_for(y)`; that is the interface WP24's isle
+  generator uses, because a VoxelManip pass does not get the strata for
+  free (`register_ore` only runs in the mapgen).
+
+Six `level` steps need six `groupcaps.cracky.maxlevel` thresholds and
+`default` ships only three, so the vendored picks are re-parameterised
+via `core.override_item` (`default` stays unpatched, VENDOR.md). Picks
+only — strata are `cracky` and nothing else.
+
+| Tool | `maxlevel` | Role |
+|---|---|---|
+| `default:pick_wood` | 0 | T1 |
+| `default:pick_stone` | 0 | T1 |
+| `default:pick_bronze` | 0 | T1 (bronze *is* T1) |
+| `default:pick_steel` | 2 | T3, unchanged |
+| `default:pick_mese` | 4 | temporary test bridge |
+| `default:pick_diamond` | 5 | temporary test bridge |
+
+- Accepted side effect: bronze no longer breaks obsidian (which carries
+  `level = 2`), steel still does.
+- **T2 has no tool of its own today** — the iron pick arrives with
+  WP26/WP29. The steel pick (maxlevel 2) covers T2 *and* T3, and iron
+  lies in the T1 band, so the ladder is walkable end to end: with today's
+  item set a player digs to −500, and T4 upward opens with WP26/WP29.
+- The mese and diamond picks are unreachable in game and are deleted by
+  **WP28** (§3.0.3). Their maxlevel 4/5 exist only so a runtime tester
+  can open T5/T6 at all.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
@@ -608,7 +729,8 @@ armor polish and whetstone kits (§7), and the race signatures of §4.
 
 Ore access gating is now the depth/stratum rule of §3.0.4, not a
 hand-written ore whitelist: a tier-n pick opens the tier-n stratum, and
-that is where tier-n ore lives.
+§3.0.1's placement table says which ore lives there — a lead metal one
+band above its own tier, a gem in its own band.
 
 > **Superseded 2026-08-07 (§3.0.3):** ~~"Vendor floor sells up to the
 > bronze pick — iron+ picks are smith products (mining stays open to
@@ -968,7 +1090,7 @@ becoming a side door around the depth gate of §3.0.4.
 | War coast 20–30 | heavy cloth (raiders), linen | base variants | PvP quests ≥20; Captain Bonerattle (L28); **outpost supply crates** (§5.6) |
 | Outer 25–45 | heavy leather, scaled hide, heavy cloth, spider silk, T2 herbs, stone cores, iron/steel | **improved variants** on elites (20% Unc / 3% Rare) | named rares L32–42; apex dragon lair (L50) |
 | Coast 45–60 | scaled hide, silk, T3 herbs, gold, garnet/diamond | improved variants; elites common | coast named rares L48–50; Reef Lurker |
-| Depth axis | the six strata of §3.0.1, each behind a tier-n tool (§3.0.4): copper/tin/coal (0…−100) → iron (−300) → no ore of its own, steel is an alloy (−500) → silver, gold (−700; gold also in coast veins) → emberstone (−1000) → Abyssal Crystal (below) | cave mobs as per surface tier | Abyssal Crystal only in housing depths |
+| Depth axis | the six strata of §3.0.4, each behind a tier-n tool; which ore lies in which band is §3.0.1's placement table: copper/tin/coal/**iron** (0…−100) → quartz (−300) → silver (−500) → garnet + emberstone (−700) → emberstone, deep band (−1000) → diamond (below); gold keeps its vendored depth and its coast veins | cave mobs as per surface tier | Abyssal Crystal only in housing depths (no continental deposit at all) |
 | Enemy territory | identical base tables (mirrored biomes) | identical | enemy named rares + enemy King = the raid incentive |
 
 ### 5.1 Quality chance per source (kill, player-tagged)
@@ -1660,3 +1782,22 @@ is booked as the **Rogue's signature damage type for Phase 2**
 (`classes.md` §6). Poison as a *mob* effect (the serpent, and the
 Alchemist's Antivenom that cures it) is unaffected — that is a mob verb,
 not a player stat.
+
+**D10 — Six strata, five new nodes** (resolves `TODO-design-crafting-rework.md`
+B7). `default:stone` stays the T1 stratum, the five below it are new
+`grug_materials` nodes placed as `stratum` ores registered last, so cave
+walls inherit their tier and a deep cave stops being a free bypass; every
+stratum drops cobble and the tool ladder is re-parameterised to six
+`maxlevel` steps via `core.override_item` (§3.0.4). Rejected: a separate
+T1 node (drags mapgen filler, cobble and every `wherein` behind it), a
+`grug_mapgen` y-band VoxelManip pass (misses the cave walls the ore pass
+gets for free) and reusing `default`'s stone family, which already
+carries biome meaning.
+
+**D11 — Ore bands follow the tool, ore `level` follows the rock**
+(resolves B8). Lead metals lie one band above their own tier, gems in
+their own band, and an ore node carries the `level` of the band it lies
+in rather than of its tier (§3.0.1). The second half closes the cave leak
+without deadlocking the first. Iron gains a −1 … −100 band because
+vendored iron starts at −128, below the stratum that demands an iron
+pick.
