@@ -175,10 +175,20 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   (the anti-kiting rule — not distance from home, or a mob that merely
   wandered would reset itself forever) or 15 s without player contact →
   threat table cleared, target dropped, drop tag cleared, mob heals to
-  full. A reset mob then **evades home**: if it stands further from its
-  own post/spawn than its own leash radius, it snaps back there (the MVP
-  of the evade walk; designated patrollers are exempt — being far from
-  the post is their job). Mob-vs-NPC fights are not leashed.
+  full. A reset mob then **evades home** (decided 2026-08-07, WoW
+  model): if it stands further from its own post/spawn than its own
+  leash radius, it **runs back visibly at 1.5× its run speed**, and
+  while evading it is **untouchable** — every attack is cancelled
+  outright (no damage, no weapon wear, no feedback) and it acquires no
+  targets — until it arrives (~4 nodes from home), where it instantly
+  becomes a normal mob again. Safety net: a mob whose straight walk
+  home is blocked by terrain falls back to the old **teleport snap
+  after ~40 s** — broken mobs self-heal, and in the normal case the
+  player sees the mob recognizably run away instead of vanishing.
+  A floating "Evade!" combat text is deferred until a combat-text
+  system exists (future WP idea). Designated patrollers are exempt —
+  being far from the post is their job. Mob-vs-NPC fights are not
+  leashed.
 - **Chase persistence**: a mob gives up a chase at **45 m**, not at its
   `view_range` (mobs_redo's default, ≤ 16 m for ground mobs — with it,
   neither the 25 m soft de-aggro nor the 40 m leash could ever fire). The

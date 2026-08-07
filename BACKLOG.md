@@ -26,7 +26,7 @@ window. Rules:
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | ✅ `grug_classes`: class+race registry, creation flow faction→race→class, attribute/HP formulas via level pipeline, /char /class /race commands (runtime test pending) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource HUD (text line per classes.md §1) | ✅ `grug_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `grug_core` (runtime test pending; spec: `docs/design/classes.md`; kit tuning → WP19) | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants | open | WP1, WP3 |
-| WP6 | Faction mobs & mob feel: guards, outposts, mob tiers by distance + DEPTH, elite mobs (scale/tint + 2 s telegraph), one behavior verb per family, named rares with faction broadcast, boar/zombie retune incl. speed-to-spec + soft de-aggro (25 m), taunt force duration, R4 ore respawn, nametags (level+HP), con-color target frame, gray = no XP; **player-tag drop rule** (loot only with player involvement, 60 s expiry, NPC drops only in PvP; carries the Leatherworker loot hook); nature-mob on-sight aggro vs players AND NPCs; **pathfinding quality pass is a blocker of this WP, not polish** (also carries the high-density target, world.md §8) | ✅ the full `docs/design/biomes_mobs.md` roster in `grug_mobs` — **38 registered mobs in 40 spawn rows**, 10 named rares (§3.3's 9 rows, Bonerattle ×2), guards, camps. Architecture: **level/tier engine** (`levels.lua` — HP/dmg/XP/armor derived from `mob_level_at`/`guard_level_at` + tier multipliers, defs never hand-set them; elite ×1.6 gold, rare ×2 violet, global nametags, con-color target frame at 20 m, gray = no XP); **threat table** in `grug_core/combat.lua` (damage-as-threat, 120 % hysteresis, 40 m validity, heal threat, real taunt) + **leash/evade** (40 m drag from the chase anchor, 15 s contact, snap-home, 45 m give-up, 25 m soft de-aggro); **verb library** (`verbs.lua`: pack, stalker/rush, ambush, webs, poison, damage aura, camp swarm, arrows); **elite/rare telegraph** (4 s first engagement, 10 s cadence, 90° cone at reach + 1.5 m, LOS required); **named-rare spawner** (2–4 h respawn, patrol routes, faction broadcast); **faction guards + 24 deterministic outposts + hourly patrol legs**, POI protection registry (`grug_core.add_poi`), guard banners on the capital platforms; **12 deterministic bandit camps** + mirefolk camps on node timers; **player-tag drop rule** via an api.lua patch; **R4 ore respawn** (depleted-vein placeholder, 15–30 min); **pathfinding/density/perf pass** (four api.lua fixes + the budget audit in `docs/research/wp6_spawn_budget.md`) and a 4-reviewer gate. Runtime test pending | WP1, WP2 |
+| WP6 | Faction mobs & mob feel: guards, outposts, mob tiers by distance + DEPTH, elite mobs (scale/tint + 2 s telegraph), one behavior verb per family, named rares with faction broadcast, boar/zombie retune incl. speed-to-spec + soft de-aggro (25 m), taunt force duration, R4 ore respawn, nametags (level+HP), con-color target frame, gray = no XP; **player-tag drop rule** (loot only with player involvement, 60 s expiry, NPC drops only in PvP; carries the Leatherworker loot hook); nature-mob on-sight aggro vs players AND NPCs; **pathfinding quality pass is a blocker of this WP, not polish** (also carries the high-density target, world.md §8) | ✅ the full `docs/design/biomes_mobs.md` roster in `grug_mobs` — **38 registered mobs in 40 spawn rows**, 10 named rares (§3.3's 9 rows, Bonerattle ×2), guards, camps. Architecture: **level/tier engine** (`levels.lua` — HP/dmg/XP/armor derived from `mob_level_at`/`guard_level_at` + tier multipliers, defs never hand-set them; elite ×1.6 gold, rare ×2 violet, global nametags, con-color target frame at 20 m, gray = no XP); **threat table** in `grug_core/combat.lua` (damage-as-threat, 120 % hysteresis, 40 m validity, heal threat, real taunt) + **leash/evade** (40 m drag from the chase anchor, 15 s contact, untouchable run-home at 1.5× run speed with a 40 s teleport backstop, 45 m give-up, 25 m soft de-aggro); **verb library** (`verbs.lua`: pack, stalker/rush, ambush, webs, poison, damage aura, camp swarm, arrows); **elite/rare telegraph** (4 s first engagement, 10 s cadence, 90° cone at reach + 1.5 m, LOS required); **named-rare spawner** (2–4 h respawn, patrol routes, faction broadcast); **faction guards + 24 deterministic outposts + hourly patrol legs**, POI protection registry (`grug_core.add_poi`), guard banners on the capital platforms; **12 deterministic bandit camps** + mirefolk camps on node timers; **player-tag drop rule** via an api.lua patch; **R4 ore respawn** (depleted-vein placeholder, 15–30 min); **pathfinding/density/perf pass** (four api.lua fixes + the budget audit in `docs/research/wp6_spawn_budget.md`) and a 4-reviewer gate. Runtime test pending | WP1, WP2 |
 | WP7 | Money & traders: copper/silver/gold currency (`docs/design/economy.md`), buy-all-drops, selling UI | open | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
@@ -167,7 +167,8 @@ exception; **runtime field installation** because mobs_redo copies only
 an explicit def-field whitelist onto the entity; **countdowns tick in
 `do_custom`**, never `core.after`; the **chase model** (45 m give-up /
 25 m soft de-aggro / 40 m drag from the chase anchor / 15 s contact /
-evade snap-home); `aoc` is **per entity NAME** in a 128-node sphere.
+evade run-home at 1.5x run speed, untouchable, teleport only as the
+40 s backstop); `aoc` is **per entity NAME** in a 128-node sphere.
 Vendored `mobs_redo` carries **16 `GRUG PATCH` sites in `api.lua`**
 (inventory in VENDOR.md). Spawn calibration audit:
 `docs/research/wp6_spawn_budget.md` — measured peaks Σaoc **16 day /
@@ -229,8 +230,16 @@ is met at the hotspots and not in the median cell.
   never winds up (deliberate: it must not slam empty air).
 - **Camp head-count blind spots**: a camp counts members within
   `radius + 16`, so a member dragged further out reads as dead and the
-  camp refills behind it. The evade snap-home closes the common case;
-  a determined puller can still inflate a camp temporarily.
+  camp refills behind it. The evade run-home closes the common case (its
+  40 s teleport backstop bounds how long a returning member can stay
+  uncounted); a determined puller can still inflate a camp temporarily.
+- **No floating combat text**: damage numbers, crits and the "Evade!"
+  banner WoW shows over an evading mob have nowhere to go — the evade
+  ships silent (the mob simply takes no damage) and crits announce
+  themselves only through a particle burst. A combat-text system (HUD or
+  short-lived text entities over the target) is a future WP idea; the
+  call site for the evade banner is marked with a TODO in the `do_punch`
+  wrapper (`grug_mobs/init.lua`).
 
 **WP3 — Classes** (✅ 2026-08-06): `grug_classes` with class AND race
 registry (races per world.md §7, race perks hook for WP7/WP10). Creation

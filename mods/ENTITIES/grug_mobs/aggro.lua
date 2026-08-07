@@ -29,12 +29,12 @@
 -- THE TWO POSITIONS DO DIFFERENT JOBS, and both are load-bearing:
 --   * `temp.grug_chase_anchor` governs the DRAG DISTANCE — how far a player
 --     may pull this mob before it gives up. Per chase, runtime only.
---   * `_grug_home` governs WHERE AN EVADED MOB ENDS UP — leash_reset snaps it
---     back there when it has strayed further than its own radius (see the
---     evade block there) — and, for a camp-bound mob, HOW FAR IT MAY DRIFT
---     WHILE IDLE (roam_check below, world.md §4a). Persistent, one per mob,
---     set at first activation (levels.lua ensure_init) or by the camp that
---     spawned it (camps.lua).
+--   * `_grug_home` governs WHERE AN EVADED MOB ENDS UP — a mob that has
+--     strayed further than its own radius RUNS back there when the chase ends
+--     (see the evade block in leash_reset) — and, for a camp-bound mob, HOW
+--     FAR IT MAY DRIFT WHILE IDLE (roam_check below, world.md §4a).
+--     Persistent, one per mob, set at first activation (levels.lua
+--     ensure_init) or by the camp that spawned it (camps.lua).
 -- What `_grug_home` is NOT is an identity: a camp counts its members by
 -- `_grug_camp_pos`, which camps.lua sets alongside it — and which is also
 -- what tells the roam cap apart from wildlife.
@@ -165,12 +165,14 @@ function grug_mobs.leash_reset(self)
 		end
 	end
 	--
-	-- EVADE: snap back to `_grug_home`.
+	-- EVADE: run back to `_grug_home` (combat_stats.md §4, world.md §4a —
+	-- decided 2026-08-07). The walk itself is evade_tick below; all that
+	-- happens here is the decision to enter the state.
 	--
-	-- This is the MVP of WoW's evade-walk, and it is what puts the DISTANCE
-	-- bound back that the chase-anchor rewrite took out. The anchor governs how
-	-- far a mob may be DRAGGED; nothing governed where it ends up, so a garrison
-	-- could be walked off its post one pull at a time:
+	-- This is what puts the DISTANCE bound back that the chase-anchor rewrite
+	-- took out. The anchor governs how far a mob may be DRAGGED; nothing
+	-- governed where it ends up, so a garrison could be walked off its post one
+	-- pull at a time:
 	--   * a guard is `type = "npc"` — it never despawns and never expires, so a
 	--     stray guard is stray FOREVER;
 	--   * count_camp_mobs (camps.lua) only counts within radius + 16, so the post
@@ -182,38 +184,132 @@ function grug_mobs.leash_reset(self)
 	--     points, so a rare parked further out than that reads as gone. A reset
 	--     rare returning to its spawn point — which is on its route — closes
 	--     that on its own.
-	-- Teleport rather than walk-home because the alternative is a second
-	-- pathfinding state machine (mobs_redo has none: go_to() fakes an attack
-	-- target, which our threat/leash/telegraph code all mis-reads — see
-	-- patrol.lua). A mob that has just dropped its target, healed to full and
-	-- gone idle is exactly the moment where a snap is invisible in practice.
+	-- It used to TELEPORT the mob home right here. It now runs home instead:
+	-- the snap solved the bookkeeping but the player watched the mob it had
+	-- been fighting vanish mid-screen. The straight-line steer of evade_tick is
+	-- NOT a second pathfinding state machine (mobs_redo has none usable here:
+	-- go_to() fakes an attack target, which our threat/leash/telegraph code all
+	-- mis-read — see patrol.lua), it is the same 1 Hz nudge patrols and the
+	-- roam cap already use; the teleport survives as the 40 s safety net for a
+	-- walk that terrain has blocked, so the bookkeeping guarantees above still
+	-- hold in the worst case, just a little later.
 	--
 	-- Threshold is the DEF radius: 25 for a camp mob, 30 for a guard, the 40 m
 	-- default otherwise — i.e. "further from your post than your post reaches".
-	-- Horizontal only (a mob on a ledge above its home is not stray).
+	-- Horizontal only (a mob on a ledge above its home is not stray). A mob
+	-- that is already INSIDE its radius does not evade at all: there is nothing
+	-- to walk back, exactly as before.
 	-- The RARE/PATROL floors of leash_check are deliberately NOT applied here:
 	-- they widen how far a mob may be dragged, which is a different question
 	-- from where it belongs.
 	--
 	-- The designated PATROLLER is the one exemption: being far from its post is
-	-- its entire job (world.md §4), and snapping it home after every timed-out
+	-- its entire job (world.md §4), and sending it home after every timed-out
 	-- fight would delete the ambient-patrol feature. Its drift is bounded
 	-- instead by PATROL_INTERVAL in camps.lua.
 	--
 	-- Zombie and Kraken carry `_grug_no_leash` and therefore never reach this
-	-- function at all — unchanged for them.
+	-- function at all — they can never evade, unchanged for them.
 	local home = self._grug_home
 	local pos = self.object and self.object:get_pos()
 	if home and pos and not self._grug_patrol_route then
 		local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
 		local dx, dz = pos.x - home.x, pos.z - home.z
 		if dx * dx + dz * dz > range * range then
-			-- Same ground correction every hand placement uses (init.lua):
-			-- `_grug_home` is a FEET position (the camp node, the spawn point),
-			-- and an entity's position is its collisionbox origin.
-			grug_mobs.place_on_ground(self.object, home)
+			-- RUNTIME ONLY (self.temp), like the chase anchor: an evader that
+			-- gets unloaded mid-run reactivates as a plain idle mob wherever it
+			-- stood, and the machinery that would have brought it home takes
+			-- over from there — the roam cap for a camp mob (roam_check), the
+			-- next leash reset for everyone else. The alternative, a persisted
+			-- flag, would risk saving a mob permanently untouchable, which is
+			-- the same failure mode the countdown rule in init.lua exists for.
+			self.temp = self.temp or {}
+			self.temp.grug_evading = {started = grug_core.mono_time()}
 		end
 	end
+end
+
+--
+-- The evade run (combat_stats.md §4 / world.md §4a, decided 2026-08-07)
+--
+-- While `temp.grug_evading` is set the mob:
+--   * runs at 1.5x run_velocity — the boost is applied by tick_speed_effects
+--     in init.lua, NOT here, so walk_velocity/run_velocity keep exactly one
+--     owner and a root/slow can never fight the evade (read the comment there
+--     before touching either side);
+--   * is UNTOUCHABLE — every punch is cancelled in the do_punch wrapper
+--     (init.lua), so no damage, no weapon wear, no feedback, no threat;
+--   * acquires no targets — `_grug_ignore_player` vetoes every player in
+--     general_attack (init.lua), and stop_attack below sweeps up the
+--     acquisition paths that bypass it;
+--   * becomes a normal mob again the instant it arrives.
+--
+local EVADE_ARRIVED = 4 -- m horizontal from `_grug_home` counts as home
+local EVADE_TIMEOUT = 40 -- s before the old teleport snap takes over
+-- Read by init.lua's tick_speed_effects (public because that is where the
+-- speed fields are owned); combat_stats §4's "1.5x its run speed".
+grug_mobs.EVADE_SPEED_FACTOR = 1.5
+
+local function evade_tick(self)
+	local ev = self.temp.grug_evading
+	if not ev then
+		return
+	end
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if not home or not pos then
+		-- Nowhere to run to (should not happen — leash_reset only sets the
+		-- flag when both exist): drop the state rather than stay invulnerable.
+		self.temp.grug_evading = nil
+		return
+	end
+	-- Belt and braces. The `_grug_ignore_player` veto (init.lua) covers
+	-- general_attack, which is the path that matters; four others reach past
+	-- it and are swept here instead, each costing at most one second of chase:
+	--   * mobs_redo's group alert calls do_attack DIRECTLY on nearby idle mobs
+	--     of the same name (api.lua:3000), as do our pack-hunter and
+	--     camp-swarm verbs (verbs.lua);
+	--   * general_attack's NON-player half can still hand an evading guard a
+	--     wolf (the veto hook is a player filter);
+	--   * a tank ability's bonus threat (grug_core.deal_ability_damage's
+	--     `threat_mult` site) and a taunt still land on the threat table even
+	--     though the punch itself was cancelled, and check_switch/the taunt
+	--     ability then force a target.
+	-- What CANNOT happen is retaliation against the evader's own attacker: its
+	-- punches are cancelled in do_punch, i.e. before api.lua's retaliation
+	-- block and before run_player_hit_mob's threat ever runs.
+	if self.attack or self.state == "attack" then
+		if type(self.stop_attack) == "function" then
+			self:stop_attack()
+		end
+	end
+	-- Arrived? Horizontal only, same reading as the leash threshold and the
+	-- roam cap. Checked BEFORE the timeout so a mob that makes it home on the
+	-- very last tick is not snapped anyway.
+	local dx, dz = pos.x - home.x, pos.z - home.z
+	if dx * dx + dz * dz <= EVADE_ARRIVED * EVADE_ARRIVED then
+		-- Instantly a normal mob again: attackable, targeting, and its speeds
+		-- restored by the next tick_speed_effects (init.lua).
+		self.temp.grug_evading = nil
+		return
+	end
+	if grug_core.mono_time() - (ev.started or 0) > EVADE_TIMEOUT then
+		-- SELF-HEALING SAFETY NET. The run is straight-line steering, not
+		-- pathfinding, so a cliff, a wall or water can park an evader forever —
+		-- and forever means untouchable forever, plus every stray-garrison
+		-- consequence listed in leash_reset above. After 40 s the old teleport
+		-- takes over: the same ground correction every hand placement uses
+		-- (init.lua), because `_grug_home` is a FEET position (the camp node,
+		-- the spawn point) and an entity's position is its collisionbox origin.
+		grug_mobs.place_on_ground(self.object, home)
+		self.temp.grug_evading = nil
+		return
+	end
+	-- One nudge home. mobs_redo's walk state re-issues the velocity and may
+	-- randomly turn or stop the mob (patrol.lua's header spells this out), so
+	-- the run is a jog with pauses rather than a straight sprint — net progress
+	-- once a second, with the timeout above as the backstop.
+	grug_mobs.walk_toward(self, home.x, home.z, pos)
 end
 
 local function leash_check(self)
@@ -267,7 +363,7 @@ end
 -- Roam cap: the SOFT half of place binding (world.md §4a)
 --
 -- "Place-bound NPCs are bound to their anchor: after losing aggro they return
--- to it (the evade snap-home above), and while idle they roam only a small
+-- to it (the evade run-home above), and while idle they roam only a small
 -- radius around it (~10-20 nodes)." The evade is the hard reset for a mob
 -- that was DRAGGED away; this is the bound on the mob's own drifting.
 --
@@ -307,6 +403,12 @@ local function roam_check(self)
 	-- The designated patroller is §4's one exemption: being far from its post
 	-- is its entire job (same exemption as the evade above).
 	if self._grug_patrol_route then
+		return
+	end
+	-- An evading mob is already running home, faster and to a stricter target
+	-- radius (4 nodes, not 20): evade_tick owns the movement in that state and
+	-- this rule would only issue the very same nudge a second time.
+	if self.temp and self.temp.grug_evading then
 		return
 	end
 	-- Idle only: fighting, fleeing and flopping own the movement. Identical
@@ -356,6 +458,13 @@ function grug_mobs.leash_tick(self, dtime)
 	-- chase, and a camp family that ever opts out of the leash must still
 	-- stay at its camp. Costs one field test for every other mob.
 	roam_check(self)
+	-- The evade run (leash_reset above). BEFORE the no-leash early return only
+	-- for symmetry with the two rules above — a `_grug_no_leash` mob never
+	-- calls leash_reset and therefore can never carry the flag, so this costs
+	-- the zombie and the kraken one field test. It must, however, stay BEFORE
+	-- leash_check: that is what keeps the arrival/timeout handling ahead of any
+	-- fresh chase bookkeeping in the same slot.
+	evade_tick(self)
 	if self._grug_no_leash then
 		return
 	end

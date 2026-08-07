@@ -247,7 +247,7 @@ Military outposts across each territory enforce the level gating:
   designated **patroller** and walks the leg toward the next ring inward
   (coast → outer → inner → war coast, and the war-coast post walks back
   inward so the chain has no dead end); the designation rotates
-  **hourly**. The patroller is exempt from the leash's snap-home rule —
+  **hourly**. The patroller is exempt from the leash's evade-home rule —
   being far from its post is the whole point.
 - **Guards attack enemy players and monsters, never other NPCs**
   (`attack_npcs = false`): a deliberate MVP simplification, so faction
@@ -264,12 +264,13 @@ Every stationary NPC population (outpost guards, capital watch, bandit/
 mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 
 - **Place-bound NPCs** are bound to their anchor (guard banner, camp
-  fire, mine, platform): after losing aggro they return to it (the
-  evade snap-home), and while idle they **roam only a small radius
-  around it** — **20 nodes**, horizontal, enforced as a gentle steer
-  home once a second while the NPC is idle (the snap stays the hard
-  reset after a chase). The patroller role is the one designed
-  exception.
+  fire, mine, platform): after losing aggro they **evade home** —
+  untouchable, running at 1.5× run speed, normal again on arrival;
+  a blocked walk falls back to a teleport snap after ~40 s
+  (combat_stats.md §4 carries the full evade rule) — and while idle
+  they **roam only a small radius around it** — **20 nodes**,
+  horizontal, enforced as a gentle steer home once a second while the
+  NPC is idle. The patroller role is the one designed exception.
 - **Character-bound NPCs** (the king's bodyguards, later escort NPCs)
   are bound to a character instead of a place: they follow their
   character wherever it goes while it lives. When the character dies

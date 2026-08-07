@@ -392,7 +392,7 @@ function grug_mobs.ensure_init(self)
 	end
 	if not self._grug_home then
 		-- Evade home (combat_stats.md §4, aggro.lua leash_reset): where this
-		-- mob is snapped back to when it ends a chase further out than its own
+		-- mob RUNS back to when it ends a chase further out than its own
 		-- radius. NOT the leash distance itself — that is measured from where
 		-- each chase began (temp.grug_chase_anchor), so a mob can never
 		-- out-drift its own leash by wandering. Plain field -> the home is the

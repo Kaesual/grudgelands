@@ -246,7 +246,7 @@ Details + line numbers in [docs/research/](docs/research/).
     api.lua patch — vanilla uses `view_range`, ≤ 16 m, which made every
     other rule dead code), walk speed beyond **25 m** (soft de-aggro),
     leash at **40 m dragged from the chase anchor** (not from home) or
-    15 s without contact, then **evade snap-home** if the mob stands
+    15 s without contact, then the **evade run-home** if the mob stands
     beyond its own radius from its post.
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn

@@ -129,6 +129,40 @@ function grug_mobs.slow(ent, duration, factor)
 end
 
 local function tick_speed_effects(self, dtime)
+	-- EVADE OWNS THE SPEEDS (aggro.lua, combat_stats.md §4). An evading mob
+	-- runs home at 1.5x its run speed, and there must stay exactly ONE owner
+	-- of walk_velocity/run_velocity (the two-owner bug class crocodile.lua's
+	-- header warns about) — so the boost is expressed as the highest-priority
+	-- effect of this very engine instead of a second writer in aggro.lua.
+	--
+	-- Why walk_velocity and not a set_velocity() argument in walk_toward: the
+	-- evade steer is a 1 Hz nudge, and mobs_redo's do_states re-issues
+	-- `set_velocity(self.walk_velocity)` for a "walk"-state mob once a second
+	-- of its own accord (api.lua:2175) — a per-call speed would survive less
+	-- than a second and the mob would walk home at walking pace. Raising the
+	-- field the walk state reads is what makes the run stick. run_velocity is
+	-- raised with it so the numbers cannot disagree if some state does read it.
+	--
+	-- Combat is over the moment the evade starts, so any root/slow is dropped
+	-- here (a webbed mob evades at FULL evade speed). `_grug_speed_base` still
+	-- holds the ORIGINAL speeds — save_speed_base is a no-op when an effect had
+	-- already saved them — so on arrival (flag cleared by aggro.lua) the next
+	-- tick falls through to the restore tail below, which puts the exact
+	-- original values back and clears the base. Same self-healing path a mob
+	-- unloaded mid-evade takes: `grug_evading` lives in self.temp and does not
+	-- survive, the persisted `_grug_speed_base` does, and the first tick after
+	-- reactivation restores.
+	if self.temp and self.temp.grug_evading then
+		save_speed_base(self)
+		self._grug_root_left = nil
+		self._grug_slow_left = nil
+		self._grug_slow_factor = nil
+		local base = self._grug_speed_base
+		local run = base.run or base.walk or 0
+		self.walk_velocity = run * grug_mobs.EVADE_SPEED_FACTOR
+		self.run_velocity = run * grug_mobs.EVADE_SPEED_FACTOR
+		return
+	end
 	if not self._grug_speed_base then
 		return
 	end
@@ -256,6 +290,38 @@ function grug_mobs.register_mob(name, def)
 	-- so we must not install one.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
+		--
+		-- EVADE = UNTOUCHABLE (combat_stats.md §4). An evading mob (aggro.lua)
+		-- cancels EVERY punch outright, and this is the first statement in the
+		-- wrapper so nothing below it — provocation memory, drop tag, threat,
+		-- rage, kill credit, XP — ever sees the hit.
+		--
+		-- The cancel IS mobs_redo's do_punch contract, and this is the one place
+		-- where the AGENTS.md gotcha ("any truthy return cancels the punch, the
+		-- api.lua comment claims the opposite") is the FEATURE. api.lua:2807-2810
+		-- reads `if self.do_punch and not self:do_punch(...) == false then
+		-- return true end`, which parses as `(not result) == false` — i.e. it
+		-- bails on a TRUTHY result. That `return true` sits BEFORE the weapon
+		-- wear (api.lua:2829-2849), before hit sound and blood particles
+		-- (api.lua:2853ff, inside `damage >= 1`), before both health
+		-- subtractions (api.lua:2902 / 2908) and check_for_death (2913), before
+		-- the knockback (2925ff) and before the retaliation + group alert that
+		-- would otherwise hand the evader a fresh target (2978ff). So: no
+		-- damage, no wear, no feedback, no aggro — exactly the spec.
+		--
+		-- What it does NOT undo: the weapon-cadence gate (api.lua:2705-2716)
+		-- runs BEFORE do_punch, so a swing spent on an evading mob still
+		-- advances that player's swing clock. Accepted — attacking something
+		-- untouchable costing a swing is honest feedback. Environmental damage
+		-- (lava, drowning) bypasses on_punch altogether and is not an "attack";
+		-- it still applies.
+		--
+		-- TODO (future WP, needs a combat-text system): float an "Evade!" over
+		-- the mob here instead of answering with silence.
+		--
+		if self.temp and self.temp.grug_evading then
+			return true
+		end
 		-- A mob can be punched before its first do_custom tick, and the XP
 		-- below needs its level: initialize here too (idempotent).
 		grug_mobs.ensure_init(self)
@@ -353,23 +419,34 @@ function grug_mobs.register_mob(name, def)
 		if self._grug_rare_id then
 			grug_mobs.rare_tick(self, dtime)
 		end
-		if night_truce or faction then
-			-- ONE target-acquisition veto consumed by general_attack (GRUG
-			-- PATCH in mobs/api.lua): the mob skips vetoed players and picks
-			-- the next-closest viable target instead. A function field is
-			-- never serialized into staticdata; do_custom runs before
-			-- general_attack on every step, so it is back after each
-			-- (re)activation in time.
-			if not self._grug_ignore_player then
-				self._grug_ignore_player = function(s, player)
-					return (night_truce and truce_active(s, player))
-						or faction_veto(player)
+		-- ONE target-acquisition veto consumed by general_attack (GRUG PATCH in
+		-- mobs/api.lua:1795): the mob skips vetoed players and picks the
+		-- next-closest viable target instead. A function field is never
+		-- serialized into staticdata; do_custom runs before general_attack on
+		-- every step, so it is back after each (re)activation in time.
+		--
+		-- Installed for EVERY mob since the evade rewrite (combat_stats.md §4):
+		-- an evading mob acquires no targets at all, which is not a faction or
+		-- truce question. A mob with neither of those carries the evade test
+		-- alone. Cost: one function call per candidate player per
+		-- general_attack, i.e. per mob once a second (api.lua:3378 runs it from
+		-- the 1 s timer block) over the players inside view_range — nothing.
+		if not self._grug_ignore_player then
+			self._grug_ignore_player = function(s, player)
+				-- Checked first and cheapest: while evading, everyone is
+				-- vetoed (aggro.lua evade_tick).
+				if s.temp and s.temp.grug_evading then
+					return true
 				end
+				return (night_truce and truce_active(s, player))
+					or faction_veto(player)
 			end
+		end
+		if night_truce then
 			-- Belt and braces for acquisition paths that bypass
 			-- general_attack (group_attack pile-ons, do_attack calls):
 			-- drop unprovoked truce players again.
-			if night_truce and self.state == "attack" and self.attack
+			if self.state == "attack" and self.attack
 					and core.is_player(self.attack)
 					and truce_active(self, self.attack) then
 				self:stop_attack()

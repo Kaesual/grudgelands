@@ -25,14 +25,14 @@
 --       count the living members, book the missing ones into the REFILL QUEUE
 --       drain every refill whose due time has passed (see "RESPAWN SLOTS")
 --   the spawned mob gets `_grug_home = camp pos` (WHERE it belongs: aggro.lua
---       snaps it back there when it evades further out than its radius) and
+--       runs it back there when it evades further out than its radius) and
 --       `_grug_camp_pos = camp pos` (WHO it belongs to — the identity the head
 --       count below and the mirefolk swarm verb match on; `_grug_home` is not
 --       an identity, a hand-placed mob has one too)
 --   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp": a
 --       camp mob may be dragged 25 nodes from wherever the fight started
 --       before it drops the target, heals and returns to the fire (aggro.lua
---       — the leash measures DRAG from the pull, the evade snap uses
+--       — the leash measures DRAG from the pull, the evade run-home uses
 --       `_grug_home`).
 --
 -- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
@@ -154,10 +154,11 @@ local PLAYER_RANGE = 80
 -- (bandit 12 + 16 > leash 25, mirefolk 10 + 16 > 25, guards 15 + 16 > 30).
 --
 -- That "> leash" comparison is only a sound bound because a defender CANNOT
--- park itself outside it: aggro.lua's leash_reset snaps a mob that ends a
--- chase further than its own radius from `_grug_home` straight back to the
--- fire (the evade), and since F5 the roam cap in the same file keeps an IDLE
--- camp mob inside 15 nodes of its anchor as well (world.md §4a). Without
+-- park itself outside it: a mob that ends a chase further than its own radius
+-- from `_grug_home` is sent back to the fire by aggro.lua's evade (a run home,
+-- with a teleport as the 40 s backstop — so "outside the margin" is bounded by
+-- the walk, not open-ended), and since F5 the roam cap in the same file keeps
+-- an IDLE camp mob inside 20 nodes of its anchor as well (world.md §4a). Without
 -- those two the margin bounded nothing — a guard walked off its post stayed
 -- off it, was counted as dead here, and the post refilled behind it, one
 -- stray per pull, forever (WP6 re-review F1).
@@ -386,7 +387,7 @@ local function spawn_one(pos, meta, cfg, living)
 		return false
 	end
 	-- Plain-table copy, never the caller's table and never an ObjectRef.
-	-- `_grug_home` is where aggro.lua's evade snaps this mob back to when it
+	-- `_grug_home` is where aggro.lua's evade sends this mob back to when it
 	-- ends a chase too far out, and what its idle roam cap measures against
 	-- (world.md §4a) — i.e. what makes it a CAMP member and not just a mob
 	-- that happens to stand here. levels.lua's ensure_init only fills the

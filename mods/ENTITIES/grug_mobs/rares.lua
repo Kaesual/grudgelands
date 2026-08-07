@@ -33,8 +33,8 @@ local PLAYER_RANGE = 120
 -- RARE_LEASH_RANGE = 300 from where the fight started (aggro.lua), so a rare
 -- in a long running fight can be outside every route point's 100 m sphere and
 -- read as gone. What keeps that from turning into a duplicate is the other
--- half of the leash: when the chase does end, leash_reset's evade snaps a rare
--- that strayed further than its family radius straight back to `_grug_home` —
+-- half of the leash: when the chase does end, leash_reset's evade sends a rare
+-- that strayed further than its family radius back to `_grug_home` —
 -- its spawn point, which is ON the route. So the blind window lasts as long as
 -- one over-long fight and closes by itself, and rare_watch additionally
 -- requires a FULL respawn_max (2-4 h) of no sighting before it releases a
