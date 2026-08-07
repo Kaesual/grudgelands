@@ -637,13 +637,19 @@ Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
 buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
 grips.
 
-**MVP note (carried over from §3.8, 2026-08-07):** no MVP class can wear
-rank-2 armor — Warrior 3, Mage 1, Priest 1 (`inventory_equipment.md` §2)
-— so the leather **items** are not registered yet, exactly as decided for
-the vendor catalogs. The curve, the chain and the recipes above are
-authored and stay authored; the line switches on with the Rogue
-(Phase 2) or with WP5's drop tables, whichever lands first. In the MVP
-the Leatherworker ships on its kits, its quiver and its cross-supply.
+**MVP note (corrected 2026-08-07):** an earlier draft of this section
+claimed no MVP class could wear rank-2 armor. That is **wrong** — a
+class wears its own rank *and everything below* (`inventory_equipment.md`
+§2), so the **Warrior (rank 3) can wear leather**, and the equip filter
+in `grug_inventory/equipment.lua` refuses only ranks *above* the
+character's. What is genuinely unsettled is whether a Warrior ever
+*wants* leather: at equal tier it is strictly less armor than metal, so
+without a dodge or speed advantage the line is a legal but pointless
+choice. Whether the leather line therefore registers in the MVP, and
+what would make it worth wearing, is open in
+`TODO-design-crafting-rework.md` (C10). The curve, the chain and the
+recipes above are authored either way, and the Rogue (Phase 2) is the
+line's intended main customer.
 
 ### 3.5 Tailor (tailor bench) — cloth, bags, the caster offhand
 

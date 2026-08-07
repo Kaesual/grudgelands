@@ -25,34 +25,46 @@ window. Rules:
 | WP2 | Territory mapgen: north/south, race regions per faction, difficulty gradient, capitals | ✅ engine biomes (v7 + min_pos/max_pos) in `grug_mapgen`; zone/difficulty API + is_protected in `grug_core` (runtime tested 2026-08-07) | WP0 |
 | WP3 | Classes: Warrior/Mage/Priest, selection dialog, stats via level pipeline | ✅ `grug_classes`: class+race registry, creation flow faction→race→class, attribute/HP formulas via level pipeline, /char /class /race commands (runtime tested 2026-08-07) | WP0 |
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource HUD (text line per classes.md §1) | ✅ `grug_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `grug_core` (runtime tested 2026-08-07; spec: `docs/design/classes.md`; kit tuning → WP19) | WP3 |
-| WP5 | Loot & enchantments: class items with roll ranges, elite variants, `grug_req_level` on **everything equippable** (equip blocked below level, enforced in the slot `allow_put`) | open (spec: `docs/design/items_crafting.md` §6, `inventory_equipment.md` §2) | WP1, WP3 |
+| WP5 | Loot & affixes (re-cut 2026-08-07): owns the whole **refinement + prefix/suffix system** (`items_crafting.md` §6b) — the refined state (+15 % damage, +100 % durability) as the prerequisite for every affix, **max 2 prefixes + 2 suffixes = 4 slots**, **mastery tier = fillable slots** (Apprentice 1 → Master 4), affix words mapped onto §6.2's per-family stat pools, quality straight from the affix count (0 Common / 1–2 Uncommon / 3–4 Rare, §6b.6), values rolled from §6.3's four ilvl bands × source window, and the refinement word dropping out of the name as soon as an affix appears (§6b.4). Plus: class items with roll ranges and elite variants; `grug_req_level` on **everything equippable**, derived from the published `_grug_ilvl` and enforced in the slot `allow_put` (`inventory_equipment.md` §2); **found items arrive pre-enchanted** — "only professions can enchant" restricts who may *apply* an affix, not what a mob drops (§6b.3, §5.1) — and **a dropped item's material tier must match the mob's tier** (§5: a T3 Steel item drops from level 21–30 mobs and nowhere else, so the drop table is not a side door around the depth gate). Lights up WP7's ×3 Uncommon rotation slot | open (spec: `docs/design/items_crafting.md` §5/§6/§6b, `inventory_equipment.md` §2; **blocked on `TODO-design-crafting-rework.md` A2** — the affix word list — and A6 for the description line) | WP1, WP3 |
 | WP6 | Faction mobs & mob feel: guards, outposts, mob tiers by distance + DEPTH, elite mobs (scale/tint + 2 s telegraph), one behavior verb per family, named rares with faction broadcast, boar/zombie retune incl. speed-to-spec + soft de-aggro (25 m), taunt force duration, R4 ore respawn, nametags (level+HP), con-color target frame, gray = no XP; **player-tag drop rule** (loot only with player involvement, 60 s expiry, NPC drops only in PvP; carries the Leatherworker loot hook); nature-mob on-sight aggro vs players AND NPCs; **pathfinding quality pass is a blocker of this WP, not polish** (also carries the high-density target, world.md §8) | ✅ the full `docs/design/biomes_mobs.md` roster in `grug_mobs` — **38 registered mobs in 40 spawn rows**, 10 named rares (§3.3's 9 rows, Bonerattle ×2), guards, camps. Architecture: **level/tier engine** (`levels.lua` — HP/dmg/XP/armor derived from `mob_level_at`/`guard_level_at` + tier multipliers, defs never hand-set them; elite ×1.6 gold, rare ×2 violet, global nametags, con-color target frame at 20 m, gray = no XP); **threat table** in `grug_core/combat.lua` (damage-as-threat, 120 % hysteresis, 40 m validity, heal threat, real taunt) + **leash/evade** (40 m drag from the chase anchor, 15 s contact, untouchable run-home at 1.5× run speed with a 40 s teleport backstop, 45 m give-up, 25 m soft de-aggro); **verb library** (`verbs.lua`: pack, stalker/rush, ambush, webs, poison, damage aura, camp swarm, arrows); **elite/rare telegraph** (4 s first engagement, 10 s cadence, 90° cone at reach + 1.5 m, LOS required); **named-rare spawner** (2–4 h respawn, patrol routes, faction broadcast); **faction guards + 24 deterministic outposts + hourly patrol legs**, POI protection registry (`grug_core.add_poi`), guard banners on the capital platforms; **12 deterministic bandit camps** + mirefolk camps on node timers; **player-tag drop rule** via an api.lua patch; **R4 ore respawn** (depleted-vein placeholder, 15–30 min); **pathfinding/density/perf pass** (four api.lua fixes + the budget audit in `docs/research/wp6_spawn_budget.md`) and a 4-reviewer gate. Runtime tested 2026-08-07 (findings F1–F6, below) | WP1, WP2 |
 | WP7 | Money & traders: copper/silver/gold currency (one integer in copper, `docs/design/economy.md`), trader NPCs that buy EVERY mob drop, **six vendor bracket catalogs** (10 levels each, Common at bracket ilvl, hourly rotation with an occasional world-window Uncommon, price ladder ×1.4 per bracket — `items_crafting.md` §3.8/§8.2), trade formspec, race-exclusive vendors + same-race discount, WP6 carry-overs (bandit coin drops, guard PvP loot) | ✅ three mods. **`grug_money`**: ONE copper integer in player meta (economy.md §1), atomic get/set/add/take clamped to 0..2³¹−1, `register_on_change`, HUD line, `/money` (+ admin `/money give`), display rule "leading zero units omitted, copper always shown". **`grug_gear`**: six bracket catalogs GENERATED from the §3.1/§3.2 curves, never hand-listed — **72 items** (4 weapon families × 6 brackets + metal/cloth armor × 4 slots × 6 brackets; leather's curve ships unregistered, nothing can wear it), §8.2 prices VERBATIM, **25 % buy-back** (economy.md §2), and `_grug_ilvl`/`_grug_bracket`/`_grug_quality` as the WP5 seam. **Armor pipeline** — armor was *inert* before this WP: `_grug_armor` → `grug_inventory.get_equipped_armor` (cached per player) → `grug_core.get_armor_percent` (stub-override) → a % reduction in the central hp modifier, punch-only, after dodge, before the absorb shield, capped at 60 % in both consumer and overrider; plus the **armor-rank binding** (cloth 1 < leather 2 < metal 3 vs. Warrior 3 / Mage 1 / Priest 1, group `grug_armor_class`, enforced in the existing equip filter, unequipped on class change). **`grug_traders`**: **8 vendor NPCs** (2 faction Quartermasters + 6 race-exclusive) placed deterministically at the six race capitals **without a mapgen change**, registered through plain `mobs:register_mob` (NOT `grug_mobs.register_mob` — that wrapper is the level engine; `type = "npc"` makes them permanent, a truthy `do_punch` makes them invulnerable); trade formspec with **no detached inventories** (a sell slot loses items on disconnect) and per-action server-side re-validation of session/range/access/prices; **hourly rotation** from a PcgRandom seeded on `floor(os.time()/3600)` + vendor + bracket (9-item fixed floor, 2 of 3 extra weapon families, 1-in-5 Uncommon ×3 gated on WP5's roller); race exclusivity + **10 % same-race discount** on buy prices only (world.md §7); weak healing potion (8c, flat 15 % max HP) on the **shared 60 s** instant-potion cooldown in player meta; three **startup audits** (every mob drop priced, no buy/sell spread that prints money, no craft/cook recipe worth more than its priced inputs). Plus the WP6 loot carry-overs (bandit stolen purse 1/3, guard PvP war trophies + heavy cloth). 3-reviewer gate (correctness/exploits · Lua+perf · design adherence). Runtime tested 2026-08-07, no findings | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
-| WP10 | Professions: 2 free mains (Herbalism, Alchemist, Blacksmith, Leatherworker, Tailor, Gem Hunter) + universal Cooking/First Aid; recipe-unlock system (craft_predict veto + workbench proximity), recipe book UI, gathering split, Leatherworker ×5-leather loot hook | open (spec: `docs/design/professions.md`, `inventory_equipment.md` §4) | WP7 |
+| WP10 | Professions (roster re-cut 2026-08-07): 2 free mains out of **six material-cut professions** — Blacksmith, Leatherworker, Tailor, **Woodcarver** (staves/wands/scepters/orbs — casters had no craftable weapon at all), **Goldsmith** (both trinket slots, gem refinement, Gem Detector), Alchemist; **Herbalism is merged into the Alchemist and Gem Hunter into the Goldsmith**, so all six are symmetric (`professions.md` §2). **One recipe book per profession**, six T1–T6 groups in one list (`items_crafting.md` §2.2): **level controls visibility, the keystone controls the unlock** (§2.3 — a visible group shows greyed with its keystone spelled out; redemption is a one-off at the workbench, state in player meta `grug_prof:<prof>`, never in the item), quest/boss/race-signature recipes unlock **inside the same book**, and the LotT-style tome chain is gone. Craft permission = the universal base ladder (§3.0.3) **plus** the two books' contents; a profession adds refinement/affixes/special variants (WP5), never a parallel item. **Cooking gets a book too** — same six groups and level gates, **no keystones** (the regional ingredient is the gate, T6 needs level-50+ ground) — but **costs no main slot**, and First Aid keeps no book at all. Gathering split: food and **spices** universal, **healing herbs Alchemist-only**. Recipe-unlock system (craft_predict veto + workbench proximity), book UI, Leatherworker ×5-leather loot hook (needs the `mobs:leather` special case, WP6 carry-over), and the §8.2 job supplies + profession books whose `grug_traders.register_stock` calls are pre-written as comments | open (spec: `professions.md`, `items_crafting.md` §2/§3.3–§3.7, `inventory_equipment.md` §4; **blocked on `TODO-design-crafting-rework.md` A1/A4/A5/E21** — signature recipes, T5/T6 + Woodcarver/Goldsmith keystones, the missing material grades, the cooking recipe lists) | WP7, WP25, WP26, WP33 |
 | WP11 | Skill trees: 2 trees × 5 talents × 3 ranks per class, 1 point per 3 levels (20/30 fillable), 9 numeric talents + 1 capstone per tree = NEW active main skill (e.g. Priest: Renew), respec for gold at the class trainer | open (spec: `docs/design/progression.md` §2) | WP3, WP4 |
 | WP12 | Global map with fog of war (adapt the mcl_maps approach), shows discovered waypoints | open | WP2, WP17 |
 | WP13 | Starter/world content: 3 race capitals per continent (center = faction seat; schematics, per-race build sets, elven treehouses), patch villages/settlements, flavor camps, spawn immunity | open (spec: world.md §2 protection zones, §3/§9, `docs/design/biomes_mobs.md`) | WP2, WP18 |
 | WP14 | Offhand & carried light: grug_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `grug_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime tested 2026-08-07) | WP3 |
-| WP16 | Guilds: registry, manager NPC, roles, guild bank (ONE detached inventory per guild — 6×32 tabs, 3 member / 3 officer, two purses, transaction log; terminals are inventory-less nodes on housing isles), /g chat | open (spec: `docs/design/guilds.md` §2/§3) | WP7 |
+| WP16 | Guilds (re-cut 2026-08-07): registry, manager NPC, three fixed roles, guild bank (ONE detached inventory per guild — 6×32 tabs, 3 member / 3 officer, two purses, transaction log; terminals are inventory-less nodes on housing isles), /g chat, 5g founding fee. **Continental mining claims are removed** — a guild is social + chat + the bank account and owns **no ground at all**, so this WP has no claim registry, no 2g/5g land purchase, no claim protection layer and no ore-respawn exception to wire (`guilds.md` §3.2, `economy.md` §4, `items_crafting.md` §8.4) | open (spec: `docs/design/guilds.md` §2/§3) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
 | WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via grug_core constants), remove mountain wall, per-race spawn points at the 3 race capitals (safe-core belt), radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), civilization-gradient biome layer (settled race biomes core/inner, shared nature biomes outward), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | ✅ two-continent geometry + radial level/guard fields in `grug_core` (wall and z-rings gone), continent ocean mask + 6 race-capital platforms in `grug_mapgen/structures.lua`, 17 mirrored biomes per biomes_mobs.md §1.3 with new `grug_nodes`/`grug_trees` content, Kraken Guard in the open sea (**needs a fresh world**; runtime tested 2026-08-07) | WP2 |
 | WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | ✅ GCD 1 s (silent gate, no wear churn) + soft target lock (8 s, separate enemy/ally slots, range+LOS re-checks) in `grug_abilities`; kits per classes.md tables (Mighty Blow 25 rage dump, NEW Hamstring w/ mob slow via `grug_mobs.slow` halving speeds, Fireball 8 mana GCD-only, Frost Nova 12 s root→slow, PW:S absorb via `grug_core.set_absorb` in the central hp modifier; Renew `talent_gated` for WP11); race passives via `grug_classes` perk registry (dwarf fall −20%, troll OOC regen — mana today, WP21 reuses perk; undead zombie night truce via `_grug_ignore_player` veto patch in mobs api.lua; orc +1 rage/hit taken, elf +5 m item-meta range, human quest-XP hook latent until WP8). Runtime tested 2026-08-07 | WP4 |
 | WP20 | Party system: /party (content sized for 2–3), tap rules (first damager's party tags), shared XP/kill/quest credit within 60 m, member HP frames HUD, group loot basics | open (spec: classes.md balance constraints) | WP4 |
 | WP21 | Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper NPC (rested XP + Home Stone rebind), NPC anchor/respawn insurance | open (spec: `docs/design/combat_stats.md` §5, progression.md §1) | WP1 |
-| WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed), NPC repair for gold, tier-scaled costs | open (spec: `docs/design/economy.md` §4) | WP5, WP7 |
+| WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed — weapons deal no damage, armor stops protecting, bonuses turn off), NPC repair for gold, tier-scaled costs. **Wear budget: 3000 combat events base, 6000 refined** — refinement's +100 % durability (`items_crafting.md` §6b.2) doubles the §8.3 budget cleanly, with no second constant; on a mining pick that doubling is the single best reason to buy a refinement at all | open (spec: `docs/design/economy.md` §4, `items_crafting.md` §8.3/§6b.2) | WP5, WP7 |
 | WP23 | Apex world bosses: one dragon POI per continent (stationary arena fight, telegraphs, hoard + respawn timer); enemy-dragon raid trophy and per-region apex kits follow (Phase 2) | open (spec: `docs/design/world.md` §4b) | WP6 |
-| WP24 | Housing isles: housing band (flat seabed −30, safe 150 m ring suppressing open-sea spawns), deterministic 1000er allocation grid + isle generation (100×100 box, ~50 skirt, 4 styles), indestructible teleport pad as waypoint, free digging to −30, 10 purchased depth steps to −530 with deterministic treasure clusters (no respawn), Dowsing Rod, visitor/trusted access lists, guild-bank terminal slot | open (spec: `docs/design/world.md` §5, `guilds.md` §3.1; open tuning: `TODO-design-housing.md`) | WP7, WP17 |
+| WP24 | Housing isles: housing band (flat seabed −30, safe 150 m ring suppressing open-sea spawns), deterministic 1000er allocation grid + isle generation (100×100 box, ~50 skirt, 4 styles), indestructible teleport pad as waypoint, free digging to −30, then **six purchased depth steps — 50c / 2s / 6s / 20s / 60s / 1g ≈ 1.9g** with boundaries **−100 / −300 / −500 / −700 / −1000 / bedrock** (re-cut 2026-08-07 from ten 50-node steps to −530; the identical table is in `world.md` §5.3, `economy.md` §4.1 and `items_crafting.md` §8.4 and the three must not drift), deterministic treasure clusters per step (no respawn). **The isle uses the same six rock strata as the continent** (`world.md` §2 R6, §5.3), so both gates apply and neither substitutes for the other: a bought step is worthless without a tool of that tier, and a T6 pick digs nothing on an isle whose step 6 is unpaid. Plus Dowsing Rod, visitor/trusted access lists, guild-bank terminal slot | open (spec: `docs/design/world.md` §5, `guilds.md` §3.1; open tuning: `TODO-design-housing.md`; **needs the `grug_core.open_sea_at` fix** — `TODO-design-crafting-rework.md` B9) | WP7, WP17, WP25 |
+| WP25 | Material ladder — ore nodes & rock strata: three **new ore nodes** (Silver T4, **Quartz** T2, **Garnet** T4) alongside the vendored copper/tin/iron/coal/diamond, **mese repurposed as Emberstone** (T5 — the glowing yellow crystal, existing texture fits; its *tool* tier dies in WP28), **Abyssal Crystal** as the T6 depth resource (§5.5), and the **six rock strata** of `items_crafting.md` §3.0.4 / `world.md` §2 R6: one node per tier at −100 / −300 / −500 / −700 / −1000 / bedrock, each carrying a `level` group that the tool's `groupcaps.<group>.maxlevel` must meet. The engine makes that a **hard refusal**, not a slow dig (`lua_api.md:2715-2731`), and `default` already uses the mechanism in both directions — this is a re-parameterisation, not new engine work. Strata drop ordinary cobble (the gate is *access*, not building material) and the same six layers are what WP24's isle generator uses | open (spec: `items_crafting.md` §3.0.1/§3.0.4, `world.md` §2 R6; **blocked on `TODO-design-crafting-rework.md` B7/B8** — the six node names/textures and the gem depth/scarcity values) | WP2, WP18 |
+| WP26 | Two-slot furnace & the alloy chain: port `lottblocks:dual_furnace_*` from Lord of the Test (`lottblocks/crafting.lua:201`; LGPL 2.1 → GPL-3.0 compatible, `items_crafting.md` §1.1) as the second smelting node next to `default`'s single-input furnace, then register the six-tier bar chain of §3.0.2 — Bronze (copper+tin, dual), Iron (lump, normal), Steel (iron bar + coal fuel, normal), Silversteel (steel+silver, dual), Embersteel (silversteel+emberstone, dual), **Grudgesteel (embersteel + Abyssal Crystal + 1 `group:grug_rare_trophy`, dual)**. **Known port conflict**: LotT's `check_craft` matches **exactly two** inputs, and the T6 bar is the only three-input recipe in the game — the port has to widen it without making the two-input recipes ambiguous. VENDOR.md gets the upstream commit + patch entry | open (spec: `items_crafting.md` §3.0.2, §1.1) | WP25 |
+| WP27 | Armor base recipes: `default` ships **no armor at all**, so all twelve base shapes (metal / cloth / leather × head, chest, legs, feet) have to be adapted — **Lord of the Test `lottarmor`** (LGPL 2.1; the owner considers it the closer fit for our ore/crafting model) or VoxeLibre `mcl_armor` (GPLv3+); sources and licences in `items_crafting.md` §1.2. Costs from the profession sections: metal chest 5 / legs 4 / head 3 / feet 2 bars (§3.3), leather jerkin 6 / pants 5 / hood 4 / boots 3 (§3.4), cloth robe 6 / leggings 5 / cowl 4 / slippers 3 bolts (§3.5). **Everyone can craft them** (§3.0.3), and they carry `_grug_armor` + `grug_armor_class` so WP7's armor pipeline and its rank filter pick them up with no change. Whether the leather line registers at all is `TODO-design-crafting-rework.md` C10 | open (spec: `items_crafting.md` §3.0.3/§3.1/§1.2, `inventory_equipment.md` §2) | WP26 |
+| WP28 | Vendored-recipe cleanup — the owner asked for a **conflict-free sweep, not a delete list**. Remove the **mese and diamond tool tiers** from `mods/BASE/default/tools.lua` (pick/shovel/axe/sword × 2 = 12 registrations plus their craft recipes, §3.0.3) once the six-tier ladder replaces them; remove **`mobs:protector` / `mobs:protector2`** (a second protection system competing with `grug_core.is_protected` and the POI registry); remove **`mobs:nametag`** (WP6 owns nametags); remove **`mobs:saddle` / `mobs:lasso` / `mobs:net` / `mobs:mob_repellent`** (taming was explicitly rejected — mounts are bought, `mounts.md` §3). Each removal has live consumers that must go with it: `mobs:mob_repellent`'s recipe takes `mobs:protector` as an ingredient and `protector2` takes a mese crystal, the fuel recipes at `mobs/crafts.lua:288-292` reference the deleted items, and `api.lua` branches on `mobs:nametag` around `:4509` for the naming formspec. Done when a **fresh world boots with no unknown-item, missing-ingredient or duplicate-recipe line in `debug.txt`**; VENDOR.md gets the patch entries | open (spec: `items_crafting.md` §3.0.3, `mounts.md` §3) | WP26, WP27 |
+| WP29 | `grug_gear` rename & merge into the base ladder: the 72 shipped items drop their bracket adjectives (*Crude / Plain / Tempered / Reinforced / Superior / Grand*) for **material names** — Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves, Embersteel Sabatons, Grudgesteel Greataxe; cloth items take their bolt grade and leather items their leather grade (Linen Robe, Silkweave Cowl) — and the catalog **merges with the base tool ladder**, because one concept may have only one item (§3.0.3). Slot nouns, **prices, ilvl anchors, bracket boundaries and the generator itself are untouched** (§3.8/§8.2). The mod header's claim that the catalog is "10–15 % behind crafted gear of the same era by construction" (`grug_gear/init.lua:8`) is **false since 2026-08-07** and must go: vendor gear and base crafted gear are now the same item, and the crafter's entire edge is refinement + affixes (§6b), not a base number | open (spec: `items_crafting.md` §3.0.3/§3.8) | WP26, WP27, WP28 |
+| WP30 | Trader rotating slots 2 → 3: `items_crafting.md` §3.2 gained the **caster 1H family** (wand / scepter / orb, the Woodcarver's, §3.6a) on the existing 1H row — same fpi 1.0, same ×1.0 factor — so `grug_gear` registers a fourth extra family and the extras pool grows from 3 to **4**. `ROTATING_SLOTS` in `mods/ENTITIES/grug_traders/stock.lua:123` rises from 2 to **3**, keeping the shipped invariant "slot count **strictly below** pool size" (§3.8): one family is still withheld every hour, so the re-roll stays a rotation rather than a permutation. Casters can finally buy a floor weapon, which the old three-family pool never allowed | open (spec: `items_crafting.md` §3.2/§3.8) | WP7 |
+| WP31 | Mounts: the four riding tiers as a **universal skill** (no main-profession slot) bought at a trainer for 1s / 8s / 30s / 60s ≈ 1g — Apprentice slow land, Journeyman fast land, Expert slow flying, Master fast flying, +50 % / +100 % over the engine's 4 nodes/s walk. A mount is an **entity the player is attached to** (`mobs.attach` / `detach` / `drive` / `fly` from the already-vendored MIT `mobs_redo/mount.lua`, which needs `player_api` — we have it), speed is the **entity's velocity and never `physics_override.speed`** (that field already has two declared owners: mob webs and the PvP snare chain), and a mount carries no level, no XP, no threat and is never registered through `grug_mobs.register_mob`. Zone rules: the open-sea **"Exhausted"** debuff dismounts a rider after 10 s, with the boundary read from `grug_core.open_sea_at(pos)` and from **no hand-picked coordinate**; **housing isles forbid riding and flying outright** at every tier, and the two rules meet exactly at the isle's 150-node safe ring | open (spec: `docs/design/mounts.md`; **blocked on the `open_sea_at` fix (B9, WP24 owns it) and on `TODO-design-crafting-rework.md` D12–D20** — saddle item and assets, world persistence, damage/kill rules, the combat dismount, enemy-territory and flight restrictions, the flight ceiling and the strait, what "Exhausted" does on foot, skins, and whether the trainer is a new NPC) | WP24, WP28 |
+| WP32 | **Farming — explicitly post-MVP** (Phase 2, its own package): a Minecraft-like farming layer, adapted rather than invented — both VoxeLibre and Lord of the Test ship a working one, and the plant selection is large enough that content is never the constraint. It must fit the herb/spice split of `biomes_mobs.md` §2 exactly: **spices are farmable, healing herbs never are** (they grow on stone, gravel, mesa clay, dead wood and jungle floor — ground no plough touches — which is what keeps every healing herb bound to a journey into its own biome), and the **found-only** cooking ingredients (mushrooms, wild cocoa, rock salt) never become crops either, so the top of the cooking ladder stays a reason to travel | open, **Phase 2** (spec: `biomes_mobs.md` §2/§6, `professions.md` §1) | WP10, WP33 |
+| WP33 | Herb & food nodes (the MVP gathering set): **no gathering node exists in code today** — `mods/MAPGEN/grug_mapgen/decorations.lua:10-11` carries only a comment deferring them. Register and place the **six herbs** — healing gravemoss (T1), dragonweed (T2), crimson lotus (T3), Alchemist-only; spices sunleaf (T1), marshbloom (T2), stormkelp (T3), gathered by everyone and used by both the Alchemist and Cooking — plus the MVP cooking ingredients including the **found-only** three (mushrooms, wild cocoa, rock salt), each in the biomes the marker table of `biomes_mobs.md` §2 assigns it, mirrored so **both continents reach every tier** (§6). Punching an alchemy herb without the Alchemist profession yields nothing plus a hint message (the gate is the book group, `items_crafting.md` §3.6); food and spices are universal | open (spec: `biomes_mobs.md` §2/§6, `professions.md` §1) | WP18 |
 
 ### Readiness (2026-08-07)
 
-**Ready now** (no design blockers, deps done): **WP5** (loot/enchants —
-items_crafting.md §6 decided, and WP7 published the `_grug_ilvl` /
-`_grug_quality` seam it plugs into), **WP10** (professions — WP7 ✅;
-`grug_traders.register_stock` is pre-written for the job supplies),
-**WP16** (guilds — WP7 ✅ shipped the money API the bank account needs),
+**Re-checked after the 2026-08-07 crafting rework** (`d5baf03`), which
+moved WP5 and WP10 out of "ready" and added the material-ladder chain.
+
+**Ready now** (no design blockers, deps done): **WP16** (guilds — WP7 ✅
+shipped the money API the bank account needs, and the claim removal made
+the WP *smaller*), **WP30** (trader rotation 2 → 3 — §3.2/§3.8 decided,
+WP7 ✅, the only new WP with nothing in front of it), **WP33** (herb &
+food nodes — `biomes_mobs.md` §2/§6 decided down to the biome, WP18 ✅),
 WP11 (talents — spec progression.md §2), WP13 (structures — mapgen/
 biomes ship, and WP6's outpost/camp anchors + POI registry are waiting
 for real structures), WP14 (offhand), WP17 (travel), WP20 (party),
@@ -61,17 +73,52 @@ elite/rare tier, the telegraph mechanic the boss scales up, and the POI
 protection registry a lair needs).
 
 **Blocked, by what**:
-- WP22 ← WP5 (needs gear to wear out); its WP7 half is done
+- **WP5 ← `TODO-design-crafting-rework.md` A2** (the affix word list and
+  its stat mapping). It was "ready now" before the rework; the design
+  half it plugs into is otherwise decided (§6b is complete, WP7
+  published the `_grug_ilvl` / `_grug_quality` seam), but a roller
+  cannot build a display name out of words that do not exist yet. A6
+  (the refined marker) should be decided in the same pass, because WP5
+  writes the description builder
+- **WP10 ← `TODO-design-crafting-rework.md` A1/A4/A5/E21** (signature
+  recipes per mastery tier, the T5/T6 and Woodcarver/Goldsmith
+  keystones, the missing leather/bolt/wood grades, the cooking recipe
+  lists) **and ← WP25/WP26** (a profession with no ore ladder and no
+  alloys has nothing to refine) **and ← WP33** (the Alchemist has no
+  herbs to gather). The structure is fully decided; the content lists
+  are not
+- **WP25 ← `TODO-design-crafting-rework.md` B7/B8** (six stratum node
+  names + textures, the Quartz/Garnet/Silver depth and scarcity values).
+  Everything else about it is decided, and it is the root of the whole
+  material chain: WP26 → WP27 → WP28 → WP29 all hang off it, and so does
+  WP24's isle rock
+- WP26 ← WP25 · WP27 ← WP26 · WP28 ← WP26, WP27 (the vendored tool tiers
+  can only be deleted once the ladder that replaces them exists) ·
+  WP29 ← WP26, WP27, WP28
+- WP22 ← WP5 (needs gear to wear out); its WP7 half is done. The wear
+  budget is now 3000 base / 6000 refined
 - WP8 ← `progression.md` §4 (quest structure/level gates); **WP9** is
   free of its WP6 dependency (guards, outposts and the war-coast roster
   ship) and now waits only on WP8 + that same §4
 - WP12 ← WP17
-- **WP24 (housing) is design-unblocked since 2026-08-07** (world.md §5
+- **WP24 (housing)** is design-unblocked since 2026-08-07 (world.md §5
   decided; `TODO-design-housing.md` now holds only in-WP tuning) and,
-  with WP7's gold shipped, waits on **WP17** alone (the pad is a
-  waypoint). It also needs a **fix in `grug_core.open_sea_at`**: today
-  open sea starts at |z| = 3200, which would spawn Kraken Guards on
-  housing beaches (world.md §2b)
+  with WP7's gold shipped, waits on **WP17** (the pad is a waypoint) and
+  now also on **WP25** — the isle's rock is the same six strata as the
+  continent's (world.md §5.3), so the depth ladder cannot be built
+  before the strata exist. It still needs the **fix in
+  `grug_core.open_sea_at`**: today open sea starts at |z| = 3200, which
+  would spawn Kraken Guards on housing beaches (world.md §2b) — and
+  since the mount rework that fix is a precondition for **WP31** too
+  (`TODO-design-crafting-rework.md` B9)
+- **WP31 (mounts) ← WP24, WP28 and nine open design questions**
+  (D12–D20). The spec in `mounts.md` is deliberately incomplete: it
+  fixes the tiers, the prices, the attachment model and the two
+  no-mount rules, and leaves the item, the assets, damage, the combat
+  dismount and every zone restriction open
+- **WP32 (farming) is Phase 2 by decision**, not by blocking — it waits
+  on WP10 and WP33 and belongs to the later expansion package together
+  with the extra herbs and cooking recipes
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
@@ -104,8 +151,13 @@ z=±200) and the mountain wall at x=±2000. `grug_core` gained
 `territory_at/zone_at/difficulty_at/mob_level_at` (ring anchors per
 combat_stats.md §3) and the central `core.is_protected` override (R1–R3;
 faction resolved via `grug_core.get_player_faction`, overridden by
-grug_factions). Deferred: R4 ore respawn → with outposts/mining zones
-(WP6/WP13); housing frontier is fully locked until housing plots ship.
+grug_factions). Deferred: R4 ore respawn → **shipped with WP6**
+(`grug_nodes/ore_respawn.lua`). *Corrected 2026-08-07*: the old note
+"→ with outposts/mining zones (WP6/WP13)" is void — continental mining
+zones were never built, and guild mining claims were **removed** with
+the crafting rework (`guilds.md` §3.2), so there is no zone layer left
+for R4 to wait on. Housing frontier is fully locked until housing plots
+ship (WP24).
 
 **WP18 — Continent mapgen rework** (✅ 2026-08-06): the world is now two
 mirrored continent rectangles (`grug_core.CONTINENT_X_HALF` 1500,
@@ -220,8 +272,15 @@ is met at the hotspots and not in the median cell.
 - **WP20**: tap rules must fix XP attribution (today the LETHAL hit gets
   the kill XP, not the first damager's party) and replace the MVP heal
   threat group (healer + heal target) with real party membership.
-- **WP16**: the ore-respawn **guild-claim exception** is a reserved slot
-  in the dig hook.
+- **WP24** (was WP16, re-assigned 2026-08-07): the ore-respawn
+  **claim exception** reserved in the dig hook
+  (`grug_nodes/ore_respawn.lua:108-120`) has lost its original owner —
+  **guild mining claims were removed** with the crafting rework
+  (`guilds.md` §3.2), so there is no `grug_claims` to call and the code
+  comment naming one is stale. The reserved slot is still needed, for a
+  different rule: on a **housing isle a mined-out treasure cluster must
+  never regrow** (`world.md` §5.4, "no respawn (R4)"), so WP24 fills the
+  slot with an isle test instead of a claim test.
 - **PvP work package** (with the war-coast PvP quests, WP9-adjacent):
   port the 2026-08-07 melee auto-attack pipeline (cadence gate, Str,
   crit — combat_stats §2) to **player-vs-player punches**. PvP melee
@@ -266,13 +325,20 @@ decisions this WP settled are folded into `economy.md` §1/§2,
   `grug_traders`; **`grug_req_level` derivation** from the published
   `_grug_ilvl` (WP7 enforces no level requirement anywhere); the
   **leather armor line** (curve is in the generator, `register = false`,
-  no wearer before the Rogue); and **quality/wear are ignored by
-  buy-back prices** — a worn or Uncommon item sells for the same 25 %.
+  no *intended* wearer before the Rogue — but the shipped rank filter
+  refuses only `rank > max`, so a Warrior could wear it today if it were
+  registered: `TODO-design-crafting-rework.md` C10 decides whether it
+  ships in the MVP); and **quality/wear are ignored by buy-back
+  prices** — a worn or Uncommon item sells for the same 25 %.
 - **WP14**: **shields/offhand contribute no armor** —
   `grug_inventory.get_equipped_armor` covers the four armor slots only,
   and the §3.1 shield column has no consumer yet.
-- **WP10**: **job supplies, profession tomes** (§8.2 prices 25c / 1s /
-  3s / 10s) and the **Alchemist's 30 % potion** are unregistered — the
+- **WP10**: **job supplies** and the **profession recipe book** — the
+  four tome rows of §8.2 collapsed into **one book at 25c** on
+  2026-08-07 when the tome chain was retired (`items_crafting.md` §2.2;
+  the 1s/3s/10s rows are gone, and a re-bought book immediately shows
+  every group the player's meta says is open) — and the **Alchemist's
+  30 % potion** are unregistered; the
   `grug_traders.register_stock` calls are pre-written as comments in
   `stock.lua` and an unknown item name would render as a buyable
   "unknown item". WP10's instant potions **must reuse**

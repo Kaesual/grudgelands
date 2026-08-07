@@ -50,13 +50,16 @@ Two free main professions per player, unchanged. The roster is organised
 | **Goldsmith** | Gold + Quartz / Garnet / Diamond | **Both trinket slots**, gem refinement, the **Gem Detector** |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
-**One MVP caveat, on the Leatherworker.** No MVP class can wear rank-2
-armor (Warrior 3, Mage 1, Priest 1 — `inventory_equipment.md` §2), so the
-leather **items** are not registered until the Rogue arrives in Phase 2
-or WP5's drop tables need them, whichever lands first
-(`items_crafting.md` §3.4/§3.8). The chain, the curve and the recipes are
-authored; in the MVP the profession ships on its armor kits, its quiver
-and its cross-supply to Tailors and Alchemists (§3).
+**One MVP caveat, on the Leatherworker.** The **Warrior can wear
+leather** — a class wears its own rank and everything below
+(`inventory_equipment.md` §2), so rank-2 armor is legal for rank-3
+characters. But at equal tier leather is strictly less armor than metal,
+so a Warrior has no *reason* to choose it, and the Rogue who would is
+Phase 2. Whether the leather line registers in the MVP and what would
+make it attractive is open in `TODO-design-crafting-rework.md` (C10).
+The chain, the curve and the recipes are authored either way, and the
+profession also ships on its armor kits, its quiver and its cross-supply
+to Tailors and Alchemists (§3).
 
 ### 2.1 The coverage is complete and overlap-free
 

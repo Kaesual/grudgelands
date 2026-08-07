@@ -37,9 +37,10 @@ game (not a mod pack), written in Lua.
 - **Player housing — the King's isles**: beyond the coastal sea behind
   each continent lies a chain of unspoiled isles; the **King grants one
   per character** for merit (questline, level 30). A 100×100 build box,
-  free digging down to the seabed, and below it a **ladder of purchased
-  depth rights** whose finite treasure clusters (no respawn, detector
-  items to find them) are the central gold sink. The main outlet for
+  free digging down to the seabed, and below it a **ladder of six
+  purchased depth rights** — one per rock stratum, 50c/2s/6s/20s/60s/1g
+  ≈ 1.9g — whose finite treasure clusters (no respawn, detector items to
+  find them) are the central gold sink. The main outlet for
   free building, and the only place a player meets their own King as an
   ally (`docs/design/world.md` §5).
 - **Travel**: waypoint network (Diablo/PoE style — teleport only from
@@ -53,6 +54,16 @@ game (not a mod pack), written in Lua.
 - Item quality tiers **Common/Uncommon/Rare/Unique** (white/blue/yellow/
   orange; Uniques post-MVP); better gear comes from crafting and hard
   bosses, not vendors — "the harder the enemy, the better the loot".
+- **One material ladder, six tiers** (decided 2026-08-07,
+  `docs/design/items_crafting.md` §3.0): Bronze → Iron → Steel →
+  Silversteel → Embersteel → Grudgesteel, one per ten character levels,
+  with gems at T2/T4/T6 and alloys smelted in a two-slot furnace. Six
+  **rock strata** gate digging by tool tier, so how deep you can mine is
+  the same statement as what you can wear. **One item per concept**:
+  the vendor catalog and the base craft ladder are the *same*
+  material-named items, everyone can craft the base tier, and what a
+  profession adds on top is **refinement** (+15 % damage, +100 %
+  durability) and **prefix/suffix enchants** — never a parallel item.
 - **Combat rests on an aggro/threat system** (it shaped WoW's fights):
   groups play the tank/healer/damage trinity; solo players stay viable
   via food (out-of-combat recovery) and healing potions. Mobs are
@@ -73,10 +84,12 @@ game (not a mod pack), written in Lua.
   land"** — the Accord–Throng conflict is old, but a new demonic evil
   rises from the Nether and threatens both factions equally
   (`docs/design/story.md`).
-- **Guilds as a pure ownership and access layer** (a shared bank account
-  reachable from members' isles, continental mining claims, mutual isle
-  visiting, fixed roles): `docs/design/guilds.md`. Deliberately NO guild
-  levels/perks/wars — Luanti is not MMORPG enough for that.
+- **Guilds as a pure social and access layer** (a shared bank account
+  reachable from members' isles, mutual isle visiting, fixed roles,
+  guild chat): `docs/design/guilds.md`. **Continental mining claims were
+  removed on 2026-08-07** — a guild owns no ground, so there is no land
+  purchase in the game at all. Deliberately NO guild levels/perks/wars —
+  Luanti is not MMORPG enough for that.
 - **License: GPL** (non-commercial project) — so we can adopt and adapt
   code from all reference projects (incl. VoxeLibre).
 
@@ -162,14 +175,23 @@ game (not a mod pack), written in Lua.
       shared material/food items plus every family's drop table, gated by
       the player-tag rule
 
-### 1.4b Loot & enchantments
+### 1.4b Loot, refinement & affixes
 - [ ] Item quality tiers Common/Uncommon/Rare (color-coded; Unique
-      reserved in the architecture, ships post-MVP)
+      reserved in the architecture, ships post-MVP) — quality now follows
+      the **affix count**: 0 Common, 1–2 Uncommon, 3–4 Rare
 - [ ] Class items as drops: wand, mage robe, warlock robe, iron armor,
-      iron sword, dagger, … (a few items per class)
+      iron sword, dagger, … (a few items per class); **a drop's material
+      tier matches the mob's tier** (a Steel item drops from level 21–30
+      mobs and nowhere else)
 - [ ] Simple enchantment system with **roll ranges**: items drop with
       randomly rolled bonuses, e.g. strength +1 to +3, attack speed +5% to
       +20% (values in item meta, visible in the description)
+- [ ] **Refinement and the prefix/suffix system**
+      (`docs/design/items_crafting.md` §6b): only a profession can refine
+      a base item, only a refined item can be enchanted, and enchants are
+      **max 2 prefixes + 2 suffixes** written into the item name
+      ("Lucky Stone Sword of the Bear"). Mastery tier decides how many of
+      the four slots a crafter can fill
 - [ ] For each class item an improved variant that only drops from hard
       mobs (elite/heartland) — with better roll ranges
 
@@ -187,14 +209,26 @@ game (not a mod pack), written in Lua.
 - [ ] Job system (`docs/design/professions.md`): 2 main professions per
       player, freely chosen at job trainers; **Cooking + First Aid as
       universal secondaries** for everyone; gathering split (food plants
-      for all, alchemy herbs need Herbalism)
-- [ ] MVP jobs: **Herbalism**, **Alchemist**, **Blacksmith**,
-      **Leatherworker** (dex gear; ×5 leather via player-tag loot hook),
-      **Tailor** (bags), **Gem Hunter** (mining/smelting stay open to
-      everyone)
+      and spices for all, healing herbs need the Alchemist)
+- [ ] MVP jobs — **six, cut by material and never by class** (re-cut
+      2026-08-07): **Blacksmith**, **Leatherworker** (×5 leather via the
+      player-tag loot hook), **Tailor** (bags), **Woodcarver** (staves,
+      wands, scepters, orbs — casters had no craftable weapon before),
+      **Goldsmith** (both trinket slots, gem refinement, Gem Detector),
+      **Alchemist** (gathers its own herbs). Herbalism merged into the
+      Alchemist, Gem Hunter into the Goldsmith; mining and smelting stay
+      open to everyone, and so does crafting the base item of every tier
 - [ ] Crafting model: everything in the 3×3 grid, multi-stage,
       recipe-unlock gated + workbench proximity for profession recipes,
-      recipe book UI (`docs/design/inventory_equipment.md` §4)
+      **one recipe book per profession** with six T1–T6 groups — level
+      controls visibility, the tier keystone controls the unlock
+      (`docs/design/items_crafting.md` §2.2,
+      `docs/design/inventory_equipment.md` §4). Cooking gets a book too,
+      without keystones and without costing a main slot
+- [ ] Material ladder & world materials: the three new ore nodes (Silver,
+      Quartz, Garnet), mese repurposed as Emberstone, the six rock strata
+      with their digging gates, the two-slot furnace and the alloy chain
+      (`docs/design/items_crafting.md` §3.0)
 - [x] Gold system (currency, persistent) — WP7: one copper integer in
       player meta, 100c = 1s / 100s = 1g display-only, HUD + `/money`
       (`docs/design/economy.md` §1)
@@ -202,7 +236,9 @@ game (not a mod pack), written in Lua.
       tier per category (vendor floor rule, economy.md) — WP7: 8 vendors
       at the six race capitals, six bracket catalogs with the hourly
       rotation, race-exclusive vendors + 10 % same-race discount, 25 %
-      buy-back (job supplies and profession tomes follow with WP10)
+      buy-back (job supplies and the one 25c profession recipe book per
+      profession follow with WP10; the rotating extras pool grows to four
+      families with WP30, so casters can buy a floor weapon)
 
 ### 1.7 Map
 - [ ] Global map with fog of war, uncovered per player
@@ -220,15 +256,22 @@ game (not a mod pack), written in Lua.
       (crit/stun) only from stealth, no threat until the opener; NB
       engine visibility is global — no per-viewer invisibility, so
       stealth is semi-transparent/invisible for everyone
-- [ ] Profession splits once population supports them: Blacksmith →
-      Weapon-/Armorsmith, Tailor + Enchanter, Leatherworker + Bowyer
-      (`docs/design/professions.md` §5)
-- [ ] **Decide: bow/ranged-weapon system + a Hunter-like class**
-      (prerequisite for Bowyer; not in the current class plan)
+- [ ] Profession split once the population supports it: Blacksmith →
+      Weapon-/Armorsmith (`docs/design/professions.md` §5). **The Bowyer
+      and Enchanter splits are dropped** (2026-08-07): bows belong to the
+      Woodcarver and the quiver to the Leatherworker, and enchanting is
+      what every profession does to its own refined items rather than a
+      seventh profession taking a cut of all six
+- [ ] **Decide: bow/ranged-weapon system + a Hunter-like class** — not in
+      the current class plan. The item half is already specced,
+      licence-clean and owned (bows = Woodcarver, quiver = Leatherworker,
+      `docs/design/items_crafting.md` §9), so only the class decision is
+      missing
 - [ ] **Player housing — the King's isles** (per-character grant at
-      level 30, 100×100 build box, 10 purchased depth steps with finite
-      treasure clusters, isle styles, visitor/trusted access, guild-bank
-      terminal; spec: `docs/design/world.md` §5, open tuning:
+      level 30, 100×100 build box, **six** purchased depth steps — one
+      per rock stratum, ≈ 1.9g — with finite treasure clusters, isle
+      styles, visitor/trusted access, guild-bank terminal; spec:
+      `docs/design/world.md` §5, open tuning:
       TODO-design-housing.md) — **strong candidate to pull into Phase 1**:
       it is the central gold sink AND the only sink that opens before
       level 60, so Phase 1 without it has nowhere for gold to go
@@ -243,7 +286,18 @@ game (not a mod pack), written in Lua.
       layer ("the world's magic created connections"), island crossings
       into enemy territory (mirror pairing), later world bosses behind
       challenges (spec in progress: TODO-design-nether.md)
-- [ ] Mounts (incl. class-specific unlock quests as flavor)
+- [ ] **Mounts** (spec decided 2026-08-07: `docs/design/mounts.md`):
+      riding is a universal skill on the same four mastery tiers,
+      **bought with gold, never tamed** — slow land, fast land, slow
+      flying, fast flying at 1s/8s/30s/60s ≈ 1g, a welcome second
+      long-term sink next to housing. Open sea throws a rider off after
+      10 s of "Exhausted"; housing isles forbid riding and flying
+      outright
+- [ ] **Farming** — Minecraft-like, adapted from VoxeLibre or Lord of the
+      Test, together with the extra herbs and cooking recipes as one
+      later expansion package. **Spices are farmable, healing herbs never
+      are**, and the found-only cooking ingredients never become crops
+      (`docs/design/biomes_mobs.md` §2)
 - [ ] Reputation system (simplified)
 - [ ] Auction-house-like trading between players
 - [ ] **Ocean content**: the reef band around continents and housing
@@ -263,6 +317,12 @@ game (not a mod pack), written in Lua.
 ## Deliberately NOT planned
 
 - Guild progression (levels, perks, guild wars) — guilds stay a pure
-  ownership layer
+  social and access layer
+- Guild-owned land: continental mining claims were designed and then
+  **removed** (2026-08-07) — there is no land purchase in the game
 - Battlegrounds/arenas (maybe much later)
-- Flying mounts
+- A seventh "Enchanter" profession — enchanting belongs to all six
+
+*(**Flying mounts left this list on 2026-08-07**: `docs/design/mounts.md`
+makes the two flying tiers the travel milestone of the second half of the
+game, fenced in by the open-sea "Exhausted" rule and the no-mount isles.)*
