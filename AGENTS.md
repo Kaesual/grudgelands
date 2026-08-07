@@ -208,6 +208,36 @@ Details + line numbers in [docs/research/](docs/research/).
   Fallback design: additionally make heartland mobs fast (`run_velocity`)
   and give them ranged attacks (`attack_type = "dogshoot"`) so terrain
   exploits are not trivial.
+  **WP6 patterns (binding for every new mob):**
+  - **Level/tier engine contract** (`grug_mobs/levels.lua`): a mob def
+    NEVER hand-sets `hp_min`/`hp_max`/`damage`/XP/`armor` — they are
+    derived from `grug_core.mob_level_at`/`guard_level_at` plus the tier
+    multipliers on the first active tick. `_grug_fixed_level` is the one
+    documented exception (Kraken L100). Everything else (speeds,
+    view_range, drops, visuals) stays def-owned.
+  - **Runtime field installation**: mobs_redo's `register_mob` copies an
+    EXPLICIT def-field whitelist into the entity table (api.lua:3196ff)
+    and staticdata drops function fields — so every `_grug_*` field an
+    api.lua patch reads off `self`, and every callable, must be
+    (re-)installed from the `do_custom`/`do_punch` wrappers on each
+    activation, not written in the def.
+  - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
+    die, be unloaded or leash-reset inside the window, and mobs_redo
+    persists plain fields — a lost timer would save the mob permanently
+    rooted. (`core.after` is fine for PLAYER-side effects, re-fetching
+    the player by name.)
+  - **Chase model** (combat_stats §3/§4): give up at **45 m** (an
+    api.lua patch — vanilla uses `view_range`, ≤ 16 m, which made every
+    other rule dead code), walk speed beyond **25 m** (soft de-aggro),
+    leash at **40 m dragged from the chase anchor** (not from home) or
+    15 s without contact, then **evade snap-home** if the mob stands
+    beyond its own radius from its post.
+  - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
+    rows of one name share a budget, per-biome tints do not. Spawn
+    calibration reference: **`docs/research/wp6_spawn_budget.md`**.
+  - **16 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+    inventory and rationale live in VENDOR.md; re-apply them on any
+    mobs_redo update.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

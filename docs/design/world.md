@@ -129,6 +129,19 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     and a player has to be able to dig out), while **villages, outposts
     and the real capitals (WP13 structures) also protect ≥ 10 nodes of
     surrounding terrain** in x/z.
+  - **POI registry** (`grug_core.add_poi{id, x, z, half, y_base}`, WP6):
+    every non-capital protected structure registers itself here instead
+    of hard-coding a zone. `half` is the **final** x/z half-extent —
+    the ≥ 10 nodes of surround are already included by the caller, the
+    registry adds nothing; `y_base` is the ground height the **mapgen**
+    resolved for that structure, so the registry entry is also the
+    persisted height decision every later mapchunk slice reads back.
+    The whole registry lives in mod storage (idempotent by id) and is
+    scanned by the central `core.is_protected`, applying the vertical
+    rule above (`POI_PROTECT_DEPTH` = 30 below `y_base`, then upward
+    without limit). Anchors whose terrain comes out flooded or too steep
+    are **skipped** — best effort, the minimum of §9 is a promise about
+    the layout, not about every single coordinate.
 - **R2 — Enemy territory**: no digging, no node placement of any kind —
   **including torches, ladders etc.** Items remain usable. Darkness and
   danger in enemy land are a feature.
@@ -139,7 +152,14 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R4 — Ores/resources respawn** (node timers) in the open world, so a
   persistent world doesn't run dry. **Exception: no respawn inside guild
   mining claims and housing plots** — a claim's price buys its *finite*
-  resources (`guilds.md` §3).
+  resources (`guilds.md` §3). Implemented with WP6: digging one of the
+  scatter ores leaves a **depleted-vein placeholder** node that
+  remembers the ore in its meta and re-grows it after a random
+  **15–30 min**. **Digging the placeholder cancels the respawn** — the
+  timer lives and dies with the node, and the placeholder itself drops
+  nothing; that is the price of clearing a vein out of your build. The
+  guild-claim exception is a reserved slot in the dig hook, filled by
+  WP16 when claims exist.
 - **R5 — Guild property**: housing plots and mining claims are fully
   usable by all members of the owning guild, locked for everyone else
   (section 5, `guilds.md`).
@@ -185,8 +205,13 @@ faction-wide services live there. Each capital contains:
 - Traders, quest givers, job trainers.
 - A waypoint of the travel network (section 6).
 - Elite guards — a capital raid is a Phase-2+ group event, not a solo
-  gank. The faction **King** sits in the faction seat as a heavily
-  guarded raid boss with top-tier loot rolls (see items/crafting
+  gank. **Real since WP6**: each spawn platform carries a **guard
+  banner** node that keeps 2–3 faction guards standing on it, and
+  because the capitals sit in zone `core` the guard field floors them at
+  60 → every capital guard is an automatic elite (scale, tint,
+  telegraph). Capital banners get **no patrol leg** — that garrison
+  holds the platform. The faction **King** sits in the faction seat as a
+  heavily guarded raid boss with top-tier loot rolls (see items/crafting
   design).
 - Race flair through architecture and NPCs (per-race wood/build sets,
   biomes_mobs.md §5; elven capital = treehouses). Mechanical race perks hang
@@ -202,10 +227,31 @@ Military outposts across each territory enforce the level gating:
 - **Guard level follows the inverse guard field** (`guard_level_at`,
   section 1): elite garrisons in the core, ~local mob level +5 at the
   war coast — guards beat equal-level intruders; groups or higher-level
-  players can push through.
+  players can push through. A guard at level ≥ 60 is automatically an
+  elite (scale/tint/telegraph, combat_stats.md §3).
+- **The guaranteed minimum is FOUR outposts per race band** — one per
+  ring — i.e. **24 in the world** (6 bands × 4). All are deterministic,
+  derived from the band's capital anchor (`grug_core.outpost_anchors`):
+  they sit at the capital's own x, at |z| = **250** (war coast), **500**
+  (inner) and **1350** (outer); the **coast** post goes to the band's
+  own shoreline — the two flank bands to x = **±1350** at the capital's
+  z, the centre band to the back shore at |z| = **1550**. An anchor whose
+  terrain resolves flooded or too steep is skipped (best-effort, §9).
+  Anything denser than this minimum — the old "roughly one outpost per
+  ring per ~500 m east–west" — is the job of WP13's patch/settlement
+  pass (biomes_mobs.md §1.4), not of the guaranteed layout.
 - Between outposts: **ambient patrols** on the same guard field — closes
-  the "just walk around the outpost" hole.
-- Density: roughly one outpost per ring per ~500 m east–west.
+  the "just walk around the outpost" hole. One guard per post is
+  designated **patroller** and walks the leg toward the next ring inward
+  (coast → outer → inner → war coast, and the war-coast post walks back
+  inward so the chain has no dead end); the designation rotates
+  **hourly**. The patroller is exempt from the leash's snap-home rule —
+  being far from its post is the whole point.
+- **Guards attack enemy players and monsters, never other NPCs**
+  (`attack_npcs = false`): a deliberate MVP simplification, so faction
+  NPC brawls cannot start themselves. Own-faction and *factionless*
+  players (brand-new characters still on the spawn platform) are vetoed
+  during target acquisition.
 - **Rare patrol mobs**: some areas have hard-to-kill rare mobs with
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
@@ -380,13 +426,17 @@ extras, WP13/WP18):
 - 1 **flavor camp** in the inner ring (e.g. a race-owned miners' camp:
   small building, chests, 2–3 NPCs; doubles as the mining-zone anchor
   of section 4).
-- 1 **military outpost per ring** as the guaranteed minimum (section 4;
-  patch outposts come on top).
+- 1 **military outpost per ring** as the guaranteed minimum — four per
+  band, 24 in the world, at the deterministic anchors of section 4
+  (patch outposts come on top with WP13).
 - 1 **apex lair** in the outer ring (section 4b, staged).
 
 Life measures (cheap on a voxel budget): named NPCs with one-liner
-barks, visible patrols between outpost ↔ village that really fight
-nature mobs on the way, light/smoke details, a quest board per village.
+barks, visible patrols between the outposts that really fight nature
+mobs on the way, light/smoke details, a quest board per village. Guards
+and patrols fight **monsters and enemy players only** — NPC-vs-NPC is
+off (`attack_npcs = false`, section 4), so the "free world life" is
+guards versus wildlife, never a faction brawl starting itself.
 **NPC and guard levels always match the surrounding wilderness**
 (`guard_level_at` reflects the local ring).
 

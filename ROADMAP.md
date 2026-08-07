@@ -98,14 +98,14 @@ game (not a mod pack), written in Lua.
       `docs/design/biomes_mobs.md` §1.3,
       guaranteed strait and coastal ocean, deep-sea guard mob
 - [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
-      field + `guard_level_at` (mobs actually scaling with them lands
-      with 1.4/WP6)
+      field + `guard_level_at` (mobs and guards actually scale with them
+      since WP6)
 - [x] Faction spawn points: walkable camp platforms at the three race
       capitals per continent (players spawn in their own race's capital;
       real capital structures follow with WP13)
 - [x] Build/dig restrictions per territory (own continent free, enemy
-      continent and the whole ocean locked; capital protected zones; ore
-      respawn deferred to WP6/13)
+      continent and the whole ocean locked; capital protected zones +
+      the WP6 POI registry for outposts; R4 ore respawn shipped with WP6)
 - [x] PvP basis: friendly-fire protection within the faction;
       quest-driven PvP follows with 1.5
 
@@ -129,27 +129,35 @@ game (not a mod pack), written in Lua.
       passive per race (world.md §7)
 
 ### 1.4 Mobs & combat
-- [ ] Faction guards (attack the enemy faction), spawned by military
+- [x] Faction guards (attack the enemy faction), spawned by military
       outposts + ambient patrols, levels scaling with territory depth
+      (WP6: 24 deterministic outposts, hourly patrol legs, `guard_level_at`
+      with auto-elite ≥ 60; real outpost structures follow with WP13)
 - [x] WoW-style starter-zone mobs: aggressive boar (day) and zombie
       (night, burns in daylight) with XP rewards and loot; more (wolves, …)
       follow with WP6
-- [ ] Neutral/hostile mobs in tiers: safe core = weak, outer ring and
+- [x] Neutral/hostile mobs in tiers: safe core = weak, outer ring and
       coasts = strong, elite mobs that require groups; incl. neutral
       **bandit camps**
       (humanoid loot source — cloth — in both territories)
-- [ ] **Aggro/threat system**: mobs pick targets by threat (damage +
+      (WP6: 38 mobs on the level/tier engine, elite/rare telegraph,
+      named rares with faction broadcast, 12 deterministic camps)
+- [x] **Aggro/threat system**: mobs pick targets by threat (damage +
       healing × factor); tank threat tools/taunt follow with class
-      abilities (1.3)
+      abilities (1.3) — WP6: threat table in `grug_core`, 120 %
+      hysteresis, heal threat, taunt, leash/evade
 - [ ] Food & recovery basics: slow natural HP regen, food for
       out-of-combat recovery, healing potions (alchemy, 1.6) for
       in-combat emergencies
-- [ ] **Good pathfinding** — dangerous mobs must reliably reach their
+- [x] **Good pathfinding** — dangerous mobs must reliably reach their
       targets (not get stuck in ravines etc.); evaluate and if necessary
       improve the mob engine's pathfinding quality (quality criterion, not
       a nice-to-have). Mobs run slightly faster than players so evading
-      is never trivially easy
-- [ ] Loot drops (trash loot to sell, crafting materials)
+      is never trivially easy (WP6-T10 + review: four `api.lua` fixes,
+      the 45 m chase model, `fear_height` 6 cliff rule)
+- [x] Loot drops (trash loot to sell, crafting materials) — WP6: the
+      shared material/food items plus every family's drop table, gated by
+      the player-tag rule
 
 ### 1.4b Loot & enchantments
 - [ ] Item quality tiers Common/Uncommon/Rare (color-coded; Unique

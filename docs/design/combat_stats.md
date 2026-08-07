@@ -82,20 +82,38 @@ Normal tier at level L:
 - **Soft de-aggro** (with the speed rule, decided 2026-08-06): beyond
   ~25 m from its target a chasing mob drops to walk speed — fleeing is
   hard, not impossible (mobs are otherwise faster than players).
-- **Readability rules for mobs** (decided 2026-08-06, land with WP6):
-  elites/rares signal via **scale + tint** (`visual_size` ×1.6 elite /
-  ×2 rare + `^[colorize` + distinct nametag); **elites telegraph**: 2 s
-  wind-up (stop, sound, `!!` nametag, particle burst) then a ×3 cone
-  hit — the same mechanic later scales up to bosses; **one behavior
+- **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
+  elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
+  gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
+  violet `#a64dff:90`, nametag prefix `★ ` — plus the `!! ` prefix while
+  a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
+  opt-in): 2 s wind-up (stop, `!!` nametag, particle burst; the growl is
+  deferred to the one WP-wide sound pass) then a ×3 damage hit into a
+  **90° frontal cone** of **reach + 1.5 m** that requires **line of
+  sight** — stepping aside, out of range or behind cover is a clean miss.
+  Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight
+  always opens with normal swings, and a ranged elite at distance never
+  winds up into empty air), afterwards one every **10 s**. The same
+  mechanic later scales up to bosses. **One behavior
   verb per mob family** (boars charge, wolves hunt in packs and flee
   low to return with friends, zombies never leash, skeleton archers
   `dogshoot`). **Named rares broadcast** their spawn faction-wide
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
-- WP1 retune (do with WP6): boar = L1 (HP 20, dmg 2, XP 10), zombie = L3
-  (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
-  `run_velocity` 4.4/4.2 — currently 3.4/2.6, shipped slow on purpose
-  until the soft de-aggro above lands in the same WP).
+- WP1 retune (**done with WP6**): boar = L1 (HP 20, dmg 2, XP 10),
+  zombie = L3 (HP 30, dmg 3, XP 30), **and speed to spec** (boar/zombie
+  `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
+  the soft de-aggro above landed in the same WP).
+- **Level floors** (`_grug_min_level`): a mob whose family belongs to a
+  later ring keeps its floor even where the field reads lower — zombie 3,
+  wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
+  where the level field has no value.
+- **Guard levels** come from the separate `grug_core.guard_level_at`
+  field (world.md §1) with its own cap of **70** (the mob axis stays
+  1–60), and a guard at level **≥ 60 is promoted to elite
+  automatically** — that is the capital watch of world.md §3. Only a
+  hand-set `_grug_fixed_level` bypasses field and cap (Kraken Guard,
+  L100).
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|
@@ -120,8 +138,8 @@ WP6): overworld caves scale with depth —
 +1 level per 20 nodes below y=0, capped at 60; ore tiers follow the
 same depth axis, so mining deep is the alternative progression path to
 travelling out. (The Nether is NOT part of this axis — its y-band is
-unreachable by digging, portals only.) NB the code still implements the
-old |z| rings until WP18 lands.
+unreachable by digging, portals only.) The radial field shipped with
+WP18; WP6's mobs and guards read it.
 
 ## 4. Threat (aggro) system
 
@@ -129,13 +147,30 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
 
 - threat += damage dealt.
 - Healing adds **0.5×healing** as threat to all mobs in combat with the
-  group (within 30 m) — the healer pulls aggro if the tank sleeps.
+  group (within 30 m) — the healer pulls aggro if the tank sleeps. Until
+  WP20 ships real parties, "the group" is the MVP pair **healer + heal
+  target**: the threat lands on every mob within 30 m that is currently
+  fighting one of those two.
 - Tank abilities generate **×3 threat**; **taunt** sets threat to
   top×1.1 and forces the mob onto the tank for 3 s (8 s cooldown).
 - A mob switches targets only when a rival exceeds **120%** of the
-  current target's threat (hysteresis against ping-pong).
-- **Leash/reset**: >40 m from home position or 15 s without player
-  contact → threat table cleared, mob heals to full.
+  current target's threat (hysteresis against ping-pong). A threat entry
+  is only a switch candidate while its player is connected, alive and
+  within the **threat validity radius of 40 m** (= the leash radius): a
+  stale entry from someone who left the fight can never pull the mob.
+- **Leash/reset**: **40 m of DRAG measured from where THAT chase began**
+  (the anti-kiting rule — not distance from home, or a mob that merely
+  wandered would reset itself forever) or 15 s without player contact →
+  threat table cleared, target dropped, drop tag cleared, mob heals to
+  full. A reset mob then **evades home**: if it stands further from its
+  own post/spawn than its own leash radius, it snaps back there (the MVP
+  of the evade walk; designated patrollers are exempt — being far from
+  the post is their job). Mob-vs-NPC fights are not leashed.
+- **Chase persistence**: a mob gives up a chase at **45 m**, not at its
+  `view_range` (mobs_redo's default, ≤ 16 m for ground mobs — with it,
+  neither the 25 m soft de-aggro nor the 40 m leash could ever fire). The
+  45 m sits deliberately above the leash so the LEASH is what ends a
+  chase, with a little hysteresis.
 
 Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:
@@ -160,7 +195,11 @@ design (`group_attack` stays on).
   (viewer-independent, updated on damage). The exact level is therefore
   always readable for everyone.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
-  mob you look at/punch; nametags cannot be colored per viewer). Relative
+  mob you look at/punch; nametags cannot be colored per viewer). The
+  frame's **reach is 20 m** — our choice, not an engine constant: far
+  enough past the 16 m view_range of our longest-sighted ground mobs to
+  size up what is about to notice you, and inside the ability targeting
+  ranges so what you can frame is roughly what you can hit. Relative
   to the viewer's level L:
 
 | Relation | Color | XP |
