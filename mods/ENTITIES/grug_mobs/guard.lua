@@ -163,13 +163,22 @@ local function guard_def(faction, description, texture)
 			punch_start = 189, punch_end = 198, punch_speed = 30,
 		},
 
-		-- EMPTY ON PURPOSE, not a TODO left open: a faction NPC drops loot
-		-- only when an ENEMY player kills it (the PvP branch of
-		-- grug_mobs._item_drop_filter, aggro.lua) — a guard slain by a wolf
-		-- or by its own side drops nothing at all. WHAT a PvP kill yields is
-		-- an economy/loot question (WP7 money, WP9 PvP quests), so the honest
-		-- state today is "no table yet".
-		drops = {},
+		-- PvP-ONLY LOOT (items_crafting.md §5.6: "Faction NPC kills
+		-- additionally drop war trophies (vendor 5-10c) + heavy cloth 1/3
+		-- (combat_stats player-tag PvP rule)"). This table only ever
+		-- materializes on a kill by an ENEMY-faction PLAYER: the faction branch
+		-- of grug_mobs._item_drop_filter (aggro.lua:529-538) returns nil for a
+		-- guard slain by a mob, by a factionless player or by its own side, and
+		-- api.lua's item_drop then drops nothing at all.
+		--
+		-- chance = N is a 1-in-N roll (api.lua:751,
+		-- `if random(drops[n].chance) == 1`): the trophy is guaranteed at 1-2
+		-- pieces x 5c, which IS the 5-10c band of §5.6, and the heavy cloth is
+		-- the literal "1/3" of the same line.
+		drops = {
+			{name = "grug_mobs:war_trophy", chance = 1, min = 1, max = 2},
+			{name = "grug_mobs:heavy_cloth", chance = 3, min = 1, max = 1},
+		},
 
 		water_damage = 0,
 		lava_damage = 4,

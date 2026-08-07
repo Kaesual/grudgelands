@@ -95,9 +95,11 @@ local bandit = {
 	-- exactly as if it had been written literally in the def; a Leatherworker
 	-- hook could multiply it, and an untagged bandit drops nothing at all.
 	--
-	-- Copper coins (the second half of the §3.1 row) are deferred to WP7:
-	-- money is one integer in player meta (economy.md §1), there is no coin
-	-- ITEM to drop yet.
+	-- The "copper coins" half of the §3.1 row is the STOLEN PURSE, in every
+	-- zone (items_crafting.md §8.1: "Bandit 'coin' drops become a stolen purse
+	-- trash item (5c)"). It is vendor trash, NOT currency — money is one
+	-- integer in player meta (economy.md §1) and there is deliberately no coin
+	-- item; a purse only turns into copper across a trader's counter.
 	drops = function(pos)
 		local zone = grug_core.zone_at(pos)
 		-- "inner camps" vs. "outer camps" of §3.1, read against the
@@ -113,8 +115,13 @@ local bandit = {
 		-- Static drop-list format (name/chance/min/max), because everything
 		-- downstream — the filter, the hooks and mobs_redo's own roll — reads
 		-- exactly that shape.
+		-- chance = N is a 1-in-N roll (api.lua:751,
+		-- `if random(drops[n].chance) == 1`), so the purse lands on roughly
+		-- every third kill — ~1.7c per bandit on top of the cloth, which is
+		-- the §8.1 trash-loot income band for the bandit's level range.
 		return {
 			{name = cloth, chance = 1, min = 1, max = 2},
+			{name = "grug_mobs:stolen_purse", chance = 3, min = 1, max = 1},
 		}
 	end,
 

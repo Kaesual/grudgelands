@@ -15,6 +15,29 @@ core.register_craftitem("grug_mobs:boar_tusk", {
 	_grug_sell_price = 1,
 })
 
+-- Bandit drop (items_crafting.md §8.1: "Bandit 'coin' drops become a stolen
+-- purse trash item (5c)"). NOT currency and never will be: money is ONE
+-- integer in player meta (economy.md §1), so this item has no on_use, no
+-- money effect and nothing may convert it except a trader paying
+-- _grug_sell_price for it like for any other trash drop.
+core.register_craftitem("grug_mobs:stolen_purse", {
+	description = "Stolen Purse",
+	inventory_image = "grug_mobs_item_stolen_purse.png",
+	groups = {grug_trash_loot = 1},
+	_grug_sell_price = 5,
+})
+
+-- Faction-NPC PvP drop (items_crafting.md §5.6: "Faction NPC kills
+-- additionally drop war trophies (vendor 5-10c)"). 1-2 per kill at 5c each
+-- is what puts a kill inside that 5-10c band — the range lives in the DROP
+-- COUNT (guard.lua), not in the item price.
+core.register_craftitem("grug_mobs:war_trophy", {
+	description = "War Trophy",
+	inventory_image = "grug_mobs_item_war_trophy.png",
+	groups = {grug_trash_loot = 1},
+	_grug_sell_price = 5,
+})
+
 --
 -- Shared mob materials (docs/design/biomes_mobs.md §6 base-material map).
 --
