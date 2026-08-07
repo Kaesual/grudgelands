@@ -24,11 +24,33 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
   detached-inventory pattern originally sketched here); stat effects
   recompute on change.
-- **Level requirement enforced here** (2026-08-07): the same `allow_put`
+- **Level requirement enforced here** (2026-08-07; **lands with WP5** —
+  WP7's equip filter deliberately ships without it): the same `allow_put`
   filter rejects any item whose `grug_req_level` exceeds the character's
   level and says so in chat (items_crafting.md §6.1). Rejecting the
   equip is deliberate — letting the item sit in the slot without effect
   would be an invisible failure.
+- **Armor classes are bound to the character class** (decided
+  2026-08-07 in WP7 — the mechanism `combat_stats.md` §2 and
+  `items_crafting.md` §3.1 both assume but never named):
+  - Every armor item carries an **armor class**: **cloth 1 < leather 2
+    < metal 3** (item group `grug_armor_class`). Items without the
+    group are unaffected.
+  - Each character class has a **maximum rank** and may wear its own
+    rank **and everything below**: **Warrior 3, Mage 1, Priest 1**. A
+    character without a class counts as cloth (rank 1).
+  - Enforced in the **same group-filtered `allow_put`** as the rest of
+    the slot rules, with a throttled chat refusal (the allow callback
+    fires repeatedly while a stack is dragged).
+  - A **class change unequips** every piece above the new rank back
+    into the main inventory — the filter can only ever refuse an equip,
+    so worn gear would otherwise survive a respec untouched. If the
+    inventory is full the piece stays worn and the player is told to
+    make room.
+  - Why the rule exists: without it nothing stops a Mage from buying
+    plate, and the **60 %-plate / 15 %-cloth spread** that
+    `combat_stats.md` §2 balances the whole tank/squishy design around
+    collapses into "everyone wears the best armor they can afford".
 
 ## 3. Bags (WoW model, LotT implementation pattern)
 

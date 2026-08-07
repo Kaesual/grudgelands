@@ -27,7 +27,7 @@ window. Rules:
 | WP4 | Abilities: 2–4 per class, cooldowns, mana/resource HUD (text line per classes.md §1) | ✅ `grug_abilities`: 3 abilities/class as hotbar items (wear = cooldown), mana/rage + HUD, damage pipeline (crit/dodge) in `grug_core` (runtime tested 2026-08-07; spec: `docs/design/classes.md`; kit tuning → WP19) | WP3 |
 | WP5 | Loot & enchantments: class items with roll ranges, elite variants, `grug_req_level` on **everything equippable** (equip blocked below level, enforced in the slot `allow_put`) | open (spec: `docs/design/items_crafting.md` §6, `inventory_equipment.md` §2) | WP1, WP3 |
 | WP6 | Faction mobs & mob feel: guards, outposts, mob tiers by distance + DEPTH, elite mobs (scale/tint + 2 s telegraph), one behavior verb per family, named rares with faction broadcast, boar/zombie retune incl. speed-to-spec + soft de-aggro (25 m), taunt force duration, R4 ore respawn, nametags (level+HP), con-color target frame, gray = no XP; **player-tag drop rule** (loot only with player involvement, 60 s expiry, NPC drops only in PvP; carries the Leatherworker loot hook); nature-mob on-sight aggro vs players AND NPCs; **pathfinding quality pass is a blocker of this WP, not polish** (also carries the high-density target, world.md §8) | ✅ the full `docs/design/biomes_mobs.md` roster in `grug_mobs` — **38 registered mobs in 40 spawn rows**, 10 named rares (§3.3's 9 rows, Bonerattle ×2), guards, camps. Architecture: **level/tier engine** (`levels.lua` — HP/dmg/XP/armor derived from `mob_level_at`/`guard_level_at` + tier multipliers, defs never hand-set them; elite ×1.6 gold, rare ×2 violet, global nametags, con-color target frame at 20 m, gray = no XP); **threat table** in `grug_core/combat.lua` (damage-as-threat, 120 % hysteresis, 40 m validity, heal threat, real taunt) + **leash/evade** (40 m drag from the chase anchor, 15 s contact, untouchable run-home at 1.5× run speed with a 40 s teleport backstop, 45 m give-up, 25 m soft de-aggro); **verb library** (`verbs.lua`: pack, stalker/rush, ambush, webs, poison, damage aura, camp swarm, arrows); **elite/rare telegraph** (4 s first engagement, 10 s cadence, 90° cone at reach + 1.5 m, LOS required); **named-rare spawner** (2–4 h respawn, patrol routes, faction broadcast); **faction guards + 24 deterministic outposts + hourly patrol legs**, POI protection registry (`grug_core.add_poi`), guard banners on the capital platforms; **12 deterministic bandit camps** + mirefolk camps on node timers; **player-tag drop rule** via an api.lua patch; **R4 ore respawn** (depleted-vein placeholder, 15–30 min); **pathfinding/density/perf pass** (four api.lua fixes + the budget audit in `docs/research/wp6_spawn_budget.md`) and a 4-reviewer gate. Runtime tested 2026-08-07 (findings F1–F6, below) | WP1, WP2 |
-| WP7 | Money & traders: copper/silver/gold currency (one integer in copper, `docs/design/economy.md`), trader NPCs that buy EVERY mob drop, **six vendor bracket catalogs** (10 levels each, Common at bracket ilvl, hourly rotation with an occasional world-window Uncommon, price ladder ×1.4 per bracket — `items_crafting.md` §3.8/§8.2), trade formspec, race-exclusive vendors + same-race discount, WP6 carry-overs (bandit coin drops, guard PvP loot) | open (spec: `docs/design/economy.md`, `items_crafting.md` §3.7/§3.8/§8) | WP1 |
+| WP7 | Money & traders: copper/silver/gold currency (one integer in copper, `docs/design/economy.md`), trader NPCs that buy EVERY mob drop, **six vendor bracket catalogs** (10 levels each, Common at bracket ilvl, hourly rotation with an occasional world-window Uncommon, price ladder ×1.4 per bracket — `items_crafting.md` §3.8/§8.2), trade formspec, race-exclusive vendors + same-race discount, WP6 carry-overs (bandit coin drops, guard PvP loot) | ✅ three mods. **`grug_money`**: ONE copper integer in player meta (economy.md §1), atomic get/set/add/take clamped to 0..2³¹−1, `register_on_change`, HUD line, `/money` (+ admin `/money give`), display rule "leading zero units omitted, copper always shown". **`grug_gear`**: six bracket catalogs GENERATED from the §3.1/§3.2 curves, never hand-listed — **72 items** (4 weapon families × 6 brackets + metal/cloth armor × 4 slots × 6 brackets; leather's curve ships unregistered, nothing can wear it), §8.2 prices VERBATIM, **25 % buy-back** (economy.md §2), and `_grug_ilvl`/`_grug_bracket`/`_grug_quality` as the WP5 seam. **Armor pipeline** — armor was *inert* before this WP: `_grug_armor` → `grug_inventory.get_equipped_armor` (cached per player) → `grug_core.get_armor_percent` (stub-override) → a % reduction in the central hp modifier, punch-only, after dodge, before the absorb shield, capped at 60 % in both consumer and overrider; plus the **armor-rank binding** (cloth 1 < leather 2 < metal 3 vs. Warrior 3 / Mage 1 / Priest 1, group `grug_armor_class`, enforced in the existing equip filter, unequipped on class change). **`grug_traders`**: **8 vendor NPCs** (2 faction Quartermasters + 6 race-exclusive) placed deterministically at the six race capitals **without a mapgen change**, registered through plain `mobs:register_mob` (NOT `grug_mobs.register_mob` — that wrapper is the level engine; `type = "npc"` makes them permanent, a truthy `do_punch` makes them invulnerable); trade formspec with **no detached inventories** (a sell slot loses items on disconnect) and per-action server-side re-validation of session/range/access/prices; **hourly rotation** from a PcgRandom seeded on `floor(os.time()/3600)` + vendor + bracket (9-item fixed floor, 2 of 3 extra weapon families, 1-in-5 Uncommon ×3 gated on WP5's roller); race exclusivity + **10 % same-race discount** on buy prices only (world.md §7); weak healing potion (8c, flat 15 % max HP) on the **shared 60 s** instant-potion cooldown in player meta; three **startup audits** (every mob drop priced, no buy/sell spread that prints money, no craft/cook recipe worth more than its priced inputs). Plus the WP6 loot carry-overs (bandit stolen purse 1/3, guard PvP war trophies + heavy cloth). 3-reviewer gate (correctness/exploits · Lua+perf · design adherence) | WP1 |
 | WP8 | Quest framework: quest log, kill/gather goals, quest-giver NPCs, min_level per quest | open (story frame: `docs/design/story.md`) | WP1, WP7 |
 | WP9 | Mandatory questlines: PvP quests (border guards), elite quests, level gates | open | WP6, WP8 |
 | WP10 | Professions: 2 free mains (Herbalism, Alchemist, Blacksmith, Leatherworker, Tailor, Gem Hunter) + universal Cooking/First Aid; recipe-unlock system (craft_predict veto + workbench proximity), recipe book UI, gathering split, Leatherworker ×5-leather loot hook | open (spec: `docs/design/professions.md`, `inventory_equipment.md` §4) | WP7 |
@@ -48,31 +48,36 @@ window. Rules:
 
 ### Readiness (2026-08-07)
 
-**Ready now** (no design blockers, deps done): WP11 (talents — spec
-progression.md §2), WP13 (structures — mapgen/biomes ship, and WP6's
-outpost/camp anchors + POI registry are waiting for real structures),
-WP14 (offhand), WP17 (travel), WP20 (party), WP21 (recovery/innkeeper),
-**WP23** (apex bosses — WP6 ✅ shipped the elite/rare tier, the
-telegraph mechanic the boss scales up, and the POI protection registry
-a lair needs).
+**Ready now** (no design blockers, deps done): **WP5** (loot/enchants —
+items_crafting.md §6 decided, and WP7 published the `_grug_ilvl` /
+`_grug_quality` seam it plugs into), **WP10** (professions — WP7 ✅;
+`grug_traders.register_stock` is pre-written for the job supplies),
+**WP16** (guilds — WP7 ✅ shipped the money API the bank account needs),
+WP11 (talents — spec progression.md §2), WP13 (structures — mapgen/
+biomes ship, and WP6's outpost/camp anchors + POI registry are waiting
+for real structures), WP14 (offhand), WP17 (travel), WP20 (party),
+WP21 (recovery/innkeeper), **WP23** (apex bosses — WP6 ✅ shipped the
+elite/rare tier, the telegraph mechanic the boss scales up, and the POI
+protection registry a lair needs).
 
 **Blocked, by what**:
-- WP5, WP7, WP10 are design-unblocked (`docs/design/items_crafting.md`
-  decided); WP22 additionally needs WP5 gear to exist
+- WP22 ← WP5 (needs gear to wear out); its WP7 half is done
 - WP8 ← `progression.md` §4 (quest structure/level gates); **WP9** is
   free of its WP6 dependency (guards, outposts and the war-coast roster
   ship) and now waits only on WP8 + that same §4
-- WP12 ← WP17; WP16 ← WP7
+- WP12 ← WP17
 - **WP24 (housing) is design-unblocked since 2026-08-07** (world.md §5
-  decided; `TODO-design-housing.md` now holds only in-WP tuning) and
-  waits on WP7 (gold for the depth ladder) + WP17 (the pad is a
+  decided; `TODO-design-housing.md` now holds only in-WP tuning) and,
+  with WP7's gold shipped, waits on **WP17** alone (the pad is a
   waypoint). It also needs a **fix in `grug_core.open_sea_at`**: today
   open sea starts at |z| = 3200, which would spawn Kraken Guards on
   housing beaches (world.md §2b)
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
-  between faction and class; race perks follow with WP7/WP10).
+  between faction and class); the visible race passives shipped with
+  WP19 and the race-exclusive vendor + 10 % discount with WP7 — only
+  race-exclusive professions/recipes are left (WP10/Phase 2).
 - Build/dig restrictions (destructibility rules §2) land in `grug_core`
   alongside WP2.
 - Housing is **WP24** since 2026-08-07 (the King's isles, per character
@@ -215,8 +220,6 @@ is met at the hotspots and not in the median cell.
 - **WP20**: tap rules must fix XP attribution (today the LETHAL hit gets
   the kill XP, not the first damager's party) and replace the MVP heal
   threat group (healer + heal target) with real party membership.
-- **WP7**: bandit **copper-coin drops** (no coin ITEM exists yet) and
-  guard PvP loot (`drops = {}` today).
 - **WP16**: the ore-respawn **guild-claim exception** is a reserved slot
   in the dig hook.
 - **PvP work package** (with the war-coast PvP quests, WP9-adjacent):
@@ -246,6 +249,44 @@ is met at the hotspots and not in the median cell.
   short-lived text entities over the target) is a future WP idea; the
   call site for the evade banner is marked with a TODO in the `do_punch`
   wrapper (`grug_mobs/init.lua`).
+
+**WP7 — Money & traders** (✅ 2026-08-07): `grug_money` (currency),
+`grug_gear` (the six generated bracket catalogs) and `grug_traders`
+(vendor NPCs, trade UI, rotation, the weak healing potion), plus the
+armor half of `grug_inventory`/`grug_core` and the WP6 loot carry-overs.
+The pattern-level rules moved to AGENTS.md "Traders/gold"; the design
+decisions this WP settled are folded into `economy.md` §1/§2,
+`items_crafting.md` §3.1/§3.2/§3.8/§6.1/§8.1/§8.2, `world.md` §7,
+`inventory_equipment.md` §2 and `combat_stats.md` §2.
+
+*Carry-overs*:
+- **WP5**: the ×3 **Uncommon is built but never offered** until
+  `grug_items.roll_enchants` exists (without rolls it is a blue-named
+  Common at triple price) — the machinery ships, WP5 needs no edit in
+  `grug_traders`; **`grug_req_level` derivation** from the published
+  `_grug_ilvl` (WP7 enforces no level requirement anywhere); the
+  **leather armor line** (curve is in the generator, `register = false`,
+  no wearer before the Rogue); and **quality/wear are ignored by
+  buy-back prices** — a worn or Uncommon item sells for the same 25 %.
+- **WP14**: **shields/offhand contribute no armor** —
+  `grug_inventory.get_equipped_armor` covers the four armor slots only,
+  and the §3.1 shield column has no consumer yet.
+- **WP10**: **job supplies, profession tomes** (§8.2 prices 25c / 1s /
+  3s / 10s) and the **Alchemist's 30 % potion** are unregistered — the
+  `grug_traders.register_stock` calls are pre-written as comments in
+  `stock.lua` and an unknown item name would render as a buyable
+  "unknown item". WP10's instant potions **must reuse**
+  `grug_traders.potion_cooldown_left` / `start_potion_cooldown` instead
+  of opening a second timer (§3.6: one shared 60 s cooldown).
+- **WP13**: vendors **reuse the guard model and skins**, so a
+  Quartermaster looks exactly like a faction guard, and the six race
+  vendors have **no race-specific skin**.
+- **WP11**: the **respec price** (§8.3, 5c × level, min 25c) has no
+  consumer yet — `grug_money.take` is the API it will call.
+- **Known balance deviation**: a bandit's expected vendor yield runs
+  ≈ 2–3× above its ring's §8.1 trash-loot band (dominant term: WP6's
+  guaranteed cloth drop, not the new purse) — recorded in
+  `items_crafting.md` §8.1 and flagged for a balance pass.
 
 **WP3 — Classes** (✅ 2026-08-06): `grug_classes` with class AND race
 registry (races per world.md §7, race perks hook for WP7/WP10). Creation

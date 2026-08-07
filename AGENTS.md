@@ -265,12 +265,77 @@ Details + line numbers in [docs/research/](docs/research/).
   apply stats to player stats on equip/swap. Drop source: a `drops`
   function in the mob def rolls on kill (base variant everywhere, improved
   variant with better ranges only on elite/heartland mobs).
-- **Traders/gold**: templates VoxeLibre `mobs_mc/villager.lua` (trade
-  tiers, detached inventory `wanted/input/offered/output`) and LotT
-  `lottmobs/trader.lua` (faction-dependent stock). Money is ONE integer
-  in copper units in player meta (100c = 1s, 100s = 1g, conversion is
-  display-only; `docs/design/economy.md`); traders buy EVERY mob drop
-  (buy-price field `_grug_sell_price` in item defs).
+- **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
+  `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
+  (binding):**
+  - **`grug_money` is the ONLY money API.** One integer in copper units
+    in player meta (100c = 1s, 100s = 1g, conversion display-only);
+    `get/set/add/take` (take is atomic and never goes negative) plus
+    `register_on_change`. **Never read or write the meta key directly** —
+    the clamp, the HUD refresh and the change callbacks all live in
+    those functions. `PlayerMetaRef:set_int` is a real 32-bit signed
+    store, hence the hard ceiling `grug_money.MAX`.
+  - **`_grug_sell_price` (copper) is the universal buy-back field** in
+    an item def — that is how "traders buy EVERY mob drop" is
+    guaranteed. For **foreign items we must not touch** (vendored
+    `default:` / `mobs:`) use `grug_traders.set_price(name, copper)`
+    instead of overriding someone else's def; `grug_traders.sell_price`
+    resolves override → def field → 0, and **0 means "not sellable"**.
+  - **`grug_gear` is a GENERATED catalog, never a hand-written list**:
+    the six bracket catalogs come out of the §3.1/§3.2 curves at load
+    time. Public surface for anything that sells gear:
+    `grug_gear.BRACKETS`, `bracket_for_level`, `get_price`,
+    `get_sell_price`, `catalog[b].fixed/.extras/.all`. Buy-back is 25 %
+    of the sale price everywhere.
+  - **Armor pipeline** (armor was inert before WP7): item def
+    `_grug_armor` → `grug_inventory.get_equipped_armor` (sums the four
+    armor slots, **cached per player**, invalidated from the equipment
+    inventory action, `grug_inventory.invalidate_armor` for server-side
+    list writes, and on join) → `grug_core.get_armor_percent`
+    (stub-override pattern, like crit/dodge) → one branch in the central
+    hp-change modifier: **punch damage only**, after the dodge roll,
+    before the absorb shield, `math.ceil` so armor alone never makes a
+    hit free. **Capped at 60 in the consumer AS WELL AS the overrider** —
+    that modifier is registered with `true` (may raise HP), so a pct >
+    100 would turn a punch into a heal.
+  - **Armor-rank gate**: items carry `grug_armor_class` (cloth 1 <
+    leather 2 < metal 3), classes carry `armor_rank`
+    (`grug_classes.get_armor_rank`, no class = 1); the check sits in the
+    existing group-filtered `allow_put` with a **throttled** chat
+    refusal (the allow callback fires repeatedly while dragging), and a
+    class change unequips what the new rank may not wear.
+  - **Vendor NPCs use plain `mobs:register_mob`, NOT
+    `grug_mobs.register_mob`** — that wrapper IS the level/XP engine and
+    would give a shopkeeper a level, a health bar and aggro wrappers.
+    `type = "npc"` is what makes them permanent (it exempts them from
+    all three mobs_redo removal paths); a **truthy `do_punch` return**
+    is what makes them invulnerable (the api.lua precedence gotcha
+    above). Placement is a throttled globalstep against fixed capital
+    offsets — **no mapgen change**, so existing worlds get vendors too;
+    the presence gate must stay inside the object-activation radius or
+    duplicates spawn forever.
+  - **Rotation is deterministic**: seed = `floor(os.time()/3600)` +
+    per-vendor salt + bracket, fed into **`PcgRandom`** — never
+    `math.random`/`table.shuffle`, whose sequence depends on what else
+    called them since startup. Two players at one vendor in one hour
+    must see the same shelf, and a restart must not re-roll it.
+  - **No detached inventories in trade UIs.** The reference
+    implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
+    `lottmobs/trader.lua`) move items through detached
+    `wanted/input/offered/output` lists — that loses whatever sits in
+    the input list when a player disconnects mid-trade. Every transfer
+    goes directly against the player's own `main` list, the vendor's
+    "stock" is a computed list of names and prices, and **every formspec
+    action re-validates from scratch** (session, distance to the stored
+    POSITION not an ObjectRef, access rule, and prices/counts recomputed
+    server-side against the snapshot the player was shown).
+  - **Three startup audits** in `grug_traders/init.lua`
+    (`register_on_mods_loaded`, silent when clean): every mob drop has a
+    price; no vendor buy/sell spread that prints money (discount
+    included); no craft/cook recipe whose output is worth more than its
+    priced inputs (the §3.8 anti-loop rule — the real case was smelting
+    a 3c iron lump into a 5c steel ingot). Add prices, don't disable
+    them.
 - **Quests**: no ready-made framework in the references. Building blocks:
   trigger/counter patterns from `lottachievements` (awards fork), event
   stages from VoxeLibre `mcl_events` (`cond_start/on_step/cond_complete`),

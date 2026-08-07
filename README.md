@@ -4,8 +4,9 @@
 factions, classes, XP, quests, professions, gold and PvP, built as a
 standalone game (not a mod pack) in Lua.
 
-> **Status: in development.** The world, mobs, classes and combat are
-> playable; quests, money, professions and the map are not built yet.
+> **Status: in development.** The world, mobs, classes, combat and the
+> money/vendor economy are playable; quests, professions and the map are
+> not built yet.
 > See [Current State](#current-state).
 
 ---
@@ -138,12 +139,14 @@ Two freely chosen main professions per character (Blacksmith,
 Leatherworker, Tailor, Alchemist, Herbalism, Gem Hunter) plus Cooking and
 First Aid for everyone. Currency is copper/silver/gold stored as one
 integer; **a full gold is a fortune**, reserved for guild founding,
-housing and mining claims. Vendors buy every mob drop, but what they
-sell is a floor rather than a shop: six catalogs of ten levels each,
-offering roughly what a normal mob of that bracket drops — unenchanted
-and a step behind crafted gear, so nobody goes naked and nobody skips
-the crafters. Every item carries a level requirement, so gear you cannot
-use yet is loot to trade, not to wear.
+housing and mining claims. Vendors buy every mob drop (at a quarter of
+what they charge), but what they sell is a floor rather than a shop: six
+catalogs of ten levels each, offering roughly what a normal mob of that
+bracket drops — always Common and therefore **always without
+enchantments**, which is what keeps crafters ahead. Each race also has
+its own vendor, open only to that race and 10 % cheaper for them. Every
+item carries a level requirement, so gear you cannot use yet is loot to
+trade, not to wear.
 
 ### Guilds — [`guilds.md`](docs/design/guilds.md)
 
@@ -178,8 +181,8 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (9 of 25 work packages):** the foundation and the whole
-world/combat layer.
+**Shipped (10 of 25 work packages):** the foundation, the whole
+world/combat layer, and the money economy.
 
 - **World**: two ocean-separated continents with soft coasts, 17 mirrored
   biomes, six race-capital spawn platforms, the radial mob-level field
@@ -195,25 +198,34 @@ world/combat layer.
   abilities per class with cooldowns, global cooldown and soft target
   lock, visible race passives, and the character screen with equipment
   slots and bags (WP3, WP4, WP15, WP19).
+- **Money & vendors**: copper/silver/gold as one integer with a HUD
+  line, eight vendor NPCs at the six race capitals (two faction
+  Quartermasters, six race-exclusive ones with a 10 % discount), six
+  generated gear catalogs of ten levels each on an hourly rotation, a
+  weak healing potion, and armor that finally mitigates damage — with
+  cloth and plate bound to the character class (WP7).
 
-**Not in the game yet:** quests and quest NPCs, money and traders,
-professions and crafting recipes, talent trees, the fog-of-war map,
-guilds, housing isles, travel/waypoints, offhand and shields, loot rolls
-on class items, durability and repair, parties, food and rest, apex
-bosses, and the real capital/outpost structures (WP6 ships anchors and
-banners, not buildings).
+**Not in the game yet:** quests and quest NPCs, professions and crafting
+recipes, talent trees, the fog-of-war map, guilds, housing isles,
+travel/waypoints, offhand and shields, loot rolls on class items,
+durability and repair, parties, food and rest, apex bosses, and the real
+capital/outpost structures (WP6 ships anchors and banners, not
+buildings).
 
-**Ready to start next** (no design blockers): talent trees (WP11), world
-structures (WP13), offhand (WP14), travel (WP17), party system (WP20),
+**Ready to start next** (no design blockers): loot & enchantments (WP5),
+professions (WP10), talent trees (WP11), world structures (WP13),
+offhand (WP14), guilds (WP16), travel (WP17), party system (WP20),
 recovery & innkeeper (WP21), apex world bosses (WP23).
 
-**Caveats:** everything shipped has been runtime-tested on a fresh world
-(2026-08-07; six findings, all fixed). One known defect remains: melee
-auto-attacks against *players* still use the engine's raw scaling, so a
-held button can deal 0 damage in PvP — the mob-side fix is in, the PvP
-port is queued. Mapgen changed in WP18, so **existing worlds are
-incompatible; always start a fresh one**. All art is currently vendored
-from reference projects; own assets are Phase 3.
+**Caveats:** everything up to WP6/WP19 has been runtime-tested on a fresh
+world (2026-08-07; six findings, all fixed); the money/vendor layer is
+code-reviewed but its runtime test is still pending. One known defect
+remains: melee auto-attacks against *players* still use the engine's raw
+scaling, so a held button can deal 0 damage in PvP — the mob-side fix is
+in, the PvP port is queued. Mapgen changed in WP18, so **existing worlds
+are incompatible; always start a fresh one**. All art is currently
+vendored from reference projects (vendors still look like faction
+guards); own assets are Phase 3.
 
 ---
 

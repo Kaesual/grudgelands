@@ -39,10 +39,29 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Spell/heal power** = ability base value + floor(Int/10)
 - **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
-- Player armor (gear) reduces incoming damage via armor_groups; endgame
-  plate reaches the **60% reduction cap**, cloth ~15%.
+- Player armor (gear) reduces incoming damage; endgame plate reaches the
+  **60% reduction cap**, cloth ~15%.
+- **How armor resolves** (it was inert until WP7; recorded 2026-08-07):
+  armor points **sum over the four armor slots** (head/chest/legs/feet —
+  offhand and trinkets contribute nothing until WP14's shields),
+  **1 point = 1 % damage reduction**, **hard cap 60 %**. Which armor a
+  character may wear at all is the class rank of
+  `inventory_equipment.md` §2.
+  - It applies **only to `reason.type == "punch"`**. There is no
+    damage-type system, so that IS the whole definition of "physical":
+    fall damage has its own race perk (world.md §7) and drowning, lava
+    and starvation are never reduced by a breastplate.
+  - **Resolution order** in the central hp-change modifier:
+    **dodge (cancels the hit entirely) → armor → fall-damage race perk
+    → absorb shield.** A shield therefore soaks *post*-mitigation
+    damage, i.e. shield points are worth full damage rather than
+    pre-armor damage.
+  - **Rounding: the reduced damage rounds up**, so armor alone can never
+    turn a landed hit into 0 — however much of it a tank stacks, the hit
+    still costs at least 1 HP.
 - **Every equippable item carries a level requirement** (`grug_req_level`
-  = its ilvl; equipping below it is blocked — items_crafting.md §6.1);
+  = its ilvl; equipping below it is blocked — items_crafting.md §6.1;
+  **enforced from WP5**, WP7's vendor gear carries the ilvl only);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 - **Auto-attacks vs MOBS run this pipeline as of 2026-08-07**: holding

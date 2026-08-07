@@ -206,9 +206,9 @@ All files MIT, author **ElCeejo**.
 re-running the script reproduces the same pixels. |
 | `grug_mobs_blank.png` | Luanti engine | LGPL 2.1+ | 1×1 fully transparent PNG, taken from the engine; used for empty texture slots (skeleton armour/wield slots, sheared-fur slot). |
 
-### 6.1 Item icons, projectile sprites and node tiles (WP6/T5–T7) — CC0 1.0, Grudgelands project
+### 6.1 Item icons, projectile sprites and node tiles (WP6/T5–T7, WP7) — CC0 1.0, Grudgelands project
 
-All 26 files below are **original 16×16 pixel art of this project**, not
+All 28 files below are **original 16×16 pixel art of this project**, not
 derived from any vendored or third-party asset, and are published under
 **CC0 1.0**. They are produced by one deterministic generator (no randomness
 — re-running reproduces every file byte-for-byte):
@@ -254,6 +254,8 @@ node tile of `grug_mobs:camp_fire` (`camps.lua`).
 | `grug_mobs_rock.png` | Grudgelands project | CC0 1.0 | generator, art `ROCK_PROJECTILE`, grey-boulder projectile sprite (WP6/T6, golem "hurls rocks"); **not** derived from `default_cobble.png` or any other vendored tile |
 | `grug_mobs_item_raw_fish.png` | Grudgelands project | CC0 1.0 | generator, art `FISH`, blue-grey palette (WP6/T7, Mirefolk drop `grug_mobs:raw_fish`) |
 | `grug_mobs_camp_fire.png` | Grudgelands project | CC0 1.0 | generator, art `CAMP_FIRE`, ash/stone/ember palette — top-down fire pit, fully opaque (a node tile must not have holes); node tile of `grug_mobs:camp_fire` (WP6/T7 camp anchor), **not** derived from `default_fire*` or any other vendored tile |
+| `grug_mobs_item_stolen_purse.png` | Grudgelands project | CC0 1.0 | generator, art `STOLEN_PURSE`, drawstring coin pouch in a leather-brown palette (WP7, bandit trash drop `grug_mobs:stolen_purse` — items_crafting.md §8.1) |
+| `grug_mobs_item_war_trophy.png` | Grudgelands project | CC0 1.0 | generator, art `WAR_TROPHY`, torn crimson pennant on a snapped pole (WP7, faction-guard PvP drop `grug_mobs:war_trophy` — items_crafting.md §5.6) |
 
 ---
 
