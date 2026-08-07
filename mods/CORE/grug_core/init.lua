@@ -91,7 +91,10 @@ grug_core.capitals = {
 
 -- Military outposts (docs/design/world.md §4 "one outpost per ring per
 -- ~500 m east-west" and §9 "1 military outpost per ring as the guaranteed
--- minimum"): 18 DETERMINISTIC anchors, three per race band.
+-- minimum"): 24 DETERMINISTIC anchors, FOUR per race band — one for each ring
+-- of the `_grug_spawn_zones` vocabulary that a band actually crosses
+-- (war_coast, inner, outer, coast). The coast ring was missing until the WP6
+-- review; §9 says "per ring", and "coast" is a ring.
 --
 -- This table is the ONE source for them. grug_mapgen/structures.lua builds
 -- the pad + guard banner at these positions, grug_mobs/camps.lua reads the
@@ -116,23 +119,55 @@ grug_core.capitals = {
 --   outer     |z| = 1350 -> still 200 nodes inside the back coast band, so
 --                           again the radial field: n = 0.58 .. 0.62 > 0.55
 --                           -> "outer".
--- (Verified numerically for all 18 anchors; the acceptance run is quoted in
--- the WP6/T8 report.)
+--   coast                 -> not a z radius at all, see coast_anchor below.
+-- (Verified numerically for all 24 anchors; the acceptance run is quoted in
+-- the WP6/T8 report and re-run in the WP6 review.)
 --
 -- The vertical size is NOT here: an outpost's y is terrain-adaptive and gets
 -- decided (and persisted as the POI's y_base) by the mapgen pass, exactly
 -- like the capital platforms above.
 grug_core.OUTPOST_HALF = 4 -- 7x7 pad (half 3) plus one node of breathing room
 
+-- Coast anchor of a race band. Unlike the three inland rings this one is not
+-- a |z| radius: which shoreline a band faces depends on where the band sits.
+--   * the CENTRE bands (human/orc, capital x = 0) are 1500 nodes from either
+--     flank, so their coast is the BACK shore: z = sign * COAST_BACK_Z.
+--   * the WEST and EAST bands sit against a FLANK shore, so theirs is
+--     x = -+COAST_FLANK_X at the capital's own z.
+-- Both constants are the INNER EDGE of the coast band (zone_at answers
+-- "coast" from X_HALF - |x| <= COAST_BAND resp. Z_MAX - |z| <= COAST_BAND,
+-- i.e. |x| >= 1350 / |z| >= 1550), and they hug that edge on purpose: the
+-- ocean mask insets the visible shoreline by 0..150 nodes INWARD
+-- (grug_mapgen INSET_MAX), so an anchor placed deeper into the band is open
+-- water for a large share of the noise range and the mapgen pass would just
+-- skip it as flooded. Exactly the reasoning the coast-band named rares use
+-- for their route points (grug_mobs/rares.lua, Silkfang/Emerald Coil).
+local COAST_FLANK_X = X_HALF - COAST_BAND -- 1350
+local COAST_BACK_Z = Z_MAX - COAST_BAND -- 1550
+
+local function coast_anchor(capital, sign)
+	if capital.x == 0 then
+		return 0, sign * COAST_BACK_Z
+	end
+	return capital.x < 0 and -COAST_FLANK_X or COAST_FLANK_X, capital.z
+end
+
 -- Ring radius and the patrol partner of each ring (world.md §4 "between
 -- outposts: ambient patrols"). The pairing always walks TOWARD the strait —
--- outer -> inner -> war_coast — and the war-coast post, which has no ring in
--- front of it, walks back to the inner one, so every band ends up with two
+-- coast -> outer -> inner -> war_coast — and the war-coast post, which has no
+-- ring in front of it, walks back to the inner one, so every band ends up with
 -- patrolled legs and no dead end.
+-- `radius` = |z| of the anchor, x = the capital's x; a ring with an `anchor`
+-- function instead derives both coordinates itself (the coast ring does).
+-- NB the coast->outer leg of a FLANK band is ~920 nodes, longer than the
+-- 250-850 the other legs cover — unavoidable, the flank shore and the outer
+-- ring simply are that far apart, and PATROL_LEASH_RANGE (aggro.lua) already
+-- exempts patrollers from the distance leash.
 local OUTPOST_RINGS = {
 	{ring = "war_coast", radius = 250, patrol_to = "inner"},
 	{ring = "inner", radius = 500, patrol_to = "war_coast"},
 	{ring = "outer", radius = 1350, patrol_to = "inner"},
+	{ring = "coast", anchor = coast_anchor, patrol_to = "outer"},
 }
 
 -- Built once at load time (pure arithmetic on the capitals table). The race
@@ -151,6 +186,12 @@ do
 		local capital = grug_core.capitals[race_id]
 		local sign = capital.z >= 0 and 1 or -1
 		for _, ring in ipairs(OUTPOST_RINGS) do
+			local ax, az
+			if ring.anchor then
+				ax, az = ring.anchor(capital, sign)
+			else
+				ax, az = capital.x, sign * ring.radius
+			end
 			local anchor = {
 				id = "outpost:" .. capital.faction .. ":" .. race_id ..
 					":" .. ring.ring,
@@ -158,8 +199,8 @@ do
 				race = race_id,
 				ring = ring.ring,
 				patrol_to = ring.patrol_to,
-				x = capital.x,
-				z = sign * ring.radius,
+				x = ax,
+				z = az,
 			}
 			outpost_list[#outpost_list + 1] = anchor
 			outpost_by_id[anchor.id] = anchor
@@ -200,6 +241,80 @@ function grug_core.outpost_patrol_target(anchor)
 	end
 	return outpost_by_id["outpost:" .. anchor.faction .. ":" .. anchor.race ..
 		":" .. anchor.patrol_to]
+end
+
+--
+-- Deterministic bandit camps (docs/design/biomes_mobs.md §3.1/§4 "Bandits …
+-- camps", world.md §9): 12 anchors, TWO per race band.
+--
+-- WHY THEY EXIST AS A FIXED LIST AT ALL. Bandits have no mobs:spawn row by
+-- design — §4 puts them "off the ABM entirely", they come out of a camp-fire
+-- node timer (grug_mobs/camps.lua). Nothing ever placed such a node: WP13's
+-- settlement pass is what is supposed to, and until it ships there is not one
+-- bandit in the world, which silently kills the whole linen-cloth line of the
+-- Tailor economy (linen scrap is a bandit/mirefolk drop). This is the BRIDGE:
+-- the same deterministic-anchor trick the outposts use, dropped by the same
+-- mapgen pass, so the economy has a source today. WP13 may replace it with
+-- real camps; the anchors are the only thing it has to reconcile.
+--
+-- GEOMETRY. Two camps per band, on the two rings a levelling player crosses
+-- between the capital and the wilderness — one inner, one outer — offset in x
+-- from the capital's own column so they can never collide with the outposts
+-- (which sit exactly on it) or with the capital platform.
+--   inner: z = sign * (|capital z| - 350) = sign * 550
+--   outer: z = sign * (|capital z| + 450) = sign * 1350
+--   x    : capital.x + 120
+--
+-- ZONE VERIFICATION (grug_core.zone_at, radial_n further down this file:
+-- dx = max(|x| - 300, 0), dz = ||z| - 900|, f = 1000 for |z| < 900 else 775,
+-- n = sqrt((dx/1150)^2 + (dz/f)^2); "inner" is 0.30 < n <= 0.55, "outer" is
+-- n > 0.55; none of the twelve is inside a coast band or the war-coast band):
+--   centre (x  120): inner n 0.3500 -> inner   outer n 0.5806 -> outer
+--   west   (x -430): inner n 0.3678 -> inner   outer n 0.5915 -> outer
+--   east   (x  670): inner n 0.4754 -> inner   outer n 0.6638 -> outer
+--
+-- NOT POI-PROTECTED, deliberately and unlike an outpost: a bandit camp is
+-- meant to be raided, burned down and looted (§4's respawn timer is what
+-- brings it back). Registering it in the POI registry would make its own
+-- clearing undiggable.
+--
+local BANDIT_X_OFFSET = 120
+local BANDIT_INNER_DZ = -350 -- toward the strait from the capital
+local BANDIT_OUTER_DZ = 450 -- ... and behind it
+
+local bandit_list = {}
+
+do
+	local races = {}
+	for race_id in pairs(grug_core.capitals) do
+		races[#races + 1] = race_id
+	end
+	table.sort(races) -- reproducible order, same reason as the outposts above
+	local rings = {
+		{ring = "inner", dz = BANDIT_INNER_DZ},
+		{ring = "outer", dz = BANDIT_OUTER_DZ},
+	}
+	for _, race_id in ipairs(races) do
+		local capital = grug_core.capitals[race_id]
+		local sign = capital.z >= 0 and 1 or -1
+		for _, r in ipairs(rings) do
+			bandit_list[#bandit_list + 1] = {
+				id = "bandit:" .. capital.faction .. ":" .. race_id ..
+					":" .. r.ring,
+				faction = capital.faction,
+				race = race_id,
+				ring = r.ring,
+				x = capital.x + BANDIT_X_OFFSET,
+				z = sign * (math.abs(capital.z) + r.dz),
+			}
+		end
+	end
+end
+
+-- The full bandit-camp anchor list. READ-ONLY for callers (the shared table,
+-- not a copy — same contract as outpost_anchors).
+function grug_core.bandit_camp_anchors()
+	return bandit_list
 end
 
 grug_core.factions = {

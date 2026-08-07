@@ -86,7 +86,7 @@ local raider = {
 	-- arrows 1/3) — plus the war-coast heavy cloth 1/3 of the §3.1 row (§6
 	-- lists "war-coast raiders" as a heavy-cloth source).
 	drops = {
-		{name = "grug_mobs:bone", chance = 1, min = 1, max = 2},
+		{name = "grug_mobs:bone", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
 		{name = "grug_mobs:arrow", chance = 3, min = 1, max = 1},
 		{name = "grug_mobs:heavy_cloth", chance = 3, min = 1, max = 1},

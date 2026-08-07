@@ -20,7 +20,9 @@
 --   poison_player ........ Serpent ("poisons": 1 dmg / 2 s for 6 s)
 --   melee_rider .......... the delivery vehicle for both of the above
 --   pack_hunter .......... Wolf / Blightfang Wolf / Hyena / Raptor
---   stalker .............. Panther ("stalks": silent approach + pounce)
+--   stalker .............. Panther ("stalks": silent approach + pounce) and
+--                          all three Boars ("charges": the same impulse,
+--                          flattened into a horizontal rush — see boar.lua)
 --   ambusher ............. Crocodile ("lurks still, burst on approach")
 --   damage_aura .......... Bog Ooze ("engulfs": touch-damage aura)
 --   camp_swarm ........... Mirefolk ("swarms": camp group aggro, all rush)
@@ -117,6 +119,14 @@ end
 -- player name -> {factor = n, expiry = mono seconds, gen = n}
 local player_slows = {}
 
+-- player name -> generation counter for RUNNING poison chains (see
+-- grug_mobs.poison_player). Same ownership hygiene as the slow's `gen` above,
+-- one level up: a poison is a chain of core.after callbacks that only knows
+-- the victim by NAME, so after a relog it would happily keep ticking on the
+-- fresh session. Bumping the counter on leaveplayer orphans every in-flight
+-- chain for that name — i.e. logging out dispels poison.
+local poison_gen = {}
+
 -- Slow a player to `factor` (0.6 = 40% slower) for `duration` seconds.
 -- Stacking mirrors grug_mobs.slow's mob-side semantics: the STRONGER
 -- factor and the LONGER remaining duration win, so a second, weaker web
@@ -169,7 +179,10 @@ core.register_on_joinplayer(function(player)
 end)
 
 core.register_on_leaveplayer(function(player)
-	player_slows[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	player_slows[name] = nil
+	-- Cancel every running poison chain for this name (see poison_gen).
+	poison_gen[name] = (poison_gen[name] or 0) + 1
 end)
 
 -- Damage-over-time on a player (Serpent: total_ticks 3, interval 2,
@@ -194,8 +207,17 @@ function grug_mobs.poison_player(player, total_ticks, interval, dmg_per_tick)
 	end
 	local name = player:get_player_name()
 	local left = total_ticks
+	-- Snapshot the victim's poison generation; leaveplayer bumps it, so a
+	-- chain started before a relog stops on its next tick instead of eating
+	-- into the fresh session (a name-keyed core.after chain cannot tell the
+	-- two apart on its own — get_player_by_name happily returns the new
+	-- ObjectRef).
+	local gen = poison_gen[name] or 0
 	local tick
 	tick = function()
+		if (poison_gen[name] or 0) ~= gen then
+			return -- superseded: the victim logged out, this chain is void
+		end
 		local p = core.get_player_by_name(name)
 		if not p then
 			return -- left the server
@@ -228,9 +250,19 @@ end
 -- kraken.lua notes. Riders on players only; mob-vs-mob melee gets no rider.
 function grug_mobs.melee_rider(def, fn)
 	local prev = def.custom_attack
-	def.custom_attack = function(self)
+	def.custom_attack = function(self, ...)
 		if prev then
-			prev(self)
+			-- An earlier link that returns exactly `false` is vetoing the
+			-- swing (mobs_redo: `if not self.custom_attack or
+			-- self:custom_attack(self, p) then` — a falsy return skips the
+			-- melee damage entirely). Swallowing that and returning true
+			-- regardless would let a rider silently re-enable an attack the
+			-- def deliberately suppressed, and would run `fn` on a swing that
+			-- never landed.
+			local r = prev(self, ...)
+			if r == false then
+				return false
+			end
 		end
 		local target = self.attack
 		if target and core.is_player(target) then

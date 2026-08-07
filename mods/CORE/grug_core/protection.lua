@@ -42,7 +42,8 @@ local storage = core.get_mod_storage()
 --
 -- Persistence: ONE serialized table under the key "pois", mirrored in the
 -- in-memory list below at load time. A few dozen entries is what the §9 POI
--- budget produces (18 outposts today), so one string is cheaper and simpler
+-- budget produces (24 outposts today; the bandit camps of the same pass are
+-- deliberately NOT registered — they are raidable), so one string is cheaper
 -- than a key per POI.
 --
 -- Idempotent by id: mapgen may look at the same anchor from up to four

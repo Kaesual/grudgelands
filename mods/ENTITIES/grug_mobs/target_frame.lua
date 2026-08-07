@@ -14,7 +14,12 @@
 -- looking is enough).
 --
 
-local RANGE = 20 -- m, matches the "target frame" reach in combat_stats §6
+-- OUR choice, not a spec number: combat_stats §6 asks for a con-colored target
+-- frame and never names a reach for it. 20 m is picked to sit comfortably past
+-- the 16 m view_range of our furthest-seeing ground mobs (so you can size up
+-- what is about to see you) and inside the ability targeting ranges of
+-- grug_abilities. Change it here, there is nothing to keep it in sync with.
+local RANGE = 20
 local INTERVAL = 0.5 -- s; AGENTS performance rule: accumulator-throttled
 
 local COLOR_GRAY = 0xaaaaaa

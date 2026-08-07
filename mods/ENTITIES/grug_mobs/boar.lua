@@ -1,7 +1,7 @@
 -- Boar: aggressive daytime mob of the safe core and inner ring (WoW
 -- memory: the first quest mobs). Weak, but combative.
 
-grug_mobs.register_mob("grug_mobs:boar", {
+local boar = {
 	description = "Boar",
 	type = "monster",
 	_grug_spawn_zones = {"core", "inner"},
@@ -70,13 +70,26 @@ grug_mobs.register_mob("grug_mobs:boar", {
 	drops = {
 		{name = "mobs:meat_raw", chance = 1, min = 1, max = 2},
 		{name = "grug_mobs:light_leather", chance = 2, min = 1, max = 1},
-		{name = "grug_mobs:boar_tusk", chance = 3, min = 1, max = 2},
+		{name = "grug_mobs:boar_tusk", chance = 3, min = 1, max = 1},
 	},
 
 	water_damage = 0,
 	lava_damage = 4,
 	light_damage = 0,
-})
+}
+
+-- Charges (biomes_mobs.md §3.1, the Boar's behavior verb): a horizontal rush
+-- re-using the stalker impulse — a boar at mid-range lunges instead of jogging
+-- the last ten metres. Same helper as the Panther's pounce (verbs.lua; the
+-- name stays "stalker", it is the generic pounce impulse), tuned flat and
+-- long: up = 1 is a shoulder-charge, not a leap, and 4..10 m is exactly the
+-- window between "already biting you" and "still closing".
+-- The three boar defs share these numbers; boar_variants.lua repeats the call
+-- for the two tints because §3.2 keeps the family identical everywhere.
+grug_mobs.stalker(boar, {min_dist = 4, max_dist = 10, cooldown = 8,
+	speed = 8, up = 1})
+
+grug_mobs.register_mob("grug_mobs:boar", boar)
 
 -- Spawns on the signature top nodes of the SETTLED biomes (biomes.lua,
 -- docs/design/biomes_mobs.md §4: the whitelist IS the biome gating), so

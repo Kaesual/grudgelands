@@ -94,13 +94,23 @@ local function golem_def(description, texture)
 		-- (wp6_model_notes §4.2).
 		jump = false,
 		stepheight = 1.1,
-		-- The ONE aggressive family that does NOT get T10's cliff rule of 6
-		-- (boar.lua). Two reasons, both specific to this def: it is `jump =
-		-- false`, so stepheight 1.1 is its only way back UP and a deeper drop
-		-- is a one-way trip into a pit where nothing can reach it; and it is
-		-- `dogshoot` — a ledge is no exploit against a mob that answers by
-		-- throwing rocks over it. 4 also keeps the max_drop it hands to
-		-- core.find_path shallow enough that a non-jumper stays mobile.
+		-- Exception to T10's cliff rule of 6 (boar.lua). The original note
+		-- here leaned on `jump = false`, which is NOT a real argument:
+		-- mobs_redo never reads a `jump` field (do_jump gates on
+		-- jump_height/stepheight and on the node in front), so the field above
+		-- is inert documentation, and this def carries the same default
+		-- jump_height 4 as everything else. The reasons that DO hold are:
+		--   * a dogshoot mob never runs the pathfinder at all (the T10 GRUG
+		--     PATCH in api.lua do_states skips A* for attack_type ==
+		--     "dogshoot"), so the "fear_height doubles as find_path's max_drop"
+		--     half of the cliff rule simply does not apply to it — 4 vs 6
+		--     changes nothing about how it navigates, only where is_at_cliff
+		--     stops it;
+		--   * and the cliff rule exists to close a terrain EXPLOIT, which a
+		--     ranged elite does not have: a player on a ledge above a golem is
+		--     in its firing line, not out of its reach. Keeping it out of deep
+		--     pits it would have to step-climb back out of (stepheight 1.1) is
+		--     worth more than two nodes of chase.
 		fear_height = 4,
 		view_range = 14,
 
@@ -175,10 +185,15 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- that is exposed bare rock, which the crags/badlands cuboids produce in
 -- patches and the rest of the world barely at all. On top of that this row is
 -- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer
--- ring and one continent, and the check order in api.lua spends the cheap
--- tests first: active-object count, mob_active_limit, then our arithmetic
--- zone_at/territory_at check, and only afterwards the light/space/player
--- queries that actually touch the map.
+-- ring and one continent, and the check order in api.lua's spawn_action spends
+-- the cheap tests first: max_per_block, mob_active_limit, then our arithmetic
+-- zone_at/territory_at check (mobs:spawn_abm_check), then the active-object
+-- count — which is a get_objects_inside_radius and therefore NOT free — and
+-- only afterwards the light/space/player queries. Our check running BEFORE
+-- count_mobs and not after it is the good direction: a golem candidate in the
+-- wrong ring is rejected by two subtractions and never costs an object scan.
+-- (The order was stated backwards in the T10 notes and in
+-- docs/research/wp6_spawn_budget.md §5; corrected in the WP6 review.)
 mobs:spawn({
 	name = "grug_mobs:stone_golem",
 	nodes = {

@@ -8,6 +8,10 @@ does not compute:
 2. the resulting population hits world.md §8's target of **~1 visible mob per
    15–20 m of wilderness travel**.
 
+Short answer, revised in the WP6 review: (1) holds within ~15 %, (2) holds *at
+the peak cells* and does not hold in the median ones — see §3, which now states
+both and names the calibration knobs instead of rounding the result up.
+
 Runtime verification is impossible from here (Luanti runs in the user's
 Flatpak); everything below is arithmetic against the implemented spawn rows
 and the engine/mobs_redo source. Where the implementation disagreed with §4 it
@@ -23,15 +27,23 @@ was changed — §4's numbers are the spec and were not touched.
 local objs = core.get_objects_inside_radius(pos, aoc_range * 2)
 ```
 
-with `aoc_range = active_block_range * 16` and the engine default
-`active_block_range = 4` (builtin/settingtypes.txt:2327). So:
+with `aoc_range = active_block_range * 16`. So:
 
 - the cap is **per entity NAME**, not per family — two rows of the same name
   (e.g. the Skeleton Archer's two node lists, the golems' surface + cave rows)
   share one budget, two different names do not;
-- it counts inside a sphere of **128 nodes** around the candidate node;
-- a spawn additionally requires a player within those 128 nodes
-  (`is_pla`), and never happens within `mob_nospawn_range = 12` of one.
+- it counts inside a sphere of `aoc_range * 2` around the candidate node;
+- a spawn additionally requires a player within that sphere (`is_pla`), and
+  never happens within `mob_nospawn_range = 12` of one.
+
+**The radius is client-configurable, not a constant.** `active_block_range`
+defaults to **4** (= 64 nodes, so the counting sphere is 128) on desktop and to
+**2** (= 32 / 64) on Android (builtin/settingtypes.txt), and a server operator
+may set anything. Everything below is computed at the desktop default; on a
+server whose operator lowers it, the same aoc numbers describe a *smaller*
+bubble and therefore a *denser* world. If we ever ship a dedicated server
+config, `active_block_range = 4` belongs in it — the density numbers here are
+only meaningful together with that value.
 
 Spawning itself only happens in ACTIVE mapblocks, i.e. within
 `active_block_range` = 4 mapblocks = **64 nodes** of a player. The 128-node
@@ -74,8 +86,8 @@ Blightfang Wolf 5 (the wolf row has no light gate, so it counts twice).
   Per the T10 brief the spec numbers stay as written; this is recorded as a
   known ~15 % overshoot of §4's own soft cap in the two settled-inner cells
   and the bone-forest night cell. §4 says "capped at ~14", not "≤ 14", and
-  §1 below shows the target is met at these numbers rather than broken by
-  them.
+  §3 below shows these cells are the ones that actually MEET the §8 travel
+  target — they are the peak, not the problem.
 - **One real implementation deviation was found and fixed**: the Gaunt Stag
   also listed `default:dry_dirt_with_dry_grass`, so the savanna carried both
   Gaunt Stag (3) and Zebra (3) although §4 prices *Stag/Gaunt Stag/Zebra* as
@@ -113,12 +125,34 @@ detection half-width `w`:
 d = 17.5 m  →  w ≈ 23 m
 ```
 
-i.e. the target is met as long as a player notices mobs out to roughly 23 m
-to either side, which is a conservative effective sight range in wooded voxel
-terrain. **Conclusion: Σaoc 14–16 lands the §8 target; it is not too sparse,
-and the "~14" cap is what keeps it from becoming too dense.** A lower ring
-(e.g. the elf-forest core at 8) yields ≈ 20 m spacing, i.e. the sparse end of
-the same band — which is correct, that is the safe village belt.
+i.e. at the peak the target is met as long as a player notices mobs out to
+roughly 23 m to either side.
+
+**That 23 m is an assumption, not a measurement**, and the conclusion has to be
+stated with it rather than around it. Redoing the same arithmetic for the
+*median* cell of the table above (Σaoc ≈ 8 — the elf-forest core, the crags,
+most of the outer ring outside the two peaks):
+
+```
+λ = 8 / 12 868          ≈ 6.2 · 10⁻⁴ mobs/m²
+nearest-neighbour        ≈ 20 m
+travel spacing at w = 23 m →  d = 1 / (2 · λ · w) ≈ 35 m
+travel spacing at w = 30 m →  d ≈ 27 m
+```
+
+**Conclusion, honestly: the §8 target of one mob per 15–20 m is met AT THE
+HOTSPOTS (Σaoc 14–16 → d ≈ 17–20 m at w = 23 m). The median cell lands at
+roughly 28–35 m, i.e. noticeably sparser than §8 asks for.** That is partly
+intended (the safe village belt and the bare crags *should* feel empty) and
+partly just where §4's row numbers land; it is documented here rather than
+papered over, because the arithmetic cannot settle which of the two it is —
+only walking the world can.
+
+The calibration knobs, in the order they should be reached for, are per row and
+not global: **`chance`** (lower = more spawn attempts, moves the equilibrium up
+to the cap faster; safe, the cap still bounds it) and then **`aoc`** (raises the
+ceiling itself; this is what actually changes density and what §4 makes
+conditional on this pass). §6 lists the cells to look at first.
 
 ## 4. Is the cap actually reached? (spawn reliability)
 
@@ -149,9 +183,15 @@ counts". Checked:
 - `mobs:spawn_abm_check` is overridden in `grug_mobs/init.lua` and runs per
   surviving candidate. Its work is a table lookup plus
   `grug_core.zone_at(pos)` / `territory_at(pos)` — pure arithmetic on the
-  radial field, no map access. It sits AFTER the active-object count and the
-  `mob_active_limit` test and BEFORE the light/space/player queries, i.e. in
-  the right place in api.lua's ordering.
+  radial field, no map access. Its actual place in `spawn_action` (api.lua),
+  re-read in the WP6 review because the T10 note had it backwards:
+  `max_per_block` → entity exists → `at_limit()` (`mob_active_limit`) →
+  **`spawn_abm_check`** → `count_mobs` (the active-object count) → day_toggle →
+  repellent → height → light → protection → player distance → headroom.
+  So it runs BEFORE the active-object count, not after it — which is the good
+  direction: `count_mobs` is a `get_objects_inside_radius` over a 128-node
+  sphere, and a candidate in the wrong ring is now rejected by two
+  subtractions before that scan ever happens.
 - The global backstop for 100 players is `mob_active_limit = 600` in the
   game's `minetest.conf` (§4's own requirement). The per-biome sums above
   bound the population around ONE player; 600 bounds the whole server.
@@ -160,6 +200,10 @@ counts". Checked:
 
 - Confirm that the settled-inner cells (16) feel right rather than crowded;
   if not, the lever is the Wolf/Stag pair's `inner` zone, not the cap.
+- **Walk a median cell** (elf-forest core, crags, a plain stretch of the outer
+  ring) and count encounters per 100 m. §3 predicts ~3 there against §8's ~6;
+  if it reads as empty, lower `chance` on the two or three families that
+  actually live in that cell before touching any `aoc`.
 - Confirm the beach cells are not too empty now that the Shore Crab is
   deferred (Gull alone, aoc 2).
 - Profile `core.find_path`; `mob_pathfinding_searchdistance = 24` is the one

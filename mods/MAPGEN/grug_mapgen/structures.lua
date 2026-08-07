@@ -32,6 +32,11 @@
 --    four wooden corner posts and a guard banner in the middle, at every
 --    anchor of grug_core.outpost_anchors(). See the outpost section below.
 --
+--  * the DETERMINISTIC BANDIT CAMPS (WP6 bridge until WP13's settlement
+--    pass): a single grug_mobs:camp_fire node at every anchor of
+--    grug_core.bandit_camp_anchors(). No pad, no protection — see the bandit
+--    camp section below.
+--
 -- (The old east-west mountain wall at |x| = 2000 is gone: the continent
 -- redesign replaces walls with ocean.)
 
@@ -515,9 +520,15 @@ end
 --
 -- Military outposts (docs/design/world.md §4/§9)
 --
--- Eighteen deterministic anchors (three rings × six race bands), all of them
--- from grug_core.outpost_anchors() — mapgen, the guard camps and the patrol
--- routes read the SAME list, so nothing here re-derives a position.
+-- Twenty-four deterministic anchors (four rings × six race bands — war_coast,
+-- inner, outer and, since the WP6 review, coast), all of them from
+-- grug_core.outpost_anchors() — mapgen, the guard camps and the patrol routes
+-- read the SAME list, so nothing here re-derives a position.
+--
+-- The coast anchors are the ones the REJECTION rule below really matters for:
+-- they sit at the inner edge of the coast band by construction, but the coast
+-- noise still floods a share of those columns depending on the inset it rolls
+-- there, and a flooded anchor is skipped rather than drowned.
 --
 -- The structure is deliberately minimal (WP13 ships real ones): a 7×7 cobble
 -- pad flattening the terrain, two cobble layers of skirt under it, five nodes
@@ -650,6 +661,69 @@ local function build_outpost(data, area, minp, maxp, o)
 	end
 end
 
+--
+-- Deterministic bandit camps (WP6 bridge, see grug_core.bandit_camp_anchors)
+--
+-- Twelve anchors, two per race band. The structure is ONE node: a
+-- grug_mobs:camp_fire on the ground. That node IS the camp — its timer spawns
+-- and respawns 3-5 bandits around itself (grug_mobs/camps.lua) — so a pad, a
+-- clearing or corner posts would add nothing but cobble. Placing it is what
+-- gives the linen-cloth economy a source before WP13 ships real settlements.
+--
+-- NOT a POI, unlike the outposts: a bandit camp is meant to be raided and
+-- razed (world.md §2's protected zones are for the things players must not be
+-- able to grief; a camp is the opposite). No add_poi call, no skip marker
+-- either — there is no structure to leave half-built, so a chunk that cannot
+-- decide the height simply does nothing and the anchor stays unbuilt.
+--
+-- HEIGHT: the same rule as everything else here, minus the persistence. The
+-- camp occupies exactly one column, so only ONE mapchunk ever places it and
+-- there is no cross-chunk agreement to maintain: engine spawn level first,
+-- heightmap median over a 5×5 as the fallback, clamped to the coast profile,
+-- and the same 2..100 sanity window the outposts use (all twelve anchors are
+-- inland — |x| <= 670, |z| <= 1350, i.e. >= 350 nodes from any rectangle edge
+-- — so column_cap returns nil for them and the clamp is pure belt and braces).
+--
+-- The node arrives by VoxelManip, which fires no callbacks, so its meta and
+-- its node timer are set up by the LBM "grug_mobs:camp_fire_init"
+-- (grug_mobs/camps.lua) — exactly the same arrangement as the guard banner.
+local BANDIT_SAMPLE = 2 -- heightmap median radius (5x5) for the fallback
+
+-- Resolved lazily, not at file scope like the other content ids: camp_fire
+-- belongs to grug_mobs, which grug_mapgen deliberately does NOT depend on
+-- (mapgen must not need the mob engine to load). By the time
+-- register_on_generated first runs, every mod is registered.
+local c_camp_fire
+
+local function camp_fire_id()
+	if c_camp_fire == nil then
+		c_camp_fire = core.registered_nodes["grug_mobs:camp_fire"] and
+			core.get_content_id("grug_mobs:camp_fire") or false
+		if not c_camp_fire then
+			core.log("warning", "[grug_mapgen] grug_mobs:camp_fire is not " ..
+				"registered — the deterministic bandit camps are skipped")
+		end
+	end
+	return c_camp_fire or nil
+end
+
+local function bandit_camp_y(anchor, minp, maxp)
+	local y = grug_core.surface_level_at(anchor.x, anchor.z)
+		or heightmap_median(anchor.x, anchor.z, BANDIT_SAMPLE, minp, maxp)
+	if not y then
+		return nil
+	end
+	y = math.floor(y)
+	local cap = column_cap(anchor.x, anchor.z)
+	if cap and cap < y then
+		y = cap
+	end
+	if y < OUTPOST_MIN_Y or y > OUTPOST_MAX_Y then
+		return nil
+	end
+	return y
+end
+
 core.register_on_generated(function(minp, maxp, blockseed)
 	local need_mask = chunk_needs_mask(minp, maxp)
 
@@ -697,7 +771,26 @@ core.register_on_generated(function(minp, maxp, blockseed)
 		end
 	end
 
-	if not need_mask and #camps == 0 and #outposts == 0 then
+	-- Bandit camps: one node each, so the collect step is just "is this
+	-- anchor's column in the chunk, and does its fire node land in the chunk's
+	-- y range". Nothing is persisted and nothing is protected (see above).
+	local fires = {}
+	local fire_id = camp_fire_id()
+	if fire_id then
+		local bandits = grug_core.bandit_camp_anchors()
+		for i = 1, #bandits do
+			local b = bandits[i]
+			if b.x >= minp.x and b.x <= maxp.x and
+					b.z >= minp.z and b.z <= maxp.z then
+				local y = bandit_camp_y(b, minp, maxp)
+				if y and y + 1 >= minp.y and y + 1 <= maxp.y then
+					fires[#fires + 1] = {x = b.x, y = y + 1, z = b.z}
+				end
+			end
+		end
+	end
+
+	if not need_mask and #camps == 0 and #outposts == 0 and #fires == 0 then
 		return
 	end
 
@@ -726,6 +819,13 @@ core.register_on_generated(function(minp, maxp, blockseed)
 	-- nearest outpost ring at |z| = 500), the order is just the file's order.
 	for _, outpost in ipairs(outposts) do
 		build_outpost(data, area, minp, maxp, outpost)
+	end
+	-- Last: the camp fire is a single node and must not be erased by anything
+	-- that clears volume. It never shares a column with a pad anyway (the
+	-- bandit anchors are 120 nodes off the capital/outpost x), the order is
+	-- simply the safe one.
+	for _, fire in ipairs(fires) do
+		data[area:index(fire.x, fire.y, fire.z)] = fire_id
 	end
 
 	vm:set_data(data)

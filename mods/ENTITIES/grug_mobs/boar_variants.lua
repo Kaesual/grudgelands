@@ -1,6 +1,6 @@
 -- Boar tints (docs/design/biomes_mobs.md §3.1, "Boar ... per-biome tint:
 -- Plague Boar in blight, Jungle Boar east"). Same family, same verb
--- ("charges" = plain dogfight, no helper needed), same drop table — only the
+-- ("charges", the stalker impulse — see boar.lua), same drop table — only the
 -- baked texture, the display name and the one biome top node differ.
 --
 -- The base Boar (boar.lua) lost those two tops in the same change, so every
@@ -13,7 +13,7 @@
 -- registrations cannot drift apart (§3.2: the boar table is identical
 -- everywhere).
 local function boar_def(description, texture)
-	return {
+	local def = {
 		description = description,
 		type = "monster",
 		_grug_spawn_zones = {"core", "inner"},
@@ -57,13 +57,19 @@ local function boar_def(description, texture)
 		drops = {
 			{name = "mobs:meat_raw", chance = 1, min = 1, max = 2},
 			{name = "grug_mobs:light_leather", chance = 2, min = 1, max = 1},
-			{name = "grug_mobs:boar_tusk", chance = 3, min = 1, max = 2},
+			{name = "grug_mobs:boar_tusk", chance = 3, min = 1, max = 1},
 		},
 
 		water_damage = 0,
 		lava_damage = 4,
 		light_damage = 0,
 	}
+	-- Charges (§3.1) — byte-for-byte the base boar's verb, same reasoning and
+	-- same numbers; see boar.lua. §3.2 keeps the family identical everywhere,
+	-- so a tint variant charges exactly like the base boar.
+	grug_mobs.stalker(def, {min_dist = 4, max_dist = 10, cooldown = 8,
+		speed = 8, up = 1})
+	return def
 end
 
 --

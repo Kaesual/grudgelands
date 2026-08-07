@@ -9,9 +9,24 @@
 --
 -- Leash / reset (combat_stats.md §4)
 --
--- A mob chasing a PLAYER resets when it is more than LEASH_RANGE from its
--- home position OR has had no player contact for LEASH_TIMEOUT seconds:
--- threat table cleared, target dropped, healed to full.
+-- A mob chasing a PLAYER resets when it has been dragged more than
+-- LEASH_RANGE from where THAT CHASE BEGAN, or when it has had no player
+-- contact for LEASH_TIMEOUT seconds: threat table cleared, target dropped,
+-- healed to full.
+--
+-- "Dragged from where the chase began", not "far from home" (fixed in the WP6
+-- review, B4): the anti-kiting rule of combat_stats §4 is about how far a
+-- player may PULL a mob, and `_grug_home` is only the point the mob happened
+-- to activate at. A wandering mob drifts away from its home on its own — a
+-- bear or jungle ape with the territorial 20 m radius reaches the edge of its
+-- own leash within a minute of idle walking — and from then on EVERY
+-- leash_check during combat fired: reset, heal to full, once a second,
+-- forever. That mob was literally unkillable. Measuring against a per-chase
+-- anchor (temp.grug_chase_anchor, seeded with the contact clock and dropped
+-- with the chase) makes the rule mean what it says and makes it impossible
+-- for a mob to out-drift its own leash while idle. `_grug_home` stays: camps
+-- still return-to and identify by it (camps.lua), it just no longer decides
+-- the leash.
 --
 -- "Player contact" reading (decided WP6-T2): contact is a hit BETWEEN the
 -- mob and its target — grug_core.run_player_hit_mob (player hits mob), a
@@ -62,27 +77,48 @@ function grug_mobs.apply_aggro_fields(self, cfg)
 	if cfg.leash_range and self._grug_leash_range ~= cfg.leash_range then
 		self._grug_leash_range = cfg.leash_range
 	end
+	-- Give-up distance for the do_states GRUG PATCH in mobs/api.lua. OURS
+	-- only, unconditionally and with no def field: vanilla mobs_redo gives up
+	-- at view_range, which for a ground mob is <= 16 m and therefore below the
+	-- 25 m soft de-aggro AND below the 40 m leash — i.e. neither of the two
+	-- rules combat_stats §3/§4 actually specifies could ever fire. The leash
+	-- below is what ends a grug chase; this number only has to stay out of its
+	-- way, hence 40 + 5 m of hysteresis margin.
+	--
+	-- Kraken included on purpose (no special case): its view_range is 20, so
+	-- 45 EXTENDS its chase — but it runs its own hand-rolled open-sea leash
+	-- (strayed(), kraken.lua) and _grug_no_leash, so that leash still governs
+	-- when it turns around, exactly as before.
+	if self._grug_chase_range ~= grug_mobs.CHASE_RANGE then
+		self._grug_chase_range = grug_mobs.CHASE_RANGE
+	end
 end
 
 -- Default leash radius; a def may override it per mob with
 -- _grug_leash_range (installed onto the entity by apply_aggro_fields above).
-grug_mobs.LEASH_RANGE = 40 -- m from the home position
+grug_mobs.LEASH_RANGE = 40 -- m dragged from where the chase began
 grug_mobs.LEASH_TIMEOUT = 15 -- s without player contact
--- Floor for NAMED RARES (rares.lua). A rare walks a 2-3 point patrol route
--- that is 150-250 m across, but `_grug_home` is only the point it happened to
--- spawn at — with a family radius it would reset the instant it aggroes at a
--- far waypoint, and a territorial family makes that fatal: Marrowclaw is a
--- Plaguehide Bear (radius 20), so every pull more than 20 m from its spawn
--- point would drop the target and heal it to full, i.e. an unkillable rare.
--- The contact timeout above still applies, so this widens the leash without
--- turning rares into world-spanning chasers.
+-- Give-up distance handed to the api.lua do_states patch (see
+-- apply_aggro_fields): must sit ABOVE LEASH_RANGE so the leash — not the
+-- mob's eyesight — is what ends a chase, with a little hysteresis so a mob
+-- hovering exactly at the leash edge does not flip between the two rules.
+grug_mobs.CHASE_RANGE = 45
+-- Floor for NAMED RARES (rares.lua): the maximum distance a rare may be
+-- DRAGGED from the spot where the pull happened. A rare is the fight of a
+-- region, not a mob you tow home in twenty metres — and its family radius
+-- would otherwise decide that for it (Marrowclaw is a Plaguehide Bear,
+-- radius 20). The contact timeout above still applies, so this widens the
+-- drag allowance without turning rares into world-spanning chasers.
+-- (Since the WP6 review the leash measures drag from the chase anchor, not
+-- distance from `_grug_home`, so this is no longer load-bearing against the
+-- route length — a rare that aggroes at a far waypoint anchors THERE. It
+-- stays as the deliberate "a rare may be kited a long way" allowance.)
 grug_mobs.RARE_LEASH_RANGE = 300
--- Floor for OUTPOST PATROLLERS (world.md §4, camps.lua/guard.lua). A patrol
--- walks 250-850 nodes from the post it spawned at, and `_grug_home` is that
--- post — with the guard's own 30 m leash it would reset (heal to full, drop
--- the target) the moment it aggroed anywhere along the route. Effectively "no
--- distance leash": a patroller leashes by CONTACT TIMEOUT only, and the 15 s
--- rule below still keeps it from chasing anyone across the continent.
+-- Floor for OUTPOST PATROLLERS (world.md §4, camps.lua/guard.lua): a patroller
+-- is 250-850 nodes from its post by design, and its guard def carries a 30 m
+-- leash meant for guards standing ON the post. Effectively "no distance
+-- leash": a patroller leashes by CONTACT TIMEOUT only, and the 15 s rule above
+-- still keeps it from chasing anyone across the continent.
 -- It has to be a floor applied HERE and not a field on the entity, because
 -- apply_aggro_fields re-writes _grug_leash_range from the def on every tick.
 grug_mobs.PATROL_LEASH_RANGE = 2000
@@ -93,7 +129,16 @@ function grug_mobs.leash_reset(self)
 	grug_core.clear_threat(self)
 	if self.temp then
 		self.temp.grug_last_contact = nil
+		-- The chase is over, so its drag anchor is too: the NEXT pull anchors
+		-- wherever the mob stands then (see leash_check).
+		self.temp.grug_chase_anchor = nil
 	end
+	-- A reset mob is UNTAGGED (combat_stats §3, the documented "no seeding"
+	-- rule): it forgot the fight, healed to full and dropped the target, so
+	-- the loot rights of whoever poked it before must not survive either —
+	-- otherwise a player could tag a mob, walk out of the leash, and let a
+	-- guard or a fall kill it for them within the 60 s window.
+	self._grug_player_tag = nil
 	if type(self.stop_attack) == "function" then
 		self:stop_attack()
 	end
@@ -114,25 +159,37 @@ local function leash_check(self)
 	local target = self.attack
 	if self.state ~= "attack" or not target or not core.is_player(target) then
 		-- Not chasing a player (idle, or fighting another mob/NPC): nothing
-		-- to leash, and the contact clock restarts with the next pull.
+		-- to leash, and the contact clock restarts with the next pull. The
+		-- drag anchor goes with it — it describes ONE chase.
 		self.temp.grug_last_contact = nil
+		self.temp.grug_chase_anchor = nil
 		return
 	end
+	local pos = self.object and self.object:get_pos()
 	local now = grug_core.mono_time()
 	if not self.temp.grug_last_contact then
 		-- Fresh pull (acquired via general_attack/group_attack without a hit
 		-- yet): seed the clock so the pull does not reset instantly.
 		self.temp.grug_last_contact = now
 	end
+	-- ... and, in the same breath, WHERE the chase began. That point — not
+	-- `_grug_home` — is what the distance rule measures against (see the
+	-- header): the spec's anti-kiting rule is about how far a player may drag
+	-- a mob, and a mob that merely WANDERED past its own leash radius must not
+	-- be resetting (i.e. healing to full) once a second for the rest of its
+	-- life. Runtime-only (self.temp): a chase does not survive an unload, and
+	-- the mob re-anchors on its next pull.
+	if not self.temp.grug_chase_anchor and pos then
+		self.temp.grug_chase_anchor = {x = pos.x, y = pos.y, z = pos.z}
+	end
 	if now - self.temp.grug_last_contact > grug_mobs.LEASH_TIMEOUT then
 		grug_mobs.leash_reset(self)
 		return
 	end
-	local pos = self.object and self.object:get_pos()
-	local home = self._grug_home
-	-- `home` comes back from staticdata as a plain table (no vector
-	-- metatable) — vector.distance reads the components, that is fine, but
-	-- never compare positions with `==` (luanti-lua.md).
+	local anchor = self.temp.grug_chase_anchor
+	-- `anchor` is a plain table (no vector metatable) — vector.distance reads
+	-- the components, that is fine, but never compare positions with `==`
+	-- (luanti-lua.md).
 	local range = self._grug_leash_range or grug_mobs.LEASH_RANGE
 	if self._grug_rare_id then
 		range = math.max(range, grug_mobs.RARE_LEASH_RANGE)
@@ -140,7 +197,7 @@ local function leash_check(self)
 	if self._grug_patrol_route then
 		range = math.max(range, grug_mobs.PATROL_LEASH_RANGE)
 	end
-	if pos and home and vector.distance(pos, home) > range then
+	if pos and anchor and vector.distance(pos, anchor) > range then
 		grug_mobs.leash_reset(self)
 	end
 end

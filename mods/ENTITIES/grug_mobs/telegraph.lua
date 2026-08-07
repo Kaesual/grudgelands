@@ -79,9 +79,10 @@ local function start_windup(self)
 	self.temp.grug_tg_left = WINDUP
 end
 
--- The payoff: everyone still standing in the frontal cone eats 3x damage.
--- Stepping out of the cone or out of range during the two seconds is a
--- clean miss — that IS the mechanic, so nothing here re-checks the target.
+-- The payoff: everyone still standing in the frontal cone, in range and in
+-- LINE OF SIGHT eats 3x damage. Stepping out of the cone, out of range or
+-- behind cover during the two seconds is a clean miss — that IS the mechanic,
+-- so nothing here re-checks the target.
 -- The mob's own target may have died or logged out; bystanders still get
 -- hit.
 local function resolve(self)
@@ -110,7 +111,19 @@ local function resolve(self)
 			local len = math.sqrt(dx * dx + dz * dz)
 			-- Standing exactly inside the mob has no direction; count it as
 			-- a hit rather than letting it divide by zero.
-			if len < 0.01 or (dx / len) * dir.x + (dz / len) * dir.z >= CONE_COS then
+			local in_cone = len < 0.01 or
+				(dx / len) * dir.x + (dz / len) * dir.z >= CONE_COS
+			-- TERRAIN DODGE. The cone is a geometric test, so without this a
+			-- player who ducked behind a rock, a tree trunk or a wall corner
+			-- inside the two seconds still ate the x3 hit — and "step out of
+			-- the way during the wind-up" is the advertised mechanic
+			-- (combat_stats §3 readability rules), not a suggestion. A blocked
+			-- player is a clean miss, exactly like one who left the cone.
+			-- Cost is bounded: at most a handful of players are within a
+			-- 3.5 m radius, and this only runs on the frame a wind-up
+			-- resolves (once per 10 s per elite).
+			if in_cone and core.line_of_sight(vector.offset(pos, 0, 1, 0),
+					vector.offset(pp, 0, 1, 0)) then
 				-- Full punch interval 1.4 like grug_core's ability damage:
 				-- armor groups, the central dodge roll and absorb shields
 				-- all apply (grug_core/combat.lua:442ff).

@@ -23,10 +23,13 @@
 --       no player within 80 m?          -> re-arm short, do nothing
 --       enough living camp mobs?        -> re-arm short, do nothing
 --       otherwise spawn exactly ONE mob near the fire and re-arm 120-300 s
---   the spawned mob gets `_grug_home = camp pos` (aggro.lua leashes it back
---       there and heals it on reset) and `_grug_camp_pos = camp pos`
---       (identity for the head count here and for the mirefolk swarm verb)
---   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp".
+--   the spawned mob gets `_grug_home = camp pos` (the point it returns to and
+--       is identified by) and `_grug_camp_pos = camp pos` (identity for the
+--       head count here and for the mirefolk swarm verb)
+--   with `_grug_leash_range = 25` in the mob defs, that IS "defends camp": a
+--       camp mob may be dragged 25 nodes from wherever the fight started
+--       before it resets and heals (aggro.lua; the leash measures drag, not
+--       distance from `_grug_home`).
 --
 -- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
 -- grug_nodes:guard_banner, and the camp types "guard_accord"/"guard_throng"
@@ -76,6 +79,12 @@ local META_TYPE = "_grug_camp_type"
 local META_TARGET = "_grug_camp_target"
 local META_PATROL_T = "_grug_camp_patrol_t"
 local META_BANNER_INIT = "_grug_banner_init"
+local META_FIRE_INIT = "_grug_camp_init"
+
+-- The two anchor nodes, by name. BANNER_NODE is needed as a value (not only
+-- as a camp-type field) because place_camp has to recognise a guard post and
+-- let the TERRITORY pick its type — see there.
+local BANNER_NODE = "grug_nodes:guard_banner"
 
 -- Re-arm delay when the tick had nothing to do (nobody around, camp full, no
 -- free ground). Short on purpose: it is one cheap check, and it decides how
@@ -251,7 +260,11 @@ local function camp_tick(pos)
 	-- camp would top out at a single mob. The camp's own target is the cap.
 	-- add_mob returns nil whenever it declines (no player in range, active
 	-- mob limit, entity missing); that must never be an error here.
-	local ent = mobs:add_mob(spot, {name = cfg.mob, ignore_count = true})
+	-- grug_mobs.add_mob, not mobs:add_mob: the wrapper applies the
+	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
+	-- — a camp family with a negative box floor would otherwise stand sunk
+	-- into the ground.
+	local ent = grug_mobs.add_mob(spot, {name = cfg.mob, ignore_count = true})
 	if not ent then
 		return IDLE_PERIOD
 	end
@@ -276,6 +289,22 @@ end
 --
 -- The node
 --
+
+-- Shared by on_construct (hand/place_camp placement) and the LBM below
+-- (mapgen placement, see there). Idempotent: the meta flag makes a second
+-- call a no-op, and an already typed fire keeps its type.
+local function init_camp_fire(pos)
+	local meta = core.get_meta(pos)
+	if meta:get_int(META_FIRE_INIT) == 1 then
+		return
+	end
+	meta:set_int(META_FIRE_INIT, 1)
+	if meta:get_string(META_TYPE) == "" then
+		meta:set_string(META_TYPE, DEFAULT_TYPE)
+	end
+	meta:set_string("infotext", "Camp Fire")
+	core.get_node_timer(pos):start(IDLE_PERIOD)
+end
 
 -- Deliberately family-agnostic ("camp fire", not "bandit fire"): the same
 -- node anchors mirefolk pools and whatever WP13 adds later; the camp TYPE
@@ -310,15 +339,14 @@ core.register_node("grug_mobs:camp_fire", {
 	-- anything that later wants to find camps.
 	groups = {cracky = 3, grug_camp = 1},
 	sounds = default.node_sound_gravel_defaults(),
+	-- PORTABLE-SPAWNER EXPLOIT: this node IS a mob spawner (its timer
+	-- repopulates the camp forever). Dropping it would let a player mine a
+	-- bandit camp, carry it to a safe corner behind their own walls and farm
+	-- the drops on tap. Destroying a camp stays possible — it just yields
+	-- nothing but the destruction. Same rule on grug_nodes:guard_banner.
+	drop = "",
 
-	on_construct = function(pos)
-		local meta = core.get_meta(pos)
-		if meta:get_string(META_TYPE) == "" then
-			meta:set_string(META_TYPE, DEFAULT_TYPE)
-		end
-		meta:set_string("infotext", "Camp Fire")
-		core.get_node_timer(pos):start(IDLE_PERIOD)
-	end,
+	on_construct = init_camp_fire,
 
 	-- Returning `true` would re-arm with the SAME timeout (mapblock.cpp
 	-- MapBlock::step: the engine calls setNodeTimer(timeout, 0) on a true
@@ -396,10 +424,26 @@ core.override_item("grug_nodes:guard_banner", {
 -- generated blocks, and init_banner's meta flag makes it idempotent on top.
 core.register_lbm({
 	name = "grug_mobs:guard_banner_init",
-	nodenames = {"grug_nodes:guard_banner"},
+	nodenames = {BANNER_NODE},
 	run_at_every_load = false,
 	action = function(pos)
 		init_banner(pos)
+	end,
+})
+
+-- The same problem, the same fix, for the CAMP FIRE: grug_mapgen's structure
+-- pass writes the deterministic bandit camps of world.md §4 straight into the
+-- mapchunk's VoxelManip, which fires no node callbacks, so on_construct never
+-- runs for a generated fire and its node timer would never be armed (a camp
+-- that never spawns anybody). init_camp_fire does exactly what on_construct
+-- does — default type "bandit", infotext, arm the timer — and its meta flag
+-- makes the pair idempotent.
+core.register_lbm({
+	name = "grug_mobs:camp_fire_init",
+	nodenames = {"grug_mobs:camp_fire"},
+	run_at_every_load = false,
+	action = function(pos)
+		init_camp_fire(pos)
 	end,
 })
 
@@ -422,11 +466,30 @@ function grug_mobs.place_camp(pos, type_id)
 			tostring(type_id) .. "'")
 		return false
 	end
+	-- TERRITORY IS AUTHORITATIVE for a guard post (world.md §0/§4: "a post can
+	-- never fly the wrong faction's colours"). banner_camp_type already
+	-- enforces that for every OTHER placement path — on_construct and the
+	-- mapgen LBM both go through it — but place_camp used to overwrite the
+	-- result with the caller's type_id afterwards, so one
+	-- place_camp(pos, "guard_throng") on Accord soil put a Throng garrison
+	-- inside Accord territory (and its guards would then hunt the players who
+	-- own that continent). The caller's wish loses; it is told so, because a
+	-- settlement schematic asking for the wrong watch is a bug worth seeing.
+	local effective = type_id
+	if cfg.node == BANNER_NODE then
+		effective = banner_camp_type(pos)
+		if effective ~= type_id then
+			core.log("warning", "[grug_mobs] place_camp at " ..
+				core.pos_to_string(pos) .. ": requested '" .. type_id ..
+				"' but the territory says '" .. effective ..
+				"' — territory wins")
+		end
+	end
 	-- set_node fires on_construct, which writes the default type and arms the
 	-- timer; the two lines after it overwrite that default.
 	core.set_node(pos, {name = cfg.node})
 	local meta = core.get_meta(pos)
-	meta:set_string(META_TYPE, type_id)
+	meta:set_string(META_TYPE, effective)
 	meta:set_int(META_TARGET, 0) -- re-rolled for THIS type on the first tick
 	-- Populate promptly instead of after the on_construct idle period: a camp
 	-- placed next to a player should not stand empty for half a minute.

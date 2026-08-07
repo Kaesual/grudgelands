@@ -79,11 +79,37 @@ end
 -- with get_node_or_nil, and terrain does not move.
 local surface_cache = {}
 
+-- Is `p` still air standing on solid, non-liquid ground? Same predicate
+-- grug_core.find_surface uses to pick a position in the first place.
+-- Deliberately core.get_node and not get_node_or_nil: every caller of
+-- route_pos below is already inside the "a player is within 120 m" gate, so
+-- the column is loaded; an "ignore" from an unloaded block fails the test and
+-- is treated like any other mismatch.
+local function surface_ok(p)
+	local here = core.get_node(p)
+	local below = core.get_node({x = p.x, y = p.y - 1, z = p.z})
+	return here.name == "air" and below.name ~= "air" and
+		below.name ~= "ignore" and
+		core.get_item_group(below.name, "liquid") == 0
+end
+
 local function route_pos(pt)
 	local key = pt.x .. "," .. pt.z
 	local y = surface_cache[key]
 	if y then
-		return vector.new(pt.x, y, pt.z)
+		local cached = vector.new(pt.x, y, pt.z)
+		-- "Terrain does not move" is not true in a game where players dig.
+		-- A cached y whose column has since been mined out, flooded, built
+		-- over or covered by a tree would spawn the rare inside a wall or
+		-- floating in a shaft — and it would stay wrong forever, because
+		-- nothing else ever invalidates this table. Re-verify, and on a
+		-- mismatch drop the entry and skip this pass: the next one resolves
+		-- the column from scratch.
+		if surface_ok(cached) then
+			return cached
+		end
+		surface_cache[key] = nil
+		return nil
 	end
 	local p = grug_core.find_surface({x = pt.x, y = NO_SURFACE_Y, z = pt.z})
 	if not p or p.y == NO_SURFACE_Y then
@@ -204,7 +230,11 @@ local function try_spawn(id, spec, now)
 	if not pos then
 		return -- area not loaded yet
 	end
-	local ent = mobs:add_mob(pos, {
+	-- grug_mobs.add_mob, not mobs:add_mob: the wrapper applies the
+	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
+	-- — without it the golem- and spider-based rares spawn sunk into the
+	-- ground.
+	local ent = grug_mobs.add_mob(pos, {
 		name = spec.mob,
 		texture = spec.texture,
 		ignore_count = true, -- a rare ignores the family's spawn cap
@@ -220,9 +250,20 @@ local function try_spawn(id, spec, now)
 	ent._grug_rare_id = id
 	-- Named rares must not evaporate when the last player walks away:
 	-- mobs_redo deletes an unloading mob whose lifetimer is below 20000
-	-- (api.lua:2838) and expires it on a timer below the same threshold
-	-- (api.lua:3006). A plain field, so the exemption persists with the mob.
+	-- (mob_staticdata) and expires it on a timer below the same threshold
+	-- (mob_expire). A plain field, so the exemption persists with the mob.
 	ent.lifetimer = 30000
+	-- ... and the SECOND half of that exemption, which the field alone cannot
+	-- buy: mob_activate clears the object property `static_save` for every
+	-- untamed monster while remove_far_mobs is on, and an object with
+	-- static_save = false never gets its get_staticdata called at all — so the
+	-- lifetimer check above would never run and the rare would be deleted on
+	-- the first unload. api.lua now honours the lifetimer there too (GRUG
+	-- PATCH B3, mob_activate), but THIS entity was activated by the add_mob
+	-- above, i.e. before its lifetimer existed, and mob_activate does not run
+	-- again. Setting the property here is what makes the first session safe;
+	-- every later activation is covered by the patch.
+	ent.object:set_properties({static_save = true})
 	grug_mobs.set_tier(ent, "rare")
 	mark_alive(id, now)
 	broadcast(spec, pos)
@@ -589,13 +630,15 @@ grug_mobs.register_rare("emerald_coil", {
 -- not mirrored at z = 0 — this is the one rare pair that is not a geometric
 -- mirror, and that is why.
 --
--- WHY THE ROUTE SPANS ONLY 250 NODES: `_grug_home` is the point a rare
--- happened to SPAWN at, and the leash check compares against
--- grug_mobs.RARE_LEASH_RANGE = 300 (aggro.lua). A rare that has ambled to the
--- far end of a longer route would sit further from its home than the leash
--- allows and reset — heal to full, drop the target — on every single pull,
--- i.e. it would be unkillable. 250 keeps the whole route inside the leash
--- from any spawn point, with room to be pulled a little further.
+-- WHY THE ROUTE SPANS ONLY 250 NODES: it was written when the leash measured
+-- distance from `_grug_home` (the spawn point), where a rare that had ambled
+-- to the far end of a longer route would have sat outside
+-- grug_mobs.RARE_LEASH_RANGE = 300 and reset — heal to full, drop the target —
+-- on every single pull, i.e. it would have been unkillable. Since the WP6
+-- review the leash measures DRAG from where the chase began (aggro.lua), so
+-- the route length no longer constrains it at all. The short span stays for
+-- its own sake: a legend that patrols one recognisable stretch of coast is
+-- findable, and 250 nodes still fits inside one player's travel.
 --
 -- No `texture`: grug_mobs:skeleton_raider already wears the grimy war-coast
 -- bones, and levels.lua lays the rare violet tint over them.

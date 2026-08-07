@@ -133,6 +133,13 @@ core.register_node("grug_nodes:guard_banner", {
 	-- Same dispatch group as the camp fire (AGENTS.md: dispatch on groups,
 	-- not on name lists) — a guard post IS a camp, only with guards in it.
 	groups = {cracky = 3, grug_camp = 1},
+	-- PORTABLE-SPAWNER EXPLOIT: grug_mobs turns this node into a mob spawner
+	-- with a node timer that repopulates the post forever. If it dropped, a
+	-- player could mine an outpost banner and re-plant it wherever they like —
+	-- a private guard barracks, or an enemy-faction post carried onto friendly
+	-- soil. Razing a post stays possible, it just yields nothing. Same rule on
+	-- grug_mobs:camp_fire.
+	drop = "",
 	node_box = {
 		type = "fixed",
 		fixed = {

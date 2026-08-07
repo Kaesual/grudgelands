@@ -113,7 +113,7 @@ local skeleton = {
 
 	-- Skeleton table (§3.1): bone 1/1, linen scrap 1/2, arrows 1/3.
 	drops = {
-		{name = "grug_mobs:bone", chance = 1, min = 1, max = 2},
+		{name = "grug_mobs:bone", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
 		{name = "grug_mobs:arrow", chance = 3, min = 1, max = 1},
 	},

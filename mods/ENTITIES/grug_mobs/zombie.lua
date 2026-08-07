@@ -55,7 +55,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	-- Zombie table (biomes_mobs.md §3.1): flesh 1/1, linen scrap 1/2,
 	-- steel ingot 1/10.
 	drops = {
-		{name = "grug_mobs:zombie_flesh", chance = 1, min = 1, max = 2},
+		{name = "grug_mobs:zombie_flesh", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
 		{name = "default:steel_ingot", chance = 10, min = 1, max = 1},
 	},

@@ -120,6 +120,17 @@ local function top_amount(threat)
 	return top
 end
 
+-- Minimum game time between two target re-evaluations of ONE mob. add_threat
+-- is called from every player punch AND from every ability hit, so a tank
+-- spamming a 3-hit combo on a pack of five mobs runs check_switch fifteen
+-- times inside a few frames — each one a loop over the threat table with a
+-- get_player_by_name + a distance test per entry, all to reach the same
+-- verdict. Threat itself still accumulates on EVERY hit (that is exact); only
+-- the question "does the target change?" is asked at most four times a second
+-- per mob. A quarter of a second is far below the perceptible switch latency
+-- and far below the 1 s leash tick.
+local SWITCH_INTERVAL = 0.25
+
 -- Hysteresis check: switch only when the best VALID rival exceeds 120% of
 -- the current target's threat (combat_stats §4 — no ping-pong).
 local function check_switch(mob_ent)
@@ -127,6 +138,13 @@ local function check_switch(mob_ent)
 	if not threat or type(mob_ent.do_attack) ~= "function" then
 		return
 	end
+	-- Throttle (see above). Runtime-only key in the same temp table the
+	-- threat lives in, so it dies with the mob's activation.
+	local now = grug_core.mono_time()
+	if now - (mob_ent.temp.grug_switch_at or -math.huge) < SWITCH_INTERVAL then
+		return
+	end
+	mob_ent.temp.grug_switch_at = now
 	if mob_ent.state == "die" or (mob_ent.health or 1) <= 0 then
 		return
 	end
@@ -138,7 +156,7 @@ local function check_switch(mob_ent)
 			mob_ent.state == "flop" or mob_ent.state == "runaway" then
 		return
 	end
-	if (mob_ent.temp.grug_forced_until or 0) > grug_core.mono_time() then
+	if (mob_ent.temp.grug_forced_until or 0) > now then
 		return -- inside a taunt window: the target is locked
 	end
 	local best_name, best, best_obj
@@ -166,7 +184,7 @@ local function check_switch(mob_ent)
 	-- force = true: overrides an existing target (mobs/api.lua:213).
 	mob_ent:do_attack(best_obj, true)
 	-- A fresh target means fresh contact — the leash clock restarts.
-	mob_ent.temp.grug_last_contact = grug_core.mono_time()
+	mob_ent.temp.grug_last_contact = now
 end
 
 -- Accumulate threat for one player on one mob, then re-check the target.

@@ -97,9 +97,9 @@ local function guard_def(faction, description, texture)
 		_grug_level_source = "guard",
 		_grug_min_level = 20,
 
-		-- Outpost defender (world.md §4): 30 nodes around the banner, so a
-		-- guard chases an intruder off the post and then walks back and
-		-- heals instead of following them into the wilderness. The camp's
+		-- Outpost defender (world.md §4): an intruder may drag a guard 30
+		-- nodes from where the fight started before it gives up, walks back
+		-- and heals, instead of following them into the wilderness. The camp's
 		-- patroller is exempt — see PATROL_LEASH_RANGE in aggro.lua.
 		_grug_leash_range = 30,
 
@@ -118,7 +118,16 @@ local function guard_def(faction, description, texture)
 		jump = true,
 		jump_height = 4,
 		stepheight = 1.1,
-		fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
+		-- THE ONE EXCEPTION to T10's cliff rule of 6 (boar.lua) besides the
+		-- golem, and for a different reason: a guard is `type = "npc"`, so it
+		-- never despawns and its lifetimer never expires. Wildlife self-heals
+		-- from a bad drop — the mob is culled and the ABM makes another one —
+		-- but a guard that walks off a 6-node ledge into a pit it cannot climb
+		-- out of (stepheight 1.1, jump_height 4) is removed from its post
+		-- PERMANENTLY, and the camp head count still sees it, so the post never
+		-- refills either. 4 costs a little chase reach at ledges and buys back
+		-- the invariant that a post stays manned.
+		fear_height = 4,
 		view_range = 14,
 		-- No day_toggle / docile_by_day: a watch stands day AND night.
 

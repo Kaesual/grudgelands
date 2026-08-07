@@ -25,8 +25,9 @@ grug_mobs.storage = core.get_mod_storage()
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
 --                          nil = no extra check. Zones and check are ANDed.
---   def._grug_leash_range — per-def leash radius in nodes around the home
---                          position (default grug_mobs.LEASH_RANGE = 40);
+--   def._grug_leash_range — per-def leash radius in nodes: how far this mob
+--                          may be DRAGGED from the point where the current
+--                          chase began (default grug_mobs.LEASH_RANGE = 40);
 --                          the "territorial" verb of bear/ape uses ~20
 --   def._grug_no_leash    — true: never gives up a player chase and never
 --                          resets/heals (zombie verb "never leashes"; mobs
@@ -137,6 +138,42 @@ function grug_mobs.is_night()
 	return tod <= 0.1875 or tod >= 0.8125
 end
 
+--
+-- Hand placement of a mob (rares.lua, camps.lua) — mobs:add_mob with the
+-- y-offset the ABM spawner applies and add_mob does not.
+--
+-- mobs_redo's spawn_action lifts the candidate position by the mob's
+-- collisionbox floor before core.add_entity (api.lua: `pos.y = pos.y + _y`
+-- with `_y = -collisionbox[2]`), because an entity's origin is its box origin,
+-- not its feet. mobs:add_mob skips that step entirely and adds the entity AT
+-- the position it was given. For a mob whose box floor is 0 (or the usual
+-- -0.01) that is invisible; for the ones with a genuinely negative floor it is
+-- not — the Stone/Mesa Golem sits at -1 (golem.lua: the mesh spans -10..+7.24
+-- units around its origin) and the Giant Spider at -0.4, so both spawned
+-- buried up to the waist in the ground, from which mobs_redo's own
+-- do_env_damage/stuck handling then has to dig them out.
+--
+-- Reads the box off the LIVE object rather than the def: levels.lua has
+-- already applied the tier scale (rare x2, elite x1.6) by the time a rare is
+-- placed, so the def's box would be the wrong size.
+--
+-- Returns the luaentity, or nil when mobs:add_mob declined (no player in
+-- range, active mob limit, unknown entity) — never an error, both callers
+-- treat a decline as "try again next tick".
+--
+function grug_mobs.add_mob(pos, def)
+	local ent = mobs:add_mob(pos, def)
+	if not ent or not ent.object then
+		return nil
+	end
+	local props = ent.object:get_properties()
+	local box = props and props.collisionbox
+	if box and box[2] and box[2] < 0 then
+		ent.object:set_pos({x = pos.x, y = pos.y - box[2], z = pos.z})
+	end
+	return ent
+end
+
 function grug_mobs.register_mob(name, def)
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
@@ -203,9 +240,14 @@ function grug_mobs.register_mob(name, def)
 				self.temp.grug_rare_death_sent = true
 				grug_mobs.rare_killed(self._grug_rare_id)
 			end
-			local xp = grug_mobs.kill_xp(self)
-			if xp > 0 and not self.temp.grug_xp_awarded and lethal then
+			-- Kill XP. The kill_xp() lookup lives INSIDE the lethal branch on
+			-- purpose: it is a level_cfg lookup plus a stats_for()
+			-- computation, and this wrapper runs on EVERY player punch in the
+			-- game — paying for it on the ~99 % of punches that kill nothing
+			-- was pure waste.
+			if lethal and not self.temp.grug_xp_awarded then
 				self.temp.grug_xp_awarded = true
+				local xp = grug_mobs.kill_xp(self)
 				-- Gray rule (combat_stats.md §6): a mob at killer level - 10
 				-- or below pays nothing, and says nothing.
 				if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
