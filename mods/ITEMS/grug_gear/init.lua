@@ -66,9 +66,37 @@ end
 local BRACKET_TINT = {"#8a7f6a", "#a89478", "#c0b088", "#d8cc9a", "#e8dcb0", "#ffffff"}
 local BRACKET_ADJECTIVE = {"Crude", "Plain", "Tempered", "Reinforced", "Superior", "Grand"}
 
--- No colorize: Common is plain white. WP5 owns colored names (§6.1).
-local function describe(bracket, noun, ilvl)
-	return BRACKET_ADJECTIVE[bracket] .. " " .. noun .. "\nItem level " .. ilvl
+-- Item description (§6.1): name, item level, then the BASE stat line -- the
+-- number the item actually contributes, so a player can compare two pieces
+-- without doing the curve in their head. Grey, because it is derived data
+-- rather than part of the name.
+--
+-- WP5 NOTE: when the enchant roller starts regenerating descriptions from
+-- meta, it must KEEP these two lines and append one line per enchant below
+-- them (§6.1) -- the base stat does not live in meta and cannot be
+-- reconstructed from the roll.
+--
+-- No colorize on the name itself: Common is plain white, WP5 owns the
+-- quality colors.
+local STAT_COLOR = "#9aa0a6"
+
+local function describe(bracket, noun, ilvl, stat_line)
+	return BRACKET_ADJECTIVE[bracket] .. " " .. noun ..
+		"\nItem level " .. ilvl ..
+		"\n" .. core.colorize(STAT_COLOR, stat_line)
+end
+
+-- "5 damage, 1.0 s swing" -- full_punch_interval IS the auto-attack cadence
+-- (combat_stats.md §2), so it belongs next to the damage number: a dagger
+-- doing less per swing but swinging faster is otherwise invisible.
+local function weapon_stats(damage, fpi)
+	return string.format("%d damage, %.1f s swing", damage, fpi)
+end
+
+-- "3 armor (-3% damage taken)" -- 1 armor point = 1% reduction
+-- (items_crafting.md §3.1), capped at 60% across all four pieces.
+local function armor_stats(armor)
+	return string.format("%d armor (-%d%% damage taken)", armor, armor)
 end
 
 --
@@ -180,7 +208,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		local groups = {grug_gear = 1}
 		groups[w.group] = 1
 		core.register_tool(itemname, {
-			description = describe(bracket, w.noun, br.ilvl),
+			description = describe(bracket, w.noun, br.ilvl,
+				weapon_stats(damage, w.fpi)),
 			inventory_image = "grug_gear_item_" .. w.key .. ".png" .. tint,
 			groups = groups,
 			stack_max = 1,
@@ -216,7 +245,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					price = br.price.chest
 				end
 				core.register_craftitem(itemname, {
-					description = describe(bracket, line.nouns[slot.key], br.ilvl),
+					description = describe(bracket, line.nouns[slot.key],
+						br.ilvl, armor_stats(armor)),
 					inventory_image = "grug_gear_item_" .. slot.key .. "_" ..
 						line.key .. ".png" .. tint,
 					groups = {

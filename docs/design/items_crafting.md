@@ -556,7 +556,18 @@ intended, and it is also what stops one level-60 friend from outfitting
 a level-5 character and flattening the entire ring progression. Description
 regenerated from meta on every change (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
-enchant). Attack speed applies via `tool_capabilities.
+enchant).
+
+**Item descriptions always show the BASE stat** (decided 2026-08-07 in
+WP7): under the name and the item level, one grey line carrying the
+number the item actually contributes — `5 damage, 1.0 s swing` for
+weapons (the swing interval belongs next to the damage, or a dagger's
+higher rate is invisible — combat_stats.md §2), `3 armor (-3% damage
+taken)` for armor pieces. Without it a player cannot compare two pieces
+without re-deriving the §3.1/§3.2 curves by hand. The base stat does
+**not** live in item meta and cannot be reconstructed from an enchant
+roll, so the regeneration above must **preserve these lines and append
+the enchant lines below them**. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
 (70/30)** — the decided budgets.
