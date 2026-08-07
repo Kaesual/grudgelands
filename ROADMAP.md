@@ -195,9 +195,14 @@ game (not a mod pack), written in Lua.
 - [ ] Crafting model: everything in the 3×3 grid, multi-stage,
       recipe-unlock gated + workbench proximity for profession recipes,
       recipe book UI (`docs/design/inventory_equipment.md` §4)
-- [ ] Gold system (currency, persistent)
-- [ ] Trader NPCs: buy EVERY mob drop for gold; sell only the lowest
-      tier per category (vendor floor rule, economy.md)
+- [x] Gold system (currency, persistent) — WP7: one copper integer in
+      player meta, 100c = 1s / 100s = 1g display-only, HUD + `/money`
+      (`docs/design/economy.md` §1)
+- [x] Trader NPCs: buy EVERY mob drop for gold; sell only the lowest
+      tier per category (vendor floor rule, economy.md) — WP7: 8 vendors
+      at the six race capitals, six bracket catalogs with the hourly
+      rotation, race-exclusive vendors + 10 % same-race discount, 25 %
+      buy-back (job supplies and profession tomes follow with WP10)
 
 ### 1.7 Map
 - [ ] Global map with fog of war, uncovered per player

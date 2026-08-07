@@ -211,7 +211,7 @@ Multi-stage everywhere (decided): ore → bar → component → item; hide →
 cured leather; cloth → bolt. Stages are base recipes (grid anywhere);
 the final item needs the workbench nearby.
 
-### 3.1 Armor curve (proposal — consistent with mob dmg 2 + 0.4L)
+### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
 1 armor point = 1% damage reduction; equipped pieces sum, **clamped at
 the 60% cap** (combat_stats §2: endgame plate 60%, cloth ~15%). Set
@@ -229,6 +229,31 @@ Check at 60: full plate+shield = 60% → mob hit 26 → 10.4 eff. vs 325 HP
 spread as designed. Drop gear uses the same table at its ilvl bracket;
 quality adds enchants, never base armor.
 
+**Off-tier ilvls: linear interpolation** (recorded 2026-08-07 with WP7).
+The vendor brackets sit at ilvl 3/10/20/30/40/50 (§3.8) — ilvls the tier
+table above does not cover — so the implementation fits a straight line
+through the T1/T4 anchors (ilvl 12 and 57) per armor line and reads the
+set total off it. Result against the four table cells:
+
+| Line | ilvl 12 | 27 | 42 | 57 |
+|---|---|---|---|---|
+| Metal | 16 | 29 | 42 | 55 (all four exact) |
+| Leather | 11 | **21** (table 20) | 30 | 40 |
+| Cloth | 5 | 8 | **12** (table 11) | 15 |
+
+So **the cloth and leather rows are not perfectly linear** — each misses
+one interior cell by 1 point; metal reproduces the table exactly. No
+shipped vendor bracket touches ilvl 27 or 42, but **WP5's drop tables
+will**, and the 1-point step is accepted there rather than bending the
+line: the table cell is the authority at the four tier ilvls, the line
+is the authority between them.
+
+**Minimum 1 armor point per piece.** The per-piece split can round to 0
+at the very bottom of the cloth line — bracket 1 (ilvl 3) has a set
+total of 3, and the 16 % foot share rounds to 0. A 0-armor boot is a
+bug, not a design statement, so every piece is clamped to ≥ 1. That
+clamp bites at exactly one item in the whole shipped catalog.
+
 ### 3.2 Weapon table (curve: 1H dmg = 4 + 0.35 × ilvl, combat_stats §2)
 
 Tier ilvls 12/27/42/57; fpi = full_punch_interval.
@@ -237,12 +262,22 @@ Tier ilvls 12/27/42/57; fpi = full_punch_interval.
 |---|---|---|---|---|---|---|
 | 1H sword / mace / axe | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
 | Dagger | 0.7 | ×0.7 | 6 | 9 | 13 | 17 |
-| 2H greataxe / warhammer | 1.4 | ×1.5 | 12 | 20 | 28 | 36 |
+| 2H greataxe / warhammer | 1.4 | ×1.5 | 12 | 20 | 29 | 36 |
 | Metal-shod staff (caster 2H) | 1.4 | ×1.2 | 10 | 16 | 23 | 29 |
+
+**Rounding rule** (made explicit 2026-08-07): **round the 1H value
+half-up, then apply the family factor and round half-up again** — never
+one rounding over the whole product. The greataxe T3 cell read 28 under
+the old text and is **corrected to 29** here: 1H at ilvl 42 is 18.7 → 19,
+and 19 × 1.5 = 28.5 → 29, the same two-step that already turns T2's
+13 × 1.5 = 19.5 into 20. The rule is load-bearing, not bookkeeping: it
+also generates the vendor bracket weapons of §3.8.
 
 2H DPS ≈ 1.07× of 1H — pays for the empty offhand. Wands/orbs stay
 **drop-only** in the MVP (WP5 class items); the Tailor tome (below) is
-the craftable caster offhand. Weapons carry `grug_req_level = ilvl`.
+the craftable caster offhand. Weapons carry `grug_req_level = ilvl`
+(the field is derived from `_grug_ilvl`; **enforced from WP5** — WP7's
+vendor weapons already carry the ilvl but nothing checks it yet).
 
 ### 3.3 Blacksmith (forge) — metal weapons, metal armor, tools
 
@@ -287,7 +322,12 @@ Herb map: T1 sunleaf/gravemoss (inner), T2 dragonweed/marshbloom
 (outer), T3 crimson lotus/stormkelp (coast) — biomes_mobs §2/§6.
 Vendor supply: vials. All effects percent-based or flat-small
 (combat_stats §5: no consumable treadmill). **One shared 60 s cooldown
-for instant potions; one "elixir" buff active at a time** (§10 P3).
+for instant potions; one "elixir" buff active at a time** (§10 P3). The
+cooldown is an absolute wall-clock expiry in player meta, so a relog
+cannot reset it; WP10's potions share that one clock rather than opening
+a second timer. **Drinking at full health is refused** (message, no
+consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
+and a 60 s lockout on a misclick is a tax, not a rule).
 
 | Tier | Recipes (2 herbs + vial unless noted) |
 |---|---|
@@ -341,12 +381,20 @@ moves with the player** instead of freezing at the starter set.
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
 | vs. crafted tier of that era | — | T1 = 8 | T2 = 13 | T2 = 13 | T3 = 19 | T4 = 24 |
 
-  Vendor gear therefore sits **10–15 % behind crafted gear of the same
-  era and carries no enchants at all**, which keeps "better gear comes
-  from crafting or hard bosses" (§0) literally true. Rationale for
-  having the ladder at all: on a small server the crafter for your armor
-  class may simply not exist — the floor stops a player from going
-  naked, it does not compete.
+  Vendor gear therefore tracks the **mob-drop curve at its bracket
+  ilvl**, which puts it within roughly **±15 % of crafted gear of the
+  same era** — sometimes under it (bracket 21–30: 11 vs. T2's 13),
+  sometimes level with it (11–20: 8 vs. T1's 8), sometimes over it
+  (31–40: 15 vs. T2's 13, because a crafted tier has to last two
+  brackets). Corrected 2026-08-07: the old wording claimed a flat
+  "10–15 % behind", which the ladder above contradicts.
+  **The crafting advantage is the enchants, not the base numbers** —
+  vendor gear is Common and therefore enchant-free by definition, so
+  "better gear comes from crafting or hard bosses" (§0) stays literally
+  true whichever way a single base value falls. Rationale for having
+  the ladder at all: on a small server the crafter for your armor class
+  may simply not exist — the floor stops a player from going naked, it
+  does not compete.
 - **Rotation**: the core stock is fixed; each bracket additionally shows
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled in the
@@ -354,8 +402,41 @@ moves with the player** instead of freezing at the starter set.
   game, strictly below crafted-fine's 0.30–0.80) and priced ×3. That is
   the "today the trader had something good" moment, without a second
   gear source.
+
+  **Implemented reading** (decided 2026-08-07):
+  - The bracket's **fixed floor is always on sale**: the 1H sword plus a
+    full set in each shipped armor line = **9 items**. That is what
+    "guaranteed, but expensive … the floor, not the ceiling" requires,
+    and the rotation may never touch it.
+  - On top of it sit **2 rotating slots**, drawn hourly from the **3
+    extra weapon families** (dagger / greataxe / staff), so **one family
+    is withheld every rotation**. Withholding is what makes it a
+    rotation: with one slot per extra the whole catalog would be on the
+    shelf every hour and the re-roll would only permute the display
+    order. If §3.2 ever gains a fourth extra family the slot count rises
+    to 3 — always strictly below the pool size.
+  - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
+    vendors in the same hour differ, and a player's own brackets differ
+    from each other), replaces one of the two rotating slots and is
+    priced **×3**.
+  - The Uncommon is **only offered once WP5's enchant roller exists.**
+    Common is enchant-free by definition, so an Uncommon without rolls
+    is mechanically identical to the Common beside it while costing
+    three times as much — a blue-named trap, not a luxury. The whole
+    ×3/quality/description machinery ships regardless; WP5 lights it up
+    without a rule change here.
+  - The rotation is **deterministic**: a pure function of (real hour,
+    vendor, bracket). Two players at the same vendor in the same hour
+    see the same shelf, and a restart does not re-roll it.
 - Catalogs are **generated from the curves** of §3.1/§3.2, not authored
   by hand — six brackets cost the same as three.
+- **Shipped armor lines: metal and cloth; leather does not ship**
+  (decided 2026-08-07). The MVP classes are Warrior / Mage / Priest
+  (`inventory_equipment.md` §2: ranks 3 / 1 / 1), so **nothing can wear
+  leather** and 24 leather items would be dead weight in every catalog.
+  The leather curve stays in the generator so its coefficients never
+  have to be re-derived; the line registers with the Rogue (Phase 2) or
+  with WP5's drop tables, whichever lands first.
 - Race-exclusive vendors and the same-race discount (world.md §7) layer
   on top of this unchanged.
 
@@ -463,8 +544,9 @@ Item meta: `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4 Unique-
 reserved), `grug_ench` = one serialized `{stat = value, …}` table (mcl
 pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`.
 
-**`grug_req_level` scope** (sharpened 2026-08-07): **every equippable
-item** carries it — weapons, armor, offhands, later trinkets — and it
+**`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —
+WP7 ships 72 equippable vendor items that carry the ilvl but no check):
+**every equippable item** carries it — weapons, armor, offhands, later trinkets — and it
 equals the item's ilvl. Equipping below the requirement is **blocked
 with a chat message**, enforced in the slots' group-filtered `allow_put`
 (inventory_equipment.md §2); "equips but grants nothing" was rejected as
@@ -478,6 +560,15 @@ enchant). Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
 (70/30)** — the decided budgets.
+
+**Hand-off from the vendor catalogs** (WP7 → WP5, 2026-08-07): vendor
+gear ships with the item-def fields **`_grug_ilvl`, `_grug_bracket` and
+`_grug_quality = 1`**. WP5 derives the per-stack `grug_req_level` and
+the enchant rolls **from those**, so a bracket catalog needs no second
+list of levels. **WP7 deliberately enforces no level requirement at
+all** — the equip filter has no `grug_req_level` branch yet, and the
+number it would read is published but unused. Adding the check is WP5's
+edit in one place, not a rewrite of the catalog.
 
 ### 6.2 Enchant pools per item family (no duplicate stat per item)
 
@@ -560,10 +651,23 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
 - **Trash/vendor loot** per kill (expected): 1–2c (L1–15), 2–4c
   (16–30), 4–7c (31–45), 6–10c (46–60); elites ×3 quantity, named
   rares ×6 (mob-tier multipliers). ≈ 35s over ~1000 kills to 60.
-  Bandit "coin" drops become a *stolen purse* trash item (5c) — no
-  physical currency items (economy.md §1 upheld).
-- Herbs/materials sold to vendors: 1–3c each (floor; the real market
-  is player trade).
+  Bandit "coin" drops become a *stolen purse* trash item (5c) at a
+  **drop chance of 1/3** (fixed 2026-08-07) — no physical currency
+  items (economy.md §1 upheld).
+- Herbs/materials sold to vendors: **1–6c each, scaling with material
+  tier** (widened 2026-08-07 — the shipped material scale already runs
+  to 6c for heavy leather and scaled hide, and a T3/T4 reagent priced
+  like a bone would make the tier ladder invisible). Still a floor; the
+  real market is player trade.
+- **Known deviation — the bandit runs hot.** A bandit's expected vendor
+  yield is ≈ **6c** in the core/inner rings and ≈ **9c** in the outer
+  ring, i.e. roughly **2–3× the trash-loot band of its own ring**. The
+  purse is not the cause (1/3 × 5c ≈ 1.7c); the dominant term is WP6's
+  **guaranteed** 1–2 cloth drop, which was priced as a Tailor material
+  rather than as trash income. Flagged for a balance pass (drop the
+  cloth to a chance roll, or re-price the band for humanoids) rather
+  than silently accepted — bandits are the intended cloth source, so
+  the fix is a tuning call, not a bug fix.
 
 ### 8.2 Vendor prices (sell to players)
 
@@ -589,6 +693,16 @@ above are the anchor and every further bracket costs **×1.4**; chest =
 | Chest | 40c | 56c | 78c | 110c | 154c | 215c |
 | Other piece | 25c | 35c | 49c | 69c | 96c | 134c |
 | Full set | 165c | 231c | 323c | 454c | 634c | 886c |
+
+Two notes on the table (2026-08-07):
+
+- **The table prices SLOTS, not families.** All four weapon families of
+  §3.2 share the single "weapon" price, so a dagger costs exactly what a
+  two-hander costs. Deliberate — the families are class flavor, not a
+  power ladder, and one price per bracket keeps the ×1.4 ladder legible.
+  Revisit only if a family ever becomes strictly better.
+- **Buy-back is 25 % of the sale price** (economy.md §2), applied to the
+  prices above and to every other vendor good.
 
 Outfitting completely from vendors in **every** bracket costs ≈ **27s**,
 about a quarter of the lifetime income to 60 (§8) — affordable

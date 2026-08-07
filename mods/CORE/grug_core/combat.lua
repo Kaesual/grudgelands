@@ -17,6 +17,15 @@ function grug_core.get_dodge_chance(player)
 	return 0
 end
 
+-- Damage reduction from equipped armor, in PERCENT (0..60). 1 armor point =
+-- 1% reduction, summed over the four armor slots and hard-capped at 60%
+-- (items_crafting.md §3.1, combat_stats.md §2). grug_inventory overrides
+-- this with the real accessor; grug_core itself must not know about
+-- equipment slots or item fields.
+function grug_core.get_armor_percent(player)
+	return 0
+end
+
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
 -- melee damage = weapon damage + floor(Str/10)). Consumed by the
 -- auto-attack patch in mobs/api.lua on_punch.
@@ -488,13 +497,20 @@ end
 -- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
 -- reports heal threat. Returns the effective healing done.
 --
+-- opts.no_crit skips the crit roll for sources that must heal a FLAT amount:
+-- consumables are specified as a percentage of max HP (items_crafting.md
+-- §3.6 — the vendor's weak potion is exactly 15%), so letting the drinker's
+-- crit chance multiply it would make the number in the tooltip a lie.
+-- WP10's alchemy potions want the same flag.
+--
 
-function grug_core.heal_player(healer, target, amount)
+function grug_core.heal_player(healer, target, amount, opts)
+	opts = opts or {}
 	local hp = target:get_hp()
 	if hp <= 0 then
 		return 0
 	end
-	if math.random() < grug_core.get_crit_chance(healer) then
+	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
 		amount = math.floor(amount * 1.5)
 		crit_particles(target:get_pos())
 	end
@@ -561,9 +577,10 @@ end)
 
 --
 -- Central damage modifier for players: dodge roll (mob melee, PvP) plus
--- combat marking, then race mitigation (dwarf fall damage), then the
--- absorb shield. Runs as an hp change modifier so a dodge cancels the
--- whole hit before armor/sounds and absorbs are consumed before HP.
+-- combat marking, then equipped-armor mitigation (physical hits only), then
+-- race mitigation (dwarf fall damage), then the absorb shield. Runs as an hp
+-- change modifier so a dodge cancels the whole hit before armor/sounds, and
+-- absorbs are consumed after mitigation but before HP.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -578,6 +595,34 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			return 0
+		end
+	end
+	-- Equipped armor (items_crafting.md §3.1): PHYSICAL mitigation only.
+	-- There is no damage-type system in this game, so `reason.type ==
+	-- "punch"` is the whole definition of physical: fall damage has its own
+	-- race perk right below, and drowning/lava/starvation must never be
+	-- reduced by a breastplate. Runs after the dodge roll (a dodge already
+	-- cancelled the hit) and before the absorb shield, so the shield soaks
+	-- what armor let through -- shield points are worth full damage, not
+	-- pre-mitigation damage.
+	-- math.ceil is deliberate: armor alone can never reduce a landed hit to
+	-- 0 damage, however much of it a tank stacks.
+	--
+	-- The 60% clamp is applied HERE as well, not only in grug_inventory's
+	-- override: this modifier is registered with `true` (it may raise HP), so
+	-- an override that ever forgot the cap and returned pct > 100 would turn
+	-- a punch into a heal. Cheap invariant, catastrophic failure mode
+	-- (WP14's shields are already slated to extend that override).
+	--
+	-- (100 - pct) / 100, NOT (1 - pct / 100): the latter double-rounds,
+	-- because 1 - pct/100 is not exactly representable as a double (e.g.
+	-- pct 42, dmg 50 gave 30 instead of 29). -hp_change and pct are whole
+	-- numbers and their product stays far inside the exact-integer range, so
+	-- this division is exact whenever the true result is an integer.
+	if reason.type == "punch" then
+		local pct = math.min(60, grug_core.get_armor_percent(player) or 0)
+		if pct > 0 then
+			hp_change = -math.ceil(-hp_change * (100 - pct) / 100)
 		end
 	end
 	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so

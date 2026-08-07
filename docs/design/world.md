@@ -549,6 +549,18 @@ small villages, and perks around vendors/professions.
   (rage decay is unaffected — a troll warrior only benefits from WP21
   on); the human bonus is a latent hook (`grug_classes.get_xp_bonus`)
   that activates when WP8's quests tag their XP with source="quest".
+- **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk
+  was named above but never given numbers):
+  - **One race-exclusive vendor per race**, standing in that race's
+    capital (§3), and **only members of that race may trade there**.
+    That exclusivity is what carries the perk: it is a shop the other
+    five races cannot open at all, not a discount tag on a shared one.
+  - **Same-race discount: 10 %** off that vendor's buy prices, rounded
+    down and never below 1c. **Buy-back prices are not discounted**
+    (economy.md §2 — discounting both ends would close the 25 % spread).
+  - Both are the *bonus* on top of the visible passive, in line with the
+    rule above that a perk must be FELT from level 1: the passive does
+    the felt work, the vendor is the flavor that pays off later.
 - Race-exclusive professions/recipes (e.g. only elven tailors craft the
   top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.
 - **No class restrictions per race in the MVP** (only 3 classes — locks

@@ -10,9 +10,17 @@ currency structure and the qualitative bands.
   conversion is automatic, players never hold ≥100 copper or silver
   (the tiers act as "decimal places").
 - **Storage: ONE integer in copper units** in player meta (1 = 1c,
-  100 = 1s, 10000 = 1g). Lua doubles are exact up to 2^53 — no
-  overflow risk at game scales. Conversion is display-only: UI always
-  renders `Xg Ys Zc`.
+  100 = 1s, 10000 = 1g). Corrected 2026-08-07: the Lua number is a
+  double, but the storage path is not — `PlayerMetaRef:set_int` is a
+  genuine **32-bit signed** store, so the balance is clamped at
+  **2,147,483,647c ≈ 214,748g**. That ceiling is still five orders of
+  magnitude above "a full gold is a fortune" (§2), i.e. unreachable by
+  play; it exists so a sale crossing it cannot wrap the balance
+  negative. Conversion is display-only: UI always renders `Xg Ys Zc`.
+- **Display rule** (decided 2026-08-07): **leading zero units are
+  omitted, copper is always shown, interior zeros are kept** — `5c`,
+  `1s 5c`, `1g 0s 5c`. One format function for HUD, chat and every
+  trade UI.
 - **No physical coin items in the MVP** — money is a counter; traders
   and NPCs adjust it. (Coin items as loot flavor: revisit later.)
 - **Vendor floor rule** (decided 2026-08-06, revised 2026-08-07):
@@ -20,9 +28,10 @@ currency structure and the qualitative bands.
   weak heal potion, basic tools) — everything above is player-crafted
   (`professions.md` §4). Revision: **the floor moves with the player**.
   Gear comes in six **bracket catalogs** of 10 levels each, every
-  bracket offering what a normal mob of that bracket drops — Common, no
-  enchants, 10–15 % behind crafted gear of the same era
-  (`items_crafting.md` §3.8).
+  bracket offering what a normal mob of that bracket drops — Common and
+  therefore **always without enchants**, within roughly ±15 % of crafted
+  gear of the same era (`items_crafting.md` §3.8; the enchants, not the
+  base numbers, are the crafting advantage).
 
 ## 2. Price bands (qualitative)
 
@@ -35,6 +44,18 @@ currency structure and the qualitative bands.
 - Valuable rare items: **several silver — never a full gold**.
 - **A full gold is a fortune**, reserved for the big sinks: the deepest
   housing depth steps, the guild founding fee, mining claims.
+- **Buy-back rate: vendors buy an item back at 25 % of their own sale
+  price**, rounded down, never below 1c (decided 2026-08-07 — the docs
+  had fixed sale prices but never a spread). Without a spread, a vendor
+  is a free storage service and any later price edit risks an income
+  loop; 25 % also keeps the `items_crafting.md` §3.8 anti-loop rule
+  ("vendor value of a crafted item < summed vendor value of its
+  ingredients") true **by construction** for everything a vendor sells.
+  The same-race discount (world.md §7) applies to the sale price only —
+  discounting the buy-back too would narrow the spread from both ends.
+  **Mob-drop materials are unaffected**: they are never sold by a
+  vendor, so their `_grug_sell_price` is their only price and is paid
+  in full (§8.1 bands in `items_crafting.md`).
 
 ## 3. Income streams
 
