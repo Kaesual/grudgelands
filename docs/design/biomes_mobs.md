@@ -440,7 +440,7 @@ arithmetic, the density model and the calibration knobs (reach for
 | Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 8000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
-| Bandits / Mirefolk | **no ABM** — camp node timer respawns 120–300 s, anchored to camp | — | — | 3–5 per camp | — | camp pos |
+| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
 Row notes:

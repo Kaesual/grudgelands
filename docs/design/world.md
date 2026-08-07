@@ -212,7 +212,9 @@ faction-wide services live there. Each capital contains:
   telegraph). Capital banners get **no patrol leg** — that garrison
   holds the platform. The faction **King** sits in the faction seat as a
   heavily guarded raid boss with top-tier loot rolls (see items/crafting
-  design).
+  design); his **bodyguards are character-bound** — they follow him,
+  run free while he is dead, and are replaced by a fresh set when he
+  respawns (binding model: §4a).
 - Race flair through architecture and NPCs (per-race wood/build sets,
   biomes_mobs.md §5; elven capital = treehouses). Mechanical race perks hang
   on individual vendors (§7).
@@ -255,6 +257,38 @@ Military outposts across each territory enforce the level gating:
 - **Rare patrol mobs**: some areas have hard-to-kill rare mobs with
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
+
+### 4a. NPC binding & respawn slots (decided 2026-08-07)
+
+Every stationary NPC population (outpost guards, capital watch, bandit/
+mirefolk camps, later miners, king bodyguards, …) follows ONE model:
+
+- **Place-bound NPCs** are bound to their anchor (guard banner, camp
+  fire, mine, platform): after losing aggro they return to it (today:
+  the evade snap-home), and while idle they **roam only a small radius
+  around it** (~10–20 nodes; today's random walk is unbounded — the
+  roam cap is part of the model). The patroller role is the one
+  designed exception.
+- **Character-bound NPCs** (the king's bodyguards, later escort NPCs)
+  are bound to a character instead of a place: they follow their
+  character wherever it goes while it lives. When the character dies
+  they become **unbound** (roam free where they stand); when the
+  character respawns, the old bodyguards **despawn** and it comes back
+  with a fresh set. (Spec now; implementation lands with the King/raid
+  WP.)
+- **Respawn slots**: every anchor has a configured **maximum population**
+  and refills toward it one NPC at a time. Each refill takes a
+  **configurable interval** (either an exact duration or a min–max
+  range rolled per refill). Slots are independent: if 2 of 4 bodyguards
+  die, exactly 2 refills queue up.
+- **Dormant catch-up** (the Luanti reality: no timers tick in unloaded
+  areas): the anchor keeps its **slot timestamps in persistent state**
+  (node meta / entity state), not in running timers. When the area
+  activates again, the anchor computes how many refills the elapsed
+  time has earned and spawns them **immediately**, and the remainder
+  continues on the normal interval. Example (interval 7 min): 3 guards
+  died 15 min ago in a since-dormant area → on the next player's
+  arrival 2 spawn at once (⌊15/7⌋), the third ~6 min later.
 
 ## 4b. Apex world bosses (dragons & kin)
 

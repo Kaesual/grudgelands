@@ -193,14 +193,31 @@ design (`group_attack` stays on).
 
 - Every mob carries a **global nametag**: `<Name> [Lv X] HP/maxHP`
   (viewer-independent, updated on damage). The exact level is therefore
-  always readable for everyone.
+  always readable for everyone — **within nametag range** (below).
+- **Nametag visibility is proximity-capped** (decided 2026-08-07 after
+  the WP6 runtime test; the engine has no distance cull — nametags of
+  every active object render up to the ~128 m object-send range, which
+  is visual clutter over a dense mob field and a free PvP tell for
+  players): mob nametags are shown only while a player is within
+  **20 m** (hidden again beyond 24 m — the hysteresis avoids per-second
+  property resends at the boundary). The gate is global
+  (nearest-player), not per viewer — the engine cannot do per-viewer
+  nametags. 20 m matches the target-frame reach: what you can frame,
+  you can read.
+- **Player nametags are hidden entirely** (alpha 0 — the only mechanism
+  that works for players): any fixed radius would still leak positions
+  through walls and darkness, exactly the PvP tell we must not give
+  away. Identification is the target frame's job — it shows the pointed
+  player's name and faction (per viewer, faction-colored).
 - **Con colors are per viewer** and live in a **HUD target frame** (the
   mob you look at/punch; nametags cannot be colored per viewer). The
   frame's **reach is 20 m** — our choice, not an engine constant: far
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
-  ranges so what you can frame is roughly what you can hit. Relative
-  to the viewer's level L:
+  ranges so what you can frame is roughly what you can hit. The frame
+  also works on **players** (name + faction, faction-colored) — it is
+  the identification mechanism now that player nametags are hidden.
+  Relative to the viewer's level L (mobs):
 
 | Relation | Color | XP |
 |----------|-------|----|
