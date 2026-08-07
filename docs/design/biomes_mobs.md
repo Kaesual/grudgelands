@@ -220,7 +220,37 @@ Walking from the village belt (core, L1–10) in any direction:
 | swamp pockets | low terrain inside outer ring → 25–45 by position | inside band |
 | depth | caves +1 level per 20 nodes below y=0 | combat_stats §3 |
 
-Every ring×band cell has registered spawns (§4) — no dead zones.
+**Dead zones — what is actually guaranteed.** This section used to
+claim "every ring×band cell has registered spawns (§4) — no dead
+zones". That was FALSE and stayed false through WP6: the claim was
+never derived, and a level walk is not a spawn check. The real gate is
+`biome top node × _grug_spawn_zones`, and because §4 assigned node
+whitelists by biome ROLE while the zones gate by RING, every biome
+patch that landed in the "wrong" ring (§1.4 makes those the rule, not
+the exception) was a cell with no eligible mob at all — 37 of them,
+found by re-deriving the matrix after a runtime report of a wildlife-
+free `grug_deep_forest` patch on the human capital.
+
+What is guaranteed now, and how:
+
+- The guarantee is **mob-side node coverage**, not biome placement.
+  Nothing constrains where a patch may appear; instead §4's filler
+  slots (see the "role is not ring" note there) give the core/inner,
+  outer/coast and war-coast rosters the tops of the *other* role, so
+  every `biome × zone` cell a patch can reach has at least one row.
+- Verified by deriving the full matrix from the shipped rows against
+  `grug_core.zone_at` and the `min_pos`/`max_pos` cuboids of §1.3 —
+  **every land cell now has day AND night spawns**, at unchanged
+  density peaks (16 day / 12 night, wp6_spawn_budget.md §2).
+- Two deliberate exceptions, both pre-existing and both day-only by
+  design: **`grug_beach`** outside the war coast (the Gull is the
+  entire beach roster since Shore Crab and Reef Lurker were deferred,
+  §8.3) and **`grug_swamp` × coast** (Crocodile and Bog Ooze are
+  `outer`-zoned per §4). Neither is empty — they have no *night* row.
+- This guarantee has to be re-derived whenever a biome is registered
+  or a `nodes`/zone list changes. `grug_crags_snowy` is the warning:
+  it was added in WP18 and no spawn row ever listed
+  `default:snowblock`, so an entire biome was mob-free until this fix.
 
 ## 2. Per-biome specs (surface, flora, gathering)
 
@@ -411,11 +441,50 @@ rows — share ONE budget; the per-biome tints are separate entities and
 each carries the full row of its family, so a jungle spider and a pale
 spider are two budgets of 4, not one.
 
+**ROLE IS NOT RING** (added 2026-08-07 after a runtime report: a
+`grug_deep_forest` patch on the human capital had guards but no
+wildlife at all, day or night). The `nodes` column below hands out
+whitelists by biome **role** — "settled tops" to the core/inner
+families, wild tops to the outer/coast ones — and thereby silently
+assumes that a settled biome only ever occurs in the settled rings.
+The patch model (§1.4) deliberately breaks that: the band cuboids
+overlap by 400–500 nodes, so **wild patches occur inside core/inner
+and settled patches far outside**, while `_grug_spawn_zones` gates on
+the radial ring. Every such patch was a biome × ring cell with zero
+eligible mobs — 37 cells in total, among them ~25.7 % of the Accord
+core belt (deep forest), the whole `grug_crags_snowy` biome (no row
+anywhere listed `default:snowblock`; the biome arrived in WP18 and
+this table was never extended) and `grug_elf_forest` × outer/coast,
+the single largest dead area at ~4.9 % of the land.
+
+The fix is on the MOB side, not the biome side — zones are a radial
+field and biomes are boxes, so no cuboid edit can align them. Four
+**filler slots** carry the tops of the *other* role, and their zone
+lists confine the effect to exactly the rings that were dead:
+
+| Slot | Family | Zones | Carries |
+|------|--------|-------|---------|
+| core/inner day | Boar | core, inner | all wild + universal land tops |
+| core/inner critter | Rabbit / Hare | core, inner | the wild + universal tops of **its own continent** |
+| core/inner + war coast night | Zombie (settled row) | core, inner, war_coast | all wild + universal land tops |
+| outer/coast day+night | Bear + Giant Spider (A), Plaguehide Bear + Pale Spider (T) | outer, coast | the settled tops of their side |
+| war coast day / night | Carrion Crow / Skeleton Raider | war_coast | every land top (both are war_coast-exclusive) |
+
+Two consequences worth stating: (a) no cell's Σaoc can rise from a
+filler node, because the filler always lands on a family that already
+inhabits that ring via its own tops and `aoc` counts per entity NAME —
+a stray match (mgv7 riverbed sand, the world-wide gravel blob ore) adds
+spawn *chances*, never a second budget; (b) Rabbit/Hare needed a
+`_grug_spawn_check` continent gate (golem.lua's idiom), because swamp
+and beach are registered once world-wide, so `mud`/`sand` are the only
+two filler nodes that are not continent-derivable.
+
 Calibration: current baseline boar interval 30 / chance 2000 / aoc 4
 on 5 node types = "sparse-to-ok" → common mobs get roughly **2× the
 attempt rate** (interval 20, chance 1500) on 1–2 node types. The
 per-biome aoc SUM is a soft ~14 (day); the rows below actually **peak
-at 16 by day** (meadows/inner and savanna/inner) **and 12 at night**
+at 16 by day** (meadows/inner, savanna/inner and — since the filler —
+deep-forest/inner) **and 12 at night**
 (bone forest/outer) — a deliberate ~15 % overshoot of the soft cap,
 because those are precisely the cells that hit the ~1 mob per 15–20 m
 target, while the median cell lands nearer 28–35 m. The full per-cell
@@ -425,29 +494,29 @@ arithmetic, the density model and the calibration knobs (reach for
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
-| Boar (all tints) | all six settled tops | 20 | 1500 | 5 | min 10 | core, inner |
-| Rabbit/Hare | settled tops | 20 | 1800 | 3 | min 10 | core, inner |
-| Zombie | settled tops | 20 | 1600 | 4 | max 5 (blight: any) | core, inner, war_coast |
+| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler) | 20 | 1500 | 5 | min 10 | core, inner |
+| Rabbit/Hare | settled tops **+ the filler tops of its own continent** — Rabbit: forest litter, gravel, snowblock, mud, sand; Hare: mud, sand (no mesa_clay, §3.1 "the badlands carry no critter"). Split by a `territory_at` check | 20 | 1800 | 3 | min 10 | core, inner |
+| Zombie | settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1600 | 4 | max 5 (blight: any) | core, inner, war_coast |
 | Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1500 | 5 | any | inner, outer |
 | Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer |
 | Jungle Lynx (Raptor slot) | rainforest litter | 20 | 1500 | 5 | min 10 | inner, outer |
-| Bear/Plaguehide | forest litter, bone litter | 20 | 2800 | 2 | min 10 | outer, coast |
+| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter** (Bear) / bone litter **+ blight_dirt** (Plaguehide) | 20 | 2800 | 2 | min 10 | outer, coast |
 | Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer, coast |
-| Giant Spider (all) | forest litter, bone litter, rainforest litter | 20 | 1800 | 4 | max 5 | outer, coast, underground |
+| Giant Spider (all) | forest litter **+ silver litter, coniferous litter** (Giant) / bone litter **+ blight_dirt** (Pale) / rainforest litter (Jungle) | 20 | 1800 | 4 | max 5 | outer, coast, underground |
 | Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1800 | 3 | min 10 | inner, outer |
 | Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 2000 | 3 | max 5 | outer, war_coast |
-| Skeleton Raider | settled tops, blight_dirt, sand | 20 | 2000 | 3 | max 5 | war_coast |
-| Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 | outer, coast |
-| Stone/Mesa Golem (elite) | gravel, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
-| Ram | gravel | 20 | 2200 | 2 | min 10 | outer |
+| Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 2000 | 3 | max 5 | war_coast |
+| Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 2000 | 3 | min 10 | outer, coast |
+| Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
+| Ram | gravel, **snowblock** | 20 | 2200 | 2 | min 10 | outer |
 | Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer, coast |
 | Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer, coast |
 | Crocodile | mud (only) | 20 | 1800 | 3 | any | outer |
 | Bog Ooze | mud | 20 | 2000 | 3 | any | outer |
 | Parrot | rainforest litter | 20 | 2500 | 2 | min 10 | core, inner |
-| Carrion Crow | settled tops, blight_dirt | 20 | 2500 | 2 | min 10 | war_coast |
+| Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 2500 | 2 | min 10 | war_coast |
 | Shore Crab — *deferred (§8.3)* | sand | 20 | 2200 | 3 | any | strait, war_coast, coast |
-| Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast |
+| Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast, **outer** |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 8000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |

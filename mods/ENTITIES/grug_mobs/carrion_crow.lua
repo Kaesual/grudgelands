@@ -77,6 +77,14 @@ grug_mobs.register_mob("grug_mobs:carrion_crow", crow)
 -- no second ABM that could double up on it.
 mobs:spawn({
 	name = "grug_mobs:carrion_crow",
+	-- ALL land tops, not just the settled ones. The war coast is not its own
+	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
+	-- what a war-coast traveller walks on — and that includes wild patches
+	-- (§1.4). §4's "settled tops, blight_dirt" left grug_deep_forest,
+	-- grug_bone_forest, grug_crags(+snowy), grug_badlands and grug_swamp
+	-- war-coast strips without ANY daytime mob. This family is war_coast-
+	-- exclusive by _grug_spawn_zones, so a wider node list cannot leak into
+	-- another cell — the zone does all of the gating either way.
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -84,6 +92,14 @@ mobs:spawn({
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 		"grug_nodes:blight_dirt", -- grug_blight
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
+		"grug_nodes:mesa_clay", -- grug_badlands
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+		"grug_nodes:mud", -- grug_swamp
+		-- No `default:sand`: the war-coast beach is the Gull's day slot
+		-- (gull.lua, zones strait/war_coast/coast) and already covered.
 	},
 	min_light = 10,
 	interval = 20,

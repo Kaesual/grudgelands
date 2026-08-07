@@ -102,6 +102,34 @@ grug_mobs.register_mob("grug_mobs:boar", boar)
 -- row per ENTITY NAME (mobs_redo counts the active-object cap per name), so
 -- each of the three boars gets the full interval 20 / chance 1500 / aoc 5 —
 -- and no biome ever carries more than one of them.
+--
+-- ROLE IS NOT RING (§4 row note, added after the runtime report that a
+-- grug_deep_forest patch on the human capital had no wildlife at all): §4
+-- hands out node whitelists by biome ROLE — "settled tops" to the core/inner
+-- families, wild tops to the outer/coast ones — and thereby assumes that a
+-- settled biome only ever occurs in the settled rings. The patch model
+-- (§1.4) deliberately breaks that assumption: the band cuboids overlap by
+-- 400-500 nodes, so wild patches occur INSIDE core/inner just as settled
+-- patches occur far outside. Every such patch was a cell with zero eligible
+-- mobs.
+--
+-- The fix is on the mob side (the zones are a radial field, the biomes are
+-- boxes — no cuboid edit can align them): the base Boar is the core/inner
+-- DAY filler and therefore carries the wild land tops as well. Its
+-- _grug_spawn_zones = {core, inner} confines that to exactly the rings that
+-- were dead; the outer/coast rosters of those biomes are untouched.
+-- rabbit.lua (critter), zombie.lua (night) and carrion_crow.lua /
+-- skeleton_raider.lua (war coast) carry the same filler for their slot.
+--
+-- No cell's Sum(aoc) can rise because of a stray filler node: the filler
+-- lives on families that ALREADY inhabit core/inner via the settled tops,
+-- and mobs_redo counts the cap per entity NAME. Where gravel or sand occur
+-- outside their biome (mgv7 riverbeds, the world-wide gravel blob ore), the
+-- match therefore adds spawn CHANCES, never a second budget.
+--
+-- `default:sand` is safe against the ocean floor: mobs:spawn defaults the
+-- ABM's neighbour list to air (api.lua:3729), so submerged sand never
+-- matches, and min_height 0 rules out the sea bed anyway.
 mobs:spawn({
 	name = "grug_mobs:boar",
 	nodes = {
@@ -109,6 +137,13 @@ mobs:spawn({
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
+		-- Wild/universal tops reachable in core+inner as patches (see above).
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:mesa_clay", -- grug_badlands
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+		"grug_nodes:mud", -- grug_swamp
+		"default:sand", -- grug_beach, incl. inland lake shores
 	},
 	min_light = 10,
 	interval = 20,

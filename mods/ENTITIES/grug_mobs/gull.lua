@@ -21,8 +21,15 @@ local gull = {
 	type = "animal",
 	passive = true,
 	runaway = true,
-	-- §4 row zones: strait, war_coast, coast (see the header note).
-	_grug_spawn_zones = {"strait", "war_coast", "coast"},
+	-- §4 row zones: strait, war_coast, coast (see the header note) — plus
+	-- `outer`, added with the dead-cell fix. grug_beach is registered ONCE
+	-- for the whole world at y 1..4 (§1.3), so `default:sand` is not only the
+	-- shoreline: every inland lake shore and river bank inside the outer ring
+	-- is a beach cell too, and it had no mob at all. The core/inner half of
+	-- that hole is covered by the Boar/Rabbit filler (boar.lua), which is
+	-- zoned core+inner; `outer` is the piece nothing else reaches, and a
+	-- sand-only critter at aoc 2 is the cheapest thing that can fill it.
+	_grug_spawn_zones = {"strait", "war_coast", "coast", "outer"},
 	-- Level: engine-owned (levels.lua). grug_core.mob_level_at caps the
 	-- strait at 5 and the war coast at 20-30 — §3.1 files the beach roster as
 	-- "L1-5 neutral", and on a flank/back coast beach the same critter comes

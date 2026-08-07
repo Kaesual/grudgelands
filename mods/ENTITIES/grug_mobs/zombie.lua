@@ -76,8 +76,15 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 -- land biome has a stone surface any more.
 --
 -- §4 calibration row: interval 20 / chance 1600 / aoc 4, max light 5.
--- FIVE tops, not six: grug_nodes:blight_dirt has its own 24 h row below and
--- would otherwise be covered by two ABMs at night.
+-- FIVE settled tops, not six: grug_nodes:blight_dirt has its own 24 h row
+-- below and would otherwise be covered by two ABMs at night.
+--
+-- This row is also the NIGHT half of the core/inner filler (boar.lua's "role
+-- is not ring" note): the wild land tops below make every wild patch inside
+-- core/inner and on the war coast a live night cell. _grug_spawn_zones
+-- (core, inner, war_coast, underground) keeps that inside the settled rings
+-- and the battlefield strip — the outer ring and the coasts, where those
+-- biomes have their own night rosters, are unaffected.
 mobs:spawn({
 	name = "grug_mobs:zombie",
 	nodes = {
@@ -86,6 +93,13 @@ mobs:spawn({
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
+		-- Wild/universal tops as core/inner/war_coast patches (see above).
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:mesa_clay", -- grug_badlands
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+		"grug_nodes:mud", -- grug_swamp
+		"default:sand", -- grug_beach
 	},
 	max_light = 5,
 	day_toggle = false,

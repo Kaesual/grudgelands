@@ -99,9 +99,22 @@ grug_mobs.register_mob("grug_mobs:bear", bear_def("Bear", "grug_mobs_bear.png"))
 
 -- §4 row "Bear/Plaguehide | forest litter, bone litter | 20 | 2800 | 2 |
 -- min 10 | outer, coast", split by continent-side top node.
+--
+-- SETTLED TOPS IN THE WILD RINGS (the mirror of boar.lua's "role is not
+-- ring"): the patch model puts settled patches deep in the outer ring and on
+-- the coasts too, and there §4 gave them nothing — grug_elf_forest x outer
+-- and x coast were the largest dead area in the world (~4.9 % of the land),
+-- grug_pine_hills x coast a smaller one. The Bear/Spider pair is the
+-- outer/coast forest roster of the Accord side, so it carries those tops.
+-- Both families are zoned {outer, coast} (+ the Spider's cave row), so the
+-- settled core/inner cells of those biomes stay exactly as §4 priced them.
 mobs:spawn({
 	name = "grug_mobs:bear",
-	nodes = {"grug_nodes:dirt_with_forest_litter"}, -- grug_deep_forest
+	nodes = {
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest patches
+		"default:dirt_with_coniferous_litter", -- grug_pine_hills patches
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 2800,
@@ -118,9 +131,15 @@ mobs:spawn({
 grug_mobs.register_mob("grug_mobs:plaguehide_bear",
 	bear_def("Plaguehide Bear", "grug_mobs_bear_plaguehide.png"))
 
+-- Throng mirror of the note above: grug_blight patches in the outer ring had
+-- no DAY mob at all (only the night Skeleton Archer), and grug_blight x coast
+-- was dead around the clock.
 mobs:spawn({
 	name = "grug_mobs:plaguehide_bear",
-	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
+	nodes = {
+		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
+		"grug_nodes:blight_dirt", -- grug_blight patches
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 2800,

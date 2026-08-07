@@ -114,6 +114,11 @@ grug_mobs.register_mob("grug_mobs:skeleton_raider", raider)
 -- here without a second ABM doubling up on it.
 mobs:spawn({
 	name = "grug_mobs:skeleton_raider",
+	-- ALL land tops plus sand — the night counterpart of the Carrion Crow's
+	-- list, and for the same reason (read that file's note): the war coast
+	-- carries whatever the local band's voronoi produces, wild patches
+	-- included, and this family is war_coast-exclusive so the wider list
+	-- cannot reach any other cell.
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -121,6 +126,12 @@ mobs:spawn({
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 		"grug_nodes:blight_dirt", -- grug_blight
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
+		"grug_nodes:mesa_clay", -- grug_badlands
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+		"grug_nodes:mud", -- grug_swamp
 		"default:sand", -- the war-coast beach band (§1.5)
 	},
 	max_light = 5,

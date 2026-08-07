@@ -198,6 +198,8 @@ mobs:spawn({
 	name = "grug_mobs:stone_golem",
 	nodes = {
 		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy (eagle.lua explains why no
+		-- row had this node before)
 		"default:stone", -- bare rock in the crags
 	},
 	interval = 30,

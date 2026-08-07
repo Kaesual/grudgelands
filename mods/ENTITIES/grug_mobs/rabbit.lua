@@ -9,7 +9,7 @@
 -- which is correct because mobs_redo counts active_object_count per
 -- registered entity name and the two node whitelists never overlap.
 
-local function rabbit_def(description, texture)
+local function rabbit_def(description, texture, territory)
 	return {
 		description = description,
 		type = "animal",
@@ -17,6 +17,19 @@ local function rabbit_def(description, texture)
 		passive = true,
 		runaway = true,
 		_grug_spawn_zones = {"core", "inner"},
+		-- CONTINENT GATE, same idiom and same reason as golem.lua's: the
+		-- split above is normally node-derivable (the six settled tops are
+		-- three per continent), but the core/inner filler below adds
+		-- `grug_nodes:mud` and `default:sand` — and swamp and beach are
+		-- registered ONCE for the whole world (§1.3), so those two nodes
+		-- exist on BOTH continents. Without this check an Accord lake shore
+		-- would carry Rabbit and Hare at the same time, i.e. both tints in
+		-- one place. _grug_spawn_check is registered per mob NAME (init.lua)
+		-- and ANDed with the zone gate; it is pure arithmetic on x/z and runs
+		-- before the active-object scan (golem.lua documents the order).
+		_grug_spawn_check = function(pos)
+			return grug_core.territory_at(pos) == territory
+		end,
 		-- HP/damage/XP and armor are engine-owned (levels.lua). A critter
 		-- has no damage of its own; the level engine still assigns one, it
 		-- is simply never used because the mob never attacks.
@@ -60,11 +73,13 @@ local function rabbit_def(description, texture)
 end
 
 --
--- Rabbit — the three Accord settled tops
+-- Rabbit — the Accord tops (settled + the wild/universal ones that occur as
+-- core/inner patches, boar.lua's "role is not ring" note). This row is the
+-- CRITTER half of that filler; the Boar is the aggressive half.
 --
 
 grug_mobs.register_mob("grug_mobs:rabbit",
-	rabbit_def("Rabbit", "grug_mobs_rabbit.png"))
+	rabbit_def("Rabbit", "grug_mobs_rabbit.png", "accord"))
 
 mobs:spawn({
 	name = "grug_mobs:rabbit",
@@ -72,6 +87,11 @@ mobs:spawn({
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+		"grug_nodes:mud", -- grug_swamp
+		"default:sand", -- grug_beach
 	},
 	min_light = 10,
 	interval = 20,
@@ -82,11 +102,18 @@ mobs:spawn({
 })
 
 --
--- Hare — the three Throng settled tops
+-- Hare — the Throng tops. Same filler idea as the Rabbit above, but with
+-- ONLY the universal tops added: `grug_nodes:mesa_clay` is deliberately left
+-- out because §3.1 states "the badlands therefore carry no critter — Hyena,
+-- Vulture and Mesa Golem only". A badlands patch inside core/inner is
+-- covered by the Boar (day) and the Zombie (night) instead, so the cell is
+-- alive without contradicting that roster line. The bone forest needs no
+-- filler either: its cuboid (x -1500..-750) never reaches core, and its
+-- inner strip already carries Blightfang Wolf + Gaunt Stag.
 --
 
 grug_mobs.register_mob("grug_mobs:hare",
-	rabbit_def("Hare", "grug_mobs_hare_dust.png"))
+	rabbit_def("Hare", "grug_mobs_hare_dust.png", "throng"))
 
 mobs:spawn({
 	name = "grug_mobs:hare",
@@ -94,6 +121,8 @@ mobs:spawn({
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"grug_nodes:blight_dirt", -- grug_blight
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
+		"grug_nodes:mud", -- grug_swamp
+		"default:sand", -- grug_beach
 	},
 	min_light = 10,
 	interval = 20,

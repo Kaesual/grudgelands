@@ -82,9 +82,20 @@ grug_mobs.register_mob("grug_mobs:giant_spider", spider)
 -- §4 row "Giant Spider (all) | forest litter, bone litter, rainforest litter
 -- | 20 | 1800 | 4 | max 5 | outer, coast, underground", split by continent
 -- side; rainforest litter belongs to the jungle tint at the end of this file.
+--
+-- The elf-forest and pine-hills tops are here for the same reason bear.lua
+-- carries them: settled patches occur in the outer ring and on the coasts
+-- (§1.4), where §4's role-based whitelists left them empty. The Bear is the
+-- day half of that Accord outer/coast forest roster, this row the night half
+-- — without it grug_elf_forest x outer/coast and grug_pine_hills x coast
+-- would be lit-up by day and dead after dark.
 mobs:spawn({
 	name = "grug_mobs:giant_spider",
-	nodes = {"grug_nodes:dirt_with_forest_litter"}, -- grug_deep_forest
+	nodes = {
+		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
+		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest patches
+		"default:dirt_with_coniferous_litter", -- grug_pine_hills patches
+	},
 	max_light = 5,
 	day_toggle = false,
 	interval = 20,
@@ -102,9 +113,14 @@ local bonelurker = spider_def("Bonelurker Spider", "grug_mobs_spider_pale.png")
 grug_mobs.melee_rider(bonelurker, web_rider)
 grug_mobs.register_mob("grug_mobs:pale_spider", bonelurker)
 
+-- blight_dirt: the night half of the Throng mirror (bear.lua's Plaguehide
+-- note) — grug_blight patches in the outer ring and on the coasts.
 mobs:spawn({
 	name = "grug_mobs:pale_spider",
-	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
+	nodes = {
+		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
+		"grug_nodes:blight_dirt", -- grug_blight patches
+	},
 	max_light = 5,
 	day_toggle = false,
 	interval = 20,

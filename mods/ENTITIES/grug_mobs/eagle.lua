@@ -107,9 +107,19 @@ grug_mobs.register_mob("grug_mobs:crag_eagle",
 -- max_height 300 instead of the usual 200: §4's note gives the crags rows
 -- that exception, and the crags reach y 79 (biome cuboid, §1.3) with the
 -- snowy sibling above.
+-- SNOWBLOCK: grug_crags_snowy is the alpine sibling of the crags — same
+-- cuboid, same climate point, snow top above y = 80 (§1.3). It was added in
+-- WP18 and §4's table was never extended, so NO spawn row in the roster
+-- listed `default:snowblock` and the whole snow cap of the dwarf west band
+-- was mob-free. The three crags families carry it now. Zero budget impact:
+-- snowblock only exists where gravel does not (y >= 80 vs the crags'
+-- y_max = 79), so no cell gains a second row.
 mobs:spawn({
 	name = "grug_mobs:crag_eagle",
-	nodes = {"default:gravel"}, -- grug_crags
+	nodes = {
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 2000,

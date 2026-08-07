@@ -63,10 +63,15 @@ grug_mobs.register_mob("grug_mobs:mountain_ram", ram)
 
 -- §4 row "Ram | gravel | 20 | 2200 | 2 | min 10 | outer".
 -- max_height 300 per §4's crags exception (the crags cuboid runs to y 79 and
--- the snowy sibling above it, §1.3).
+-- the snowy sibling above it, §1.3) — and the snow top is exactly where the
+-- Ram belongs, so `default:snowblock` is listed here too (eagle.lua carries
+-- the full note on why no row had it).
 mobs:spawn({
 	name = "grug_mobs:mountain_ram",
-	nodes = {"default:gravel"}, -- grug_crags
+	nodes = {
+		"default:gravel", -- grug_crags
+		"default:snowblock", -- grug_crags_snowy
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 2200,
