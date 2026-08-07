@@ -17,6 +17,15 @@ function grug_core.get_dodge_chance(player)
 	return 0
 end
 
+-- Damage reduction from equipped armor, in PERCENT (0..60). 1 armor point =
+-- 1% reduction, summed over the four armor slots and hard-capped at 60%
+-- (items_crafting.md §3.1, combat_stats.md §2). grug_inventory overrides
+-- this with the real accessor; grug_core itself must not know about
+-- equipment slots or item fields.
+function grug_core.get_armor_percent(player)
+	return 0
+end
+
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
 -- melee damage = weapon damage + floor(Str/10)). Consumed by the
 -- auto-attack patch in mobs/api.lua on_punch.
@@ -561,9 +570,10 @@ end)
 
 --
 -- Central damage modifier for players: dodge roll (mob melee, PvP) plus
--- combat marking, then race mitigation (dwarf fall damage), then the
--- absorb shield. Runs as an hp change modifier so a dodge cancels the
--- whole hit before armor/sounds and absorbs are consumed before HP.
+-- combat marking, then equipped-armor mitigation (physical hits only), then
+-- race mitigation (dwarf fall damage), then the absorb shield. Runs as an hp
+-- change modifier so a dodge cancels the whole hit before armor/sounds, and
+-- absorbs are consumed after mitigation but before HP.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -578,6 +588,22 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			core.chat_send_player(player:get_player_name(),
 				core.colorize("#aaaaaa", "You dodge!"))
 			return 0
+		end
+	end
+	-- Equipped armor (items_crafting.md §3.1): PHYSICAL mitigation only.
+	-- There is no damage-type system in this game, so `reason.type ==
+	-- "punch"` is the whole definition of physical: fall damage has its own
+	-- race perk right below, and drowning/lava/starvation must never be
+	-- reduced by a breastplate. Runs after the dodge roll (a dodge already
+	-- cancelled the hit) and before the absorb shield, so the shield soaks
+	-- what armor let through -- shield points are worth full damage, not
+	-- pre-mitigation damage.
+	-- math.ceil is deliberate: armor alone can never reduce a landed hit to
+	-- 0 damage, however much of it a tank stacks.
+	if reason.type == "punch" then
+		local pct = grug_core.get_armor_percent(player)
+		if pct > 0 then
+			hp_change = -math.ceil(-hp_change * (1 - pct / 100))
 		end
 	end
 	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so

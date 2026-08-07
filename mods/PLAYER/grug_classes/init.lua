@@ -48,6 +48,19 @@ function grug_classes.get_class_def(player)
 	return id and grug_classes.registered_classes[id] or nil
 end
 
+-- Highest armor class a character may wear (decided 2026-08-07 for WP7).
+-- items_crafting.md §3.1 and combat_stats.md §2 assume plate on tanks and
+-- cloth on casters ("full plate 60% vs. cloth 15% -- tank/squishy spread as
+-- designed") but never named the mechanism: ranks are cloth 1 < leather 2 <
+-- metal 3, and a class wears its own rank and everything below it. The gate
+-- itself lives in grug_inventory's equip filter (the `grug_armor_class`
+-- item group). A character without a class yet counts as cloth, so the
+-- filter always has a number to compare against.
+function grug_classes.get_armor_rank(player)
+	local def = grug_classes.get_class_def(player)
+	return def and def.armor_rank or 1
+end
+
 local class_chosen_callbacks = {}
 
 -- func(player, class_id) — called after a class was set (selection dialog
@@ -103,6 +116,9 @@ end
 --
 -- MVP classes (combat_stats.md §1): base 10/10/10, 4 growth points per
 -- level. resource = "mana" | "rage" (HUD/regen lands with WP4).
+-- armor_rank = the highest wearable armor class (1 cloth / 2 leather /
+-- 3 metal, see grug_classes.get_armor_rank above). Leather has no wearer in
+-- the MVP -- the Rogue is Phase 2 -- which is why no leather items ship yet.
 --
 
 grug_classes.register_class({
@@ -112,6 +128,7 @@ grug_classes.register_class({
 		"taking blows; holds the enemy's attention.",
 	growth = {str = 3, int = 0, dex = 1},
 	resource = "rage",
+	armor_rank = 3,
 })
 
 grug_classes.register_class({
@@ -121,6 +138,7 @@ grug_classes.register_class({
 		"fueled by a deep mana pool.",
 	growth = {str = 0, int = 3, dex = 1},
 	resource = "mana",
+	armor_rank = 1,
 })
 
 grug_classes.register_class({
@@ -130,6 +148,7 @@ grug_classes.register_class({
 		"and pulls aggro if the tank sleeps.",
 	growth = {str = 1, int = 2, dex = 1},
 	resource = "mana",
+	armor_rank = 1,
 })
 
 --
