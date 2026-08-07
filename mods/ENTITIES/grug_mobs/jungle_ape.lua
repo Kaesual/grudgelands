@@ -38,7 +38,7 @@ local ape = {
 	jump = true,
 	jump_height = 8,
 	stepheight = 3,
-	fear_height = 4,
+	fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
 	view_range = 12, -- territorial: notices you late, then commits
 
 	visual = "mesh",

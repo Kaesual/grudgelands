@@ -56,7 +56,7 @@ local crocodile = {
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
-	fear_height = 4,
+	fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
 	-- Ambush range, see the header. grug_mobs.ambusher re-arms the "stand"
 	-- order at the same 6 nodes, so seeing a player and bursting coincide.
 	view_range = 6,

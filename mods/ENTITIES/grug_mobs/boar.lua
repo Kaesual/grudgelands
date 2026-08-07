@@ -21,8 +21,25 @@ grug_mobs.register_mob("grug_mobs:boar", {
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
-	fear_height = 4,
-	view_range = 10,
+	-- CLIFF RULE for aggressive ground mobs (decided in T10; every aggressive
+	-- family in grug_mobs points back here, critters keep 3).
+	--
+	-- fear_height is BOTH the drop a mob refuses to walk off (is_at_cliff,
+	-- api.lua:931) and — whenever it is non-zero — the max_drop handed to
+	-- core.find_path (api.lua smart_mobs). At 4 a chaser stops dead at any
+	-- ledge a player can simply hop down, which is the cheapest terrain
+	-- exploit there is and exactly what AGENTS.md "Mobs" forbids ("dangerous
+	-- mobs must not fail at terrain, otherwise they are not dangerous").
+	-- 6 is the free value: mobs_redo charges fall damage only above SIX nodes
+	-- (api.lua:2476, `if d > 6 then damage = d - 6`), so a chaser now follows
+	-- every drop that costs a player HP while costing itself nothing, and it
+	-- still refuses the deep falls that would hurt. It also lengthens the
+	-- downward ray of is_at_cliff, so lava/danger detection below a ledge gets
+	-- STRICTLY better. Not raised to 8: that would trade real HP for two more
+	-- nodes of reach and start dropping mobs into pits they cannot climb out
+	-- of (stepheight 1.1 is the only way back up).
+	fear_height = 6,
+	view_range = 10, -- starter mob at the village belt: sees you at melee range
 
 	visual = "mesh",
 	mesh = "grug_mobs_boar.b3d",

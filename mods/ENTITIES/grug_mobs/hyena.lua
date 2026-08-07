@@ -30,7 +30,7 @@ local hyena = {
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
-	fear_height = 4,
+	fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
 	view_range = 14,
 
 	visual = "mesh",

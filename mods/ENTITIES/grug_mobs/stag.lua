@@ -62,9 +62,15 @@ end
 grug_mobs.register_mob("grug_mobs:stag", stag_def("Stag", "grug_mobs_stag.png"))
 
 -- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
--- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side;
--- dry grass goes to the Gaunt Stag (and later to T6's Zebra, which shares
--- the savanna with it).
+-- grass | 20 | 1800 | 3 | min 10 | inner, outer", split by continent side.
+--
+-- T10 correction: §4 prices these three names as ONE row of aoc 3, so each
+-- top node may be claimed by exactly ONE of them. `dry_dirt_with_dry_grass`
+-- belongs to the Zebra (§3.1 "Savanna extras … Zebra"); the Gaunt Stag used
+-- to list it as well, which stacked 3 + 3 = 6 stag-family slots on the
+-- savanna and pushed that biome's day sum to 19 against §4's ~14 cap
+-- (docs/research/wp6_spawn_budget.md). The Gaunt Stag is the bone-forest
+-- half of the forest pair (§3.1) and keeps bone litter only.
 mobs:spawn({
 	name = "grug_mobs:stag",
 	nodes = {
@@ -80,7 +86,7 @@ mobs:spawn({
 })
 
 --
--- Gaunt Stag — Throng: bone forest and savanna
+-- Gaunt Stag — Throng: bone forest
 --
 
 grug_mobs.register_mob("grug_mobs:gaunt_stag",
@@ -88,10 +94,9 @@ grug_mobs.register_mob("grug_mobs:gaunt_stag",
 
 mobs:spawn({
 	name = "grug_mobs:gaunt_stag",
-	nodes = {
-		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
-		"default:dry_dirt_with_dry_grass", -- grug_savanna
-	},
+	-- Bone forest only — the savanna's stag-table slot is the Zebra's
+	-- (zebra.lua, same drop table per §3.2). See the note above.
+	nodes = {"grug_nodes:dirt_with_bone_litter"}, -- grug_bone_forest
 	min_light = 10,
 	interval = 20,
 	chance = 1800,

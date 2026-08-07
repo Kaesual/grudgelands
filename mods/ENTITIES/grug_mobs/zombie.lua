@@ -32,7 +32,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	run_velocity = 4.2,
 	jump = true,
 	stepheight = 1.1,
-	fear_height = 4,
+	fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
 	view_range = 14,
 
 	visual = "mesh",

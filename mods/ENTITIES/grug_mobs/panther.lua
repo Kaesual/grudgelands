@@ -36,7 +36,7 @@ local panther = {
 	jump = true,
 	jump_height = 4,
 	stepheight = 1.1,
-	fear_height = 4,
+	fear_height = 6, -- T10 cliff rule (boar.lua): follow the drops players take
 	-- Short sight on purpose: it must get CLOSE before the pounce window of
 	-- grug_mobs.stalker (4-8 m) even opens.
 	view_range = 12,

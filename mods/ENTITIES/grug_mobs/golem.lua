@@ -94,6 +94,13 @@ local function golem_def(description, texture)
 		-- (wp6_model_notes §4.2).
 		jump = false,
 		stepheight = 1.1,
+		-- The ONE aggressive family that does NOT get T10's cliff rule of 6
+		-- (boar.lua). Two reasons, both specific to this def: it is `jump =
+		-- false`, so stepheight 1.1 is its only way back UP and a deeper drop
+		-- is a one-way trip into a pit where nothing can reach it; and it is
+		-- `dogshoot` — a ledge is no exploit against a mob that answers by
+		-- throwing rocks over it. 4 also keeps the max_drop it hands to
+		-- core.find_path shallow enough that a non-jumper stays mobile.
 		fear_height = 4,
 		view_range = 14,
 
@@ -160,6 +167,18 @@ grug_mobs.register_mob("grug_mobs:stone_golem", stone_golem)
 -- max_height 300 per §4's crags/golem exception; min_height 0 keeps this row
 -- on the surface — the cave row (same nodes, negative heights) is T7's,
 -- which is why the zone list above already allows "underground".
+--
+-- ABM CANDIDATE VOLUME (T10 sanity check, the same argument the cave rows
+-- make in zombie.lua): `default:stone` between y 0 and 300 is not "the whole
+-- world". mobs:spawn defaults the ABM's neighbour list to {"air"}
+-- (api.lua:3729), so only stone with air beside it counts — on the surface
+-- that is exposed bare rock, which the crags/badlands cuboids produce in
+-- patches and the rest of the world barely at all. On top of that this row is
+-- interval 30 / chance 9000 (the rarest in the roster) and gated to the outer
+-- ring and one continent, and the check order in api.lua spends the cheap
+-- tests first: active-object count, mob_active_limit, then our arithmetic
+-- zone_at/territory_at check, and only afterwards the light/space/player
+-- queries that actually touch the map.
 mobs:spawn({
 	name = "grug_mobs:stone_golem",
 	nodes = {

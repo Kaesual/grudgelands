@@ -1477,6 +1477,19 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 
 		self.path.following = false
 
+		-- GRUG PATCH: give `self.path.stuck` a meaning (WP6-T10). The field is
+		-- READ in do_states (walk instead of run) and cleared when
+		-- the mob reaches its target, but NOTHING in mobs_redo ever sets it —
+		-- dead code here and in the mcl_mobs fork of the same rnd code.
+		-- Meaning chosen: "wedged with NO usable path", i.e. the mob is about
+		-- to blunder straight at its target through whatever is in the way;
+		-- walking that stretch kills the ram-the-wall jitter and the mob keeps
+		-- pushing instead of bouncing. Deliberately NOT set while a path IS
+		-- being followed: walk_velocity is 1 for most grug_mobs defs, so a
+		-- chaser would crawl every detour at 1 m/s and terrain would become
+		-- the free escape hatch that AGENTS.md "Mobs" explicitly forbids.
+		self.path.stuck = true
+
 		 -- lets make a way by digging/building
 		if self.pathfinding == 2 and mobs_griefing then
 
@@ -1529,6 +1542,7 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 
 		self:do_jump() --add jump to pathfinding
 		self.path.following = true
+		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
 
 	else -- yay i found path
 
@@ -1539,6 +1553,7 @@ function mob_class:apply_path(way, target_pos, add_jump, set_velocity)
 		end
 
 		self.path.following = true -- now follow path
+		self.path.stuck = false -- GRUG PATCH: path found, run it (see above)
 	end
 end
 
@@ -1552,7 +1567,15 @@ local function path_height_blocked(self)
 
 		node = get_node({x = pos.x, y = pos.y + 1, z = pos.z}).name
 
-		if core.registered_nodes[node].walkable then return true end
+		-- GRUG PATCH: nil guard (WP6-T10). core.registered_nodes[node] is nil
+		-- for "ignore" (unloaded/unemerged blocks — routine while a path
+		-- reaches toward the edge of the active area) and for any node whose
+		-- mod is gone, so the bare `.walkable` index crashed the mob's step.
+		-- Unknown counts as BLOCKED: a 2-node-high mob must not be sent
+		-- through clearance we cannot verify.
+		local ndef = core.registered_nodes[node]
+
+		if not ndef or ndef.walkable then return true end
 	end
 end
 
@@ -1572,7 +1595,22 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 
 	self.path.lastpos = {x = s.x, y = s.y, z = s.z}
 
-	if self.path.stuck_timer <= pathfinding_stuck_timeout then return end
+	-- GRUG PATCH: actually USE mob_pathfinding_stuck_path_timeout (WP6-T10).
+	-- Upstream reads the setting at load time (line ~89) and then never
+	-- references it — mobs kept re-planning on the short timeout, and the
+	-- setting was a lie. Intent verified against the sibling fork of the same
+	-- rnd code (VoxeLibre mcl_mobs/combat.lua:90-106), which branches exactly
+	-- like this: a mob that is ALREADY following a path gets the longer
+	-- stuck_path_timeout of no-progress patience, a mob without one re-plans
+	-- after the short stuck_timeout. Reaching this point IS "give up on the
+	-- path": below, either line_of_sight clears path.following or find_path
+	-- replaces path.way outright. Two effects we want — a wedged path-follower
+	-- stops rubber-banding against its own bad path, and a moving one does not
+	-- pay for an A* search every stuck_timeout seconds.
+	local timeout = self.path.following and pathfinding_stuck_path_timeout
+			or pathfinding_stuck_timeout
+
+	if self.path.stuck_timer <= timeout then return end
 
 	local has_lineofsight = core.line_of_sight(
 			{x = s.x, y = s.y + 0.5, z = s.z},
@@ -1581,6 +1619,11 @@ function mob_class:smart_mobs(s, p, dist, dtime)
 	self.path.stuck_timer = 0
 
 	if has_lineofsight then
+		-- GRUG PATCH: the target is visible again, so the detour is over —
+		-- clear the wedged flag with it (WP6-T10, see apply_path). Without
+		-- this a mob that was walled in once would keep walking instead of
+		-- running for the rest of the chase.
+		self.path.stuck = false
 		self.path.following = false ; return
 	end
 
@@ -2290,13 +2333,18 @@ function mob_class:do_states(dtime)
 			and self.attack_type ~= "dogshoot" then
 
 				-- no paths longer than 60
+				-- GRUG PATCH: clear the wedged flag together with the path on
+				-- both abandon exits (WP6-T10, see apply_path) — otherwise the
+				-- walk-speed penalty outlives the detour that caused it.
 				if #self.path.way > 60 or dist < self.reach then
+					self.path.stuck = false
 					self.path.following = false ; return
 				end
 
 				local p1 = self.path.way[1]
 
 				if not p1 then
+					self.path.stuck = false
 					self.path.following = false ; return
 				end
 
@@ -2313,7 +2361,18 @@ function mob_class:do_states(dtime)
 			if dist > (self.reach + (self.reach_ext or 0)) then
 
 				-- path finding by rnd (only when enabled in setting and mob)
-				if self.pathfinding and pathfinding_enable then
+				-- GRUG PATCH: never run A* for a dogshoot mob (WP6-T10). The
+				-- path CONSUMPTION block ~40 lines up already excludes
+				-- attack_type == "dogshoot", so every core.find_path call for
+				-- one of them was computed and thrown away — pure cost, plus a
+				-- stray war_cry and a walk_velocity write from apply_path.
+				-- Losing nothing: a ranged family answers terrain by shooting
+				-- over it, which is exactly why biomes_mobs §3.1 gives the
+				-- archer/raider/golem `dogshoot` in the first place. Our defs
+				-- keep `pathfinding = 1` (§3 says all aggressive mobs do), it
+				-- simply costs nothing now.
+				if self.pathfinding and pathfinding_enable
+				and self.attack_type ~= "dogshoot" then
 					self:smart_mobs(s, p, dist, dtime)
 				end
 
