@@ -368,10 +368,17 @@ end
 -- player, in server time.
 --
 
--- Jitter tolerance: a swing may land 10 % early. The client quantizes
--- punches to 0.2 s steps, so a strict comparison would push a 0.9 s weapon
--- to an effective 1.0 s cadence.
-local SWING_TOLERANCE = 0.9
+-- Tick slack: half a client punch step (0.2 s, see above). While the button
+-- is held the punches this gate sees are spaced at MULTIPLES of 0.2 s from
+-- the last accepted swing, so a weapon interval that is not a multiple of
+-- 0.2 can only ever be served by the next tick at or past it — accepting
+-- `interval` exactly would round every weapon UP. Subtracting half a step
+-- rounds to the NEAREST tick instead: fpi 0.9 accepts the 0.8 s packet
+-- (0.8 >= 0.9 - 0.1) for an effective 0.8 s cadence, while fpi 1.0 still
+-- rejects it (0.8 < 0.9) and lands on 1.0 s. A multiplicative tolerance
+-- cannot do this — 0.9 * 0.9 = 0.81 rejects the 0.8 s packet and the 0.9 s
+-- weapon silently swings at 1.0 s.
+local SWING_SLACK = 0.1
 
 local last_swing = {} -- player name -> mono_time of the last accepted swing
 
@@ -385,7 +392,7 @@ function grug_core.accept_melee_swing(player, interval)
 	local name = player:get_player_name()
 	local now = grug_core.mono_time()
 	local last = last_swing[name]
-	if last and now - last < interval * SWING_TOLERANCE then
+	if last and now - last < interval - SWING_SLACK then
 		return false
 	end
 	last_swing[name] = now
@@ -400,6 +407,12 @@ end)
 -- the same particle burst as ability crits above — auto-attacks were the one
 -- damage source that could never crit. `target` only supplies the particle
 -- position. Returns the (possibly critical) damage.
+--
+-- The crit result is FLOORED, exactly like deal_ability_damage's, so the two
+-- crit paths cannot disagree about what a ×1.5 on the same number is worth.
+-- Only the crit branch floors — a non-crit hit is handed back untouched,
+-- because the caller's damage is still mid-computation (mobs_redo's armor
+-- scaling produces fractions on purpose and rounds at the very end).
 function grug_core.melee_crit(player, damage, target)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
 		return damage
@@ -408,7 +421,7 @@ function grug_core.melee_crit(player, damage, target)
 	if pos then
 		crit_particles(pos)
 	end
-	return damage * 1.5
+	return math.floor(damage * 1.5)
 end
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip

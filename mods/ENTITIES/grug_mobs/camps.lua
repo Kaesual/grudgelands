@@ -423,10 +423,15 @@ local function camp_tick(pos, elapsed)
 	local cfg, id = camp_cfg(pos, meta)
 	if not cfg then
 		-- A camp type that no mod registered (typo, or a removed family):
-		-- log once per tick at a slow rate instead of spinning.
+		-- log once per tick instead of spinning. IDLE_PERIOD and not something
+		-- slower, so this function keeps its invariant that it NEVER re-arms
+		-- longer than IDLE_PERIOD — the catch-up detection further down reads
+		-- `elapsed > IDLE_PERIOD + 1` as "the mapblock was dormant", and a
+		-- longer re-arm here would make that a lie the moment the missing camp
+		-- type is registered again (a mod re-enabled mid-world).
 		core.log("warning", "[grug_mobs] camp fire at " ..
 			core.pos_to_string(pos) .. " has unknown camp type '" .. id .. "'")
-		return RESPAWN_MAX
+		return IDLE_PERIOD
 	end
 	local now = core.get_gametime()
 	-- Camp size is rolled ONCE and kept, so a camp has a stable identity
@@ -457,6 +462,12 @@ local function camp_tick(pos, elapsed)
 	local living = count_camp_mobs(pos, cfg)
 	local queue = meta:get_int(META_QUEUE)
 	local next_refill = meta:get_int(META_NEXT)
+	-- What is on disk right now, so the write-back at the end can skip a
+	-- no-op: a full camp ticks every IDLE_PERIOD forever, and set_int marks
+	-- the mapblock dirty unconditionally — writing the same two numbers back
+	-- every 30 s would re-save the block for the whole time a player stands
+	-- anywhere near it.
+	local queue_on_disk, next_on_disk = queue, next_refill
 	-- A queue with no due time is meta damage (an admin edit, a half-written
 	-- block): schedule it instead of letting the drain read "due at second 0"
 	-- and empty the whole queue at once.
@@ -510,8 +521,12 @@ local function camp_tick(pos, elapsed)
 		queue = queue - 1
 		next_refill = next_refill + roll_interval(cfg)
 	end
-	meta:set_int(META_QUEUE, queue)
-	meta:set_int(META_NEXT, next_refill)
+	if queue ~= queue_on_disk then
+		meta:set_int(META_QUEUE, queue)
+	end
+	if next_refill ~= next_on_disk then
+		meta:set_int(META_NEXT, next_refill)
+	end
 	if queue <= 0 or blocked then
 		return IDLE_PERIOD
 	end

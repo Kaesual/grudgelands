@@ -212,6 +212,12 @@ is met at the hotspots and not in the median cell.
   guard PvP loot (`drops = {}` today).
 - **WP16**: the ore-respawn **guild-claim exception** is a reserved slot
   in the dig hook.
+- **PvP work package** (with the war-coast PvP quests, WP9-adjacent):
+  port the 2026-08-07 melee auto-attack pipeline (cadence gate, Str,
+  crit — combat_stats §2) to **player-vs-player punches**. PvP melee
+  still runs the engine's raw tflp scaling, i.e. a held button deals a
+  permanent 0 with weapons below bronze — the exact defect the mob
+  pipeline fixed.
 
 *Accepted caveats* (known, deliberately not fixed in WP6):
 - **Dual `physics_override` ownership**: `grug_mobs/verbs.lua` (webs) and

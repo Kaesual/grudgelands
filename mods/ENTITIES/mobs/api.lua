@@ -2759,14 +2759,6 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
-	-- GRUG PATCH (cadence): auto-attack crit — ×1.5 plus the same particle
-	-- burst ability crits use (combat_stats.md §2). Rolled after the armor
-	-- scaling (a factor commutes) and before the `immune_to` override below,
-	-- so an immunity entry still wins over a lucky roll.
-	if grug_cadence then
-		damage = grug_core.melee_crit(hitter, damage, self.object)
-	end
-
 	-- check if hit by player item or entity
 	local hit_item = weapon_def.name
 
@@ -2784,6 +2776,18 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		elseif self.immune_to[n][1] == "all" then
 			damage = self.immune_to[n][2] or 0
 		end
+	end
+
+	-- GRUG PATCH (cadence): auto-attack crit — ×1.5 plus the same particle
+	-- burst ability crits use (combat_stats.md §2), both inside
+	-- grug_core.melee_crit. Rolled after the armor scaling (a factor
+	-- commutes) and, crucially, AFTER the `immune_to` loop above: that loop
+	-- OVERWRITES damage rather than scaling it, so a roll placed before it
+	-- was thrown away — and the burst had already fired, showing a crit on a
+	-- hit the mob is immune to. melee_crit's own `damage <= 0` guard now
+	-- covers the usual immunity value of 0, so no burst and no roll.
+	if grug_cadence then
+		damage = grug_core.melee_crit(hitter, damage, self.object)
 	end
 
 	local enchants = {}

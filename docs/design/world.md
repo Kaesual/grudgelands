@@ -266,7 +266,7 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 - **Place-bound NPCs** are bound to their anchor (guard banner, camp
   fire, mine, platform): after losing aggro they return to it (the
   evade snap-home), and while idle they **roam only a small radius
-  around it** — **15 nodes**, horizontal, enforced as a gentle steer
+  around it** — **20 nodes**, horizontal, enforced as a gentle steer
   home once a second while the NPC is idle (the snap stays the hard
   reset after a chase). The patroller role is the one designed
   exception.

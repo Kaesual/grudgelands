@@ -285,11 +285,17 @@ end
 -- nudge (patrol.lua walk_toward) — never mobs_redo's go_to(), which fakes an
 -- attack target and would blind the mob to players; see patrol.lua.
 --
--- ~15 nodes: the middle of §4a's 10-20, comfortably inside every camp type's
--- own leash radius (bandit/mirefolk 25, guard 30) so the two rules never
--- fight, and outside every camp radius (10-15) so a mob milling around the
--- fire is left completely alone.
-local ROAM_RADIUS = 15
+-- 20 nodes: world.md §4a's roam radius, and the value has to sit STRICTLY
+-- above every camp radius (bandit 12, mirefolk 10, guards 15 — camps.lua) or
+-- this rule fights the spawner. At 15 it did exactly that: camps.lua's
+-- free_spot_near places a member anywhere out to `radius`, so a guard could
+-- be spawned at 15.0 and land on an integer node 15-16 out, which this check
+-- read as stray on its very first idle tick — a fresh guard immediately
+-- walking back to the banner. 20 clears the widest camp by a full node of
+-- rounding slack and still sits comfortably inside every leash radius
+-- (bandit/mirefolk 25, guard 30), so the two rules never fight from the
+-- other side either.
+local ROAM_RADIUS = 20
 
 local function roam_check(self)
 	-- CAMP-BOUND ONLY. `_grug_camp_pos` is the identity ("I belong to that

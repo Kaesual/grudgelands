@@ -639,6 +639,14 @@ end
 -- the pre-retry code did with EVERY flooded anchor, so it is never worse — and
 -- the flooding the runtime log actually showed is the mask's, which is handled
 -- above.
+-- The accepted side effect of that narrow case: the POI record is the
+-- decision, so its PROTECTION ZONE goes live at a position where no structure
+-- will ever be raised — a block of unbuildable wilderness, and
+-- grug_core.outpost_position pointing at bare terrain. Nothing is corrupt (the
+-- zone and the never-built structure still agree on one position, which is the
+-- invariant this function exists for) and nothing retries it, because the
+-- candidate walk only ever runs forward. Accepted for now; revisit with WP13's
+-- structure pass, which is where deferred/rebuilt structures belong.
 -- Shared with the bandit camps further down (they pass a smaller sample
 -- radius); the y window is the same for both.
 local function candidate_ground_y(cand, radius, minp, maxp)
