@@ -150,24 +150,30 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   no placement. Each faction can only build INSIDE its own continent
   rectangle. Sole exception: the player housing isles (R5, section 5).
 - **R4 — Ores/resources respawn** (node timers) in the open world, so a
-  persistent world doesn't run dry. **Exception: no respawn inside guild
-  mining claims and housing isles** — a claim's price buys its *finite*
-  resources (`guilds.md` §3), and an isle's depth step buys its finite
-  treasure clusters (§5.4). Implemented with WP6: digging one of the
+  persistent world doesn't run dry. **Exception: no respawn on housing
+  isles** — an isle's depth step buys its finite treasure clusters
+  (§5.4). Implemented with WP6: digging one of the
   scatter ores leaves a **depleted-vein placeholder** node that
   remembers the ore in its meta and re-grows it after a random
   **15–30 min**. **Digging the placeholder cancels the respawn** — the
   timer lives and dies with the node, and the placeholder itself drops
-  nothing; that is the price of clearing a vein out of your build. The
-  guild-claim exception is a reserved slot in the dig hook, filled by
-  WP16 when claims exist.
-- **R5 — Housing isles & guild claims**: a housing isle's 100×100 build
+  nothing; that is the price of clearing a vein out of your build.
+- **R5 — Housing isles**: a housing isle's 100×100 build
   box belongs to its **owner, a character rather than a guild** (§5):
   the owner and the characters on their *trusted* list build and dig
   there down to the purchased depth, everyone else may look and not
-  touch. Continental mining claims stay **guild** property — usable by
-  all members of the owning guild, locked for everyone else
-  (`guilds.md` §3.2).
+  touch. A guild owns no land anywhere (`guilds.md` §3).
+- **R6 — Rock strata** (decided 2026-08-07): below the surface the stone
+  is layered into **six strata, one per material tier**, with boundaries
+  at **−100 / −300 / −500 / −700 / −1000 / bedrock**. A stratum can only
+  be broken by a tool of its own tier or better (engine mechanism: the
+  node's `level` group against the tool's `groupcaps.maxlevel`). Depth
+  — and with it the whole metal ladder — is therefore gated by the tool
+  a character can already make, not by a rule the server has to police.
+  **The layering is identical on the continent and on the housing
+  isles**: on the continent the tool tier alone gates you, on an isle
+  you need the tool tier **and** the purchased depth step (§5.3). The
+  six tiers and their materials live in `items_crafting.md`.
 - **No per-player land claims in the MVP**: open-world builds are "at
   your own risk"; the protected build space is your own housing isle
   (§5). Revisit only if griefing becomes a real problem.
@@ -246,8 +252,11 @@ faction-wide services live there. Each capital contains:
 Military outposts across each territory enforce the level gating:
 
 - Roles: guard spawner/anchor, quest hub, graveyard/respawn point for the
-  own faction, protector of resource-rich mining zones (e.g. a dwarven
-  mining camp — resource site + conflict point in one).
+  own faction, protector of resource-rich mining sites (e.g. a dwarven
+  mining camp — resource site + conflict point in one). Such a site is
+  **world content, not a purchasable claim**: it is guarded, never owned,
+  and anyone who fights past the garrison may dig it (guilds hold no
+  land — `guilds.md` §3; ore respawns there like everywhere else, R4).
 - **Guard level follows the inverse guard field** (`guard_level_at`,
   section 1): elite garrisons in the core, ~local mob level +5 at the
   war coast — guards beat equal-level intruders; groups or higher-level
@@ -362,7 +371,7 @@ the crown also gives the own faction's King his first friendly role
 ### 5.1 Ownership & the isle
 
 - **One isle per character** (changed 2026-08-07 from per-guild; guilds
-  keep bank, claims and roles — `guilds.md`). Granted is granted: no
+  keep the bank and the roles — `guilds.md`). Granted is granted: no
   upkeep, no decay, no way to lose it.
 - **Build box: 100 × 100 nodes in x/z, from the purchased depth to the
   sky.** The box IS the extent of the build and dig right (§2 R5), which
@@ -397,21 +406,32 @@ Re-styling an existing isle for gold is a reserved Phase-2 sink, not MVP.
 ### 5.3 Depth rights — the central gold sink
 
 The only paid axis (x/z is a gift — you do not buy land from your
-liege). **10 steps of 50 nodes**, from the seabed at −30 down to −530:
+liege). **Six steps, one per rock stratum** (revised 2026-08-07 from ten
+steps of 50 nodes to −530): every step opens exactly the stratum that
+the matching tool tier can break, so an isle's ladder and the
+continent's are the same six layers (§2 R6).
 
-| Step | Floor | Price | Step | Floor | Price |
-|---|---|---|---|---|---|
-| 1 | −80 | 50c | 6 | −330 | 12s |
-| 2 | −130 | 1s | 7 | −380 | 20s |
-| 3 | −180 | 2s | 8 | −430 | 35s |
-| 4 | −230 | 4s | 9 | −480 | 60s |
-| 5 | −280 | 7s | 10 | −530 | **1g** |
+| Step | Opens down to | Rock tier | Price |
+|---|---|---|---|
+| free | −30 (the seabed) | — | — |
+| 1 | −100 | T1 | 50c |
+| 2 | −300 | T2 | 2s |
+| 3 | −500 | T3 | 6s |
+| 4 | −700 | T4 | 20s |
+| 5 | −1000 | T5 | 60s |
+| 6 | bedrock | T6 | **1g** |
 
-≈ **2.4 g for the full ladder**. Against a lifetime income to level 60 of
+≈ **1.9 g for the full ladder**. **Both gates apply and neither
+substitutes for the other**: a bought step is worthless without a tool
+of that tier, and a T6 pick digs nothing on an isle whose step 6 is
+unpaid. Against a lifetime income to level 60 of
 about 1 g and endgame farming of 6–12 s/h (items_crafting.md §8), the
 first steps are reachable soon after the level-30 grant and the last are
 a genuine endgame fortune — the ladder deliberately outlives the level
 cap. Bought steps are permanent.
+
+This price table is the same one in `economy.md` §4.1 and
+`items_crafting.md` §8.4 — the three must not drift apart.
 
 ### 5.4 What is down there: treasure clusters, not a mine
 
@@ -425,20 +445,24 @@ selling the same ore without the danger.
   **fixed, deterministic set of clusters** — working value **8 clusters
   of 20–40 nodes** per step, positions rolled per isle, count and
   contents identical for everyone. A step is therefore a *calculable
-  payout*, which is what makes its price balanceable at all.
+  payout*, which is what makes its price balanceable at all. The count
+  does **not** scale with a stratum's height: a deeper step costs more
+  because its clusters carry a higher material tier, not because it
+  holds more of them.
 - **No respawn** (R4): a mined-out cluster is gone. That is precisely why
   the ladder keeps costing — the next payout is the next step.
-- Contents rise with depth: steps 1–3 ordinary building and smithing
-  stock, 4–7 iron/steel-grade material and gems, **8–10 the depth
-  treasures** including **abyssal gems**, the race-signature ingredient
-  (items_crafting.md §4 / §5.5).
+- Contents follow the strata (§5.3): steps 1–3 ordinary building and
+  smithing stock, steps 4–5 the deep metals and their gems, **step 6 the
+  depth treasure — Abyssal Crystal**, the T6 material and the
+  race-signature ingredient (items_crafting.md §4 / §5.5).
 - **Finder items are mandatory infrastructure, not flavor**: a step is
-  100×100×50 nodes and nobody strip-mines half a million of them. From
+  100×100 nodes wide and up to 300 deep, and nobody strip-mines millions
+  of them. From
   the moment housing unlocks, vendors sell a cheap **Dowsing Rod**
   (nearest un-mined cluster within 64 m, direction only, 30 s cooldown);
-  the **Gem Hunter** profession crafts the better **Gem Detector**
-  (longer range, distance readout) — the profession's second reason to
-  exist (professions.md §2).
+  the **Goldsmith** profession crafts the better **Gem Detector**
+  (longer range, distance readout) — one of that profession's two
+  reasons to exist (professions.md §2).
 
 ### 5.5 Access rights
 

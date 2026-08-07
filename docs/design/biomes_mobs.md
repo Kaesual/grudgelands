@@ -254,32 +254,79 @@ What is guaranteed now, and how:
 
 ## 2. Per-biome specs (surface, flora, gathering)
 
-Gathering split (professions.md): `[food]` = gatherable by everyone;
-`[herb Tn]` = Herbalism only, alchemy tier n. Herb tiers tie to rings:
-T1 inner (10–25), T2 outer (25–45), T3 coast/deep (45–60).
+Gathering split (professions.md §2), **revised 2026-08-07 — the herbs
+split in two**:
+
+| Marker | Who may gather it | Farmable later |
+|---|---|---|
+| `[food]` | everyone | yes — becomes a crop with the farming package |
+| `[food found-only]` | everyone | **never** — found in the world, never grown |
+| `[herb Tn]` | **healing herb** — Alchemist only, tier n | **never** |
+| `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by the Alchemist **and** by Cooking | yes |
+
+Both plant lines keep the same ring tiers: T1 inner (10–25), T2 outer
+(25–45), T3 coast/deep (45–60), and each line has exactly one plant per
+tier, reachable on both continents.
+
+**Where the line runs**: healing herbs grow on ground no plough will
+ever touch — bare stone, gravel and mesa clay, dead wood, the deep
+jungle floor — while spices grow on the soft, workable ground of
+meadow, marsh and shore. The split is readable off the biome itself, it
+keeps every healing herb bound to a journey into its own biome, and it
+gives Cooking a supply line that farming can later take over without
+ever touching alchemy's.
+
+**MVP scope**: only the plants listed below spawn — a handful of cooking
+ingredients plus the six herbs. More herbs, more cooking recipes and the
+farming system are one later package.
 
 | Biome | Trees / schematics | Ground cover & gathering | Notes |
 |-------|--------------------|--------------------------|-------|
-| grug_meadows | apple_tree.mts sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[herb T1]` | fields/roads near settlements (WP13) |
+| grug_meadows | apple_tree.mts sparse (fill 0.0015), bush | grass 1–5, flowers; wild potato + corn patches `[food]`, apples `[food]`; sunleaf `[spice T1]` | fields/roads near settlements (WP13) |
 | grug_pine_hills | pine_tree.mts + small_pine (fill 0.006) | ferns; wild berries (blueberry bush) `[food]`; gravemoss on stone `[herb T1]` | scattered boulders (deco) |
-| grug_elf_forest | silverwood (retinted aspen_tree.mts) + apple mix (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[herb T1]` | great-silverwood only via settlement schematics |
-| grug_deep_forest | apple + aspen dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food]`; dragonweed edge `[herb T2]` | dark, high tree density |
+| grug_elf_forest | silverwood (retinted aspen_tree.mts) + apple mix (fill 0.007) | pale grass, white flowers; wild berries `[food]`; sunleaf `[spice T1]` | great-silverwood only via settlement schematics |
+| grug_deep_forest | apple + aspen dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food found-only]`; dragonweed edge `[herb T2]` | dark, high tree density |
 | grug_crags | snowy_pine above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
-| grug_savanna | acacia_tree.mts sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[herb T1]` | waterhole ponds (deco) |
+| grug_savanna | acacia_tree.mts sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
 | grug_badlands | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | band-specific nature biome (Orc area only) |
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
-| grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
-| grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[herb T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
-| grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[herb T2]`; mushrooms `[food]` | shallow water pools (mud floor) |
-| grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[herb T3]` | |
+| grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
+| grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
+| grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
+| grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
-Herb summary (both continents can gather every tier — see §6):
-sunleaf T1 (meadows, savanna, elf forest, jungle edge), gravemoss T1
-(pine hills, blight), dragonweed T2 (crags, badlands, deep forest,
-bone forest), marshbloom T2 (swamp), crimson lotus T3 (deep jungle,
-jungle fringe), stormkelp T3 (coast-zone beaches).
+**Healing herbs** (Alchemist only, never farmable; both continents reach
+every tier — see §6): **gravemoss T1** (pine hills, blight),
+**dragonweed T2** (crags, badlands, deep forest, bone forest),
+**crimson lotus T3** (deep jungle, jungle fringe). All three sit on
+stone, gravel, mesa clay, dead-wood litter or jungle floor.
+
+**Spices** (gathered by everyone, used by both the Alchemist and
+Cooking — which costs no main slot — and farmable once farming ships):
+**sunleaf T1** (meadows, savanna, elf forest, jungle edge),
+**marshbloom T2** (swamp), **stormkelp T3** (coast-zone beaches). All
+three sit on grass, mud or sand — cultivable ground.
+
+**Cooking supply, checked against the cooking tiers** (cooking keeps its
+own recipe book with T1–T6 groups, `items_crafting.md`; the tiers tie to
+the region an ingredient comes from):
+
+- Low and middle tiers come out of the settled rings and the swamp:
+  potato, corn, apples, berries, melon, mushrooms, sunleaf, marshbloom,
+  plus meat and fish from anywhere.
+- **T6 needs ingredients from level 50+ ground, and the coast/outer
+  rows do carry them**: **wild cocoa** in deep jungle / jungle fringe
+  (38–60), **stormkelp** and **rock salt** on the coast-zone beaches
+  (45–60), and the meat of the outer/coast families (bear, jungle ape,
+  panther, crocodile), whose level comes from `mob_level_at` and is
+  45–60 out there. Every one of them exists on both continents (§6), so
+  neither faction is cut off from the top of the cooking ladder.
+- **Deliberately found-only** (never a crop): mushrooms, wild cocoa,
+  rock salt. That keeps the top of the cooking ladder a reason to
+  travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
+  as a quest goal.
 
 ## 3. Mob roster
 
@@ -585,10 +632,14 @@ license-clean, keep attribution.
 | Linen cloth | 10–30 | **bandit camps** (core/inner), mirefolk | same |
 | Heavy cloth | 25–45 | outer bandit camps, war-coast raiders | same |
 | Spider silk (Tailor T3) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
-| Food plants (everyone) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, mushrooms (forest/swamp), melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), mushrooms (bone forest/swamp), berries via forest patches, meat/fish |
-| Herbs T1 (Herbalism) | 10–25 | sunleaf (meadows, elf forest), gravemoss (pine hills) | sunleaf (savanna, jungle edge), gravemoss (blight) |
-| Herbs T2 | 25–45 | dragonweed (crags, deep forest), marshbloom (swamp) | dragonweed (badlands, bone forest), marshbloom (swamp) |
-| Herbs T3 | 45–60 | crimson lotus (jungle fringe), stormkelp (coast) | crimson lotus (deep jungle), stormkelp (coast) |
+| Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
+| Food plants, **found-only** (everyone, never farmable) | 25–60 | mushrooms (deep forest/swamp), wild cocoa (jungle fringe), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (deep jungle), rock salt (coast beaches) |
+| Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
+| Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
+| Healing herbs T3 | 45–60 | crimson lotus (jungle fringe) | crimson lotus (deep jungle) |
+| Spices T1 (everyone gathers; Alchemist + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
+| Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
+| Spices T3 | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Ores/gems | depth axis | universal underground + golem drops | same |

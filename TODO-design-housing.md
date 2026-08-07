@@ -2,7 +2,8 @@
 
 **Most of this file was decided on 2026-08-07 and folded into
 `docs/design/world.md` §5** (the King's isles: per-character grant at
-level 30, 100×100 build box, seabed at −30, 10 depth steps to −530,
+level 30, 100×100 build box, seabed at −30, **six** depth steps — one
+per rock stratum, down to bedrock, re-cut from ten on 2026-08-07 —
 treasure clusters instead of ore, styles, access levels, allocation
 grid), plus `guilds.md` §2/§3 (bank as one account with terminals),
 `economy.md` §4.1, `items_crafting.md` §5.5/§8.4, `story.md` §2,

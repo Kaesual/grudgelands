@@ -19,6 +19,8 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
   `combat_stats.md` §7 / WP14).
 - **2 Trinket slots, reserved**: UI + meta support from day one, first
   trinket items post-MVP (same strategy as the Unique quality tier).
+  Both slots are the **Goldsmith's** exclusive item family
+  (professions.md §2).
 - No ring/neck/shoulder slots in the MVP.
 - Slots are **player-inventory lists** with group-filtered `allow_put`
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
@@ -55,11 +57,17 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
 ## 3. Bags (WoW model, LotT implementation pattern)
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
-  slots** extend it: small 8 / medium 16 / large 24 slots
-  (`bagslots` group; bag slots + contents are player-inventory lists,
-  see above).
-- **Bags are Tailor products** (+ one small vendor-sold bag) — cloth
-  farming feeds the tailor economy.
+  slots** extend it. **Four sizes, one per mastery tier** (revised
+  2026-08-07 — the huge bag is new): **small 8 / medium 16 / large 24 /
+  huge 32** slots (`bagslots` group; bag slots + contents are
+  player-inventory lists, see above). Four huge bags therefore add 128
+  slots — the Master tailor's flagship product, and the reason the bag
+  line stays interesting to the end of the mastery ladder.
+- **Bags are Tailor products on all four mastery tiers**
+  (`items_crafting.md` §2.1 for the tiers, §3.5 for the recipes) — cloth
+  farming feeds the tailor economy. The **small 8-slot bag is the
+  exception and stays vendor-sellable**: it is the floor tier of its
+  item category (professions.md §4), so it is bought, not crafted-only.
 - No item drop on death (unchanged; death costs XP, not gear).
 
 ## 4. Crafting model (revised 2026-08-06 — replaces the workbench-UI split)
@@ -68,14 +76,21 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
   recipes alike; profession items are **multi-stage** (ore → ingot →
   component → item).
 - **Recipes are gated by profession progression**: laying the right
-  materials into the grid without having learned the recipe produces
-  nothing (`craft_predict` veto). Learned recipes are browsable in a
-  **recipe book UI** (character screen / trainer) — mandatory, since a
-  3×3 shape you don't know is otherwise undiscoverable.
+  materials into the grid without having unlocked the recipe produces
+  nothing (`craft_predict` veto). What a character has unlocked is
+  defined by the **profession's recipe book** — one book per profession,
+  its tier groups gated by character level and tier keystone
+  (`items_crafting.md` §2.2, revised 2026-08-07); that model is written
+  there and deliberately not restated here.
+- **The book UI is mandatory**, since a 3×3 shape you don't know is
+  otherwise undiscoverable: unlocked recipes are browsable, reachable
+  from the character screen.
 - **Profession recipes additionally require the matching workbench
-  nearby** (`find_node_near`: forge, tanning rack, tailor bench, alchemy
-  table) — keeps cities/camps as crafting magnets. Base recipes work
-  anywhere.
+  nearby** (`find_node_near`) — **one bench per profession**, so the
+  roster of professions.md §2 is also the roster of benches (forge,
+  tanning rack, tailor bench, alchemy table, and one each for the
+  Woodcarver and the Goldsmith). Keeps cities/camps as crafting magnets;
+  base recipes work anywhere.
 - Workbenches are initially **uncraftable and stand only in the
   capitals/villages** (placement with WP13); job-supply vendors (thread,
   flux, vials) stand next to them (materials design:

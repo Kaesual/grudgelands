@@ -3,10 +3,22 @@
 **Decided spec** (authored + approved 2026-08-06; the five flagged
 points P1–P5 were all decided per recommendation — resolutions in §10).
 
+**Reworked 2026-08-07** (crafting rework session): the material ladder is
+now six tiers (§3.0), the tome chain is replaced by one recipe book per
+profession (§2.2), professions **refine and enchant** instead of owning
+the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
+concept** — the vendor bracket catalog and the base craft ladder are the
+same, material-named items (§3.0.3). Resolutions in §10.
+
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
 `inventory_equipment.md` §4 (3×3 grid, multi-stage, craft_predict
 unlock gate, workbench proximity, recipe book UI) — unchanged here.
+
+**Notation (binding, 2026-08-07).** `T1`–`T6` **always** means a *gear /
+material* tier (§3.0). The four **mastery** tiers are **always written by
+name** — Apprentice, Journeyman, Expert, Master — never as "T4". The two
+ladders are independent; §2.1 spells out how they meet.
 
 ## 0. Decided anchors (2026-08-06, binding — preserved)
 
@@ -15,7 +27,9 @@ unlock gate, workbench proximity, recipe book UI) — unchanged here.
   enchant list live in item meta from day one.
 - **Uncommon = 1–2 weak enchantments; Rare = 3–4 enchantments.**
 - Vendors sell simple (Common) gear — available but painfully expensive;
-  better gear comes from **crafting** or **special bosses**.
+  better gear comes from **crafting** or **special bosses**. *Sharpened
+  2026-08-07*: "crafting" means **refinement + enchanting** (§6b) — the
+  plain base item is the same item the vendor sells (§3.0.3).
 - Items are **upgradeable via crafting within limits**: an upgraded
   mediocre item never becomes a top item. No upgrade failure chance.
 - **The harder the enemy, the better the loot** — boss/elite multipliers
@@ -32,6 +46,12 @@ unlock gate, workbench proximity, recipe book UI) — unchanged here.
   uncraftable, capitals/villages only; bags are Tailor products.
 - Vendor floor rule: vendors sell only the LOWEST tier per category
   (professions.md §4, economy.md §1).
+- **One item per concept** (decided 2026-08-07, binding): no two items
+  may fill the same role. The vendor bracket catalog *is* the base craft
+  ladder, and both are material-named (§3.0.3).
+- **Everyone crafts the base items of every material tier**; professions
+  refine and enchant them and hold a few exclusive recipes per mastery
+  tier (§3.3–§3.6b, §6b).
 
 ## 1. Reference research (2026-08-06)
 
@@ -67,8 +87,34 @@ compatible; `lottinventory` mixes WTFPL (Zeg9 zcg) + LGPL 2.1
 - **What LotT does NOT do**: the books never gate the engine craft —
   a player who knows a 3×3 shape can craft without the book. The book
   is pure recipe *discovery*. Our decided model (craft_predict veto +
-  player-meta unlock) closes that hole; the adaptation in §2 keeps the
-  chain and adds the hard gate.
+  player-meta unlock) closes that hole. *Revised 2026-08-07*: we keep
+  the group-filtered guide viewer and the hard gate, but **drop the
+  chain** — one book per profession, groups instead of tiers (§2.2).
+
+**The two-slot ("dual") furnace — ported** (verified in source
+2026-08-07). `lottblocks:dual_furnace_active` /
+`lottblocks:dual_furnace_inactive`, registered in
+`lottblocks/crafting.lua:201`. It is a genuine **alloy** furnace, not a
+parallel smelter: `on_construct` sets `input` to 2 slots, `output` to 2
+and `fuel` to 1 (`crafting.lua:230-236`), and `check_craft`
+(`crafting.lua:54-71`) matches a `type = "dualfurn"` recipe's two
+ingredients against the two input slots **in either order**, consumes one
+of each and emits one output. Recipes are registered through
+`lottblocks.crafting.add_craft` (`crafting.lua:30-33`); LotT uses it for
+its ring metallurgy (`lottother/rings/ringcraft.lua:52ff`). This is the
+node our §3.0.2 alloys run on.
+
+- **Licence**: LotT ships `LICENSE.txt` = **LGPL 2.1** for code, and
+  `mods/lottblocks/license.txt` names every code author of that mod under
+  LGPL 2.1 — so the §1.1 header note covers the dual furnace with no
+  extra clearance. LGPL 2.1 → GPL-3.0-or-later is compatible (AGENTS.md
+  "Licenses"). The **media** in `lottblocks` is CC BY-SA 3.0 (Amaz et
+  al.), which is why the port takes the *code* and ships our own front
+  textures — no CC BY-SA attribution debt for a node we re-skin anyway.
+- **One porting change** (decided 2026-08-07): our T6 alloy has **three**
+  inputs (§3.0.2), LotT's `check_craft` matches exactly two. The port
+  widens the `input` list and the matcher to **3** slots. Nothing else in
+  the node changes.
 
 Race-specific items: races are **privileges** (`GAMEelf`, `GAMEorc`, …,
 `lottclasses/init.lua:1-17`) driving skins/allies/immunity — but **LotT
@@ -99,7 +145,7 @@ in `LICENSE-media.md` (AGENTS.md rule).
 |---|---|---|---|
 | Bows & arrows | `mods/ITEMS/mcl_bows` (+`vl_projectile`) | **LGPL 3.0** (projectile GPLv3+) | ~1000 lines to port, ~6 dep shims — LOW-MEDIUM (§9) |
 | Potions/brewing | `mods/ITEMS/mcl_potions` (`mcl_brewing`) | **MIT** (brewing GPLv3+) | effect engine liftable as-is — LOW |
-| Armor | `mods/ITEMS/mcl_armor` | GPLv3+ | we only need the equip/update + texture-layer pattern (slots already ours, WP15) — LOW |
+| Armor | `mods/ITEMS/mcl_armor` | GPLv3+ | equip/update + texture-layer pattern (slots already ours, WP15) + the **trim/colour system** for special variants (§6b.7) — LOW |
 | Tools/weapons | `mods/ITEMS/mcl_tools`, `vl_weaponry` | GPLv3+ | numbers reference only |
 | Enchanting | `mods/ITEMS/mcl_enchanting` + `mods/HELP/tt` (MIT) | GPLv3+ | meta-storage + description pipeline is our WP5 template — MEDIUM |
 
@@ -123,15 +169,38 @@ Key implementation patterns we adopt:
   matches combat_stats caps.
 - **Bow charging** (`mcl_bows/bow.lua`): hold-timestamps + meta-swapped
   inventory image; damage 9 base / 10+ crit at full 0.5 s charge (§9).
+- **Armor recipes** (added 2026-08-07): `default` registers **no armor at
+  all** — the vendored `mods/BASE/default/tools.lua` ladder is picks,
+  shovels, axes and swords only. The four armor shapes therefore have to
+  be authored by us. Two clean sources: `mcl_armor/api.lua:171-176`
+  (a `craft_material` field per element, one generic
+  `register_craft` per piece) and **Lord of the Test**
+  `lottarmor/init.lua:284-345`, which loops one ingot variable over
+  helmet / chestplate / leggings / boots. **LotT is the closer fit** — a
+  flat `craft_ingreds` map from tier name to ingot is exactly our
+  six-tier ladder, and it is LGPL 2.1 + BSD-3-Clause (`lottarmor/
+  license.txt`), i.e. compatible. We take the **shapes** and keep our own
+  bar costs (§3.3): LotT's are 5/8/7/4 for head/chest/legs/feet, ours are
+  3/5/4/2.
+- **Armor trims** (`mcl_armor/trims.lua`): a template craftitem plus a
+  colour overlay baked onto the armor texture. That is the visual
+  treatment for our special variants (§6b.7).
 
-## 2. Profession progression: tiers & the tome chain
+## 2. Profession progression: the two ladders & the recipe book
 
-**One mechanism only: the tome chain. No skill-up grind, no per-recipe
+**One mechanism only: the recipe book. No skill-up grind, no per-recipe
 unlocks.** (Skill-ups were considered and rejected: a second progression
-currency that fights the 10–20 h pace; the chain already gates by zone
+currency that fights the 10–20 h pace; the book already gates by zone
 materials, which IS the level gate.)
 
-### 2.1 Four tiers, aligned to the rings
+### 2.1 The two ladders (mastery vs. gear) — made explicit 2026-08-07
+
+There are **two independent ladders**. They are not alternatives; both
+stay, and they never mean the same thing.
+
+**Ladder 1 — mastery** (this table, unchanged since 2026-08-06). Four
+tiers, one per quarter of the level curve. Mastery is a property of the
+*crafter*.
 
 | Tier | Name | Item levels | Learn at ~char level | Ring that feeds it |
 |---|---|---|---|---|
@@ -140,55 +209,121 @@ materials, which IS the level gate.)
 | 3 | Expert | 31–45 | ~30–33 | outer |
 | 4 | Master | 46–60 | ~46–50 | coast + named rares |
 
-Learning tier n unlocks that tier's **whole recipe list** (browsable in
-the recipe book UI) including the recipe for the **next tome**.
+**Ladder 2 — gear/material, T1–T6** (§3.0). Six tiers, one per ten
+character levels, matching the six vendor brackets of §3.8 exactly:
+1–10, 11–20, 21–30, 31–40, 41–50, 51–60, ilvl anchors 3 / 10 / 20 / 30 /
+40 / 50. Gear tier is a property of the *item*.
 
-### 2.2 The tome (LotT chain, adapted to our unlock model)
+Three statements close the 4-vs-6 question for good — none of them is a
+new rule, all three were implicit before:
 
-Item: `grug_items:tome_<prof>_<n>` ("Journeyman's Tome of Smithing"),
-tool, stack_max 1.
+1. **The "item levels" column above is the enchant roll band.** The four
+   bands 1–15 / 16–30 / 31–45 / 46–60 in that column are *precisely* the
+   four columns of §6.3's roll table. Same boundaries, two names: read
+   as a crafter it is "which mastery tier am I", read as an item it is
+   "which roll band do my enchants come from". There is no third set of
+   boundaries anywhere in this document.
+2. **Mastery decides how many enchant slots a crafter can fill** —
+   Apprentice 1, Journeyman 2, Expert 3, Master 4 (§6b.5). It does *not*
+   decide which material tier you may touch; that is the gear ladder and
+   the digging-depth gate (§3.0.4).
+3. **Mastery additionally brings a few profession-exclusive recipes per
+   tier** (§3.3–§3.6b). Everything else a profession makes is a
+   refinement of a base item everybody can craft (§3.0.3).
 
-- **Right-click = learn + browse**: writes the unlock (player meta
-  `grug_prof:<prof> = n`, idempotent) and opens the recipe book UI at
-  that profession — the tome IS the physical recipe book (LotT's
-  guide-viewer role) and is **not consumed by reading**.
-- **Reading tier n requires learned tier n−1** in that profession (and
-  the profession itself, i.e. one of the 2 main slots) — else a chat
-  message, nothing happens. No tier skipping.
-- **The chain: crafting the tier-n+1 tome consumes the tier-n tome**
-  as grid ingredient (LotT `protection_book` pattern) + 4× blank
-  parchment (vendor) + a tier keystone (below), at the profession's
-  workbench. Crafting it requires learned tier n (craft_predict).
-- **Tomes are tradeable**: a master can buy a fresh Apprentice tome
-  (25c, trainer) and forge it up into a Journeyman/Expert tome to sell —
-  the buyer still needs the previous tier to read it, so the ladder
-  holds while tome-crafting becomes an endgame product line.
-- Lost your tome? The job trainer sells a replacement of your CURRENT
-  learned tier (1s/3s/10s for T2/T3/T4) — meta is authoritative, the
-  item is interface + ingredient.
+Learning a mastery tier unlocks its exclusive recipes and raises the
+fillable slot count. Learning a **book group** (below) unlocks a material
+tier's recipes. The two unlocks are separate and both are needed.
+
+### 2.2 The recipe book — one per profession (replaces the tome chain 2026-08-07)
+
+**The LotT-style tome chain is retired.** Each better tome consuming the
+previous one produced four near-identical items per profession — 24 in
+all — whose only job was to be each other's ingredient, and it forced the
+recipe catalog to be cut by mastery tier when what it actually needed to
+be cut by is material tier. Replaced by **exactly one book per
+profession**, internally grouped.
+
+Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
+**one per profession, for the whole game**.
+
+- **Right-click = browse**: opens the recipe book UI (LotT's
+  group-filtered guide-viewer role, §1.1) filtered to that profession.
+  Never consumed.
+- **Six groups, T1–T6** — the gear/material tiers of §3.0, in one list.
+- **Level controls visibility, the keystone controls the unlock.** A
+  group becomes *visible* when the character reaches the first level of
+  its band (§3.0: T3 at level 21), and it is shown **greyed with its
+  keystone requirement spelled out** — a Blacksmith at 21 reads
+  "requires: 6 steel bars + 2 stone cores". Redeeming the keystone once
+  (§2.3) opens the group permanently. This is why keystones survive the
+  rework: a pure level gate would lose the **zone** requirement, and
+  being in the outer ring is what the keystone actually proves.
+- **Unlock state lives in player meta**, not in the item: `grug_prof:
+  <prof>` holds the highest opened group (idempotent writes). The book
+  is interface, never progression storage.
+- **Quest and boss recipes unlock inside the same book** — race
+  signatures (§4), masterworks (§6.4) and any future quest reward appear
+  in the group of their own material tier once earned. There is **no
+  second book** and no separate unique-recipe list.
+- **A player can craft only what is in their books, plus the universal
+  base recipes** (§3.0.3). That is the whole craft permission model:
+  base ladder for everyone, book contents for the two mains.
+- **Books are tradeable**, and worth exactly one purchase: a lost book is
+  re-bought from the job trainer for the same 25c (§8.2) and immediately
+  shows everything the meta says you have opened.
 - Unlearning a profession (switch at trainer, professions.md §1) wipes
   the meta key — progression of the dropped profession is lost (as
-  decided); tomes in inventory become unreadable paper for you.
+  decided); the book in your inventory becomes unreadable paper for you.
+- **Cooking has a book too** (§3.7) — same six groups, same level gates.
+  This overrides the old "Cooking and First Aid have no tomes" line in
+  §2.3.
 
 ### 2.3 Tier keystones (the zone gate — materials, exact)
 
-| Profession | T2 tome adds | T3 tome adds | T4 tome adds |
+**Reframed 2026-08-07.** The keystone is no longer a tome *ingredient*;
+it is the **redemption token that opens a group in the book** (§2.2). The
+materials are unchanged — they were always chosen as proof that the
+player has been in the ring that produces them, and that is exactly the
+job the new model needs them for. Redemption is a one-off action at the
+profession's workbench; the materials are consumed, nothing is produced,
+the meta key advances.
+
+Columns are **book groups**, i.e. gear tiers (§3.0):
+
+| Profession | T2 group | T3 group | T4 group |
 |---|---|---|---|
-| Smithing | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` |
-| Leatherwork | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy |
-| Tailoring | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
-| Alchemy | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
-| Herbalism (3 tiers) | 12 sunleaf + 12 gravemoss | 12 dragonweed + 6 marshbloom | — |
-| Gem Hunter (2 tiers) | 3 gem + 2 stone core | — | — |
+| Blacksmith | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` |
+| Leatherworker | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy |
+| Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
+| Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
+| Woodcarver | — (`TODO-design-crafting-rework`) | — | — |
+| Goldsmith | — (`TODO-design-crafting-rework`) | — | — |
+
+- **T1 opens with the profession** — no keystone; it is the tier every
+  player already crafts from (§3.0.3).
+- **T5 and T6 keystones** follow the same shape at their own tier's
+  materials and are listed with the signature recipes in
+  `TODO-design-crafting-rework.md`. The *rule* is decided; the two lists
+  are not yet authored.
+- The **Herbalism and Gem Hunter rows are deleted** (2026-08-07):
+  Herbalism merged into the Alchemist, Gem Hunter into the Goldsmith
+  (professions.md §2), so the asymmetric "3 tiers"/"2 tiers" stubs have
+  no owner. Their mechanics survive inside the merged professions —
+  herb gathering is an Alchemist ability (§3.6), the mining bonus gem
+  chance and the Gem Detector are Goldsmith (§3.6b).
 
 `group:grug_rare_trophy` = the signature drop any **named rare** carries
 (§5.4) — every named rare on your own continent qualifies; both
 factions always have sources (biomes_mobs §3.3 lists ≥4 per continent).
-Herbalism tiers gate *gathering* (punching a T2 herb without tier 2
-yields nothing + hint message); Gem Hunter tier 2 raises the bonus gem
-chance 10%→20% while mining (WP10). **Cooking and First Aid have no
-tomes**: the trainer teaches them free, all recipes at once; materials
-are the only gate (universal valve skills stay frictionless).
+
+**Cooking and First Aid stay free and universal** — the trainer teaches
+them at no main-profession cost (professions.md §1). *Revised
+2026-08-07*: **Cooking now has a recipe book** with the same six groups
+and level gates (§2.2, §3.7), because its tiers are tied to regional
+ingredients and want to be quest goals. Its groups take **no keystone** —
+the ingredient itself is the gate. **First Aid keeps no book at all**:
+all recipes at once, materials are the only gate.
 
 ### 2.4 Pacing check (10–20 h to level 60)
 
@@ -196,20 +331,145 @@ are the only gate (universal valve skills stay frictionless).
 after ~5–10 h, L45 after ~7.5–15 h. Each keystone is ~30–60 min of
 natural play in the ring you just reached (6 iron bars ≈ one dig to
 y −300 or a golem hunt; 2 bear claws ≈ 8 bear kills at 1/4). A player
-who levels one crafting + one gathering profession alongside questing
-reaches Master at 50–55 without detour grinding; a pure fighter can buy
-tomes/gear from crafters instead — both paths inside the 10–20 h
-envelope. **Intended gear cadence: a visible upgrade every 45–90 min**
-(quest rewards + 3% world drops between the four crafted tier sets),
+who levels two professions alongside questing reaches Master at 50–55
+without detour grinding; a pure fighter buys refined and enchanted gear
+from crafters instead — both paths inside the 10–20 h envelope.
+**Intended gear cadence: a visible upgrade every 45–90 min** (quest
+rewards + 3% world drops between the six material tiers, §3.0),
 and at 60 the professions stay load-bearing via repair (§8), consumables
 (elixirs/bandages/potions), upgrade kits (§7), masterworks and race
 signatures (§4).
 
-## 3. Item catalog per profession per tier
+## 3. Materials, curves and the profession catalogs
 
 Multi-stage everywhere (decided): ore → bar → component → item; hide →
 cured leather; cloth → bolt. Stages are base recipes (grid anywhere);
 the final item needs the workbench nearby.
+
+Reading order: **§3.0** the material ladder and the one-item-per-concept
+rule, **§3.1/§3.2** the armor and weapon curves every item is generated
+from, **§3.3–§3.6b** the six profession catalogs, **§3.7** the universal
+secondaries, **§3.8** the vendor brackets.
+
+### 3.0 The material ladder (decided 2026-08-07)
+
+Six tiers, one per ten character levels. This is gear ladder 2 of §2.1;
+the level bands and ilvl anchors are the §3.8 vendor brackets verbatim,
+because under §3.0.3 they are the same items.
+
+#### 3.0.1 The ore table
+
+| Tier | Levels | ilvl | Lead metal | Ore node | Digging depth | Gem |
+|---|---|---|---|---|---|---|
+| T1 | 1–10 | 3 | **Bronze** | Copper, Tin (exist) | 0 … −100 | — |
+| T2 | 11–20 | 10 | **Iron** | Iron (exists) | −100 … −300 | **Quartz** (new, common) |
+| T3 | 21–30 | 20 | **Steel** | — (alloy) | −300 … −500 | — |
+| T4 | 31–40 | 30 | **Silversteel** | **Silver (new)** | −500 … −700 | **Garnet** (new) |
+| T5 | 41–50 | 40 | **Embersteel** | **Emberstone** (repurposed mese) | −700 … −1000 | — |
+| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (§5.5) | below −1000 | **Diamond** (exists) |
+
+- **Wood and stone are the pre-metal T1 floor** — the starter kit and the
+  vendor floor. T1 therefore spans wood / stone / bronze. Wood and stone
+  keep the stats `default` ships and sit **below the ilvl anchors**: they
+  carry no level requirement, and they are the one rung that is not
+  generated from the §3.1/§3.2 curves.
+- **Gold is no longer a tool metal.** It becomes the **jewelry** material
+  — the Goldsmith, the two trinket slots (§3.6b) — plus the gem-hunting
+  bonus. No gold weapon, no gold armor, no gold pick.
+- **The mese tool tier is retired**, and so is the diamond tool tier.
+  The mese **ore node** is repurposed as **Emberstone**, a glowing yellow
+  crystal — the existing `default` texture already reads that way. Both
+  vendored tool ladders above steel are deleted (§3.0.3).
+- **Diamond is a gem, not a tool material.**
+- **New ore nodes to create: Silver, Quartz, Garnet.** Everything else
+  exists in the vendored `default` (copper, tin, iron, coal, mese →
+  Emberstone, diamond) or is already sketched as the abyssal gem of
+  §5.5, now named **Abyssal Crystal**.
+- **The T6 metal is the one tier behind a purchase.** Abyssal Crystal is
+  a housing-depth resource (§5.5) plus the 10 % apex-hoard bridge (§10
+  P5), so Grudgesteel needs the level-30 isle grant and its deepest depth
+  step (§8.4). That is intended: T6 is the endgame tier and the depth
+  ladder is the endgame sink; the five tiers below it are entirely
+  continental.
+- **Exact depth placement and scarcity of Quartz and Garnet** inside
+  their bands are in `TODO-design-crafting-rework.md`.
+
+#### 3.0.2 Alloys and the two-slot furnace
+
+Two smelting nodes. The **normal furnace** does single-input smelting;
+the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
+
+| Output | Recipe | Node |
+|---|---|---|
+| Bronze bar | Copper + Tin | dual furnace |
+| Iron bar | Iron lump | normal furnace |
+| Steel bar | 1 iron bar, ~2 coal of fuel | normal furnace |
+| Silversteel bar | Steel + Silver | dual furnace |
+| Embersteel bar | Silversteel + Emberstone | dual furnace |
+| Grudgesteel bar | Embersteel + Abyssal Crystal + 1 `group:grug_rare_trophy` | dual furnace (3-input port, §1.1) |
+
+The T6 bar is the only three-input recipe in the game, and the trophy
+slot is deliberate: Grudgesteel cannot be farmed, it is spent from the
+same named-rare drop that opens the T4 book group (§2.3, §5.2).
+
+#### 3.0.3 One item per concept — NO duplicates (binding)
+
+**There is exactly one item per concept.** No two items may fill the same
+role: there is no `default` stone sword standing next to a "Crude Sword"
+from `grug_gear`. Consequences, all binding:
+
+- **The vendor bracket catalog and the base craft ladder are the same
+  items**, and they are **material-named** — Bronze Sword, Iron
+  Chestplate, Steel Greaves — never bracket-named. The 72 items WP7
+  shipped under the adjectives *Crude / Plain / Tempered / Reinforced /
+  Superior / Grand* merge into that one ladder. That is a **rename plus a
+  merge with the tool ladder — planned work, not a defect**; the
+  generator, the six bracket catalogs, the prices and the ilvl anchors of
+  §3.8/§8.2 are untouched by it.
+- **Everyone can craft the base items of every material tier** — tools,
+  weapons, armor. This is the deliberate "Minecraft feel", and it is what
+  makes mining and smelting worth doing for a player with no crafting
+  profession at all.
+  **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
+  iron+ picks are smith products" (see the marked line there).
+- **`default`'s tool ladder is replaced** by the six-tier ladder: wood
+  and stone stay, bronze/iron/steel/silversteel/embersteel/grudgesteel
+  replace the rest, and the **mese and diamond tool tiers are deleted**
+  (that is `pick`/`shovel`/`axe`/`sword` × mese, diamond in
+  `mods/BASE/default/tools.lua` — twelve registrations to drop, plus
+  their craft recipes).
+- **Armor base recipes must be created.** `default` has **no armor at
+  all**. Shapes adapted from LotT `lottarmor` (closer fit) or VoxeLibre
+  `mcl_armor` — sources and licences in §1.2 — with our bar costs from
+  §3.3.
+- A profession never gets a *parallel* item. What a profession adds on
+  top of the base item is the **refinement, the enchant and the special
+  variant** (§6b), plus its handful of exclusive recipes.
+
+#### 3.0.4 Depth gating: rock strata need a tool of their tier
+
+The rock **below each tier's depth boundary can only be broken by a tool
+of that tier**. This — not a level check — is what gates metal
+availability by character level, and it is identical on the continent and
+on the housing isles (world.md §5).
+
+Engine mechanism, verified in `reference_projects/luanti/doc/lua_api.md`:
+the stratum node carries a **`level` group**, the tool declares
+**`groupcaps.<dig group>.maxlevel`**. Per `lua_api.md:2715-2731`, the
+usable-uses count is multiplied by `3^leveldiff` where `leveldiff` is the
+tool's `maxlevel` minus the node's `level`, and **"the node cannot be dug
+if `leveldiff` is less than zero"** (`lua_api.md:2722`); the worked
+example at `lua_api.md:2806` states it outright — *"At `level > 2`, the
+node is not diggable, because it's `level > maxlevel`."* The gate is
+therefore a hard engine refusal, not a slow dig, which is what we want.
+
+The vendored `default` already uses the mechanism in both directions —
+its tools declare `maxlevel` 1/1/2/2/3/3 up the ladder
+(`mods/BASE/default/tools.lua`) and its hardest nodes carry
+`groups = {cracky = 1, level = 2}` — so the six strata are a
+re-parameterisation of a live system, not new engine work. Six strata,
+one per tier, their node names and textures listed in
+`TODO-design-crafting-rework.md`.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
@@ -217,12 +477,18 @@ the final item needs the workbench nearby.
 the 60% cap** (combat_stats §2: endgame plate 60%, cloth ~15%). Set
 totals (4 pieces: chest/legs/head/feet split ≈ 35/27/22/16%):
 
-| Class (profession) | T1 | T2 | T3 | T4 | T4 per piece |
+**Column relabel, 2026-08-07 — no number changed.** These columns used to
+be headed "T1–T4", which now collides with the six gear tiers of §3.0.
+They are and always were **four sample points on one continuous line**,
+taken at **ilvl 12 / 27 / 42 / 57**; the paragraph below already says so.
+Headed by their ilvl from here on.
+
+| Armor line (profession) | ilvl 12 | 27 | 42 | 57 | ilvl 57 per piece |
 |---|---|---|---|---|---|
-| Metal (Smith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
-| Leather (LW) | 11 | 20 | 30 | 40 | 14/11/9/6 |
+| Metal (Blacksmith) | 16 | 29 | 42 | 55 | 19/15/12/9 |
+| Leather (Leatherworker) | 11 | 20 | 30 | 40 | 14/11/9/6 |
 | Cloth (Tailor) | 5 | 8 | 11 | 15 | 5/4/3/3 |
-| Shield (Smith, T2+, Warrior) | — | 4 | 5 | 5 | — |
+| Shield (Blacksmith, Journeyman+, Warrior) | — | 4 | 5 | 5 | — |
 
 Check at 60: full plate+shield = 60% → mob hit 26 → 10.4 eff. vs 325 HP
 (≈31 hits); cloth Mage 15% → 22.1 vs 148 HP (≈7 hits) — tank/squishy
@@ -254,73 +520,179 @@ total of 3, and the 16 % foot share rounds to 0. A 0-armor boot is a
 bug, not a design statement, so every piece is clamped to ≥ 1. That
 clamp bites at exactly one item in the whole shipped catalog.
 
+**The six-tier ladder reads off the same line** (2026-08-07). Under
+§3.0.3 the material sets and the vendor brackets are one catalog, so a
+tier's armor values are the line evaluated at that tier's ilvl anchor —
+3 / 10 / 20 / 30 / 40 / 50 — per piece, exactly as the shipped generator
+already does it. Nothing is re-derived and no coefficient changes; the
+tier columns above stay the authority at their four ilvls.
+
+**Base recipes.** `default` ships no armor (§1.2), so the four shapes are
+ours. Bar costs are §3.3's — chest 5 / legs 4 / head 3 / feet 2 per
+piece — for the lead metal of the tier, and the same shapes serve the
+leather and cloth lines with cured leather and bolts in place of bars.
+
 ### 3.2 Weapon table (curve: 1H dmg = 4 + 0.35 × ilvl, combat_stats §2)
 
-Tier ilvls 12/27/42/57; fpi = full_punch_interval.
+fpi = full_punch_interval. Columns are **ilvl sample points**, relabelled
+2026-08-07 for the same reason as §3.1's — no number changed.
 
-| Family | fpi | dmg factor | T1 | T2 | T3 | T4 |
+| Family | fpi | dmg factor | ilvl 12 | 27 | 42 | 57 |
 |---|---|---|---|---|---|---|
 | 1H sword / mace / axe | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
+| Wand / scepter / orb (caster 1H) | 1.0 | ×1.0 | 8 | 13 | 19 | 24 |
 | Dagger | 0.7 | ×0.7 | 6 | 9 | 13 | 17 |
 | 2H greataxe / warhammer | 1.4 | ×1.5 | 12 | 20 | 29 | 36 |
 | Metal-shod staff (caster 2H) | 1.4 | ×1.2 | 10 | 16 | 23 | 29 |
 
 **Rounding rule** (made explicit 2026-08-07): **round the 1H value
 half-up, then apply the family factor and round half-up again** — never
-one rounding over the whole product. The greataxe T3 cell read 28 under
-the old text and is **corrected to 29** here: 1H at ilvl 42 is 18.7 → 19,
-and 19 × 1.5 = 28.5 → 29, the same two-step that already turns T2's
-13 × 1.5 = 19.5 into 20. The rule is load-bearing, not bookkeeping: it
+one rounding over the whole product. The greataxe ilvl-42 cell read 28
+under the old text and is **corrected to 29** here: 1H at ilvl 42 is
+18.7 → 19, and 19 × 1.5 = 28.5 → 29, the same two-step that already turns
+ilvl 27's 13 × 1.5 = 19.5 into 20. The rule is load-bearing, not
+bookkeeping: it
 also generates the vendor bracket weapons of §3.8.
 
-2H DPS ≈ 1.07× of 1H — pays for the empty offhand. Wands/orbs stay
-**drop-only** in the MVP (WP5 class items); the Tailor tome (below) is
-the craftable caster offhand. Weapons carry `grug_req_level = ilvl`
+2H DPS ≈ 1.07× of 1H — pays for the empty offhand.
+
+**Caster weapons are craftable from 2026-08-07.** The old text left wands
+and orbs **drop-only**, which meant a Mage or Priest had no craftable
+weapon at all — the one real hole in the catalog. The **Woodcarver**
+(§3.6a) closes it: wands, scepters and orbs are the caster **main-hand
+1H** family and ride the existing 1H row (same fpi, same factor — the
+weapon families are class flavor, not a power ladder, §8.2); staves stay
+the caster 2H on the staff row, and "metal-shod" is literal — the
+Woodcarver buys the fitting from a Blacksmith (§3.6a). Orbs are **not**
+an offhand: the offhand is the Tailor's spell tome or the Blacksmith's
+shield and nothing else (§3.5, §3.3), so there is no duplicate.
+
+Weapons carry `grug_req_level = ilvl`
 (the field is derived from `_grug_ilvl`; **enforced from WP5** — WP7's
 vendor weapons already carry the ilvl but nothing checks it yet).
 
-### 3.3 Blacksmith (forge) — metal weapons, metal armor, tools
+**How to read §3.3–§3.6b** (rewritten 2026-08-07). These sections used to
+describe a model where each profession **owned** its item catalog. Under
+§3.0.3 that is no longer true: the base item of every material tier is
+craftable by everyone. What each section now lists is three things —
 
-Materials: T1 **bronze** (copper+tin, any depth ≤ y 0), T2 **iron**
-(y ≤ −300, outer-ring surface veins, or golem drops 1/2), T3 **steel**
-(1 iron + 2 coal, furnace), T4 **gem-tempered steel** (steel + gem +
-flux at the forge — no new ore, see §10 P1). Vendor supply: flux.
+1. the **material chain** the profession refines through (unchanged; it
+   is still the profession's progression and its trade good),
+2. the **item families** the profession may **refine, enchant and turn
+   into special variants** (§6b) — its exclusive claim on the *quality*
+   of an item, not on its existence,
+3. its **exclusive recipes**, a handful per mastery tier: things nobody
+   else can make at all.
 
-Per tier: 1H sword, 1H mace, dagger, 2H, 4 armor pieces; T2+ adds
-shield + staff; picks: bronze/iron/steel/gem-tipped. Bar costs: chest 5,
-legs 4, head 3, feet 2, shield 4, 1H 3, dagger 2, 2H 5, staff 2 (+2
-wood), pick 3. Ore access gating: stone pick → copper/tin/coal; bronze
-→ iron; iron → gold/gems (y ≤ −600 or coast veins); steel → abyssal gem
-nodes (housing depths). Vendor floor sells up to the bronze pick —
-iron+ picks are smith products (mining stays open to all, the TOOL is
-the trade good).
+Coverage across the six professions is complete and overlap-free
+(professions.md §2).
 
-### 3.4 Leatherworker (tanning rack) — dex gear
+### 3.3 Blacksmith (forge) — metal, and everything made of it
 
-Stage: hide + thread → cured/heavy/scaled leather 1:1. Sets per tier
-(jerkin 6 / pants 5 / hood 4 / boots 3 leather): T1 light leather, T2
-cured leather, T3 heavy leather, T4 scaled hide + heavy mix. T2+ armor
-kits (§7). Quiver (bag-slot item for arrows) is catalogued but ships
-with §9's Phase-2 decision. Supply loop as decided: LW ×5 leather tag,
-Tailors buy leather for bags, Alchemists for apothecary gear.
+**Material chain**: T1 **Bronze** → T2 **Iron** → T3 **Steel** → T4
+**Silversteel** → T5 **Embersteel** → T6 **Grudgesteel** (§3.0.1/§3.0.2).
+Vendor supply: flux. *Revised 2026-08-07*: the old four-step chain
+(bronze / iron / steel / gem-tempered steel) is superseded by the
+six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
+— the T4 metal is Silversteel from a real new ore, which is exactly the
+"new ore post-MVP" option P1 held open.
 
-### 3.5 Tailor (tailor bench) — cloth armor + bags + caster offhand
+**Refines and enchants**: metal armor (all four slots), 1H weapons,
+daggers, 2H weapons, shields. Bar costs for the base recipes: chest 5,
+legs 4, head 3, feet 2, shield 4, 1H 3, dagger 2, 2H 5, staff fitting 2,
+pick 3.
 
-Stage: 2 cloth + thread → bolt. T1 linen scrap → patch bolt (zombies
-drop scraps from L1 — Tailors start in the safe core), T2 linen cloth →
-woven bolt, T3 heavy cloth → heavy bolt, T4 heavy + spider silk →
-silkweave bolt. Sets per tier: robe 6 / leggings 5 / cowl 4 / slippers
-3 bolts. **Bags** (inventory_equipment §3): medium 16 slots = T2 (8
-woven bolts + 2 cured leather), large 24 = T3 (10 heavy bolts + 4
-spider silk + 2 heavy leather); the small 8-slot bag stays vendor-only
-(floor rule). T2+ **spell tome offhand**: +10/+20/+30 mana (T2/T3/T4),
-cloth + parchment + leather binding.
+**Exclusive recipes**: shields (Journeyman+ — no other profession makes
+an offhand of metal), the **metal fittings** the Woodcarver buys (§3.6a),
+armor polish and whetstone kits (§7), and the race signatures of §4.
 
-### 3.6 Alchemist (alchemy table) — potions, elixirs, apothecary gear
+Ore access gating is now the depth/stratum rule of §3.0.4, not a
+hand-written ore whitelist: a tier-n pick opens the tier-n stratum, and
+that is where tier-n ore lives.
 
-Herb map: T1 sunleaf/gravemoss (inner), T2 dragonweed/marshbloom
-(outer), T3 crimson lotus/stormkelp (coast) — biomes_mobs §2/§6.
-Vendor supply: vials. All effects percent-based or flat-small
+> **Superseded 2026-08-07 (§3.0.3):** ~~"Vendor floor sells up to the
+> bronze pick — iron+ picks are smith products (mining stays open to
+> all, the TOOL is the trade good)."~~ Every pick on the ladder is a base
+> recipe now, so the Blacksmith has no claim on iron+ picks. Vendor stock
+> is unchanged — the bronze pick stays the vendor's top tool (§3.7); a
+> higher pick is **crafted, not bought**. The trade good is the
+> **refined** pick: +100 % durability (§6b.2) is worth more on a mining
+> tool than on anything else in the game.
+
+### 3.4 Leatherworker (tanning rack) — leather
+
+**Material chain**: hide + thread → leather, 1:1 per grade. **T1 light
+leather, T2 cured leather, T3 heavy leather, T4 scaled hide**; the T5 and
+T6 grades are listed in `TODO-design-crafting-rework.md`.
+
+**Refines and enchants**: leather armor, all four slots. Base recipes use
+the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather.
+
+**Exclusive recipes**: armor kits from Journeyman up (§7), and the
+**quiver** — a bag-slot item that holds only arrows, catalogued here and
+shipping with §9's Phase-2 bow decision. The bow itself is a Woodcarver
+product (§3.6a, §9), the quiver is not.
+
+Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
+buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
+grips.
+
+**MVP note (corrected 2026-08-07):** an earlier draft of this section
+claimed no MVP class could wear rank-2 armor. That is **wrong** — a
+class wears its own rank *and everything below* (`inventory_equipment.md`
+§2), so the **Warrior (rank 3) can wear leather**, and the equip filter
+in `grug_inventory/equipment.lua` refuses only ranks *above* the
+character's. What is genuinely unsettled is whether a Warrior ever
+*wants* leather: at equal tier it is strictly less armor than metal, so
+without a dodge or speed advantage the line is a legal but pointless
+choice. Whether the leather line therefore registers in the MVP, and
+what would make it worth wearing, is open in
+`TODO-design-crafting-rework.md` (C10). The curve, the chain and the
+recipes above are authored either way, and the Rogue (Phase 2) is the
+line's intended main customer.
+
+### 3.5 Tailor (tailor bench) — cloth, bags, the caster offhand
+
+**Material chain**: 2 cloth + thread → bolt. **T1 linen scrap → patch
+bolt** (zombies drop scraps from L1 — Tailors start in the safe core),
+**T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy bolt**, **T4
+heavy + spider silk → silkweave bolt**; the T5 and T6 bolts are listed in
+`TODO-design-crafting-rework.md`.
+
+**Refines and enchants**: cloth armor, all four slots. Base recipes:
+robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
+
+**Exclusive recipes**:
+
+- **Bags** (`inventory_equipment.md` §3) — **four sizes across the four
+  mastery tiers, 8 / 16 / 24 / 32 slots**. The 8-slot bag stays
+  vendor-sellable, because it is the floor tier (vendor floor rule); the
+  16-slot bag is 8 woven bolts + 2 cured leather, the 24-slot 10 heavy
+  bolts + 4 spider silk + 2 heavy leather, and the 32-slot ("huge bag")
+  is the Master-tier addition of 2026-08-07. Bags are the one signature
+  recipe line that is fully decided.
+- **The spell tome (offhand)** from Journeyman up: +10 / +20 / +30 mana
+  at Journeyman / Expert / Master, cloth + parchment + leather binding.
+  It is one of exactly **two** offhands in the game; the other is the
+  Blacksmith's shield (§3.3). Different item, different armor class, no
+  duplicate.
+
+### 3.6 Alchemist (alchemy table) — herbs, potions, elixirs, apothecary gear
+
+**Herbalism is merged into the Alchemist** (2026-08-07, professions.md
+§2): the Alchemist **gathers its own herbs**, and the separate gathering
+profession is gone. What was a Herbalism tier gate is now the
+Alchemist's book group — punching a herb the profession has not opened
+yields nothing plus a hint message, exactly as before, but the gate is
+the book group instead of a second profession. For everyone without the
+Alchemist profession, alchemy herbs stay scenery; food-grade plants stay
+universal (professions.md §1).
+
+**Material chain**: herbs and spices in **three grades**, not six — the
+herb map is cut by ring, not by metal tier: T1 sunleaf/gravemoss (inner),
+T2 dragonweed/marshbloom (outer), T3 crimson lotus/stormkelp (coast);
+biomes_mobs §2/§6 owns the biome binding and the healing-herb / spice
+split. Vendor supply: vials. All effects percent-based or flat-small
 (combat_stats §5: no consumable treadmill). **One shared 60 s cooldown
 for instant potions; one "elixir" buff active at a time** (§10 P3). The
 cooldown is an absolute wall-clock expiry in player meta, so a relog
@@ -329,31 +701,99 @@ a second timer. **Drinking at full health is refused** (message, no
 consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
 and a 60 s lockout on a misclick is a tax, not a rule).
 
-| Tier | Recipes (2 herbs + vial unless noted) |
+**Exclusive recipes** — the entire consumable line is Alchemist-only;
+nothing here has a base recipe (mastery names, relabelled 2026-08-07):
+
+| Mastery | Recipes (2 herbs + vial unless noted) |
 |---|---|
-| T1 | Healing Potion (instant 30% HP — the combat_stats standard; vendor's weak 15% stays the floor), Mana Potion (instant 30% mana) |
-| T2 | Elixirs of Might/Wisdom/Grace (+2 Str/Int/Dex, 15 min), Antivenom (cures poison — serpent/spider counter; dragonweed + venom gland) |
-| T3 | Greater Elixirs (+4), Cat's-Eye Elixir (night vision 10 min — the enemy-territory raid tool vs the R2 no-torch rule), Deepwater Draught (water breathing 10 min; stormkelp), Swiftness Draught (+8% speed, 15 s — deliberately short; mobs must stay faster, flag §10 P4) |
-| T4 | Supreme Elixirs (+6), Stoneskin Flask (+4% armor, 30 min), Sovereign's Flask (§4, Human signature) |
+| Apprentice | Healing Potion (instant 30% HP — the combat_stats standard; vendor's weak 15% stays the floor), Mana Potion (instant 30% mana) |
+| Journeyman | Elixirs of Might/Wisdom/Grace (+2 Str/Int/Dex, 15 min), Antivenom (cures poison — serpent/spider counter; dragonweed + venom gland) |
+| Expert | Greater Elixirs (+4), Cat's-Eye Elixir (night vision 10 min — the enemy-territory raid tool vs the R2 no-torch rule), Deepwater Draught (water breathing 10 min; stormkelp), Swiftness Draught (+8% speed, 15 s — deliberately short; mobs must stay faster, flag §10 P4) |
+| Master | Supreme Elixirs (+6), Stoneskin Flask (+4% armor, 30 min), Sovereign's Flask (§4, Human signature) |
 
 **Apothecary gear** (the requested alchemist gear; cloth-class armor
-values, cross-buys leather + bolts): T2 Apothecary Hood, T3 Apothecary
-Garb (chest), T4 Master's Regalia (chest, Rare, replaces Garb). Worn
+values, cross-buys leather + bolts): Journeyman Apothecary Hood, Expert
+Apothecary Garb (chest), Master's Regalia (chest, Rare, replaces Garb).
+Worn
 pieces add +10% potion/elixir duration and +1 elixir attribute each
 (max 2 pieces counted) — profession identity you can see. Template:
 slot pieces à la mcl_armor + effect hooks à la mcl_potions (both §1.2).
 
+### 3.6a Woodcarver (carving bench) — wood, and every caster weapon
+
+New profession, 2026-08-07 (professions.md §2). It exists because §3.2
+left wands and orbs drop-only: before the Woodcarver, a Mage or Priest
+had **no craftable weapon at all**, which is the only outright hole the
+old roster had.
+
+**Material chain**: wood, including the per-race woods of biomes_mobs §5
+— silverwood and gravewood among them. Grades follow the six tiers; the
+tier grade list is in `TODO-design-crafting-rework.md`.
+
+**Refines and enchants**: staves, wands, scepters, orbs — the whole
+caster weapon family of §3.2, main hand, 1H and 2H.
+
+**Exclusive recipes**: the caster families themselves have base recipes
+like everything else (§3.0.3), and the Woodcarver additionally owns
+**bows** from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker
+split" assignment; the quiver stays Leatherworker, §3.4).
+
+**Cross-buy: the Woodcarver buys metal fittings from the Blacksmith.**
+The §3.2 family is literally called "metal-shod staff"; from T2 up every
+caster weapon needs a Blacksmith-made fitting of its own tier. That is
+the same deliberate supply loop the Leatherworker and Tailor already run
+in professions.md §3 — a profession that cannot finish its own top item
+alone is what keeps the market alive.
+
+### 3.6b Goldsmith (jeweller's bench) — gold, gems, both trinket slots
+
+New profession, 2026-08-07 (professions.md §2). **Gem Hunter is merged
+into it** and disappears as a separate profession; the mining bonus gem
+chance and the Gem Detector come along as Goldsmith abilities.
+
+**Material chain**: **Gold** — demoted from tool metal to jewelry metal
+in §3.0.1 and now with exactly one consumer — plus the three gems of the
+ore table: **Quartz (T2), Garnet (T4), Diamond (T6)**.
+
+**Refines and enchants**: trinkets, and **gem refinement** — cutting a
+raw gem into the reagent every other profession's fine and masterwork
+recipes want (§6.4).
+
+**Exclusive recipes**:
+
+- **Both trinket slots** (`inventory_equipment.md` §2). They had no owner
+  in the old roster at all; the Goldsmith is the first profession to hold
+  a slot pair outright. The slots themselves are reserved post-MVP (UI +
+  meta from day one, items later), so this is the one profession whose
+  headline product arrives after the MVP — the gem line, the Gem Detector
+  and the mining bonus carry it until then.
+- **The Gem Detector** (world.md §5.4) — locates treasure clusters on a
+  housing isle better than the vendor's Dowsing Rod. Carried over from
+  the Gem Hunter unchanged, including its role as the profession's second
+  pillar.
+- The **bonus gem chance while mining** (10 % → 20 % at Journeyman) —
+  carried over from the old Gem Hunter tier-2 effect.
+
 ### 3.7 Universal secondaries & vendor floor
 
-- **Cooking** (trainer, free): cooked meat/fish (T1), Hearty Stew
-  (T2: meat + potato/corn), Hunter's Feast (T3: meat ×2 + melon +
-  mushroom). Eating cooked food grants **Well Fed: +1/+2/+3 Str AND
-  Int for 15 min** by tier (stacks with one elixir). Raw food still
-  fuels resting regen (combat_stats §5) — cooking adds the buff, not
-  the regen.
+Neither of these costs a main profession slot (professions.md §1).
+
+- **Cooking** (trainer, free): cooked meat/fish, Hearty Stew (meat +
+  potato/corn), Hunter's Feast (meat ×2 + melon + mushroom). Eating
+  cooked food grants **Well Fed: +1/+2/+3 Str AND Int for 15 min** by
+  tier (stacks with one elixir). Raw food still fuels resting regen
+  (combat_stats §5) — cooking adds the buff, not the regen.
+  **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
+  groups and the same level gates as a profession book, but **no
+  keystones** — a cooking tier opens on its **ingredients**, which are
+  regional, so **T6 cooking needs ingredients that only exist in level
+  50+ areas**. Tier unlocks are explicitly wanted as quest goals ("find
+  cocoa in the jungle"). Cooking is free and universal *and* gated; the
+  book is what makes both true at once.
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.
+  **No book** — all recipes at once, materials are the only gate.
 - **Vendor stock**: the level-independent core (small bag, weak healing
   potion, wooden/stone tools, bronze pick, torches, job supplies —
   thread/flux/vial/parchment/whetstone blank) plus the **bracket
@@ -365,11 +805,36 @@ Revises the old "one floor at ilvl ≤ 5" model. The vendor floor rule
 stands — vendors sell the lowest tier of each category — but **the floor
 moves with the player** instead of freezing at the starter set.
 
+**Merged with the base craft ladder** (2026-08-07, §3.0.3). A bracket is
+a **material tier** (§3.0.1), and the items in it are the base items
+everybody can craft. Two consequences, and nothing else in this section
+changes:
+
+- **The items are material-named**, never bracket-named. The shipped
+  adjective naming — *Crude / Plain / Tempered / Reinforced / Superior /
+  Grand* over the six brackets — is replaced by the material the item is
+  actually made of: **metal items take the lead metal** of §3.0.1
+  (Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves,
+  Embersteel Sabatons, Grudgesteel Greataxe), **cloth items take their
+  bolt grade** and **leather items their leather grade** (§3.4/§3.5) —
+  Linen Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
+  Chestplate / Greaves / Sabatons, Cowl / Robe / Leggings / Slippers),
+  and so are the generator, the prices, the ilvl anchors and the bracket
+  boundaries. This is a rename plus the merge with `default`'s tool
+  ladder — planned work, not a defect.
+- **Selling a base item is not selling "the low tier of crafting".** It
+  is selling the same item a crafter starts from. What a vendor can never
+  sell is a **refined** or **enchanted** item (§6b) — that is the whole
+  of the crafting advantage now, stated as a rule instead of as a number
+  comparison.
+
 - **Six catalogs, one per 10 levels**: 1–10, 11–20, 21–30, 31–40, 41–50,
-  51–60. A player sees their own bracket **and every bracket below**
-  (tabs in the trade formspec), so starter goods stay buyable and a new
-  shelf opens every 10 levels — a deliberate reward beat on a level
-  curve that otherwise only pays out talent points (progression.md §2).
+  51–60 — the same bands as the six material tiers. A player sees their
+  own bracket **and every bracket below** (tabs in the trade formspec),
+  so starter goods stay buyable and a new shelf opens every 10 levels — a
+  deliberate reward beat on a level curve that otherwise only pays out
+  talent points (progression.md §2). The bands are **1-based**: bracket 1
+  is levels 1–10, never 0–9.
 - **Binding strength rule**: *a bracket's gear is exactly what a normal
   mob of that bracket drops — guaranteed, but expensive.* The floor, not
   the ceiling. Item level per bracket **3 / 10 / 20 / 30 / 40 / 50**,
@@ -377,24 +842,27 @@ moves with the player** instead of freezing at the starter set.
 
 | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
 |---|---|---|---|---|---|---|
+| Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
 | ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
-| vs. crafted tier of that era | — | T1 = 8 | T2 = 13 | T2 = 13 | T3 = 19 | T4 = 24 |
+| refined, +15 % (§6b.2) | 6 | 9 | 13 | 17 | 21 | 25 |
 
-  Vendor gear therefore tracks the **mob-drop curve at its bracket
-  ilvl**, which puts it within roughly **±15 % of crafted gear of the
-  same era** — sometimes under it (bracket 21–30: 11 vs. T2's 13),
-  sometimes level with it (11–20: 8 vs. T1's 8), sometimes over it
-  (31–40: 15 vs. T2's 13, because a crafted tier has to last two
-  brackets). Corrected 2026-08-07: the old wording claimed a flat
-  "10–15 % behind", which the ladder above contradicts.
-  **The crafting advantage is the enchants, not the base numbers** —
-  vendor gear is Common and therefore enchant-free by definition, so
-  "better gear comes from crafting or hard bosses" (§0) stays literally
-  true whichever way a single base value falls. Rationale for having
-  the ladder at all: on a small server the crafter for your armor class
-  may simply not exist — the floor stops a player from going naked, it
-  does not compete.
+  **The refined row is the whole design in one line** (added 2026-08-07,
+  computed from the row above with §3.2's half-up rounding). A refined
+  item of tier n is strictly better than a base item of tier n — and
+  strictly **worse** than a base item of tier n+1: 6 < 8, 9 < 11,
+  13 < 15, 17 < 18, 21 < 22. That is exactly the constraint the rework was
+  chosen for (+15 %, not +25 %), and it holds across the whole ladder
+  with no exception. A refined item therefore never lets a player skip a
+  tier; it makes the tier they are in worth staying in.
+
+  Rationale for having the vendor ladder at all: on a small server the
+  crafter for your armor class may simply not exist — the floor stops a
+  player from going naked, it does not compete. Superseded 2026-08-07:
+  the old "±15 % of crafted gear of the same era" comparison, and the
+  older "10–15 % behind" before it. Under the merge there is nothing to
+  compare — vendor gear and base crafted gear are the same item, and the
+  crafter's edge is refinement and enchants (§6b), not a base number.
 - **Rotation**: the core stock is fixed; each bracket additionally shows
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled in the
@@ -408,17 +876,22 @@ moves with the player** instead of freezing at the starter set.
     full set in each shipped armor line = **9 items**. That is what
     "guaranteed, but expensive … the floor, not the ceiling" requires,
     and the rotation may never touch it.
-  - On top of it sit **2 rotating slots**, drawn hourly from the **3
-    extra weapon families** (dagger / greataxe / staff), so **one family
-    is withheld every rotation**. Withholding is what makes it a
-    rotation: with one slot per extra the whole catalog would be on the
-    shelf every hour and the re-roll would only permute the display
-    order. If §3.2 ever gains a fourth extra family the slot count rises
-    to 3 — always strictly below the pool size.
+  - On top of it sit the **rotating slots**, drawn hourly from the
+    **extra weapon families**, so **one family is withheld every
+    rotation**. Withholding is what makes it a rotation: with one slot
+    per extra the whole catalog would be on the shelf every hour and the
+    re-roll would only permute the display order. The slot count is
+    **always strictly below the pool size** — that is the rule, the
+    number follows from §3.2.
+    **Applied 2026-08-07**: §3.2 gained the caster 1H family
+    (wand / scepter / orb, §3.6a), so the pool is now **4** — dagger,
+    greataxe, staff, caster 1H — and the slot count rises from 2 to
+    **3**, exactly as the rule above already prescribed. Casters can now
+    buy a floor weapon, which the old three-family pool never allowed.
   - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
     vendors in the same hour differ, and a player's own brackets differ
-    from each other), replaces one of the two rotating slots and is
-    priced **×3**.
+    from each other), replaces one of the rotating slots and is priced
+    **×3**.
   - The Uncommon is **only offered once WP5's enchant roller exists.**
     Common is enchant-free by definition, so an Uncommon without rolls
     is mechanically identical to the Common beside it while costing
@@ -436,7 +909,9 @@ moves with the player** instead of freezing at the starter set.
   leather** and 24 leather items would be dead weight in every catalog.
   The leather curve stays in the generator so its coefficients never
   have to be re-derived; the line registers with the Rogue (Phase 2) or
-  with WP5's drop tables, whichever lands first.
+  with WP5's drop tables, whichever lands first. Under the §3.0.3 merge
+  this decision now covers the **craft** ladder too — there is one
+  catalog, so a line that does not ship does not ship anywhere (§3.4).
 - Race-exclusive vendors and the same-race discount (world.md §7) layer
   on top of this unchanged.
 
@@ -451,8 +926,10 @@ tier + the recipe. **Production is race-locked; the item is tradeable
 and wearable by anyone in the faction** — that makes every
 race+profession combo a market niche. All are Rare quality, ilvl 60,
 rolled at the crafted-masterwork window (§6.3), **first enchant fixed**
-(signature stat), remainder rolled. Shared mats: 2× abyssal gem
-(housing depths, §5.5) + tier-4 bases + one specific trophy.
+(signature stat), remainder rolled. Shared mats: 2× Abyssal Crystal
+(housing depths, §5.5) + **T6 bases** + one specific trophy. The recipe
+unlocks **inside the profession's own book**, in its T6 group — there is
+no separate signature book (§2.2).
 
 | Race (faction) | Profession | Item | Slot/type | Fixed enchant |
 |---|---|---|---|---|
@@ -472,7 +949,14 @@ mage robe") with the Silvercanopy Robe.
 
 Drops obey the player-tag rule (combat_stats §3), quality/roll windows
 per §6.3, gear-drop ilvl = mob level. Ring → materials is binding via
-biomes_mobs §6; this table adds the gear/special layer:
+biomes_mobs §6; this table adds the gear/special layer.
+
+**A dropped item's material tier must match the mob's tier** (added
+2026-08-07). `ilvl = mob level` already implied it; stated outright
+because the item is now material-named: a **T3 (Steel) item drops from
+level 21–30 mobs** and nowhere else. A mob may not drop gear from a tier
+its level band does not cover — that is what stops the drop table from
+becoming a side door around the depth gate of §3.0.4.
 
 | Ring (levels) | Materials (recap) | Gear drops | Special |
 |---|---|---|---|
@@ -480,11 +964,17 @@ biomes_mobs §6; this table adds the gear/special layer:
 | Inner 10–25 | leather, linen cloth, T1 herbs | base variants | Grimtusk/Ashmaw (L12); bandit camps = linen |
 | War coast 20–30 | heavy cloth (raiders), linen | base variants | PvP quests ≥20; Captain Bonerattle (L28); **outpost supply crates** (§5.6) |
 | Outer 25–45 | heavy leather, scaled hide, heavy cloth, spider silk, T2 herbs, stone cores, iron/steel | **improved variants** on elites (20% Unc / 3% Rare) | named rares L32–42; apex dragon lair (L50) |
-| Coast 45–60 | scaled hide, silk, T3 herbs, gold/gems | improved variants; elites common | coast named rares L48–50; Reef Lurker |
-| Depth axis | ore ladder: copper/tin/coal → iron (−300) → gold/gems (−600) | cave mobs as per surface tier | abyssal gems only in housing depths |
+| Coast 45–60 | scaled hide, silk, T3 herbs, gold, garnet/diamond | improved variants; elites common | coast named rares L48–50; Reef Lurker |
+| Depth axis | the six strata of §3.0.1, each behind a tier-n tool (§3.0.4): copper/tin/coal (0…−100) → iron (−300) → no ore of its own, steel is an alloy (−500) → silver, gold (−700; gold also in coast veins) → emberstone (−1000) → Abyssal Crystal (below) | cave mobs as per surface tier | Abyssal Crystal only in housing depths |
 | Enemy territory | identical base tables (mirrored biomes) | identical | enemy named rares + enemy King = the raid incentive |
 
 ### 5.1 Quality chance per source (kill, player-tagged)
+
+**Still valid after the 2026-08-07 rework.** "Only professions can
+enchant" (§6b.3) means only a profession can **apply** an enchant to an
+item; **found items keep their own enchants**. A mob drop arrives
+pre-enchanted from this table and is worn as it fell, with no crafter
+involved. The two systems never meet.
 
 | Source | Uncommon | Rare | Roll window (§6.3) |
 |---|---|---|---|
@@ -493,12 +983,17 @@ biomes_mobs §6; this table adds the gear/special layer:
 | Named rare (armor 70) | 100% | 25% | rare |
 | Apex boss / faction King | — | 100% | boss |
 
+A dropped item that carries enchants is by definition also **refined**
+(§6b.3 admits no other state) — which is why the refinement word never
+appears in a drop's name (§6b.4).
+
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 
 2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill:
 guaranteed Uncommon (rare window) + 25% Rare + **100% signature trophy**
 (`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): the
-T4-tome keystone and masterwork ingredient (§2.3, §6.4). Anti-camping:
+T4 book-group keystone, the third input of the T6 alloy and the
+masterwork ingredient (§2.3, §3.0.2, §6.4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
 
@@ -506,21 +1001,23 @@ extra mechanic needed.
 
 Respawn 20–28 h (rolled). Lair **hoard chest** unlocks on the kill, one
 withdrawal per tagged player: 1 Rare item (boss window) + 3–5 wyrmscale
-(T4 leatherworking masterwork mat) + 20–50c + **1 abyssal gem** (the
-bridge source until housing ships, §10 P5).
+(Master-tier leatherworking masterwork mat) + 20–50c + **1 Abyssal
+Crystal** (the bridge source until housing ships, §10 P5).
 
 ### 5.4 The faction King (enemy capital raid)
 
 Respawn 20–28 h. Per tagged raider: 1 Rare (boss window) + 30–60c;
 once per kill: **Fallen Crown** (masterwork ingredient usable in any
-profession's T4 masterwork as the trophy slot). Elite guard ring makes
-it a group raid by design; kills broadcast world-wide.
+profession's Master-tier masterwork as the trophy slot). Elite guard ring
+makes it a group raid by design; kills broadcast world-wide.
 
 ### 5.5 Housing depth treasures
 
-**Abyssal gems**: finite nodes in the deepest steps of a **personal**
-housing isle (depth steps 8–10, world.md §5.4 — no respawn, R4);
-ingredients for race signatures (×2) and optional T4 masterworks.
+**Abyssal Crystal** (renamed 2026-08-07 from "abyssal gem" — it is the T6
+alloy input of §3.0.2, not a Goldsmith gem): finite nodes in the deepest
+purchased step of a **personal** housing isle (world.md §5.4 — no
+respawn, R4); ingredients for race signatures (×2) and optional
+Master-tier masterworks.
 Revised 2026-08-07: since every character is granted an isle at level 30
 and the depths are a bought treasure-cluster ladder rather than guild
 property, the supply is personal progression, not a guild privilege —
@@ -570,7 +1067,16 @@ roll, so the regeneration above must **preserve these lines and append
 the enchant lines below them**. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
-(70/30)** — the decided budgets.
+(70/30)** — the decided budgets, and from 2026-08-07 also the prefix and
+suffix count of §6b.
+
+**Refinement and the base-stat line** (2026-08-07): a refined item's grey
+line shows the **refined** number — the +15 % damage or armor of §6b.2,
+rounded half-up like every other value on the curve, and the doubled
+durability. Refinement is a property of the item, not a roll, so it goes
+into meta alongside `grug_quality` as a plain boolean; the description
+pipeline reads it exactly like the ilvl. The affix words themselves live
+in the **name**, not in the stat lines (§6b.4).
 
 **Hand-off from the vendor catalogs** (WP7 → WP5, 2026-08-07): vendor
 gear ships with the item-def fields **`_grug_ilvl`, `_grug_bracket` and
@@ -593,7 +1099,12 @@ edit in one place, not a rewrite of the catalog.
 
 ### 6.3 Roll ranges by ilvl bracket and source window
 
-Value ranges (min–max) per ilvl bracket:
+Value ranges (min–max) per ilvl bracket. **The four bands below are the
+"item levels" column of §2.1's mastery table** — 1–15 / 16–30 / 31–45 /
+46–60, one band per mastery tier, same boundaries, no third set anywhere
+(confirmed 2026-08-07). An Apprentice's work rolls in the first band, a
+Master's in the fourth. These bands are **not** the six material tiers of
+§3.0; the two ladders are independent by design (§2.1).
 
 | Enchant | 1–15 | 16–30 | 31–45 | 46–60 |
 |---|---|---|---|---|
@@ -623,30 +1134,174 @@ armor cap clamp identically. Budgets need no further rules.
 
 ### 6.4 Crafted quality (how crafting reaches Uncommon/Rare)
 
-- Standard recipes → **Common** (reliable, repairable baseline).
-- **Fine recipes** (each tier, +1 gem or tier reagent — venom sac,
-  slime gel, sleek pelt, …) → **Uncommon**, crafted-fine window.
-- **Masterwork recipes** (T3/T4 only; + named-rare trophy or Fallen
-  Crown, T4 also abyssal-gem option) → **Rare**, crafted-masterwork
-  window. Race signatures (§4) are masterworks with a fixed first
-  enchant. This keeps "better gear comes from crafting or hard bosses"
-  literally true: the two 0.60–1.00 windows are crafting and bosses.
+Re-stated 2026-08-07 against the refinement model of §6b; the windows and
+the quality thresholds are unchanged.
+
+- **Base recipes → Common**, no enchants, craftable by everyone
+  (§3.0.3). This is the reliable, repairable baseline and the item a
+  vendor sells.
+- **Refinement → Common, refined** (§6b.1/§6b.2). Still Common — a
+  refined item has no enchants yet, so it cannot be blue. Professions
+  only.
+- **Fine recipes** = refine + **1–2 affixes** (each tier, +1 cut gem or
+  tier reagent — venom sac, slime gel, sleek pelt, …) → **Uncommon**,
+  crafted-fine window.
+- **Masterwork recipes** = refine + **3–4 affixes** (Expert/Master only;
+  + named-rare trophy or Fallen Crown, at Master also an Abyssal Crystal
+  option) → **Rare**, crafted-masterwork window. Race signatures (§4) are
+  masterworks with a fixed first affix. This keeps "better gear comes
+  from crafting or hard bosses" literally true: the two 0.60–1.00 windows
+  are crafting and bosses.
+
+The mapping is exact: §0's **Uncommon = 1–2 enchants, Rare = 3–4** and
+§6b.4's **2 prefixes + 2 suffixes = 4 slots** are the same budget counted
+two ways. Nothing had to be re-balanced for the prefix/suffix model —
+that is why it was chosen.
+
+## 6b. Refinement, affixes and special variants (decided 2026-08-07)
+
+This is what a profession is *for*. Everyone crafts the base item
+(§3.0.3); a profession makes it better, and every step below is
+profession-only.
+
+### 6b.1 Only professions refine
+
+A base item becomes a **refined** item at the profession's workbench. The
+refinement is expressed in the item **name** by a family word:
+
+| Family | Refinement word | Example |
+|---|---|---|
+| Weapons, tools | **Honed** | Honed Stone Sword |
+| Metal & leather armor, shields | **Reinforced** | Reinforced Iron Chestplate |
+| Cloth armor, bags, spell tomes | **Ornate** | Ornate Robe |
+
+A profession may only refine the families it owns (§3.3–§3.6b). No
+player without the profession can produce a refined item by any means.
+
+### 6b.2 The refinement bonus
+
+**+15 % base damage** (or the armor equivalent) and **+100 % durability.**
+
+- **15 %, not 25 %** — deliberately chosen so that a refined item of tier
+  n never beats an unrefined item of tier n+1. §3.8 carries the full
+  ladder check; it holds at every step.
+- **+100 % durability** doubles WP22's 3000-combat-event wear budget
+  (§8.3) to 6000 cleanly — no new constant, and it makes refinement worth
+  buying even on an item whose damage number a player does not care
+  about (a pick, §3.3).
+- The bonus is applied to the item's own base value and shown in the grey
+  stat line (§6.1). It does not scale with mastery tier; a Master's
+  refinement is worth the same +15 % as an Apprentice's. What mastery
+  buys is **slots** (§6b.5), not a bigger bonus.
+
+### 6b.3 Only refined items can be enchanted
+
+**A plain base item can never carry an enchant.** Refinement is the
+prerequisite for every affix, without exception. This is the single rule
+that makes refinement worth doing at all, and it is why "enchanted"
+implies "refined" everywhere else in this document.
+
+**Found items keep their own enchants** (§5.1). "Only professions can
+enchant" restricts who may *apply* an affix; it says nothing about items
+that arrived pre-enchanted from a mob.
+
+### 6b.4 The prefix/suffix naming system
+
+Enchants are expressed in the item name as **prefixes and suffixes**.
+
+- **Maximum 2 prefixes + 2 suffixes = 4 enchant slots.** That is the hard
+  ceiling for any item in the game.
+- **Prefixes** name a stat the item gives its wielder: *lucky* (+crit),
+  *quick* (+dex), *heavy* (+str), *clever* (+int).
+- **Suffixes** do the same in the genitive: *of the bear* (+str), *of the
+  ox* (+health), *of the snake* (+poison), *of the eagle* (+crit).
+- **Two suffixes combine into one phrase**: "of Bear and Ox" — the "the"
+  is dropped when combining, because "of the Bear and the Ox" reads
+  badly. One suffix keeps it: "of the Ox".
+- Examples: *Stone Sword of the Ox*, *Lucky Stone Sword of the Bear*,
+  *Heavy Lucky Stone Sword*, *Heavy Lucky Stone Sword of Bear and Ox*
+  (a full four-slot Master piece).
+- **The refinement word disappears as soon as an affix is present.** An
+  enchanted sword is "Stone Sword of the Ox", never "Honed Stone Sword of
+  the Ox". Since only refined items can be enchanted (§6b.3), the refined
+  state is *implied* by any affix — the word would carry no information
+  and would crowd out the affixes that do.
+- The affix **words** are the display layer; the rolled **values** live
+  in `grug_ench` exactly as before (§6.1) and are shown one per line
+  under the grey stat lines. The word says which stat, the line says how
+  much.
+
+The word lists and the stat each word maps to — including which affixes
+are legal on which item family (§6.2 has the pools) — are in
+`TODO-design-crafting-rework.md`.
+
+### 6b.5 Mastery tier = fillable slots
+
+| Mastery | Fillable enchant slots |
+|---|---|
+| Apprentice | 1 |
+| Journeyman | 2 |
+| Expert | 3 |
+| Master | 4 |
+
+An Apprentice can put one affix on a refined item; a Master can fill all
+four. The slots are the item's — a Master can add a second affix to a
+one-affix item an Apprentice made, up to four. This is the second reason
+mastery matters (the first is the exclusive recipes, §2.1) and it is what
+makes a Master crafter worth seeking out on a server.
+
+### 6b.6 Quality follows the slot count
+
+No new rule — §6.1's budgets, read through the affix model:
+
+| Affixes | Quality | Colour |
+|---|---|---|
+| 0 | Common | white |
+| 1–2 | Uncommon | blue |
+| 3–4 | Rare | yellow |
+
+So an Apprentice and a Journeyman produce Uncommon items, an Expert and a
+Master produce Rare ones. The roll values come from the §6.3 band of the
+crafter's mastery tier in the crafted-fine or crafted-masterwork window
+(§6.4).
+
+### 6b.7 Special variants
+
+A profession can turn a **refined but not yet enchanted** item into a
+**special variant** with an effect of its own — an "Iron Frost Armor"
+that slows attackers, for instance.
+
+- A special variant **keeps its full 2 prefix + 2 suffix slots on top of
+  its special effect.** The effect is not one of the four; it is a fifth
+  thing the item does.
+- The input must be unenchanted: the special variant is a step *between*
+  refinement and enchanting, not an alternative to either.
+- **Visual treatment**: adapt VoxeLibre's armor **trim/colouring** system
+  (`mcl_armor/trims.lua`, §1.2) — a template item plus a colour overlay
+  baked onto the armor texture, e.g. Iron armor carrying a diamond trim.
+  That gives every special variant a look without one texture per
+  combination.
 
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 
-Two kit types per crafting profession, applied in the grid (item +
-kit), workbench nearby; effects on the item's OWN family only
-(whetstones/armor polish = smith, armor kits = LW, embroidery = tailor,
-imbuing oils = apothecary gear + caster offhands):
+Two kit types per profession, applied in the grid (item + kit),
+workbench nearby; effects on the item's OWN family only (whetstones/armor
+polish = Blacksmith, armor kits = Leatherworker, embroidery = Tailor,
+wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
+apothecary gear):
 
-- **Imbue kit** (per tier): Common → Uncommon; rolls 1–2 enchants in
-  the crafted-fine window. Cost ≈ 1 tier reagent + tier materials.
-- **Temper kit** (T3/T4): re-rolls all enchant VALUES on an Uncommon/
-  Rare item; 1st application window 0.50–0.95, 2nd 0.60–1.00, **max 2**
-  (`grug_upgrades` meta). Never changes enchant count or quality tier —
-  an imbued Common (now Uncommon, 1–2 enchants) stays strictly below a
-  fresh Rare (3–4 enchants): the decided "upgraded mediocre item never
-  becomes a top item", enforced structurally, not by caps.
+- **Imbue kit** (per material tier): **refined** Common → Uncommon; rolls
+  1–2 affixes in the crafted-fine window. Cost ≈ 1 tier reagent + tier
+  materials. *Sharpened 2026-08-07*: the input must be **refined**
+  (§6b.3) — a kit is a way to apply affixes, and affixes need a refined
+  item like every other route to them. The kit is bought from a
+  profession; applying it is not.
+- **Temper kit** (Expert/Master): re-rolls all affix VALUES on an
+  Uncommon/Rare item; 1st application window 0.50–0.95, 2nd 0.60–1.00,
+  **max 2** (`grug_upgrades` meta). Never changes affix count or quality
+  tier — an imbued Common (now Uncommon, 1–2 affixes) stays strictly
+  below a fresh Rare (3–4 affixes): the decided "upgraded mediocre item
+  never becomes a top item", enforced structurally, not by caps.
 
 ## 8. Prices & the gold-income curve (resolves the old §4; seeds economy.md numbers)
 
@@ -690,9 +1345,15 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
 | Small bag (8 slots) | 80c |
 | Vendor Common gear: weapon / chest / other piece | 50c / 40c / 25c |
 | Wood & stone tools / bronze pick | 5–15c / 40c |
-| Apprentice tome (any profession) | 25c |
-| Replacement tome T2 / T3 / T4 | 1s / 3s / 10s |
+| Recipe book (any profession; also the replacement) | 25c |
 | Dowsing Rod (housing cluster finder, world.md §5.4) | 15c |
+
+*Book prices revised 2026-08-07*: the four tome rows collapse into one.
+There is one book per profession (§2.2), so there is one price, and it is
+the old Apprentice-tome price unchanged. The 1s/3s/10s replacement rows
+are **deleted** — they priced a *progression carrier*, and progression
+now lives in player meta, so a re-bought book immediately shows every
+group the character has opened. Losing a book costs 25c at any level.
 
 **Bracket gear ladder** (§3.8, decided 2026-08-07): the bracket-1 prices
 above are the anchor and every further bracket costs **×1.4**; chest =
@@ -707,8 +1368,8 @@ above are the anchor and every further bracket costs **×1.4**; chest =
 
 Two notes on the table (2026-08-07):
 
-- **The table prices SLOTS, not families.** All four weapon families of
-  §3.2 share the single "weapon" price, so a dagger costs exactly what a
+- **The table prices SLOTS, not families.** Every weapon family of
+  §3.2 shares the single "weapon" price, so a dagger costs exactly what a
   two-hander costs. Deliberate — the families are class flavor, not a
   power ladder, and one price per bracket keeps the ×1.4 ladder legible.
   Revisit only if a family ever becomes strictly better.
@@ -726,8 +1387,10 @@ as a luxury, not as an upgrade path.
 - **Repair** (WP22): per piece = ceil(ilvl × 0.5c) × quality factor
   (Common ×1, Uncommon ×1.5, Rare ×2). Starter piece 1–3c; full Rare
   set at 60 ≈ 3s per full repair. Wear budget ≈ 3000 combat events per
-  item (broken = stops working, never destroyed — decided). The price,
-  not the frequency, is the tier lever.
+  item (broken = stops working, never destroyed — decided), **6000 on a
+  refined item** (§6b.2). The price, not the frequency, is the tier
+  lever — and refinement halves the frequency, which is exactly the
+  convenience a player pays a crafter for.
 - **Respec**: 5c × character level (min 25c) → 3s at 60, repeatable.
 - Job supplies + vendor consumables: the steady trickle (≈15–25% of
   leveling income re-sunk by design).
@@ -738,49 +1401,80 @@ Revised 2026-08-07 with the housing rework (world.md §5): the isle is a
 **free royal grant at level 30**, and the old split of build-rights and
 mining-rights purchases collapses into **one depth ladder**.
 
+**Re-cut 2026-08-07 to six depth steps**, one per rock stratum (§3.0.4),
+so the ten arbitrary 50-node steps become the six the mining ladder
+already needs. Use this table verbatim; world.md §5.3 carries the same
+one.
+
 | Sink | Price |
 |---|---|
 | Housing isle itself | free (questline grant, min_level 30) |
-| Housing depth steps 1–10 (50 nodes each, −80 … −530) | 50c · 1s · 2s · 4s · 7s · 12s · 20s · 35s · 60s · **1g** (≈ 2.4g total) |
+| Housing depth step 1 → −100 (T1 rock) | **50c** |
+| Housing depth step 2 → −300 (T2) | **2s** |
+| Housing depth step 3 → −500 (T3) | **6s** |
+| Housing depth step 4 → −700 (T4) | **20s** |
+| Housing depth step 5 → −1000 (T5) | **60s** |
+| Housing depth step 6 → bedrock (T6) | **1g** |
 | Guild founding | **5g** |
-| Continental mining claim, small / large | 2g / 5g, one-time, finite resources included |
-| Dowsing Rod (vendor) / Gem Detector (Gem Hunter craft) | 15c / crafted |
+| Dowsing Rod (vendor) / Gem Detector (Goldsmith craft) | 15c / crafted |
 
-The depth ladder is now the **anchor sink** (economy.md §4.1): it opens
-at level 30, is per character rather than per guild, and each step buys
-a finite cluster payout (world.md §5.4) that can never fund the next
-step. A 5-player guild still pools its founding fee with ~1–2 evenings
-of endgame income each.
+Six steps total ≈ **1.9g** (was ≈ 2.4g over ten steps). The 1g final step
+is still the flagship purchase, so economy.md §2's "a full gold is a
+fortune" holds; economy.md §4.1 carries the reduced total. Down to −30
+is free (the seabed layer, world.md §5).
+
+**Continental mining claims are removed** (2026-08-07): guilds are
+social, chat and the guild bank, nothing else, so the 2g/5g claim rows
+are deleted here, in `guilds.md` §3.2, in `world.md` §4 and in the
+economy.md §4 sink list. Guild founding at 5g stays.
+
+The depth ladder is the **anchor sink** (economy.md §4.1): it opens at
+level 30, is per character rather than per guild, and each step buys a
+finite cluster payout (world.md §5.4) that can never fund the next step.
+A 5-player guild pools its 5g founding fee at 1g per head — **8–17
+hours of endgame income each** at the 6–12s/hour rate of §8. (The
+earlier "~1–2 evenings each" did not survive the arithmetic; corrected
+2026-08-07. `guilds.md` §1 carries the same figure.)
 
 ## 9. Bows & arrows (Phase-2 enabler — catalogued, class NOT decided)
 
 Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
 2 attribution sounds; port ≈ 1000 lines incl. `vl_projectile`, §1.2):
 
-- **Bow family on the weapon curve**: Shortbow T1 / Hunting Bow T2 /
-  Longbow T3 / Wyrmsinew Bow T4 — full-charge damage = the 1H curve
-  (8/13/19/24) at 25 m range, charge 0.5 s (mcl hold-pattern), partial
-  charge scales linearly, enchant pool = melee weapons (attack speed →
-  charge speed).
+- **Bow family on the weapon curve**: full-charge damage = the 1H curve
+  (8/13/19/24 at ilvl 12/27/42/57) at 25 m range, charge 0.5 s (mcl
+  hold-pattern), partial charge scales linearly, enchant pool = melee
+  weapons (attack speed → charge speed). One bow per material tier,
+  material-named like everything else (§3.0.3).
 - **Arrows** as stackable ammo + entity (vl_projectile template);
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
   eagle/vulture drops finally get their reagent role). Quiver =
-  LW bag-slot item holding only arrows.
-- **Producer**: Bowyer = the decided Leatherworker split
-  (professions.md §5); until then the recipes sit unassigned.
-- This section makes the OPEN Phase-2 Archer/Hunter + Bowyer decision
-  cheap: the entire item/ammo/entity path is specced and license-clean;
-  the only open questions left are class kit + balance. **Explicitly
-  not decided here.**
+  Leatherworker bag-slot item holding only arrows (§3.4).
+- **Producer: the Woodcarver** (decided 2026-08-07). This replaces the
+  old "Bowyer = Leatherworker split" assignment — the Woodcarver already
+  owns every other wooden ranged/caster weapon (§3.6a), so the bow needs
+  no new profession and the Bowyer split is dropped from professions.md
+  §5 entirely.
+- This section makes the OPEN Phase-2 Archer/Hunter decision cheap: the
+  entire item/ammo/entity path is specced, license-clean and now has an
+  owner; the only open questions left are class kit + balance.
+  **Explicitly not decided here.**
 
-## 10. Resolved decision points (2026-08-06)
+## 10. Resolved decision points
+
+### 10.1 2026-08-06
 
 **P1 — Tier-4 metal.** Gem-tempered steel (steel + gems, no new ore —
 uses Gem Hunter, golem drops, existing depth ores) vs a new deep ore
 with mapgen registration. Recommendation: **gem-tempered steel** (zero
 mapgen risk, strengthens two existing loops); a new ore can still be
 added post-MVP as a T5/Unique hook.
-**Decided as recommended (2026-08-06).**
+**Decided as recommended (2026-08-06).** **Superseded 2026-08-07 by
+D1**: the ladder is six tiers, the T4 metal is Silversteel from a real
+new ore, and gem-tempered steel is retired. P1's own escape hatch ("a
+new ore post-MVP") is what was taken, one phase earlier than expected —
+the mapgen risk it was avoiding is now carried anyway for Silver, Quartz
+and Garnet (§3.0.1).
 
 **P2 — Signature-recipe asymmetry.** Troll harness (top leather) and
 Human flask have no cross-faction stat mirror (6 races on 4 crafting
@@ -807,7 +1501,56 @@ signatures would be uncraftable. Recommendation: **apex hoards drop 1
 abyssal gem** as interim source; remove (or reduce to 10% chance) once
 housing depths are live.
 **Decided as recommended (2026-08-06).** *Amended 2026-08-07*: with
-personal isles the source is no longer guild-gated, but abyssal gems sit
-in depth steps 8–10 (≈ 2g into the ladder), so the bridge is **kept at
-the reduced 10%** rather than removed — the alternative would lock race
-signatures behind the single most expensive purchase in the game.
+personal isles the source is no longer guild-gated, but the **Abyssal
+Crystal** (renamed, §5.5) sits in depth step 6 — the 1g step, the single
+most expensive purchase in the game (§8.4) — so the bridge is **kept at
+the reduced 10%** rather than removed.
+
+### 10.2 2026-08-07 (crafting rework)
+
+**D1 — Two ladders, not one.** The four mastery tiers and a six-tier
+material ladder were read as a 4-vs-6 conflict. **Both stay, they mean
+different things**: mastery is a property of the crafter (enchant slots +
+exclusive recipes), T1–T6 is a property of the item (materials, level
+bands, who may wear what). The mastery table's "item levels" column is
+identical to §6.3's four roll bands — one set of boundaries, two names.
+`T<n>` from now on always means a material tier; mastery tiers are always
+written by name (§2.1).
+
+**D2 — One item per concept.** Binding. The vendor bracket catalog and
+the base craft ladder are **the same, material-named items**, and
+`default`'s tool ladder is replaced rather than supplemented. Everyone
+crafts the base items of every tier; what a profession adds is
+refinement, affixes, special variants and a few exclusive recipes. The
+72 shipped `grug_gear` items are renamed and merged, and the mese and
+diamond tool tiers are deleted (§3.0.3). Rejected alternative: letting
+`default`'s ladder stand next to a bracket ladder — two items per
+concept, and no player would ever be able to tell which one to make.
+
+**D3 — Six professions, cut by material.** Blacksmith, Leatherworker,
+Tailor, Woodcarver, Goldsmith, Alchemist. Herbalism merges into the
+Alchemist, Gem Hunter into the Goldsmith; all six are symmetric with four
+mastery tiers. Cutting by class was rejected: it breaks the moment
+Phase 2 adds four classes, and a material profession serving several
+classes is what keeps the supply chain social (professions.md §2/§4).
+
+**D4 — One recipe book per profession, groups instead of a chain.** The
+LotT tome chain is retired: level controls visibility, the keystone
+controls the unlock, quest and boss recipes land in the same book, and a
+player crafts only what is in their books plus the universal base
+recipes. The keystones survive because they carry the **zone** gate a
+level check cannot (§2.2/§2.3).
+
+**D5 — Refinement is the profession's product.** +15 % base damage or
+armor and +100 % durability; only refined items can be enchanted; affixes
+are 2 prefixes + 2 suffixes, and mastery tier is how many of the four a
+crafter can fill. 15 % was chosen against 25 % because a refined tier-n
+item must not beat an unrefined tier-n+1 item — §3.8 shows it holds at
+every step of the ladder. The refinement word drops out of the name once
+an affix is present, since only refined items can carry one (§6b).
+
+**D6 — Cooking gets a book, but not a profession slot.** Cooking and
+First Aid stay free and universal. Cooking's tiers are tied to regional
+ingredients (T6 needs level-50+ ingredients) and are wanted as quest
+goals, which needs a group structure; First Aid does not and keeps none
+(§2.3, §3.7).

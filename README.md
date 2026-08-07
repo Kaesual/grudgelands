@@ -68,6 +68,10 @@ live there. This section is the tour; the docs are the truth.
 - **Controlled destructibility**: build and dig freely at home, never in
   enemy territory (not even a torch), never in the ocean. Ores respawn so
   a persistent world doesn't run dry.
+- **Depth is a ladder, not a chore**: the stone below you is six rock
+  strata (−100 / −300 / −500 / −700 / −1000 / bedrock), and each one can
+  only be broken by a tool of its own tier. How deep you can mine is the
+  same statement as what you can wear.
 - **Three race capitals per continent** (you spawn in your own race's),
   24 deterministic military outposts, ambient patrols between them,
   villages and flavor camps.
@@ -79,11 +83,12 @@ live there. This section is the tour; the docs are the truth.
 - **Housing is a royal grant, not a purchase**: a questline at level 30
   earns you one of the King's isles behind your continent — a 100×100
   build box, free digging down to the seabed, and below that a ladder of
-  **purchased depth rights**. Each step hides a finite set of treasure
-  clusters you hunt with a dowsing rod; nothing regrows, so the next
-  payout is the next step. That ladder is the game's central gold sink.
-  Guild members may visit; a per-character trust list decides who may
-  dig and open your chests.
+  **six purchased depth rights**, one per rock stratum, from 50c to a
+  full gold (≈ 1.9g for the lot). Each step hides a finite set of
+  treasure clusters you hunt with a dowsing rod; nothing regrows, so the
+  next payout is the next step. That ladder is the game's central gold
+  sink. Guild members may visit; a per-character trust list decides who
+  may dig and open your chests.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
@@ -116,30 +121,49 @@ group, spawn parameters, per-race woods and the base-material map.
 
 ### Items, loot & crafting — [`items_crafting.md`](docs/design/items_crafting.md) · [`inventory_equipment.md`](docs/design/inventory_equipment.md)
 
-- Quality tiers **Common / Uncommon / Rare** (Unique reserved), with
-  enchantments rolled from ranges into item meta and shown in the
-  description. The harder the enemy, the better the *roll window* — same
-  mechanic everywhere.
+- **Two ladders, and they never mean the same thing.** T1–T6 is the
+  *material* ladder — Bronze, Iron, Steel, Silversteel, Embersteel,
+  Grudgesteel, one per ten levels, with gems at T2/T4/T6 and alloys
+  smelted in a two-slot furnace. Apprentice / Journeyman / Expert /
+  Master is the *mastery* ladder, a property of the crafter.
+- **One item per concept.** The vendor catalog and the base craft ladder
+  are the same material-named items (Bronze Sword, Steel Chestplate),
+  and **everyone can craft the base tier** — the deliberate Minecraft
+  feel. A profession never makes a parallel item.
+- **What a profession is for is making an item better**: it **refines**
+  it (+15 % damage, +100 % durability — Honed, Reinforced, Ornate), and
+  only a refined item can be **enchanted**. Enchants are written into
+  the name as **max 2 prefixes + 2 suffixes** — *Heavy Lucky Stone Sword
+  of Bear and Ox* is a full four-slot Master piece — and your mastery
+  tier decides how many of those slots you can fill.
+- Quality tiers **Common / Uncommon / Rare** (Unique reserved) follow
+  straight from the affix count: 0, 1–2, 3–4. Values are rolled from
+  ranges into item meta; the harder the enemy, the better the *roll
+  window* — same mechanic everywhere.
 - **The best gear comes from crafting or hard bosses**, never from
   vendors: the two top roll windows belong to masterwork recipes and boss
-  loot.
-- Four profession tiers gated by a **tome chain** (each tome consumes the
-  previous one plus a keystone from the ring you just reached) — one
-  mechanism, no skill-up grind.
+  loot, and no vendor ever sells a refined or enchanted item.
+- **One recipe book per profession**, six T1–T6 groups in one list:
+  your level makes a group visible, a **tier keystone** from the ring
+  you just reached unlocks it. One mechanism, no skill-up grind.
 - **Race-exclusive signature recipes** at the top end: production is
   race-locked, the item is tradeable — every race+profession combination
   becomes a market niche.
 - Everything is crafted in the 3×3 grid, multi-stage, gated by a recipe
   unlock plus workbench proximity. Character screen on sfinv pages,
-  equipment slots, Tailor-made bags.
+  equipment slots, Tailor-made bags in four sizes up to 32 slots.
 
 ### Professions & economy — [`professions.md`](docs/design/professions.md) · [`economy.md`](docs/design/economy.md)
 
-Two freely chosen main professions per character (Blacksmith,
-Leatherworker, Tailor, Alchemist, Herbalism, Gem Hunter) plus Cooking and
-First Aid for everyone. Currency is copper/silver/gold stored as one
-integer; **a full gold is a fortune**, reserved for guild founding,
-housing and mining claims. Vendors buy every mob drop (at a quarter of
+Two freely chosen main professions per character, **cut by material and
+never by class** so the roster does not grow every time a class does:
+Blacksmith, Leatherworker, Tailor, Woodcarver (staves, wands, scepters,
+orbs — casters had no craftable weapon before), Goldsmith (both trinket
+slots, gem refinement) and Alchemist, who gathers its own herbs. Cooking
+and First Aid stay free for everyone, and Cooking gets a recipe book of
+its own without costing a slot. Currency is copper/silver/gold stored as
+one integer; **a full gold is a fortune**, reserved for guild founding
+and the deepest housing step. Vendors buy every mob drop (at a quarter of
 what they charge), but what they sell is a floor rather than a shop: six
 catalogs of ten levels each, offering roughly what a normal mob of that
 bracket drops — always Common and therefore **always without
@@ -150,11 +174,23 @@ trade, not to wear.
 
 ### Guilds — [`guilds.md`](docs/design/guilds.md)
 
-An **ownership and access layer**: one shared bank account — 6 tabs and
-two purses, reachable at the capital or from a terminal on any member's
-isle — plus contested mining claims out in the open world, mutual isle
-visiting, three fixed roles and guild chat. Deliberately no guild levels,
-perks or wars.
+A **social and access layer**: one shared bank account — 6 tabs and two
+purses, reachable at the capital or from a terminal on any member's
+isle — plus mutual isle visiting, three fixed roles and guild chat. A
+guild owns **no ground**; the contested mining claims were designed and
+then cut, so there is no land purchase anywhere in the game.
+Deliberately no guild levels, perks or wars.
+
+### Mounts — [`mounts.md`](docs/design/mounts.md)
+
+Specced, not built. Riding is a **universal skill** on the same four
+mastery tiers, and mounts are **bought with gold, never tamed**: slow
+land, fast land, slow flying, fast flying at 1s / 8s / 30s / 60s — about
+one gold for the whole ladder, and the second-largest thing to save
+towards after housing. The first flight buys *terrain*, not speed. Two
+places refuse you: out over the open sea an **"Exhausted"** debuff
+throws a rider into the water after ten seconds, and on a housing isle
+there is no riding and no flying at all.
 
 ### Where the journey goes
 
@@ -164,12 +200,14 @@ perks or wars.
   the housing isles (a strong candidate to move into Phase 1, since
   nothing else gives gold a purpose), the walkable Nether with crossings
   into enemy land, dungeons, apex bosses per region, the reef band,
-  mounts, reputation, player trading.
+  mounts, farming, reputation, player trading.
 - **Phase 3** — own textures/models/sounds, localization (German first),
   balancing, server performance, onboarding.
 
-Deliberately **not** planned: guild progression, battlegrounds, flying
-mounts.
+Deliberately **not** planned: guild progression, guild-owned land,
+battlegrounds, a separate Enchanter profession. (Flying mounts used to
+be on this list; they came back as the two top riding tiers on
+2026-08-07, fenced in by the open-sea and housing-isle rules above.)
 
 Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 
@@ -181,8 +219,12 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (10 of 25 work packages):** the foundation, the whole
-world/combat layer, and the money economy.
+**Shipped (10 of 33 work packages):** the foundation, the whole
+world/combat layer, and the money economy. *(The count grew on
+2026-08-07: the crafting rework cut nine new work packages — the
+material ladder, the two-slot furnace, armor recipes, the vendored-recipe
+sweep, the gear rename, the trader rotation, mounts, farming and the
+herb/food nodes. Nothing shipped or un-shipped.)*
 
 - **World**: two ocean-separated continents with soft coasts, 17 mirrored
   biomes, six race-capital spawn platforms, the radial mob-level field
@@ -208,20 +250,37 @@ world/combat layer, and the money economy.
 **Not in the game yet:** quests and quest NPCs, professions and crafting
 recipes, talent trees, the fog-of-war map, guilds, housing isles,
 travel/waypoints, offhand and shields, loot rolls on class items,
-durability and repair, parties, food and rest, apex bosses, and the real
-capital/outpost structures (WP6 ships anchors and banners, not
-buildings).
+refinement and affixes, durability and repair, parties, food and rest,
+apex bosses, mounts, and the real capital/outpost structures (WP6 ships
+anchors and banners, not buildings). The whole **material layer** is
+still on paper too: the new ores, the six rock strata, the two-slot
+furnace and the alloy chain, armor recipes (the vendored base game has
+none at all), the herb and food nodes, and the rename of the shipped gear
+catalog to material names.
 
-**Ready to start next** (no design blockers): loot & enchantments (WP5),
-professions (WP10), talent trees (WP11), world structures (WP13),
-offhand (WP14), guilds (WP16), travel (WP17), party system (WP20),
-recovery & innkeeper (WP21), apex world bosses (WP23).
+**Ready to start next** (no design blockers): guilds (WP16), the trader
+rotation fix (WP30), herb & food nodes (WP33), talent trees (WP11),
+world structures (WP13), offhand (WP14), travel (WP17), party system
+(WP20), recovery & innkeeper (WP21), apex world bosses (WP23).
+
+**Newly blocked by design work** (2026-08-07): loot & affixes (WP5) and
+professions (WP10) were ready before the crafting rework and now wait on
+`TODO-design-crafting-rework.md` — the affix word lists for WP5, and the
+signature recipes, keystones, material grades and cooking recipes for
+WP10. The material ladder (WP25) waits on the rock-stratum names and the
+gem scarcity values in the same file, and everything else in the material
+chain waits on it.
 
 **Caveats:** every shipped work package has been runtime-tested
 (2026-08-07 — six findings on the WP1–WP19 pass, all fixed; WP7 passed
 without findings). One known defect remains: melee auto-attacks against *players* still use the engine's raw
 scaling, so a held button can deal 0 damage in PvP — the mob-side fix is
-in, the PvP port is queued. Mapgen changed in WP18, so **existing worlds
+in, the PvP port is queued. `grug_core.open_sea_at` still puts open sea
+3200 nodes out, which is too far for the housing isles and for the mount
+rule that now depends on it. The shipped gear still carries its old
+bracket names ("Crude Sword") and its mod header still claims to sit
+10–15 % behind crafted gear — both were superseded on 2026-08-07 and are
+queued work, not defects. Mapgen changed in WP18, so **existing worlds
 are incompatible; always start a fresh one**. All art is currently
 vendored from reference projects (vendors still look like faction
 guards); own assets are Phase 3.
