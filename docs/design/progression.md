@@ -27,6 +27,11 @@ Levels must keep delivering *decisions and buttons*, not just stats:
   Renew; further capstones designed with WP11).
 - **Respec at the class trainer for gold**, price rising with level —
   repeatable per-character gold sink and the class trainer's purpose.
+- **Level 30 — the King's grant** (added 2026-08-07): the housing
+  questline hands over a personal isle (world.md §5). The one big
+  non-combat reward beat in the curve, deliberately placed mid-run where
+  talent points alone stop feeling like news, and the point from which
+  gold gains a long-term purpose (economy.md §4.1).
 
 ## 3. Death rules (MVP — deliberately simple)
 

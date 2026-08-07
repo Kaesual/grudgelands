@@ -36,6 +36,14 @@ storytelling (per the vision — a light layer, not cutscene opera).
   enemy territory — ROADMAP 1.5) get framed by this premise:
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
+- **The King's grant** (decided 2026-08-07, `min_level` 30): a
+  questline of service to the realm ends at the throne of the own
+  faction seat, and the King grants the player one of the **unspoiled
+  isles** behind the continent — the housing unlock (world.md §5). It
+  is the story's one warm beat in an otherwise grim premise, the only
+  scene in which a player meets their own King instead of raiding the
+  enemy's, and it explains what housing is *doing* in this world:
+  a reward for merit, not a real-estate purchase.
 - Phase 2 payoff: the Nether becomes walkable (island crossings), its
   **world bosses are demonic lords** behind challenges
   (TODO-design-nether.md) — the questline's late chapters point there.

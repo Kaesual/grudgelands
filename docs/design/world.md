@@ -148,11 +148,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R3 — Ocean**: everything outside the two continent rectangles
   (strait, coastal ocean, open sea) is locked for everyone — no digging,
   no placement. Each faction can only build INSIDE its own continent
-  rectangle. Sole exception: guild housing cubes (R5, section 5).
+  rectangle. Sole exception: the player housing isles (R5, section 5).
 - **R4 — Ores/resources respawn** (node timers) in the open world, so a
   persistent world doesn't run dry. **Exception: no respawn inside guild
-  mining claims and housing plots** — a claim's price buys its *finite*
-  resources (`guilds.md` §3). Implemented with WP6: digging one of the
+  mining claims and housing isles** — a claim's price buys its *finite*
+  resources (`guilds.md` §3), and an isle's depth step buys its finite
+  treasure clusters (§5.4). Implemented with WP6: digging one of the
   scatter ores leaves a **depleted-vein placeholder** node that
   remembers the ore in its meta and re-grows it after a random
   **15–30 min**. **Digging the placeholder cancels the respawn** — the
@@ -160,29 +161,47 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   nothing; that is the price of clearing a vein out of your build. The
   guild-claim exception is a reserved slot in the dig hook, filled by
   WP16 when claims exist.
-- **R5 — Guild property**: housing plots and mining claims are fully
-  usable by all members of the owning guild, locked for everyone else
-  (section 5, `guilds.md`).
+- **R5 — Housing isles & guild claims**: a housing isle's 100×100 build
+  box belongs to its **owner, a character rather than a guild** (§5):
+  the owner and the characters on their *trusted* list build and dig
+  there down to the purchased depth, everyone else may look and not
+  touch. Continental mining claims stay **guild** property — usable by
+  all members of the owning guild, locked for everyone else
+  (`guilds.md` §3.2).
 - **No per-player land claims in the MVP**: open-world builds are "at
-  your own risk"; the protected build space is your guild's housing
-  plot. Revisit only if griefing becomes a real problem.
+  your own risk"; the protected build space is your own housing isle
+  (§5). Revisit only if griefing becomes a real problem.
 
 Implementation: one central `core.is_protected` override in `grug_core`
 (faction + position check).
 
 ## 2b. Ocean zones & deep-sea danger
 
-The ocean is layered by distance from the coast:
+The ocean is layered by distance from the nearest land — and since
+2026-08-07 "land" includes the housing isles (§5), so every isle carries
+its own coastal ring:
 
-- **Coastal ocean (~1500 nodes around each continent)**: guaranteed real
-  ocean — the terrain generates, but it MUST be water, no islands. The
-  coast is active gameplay space (e.g. special farmable underwater mobs);
-  content lands with its own WPs.
-- **Open sea (beyond the coastal ocean)**: deliberately deadly. Massively
+- **Coastal sea** (~1500 nodes around each continent, **150 nodes around
+  each housing isle**): guaranteed real ocean — the terrain generates,
+  but it MUST be water, no islands. This is the **reef band** and active
+  gameplay space: coral, kelp, fish and harmless-to-low-level shore
+  wildlife (decided 2026-08-07; the biome registration and its roster
+  land with the ocean-content WP, biomes_mobs.md §1.2).
+- **Open sea (beyond the coastal band)**: deliberately deadly. Massively
   oversized high-level guard mobs that one-shot anything — the **Kraken
   Guard** (lvl 100, no drops, no XP) ships with WP18, gated on
-  `grug_core.open_sea_at`. Sea travel is discouraged by design; players
-  are not meant to reach the world edge or swim to housing islands.
+  `grug_core.open_sea_at`. **Deep-sea creatures also destroy boats**
+  (decided 2026-08-07): no boat item exists yet, but the rule is binding
+  for whoever adds one — otherwise a boat turns the deterrent into a
+  ferry. Players are not meant to reach the world edge, and not meant to
+  travel between housing isles by sea.
+- **The housing band** (|z| ≥ 4000 behind each continent, §5.6) is open
+  sea with allocated isles punched into it: deadly water between the
+  isles, safe inside each isle's 150-node ring. **`open_sea_at` must
+  therefore answer false inside those rings** — today it is a pure
+  distance-from-the-continent test (`OCEAN_COASTAL_WIDTH` 1500, so open
+  sea starts at |z| = 3200) and would happily spawn Kraken Guards on
+  somebody's beach.
 - **The strait between the continents is NOT extra dangerous** — danger
   only guards the places players are not supposed to go, never the
   faction-vs-faction crossing.
@@ -214,7 +233,10 @@ faction-wide services live there. Each capital contains:
   heavily guarded raid boss with top-tier loot rolls (see items/crafting
   design); his **bodyguards are character-bound** — they follow him,
   run free while he is dead, and are replaced by a fresh set when he
-  respawns (binding model: §4a).
+  respawns (binding model: §4a). To his OWN faction he is the **liege
+  who grants the housing isles** (§5, decided 2026-08-07): the level-30
+  housing questline ends at his throne, which is the one time a player
+  meets their own King as something other than the enemy's raid target.
 - Race flair through architecture and NPCs (per-race wood/build sets,
   biomes_mobs.md §5; elven capital = treehouses). Mechanical race perks hang
   on individual vendors (§7).
@@ -325,42 +347,145 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 - **Phase 3 — the Nether dragon lord** as the demonic story capstone
   (story.md; only if the population supports larger raids).
 
-## 5. Housing (ocean model, guild-owned)
+## 5. Housing: the King's isles (player-owned)
 
-Housing moves off-continent (continent redesign 2026-08-06): guild
-housing lies **in the safe ocean beyond the coastal zone** (|z| ≳ 4000,
-"behind" the own continent), allocated **on demand** when a guild buys
-land — no mobs, no PvP, effectively unlimited reserve. **Owner is always
-a guild** (`guilds.md`) — a solo player founds a solo guild; groups pool
-housing.
+Decided 2026-08-07 — replaces the guild-owned ocean plots of the
+2026-08-06 continent redesign. **Fiction first**: beyond the coastal sea
+behind each continent lies a scattered chain of unspoiled isles, barren
+above the rock and rich below it. The **King grants one isle to subjects
+who have earned merit** — housing is *unlocked by a questline* with
+`min_level` **30** (story.md §2), never bought. Rationale: housing used
+to be pure mechanics with no reason to exist in the world; tying it to
+the crown also gives the own faction's King his first friendly role
+(§3).
 
-Decided anchors (the open layout questions — one island per guild vs. a
-contiguous housing shelf, sizes, access — live in
-`TODO-design-housing.md` until settled):
+### 5.1 Ownership & the isle
 
-- **One housing area per guild**, generated/allocated when bought.
-  Bought is bought — no upkeep, no decay.
-- **Build rights (x/z extent) and mining rights (y depth) are bought
-  SEPARATELY, in paid steps** with rising prices; together they define
-  the cube the guild may edit — the central long-term gold sink. A fresh
-  purchase starts with a small part of a much larger reserved area
-  (numbers with the economy design, items_crafting.md §7).
-- **Depth treasures**: greater depths hold exclusive, artificially
-  limited gems/materials — ingredient source for high-end recipes. Like
-  mining claims: **no respawn** — what is dug is gone (R4).
-- All guild members build/dig inside the cube; everyone else is locked
-  out. The surrounding ocean is unbuildable for everyone (R3), so the
-  safe buffer between guild areas is automatic.
-- **Visitors are allowed** (areas can be entered and admired); who wants
-  privacy builds a wall.
-- Access via the area's own waypoint (section 6) — the deadly open sea
-  (2b) is not the intended travel path.
+- **One isle per character** (changed 2026-08-07 from per-guild; guilds
+  keep bank, claims and roles — `guilds.md`). Granted is granted: no
+  upkeep, no decay, no way to lose it.
+- **Build box: 100 × 100 nodes in x/z, from the purchased depth to the
+  sky.** The box IS the extent of the build and dig right (§2 R5), which
+  keeps `is_protected` a plain box test on a hot path.
+- **Free digging down to the seabed plane at y = −30** — that is the
+  isle's own worthless body. Everything below it is bought (§5.3).
+- A **skirt of ~50 nodes radius** falls from the box edge to the seabed.
+  The skirt is scenery and is protected for **everyone including the
+  owner**: isles keep their silhouette seen from the water, and nobody
+  floods their own cellar by landscaping the shoreline.
+- **Teleport pad**: a small indestructible platform on the isle's
+  continent-facing shore, protected as its own footprint from 5 below to
+  6 above — deliberately NOT the unlimited-upward POI rule of §2, or the
+  owner could never roof it over. The pad is a waypoint of the travel
+  network (§6) and the only intended way in or out.
+
+### 5.2 Isle styles
+
+A **one-time style choice** when the isle is granted. Styles differ in
+surface palette, vegetation and skirt profile only — **the resource
+content below the seabed is identical**, so no style is the good one:
+
+| Style | Look | Skirt |
+|---|---|---|
+| Coral Shore | white sand, palms, shallow reef | gentle |
+| Pinecrag | grey stone, conifers, boulder fields | steep |
+| Ashen Rock | black volcanic rock, basalt columns, sparse growth | steep, cliffed |
+| Mistwood | dark soil, gravewood, heavy undergrowth | gentle |
+
+Re-styling an existing isle for gold is a reserved Phase-2 sink, not MVP.
+
+### 5.3 Depth rights — the central gold sink
+
+The only paid axis (x/z is a gift — you do not buy land from your
+liege). **10 steps of 50 nodes**, from the seabed at −30 down to −530:
+
+| Step | Floor | Price | Step | Floor | Price |
+|---|---|---|---|---|---|
+| 1 | −80 | 50c | 6 | −330 | 12s |
+| 2 | −130 | 1s | 7 | −380 | 20s |
+| 3 | −180 | 2s | 8 | −430 | 35s |
+| 4 | −230 | 4s | 9 | −480 | 60s |
+| 5 | −280 | 7s | 10 | −530 | **1g** |
+
+≈ **2.4 g for the full ladder**. Against a lifetime income to level 60 of
+about 1 g and endgame farming of 6–12 s/h (items_crafting.md §8), the
+first steps are reachable soon after the level-30 grant and the last are
+a genuine endgame fortune — the ladder deliberately outlives the level
+cap. Bought steps are permanent.
+
+### 5.4 What is down there: treasure clusters, not a mine
+
+**Housing mining is a treasure hunt, not a second ore economy** (decided
+2026-08-07). The continental depth axis — ores by biome and depth, cave
+mobs scaling +1 level per 20 nodes (combat_stats.md §3) — stays the
+world's mining game, and a safe private isle must not undercut it by
+selling the same ore without the danger.
+
+- The isle's rock is **deliberately barren**. Each depth step holds a
+  **fixed, deterministic set of clusters** — working value **8 clusters
+  of 20–40 nodes** per step, positions rolled per isle, count and
+  contents identical for everyone. A step is therefore a *calculable
+  payout*, which is what makes its price balanceable at all.
+- **No respawn** (R4): a mined-out cluster is gone. That is precisely why
+  the ladder keeps costing — the next payout is the next step.
+- Contents rise with depth: steps 1–3 ordinary building and smithing
+  stock, 4–7 iron/steel-grade material and gems, **8–10 the depth
+  treasures** including **abyssal gems**, the race-signature ingredient
+  (items_crafting.md §4 / §5.5).
+- **Finder items are mandatory infrastructure, not flavor**: a step is
+  100×100×50 nodes and nobody strip-mines half a million of them. From
+  the moment housing unlocks, vendors sell a cheap **Dowsing Rod**
+  (nearest un-mined cluster within 64 m, direction only, 30 s cooldown);
+  the **Gem Hunter** profession crafts the better **Gem Detector**
+  (longer range, distance readout) — the profession's second reason to
+  exist (professions.md §2).
+
+### 5.5 Access rights
+
+Two grantable levels, managed by the owner at the pad:
+
+| Level | May | Who |
+|---|---|---|
+| Visitor | enter, look | own guild members automatically, plus a per-character whitelist |
+| Trusted | build, dig, open containers | per-character whitelist only; implies Visitor |
+| Owner | everything, both lists, buys depth steps | the grantee |
+
+- Deliberately **guild-wide for visiting, character-wise for trust**:
+  "who may see my isle" is a social question, "who may empty my chests"
+  is a friendship question. There is one toggle, not three — trust
+  covers building, digging and containers together.
+- **One documented exception**: the guild-bank terminal (`guilds.md`
+  §3.1) is usable by every guild member standing on the isle regardless of
+  trust level, subject to the guild's own role rules.
+
+### 5.6 Placement & generation
+
+- Isles sit on a **deterministic allocation grid**: one slot per
+  **1000 × 1000** cell in the housing band (|z| ≥ 4000 behind the own
+  continent). Slot index → coordinates is a computation, never a search.
+- The band's seabed is flat at **y = −30**, which makes generation cheap:
+  the mapgen pass fills only the skirt cone and the isle body, and only
+  where the registry marks a slot **allocated**. An unallocated slot
+  generates as plain ocean — the same VoxelManip cap-and-flood pattern
+  the continent mask already uses everywhere else (WP18).
+  *Implementation note*: Luanti generates deterministically from the
+  seed, so an isle cannot appear in chunks that were already emerged as
+  ocean. Either skip such slots at allocation time or accept a one-time
+  forced regeneration of those few chunks.
+- **1000 nodes of pitch minus the 150-node safe ring ⇒ ≥ 700 nodes of
+  deadly open water between neighbours.** Swimming to the isle next door
+  is a long trip through §2b's deep sea, and that is the point: isles are
+  reached by waypoint, not by water.
+- No hostile spawns, no PvP, and **no workbenches, trainers or vendors**
+  on isles (inventory_equipment.md §4 keeps workbenches in capitals and
+  villages) — the isles must not become a substitute capital.
 
 ## 6. Travel: waypoints & Home Stone
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
-- Waypoints: spawn camp, capital, the own guild's housing plot, plus
+- Waypoints: spawn camp, capital, the own housing isle's pad (plus the
+  pads of isles you are allowed to visit, §5.5), and
   **~1 waypoint per ring per race region** across each territory
   (density is the tuning knob for how relaxed world travel feels).
 - **Unlocked by visiting, per character** (player meta); the fog-of-war
@@ -369,8 +494,8 @@ contiguous housing shelf, sizes, access — live in
   (waypoint → waypoint), instant and free — travel time is the cost;
   mounts stay relevant.
 - **No waypoints in enemy territory** (not claimable or usable there)
-  and **none in the strait/ocean** (except each guild's housing
-  waypoint, section 5).
+  and **none in the strait/ocean** (except the housing isles' pads,
+  section 5).
 - Phase 2 extension: **Nether crossings** link mirrored points
   (x, z) ↔ (x, −z) into enemy territory
   (TODO-design-nether.md until specced).

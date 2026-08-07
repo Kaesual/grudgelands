@@ -398,9 +398,14 @@ it a group raid by design; kills broadcast world-wide.
 
 ### 5.5 Housing depth treasures
 
-**Abyssal gems**: finite nodes in guild housing depths (no respawn, R4);
-ingredients for race signatures (×2) and optional T4 masterworks. Until
-housing ships, apex hoards drop 1 each (§10 P5).
+**Abyssal gems**: finite nodes in the deepest steps of a **personal**
+housing isle (depth steps 8–10, world.md §5.4 — no respawn, R4);
+ingredients for race signatures (×2) and optional T4 masterworks.
+Revised 2026-08-07: since every character is granted an isle at level 30
+and the depths are a bought treasure-cluster ladder rather than guild
+property, the supply is personal progression, not a guild privilege —
+but the deep steps are endgame-priced, so the apex-hoard bridge stays
+(§10 P5).
 
 ### 5.6 War-coast PvP incentive (proposal)
 
@@ -535,14 +540,25 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
 - Job supplies + vendor consumables: the steady trickle (≈15–25% of
   leveling income re-sunk by design).
 
-### 8.4 Big one-time sinks (seeds for guilds/housing TODOs)
+### 8.4 Big one-time sinks
 
-Guild founding **5g**; housing build-rights step 1 = **2g**, each
-further step ×1.5 (steps small and rising — the maximum is practically
-never reached, as decided); mining-rights depth step 1 = **3g**, ×1.5
-per step; continental mining claims 2g (small) / 5g (large), one-time,
-finite resources included. A 5-player guild pools its founding fee with
-~1–2 evenings of endgame income each.
+Revised 2026-08-07 with the housing rework (world.md §5): the isle is a
+**free royal grant at level 30**, and the old split of build-rights and
+mining-rights purchases collapses into **one depth ladder**.
+
+| Sink | Price |
+|---|---|
+| Housing isle itself | free (questline grant, min_level 30) |
+| Housing depth steps 1–10 (50 nodes each, −80 … −530) | 50c · 1s · 2s · 4s · 7s · 12s · 20s · 35s · 60s · **1g** (≈ 2.4g total) |
+| Guild founding | **5g** |
+| Continental mining claim, small / large | 2g / 5g, one-time, finite resources included |
+| Dowsing Rod (vendor) / Gem Detector (Gem Hunter craft) | 15c / crafted |
+
+The depth ladder is now the **anchor sink** (economy.md §4.1): it opens
+at level 30, is per character rather than per guild, and each step buys
+a finite cluster payout (world.md §5.4) that can never fund the next
+step. A 5-player guild still pools its founding fee with ~1–2 evenings
+of endgame income each.
 
 ## 9. Bows & arrows (Phase-2 enabler — catalogued, class NOT decided)
 
@@ -598,4 +614,8 @@ balance-watch in the WP7 playtest.
 signatures would be uncraftable. Recommendation: **apex hoards drop 1
 abyssal gem** as interim source; remove (or reduce to 10% chance) once
 housing depths are live.
-**Decided as recommended (2026-08-06).**
+**Decided as recommended (2026-08-06).** *Amended 2026-08-07*: with
+personal isles the source is no longer guild-gated, but abyssal gems sit
+in depth steps 8–10 (≈ 2g into the ladder), so the bridge is **kept at
+the reduced 10%** rather than removed — the alternative would lock race
+signatures behind the single most expensive purchase in the game.

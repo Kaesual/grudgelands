@@ -28,7 +28,7 @@ Recipe/material details: `items_crafting.md`.
 | Tailor | cloth armor, **bags** | cloth from humanoids (bandit camps) |
 | Alchemist | potions | strong potions; weak heal potions are vendor goods |
 | Herbalism | alchemy/craft herbs | gathering profession; food plants excluded (universal) |
-| Gem Hunter | bonus gem drops while mining | as decided for WP10 |
+| Gem Hunter | bonus gem drops while mining; crafts the **Gem Detector** | as decided for WP10; the detector (world.md §5.4) is the profession's second pillar — it locates treasure clusters on housing isles better than the vendor's Dowsing Rod |
 
 ## 3. Leatherworker supply mechanic
 

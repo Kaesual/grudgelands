@@ -33,6 +33,12 @@ out; a dragon on the mountain you can see at level 8 and only kill at 50;
 and across the strait an enemy king in a guarded throne room whose crown is
 a crafting ingredient.
 
+Your own king, meanwhile, is the one who rewards you. Behind each continent,
+past the deadly open sea, lies a chain of unspoiled isles — barren above the
+rock and rich below it. Serve the realm well enough and the crown grants you
+one: your isle, your build, and a shaft going down as deep as you can afford
+to buy the rights.
+
 Full premise: **[docs/design/story.md](docs/design/story.md)**.
 
 ---
@@ -69,9 +75,14 @@ live there. This section is the tour; the docs are the truth.
 - **Travel** is a Diablo-style waypoint network (unlocked by visiting,
   teleport only waypoint-to-waypoint, none in enemy land) plus a Home
   Stone with a 10 s cast and a 60 min cooldown.
-- **Housing** lives in the safe ocean behind your own continent and is
-  **guild-owned** — build rights (x/z) and mining rights (depth) are
-  bought separately in rising steps: the game's central gold sink.
+- **Housing is a royal grant, not a purchase**: a questline at level 30
+  earns you one of the King's isles behind your continent — a 100×100
+  build box, free digging down to the seabed, and below that a ladder of
+  **purchased depth rights**. Each step hides a finite set of treasure
+  clusters you hunt with a dowsing rod; nothing regrows, so the next
+  payout is the next step. That ladder is the game's central gold sink.
+  Guild members may visit; a per-character trust list decides who may
+  dig and open your chests.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
@@ -132,17 +143,21 @@ lowest tier of each category — everything above is player-crafted.
 
 ### Guilds — [`guilds.md`](docs/design/guilds.md)
 
-A pure **ownership layer**: bank, housing area, mining claims, three fixed
-roles, guild chat. Even solo players found one. Deliberately no guild
-levels, perks or wars.
+An **ownership and access layer**: one shared bank account — 6 tabs and
+two purses, reachable at the capital or from a terminal on any member's
+isle — plus contested mining claims out in the open world, mutual isle
+visiting, three fixed roles and guild chat. Deliberately no guild levels,
+perks or wars.
 
 ### Where the journey goes
 
 - **Phase 1 (MVP)** — the loop above end to end: world, classes, mobs,
   quests with level gates, professions, gold and traders, the map.
 - **Phase 2** — four more classes (Paladin, Rogue, Warlock, Shaman),
-  player housing, the walkable Nether with crossings into enemy land,
-  dungeons, apex bosses per region, mounts, reputation, player trading.
+  the housing isles (a strong candidate to move into Phase 1, since
+  nothing else gives gold a purpose), the walkable Nether with crossings
+  into enemy land, dungeons, apex bosses per region, the reef band,
+  mounts, reputation, player trading.
 - **Phase 3** — own textures/models/sounds, localization (German first),
   balancing, server performance, onboarding.
 
@@ -159,7 +174,7 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (9 of 24 work packages):** the foundation and the whole
+**Shipped (9 of 25 work packages):** the foundation and the whole
 world/combat layer.
 
 - **World**: two ocean-separated continents with soft coasts, 17 mirrored
@@ -179,9 +194,10 @@ world/combat layer.
 
 **Not in the game yet:** quests and quest NPCs, money and traders,
 professions and crafting recipes, talent trees, the fog-of-war map,
-guilds, travel/waypoints, offhand and shields, loot rolls on class items,
-durability and repair, parties, food and rest, apex bosses, and the real
-capital/outpost structures (WP6 ships anchors and banners, not buildings).
+guilds, housing isles, travel/waypoints, offhand and shields, loot rolls
+on class items, durability and repair, parties, food and rest, apex
+bosses, and the real capital/outpost structures (WP6 ships anchors and
+banners, not buildings).
 
 **Ready to start next** (no design blockers): talent trees (WP11), world
 structures (WP13), offhand (WP14), travel (WP17), party system (WP20),

@@ -34,11 +34,14 @@ game (not a mod pack), written in Lua.
   your own faction's territory (outside protected zones such as capitals,
   outposts and quest structures); enemy territory and the border zone
   cannot be modified. Ores respawn so a persistent world does not run dry.
-- **Player housing**: guild-owned areas in the safe ocean behind the own
-  continent (island model in design), with separately purchasable build
-  (x/z) and mining (depth) rights and depth treasures — the main outlet
-  for free building and the central gold sink (`docs/design/world.md`
-  §5, layout: `TODO-design-housing.md`).
+- **Player housing — the King's isles**: beyond the coastal sea behind
+  each continent lies a chain of unspoiled isles; the **King grants one
+  per character** for merit (questline, level 30). A 100×100 build box,
+  free digging down to the seabed, and below it a **ladder of purchased
+  depth rights** whose finite treasure clusters (no respawn, detector
+  items to find them) are the central gold sink. The main outlet for
+  free building, and the only place a player meets their own King as an
+  ally (`docs/design/world.md` §5).
 - **Travel**: waypoint network (Diablo/PoE style — teleport only from
   waypoint to waypoint, unlocked by visiting, none in enemy territory)
   + a Home Stone to the own capital (10 s cast, damage interrupts,
@@ -70,10 +73,10 @@ game (not a mod pack), written in Lua.
   land"** — the Accord–Throng conflict is old, but a new demonic evil
   rises from the Nether and threatens both factions equally
   (`docs/design/story.md`).
-- **Guilds as a pure ownership layer** (bank, housing, mining claims,
-  fixed roles; even solo players found one): `docs/design/guilds.md`.
-  Deliberately NO guild levels/perks/wars — Luanti is not MMORPG enough
-  for that.
+- **Guilds as a pure ownership and access layer** (a shared bank account
+  reachable from members' isles, continental mining claims, mutual isle
+  visiting, fixed roles): `docs/design/guilds.md`. Deliberately NO guild
+  levels/perks/wars — Luanti is not MMORPG enough for that.
 - **License: GPL** (non-commercial project) — so we can adopt and adapt
   code from all reference projects (incl. VoxeLibre).
 
@@ -217,10 +220,13 @@ game (not a mod pack), written in Lua.
       (`docs/design/professions.md` §5)
 - [ ] **Decide: bow/ranged-weapon system + a Hunter-like class**
       (prerequisite for Bowyer; not in the current class plan)
-- [ ] **Player housing** (guild-owned ocean areas with separately paid
-      build/mining rights + depth treasures; spec: `docs/design/world.md`
-      §5, layout TODO-design-housing.md) — may be pulled into Phase 1
-      since it is the central gold sink
+- [ ] **Player housing — the King's isles** (per-character grant at
+      level 30, 100×100 build box, 10 purchased depth steps with finite
+      treasure clusters, isle styles, visitor/trusted access, guild-bank
+      terminal; spec: `docs/design/world.md` §5, open tuning:
+      TODO-design-housing.md) — **strong candidate to pull into Phase 1**:
+      it is the central gold sink AND the only sink that opens before
+      level 60, so Phase 1 without it has nowhere for gold to go
 - [ ] Race perks beyond the basics: race-exclusive professions/recipes,
       race-restricted classes (decide once more classes exist)
 - [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
@@ -235,6 +241,9 @@ game (not a mod pack), written in Lua.
 - [ ] Mounts (incl. class-specific unlock quests as flavor)
 - [ ] Reputation system (simplified)
 - [ ] Auction-house-like trading between players
+- [ ] **Ocean content**: the reef band around continents and housing
+      isles (coral/kelp flora, fish, shore wildlife) — decided in
+      `docs/design/world.md` §2b, catalog open (`biomes_mobs.md` §1.2)
 
 ## Phase 3 — Polish
 

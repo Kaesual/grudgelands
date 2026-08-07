@@ -151,6 +151,16 @@ Notes:
 - The single shared `grug_ocean` above replaces the per-biome
   sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
   one ocean is simpler and the only way to cover the open sea).
+- **Reef band — decided 2026-08-07, not yet catalogued**: the coastal
+  sea around the continents *and* around every housing isle
+  (world.md §2b: 1500 / 150 nodes) becomes a real biome with coral,
+  kelp, fish and harmless-to-low-level shore wildlife, distinct from the
+  bare `grug_ocean` sand bottom that carries the strait and the open
+  sea. It is the counterpart to the deep sea's lethality: pretty and
+  inhabited near land, deadly away from it. The registration, the flora
+  and the mob rows are open work for the ocean-content WP — including
+  whether Shore Crab and Reef Lurker (§8.3, deferred for want of a
+  licensed model) come back with it.
 - **Where the beaches really are**: the ocean mask carves the coastline
   0..150 nodes INSIDE the rectangle, so the strait-facing shoreline sits
   at |z| ≈ 100..250 — i.e. inside the **war_coast** zone (|z| ≤ 300),

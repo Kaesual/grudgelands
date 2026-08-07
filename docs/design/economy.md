@@ -25,8 +25,8 @@ currency structure and the qualitative bands.
 - Starter-zone items and trash loot: **a few copper**.
 - High-tier weapons/armor pieces: **a few silver**.
 - Valuable rare items: **several silver — never a full gold**.
-- **A full gold is a fortune**, reserved for the big sinks: guild
-  founding fee, housing expansion steps, mining claims.
+- **A full gold is a fortune**, reserved for the big sinks: the deepest
+  housing depth steps, the guild founding fee, mining claims.
 
 ## 3. Income streams
 
@@ -52,5 +52,26 @@ currency structure and the qualitative bands.
   money. The per-character steady sink from hour one.
 - **Talent respec** at the class trainer, price rising with level
   (progression.md §2, WP11).
-- Big/long-term: guild founding fee, housing expansion, mining claims
-  (one-time purchases of finite resources — `guilds.md` §3).
+- Big/long-term: **housing depth rights** (the main one), guild founding
+  fee, continental mining claims (one-time purchases of finite
+  resources — `guilds.md` §3.2).
+
+### 4.1 Housing depth rights — the central long-term sink
+
+Revised 2026-08-07 with the housing rework (`world.md` §5). The isle
+itself is **free** — a royal grant at level 30, not a purchase — and the
+only paid axis is **depth**: 10 steps of 50 nodes from 50c up to 1g,
+≈ 2.4g for the full ladder (table: world.md §5.3, price list:
+items_crafting.md §8.4).
+
+Why this works as the anchor sink:
+
+- It starts at **level 30**, so the *long-term* sink opens well before
+  the level cap. The early sinks (vendor gear, bags, consumables, job
+  supplies, repair — §4) keep gold meaningful from hour one; what was
+  missing was something to save *towards*.
+- It is **per character, not per guild**, so the drain scales with the
+  player count instead of the guild count. Total gold destroyed goes up
+  even though the entry price went to zero.
+- Every step buys a **finite** payout (world.md §5.4, no respawn), so it
+  can never turn into an income source that pays for its own next step.

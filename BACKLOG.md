@@ -36,7 +36,7 @@ window. Rules:
 | WP13 | Starter/world content: 3 race capitals per continent (center = faction seat; schematics, per-race build sets, elven treehouses), patch villages/settlements, flavor camps, spawn immunity | open (spec: world.md §2 protection zones, §3/§9, `docs/design/biomes_mobs.md`) | WP2, WP18 |
 | WP14 | Offhand & carried light: grug_offhand (mcl_offhand pattern), shields, 2H rule, torch light radius (profiled) | open (spec: `docs/design/combat_stats.md` §7) | WP3 |
 | WP15 | Character screen & bags: sfinv pages (Character/Bags), equipment slots + stat recompute, bag system | ✅ `grug_inventory`: Character homepage (stats, model, 7 slots incl. reserved trinkets), 4-slot bag system (runtime test pending) | WP3 |
-| WP16 | Guilds: registry, manager NPC, roles, guild bank, /g chat | open (spec: `docs/design/guilds.md`) | WP7 |
+| WP16 | Guilds: registry, manager NPC, roles, guild bank (ONE detached inventory per guild — 6×32 tabs, 3 member / 3 officer, two purses, transaction log; terminals are inventory-less nodes on housing isles), /g chat | open (spec: `docs/design/guilds.md` §2/§3) | WP7 |
 | WP17 | Travel: waypoint nodes, visit-unlock, travel formspec (map UI docks on with WP12), Home Stone + /unstuck | open (spec: `docs/design/world.md` §6) | WP2 |
 | WP18 | Continent mapgen rework: two ocean-separated continents (soft coasts, 3000×1600 default via grug_core constants), remove mountain wall, per-race spawn points at the 3 race capitals (safe-core belt), radial mob-level field with war-coast cap (+ `guard_level_at` inverse field for WP6), civilization-gradient biome layer (settled race biomes core/inner, shared nature biomes outward), coastal-ocean guarantee, R3 ocean build lock, deep-sea guard mobs | ✅ two-continent geometry + radial level/guard fields in `grug_core` (wall and z-rings gone), continent ocean mask + 6 race-capital platforms in `grug_mapgen/structures.lua`, 17 mirrored biomes per biomes_mobs.md §1.3 with new `grug_nodes`/`grug_trees` content, Kraken Guard in the open sea (**needs a fresh world**; runtime test pending) | WP2 |
 | WP19 | Combat feel & kit tuning: global cooldown (1 s), soft target lock (~8 s), Mighty Blow as rage dump, Hamstring, Fireball mana-limited, Frost Nova pivot (12 s + slow), Power Word: Shield (absorb via hp modifier), visible race passives | ✅ GCD 1 s (silent gate, no wear churn) + soft target lock (8 s, separate enemy/ally slots, range+LOS re-checks) in `grug_abilities`; kits per classes.md tables (Mighty Blow 25 rage dump, NEW Hamstring w/ mob slow via `grug_mobs.slow` halving speeds, Fireball 8 mana GCD-only, Frost Nova 12 s root→slow, PW:S absorb via `grug_core.set_absorb` in the central hp modifier; Renew `talent_gated` for WP11); race passives via `grug_classes` perk registry (dwarf fall −20%, troll OOC regen — mana today, WP21 reuses perk; undead zombie night truce via `_grug_ignore_player` veto patch in mobs api.lua; orc +1 rage/hit taken, elf +5 m item-meta range, human quest-XP hook latent until WP8). Runtime test pending | WP4 |
@@ -44,6 +44,7 @@ window. Rules:
 | WP21 | Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper NPC (rested XP + Home Stone rebind), NPC anchor/respawn insurance | open (spec: `docs/design/combat_stats.md` §5, progression.md §1) | WP1 |
 | WP22 | Durability & repair: effect-loss at 0 durability (items never destroyed), NPC repair for gold, tier-scaled costs | open (spec: `docs/design/economy.md` §4) | WP5, WP7 |
 | WP23 | Apex world bosses: one dragon POI per continent (stationary arena fight, telegraphs, hoard + respawn timer); enemy-dragon raid trophy and per-region apex kits follow (Phase 2) | open (spec: `docs/design/world.md` §4b) | WP6 |
+| WP24 | Housing isles: housing band (flat seabed −30, safe 150 m ring suppressing open-sea spawns), deterministic 1000er allocation grid + isle generation (100×100 box, ~50 skirt, 4 styles), indestructible teleport pad as waypoint, free digging to −30, 10 purchased depth steps to −530 with deterministic treasure clusters (no respawn), Dowsing Rod, visitor/trusted access lists, guild-bank terminal slot | open (spec: `docs/design/world.md` §5, `guilds.md` §3.1; open tuning: `TODO-design-housing.md`) | WP7, WP17 |
 
 ### Readiness (2026-08-07)
 
@@ -62,16 +63,21 @@ a lair needs).
   free of its WP6 dependency (guards, outposts and the war-coast roster
   ship) and now waits only on WP8 + that same §4
 - WP12 ← WP17; WP16 ← WP7
-- Housing WP (unscheduled) ← `TODO-design-housing.md`
+- **WP24 (housing) is design-unblocked since 2026-08-07** (world.md §5
+  decided; `TODO-design-housing.md` now holds only in-WP tuning) and
+  waits on WP7 (gold for the depth ladder) + WP17 (the pad is a
+  waypoint). It also needs a **fix in `grug_core.open_sea_at`**: today
+  open sea starts at |z| = 3200, which would spawn Kraken Guards on
+  housing beaches (world.md §2b)
 
 Notes from the decided world design (`docs/design/world.md`):
 - Race choice at character creation: ✅ shipped with WP3 (race dialog
   between faction and class; race perks follow with WP7/WP10).
 - Build/dig restrictions (destructibility rules §2) land in `grug_core`
   alongside WP2.
-- Housing implementation is not yet scheduled as a WP — the layout is
-  still open in `TODO-design-housing.md` (ocean/island model, world.md
-  §5). The Home Stone is covered by WP17.
+- Housing is **WP24** since 2026-08-07 (the King's isles, per character
+  rather than per guild — world.md §5). The Home Stone is covered by
+  WP17.
 
 ### WP details (acceptance criteria)
 
