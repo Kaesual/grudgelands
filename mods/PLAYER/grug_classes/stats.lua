@@ -72,6 +72,9 @@ end
 -- same pattern as grug_core.get_player_faction).
 grug_core.get_crit_chance = grug_classes.get_crit_chance
 grug_core.get_dodge_chance = grug_classes.get_dodge_chance
+-- Auto-attack Strength bonus (combat_stats.md §2); read by the weapon-cadence
+-- patch in mobs/api.lua on_punch.
+grug_core.get_melee_bonus = grug_classes.get_melee_bonus
 
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	grug_classes.apply_stats(player,

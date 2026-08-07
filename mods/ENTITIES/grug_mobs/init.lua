@@ -39,6 +39,15 @@ grug_mobs.storage = core.get_mod_storage()
 local spawn_zones = {} -- mob name -> set of allowed zone names
 local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 
+-- Every mob registered through the wrapper below (entity name -> true).
+-- Read per punch by the weapon-cadence GRUG PATCH in mobs/api.lua on_punch:
+-- only OUR mobs use the auto-attack model (cadence gate, full damage per
+-- accepted swing, Strength bonus, crit) — a vanilla mobs_redo mob keeps
+-- vanilla behavior. A table lookup keyed on `self.name` costs nothing per
+-- punch and — unlike the runtime-installed `_grug_*` entity fields — is
+-- already complete before the very first punch on a freshly activated mob.
+grug_mobs.registered_cadence = {}
+
 -- mobs_redo's global hook for additional spawn checks (an empty stub
 -- upstream; returning true BLOCKS the spawn). A mob with neither zones nor
 -- a check spawns wherever its mobs:spawn() row allows.
@@ -194,6 +203,7 @@ function grug_mobs.register_mob(name, def)
 	-- Level/tier config + stat derivation (levels.lua); HP, damage and XP
 	-- are engine-owned from here on, the def must not hand-set them.
 	grug_mobs.register_level_cfg(name, def)
+	grug_mobs.registered_cadence[name] = true
 	-- Aggro config kept as an upvalue: mobs_redo does not copy custom def
 	-- fields onto the entity, so the wrappers install them at runtime
 	-- (grug_mobs.apply_aggro_fields, aggro.lua).

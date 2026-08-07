@@ -43,6 +43,15 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   plate reaches the **60% reduction cap**, cloth ~15%.
 - Weapons carry a level requirement; weapon base damage ≈ 4 + 0.35×level
   (level-60 weapon ≈ 25; itemization details → items/crafting design).
+- **Auto-attacks run this pipeline as of 2026-08-07**: holding the attack
+  key is an auto-attack at the weapon's attack speed
+  (`full_punch_interval`) — each accepted swing deals the full weapon
+  damage + floor(Str/10) and rolls the crit above, while punches arriving
+  faster (the client fires one every 0.2 s while the key is held) are
+  discarded whole, so spamming gains nothing. Cadence gate, Strength and
+  crit sit in the `mobs/api.lua` `on_punch` patch calling `grug_core`
+  (before this, auto-attacks ignored Strength, could never crit, and every
+  weapon below a bronze sword dealt 0 while the key was held).
 
 Anchors (computed):
 

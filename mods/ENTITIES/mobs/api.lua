@@ -2679,6 +2679,42 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
+	-- GRUG PATCH: weapon-cadence auto-attacks (combat_stats.md §2, 2026-08-07).
+	-- Player melee on one of OUR mobs is an auto-attack at weapon speed: a
+	-- punch that arrives before the wielded weapon's full_punch_interval has
+	-- passed since the last ACCEPTED swing is discarded right here — before
+	-- weapon wear, hit sounds, `do_punch` (threat/rage/drop tag/XP) and the
+	-- retaliation block below, so button spam does nothing at all. An
+	-- accepted swing then lands at FULL weapon damage (see the loop below).
+	-- The clock cannot be `tflp`: the engine resets it on every punch PACKET
+	-- and the client sends one every 0.2 s while the dig key is held, which
+	-- is exactly what made vanilla's `tflp / full_punch_interval` factor
+	-- collapse to 0.2/fpi (0.22 with the bare hand) and every weapon below a
+	-- bronze sword deal a permanent, invisible 0 against an armor-100 mob
+	-- (all feedback AND the health subtraction hang off `damage >= 1`).
+	-- Rationale and the per-player clock: grug_core/combat.lua.
+	-- Scope: real player swings on a grug_mobs-registered mob only —
+	-- mob-vs-mob, arrows and our own ability punches (`in_ability_punch`,
+	-- set around the punch in grug_core.deal_ability_damage, which already
+	-- rolls its own stats and punches at a full interval) keep vanilla
+	-- behavior, as does every vanilla mobs_redo mob. `grug_core` is
+	-- guaranteed loaded once `grug_mobs` is (it depends on it).
+	-- `return true` is mobs_redo's own "punch handled" exit, same as the
+	-- protection branch above.
+	local grug_cadence = false
+
+	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name]
+	and not grug_core.in_ability_punch then
+
+		grug_cadence = true
+
+		if not grug_core.accept_melee_swing(hitter,
+				tool_capabilities.full_punch_interval or 1.4) then
+			return true
+		end
+	end
+
 	local weapon = hitter:get_wielded_item()
 	local weapon_def = weapon:get_definition() or {}
 
@@ -2700,9 +2736,35 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 			if tmp < 0 then tmp = 0.0 elseif tmp > 1 then tmp = 1.0 end
 
-			damage = damage + (tool_capabilities.damage_groups[group] or 0)
-					* tmp * ((armor[group] or 0) / 100.0)
+			local base = tool_capabilities.damage_groups[group] or 0
+
+			-- GRUG PATCH (cadence, see the gate above): an accepted swing is
+			-- a FULL swing — `tflp` is the time since the last client punch,
+			-- not since the last hit, so it must not scale the damage — and
+			-- it carries the attacker's Strength bonus (combat_stats.md §2:
+			-- melee damage = weapon damage + floor(Str/10)), added to the
+			-- melee damage group BEFORE the armor scaling so a tough mob's
+			-- armor reduces the whole hit, exactly like it does for the
+			-- ability damage that arrives through the same loop.
+			if grug_cadence then
+
+				tmp = 1.0
+
+				if group == "fleshy" then
+					base = base + grug_core.get_melee_bonus(hitter)
+				end
+			end
+
+			damage = damage + base * tmp * ((armor[group] or 0) / 100.0)
 		end
+	end
+
+	-- GRUG PATCH (cadence): auto-attack crit — ×1.5 plus the same particle
+	-- burst ability crits use (combat_stats.md §2). Rolled after the armor
+	-- scaling (a factor commutes) and before the `immune_to` override below,
+	-- so an immunity entry still wins over a lucky roll.
+	if grug_cadence then
+		damage = grug_core.melee_crit(hitter, damage, self.object)
 	end
 
 	-- check if hit by player item or entity
@@ -2858,7 +2920,12 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	end
 
 	-- knock back effect (only on full punch)
-	if self.knock_back and tflp >= punch_interval then
+	-- GRUG PATCH (cadence): an accepted swing IS a full punch. The gate above
+	-- lets a swing land up to 10 % early (client punch quantization), and
+	-- `tflp` no longer describes the swing rhythm at all, so vanilla's
+	-- `tflp >= punch_interval` test would drop the knockback of a perfectly
+	-- legitimate hit.
+	if self.knock_back and (grug_cadence or tflp >= punch_interval) then
 
 		local v = self.object:get_velocity()
 

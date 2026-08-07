@@ -251,7 +251,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **16 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **20 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron

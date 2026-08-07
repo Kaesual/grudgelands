@@ -17,6 +17,13 @@ function grug_core.get_dodge_chance(player)
 	return 0
 end
 
+-- Flat weapon-damage bonus from Strength (combat_stats.md §2:
+-- melee damage = weapon damage + floor(Str/10)). Consumed by the
+-- auto-attack patch in mobs/api.lua on_punch.
+function grug_core.get_melee_bonus(player)
+	return 0
+end
+
 -- Race passive lookup (world.md §7); grug_classes overrides this with the
 -- real registry accessor. Returns the perk value or nil.
 function grug_core.get_race_perk(player, key)
@@ -339,6 +346,69 @@ local function crit_particles(pos)
 		size = {min = 2, max = 3},
 		texture = "default_item_smoke.png^[multiply:#ffd100",
 	})
+end
+
+--
+-- Auto-attack cadence (combat_stats.md §2, implemented 2026-08-07). Held
+-- melee = auto-attack at weapon speed; every accepted swing lands at FULL
+-- weapon damage, everything arriving faster is discarded whole.
+--
+-- Why the clock lives HERE and not in mobs_redo's `tflp`: with the dig
+-- button held the client punches every `object_hit_delay` = 0.2 s
+-- (engine `src/client/game_internal.h`) and the server resets its punch
+-- timer on EVERY punch packet (`PlayerSAO::resetTimeFromLastPunch`,
+-- `src/network/serverpackethandler.cpp` INTERACT_START_DIGGING) — so `tflp`
+-- measures the time between CLIENT punches, never between hits that landed,
+-- and it sits at ~0.2 s forever while the button is down. mobs_redo scaled
+-- damage by `tflp / full_punch_interval`, which therefore collapsed to
+-- 0.2/fpi and made every weapon below a bronze sword deal a permanent,
+-- feedback-less 0 against an armor-100 mob (all feedback AND the health
+-- subtraction sit behind mobs_redo's `damage >= 1`). Gating on `tflp` alone
+-- would have dropped EVERY held punch instead. So: our own clock, per
+-- player, in server time.
+--
+
+-- Jitter tolerance: a swing may land 10 % early. The client quantizes
+-- punches to 0.2 s steps, so a strict comparison would push a 0.9 s weapon
+-- to an effective 1.0 s cadence.
+local SWING_TOLERANCE = 0.9
+
+local last_swing = {} -- player name -> mono_time of the last accepted swing
+
+-- Consumes the swing clock. true = accepted auto-attack (clock stamped),
+-- false = the punch arrived too early and the caller must discard it
+-- ENTIRELY (no damage, no wear, no sound, no threat — button spam does
+-- nothing). `interval` is the weapon's full_punch_interval.
+-- Per PLAYER, not per mob: attack speed is a property of the attacker, so
+-- switching targets must not hand out a free swing.
+function grug_core.accept_melee_swing(player, interval)
+	local name = player:get_player_name()
+	local now = grug_core.mono_time()
+	local last = last_swing[name]
+	if last and now - last < interval * SWING_TOLERANCE then
+		return false
+	end
+	last_swing[name] = now
+	return true
+end
+
+core.register_on_leaveplayer(function(player)
+	last_swing[player:get_player_name()] = nil
+end)
+
+-- Crit roll for a finished auto-attack (combat_stats.md §2): same ×1.5 and
+-- the same particle burst as ability crits above — auto-attacks were the one
+-- damage source that could never crit. `target` only supplies the particle
+-- position. Returns the (possibly critical) damage.
+function grug_core.melee_crit(player, damage, target)
+	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
+		return damage
+	end
+	local pos = target and target:get_pos()
+	if pos then
+		crit_particles(pos)
+	end
+	return damage * 1.5
 end
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip
