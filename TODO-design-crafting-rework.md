@@ -153,6 +153,17 @@ worst case ≈ 36 % against a 30 % cap — it clamps, dodge ≈ 19 % and the
 60 % armor cap are untouched). Option **(a)** below was taken, together
 with C11's option (b). The reasoning stays here; the rule lives there.
 
+**Owner steer, 2026-08-08 — trinkets are NOT finished planning and must
+not be implemented before they are.** The direction to work out: a
+trinket probably deserves **its own kind of enchantment rather than the
+normal prefix/suffix affixes**, because it has **no base value at all** —
+no damage number, no armor number — so both the refinement bonus and the
+affix model that hang off a base value have nothing to bite on. That
+makes option **(b)** below (fixed special effects, §6b.7 shape) the more
+likely resolution than the pool row that was provisionally landed under
+(a). Re-open this before WP5 or WP10 touches trinkets: the §6.2 pool row
+already in the doc is a placeholder, not a settled rule.
+
 **Still open below: the bag half — and the same gap now applies to
 trinkets.** §6b.1's refinement-word table has no row for trinkets, and
 §6b.2's refinement bonus ("+15 % base damage or the armor equivalent,
