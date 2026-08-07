@@ -77,7 +77,12 @@ That is the property the re-cut was made for, and it is checkable:
   and the 2H staff to the Woodcarver. Bows join the Woodcarver in
   Phase 2 (§5).
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
-  old roster they had none at all.
+  old roster they had none at all. **The items ship in the MVP**
+  (decided 2026-08-08): the slots are no longer reserved
+  (`inventory_equipment.md` §2) and trinkets have their own enchant pool
+  (`items_crafting.md` §6.2), so the Goldsmith's headline is a product
+  and not a promise, and it is not the one profession in the roster
+  whose exclusive output arrives after the MVP.
 - **The offhand is split, not shared**: the Tailor makes the **spell
   tome**, the Blacksmith makes the **shield**. Different items, different
   armor classes, different users — one item per concept holds

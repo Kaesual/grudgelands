@@ -17,10 +17,17 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
 
 - **Head, Chest, Legs, Feet, Offhand** (offhand mechanics:
   `combat_stats.md` §7 / WP14).
-- **2 Trinket slots, reserved**: UI + meta support from day one, first
-  trinket items post-MVP (same strategy as the Unique quality tier).
-  Both slots are the **Goldsmith's** exclusive item family
-  (professions.md §2).
+- **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
+  UI, meta and the group-filtered `allow_put` shipped with WP15; what
+  was missing was an item family, and **trinket items now ship in the
+  MVP** as the **Goldsmith's** exclusive family (professions.md §2,
+  items_crafting.md §3.6b) with their own enchant pool
+  (items_crafting.md §6.2). Trinkets carry **no armor class and no class
+  rank binding** — every class wears both slots, and they add no armor
+  points (combat_stats.md §2), which is why the 60 % armor cap is
+  untouched by them. The Unique quality tier keeps the
+  ship-the-frame-first strategy on its own; the trinket slots no longer
+  share it.
 - No ring/neck/shoulder slots in the MVP.
 - Slots are **player-inventory lists** with group-filtered `allow_put`
   (decided during WP15 — auto-persisted, simpler than the 3d_armor

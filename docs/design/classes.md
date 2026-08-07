@@ -113,4 +113,17 @@ moves into the talent tree.
 - Buffs/auras (e.g. Battle Shout) and party frames → with skill trees
   (WP11) or later. (Power Word: Shield moved into the base kit with the
   WP19 kit tuning, §5.)
+- **Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08).
+  Poison is intended as the **Rogue's signature damage type** — the
+  damage-over-time channel §2's pipeline does not have yet — and the
+  Rogue is the Phase 2 class (ROADMAP; `professions.md` §2 already
+  builds the leather line for it). **Until then there is no poison
+  stat**: it appears in no `combat_stats.md` §2 formula, in no
+  `items_crafting.md` §6.2 enchant pool and in no §6.3 roll range, so
+  nothing may carry "+poison" — not an affix word, not a trinket, not a
+  drop. What exists today is poison as a **mob** effect only (the
+  serpent's flat damage-over-time on hit, `biomes_mobs.md` §3.1, and the
+  Alchemist's Antivenom that cures it, `items_crafting.md` §3.6); that
+  is a mob verb, not a player stat, and the Rogue work is what turns it
+  into one.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.

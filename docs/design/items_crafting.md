@@ -763,10 +763,13 @@ recipes want (§6.4).
 
 - **Both trinket slots** (`inventory_equipment.md` §2). They had no owner
   in the old roster at all; the Goldsmith is the first profession to hold
-  a slot pair outright. The slots themselves are reserved post-MVP (UI +
-  meta from day one, items later), so this is the one profession whose
-  headline product arrives after the MVP — the gem line, the Gem Detector
-  and the mining bonus carry it until then.
+  a slot pair outright. **Trinkets ship in the MVP** (decided
+  2026-08-08 — the slots are no longer reserved): the Goldsmith's
+  headline is a **product, not a promise**, it is the profession's own
+  wearable output on day one, and it is the reason the profession is no
+  longer the one exception to `professions.md` §2.1's coverage claim.
+  Trinkets carry no armor class and no class rank binding, so every
+  class is a customer; their enchant pool is the trinket row of §6.2.
 - **The Gem Detector** (world.md §5.4) — locates treasure clusters on a
   housing isle better than the vendor's Dowsing Rod. Carried over from
   the Gem Hunter unchanged, including its role as the profession's second
@@ -1043,7 +1046,7 @@ pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`.
 
 **`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —
 WP7 ships 72 equippable vendor items that carry the ilvl but no check):
-**every equippable item** carries it — weapons, armor, offhands, later trinkets — and it
+**every equippable item** carries it — weapons, armor, offhands and trinkets — and it
 equals the item's ilvl. Equipping below the requirement is **blocked
 with a chat message**, enforced in the slots' group-filtered `allow_put`
 (inventory_equipment.md §2); "equips but grants nothing" was rejected as
@@ -1096,6 +1099,34 @@ edit in one place, not a rewrite of the catalog.
 | Metal armor | +Str, +HP, +armor%, +dodge% |
 | Leather armor | +Dex, +HP, +crit%, +dodge% |
 | Cloth armor | +Int, +mana, +HP, +crit% |
+| **Trinkets** (both slots) | **+Str, +Int, +Dex, +HP, +mana, +crit%** |
+
+**The trinket row** (added 2026-08-08 with the MVP trinkets,
+`inventory_equipment.md` §2). Every other row is bound to a wearer by
+its armor class or its weapon family, so its pool can be narrow;
+trinkets are worn by **every class** (no armor class, no rank binding,
+§3.6b), so theirs is the one **universal-ish** pool: all three primaries
+so any class finds its own, +HP and +mana as the two flat resources, and
++crit% as the single percentage. It is deliberately **not** a superset:
+
+- **No +armor%** — armor is what the four armor slots are *for*, and a
+  fifth and sixth source would push the 60 % cap (`combat_stats.md` §2)
+  without any class having to wear armor for it.
+- **No +dodge%** — avoidance stays an armor property, so the
+  mitigation-vs-avoidance choice between the metal and leather rows
+  keeps its meaning; a trinket that hands out dodge would let a cloth
+  wearer buy the leather row's identity.
+- **No +attack speed%** — that is the melee-weapon row's identity and
+  the one stat that multiplies with everything else on a character.
+
+Six entries against the other rows' four or five is intended: with the
+hard 4-slot ceiling of §6b.4, a wider pool means a trinket is a *roll*
+rather than a predictable stat stick, which is what makes two of them
+worth comparing. This section's **"no duplicate stat per item"** rule
+applies to trinkets unchanged — a single trinket may never carry +Str
+twice, so its up-to-four affixes are four *different* stats out of the
+six. The two trinket slots hold two separate items, so the same stat may
+legally appear once in each.
 
 ### 6.3 Roll ranges by ilvl bracket and source window
 
@@ -1127,10 +1158,50 @@ Master's in the fourth. These bands are **not** the six material tiers of
 | crafted-masterwork | 0.60–1.00 | crafted Rare incl. race signatures |
 | boss | 0.80–1.00 | apex hoards, faction King |
 
-Cap safety at 60 (6 slots: weapon, offhand, 4 armor): worst-case crit
-stacking ≈ 6×3% + 5% base + ~7% from Dex = ~30% — lands exactly on the
-cap, which **clamps** (flat caps, combat_stats §2); dodge and the 60%
-armor cap clamp identically. Budgets need no further rules.
+**Cap safety at 60 — re-run for 8 slots (2026-08-08).** The original
+check assumed **6** enchantable slots (weapon, offhand, 4 armor) and
+read: worst-case crit ≈ 6×3 % + 5 % base + ~7 % from Dex ≈ 30 %, landing
+exactly on the cap. With the MVP trinkets (`inventory_equipment.md` §2)
+the count is **8**, and the arithmetic changes:
+
+| Stat | Slots that can roll it | Worst case at 60 | Cap (`combat_stats.md` §2) | Verdict |
+|---|---|---|---|---|
+| **Crit** | 8 (weapon, offhand, 4 armor, 2 trinkets) | 8×3 % = 24 % + 5 % base + ~7 % Dex ≈ **36 %** | **30 %** | over by ~6 points, **clamps** |
+| **Dodge** | 4 (armor only — no trinket, no weapon) | 4×3 % = 12 % + ~7 % Dex ≈ **19 %** | **30 %** | under, no clamp |
+| **Armor %** | 4 (armor only) | unchanged by trinkets | **60 %** | unchanged |
+
+Where the numbers come from: **3 %** is the top of the 46–60
+`+Crit%/+Dodge%` band in the table above, and one item may carry a given
+stat **once** (§6.2), so 3 % per slot is the ceiling per item. The
+**5 %** is crit's flat base and the **~7 %** is `0.1 %×Dex` at a
+level-60 Dex of ≈ 70 (`combat_stats.md` §1/§2 — base 10 plus 1 per
+level); dodge has the Dex term but no base, which is the whole
+difference between the two rows.
+
+**A stricter upper bound, for completeness.** Nothing stops one item
+from carrying `+Dex` *and* `+crit%` (different stats, so §6.2's rule is
+satisfied). Eight items at the band's top `+Dex` of 12 add 96 Dex, i.e.
+another ~9.6 % crit, for an absolute ceiling of ≈ **45 %** — and dodge
+by the same route reaches ≈ 12 % + 16.6 % ≈ **29 %**, still under its
+cap by a hair. Both are deliberately generous — they need a full Rare
+set rolled at the top of every range on both stats on every slot, and
+they over-count anyway, because `+Dex` is in neither the metal-armor,
+the cloth-armor nor the caster-weapon pool. No reachable set gets there;
+the bound exists so nobody has to wonder.
+
+**Verdict: the flat caps still absorb it, and no new rule is needed.**
+Crit clamps at 30 %, dodge lands under its cap even in the stricter
+bound above, and the 60 % armor cap is not touched at all because
+trinkets roll no `+armor%`. What is gone is the *headroom*: the 6-slot
+check landed on the cap with nothing to spare, the 8-slot one
+**overshoots it by about 6 points** in the plain case and by ~15 in the
+stacked one — a fully crit-stacked endgame set wastes roughly its last
+two crit affixes. That is a clamp, not a balance break: nothing
+overflows into a stat the design does not bound, and no number outside
+this section changes. Since `+crit%` is the only percentage in the
+trinket pool, it is also the **only** cap the two new slots move at all.
+If the wasted affixes ever become a real complaint, the fix belongs in
+WP5's affix distribution, not in a new cap.
 
 ### 6.4 Crafted quality (how crafting reaches Uncommon/Rare)
 
@@ -1214,7 +1285,11 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
 - **Prefixes** name a stat the item gives its wielder: *lucky* (+crit),
   *quick* (+dex), *heavy* (+str), *clever* (+int).
 - **Suffixes** do the same in the genitive: *of the bear* (+str), *of the
-  ox* (+health), *of the snake* (+poison), *of the eagle* (+crit).
+  ox* (+health), *of the cat* (+dodge), *of the eagle* (+crit).
+  Every word maps to a stat that a §6.2 pool actually contains — there
+  is **no poison stat** in this game (see §6.2 and `combat_stats.md` §2;
+  poison arrives with the Rogue in Phase 2, `classes.md` §6), and an
+  affix word for a stat nothing consumes is a bug, not flavour.
 - **Two suffixes combine into one phrase**: "of Bear and Ox" — the "the"
   is dropped when combining, because "of the Bear and the Ox" reads
   badly. One suffix keeps it: "of the Ox".
@@ -1554,3 +1629,34 @@ First Aid stay free and universal. Cooking's tiers are tied to regional
 ingredients (T6 needs level-50+ ingredients) and are wanted as quest
 goals, which needs a group structure; First Aid does not and keeps none
 (§2.3, §3.7).
+
+### 10.3 2026-08-08
+
+**D7 — Trinkets ship in the MVP** (resolves `TODO-design-crafting-rework.md`
+C11). The two slots stop being reserved (`inventory_equipment.md` §2) and
+the Goldsmith's headline product becomes real content instead of a
+promise (§3.6b). It was the cheapest missing family in the game — the
+slots, their meta and their `allow_put` shipped with WP15, and trinkets
+need no model, no armor class and no rank binding. Rejected: shipping
+the Goldsmith as a pure supplier profession, which left one of six
+professions with no wearable output of its own.
+
+**D8 — Trinkets get their own §6.2 pool row, and the cap check is re-run
+for 8 slots** (resolves the trinket half of A3). Pool: **+Str, +Int,
++Dex, +HP, +mana, +crit%** — universal-ish because every class wears
+both slots, and deliberately without +armor%, +dodge% and +attack
+speed%, which are the identity of the armor and melee-weapon rows.
+Consequence, stated rather than discovered later: the §6.3 worst case
+for crit rises from ≈ 30 % on 6 slots to ≈ 36 % on 8 and now **clamps**
+against the 30 % cap of `combat_stats.md` §2 instead of landing on it.
+Dodge (≈ 19 %) and the 60 % armor cap are untouched, because trinkets
+roll neither.
+
+**D9 — There is no poison stat** (resolves the poison half of A2).
+§6b.4's *of the snake* (+poison) was an off-hand example, not a
+decision: poison appears in no §6.2 pool, no §6.3 row and nowhere in
+`combat_stats.md`. The example is now *of the cat* (+dodge), and poison
+is booked as the **Rogue's signature damage type for Phase 2**
+(`classes.md` §6). Poison as a *mob* effect (the serpent, and the
+Alchemist's Antivenom that cures it) is unaffected — that is a mob verb,
+not a player stat.

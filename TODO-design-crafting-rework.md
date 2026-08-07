@@ -11,14 +11,16 @@ prefix/suffix affixes (§6b), the six-step housing depth ladder
 removal of the continental mining claims (`guilds.md` §3.2), the herb /
 spice split (`biomes_mobs.md` §2) and the new `mounts.md`.
 
-**Everything in this file is still open.** Nothing decided lives here;
-what is decided lives in `docs/design/`. Several design sections point
-here by name for exactly these lists.
+**Everything in this file is open unless its *Decision* line says
+otherwise.** No decided *rule* lives here — a decided question keeps only
+a one-line stub naming the design file it landed in, so the reasoning
+behind it stays findable; the rule itself lives in `docs/design/`.
+Several design sections point here by name for exactly these lists.
 
 Once a question is decided: fold it into the design doc named in its
-*Lands in* line, update ROADMAP/BACKLOG where affected, and strike the
-question. When the file is empty, delete it (AGENTS.md "Documentation
-layers").
+*Lands in* line, update ROADMAP/BACKLOG where affected, and replace the
+question with that stub. When nothing open is left, delete the file
+(AGENTS.md "Documentation layers").
 
 Groups: **A** crafting & items · **B** materials & world · **C** two
 design tensions · **D** mounts · **E** cooking.
@@ -99,11 +101,17 @@ Two constraints the list must satisfy:
   roller rule (WP5), but it constrains the vocabulary: a word must
   identify its stat unambiguously.
 
-**The example list is not conformant.** §6b.4's *of the snake* maps to
-"+poison", and there is no poison stat anywhere in `combat_stats.md` or
-in §6.2/§6.3. Either drop it or promote poison to a real stat (a large
-change — it would need a damage-over-time consumer in the damage
-pipeline).
+**The example list was not conformant, and is fixed.** §6b.4's *of the
+snake* mapped to "+poison", and there is no poison stat anywhere in
+`combat_stats.md` or in §6.2/§6.3 — it was an off-hand example, never a
+decision. **Poison is out of scope for the MVP affix list** (decided
+2026-08-08): the example is now *of the cat* (+dodge), a stat the §6.2
+pools actually contain, and poison is recorded in `classes.md` §6 as
+arriving with the **Rogue in Phase 2** as its signature damage type. Any
+word list authored for this question must map every word to a stat that
+exists in §6.2 — no candidate may reintroduce poison, and promoting
+poison to a real stat is Rogue work (a damage-over-time consumer in the
+`classes.md` §2 pipeline), not affix work.
 
 Options:
 
@@ -128,24 +136,41 @@ of §6.2, and adding the trinket row of A3 extends it for free.
 *Lands in*: `items_crafting.md` §6b.4 (word table) — §6.2 stays the
 legality source.
 **Decision:** _open_ — **blocks WP5** (the roller needs the words to
-build a display name).
+build a display name). The **poison sub-question is decided
+2026-08-08**: out of scope for the MVP affix list → landed in
+`items_crafting.md` §6b.4 (example replaced by *of the cat*) and
+`classes.md` §6 (poison arrives with the Rogue in Phase 2). The word
+list itself is untouched by that and still has to be authored.
 
 ### A3 — Trinkets (and bags) have no enchant pool
 
-`items_crafting.md` §6.2 has five rows: melee weapons, caster
-weapons/offhands, metal armor, leather armor, cloth armor. **Trinkets are
-missing**, so the Goldsmith's headline product (§3.6b,
-`inventory_equipment.md` §2 — both slots are its exclusive family) cannot
-be enchanted at all, which contradicts §6b's rule that every refined item
-takes affixes.
+**Decision (trinket half):** decided 2026-08-08 → landed in
+`items_crafting.md` §6.2 (the new **Trinkets** pool row — +Str, +Int,
++Dex, +HP, +mana, +crit%, universal-ish because every class wears both
+slots, deliberately no +armor%/+dodge%/+attack speed%) and
+`items_crafting.md` §6.3 (the cap check **re-run for 8 slots**: crit
+worst case ≈ 36 % against a 30 % cap — it clamps, dodge ≈ 19 % and the
+60 % armor cap are untouched). Option **(a)** below was taken, together
+with C11's option (b). The reasoning stays here; the rule lives there.
 
-The same hole exists one step further down: §6b.1 makes **bags** an
+**Still open below: the bag half — and the same gap now applies to
+trinkets.** §6b.1's refinement-word table has no row for trinkets, and
+§6b.2's refinement bonus ("+15 % base damage or the armor equivalent,
++100 % durability") has nothing to attach to on an item that has neither
+a damage number nor an armor number. Since §6b.3 makes refinement the
+prerequisite for *every* affix, the new §6.2 trinket row needs that
+answered before WP5 can roll one — it is exactly the bag problem, on a
+second family. Options (d)/(e) below were written for bags; whatever is
+chosen has to cover trinkets too, or trinkets need their own base-stat
+line in §3.1/§3.2 for the +15 % to bite.
+
+The bag hole as originally written: §6b.1 makes **bags** an
 "Ornate" refinable family, but §6b.2's refinement bonus is "+15 % base
 damage or the armor equivalent, +100 % durability" — a bag has neither a
 damage number nor durability, and no §6.2 pool. Today "Ornate Bag" is a
 name with no effect behind it.
 
-Options for trinkets:
+Options for trinkets (**(a) was taken**, see the decision stub above):
 
 - **(a) Own pool row.** Proposal: +Str / +Int / +Dex (one primary),
   +HP, +Mana, +Crit% — deliberately *no* +Armor%, so trinkets never
@@ -169,12 +194,18 @@ Recommendation: **(a)** for trinkets — with the §6.3 cap arithmetic
 re-run for 8 slots — and **(e)** for bags: the bag line is already the
 Tailor's four-tier signature ladder (A1), it needs no second progression
 axis, and "you cannot refine a bag" is one sentence rather than a new
-bonus type.
+bonus type. **(e) cannot simply be extended to trinkets**: a trinket
+that may not be refined may not be enchanted either (§6b.3), which would
+empty the §6.2 row just added.
 
-*Lands in*: `items_crafting.md` §6.2 (new row), §6.3 (cap re-check),
-§6b.1 (bag families).
-**Decision:** _open_ — coupled to C11; if trinkets stay post-MVP the
-pool row can wait, the bag half cannot.
+*Lands in*: `items_crafting.md` §6.2 (new row — **done 2026-08-08**),
+§6.3 (cap re-check — **done 2026-08-08**), §6b.1 (the refinement-word
+row for bags **and** trinkets) and §6b.2 (what refinement gives an item
+with no damage and no armor number).
+**Decision:** trinket pool + cap arithmetic **decided 2026-08-08**
+(→ `items_crafting.md` §6.2/§6.3). **Open**: the bag half, and the
+refinement question for both bags and trinkets. Blocks WP5's roller for
+trinkets only, nothing else.
 
 ### A4 — T5/T6 keystones, and the two new professions' keystone rows
 
@@ -485,6 +516,15 @@ today it states as fact something the shipped filter contradicts.
 
 ### C11 — The Goldsmith's headline product is post-MVP
 
+**Decision:** decided 2026-08-08, option **(b)** — **trinkets are pulled
+into the MVP** → landed in `inventory_equipment.md` §2 (the two slots
+are no longer reserved; trinket items ship as the Goldsmith's exclusive
+family, no armor class, no rank binding), `items_crafting.md` §3.6b (the
+profession's headline is a product, not a promise), `items_crafting.md`
+§6.2/§6.3 (the pool row and the re-run cap arithmetic — A3) and
+`professions.md` §2.1 (the coverage bullet). The situation and the
+options below are kept for the reasoning.
+
 **The situation.** `professions.md` §2.1 celebrates that "both trinket
 slots finally have an owner" — the Goldsmith (`items_crafting.md`
 §3.6b). But `inventory_equipment.md` §2 keeps both trinket slots
@@ -533,7 +573,10 @@ trainer.
 
 *Lands in*: `inventory_equipment.md` §2 (slot status),
 `items_crafting.md` §3.6b, §6.2 (with A3).
-**Decision:** _open_ — coupled to A3.
+**Decision:** **(b), decided 2026-08-08** — see the stub at the top of
+this question. What (b) does **not** answer is the trinket base-stat
+curve and the refinement bonus for a family with neither damage nor
+armor; that stays with A3.
 
 ---
 
@@ -634,6 +677,36 @@ during it.
 
 ### D16 — Is riding restricted in enemy territory, on the war coast, in PvP, or underground?
 
+**Decision (enemy-territory switch only):** decided 2026-08-08 → landed
+in `mounts.md` §4.3. **Land mounts are allowed everywhere**, enemy
+territory included; **flying mounts are banned in enemy territory** — a
+flying mount cannot be summoned there, and a rider who crosses the
+border while flying is dismounted after the **same 10-second warned
+grace** as §4.1's "Exhausted", so the game has one number and one shape
+for "you are somewhere your mount may not be". The mechanism is
+`grug_core.territory_at(pos)` (`mods/CORE/grug_core/init.lua:586-596`,
+returns `accord`/`throng`/`ocean`) compared against the rider's own
+faction; over water it is silent, so §4.1 keeps the strait and the open
+sea and the border rule takes over on landfall. `mounts.md` §1.1 carries
+the one-line summary.
+
+**The other three switches were not answered and stay open:**
+
+- **The war coast.** The recommendation below asks for flight to be
+  refused over **both** war coasts, i.e. also over one's *own*. The
+  enemy-side half is now covered by the territory ban; the **own-side
+  half is undecided** — a defender flying along their own war coast is
+  still legal under §4.3.
+- **While flagged for PvP.** Untouched. The recommendation to fold it
+  into D15 (the combat dismount) rather than make it a fifth zone rule
+  still stands and is still unanswered.
+- **Underground.** Untouched. The recommendation below (unrestricted —
+  the §3.0.4 depth ladder gates *breaking* rock, not reaching it) is
+  still only a recommendation, and D17's flight-ceiling half is its
+  mirror image upward.
+
+The original context and options are kept below.
+
 `world.md` §1 builds the whole invasion model on the war-coast funnel
 (guard strength runs inverse, the strait-facing band is capped 20–30 and
 is where PvP is meant to happen), and §6 already denies waypoints in
@@ -652,9 +725,21 @@ guard; **underground unrestricted** — the depth ladder of §3.0.4 gates
 away. Fold the PvP switch into D15 rather than making it a fifth zone
 rule.
 
-**Decision:** _open_ — coupled to D17.
+**Decision:** **enemy territory decided 2026-08-08** (→ `mounts.md`
+§4.3, land yes / flying no). **Still open**: the *own*-side war coast,
+the PvP flag (D15), and underground.
 
 ### D17 — Is there a flight ceiling, and what happens over the strait?
+
+**Decision (strait half):** decided 2026-08-08 with D16 → landed in
+`mounts.md` §4.3. Option **(a)** was taken and the strait itself needs
+**no rule of its own**: flight over the strait stays legal and stays
+governed by §4.1's Exhausted rule, and the **enemy-territory flight ban
+closes the hole on landfall** instead. Option (b) — a third no-mount
+zone over the strait — was rejected for the reason listed below (it
+strands flyers in water), and (c) was rejected as contradicting
+`world.md` §1. **The ceiling half is still open** (see below); nothing
+in the game caps a flying mount's altitude today.
 
 Two halves of one question.
 
@@ -678,7 +763,10 @@ and should be taken deliberately if at all.
 
 Recommendation: **(a)**.
 
-**Decision:** _open_ — decide together with D16.
+**Decision:** **strait half decided 2026-08-08** with D16, option (a)
+minus the ceiling (→ `mounts.md` §4.3). **Open**: whether there is a
+**flight ceiling** at all, and whether it would be a design rule or just
+the map limit.
 
 ### D18 — What does "Exhausted" do to an un-mounted player?
 
@@ -791,8 +879,8 @@ reachable on both continents (`biomes_mobs.md` §6).
 | # | Question | Blocks |
 |---|---|---|
 | A1 | Signature recipes per profession × mastery tier | WP10 |
-| A2 | Affix word lists + stat mapping | **WP5** |
-| A3 | Trinket enchant pool (and refinable bags) | WP5 (with C11) |
+| A2 | Affix word lists + stat mapping (poison ruled out 2026-08-08) | **WP5** |
+| A3 | ~~Trinket enchant pool~~ (decided 2026-08-08) — refinement for bags **and** trinkets still open | WP5 (trinkets only) |
 | A4 | T5/T6 keystones + Woodcarver/Goldsmith rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
@@ -800,6 +888,6 @@ reachable on both continents (`biomes_mobs.md` §6).
 | B8 | Quartz/Garnet/Silver depth & scarcity | **material ladder** |
 | B9 | `open_sea_at` boundary fix | **WP24**, mounts WP |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
-| C11 | Goldsmith's headline product is post-MVP | WP10 scope |
-| D12–D20 | Mounts: item/assets, persistence, damage, combat dismount, zones, ceiling, Exhausted, skins, trainer | **mounts WP**; D20 also WP13 |
+| C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |
+| D12–D20 | Mounts: item/assets, persistence, damage, combat dismount, zones, ceiling, Exhausted, skins, trainer. **D16's enemy-territory switch and D17's strait half are decided 2026-08-08** (`mounts.md` §4.3); open in those two: own-side war coast, PvP flag, underground, flight ceiling | **mounts WP**; D20 also WP13 |
 | E21 | Cooking recipe lists per tier | **WP10** |
