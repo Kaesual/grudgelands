@@ -170,6 +170,62 @@ local OUTPOST_RINGS = {
 	{ring = "coast", anchor = coast_anchor, patrol_to = "outer"},
 }
 
+-- RETRY CANDIDATES. An anchor is ONE column, and one column can be under
+-- water: the ocean mask insets the visible coastline by 0..150 nodes
+-- (grug_mapgen INSET_MAX) and v7 puts lakes and river channels where it likes.
+-- Mapgen used to SKIP such an anchor permanently, and a runtime log showed 4
+-- of 6 attempted anchors skipped as flooded — i.e. most rings had no outpost
+-- at all, against world.md §9's "1 military outpost per ring as the guaranteed
+-- minimum". So every anchor carries an ORDERED CANDIDATE LIST — itself first,
+-- then three fallbacks — and grug_mapgen walks it until one resolves to
+-- buildable ground (per-candidate skip markers, so a later candidate keeps its
+-- chance even when its chunk generates much later).
+--
+-- DIRECTION, and why it is not simply "inland" everywhere: a fallback must
+-- stay inside its own RING, otherwise §9's promise is quietly broken and the
+-- post's guards get the neighbouring ring's level field. A step along z
+-- crosses a ring boundary within 24..96 nodes at three of the four rings
+-- (outer |z| 1350 -> 1326 already answers "inner" for a centre band), while a
+-- step along x is nearly free: radial_n uses dx = max(|x| - 300, 0), so inside
+-- the core belt a lateral move does not change the field at all. Hence:
+--   * war_coast steps INLAND (24, 48). It is the one ring that is
+--     SYSTEMATICALLY flooded — its anchor sits |z| - Z_MIN = 150 nodes from
+--     the rectangle's front edge, exactly the maximum coast inset — and +48
+--     makes the column mask-proof by construction: the mask only caps a column
+--     below y 2 when the inset-corrected distance drops under ~34, and
+--     198 - 150 = 48 stays above that for EVERY value the inset can roll. The
+--     ring bound (|z| <= WAR_COAST_Z = 300) has no room for a third step, so
+--     candidate 4 slides along the ring instead.
+--   * inner and outer slide ALONG the ring (+-96 in x, which resamples the
+--     coast noise and walks out of a lake) and spend their third candidate on
+--     the one z step their ring still tolerates: inner 96 toward the capital
+--     (|z| 596 — four nodes short of the |z| = 600 where a centre band's field
+--     reaches n = 0.30 and the zone would turn into "core"), outer 96 AWAY
+--     from it (|z| 1446, still 104 nodes short of the coast band and outside
+--     the mask's reach; a step toward the capital would answer "inner" after
+--     24 nodes already).
+--   * the COAST ring is the exception the geometry forces: its anchors sit on
+--     the INNER EDGE of a 150-node band, so ANY inland step leaves the band by
+--     definition. Two lateral candidates keep the band, and the last one
+--     deliberately steps 48 nodes inland (zone answers "outer") as the last
+--     resort — a post 48 nodes behind the band still reads as the coast
+--     garrison, no post at all does not.
+-- The lateral candidates go to -96 BEFORE +96 on purpose: the deterministic
+-- bandit camps below sit at capital.x + 120 on the same bands (the outer ring
+-- even shares their |z| = 1350 exactly), so a +96 fallback would park a guard
+-- outpost 24 nodes from a bandit camp. -96 first puts 216 nodes between them,
+-- and the bandit camps mirror the rule by stepping +96 first, away from the
+-- outpost column.
+-- Offsets are {lateral, inland} in the anchor's own frame; the frame is built
+-- with the anchor below. The full id x candidate -> zone_at table is in the
+-- F1 fix report.
+local OUTPOST_RETRY = {
+	war_coast = {{0, 24}, {0, 48}, {96, 0}},
+	inner = {{-96, 0}, {96, 0}, {0, 96}},
+	outer = {{-96, 0}, {96, 0}, {0, -96}},
+	coast = {{-96, 0}, {96, 0}, {0, 48}},
+}
+
 -- Built once at load time (pure arithmetic on the capitals table). The race
 -- ids are sorted so the list order is reproducible across runs — pairs() over
 -- the capitals would not be.
@@ -202,6 +258,31 @@ do
 				x = ax,
 				z = az,
 			}
+			-- Frame of the retry candidates (see OUTPOST_RETRY): "inland"
+			-- points at the band's own capital, "lateral" runs along the ring.
+			-- A flank coast anchor is the only one whose band runs along z, so
+			-- its two axes are swapped.
+			local lat_x, lat_z, inl_x, inl_z
+			if ring.ring == "coast" and capital.x ~= 0 then
+				lat_x, lat_z = 0, 1
+				inl_x, inl_z = (ax > 0 and -1 or 1), 0
+			else
+				lat_x, lat_z = 1, 0
+				inl_x = 0
+				-- Toward the capital: |z| grows for the two rings in front of
+				-- it, shrinks for the two behind it.
+				inl_z = math.abs(az) < math.abs(capital.z) and sign or -sign
+			end
+			local candidates = {{x = ax, z = az}}
+			local retry = OUTPOST_RETRY[ring.ring]
+			for j = 1, (retry and #retry or 0) do
+				local o = retry[j]
+				candidates[#candidates + 1] = {
+					x = ax + o[1] * lat_x + o[2] * inl_x,
+					z = az + o[1] * lat_z + o[2] * inl_z,
+				}
+			end
+			anchor.candidates = candidates
 			outpost_list[#outpost_list + 1] = anchor
 			outpost_by_id[anchor.id] = anchor
 		end
@@ -218,6 +299,29 @@ function grug_core.get_outpost(id)
 	return outpost_by_id[id]
 end
 
+-- Ordered build candidates of an anchor (see OUTPOST_RETRY): index 1 IS the
+-- anchor, 2..n are the fallbacks. READ-ONLY for callers — the shared table,
+-- same contract as outpost_anchors().
+function grug_core.outpost_candidates(anchor)
+	return anchor and anchor.candidates or nil
+end
+
+-- Where the outpost of this anchor REALLY stands, as x, z. The anchor is only
+-- candidate 1: when mapgen had to fall back it persisted the built position as
+-- the POI record, and that record is the authority. Everything that wants to
+-- meet the outpost on the map (patrol routes, outpost_at) must go through
+-- here, or it points at an empty field up to 96 nodes off.
+function grug_core.outpost_position(anchor)
+	if not anchor then
+		return nil
+	end
+	local poi = grug_core.get_poi(anchor.id)
+	if poi then
+		return poi.x, poi.z
+	end
+	return anchor.x, anchor.z
+end
+
 -- The outpost anchor whose footprint contains pos (x/z only — an outpost's y
 -- is terrain-adaptive), or nil. Used by the guard camp to find out WHICH
 -- outpost its banner stands on; a banner elsewhere (the capital watch of
@@ -226,7 +330,8 @@ function grug_core.outpost_at(pos)
 	local half = grug_core.OUTPOST_HALF
 	for i = 1, #outpost_list do
 		local a = outpost_list[i]
-		if math.abs(pos.x - a.x) <= half and math.abs(pos.z - a.z) <= half then
+		local ax, az = grug_core.outpost_position(a)
+		if math.abs(pos.x - ax) <= half and math.abs(pos.z - az) <= half then
 			return a
 		end
 	end
@@ -282,6 +387,23 @@ local BANDIT_X_OFFSET = 120
 local BANDIT_INNER_DZ = -350 -- toward the strait from the capital
 local BANDIT_OUTER_DZ = 450 -- ... and behind it
 
+-- Retry candidates, exactly the mechanism the outposts got (see OUTPOST_RETRY
+-- above): a camp anchor that lands in a lake or a river channel used to be
+-- dropped silently and that band lost its bandits — and with them the linen
+-- source of the Tailor economy — for the lifetime of the world. Two fallbacks
+-- are enough here: none of the twelve is anywhere near the coast band or the
+-- mask (>= 350 nodes from every rectangle edge), so the only thing to step out
+-- of is local natural water.
+-- LATERAL in x, not inland, for the reason spelled out at OUTPOST_RETRY: the
+-- radial field ignores x inside the core belt and grows slowly outside it, so
+-- +-96 keeps every candidate in the zone the block comment above verifies,
+-- while a 96-node step in z would drop the inner camps of the centre and west
+-- bands into "core" (dz 254 -> n 0.25) and re-level their bandits.
+-- +96 comes FIRST because the outposts sit on the capital's own x column, 120
+-- nodes to the west of these anchors: stepping away from them keeps a camp and
+-- a garrison from ending up 24 nodes apart (see OUTPOST_RETRY).
+local BANDIT_RETRY = {96, -96}
+
 local bandit_list = {}
 
 do
@@ -298,14 +420,22 @@ do
 		local capital = grug_core.capitals[race_id]
 		local sign = capital.z >= 0 and 1 or -1
 		for _, r in ipairs(rings) do
+			local ax = capital.x + BANDIT_X_OFFSET
+			local az = sign * (math.abs(capital.z) + r.dz)
+			local candidates = {{x = ax, z = az}}
+			for j = 1, #BANDIT_RETRY do
+				candidates[#candidates + 1] =
+					{x = ax + BANDIT_RETRY[j], z = az}
+			end
 			bandit_list[#bandit_list + 1] = {
 				id = "bandit:" .. capital.faction .. ":" .. race_id ..
 					":" .. r.ring,
 				faction = capital.faction,
 				race = race_id,
 				ring = r.ring,
-				x = capital.x + BANDIT_X_OFFSET,
-				z = sign * (math.abs(capital.z) + r.dz),
+				x = ax,
+				z = az,
+				candidates = candidates,
 			}
 		end
 	end
@@ -315,6 +445,12 @@ end
 -- not a copy — same contract as outpost_anchors).
 function grug_core.bandit_camp_anchors()
 	return bandit_list
+end
+
+-- Ordered build candidates of a bandit camp anchor (index 1 = the anchor).
+-- Same contract as outpost_candidates: READ-ONLY, the shared table.
+function grug_core.bandit_camp_candidates(anchor)
+	return anchor and anchor.candidates or nil
 end
 
 grug_core.factions = {

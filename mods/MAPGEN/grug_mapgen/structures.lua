@@ -30,12 +30,14 @@
 --  * the MILITARY OUTPOSTS of docs/design/world.md §4/§9 ("1 military
 --    outpost per ring as the guaranteed minimum"): a 7×7 cobble pad with
 --    four wooden corner posts and a guard banner in the middle, at every
---    anchor of grug_core.outpost_anchors(). See the outpost section below.
+--    anchor of grug_core.outpost_anchors() — or, when that column turns out
+--    to be under water or on a peak, at the first of its retry candidates
+--    that does not. See the outpost section below.
 --
 --  * the DETERMINISTIC BANDIT CAMPS (WP6 bridge until WP13's settlement
 --    pass): a single grug_mobs:camp_fire node at every anchor of
---    grug_core.bandit_camp_anchors(). No pad, no protection — see the bandit
---    camp section below.
+--    grug_core.bandit_camp_anchors() (same retry rule). No pad, no
+--    protection — see the bandit camp section below.
 --
 -- (The old east-west mountain wall at |x| = 2000 is gone: the continent
 -- redesign replaces walls with ocean.)
@@ -47,9 +49,11 @@ local CAMP_HALF = grug_core.CAMP_HALF
 local CLEAR_HEIGHT = grug_core.CAMP_CLEAR_HEIGHT
 local SKIRT_DEPTH = 16 -- platform base reaches this far below the surface
 
--- Mod-wide persistence (AGENTS.md: fetch at load time). Only the outpost pass
--- writes here, and only the "this anchor was rejected" markers — the accepted
--- ones persist as POI records in grug_core (see the outpost section).
+-- Mod-wide persistence (AGENTS.md: fetch at load time). The outpost pass
+-- writes the "this CANDIDATE was rejected" markers here (the accepted ones
+-- persist as POI records in grug_core, see the outpost section) and the bandit
+-- pass writes the same per-candidate markers plus one "this camp is built"
+-- marker per anchor (it has no POI record to carry that).
 local storage = core.get_mod_storage()
 
 -- Sea level of the active mapgen (v7 default 1); the whole mask profile is
@@ -528,7 +532,7 @@ end
 -- The coast anchors are the ones the REJECTION rule below really matters for:
 -- they sit at the inner edge of the coast band by construction, but the coast
 -- noise still floods a share of those columns depending on the inset it rolls
--- there, and a flooded anchor is skipped rather than drowned.
+-- there, and a flooded anchor is retried elsewhere rather than drowned.
 --
 -- The structure is deliberately minimal (WP13 ships real ones): a 7×7 cobble
 -- pad flattening the terrain, two cobble layers of skirt under it, five nodes
@@ -555,11 +559,28 @@ end
 -- anchor below the rejection threshold instead of leaving a cobble island in
 -- the water.
 --
--- REJECTION: an anchor whose surface ends up below y 2 or above y 100 is NOT
--- built and is marked as skipped in mod storage. world.md §9 promises a
--- minimum, not a guarantee at every single coordinate: a MISSING outpost is
--- acceptable, a drowned one — guards spawning in water, a banner under the
--- sea — is not.
+-- REJECTION AND RETRY: a candidate whose surface ends up below y 2 or above
+-- y 100 is NOT built there — a drowned outpost (guards spawning in water, a
+-- banner under the sea) is worse than none. It used to end the story for that
+-- anchor, and a runtime log then showed 4 of 6 attempted anchors skipped as
+-- flooded, i.e. §9's "1 military outpost per ring" delivered almost nothing.
+-- Now every anchor has an ordered CANDIDATE list (grug_core.outpost_candidates
+-- — the anchor plus three fallbacks that step inland resp. slide along the
+-- ring; the direction rules and the zone verification live there), and:
+--   * only the REJECTED CANDIDATE is marked, under "outpost_skip:<id>:<index>"
+--     — the anchor keeps its other chances, across chunks and sessions;
+--   * the candidates are resolved STRICTLY IN ORDER (see the collect loop):
+--     the anchor is the outpost, a fallback is what happens when the terrain
+--     says no — not what happens when a neighbouring mapchunk is generated
+--     first;
+--   * the winning candidate is persisted as the POI record with the BUILT
+--     position, which is what the per-id "already built" check below reads.
+--     Neighbouring chunks and later sessions therefore see one outpost, never
+--     two.
+--   * LEGACY: worlds from before the retry scheme stored a plain
+--     "outpost_skip:<id>". That key means "candidate 1 was rejected" and
+--     nothing more — it must never be read as "this anchor is dead", or the
+--     fallbacks could not heal an existing world. See candidate_skipped.
 local OUTPOST_HALF = grug_core.OUTPOST_HALF
 local OUTPOST_PAD = 3 -- 7x7 pad (the structure; OUTPOST_HALF adds the margin)
 local OUTPOST_SKIRT = 2 -- cobble layers below the pad top
@@ -574,50 +595,128 @@ local OUTPOST_PROTECT_HALF = OUTPOST_HALF + 10
 -- File scope so the corner loop allocates nothing per mapchunk.
 local OUTPOST_CORNERS = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}}
 
-local function outpost_skipped(id)
-	return storage:get_string("outpost_skip:" .. id) ~= ""
+-- True when this candidate of this anchor was already rejected. Index 1 also
+-- honours the LEGACY key of the pre-retry scheme (see above): it recorded the
+-- rejection of the anchor column, which IS candidate 1 — and of nothing else,
+-- so candidates 2..n stay open in an existing world.
+local function candidate_skipped(id, index)
+	if storage:get_string("outpost_skip:" .. id .. ":" .. index) ~= "" then
+		return true
+	end
+	return index == 1 and storage:get_string("outpost_skip:" .. id) ~= ""
 end
 
--- Resolves (and persists) the outpost's surface y, or nil when this mapchunk
--- cannot decide it. Persisting happens through grug_core.add_poi: the POI
--- record IS the decision, which keeps the protected zone and the built
--- structure at exactly one shared height by construction.
-local function outpost_y(anchor, minp, maxp)
-	local poi = grug_core.get_poi(anchor.id)
-	if poi then
-		return poi.y_base
+-- Does the chunk box reach the column (x, z) grown by `half`?
+local function chunk_covers(minp, maxp, x, z, half)
+	return maxp.x >= x - half and minp.x <= x + half and
+		maxp.z >= z - half and minp.z <= z + half
+end
+
+-- Ground level of ONE candidate column, and whether it can carry a structure.
+-- Returns y; or nil plus a reason when the ground is unusable; or nil ALONE
+-- when nothing here can answer yet. Callers must keep those two nils apart: a
+-- REJECTED candidate hands over to the next one, an undecided one keeps its
+-- turn (the terrain, never the chunk order, moves a structure).
+--
+-- Two of the three sources are pure functions of x/z and answer from ANY
+-- mapchunk, which is what lets the decision below judge candidates that lie
+-- outside the chunk being generated:
+--   * column_cap, the ocean mask's own profile. When it caps a column below
+--     the minimum, no terrain height can save it — the mask will flood it. So
+--     that verdict is taken FIRST, and it is exactly the one the war-coast and
+--     coast anchors need: those are the candidates the runtime log showed
+--     drowning, and their rejection therefore never waits for a particular
+--     chunk.
+--   * grug_core.surface_level_at, the engine's spawn level.
+-- Only the heightmap fallback is chunk-local (mgv7 answers no spawn level in
+-- water, in rivers or above y ~17), so it is used just for a candidate this
+-- chunk actually covers. A candidate that ends up needing it stays UNDECIDED
+-- until such a chunk is generated — the honest answer, and the one place where
+-- the outcome can still depend on chunk order: with a NATURAL lake on the
+-- anchor (not the mask, see above), the rejection only happens once the
+-- anchor's own chunk is generated, and if the winning fallback's chunk came
+-- before that, the structure ends up decided but unbuilt. That is exactly what
+-- the pre-retry code did with EVERY flooded anchor, so it is never worse — and
+-- the flooding the runtime log actually showed is the mask's, which is handled
+-- above.
+-- Shared with the bandit camps further down (they pass a smaller sample
+-- radius); the y window is the same for both.
+local function candidate_ground_y(cand, radius, minp, maxp)
+	local cap = column_cap(cand.x, cand.z) -- nil = inland, no cap at all
+	if cap and cap < OUTPOST_MIN_Y then
+		return nil, "flooded"
 	end
-	if outpost_skipped(anchor.id) then
-		return nil
+	local y = grug_core.surface_level_at(cand.x, cand.z)
+	if not y and chunk_covers(minp, maxp, cand.x, cand.z, radius) then
+		y = heightmap_median(cand.x, cand.z, radius, minp, maxp)
 	end
-	local y = grug_core.surface_level_at(anchor.x, anchor.z)
-		or heightmap_median(anchor.x, anchor.z, OUTPOST_PAD, minp, maxp)
 	if not y then
-		return nil -- chunk fully above/below the surface: another one decides
+		return nil
 	end
 	y = math.floor(y)
-	-- Clamp to the coast profile (see above): nil = inland, no cap at all.
-	local cap = column_cap(anchor.x, anchor.z)
 	if cap and cap < y then
-		y = cap
+		y = cap -- clamp to the coast profile (see above)
 	end
 	if y < OUTPOST_MIN_Y or y > OUTPOST_MAX_Y then
-		local reason = y < OUTPOST_MIN_Y and "flooded" or "too high"
-		storage:set_string("outpost_skip:" .. anchor.id, reason)
-		core.log("action", ("[grug_mapgen] outpost %s skipped (%s, y=%d)")
-			:format(anchor.id, reason, y))
-		return nil
+		return nil, (y < OUTPOST_MIN_Y and "flooded" or "too high")
 	end
-	grug_core.add_poi({
-		id = anchor.id,
-		x = anchor.x,
-		z = anchor.z,
-		half = OUTPOST_PROTECT_HALF,
-		y_base = y,
-	})
-	core.log("action", ("[grug_mapgen] outpost %s anchored at %d,%d,%d")
-		:format(anchor.id, anchor.x, y, anchor.z))
 	return y
+end
+
+-- True when any candidate of this anchor reaches into the chunk — the cheap
+-- arithmetic gate that keeps the decision below (and its spawn-level queries)
+-- off the vast majority of mapchunks.
+local function chunk_near_outpost(anchor, minp, maxp)
+	local cands = grug_core.outpost_candidates(anchor)
+	for c = 1, #cands do
+		if chunk_covers(minp, maxp, cands[c].x, cands[c].z, OUTPOST_HALF) then
+			return true
+		end
+	end
+	return false
+end
+
+-- Decides WHERE this outpost stands and persists that as the POI record (the
+-- record is the decision: position, y_base and "it exists at all", which is
+-- what keeps the protected zone, the built structure and
+-- grug_core.outpost_position at one shared position by construction). Returns
+-- the record, or nil while the question is still open.
+--
+-- The candidates are walked STRICTLY IN ORDER and a candidate that nothing can
+-- decide yet stops the walk — a fallback is what happens when the terrain says
+-- no, never what happens when a neighbouring mapchunk was generated first. It
+-- deliberately does NOT require the winning candidate to be inside this chunk:
+-- deciding early and building later is exactly what the POI record is for, and
+-- it means a rejected anchor can hand over to a fallback whose own chunk is
+-- generated before or after this one.
+local function decide_outpost(anchor, minp, maxp)
+	local cands = grug_core.outpost_candidates(anchor)
+	for c = 1, #cands do
+		if not candidate_skipped(anchor.id, c) then
+			local cand = cands[c]
+			local y, reason = candidate_ground_y(cand, OUTPOST_PAD, minp, maxp)
+			if y then
+				core.log("action",
+					("[grug_mapgen] outpost %s anchored at %d,%d,%d " ..
+					"(candidate %d)"):format(anchor.id, cand.x, y, cand.z, c))
+				return grug_core.add_poi({
+					id = anchor.id,
+					x = cand.x,
+					z = cand.z,
+					half = OUTPOST_PROTECT_HALF,
+					y_base = y,
+				})
+			end
+			if not reason then
+				return nil -- undecided: nobody behind it may jump the queue
+			end
+			storage:set_string("outpost_skip:" .. anchor.id .. ":" .. c, reason)
+			core.log("action",
+				("[grug_mapgen] outpost %s candidate %d at %d,%d skipped " ..
+				"(%s)"):format(anchor.id, c, cand.x, cand.z, reason))
+		end
+	end
+	return nil -- every candidate rejected: this ring keeps no post
 end
 
 local function build_outpost(data, area, minp, maxp, o)
@@ -656,7 +755,10 @@ local function build_outpost(data, area, minp, maxp, o)
 		-- A VoxelManip write fires NO node callbacks, so this banner arrives
 		-- without meta and without a node timer. The LBM
 		-- "grug_mobs:guard_banner_init" (grug_mobs/camps.lua) is what turns it
-		-- into a live guard post on first load — that is why the LBM exists.
+		-- into a live guard post — that is why the LBM exists, and why it has
+		-- to run at EVERY mapblock load: an LBM with run_at_every_load = false
+		-- never runs on a mapblock generated after the LBM's introduction
+		-- (lua_api.md:10312-10316), which is every block this line writes into.
 		data[area:index(o.x, by, o.z)] = c_banner
 	end
 end
@@ -672,21 +774,38 @@ end
 --
 -- NOT a POI, unlike the outposts: a bandit camp is meant to be raided and
 -- razed (world.md §2's protected zones are for the things players must not be
--- able to grief; a camp is the opposite). No add_poi call, no skip marker
--- either — there is no structure to leave half-built, so a chunk that cannot
--- decide the height simply does nothing and the anchor stays unbuilt.
+-- able to grief; a camp is the opposite). No add_poi call.
 --
--- HEIGHT: the same rule as everything else here, minus the persistence. The
--- camp occupies exactly one column, so only ONE mapchunk ever places it and
--- there is no cross-chunk agreement to maintain: engine spawn level first,
--- heightmap median over a 5×5 as the fallback, clamped to the coast profile,
--- and the same 2..100 sanity window the outposts use (all twelve anchors are
--- inland — |x| <= 670, |z| <= 1350, i.e. >= 350 nodes from any rectangle edge
--- — so column_cap returns nil for them and the clamp is pure belt and braces).
+-- RETRY, like the outposts: an anchor column that sits in a lake or a river
+-- used to be dropped silently and that band simply had no bandits (and no
+-- linen source) forever. grug_core.bandit_camp_candidates gives every anchor
+-- two lateral fallbacks, resolved strictly in order — a candidate steps aside
+-- only when the TERRAIN rejects it, never because its neighbour's mapchunk was
+-- generated first.
+-- What a POI-less structure has no home for is the bookkeeping the POI record
+-- does for an outpost, so this pass keeps its own two keys in mod storage:
+-- "bandit_at:<id>" = "x,z,y", the decided position (without it a fallback
+-- candidate's mapchunk — generated at any later time, possibly a session later
+-- — would place a SECOND camp 96 nodes from the first, and a world from before
+-- the retry scheme, which has no keys at all, would be the worst case), and
+-- "bandit_skip:<id>:<index>" for a rejected candidate, so the next one may
+-- have its turn. Neither resurrects a razed camp: mapgen never runs over a
+-- generated chunk again.
+--
+-- HEIGHT: the same rule as everything else here, minus the y persistence. A
+-- camp occupies exactly one column, so only ONE mapchunk ever places a given
+-- candidate and there is no cross-chunk agreement to maintain: engine spawn
+-- level first, heightmap median over a 5×5 as the fallback, clamped to the
+-- coast profile, and the same 2..100 sanity window the outposts use (all
+-- twelve anchors and their candidates are inland — |x| <= 766, |z| <= 1350,
+-- i.e. >= 350 nodes from any rectangle edge — so column_cap returns nil for
+-- them and the clamp is pure belt and braces).
 --
 -- The node arrives by VoxelManip, which fires no callbacks, so its meta and
 -- its node timer are set up by the LBM "grug_mobs:camp_fire_init"
--- (grug_mobs/camps.lua) — exactly the same arrangement as the guard banner.
+-- (grug_mobs/camps.lua), which for that reason has to run at EVERY mapblock
+-- load — see the note at the LBM — exactly the same arrangement as the guard
+-- banner.
 local BANDIT_SAMPLE = 2 -- heightmap median radius (5x5) for the fallback
 
 -- Resolved lazily, not at file scope like the other content ids: camp_fire
@@ -707,21 +826,56 @@ local function camp_fire_id()
 	return c_camp_fire or nil
 end
 
-local function bandit_camp_y(anchor, minp, maxp)
-	local y = grug_core.surface_level_at(anchor.x, anchor.z)
-		or heightmap_median(anchor.x, anchor.z, BANDIT_SAMPLE, minp, maxp)
-	if not y then
+-- The camp's decided position, "x,z,y" in mod storage, or nil while it is
+-- still open. This is the POI record's stand-in (see the section header): the
+-- one place that says where — and whether — this camp is.
+local function bandit_decision(id)
+	local raw = storage:get_string("bandit_at:" .. id)
+	local x, z, y = raw:match("^(-?%d+),(-?%d+),(-?%d+)$")
+	if not x then
 		return nil
 	end
-	y = math.floor(y)
-	local cap = column_cap(anchor.x, anchor.z)
-	if cap and cap < y then
-		y = cap
+	return {x = tonumber(x), z = tonumber(z), y = tonumber(y)}
+end
+
+-- Decides where this camp stands, exactly like decide_outpost above and with
+-- the same strict candidate order; the answer goes to mod storage instead of
+-- the POI registry, because a bandit camp is not protected.
+local function decide_bandit_camp(anchor, minp, maxp)
+	local cands = grug_core.bandit_camp_candidates(anchor)
+	for c = 1, #cands do
+		if storage:get_string("bandit_skip:" .. anchor.id .. ":" .. c) == "" then
+			local cand = cands[c]
+			local y, reason =
+				candidate_ground_y(cand, BANDIT_SAMPLE, minp, maxp)
+			if y then
+				storage:set_string("bandit_at:" .. anchor.id,
+					cand.x .. "," .. cand.z .. "," .. y)
+				core.log("action",
+					("[grug_mapgen] bandit camp %s anchored at %d,%d,%d " ..
+					"(candidate %d)"):format(anchor.id, cand.x, y, cand.z, c))
+				return {x = cand.x, z = cand.z, y = y}
+			end
+			if not reason then
+				return nil -- undecided: nobody behind it may jump the queue
+			end
+			storage:set_string("bandit_skip:" .. anchor.id .. ":" .. c, reason)
+			core.log("action",
+				("[grug_mapgen] bandit camp %s candidate %d at %d,%d skipped " ..
+				"(%s)"):format(anchor.id, c, cand.x, cand.z, reason))
+		end
 	end
-	if y < OUTPOST_MIN_Y or y > OUTPOST_MAX_Y then
-		return nil
+	return nil -- every candidate rejected: this band keeps no camp
+end
+
+local function chunk_near_bandit_camp(anchor, minp, maxp)
+	local cands = grug_core.bandit_camp_candidates(anchor)
+	for c = 1, #cands do
+		if chunk_covers(minp, maxp, cands[c].x, cands[c].z, 0) then
+			return true
+		end
 	end
-	return y
+	return false
 end
 
 core.register_on_generated(function(minp, maxp, blockseed)
@@ -755,37 +909,44 @@ core.register_on_generated(function(minp, maxp, blockseed)
 	-- collect the ones whose build volume reaches into this chunk. The x/z
 	-- overlap test uses OUTPOST_HALF (structure + breathing room), so a chunk
 	-- that only clips the pad still builds its slice.
+	--
+	-- Two separate questions, in this order: WHERE does this outpost stand
+	-- (decide_outpost, once per anchor and per world — the POI record carries
+	-- the answer to every later chunk and session), and does the answer reach
+	-- into THIS chunk (then build the slice). Keeping them apart is what makes
+	-- the retry work in any chunk order: the decision only needs the engine's
+	-- spawn level, which any chunk can ask for any column.
 	local outposts = {}
 	local anchors = grug_core.outpost_anchors()
 	for i = 1, #anchors do
 		local a = anchors[i]
-		if maxp.x >= a.x - OUTPOST_HALF and
-				minp.x <= a.x + OUTPOST_HALF and
-				maxp.z >= a.z - OUTPOST_HALF and
-				minp.z <= a.z + OUTPOST_HALF then
-			local y = outpost_y(a, minp, maxp)
-			if y and maxp.y >= y - OUTPOST_SKIRT and
-					minp.y <= y + OUTPOST_CLEAR then
-				outposts[#outposts + 1] = {x = a.x, y = y, z = a.z}
-			end
+		local poi = grug_core.get_poi(a.id)
+		if not poi and chunk_near_outpost(a, minp, maxp) then
+			poi = decide_outpost(a, minp, maxp)
+		end
+		if poi and chunk_covers(minp, maxp, poi.x, poi.z, OUTPOST_HALF) and
+				maxp.y >= poi.y_base - OUTPOST_SKIRT and
+				minp.y <= poi.y_base + OUTPOST_CLEAR then
+			outposts[#outposts + 1] = {x = poi.x, y = poi.y_base, z = poi.z}
 		end
 	end
 
-	-- Bandit camps: one node each, so the collect step is just "is this
-	-- anchor's column in the chunk, and does its fire node land in the chunk's
-	-- y range". Nothing is persisted and nothing is protected (see above).
+	-- Bandit camps: the same two questions as the outposts above (decide once,
+	-- then build the chunk that holds the answer), only with the mod-storage
+	-- record instead of a POI and with a single node instead of a pad.
 	local fires = {}
 	local fire_id = camp_fire_id()
 	if fire_id then
 		local bandits = grug_core.bandit_camp_anchors()
 		for i = 1, #bandits do
 			local b = bandits[i]
-			if b.x >= minp.x and b.x <= maxp.x and
-					b.z >= minp.z and b.z <= maxp.z then
-				local y = bandit_camp_y(b, minp, maxp)
-				if y and y + 1 >= minp.y and y + 1 <= maxp.y then
-					fires[#fires + 1] = {x = b.x, y = y + 1, z = b.z}
-				end
+			local at = bandit_decision(b.id)
+			if not at and chunk_near_bandit_camp(b, minp, maxp) then
+				at = decide_bandit_camp(b, minp, maxp)
+			end
+			if at and chunk_covers(minp, maxp, at.x, at.z, 0) and
+					at.y + 1 >= minp.y and at.y + 1 <= maxp.y then
+				fires[#fires + 1] = {x = at.x, y = at.y + 1, z = at.z}
 			end
 		end
 	end

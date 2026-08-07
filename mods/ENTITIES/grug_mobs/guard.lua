@@ -11,7 +11,10 @@
 --      outpost as a protected POI (grug_core.add_poi).
 --   2. The banner arrives via VoxelManip, which fires NO node callbacks, so
 --      the LBM "grug_mobs:guard_banner_init" (camps.lua) starts its node
---      timer on first load.
+--      timer. That LBM runs at EVERY mapblock activation, not once: a
+--      `run_at_every_load = false` LBM never runs on blocks generated after
+--      its introduction (lua_api.md:10312-10316), which is every block mapgen
+--      ever puts a banner in — see the long note at the LBM itself.
 --   3. That timer is the camp mechanism of camps.lua: camp type
 --      "guard_accord"/"guard_throng" — 2-3 guards, radius 15, spawned one at
 --      a time while a player is near.

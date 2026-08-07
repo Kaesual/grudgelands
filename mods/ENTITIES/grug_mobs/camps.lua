@@ -39,8 +39,8 @@
 -- at the bottom of this file. Two things differ:
 --   * the banner is placed by MAPGEN (grug_mapgen/structures.lua) via a
 --     VoxelManip, which fires no node callbacks at all — so the timer of a
---     generated banner is started by the LBM at the bottom instead of by
---     on_construct;
+--     generated banner is started by the LBM at the bottom (which for that
+--     reason must run at EVERY load, see there) instead of by on_construct;
 --   * the camp type is not chosen by the placer but by the TERRITORY the
 --     banner stands in (grug_core.territory_at), so a post can never fly the
 --     wrong faction's colours;
@@ -89,6 +89,11 @@ local META_FIRE_INIT = "_grug_camp_init"
 -- let the TERRITORY pick its type — see there.
 local BANNER_NODE = "grug_nodes:guard_banner"
 
+-- Forward declaration: camp_cfg (a helper, far above the guard-post section)
+-- needs the territory rule to type a banner whose meta went missing. The
+-- definition lives with the rest of the guard-post code further down.
+local banner_camp_type
+
 -- Re-arm delay when the tick had nothing to do (nobody around, camp full, no
 -- free ground). Short on purpose: it is one cheap check, and it decides how
 -- fast a camp repopulates once a player walks up to a stale one.
@@ -123,10 +128,23 @@ local SPOT_TRIES = 12
 -- Helpers
 --
 
-local function camp_cfg(meta)
+-- Config of the camp anchored at pos. The type normally comes from meta; the
+-- fallback for an EMPTY meta value is decided by the NODE, never by
+-- DEFAULT_TYPE alone: a guard banner that lost its meta (a /clearobjects-style
+-- accident, a hand-placed node whose on_construct was bypassed, an old world
+-- from before the init LBMs ran) would otherwise be read as a bandit camp and
+-- spawn BANDITS inside a military outpost. Territory stays authoritative for a
+-- banner here exactly as it is in place_camp and init_banner; only the camp
+-- fire falls back to "bandit".
+local function camp_cfg(pos, meta)
 	local id = meta:get_string(META_TYPE)
 	if id == "" then
-		id = DEFAULT_TYPE
+		local node = core.get_node(pos)
+		if node.name == BANNER_NODE then
+			id = banner_camp_type(pos)
+		else
+			id = DEFAULT_TYPE
+		end
 	end
 	return grug_mobs.registered_camp_types[id], id
 end
@@ -205,8 +223,13 @@ end
 -- ObjectRef, never a function. Both endpoints come from
 -- grug_core.outpost_anchors(): this post, and the adjacent outpost of the
 -- same race band one ring further toward the strait. That shared anchor list
--- is the ONE source both mapgen and this file read, so a patrol can never
--- walk to a post that was never built.
+-- is the ONE source both mapgen and this file read, so a patrol always walks
+-- the leg the world was laid out with. Where the target post PHYSICALLY
+-- stands is a second question (retry candidates, see below); and a target
+-- whose chunks were never generated, or whose candidates were all rejected,
+-- means the patroller ambles to an empty spot and back — harmless, and not
+-- worth suppressing the patrol for, since the target may still be built the
+-- moment a player walks over there.
 --
 -- A banner that is not on an outpost anchor — the capital watch of world.md
 -- §3 — simply gets no route and every guard holds the platform.
@@ -221,8 +244,14 @@ local function assign_patrol(pos, meta, ent)
 	if not target then
 		return
 	end
+	-- The route runs between the BUILT positions, not the raw anchors: an
+	-- anchor whose own column was flooded is built at one of its retry
+	-- candidates (grug_core.outpost_candidates), up to 96 nodes away, and
+	-- outpost_position is the accessor that knows where that ended up.
+	local ax, az = grug_core.outpost_position(anchor)
+	local tx, tz = grug_core.outpost_position(target)
 	ent._grug_patrol_route = {
-		points = {{x = anchor.x, z = anchor.z}, {x = target.x, z = target.z}},
+		points = {{x = ax, z = az}, {x = tx, z = tz}},
 		wp = 1,
 	}
 	meta:set_int(META_PATROL_T, now)
@@ -236,7 +265,7 @@ end
 
 local function camp_tick(pos)
 	local meta = core.get_meta(pos)
-	local cfg, id = camp_cfg(meta)
+	local cfg, id = camp_cfg(pos, meta)
 	if not cfg then
 		-- A camp type that no mod registered (typo, or a removed family):
 		-- log once per tick at a slow rate instead of spinning.
@@ -305,7 +334,20 @@ end
 -- Shared by on_construct (hand/place_camp placement) and the LBM below
 -- (mapgen placement, see there). Idempotent: the meta flag makes a second
 -- call a no-op, and an already typed fire keeps its type.
+--
+-- The TIMER is armed BEFORE that early return, on purpose. The LBM runs at
+-- every load (see there), so this function is the one place that sees every
+-- camp fire on every activation — and a fire whose timer went missing (an old
+-- world generated before the init LBM existed, a mapblock written by a tool,
+-- an engine-side loss) would otherwise stay a dead node forever while its meta
+-- flag says "initialised". `is_started` keeps the repeat cost at one meta read
+-- plus one timer query per node per activation and never re-arms a running
+-- timer, so a camp mid-respawn is not reset by a reload.
 local function init_camp_fire(pos)
+	local timer = core.get_node_timer(pos)
+	if not timer:is_started() then
+		timer:start(IDLE_PERIOD)
+	end
 	local meta = core.get_meta(pos)
 	if meta:get_int(META_FIRE_INIT) == 1 then
 		return
@@ -315,7 +357,6 @@ local function init_camp_fire(pos)
 		meta:set_string(META_TYPE, DEFAULT_TYPE)
 	end
 	meta:set_string("infotext", "Camp Fire")
-	core.get_node_timer(pos):start(IDLE_PERIOD)
 end
 
 -- Deliberately family-agnostic ("camp fire", not "bandit fire"): the same
@@ -385,7 +426,9 @@ core.register_node("grug_mobs:camp_fire", {
 
 -- Which watch stands here: the TERRITORY decides, never the placer
 -- (world.md §0/§4 — a post cannot fly the wrong faction's colours).
-local function banner_camp_type(pos)
+-- Assigns the forward-declared local at the top of the file (camp_cfg uses it
+-- as the meta-less fallback); NOT a global.
+function banner_camp_type(pos)
 	local territory = grug_core.territory_at(pos)
 	if territory ~= "accord" and territory ~= "throng" then
 		-- Only reachable for a banner placed by hand in the ocean/strait: the
@@ -403,7 +446,16 @@ end
 -- Shared by on_construct (hand/place_camp placement) and the LBM below
 -- (mapgen placement). Idempotent: the meta flag makes a second call a no-op,
 -- and an already typed banner keeps its type.
+--
+-- Same self-healing arm as init_camp_fire above and for the same reason: the
+-- LBM runs at every load, so an outpost banner whose node timer was lost gets
+-- it back on the next activation instead of standing there as a decorative
+-- flag with no garrison. `is_started` never resets a running timer.
 local function init_banner(pos)
+	local timer = core.get_node_timer(pos)
+	if not timer:is_started() then
+		timer:start(IDLE_PERIOD)
+	end
 	local meta = core.get_meta(pos)
 	if meta:get_int(META_BANNER_INIT) == 1 then
 		return
@@ -413,7 +465,6 @@ local function init_banner(pos)
 		meta:set_string(META_TYPE, banner_camp_type(pos))
 	end
 	meta:set_string("infotext", "Guard Post")
-	core.get_node_timer(pos):start(IDLE_PERIOD)
 end
 
 core.override_item("grug_nodes:guard_banner", {
@@ -431,13 +482,30 @@ core.override_item("grug_nodes:guard_banner", {
 -- capital-watch banner on every spawn platform) straight into the mapchunk's
 -- VoxelManip. A VM write is not set_node — it fires NO node callbacks at all,
 -- so on_construct above never runs for a generated banner and its node timer
--- would never be armed. The LBM is the init path for exactly those nodes; it
--- runs once per mapblock (run_at_every_load = false), including on freshly
--- generated blocks, and init_banner's meta flag makes it idempotent on top.
+-- would never be armed. The LBM is the init path for exactly those nodes.
+--
+-- WHY run_at_every_load = true, and why `false` was a total loss here:
+-- lua_api.md:10312-10316 spells the semantics out — a `false` LBM only runs on
+-- a mapblock whose "last active" timestamp is OLDER than the LBM's
+-- introduction timestamp, and a block's timestamp is set WHEN IT IS GENERATED.
+-- So `false` means "run once on blocks that already existed before this LBM
+-- was introduced" and, verbatim from the docs, "It never runs on mapblocks
+-- generated after the LBM's introduction". Every banner in this game is placed
+-- by mapgen, i.e. in a block generated after the LBM existed — the init never
+-- ran for a single one of them, no timer was ever armed, and the entire guard
+-- post / bandit camp mechanism was dead in every world (engine side:
+-- LBMManager puts a non-every-load LBM into the bucket of its introduction
+-- time, and getLBMsIntroducedAfter only ever selects buckets at or after the
+-- block's own, i.e. later, timestamp).
+-- `true` runs the action on EVERY activation of a block holding this node,
+-- which is what the two init functions are written for (cheap, idempotent,
+-- self-healing). It also repairs EXISTING worlds: the engine refiles the LBM
+-- into the always-selected bucket on the next load, so every banner already in
+-- the map gets its timer on the next visit.
 core.register_lbm({
 	name = "grug_mobs:guard_banner_init",
 	nodenames = {BANNER_NODE},
-	run_at_every_load = false,
+	run_at_every_load = true,
 	action = function(pos)
 		init_banner(pos)
 	end,
@@ -450,10 +518,16 @@ core.register_lbm({
 -- that never spawns anybody). init_camp_fire does exactly what on_construct
 -- does — default type "bandit", infotext, arm the timer — and its meta flag
 -- makes the pair idempotent.
+--
+-- run_at_every_load = true for exactly the reason spelled out at the banner
+-- LBM above: with `false` this LBM would never have run on a single
+-- mapgen-placed fire (they all live in blocks generated after the LBM's
+-- introduction), and no bandit camp in the world would ever have spawned
+-- anybody.
 core.register_lbm({
 	name = "grug_mobs:camp_fire_init",
 	nodenames = {"grug_mobs:camp_fire"},
-	run_at_every_load = false,
+	run_at_every_load = true,
 	action = function(pos)
 		init_camp_fire(pos)
 	end,
