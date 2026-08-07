@@ -217,10 +217,9 @@ professions (WP10), talent trees (WP11), world structures (WP13),
 offhand (WP14), guilds (WP16), travel (WP17), party system (WP20),
 recovery & innkeeper (WP21), apex world bosses (WP23).
 
-**Caveats:** everything up to WP6/WP19 has been runtime-tested on a fresh
-world (2026-08-07; six findings, all fixed); the money/vendor layer is
-code-reviewed but its runtime test is still pending. One known defect
-remains: melee auto-attacks against *players* still use the engine's raw
+**Caveats:** every shipped work package has been runtime-tested
+(2026-08-07 — six findings on the WP1–WP19 pass, all fixed; WP7 passed
+without findings). One known defect remains: melee auto-attacks against *players* still use the engine's raw
 scaling, so a held button can deal 0 damage in PvP — the mob-side fix is
 in, the PvP port is queued. Mapgen changed in WP18, so **existing worlds
 are incompatible; always start a fresh one**. All art is currently
