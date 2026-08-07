@@ -31,10 +31,13 @@
 --     may pull this mob before it gives up. Per chase, runtime only.
 --   * `_grug_home` governs WHERE AN EVADED MOB ENDS UP — leash_reset snaps it
 --     back there when it has strayed further than its own radius (see the
---     evade block there). Persistent, one per mob, set at first activation
---     (levels.lua ensure_init) or by the camp that spawned it (camps.lua).
+--     evade block there) — and, for a camp-bound mob, HOW FAR IT MAY DRIFT
+--     WHILE IDLE (roam_check below, world.md §4a). Persistent, one per mob,
+--     set at first activation (levels.lua ensure_init) or by the camp that
+--     spawned it (camps.lua).
 -- What `_grug_home` is NOT is an identity: a camp counts its members by
--- `_grug_camp_pos`, which camps.lua sets alongside it.
+-- `_grug_camp_pos`, which camps.lua sets alongside it — and which is also
+-- what tells the roam cap apart from wildlife.
 --
 -- "Player contact" reading (decided WP6-T2): contact is a hit BETWEEN the
 -- mob and its target — grug_core.run_player_hit_mob (player hits mob), a
@@ -260,6 +263,66 @@ local function leash_check(self)
 	end
 end
 
+--
+-- Roam cap: the SOFT half of place binding (world.md §4a)
+--
+-- "Place-bound NPCs are bound to their anchor: after losing aggro they return
+-- to it (the evade snap-home above), and while idle they roam only a small
+-- radius around it (~10-20 nodes)." The evade is the hard reset for a mob
+-- that was DRAGGED away; this is the bound on the mob's own drifting.
+--
+-- Why it is needed at all: mobs_redo's idle walk is an unbounded random walk
+-- (do_states picks a random yaw and walks, api.lua:2150ff) — nothing in it
+-- ever pulls a mob back. A bandit camp therefore dissolved into the landscape
+-- over an evening, and every member that drifted past radius + 16 was counted
+-- as dead by camps.lua and refilled behind (the same failure mode the evade
+-- was written for, only slower). With the cap the head count's margin is a
+-- real bound in the IDLE case too, not just after a fight.
+--
+-- Deliberately a gentle steer and not a teleport: an idle mob walking home is
+-- invisible in the good way, and the snap is reserved for the moment a mob
+-- has just dropped a chase (where it is equally invisible). Reuses the patrol
+-- nudge (patrol.lua walk_toward) — never mobs_redo's go_to(), which fakes an
+-- attack target and would blind the mob to players; see patrol.lua.
+--
+-- ~15 nodes: the middle of §4a's 10-20, comfortably inside every camp type's
+-- own leash radius (bandit/mirefolk 25, guard 30) so the two rules never
+-- fight, and outside every camp radius (10-15) so a mob milling around the
+-- fire is left completely alone.
+local ROAM_RADIUS = 15
+
+local function roam_check(self)
+	-- CAMP-BOUND ONLY. `_grug_camp_pos` is the identity ("I belong to that
+	-- anchor"), `_grug_home` merely a position every mob has — wildlife keeps
+	-- its unbounded wander, which is what wildlife is for.
+	if not self._grug_camp_pos then
+		return
+	end
+	-- The designated patroller is §4's one exemption: being far from its post
+	-- is its entire job (same exemption as the evade above).
+	if self._grug_patrol_route then
+		return
+	end
+	-- Idle only: fighting, fleeing and flopping own the movement. Identical
+	-- test to route_tick's, and it is what makes this rule invisible in
+	-- combat — a guard chasing an intruder is never steered home.
+	if self.attack or (self.state ~= "stand" and self.state ~= "walk") then
+		return
+	end
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if not home or not pos then
+		return
+	end
+	-- Horizontal only, like the evade: a mob on the ledge above its fire is
+	-- not stray.
+	local dx, dz = pos.x - home.x, pos.z - home.z
+	if dx * dx + dz * dz <= ROAM_RADIUS * ROAM_RADIUS then
+		return
+	end
+	grug_mobs.walk_toward(self, home.x, home.z, pos)
+end
+
 -- Called on every do_custom tick; does real work once a second. This IS the
 -- per-mob 1 Hz slot, so the threat-switch drain rides along in it rather than
 -- opening a second accumulator.
@@ -282,6 +345,11 @@ function grug_mobs.leash_tick(self, dtime)
 	-- early return — threat targeting has nothing to do with leashing, and the
 	-- zombie and the kraken have threat tables like everyone else.
 	grug_core.recheck_switch(self)
+	-- Idle roam cap (world.md §4a). Also BEFORE the no-leash early return:
+	-- being bound to an anchor is not the same question as being leashed to a
+	-- chase, and a camp family that ever opts out of the leash must still
+	-- stay at its camp. Costs one field test for every other mob.
+	roam_check(self)
 	if self._grug_no_leash then
 		return
 	end

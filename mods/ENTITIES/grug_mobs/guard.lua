@@ -16,8 +16,10 @@
 --      its introduction (lua_api.md:10312-10316), which is every block mapgen
 --      ever puts a banner in — see the long note at the LBM itself.
 --   3. That timer is the camp mechanism of camps.lua: camp type
---      "guard_accord"/"guard_throng" — 2-3 guards, radius 15, spawned one at
---      a time while a player is near.
+--      "guard_accord"/"guard_throng" — 2-3 guards, radius 15, refilled one
+--      RESPAWN SLOT at a time (world.md §4a; 180-360 s per slot, owed
+--      refills catch up when a dormant post reactivates) while a player is
+--      near.
 --   4. Each guard's LEVEL comes from the inverse guard field
 --      (grug_core.guard_level_at via _grug_level_source = "guard",
 --      levels.lua) — ~36 at the war coast, ~47 in the inner ring, 60+ in the
@@ -26,7 +28,9 @@
 --      "elite city watch (60+)" of world.md §1), which also switches on the
 --      2 s wind-up telegraph.
 --   6. It defends its post: _grug_leash_range = 30 around the banner
---      (camps.lua writes the banner position into _grug_home).
+--      (camps.lua writes the banner position into _grug_home), and while
+--      idle it stays within the 15-node roam cap of world.md §4a
+--      (aggro.lua) instead of wandering off the pad.
 --   7. The camp's designated patroller additionally carries
 --      _grug_patrol_route and ambles to the neighbouring ring's outpost and
 --      back (patrol.lua + the patrol leash exemption in aggro.lua).

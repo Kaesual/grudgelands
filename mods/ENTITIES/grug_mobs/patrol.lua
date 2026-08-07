@@ -22,6 +22,28 @@ local WAYPOINT_REACHED = 4 -- m
 local TICK = 1 -- s between nudges (performance rule: throttled)
 
 --
+-- ONE nudge toward a horizontal point: turn, and keep walking. This is the
+-- whole movement primitive — shared with the camp roam cap in aggro.lua
+-- (world.md §4a, "while idle they roam only a small radius around their
+-- anchor"), which is the same "walk that way" with a different target.
+--
+-- mobs_redo's own walk state re-randomizes the yaw with a 30 % chance per
+-- do_states call (api.lua:2152) and may stop the mob (`stand_chance`), so a
+-- single nudge is a suggestion, not a command — but do_custom runs BEFORE
+-- do_states in the same step and this repeats once a second, so the mob
+-- makes net progress instead of a straight line. That is exactly what an
+-- amble should look like.
+--
+-- `pos` is passed in because both callers already fetched it; y is only used
+-- to keep the yaw horizontal.
+--
+function grug_mobs.walk_toward(self, x, z, pos)
+	self:yaw_to_pos(vector.new(x, pos.y, z), 0, 4)
+	self.state = "walk"
+	self:set_velocity(self.walk_velocity)
+end
+
+--
 -- points     — array of {x = , z = }, at least 2; y is never used, the mob
 --              walks on whatever ground it finds (the route is a direction,
 --              not a path — pathfinding = 1 handles the obstacles).
@@ -62,7 +84,5 @@ function grug_mobs.route_tick(self, dtime, points, wp_holder, wp_key)
 		wp_holder[wp_key] = idx
 		pt = points[idx]
 	end
-	self:yaw_to_pos(vector.new(pt.x, pos.y, pt.z), 0, 4)
-	self.state = "walk"
-	self:set_velocity(self.walk_velocity)
+	grug_mobs.walk_toward(self, pt.x, pt.z, pos)
 end

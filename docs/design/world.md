@@ -264,11 +264,12 @@ Every stationary NPC population (outpost guards, capital watch, bandit/
 mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 
 - **Place-bound NPCs** are bound to their anchor (guard banner, camp
-  fire, mine, platform): after losing aggro they return to it (today:
-  the evade snap-home), and while idle they **roam only a small radius
-  around it** (~10–20 nodes; today's random walk is unbounded — the
-  roam cap is part of the model). The patroller role is the one
-  designed exception.
+  fire, mine, platform): after losing aggro they return to it (the
+  evade snap-home), and while idle they **roam only a small radius
+  around it** — **15 nodes**, horizontal, enforced as a gentle steer
+  home once a second while the NPC is idle (the snap stays the hard
+  reset after a chase). The patroller role is the one designed
+  exception.
 - **Character-bound NPCs** (the king's bodyguards, later escort NPCs)
   are bound to a character instead of a place: they follow their
   character wherever it goes while it lives. When the character dies
@@ -280,7 +281,12 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max
   range rolled per refill). Slots are independent: if 2 of 4 bodyguards
-  die, exactly 2 refills queue up.
+  die, exactly 2 refills queue up. Intervals in force today:
+  bandit/mirefolk camps **120–300 s** per slot (biomes_mobs.md §4),
+  guard posts **180–360 s** — clearing an outpost buys a while of open
+  road. A **freshly generated** anchor owes its full garrison from the
+  moment it exists, so a camp nobody has visited yet is manned when the
+  first player walks up.
 - **Dormant catch-up** (the Luanti reality: no timers tick in unloaded
   areas): the anchor keeps its **slot timestamps in persistent state**
   (node meta / entity state), not in running timers. When the area
@@ -288,7 +294,10 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   time has earned and spawns them **immediately**, and the remainder
   continues on the normal interval. Example (interval 7 min): 3 guards
   died 15 min ago in a since-dormant area → on the next player's
-  arrival 2 spawn at once (⌊15/7⌋), the third ~6 min later.
+  arrival 2 spawn at once (⌊15/7⌋), the third ~6 min later. The clock is
+  **world time** (it runs while players are elsewhere, stands still
+  while the server is off) and it starts when the anchor **notices** the
+  death — an anchor cannot count losses in an area nobody was in.
 
 ## 4b. Apex world bosses (dragons & kin)
 

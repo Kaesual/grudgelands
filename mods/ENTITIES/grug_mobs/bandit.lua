@@ -4,10 +4,11 @@
 -- camps) / heavy cloth (outer camps); copper coins").
 --
 -- NO mobs:spawn ROW — that is the design, not an omission: §4's row for this
--- family reads "Bandits / Mirefolk | **no ABM** — camp node timer respawns
--- 120-300 s, anchored to camp, 3-5 per camp". Every bandit in the world
--- comes out of a camp fire (camps.lua), which is also what gives it its
--- `_grug_home` and `_grug_camp_pos`.
+-- family reads "Bandits / Mirefolk | **no ABM** — camp anchor with respawn
+-- slots (world.md §4a): max 3-5, one refill per 120-300 s, dormant catch-up".
+-- Every bandit in the world comes out of a camp fire (camps.lua), which is
+-- also what gives it its `_grug_home` and `_grug_camp_pos` — and with them
+-- the idle roam cap of §4a (aggro.lua).
 --
 -- MESH: `character.b3d`, the engine/MTG player model, referenced BY NAME.
 -- Luanti's media namespace is FLAT — every mod's media is served under its
