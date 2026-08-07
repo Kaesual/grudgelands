@@ -212,11 +212,12 @@ design (`group_attack` stays on).
   every active object render up to the ~128 m object-send range, which
   is visual clutter over a dense mob field and a free PvP tell for
   players): mob nametags are shown only while a player is within
-  **20 m** (hidden again beyond 24 m — the hysteresis avoids per-second
-  property resends at the boundary). The gate is global
+  **25 m** (hidden again beyond 30 m — the hysteresis avoids per-second
+  property resends at the boundary; 20/24 in the first cut, widened
+  2026-08-07 after the runtime retest). The gate is global
   (nearest-player), not per viewer — the engine cannot do per-viewer
-  nametags. 20 m matches the target-frame reach: what you can frame,
-  you can read.
+  nametags. The radius sits just past the 20 m target-frame reach:
+  everything you can frame has a readable tag, plus a margin.
 - **Player nametags are hidden entirely** (alpha 0 — the only mechanism
   that works for players): any fixed radius would still leak positions
   through walls and darkness, exactly the PvP tell we must not give

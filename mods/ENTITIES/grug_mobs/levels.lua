@@ -83,8 +83,10 @@ end
 -- can frame, you can read.
 --
 
-local TAG_SHOW_D2 = 20 * 20
-local TAG_HIDE_D2 = 24 * 24
+-- 25/30 per the 2026-08-07 runtime retest (20/24 read as too tight);
+-- combat_stats.md §6 carries the same numbers.
+local TAG_SHOW_D2 = 25 * 25
+local TAG_HIDE_D2 = 30 * 30
 
 --
 -- Cached player positions: ONE globalstep for the entire mob population.
