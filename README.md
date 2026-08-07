@@ -203,10 +203,13 @@ banners, not buildings).
 structures (WP13), offhand (WP14), travel (WP17), party system (WP20),
 recovery & innkeeper (WP21), apex world bosses (WP23).
 
-**Caveats:** several shipped WPs are still marked *runtime test pending*
-(runtime testing is manual). Mapgen changed in WP18 — **existing worlds
-are incompatible, always test on a fresh world**. All art is currently
-vendored from reference projects; own assets are Phase 3.
+**Caveats:** everything shipped has been runtime-tested on a fresh world
+(2026-08-07; six findings, all fixed). One known defect remains: melee
+auto-attacks against *players* still use the engine's raw scaling, so a
+held button can deal 0 damage in PvP — the mob-side fix is in, the PvP
+port is queued. Mapgen changed in WP18, so **existing worlds are
+incompatible; always start a fresh one**. All art is currently vendored
+from reference projects; own assets are Phase 3.
 
 ---
 
