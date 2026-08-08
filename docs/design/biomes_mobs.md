@@ -543,9 +543,15 @@ final naming in items_crafting.md. All aggressive mobs:
 Three behaviour classes, not two. The split is by **size and role**, not by
 who runs away:
 
-**Critters** — *small* animals only: rabbit, hare, parrot, gull (+ the
-cave/creepy additions of the asset pass). They are scenery with a use, not
-content:
+**Critters** — *small* animals only: **rabbit, hare, parrot, gull**, plus
+the four additions the 2026-08-08 asset survey found on disk: **Cave Bat**
+and a **cave crawler** (both `underground` — the caves had no critter at
+all), **Bone Weevil** (bone forest + blight, the "creepy" biomes, day) and
+**Bog Fowl** (swamp, day). The **Carrion Crow is deliberately NOT a
+critter** — it is the last feather source and the entire daytime population
+of the war coast, so it moves to the passive-prey class below instead
+(same mesh, ~1.0 nodes tall, level 20–30 there). They are scenery with a
+use, not content:
 
 - **Always level 1, always 1 HP**, whatever the level field says at their
   position. This is the second documented exception to §0's "stats derived,
