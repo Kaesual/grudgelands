@@ -2847,7 +2847,31 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		weapon:add_wear(wear)
 	end
 
-	hitter:set_wielded_item(weapon)
+	-- GRUG PATCH: do not write the wielded stack back when nothing changed
+	-- (weapon-slot design E, 2026-08-08). `ObjectRef:set_wielded_item` on a
+	-- PLAYER is not a field assignment: it triggers SendInventory, i.e. a full
+	-- serialization of that player's entire inventory plus a packet
+	-- (`src/script/lua_api/l_object.cpp:362-369`). Upstream pays that on every
+	-- punch, including the ones that changed the stack by nothing at all --
+	-- `weapon` is a COPY of the wielded item and `add_wear(0)` is a no-op, so
+	-- with `wear == 0` this call re-sends the inventory to say the item is
+	-- exactly what the client already has.
+	--
+	-- It became load-bearing with the auto-attack skill: ability punches carry
+	-- `punch_attack_uses = 0` (grug_core.deal_ability_damage), so EVERY swing
+	-- of a continuously auto-attacking player took this branch at wear 0 --
+	-- ~1.4 packets per second per player, ~140/s at the 100-player design
+	-- target, for zero information. It also removes a lost-update window: the
+	-- stack written back here was read at the top of on_punch, so anything
+	-- that touched the same slot during the punch (the cooldown wear ticker)
+	-- would have been overwritten.
+	--
+	-- `use_tr` keeps the write unconditional whenever toolranks is installed
+	-- (we do not ship it): `new_afteruse` may rewrite the stack's description
+	-- meta even at wear 0, and that IS a change worth sending.
+	if wear > 0 or use_tr then
+		hitter:set_wielded_item(weapon)
+	end
 
 	-- only play hit sound and show blood effects if damage is 1 or over
 	if damage >= 1 then

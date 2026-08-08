@@ -182,6 +182,143 @@ core.register_on_leaveplayer(function(player)
 end)
 
 --
+-- Universal: the auto-attack (weapon-slot design E1-E8).
+--
+-- Auto-attack is an ORDINARY ability item. It has to be: an item with an
+-- on_use disables punching entirely for as long as it is selected (the client
+-- sends INTERACT_USE regardless of what is pointed at, game.cpp:2785-2789), so
+-- with abilities in the hotbar there was no way for the weapon SLOT to feed a
+-- held-button auto-attack. As a skill it reads the slot like every other one:
+-- weapon damage, swing speed and skin all come from the equipped item, and
+-- swapping the weapon changes all three without a relog.
+--
+-- What stays behind: punching a mob with a wielded pick or a bare hand
+-- (E5). That path keeps the WP6 cadence patch and is strictly worse than the
+-- skill -- no crit, no rage, no threat multiplier, no target lock -- so it is
+-- not a bypass worth defending against.
+--
+
+-- An empty weapon slot is an empty slot (B1): no fallback to whatever is in
+-- the hand, and the swing is a fist. 1 damage is exactly the baseline Mighty
+-- Blow's hotbar scan uses for bare hands today (C2: an empty slot makes
+-- skills weak, never uncastable), and 1.0 s is the fist's cadence.
+local BARE_HAND_DAMAGE = 1
+local BARE_HAND_INTERVAL = 1.0
+
+-- What the equipped weapon is worth this swing: fleshy damage and swing time.
+--
+-- Read fresh on EVERY swing, never cached in the loop: unequipping mid-fight
+-- drops to fist damage rather than stopping the attack, and swapping a
+-- greataxe for a dagger changes the cadence from the next swing on (E3).
+-- grug_inventory caches the slot itself, so this costs one ItemStack copy.
+--
+-- get_tool_capabilities() resolves the per-stack meta override before the item
+-- definition, which is how WP5's rolled attack-speed affix will reach this
+-- without a line of change here.
+local function swing_stats(player)
+	local stack = grug_core.get_equipped_weapon(player)
+	if not stack or stack:is_empty() then
+		return BARE_HAND_DAMAGE, BARE_HAND_INTERVAL
+	end
+	local caps = stack:get_tool_capabilities() or {}
+	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
+	local fpi = caps.full_punch_interval
+	-- A non-positive interval would make the swing loop fire every tick, i.e.
+	-- 10 swings a second. Nothing equippable declares one -- but the interval
+	-- comes out of item meta, and meta is data.
+	if type(fpi) ~= "number" or fpi <= 0 then
+		fpi = BARE_HAND_INTERVAL
+	end
+	return damage, fpi
+end
+
+-- One swing. Returns the cooldown it earned (the weapon's swing time) so the
+-- caller can arm the timer, or nil plus the reason it stopped.
+--
+-- The target is resolved through the SAME helper the class kits use, so
+-- "target dead", "out of range" and "out of line of sight" are one test and
+-- the soft target lock (8 s) is refreshed by every swing. `pointed` is the
+-- click's own target on the first cast and nil for every repeat afterwards --
+-- from then on the lock IS the target.
+local function strike_swing(user, pointed, def)
+	local target = enemy_target(user, pointed, def)
+	if not target then
+		return nil, "No target."
+	end
+	local weapon_damage, fpi = swing_stats(user)
+	-- combat_stats.md §2: melee damage = weapon damage + floor(Str/10).
+	-- deal_ability_damage rolls the crit (x1.5), pre-rolls a player target's
+	-- dodge, does the friendly-fire check, marks combat and reports threat --
+	-- threat multiplier 1, Taunt keeps its x3.
+	local amount = weapon_damage + grug_classes.get_melee_bonus(user)
+	-- Nothing is read off `target` after this line: a lethal ability punch
+	-- removes an animation-less mob synchronously, invalidating the ObjectRef.
+	local dealt = grug_core.deal_ability_damage(user, target, amount)
+	if dealt > 0 then
+		-- classes.md §1's +12 per landed melee hit. It has to happen HERE:
+		-- grug_core's hit hook skips ability punches on purpose (see the note
+		-- in init.lua), and a dodged swing (dealt == 0) generates nothing.
+		grug_abilities.add_rage(user, 12)
+	end
+	-- Deliberately NO particle burst of its own, unlike the class abilities:
+	-- the punch already runs mobs_redo's hit sound and blood effect, and this
+	-- one fires every 0.7-1.4 s for as long as a fight lasts. Crits keep their
+	-- burst (grug_core rolls it), which is what makes a crit readable.
+	return fpi
+end
+
+-- Working title kept from the design file. Deliberately a plain English verb,
+-- not a Blizzard ability name.
+grug_abilities.register_ability({
+	id = "strike",
+	universal = true, -- every class, and a character with no class yet (E1)
+	name = "Strike",
+	description = "Attack your target with the equipped weapon and\n" ..
+		"keep swinging at its speed. Cast again to stop.\n" ..
+		"Generates 12 rage per hit.",
+	-- Bone white, deliberately neutral (E8): the four class colours carry the
+	-- ability identities and a fifth colour would compete with them. With an
+	-- empty weapon slot the item falls back to this orb, which reads correctly
+	-- as "you are punching with your fists".
+	color = "#d9d3c0",
+	cost = {}, -- no resource cost: it is what GENERATES the resource
+	-- The real cadence is per cast, from the weapon (E2) -- `cooldown` is the
+	-- registry's required floor value and stays 0 so a bare-handed swing is
+	-- never blocked by a stale number.
+	cooldown = 0,
+	cooldown_for = function(user)
+		local _, fpi = swing_stats(user)
+		return fpi
+	end,
+	cooldown_text = "swings at your weapon's speed",
+	-- No wear bar for this one (E2): its cooldown restarts every 0.7-1.4 s for
+	-- as long as a player is in combat, and every wear write re-sends the whole
+	-- inventory to the client.
+	no_cooldown_display = true,
+	-- Off the global cooldown in BOTH directions (E2): a 1 s GCD would cap a
+	-- 0.7 s dagger, and a swing starting a GCD would lock the class kit out
+	-- for as long as the player keeps attacking.
+	off_gcd = true,
+	-- Melee, so the elf's +5 m ability range does not apply (E7) -- it would
+	-- otherwise hand elves a 9 m sword.
+	melee = true,
+	range = 4,
+	repeat_swing = function(user, def)
+		return strike_swing(user, nil, def)
+	end,
+	cast = function(user, pointed, def)
+		-- A second cast never reaches this function: try_cast stops the
+		-- running loop before its own gates (E3's "second cast").
+		local fpi, err = strike_swing(user, pointed, def)
+		if not fpi then
+			return false, err
+		end
+		grug_abilities.start_repeat(user, def)
+		return true
+	end,
+})
+
+--
 -- Warrior (rage; all abilities count as tank abilities: threat ×3)
 --
 
