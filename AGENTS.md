@@ -80,11 +80,16 @@ current state). It is **derived, never authoritative**:
   (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
-  in there**. They are **git submodules** (decided 2026-08-08) — not part of
-  the build, but required to develop this codebase: every engine-behaviour
-  claim, licence verification and `file:line` citation in the design docs
-  points into them. Get them with
-  `git submodule update --init --recursive --depth 1`.
+  in there**. The eight sources are **git submodules** (converted 2026-08-08,
+  WP36) — not part of the build (the game runs with the directory empty), but
+  required to develop this codebase: every engine-behaviour claim, licence
+  verification and `file:line` citation in the design docs points into them.
+  Get them with `git submodule update --init --recursive --depth 1`.
+  - **Never move a pinned commit as a side effect of other work** — it
+    invalidates every citation written against it and every
+    `LICENSE-media.md` row quoting it. `git submodule status` must show no
+    `+`/`-`/`U` marker. Deliberate updates and the re-verification they
+    require: [docs/reference_projects.md](docs/reference_projects.md).
   - **A reference project needed beyond one session MUST live here and be
     listed in [docs/reference_projects.md](docs/reference_projects.md)** —
     with upstream URL, why we need it and its licence. Ad-hoc clones into a

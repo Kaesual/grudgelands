@@ -346,6 +346,20 @@ tools/sync_to_luanti.sh   # copies the game into ~/.var/app/org.luanti.luanti/..
 Engine log for diagnosis:
 `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 
+### Reference projects (development only)
+
+```sh
+git submodule update --init --recursive --depth 1
+```
+
+`reference_projects/` holds the eight upstream sources this codebase is
+developed against, as git submodules. **The game builds and runs without
+them** — they are never loaded by the engine and nothing in `mods/` reads
+them. They are needed to *develop* the codebase: every engine-behaviour
+claim, licence verification and `file:line` citation in the design docs
+points into them, pinned at the commit it was written against. Details and
+the update discipline: [docs/reference_projects.md](docs/reference_projects.md).
+
 ---
 
 ## Repository layout
@@ -360,7 +374,7 @@ Engine log for diagnosis:
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | goals and phases · work packages with status |
 | [AGENTS.md](AGENTS.md) | conventions, Lua/Luanti rules, patterns — read this first before contributing |
 | [VENDOR.md](VENDOR.md) | vendored third-party mods: upstream commit, license, patch inventory |
-| `reference_projects/` | read-only references (the engine, Lord of the Test, VoxeLibre, minetest_game, mobs_redo) |
+| [docs/reference_projects.md](docs/reference_projects.md) · `reference_projects/` | the eight read-only upstream sources as git submodules — not part of the build |
 
 ## License
 

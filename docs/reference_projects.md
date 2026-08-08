@@ -30,12 +30,54 @@ gone while `LICENSE-media.md` still cited their commits.
 git submodule update --init --recursive --depth 1
 ```
 
-`--depth 1` keeps the checkout small; drop it if you need history (e.g. to
-verify when an upstream licence changed). A submodule can be updated
-deliberately with `git -C reference_projects/<name> fetch --depth 1 origin
-<ref>` followed by a commit of the new pointer — **never** update one as a
-side effect of other work: a moved reference invalidates every `file:line`
-citation in the design docs.
+That is the whole setup. It is **optional for playing** — the game builds and
+runs with `reference_projects/` empty, because nothing under `mods/` reads it
+and the engine never loads it. It is **not** optional for developing: without
+the checkouts, every citation in the design docs is unverifiable.
+
+`--depth 1` is the default we use — it keeps the checkout small (`luanti` and
+`VoxeLibre` carry years of history otherwise). Deepen a single one on demand
+when you actually need history, e.g. to find out when an upstream licence
+changed:
+
+```sh
+git -C reference_projects/VoxeLibre fetch --unshallow
+```
+
+## Update discipline
+
+**Never update a reference as a side effect of other work.** The pinned
+commit is the contract: every `file:line` citation in `docs/design/`,
+`AGENTS.md` and the research notes was written against exactly that tree, and
+every `LICENSE-media.md` row quotes exactly that commit as the provenance of
+an imported asset. Moving a pointer silently invalidates all of them — the
+lines shift, and a licence row starts naming a commit whose files nobody
+checked. So:
+
+- Do not run `git submodule update --remote`, and do not commit a gitlink
+  that changed because a `git pull` inside a reference moved its branch.
+- `git submodule status` must never show a `+` (checked-out commit differs
+  from the recorded one), `-` (not initialised) or `U` (conflict) marker on a
+  commit that is about to be pushed.
+- Never change a file inside `reference_projects/` — see the rules below.
+
+Updating one **deliberately** is a change of its own, with its own commit:
+
+```sh
+git -C reference_projects/<name> fetch --depth 1 origin <ref>
+git -C reference_projects/<name> checkout <sha>
+git add reference_projects/<name>          # commits the new pointer
+```
+
+and in the same commit, re-check what depended on the old one: the citations
+into that project and its rows in the affected `LICENSE-media.md` files. If
+the new tree moved a file an asset came from, the licence row needs the new
+commit *and* a re-verification, not just a new SHA.
+
+Three of the eight (`animalworld`, `animalia`, `mobs_monster`) are therefore
+pinned at the commits `mods/ENTITIES/grug_mobs/LICENSE-media.md` §3–§5 quote,
+not at their branch tips; the other five sit at the commits the existing
+`file:line` citations were written against.
 
 ## The list
 
