@@ -444,8 +444,12 @@ Details + line numbers in [docs/research/](docs/research/).
   continent rectangle itself comes from `grug_core` and reaches the
   mapgen env via `core.ipc_set` — never copy those constants.
   A `run_at_every_load` LBM in `grug_mapgen/ocean_mask.lua` heals worlds
-  generated before that fix; it is idempotent precisely because
-  `column_cap` is (x, z)-pure.
+  generated before that fix. `column_cap` being (x, z)-pure is what makes
+  it idempotent; what makes it *safe* is the carved-column discriminator —
+  it cuts only where the map still shows the mask's own signature (biome
+  ground at the cap, air/liquid directly above), because `column_cap`
+  knows where the mask cuts but not whether it cut, and an unconditional
+  sweep would decapitate every legal coastal tree in the band.
   The **six race-capital camp platforms** are the second kind
   (`grug_mapgen/structures.lua`, with the outposts and bandit camps;
   terrain-adaptive height from

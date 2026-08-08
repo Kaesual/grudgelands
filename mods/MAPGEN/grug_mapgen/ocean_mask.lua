@@ -75,17 +75,28 @@ core.register_mapgen_script(path .. "/ocean_mask_mapgen.lua")
 -- An LBM has no heightmap, but the map itself carries the answer, because the
 -- mask leaves a signature and v7 leaves a different one:
 --
---   * a CARVED column (h > cap) has the mask's RE-DRESSED SURFACE exactly at
---     the cap — sand at beach level, else the biome's node_top over node_filler
---     (ocean_mask_mapgen.lua's re-dress block) — and air or water directly
---     above it, because the carve cleared cap+1 upward before re-dressing. The
---     re-dress cannot be skipped for a carved column: `h > cap` means the node
---     at the cap was solid material, which is exactly the condition the
---     re-dress loop tests.
+--   * a CARVED column (h > cap) whose cap node was solid material shows the
+--     mask's RE-DRESSED SURFACE exactly at the cap — sand at beach level, else
+--     the biome's node_top over node_filler (ocean_mask_mapgen.lua's re-dress
+--     block) — and air or water directly above it, because the carve cleared
+--     cap+1 upward before re-dressing.
 --   * an UNCARVED column (h <= cap) shows at the cap whatever v7 and the
 --     decoration stage put there: air, a trunk, leaves, a snow layer — its
 --     ground top is at h, BELOW the cap. In the case above it reads
 --     `default:tree` at y 15 and dirt_with_grass at y 10.
+--
+-- THE FIRST BULLET IS SUFFICIENT, NOT NECESSARY (WP36 re-review). An earlier
+-- version of this header claimed the re-dress "cannot be skipped for a carved
+-- column, because `h > cap` means the node at the cap was solid material". That
+-- is not what `h` is. It comes from Mapgen::updateHeightmap -> findGroundLevel,
+-- the topmost WALKABLE node of the column (mapgen.cpp:238-252, :276-290), taken
+-- directly after generateTerrain and therefore BEFORE biomes, caves, dungeons
+-- and decorations (mapgen_v7.cpp:322-324 vs :331-364). `h > cap` says only that
+-- something walkable stands above the cap; the node AT the cap may be a
+-- mountain-noise overhang gap, a river channel or a cave. The re-dress loop
+-- tests `not not_solid[...]` per layer, writes nothing there, and the column
+-- keeps air at its cap — so it reads as UNCARVED here forever. Residual class
+-- (1) below; the direction is the safe one.
 --
 -- Hence the discriminator in column_carved(): cut only where the node AT the
 -- cap is biome ground AND the node directly above it is air or liquid. Both
@@ -99,11 +110,38 @@ core.register_mapgen_script(path .. "/ocean_mask_mapgen.lua")
 -- an unloaded neighbour, a cave mouth at the cap, a player's floor above the
 -- cap, cobble from a structure — fails one of the two tests and the column is
 -- left ALONE. The sweep can therefore miss overflow (it is retried on every
--- later load), but it cannot invent a cut the mapgen would not have made. The
--- single residual: a column whose terrain top is EXACTLY at its cap, with air
--- above it, carrying foliage rooted in a NEIGHBOURING column — indistinguish-
--- able from a floating crown by any per-column signal, and confined to the
--- h == cap contour line.
+-- later load), but it cannot invent a cut the mapgen would not have made. Three
+-- residual classes, all of them "overflow survives", none of them "legal
+-- terrain is cut":
+--
+--   1. A column the mask DID carve but could not re-dress at the cap (the
+--      paragraph above: overhang gap, river channel or cave at the cap level).
+--      It reads as uncarved, so its share of an old world's floating crown
+--      stays. Caves crossing the coast band's cap range are not rare.
+--   2. A column whose terrain top is EXACTLY at its cap, with air above it,
+--      carrying foliage rooted in a NEIGHBOURING column — indistinguishable
+--      from a floating crown by any per-column signal, and confined to the
+--      h == cap contour line.
+--   3. The MIRROR of (2), and the more common of the pair: a tree rooted in a
+--      CARVED column whose 5x5 schematic footprint reaches into a neighbour
+--      column with h <= cap. The neighbour was never carved, so the neighbour's
+--      share of the crown is not overflow by this sweep's definition and is
+--      left standing. Concretely: inland ramp at s = 90, i.e. cap = 38,
+--      mapchunk -32..47, root column h = 40 > cap, neighbour column
+--      h = 35 <= cap; the old world clipped the crown at maxp.y = 47, this
+--      sweep heals the root column and the neighbour keeps its leaves at
+--      48..51. So "a genuinely floating crown is still fully removed" holds
+--      only where the whole footprint sits over carved columns; at the h ~ cap
+--      boundary a fringe survives, and it survives DELIBERATELY — healing a
+--      neighbour column because some other column near it was carved is exactly
+--      the unconditional cut that decapitates a legitimate coastal tree (the
+--      WP36 review's High 1), only with a wider blast radius.
+-- All three are bounded to the h ~ cap contour of the coast band. (1) and (2)
+-- are LBM-only — the mapgen pass carves by heightmap, not by signature. (3) is
+-- not: the mapgen pass leaves an uncarved neighbour alone too, so a new world
+-- also keeps that fringe, four or five nodes over the neighbour's own surface.
+-- That is the price of "the mask shapes the coast and leaves the hinterland to
+-- v7" and it is paid at generation time, not here.
 --
 -- PROTECTED POIs ARE NEVER TOUCHED (the review's High 2). candidate_ground_y in
 -- structures.lua clamps an outpost to its column_cap, so its four
@@ -228,8 +266,14 @@ local WATER = {name = "default:water_source"}
 --     tree;
 --   * node_riverbed is the floor of a river channel, with river water above it
 --     — the same false reading;
---   * node_dust sits ABOVE the surface, and a decoration's place_on target can
---     be a tree trunk (grug_trees:gravewood_tree is one in decorations.lua).
+--   * node_dust (a snow layer, say) sits ABOVE the surface, not at it, so it is
+--     never what the re-dress writes at a cap — and it is placed by
+--     dustTopNodes on whatever the column's top happens to be, which is not a
+--     signature of anything. (An earlier version of this line justified the
+--     exclusion with "a decoration's place_on can be a tree trunk, e.g.
+--     grug_trees:gravewood_tree". That is wrong: GRAVEWOOD is a `decoration`
+--     value in decorations.lua:141/270/281, never a `place_on`; every place_on
+--     in that file is a biome node_top. The exclusion stands on its own.)
 -- The one thing this costs: a carved column that could NOT be re-dressed (the
 -- mapgen pass leaves the cut material when it cannot resolve a biome) is not
 -- recognised and stays unhealed. mgv7 always provides a biomemap and every
@@ -399,6 +443,12 @@ end
 local memo_key
 local memo_caps = {}
 local memo_carved = {}
+-- Same lifetime, same reason (WP36 re-review, Low 4): this used to be a local
+-- of heal_block, which made "at most once per block" false — it reset on each
+-- of the 4-8 bulk_action calls the engine makes for one mapblock while
+-- memo_caps/memo_carved survived, so a block with an unloaded neighbour below
+-- paid for up to eight core.load_area calls instead of one.
+local memo_loaded = false
 
 -- One bulk_action call = one mapblock (s_env.cpp:464-477), one content id.
 local function heal_block(pos_list)
@@ -434,17 +484,17 @@ local function heal_block(pos_list)
 		memo_key = block_key
 		memo_caps = {}
 		memo_carved = {}
+		memo_loaded = false
 	end
 	-- Lazy, at most once per block, and only when a probe actually found an
 	-- unloaded neighbour: the cap of a column can sit several mapblocks below
 	-- the crown that is being healed. core.load_area reads from disk, it never
 	-- generates (lua_api.md), so it cannot pull new terrain into existence.
-	local loaded = false
 	local function loader()
-		if loaded then
+		if memo_loaded then
 			return false -- already tried; a second call cannot help
 		end
-		loaded = true
+		memo_loaded = true
 		core.load_area({x = bx, y = cap_lo, z = bz},
 			{x = bx + 15, y = math.min(cap_hi or MASK_MAX_Y, bmax.y - 1) + 1,
 				z = bz + 15})

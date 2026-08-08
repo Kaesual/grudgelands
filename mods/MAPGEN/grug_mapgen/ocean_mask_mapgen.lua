@@ -41,8 +41,10 @@
 -- THE VOXELMANIP IS THE ENGINE'S. It is handed to the callback (lua_api.md
 -- :7699-7706) and read_from_map/write_to_map are DISALLOWED on it
 -- (l_vmanip.cpp:45, :157) — the engine blits it back itself in finishGen.
--- get_data/set_data/update_liquids/calc_lighting all work (calc_lighting is
--- even mapgen-vm-only, l_vmanip.cpp:369). update_liquids feeds the emerge
+-- get_data/set_data/update_liquids/calc_lighting/set_lighting all work
+-- (calc_lighting and set_lighting are even mapgen-vm-only, l_vmanip.cpp:210-212
+-- and :233-238; is_mapgen_vm is true here, s_mapgen.cpp:41).
+-- update_liquids feeds the emerge
 -- thread's own transforming-liquid queue in this env (l_mapgen.cpp:1983-1988),
 -- which finishBlockMake then processes — the main-env pass had to go through
 -- the server map's queue instead.
@@ -84,6 +86,47 @@ local SHELL_MAX_Y = 120
 -- ~11 MB table for every masked chunk. One per mapgen thread, and a mapgen
 -- thread runs one chunk at a time, so this stays a private buffer.
 local vm_data = {}
+
+--
+-- SUNLIGHT BOOKKEEPING (WP36 re-review, High 1). The two carve passes below
+-- record every stretch of column they cleared into daylight; the callback
+-- stamps LIGHT_SUN on it before calc_lighting runs. WHY that is necessary, and
+-- why it is CORRECT, is argued at the calc_lighting call at the bottom of this
+-- file — read that block, not this one.
+--
+-- Storage is one flat array, five numbers per run (x1, x2, y1, y2, z), reused
+-- across mapchunks for the same reason vm_data is. Consecutive x with an
+-- IDENTICAL y range merge into one run; the lower edge follows the column's cap
+-- and the cap follows a noise, so a run is a handful of columns, not a whole
+-- row. Measured on the headless smoke test's worst case — an 80x80 mapchunk in
+-- which every single column is carved — that is 1683 vm:set_lighting calls
+-- covering 458 500 nodes, i.e. a quarter of a call per column, against a carve
+-- that already moved eleven megabytes through Lua.
+--
+local sun_runs = {}
+local sun_count = 0
+-- day 15 = LIGHT_SUN; the night bank of a sunlit node is 0 (mapgen.cpp:483-484
+-- "sunlight will never be in the night lightbank"). set_lighting masks each
+-- field with 0x0F (l_vmanip.cpp:243-245), so this is exactly the byte
+-- propagateSunlight itself writes.
+local SUNLIGHT = {day = 15, night = 0}
+
+local function sun_add(x, z, y1, y2)
+	if sun_count > 0 then
+		local b = sun_count - 5
+		if sun_runs[b + 5] == z and sun_runs[b + 3] == y1 and
+				sun_runs[b + 4] == y2 and sun_runs[b + 2] == x - 1 then
+			sun_runs[b + 2] = x
+			return
+		end
+	end
+	sun_runs[sun_count + 1] = x
+	sun_runs[sun_count + 2] = x
+	sun_runs[sun_count + 3] = y1
+	sun_runs[sun_count + 4] = y2
+	sun_runs[sun_count + 5] = z
+	sun_count = sun_count + 5
+end
 
 -- Content ids at file scope. This script is loaded when the mapgen thread
 -- starts, which is after every mod is registered and after the node definitions
@@ -260,6 +303,12 @@ local function build_ocean_mask(data, area, minp, maxp, emax)
 							idx = idx + ystride
 						end
 						dirty = true
+						-- Everything from `dry` up to the ceiling is air we
+						-- just wrote, and a carved column is open sky above
+						-- it by construction (see the lighting block at the
+						-- bottom of this file), so this whole stretch is
+						-- LIGHT_SUN and nothing else.
+						sun_add(x, z, dry, y2)
 					end
 					-- Re-dress the exposed top: sand where the cut ends at
 					-- beach/seabed level, otherwise the biome's own surface
@@ -317,9 +366,25 @@ end
 -- answers the question here as well as it does for the healing LBM in
 -- ocean_mask.lua, and cheaper: the whole emerged area is already in `data`, so
 -- the test is two array reads — biome ground AT the cap (that is the mask's
--- re-dress, which a carved column always has) and air/liquid directly above it.
+-- re-dress) and air/liquid directly above it.
 -- A cap outside this VoxelManip cannot be tested and is left alone; that column
 -- belongs to a mapchunk far below anyway, and the healing LBM covers it.
+--
+-- THE TEST IS SUFFICIENT, NOT NECESSARY (WP36 re-review, Medium). "A carved
+-- column always shows the re-dress at its cap" is FALSE, and the same sentence
+-- used to stand in ocean_mask.lua's header. `h` is
+-- Mapgen::updateHeightmap -> findGroundLevel, i.e. the topmost WALKABLE node
+-- (mapgen.cpp:238-252, :276-290), and it is taken directly after
+-- generateTerrain, before biomes, caves, dungeons and decorations
+-- (mapgen_v7.cpp:322-324 vs :331-364). So `h > cap` only says "something
+-- walkable stands above the cap", never that the node AT the cap is solid: a
+-- mountain-noise overhang, a river channel or (after the fact) a cave can put
+-- air there, the re-dress loop's `not not_solid[...]` test then writes nothing,
+-- and the column keeps air at its cap forever. Such a column reads as UNCARVED
+-- here and in the healing LBM and is left alone — the safe direction, and the
+-- documented residual in ocean_mask.lua's header. Writing ground at the cap
+-- unconditionally would make the premise true at the price of a floating slab
+-- sealing every cave mouth and overhang the coast band crosses; not worth it.
 local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
 	-- Fresh overflow can only sit near this chunk's own terrain.
 	local y_top = math.min(emax.y, SHELL_MAX_Y, max_h + DECO_MARGIN)
@@ -340,6 +405,7 @@ local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
 						is_ground(data[area:index(x, cap, z)]) and
 						clear_above[data[area:index(x, cap + 1, z)]] then
 					local idx = area:index(x, cap + 1, z)
+					local col_dirty = false
 					for y = cap + 1, y_top do
 						if not not_solid[data[idx]] then
 							if y <= WATER_LEVEL then
@@ -348,9 +414,20 @@ local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
 							else
 								data[idx] = c_air
 							end
-							dirty = true
+							col_dirty = true
 						end
 						idx = idx + ystride
+					end
+					if col_dirty then
+						dirty = true
+						-- Same claim as in the mapchunk pass: the discriminator
+						-- above just established that the neighbour carved this
+						-- column, so above its cap there is nothing but the
+						-- air/water it left and the overflow we removed.
+						local dry = math.max(cap + 1, WATER_LEVEL + 1)
+						if y_top >= dry then
+							sun_add(x, z, dry, y_top)
+						end
 					end
 				end
 			end
@@ -369,6 +446,7 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 	-- Reused buffer: a fresh get_data() table is ~11 MB of garbage per chunk.
 	local data = vm:get_data(vm_data)
 
+	sun_count = 0
 	local wrote_water, max_h, dirty = build_ocean_mask(data, area, minp, maxp, emax)
 	if max_h then
 		-- After the mapchunk pass: the shell columns belong to already finished
@@ -392,28 +470,80 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 		-- and cut-open hollows keep standing water walls.
 		vm:update_liquids()
 	end
-	-- The engine already lit this chunk inside makeChunk (mapgen_v7.cpp:378);
-	-- we changed it afterwards, so it has to be redone. NOT write_to_map:
-	-- that is disallowed here and unnecessary — finishGen blits.
+	-- The daylight we carved open, stamped before calc_lighting runs. Read the
+	-- block below for why this is a prerequisite and not a shortcut.
+	for i = 1, sun_count, 5 do
+		local z = sun_runs[i + 4]
+		vm:set_lighting(SUNLIGHT,
+			{x = sun_runs[i], y = sun_runs[i + 2], z = z},
+			{x = sun_runs[i + 1], y = sun_runs[i + 3], z = z})
+	end
+	-- LIGHTING (WP36 re-review, High 1 — the third and hopefully last shape of
+	-- this fix). The engine already lit this chunk inside makeChunk
+	-- (mapgen_v7.cpp:378); we changed it afterwards, so it has to be redone.
+	-- NOT write_to_map: that is disallowed here and unnecessary — finishGen
+	-- blits.
 	--
-	-- THE RANGE IS EXPLICIT, and that is WP36's second half of the
-	-- floating-tree fix. calc_lighting() without arguments lights
-	-- emin.y + 16 .. emax.y - 16, i.e. exactly minp.y..maxp.y in y
-	-- (l_vmanip.cpp:219-221 — x/z are NOT trimmed, so the shell clean's columns
-	-- are covered by the default, only the height is not). The carve now
-	-- reaches up to emax.y, so the top 16 nodes it newly clears would keep the
-	-- light values of the leaves they replaced — default:leaves does not
-	-- propagate sunlight — and a dark air/water band would sit over every
-	-- coastal mapchunk whose neighbour above was generated first. Nothing else
-	-- would ever repair it: the chunk above lights from its own minp.y - 1
-	-- upward, so it only covers this band if it generates AFTER us.
+	-- WHY A RANGE ALONE CANNOT DO IT. calc_lighting runs
+	-- Mapgen::calcLighting(pmin, pmax, m_area.MinEdge, m_area.MaxEdge)
+	-- (l_mapgen.cpp:2001-2017), i.e. propagateSunlight over the range we pass
+	-- and spreadLight over the WHOLE emerged area regardless. And
+	-- propagateSunlight (mapgen.cpp:476-509) does not start at pmax.y: it reads
+	-- the node ONE ABOVE it as a seed (`m_area.index(x, a.MaxEdge.Y + 1, z)`,
+	-- :489) and skips the entire column unless that seed is either
+	-- CONTENT_IGNORE in a chunk that is not underground (:490-492) or already
+	-- carries LIGHT_SUN (:493-495). Then it descends and BREAKS at the first
+	-- node whose `sunlight_propagates` is false (:501-502) — and `ignore` is
+	-- such a node (nodedef.cpp:723-728).
 	--
-	-- The upper edge is emax.y - 1, not emax.y, on purpose:
-	-- Mapgen::propagateSunlight seeds each column from the node ONE ABOVE the
-	-- range it is given (mapgen.cpp:489), so emax.y would index outside the
-	-- VoxelManip's own area. This is the same shape the engine uses for itself,
-	-- one node of headroom (mapgen_v7.cpp:378 passes node_max + (0,1,0)), just
-	-- 15 nodes higher because our writes are.
+	-- vm:set_data writes CONTENT ONLY (l_vmanip.cpp:128-135), so every node the
+	-- carve cleared keeps the param1 of the leaf/stone it replaced. That poisons
+	-- whichever row we would like to seed from:
+	--   * pmax.y = maxp.y (the engine default, l_vmanip.cpp:219-221) seeds at
+	--     maxp.y + 1 — inside the carve, so a shaved coastal hill seeds from
+	--     ex-stone with param1 = 0 and the whole column is skipped;
+	--   * pmax.y = emax.y - 1 (what faa00a7 shipped) seeds at emax.y, which is
+	--     ex-`ignore` turned into air by the carve, param1 = 0 — same skip; and
+	--     where the carve did NOT reach that high the seed is still `ignore`, so
+	--     the descent starts on `ignore` at emax.y - 1 and breaks at once.
+	-- Both leave the carved volume at whatever light the removed leaves had:
+	-- a permanently dark coastal band, and a black interior where the mask
+	-- shaved a hill that reached the chunk top.
+	--
+	-- WHAT WE DO INSTEAD. The two carve passes recorded every stretch they
+	-- cleared into daylight (sun_add). Those stretches are air we wrote
+	-- ourselves, above a cap, and a carved column is OPEN SKY above its cap by
+	-- construction: the cut height is (x, z)-pure, the guard `cap <= maxp.y`
+	-- hands a cap inside our shell to the chunk above, and that chunk carves the
+	-- same column from ITS minp.y (= maxp.y + 1) upward for the same reason we
+	-- did. So LIGHT_SUN is not an approximation there, it is the answer — we
+	-- stamp it with vm:set_lighting (mapgen VM only, l_vmanip.cpp:232-238; the
+	-- fields are masked to 0x0F at :243-245, so day = 15 IS LIGHT_SUN).
+	-- Deliberately only ABOVE the water line: water has no
+	-- sunlight_propagates, so the engine stops sunlight at the surface and lets
+	-- spreadLight attenuate it downward — stamping the water would be too
+	-- bright.
+	--
+	-- With that, the ENGINE DEFAULT RANGE is correct again and is what we pass:
+	-- the seed row maxp.y + 1 is either untouched (uncarved column: exactly the
+	-- light makeChunk computed, shadows included) or stamped by us (carved
+	-- column: open sky). propagate_shadow stays TRUE, so no column that we did
+	-- not touch is brightened — which is why this is not simply
+	-- `propagate_shadow = false`, whose "assume sun above pmax.y" would erase
+	-- every shadow cast into this chunk by an already-generated chunk above.
+	--
+	-- WHAT THIS COVERS, AND WHAT IT LEAVES TO THE NEIGHBOUR:
+	--   * minp.y..maxp.y, carved and uncarved columns alike — ours, fixed here.
+	--   * the shell band maxp.y+1..emax.y where we cleared something and the
+	--     chunk above is ALREADY generated — ours (nothing would ever re-light
+	--     it), fixed by the stamp, which reaches up to the carve ceiling.
+	--   * the same band where the chunk above is NOT generated yet — left to it
+	--     on purpose: its own makeChunk lights node_min - 1 .. node_max + 1
+	--     (mapgen_v7.cpp:376-378), i.e. from maxp.y upward, which covers the
+	--     whole band. The stamp is already correct there too, so the two agree.
+	--   * anything above the carve ceiling (min(emax.y, max_h + DECO_MARGIN)) is
+	--     not ours in either direction — that is the DECO_MARGIN assumption
+	--     documented at build_ocean_mask.
 	vm:calc_lighting({x = emin.x, y = minp.y, z = emin.z},
-		{x = emax.x, y = emax.y - 1, z = emax.z})
+		{x = emax.x, y = maxp.y, z = emax.z})
 end)

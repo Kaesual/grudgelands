@@ -139,12 +139,23 @@ local function build(cfg)
 	-- that is above this line.)
 	local MASK_MIN_Y = SEA_FLOOR_CAP + 1
 
-	-- ... and the highest cap it can ever produce (the last node before the
-	-- taper ends and surface_cap turns nil). Only a bound, never a decision:
-	-- the healing LBM uses it to size the map region it has to have in memory
-	-- before it can probe a column's cap, in the one case where box_cap_bounds
-	-- returns no upper bound because some column of the box is uncapped.
-	local MASK_MAX_Y = surface_cap(TAPER - 1)
+	-- ... and the highest cap it can ever produce. Only a bound, never a
+	-- decision: the healing LBM uses it to size the map region it has to have
+	-- in memory before it can probe a column's cap, in the one case where
+	-- box_cap_bounds returns no upper bound because some column of the box is
+	-- uncapped.
+	--
+	-- NOT surface_cap(TAPER - 1) (that was the WP36 re-review's Low 2): the
+	-- argument of surface_cap is `s = d - coast_inset(x, z)` and coast_inset
+	-- returns a NOISE VALUE, i.e. a float, so s is real-valued and ranges over
+	-- the whole open interval (-inf, TAPER), not over the integers. The cap is
+	-- monotone in s, so the bound is the supremum of the ramp branch as
+	-- s -> TAPER from below: floor of everything strictly under
+	--     lim = WATER_LEVEL - SHORE_DROP + TAPER_RISE
+	-- which is ceil(lim) - 1 (and equals lim - 1 exactly when lim is an
+	-- integer, as it is with the numbers above: 1 - 5 + 119 = 115 -> 114).
+	-- surface_cap(TAPER - 1) = 113 misses the s in [149.37, 150) band by one.
+	local MASK_MAX_Y = math.ceil(WATER_LEVEL - SHORE_DROP + TAPER_RISE) - 1
 
 	-- core.get_perlin was renamed in 5.12; keep working on both. Both names
 	-- exist in the mapgen env too (builtin/emerge/env.lua).
