@@ -390,10 +390,14 @@ end
 --
 -- Both are ~L12, which is a property of WHERE they walk, not of a number in
 -- this file: grug_core.mob_level_at is a radial field around the faction
--- seat at (0, +-900). Level check for the route points below (level_at_n of
--- the radial value, world.md §1 anchors):
+-- seat at (0, +-900), plus a level-1 bubble within 240 nodes of each capital
+-- anchor (world.md §1, WP36). Level check for the route points below
+-- (level_at_n of the radial value, world.md §1 anchors):
 --   (250, 560) -> n 0.340 -> L12    (340, 580) -> n 0.322 -> L11
 --   (180, 540) -> n 0.360 -> L14
+-- The closest any of them comes to a capital anchor is 383 nodes ((340,580)
+-- to (+-550, +-900); the other two are 422 and 402 from (0, +-900)), so all
+-- three sit well outside every bubble and the radial value alone decides.
 -- All three are zone "inner" (radial 400-470 nodes out from the capital),
 -- matching "inner ring" in §3.3, and all sit inside the center race band
 -- (|x| <= 700, world.md §7) so the biome is the center one: meadows on the
@@ -626,7 +630,11 @@ grug_mobs.register_rare("emerald_coil", {
 -- does NOT decide, the CAP does (grug_core/init.lua):
 --
 --   war_coast_cap(az) = 20 + (az - 100) / (300 - 100) * 10     for az <= 300
---   mob_level_at      = min(level_at_n(radial_n), cap)         inside the band
+--   mob_level_at      = min(bubbled(level_at_n(radial_n)), cap) in the band
+--
+-- (`bubbled` is WP36's capital bubble, world.md §1 — it only bites within 240
+-- nodes of a capital anchor, i.e. at |z| >= 660, and these routes run at
+-- |z| = 268, so it is a no-op here and the line below holds unchanged.)
 --
 -- so the level is a pure function of |z| as long as the uncapped field stays
 -- ABOVE the cap. Both routes run at |z| = 268 -> cap 28.40 -> **L28** after
