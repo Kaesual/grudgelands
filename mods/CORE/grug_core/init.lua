@@ -663,6 +663,65 @@ local function level_at_n(n)
 	return level_anchors[#level_anchors].level
 end
 
+-- Capital level bubble (world.md §1, decided with WP36). radial_n is centred
+-- on the continent SEAT, not on each capital, so only the two central
+-- capitals (x = 0) sit at n ~ 0. The four side capitals (x = +-550) sit at
+-- n = 0.217, i.e. the field says level 8 there while zone_at says "core" —
+-- the first mob a fresh dwarf/elf/undead/troll met was a level-8 boar
+-- (55 HP / 5.2 dmg) against a 30 HP player. The fix is a bubble applied
+-- INSIDE mob_level_at only: level 1 within CAPITAL_BUBBLE_FLAT nodes of any
+-- capital anchor, blending back into the ambient field at CAPITAL_BUBBLE_R.
+-- radial_n itself is deliberately NOT touched, so zone_at, guard_level_at,
+-- the 24 outpost anchors, the 12 bandit-camp anchors and the whole
+-- docs/research/wp6_spawn_budget.md cell inventory stay bit-identical.
+-- The fade is 200 nodes wide (>= 150 is the requirement of biomes_mobs §1.5's
+-- "no jumps > 5" rule): the steepest climb out of a capital is 1 -> 17.6 over
+-- those 200 nodes, i.e. < 1 level per 10-node step. The bubble can only ever
+-- LOWER a level (level_at_n >= 1 everywhere, and the blend interpolates
+-- between 1 and that value), and it is applied to the RADIAL part only — the
+-- war-coast/strait caps and above all the depth floor below still run
+-- afterwards, so caves under a capital keep their depth level. The safe core
+-- is safe on the surface, nowhere else (combat_stats.md §3).
+local CAPITAL_BUBBLE_FLAT = 40 -- level 1 within this radius of an anchor
+local CAPITAL_BUBBLE_R = 240 -- ambient field fully restored from here out
+local CAPITAL_BUBBLE_FADE = CAPITAL_BUBBLE_R - CAPITAL_BUBBLE_FLAT
+
+-- Flat x/z list of the six capital anchors, built ONCE at load time (same
+-- reason as the outpost/bandit anchor tables above: mob_level_at runs per mob
+-- spawn and must not rebuild a table per call). Order is irrelevant here —
+-- the lookup below is a minimum over all six.
+local capital_xz = {}
+do
+	for _, capital in pairs(grug_core.capitals) do
+		capital_xz[#capital_xz + 1] = {x = capital.x, z = capital.z}
+	end
+end
+
+-- Blend factor of the capital bubble at pos: 0 inside the flat radius of the
+-- nearest capital anchor, 1 at/beyond CAPITAL_BUBBLE_R (= bubble is a no-op),
+-- linear in between. Horizontal distance only; the depth axis is handled by
+-- mob_level_at's floor, which runs after the bubble.
+local function capital_blend(pos)
+	local best
+	for i = 1, #capital_xz do
+		local c = capital_xz[i]
+		local dx = pos.x - c.x
+		local dz = pos.z - c.z
+		local d2 = dx * dx + dz * dz
+		if not best or d2 < best then
+			best = d2
+		end
+	end
+	if not best or best >= CAPITAL_BUBBLE_R * CAPITAL_BUBBLE_R then
+		return 1
+	end
+	local d = math.sqrt(best)
+	if d <= CAPITAL_BUBBLE_FLAT then
+		return 0
+	end
+	return (d - CAPITAL_BUBBLE_FLAT) / CAPITAL_BUBBLE_FADE
+end
+
 -- War-coast cap (world.md §1): the strait-facing PvP stage stays at 20-30
 -- up to |z| = WAR_COAST_Z, then the cap RAMPS to 60 until WAR_COAST_FADE_Z,
 -- where it becomes a no-op. Without that ramp the capped band ended in an
@@ -676,9 +735,10 @@ end
 
 -- Mob level for a hostile spawned at pos (1..60), or nil on the open water
 -- surface (no leveled hostiles there; the deep-sea guards of world.md §2b
--- are hand-set). Radial field from the faction seat, then the two caps of
--- world.md §1 (war coast, strait) and the depth axis of combat_stats.md §3
--- — the safe core is only safe on the surface.
+-- are hand-set). Radial field from the faction seat plus the per-capital
+-- bubble (see above), then the two caps of world.md §1 (war coast, strait)
+-- and the depth axis of combat_stats.md §3 — the safe core is only safe on
+-- the surface.
 function grug_core.mob_level_at(pos)
 	local ocean = grug_core.territory_at(pos) == "ocean"
 	local az = math.abs(pos.z)
@@ -688,6 +748,12 @@ function grug_core.mob_level_at(pos)
 		return nil
 	end
 	local level = level_at_n(radial_n(pos))
+	-- Capital bubble (see above): part of the RADIAL term, hence applied
+	-- before the caps and the depth floor. Lowers only.
+	local blend = capital_blend(pos)
+	if blend < 1 then
+		level = math.min(level, 1 + blend * (level - 1))
+	end
 	if not ocean and az > Z_MIN and az <= WAR_COAST_FADE_Z then
 		level = math.min(level, war_coast_cap(az))
 	elseif az <= Z_MIN then

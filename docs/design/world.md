@@ -83,19 +83,48 @@ Decided 2026-08-06. Two **decoupled** level fields, both centralized in
 `grug_core`:
 
 **Mob level** (`mob_level_at` — where you level): radial distance from
-the capital (continent center, ~(0, ±900)), with a per-direction cap.
-Overworld caves add a depth axis on top (combat_stats.md §3: level also
-grows 3 levels per 50 nodes below y=0 — the safe core is only safe on the
-surface, depth already overtakes it at −83):
+the **continent seat** (~(0, ±900)), with a per-direction cap, plus a
+**level-1 bubble around every capital** (see below). Overworld caves add a
+depth axis on top (combat_stats.md §3: level also grows 3 levels per 50
+nodes below y=0 — the safe core is only safe on the surface, depth already
+overtakes it at −83):
 
 | Zone | Location | Mob level |
 |------|----------|-----------|
+| Capital bubble | ≤ 40 nodes from any of the six capital anchors (§3) | **1**, blending back into the field by 240 nodes |
 | Safe core | x-elongated belt (≈ ±600 × ±300): the three race capitals (§3; the central one is the faction seat) | 1–10 |
 | Inner ring | core edge … ~550 from the capital | 10–25 |
 | Outer ring | ~550 … toward flank/back coasts | 25–45 |
 | Flank & back coasts | shorelines at x≈±1500 / z≈±1700 | 45–60, elites |
 | **War coast** (strait-facing band, z ≈ ±100…±300) | capped at | **~20–30**; outposts, first PvP quests (min level ~20) |
 | Strait & beaches | z 0 … ±100 | lvl 1–5 neutral wildlife |
+
+**The capital bubble** (decided with WP36, after a runtime report). The
+radial field is centred on the continent *seat*, not on each capital, so
+only the two central capitals (human/orc, x = 0) sat at field value n ≈ 0.
+The four side capitals (dwarf/elf/undead/troll, x = ±550) sit at n = 0.217,
+which the field reads as **level 8** — `zone_at` answered "core" there while
+a fresh level-1 player's first neighbour was a level-8 boar (55 HP,
+5.2 damage, against 30 player HP). Fix, inside `mob_level_at` only:
+
+- **Level 1 within 40 nodes** of any of the six capital anchors (the spawn
+  platform is 25×25, so the whole camp and a wide apron are level 1).
+- **Linear blend back to the ambient field over the next 200 nodes**, fully
+  restored at 240 nodes. 200 nodes is the width the "no jumps > 5" rule of
+  biomes_mobs.md §1.5 needs: the steepest walk out of a side capital climbs
+  1 → 17.6 across it, i.e. under 1 level per 10 nodes.
+- **Lowering only** — a bubble never raises a level, and outside 240 nodes
+  the field is bit-identical to what it was.
+- It is a term of the *radial* part: the war-coast/strait caps and, above
+  all, the **depth floor** still run afterwards. Caves under a capital are
+  not level 1 — at y = −200 every capital reads level 11, exactly as before.
+  Below the capitals the depth axis alone now decides at all six (the side
+  capitals used to read a flat 8 down to −140).
+- The radial field itself is deliberately **not** re-shaped: `zone_at`, the
+  guard field, the 24 outpost anchors and the 12 bandit-camp anchors keep
+  their values to the node. `difficulty_at` is the one derived quantity that
+  necessarily moves, because it is *defined* as (mob level − 1)/59: inside a
+  bubble it now reads 0. Nothing consumes it yet.
 
 **Guard level** (`guard_level_at` — anti-invasion gating; the field exists
 since WP18, the guards that read it arrive with WP6): runs
