@@ -543,6 +543,15 @@ grug_mobs.register_rare("korgans_bane", {
 -- Exactly L50 at all three points, the §3.3 target, and all three are zone
 -- "coast" (|x| >= 1350).
 --
+-- The route is UNCHANGED since 2026-08-08 and now actually lies in the biome
+-- it broadcasts. It never did before: the three deep-forest registrations
+-- reached x 1500 and their 60/75 climate point beat the fringe's 85/85
+-- everywhere, so all three points came up deep forest for every seed tested
+-- (measured 0 of 50). Capping the deep forest at x 1250 (grug_mapgen/
+-- biomes.lua) makes x 1251..1500 the fringe's alone, so all three points are
+-- now a CONTAINMENT guarantee, not a climate coin flip: exactly one eligible
+-- registration, 50 of 50 seeds.
+--
 -- DEVIATION worth knowing: "coast" and "~L50" together pin |z| to roughly
 -- 740..1060. At |x| >= 1350 the field already sits at L47 where dz = 0, and
 -- the back-side scale 775 makes it climb fast — (1350, -1300) is L60, so a

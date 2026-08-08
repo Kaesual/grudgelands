@@ -20,12 +20,14 @@
 -- turns the deco unrestricted (mg_decoration.cpp:193-197).
 --
 -- SECOND LANDMINE, since the capital-guarantee carve (biomes.lua, 2026-08-08):
--- three bands ship as several SIBLING registrations, and a sibling is a
+-- grug_deep_forest ships as several SIBLING registrations, and a sibling is a
 -- separate biome name. A deco that lists only the parent silently disappears
 -- from the slabs it does not list — no warning, because the parent name
--- resolves fine. The three lists below are the single place that mapping
--- lives; never write "grug_meadows", "grug_savanna" or "grug_deep_forest" as
--- a bare string in a `biomes` list again.
+-- resolves fine. The DEEP_FOREST list below is the single place that mapping
+-- lives; never write "grug_deep_forest" as a bare string in a `biomes` list
+-- again. (grug_meadows and grug_savanna were split the same way and collapsed
+-- back to one cuboid each on 2026-08-08 — their `_front`/`_back` siblings no
+-- longer exist and must not be named here, or the whole list stops resolving.)
 
 local schem = core.get_modpath("default") .. "/schematics/"
 
@@ -127,13 +129,16 @@ local MUD = "grug_nodes:mud"
 local GRAVEWOOD = "grug_trees:gravewood_tree"
 local JUNGLE = {"grug_deep_jungle", "grug_jungle_fringe"}
 
--- The three split bands (biomes.lua): belt slab + the slabs the carve box
--- pushed out of the middle. Same node_top and same flora throughout — the
--- split is pure geometry, so every deco of the band lists all of its slabs.
-local MEADOWS = {"grug_meadows", "grug_meadows_front", "grug_meadows_back"}
-local SAVANNA = {"grug_savanna", "grug_savanna_front", "grug_savanna_back"}
+-- The one split band (biomes.lua): back slab + front slab + east wing, because
+-- the carve box needs a hole in the middle of the cuboid. Same node_top and
+-- same flora throughout — the split is pure geometry, so every deco of the
+-- band lists all three registrations.
 local DEEP_FOREST = {"grug_deep_forest", "grug_deep_forest_front",
 	"grug_deep_forest_east"}
+-- Single cuboids, kept as one-element lists so a future re-split only has to
+-- touch these two lines.
+local MEADOWS = {"grug_meadows"}
+local SAVANNA = {"grug_savanna"}
 
 --
 -- grug_meadows (Human settled): open grassland, a few oaks.

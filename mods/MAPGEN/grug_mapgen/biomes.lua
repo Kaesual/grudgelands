@@ -7,12 +7,12 @@
 -- continents never touch, so a mirrored pair may share heat/humidity
 -- points.
 --
--- Inside a continent the band cuboids overlap WIDELY (150-500 nodes) on
--- purpose: in an overlap the heat/humidity voronoi decides per position,
--- which yields the recurring settled/wild patch mosaic of §1.4 instead of
--- hard seams. The climate noise that makes the outermost points (90/90,
--- 15/45, 60/95) reachable, and the blend noise that frays the voronoi
--- borders, are set in init.lua.
+-- Inside a continent the band cuboids overlap WIDELY (101-450 nodes in x, up
+-- to 500 in z) on purpose: in an overlap the heat/humidity voronoi decides
+-- per position, which yields the recurring settled/wild patch mosaic of §1.4
+-- instead of hard seams. The climate noise that makes the outermost points
+-- (90/90, 15/45, 60/95) reachable, and the blend noise that frays the
+-- voronoi borders, are set in init.lua.
 --
 -- THE CAPITAL GUARANTEE (world.md §3, decided 2026-08-08). Every capital
 -- must sit in its own race biome. Climate-point tuning cannot do that: with
@@ -32,11 +32,11 @@
 --
 -- LANDMINE (AGENTS.md): ore/decoration defs whose `biomes` names do not
 -- resolve are silently unrestricted world-wide -- decorations.lua and
--- ores.lua may only name biomes registered in this file. The carve splits
--- three bands into SIBLING registrations (grug_savanna/_front/_back,
--- grug_meadows/_front/_back, grug_deep_forest/_front/_east), and a sibling
--- is a new biome NAME: every deco list that named the parent must name all
--- of its slabs, or the deco vanishes from the slabs it does not name.
+-- ores.lua may only name biomes registered in this file. The carve splits ONE
+-- band into SIBLING registrations (grug_deep_forest/_front/_east), and a
+-- sibling is a new biome NAME: every deco list that named the parent must
+-- name all of its slabs, or the deco vanishes from the slabs it does not
+-- name.
 
 local X_HALF = grug_core.CONTINENT_X_HALF -- 1500
 local Z_MIN = grug_core.CONTINENT_Z_MIN -- 100
@@ -60,23 +60,34 @@ local CARVE_Z_MAX = 1200
 -- Derived band edges -- all four follow from the carve box and CAPITAL_R,
 -- nothing here is a free number:
 --   * WILD_X: the side WILD bands must leave the carve box entirely.
---   * BELT_X: inside the box the centre band must stop one node short of the
---     side capitals' boxes, whose inner edge is SIDE_X - CAPITAL_R = 350.
+--   * CENTER_X: the centre band must stop one node short of the side
+--     capitals' boxes, whose inner edge is SIDE_X - CAPITAL_R = 350.
 --   * SETTLED_X: the side SETTLED bands must stop one node short of the
 --     centre capital's box, whose outer edge is CAPITAL_R = 200. Note this
 --     is NOT the centre band's own edge (349): letting the two overlap by
---     149 nodes inside the belt keeps the border a voronoi mosaic. Making
---     them merely contiguous at +-350 would satisfy the guarantee too, but
---     would draw a brand-new ruler-straight 600-node cuboid face per side
---     per continent right between the capitals -- and no blend noise can
---     soften a cuboid face (it is tested before the climate is read).
+--     149 nodes keeps the border a voronoi mosaic. Making them merely
+--     contiguous at +-350 would satisfy the guarantee too, but would draw a
+--     brand-new ruler-straight 1600-node cuboid face per side per continent
+--     right between the capitals -- and no blend noise can soften a cuboid
+--     face (it is tested before the climate is read).
 --   * WILD_Z_MIN: the centre BACK-country band must leave the box in z.
 local WILD_X = CARVE_X + 1 -- 801
-local BELT_X = SIDE_X - CAPITAL_R - 1 -- 349
+local CENTER_X = SIDE_X - CAPITAL_R - 1 -- 349
 local SETTLED_X = CAPITAL_R + 1 -- 201
 local WILD_Z_MIN = CARVE_Z_MAX + 1 -- 1201
--- Front slab of the centre band: from the war coast up to the carve box.
+-- Front slab of the DEEP FOREST (the only band with a hole in the middle):
+-- from the war coast up to the carve box.
 local FRONT_Z_MAX = CARVE_Z_MIN - 1 -- 599
+
+-- Outer x edge of the side bands and of the deep forest -- i.e. of every
+-- cuboid that reaches the flanks except the four FLANK-STRIP biomes
+-- themselves. The strips x -1500..-1251 (bone forest / crags) and
+-- x 1251..1500 (deep jungle / jungle fringe) belong to those biomes ALONE on
+-- both continents, and that uncontested strip is the only reason their four
+-- extreme climate points (15/45, 25/35, 90/90, 85/85) are visible at all:
+-- every one of them sits further from the field mean than the biome it would
+-- otherwise have to outvote.
+local BAND_X_MAX = 1250
 
 -- Lowest y of the land biomes; y 1..4 belongs to the beach, y <= 3 to the
 -- ocean (both cover the soft coastline the ocean mask carves, structures.lua).
@@ -138,16 +149,28 @@ end
 -- that land without ANY biome (bare stone, no decorations, no spawn
 -- surface). Same reason for every band below.
 --
--- THREE SLABS instead of one cuboid (the carve, see the header): the belt
--- slab is narrow (|x| <= 349) so it cannot reach the side capitals, while
--- the front and back slabs keep the band's full |x| <= 700 outside the carve
--- box -- that is where the wide (499-node) centre<->side overlaps of §1.3
--- live (the shipped single cuboid only had 201). Inside the belt the overlap
--- is 149 nodes, the widest the guarantee allows: measured that is worth
--- ~4700 nodes of wandering border against the contiguous +-350 alternative,
--- but it is still too narrow for the spread-1000 climate field to cross
--- INSIDE it often, so most of the belt border does sit on one of its two
--- faces. Cuboids cannot do better; only R itself could buy more.
+-- ONE cuboid, narrowed to |x| <= 349 (the carve, see the header) and spanning
+-- the whole z range of the continent. z_max was 1500 before the rework, which
+-- left the wild back-country band the strip |z| 1501..1700 uncontested -- and
+-- made the face at z = 1501 a 733-node straight line (measured). Z_MAX instead
+-- lets the band contest the whole back country against badlands / deep forest,
+-- which is what the patch model of §1.4 asks for anyway; it removes 910 nodes
+-- of straight border (12 334 -> 11 424 over 5 seeds) and costs the badlands
+-- nothing measurable (0.81 % of the land before the rework, 1.95 % now).
+--
+-- D4 TRIED AND ROLLED BACK (2026-08-08). The carve only needs the band to be
+-- narrow INSIDE the box (|z| 600..1200), so it first shipped as three slabs:
+-- a narrow belt slab plus a front and a back slab that kept the band's
+-- original |x| <= 700 and therefore a 499-node centre<->side overlap outside
+-- the box. That bought wider mosaics but paid for them with four brand-new
+-- ruler-straight cuboid faces at |z| = 599 and |z| = 1200 -- right across the
+-- middle of both continents, the one line every player walks. Measured over 5
+-- seeds with everything else held equal, the three slabs cost exactly 1 500
+-- nodes of straight ground border (13 834 vs 12 334) plus 1 592 nodes of
+-- deco-only border, i.e. ~3/4 of the whole regression the carve introduced.
+-- The overlap is now 149 nodes EVERYWHERE, which is the accepted price: only
+-- a smaller CAPITAL_R could buy a wider one, and straight lines were the
+-- complaint that started this rework. Do not re-propose the slabs.
 --
 
 register_mirrored({
@@ -155,50 +178,14 @@ register_mirrored({
 		name = "grug_savanna",
 		top = "default:dry_dirt_with_dry_grass",
 		filler = "default:dry_dirt",
-		x_min = -BELT_X, x_max = BELT_X,
-		z_min = CARVE_Z_MIN, z_max = CARVE_Z_MAX,
+		x_min = -CENTER_X, x_max = CENTER_X, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 85, humidity = 35,
 	},
 	accord = {
 		name = "grug_meadows",
 		top = "default:dirt_with_grass",
 		filler = "default:dirt",
-		x_min = -BELT_X, x_max = BELT_X,
-		z_min = CARVE_Z_MIN, z_max = CARVE_Z_MAX,
-		heat = 50, humidity = 40,
-	},
-})
-
-register_mirrored({
-	throng = {
-		name = "grug_savanna_front",
-		top = "default:dry_dirt_with_dry_grass",
-		filler = "default:dry_dirt",
-		x_min = -700, x_max = 700, z_min = Z_MIN, z_max = FRONT_Z_MAX,
-		heat = 85, humidity = 35,
-	},
-	accord = {
-		name = "grug_meadows_front",
-		top = "default:dirt_with_grass",
-		filler = "default:dirt",
-		x_min = -700, x_max = 700, z_min = Z_MIN, z_max = FRONT_Z_MAX,
-		heat = 50, humidity = 40,
-	},
-})
-
-register_mirrored({
-	throng = {
-		name = "grug_savanna_back",
-		top = "default:dry_dirt_with_dry_grass",
-		filler = "default:dry_dirt",
-		x_min = -700, x_max = 700, z_min = WILD_Z_MIN, z_max = 1500,
-		heat = 85, humidity = 35,
-	},
-	accord = {
-		name = "grug_meadows_back",
-		top = "default:dirt_with_grass",
-		filler = "default:dirt",
-		x_min = -700, x_max = 700, z_min = WILD_Z_MIN, z_max = 1500,
+		x_min = -CENTER_X, x_max = CENTER_X, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 50, humidity = 40,
 	},
 })
@@ -209,19 +196,37 @@ register_mirrored({
 -- whose cuboid needs a HOLE IN THE MIDDLE -- the carve box sits inside it on
 -- all four sides -- and one box cannot express that, so it ships as three
 -- registrations: the back slab (paired with badlands below, same role), the
--- front slab, and the east wing that keeps the elf band covered.
+-- front slab, and the east wing that keeps the elf band covered. That split
+-- is required by the CARVE, not by D4, and stays.
+--
+-- x_max BAND_X_MAX, NOT X_HALF (2026-08-08). All three used to reach x 1500
+-- and thereby swallowed grug_jungle_fringe whole: 60/75 sits 12 climate units
+-- from the field mean, 85/85 sits 43, so the fringe won 0.08 % of the land and
+-- the Accord east flank was deep forest -- no crimson-lotus T3 source on the
+-- Accord side (biomes_mobs §2/§6) and Silkfang (§3.3) patrolling outside its
+-- named habitat. Capping all three at the settled bands' own outer edge hands
+-- the flank strip x 1251..1500 to the fringe uncontested, exactly mirroring
+-- deep jungle on the Throng side, and leaves x 1150..1250 as a contested
+-- overlap. Measured over 8 seeds: fringe 0.08 % -> 2.71 % of the land (deep
+-- jungle, its mirror, has 3.13 %), deep forest 9.9 % -> 8.1 %, T3 lotus supply
+-- 3.21 % -> 5.84 %. It costs 393 nodes of straight border (11 031 -> 11 424
+-- over 5 seeds) -- 335 for the east wing, 58 for the front/back caps; capping
+-- only the east wing would have left the fringe contested wherever
+-- |z| <= 599 or |z| >= 1201, i.e. exactly on the two coasts. This is
+-- Accord-only: grug_deep_forest has no Throng mirror (the Throng centre-back
+-- wild is grug_badlands).
 --
 -- CLIMATE POINT 95/15 -> 75/20 (D2, 2026-08-08). An overlap only becomes a
 -- patch mosaic if BOTH points are reachable by the local noise. Measured
 -- over the land columns the field has mean 60.9 / 48.8 and sigma 14.7 /
 -- 16.8, so 95/15 sat 2.3 / -2.0 sigma out: badlands never won inside its
--- 300-node overlap with the savanna back slab and the border collapsed onto
--- the savanna cuboid face at z = 1501 as a straight line. 75/20 is still the
--- driest point on the continent and still hot (+1 sigma), but it is 32
--- climate units from the field mean instead of 48. It keeps exactly 18.0
--- units of separation from grug_savanna (85/35) -- the same separation as
--- the tightest pre-existing pair (elf forest / deep forest), which is the
--- floor below which a border starts to salt-and-pepper.
+-- overlap with the savanna and the border collapsed onto the savanna cuboid
+-- face as a straight line. 75/20 is still the driest point on the continent
+-- and still hot (+1 sigma), but it is 32 climate units from the field mean
+-- instead of 48. It keeps exactly 18.0 units of separation from grug_savanna
+-- (85/35) -- the same separation as the tightest pre-existing pair (elf
+-- forest / deep forest), which is the floor below which a border starts to
+-- salt-and-pepper.
 --
 register_mirrored({
 	throng = {
@@ -235,7 +240,7 @@ register_mirrored({
 		name = "grug_deep_forest",
 		top = "grug_nodes:dirt_with_forest_litter",
 		filler = "default:dirt",
-		x_min = -900, x_max = X_HALF, z_min = WILD_Z_MIN, z_max = Z_MAX,
+		x_min = -900, x_max = BAND_X_MAX, z_min = WILD_Z_MIN, z_max = Z_MAX,
 		heat = 60, humidity = 75,
 	},
 })
@@ -245,7 +250,7 @@ register_mirrored({
 		name = "grug_deep_forest_front",
 		top = "grug_nodes:dirt_with_forest_litter",
 		filler = "default:dirt",
-		x_min = -900, x_max = X_HALF, z_min = Z_MIN, z_max = FRONT_Z_MAX,
+		x_min = -900, x_max = BAND_X_MAX, z_min = Z_MIN, z_max = FRONT_Z_MAX,
 		heat = 60, humidity = 75,
 	},
 })
@@ -255,7 +260,7 @@ register_mirrored({
 		name = "grug_deep_forest_east",
 		top = "grug_nodes:dirt_with_forest_litter",
 		filler = "default:dirt",
-		x_min = WILD_X, x_max = X_HALF, z_min = Z_MIN, z_max = Z_MAX,
+		x_min = WILD_X, x_max = BAND_X_MAX, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 60, humidity = 75,
 	},
 })
@@ -270,14 +275,14 @@ register_mirrored({
 		name = "grug_blight",
 		top = "grug_nodes:blight_dirt",
 		filler = "default:dirt",
-		x_min = -1250, x_max = -SETTLED_X, z_min = Z_MIN, z_max = Z_MAX,
+		x_min = -BAND_X_MAX, x_max = -SETTLED_X, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 25, humidity = 20,
 	},
 	accord = {
 		name = "grug_pine_hills",
 		top = "default:dirt_with_coniferous_litter",
 		filler = "default:dirt",
-		x_min = -1250, x_max = -SETTLED_X, z_min = Z_MIN, z_max = Z_MAX,
+		x_min = -BAND_X_MAX, x_max = -SETTLED_X, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 30, humidity = 60,
 	},
 })
@@ -346,29 +351,29 @@ register_mirrored({
 		name = "grug_jungle_edge",
 		top = "default:dirt_with_rainforest_litter",
 		filler = "default:dirt",
-		x_min = SETTLED_X, x_max = 1250, z_min = Z_MIN, z_max = Z_MAX,
+		x_min = SETTLED_X, x_max = BAND_X_MAX, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 80, humidity = 70,
 	},
 	accord = {
 		name = "grug_elf_forest",
 		top = "grug_nodes:dirt_with_silver_litter",
 		filler = "default:dirt",
-		x_min = SETTLED_X, x_max = 1250, z_min = Z_MIN, z_max = Z_MAX,
+		x_min = SETTLED_X, x_max = BAND_X_MAX, z_min = Z_MIN, z_max = Z_MAX,
 		heat = 70, humidity = 60,
 	},
 })
 
--- NOT moved by D2 either. deep jungle 90/90 wins its own flank strip
--- (x 1251..1500) uncontested, so its distance from the field mean costs it
--- nothing. grug_jungle_fringe 85/85 is the one point where that is NOT true:
--- it shares its whole cuboid with the deep-forest east wing, whose 60/75 sits
--- far closer to the mean, so the fringe wins only 0.08 % of the land -- the
--- Accord side effectively has no jungle fringe at all. That is PRE-EXISTING
--- (measured the same on the shipped registrations) and it is not fixable by
--- moving the point: any point close enough to the mean to beat 60/75 is no
--- longer a rainforest climate. The fix is geometric (cap the east wing at
--- x 1250 and leave the flank strip to the fringe) and belongs to its own
--- pass -- it changes shares, level continuity (§1.5) and the T3 herb supply.
+-- NEITHER POINT MOVED, both live off their flank strip. 90/90 and 85/85 are
+-- the two points furthest from the field mean (mean 60.9 / 48.8, sigma 14.7 /
+-- 16.8), so neither can win a contested overlap against anything: they exist
+-- only because x 1251..1500 (BAND_X_MAX + 1 upward) is theirs alone. The
+-- Accord half only got that strip on 2026-08-08, when the three deep-forest
+-- registrations were capped at BAND_X_MAX -- until then they reached x 1500
+-- and the fringe won 0.08 % of the land, i.e. the Accord east flank was deep
+-- forest and the Accord had no crimson-lotus T3 source at all (see the
+-- deep-forest block above). x_min stays at 1150, i.e. 101 nodes further in
+-- than the strip, so the inner border is still a voronoi mosaic against elf
+-- forest and deep forest rather than a bare cuboid face.
 register_mirrored({
 	throng = {
 		name = "grug_deep_jungle",

@@ -92,13 +92,15 @@ core.register_ore({
 	-- over a default:dirt filler, biomes.lua). Left out on purpose: savanna
 	-- (dry dirt, as in minetest_game), badlands (mesa clay), crags (gravel),
 	-- swamp (mud), beach/ocean (sand).
-	-- LANDMINE (biomes.lua, 2026-08-08): grug_meadows and grug_deep_forest
-	-- each ship as SEVERAL registrations since the capital-guarantee carve,
-	-- and a sibling is a separate biome NAME. All of them belong here — a
-	-- missing sibling silently loses its dirt blobs, because the names that
-	-- ARE listed resolve and the def stays biome-restricted.
-	biomes = {"grug_meadows", "grug_meadows_front", "grug_meadows_back",
-		"grug_pine_hills", "grug_elf_forest",
+	-- LANDMINE (biomes.lua, 2026-08-08): grug_deep_forest ships as SEVERAL
+	-- registrations since the capital-guarantee carve, and a sibling is a
+	-- separate biome NAME. All of them belong here — a missing sibling
+	-- silently loses its dirt blobs, because the names that ARE listed
+	-- resolve and the def stays biome-restricted. Keep the list tight in the
+	-- other direction too: grug_meadows_front/_back disappeared again when the
+	-- centre band collapsed back to one cuboid, and a stale name only earns a
+	-- log warning — it is the kind of dead entry that survives for years.
+	biomes = {"grug_meadows", "grug_pine_hills", "grug_elf_forest",
 		"grug_deep_forest", "grug_deep_forest_front", "grug_deep_forest_east",
 		"grug_blight", "grug_bone_forest",
 		"grug_jungle_edge", "grug_deep_jungle", "grug_jungle_fringe"},

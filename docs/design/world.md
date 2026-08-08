@@ -273,15 +273,24 @@ capital meadows, undead and troll savanna. What ships now:
   everywhere else).
 - **The carve box** (§1) pushes the four wild side bands out to
   |x| ≥ 801, moves the badlands/deep-forest back country to |z| ≥ 1201,
-  splits the centre band into a narrow belt slab (|x| ≤ 349) plus front
-  and back slabs, and lets the side settled bands reach in to |x| ≥ 201.
+  narrows the centre band to |x| ≤ 349 over its whole z range, and lets
+  the side settled bands reach in to |x| ≥ 201.
   R = min(800 − 550, 550 − 350) = 200; the theoretical maximum is 274,
   because two neighbouring capitals are only 550 apart. Registration
   detail and the resulting biome table: `biomes_mobs.md` §1.3.
-- **No coverage hole**: the split without the side-band extension would
-  leave 3 % of the land with no eligible biome at all, which generates
-  as bare stone. Verified: **0** land columns without a biome, at every
-  y from 4 to 31000.
+  The centre band first shipped as three slabs (a narrow belt inside the
+  box, full-width front and back slabs outside it) to keep the wide
+  centre↔side overlaps; that was **rolled back the same day** because the
+  slabs' four new cuboid faces cost 1 500 nodes of straight ground border
+  — three quarters of the whole regression the carve caused. Only the
+  deep forest still needs slabs, because only it needs a hole in the
+  middle of its cuboid. See the D4 note in `biomes_mobs.md` §1.3 before
+  re-proposing them.
+- **No coverage hole**: the narrowed centre band without the side-band
+  extension to |x| ≥ 201 would leave 5 % of the land with no eligible
+  biome at all, which generates as bare stone (measured negative control:
+  478 799 land columns). Verified on the shipped registrations: **0** land
+  columns without a biome, at every y from 4 to 31000.
 - **Accepted residual (D5)**: `grug_swamp` (y 1..6) and `grug_beach`
   (y 1..4) are universal, x/z-unlimited and are **not** carved. A
   capital whose terrain surface lands at y ≤ 6 can therefore still come

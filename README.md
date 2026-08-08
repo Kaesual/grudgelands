@@ -111,7 +111,7 @@ live there. This section is the tour; the docs are the truth.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
-13 mirrored biome bands (23 registrations), each race band tipping from
+13 mirrored biome bands (19 registrations), each race band tipping from
 its settled variant into its wild nature variant as you move outward. Identical base drops on both
 continents ("same loot, different look"), a full mob roster per biome
 group, spawn parameters, per-race woods and the base-material map.
