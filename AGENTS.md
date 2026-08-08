@@ -80,11 +80,16 @@ current state). It is **derived, never authoritative**:
   (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
-  in there**. They are **git submodules** (decided 2026-08-08) — not part of
-  the build, but required to develop this codebase: every engine-behaviour
-  claim, licence verification and `file:line` citation in the design docs
-  points into them. Get them with
-  `git submodule update --init --recursive --depth 1`.
+  in there**. The eight sources are **git submodules** (converted 2026-08-08,
+  WP36) — not part of the build (the game runs with the directory empty), but
+  required to develop this codebase: every engine-behaviour claim, licence
+  verification and `file:line` citation in the design docs points into them.
+  Get them with `git submodule update --init --recursive --depth 1`.
+  - **Never move a pinned commit as a side effect of other work** — it
+    invalidates every citation written against it and every
+    `LICENSE-media.md` row quoting it. `git submodule status` must show no
+    `+`/`-`/`U` marker. Deliberate updates and the re-verification they
+    require: [docs/reference_projects.md](docs/reference_projects.md).
   - **A reference project needed beyond one session MUST live here and be
     listed in [docs/reference_projects.md](docs/reference_projects.md)** —
     with upstream URL, why we need it and its licence. Ad-hoc clones into a
@@ -242,6 +247,26 @@ Details + line numbers in [docs/research/](docs/research/).
     multipliers on the first active tick. `_grug_fixed_level` is the one
     documented exception (Kraken L100). Everything else (speeds,
     view_range, drops, visuals) stays def-owned.
+    **Four tiers since WP36**: `critter` (added for the small animals —
+    fixed L1, 1 HP, 10 XP, no fall damage, never promotable; the second
+    documented exception to "stats derived") plus `normal`/`elite`/`rare`,
+    whose arithmetic is unchanged. The **telegraph gate is a POSITIVE
+    elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
+    call sites) — a `tier ~= "normal"` test hands a rabbit a 2 s wind-up
+    and a ×3 cone hit the day a fourth tier appears.
+  - **Three behaviour classes, and a new mob picks one**
+    (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
+    food-only drops, `passive` + `runaway`), **passive prey** (the large
+    grazers — `grug_mobs.passive_prey` in `verbs.lua`: `passive = false`
+    is what buys retaliation, `attack_players`/`attack_npcs = false` is
+    what removes aggro on sight, `runaway` must be OFF because on_punch
+    sets it a dozen lines before the retaliation block resets it, and
+    **`attack_type` must be set** — `do_states`' attack branch dispatches
+    on three values with no `else`, so a retaliating mob without one holds
+    a target and does nothing at all) and **enemy** (§3.1's verbs).
+    Ground mobs that can end up in the attack state carry
+    `pathfinding = 1`; fliers never do (`core.find_path` is a ground
+    search).
   - **Runtime field installation**: mobs_redo's `register_mob` copies an
     EXPLICIT def-field whitelist into the entity table (api.lua:3196ff)
     and staticdata drops function fields — so every `_grug_*` field an
@@ -376,11 +401,13 @@ Details + line numbers in [docs/research/](docs/research/).
   `on_rightclick`, HUD `waypoint` elements for quest targets.
 - **Mapgen/biomes** (decided in WP2, reworked in WP18): engine biomes on
   mapgen v7, territory/race-region confinement via the biome definition's
-  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **19 biome
+  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **20 biome
   registrations** = 13 band biomes (12 mirrored bands plus `grug_crags`'
-  alpine cap `grug_crags_snowy`) + 2 extra `grug_deep_forest` slabs, the
-  only band that needs a hole in the middle of its cuboid for the
-  2026-08-08 capital-guarantee carve, + the 4 universal ones. The centre
+  alpine cap `grug_crags_snowy`) + 3 extra slabs — the 2 extra
+  `grug_deep_forest` ones (the only band that needs a hole in the middle of
+  its cuboid for the 2026-08-08 capital-guarantee carve) and
+  `grug_badlands_east`, WP36's Throng mirror of `grug_deep_forest_east` —
+  + the 4 universal ones. The centre
   band was split into slabs the same way and rolled back the same day —
   read the D4 note before re-proposing it.
   See `docs/design/biomes_mobs.md` §1.3; every band is authored ONCE in
@@ -418,20 +445,71 @@ Details + line numbers in [docs/research/](docs/research/).
   sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
   giant spider, stone + mesa golem); `default:stone` itself carries
   `grug_stratum = 1`, so the group alone is the complete predicate.
-  The two things biomes cannot express live in one
-  `register_on_generated` VoxelManip pass (`grug_mapgen/structures.lua`):
-  the **continent ocean mask** (two mirrored continent rectangles;
-  a coast noise insets them by 0..150 nodes INWARD only — so the strait is
-  guaranteed by construction, not by luck — surface cap + flood outside,
-  taper inward, chunk-box fast path skips inland/deep chunks) and the
-  **six race-capital camp platforms** (terrain-adaptive height from
-  `core.get_spawn_level` at the anchor − 2, resolved lazily in
-  `grug_core.get_camp_platform_y` and persisted per race id in mod storage;
-  a footprint heightmap median in `grug_mapgen` covers the many positions
-  where the engine answers nil — mgv7 calls anything above y 17, in a river
-  or in water "unsuitable". NEVER decide a platform y from the mapchunk
-  heightmap alone: it exists per chunk, so the value and the build order
-  become chunk-order-dependent and can deadlock). Zone/level queries:
+  The two things biomes cannot express live in VoxelManip passes, and
+  since WP36 in **two different Lua environments** — the split is the
+  rule, not a detail: a pass that only needs the chunk belongs in the
+  **mapgen env** (`core.register_mapgen_script`), a pass that needs
+  `grug_core`, mod storage or the POI registry cannot go there at all
+  and stays in `register_on_generated` in the main env.
+  The **continent ocean mask** is the first kind
+  (`grug_mapgen/ocean_mask_mapgen.lua`; two mirrored continent
+  rectangles; a coast noise insets them by 0..150 nodes INWARD only — so
+  the strait is guaranteed by construction, not by luck — surface cap +
+  flood outside, taper inward, box fast path skips inland/deep chunks;
+  it carves up to **`emax.y`**, not `maxp.y`, because the engine places
+  decorations up to the emerged top edge — `mg_decoration.cpp:424` — and
+  clamping to `maxp.y` is what left floating tree crowns over the water).
+  Its geometry (`column_cap`, a pure function of x/z) lives in
+  `grug_mapgen/geometry.lua`, which **both** environments `dofile`; the
+  continent rectangle itself comes from `grug_core` and reaches the
+  mapgen env via `core.ipc_set` — never copy those constants.
+  A `run_at_every_load` LBM in `grug_mapgen/ocean_mask.lua` heals worlds
+  generated before that fix. `column_cap` being (x, z)-pure is what makes
+  it idempotent; what makes it *safe* is the carved-column discriminator —
+  it cuts only where the map still shows the mask's own signature (biome
+  ground at the cap, air/liquid directly above), because `column_cap`
+  knows where the mask cuts but not whether it cut, and an unconditional
+  sweep would decapitate every legal coastal tree in the band. **The same
+  discriminator gates `clean_shell` in the mapgen pass**, so its residuals
+  are not LBM-only, and it is *not* free of false positives: on the
+  `h == cap` contour a column legitimately carrying a neighbouring tree's
+  crown reads as carved and loses it. The four residual classes — which
+  one is "overflow survives" and which one is "legal terrain is cut" —
+  are enumerated in `ocean_mask.lua`'s header; keep that list honest.
+  The **six race-capital camp platforms** are the second kind
+  (`grug_mapgen/structures.lua`, with the outposts and bandit camps).
+  **Exactly ONE decider, the answer is ALWAYS persisted, and a caller that
+  finds the height undecided FORCES the decision instead of inventing one**
+  (WP36 — before it, `get_spawn_pos` silently substituted the
+  `CAMP_PLATFORM_Y` minimum and wrote nothing down, so the same capital read
+  y 8 in one session and y 36 in the next). The ladder, in order:
+  `core.get_spawn_level` at the anchor − 2 (mgv7 refuses anything above
+  y 17, in a river or in water, so it answers nil at many capitals) → a
+  footprint heightmap median in `grug_mapgen` → `probe_platform_y`, a
+  main-env VoxelManip ground probe over the finished map. All three measure
+  the **same** footprint, `grug_core.CAMP_SAMPLE_RADIUS` — two fallbacks
+  measuring two different areas would be two different answers again.
+  `grug_core.get_camp_platform_y` reads, `set_camp_platform_y` writes
+  (first writer wins, per race id in mod storage), and
+  **`grug_core.request_camp_platform`** is what a caller uses when the
+  answer is missing: it emerges the footprint (idempotent, bounded per
+  session), and its completion callback falls back to the probe — which is
+  the only decider that can see a footprint whose surface sits exactly on a
+  **mapchunk y edge**, the case no heightmap can report and the WP18
+  deadlock that was never actually closed. A staggered startup sweep
+  requests all six so an unvisited capital cannot leave the protection rules
+  answering from their own fallback. Two invariants the review had to add:
+  **a decided height is not a built platform** — `build_camp` only runs from
+  `register_on_generated`, so whenever the probe decides, the chunks are
+  already on disk and `grug_core.ensure_camp_platform_built` (stub in
+  `grug_core`, implemented in `grug_mapgen`) has to build it from the
+  finished map — and **an uncertain measurement persists nothing**, because
+  a graceful shutdown fires every queued emerge callback with
+  `EMERGE_CANCELLED` while the env and mod storage are still alive, and
+  first-writer-wins would make a half-generated reading permanent.
+  NEVER decide a platform y from the mapchunk heightmap alone: it exists per
+  chunk, so the value and the build order become chunk-order-dependent and
+  can deadlock. Zone/level queries:
   `grug_core.territory_at` (accord/throng/ocean), `zone_at`
   (underground/ocean/strait/war_coast/coast/core/inner/outer — the
   `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`

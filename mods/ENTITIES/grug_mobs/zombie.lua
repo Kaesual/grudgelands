@@ -95,7 +95,12 @@ mobs:spawn({
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
 		-- Wild/universal tops as core/inner/war_coast patches (see above).
 		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
-		"grug_nodes:mesa_clay", -- grug_badlands
+		-- grug_deep_jungle (own top since WP36, §1.3). This is the only night
+		-- row that reaches the deep jungle's INNER patches — panther and
+		-- jungle spider are outer/coast — and, with the raider, one of two on
+		-- its war-coast strip.
+		"grug_nodes:dirt_with_canopy_litter",
+		"grug_nodes:mesa_clay", -- grug_badlands (+ grug_badlands_east)
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
 		"grug_nodes:mud", -- grug_swamp

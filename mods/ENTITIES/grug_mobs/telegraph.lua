@@ -139,8 +139,14 @@ end
 -- Called every step from init.lua's do_custom wrapper (guarded there by the
 -- tier, so normal mobs never enter this function).
 function grug_mobs.telegraph_tick(self, dtime)
-	local tier = self._grug_tier
-	if tier ~= "elite" and tier ~= "rare" then
+	-- Same predicate as the caller's gate, from the same place: the
+	-- `telegraph` flag on levels.lua's TIERS table. This function is public,
+	-- so the re-check stays — but it must never become a second, independent
+	-- list of tier names (it used to be `tier ~= "elite" and tier ~= "rare"`,
+	-- while the gate in init.lua tested `tier ~= "normal"`; two spellings of
+	-- one rule are how the critter tier would have slipped through one of
+	-- them).
+	if not grug_mobs.tier_telegraphs(self._grug_tier) then
 		return
 	end
 	self.temp = self.temp or {}

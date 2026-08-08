@@ -1,9 +1,13 @@
-import sys, numpy as np, random
-sys.path.insert(0, "/tmp/claude-1000/-home-jan-projects-grudgelands/91ecbd76-d170-44c2-bdbc-709677e54187/scratchpad")
+import os, sys, numpy as np, random
+# The tool lives next to its own modules and next to the biomes.csv that
+# dump_biomes.lua writes; both used to be absolute paths into the scratchpad of
+# the session that built the tool, which died with it (WP36 fix).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import model
 from model import load_biomes, build
 
-B = load_biomes("/tmp/claude-1000/-home-jan-projects-grudgelands/91ecbd76-d170-44c2-bdbc-709677e54187/scratchpad/biomes.csv")
+B = load_biomes(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "biomes.csv"))
 NAMES = [b["name"] for b in B]
 TOPS = [b["node_top"] for b in B]
 RAIN = "default:dirt_with_rainforest_litter"
@@ -12,7 +16,7 @@ STEP = 20
 rng = random.Random(20260808)
 seeds = [model.SEED] + [rng.randint(-2**31, 2**31 - 1) for _ in range(29)]
 
-print("seed_s32            cont  rain%%  jungle_edge%%  deep_jungle%%  top1  top1%%  heatmean heatsd hummean humsd")
+print("seed_s32            cont  rain%  jungle_edge%  deep_jungle%  top1  top1%  heatmean heatsd hummean humsd")
 rows = {1: [], -1: []}
 for sd in seeds:
     model.SEED = sd

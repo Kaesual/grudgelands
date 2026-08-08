@@ -148,7 +148,7 @@ end)
 preset)` helper and a table of named presets, then drive it from context we
 already have:
 
-- per **biome/region** (`grug_mapgen` knows the 19 biomes) — desaturated cold
+- per **biome/region** (`grug_mapgen` knows the 20 biomes) — desaturated cold
   tint on the war coast, warm saturation in the safe core, near-zero
   saturation + strong shadow tint underground;
 - per **faction continent** — Kragmar cooler/harsher, Elandor warmer;

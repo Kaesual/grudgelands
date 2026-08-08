@@ -264,6 +264,17 @@ function grug_mobs.register_mob(name, def)
 		no_leash = def._grug_no_leash,
 		soft_deaggro = def._grug_soft_deaggro,
 		leash_range = def._grug_leash_range,
+		-- "This mob may target NOBODY on sight" — see apply_aggro_fields.
+		-- DERIVED, not a def flag: it is exactly the conjunction
+		-- general_attack's own candidate filter tests (api.lua:1787 for
+		-- players, :1817-1819 for the three mob types, `attacks_monsters`
+		-- being register_mob's legacy spelling, api.lua:3520), so it can
+		-- never drift out of sync with the fields it summarises. Both player
+		-- fields default to TRUE in mob_class (api.lua:171-172), hence the
+		-- explicit `== false`; the two mob fields default to false.
+		no_acquire = def.attack_players == false and def.attack_npcs == false
+			and not def.attack_animals and not def.attack_monsters
+			and not def.attacks_monsters,
 	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped
@@ -404,14 +415,22 @@ function grug_mobs.register_mob(name, def)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
 		-- Runs before do_states/general_attack in the same step (api.lua:
-		-- 3137 vs. 3144/3156), so the aggro fields the api.lua patches read
+		-- 3359 vs. :3366/:3378), so the aggro fields the api.lua patches read
 		-- are always in place in time.
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
-		-- Elite/rare wind-up (telegraph.lua). Guarded here so a normal mob
-		-- pays one field comparison per step and nothing else.
-		if self._grug_tier and self._grug_tier ~= "normal" then
+		-- Elite/rare wind-up (telegraph.lua). Guarded here so a mob that does
+		-- not telegraph pays one table lookup per step and nothing else.
+		--
+		-- POSITIVE tier test, and it has to stay one (biomes_mobs.md §3.0):
+		-- this used to read `self._grug_tier ~= "normal"`, which was correct
+		-- only as long as elite and rare were the only tiers that existed —
+		-- the moment the `critter` tier landed, that form would have given a
+		-- rabbit a 2 s wind-up and a x3 cone hit. The predicate itself lives
+		-- in levels.lua next to the TIERS table (one source of truth;
+		-- telegraph_tick's own re-check asks the same function).
+		if grug_mobs.tier_telegraphs(self._grug_tier) then
 			grug_mobs.telegraph_tick(self, dtime)
 		end
 		-- Named-rare patrol (rares.lua); the flag only exists on the handful
@@ -425,12 +444,23 @@ function grug_mobs.register_mob(name, def)
 		-- serialized into staticdata; do_custom runs before general_attack on
 		-- every step, so it is back after each (re)activation in time.
 		--
-		-- Installed for EVERY mob since the evade rewrite (combat_stats.md §4):
+		-- Installed on EVERY mob since the evade rewrite (combat_stats.md §4):
 		-- an evading mob acquires no targets at all, which is not a faction or
 		-- truce question. A mob with neither of those carries the evade test
 		-- alone. Cost: one function call per candidate player per
 		-- general_attack, i.e. per mob once a second (api.lua:3378 runs it from
 		-- the 1 s timer block) over the players inside view_range — nothing.
+		--
+		-- What it does NOT reach any more: the five passive-prey mobs
+		-- (verbs.lua). Its only reader is the GRUG PATCH inside
+		-- general_attack (api.lua:1795), and `no_acquire` shadows that whole
+		-- method with a no-op on any mob that may target nobody (aggro.lua),
+		-- which is exactly those five. So on a stag this closure is installed
+		-- and never called. No behaviour is lost — an evading prey mob could
+		-- not acquire anything through general_attack either, that being the
+		-- point of the shadow — but the veto is a dead field there, and a
+		-- future def that gains a target back gets it working again for free,
+		-- because `no_acquire` is derived from the same attack_* fields.
 		if not self._grug_ignore_player then
 			self._grug_ignore_player = function(s, player)
 				-- Checked first and cheapest: while evading, everyone is
@@ -519,5 +549,14 @@ dofile(modpath .. "/mirefolk.lua")
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
 dofile(modpath .. "/camps.lua")
+-- The 2026-08-08 critter round (biomes_mobs.md §3.0, WP36): the two cave
+-- critters — the underground had none at all — plus the two surface ones.
+-- All four run on the `critter` tier of levels.lua, so they must come after
+-- it; bone_weevil.lua shares cave_crawler.lua's mesh but needs no load order
+-- (a mesh is a file name, not a registration).
+dofile(modpath .. "/cave_bat.lua")
+dofile(modpath .. "/cave_crawler.lua")
+dofile(modpath .. "/bone_weevil.lua")
+dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")

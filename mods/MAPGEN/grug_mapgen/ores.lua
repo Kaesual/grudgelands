@@ -90,8 +90,9 @@ core.register_ore({
 	},
 	-- Only in the biomes whose ground is dirt (node_top of the dirt family
 	-- over a default:dirt filler, biomes.lua). Left out on purpose: savanna
-	-- (dry dirt, as in minetest_game), badlands (mesa clay), crags (gravel),
-	-- swamp (mud), beach/ocean (sand).
+	-- (dry dirt, as in minetest_game), badlands AND its WP36 east wing
+	-- grug_badlands_east (both mesa clay top over a mesa clay filler), crags
+	-- (gravel), swamp (mud), beach/ocean (sand).
 	-- LANDMINE (biomes.lua, 2026-08-08): grug_deep_forest ships as SEVERAL
 	-- registrations since the capital-guarantee carve, and a sibling is a
 	-- separate biome NAME. All of them belong here — a missing sibling
@@ -100,6 +101,9 @@ core.register_ore({
 	-- other direction too: grug_meadows_front/_back disappeared again when the
 	-- centre band collapsed back to one cuboid, and a stale name only earns a
 	-- log warning — it is the kind of dead entry that survives for years.
+	-- grug_deep_jungle stays listed although WP36 gave it its own node_top:
+	-- the TOP changed, the `default:dirt` FILLER did not, which is what this
+	-- blob replaces.
 	biomes = {"grug_meadows", "grug_pine_hills", "grug_elf_forest",
 		"grug_deep_forest", "grug_deep_forest_front", "grug_deep_forest_east",
 		"grug_blight", "grug_bone_forest",

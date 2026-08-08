@@ -103,7 +103,14 @@ end
 -- coast".
 mobs:spawn({
 	name = "grug_mobs:jungle_ape",
-	nodes = {"default:dirt_with_rainforest_litter"},
+	-- Two nodes since WP36: grug_deep_jungle stopped sharing the jungle
+	-- edge's rainforest litter and has its own top (§1.3). Without the
+	-- second name the Throng half of the jungle group would lose its whole
+	-- outer/coast day roster.
+	nodes = {
+		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 2800,

@@ -94,4 +94,9 @@ local path = core.get_modpath(core.get_current_modname())
 dofile(path .. "/biomes.lua")
 dofile(path .. "/ores.lua")
 dofile(path .. "/decorations.lua")
+-- Before structures.lua: it publishes grug_mapgen.geometry (the coast profile),
+-- which structures.lua reads to clamp outpost/bandit-camp heights. geometry.lua
+-- itself is dofile'd from here AND from the mapgen environment — see the file
+-- headers of ocean_mask.lua and ocean_mask_mapgen.lua.
+dofile(path .. "/ocean_mask.lua")
 dofile(path .. "/structures.lua")

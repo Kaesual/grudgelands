@@ -24,16 +24,19 @@ local parrot = {
 	-- the ring gate is derived from that: core + inner, exactly like the
 	-- other settled critters (rabbit.lua). WP6/T10 calibrates the numbers.
 	_grug_spawn_zones = {"core", "inner"},
-	-- §3.1 puts the jungle_edge families "from L10"; a critter has no combat
-	-- role, so the floor is left off here (rabbit.lua carries none either)
-	-- and the field decides.
+	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
+	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
+	-- It also replaces the old "§3.1 puts the jungle_edge families from L10"
+	-- note — a critter has no level source at all any more.
+	_grug_tier = "critter",
 
 	-- Flier (see the header): floats/fall_damage are inert while fly is set
-	-- but keep the def honest, as in kraken.lua.
+	-- (falling() bails out first). fall_damage is not written here: the
+	-- critter tier owns it, and as `false` rather than the `0` §3.0 prints —
+	-- 0 is truthy in Lua, so it would have been a no-op (levels.lua header).
 	fly = true,
 	fly_in = "air",
 	jump = false,
-	fall_damage = 0,
 	fear_height = 0,
 
 	walk_velocity = 1.5,
@@ -60,9 +63,12 @@ local parrot = {
 		fly_start = 60, fly_end = 120, fly_speed = 50,
 	},
 
+	-- FOOD ONLY (§3.1: "meat 1/1 — food only (feather moved to the
+	-- bird-of-prey table)"). Plain feather is now a Crag Eagle / Vulture drop
+	-- (eagle.lua), so arrow fletching sits behind a real fight instead of
+	-- behind a bird that dies to one hit.
 	drops = {
-		{name = "grug_mobs:feather", chance = 1, min = 1, max = 1},
-		{name = "mobs:meat_raw", chance = 2, min = 1, max = 1},
+		{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
 	},
 
 	water_damage = 0,

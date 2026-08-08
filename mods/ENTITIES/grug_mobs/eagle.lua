@@ -46,6 +46,11 @@ local function eagle_def(description, texture)
 
 		-- Flier (see the header). floats/fall_damage are inert while fly is
 		-- set but keep the def honest, exactly like kraken.lua.
+		-- NB the `0` below is documentation, not a switch: mobs_redo tests
+		-- `if self.fall_damage` (api.lua:2608) and 0 is truthy in Lua, so it
+		-- would NOT disable fall damage on a ground mob — `false` does. It is
+		-- inert here only because falling() bails out for fliers first. Do not
+		-- copy this line into a walking def (levels.lua's critter tier header).
 		fly = true,
 		fly_in = "air",
 		jump = false,
@@ -84,8 +89,17 @@ local function eagle_def(description, texture)
 
 		-- Bird-of-prey table (§3.2): shared verbatim between Crag Eagle and
 		-- Vulture.
+		--
+		-- PLAIN FEATHER moved here in WP36 (§3.0/§6): it used to fall off the
+		-- Gull and the Parrot, i.e. off two 1 HP critters, which made arrow
+		-- fletching a walk rather than a fight. The critters are food-only
+		-- now and this family is the material's only source — one on each
+		-- continent (Crag Eagle / Vulture), so §6's "every row has at least
+		-- one source per continent" still holds. Chance 2 keeps it clearly
+		-- below the sharp feather, which stays the family's signature drop.
 		drops = {
 			{name = "grug_mobs:sharp_feather", chance = 1, min = 1, max = 2},
+			{name = "grug_mobs:feather", chance = 2, min = 1, max = 2},
 			{name = "mobs:meat_raw", chance = 2, min = 1, max = 1},
 		},
 

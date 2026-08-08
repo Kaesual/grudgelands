@@ -71,6 +71,16 @@ register_litter("dirt_with_forest_litter", "Dirt with Forest Litter",
 	"grug_nodes_forest_litter")
 register_litter("dirt_with_silver_litter", "Dirt with Silver Litter",
 	"grug_nodes_silver_litter")
+-- The shaded floor under the closed deep-jungle canopy (WP36, biomes_mobs.md
+-- §1.3). It exists because grug_deep_jungle used to SHARE
+-- `default:dirt_with_rainforest_litter` with grug_jungle_edge, which made
+-- 41 % of the Throng continent a single eligible visual (the whole span
+-- x 201..1500) -- the one biome pair in the world that did not have its own
+-- top per registration. Same node family, same spawn-whitelist role as the
+-- three above; the tint is deliberately colder and darker than
+-- `dirt_with_forest_litter` (which is Accord-only, so the two never meet).
+register_litter("dirt_with_canopy_litter", "Dirt with Canopy Litter",
+	"grug_nodes_canopy_litter")
 
 -- Swamp mud. `mud = 1` is a MARKER GROUP only -- the walking slow-down
 -- described in docs/design/biomes_mobs.md §1.3 is NOT implemented in WP18;

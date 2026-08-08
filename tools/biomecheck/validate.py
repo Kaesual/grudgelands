@@ -2,7 +2,8 @@
 surface node_top against the model's prediction."""
 import sys, sqlite3, io, struct, random
 import numpy as np
-sys.path.insert(0, "/tmp/claude-1000/-home-jan-projects-grudgelands/91ecbd76-d170-44c2-bdbc-709677e54187/scratchpad")
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import model
 from model import (load_biomes, terrain_height, column_cap, calc_biome, SEED,
                    np_heat, np_humidity, np_heat_bl, np_hum_bl, WATER_LEVEL,
@@ -118,7 +119,8 @@ def main():
     bid = calc_biome(B, heat, hum, X, Z, h)
 
     # predicted visible top: sand where the mask cut at/below beach level,
-    # else the biome's node_top (structures.lua build_ocean_mask).
+    # else the biome's node_top (geometry.lua column_cap + the sand re-dress
+    # in ocean_mask_mapgen.lua; both were structures.lua before WP36).
     carved = has & (h > cap)
     pred = []
     for i in range(len(X)):

@@ -1,25 +1,40 @@
 -- Stag / Gaunt Stag (docs/design/biomes_mobs.md §3.1, forest pair).
--- Verb "flees (critter)" — native mobs_redo behaviour (animal + passive +
--- runaway), same shape as rabbit.lua, only bigger and one ring further out.
+--
+-- Verb "grazes" — PASSIVE PREY since WP36 (§3.0): no aggro on sight, but it
+-- fights back when attacked. It is NOT a critter: a stag is a large grazer,
+-- so it keeps its level from the field, its HP and XP from the formulas and
+-- its leather drop. That is what makes it worth the swing and what keeps the
+-- leather tiers gated by a real fight rather than by travel.
+-- grug_mobs.passive_prey (verbs.lua) carries the mobs_redo reasoning.
 --
 -- The Zebra (T6, savanna) is the Throng mirror on the very same stag drop
--- table (§3.2) and will reuse the numbers below.
+-- table (§3.2) and reuses the numbers below.
 
 local function stag_def(description, texture)
-	return {
+	local def = {
 		description = description,
 		type = "animal",
-		passive = true,
-		runaway = true,
 		_grug_spawn_zones = {"inner", "outer"},
-		-- Stats engine-owned (levels.lua).
+		-- Stats engine-owned (levels.lua) — normal tier, so level, HP, damage
+		-- and XP all come from the field and the formulas.
 
 		walk_velocity = 1.5,
-		run_velocity = 3.4, -- critter speed (§0)
+		run_velocity = 3.4, -- grazer speed (§0's "critters 3.4" line)
 		jump = true,
 		stepheight = 1.1,
 		fear_height = 3,
-		view_range = 12, -- spots you early and leaves
+		view_range = 12,
+		-- Ground prey chases up to 45 m since WP36 (§3.0 retaliation + the
+		-- _grug_chase_range patch), so it needs the same A* every other mob
+		-- that enters the attack state has: `core.find_path` runs only from
+		-- the attack branch (api.lua:2442-2445), i.e. only after a player
+		-- punch, so a grazing herd pays nothing. Without it the "worth the
+		-- swing" of §3.0 is defeated by any 3-node ledge. §3's "all
+		-- aggressive mobs: pathfinding = 1" does not cover prey (prey never
+		-- initiates) — this is AGENTS.md's pathfinding quality criterion,
+		-- applied to a mob that now fights. NOT given to the Carrion Crow:
+		-- it is `fly = true`, and find_path is a ground search (eagle.lua).
+		pathfinding = 1,
 
 		visual = "mesh",
 		mesh = "grug_mobs_stag.b3d",
@@ -35,7 +50,11 @@ local function stag_def(description, texture)
 		collisionbox = {-0.5, -0.01, -0.5, 0.5, 1.8, 0.5},
 		makes_footstep_sound = true,
 
-		-- wp6_model_notes §3.1 (creatura ranges translated); no punch clip.
+		-- wp6_model_notes §3.1 (creatura ranges translated). No punch clip on
+		-- this mesh: mobs_redo's set_animation returns without a write when
+		-- the requested clip is missing (api.lua:464), so a retaliating stag
+		-- keeps its run animation instead of freezing — acceptable, and
+		-- cheaper than inventing a clip the mesh does not have.
 		animation = {
 			stand_start = 1, stand_end = 59, stand_speed = 10,
 			walk_start = 70, walk_end = 89, walk_speed = 30,
@@ -53,6 +72,9 @@ local function stag_def(description, texture)
 		lava_damage = 4,
 		light_damage = 0,
 	}
+	-- Verb last, def first (verbs.lua contract): passive = false,
+	-- attack_players/attack_npcs = false, runaway = false.
+	return grug_mobs.passive_prey(def)
 end
 
 --

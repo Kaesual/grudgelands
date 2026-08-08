@@ -154,6 +154,47 @@ local function in_poi_zone(pos)
 	return false
 end
 
+-- BOX form of the two zone tests above, for passes that work on a whole
+-- mapblock instead of on one dig attempt: true when any protected structure
+-- zone — a capital platform or any POI — intersects minp..maxp.
+--
+-- It exists because "do not touch a protected POI" has to be answerable
+-- WITHOUT the caller knowing what kind of structure stands there or what it is
+-- built of: grug_mapgen's ocean-mask healing LBM would otherwise delete the
+-- four wooden corner posts of every outpost whose pad mapgen clamped onto the
+-- coast cap (12 of the 24 sit in the coast/war-coast band), and WP13's
+-- structures would walk into the same trap one by one. Asking here means they
+-- are all covered by the rule that already protects them from players.
+--
+-- Same rules as in_capital_zone/in_poi_zone, transposed: the horizontal square
+-- is unchanged, and the vertical half-line "from y_base - DEPTH upward" becomes
+-- "the box's TOP edge reaches it". Deliberately allocation-free and linear —
+-- the §9 POI budget keeps the list under 100 entries, and the caller pays this
+-- once per mapblock, after its own cheap arithmetic gates.
+function grug_core.protected_zone_in_box(minp, maxp)
+	for race_id, capital in pairs(grug_core.capitals) do
+		if maxp.x >= capital.x - CAMP_HALF and
+				minp.x <= capital.x + CAMP_HALF and
+				maxp.z >= capital.z - CAMP_HALF and
+				minp.z <= capital.z + CAMP_HALF then
+			local platform_y = grug_core.get_camp_platform_y(race_id)
+				or grug_core.CAMP_PLATFORM_Y
+			if maxp.y >= platform_y - DEPTH then
+				return true
+			end
+		end
+	end
+	for i = 1, #pois do
+		local p = pois[i]
+		if maxp.x >= p.x - p.half and minp.x <= p.x + p.half and
+				maxp.z >= p.z - p.half and minp.z <= p.z + p.half and
+				maxp.y >= p.y_base - DEPTH then
+			return true
+		end
+	end
+	return false
+end
+
 function core.is_protected(pos, name)
 	if name ~= "" and
 			core.check_player_privs(name, {protection_bypass = true}) then

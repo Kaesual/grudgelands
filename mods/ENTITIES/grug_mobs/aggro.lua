@@ -60,6 +60,47 @@
 --
 
 --
+-- Target acquisition for a mob that may target nobody (WP36 review, LOW 2).
+--
+-- mobs_redo's general_attack short-circuits at its very first line for a
+-- `passive` mob (api.lua:1769). Passive prey is deliberately NOT passive —
+-- that is the field that buys it retaliation (verbs.lua) — so it falls
+-- through into the acquisition loop and pays, once a second, for a
+-- `core.get_objects_inside_radius(pos, view_range)` (api.lua:1775) plus the
+-- ObjectRef table it allocates. Every candidate that scan can return is then
+-- discarded by the filter: players by `attack_players = false` (:1787),
+-- animals/monsters/npcs by the three type tests (:1817-1819), and anything
+-- else by the `else objs[n] = nil` tail (:1823). `min_player` is therefore
+-- nil at :1847 with certainty, not merely usually — the whole call is
+-- provably a no-op, and against the 100-player design target it is a no-op
+-- per prey mob per second.
+--
+-- So we replace the METHOD on the entity instead of patching the vendored
+-- file (AGENTS.md: prefer a wrapper over an in-place edit). `self` is an
+-- instance table whose metatable's __index is mobs.mob_class (api.lua:182),
+-- so an instance field shadows the class method — the same technique
+-- `_grug_ignore_player` uses, and safe for the same reason:
+-- clean_staticdata drops every field of type "function" (api.lua:3024), so
+-- this cannot be persisted, and do_custom runs before general_attack in the
+-- same on_step (api.lua:3359 vs. :3378), so it is always reinstalled in time.
+-- ONE shared function, never a per-entity closure.
+--
+-- Not applied to any mob that can still target something: the guard keeps
+-- attack_monsters, so it keeps the real scan.
+--
+-- The `grug_traders` vendor NPCs do NOT have this defect and need no
+-- wrapper (checked 2026-08-08): their def sets `passive = true`
+-- (`grug_traders/vendors.lua:177`), and general_attack's very first test
+-- returns on `self.passive` (api.lua:1769) — before the
+-- get_objects_inside_radius at :1775 — so a vendor never runs the scan at
+-- all. They also register through plain `mobs:register_mob` (vendors.lua
+-- :258, deliberately not through grug_mobs.register_mob, which IS the level
+-- engine), so the `no_acquire` derivation never sees them either. Do not
+-- file a WP to wrap a code path that cannot execute.
+--
+local function no_target_acquisition() end
+
+--
 -- Runtime field installation. Custom def fields do NOT reach the entity:
 -- mobs_redo's register_mob copies an EXPLICIT field list into the entity
 -- table (api.lua:3196ff) and mob_activate only layers staticdata on top. So
@@ -69,6 +110,10 @@
 -- upvalue table built in grug_mobs.register_mob.
 --
 function grug_mobs.apply_aggro_fields(self, cfg)
+	-- The guaranteed-empty acquisition scan above.
+	if cfg.no_acquire and self.general_attack ~= no_target_acquisition then
+		self.general_attack = no_target_acquisition
+	end
 	-- Gate for the item_drop GRUG PATCH: only mobs registered through us
 	-- follow the player-tag rule, vanilla mobs_redo mobs are untouched.
 	if not self._grug_drop_rule then

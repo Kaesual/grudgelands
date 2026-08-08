@@ -108,12 +108,22 @@ grug_mobs.register_mob("grug_mobs:bear", bear_def("Bear", "grug_mobs_bear.png"))
 -- outer/coast forest roster of the Accord side, so it carries those tops.
 -- Both families are zoned {outer, coast} (+ the Spider's cave row), so the
 -- settled core/inner cells of those biomes stay exactly as §4 priced them.
+--
+-- `default:dirt_with_grass` ADDED BY WP36 while re-deriving §1.5. §4's filler
+-- table says this slot carries "the settled tops of their side", and
+-- grug_meadows is the Accord's third settled top — it was missing because at
+-- WP6 time the centre band stopped at |z| 1500 and therefore could not reach
+-- the back-coast band (|z| >= 1550) at all. The D4 rollback of 2026-08-08
+-- extended it to Z_MAX and thereby created a grug_meadows x coast cell that
+-- was dead day AND night (grug_savanna x coast likewise, see the Plaguehide
+-- row below). Exactly the grug_crags_snowy failure mode, one band later.
 mobs:spawn({
 	name = "grug_mobs:bear",
 	nodes = {
 		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest patches
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills patches
+		"default:dirt_with_grass", -- grug_meadows patches (see above)
 	},
 	min_light = 10,
 	interval = 20,
@@ -133,12 +143,28 @@ grug_mobs.register_mob("grug_mobs:plaguehide_bear",
 
 -- Throng mirror of the note above: grug_blight patches in the outer ring had
 -- no DAY mob at all (only the night Skeleton Archer), and grug_blight x coast
--- was dead around the clock.
+-- was dead around the clock. `default:dry_dirt_with_dry_grass` is the WP36
+-- addition, the exact mirror of the Bear's grug_meadows one — grug_savanna x
+-- coast was dead day and night for the same reason.
+--
+-- default:dirt_with_rainforest_litter is deliberately NOT here, and the
+-- reason is CONTINENT LEAKAGE, not the aoc budget: it is the one band top
+-- that exists on BOTH continents (grug_jungle_edge on the Throng,
+-- grug_jungle_fringe on the Accord, biomes_mobs §1.3), and neither this mob
+-- nor grug_mobs:pale_spider carries a _grug_spawn_check -- listing it would
+-- put two Throng-tinted families into Elandor's jungle fringe. The cell also
+-- does not need them: it already has jungle ape, serpent, panther and jungle
+-- spider. (An earlier revision of this comment said the filler "would push
+-- the cell to 15 aoc at night, past the peak of 12". That was wrong twice
+-- over -- rainforest litter x outer/coast is Panther 4 + Jungle Spider 4 = 8
+-- at night, so the Pale Spider's 4 would reach exactly 12, level with the
+-- peak. Re-derived 2026-08-08, wp6_spawn_budget.md §2.2.)
 mobs:spawn({
 	name = "grug_mobs:plaguehide_bear",
 	nodes = {
 		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
 		"grug_nodes:blight_dirt", -- grug_blight patches
+		"default:dry_dirt_with_dry_grass", -- grug_savanna patches (see above)
 	},
 	min_light = 10,
 	interval = 20,

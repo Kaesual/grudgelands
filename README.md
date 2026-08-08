@@ -57,9 +57,12 @@ live there. This section is the tour; the docs are the truth.
   Everything else is ocean.
 - **Difficulty is geography.** Mob level grows radially outward from your
   capital: safe core 1–10, inner ring 10–25, outer ring 25–45, the far
-  coasts 45–60. Caves add a depth axis (3 levels per 50 nodes down,
-  −500 = level 30, −1000 = the level-60 cap), so mining deep is an
-  alternative to travelling out.
+  coasts 45–60. Every capital sits in a **level-1 bubble** 40 nodes wide
+  that fades back into the field over the next 200, so wherever you wake
+  up, the first animal you meet is a level-1 one. Caves add a depth axis
+  (3 levels per 50 nodes down, −500 = level 30, −1000 = the level-60
+  cap) — and the bubble does not reach down there, so mining deep is an
+  alternative to travelling out even under your own city.
 - **The war coast is capped at 20–30** — the strait-facing band is the PvP
   stage, and the first PvP quests arrive around level 20. Nobody is forced
   into PvP before that.
@@ -111,10 +114,15 @@ live there. This section is the tour; the docs are the truth.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
-13 mirrored biome bands (19 registrations), each race band tipping from
+13 mirrored biome bands (20 registrations), each race band tipping from
 its settled variant into its wild nature variant as you move outward. Identical base drops on both
 continents ("same loot, different look"), a full mob roster per biome
 group, spawn parameters, per-race woods and the base-material map.
+Animals come in **three classes**: *critters* are scenery with a use
+(always level 1, food drops only, so a full larder ends the hunt by
+itself), *passive prey* are the large grazers — they never attack on
+sight, but a punched stag fights back, which is what keeps the leather
+tiers behind a real fight — and *enemies* are everything else.
 
 ### Combat & character — [`combat_stats.md`](docs/design/combat_stats.md) · [`classes.md`](docs/design/classes.md) · [`progression.md`](docs/design/progression.md)
 
@@ -241,22 +249,32 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (11 of 35 work packages):** the foundation, the whole
-world/combat layer, the money economy, and the material ladder's rock and
-ores. *(The total is 35 — WP0 through WP34 — and was printed as 33 here
-until 2026-08-08: the 2026-08-07 crafting rework had cut nine new work
-packages on top of the original twenty-five, and the depth design pass
-added WP34 on 2026-08-08.)*
+**Shipped (12 of 38 work packages):** the foundation, the whole
+world/combat layer, the money economy, the material ladder's rock and
+ores, and the fix round that came out of the second runtime test.
+*(The total is 38 — WP0 through WP37, up from 35 earlier on 2026-08-08:
+the weapon-slot design pass cut WP35, the runtime test cut WP36, and
+WP36 spun off WP37 while it ran.)*
 
 - **World**: two ocean-separated continents with soft coasts, 13 mirrored
   biome bands, six race-capital spawn platforms, the radial mob-level field
   plus the inverse guard field, the ocean build lock and the deep-sea
-  Kraken Guard (WP2, WP18).
-- **Mobs & combat feel**: 38 mobs on a level/tier engine, 10 named rares
+  Kraken Guard (WP2, WP18). WP36 finished the coastline (no more tree
+  crowns floating over the water, and older worlds heal themselves),
+  gave every race capital a level-1 bubble so the four side capitals no
+  longer greet a fresh character with level-8 wildlife, made the capital
+  platform height a single decider instead of a guess, and broke the
+  Throng's biome monopoly — 41 % of that continent used to have exactly
+  one possible look.
+- **Mobs & combat feel**: 42 mobs on a level/tier engine, 10 named rares
   with faction broadcast, faction guards on 24 deterministic outposts with
   hourly patrol legs, 12 bandit camps, the threat table, leash/evade, the
   elite/rare telegraph, nametags and the con-color target frame, ore
-  respawn, and a pathfinding/density pass (WP1, WP6).
+  respawn, and a pathfinding/density pass (WP1, WP6). WP36 sorted the
+  animals into three classes: **critters** (small, always level 1, food
+  drops only — plus four new ones for the caves, the bone forest and the
+  swamp), **passive prey** (the large grazers: they never attack on
+  sight, but they fight back) and everything else.
 - **Character**: faction → race → class creation, Warrior/Mage/Priest with
   attribute and HP formulas, the XP curve to 60 with death penalty, 3
   abilities per class with cooldowns, global cooldown and soft target
@@ -287,10 +305,12 @@ catalog to material names.
 
 **Ready to start next** (no design blockers): the depth economy (WP34 —
 the arrival pulse that makes deep mining dangerous, the depth level
-curve's overdue recalibration, the denser surface spawns, camp-only ore
-respawn, lava lakes and the continental Abyssal Crystal), the two-slot
+curve's overdue recalibration, camp-only ore respawn, lava lakes and the
+continental Abyssal Crystal), the two-slot
 furnace and the alloy chain (WP26, the next link in the material chain),
-guilds (WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
+the weapon slot and ability-item skins (WP35), the denser surface spawns
+(WP37 — decided long ago, never rolled out across the roster), guilds
+(WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
 talent trees (WP11), world structures (WP13 — which now also owns the
 mining camps), offhand (WP14), travel (WP17), party system (WP20),
 recovery & innkeeper (WP21), apex world bosses (WP23).
@@ -302,11 +322,17 @@ signature recipes, keystones, material grades and cooking recipes for
 WP10. (The material ladder, WP25, was blocked by the same file and was
 unblocked and built on 2026-08-08.)
 
-**Caveats:** every shipped work package has been runtime-tested
-(2026-08-07 — six findings on the WP1–WP19 pass, all fixed; WP7 passed
-without findings) **except WP25, the material ladder, which has not been
-runtime-tested at all yet**: its strata, ore bands, pickaxe gates and
-cave-spawn changes have only been reviewed and syntax-checked. One known
+**Caveats:** the shipped work packages were runtime-tested on 2026-08-07
+(six findings on the WP1–WP19 pass, all fixed; WP7 passed without
+findings), **except WP25 (the material ladder) and WP36 (the fix round),
+neither of which has been runtime-tested at all**: they have only been
+reviewed and syntax-checked. The second runtime test, on 2026-08-08, is
+what produced WP36 in the first place, and WP36's own fixes are
+therefore still unverified in-game. **Two design questions are open, not
+decided**: whether the jungle fringe should follow the deep jungle's new
+ground texture (`TODO-design-jungle-fringe.md`), and the extra badlands
+band WP36 added on the Throng side, which is deliberately cheap to
+revert if the owner disagrees with the reading behind it. One known
 defect remains: melee auto-attacks against *players* still use the
 engine's raw scaling, so a held button can deal 0 damage in PvP — the
 mob-side fix is in, the PvP port is queued.
@@ -321,10 +347,13 @@ respawn** still runs the old world-wide 15–30 min rule, although the
 design now lets nothing regrow outside a mining camp; and the **depth
 level curve** in `grug_core` still adds a level every 20 nodes instead of
 three every 50, so the documented anchors (−500 = level 30, −1000 = the
-cap) do not hold in the running game yet. Mapgen
-changed in WP18 and again in WP25 (the
+cap) do not hold in the running game yet. A third: the surface spawn
+density was raised on paper on 2026-08-08 and still has not been rolled
+out to the mob roster (WP37). Mapgen
+changed in WP18, again in WP25 (the
 rock strata are placed by the mapgen's ore stage, so an existing world
-gets them only in freshly generated chunks, with seams at the border), so
+gets them only in freshly generated chunks, with seams at the border)
+and again in WP36 (the biome layer and the coastline), so
 **existing worlds are incompatible; always start a fresh one**. All art
 is currently vendored from reference projects (vendors still look like
 faction guards); own assets are Phase 3.
@@ -346,6 +375,20 @@ tools/sync_to_luanti.sh   # copies the game into ~/.var/app/org.luanti.luanti/..
 Engine log for diagnosis:
 `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 
+### Reference projects (development only)
+
+```sh
+git submodule update --init --recursive --depth 1
+```
+
+`reference_projects/` holds the eight upstream sources this codebase is
+developed against, as git submodules. **The game builds and runs without
+them** — they are never loaded by the engine and nothing in `mods/` reads
+them. They are needed to *develop* the codebase: every engine-behaviour
+claim, licence verification and `file:line` citation in the design docs
+points into them, pinned at the commit it was written against. Details and
+the update discipline: [docs/reference_projects.md](docs/reference_projects.md).
+
 ---
 
 ## Repository layout
@@ -360,7 +403,7 @@ Engine log for diagnosis:
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | goals and phases · work packages with status |
 | [AGENTS.md](AGENTS.md) | conventions, Lua/Luanti rules, patterns — read this first before contributing |
 | [VENDOR.md](VENDOR.md) | vendored third-party mods: upstream commit, license, patch inventory |
-| `reference_projects/` | read-only references (the engine, Lord of the Test, VoxeLibre, minetest_game, mobs_redo) |
+| [docs/reference_projects.md](docs/reference_projects.md) · `reference_projects/` | the eight read-only upstream sources as git submodules — not part of the build |
 
 ## License
 

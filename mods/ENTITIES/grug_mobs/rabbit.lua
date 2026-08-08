@@ -30,9 +30,11 @@ local function rabbit_def(description, texture, territory)
 		_grug_spawn_check = function(pos)
 			return grug_core.territory_at(pos) == territory
 		end,
-		-- HP/damage/XP and armor are engine-owned (levels.lua). A critter
-		-- has no damage of its own; the level engine still assigns one, it
-		-- is simply never used because the mob never attacks.
+		-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
+		-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
+		-- HP/damage/XP/armor AND fall_damage are engine-owned from here — the
+		-- def must not restate any of them.
+		_grug_tier = "critter",
 
 		-- Critter speed (biomes_mobs §0: 3.4). No pathfinding: a fleeing
 		-- rabbit takes the straight line away from the threat, and
@@ -61,9 +63,13 @@ local function rabbit_def(description, texture, territory)
 			run_start = 0, run_end = 20, run_speed = 30,
 		},
 
+		-- FOOD ONLY (§3.0/§3.1 "meat 1/1 — food only"): the light-leather
+		-- roll is gone. A critter must never be worth farming, and a food
+		-- item stops being one the moment the larder is full — a crafting
+		-- material never does. §6's light-leather row lost rabbits/hares
+		-- with this change and still has the Boar on both continents.
 		drops = {
 			{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
-			{name = "grug_mobs:light_leather", chance = 3, min = 1, max = 1},
 		},
 
 		water_damage = 0,

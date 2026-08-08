@@ -1,24 +1,21 @@
--- Post-generation pass for the two things the biome system cannot express:
+-- Post-generation pass for the structures the biome system cannot express.
 --
---  * the CONTINENT OCEAN MASK (docs/design/world.md §1/§2b): the world is two
---    separate continents mirrored at z = 0, everything else is ocean —
---    "the terrain generates, but it MUST be water, no islands". v7 happily
---    grows land outside the continent rectangles, so this pass caps the
---    surface of every column near or outside a rectangle edge and floods
---    what it cut. The shoreline is soft: a 2D noise insets the rectangle by
---    0..150 nodes, and because the inset is clamped at 0 it only ever moves
---    the coast INWARD — the 200-node strait of §1 (|z| < 100 is water) is
---    guaranteed by construction, never by luck of the noise.
---    The cap rises across a 150-node ramp to ~115 nodes above sea level and
---    is then dropped entirely (columns further inland are never even looked
---    at), so the mask shapes the coast and leaves the hinterland to v7. What
---    it does cut it re-dresses: sand at beach level, otherwise the column's
---    own biome surface, so a shaved coastal hill stays walkable land.
---    The mask also reaches into the 16-node SHELL of the emerged area, not
---    just the mapchunk: schematic decorations for a tree rooted in this chunk
---    spill into the neighbouring chunks, which were generated (and masked)
---    earlier and can no longer remove what arrives after them — that overflow
---    was left hanging as floating canopy over the water (see clean_shell).
+-- NOT HERE ANY MORE (WP36 item 2): the CONTINENT OCEAN MASK. It moved to the
+-- MAPGEN environment — `ocean_mask_mapgen.lua`, registered by `ocean_mask.lua`
+-- via core.register_mapgen_script — because it is pure voxel work on the chunk
+-- the engine has just generated and does not need any of the things this file
+-- needs. Running it here meant running it after the chunk was already blitted
+-- to the map (servermap.cpp:291), on the server step, and writing every coastal
+-- chunk twice.
+--
+-- The passes below CANNOT follow it: they need `grug_core` (capitals, POI
+-- registry, spawn levels), mod storage and the engine's spawn level, none of
+-- which exist in the mapgen env (lua_api.md:7678-7691). They still run AFTER
+-- the mask for a given chunk, and now by engine ordering rather than by file
+-- order: the mapgen-env callback fires at emerge.cpp:745, the main-env one this
+-- file registers at emerge.cpp:619-624, for the same chunk.
+--
+-- What stays here:
 --
 --  * the RACE CAPITAL PLATFORMS: a walkable, guaranteed flat platform at all
 --    six race capitals (grug_core.capitals) — placeholder until WP13 ships
@@ -42,9 +39,13 @@
 -- (The old east-west mountain wall at |x| = 2000 is gone: the continent
 -- redesign replaces walls with ocean.)
 
-local X_HALF = grug_core.CONTINENT_X_HALF
-local Z_MIN = grug_core.CONTINENT_Z_MIN
-local Z_MAX = grug_core.CONTINENT_Z_MAX
+-- The coast profile. `column_cap(x, z)` is a pure function of (x, z) and the
+-- ONLY thing this file needs from the ocean mask: it is what stops an outpost
+-- or a bandit camp from being anchored on a column the mask is about to flood
+-- (see candidate_ground_y). Same table, same numbers, same noise the mapgen-env
+-- mask uses — geometry.lua exists so there is exactly one of them.
+local column_cap = grug_mapgen.geometry.column_cap
+
 local CAMP_HALF = grug_core.CAMP_HALF
 local CLEAR_HEIGHT = grug_core.CAMP_CLEAR_HEIGHT
 local SKIRT_DEPTH = 16 -- platform base reaches this far below the surface
@@ -56,352 +57,19 @@ local SKIRT_DEPTH = 16 -- platform base reaches this far below the surface
 -- marker per anchor (it has no POI record to carry that).
 local storage = core.get_mod_storage()
 
--- Sea level of the active mapgen (v7 default 1); the whole mask profile is
--- expressed relative to it.
-local WATER_LEVEL = tonumber(core.get_mapgen_setting("water_level")) or 1
-
---
--- Continent ocean mask
---
-
-local TAPER = 150 -- width of the shore -> inland ramp; beyond it: no cap
-local INSET_MAX = 150 -- the coast noise pulls the shoreline in by 0..150
-local SHORE_DROP = 5 -- surface cap right at the shoreline: W - 5
-local TAPER_RISE = 119 -- cap gained across the taper band (quadratic ease)
-local SHELF_DEPTH = 10 -- seabed drops this much across SHELF_WIDTH
-local SHELF_WIDTH = 60 -- ... and is flat further out (v7 takes over)
-local BEACH_DEPTH = 3 -- sand layers put on a newly exposed beach top
-local FILLER_DEPTH = 2 -- filler layers under a re-dressed biome top
--- Decorations (trees) were already placed when this pass runs and reach at
--- most this far above the mapgen heightmap; carving stops there, so a
--- mapchunk high above the terrain costs nothing.
-local DECO_MARGIN = 32
--- Width of the emerged shell around a mapchunk (the mapgen VM reaches this
--- far beyond minp..maxp on every side).
-local SHELL = 16
--- Ceiling for the shell clean. Honest bound, not a proof: the fresh overflow
--- it removes sits within DECO_MARGIN of this chunk's own terrain (that is the
--- tighter bound actually used), and coastal canopies live far below this.
--- A tree on a ramp column whose cap is near the maximum W+114 could in
--- principle put leaves up to ~147 — not worth a taller loop over every
--- shell column of every coastal chunk, so it is bounded here on purpose.
-local SHELL_MAX_Y = 120
-
--- Inland-signed distance to the NEARER continent rectangle: positive inside,
--- negative outside, in nodes. Only three edges can be the nearest one for a
--- given continent — the flank (|x| = X_HALF), the strait-facing front
--- (|z| = Z_MIN) and the back (|z| = Z_MAX) — and since the two rectangles
--- are mirrored at z = 0, evaluating them on |z| yields the max over both
--- (the far continent is never the nearer one). Pure arithmetic: exposed so
--- it can be exercised without the engine.
-local function continent_distance(x, z)
-	local ax = x >= 0 and x or -x
-	local az = z >= 0 and z or -z
-	local d = X_HALF - ax -- flank
-	local front = az - Z_MIN
-	if front < d then
-		d = front
-	end
-	local back = Z_MAX - az
-	if back < d then
-		d = back
-	end
-	return d
-end
-grug_mapgen.continent_distance = continent_distance
-
--- Highest y the terrain may keep at inland-signed distance s (after the
--- coast noise inset), or nil for "no cap at all" from TAPER inland — the
--- mask shapes the coast, it must never flatten the hinterland.
--- Seaward of the shoreline the cap is the ocean floor profile: a shelf from
--- ~5 below sea level at the beach to ~15 below out at SHELF_WIDTH (deeper is
--- pointless — v7's own seabed is below that anyway). Inland it rises
--- quadratically to ~W+114 across the ramp, so the last nodes before the
--- water sit at beach level and only real mountains near the shore get cut.
--- Strictly a function of (x, z): vertically stacked mapchunks of the same
--- column MUST agree on the cap, so nothing chunk-local (heightmap!) may
--- enter here.
-local function surface_cap(s)
-	if s >= TAPER then
-		return nil
-	end
-	if s <= 0 then
-		local away = -s
-		if away > SHELF_WIDTH then
-			away = SHELF_WIDTH
-		end
-		return math.floor(WATER_LEVEL - SHORE_DROP - 1 -
-			away / SHELF_WIDTH * SHELF_DEPTH)
-	end
-	local t = s / TAPER -- 0 < t < 1, the s >= TAPER case returned above
-	return math.floor(WATER_LEVEL - SHORE_DROP + t * t * TAPER_RISE)
-end
-grug_mapgen.surface_cap = surface_cap
-
--- Flat part of the shelf: everything from SHELF_WIDTH seaward shares one cap,
--- so the open sea needs no coast noise at all.
-local SEA_FLOOR_CAP = surface_cap(-SHELF_WIDTH)
-
--- Deepest y the mask can ever carve (deepest shelf cap + 1).
--- Everything below is pure underground: such mapchunks are skipped outright,
--- so caves stay caves no matter how far out at sea they are. (The beach
--- re-surfacing reaches BEACH_DEPTH lower, but it only ever runs in a chunk
--- that carved something, i.e. one that is above this line.)
-local MASK_MIN_Y = SEA_FLOOR_CAP + 1
-
--- core.get_perlin was renamed in 5.12; keep working on both.
-local get_noise = core.get_value_noise or core.get_perlin
-
-local coast_noise
-local function coast_inset(x, z)
-	coast_noise = coast_noise or get_noise({
-		offset = 75, scale = 75,
-		spread = {x = 300, y = 300, z = 300},
-		seed = 91744, octaves = 3, persist = 0.55,
-	})
-	local inset = coast_noise:get_2d({x = x, y = z})
-	if inset < 0 then
-		return 0
-	elseif inset > INSET_MAX then
-		return INSET_MAX
-	end
-	return inset
-end
-
 -- Reused across mapchunks: vm:get_data() without a buffer allocates a fresh
--- ~11 MB table for every masked chunk.
+-- ~11 MB table for every chunk that carries a structure.
 local vm_data = {}
 
 -- Content ids at file scope, the pattern the whole file uses: this chunk runs
 -- when grug_mapgen loads, and every name below belongs to a mod grug_mapgen
 -- declares in mod.conf `depends` (default, grug_nodes), so all of them are
--- registered by now. Only ids that depend on data resolved LATER (the biome
--- table) are looked up lazily — see biome_surface_at.
+-- registered by now. (grug_mobs:camp_fire is the one exception — see
+-- camp_fire_id further down.)
 local c_air = core.get_content_id("air")
-local c_ignore = core.get_content_id("ignore")
 local c_cobble = core.get_content_id("default:cobble")
-local c_sand = core.get_content_id("default:sand")
-local c_water = core.get_content_id("default:water_source")
 local c_tree = core.get_content_id("default:tree")
 local c_banner = core.get_content_id("grug_nodes:guard_banner")
-
--- Content the re-dressing must not overwrite (it only ever replaces the
--- solid material it just exposed).
-local not_solid = {
-	[c_air] = true,
-	[c_ignore] = true,
-	[c_water] = true,
-	[core.get_content_id("default:water_flowing")] = true,
-	[core.get_content_id("default:river_water_source")] = true,
-	[core.get_content_id("default:river_water_flowing")] = true,
-}
-
--- Surface layers of a biome, by biome id, for re-dressing a cut top above
--- beach level: node_top (depth_top layers) over node_filler (FILLER_DEPTH
--- layers). Without it a shaved coastal hill would end in bare stone — not
--- walkable-looking, no mob spawn surface, no decorations. Resolved lazily
--- and cached: registered_biomes and content ids are fixed once mapgen runs.
--- false = "this biome cannot be re-dressed" (leave the cut material).
-local biome_surface = {}
-local function biome_surface_at(id)
-	local surf = biome_surface[id]
-	if surf == nil then
-		surf = false
-		local name = id and core.get_biome_name(id)
-		local def = name and core.registered_biomes[name]
-		if def and def.node_top and core.registered_nodes[def.node_top] then
-			local filler = def.node_filler
-			surf = {
-				top = core.get_content_id(def.node_top),
-				top_depth = def.depth_top or 1,
-				filler = (filler and core.registered_nodes[filler]) and
-					core.get_content_id(filler) or nil,
-			}
-		end
-		biome_surface[id] = surf
-	end
-	return surf or nil
-end
-
--- Chunk-level fast path: true only for mapchunks that can contain a coast
--- column at all. Pure arithmetic on the chunk box — no mapgen object is
--- fetched for the (vast majority) fully inland or deep chunks.
--- The box is the EMERGED one (minp..maxp grown by SHELL): the shell clean
--- works on those columns, so a chunk whose shell alone reaches the coast band
--- still has work to do.
-local function chunk_needs_mask(minp, maxp)
-	if maxp.y < MASK_MIN_Y then
-		return false -- pure underground: caves stay caves
-	end
-	local ax = math.max(math.abs(minp.x), math.abs(maxp.x)) + SHELL
-	local az_far = math.max(math.abs(minp.z), math.abs(maxp.z)) + SHELL
-	local az_near = 0
-	if minp.z > 0 then
-		az_near = math.max(minp.z - SHELL, 0)
-	elseif maxp.z < 0 then
-		az_near = math.max(-maxp.z - SHELL, 0)
-	end
-	-- Smallest continent_distance anywhere in the emerged box.
-	local d = math.min(X_HALF - ax, az_near - Z_MIN, Z_MAX - az_far)
-	return d < TAPER + INSET_MAX
-end
-
--- Cap of a single column — the whole geometry of the mask in one place, used
--- by the mapchunk pass and by the shell clean alike. nil means "hands off".
--- Depends on (x, z) only: every mapchunk that ever looks at this column, from
--- whatever direction and at whatever time, derives exactly the same cap.
-local function column_cap(x, z)
-	local d = continent_distance(x, z)
-	if d >= TAPER + INSET_MAX then
-		return nil -- inland, beyond the reach of the coast band
-	end
-	if d <= -SHELF_WIDTH then
-		return SEA_FLOOR_CAP -- flat shelf: no noise lookup needed
-	end
-	return surface_cap(d - coast_inset(x, z))
-end
-
--- Column rule (per x/z, run before the camps):
---   cap = column_cap(x, z), nil -> column untouched
---   carve when the mapgen heightmap h exceeds cap: water_source for
---   y <= water level, air above, from cap+1 up to the top of the column,
---   then re-dress the exposed top (sand at beach level, else the column's
---   biome surface).
--- h is clamped by the engine when the real surface lies outside the chunk's
--- y range (maxp.y if the ground continues above it, -MAX_MAP_GENERATION_LIMIT
--- if the column holds no walkable node at all), and `h > cap` happens to be
--- the correct decision in every one of those cases: ground above -> carve the
--- whole chunk, nothing walkable -> nothing to carve. h decides only WHETHER a
--- column is cut, never WHERE — the cut height is (x, z)-deterministic, so
--- vertically stacked mapchunks of one column cut at exactly the same y.
--- Returns whether any water was placed (the caller then updates liquids) and
--- the highest terrain in the chunk (the shell clean bounds itself by it).
-local function build_ocean_mask(data, area, minp, maxp)
-	local heightmap = core.get_mapgen_object("heightmap")
-	if not heightmap then
-		return false, nil
-	end
-	local biomemap = core.get_mapgen_object("biomemap")
-	local width = maxp.x - minp.x + 1
-	local ystride = area.ystride
-	local wrote_water = false
-	local max_h = -31000
-	for i = 1, width * (maxp.z - minp.z + 1) do
-		local h = heightmap[i]
-		if h and h > max_h then
-			max_h = h
-		end
-	end
-	for z = minp.z, maxp.z do
-		local row = (z - minp.z) * width
-		for x = minp.x, maxp.x do
-			local cap = column_cap(x, z)
-			if cap then
-				local i2d = row + (x - minp.x) + 1
-				local h = heightmap[i2d]
-				-- `cap <= maxp.y` (not <): when the cap sits exactly on the
-				-- chunk's top edge the carve ranges come out empty, but the
-				-- re-dress below must still run in THIS chunk -- the chunk
-				-- above starts at cap+1 and can never write the top layers.
-				if h and h > cap and cap <= maxp.y then
-					local y1 = math.max(cap + 1, minp.y)
-					local y2 = math.min(maxp.y, h + DECO_MARGIN)
-					local wet = math.min(y2, WATER_LEVEL)
-					if wet >= y1 then
-						local idx = area:index(x, y1, z)
-						for _ = y1, wet do
-							data[idx] = c_water
-							idx = idx + ystride
-						end
-						wrote_water = true
-					end
-					local dry = math.max(y1, WATER_LEVEL + 1)
-					if y2 >= dry then
-						local idx = area:index(x, dry, z)
-						for _ = dry, y2 do
-							data[idx] = c_air
-							idx = idx + ystride
-						end
-					end
-					-- Re-dress the exposed top: sand where the cut ends at
-					-- beach/seabed level, otherwise the biome's own surface
-					-- (a shaved coastal hill must stay walkable land, not a
-					-- bare stone plateau).
-					local top, top_depth, filler, layers
-					if cap <= WATER_LEVEL + 3 then
-						top, top_depth, layers = c_sand, BEACH_DEPTH, BEACH_DEPTH
-					else
-						local surf = biomemap and biome_surface_at(biomemap[i2d])
-						if surf then
-							top, top_depth = surf.top, surf.top_depth
-							filler = surf.filler
-							layers = top_depth + (filler and FILLER_DEPTH or 0)
-						end
-					end
-					if top then
-						local sy1 = math.max(cap - layers + 1, minp.y)
-						local idx = area:index(x, cap, z)
-						for y = cap, sy1, -1 do
-							if not not_solid[data[idx]] then
-								data[idx] = (cap - y) < top_depth and top or filler
-							end
-							idx = idx - ystride
-						end
-					end
-				end
-			end
-		end
-	end
-	return wrote_water, max_h
-end
-
--- Decoration overflow cleanup on the emerged shell (see the file header).
--- The schematics the engine placed for THIS chunk may have spilled up to
--- SHELL nodes into the neighbouring chunks; those neighbours ran their own
--- mask earlier and cannot remove nodes that appear afterwards, which left
--- floating canopies standing over the water. The overflow is still inside
--- this VM, so we clean it here, using the very same column_cap — it depends
--- on (x, z) only, so this chunk cuts the neighbour's column at exactly the
--- height the neighbour used, and the pass is idempotent: a column the
--- neighbour already masked is air/water above the cap and nothing matches.
--- Only solid content is replaced; `ignore` (never-generated volume) and
--- every water variant are left alone, and nothing below the cap is touched,
--- so caves and seabeds survive.
-local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
-	-- Fresh overflow can only sit near this chunk's own terrain.
-	local y_top = math.min(emax.y, SHELL_MAX_Y, max_h + DECO_MARGIN)
-	if y_top < emin.y then
-		return false
-	end
-	local ystride = area.ystride
-	local wrote_water = false
-	for z = emin.z, emax.z do
-		local inner_z = z >= minp.z and z <= maxp.z
-		for x = emin.x, emax.x do
-			if not (inner_z and x >= minp.x and x <= maxp.x) then
-				local cap = column_cap(x, z)
-				if cap then
-					local y1 = math.max(cap + 1, emin.y)
-					if y_top >= y1 then
-						local idx = area:index(x, y1, z)
-						for y = y1, y_top do
-							if not not_solid[data[idx]] then
-								if y <= WATER_LEVEL then
-									data[idx] = c_water
-									wrote_water = true
-								else
-									data[idx] = c_air
-								end
-							end
-							idx = idx + ystride
-						end
-					end
-				end
-			end
-		end
-	end
-	return wrote_water
-end
 
 --
 -- Race capital platforms
@@ -438,7 +106,28 @@ end
 -- (no anchor-column gate: that is what deadlocked), so at most the chunks
 -- generated before it — with ascending-y emerge, the one holding the lower
 -- part of the skirt — can miss their slice.
-local SAMPLE_RADIUS = CAMP_HALF + 4 -- footprint + margin, Chebyshev
+--
+-- WP36 put a NET under it, in grug_core, and it changes nothing about the
+-- DECISION here: this pass is still the decider whenever it can decide, and it
+-- still persists through grug_core.set_camp_platform_y (first writer wins).
+-- What changed is what happens when it CANNOT — the two cases being a
+-- footprint whose surface sits exactly on a mapchunk y edge (unreportable
+-- through a heightmap, see grug_core's probe_platform_y) and a capital nobody
+-- has ever generated. Both used to leave the platform undecided, which every
+-- non-mapgen caller then papered over with its own CAMP_PLATFORM_Y fallback:
+-- two deciders, two answers, one world. grug_core.request_camp_platform now
+-- forces the footprint to emerge (which is what runs this pass) and measures
+-- the finished map itself if this pass still had nothing to say.
+--
+-- It DOES change something about the BUILD, and the first attempt missed it:
+-- in exactly those two cases the chunks are already generated by the time the
+-- height is known, so this callback never fires for them again and no platform
+-- would ever be built. See grug_core.ensure_camp_platform_built below — the
+-- same build_camp, run once against the finished map.
+--
+-- The sample radius comes from grug_core so the two measurements cover
+-- exactly the same footprint. Do not re-derive it here.
+local SAMPLE_RADIUS = grug_core.CAMP_SAMPLE_RADIUS -- footprint + margin
 
 -- Median of the mapgen heightmap over a footprint box (Chebyshev radius
 -- around cx/cz, clipped to the chunk), or nil if this chunk cannot see the
@@ -476,8 +165,9 @@ end
 local function fallback_platform_y(capital, minp, maxp)
 	return heightmap_median(capital.x, capital.z, SAMPLE_RADIUS, minp, maxp)
 end
--- Exposed so the fallback can be exercised with a stub heightmap, without
--- the engine (same reason as continent_distance/surface_cap above).
+-- Exposed so the fallback can be exercised with a stub heightmap, without the
+-- engine — the same reason grug_mapgen.continent_distance / .surface_cap /
+-- .column_cap are exposed in ocean_mask.lua.
 grug_mapgen.fallback_platform_y = fallback_platform_y
 
 -- The capital watch (world.md §3 "elite guards"): ONE guard banner on the
@@ -519,6 +209,198 @@ local function build_camp(data, area, minp, maxp, camp)
 			and by >= minp.y and by <= maxp.y then
 		data[area:index(bx, by, bz)] = c_banner
 	end
+end
+
+-- The same build, on the FINISHED map (WP36 review fix).
+--
+-- build_camp above only ever runs from register_on_generated, and that covers
+-- the normal case and NOTHING else. Whenever grug_core's ground probe is the
+-- decider — a footprint whose surface sits on a mapchunk y edge, or a world
+-- whose capital chunks predate this pass — the chunks are already on disk by
+-- the time the height is known, on_generated never fires for them again, and
+-- no platform is ever built. That was the worst of the three states: a
+-- DECIDED height with no platform means grug_core.get_spawn_pos puts players
+-- at y+1 on raw terrain, the protection rule protects empty ground, and
+-- grug_traders/vendors.lua — whose only brake was the nil — starts placing
+-- vendors on the hillside.
+--
+-- Idempotent, and it cannot fight the mapgen pass:
+--   * it runs from grug_core's emerge completion callback, i.e. after every
+--     on_generated for the footprint has already returned;
+--   * the presence test is the platform's own guard banner, so a platform this
+--     pass (or an earlier session) already built is never rewritten;
+--   * where they do overlap they write byte-identical data — this calls
+--     build_camp, it does not reimplement it.
+--
+-- HOW FAR UP IT WRITES, and why that is NOT grug_core's probe window (WP36
+-- re-review). The camp volume runs CLEAR_HEIGHT = 64 nodes above a platform
+-- height that may be CAMP_PLATFORM_MAX_Y = 100, i.e. up to y 164, while
+-- CAMP_PROBE_TOP is 120. Clamping the build to the probe ceiling — the first
+-- version did — silently truncated the clearing for every capital above y 56
+-- (at y = 100, 44 of the 64 layers), leaving a rock/tree ceiling right over
+-- the spawn. The "the mapchunks above clear their own slice when they are
+-- generated" argument does not rescue that: it holds for chunks generated
+-- LATER, and the whole reason this function exists is a footprint whose
+-- chunks are already on disk and will never fire on_generated again.
+--
+-- So the build takes the FULL camp volume and lets the one real test decide
+-- how far up it gets. camp_slice_top scans bottom-up and stops below the first
+-- y whose footprint still reads CONTENT_IGNORE — i.e. below the first mapchunk
+-- the mapgen has not generated: read_from_map creates those blocks blank and a
+-- blank MapBlock is CONTENT_IGNORE in all of its nodes (map.cpp:804-811 ->
+-- servermap.cpp:419-441 -> mapsector.cpp:60-70 -> mapblock.cpp:101-111), and
+-- writing into them would blit blank blocks to disk. What is left above that
+-- line is genuinely not lost — those chunks are ungenerated BY DEFINITION, so
+-- build_camp runs for their own slice when they are generated.
+--
+-- INVARIANT this scan relies on, load-bearing and easy to miss: it walks only
+-- the FOOTPRINT PRISM (x1..x2, z1..z2), while read_from_map/write_to_map cover
+-- the block-rounded emin..emax halo, up to 15 nodes wider per axis. Sound,
+-- because the rounding adds no BLOCKS: read_from_map emerges exactly
+-- getNodeBlockPos(p1)..getNodeBlockPos(p2) (l_vmanip.cpp:47-51), which is the
+-- set of blocks the prism itself occupies, and "un-generated" is a per-BLOCK
+-- property (all 16^3 nodes ignore, see above). A halo node can therefore only
+-- read ignore if a prism node in the same block does too, and the scan has
+-- already stopped below it. Keep this true if the scanned box and the
+-- read/written box ever stop being the same box.
+local function camp_slice_top(data, area, x1, x2, z1, z2, y1, y2)
+	local c_ignore = core.CONTENT_IGNORE
+	for y = y1, y2 do
+		for z = z1, z2 do
+			for x = x1, x2 do
+				if data[area:index(x, y, z)] == c_ignore then
+					return y - 1
+				end
+			end
+		end
+	end
+	return y2
+end
+
+-- Bound on the EXPENSIVE half of ensure_camp_platform_built. Everything above
+-- the VoxelManip in it is two node reads; from there on it is a ~330k-node
+-- read plus a write, and grug_core.get_spawn_pos calls it on every respawn
+-- (WP36 re-review, MEDIUM 2). A build that gets that far either succeeds — and
+-- is then never reached again, grug_core memoises it per session — or found an
+-- un-generated footprint, which one more read in the same session will not
+-- change. Three tries per capital; a restart starts over, exactly like
+-- grug_core's MAX_PLATFORM_ATTEMPTS.
+local MAX_BUILD_ATTEMPTS = 3
+local build_attempts = {}
+
+function grug_core.ensure_camp_platform_built(race_id)
+	local capital = grug_core.capitals[race_id]
+	if not capital then
+		return false
+	end
+	local y = grug_core.get_camp_platform_y(race_id)
+	if not y then
+		return false -- undecided: there is no platform to build yet
+	end
+	local anchor = core.get_node_or_nil({x = capital.x, y = y, z = capital.z})
+	if not anchor or anchor.name == "ignore" then
+		return false -- footprint not loaded: decide nothing, build nothing
+	end
+	-- The guard banner is the platform's unique signature — only build_camp
+	-- ever puts one at this exact column, and the outposts' banners are 500+
+	-- nodes away. The test is deliberately the strict one: a false negative
+	-- only rebuilds (idempotent, and at most once per session, because a
+	-- successful build reports true), while a false positive would leave the
+	-- platform missing, which is the whole bug being closed here.
+	local banner = core.get_node_or_nil({
+		x = capital.x + CAMP_BANNER_OFFSET,
+		y = y + 1,
+		z = capital.z + CAMP_BANNER_OFFSET,
+	})
+	if banner and banner.name == "grug_nodes:guard_banner" then
+		return true -- already built (mapgen pass, or an earlier session)
+	end
+	-- Past the two cheap tests: from here on it costs a VoxelManip (see
+	-- MAX_BUILD_ATTEMPTS above). A successful build spends one attempt and
+	-- never comes back.
+	local attempts = build_attempts[race_id] or 0
+	if attempts >= MAX_BUILD_ATTEMPTS then
+		return false
+	end
+	build_attempts[race_id] = attempts + 1
+	local x1, x2 = capital.x - CAMP_HALF, capital.x + CAMP_HALF
+	local z1, z2 = capital.z - CAMP_HALF, capital.z + CAMP_HALF
+	local y1 = math.max(y - SKIRT_DEPTH, grug_core.CAMP_PROBE_BOTTOM)
+	-- The FULL camp volume, not clamped to CAMP_PROBE_TOP — see the block
+	-- comment at camp_slice_top: the clamp truncated the clearing above y 56,
+	-- and camp_slice_top (not a constant) is what keeps the write inside
+	-- generated map.
+	local y2 = y + CLEAR_HEIGHT
+	local p1 = {x = x1, y = y1, z = z1}
+	local p2 = {x = x2, y = y2, z = z2}
+	local vm = core.get_voxel_manip()
+	local emin, emax = vm:read_from_map(p1, p2)
+	local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+	-- Fresh table, not the mapchunk buffer above: this runs at most six times
+	-- in the life of a world and must not pin ~200k array slots afterwards.
+	local data = vm:get_data()
+	local top = camp_slice_top(data, area, x1, x2, z1, z2, y1, y2)
+	if top < y then
+		-- The platform layer itself is not fully emerged. Uncertain means
+		-- build nothing, exactly like the probe.
+		core.log("warning", ("[grug_mapgen] %s capital platform not built at " ..
+			"y=%d: the footprint is not fully emerged"):format(race_id, y))
+		return false
+	end
+	if top < y2 then
+		-- Everything above `top` belongs to a mapchunk that has not been
+		-- generated. read_from_map has already created blank blocks for it in
+		-- memory (map.cpp:771-816, load_if_inexistent defaults to true) and
+		-- write_to_map would blit them to disk (map.cpp:860-896) — harmless,
+		-- because a blank block stays `m_generated = false` and is regenerated
+		-- later, but pointless. Take a second, smaller VoxelManip that covers
+		-- only the generated blocks instead.
+		p2 = {x = x2, y = top, z = z2}
+		vm = core.get_voxel_manip()
+		emin, emax = vm:read_from_map(p1, p2)
+		area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+		data = vm:get_data()
+	end
+	build_camp(data, area, p1, p2, {x = capital.x, y = y, z = capital.z})
+	vm:set_data(data)
+	-- Liquids, same reason as the mapchunk pass below: the clearing opens a
+	-- shaft that can break into standing water, and a main-env write does not
+	-- queue the liquid transform finishBlockMake would. This call is real on a
+	-- NON-mapgen VoxelManip — ModApiMapgen::update_liquids handles the
+	-- non-emerge case explicitly and takes the ServerMap's own
+	-- m_transforming_liquid queue (l_mapgen.cpp:1980-1998).
+	vm:update_liquids()
+	-- DELIBERATELY NO calc_lighting() here (WP36 re-review), unlike the
+	-- mapchunk pass below. This vm comes from core.get_voxel_manip(), so
+	-- is_mapgen_vm is false, and l_vmanip.cpp:208-215 then does nothing but
+	-- log_deprecated() and return 0 — the call cannot light anything. What it
+	-- CAN do is throw: with deprecated_lua_api_handling = error
+	-- (c_internal.cpp:169-187; the default is "log", defaultsettings.cpp:467,
+	-- with once = false, i.e. a warning plus a full Lua backtrace on every
+	-- single repair) it raises a LuaError, and one of this function's callers is
+	-- grug_core's emerge completion callback, where a LuaError is caught and
+	-- turned into Server::setAsyncFatalError (s_env.cpp:328-332) — the server
+	-- aborts and the platform is never built.
+	-- Lighting is correct WITHOUT the call, not because of it: write_to_map on
+	-- a non-mapgen VM with the default update_light takes the
+	-- blit_back_with_light path (l_vmanip.cpp:150, :164-168).
+	vm:write_to_map()
+	-- warning, not action: a missing banner is read as "no platform", and the
+	-- rebuild above then put 25x25 nodes of cobble and a 25x25xCLEAR_HEIGHT
+	-- clearing over whatever stood there, without a protection check. That is
+	-- correct for the case this exists for (a decided height that never got a
+	-- platform) and admin/legacy-only otherwise — grug_nodes:guard_banner has
+	-- drop = "" and no craft recipe, grug_core's capital rule protects the
+	-- whole footprint from CAMP_HALF outward (protection.lua in_capital_zone),
+	-- and no mob in the tree sets pathfinding = 2, so nothing can dig it away.
+	-- It is still a destructive write, and it says so in the log. It also
+	-- cannot loop: a successful rebuild reports true and grug_core memoises
+	-- that for the session.
+	core.log("warning", ("[grug_mapgen] %s capital platform (re)built from the " ..
+		"map at %d,%d,%d — no guard banner was present, so the 25x25 footprint " ..
+		"was overwritten (mapgen never saw the decided height)")
+		:format(race_id, capital.x, y, capital.z))
+	return true
 end
 
 --
@@ -886,9 +768,12 @@ local function chunk_near_bandit_camp(anchor, minp, maxp)
 	return false
 end
 
+-- Main-environment pass. The ocean mask has already run on this chunk in the
+-- mapgen environment (ocean_mask_mapgen.lua) — the engine calls that callback
+-- before it blits the chunk, and this one after (emerge.cpp:745 vs :619-624) —
+-- so the coast profile the outpost heights are clamped to is already in the map
+-- by the time anything below reads it.
 core.register_on_generated(function(minp, maxp, blockseed)
-	local need_mask = chunk_needs_mask(minp, maxp)
-
 	local camps = {}
 	for race_id, capital in pairs(grug_core.capitals) do
 		if maxp.x >= capital.x - CAMP_HALF and
@@ -959,7 +844,10 @@ core.register_on_generated(function(minp, maxp, blockseed)
 		end
 	end
 
-	if not need_mask and #camps == 0 and #outposts == 0 and #fires == 0 then
+	-- The overwhelming majority of mapchunks hold no structure at all, and
+	-- since the mask left this callback they cost exactly this test: no
+	-- VoxelManip is fetched, nothing is written to the map a second time.
+	if #camps == 0 and #outposts == 0 and #fires == 0 then
 		return
 	end
 
@@ -968,19 +856,6 @@ core.register_on_generated(function(minp, maxp, blockseed)
 	-- Reused buffer: a fresh get_data() table is ~11 MB of garbage per chunk.
 	local data = vm:get_data(vm_data)
 
-	local wrote_water = false
-	if need_mask then
-		local max_h
-		wrote_water, max_h = build_ocean_mask(data, area, minp, maxp)
-		if max_h then
-			-- After the mapchunk pass: the shell columns belong to already
-			-- finished neighbours, only this chunk's decoration overflow is
-			-- new there.
-			if clean_shell(data, area, minp, maxp, emin, emax, max_h) then
-				wrote_water = true
-			end
-		end
-	end
 	for _, camp in ipairs(camps) do
 		build_camp(data, area, minp, maxp, camp)
 	end
@@ -998,11 +873,19 @@ core.register_on_generated(function(minp, maxp, blockseed)
 	end
 
 	vm:set_data(data)
-	if wrote_water then
-		-- Without this the water we placed never starts flowing: coastal
-		-- caves and cut-open hollows keep standing water walls.
-		vm:update_liquids()
-	end
+	-- Nothing here PLACES a liquid any more (the ocean mask, which did, now
+	-- runs in the mapgen env and updates them there) — but every pass above
+	-- REMOVES solid nodes: a platform clearing opens a 25x25x64 shaft and an
+	-- outpost a 7x7x5 one, and where that shaft breaks into standing water
+	-- (a coastal outpost pad against a lake or a river bank) the water has to
+	-- start flowing. A main-env write_to_map does not queue liquids the way
+	-- finishBlockMake does for a mapgen VM, so without this the world keeps a
+	-- suspended water wall until a player disturbs it by hand. The cost is
+	-- bounded by the early return above: only the ~40 mapchunks in a world
+	-- that actually carry a capital platform, an outpost or a bandit camp ever
+	-- reach this line.
+	vm:update_liquids()
+	-- Lighting changes for the same reason, so it is recalculated.
 	vm:calc_lighting()
 	vm:write_to_map()
 end)

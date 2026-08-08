@@ -60,6 +60,8 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	fly_in = "default:water_source",
 	floats = 1,
 	jump = false,
+	-- Inert (falling() bails out for fliers) and NOT a switch: 0 is truthy in
+	-- Lua, so on a walking mob this line would do nothing — see eagle.lua.
 	fall_damage = 0,
 	fear_height = 0,
 	walk_velocity = 3,
@@ -73,13 +75,25 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	collisionbox = {-0.8, 0.0, -0.8, 0.8, 1.8, 0.8},
 	makes_footstep_sound = false,
 
-	-- Frame ranges from VoxeLibre's squid def (one swim loop); punch reuses
-	-- it, the model has no attack animation.
+	-- One swim loop; punch reuses it, the model has no attack animation.
+	--
+	-- END FRAME 41, NOT 60. VoxeLibre's squid def says 1..60, but the mesh
+	-- physically ends at frame 41: every one of its nine joints carries
+	-- exactly 41 keys (`KEYS flags=7 n=41 frames=1..41`), and the engine
+	-- takes the frame count from the last KEY, not from the ANIM chunk —
+	-- `readChunkANIM` reads `animFrames` into a local marked
+	-- "not stored/used" and throws it away
+	-- (`reference_projects/luanti/irr/src/CB3DMeshFileLoader.cpp:615-641`);
+	-- `SkinnedMesh::getMaxFrameNumber` answers from the keys
+	-- (`irr/src/SkinnedMesh.cpp:43-46`). Frames 42..60 therefore do not
+	-- exist: the client clamps to the last key and the tentacles FREEZE for
+	-- the tail third of every cycle. Copying the upstream number inherited
+	-- that stutter. (WP36/0b mesh audit.)
 	animation = {
-		stand_start = 1, stand_end = 60, stand_speed = 15,
-		walk_start = 1, walk_end = 60, walk_speed = 25,
-		run_start = 1, run_end = 60, run_speed = 40,
-		punch_start = 1, punch_end = 60, punch_speed = 40,
+		stand_start = 1, stand_end = 41, stand_speed = 15,
+		walk_start = 1, walk_end = 41, walk_speed = 25,
+		run_start = 1, run_end = 41, run_speed = 40,
+		punch_start = 1, punch_end = 41, punch_speed = 40,
 	},
 
 	drops = {}, -- no drops (biomes_mobs.md §3.1)

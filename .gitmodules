@@ -1,0 +1,24 @@
+[submodule "reference_projects/luanti"]
+	path = reference_projects/luanti
+	url = https://github.com/luanti-org/luanti
+[submodule "reference_projects/minetest_game"]
+	path = reference_projects/minetest_game
+	url = https://github.com/luanti-org/minetest_game
+[submodule "reference_projects/mobs_redo"]
+	path = reference_projects/mobs_redo
+	url = https://codeberg.org/tenplus1/mobs_redo
+[submodule "reference_projects/VoxeLibre"]
+	path = reference_projects/VoxeLibre
+	url = https://git.minetest.land/VoxeLibre/VoxeLibre
+[submodule "reference_projects/Lord-of-the-Test"]
+	path = reference_projects/Lord-of-the-Test
+	url = https://github.com/minetest-LOTR/Lord-of-the-Test
+[submodule "reference_projects/animalworld"]
+	path = reference_projects/animalworld
+	url = https://github.com/mt-mods/animalworld
+[submodule "reference_projects/animalia"]
+	path = reference_projects/animalia
+	url = https://github.com/ElCeejo/animalia
+[submodule "reference_projects/mobs_monster"]
+	path = reference_projects/mobs_monster
+	url = https://codeberg.org/tenplus1/mobs_monster

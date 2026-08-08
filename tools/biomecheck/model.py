@@ -5,11 +5,17 @@ Re-implements, per column:
   * BiomeGenOriginal heat/humidity INCLUDING the blend noises
     (mg_biome.cpp calcHeatAtPoint/calcHumidityAtPoint)
   * BiomeGenOriginal::calcBiomeFromNoise (cuboid filter + voronoi)
-  * grug_mapgen's ocean mask (structures.lua column_cap)
+  * grug_mapgen's ocean mask (geometry.lua column_cap)
+
+The mask geometry used to live in structures.lua; WP36 moved it to
+`mods/MAPGEN/grug_mapgen/geometry.lua`, which both the main and the mapgen
+Lua environment dofile. The numbers below were re-verified against it
+(2026-08-08) and are unchanged by the move.
 """
 import sys, csv, math
 import numpy as np
-sys.path.insert(0, "/tmp/claude-1000/-home-jan-projects-grudgelands/91ecbd76-d170-44c2-bdbc-709677e54187/scratchpad")
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from noiselib import NP, fractal2d
 
 WORLD_SEED_U64 = 1181064378178512398
@@ -31,7 +37,7 @@ np_tpersist  = NP(0.6, 0.1, 2000, 539, 3, 0.6)
 np_hselect   = NP(-8, 16, 500, 4213, 6, 0.7)
 np_coast     = NP(75, 75, 300, 91744, 3, 0.55)
 
-# ---- geometry (grug_core / structures.lua) ----
+# ---- geometry (grug_core / grug_mapgen/geometry.lua) ----
 X_HALF, Z_MIN, Z_MAX = 1500, 100, 1700
 TAPER, INSET_MAX, SHORE_DROP, TAPER_RISE = 150, 150, 5, 119
 SHELF_DEPTH, SHELF_WIDTH = 10, 60
@@ -55,7 +61,7 @@ def continent_distance(X, Z):
 
 
 def surface_cap(s):
-    """Vectorised structures.lua surface_cap; returns (cap, has_cap)."""
+    """Vectorised geometry.lua surface_cap; returns (cap, has_cap)."""
     cap = np.zeros(s.shape, dtype=np.float64)
     sea = s <= 0
     away = np.minimum(-s, SHELF_WIDTH)

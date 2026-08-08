@@ -79,7 +79,8 @@ grug_mobs.register_mob("grug_mobs:serpent", serpent)
 mobs:spawn({
 	name = "grug_mobs:serpent",
 	nodes = {
-		"default:dirt_with_rainforest_litter", -- deep jungle / jungle fringe
+		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
 		"grug_nodes:mud", -- grug_swamp
 	},
 	min_light = 10,

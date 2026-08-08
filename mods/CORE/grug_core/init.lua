@@ -493,16 +493,82 @@ grug_core.factions = {
 -- transient: inside a river channel, at/below water level, or wherever the
 -- terrain rises above max(np_terrain_base.offset, np_terrain_alt.offset,
 -- water_level + 16) — with our offsets that ceiling is y = 17, so a capital
--- on higher ground answers nil forever. Nothing is persisted then; the camp
--- pass falls back to the mapgen heightmap (grug_mapgen/structures.lua) and
--- every other caller keeps its CAMP_PLATFORM_Y fallback.
+-- on higher ground answers nil forever. Nothing is persisted then, and the
+-- decision falls to the two terrain measurements below.
 --
 -- NB do not call this at load time: EmergeManager::getSpawnLevelAtPoint has
 -- no mapgen before Server::init() runs initMapgens (server.cpp, after the
 -- mods are loaded) and then answers 0, which arrives here as a bogus 1.
 --
+-- WP36 (2026-08-08), the second order-dependence bug at this spot. The same
+-- world, the same anchor and two sessions used to answer y = 8 and y = 36,
+-- because there were TWO deciders and only one of them wrote anything down:
+--
+--   * grug_mapgen's camp pass measured the footprint in the mapchunk it was
+--     generating and PERSISTED the answer (36),
+--   * every other caller — get_spawn_pos above all — silently substituted
+--     the CAMP_PLATFORM_Y minimum (8) and persisted NOTHING, so a session in
+--     which the capital mapchunk had never been generated simply answered 8
+--     and the next session answered 36.
+--
+-- The rule since: there is exactly ONE decider (see set_camp_platform_y,
+-- first writer wins), the answer is ALWAYS persisted, and a caller that finds
+-- the platform undecided does not invent a height — it FORCES the decision
+-- (grug_core.request_camp_platform below) instead. The engine spawn level
+-- stays the primary source, the mapgen heightmap median stays the fallback
+-- for the positions mgv7 refuses to answer for, and a map-side ground probe
+-- closes the one hole both of them had: a footprint whose surface sits
+-- exactly on a mapchunk y edge, which no chunk's heightmap can report (see
+-- probe_platform_y).
+--
+-- Two halves of "exactly one decider" that the first WP36 attempt missed and
+-- the review caught:
+--
+--   * A DECIDED HEIGHT IS NOT A BUILT PLATFORM. build_camp only ever runs
+--     from register_on_generated, so whenever the probe is the decider the
+--     chunks are already on disk and no platform is ever built — the y-edge
+--     case is exactly that, on a fresh world as much as on a legacy one.
+--     grug_core.ensure_camp_platform_built (a stub here, overridden by
+--     grug_mapgen) builds it from the finished map, idempotently.
+--   * AN UNCERTAIN MEASUREMENT PERSISTS NOTHING. A graceful shutdown fires
+--     every queued emerge callback with EMERGE_CANCELLED and still counts
+--     them down to calls_remaining == 0 (emerge.cpp:804 -> :494-508 ->
+--     l_env.cpp:141-158), while the env and the mod-storage database are
+--     still alive (server.cpp ~Server: stopThreads() at :385 runs before
+--     m_script.reset() at :426 and endSave() at :435, and
+--     content/mods.cpp:232-238 writes through). Probing a half-generated
+--     footprint would read solid rock up to the top of the generated
+--     mapchunk and `ignore` above it, and first-writer-wins would make that
+--     number permanent. Both the callback and the probe itself now refuse.
+
+-- Vertical window of the ground probe and of the emerge that feeds it. The
+-- ceiling is find_surface's (terrain above it clamps to CAMP_PLATFORM_MAX_Y
+-- anyway), the floor sits below CAMP_PLATFORM_Y, which is what makes "no
+-- ground in the window at all" decidable — see probe_platform_y.
+--
+-- Public because grug_mapgen reads it, but it is NOT the bound of what the
+-- platform repair build there may WRITE, and the earlier claim that it was
+-- cost that build 44 of its 64 clearing layers at a capital on y 100: the camp
+-- volume runs CLEAR_HEIGHT above a height that may itself be
+-- CAMP_PLATFORM_MAX_Y, i.e. up to y 164. What keeps that build inside
+-- generated map is its own CONTENT_IGNORE scan (camp_slice_top in
+-- grug_mapgen/structures.lua), which is the stronger test in both directions —
+-- it also holds when nothing emerged this window at all, which is exactly what
+-- get_spawn_pos's decided branch does.
+grug_core.CAMP_PROBE_TOP = 120
+grug_core.CAMP_PROBE_BOTTOM = -16
 
 local SPAWN_LEVEL_TO_SURFACE = 2
+
+-- Footprint every platform measurement is taken over (Chebyshev radius
+-- around the anchor): the 25×25 platform plus a margin. grug_mapgen's
+-- heightmap median and the ground probe below deliberately use the SAME
+-- radius — two fallbacks measuring two different areas would be two
+-- different answers again, which is the bug this section exists to prevent.
+grug_core.CAMP_SAMPLE_RADIUS = grug_core.CAMP_HALF + 4
+
+local PROBE_TOP = grug_core.CAMP_PROBE_TOP
+local PROBE_BOTTOM = grug_core.CAMP_PROBE_BOTTOM
 
 local storage = core.get_mod_storage()
 
@@ -557,9 +623,342 @@ function grug_core.set_camp_platform_y(race_id, y)
 	return y
 end
 
+--
+-- The last-resort decider: measure the ground from the MAP.
+--
+-- grug_mapgen's heightmap median (grug_mapgen/structures.lua) is the normal
+-- fallback and stays that, because it costs nothing — the chunk being
+-- generated already has the heightmap. It has one hole, and it is the hole
+-- that deadlocked the WP18 attempt: Mapgen::findGroundLevel returns maxp.y
+-- both when the ground IS at maxp.y and when it merely continues above
+-- (mapgen.cpp:238-252), so a footprint whose surface sits exactly on a
+-- mapchunk y edge is unreportable — the chunk below must drop those samples
+-- as ambiguous, and the chunk above finds nothing walkable at all and
+-- reports the -MAX_MAP_GENERATION_LIMIT sentinel. Neither can decide, and
+-- before this the platform then stayed undecided for the life of the world:
+-- no platform was ever built and every caller fell back to y = 8 forever.
+--
+-- This probe has no chunk boundaries at all. It reads a single VoxelManip
+-- over the whole footprint × the whole legal platform band and takes the
+-- median of each column's topmost SOLID GROUND node. It therefore CANNOT be
+-- chunk-order-dependent: it is a pure function of the generated terrain.
+--
+-- It never races the mapgen pass either: first-writer-wins in
+-- set_camp_platform_y means whichever of the two got there first keeps the
+-- world, and in practice the mapgen pass always does — it runs DURING the
+-- emerge this probe waits for. The probe is what answers when mapgen could
+-- not, including for a world whose capital chunks were generated by an
+-- earlier version and never recorded a height.
+--
+-- NOT the same quantity as the heightmap median, and the earlier claim that
+-- it was is wrong: the mapgen heightmap comes out of Mapgen::findGroundLevel
+-- BEFORE the decoration stage, this probe reads the finished map — trees and
+-- all. default:leaves and default:tree set no `walkable`, which DEFAULTS TO
+-- TRUE (mods/BASE/default/nodes.lua:756-764), so a plain "topmost walkable"
+-- test measures canopy, not ground. group:tree/group:leaves are excluded
+-- below; with that exclusion the two measurements really do approximate the
+-- same surface. (The bug was latent, not live — the densest decoration
+-- fill_ratio reachable inside a capital footprint is 0.012 and a median only
+-- flips at ~60 % canopy — but "latent" is not a reason to keep it.)
+--
+-- WHAT AN UNCERTAIN PROBE DOES: NOTHING. It returns nil and the caller
+-- persists nothing, so the decision is simply retried later. There is exactly
+-- one uncertain case, and it is the one that matters: a footprint that is not
+-- fully emerged. Un-emerged map reads back as CONTENT_IGNORE
+-- (MMVManip::initialEmerge, map.cpp:771-816), and a column's answer cannot be
+-- influenced by anything BELOW its topmost ground node — so scanning each
+-- column top-down and bailing out the moment `ignore` appears before ground
+-- is a complete test, at no cost in the normal case (the first node read of
+-- the first column already catches the "upper mapchunk missing" shape).
+--
+-- Everything else is DECIDABLE, deliberately, because deciding beats
+-- deadlocking (that is what WP18 got wrong):
+--   * a column with no ground anywhere in [PROBE_BOTTOM, PROBE_TOP] — an
+--     ocean-floor capital, TODO-design-capitals §1 — contributes PROBE_BOTTOM.
+--     That is not a guess: the surface is then BELOW PROBE_BOTTOM, and
+--     set_camp_platform_y clamps every value below CAMP_PLATFORM_Y to
+--     CAMP_PLATFORM_Y, so every possible true height maps to the same answer.
+--     The capital gets a platform island just above sea level instead of no
+--     platform and a session-dependent fallback.
+--   * a column whose ground reaches PROBE_TOP contributes PROBE_TOP, which
+--     clamps to CAMP_PLATFORM_MAX_Y. Logged, because a capital inside a
+--     mountain is a design problem (TODO-design-capitals §1-3), not a
+--     measurement problem.
+-- Every column therefore contributes exactly one sample and the median is a
+-- true median of the footprint.
+local ground_cid = {}
+local C_IGNORE = core.CONTENT_IGNORE
+local C_AIR = core.CONTENT_AIR
+
+-- "Is this content id ground to stand a platform on?" — memoized, so the
+-- registered_nodes lookup happens once per content id per session and the
+-- column scan below stays a plain array walk.
+local function is_ground_cid(cid)
+	local v = ground_cid[cid]
+	if v == nil then
+		local name = core.get_name_from_content_id(cid)
+		local def = name and core.registered_nodes[name]
+		v = def ~= nil and def.walkable ~= false and
+			core.get_item_group(name, "liquid") == 0 and
+			core.get_item_group(name, "tree") == 0 and
+			core.get_item_group(name, "leaves") == 0
+		ground_cid[cid] = v
+	end
+	return v
+end
+
+-- Returns the measured platform y, or nil plus a reason when the footprint
+-- cannot be measured. nil MUST NOT be turned into a height by the caller.
+local function probe_platform_y(capital)
+	local r = grug_core.CAMP_SAMPLE_RADIUS
+	local p1 = vector.new(capital.x - r, PROBE_BOTTOM, capital.z - r)
+	local p2 = vector.new(capital.x + r, PROBE_TOP, capital.z + r)
+	local vm = core.get_voxel_manip()
+	local emin, emax = vm:read_from_map(p1, p2)
+	local area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+	-- Deliberately NOT a file-scope buffer: this runs at most six times in the
+	-- life of a world, and a shared buffer would keep ~331k array slots (~2.6
+	-- MB) alive for the rest of the server's life for nothing (AGENTS.md
+	-- performance rules, 100-player target). The table dies with this call.
+	local data = vm:get_data()
+	local ystride = area.ystride
+	local samples, n = {}, 0
+	for z = p1.z, p2.z do
+		for x = p1.x, p2.x do
+			-- Top down to the first ground node; ystride steps instead of a
+			-- fresh area:index per node (the scan is ~150k nodes).
+			local vi = area:index(x, PROBE_TOP, z)
+			-- No ground in the whole column: the surface is below the window.
+			local top = PROBE_BOTTOM
+			for y = PROBE_TOP, PROBE_BOTTOM, -1 do
+				local cid = data[vi]
+				if cid == C_IGNORE then
+					return nil, "footprint is not fully emerged"
+				end
+				if cid ~= C_AIR and is_ground_cid(cid) then
+					top = y
+					break
+				end
+				vi = vi - ystride
+			end
+			n = n + 1
+			samples[n] = top
+		end
+	end
+	if n == 0 then
+		return nil, "empty footprint" -- unreachable: r >= 1
+	end
+	table.sort(samples)
+	return samples[math.floor((n + 1) / 2)]
+end
+
+-- Builds the capital platform on the FINISHED map when it is missing, and
+-- returns true when the platform is known to be there. A STUB here, overridden
+-- by grug_mapgen/structures.lua, which owns the geometry — grug_core must not
+-- depend on grug_mapgen, the dependency runs the other way (same stub-override
+-- pattern as grug_core.get_race_perk / get_armor_percent).
+--
+-- Why it has to exist: build_camp only ever runs from register_on_generated.
+-- Whenever THIS file's probe is the decider, the footprint chunks are already
+-- on disk, on_generated never fires for them again, and the platform would
+-- never be built — while every consumer of the now-decided height (spawn
+-- position, protection, grug_traders' vendor placement, which used the nil to
+-- hold itself back) starts acting as if it were there.
+function grug_core.ensure_camp_platform_built(race_id)
+	return false
+end
+
+-- Makes sure this capital's platform height gets DECIDED and its platform
+-- BUILT, and returns nothing: the answer arrives asynchronously in mod
+-- storage. Idempotent; at most one emerge per race in flight, and at most
+-- MAX_PLATFORM_ATTEMPTS of them per session.
+--
+-- MAIN ENVIRONMENT ONLY — never call this from a mapgen callback. The camp
+-- pass in grug_mapgen runs inside core.register_on_generated on the emerge
+-- thread and must keep using get_camp_platform_y directly; queueing another
+-- emerge from in there would be a loop.
+--
+-- "Main environment" is necessary but was NOT sufficient, and the review was
+-- right to call the old wording out: grug_factions/init.lua:143-152 is main
+-- env and is an EMERGE COMPLETION CALLBACK, i.e. it runs inside
+-- LuaEmergeAreaCallback with Server::EnvAutoLock held (l_env.cpp:141-158).
+-- Re-entering core.emerge_area from there used to be harmless only by
+-- accident — platform_requested had already been set by the outer
+-- get_spawn_pos, so the inner call could never be the first one. That is a
+-- load-bearing accident, and it is also the one place where the engine's own
+-- shutdown path inverts its locks (EmergeThread::cancelPendingItems holds
+-- m_queue_mutex and then takes the env lock, emerge.cpp:494-508, while
+-- enqueueBlockEmergeEx takes m_queue_mutex under the env lock,
+-- emerge.cpp:300-312). So the emerge is now queued from core.after(0)
+-- instead: one globalstep later, in the main env, outside any completion
+-- callback. The re-entrancy guard is a real guard, not a side effect.
+--
+-- The emerge is what makes the answer exist at all for a capital nobody has
+-- ever visited: it generates the footprint, which runs grug_mapgen's camp
+-- pass, which decides, persists and builds. If that still leaves the platform
+-- undecided — the chunk y edge case above, or a world whose capital chunks
+-- predate the camp pass, where the emerge generates nothing — the probe
+-- decides from the finished map and ensure_camp_platform_built builds it.
+local platform_pending = {}   -- an emerge for this capital is in flight
+local platform_attempts = {}  -- emerges spent on it this session
+local platform_built = {}     -- the platform is confirmed present
+
+-- A capital that cannot be measured (only ever: a footprint that would not
+-- emerge) is retried on the next request instead of being written off for the
+-- session, but not forever — three emerges is plenty for a transient failure
+-- and bounds the cost if something is structurally wrong. A restart starts
+-- over.
+local MAX_PLATFORM_ATTEMPTS = 3
+
+-- A decided height without a built platform is the worse of the two states, so
+-- this runs on EVERY path that ends with a height — which since the WP36
+-- re-review means get_spawn_pos's DECIDED branch too, not just
+-- request_camp_platform's. That branch was the hole: get_spawn_pos returns the
+-- moment a height exists and never reaches request_camp_platform, so the only
+-- caller left for an already-decided capital was the startup sweep, i.e. ONE
+-- attempt per session at t = 60/75/.../135 s. A world upgraded from a build
+-- that decided a height without ever building the platform therefore healed
+-- only if its footprint happened to be loaded in that one second; the single
+-- orc player joining at t = 5 min spawned on raw terrain, every session,
+-- forever.
+--
+-- Cost on the hot path (get_spawn_pos runs on every respawn): zero once the
+-- platform is confirmed — the memo below short-circuits before any node read.
+-- Until then it is the two get_node_or_nil of ensure_camp_platform_built, and
+-- the VoxelManip behind them is bounded per session by grug_mapgen's own
+-- MAX_BUILD_ATTEMPTS. It cannot re-enter the emerge path either:
+-- ensure_camp_platform_built neither emerges nor calls back into
+-- request_camp_platform.
+local function platform_decided(race_id)
+	if platform_built[race_id] then
+		return
+	end
+	platform_built[race_id] = grug_core.ensure_camp_platform_built(race_id)
+end
+
+local function finish_platform(race_id, capital, incomplete)
+	platform_pending[race_id] = nil
+	if grug_core.get_camp_platform_y(race_id) then
+		-- grug_mapgen decided it while generating: it wins (first writer).
+		platform_decided(race_id)
+		return
+	end
+	if incomplete then
+		-- At least one block came back EMERGE_CANCELLED/EMERGE_ERRORED, i.e.
+		-- "not present" (lua_api.md:7178-7181). The overwhelmingly common
+		-- cause is a graceful server stop, which cancels the rest of the
+		-- queue and still counts it down to 0 while mod storage is still
+		-- writing through — exactly the moment a half-generated footprint
+		-- would be measured and made permanent. Persist NOTHING.
+		core.log("warning", ("[grug_core] %s capital platform stays undecided: " ..
+			"the footprint emerge did not complete (server stopping?)")
+			:format(race_id))
+		return
+	end
+	local y, reason = probe_platform_y(capital)
+	if not y then
+		core.log("warning", ("[grug_core] %s capital platform stays undecided " ..
+			"at %d,%d: %s"):format(race_id, capital.x, capital.z, reason))
+		return
+	end
+	if y >= PROBE_TOP then
+		-- y CANNOT be anything but PROBE_TOP here (the column scan starts
+		-- there), so printing it would say nothing. What is worth logging is
+		-- WHERE and what the number means: the median column of the footprint
+		-- is solid up to the ceiling, so the real surface is unknown and above
+		-- it.
+		core.log("warning", ("[grug_core] %s capital at %d,%d: the footprint " ..
+			"median is still solid ground at the top of the probe window " ..
+			"(y=%d), so the real surface is somewhere above it — the platform " ..
+			"is capped at y=%d and will sit inside the terrain")
+			:format(race_id, capital.x, capital.z, PROBE_TOP,
+				grug_core.CAMP_PLATFORM_MAX_Y))
+	end
+	grug_core.set_camp_platform_y(race_id, y)
+	platform_decided(race_id)
+end
+
+function grug_core.request_camp_platform(race_id)
+	local capital = grug_core.capitals[race_id]
+	if not capital then
+		return
+	end
+	if grug_core.get_camp_platform_y(race_id) then
+		-- Decided (stored, or the engine answered just now). The platform
+		-- itself can still be missing — a world decided by an earlier build
+		-- of this code, which recorded a height and built nothing.
+		platform_decided(race_id)
+		return
+	end
+	if platform_pending[race_id] then
+		return
+	end
+	local attempts = platform_attempts[race_id] or 0
+	if attempts >= MAX_PLATFORM_ATTEMPTS then
+		return
+	end
+	platform_attempts[race_id] = attempts + 1
+	platform_pending[race_id] = true
+	core.after(0, function()
+		local r = grug_core.CAMP_SAMPLE_RADIUS
+		-- Captured per emerge, not per block: EMERGE_CANCELLED/EMERGE_ERRORED
+		-- anywhere in the footprint invalidates the whole measurement.
+		local incomplete = false
+		core.emerge_area(
+			vector.new(capital.x - r, PROBE_BOTTOM, capital.z - r),
+			vector.new(capital.x + r, PROBE_TOP, capital.z + r),
+			function(_, action, remaining)
+				if action == core.EMERGE_CANCELLED or
+						action == core.EMERGE_ERRORED then
+					incomplete = true
+				end
+				if remaining > 0 then
+					return
+				end
+				finish_platform(race_id, capital, incomplete)
+			end)
+	end)
+end
+
+-- Startup sweep. Without it a capital nobody visits stays undecided, and
+-- then grug_core.protected_zone_in_box and the capital protection rule keep
+-- answering from their CAMP_PLATFORM_Y fallback — the same "two answers, one
+-- world" problem one level down. Six emerges, once per world (once a height
+-- is stored a request costs the two node reads of the platform-present check,
+-- and nothing at all once that check has answered yes), and deliberately late
+-- and staggered: the capital a player actually spawns in is already requested by
+-- get_spawn_pos within seconds of the join, so this sweep only has to catch
+-- the other five and must not compete with world creation for the emerge
+-- queue.
+local SWEEP_DELAY = 60
+local SWEEP_STAGGER = 15
+
+do
+	local ids = {}
+	for race_id in pairs(grug_core.capitals) do
+		ids[#ids + 1] = race_id
+	end
+	-- pairs() order is not defined, and the stagger has to be reproducible.
+	table.sort(ids)
+	for i = 1, #ids do
+		local race_id = ids[i]
+		core.after(SWEEP_DELAY + (i - 1) * SWEEP_STAGGER, function()
+			grug_core.request_camp_platform(race_id)
+		end)
+	end
+end
+
 -- Spawn position on the platform of a race capital (top layer + 1). An
 -- unknown race — or one of the other faction (admin faction switch) —
 -- falls back to the faction seat.
+--
+-- Returns pos, decided. `decided` is false while the platform height is not
+-- yet resolved: the position is then PROVISIONAL (the CAMP_PLATFORM_Y
+-- minimum) and a caller that places a player must re-read after the capital
+-- has emerged — which is exactly what grug_factions.teleport_to_spawn does,
+-- and why it emerges the capital before it moves anybody. This call kicks
+-- the decision off itself, so `decided` is false for one emerge and never
+-- for a whole session again; nothing provisional is ever persisted.
 function grug_core.get_spawn_pos(faction_id, race_id)
 	local faction = grug_core.factions[faction_id]
 	local capital = race_id and grug_core.capitals[race_id]
@@ -568,8 +967,17 @@ function grug_core.get_spawn_pos(faction_id, race_id)
 		capital = grug_core.capitals[race_id]
 	end
 	local y = grug_core.get_camp_platform_y(race_id)
-		or grug_core.CAMP_PLATFORM_Y
-	return vector.new(capital.x, y + 1, capital.z)
+	if y then
+		-- A decided height is not a built platform, and this branch never
+		-- reaches request_camp_platform — see platform_decided for why that
+		-- made the self-heal a once-per-session startup lottery, and for what
+		-- this costs on the respawn path (nothing, once the platform is there).
+		platform_decided(race_id)
+		return vector.new(capital.x, y + 1, capital.z), true
+	end
+	grug_core.request_camp_platform(race_id)
+	return vector.new(capital.x, grug_core.CAMP_PLATFORM_Y + 1, capital.z),
+		false
 end
 
 grug_core.faction_ids = {"accord", "throng"}
@@ -663,6 +1071,65 @@ local function level_at_n(n)
 	return level_anchors[#level_anchors].level
 end
 
+-- Capital level bubble (world.md §1, decided with WP36). radial_n is centred
+-- on the continent SEAT, not on each capital, so only the two central
+-- capitals (x = 0) sit at n ~ 0. The four side capitals (x = +-550) sit at
+-- n = 0.217, i.e. the field says level 8 there while zone_at says "core" —
+-- the first mob a fresh dwarf/elf/undead/troll met was a level-8 boar
+-- (55 HP / 5.2 dmg) against a 30 HP player. The fix is a bubble applied
+-- INSIDE mob_level_at only: level 1 within CAPITAL_BUBBLE_FLAT nodes of any
+-- capital anchor, blending back into the ambient field at CAPITAL_BUBBLE_R.
+-- radial_n itself is deliberately NOT touched, so zone_at, guard_level_at,
+-- the 24 outpost anchors, the 12 bandit-camp anchors and the whole
+-- docs/research/wp6_spawn_budget.md cell inventory stay bit-identical.
+-- The fade is 200 nodes wide (>= 150 is the requirement of biomes_mobs §1.5's
+-- "no jumps > 5" rule): the steepest climb out of a capital is 1 -> 17.6 over
+-- those 200 nodes, i.e. < 1 level per 10-node step. The bubble can only ever
+-- LOWER a level (level_at_n >= 1 everywhere, and the blend interpolates
+-- between 1 and that value), and it is applied to the RADIAL part only — the
+-- war-coast/strait caps and above all the depth floor below still run
+-- afterwards, so caves under a capital keep their depth level. The safe core
+-- is safe on the surface, nowhere else (combat_stats.md §3).
+local CAPITAL_BUBBLE_FLAT = 40 -- level 1 within this radius of an anchor
+local CAPITAL_BUBBLE_R = 240 -- ambient field fully restored from here out
+local CAPITAL_BUBBLE_FADE = CAPITAL_BUBBLE_R - CAPITAL_BUBBLE_FLAT
+
+-- Flat x/z list of the six capital anchors, built ONCE at load time (same
+-- reason as the outpost/bandit anchor tables above: mob_level_at runs per mob
+-- spawn and must not rebuild a table per call). Order is irrelevant here —
+-- the lookup below is a minimum over all six.
+local capital_xz = {}
+do
+	for _, capital in pairs(grug_core.capitals) do
+		capital_xz[#capital_xz + 1] = {x = capital.x, z = capital.z}
+	end
+end
+
+-- Blend factor of the capital bubble at pos: 0 inside the flat radius of the
+-- nearest capital anchor, 1 at/beyond CAPITAL_BUBBLE_R (= bubble is a no-op),
+-- linear in between. Horizontal distance only; the depth axis is handled by
+-- mob_level_at's floor, which runs after the bubble.
+local function capital_blend(pos)
+	local best
+	for i = 1, #capital_xz do
+		local c = capital_xz[i]
+		local dx = pos.x - c.x
+		local dz = pos.z - c.z
+		local d2 = dx * dx + dz * dz
+		if not best or d2 < best then
+			best = d2
+		end
+	end
+	if not best or best >= CAPITAL_BUBBLE_R * CAPITAL_BUBBLE_R then
+		return 1
+	end
+	local d = math.sqrt(best)
+	if d <= CAPITAL_BUBBLE_FLAT then
+		return 0
+	end
+	return (d - CAPITAL_BUBBLE_FLAT) / CAPITAL_BUBBLE_FADE
+end
+
 -- War-coast cap (world.md §1): the strait-facing PvP stage stays at 20-30
 -- up to |z| = WAR_COAST_Z, then the cap RAMPS to 60 until WAR_COAST_FADE_Z,
 -- where it becomes a no-op. Without that ramp the capped band ended in an
@@ -676,9 +1143,10 @@ end
 
 -- Mob level for a hostile spawned at pos (1..60), or nil on the open water
 -- surface (no leveled hostiles there; the deep-sea guards of world.md §2b
--- are hand-set). Radial field from the faction seat, then the two caps of
--- world.md §1 (war coast, strait) and the depth axis of combat_stats.md §3
--- — the safe core is only safe on the surface.
+-- are hand-set). Radial field from the faction seat plus the per-capital
+-- bubble (see above), then the two caps of world.md §1 (war coast, strait)
+-- and the depth axis of combat_stats.md §3 — the safe core is only safe on
+-- the surface.
 function grug_core.mob_level_at(pos)
 	local ocean = grug_core.territory_at(pos) == "ocean"
 	local az = math.abs(pos.z)
@@ -688,6 +1156,12 @@ function grug_core.mob_level_at(pos)
 		return nil
 	end
 	local level = level_at_n(radial_n(pos))
+	-- Capital bubble (see above): part of the RADIAL term, hence applied
+	-- before the caps and the depth floor. Lowers only.
+	local blend = capital_blend(pos)
+	if blend < 1 then
+		level = math.min(level, 1 + blend * (level - 1))
+	end
 	if not ocean and az > Z_MIN and az <= WAR_COAST_FADE_Z then
 		level = math.min(level, war_coast_cap(az))
 	elseif az <= Z_MIN then

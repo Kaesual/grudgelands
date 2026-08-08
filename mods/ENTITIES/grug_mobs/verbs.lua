@@ -584,3 +584,95 @@ function grug_mobs.register_simple_arrow(name, opts)
 		end,
 	})
 end
+
+--
+-- "grazes" — PASSIVE PREY (biomes_mobs.md §3.0, decided 2026-08-08)
+--
+-- The large grazers (Stag, Gaunt Stag, Zebra, Mountain Ram) and the Carrion
+-- Crow: ordinary mobs in every mechanical respect — level from the field, HP
+-- and XP from the formulas, leather drops kept — with exactly one behavioural
+-- difference from the aggressive families: **they never attack on sight, but
+-- they fight back when attacked.**
+--
+-- mobs_redo ALREADY EXPRESSES THIS, so nothing here is a new aggro system;
+-- the helper only sets the four fields that say it, in one place, with the
+-- reasons attached (api.lua line numbers against our vendored copy):
+--
+--   * `passive = false` is what makes retaliation exist at all. on_punch's
+--     tail (api.lua:2979) reads `if not self.passive ... then self:do_attack(
+--     hitter)` and additionally alerts same-name mobs with group_attack —
+--     a `passive = true` mob has no code path that can ever hit back.
+--   * `attack_players = false` is what removes aggro on sight. It is read in
+--     exactly ONE place, general_attack's candidate filter (api.lua:1787),
+--     which is the on-sight acquisition loop; nothing in the attack STATE
+--     consults it. So a prey animal never picks a target itself, and the
+--     target do_punch hands it is unaffected. `attack_npcs` goes with it
+--     (default true) so faction NPCs are not hunted either; attack_animals
+--     and attack_monsters are already false by default (api.lua:169-172).
+--   * `runaway` must be OFF. It is not merely redundant with retaliation,
+--     the two collide: on_punch's runaway block (api.lua:2967) sets
+--     `state = "runaway"` a dozen lines BEFORE the retaliation block resets
+--     it to "" and calls do_attack — so the flee would be overwritten every
+--     time and the field would only ever survive as a lie in the def. A
+--     grazer that fights back does not flee.
+--   * `attack_type` must be SET, and this is the field the first cut of the
+--     verb forgot (WP36 review, HIGH). `passive = false` is necessary but
+--     not sufficient: it buys the mob a `state = "attack"` and an
+--     `self.attack` reference, and the attack STATE MACHINE is what turns
+--     those into a fight. do_states' attack branch (api.lua:2214-2588)
+--     dispatches on exactly three predicates — `"explode"` (:2277),
+--     `"dogfight"`/`"dogshoot"` (:2360), `"shoot"`/`"dogshoot"` (:2539) —
+--     with NO else, and mobs.mob_class carries no default (api.lua:120-178),
+--     so an unset attack_type matched nothing. The retaliating grazer then:
+--     dealt no damage (the punch at api.lua:2530 lives inside the dogfight
+--     branch), played no "punch" clip (api.lua:2519, same branch), issued no
+--     set_velocity at all — falling() only writes the y axis (api.lua:2640),
+--     so it coasted on the knockback of api.lua:2951 in a straight line —
+--     and was locked out of wander/stand as well, because on_step calls
+--     do_states LIVE while `state == "attack"` (api.lua:3366) and
+--     general_attack early-returns on it (api.lua:1769). Net effect: being
+--     prey made a grazer strictly EASIER to kill than the 3 s `runaway`
+--     flee it replaced, which is the exact inverse of §3.0's intent.
+--     Two more systems read the field as "can this thing fight at all" and
+--     were therefore no-ops on prey: the threat-driven target switch
+--     (grug_core/combat.lua:182) and the Taunt ability (grug_abilities/
+--     kits.lua:303).
+--     `dogfight` is the melee family and the right one here: prey has no
+--     `arrow`, so `shoot`/`dogshoot` would fire nothing, and `explode` is
+--     the creeper family. The dogfight branch needs `reach` (3, the
+--     mob_class default), `punch_interval` (1, api.lua:3534),
+--     `damage_group` (nil -> "fleshy", api.lua:2528) and `self.damage`,
+--     which levels.lua's apply_stats already sets from the field formula —
+--     all four are in place, so this is one field and no new tuning.
+--     Written as `def.attack_type or "dogfight"` so a def may still choose
+--     its own; none of the five does today.
+--
+-- What this does NOT do is let prey INITIATE. Target acquisition on sight
+-- lives in general_attack alone, and `attack_players = false` removes every
+-- player candidate there before an attack_type is ever consulted (the field
+-- is not read in that function at all). The other do_attack callers are all
+-- provocation: on_punch's own retaliation, the group alert (api.lua:2997 —
+-- needs `group_attack`, which no prey def sets), threat/taunt (both only
+-- reachable once the mob has been hit), and our pack/swarm verbs (not
+-- applied to prey). See `no_acquire` in init.lua/aggro.lua, which turns the
+-- resulting guaranteed-empty scan off entirely.
+--
+-- The critters keep `passive = true` + `runaway = true` (rabbit.lua) — that
+-- is the OTHER class of §3.0 and the reason this helper exists as its own
+-- named verb instead of as "the animal default".
+--
+-- NOT set here: `pathfinding`. A retaliating prey mob chases like any other
+-- attacker (45 m, api.lua's chase patch), so the four GROUND prey defs carry
+-- `pathfinding = 1` themselves (stag.lua carries the reasoning) — but the
+-- fifth, the Carrion Crow, is `fly = true`, and core.find_path is a ground
+-- search. One verb cannot serve both, and the field belongs where the
+-- locomotion is described.
+--
+function grug_mobs.passive_prey(def)
+	def.passive = false
+	def.attack_players = false
+	def.attack_npcs = false
+	def.runaway = false
+	def.attack_type = def.attack_type or "dogfight"
+	return def
+end
