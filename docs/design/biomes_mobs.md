@@ -90,17 +90,18 @@ Continent column: **A** = Elandor (Accord, south), **T** = Kragmar
 | 5 | grug_elf_forest | A | Elf settled | east core+inner | 1–25 |
 | 6 | grug_jungle_fringe | A | universal jungle (Accord side) | east flank strip | 38–60 |
 | 7 | grug_savanna | T | Orc settled | core+inner (+war coast, thin tail to the back coast) | 1–25 (patches out there follow the field, up to 60) |
-| 8 | grug_badlands | T | Orc wild, band-specific | center-back outer | 25–60 |
+| 8 | grug_badlands | T | Orc wild (+ Troll east wing) | center-back outer + east | 25–60 |
 | 9 | grug_blight | T | Undead settled | west core+inner | 1–25 |
 | 10 | grug_bone_forest | T | universal forest, Throng look | west outer | 25–60 |
 | 11 | grug_jungle_edge | T | Troll settled | east core+inner | 1–25 |
 | 12 | grug_deep_jungle | T | universal jungle (Throng side) | east outer | 25–60 |
+| 12a | grug_badlands_east | T | slab of #8 — the Troll band's second wild | east outer/coast | 25–60 |
 | 13 | grug_swamp | both | universal, low terrain pockets | outer (y ≤ 6) | 25–45 |
 | 14 | grug_beach | both | universal shoreline fringe | everywhere (y 1..4) | by position |
 | 15 | grug_ocean | both | sand-bottom ocean | y < 1 | — |
 | 16 | grug_underground | both | caves (existing) | y ≤ −256 | depth axis |
 
-The table lists **bands**, not registrations. Two bands ship as several
+The table lists **bands**, not registrations. Three bands ship as several
 registrations each, because a cuboid cannot express what they need:
 
 - `grug_crags` has the alpine sibling **`grug_crags_snowy`** (same cuboid
@@ -109,16 +110,25 @@ registrations each, because a cuboid cannot express what they need:
   middle** (the capital carve box of §1.3 sits inside it on all four
   sides), so it ships as **`grug_deep_forest`** (back), **`_front`** and
   **`_east`**.
+- `grug_badlands` has the east wing **`grug_badlands_east`** (WP36,
+  x 801..1250, full z) — the Throng mirror of `grug_deep_forest_east`.
+  **This is the 2026-08-08 delta**: the badlands used to be described here
+  and in §2 as "band-specific / Orc area only", the same words `grug_crags`
+  still carries. It is not band-specific any more, for the same reason
+  `grug_deep_forest` never was — a centre-back wild that also covers the
+  neighbouring band's wild ring. See §1.3 for the measurement that chose
+  it over a `grug_bone_forest_east`.
 
-So the world holds **19 biome registrations**. Every slab of a band
-carries the *same* `node_top`, flora and mob roster as its parent — the
-split is pure geometry. That is also the landmine: a decoration or ore
-def that names only the parent silently loses the other slabs (the name
-it *does* list resolves, so nothing warns), which is why
-`grug_mapgen/decorations.lua` keeps one `DEEP_FOREST` list and `ores.lua`
-names all eleven dirt biomes. The reverse bites too: the centre band was
-split the same way on 2026-08-08 and collapsed back on the same day
-(§1.3, D4), and its `_front`/`_back` names had to leave both lists again.
+So the world holds **20 biome registrations**. Every slab of a band
+carries the *same* `node_top`, climate point, flora and mob roster as its
+parent — the split is pure geometry. That is also the landmine: a
+decoration or ore def that names only the parent silently loses the other
+slabs (the name it *does* list resolves, so nothing warns), which is why
+`grug_mapgen/decorations.lua` keeps one `DEEP_FOREST` and one `BADLANDS`
+list and `ores.lua` names all eleven dirt biomes. The reverse bites too:
+the centre band was split the same way on 2026-08-08 and collapsed back on
+the same day (§1.3, D4), and its `_front`/`_back` names had to leave both
+lists again.
 
 War coast is **not** its own biome (decided 2026-08-06): it uses the
 local band's settled biome plus a battlefield decoration set (§2,
@@ -139,12 +149,12 @@ decides per position → recurring patches (the patch model, §1.4).
 | grug_savanna / grug_meadows | −349..349 | 100..1700 | ≥4 | 85 / 50 | 35 / 40 | dry_dirt_with_dry_grass / dirt_with_grass |
 | grug_badlands / grug_deep_forest* | −700..700 (*A: −900..1250) | 1201..1700 | ≥4 | 75 / 60 | 20 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
 | grug_deep_forest_front (A only) | −900..1250 | 100..599 | ≥4 | 60 | 75 | ” |
-| grug_deep_forest_east (A only) | 801..1250 | 100..1700 | ≥4 | 60 | 75 | ” |
+| grug_badlands_east / grug_deep_forest_east | 801..1250 | 100..1700 | ≥4 | 75 / 60 | 20 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
 | grug_blight / grug_pine_hills | −1250..−201 | 100..1700 | ≥4 | 25 / 30 | 20 / 60 | grug_nodes:blight_dirt / dirt_with_coniferous_litter |
 | grug_bone_forest / grug_crags | −1500..−801 | 100..1700 | ≥4 (crags 4..79) | 15 / 25 | 45 / 35 | grug_nodes:dirt_with_bone_litter / default:gravel |
 | grug_crags_snowy (A only) | −1500..−801 | 100..1700 | ≥80 | 25 | 35 | default:snowblock (dust: default:snow) |
 | grug_jungle_edge / grug_elf_forest | 201..1250 | 100..1700 | ≥4 | 80 / 70 | 70 / 60 | dirt_with_rainforest_litter / grug_nodes:dirt_with_silver_litter |
-| grug_deep_jungle / grug_jungle_fringe | 801..1500 (A: 1150..1500) | 100..1700 | ≥4 | 90 / 85 | 90 / 85 | dirt_with_rainforest_litter / dirt_with_rainforest_litter |
+| grug_deep_jungle / grug_jungle_fringe | 801..1500 (A: 1150..1500) | 100..1700 | ≥4 | 80 / 85 | 88 / 85 | grug_nodes:dirt_with_canopy_litter / dirt_with_rainforest_litter |
 | grug_swamp † | full | −1700..1700 | 1..6 | 60 | 95 | grug_nodes:mud |
 | grug_beach † | full | −1700..1700 | 1..4 | 50 | 55 | default:sand |
 | grug_ocean † | unlimited | unlimited | −255..3 | 50 | 50 | default:sand |
@@ -236,6 +246,59 @@ to a containment guarantee (exactly one eligible registration). The cap
 costs 393 nodes of straight border. **Accord-only** — `grug_deep_forest`
 has no Throng mirror; the Throng centre-back wild is `grug_badlands`.
 
+**The Throng biome monopoly, fixed 2026-08-08 (WP36).** `grug_jungle_edge`
+(x 201..1250) and `grug_deep_jungle` (x 801..1500) both shipped
+`default:dirt_with_rainforest_litter`, and outside |z| 1201..1700 nothing
+else reached x 350..1500 at all. Measured with `tools/biomecheck`:
+**41.1 % of Throng land had exactly ONE eligible `node_top`**, against
+29.5 % on the Accord side, whose mirror position carries
+`grug_deep_forest_east` with a different top. The share table hides this —
+folded onto the visible top, the two registrations look like one biome.
+Three changes, all of them on the Throng side:
+
+1. **`grug_deep_jungle` got its own top**,
+   `grug_nodes:dirt_with_canopy_litter` (the shaded floor under the closed
+   canopy; retint recipe and licence row in `grug_nodes/LICENSE-media.md`).
+   `grug_jungle_fringe` keeps the rainforest litter, because §8.4 binds the
+   fringe to the **troll jungle's** nodes 1:1 — and the troll jungle is
+   `grug_jungle_edge`, not this one. Deep jungle / fringe was the only
+   mirrored pair in the world whose halves shared a look; now none does.
+2. **`grug_badlands_east`** fills the empty Throng half of the
+   `grug_deep_forest_east` row: the centre-back wild reaching into the
+   neighbouring band's wild ring, which is what the Accord has shipped
+   since the carve. The alternative reading — a `grug_bone_forest_east`,
+   since §3.2 pairs the deep forest with the bone forest — was **measured
+   and rejected**: a slab must carry its parent's climate point, and
+   15/45 is so much closer to the field mean than `grug_jungle_edge`'s
+   80/70 that over 12 seeds it takes **62.4 %** of the x 801..1250 strip
+   and pushes the jungle edge to 29.3 %, i.e. it would flip the whole
+   Troll east into a grey dead forest. `grug_badlands`' 75/20 measures
+   35.6 % against the jungle edge's 52.5 % — within a point of the Accord
+   mirror (deep-forest slabs 36.1 %, elf forest 54.3 %).
+3. **`grug_deep_jungle` 90/90 → 80/88.** 90/90 was +1.8 / +2.2 σ out and
+   over 12 seeds only **0.1 %** of the biome's own land sat inside
+   x ≤ 1250 — i.e. it was its uncontested flank strip and nothing else
+   (it took **0.0 %** of the contested strip against the jungle edge).
+   With 80/88 that rises to **6.9 %** / 2.7 %. 80/88 keeps exactly
+   **18.0** units from `grug_jungle_edge` (80/70), the floor above; 21.2
+   from `grug_swamp` (60/95, shares y 4..6), 44.6 from `grug_beach`
+   (50/55, shares y = 4) and 68.2 from `grug_badlands_east` (75/20). The
+   border against the jungle edge is therefore the single line
+   humidity = 79, which the blend noise (≤ 8 units of displacement per
+   axis, under half the floor) frays into a mosaic.
+
+Result, this world's seed: eligible-visual monopoly **60.9 % → 42.8 %** of
+Throng land, rainforest-litter-only **41.1 % → 18.8 %**, columns with three
+eligible visuals 4.3 % → 22.3 %. Over **30 seeds** the Throng's largest
+single visible top falls from a mean of **35.0 % to 27.4 %** (max 49.3 % →
+42.8 %), i.e. below the Accord's 29.7 %, and the node that dominates most
+often changes from rainforest litter in 24 of 30 seeds to 14 of 30 spread
+over five different tops. **The residual 42.8 % is not in the east**: it is
+x −800..−351 and x −200..200 outside |z| 1201..1700, where the Throng has
+no equivalent of `grug_deep_forest_front` / the deep forest's x −900..1250
+back slab (`grug_badlands` is only x −700..700, z 1201..1700). That is a
+separate, still-open asymmetry.
+
 † The three universal biomes are registered **once**, not as a mirrored
 pair — a biome name may exist only once in the engine. Swamp and beach
 therefore use a z-symmetric cuboid, and `grug_ocean` is x/z-**unlimited**:
@@ -279,7 +342,8 @@ Notes:
   introduced, against a complaint ("boring straight lines") that was the
   reason for the rework. The band is **one cuboid** again, x ±349,
   z 100..1700, and the centre↔side overlap is 149 nodes everywhere.
-  Registration count 23 → **19**.
+  Registration count 23 → **19** (→ **20** with WP36's
+  `grug_badlands_east`, see the monopoly note above).
 - **z_max 1700, not 1500** (same pass). The pre-rework centre band
   stopped at |z| 1500, which left the back-country band the strip
   |z| 1501..1700 uncontested and made the face at z = 1501 a 733-node
@@ -320,9 +384,12 @@ Notes:
   CC BY-SA 3.0, in a new `grug_nodes` mod): `blight_dirt` (grey-violet
   dirt), `dirt_with_bone_litter` (ash-grey litter), `dirt_with_forest_
   litter` (dark green), `dirt_with_silver_litter` (pale), `mesa_clay`
-  (red-orange), `mud` (swamp, slows walking slightly via groups). These
-  exist FOR the LotT spawn-whitelist trick — precise per-biome spawn
-  gating with zero runtime cost (§4).
+  (red-orange), `mud` (swamp, slows walking slightly via groups) and
+  `dirt_with_canopy_litter` (deep shade emerald, WP36 — the deep jungle
+  floor). These exist FOR the LotT spawn-whitelist trick — precise
+  per-biome spawn gating with zero runtime cost (§4). **A new one is a new
+  set of `biome × zone` spawn cells** — see the §1.5 warning before adding
+  the next.
 
 ### 1.4 Patch model & settlements
 
@@ -358,6 +425,18 @@ Notes:
   | healing **T2** dragonweed (crags, badlands, deep forest, bone forest) | 28.3 % | 25.0 % | 23.5 % |
   | healing **T3** crimson lotus (deep jungle, jungle fringe) | 3.2 % | 3.2 % | 5.8 % |
   | spice **T1** sunleaf (meadows, savanna, elf forest, jungle edge) | 55.3 % | 51.2 % | 48.5 % |
+
+  **Not yet folded into that table: WP36 (2026-08-08).** It changes the
+  Throng east only (12 seeds, both changes together): `grug_jungle_edge`
+  29.98 % → **23.69 %** of the Throng land and 90.4 % → **52.5 %** of the
+  x 801..1250 strip, `grug_badlands_east` **5.87 %** of the land and
+  **35.6 %** of that strip, `grug_deep_jungle` 5.30 % → **5.84 %**.
+  Effect on §2 gathering:
+  the Throng's dragonweed **T2** supply grows with the badlands wing, the
+  crimson-lotus **T3** supply grows slightly with the deep jungle, the
+  sunleaf **T1** supply shrinks with the jungle edge. Nothing changes on
+  the Accord side. Re-measure the whole table on the next mapgen pass
+  rather than patching single cells.
 
   T1 healing is the one tier that moves by more than a third, and it is
   the *carve* that moves it (+75 % with the old climate points; the D2
@@ -439,6 +518,42 @@ What is guaranteed now, and how:
   biome × zone cells (a band can reach fewer places, never more). The
   biome names in `grug_mobs/*.lua` are comments only — the spawn rows
   gate on `nodes`, never on a biome name.
+- **Read that bullet carefully before reusing it.** Its premise is
+  "every slab carries its parent's `node_top`", and it holds *only* for
+  slabs. `grug_badlands_east` (WP36) is another slab and again cost
+  nothing. `grug_nodes:dirt_with_canopy_litter` (WP36) is the opposite
+  case: a **new top** is a brand-new column of `biome × zone` cells with
+  no rows in it at all, exactly like `default:snowblock` in WP18. The
+  cuboid x 801..1500 never reaches zone `core` (the radial field puts
+  |x| ≥ 801 at n ≥ 0.44), so four cells had to be filled —
+  `inner`/`outer`/`coast`/`war_coast`, day and night:
+
+  | cell | day rows (Σaoc) | night rows (Σaoc) |
+  |---|---|---|
+  | canopy × inner | Jungle Boar, Jungle Lynx (10) | Zombie settled row (4) |
+  | canopy × outer | Jungle Ape, Jungle Lynx, Serpent (11) | Jungle Spider, Panther (8) |
+  | canopy × coast | Jungle Ape, Serpent (6) | Jungle Spider, Panther (8) |
+  | canopy × war_coast | Carrion Crow (2) | Skeleton Raider, Zombie (7) |
+
+  The deep jungle deliberately gets **no critter** (the Hare's list was
+  left alone) — same rule as the badlands, §3.1. The full matrix was
+  re-derived from the shipped rows against `grug_core.zone_at` and the
+  §1.3 cuboids: **every land cell still has day AND night spawns**, the
+  density peaks are unchanged at **16 day / 12 night**, and the only
+  day-only cells are the three documented exceptions (`grug_beach` ×
+  outer and × coast, `grug_swamp` × coast).
+- **Two dead cells found by that re-derivation and repaired in the same
+  round** — not caused by WP36, caused by the **D4 rollback**. Before
+  2026-08-08 the centre band stopped at |z| 1500 and could not reach the
+  back-coast band (|z| ≥ 1550); extending it to Z_MAX created
+  `grug_meadows × coast` and `grug_savanna × coast`, which had **no mob
+  at all, day or night**. §4's outer/coast filler slot says Bear + Giant
+  Spider (A) / Plaguehide Bear + Pale Spider (T) carry "the settled tops
+  of their side", and `default:dirt_with_grass` /
+  `default:dry_dirt_with_dry_grass` were simply missing from those four
+  lists. Added. The jungle edge's rainforest litter is deliberately *not*
+  added to the Throng pair: that biome has its own outer/coast roster and
+  the filler would take the cell to Σaoc 15 at night, past the peak of 12.
 
 ## 2. Per-biome specs (surface, flora, gathering)
 
@@ -483,11 +598,11 @@ farming system are one later package.
 | grug_deep_forest | apple + aspen dense (fill 0.02), fallen logs (apple_log.mts) | ferns, mushrooms `[food found-only]`; dragonweed edge `[herb T2]` | dark, high tree density |
 | grug_crags | snowy_pine above y 60, else bare | gravel/stone tops, snow above y 80; dragonweed `[herb T2]`, frost lichen deco | band-specific nature biome (Dwarf area only) |
 | grug_savanna | acacia_tree.mts sparse (0.002), dry shrubs | dry grass 1–5; wild corn patches `[food]`; sunleaf `[spice T1]` | waterhole ponds (deco) |
-| grug_badlands | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | band-specific nature biome (Orc area only) |
+| grug_badlands (+ `_east`) | large_cactus, dead shrub | mesa clay banding (stratum deco optional); dragonweed `[herb T2]` | Orc back country **plus the Troll east wing** since WP36 (§1.3) — the mirror of the deep forest's east wing, not a band-specific biome any more |
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | fringe = same nodes/roster, Accord side |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora and roster on both sides, but **not the same ground node since WP36**: the deep jungle stands on `grug_nodes:dirt_with_canopy_litter`, the fringe still on `default:dirt_with_rainforest_litter` (§8.4 binds the fringe to the *troll jungle* = `grug_jungle_edge`). Every deco of this row therefore names **both** nodes in `place_on` — a `place_on` is as silent as a `biomes` list |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -769,6 +884,15 @@ lists confine the effect to exactly the rings that were dead:
 | outer/coast day+night | Bear + Giant Spider (A), Plaguehide Bear + Pale Spider (T) | outer, coast | the settled tops of their side |
 | war coast day / night | Carrion Crow / Skeleton Raider | war_coast | every land top (both are war_coast-exclusive) |
 
+**"The settled tops of their side" was incomplete until WP36**: the
+outer/coast row was missing `default:dirt_with_grass` (Bear + Giant
+Spider) and `default:dry_dirt_with_dry_grass` (Plaguehide + Pale Spider),
+which is why `grug_meadows × coast` and `grug_savanna × coast` were dead
+day and night after the D4 rollback extended the centre band to Z_MAX
+(§1.5). The jungle edge's rainforest litter stays out of the Throng pair
+on purpose — that biome has its own outer/coast roster and the filler
+would push the cell to Σaoc 15 at night, over the peak of 12.
+
 Two consequences worth stating: (a) no cell's Σaoc can rise from a
 filler node, because the filler always lands on a family that already
 inhabits that ring via its own tops and `aoc` counts per entity NAME —
@@ -809,23 +933,23 @@ the new values once the change ships.
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
-| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler) | 20 | 1125 | 5 | min 10 | core, inner |
+| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler); the **Jungle Boar** additionally carries **canopy litter** — deep-jungle patches in `inner` (§1.5) | 20 | 1125 | 5 | min 10 | core, inner |
 | Rabbit/Hare | settled tops **+ the filler tops of its own continent** — Rabbit: forest litter, gravel, snowblock, mud, sand; Hare: mud, sand (no mesa_clay, §3.1 "the badlands carry no critter"). Split by a `territory_at` check | 20 | 1350 | 3 | min 10 | core, inner |
-| Zombie | settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1200 | 4 | max 5 (blight: any) | core, inner, war_coast |
+| Zombie | settled tops **+ forest litter, canopy litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1200 | 4 | max 5 (blight: any) | core, inner, war_coast |
 | Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1125 | 5 | any | inner, outer |
 | Hyena | dry grass, mesa_clay | 20 | 1125 | 5 | any | inner, outer |
-| Jungle Lynx (Raptor slot) | rainforest litter | 20 | 1125 | 5 | min 10 | inner, outer |
-| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter** (Bear) / bone litter **+ blight_dirt** (Plaguehide) | 20 | 2100 | 2 | min 10 | outer, coast |
-| Jungle Ape | rainforest litter | 20 | 2100 | 2 | min 10 | outer, coast |
-| Giant Spider (all) | forest litter **+ silver litter, coniferous litter** (Giant) / bone litter **+ blight_dirt** (Pale) / rainforest litter (Jungle) | 20 | 1800 | 4 | max 5 | outer, coast, underground |
+| Jungle Lynx (Raptor slot) | rainforest litter **+ canopy litter** | 20 | 1125 | 5 | min 10 | inner, outer |
+| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter, grass** (Bear) / bone litter **+ blight_dirt, dry grass** (Plaguehide) | 20 | 2100 | 2 | min 10 | outer, coast |
+| Jungle Ape | rainforest litter **+ canopy litter** | 20 | 2100 | 2 | min 10 | outer, coast |
+| Giant Spider (all) | forest litter **+ silver litter, coniferous litter, grass** (Giant) / bone litter **+ blight_dirt, dry grass** (Pale) / rainforest litter **+ canopy litter** (Jungle) | 20 | 1800 | 4 | max 5 | outer, coast, underground |
 | Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1350 | 3 | min 10 | inner, outer |
 | Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 1500 | 3 | max 5 | outer, war_coast |
 | Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 1500 | 3 | max 5 | war_coast |
 | Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 1500 | 3 | min 10 | outer, coast |
 | Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
 | Ram | gravel, **snowblock** | 20 | 1650 | 2 | min 10 | outer |
-| Panther | rainforest litter | 20 | 1350 | 4 | max 5 | outer, coast |
-| Serpent | rainforest litter, mud | 20 | 1350 | 4 | min 10 | outer, coast |
+| Panther | rainforest litter **+ canopy litter** | 20 | 1350 | 4 | max 5 | outer, coast |
+| Serpent | rainforest litter **+ canopy litter**, mud | 20 | 1350 | 4 | min 10 | outer, coast |
 | Crocodile | mud (only) | 20 | 1350 | 3 | any | outer |
 | Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
 | Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
@@ -1039,7 +1163,11 @@ and 5 record what WP6 then actually shipped.
    Reef Lurker is registered, and the §3.1/§4 rows for both stay in
    this catalog as the spec to implement once a model exists.
 4. **Jungle fringe reuses the troll jungle nodes 1:1** on the Accord
-   side (max drop symmetry, zero new assets).
+   side (max drop symmetry, zero new assets). **The troll jungle is
+   `grug_jungle_edge`** — this decision binds the fringe to the *settled*
+   Troll biome's nodes, not to `grug_deep_jungle`, which got a ground node
+   of its own in WP36 (§1.3). The fringe therefore still stands on
+   `default:dirt_with_rainforest_litter` and this point is untouched.
 5. **The boar's "charges"** is implemented as a **mid-range rush**, not
    a wind-up gallop: the same impulse the panther's pounce uses,
    flattened horizontally, fired at 4–10 m with an 8 s cooldown. One

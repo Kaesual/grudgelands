@@ -95,6 +95,10 @@ mobs:spawn({
 		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest patches
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills patches
+		-- WP36, the night half of bear.lua's grug_meadows addition: read the
+		-- note there — grug_meadows x coast had no mob at all after the
+		-- centre band was extended to Z_MAX on 2026-08-08.
+		"default:dirt_with_grass", -- grug_meadows patches
 	},
 	max_light = 5,
 	day_toggle = false,
@@ -115,11 +119,14 @@ grug_mobs.register_mob("grug_mobs:pale_spider", bonelurker)
 
 -- blight_dirt: the night half of the Throng mirror (bear.lua's Plaguehide
 -- note) — grug_blight patches in the outer ring and on the coasts.
+-- dry_dirt_with_dry_grass: the night half of the WP36 grug_savanna x coast
+-- repair, same note.
 mobs:spawn({
 	name = "grug_mobs:pale_spider",
 	nodes = {
 		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest
 		"grug_nodes:blight_dirt", -- grug_blight patches
+		"default:dry_dirt_with_dry_grass", -- grug_savanna patches
 	},
 	max_light = 5,
 	day_toggle = false,
@@ -134,13 +141,17 @@ mobs:spawn({
 -- Jungle Spider — grug_deep_jungle (Throng) and grug_jungle_fringe (Accord),
 -- added with the jungle group (T6)
 --
--- ONE registration for both continents, unlike the pair above: §8.4 decided
--- the Accord jungle fringe reuses the troll jungle nodes 1:1, so
--- `default:dirt_with_rainforest_litter` is the top node on BOTH sides and a
--- node split is impossible — and unnecessary, because §3.2 puts every spider
--- tint on the same table anyway ("spider table | Giant Spider | Giant Spider
--- (tints)"). Same def factory, same drops, same §4 numbers: only the texture
--- and the spawn node change.
+-- ONE registration for both continents, unlike the pair above: §3.2 puts
+-- every spider tint on the same table anyway ("spider table | Giant Spider |
+-- Giant Spider (tints)"). Same def factory, same drops, same §4 numbers: only
+-- the texture and the spawn node change.
+--
+-- TWO node names since WP36. §8.4 binds grug_jungle_fringe to the TROLL
+-- JUNGLE's nodes 1:1 — and the troll jungle is grug_jungle_edge, not
+-- grug_deep_jungle, which got its own top that round (§1.3). So the fringe
+-- still stands on rainforest litter while the Throng deep jungle stands on
+-- canopy litter, and this row must name both or the Throng half of the
+-- outer/coast NIGHT roster disappears.
 --
 
 local jungle_spider = spider_def("Jungle Spider", "grug_mobs_spider_jungle.png")
@@ -149,7 +160,10 @@ grug_mobs.register_mob("grug_mobs:jungle_spider", jungle_spider)
 
 mobs:spawn({
 	name = "grug_mobs:jungle_spider",
-	nodes = {"default:dirt_with_rainforest_litter"}, -- deep jungle / fringe
+	nodes = {
+		"default:dirt_with_rainforest_litter", -- grug_jungle_fringe (Accord)
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (Throng)
+	},
 	max_light = 5,
 	day_toggle = false,
 	interval = 20,

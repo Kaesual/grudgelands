@@ -91,6 +91,7 @@ mobs:spawn({
 		"grug_nodes:dirt_with_silver_litter", -- grug_elf_forest
 		"default:dry_dirt_with_dry_grass", -- grug_savanna
 		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle (WP36 top)
 		"grug_nodes:blight_dirt", -- grug_blight
 		"grug_nodes:dirt_with_forest_litter", -- grug_deep_forest
 		"grug_nodes:dirt_with_bone_litter", -- grug_bone_forest

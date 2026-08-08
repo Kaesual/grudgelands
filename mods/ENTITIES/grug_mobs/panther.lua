@@ -80,7 +80,13 @@ grug_mobs.register_mob("grug_mobs:panther", panther)
 -- pair spider.lua uses.
 mobs:spawn({
 	name = "grug_mobs:panther",
-	nodes = {"default:dirt_with_rainforest_litter"},
+	-- Two nodes since WP36 (§1.3): grug_deep_jungle has its own top now, and
+	-- the panther is the Throng jungle's outer/coast NIGHT row — without the
+	-- second name that cell would have had no night mob at all.
+	nodes = {
+		"default:dirt_with_rainforest_litter", -- jungle edge / jungle fringe
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle
+	},
 	max_light = 5,
 	day_toggle = false,
 	interval = 20,

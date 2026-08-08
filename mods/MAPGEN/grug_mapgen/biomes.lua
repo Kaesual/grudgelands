@@ -32,11 +32,20 @@
 --
 -- LANDMINE (AGENTS.md): ore/decoration defs whose `biomes` names do not
 -- resolve are silently unrestricted world-wide -- decorations.lua and
--- ores.lua may only name biomes registered in this file. The carve splits ONE
--- band into SIBLING registrations (grug_deep_forest/_front/_east), and a
--- sibling is a new biome NAME: every deco list that named the parent must
--- name all of its slabs, or the deco vanishes from the slabs it does not
--- name.
+-- ores.lua may only name biomes registered in this file. The carve splits
+-- bands into SIBLING registrations (grug_deep_forest/_front/_east,
+-- grug_badlands/_east), and a sibling is a new biome NAME: every deco list
+-- that named the parent must name all of its slabs, or the deco vanishes
+-- from the slabs it does not name.
+--
+-- SECOND LANDMINE, same shape but on the MOB side (biomes_mobs.md §1.5,
+-- re-derived by WP36): a sibling costs nothing there as long as it carries
+-- its parent's `node_top` -- the spawn gate is `node_top x zone`, never a
+-- biome name. A NEW `node_top`, however, is a brand-new set of
+-- biome x zone cells with no rows at all. grug_crags_snowy is the standing
+-- warning (added in WP18, no spawn row listed default:snowblock, the whole
+-- biome was mob-free until WP6); grug_nodes:dirt_with_canopy_litter below is
+-- the second case and its rows were derived with it.
 
 local X_HALF = grug_core.CONTINENT_X_HALF -- 1500
 local Z_MIN = grug_core.CONTINENT_Z_MIN -- 100
@@ -257,7 +266,42 @@ register_mirrored({
 	},
 })
 
+-- THE EAST WING, both continents (the throng half added by WP36,
+-- 2026-08-08). The Accord's centre-back wild (grug_deep_forest) reaches into
+-- the ELF band with this slab; until WP36 the Throng's centre-back wild
+-- (grug_badlands) had no such wing, so between x 801 and 1250 the only wild
+-- registration on the Throng side was grug_deep_jungle -- which then shared
+-- its top with grug_jungle_edge (see the deep-jungle block below), leaving
+-- 41 % of the continent with a single eligible visual. This block is the
+-- empty half of that pair, filled.
+--
+-- DESIGN DELTA, flagged (docs/design/biomes_mobs.md §1.2/§2 called
+-- grug_badlands "band-specific ... Orc area only", the same words used for
+-- grug_crags). It is not band-specific any more, exactly as
+-- grug_deep_forest is not: a centre-back wild with an east wing is what the
+-- Accord has shipped since the carve, and this is its mirror. The doc rows
+-- were updated in the same change.
+--
+-- WHY THE BADLANDS AND NOT A BONE-FOREST WING. §3.2 pairs grug_deep_forest
+-- with grug_bone_forest ("universal forest, Throng look"), so a
+-- grug_bone_forest_east was the other candidate. Measured over 12 seeds it
+-- takes 62.4 % of the x 801..1250 strip and pushes grug_jungle_edge down to
+-- 29.3 %, i.e. it would flip the whole Troll east band into a grey dead
+-- forest -- its 15/45 point is simply far closer to the field mean than
+-- 80/70, and a slab must share its parent's point (grug_deep_forest{,_front,
+-- _east} and grug_crags{,_snowy} all do). grug_badlands' 75/20 measures at
+-- 35.6 % of the strip against jungle edge 52.5 %, which is within a point of
+-- the Accord mirror (grug_deep_forest_east + its siblings 36.1 %, elf forest
+-- 54.3 %). Same node, same flora, same mob roster as the parent, so no spawn
+-- row, no ore row and no new climate point are needed.
 register_mirrored({
+	throng = {
+		name = "grug_badlands_east",
+		top = "grug_nodes:mesa_clay",
+		filler = "grug_nodes:mesa_clay",
+		x_min = WILD_X, x_max = BAND_X_MAX, z_min = Z_MIN, z_max = Z_MAX,
+		heat = 75, humidity = 20,
+	},
 	accord = {
 		name = "grug_deep_forest_east",
 		top = "grug_nodes:dirt_with_forest_litter",
@@ -365,25 +409,52 @@ register_mirrored({
 	},
 })
 
--- NEITHER POINT MOVED, both live off their flank strip. 90/90 and 85/85 are
--- the two points furthest from the field mean (per-seed draw, see the note
--- at the top of this file; the 60.9 / 48.8 used here was one seed, sigma
--- 16.8), so neither can win a contested overlap against anything: they exist
--- only because x 1251..1500 (BAND_X_MAX + 1 upward) is theirs alone. The
--- Accord half only got that strip on 2026-08-08, when the three deep-forest
--- registrations were capped at BAND_X_MAX -- until then they reached x 1500
--- and the fringe won 0.08 % of the land, i.e. the Accord east flank was deep
--- forest and the Accord had no crimson-lotus T3 source at all (see the
--- deep-forest block above). x_min stays at 1150, i.e. 101 nodes further in
--- than the strip, so the inner border is still a voronoi mosaic against elf
--- forest and deep forest rather than a bare cuboid face.
+-- grug_jungle_fringe's point NOT MOVED: it lives off its flank strip. 85/85
+-- is one of the two points furthest from the field mean (per-seed draw, see
+-- the note at the top of this file), so it cannot win a contested overlap
+-- against anything: it exists only because x 1251..1500 (BAND_X_MAX + 1
+-- upward) is its alone. The Accord half only got that strip on 2026-08-08,
+-- when the three deep-forest registrations were capped at BAND_X_MAX -- until
+-- then they reached x 1500 and the fringe won 0.08 % of the land, i.e. the
+-- Accord east flank was deep forest and the Accord had no crimson-lotus T3
+-- source at all (see the deep-forest block above). x_min stays at 1150, i.e.
+-- 101 nodes further in than the strip, so the inner border is still a voronoi
+-- mosaic against elf forest and deep forest rather than a bare cuboid face.
+--
+-- grug_deep_jungle: OWN node_top AND OWN CLIMATE POINT since WP36
+-- (2026-08-08). Two separate defects, one block.
+--
+--  1. THE TOP. It used to ship `default:dirt_with_rainforest_litter`, the
+--     same top as grug_jungle_edge (x 201..1250) -- and nothing else reaches
+--     x 350..1500 outside |z| 1201..1700. Measured with tools/biomecheck:
+--     41.1 % of Throng land had exactly ONE eligible node_top, against
+--     29.5 % of the Accord land, whose mirror position carries
+--     grug_deep_forest_east with a different top. The fringe keeps the
+--     rainforest litter (§8.4: the Accord jungle reuses the TROLL JUNGLE's
+--     nodes 1:1, and the troll jungle is grug_jungle_edge, not this one), so
+--     this is now the only mirrored pair whose two halves differ -- which is
+--     what every other pair in this file already does.
+--
+--  2. THE POINT, 90/90 -> 80/88. 90/90 sat +1.8 / +2.2 sigma from the field
+--     mean and lost EVERY contested column: measured over 12 seeds it won
+--     0.00 % of the land inside x <= 1250, i.e. the whole biome was the
+--     uncontested flank strip and nothing else. 80/88 is exactly 18.0
+--     climate units from grug_jungle_edge (80/70) -- the hard floor of §1.3,
+--     the same separation grug_badlands keeps against grug_savanna -- so the
+--     border between them is the single line humidity = 79, which the blend
+--     noise (scale 4, i.e. at most 8 units of displacement per axis, well
+--     under half the floor) frays into a mosaic. Separation from grug_swamp
+--     (60/95, shares y 4..6 with this cuboid) is 21.2, from grug_beach
+--     (50/55, shares y = 4) 44.6, from grug_badlands_east (75/20) 68.2.
+--     Result over 12 seeds: 0.00 % -> 4.1 % of its own land inside the
+--     contested strip, total share 5.30 % -> 5.58 %.
 register_mirrored({
 	throng = {
 		name = "grug_deep_jungle",
-		top = "default:dirt_with_rainforest_litter",
+		top = "grug_nodes:dirt_with_canopy_litter",
 		filler = "default:dirt",
 		x_min = WILD_X, x_max = X_HALF, z_min = Z_MIN, z_max = Z_MAX,
-		heat = 90, humidity = 90,
+		heat = 80, humidity = 88,
 	},
 	accord = {
 		name = "grug_jungle_fringe",

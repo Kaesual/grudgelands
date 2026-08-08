@@ -29,6 +29,10 @@ does. Use both.
    `1181064378178512398` → `1580377614`.
 2. `luajit dump_biomes.lua > biomes.csv` — always re-run; it reads the live
    `biomes.lua`, so a cuboid or climate-point edit is picked up for free.
+   Run it **from this directory**: `biomes.csv` is a build artefact and the
+   scripts look for it (and for each other) next to themselves. They used to
+   carry absolute paths into the scratchpad of the session that wrote them,
+   which died with it — fixed in WP36; do not reintroduce an absolute path.
 3. `python3 analyse.py` — shares + largest contiguous region.
 4. `python3 diagnose.py` — *why*: point distances and the monopoly count.
 5. `python3 crossseed.py` — is it this seed or the design?

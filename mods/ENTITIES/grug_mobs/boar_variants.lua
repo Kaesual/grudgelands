@@ -93,9 +93,18 @@ mobs:spawn({
 --
 -- Jungle Boar — grug_jungle_edge (Troll settled band, Throng east)
 --
--- NB the same top node also carries the Accord-side grug_jungle_fringe and
--- the Throng grug_deep_jungle (§1.3), but those are outer/coast biomes and
--- the zone gate above (core, inner) keeps the Jungle Boar out of them.
+-- NB the rainforest litter also carries the Accord-side grug_jungle_fringe,
+-- and the canopy litter carries the Throng grug_deep_jungle (§1.3), but those
+-- are outer/coast biomes and the zone gate above (core, inner) keeps the
+-- Jungle Boar out of them wherever they sit that far out.
+--
+-- The canopy litter is the §4 "core/inner day filler" slot for the deep
+-- jungle: the wild deep-jungle cuboid starts at x 801, which the radial field
+-- still reaches with zone `inner` up to |x| ~932, and the patch model (§1.4)
+-- puts wild patches inside the settled rings anyway. The boar tint carries it
+-- rather than plain grug_mobs:boar because §3.1 assigns the east band the
+-- Jungle Boar. Deep jungle carries no CRITTER (same rule as the badlands,
+-- §3.1), so the Hare's list is deliberately left alone.
 --
 
 grug_mobs.register_mob("grug_mobs:jungle_boar",
@@ -103,7 +112,10 @@ grug_mobs.register_mob("grug_mobs:jungle_boar",
 
 mobs:spawn({
 	name = "grug_mobs:jungle_boar",
-	nodes = {"default:dirt_with_rainforest_litter"}, -- grug_jungle_edge
+	nodes = {
+		"default:dirt_with_rainforest_litter", -- grug_jungle_edge
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle patches
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 1500,

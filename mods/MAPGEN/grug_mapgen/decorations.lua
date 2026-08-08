@@ -20,14 +20,22 @@
 -- turns the deco unrestricted (mg_decoration.cpp:193-197).
 --
 -- SECOND LANDMINE, since the capital-guarantee carve (biomes.lua, 2026-08-08):
--- grug_deep_forest ships as several SIBLING registrations, and a sibling is a
--- separate biome name. A deco that lists only the parent silently disappears
--- from the slabs it does not list — no warning, because the parent name
--- resolves fine. The DEEP_FOREST list below is the single place that mapping
--- lives; never write "grug_deep_forest" as a bare string in a `biomes` list
+-- grug_deep_forest and (since WP36) grug_badlands ship as several SIBLING
+-- registrations, and a sibling is a separate biome name. A deco that lists
+-- only the parent silently disappears from the slabs it does not list — no
+-- warning, because the parent name resolves fine. The DEEP_FOREST and
+-- BADLANDS lists below are the single place those mappings live; never write
+-- "grug_deep_forest" or "grug_badlands" as a bare string in a `biomes` list
 -- again. (grug_meadows and grug_savanna were split the same way and collapsed
 -- back to one cuboid each on 2026-08-08 — their `_front`/`_back` siblings no
 -- longer exist and must not be named here, or the whole list stops resolving.)
+--
+-- THIRD LANDMINE, WP36: a `place_on` is just as silent as a `biomes` list.
+-- grug_deep_jungle got its OWN node_top that round
+-- (grug_nodes:dirt_with_canopy_litter, it used to share the jungle edge's
+-- rainforest litter), and every deco that kept `place_on = RAINFOREST` while
+-- still naming grug_deep_jungle in `biomes` would simply never fire there —
+-- a bare biome. That is what JUNGLE_FLOOR below is for.
 
 local schem = core.get_modpath("default") .. "/schematics/"
 
@@ -121,6 +129,10 @@ local FOREST = "grug_nodes:dirt_with_forest_litter"
 local BONE = "grug_nodes:dirt_with_bone_litter"
 local BLIGHT = "grug_nodes:blight_dirt"
 local RAINFOREST = "default:dirt_with_rainforest_litter"
+-- The deep jungle's own floor since WP36 (grug_nodes, biomes.lua). It used to
+-- be RAINFOREST, i.e. the same node as grug_jungle_edge — which is exactly
+-- why every deco below that means "jungle" has to name BOTH nodes now.
+local CANOPY = "grug_nodes:dirt_with_canopy_litter"
 local DRY_GRASS = "default:dry_dirt_with_dry_grass"
 local MESA = "grug_nodes:mesa_clay"
 local GRAVEL = "default:gravel"
@@ -128,13 +140,22 @@ local MUD = "grug_nodes:mud"
 
 local GRAVEWOOD = "grug_trees:gravewood_tree"
 local JUNGLE = {"grug_deep_jungle", "grug_jungle_fringe"}
+-- place_on for the JUNGLE list: the Throng half now stands on CANOPY and the
+-- Accord half still on RAINFOREST (§8.4 binds the FRINGE to the troll
+-- jungle's nodes, and the troll jungle is grug_jungle_edge). Both nodes in
+-- one place_on rather than two registrations — the `biomes` list already
+-- confines the deco to the two jungle wilds, and only one of the two nodes
+-- can ever be the top inside each of them.
+local JUNGLE_FLOOR = {RAINFOREST, CANOPY}
 
--- The one split band (biomes.lua): back slab + front slab + east wing, because
--- the carve box needs a hole in the middle of the cuboid. Same node_top and
--- same flora throughout — the split is pure geometry, so every deco of the
--- band lists all three registrations.
+-- The two split bands (biomes.lua): grug_deep_forest ships as back slab +
+-- front slab + east wing (the carve box needs a hole in the middle of the
+-- cuboid), grug_badlands as back slab + east wing. Same node_top and same
+-- flora throughout — the split is pure geometry, so every deco of a band
+-- lists all of its registrations.
 local DEEP_FOREST = {"grug_deep_forest", "grug_deep_forest_front",
 	"grug_deep_forest_east"}
+local BADLANDS = {"grug_badlands", "grug_badlands_east"}
 -- Single cuboids, kept as one-element lists so a future re-split only has to
 -- touch these two lines.
 local MEADOWS = {"grug_meadows"}
@@ -238,9 +259,9 @@ end
 --
 
 register_tree("badlands_large_cactus", "large_cactus.mts", MESA,
-	{"grug_badlands"}, 0.001)
+	BADLANDS, 0.001)
 register_plant("badlands_dry_shrub", "default:dry_shrub", MESA,
-	{"grug_badlands"}, 0.008, {param2 = 4})
+	BADLANDS, 0.008, {param2 = 4})
 
 --
 -- grug_blight (Undead settled): barren, bare gravewood trunks, bone piles.
@@ -276,12 +297,12 @@ register_plant("jungle_edge_junglegrass", "default:junglegrass", RAINFOREST,
 -- (§8.4) -- dense canopy plus emergent giants.
 --
 
-register_tree("jungle_tree", "jungle_tree.mts", RAINFOREST, JUNGLE, 0.02)
+register_tree("jungle_tree", "jungle_tree.mts", JUNGLE_FLOOR, JUNGLE, 0.02)
 -- 37 nodes tall: default limits it to low altitudes and a wide sidelen,
 -- otherwise it cannot fit into a mapchunk.
-register_tree("emergent_jungle_tree", "emergent_jungle_tree.mts", RAINFOREST,
+register_tree("emergent_jungle_tree", "emergent_jungle_tree.mts", JUNGLE_FLOOR,
 	JUNGLE, 0.005, {sidelen = 80, y_max = 32, place_offset_y = -4})
-register_plant("jungle_junglegrass", "default:junglegrass", RAINFOREST,
+register_plant("jungle_junglegrass", "default:junglegrass", JUNGLE_FLOOR,
 	JUNGLE, 0.05)
 -- NO jungle papyrus: v7 never places water above sea level, so "papyrus at
 -- water" cannot exist on the jungle cuboids (surface y >= 4) -- any real

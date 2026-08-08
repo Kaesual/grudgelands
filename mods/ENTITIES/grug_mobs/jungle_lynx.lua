@@ -83,9 +83,14 @@ grug_mobs.register_mob("grug_mobs:jungle_lynx", lynx)
 -- outer" — verbatim, the family only changed its skin.
 mobs:spawn({
 	name = "grug_mobs:jungle_lynx",
-	-- grug_jungle_edge (inner) and grug_deep_jungle / grug_jungle_fringe
-	-- (outer) all use this top node (§1.3).
-	nodes = {"default:dirt_with_rainforest_litter"},
+	-- grug_jungle_edge (inner) and grug_jungle_fringe (outer, Accord) use the
+	-- rainforest litter; grug_deep_jungle got its own top in WP36 and needs
+	-- naming separately or the Throng half of this family's habitat would
+	-- vanish (§1.3/§1.5).
+	nodes = {
+		"default:dirt_with_rainforest_litter",
+		"grug_nodes:dirt_with_canopy_litter", -- grug_deep_jungle
+	},
 	min_light = 10,
 	interval = 20,
 	chance = 1500,

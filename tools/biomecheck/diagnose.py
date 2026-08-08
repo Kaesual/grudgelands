@@ -1,5 +1,6 @@
 import sys, numpy as np
-sys.path.insert(0, "/tmp/claude-1000/-home-jan-projects-grudgelands/91ecbd76-d170-44c2-bdbc-709677e54187/scratchpad")
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from model import *
 
 B = load_biomes("biomes.csv")
