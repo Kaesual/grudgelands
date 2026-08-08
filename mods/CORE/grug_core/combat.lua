@@ -469,8 +469,22 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- pcall + flag restore: an error mid-punch must not leave the sticky
 	-- flag set (that would silently kill rage generation server-wide).
 	grug_core.in_ability_punch = true
+	-- `punch_attack_uses = 0` is not cosmetic: mobs_redo's on_punch runs an
+	-- UNGUARDED wear block (mods/ENTITIES/mobs/api.lua:2829-2850) that adds
+	-- floor(fpi / 75 * 9000) wear to the WIELDED stack and writes it back with
+	-- set_wielded_item -- and during a cast the wielded stack IS the ability
+	-- tool. At fpi 1.4 that is 167, not 168: 1.4/75*9000 is 167.99999999999997
+	-- in doubles (TODO-design-weapon-slot.md A5 quotes 168/~390 -- measured,
+	-- it is 167 and the tool breaks on cast 393). Abilities with a cooldown
+	-- hid it by accident (the cooldown ticker overwrites the wear every step
+	-- and zeroes it at the end); Mighty Blow has cooldown 0, so its own icon
+	-- grew a wear bar and the tool broke after 393 landed hits, vanishing
+	-- from the hotbar until a relog
+	-- re-granted it. api.lua:2836-2838 reads exactly this field as "no wear",
+	-- so one line switches the whole path off for every ability punch.
 	local ok, err = pcall(target.punch, target, attacker, 1.4, {
 		full_punch_interval = 1.4,
+		punch_attack_uses = 0,
 		damage_groups = {fleshy = amount},
 	}, nil)
 	grug_core.in_ability_punch = false
