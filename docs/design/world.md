@@ -510,8 +510,11 @@ elsewhere:
   the isle becomes the safe way to farm the deep band.
 
 **Lava lakes are a `register_on_generated` VoxelManip pass** (decided
-2026-08-08), in the same file as the continent ocean mask and the camp
-platforms (`grug_mapgen/structures.lua`), plus **cheap
+2026-08-08), next to the continent ocean mask
+(`grug_mapgen/ocean_mask_mapgen.lua`, in the mapgen environment since
+WP36) and the camp platforms (`grug_mapgen/structures.lua`, main
+environment) — pure voxel work with no need of `grug_core`, mod storage
+or the POI registry belongs in the mapgen env — plus **cheap
 `ore_type = "blob"` lava pockets** in `group:grug_stratum` rock for
 ambience. Only a pass can express what the worked example actually
 promises — a *flat, connected* lava surface with an air dome over it and

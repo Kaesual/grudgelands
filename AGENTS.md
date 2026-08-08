@@ -423,13 +423,30 @@ Details + line numbers in [docs/research/](docs/research/).
   sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
   giant spider, stone + mesa golem); `default:stone` itself carries
   `grug_stratum = 1`, so the group alone is the complete predicate.
-  The two things biomes cannot express live in one
-  `register_on_generated` VoxelManip pass (`grug_mapgen/structures.lua`):
-  the **continent ocean mask** (two mirrored continent rectangles;
-  a coast noise insets them by 0..150 nodes INWARD only — so the strait is
-  guaranteed by construction, not by luck — surface cap + flood outside,
-  taper inward, chunk-box fast path skips inland/deep chunks) and the
-  **six race-capital camp platforms** (terrain-adaptive height from
+  The two things biomes cannot express live in VoxelManip passes, and
+  since WP36 in **two different Lua environments** — the split is the
+  rule, not a detail: a pass that only needs the chunk belongs in the
+  **mapgen env** (`core.register_mapgen_script`), a pass that needs
+  `grug_core`, mod storage or the POI registry cannot go there at all
+  and stays in `register_on_generated` in the main env.
+  The **continent ocean mask** is the first kind
+  (`grug_mapgen/ocean_mask_mapgen.lua`; two mirrored continent
+  rectangles; a coast noise insets them by 0..150 nodes INWARD only — so
+  the strait is guaranteed by construction, not by luck — surface cap +
+  flood outside, taper inward, box fast path skips inland/deep chunks;
+  it carves up to **`emax.y`**, not `maxp.y`, because the engine places
+  decorations up to the emerged top edge — `mg_decoration.cpp:424` — and
+  clamping to `maxp.y` is what left floating tree crowns over the water).
+  Its geometry (`column_cap`, a pure function of x/z) lives in
+  `grug_mapgen/geometry.lua`, which **both** environments `dofile`; the
+  continent rectangle itself comes from `grug_core` and reaches the
+  mapgen env via `core.ipc_set` — never copy those constants.
+  A `run_at_every_load` LBM in `grug_mapgen/ocean_mask.lua` heals worlds
+  generated before that fix; it is idempotent precisely because
+  `column_cap` is (x, z)-pure.
+  The **six race-capital camp platforms** are the second kind
+  (`grug_mapgen/structures.lua`, with the outposts and bandit camps;
+  terrain-adaptive height from
   `core.get_spawn_level` at the anchor − 2, resolved lazily in
   `grug_core.get_camp_platform_y` and persisted per race id in mod storage;
   a footprint heightmap median in `grug_mapgen` covers the many positions
