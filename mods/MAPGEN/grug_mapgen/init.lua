@@ -52,6 +52,44 @@ core.set_mapgen_setting_noiseparams("mg_biome_np_humidity", {
 	flags = "eased",
 }, true)
 
+-- Climate BLEND noise (decided 2026-08-08, D3). The engine adds these two
+-- fields on top of the heat/humidity fields above (mg_biome.cpp:163-173 and
+-- :180-196) and their only job is to fray the voronoi borders between biome
+-- climate points. We never set them, so they ran at the engine defaults
+-- (scale 1.5, spread 8, mg_biome.h:153-154) — a per-node dither with a
+-- fringe of ~19 nodes, invisible next to a 3000-node continent.
+--
+-- offset 0 / scale 4 / spread 32 / octaves 2 / persist 1.0 gives ~45 nodes of
+-- fingering in ~32-node lobes: coherent fingers instead of dither, ~7.5 % of
+-- the land reassigned near a border. Seeds stay at the engine's 13 / 90003 —
+-- they are only "which noise", not a tuning knob.
+--
+-- HARD CEILING: scale 6. The blend displaces the sampled climate by up to
+-- +-2 * scale in each axis, and the tightest same-continent point pair
+-- (elf forest 70/60 <-> deep forest 60/75) is 18.0 units apart; above ~6 the
+-- displacement exceeds half that and the border salt-and-peppers instead of
+-- fingering. Every new climate point must keep that 18.0 floor.
+--
+-- COSTS NOTHING: all four climate noises are computed for every mapchunk
+-- regardless (mg_biome.cpp:181-194), so scale/spread change no work at all.
+-- Needs a FRESH WORLD like every override_meta setting above.
+--
+-- `flags = "eased"` for the same reason as the two noises above: it is
+-- spelled out for readability and changes nothing, because a Lua
+-- noiseparams table without `flags` gets NOISE_FLAG_DEFAULTS
+-- (c_content.cpp:2070-2073) and 2D noise treats DEFAULTS as eased
+-- (noise.cpp:325-326). Only 3D noise needs it spelled out to be eased.
+core.set_mapgen_setting_noiseparams("mg_biome_np_heat_blend", {
+	offset = 0, scale = 4, spread = {x = 32, y = 32, z = 32},
+	seed = 13, octaves = 2, persist = 1.0, lacunarity = 2.0,
+	flags = "eased",
+}, true)
+core.set_mapgen_setting_noiseparams("mg_biome_np_humidity_blend", {
+	offset = 0, scale = 4, spread = {x = 32, y = 32, z = 32},
+	seed = 90003, octaves = 2, persist = 1.0, lacunarity = 2.0,
+	flags = "eased",
+}, true)
+
 local path = core.get_modpath(core.get_current_modname())
 dofile(path .. "/biomes.lua")
 dofile(path .. "/ores.lua")

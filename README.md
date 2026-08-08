@@ -111,8 +111,8 @@ live there. This section is the tour; the docs are the truth.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
-17 mirrored biomes, each race band tipping from its settled variant into
-its wild nature variant as you move outward. Identical base drops on both
+13 mirrored biome bands (23 registrations), each race band tipping from
+its settled variant into its wild nature variant as you move outward. Identical base drops on both
 continents ("same loot, different look"), a full mob roster per biome
 group, spawn parameters, per-race woods and the base-material map.
 
@@ -248,8 +248,8 @@ until 2026-08-08: the 2026-08-07 crafting rework had cut nine new work
 packages on top of the original twenty-five, and the depth design pass
 added WP34 on 2026-08-08.)*
 
-- **World**: two ocean-separated continents with soft coasts, 17 mirrored
-  biomes, six race-capital spawn platforms, the radial mob-level field
+- **World**: two ocean-separated continents with soft coasts, 13 mirrored
+  biome bands, six race-capital spawn platforms, the radial mob-level field
   plus the inverse guard field, the ocean build lock and the deep-sea
   Kraken Guard (WP2, WP18).
 - **Mobs & combat feel**: 38 mobs on a level/tier engine, 10 named rares

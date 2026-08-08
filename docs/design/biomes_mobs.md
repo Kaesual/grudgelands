@@ -55,7 +55,11 @@ z 600..1132 (implemented field, see below); inner ring ≤ ~550 radial
 from capital (front side exact); outer ring beyond;
 war coast z 100..300. Race bands (fixed compass): west x ≤ −500,
 center −700..700, east ≥ 500 — Accord W/C/E = Dwarf/Human/Elf, Throng
-W/C/E = Undead/Orc/Troll.
+W/C/E = Undead/Orc/Troll. These are the *narrative* band bounds
+(`grug_core.REGION_*`); the biome cuboids that actually generate the
+ground are §1.3 and no longer line up with them — the capital carve
+moved the settled bands' inner edges to |x| ≥ 201 and the wild ones to
+|x| ≥ 801.
 
 The radial level field is **z-asymmetric** (WP18): the strait-facing
 front uses the wider scale 1000, the back side 775, so the approach to
@@ -93,9 +97,24 @@ Continent column: **A** = Elandor (Accord, south), **T** = Kragmar
 | 15 | grug_ocean | both | sand-bottom ocean | y < 1 | — |
 | 16 | grug_underground | both | caves (existing) | y ≤ −256 | depth axis |
 
-`grug_crags` additionally registers an alpine sibling
-**`grug_crags_snowy`** (same cuboid and climate point, y ≥ 80, snowblock
-top — §1.3), so the world holds **17 biome registrations**.
+The table lists **bands**, not registrations. Four bands ship as several
+registrations each, because a cuboid cannot express what they need:
+
+- `grug_crags` has the alpine sibling **`grug_crags_snowy`** (same cuboid
+  and climate point, y ≥ 80, snowblock top — §1.3).
+- the capital-biome carve (§1.3, decided 2026-08-08) splits the centre
+  band into a narrow belt slab plus a front and a back slab —
+  **`grug_savanna`/`_front`/`_back`** and
+  **`grug_meadows`/`_front`/`_back`** — and `grug_deep_forest` into
+  **`grug_deep_forest`** (back), **`_front`** and **`_east`**.
+
+So the world holds **23 biome registrations**. Every slab of a band
+carries the *same* `node_top`, flora and mob roster as its parent — the
+split is pure geometry. That is also the landmine: a decoration or ore
+def that names only the parent silently loses the other slabs (the name
+it *does* list resolves, so nothing warns), which is why
+`grug_mapgen/decorations.lua` keeps one `MEADOWS`/`SAVANNA`/`DEEP_FOREST`
+list and `ores.lua` names all thirteen dirt biomes.
 
 War coast is **not** its own biome (decided 2026-08-06): it uses the
 local band's settled biome plus a battlefield decoration set (§2,
@@ -107,20 +126,24 @@ All values Throng (z positive); the Accord half of a row registers the
 same cuboid mirrored (z → −z) under its own name and climate point —
 and a pair MAY share a point, because the two continents never overlap.
 Overlaps
-between settled and wild cuboids are deliberately WIDE (~400–500
+between settled and wild cuboids are deliberately WIDE (149–500
 nodes): inside an overlap the heat/humidity voronoi decides per
 position → recurring patches (the patch model, §1.4). `y_max = 31000`,
 `y_min = 4` unless noted.
 
 | Biome | x range | z range | y | heat | humidity | node_top |
 |-------|---------|---------|---|------|----------|----------|
-| grug_savanna / grug_meadows | −700..700 | 100..1500 | ≥4 | 85 / 50 | 35 / 40 | dry_dirt_with_dry_grass / dirt_with_grass |
-| grug_badlands / grug_deep_forest* | −700..700 (*A: −900..1500) | 1100..1700 (*A: 100..1700) | ≥4 | 95 / 60 | 15 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
-| grug_blight / grug_pine_hills | −1250..−500 | 100..1700 | ≥4 | 25 / 30 | 20 / 60 | grug_nodes:blight_dirt / dirt_with_coniferous_litter |
-| grug_bone_forest / grug_crags | −1500..−750 | 100..1700 | ≥4 (crags 4..79) | 15 / 10 | 45 / 30 | grug_nodes:dirt_with_bone_litter / default:gravel |
-| grug_crags_snowy (A only) | −1500..−750 | 100..1700 | ≥80 | 10 | 30 | default:snowblock (dust: default:snow) |
-| grug_jungle_edge / grug_elf_forest | 500..1250 | 100..1700 | ≥4 | 80 / 70 | 70 / 60 | dirt_with_rainforest_litter / grug_nodes:dirt_with_silver_litter |
-| grug_deep_jungle / grug_jungle_fringe | 750..1500 (A: 1150..1500) | 100..1700 | ≥4 | 90 / 85 | 90 / 85 | dirt_with_rainforest_litter / dirt_with_rainforest_litter |
+| grug_savanna / grug_meadows (belt slab) | −349..349 | 600..1200 | ≥4 | 85 / 50 | 35 / 40 | dry_dirt_with_dry_grass / dirt_with_grass |
+| grug_savanna_front / grug_meadows_front | −700..700 | 100..599 | ≥4 | 85 / 50 | 35 / 40 | ” |
+| grug_savanna_back / grug_meadows_back | −700..700 | 1201..1500 | ≥4 | 85 / 50 | 35 / 40 | ” |
+| grug_badlands / grug_deep_forest* | −700..700 (*A: −900..1500) | 1201..1700 | ≥4 | 75 / 60 | 20 / 75 | grug_nodes:mesa_clay / grug_nodes:dirt_with_forest_litter |
+| grug_deep_forest_front (A only) | −900..1500 | 100..599 | ≥4 | 60 | 75 | ” |
+| grug_deep_forest_east (A only) | 801..1500 | 100..1700 | ≥4 | 60 | 75 | ” |
+| grug_blight / grug_pine_hills | −1250..−201 | 100..1700 | ≥4 | 25 / 30 | 20 / 60 | grug_nodes:blight_dirt / dirt_with_coniferous_litter |
+| grug_bone_forest / grug_crags | −1500..−801 | 100..1700 | ≥4 (crags 4..79) | 15 / 25 | 45 / 35 | grug_nodes:dirt_with_bone_litter / default:gravel |
+| grug_crags_snowy (A only) | −1500..−801 | 100..1700 | ≥80 | 25 | 35 | default:snowblock (dust: default:snow) |
+| grug_jungle_edge / grug_elf_forest | 201..1250 | 100..1700 | ≥4 | 80 / 70 | 70 / 60 | dirt_with_rainforest_litter / grug_nodes:dirt_with_silver_litter |
+| grug_deep_jungle / grug_jungle_fringe | 801..1500 (A: 1150..1500) | 100..1700 | ≥4 | 90 / 85 | 90 / 85 | dirt_with_rainforest_litter / dirt_with_rainforest_litter |
 | grug_swamp † | full | −1700..1700 | 1..6 | 60 | 95 | grug_nodes:mud |
 | grug_beach † | full | −1700..1700 | 1..4 | 50 | 55 | default:sand |
 | grug_ocean † | unlimited | unlimited | −255..3 | 50 | 50 | default:sand |
@@ -130,6 +153,75 @@ carries real land above y = 4 wherever the coast-noise inset is small,
 and a band starting at 160 would leave that strip without ANY biome —
 bare stone, no decorations, no spawn surface.
 
+**The carve box (decided 2026-08-08; the guarantee itself is
+`world.md` §3).** Everything above that looks asymmetric — the belt/
+front/back split of the centre band, the deep-forest hole, the −201/
+−801 inner edges, badlands starting at z 1201 — exists so that inside
+|x| ≤ 800, 600 ≤ |z| ≤ 1200 **only the band that owns the capital in
+that part of the box is eligible at all**. The engine filters the
+cuboids on the raw integer position *before* it reads any climate noise
+(`BiomeGenOriginal::calcBiomeFromNoise`, `mg_biome.cpp:238-244`), so
+containment is a proof, not a probability. Verified: 100 % of a
+±200 box around each of the six anchors, over 200 random seeds, and 0
+land columns anywhere with no eligible biome.
+
+The two edges that carry the guarantee are one node tighter than they
+look, and both numbers are load-bearing:
+
+- the centre belt stops at **±349**, one node short of the side
+  capitals' boxes (550 − 200 = 350);
+- the side settled bands stop at **∓201**, one node short of the centre
+  capital's box (0 + 200).
+
+They therefore **overlap by 149 nodes inside the belt** instead of
+meeting at a line. Making them merely contiguous at ±350 would satisfy
+the guarantee just as well and would draw a brand-new ruler-straight
+600-node cuboid face per side per continent between the capitals — the
+one place every player walks. Measured, the 149-node overlap is worth
+~4 700 nodes of extra *organic* (wandering) border and ~150 fewer
+straight ones. Outside the belt the front/back slabs restore the full
+**499-node** centre↔side overlap (wider than the 201 nodes the shipped
+registrations had).
+
+**Climate points moved 2026-08-08** (`grug_badlands` 95/15 → **75/20**,
+`grug_crags`/`grug_crags_snowy` 10/30 → **25/35**). Over the land
+columns the climate field has mean 60.9 / 48.8 and σ 14.7 / 16.8, so
+both old points sat 2–3.5 σ out: they never won inside their overlaps
+and the border collapsed onto a cuboid face as a straight line (the
+crags ↔ pine hills face at x = −1250 was the single worst line in the
+world, 1 132 nodes). The new points sit 32 and 38.5 climate units from
+the mean and split their overlaps roughly evenly. **Floor: 18.0 units
+of separation between any two points that share a cuboid** — the
+distance of the tightest pre-existing pair (elf forest 70/60 ↔ deep
+forest 60/75); badlands sits exactly at it against savanna 85/35.
+`grug_bone_forest` 15/45 and `grug_blight` 25/20 were deliberately left
+alone: they are ~46 units from the mean *both*, i.e. the one pair that
+already contests its overlap symmetrically.
+
+**Climate BLEND noise** (`mg_biome_np_heat_blend` /
+`mg_biome_np_humidity_blend`, set in `grug_mapgen/init.lua`): offset 0,
+**scale 4, spread 32**, octaves 2, persist 1.0, lacunarity 2.0, engine
+seeds 13 / 90003. The engine adds these on top of the heat/humidity
+fields and they are the only knob that softens a *voronoi* border; they
+cannot touch a cuboid face, which is tested before the climate is read.
+The engine defaults (1.5 / 8) were a per-node dither; 4 / 32 gives
+~45-node fingering in ~32-node lobes. **Hard ceiling scale 6** — above
+that the displacement exceeds half the 18.0-unit point floor and
+borders salt-and-pepper. All four climate noises are computed for every
+mapchunk anyway, so this costs nothing at runtime. **Needs a fresh
+world** (`override_meta` rewrites `map_meta.txt`).
+
+**Known gap, pre-existing, not fixed here**: `grug_jungle_fringe` wins
+only ~0.08 % of the land. Its cuboid is fully contained in the
+deep-forest east wing, and 60/75 sits far closer to the field mean than
+85/85, so the Accord east flank is deep forest, not jungle fringe —
+which costs the Accord side its **crimson lotus T3** source (§2) and
+puts Silkfang (§3.3) outside its named habitat. No climate point that
+is still a rainforest can beat 60/75; the fix is geometric (cap the
+east wing at x 1250 and leave the flank strip to the fringe) and needs
+its own pass, because it moves shares, §1.5 level continuity and the
+T3 herb supply together.
+
 † The three universal biomes are registered **once**, not as a mirrored
 pair — a biome name may exist only once in the engine. Swamp and beach
 therefore use a z-symmetric cuboid, and `grug_ocean` is x/z-**unlimited**:
@@ -138,16 +230,31 @@ cuboid, and without an unlimited ocean they would have no biome at all
 (no seabed filler, no dungeon nodes, no cave liquid).
 
 Notes:
-- grug_deep_forest (Accord) is ONE biome with a wide cuboid spanning
-  the human back-country AND the elf band — its point loses to the
-  settled points in core/inner (their cuboids end at z 1500 / x 1250),
-  and wins uncontested beyond → settled inner, patchy middle, wild
-  outer, no hard seams.
-- Extreme points (95/15, 10/30, 90/90) need the climate noise to
+- grug_deep_forest (Accord) is the wide back-country/elf-band forest —
+  its point loses to the settled points in core/inner (their cuboids
+  end at z 1500 / x 1250) and wins uncontested beyond → settled inner,
+  patchy middle, wild outer, no hard seams. Since the carve it is three
+  registrations with the capital belt cut out of the middle; a single
+  cuboid cannot express a hole.
+- The outer points (90/90, 15/45, 60/95) need the climate noise to
   actually reach them: WP18 sets `mg_biome_np_heat`/`np_humidity` to
-  offset 50 / scale 35 (engine defaults otherwise; the `eased` flag has
-  to be passed explicitly or a Lua noiseparams table drops it), so all
-  points are reachable. Verify in a test world before tuning shares.
+  offset 50 / scale 35 (engine defaults otherwise; the `eased` flag is
+  spelled out for readability — a Lua noiseparams table without `flags`
+  gets `NOISE_FLAG_DEFAULTS`, which 2D noise already treats as eased,
+  so only 3D noise really needs it), so all points are reachable.
+  Verify in a test world before tuning shares.
+- **Straight borders are a property of the cuboids, not of the points**
+  (measured 2026-08-08). Moving a point only decides *which* cuboid
+  face the border collapses onto — the total barely moves, because the
+  climate field (spread 1000) is nearly constant across a 450-node
+  overlap. What point tuning does buy is a flatter distribution: the
+  world's worst single line went 1 665 → 1 551 nodes and the western
+  band stopped being one 1 400-node ruler. The carve itself costs
+  ~2 100 nodes of new cuboid-face border (11 343 → 13 441 over both
+  continents), of which ~1 500 are the price of the front/back slabs;
+  dropping them would give 11 947 but cut the centre↔side overlap to
+  149 nodes everywhere. That trade was decided in favour of the wide
+  overlaps.
 - The single shared `grug_ocean` above replaces the per-biome
   sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
   one ocean is simpler and the only way to cover the open sea).
@@ -183,6 +290,30 @@ Notes:
   mosaic: settled patches deep in the wild zone and wild patches near
   the core, pure only at the extremes. No extra noise machinery needed
   — this is exactly how the current biomes.lua overlap works, widened.
+  **Exception since the carve**: inside the ±200 box around a capital
+  there is no mosaic at all, by construction (§1.3, `world.md` §3).
+- **Land shares after the carve** (mean over 8 seeds, both continents,
+  slabs folded back onto their band). The carve moves the settled/wild
+  balance of §1.4 noticeably in favour of the *side* settled bands,
+  which is what the civilization gradient of `world.md` §1 asks for:
+
+  | band | before | after | | band | before | after |
+  |---|---|---|---|---|---|---|
+  | savanna | 19.8 % | 10.7 % | | blight | 5.9 % | 10.5 % |
+  | meadows | 15.1 % | 12.0 % | | pine hills | 7.2 % | 10.1 % |
+  | deep forest | 15.3 % | 9.9 % | | elf forest | 8.5 % | 12.1 % |
+  | bone forest | 8.2 % | 7.4 % | | jungle edge | 12.0 % | 16.4 % |
+  | crags | 4.0 % | 6.1 % | | deep jungle | 3.1 % | 3.1 % |
+  | badlands | 0.8 % | 1.7 % | | jungle fringe | 0.09 % | 0.08 % |
+
+  Effect on the §2 gathering split (a herb is bound to its biomes):
+  **healing T1** (gravemoss: pine hills + blight) 13.1 → 20.6 %,
+  **healing T2** (dragonweed: crags + badlands + deep forest + bone
+  forest) 28.3 → 25.0 %, **healing T3** (crimson lotus) unchanged,
+  **spice T1** (sunleaf) 55.4 → 51.2 %. Only T1 moves by more than a
+  third, and it is the *carve* that moves it (+75 % with the old
+  climate points); the D2 point moves pull it back down to +57 %.
+  Nothing gets rarer by more than 12 %.
 - **Settlement pass** (WP13 structure pass, deterministic from world
   seed): candidate points on a jittered grid (~300 ± 100 m) across each
   band. At each candidate, read the biome:
@@ -251,6 +382,12 @@ What is guaranteed now, and how:
   or a `nodes`/zone list changes. `grug_crags_snowy` is the warning:
   it was added in WP18 and no spawn row ever listed
   `default:snowblock`, so an entire biome was mob-free until this fix.
+- The six carve siblings of §1.3 (`grug_savanna_front` …) needed **no**
+  re-derivation and no mob change: the gate is `node_top × zone`, every
+  slab carries its parent's `node_top`, and the carve only ever *removes*
+  biome × zone cells (a band can reach fewer places, never more). The
+  biome names in `grug_mobs/*.lua` are comments only — the spawn rows
+  gate on `nodes`, never on a biome name.
 
 ## 2. Per-biome specs (surface, flora, gathering)
 

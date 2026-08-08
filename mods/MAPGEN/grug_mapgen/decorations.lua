@@ -15,7 +15,17 @@
 --
 -- LANDMINE (AGENTS.md): every `biomes` entry below must name a biome
 -- registered in biomes.lua, otherwise the decoration silently becomes
--- world-wide.
+-- world-wide. An unresolvable single name is only dropped with a warning
+-- (l_mapgen.cpp:412-455); it is a whole list that fails to resolve which
+-- turns the deco unrestricted (mg_decoration.cpp:193-197).
+--
+-- SECOND LANDMINE, since the capital-guarantee carve (biomes.lua, 2026-08-08):
+-- three bands ship as several SIBLING registrations, and a sibling is a
+-- separate biome name. A deco that lists only the parent silently disappears
+-- from the slabs it does not list — no warning, because the parent name
+-- resolves fine. The three lists below are the single place that mapping
+-- lives; never write "grug_meadows", "grug_savanna" or "grug_deep_forest" as
+-- a bare string in a `biomes` list again.
 
 local schem = core.get_modpath("default") .. "/schematics/"
 
@@ -117,16 +127,24 @@ local MUD = "grug_nodes:mud"
 local GRAVEWOOD = "grug_trees:gravewood_tree"
 local JUNGLE = {"grug_deep_jungle", "grug_jungle_fringe"}
 
+-- The three split bands (biomes.lua): belt slab + the slabs the carve box
+-- pushed out of the middle. Same node_top and same flora throughout — the
+-- split is pure geometry, so every deco of the band lists all of its slabs.
+local MEADOWS = {"grug_meadows", "grug_meadows_front", "grug_meadows_back"}
+local SAVANNA = {"grug_savanna", "grug_savanna_front", "grug_savanna_back"}
+local DEEP_FOREST = {"grug_deep_forest", "grug_deep_forest_front",
+	"grug_deep_forest_east"}
+
 --
 -- grug_meadows (Human settled): open grassland, a few oaks.
 --
 
 register_tree("meadows_apple_tree", "apple_tree.mts", GRASS,
-	{"grug_meadows"}, 0.0015)
-register_tree("meadows_bush", "bush.mts", GRASS, {"grug_meadows"}, 0.004)
+	MEADOWS, 0.0015)
+register_tree("meadows_bush", "bush.mts", GRASS, MEADOWS, 0.004)
 for length = 1, 5 do
 	register_plant("meadows_grass_" .. length, "default:grass_" .. length,
-		GRASS, {"grug_meadows"}, 0.06)
+		GRASS, MEADOWS, 0.06)
 end
 
 --
@@ -170,22 +188,22 @@ end
 --
 
 register_tree("deep_forest_apple_tree", "apple_tree.mts", FOREST,
-	{"grug_deep_forest"}, 0.012)
+	DEEP_FOREST, 0.012)
 -- Real aspen (§2): the same .mts as elf_forest_silverwood, but WITHOUT its
 -- replacements. Keep it that way -- silverwood belongs to the elf band only.
 register_tree("deep_forest_aspen_tree", "aspen_tree.mts", FOREST,
-	{"grug_deep_forest"}, 0.008)
+	DEEP_FOREST, 0.008)
 -- apple_log.mts also contains flowers:mushroom_brown; the flowers mod is not
 -- part of the game, so the node is replaced instead of silently dropped.
 register_tree("deep_forest_apple_log", "apple_log.mts", FOREST,
-	{"grug_deep_forest"}, 0.001, {
+	DEEP_FOREST, 0.001, {
 		flags = "place_center_x",
 		place_offset_y = 1,
 		replacements = {["flowers:mushroom_brown"] = "air"},
 	})
 for length = 1, 3 do
 	register_plant("deep_forest_fern_" .. length, "default:fern_" .. length,
-		FOREST, {"grug_deep_forest"}, 0.02)
+		FOREST, DEEP_FOREST, 0.02)
 end
 
 --
@@ -202,12 +220,12 @@ register_tree("crags_snowy_pine_tree", "snowy_pine_tree_from_sapling.mts",
 --
 
 register_tree("savanna_acacia_tree", "acacia_tree.mts", DRY_GRASS,
-	{"grug_savanna"}, 0.002)
+	SAVANNA, 0.002)
 register_tree("savanna_acacia_bush", "acacia_bush.mts", DRY_GRASS,
-	{"grug_savanna"}, 0.004)
+	SAVANNA, 0.004)
 for length = 1, 5 do
 	register_plant("savanna_dry_grass_" .. length,
-		"default:dry_grass_" .. length, DRY_GRASS, {"grug_savanna"}, 0.06)
+		"default:dry_grass_" .. length, DRY_GRASS, SAVANNA, 0.06)
 end
 
 --

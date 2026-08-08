@@ -468,7 +468,8 @@ grug_mobs.register_rare("old_whitefang", {
 })
 
 -- Marrowclaw — Throng west, bone forest (grug_bone_forest cuboid
--- x -1500..-750, §1.3).
+-- x -1500..-801, §1.3; the inner edge moved out from -750 with the
+-- capital-guarantee carve, all three route points are west of it).
 --   (-1050, 1150): dx 750, dz 250 -> n 0.7276 -> L 35.2 -> 35
 --   (-1120, 1060): dx 820, dz 160 -> n 0.7423 -> L 36.0 -> 36
 --   ( -980, 1230): dx 680, dz 330 -> n 0.7287 -> L 35.2 -> 35
@@ -503,7 +504,7 @@ grug_mobs.register_rare("marrowclaw", {
 -- is inside the war-coast cap band (all have |z| > 600).
 --
 
--- Korgan's Bane — Accord west, high crags (grug_crags cuboid x -1500..-750,
+-- Korgan's Bane — Accord west, high crags (grug_crags cuboid x -1500..-801,
 -- §1.3; all three points also sit WEST of the grug_pine_hills cuboid edge at
 -- x -1250, so the patch mosaic around them is crags, not pine hills).
 --   (-1270,  -880): dx 970, dz  20, f 1000 -> n 0.8437 -> L 41.78 -> 42
@@ -564,7 +565,8 @@ grug_mobs.register_rare("silkfang", {
 })
 
 -- Dustwing — Throng centre, badlands back country (grug_badlands cuboid
--- x -700..700, z 1100..1700, §1.3).
+-- x -700..700, z 1201..1700, §1.3; z_min moved in from 1100 with the
+-- capital-guarantee carve, both route z values are well beyond it).
 --   (300, 1500): dx   0, dz 600, f 775 -> n 0.7742 -> L 37.81 -> 38
 --   (400, 1500): dx 100, dz 600, f 775 -> n 0.7791 -> L 38.09 -> 38
 --   (220, 1490): dx   0, dz 590, f 775 -> n 0.7613 -> L 37.07 -> 37
@@ -583,7 +585,8 @@ grug_mobs.register_rare("dustwing", {
 })
 
 -- Emerald Coil — Throng east, deep jungle COAST (grug_deep_jungle cuboid
--- x 750..1500, §1.3).
+-- x 801..1500, §1.3; x_min moved out from 750 with the capital-guarantee
+-- carve, all three route points are far east of it).
 --   (1352,  976): dx 1052, dz  76, f 775 -> n 0.9200 -> L 48.00 -> 48
 --   (1355,  800): dx 1055, dz 100, f 1000 -> n 0.9228 -> L 48.42 -> 48
 --   (1350, 1020): dx 1050, dz 120, f  775 -> n 0.9261 -> L 48.91 -> 49

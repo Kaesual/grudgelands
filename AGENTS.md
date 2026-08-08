@@ -366,8 +366,10 @@ Details + line numbers in [docs/research/](docs/research/).
   `on_rightclick`, HUD `waypoint` elements for quest targets.
 - **Mapgen/biomes** (decided in WP2, reworked in WP18): engine biomes on
   mapgen v7, territory/race-region confinement via the biome definition's
-  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **17 biomes**
-  per `docs/design/biomes_mobs.md` §1.3, every band authored ONCE in
+  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **23 biome
+  registrations** (13 bands, four of which ship as several sibling slabs
+  since the 2026-08-08 capital-guarantee carve, plus the four universal
+  ones) per `docs/design/biomes_mobs.md` §1.3, every band authored ONCE in
   Throng coordinates and registered mirrored at z=0 (`register_mirrored`
   in `grug_mapgen/biomes.lua`; the universal swamp/beach/ocean/underground
   are registered once — a biome name may exist only once); the cuboids

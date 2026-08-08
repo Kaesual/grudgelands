@@ -110,8 +110,9 @@ game (not a mod pack), written in Lua.
       composed of several race-flavored biome regions
 - [x] Continent rework (WP18): two ocean-separated continents with soft
       noisy coastlines (continent ocean mask instead of the old mountain
-      wall), 17 biomes (mirrored bands) per
-      `docs/design/biomes_mobs.md` §1.3,
+      wall), mirrored biome bands per
+      `docs/design/biomes_mobs.md` §1.3 (23 registrations since the
+      2026-08-08 capital-biome carve),
       guaranteed strait and coastal ocean, deep-sea guard mob
 - [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
       field + `guard_level_at` (mobs and guards actually scale with them
