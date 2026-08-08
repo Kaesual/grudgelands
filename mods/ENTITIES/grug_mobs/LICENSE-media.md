@@ -11,6 +11,13 @@ never on ContentDB).
 `animalworld` / `mobs_mc` needs per-file license verification, which is
 deferred to a later work package.
 
+**Re-verified 2026-08-08 (WP36/0b)** against the `reference_projects/`
+submodules, now that they pin exactly the commits quoted below: every one of
+the 21 `.b3d` files in `models/` is **byte-identical** (`cmp`) to the upstream
+file its row names, so every "Modifications: none" claim in §1.1/§3/§4/§5 is
+proven, not asserted; the five license statements were re-read in the source
+repos. See §8 for the animation audit of the same 21 meshes.
+
 ## Retint recipe `R`
 
 All pre-baked tint variants below were produced with ImageMagick 7 using one
@@ -273,3 +280,83 @@ A code-only GPL-3.0 text with no media statement does not clearly license the
 `.b3d`/`.png` files, so **no paleotest media was imported**. The decided
 fallback applies: the Raptor family is served by the **Jungle Lynx**
 (`grug_mobs_jungle_lynx.png` on `grug_mobs_panther.b3d`, §3 above).
+
+---
+
+## 8. Animation audit of every vendored `.b3d` (WP36/0b, 2026-08-08)
+
+AGENTS.md "Project structure": **imported meshes must be animated** — a mesh
+without `ANIM`/`BONE`/`KEYS` chunks slides instead of moving. This section is
+the evidence that the rule holds for everything the game ships, so a future
+session does not have to re-derive it.
+
+**Result: all 21 meshes in `models/` are animated** (plus `character.b3d`
+from `player_api`, listed for completeness — its license lives in that mod's
+own `README.txt`: model by MirceaKitsune with later fixes, CC BY-SA 3.0).
+Nothing had to be replaced, so no new media was imported and no license row
+below §7 changed. The `.obj` files in `mods/BASE/default/models/` (torch,
+open chest) are static **node** models — the rule does not apply to them.
+
+**How to reproduce**: B3D is a chunked binary format (`BB3D` → `NODE` →
+`BONE`/`KEYS`/`ANIM`/`MESH`), so it must be parsed, not grepped. Walk the
+chunk tree reading `<4-byte tag><int32 size>`; note the two traps —
+`NODE` is followed by a zero-terminated name plus 10 floats (position,
+scale, quaternion) before its subchunks, and `MESH` is followed by an
+`int32 brush_id` before *its* subchunks. `KEYS` has a flag word
+(1 = position, 2 = scale, 4 = rotation) that fixes the per-key stride.
+
+**The frame count comes from the keys, not from `ANIM`.** The engine's B3D
+reader parses the `ANIM` chunk's frame count into a local variable that is
+explicitly marked *"not stored/used"* and discards it
+(`reference_projects/luanti/irr/src/CB3DMeshFileLoader.cpp:615-641`);
+`SkinnedMesh::getMaxFrameNumber` answers from the animation's `end_frame`
+(`irr/src/SkinnedMesh.cpp:43-46`), i.e. the last keyframe. Several
+`animalworld` meshes carry a *lower* `ANIM` count than they have keys
+(Kobra says 249, keys run to 350) — trusting `ANIM` would have produced
+false positives here.
+
+| Mesh | Chunks | Keyed joints | Weights | Keyframes | Frame range | Def(s) using it | Def range | Verdict |
+|------|--------|--------------|---------|-----------|-------------|-----------------|-----------|---------|
+| `character.b3d` | ANIM+BONE+KEYS | 6 | 1008 | 1326 | 1..221 | `bandit.lua`, `guard.lua`, `mirefolk.lua`, `grug_traders/vendors.lua` | 0..198 | animated, in range |
+| `grug_mobs_bear.b3d` | ANIM+BONE+KEYS | 11 | 2400 | 891 | 1..81 | `bear.lua` | 0..40 | animated, in range |
+| `grug_mobs_boar.b3d` | ANIM+BONE+KEYS | 8 | 1344 | 656 | 1..82 | `boar.lua`, `boar_variants.lua` | 0..40 | animated, in range |
+| `grug_mobs_bog_ooze.b3d` | ANIM+BONE+KEYS | 2 | 120 | 40 | 1..20 | `bog_ooze.lua` | 1..20 | animated, in range |
+| `grug_mobs_crocodile.b3d` | ANIM+BONE+KEYS | 15 | 360 | 6750 | 1..500 | `crocodile.lua` | 0..350 | animated, in range |
+| `grug_mobs_eagle.b3d` | ANIM+BONE+KEYS | 18 | 432 | 6300 | 1..350 | `eagle.lua` | 0..350 | animated, in range |
+| `grug_mobs_gull.b3d` | ANIM+BONE+KEYS | 12 | 1984 | 1920 | 1..160 | `carrion_crow.lua`, `gull.lua` | 1..160 | animated, in range |
+| `grug_mobs_hyena.b3d` | ANIM+BONE+KEYS | 16 | 384 | 5600 | 1..350 | `hyena.lua` | 0..350 | animated, in range |
+| `grug_mobs_jungle_ape.b3d` | ANIM+BONE+KEYS | 20 | 480 | 9402 | 1..700 | `jungle_ape.lua` | 0..450 | animated, in range |
+| `grug_mobs_kraken.b3d` | ANIM+BONE+KEYS | 9 | 1944 | 369 | 1..41 | `kraken.lua` | 1..41 | animated, in range **(def fixed, see below)** |
+| `grug_mobs_panther.b3d` | ANIM+BONE+KEYS | 17 | 408 | 5950 | 1..350 | `jungle_lynx.lua`, `panther.lua` | 0..350 | animated, in range |
+| `grug_mobs_parrot.b3d` | ANIM+BONE+KEYS | 11 | 3200 | 1661 | 1..151 | `parrot.lua` | 0..120 | animated, in range |
+| `grug_mobs_rabbit.b3d` | ANIM+BONE+KEYS | 13 | 3456 | 546 | 1..42 | `rabbit.lua` | 0..20 | animated, in range |
+| `grug_mobs_ram.b3d` | ANIM+BONE+KEYS | 7 | 2016 | 1134 | 1..162 | `ram.lua` | 0..40 | animated, in range |
+| `grug_mobs_serpent.b3d` | ANIM+BONE+KEYS | 15 | 360 | 4550 | 1..350 | `serpent.lua` | 0..350 | animated, in range |
+| `grug_mobs_skeleton.b3d` | ANIM+BONE+KEYS | 8 | 5824 | 1376 | 1..172 | `skeleton_archer.lua`, `skeleton_raider.lua` | 0..90 | animated, in range |
+| `grug_mobs_spider.b3d` | ANIM+BONE+KEYS | 11 | 7128 | 506 | 1..46 | `spider.lua` | 0..45 | animated, in range |
+| `grug_mobs_stag.b3d` | ANIM+BONE+KEYS | 13 | 4420 | 1950 | 1..150 | `stag.lua` | 1..119 | animated, in range |
+| `grug_mobs_stone_golem.b3d` | ANIM+BONE+KEYS | 6 | 1440 | 384 | 1..64 | `golem.lua` | 0..63 | animated, in range |
+| `grug_mobs_wolf.b3d` | ANIM+BONE+KEYS | 12 | 2904 | 1104 | 1..92 | `wolf.lua` | 0..40 | animated, in range |
+| `grug_mobs_zebra.b3d` | ANIM+BONE+KEYS | 11 | 264 | 2200 | 1..200 | `zebra.lua` | 0..200 | animated, in range |
+| `grug_mobs_zombie.b3d` | ANIM+BONE+KEYS | 7 | 2160 | 847 | 1..121 | `zombie.lua` | 0..59 | animated, in range |
+
+### 8.1 The one defect the cross-check found: the Kraken
+
+A def pointing at frames the mesh does not have is the same visible bug as an
+unanimated mesh, so the audit compared every `animation` table against the
+mesh's real key range. One mismatch: `kraken.lua` used **1..60** on a mesh
+whose nine joints each carry exactly 41 keys (`frames=1..41`) — the def was
+copied from VoxeLibre's `mobs_mc/squid.lua:36-43`, which has the same
+mistake. Frames 42..60 do not exist, so the client clamped to the last key
+and the tentacles froze for the tail third of every loop. Fixed to **1..41**
+in all four clips (stand/walk/run/punch); playback speeds unchanged, so the
+swim cycle is now continuous instead of stuttering.
+
+### 8.2 The Lord-of-the-Test rat never shipped
+
+`docs/reference_projects.md` records the LotT rat as the known unanimated
+case. It is **not in this mod** — there is no rat mesh, texture or mob def,
+and the animalia substitution the note describes did happen for the two
+models actually taken from that repo (§4: reindeer→Stag, song bird→Gull and
+Carrion Crow). Nothing to fix. animalia's un-imported rat/bat/frog/owl/cat/fox
+roster stays available under the MIT license already cleared in §4.
