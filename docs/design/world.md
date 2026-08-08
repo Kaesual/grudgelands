@@ -366,6 +366,44 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 - **Phase 3 — the Nether dragon lord** as the demonic story capstone
   (story.md; only if the population supports larger raids).
 
+## 4c. The T6 band below −1000 is endgame territory (decided 2026-08-08)
+
+**The deepest stratum is content, not only a material tier.** Below
+**−1000** the rock is Abyssal Rock (§2 R6, `items_crafting.md` §3.0.4)
+and nothing but a **T6 tool** breaks it, so the band is unreachable
+until the very top of the material ladder. That makes it the one region
+of the world whose *entry requirement* is endgame by construction — the
+same role §4b's apex bosses fill by level, expressed as a depth instead
+of as a boss, which is why the rule lives next to them and not in §2:
+§2 R6 owns **who may break the rock**, this section owns **what is down
+there waiting**.
+
+**Decided: the band's role is to carry endgame content** — dangerous
+underground *environments*, the worked example being **lava lakes**,
+together with a creature roster appropriate to the players who can get
+there. The depth axis has always been the "alternative progression path
+to travelling out" (`combat_stats.md` §3); below −1000 it stops being
+only a resource axis and becomes a destination, so that the last pick on
+the ladder buys a place to go and not merely a harder wall.
+
+Two constraints the content has to respect, both already decided
+elsewhere:
+
+- **Regular mobs still cap at level 60** (`combat_stats.md` §3). What
+  makes the band deadly is the environment and the **rate of arrival**,
+  not bigger numbers — a level-60 roster under permanent pressure, never
+  a level-80 one.
+- **This is a continental band, not an isle one.** A housing isle runs
+  through the same six strata (§5.3) but is protected, private and free
+  of hostile spawns (§5.6); an isle's step 6 buys **treasure** (§5.4),
+  the continent's −1000 buys **danger**. The two must not converge, or
+  the isle becomes the safe way to farm the deep band.
+
+**The content itself is not authored yet** — the creature roster,
+whether lava lakes arrive as a biome, a decoration or a structure pass,
+and how the band relates to §4b's apex bosses are open in
+`TODO-design-depth.md` **D10**.
+
 ## 5. Housing: the King's isles (player-owned)
 
 Decided 2026-08-07 — replaces the guild-owned ocean plots of the
@@ -519,6 +557,40 @@ Two grantable levels, managed by the owner at the pad:
 - No hostile spawns, no PvP, and **no workbenches, trainers or vendors**
   on isles (inventory_equipment.md §4 keeps workbenches in capitals and
   villages) — the isles must not become a substitute capital.
+
+### 5.7 Farming on the isle: cooking ingredients only (decided 2026-08-08)
+
+- **A player may farm on their own isle.** It is protected ground (§2
+  R5) inside the owner's own build box (§5.1), which makes it the one
+  place in the world where a planted crop is safe from somebody else's
+  spade — so the isle is where farming belongs, and the isle grant is
+  what hands a character a field.
+- **Only cooking ingredients grow there.** That is exactly the `[food]`
+  and `[spice Tn]` lines of `biomes_mobs.md` §2 — potatoes, corn,
+  apples, berries, melon, plus the three spices sunleaf, marshbloom and
+  stormkelp — and nothing else.
+- **Never the healing herbs.** Gravemoss, dragonweed and crimson lotus
+  are Alchemist-gathered and **never farmable, anywhere**
+  (`biomes_mobs.md` §2): they grow on bare stone, gravel, mesa clay,
+  dead-wood litter and jungle floor — ground no plough touches — and
+  that is what keeps every healing herb bound to a journey into its own
+  biome. A private isle must not become the shortcut around that.
+- **Never the found-only ingredients.** Mushrooms, wild cocoa and rock
+  salt stay found in the world (`biomes_mobs.md` §2), so the top of the
+  cooking ladder stays a reason to travel — T6 cooking needs
+  level-50+ ingredients (`items_crafting.md` §3.7) — and "find cocoa in
+  the jungle" stays usable as a quest goal.
+- **The restriction is on the plant set, not on who uses the harvest.**
+  Spices are cooking ingredients *and* Alchemist reagents
+  (`biomes_mobs.md` §2), so a farmed spice is still a spice. What an
+  isle can never produce is a **healing herb** — and the Alchemist's
+  tier keystones (`items_crafting.md` §2.3) and its potion recipes
+  (§3.6) all call for one, so no part of the alchemy ladder becomes
+  farmable.
+- **Farming itself is post-MVP**: the crop layer is `BACKLOG.md`'s
+  **WP32** (Phase 2), and it adapts an existing farming mod rather than
+  inventing one. This section decides the *place* and the *permitted
+  set*; the plant list stays `biomes_mobs.md` §2's.
 
 ## 6. Travel: waypoints & Home Stone
 

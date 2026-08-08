@@ -225,10 +225,28 @@ design (`group_attack` stays on).
 
 - Natural regen: **0.5% max HP/s out of combat, 0 in combat** — in-combat
   healing is the healer's/potion's job.
-- **Food**: while resting (standing still; interrupted by damage or
-  movement) **4% max HP/s** → full in ~25 s. The solo "detour".
+- **Food — raw restores, cooked restores AND buffs** (decided
+  2026-08-08; `items_crafting.md` §3.7 carries the cooking side and the
+  two must not drift apart). Both work only **while resting** — standing
+  still, interrupted by damage or by movement:
+  - **Raw / plain food: regeneration only, no buff.** **4 % max HP/s**
+    → full in ~25 s. The solo "detour", unchanged.
+  - **Cooked food: a restore *and* a buff.** The restore uses this same
+    resting channel at **twice the rate, 8 % max HP/s**, and a dish
+    carries the percentage of max HP one serving delivers (worked
+    example: potatoes with boar steak, 30 % of max HP plus a Strength
+    buff). Cooking buys **speed of rest**, never an instant heal — the
+    instant slot belongs to the potion below, which is the only thing
+    in the game that restores health in combat. The buff is Well Fed
+    (`items_crafting.md` §3.7).
+  - **One food buff at a time; the most recently eaten food wins** and
+    replaces the running one. It still stacks with one elixir
+    (`items_crafting.md` §3.6/§10 P3).
 - **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
-  craft; weak 15% variant sold by vendors).
+  craft; weak 15% variant sold by vendors). Deliberately the same order
+  of magnitude as a cooked dish: the potion is paid for in cooldown and
+  works mid-fight, the dish is paid for in ~4 s of standing still and
+  dies to one hit.
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
   treadmill in the MVP.

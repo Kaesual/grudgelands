@@ -12,7 +12,8 @@ stays findable; the rule itself lives in `docs/design/` (AGENTS.md
 "Documentation layers").
 
 Groups: **A** the depth curve and spawn pressure · **B** renewable
-resources · **C** the housing isles.
+resources · **C** the housing isles · **D** the T6 band as endgame
+content.
 
 ---
 
@@ -332,6 +333,80 @@ clusters and, for the amplifier, WP5.
 
 ---
 
+## D. The T6 band as endgame content
+
+### D10 — What is down there below −1000: the roster and the environments
+
+**Decision:** the band's **role** is decided 2026-08-08 → landed in
+`world.md` §4c, cross-referenced from `items_crafting.md` §3.0.1's T6
+row. Decided there: below −1000 is the T6 stratum, reachable only with a
+T6 tool, and it is intended to **carry endgame content** — dangerous
+underground environments, the owner's own example being **lava lakes
+with dangerous creatures around them**, plus a level-appropriate roster.
+**The content is open, and it is this group's only question.**
+
+Two decisions in this file already fence it in: **A4** caps regular mobs
+at 60, so the band's danger has to come from the environment and from
+the **rate of arrival**, not from bigger stats; **A2**'s player-centric
+phase-in is the mechanism that delivers that rate, and it already needs
+a roster of its own.
+
+Open:
+
+- **The creature roster.** Which families live down there, and whether
+  they are the A2 phase-in set extended (one roster, one `aoc`
+  accounting) or a second, place-bound set that spawns from the rock the
+  way the cave rows do. Recommendation: **extend A2's set** — the
+  fiction is the same one (`story.md` §1: the servants leak through from
+  below), and a second mechanism would have to re-solve the per-name
+  `aoc` problem A2 exists to route around.
+- **Lava lakes: biome, decoration, ore blob or structure pass?** The
+  four are not equivalent here:
+  - **(a) A deep biome.** Biomes take y bounds and the underground
+    biome is already registered once (`grug_mapgen/biomes.lua`), but the
+    six strata are **stratum ores registered last** and convert
+    `default:stone` wholesale (`items_crafting.md` §3.0.4), so a
+    biome's own stone would be overwritten and only its cave/deco layer
+    would survive. A biome buys less here than it looks like it does.
+  - **(b) An `ore_type = "blob"` pass** of lava inside
+    `group:grug_stratum` rock. Cheapest by far, rides the existing ore
+    stage, and needs no new machinery — but a blob has no shape
+    control, so it makes pockets, not lakes with a surface and a shore.
+  - **(c) A `register_on_generated` VoxelManip pass**, in the same file
+    as the continent mask and the camp platforms
+    (`grug_mapgen/structures.lua`). The only option that can express a
+    *flat* connected lava surface with an air dome over it — i.e. an
+    actual lake you stand at the edge of. Costs a pass on the hot path
+    and a chunk-box fast path to keep it cheap.
+  - **(d) A schematic/structure set** placed by WP13's structure pass,
+    which would also give the band ruins, bridges and lairs rather than
+    only terrain.
+
+  Recommendation: **(c) for the lakes plus (b) for cheap ambience
+  pockets**, and (d) later for anything with walls.
+- **How the band relates to `world.md` §4b's apex bosses.** §4b's stage
+  1 is a *visible* outdoor carrot (the Mountain Wyrm at the outer ring,
+  "you can see it at level 8 and fight it at 50"), which is the exact
+  opposite of a boss nobody can reach without a T6 pick. Open: does the
+  deep band get an apex of its own — the lair/hoard/arena tech already
+  exists and is generic — or does it stay roster-plus-environment, with
+  the bosses left on the surface? Recommendation: **roster-plus-
+  environment for the MVP**, a deep apex as a §4b stage of its own once
+  the band has content at all, so the two are not authored at once.
+- **Whether the band gets its own drop layer.** `items_crafting.md` §5's
+  loot table has a "Depth axis" row that today lists only materials
+  ("cave mobs as per surface tier"). A level-60 roster in a place only a
+  T6 player reaches is the natural home for T6 gear drops, and that is a
+  §5 edit, not a §4c one.
+
+*Lands in*: `world.md` §4c (the environments and the band's content
+role), `biomes_mobs.md` §3/§4 (the mob rows and their spawn parameters),
+`items_crafting.md` §5 (the drop layer, if it gets one).
+**Decision:** role decided 2026-08-08; content **open**. Blocks the
+depth WP's content half, and WP13 if the lakes turn out to be structures.
+
+---
+
 ## Status summary
 
 | # | Question | Blocks |
@@ -345,3 +420,4 @@ clusters and, for the amplifier, WP5.
 | C7 | ~~Abyssal Crystal continental below −1000~~ — decided 2026-08-08; scarcity numbers open | WP26 (reads §3.0.2) |
 | C8 | What is in an isle's rock — the recommendation contradicts the first instinct on purpose | **WP24** |
 | C9 | Six isle-exclusive materials; the affix amplifier's cap re-check | **WP24**, WP5 |
+| D10 | The T6 band's content — roster, lava lakes, relation to the apex bosses (the band's **role** is decided 2026-08-08 → `world.md` §4c) | the depth WP, WP13 |

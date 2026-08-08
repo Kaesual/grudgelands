@@ -8,8 +8,9 @@ without re-opening the design.
 Neighbouring rules: the war-coast funnel `world.md` §1, travel and
 waypoints `world.md` §6, ocean zones
 `world.md` §2b, housing isles `world.md` §5, the four mastery tiers
-`items_crafting.md` §2.1, universal skills `professions.md` §1, sinks
-`economy.md` §4 and `items_crafting.md` §8.4.
+`items_crafting.md` §2.1, universal skills `professions.md` §1, the mob
+speed pillar `combat_stats.md` §3 and the chase/leash model
+`combat_stats.md` §4, sinks `economy.md` §4 and `items_crafting.md` §8.4.
 
 ## 1. Riding is a universal skill
 
@@ -40,6 +41,10 @@ level anchors — a player learns one vocabulary, not two:
   nodes/s** (engine default `movement_speed_walk = 4`,
   `reference_projects/luanti/src/defaultsettings.cpp:520`; the game
   does not override it).
+- **Every tier is faster than every mob** — aggressive mobs run 4.4
+  (`combat_stats.md` §3). That is deliberate, and it is exactly why
+  **incoming damage dismounts the rider** (§3.1): the speed is
+  permanent, the immunity to the mob game is not.
 - The two flying tiers are the milestones — a flying mount is **the**
   travel upgrade of the second half of the game, and Expert is
   deliberately no faster than Journeyman: the first flight buys
@@ -116,6 +121,52 @@ sits clearly under its 1g flagship step.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach
   path, so the player lands on a valid node rather than inside the
   mount's model.
+- **Taking damage dismounts you** (§3.1) — the same detach path again.
+
+### 3.1 Incoming damage dismounts the rider (decided 2026-08-08)
+
+- **Any incoming damage dismounts the rider, immediately.** Damage from
+  any source counts — a mob's melee swing, a ranged attack, an enemy
+  player in PvP, the environment. There is **no threshold and no grace
+  period**: the two crossing rules of §4 warn for 10 seconds because a
+  player cannot see a border, while a hit is unambiguous and the whole
+  point of this rule is that it lands at the moment of the hit.
+- The dismount uses the **same detach path** as every other one (§3), so
+  the rider is set down on a free neighbouring node rather than inside
+  the mount's model.
+
+**Why this rule exists: it is what keeps the speed pillar intact.**
+`combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.4** against
+a player's **4.0** — "evading must never be trivially easy" — and the
+whole mob game is built on top of that one inequality: the **25 m soft
+de-aggro** (`combat_stats.md` §3 — a chasing mob drops to walk speed, so
+fleeing is hard but not impossible) and the **45 m chase give-up** and
+**40 m leash** of `combat_stats.md` §4 all assume the mob can close the
+distance. A mount does **6–8 nodes/s
+permanently** (§1.1) and is therefore faster than every mob in the game.
+Without this rule a mounted player is simply immune to the mob game: no
+chase can ever be won, the soft de-aggro and the leash become
+unreachable by design, and the one number the design leans on hardest
+stops being true.
+
+The same pillar is why the **Swiftness Draught** is capped where it is:
+`items_crafting.md` §3.6 gives it **+8 % for 15 s** and §10 P4 states the
+arithmetic outright — 4.0 × 1.08 = 4.32 < 4.4, so even the alchemist's
+best sprint keeps mobs faster, and the 15 seconds are deliberately short.
+A mount breaks that ceiling permanently and by design; **the dismount is
+what pays for it.** Riding buys travel between fights, never an exit from
+one.
+
+**And it stops being a formality once ranged attackers exist.** Today a
+rider mostly has to walk into a melee swing to lose the mount, but
+skeleton archers already fight at range (`dogshoot`, `combat_stats.md`
+§3), bows are fully catalogued as a Phase-2 enabler
+(`items_crafting.md` §9) and the Rogue/Hunter direction is deferred
+Phase-2 work (`classes.md` §6). From that point on a rider crossing
+hostile or enemy ground can be **brought down at range**, which is
+exactly the counterplay a permanent speed buff needs — and in PvP it is
+the counterplay to mounts, since a player's damage dismounts like any
+other.
 
 ## 4. Where riding is forbidden
 

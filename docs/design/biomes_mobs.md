@@ -276,6 +276,13 @@ keeps every healing herb bound to a journey into its own biome, and it
 gives Cooking a supply line that farming can later take over without
 ever touching alchemy's.
 
+**Where farming happens** (decided 2026-08-08): on a player's **own
+housing isle** (`world.md` §5.7) — protected ground, so a crop is safe
+from another player's spade — and **only cooking ingredients grow
+there**: the `[food]` and `[spice Tn]` lines of this section, never a
+`[herb Tn]` and never a `[food found-only]`. The "Farmable later" column
+above is therefore also the isle's permitted plant set.
+
 **MVP scope**: only the plants listed below spawn — a handful of cooking
 ingredients plus the six herbs. More herbs, more cooking recipes and the
 farming system are one later package.

@@ -74,7 +74,10 @@ live there. This section is the tour; the docs are the truth.
   same statement as what you can wear. Cave walls carry their layer too,
   so a deep cave is no shortcut past the gate — and every stratum drops
   ordinary cobble, because what is gated is access, not building
-  material.
+  material. A better pick also digs **faster**, not only deeper. The
+  bottom layer, **below −1000**, is endgame territory in its own right:
+  lava lakes and a level-appropriate roster behind the last pick on the
+  ladder.
 - **Three race capitals per continent** (you spawn in your own race's),
   24 deterministic military outposts, ambient patrols between them,
   villages and flavor camps.
@@ -190,10 +193,13 @@ Specced, not built. Riding is a **universal skill** on the same four
 mastery tiers, and mounts are **bought with gold, never tamed**: slow
 land, fast land, slow flying, fast flying at 1s / 8s / 30s / 60s — about
 one gold for the whole ladder, and the second-largest thing to save
-towards after housing. The first flight buys *terrain*, not speed. Two
-places refuse you: out over the open sea an **"Exhausted"** debuff
-throws a rider into the water after ten seconds, and on a housing isle
-there is no riding and no flying at all.
+towards after housing. The first flight buys *terrain*, not speed.
+**Taking damage throws you off** — a mount is faster than every mob in
+the game, so it buys travel between fights, never an exit from one.
+Three places refuse you as well: out over the open sea an
+**"Exhausted"** debuff drops a rider into the water after ten seconds,
+on a housing isle there is no riding and no flying at all, and in enemy
+territory a land mount is fine while a flying one is not.
 
 ### Where the journey goes
 

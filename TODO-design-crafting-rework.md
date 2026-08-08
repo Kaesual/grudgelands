@@ -457,6 +457,55 @@ needs the isle exception spelled out.
 **Decision:** _open_ (mechanism) — the *need* is decided. Owner: WP24;
 the mount WP consumes it.
 
+### B22 — The six picks' dig-speed progression: the actual `times`
+
+`items_crafting.md` §3.0.4 decided the **rule** on 2026-08-08 — a
+tier-n pick digs its own stratum and every stratum above it faster than
+the tier below, the gate is access and the `times` are the reward. It
+deliberately did **not** decide the numbers, and today there is no
+authored progression at all: what a player feels is the vendored
+`default` times, re-scaled by WP25 only to *undo* a `maxlevel` side
+effect, not to build a ladder.
+
+**The engine subtlety that makes this more than a table of six
+numbers.** `leveldiff = maxlevel − node level` feeds `real_uses =
+uses · 3^leveldiff` **and**, for `leveldiff > 1`, `time =
+time / leveldiff` (`reference_projects/luanti/src/tool.cpp:394-414`,
+`lua_api.md:2715-2731`). Two consequences for whoever authors this:
+
+- The number a player experiences on a stratum is **not** the `times`
+  entry — it is that entry divided by the leveldiff against *that*
+  stratum. So a part of the wanted speed-up is already free (a pick two
+  tiers above the rock is halved), and it has to be **measured before**
+  more is stacked on top, or the top of the ladder overshoots.
+- Any `times` change has to be re-checked against `uses`, because the
+  same `leveldiff` scales both. That is exactly how WP25's re-tiered
+  bronze pick silently fell from 180 usable blocks to 20.
+
+Options:
+
+- **(a) Author one `times` set per tier from a curve**, then verify the
+  ladder as *effective* seconds in a six-picks × six-strata table — the
+  same shape §3.0.4 already uses for the durability side.
+- **(b) Rely on the engine's `leveldiff` division alone** and author no
+  progression. Free, but it only rewards digging rock *below* your tier
+  and gives nothing at all on your own stratum, which is the half of the
+  rule the owner actually asked for.
+- **(c) A flat per-tier multiplier on the vendored base times.** One
+  number per tier, but it compounds with the leveldiff division instead
+  of accounting for it, so the effective spread at the ends of the
+  ladder is not what the table says.
+
+Recommendation: **(a)**, with the effective-value table as the
+acceptance check, and calibrated in a runtime test rather than derived
+on paper (pattern: `docs/research/wp6_spawn_budget.md`). Author it
+together with the missing picks — T2 has no pick of its own today
+(§3.0.4), so the ladder is being written anyway.
+
+*Lands in*: `items_crafting.md` §3.0.4.
+**Decision:** _open_ (the numbers; the **rule** is decided 2026-08-08).
+Owner: **WP26/WP29**, which author the iron+ picks.
+
 ---
 
 ## C. Two design tensions
@@ -672,31 +721,66 @@ be destructible, and PvP counterplay is D15's dismount instead;
 a loss); **(c)** killable and lost — rejected: 60s of gold deleted by
 one gank.
 
-Recommendation: **(a)**.
+Recommendation: **(a)**, and it got stronger on 2026-08-08: D15's damage
+dismount is now **decided** (`mounts.md` §3.1), so the counterplay
+option (a) leans on exists in the design rather than being promised by a
+sibling question. A hit already takes the rider off the mount; making
+the mount itself destructible on top would only add the gank loss (c)
+was rejected for.
 
 **Decision:** _open_.
 
 ### D15 — Does damage or combat dismount the rider?
 
-The natural hook exists: `grug_core.mark_in_combat` / `in_combat`
-(5 s window, shipped with WP4 and reused by WP6's leash and by
-recovery).
+**Decision (the damage half):** decided 2026-08-08 → landed in
+`mounts.md` §3.1. **Any incoming damage dismounts the rider
+immediately** — a mob's melee or ranged hit, an enemy player, the
+environment — with **no threshold and no grace period**, through the
+same detach path as every other dismount. That is option **(a)** below,
+not the recommended **(c)**.
 
-This is the load-bearing one. Mobs run 4.4 nodes/s (`combat_stats.md`);
-an Apprentice mount does 6 and a Journeyman 8. **Without a rule, a
-mounted player is immune to the entire mob game** — the 25 m soft
-de-aggro and the 40 m leash of WP6 become unreachable by design.
+What the decision turned on:
 
-Options: **(a)** any damage dismounts immediately; **(b)** being
-`in_combat` blocks *mounting* but does not dismount; **(c)** both — damage
-dismounts, and mounting is refused while in combat; **(d)** a damage
-threshold or a cast-like remount delay.
+- **It is a pillar question, not a mount question.** Aggressive mobs run
+  `run_velocity` 4.4 against a player's 4.0 (`combat_stats.md` §3), and
+  the entire chase model hangs off that one inequality — the 25 m soft
+  de-aggro (§3), the 45 m give-up and the 40 m leash (§4). A mount does
+  **6–8 nodes/s permanently** (`mounts.md` §1.1), so without a rule a
+  mounted player is immune to the whole mob game and three shipped WP6
+  numbers become unreachable by design.
+- **The Swiftness Draught is the precedent.** It is capped at +8 % for
+  15 s precisely so that 4.0 × 1.08 = 4.32 stays under 4.4
+  (`items_crafting.md` §3.6, §10 P4). A permanent mount with no rule
+  would have been the one system in the game allowed to ignore a limit
+  a *consumable* has to respect.
+- **Ranged attackers turn it from a formality into a threat.** Skeleton
+  archers already use `dogshoot` (`combat_stats.md` §3), bows are
+  catalogued as a Phase-2 enabler (`items_crafting.md` §9) and the
+  Rogue/Hunter direction is deferred Phase-2 work (`classes.md` §6) — so
+  the rule's teeth grow with the roster instead of needing a second
+  mechanic later.
 
-Recommendation: **(c)**. (a) alone lets a player remount mid-fight; (b)
-alone lets a player ride away from a fight already started.
+**One sliver stays open — mounting *while* in combat.** The decided rule
+answers damage; it does not say whether the mount action is **refused**
+while `grug_core.mark_in_combat` / `in_combat` is true (the 5 s window
+shipped with WP4 and reused by WP6's leash and by recovery). Under the
+damage rule alone a player can remount between two hits and ride away
+from a fight already started, which is the hole the old recommendation
+(c) wanted closed. The hook exists and costs nothing; this needs a
+decision, not an author.
 
-**Decision:** _open_ — this one has to be decided before the WP, not
-during it.
+**This also answers D16's PvP-flag switch**: a player's damage dismounts
+exactly like a mob's, so PvP needs no fifth zone rule of its own — the
+old recommendation to fold that switch into D15 is hereby carried out.
+
+The original options are kept for the record: **(a)** any damage
+dismounts immediately; **(b)** being `in_combat` blocks *mounting* but
+does not dismount; **(c)** both; **(d)** a damage threshold or a
+cast-like remount delay.
+
+*Landed in*: `mounts.md` §3.1.
+**Decision:** damage half **decided 2026-08-08**; **mounting while in
+combat is still open** and wanted before the mount WP, not during it.
 
 ### D16 — Is riding restricted in enemy territory, on the war coast, in PvP, or underground?
 
@@ -720,9 +804,10 @@ the one-line summary.
   enemy-side half is now covered by the territory ban; the **own-side
   half is undecided** — a defender flying along their own war coast is
   still legal under §4.3.
-- **While flagged for PvP.** Untouched. The recommendation to fold it
-  into D15 (the combat dismount) rather than make it a fifth zone rule
-  still stands and is still unanswered.
+- **While flagged for PvP.** **Answered 2026-08-08 by D15**, exactly as
+  the recommendation asked: any incoming damage dismounts the rider
+  (`mounts.md` §3.1) and a player's damage is damage, so PvP never
+  became a fifth zone rule. Nothing is left open in this switch.
 - **Underground.** Untouched. The recommendation below (unrestricted —
   the §3.0.4 depth ladder gates *breaking* rock, not reaching it) is
   still only a recommendation, and D17's flight-ceiling half is its
@@ -749,8 +834,9 @@ away. Fold the PvP switch into D15 rather than making it a fifth zone
 rule.
 
 **Decision:** **enemy territory decided 2026-08-08** (→ `mounts.md`
-§4.3, land yes / flying no). **Still open**: the *own*-side war coast,
-the PvP flag (D15), and underground.
+§4.3, land yes / flying no); **the PvP flag is decided 2026-08-08 too**,
+by D15's damage dismount (→ `mounts.md` §3.1). **Still open**: the
+*own*-side war coast and underground.
 
 ### D17 — Is there a flight ceiling, and what happens over the strait?
 
@@ -868,7 +954,21 @@ ingredient set is decided too, including the found-only three:
 wild cocoa and rock salt as deliberately never-farmable, and §6 maps them
 to both continents.
 
-Open: the **recipes**.
+**Decided 2026-08-08, and it changed what this question is about**: food
+now has a **structure**, landed in `items_crafting.md` §3.7 and
+`combat_stats.md` §5. **Raw / plain food gives regeneration only, no
+buff; cooked food gives both** — a restore *and* a buff. The restore
+runs through §5's **resting** channel (standing still, interrupted by
+damage or movement) at **8 % max HP/s**, twice raw food's 4 %, so cooked
+food is the *faster rest* and the Alchemist's Healing Potion keeps the
+**instant** slot it was given for (30 % instantly, in combat, 60 s
+cooldown, `items_crafting.md` §3.6). And **only one food buff is active
+at a time — the most recently eaten food replaces the running one** (the
+food-side twin of §10 P3's one-elixir rule; food and elixir still stack
+with each other). What is left open is what it always was: the numbers
+per group.
+
+Open: the **recipes**, and now also the **magnitudes**.
 
 - **The recipes per group.** §3.7 names three today — cooked meat/fish,
   Hearty Stew (meat + potato/corn), Hunter's Feast (meat ×2 + melon +
@@ -877,6 +977,19 @@ Open: the **recipes**.
   ingredient *is* the gate, so this list is the level gate.
 - **How Well Fed maps.** §3.7's buff is "+1/+2/+3 Str AND Int for
   15 min **by tier**" — three steps against six groups.
+- **The restore percentage per group** (new with the structure above).
+  §3.7 carries one worked example, the owner's: potatoes with boar
+  steak, **30 % of max HP**. Six groups need six numbers, and they are
+  bounded from above by the potion: a cooked dish may match the potion's
+  30 % because it is paid for in ~4 s of standing still, but a dish that
+  restores *more* than a potion would make the potion pointless outside
+  combat as well as inside it.
+- **The example's own magnitudes do not match the shipped ones**, and
+  E21 has to reconcile them rather than pick silently: the worked
+  example is **+5 Strength for 5 minutes**, while §3.7's Well Fed is
+  **+1/+2/+3 Str *and* Int for 15 minutes**. Different size, different
+  duration, and one stat against two. The structure is what was decided
+  on 2026-08-08; these numbers were not.
 
 Options for the buff mapping: **(a)** two groups per step
 (T1–T2 → +1, T3–T4 → +2, T5–T6 → +3) — no new numbers, nothing to
@@ -890,10 +1003,18 @@ ring — roughly potato/corn (T1), berries/apples (T2), mushrooms (T3),
 melon + marshbloom (T4), rock salt + stormkelp (T5), wild cocoa + outer
 or coast meat (T6). That makes the "find cocoa in the jungle" quest goal
 of §3.7 land on the top group by construction, and keeps every tier
-reachable on both continents (`biomes_mobs.md` §6).
+reachable on both continents (`biomes_mobs.md` §6). For the restore, a
+matching six-step ramp topping out at the potion's 30 % rather than
+above it; for the example's +5/5 min, read it as the *shape* (one
+primary stat, a short buff) and let (a)'s ramp set the size, or the
+"no consumable treadmill" rule of `combat_stats.md` §5 is reopened by a
+single dish.
 
 *Lands in*: `items_crafting.md` §3.7.
-**Decision:** _open_ — **blocks WP10**'s cooking book.
+**Decision:** structure **decided 2026-08-08** (raw restores, cooked
+restores + buffs, one food buff at a time); the **per-group recipes,
+restore percentages and buff magnitudes stay open** — **blocks WP10**'s
+cooking book.
 
 ---
 
@@ -910,7 +1031,8 @@ reachable on both continents (`biomes_mobs.md` §6).
 | B7 | ~~Rock-stratum node names & textures~~ — **decided 2026-08-08**: five new nodes below `default:stone`, placed as stratum ores registered last (`items_crafting.md` §3.0.4, `world.md` §2 R6) | — (WP25 and WP24's isle rock are design-unblocked) |
 | B8 | ~~Quartz/Garnet/Silver depth & scarcity~~ — **decided 2026-08-08**: ore bands, scarcities and the ore `level` rule (`items_crafting.md` §3.0.1) | — |
 | B9 | `open_sea_at` boundary fix | **WP24**, mounts WP |
+| B22 | The six picks' dig-speed `times` (the **rule** — higher tier digs faster, not only deeper — is decided 2026-08-08, `items_crafting.md` §3.0.4) | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |
-| D12–D20 | Mounts: item/assets, persistence, damage, combat dismount, zones, ceiling, Exhausted, skins, trainer. **D16's enemy-territory switch and D17's strait half are decided 2026-08-08** (`mounts.md` §4.3); open in those two: own-side war coast, PvP flag, underground, flight ceiling | **mounts WP**; D20 also WP13 |
-| E21 | Cooking recipe lists per tier | **WP10** |
+| D12–D20 | Mounts: item/assets, persistence, damage, combat dismount, zones, ceiling, Exhausted, skins, trainer. **Decided 2026-08-08**: D15's damage half (any incoming damage dismounts → `mounts.md` §3.1, which also settles D16's PvP-flag switch), D16's enemy-territory switch and D17's strait half (`mounts.md` §4.3); still open in those: **mounting while in combat**, the own-side war coast, underground, the flight ceiling | **mounts WP**; D20 also WP13 |
+| E21 | Cooking recipe lists per tier — plus the restore % and buff magnitudes; **the food structure is decided 2026-08-08** (`items_crafting.md` §3.7, `combat_stats.md` §5) | **WP10** |

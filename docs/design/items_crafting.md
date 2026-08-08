@@ -217,12 +217,17 @@ character levels, matching the six vendor brackets of §3.8 exactly:
 Three statements close the 4-vs-6 question for good — none of them is a
 new rule, all three were implicit before:
 
-1. **The "item levels" column above is the enchant roll band.** The four
-   bands 1–15 / 16–30 / 31–45 / 46–60 in that column are *precisely* the
-   four columns of §6.3's roll table. Same boundaries, two names: read
-   as a crafter it is "which mastery tier am I", read as an item it is
-   "which roll band do my enchants come from". There is no third set of
-   boundaries anywhere in this document.
+1. **The "item levels" column above is the enchant roll band, and the
+   band follows the ITEM** (sharpened 2026-08-08). The four bands
+   1–15 / 16–30 / 31–45 / 46–60 in that column are *precisely* the four
+   columns of §6.3's roll table, and what picks a band is the **item's
+   ilvl** — never the crafter's mastery tier and never the crafter's
+   character level. There is no third set of boundaries anywhere in this
+   document. That the four band boundaries fall on the same numbers as
+   the four mastery level anchors is a property of the numbers, not a
+   rule: nothing stops a level-50 Master from smithing a T1 Bronze Sword
+   (ilvl 3), and that sword rolls in the first band. §6.3 spells out the
+   two consequences.
 2. **Mastery decides how many enchant slots a crafter can fill** —
    Apprentice 1, Journeyman 2, Expert 3, Master 4 (§6b.5). It does *not*
    decide which material tier you may touch; that is the gear ladder and
@@ -366,7 +371,7 @@ because under §3.0.3 they are the same items.
 | T3 | 21–30 | 20 | **Steel** | — (alloy) | −300 … −500 | — |
 | T4 | 31–40 | 30 | **Silversteel** | **Silver (new)** | −500 … −700 | **Garnet** (new) |
 | T5 | 41–50 | 40 | **Embersteel** | **Emberstone** (repurposed mese) | −700 … −1000 | — |
-| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (§5.5) | below −1000 | **Diamond** (exists) |
+| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (§5.5) | below −1000 (`world.md` §4c) | **Diamond** (exists) |
 
 - **Wood and stone are the pre-metal T1 floor** — the starter kit and the
   vendor floor. T1 therefore spans wood / stone / bronze. Wood and stone
@@ -401,6 +406,12 @@ because under §3.0.3 they are the same items.
   names the band that this tier's own pick unlocks (§3.0.4), not the band
   its material lies in. Where the ores actually sit is the placement
   table below.
+- **The T6 row's band is also endgame content territory.** Everything
+  below −1000 needs a T6 tool, which makes it the one part of the world
+  gated by the top of this very table — so `world.md` §4c gives it a
+  role beyond its ores: dangerous underground environments (lava lakes)
+  with a level-appropriate creature roster. The T6 row therefore buys a
+  *place*, not only a metal.
 - **Binding: a lead metal lies one band *above* its own tier, a gem lies
   in its own band.** Otherwise a tier-n tool would be needed to reach the
   material a tier-n tool is made of. Iron (T2 metal) is mined in the T1
@@ -631,6 +642,27 @@ only — strata are `cracky` and nothing else.
 - The mese and diamond picks are unreachable in game and are deleted by
   **WP28** (§3.0.3). Their maxlevel 4/5 exist only so a runtime tester
   can open T5/T6 at all.
+
+**A higher tier does not only dig *deeper*, it digs *faster*** (decided
+2026-08-08). The `maxlevel` gate above is the **access** half of the tool
+ladder; the dig `times` are the other half, and they are the **reward**.
+The rule: **each tier's pick digs its own stratum — and every stratum
+above it — faster than the pick of the tier below.** So the next pick is
+felt on the rock a player is already mining, not only on the rock they
+could not touch before, and the ladder is monotone by construction —
+using a higher pick is never slower on any stratum it can break at all.
+
+**The per-tier numbers are open** and live in
+`TODO-design-crafting-rework.md` **B22**. One subtlety this section
+already documents has to be respected while authoring them: `maxlevel`
+silently rescales **both** `uses` and dig `times` through `leveldiff`
+(`real_uses = uses · 3^leveldiff`, and `time = time / leveldiff` for
+`leveldiff > 1`), so the progression has to be authored against
+**effective** values per stratum, never against the raw `times` in the
+item def. Part of the wanted speed-up therefore already exists for free
+and must be measured before more is stacked on top — and every `times`
+change has to be re-checked against `uses`, which the same `leveldiff`
+scales. WP25 walked into exactly this trap from the durability side.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
@@ -863,6 +895,15 @@ a second timer. **Drinking at full health is refused** (message, no
 consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
 and a 60 s lockout on a misclick is a tax, not a rule).
 
+**The potion keeps the instant slot; cooked food does not take it**
+(decided 2026-08-08). Cooked food restores a comparable percentage —
+the worked example is the same 30 % — but it does so through
+`combat_stats.md` §5's **resting** channel (§3.7): standing still, at
+8 % max HP/s, interrupted by any damage and by any movement. The Healing
+Potion is the only thing in the game that restores health **instantly
+and in combat**, and that, not the size of the number, is what it is
+bought for.
+
 **Exclusive recipes** — the entire consumable line is Alchemist-only;
 nothing here has a base recipe (mastery names, relabelled 2026-08-07):
 
@@ -944,10 +985,41 @@ recipes want (§6.4).
 Neither of these costs a main profession slot (professions.md §1).
 
 - **Cooking** (trainer, free): cooked meat/fish, Hearty Stew (meat +
-  potato/corn), Hunter's Feast (meat ×2 + melon + mushroom). Eating
-  cooked food grants **Well Fed: +1/+2/+3 Str AND Int for 15 min** by
-  tier (stacks with one elixir). Raw food still fuels resting regen
-  (combat_stats §5) — cooking adds the buff, not the regen.
+  potato/corn), Hunter's Feast (meat ×2 + melon + mushroom).
+  **Raw food restores; cooked food restores AND buffs** (decided
+  2026-08-08 — this replaces the old "raw food still fuels resting
+  regen, cooking adds the buff, not the regen", which had the shape
+  backwards). `combat_stats.md` §5 carries the same three rules from the
+  recovery side; the two must not drift apart.
+  - **Raw / plain food gives regeneration only, no buff.** It is the
+    resting channel of `combat_stats.md` §5 — standing still,
+    interrupted by damage or by movement — at **4 % max HP/s**.
+  - **Cooked food gives both**: a restore *and* a buff. The restore runs
+    through the **same resting channel at twice the rate, 8 % max HP/s**,
+    and a dish carries the percentage of max HP one serving delivers
+    (worked example: potatoes with boar steak, **30 % of max HP** plus a
+    Strength buff). Cooking is therefore the **faster rest**, never a
+    second instant heal: the instant slot stays the Alchemist's
+    (§3.6 Healing Potion — 30 % max HP instantly, usable in combat, 60 s
+    shared cooldown). A cooked dish that restores the same 30 % costs
+    ~4 s of standing still and dies to a single hit or a single step;
+    the potion costs a cooldown and nothing else. That is the entire
+    difference between the two, and it is what keeps the potion worth
+    carrying.
+  - **Only one food buff is active at a time, and the most recently
+    eaten food wins** — eating again *replaces* the running buff; food
+    buffs never stack and never extend one another. This is the food-side
+    twin of §3.6's "one elixir active at a time" (§10 P3), and a food
+    buff and an elixir still stack **with each other**, exactly as
+    before.
+  - The buff is **Well Fed: +1/+2/+3 Str AND Int for 15 min by tier**
+    (unchanged since 2026-08-06). **Its tier mapping is the open part**:
+    three buff steps stand against the **six** T1–T6 groups the cooking
+    book below now has, and no per-group restore percentage is authored
+    either. Both live in `TODO-design-crafting-rework.md` **E21**, which
+    already owns the per-tier recipe lists — the structure above is
+    decided, the per-tier magnitudes are not.
+
   **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
   groups and the same level gates as a profession book, but **no
   keystones** — a cooking tier opens on its **ingredients**, which are
@@ -1113,8 +1185,10 @@ mage robe") with the Silvercanopy Robe.
 ## 5. Loot zones — what drops where
 
 Drops obey the player-tag rule (combat_stats §3), quality/roll windows
-per §6.3, gear-drop ilvl = mob level. Ring → materials is binding via
-biomes_mobs §6; this table adds the gear/special layer.
+per §6.3, **gear-drop ilvl = mob level** — and since §6.3's roll band is
+chosen by the item's ilvl, that one number is all a drop needs: a drop
+has no crafter whose mastery could be read instead. Ring → materials is
+binding via biomes_mobs §6; this table adds the gear/special layer.
 
 **A dropped item's material tier must match the mob's tier** (added
 2026-08-07). `ilvl = mob level` already implied it; stated outright
@@ -1290,14 +1364,36 @@ twice, so its up-to-four affixes are four *different* stats out of the
 six. The two trinket slots hold two separate items, so the same stat may
 legally appear once in each.
 
-### 6.3 Roll ranges by ilvl bracket and source window
+### 6.3 Roll ranges by the item's ilvl bracket and source window
 
-Value ranges (min–max) per ilvl bracket. **The four bands below are the
-"item levels" column of §2.1's mastery table** — 1–15 / 16–30 / 31–45 /
-46–60, one band per mastery tier, same boundaries, no third set anywhere
-(confirmed 2026-08-07). An Apprentice's work rolls in the first band, a
-Master's in the fourth. These bands are **not** the six material tiers of
-§3.0; the two ladders are independent by design (§2.1).
+Value ranges (min–max) per ilvl bracket. **The band is chosen by the
+ITEM's ilvl** (decided 2026-08-08) — never by the crafter's mastery tier
+and never by the crafter's character level. The four bands below are the
+"item levels" column of §2.1's mastery table — 1–15 / 16–30 / 31–45 /
+46–60, same boundaries, no third set anywhere; that those boundaries
+fall on the same numbers as the four mastery level anchors is a property
+of the numbers, not a rule. These bands are **not** the six material
+tiers of §3.0; the two ladders are independent by design (§2.1).
+
+Two consequences, both intended:
+
+- **A Master who crafts a low-tier item gets low-tier rolls.** A
+  level-50 Master smithing a T1 Bronze Sword (ilvl 3) rolls in the 1–15
+  band — +1–3 Str, not +6–12. **The item is what is weak, not the
+  crafter**, and this is the same rule as "a T2 enchant cannot be applied
+  to a T1 item", read from the roll table's side. What the Master's rank
+  still buys on that sword is the **slot count** (all four, §6b.5) and
+  the crafted-masterwork window below, not a bigger number per slot.
+- **An Apprentice fills one slot even on a T6 item.** Mastery decides
+  *how many* affixes a crafter may put on an item (§6b.5), never *how
+  big* they are: an Apprentice working T6 stock produces a one-affix
+  item whose single roll is a full 46–60 roll.
+
+**Mob drops have no crafter at all**, which is the other half of the
+argument: §5 sets gear-drop ilvl = mob level and points at this table, so
+for a drop only the item reading can work at all. One rule for both
+sources is what keeps a dropped and a crafted item of the same ilvl
+comparable.
 
 | Enchant | 1–15 | 16–30 | 31–45 | 46–60 |
 |---|---|---|---|---|
@@ -1444,10 +1540,14 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
 
 - **Maximum 2 prefixes + 2 suffixes = 4 enchant slots.** That is the hard
   ceiling for any item in the game.
-- **Prefixes** name a stat the item gives its wielder: *lucky* (+crit),
-  *quick* (+dex), *heavy* (+str), *clever* (+int).
-- **Suffixes** do the same in the genitive: *of the bear* (+str), *of the
-  ox* (+health), *of the cat* (+dodge), *of the eagle* (+crit).
+- **Prefixes** name a stat the item gives its wielder: *lucky*
+  (+crit%), *quick* (+Dex), *heavy* (+Str), *clever* (+Int).
+- **Suffixes** do the same in the genitive: *of the bear* (+Str), *of the
+  ox* (**+HP**), *of the cat* (+dodge%), *of the eagle* (+crit%).
+  **The stat names above are §6.2's own, verbatim** (aligned 2026-08-08:
+  the ox used to be written "+health", which is not a stat this game
+  has) — an example that models a wrong stat name is exactly what A2's
+  affix→stat mapping must not inherit.
   Every word maps to a stat that a §6.2 pool actually contains — there
   is **no poison stat** in this game (see §6.2 and `combat_stats.md` §2;
   poison arrives with the Rogue in Phase 2, `classes.md` §6), and an
@@ -1498,9 +1598,10 @@ No new rule — §6.1's budgets, read through the affix model:
 | 3–4 | Rare | yellow |
 
 So an Apprentice and a Journeyman produce Uncommon items, an Expert and a
-Master produce Rare ones. The roll values come from the §6.3 band of the
-crafter's mastery tier in the crafted-fine or crafted-masterwork window
-(§6.4).
+Master produce Rare ones. The roll **values** come from the §6.3 band of
+the **item's** ilvl (sharpened 2026-08-08), in the crafted-fine or
+crafted-masterwork window (§6.4): mastery buys the number of slots on
+this table, never the size of what goes into one.
 
 ### 6b.7 Special variants
 
@@ -1802,6 +1903,45 @@ slots, their meta and their `allow_put` shipped with WP15, and trinkets
 need no model, no armor class and no rank binding. Rejected: shipping
 the Goldsmith as a pure supplier profession, which left one of six
 professions with no wearable output of its own.
+
+**D8 — The enchant roll band follows the ITEM, not the crafter.** §6.3's
+four bands are picked by the item's **ilvl**; the crafter's mastery
+decides only **how many** affix slots may be filled (§6b.5). D1 had left
+the sentence readable both ways ("read as a crafter … read as an item"),
+and the two readings diverge, because mastery follows the *character's
+level* while ilvl follows the *item's material tier*. The crafter
+reading broke two things at once: a level-50 Master's T1 Bronze Sword
+(ilvl 3) would have carried band-4 rolls, violating "a T2 enchant cannot
+be applied to a T1 item"; and **mob drops have no crafter at all**, while
+§5 sets gear-drop ilvl = mob level and sends the roller to §6.3. That
+the band boundaries coincide with the four mastery level anchors is a
+property of the numbers, not a rule. Rejected: two roll tables, one for
+crafted and one for dropped gear — the same ilvl would then have meant
+two different items.
+
+**D9 — Raw food restores, cooked food restores AND buffs.** §3.7 had it
+backwards ("cooking adds the buff, not the regen"). Raw/plain food gives
+**regeneration only**; cooked food gives a **restore and a buff**, and
+only **one food buff** is ever active — the most recently eaten food
+replaces the previous one. The restore is routed through
+`combat_stats.md` §5's **resting** channel at **8 % max HP/s** (twice
+raw food's 4 %) rather than being made instant: the Alchemist's Healing
+Potion owns the instant slot by design (§3.6), and a cooked dish
+restoring 30 % instantly would have deleted the potion's reason to
+exist. Cooking therefore buys a **faster rest**, not a second potion.
+The per-tier magnitudes (Well Fed's three steps against the cooking
+book's six groups, and the restore % per group) stay open in
+`TODO-design-crafting-rework.md` E21.
+
+**D10 — A higher-tier pick digs faster, not only deeper.** §3.0.4
+documented the `maxlevel` *gate* thoroughly but never stated the other
+half of the tool ladder: each tier's pick digs its own stratum, and
+every stratum above it, faster than the tier below. The gate is
+**access**, the `times` are the **reward**. Numbers open in
+`TODO-design-crafting-rework.md` B22, to be authored against
+**effective** values — `maxlevel` silently rescales both `uses` and dig
+`times` through `leveldiff`, which is the trap WP25 already hit from the
+durability side.
 
 **D8 — Trinkets get their own §6.2 pool row, and the cap check is re-run
 for 8 slots** (resolves the trinket half of A3). Pool: **+Str, +Int,
