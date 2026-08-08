@@ -218,7 +218,7 @@ Walking from the village belt (core, L1–10) in any direction:
 | any village → strait | core 1–10 (z 900..600) → inner 10–25 (z 600..350) → war coast 28–30→20, falling toward the strait (cap ramp 600..100) → strait beach 1–5 neutral | continuous down to z 100; the strait step is a DESIGNED break (neutral wildlife, not a difficulty ramp) |
 | lateral (band to band) | same radial field on both sides of a band border | no jump by construction |
 | swamp pockets | low terrain inside outer ring → 25–45 by position | inside band |
-| depth | caves +1 level per 20 nodes below y=0 | combat_stats §3 |
+| depth | caves 3 levels per 50 nodes below y=0 | combat_stats §3 |
 
 **Dead zones — what is actually guaranteed.** This section used to
 claim "every ring×band cell has registered spawns (§4) — no dead

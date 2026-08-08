@@ -145,6 +145,13 @@ Notes from the decided world design (`docs/design/world.md`):
 - Housing is **WP24** since 2026-08-07 (the King's isles, per character
   rather than per guild — world.md §5). The Home Stone is covered by
   WP17.
+- **Known deviation, design vs. code (2026-08-08)**: `world.md` §2 R4 now
+  says *nothing regrows* except inside indestructible structures
+  (`TODO-design-depth.md` B5/B6), but the shipped
+  `grug_nodes/ore_respawn.lua` still runs the old world-wide 15–30 min
+  depleted-vein respawn. The docs are the spec, so the code is behind.
+  Re-scoping it onto POIs/mining camps belongs to the **depth WP** (which
+  also owns B6's content); this is a note, not a new work package.
 
 ### WP details (acceptance criteria)
 
@@ -172,7 +179,10 @@ grug_factions). Deferred: R4 ore respawn → **shipped with WP6**
 zones were never built, and guild mining claims were **removed** with
 the crafting rework (`guilds.md` §3.2), so there is no zone layer left
 for R4 to wait on. Housing frontier is fully locked until housing plots
-ship (WP24).
+ship (WP24). *Superseded 2026-08-08*: R4 was **rewritten** — nothing
+regrows outside indestructible structures (`world.md` §2 R4,
+`TODO-design-depth.md` B5/B6), which gives the mechanic a zone layer to
+wait on again; see the deviation note in "Readiness".
 
 **WP18 — Continent mapgen rework** (✅ 2026-08-06): the world is now two
 mirrored continent rectangles (`grug_core.CONTINENT_X_HALF` 1500,

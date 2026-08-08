@@ -57,8 +57,9 @@ live there. This section is the tour; the docs are the truth.
   Everything else is ocean.
 - **Difficulty is geography.** Mob level grows radially outward from your
   capital: safe core 1–10, inner ring 10–25, outer ring 25–45, the far
-  coasts 45–60. Caves add a depth axis (~+1 level per 20 nodes down), so
-  mining deep is an alternative to travelling out.
+  coasts 45–60. Caves add a depth axis (3 levels per 50 nodes down,
+  −500 = level 30, −1000 = the level-60 cap), so mining deep is an
+  alternative to travelling out.
 - **The war coast is capped at 20–30** — the strait-facing band is the PvP
   stage, and the first PvP quests arrive around level 20. Nobody is forced
   into PvP before that.
@@ -66,8 +67,9 @@ live there. This section is the tour; the docs are the truth.
   guards are only local level +5. Invading is funnelled to where PvP is
   meant to happen; landing anywhere else means facing level-60 wildlife.
 - **Controlled destructibility**: build and dig freely at home, never in
-  enemy territory (not even a torch), never in the ocean. Ores respawn so
-  a persistent world doesn't run dry.
+  enemy territory (not even a torch), never in the ocean. Nothing regrows:
+  a mined-out vein is gone for good, and the world stays supplied by going
+  deeper rather than by waiting.
 - **Depth is a ladder, not a chore**: the stone below you is six rock
   strata (−100 / −300 / −500 / −700 / −1000 / bedrock), and each one can
   only be broken by a tool of its own tier. How deep you can mine is the
@@ -298,7 +300,11 @@ mob-side fix is in, the PvP port is queued.
 rule that now depends on it. The shipped gear still carries its old
 bracket names ("Crude Sword") and its mod header still claims to sit
 10–15 % behind crafted gear — both were superseded on 2026-08-07 and are
-queued work, not defects. Mapgen changed in WP18 and again in WP25 (the
+queued work, not defects. The same goes for the shipped **ore respawn**:
+the design rule was reversed on 2026-08-08 (nothing regrows outside
+indestructible structures), while the code still runs the old world-wide
+15–30 min respawn until the depth work package re-scopes it. Mapgen
+changed in WP18 and again in WP25 (the
 rock strata are placed by the mapgen's ore stage, so an existing world
 gets them only in freshly generated chunks, with seams at the border), so
 **existing worlds are incompatible; always start a fresh one**. All art

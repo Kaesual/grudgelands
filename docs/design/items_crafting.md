@@ -1943,7 +1943,7 @@ every stratum above it, faster than the tier below. The gate is
 `times` through `leveldiff`, which is the trap WP25 already hit from the
 durability side.
 
-**D8 — Trinkets get their own §6.2 pool row, and the cap check is re-run
+**D11 — Trinkets get their own §6.2 pool row, and the cap check is re-run
 for 8 slots** (resolves the trinket half of A3). Pool: **+Str, +Int,
 +Dex, +HP, +mana, +crit%** — universal-ish because every class wears
 both slots, and deliberately without +armor%, +dodge% and +attack
@@ -1954,7 +1954,7 @@ against the 30 % cap of `combat_stats.md` §2 instead of landing on it.
 Dodge (≈ 19 %) and the 60 % armor cap are untouched, because trinkets
 roll neither.
 
-**D9 — There is no poison stat** (resolves the poison half of A2).
+**D12 — There is no poison stat** (resolves the poison half of A2).
 §6b.4's *of the snake* (+poison) was an off-hand example, not a
 decision: poison appears in no §6.2 pool, no §6.3 row and nowhere in
 `combat_stats.md`. The example is now *of the cat* (+dodge), and poison
@@ -1963,7 +1963,7 @@ is booked as the **Rogue's signature damage type for Phase 2**
 Alchemist's Antivenom that cures it) is unaffected — that is a mob verb,
 not a player stat.
 
-**D10 — Six strata, five new nodes** (resolves `TODO-design-crafting-rework.md`
+**D13 — Six strata, five new nodes** (resolves `TODO-design-crafting-rework.md`
 B7). `default:stone` stays the T1 stratum, the five below it are new
 `grug_materials` nodes placed as `stratum` ores registered last, so cave
 walls inherit their tier and a deep cave stops being a free bypass; every
@@ -1974,7 +1974,7 @@ T1 node (drags mapgen filler, cobble and every `wherein` behind it), a
 gets for free) and reusing `default`'s stone family, which already
 carries biome meaning.
 
-**D11 — Ore bands follow the tool, ore `level` follows the rock**
+**D14 — Ore bands follow the tool, ore `level` follows the rock**
 (resolves B8). Lead metals lie one band above their own tier, gems in
 their own band, and an ore node carries the `level` of the band it lies
 in rather than of its tier (§3.0.1). The second half closes the cave leak

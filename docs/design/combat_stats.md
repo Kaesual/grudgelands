@@ -167,13 +167,21 @@ from the capital in the continent center — safe core 1–10, inner ring
 the deep-sea guards (world.md §2b). Guards use the SEPARATE inverse
 field `guard_level_at` (world.md §1): elite in the safe core, ~mob
 level +5 at war-coast outposts. **Depth axis** (decided 2026-08-06,
-WP6): overworld caves scale with depth —
-`mob_level_at = max(surface_level(x,z), depth_level(y))`, roughly
-+1 level per 20 nodes below y=0, capped at 60; ore tiers follow the
-same depth axis, so mining deep is the alternative progression path to
-travelling out. (The Nether is NOT part of this axis — its y-band is
-unreachable by digging, portals only.) The radial field shipped with
-WP18; WP6's mobs and guards read it.
+WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —
+`mob_level_at = max(surface_level(x,z), depth_level(y))`, **3 levels per
+50 nodes** below y=0, capped at 60; ore tiers follow the same depth
+axis, so mining deep is the alternative progression path to travelling
+out. Both anchors sit exactly on a rock-stratum boundary
+(`items_crafting.md` §3.0.4): **−500 = level 30** (top of the Granite
+stratum), **−1000 = level 60** (top of the Abyssal Rock stratum and the
+cap). What the rate really says is where depth **overtakes** the surface
+field: at `y = −surface_level / 0.06`, i.e. **−83** in the safe core
+(L5), **−417** in the inner ring (L25) and **−750** in the outer ring
+(L45) — in the beginner zone depth takes over almost immediately, and
+the outermost surface band (60) meets the depth cap exactly at −1000.
+(The Nether is NOT part of this axis — its y-band is unreachable by
+digging, portals only.) The radial field shipped with WP18; WP6's mobs
+and guards read it.
 
 ## 4. Threat (aggro) system
 

@@ -78,8 +78,8 @@ Decided 2026-08-06. Two **decoupled** level fields, both centralized in
 **Mob level** (`mob_level_at` — where you level): radial distance from
 the capital (continent center, ~(0, ±900)), with a per-direction cap.
 Overworld caves add a depth axis on top (combat_stats.md §3: level also
-grows ~+1 per 20 nodes below y=0 — the safe core is only safe on the
-surface):
+grows 3 levels per 50 nodes below y=0 — the safe core is only safe on the
+surface, depth already overtakes it at −83):
 
 | Zone | Location | Mob level |
 |------|----------|-----------|
@@ -149,15 +149,17 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   (strait, coastal ocean, open sea) is locked for everyone — no digging,
   no placement. Each faction can only build INSIDE its own continent
   rectangle. Sole exception: the player housing isles (R5, section 5).
-- **R4 — Ores/resources respawn** (node timers) in the open world, so a
-  persistent world doesn't run dry. **Exception: no respawn on housing
-  isles** — an isle's depth step buys its finite treasure clusters
-  (§5.4). Implemented with WP6: digging one of the
-  scatter ores leaves a **depleted-vein placeholder** node that
-  remembers the ore in its meta and re-grows it after a random
-  **15–30 min**. **Digging the placeholder cancels the respawn** — the
-  timer lives and dies with the node, and the placeholder itself drops
-  nothing; that is the price of clearing a vein out of your build.
+- **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
+  **not** respawn. A mined-out vein is gone, everywhere, for good. The
+  world does not run dry because **depth supplies without bound** (R6,
+  §5.3, `combat_stats.md` §3) — the price of a material is paid in danger
+  and travel, never in waiting for a timer. Renewable ore would have
+  capped every material's value at its respawn interval and turned mining
+  into a rotation instead of an expedition. **Sole exception: renewable
+  nodes inside indestructible structures** — mining camps, POIs and the
+  like, where the walls are protected (R1) and no player can build a farm
+  around the node. Which nodes those are, at what interval and in which
+  structures, is still open: `TODO-design-depth.md` **B6**.
 - **R5 — Housing isles**: a housing isle's 100×100 build
   box belongs to its **owner, a character rather than a guild** (§5):
   the owner and the characters on their *trusted* list build and dig
@@ -266,7 +268,9 @@ Military outposts across each territory enforce the level gating:
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
   and anyone who fights past the garrison may dig it (guilds hold no
-  land — `guilds.md` §3; ore respawns there like everywhere else, R4).
+  land — `guilds.md` §3). Under R4 such a camp is the **only** place
+  where anything regrows at all, precisely because its structure is
+  indestructible; scope still open in `TODO-design-depth.md` **B6**.
 - **Guard level follows the inverse guard field** (`guard_level_at`,
   section 1): elite garrisons in the core, ~local mob level +5 at the
   war coast — guards beat equal-level intruders; groups or higher-level
@@ -491,7 +495,7 @@ it itself, so the two ladders cannot drift apart.
 
 **Housing mining is a treasure hunt, not a second ore economy** (decided
 2026-08-07). The continental depth axis — ores by biome and depth, cave
-mobs scaling +1 level per 20 nodes (combat_stats.md §3) — stays the
+mobs scaling 3 levels per 50 nodes (combat_stats.md §3) — stays the
 world's mining game, and a safe private isle must not undercut it by
 selling the same ore without the danger.
 
@@ -503,8 +507,9 @@ selling the same ore without the danger.
   does **not** scale with a stratum's height: a deeper step costs more
   because its clusters carry a higher material tier, not because it
   holds more of them.
-- **No respawn** (R4): a mined-out cluster is gone. That is precisely why
-  the ladder keeps costing — the next payout is the next step.
+- **No respawn** (R4, the world-wide rule): a mined-out cluster is gone.
+  That is precisely why the ladder keeps costing — the next payout is the
+  next step.
 - Contents follow the strata (§5.3): steps 1–3 ordinary building and
   smithing stock, steps 4–5 the deep metals and their gems, **step 6 the
   depth treasure — Abyssal Crystal**, the T6 material and the

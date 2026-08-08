@@ -59,9 +59,11 @@ level anchors — a player learns one vocabulary, not two:
 
 *Rationale for reusing the ladder*: the four names already carry a
 meaning for every player (their profession book, their enchant slots,
-their tome chain). A fifth, separate ladder for riding would be pure
-vocabulary tax; sharing it makes "I am Expert" a statement about where
-a character stands, not about which system is being talked about.
+their signature recipes — `items_crafting.md` §2.1 binds a few
+profession-exclusive recipes to every mastery tier). A fifth, separate
+ladder for riding would be pure vocabulary tax; sharing it makes "I am
+Expert" a statement about where a character stands, not about which
+system is being talked about.
 
 ## 2. Prices — the riding gold sink
 

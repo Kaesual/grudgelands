@@ -45,6 +45,29 @@ core.override_item("default:mese_crystal", {description = "Emberstone Crystal"})
 core.override_item("default:mese_crystal_fragment", {description = "Emberstone Shard"})
 core.override_item("default:mese", {description = "Emberstone Block"})
 
+-- The six vendored LIGHT SOURCES go with them: every one is crafted from
+-- Emberstone crystal (mods/BASE/default/crafting.lua), so a "Mese Lamp" sitting
+-- next to an "Emberstone Crystal" in the same recipe is a visible break in the
+-- rename. Description only again -- `light_source`, `tiles`, `groups` and the
+-- recipes stay exactly as default registered them. All six itemstrings verified
+-- against mods/BASE/default/nodes.lua (:2852 and :2864-2892); the five posts go
+-- through `default.register_mesepost`, which registers exactly ONE node per call
+-- (functions.lua:503) plus a craft recipe -- no second variant under another
+-- name to chase.
+core.override_item("default:meselamp", {description = "Emberstone Lamp"})
+core.override_item("default:mese_post_light", {description = "Apple Wood Emberstone Post Light"})
+core.override_item("default:mese_post_light_acacia_wood", {description = "Acacia Wood Emberstone Post Light"})
+core.override_item("default:mese_post_light_junglewood", {description = "Jungle Wood Emberstone Post Light"})
+core.override_item("default:mese_post_light_pine_wood", {description = "Pine Wood Emberstone Post Light"})
+core.override_item("default:mese_post_light_aspen_wood", {description = "Aspen Wood Emberstone Post Light"})
+
+-- NOT renamed, on purpose: the four mese TOOLS (default:pick_mese,
+-- default:shovel_mese, default:axe_mese, default:sword_mese). §3.0.1 retires
+-- the mese tool tier outright and WP28 deletes all four, so renaming them would
+-- only be churn on items that are on their way out. (The mese pickaxe still
+-- gets a `maxlevel` bump in section 3 -- as a temporary test bridge, not as a
+-- game item.)
+
 -- NOT given a `level`, on purpose: default:stone_with_copper, _tin, _coal,
 -- _gold, _iron. They are not gate-relevant -- copper/tin/coal/iron are T1
 -- materials that must stay reachable with the starter pickaxe, and gold is

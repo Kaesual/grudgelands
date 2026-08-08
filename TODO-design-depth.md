@@ -23,21 +23,25 @@ Three passages in `docs/design/` are **no longer true** and are waiting on
 the open questions below before they can be rewritten. Until then, do not
 implement against them:
 
-1. **`world.md` §2 R4** — "Ores/resources respawn (node timers) in the open
-   world" with the isles as the exception. Reversed by **B5**: nothing
-   respawns anywhere except inside indestructible structures.
+1. ~~**`world.md` §2 R4** — "Ores/resources respawn (node timers) in the
+   open world" with the isles as the exception.~~ Reversed by **B5** and
+   **rewritten on 2026-08-08**: nothing respawns anywhere except inside
+   indestructible structures (scope open in B6). §2 R4 is current again;
+   the shipped `ore_respawn.lua` is not.
 2. **`items_crafting.md` §3.0.2 / §3.0.1** — "Abyssal Crystal … so
    Grudgesteel needs the level-30 isle grant and its deepest depth step",
    and the T6 row's "no continental deposit at all" (written 2026-08-08,
-   §10.3 D11). Reversed by **C7**: the crystal is a base resource and gets
+   §10.3 D14). Reversed by **C7**: the crystal is a base resource and gets
    a continental deposit below −1000.
 3. **`world.md` §5.4** — "Housing mining is a treasure hunt, not a second
    ore economy". Partially reversed by **C8**, which is still open: isles
    are to become worth mining, but the *distribution* is the open question
    and it must not be the continental one.
 
-`combat_stats.md` §3's depth axis (+1 per 20 nodes) is superseded by **A1**
-but not contradicted — it is a recalibration of the same formula.
+`combat_stats.md` §3's depth axis carried "+1 per 20 nodes" and was
+superseded by **A1** — not contradicted, it is a recalibration of the same
+formula. **Folded in on 2026-08-08**: §3 now states the new rate, so that
+passage is current again.
 
 ---
 
@@ -45,7 +49,9 @@ but not contradicted — it is a recalibration of the same formula.
 
 ### A1 — The depth level curve
 
-**Decision:** decided 2026-08-08 → lands in `combat_stats.md` §3.
+**Decision:** decided 2026-08-08 → **landed in `combat_stats.md` §3**
+(with the anchors and the crossover points; `world.md` §1 and §5.4 and
+`biomes_mobs.md` §1.5 cite it).
 
 The model is unchanged and was already correct: `mob_level_at =
 max(surface_level(x,z), depth_level(y))`, cap 60. Only the *rate* is
@@ -172,8 +178,8 @@ concurrent cap (A2) with a high arrival rate costs far less than a swarm.
 
 ### B5 — Ore respawn is removed
 
-**Decision:** decided 2026-08-08 → lands in `world.md` §2 R4 (rewrite) and
-`items_crafting.md` where R4 is referenced.
+**Decision:** decided 2026-08-08 → **landed in `world.md` §2 R4**
+(rewritten), with §4 and the README pulled along.
 
 R4 existed so "a persistent world doesn't run dry". The depth economy of
 group A solves that better: an effectively unbounded supply priced in
@@ -189,6 +195,11 @@ Implementation note, so nobody deletes the wrong thing: the machinery in
 `mods/ITEMS/grug_nodes/ore_respawn.lua` is **re-scoped, not removed** — the
 depleted-vein node and the `register_on_dignode` hook are what B6 needs.
 The hook already carries a marker for exactly this kind of zone check.
+
+**Known deviation until then**: the shipped code still runs the old
+world-wide respawn, so it now contradicts the design docs (which are the
+spec); re-hanging it onto POIs/mining camps belongs to the depth WP, and
+the same note sits in `BACKLOG.md`'s readiness section.
 
 ### B6 — Renewable nodes live only where the world is not editable
 
@@ -220,8 +231,9 @@ Open:
 - The respawn interval inside camps. The shipped 15–30 min was tuned for a
   world-wide mechanic; for a handful of nodes at a destination it can be
   much longer.
-- `world.md` §4 currently states the opposite in writing — "ore respawns
-  there like everywhere else, R4" — and inverts to "only there".
+- ~~`world.md` §4 currently states the opposite in writing — "ore respawns
+  there like everywhere else, R4".~~ Inverted on 2026-08-08: §4 now says
+  "only there", and points here for the scope.
 
 **Decision:** rule decided; content **open**. Blocks nothing today, but
 WP13 cannot author camps without it.
@@ -233,7 +245,7 @@ WP13 cannot author camps without it.
 ### C7 — Abyssal Crystal gets a continental deposit below −1000
 
 **Decision:** decided 2026-08-08 → lands in `items_crafting.md` §3.0.1
-(placement table), §3.0.2 (the Grudgesteel sentence) and §10.3 (D11 is
+(placement table), §3.0.2 (the Grudgesteel sentence) and §10.3 (D14 is
 partly reversed).
 
 The crystal is a **base resource**, not a privilege, and the deep band is
