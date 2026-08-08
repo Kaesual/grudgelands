@@ -111,8 +111,8 @@ game (not a mod pack), written in Lua.
 - [x] Continent rework (WP18): two ocean-separated continents with soft
       noisy coastlines (continent ocean mask instead of the old mountain
       wall), mirrored biome bands per
-      `docs/design/biomes_mobs.md` §1.3 (19 registrations since the
-      2026-08-08 capital-biome carve),
+      `docs/design/biomes_mobs.md` §1.3 (20 registrations after the
+      2026-08-08 capital-biome carve and WP36's `grug_badlands_east`),
       guaranteed strait and coastal ocean, deep-sea guard mob
 - [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
       field + `guard_level_at` (mobs and guards actually scale with them

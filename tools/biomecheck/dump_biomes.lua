@@ -1,6 +1,13 @@
 -- Engine stub: load the REAL grug_core/init.lua and grug_mapgen/biomes.lua,
 -- dump every registration as CSV in registration order (= engine biome index).
-local REPO = "/home/jan/projects/grudgelands"
+--
+-- The repo root is derived from THIS FILE's own path (tools/biomecheck/ ->
+-- ../..), never hardcoded: an absolute path pins the tool to one checkout and
+-- silently reads the wrong tree from any other (WP36 fix, same defect the
+-- Python scripts had with biomes.csv). GRUG_REPO overrides it if ever needed.
+local script = debug.getinfo(1, "S").source:match("^@(.*)$")
+local here = script and script:match("^(.*)[/\\][^/\\]+$") or "."
+local REPO = os.getenv("GRUG_REPO") or (here .. "/../..")
 
 local biomes = {}
 

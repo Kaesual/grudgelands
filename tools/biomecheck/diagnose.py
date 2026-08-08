@@ -1,9 +1,13 @@
 import sys, numpy as np
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 from model import *
 
-B = load_biomes("biomes.csv")
+# biomes.csv is a build artefact of dump_biomes.lua and lives NEXT TO THIS
+# SCRIPT, never in the caller's CWD (WP36 fix; do not reintroduce a path that
+# depends on where the tool is run from).
+B = load_biomes(os.path.join(HERE, "biomes.csv"))
 NAMES = [b["name"] for b in B]
 TOPS = [b["node_top"] for b in B]
 UNIVERSAL = {"grug_swamp", "grug_beach", "grug_ocean", "grug_underground"}

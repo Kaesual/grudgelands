@@ -561,8 +561,9 @@ grug_mobs.register_rare("korgans_bane", {
 -- the back-side scale 775 makes it climb fast — (1350, -1300) is L60, so a
 -- route further from the seat cannot be L50 no matter how it is shaped.
 -- The x values are likewise the INNER edge of the coast band on purpose: the
--- ocean mask insets the shoreline by 0..150 nodes (grug_mapgen/structures.lua
--- INSET_MAX), so a route point at |x| 1450 would often be open water, where
+-- ocean mask insets the shoreline by 0..150 nodes (grug_mapgen/geometry.lua
+-- INSET_MAX; that file is where the mask geometry moved in WP36, unchanged),
+-- so a route point at |x| 1450 would often be open water, where
 -- route_pos returns nil and the rare never spawns. |x| ~1350 needs an inset
 -- close to the clamp before it floods, and the first point sits ~300 nodes
 -- away in z — the coast noise has spread 300, so the two ends of the route do
@@ -652,7 +653,7 @@ grug_mobs.register_rare("emerald_coil", {
 -- 1350, so none of them slips into the "coast" band.
 --
 -- WHY |z| = 268 AND NOT NEARER THE WATER: the ocean mask insets the coastline
--- 0..150 nodes INTO the rectangle (grug_mapgen/structures.lua INSET_MAX), so
+-- 0..150 nodes INTO the rectangle (grug_mapgen/geometry.lua INSET_MAX), so
 -- the strait-facing shoreline wanders between |z| 100 and 250 and the dry
 -- beach only starts ~30 nodes further in (§1.5). A route at |z| 150..250
 -- would often be open water, where route_pos returns nil and the rare never

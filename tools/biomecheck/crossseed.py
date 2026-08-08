@@ -16,7 +16,7 @@ STEP = 20
 rng = random.Random(20260808)
 seeds = [model.SEED] + [rng.randint(-2**31, 2**31 - 1) for _ in range(29)]
 
-print("seed_s32            cont  rain%%  jungle_edge%%  deep_jungle%%  top1  top1%%  heatmean heatsd hummean humsd")
+print("seed_s32            cont  rain%  jungle_edge%  deep_jungle%  top1  top1%  heatmean heatsd hummean humsd")
 rows = {1: [], -1: []}
 for sd in seeds:
     model.SEED = sd

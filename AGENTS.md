@@ -381,11 +381,13 @@ Details + line numbers in [docs/research/](docs/research/).
   `on_rightclick`, HUD `waypoint` elements for quest targets.
 - **Mapgen/biomes** (decided in WP2, reworked in WP18): engine biomes on
   mapgen v7, territory/race-region confinement via the biome definition's
-  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **19 biome
+  `min_pos`/`max_pos` cuboids (works on x/z, not just y!). **20 biome
   registrations** = 13 band biomes (12 mirrored bands plus `grug_crags`'
-  alpine cap `grug_crags_snowy`) + 2 extra `grug_deep_forest` slabs, the
-  only band that needs a hole in the middle of its cuboid for the
-  2026-08-08 capital-guarantee carve, + the 4 universal ones. The centre
+  alpine cap `grug_crags_snowy`) + 3 extra slabs — the 2 extra
+  `grug_deep_forest` ones (the only band that needs a hole in the middle of
+  its cuboid for the 2026-08-08 capital-guarantee carve) and
+  `grug_badlands_east`, WP36's Throng mirror of `grug_deep_forest_east` —
+  + the 4 universal ones. The centre
   band was split into slabs the same way and rolled back the same day —
   read the D4 note before re-proposing it.
   See `docs/design/biomes_mobs.md` §1.3; every band is authored ONCE in

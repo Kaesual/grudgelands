@@ -11,8 +11,11 @@
 -- to 500 in z) on purpose: in an overlap the heat/humidity voronoi decides
 -- per position, which yields the recurring settled/wild patch mosaic of §1.4
 -- instead of hard seams. The climate noise that makes the outermost points
--- (90/90, 15/45, 60/95) reachable, and the blend noise that frays the
--- voronoi borders, are set in init.lua.
+-- reachable -- as of WP36 those are grug_jungle_fringe 85/85,
+-- grug_deep_jungle 80/88, grug_swamp 60/95 and grug_bone_forest 15/45; the
+-- old extremes 95/15, 10/30 (D2) and 90/90 (WP36) are retired, see the
+-- blocks below -- and the blend noise that frays the voronoi borders, are
+-- set in init.lua.
 --
 -- THE CAPITAL GUARANTEE (world.md §3, decided 2026-08-08). Every capital
 -- must sit in its own race biome. Climate-point tuning cannot do that: with
@@ -93,13 +96,16 @@ local FRONT_Z_MAX = CARVE_Z_MIN - 1 -- 599
 -- themselves. The strips x -1500..-1251 (bone forest / crags) and
 -- x 1251..1500 (deep jungle / jungle fringe) belong to those biomes ALONE on
 -- both continents, and that uncontested strip is the only reason their four
--- extreme climate points (15/45, 25/35, 90/90, 85/85) are visible at all:
+-- extreme climate points (15/45, 25/35, 80/88, 85/85 -- the deep jungle's was
+-- 90/90 until WP36) are visible at all:
 -- every one of them sits further from the field mean than the biome it would
 -- otherwise have to outvote.
 local BAND_X_MAX = 1250
 
 -- Lowest y of the land biomes; y 1..4 belongs to the beach, y <= 3 to the
--- ocean (both cover the soft coastline the ocean mask carves, structures.lua).
+-- ocean (both cover the soft coastline the ocean mask carves -- the mask
+-- geometry lives in geometry.lua since WP36, the carve in
+-- ocean_mask_mapgen.lua; it was all structures.lua before that).
 local LAND_Y_MIN = 4
 local SKY = 31000
 
@@ -388,8 +394,14 @@ register_mirrored({
 
 --
 -- East band: Troll jungle edge (T) / Elf forest (A), wild variants
--- deep jungle (T) / jungle fringe (A, the same nodes as the troll jungle
--- one-to-one, §8.4).
+-- deep jungle (T) / jungle fringe (A).
+--
+-- §8.4 says the fringe reuses "the troll jungle" nodes one-to-one. That named
+-- ONE node set until WP36 gave grug_deep_jungle a top of its own; it now names
+-- two, and which one it meant is an OPEN design question --
+-- TODO-design-jungle-fringe.md at the repo root has both readings. What ships
+-- is the grug_jungle_edge reading: the fringe keeps
+-- default:dirt_with_rainforest_litter (see the fringe block below).
 --
 
 register_mirrored({
@@ -430,10 +442,11 @@ register_mirrored({
 --     41.1 % of Throng land had exactly ONE eligible node_top, against
 --     29.5 % of the Accord land, whose mirror position carries
 --     grug_deep_forest_east with a different top. The fringe keeps the
---     rainforest litter (§8.4: the Accord jungle reuses the TROLL JUNGLE's
---     nodes 1:1, and the troll jungle is grug_jungle_edge, not this one), so
---     this is now the only mirrored pair whose two halves differ -- which is
---     what every other pair in this file already does.
+--     rainforest litter -- that is what SHIPS; whether §8.4 binds it to
+--     grug_jungle_edge or to grug_deep_jungle is open, see the east-band
+--     header above and TODO-design-jungle-fringe.md. Either way this is now
+--     the only mirrored pair whose two halves differ, which is what every
+--     other pair in this file already does.
 --
 --  2. THE POINT, 90/90 -> 80/88. 90/90 sat +1.8 / +2.2 sigma from the field
 --     mean and lost EVERY contested column: measured over 12 seeds it won
@@ -446,8 +459,13 @@ register_mirrored({
 --     under half the floor) frays into a mosaic. Separation from grug_swamp
 --     (60/95, shares y 4..6 with this cuboid) is 21.2, from grug_beach
 --     (50/55, shares y = 4) 44.6, from grug_badlands_east (75/20) 68.2.
---     Result over 12 seeds: 0.00 % -> 4.1 % of its own land inside the
---     contested strip, total share 5.30 % -> 5.58 %.
+--     Result over 12 seeds (this world's seed plus the first eleven of
+--     tools/biomecheck/crossseed.py's deterministic list; re-measured
+--     2026-08-08 after three conflicting figures had been written down):
+--     0.1 % -> 6.9 % of its OWN land sits inside the contested x <= 1250,
+--     0.0 % -> 2.7 % of that strip is won against grug_jungle_edge, and the
+--     total land share goes 5.30 % -> 5.84 %. Same numbers in
+--     biomes_mobs.md §1.3/§1.4 -- do not let them drift apart again.
 register_mirrored({
 	throng = {
 		name = "grug_deep_jungle",

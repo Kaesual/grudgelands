@@ -119,7 +119,8 @@ def main():
     bid = calc_biome(B, heat, hum, X, Z, h)
 
     # predicted visible top: sand where the mask cut at/below beach level,
-    # else the biome's node_top (structures.lua build_ocean_mask).
+    # else the biome's node_top (geometry.lua column_cap + the sand re-dress
+    # in ocean_mask_mapgen.lua; both were structures.lua before WP36).
     carved = has & (h > cap)
     pred = []
     for i in range(len(X)):

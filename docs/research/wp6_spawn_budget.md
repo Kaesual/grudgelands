@@ -37,9 +37,39 @@ mistake the commit fixed in the code:
 Neither peak moved: 16 day / 12 night, same as before — a third cell
 (deep forest/inner) joined the day peak, but no cell exceeds it, so §3's
 arithmetic is untouched and §3 says why. What the correction *does* change in
-§3 is the median, downward — §2.2 counts 66 live biome × ring cells against
+§3 is the median, downward — §2.2 counted 66 live biome × ring cells against
 the old table's 38 (both excluding the single underground cell), and most of
 the ones it adds are thin.
+
+**Second correction, 2026-08-08 (WP36 and the D4 rollback).** §2.2 was
+re-derived a second time, mechanically: the cell geometry from the shipped
+`min_pos`/`max_pos` cuboids against `grug_core.zone_at`, the Σaoc from the
+shipped `mobs:spawn` rows and `_grug_spawn_zones` of `grug_mobs/*.lua`. Every
+cell the two mapgen changes did not touch came out identical to the table
+below's previous revision, which is the check that the re-derivation is sound.
+Five groups of cells moved, and the inventory is now **67 live / 8
+impossible** (was 66 / 9):
+
+1. **`grug_deep_jungle` carries `grug_nodes:dirt_with_canopy_litter`** since
+   WP36, so the old "deep jungle" row is a *new* row on a *new* top, and two
+   of its cells differ from the rainforest row it split off from
+   (inner 15 → **10**, no Parrot and no Hare on canopy litter; war_coast
+   10 → **7** at night, because the Skeleton Archer's war-coast node list is
+   the five *settled* tops and canopy litter is not one).
+2. **`grug_meadows × coast` and `grug_savanna × coast` are live** (2 / 4).
+   They were printed `–` with an arithmetic that described the *pre-carve*
+   centre band; the shipped cuboid is x ±349, z 100..1700 and does reach the
+   back-coast band. They were the two dead cells WP36 repaired.
+3. **`meadows × outer` and `savanna × outer` 8 / 5 → 10 / 9**, the same WP36
+   edit seen from the other side: Bear + Giant Spider gained
+   `default:dirt_with_grass`, Plaguehide Bear + Pale Spider gained
+   `default:dry_dirt_with_dry_grass`.
+4. **`badlands × war_coast` is live** (2 / 7), because `grug_badlands_east`
+   (WP36) spans z 100..1700 while its parent starts at z 1201.
+5. **`deep forest × core` and `badlands × core` are now impossible** — this
+   one is the *capital carve* of 2026-08-08, not WP36, and it is the one
+   change that makes the inventory smaller. Both had a live number in the
+   previous revision, from before the carve cut the capital belt out of them.
 
 ## 1. What `aoc` actually caps
 
@@ -125,39 +155,59 @@ Stone/Mesa Golem underground (1, not 2).
 
 Cells are **day / night**. `–` = geometrically impossible (§2.1).
 
+A row is a **band**, i.e. a `node_top`: siblings that share a top are folded
+(`grug_deep_forest{,_front,_east}`, `grug_badlands{,_east}`,
+`grug_crags{,_snowy}`), because the spawn gate is `node_top × zone` and never
+a biome name. The one pair that is *not* folded is jungle edge / jungle
+fringe: they share `default:dirt_with_rainforest_litter` but sit on different
+continents (§1.3 of the catalog), so they are two places, not one.
+
 | Biome (top node) | core | inner | outer | coast | war_coast |
 |---|---|---|---|---|---|
-| meadows (`dirt_with_grass`) | 8 / 4 | **16** / 9 | 8 / 5 | – | 2 / 10 |
-| savanna (`dry_dirt_with_dry_grass`) | 8 / 4 | **16** / 9 | 8 / 5 | – | 2 / 10 |
+| meadows (`dirt_with_grass`) | 8 / 4 | **16** / 9 | 10 / 9 | 2 / 4 | 2 / 10 |
+| savanna (`dry_dirt_with_dry_grass`) | 8 / 4 | **16** / 9 | 10 / 9 | 2 / 4 | 2 / 10 |
 | pine hills (`dirt_with_coniferous_litter`) | 8 / 4 | 13 / 9 | 7 / 9 | 2 / 4 | 2 / 10 |
 | elf forest (`dirt_with_silver_litter`) | 8 / 4 | 8 / 4 | 2 / 4 | 2 / 4 | 2 / 10 |
 | jungle edge (`dirt_with_rainforest_litter`) | 10 / 4 | 15 / 4 | 11 / 8 | 6 / 8 | 2 / 10 |
 | blight (`blight_dirt`) | 12 / 4 | 12 / 4 | 2 / 7 | 2 / 4 | 6 / 10 |
-| deep forest (`dirt_with_forest_litter`) | 8 / 4 | **16** / 9 | 10 / 9 | 2 / 4 | 2 / 7 |
+| deep forest (`dirt_with_forest_litter`, 3 slabs) | – | **16** / 9 | 10 / 9 | 2 / 4 | 2 / 7 |
 | bone forest (`dirt_with_bone_litter`) | – | 8 / 5 | 10 / **12** | 2 / 4 | 2 / 6 |
-| badlands (`mesa_clay`) | 5 / 4 | 10 / 9 | 9 / 6 | 4 / 1 | – |
+| badlands (`mesa_clay`, + `_east`) | – | 10 / 9 | 9 / 6 | 4 / 1 | 2 / 7 |
 | crags (`gravel`, y ≤ 79) | – | 8 / 4 | 6 / 1 | 4 / 1 | 2 / 7 |
 | crags snowy (`snowblock`, y ≥ 80) | – | 8 / 4 | 6 / 1 | 4 / 1 | 2 / 7 |
-| deep jungle (`dirt_with_rainforest_litter`) | – | 15 / 4 | 11 / 8 | 6 / 8 | 2 / 10 |
+| deep jungle (`dirt_with_canopy_litter`) | – | 10 / 4 | 11 / 8 | 6 / 8 | 2 / 7 |
 | jungle fringe (`dirt_with_rainforest_litter`) | – | – | 11 / 8 | 6 / 8 | 2 / 10 |
 | swamp (`mud`) | 8 / 4 | 8 / 4 | 10 / 6 | 4 / 0 | 2 / 7 |
 | beach (`sand`) | 8 / 4 | 8 / 4 | 2 / 0 | 2 / 0 | 2 / 7 |
 | underground (`stone`, y ≤ −41) | *one cell, all x/z:* | **9 / 9** | | | |
 
-66 live cells, 9 impossible ones. The nine, each with the arithmetic that
-makes it empty (all in the constants of §2.1):
+**67 live cells, 8 impossible ones**, and every one of the eight is a
+core-or-inner cell of a *wild* band — no band is missing an outer, coast or
+war-coast cell any more. The arithmetic that makes each empty (all in the
+constants of §2.1):
 
-- **meadows/coast** and **savanna/coast** — the centre band box is
-  x ∈ [−700, 700], so |x| never reaches 1350, and its z stops at 1500, short
-  of the 1550 back-coast edge. The only two settled biomes with no shoreline.
-- **badlands/war_coast** — the badlands box starts at |z| = 1100, far behind
-  the war coast's |z| ≤ 300.
+- **deep forest/core** and **badlands/core** — the **capital carve** of
+  2026-08-08, and it is exact rather than lucky. The core belt at |x| ≤ 300
+  is |z| 600..1132 (n ≤ 0.30 needs dz ≤ 0.30 · 1000 = 300 toward the strait,
+  dz ≤ 0.30 · 775 = 232 behind the seat). `grug_deep_forest_front` stops at
+  |z| = 599 — one node short, by construction — the back slab starts at
+  |z| = 1201 (dz/f = 301/775 = 0.388), and both east wings start at
+  |x| = 801 (dx/1150 = 0.436). Same three numbers for the badlands and its
+  wing. The carve box IS the core belt plus slack, so this is the guarantee
+  of `world.md` §3 showing up in the spawn inventory.
 - **bone forest/core**, **crags/core**, **crags snowy/core**,
-  **deep jungle/core** — all four boxes lie entirely at |x| ≥ 750, so
-  dx ≥ 450 and n ≥ 450/1150 = 0.391 > 0.30 everywhere inside them.
+  **deep jungle/core** — all four boxes lie entirely at |x| ≥ 801, so
+  dx ≥ 501 and n ≥ 501/1150 = 0.436 > 0.30 everywhere inside them.
 - **jungle fringe/core** and **jungle fringe/inner** — that box starts at
   |x| = 1150, so dx ≥ 850 and n ≥ 0.739 > 0.55: it is outer or coast, never
   anything nearer.
+
+Three cells the previous revision printed as impossible are **live**:
+`meadows × coast` and `savanna × coast` (the centre band is x ±349,
+z 100..**1700**, so it does reach the |z| ≥ 1550 back-coast band — the
+"x ∈ [−700, 700] … z stops at 1500" arithmetic quoted here described the
+pre-carve band), and `badlands × war_coast` (`grug_badlands_east` spans
+z 100..1700 while its parent starts at z 1201).
 
 Three zones are not columns. `underground` is the last row: depth wins in
 `zone_at`, so it is one cell for the whole world — Zombie 4 + Giant Spider 4 +
@@ -169,11 +219,20 @@ an artifact and is discussed in the footnote below.
 
 Notes on the table:
 
-- *The three rainforest rows carry identical mob sets.* `grug_jungle_edge`,
-  `grug_deep_jungle` and `grug_jungle_fringe` all top with
-  `default:dirt_with_rainforest_litter` (§1.3, §8.4), so a spawn row cannot
-  tell them apart — they differ **only** in which zones their boxes reach.
-  Same for `grug_crags` / `grug_crags_snowy`: every row that lists
+- *Two rainforest rows, not three, since WP36.* `grug_jungle_edge` (Kragmar)
+  and `grug_jungle_fringe` (Elandor) still both top with
+  `default:dirt_with_rainforest_litter`, so a spawn row cannot tell them
+  apart — they differ **only** in which zones their boxes reach, and in the
+  continent, which matters for the two continent-gated families (the Hare
+  reaches the jungle edge's core/inner, the Rabbit does not reach the
+  fringe's — but the fringe has no core or inner cell anyway, so the two
+  rows come out identical everywhere they overlap). `grug_deep_jungle`
+  **left that group**: it carries `grug_nodes:dirt_with_canopy_litter` since
+  WP36 and is its own row above. That top being the only land top present on
+  *both* continents is also why the outer/coast filler slot deliberately does
+  not list it (catalog §4, §1.5).
+  `grug_crags` / `grug_crags_snowy` are still one roster twice: every row
+  that lists
   `default:gravel` also lists `default:snowblock` after 51c5d4e, so the snow
   cap is the gravel cell one more time. (Above y = 200 the snow cap loses the
   `max_height = 200` families — Boar, Rabbit, Zombie, Carrion Crow, Skeleton
@@ -191,7 +250,9 @@ Notes on the table:
 **Footnote on zone `strait`, deliberately not a column.** Every land cuboid
 starts at `z_min = grug_core.CONTINENT_Z_MIN = 100`, and `zone_at` answers
 `strait` for `|z| <= 100` — so the *single plane* |z| = 100 formally makes
-`strait` reachable for all 13 band biomes. It is an artifact, not a cell: that
+`strait` reachable for 14 of the 16 band registrations (all but
+`grug_badlands` and `grug_deep_forest`, whose boxes start at |z| = 1201).
+It is an artifact, not a cell: that
 plane is the outer edge of the continent rectangle, the ocean mask insets the
 visible shoreline 0..150 nodes further INWARD (`grug_mapgen` INSET_MAX), and
 grug_core states the rule outright — "strait: |z| < 100 is always water". The
@@ -211,6 +272,14 @@ by 51c5d4e (§2.4). Day 16 in three cells: **meadows/inner** and
 (the wolf row has no light gate, so it counts in both columns).
 
 ### 2.3 What 51c5d4e changed, cell by cell
+
+**Read this subsection as history, against the world of 2026-08-07.** Four of
+the cells it names were overtaken the next day and §2.2 above is the current
+inventory: `deep forest/core 8` and `badlands/core 5` were removed by the
+capital carve, `badlands/war_coast` ("the badlands have no war coast at all")
+was created by `grug_badlands_east`, and the "old single jungle row is now
+three" is two rainforest rows plus a canopy-litter row since WP36. Nothing
+below is *wrong about what 51c5d4e did*; it simply predates two mapgen passes.
 
 The previous revision printed one DAY sum per cell plus a single night PEAK
 per biome, so only the day column is directly comparable. **25 day cells
@@ -339,8 +408,8 @@ roughly 23 m to either side.
 
 **That 23 m is an assumption, not a measurement**, and the conclusion has to be
 stated with it rather than around it. Redoing the same arithmetic away from
-the peak: over §2.2's 66 live day cells the distribution is bimodal, 22 cells
-at Σaoc 2, 15 at 8, the rest spread between — median **6.5**, mean 6.6. So two
+the peak: over §2.2's 67 live day cells the distribution is bimodal, 25 cells
+at Σaoc 2, 12 at 8, the rest spread between — median **6**, mean 6.4. So two
 blocks, the ordinary cell (8: elf forest core/inner, the crags, swamp and
 beach core/inner, most of the outer ring outside the peaks) and the thin one
 (2: every war coast whose only day family is the Carrion Crow, the beach, the
@@ -357,10 +426,10 @@ bear-only coasts):
            at w = 23 m →  d ≈ 140 m
 ```
 
-(The old revision quoted "median ≈ 8". That was the median of a table which
+(The oldest revision quoted "median ≈ 8". That was the median of a table which
 had wrongly deleted most of the thin cells. With the corrected inventory 8 is
-the UPPER mode of a bimodal distribution — the lower mode is 2, with 22 of the
-66 cells in it — and the median sits between them at 6.5. The 8-block is still
+the UPPER mode of a bimodal distribution — the lower mode is 2, with 25 of the
+67 cells in it — and the median sits between them at 6. The 8-block is still
 the right block to reason about for "walking through a biome"; the 2-block is
 what a war coast or a shoreline strip feels like.)
 

@@ -293,8 +293,13 @@ register_plant("jungle_edge_junglegrass", "default:junglegrass", RAINFOREST,
 	{"grug_jungle_edge"}, 0.04)
 
 --
--- grug_deep_jungle / grug_jungle_fringe: the same nodes on both continents
--- (§8.4) -- dense canopy plus emergent giants.
+-- grug_deep_jungle / grug_jungle_fringe: same flora and roster on both
+-- continents, but NOT the same ground node since WP36 -- the deep jungle
+-- stands on grug_nodes:dirt_with_canopy_litter, the fringe still on
+-- default:dirt_with_rainforest_litter. That is why every deco below places
+-- on JUNGLE_FLOOR (= RAINFOREST + CANOPY) and not on one of the two: a
+-- place_on that misses a top is as silent as a biomes list that misses a
+-- slab. Dense canopy plus emergent giants.
 --
 
 register_tree("jungle_tree", "jungle_tree.mts", JUNGLE_FLOOR, JUNGLE, 0.02)

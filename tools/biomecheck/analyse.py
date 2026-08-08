@@ -1,11 +1,13 @@
 import sys, numpy as np
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 from model import *
 from collections import Counter
 
 STEP = 10
-B = load_biomes("biomes.csv")
+# biomes.csv sits next to this script (see diagnose.py), not in the CWD.
+B = load_biomes(os.path.join(HERE, "biomes.csv"))
 NAMES = [b["name"] for b in B]
 TOPS = [b["node_top"] for b in B]
 
@@ -77,7 +79,7 @@ for zsign, cont in ((1, "THRONG / Kragmar (z>0)"), (-1, "ACCORD / Elandor (z<0)"
     for t, c in vis.most_common():
         print("   %-40s %6.2f%%" % (t, 100 * c / tot))
 
-    print("\n-- share per race BAND (column %% within the band) --")
+    print("\n-- share per race BAND (column % within the band) --")
     bands = band_of(X)
     for bn in ("west", "centre", "east"):
         m = L & (bands == bn)

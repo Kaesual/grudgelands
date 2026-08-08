@@ -95,7 +95,7 @@ Continent column: **A** = Elandor (Accord, south), **T** = Kragmar
 | 10 | grug_bone_forest | T | universal forest, Throng look | west outer | 25–60 |
 | 11 | grug_jungle_edge | T | Troll settled | east core+inner | 1–25 |
 | 12 | grug_deep_jungle | T | universal jungle (Throng side) | east outer | 25–60 |
-| 12a | grug_badlands_east | T | slab of #8 — the Troll band's second wild | east outer/coast | 25–60 |
+| 12a | grug_badlands_east | T | slab of #8 — the Troll band's second wild | east inner (to \|x\| ≈ 932), outer, back coast, war coast — **not** core | 25–60 |
 | 13 | grug_swamp | both | universal, low terrain pockets | outer (y ≤ 6) | 25–45 |
 | 14 | grug_beach | both | universal shoreline fringe | everywhere (y 1..4) | by position |
 | 15 | grug_ocean | both | sand-bottom ocean | y < 1 | — |
@@ -259,10 +259,14 @@ Three changes, all of them on the Throng side:
 1. **`grug_deep_jungle` got its own top**,
    `grug_nodes:dirt_with_canopy_litter` (the shaded floor under the closed
    canopy; retint recipe and licence row in `grug_nodes/LICENSE-media.md`).
-   `grug_jungle_fringe` keeps the rainforest litter, because §8.4 binds the
-   fringe to the **troll jungle's** nodes 1:1 — and the troll jungle is
-   `grug_jungle_edge`, not this one. Deep jungle / fringe was the only
-   mirrored pair in the world whose halves shared a look; now none does.
+   **`grug_jungle_fringe` keeps `default:dirt_with_rainforest_litter`** —
+   that is what ships and what every number in this section was measured
+   against. Which of the two Troll jungle biomes §8.4's "the fringe reuses
+   the troll jungle nodes 1:1" binds the fringe to is **not settled by this
+   document**: see **[TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)**.
+   Either way both continents end up with three distinct eastern tops, and
+   deep jungle / fringe — until WP36 the only mirrored pair in the world
+   whose halves shared a look — no longer share one.
 2. **`grug_badlands_east`** fills the empty Throng half of the
    `grug_deep_forest_east` row: the centre-back wild reaching into the
    neighbouring band's wild ring, which is what the Accord has shipped
@@ -279,7 +283,8 @@ Three changes, all of them on the Throng side:
    over 12 seeds only **0.1 %** of the biome's own land sat inside
    x ≤ 1250 — i.e. it was its uncontested flank strip and nothing else
    (it took **0.0 %** of the contested strip against the jungle edge).
-   With 80/88 that rises to **6.9 %** / 2.7 %. 80/88 keeps exactly
+   With 80/88 that rises to **6.9 %** / 2.7 %, and the biome's total land
+   share from **5.30 % to 5.84 %**. 80/88 keeps exactly
    **18.0** units from `grug_jungle_edge` (80/70), the floor above; 21.2
    from `grug_swamp` (60/95, shares y 4..6), 44.6 from `grug_beach`
    (50/55, shares y = 4) and 68.2 from `grug_badlands_east` (75/20). The
@@ -287,17 +292,49 @@ Three changes, all of them on the Throng side:
    humidity = 79, which the blend noise (≤ 8 units of displacement per
    axis, under half the floor) frays into a mosaic.
 
-Result, this world's seed: eligible-visual monopoly **60.9 % → 42.8 %** of
-Throng land, rainforest-litter-only **41.1 % → 18.8 %**, columns with three
-eligible visuals 4.3 % → 22.3 %. Over **30 seeds** the Throng's largest
-single visible top falls from a mean of **35.0 % to 27.4 %** (max 49.3 % →
-42.8 %), i.e. below the Accord's 29.7 %, and the node that dominates most
-often changes from rainforest litter in 24 of 30 seeds to 14 of 30 spread
-over five different tops. **The residual 42.8 % is not in the east**: it is
-x −800..−351 and x −200..200 outside |z| 1201..1700, where the Throng has
-no equivalent of `grug_deep_forest_front` / the deep forest's x −900..1250
-back slab (`grug_badlands` is only x −700..700, z 1201..1700). That is a
-separate, still-open asymmetry.
+Every "12 seeds" figure in this section and in §1.4 was **re-measured
+2026-08-08** over one set — this world's seed plus the first eleven of the
+deterministic list in `tools/biomecheck/crossseed.py`, Throng land, step 20 —
+because three different post-values for the deep jungle had been written into
+three places. The set above is the one that holds;
+`grug_mapgen/biomes.lua` carries the same numbers.
+
+Result, this world's seed (`tools/biomecheck`, step 10): eligible-visual
+monopoly **60.9 % → 42.8 %** of Throng land, rainforest-litter-only
+**41.1 % → 18.8 %**, columns with three eligible visuals 4.3 % → 22.3 %.
+Over **30 seeds** the Throng's largest single visible top falls from a mean
+of **35.0 % to 27.4 %** (max 49.3 % → 42.8 % — a *different* 42.8 from the
+monopoly figure, and a coincidence), i.e. below the Accord's 29.7 %, and the
+node that dominates most often changes from rainforest litter in 24 of 30
+seeds to 14 of 30 spread over five different tops.
+
+**Where the residual 42.8 pp sits** (re-measured 2026-08-08 with
+`tools/biomecheck`, this world's seed, step 10, land columns with exactly one
+eligible visual). The five groups are disjoint and sum to the 42.83 pp:
+
+| the one visual those columns have | where they are | pp of Throng land |
+|---|---|---|
+| `default:dirt_with_rainforest_litter` — `grug_jungle_edge` alone | x 201..800 | **18.77** |
+| `default:dry_dirt_with_dry_grass` — `grug_savanna` alone | x −200..200 | 8.90 |
+| `grug_nodes:dirt_with_bone_litter` — `grug_bone_forest` alone | x ≤ −801 | 5.94 |
+| `grug_nodes:blight_dirt` — `grug_blight` alone | x −800..−201 | 4.95 |
+| `grug_nodes:dirt_with_canopy_litter` — `grug_deep_jungle` alone | x ≥ 801 | 4.27 |
+
+So **the largest single block of the residual is in the east after all**:
+x 201..800 is the Troll settled band's own strip, which only
+`grug_jungle_edge` reaches, and its 18.77 pp is numerically the same figure
+as the "rainforest-litter-only 18.8 %" above — they are the same columns.
+(An earlier revision of this paragraph named x −800..−351 and x −200..200 as
+the residual; those two are 13.75 pp together, a third of it.)
+
+What the table actually shows is **one defect repeated once per band, not an
+east/west asymmetry**: wherever a band's settled cuboid, its wild partner and
+the flank strip do not all overlap, the leftover strip has a single eligible
+registration. Closing it is a geometry question — a further registration
+whose cuboid covers x 201..800, and the mirrored gaps in the centre and the
+west, where the Throng still has no equivalent of `grug_deep_forest_front`
+or of the deep forest's x −900..1250 back slab (`grug_badlands` is only
+x −700..700, z 1201..1700). **Still open**, deliberately not fixed in WP36.
 
 † The three universal biomes are registered **once**, not as a mirrored
 pair — a biome name may exist only once in the engine. Swamp and beach
@@ -313,8 +350,12 @@ Notes:
   seams. Since the carve it is three registrations with the capital belt
   cut out of the middle; a single cuboid cannot express a hole. Its
   x_max is 1250, not 1500 — see the jungle-fringe note above.
-- The outer points (90/90, 15/45, 60/95) need the climate noise to
-  actually reach them: WP18 sets `mg_biome_np_heat`/`np_humidity` to
+- The outermost points need the climate noise to actually reach them. As
+  of WP36 they are `grug_jungle_fringe` **85/85**, `grug_deep_jungle`
+  **80/88**, `grug_swamp` **60/95** and `grug_bone_forest` **15/45**; the
+  three that used to be quoted here are retired — 95/15 and 10/30 with D2,
+  90/90 with WP36's deep-jungle move (all three lost every contested
+  column, see above). WP18 sets `mg_biome_np_heat`/`np_humidity` to
   offset 50 / scale 35 (engine defaults otherwise; the `eased` flag is
   spelled out for readability — a Lua noiseparams table without `flags`
   gets `NOISE_FLAG_DEFAULTS`, which 2D noise already treats as eased,
@@ -512,17 +553,36 @@ What is guaranteed now, and how:
   or a `nodes`/zone list changes. `grug_crags_snowy` is the warning:
   it was added in WP18 and no spawn row ever listed
   `default:snowblock`, so an entire biome was mob-free until this fix.
-- The six carve siblings of §1.3 (`grug_savanna_front` …) needed **no**
-  re-derivation and no mob change: the gate is `node_top × zone`, every
-  slab carries its parent's `node_top`, and the carve only ever *removes*
-  biome × zone cells (a band can reach fewer places, never more). The
-  biome names in `grug_mobs/*.lua` are comments only — the spawn rows
-  gate on `nodes`, never on a biome name.
-- **Read that bullet carefully before reusing it.** Its premise is
-  "every slab carries its parent's `node_top`", and it holds *only* for
-  slabs. `grug_badlands_east` (WP36) is another slab and again cost
-  nothing. `grug_nodes:dirt_with_canopy_litter` (WP36) is the opposite
-  case: a **new top** is a brand-new column of `biome × zone` cells with
+- **The one test that decides whether a new registration costs mob work**:
+  the gate is `node_top × zone`, so a registration is free **iff every zone
+  its cuboid reaches already has rows for the top it carries**. Two things
+  can break that, and they are independent: a **new top** (a whole new
+  column of cells, all empty), and a cuboid that **reaches a zone the top
+  has never reached before**. Sharing the parent's top only settles the
+  first. The biome names in `grug_mobs/*.lua` are comments only — the spawn
+  rows gate on `nodes`, never on a biome name.
+- The carve siblings of §1.3 (`grug_deep_forest_front` / `_east` today; the
+  six of them at the time of the carve, before D4 took the centre-band slabs
+  back out) passed that test
+  without any check being needed, and for a reason that is specific to a
+  *carve*: cutting a hole into a band can only ever make it reach **fewer**
+  places, never more, so no new cell can appear. **Do not reuse that
+  shortcut for a registration that is not a carve piece.**
+- `grug_badlands_east` (WP36) is exactly such a case and **the shortcut
+  would have been wrong on it**: it is a new cuboid, not a slice of the
+  parent's, and it extends the band's reach in z — `grug_badlands` is
+  z 1201..1700 (zones coast/inner/outer), the wing is z 100..1700 and
+  therefore **adds `war_coast`** (plus the formal |z| = 100 strait plane,
+  the artifact of `wp6_spawn_budget.md` §2.2's footnote). So the new cell
+  had to be derived rather than assumed. It came out **live at 2 day /
+  7 night** — Carrion Crow by day, Skeleton Raider + Zombie by night —
+  because §4's war-coast filler slot hands both war-coast-exclusive
+  families *every* land top, `grug_nodes:mesa_clay` included. Nothing had
+  to be added; but `mesa_clay × war_coast` had been printed as
+  geometrically impossible in `wp6_spawn_budget.md` §2.2 and is corrected
+  there.
+- `grug_nodes:dirt_with_canopy_litter` (WP36) is the other failure mode:
+  a **new top** is a brand-new column of `biome × zone` cells with
   no rows in it at all, exactly like `default:snowblock` in WP18. The
   cuboid x 801..1500 never reaches zone `core` (the radial field puts
   |x| ≥ 801 at n ≥ 0.44), so four cells had to be filled —
@@ -552,8 +612,17 @@ What is guaranteed now, and how:
   of their side", and `default:dirt_with_grass` /
   `default:dry_dirt_with_dry_grass` were simply missing from those four
   lists. Added. The jungle edge's rainforest litter is deliberately *not*
-  added to the Throng pair: that biome has its own outer/coast roster and
-  the filler would take the cell to Σaoc 15 at night, past the peak of 12.
+  added to the Throng pair, and the reason is **continent leakage, not the
+  budget**: `default:dirt_with_rainforest_litter` is the only band top that
+  exists on *both* continents (`grug_jungle_edge` on the Throng,
+  `grug_jungle_fringe` on the Accord, §1.3), and neither Plaguehide Bear nor
+  Pale Spider carries a `_grug_spawn_check`, so listing it would put two
+  Throng-tinted families into Elandor's jungle fringe. (An earlier revision
+  gave the budget as the reason — "Σaoc 15 at night, past the peak of 12".
+  That arithmetic was wrong: `rainforest litter × outer` and `× coast` are
+  Panther 4 + Jungle Spider 4 = **8** at night, so the Pale Spider's 4 would
+  reach **12**, which *ties* the peak instead of passing it. The decision
+  stands on the leakage argument alone.)
 
 ## 2. Per-biome specs (surface, flora, gathering)
 
@@ -602,7 +671,7 @@ farming system are one later package.
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora and roster on both sides, but **not the same ground node since WP36**: the deep jungle stands on `grug_nodes:dirt_with_canopy_litter`, the fringe still on `default:dirt_with_rainforest_litter` (§8.4 binds the fringe to the *troll jungle* = `grug_jungle_edge`). Every deco of this row therefore names **both** nodes in `place_on` — a `place_on` is as silent as a `biomes` list |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora and roster on both sides, but **not the same ground node since WP36**: the deep jungle stands on `grug_nodes:dirt_with_canopy_litter`, the fringe still on `default:dirt_with_rainforest_litter` (which of the two the fringe *should* reuse under §8.4 is open — [TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)). Every deco of this row therefore names **both** nodes in `place_on` — a `place_on` is as silent as a `biomes` list |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -889,9 +958,13 @@ outer/coast row was missing `default:dirt_with_grass` (Bear + Giant
 Spider) and `default:dry_dirt_with_dry_grass` (Plaguehide + Pale Spider),
 which is why `grug_meadows × coast` and `grug_savanna × coast` were dead
 day and night after the D4 rollback extended the centre band to Z_MAX
-(§1.5). The jungle edge's rainforest litter stays out of the Throng pair
-on purpose — that biome has its own outer/coast roster and the filler
-would push the cell to Σaoc 15 at night, over the peak of 12.
+(§1.5). The jungle edge's rainforest litter stays out of the Throng pair on
+purpose, **because that top is the one land top both continents carry**
+(`grug_jungle_edge` T / `grug_jungle_fringe` A, §1.3) and neither Plaguehide
+Bear nor Pale Spider has a `_grug_spawn_check` — the filler would tint the
+Accord's jungle fringe Throng. It is *not* a budget argument: that cell is
+Panther 4 + Jungle Spider 4 = 8 at night, so the Pale Spider would take it
+to 12, level with the peak, not over it.
 
 Two consequences worth stating: (a) no cell's Σaoc can rise from a
 filler node, because the filler always lands on a family that already
@@ -1163,11 +1236,14 @@ and 5 record what WP6 then actually shipped.
    Reef Lurker is registered, and the §3.1/§4 rows for both stay in
    this catalog as the spec to implement once a model exists.
 4. **Jungle fringe reuses the troll jungle nodes 1:1** on the Accord
-   side (max drop symmetry, zero new assets). **The troll jungle is
-   `grug_jungle_edge`** — this decision binds the fringe to the *settled*
-   Troll biome's nodes, not to `grug_deep_jungle`, which got a ground node
-   of its own in WP36 (§1.3). The fringe therefore still stands on
-   `default:dirt_with_rainforest_litter` and this point is untouched.
+   side (max drop symmetry, zero new assets). Until WP36 the Throng had
+   only one jungle ground node, so "the troll jungle" named one thing;
+   since `grug_deep_jungle` got a top of its own (§1.3) it names two, and
+   **which one this point meant is not decided here**. What ships is the
+   fringe on `default:dirt_with_rainforest_litter`, i.e. the
+   `grug_jungle_edge` reading. The open question, both readings and what a
+   change would cost:
+   **[TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)**.
 5. **The boar's "charges"** is implemented as a **mid-range rush**, not
    a wind-up gallop: the same impulse the panther's pounce uses,
    flattened horizontally, fired at 4–10 m with an 8 s cooldown. One

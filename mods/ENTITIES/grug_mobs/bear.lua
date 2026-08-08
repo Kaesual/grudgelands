@@ -145,10 +145,20 @@ grug_mobs.register_mob("grug_mobs:plaguehide_bear",
 -- no DAY mob at all (only the night Skeleton Archer), and grug_blight x coast
 -- was dead around the clock. `default:dry_dirt_with_dry_grass` is the WP36
 -- addition, the exact mirror of the Bear's grug_meadows one — grug_savanna x
--- coast was dead day and night for the same reason. The jungle edge's
--- rainforest litter is deliberately NOT here: that biome has its own
--- outer/coast roster (jungle ape, serpent, panther, jungle spider) and the
--- filler would push the cell to 15 aoc at night, past the peak of 12.
+-- coast was dead day and night for the same reason.
+--
+-- default:dirt_with_rainforest_litter is deliberately NOT here, and the
+-- reason is CONTINENT LEAKAGE, not the aoc budget: it is the one band top
+-- that exists on BOTH continents (grug_jungle_edge on the Throng,
+-- grug_jungle_fringe on the Accord, biomes_mobs §1.3), and neither this mob
+-- nor grug_mobs:pale_spider carries a _grug_spawn_check -- listing it would
+-- put two Throng-tinted families into Elandor's jungle fringe. The cell also
+-- does not need them: it already has jungle ape, serpent, panther and jungle
+-- spider. (An earlier revision of this comment said the filler "would push
+-- the cell to 15 aoc at night, past the peak of 12". That was wrong twice
+-- over -- rainforest litter x outer/coast is Panther 4 + Jungle Spider 4 = 8
+-- at night, so the Pale Spider's 4 would reach exactly 12, level with the
+-- peak. Re-derived 2026-08-08, wp6_spawn_budget.md §2.2.)
 mobs:spawn({
 	name = "grug_mobs:plaguehide_bear",
 	nodes = {
