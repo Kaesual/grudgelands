@@ -151,6 +151,17 @@ game (not a mod pack), written in Lua.
       kit tuning per classes.md tables (rage dump, Hamstring snare,
       Frost Nova root→slow, Power Word: Shield absorb), one visible
       passive per race (world.md §7)
+- [x] **Weapon slot, and auto-attack as a skill** (WP35): one equipment
+      slot whose item is the single source of damage *and* appearance for
+      every skill of its type — no fallback to whatever is in the hand.
+      Every ability item wears the equipped weapon's skin on its own color
+      orb (which retires the deferred "own ability icons"), and the held
+      attack button becomes a universal ability, **Strike**: off the global
+      cooldown, swinging at the weapon's own speed, toggled on and off
+      (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
+      `classes.md` §2b/§2c). Two-handed weapons declare their hand count
+      here, but the rule stays dormant until WP14 ships an offhand item.
+      **Not runtime tested**
 
 ### 1.4 Mobs & combat
 - [x] Faction guards (attack the enemy faction), spawned by military
