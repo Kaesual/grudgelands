@@ -47,6 +47,13 @@ local RESPAWN_MAX = 1800
 -- stocked. `check_ore_list()` below re-verifies the coupling at load time,
 -- so a future ore added in grug_mapgen shows up as a log warning instead of
 -- silently never respawning.
+--
+-- `grug_materials:abyssal_crystal_ore` is absent BY DESIGN, not by oversight:
+-- no register_ore places it (grug_mapgen/ores.lua registers no scatter ore for
+-- it), because it is a housing-isle depth-step payout, and world.md §5.4
+-- states that isle clusters explicitly do NOT respawn under R4 -- a mined-out
+-- step is what makes the next step worth buying. Listing it here would only
+-- earn a startup warning from check_ore_list().
 local respawning_ores = {
 	["default:stone_with_coal"] = true,
 	["default:stone_with_tin"] = true,
@@ -55,7 +62,13 @@ local respawning_ores = {
 	["default:stone_with_gold"] = true,
 	["default:stone_with_mese"] = true,
 	["default:stone_with_diamond"] = true,
-	["default:mese"] = true,
+	-- `default:mese` (the mese BLOCK) is deliberately absent since WP25:
+	-- grug_mapgen no longer registers a scatter ore for it (it was a level-2
+	-- node sitting in the level-5 band, i.e. a hole in the depth gate), so
+	-- listing it here would only earn a startup warning from check_ore_list().
+	["grug_materials:stone_with_quartz"] = true,
+	["grug_materials:stone_with_silver"] = true,
+	["grug_materials:stone_with_garnet"] = true,
 }
 
 --
@@ -70,6 +83,13 @@ core.register_node(DEPLETED, {
 	-- `stone = 1` is deliberately absent: this must not be usable as a stone
 	-- source in recipes or be treated as stone by other mods. `cracky = 3`
 	-- matches the ore it replaces, so it digs like the rest of the wall.
+	--
+	-- NO `level` EITHER, and that is not an oversight (§3.0.1/§3.0.4): a
+	-- depleted vein only ever appears where somebody could already break the
+	-- ore that stood there, it drops nothing, and the ores that produce it in
+	-- practice (coal, tin, copper, iron, gold) carry no `level` themselves
+	-- because they are deliberately not gate-relevant. The rock AROUND the
+	-- pocket is the depth gate, never the single pocket.
 	groups = {cracky = 3, grug_depleted = 1},
 	drop = "",
 	sounds = default.node_sound_stone_defaults(),
@@ -80,8 +100,13 @@ core.register_node(DEPLETED, {
 		else
 			-- Meta lost or pointing at an ore that no longer exists (world
 			-- upgraded, list changed): never leave the placeholder in the
-			-- world forever -- fall back to plain stone.
-			core.set_node(pos, {name = "default:stone"})
+			-- world forever -- fall back to the wall it sits in.
+			--
+			-- Not a hardcoded `default:stone`: that is only the tier-1
+			-- stratum. At -600 it would punch a level-0 hole into a level-3
+			-- granite wall, i.e. a free bypass of the §3.0.4 depth gate,
+			-- reachable by anyone who waits out a timer next to a lost meta.
+			core.set_node(pos, {name = grug_materials.stratum_node_for(pos.y)})
 		end
 		-- set_node dropped the timer with the node anyway; be explicit.
 		return false

@@ -251,7 +251,11 @@ mobs:spawn({
 --
 mobs:spawn({
 	name = "grug_mobs:stone_golem",
-	nodes = {"default:stone"},
+	-- group:grug_stratum is the tier-2..6 rock (WP25): below -100 there is no
+	-- default:stone left, so without the group this row would only ever fire
+	-- between -41 and -100 and the depth axis of combat_stats.md §3 would be
+	-- dead. default:stone stays for the tier-1 band above -100.
+	nodes = {"default:stone", "group:grug_stratum"},
 	interval = 30,
 	chance = 9000,
 	active_object_count = 1,
@@ -261,7 +265,9 @@ mobs:spawn({
 
 mobs:spawn({
 	name = "grug_mobs:mesa_golem",
-	nodes = {"default:stone"},
+	-- Same reason as the stone golem row above: the deep half of the cave
+	-- system is stratum rock, not default:stone.
+	nodes = {"default:stone", "group:grug_stratum"},
 	interval = 30,
 	chance = 9000,
 	active_object_count = 1,

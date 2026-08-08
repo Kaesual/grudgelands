@@ -71,7 +71,10 @@ live there. This section is the tour; the docs are the truth.
 - **Depth is a ladder, not a chore**: the stone below you is six rock
   strata (−100 / −300 / −500 / −700 / −1000 / bedrock), and each one can
   only be broken by a tool of its own tier. How deep you can mine is the
-  same statement as what you can wear.
+  same statement as what you can wear. Cave walls carry their layer too,
+  so a deep cave is no shortcut past the gate — and every stratum drops
+  ordinary cobble, because what is gated is access, not building
+  material.
 - **Three race capitals per continent** (you spawn in your own race's),
   24 deterministic military outposts, ambient patrols between them,
   villages and flavor camps.
@@ -215,16 +218,15 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 
 ## Current State
 
-*Last updated: 2026-08-07. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-08. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (10 of 33 work packages):** the foundation, the whole
-world/combat layer, and the money economy. *(The count grew on
-2026-08-07: the crafting rework cut nine new work packages — the
-material ladder, the two-slot furnace, armor recipes, the vendored-recipe
-sweep, the gear rename, the trader rotation, mounts, farming and the
-herb/food nodes. Nothing shipped or un-shipped.)*
+**Shipped (11 of 34 work packages):** the foundation, the whole
+world/combat layer, the money economy, and the material ladder's rock and
+ores. *(The total is 34 — WP0 through WP33 — and was printed as 33 here
+until 2026-08-08: the 2026-08-07 crafting rework had cut nine new work
+packages on top of the original twenty-five.)*
 
 - **World**: two ocean-separated continents with soft coasts, 17 mirrored
   biomes, six race-capital spawn platforms, the radial mob-level field
@@ -246,44 +248,56 @@ herb/food nodes. Nothing shipped or un-shipped.)*
   generated gear catalogs of ten levels each on an hourly rotation, a
   weak healing potion, and armor that finally mitigates damage — with
   cloth and plate bound to the character class (WP7).
+- **Materials**: the six rock strata under the whole world, each one
+  refusing any pickaxe below its tier, with the ore bands re-cut onto
+  those six tiers — three new ores (quartz, silver, garnet), Abyssal
+  Crystal, and mese renamed to Emberstone (WP25).
 
 **Not in the game yet:** quests and quest NPCs, professions and crafting
 recipes, talent trees, the fog-of-war map, guilds, housing isles,
 travel/waypoints, offhand and shields, loot rolls on class items,
 refinement and affixes, durability and repair, parties, food and rest,
 apex bosses, mounts, and the real capital/outpost structures (WP6 ships
-anchors and banners, not buildings). The whole **material layer** is
-still on paper too: the new ores, the six rock strata, the two-slot
-furnace and the alloy chain, armor recipes (the vendored base game has
-none at all), the herb and food nodes, and the rename of the shipped gear
+anchors and banners, not buildings). Most of the **material layer** is
+still on paper too: the rock and the ores are in, but the two-slot
+furnace and the alloy chain are not, so no bar of the six tiers can be
+smelted yet — and neither can armor recipes (the vendored base game has
+none at all), the herb and food nodes, or the rename of the shipped gear
 catalog to material names.
 
-**Ready to start next** (no design blockers): guilds (WP16), the trader
-rotation fix (WP30), herb & food nodes (WP33), talent trees (WP11),
-world structures (WP13), offhand (WP14), travel (WP17), party system
-(WP20), recovery & innkeeper (WP21), apex world bosses (WP23).
+**Ready to start next** (no design blockers): the two-slot furnace and
+the alloy chain (WP26, the next link in the material chain), guilds
+(WP16), the trader rotation fix (WP30), herb & food nodes (WP33), talent
+trees (WP11), world structures (WP13), offhand (WP14), travel (WP17),
+party system (WP20), recovery & innkeeper (WP21), apex world bosses
+(WP23).
 
-**Newly blocked by design work** (2026-08-07): loot & affixes (WP5) and
-professions (WP10) were ready before the crafting rework and now wait on
+**Still blocked by design work**: loot & affixes (WP5) and professions
+(WP10) were ready before the 2026-08-07 crafting rework and still wait on
 `TODO-design-crafting-rework.md` — the affix word lists for WP5, and the
 signature recipes, keystones, material grades and cooking recipes for
-WP10. The material ladder (WP25) waits on the rock-stratum names and the
-gem scarcity values in the same file, and everything else in the material
-chain waits on it.
+WP10. (The material ladder, WP25, was blocked by the same file and was
+unblocked and built on 2026-08-08.)
 
 **Caveats:** every shipped work package has been runtime-tested
 (2026-08-07 — six findings on the WP1–WP19 pass, all fixed; WP7 passed
-without findings). One known defect remains: melee auto-attacks against *players* still use the engine's raw
-scaling, so a held button can deal 0 damage in PvP — the mob-side fix is
-in, the PvP port is queued. `grug_core.open_sea_at` still puts open sea
+without findings) **except WP25, the material ladder, which has not been
+runtime-tested at all yet**: its strata, ore bands, pickaxe gates and
+cave-spawn changes have only been reviewed and syntax-checked. One known
+defect remains: melee auto-attacks against *players* still use the
+engine's raw scaling, so a held button can deal 0 damage in PvP — the
+mob-side fix is in, the PvP port is queued.
+`grug_core.open_sea_at` still puts open sea
 3200 nodes out, which is too far for the housing isles and for the mount
 rule that now depends on it. The shipped gear still carries its old
 bracket names ("Crude Sword") and its mod header still claims to sit
 10–15 % behind crafted gear — both were superseded on 2026-08-07 and are
-queued work, not defects. Mapgen changed in WP18, so **existing worlds
-are incompatible; always start a fresh one**. All art is currently
-vendored from reference projects (vendors still look like faction
-guards); own assets are Phase 3.
+queued work, not defects. Mapgen changed in WP18 and again in WP25 (the
+rock strata are placed by the mapgen's ore stage, so an existing world
+gets them only in freshly generated chunks, with seams at the border), so
+**existing worlds are incompatible; always start a fresh one**. All art
+is currently vendored from reference projects (vendors still look like
+faction guards); own assets are Phase 3.
 
 ---
 

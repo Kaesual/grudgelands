@@ -178,7 +178,10 @@ mobs:spawn({
 --
 mobs:spawn({
 	name = "grug_mobs:giant_spider",
-	nodes = {"default:stone"},
+	-- group:grug_stratum = the tier-2..6 rock (WP25). default:stone alone ends
+	-- at -100 after the mapgen strata, which would leave this row firing in a
+	-- 60-node sliver instead of the whole cave system.
+	nodes = {"default:stone", "group:grug_stratum"},
 	max_light = 5,
 	interval = 20,
 	chance = 1800,

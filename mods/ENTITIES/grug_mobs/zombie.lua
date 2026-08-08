@@ -174,9 +174,24 @@ mobs:spawn({
 -- api.lua:3729), so only stone with air next to it — cave walls, ceilings
 -- and floors — is ever a candidate. Solid rock costs nothing.
 --
+-- WHY THE mod.conf DEPENDENCY ON grug_materials IS *NOT* A LOAD-ORDER FIX:
+-- an ABM's `nodenames` are resolved lazily, not at registration. The engine
+-- rebuilds ABMHandler once per ABM interval inside ServerEnvironment::step
+-- (serverenvironment.cpp:1024) and only there turns the strings into content
+-- ids (blockmodifier.cpp:92, NodeDefManager::getIds) — long after every mod
+-- has loaded. `group:grug_stratum` would therefore resolve with no dependency
+-- at all. It is declared anyway, for the same reason grug_nodes already is:
+-- it documents that these three cave rows are worthless without the mod that
+-- defines the group, and it guarantees that mod is enabled.
+--
 mobs:spawn({
 	name = "grug_mobs:zombie",
-	nodes = {"default:stone"},
+	-- group:grug_stratum is the tier-2..6 rock introduced by WP25; below -100
+	-- no default:stone survives the mapgen strata, so on its own the node name
+	-- would confine this row to -41..-100 and kill the whole depth axis. The
+	-- performance argument above holds unchanged: the group is still only
+	-- matched where the implicit {"air"} neighbour makes it a cave wall.
+	nodes = {"default:stone", "group:grug_stratum"},
 	max_light = 5,
 	-- No day_toggle: it is always night down there, and the light gate above
 	-- already does the work. Setting day_toggle = false would additionally
