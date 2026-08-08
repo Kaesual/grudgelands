@@ -106,7 +106,22 @@ local c_banner = core.get_content_id("grug_nodes:guard_banner")
 -- (no anchor-column gate: that is what deadlocked), so at most the chunks
 -- generated before it — with ascending-y emerge, the one holding the lower
 -- part of the skirt — can miss their slice.
-local SAMPLE_RADIUS = CAMP_HALF + 4 -- footprint + margin, Chebyshev
+--
+-- WP36 put a NET under it, in grug_core, and it changes nothing here: this
+-- pass is still the decider whenever it can decide, and it still persists
+-- through grug_core.set_camp_platform_y (first writer wins). What changed is
+-- what happens when it CANNOT — the two cases being a footprint whose
+-- surface sits exactly on a mapchunk y edge (unreportable through a
+-- heightmap, see grug_core's probe_platform_y) and a capital nobody has ever
+-- generated. Both used to leave the platform undecided, which every
+-- non-mapgen caller then papered over with its own CAMP_PLATFORM_Y fallback:
+-- two deciders, two answers, one world. grug_core.request_camp_platform now
+-- forces the footprint to emerge (which is what runs this pass) and measures
+-- the finished map itself if this pass still had nothing to say.
+--
+-- The sample radius comes from grug_core so the two measurements cover
+-- exactly the same footprint. Do not re-derive it here.
+local SAMPLE_RADIUS = grug_core.CAMP_SAMPLE_RADIUS -- footprint + margin
 
 -- Median of the mapgen heightmap over a footprint box (Chebyshev radius
 -- around cx/cz, clipped to the chunk), or nil if this chunk cannot see the

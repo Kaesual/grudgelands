@@ -80,15 +80,68 @@ rather than patching each one:
   **Decide 1 now, keep 2–4 as a documented ladder** so later work does not
   have to re-argue the premise.
 
-## 4. Related bug found in the same test (not a design question)
+## 4. Related bug found in the same test — RESOLVED (WP36, 2026-08-08)
 
-The troll capital platform resolved to **y = 8** in one session and
-**y = 36** in the next, same world, same anchor (550, 900) — from the
-`grwasd` debug log. That is the generation-order-dependence class WP18
-already fixed once for the platform height
-(`grug_core.get_camp_platform_y` persists per race in mod storage, and the
-height is supposed to come from `core.get_spawn_level` first with a
-heightmap median as fallback). Needs its own investigation: either the
-persistence is not being read, or the fallback path is order-dependent
-again. Filed here because the capital pass would supersede it — but it
-should be fixed before then, since it affects where players spawn today.
+**Report.** The troll capital platform resolved to **y = 8** in one session
+and **y = 36** in the next, same anchor (550, 900).
+
+**Diagnosis.** Not a persistence failure and not the mapgen fallback going
+order-dependent again. There were simply **two deciders and only one of
+them wrote anything down**:
+
+- `grug_mapgen/structures.lua` measured the footprint heightmap median in
+  the mapchunk it was generating and *persisted* the answer (36) through
+  `grug_core.set_camp_platform_y`;
+- `grug_core.get_spawn_pos` — and `protection.lua` — silently substituted
+  the `CAMP_PLATFORM_Y` minimum (8) whenever `get_camp_platform_y`
+  answered nil, and **persisted nothing**.
+
+`get_camp_platform_y` answers nil exactly when `core.get_spawn_level`
+does, and for mgv7 that nil is permanent, not transient: rivers, water,
+and any terrain above `max(terrain offsets, water_level + 16)` = y 17 with
+our offsets (`mapgen_v7.cpp:248-292`). The troll capital's terrain is at
+36, so the engine never answered there in *any* session. Session 1 (in
+which that mapchunk was never generated) therefore reported the unlogged,
+unpersisted 8, session 2 generated the chunk and persisted 36.
+
+The log confirms it: `set_camp_platform_y` logs only when it persists, and
+in world `grwasd` there is exactly one troll line, `decided at y=36` at
+12:40:05 in the *second* session — the 8 of the first session was never
+logged because nothing decided it. 36 > 17 also proves the value came from
+the heightmap fallback, i.e. that the engine spawn level was nil at that
+column all along.
+
+Two things in the report do not hold up and are recorded here rather than
+smoothed over: the two numbers are **not** two log lines from one world
+(`grwasd` logs only the 36; the `y=8` troll line at 12:31:40 belongs to the
+earlier world `qrasdd`), and the load-time-zero path that
+`grug_core/init.lua` warns about (`getSpawnLevelAtPoint` returning 0 before
+`initMapgens`, `emerge.cpp:348-354`) was **not** involved — there is no
+load-time caller in the tree, and no `capital platform decided` line in the
+whole log comes from the `ServerStart` phase. The bug is reproducible
+inside `grwasd` alone from the mechanism above.
+
+**Fix.** One decider, and a caller that finds the platform undecided forces
+the decision instead of inventing a height:
+
+- `grug_core.request_camp_platform(race_id)` emerges the capital footprint,
+  which runs the mapgen camp pass — the normal decider — and persists.
+  `get_spawn_pos` calls it, and a staggered startup sweep calls it for all
+  six capitals so an unvisited capital cannot stay undecided either.
+- If the emerge still leaves it undecided, a map-side ground probe in
+  `grug_core` decides from the finished terrain. That closes the one hole
+  the heightmap median has and always had: a footprint whose surface sits
+  exactly on a mapchunk y edge is unreportable through
+  `Mapgen::findGroundLevel` (`mapgen.cpp:238-252`), and the platform then
+  stayed undecided — and unbuilt — for the life of the world.
+- `get_spawn_pos` now returns `pos, decided`. `decided = false` marks the
+  provisional position that exists for the duration of one emerge and is
+  never persisted; `grug_factions.teleport_to_spawn` already re-reads after
+  the capital has emerged, which is why it moves nobody before then.
+
+First-writer-wins is unchanged: a world that already has a platform height
+keeps it, whichever of the two measurements got there first.
+
+**Still true:** the authored capital pass of §1–§3 supersedes all of this
+by shaping its own terrain. The fix above only keeps today's spawns
+consistent until then.
