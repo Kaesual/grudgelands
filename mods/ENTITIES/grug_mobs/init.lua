@@ -409,9 +409,17 @@ function grug_mobs.register_mob(name, def)
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
 		grug_mobs.leash_tick(self, dtime)
-		-- Elite/rare wind-up (telegraph.lua). Guarded here so a normal mob
-		-- pays one field comparison per step and nothing else.
-		if self._grug_tier and self._grug_tier ~= "normal" then
+		-- Elite/rare wind-up (telegraph.lua). Guarded here so a mob that does
+		-- not telegraph pays one table lookup per step and nothing else.
+		--
+		-- POSITIVE tier test, and it has to stay one (biomes_mobs.md §3.0):
+		-- this used to read `self._grug_tier ~= "normal"`, which was correct
+		-- only as long as elite and rare were the only tiers that existed —
+		-- the moment the `critter` tier landed, that form would have given a
+		-- rabbit a 2 s wind-up and a x3 cone hit. The predicate itself lives
+		-- in levels.lua next to the TIERS table (one source of truth;
+		-- telegraph_tick's own re-check asks the same function).
+		if grug_mobs.tier_telegraphs(self._grug_tier) then
 			grug_mobs.telegraph_tick(self, dtime)
 		end
 		-- Named-rare patrol (rares.lua); the flag only exists on the handful
@@ -519,5 +527,14 @@ dofile(modpath .. "/mirefolk.lua")
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")
 dofile(modpath .. "/camps.lua")
+-- The 2026-08-08 critter round (biomes_mobs.md §3.0, WP36): the two cave
+-- critters — the underground had none at all — plus the two surface ones.
+-- All four run on the `critter` tier of levels.lua, so they must come after
+-- it; bone_weevil.lua shares cave_crawler.lua's mesh but needs no load order
+-- (a mesh is a file name, not a registration).
+dofile(modpath .. "/cave_bat.lua")
+dofile(modpath .. "/cave_crawler.lua")
+dofile(modpath .. "/bone_weevil.lua")
+dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")

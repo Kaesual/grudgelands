@@ -1,6 +1,10 @@
 -- Mountain Ram (docs/design/biomes_mobs.md §3.1, mountain pair).
--- Verb "flees (critter)" — native mobs_redo behaviour (animal + passive +
--- runaway), same shape as rabbit.lua/stag.lua, no helper from verbs.lua.
+--
+-- Verb "grazes" — PASSIVE PREY since WP36 (§3.0), same shape as stag.lua: no
+-- aggro on sight, fights back when attacked, level/HP/XP from the field and
+-- the formulas. §3.1 spells out why this family in particular must NOT be a
+-- critter: "the ram is the crags' heavy-leather source, which is why it is
+-- prey and not a critter".
 --
 -- The Throng half of the §3.1 row ("Mountain Ram (Dust Hare)") already
 -- shipped in T5: rabbit.lua registers grug_mobs:hare with the
@@ -16,13 +20,11 @@
 local ram = {
 	description = "Mountain Ram",
 	type = "animal",
-	passive = true,
-	runaway = true,
 	_grug_spawn_zones = {"outer"},
-	-- HP/damage/XP/armor: engine-owned (levels.lua).
+	-- HP/damage/XP/armor: engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,
-	run_velocity = 3.4, -- critter speed (§0)
+	run_velocity = 3.4, -- grazer speed (§0)
 	jump = true,
 	jump_height = 4, -- it lives on gravel slopes
 	stepheight = 1.1,
@@ -41,8 +43,8 @@ local ram = {
 	collisionbox = {-0.45, -0.01, -0.45, 0.45, 1.29, 0.45},
 	makes_footstep_sound = true,
 
-	-- wp6_model_notes §1.7: stand is the single frame 0, no punch clip
-	-- (critter). Frames 81-161 are the lamb and stay unused.
+	-- wp6_model_notes §1.7: stand is the single frame 0, no punch clip on
+	-- this mesh (stag.lua's note). Frames 81-161 are the lamb and stay unused.
 	animation = {
 		stand_start = 0, stand_end = 0,
 		walk_start = 0, walk_end = 40, walk_speed = 30,
@@ -58,6 +60,9 @@ local ram = {
 	lava_damage = 4,
 	light_damage = 0,
 }
+
+-- Verb before registration (verbs.lua contract).
+grug_mobs.passive_prey(ram)
 
 grug_mobs.register_mob("grug_mobs:mountain_ram", ram)
 

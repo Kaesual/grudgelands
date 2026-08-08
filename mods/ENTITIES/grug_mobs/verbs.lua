@@ -584,3 +584,46 @@ function grug_mobs.register_simple_arrow(name, opts)
 		end,
 	})
 end
+
+--
+-- "grazes" — PASSIVE PREY (biomes_mobs.md §3.0, decided 2026-08-08)
+--
+-- The large grazers (Stag, Gaunt Stag, Zebra, Mountain Ram) and the Carrion
+-- Crow: ordinary mobs in every mechanical respect — level from the field, HP
+-- and XP from the formulas, leather drops kept — with exactly one behavioural
+-- difference from the aggressive families: **they never attack on sight, but
+-- they fight back when attacked.**
+--
+-- mobs_redo ALREADY EXPRESSES THIS, so nothing here is a new aggro system;
+-- the helper only sets the four fields that say it, in one place, with the
+-- reasons attached (api.lua line numbers against our vendored copy):
+--
+--   * `passive = false` is what makes retaliation exist at all. on_punch's
+--     tail (api.lua:2979) reads `if not self.passive ... then self:do_attack(
+--     hitter)` and additionally alerts same-name mobs with group_attack —
+--     a `passive = true` mob has no code path that can ever hit back.
+--   * `attack_players = false` is what removes aggro on sight. It is read in
+--     exactly ONE place, general_attack's candidate filter (api.lua:1787),
+--     which is the on-sight acquisition loop; nothing in the attack STATE
+--     consults it. So a prey animal never picks a target itself, and the
+--     target do_punch hands it is unaffected. `attack_npcs` goes with it
+--     (default true) so faction NPCs are not hunted either; attack_animals
+--     and attack_monsters are already false by default (api.lua:169-172).
+--   * `runaway` must be OFF. It is not merely redundant with retaliation,
+--     the two collide: on_punch's runaway block (api.lua:2967) sets
+--     `state = "runaway"` a dozen lines BEFORE the retaliation block resets
+--     it to "" and calls do_attack — so the flee would be overwritten every
+--     time and the field would only ever survive as a lie in the def. A
+--     grazer that fights back does not flee.
+--
+-- The critters keep `passive = true` + `runaway = true` (rabbit.lua) — that
+-- is the OTHER class of §3.0 and the reason this helper exists as its own
+-- named verb instead of as "the animal default".
+--
+function grug_mobs.passive_prey(def)
+	def.passive = false
+	def.attack_players = false
+	def.attack_npcs = false
+	def.runaway = false
+	return def
+end

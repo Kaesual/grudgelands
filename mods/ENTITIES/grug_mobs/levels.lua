@@ -17,6 +17,31 @@
 --     def armor at tier "normal" is kept (Kraken: 70).
 --   * Everything else (speeds, view_range, drops, visuals) stays def-owned;
 --     the tier visuals (scale/tint) are layered on top of them at runtime.
+--   * ONE tier extends that list, and it is spelled out in the TIERS table
+--     rather than hidden in a def: the `critter` tier also owns `level`,
+--     `fall_damage` and the telegraph flag (see below).
+--
+-- THE `critter` TIER (biomes_mobs.md §3.0, decided 2026-08-08) is the SECOND
+-- documented exception to "stats derived, never hand-rolled" — after the
+-- Kraken's `_grug_fixed_level` L100 — and, unlike that one, it is a TIER in
+-- this engine and never a hand-set stat in a def:
+--   * always level 1 and always 1 HP, whatever the level field says at the
+--     mob's position (`level = 1`, `hp_flat = 1` below);
+--   * 10 XP flat (`xp_flat`). No second rule is needed to stop it being a
+--     farm: combat_stats.md §3's gray-kill rule zeroes it for anyone above
+--     level 11 on its own.
+--   * `fall_damage` off. At 1 HP any 7-node fall is lethal (mobs_redo
+--     charges `d - 6`, api.lua:2608ff), which would quietly delete the
+--     population in exactly the hilly terrain a travelling player crosses.
+--     NB it must be `false`, NOT `0`: mobs_redo tests `if self.fall_damage`
+--     and every number — 0 included — is truthy in Lua, so `fall_damage = 0`
+--     is a no-op. §3.0 writes "0"; the engine reading is what ships.
+--   * never elite or rare (`grug_mobs.set_tier` refuses the promotion) and
+--     never telegraphs — hence `telegraph` being a positive TIER flag: a
+--     `tier ~= "normal"` gate would hand a rabbit a 2 s wind-up and a x3
+--     cone hit.
+-- Everything else about a critter (speed 3.4, passive/runaway, the meat-only
+-- drop list) stays def-owned like any other mob.
 --
 -- Persistence note: mobs_redo serializes every plain entity field into
 -- staticdata (api.lua clean_staticdata:2790) and re-applies fields whose
@@ -36,18 +61,35 @@ grug_mobs.MAX_LEVEL = MAX_LEVEL
 -- elite city watch. `_grug_fixed_level` bypasses both (Kraken = 100).
 local LEVEL_CAP = {mob = MAX_LEVEL, guard = 70}
 
+-- The multiplier model is `hp`/`dmg`/`xp`; the critter row opts out of two
+-- thirds of it with FLAT overrides instead of a multiplier, because "1 HP"
+-- and "10 XP" are not a factor of anything — see the header. `level`, when
+-- present, fixes the level before the field is ever queried; `telegraph` is
+-- the single source of truth for the elite/rare wind-up gate (init.lua's
+-- do_custom guard and telegraph.lua's own re-check both ask this table).
 local TIERS = {
 	normal = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
 		tint = nil, prefix = ""},
+	critter = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
+		tint = nil, prefix = "",
+		level = 1, hp_flat = 1, xp_flat = 10, fall_damage = false},
 	elite = {hp = 3, dmg = 1.8, xp = 4, armor = 80, scale = 1.6,
-		tint = "#ffa800:80", prefix = "Elite "},
+		tint = "#ffa800:80", prefix = "Elite ", telegraph = true},
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
-		tint = "#a64dff:90", prefix = "★ "},
+		tint = "#a64dff:90", prefix = "★ ", telegraph = true},
 }
 
 local function tier_def(tier)
 	return TIERS[tier] or TIERS.normal
+end
+
+-- Does this tier use the elite/rare wind-up (telegraph.lua)? POSITIVE test,
+-- deliberately: the negative form `tier ~= "normal"` silently included every
+-- tier added later — the critter being exactly that case (biomes_mobs.md
+-- §3.0: "the telegraph gate must be a positive elite/rare test").
+function grug_mobs.tier_telegraphs(tier)
+	return tier_def(tier).telegraph == true
 end
 
 -- mob name -> level/tier config from the def (see register_level_cfg)
@@ -59,11 +101,18 @@ end
 
 -- Derived stats for a level/tier pair. Single source of truth — every
 -- other place asks here instead of repeating a formula.
+--
+-- `hp_flat`/`xp_flat` are the critter tier's opt-out of the multiplier model
+-- (header): a flat value REPLACES the formula for that one stat and leaves
+-- the other two alone, so `normal`/`elite`/`rare` — which carry neither
+-- field — go through exactly the arithmetic they always did. Damage stays
+-- formula-derived even for a critter: it never attacks, so the number is
+-- never read, and inventing a second exception for it would be noise.
 function grug_mobs.stats_for(level, tier)
 	local t = tier_def(tier)
-	return math.floor((15 + 5 * level) * t.hp + 0.5),
+	return t.hp_flat or math.floor((15 + 5 * level) * t.hp + 0.5),
 		round1((2 + 0.4 * level) * t.dmg),
-		math.floor(10 * level * t.xp + 0.5)
+		t.xp_flat or math.floor(10 * level * t.xp + 0.5)
 end
 
 --
@@ -342,7 +391,14 @@ end
 -- Level assignment
 --
 
-local function resolve_level(self, cfg)
+local function resolve_level(self, cfg, tier)
+	local t = tier_def(tier)
+	if t.level then
+		-- Tier-fixed level (critter: always 1). Checked before `cfg.fixed`
+		-- and before the field is queried at all — a critter has no level
+		-- source, so there is nothing to cap or clamp.
+		return t.level
+	end
 	if cfg.fixed then
 		-- Hand-set level: bypasses the field AND the source cap on purpose
 		-- (the Kraken is L100, kraken.lua).
@@ -381,6 +437,15 @@ function grug_mobs.register_level_cfg(name, def)
 		xp_override = def._grug_xp_reward,
 	}
 	def.armor = tier_def(tier).armor or def.armor or 100
+	-- Def-time normalization, exactly like the armor line above and for the
+	-- same reason: the value has to be in the def BEFORE mobs:register_mob
+	-- copies its field whitelist into the entity table (api.lua:3474
+	-- `fall_damage = def.fall_damage`), because a nil there falls through the
+	-- class metatable to mobs_redo's default of `true`. `false` and not `0`
+	-- — see the header.
+	if tier_def(tier).fall_damage == false then
+		def.fall_damage = false
+	end
 end
 
 -- First-tick initialization + per-activation re-hooks. Cheap enough to call
@@ -405,8 +470,12 @@ function grug_mobs.ensure_init(self)
 	if not self._grug_level then
 		-- Plain fields persist via staticdata, so this runs exactly once
 		-- per mob, not once per activation.
-		self._grug_level = resolve_level(self, cfg)
+		-- The tier is settled FIRST: a tier can fix the level (critter), so
+		-- resolve_level has to be told which one applies. `self._grug_tier`
+		-- may already be set when the rare spawner promoted this entity
+		-- before its first tick (set_tier).
 		self._grug_tier = self._grug_tier or cfg.tier
+		self._grug_level = resolve_level(self, cfg, self._grug_tier)
 		apply_tier_visuals(self)
 		apply_stats(self, false)
 	end
@@ -444,6 +513,14 @@ end
 -- Used by the rare spawner and by any def-independent tier decision.
 function grug_mobs.set_tier(ent, tier)
 	if not ent or not ent.object then
+		return
+	end
+	-- "Never elite or rare" (biomes_mobs.md §3.0). Enforced on the ENGINE
+	-- side rather than trusted to every caller: the rare spawner picks by
+	-- mob name today, but a future elite roll must not be able to turn a
+	-- 1 HP rabbit into a x3-HP telegraphing elite by accident.
+	local cfg = level_cfg[ent.name]
+	if cfg and cfg.tier == "critter" then
 		return
 	end
 	ent._grug_tier = TIERS[tier] and tier or "normal"

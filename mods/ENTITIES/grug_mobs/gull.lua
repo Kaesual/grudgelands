@@ -30,18 +30,22 @@ local gull = {
 	-- zoned core+inner; `outer` is the piece nothing else reaches, and a
 	-- sand-only critter at aoc 2 is the cheapest thing that can fill it.
 	_grug_spawn_zones = {"strait", "war_coast", "coast", "outer"},
-	-- Level: engine-owned (levels.lua). grug_core.mob_level_at caps the
-	-- strait at 5 and the war coast at 20-30 — §3.1 files the beach roster as
-	-- "L1-5 neutral", and on a flank/back coast beach the same critter comes
-	-- out at 45-60. A critter has no combat role either way, so no
-	-- _grug_min_level floor (rabbit.lua/parrot.lua carry none either).
+	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
+	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
+	-- This is also what settles the old level question in this file: the
+	-- beach roster used to inherit whatever mob_level_at said (5 on the
+	-- strait, 20-30 on the war coast, 45-60 on a flank coast), which made one
+	-- and the same harmless bird a level-55 nametag. A critter is level 1
+	-- everywhere now, by tier.
+	_grug_tier = "critter",
 
 	-- Flier (see the header): floats/fall_damage are inert while fly is set
-	-- but keep the def honest, as in kraken.lua/eagle.lua.
+	-- (falling() bails out first). fall_damage is not written here — the
+	-- critter tier owns it, as `false` rather than the `0` §3.0 prints (0 is
+	-- truthy in Lua; levels.lua header).
 	fly = true,
 	fly_in = "air",
 	jump = false,
-	fall_damage = 0,
 	fear_height = 0,
 
 	walk_velocity = 1.5,
@@ -72,8 +76,10 @@ local gull = {
 		fly_start = 140, fly_end = 160, fly_speed = 40,
 	},
 
+	-- FOOD ONLY (§3.1: "meat 1/1 — food only"). The feather moved to the
+	-- bird-of-prey table (§3.0/§6, eagle.lua) with the critter rework.
 	drops = {
-		{name = "grug_mobs:feather", chance = 1, min = 1, max = 1},
+		{name = "mobs:meat_raw", chance = 1, min = 1, max = 1},
 	},
 
 	water_damage = 0,

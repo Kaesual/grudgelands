@@ -623,6 +623,22 @@ What is guaranteed now, and how:
   Panther 4 + Jungle Spider 4 = **8** at night, so the Pale Spider's 4 would
   reach **12**, which *ties* the peak instead of passing it. The decision
   stands on the leakage argument alone.)
+- **The critter round (§3.0) re-derived the same matrix a third time**, and
+  it is the easy case of the test above: four new entity names, **no new top
+  node and no new cuboid**, so not one `biome × zone` column or cell was
+  created — every row lands on a top that already had rows (`grug_nodes:mud`,
+  `grug_nodes:dirt_with_bone_litter`, `grug_nodes:blight_dirt`, and the cave
+  rock `default:stone` + `group:grug_stratum`). The guarantee therefore
+  cannot break by construction: this round only ever ADDS a name to a live
+  cell. Re-derived anyway, because that is the rule: **every land cell still
+  has day AND night spawns**, the day peak is unchanged at **16** (the
+  highest cell this round touches is blight core/inner at 14) and the night
+  peak is unchanged at **12** — the underground cell was taken to exactly 12
+  and deliberately not past it, which is why the second cave critter ships at
+  `aoc` 1 (§4's row note; full arithmetic in `wp6_spawn_budget.md` §2.5).
+  The only day-only cells remain the three documented exceptions
+  (`grug_beach` × outer and × coast, `grug_swamp` × coast) — a *day* critter
+  cannot fill a night column, and the swamp's Bog Fowl does not try to.
 
 ## 2. Per-biome specs (surface, flora, gathering)
 
@@ -750,27 +766,64 @@ use, not content:
   snack on the road but never a farm target, so a player with a full larder
   stops killing them automatically. This is what fixes their loot-table
   "value as an enemy".
-- **`fall_damage = 0`.** At 1 HP any 7-node fall is lethal (mobs_redo
+- **No fall damage.** At 1 HP any 7-node fall is lethal (mobs_redo
   charges `d − 6`), which would quietly delete the population in exactly
   the hilly terrain where a travelling player wants a snack. They drop
   nothing without a player tag anyway, so there is no exploit either way.
+  **The field must be written `false`, not `0`** — mobs_redo tests
+  `if self.fall_damage` (`mods/ENTITIES/mobs/api.lua:2608`) and every
+  number is truthy in Lua, so `fall_damage = 0` is a silent no-op. Earlier
+  revisions of this section printed `0`; the tier writes `false`.
 - **Never elite or rare.** The level engine's telegraph gate must be a
   *positive* elite/rare test — a `tier ~= "normal"` test would give a
   rabbit a 2 s wind-up and a ×3 cone hit.
 
+**How the tier is expressed** (WP36, `grug_mobs/levels.lua`): the `TIERS`
+table gains a `critter` row that opts out of the multiplier model with FLAT
+values (`hp_flat = 1`, `xp_flat = 10`) plus a fixed `level = 1`, so
+`normal`/`elite`/`rare` keep the exact arithmetic they always had — a flat
+value replaces the formula for one stat and leaves the other two alone.
+Damage stays formula-derived even for a critter: it never attacks, so the
+number is never read, and a third exception would be noise. `fall_damage`
+is normalized into the def at registration time, next to `armor` and for the
+same reason (mobs_redo copies an explicit def-field whitelist, and a nil
+there falls through to its default of `true`). The telegraph gate is a
+positive `telegraph = true` flag on the elite and rare rows, asked through
+one predicate that both the `do_custom` gate and `telegraph_tick` call, and
+`set_tier` refuses to promote a critter at all.
+
 **Passive prey** — the *large* grazers: stag, gaunt stag, zebra, mountain
-ram. They are ordinary mobs in every mechanical respect — **level from the
-field, HP and XP from the formulas, leather drops kept** — with one
-behavioural difference from the aggressive families: **they never attack on
-sight, but they fight back when attacked.** That is what makes them worth
-the swing, and it keeps the leather tiers gated by a real fight rather than
-by travel.
+ram, **plus the Carrion Crow**. They are ordinary mobs in every mechanical
+respect — **level from the field, HP and XP from the formulas, leather drops
+kept** — with one behavioural difference from the aggressive families:
+**they never attack on sight, but they fight back when attacked.** That is
+what makes them worth the swing, and it keeps the leather tiers gated by a
+real fight rather than by travel.
+
+mobs_redo already expresses exactly this, so it is **three def fields and no
+new aggro system** (`grug_mobs.passive_prey` in `verbs.lua` sets them in one
+place): `passive = false` is what makes retaliation exist at all (on_punch's
+tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:2979),
+`attack_players = false` (with `attack_npcs = false`) is what removes aggro
+on sight — it is read in exactly one place, `general_attack`'s candidate
+filter (api.lua:1787), and nothing in the attack *state* consults it — and
+`runaway` must be **off**, because on_punch's runaway block sets
+`state = "runaway"` a dozen lines before the retaliation block resets it, so
+the two cannot both be true.
+
+The Carrion Crow's three decided changes, all zero-cost: `visual_size`
+10 → **14** (~1.0 nodes tall — a target you can see and click), the
+collisionbox scaled by that same 1.4 (`0.4 → 0.6` high, `0.2 → 0.3` wide),
+and `punch` **aliased onto the fly clip** of the shared gull mesh so the
+retaliation reads. Same mesh, same texture, same spawn row, same `aoc`.
 
 **Enemies** — everything else, unchanged (§3.1's verbs).
 
 Consequence for the material map (§6): plain **feather** loses its critter
 source and moves to the **bird-of-prey table** (crag eagle / vulture), so
-arrow fletching stays behind a real fight. Meat stays universal.
+arrow fletching stays behind a real fight. Meat stays universal. The Carrion
+Crow **keeps** its feather — it is prey, not a critter, and that drop is
+what makes the war coast worth walking by day.
 
 ### 3.1 Families by biome group
 
@@ -793,6 +846,7 @@ arrow fletching stays behind a real fight. Meat stays universal.
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.4 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 3.4 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 walk | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
+| **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
 
 **Mountain pair — grug_crags (A) ↔ grug_badlands (T)** (outer, 25–60):
 
@@ -810,9 +864,9 @@ numbers and drops. The badlands therefore carry no critter — Hyena,
 Vulture and Mesa Golem only.
 
 **Savanna extras (grug_savanna inner, L10–25):** Hyena (above, from
-L10); Zebra — flees, meat ×2 + leather 1/2 `[leather]`, animalworld
-zebra (Accord mirror = Stag in meadows-adjacent forest patches: same
-table).
+L10); Zebra — grazes (**passive prey**, §3.0, exactly like the Stag it
+mirrors), meat ×2 + leather 1/2 `[leather]`, animalworld zebra (Accord
+mirror = Stag in meadows-adjacent forest patches: same table).
 
 **Jungle group — grug_deep_jungle (T) ↔ grug_jungle_fringe (A)** (outer/
 coast, 38–60) + grug_jungle_edge inner (10–25):
@@ -833,6 +887,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.4, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
 | Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
 | Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
+| **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
 
 **grug_beach / strait (L1–5 neutral — attack only when provoked):**
 
@@ -848,7 +903,9 @@ the Gull alone.
 
 **War coast (20–30, both continents):** local settled-biome roster
 continues; plus Skeleton Raider (dogshoot, night — battlefield dead;
-skeleton table + heavy cloth 1/3) and Carrion Crow (flees, feather).
+skeleton table + heavy cloth 1/3) and Carrion Crow (**passive prey**,
+§3.0 — grazes/scavenges, no aggro, retaliates; feather 1/1, and it is the
+whole daytime population of the war coast).
 Faction NPC outposts/guards are WP6, not part of this catalog.
 
 **Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
@@ -858,7 +915,16 @@ spawns only in open sea beyond the coastal ocean. No drops.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
-of `mob_level_at`. No cave-only families in this catalog.
+of `mob_level_at`. **Two cave-only critters since 2026-08-08** (§3.0 —
+before them every single thing that moved underground wanted the player
+dead): **Cave Bat** (flier, `mobs_mc_bat`, no retint) and **Cave
+Crawler** (`mobs_mc_silverfish`, no retint). Both are `critter`-tier, so
+the depth term never touches them — a level-60 bat is not a thing.
+
+| Mob | Verb | Day/Night | Speed | Drops | Model |
+|-----|------|-----------|-------|-------|-------|
+| Cave Bat | flees (**critter**, §3.0), flier | any (cave dark) | 3.4 fly | meat 1/1 — food only | mobs_mc_bat |
+| Cave Crawler | flees (**critter**, §3.0) | any (cave dark) | 3.4 | meat 1/1 — food only | mobs_mc_silverfish |
 
 ### 3.2 Cross-continent drop-table pairs (binding)
 
@@ -1029,6 +1095,10 @@ the new values once the change ships.
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
 | Shore Crab — *deferred (§8.3)* | sand | 20 | 1650 | 3 | any | strait, war_coast, coast |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
+| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
+| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
+| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 2200 | 2 | min 10 | (none — the node gates) |
+| **Bog Fowl** (critter) | mud (only) | 20 | 2200 | 2 | min 10 | (none — the node gates) |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
@@ -1045,7 +1115,22 @@ Row notes:
   `war_coast`-only zone does all the gating and it needs no extra
   check. Its table is the skeleton table **plus heavy cloth 1/3**.
 - **Parrot** and **Carrion Crow** are priced like the Gull, the other
-  "flees" bird: 20 / 1875 / 2. Neither creates a new peak.
+  "flees" bird: 20 / 1875 / 2. Neither creates a new peak. The Crow's
+  move to passive prey (§3.0) changed **no** spawn number — same row,
+  same `aoc`, same zone.
+- **The four critters of §3.0** (added 2026-08-08) all share
+  20 / 2200 / 2, with **one exception that is pure arithmetic**: the
+  **Cave Crawler ships at `aoc` 1**. The underground cell was
+  Zombie 4 + Giant Spider 4 + one Golem 1 = **9 / 9**; two cave critters
+  at 2 each would make it 13 / 13, one over the world night peak of 12,
+  so 2 + 1 lands it exactly on **12 / 12**. The two surface critters
+  raise no cell above 14 against the day peak of 16
+  (`wp6_spawn_budget.md` §2.2). The **Bone Weevil is deliberately ONE
+  entity name with two spawn rows** — `aoc` counts per name, so the bone
+  forest and the blight share its budget of 2 the way the Skeleton
+  Archer's two node lists share theirs, while an `on_spawn` stamp still
+  gives each biome its own tint. Two registrations would have been two
+  budgets.
 
 Performance justification (AGENTS.md rules, 100-player scale):
 - aoc caps are per mob NAME in the spawn area, so co-located players
@@ -1166,7 +1251,8 @@ license-clean, keep attribution.
 
 | Material | Tier | Accord sources | Throng sources |
 |----------|------|------------------|---------------|
-| Light leather `[leather]` | 1–15 | boars, rabbits, rams | plague boars, hares |
+| Light leather `[leather]` | 1–15 | boars | plague boars |
+| Feather (fletching) | 20–60 | crag eagles, carrion crows | vultures, carrion crows |
 | Leather `[leather]` | 10–45 | wolves, stags | hyenas, jungle lynxes, blightfang wolves, zebras, panthers* (*fringe gives A access too) |
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
@@ -1189,6 +1275,17 @@ license-clean, keep attribution.
 Every row has at least one source per continent. Race woods are
 deliberately asymmetric (identity); base recipes accept `group:wood`.
 
+**Two rows moved with the critter rework of §3.0 (2026-08-08).** *Light
+leather* lost rabbits and hares — critters drop food only — and the row's
+"rams" entry was stale anyway (§3.1 gives the Mountain Ram **heavy**
+leather, which is why that family is prey and not a critter). The Boar
+carries the tier alone now, and it exists on both continents, so the
+"one source per continent" rule holds. *Feather* is a row for the first
+time: it used to fall off the Gull and the Parrot, i.e. off two 1 HP
+critters, and now comes off the **bird-of-prey table** (§3.2) plus the
+Carrion Crow, which is prey rather than a critter — so arrow fletching
+is behind a fight on both sides.
+
 **Cloth supply, precisely** (resolved in WP6): zombies and skeletons
 drop **linen scrap**, which is vendor trash, *not* the tailoring
 material. The cloth line comes from **humanoids** — bandit camps for
@@ -1206,7 +1303,7 @@ create it.
 | Mob(s) | Source | License (code/media) | Work needed |
 |--------|--------|----------------------|-------------|
 | Boar, Zombie | already vendored | GPLv3 / CC BY-SA 4.0 | retints only |
-| Rabbit, Parrot, Skeleton, Wolf, Slime→Ooze, Squid→Kraken, Polar bear→Bear, Sheep→Ram | VoxeLibre mobs_mc | GPLv3 / CC BY-SA 4.0 | mcl_mobs→mobs_redo port (pattern known), retextures |
+| Rabbit, Parrot, Skeleton, Wolf, Slime→Ooze, Squid→Kraken, Polar bear→Bear, Sheep→Ram, **Bat→Cave Bat, Silverfish→Cave Crawler/Bone Weevil, Chicken→Bog Fowl** | VoxeLibre mobs_mc | GPLv3 / CC BY-SA 4.0 | mcl_mobs→mobs_redo port (pattern known), retextures; the four critters of §3.0 are **zero-download** — the meshes were already on disk |
 | Spider, Stone Golem | mobs_monster (TenPlus1) | MIT / CC BY 3.0 | drop-in mobs_redo, retint |
 | Hyena, Zebra, Eagle/Vulture, Leopard→Panther, Cobra→Serpent, Crocodile, Monkey→Ape | animalworld (mt-mods) | MIT / MIT (**sounds: verify per file, freesound CC**) | mobs_redo-native; texture pass toward 16px style |
 | Reindeer→Stag, Song bird→Gull/Crow | animalia (ElCeejo) | MIT / MIT | asset harvest, re-register on mobs_redo, remap anim frames |

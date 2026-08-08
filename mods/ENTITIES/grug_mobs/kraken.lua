@@ -60,6 +60,8 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	fly_in = "default:water_source",
 	floats = 1,
 	jump = false,
+	-- Inert (falling() bails out for fliers) and NOT a switch: 0 is truthy in
+	-- Lua, so on a walking mob this line would do nothing — see eagle.lua.
 	fall_damage = 0,
 	fear_height = 0,
 	walk_velocity = 3,

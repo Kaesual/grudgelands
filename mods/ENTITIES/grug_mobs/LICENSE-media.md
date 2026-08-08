@@ -18,6 +18,16 @@ file its row names, so every "Modifications: none" claim in §1.1/§3/§4/§5 is
 proven, not asserted; the five license statements were re-read in the source
 repos. See §8 for the animation audit of the same 21 meshes.
 
+**Three meshes added 2026-08-08 (WP36 item 4, the critter round):**
+`grug_mobs_cave_bat.b3d`, `grug_mobs_cave_crawler.b3d` and
+`grug_mobs_bog_fowl.b3d`, all from the same VoxeLibre commit §1 already
+pins, all verified the same way — `cmp` byte-identical to their upstream
+files, animation chunks and real frame ranges measured out of the binary
+(§8's table, now 24 meshes), and their two license statements
+(`mods/ENTITIES/mobs_mc/LICENSE-media.md` for models and textures,
+top-level `LEGAL.md`) re-read at that commit. **Zero download**: the files
+were already on disk in the pinned submodule.
+
 ## Retint recipe `R`
 
 All pre-baked tint variants below were produced with ImageMagick 7 using one
@@ -66,13 +76,20 @@ Blender sources: <https://github.com/22i/minecraft-voxel-blender-models>
 | `grug_mobs_bear.b3d` | `= models/mobs_mc_polarbear.b3d` | none |
 | `grug_mobs_bog_ooze.b3d` | `= models/mobs_mc_slime.b3d` | none |
 | `grug_mobs_ram.b3d` | `= models/mobs_mc_sheepfur.b3d` | none |
+| `grug_mobs_cave_bat.b3d` | `= models/mobs_mc_bat.b3d` | none |
+| `grug_mobs_cave_crawler.b3d` | `= models/mobs_mc_silverfish.b3d` | none (also serves the Bone Weevil, `bone_weevil.lua`) |
+| `grug_mobs_bog_fowl.b3d` | `= models/mobs_mc_chicken.b3d` | none |
 
 ### 1.2 Textures — CC BY-SA 4.0
 
 Base pack "Pixel Perfection" by [XSSheep](https://www.planetminecraft.com/member/xssheep/);
 the files marked *(MysticTempest)* were modified by MysticTempest inside
-VoxeLibre (per `LICENSE-media.md` of `mobs_mc`). Our own changes are in the
-last column and are published under the same CC BY-SA 4.0.
+VoxeLibre, and the ones marked *(kingoscargames)* were **added** by
+kingoscargames there — both lists are explicit in `LICENSE-media.md` of
+`mobs_mc`, whose default for every mob texture it does not name otherwise is
+"Original author: XSSheep … License (if not mentioned otherwise):
+CC BY-SA 4.0". Our own changes are in the last column and are published under
+the same CC BY-SA 4.0.
 
 | File | Upstream | Author chain | Modifications |
 |------|----------|--------------|---------------|
@@ -91,6 +108,11 @@ last column and are published under the same CC BY-SA 4.0.
 | `grug_mobs_bog_ooze.png` | `= mobs_mc_slime.png` | XSSheep → MysticTempest | slime green → murky bog green: `R, modulate 80,90,100, #6E7A4A` |
 | `grug_mobs_ram.png` | `= mobs_mc_sheep.png` | XSSheep | none (body/face layer, texture slot 2 of the sheepfur mesh) |
 | `grug_mobs_ram_fur.png` | `= mobs_mc_sheep_fur.png` | XSSheep | Mountain-Ram fleece, white → dusty grey-brown: `R, #B9A98C` (texture slot 1) |
+| `grug_mobs_cave_bat.png` | `= mobs_mc_bat.png` | XSSheep | none |
+| `grug_mobs_cave_crawler.png` | `= mobs_mc_silverfish.png` | XSSheep | none |
+| `grug_mobs_bone_weevil.png` | `= mobs_mc_silverfish.png` | XSSheep | Bone Weevil, bone-forest variant — bleached bone: `R, modulate 118,30,100, #EDEAE0` |
+| `grug_mobs_bone_weevil_blight.png` | `= mobs_mc_silverfish.png` | XSSheep | Bone Weevil, blight variant — sickly olive: `R, modulate 110,110,100, #8FA85E` |
+| `grug_mobs_bog_fowl.png` | `= mobs_mc_chicken.png` | XSSheep → *(kingoscargames)* | Bog Fowl, marsh olive-brown: `R, modulate 100,70,100, #A3B184` |
 
 ### 1.3 Derived from the vendored boar texture (CC BY-SA 4.0)
 
@@ -290,7 +312,7 @@ without `ANIM`/`BONE`/`KEYS` chunks slides instead of moving. This section is
 the evidence that the rule holds for everything the game ships, so a future
 session does not have to re-derive it.
 
-**Result: all 21 meshes in `models/` are animated** (plus `character.b3d`
+**Result: all 24 meshes in `models/` are animated** (plus `character.b3d`
 from `player_api`, listed for completeness — its license lives in that mod's
 own `README.txt`: model by MirceaKitsune with later fixes, CC BY-SA 3.0).
 Nothing had to be replaced, so no new media was imported and no license row
@@ -320,7 +342,10 @@ false positives here.
 | `character.b3d` | ANIM+BONE+KEYS | 6 | 1008 | 1326 | 1..221 | `bandit.lua`, `guard.lua`, `mirefolk.lua`, `grug_traders/vendors.lua` | 0..198 | animated, in range |
 | `grug_mobs_bear.b3d` | ANIM+BONE+KEYS | 11 | 2400 | 891 | 1..81 | `bear.lua` | 0..40 | animated, in range |
 | `grug_mobs_boar.b3d` | ANIM+BONE+KEYS | 8 | 1344 | 656 | 1..82 | `boar.lua`, `boar_variants.lua` | 0..40 | animated, in range |
+| `grug_mobs_bog_fowl.b3d` | ANIM+BONE+KEYS | 11 | 1760 | 638 | 1..58 | `bog_fowl.lua` | 1..20 | animated, in range |
 | `grug_mobs_bog_ooze.b3d` | ANIM+BONE+KEYS | 2 | 120 | 40 | 1..20 | `bog_ooze.lua` | 1..20 | animated, in range |
+| `grug_mobs_cave_bat.b3d` | ANIM+BONE+KEYS | 7 | 952 | 567 | 1..81 | `cave_bat.lua` | 1..40 | animated, in range |
+| `grug_mobs_cave_crawler.b3d` | ANIM+BONE+KEYS | 7 | 1456 | 147 | 1..21 | `cave_crawler.lua`, `bone_weevil.lua` | 1..20 | animated, in range |
 | `grug_mobs_crocodile.b3d` | ANIM+BONE+KEYS | 15 | 360 | 6750 | 1..500 | `crocodile.lua` | 0..350 | animated, in range |
 | `grug_mobs_eagle.b3d` | ANIM+BONE+KEYS | 18 | 432 | 6300 | 1..350 | `eagle.lua` | 0..350 | animated, in range |
 | `grug_mobs_gull.b3d` | ANIM+BONE+KEYS | 12 | 1984 | 1920 | 1..160 | `carrion_crow.lua`, `gull.lua` | 1..160 | animated, in range |
@@ -360,3 +385,26 @@ and the animalia substitution the note describes did happen for the two
 models actually taken from that repo (§4: reindeer→Stag, song bird→Gull and
 Carrion Crow). Nothing to fix. animalia's un-imported rat/bat/frog/owl/cat/fox
 roster stays available under the MIT license already cleared in §4.
+
+### 8.3 The critter round (WP36 item 4) measured, did not copy
+
+The three meshes added on 2026-08-08 went through the audit *before* their
+defs were written, which is the rule §8.1 exists for. Measured out of the
+binaries (the parser above), not read out of `mobs_mc/*.lua`:
+
+| Mesh | Keyed joints | Keys | Real frame range | Upstream def says | What we ship |
+|------|--------------|------|------------------|-------------------|--------------|
+| `grug_mobs_cave_bat.b3d` | 7 | 567 | **1..81** | flight 0..40, death 40..80 | 1..40 on stand/walk/run/fly |
+| `grug_mobs_cave_crawler.b3d` | 7 | 147 | **1..21** | one loop 0..20 | 1..20 on stand/walk/run |
+| `grug_mobs_bog_fowl.b3d` | 11 | 638 | **1..58** | idle 0..0, walk 0..20, flap 20..26, chick 31+ | 1..1 stand, 1..20 walk/run |
+
+Two deliberate deviations from upstream, both harmless and both worth
+stating: every clip **starts at 1, not 0** (0 is below the first real
+keyframe — the engine clamps, but there is no reason to ask it to), and no
+death clip is used, because mobs_redo plays none for our mobs (both of its
+death hooks skip the animation, `grug_mobs/init.lua`). The chicken's chick
+range 31+ is unreachable for us: breeding is not registered.
+
+The **Carrion Crow** also gained a clip in this round without touching its
+mesh: `punch` aliased onto the fly range 140..160 of `grug_mobs_gull.b3d`
+(measured 1..160, §8's table), so its retaliation as passive prey reads.

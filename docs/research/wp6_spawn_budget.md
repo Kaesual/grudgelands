@@ -71,6 +71,16 @@ impossible** (was 66 / 9):
    change that makes the inventory smaller. Both had a live number in the
    previous revision, from before the carve cut the capital belt out of them.
 
+**Third correction, 2026-08-08 (the critter round, `biomes_mobs.md` §3.0).**
+§2.2 moved again, and this time only by ADDITION — four new critter names, no
+row removed, no zone or node list of an existing family touched. The
+affected cells and the reasoning are §2.5; the short version is that the
+underground cell goes **9 / 9 → 12 / 12** (deliberately, to the night peak
+and not past it), fifteen surface cells gain 2 in the DAY column only, and
+**neither peak moves**: 16 day, 12 night. §3's density math is therefore
+unchanged again, for the same reason it was unchanged in 2026-08-07 — it is
+driven by the peak.
+
 ## 1. What `aoc` actually caps
 
 `mobs:spawn{active_object_count = N}` reaches `spawn_action` in
@@ -169,17 +179,17 @@ continents (§1.3 of the catalog), so they are two places, not one.
 | pine hills (`dirt_with_coniferous_litter`) | 8 / 4 | 13 / 9 | 7 / 9 | 2 / 4 | 2 / 10 |
 | elf forest (`dirt_with_silver_litter`) | 8 / 4 | 8 / 4 | 2 / 4 | 2 / 4 | 2 / 10 |
 | jungle edge (`dirt_with_rainforest_litter`) | 10 / 4 | 15 / 4 | 11 / 8 | 6 / 8 | 2 / 10 |
-| blight (`blight_dirt`) | 12 / 4 | 12 / 4 | 2 / 7 | 2 / 4 | 6 / 10 |
+| blight (`blight_dirt`) | 14 / 4 | 14 / 4 | 4 / 7 | 4 / 4 | 8 / 10 |
 | deep forest (`dirt_with_forest_litter`, 3 slabs) | – | **16** / 9 | 10 / 9 | 2 / 4 | 2 / 7 |
-| bone forest (`dirt_with_bone_litter`) | – | 8 / 5 | 10 / **12** | 2 / 4 | 2 / 6 |
+| bone forest (`dirt_with_bone_litter`) | – | 10 / 5 | 12 / **12** | 4 / 4 | 4 / 6 |
 | badlands (`mesa_clay`, + `_east`) | – | 10 / 9 | 9 / 6 | 4 / 1 | 2 / 7 |
 | crags (`gravel`, y ≤ 79) | – | 8 / 4 | 6 / 1 | 4 / 1 | 2 / 7 |
 | crags snowy (`snowblock`, y ≥ 80) | – | 8 / 4 | 6 / 1 | 4 / 1 | 2 / 7 |
 | deep jungle (`dirt_with_canopy_litter`) | – | 10 / 4 | 11 / 8 | 6 / 8 | 2 / 7 |
 | jungle fringe (`dirt_with_rainforest_litter`) | – | – | 11 / 8 | 6 / 8 | 2 / 10 |
-| swamp (`mud`) | 8 / 4 | 8 / 4 | 10 / 6 | 4 / 0 | 2 / 7 |
+| swamp (`mud`) | 10 / 4 | 10 / 4 | 12 / 6 | 6 / 0 | 4 / 7 |
 | beach (`sand`) | 8 / 4 | 8 / 4 | 2 / 0 | 2 / 0 | 2 / 7 |
-| underground (`stone`, y ≤ −41) | *one cell, all x/z:* | **9 / 9** | | | |
+| underground (`stone`, y ≤ −41) | *one cell, all x/z:* | **12 / 12** | | | |
 
 **67 live cells, 8 impossible ones**, and every one of the eight is a
 core-or-inner cell of a *wild* band — no band is missing an outer, coast or
@@ -211,9 +221,12 @@ z 100..1700 while its parent starts at z 1201).
 
 Three zones are not columns. `underground` is the last row: depth wins in
 `zone_at`, so it is one cell for the whole world — Zombie 4 + Giant Spider 4 +
-one golem 1 = 9, printed 9/9 because the two `max_light 5` cave rows carry no
-`day_toggle` on purpose (zombie.lua: "it is always night down there"), so the
-surface clock does not gate them and the cave's own darkness always passes.
+one golem 1 + **Cave Bat 2 + Cave Crawler 1** = 12, printed 12/12 because all
+four `max_light 5` cave rows carry no `day_toggle` on purpose (zombie.lua:
+"it is always night down there"), so the surface clock does not gate them and
+the cave's own darkness always passes. The 2 + 1 split of the two critters is
+what keeps this cell level with the night peak instead of one over it — see
+§2.5.
 `ocean` is outside every land cuboid (the Kraken's cell, aoc 1). `strait` is
 an artifact and is discussed in the footnote below.
 
@@ -265,11 +278,15 @@ matters on the beach band the mask carves inside the rectangle, which
 `zone_at` already answers as war_coast/coast/outer.
 
 **Peaks: 16 day, 12 night** — re-confirmed from this table, and both unmoved
-by 51c5d4e (§2.4). Day 16 in three cells: **meadows/inner** and
+by 51c5d4e (§2.4) or by the critter round (§2.5). Day 16 in three cells:
+**meadows/inner** and
 **deep forest/inner** = Boar 5 + Rabbit 3 + Stag 3 + Wolf 5;
-**savanna/inner** = Boar 5 + Hare 3 + Hyena 5 + Zebra 3. Night 12 in one:
-**bone forest/outer** = Skeleton Archer 3 + Pale Spider 4 + Blightfang Wolf 5
-(the wolf row has no light gate, so it counts in both columns).
+**savanna/inner** = Boar 5 + Hare 3 + Hyena 5 + Zebra 3. Night 12 in **two**
+cells since the critter round: **bone forest/outer** = Skeleton Archer 3 +
+Pale Spider 4 + Blightfang Wolf 5 (the wolf row has no light gate, so it
+counts in both columns), and **underground** = Zombie 4 + Giant Spider 4 +
+one golem 1 + Cave Bat 2 + Cave Crawler 1. Both are *at* the peak, neither is
+above it.
 
 ### 2.3 What 51c5d4e changed, cell by cell
 
@@ -373,6 +390,62 @@ elf forest war_coast, and the underground cell.
   and reuses the Skeleton Archer's numbers.
 - Shore Crab and Reef Lurker are absent by decision (§8.3, no licensed model);
   their aoc 3 / 1 are therefore missing from the beach cells.
+
+### 2.5 The critter round (2026-08-08, `biomes_mobs.md` §3.0)
+
+Four new entity names, all `critter` tier, all at `interval 20 / chance 2200`
+and `aoc` 2 — except one, and that exception is the whole point of this
+subsection. Counted the same way as every other cell: sum `aoc` over the
+distinct entity NAMES whose spawn row lists the cell's top node and whose
+zone gate admits the zone.
+
+**The two cave critters, and why the second is `aoc` 1.** Both spawn on
+`default:stone` + `group:grug_stratum` with `max_light 5`, no `day_toggle`,
+`min_height −31000 / max_height −40` and `_grug_spawn_zones = {underground}` —
+i.e. the canonical cave row of `zombie.lua`, so both count in the day AND the
+night column:
+
+```
+underground before          Zombie 4 + Giant Spider 4 + one Golem 1  =  9 / 9
++ Cave Bat        aoc 2                                             = 11 / 11
++ Cave Crawler    aoc 2                                             = 13 / 13   <- one over
++ Cave Crawler    aoc 1                                             = 12 / 12   <- ships
+```
+
+The world night peak is 12 (bone forest/outer), so shipping both at 2 would
+have made the underground the new peak — for two harmless 1 HP animals.
+`aoc` is per entity NAME inside a 128-node sphere (§1), so the two critters
+are two independent budgets and there is no way to share one; the second row
+takes 1. `chance` stays 2200 on both, so the smaller budget still fills at
+the same rate (§4: the equilibrium is set by the cap, not by the roll).
+
+**The two surface critters** are day-only (`min_light 10`), so no night
+column moves at all:
+
+| Row | Nodes | Cells it lands in (day) |
+|---|---|---|
+| Bog Fowl, `aoc` 2 | `grug_nodes:mud`, no zone gate | swamp core 8→**10**, inner 8→**10**, outer 10→**12**, coast 4→**6**, war_coast 2→**4** |
+| Bone Weevil, `aoc` 2 | `grug_nodes:dirt_with_bone_litter` **and** `grug_nodes:blight_dirt`, two rows, no zone gate | bone forest inner 8→**10**, outer 10→**12**, coast 2→**4**, war_coast 2→**4**; blight core 12→**14**, inner 12→**14**, outer 2→**4**, coast 2→**4**, war_coast 6→**8** |
+
+The Bone Weevil is **one entity name with two spawn rows**, exactly like the
+Skeleton Archer's two node lists: the bone forest and the blight therefore
+share ONE budget of 2, and each row stamps its own tint through `on_spawn`
+instead of buying a second registration (which would have been a second
+budget in both cells). Highest cell reached anywhere in this round is
+**14** (blight core/inner) against the day peak of **16**.
+
+**Coverage is unaffected in principle** — this round only ever ADDS a name to
+a cell that already had rows, so no cell can lose day or night spawns and no
+new `biome × zone` column exists (no new top node: `mud`, `bone_litter`,
+`blight_dirt` and the cave rock were all already spawn nodes). The three
+documented day-only cells stay exactly those three: swamp/coast (now 6 / 0),
+beach/outer (2 / 0) and beach/coast (2 / 0) — a DAY critter cannot change a
+night column.
+
+**Nothing else in the critter round touches a spawn number.** The Carrion
+Crow's move to passive prey is a behaviour and a visual change on the same
+row (same `aoc` 2, same zones, same nodes); the drop-table edits (food-only
+critters, feather to the bird-of-prey table) are loot, not density.
 
 ## 3. Density math
 

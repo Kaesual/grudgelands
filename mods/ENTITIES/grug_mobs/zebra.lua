@@ -1,9 +1,10 @@
 -- Zebra (docs/design/biomes_mobs.md §3.1, savanna extras: "Zebra — flees,
 -- meat x2 + leather 1/2 [leather]").
 --
--- Verb "flees (critter)" — native mobs_redo behaviour (animal + passive +
--- runaway), same shape as stag.lua. §3.2 puts it on the shared STAG table
--- together with Stag and Gaunt Stag ("Stag, Zebra-mirror | Gaunt Stag,
+-- Verb "grazes" — PASSIVE PREY since WP36 (§3.0), same shape as stag.lua:
+-- no aggro on sight, fights back when attacked, keeps level/HP/XP from the
+-- field and formulas and keeps its leather. §3.2 puts it on the shared STAG
+-- table together with Stag and Gaunt Stag ("Stag, Zebra-mirror | Gaunt Stag,
 -- Zebra"), so the drops below are byte-identical to stag.lua's.
 --
 -- No _grug_min_level: the family row of §4 (the stag row) carries none and
@@ -13,13 +14,11 @@
 local zebra = {
 	description = "Zebra",
 	type = "animal",
-	passive = true,
-	runaway = true,
 	_grug_spawn_zones = {"inner", "outer"},
-	-- Stats engine-owned (levels.lua).
+	-- Stats engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,
-	run_velocity = 3.4, -- critter speed (§0)
+	run_velocity = 3.4, -- grazer speed (§0)
 	-- wp6_model_notes §2.2: upstream sets jump = false and stepheight 2 —
 	-- a zebra walks up slopes instead of hopping.
 	jump = false,
@@ -38,7 +37,8 @@ local zebra = {
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.2. `stand1` is mobs_redo's second idle clip — it
-	-- picks randomly between stand and stand1. No punch clip (prey).
+	-- picks randomly between stand and stand1. No punch clip on this mesh —
+	-- set_animation simply keeps the current one (stag.lua's note).
 	animation = {
 		speed_normal = 30,
 		stand_start = 0, stand_end = 50,
@@ -57,6 +57,9 @@ local zebra = {
 	lava_damage = 4,
 	light_damage = 0,
 }
+
+-- Verb before registration (verbs.lua contract).
+grug_mobs.passive_prey(zebra)
 
 grug_mobs.register_mob("grug_mobs:zebra", zebra)
 
