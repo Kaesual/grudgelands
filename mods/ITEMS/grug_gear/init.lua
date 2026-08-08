@@ -89,8 +89,17 @@ end
 -- "5 damage, 1.0 s swing" -- full_punch_interval IS the auto-attack cadence
 -- (combat_stats.md §2), so it belongs next to the damage number: a dagger
 -- doing less per swing but swinging faster is otherwise invisible.
-local function weapon_stats(damage, fpi)
-	return string.format("%d damage, %.1f s swing", damage, fpi)
+--
+-- Two-handed weapons say so HERE as well as in the equip refusal (B4): the
+-- rule costs a greataxe user their offhand torch, and combat_stats.md §7 wants
+-- that to be a decision, not a surprise. The refusal explains it at the moment
+-- it bites; this line lets a player see it before they buy the thing.
+local function weapon_stats(damage, fpi, hands)
+	local line = string.format("%d damage, %.1f s swing", damage, fpi)
+	if hands >= 2 then
+		line = line .. ", two-handed"
+	end
+	return line
 end
 
 -- "3 armor (-3% damage taken)" -- 1 armor point = 1% reduction
@@ -117,12 +126,22 @@ local function dmg1h(ilvl)
 	return math.floor(4 + 0.35 * ilvl + 0.5)
 end
 
+-- `hands` is published as `_grug_hands` and enforced by grug_inventory's equip
+-- filter (weapon-slot design B4, combat_stats.md §7): a two-handed weapon
+-- needs an empty offhand and blocks the offhand while equipped. It is a
+-- DECLARATION here, never a check -- grug_gear registers items, the equipment
+-- lists are the only place that knows what a free hand is.
+--
+-- greataxe and staff are the two-handers; sword and dagger are one-handed, and
+-- so is the caster 1H (wand/tome) once §3.2's caster family exists. Anything
+-- that does not declare the field at all counts as one-handed, which is what
+-- keeps the rule additive for torches, shields and every future offhand item.
 local WEAPONS = {
 	-- `fixed` = always on sale; the rest are the rotation pool of §3.8.
-	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, group = "sword", fixed = true},
-	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, group = "sword"},
-	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, group = "axe"},
-	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, group = "staff"},
+	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, hands = 1, group = "sword", fixed = true},
+	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
+	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
+	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 }
 
 --
@@ -213,7 +232,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		groups[w.group] = 1
 		core.register_tool(itemname, {
 			description = describe(bracket, w.noun, br.ilvl,
-				weapon_stats(damage, w.fpi)),
+				weapon_stats(damage, w.fpi, w.hands)),
 			inventory_image = "grug_gear_item_" .. w.key .. ".png" .. tint,
 			groups = groups,
 			stack_max = 1,
@@ -226,6 +245,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			_grug_ilvl = br.ilvl,
 			_grug_bracket = bracket,
 			_grug_quality = 1,
+			_grug_hands = w.hands,
 			_grug_sell_price = buyback(br.price.weapon),
 		})
 		buy_price[itemname] = br.price.weapon
@@ -310,6 +330,19 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- that reads them. The current table is therefore read back off the
 -- registration and copied — which also means this survives WP29's re-tiering
 -- of those groups without anyone remembering to update a hand-copied literal.
+--
+-- ALL TWELVE ARE ONE-HANDED, the vendored axes included (B4, decided here).
+-- The tempting reading is "an axe is two-handed", but a `default:` axe is a
+-- hatchet, not our Greataxe: it hits for 4 fleshy at a 1.0 s interval where
+-- the sword of the same tier hits for 6 at 0.8 s (default/tools.lua:265-278
+-- vs :359-372), i.e. it is strictly WORSE in combat and could not pay for the
+-- offhand it would block. It is also the woodcutting tool every character
+-- carries permanently, so a 2H axe would take the torch away from anyone who
+-- owns one — an arbitrary tax, not the deliberate trade combat_stats.md §7
+-- asks for. The two-handed statement belongs to the family that is actually
+-- paid for by ×1.5 damage: grug_gear's Greataxe. The field is still written
+-- explicitly rather than left to the "no field = one-handed" default, so the
+-- decision is visible at the site it applies to.
 local VENDORED_WEAPONS = {
 	"default:sword_wood", "default:sword_stone", "default:sword_bronze",
 	"default:sword_steel", "default:sword_mese", "default:sword_diamond",
@@ -327,6 +360,6 @@ for _, itemname in ipairs(VENDORED_WEAPONS) do
 	else
 		local groups = table.copy(def.groups or {})
 		groups.grug_equip_weapon = 1
-		core.override_item(itemname, {groups = groups})
+		core.override_item(itemname, {groups = groups, _grug_hands = 1})
 	end
 end

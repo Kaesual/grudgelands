@@ -100,23 +100,144 @@ end)
 
 local ARMOR_CLASS_NAME = {"cloth", "leather", "metal"}
 local WARN_INTERVAL = 2 -- seconds
+local WARN_COLOR = "#ff9955"
 
 -- The allow callback fires repeatedly while a stack is dragged around, so the
 -- refusal message has to be throttled per player or it spams the chat.
+--
+-- ONE channel for every equip refusal (armor rank, two-handed rule, and
+-- whatever WP5 adds), not one budget per rule: a drag is a single gesture, and
+-- per-rule budgets would just spam at N times the rate the moment the stack
+-- crosses two slots on its way.
 local last_warn = {}
 
-local function warn_armor_class(player, rank)
+-- Returns the player name exactly once per WARN_INTERVAL and nil in between,
+-- marking the send as it does so. Callers build their message only AFTER this
+-- returns a name: the class/def lookups behind these messages have no business
+-- running on every frame of a drag.
+local function claim_warn(player)
 	local name = player:get_player_name()
 	local now = grug_core.mono_time()
 	local last = last_warn[name]
 	if last and now - last < WARN_INTERVAL then
-		return
+		return nil
 	end
 	last_warn[name] = now
+	return name
+end
+
+-- First line of an item's description, i.e. the display name without the item
+-- level and stat lines grug_gear appends. Used by the refusals below and by
+-- the class-change unequip at the bottom.
+local function piece_name(stack)
+	local def = core.registered_items[stack:get_name()]
+	local desc = (def and def.description) or stack:get_name()
+	return (desc:gsub("\n.*", ""))
+end
+
+local function warn_armor_class(player, rank)
+	local name = claim_warn(player)
+	if not name then
+		return
+	end
 	local class_def = grug_classes.get_class_def(player)
-	core.chat_send_player(name, core.colorize("#ff9955",
+	core.chat_send_player(name, core.colorize(WARN_COLOR,
 		"A " .. (class_def and class_def.name or "character without a class") ..
 		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor."))
+end
+
+--
+-- The two-handed rule (combat_stats.md §7, weapon-slot design B4).
+--
+-- Two rules, one symmetry: a two-handed weapon needs an empty offhand, and the
+-- offhand needs the weapon slot empty or one-handed. Both are the same
+-- statement about the same pair of hands, so both live in the one
+-- group-filtered allow_put below rather than in two places that could drift.
+--
+-- REFUSAL, not repair: the alternative shape -- let the equip through and clear
+-- the other slot from an equipment-change consumer -- is both more expensive
+-- and more dangerous. A consumer that WRITES equipment re-enters the notifier,
+-- which is exactly the recursion its guard exists for, and it would silently
+-- move a player's torch out from under them. allow_put refuses before anything
+-- moves, and refusing is the only shape that can explain itself at the moment
+-- the player asks for the thing.
+--
+-- WHY THE MESSAGE SPELLS OUT THE TORCH: with this rule live, carrying a light
+-- source costs a greataxe or staff user their weapon (§7 puts the moving light
+-- radius in the offhand). §7 wants that to be a decision, not a surprise, so a
+-- bare "you cannot do that" would be a bug in the design, not just in the UX.
+-- grug_gear says the same thing a second time in the item description, for
+-- players who never hit the refusal at all.
+--
+
+-- Hand count of an item. Anything that does not declare `_grug_hands` is
+-- one-handed -- that default is what keeps the rule additive: torches, shields
+-- and every future offhand item need no field at all to be legal.
+-- Accepts an ItemStack or an item name.
+function grug_inventory.hands_of(item)
+	local itemname = item
+	if type(item) ~= "string" then
+		itemname = item and item:get_name() or ""
+	end
+	local def = core.registered_items[itemname]
+	local hands = def and def._grug_hands
+	if type(hands) == "number" and hands >= 2 then
+		return 2
+	end
+	return 1
+end
+
+-- The stack in the OTHER hand slot AS THIS ACTION WOULD LEAVE IT. A move whose
+-- source is that slot empties it, and refusing against a stack the same action
+-- is about to remove is how "my staff can never leave the offhand" bugs are
+-- built. Cheap insurance: no shipped item carries both hand groups today, but
+-- the slot is family-agnostic by design (B3) and WP14 adds offhand items.
+local function other_hand_stack(inventory, other_list, action, info)
+	local stack = inventory:get_stack(other_list, 1)
+	if stack:is_empty() then
+		return stack
+	end
+	if action == "move" and info.from_list == other_list and
+			info.from_index == 1 and (info.count or 0) >= stack:get_count() then
+		return ItemStack("")
+	end
+	return stack
+end
+
+-- true = the hands are free enough for this, false = refused (and the player
+-- has been told why, throttled).
+local function allow_hands(player, inventory, to_list, stack, action, info)
+	local other_list = (to_list == WEAPON_LIST) and OFFHAND_LIST or WEAPON_LIST
+	local other = other_hand_stack(inventory, other_list, action, info)
+	if other:is_empty() then
+		return true -- the other hand is free: nothing to cross-check
+	end
+	if to_list == WEAPON_LIST then
+		if grug_inventory.hands_of(stack) < 2 then
+			return true
+		end
+		local name = claim_warn(player)
+		if name then
+			core.chat_send_player(name, core.colorize(WARN_COLOR,
+				piece_name(stack) .. " is two-handed and needs an empty offhand" ..
+				" — take " .. piece_name(other) .. " out first. A two-handed" ..
+				" weapon and an offhand item (a torch's light, a shield) are a" ..
+				" choice between the two, never both."))
+		end
+		return false
+	end
+	-- Into the offhand: what matters is the weapon already in the other hand.
+	if grug_inventory.hands_of(other) < 2 then
+		return true
+	end
+	local name = claim_warn(player)
+	if name then
+		core.chat_send_player(name, core.colorize(WARN_COLOR,
+			piece_name(other) .. " is two-handed and leaves no hand free for " ..
+			piece_name(stack) .. " — carrying a torch (or a shield) costs you" ..
+			" the two-handed weapon. Equip a one-handed weapon to keep both."))
+	end
+	return false
 end
 
 core.register_on_leaveplayer(function(player)
@@ -150,6 +271,15 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 			local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
 			if rank > 0 and rank > grug_classes.get_armor_rank(player) then
 				warn_armor_class(player, rank)
+				return 0
+			end
+		elseif to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
+			-- The two-handed rule, both directions (B4). Armor lists and hand
+			-- lists are disjoint, hence the elseif: no equip pays for both
+			-- checks. NB the rank gate above stays armor-lists-only, and there
+			-- is no class gate on the weapon slot at all (B3) — a Mage may
+			-- equip a greataxe and simply gains nothing from it.
+			if not allow_hands(player, inventory, to_list, stack, action, info) then
 				return 0
 			end
 		end
@@ -335,11 +465,7 @@ end
 -- grug_classes fires this after the new class is written to meta, so
 -- get_armor_rank already answers for the NEW class.
 --
-local function piece_name(stack)
-	local def = core.registered_items[stack:get_name()]
-	local desc = (def and def.description) or stack:get_name()
-	return (desc:gsub("\n.*", ""))
-end
+-- (piece_name lives up with the refusal messages, which need the same thing.)
 
 grug_classes.register_on_class_chosen(function(player)
 	if not player or not player.is_player or not player:is_player() then
