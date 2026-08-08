@@ -89,8 +89,17 @@ end
 -- "5 damage, 1.0 s swing" -- full_punch_interval IS the auto-attack cadence
 -- (combat_stats.md §2), so it belongs next to the damage number: a dagger
 -- doing less per swing but swinging faster is otherwise invisible.
-local function weapon_stats(damage, fpi)
-	return string.format("%d damage, %.1f s swing", damage, fpi)
+--
+-- Two-handed weapons say so HERE as well as in the equip refusal (B4): the
+-- rule costs a greataxe user their offhand torch, and combat_stats.md §7 wants
+-- that to be a decision, not a surprise. The refusal explains it at the moment
+-- it bites; this line lets a player see it before they buy the thing.
+local function weapon_stats(damage, fpi, hands)
+	local line = string.format("%d damage, %.1f s swing", damage, fpi)
+	if hands >= 2 then
+		line = line .. ", two-handed"
+	end
+	return line
 end
 
 -- "3 armor (-3% damage taken)" -- 1 armor point = 1% reduction
@@ -117,12 +126,22 @@ local function dmg1h(ilvl)
 	return math.floor(4 + 0.35 * ilvl + 0.5)
 end
 
+-- `hands` is published as `_grug_hands` and enforced by grug_inventory's equip
+-- filter (weapon-slot design B4, combat_stats.md §7): a two-handed weapon
+-- needs an empty offhand and blocks the offhand while equipped. It is a
+-- DECLARATION here, never a check -- grug_gear registers items, the equipment
+-- lists are the only place that knows what a free hand is.
+--
+-- greataxe and staff are the two-handers; sword and dagger are one-handed, and
+-- so is the caster 1H (wand/tome) once §3.2's caster family exists. Anything
+-- that does not declare the field at all counts as one-handed, which is what
+-- keeps the rule additive for torches, shields and every future offhand item.
 local WEAPONS = {
 	-- `fixed` = always on sale; the rest are the rotation pool of §3.8.
-	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, group = "sword", fixed = true},
-	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, group = "sword"},
-	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, group = "axe"},
-	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, group = "staff"},
+	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, hands = 1, group = "sword", fixed = true},
+	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
+	{key = "greataxe", noun = "Greataxe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
+	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 }
 
 --
@@ -203,13 +222,17 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	for _, w in ipairs(WEAPONS) do
 		local itemname = "grug_gear:" .. w.key .. "_b" .. bracket
 		local damage = math.max(1, math.floor(base_damage * w.factor + 0.5))
-		-- Weapons are wielded from the hotbar, so they carry NO grug_equip_*
-		-- group -- they must never be droppable into an equipment slot.
-		local groups = {grug_gear = 1}
+		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
+		-- No class gate: weapon families are class FLAVOR, not a power ladder
+		-- (§8.2), so a Mage may equip a greataxe and simply gains nothing from
+		-- it; the only gate on the slot is WP5's grug_req_level. The slot
+		-- itself is family-agnostic, which is how the future bow family joins
+		-- without a second slot.
+		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
 		core.register_tool(itemname, {
 			description = describe(bracket, w.noun, br.ilvl,
-				weapon_stats(damage, w.fpi)),
+				weapon_stats(damage, w.fpi, w.hands)),
 			inventory_image = "grug_gear_item_" .. w.key .. ".png" .. tint,
 			groups = groups,
 			stack_max = 1,
@@ -222,6 +245,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			_grug_ilvl = br.ilvl,
 			_grug_bracket = bracket,
 			_grug_quality = 1,
+			_grug_hands = w.hands,
 			_grug_sell_price = buyback(br.price.weapon),
 		})
 		buy_price[itemname] = br.price.weapon
@@ -281,3 +305,61 @@ end
 
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")
+
+--
+-- The vendored `default` swords and axes are weapon-slot eligible too
+-- (weapon-slot design B3, decided 2026-08-08).
+--
+-- WHY, since these are not our items: with the no-fallback rule of B1 the
+-- weapon slot is the ONLY source of melee damage, and a fresh character owns
+-- exactly one weapon — the `default:sword_stone` of the starter kit
+-- (grug_factions). Without this list that character would have no melee
+-- damage at all until their first vendor visit.
+--
+-- PICKAXES AND SHOVELS ARE DELIBERATELY ABSENT: mining tools stay mining
+-- tools, and punching a mob with a pick keeps working through the ordinary
+-- wielded-item path either way.
+--
+-- TEMPORARY BY CONSTRUCTION: WP28 deletes the mese and diamond tool tiers and
+-- WP29 folds the rest into the material ladder, so this list only ever
+-- shrinks — hence a loop over names instead of hand-copied override blocks.
+--
+-- `core.override_item` REPLACES a named field wholesale, it does not merge
+-- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`
+-- would drop `sword`/`axe`/`flammable` and break every recipe and burn time
+-- that reads them. The current table is therefore read back off the
+-- registration and copied — which also means this survives WP29's re-tiering
+-- of those groups without anyone remembering to update a hand-copied literal.
+--
+-- ALL TWELVE ARE ONE-HANDED, the vendored axes included (B4, decided here).
+-- The tempting reading is "an axe is two-handed", but a `default:` axe is a
+-- hatchet, not our Greataxe: it hits for 4 fleshy at a 1.0 s interval where
+-- the sword of the same tier hits for 6 at 0.8 s (default/tools.lua:265-278
+-- vs :359-372), i.e. it is strictly WORSE in combat and could not pay for the
+-- offhand it would block. It is also the woodcutting tool every character
+-- carries permanently, so a 2H axe would take the torch away from anyone who
+-- owns one — an arbitrary tax, not the deliberate trade combat_stats.md §7
+-- asks for. The two-handed statement belongs to the family that is actually
+-- paid for by ×1.5 damage: grug_gear's Greataxe. The field is still written
+-- explicitly rather than left to the "no field = one-handed" default, so the
+-- decision is visible at the site it applies to.
+local VENDORED_WEAPONS = {
+	"default:sword_wood", "default:sword_stone", "default:sword_bronze",
+	"default:sword_steel", "default:sword_mese", "default:sword_diamond",
+	"default:axe_wood", "default:axe_stone", "default:axe_bronze",
+	"default:axe_steel", "default:axe_mese", "default:axe_diamond",
+}
+
+for _, itemname in ipairs(VENDORED_WEAPONS) do
+	local def = core.registered_items[itemname]
+	if not def then
+		-- Not fatal: the list shrinks with WP28/WP29, and a stale entry must
+		-- say so rather than crash the game.
+		core.log("warning", "[grug_gear] cannot make " .. itemname ..
+			" weapon-slot eligible: no such item")
+	else
+		local groups = table.copy(def.groups or {})
+		groups.grug_equip_weapon = 1
+		core.override_item(itemname, {groups = groups, _grug_hands = 1})
+	end
+end

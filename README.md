@@ -141,6 +141,14 @@ tiers behind a real fight — and *enemies* are everything else.
 - **MVP classes**: Warrior (rage), Mage and Priest (mana), 3–4 instant
   abilities each as hotbar items with cooldowns and a 1 s global cooldown,
   plus a soft target lock. Talent trees add the rest.
+- **Your weapon lives in a slot, not in the hotbar** — and it is the only
+  thing that decides what a skill hits for and what it looks like. Every
+  ability shows your own sword, in the bar and in your hand, and swapping
+  the weapon reskins all of them at once; an empty slot means bare fists,
+  never a blocked button. **Auto-attack is itself a skill**: one click
+  starts swinging at the weapon's own speed, a second one stops it. A
+  two-handed weapon costs you the offhand, so a greataxe and a carried
+  torch are a choice between the two.
 - **Pace**: level 60 in ~10–20 hours. The endgame is the game. Death costs
   25% of the current level's progress and a walk back — never items.
 - Group content is sized for **2–3 players** and everything is
@@ -178,7 +186,9 @@ tiers behind a real fight — and *enemies* are everything else.
   becomes a market niche.
 - Everything is crafted in the 3×3 grid, multi-stage, gated by a recipe
   unlock plus workbench proximity. Character screen on sfinv pages,
-  equipment slots, Tailor-made bags in four sizes up to 32 slots.
+  equipment slots — armor, trinkets, and the weapon/offhand pair that
+  decides what your skills hit for — and Tailor-made bags in four sizes
+  up to 32 slots.
 
 ### Professions & economy — [`professions.md`](docs/design/professions.md) · [`economy.md`](docs/design/economy.md)
 
@@ -249,12 +259,13 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (12 of 38 work packages):** the foundation, the whole
+**Shipped (13 of 39 work packages):** the foundation, the whole
 world/combat layer, the money economy, the material ladder's rock and
-ores, and the fix round that came out of the second runtime test.
-*(The total is 38 — WP0 through WP37, up from 35 earlier on 2026-08-08:
-the weapon-slot design pass cut WP35, the runtime test cut WP36, and
-WP36 spun off WP37 while it ran.)*
+ores, the fix round that came out of the second runtime test, and the
+weapon slot that turned auto-attack into a skill.
+*(The total is 39 — WP0 through WP38, up from 35 earlier on 2026-08-08:
+the weapon-slot design pass cut WP35, the runtime test cut WP36, WP36
+spun off WP37 while it ran, and WP35 spun off WP38.)*
 
 - **World**: two ocean-separated continents with soft coasts, 13 mirrored
   biome bands, six race-capital spawn platforms, the radial mob-level field
@@ -279,7 +290,14 @@ WP36 spun off WP37 while it ran.)*
   attribute and HP formulas, the XP curve to 60 with death penalty, 3
   abilities per class with cooldowns, global cooldown and soft target
   lock, visible race passives, and the character screen with equipment
-  slots and bags (WP3, WP4, WP15, WP19).
+  slots and bags (WP3, WP4, WP15, WP19). WP35 added the **weapon slot**:
+  the item in it is the single source of a skill's damage and of its look,
+  so every ability now shows your own sword instead of a colored orb and
+  no skill reads the hotbar any more — and the held attack button became a
+  universal ability, **Strike**, that swings at the weapon's own speed
+  until you switch it off. Two-handed weapons declare themselves here too,
+  though that rule stays dormant until there is something to put in the
+  offhand.
 - **Money & vendors**: copper/silver/gold as one integer with a HUD
   line, eight vendor NPCs at the six race capitals (two faction
   Quartermasters, six race-exclusive ones with a 10 % discount), six
@@ -293,7 +311,9 @@ WP36 spun off WP37 while it ran.)*
 
 **Not in the game yet:** quests and quest NPCs, professions and crafting
 recipes, talent trees, the fog-of-war map, guilds, housing isles,
-travel/waypoints, offhand and shields, loot rolls on class items,
+travel/waypoints, shields and the carried torch light (the offhand slot
+and its rules exist, but no item can go into it yet), loot rolls on class
+items,
 refinement and affixes, durability and repair, parties, food and rest,
 apex bosses, mounts, and the real capital/outpost structures (WP6 ships
 anchors and banners, not buildings). Most of the **material layer** is
@@ -308,11 +328,15 @@ the arrival pulse that makes deep mining dangerous, the depth level
 curve's overdue recalibration, camp-only ore respawn, lava lakes and the
 continental Abyssal Crystal), the two-slot
 furnace and the alloy chain (WP26, the next link in the material chain),
-the weapon slot and ability-item skins (WP35), the denser surface spawns
+the melee path (WP38 — the PvP punch is still ungated and now stacks
+with the auto-attack skill, and the shared swing clock is unfair to slow
+weapons), the denser surface spawns
 (WP37 — decided long ago, never rolled out across the roster), guilds
 (WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
 talent trees (WP11), world structures (WP13 — which now also owns the
-mining camps), offhand (WP14), travel (WP17), party system (WP20),
+mining camps), offhand and shields (WP14 — which now only has to ship
+the items, since WP35 built the equip rules around the slot), travel
+(WP17), party system (WP20),
 recovery & innkeeper (WP21), apex world bosses (WP23).
 
 **Still blocked by design work**: loot & affixes (WP5) and professions
@@ -324,18 +348,25 @@ unblocked and built on 2026-08-08.)
 
 **Caveats:** the shipped work packages were runtime-tested on 2026-08-07
 (six findings on the WP1–WP19 pass, all fixed; WP7 passed without
-findings), **except WP25 (the material ladder) and WP36 (the fix round),
-neither of which has been runtime-tested at all**: they have only been
-reviewed and syntax-checked. The second runtime test, on 2026-08-08, is
+findings), **except WP25 (the material ladder), WP36 (the fix round) and
+WP35 (the weapon slot) — none of which has been runtime-tested at all**:
+they have only been reviewed and syntax-checked. WP36 and WP35 both
+merged on 2026-08-08. The second runtime test, on that same day, is
 what produced WP36 in the first place, and WP36's own fixes are
 therefore still unverified in-game. **Two design questions are open, not
 decided**: whether the jungle fringe should follow the deep jungle's new
 ground texture (`TODO-design-jungle-fringe.md`), and the extra badlands
 band WP36 added on the Throng side, which is deliberately cheap to
-revert if the owner disagrees with the reading behind it. One known
-defect remains: melee auto-attacks against *players* still use the
-engine's raw scaling, so a held button can deal 0 damage in PvP — the
-mob-side fix is in, the PvP port is queued.
+revert if the owner disagrees with the reading behind it. The melee path
+carries two measured defects, both queued as WP38: punches at *players*
+still run the engine's raw scaling — so a held button can deal 0 damage
+in PvP, and since WP35 that ungated stream also *stacks* with the
+auto-attack skill (5.17× over 30 s in the worst measured case) — and the
+one swing clock the two melee paths share is decided by whoever asks for
+the shorter interval, so tapping the dig key with a fast item can starve
+a greataxe down to 0.35× its damage. The two-handed rule is built and
+tested but **dormant**: no item can enter the offhand until WP14, so
+neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea
 3200 nodes out, which is too far for the housing isles and for the mount
 rule that now depends on it. The shipped gear still carries its old

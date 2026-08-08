@@ -50,6 +50,45 @@ end
 -- Character page
 --
 
+-- Equipment column layout (weapon-slot design B5). The four armor pieces keep
+-- their own column at x = 6; the second column leads with WEAPON and OFFHAND
+-- so the pair reads as "hands", with the two trinkets below them. Positions
+-- only — the slot list, its order and its label come from
+-- grug_inventory.equipment_slots, so a new slot is one entry there plus one
+-- row here.
+local SLOT_POS = {
+	grug_head = {6, 0.6},
+	grug_chest = {6, 1.6},
+	grug_legs = {6, 2.6},
+	grug_feet = {6, 3.6},
+	grug_weapon = {7, 0.6},
+	grug_offhand = {7, 1.6},
+	grug_trinket1 = {7, 2.6},
+	grug_trinket2 = {7, 3.6},
+}
+
+-- A tooltip[] rect of "1,1" does NOT cover one inventory cell in legacy
+-- coordinates, it covers one grid CELL INCLUDING its gutters: both elements
+-- share getElementBasePos (guiFormSpecMenu.cpp:257-265) so the origins do
+-- coincide, but list[] sizes a slot as `imgsize` (:490-495) while tooltip[]
+-- multiplies its geometry by `spacing` (:2566-2567), and legacy `spacing` is
+-- (imgsize·5/4, imgsize·15/13) (:3340). A "1,1" rect would therefore be 25 %
+-- wider and 15 % taller than the slot and tile the gaps between our slots, so
+-- the label of a neighbour shows while the pointer sits between two of them.
+-- These two factors are exactly imgsize/spacing.
+local TOOLTIP_W = 4 / 5
+local TOOLTIP_H = 13 / 15
+
+-- A slot without a position would silently not be drawn at all — and an
+-- equipment slot the player cannot see is an item sink. Load-time check, one
+-- loop, because equipment.lua is dofile'd before this file.
+for _, slot in ipairs(grug_inventory.equipment_slots) do
+	if not SLOT_POS[slot.list] then
+		core.log("error", ("[grug_inventory] equipment slot %q has no position " ..
+			"in the character page and is not drawn"):format(slot.list))
+	end
+end
+
 local function character_content(player)
 	local class = grug_classes.get_class_def(player)
 	local race = grug_classes.get_race_def(player)
@@ -87,13 +126,25 @@ local function character_content(player)
 	end
 
 	table.insert(fs, "label[6.3,0.1;" .. esc("Equipment") .. "]")
-	local armor_slots = {"grug_head", "grug_chest", "grug_legs", "grug_feet"}
-	for i, list in ipairs(armor_slots) do
-		table.insert(fs, ("list[current_player;%s;6,%.1f;1,1;]"):format(list, i - 0.4))
+	for _, slot in ipairs(grug_inventory.equipment_slots) do
+		local pos = SLOT_POS[slot.list]
+		if pos then
+			table.insert(fs, ("list[current_player;%s;%.1f,%.1f;1,1;]"):format(
+				slot.list, pos[1], pos[2]))
+			-- The area tooltip is the slot's label: eight one-unit cells have no
+			-- room for eight text labels, and without one nothing distinguishes
+			-- the weapon slot from the offhand or a trinket.
+			--
+			-- It shows on EMPTY slots only, which is what we want — a slot with
+			-- an item in it should describe the item. That falls out of the draw
+			-- order rather than out of any option: guiFormSpecMenu.cpp:3672-3682
+			-- runs the tooltip-RECT loop before the children are drawn, and
+			-- :3714-3717 lets the hovered ITEM tooltip overwrite the very same
+			-- m_tooltip_element afterwards, which is only painted at :3856.
+			table.insert(fs, ("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(
+				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot.label)))
+		end
 	end
-	table.insert(fs, "list[current_player;grug_offhand;7,0.6;1,1;]")
-	table.insert(fs, "list[current_player;grug_trinket1;7,1.6;1,1;]")
-	table.insert(fs, "list[current_player;grug_trinket2;7,2.6;1,1;]")
 	return table.concat(fs)
 end
 

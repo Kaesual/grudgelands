@@ -1,7 +1,8 @@
 # Inventory, Character Screen & Equipment
 
 Decided spec (2026-08-06). Implementation: WP15 (character screen +
-bags), WP10 (workbench UIs), WP14 (offhand slot).
+bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
+hand count).
 
 ## 1. Character screen (the "i" key)
 
@@ -15,8 +16,59 @@ bags), WP10 (workbench UIs), WP14 (offhand slot).
 
 ## 2. Equipment slots (MVP)
 
-- **Head, Chest, Legs, Feet, Offhand** (offhand mechanics:
-  `combat_stats.md` §7 / WP14).
+- **Head, Chest, Legs, Feet, Weapon, Offhand** (weapon slot: the block
+  below; offhand mechanics: `combat_stats.md` §7 / WP14). Armor keeps its
+  own column on the character page; **Weapon and Offhand sit next to each
+  other** so the pair reads as "hands".
+- **The Weapon slot** (decided 2026-08-08, shipped with WP35). The item in
+  it is the **single, fixed source of damage and appearance** for every
+  skill of its type — sword-type skills read the weapon slot, shield-type
+  skills read the offhand (`combat_stats.md` §2, `classes.md` §2b). There
+  is **no fallback to the wielded item**: an empty slot means the connected
+  skills carry no item, look as they did before the slot existed and hit
+  for the bare-handed baseline. **Weapons are therefore no longer hotbar
+  items** — a sword lying in the hotbar drives no skill and no skin.
+  - **Eligible is whatever carries the item group `grug_equip_weapon`**:
+    all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
+    and the twelve vendored `default:` swords and axes (that list shrinks
+    by construction as WP28/WP29 fold those items into the material
+    ladder). Mining tools stay mining tools — **picks and shovels are not
+    eligible**.
+  - **No class gate.** Weapon families are class *flavor*, not a power
+    ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and
+    simply gains nothing from it. The **only** gate on this slot is the
+    level requirement below (`grug_req_level`, WP5).
+  - The slot is **family-agnostic** — it holds whatever carries the group,
+    which is how the future bow family joins without a second slot.
+  - **No migration**: the slot starts empty and weapons stay valid `main`
+    items. A character that owns a slot-eligible weapon, has finished
+    character creation and has the slot empty gets a **one-time chat hint**
+    instead of having its items moved.
+- **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
+  (decided 2026-08-08): every weapon declares `_grug_hands` —
+  **greataxe 2, staff 2, sword 1, dagger 1** (the caster 1H family of
+  `items_crafting.md` §3.2 is one-handed too when WP30 registers it), and
+  the twelve vendored
+  `default:` swords and axes **1** (a `default:` axe is a hatchet, not the
+  Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
+  and 0.8 s, i.e. strictly worse in combat, and it is the woodcutting tool
+  every character carries). An item **without** the field counts as
+  one-handed, which is what keeps the rule additive for torches, shields
+  and every future offhand item.
+  - The rule is one sentence in **both** directions: **the two occupied
+    hands must add up to at most two hands.** A two-handed weapon refuses
+    an occupied offhand, and an occupied two-handed hand refuses anything
+    into the other slot.
+  - Enforced in the **same group-filtered `allow_put`** as the armor rank,
+    as a **refusal with a chat message that says why** (throttled — the
+    allow callback fires repeatedly while a stack is dragged) — never by
+    clearing the other slot. Two-handers also carry ", two-handed" in their
+    generated stat line, so the trade is readable before the refusal ever
+    fires. Rationale: the consequence is a gameplay rule, not a
+    technicality — carrying a torch (or later a shield) costs you the
+    two-handed weapon. *(The offhand direction cannot fire until an item
+    carries `grug_equip_offhand`, i.e. WP14's shields and the carried
+    light.)*
 - **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the

@@ -222,6 +222,35 @@ Details + line numbers in [docs/research/](docs/research/).
   return cancels the punch (api.lua comment claims the opposite) — hook
   wrappers must return nil; player-hit hook:
   `grug_core.register_on_player_hit_mob` (fired by grug_mobs).
+  WP35 added: a **weapon slot** (group `grug_equip_weapon`) whose item is
+  the single fixed source of damage AND appearance for every skill of its
+  type — **no fallback to the wielded item**, empty slot = bare-handed
+  baseline; `inventory_equipment.md` §2 (eligibility, no class gate, the
+  `_grug_hands` two-handed rule) and `combat_stats.md` §2. Its
+  **equipment seam** lives in `grug_core/combat.lua`:
+  `get_equipped_weapon`/`get_equipped_offhand` (stub-override pattern like
+  `get_armor_percent`; **the returned ItemStack is the caller's OWN
+  COPY** — a modified copy is not equipped until it is written back AND
+  `grug_inventory.equipment_changed` is called) plus
+  `register_on_equipment_change(func(player, listname))`, where `listname`
+  is the one list that changed or **nil** for "assume everything moved".
+  Consumers must be idempotent and cheap (every inventory write re-sends
+  the list to the client), **may be called twice for one change** (the
+  notifier coalesces a nested equipment write into a second pass) and run
+  **unwrapped**, so an error in one is loud. Never write an equipment list
+  without going through `grug_inventory.equipment_changed`.
+  **Auto-attack is an ability now** (`classes.md` §2b, the universal
+  "Strike"), because an item with `on_use` makes the client send
+  `INTERACT_USE` instead of a punch — a slot-fed auto-attack is otherwise
+  unreachable. Universal (granted without a class), off-GCD, per-cast
+  cooldown from the weapon's `full_punch_interval`, grants its own rage on
+  damage that actually LANDED, and shares **one melee clock per player**
+  (`grug_core.accept_melee_swing`) with the old held-button path — which
+  survives for tools and fists and must never stack with it. **That clock
+  covers MOB targets only** (its two callers are the Strike and the
+  mobs_redo `on_punch` gate, and a punch on a *player* reaches neither),
+  and it is winner-takes-all by requested interval — both are open
+  defects, BACKLOG **WP38**. Do not read it as a PvP guarantee.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -287,7 +316,11 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **20 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **21 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** (the 21st
+    landed with WP35: the `set_wielded_item` write-back at the end of the
+    wear block runs only when wear actually changed — on a player that
+    call is a full inventory serialization plus packet, ~140/s at the
+    100-player target with the auto-attack skill swinging) — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
@@ -297,6 +330,16 @@ Details + line numbers in [docs/research/](docs/research/).
   generate the description via meta key `description` with the rolled
   values (pattern `_mcl_generate_description`). Effect: attack speed via
   `tool_capabilities.full_punch_interval` in the stack meta override;
+  **the APPEARANCE keys are per-stack meta overrides too** —
+  `inventory_image`, `inventory_overlay`, `wield_image`, `wield_overlay`,
+  `wield_scale`, `color`, `range`, `description` beat the item definition
+  for that one stack (`lua_api.md:2929-2949`), they are texture *names* so
+  the full modifier syntax works, and the client caches per item+image
+  name. That is how WP35 puts the equipped weapon on every ability icon
+  and how WP19 gives the elf +5 m — no new registrations, no engine patch.
+  Build such a string in ONE helper: a malformed modifier is a
+  client-side `generateImagePart` error and an untextured icon, with
+  nothing at all in the server log;
   apply stats to player stats on equip/swap. Drop source: a `drops`
   function in the mob def rolls on kill (base variant everywhere, improved
   variant with better ranges only on elite/heartland mobs).
