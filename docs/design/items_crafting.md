@@ -434,10 +434,21 @@ Ore placement (decided 2026-08-08). `clust_scarcity` is the
   steel pick. Without an iron deposit above −100 the ladder is blocked
   shut at T2.
 - **Calibration** ("reagent calibration"): Quartz at iron's density,
-  Garnet at copper's, Silver denser than Garnet — because §6.4 makes one
-  cut gem the cost of *every* fine recipe, a gem is a reagent, not a
-  rarity. Re-tune against §2.4 after the first runtime test rather than
-  deriving it on paper (pattern: `docs/research/wp6_spawn_budget.md`).
+  Garnet just under copper's, Silver denser than Garnet — because §6.4
+  makes one cut gem the cost of *every* fine recipe, a gem is a reagent,
+  not a rarity. Re-tune against §2.4 after the first runtime test rather
+  than deriving it on paper (pattern:
+  `docs/research/wp6_spawn_budget.md`). The numbers in the table are the
+  decision; this line only names the intent.
+- **There is no natural Mese-block deposit any more.** minetest_game
+  scatters `default:mese` (the *block*) as an ore below −2048; WP25
+  removed those rows. The block carries `level = 2` upstream, so it sat
+  inside the T6 band while a steel pick could still break it, and one
+  block yields nine Emberstone crystals — the T5 lead material, handed
+  out at T3 tooling. The Emberstone source is the *ore* node
+  `default:stone_with_mese`; the craftable block is untouched (raising
+  its `level` was rejected — it is a placeable building block, and a
+  level-5 block would lock out the player who placed it).
 - **An ore node carries the `level` of the band it lies in, not of its
   own tier** — an ore is exactly as hard as the rock around it. This
   closes the cave leak (a cave at −600 would otherwise expose Silver to
@@ -582,8 +593,28 @@ only — strata are `cracky` and nothing else.
 | `default:pick_mese` | 4 | temporary test bridge |
 | `default:pick_diamond` | 5 | temporary test bridge |
 
-- Accepted side effect: bronze no longer breaks obsidian (which carries
-  `level = 2`), steel still does.
+- **`uses` and `times` are compensated with the `maxlevel` change.**
+  `maxlevel` is not only the gate: the engine derives
+  `leveldiff = maxlevel − node level` and feeds it into two more
+  formulas — `real_uses = uses · 3^leveldiff` and, for
+  `leveldiff > 1`, `time = time / leveldiff` (`src/tool.cpp:394-414`).
+  Lowering a `maxlevel` therefore silently shreds durability and dig
+  speed. The three lowered picks get their `uses` and dig `times`
+  re-scaled so their **effective** values against ordinary level-0 rock
+  are exactly the pre-WP25 ones: wood `uses` 10 → 30, stone 20 → 60,
+  bronze 20 → 180 with all three `times` halved (bronze alone had
+  `leveldiff = 2` before and thus the time division). This is a
+  re-parameterisation of the *gate*, not a nerf of the starter tools.
+- The mese and diamond picks are **deliberately not compensated**: their
+  `maxlevel` goes *up*, which makes them 3× resp. 9× more durable and
+  faster against level-0 rock. They are test bridges, not game items
+  (see below), so those numbers state nothing about balance and must not
+  seed a wear-budget check (§8.3).
+- Accepted side effect: bronze no longer breaks default's `level = 2`
+  nodes — obsidian and its two variants, the steel/copper/tin/bronze
+  blocks and the mese block. Steel still breaks all of them.
+  `default:diamondblock` (`level = 3`) was already out of bronze's reach
+  before WP25, and `default` has no `level = 1` node at all.
 - **T2 has no tool of its own today** — the iron pick arrives with
   WP26/WP29. The steel pick (maxlevel 2) covers T2 *and* T3, and iron
   lies in the T1 band, so the ladder is walkable end to end: with today's

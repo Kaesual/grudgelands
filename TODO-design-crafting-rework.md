@@ -343,78 +343,80 @@ before WP5 writes it.
 ### B7 — Rock-stratum node names and textures (six strata)
 
 **Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.4
-(the stratum table with names, bands, `level`s and textures, the
-re-parameterised pick `maxlevel`s, the placement rule, the cobble drop,
-the `grug_stratum` group and `cracky = 3`) and `world.md` §2 R6 (the
-world rule: node names, cobble drop, cave walls). The reasoning stays
-here; the rules and numbers live there.
+and `world.md` §2 R6/§5.3. The rules, names, bands, textures and
+`maxlevel`s live there; only the reasoning stays here.
 
-What the decision actually turned on, and would be expensive to
-re-derive:
+What the decision turned on:
 
-- **`default:stone` is kept as the T1 stratum**, so there are six strata
-  but only five new nodes. A separate T1 node would have had to be
-  dragged through the mapgen filler, the cobble source, the `wherein` of
-  every ore registration and several recipes — for nothing.
-- **Placement is `register_ore{ore_type = "stratum"}`, not a
-  `grug_mapgen` y-band VoxelManip pass**, and the strata are registered
-  **last**. In mgv7 the ore stage runs *after* cave generation and
-  before the dungeons (`mapgen_v7.cpp:335/355/359`) and registration
-  order is placement order — so **cave walls inherit their stratum for
-  free**. That was the real question in this item: plain-stone cave
-  walls would have made every deep cave a bypass for a level-10 player.
-  The VoxelManip route would have had to re-solve the cave problem by
-  hand.
-- **Six `level` steps need six `maxlevel` steps**, and `default` ships
-  only three — hence the `core.override_item` pass over the vendored
-  picks (`default` stays unpatched, VENDOR.md). Accepted side effect:
-  bronze stops breaking obsidian. **T2 has no tool of its own until
-  WP26/WP29**; the steel pick spans T2+T3 and iron lies in the T1 band,
-  so the ladder is walkable to −500 with today's item set.
-- The isle generator cannot ride on the ore stage (`register_ore` only
-  runs in the mapgen), so it asks `grug_materials.stratum_node_for(y)`
-  instead — that is the WP24 interface (`world.md` §5.3).
+- **Keeping the ordinary world stone as the first stratum** was worth
+  more than a clean six-new-nodes symmetry: that node is already the
+  mapgen filler, the cobble source, the `wherein` of every ore
+  registration and a recipe ingredient, and a separate T1 node would
+  have had to be dragged through all of it for nothing.
+- **Cave walls were the real question in this item.** Plain-stone cave
+  walls would have made every deep cave a free bypass of the depth gate
+  for a low-level character. Registering the strata as stratum *ores*,
+  last of all ores, solves it for free, because in mgv7 the ore stage
+  runs after cave generation and before the dungeons and registration
+  order is placement order. A hand-written VoxelManip pass would have
+  had to re-solve that problem by hand.
+- **The engine already had the mechanism in both directions** — the
+  vendored `default` gates its hardest nodes exactly this way — so the
+  strata are a re-parameterisation of a live system, not new engine
+  work. The picks are re-parameterised from outside via
+  `core.override_item` so the vendored mod stays unpatched (VENDOR.md).
+  Caveat found while implementing: `maxlevel` also drives durability and
+  dig speed, so re-parameterising the gate means compensating those too,
+  or the starter picks get nerfed as a side effect (§3.0.4).
+- **The isle generator cannot ride on the ore stage** (`register_ore`
+  only runs in the mapgen), which is why WP24 asks `grug_materials` for
+  the rock of a depth instead — the one interface both ladders share.
 
-Rejected: a separate T1 stratum node; the y-band VoxelManip pass; six
-hand-made 16px textures (Phase 3 work — `^[colorize` on
-`default_stone.png` was taken instead); and reusing `default`'s existing
-stone family (stone / desert_stone / sandstone), which already carries
-biome meaning and would have made depth and biome say the same thing.
+Rejected: a separate T1 stratum node; the y-band VoxelManip pass;
+hand-made 16px textures (Phase 3 work — engine `^[colorize` modifiers
+were taken instead); and reusing `default`'s existing stone family
+(stone / desert_stone / sandstone), which already carries biome meaning
+and would have made depth and biome say the same thing.
 
 *Landed in*: `items_crafting.md` §3.0.4, `world.md` §2 R6/§5.3.
 
 ### B8 — Quartz and Garnet: depth placement and scarcity
 
-**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.1
-(the ore placement table — bands, `clust_scarcity`, `clust_num_ores`,
-`clust_size` — plus the band rule, the ore `level` rule and the Abyssal
-Crystal placement). Silver, iron and Emberstone were authored in the
-same pass. The reasoning stays here; the numbers live there.
+**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.1.
+Silver, iron and Emberstone were authored in the same pass. The bands,
+scarcities and the ore `level` rule live there; only the reasoning stays
+here.
 
 What the decision turned on:
 
-- **The band rule**: a lead metal lies one band *above* its own tier, a
-  gem in its own band — otherwise a tier-n tool would be needed to reach
-  the material a tier-n tool is made of. It also settles how §3.0.1's
-  "Digging depth" column reads: it is a *tool* depth, not a find depth.
-- **The iron deadlock**, found while checking the rule against the
-  vendored ores: iron starts at −128, i.e. *below* the T2 stratum that
-  already demands an iron or steel pick. The new −1 … −100 iron band is
-  a deadlock fix, not tuning.
+- **A lead metal has to be findable one band shallower than its own
+  tier, a gem does not.** Otherwise a tier-n tool would be needed to
+  reach the material a tier-n tool is made of. That also settles how
+  §3.0.1's "Digging depth" column reads: it is a *tool* depth, not a
+  find depth.
+- **The iron deadlock**, found while checking that rule against the
+  vendored ores: iron only started *below* the stratum that already
+  demands an iron or steel pick, so the ladder was locked shut at T2.
+  The new shallow iron band is a deadlock fix, not tuning.
 - **The ore `level` leak**, found while checking B7's cave-wall
-  inheritance: if an ore carried the `level` of its own tier, a cave at
-  −600 would expose Silver to any bronze pick. Fixed by giving an ore
+  inheritance: if an ore carried the `level` of its own tier, a deep
+  cave would expose Silver to any starter pick. Fixed by giving an ore
   the `level` of the *band* it lies in — an ore is exactly as hard as
-  the rock around it — which does not deadlock anything, because the
-  band rule already put the metal one tier shallower.
-- **Calibration** stays what it was: gems are a reagent, not a rarity
-  (§6.4 spends one on every fine recipe), so Quartz sits at iron's
-  density and Garnet at copper's. Re-tune against §2.4 after the first
-  runtime test rather than on paper (pattern:
+  the rock around it — which deadlocks nothing, because the band rule
+  already put the metal one tier shallower.
+- **The same leak reached the vendored mese *block*** (found in review):
+  it is scattered as an ore deep down, carries a low `level` upstream
+  and crafts into a stack of the T5 material — the deposit was
+  dropped outright rather than hardened, because the block is also a
+  placeable building item and a gated block cannot be picked back up by
+  the player who set it.
+- **Gems are a reagent, not a rarity** (§6.4 spends one on every fine
+  recipe), which is why the gem densities look generous. Re-tune against
+  §2.4 after the first runtime test rather than on paper (pattern:
   `docs/research/wp6_spawn_budget.md`).
 - **Abyssal Crystal gets no continental deposit at all** — WP25
   registers node and item, WP24 (isle treasure clusters) and WP23 (the
-  10 % dragon hoard) place them. That keeps §3.0.2's binding statement
+  dragon hoard) place them. That keeps §3.0.2's binding statement
   literally true: Grudgesteel needs the level-30 isle grant and its
   deepest depth step.
 

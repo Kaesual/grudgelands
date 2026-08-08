@@ -166,9 +166,14 @@ local scatter_ores = {
 	-- lead metal, so its main band is T4 (−501 … −700); the second band keeps
 	-- it available all the way down for T5/T6 play.
 	-- The old mountain band (y >= 1025) is dropped, not moved: our terrain
-	-- noise (init.lua, mgv7_np_terrain_base offset 14 / scale 70) tops out two
-	-- orders of magnitude below y 1025, so it was dead code inherited from
-	-- minetest_game. Same reason it is absent from every new row below.
+	-- noise (init.lua, mgv7_np_terrain_base offset 14 / scale 70, 5 octaves,
+	-- persist 0.6) tops out around y 175 -- an order of magnitude below
+	-- y 1025 -- so it was dead code inherited from minetest_game. Same reason
+	-- it is absent from every new row below.
+	-- HONEST NOTE: coal, tin, copper, iron and gold above still carry their
+	-- y >= 1025 bands, which are dead for exactly the same reason. They are
+	-- left standing because WP25 only re-cuts the bands the material ladder
+	-- depends on; sweeping the rest is a separate, purely cosmetic pass.
 	{"default:stone_with_mese",
 		{12 * 12 * 12, 4, 3, -501, -700},
 		{14 * 14 * 14, 5, 3, -701, -31000}},
@@ -184,10 +189,23 @@ local scatter_ores = {
 		{9 * 9 * 9, 5, 3, -301, -500}},
 	{"grug_materials:stone_with_garnet",
 		{10 * 10 * 10, 4, 3, -501, -700}},
-	{"default:mese",
-		{36 * 36 * 36, 3, 2, 31000, 1025},
-		{36 * 36 * 36, 3, 2, -2048, -4095},
-		{28 * 28 * 28, 5, 3, -4096, -31000}},
+	-- REMOVED IN WP25: the `default:mese` rows (the mese BLOCK as a scatter
+	-- ore, inherited from minetest_game, bands y >= 1025 / -2048..-4095 /
+	-- -4096..-31000). Three reasons, in order of weight:
+	--   * It was a hole in the depth gate. The block carries upstream
+	--     `groups = {cracky = 1, level = 2}` (mods/BASE/default/nodes.lua) and
+	--     the level rule of §3.0.1 never reached it, so it sat inside the
+	--     level-5 abyssal-rock band while a plain STEEL pick (maxlevel 2)
+	--     could still break it -- and one block crafts into NINE Emberstone
+	--     crystals (mods/BASE/default/craftitems.lua), i.e. the T5 lead
+	--     material handed out at T3 tooling.
+	--   * §3.0.1's ore table knows no natural mese-block deposit at all. The
+	--     Emberstone source is `default:stone_with_mese`, placed above.
+	--   * Not fixed by giving the node `level = 5`: `default:mese` is also a
+	--     craftable, placeable building block, and a level-5 block would stop
+	--     the very player who placed it from picking it up again.
+	-- The craftable block itself is untouched -- only its mapgen deposit is
+	-- gone.
 }
 
 for _, entry in ipairs(scatter_ores) do

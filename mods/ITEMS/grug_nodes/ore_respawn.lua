@@ -62,7 +62,10 @@ local respawning_ores = {
 	["default:stone_with_gold"] = true,
 	["default:stone_with_mese"] = true,
 	["default:stone_with_diamond"] = true,
-	["default:mese"] = true,
+	-- `default:mese` (the mese BLOCK) is deliberately absent since WP25:
+	-- grug_mapgen no longer registers a scatter ore for it (it was a level-2
+	-- node sitting in the level-5 band, i.e. a hole in the depth gate), so
+	-- listing it here would only earn a startup warning from check_ore_list().
 	["grug_materials:stone_with_quartz"] = true,
 	["grug_materials:stone_with_silver"] = true,
 	["grug_materials:stone_with_garnet"] = true,
@@ -80,6 +83,13 @@ core.register_node(DEPLETED, {
 	-- `stone = 1` is deliberately absent: this must not be usable as a stone
 	-- source in recipes or be treated as stone by other mods. `cracky = 3`
 	-- matches the ore it replaces, so it digs like the rest of the wall.
+	--
+	-- NO `level` EITHER, and that is not an oversight (§3.0.1/§3.0.4): a
+	-- depleted vein only ever appears where somebody could already break the
+	-- ore that stood there, it drops nothing, and the ores that produce it in
+	-- practice (coal, tin, copper, iron, gold) carry no `level` themselves
+	-- because they are deliberately not gate-relevant. The rock AROUND the
+	-- pocket is the depth gate, never the single pocket.
 	groups = {cracky = 3, grug_depleted = 1},
 	drop = "",
 	sounds = default.node_sound_stone_defaults(),
