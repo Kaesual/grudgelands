@@ -170,9 +170,10 @@ of them to claims made above:
   placing vendors on the hillside, its `nil` guard having been the only
   brake). `grug_core.ensure_camp_platform_built` — a stub in `grug_core`,
   implemented in `grug_mapgen/structures.lua` — now builds it from the
-  finished map, idempotently (the guard banner is the presence test), inside
-  the volume the emerge covered and never above the first y that still reads
-  `ignore`.
+  finished map, idempotently (the guard banner is the presence test), over the
+  **whole camp volume** and never above the first y whose footprint still reads
+  `ignore`. That `ignore` scan is the only bound; the *probe window* is not one
+  (see the third round below, which is where the first version got this wrong).
 - **A capital in deep water is now decidable.** `PROBE_BOTTOM = -16` sits far
   above the mgv7 terrain floor, so the ocean-floor capital of §1 produced no
   samples at all, a warning, and a session-long dead end. A column with no
@@ -187,6 +188,57 @@ of them to claims made above:
   and because `CAMP_PLATFORM_Y` is the *minimum* of the clamp the substitute
   always protects a superset of the real zone. It is a deliberate
   over-approximation, and it disappears on its own once the height is decided.
+
+**Third round (same day, after the re-review of the fixes above).** Two
+corrections to the repair build, one to a claim in the second round, and two
+notes:
+
+- **`calc_lighting()` on the repair build was a no-op that could kill the
+  server.** The repair takes its VoxelManip from `core.get_voxel_manip()`, so
+  `is_mapgen_vm` is false and `l_vmanip.cpp:208-215` only calls
+  `log_deprecated()` and returns — the two lines had been copied from the
+  mapchunk pass, which uses `core.get_mapgen_object("voxelmanip")` and *is* a
+  mapgen VM. With the default `deprecated_lua_api_handling = log`
+  (`defaultsettings.cpp:467`, `once = false`) that meant a warning plus a full
+  Lua backtrace on every repair; with `= error` it raises a `LuaError`
+  (`c_internal.cpp:169-187`) inside the emerge completion callback, where the
+  engine turns it into `Server::setAsyncFatalError` (`s_env.cpp:328-332`) — the
+  server aborts and the platform is never built. Removed. Lighting was never
+  the call's doing anyway: `write_to_map` on a non-mapgen VM already takes the
+  `blit_back_with_light` path (`l_vmanip.cpp:150`, `:164-168`).
+  `update_liquids()` stays — `ModApiMapgen::update_liquids` handles the
+  non-emerge case explicitly (`l_mapgen.cpp:1980-1998`).
+- **"Inside the volume the emerge covered" was the wrong bound.** The camp
+  volume runs `CAMP_CLEAR_HEIGHT` = 64 nodes above a height that may be
+  `CAMP_PLATFORM_MAX_Y` = 100, i.e. up to y 164, while `CAMP_PROBE_TOP` is 120
+  — so clamping the build to the probe window truncated the clearing for every
+  capital above y 56 and left a rock/tree ceiling over the spawn. "The
+  mapchunks above clear their own slice when they are generated" does not
+  cover it: that holds for chunks generated *later*, and this build exists
+  precisely for footprints whose chunks are already on disk. The build now
+  takes the full volume, and the `ignore` scan alone decides how far up it
+  gets. It scans only the footprint prism while the VoxelManip covers the
+  block-rounded halo, which is sound because the rounding adds no *blocks*
+  (`read_from_map` emerges exactly `getNodeBlockPos(p1)..getNodeBlockPos(p2)`,
+  `l_vmanip.cpp:47-51`) and "un-generated" is a per-block property.
+- **The self-heal was reachable only from the startup sweep.**
+  `get_spawn_pos` returns the moment a height exists and never calls
+  `request_camp_platform`, so a decided-but-unbuilt capital got exactly one
+  repair attempt per session, at t = 60…135 s. A player joining later spawned
+  on raw terrain every session. The decided branch now runs the built-check
+  too; it is free once the platform is confirmed (session memo) and two node
+  reads until then, with the VoxelManip behind it bounded at three tries per
+  capital per session.
+- **The repair is destructive by construction and now logs at `warning`.** A
+  missing guard banner is read as "no platform", and the 25×25 footprint is
+  then overwritten with no protection check. The re-review could not make that
+  player-reachable (the footprint is `is_protected`, the banner has
+  `drop = ""` and no recipe, no mob uses `pathfinding = 2`), so it is
+  admin/legacy-only — but it is a destructive write and says so.
+- **The "terrain reaches the top of the probe window" warning was
+  tautological** (it formatted the constant, and the measured value can only
+  ever *be* that constant). It now names the capital and says what the number
+  means.
 
 **Still true:** the authored capital pass of §1–§3 supersedes all of this by
 shaping its own terrain, including the ocean case above, which the platform

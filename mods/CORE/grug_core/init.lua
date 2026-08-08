@@ -541,13 +541,20 @@ grug_core.factions = {
 --     mapchunk and `ignore` above it, and first-writer-wins would make that
 --     number permanent. Both the callback and the probe itself now refuse.
 
--- Vertical window of the ground probe and of the emerge that feeds it. Public
--- because it is also the ONLY volume the platform repair build in grug_mapgen
--- may touch: writing outside it would create map blocks the mapgen has not
--- generated yet. The ceiling is find_surface's (terrain above it clamps to
--- CAMP_PLATFORM_MAX_Y anyway), the floor sits below CAMP_PLATFORM_Y, which is
--- what makes "no ground in the window at all" decidable — see
--- probe_platform_y.
+-- Vertical window of the ground probe and of the emerge that feeds it. The
+-- ceiling is find_surface's (terrain above it clamps to CAMP_PLATFORM_MAX_Y
+-- anyway), the floor sits below CAMP_PLATFORM_Y, which is what makes "no
+-- ground in the window at all" decidable — see probe_platform_y.
+--
+-- Public because grug_mapgen reads it, but it is NOT the bound of what the
+-- platform repair build there may WRITE, and the earlier claim that it was
+-- cost that build 44 of its 64 clearing layers at a capital on y 100: the camp
+-- volume runs CLEAR_HEIGHT above a height that may itself be
+-- CAMP_PLATFORM_MAX_Y, i.e. up to y 164. What keeps that build inside
+-- generated map is its own CONTENT_IGNORE scan (camp_slice_top in
+-- grug_mapgen/structures.lua), which is the stronger test in both directions —
+-- it also holds when nothing emerged this window at all, which is exactly what
+-- get_spawn_pos's decided branch does.
 grug_core.CAMP_PROBE_TOP = 120
 grug_core.CAMP_PROBE_BOTTOM = -16
 
@@ -803,12 +810,29 @@ local platform_built = {}     -- the platform is confirmed present
 -- over.
 local MAX_PLATFORM_ATTEMPTS = 3
 
+-- A decided height without a built platform is the worse of the two states, so
+-- this runs on EVERY path that ends with a height — which since the WP36
+-- re-review means get_spawn_pos's DECIDED branch too, not just
+-- request_camp_platform's. That branch was the hole: get_spawn_pos returns the
+-- moment a height exists and never reaches request_camp_platform, so the only
+-- caller left for an already-decided capital was the startup sweep, i.e. ONE
+-- attempt per session at t = 60/75/.../135 s. A world upgraded from a build
+-- that decided a height without ever building the platform therefore healed
+-- only if its footprint happened to be loaded in that one second; the single
+-- orc player joining at t = 5 min spawned on raw terrain, every session,
+-- forever.
+--
+-- Cost on the hot path (get_spawn_pos runs on every respawn): zero once the
+-- platform is confirmed — the memo below short-circuits before any node read.
+-- Until then it is the two get_node_or_nil of ensure_camp_platform_built, and
+-- the VoxelManip behind them is bounded per session by grug_mapgen's own
+-- MAX_BUILD_ATTEMPTS. It cannot re-enter the emerge path either:
+-- ensure_camp_platform_built neither emerges nor calls back into
+-- request_camp_platform.
 local function platform_decided(race_id)
 	if platform_built[race_id] then
 		return
 	end
-	-- A decided height without a built platform is the worse of the two
-	-- states, so this runs on EVERY path that ends with a height.
 	platform_built[race_id] = grug_core.ensure_camp_platform_built(race_id)
 end
 
@@ -838,9 +862,16 @@ local function finish_platform(race_id, capital, incomplete)
 		return
 	end
 	if y >= PROBE_TOP then
-		core.log("warning", ("[grug_core] %s capital terrain reaches the top of " ..
-			"the probe window (y=%d) — the platform is capped at y=%d and will " ..
-			"sit inside the terrain"):format(race_id, PROBE_TOP,
+		-- y CANNOT be anything but PROBE_TOP here (the column scan starts
+		-- there), so printing it would say nothing. What is worth logging is
+		-- WHERE and what the number means: the median column of the footprint
+		-- is solid up to the ceiling, so the real surface is unknown and above
+		-- it.
+		core.log("warning", ("[grug_core] %s capital at %d,%d: the footprint " ..
+			"median is still solid ground at the top of the probe window " ..
+			"(y=%d), so the real surface is somewhere above it — the platform " ..
+			"is capped at y=%d and will sit inside the terrain")
+			:format(race_id, capital.x, capital.z, PROBE_TOP,
 				grug_core.CAMP_PLATFORM_MAX_Y))
 	end
 	grug_core.set_camp_platform_y(race_id, y)
@@ -893,9 +924,9 @@ end
 -- then grug_core.protected_zone_in_box and the capital protection rule keep
 -- answering from their CAMP_PLATFORM_Y fallback — the same "two answers, one
 -- world" problem one level down. Six emerges, once per world (once a height
--- is stored a request costs one node read for the platform-present check and
--- then nothing at all), and deliberately late and
--- staggered: the capital a player actually spawns in is already requested by
+-- is stored a request costs the two node reads of the platform-present check,
+-- and nothing at all once that check has answered yes), and deliberately late
+-- and staggered: the capital a player actually spawns in is already requested by
 -- get_spawn_pos within seconds of the join, so this sweep only has to catch
 -- the other five and must not compete with world creation for the emerge
 -- queue.
@@ -937,6 +968,11 @@ function grug_core.get_spawn_pos(faction_id, race_id)
 	end
 	local y = grug_core.get_camp_platform_y(race_id)
 	if y then
+		-- A decided height is not a built platform, and this branch never
+		-- reaches request_camp_platform — see platform_decided for why that
+		-- made the self-heal a once-per-session startup lottery, and for what
+		-- this costs on the respawn path (nothing, once the platform is there).
+		platform_decided(race_id)
 		return vector.new(capital.x, y + 1, capital.z), true
 	end
 	grug_core.request_camp_platform(race_id)
