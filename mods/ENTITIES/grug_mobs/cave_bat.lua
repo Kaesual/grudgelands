@@ -82,7 +82,10 @@ local bat = {
 grug_mobs.register_mob("grug_mobs:cave_bat", bat)
 
 -- §3.0's numbers for the four new critters: interval 20 / chance 2200 /
--- aoc 2. This is the FIRST of the two cave rows and the one that keeps the
+-- aoc 2. (§4's table prints 1650 for this row: it lists the DECIDED
+-- post-0.75 surface density, which is unimplemented roster-wide and tracked
+-- in BACKLOG.md — 2200 is what every other row ships at too.)
+-- This is the FIRST of the two cave rows and the one that keeps the
 -- full aoc 2; the Cave Crawler ships at 1 so the cell lands exactly on the
 -- night peak instead of one over it (cave_crawler.lua carries the
 -- arithmetic).

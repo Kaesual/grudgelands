@@ -80,7 +80,8 @@ grug_mobs.register_mob("grug_mobs:cave_crawler", crawler)
 -- 128-node sphere, so the two cave critters are two independent budgets and
 -- the sum is the cell's; there is no way to share one. Shipping the second at
 -- 1 buys the cave its bug at zero cost to the ceiling. `chance` stays 2200,
--- so the smaller budget still fills at the same rate.
+-- so the smaller budget still fills at the same rate. (§4 prints the decided
+-- post-0.75 value 1650; see cave_bat.lua.)
 --
 -- Row shape: the canonical cave row of zombie.lua (see cave_bat.lua).
 mobs:spawn({

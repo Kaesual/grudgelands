@@ -264,6 +264,17 @@ function grug_mobs.register_mob(name, def)
 		no_leash = def._grug_no_leash,
 		soft_deaggro = def._grug_soft_deaggro,
 		leash_range = def._grug_leash_range,
+		-- "This mob may target NOBODY on sight" — see apply_aggro_fields.
+		-- DERIVED, not a def flag: it is exactly the conjunction
+		-- general_attack's own candidate filter tests (api.lua:1787 for
+		-- players, :1817-1819 for the three mob types, `attacks_monsters`
+		-- being register_mob's legacy spelling, api.lua:3519), so it can
+		-- never drift out of sync with the fields it summarises. Both player
+		-- fields default to TRUE in mob_class (api.lua:171-172), hence the
+		-- explicit `== false`; the two mob fields default to false.
+		no_acquire = def.attack_players == false and def.attack_npcs == false
+			and not def.attack_animals and not def.attack_monsters
+			and not def.attacks_monsters,
 	}
 	local faction = def._grug_faction
 	-- Race-perk key (world.md §7): players holding this perk are dropped

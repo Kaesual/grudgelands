@@ -96,7 +96,8 @@ local function stamp(texture)
 end
 
 -- §3.0's numbers for the four new critters: interval 20 / chance 2200 /
--- aoc 2, day (`min_light 10`). TWO ROWS, ONE BUDGET — mobs_redo counts the
+-- aoc 2, day (`min_light 10`; §4 prints the decided post-0.75 value 1650 —
+-- see cave_bat.lua). TWO ROWS, ONE BUDGET — mobs_redo counts the
 -- cap per entity name, so bone forest and blight share the same 2 the way
 -- the Skeleton Archer's two node lists share theirs (§4).
 --

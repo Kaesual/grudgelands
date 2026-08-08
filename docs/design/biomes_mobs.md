@@ -800,16 +800,30 @@ kept** — with one behavioural difference from the aggressive families:
 what makes them worth the swing, and it keeps the leather tiers gated by a
 real fight rather than by travel.
 
-mobs_redo already expresses exactly this, so it is **three def fields and no
+mobs_redo already expresses exactly this, so it is **four def fields and no
 new aggro system** (`grug_mobs.passive_prey` in `verbs.lua` sets them in one
 place): `passive = false` is what makes retaliation exist at all (on_punch's
 tail calls `do_attack(hitter)` only for a non-passive mob, api.lua:2979),
 `attack_players = false` (with `attack_npcs = false`) is what removes aggro
 on sight — it is read in exactly one place, `general_attack`'s candidate
-filter (api.lua:1787), and nothing in the attack *state* consults it — and
+filter (api.lua:1787), and nothing in the attack *state* consults it —
 `runaway` must be **off**, because on_punch's runaway block sets
 `state = "runaway"` a dozen lines before the retaliation block resets it, so
-the two cannot both be true.
+the two cannot both be true — and **`attack_type = "dogfight"`** is what
+makes the retaliation actually *fight*. That last one is necessary, not
+decoration: `do_states`' attack branch dispatches on `explode` /
+`dogfight`-`dogshoot` / `shoot`-`dogshoot` with **no else** (api.lua:2214,
+2277, 2360, 2539) and `mobs.mob_class` defaults it to nil, so a
+`passive = false` mob without an attack type holds a target reference and
+does nothing with it — no damage, no punch clip, not even a `set_velocity`,
+which leaves it coasting on the knockback until the leash drops it. It was
+missing from the first WP36 cut and made a punched grazer *easier* to kill
+than the 3 s `runaway` flee it replaced; `dogfight` is the melee family and
+the right one, since prey carries no `arrow`. Two further systems read
+`attack_type` as "can this fight at all" and were silent no-ops on prey
+until it was set: the threat-driven target switch and the Taunt ability.
+Setting it does **not** let prey initiate — acquisition on sight lives in
+`general_attack` alone, which never reads the field.
 
 The Carrion Crow's three decided changes, all zero-cost: `visual_size`
 10 → **14** (~1.0 nodes tall — a target you can see and click), the
@@ -1054,11 +1068,21 @@ arithmetic, the density model and the calibration knobs (reach for
 `chance` before `aoc`) are the audit trail in
 **[docs/research/wp6_spawn_budget.md](../research/wp6_spawn_budget.md)**.
 
-**Surface density raised by 0.75 (decided 2026-08-08).** The overworld
-is to feel a little busier, so **every surface row's `chance` is
-multiplied by 0.75** — one third more spawn attempts — and the values in
-the table below are already the multiplied ones (the WP6 derivation
-above is what they were multiplied from). **`aoc` is untouched on
+**Surface density raised by 0.75 (decided 2026-08-08) — DECIDED, NOT YET
+IMPLEMENTED.** The overworld is to feel a little busier, so **every
+surface row's `chance` is multiplied by 0.75** — one third more spawn
+attempts. **The `chance` column below is the DECIDED value, not the
+shipped one**: `grug_mobs` still passes the pre-multiplication WP6 number
+to every `mobs:spawn` row, i.e. **shipped `chance` = table value ÷ 0.75**
+(Boar 1500 against the table's 1125, Rabbit 1800/1350, Stag 1800/1350,
+Ram 2200/1650, and so on), and the three excluded rows below match code
+exactly because they were never multiplied. Rolling the multiplication
+out across the roster is implementation work, not an open design
+question, and is tracked as **BACKLOG WP37**; **until it ships, a `chance`
+in this table does not predict what a fresh world does**, and a code
+comment in `mods/ENTITIES/grug_mobs/*.lua` that quotes "its §4 row" may
+quote the shipped number instead of the one printed here — the same gap,
+and the same WP re-syncs both. **`aoc` is untouched on
 purpose**: it is the ceiling the budget audit calibrated against the
 100-player target, it counts per entity NAME, and it therefore still
 bounds the outcome — more attempts fill the same budget faster, they do
@@ -1095,10 +1119,10 @@ the new values once the change ships.
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
 | Shore Crab — *deferred (§8.3)* | sand | 20 | 1650 | 3 | any | strait, war_coast, coast |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
-| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
-| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
-| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 2200 | 2 | min 10 | (none — the node gates) |
-| **Bog Fowl** (critter) | mud (only) | 20 | 2200 | 2 | min 10 | (none — the node gates) |
+| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 1650 | 2 | max 5 | underground |
+| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 1650 | **1** | max 5 | underground |
+| **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 1650 | 2 | min 10 | (none — the node gates) |
+| **Bog Fowl** (critter) | mud (only) | 20 | 1650 | 2 | min 10 | (none — the node gates) |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
@@ -1119,7 +1143,11 @@ Row notes:
   move to passive prey (§3.0) changed **no** spawn number — same row,
   same `aoc`, same zone.
 - **The four critters of §3.0** (added 2026-08-08) all share
-  20 / 2200 / 2, with **one exception that is pure arithmetic**: the
+  20 / 1650 / 2 — they were authored at the WP6-style **2200** and ship at
+  it, and 1650 is that number carried through the 0.75 rule above like
+  every other surface row, so they read the same way as the rest of the
+  table (decided here, still 2200 in `grug_mobs`) — with **one exception
+  that is pure arithmetic**: the
   **Cave Crawler ships at `aoc` 1**. The underground cell was
   Zombie 4 + Giant Spider 4 + one Golem 1 = **9 / 9**; two cave critters
   at 2 each would make it 13 / 13, one over the world night peak of 12,
