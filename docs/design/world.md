@@ -156,10 +156,21 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   and travel, never in waiting for a timer. Renewable ore would have
   capped every material's value at its respawn interval and turned mining
   into a rotation instead of an expedition. **Sole exception: renewable
-  nodes inside indestructible structures** — mining camps, POIs and the
-  like, where the walls are protected (R1) and no player can build a farm
-  around the node. Which nodes those are, at what interval and in which
-  structures, is still open: `TODO-design-depth.md` **B6**.
+  nodes inside indestructible structures**, where the walls are protected
+  (R1) and no player can build a farm around the node. In the MVP that
+  exception is **exactly one structure kind: the mining camps** of §4.
+  - **10–15 renewable resource nodes per camp**, in the **tier of the
+    camp's own region** (§2 R6 / `items_crafting.md` §3.0.1) — so a camp
+    is where a player gets T3 stock without a −400 expedition, and the
+    camp's garrison is the price.
+  - **Respawn 2–4 hours per node**, not minutes. A camp is a destination
+    worth a trip every few sessions, never a farm rotation; the interval
+    is deliberately an order of magnitude above the 15–30 min the removed
+    world-wide mechanic used, because a handful of nodes at a guarded
+    place is a different thing from a vein under every hill.
+  - Other POI kinds may join the exception later, one renewable node type
+    per kind, once camps have proven the shape. Nothing else regrows
+    today.
 - **R5 — Housing isles**: a housing isle's 100×100 build
   box belongs to its **owner, a character rather than a guild** (§5):
   the owner and the characters on their *trusted* list build and dig
@@ -268,9 +279,16 @@ Military outposts across each territory enforce the level gating:
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
   and anyone who fights past the garrison may dig it (guilds hold no
-  land — `guilds.md` §3). Under R4 such a camp is the **only** place
-  where anything regrows at all, precisely because its structure is
-  indestructible; scope still open in `TODO-design-depth.md` **B6**.
+  land — `guilds.md` §3). Under R4 a **mining camp is the only place in
+  the world where anything regrows at all**, precisely because its
+  structure is indestructible: 10–15 renewable nodes in the region's own
+  material tier on a 2–4 h respawn (numbers and rationale in §2 R4).
+  That is what makes such a camp a travel destination and a conflict
+  point rather than scenery — and it is why a camp needs a garrison worth
+  fighting. **Mining camps do not exist as a structure yet** — this
+  section has so far named them only as a *role* an outpost can carry;
+  authoring them (schematic, garrison, protection footprint) belongs to
+  the world-structures package.
 - **Guard level follows the inverse guard field** (`guard_level_at`,
   section 1): elite garrisons in the core, ~local mob level +5 at the
   war coast — guards beat equal-level intruders; groups or higher-level
@@ -396,17 +414,45 @@ elsewhere:
 - **Regular mobs still cap at level 60** (`combat_stats.md` §3). What
   makes the band deadly is the environment and the **rate of arrival**,
   not bigger numbers — a level-60 roster under permanent pressure, never
-  a level-80 one.
+  a level-80 one. The rate itself is the **depth phase-in pulse**, and
+  it is a spawn rule: it lives in `biomes_mobs.md` §4.1, which also owns
+  the roster the pulse delivers below −1000.
 - **This is a continental band, not an isle one.** A housing isle runs
   through the same six strata (§5.3) but is protected, private and free
   of hostile spawns (§5.6); an isle's step 6 buys **treasure** (§5.4),
   the continent's −1000 buys **danger**. The two must not converge, or
   the isle becomes the safe way to farm the deep band.
 
-**The content itself is not authored yet** — the creature roster,
-whether lava lakes arrive as a biome, a decoration or a structure pass,
-and how the band relates to §4b's apex bosses are open in
-`TODO-design-depth.md` **D10**.
+**Lava lakes are a `register_on_generated` VoxelManip pass** (decided
+2026-08-08), in the same file as the continent ocean mask and the camp
+platforms (`grug_mapgen/structures.lua`), plus **cheap
+`ore_type = "blob"` lava pockets** in `group:grug_stratum` rock for
+ambience. Only a pass can express what the worked example actually
+promises — a *flat, connected* lava surface with an air dome over it and
+a shore to stand on; a blob has no shape control and yields pockets, not
+lakes. The pass carries a **chunk-box fast path** so it costs nothing
+above −1000, the way the ocean mask already skips inland chunks.
+
+A *deep biome* buys less here than it looks like it does, which is why
+it is not the mechanism: the six strata are **stratum ores registered
+last** and convert `default:stone` wholesale (`items_crafting.md`
+§3.0.4), so a biome's own `node_stone` would simply be overwritten and
+only its cave/decoration layer would survive.
+
+**No apex boss of its own in the MVP** (decided 2026-08-08). The band
+carries itself on the phase-in roster, the lava lakes and its resource
+density. §4b's apex bosses are deliberately **visible outdoor carrots**
+— the Mountain Wyrm is a thing you see at level 8 and fight at 50 — and
+a boss behind a T6 pickaxe is the exact opposite of that, so a deep apex
+is not the same design object under a different sky. It arrives later as
+its own §4b stage, once the band has content at all; the lair/hoard/
+arena tech is generic and waits. Authoring the zone and its boss at the
+same time would mean inventing both against nothing.
+
+**The band gets no drop layer of its own.** What it pays out is raw
+material; its creatures drop exactly what their families drop everywhere
+else, and being deep adds nothing to a loot table (`items_crafting.md`
+§5, which carries the argument).
 
 ## 5. Housing: the King's isles (player-owned)
 
@@ -494,26 +540,62 @@ it itself, so the two ladders cannot drift apart.
 ### 5.4 What is down there: treasure clusters, not a mine
 
 **Housing mining is a treasure hunt, not a second ore economy** (decided
-2026-08-07). The continental depth axis — ores by biome and depth, cave
-mobs scaling 3 levels per 50 nodes (combat_stats.md §3) — stays the
-world's mining game, and a safe private isle must not undercut it by
-selling the same ore without the danger.
+2026-08-07, **re-affirmed and made generous 2026-08-08**). The
+continental depth axis — ores by biome and depth, cave mobs scaling 3
+levels per 50 nodes (combat_stats.md §3) — stays the world's mining
+game, and a safe private isle must not undercut it by selling the same
+ore without the danger.
 
-- The isle's rock is **deliberately barren**. Each depth step holds a
-  **fixed, deterministic set of clusters** — working value **8 clusters
-  of 20–40 nodes** per step, positions rolled per isle, count and
-  contents identical for everyone. A step is therefore a *calculable
-  payout*, which is what makes its price balanceable at all. The count
-  does **not** scale with a stratum's height: a deeper step costs more
-  because its clusters carry a higher material tier, not because it
-  holds more of them.
+**Why the shape, and not a continental ore field**: an isle is 100×100
+and runs from the seabed at −30 to bedrock, i.e. **~9.7 million nodes**.
+At continental ore density that is tens of thousands of ore nodes on
+protected (R5), mob-free, PvP-free, travel-free ground — an owner would
+never mine the continent again, and the whole depth danger of §4c would
+be a rule that applies to other people. The second argument is the
+sink's own: the depth ladder is the game's central gold sink (§5.3), and
+**a sink must pay out a known amount**. An ore field pays out whatever
+the seed felt like.
+
+- The isle's rock is **barren between the clusters**. Each depth step
+  holds a **fixed, deterministic set of clusters** — positions rolled
+  per isle, count and contents identical for everyone. A step is
+  therefore a *calculable payout*, which is what makes its price
+  balanceable at all. The count does **not** scale with a stratum's
+  height: a deeper step costs more because its clusters carry a higher
+  material tier, not because it holds more of them.
+- **The clusters are deliberately generous** (2026-08-08): the
+  2026-08-07 working value of 8 clusters × 20–40 nodes is a floor, not a
+  target, and each step's clusters are filled **in that step's own rock
+  tier** (§5.3). Every bought step has to read as a real payday for the
+  gold it cost — that, not an ore field, is how "mining an isle is worth
+  it" is delivered. The exact count and fill per step is authored in the
+  housing package against the price ladder above.
 - **No respawn** (R4, the world-wide rule): a mined-out cluster is gone.
   That is precisely why the ladder keeps costing — the next payout is the
   next step.
 - Contents follow the strata (§5.3): steps 1–3 ordinary building and
-  smithing stock, steps 4–5 the deep metals and their gems, **step 6 the
-  depth treasure — Abyssal Crystal**, the T6 material and the
-  race-signature ingredient (items_crafting.md §4 / §5.5).
+  smithing stock, steps 4–5 the deep metals and their gems, **step 6
+  Abyssal Crystal**, the T6 material and the race-signature ingredient
+  (items_crafting.md §4 / §5.5). Since 2026-08-08 the crystal also has a
+  continental deposit below −1000 (items_crafting.md §3.0.1), so the
+  isle is the *safe* source of it, no longer the only one — what the
+  ladder sells exclusively is the six materials below.
+- **Six isle-exclusive materials, one per depth step** (decided
+  2026-08-08). Each step additionally holds **one rare material that
+  exists nowhere else in the world** — not on the continent, not in any
+  drop table. Non-renewable like everything else on an isle (R4: an isle
+  is editable ground, so nothing regrows there), and reserved for
+  special recipes. This is what gives the 1.9 g ladder a reason to exist
+  of its own now that the T6 alloy is no longer hostage to it.
+  - **All six are named, textured and placed; exactly one of them does
+    anything in the MVP** — the **Amplifier**, applicable **once per
+    item**, raising **all of that item's prefix and suffix values by
+    10 %** (`items_crafting.md` §6b.8 owns the effect and its rules).
+  - The other five are visible, collectable forerunners. Placing them
+    now and wiring their recipes later is what keeps every future
+    material addition **out of mapgen**: the isles already hold the
+    stock, so a later recipe package needs no world change and no
+    regenerated isle.
 - **Finder items are mandatory infrastructure, not flavor**: a step is
   100×100 nodes wide and up to 300 deep, and nobody strip-mines millions
   of them. From

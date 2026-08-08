@@ -69,7 +69,9 @@ live there. This section is the tour; the docs are the truth.
 - **Controlled destructibility**: build and dig freely at home, never in
   enemy territory (not even a torch), never in the ocean. Nothing regrows:
   a mined-out vein is gone for good, and the world stays supplied by going
-  deeper rather than by waiting.
+  deeper rather than by waiting. The one exception is a **guarded mining
+  camp**, where a handful of nodes refill over hours — you cannot build a
+  farm around them, because you cannot dig the walls.
 - **Depth is a ladder, not a chore**: the stone below you is six rock
   strata (−100 / −300 / −500 / −700 / −1000 / bedrock), and each one can
   only be broken by a tool of its own tier. How deep you can mine is the
@@ -80,6 +82,13 @@ live there. This section is the tour; the docs are the truth.
   bottom layer, **below −1000**, is endgame territory in its own right:
   lava lakes and a level-appropriate roster behind the last pick on the
   ladder.
+- **The deep has no safe places.** Below −300 the dark starts sending
+  things after you at a rate that grows with depth — light does not stop
+  it, and neither does walling yourself in, though you always get about
+  two seconds of warning. Nothing down there hits harder than a level-60
+  mob; what makes it dangerous is that it never quite stops arriving.
+  What the depth pays out is raw material — there is no special gear
+  layer down there, because the best gear is made, not found.
 - **Three race capitals per continent** (you spawn in your own race's),
   24 deterministic military outposts, ambient patrols between them,
   villages and flavor camps.
@@ -92,11 +101,13 @@ live there. This section is the tour; the docs are the truth.
   earns you one of the King's isles behind your continent — a 100×100
   build box, free digging down to the seabed, and below that a ladder of
   **six purchased depth rights**, one per rock stratum, from 50c to a
-  full gold (≈ 1.9g for the lot). Each step hides a finite set of
-  treasure clusters you hunt with a dowsing rod; nothing regrows, so the
-  next payout is the next step. That ladder is the game's central gold
-  sink. Guild members may visit; a per-character trust list decides who
-  may dig and open your chests.
+  full gold (≈ 1.9g for the lot). Each step hides a finite, deliberately
+  generous set of treasure clusters you hunt with a dowsing rod —
+  filled in that step's own rock tier — plus **one rare material that
+  exists nowhere else in the world**, six in all up the ladder. Nothing
+  regrows, so the next payout is the next step. That ladder is the game's
+  central gold sink. Guild members may visit; a per-character trust list
+  decides who may dig and open your chests.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
@@ -230,11 +241,12 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (11 of 34 work packages):** the foundation, the whole
+**Shipped (11 of 35 work packages):** the foundation, the whole
 world/combat layer, the money economy, and the material ladder's rock and
-ores. *(The total is 34 — WP0 through WP33 — and was printed as 33 here
+ores. *(The total is 35 — WP0 through WP34 — and was printed as 33 here
 until 2026-08-08: the 2026-08-07 crafting rework had cut nine new work
-packages on top of the original twenty-five.)*
+packages on top of the original twenty-five, and the depth design pass
+added WP34 on 2026-08-08.)*
 
 - **World**: two ocean-separated continents with soft coasts, 17 mirrored
   biomes, six race-capital spawn platforms, the radial mob-level field
@@ -273,12 +285,15 @@ smelted yet — and neither can armor recipes (the vendored base game has
 none at all), the herb and food nodes, or the rename of the shipped gear
 catalog to material names.
 
-**Ready to start next** (no design blockers): the two-slot furnace and
-the alloy chain (WP26, the next link in the material chain), guilds
-(WP16), the trader rotation fix (WP30), herb & food nodes (WP33), talent
-trees (WP11), world structures (WP13), offhand (WP14), travel (WP17),
-party system (WP20), recovery & innkeeper (WP21), apex world bosses
-(WP23).
+**Ready to start next** (no design blockers): the depth economy (WP34 —
+the arrival pulse that makes deep mining dangerous, the depth level
+curve's overdue recalibration, the denser surface spawns, camp-only ore
+respawn, lava lakes and the continental Abyssal Crystal), the two-slot
+furnace and the alloy chain (WP26, the next link in the material chain),
+guilds (WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
+talent trees (WP11), world structures (WP13 — which now also owns the
+mining camps), offhand (WP14), travel (WP17), party system (WP20),
+recovery & innkeeper (WP21), apex world bosses (WP23).
 
 **Still blocked by design work**: loot & affixes (WP5) and professions
 (WP10) were ready before the 2026-08-07 crafting rework and still wait on
@@ -300,10 +315,13 @@ mob-side fix is in, the PvP port is queued.
 rule that now depends on it. The shipped gear still carries its old
 bracket names ("Crude Sword") and its mod header still claims to sit
 10–15 % behind crafted gear — both were superseded on 2026-08-07 and are
-queued work, not defects. The same goes for the shipped **ore respawn**:
-the design rule was reversed on 2026-08-08 (nothing regrows outside
-indestructible structures), while the code still runs the old world-wide
-15–30 min respawn until the depth work package re-scopes it. Mapgen
+queued work, not defects. Two more of the same kind came out of the
+2026-08-08 depth design pass, both queued into WP34: the shipped **ore
+respawn** still runs the old world-wide 15–30 min rule, although the
+design now lets nothing regrow outside a mining camp; and the **depth
+level curve** in `grug_core` still adds a level every 20 nodes instead of
+three every 50, so the documented anchors (−500 = level 30, −1000 = the
+cap) do not hold in the running game yet. Mapgen
 changed in WP18 and again in WP25 (the
 rock strata are placed by the mapgen's ore stage, so an existing world
 gets them only in freshly generated chunks, with seams at the border), so

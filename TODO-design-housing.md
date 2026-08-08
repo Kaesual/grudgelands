@@ -22,6 +22,14 @@ step measured against its price (world.md §5.3). Rule to hold: a step's
 payout must be **worth roughly its price and no more** — the ladder is a
 sink, not an investment.
 
+> **Reconcile before WP24 authors the cluster contents (noted 2026-08-08).**
+> `TODO-design-depth.md` C8 decided that a bought step should land as a
+> real payday rather than a thin scatter, which is about the *shape* of
+> the payout, not its total. The two readings are compatible — a lump
+> worth its price is still worth its price — but the wording has to be
+> made to say that in one place, or the first person to author a cluster
+> will pick whichever sentence they read first.
+
 ## Q2 — Detector tuning
 
 Vendor **Dowsing Rod**: 64 m range, direction only, 30 s cooldown, 15c

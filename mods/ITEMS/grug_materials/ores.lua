@@ -56,19 +56,24 @@ register_ore_node("stone_with_garnet", "Garnet Ore",
 	"default_stone.png^(default_mineral_diamond.png^[colorize:#9e1526:210)",
 	{cracky = 2, level = 3}, "garnet_crystal")
 
--- Abyssal Crystal -- the T6 material, abyssal rock band (level 5).
+-- Abyssal Crystal -- the T6 lead material, and therefore in the T5 band
+-- (Emberrock, level 4), exactly like every other lead metal sits one band
+-- above its own tier. Putting it in the T6 rock it is *named* after would
+-- have closed the ladder into a circle: T6 rock needs a Grudgesteel pick,
+-- and Grudgesteel is made of this. See items_crafting.md §3.0.1.
 --
--- INTERFACE NOTE: this node is placed by NO `register_ore` call, anywhere.
--- Decided 2026-08-08: items_crafting.md §3.0.2 makes Grudgesteel bindingly
--- dependent on the housing-isle depth step, so the crystal must not be
--- scatterable on the continent. Its two placers are:
+-- INTERFACE NOTE: WP25 registers this node and places it nowhere. Three work
+-- packages own its placement:
+--   * WP34 -- the continental scatter band, -701 … -1000 (items_crafting.md
+--     §3.0.1). Decided 2026-08-08, reversing the same day's earlier "no
+--     continental deposit": the crystal is a base resource, and a material
+--     the whole T6 ladder hangs on must not sit behind a 1.9 g purchase.
 --   * WP24 -- treasure cluster of the purchased isle depth step (world.md §5.4)
---   * WP23 -- 10 % apex dragon hoard (items_crafting.md §10 P5)
--- It is registered here so both work packages have something to place, and so
--- that the item exists before either of them lands.
+--   * WP23 -- 10 % apex dragon hoard (items_crafting.md §10 P5), which is a
+--     bridge into T6 and no longer its only door.
 register_ore_node("abyssal_crystal_ore", "Abyssal Crystal Ore",
 	"default_stone.png^(default_mineral_diamond.png^[colorize:#3a1f6e:210)",
-	{cracky = 1, level = 5}, "abyssal_crystal")
+	{cracky = 1, level = 4}, "abyssal_crystal")
 
 --
 -- The raw items
@@ -90,7 +95,7 @@ register_ore_node("abyssal_crystal_ore", "Abyssal Crystal Ore",
 -- garnet 3c = diamond 3c (both gems; diamond's 3c is the existing anti-loop
 -- cap and garnet may only reach it, not pass it) < silver 4c (a T4 metal
 -- lump, one step above the iron-lump anchor) < abyssal crystal 6c (the band
--- ceiling, the one material with no continental deposit at all).
+-- ceiling, and by far the scarcest thing the placement table places).
 --
 -- None of them has a recipe yet (smelting is WP26, cutting is WP10), so no
 -- vendor loop can exist around these prices today -- when the recipes land,

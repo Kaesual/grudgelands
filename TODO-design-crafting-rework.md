@@ -418,7 +418,10 @@ What the decision turned on:
   registers node and item, WP24 (isle treasure clusters) and WP23 (the
   dragon hoard) place them. That keeps §3.0.2's binding statement
   literally true: Grudgesteel needs the level-30 isle grant and its
-  deepest depth step.
+  deepest depth step. **Superseded on 2026-08-08** by
+  `TODO-design-depth.md` C7: the crystal is a base resource and gets a
+  continental band in the T5 rock, so the isle no longer holds T6
+  hostage. The rest of this entry stands.
 
 *Landed in*: `items_crafting.md` §3.0.1.
 

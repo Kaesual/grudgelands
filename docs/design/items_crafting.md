@@ -371,7 +371,7 @@ because under §3.0.3 they are the same items.
 | T3 | 21–30 | 20 | **Steel** | — (alloy) | −300 … −500 | — |
 | T4 | 31–40 | 30 | **Silversteel** | **Silver (new)** | −500 … −700 | **Garnet** (new) |
 | T5 | 41–50 | 40 | **Embersteel** | **Emberstone** (repurposed mese) | −700 … −1000 | — |
-| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (§5.5) | below −1000 (`world.md` §4c) | **Diamond** (exists) |
+| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (T5 band + §5.5) | below −1000 (`world.md` §4c) | **Diamond** (exists) |
 
 - **Wood and stone are the pre-metal T1 floor** — the starter kit and the
   vendor floor. T1 therefore spans wood / stone / bronze. Wood and stone
@@ -390,18 +390,29 @@ because under §3.0.3 they are the same items.
   exists in the vendored `default` (copper, tin, iron, coal, mese →
   Emberstone, diamond) or is already sketched as the abyssal gem of
   §5.5, now named **Abyssal Crystal**.
-- **The T6 metal is the one tier behind a purchase.** Abyssal Crystal is
-  a housing-depth resource (§5.5) plus the 10 % apex-hoard bridge (§10
-  P5), so Grudgesteel needs the level-30 isle grant and its deepest depth
-  step (§8.4). That is intended: T6 is the endgame tier and the depth
-  ladder is the endgame sink; the five tiers below it are entirely
-  continental. **Abyssal Crystal therefore has no continental deposit at
-  all**: the ore node (`level = 5`) and its item exist, but the only
-  things that place them are the isle treasure clusters of the purchased
-  depth step (`world.md` §5.4, WP24) and the 10 % dragon hoard (§10 P5,
-  WP23). WP25 only registers the node
-  (`grug_materials:abyssal_crystal_ore`) and the item
-  (`grug_materials:abyssal_crystal`).
+- **Abyssal Crystal is a base resource, not a privilege** (decided
+  2026-08-08, reversing the same day's earlier "no continental deposit at
+  all"). It gets a **continental deposit**, because a material the whole
+  T6 ladder depends on must not sit behind a 1.9 g purchase. It stays a
+  housing treasure too (§5.5) and keeps the 10 % apex-hoard bridge (§10
+  P5); what changes is that **Grudgesteel no longer needs the level-30
+  isle grant**. The isle keeps its own reason to exist through its six
+  exclusive materials (`world.md` §5.4) instead of by holding the T6
+  alloy hostage. The node is `grug_materials:abyssal_crystal_ore`
+  (`level = 4`, i.e. the Emberrock around it) dropping
+  `grug_materials:abyssal_crystal`; WP25 registered both and placed
+  neither, so the band below is the first thing that places it.
+- **The continental band is the T5 band, not the deep one — and that is
+  the binding rule, not a preference.** A lead metal lies one band
+  *above* its own tier (the rule at the end of this section), so Abyssal
+  Crystal sits in **−701 … −1000**, the Emberrock the T5 pick opens, and
+  the ore node carries `level = 4` to match the rock around it. Putting
+  it below −1000 instead would have closed the ladder into a circle: T6
+  rock needs a Grudgesteel pick, Grudgesteel needs Abyssal Crystal, and
+  the tier would have been reachable only through the 10 % apex-hoard
+  drop. The hoard therefore stays what §10 P5 always called it — a
+  **bridge**, not the door. The isle's step 6 is unaffected: it holds
+  crystal too, and there the depth payment is the point.
 - **The "Digging depth" column is a *tool* depth, not a find depth.** It
   names the band that this tier's own pick unlocks (§3.0.4), not the band
   its material lies in. Where the ores actually sit is the placement
@@ -431,6 +442,7 @@ Ore placement (decided 2026-08-08). `clust_scarcity` is the
 | Emberstone | T5 metal | −501 … −700 | 12³ | 4 | 3 |
 | Emberstone (deep) | T5 metal | −701 … −31000 | 14³ | 5 | 3 |
 | Diamond | T6 gem | −1001 … −31000 | 15³ | 4 | 3 |
+| Abyssal Crystal | T6 material | −701 … −1000 | 20³ | 2 | 2 |
 
 - Copper, tin, coal and gold keep their vendored `default` placement
   unchanged.
@@ -440,6 +452,14 @@ Ore placement (decided 2026-08-08). `clust_scarcity` is the
   Emberstone stays the vendored `default:stone_with_mese` (renamed, not
   re-registered) and Diamond stays `default:stone_with_diamond`. WP26's
   alloy recipes consume exactly these names.
+- **Abyssal Crystal is deliberately the scarcest thing in the table** —
+  by volume roughly a quarter of Diamond's, and its clusters are half the
+  size of everything else's. It is the one material whose scarcity
+  decides how fast the endgame alloy can move at all, and it sits in the
+  band that carries the deepest phase-in pressure a T5 character can
+  stand in (`biomes_mobs.md` §4.1), so what it really costs is time under
+  fire. Re-tune it against §2.4 after the first runtime test rather than
+  on paper (same pattern as the calibration line below).
 - **The iron band is a deadlock fix, not tuning.** Vendored iron starts
   at −128, i.e. *below* the T2 stratum that already demands an iron or
   steel pick. Without an iron deposit above −100 the ladder is blocked
@@ -467,7 +487,7 @@ Ore placement (decided 2026-08-08). `clust_scarcity` is the
   lies in the T3 band, carries `level = 2` and is therefore the steel
   pick's prey, exactly as intended. Concretely: Quartz `level = 1`,
   Silver `2`, Garnet `3`, Emberstone (`default:stone_with_mese`) `3`,
-  Diamond `5`, Abyssal Crystal `5`. Copper, tin, coal, iron and gold get **no** `level` — they are not
+  Diamond `5`, Abyssal Crystal `4`. Copper, tin, coal, iron and gold get **no** `level` — they are not
   gate-relevant and the rock around them is the gate. **An ore may never
   carry a higher `level` than the stratum it lies in.**
 
@@ -1204,8 +1224,21 @@ becoming a side door around the depth gate of §3.0.4.
 | War coast 20–30 | heavy cloth (raiders), linen | base variants | PvP quests ≥20; Captain Bonerattle (L28); **outpost supply crates** (§5.6) |
 | Outer 25–45 | heavy leather, scaled hide, heavy cloth, spider silk, T2 herbs, stone cores, iron/steel | **improved variants** on elites (20% Unc / 3% Rare) | named rares L32–42; apex dragon lair (L50) |
 | Coast 45–60 | scaled hide, silk, T3 herbs, gold, garnet/diamond | improved variants; elites common | coast named rares L48–50; Reef Lurker |
-| Depth axis | the six strata of §3.0.4, each behind a tier-n tool; which ore lies in which band is §3.0.1's placement table: copper/tin/coal/**iron** (0…−100) → quartz (−300) → silver (−500) → garnet + emberstone (−700) → emberstone, deep band (−1000) → diamond (below); gold keeps its vendored depth and its coast veins | cave mobs as per surface tier | Abyssal Crystal only in housing depths (no continental deposit at all) |
+| Depth axis | the six strata of §3.0.4, each behind a tier-n tool; which ore lies in which band is §3.0.1's placement table: copper/tin/coal/**iron** (0…−100) → quartz (−300) → silver (−500) → garnet + emberstone (−700) → emberstone deep band **and Abyssal Crystal** (−1000) → diamond (below); gold keeps its vendored depth and its coast veins | cave mobs as per surface tier | **no drop layer of its own**, at any depth (below) |
 | Enemy territory | identical base tables (mirrored biomes) | identical | enemy named rares + enemy King = the raid incentive |
+
+**The depth axis pays in materials, and gets no drop layer of its own**
+(decided 2026-08-08). The deep band below −1000 (`world.md` §4c) is a
+level-60 place only a T6 pick reaches, which makes it the obvious home
+for a T6 gear layer — and deliberately does not become one. Underground
+mobs keep dropping exactly what their families drop on the surface (the
+Gear drops column above); nothing is added for being deep. Two reasons,
+both structural: **the best items come from crafting and from hard
+bosses** (§0, §6.4 — the two 0.60–1.00 windows of §6.3 are exactly those
+two), and a depth layer would be a third top source with neither a
+crafter nor a boss behind it; and the depth already pays the endgame
+*material*, which is the input the crafted endgame item is made of.
+Depth buys danger and volume; the gear it feeds is made, not found.
 
 ### 5.1 Quality chance per source (kill, player-tagged)
 
@@ -1262,6 +1295,12 @@ and the depths are a bought treasure-cluster ladder rather than guild
 property, the supply is personal progression, not a guild privilege —
 but the deep steps are endgame-priced, so the apex-hoard bridge stays
 (§10 P5).
+
+Revised 2026-08-08: the crystal also has a **continental deposit below
+−1000** (§3.0.1), so an isle is now the *safe* source rather than the
+only one. What an isle sells exclusively instead are its **six
+step-exclusive materials** (`world.md` §5.4), of which one is live in the
+MVP — the **Amplifier** of §6b.8.
 
 ### 5.6 War-coast PvP incentive (proposal)
 
@@ -1620,6 +1659,33 @@ that slows attackers, for instance.
   That gives every special variant a look without one texture per
   combination.
 
+### 6b.8 The Amplifier (isle-exclusive, decided 2026-08-08)
+
+The **Amplifier** is one of the six materials that exist only in a
+housing isle's purchased depth steps (`world.md` §5.4) and the only one
+of the six that does anything in the MVP.
+
+- **Effect: it raises *all* prefix and suffix values on one item by
+  10 %**, rounded the way the affix line is displayed. It multiplies what
+  §6.3 already rolled; it never adds a slot, never changes an item's
+  quality tier (§6b.6) and never turns an unenchanted item into an
+  enchanted one.
+- **Applicable once per item**, ever. The used-up state is a marker in
+  the item's meta next to `grug_ench` (§6.1) — the roller/description
+  side of WP5 owns it, and it must be a marker rather than a counter on
+  the values, because the effect has to be idempotent against a second
+  application no matter how the item travelled.
+- The input is an item that already carries affixes: the Amplifier is a
+  step *after* enchanting, unlike the special variant of §6b.7, which is
+  a step before it.
+- **The §6.3 cap arithmetic has to be re-run against this multiplier
+  before it ships** — the same check §6.3 already ran for eight slots.
+  The caps sit in the consumer (crit clamps at 30 %, armor at 60 %,
+  `combat_stats.md` §2), so a 10 % lift on already-clamping values is
+  expected to absorb cleanly, but that is a prediction and it is to be
+  verified, not assumed. This is a task, not an open design question: the
+  effect is decided.
+
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 
 Two kit types per profession, applied in the grid (item + kit),
@@ -1842,7 +1908,11 @@ housing depths are live.
 personal isles the source is no longer guild-gated, but the **Abyssal
 Crystal** (renamed, §5.5) sits in depth step 6 — the 1g step, the single
 most expensive purchase in the game (§8.4) — so the bridge is **kept at
-the reduced 10%** rather than removed.
+the reduced 10%** rather than removed. *Amended 2026-08-08*: the
+continental band of §3.0.1 did not change that, because it lies below
+−1000 and needs the very pick the crystal makes — the 10 % hoard drop is
+now the **only** ungated source of the material and is therefore
+permanent, not interim (§3.0.1, "The T6 entry point is the apex hoard").
 
 ### 10.2 2026-08-07 (crafting rework)
 
@@ -1981,3 +2051,36 @@ in rather than of its tier (§3.0.1). The second half closes the cave leak
 without deadlocking the first. Iron gains a −1 … −100 band because
 vendored iron starts at −128, below the stratum that demands an iron
 pick.
+
+**D15 — Abyssal Crystal gets a continental band in the T5 rock** (resolves
+`TODO-design-depth.md` C7 and reverses the half of D14 that had written
+"no continental deposit at all"). `clust_scarcity = 20³`,
+`clust_num_ores = 2`, `clust_size = 2`, band −701 … −1000 (§3.0.1) —
+by volume the scarcest entry in the placement table by a wide margin.
+The band is the T5 one, not the deep one, because §3.0.1's binding rule
+puts a lead metal one band above its own tier — below −1000 the T6 pick
+would have been needed to mine the material the T6 pick is made of, and
+the 10 % apex hoard would have become the tier's only door instead of a
+bridge. The crystal is a **base resource**, and the earlier
+arrangement made the entire T6 alloy depend on a 1.9 g gold sink. What
+replaces the isle's hold on T6 is its six step-exclusive materials
+(`world.md` §5.4). Rejected: leaving T6 behind the purchase, which had
+been chosen only to keep one sentence in §3.0.1 literally true.
+
+**D16 — The depth gets no drop layer of its own** (resolves the loot half
+of `TODO-design-depth.md` D10). Underground mobs drop what their families
+drop on the surface; being deep adds nothing (§5). A T6 gear layer down
+there would have been a third 0.60–1.00-window source with neither a
+crafter nor a boss behind it, against §0's promise that the best items
+come from crafting and hard bosses — and the band already pays the
+endgame *material* that the crafted endgame item is made of. Rejected:
+T6 gear drops on the level-60 deep roster.
+
+**D17 — The Amplifier is the one live isle-exclusive material in the
+MVP** (resolves the effect half of `TODO-design-depth.md` C9). Once per
+item, **+10 % on all prefix and suffix values** (§6b.8); the other five
+isle materials are named and placed but inert, so later recipes can hang
+off stock that is already in the ground and no mapgen change is needed
+to add them. Two follow-ups are **tasks, not open questions**: §6.3's cap
+arithmetic is re-run against the multiplier, and WP5 owns the
+once-per-item marker in item meta.

@@ -2,46 +2,25 @@
 
 Opened 2026-08-08, out of the WP25 runtime test. WP25 shipped the six rock
 strata, so depth is now a real gate for the first time — and testing it
-surfaced a set of coupled questions the existing docs answer either not at
-all or in a way the owner has since overturned.
+surfaced a set of coupled questions the existing docs answered either not
+at all or in a way the owner has since overturned.
 
-**Everything in this file is open unless its *Decision* line says
-otherwise.** No decided *rule* lives here — a decided question keeps only a
-short stub naming the design file it landed in, so the reasoning behind it
-stays findable; the rule itself lives in `docs/design/` (AGENTS.md
-"Documentation layers").
+**All ten questions were decided on 2026-08-08 and folded into
+`docs/design/`.** What is left in this file is the reasoning and the
+rejected options behind each decision — no rule and no number lives here
+(AGENTS.md "Documentation layers"). Three passages this file had flagged
+as overturned (`world.md` §2 R4, `items_crafting.md` §3.0.2/§3.0.1 and
+`world.md` §5.4) were rewritten in the same pass and are current again,
+so the warning block that used to stand here is gone.
+
+**Three small remainders are still open**, all of them content rather
+than mechanics, listed under the stubs they belong to: the pulse's
+placement geometry (A2), the servant roster below −1000 (A2/D10) and the
+names of the six isle-exclusive materials (C9).
 
 Groups: **A** the depth curve and spawn pressure · **B** renewable
 resources · **C** the housing isles · **D** the T6 band as endgame
 content.
-
----
-
-## ⚠ Design-doc statements this file overturns
-
-Three passages in `docs/design/` are **no longer true** and are waiting on
-the open questions below before they can be rewritten. Until then, do not
-implement against them:
-
-1. ~~**`world.md` §2 R4** — "Ores/resources respawn (node timers) in the
-   open world" with the isles as the exception.~~ Reversed by **B5** and
-   **rewritten on 2026-08-08**: nothing respawns anywhere except inside
-   indestructible structures (scope open in B6). §2 R4 is current again;
-   the shipped `ore_respawn.lua` is not.
-2. **`items_crafting.md` §3.0.2 / §3.0.1** — "Abyssal Crystal … so
-   Grudgesteel needs the level-30 isle grant and its deepest depth step",
-   and the T6 row's "no continental deposit at all" (written 2026-08-08,
-   §10.3 D14). Reversed by **C7**: the crystal is a base resource and gets
-   a continental deposit below −1000.
-3. **`world.md` §5.4** — "Housing mining is a treasure hunt, not a second
-   ore economy". Partially reversed by **C8**, which is still open: isles
-   are to become worth mining, but the *distribution* is the open question
-   and it must not be the continental one.
-
-`combat_stats.md` §3's depth axis carried "+1 per 20 nodes" and was
-superseded by **A1** — not contradicted, it is a recalibration of the same
-formula. **Folded in on 2026-08-08**: §3 now states the new rate, so that
-passage is current again.
 
 ---
 
@@ -55,8 +34,8 @@ passage is current again.
 
 The model is unchanged and was already correct: `mob_level_at =
 max(surface_level(x,z), depth_level(y))`, cap 60. Only the *rate* is
-recalibrated, from "+1 per 20 nodes" to **3 levels per 50 nodes**, so that
-the two anchors the owner set fall exactly on stratum boundaries.
+recalibrated, so that the two anchors the owner set fall exactly on
+stratum boundaries.
 
 Why `max()` and not an additive term, since the question came up: the
 material ladder is absolute in y — silver sits at −301…−500 everywhere. An
@@ -66,111 +45,76 @@ place to mine T4, and would blow the level cap. `max()` binds the danger to
 the resource, which is what makes depth the "alternative progression path"
 that `combat_stats.md` §3 already claims it is.
 
-The reasoning stays here; the formula, the anchors and the crossover table
-live in `combat_stats.md` §3.
-
 ### A2 — Spawn pressure by depth: the phase-in
 
-The load-bearing open question of this file.
+**Decision:** decided 2026-08-08 → **landed in `biomes_mobs.md` §4.1**
+(mechanism, curve, concurrent cap, the sealed-room rule with its
+telegraph, and the staged roster); `combat_stats.md` §3 and `world.md`
+§4c link to it with a sentence each.
 
-**The constraint that rules out the obvious answer.** `mobs:spawn`
-registers a static ABM: `chance` and `active_object_count` are fixed at
-registration time, and **`aoc` is counted per entity NAME in a 128-node
+The load-bearing decision of this file, and the constraint that decided
+it belongs here as well as in the design doc: `mobs:spawn` registers a
+**static** ABM whose `chance` and `active_object_count` are fixed at
+registration time, and **`aoc` counts per entity NAME in a 128-node
 sphere, shared by every row of that name** (AGENTS.md; measured in
-`docs/research/wp6_spawn_budget.md`). A second, deeper spawn row for
-`grug_mobs:zombie` therefore cannot carry a larger budget than the shallow
-one — the two share it. A depth-continuous spawn rate is not expressible in
-the ABM model at all.
+`docs/research/wp6_spawn_budget.md`). A depth-continuous spawn rate is
+not expressible in the ABM model at all. A **player-centric pulse in a
+throttled globalstep** was chosen because it is the only option that
+yields a continuous curve, it scales with player presence rather than
+with how much air the mapgen happened to carve, and it is the only one
+that can ignore light on purpose.
 
-Options:
+Rejected:
 
-- **(a) A player-centric phase-in pulse.** A throttled globalstep walks the
-  players, and for each one below the threshold rolls an arrival at a
-  frequency `f(depth)`, spawning in the dark rock near them. Independent of
-  light, independent of cavern volume, and hard-capped per player.
-- **(b) One "deep" entity name per mob** (`grug_mobs:zombie_deep`, …) so
-  each band gets its own `aoc` budget. Works within the shipped model, but
-  it doubles the roster, and `aoc` still cannot vary *within* a band.
-- **(c) Raise `chance`/`aoc` globally on the existing cave rows.** One
-  number, no new machinery, but it raises the pressure at −120 as much as
-  at −1800 and it spends the budget the WP6 audit measured.
+- **One "deep" entity name per mob** (`grug_mobs:zombie_deep`, …) to buy
+  each band its own `aoc` budget. Works inside the shipped model, but it
+  doubles the roster and `aoc` still cannot vary *within* a band.
+- **Raising `chance`/`aoc` globally on the existing cave rows.** One
+  number and no new machinery, but it raises the pressure at −120 as much
+  as at −1800 and it spends the budget the WP6 audit measured.
 
-Recommendation: **(a)**. It is the only option that yields a continuous
-curve; it is what the fiction already says (`story.md` §1: "something
-demonic and ancient stretches its dark hands **from below** into the
-overworld" — the servants leak through before the portals do); it scales
-with player presence rather than with how much air the mapgen happened to
-carve, which is the right cost model at the 100-player target; and it is
-the only one that can ignore light on purpose. The existing ABM cave rows
-stay as they are and remain the ambient cave life.
+Also settled while deciding: the pulse's shallow half reuses the existing
+cave families, so **the depth work package ships without a single new
+mob**, and the ABM cave rows stay untouched as ambient cave life.
 
-**Open numbers**, to be set as starting values and then calibrated in a
-runtime test the way `wp6_spawn_budget.md` did:
+**Still open** (content, blocks nothing that has started):
 
-- The arrival curve. Proposed shape, single formula, safe by construction:
-  `arrivals_per_minute = min(R_MAX, max(0, (−y − Y0) · R_MAX / SPAN))`
-  with a suggested `Y0 = 300` (nothing above it), `R_MAX = 6/min` and
-  `SPAN = 1700`, giving ~2.5/min at −1000, ~4.2/min at −1500 and the
-  ceiling of 6/min at −2000 and below. The `min()` is what makes it hold
-  past −2000 rather than growing without bound.
-- **The concurrent cap per player** — proposed 6. This is the real safety
-  valve and the number the 100-player target actually cares about.
-- Spawn placement: distance band from the player, line-of-sight rule,
-  whether it must be a solid-adjacent air node, and what happens if there
-  is no legal position (skip, or widen the search).
-- **Whether a phase-in may appear inside a sealed room.** This is the whole
-  point of the mechanic and should be answered explicitly: removing the
-  light gate alone does *not* deny safe areas, because a walled 3×3 room
-  offers no spawn position at all. If "no safe areas below X" is to be
-  literally true, the pulse has to be allowed to place a mob in a room the
-  player dug out. Recommendation: yes, below the same threshold, and that
-  is exactly the story beat.
-- Which mobs phase in. Recommendation: a small dedicated set rather than
-  the whole cave roster, so the fiction reads (these are *servants*, not
-  local wildlife) and so the `aoc` accounting stays separate.
-
-**Decision:** _open_ — the mechanic is decided (a), the numbers are not.
+- **Placement geometry** — the distance band from the player, the
+  line-of-sight rule, whether the target must be a solid-adjacent air
+  node, and what happens when no legal position exists (skip, or widen
+  the search).
+- **The servant roster below −1000** — see D10, which is the same list.
 
 ### A3 — Surface spawn rate, slightly up
 
-The owner wants the overworld a little denser as well. This is the ABM
-rows' `chance`, and it has one binding constraint: `aoc` is the cap that
+**Decision:** decided 2026-08-08 → **landed in `biomes_mobs.md` §4**
+(the factor, the two mechanism-driven exclusions, and the multiplied
+`chance` column).
+
+`chance` is the safe knob because `aoc` — the ceiling
 `docs/research/wp6_spawn_budget.md` calibrated against the 100-player
-target, and it is shared per entity name.
-
-Options: **(a)** lower `chance` on the surface rows (more attempts, same
-ceiling) — the safe knob, because `aoc` still bounds the outcome;
-**(b)** raise `aoc` — moves the ceiling itself and re-opens the budget
-audit.
-
-Recommendation: **(a)**, in one pass across the surface rows, with the
-budget audit re-run afterwards. A ~25 % reduction in `chance` is a sensible
-first step.
-
-**Decision:** _open_ (the amount).
+target — still bounds the outcome: more attempts fill the same budget
+faster, they do not raise it. Rejected: **raising `aoc`**, which moves
+the ceiling itself and re-opens the budget audit rather than merely
+re-running it.
 
 ### A4 — Does anything scale past level 60?
 
 **Decision:** decided 2026-08-08 → no design-doc change needed; the
 existing rule stands.
 
-**60 stays the cap for regular mobs.** Depth beyond −1000 buys *frequency*,
-not stats. The existing exceptions are untouched: elite guards via
-`guard_level_at`, and fixed-level bosses via `_grug_fixed_level` (the
-Kraken at 100).
+**60 stays the cap for regular mobs.** Depth beyond −1000 buys
+*frequency*, not stats. The existing exceptions are untouched: elite
+guards via `guard_level_at`, and fixed-level bosses via
+`_grug_fixed_level` (the Kraken at 100).
 
 This is what keeps `grug_core.difficulty_at`'s 0..1 contract intact — it is
 normalised as `(level−1)/59` and read by several consumers, so a level 80
 mob would have broken it. It also keeps the XP curve out of the balance
 question: a level 60 player farming the deep band is paid in materials, not
-experience, which is the intended shape.
-
-One consequence worth stating when this lands: because strength is capped,
-"too dangerous even for a perfectly equipped level 60" has to come from the
-**rate of arrival**, not from the concurrent count — a trickle that never
-lets the player finish clearing the room, so the mining happens under
-permanent pressure. That is also the cheap answer for the server: a modest
-concurrent cap (A2) with a high arrival rate costs far less than a swarm.
+experience, which is the intended shape. The consequence — that "too
+dangerous even for a perfectly equipped level 60" has to come from the
+**rate of arrival** — is what A2 then delivered.
 
 ---
 
@@ -198,150 +142,112 @@ The hook already carries a marker for exactly this kind of zone check.
 
 **Known deviation until then**: the shipped code still runs the old
 world-wide respawn, so it now contradicts the design docs (which are the
-spec); re-hanging it onto POIs/mining camps belongs to the depth WP, and
-the same note sits in `BACKLOG.md`'s readiness section.
+spec); re-hanging it onto mining camps belongs to **WP34**, and the same
+note sits in `BACKLOG.md`'s readiness section.
 
 ### B6 — Renewable nodes live only where the world is not editable
 
-**Decision:** the rule is decided 2026-08-08; the content is open.
+**Decision:** decided 2026-08-08 → **landed in `world.md` §2 R4** (the
+exception, with the counts, the tier rule and the interval) **and §4**
+(the camp's role and the fact that the structure does not exist yet).
 
-The rule, as the owner put it and sharpened: **nachwachsende Ressourcen
-existieren ausschließlich dort, wo die Welt nicht editierbar ist.** That is
-the line the design already draws with the POI protection registry
-(`grug_core.add_poi`, `world.md` §2 R1), and it is self-enforcing — a
-player who cannot dig the walls cannot build a farm around the node.
+The rule, as the owner put it: **renewable resources exist only where the
+world is not editable.** That is the line the design already draws with
+the POI protection registry (`grug_core.add_poi`, `world.md` §2 R1), and
+it is self-enforcing — a player who cannot dig the walls cannot build a
+farm around the node.
 
-Decided: mining camps carry **10–15** renewable resource nodes, and a
-camp's ore is **its own region's tier**, so a camp is a place to get T3
-without a −400 expedition. That makes it the "resource site + conflict
-point in one" that `world.md` §4 already asks for. Non-camp POIs get the
-same treatment later, one renewable node type per POI kind (the owner's
-example: a gem block on a jungle-temple altar).
+Scoped to **mining camps only** in the MVP. Rejected: opening the
+exception to every POI kind at once — the owner's own later idea (a gem
+block on a jungle-temple altar) is exactly the sort of thing that should
+wait until one structure has proven the shape. The long respawn window
+was chosen against the shipped 15–30 min because a handful of nodes at a
+guarded destination is a different object from a vein under every hill: a
+camp should be worth a trip every few sessions, never a rotation.
 
-Open:
-
-- **Mining camps do not exist as a structure yet.** `world.md` §4 mentions
-  them only as a *role* an outpost can have ("e.g. a dwarven mining camp").
-  Someone has to build them — most likely WP13 (world structures), which
-  would then also own their protection footprint.
-- Which POI kinds qualify, and the node count per kind.
-- Whether the depleted-vein placeholder stays visible inside camps (it is
-  good ambience — a worked-out vein that refills) or whether the node
-  simply reappears.
-- The respawn interval inside camps. The shipped 15–30 min was tuned for a
-  world-wide mechanic; for a handful of nodes at a destination it can be
-  much longer.
-- ~~`world.md` §4 currently states the opposite in writing — "ore respawns
-  there like everywhere else, R4".~~ Inverted on 2026-08-08: §4 now says
-  "only there", and points here for the scope.
-
-**Decision:** rule decided; content **open**. Blocks nothing today, but
-WP13 cannot author camps without it.
+Mining camps still have to be **built** — `world.md` §4 had named them
+only as a *role* an outpost can carry. That is WP13's job (structure,
+garrison, protection footprint), and WP34 owns the respawn mechanic that
+runs inside them.
 
 ---
 
 ## C. The housing isles
 
-### C7 — Abyssal Crystal gets a continental deposit below −1000
+### C7 — Abyssal Crystal gets a continental deposit
 
-**Decision:** decided 2026-08-08 → lands in `items_crafting.md` §3.0.1
-(placement table), §3.0.2 (the Grudgesteel sentence) and §10.3 (D14 is
-partly reversed).
+**Decision:** decided 2026-08-08 → **landed in `items_crafting.md`
+§3.0.1** (the reversal and the placement row), with §5, §5.5 and §10 P5
+pulled along and §10.3 D15 recording it.
 
-The crystal is a **base resource**, not a privilege, and the deep band is
-where it belongs thematically. This reverses the decision taken earlier the
-same day (no continental deposit), which had been made to keep §3.0.2's
-claim that Grudgesteel depends on the isle depth ladder literally true.
-That claim is what changes: the isle keeps its own reason to exist through
-C9's exclusive materials instead of by holding the T6 alloy hostage.
+The crystal is a **base resource**, not a privilege. This reverses the
+decision taken earlier
+the same day (no continental deposit), which had been made only to keep
+§3.0.2's claim that Grudgesteel depends on the isle depth ladder
+literally true. That claim is what changed: the isle keeps its own reason
+to exist through C9's exclusive materials instead of by holding the T6
+alloy hostage. It is deliberately the scarcest entry in the placement
+table — what the band sells is volume under pressure, not a giveaway.
 
-Open only as numbers: the band and the `register_ore` scarcity, to be
-authored in the §3.0.1 table alongside the WP25 values. It should be
-genuinely scarce — the deep band's appeal is meant to be volume under
-pressure, not a T6 giveaway at −1010.
+**Caught while folding, and the reason the band is the T5 one rather than
+the deep one**: an earlier draft put it below −1000, which closed the
+ladder into a circle — T6 rock only opens to a Grudgesteel pick, and
+Grudgesteel is made of this crystal, so the 10 % apex-hoard drop would
+have become the tier's only door instead of a bridge. §3.0.1's binding
+rule already answers it: a lead metal lies one band *above* its own
+tier. Abyssal Crystal is no exception to that rule, and the ore node
+carries the `level` of the Emberrock it sits in.
 
 ### C8 — What is actually in an isle's rock?
 
-**This is the open question of group C, and the recommendation contradicts
-the owner's first instinct — deliberately, so it gets decided rather than
-assumed.**
+**Decision:** decided 2026-08-08 → **landed in `world.md` §5.4** — §5.4's
+shape stands (deterministic treasure clusters per purchased step, no ore
+field), the clusters become markedly more generous, and each step's
+clusters are filled in that step's own rock tier.
 
-The owner's goal: an isle should be worth mining ("Mining lohnt sich"), by
-carrying the same base resource distribution as the continent, plus C9's
-exclusives.
+The recommendation contradicted the owner's first instinct on purpose and
+was accepted. The magnitude is what carries it: an isle is 100×100 from
+the seabed at −30 to bedrock, i.e. **~9.7 million nodes**, so continental
+ore density would have put tens of thousands of ore nodes on protected,
+mob-free, PvP-free, travel-free ground — an owner would never mine the
+continent again and the whole group-A danger economy would apply only to
+other people. The finiteness argument does not rescue it: 1.9 g buys a
+supply that outlasts the character. The second argument is the sink's:
+**a gold sink should pay out a known amount**, and an ore field pays out
+whatever the seed felt like.
 
-The problem is magnitude. An isle is a 100×100 build box running from the
-seabed at −30 down to bedrock — call it 970 nodes deep, so **~9.7 million
-nodes**. At the continental quartz density decided in WP25 (`clust_scarcity
-= 8³`, 6 ores per cluster) that is roughly **113,000 quartz nodes** in one
-player's private box. Protected ground (R5), no mobs, no PvP, no depth
-danger, no travel. An owner would never mine the continent again, and the
-entire group-A danger economy would be bypassed by anyone who bought the
-depth ladder.
-
-The finiteness argument does not rescue it: 1.9 g buys a supply that
-outlasts the character.
-
-Options:
-
-- **(a) Keep §5.4's shape, raise its generosity.** The isle keeps
-  *deterministic treasure clusters per purchased step* rather than an ore
-  field, but the clusters are made rich enough that clearing a step is a
-  real payday. Preserves the "treasure hunt, not a second ore economy"
-  decision while satisfying "mining is worth it".
-- **(b) Continental distribution at a fraction of the density** — e.g. a
-  tenth — so the isle is a slow, safe trickle and the continent stays the
-  place to actually supply a profession.
-- **(c) Continental distribution at full density** — the owner's first
-  formulation. Simple and generous, and it makes the isle the primary mine
-  for everyone who owns one.
-- **(d) No base ores at all, only C9's exclusives.** The purest reading of
-  §5.4, and the strongest push back onto the continent — but then the
-  depth ladder's first four steps buy almost nothing.
-
-Recommendation: **(a)**, with the cluster contents scaled to the step's
-tier. It is the smallest change to a decision that was made deliberately
-six weeks of design ago, it keeps the safe/dangerous split that group A
-exists to create, and "a bought step yields a defined, generous haul" is a
-better fit for a **gold sink** than "a bought step yields an ore field",
-because a sink should pay out a known amount.
-
-**Decision:** _open_ — **blocks WP24**.
+Rejected: **continental distribution at full density** (the first
+formulation — makes the isle the primary mine for everyone who owns one);
+**continental distribution at a fraction of the density** (a slow safe
+trickle still bypasses the danger axis, just more slowly); **no base
+materials at all** (the purest reading of §5.4, but then the ladder's
+first four steps buy almost nothing).
 
 ### C9 — One isle-exclusive rare material per depth tier
 
-**Decision:** the direction is decided 2026-08-08; names, numbers and
-effects are open.
+**Decision:** decided 2026-08-08 → **landed in `world.md` §5.4** (six
+materials, one per step, non-renewable, all six placed and only one live)
+and **`items_crafting.md` §6b.8** (the Amplifier's effect and its rules),
+recorded in §10.3 D17.
 
-Decided: each of the six depth steps additionally holds **one rare material
-that exists nowhere else in the world**. Non-renewable (B5/B6 — an isle is
-editable ground, so nothing regrows there), and reserved for special
-recipes: unique endgame items and the highest-tier upgrades. This is what
-gives the 1.9 g depth ladder its own reason to exist once C7 takes the T6
-alloy off its back.
+Each of the six depth steps additionally holds one rare material that
+exists nowhere else in the world. That is what gives the 1.9 g ladder its
+own reason to exist once C7 takes the T6 alloy off its back. Only the
+**Amplifier** does anything in the MVP — once per item, +10 % on all
+prefix and suffix values. The other five are named, textured and placed
+but inert, which is the whole point of placing them now: a later recipe
+package can hang new recipes on stock that is already in the ground,
+without a mapgen change and without regenerating anybody's isle.
 
-The owner's first concrete idea, as the shape to aim for: **a stone that
-amplifies an item's magical properties — applicable once per item, raising
-all prefix and suffix values by 10 %.**
+Two follow-ups were written into the design as **tasks, not open
+questions**: §6.3's cap arithmetic is re-run against the multiplier (the
+same check §6.3 already ran for eight slots — the caps are consumer-side,
+so it should absorb cleanly, but verified rather than assumed), and WP5
+owns the once-per-item marker in item meta.
 
-Open:
-
-- Six names, six textures, six drop items, and which step holds which.
-- Scarcity per step. These are meant to be a find, not a yield.
-- **The amplifier's interaction with the affix system.** It multiplies
-  §6.3's rolled values, so §6.3's cap arithmetic has to be re-run — the
-  same check A3 in `TODO-design-crafting-rework.md` already ran for eight
-  slots. The caps are consumer-side (crit clamps at 30 %, armor at 60 %),
-  so it probably absorbs cleanly, but it must be verified rather than
-  assumed. It also needs a once-per-item marker in item meta, which is
-  WP5's description/roller territory.
-- Whether the remaining five materials get effects now or stay reserved.
-  The owner's framing — "später, wenn wir das Grund-Spiel fertig haben,
-  können wir dort auch weitere Materialien für mehr Rezepte verstecken" —
-  argues for naming all six but only wiring the amplifier in the MVP.
-
-**Decision:** direction decided; content **open**. Blocks WP24's treasure
-clusters and, for the amplifier, WP5.
+**Still open**: the **six names, textures and scarcities**, and which
+step holds which. These are meant to be a find, not a yield. Blocks
+WP24's treasure clusters, nothing else.
 
 ---
 
@@ -349,87 +255,54 @@ clusters and, for the amplifier, WP5.
 
 ### D10 — What is down there below −1000: the roster and the environments
 
-**Decision:** the band's **role** is decided 2026-08-08 → landed in
-`world.md` §4c, cross-referenced from `items_crafting.md` §3.0.1's T6
-row. Decided there: below −1000 is the T6 stratum, reachable only with a
-T6 tool, and it is intended to **carry endgame content** — dangerous
-underground environments, the owner's own example being **lava lakes
-with dangerous creatures around them**, plus a level-appropriate roster.
-**The content is open, and it is this group's only question.**
+**Decision:** decided 2026-08-08 → **landed in `world.md` §4c** (the
+band's role, the lava-lake mechanism, and no apex boss in the MVP) and
+**`items_crafting.md` §5** (no drop layer of its own), recorded in §10.3
+D16.
 
-Two decisions in this file already fence it in: **A4** caps regular mobs
-at 60, so the band's danger has to come from the environment and from
-the **rate of arrival**, not from bigger stats; **A2**'s player-centric
-phase-in is the mechanism that delivers that rate, and it already needs
-a roster of its own.
+**Lava lakes** are a `register_on_generated` VoxelManip pass in
+`grug_mapgen/structures.lua` plus cheap `ore_type = "blob"` lava pockets
+for ambience. Rejected: a **deep biome** — the six strata are stratum
+ores registered last and convert `default:stone` wholesale, so a biome's
+own `node_stone` would be overwritten and only its cave/deco layer would
+survive; **blobs alone** — no shape control, so pockets rather than lakes
+with a surface and a shore; **schematics** — the right tool for anything
+with walls, and still the right tool later, but not for terrain.
 
-Open:
+**No apex boss of its own in the MVP.** §4b's apex bosses are
+deliberately *visible* outdoor carrots — the Mountain Wyrm is seen at
+level 8 and fought at 50 — and a boss behind a T6 pickaxe is the exact
+opposite of that, so it is not the same design object under a different
+sky. Authoring the zone and its boss at once would mean inventing both
+against nothing; the lair/hoard/arena tech is generic and waits.
 
-- **The creature roster.** Which families live down there, and whether
-  they are the A2 phase-in set extended (one roster, one `aoc`
-  accounting) or a second, place-bound set that spawns from the rock the
-  way the cave rows do. Recommendation: **extend A2's set** — the
-  fiction is the same one (`story.md` §1: the servants leak through from
-  below), and a second mechanism would have to re-solve the per-name
-  `aoc` problem A2 exists to route around.
-- **Lava lakes: biome, decoration, ore blob or structure pass?** The
-  four are not equivalent here:
-  - **(a) A deep biome.** Biomes take y bounds and the underground
-    biome is already registered once (`grug_mapgen/biomes.lua`), but the
-    six strata are **stratum ores registered last** and convert
-    `default:stone` wholesale (`items_crafting.md` §3.0.4), so a
-    biome's own stone would be overwritten and only its cave/deco layer
-    would survive. A biome buys less here than it looks like it does.
-  - **(b) An `ore_type = "blob"` pass** of lava inside
-    `group:grug_stratum` rock. Cheapest by far, rides the existing ore
-    stage, and needs no new machinery — but a blob has no shape
-    control, so it makes pockets, not lakes with a surface and a shore.
-  - **(c) A `register_on_generated` VoxelManip pass**, in the same file
-    as the continent mask and the camp platforms
-    (`grug_mapgen/structures.lua`). The only option that can express a
-    *flat* connected lava surface with an air dome over it — i.e. an
-    actual lake you stand at the edge of. Costs a pass on the hot path
-    and a chunk-box fast path to keep it cheap.
-  - **(d) A schematic/structure set** placed by WP13's structure pass,
-    which would also give the band ruins, bridges and lairs rather than
-    only terrain.
+**No gear drops.** The depth pays in raw materials only, which keeps §0's
+promise that the best items come from crafting and hard bosses intact.
 
-  Recommendation: **(c) for the lakes plus (b) for cheap ambience
-  pockets**, and (d) later for anything with walls.
-- **How the band relates to `world.md` §4b's apex bosses.** §4b's stage
-  1 is a *visible* outdoor carrot (the Mountain Wyrm at the outer ring,
-  "you can see it at level 8 and fight it at 50"), which is the exact
-  opposite of a boss nobody can reach without a T6 pick. Open: does the
-  deep band get an apex of its own — the lair/hoard/arena tech already
-  exists and is generic — or does it stay roster-plus-environment, with
-  the bosses left on the surface? Recommendation: **roster-plus-
-  environment for the MVP**, a deep apex as a §4b stage of its own once
-  the band has content at all, so the two are not authored at once.
-- **Whether the band gets its own drop layer.** `items_crafting.md` §5's
-  loot table has a "Depth axis" row that today lists only materials
-  ("cave mobs as per surface tier"). A level-60 roster in a place only a
-  T6 player reaches is the natural home for T6 gear drops, and that is a
-  §5 edit, not a §4c one.
-
-*Lands in*: `world.md` §4c (the environments and the band's content
-role), `biomes_mobs.md` §3/§4 (the mob rows and their spawn parameters),
-`items_crafting.md` §5 (the drop layer, if it gets one).
-**Decision:** role decided 2026-08-08; content **open**. Blocks the
-depth WP's content half, and WP13 if the lakes turn out to be structures.
+**Still open**: the **servant roster** below −1000 — which families live
+down there, their models and their drop tables. A2 already decided that
+they are the pulse's own set (one mechanism, one accounting) rather than
+a second place-bound spawn source, and that the shallow half of the pulse
+reuses existing mobs, so this is content on top of a shipped mechanic
+rather than a blocker underneath it.
 
 ---
 
 ## Status summary
 
-| # | Question | Blocks |
+| # | Question | State |
 |---|---|---|
-| A1 | ~~Depth level curve~~ — decided 2026-08-08 (3 levels per 50 nodes, `max()` model unchanged) | — |
-| A2 | Phase-in spawn pressure: the numbers, the placement rules, the roster | **the depth WP** |
-| A3 | How much to raise the surface spawn rate | the depth WP |
-| A4 | ~~Anything past level 60?~~ — decided 2026-08-08 (no; depth buys frequency, not stats) | — |
-| B5 | ~~Ore respawn removed~~ — decided 2026-08-08 | — |
-| B6 | Renewable nodes: which POI kinds, counts, intervals — and mining camps do not exist yet | WP13 |
-| C7 | ~~Abyssal Crystal continental below −1000~~ — decided 2026-08-08; scarcity numbers open | WP26 (reads §3.0.2) |
-| C8 | What is in an isle's rock — the recommendation contradicts the first instinct on purpose | **WP24** |
-| C9 | Six isle-exclusive materials; the affix amplifier's cap re-check | **WP24**, WP5 |
-| D10 | The T6 band's content — roster, lava lakes, relation to the apex bosses (the band's **role** is decided 2026-08-08 → `world.md` §4c) | the depth WP, WP13 |
+| A1 | Depth level curve | ~~open~~ decided 2026-08-08 → `combat_stats.md` §3 |
+| A2 | Phase-in spawn pressure | ~~open~~ decided 2026-08-08 → `biomes_mobs.md` §4.1; **placement geometry + servant roster still open** |
+| A3 | Surface spawn rate | ~~open~~ decided 2026-08-08 → `biomes_mobs.md` §4 |
+| A4 | Anything past level 60? | ~~open~~ decided 2026-08-08 (no; depth buys frequency, not stats) |
+| B5 | Ore respawn removed | ~~open~~ decided 2026-08-08 → `world.md` §2 R4 |
+| B6 | Renewable nodes: scope, counts, interval | ~~open~~ decided 2026-08-08 → `world.md` §2 R4 / §4 (camps only; the structure is WP13's) |
+| C7 | Abyssal Crystal continental below −1000 | ~~open~~ decided 2026-08-08 → `items_crafting.md` §3.0.1 |
+| C8 | What is in an isle's rock | ~~open~~ decided 2026-08-08 → `world.md` §5.4 (generous clusters, no ore field) |
+| C9 | Six isle-exclusive materials + the Amplifier | ~~open~~ decided 2026-08-08 → `world.md` §5.4, `items_crafting.md` §6b.8; **the six names/textures/scarcities still open** |
+| D10 | The T6 band's content | ~~open~~ decided 2026-08-08 → `world.md` §4c, `items_crafting.md` §5; **the servant roster still open** |
+
+**Implementation**: `BACKLOG.md` **WP34 — Depth economy** carries the
+mechanics half of A2/A3/B5/B6/C7/D10; WP13 owns the mining camps as a
+structure and WP24 the isle side of C8/C9.

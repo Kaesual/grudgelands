@@ -546,32 +546,48 @@ arithmetic, the density model and the calibration knobs (reach for
 `chance` before `aoc`) are the audit trail in
 **[docs/research/wp6_spawn_budget.md](../research/wp6_spawn_budget.md)**.
 
+**Surface density raised by 0.75 (decided 2026-08-08).** The overworld
+is to feel a little busier, so **every surface row's `chance` is
+multiplied by 0.75** — one third more spawn attempts — and the values in
+the table below are already the multiplied ones (the WP6 derivation
+above is what they were multiplied from). **`aoc` is untouched on
+purpose**: it is the ceiling the budget audit calibrated against the
+100-player target, it counts per entity NAME, and it therefore still
+bounds the outcome — more attempts fill the same budget faster, they do
+not raise it, so no cell's peak Σaoc moves. Two kinds of row are
+excluded, and both exclusions follow from the mechanism rather than from
+taste: the rows that also carry `underground` (Giant Spider, Stone/Mesa
+Golem) are *one* row for surface and cave, so raising them would raise
+cave pressure, which the phase-in pulse of §4.1 now owns; and the Kraken
+Guard is a deterrent, not density. The budget audit is re-run against
+the new values once the change ships.
+
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
-| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler) | 20 | 1500 | 5 | min 10 | core, inner |
-| Rabbit/Hare | settled tops **+ the filler tops of its own continent** — Rabbit: forest litter, gravel, snowblock, mud, sand; Hare: mud, sand (no mesa_clay, §3.1 "the badlands carry no critter"). Split by a `territory_at` check | 20 | 1800 | 3 | min 10 | core, inner |
-| Zombie | settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1600 | 4 | max 5 (blight: any) | core, inner, war_coast |
-| Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1500 | 5 | any | inner, outer |
-| Hyena | dry grass, mesa_clay | 20 | 1500 | 5 | any | inner, outer |
-| Jungle Lynx (Raptor slot) | rainforest litter | 20 | 1500 | 5 | min 10 | inner, outer |
-| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter** (Bear) / bone litter **+ blight_dirt** (Plaguehide) | 20 | 2800 | 2 | min 10 | outer, coast |
-| Jungle Ape | rainforest litter | 20 | 2800 | 2 | min 10 | outer, coast |
+| Boar (all tints) | all six settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (core/inner filler) | 20 | 1125 | 5 | min 10 | core, inner |
+| Rabbit/Hare | settled tops **+ the filler tops of its own continent** — Rabbit: forest litter, gravel, snowblock, mud, sand; Hare: mud, sand (no mesa_clay, §3.1 "the badlands carry no critter"). Split by a `territory_at` check | 20 | 1350 | 3 | min 10 | core, inner |
+| Zombie | settled tops **+ forest litter, mesa_clay, gravel, snowblock, mud, sand** (night filler) | 20 | 1200 | 4 | max 5 (blight: any) | core, inner, war_coast |
+| Wolf/Blightfang | coniferous litter, forest litter, bone litter, grass | 20 | 1125 | 5 | any | inner, outer |
+| Hyena | dry grass, mesa_clay | 20 | 1125 | 5 | any | inner, outer |
+| Jungle Lynx (Raptor slot) | rainforest litter | 20 | 1125 | 5 | min 10 | inner, outer |
+| Bear/Plaguehide | forest litter **+ silver litter, coniferous litter** (Bear) / bone litter **+ blight_dirt** (Plaguehide) | 20 | 2100 | 2 | min 10 | outer, coast |
+| Jungle Ape | rainforest litter | 20 | 2100 | 2 | min 10 | outer, coast |
 | Giant Spider (all) | forest litter **+ silver litter, coniferous litter** (Giant) / bone litter **+ blight_dirt** (Pale) / rainforest litter (Jungle) | 20 | 1800 | 4 | max 5 | outer, coast, underground |
-| Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1800 | 3 | min 10 | inner, outer |
-| Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 2000 | 3 | max 5 | outer, war_coast |
-| Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 2000 | 3 | max 5 | war_coast |
-| Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 2000 | 3 | min 10 | outer, coast |
+| Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry grass | 20 | 1350 | 3 | min 10 | inner, outer |
+| Skeleton Archer | bone litter, blight_dirt, settled tops (war coast) | 20 | 1500 | 3 | max 5 | outer, war_coast |
+| Skeleton Raider | **every land top** + sand (war_coast-exclusive) | 20 | 1500 | 3 | max 5 | war_coast |
+| Crag Eagle/Vulture | gravel, **snowblock**, mesa_clay | 20 | 1500 | 3 | min 10 | outer, coast |
 | Stone/Mesa Golem (elite) | gravel, **snowblock**, stone, mesa_clay | 30 | 9000 | 1 | any | outer, coast, underground |
-| Ram | gravel, **snowblock** | 20 | 2200 | 2 | min 10 | outer |
-| Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer, coast |
-| Serpent | rainforest litter, mud | 20 | 1800 | 4 | min 10 | outer, coast |
-| Crocodile | mud (only) | 20 | 1800 | 3 | any | outer |
-| Bog Ooze | mud | 20 | 2000 | 3 | any | outer |
-| Parrot | rainforest litter | 20 | 2500 | 2 | min 10 | core, inner |
-| Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 2500 | 2 | min 10 | war_coast |
-| Shore Crab — *deferred (§8.3)* | sand | 20 | 2200 | 3 | any | strait, war_coast, coast |
-| Gull | sand | 20 | 2500 | 2 | min 10 | strait, war_coast, coast, **outer** |
-| Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 8000 | 1 | any | coast |
+| Ram | gravel, **snowblock** | 20 | 1650 | 2 | min 10 | outer |
+| Panther | rainforest litter | 20 | 1350 | 4 | max 5 | outer, coast |
+| Serpent | rainforest litter, mud | 20 | 1350 | 4 | min 10 | outer, coast |
+| Crocodile | mud (only) | 20 | 1350 | 3 | any | outer |
+| Bog Ooze | mud | 20 | 1500 | 3 | any | outer |
+| Parrot | rainforest litter | 20 | 1875 | 2 | min 10 | core, inner |
+| Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
+| Shore Crab — *deferred (§8.3)* | sand | 20 | 1650 | 3 | any | strait, war_coast, coast |
+| Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
+| Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
 | Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 120–300 s, dormant catch-up | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
@@ -583,11 +599,11 @@ Row notes:
   water half of the verb is delivered by `floats` instead — the croc
   spawns on the mud bank and drifts into the pool.
 - The **Skeleton Raider** reuses the Skeleton Archer's numbers
-  (20 / 2000 / 3, night); it is the war-coast family, so its
+  (20 / 1500 / 3, night); it is the war-coast family, so its
   `war_coast`-only zone does all the gating and it needs no extra
   check. Its table is the skeleton table **plus heavy cloth 1/3**.
 - **Parrot** and **Carrion Crow** are priced like the Gull, the other
-  "flees" bird: 20 / 2500 / 2. Neither creates a new peak.
+  "flees" bird: 20 / 1875 / 2. Neither creates a new peak.
 
 Performance justification (AGENTS.md rules, 100-player scale):
 - aoc caps are per mob NAME in the spawn area, so co-located players
@@ -603,6 +619,83 @@ Performance justification (AGENTS.md rules, 100-player scale):
 - The density target is delivered by SPAWN RELIABILITY (every surface
   chunk has whitelisted nodes) rather than raw counts; WP6's
   pathfinding/perf pass remains the blocker before raising any aoc.
+
+### 4.1 The depth phase-in pulse (decided 2026-08-08)
+
+Depth is a danger axis, not only a material axis (`combat_stats.md` §3,
+`world.md` §4c). Because regular mobs cap at level 60, everything past
+that cap has to be bought with **frequency**: a trickle that never lets
+a miner finish clearing the room, so deep mining happens under permanent
+pressure. This section owns that trickle.
+
+**Mechanism: a player-centric pulse in a throttled
+`register_globalstep`, never an ABM.** The reason belongs here, because
+it is the constraint that rules out the obvious answer and it will be
+re-discovered otherwise: `mobs:spawn` registers a **static** ABM whose
+`chance` and `active_object_count` are fixed at registration time, and
+**`aoc` counts per entity NAME inside a 128-node sphere, shared by every
+row of that name** (see the note above §4's table). A second, deeper row
+for an existing mob therefore cannot carry a larger budget than the
+shallow one, and a rate that varies continuously *within* a band is not
+expressible in the ABM model at all. A pulse also scales with player
+presence instead of with how much air the mapgen happened to carve,
+which is the right cost model at the 100-player target.
+
+**The arrival curve** — one formula, safe by construction:
+
+`arrivals_per_minute = min(R_MAX, max(0, (−y − Y0) · R_MAX / SPAN))`
+with **Y0 = 300**, **R_MAX = 6/min**, **SPAN = 1700**.
+
+| Depth | Arrivals/min |
+|---|---|
+| above −300 | 0 — the pulse does not exist here |
+| −1000 | ~2.5 |
+| −1500 | ~4.2 |
+| −2000 and below | 6 (the ceiling) |
+
+The `min()` is what makes the formula hold below −2000 instead of
+growing without bound; the `max(0, …)` is what keeps the overworld free
+of it. These are starting values, calibrated in a runtime test the way
+`docs/research/wp6_spawn_budget.md` calibrated the ABM rows.
+
+**Concurrent cap: 6 phase-in mobs per player.** This is the real safety
+valve and the number the 100-player target actually cares about — it is
+checked first in the runtime test. A modest concurrent cap with a high
+arrival rate is also far cheaper than a swarm, and it is the shape the
+design wants anyway: pressure, not a wall of bodies.
+
+**Light-independent, and it may place a mob inside a sealed room.**
+Wherever the pulse is active it ignores light entirely, and it is
+allowed to put an arrival into a chamber the player dug out and walled
+up. That is deliberate and it is the whole mechanic: dropping `max_light`
+alone would only kill the *lit* cave, never the 3×3 bunker, because a
+sealed room offers no spawn position at all — "there are no safe places
+down here" has to be literally true or it is decoration. Every arrival
+carries a **~2 s telegraph** (particle burst + sound) before it exists,
+on the pattern of the elite wind-up of `combat_stats.md` §3, so the
+player is warned by the world rather than ambushed by a rule.
+
+**The roster is staged, and it needs no new mob to ship:**
+
+- **−300 … −1000: the existing cave families** (§3.1's cave note —
+  Zombie, Giant Spider, Stone Golem), levelled by `mob_level_at` like
+  everything else. The fiction reads as the local dead being drawn
+  upward from below rather than as an invasion, which is exactly what
+  this band is.
+- **below −1000: the deep band's own servants** (`story.md` §1 — the
+  ancient thing below stretches its hands up; these are its household,
+  not local wildlife). Their families are catalogued in §3 as they are
+  authored.
+
+The consequence is worth stating: because the shallow half reuses rows
+that already exist, **the depth work can ship without a single new
+mob**, and the servant roster becomes content that lands on top rather
+than a blocker underneath.
+
+**The ABM cave rows are untouched.** They stay exactly as §4's table
+registers them and remain the ambient cave life; the pulse is a second,
+independent source layered over them, and it is the only one that scales
+with depth.
 
 ## 5. Per-race woods & build sets (LotT pattern)
 

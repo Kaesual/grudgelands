@@ -183,6 +183,13 @@ the outermost surface band (60) meets the depth cap exactly at −1000.
 digging, portals only.) The radial field shipped with WP18; WP6's mobs
 and guards read it.
 
+**Depth buys frequency, not stats.** Past the level-60 cap the axis
+keeps going as *spawn pressure*: a player-centric arrival pulse whose
+rate grows with depth, so deep mining happens under permanent
+interruption rather than against bigger numbers. That is a spawn rule
+and it lives in `biomes_mobs.md` §4.1 — curve, cap and roster in one
+place.
+
 ## 4. Threat (aggro) system
 
 A core combat pillar — mobs choose targets by **threat**, not proximity:
