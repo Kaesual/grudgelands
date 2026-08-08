@@ -348,14 +348,24 @@ local ORB_BACKDROP_ALPHA = 150
 -- cooldown-wear path above is so stingy and why the GCD is not displayed at all
 -- (D2/2). Without it, dragging any item would rewrite four stacks.
 --
--- Shape: "<version>|<source image>", or the empty string for "no skin" (which
--- is also what an untouched stack answers, so a weaponless character never
--- writes anything). The source image is in the token rather than just the item
--- NAME because that is what the composed strings actually depend on -- a
--- per-stack image override on the weapon (a WP5 affix) must not read as
--- unchanged. SKIN_VERSION is bumped whenever the composition below changes, or
--- an already-granted stack would keep the old look forever.
-local SKIN_VERSION = 1
+-- Shape: "<version>|<colour>|<inventory source>|<wield source>", or the empty
+-- string for "no skin" (which is also what an untouched stack answers, so a
+-- weaponless character never writes anything).
+--
+-- EVERY input of the composition below is in the token, and that is the whole
+-- rule: the source images rather than just the item NAME (a per-stack image
+-- override on the weapon -- a WP5 affix -- must not read as unchanged), and
+-- def.color, because it lives in kits.lua, i.e. in a different file from the
+-- SKIN_VERSION a colour edit would otherwise have to remember to bump. Without
+-- it, changing an ability's colour left every already-granted stack tinted the
+-- old way until the player next swapped weapons -- indefinitely, for a
+-- character that keeps one sword.
+--
+-- SKIN_VERSION stays for what the token cannot see: a change to the
+-- composition ITSELF (the modifier chain, the backdrop alpha, the orb
+-- texture). Bump it there, or an already-granted stack keeps the old look
+-- forever.
+local SKIN_VERSION = 2
 local SKIN_TOKEN_KEY = "grug_skin"
 
 -- The equipment list behind each ability slot. This is grug_inventory's
@@ -365,13 +375,56 @@ local SKIN_TOKEN_KEY = "grug_skin"
 -- silent mismatch here would look exactly like "the skin never updates".
 local SLOT_OF_LIST = {grug_weapon = "weapon", grug_offhand = "offhand"}
 
--- Source image of what is in one hand slot, or "" when there is nothing to wear
--- (empty slot, or an item that has no inventory image of its own -- a node
--- item). Mirrors the engine's own resolution order: stack meta wins over the
--- definition (src/inventory.cpp:258-266). `inventory_image` in a DEFINITION may
--- be an item image definition table rather than a string
--- (lua_api.md:10388-10392); the meta override is always a plain name.
-local function slot_image(player, slot)
+-- The equipment lists that provably CANNOT change an ability skin. Named one by
+-- one on purpose: "not a hand list" and "not a list I have heard of" are
+-- different statements, and only the first one may skip the pass (see the
+-- equipment-change hook below).
+local SKIN_IRRELEVANT_LIST = {
+	grug_head = true,
+	grug_chest = true,
+	grug_legs = true,
+	grug_feet = true,
+	grug_trinket1 = true,
+	grug_trinket2 = true,
+}
+
+-- Lists sync_kit must never WRITE: an equipment list belongs to
+-- grug_inventory's cache-drop/notify contract (equipment.lua:56-78), and a bare
+-- inv:set_stack there would leave the weapon cache reporting an item that is
+-- gone. Seeded from the two tables above and completed from the real slot table
+-- at mods_loaded, so a slot added by a later WP is covered without an edit
+-- here.
+local equipment_list = {}
+for list in pairs(SLOT_OF_LIST) do
+	equipment_list[list] = true
+end
+for list in pairs(SKIN_IRRELEVANT_LIST) do
+	equipment_list[list] = true
+end
+
+-- `inventory_image`/`wield_image` in a DEFINITION may be an item image
+-- definition table rather than a string (lua_api.md:10388-10392); the meta
+-- override is always a plain name.
+local function def_image(img)
+	if type(img) == "table" then
+		return img.name or ""
+	end
+	return img or ""
+end
+
+-- The two source images of what is in one hand slot: the one the hotbar icon is
+-- composed from and the one that goes into the player's hand. Both "" when
+-- there is nothing to wear (an empty slot, or an item with no inventory image
+-- -- a node item). Mirrors the engine's own resolution order: stack meta wins
+-- over the definition (src/inventory.cpp:258-295).
+--
+-- The wield source is asked for SEPARATELY rather than reusing the inventory
+-- image: an item may define its own `wield_image`, and the engine prefers it
+-- over everything else for the extruded in-hand mesh
+-- (src/client/wieldmesh.cpp:454-493). No shipped weapon defines one today --
+-- taking the inventory image is correct for every one of them -- but the day
+-- one does, the ability item would have shown the wrong art in hand.
+local function slot_sources(player, slot)
 	local stack
 	if slot == "offhand" then
 		stack = grug_core.get_equipped_offhand(player)
@@ -379,17 +432,27 @@ local function slot_image(player, slot)
 		stack = grug_core.get_equipped_weapon(player)
 	end
 	if not stack or stack:is_empty() then
-		return ""
+		return "", ""
 	end
-	local img = stack:get_meta():get_string("inventory_image")
-	if img == "" then
-		local def = core.registered_items[stack:get_name()]
-		img = def and def.inventory_image or ""
-		if type(img) == "table" then
-			img = img.name or ""
-		end
+	local def = core.registered_items[stack:get_name()]
+	local meta = stack:get_meta()
+	local inv_src = meta:get_string("inventory_image")
+	if inv_src == "" then
+		inv_src = def_image(def and def.inventory_image)
 	end
-	return img
+	if inv_src == "" then
+		-- Nothing to wear: an item the inventory itself cannot draw has no art
+		-- for us to borrow either, so the ability keeps its orb (C2).
+		return "", ""
+	end
+	local wield_src = meta:get_string("wield_image")
+	if wield_src == "" then
+		wield_src = def_image(def and def.wield_image)
+	end
+	if wield_src == "" then
+		wield_src = inv_src
+	end
+	return inv_src, wield_src
 end
 
 -- THE one place a texture-modifier string is composed (D2/5). These strings are
@@ -407,19 +470,80 @@ end
 -- composes correctly as a group. Backslash escaping (lua_api.md:698-708) is
 -- required only by modifiers that take a texture NAME as an argument
 -- ([combine, [mask, [lowpart); we use none of those.
-local function skin_images(color, src)
-	if src == "" then
-		return nil, nil
+
+-- Would this source survive that splitter? Three inputs do not, and the source
+-- is NOT ours: it is a per-stack override, i.e. exactly the key WP5's affix
+-- roller is planned to write. Verified against the engine
+-- (src/client/imagesource.cpp:1819-1866, the backwards scan):
+--   * an unbalanced "(" -> the scan reaches a "(" at balance 0 and returns NULL
+--     ("extranous '('"),
+--   * an unbalanced ")" -> the scan ends with balance > 0 and returns NULL
+--     ("missing matching '('"),
+--   * a source ending in "\" -> the scan skips any character whose predecessor
+--     is a backslash, so it never sees the ")" we appended, and falls into the
+--     first case.
+-- All three yield an untextured icon and a client-side error with NOTHING in
+-- the server log, so the check is what makes the failure diagnosable at all.
+local function composable(src)
+	local bal = 0
+	for i = #src, 1, -1 do
+		-- The splitter's escape rule, verbatim. (i > 1: the character before
+		-- src[1] is our own "(", never a backslash.)
+		if not (i > 1 and src:sub(i - 1, i - 1) == "\\") then
+			local c = src:sub(i, i)
+			if c == ")" then
+				bal = bal + 1
+			elseif c == "(" then
+				if bal == 0 then
+					return false
+				end
+				bal = bal - 1
+			end
+		end
 	end
-	return ORB_TEXTURE .. "^[multiply:" .. color ..
-		"^[opacity:" .. ORB_BACKDROP_ALPHA .. "^(" .. src .. ")", src
+	return bal == 0 and src:sub(-1) ~= "\\"
 end
 
-local function skin_token(src)
-	if src == "" then
+-- One log line per distinct bad source per server run: the token compare would
+-- already keep it rare, but a WP5 re-roll loop must not be able to fill the
+-- log. Bounded by the number of distinct broken strings, not by time.
+local warned_source = {}
+
+local function reject_source(src, which)
+	if not warned_source[src] then
+		warned_source[src] = true
+		core.log("error", "[grug_abilities] equipped item's " .. which ..
+			" image cannot be composed into an ability skin: \"" .. src ..
+			"\" (unbalanced parentheses, or a trailing backslash that would" ..
+			" escape the closing one). The ability items keep their orb icon.")
+	end
+	return nil, nil
+end
+
+local function skin_images(color, src)
+	if src.inv == "" then
+		return nil, nil
+	end
+	-- Refuse the WHOLE skin when either source is bad, not just the broken half:
+	-- the orb is a complete, correct look (C2), a sword icon over an untextured
+	-- hand is not. The wield source is emitted UNWRAPPED and therefore only
+	-- needs the two balance rules -- it gets the trailing-backslash rule too,
+	-- because one predicate slightly too strict beats two that can drift.
+	if not composable(src.inv) then
+		return reject_source(src.inv, "inventory")
+	end
+	if not composable(src.wield) then
+		return reject_source(src.wield, "wield")
+	end
+	return ORB_TEXTURE .. "^[multiply:" .. color ..
+		"^[opacity:" .. ORB_BACKDROP_ALPHA .. "^(" .. src.inv .. ")", src.wield
+end
+
+local function skin_token(color, src)
+	if src.inv == "" then
 		return ""
 	end
-	return SKIN_VERSION .. "|" .. src
+	return SKIN_VERSION .. "|" .. color .. "|" .. src.inv .. "|" .. src.wield
 end
 
 -- Skin one ability stack IN PLACE; returns true only when something actually
@@ -429,7 +553,7 @@ end
 -- and stays whatever it was, and so does the elf `range` override.
 local function apply_skin(stack, def, src)
 	local meta = stack:get_meta()
-	local token = skin_token(src)
+	local token = skin_token(def.color, src)
 	if meta:get_string(SKIN_TOKEN_KEY) == token then
 		return false
 	end
@@ -443,13 +567,15 @@ local function apply_skin(stack, def, src)
 end
 
 -- Resolve each hand at most once per pass, and only when a stack actually asks
--- for it.
+-- for it. The entry is the {inv, wield} source pair, so one hand is read once
+-- even though two images come out of it.
 local function skin_source_cache(player)
 	local cache = {}
 	return function(def)
 		local src = cache[def.slot]
 		if not src then
-			src = slot_image(player, def.slot)
+			local inv_src, wield_src = slot_sources(player, def.slot)
+			src = {inv = inv_src, wield = wield_src}
 			cache[def.slot] = src
 		end
 		return src
@@ -483,26 +609,31 @@ end
 -- both are the token compare's job.
 --
 -- `listname` is the one equipment list that changed, or nil for "assume
--- everything". An armor or trinket list cannot change any ability skin, so it
--- returns before touching the inventory at all; a list we do NOT recognise
--- (nil, or a slot added later) falls through to the full pass, because being
--- slow is recoverable and being silently wrong is not.
+-- everything".
+--
+-- Three cases, and the third one is the reason this is not one lookup: a HAND
+-- list syncs that hand only; a list that provably cannot change a skin (armor,
+-- trinkets -- SKIN_IRRELEVANT_LIST) returns before touching the inventory at
+-- all; and ANY other name -- nil, a renamed list, a slot a later WP added --
+-- falls through to the full pass. Being slow is recoverable, being silently
+-- wrong is not: a skip on an unknown name is 0 writes, i.e. the skins stop
+-- following the weapon with nothing but one load-time log line to say so.
+-- The full pass costs one walk of `main` with a token compare per ability
+-- stack, and writes only what actually changed.
 grug_core.register_on_equipment_change(function(player, listname)
-	if listname then
-		local slot = SLOT_OF_LIST[listname]
-		if not slot then
-			return
-		end
-		sync_skins(player, slot)
-	else
-		sync_skins(player, nil)
+	if listname and SKIN_IRRELEVANT_LIST[listname] then
+		return
 	end
+	-- nil (or an unrecognised name) -> nil -> both hands.
+	sync_skins(player, listname and SLOT_OF_LIST[listname])
 end)
 
 -- The list names above are a string contract with a mod we do not depend on.
--- If grug_inventory ever renames a slot list, the skins would simply stop
--- following the weapon, with nothing in the log to say why -- so check it once,
--- after every mod has registered its slots.
+-- The hook is written so that getting them wrong costs speed rather than
+-- correctness, but a stale name still means every equip pays for a full pass --
+-- so read the real slot table once, after every mod has registered its slots,
+-- and say so. This pass also completes `equipment_list`, i.e. the set sync_kit
+-- refuses to write.
 core.register_on_mods_loaded(function()
 	if not core.global_exists("grug_inventory")
 			or not grug_inventory.equipment_slots then
@@ -510,15 +641,22 @@ core.register_on_mods_loaded(function()
 	end
 	local seen = {}
 	for _, entry in ipairs(grug_inventory.equipment_slots) do
+		equipment_list[entry.list] = true
 		if SLOT_OF_LIST[entry.list] then
 			seen[SLOT_OF_LIST[entry.list]] = true
+		elseif not SKIN_IRRELEVANT_LIST[entry.list] then
+			core.log("warning", "[grug_abilities] equipment list \"" ..
+				entry.list .. "\" is in neither skin table -- correct, but every" ..
+				" change to it now costs a full skin pass. Add it to" ..
+				" SLOT_OF_LIST if it is a hand slot, to SKIN_IRRELEVANT_LIST" ..
+				" if it cannot change an ability skin.")
 		end
 	end
 	for list, slot in pairs(SLOT_OF_LIST) do
 		if not seen[slot] then
 			core.log("error", "[grug_abilities] no equipment slot uses list \"" ..
-				list .. "\" -- ability skins will not follow the " .. slot ..
-				" slot")
+				list .. "\" -- ability skins now follow the " .. slot ..
+				" slot only via the full pass on every equipment change")
 		end
 	end
 end)
@@ -555,42 +693,53 @@ local function sync_kit(player)
 	local inv = player:get_inventory()
 	local have = {}
 	for listname, list in pairs(inv:get_lists()) do
-		for i, stack in ipairs(list) do
-			local def = item_defs[stack:get_name()]
-			if def then
-				-- Only granted items in "main" count as present:
-				-- foreign-class items, talent-gated items (not granted
-				-- yet), duplicates and strays in other lists (bags from
-				-- old saves) are removed; own-class strays re-granted
-				-- into main below.
-				if not in_kit(def, class) or def.talent_gated or
-						listname ~= "main" or have[stack:get_name()] then
-					inv:set_stack(listname, i, ItemStack(""))
-				else
-					have[stack:get_name()] = true
-					local changed = false
-					if stack:get_wear() ~= 0 then
-						stack:set_wear(0)
-						changed = true
-					end
-					local meta = stack:get_meta()
-					local desired = range_bonus > 0
-						and (def.range or 4) + range_bonus or 0
-					if meta:get_float("range") ~= desired then
-						if desired > 0 then
-							meta:set_float("range", desired)
-						else
-							meta:set_string("range", "") -- remove override
+		-- Equipment lists are skipped ENTIRELY, purge included: writing one
+		-- bypasses grug_inventory's cache-drop/notify contract
+		-- (equipment.lua:56-78), which is the one rule T5 asks of every writer,
+		-- and this loop is the only writer in the game that could break it. No
+		-- ability item can reach such a list either -- the equip gate refuses
+		-- anything without the slot's group and the allow callback above refuses
+		-- moving an ability item out of "main" -- so nothing is lost by not
+		-- looking. Closing it by NOT writing rather than by announcing the write
+		-- is what keeps grug_abilities free of a dependency on grug_inventory.
+		if not equipment_list[listname] then
+			for i, stack in ipairs(list) do
+				local def = item_defs[stack:get_name()]
+				if def then
+					-- Only granted items in "main" count as present:
+					-- foreign-class items, talent-gated items (not granted
+					-- yet), duplicates and strays in other lists (bags from
+					-- old saves) are removed; own-class strays re-granted
+					-- into main below.
+					if not in_kit(def, class) or def.talent_gated or
+							listname ~= "main" or have[stack:get_name()] then
+						inv:set_stack(listname, i, ItemStack(""))
+					else
+						have[stack:get_name()] = true
+						local changed = false
+						if stack:get_wear() ~= 0 then
+							stack:set_wear(0)
+							changed = true
 						end
-						changed = true
-					end
-					-- The skin, same discipline as the range override above:
-					-- compare first, write once, or not at all.
-					if apply_skin(stack, def, source_of(def)) then
-						changed = true
-					end
-					if changed then
-						inv:set_stack(listname, i, stack)
+						local meta = stack:get_meta()
+						local desired = range_bonus > 0
+							and (def.range or 4) + range_bonus or 0
+						if meta:get_float("range") ~= desired then
+							if desired > 0 then
+								meta:set_float("range", desired)
+							else
+								meta:set_string("range", "") -- remove override
+							end
+							changed = true
+						end
+						-- The skin, same discipline as the range override
+						-- above: compare first, write once, or not at all.
+						if apply_skin(stack, def, source_of(def)) then
+							changed = true
+						end
+						if changed then
+							inv:set_stack(listname, i, stack)
+						end
 					end
 				end
 			end

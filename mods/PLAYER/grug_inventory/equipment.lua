@@ -100,6 +100,8 @@ end)
 
 local ARMOR_CLASS_NAME = {"cloth", "leather", "metal"}
 local WARN_INTERVAL = 2 -- seconds
+-- ... and at most this many DIFFERENT refusals inside one such window.
+local WARN_BURST = 2
 local WARN_COLOR = "#ff9955"
 
 -- The allow callback fires repeatedly while a stack is dragged around, so the
@@ -109,20 +111,37 @@ local WARN_COLOR = "#ff9955"
 -- whatever WP5 adds), not one budget per rule: a drag is a single gesture, and
 -- per-rule budgets would just spam at N times the rate the moment the stack
 -- crosses two slots on its way.
-local last_warn = {}
+--
+-- But a single channel keyed on TIME alone can swallow a refusal whole: an
+-- armor-rank refusal followed within 2 s by a hands refusal used to produce
+-- zero messages, and a silent refusal is strictly worse than a bare one (B4
+-- makes "the refusal explains itself" a design requirement). So the channel
+-- remembers WHICH refusals it already sent in the current window and lets a
+-- different one through -- up to WARN_BURST of them, because two rules refusing
+-- one gesture is a gesture, and a third distinct reason inside 2 s is spam.
+--
+-- The window is anchored at the first message and is NOT pushed forward by a
+-- throttled attempt, so a held drag still ends up at one burst per 2 s.
+local last_warn = {} -- player name -> {at = mono_time, sent = {reason}, n}
 
--- Returns the player name exactly once per WARN_INTERVAL and nil in between,
--- marking the send as it does so. Callers build their message only AFTER this
--- returns a name: the class/def lookups behind these messages have no business
--- running on every frame of a drag.
-local function claim_warn(player)
+-- Returns the player name when this exact refusal may be sent, nil otherwise,
+-- marking the send as it does so. `reason` is a cheap identity of the MESSAGE
+-- (rule plus the item names it names), not of the rule: callers build the
+-- message text only AFTER this returns a name, because the description lookups
+-- behind these messages have no business running on every frame of a drag.
+local function claim_warn(player, reason)
 	local name = player:get_player_name()
 	local now = grug_core.mono_time()
-	local last = last_warn[name]
-	if last and now - last < WARN_INTERVAL then
+	local rec = last_warn[name]
+	if not rec or now - rec.at >= WARN_INTERVAL then
+		last_warn[name] = {at = now, sent = {[reason] = true}, n = 1}
+		return name
+	end
+	if rec.sent[reason] or rec.n >= WARN_BURST then
 		return nil
 	end
-	last_warn[name] = now
+	rec.sent[reason] = true
+	rec.n = rec.n + 1
 	return name
 end
 
@@ -135,8 +154,11 @@ local function piece_name(stack)
 	return (desc:gsub("\n.*", ""))
 end
 
+-- The message text is the class name plus the armor class, and a character's
+-- class cannot change inside one throttle window -- so the rank alone is a
+-- faithful identity for it, and a cheap one.
 local function warn_armor_class(player, rank)
-	local name = claim_warn(player)
+	local name = claim_warn(player, "armor:" .. rank)
 	if not name then
 		return
 	end
@@ -149,9 +171,9 @@ end
 --
 -- The two-handed rule (combat_stats.md §7, weapon-slot design B4).
 --
--- Two rules, one symmetry: a two-handed weapon needs an empty offhand, and the
--- offhand needs the weapon slot empty or one-handed. Both are the same
--- statement about the same pair of hands, so both live in the one
+-- One rule, one sentence: two occupied hands must add up to at most two. That
+-- covers "a two-handed weapon needs an empty offhand" and "the offhand needs
+-- the weapon slot empty or one-handed" at once, so both live in the one
 -- group-filtered allow_put below rather than in two places that could drift.
 --
 -- REFUSAL, not repair: the alternative shape -- let the equip through and clear
@@ -162,12 +184,12 @@ end
 -- moves, and refusing is the only shape that can explain itself at the moment
 -- the player asks for the thing.
 --
--- WHY THE MESSAGE SPELLS OUT THE TORCH: with this rule live, carrying a light
--- source costs a greataxe or staff user their weapon (§7 puts the moving light
--- radius in the offhand). §7 wants that to be a decision, not a surprise, so a
--- bare "you cannot do that" would be a bug in the design, not just in the UX.
--- grug_gear says the same thing a second time in the item description, for
--- players who never hit the refusal at all.
+-- WHY THE MESSAGE SPELLS OUT THE TORCH (WP14): with this rule live, carrying
+-- a light source costs a greataxe or staff user their weapon (§7 puts the
+-- moving light radius in the offhand). §7 wants that to be a decision, not a
+-- surprise, so a bare "you cannot do that" would be a bug in the design, not
+-- just in the UX. grug_gear says the same thing a second time in the item
+-- description, for players who never hit the refusal at all.
 --
 
 -- Hand count of an item. Anything that does not declare `_grug_hands` is
@@ -204,38 +226,55 @@ local function other_hand_stack(inventory, other_list, action, info)
 	return stack
 end
 
+-- What the OTHER hand is called, for the refusal text.
+local HAND_LABEL = {[WEAPON_LIST] = "weapon slot", [OFFHAND_LIST] = "offhand"}
+
 -- true = the hands are free enough for this, false = refused (and the player
 -- has been told why, throttled).
+--
+-- The rule is one sentence in both directions -- two occupied hands must add up
+-- to at most two -- so it is tested that way rather than per target slot: the
+-- incoming item may be the two-handed one, or the one already in the other hand
+-- may be, and BOTH refuse (B4 says both directions). Testing only the incoming
+-- stack on the way into the weapon slot would let a 1H sword join a 2H item
+-- sitting in the offhand. Unconstructible today (nothing carries
+-- grug_equip_offhand at all, and no item carries both hand groups), which is
+-- exactly why it has to be written down rather than discovered by WP14.
 local function allow_hands(player, inventory, to_list, stack, action, info)
 	local other_list = (to_list == WEAPON_LIST) and OFFHAND_LIST or WEAPON_LIST
 	local other = other_hand_stack(inventory, other_list, action, info)
 	if other:is_empty() then
 		return true -- the other hand is free: nothing to cross-check
 	end
-	if to_list == WEAPON_LIST then
-		if grug_inventory.hands_of(stack) < 2 then
-			return true
-		end
-		local name = claim_warn(player)
-		if name then
-			core.chat_send_player(name, core.colorize(WARN_COLOR,
-				piece_name(stack) .. " is two-handed and needs an empty offhand" ..
-				" — take " .. piece_name(other) .. " out first. A two-handed" ..
-				" weapon and an offhand item (a torch's light, a shield) are a" ..
-				" choice between the two, never both."))
-		end
-		return false
+	local incoming_2h = grug_inventory.hands_of(stack) >= 2
+	local held_2h = grug_inventory.hands_of(other) >= 2
+	if not incoming_2h and not held_2h then
+		return true -- one hand each: they fit
 	end
-	-- Into the offhand: what matters is the weapon already in the other hand.
-	if grug_inventory.hands_of(other) < 2 then
-		return true
-	end
-	local name = claim_warn(player)
+	-- Only item NAMES here, no description lookups: this runs on every frame of
+	-- a drag, and the text below runs only when the throttle lets it.
+	local reason = incoming_2h
+		and ("hands:incoming:" .. stack:get_name() .. ":" .. other:get_name())
+		or ("hands:held:" .. other:get_name() .. ":" .. stack:get_name())
+	local name = claim_warn(player, reason)
 	if name then
-		core.chat_send_player(name, core.colorize(WARN_COLOR,
-			piece_name(other) .. " is two-handed and leaves no hand free for " ..
-			piece_name(stack) .. " — carrying a torch (or a shield) costs you" ..
-			" the two-handed weapon. Equip a one-handed weapon to keep both."))
+		-- WP14: both texts promise a torch's light in the offhand, which no item
+		-- delivers yet (nothing carries grug_equip_offhand, so neither branch of
+		-- this rule can fire at all today). Re-read them when WP14 ships the
+		-- shields and the carried light source.
+		local msg
+		if incoming_2h then
+			msg = piece_name(stack) .. " is two-handed and needs an empty " ..
+				HAND_LABEL[other_list] .. " — take " .. piece_name(other) ..
+				" out first. A two-handed weapon and an offhand item (a torch's" ..
+				" light, a shield) are a choice between the two, never both."
+		else
+			msg = piece_name(other) .. " is two-handed and leaves no hand free" ..
+				" for " .. piece_name(stack) .. " — carrying a torch (or a" ..
+				" shield) costs you the two-handed weapon. Equip a one-handed" ..
+				" weapon to keep both."
+		end
+		core.chat_send_player(name, core.colorize(WARN_COLOR, msg))
 	end
 	return false
 end

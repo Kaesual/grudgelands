@@ -76,12 +76,19 @@ function grug_core.register_on_equipment_change(func)
 end
 
 --
--- Re-entrancy. A consumer is EXPECTED to write equipment itself -- the
--- two-handed rule (B4) clears the offhand when a 2H weapon is equipped -- and
--- the seam's own contract then obliges it to announce that write through
--- grug_inventory.equipment_changed, which lands back here. Without a guard
--- that is unbounded recursion inside an inventory-action callback, i.e. a C
--- stack overflow and a dead server.
+-- Re-entrancy. A consumer MAY write equipment itself, and the seam's own
+-- contract then obliges it to announce that write through
+-- grug_inventory.equipment_changed, which lands back here. Without a guard that
+-- is unbounded recursion inside an inventory-action callback, i.e. a C stack
+-- overflow and a dead server.
+--
+-- NOTHING does it today -- the two-handed rule (B4) chose refusal over repair,
+-- precisely so that no consumer has to write equipment to enforce a slot rule.
+-- The writers this is waiting for are the ones that cannot refuse: WP22's
+-- durability (a swing wears the equipped weapon and writes the stack back),
+-- WP5's affix re-roll, WP11's respec unequipping what the new class may not
+-- wear. grug_inventory's class-change unequip already writes lists exactly that
+-- way; it just does it from outside the callback loop, so it never re-enters.
 --
 -- (The ENGINE cannot recurse into this: InvRef:set_stack only flags the
 -- inventory modified, and the player_inventory_On* callbacks are reachable
