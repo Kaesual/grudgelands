@@ -2861,10 +2861,13 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- `punch_attack_uses = 0` (grug_core.deal_ability_damage), so EVERY swing
 	-- of a continuously auto-attacking player took this branch at wear 0 --
 	-- ~1.4 packets per second per player, ~140/s at the 100-player design
-	-- target, for zero information. It also removes a lost-update window: the
-	-- stack written back here was read at the top of on_punch, so anything
-	-- that touched the same slot during the punch (the cooldown wear ticker)
-	-- would have been overwritten.
+	-- target, for zero information. That packet count is the whole rationale --
+	-- an earlier version of this comment also claimed the skipped write closes
+	-- a lost-update window against the cooldown wear ticker, and it does not:
+	-- Lua here is single-threaded, on_punch runs to completion synchronously,
+	-- the wear ticker runs in a globalstep and cannot interleave with it, and
+	-- no set_wielded_item anywhere in mods/ is reachable between the read at
+	-- the top of this function and the write below.
 	--
 	-- `use_tr` keeps the write unconditional whenever toolranks is installed
 	-- (we do not ship it): `new_afteruse` may rewrite the stack's description

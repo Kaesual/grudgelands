@@ -383,21 +383,54 @@ end
 -- The loop is deliberately not a core.after chain: it re-fetches the player
 -- by name every tick (an ObjectRef does not survive a disconnect), it drives
 -- an ability whose interval CHANGES underneath it (weapon swap), and it has
--- to be stoppable from six different places. One table plus one accumulator
--- is all of that.
+-- to be stoppable from six different places. Two tables — who is swinging and
+-- when the next swing is due — are all of that.
 --
 
 local repeating = {} -- player name -> ability def of the running loop
+local repeat_due = {} -- player name -> us time the last armed swing was DUE at
 
--- The loop's own tick. 0.5 s (the regen ticker's step below) would quantise a
--- 0.7 s dagger to 1.0 s and make attack speed a dead stat, so the swing pass
--- runs at 0.1 s inside the SAME globalstep — one registered callback, two
--- accumulators, and a pass that costs one table lookup while nobody is
--- attacking.
-local REPEAT_TICK = 0.1
+-- How much of a LATE swing the loop may reclaim, in seconds.
+--
+-- The loop can only swing on a globalstep boundary, so a swing due at t lands
+-- at the first step at or after t. Arming the next one from `now` throws that
+-- overshoot away and makes the real cadence ceil(fpi / step) * step — which
+-- re-tunes every weapon UPWARD, and each by a different amount: at the engine's
+-- shipped dedicated_server_step of 0.09 s
+-- (reference_projects/luanti/src/defaultsettings.cpp:498) a 1.0 s sword would
+-- swing at 1.08 (−7.4 % DPS) while a 0.7 s dagger swings at 0.72 (−2.8 %). That
+-- is a non-uniform re-tune of the very numbers combat_stats.md §2 balances
+-- against. Arming the next swing from the previous DUE time instead CARRIES the
+-- remainder, so the mean cadence is the weapon's interval exactly, at any step
+-- size.
+--
+-- The clamp is what reconciles that with the OTHER rounding rule in this game.
+-- grug_core's per-player swing clock (`accept_melee_swing`,
+-- mods/CORE/grug_core/combat.lua:511) refuses two melee swings closer together
+-- than `interval - SWING_SLACK`, with SWING_SLACK = 0.1 — and the Strike
+-- consumes that very clock, which is what keeps it and the held-button punch
+-- path from stacking into two damage streams. Reclaiming at most SWING_SLACK
+-- guarantees the loop can never schedule a swing its own clock would then
+-- refuse. **Keep this value <= grug_core's SWING_SLACK.** If the two ever
+-- drift, the failure is benign and self-healing (a refused swing simply retries
+-- on the next step) but it is a silent DPS loss, so they are documented as a
+-- pair rather than derived — grug_core does not export its constant.
+local SWING_CATCHUP = 0.1
 
+-- Starts (or restarts) the loop for `def`. Public, so it validates: without
+-- this an unregistered def, or one without a `repeat_swing`, would throw from
+-- inside run_repeat_tick — i.e. from a registered globalstep, taking the 0.5 s
+-- regen/cooldown pass down with it on that tick and every tick after. The
+-- registration check is not decoration either: arm_cooldown files the record
+-- under `def.id` and the wear ticker looks that id back up in `registered`.
 function grug_abilities.start_repeat(player, def)
-	repeating[player:get_player_name()] = def
+	assert(type(def) == "table" and grug_abilities.registered[def.id] == def,
+		"start_repeat needs a registered ability definition")
+	assert(type(def.repeat_swing) == "function",
+		"ability \"" .. tostring(def.id) .. "\" has no repeat_swing")
+	local name = player:get_player_name()
+	repeating[name] = def
+	repeat_due[name] = nil -- a fresh toggle carries nothing from the last one
 end
 
 -- Stops a running loop. With `def`, only that ability's loop is stopped (a
@@ -411,6 +444,7 @@ function grug_abilities.stop_repeat(player, def)
 		return false
 	end
 	repeating[name] = nil
+	repeat_due[name] = nil
 	return true
 end
 
@@ -419,10 +453,43 @@ function grug_abilities.is_repeating(player, def)
 	return running ~= nil and (def == nil or running == def)
 end
 
--- One pass over the running loops. `def.repeat_swing(player, def)` returns
--- the cooldown of the swing it just made (i.e. "keep going"), or nil plus an
--- optional message to STOP — which is where target dead / out of range / out
--- of LOS all arrive, since the ability re-validates its target every swing.
+-- Arms the next swing of a repeating ability, carrying the remainder of the
+-- current one (see SWING_CATCHUP). `cooldown` is what the swing earned; what is
+-- actually armed is that minus however late this swing was, capped.
+local function arm_repeat(player, def, cooldown)
+	local name = player:get_player_name()
+	local now = core.get_us_time()
+	local due = repeat_due[name]
+	local late = due and (now - due) / 1e6 or 0
+	-- Never more than half the interval, so an absurdly fast weapon cannot be
+	-- clamped into a non-positive duration (which would store no record at all
+	-- and fire once per step — the very failure the assert below guards).
+	local budget = math.min(SWING_CATCHUP, cooldown * 0.5)
+	if late < 0 then
+		late = 0
+	elseif late > budget then
+		late = budget
+	end
+	local duration = cooldown - late
+	repeat_due[name] = now + duration * 1e6
+	grug_abilities.arm_cooldown(player, def, duration)
+end
+
+-- One pass over the running loops, once per globalstep.
+--
+-- `def.repeat_swing(player, def)` answers one of three things:
+--   * a POSITIVE number — it swung; that is the cooldown the swing earned,
+--   * `false` — "not this step": it declined without stopping (the Strike's
+--     shared swing clock is still held by a punch the player made with a
+--     wielded tool), so nothing is armed and the loop retries next step,
+--   * `nil` plus an optional message — STOP, which is where target dead / out
+--     of range / out of LOS arrive, since the ability re-validates every swing.
+--
+-- The pass deliberately has NO accumulator of its own. One at 0.1 s used to
+-- coarsen the swing grid from `dtime` to ceil(0.1 / dtime) * dtime — 0.18 s at
+-- the shipped server step, i.e. twice the error SWING_CATCHUP is able to
+-- reclaim — and it saved nothing: with nobody attacking, `repeating` is empty
+-- and this is one `next()` on an empty table.
 local function run_repeat_tick()
 	for name, def in pairs(repeating) do
 		local player = core.get_player_by_name(name)
@@ -431,12 +498,27 @@ local function run_repeat_tick()
 			-- the backstop that guarantees no loop can ever run against a
 			-- stale player name, whatever a future caller forgets.
 			repeating[name] = nil
+			repeat_due[name] = nil
 		elseif grug_abilities.ready(player, def.id) then
 			local cooldown, stop_msg = def.repeat_swing(player, def)
-			if cooldown then
-				grug_abilities.arm_cooldown(player, def, cooldown)
+			if cooldown == false then
+				-- Declined, not stopped: retry on the next step.
+			elseif cooldown then
+				-- A repeating ability whose cooldown comes back 0 (or anything
+				-- but a positive number) stores no record at all, so `ready` is
+				-- instantly true again and the loop degenerates into one swing
+				-- per globalstep. The Strike cannot reach this — swing_stats
+				-- clamps a non-positive full_punch_interval — so this is a
+				-- guard for the NEXT repeating ability, and it is an assert
+				-- rather than a silent fallback because a swing loop running at
+				-- ten times its rate is not a state to keep playing in.
+				assert(type(cooldown) == "number" and cooldown > 0,
+					"repeat_swing of ability \"" .. tostring(def.id) ..
+					"\" returned a non-positive cooldown")
+				arm_repeat(player, def, cooldown)
 			else
 				repeating[name] = nil
+				repeat_due[name] = nil
 				if stop_msg then
 					grug_abilities.flash(player, stop_msg)
 				end
@@ -860,16 +942,63 @@ local function in_kit(def, class)
 end
 
 -- Every ability this character gets, in hotbar order: universal first (E1 —
--- the auto-attack lands on key 1 for everyone), then the class kit.
+-- the auto-attack lands on key 1 for everyone), then the class kit. Talent-
+-- gated abilities are left out entirely, so a def's position in this list IS
+-- its hotbar slot (Renew must not push Power Word: Shield off key 4).
 local function kit_of(class)
 	local kit = {}
 	for _, def in ipairs(grug_abilities.universal) do
-		kit[#kit + 1] = def
+		if not def.talent_gated then
+			kit[#kit + 1] = def
+		end
 	end
 	for _, def in ipairs(grug_abilities.by_class[class] or {}) do
-		kit[#kit + 1] = def
+		if not def.talent_gated then
+			kit[#kit + 1] = def
+		end
 	end
 	return kit
+end
+
+-- Put a freshly granted ability item at its kit position instead of wherever
+-- there happens to be room.
+--
+-- `inv:add_item("main", stack)` takes the first FREE slot, so E1's "first in
+-- the hotbar, key 1 for everyone" only ever held for a character created after
+-- the ability existed: every already-playing Warrior had keys 1-4 filled with
+-- the class kit granted in an earlier session and got the universal Strike
+-- behind it. That is not a migration case that fades — it is the state of every
+-- live character on the day this ships.
+--
+-- Only NEWLY granted items are placed. Rearranging the whole kit on every join
+-- would undo the hotbar order a player chose for themselves (ability items are
+-- locked to `main`, but they can be moved around inside it).
+local function grant_at(inv, stack, index)
+	local size = inv:get_size("main")
+	if index < 1 or index > size then
+		inv:add_item("main", stack)
+		return
+	end
+	local occupant = inv:get_stack("main", index)
+	if occupant:is_empty() then
+		inv:set_stack("main", index, stack)
+		return
+	end
+	-- The slot is taken — by the player's own item, or by an ability granted
+	-- before this one existed. Move it aside rather than destroying it.
+	local free
+	for i = 1, size do
+		if inv:get_stack("main", i):is_empty() then
+			free = i
+			break
+		end
+	end
+	if not free then
+		inv:add_item("main", stack) -- pack full: exactly as before, i.e. lost
+		return
+	end
+	inv:set_stack("main", free, occupant)
+	inv:set_stack("main", index, stack)
 end
 
 local function sync_kit(player)
@@ -946,9 +1075,9 @@ local function sync_kit(player)
 			end
 		end
 	end
-	for _, def in ipairs(kit_of(class)) do
+	for index, def in ipairs(kit_of(class)) do
 		local itemname = "grug_abilities:" .. def.id
-		if not def.talent_gated and not have[itemname] then
+		if not have[itemname] then
 			local stack = ItemStack(itemname)
 			local effective = grug_abilities.get_range(player, def)
 			if effective > (def.range or 4) then
@@ -958,7 +1087,7 @@ local function sync_kit(player)
 			-- must not spend one write appearing as an orb and a second one
 			-- turning into the weapon.
 			apply_skin(stack, def, source_of(def))
-			inv:add_item("main", stack)
+			grant_at(inv, stack, index)
 		end
 	end
 end
@@ -1028,19 +1157,14 @@ end, false)
 --
 
 local acc = 0
-local repeat_acc = 0
 
 core.register_globalstep(function(dtime)
-	-- The finer accumulator FIRST, and before the 0.5 s gate returns: a swing
-	-- loop quantised to 0.5 s would turn every weapon into a 1.0 s weapon
-	-- (0.7 s dagger included). While nobody is auto-attacking this is one
-	-- addition, one comparison and one empty pairs() — `repeating` is keyed by
-	-- player and is empty out of combat.
-	repeat_acc = repeat_acc + dtime
-	if repeat_acc >= REPEAT_TICK then
-		repeat_acc = 0
-		run_repeat_tick()
-	end
+	-- The swing pass FIRST, and before the 0.5 s gate returns: quantised to
+	-- 0.5 s every weapon would become a 1.0 s weapon (0.7 s dagger included).
+	-- It runs on every step, without an accumulator of its own — see
+	-- run_repeat_tick. While nobody is auto-attacking this is one `next()` on
+	-- an empty table; `repeating` is keyed by player and is empty out of combat.
+	run_repeat_tick()
 	acc = acc + dtime
 	if acc < 0.5 then
 		return
@@ -1170,6 +1294,7 @@ core.register_on_leaveplayer(function(player)
 	grug_abilities.stop_repeat(player)
 	mana[name] = nil
 	rage[name] = nil
+	repeat_due[name] = nil
 	cooldowns[name] = nil
 	gcd_expiry[name] = nil
 	targets[name] = nil
