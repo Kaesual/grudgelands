@@ -67,6 +67,18 @@ local SLOT_POS = {
 	grug_trinket2 = {7, 3.6},
 }
 
+-- A tooltip[] rect of "1,1" does NOT cover one inventory cell in legacy
+-- coordinates, it covers one grid CELL INCLUDING its gutters: both elements
+-- share getElementBasePos (guiFormSpecMenu.cpp:257-265) so the origins do
+-- coincide, but list[] sizes a slot as `imgsize` (:490-495) while tooltip[]
+-- multiplies its geometry by `spacing` (:2566-2567), and legacy `spacing` is
+-- (imgsize·5/4, imgsize·15/13) (:3340). A "1,1" rect would therefore be 25 %
+-- wider and 15 % taller than the slot and tile the gaps between our slots, so
+-- the label of a neighbour shows while the pointer sits between two of them.
+-- These two factors are exactly imgsize/spacing.
+local TOOLTIP_W = 4 / 5
+local TOOLTIP_H = 13 / 15
+
 -- A slot without a position would silently not be drawn at all — and an
 -- equipment slot the player cannot see is an item sink. Load-time check, one
 -- loop, because equipment.lua is dofile'd before this file.
@@ -122,8 +134,15 @@ local function character_content(player)
 			-- The area tooltip is the slot's label: eight one-unit cells have no
 			-- room for eight text labels, and without one nothing distinguishes
 			-- the weapon slot from the offhand or a trinket.
-			table.insert(fs, ("tooltip[%.1f,%.1f;1,1;%s]"):format(
-				pos[1], pos[2], esc(slot.label)))
+			--
+			-- It shows on EMPTY slots only, which is what we want — a slot with
+			-- an item in it should describe the item. That falls out of the draw
+			-- order rather than out of any option: guiFormSpecMenu.cpp:3672-3682
+			-- runs the tooltip-RECT loop before the children are drawn, and
+			-- :3714-3717 lets the hovered ITEM tooltip overwrite the very same
+			-- m_tooltip_element afterwards, which is only painted at :3856.
+			table.insert(fs, ("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(
+				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot.label)))
 		end
 	end
 	return table.concat(fs)

@@ -61,14 +61,20 @@ local slot_cache = {} -- player name -> {[list] = ItemStack or false}
 -- same three call sites (the inventory action, a server-side list write, and
 -- join), and a writer that remembered one and forgot the other would leave a
 -- swapped weapon dealing the old damage until relog.
-function grug_inventory.equipment_changed(player)
+--
+-- `listname` is optional and is passed straight through to the hook consumers
+-- (see grug_core.register_on_equipment_change): the one equipment list that
+-- changed, or nil for "unknown / more than one". The CACHES are always dropped
+-- wholesale regardless -- two table writes are cheaper than a caller who names
+-- one list and quietly wrote two.
+function grug_inventory.equipment_changed(player, listname)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
 	local name = player:get_player_name()
 	armor_cache[name] = nil
 	slot_cache[name] = nil
-	grug_core.notify_equipment_change(player)
+	grug_core.notify_equipment_change(player, listname)
 end
 
 -- WP7 name, kept because AGENTS.md and the WP7 armor pipeline document it.
@@ -134,10 +140,13 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		if core.get_item_group(stack:get_name(), group) == 0 then
 			return 0
 		end
+		-- NB deliberately NO grug_req_level check anywhere in this callback:
+		-- the item-level requirement is WP5's (it owns the meta key), see
+		-- inventory_equipment.md §2. It belongs HERE, next to the group test,
+		-- not in the armor branch below -- it gates EVERY equipment list, and
+		-- for the weapon slot it is the ONLY gate (B3: weapon families are
+		-- class flavor, not a power ladder, so there is no class check).
 		if is_armor_list[to_list] then
-			-- NB deliberately NO grug_req_level check here: the item-level
-			-- requirement is WP5's (it owns the meta key), see
-			-- inventory_equipment.md §2.
 			local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
 			if rank > 0 and rank > grug_classes.get_armor_rank(player) then
 				warn_armor_class(player, rank)
@@ -151,18 +160,34 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 	-- swallow every other mod's check).
 end)
 
+-- Which equipment list did this action touch? Returns the list name, or false
+-- when none was involved. `true` means "two DIFFERENT equipment lists" (a drag
+-- straight from one slot into another), which the hook reports as nil =
+-- "unknown, assume everything".
+local function touched_equipment_list(action, info)
+	if action ~= "move" then
+		return slot_group[info.listname] and info.listname or false
+	end
+	local from = slot_group[info.from_list] and info.from_list
+	local to = slot_group[info.to_list] and info.to_list
+	if from and to then
+		return (from == to) and from or true
+	end
+	return from or to or false
+end
+
 -- Equipment changed: recompute stats (gear stats land with WP5 — the hook
 -- is already the right place) and refresh an open character page.
 core.register_on_player_inventory_action(function(player, action, inventory, info)
-	local touched = (action == "move" and
-			(slot_group[info.from_list] or slot_group[info.to_list]))
-		or (action ~= "move" and slot_group[info.listname])
+	local touched = touched_equipment_list(action, info)
 	if touched then
+		-- `true` is the "two lists at once" marker, which the hook spells nil.
+		local listname = (touched ~= true) and touched or nil
 		-- Before apply_stats/refresh: those may read the armor total or the
 		-- equipped weapon, and neither must answer from a stale cache. This is
 		-- also where the equipment-change hook fires for a normal equip/swap
 		-- (see grug_inventory.equipment_changed).
-		grug_inventory.equipment_changed(player)
+		grug_inventory.equipment_changed(player, listname)
 		grug_classes.apply_stats(player)
 		grug_inventory.refresh(player)
 	end
@@ -218,18 +243,32 @@ end
 -- slot, or nil when it is empty — an empty slot is an empty slot, there is no
 -- fallback to the wielded item.
 --
--- READ-ONLY for callers: this hands out the CACHED stack, not a copy (same
--- contract as grug_core.outpost_anchors). A caller that needs to modify it
--- must copy it first; writing through it would silently poison the cache.
+-- The caller GETS A COPY and may do whatever it likes with it. The cache holds
+-- the private original; every read constructs a fresh ItemStack from it, so
+-- `w:add_wear(n)` (WP22 durability), `w:get_meta():set_*` (a WP5 affix
+-- re-roll, a description tooltip) cannot desync the cache from the list.
 --
--- CACHED PER PLAYER for the same reason the armor total is: the consumer is
--- the melee path, which reads the weapon once per swing (and, with the
--- auto-attack skill, continuously while a player is in combat) for a value
--- that only changes when the slot changes. The cache is dropped from the same
--- three places as the armor total — the equipment inventory action above, a
--- server-side write via grug_inventory.equipment_changed, and (re-)join.
--- `false` is the "slot is empty" entry, so an empty slot is cached too rather
--- than recomputed on every read.
+-- The obvious alternative — handing out the cached stack, the way the armor
+-- cache's rationale would suggest — was rejected deliberately: the armor total
+-- is read once per punch TAKEN (~1200/s at the 100-player target), the weapon
+-- once per swing MADE (~100/s, even with T3's auto-attack). One ItemStack
+-- userdata per 10 ms does not buy a footgun whose failure mode is invisible:
+-- a write through the shared stack goes through no tracked path at all, so no
+-- invalidation site could ever detect it.
+--
+-- The rule that comes with the copy: to actually CHANGE the equipment, write
+-- the modified stack back into the list and call
+-- grug_inventory.equipment_changed(player, list).
+--
+-- Still CACHED PER PLAYER, because the expensive half is the inventory read,
+-- not the copy: the consumer is the melee path, which reads the weapon once
+-- per swing (and, with the auto-attack skill, continuously while a player is
+-- in combat) for a value that only changes when the slot changes. The cache is
+-- dropped from the same three places as the armor total — the equipment
+-- inventory action above, a server-side write via
+-- grug_inventory.equipment_changed, and (re-)join. `false` is the "slot is
+-- empty" entry, so an empty slot is cached too rather than recomputed on every
+-- read.
 --
 local function cached_slot_item(player, list)
 	if not player or not player.is_player or not player:is_player() then
@@ -251,7 +290,9 @@ local function cached_slot_item(player, list)
 	if entry == false then
 		return nil
 	end
-	return entry
+	-- ItemStack(<ItemStack>) is a real copy, metadata included
+	-- (src/script/common/c_content.cpp:1411-1415 returns the stack BY VALUE).
+	return ItemStack(entry)
 end
 
 function grug_inventory.get_equipped_weapon(player)
@@ -360,29 +401,97 @@ end)
 -- per session: the flag lives in player meta, and a player who reads it and
 -- decides to fight with their fists is not nagged again.
 --
+-- "Once ever" is exactly why the flag must only ever be spent on a character
+-- that can ACT on the hint. The naive version — fire five seconds after join
+-- whenever the slot is empty — burns it on the worst possible case: a
+-- brand-new character is still inside the faction → race → class formspec
+-- chain at t = 5 s (grug_factions/init.lua:215-228 opens the first one at
+-- t = 1 s), and the starter `default:sword_stone` is only granted inside
+-- grug_factions.set_faction, so at that moment the character owns no weapon at
+-- all. It would be told to equip something it does not have, while reading a
+-- dialog, and would then never be told again — D2 risk 6 with the mitigation
+-- switched off.
+--
+-- So the hint RE-ARMS instead of firing, and only goes out when all three of
+-- these hold:
+--   1. character creation is finished (a class is set — the last step of the
+--      chain, and the point at which the formspecs are closed for good),
+--   2. the weapon slot is empty,
+--   3. the character actually OWNS something it could put in there.
+-- Anything else leaves the meta flag untouched, so the next trigger tries
+-- again. Triggers are join and "class chosen"; between them they cover the
+-- fresh character (fires shortly after it picks its class, with the starter
+-- sword already in the bag) and every existing one (fires on the next join).
+-- A character that owns no weapon at all stays armed across sessions until it
+-- buys one — which is the right moment for the advice anyway.
+--
 local WEAPON_HINT_KEY = "grug_weapon_hint"
 local WEAPON_HINT_DELAY = 5 -- seconds, so it lands after the join/creation chatter
 
-core.register_on_joinplayer(function(player)
+-- Condition 3. `main` only: bags are storage, the hint is about the item the
+-- player is carrying around.
+local function owns_slot_eligible_weapon(player)
+	local inv = player:get_inventory()
+	if not inv then
+		return false
+	end
+	local weapon_group = slot_group[WEAPON_LIST]
+	local list = inv:get_list("main") or {}
+	for i = 1, #list do
+		local stack = list[i]
+		if not stack:is_empty() and
+				core.get_item_group(stack:get_name(), weapon_group) > 0 then
+			return true
+		end
+	end
+	return false
+end
+
+local function try_weapon_hint(name)
+	local player = core.get_player_by_name(name)
+	if not player then
+		return
+	end
+	-- The meta flag is re-read HERE, not only at the trigger: two triggers can
+	-- be in flight at once (leave and rejoin inside the delay, or join
+	-- immediately followed by the class pick), and without this re-read the
+	-- hint is sent twice.
 	local meta = player:get_meta()
 	if meta:get_int(WEAPON_HINT_KEY) == 1 then
 		return
 	end
+	if not grug_classes.get_class(player) then
+		return -- still in character creation: stay armed
+	end
+	if grug_inventory.get_equipped_weapon(player) then
+		return -- nothing to say, and the flag is not spent on saying it
+	end
+	if not owns_slot_eligible_weapon(player) then
+		return -- nothing to equip yet: stay armed
+	end
+	meta:set_int(WEAPON_HINT_KEY, 1)
+	core.chat_send_player(name, core.colorize("#ffd100",
+		"You have no weapon equipped. Open your inventory and put a weapon " ..
+		"into the Weapon slot on the Character screen — your skills take " ..
+		"their damage and their look from it."))
+end
+
+local function arm_weapon_hint(player)
+	if not player or not player.is_player or not player:is_player() then
+		return
+	end
+	if player:get_meta():get_int(WEAPON_HINT_KEY) == 1 then
+		return
+	end
 	local name = player:get_player_name()
 	core.after(WEAPON_HINT_DELAY, function()
-		local p = core.get_player_by_name(name)
-		if not p then
-			return
-		end
-		-- Re-checked here, not above: five seconds is long enough to equip
-		-- something, and a player who already did needs no hint.
-		if grug_inventory.get_equipped_weapon(p) then
-			return
-		end
-		p:get_meta():set_int(WEAPON_HINT_KEY, 1)
-		core.chat_send_player(name, core.colorize("#ffd100",
-			"You have no weapon equipped. Open your inventory and put a weapon " ..
-			"into the Weapon slot on the Character screen — your skills take " ..
-			"their damage and their look from it."))
+		try_weapon_hint(name)
 	end)
-end)
+end
+
+core.register_on_joinplayer(arm_weapon_hint)
+
+-- The other trigger: the fresh character, the moment it stops being fresh.
+-- grug_classes fires this after the class is written to meta, so
+-- grug_classes.get_class already answers inside the delayed check.
+grug_classes.register_on_class_chosen(arm_weapon_hint)

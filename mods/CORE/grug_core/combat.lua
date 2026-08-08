@@ -37,8 +37,13 @@ end
 -- item and hit for the bare-handed baseline. grug_inventory overrides both
 -- with a per-player cached read.
 --
--- The returned ItemStack is READ-ONLY for callers: grug_inventory hands out
--- the cached stack itself, not a copy. Copy it before modifying it.
+-- The returned ItemStack is the CALLER'S OWN COPY. grug_inventory caches the
+-- slot contents, but every read hands out a fresh ItemStack, so a consumer may
+-- read its meta, wear it, re-roll it -- nothing it does can poison the cache.
+-- The flip side is the rule that buys that safety: a modified copy is NOT
+-- equipped until it is written back into the list AND
+-- grug_inventory.equipment_changed is called (WP22's durability, WP5's affix
+-- re-roll). Writing back without that leaves the cache reporting the old item.
 --
 
 function grug_core.get_equipped_weapon(player)
@@ -51,7 +56,16 @@ end
 
 -- Fired whenever a player's equipment MAY have changed: an equip/swap through
 -- the character screen, a server-side write to one of the lists (the
--- class-change unequip), and (re-)join. func(player)
+-- class-change unequip), and (re-)join.
+--
+--     func(player, listname)
+--
+-- `listname` is the ONE equipment list that changed, or **nil** for "unknown,
+-- assume everything moved" (join, a class-change unequip touching several
+-- slots, any caller that cannot name a single list). It exists so a consumer
+-- can bail out early: the ability-skin sync (T2) only cares about
+-- grug_weapon/grug_offhand and must not walk 32 `main` stacks every time a
+-- trinket is dragged. A consumer that ignores the argument stays correct.
 --
 -- Consumers must be idempotent and cheap -- this is what rewrites the ability
 -- item skins, and every inventory write re-sends the list to the client.
@@ -61,12 +75,69 @@ function grug_core.register_on_equipment_change(func)
 	table.insert(equipment_change_callbacks, func)
 end
 
+--
+-- Re-entrancy. A consumer is EXPECTED to write equipment itself -- the
+-- two-handed rule (B4) clears the offhand when a 2H weapon is equipped -- and
+-- the seam's own contract then obliges it to announce that write through
+-- grug_inventory.equipment_changed, which lands back here. Without a guard
+-- that is unbounded recursion inside an inventory-action callback, i.e. a C
+-- stack overflow and a dead server.
+--
+-- (The ENGINE cannot recurse into this: InvRef:set_stack only flags the
+-- inventory modified, and the player_inventory_On* callbacks are reachable
+-- solely from a client inventory-action packet --
+-- src/inventorymanager.cpp:150-185. The recursion risk is purely mod-side.)
+--
+-- The guard coalesces instead of just dropping: a nested notification sets
+-- `pending`, and the loop is re-run ONCE after the outer pass, so consumers
+-- that already ran before the 2H rule cleared the offhand still see the final
+-- state. Bounded at two passes by construction; a consumer that notifies
+-- unconditionally is a bug and says so in the log, once per server run.
+--
+-- Keyed PER PLAYER, not by a single flag: a consumer that reacts to A's equip
+-- by writing B's equipment (a future party/aura effect) must not have B's
+-- notification swallowed and charged to A's second pass.
+--
+-- Consumers are called UNWRAPPED, like every other hook in this game
+-- (grug_xp, grug_money, grug_classes, the threat table below): an error in a
+-- registered callback is a mod bug and has to be loud. It also means the guard
+-- cannot leak -- a Lua error inside an engine callback takes the server down
+-- with it, so there is no "next call" left to block.
+local notifying = {} -- player name -> true while its callback loop runs
+local notify_pending = {} -- player name -> true when a nested call arrived
+local warned_unconditional = false
+
+local function run_equipment_callbacks(player, listname)
+	for _, func in ipairs(equipment_change_callbacks) do
+		func(player, listname)
+	end
+end
+
 -- Internal: grug_inventory fires this from grug_inventory.equipment_changed,
 -- after it dropped its caches, so a callback already reads the NEW equipment.
-function grug_core.notify_equipment_change(player)
-	for _, func in ipairs(equipment_change_callbacks) do
-		func(player)
+function grug_core.notify_equipment_change(player, listname)
+	local name = player:get_player_name()
+	if notifying[name] then
+		notify_pending[name] = true
+		return
 	end
+	notifying[name] = true
+	run_equipment_callbacks(player, listname)
+	if notify_pending[name] then
+		notify_pending[name] = nil
+		-- Second and final pass: whatever a consumer changed from inside the
+		-- first one is now visible to all of them. `nil` because the nested
+		-- write is by definition a different list than the one that started it.
+		run_equipment_callbacks(player, nil)
+		if notify_pending[name] and not warned_unconditional then
+			warned_unconditional = true
+			core.log("warning", "[grug_core] an on_equipment_change consumer " ..
+				"calls equipment_changed unconditionally -- the notification " ..
+				"is capped at two passes, fix the consumer")
+		end
+		notify_pending[name] = nil
+	end
+	notifying[name] = nil
 end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
