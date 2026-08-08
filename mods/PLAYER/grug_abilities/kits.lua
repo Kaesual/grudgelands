@@ -199,7 +199,29 @@ end)
 -- of the path in isolation and false of the two running AT ONCE: the ability
 -- item only disables punching while it is SELECTED, so a hotbar switch used to
 -- leave both swinging. The defence is one shared swing clock, in strike_swing
--- below -- the two are mutually exclusive by construction, not by a rule.
+-- below.
+--
+-- SCOPE OF THAT DEFENCE, exactly (review MEDIUM A): it covers MOB targets and
+-- nothing else. `grug_core.accept_melee_swing` has two callers -- strike_swing
+-- below and the cadence gate in mods/ENTITIES/mobs/api.lua:2712, which is a
+-- mobs_redo `on_punch` and is therefore only reached when the thing punched is
+-- a mob (and only a grug_mobs-registered one at that:
+-- `grug_mobs.registered_cadence[self.name]`). A punch on a PLAYER goes through
+-- PlayerSAO::punch -> on_punchplayer (src/server/player_sao.cpp:457-480) and
+-- never touches the clock at all. So against another player the held-button
+-- path is still ungated and DOES stack with the Strike: measured over 30 s at
+-- dtime 0.09, Strike alone 180 damage, Strike plus a held dig with a fleshy-25
+-- hotbar weapon 930 (5.17x); with equal weapons a clean ~2x.
+--
+-- That raw PvP melee path is the documented carry-over of combat_stats.md §2
+-- ("PvP melee still runs the engine's raw tflp scaling"), and E6's claim that
+-- the Strike closes it holds only for the damage the STRIKE deals -- it does
+-- not remove the second stream. Closing it for real means porting the cadence
+-- model to player punches (a `core.register_on_punchplayer` that returns true
+-- to suppress the engine's damage, doc/lua_api.md:6589), which is the PvP work
+-- package's job: it needs its own hostility/dodge/threat decisions, and it
+-- would inherit the clock defect below. Do not read the shared clock as a PvP
+-- guarantee.
 --
 
 -- An empty weapon slot is an empty slot (B1): no fallback to whatever is in
@@ -207,15 +229,19 @@ end)
 -- uncastable).
 --
 -- "A fist" is not a number to pick — it is THIS game's hand item, and the
--- engine's own bare-handed punch reads exactly these capabilities. The engine
--- default is full_punch_interval 0.9 / fleshy 1
--- (reference_projects/luanti/builtin/game/register.lua), and
--- mods/BASE/default/tools.lua:8-19 overrides the hand with the same 0.9 — so a
--- hardcoded 1.0 made an empty slot swing 11 % SLOWER through the Strike than
--- the same character punching bare-handed through the held-button path, for no
--- reason anyone could have found in a design doc. `ItemStack("")` is the hand:
--- an empty stack resolves to the "" item definition, which is what the engine
--- hands a punch that carries no tool.
+-- engine's own bare-handed punch reads exactly these capabilities. The
+-- numbers are 0.9 / fleshy 1, and they come from ONE place: this game's own
+-- `mods/BASE/default/tools.lua:8-19`, which overrides the hand item. The
+-- engine itself supplies neither — builtin's hand
+-- (reference_projects/luanti/builtin/game/register.lua:447-451) carries no
+-- `tool_capabilities` at all, and the C++ fallback is full_punch_interval
+-- **1.4** with an empty damage-group map (src/tool.h:60-72). So a hardcoded
+-- 1.0 made an empty slot swing 11 % SLOWER through the Strike than the same
+-- character punching bare-handed through the held-button path, for no reason
+-- anyone could have found in a design doc — and reading the value is what
+-- keeps the two paths equal if default's hand is ever re-tuned.
+-- `ItemStack("")` is the hand: an empty stack resolves to the "" item
+-- definition, which is what the engine hands a punch that carries no tool.
 --
 -- Read once after every mod has registered, not at load time: default's
 -- override_item runs in BASE and we are in PLAYER, but the ordering is a mod
@@ -262,8 +288,9 @@ local function swing_stats(player)
 	return damage, fpi
 end
 
--- What the target has left, in HP -- the ONLY honest answer to "did that hit
--- land" (review HIGH 1).
+-- What the target has left, in HP -- the honest answer to "did that hit land"
+-- (review HIGH 1), under one stated assumption: that nothing else writes the
+-- target's health between the two samples. See the end of this comment.
 --
 -- `grug_core.deal_ability_damage` returns the INTENDED amount
 -- (grug_core/combat.lua:628); it returns 0 only for its own two pre-rolls, the
@@ -289,12 +316,73 @@ end
 -- object's own hp is not what mobs_redo subtracts), and that field survives the
 -- entity removal of a lethal blow -- check_for_death never resets it -- so the
 -- killing hit is still counted.
+--
+-- THE ASSUMPTION (review LOW G): "HP went down" is read as "our punch landed",
+-- so a THIRD PARTY lowering the target's health inside the same punch would be
+-- credited to us -- 12 rage for a swing that dealt nothing. The constructed
+-- case is a mob that raises `self.health` above `hp_max` inside its own
+-- `do_punch`, which check_for_death then clamps back down
+-- (mods/ENTITIES/mobs/api.lua:855-856). It is not reachable in this game: the
+-- only writers of mob health are grug_mobs/levels.lua:324, which sets `hp_max`
+-- in the same call, and grug_mobs/aggro.lua:203, which runs outside the punch.
+-- A future mob that heals or shields itself from `do_punch` would break the
+-- reading, and the fix would be to compare against the damage the punch is
+-- known to have applied rather than against a health delta.
 local function target_hp(target, ent)
 	if ent then
 		return ent.health or 0
 	end
 	return target:get_hp()
 end
+
+-- The shared melee clock is WINNER-TAKES-ALL BY REQUESTED INTERVAL, and the
+-- Strike is the side that loses (review MEDIUM B). `accept_melee_swing`
+-- (mods/CORE/grug_core/combat.lua:521-530) stores a timestamp and NOTHING
+-- ELSE: the acceptance threshold is whatever the current caller asks for, so
+-- whoever asks with the SHORTER interval stamps the clock often enough that
+-- the slower asker is refused forever. Measured over 30 s at dtime 0.09, on a
+-- mob, with a greataxe (fpi 1.4) in the slot: Strike alone 198 damage; the
+-- same greataxe plus a held BARE-HAND dig 77 (0.39x); plus a held steel pick
+-- (fpi 1.0) 159 (0.80x). The design says the equipped weapon is the single
+-- source of damage (B1); the clock says the fastest thing the player touched
+-- is -- and the loss is silent, which is the worse half.
+--
+-- This cannot be fixed from grug_abilities: the clock's shape is grug_core's.
+-- The fix belongs there and is small -- remember the accepted swing's own
+-- interval alongside its time and refuse on `max(requested, accepted)`, so the
+-- slot weapon's cadence governs and the carry-over path is the one that
+-- starves. Until then the loop simply retries, and what this file CAN do is
+-- refuse to lose the damage silently: `note_starved` below says so once.
+local clock_block = {} -- player name -> {since = us time, warned = us time}
+
+-- How long a refusal streak has to last before the player is told, as a
+-- multiple of the weapon's own swing time (so a greataxe is not nagged for
+-- missing one 2 s swing), and how rarely the message may repeat.
+local STARVE_WARN_AFTER = 2
+local STARVE_WARN_EVERY = 10
+
+local function note_starved(user, def, fpi)
+	local name = user:get_player_name()
+	local now = core.get_us_time()
+	local rec = clock_block[name]
+	if not rec then
+		clock_block[name] = {since = now, warned = 0}
+		return
+	end
+	if (now - rec.since) / 1e6 < STARVE_WARN_AFTER * fpi then
+		return
+	end
+	if rec.warned ~= 0 and (now - rec.warned) / 1e6 < STARVE_WARN_EVERY then
+		return
+	end
+	rec.warned = now
+	grug_abilities.flash(user,
+		"Your held attack is taking " .. def.name .. "'s swings.")
+end
+
+core.register_on_leaveplayer(function(player)
+	clock_block[player:get_player_name()] = nil
+end)
 
 -- One swing. Returns the cooldown it earned (the weapon's swing time) so the
 -- caller can arm the timer, `false` for "not this step, but do not stop", or
@@ -324,14 +412,18 @@ local function strike_swing(user, pointed, def)
 	-- Strike loop swinging the equipment-slot weapon at full damage next to it
 	-- -- two damage streams, ~1.9x the DPS and doubled rage income, against
 	-- B1's "the slot item is the single, fixed source of damage". Sharing the
-	-- clock makes the two mutually exclusive by construction rather than by a
-	-- rule someone has to remember.
+	-- clock makes the two mutually exclusive AGAINST A MOB. It does nothing
+	-- against a player target -- see the scope note at the top of this section
+	-- (review MEDIUM A) -- and it costs a slow weapon its damage rather than
+	-- splitting the difference (review MEDIUM B, above note_starved).
 	--
 	-- Consumed AFTER the target check, so a swing into thin air does not burn
 	-- the clock, and before the damage, so a refused swing costs nothing at all.
 	if not grug_core.accept_melee_swing(user, fpi) then
+		note_starved(user, def, fpi)
 		return false
 	end
+	clock_block[user:get_player_name()] = nil
 	-- combat_stats.md §2: melee damage = weapon damage + floor(Str/10).
 	-- deal_ability_damage rolls the crit (x1.5), pre-rolls a player target's
 	-- dodge, does the friendly-fire check, marks combat and reports threat --
@@ -364,7 +456,7 @@ grug_abilities.register_ability({
 	id = "strike",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = "Attack your target with the equipped weapon and\n" ..
+	description = "Attack your target with your equipped weapon and\n" ..
 		"keep swinging at its speed. Cast again to stop.\n" ..
 		"Generates 12 rage per hit.",
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
@@ -404,11 +496,20 @@ grug_abilities.register_ability({
 		if fpi == nil then
 			return false, err
 		end
-		-- `false` means the shared melee clock is still held by a punch the
-		-- player made with a WIELDED tool a moment ago. The toggle goes on
-		-- either way -- the loop takes the next legal swing -- it just does
-		-- not hand out a free swing for switching items.
 		grug_abilities.start_repeat(user, def)
+		if fpi == false then
+			-- `false` means the shared melee clock is still held by a punch the
+			-- player made with a WIELDED tool a moment ago. The toggle goes on
+			-- either way -- but NOTHING SWUNG, so this cast earned no cooldown:
+			-- the third return value overrides try_cast's cooldown_for() (review
+			-- LOW D). Arming the full swing interval here made the refusal cost a
+			-- whole extra swing -- measured with a greataxe on a free clock, the
+			-- first swing landed at 1.44 s instead of 1.22 s -- and it made the
+			-- comment's "the loop takes the next legal swing" false, because the
+			-- loop waits on exactly this cooldown. With 0 nothing is stored, so
+			-- the loop retries on the very next globalstep.
+			return true, nil, 0
+		end
 		return true
 	end,
 })
@@ -451,27 +552,38 @@ grug_abilities.register_ability({
 	class = "warrior",
 	name = "Mighty Blow",
 	description = "A heavy melee hit: 150% weapon damage plus your\n" ..
-		"melee bonus. Uses the best weapon you carry.",
+		"melee bonus. Uses your equipped weapon.",
 	color = "#c84a32",
 	cost = {rage = 25},
 	cooldown = 0,
+	-- Melee at 4 m, so the elf's +5 m ability range does not apply (E7). This
+	-- was a PRE-EXISTING bug, not something the weapon slot introduced: the
+	-- perk was written as "+5 m on every ability" and gave elves a 9 m reach on
+	-- a hit that is supposed to be within arm's length. The flag is all it
+	-- takes -- grug_abilities.get_range honours it, and sync_kit derives the
+	-- stack's `range` meta from get_range, so the engine's pointing reach and
+	-- the target-lock fallback move together.
+	melee = true,
 	range = 4,
 	cast = function(user, pointed, def)
 		local target = enemy_target(user, pointed, def)
 		if not target then
 			return false, "No target."
 		end
-		-- The wielded item is this ability, so take the strongest weapon
-		-- from the hotbar (list "main", slots 1–8) as the swing.
-		local weapon_damage = 1 -- bare hands
-		local list = user:get_inventory():get_list("main") or {}
-		for i = 1, math.min(8, #list) do
-			local caps = list[i]:get_tool_capabilities()
-			local dmg = caps.damage_groups and caps.damage_groups.fleshy or 0
-			if dmg > weapon_damage then
-				weapon_damage = dmg
-			end
-		end
+		-- The equipped weapon, and only that (B1, T4). This used to scan hotbar
+		-- slots 1-8 for the strongest fleshy damage, because "the wielded item
+		-- is this ability" and there was no slot to ask. There is now, and the
+		-- slot is the SINGLE source: no fallback to the hand, no fallback to the
+		-- pack. `swing_stats` is the same reader the Strike uses, so the two
+		-- melee abilities can never disagree about what the player is holding --
+		-- it resolves per-stack meta before the item definition, which is how
+		-- WP5's rolled affixes will reach this for free.
+		--
+		-- Empty slot: `swing_stats` answers the hand's own fleshy damage (1),
+		-- i.e. exactly what the old scan produced with no weapon in the hotbar,
+		-- so an unarmed Mighty Blow is worth floor(1 * 1.5) + melee bonus as
+		-- before -- weak, never uncastable (C2).
+		local weapon_damage = swing_stats(user)
 		local amount = math.floor(weapon_damage * 1.5)
 			+ grug_classes.get_melee_bonus(user)
 		-- Position BEFORE the damage: a lethal punch invalidates mob refs.
@@ -492,6 +604,9 @@ grug_abilities.register_ability({
 	color = "#a8324e",
 	cost = {rage = 10},
 	cooldown = 6,
+	-- Melee at 4 m: same pre-existing elf-range bug as Mighty Blow above, same
+	-- one-flag fix (E7).
+	melee = true,
 	range = 4,
 	cast = function(user, pointed, def)
 		local target = enemy_target(user, pointed, def)

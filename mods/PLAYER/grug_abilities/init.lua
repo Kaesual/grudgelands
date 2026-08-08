@@ -147,9 +147,11 @@ end
 -- flag rather than a range threshold because a threshold silently re-tunes
 -- the perk the day an ability's range changes.
 --
--- NB Mighty Blow and Hamstring are melee at 4 m and carry the same
--- pre-existing bug; setting the flag on them is T4's, and needs nothing here
--- but the flag.
+-- Mighty Blow and Hamstring are melee at 4 m and carried the same pre-existing
+-- bug; T4 set the flag on both (kits.lua). Every ability that is still meant to
+-- reach further -- Fireball and Smite at 20 m, Flash Heal / Power Word: Shield /
+-- Renew at 15 m, Charge at 12 m, Taunt at 8 m, and the two self-centred Mage
+-- spells -- keeps the perk, because it is granted by the ABSENCE of the flag.
 function grug_abilities.get_range(player, def)
 	local base = def.range or 4
 	if def.melee then
@@ -419,15 +421,29 @@ local SWING_CATCHUP = 0.1
 
 -- Starts (or restarts) the loop for `def`. Public, so it validates: without
 -- this an unregistered def, or one without a `repeat_swing`, would throw from
--- inside run_repeat_tick — i.e. from a registered globalstep, taking the 0.5 s
--- regen/cooldown pass down with it on that tick and every tick after. The
--- registration check is not decoration either: arm_cooldown files the record
--- under `def.id` and the wear ticker looks that id back up in `registered`.
+-- inside run_repeat_tick. The registration check is not decoration either:
+-- arm_cooldown files the record under `def.id` and the wear ticker looks that
+-- id back up in `registered`.
+--
+-- The validation LOGS AND REFUSES rather than asserting (review LOW C). A
+-- LuaError raised from a mod callback does not stay local to that callback: it
+-- propagates out of Server::AsyncRunStep, and the ServerThread catches
+-- `LuaError` only to call `setAsyncFatalError`
+-- (reference_projects/luanti/src/server.cpp:128-132 and :163-167), which shuts
+-- the server down. For a guard whose whole point is that it should be
+-- unreachable, killing everyone's session is the worst available outcome:
+-- refusing to start a broken loop costs one player one ability.
 function grug_abilities.start_repeat(player, def)
-	assert(type(def) == "table" and grug_abilities.registered[def.id] == def,
-		"start_repeat needs a registered ability definition")
-	assert(type(def.repeat_swing) == "function",
-		"ability \"" .. tostring(def.id) .. "\" has no repeat_swing")
+	if type(def) ~= "table" or grug_abilities.registered[def.id] ~= def then
+		core.log("error", "[grug_abilities] start_repeat called with something" ..
+			" that is not a registered ability definition -- no loop started")
+		return
+	end
+	if type(def.repeat_swing) ~= "function" then
+		core.log("error", "[grug_abilities] ability \"" .. tostring(def.id) ..
+			"\" has no repeat_swing -- no loop started")
+		return
+	end
 	local name = player:get_player_name()
 	repeating[name] = def
 	repeat_due[name] = nil -- a fresh toggle carries nothing from the last one
@@ -503,25 +519,44 @@ local function run_repeat_tick()
 			local cooldown, stop_msg = def.repeat_swing(player, def)
 			if cooldown == false then
 				-- Declined, not stopped: retry on the next step.
-			elseif cooldown then
-				-- A repeating ability whose cooldown comes back 0 (or anything
-				-- but a positive number) stores no record at all, so `ready` is
-				-- instantly true again and the loop degenerates into one swing
-				-- per globalstep. The Strike cannot reach this — swing_stats
-				-- clamps a non-positive full_punch_interval — so this is a
-				-- guard for the NEXT repeating ability, and it is an assert
-				-- rather than a silent fallback because a swing loop running at
-				-- ten times its rate is not a state to keep playing in.
-				assert(type(cooldown) == "number" and cooldown > 0,
-					"repeat_swing of ability \"" .. tostring(def.id) ..
-					"\" returned a non-positive cooldown")
-				arm_repeat(player, def, cooldown)
-			else
+			elseif cooldown == nil then
+				-- STOP. Tested for explicitly and BEFORE the guard below, which
+				-- would otherwise swallow it: `nil` is not a positive number
+				-- either, and an ordinary "the target died" would have been
+				-- reported as a broken ability.
 				repeating[name] = nil
 				repeat_due[name] = nil
 				if stop_msg then
 					grug_abilities.flash(player, stop_msg)
 				end
+			elseif type(cooldown) ~= "number" or cooldown <= 0 then
+				-- A repeating ability whose cooldown comes back 0 (or anything
+				-- but a positive number) stores no record at all, so `ready` is
+				-- instantly true again and the loop degenerates into one swing
+				-- per globalstep. The Strike cannot reach this — swing_stats
+				-- clamps a non-positive full_punch_interval — so this is a
+				-- guard for the NEXT repeating ability.
+				--
+				-- It logs and STOPS the loop instead of asserting (review
+				-- LOW C). This runs inside a registered globalstep, and a
+				-- LuaError from there reaches ServerThread's `catch (LuaError)`
+				-- -> setAsyncFatalError -> server shutdown
+				-- (reference_projects/luanti/src/server.cpp:128-132, :163-167)
+				-- — and because the record in `repeating` would never be
+				-- cleared, every following step would raise it again. Stopping
+				-- the one loop leaves the other players' game running and puts
+				-- the reason in the log. (The old assert also paid for its
+				-- message on every PASSING call: Lua evaluates the second
+				-- argument eagerly, so the concatenation ran once per swing per
+				-- player. This branch builds it only when it fires.)
+				core.log("error", "[grug_abilities] repeat_swing of ability \"" ..
+					tostring(def.id) .. "\" returned a non-positive cooldown (" ..
+					tostring(cooldown) .. ") -- loop stopped for player \"" ..
+					name .. "\"")
+				repeating[name] = nil
+				repeat_due[name] = nil
+			else
+				arm_repeat(player, def, cooldown)
 			end
 		end
 	end
@@ -566,7 +601,16 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
 	-- cooldown, no GCD. def is passed through for the target-lock helpers
 	-- (range checks).
-	local ok, err = def.cast(user, pointed_thing, def)
+	--
+	-- The THIRD return value is the cooldown this particular cast earned, and
+	-- it overrides cooldown_for() when it is present (review LOW D). It exists
+	-- for the one case a cast can succeed without doing its work: the
+	-- auto-attack's toggle turns on even when the shared melee clock refused
+	-- the swing, and charging that refusal a full swing interval delayed the
+	-- first real swing by one whole cadence — with the toggle's own cooldown
+	-- running, the loop could not "take the next legal swing" at all. `0` means
+	-- "arm nothing"; nil (every other ability) means "the usual".
+	local ok, err, cast_cooldown = def.cast(user, pointed_thing, def)
 	if not ok then
 		grug_abilities.flash(user, err or "Invalid target.")
 		return
@@ -575,8 +619,10 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if not def.off_gcd then
 		gcd_expiry[name] = core.get_us_time() + grug_abilities.GCD * 1e6
 	end
-	grug_abilities.arm_cooldown(user, def,
-		grug_abilities.cooldown_for(user, def))
+	if cast_cooldown == nil then
+		cast_cooldown = grug_abilities.cooldown_for(user, def)
+	end
+	grug_abilities.arm_cooldown(user, def, cast_cooldown)
 end
 
 --
@@ -1161,9 +1207,25 @@ local acc = 0
 core.register_globalstep(function(dtime)
 	-- The swing pass FIRST, and before the 0.5 s gate returns: quantised to
 	-- 0.5 s every weapon would become a 1.0 s weapon (0.7 s dagger included).
-	-- It runs on every step, without an accumulator of its own — see
-	-- run_repeat_tick. While nobody is auto-attacking this is one `next()` on
-	-- an empty table; `repeating` is keyed by player and is empty out of combat.
+	--
+	-- IT RUNS ON EVERY STEP, WITHOUT AN ACCUMULATOR — a deliberate, measured
+	-- exception to AGENTS.md's performance rule "always throttle
+	-- register_globalstep with a dtime accumulator", and to E3's own "with its
+	-- own finer accumulator". Recorded here rather than left to be
+	-- rediscovered (review LOW E). Two reasons, in this order:
+	--   * an accumulator does not just cost precision, it takes it. Any period
+	--     p coarsens the swing grid from `dtime` to ceil(p / dtime) * dtime;
+	--     at p = 0.1 and the engine's shipped dedicated_server_step of 0.09
+	--     (reference_projects/luanti/src/defaultsettings.cpp:498) that is
+	--     0.18 s, twice the error SWING_CATCHUP is able to reclaim, so every
+	--     weapon's cadence would be re-tuned and each by a different amount.
+	--   * it would save nothing measurable. `repeating` is keyed by player and
+	--     is EMPTY unless somebody is actually auto-attacking, so the idle
+	--     cost of this call is one `next()` on an empty table — measured at
+	--     0.0003 ms/step idle, and 0.093 ms/step with 100 players all
+	--     attacking, against a 90 ms step budget.
+	-- The rule stands for passes whose work does not scale down to nothing on
+	-- an idle server; this one does, and it is the throttle that would cost.
 	run_repeat_tick()
 	acc = acc + dtime
 	if acc < 0.5 then
@@ -1273,7 +1335,8 @@ end)
 
 -- Death and respawn are two of E3's stop conditions and are hooked
 -- separately: dying stops the loop AT the death (the tick's own hp check is
--- the backstop, up to 0.1 s later), and the respawn stops it a second time
+-- the backstop, one globalstep later — it has no accumulator of its own, so
+-- there is no 0.1 s window any more), and the respawn stops it a second time
 -- because a respawn is also a re-grant path -- a loop that somehow outlived
 -- the death must not be handed the fresh character.
 core.register_on_dieplayer(function(player)
