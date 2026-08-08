@@ -203,9 +203,13 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 	for _, w in ipairs(WEAPONS) do
 		local itemname = "grug_gear:" .. w.key .. "_b" .. bracket
 		local damage = math.max(1, math.floor(base_damage * w.factor + 0.5))
-		-- Weapons are wielded from the hotbar, so they carry NO grug_equip_*
-		-- group -- they must never be droppable into an equipment slot.
-		local groups = {grug_gear = 1}
+		-- Every weapon family is weapon-slot eligible (weapon-slot design B3).
+		-- No class gate: weapon families are class FLAVOR, not a power ladder
+		-- (§8.2), so a Mage may equip a greataxe and simply gains nothing from
+		-- it; the only gate on the slot is WP5's grug_req_level. The slot
+		-- itself is family-agnostic, which is how the future bow family joins
+		-- without a second slot.
+		local groups = {grug_gear = 1, grug_equip_weapon = 1}
 		groups[w.group] = 1
 		core.register_tool(itemname, {
 			description = describe(bracket, w.noun, br.ilvl,
@@ -281,3 +285,48 @@ end
 
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")
+
+--
+-- The vendored `default` swords and axes are weapon-slot eligible too
+-- (weapon-slot design B3, decided 2026-08-08).
+--
+-- WHY, since these are not our items: with the no-fallback rule of B1 the
+-- weapon slot is the ONLY source of melee damage, and a fresh character owns
+-- exactly one weapon — the `default:sword_stone` of the starter kit
+-- (grug_factions). Without this list that character would have no melee
+-- damage at all until their first vendor visit.
+--
+-- PICKAXES AND SHOVELS ARE DELIBERATELY ABSENT: mining tools stay mining
+-- tools, and punching a mob with a pick keeps working through the ordinary
+-- wielded-item path either way.
+--
+-- TEMPORARY BY CONSTRUCTION: WP28 deletes the mese and diamond tool tiers and
+-- WP29 folds the rest into the material ladder, so this list only ever
+-- shrinks — hence a loop over names instead of hand-copied override blocks.
+--
+-- `core.override_item` REPLACES a named field wholesale, it does not merge
+-- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`
+-- would drop `sword`/`axe`/`flammable` and break every recipe and burn time
+-- that reads them. The current table is therefore read back off the
+-- registration and copied — which also means this survives WP29's re-tiering
+-- of those groups without anyone remembering to update a hand-copied literal.
+local VENDORED_WEAPONS = {
+	"default:sword_wood", "default:sword_stone", "default:sword_bronze",
+	"default:sword_steel", "default:sword_mese", "default:sword_diamond",
+	"default:axe_wood", "default:axe_stone", "default:axe_bronze",
+	"default:axe_steel", "default:axe_mese", "default:axe_diamond",
+}
+
+for _, itemname in ipairs(VENDORED_WEAPONS) do
+	local def = core.registered_items[itemname]
+	if not def then
+		-- Not fatal: the list shrinks with WP28/WP29, and a stale entry must
+		-- say so rather than crash the game.
+		core.log("warning", "[grug_gear] cannot make " .. itemname ..
+			" weapon-slot eligible: no such item")
+	else
+		local groups = table.copy(def.groups or {})
+		groups.grug_equip_weapon = 1
+		core.override_item(itemname, {groups = groups})
+	end
+end

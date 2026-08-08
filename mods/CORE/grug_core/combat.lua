@@ -26,6 +26,49 @@ function grug_core.get_armor_percent(player)
 	return 0
 end
 
+--
+-- The equipment seam (weapon-slot design C4). grug_abilities needs to know
+-- what is in the two hand slots and when it changes; grug_inventory owns the
+-- slots. Neither depends on the other, so the contract lives here.
+--
+-- get_equipped_weapon/get_equipped_offhand are STUBS returning nil (same
+-- pattern as get_armor_percent above) -- nil means "empty slot", and an empty
+-- slot has no fallback to the wielded item (B1): the connected skills carry no
+-- item and hit for the bare-handed baseline. grug_inventory overrides both
+-- with a per-player cached read.
+--
+-- The returned ItemStack is READ-ONLY for callers: grug_inventory hands out
+-- the cached stack itself, not a copy. Copy it before modifying it.
+--
+
+function grug_core.get_equipped_weapon(player)
+	return nil
+end
+
+function grug_core.get_equipped_offhand(player)
+	return nil
+end
+
+-- Fired whenever a player's equipment MAY have changed: an equip/swap through
+-- the character screen, a server-side write to one of the lists (the
+-- class-change unequip), and (re-)join. func(player)
+--
+-- Consumers must be idempotent and cheap -- this is what rewrites the ability
+-- item skins, and every inventory write re-sends the list to the client.
+local equipment_change_callbacks = {}
+
+function grug_core.register_on_equipment_change(func)
+	table.insert(equipment_change_callbacks, func)
+end
+
+-- Internal: grug_inventory fires this from grug_inventory.equipment_changed,
+-- after it dropped its caches, so a callback already reads the NEW equipment.
+function grug_core.notify_equipment_change(player)
+	for _, func in ipairs(equipment_change_callbacks) do
+		func(player)
+	end
+end
+
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
 -- melee damage = weapon damage + floor(Str/10)). Consumed by the
 -- auto-attack patch in mobs/api.lua on_punch.
