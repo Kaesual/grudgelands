@@ -65,7 +65,14 @@ mirrored at z=0. Everything else is ocean.
   ring carry the settled race biomes (villages, roads, fields); outward
   every race band tips into its **wild nature variant** — shared nature
   biomes that exist on BOTH continents with identical base drops
-  (section 8).
+  (section 8). **Made binding 2026-08-08**: a **carve box** of
+  |x| ≤ 800, 600 ≤ |z| ≤ 1200 per continent (~20 % of the land) is
+  reserved for the settled bands — no wild band may be *registered*
+  there at all, and the centre band may not reach into the side
+  capitals' ground. That is what turns the gradient from a tendency
+  into a guarantee (§3); §8's "wild patches near the core" flavour is
+  what it costs, and this settles the contradiction between the two
+  sections in favour of the guarantee.
 - All anchors (capital position, ring radii, coast caps) derive from the
   continent size constants in `grug_core` — world size is configurable at
   world creation (3000×1600 default; changing it requires a new world).
@@ -244,7 +251,57 @@ rule of §2 — the structure plus ≥ 10 nodes of surrounding terrain, from
 30 nodes below its base level upward. The
 **central race's capital (Humans/Orcs, ~(0, ±900)) doubles as the
 faction seat**: the faction King (raid boss), guild manager, and
-faction-wide services live there. Each capital contains:
+faction-wide services live there.
+
+**"In the race's own biome" is a guarantee, not a hope (decided
+2026-08-08).** It used to be neither enforced nor true: on a random
+seed the intended biome won at the anchor in 22–63 % of cases at four
+of the six capitals — the human capital came up deep forest, the dwarf
+capital meadows, undead and troll savanna. What ships now:
+
+- **Guaranteed radius R = 200.** In the whole ±200 box around every one
+  of the six anchors, exactly **one** biome is registered — the race's
+  own. Verified over 200 random seeds at 100 %.
+- **How**: geometry, not climate tuning. The engine filters biome
+  cuboids on the raw integer position *before* it reads heat/humidity
+  (`BiomeGenOriginal::calcBiomeFromNoise`), so a containment argument is
+  seed-proof, while the climate at a capital is effectively a coin flip
+  of the seed (spread 1000 over a 3000×1600 continent leaves only ~5
+  independent large-octave samples per continent — even collapsing every
+  settled point onto the noise mean scored 0 % at four capitals, and the
+  engine's `weight` knob tops out at 56–94 % while distorting shares
+  everywhere else).
+- **The carve box** (§1) pushes the four wild side bands out to
+  |x| ≥ 801, moves the badlands/deep-forest back country to |z| ≥ 1201,
+  narrows the centre band to |x| ≤ 349 over its whole z range, and lets
+  the side settled bands reach in to |x| ≥ 201.
+  R = min(800 − 550, 550 − 350) = 200; the theoretical maximum is 274,
+  because two neighbouring capitals are only 550 apart. Registration
+  detail and the resulting biome table: `biomes_mobs.md` §1.3.
+  The centre band first shipped as three slabs (a narrow belt inside the
+  box, full-width front and back slabs outside it) to keep the wide
+  centre↔side overlaps; that was **rolled back the same day** because the
+  slabs' four new cuboid faces cost 1 500 nodes of straight ground border
+  — three quarters of the whole regression the carve caused. Only the
+  deep forest still needs slabs, because only it needs a hole in the
+  middle of its cuboid. See the D4 note in `biomes_mobs.md` §1.3 before
+  re-proposing them.
+- **No coverage hole**: the narrowed centre band without the side-band
+  extension to |x| ≥ 201 would leave 5 % of the land with no eligible
+  biome at all, which generates as bare stone (measured negative control:
+  478 799 land columns). Verified on the shipped registrations: **0** land
+  columns without a biome, at every y from 4 to 31000.
+- **Accepted residual (D5)**: `grug_swamp` (y 1..6) and `grug_beach`
+  (y 1..4) are universal, x/z-unlimited and are **not** carved. A
+  capital whose terrain surface lands at y ≤ 6 can therefore still come
+  up swamp or beach — measured at ~30 % of the box at y 5–6 and ~75 % at
+  y 4. Accepted rather than split both into z-slabs as well: the camp
+  platform sits at the engine spawn level and our terrain baseline is
+  lifted ~6–10 nodes above sea level, so a capital that low is a corner
+  case, and the cost would be six more registrations plus their deco
+  lists.
+
+Each capital contains:
 
 - The **spawn point for characters of its race** — players start (and
   respawn) in their own race's capital.
@@ -782,7 +839,9 @@ rosters).
   its nature variant (dwarven pine hills → high crags; elven forest →
   deep forest; troll jungle edge → deep jungle …). Difficulty and biome
   reinforce each other: jungle/high mountains are high-level BY
-  POSITION.
+  POSITION. **Since 2026-08-08 no nature biome is registered inside the
+  carve box** (§1/§3): wild patches start outside |x| ≤ 800,
+  600 ≤ |z| ≤ 1200, not "anywhere, thinning inward".
 - Working level bands (final in the biome TODO): coast/beach 5–25,
   deep forest 10–30, swamp 25–40, jungle 35–55, high mountains 40–60.
 - **Nature mobs are aggressive on sight against players AND NPCs**
