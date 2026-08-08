@@ -105,6 +105,39 @@ local not_solid = {
 	[core.get_content_id("default:river_water_flowing")] = true,
 }
 
+-- Content that counts as "the mask already cut here" when it sits directly
+-- above a column's cap: air and every liquid, i.e. not_solid MINUS `ignore`.
+-- `ignore` is never-generated volume, which means the NEIGHBOURING chunk has
+-- not run its own mask yet — and when it does, it owns that column with its own
+-- heightmap. Not answering for it is the correct answer, not a gap.
+local clear_above = {}
+for c in pairs(not_solid) do
+	clear_above[c] = true
+end
+clear_above[c_ignore] = nil
+
+-- What a CARVED column shows at its cap: exactly what the re-dress below writes
+-- there — c_sand at beach level, otherwise the column biome's node_top. So the
+-- set is every registered biome's node_top plus c_sand, and deliberately NOT
+-- node_filler/node_stone (a cave floor at cap height would read as a re-dress
+-- and cost that column its tree) or node_riverbed (a river channel floor would,
+-- with its own water above it). Same set and same reasoning as the healing
+-- LBM's in ocean_mask.lua; lazily built for the same reason biome_surface is.
+local ground_ids
+local function is_ground(c)
+	if not ground_ids then
+		ground_ids = {[c_sand] = true}
+		for _, def in pairs(core.registered_biomes) do
+			local name = def.node_top
+			local ndef = name and core.registered_nodes[name]
+			if ndef and (not ndef.liquidtype or ndef.liquidtype == "none") then
+				ground_ids[core.get_content_id(name)] = true
+			end
+		end
+	end
+	return ground_ids[c] == true
+end
+
 -- Surface layers of a biome, by biome id, for re-dressing a cut top above beach
 -- level: node_top (depth_top layers) over node_filler (FILLER_DEPTH layers).
 -- Without it a shaved coastal hill would end in bare stone — not
@@ -274,6 +307,19 @@ end
 -- Only solid content is replaced; `ignore` (never-generated volume) and every
 -- water variant are left alone, and nothing below the cap is touched, so caves
 -- and seabeds survive.
+--
+-- IT ONLY CLEANS COLUMNS THE MASK ACTUALLY CARVED (WP36 review). A shell column
+-- has no heightmap entry — the mapgen heightmap covers minp..maxp only — so
+-- this pass never knew whether the neighbour's `h > cap` even held, and cut
+-- unconditionally. On an UNCARVED neighbour column (terrain at or below its
+-- cap) that shaved a legitimate tree down to a stump, in a 16-node ring around
+-- every coastal mapchunk, and it did so since the pass was written. The map
+-- answers the question here as well as it does for the healing LBM in
+-- ocean_mask.lua, and cheaper: the whole emerged area is already in `data`, so
+-- the test is two array reads — biome ground AT the cap (that is the mask's
+-- re-dress, which a carved column always has) and air/liquid directly above it.
+-- A cap outside this VoxelManip cannot be tested and is left alone; that column
+-- belongs to a mapchunk far below anyway, and the healing LBM covers it.
 local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
 	-- Fresh overflow can only sit near this chunk's own terrain.
 	local y_top = math.min(emax.y, SHELL_MAX_Y, max_h + DECO_MARGIN)
@@ -288,22 +334,23 @@ local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
 		for x = emin.x, emax.x do
 			if not (inner_z and x >= minp.x and x <= maxp.x) then
 				local cap = column_cap(x, z)
-				if cap then
-					local y1 = math.max(cap + 1, emin.y)
-					if y_top >= y1 then
-						local idx = area:index(x, y1, z)
-						for y = y1, y_top do
-							if not not_solid[data[idx]] then
-								if y <= WATER_LEVEL then
-									data[idx] = c_water
-									wrote_water = true
-								else
-									data[idx] = c_air
-								end
-								dirty = true
+				-- `cap < y_top` also guarantees cap + 1 is inside the VM, so
+				-- both probes below are in range.
+				if cap and cap >= emin.y and cap < y_top and
+						is_ground(data[area:index(x, cap, z)]) and
+						clear_above[data[area:index(x, cap + 1, z)]] then
+					local idx = area:index(x, cap + 1, z)
+					for y = cap + 1, y_top do
+						if not not_solid[data[idx]] then
+							if y <= WATER_LEVEL then
+								data[idx] = c_water
+								wrote_water = true
+							else
+								data[idx] = c_air
 							end
-							idx = idx + ystride
+							dirty = true
 						end
+						idx = idx + ystride
 					end
 				end
 			end
@@ -348,5 +395,25 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 	-- The engine already lit this chunk inside makeChunk (mapgen_v7.cpp:378);
 	-- we changed it afterwards, so it has to be redone. NOT write_to_map:
 	-- that is disallowed here and unnecessary — finishGen blits.
-	vm:calc_lighting()
+	--
+	-- THE RANGE IS EXPLICIT, and that is WP36's second half of the
+	-- floating-tree fix. calc_lighting() without arguments lights
+	-- emin.y + 16 .. emax.y - 16, i.e. exactly minp.y..maxp.y in y
+	-- (l_vmanip.cpp:219-221 — x/z are NOT trimmed, so the shell clean's columns
+	-- are covered by the default, only the height is not). The carve now
+	-- reaches up to emax.y, so the top 16 nodes it newly clears would keep the
+	-- light values of the leaves they replaced — default:leaves does not
+	-- propagate sunlight — and a dark air/water band would sit over every
+	-- coastal mapchunk whose neighbour above was generated first. Nothing else
+	-- would ever repair it: the chunk above lights from its own minp.y - 1
+	-- upward, so it only covers this band if it generates AFTER us.
+	--
+	-- The upper edge is emax.y - 1, not emax.y, on purpose:
+	-- Mapgen::propagateSunlight seeds each column from the node ONE ABOVE the
+	-- range it is given (mapgen.cpp:489), so emax.y would index outside the
+	-- VoxelManip's own area. This is the same shape the engine uses for itself,
+	-- one node of headroom (mapgen_v7.cpp:378 passes node_max + (0,1,0)), just
+	-- 15 nodes higher because our writes are.
+	vm:calc_lighting({x = emin.x, y = minp.y, z = emin.z},
+		{x = emax.x, y = emax.y - 1, z = emax.z})
 end)

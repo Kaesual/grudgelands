@@ -139,6 +139,13 @@ local function build(cfg)
 	-- that is above this line.)
 	local MASK_MIN_Y = SEA_FLOOR_CAP + 1
 
+	-- ... and the highest cap it can ever produce (the last node before the
+	-- taper ends and surface_cap turns nil). Only a bound, never a decision:
+	-- the healing LBM uses it to size the map region it has to have in memory
+	-- before it can probe a column's cap, in the one case where box_cap_bounds
+	-- returns no upper bound because some column of the box is uncapped.
+	local MASK_MAX_Y = surface_cap(TAPER - 1)
+
 	-- core.get_perlin was renamed in 5.12; keep working on both. Both names
 	-- exist in the mapgen env too (builtin/emerge/env.lua).
 	local coast_inset = cfg.inset
@@ -249,6 +256,7 @@ local function build(cfg)
 		SHELL = SHELL,
 		SEA_FLOOR_CAP = SEA_FLOOR_CAP,
 		MASK_MIN_Y = MASK_MIN_Y,
+		MASK_MAX_Y = MASK_MAX_Y,
 	}
 end
 

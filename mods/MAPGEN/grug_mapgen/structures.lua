@@ -660,9 +660,19 @@ core.register_on_generated(function(minp, maxp, blockseed)
 	end
 
 	vm:set_data(data)
-	-- No update_liquids: nothing here places a liquid (the ocean mask, which
-	-- did, now runs in the mapgen env and updates them there). Lighting does
-	-- change — a platform clearing opens a 25x25 shaft — so it is recalculated.
+	-- Nothing here PLACES a liquid any more (the ocean mask, which did, now
+	-- runs in the mapgen env and updates them there) — but every pass above
+	-- REMOVES solid nodes: a platform clearing opens a 25x25x64 shaft and an
+	-- outpost a 7x7x5 one, and where that shaft breaks into standing water
+	-- (a coastal outpost pad against a lake or a river bank) the water has to
+	-- start flowing. A main-env write_to_map does not queue liquids the way
+	-- finishBlockMake does for a mapgen VM, so without this the world keeps a
+	-- suspended water wall until a player disturbs it by hand. The cost is
+	-- bounded by the early return above: only the ~40 mapchunks in a world
+	-- that actually carry a capital platform, an outpost or a bandit camp ever
+	-- reach this line.
+	vm:update_liquids()
+	-- Lighting changes for the same reason, so it is recalculated.
 	vm:calc_lighting()
 	vm:write_to_map()
 end)
