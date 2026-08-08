@@ -193,13 +193,33 @@ end)
 -- swapping the weapon changes all three without a relog.
 --
 -- What stays behind: punching a mob with a wielded pick or a bare hand
--- (E5). That path keeps the WP6 cadence patch and is strictly worse than the
--- skill -- no crit, no rage from the ability, no threat multiplier, no target
--- lock. E5 read that as "not a bypass worth defending against", and it is true
--- of the path in isolation and false of the two running AT ONCE: the ability
--- item only disables punching while it is SELECTED, so a hotbar switch used to
--- leave both swinging. The defence is one shared swing clock, in strike_swing
--- below.
+-- (E5). E5 justified leaving it alone with "strictly worse than the skill --
+-- no crit", and that is FALSE. The WP6 cadence patch it keeps hands it both
+-- of the Strike's numbers: mods/ENTITIES/mobs/api.lua:2749-2756 adds
+-- grug_core.get_melee_bonus(hitter) to the fleshy group on every ACCEPTED
+-- swing, and api.lua:2789-2791 rolls grug_core.melee_crit on the result. An
+-- accepted swing then reaches grug_mobs' do_punch wrapper
+-- (grug_mobs/init.lua:352 -> grug_core.run_player_hit_mob), which adds the
+-- base threat (= damage) and fires the hit hook in this mod's init.lua:1165 --
+-- and that hook sets the soft target lock and grants the +12 rage, because
+-- grug_core.in_ability_punch is false on this path. So a hotbar weapon swung
+-- with the dig key at one of our mobs deals FULL weapon damage + Str + crit
+-- and generates rage, threat and a target lock, exactly like the Strike.
+--
+-- What it actually lacks is the source and the convenience: the damage comes
+-- from the WIELDED stack rather than the weapon slot, which is exactly B1's
+-- "single, fixed source" being bypassed; it wears that stack (the Strike
+-- punches with punch_attack_uses = 0); it carries no ability threat
+-- multiplier; and it cannot swing at the lock -- the player has to keep the
+-- mob pointed, with no range/LOS test and no auto-repeat.
+--
+-- docs/design/combat_stats.md §2 records the same split.
+--
+-- E5 read the path as "not a bypass worth defending against". Whatever that is
+-- worth for the path in isolation, it is false of the two running AT ONCE: the
+-- ability item only disables punching while it is SELECTED, so a hotbar switch
+-- used to leave both swinging. The defence is one shared swing clock, in
+-- strike_swing below.
 --
 -- SCOPE OF THAT DEFENCE, exactly (review MEDIUM A): it covers MOB targets and
 -- nothing else. `grug_core.accept_melee_swing` has two callers -- strike_swing
@@ -406,8 +426,10 @@ local function strike_swing(user, pointed, def)
 	-- mods/ENTITIES/mobs/api.lua:2706ff) -- review HIGH 2.
 	--
 	-- E5 left the old path alone because a hotbar weapon swung that way is
-	-- "strictly worse than the skill". True in isolation, false when both run
-	-- at once: A2 only stops a player punching while the ABILITY item is
+	-- "strictly worse than the skill" -- an assessment the section header above
+	-- corrects (it crits, it generates rage and it takes the target lock).
+	-- Whatever it is worth in isolation, it is false when both run at
+	-- once: A2 only stops a player punching while the ABILITY item is
 	-- selected, so switching the hotbar to a pick and holding dig left the
 	-- Strike loop swinging the equipment-slot weapon at full damage next to it
 	-- -- two damage streams, ~1.9x the DPS and doubled rage income, against

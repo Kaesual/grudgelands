@@ -88,7 +88,19 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   is held) discarded whole, plus the Strength bonus and the auto-attack
   crit roll (before that patch, auto-attacks ignored Strength, could never
   crit, and every weapon below a bronze sword dealt 0 while the key was
-  held). This path grants **no rage, no threat report and no target lock**.
+  held). Against a mob it **also generates rage, base threat and the soft
+  target lock** (corrected 2026-08-08 — an earlier version of this bullet
+  denied all three): the cadence gate and the `do_punch` wrapper that feeds
+  the hit pipeline are installed by the same mob registration, so every
+  accepted swing adds threat equal to the damage dealt, grants the +12 rage
+  and sets the lock, exactly as a Strike swing does. What it lacks is the
+  **source** and the ability plumbing: its damage comes from the **wielded
+  stack** rather than the weapon slot — the one place the single-fixed-source
+  rule above is bypassed — it **wears** that stack (an ability punch does
+  not), it carries **no ability threat multiplier** (base threat only; a
+  tank ability's ×3 is unavailable to it), and it cannot swing at the lock:
+  the player has to keep the mob pointed, with no range/line-of-sight test
+  and no auto-repeat.
   Both paths consume **one shared per-player melee clock**, so against a
   mob the skill and a held button can never both land inside the same
   swing window (a punch on a *player* never reaches that gate — next

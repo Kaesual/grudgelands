@@ -595,7 +595,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	-- floor(fpi / 75 * 9000) wear to the WIELDED stack and writes it back with
 	-- set_wielded_item -- and during a cast the wielded stack IS the ability
 	-- tool. At fpi 1.4 that is 167, not 168: 1.4/75*9000 is 167.99999999999997
-	-- in doubles (TODO-design-weapon-slot.md A5 quotes 168/~390 -- measured,
+	-- in doubles (BACKLOG.md's WP35 row, T0, quotes 168/~390 -- measured,
 	-- it is 167 and the tool breaks on cast 393). Abilities with a cooldown
 	-- hid it by accident (the cooldown ticker overwrites the wear every step
 	-- and zeroes it at the end); Mighty Blow has cooldown 0, so its own icon

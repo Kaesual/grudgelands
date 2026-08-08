@@ -831,10 +831,11 @@ small villages, and perks around vendors/professions.
   (implementation: WP19, race registry hook): Dwarf −20% fall damage ·
   Troll +50% out-of-combat regen · Undead ignored by zombies at night
   (unless the player attacked that zombie) · Orc +1 rage per hit taken ·
-  Elf +5 m ability range · Human +10% quest XP. Plus **one race-exclusive
-  vendor per race** (WP7). Implementation state (WP19): the troll regen
-  multiplier reaches mana today and MUST be consumed by WP21's HP regen
-  (rage decay is unaffected — a troll warrior only benefits from WP21
+  Elf +5 m ability range (**ranged/spell abilities only** — melee abilities
+  keep their own reach, `classes.md` §2b) · Human +10% quest XP. Plus **one
+  race-exclusive vendor per race** (WP7). Implementation state (WP19): the
+  troll regen multiplier reaches mana today and MUST be consumed by WP21's
+  HP regen (rage decay is unaffected — a troll warrior only benefits from WP21
   on); the human bonus is a latent hook (`grug_classes.get_xp_bonus`)
   that activates when WP8's quests tag their XP with source="quest".
 - **The vendor perk, quantified** (decided 2026-08-07 in WP7 — the perk

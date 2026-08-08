@@ -36,7 +36,7 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | 10 + 2×Int (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | +12 per landed **Strike** hit (§2b — the auto-attack; the class abilities generate no rage), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
+| Rage | Warrior | 0–100, starts at 0 | +12 per landed melee auto-attack hit (the **Strike** of §2b, and the surviving held-button path for tools and fists — combat_stats §2; the class abilities generate no rage), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
