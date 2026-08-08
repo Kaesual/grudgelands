@@ -265,6 +265,29 @@ Details + line numbers in [docs/research/](docs/research/).
   apply stats to player stats on equip/swap. Drop source: a `drops`
   function in the mob def rolls on kill (base variant everywhere, improved
   variant with better ranges only on elite/heartland mobs).
+- **Materials & depth gating** (shipped with WP25; `items_crafting.md`
+  §3.0.1/§3.0.4, `world.md` §2 R6):
+  - **The material ladder has a public interface** —
+    `grug_materials.TIERS`, `tier_at(y)`, `stratum_node_for(y)`,
+    `level_for_tier(tier)`. Nothing outside `grug_materials` hardcodes a
+    depth boundary or a stratum node name; ask the mod. WP24's isle
+    generator is the first consumer, because a VoxelManip pass does not
+    get the strata from the mapgen ore stage the way the continent does
+    (`grug_nodes/ore_respawn.lua` is the second — its fallback would
+    otherwise punch level-0 stone into a level-3 wall).
+  - **Engine contract, `groupcaps.<group>.maxlevel`**: it is not only the
+    diggability gate. `leveldiff = maxlevel − node level` feeds three
+    formulas at once (`reference_projects/luanti/src/tool.cpp:394-414`,
+    documented in `lua_api.md:2715-2731`): `leveldiff < 0` → not diggable
+    at all, `leveldiff > 1` → `time = time / leveldiff`, and
+    `real_uses = uses · 3^leveldiff`. **Changing a `maxlevel` therefore
+    changes durability and dig speed with it** and has to be compensated
+    in `uses`/`times` — WP25 walked into exactly this (the re-tiered
+    bronze pick silently fell from 180 usable blocks to 20). Such
+    re-parameterisations of vendored items go through
+    `core.override_item`, which **replaces a named field wholesale, it
+    does not merge** — so an override must restate the full upstream
+    `groups` / `tool_capabilities` with one field changed.
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
   `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
   (binding):**
@@ -359,7 +382,27 @@ Details + line numbers in [docs/research/](docs/research/).
   **Landmine**: ore/decoration defs whose `biomes` names don't resolve
   are silently unrestricted (world-wide) — never register ores/decos
   against biome names that might not exist. `game.conf` pins
-  `allowed_mapgens = v7`. The two things biomes cannot express live in one
+  `allowed_mapgens = v7`.
+  **Registration order is a tool, not trivia**: in mgv7 a mapchunk runs
+  caves (`mapgen_v7.cpp:335`) → ores (`:355`) → dungeons (`:359`), and
+  inside the ore stage the ores run in **registration order**, each
+  converting only nodes that still match its `wherein`. That is the whole
+  mechanism behind the six rock strata (`grug_mapgen/ores.lua`): an
+  `ore_type = "stratum"` registered LAST with `wherein = "default:stone"`
+  takes exactly the nodes no other ore claimed — so not one vein's
+  `wherein` had to change — and, running after the caves, it also
+  converts the already-carved cave walls, which therefore inherit their
+  stratum for free. A `register_on_generated` VoxelManip pass would have
+  got neither of those for free. (Dungeons run after the ores, so dungeon
+  walls are *not* stratum rock — accepted.)
+  **Landmine since WP25: `default:stone` no longer exists below −100.**
+  Every node whitelist, every `wherein`/`place_on` and every mob spawn
+  `nodes` list that means "underground rock" has to carry
+  `group:grug_stratum` as well, or it silently narrows to the −40…−100
+  sliver. WP25 repaired exactly that on four cave spawn rows (zombie,
+  giant spider, stone + mesa golem); `default:stone` itself carries
+  `grug_stratum = 1`, so the group alone is the complete predicate.
+  The two things biomes cannot express live in one
   `register_on_generated` VoxelManip pass (`grug_mapgen/structures.lua`):
   the **continent ocean mask** (two mirrored continent rectangles;
   a coast noise insets them by 0..150 nodes INWARD only — so the strait is

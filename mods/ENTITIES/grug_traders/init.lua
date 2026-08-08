@@ -67,11 +67,11 @@ end
 
 --
 -- Foreign mob drops (items_crafting.md §8.1: "Herbs/materials sold to
--- vendors: 1-3c each" — the floor band; the real market is player trade).
+-- vendors: 1-6c each" — the floor band; the real market is player trade).
 -- Collected by walking every `drops` table in mods/ENTITIES/grug_mobs; the
 -- audit at the bottom of this file re-proves the list at every start.
 --
--- EVERY price below stays inside §8.1's 1-3c band; the ordering inside it
+-- EVERY price below stays inside §8.1's 1-6c band; the ordering inside it
 -- mirrors the grug_mobs material scale (items.lua: 1-3 vendor trash):
 --   mobs:meat_raw       2c  food, the single most common drop in the roster;
 --                           the same price as our own grug_mobs:raw_fish

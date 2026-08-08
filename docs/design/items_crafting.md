@@ -612,13 +612,22 @@ only — strata are `cracky` and nothing else.
   seed a wear-budget check (§8.3).
 - Accepted side effect: bronze no longer breaks default's `level = 2`
   nodes — obsidian and its two variants, the steel/copper/tin/bronze
-  blocks and the mese block. Steel still breaks all of them.
+  blocks and the mese block, plus the `stairs` registrations of all of
+  those. Steel still breaks every one of them.
   `default:diamondblock` (`level = 3`) was already out of bronze's reach
   before WP25, and `default` has no `level = 1` node at all.
 - **T2 has no tool of its own today** — the iron pick arrives with
   WP26/WP29. The steel pick (maxlevel 2) covers T2 *and* T3, and iron
-  lies in the T1 band, so the ladder is walkable end to end: with today's
-  item set a player digs to −500, and T4 upward opens with WP26/WP29.
+  lies in the T1 band, so the ladder is unbroken as far as it goes:
+  with today's item set a player digs down to **−500**, and T4 downward
+  opens with WP26/WP29.
+- **A pick is at its most fragile in the rock of its own tier**, and that
+  is the intended shape of the ladder rather than a defect. `uses` is
+  multiplied by `3^leveldiff`, so the steel pick gets 180 digs out of
+  surface stone, 60 out of slate and only its bare 20 out of basalt —
+  and the next tier's pick makes that same basalt cheap again. Whether
+  the *base* `uses` of the six picks need raising for deep mining to feel
+  fair is a durability question and belongs to **WP22**, not here.
 - The mese and diamond picks are unreachable in game and are deleted by
   **WP28** (§3.0.3). Their maxlevel 4/5 exist only so a runtime tester
   can open T5/T6 at all.

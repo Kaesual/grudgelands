@@ -225,10 +225,17 @@ game (not a mod pack), written in Lua.
       (`docs/design/items_crafting.md` §2.2,
       `docs/design/inventory_equipment.md` §4). Cooking gets a book too,
       without keystones and without costing a main slot
-- [ ] Material ladder & world materials: the three new ore nodes (Silver,
-      Quartz, Garnet), mese repurposed as Emberstone, the six rock strata
-      with their digging gates, the two-slot furnace and the alloy chain
-      (`docs/design/items_crafting.md` §3.0)
+- [x] Material ladder — world materials (WP25): the three new ore nodes
+      (Silver, Quartz, Garnet) plus Abyssal Crystal, mese repurposed as
+      Emberstone, and the **six rock strata with their digging gates** —
+      five new nodes below `default:stone` (the T1 stratum), placed as
+      `stratum` ores registered last so cave walls inherit their tier,
+      and a re-parameterised pickaxe `maxlevel` ladder to open them
+      (`docs/design/items_crafting.md` §3.0.1/§3.0.4, `world.md` §2 R6).
+      Walkable to −500 with today's items; T4–T6 need the picks of
+      WP26/WP29. **Needs a fresh world, not runtime tested yet**
+- [ ] Material ladder — the two-slot furnace and the alloy chain on top
+      of it (WP26, `docs/design/items_crafting.md` §3.0.2)
 - [x] Gold system (currency, persistent) — WP7: one copper integer in
       player meta, 100c = 1s / 100s = 1g display-only, HUD + `/money`
       (`docs/design/economy.md` §1)

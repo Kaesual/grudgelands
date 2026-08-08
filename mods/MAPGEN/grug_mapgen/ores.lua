@@ -165,11 +165,15 @@ local scatter_ores = {
 	-- Emberstone (the repurposed mese ore, items_crafting.md §3.0.1) is the T5
 	-- lead metal, so its main band is T4 (−501 … −700); the second band keeps
 	-- it available all the way down for T5/T6 play.
-	-- The old mountain band (y >= 1025) is dropped, not moved: our terrain
-	-- noise (init.lua, mgv7_np_terrain_base offset 14 / scale 70, 5 octaves,
-	-- persist 0.6) tops out around y 175 -- an order of magnitude below
-	-- y 1025 -- so it was dead code inherited from minetest_game. Same reason
-	-- it is absent from every new row below.
+	-- The old mountain band (y >= 1025) is dropped, not moved: no terrain in
+	-- this game reaches it. Our base terrain (init.lua, mgv7_np_terrain_base
+	-- offset 14 / scale 70, 5 octaves, persist 0.6) tops out around y 175, and
+	-- mgv7's mountain layer -- which IS on, MGV7_MOUNTAINS is in the default
+	-- spflags -- adds at most mount_zero_level + max(np_mountain) *
+	-- max(np_mount_height) ~= 0 + 1.83 * 475 ~= y 870 in the theoretical case
+	-- where both noises peak together (mapgen_v7.cpp:143/145, :423-428). Still
+	-- below 1025, so the band was dead code inherited from minetest_game. Same
+	-- reason it is absent from every new row below.
 	-- HONEST NOTE: coal, tin, copper, iron and gold above still carry their
 	-- y >= 1025 bands, which are dead for exactly the same reason. They are
 	-- left standing because WP25 only re-cuts the bands the material ladder

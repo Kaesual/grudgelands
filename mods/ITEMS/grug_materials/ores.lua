@@ -16,13 +16,11 @@
 -- Backgrounds stay `default_stone.png` even though after the stratum
 -- conversion these veins actually sit in slate/basalt/granite. That is
 -- deliberate: the pale vein reads clearly against the dark wall it is
--- embedded in. minetest_game solves the same problem the other way round --
--- there is no `default:desert_stone_with_*` node family at all; ONE ore node
--- is placed into both stone kinds via `wherein = {"default:stone",
--- "default:desert_stone"}` (mods/BASE/default/mapgen.lua:78), so its single
--- `default_stone.png` background likewise ends up sitting in rock it does not
--- match. Same conclusion either way: the vein reads by its overlay, not by
--- its backdrop.
+-- embedded in -- a vein reads by its overlay, not by its backdrop. There is
+-- also nothing to match it to: every mineral ore in the game, ours and
+-- default's alike, is registered with `wherein = "default:stone"` and carries
+-- the one stone background, so a per-stratum ore variant would mean five
+-- extra node registrations per ore for a backdrop nobody looks at.
 --
 -- Tiles are engine texture modifiers over vendored minetest_game art -- no
 -- new PNG is shipped (LICENSE-media.md). The parenthesised grouping applies
