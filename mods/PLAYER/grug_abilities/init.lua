@@ -181,6 +181,17 @@ function grug_abilities.register_ability(def)
 	assert(def.id and def.class and def.cast and def.cooldown,
 		"incomplete ability definition")
 	def.cost = def.cost or {}
+	-- Which equipment slot's item this ability wears and (from T4 on) swings
+	-- (weapon-slot design C1). "weapon" is the default and every shipped
+	-- ability takes it -- deliberately INCLUDING the ones that deal no weapon
+	-- damage at all (Blink, Renew, Power Word: Shield): "all skills use the
+	-- weapon skin" is the rule, and an exception list would put the orb back on
+	-- precisely the abilities whose colour is hardest to remember. "offhand"
+	-- exists for WP14's shield abilities and has no user yet -- it is built now
+	-- so WP14 does not pay for the same plumbing twice.
+	def.slot = def.slot or "weapon"
+	assert(def.slot == "weapon" or def.slot == "offhand",
+		"ability slot must be \"weapon\" or \"offhand\"")
 	grug_abilities.registered[def.id] = def
 	grug_abilities.by_class[def.class] = grug_abilities.by_class[def.class] or {}
 	table.insert(grug_abilities.by_class[def.class], def)
@@ -307,6 +318,212 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 end
 
 --
+-- Ability item skins (weapon-slot design C1-C4). Every ability item wears the
+-- item that sits in its slot: a Warrior with a sword equipped holds HIS sword
+-- no matter which ability is selected, and swapping the weapon swaps all four
+-- icons at once. The mechanism is the per-stack meta override of A1
+-- (lua_api.md:2929-2949, src/inventory.cpp:258-295) -- no new item
+-- registrations, no new asset, no engine patch.
+--
+-- C3 (a), the orb backdrop: the hotbar icon is the tinted orb DIMMED, with the
+-- weapon art composited on top, so the colour the eye already learned stays a
+-- large area. The wield (in-hand) image is the weapon art ALONE -- a glowing
+-- disc extruded into a slab in the player's hand is exactly the "round thing"
+-- this work removes.
+--
+-- C2, empty slot: the meta keys are simply NOT written, so the item definition's
+-- own tinted orb shows through and a character without a weapon looks exactly
+-- like the game did before this. An empty slot makes skills weak, never
+-- uncastable.
+--
+
+local ORB_TEXTURE = "grug_abilities_orb.png"
+-- Alpha of the backdrop, 0..255. Dimmed so the weapon on top stays the thing
+-- you read first; the hue still carries the ability identity.
+local ORB_BACKDROP_ALPHA = 150
+
+-- The skin token: what a stack has to say about itself so a sync can decide, in
+-- ONE string compare, that it is already correct. Load-bearing, not polish --
+-- every inventory write re-sends the whole list to the client, which is why the
+-- cooldown-wear path above is so stingy and why the GCD is not displayed at all
+-- (D2/2). Without it, dragging any item would rewrite four stacks.
+--
+-- Shape: "<version>|<source image>", or the empty string for "no skin" (which
+-- is also what an untouched stack answers, so a weaponless character never
+-- writes anything). The source image is in the token rather than just the item
+-- NAME because that is what the composed strings actually depend on -- a
+-- per-stack image override on the weapon (a WP5 affix) must not read as
+-- unchanged. SKIN_VERSION is bumped whenever the composition below changes, or
+-- an already-granted stack would keep the old look forever.
+local SKIN_VERSION = 1
+local SKIN_TOKEN_KEY = "grug_skin"
+
+-- The equipment list behind each ability slot. This is grug_inventory's
+-- vocabulary, but grug_abilities deliberately does not depend on that mod --
+-- the seam is grug_core's, and `listname` arrives as a plain string. The names
+-- are audited against the real slot table at mods_loaded below, because a
+-- silent mismatch here would look exactly like "the skin never updates".
+local SLOT_OF_LIST = {grug_weapon = "weapon", grug_offhand = "offhand"}
+
+-- Source image of what is in one hand slot, or "" when there is nothing to wear
+-- (empty slot, or an item that has no inventory image of its own -- a node
+-- item). Mirrors the engine's own resolution order: stack meta wins over the
+-- definition (src/inventory.cpp:258-266). `inventory_image` in a DEFINITION may
+-- be an item image definition table rather than a string
+-- (lua_api.md:10388-10392); the meta override is always a plain name.
+local function slot_image(player, slot)
+	local stack
+	if slot == "offhand" then
+		stack = grug_core.get_equipped_offhand(player)
+	else
+		stack = grug_core.get_equipped_weapon(player)
+	end
+	if not stack or stack:is_empty() then
+		return ""
+	end
+	local img = stack:get_meta():get_string("inventory_image")
+	if img == "" then
+		local def = core.registered_items[stack:get_name()]
+		img = def and def.inventory_image or ""
+		if type(img) == "table" then
+			img = img.name or ""
+		end
+	end
+	return img
+end
+
+-- THE one place a texture-modifier string is composed (D2/5). These strings are
+-- parsed CLIENT-side: a malformed one yields a generateImagePart error and an
+-- untextured icon, not a server error, so there is exactly one site to get
+-- right and no second one to drift from it.
+--
+-- Returns inventory_image, wield_image -- or nil, nil when there is nothing to
+-- wear, which is the caller's signal to remove the overrides (C2).
+--
+-- Escaping: `src` is wrapped in `^( ... )` rather than backslash-escaped.
+-- generateImage splits on top-level `^` only, tracking parentheses
+-- (src/client/imagesource.cpp:1819-1847), so a source image that carries its
+-- own modifier -- every grug_gear weapon does, they are tinted per bracket --
+-- composes correctly as a group. Backslash escaping (lua_api.md:698-708) is
+-- required only by modifiers that take a texture NAME as an argument
+-- ([combine, [mask, [lowpart); we use none of those.
+local function skin_images(color, src)
+	if src == "" then
+		return nil, nil
+	end
+	return ORB_TEXTURE .. "^[multiply:" .. color ..
+		"^[opacity:" .. ORB_BACKDROP_ALPHA .. "^(" .. src .. ")", src
+end
+
+local function skin_token(src)
+	if src == "" then
+		return ""
+	end
+	return SKIN_VERSION .. "|" .. src
+end
+
+-- Skin one ability stack IN PLACE; returns true only when something actually
+-- changed, i.e. only when the caller has to spend an inventory write.
+--
+-- Touches nothing but the three meta keys: the wear bar is the cooldown display
+-- and stays whatever it was, and so does the elf `range` override.
+local function apply_skin(stack, def, src)
+	local meta = stack:get_meta()
+	local token = skin_token(src)
+	if meta:get_string(SKIN_TOKEN_KEY) == token then
+		return false
+	end
+	local inv_img, wield_img = skin_images(def.color, src)
+	-- Writing "" REMOVES the key (same as the `range` override below), which is
+	-- how the empty slot gets back to the definition's own orb.
+	meta:set_string("inventory_image", inv_img or "")
+	meta:set_string("wield_image", wield_img or "")
+	meta:set_string(SKIN_TOKEN_KEY, token)
+	return true
+end
+
+-- Resolve each hand at most once per pass, and only when a stack actually asks
+-- for it.
+local function skin_source_cache(player)
+	local cache = {}
+	return function(def)
+		local src = cache[def.slot]
+		if not src then
+			src = slot_image(player, def.slot)
+			cache[def.slot] = src
+		end
+		return src
+	end
+end
+
+-- Rewrite the skins of the granted ability items. `slot` limits the pass to one
+-- hand; nil means both. Ability items live in "main" only (the allow callback
+-- above enforces it), so this is one list, and it writes only the stacks whose
+-- token is stale.
+local function sync_skins(player, slot)
+	local inv = player:get_inventory()
+	local list = inv and inv:get_list("main")
+	if not list then
+		return
+	end
+	local source_of = skin_source_cache(player)
+	for i = 1, #list do
+		local stack = list[i]
+		local def = item_defs[stack:get_name()]
+		if def and (slot == nil or def.slot == slot) then
+			if apply_skin(stack, def, source_of(def)) then
+				inv:set_stack("main", i, stack)
+			end
+		end
+	end
+end
+
+-- C4's third trigger (join and class pick are sync_kit's). Consumers of this
+-- hook must be idempotent and cheap and may be called twice for one change --
+-- both are the token compare's job.
+--
+-- `listname` is the one equipment list that changed, or nil for "assume
+-- everything". An armor or trinket list cannot change any ability skin, so it
+-- returns before touching the inventory at all; a list we do NOT recognise
+-- (nil, or a slot added later) falls through to the full pass, because being
+-- slow is recoverable and being silently wrong is not.
+grug_core.register_on_equipment_change(function(player, listname)
+	if listname then
+		local slot = SLOT_OF_LIST[listname]
+		if not slot then
+			return
+		end
+		sync_skins(player, slot)
+	else
+		sync_skins(player, nil)
+	end
+end)
+
+-- The list names above are a string contract with a mod we do not depend on.
+-- If grug_inventory ever renames a slot list, the skins would simply stop
+-- following the weapon, with nothing in the log to say why -- so check it once,
+-- after every mod has registered its slots.
+core.register_on_mods_loaded(function()
+	if not core.global_exists("grug_inventory")
+			or not grug_inventory.equipment_slots then
+		return
+	end
+	local seen = {}
+	for _, entry in ipairs(grug_inventory.equipment_slots) do
+		if SLOT_OF_LIST[entry.list] then
+			seen[SLOT_OF_LIST[entry.list]] = true
+		end
+	end
+	for list, slot in pairs(SLOT_OF_LIST) do
+		if not seen[slot] then
+			core.log("error", "[grug_abilities] no equipment slot uses list \"" ..
+				list .. "\" -- ability skins will not follow the " .. slot ..
+				" slot")
+		end
+	end
+end)
+
+--
 -- Kit granting: exactly one item per class ability, foreign class items are
 -- purged, wear resets with the (runtime) cooldowns. Runs on join and on
 -- class pick/switch. Talent-gated abilities (def.talent_gated, e.g. Renew)
@@ -316,6 +533,16 @@ end
 -- pointed_thing reaches as far as grug_abilities.get_range allows.
 --
 
+-- Does this ability belong in THIS character's kit? One predicate, used by both
+-- the purge below and the grant loop, so the two can never disagree about what
+-- a kit is. T3's universal auto-attack is granted to every class and must be
+-- exempt from the purge (or it is granted and destroyed in the same pass): it
+-- adds its flag HERE and to the grant loop's ability list, and nothing else in
+-- sync_kit has to know.
+local function in_kit(def, class)
+	return def.class == class
+end
+
 local function sync_kit(player)
 	local class = grug_classes.get_class(player)
 	local name = player:get_player_name()
@@ -324,6 +551,7 @@ local function sync_kit(player)
 	wear_steps[name] = {}
 	slot_cache[name] = {}
 	local range_bonus = grug_classes.get_race_perk(player, "ability_range_bonus") or 0
+	local source_of = skin_source_cache(player)
 	local inv = player:get_inventory()
 	local have = {}
 	for listname, list in pairs(inv:get_lists()) do
@@ -335,7 +563,7 @@ local function sync_kit(player)
 				-- yet), duplicates and strays in other lists (bags from
 				-- old saves) are removed; own-class strays re-granted
 				-- into main below.
-				if def.class ~= class or def.talent_gated or
+				if not in_kit(def, class) or def.talent_gated or
 						listname ~= "main" or have[stack:get_name()] then
 					inv:set_stack(listname, i, ItemStack(""))
 				else
@@ -356,6 +584,11 @@ local function sync_kit(player)
 						end
 						changed = true
 					end
+					-- The skin, same discipline as the range override above:
+					-- compare first, write once, or not at all.
+					if apply_skin(stack, def, source_of(def)) then
+						changed = true
+					end
 					if changed then
 						inv:set_stack(listname, i, stack)
 					end
@@ -371,6 +604,10 @@ local function sync_kit(player)
 				stack:get_meta():set_float("range",
 					(def.range or 4) + range_bonus)
 			end
+			-- Skin it BEFORE it reaches the inventory: a freshly granted item
+			-- must not spend one write appearing as an orb and a second one
+			-- turning into the weapon.
+			apply_skin(stack, def, source_of(def))
 			inv:add_item("main", stack)
 		end
 	end
