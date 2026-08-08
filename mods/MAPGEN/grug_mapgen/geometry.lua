@@ -43,6 +43,17 @@ local SHELF_WIDTH = 60 -- ... and is flat further out (v7 takes over)
 -- Decorations (trees) are placed before the mask runs and reach at most this
 -- far above the mapgen heightmap; carving stops there, so a mapchunk high above
 -- the terrain costs nothing.
+--
+-- IT IS MET EXACTLY, WITH NO HEADROOM (WP36 re-review, Low 2): the tallest
+-- registered decoration is emergent_jungle_tree.mts, size.Y = 37 with
+-- place_offset_y = -4, i.e. -4 + 36 = 32 — and it is a coast-band decoration.
+-- The next highest is jungle_tree.mts at 16. Since the sunlight stamp was added
+-- this number no longer only bounds a loop: "nothing stands above the carve
+-- ceiling" is what makes the stamp correct, and a wrong stamp is permanent. So
+-- do not raise a schematic past it silently — ocean_mask.lua's
+-- register_on_mods_loaded audit recomputes the reach of every registered
+-- decoration from the engine's own two placement formulas and warns (silent
+-- when clean, the grug_traders pattern).
 local DECO_MARGIN = 32
 -- Width of the emerged shell around a mapchunk (the mapgen VM reaches this far
 -- beyond minp..maxp on every side).

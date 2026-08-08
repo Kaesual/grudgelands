@@ -106,42 +106,79 @@ core.register_mapgen_script(path .. "/ocean_mask_mapgen.lua")
 -- ONTO the cap (an outpost pad is cobble at the cap with posts above it, and
 -- cobble is not biome ground either).
 --
--- ERRORS ARE ONE-SIDED BY CONSTRUCTION. Everything unexpected — `ignore` from
--- an unloaded neighbour, a cave mouth at the cap, a player's floor above the
--- cap, cobble from a structure — fails one of the two tests and the column is
--- left ALONE. The sweep can therefore miss overflow (it is retried on every
--- later load), but it cannot invent a cut the mapgen would not have made. Three
--- residual classes, all of them "overflow survives", none of them "legal
--- terrain is cut":
+-- ERRORS ARE ALMOST ALL ONE-SIDED BY CONSTRUCTION. Everything unexpected —
+-- `ignore` from an unloaded neighbour, a cave mouth at the cap, a player's
+-- floor above the cap, cobble from a structure — fails one of the two tests and
+-- the column is left ALONE, so the sweep misses overflow far more often than it
+-- over-reaches, and a miss is retried on every later load. It is NOT, however,
+-- incapable of cutting something the mapgen would have kept: class (2) below is
+-- exactly that, and an earlier version of this header denied it existed ("it
+-- cannot invent a cut the mapgen would not have made", "all of them overflow
+-- survives, none of them legal terrain is cut"). Both sentences were wrong.
 --
---   1. A column the mask DID carve but could not re-dress at the cap (the
---      paragraph above: overhang gap, river channel or cave at the cap level).
---      It reads as uncarved, so its share of an old world's floating crown
---      stays. Caves crossing the coast band's cap range are not rare.
---   2. A column whose terrain top is EXACTLY at its cap, with air above it,
---      carrying foliage rooted in a NEIGHBOURING column — indistinguishable
---      from a floating crown by any per-column signal, and confined to the
---      h == cap contour line.
---   3. The MIRROR of (2), and the more common of the pair: a tree rooted in a
---      CARVED column whose 5x5 schematic footprint reaches into a neighbour
---      column with h <= cap. The neighbour was never carved, so the neighbour's
---      share of the crown is not overflow by this sweep's definition and is
---      left standing. Concretely: inland ramp at s = 90, i.e. cap = 38,
---      mapchunk -32..47, root column h = 40 > cap, neighbour column
---      h = 35 <= cap; the old world clipped the crown at maxp.y = 47, this
---      sweep heals the root column and the neighbour keeps its leaves at
---      48..51. So "a genuinely floating crown is still fully removed" holds
---      only where the whole footprint sits over carved columns; at the h ~ cap
---      boundary a fringe survives, and it survives DELIBERATELY — healing a
---      neighbour column because some other column near it was carved is exactly
---      the unconditional cut that decapitates a legitimate coastal tree (the
---      WP36 review's High 1), only with a wider blast radius.
--- All three are bounded to the h ~ cap contour of the coast band. (1) and (2)
--- are LBM-only — the mapgen pass carves by heightmap, not by signature. (3) is
--- not: the mapgen pass leaves an uncarved neighbour alone too, so a new world
--- also keeps that fringe, four or five nodes over the neighbour's own surface.
--- That is the price of "the mask shapes the coast and leaves the hinterland to
--- v7" and it is paid at generation time, not here.
+-- FOUR RESIDUAL CLASSES. The label each one carries is the honest one; do not
+-- summarise them as if they were all "overflow survives".
+--
+--   (1) OVERFLOW SURVIVES. A column the mask DID carve but could not re-dress
+--       at the cap (the paragraph above: overhang gap, river channel or cave at
+--       the cap level). It reads as uncarved, so its share of an old world's
+--       floating crown stays. Caves crossing the coast band's cap range are not
+--       rare.
+--   (2) LEGAL TERRAIN IS CUT — the direction this header used to call
+--       impossible. A column whose terrain top is EXACTLY at its cap carries
+--       the biome's node_top there (is_ground ✓) and air at cap+1
+--       (clear_above ✓), so the discriminator answers CARVED and the sweep airs
+--       every healable node above the cap. Right for a floating crown, wrong
+--       for foliage rooted in a NEIGHBOURING column: default's apple_tree.mts
+--       is 7x8x7 placed with place_center_x/z, and while its trunk slices
+--       y+0..y+3 reach 0 columns sideways, its crown reaches 3 columns at
+--       y+4/y+5 and still 2 at y+6. A column two nodes from such a trunk, with
+--       h == cap, therefore holds leaves at root+4..root+6 over air at cap+1 —
+--       and loses them. Confined to the h == cap contour line of the coast
+--       band, and indistinguishable from a floating crown by ANY per-column
+--       signal: the only signal left is sideways, and probing eight neighbours
+--       over several y per candidate column is not something a sweep that runs
+--       on every block load can pay for. Kept as a documented cut.
+--   (3) OVERFLOW SURVIVES, and the more common of the (2)/(3) pair: a tree
+--       rooted in a CARVED column whose schematic footprint (5x5 for aspen,
+--       jungle and pine, 7x7 for apple and the emergent jungle tree) reaches
+--       into a neighbour column with h <= cap. The neighbour was never carved, so the
+--       neighbour's share of the crown is not overflow by this sweep's
+--       definition and is left standing. Concretely: inland ramp at s = 90,
+--       i.e. cap = 38, mapchunk -32..47, root column h = 40 > cap, neighbour
+--       column h = 35 <= cap; the old world clipped the crown at maxp.y = 47,
+--       this sweep heals the root column and the neighbour keeps its leaves at
+--       48..51. So "a genuinely floating crown is still fully removed" holds
+--       only where the whole footprint sits over carved columns; at the h ~ cap
+--       boundary a fringe survives, and it survives DELIBERATELY — healing a
+--       neighbour column because some other column near it was carved is
+--       exactly the unconditional cut that decapitates a legitimate coastal
+--       tree (the WP36 review's High 1), only with a wider blast radius.
+--   (4) OVERFLOW SURVIVES, in worlds generated before the WP36 re-review's
+--       Medium 1 fix only. A column whose cap lands EXACTLY on a mapchunk top
+--       edge — y 47 is the only such edge inside the -15..114 cap range at the
+--       default chunksize — used to keep bare `default:stone` at the cap: the
+--       lower chunk's `h > cap` can never fire there (h is clamped to maxp.y by
+--       findGroundLevel, mapgen.cpp:238-252) and the upper chunk's re-dress
+--       loop came out empty (sy1 = cap+1). Stone is no biome's node_top, so
+--       is_ground fails and such a column reads UNCARVED here and in
+--       clean_shell forever, whatever stands above it — plus a bare-stone
+--       contour along the whole coastline with no biome top, no decoration
+--       surface and no _grug_spawn_zones ground. Fresh worlds do not have it:
+--       build_ocean_mask owns that re-dress now (its `cap == maxp.y` branch).
+--       Old ones keep it, because repairing it here would mean WRITING ground
+--       at a cap this sweep is not sure was cut — the unconditional write the
+--       whole discriminator exists to avoid.
+--
+-- All four are bounded to the h ~ cap contour of the coast band. NONE of them
+-- is LBM-only. clean_shell in ocean_mask_mapgen.lua runs the SAME two-node
+-- signature test (`is_ground(...) and clear_above[...]`), so (1), (2) and (4)
+-- hit the 16-node shell ring of every coastal mapchunk in a BRAND NEW world as
+-- well, and (3) is a property of the mapchunk carve itself, i.e. of generation
+-- time. An earlier version of this list claimed "(1) and (2) are LBM-only — the
+-- mapgen pass carves by heightmap, not by signature": true of build_ocean_mask,
+-- false of clean_shell, whose own header has documented the signature test for
+-- (1) since it was written.
 --
 -- PROTECTED POIs ARE NEVER TOUCHED (the review's High 2). candidate_ground_y in
 -- structures.lua clamps an outpost to its column_cap, so its four
@@ -580,8 +617,61 @@ else
 		"ocean mask healing LBM is not registered")
 end
 
--- Startup audit (the grug_traders pattern: silent when clean). Two classes, and
--- the second one is the review's Medium 1 lesson: re-running the same
+-- How far above the mapgen heightmap value can a registered decoration reach?
+-- That number is the whole justification for geometry.lua's DECO_MARGIN, which
+-- bounds the carve ceiling in BOTH passes of ocean_mask_mapgen.lua — and, since
+-- the WP36 re-review's Low 1, the sunlight stamp with it: "above the ceiling
+-- there is no decoration content" is what makes "everything above a carved cap
+-- is air we wrote" true, and a stamp on a false version of that claim is
+-- permanent (spreadLight only ever raises light). Today the maximum is exactly
+-- DECO_MARGIN — emergent_jungle_tree.mts, size.Y 37 with place_offset_y = -4,
+-- so -4 + 36 = 32, next highest jungle_tree.mts at 16 — i.e. ZERO headroom, and
+-- emergent_jungle_tree is a coast-band decoration. One taller schematic and the
+-- mask would silently leave floating crowns again, so this is audited instead
+-- of assumed.
+--
+-- The two engine formulas, both taking `p` = the surface node the decoration is
+-- placed ON (mg_decoration.cpp:231-247 passes the heightmap value itself):
+--   * schematic — DecoSchematic::generate (mg_decoration.cpp:400-421): the
+--     bottom slice sits AT p, then `p.Y += place_offset_y` (or
+--     `p.Y -= (size.Y-1)/2` when place_center_y is set), so the top node is
+--     p.Y + place_offset_y + size.Y - 1.
+--   * simple — DecoSimple::generate: the write loop steps +1 BEFORE each node
+--     from p.Y + place_offset_y, so the top node is
+--     p.Y + place_offset_y + max(height, height_max).
+-- Schematics whose voxels never reached Lua have no size here either; they are
+-- already reported by the `blind` warning above and are not counted twice.
+local function deco_reach()
+	local worst, who = 0, nil
+	for _, def in pairs(core.registered_decorations) do
+		local off = tonumber(def.place_offset_y) or 0
+		local reach
+		if def.deco_type == "schematic" then
+			local schem = def.schematic
+			local size = type(schem) == "table" and schem.size
+			if type(size) == "table" and tonumber(size.y) then
+				local flags = type(def.flags) == "string" and def.flags or ""
+				if flags:find("place_center_y", 1, true) and
+						not flags:find("noplace_center_y", 1, true) then
+					reach = size.y - 1 - math.floor((size.y - 1) / 2)
+				else
+					reach = off + size.y - 1
+				end
+			end
+		else
+			local h = math.max(tonumber(def.height) or 1,
+				tonumber(def.height_max) or 0)
+			reach = off + h
+		end
+		if reach and reach > worst then
+			worst, who = reach, def.name or "<unnamed decoration>"
+		end
+	end
+	return worst, who
+end
+
+-- Startup audit (the grug_traders pattern: silent when clean). Three classes,
+-- and the second one is the review's Medium 1 lesson: re-running the same
 -- derivation only catches content that ARRIVED LATE, never content the
 -- derivation is structurally blind to. So the audit does not stop at the
 -- diffing.
@@ -598,6 +688,10 @@ end
 --     name of every schematic decoration whose voxels are opaque to Lua. Any
 --     such name that is neither covered nor deliberately excluded (air, liquid,
 --     terrain material, unregistered) is reported.
+--  3. DECO_MARGIN (the re-review's Low 2). See deco_reach above: the carve
+--     ceiling and the sunlight stamp both rest on "no decoration reaches more
+--     than DECO_MARGIN above the heightmap", the current margin is met exactly,
+--     and nothing else would notice a taller schematic.
 core.register_on_mods_loaded(function()
 	local covered = {}
 	for i = 1, #healable do
@@ -639,5 +733,14 @@ core.register_on_mods_loaded(function()
 		core.log("warning", "[grug_mapgen] decorations with an opaque " ..
 			"schematic registered after grug_mapgen: " ..
 			table.concat(blind, ", "))
+	end
+	local reach, who = deco_reach()
+	if reach > geom.DECO_MARGIN then
+		core.log("warning", ("[grug_mapgen] %s reaches %d nodes above the " ..
+			"mapgen heightmap, more than DECO_MARGIN = %d — the ocean mask " ..
+			"stops carving below its crown, so it will leave floating " ..
+			"foliage over the coast AND stamp daylight under it. Raise " ..
+			"DECO_MARGIN in geometry.lua to at least %d.")
+			:format(who, reach, geom.DECO_MARGIN, reach))
 	end
 end)

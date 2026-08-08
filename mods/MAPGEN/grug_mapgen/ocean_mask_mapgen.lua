@@ -74,13 +74,24 @@ local SHELL = geom.SHELL
 
 local BEACH_DEPTH = 3 -- sand layers put on a newly exposed beach top
 local FILLER_DEPTH = 2 -- filler layers under a re-dressed biome top
--- Ceiling for the shell clean. Honest bound, not a proof: the fresh overflow it
--- removes sits within DECO_MARGIN of this chunk's own terrain (that is the
--- tighter bound actually used), and coastal canopies live far below this.
--- A tree on a ramp column whose cap is near the maximum W+114 could in
--- principle put leaves up to ~147 — not worth a taller loop over every shell
--- column of every coastal chunk, so it is bounded here on purpose.
-local SHELL_MAX_Y = 120
+
+-- There used to be a third constant here, SHELL_MAX_Y = 120: a flat ceiling on
+-- the shell clean, admitted in its own comment to be "an honest bound, not a
+-- proof" because a tree on a ramp column whose cap is near the maximum W+114
+-- can put leaves up to ~147. It is GONE (WP36 re-review, Low 1), because it was
+-- not merely imprecise, it was unsound in combination with the sunlight stamp:
+-- where it truncated the clean, the leftover canopy stayed standing and the
+-- stamp wrote LIGHT_SUN into every node below it — and spreadLight only ever
+-- RAISES light, so that day-15 column under a shadow was permanent.
+-- Reproduced case: shell column with cap 93 in the chunk 48..127 whose max_h is
+-- 100 — leaves at 110..118 removed, leaves at 121..126 kept, y 94..120 stamped
+-- day 15 underneath them.
+-- The shell clean now uses exactly the ceiling the mapchunk pass uses,
+-- min(emax.y, max_h + DECO_MARGIN), so "everything above the cap in a carved
+-- column is air or water we wrote" is true for the shell band as well, and the
+-- stamp rests on the same DECO_MARGIN argument as everything else (audited at
+-- startup, see ocean_mask.lua). The extra loop iterations are bounded by
+-- emax.y and only paid by columns that pass the carve discriminator.
 
 -- Reused across mapchunks: vm:get_data() without a buffer allocates a fresh
 -- ~11 MB table for every masked chunk. One per mapgen thread, and a mapgen
@@ -110,6 +121,13 @@ local sun_count = 0
 -- field with 0x0F (l_vmanip.cpp:243-245), so this is exactly the byte
 -- propagateSunlight itself writes.
 local SUNLIGHT = {day = 15, night = 0}
+-- Two mutated position tables instead of two fresh ones per set_lighting call
+-- (WP36 re-review, Low 3): the worst case measured above is 1683 calls for one
+-- coastal mapchunk, i.e. 3366 short-lived tables per chunk for the collector to
+-- walk. set_lighting only READS them (check_v3s16 copies into a v3s16,
+-- l_vmanip.cpp:248-249), so reuse is safe.
+local sun_pmin = {x = 0, y = 0, z = 0}
+local sun_pmax = {x = 0, y = 0, z = 0}
 
 local function sun_add(x, z, y1, y2)
 	if sun_count > 0 then
@@ -217,11 +235,15 @@ end
 --   surface).
 -- h is clamped by the engine when the real surface lies outside the chunk's y
 -- range (maxp.y if the ground continues above it, -MAX_MAP_GENERATION_LIMIT if
--- the column holds no walkable node at all), and `h > cap` happens to be the
--- correct decision in every one of those cases: ground above -> carve the whole
--- chunk, nothing walkable -> nothing to carve. h decides only WHETHER a column
--- is cut, never WHERE — the cut height is (x, z)-deterministic, so vertically
--- stacked mapchunks of one column cut at exactly the same y.
+-- the column holds no walkable node at all), and `h > cap` is the correct
+-- decision in both of those cases: ground above -> carve the whole chunk,
+-- nothing walkable -> nothing to carve. The ONE case it cannot decide is
+-- cap == maxp.y, where the clamp makes `h > cap` unsatisfiable — that column is
+-- carved by the chunk above and re-dressed here, through the second branch
+-- documented at the loop below (WP36 re-review, Medium 1).
+-- h decides only WHETHER a column is cut, never WHERE — the cut height is
+-- (x, z)-deterministic, so vertically stacked mapchunks of one column cut at
+-- exactly the same y.
 --
 -- THE CARVE CEILING IS emax.y, NOT maxp.y (WP36 item 2, the floating-tree bug).
 -- Decorations are placed by the engine before this callback and a schematic may
@@ -275,14 +297,63 @@ local function build_ocean_mask(data, area, minp, maxp, emax)
 			if cap then
 				local i2d = row + (x - minp.x) + 1
 				local h = heightmap[i2d]
-				-- `cap <= maxp.y` (not <): when the cap sits exactly on the
-				-- chunk's top edge the carve ranges come out empty, but the
-				-- re-dress below must still run in THIS chunk -- the chunk
-				-- above starts at cap+1 and can never write the top layers.
-				-- Deliberately still maxp.y and not emax.y: a cap inside the
-				-- shell above belongs to the chunk above, which owns both the
-				-- carve and the re-dress for it.
-				if h and h > cap and cap <= maxp.y then
+				-- `cap <= maxp.y`, not emax.y: a cap that sits inside the
+				-- emerged shell above belongs to the chunk above, which owns
+				-- both the carve and the re-dress for it.
+				--
+				-- TWO BRANCHES, BECAUSE `h > cap` CANNOT ANSWER FOR A CAP THAT
+				-- SITS ON THE CHUNK'S TOP EDGE (WP36 re-review, Medium 1). h is
+				-- Mapgen::updateHeightmap -> findGroundLevel over
+				-- node_min.Y..node_max.Y (mapgen.cpp:238-252, :276-290, called
+				-- at mapgen_v7.cpp:322), so h <= maxp.y ALWAYS and
+				-- `h > cap and cap == maxp.y` is unsatisfiable. An earlier
+				-- version of this comment claimed the opposite -- "the carve
+				-- ranges come out empty, but the re-dress must still run in
+				-- THIS chunk" -- and its `cap <= maxp.y` guard was therefore a
+				-- DEAD branch. The chunk ABOVE does carve the column, from its
+				-- minp.y = cap+1 upward, but its own re-dress clamps
+				-- sy1 = max(cap - layers + 1, minp.y) = cap+1, so its loop
+				-- `for y = cap, cap+1, -1` runs zero times. Nothing dressed the
+				-- cap, and every column whose cap lands on a chunk edge (y 47
+				-- is the only one inside the -15..114 cap range at the default
+				-- chunksize) kept bare stone along the whole coastline: no
+				-- biome top, no decoration surface, no _grug_spawn_zones
+				-- ground -- and, because is_ground() never matches stone, a
+				-- column that clean_shell and the healing LBM read as UNCARVED
+				-- forever.
+				--
+				-- So this chunk owns the re-dress for cap == maxp.y, and it has
+				-- to decide "was this column cut?" without h. It reads its OWN
+				-- freshly generated node AT the cap, which is as deterministic
+				-- as h and just as chunk-local -- no cross-chunk probe, no
+				-- emerge-order dependence, and the cut height stays purely
+				-- (x, z):
+				--   * terrain continues above the cap -> generateBiomes saw
+				--     solid material one node above node_max.Y and forced
+				--     nplaced to stone level (its c_above test, mapgen.cpp),
+				--     so the cap carries stone/stratum: not ground -> dress.
+				--   * terrain tops out exactly AT the cap -> generateBiomes saw
+				--     air or water above and wrote the biome's node_top there,
+				--     and a schematic cannot overwrite it (blitToVManip only
+				--     replaces air/ignore without force_place,
+				--     mg_schematic.cpp:167-176) -> ground -> hands off, this is
+				--     legal terrain.
+				--   * a cave, an overhang gap or a river channel at the cap ->
+				--     not solid -> hands off. The re-dress could not have
+				--     written its top layer there anyway; that is residual
+				--     class (1) in ocean_mask.lua.
+				-- Same one-sided direction as everywhere else in this pass:
+				-- anything unexpected at the cap reads as "not the mask's".
+				local carve, dress = false, false
+				if h and cap <= maxp.y then
+					if h > cap then
+						carve, dress = true, true
+					elseif cap == maxp.y and h == cap then
+						local c = data[area:index(x, cap, z)]
+						dress = not not_solid[c] and not is_ground(c)
+					end
+				end
+				if carve then
 					local y1 = math.max(cap + 1, minp.y)
 					local y2 = ceiling
 					local wet = math.min(y2, WATER_LEVEL)
@@ -310,6 +381,8 @@ local function build_ocean_mask(data, area, minp, maxp, emax)
 						-- LIGHT_SUN and nothing else.
 						sun_add(x, z, dry, y2)
 					end
+				end
+				if dress then
 					-- Re-dress the exposed top: sand where the cut ends at
 					-- beach/seabed level, otherwise the biome's own surface
 					-- (a shaved coastal hill must stay walkable land, not a
@@ -386,8 +459,11 @@ end
 -- unconditionally would make the premise true at the price of a floating slab
 -- sealing every cave mouth and overhang the coast band crosses; not worth it.
 local function clean_shell(data, area, minp, maxp, emin, emax, max_h)
-	-- Fresh overflow can only sit near this chunk's own terrain.
-	local y_top = math.min(emax.y, SHELL_MAX_Y, max_h + DECO_MARGIN)
+	-- Fresh overflow can only sit near this chunk's own terrain, and it cannot
+	-- reach above the emerged area at all (mg_decoration.cpp:424). EXACTLY the
+	-- ceiling build_ocean_mask uses — see the SHELL_MAX_Y obituary at the top of
+	-- this file for why the third, flat bound had to go.
+	local y_top = math.min(emax.y, max_h + DECO_MARGIN)
 	if y_top < emin.y then
 		return false, false
 	end
@@ -474,9 +550,9 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 	-- block below for why this is a prerequisite and not a shortcut.
 	for i = 1, sun_count, 5 do
 		local z = sun_runs[i + 4]
-		vm:set_lighting(SUNLIGHT,
-			{x = sun_runs[i], y = sun_runs[i + 2], z = z},
-			{x = sun_runs[i + 1], y = sun_runs[i + 3], z = z})
+		sun_pmin.x, sun_pmin.y, sun_pmin.z = sun_runs[i], sun_runs[i + 2], z
+		sun_pmax.x, sun_pmax.y, sun_pmax.z = sun_runs[i + 1], sun_runs[i + 3], z
+		vm:set_lighting(SUNLIGHT, sun_pmin, sun_pmax)
 	end
 	-- LIGHTING (WP36 re-review, High 1 — the third and hopefully last shape of
 	-- this fix). The engine already lit this chunk inside makeChunk
@@ -516,7 +592,9 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 	-- construction: the cut height is (x, z)-pure, the guard `cap <= maxp.y`
 	-- hands a cap inside our shell to the chunk above, and that chunk carves the
 	-- same column from ITS minp.y (= maxp.y + 1) upward for the same reason we
-	-- did. So LIGHT_SUN is not an approximation there, it is the answer — we
+	-- did. (The `cap == maxp.y` branch of build_ocean_mask writes nothing above
+	-- the cap and records no run, so it does not enter this argument at all.)
+	-- So LIGHT_SUN is not an approximation there, it is the answer — we
 	-- stamp it with vm:set_lighting (mapgen VM only, l_vmanip.cpp:232-238; the
 	-- fields are masked to 0x0F at :243-245, so day = 15 IS LIGHT_SUN).
 	-- Deliberately only ABOVE the water line: water has no
@@ -543,7 +621,11 @@ core.register_on_generated(function(vm, minp, maxp, blockseed)
 	--     whole band. The stamp is already correct there too, so the two agree.
 	--   * anything above the carve ceiling (min(emax.y, max_h + DECO_MARGIN)) is
 	--     not ours in either direction — that is the DECO_MARGIN assumption
-	--     documented at build_ocean_mask.
+	--     documented at build_ocean_mask. Both passes use that one ceiling since
+	--     the WP36 re-review's Low 1; while clean_shell still truncated at a
+	--     flat SHELL_MAX_Y = 120 the stamp could write day 15 UNDER a canopy the
+	--     clean had not reached, and spreadLight never lowers light again.
+	--     DECO_MARGIN itself is audited at startup (ocean_mask.lua).
 	vm:calc_lighting({x = emin.x, y = minp.y, z = emin.z},
 		{x = emax.x, y = maxp.y, z = emax.z})
 end)

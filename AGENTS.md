@@ -449,7 +449,13 @@ Details + line numbers in [docs/research/](docs/research/).
   it cuts only where the map still shows the mask's own signature (biome
   ground at the cap, air/liquid directly above), because `column_cap`
   knows where the mask cuts but not whether it cut, and an unconditional
-  sweep would decapitate every legal coastal tree in the band.
+  sweep would decapitate every legal coastal tree in the band. **The same
+  discriminator gates `clean_shell` in the mapgen pass**, so its residuals
+  are not LBM-only, and it is *not* free of false positives: on the
+  `h == cap` contour a column legitimately carrying a neighbouring tree's
+  crown reads as carved and loses it. The four residual classes — which
+  one is "overflow survives" and which one is "legal terrain is cut" —
+  are enumerated in `ocean_mask.lua`'s header; keep that list honest.
   The **six race-capital camp platforms** are the second kind
   (`grug_mapgen/structures.lua`, with the outposts and bandit camps;
   terrain-adaptive height from
