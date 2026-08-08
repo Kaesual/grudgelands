@@ -142,6 +142,53 @@ the decision instead of inventing a height:
 First-writer-wins is unchanged: a world that already has a platform height
 keeps it, whichever of the two measurements got there first.
 
-**Still true:** the authored capital pass of §1–§3 supersedes all of this
-by shaping its own terrain. The fix above only keeps today's spawns
+**Second round (same day, after the code review).** Four corrections, three
+of them to claims made above:
+
+- **"A session killed mid-emerge persists nothing" was only true for
+  SIGKILL.** A *graceful* stop cancels the rest of the emerge queue and still
+  runs every callback, with `EMERGE_CANCELLED` and a `calls_remaining` that
+  counts down to 0 (`emerge.cpp:804` → `:494-508` → `l_env.cpp:141-158`),
+  while the Lua env and the mod-storage database are both still alive
+  (`server.cpp` `~Server`: `stopThreads()` at `:385` before `m_script.reset()`
+  at `:426` and `endSave()` at `:435`; `content/mods.cpp:232-238` writes
+  through). The old callback ignored `action`, so quitting mid-emerge made the
+  probe measure a half-generated footprint and first-writer-wins made the
+  result permanent — reproduced at a capital whose terrain is at y 90: the
+  probe read the top of the generated mapchunk and persisted **47**. The
+  callback now refuses on any `EMERGE_CANCELLED`/`EMERGE_ERRORED`, and the
+  probe independently refuses on any `ignore` in a column above its ground
+  node, so neither path can invent a height. **An uncertain probe persists
+  nothing and retries later** (bounded at three emerges per capital per
+  session).
+- **A decided height was not a built platform.** `build_camp` only ever ran
+  from `register_on_generated`, so in exactly the cases the probe exists for —
+  the y-edge case on a *fresh* world as much as a legacy world whose capital
+  chunks already exist — the chunks were on disk before the height was known
+  and no platform was ever built, while every consumer of the height started
+  behaving as if one were (spawn on raw terrain; `grug_traders/vendors.lua`
+  placing vendors on the hillside, its `nil` guard having been the only
+  brake). `grug_core.ensure_camp_platform_built` — a stub in `grug_core`,
+  implemented in `grug_mapgen/structures.lua` — now builds it from the
+  finished map, idempotently (the guard banner is the presence test), inside
+  the volume the emerge covered and never above the first y that still reads
+  `ignore`.
+- **A capital in deep water is now decidable.** `PROBE_BOTTOM = -16` sits far
+  above the mgv7 terrain floor, so the ocean-floor capital of §1 produced no
+  samples at all, a warning, and a session-long dead end. A column with no
+  ground in the probe window now contributes `PROBE_BOTTOM` — which is not a
+  guess: the true surface is then *below* the window, and every value below
+  `CAMP_PLATFORM_Y` clamps to `CAMP_PLATFORM_Y` anyway, so every possible
+  answer maps to the same height. Such a capital gets a platform island just
+  above sea level instead of nothing.
+- **"Exactly ONE decider" is precise about the height, not about every
+  reader.** `protection.lua:127/180` still substitutes `CAMP_PLATFORM_Y` when
+  the height is undecided. That is not a second decider: it persists nothing,
+  and because `CAMP_PLATFORM_Y` is the *minimum* of the clamp the substitute
+  always protects a superset of the real zone. It is a deliberate
+  over-approximation, and it disappears on its own once the height is decided.
+
+**Still true:** the authored capital pass of §1–§3 supersedes all of this by
+shaping its own terrain, including the ocean case above, which the platform
+island only makes survivable. The fixes above only keep today's spawns
 consistent until then.
