@@ -586,7 +586,8 @@ with no auto-attack at all.
 
 ## 6. Scheduling
 
-- This is a **new work package** (WP34 by today's numbering), and it is
+- This is a **new work package** (**WP35** — WP34 was taken by the depth
+  economy in `0bca299`, one commit after this file was opened), and it is
   **not blocked**: every mod it touches is shipped, and it needs neither
   a fresh world nor a mapgen change.
 - **WP14 (offhand & carried light) shrinks.** The offhand *slot* already
