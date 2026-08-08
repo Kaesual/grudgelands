@@ -80,16 +80,26 @@ current state). It is **derived, never authoritative**:
   (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
-  in there**:
-  - `luanti/` — the engine itself (C++ + builtin Lua). API reference:
-    `reference_projects/luanti/doc/lua_api.md` (~12,700 lines, THE source).
-  - `Lord-of-the-Test/` — best faction reference (privileges + ally matrix,
-    faction-aware mob AI, traders).
-  - `VoxeLibre/` — best architecture reference (XP system, villager
-    trading, map rendering, modpack structure).
-  - `minetest_game/` — minimal base game (node/tool palette in
-    `mods/default`).
-  - `mobs_redo/` — mob engine (MIT license → we may fork/embed it).
+  in there**. They are **git submodules** (decided 2026-08-08) — not part of
+  the build, but required to develop this codebase: every engine-behaviour
+  claim, licence verification and `file:line` citation in the design docs
+  points into them. Get them with
+  `git submodule update --init --recursive --depth 1`.
+  - **A reference project needed beyond one session MUST live here and be
+    listed in [docs/reference_projects.md](docs/reference_projects.md)** —
+    with upstream URL, why we need it and its licence. Ad-hoc clones into a
+    scratchpad die with the session, and then a *cleared* licence silently
+    costs a re-download (this happened on 2026-08-08 with animalworld,
+    animalia and mobs_monster, whose commits `LICENSE-media.md` still cited).
+    This is **not** in conflict with the vendoring rule above: *vendored*
+    means code we **ship** in `mods/` and patch in-tree; these are sources we
+    **read** and never touch, and a submodule pins exactly the commit our
+    licence rows quote.
+  - **Imported meshes must be animated.** A mesh without `ANIM`/`BONE`/`KEYS`
+    chunks slides instead of moving; choose another source rather than
+    shipping it.
+  - The eight sources and what each is for: see
+    [docs/reference_projects.md](docs/reference_projects.md).
 
 ## Lua & Luanti environment (IMPORTANT)
 
