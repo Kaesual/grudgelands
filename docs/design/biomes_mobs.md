@@ -185,7 +185,13 @@ widest the guarantee allows; only a smaller `CAPITAL_R` could buy more.
 
 **Climate points moved 2026-08-08** (`grug_badlands` 95/15 → **75/20**,
 `grug_crags`/`grug_crags_snowy` 10/30 → **25/35**). Over the land
-columns the climate field has mean 60.9 / 48.8 and σ 14.7 / 16.8, so
+columns the climate field's mean is a **per-seed draw**: measured over 30
+seeds it is ~50 / 51 with a per-seed spread of ±8.8 and a range of 26..67,
+while the within-seed σ is ~16 / 15. (An earlier revision quoted
+"mean 60.9 / 48.8" as a property of the field — that was one seed's value,
+and every "N units from the field mean" argument derived from it is
+therefore seed-local, not robust. Two continents of the same seed can differ
+by 10 units on average and 27 at worst.) So
 both old points sat 2–3.5 σ out: they never won inside their overlaps
 and the border collapsed onto a cuboid face as a straight line (the
 crags ↔ pine hills face at x = −1250 was the single worst line in the
@@ -532,6 +538,50 @@ Drop chances in mobs_redo format (chance N = 1/N). Working item names —
 final naming in items_crafting.md. All aggressive mobs:
 `pathfinding = 1`, `group_attack` per verb, soft de-aggro 25 m (WP6).
 
+### 3.0 Critters vs. passive prey vs. enemies (decided 2026-08-08)
+
+Three behaviour classes, not two. The split is by **size and role**, not by
+who runs away:
+
+**Critters** — *small* animals only: rabbit, hare, parrot, gull (+ the
+cave/creepy additions of the asset pass). They are scenery with a use, not
+content:
+
+- **Always level 1, always 1 HP**, whatever the level field says at their
+  position. This is the second documented exception to §0's "stats derived,
+  never hand-rolled" rule (after the Kraken's fixed L100) and it is
+  implemented as a **`critter` tier** in the level engine, not as a
+  hand-set stat in a def.
+- **10 XP flat.** Deliberate starter-belt trickle; the gray-kill rule
+  (combat_stats §3) zeroes it for anyone above level 11 on its own, so no
+  extra rule is needed.
+- **They drop FOOD only** — meat, nothing else. No leather, no feather, no
+  crafting ingredient of any kind. Rationale: a food item is a welcome
+  snack on the road but never a farm target, so a player with a full larder
+  stops killing them automatically. This is what fixes their loot-table
+  "value as an enemy".
+- **`fall_damage = 0`.** At 1 HP any 7-node fall is lethal (mobs_redo
+  charges `d − 6`), which would quietly delete the population in exactly
+  the hilly terrain where a travelling player wants a snack. They drop
+  nothing without a player tag anyway, so there is no exploit either way.
+- **Never elite or rare.** The level engine's telegraph gate must be a
+  *positive* elite/rare test — a `tier ~= "normal"` test would give a
+  rabbit a 2 s wind-up and a ×3 cone hit.
+
+**Passive prey** — the *large* grazers: stag, gaunt stag, zebra, mountain
+ram. They are ordinary mobs in every mechanical respect — **level from the
+field, HP and XP from the formulas, leather drops kept** — with one
+behavioural difference from the aggressive families: **they never attack on
+sight, but they fight back when attacked.** That is what makes them worth
+the swing, and it keeps the leather tiers gated by a real fight rather than
+by travel.
+
+**Enemies** — everything else, unchanged (§3.1's verbs).
+
+Consequence for the material map (§6): plain **feather** loses its critter
+source and moves to the **bird-of-prey table** (crag eagle / vulture), so
+arrow fletching stays behind a real fight. Meat stays universal.
+
 ### 3.1 Families by biome group
 
 **Settled biomes, all six (core + inner, L1–25):**
@@ -539,7 +589,7 @@ final naming in items_crafting.md. All aggressive mobs:
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.4 (WP6 retune) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
-| Rabbit/Hare (tints) | flees (critter) | day | 3.4 | meat 1/1; light leather 1/3 `[leather]` | mobs_mc_rabbit |
+| Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
 | Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.2 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; camps placed by §1.4, inner+outer, both continents) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (inner camps) / heavy cloth (outer camps); copper coins | character.b3d + bandit skins (LotT-derived) |
 
@@ -551,7 +601,7 @@ final naming in items_crafting.md. All aggressive mobs:
 | Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.4 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
 | Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.4 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.4 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
-| Stag (Gaunt Stag) | flees (critter) | day | 3.4 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
+| Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 3.4 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 walk | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
 
 **Mountain pair — grug_crags (A) ↔ grug_badlands (T)** (outer, 25–60):
@@ -560,7 +610,7 @@ final naming in items_crafting.md. All aggressive mobs:
 |-----|------|-----------|-------|-------|-------|
 | Crag Eagle (Vulture) | dive-bombs — a real **flier** (`fly` in air) on `dogfight`, whose vertical tracking drives it down onto a grounded target and back up: that IS the swoop, and it needs no projectile asset | day | 4.6 heartland | sharp feather 1/1 ×1–2; meat 1/2 | animalworld eagle (+tint) |
 | Stone Golem (Mesa Golem) — **elite** (armor 80, telegraphed slam) | hurls rocks (dogshoot) | 24 h | 3.0 | stone core 1/1; iron lump 1/2; gem 1/8 | mobs_monster stone monster |
-| Mountain Ram | flees (critter) | day | 3.4 | meat 1/1; **heavy** leather 1/4 `[leather]` — a ram substitutes heavy leather for the critter's light leather, it has no light-leather slot | mobs_mc sheepfur retexture |
+| Mountain Ram | grazes (**passive prey**, §3.0) | day | 3.4 | meat 1/1; **heavy** leather 1/4 `[leather]` — the ram is the crags' heavy-leather source, which is why it is prey and not a critter | mobs_mc sheepfur retexture |
 | Hyena — savanna+badlands (Throng's wolf-mirror, wolf drop table) | hunts in packs | 24 h | 4.4 | wolf table | animalworld hyena |
 
 The Ram's Throng mirror, the **Dust Hare**, is not a badlands critter of
@@ -584,7 +634,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.4 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.4 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
 | Giant Spider (jungle tint) | webs | night | 4.4 | spider table | mobs_monster spider |
-| Parrot — jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2 | mobs_mc_parrot |
+| Parrot — jungle_edge critter | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (feather moved to the bird-of-prey table) | mobs_mc_parrot |
 
 **grug_swamp (universal, 25–45):**
 
@@ -599,7 +649,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Shore Crab — **deferred (§8.3), not shipped** | retaliates (pinches when punched) | 24 h | 3.4 | crab meat 1/1; chitin 1/2 | deferred until a licensed model is sourced (decided); strait launches with Gull only |
-| Gull | flees | day | 3.4 fly | feather 1/1 | animalia song bird retexture |
+| Gull | flees (**critter**, §3.0) | day | 3.4 fly | meat 1/1 — food only | animalia song bird retexture |
 
 Coast-zone beaches (45–60) reuse Crab as an **elite** "Reef Lurker"
 (scale ×1.6, armor 80) — same table ×3 quantity. **Deferred with the

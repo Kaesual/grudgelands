@@ -98,6 +98,16 @@ Normal tier at level L:
 - **HP** = 15 + 5×L · **Damage/hit** = 2 + 0.4×L · **XP** = 10×L
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, bosses 60 (hand-tuned).
+- **Three mob classes** (decided 2026-08-08, full rule in
+  `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
+  always **1 HP**, 10 XP flat, **food-only drops**, `fall_damage = 0`,
+  never elite/rare; a `critter` tier in the level engine, the second
+  documented exception to "stats derived, never hand-rolled" after the
+  Kraken), **passive prey** (large grazers — ordinary levels, HP, XP and
+  leather drops, but they never attack on sight and only fight back when
+  attacked) and **enemies** (everything else). Note the class is defined by
+  size and loot role, NOT by speed — the speed bullet below is a
+  consequence, not the definition.
 - **Speed**: aggressive mobs `run_velocity` **4.4** (player: 4.0) —
   evading must never be trivially easy; harmless critters 3.4; heartland
   hunters 4.6, partly with ranged attacks (`dogshoot`).

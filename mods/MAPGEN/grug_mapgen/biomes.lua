@@ -218,7 +218,9 @@ register_mirrored({
 --
 -- CLIMATE POINT 95/15 -> 75/20 (D2, 2026-08-08). An overlap only becomes a
 -- patch mosaic if BOTH points are reachable by the local noise. Measured
--- over the land columns the field has mean 60.9 / 48.8 and sigma 14.7 /
+-- over the land columns. NB the field mean is a PER-SEED draw (~50/51
+-- +-8.8 over 30 seeds, range 26..67); the numbers below were derived from
+-- one seed's 60.9 / 48.8 and are therefore indicative, not robust. sigma
 -- 16.8, so 95/15 sat 2.3 / -2.0 sigma out: badlands never won inside its
 -- overlap with the savanna and the border collapsed onto the savanna cuboid
 -- face as a straight line. 75/20 is still the driest point on the continent
@@ -364,7 +366,8 @@ register_mirrored({
 })
 
 -- NEITHER POINT MOVED, both live off their flank strip. 90/90 and 85/85 are
--- the two points furthest from the field mean (mean 60.9 / 48.8, sigma 14.7 /
+-- the two points furthest from the field mean (per-seed draw, see the note
+-- at the top of this file; the 60.9 / 48.8 used here was one seed, sigma
 -- 16.8), so neither can win a contested overlap against anything: they exist
 -- only because x 1251..1500 (BAND_X_MAX + 1 upward) is theirs alone. The
 -- Accord half only got that strip on 2026-08-08, when the three deep-forest
