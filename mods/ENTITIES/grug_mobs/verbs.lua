@@ -661,6 +661,13 @@ end
 -- is the OTHER class of §3.0 and the reason this helper exists as its own
 -- named verb instead of as "the animal default".
 --
+-- NOT set here: `pathfinding`. A retaliating prey mob chases like any other
+-- attacker (45 m, api.lua's chase patch), so the four GROUND prey defs carry
+-- `pathfinding = 1` themselves (stag.lua carries the reasoning) — but the
+-- fifth, the Carrion Crow, is `fly = true`, and core.find_path is a ground
+-- search. One verb cannot serve both, and the field belongs where the
+-- locomotion is described.
+--
 function grug_mobs.passive_prey(def)
 	def.passive = false
 	def.attack_players = false

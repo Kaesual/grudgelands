@@ -30,6 +30,9 @@ local ram = {
 	stepheight = 1.1,
 	fear_height = 3,
 	view_range = 10,
+	-- Ground prey chases up to 45 m since WP36 — see stag.lua for the full
+	-- reasoning. Doubly wanted here: the ram's home is broken alpine gravel.
+	pathfinding = 1,
 
 	visual = "mesh",
 	mesh = "grug_mobs_ram.b3d",

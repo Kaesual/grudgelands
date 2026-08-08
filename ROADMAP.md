@@ -113,13 +113,20 @@ game (not a mod pack), written in Lua.
       wall), mirrored biome bands per
       `docs/design/biomes_mobs.md` §1.3 (20 registrations after the
       2026-08-08 capital-biome carve and WP36's `grug_badlands_east`),
-      guaranteed strait and coastal ocean, deep-sea guard mob
+      guaranteed strait and coastal ocean, deep-sea guard mob. WP36
+      finished the coastline: the mask carves to `emax.y` (no more
+      floating tree crowns over the water), runs in the mapgen
+      environment, and a `run_at_every_load` LBM heals older worlds
 - [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
       field + `guard_level_at` (mobs and guards actually scale with them
-      since WP6)
+      since WP6; WP36 added the level-1 bubble at every race capital, so
+      the four side capitals no longer start a fresh player against
+      level-8 wildlife)
 - [x] Faction spawn points: walkable camp platforms at the three race
       capitals per continent (players spawn in their own race's capital;
-      real capital structures follow with WP13)
+      real capital structures follow with WP13). WP36 made the platform
+      height a single decider that is forced when undecided, instead of
+      an invented fallback that read differently in two sessions
 - [x] Build/dig restrictions per territory (own continent free, enemy
       continent and the whole ocean locked; capital protected zones +
       the WP6 POI registry for outposts; R4 ore respawn shipped with WP6)
@@ -158,7 +165,11 @@ game (not a mod pack), written in Lua.
       **bandit camps**
       (humanoid loot source — cloth — in both territories)
       (WP6: 38 mobs on the level/tier engine, elite/rare telegraph,
-      named rares with faction broadcast, 12 deterministic camps)
+      named rares with faction broadcast, 12 deterministic camps;
+      WP36: **42 mobs** — a `critter` tier for the small animals plus
+      four new ones for the caves, the bone forest and the swamp — and
+      the large grazers became **passive prey**: they never attack on
+      sight and they fight back when attacked)
 - [x] **Aggro/threat system**: mobs pick targets by threat (damage +
       healing × factor); tank threat tools/taunt follow with class
       abilities (1.3) — WP6: threat table in `grug_core`, 120 %

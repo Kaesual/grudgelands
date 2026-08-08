@@ -825,6 +825,21 @@ until it was set: the threat-driven target switch and the Taunt ability.
 Setting it does **not** let prey initiate — acquisition on sight lives in
 `general_attack` alone, which never reads the field.
 
+A fifth field follows from the fourth, and it is the one place where prey
+is not "four def fields and nothing else": **the four GROUND prey mobs
+(stag, gaunt stag, zebra, mountain ram) carry `pathfinding = 1`.** §3's
+"all aggressive mobs: `pathfinding = 1`" does not reach prey by its own
+wording — prey never initiates — but once retaliation exists, a punched
+grazer runs the ordinary chase (45 m, soft de-aggro at 25 m), and
+`core.find_path` is what keeps that chase from ending at the first ledge.
+Without it "worth the swing" is defeated by terrain and the leather tiers
+go back to being gated by travel. It costs nothing at rest: mobs_redo
+calls A* only from the attack branch, which prey reaches only after a
+player punch. **The Carrion Crow is the exception and stays unset** — it
+is a flier, `core.find_path` is a ground search, and every other flier in
+the roster (crag eagle, vulture, gull, parrot, Kraken Guard) follows the
+same rule.
+
 The Carrion Crow's three decided changes, all zero-cost: `visual_size`
 10 → **14** (~1.0 nodes tall — a target you can see and click), the
 collisionbox scaled by that same 1.4 (`0.4 → 0.6` high, `0.2 → 0.3` wide),
@@ -1075,7 +1090,7 @@ attempts. **The `chance` column below is the DECIDED value, not the
 shipped one**: `grug_mobs` still passes the pre-multiplication WP6 number
 to every `mobs:spawn` row, i.e. **shipped `chance` = table value ÷ 0.75**
 (Boar 1500 against the table's 1125, Rabbit 1800/1350, Stag 1800/1350,
-Ram 2200/1650, and so on), and the three excluded rows below match code
+Ram 2200/1650, and so on), and the five excluded rows below match code
 exactly because they were never multiplied. Rolling the multiplication
 out across the roster is implementation work, not an open design
 question, and is tracked as **BACKLOG WP37**; **until it ships, a `chance`
@@ -1088,11 +1103,27 @@ purpose**: it is the ceiling the budget audit calibrated against the
 bounds the outcome — more attempts fill the same budget faster, they do
 not raise it, so no cell's peak Σaoc moves. Two kinds of row are
 excluded, and both exclusions follow from the mechanism rather than from
-taste: the rows that also carry `underground` (Giant Spider, Stone/Mesa
-Golem) are *one* row for surface and cave, so raising them would raise
-cave pressure, which the phase-in pulse of §4.1 now owns; and the Kraken
-Guard is a deterrent, not density. The budget audit is re-run against
-the new values once the change ships.
+taste:
+
+- **Every row that reaches the caves at all**, because cave pressure
+  belongs to the phase-in pulse of §4.1, not to this multiplier. That is
+  the rows carrying `underground` *next to* a surface zone (Giant Spider
+  1800, Stone/Mesa Golem 9000) — one row serving surface and cave, so
+  raising it for the surface would raise it underground too — **and, more
+  plainly still, the two rows that are `underground`-ONLY: Cave Bat 2200
+  and Cave Crawler 2200** (`nodes = {"default:stone",
+  "group:grug_stratum"}`, `max 5` light, y −31000…−40, `grug_mobs/
+  cave_bat.lua` / `cave_crawler.lua`). A cave-only row has no surface half
+  to make busier, so multiplying it would be *only* cave pressure — and it
+  would refill a third faster the underground cell WP36 calibrated to
+  exactly the night peak (9/9 → 12/12). They are also outside "surface
+  density" by wording, not merely by mechanism.
+- **The Kraken Guard 12000**, which is a deterrent, not density.
+
+The two remaining critter rows — **Bone Weevil 1650** and **Bog Fowl
+1650** — are ordinary *surface* rows (day, `min 10`, y 0…200) and carry
+the multiplied value like every other surface row. The budget audit is
+re-run against the new values once the change ships.
 
 | Mob | nodes (spawn on) | interval | chance | aoc | light | zones |
 |-----|------------------|----------|--------|-----|-------|-------|
@@ -1119,8 +1150,8 @@ the new values once the change ships.
 | Carrion Crow | **every land top** except sand (the Gull holds that slot); war_coast-exclusive | 20 | 1875 | 2 | min 10 | war_coast |
 | Shore Crab — *deferred (§8.3)* | sand | 20 | 1650 | 3 | any | strait, war_coast, coast |
 | Gull | sand | 20 | 1875 | 2 | min 10 | strait, war_coast, coast, **outer** |
-| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 1650 | 2 | max 5 | underground |
-| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 1650 | **1** | max 5 | underground |
+| **Cave Bat** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | 2 | max 5 | underground |
+| **Cave Crawler** (critter) | stone **+ `group:grug_stratum`** | 20 | 2200 | **1** | max 5 | underground |
 | **Bone Weevil** (critter) | bone litter / blight_dirt — **two rows, one entity name, one budget**; the row stamps the tint | 20 | 1650 | 2 | min 10 | (none — the node gates) |
 | **Bog Fowl** (critter) | mud (only) | 20 | 1650 | 2 | min 10 | (none — the node gates) |
 | Reef Lurker (elite crab) — *deferred (§8.3)* | sand | 30 | 6000 | 1 | any | coast |
@@ -1142,12 +1173,16 @@ Row notes:
   "flees" bird: 20 / 1875 / 2. Neither creates a new peak. The Crow's
   move to passive prey (§3.0) changed **no** spawn number — same row,
   same `aoc`, same zone.
-- **The four critters of §3.0** (added 2026-08-08) all share
-  20 / 1650 / 2 — they were authored at the WP6-style **2200** and ship at
-  it, and 1650 is that number carried through the 0.75 rule above like
-  every other surface row, so they read the same way as the rest of the
-  table (decided here, still 2200 in `grug_mobs`) — with **one exception
-  that is pure arithmetic**: the
+- **The four critters of §3.0** (added 2026-08-08) were all authored at
+  the WP6-style **interval 20 / chance 2200 / aoc 2** and all ship at that
+  chance. The table above prints them **split by zone**, because the 0.75
+  rule is a *surface* rule: the two surface rows (**Bone Weevil**, **Bog
+  Fowl** — day, `min 10`, y 0…200) carry the multiplied **1650** like
+  every other surface row, while the two `underground`-only rows (**Cave
+  Bat**, **Cave Crawler**) print their shipped **2200**, since they are
+  excluded from the multiplier for the same reason the Giant Spider and
+  the Golems are (see the header: cave pressure belongs to §4.1's depth
+  pulse). There is also **one exception that is pure arithmetic**: the
   **Cave Crawler ships at `aoc` 1**. The underground cell was
   Zombie 4 + Giant Spider 4 + one Golem 1 = **9 / 9**; two cave critters
   at 2 each would make it 13 / 13, one over the world night peak of 12,

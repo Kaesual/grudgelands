@@ -41,6 +41,10 @@ local crow = {
 	-- Flier (gull.lua header). fall_damage stays at mobs_redo's default: prey
 	-- is not a critter, and a flier's falling() bails out before the fall
 	-- check anyway (api.lua:2594).
+	-- `pathfinding` deliberately UNSET, unlike the four ground prey mobs that
+	-- got it in WP36 (stag.lua): core.find_path is a ground search, and a
+	-- flier answers terrain by flying over it — the same rule eagle.lua,
+	-- gull.lua, parrot.lua and the kraken already follow.
 	fly = true,
 	fly_in = "air",
 	jump = false,

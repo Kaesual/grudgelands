@@ -268,7 +268,7 @@ function grug_mobs.register_mob(name, def)
 		-- DERIVED, not a def flag: it is exactly the conjunction
 		-- general_attack's own candidate filter tests (api.lua:1787 for
 		-- players, :1817-1819 for the three mob types, `attacks_monsters`
-		-- being register_mob's legacy spelling, api.lua:3519), so it can
+		-- being register_mob's legacy spelling, api.lua:3520), so it can
 		-- never drift out of sync with the fields it summarises. Both player
 		-- fields default to TRUE in mob_class (api.lua:171-172), hence the
 		-- explicit `== false`; the two mob fields default to false.
@@ -415,7 +415,7 @@ function grug_mobs.register_mob(name, def)
 		-- First-tick level/stat assignment + per-activation nametag hook.
 		grug_mobs.ensure_init(self)
 		-- Runs before do_states/general_attack in the same step (api.lua:
-		-- 3137 vs. 3144/3156), so the aggro fields the api.lua patches read
+		-- 3359 vs. :3366/:3378), so the aggro fields the api.lua patches read
 		-- are always in place in time.
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
 		tick_speed_effects(self, dtime)
@@ -444,12 +444,23 @@ function grug_mobs.register_mob(name, def)
 		-- serialized into staticdata; do_custom runs before general_attack on
 		-- every step, so it is back after each (re)activation in time.
 		--
-		-- Installed for EVERY mob since the evade rewrite (combat_stats.md §4):
+		-- Installed on EVERY mob since the evade rewrite (combat_stats.md §4):
 		-- an evading mob acquires no targets at all, which is not a faction or
 		-- truce question. A mob with neither of those carries the evade test
 		-- alone. Cost: one function call per candidate player per
 		-- general_attack, i.e. per mob once a second (api.lua:3378 runs it from
 		-- the 1 s timer block) over the players inside view_range — nothing.
+		--
+		-- What it does NOT reach any more: the five passive-prey mobs
+		-- (verbs.lua). Its only reader is the GRUG PATCH inside
+		-- general_attack (api.lua:1795), and `no_acquire` shadows that whole
+		-- method with a no-op on any mob that may target nobody (aggro.lua),
+		-- which is exactly those five. So on a stag this closure is installed
+		-- and never called. No behaviour is lost — an evading prey mob could
+		-- not acquire anything through general_attack either, that being the
+		-- point of the shadow — but the veto is a dead field there, and a
+		-- future def that gains a target back gets it working again for free,
+		-- because `no_acquire` is derived from the same attack_* fields.
 		if not self._grug_ignore_player then
 			self._grug_ignore_player = function(s, player)
 				-- Checked first and cheapest: while evading, everyone is

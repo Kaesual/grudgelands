@@ -88,6 +88,16 @@
 -- Not applied to any mob that can still target something: the guard keeps
 -- attack_monsters, so it keeps the real scan.
 --
+-- The `grug_traders` vendor NPCs do NOT have this defect and need no
+-- wrapper (checked 2026-08-08): their def sets `passive = true`
+-- (`grug_traders/vendors.lua:177`), and general_attack's very first test
+-- returns on `self.passive` (api.lua:1769) — before the
+-- get_objects_inside_radius at :1775 — so a vendor never runs the scan at
+-- all. They also register through plain `mobs:register_mob` (vendors.lua
+-- :258, deliberately not through grug_mobs.register_mob, which IS the level
+-- engine), so the `no_acquire` derivation never sees them either. Do not
+-- file a WP to wrap a code path that cannot execute.
+--
 local function no_target_acquisition() end
 
 --

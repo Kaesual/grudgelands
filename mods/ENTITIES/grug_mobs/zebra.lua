@@ -25,6 +25,9 @@ local zebra = {
 	stepheight = 2,
 	fear_height = 3,
 	view_range = 14, -- open savanna: it sees you coming
+	-- Ground prey chases up to 45 m since WP36 — see stag.lua for the full
+	-- reasoning. A* only runs from the attack branch, i.e. only after a punch.
+	pathfinding = 1,
 
 	visual = "mesh",
 	mesh = "grug_mobs_zebra.b3d",

@@ -24,6 +24,17 @@ local function stag_def(description, texture)
 		stepheight = 1.1,
 		fear_height = 3,
 		view_range = 12,
+		-- Ground prey chases up to 45 m since WP36 (§3.0 retaliation + the
+		-- _grug_chase_range patch), so it needs the same A* every other mob
+		-- that enters the attack state has: `core.find_path` runs only from
+		-- the attack branch (api.lua:2442-2445), i.e. only after a player
+		-- punch, so a grazing herd pays nothing. Without it the "worth the
+		-- swing" of §3.0 is defeated by any 3-node ledge. §3's "all
+		-- aggressive mobs: pathfinding = 1" does not cover prey (prey never
+		-- initiates) — this is AGENTS.md's pathfinding quality criterion,
+		-- applied to a mob that now fights. NOT given to the Carrion Crow:
+		-- it is `fly = true`, and find_path is a ground search (eagle.lua).
+		pathfinding = 1,
 
 		visual = "mesh",
 		mesh = "grug_mobs_stag.b3d",

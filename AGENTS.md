@@ -247,6 +247,26 @@ Details + line numbers in [docs/research/](docs/research/).
     multipliers on the first active tick. `_grug_fixed_level` is the one
     documented exception (Kraken L100). Everything else (speeds,
     view_range, drops, visuals) stays def-owned.
+    **Four tiers since WP36**: `critter` (added for the small animals —
+    fixed L1, 1 HP, 10 XP, no fall damage, never promotable; the second
+    documented exception to "stats derived") plus `normal`/`elite`/`rare`,
+    whose arithmetic is unchanged. The **telegraph gate is a POSITIVE
+    elite/rare test** (`grug_mobs.tier_telegraphs`, one predicate for both
+    call sites) — a `tier ~= "normal"` test hands a rabbit a 2 s wind-up
+    and a ×3 cone hit the day a fourth tier appears.
+  - **Three behaviour classes, and a new mob picks one**
+    (`biomes_mobs.md` §3.0): **critter** (small, scenery with a use —
+    food-only drops, `passive` + `runaway`), **passive prey** (the large
+    grazers — `grug_mobs.passive_prey` in `verbs.lua`: `passive = false`
+    is what buys retaliation, `attack_players`/`attack_npcs = false` is
+    what removes aggro on sight, `runaway` must be OFF because on_punch
+    sets it a dozen lines before the retaliation block resets it, and
+    **`attack_type` must be set** — `do_states`' attack branch dispatches
+    on three values with no `else`, so a retaliating mob without one holds
+    a target and does nothing at all) and **enemy** (§3.1's verbs).
+    Ground mobs that can end up in the attack state carry
+    `pathfinding = 1`; fliers never do (`core.find_path` is a ground
+    search).
   - **Runtime field installation**: mobs_redo's `register_mob` copies an
     EXPLICIT def-field whitelist into the entity table (api.lua:3196ff)
     and staticdata drops function fields — so every `_grug_*` field an
@@ -457,15 +477,39 @@ Details + line numbers in [docs/research/](docs/research/).
   one is "overflow survives" and which one is "legal terrain is cut" —
   are enumerated in `ocean_mask.lua`'s header; keep that list honest.
   The **six race-capital camp platforms** are the second kind
-  (`grug_mapgen/structures.lua`, with the outposts and bandit camps;
-  terrain-adaptive height from
-  `core.get_spawn_level` at the anchor − 2, resolved lazily in
-  `grug_core.get_camp_platform_y` and persisted per race id in mod storage;
-  a footprint heightmap median in `grug_mapgen` covers the many positions
-  where the engine answers nil — mgv7 calls anything above y 17, in a river
-  or in water "unsuitable". NEVER decide a platform y from the mapchunk
-  heightmap alone: it exists per chunk, so the value and the build order
-  become chunk-order-dependent and can deadlock). Zone/level queries:
+  (`grug_mapgen/structures.lua`, with the outposts and bandit camps).
+  **Exactly ONE decider, the answer is ALWAYS persisted, and a caller that
+  finds the height undecided FORCES the decision instead of inventing one**
+  (WP36 — before it, `get_spawn_pos` silently substituted the
+  `CAMP_PLATFORM_Y` minimum and wrote nothing down, so the same capital read
+  y 8 in one session and y 36 in the next). The ladder, in order:
+  `core.get_spawn_level` at the anchor − 2 (mgv7 refuses anything above
+  y 17, in a river or in water, so it answers nil at many capitals) → a
+  footprint heightmap median in `grug_mapgen` → `probe_platform_y`, a
+  main-env VoxelManip ground probe over the finished map. All three measure
+  the **same** footprint, `grug_core.CAMP_SAMPLE_RADIUS` — two fallbacks
+  measuring two different areas would be two different answers again.
+  `grug_core.get_camp_platform_y` reads, `set_camp_platform_y` writes
+  (first writer wins, per race id in mod storage), and
+  **`grug_core.request_camp_platform`** is what a caller uses when the
+  answer is missing: it emerges the footprint (idempotent, bounded per
+  session), and its completion callback falls back to the probe — which is
+  the only decider that can see a footprint whose surface sits exactly on a
+  **mapchunk y edge**, the case no heightmap can report and the WP18
+  deadlock that was never actually closed. A staggered startup sweep
+  requests all six so an unvisited capital cannot leave the protection rules
+  answering from their own fallback. Two invariants the review had to add:
+  **a decided height is not a built platform** — `build_camp` only runs from
+  `register_on_generated`, so whenever the probe decides, the chunks are
+  already on disk and `grug_core.ensure_camp_platform_built` (stub in
+  `grug_core`, implemented in `grug_mapgen`) has to build it from the
+  finished map — and **an uncertain measurement persists nothing**, because
+  a graceful shutdown fires every queued emerge callback with
+  `EMERGE_CANCELLED` while the env and mod storage are still alive, and
+  first-writer-wins would make a half-generated reading permanent.
+  NEVER decide a platform y from the mapchunk heightmap alone: it exists per
+  chunk, so the value and the build order become chunk-order-dependent and
+  can deadlock. Zone/level queries:
   `grug_core.territory_at` (accord/throng/ocean), `zone_at`
   (underground/ocean/strait/war_coast/coast/core/inner/outer — the
   `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`
