@@ -166,12 +166,14 @@ turns Fireball into the same kind of proc that Mighty Blow is.
     unserialized. Per-*slot* incremental is an unimplemented TODO in the
     engine (`src/inventory.cpp`), so the `main` list itself goes out whole.
   - Consequence for the look: a bar can only move `charge_time / 0.5 s`
-    times. An 8 s charge gets 16 visible steps and reads as continuous; a
-    2 s charge gets 4 and reads as chunky, whatever the color blend does.
-    So **charge times start at ~4 s**, and a skill that wants a shorter
-    one gets no charge at all (Mighty Blow, limited by rage). Set
-    `WEAR_STEPS` to 32 so the quantizer is never the binding constraint —
-    the ticker is the knob, and raising *it* is what costs packets.
+    times. **Rule: the ticker stays at 0.5 s** — speeding it up is the one
+    change that actually costs packets, and it is not worth a smoother
+    bar. **Recommendation, not a gate: charge times of at least 2 s, and
+    3–4 s reads better** (4 visible steps already say "charging, nearly
+    there"; 6–8 look continuous). A skill may still have no charge at all
+    and be limited by its resource alone — Mighty Blow is exactly that.
+    Set `WEAR_STEPS` to 32 so the quantizer is never the binding
+    constraint; the ticker is the only knob.
   - The Strike's old `no_cooldown_display` exception disappears with the
     model: it has no charge, so it has no bar.
 
