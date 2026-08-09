@@ -1105,6 +1105,18 @@ end
 -- wear bar params, so the token is the compare — every inventory write
 -- re-sends the list, and a newly granted item must not spend a second
 -- write on the ramp once the sync pass established it.
+--
+-- The argument is the wear bar table ITSELF — `color_stops` and `blend` at
+-- the top level. `read_wear_bar_params` reads both off the table it is
+-- handed (`src/script/common/c_content.cpp:1847-1889`), and a missing
+-- `color_stops` is a hard `LuaError("color_stops must be a table")`. The
+-- `wear_color = {...}` wrapper belongs to an ITEM DEFINITION
+-- (`doc/lua_api.md:10512-10522`), where the field name is what selects this
+-- same reader — passing the definition's shape to the meta method threw
+-- from inside the class-pick formspec handler and, being a LuaError out of
+-- a callback, took the server with it (server.cpp:128-132, :163-167).
+-- Hamstring is the only ability with a `charge`, so the crash was "pick
+-- Warrior".
 local function apply_charge_bar(stack, def)
 	if not def.charge then
 		return false
@@ -1113,12 +1125,32 @@ local function apply_charge_bar(stack, def)
 	if meta:get_string("grug_charge_bar") == "1" then
 		return false
 	end
-	meta:set_wear_bar_params({wear_color = {blend = "linear",
-		color_stops = {[0.0] = "#ff0000", [0.5] = "#ffff00",
-		[1.0] = "#00ff00"}}})
+	meta:set_wear_bar_params({
+		blend = "linear",
+		color_stops = {[0.0] = "#ff0000", [0.5] = "#ffff00", [1.0] = "#00ff00"},
+	})
 	meta:set_string("grug_charge_bar", "1")
 	return true
 end
+
+-- Load-time probe for the call above (WP38 review). The wear bar table is
+-- validated C++-side and a bad shape is a LuaError, not a return value —
+-- and the only caller is sync_kit, which runs inside the class-pick
+-- formspec handler, so the failure mode is a SERVER SHUTDOWN on "pick
+-- Warrior" (server.cpp:128-132, :163-167). There is no getter to compare
+-- against and no syntax check can see the shape, so it is exercised once
+-- at startup on a scratch stack that goes nowhere: a wrong table costs one
+-- loud line at boot instead of the first player who picks a class with a
+-- charging skill in its kit.
+core.register_on_mods_loaded(function()
+	local ok, err = pcall(apply_charge_bar, ItemStack("grug_abilities:strike"),
+		{charge = 1})
+	if not ok then
+		core.log("error", "[grug_abilities] the engine rejects the charge-bar " ..
+			"wear params: " .. tostring(err) .. " -- granting any skill that " ..
+			"has a charge would kill the server from sync_kit")
+	end
+end)
 
 -- Resolve each hand at most once per pass, and only when a stack actually asks
 -- for it. The entry is the {inv, wield} source pair, so one hand is read once
