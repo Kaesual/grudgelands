@@ -139,8 +139,17 @@ tiers behind a real fight — and *enemies* are everything else.
   frontal cone that requires line of sight. Stepping aside is a clean
   miss. Named rares broadcast their spawn faction-wide.
 - **MVP classes**: Warrior (rage), Mage and Priest (mana), 3–4 instant
-  abilities each as hotbar items with cooldowns and a 1 s global cooldown,
-  plus a soft target lock. Talent trees add the rest.
+  abilities each as hotbar items, plus a soft target lock. Talent trees add
+  the rest.
+- **Skills never slow your swing** (decided 2026-08-09, WP38). Melee timing
+  and skill timing are two independent systems: you swing as fast or as
+  slow as you like and no punch is thrown away, while every melee skill is
+  the ordinary weapon attack **plus** an effect that fires when that
+  skill's own charge is full — shown as a bar under the icon that fills
+  red→yellow→green and disappears when the skill is ready. Rotation is the
+  hotbar: keys 1–8 pick which effect is armed next, without ever
+  interrupting the attack. Heals, shields and gap closers stay ordinary
+  casts.
 - **Your weapon lives in a slot, not in the hotbar** — and it is the only
   thing that decides what a skill hits for and what it looks like. Every
   ability shows your own sword, in the bar and in your hand, and swapping
@@ -255,7 +264,7 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 
 ## Current State
 
-*Last updated: 2026-08-08. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-09. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
@@ -328,9 +337,10 @@ the arrival pulse that makes deep mining dangerous, the depth level
 curve's overdue recalibration, camp-only ore respawn, lava lakes and the
 continental Abyssal Crystal), the two-slot
 furnace and the alloy chain (WP26, the next link in the material chain),
-the melee path (WP38 — the PvP punch is still ungated and now stacks
-with the auto-attack skill, and the shared swing clock is unfair to slow
-weapons), the denser surface spawns
+the melee path (WP38 — re-scoped on 2026-08-09 from a two-defect fix into
+the design revision that makes swing timing and skill timing independent;
+it deletes the shared swing clock instead of repairing it and closes the
+ungated PvP punch on the way), the denser surface spawns
 (WP37 — decided long ago, never rolled out across the roster), guilds
 (WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
 talent trees (WP11), world structures (WP13 — which now also owns the
@@ -358,13 +368,16 @@ decided**: whether the jungle fringe should follow the deep jungle's new
 ground texture (`TODO-design-jungle-fringe.md`), and the extra badlands
 band WP36 added on the Throng side, which is deliberately cheap to
 revert if the owner disagrees with the reading behind it. The melee path
-carries two measured defects, both queued as WP38: punches at *players*
+carries three measured defects, all queued as WP38: punches at *players*
 still run the engine's raw scaling — so a held button can deal 0 damage
 in PvP, and since WP35 that ungated stream also *stacks* with the
-auto-attack skill (5.17× over 30 s in the worst measured case) — and the
+auto-attack skill (5.17× over 30 s in the worst measured case); the
 one swing clock the two melee paths share is decided by whoever asks for
 the shorter interval, so tapping the dig key with a fast item can starve
-a greataxe down to 0.35× its damage. The two-handed rule is built and
+a greataxe down to 0.35× its damage; and the same ungated PvP path hands
+out rage per punch *packet* rather than per landed hit, which is 60 rage
+a second. WP38 was re-scoped on 2026-08-09 to fix the cause rather than
+the three symptoms. The two-handed rule is built and
 tested but **dormant**: no item can enter the offhand until WP14, so
 neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea

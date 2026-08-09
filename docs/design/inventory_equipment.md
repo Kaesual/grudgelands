@@ -10,6 +10,26 @@ hand count).
   the homepage**: stat sheet (attributes, HP/mana, melee/spell bonus,
   crit/dodge — the `/char` data), equipment slots, 3D model preview
   (formspec `model[]`).
+- **Every equipment slot says what it is, without hovering** (decided
+  2026-08-09, WP38). Eight identical empty cells plus a hover tooltip is
+  not enough. Preferred: a **ghost icon per empty slot** — the slot's type
+  drawn dimmed inside it (reuse the `grug_gear` art where a slot has a
+  natural match: head/chest/legs/feet, weapon; offhand and trinket need two
+  new 16 px silhouettes). Two constraints found while specifying it:
+  - `listcolors[]` is **per formspec, not per list**, and the Character
+    page also carries sfinv's main inventory and hotbar lists. Making slot
+    backgrounds transparent so a ghost drawn *before* the `list[]` shows
+    through therefore strips the cells from the main inventory too. So:
+    draw the ghost **after** the `list[]` and **only for slots that are
+    actually empty** — nothing to cover, no `listcolors` change, no effect
+    on any other list. It needs the formspec re-sent on equipment change
+    (`sfinv.set_player_inventory_formspec` from the existing
+    `register_on_equipment_change` hook), which is a rare event.
+  - **Runtime check that decides the approach**: an `image[]` over a
+    `list[]` slot must not swallow the click. If it does, fall back to
+    one- or two-character `label[]`s ("H", "C", "L", "F", "W", "O", "T1",
+    "T2") — legibility beats prettiness here, and the existing hover
+    tooltips carry the full name either way.
 - Further pages: **Bags**, existing **Crafting** (3×3 grid).
 - Armor visuals on the player model (multiskin layering à la lottarmor):
   Phase 3.

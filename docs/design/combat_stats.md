@@ -70,47 +70,6 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   **enforced from WP5**, WP7's vendor gear carries the ilvl only);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
-- **Auto-attack is an ABILITY, not a held button** (decided 2026-08-08,
-  shipped with WP35). The universal **Strike** (`classes.md` §2b) *is* the
-  auto-attack: one cast starts swinging at the target and keeps swinging at
-  the equipped weapon's `full_punch_interval`; each swing deals the full
-  weapon damage + floor(Str/10), rolls the crit above, reports threat
-  (multiplier 1), generates the Warrior's rage on damage that actually
-  landed, and accepts hostile players. It had to become a skill: the engine
-  sends `INTERACT_USE` instead of a punch whenever the selected item has an
-  `on_use`, so every ability item disables punching while it is held and a
-  slot-fed auto-attack is otherwise unreachable.
-- **The held-button punch path stays — for tools and fists** (unchanged
-  since 2026-08-07): punching a mob with a wielded pick, axe or bare hand
-  runs the cadence patch in `mobs/api.lua` calling `grug_core` — one
-  full-damage swing per the **wielded** item's `full_punch_interval`,
-  punches arriving faster (the client fires one every 0.2 s while the key
-  is held) discarded whole, plus the Strength bonus and the auto-attack
-  crit roll (before that patch, auto-attacks ignored Strength, could never
-  crit, and every weapon below a bronze sword dealt 0 while the key was
-  held). Against a mob it **also generates rage, base threat and the soft
-  target lock** (corrected 2026-08-08 — an earlier version of this bullet
-  denied all three): the cadence gate and the `do_punch` wrapper that feeds
-  the hit pipeline are installed by the same mob registration, so every
-  accepted swing adds threat equal to the damage dealt, grants the +12 rage
-  and sets the lock, exactly as a Strike swing does. What it lacks is the
-  **source** and the ability plumbing: its damage comes from the **wielded
-  stack** rather than the weapon slot — the one place the single-fixed-source
-  rule above is bypassed — it **wears** that stack (an ability punch does
-  not), it carries **no ability threat multiplier** (base threat only; a
-  tank ability's ×3 is unavailable to it), and it cannot swing at the lock:
-  the player has to keep the mob pointed, with no range/line-of-sight test
-  and no auto-repeat.
-  Both paths consume **one shared per-player melee clock**, so against a
-  mob the skill and a held button can never both land inside the same
-  swing window (a punch on a *player* never reaches that gate — next
-  bullet).
-- **PvP melee (player vs player) still runs the engine's raw tflp-scaling
-  and therefore shares the old held-button-deals-0 defect — the same
-  pipeline must be ported to player punches with the PvP work package**
-  (carry-over, noted in BACKLOG). The Strike routes its own PvP damage
-  through the ability pipeline instead, so it dodges and crits correctly;
-  it does not repair the raw path, and it does not remove it.
 
 Anchors (computed):
 
@@ -124,6 +83,87 @@ Anchors (computed):
 Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
+
+### Melee timing (revised 2026-08-09, ships with WP38)
+
+**Swing timing and skill timing are two independent systems.** The swing
+rhythm belongs to the engine and to the weapon; the skill rhythm belongs to
+the design and to each skill's own charge timer (`classes.md` §2b). Neither
+gates the other. This **replaces** the all-or-nothing cadence gate of
+2026-08-07 and the shared per-player melee clock of 2026-08-08 — both are
+deleted, together with the starvation warning that mitigated the second one.
+Every defect they produced (a slow weapon starved by a fast one, an ungated
+PvP path that stacked with the Strike) was a symptom of the coupling, not a
+bug inside the gate.
+
+- **No punch is discarded, and damage is proportional.** A punch deals
+  `weapon damage × clamp(tflp / full_punch_interval, 0, 1)` — what the
+  engine already means by a partial swing. That needs no gate and is
+  DPS-exact at any click rate: the server resets `time_from_last_punch` on
+  every punch **packet** and the client sends one every 0.2 s while the key
+  is held, so `tflp` sits at 0.2 s and five punches a second each deal a
+  fifth of a swing. Holding the button and clicking fast come out the same;
+  only clicking *slower* than the weapon's interval loses damage, which is
+  correct. Short swings are therefore allowed and normal — this is the point
+  of the revision.
+- **The rounding hole is closed by a remainder accumulator, never by a
+  minimum.** Fractional damage accumulates, is `floor`ed when applied, and
+  the remainder carries to the next punch. **One accumulator per player**,
+  holding a target object id and a remainder below 1; a punch on a
+  *different* target resets it to 0. Rounding every punch up to 1 was
+  considered and **rejected**: with `tflp` pinned at 0.2 s it makes spam
+  strictly better, and worst exactly where the numbers are smallest — a
+  3-damage weapon at a 1 s interval would deal 5 DPS instead of 3 (+67 %),
+  while a 25-damage weapon gains nothing. There is no "at least 1 per swing
+  interval" floor either: the accumulator already guarantees any non-zero
+  damage lands eventually, and a floor would override mobs_redo's
+  `immune_to`, which *sets* damage rather than scaling it. Switching targets
+  forfeits at most 0.999 damage — deliberate, and it is what keeps the
+  accumulator a single field instead of a per-target table.
+- **Hit feedback does not depend on the damage NUMBER.** mobs_redo gates the
+  hit sound, the blood, the damage texture flash, the health subtraction and
+  the death check behind one `damage >= 1` (`mods/ENTITIES/mobs/api.lua`).
+  With fractional swings that is wrong twice over: a 0.4-damage punch must
+  still sound and bleed, and an accumulated hit must still be able to kill.
+  Feedback moves in front of the threshold; the health subtraction and the
+  death check run on the **accumulated integer**.
+- **PvP melee runs through the same pipeline** — this closes the carry-over
+  that stood here since 2026-08-07. A `core.register_on_punchplayer` returns
+  true to suppress the engine's own damage and applies ours instead: the same
+  proportional damage, the same accumulator, then dodge, armor and threat.
+  Rage is granted on damage that **landed**, never on the punch event: the
+  callback fires once per punch packet (≈5/s), so granting per event is worth
+  60 rage/s against a hostile player — the same defect that was fixed for
+  mobs on 2026-08-08 by sampling the target's hit points before and after.
+- **The two damage streams cannot coexist, and no clock is needed to say
+  so.** An ability item disables punching while it is selected (the engine
+  sends `INTERACT_USE` instead of a punch whenever the wielded item has an
+  `on_use`), so the only way to have both was an auto-repeat loop that kept
+  running after a hotbar switch. The loop now **follows the selected ability
+  item** (`classes.md` §2b): switching to another ability re-arms it,
+  switching to anything else stops it. Structurally one stream, at all times.
+- **The held-button path stays — for tools and fists.** Punching with a
+  wielded pick, axe or bare hand is still the wielded item's damage at the
+  wielded item's interval, plus the Strength bonus, the crit roll, rage,
+  base threat and the soft target lock. What it still lacks is the **source**
+  and the ability plumbing: its damage comes from the wielded stack rather
+  than the weapon slot — the one place the single-fixed-source rule above is
+  bypassed — it **wears** that stack (an ability punch does not), it carries
+  **no ability threat multiplier**, and it cannot swing at the target lock.
+- **Ranged weapons are deferred, but their shape is decided.** A bow is
+  *drawn*, not clicked: hold to charge up to a maximum, release to fire, with
+  arrow speed, damage and range scaling with the draw — an early release
+  travels a few metres. Model it on VoxeLibre's `mcl_bows`. The draw state is
+  readable server-side from `player:get_player_control().dig`, so this needs
+  no engine work. It gets a work package of its own; when it lands, caster
+  skills become procs on a ranged auto-attack exactly the way melee skills
+  are procs on a swing.
+
+Balance note: the DPS baseline above is unchanged by construction (the
+accumulator is exact and the proportional damage integrates to one full swing
+per interval). What the proc model adds is **burst on top of** a baseline that
+used to be interrupted by casting. The damage tables are **not** recomputed
+with WP38 — they get a tuning pass after the model has been played.
 
 ## 3. Mobs
 
