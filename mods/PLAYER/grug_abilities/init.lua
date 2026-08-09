@@ -1268,21 +1268,118 @@ grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, 
 	end
 end)
 
-core.register_on_punchplayer(function(player, hitter)
+--
+-- PvP melee (combat_stats.md §2, WP38 T4): the held-button path against
+-- PLAYERS runs through the same pipeline as the mob path — proportional
+-- partial-swing damage, the remainder accumulator, then the central
+-- dodge → armor → absorb modifier, rage on damage that LANDED. The hook
+-- this replaces granted +12 rage per punch EVENT: while the dig key is
+-- held the callback fires once per punch packet (≈5/s, combat_stats.md
+-- §2), so that was 60 rage/s against a hostile player — the exact
+-- firehose the landed-damage rule of combat_stats.md §2 killed for mobs
+-- on 2026-08-08 (see the rage section above).
+--
+-- MODE_OR composition (reference_projects/luanti/src/script/cpp_api/
+-- s_player.cpp:63): ANY callback returning true marks the punch handled
+-- and the engine's own damage is suppressed (player_sao.cpp:482-490).
+-- Same-faction pairs are grug_factions' handler (its true suppresses
+-- before ours could matter); hostile pairs are ours. Neither vetoes the
+-- other — this one never returns true outside the hostile path.
+--
+-- Knockback is deliberately not fed our damage (MVP): builtin's own
+-- on_punchplayer (builtin/game/knockback.lua:25-48) applies knockback
+-- velocity to punched players off the ENGINE's `damage` argument — for a
+-- handled punch that is the pre-pipeline hitparams.hp the callbacks
+-- receive. Routing OUR damage into core.calculate_knockback is deferred.
+--
+-- enable_pvp = false means this callback never fires at all: PlayerSAO::punch
+-- returns before the script callback when PvP is off (player_sao.cpp:463-470),
+-- so nothing here can leak damage into a no-PvP world.
+--
+core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, dir, damage)
+	-- Guards first. Mob punches, self-hits and punches on corpses keep
+	-- the engine path; ability punches on players run fully through
+	-- grug_core.deal_ability_damage (which pre-rolls dodge and punches at
+	-- full interval) — handling them here would double-apply.
 	if not (hitter and hitter:is_player()) then
 		return
 	end
-	if grug_factions.hostile(hitter, player) then
-		grug_abilities.set_target(hitter, player, false)
-		if not grug_core.in_ability_punch then
-			grug_core.mark_in_combat(hitter)
-			grug_abilities.add_rage(hitter, 12)
-		end
-	elseif grug_factions.same_faction(hitter, player) then
-		-- Friendly fire deals no damage (grug_factions), but punching an
-		-- ally targets them for heals.
-		grug_abilities.set_target(hitter, player, true)
+	if hitter == player or player:get_hp() <= 0 then
+		return
 	end
+	if grug_core.in_ability_punch then
+		return
+	end
+	if grug_factions.same_faction(hitter, player) then
+		-- Ally heal targeting, kept from the old hook. The damage is
+		-- grug_factions' concern: its own handler returns true and
+		-- suppresses it (MODE_OR, s_player.cpp:63) — never return true
+		-- here, or the same-faction punch would end up handled twice.
+		grug_abilities.set_target(hitter, player, true)
+		return
+	end
+	if not grug_factions.hostile(hitter, player) then
+		-- Factionless/neutral pairs keep the engine's damage, exactly as
+		-- before this WP: hostile() requires BOTH sides to have a faction
+		-- (grug_factions/init.lua:87-91), so two factionless players are
+		-- neutral, not hostile.
+		return
+	end
+
+	-- Hostile pair from here on. Target lock and combat marking, kept
+	-- from the old hook.
+	grug_abilities.set_target(hitter, player, false)
+	grug_core.mark_in_combat(hitter)
+
+	-- Damage source is the WIELDED stack (combat_stats.md §2: the
+	-- held-button path stays wielded-item damage — the weapon SLOT feeds
+	-- only the ability swings; this path is the tools-and-fists one). The
+	-- callback's tool_capabilities are normally present; when absent,
+	-- get_tool_capabilities resolves an empty hand to the hand item's own
+	-- caps (the engine always registers the "" item, inventory.cpp:344-346).
+	local caps = tool_capabilities or
+		hitter:get_wielded_item():get_tool_capabilities()
+	local fleshy = caps.damage_groups and caps.damage_groups.fleshy or 0
+	local fpi = caps.full_punch_interval
+	if not (type(fpi) == "number" and fpi > 0) then
+		fpi = 1.4
+	end
+
+	-- Mirror the mob path (the api.lua GRUG PATCH): partial-swing factor,
+	-- Strength added BEFORE the factor so the factor scales the whole hit,
+	-- unfloored crit (the accumulator floors at application time — a ×1.5
+	-- on a 0.4 swing must ride the same remainder as the pre-crit
+	-- fraction), then the accumulated integer applied.
+	local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
+	local raw = (fleshy + grug_core.get_melee_bonus(hitter)) * fraction
+	raw = grug_core.melee_crit(hitter, raw, player)
+	local applied = grug_core.apply_accumulated_melee(hitter, player, raw)
+	if applied >= 1 then
+		local hp_before = player:get_hp()
+		-- set_hp with the punch reason routes through the central hp-change
+		-- modifier ONCE (player_sao.cpp:519): the dodge roll happens here,
+		-- not pre-rolled like deal_ability_damage does, then armor, then
+		-- the absorb shield. A dodge zeroes the hit → `landed` stays false
+		-- → no rage.
+		player:set_hp(hp_before - applied, {type = "punch", object = hitter})
+		local landed = player:get_hp() < hp_before
+		if landed then
+			-- Rage only on damage that actually landed, scaled by the same
+			-- fraction that scaled the hit. At a held button (5 packets/s
+			-- at fraction ≈ 0.2/fpi each) the influx integrates back to
+			-- 12 rage per weapon interval instead of 60 per second — but
+			-- in LUMPS of 12×fraction per landing packet, and only when
+			-- that packet applied ≥ 1: a hit weaker than 5 damage at a
+			-- 1.0 s interval lands every other packet and grants
+			-- proportionally less. Rage follows the damage applied, not
+			-- the weapon.
+			grug_abilities.add_rage(hitter, 12 * fraction)
+		end
+	end
+	-- The engine's own damage is suppressed on the hostile path ALWAYS —
+	-- even when nothing landed (applied 0, absorbed, dodged): the
+	-- pipeline is ours now.
+	return true
 end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
