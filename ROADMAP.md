@@ -162,6 +162,16 @@ game (not a mod pack), written in Lua.
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
       **Not runtime tested**
+- [ ] **Swing timing and skill timing become independent** (WP38, decided
+      2026-08-09): no skill restricts how fast you swing, damage is
+      proportional with a remainder accumulator so short swings never
+      round to nothing, and every skill is the ordinary weapon attack
+      **plus** an effect that fires when its own charge is full — shown as
+      a bar that fills red→yellow→green and vanishes when ready. That
+      deletes the shared melee clock instead of repairing it, closes the
+      ungated PvP punch, and **retires the 1 s global cooldown** of WP19:
+      per-skill charges and resource costs are the limiters now
+      (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
 
 ### 1.4 Mobs & combat
 - [x] Faction guards (attack the enemy faction), spawned by military

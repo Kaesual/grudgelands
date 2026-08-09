@@ -2,8 +2,9 @@
 
 Decided spec (2026-08-06). Implementation: WP4 (`grug_abilities`, resource
 HUD, damage pipeline hooks in `grug_core`), WP19 (kit tuning, GCD, target
-lock), WP35 (§2b's universal ability and §2c's ability-item skins); skill
-trees extend these kits in WP11. Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat
+lock), WP35 (§2b's universal ability and §2c's ability-item skins), WP38
+(§2b's proc model, which retires WP19's GCD); skill trees extend these
+kits in WP11. Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat
 values: `combat_stats.md` §4.
 
 Core principles:
@@ -13,13 +14,22 @@ Core principles:
   10 s cast (world.md §6) is its own mechanic and stays.
 - **Abilities are hotbar items** (indestructible, not droppable/tradeable,
   locked to the main inventory; granted at class pick, except §2b's
-  universal Strike, which is granted on join). Left click = cast at the
-  pointed target; the item's wear bar displays the running cooldown —
-  **the Strike is the one exception and shows none** (§2b). What the item
-  *looks* like is §2c.
-- **Global cooldown 1.0 s** across all abilities of a class (decided
-  2026-08-06, WP19) — turns button mashing into a rotation. §2b's Strike
-  is off it in both directions.
+  universal Strike, which is granted on join). Left click = attack or cast
+  at the pointed target; the item's wear bar displays the skill's **charge
+  bar** (§2b). What the item *looks* like is §2c.
+- **An ability item picks up dropped items like a weapon does** (fixed
+  2026-08-09, WP38). Item pickup rides on the `on_punch` of the builtin
+  item entity, and an item with an `on_use` makes the client send
+  `INTERACT_USE` instead of a punch — so with a skill selected, walking
+  over loot and clicking it did nothing. A click on an item entity picks it
+  up and does **not** cast.
+- **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
+  it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
+  chaining, and the two limiters that replaced it do that job better and
+  visibly: each skill has its **own** charge timer, and every effect costs
+  a **resource**. A flat second on top of both only added an invisible
+  delay — and against §2b's swing skills it would have capped attack speed,
+  which is the defect that already made the Strike an exception.
 - **Soft target lock** (WP19): the last punched/pointed enemy or ally
   stays the implicit target for ~8 s; abilities default to it (makes
   healing moving allies possible).
@@ -59,8 +69,9 @@ Core principles:
 - **Auto-attacks carry the melee bonus and roll crit since 2026-08-07**
   (combat_stats §2), on both paths: the Strike of §2b routes through the
   same `grug_core` helpers as every other ability, and the held-button
-  path for tools and fists gets them from the `mobs/api.lua` cadence
-  patch. WP5's equip-time stack-meta `tool_capabilities` override
+  path for tools and fists gets them from the `mobs/api.lua` patch (whose
+  *cadence gate* half WP38 removes — the Strength bonus and the crit roll
+  stay). WP5's equip-time stack-meta `tool_capabilities` override
   (enchant design in AGENTS.md) is what will carry a rolled attack-speed
   affix into the Strike's cadence — it is read per swing, so that needs
   no further ability work.
@@ -70,36 +81,117 @@ Core principles:
   stubs with the real threat table. Taunt's forced-target effect works
   already via mobs_redo `do_attack(player, force)`.
 
-## 2b. Universal abilities (no class kit)
+## 2b. How a skill fires — swing skills and cast skills
 
-Abilities that belong to **no class** — every character has them, including
-one that has not picked a class yet. Today there is exactly one, and it is
-what used to be the held attack button (`combat_stats.md` §2; decided
-2026-08-08, shipped with WP35).
+Revised **2026-08-09**, ships with WP38. It replaces the model of
+2026-08-08, in which every skill owned the melee clock while its own
+cooldown ran. Rationale and the melee side of it: `combat_stats.md` §2.
 
-| Ability | Cost | Cooldown | Effect |
-|---------|------|----------|--------|
-| Strike | free | the **equipped weapon's** `full_punch_interval`, resolved per cast | Melee hit (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 12 rage per landed hit (§1). Toggles auto-repeat. |
+Every ability is one of **two kinds**, and the kind is a property of the
+ability, declared where it is registered:
+
+1. **Swing skills** — the click **is** an ordinary weapon attack. The
+   skill's own effect rides along on a landed swing, but only when the
+   skill is **charged**. Today exactly the three melee abilities: Strike,
+   Mighty Blow, Hamstring.
+2. **Cast skills** — a discrete action that is not a weapon swing: heals,
+   shields, Blink, Frost Nova, Smite, Charge, Taunt. A gap closer is
+   wanted *now*, from 10 m, and a heal must not require punching the
+   patient. These keep the familiar shape: a cost, a cooldown, a target.
+
+The whole Mage and Priest kit is cast skills, and stays that way until
+ranged auto-attacks exist (`combat_stats.md` §2) — a bow or a wand is what
+turns Fireball into the same kind of proc that Mighty Blow is.
+
+### Rules for swing skills
+
+- **A skill never makes you slower or weaker than the bare weapon.**
+  Holding any swing skill and attacking always deals ordinary weapon damage
+  at the weapon's own rhythm (`combat_stats.md` §2). The effect is a bonus
+  on top; there is no state in which selecting a skill costs you damage.
+- **Every skill charges on its own timer, and the timer runs always** —
+  including while the skill is *not* selected. That is what makes the
+  hotbar a rotation: several skills come up during a fight and are spent in
+  consecutive swings.
+- **Charges do not stack.** One charge maximum, and a full charge never
+  decays. Stacking would bring back burst hoarding; decay would punish a
+  player for looking at the map.
+- **A landed swing with a charged skill selected fires the effect and
+  resets that skill's charge.** Only the *selected* skill can proc, so only
+  one effect can ride on one swing.
+- **The resource cost is paid at the proc, and an unaffordable proc does
+  not consume the charge.** This is the decision layer: Mighty Blow's rage
+  is the reason to keep swinging with it rather than to spend the rage
+  elsewhere. Silently not firing is correct — a warning on every swing
+  would be noise.
+- **Rotation is the hotbar.** Keys 1–8 pick which effect is armed; no cast
+  click is needed to switch. The auto-repeat loop **follows the selected
+  ability item**, so switching slots mid-fight re-arms the proc without
+  interrupting the attack, and switching to a non-ability item stops the
+  loop. That is also the whole stacking defence: two melee damage streams
+  are structurally impossible (`combat_stats.md` §2).
+- **Auto-repeat stays a toggle** on the same item: the first click starts
+  swinging at the soft-locked target, a **second click on the same slot**
+  stops it. It also stops on target dead or gone, out of range, out of line
+  of sight, death, disconnect, respawn or a class change. The weapon is
+  re-read **every swing**, so unequipping mid-fight drops to fist damage
+  instead of stopping the attack.
+
+### The charge bar
+
+- A **charging** skill shows a bar under its hotbar icon that grows from
+  left to right and runs **red → yellow → green** as a continuous ramp, no
+  fixed intermediate states. A **fully charged** skill shows **no bar** —
+  being ready is the default, and the absence of a bar is the signal.
+- This is the item **wear bar**, driven by the charge instead of by a
+  cooldown: `wear = (1 − charge) × 65535`. The engine defines durability as
+  `1 − wear / 65535` and derives both bar length and color from it, and it
+  draws nothing at `wear = 0`. The color ramp is `set_wear_bar_params` with
+  `blend = "linear"` and stops at 0.0 red / 0.5 yellow / 1.0 green.
+- **The bar's resolution is set by the TICKER, not by `WEAR_STEPS`, and the
+  packet cost is 2/s per player at worst** (measured against the engine
+  source 2026-08-09, correcting a first draft of this bullet that claimed
+  a per-skill cost):
+  - Wear writes are driven by the **one shared 0.5 s globalstep** that
+    already serves every ability of every player. There is no per-skill
+    loop and there must never be one.
+  - The engine **coalesces**: `ServerEnvironment::step` sends a player's
+    inventory at most once per environment step, and only if it was
+    modified (`src/serverenvironment.cpp`). Ten skills charging at once
+    therefore cost exactly what one costs — **one packet per tick, so ≤ 2
+    per second per player**, and none at all while nothing is charging.
+  - The packet is **incremental at list granularity** (`Inventory::serialize`
+    writes `KeepList` for untouched lists), so a wear write on `main`
+    leaves the eight equipment lists, the bag lists and `craft`
+    unserialized. Per-*slot* incremental is an unimplemented TODO in the
+    engine (`src/inventory.cpp`), so the `main` list itself goes out whole.
+  - Consequence for the look: a bar can only move `charge_time / 0.5 s`
+    times. **Rule: the ticker stays at 0.5 s** — speeding it up is the one
+    change that actually costs packets, and it is not worth a smoother
+    bar. **Recommendation, not a gate: charge times of at least 2 s, and
+    3–4 s reads better** (4 visible steps already say "charging, nearly
+    there"; 6–8 look continuous). A skill may still have no charge at all
+    and be limited by its resource alone — Mighty Blow is exactly that.
+    Set `WEAR_STEPS` to 32 so the quantizer is never the binding
+    constraint; the ticker is the only knob.
+  - The Strike's old `no_cooldown_display` exception disappears with the
+    model: it has no charge, so it has no bar.
+
+### Strike
+
+Strike is the **universal** ability — no class owns it, every character has
+it, including one that has not picked a class yet.
+
+| Ability | Cost | Charge | Effect |
+|---------|------|--------|--------|
+| Strike | free | none — it is the plain attack | Melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 12 rage per landed hit (§1). Toggles auto-repeat. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
   character is never standing in the world with no way to fight back.
 - **Free**, because it is what *generates* the Warrior's resource.
-- **Off the global cooldown in both directions**: it neither waits for a
-  GCD nor starts one. A 1 s GCD would cap a 0.7 s dagger and make attack
-  speed a dead stat, and a swing that started one would lock the class kit
-  out for as long as the player keeps attacking.
-- **No wear-bar cooldown display** — the one exception to the hotbar rule
-  in the core principles above. Its cooldown restarts every 0.7–1.4 s for
-  as long as a fight lasts and every wear write re-sends the whole
-  inventory to the client; same rationale as the deliberately silent GCD.
-- **Auto-repeat is a toggle**: the first cast keeps swinging at the target
-  held by the soft target lock, at the weapon's speed. It stops on target
-  dead or gone, out of range, out of line of sight, a **second cast**,
-  death, disconnect, respawn or a class change. The weapon is re-read
-  **every swing**, so unequipping mid-fight drops to fist damage instead of
-  stopping the attack, and swapping a greataxe for a dagger changes the
-  cadence from the next swing on.
+- It is the **"no effect" slot**: the baseline every other swing skill is
+  measured against, and the slot to sit on while the others charge.
 - **An empty weapon slot makes it weak, never uncastable**: it swings for
   the bare-hand baseline. The same holds for every weapon-scaled class
   ability.
@@ -134,6 +226,26 @@ color, and the tinted orb becomes the no-weapon fallback.
   "round thing" this replaces.
 - **Empty slot = the plain tinted orb**, i.e. the look the game shipped
   with before the weapon slot existed.
+- **Which skill is this? — the name goes on the HUD, not on the icon**
+  (decided 2026-08-09, WP38). Color alone was judged not enough to tell
+  eight ability items apart. Writing the name into the icon is **not
+  possible**: Luanti has no text texture modifier — the complete list is
+  `doc/lua_api.md` "Texture modifiers" (`[combine`, `[resize`, `[opacity`,
+  `[invert`, `[brighten`, `[noalpha`, `[makealpha`, `[transform`,
+  `[inventorycube`, `[fill`, `[lowpart`, `[verticalframe`, `[mask`,
+  `[sheet`, `[colorize`, `[colorizehsl`, `[multiply`, `[screen`, `[hsl`,
+  `[contrast`, `[overlay`, `[hardlight`, `[png`) and there is no `[text`.
+  Baking labels into PNGs would mean one authored texture per ability for
+  about four legible characters at 16 px. Instead: **when the wielded
+  ability item changes, the HUD shows that skill's name** — no asset, fully
+  legible, and it answers the question at the moment the player asks it.
+- **Signature icons, after the MVP.** The long-term answer is one
+  **recognizable symbol per ability** replacing the tinted orb backdrop,
+  with the weapon art still composited on top — recognition beats color
+  coding. Layering is already how the icon is built (a `^` overlay chain in
+  one composition site), so this costs **art and no machinery**: the same
+  helper, a different backdrop texture per ability, and the color coding
+  becomes redundant. Not in WP38.
 - Still deferred: the alternative composition (weapon art plus a tinted
   border/halo overlay) — it needs art, not a redesign. And the weapon is
   **not** shown on the character model in third person; the engine draws
@@ -151,10 +263,16 @@ an engine where mobs outrun players, the snare is the Warrior's identity).
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Charge | — (generates 15 rage) | 10 s | Dash to an enemy up to 12 m away, 3 damage. Engage tool. |
-| Mighty Blow | 25 rage | GCD only | Melee hit (4 m): floor(weapon damage × 1.5) + melee bonus. The rage dump. |
-| Hamstring | 10 rage | 6 s | Melee hit (4 m): 2 damage + 50% slow for 5 s. |
-| Taunt | free | 8 s | Target mob (8 m) is forced onto the Warrior for 3 s; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
+| Charge | — (generates 15 rage) | cast, 10 s | Dash to an enemy up to 12 m away, 3 damage. Engage tool. |
+| Mighty Blow | 25 rage | **swing**, no charge | The swing lands as usual and the effect rides along whenever the rage is there: floor(weapon damage × 1.5) + melee bonus instead of the plain hit. The rage dump. |
+| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. |
+| Taunt | free | cast, 8 s | Target mob (8 m) is forced onto the Warrior for 3 s; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
+
+A **swing skill with no charge timer is limited by its resource alone**,
+which is exactly what Mighty Blow was built to be: at +12 rage per landed
+hit it procs about every other swing and the Warrior is never rage-capped.
+That is why removing the GCD costs it nothing — "GCD only" was never the
+real limiter.
 
 ## 4. Mage (Mana)
 
