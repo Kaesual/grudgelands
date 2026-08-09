@@ -1437,10 +1437,13 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		return
 	end
 	if grug_factions.same_faction(hitter, player) then
-		-- Ally heal targeting, kept from the old hook. The damage is
-		-- grug_factions' concern: its own handler returns true and
-		-- suppresses it (MODE_OR, s_player.cpp:63) — never return true
-		-- here, or the same-faction punch would end up handled twice.
+		-- Ally heal targeting, kept from the old hook. This branch DOES run
+		-- for same-faction pairs: MODE_OR (mode 4, builtin/common/
+		-- register.lua:29-33) runs EVERY callback and keeps the first truthy
+		-- return — only OR_SC short-circuits — so grug_factions' `return
+		-- true` suppresses the damage (player_sao.cpp:482-490) without
+		-- stopping this handler. Never return true here: the suppression is
+		-- grug_factions' job, and a second true buys nothing.
 		grug_abilities.set_target(hitter, player, true)
 		return
 	end
@@ -1561,8 +1564,11 @@ core.register_globalstep(function(dtime)
 	-- sees a same-index content swap: an index is not the item. It is
 	-- deliberately not folded into the 0.5 s body below, which already
 	-- iterates the players — throttling is the point.
-	run_repeat_tick()
+	-- The watcher runs BEFORE the loop tick (review LOW 3): with the reverse
+	-- order a swing due on the exact switch step landed once more from the
+	-- weapon slot the player had just left.
 	watch_wield()
+	run_repeat_tick()
 	acc = acc + dtime
 	if acc < 0.5 then
 		return
