@@ -546,7 +546,24 @@ end
 --
 
 repeating = {} -- player name -> ability def of the running loop (forward-declared above)
-local repeat_due = {} -- player name -> us time the last armed swing was DUE at
+
+-- Player name -> us time the next loop-path swing is DUE at.
+--
+-- It is the loop's cadence AND the swing clock, and it deliberately
+-- OUTLIVES the loop (WP38 review). While the loop runs, `repeating` and this
+-- table move together; when the loop stops, this one stays. Clearing it on
+-- stop is what made the click toggle a damage exploit: `try_cast` swings
+-- immediately on a start, `stop_repeat` threw the clock away, so
+-- click-stop-click delivered a FULL-damage swing per click pair with no
+-- bound at all — ~4 swings/s against 1/s for a 1.0 s weapon, plus the rage
+-- and the procs that ride on them. The held-button path needs no such clock
+-- (its `tflp` scaling is DPS-exact at any click rate, combat_stats.md §2),
+-- but a loop swing deals a FULL swing's damage and therefore does.
+--
+-- Reset only where the character itself is reset — respawn, class change,
+-- disconnect — never on an ordinary toggle-off. A stale entry can only ever
+-- DELAY the next swing, and by at most one weapon interval.
+local repeat_due = {}
 
 -- How much of a LATE swing the loop may reclaim, in seconds.
 --
@@ -611,6 +628,10 @@ end
 -- Fireball must not switch the auto-attack off). Returns true when something
 -- was actually running — that is what makes the "second cast" stop condition
 -- a single test at the top of try_cast.
+--
+-- `repeat_due` is deliberately NOT cleared here (see its declaration): the
+-- swing clock outlives the loop, or stopping and restarting would be a free
+-- swing.
 function grug_abilities.stop_repeat(player, def)
 	local name = player:get_player_name()
 	local running = repeating[name]
@@ -618,8 +639,17 @@ function grug_abilities.stop_repeat(player, def)
 		return false
 	end
 	repeating[name] = nil
-	repeat_due[name] = nil
 	return true
+end
+
+-- Seconds until the next loop-path swing may land, 0 when one is due now.
+local function swing_wait(name)
+	local due = repeat_due[name]
+	if not due then
+		return 0
+	end
+	local wait = (due - core.get_us_time()) / 1e6
+	return wait > 0 and wait or 0
 end
 
 function grug_abilities.is_repeating(player, def)
@@ -677,18 +707,20 @@ local function run_repeat_tick()
 		if not player or player:get_hp() <= 0 then
 			-- Disconnect and death. Both have their own hooks below; this is
 			-- the backstop that guarantees no loop can ever run against a
-			-- stale player name, whatever a future caller forgets.
+			-- stale player name, whatever a future caller forgets. The swing
+			-- clock is left alone here for the same reason stop_repeat leaves
+			-- it: leaveplayer and respawn are the sites that reset it.
 			repeating[name] = nil
-			repeat_due[name] = nil
 		elseif core.get_us_time() >= (repeat_due[name] or 0) then
 			local fpi, stop_msg = grug_abilities.melee_swing(player, nil)
 			if fpi == nil then
 				-- STOP. Tested for explicitly and BEFORE the guard below, which
 				-- would otherwise swallow it: `nil` is not a positive number
 				-- either, and an ordinary "the target died" would have been
-				-- reported as a broken ability.
+				-- reported as a broken ability. No swing happened, so the
+				-- clock keeps the due time this pass did not spend — the
+				-- player is owed that swing and a click gets it at once.
 				repeating[name] = nil
-				repeat_due[name] = nil
 				if stop_msg then
 					grug_abilities.flash(player, stop_msg)
 				end
@@ -716,8 +748,11 @@ local function run_repeat_tick()
 					tostring(def.id) .. "\" returned a non-positive interval (" ..
 					tostring(fpi) .. ") -- loop stopped for player \"" ..
 					name .. "\"")
+				-- The swing clock keeps its last VALID due time: this branch
+				-- cannot arm one from a non-positive interval, and leaving
+				-- the old value is the conservative half (it can only delay
+				-- the next swing, never hand out a free one).
 				repeating[name] = nil
-				repeat_due[name] = nil
 			else
 				arm_repeat(player, fpi)
 			end
@@ -752,12 +787,34 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	-- swing skill the loop already counts as stops it: "second click on the
 	-- same slot stops."
 	if def.kind == "swing" then
+		local swinger = user:get_player_name()
 		if grug_abilities.is_repeating(user) then
 			-- Loop already running: re-arm ONLY (toggle identity + target
 			-- refresh from the click), NO extra swing — click spam must not
 			-- be a second damage stream (classes.md §2b).
-			repeating[user:get_player_name()] = def
+			repeating[swinger] = def
 			grug_abilities.refresh_melee_target(user, pointed_thing)
+			return
+		end
+		-- The loop is not running, so this click starts it — and the START
+		-- is where the second damage stream used to get in (WP38 review).
+		-- `stop_repeat` above answers a click on the RUNNING skill, so
+		-- click-stop-click reached this line every second click and swung
+		-- immediately, at full weapon damage, with nothing bounding the
+		-- rate. The swing clock outlives the loop for exactly this case: a
+		-- start that is still inside the previous swing's interval arms the
+		-- loop for the REMAINDER instead of swinging now. The player loses
+		-- nothing — the loop delivers that swing the moment it is due — and
+		-- gains no way to swing faster than the weapon allows.
+		local wait = swing_wait(swinger)
+		if wait > 0 then
+			-- Validate the target anyway, or a click at thin air would arm a
+			-- loop that reports "No target." a moment later.
+			if not grug_abilities.refresh_melee_target(user, pointed_thing) then
+				grug_abilities.flash(user, "No target.")
+				return
+			end
+			grug_abilities.start_repeat(user, def, wait)
 			return
 		end
 		local fpi, err = grug_abilities.melee_swing(user, pointed_thing)
@@ -1244,8 +1301,11 @@ local function sync_kit(player)
 	-- its cooldowns and charges wiped and its items re-granted, so the loop
 	-- stops with them (E3 — no loop may survive a purge/re-grant pass).
 	-- Wiping the charges makes the new kit start fully charged: no record
-	-- IS the charged state (see the charge timers section).
+	-- IS the charged state (see the charge timers section). The swing clock
+	-- goes with them — it survives an ordinary toggle-off, but a re-granted
+	-- kit is a fresh character as far as timing is concerned.
 	grug_abilities.stop_repeat(player)
+	repeat_due[name] = nil
 	cooldowns[name] = {}
 	charges[name] = {}
 	wear_steps[name] = {}
@@ -1358,15 +1418,28 @@ end)
 -- fractional-capable already: the `rage` table holds doubles and the HUD
 -- floors.
 --
--- "HP sank" is tested against the remainder accumulator's APPLIED integer:
--- on the accumulator path the health subtraction right after this hook
--- removes exactly `applied`, so `applied >= 1` and "hit points came off"
--- are the same statement; on the non-accumulator path (immune_to, which
--- SETS damage rather than scaling it) the subtraction removes floor(damage),
--- so floor(damage) >= 1 — floors absolutely. Nothing else reaches the
--- hook with a landed hit: a vendor NPC never reaches this wrapper at all
--- (plain mobs:register_mob, no grug wrapper), an evading mob cancels the
--- punch before it.
+-- "LANDED" is the design's word and it means the punch was not CANCELLED
+-- (classes.md §1: "a target that cancels the punch — a vendor NPC, an
+-- evading mob — an immune_to mob or a player with PvP off yields 0 rage").
+-- It does NOT mean "this packet happened to push the accumulator over an
+-- integer" (WP38 review). Testing `applied >= 1` made the rage income
+-- depend on the WEAPON'S DAMAGE rather than on its speed: the sum of
+-- 12 × fraction over a swing's packets is +12 per weapon interval only if
+-- every packet pays, and gating on the accumulator's carry skips exactly
+-- the packets whose fraction was banked. Measured at fpi 1.0 against an
+-- armor-100 mob: a 5-damage weapon paid the full 12/s, a 3-damage weapon
+-- 7.2/s (−40 %) and a bare hand 3.0/s against 13.3/s (−78 %) — the
+-- rounding hole the accumulator closes for damage, re-opened in the
+-- resource economy. Base threat two lines up never had it: it takes the
+-- raw fractional damage and integrates correctly.
+--
+-- So the test is the RAW damage on the accumulator path (the fraction is
+-- real damage — it is banked, not lost), and floor(damage) >= 1 on the
+-- non-accumulator path (immune_to SETS damage rather than scaling it, so
+-- there is no fraction to bank and the usual immunity value of 0 must pay
+-- nothing). Nothing else reaches the hook with a landed hit: a vendor NPC
+-- never reaches this wrapper at all (plain mobs:register_mob, no grug
+-- wrapper), an evading mob cancels the punch before it.
 --
 -- SINCE THE AUTO-ATTACK IS AN ABILITY (E1) the hooks below no longer see
 -- the swing that classes.md §1 actually means: an ability punch sets
@@ -1387,8 +1460,12 @@ grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, 
 	if grug_core.in_ability_punch then
 		return
 	end
-	local landed = (applied ~= nil and applied >= 1)
-		or (applied == nil and math.floor(damage or 0) >= 1)
+	local landed
+	if applied ~= nil then
+		landed = (damage or 0) > 0 -- accumulator path: a banked fraction counts
+	else
+		landed = math.floor(damage or 0) >= 1 -- immune_to: a SET value, no fraction
+	end
 	if landed then
 		grug_abilities.add_rage(player, 12 * (fraction or 1))
 	end
@@ -1483,27 +1560,30 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	local raw = (fleshy + grug_core.get_melee_bonus(hitter)) * fraction
 	raw = grug_core.melee_crit(hitter, raw, player)
 	local applied = grug_core.apply_accumulated_melee(hitter, player, raw)
+	-- A packet whose commit was NULLIFIED pays no rage; a packet that only
+	-- banked its fraction does (WP38 review — same correction as the mob
+	-- hook above: gating the payment on the accumulator's carry made the
+	-- rage income scale with the weapon's damage instead of its speed).
+	-- Nullified is the dodge and the absorb shield, i.e. the two things
+	-- classes.md §1 means by "damage that actually landed"; they are
+	-- visible only on a packet that applied something.
+	local nullified = false
 	if applied >= 1 then
 		local hp_before = player:get_hp()
 		-- set_hp with the punch reason routes through the central hp-change
 		-- modifier ONCE (player_sao.cpp:519): the dodge roll happens here,
 		-- not pre-rolled like deal_ability_damage does, then armor, then
-		-- the absorb shield. A dodge zeroes the hit → `landed` stays false
-		-- → no rage.
+		-- the absorb shield.
 		player:set_hp(hp_before - applied, {type = "punch", object = hitter})
-		local landed = player:get_hp() < hp_before
-		if landed then
-			-- Rage only on damage that actually landed, scaled by the same
-			-- fraction that scaled the hit. At a held button (5 packets/s
-			-- at fraction ≈ 0.2/fpi each) the influx integrates back to
-			-- 12 rage per weapon interval instead of 60 per second — but
-			-- in LUMPS of 12×fraction per landing packet, and only when
-			-- that packet applied ≥ 1: a hit weaker than 5 damage at a
-			-- 1.0 s interval lands every other packet and grants
-			-- proportionally less. Rage follows the damage applied, not
-			-- the weapon.
-			grug_abilities.add_rage(hitter, 12 * fraction)
-		end
+		nullified = player:get_hp() >= hp_before
+	end
+	if raw > 0 and not nullified then
+		-- 12 × fraction per punch packet: at a held button (5 packets/s at
+		-- fraction ≈ 0.2/fpi each) that integrates to exactly 12 rage per
+		-- weapon interval, instead of the 60 rage/s the old per-EVENT hook
+		-- paid. An opponent who dodges or absorbs starves the attacker's
+		-- rage in proportion, because those packets drop out.
+		grug_abilities.add_rage(hitter, 12 * fraction)
 	end
 	-- The engine's own damage is suppressed on the hostile path ALWAYS —
 	-- even when nothing landed (applied 0, absorbed, dodged): the
@@ -1723,6 +1803,10 @@ end)
 
 core.register_on_respawnplayer(function(player)
 	grug_abilities.stop_repeat(player)
+	-- A fresh body starts on a fresh swing clock (see repeat_due): dying is
+	-- not a way to skip a swing interval, but it is also not a reason to owe
+	-- one after the corpse run.
+	repeat_due[player:get_player_name()] = nil
 	refill_mana(player)
 	rage[player:get_player_name()] = 0
 	hud_update(player)

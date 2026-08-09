@@ -575,8 +575,53 @@ function grug_core.apply_accumulated_melee(player, target, raw_damage)
 	return applied
 end
 
+--
+-- Swing-fraction accumulator for WEAPON WEAR (WP38 review). Same shape as
+-- the damage accumulator above and for the same reason: with the cadence
+-- gate deleted, every punch PACKET reaches mobs_redo's wear block, and the
+-- client sends one every 0.2 s while the dig key is held. Spending a full
+-- swing's wear per packet is two regressions at once — the tool wears
+-- `1/fraction` times faster than it did before WP38 (at fpi 1.0 a weapon
+-- dies after ~109 s of held attacking instead of ~546 s), and each write
+-- goes through `set_wielded_item`, i.e. a full inventory serialization plus
+-- a packet per punch (`src/script/lua_api/l_object.cpp:362-369`) — ~500/s
+-- at the 100-player design target. That packet count is the very cost
+-- WP35's patch #21 exists to avoid.
+--
+-- So the fractions accumulate here and the wear is spent WHOLE, once per
+-- completed swing: durability per unit of damage dealt is exactly what it
+-- was before WP38, at any click rate, and the inventory write is back to
+-- once per swing. Per PLAYER, not per target — attack speed and tool wear
+-- are properties of the attacker, and a target switch must not hand out a
+-- free swing's worth of durability.
+--
+-- Runtime-only, like every other piece of this per-player combat state: a
+-- dropped remainder costs at most one swing's wear, in the player's favour.
+--
+
+local melee_wear_fraction = {} -- player name -> [0,1)
+
+-- Did this punch complete a whole swing's worth of wear? `fraction` is
+-- clamp(tflp / full_punch_interval, 0, 1) of this punch — the same number
+-- the damage is scaled by. Call it ONCE per punch that would actually spend
+-- wear (a wear-free punch must not consume the accumulator).
+function grug_core.melee_wear_due(player, fraction)
+	local name = player:get_player_name()
+	local total = (melee_wear_fraction[name] or 0) + (fraction or 0)
+	if total >= 1 then
+		-- One swing spent; carry only what is left over. A full-interval
+		-- punch (fraction 1) is due immediately and leaves nothing behind.
+		melee_wear_fraction[name] = total - math.floor(total)
+		return true
+	end
+	melee_wear_fraction[name] = total
+	return false
+end
+
 core.register_on_leaveplayer(function(player)
-	melee_remainder[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	melee_remainder[name] = nil
+	melee_wear_fraction[name] = nil
 end)
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip

@@ -135,7 +135,10 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   stops it. It also stops on target dead or gone, out of range, out of line
   of sight, death, disconnect, respawn or a class change. The weapon is
   re-read **every swing**, so unequipping mid-fight drops to fist damage
-  instead of stopping the attack.
+  instead of stopping the attack. **Toggling off does not reset the swing
+  timer**: a restart inside the running interval waits out the remainder
+  rather than swinging at once, or the toggle itself would be a way to
+  swing faster than the weapon (`combat_stats.md` §2).
 
 ### The charge bar
 

@@ -2714,6 +2714,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	local grug_melee = false
 	local grug_mob_hit = false
 	local grug_immune = false
+	-- clamp(tflp / full_punch_interval, 0, 1) of this punch, assigned once
+	-- `tflp` has been normalized below. It is the proportional model's own
+	-- factor (`tmp` in the damage loop) and the wear accumulator's input.
+	local grug_fraction = 0
 
 	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name] then
@@ -2735,6 +2739,11 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 	-- quick error check incase it ends up 0
 	if tflp == 0 then tflp = 0.2 end
+
+	-- GRUG PATCH (WP38 review): the punch fraction, computed once from the
+	-- normalized `tflp` — the damage loop below derives the same number as
+	-- `tmp`, and the wear block feeds it to grug_core's wear accumulator.
+	grug_fraction = min(1, max(0, tflp / (tool_capabilities.full_punch_interval or 1.4)))
 
 	if use_cmi then
 		damage = cmi.calculate_damage(self.object, hitter, tflp, tool_capabilities, dir)
@@ -2880,6 +2889,26 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 	if mobs.is_creative(hitter:get_player_name()) then
 		wear = use_tr and 1 or 0
+	end
+
+	-- GRUG PATCH (WP38 review, combat_stats.md §2): one swing's wear per
+	-- SWING, not per punch packet. With the cadence gate deleted this block
+	-- runs ~5 times a second while the dig key is held, and upstream spends
+	-- a full swing's wear every time — which wears the tool `1/fraction`
+	-- times faster than before WP38 AND puts a full inventory serialization
+	-- plus packet (`set_wielded_item`, l_object.cpp:362-369) on every one of
+	-- those punches, ~500/s at the 100-player target. grug_core accumulates
+	-- the swing fractions and answers true once they add up to a whole
+	-- swing, so durability per unit of damage dealt is unchanged at any
+	-- click rate and the write is back to once per swing (the `wear > 0`
+	-- guard below then skips the rest of the packets for free).
+	--
+	-- Ordered AFTER the two adjustments above on purpose: a punch that
+	-- spends no wear at all (creative, `punch_attack_uses = 0`) must not
+	-- consume the accumulator, or a creative session would eat the wear of
+	-- the next real fight. Short-circuit `and` is what guarantees that.
+	if grug_melee and wear > 0 and not grug_core.melee_wear_due(hitter, grug_fraction) then
+		wear = 0
 	end
 
 	if use_tr and weapon_def.original_description then

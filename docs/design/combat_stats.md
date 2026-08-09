@@ -135,6 +135,16 @@ bug inside the gate.
   callback fires once per punch packet (≈5/s), so granting per event is worth
   60 rage/s against a hostile player — the same defect that was fixed for
   mobs on 2026-08-08 by sampling the target's hit points before and after.
+  **The payment is `12 × fraction` per punch, and "landed" means the punch
+  was not cancelled** — not "this packet pushed the accumulator over an
+  integer". Those fractions sum to exactly +12 per weapon interval only if
+  every punch pays; gating on the accumulator's carry instead skips the
+  punches whose fraction was *banked*, which makes rage income scale with the
+  weapon's damage rather than its speed (measured: −40 % for a 3-damage
+  weapon, −78 % bare-handed). It is the rounding hole of the bullet above,
+  re-opened in the resource economy. The three cancels `classes.md` §1 names
+  — a punch the target refuses, an `immune_to` mob, PvP off — pay nothing,
+  and so does a hit the victim dodges or fully absorbs.
 - **The two damage streams cannot coexist, and no clock is needed to say
   so.** An ability item disables punching while it is selected (the engine
   sends `INTERACT_USE` instead of a punch whenever the wielded item has an
@@ -142,6 +152,17 @@ bug inside the gate.
   running after a hotbar switch. The loop now **follows the selected ability
   item** (`classes.md` §2b): switching to another ability re-arms it,
   switching to anything else stops it. Structurally one stream, at all times.
+- **The loop path still needs a clock — the one thing the deleted clock was
+  right about.** "No punch is discarded" is a statement about the *held*
+  path, where the engine's `tflp` scaling makes any click rate DPS-exact. A
+  loop swing is different: it deals a **full** swing's damage, so its rate
+  has to be bounded, and the bound is the loop's own next-swing time. That
+  time therefore **survives a toggle-off**: a click that restarts the loop
+  inside the previous swing's interval arms it for the remainder instead of
+  swinging immediately. Otherwise click-stop-click is a full swing per click
+  pair at whatever rate the player can click — the auto-repeat toggle would
+  be the fastest attack in the game. The clock resets only where the
+  character does: respawn, class change, disconnect.
 - **The held-button path stays — for tools and fists.** Punching with a
   wielded pick, axe or bare hand is still the wielded item's damage at the
   wielded item's interval, plus the Strength bonus, the crit roll, rage,
@@ -150,6 +171,12 @@ bug inside the gate.
   than the weapon slot — the one place the single-fixed-source rule above is
   bypassed — it **wears** that stack (an ability punch does not), it carries
   **no ability threat multiplier**, and it cannot swing at the target lock.
+  **Wear is spent per SWING, not per punch**: the swing fractions accumulate
+  the same way the damage does, and one swing's worth of wear is written when
+  they add up to a whole one. Charging it per punch packet would wear a tool
+  `1/fraction` times faster than it did before this revision *and* put a full
+  inventory serialization on every punch — `set_wielded_item` on a player is
+  a packet, not a field assignment, and there are five punches a second.
 - **Ranged weapons are deferred, but their shape is decided.** A bow is
   *drawn*, not clicked: hold to charge up to a maximum, release to fire, with
   arrow speed, damage and range scaling with the draw — an early release

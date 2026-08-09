@@ -445,8 +445,10 @@ grug_abilities.melee_swing = melee_swing
 
 -- try_cast's re-arm click refreshes the lock WITHOUT swinging (classes.md
 -- §2b: a click on another swing skill while the loop runs is re-arm only).
+-- Returns the target it locked, or nil — try_cast's start-inside-the-swing-
+-- interval path needs the answer to refuse a loop on nothing.
 function grug_abilities.refresh_melee_target(user, pointed)
-	enemy_target(user, pointed, strike_def)
+	return enemy_target(user, pointed, strike_def)
 end
 
 --

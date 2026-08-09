@@ -269,20 +269,41 @@ Details + line numbers in [docs/research/](docs/research/).
   damage stream), a second click on the same slot stops, and the wield
   watcher (`watch_wield`, per-step `get_wield_index` plus a dirty flag
   from inventory actions) stops the loop within one step when a
-  non-ability item is selected. **Melee damage is proportional**
+  non-ability item is selected. **`repeat_due` OUTLIVES the loop** —
+  it is the loop cadence and the swing clock in one, reset only on
+  respawn/class change/disconnect. Clearing it on toggle-off made
+  click-stop-click a full-damage swing per click pair with no rate
+  bound at all (~4×). "No punch is discarded" is a statement about the
+  HELD path, whose `tflp` scaling is DPS-exact at any click rate; a
+  loop swing deals a FULL swing and needs the clock. **Melee damage is
+  proportional**
   (combat_stats.md §2): the held-button path deals `weapon damage ×
   clamp(tflp/fpi, 0, 1)` + Strength (added before the factor) + crit,
   and fractions ride the per-player remainder accumulator
   `grug_core.apply_accumulated_melee` (keyed by target `get_guid()`,
   reset on target switch, max forfeit 0.999) — the 2026-08-07 cadence
   gate and the 2026-08-08 shared melee clock are deleted, not repaired.
+  **Weapon WEAR is spent per swing, not per punch**
+  (`grug_core.melee_wear_due`, the same fraction accumulator shape, per
+  player): the wear block in api.lua now runs on all ~5 packets/s, and
+  paying a full swing's wear each time both wears the tool `1/fraction`
+  times faster and fires `set_wielded_item` — a full inventory
+  serialization plus packet — per punch, ~500/s at the 100-player target.
   **PvP melee runs through the same pipeline** (the on_punchplayer
   handler in grug_abilities): wielded-stack proportional damage, the
   same accumulator, `set_hp(hp - applied, {type="punch", object=...})`
   so dodge/armor/absorb run exactly once through the central hp-change
   modifier, `return true` suppresses the engine damage, and rage is
   12 × fraction only on damage that LANDED (the 60 rage/s punch-packet
-  firehose is dead). Same-faction pairs stay with grug_factions' handler
+  firehose is dead). **"LANDED" = the punch was not cancelled**, NOT
+  "the accumulator carried this packet": those fractions sum to +12 per
+  weapon interval only if every punch pays, so testing `applied >= 1`
+  makes rage income scale with the weapon's DAMAGE instead of its speed
+  (−40 % for a 3-damage weapon, −78 % bare-handed) — the rounding hole
+  the accumulator closes, re-opened in the resource economy. Base threat
+  never had it: it takes the raw fractional damage. Cancels that pay
+  nothing: refused punch, `immune_to`, PvP off, dodge, full absorb.
+  Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players keeps coming from builtin off the engine's damage
   argument (deferred, MVP). What the held-button path still lacks vs.
@@ -353,7 +374,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **26 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **28 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear actually changed (on a
@@ -369,6 +390,12 @@ Details + line numbers in [docs/research/](docs/research/).
     the `damage >= 1` gate while the health subtraction and
     `check_for_death` run on the accumulated integer (bridged to the
     do_punch wrapper as `self.temp.grug_applied` for its lethal check).
+    The WP38 review added two more: `grug_fraction` (the punch's
+    clamp(tflp/fpi, 0, 1), computed once from the normalized `tflp`) and
+    the wear gate that spends a swing's wear only when
+    `grug_core.melee_wear_due` says the fractions add up to a whole swing
+    — placed AFTER the creative/`punch_attack_uses` adjustments, so a
+    wear-free punch never consumes the accumulator.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre
