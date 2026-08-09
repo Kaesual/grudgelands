@@ -34,13 +34,17 @@ contested findings) — the role is the same either way; pick per WP.
 3. **Implement** on the branch — via Opus subagents working from the
    orchestrator's briefs (roles above); the orchestrator reviews each
    returned diff before building on it. Project conventions (AGENTS.md),
-   `luajit -e "assert(loadfile(...))"` per changed file, commits in
-   coherent steps. Do NOT run `tools/sync_to_luanti.sh` from a branch
-   unless the user asked to runtime-test that branch — the sync
-   overwrites the shared Luanti install.
-4. **Self-check** before review: grep sweep against the
-   `docs/research/luanti-lua.md` do-not-write list (plain-Lua-5.1
-   fallback is a HARD requirement), AGENTS performance rules
+   syntax check per changed file with **`tools/bin/luac51 -p`** (the
+   engine's own bundled 5.1.5 — build once via `tools/build_lua51.sh`;
+   `luajit` is a superset and green-lights `goto`, see "Verifying a
+   change" in `docs/research/luanti-lua.md`) — commits in coherent
+   steps. Do NOT run `tools/sync_to_luanti.sh` from a branch unless the
+   user asked to runtime-test that branch — the sync overwrites the
+   shared Luanti install.
+4. **Self-check** before review: run the five grep sweeps from
+   "Verifying a change" in `docs/research/luanti-lua.md` (they cover the
+   do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
+   AGENTS performance rules
    (globalstep throttling, inventory churn, 100-player target).
 5. **Mandatory code review**: at least **one full Opus code review of
    the WP diff** using the checklist below. **Run review/research
@@ -73,8 +77,14 @@ Point reviewers at this section verbatim.
    copy semantics (`set_stack` needed after mutation).
 2. **Lua rules**: full sweep against `docs/research/luanti-lua.md`
    (do-not-write list; vector `==` trap; `unpack` not `table.unpack`;
-   no `\u{}`/`\x`/`\z` escapes; no goto; strict.lua global leaks —
-   verify via `luajit -bl` GSET when in doubt).
+   no `\u{}`/`\x`/`\z` escapes — these do not error, they silently mean
+   something else on the fallback build; no goto; strict.lua global
+   leaks — verify via `tools/bin/luac51 -l -p … | grep SETGLOBAL` when
+   in doubt). The engine version pin
+   (5.17.0-dev) never relaxes this: the language stays plain Lua 5.1.
+   Engine behaviour is not guessed — it is read in
+   `reference_projects/luanti` (`builtin/` → `src/script/lua_api/`) and
+   quoted as `file:line`.
 3. **Performance** (100-player design target): globalstep accumulators;
    no per-tick inventory writes; `get_objects_inside_radius` frequency;
    ABM/LBM budgets; mod-storage access patterns.

@@ -14,7 +14,7 @@ does. Use both.
 |---|---|---|
 | `noiselib.py` | `noise2d` / `noise2d_value` / `NoiseFractal2D` in float32 numpy, bit-exact against `src/noise.cpp` | — |
 | `ref.c` | the same math compiled straight from the engine source; run once to prove bit-exactness (`gcc -o ref ref.c -lm`) | instant |
-| `dump_biomes.lua` | luajit engine stub → loads the **real** `grug_core/init.lua` + `grug_mapgen/biomes.lua`, writes `biomes.csv` in registration order | 0.00 s |
+| `dump_biomes.lua` | Lua 5.1 engine stub → loads the **real** `grug_core/init.lua` + `grug_mapgen/biomes.lua`, writes `biomes.csv` in registration order | 0.00 s |
 | `model.py` | mgv7 base terrain + heat/humidity **incl. the blend noises** + `calcBiomeFromNoise` + the real ocean mask from `grug_mapgen/geometry.lua` (it was `structures.lua` until WP36 moved the mask geometry out; the profile constants and the coast noise are unchanged) | — |
 | `analyse.py` | shares per registration / per visible `node_top` / per band / per ring, x-strip overlap winners, flood-fill largest contiguous region, both continents | 0.37 s |
 | `diagnose.py` | climate-point distance from the seed's field mean in units and σ, plus the **eligible-registration and eligible-visual counts per column** | ~0.4 s |
@@ -27,7 +27,7 @@ does. Use both.
    `<world>/map_meta.txt`; paste them into `model.py`'s `NP(...)` lines and
    set `WORLD_SEED_U64`. **The engine truncates the seed to `s32`** —
    `1181064378178512398` → `1580377614`.
-2. `luajit dump_biomes.lua > biomes.csv` — always re-run; it reads the live
+2. `../bin/lua51 dump_biomes.lua > biomes.csv` — always re-run; it reads the live
    `biomes.lua`, so a cuboid or climate-point edit is picked up for free.
    Redirect it **into this directory** (`biomes.csv` is a build artefact and
    every script looks for it, and for its sibling modules, next to
@@ -43,7 +43,10 @@ does. Use both.
    `map.sqlite`. Expect ~99 % on non-decoration ground tops; a lower number
    means a mod changed something the model does not know about.
 
-Requirements: `luajit`, `python3` + `numpy`; optional `zstandard` (step 6)
+Requirements: a Lua 5.1 interpreter — `tools/bin/lua51` from
+`tools/build_lua51.sh` (preferred: no package needed, and it is the plain
+5.1 the engine falls back to) or `luajit`; both produce byte-identical
+`biomes.csv`. Plus `python3` + `numpy`; optional `zstandard` (step 6)
 and `gcc` (the bit-exactness proof).
 
 ## Gotchas — keep these in mind or the numbers lie

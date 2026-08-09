@@ -4,6 +4,52 @@ Deeper reference for the AGENTS.md section "Lua & Luanti environment".
 All file references point into `reference_projects/luanti` (5.17.0-dev,
 commit `df04879`) unless a URL is given.
 
+## What the version pin means (read this first)
+
+Two different version numbers are in play. Do not conflate them:
+
+- **Luanti 5.17.0-dev** is the *engine* version of the reference checkout
+  in `reference_projects/luanti`. It exists so every claim below can be
+  quoted as `file:line` and re-checked. It is a **read-only source
+  reference**, not an API floor we target.
+- **Lua 5.1** is the *language* version we write. It is decoupled from the
+  engine version and **never rises with it** — a newer Luanti still embeds
+  Lua 5.1.5 (`lib/lua/src/lua.h:20`). Bumping the engine checkout does not
+  unlock `goto`, `//`, `table.unpack` or any other 5.2+/5.3+ syntax.
+
+So: "the engine is at 5.17" says nothing about which syntax is allowed.
+The allowed syntax is fixed by the section "Language level & safe feature
+set" below, and it is Lua 5.1 — *plain* 5.1, not LuaJIT's superset,
+because the fallback build ships plain PUC 5.1.5 (see "Which Lua exactly").
+
+## Where the real code lives
+
+The engine's own Lua **is checked out in this repo** — never guess at
+engine behaviour, read it. All paths are relative to
+`reference_projects/luanti`:
+
+| What | Path |
+| --- | --- |
+| **The Lua the engine ships and runs before any mod** | `builtin/init.lua` (bootstrap + load order) |
+| Stdlib extensions & helpers | `builtin/common/` — `math.lua`, `vector.lua`, `vector2.lua`, `strict.lua`, `serialize.lua`, `misc_helpers.lua`, `after.lua`, `metatable.lua`, `register.lua`, `mod_storage.lua`, `item_s.lua`, `chatcommands.lua` |
+| Server-side game layer (the `core.*` behaviour mods sit on) | `builtin/game/` — `item.lua`, `falling.lua`, `register.lua`, `hud.lua`, `knockback.lua`, `features.lua`, `deprecated.lua`, `privileges.lua`, `static_spawn.lua`, `voxelarea.lua`, … |
+| Async / mapgen (emerge) environments | `builtin/async/game.lua`, `builtin/emerge/` |
+| Engine-sanctioned usage examples | `builtin/common/tests/*_spec.lua`, `builtin/game/tests/` |
+| Setting names, types and defaults | `builtin/settingtypes.txt` |
+| **The interpreter itself** (fallback build) | `lib/lua/src/` — PUC Lua 5.1.5 |
+| `bit` library when there is no LuaJIT | `lib/bitop/` |
+| `string.pack`/`unpack`/`packsize` backport | `lib/lstrpack/` |
+| **C++ binding layer** — the truth when the docs are silent | `src/script/lua_api/l_*.cpp` (one file per API area: `l_env`, `l_object`, `l_item`, `l_inventory`, `l_mapgen`, `l_noise`, `l_vmanip`, `l_util`, …) |
+| Bootstrap, sandbox whitelist, callback dispatch | `src/script/cpp_api/` — `s_base.cpp`, `s_security.cpp`, `s_entity.cpp`, `s_player.cpp`, … |
+| **The API spec** (~12,700 lines) | `doc/lua_api.md` |
+| Other docs | `doc/breakages.md`, `doc/builtin_entities.md`, `doc/world_format.md`, `doc/client_lua_api.md`, `doc/menu_lua_api.md` |
+
+Lookup order that works: `doc/lua_api.md` for the contract → `builtin/`
+for what the engine actually does in Lua → `src/script/lua_api/l_*.cpp`
+for anything the other two leave open (mapgen order, biome selection,
+punch handling, nametag rendering). Quote `file:line` in findings so the
+next agent can re-verify.
+
 ## Which Lua exactly
 
 - The engine **prefers LuaJIT but does not require it**. `ENABLE_LUAJIT` is
@@ -181,16 +227,23 @@ fresh global table and copies only whitelisted names into it
 
 ## Do-not-write checklist
 
-1. No `goto` / `::labels::` — LuaJIT-only.
-2. No `\u{...}`, `\x..`, `\z` string escapes — LuaJIT-only. Write UTF-8
-   bytes literally or use `string.char`.
+Every "write instead" below is plain 5.1 and runs on both builds.
+
+1. No `goto` / `::labels::` — LuaJIT-only. Write instead: `break` out of an
+   `if`, or restructure into a helper function with an early `return`.
+2. No `\u{...}`, `\x..`, `\z` string escapes — LuaJIT-only. Write instead:
+   the UTF-8 bytes literally in the source (`"§"`), or `string.char(0xC2, 0xA7)`;
+   decimal escapes like `"\65"` are 5.1 and fine.
 3. No `table.unpack` / `table.pack` / `rawlen` / `__len` on tables /
    `__pairs` — these need `LUAJIT_ENABLE_LUA52COMPAT`, which we cannot
-   assume. Use `unpack(t, 1, n)` and track counts explicitly.
+   assume. Write instead: `unpack(t, 1, n)`, `#t` (arrays without holes),
+   and track counts explicitly in a field (`t.n = n`).
 4. No `table.move`, `coroutine.isyieldable`, `math.type`, `math.tointeger`,
-   `utf8.*` — LuaJIT/5.3-only.
-5. No `//`, no `&`/`|`/`~`/`<<`/`>>` — use `math.floor(a/b)` and `bit.*`
-   (32-bit). No integers above 2^53−1.
+   `utf8.*` — LuaJIT/5.3-only. Write instead: `table.insert_all` (engine
+   helper) or an index loop; `x % 1 == 0` for the integer test.
+5. No `//`, no `&`/`|`/`~`/`<<`/`>>` — write instead `math.floor(a / b)` and
+   `bit.band/bor/bxor/bnot/lshift/rshift(a, b)` (32-bit). No integers above
+   2^53−1.
 6. No `require`, `io.popen`, `os.execute`, `os.exit`, no bytecode loading —
    blocked by the sandbox.
 7. No `==` between vectors unless both sides came from `vector.*`; use
@@ -203,3 +256,72 @@ fresh global table and copies only whitelisted names into it
 11. No upvalue capture in `core.handle_async` functions; no `core.get_node`
     or player access in async/mapgen environments.
 12. Always `core.*`, never `minetest.*`.
+
+## Verifying a change
+
+### The right interpreter: `tools/bin/luac51`, not `luajit`
+
+**`luajit -e 'assert(loadfile(f))'` does NOT prove 5.1 compatibility.**
+LuaJIT is a *superset*: it accepts exactly what the fallback build rejects.
+Run `tools/build_lua51.sh` once per machine — it compiles the **engine's
+own bundled PUC Lua 5.1.5** out of `reference_projects/luanti/lib/lua/src`
+(no package, no network, only a C compiler) into `tools/bin/lua51` and
+`tools/bin/luac51`. That parser *is* the fallback build's parser.
+
+```sh
+find mods/*/grug_* -name '*.lua' | xargs tools/bin/luac51 -p   # syntax gate
+tools/bin/luac51 -l -p <file> | grep SETGLOBAL                 # global writes
+tools/bin/lua51 tools/biomecheck/dump_biomes.lua > biomes.csv  # stub tools
+```
+
+`luac51 -p` parses without emitting bytecode; `-l -p` lists opcodes, so
+`SETGLOBAL` is the plain-5.1 equivalent of `luajit -bl … | grep GSET` for
+the strict.lua check — expect exactly one line, the mod table.
+
+### Escapes are a *silent* divergence — only grep finds them
+
+Neither parser errors on `\x`/`\u{}`/`\z`: Lua 5.1 keeps unknown escapes as
+literal characters, so the same source means different things per build.
+Measured, same file, both interpreters:
+
+| source | LuaJIT | PUC 5.1.5 |
+| --- | --- | --- |
+| `"\x41"` | `A` (1 byte) | `x41` (3 bytes) |
+| `"\u{41}"` | `A` | `u{41}` |
+| `"a\z  b"` | `ab` (2) | `az  b` (5) |
+
+An aarch64 player would see the literal text `u{41}` in the HUD, with no
+error anywhere. `goto` at least fails loudly under `luac51`; these do not.
+
+### The grep sweeps
+
+Plain-5.1 conformance beyond syntax is checked by **grep**, against our own
+mods only (`mods/*/grug_*`; `mods/BASE/*` and `mods/ENTITIES/mobs` are
+vendored upstream code — see VENDOR.md — and legitimately use `minetest.*`):
+
+```sh
+# 1. goto / labels
+grep -rnE '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' mods/*/grug_* --include=*.lua
+# 2. LuaJIT-only string escapes
+grep -rnE '\\u\{|\\x[0-9A-Fa-f]|\\z' mods/*/grug_* --include=*.lua
+# 3. 5.2+/5.3 stdlib
+grep -rnE 'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.' mods/*/grug_* --include=*.lua
+# 4. integer division / bitwise operator syntax
+grep -rnE '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' mods/*/grug_* --include=*.lua
+# 5. sandbox-blocked calls and the wrong namespace
+grep -rnE '\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.' mods/*/grug_* --include=*.lua
+```
+
+Sweeps 1 and 4 also match prose in comments (`|` in a design-doc table row,
+C++ `Class::method` references) — read each hit, do not just count them.
+Zero hits outside comments is the passing state.
+
+### Does LuaJIT still have a use?
+
+Only where LuaJIT-specific output is wanted (`luajit -bl … | grep GSET`) or
+as a second opinion. Everything the project needs — the syntax gate, the
+global-leak check, running `tools/biomecheck/dump_biomes.lua` (byte-identical
+CSV under both) — works on `tools/bin/lua51`, and only that one answers the
+question we actually care about. **Neither replaces a runtime test in the
+real engine**: these binaries have no `builtin/`, no sandbox and no `core.*`,
+so they parse and stub, never run a mod.

@@ -60,7 +60,9 @@ current state). It is **derived, never authoritative**:
    `docs/research/luanti-lua.md` rules). Merge to main only after a
    clean review; every completion message ends with a runtime test plan
    for the user.
-4. **WP completion**: Lua syntax check (`luajit -e "assert(loadfile(...))"`),
+4. **WP completion**: Lua syntax check with `tools/bin/luac51 -p` (plain
+   5.1 — build once via `tools/build_lua51.sh`; **not** `luajit`, which
+   accepts syntax the engine's fallback build rejects),
    `tools/sync_to_luanti.sh` (from main, after merge), commit, update
    BACKLOG status + ROADMAP checkboxes + the README "Current State"
    section (see "Documentation layers"). Anything future sessions need
@@ -124,7 +126,15 @@ current state). It is **derived, never authoritative**:
   - Backported from 5.4 (engine-injected, both builds):
     `string.pack`/`unpack`/`packsize`.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
-  checkout after 5.16).
+  checkout after 5.16). That pin is the *engine* version of a read-only
+  source reference — **the language version is decoupled and stays Lua
+  5.1**; a newer engine never unlocks newer syntax.
+- **The engine's own Lua is checked out in this repo — read it, never
+  guess.** `reference_projects/luanti/builtin/` (what runs before any
+  mod), `lib/lua/src/` (the bundled 5.1.5 interpreter),
+  `src/script/lua_api/l_*.cpp` (the C++ truth when `doc/lua_api.md` is
+  silent). Full map: "Where the real code lives" in
+  docs/research/luanti-lua.md.
 - **Use the `core.*` namespace** — `minetest.*` is only a deprecated alias.
 - **All game logic runs server-side.** Mods run on the server only;
   definitions/media are transferred to clients automatically. SSCSM
