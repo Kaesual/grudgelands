@@ -148,15 +148,32 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   `1 − wear / 65535` and derives both bar length and color from it, and it
   draws nothing at `wear = 0`. The color ramp is `set_wear_bar_params` with
   `blend = "linear"` and stops at 0.0 red / 0.5 yellow / 1.0 green.
-- **The visible resolution is bounded by the write rate, not by the color
-  mode.** Every wear write re-sends the player's whole inventory, so the
-  bar is quantized (`WEAR_STEPS`) and written only when the visible step
-  changes. The constant is the knob and it has a price: `WEAR_STEPS /
-  charge_time` inventory re-sends per second per charging skill. **Start at
-  24** — on a hotbar icon that is one to two screen pixels and about
-  10/255 per color channel per step, i.e. below what the eye separates —
-  and measure before raising it. The Strike's old `no_cooldown_display`
-  exception disappears with the model: it has no charge, so it has no bar.
+- **The bar's resolution is set by the TICKER, not by `WEAR_STEPS`, and the
+  packet cost is 2/s per player at worst** (measured against the engine
+  source 2026-08-09, correcting a first draft of this bullet that claimed
+  a per-skill cost):
+  - Wear writes are driven by the **one shared 0.5 s globalstep** that
+    already serves every ability of every player. There is no per-skill
+    loop and there must never be one.
+  - The engine **coalesces**: `ServerEnvironment::step` sends a player's
+    inventory at most once per environment step, and only if it was
+    modified (`src/serverenvironment.cpp`). Ten skills charging at once
+    therefore cost exactly what one costs — **one packet per tick, so ≤ 2
+    per second per player**, and none at all while nothing is charging.
+  - The packet is **incremental at list granularity** (`Inventory::serialize`
+    writes `KeepList` for untouched lists), so a wear write on `main`
+    leaves the eight equipment lists, the bag lists and `craft`
+    unserialized. Per-*slot* incremental is an unimplemented TODO in the
+    engine (`src/inventory.cpp`), so the `main` list itself goes out whole.
+  - Consequence for the look: a bar can only move `charge_time / 0.5 s`
+    times. An 8 s charge gets 16 visible steps and reads as continuous; a
+    2 s charge gets 4 and reads as chunky, whatever the color blend does.
+    So **charge times start at ~4 s**, and a skill that wants a shorter
+    one gets no charge at all (Mighty Blow, limited by rage). Set
+    `WEAR_STEPS` to 32 so the quantizer is never the binding constraint —
+    the ticker is the knob, and raising *it* is what costs packets.
+  - The Strike's old `no_cooldown_display` exception disappears with the
+    model: it has no charge, so it has no bar.
 
 ### Strike
 
