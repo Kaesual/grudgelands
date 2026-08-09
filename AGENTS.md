@@ -216,10 +216,10 @@ Details + line numbers in [docs/research/](docs/research/).
   (5 s window), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
   grug_classes. Abilities = hotbar tools in `grug_abilities` (item `range` =
-  targeting range, wear bar = cooldown display); kits/numbers:
-  `docs/design/classes.md`. WP19 added: **GCD 1 s** (silent gate in
-  try_cast, deliberately NOT shown via wear — would churn inventory
-  re-sends), **soft target lock** 8 s (separate enemy/ally slots via
+  targeting range, wear bar = cooldown display for cast skills, charge
+  bar for swing skills since WP38); kits/numbers:
+  `docs/design/classes.md`. WP19 added: **soft target lock** 8 s
+  (separate enemy/ally slots via
   `grug_abilities.get_target(player, ally)`; fallback re-checks range +
   LOS), **absorb shields** (`grug_core.set_absorb`, soaked in the central
   hp modifier after dodge/fall mitigation), **race passives** as a perk
@@ -249,18 +249,45 @@ Details + line numbers in [docs/research/](docs/research/).
   notifier coalesces a nested equipment write into a second pass) and run
   **unwrapped**, so an error in one is loud. Never write an equipment list
   without going through `grug_inventory.equipment_changed`.
-  **Auto-attack is an ability now** (`classes.md` §2b, the universal
-  "Strike"), because an item with `on_use` makes the client send
-  `INTERACT_USE` instead of a punch — a slot-fed auto-attack is otherwise
-  unreachable. Universal (granted without a class), off-GCD, per-cast
-  cooldown from the weapon's `full_punch_interval`, grants its own rage on
-  damage that actually LANDED, and shares **one melee clock per player**
-  (`grug_core.accept_melee_swing`) with the old held-button path — which
-  survives for tools and fists and must never stack with it. **That clock
-  covers MOB targets only** (its two callers are the Strike and the
-  mobs_redo `on_punch` gate, and a punch on a *player* reaches neither),
-  and it is winner-takes-all by requested interval — both are open
-  defects, BACKLOG **WP38**. Do not read it as a PvP guarantee.
+  **Auto-attack is the melee loop ability** (`classes.md` §2b; WP35 made
+  it an ability, WP38 made it the proc chassis): an item with `on_use`
+  makes the client send `INTERACT_USE` instead of a punch, so a slot-fed
+  auto-attack is only reachable as an ability. Since WP38 every ability
+  is `kind = "swing"` (Strike, Mighty Blow, Hamstring) or `"cast"`
+  (everything else), asserted at registration. The swing click IS the
+  ordinary weapon attack; a landed loop/click swing with the SELECTED,
+  charged, affordable swing skill procs (cost paid at the proc, charge
+  reset; unaffordable = no proc, charge kept, no warning). Charge timers
+  are runtime timestamps (`grug_abilities.charge_ready/reset_charge/
+  charge_fraction`), tick always, one charge max, no decay, charged at
+  join/grant — and the **GCD is deleted** (per-skill charges and
+  resource costs replaced it; Fireball is mana-limited only). The loop
+  (`grug_abilities.melee_swing` in kits.lua, cadence in `repeat_due`
+  only, never the cooldown table) reads the selected skill live every
+  swing: a hotbar switch re-arms the proc with zero interruption, a
+  click while running is re-arm/target-refresh only (never a second
+  damage stream), a second click on the same slot stops, and the wield
+  watcher (`watch_wield`, per-step `get_wield_index` plus a dirty flag
+  from inventory actions) stops the loop within one step when a
+  non-ability item is selected. **Melee damage is proportional**
+  (combat_stats.md §2): the held-button path deals `weapon damage ×
+  clamp(tflp/fpi, 0, 1)` + Strength (added before the factor) + crit,
+  and fractions ride the per-player remainder accumulator
+  `grug_core.apply_accumulated_melee` (keyed by target `get_guid()`,
+  reset on target switch, max forfeit 0.999) — the 2026-08-07 cadence
+  gate and the 2026-08-08 shared melee clock are deleted, not repaired.
+  **PvP melee runs through the same pipeline** (the on_punchplayer
+  handler in grug_abilities): wielded-stack proportional damage, the
+  same accumulator, `set_hp(hp - applied, {type="punch", object=...})`
+  so dodge/armor/absorb run exactly once through the central hp-change
+  modifier, `return true` suppresses the engine damage, and rage is
+  12 × fraction only on damage that LANDED (the 60 rage/s punch-packet
+  firehose is dead). Same-faction pairs stay with grug_factions' handler
+  (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
+  knockback on players keeps coming from builtin off the engine's damage
+  argument (deferred, MVP). What the held-button path still lacks vs.
+  the loop: the damage SOURCE (wielded stack, not the slot), it wears
+  that stack, no ability threat multiplier, no target-lock swing.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -326,13 +353,22 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **21 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** (the 21st
-    landed with WP35: the `set_wielded_item` write-back at the end of the
-    wear block runs only when wear actually changed — on a player that
-    call is a full inventory serialization plus packet, ~140/s at the
-    100-player target with the auto-attack skill swinging) — the
+  - **26 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
-    mobs_redo update.
+    mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
+    the end of the wear block runs only when wear actually changed (on a
+    player that call is a full inventory serialization plus packet,
+    ~140/s at the 100-player target with the auto-attack swinging). WP38
+    reshaped the melee patches: the 2026-08-07 cadence gate is deleted;
+    the player-melee flag is `grug_melee`, the damage loop keeps
+    vanilla's `tflp/fpi` factor (that IS the proportional model) and
+    adds the Strength bonus before armor scaling, the crit roll is
+    unfloored (the accumulator floors at application), knockback fires
+    when the accumulated hit lands (`subtract >= 1`), and the
+    feedback/subtraction split moves hit sound/blood/flash in front of
+    the `damage >= 1` gate while the health subtraction and
+    `check_for_death` run on the accumulated integer (bridged to the
+    do_punch wrapper as `self.temp.grug_applied` for its lethal check).
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

@@ -144,7 +144,9 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   fixed intermediate states. A **fully charged** skill shows **no bar** —
   being ready is the default, and the absence of a bar is the signal.
 - This is the item **wear bar**, driven by the charge instead of by a
-  cooldown: `wear = (1 − charge) × 65535`. The engine defines durability as
+  cooldown: `wear = (1 − charge) × 65534` (the game's wear cap is 65534,
+  not the engine's 65535 — a fully worn item reads as broken). The engine
+  defines durability as
   `1 − wear / 65535` and derives both bar length and color from it, and it
   draws nothing at `wear = 0`. The color ramp is `set_wear_bar_params` with
   `blend = "linear"` and stops at 0.0 red / 0.5 yellow / 1.0 green.
@@ -284,7 +286,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 8 | GCD only | 20 m ranged hit: 6 + spell power damage. Bread-and-butter nuke, limited by the mana pool. |
+| Fireball | 8 | none (mana-limited) | 20 m ranged hit: 6 + spell power damage. Bread-and-butter nuke, limited by the mana pool. |
 | Frost Nova | 10 | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
 | Blink | 8 | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 

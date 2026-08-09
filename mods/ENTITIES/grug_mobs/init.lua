@@ -320,12 +320,16 @@ function grug_mobs.register_mob(name, def)
 		-- would otherwise hand the evader a fresh target (2978ff). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
-		-- What it does NOT undo: the weapon-cadence gate (api.lua:2705-2716)
-		-- runs BEFORE do_punch, so a swing spent on an evading mob still
-		-- advances that player's swing clock. Accepted — attacking something
-		-- untouchable costing a swing is honest feedback. Environmental damage
-		-- (lava, drowning) bypasses on_punch altogether and is not an "attack";
-		-- it still applies.
+		-- What it does NOT undo: on_punch runs its damage computation and its
+		-- remainder-accumulator commit BEFORE calling do_punch (api.lua GRUG
+		-- PATCH #22), so a punch spent on an evading mob has already consumed
+		-- its raw fraction into the accumulator — the committed integer is
+		-- then discarded with the cancel, and only the remainder below 1
+		-- carries. Accepted: attacking something untouchable costing its
+		-- damage is honest feedback. There is no swing clock any more (WP38)
+		-- and no gate that a cancelled punch would have advanced.
+		-- Environmental damage (lava, drowning) bypasses on_punch altogether
+		-- and is not an "attack"; it still applies.
 		--
 		-- TODO (future WP, needs a combat-text system): float an "Evade!" over
 		-- the mob here instead of answering with silence.
@@ -347,13 +351,31 @@ function grug_mobs.register_mob(name, def)
 			-- Loot rights (combat_stats.md §3): every player hit renews the
 			-- 60 s drop tag. Plain field -> survives unload (aggro.lua).
 			grug_mobs.tag_player(self, hitter)
+			-- The accumulated integer (api.lua GRUG PATCH #22) — nil on the
+			-- ability-punch and immune_to paths. The hit hook below needs it
+			-- for its landed test; the lethal check needs it as well (below).
+			local applied = self.temp and self.temp.grug_applied
+			-- The punch fraction clamp(tflp/fpi, 0, 1): what the rage hook
+			-- multiplies its +12 by. `tflp`'s nil guard mirrors api.lua's own
+			-- `if tflp == 0 then tflp = 0.2 end`.
+			local fpi = tool_capabilities and tool_capabilities.full_punch_interval or 1.4
+			local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
 			-- Base threat + combat marking + rage; also refreshes the leash
-			-- contact clock (grug_core/combat.lua).
-			grug_core.run_player_hit_mob(hitter, self, damage or 0)
+			-- contact clock (grug_core/combat.lua). The applied integer and
+			-- the punch fraction are what let the rage hook pay
+			-- 12 × fraction on damage that actually LANDED (combat_stats.md
+			-- §2, classes.md §1).
+			grug_core.run_player_hit_mob(hitter, self, damage or 0, applied, fraction)
 			-- Lethal? mobs_redo subtracts the damage right after this wrapper
 			-- returns (api.lua:2698ff), so this is the earliest — and only —
-			-- place where killer AND victim are both known.
-			local lethal = self.health - math.floor(damage or 0) <= 0
+			-- place where killer AND victim are both known. On the
+			-- accumulator path (api.lua GRUG PATCH #22, combat_stats.md §2)
+			-- the health subtraction uses the accumulated INTEGER, so the
+			-- lethal check must use the same number or kill credit/XP and
+			-- the rare-respawn timer fire one punch early/late. `nil`
+			-- (ability punches, immune_to) falls back to the old
+			-- expression — ability damage is already integer.
+			local lethal = self.health - (applied or math.floor(damage or 0)) <= 0
 			-- Named rare killed by a player: start its respawn timer
 			-- (rares.lua). Deliberately OUTSIDE the XP branch below — the
 			-- gray rule can zero the XP, the kill still counts.

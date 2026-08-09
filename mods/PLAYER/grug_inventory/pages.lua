@@ -67,6 +67,22 @@ local SLOT_POS = {
 	grug_trinket2 = {7, 3.6},
 }
 
+-- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
+-- §1). Reused grug_gear art for the five slots with a natural match, dimmed by
+-- one multiply — the two new silhouettes are authored dim already. Keep every
+-- modifier exact: a malformed one is a client-side generateImagePart error and
+-- an untextured icon, with nothing in the server log.
+local GHOST_TEXTURE = {
+	grug_head = "grug_gear_item_head_metal.png^[multiply:#666666",
+	grug_chest = "grug_gear_item_chest_metal.png^[multiply:#666666",
+	grug_legs = "grug_gear_item_legs_metal.png^[multiply:#666666",
+	grug_feet = "grug_gear_item_feet_metal.png^[multiply:#666666",
+	grug_weapon = "grug_gear_item_sword.png^[multiply:#666666",
+	grug_offhand = "grug_inventory_ghost_offhand.png",
+	grug_trinket1 = "grug_inventory_ghost_trinket.png",
+	grug_trinket2 = "grug_inventory_ghost_trinket.png",
+}
+
 -- A tooltip[] rect of "1,1" does NOT cover one inventory cell in legacy
 -- coordinates, it covers one grid CELL INCLUDING its gutters: both elements
 -- share getElementBasePos (guiFormSpecMenu.cpp:257-265) so the origins do
@@ -86,6 +102,10 @@ for _, slot in ipairs(grug_inventory.equipment_slots) do
 	if not SLOT_POS[slot.list] then
 		core.log("error", ("[grug_inventory] equipment slot %q has no position " ..
 			"in the character page and is not drawn"):format(slot.list))
+	end
+	if not GHOST_TEXTURE[slot.list] then
+		core.log("error", ("[grug_inventory] equipment slot %q has no ghost " ..
+			"texture in the character page"):format(slot.list))
 	end
 end
 
@@ -143,6 +163,18 @@ local function character_content(player)
 			-- m_tooltip_element afterwards, which is only painted at :3856.
 			table.insert(fs, ("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(
 				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot.label)))
+			-- The ghost is drawn AFTER the list[] and only for empty slots,
+			-- never before it to fake a transparent cell: listcolors[] is
+			-- per-formspec and this page also carries sfinv's main inventory,
+			-- so a page-wide transparent slot cell would strip the main
+			-- inventory's cells too (inventory_equipment.md §1). One inventory
+			-- read per slot per formspec build; the build is a rare event —
+			-- it happens on navigation and on the refresh hooks below, never
+			-- in a step or on a hover.
+			if player:get_inventory():get_stack(slot.list, 1):is_empty() then
+				table.insert(fs, ("image[%.1f,%.1f;1,1;%s]"):format(
+					pos[1], pos[2], GHOST_TEXTURE[slot.list]))
+			end
 		end
 	end
 	return table.concat(fs)
@@ -251,6 +283,13 @@ grug_xp.register_on_level_change(function(player, old_level, new_level)
 	if old_level ~= nil then
 		grug_inventory.refresh(player)
 	end
+end)
+
+-- Ghost icons mirror slot occupancy, so an equipment change re-renders an
+-- open Character page (inventory_equipment.md §1). Rare event; refresh()
+-- itself no-ops on any other page.
+grug_core.register_on_equipment_change(function(player, listname)
+	grug_inventory.refresh(player)
 end)
 
 -- Rebuild the inventory formspec once more on join. sfinv already built one

@@ -427,7 +427,10 @@ end
 --
 -- Player hit mob hook: fired by grug_mobs' do_punch wrapper for every player
 -- punch that reaches a mob (rage generation, combat marking, threat).
--- func(player, mob_ent, damage)
+-- func(player, mob_ent, damage, applied, fraction)
+-- `applied` is the accumulated integer from the api.lua patch (combat_stats
+-- §2), nil on the ability-punch and immune_to paths. `fraction` is
+-- clamp(tflp / full_punch_interval, 0, 1) of this punch.
 --
 
 local hit_mob_callbacks = {}
@@ -436,7 +439,7 @@ function grug_core.register_on_player_hit_mob(func)
 	table.insert(hit_mob_callbacks, func)
 end
 
-function grug_core.run_player_hit_mob(player, mob_ent, damage)
+function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction)
 	grug_core.mark_in_combat(player)
 	-- THE ONE base-threat site. Every player hit on a mob passes through
 	-- here: auto-attacks go player -> object:punch -> grug_mobs' do_punch
@@ -444,6 +447,8 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage)
 	-- object:punch -> the SAME wrapper -> here. Adding damage-as-threat in
 	-- deal_ability_damage as well would double-count every ability hit;
 	-- that call only adds the tank multiplier BONUS on top (see there).
+	-- Base threat stays the raw, possibly FRACTIONAL damage: threat is a
+	-- sum, not an integer, so it accumulates fractionally just fine.
 	if mob_ent then
 		grug_core.add_threat(mob_ent, player, damage or 0)
 		-- Player contact for the leash (aggro.lua): being hit counts.
@@ -451,7 +456,7 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage)
 		mob_ent.temp.grug_last_contact = grug_core.mono_time()
 	end
 	for _, func in ipairs(hit_mob_callbacks) do
-		func(player, mob_ent, damage)
+		func(player, mob_ent, damage, applied, fraction)
 	end
 end
 
@@ -479,70 +484,29 @@ local function crit_particles(pos)
 end
 
 --
--- Auto-attack cadence (combat_stats.md §2, implemented 2026-08-07). Held
--- melee = auto-attack at weapon speed; every accepted swing lands at FULL
--- weapon damage, everything arriving faster is discarded whole.
---
--- Why the clock lives HERE and not in mobs_redo's `tflp`: with the dig
--- button held the client punches every `object_hit_delay` = 0.2 s
--- (engine `src/client/game_internal.h`) and the server resets its punch
--- timer on EVERY punch packet (`PlayerSAO::resetTimeFromLastPunch`,
--- `src/network/serverpackethandler.cpp` INTERACT_START_DIGGING) — so `tflp`
--- measures the time between CLIENT punches, never between hits that landed,
--- and it sits at ~0.2 s forever while the button is down. mobs_redo scaled
--- damage by `tflp / full_punch_interval`, which therefore collapsed to
--- 0.2/fpi and made every weapon below a bronze sword deal a permanent,
--- feedback-less 0 against an armor-100 mob (all feedback AND the health
--- subtraction sit behind mobs_redo's `damage >= 1`). Gating on `tflp` alone
--- would have dropped EVERY held punch instead. So: our own clock, per
--- player, in server time.
+-- Swing cadence (combat_stats.md §2, WP38). The all-or-nothing cadence gate
+-- of 2026-08-07 and the shared per-player swing clock of 2026-08-08 are both
+-- removed — no punch is discarded, and a hit deals `weapon damage ×
+-- clamp(tflp / full_punch_interval, 0, 1)`, the engine's own partial-swing
+-- factor. The fractions a held-button spam leaves behind are carried by the
+-- accumulator below. `tflp` can never serve as a clock even so: the engine
+-- resets it on every punch PACKET, and the client sends one every 0.2 s
+-- while the dig key is held — it measures the client's click rate, never
+-- the swing rhythm, which is exactly why the damage formula divides by the
+-- weapon interval instead of gating on it.
 --
 
--- Tick slack: half a client punch step (0.2 s, see above). While the button
--- is held the punches this gate sees are spaced at MULTIPLES of 0.2 s from
--- the last accepted swing, so a weapon interval that is not a multiple of
--- 0.2 can only ever be served by the next tick at or past it — accepting
--- `interval` exactly would round every weapon UP. Subtracting half a step
--- rounds to the NEAREST tick instead: fpi 0.9 accepts the 0.8 s packet
--- (0.8 >= 0.9 - 0.1) for an effective 0.8 s cadence, while fpi 1.0 still
--- rejects it (0.8 < 0.9) and lands on 1.0 s. A multiplicative tolerance
--- cannot do this — 0.9 * 0.9 = 0.81 rejects the 0.8 s packet and the 0.9 s
--- weapon silently swings at 1.0 s.
-local SWING_SLACK = 0.1
-
-local last_swing = {} -- player name -> mono_time of the last accepted swing
-
--- Consumes the swing clock. true = accepted auto-attack (clock stamped),
--- false = the punch arrived too early and the caller must discard it
--- ENTIRELY (no damage, no wear, no sound, no threat — button spam does
--- nothing). `interval` is the weapon's full_punch_interval.
--- Per PLAYER, not per mob: attack speed is a property of the attacker, so
--- switching targets must not hand out a free swing.
-function grug_core.accept_melee_swing(player, interval)
-	local name = player:get_player_name()
-	local now = grug_core.mono_time()
-	local last = last_swing[name]
-	if last and now - last < interval - SWING_SLACK then
-		return false
-	end
-	last_swing[name] = now
-	return true
-end
-
-core.register_on_leaveplayer(function(player)
-	last_swing[player:get_player_name()] = nil
-end)
-
--- Crit roll for a finished auto-attack (combat_stats.md §2): same ×1.5 and
--- the same particle burst as ability crits above — auto-attacks were the one
+-- Crit roll for a player melee punch (combat_stats.md §2): same ×1.5 and
+-- the same particle burst as ability crits above — player melee was the one
 -- damage source that could never crit. `target` only supplies the particle
 -- position. Returns the (possibly critical) damage.
 --
--- The crit result is FLOORED, exactly like deal_ability_damage's, so the two
--- crit paths cannot disagree about what a ×1.5 on the same number is worth.
--- Only the crit branch floors — a non-crit hit is handed back untouched,
--- because the caller's damage is still mid-computation (mobs_redo's armor
--- scaling produces fractions on purpose and rounds at the very end).
+-- Deliberately NOT floored here: on the proportional path (WP38) the
+-- remainder accumulator floors at application time, so flooring the crit
+-- would double-round — a ×1.5 on a 0.4-damage swing is 0.6, and both the
+-- pre-crit and the post-crit fraction have to ride the SAME accumulator.
+-- Only the plain ×1.5 is rolled; the `damage <= 0` guard below keeps an
+-- immunity-zeroed hit from rolling at all.
 function grug_core.melee_crit(player, damage, target)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
 		return damage
@@ -551,8 +515,69 @@ function grug_core.melee_crit(player, damage, target)
 	if pos then
 		crit_particles(pos)
 	end
-	return math.floor(damage * 1.5)
+	return damage * 1.5
 end
+
+--
+-- Fractional melee remainder accumulator (combat_stats.md §2, WP38). The
+-- proportional-damage revision accepts sub-1 swings, and flooring each
+-- punch separately leaks the fraction forever — a 3-damage weapon at a 1 s
+-- interval would deal 3 DPS instead of the proportional 3.75. So fractions
+-- accumulate per player and are floored only when applied: the health
+-- subtraction and the death check run on the accumulated INTEGER, never on
+-- the raw fraction ("the rounding hole is closed by a remainder
+-- accumulator, never by a minimum").
+--
+-- One accumulator per player, holding a target object id and a remainder
+-- below 1; a punch on a DIFFERENT target resets the remainder to 0 first.
+-- Switching targets forfeits at most 0.999 damage — deliberate (that is
+-- what keeps this a single field instead of a per-target table) — so a
+-- target-guard player slapping a row of rabbits hands each of them the same
+-- full fresh accumulator, and nothing sharper than 1 HP is ever lost.
+--
+-- Target identity is `ObjectRef:get_guid()` (lua_api.md:9050): the player
+-- name for players, a unique collision-free string for entities, stable
+-- across reloads, so a remainder survives neither an object swap nor a mob
+-- respawn.
+--
+-- Runtime-only by design. A stale entry costs at most 0.999 damage of the
+-- NEXT punch, so a player who logs off mid-fight has no meaningful remainder
+-- to collect — the entry is dropped on leave like every other piece of this
+-- per-player combat state.
+--
+-- Consumed by the api.lua GRUG PATCH (#22) on the player-melee path (the
+-- accumulated integer doubles as the death-check gate there) and, later, by
+-- the PvP melee path (same pipeline, combat_stats.md §2).
+--
+
+local melee_remainder = {} -- player name -> {target = guid, remainder = [0,1)}
+
+-- Applies the fractional part of a melee hit against `target`. Returns the
+-- integer damage to subtract from the target's health: `remainder +
+-- raw_damage` floored, with the new remainder carried for the next punch.
+-- A non-positive raw hit returns 0 WITHOUT touching state. `raw_damage` is
+-- the mobs_redo damage after armor scaling and the crit roll.
+function grug_core.apply_accumulated_melee(player, target, raw_damage)
+	if raw_damage <= 0 then
+		return 0
+	end
+	local name = player:get_player_name()
+	local guid = target:get_guid()
+	local entry = melee_remainder[name]
+	if not entry or entry.target ~= guid then
+		-- Different target: reset first (at most 0.999 damage forfeited).
+		entry = {target = guid, remainder = 0}
+		melee_remainder[name] = entry
+	end
+	local total = entry.remainder + raw_damage
+	local applied = math.floor(total)
+	entry.remainder = total - applied
+	return applied
+end
+
+core.register_on_leaveplayer(function(player)
+	melee_remainder[player:get_player_name()] = nil
+end)
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip
 -- ability hits (rage comes from auto-attacks only, classes.md §1) and the

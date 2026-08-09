@@ -2679,39 +2679,49 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
-	-- GRUG PATCH: weapon-cadence auto-attacks (combat_stats.md §2, 2026-08-07).
-	-- Player melee on one of OUR mobs is an auto-attack at weapon speed: a
-	-- punch that arrives before the wielded weapon's full_punch_interval has
-	-- passed since the last ACCEPTED swing is discarded right here — before
-	-- weapon wear, hit sounds, `do_punch` (threat/rage/drop tag/XP) and the
-	-- retaliation block below, so button spam does nothing at all. An
-	-- accepted swing then lands at FULL weapon damage (see the loop below).
-	-- The clock cannot be `tflp`: the engine resets it on every punch PACKET
-	-- and the client sends one every 0.2 s while the dig key is held, which
-	-- is exactly what made vanilla's `tflp / full_punch_interval` factor
-	-- collapse to 0.2/fpi (0.22 with the bare hand) and every weapon below a
-	-- bronze sword deal a permanent, invisible 0 against an armor-100 mob
-	-- (all feedback AND the health subtraction hang off `damage >= 1`).
-	-- Rationale and the per-player clock: grug_core/combat.lua.
+	-- GRUG PATCH (player melee, combat_stats.md §2, WP38): the cadence gate
+	-- of 2026-08-07 and the shared per-player swing clock of 2026-08-08 are
+	-- deleted — no punch is discarded, damage is proportional. `grug_melee`
+	-- marks a player punch on a grug_mobs-registered mob that is NOT an
+	-- ability punch: the Strength bonus below needs it, the accumulator
+	-- application needs it, and the knockback rule needs it.
+	-- Why the damage formula divides by the interval instead of gating on
+	-- it: the engine resets `tflp` on every punch PACKET and the client
+	-- sends one every 0.2 s while the dig key is held, which is exactly
+	-- what made vanilla's `tflp / full_punch_interval` factor collapse to
+	-- 0.2/fpi (0.22 with the bare hand) and every weapon below a bronze
+	-- sword deal a permanent, invisible 0 against an armor-100 mob (all
+	-- feedback AND the health subtraction hang off `damage >= 1`). The
+	-- revision keeps the division — it IS the proportional model — and
+	-- moves feedback in front of the threshold (see below).
 	-- Scope: real player swings on a grug_mobs-registered mob only —
 	-- mob-vs-mob, arrows and our own ability punches (`in_ability_punch`,
 	-- set around the punch in grug_core.deal_ability_damage, which already
 	-- rolls its own stats and punches at a full interval) keep vanilla
 	-- behavior, as does every vanilla mobs_redo mob. `grug_core` is
 	-- guaranteed loaded once `grug_mobs` is (it depends on it).
-	-- `return true` is mobs_redo's own "punch handled" exit, same as the
-	-- protection branch above.
-	local grug_cadence = false
+	-- GRUG PATCH (fractional-remainder accumulator, WP38, combat_stats.md
+	-- §2): the flag block additionally records `grug_mob_hit` — ANY player
+	-- punch on a grug_mobs-registered mob, ability punches included. The
+	-- accumulator result must reach grug_mobs' do_punch wrapper as
+	-- `self.temp.grug_applied` (its lethal check runs on the same integer
+	-- the health subtraction will use), and an ability punch on the same
+	-- mob must see nil rather than a stale value — so the write happens
+	-- on every such punch, not only on accumulator punches. `grug_melee`
+	-- itself is unchanged — the same condition it always had, exactly as
+	-- before. `grug_immune` marks a hit that matched the `immune_to` loop
+	-- below (see there).
+	local grug_melee = false
+	local grug_mob_hit = false
+	local grug_immune = false
 
 	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
-	and grug_mobs.registered_cadence[self.name]
-	and not grug_core.in_ability_punch then
+	and grug_mobs.registered_cadence[self.name] then
 
-		grug_cadence = true
+		grug_mob_hit = true
 
-		if not grug_core.accept_melee_swing(hitter,
-				tool_capabilities.full_punch_interval or 1.4) then
-			return true
+		if not grug_core.in_ability_punch then
+			grug_melee = true
 		end
 	end
 
@@ -2738,21 +2748,19 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 			local base = tool_capabilities.damage_groups[group] or 0
 
-			-- GRUG PATCH (cadence, see the gate above): an accepted swing is
-			-- a FULL swing — `tflp` is the time since the last client punch,
-			-- not since the last hit, so it must not scale the damage — and
-			-- it carries the attacker's Strength bonus (combat_stats.md §2:
-			-- melee damage = weapon damage + floor(Str/10)), added to the
-			-- melee damage group BEFORE the armor scaling so a tough mob's
-			-- armor reduces the whole hit, exactly like it does for the
-			-- ability damage that arrives through the same loop.
-			if grug_cadence then
-
-				tmp = 1.0
-
-				if group == "fleshy" then
-					base = base + grug_core.get_melee_bonus(hitter)
-				end
+			-- GRUG PATCH (player melee, WP38): the melee path adds the
+			-- attacker's Strength bonus (combat_stats.md §2: melee damage =
+			-- weapon damage + floor(Str/10)), added to the melee damage
+			-- group BEFORE the armor scaling so a tough mob's armor reduces
+			-- the whole hit, exactly like it does for the ability damage
+			-- that arrives through the same loop. `tmp` above keeps vanilla
+			-- mobs_redo's `tflp / full_punch_interval` clamp — that IS the
+			-- proportional model of combat_stats.md §2 (no punch is
+			-- discarded: the client holds nothing gated, it just sends a
+			-- punch every 0.2 s and each deals a fraction of a swing), so
+			-- melee punches no longer override it to 1.0.
+			if grug_melee and group == "fleshy" then
+				base = base + grug_core.get_melee_bonus(hitter)
 			end
 
 			damage = damage + base * tmp * ((armor[group] or 0) / 100.0)
@@ -2766,19 +2774,28 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		hit_item = hitter:get_luaentity().name
 	end
 
+	-- GRUG PATCH (WP38, combat_stats.md §2): `grug_immune` marks a hit
+	-- that matched `immune_to`. That loop OVERWRITES damage instead of
+	-- scaling it, so a fractional-remainder accumulator must not touch the
+	-- result — a floor on top of a SET value would be wrong by design
+	-- ("a floor would override mobs_redo's immune_to, which sets damage
+	-- rather than scaling it").
 	for n = 1, #self.immune_to do -- check for toll immunity or special damage
 
 		if self.immune_to[n][1] == hit_item then
 
-			damage = self.immune_to[n][2] or 0 ; break
+			damage = self.immune_to[n][2] or 0
+			grug_immune = true
+			break
 
 		-- if "all" then no tools deal damage unless it's specified in list
 		elseif self.immune_to[n][1] == "all" then
 			damage = self.immune_to[n][2] or 0
+			grug_immune = true
 		end
 	end
 
-	-- GRUG PATCH (cadence): auto-attack crit — ×1.5 plus the same particle
+	-- GRUG PATCH (player melee): melee crit — ×1.5 plus the same particle
 	-- burst ability crits use (combat_stats.md §2), both inside
 	-- grug_core.melee_crit. Rolled after the armor scaling (a factor
 	-- commutes) and, crucially, AFTER the `immune_to` loop above: that loop
@@ -2786,8 +2803,32 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- was thrown away — and the burst had already fired, showing a crit on a
 	-- hit the mob is immune to. melee_crit's own `damage <= 0` guard now
 	-- covers the usual immunity value of 0, so no burst and no roll.
-	if grug_cadence then
+	if grug_melee then
 		damage = grug_core.melee_crit(hitter, damage, self.object)
+	end
+
+	-- GRUG PATCH (WP38, combat_stats.md §2): fractional melee damage goes
+	-- through the per-player remainder accumulator — `remainder + damage`
+	-- floored, the fraction carried to the next punch, so sub-1 swings
+	-- still add up and a punch never loses its fraction to the floor.
+	-- `immune_to`-matched hits are excluded: that loop SETS damage, so the
+	-- accumulated integer must not override the mob's immunity value
+	-- (grug_core/combat.lua holds the full rationale). `grug_applied` is
+	-- nil on every other path (ability punches, non-melee punches,
+	-- vanilla mobs), which keeps them on vanilla behavior below.
+	local grug_applied -- nil = not on the accumulator path
+	if grug_melee and not grug_immune and damage > 0 then
+		grug_applied = grug_core.apply_accumulated_melee(hitter, self.object, damage)
+	end
+	-- The wrapper (grug_mobs' do_punch, runs right after this) needs the
+	-- same integer for its lethal check — kill credit/XP and the rare
+	-- respawn timer must fire on the exact punch that kills. Written on
+	-- EVERY player punch on a registered mob so an ability punch on the
+	-- same mob rewrites the stale value with nil. `self.temp` is
+	-- mobs_redo's runtime-only store, never serialized.
+	if grug_mob_hit then
+		self.temp = self.temp or {}
+		self.temp.grug_applied = grug_applied
 	end
 
 	local enchants = {}
@@ -2876,8 +2917,25 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		hitter:set_wielded_item(weapon)
 	end
 
-	-- only play hit sound and show blood effects if damage is 1 or over
-	if damage >= 1 then
+	-- GRUG PATCH (WP38, combat_stats.md §2): hit feedback and the health
+	-- subtraction are no longer one gate. Hit feedback does not depend on
+	-- the damage NUMBER — a 0.4-damage swing must still sound and bleed —
+	-- while the subtraction and the death check run on the accumulated
+	-- integer, which is what can actually reach 1 and kill. On the
+	-- accumulator path (`grug_applied` set): feedback = raw damage > 0,
+	-- subtraction = the accumulated integer. Every other path is vanilla:
+	-- feedback = damage >= 1, subtraction = floor(damage) — identical for
+	-- damage >= 0, since floor(damage) >= 1 iff damage >= 1.
+	local feedback, subtract
+	if grug_applied ~= nil then
+		feedback = damage > 0 -- raw fractional damage drives feedback
+		subtract = grug_applied -- accumulated integer drives health/death
+	else
+		feedback = damage >= 1 -- vanilla behavior for every other path
+		subtract = floor(damage)
+	end
+
+	if feedback then
 
 		-- select tool use sound if found, or fallback to default
 		local snd = weapon_def.sound and weapon_def.sound.use or "mobs_punch"
@@ -2923,16 +2981,19 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				end
 			end)
 		end
+	end
+
+	if subtract >= 1 then
 
 		-- check for friendly fire (arrows from same mob)
 		if self.friendly_fire then
-			self.health = self.health - floor(damage) -- do damage regardless
+			self.health = self.health - subtract -- do damage regardless
 		else
 			local entity = hitter and hitter:get_luaentity()
 
 			-- check if arrow from same mob, if so then do no damage
 			if (entity and entity.name ~= self.arrow) or is_player(hitter) then
-				self.health = self.health - floor(damage)
+				self.health = self.health - subtract
 			end
 		end
 
@@ -2951,12 +3012,16 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	end
 
 	-- knock back effect (only on full punch)
-	-- GRUG PATCH (cadence): an accepted swing IS a full punch. The gate above
-	-- lets a swing land up to 10 % early (client punch quantization), and
-	-- `tflp` no longer describes the swing rhythm at all, so vanilla's
-	-- `tflp >= punch_interval` test would drop the knockback of a perfectly
-	-- legitimate hit.
-	if self.knock_back and (grug_cadence or tflp >= punch_interval) then
+	-- GRUG PATCH (WP38): on the proportional path `tflp` is pinned at ~0.2 s
+	-- while the dig key is held, so vanilla's `tflp >= punch_interval` test
+	-- would ~never fire and melee knockback would silently die. A melee
+	-- punch knocks back when the swing actually LANDS — the accumulator
+	-- committed at least 1 (`subtract`, computed above, is in scope here).
+	-- Ability punches keep the vanilla branch: they punch with
+	-- `full_punch_interval` 1.4 and thus `tflp == punch_interval`, knocking
+	-- back exactly as before.
+	if self.knock_back and ((grug_melee and subtract >= 1)
+			or (not grug_melee and tflp >= punch_interval)) then
 
 		local v = self.object:get_velocity()
 
@@ -2980,7 +3045,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			-- turn mob on knockback
 			self:set_yaw((self.object:get_yaw() or 0) - random(-0.9, 0.9), 6)
 
-			if self.animation and self.animation.injured_end and damage >= 1 then
+			-- GRUG PATCH (WP38): a sub-1 hit still shows the hit reaction —
+			-- the injured animation keys off the same flag that drove the
+			-- sound and the blood (raw damage > 0 on the accumulator path).
+			if self.animation and self.animation.injured_end and feedback then
 				self:set_animation("injured")
 			else
 				self:set_animation("walk")

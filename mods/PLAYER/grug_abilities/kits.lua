@@ -192,56 +192,56 @@ end)
 -- weapon damage, swing speed and skin all come from the equipped item, and
 -- swapping the weapon changes all three without a relog.
 --
--- What stays behind: punching a mob with a wielded pick or a bare hand
--- (E5). E5 justified leaving it alone with "strictly worse than the skill --
--- no crit", and that is FALSE. The WP6 cadence patch it keeps hands it both
--- of the Strike's numbers: mods/ENTITIES/mobs/api.lua:2749-2756 adds
--- grug_core.get_melee_bonus(hitter) to the fleshy group on every ACCEPTED
--- swing, and api.lua:2789-2791 rolls grug_core.melee_crit on the result. An
--- accepted swing then reaches grug_mobs' do_punch wrapper
--- (grug_mobs/init.lua:352 -> grug_core.run_player_hit_mob), which adds the
--- base threat (= damage) and fires the hit hook in this mod's init.lua:1165 --
--- and that hook sets the soft target lock and grants the +12 rage, because
--- grug_core.in_ability_punch is false on this path. So a hotbar weapon swung
--- with the dig key at one of our mobs deals FULL weapon damage + Str + crit
--- and generates rage, threat and a target lock, exactly like the Strike.
+-- Two melee streams exist, and WP38 (combat_stats.md §2 "Melee timing") made
+-- them deliberately asymmetric:
 --
--- What it actually lacks is the source and the convenience: the damage comes
--- from the WIELDED stack rather than the weapon slot, which is exactly B1's
--- "single, fixed source" being bypassed; it wears that stack (the Strike
--- punches with punch_attack_uses = 0); it carries no ability threat
--- multiplier; and it cannot swing at the lock -- the player has to keep the
--- mob pointed, with no range/LOS test and no auto-repeat.
+-- The HELD-BUTTON path (any wielded tool, or a bare hand) runs through the
+-- api.lua GRUG PATCH (mods/ENTITIES/mobs/api.lua on_punch). It deals
+-- `weapon damage × clamp(tflp / full_punch_interval, 0, 1)` — while the dig
+-- key is held the client sends one punch packet every 0.2 s, so each packet
+-- deals a fifth of a swing, and grug_core's remainder accumulator carries
+-- the fractions until they add up to a full hit point (the design doc
+-- rejects every "minimum damage" alternative: with the button held, a
+-- round-up floor would make spam strictly better, and worst exactly where
+-- the numbers are smallest). On top of the proportion: the Strength bonus
+-- (grug_core.get_melee_bonus), the crit roll (grug_core.melee_crit),
+-- 12 × fraction rage per punch that LANDED, base threat and the soft target
+-- lock, all through grug_mobs' do_punch wrapper
+-- (grug_mobs/init.lua -> grug_core.run_player_hit_mob). What it still
+-- lacks is the source and the convenience: the damage comes from the WIELDED
+-- stack rather than the weapon slot, which is exactly B1's "single, fixed
+-- source" being bypassed; it wears that stack (the Strike punches with
+-- punch_attack_uses = 0); it carries no ability threat multiplier; and it
+-- cannot swing at the lock — the player has to keep the mob pointed, with no
+-- range/LOS test and no auto-repeat.
+--
+-- The swing LOOP is generic: it swings the SLOT weapon at FULL damage once
+-- per the weapon's own full_punch_interval (E3's loop; arm_repeat carries
+-- the fraction of a late step so the mean cadence is the interval exactly),
+-- with the ability's range/LOS checks and the target lock (E4). What a
+-- swing DOES is the live selected swing skill's business (classes.md §2b):
+-- Strike is the plain hit; Mighty Blow and Hamstring ride along on a LANDED
+-- swing as procs — one effect per swing, decided from the hotbar selection
+-- read every swing, so a mid-fight switch re-arms the proc without
+-- interrupting the loop. A click on a swing skill while the loop runs is
+-- RE-ARM only (refresh_melee_target: refresh the lock, do not swing); a
+-- second click stops. Cast skills are discrete — a cast runs and is done,
+-- they never ride along.
+--
+-- What WP38 removed between them: the all-or-nothing cadence gate of
+-- 2026-08-07 and the shared per-player melee clock of 2026-08-08. The clock
+-- was WINNER-TAKES-ALL by requested interval — whoever asked with the
+-- shorter interval stamped it often enough that the slower asker was
+-- refused forever (a held bare-hand dig starved the greataxe Strike loop,
+-- measured 0.39x over 30 s) — and it could not gate a punch on a PLAYER
+-- at all, so against another player the held-button path stacked with the
+-- Strike. The revision's answer is not a better clock: the two streams
+-- cannot coexist structurally, and the loop follows the selected ability
+-- item (classes.md §2b) — deleting the clock AND landing the one-stream
+-- rule is THIS task. Melee damage is now the same formula in both streams,
+-- and nothing is discarded.
 --
 -- docs/design/combat_stats.md §2 records the same split.
---
--- E5 read the path as "not a bypass worth defending against". Whatever that is
--- worth for the path in isolation, it is false of the two running AT ONCE: the
--- ability item only disables punching while it is SELECTED, so a hotbar switch
--- used to leave both swinging. The defence is one shared swing clock, in
--- strike_swing below.
---
--- SCOPE OF THAT DEFENCE, exactly (review MEDIUM A): it covers MOB targets and
--- nothing else. `grug_core.accept_melee_swing` has two callers -- strike_swing
--- below and the cadence gate in mods/ENTITIES/mobs/api.lua:2712, which is a
--- mobs_redo `on_punch` and is therefore only reached when the thing punched is
--- a mob (and only a grug_mobs-registered one at that:
--- `grug_mobs.registered_cadence[self.name]`). A punch on a PLAYER goes through
--- PlayerSAO::punch -> on_punchplayer (src/server/player_sao.cpp:457-480) and
--- never touches the clock at all. So against another player the held-button
--- path is still ungated and DOES stack with the Strike: measured over 30 s at
--- dtime 0.09, Strike alone 180 damage, Strike plus a held dig with a fleshy-25
--- hotbar weapon 930 (5.17x); with equal weapons a clean ~2x.
---
--- That raw PvP melee path is the documented carry-over of combat_stats.md §2
--- ("PvP melee still runs the engine's raw tflp scaling"), and E6's claim that
--- the Strike closes it holds only for the damage the STRIKE deals -- it does
--- not remove the second stream. Closing it for real means porting the cadence
--- model to player punches (a `core.register_on_punchplayer` that returns true
--- to suppress the engine's damage, doc/lua_api.md:6589), which is the PvP work
--- package's job: it needs its own hostility/dodge/threat decisions, and it
--- would inherit the clock defect below. Do not read the shared clock as a PvP
--- guarantee.
 --
 
 -- An empty weapon slot is an empty slot (B1): no fallback to whatever is in
@@ -355,186 +355,99 @@ local function target_hp(target, ent)
 	return target:get_hp()
 end
 
--- The shared melee clock is WINNER-TAKES-ALL BY REQUESTED INTERVAL, and the
--- Strike is the side that loses (review MEDIUM B). `accept_melee_swing`
--- (mods/CORE/grug_core/combat.lua:521-530) stores a timestamp and NOTHING
--- ELSE: the acceptance threshold is whatever the current caller asks for, so
--- whoever asks with the SHORTER interval stamps the clock often enough that
--- the slower asker is refused forever. Measured over 30 s at dtime 0.09, on a
--- mob, with a greataxe (fpi 1.4) in the slot: Strike alone 198 damage; the
--- same greataxe plus a held BARE-HAND dig 77 (0.39x); plus a held steel pick
--- (fpi 1.0) 159 (0.80x). The design says the equipped weapon is the single
--- source of damage (B1); the clock says the fastest thing the player touched
--- is -- and the loss is silent, which is the worse half.
---
--- This cannot be fixed from grug_abilities: the clock's shape is grug_core's.
--- The fix belongs there and is small -- remember the accepted swing's own
--- interval alongside its time and refuse on `max(requested, accepted)`, so the
--- slot weapon's cadence governs and the carry-over path is the one that
--- starves. Until then the loop simply retries, and what this file CAN do is
--- refuse to lose the damage silently: `note_starved` below says so once.
-local clock_block = {} -- player name -> {since = us time, warned = us time}
-
--- How long a refusal streak has to last before the player is told, as a
--- multiple of the weapon's own swing time (so a greataxe is not nagged for
--- missing one 2 s swing), and how rarely the message may repeat.
-local STARVE_WARN_AFTER = 2
-local STARVE_WARN_EVERY = 10
-
-local function note_starved(user, def, fpi)
-	local name = user:get_player_name()
-	local now = core.get_us_time()
-	local rec = clock_block[name]
-	if not rec then
-		clock_block[name] = {since = now, warned = 0}
-		return
-	end
-	if (now - rec.since) / 1e6 < STARVE_WARN_AFTER * fpi then
-		return
-	end
-	if rec.warned ~= 0 and (now - rec.warned) / 1e6 < STARVE_WARN_EVERY then
-		return
-	end
-	rec.warned = now
-	grug_abilities.flash(user,
-		"Your held attack is taking " .. def.name .. "'s swings.")
-end
-
-core.register_on_leaveplayer(function(player)
-	clock_block[player:get_player_name()] = nil
-end)
-
 -- One swing. Returns the cooldown it earned (the weapon's swing time) so the
--- caller can arm the timer, `false` for "not this step, but do not stop", or
--- nil plus the reason it stopped.
+-- caller can arm the timer, or nil plus the reason it stopped.
 --
 -- The target is resolved through the SAME helper the class kits use, so
 -- "target dead", "out of range" and "out of line of sight" are one test and
 -- the soft target lock (8 s) is refreshed by every swing. `pointed` is the
--- click's own target on the first cast and nil for every repeat afterwards --
--- from then on the lock IS the target. It is resolved BEFORE the swing clock is
--- consulted, so those stop conditions stay live even while the clock is held by
--- the other melee path.
-local function strike_swing(user, pointed, def)
-	local target = enemy_target(user, pointed, def)
+-- click's own target on the first cast and nil for every repeat afterwards —
+-- from then on the lock IS the target. The lock profile is the Strike
+-- definition's (all three swing skills share melee 4 m). The shared swing
+-- clock is gone (WP38, combat_stats.md §2 — no punch is discarded, damage is
+-- proportional), so there is no "declined" answer any more: the swing
+-- happens whenever it has a target.
+local strike_def -- assigned with the Strike definition below (the swing-range profile)
+
+-- The swing skill the player currently has selected, or nil (Strike, a cast
+-- skill, a non-ability item — all baseline). Read from the wielded item every
+-- swing; kits.lua cannot see init.lua's item_defs, hence the accessor.
+local function selected_swing_def(user)
+	local d = grug_abilities.ability_of_item(user:get_wielded_item():get_name())
+	return (d and d.kind == "swing" and d.proc_swing) and d or nil
+end
+
+local function melee_swing(user, pointed)
+	local target = enemy_target(user, pointed, strike_def)
 	if not target then
 		return nil, "No target."
 	end
 	local weapon_damage, fpi = swing_stats(user)
-	-- ONE melee clock per player, shared with the held-button punch path
-	-- (grug_core.accept_melee_swing, consumed by the cadence gate in
-	-- mods/ENTITIES/mobs/api.lua:2706ff) -- review HIGH 2.
-	--
-	-- E5 left the old path alone because a hotbar weapon swung that way is
-	-- "strictly worse than the skill" -- an assessment the section header above
-	-- corrects (it crits, it generates rage and it takes the target lock).
-	-- Whatever it is worth in isolation, it is false when both run at
-	-- once: A2 only stops a player punching while the ABILITY item is
-	-- selected, so switching the hotbar to a pick and holding dig left the
-	-- Strike loop swinging the equipment-slot weapon at full damage next to it
-	-- -- two damage streams, ~1.9x the DPS and doubled rage income, against
-	-- B1's "the slot item is the single, fixed source of damage". Sharing the
-	-- clock makes the two mutually exclusive AGAINST A MOB. It does nothing
-	-- against a player target -- see the scope note at the top of this section
-	-- (review MEDIUM A) -- and it costs a slow weapon its damage rather than
-	-- splitting the difference (review MEDIUM B, above note_starved).
-	--
-	-- Consumed AFTER the target check, so a swing into thin air does not burn
-	-- the clock, and before the damage, so a refused swing costs nothing at all.
-	if not grug_core.accept_melee_swing(user, fpi) then
-		note_starved(user, def, fpi)
-		return false
+	local melee_bonus = grug_classes.get_melee_bonus(user)
+	local amount, tmult, post = weapon_damage + melee_bonus, 1, nil
+	-- The SELECTED swing skill decides the proc (classes.md §2b: only the
+	-- selected skill procs, one effect per swing). Read LIVE every swing -- a
+	-- hotbar switch mid-fight re-arms the proc without interrupting the loop.
+	-- Strike itself has no proc_swing: it IS the baseline. An unaffordable
+	-- proc does not fire and does NOT consume the charge -- silently, by
+	-- design (a warning per swing would be noise).
+	local sel = selected_swing_def(user)
+	local proc = sel and grug_abilities.charge_ready(user, sel)
+		and grug_abilities.can_afford(user, sel.cost)
+	if proc then
+		amount, tmult, post = sel.proc_swing(user, target,
+			{weapon_damage = weapon_damage, fpi = fpi, melee_bonus = melee_bonus})
 	end
-	clock_block[user:get_player_name()] = nil
-	-- combat_stats.md §2: melee damage = weapon damage + floor(Str/10).
-	-- deal_ability_damage rolls the crit (x1.5), pre-rolls a player target's
-	-- dodge, does the friendly-fire check, marks combat and reports threat --
-	-- threat multiplier 1, Taunt keeps its x3.
-	local amount = weapon_damage + grug_classes.get_melee_bonus(user)
 	-- The luaentity is captured BEFORE the punch: a lethal ability punch
 	-- removes an animation-less mob synchronously and invalidates the
 	-- ObjectRef, but the Lua table (and its `health`) stays readable.
 	local ent = mob_ent(target)
 	local hp_before = target_hp(target, ent)
-	grug_core.deal_ability_damage(user, target, amount)
+	grug_core.deal_ability_damage(user, target, amount, {threat_mult = tmult})
 	if target_hp(target, ent) < hp_before then
-		-- classes.md §1's +12 per melee hit DEALT. It has to happen here:
-		-- grug_core's hit hook skips ability punches on purpose (see the note
-		-- in init.lua). Gated on hit points that actually came off, never on
-		-- the swing being attempted -- see target_hp above for the three ways
-		-- a swing lands for nothing.
+		if proc then
+			grug_abilities.pay(user, sel.cost)
+			grug_abilities.reset_charge(user, sel)
+			if post then post() end
+		end
+		-- Rage: +12 per LANDED loop swing, whatever the selected skill -- the
+		-- loop swing IS the Strike semantically (classes.md §1).
 		grug_abilities.add_rage(user, 12)
 	end
-	-- Deliberately NO particle burst of its own, unlike the class abilities:
-	-- the punch already runs mobs_redo's hit sound and blood effect, and this
-	-- one fires every 0.7-1.4 s for as long as a fight lasts. Crits keep their
-	-- burst (grug_core rolls it), which is what makes a crit readable.
 	return fpi
 end
 
 -- Working title kept from the design file. Deliberately a plain English verb,
--- not a Blizzard ability name.
-grug_abilities.register_ability({
+-- not a Blizzard ability name. (Assigned, not re-declared: the forward
+-- declaration above melee_swing is the upvalue it closes over.)
+strike_def = {
 	id = "strike",
+	kind = "swing",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = "Attack your target with your equipped weapon and\n" ..
-		"keep swinging at its speed. Cast again to stop.\n" ..
-		"Generates 12 rage per hit.",
+	description = "Melee attack with your equipped weapon. Swings at your weapon's speed, generates 12 rage per landed hit. Cast again to stop.",
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
 	-- empty weapon slot the item falls back to this orb, which reads correctly
 	-- as "you are punching with your fists".
 	color = "#d9d3c0",
 	cost = {}, -- no resource cost: it is what GENERATES the resource
-	-- The real cadence is per cast, from the weapon (E2) -- `cooldown` is the
-	-- registry's required floor value and stays 0 so a bare-handed swing is
-	-- never blocked by a stale number.
-	cooldown = 0,
-	cooldown_for = function(user)
-		local _, fpi = swing_stats(user)
-		return fpi
-	end,
-	cooldown_text = "swings at your weapon's speed",
-	-- No wear bar for this one (E2): its cooldown restarts every 0.7-1.4 s for
-	-- as long as a player is in combat, and every wear write re-sends the whole
-	-- inventory to the client.
-	no_cooldown_display = true,
-	-- Off the global cooldown in BOTH directions (E2): a 1 s GCD would cap a
-	-- 0.7 s dagger, and a swing starting a GCD would lock the class kit out
-	-- for as long as the player keeps attacking.
-	off_gcd = true,
 	-- Melee, so the elf's +5 m ability range does not apply (E7) -- it would
 	-- otherwise hand elves a 9 m sword.
 	melee = true,
 	range = 4,
-	repeat_swing = function(user, def)
-		return strike_swing(user, nil, def)
-	end,
-	cast = function(user, pointed, def)
-		-- A second cast never reaches this function: try_cast stops the
-		-- running loop before its own gates (E3's "second cast").
-		local fpi, err = strike_swing(user, pointed, def)
-		if fpi == nil then
-			return false, err
-		end
-		grug_abilities.start_repeat(user, def)
-		if fpi == false then
-			-- `false` means the shared melee clock is still held by a punch the
-			-- player made with a WIELDED tool a moment ago. The toggle goes on
-			-- either way -- but NOTHING SWUNG, so this cast earned no cooldown:
-			-- the third return value overrides try_cast's cooldown_for() (review
-			-- LOW D). Arming the full swing interval here made the refusal cost a
-			-- whole extra swing -- measured with a greataxe on a free clock, the
-			-- first swing landed at 1.44 s instead of 1.22 s -- and it made the
-			-- comment's "the loop takes the next legal swing" false, because the
-			-- loop waits on exactly this cooldown. With 0 nothing is stored, so
-			-- the loop retries on the very next globalstep.
-			return true, nil, 0
-		end
-		return true
-	end,
-})
+}
+grug_abilities.register_ability(strike_def)
+
+-- init.lua's loop and try_cast call these (load-order: this file is dofile'd
+-- from init.lua's tail, before any globalstep can fire).
+grug_abilities.melee_swing = melee_swing
+
+-- try_cast's re-arm click refreshes the lock WITHOUT swinging (classes.md
+-- §2b: a click on another swing skill while the loop runs is re-arm only).
+function grug_abilities.refresh_melee_target(user, pointed)
+	enemy_target(user, pointed, strike_def)
+end
 
 --
 -- Warrior (rage; all abilities count as tank abilities: threat ×3)
@@ -544,6 +457,7 @@ grug_abilities.register_ability({
 	id = "charge",
 	class = "warrior",
 	name = "Charge",
+	kind = "cast",
 	description = "Dash to an enemy up to 12 m away, dealing 3 damage\n" ..
 		"and generating 15 rage.",
 	color = "#e8c85a",
@@ -571,13 +485,12 @@ grug_abilities.register_ability({
 -- per auto-hit a cooldown left the Warrior permanently rage-capped.
 grug_abilities.register_ability({
 	id = "mighty_blow",
+	kind = "swing",
 	class = "warrior",
 	name = "Mighty Blow",
-	description = "A heavy melee hit: 150% weapon damage plus your\n" ..
-		"melee bonus. Uses your equipped weapon.",
+	description = "A heavy melee hit: 150% weapon damage plus your melee bonus. Rides along on a landed swing whenever you have the rage.",
 	color = "#c84a32",
 	cost = {rage = 25},
-	cooldown = 0,
 	-- Melee at 4 m, so the elf's +5 m ability range does not apply (E7). This
 	-- was a PRE-EXISTING bug, not something the weapon slot introduced: the
 	-- perk was written as "+5 m on every ability" and gave elves a 9 m reach on
@@ -587,32 +500,13 @@ grug_abilities.register_ability({
 	-- the target-lock fallback move together.
 	melee = true,
 	range = 4,
-	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
-		if not target then
-			return false, "No target."
-		end
-		-- The equipped weapon, and only that (B1, T4). This used to scan hotbar
-		-- slots 1-8 for the strongest fleshy damage, because "the wielded item
-		-- is this ability" and there was no slot to ask. There is now, and the
-		-- slot is the SINGLE source: no fallback to the hand, no fallback to the
-		-- pack. `swing_stats` is the same reader the Strike uses, so the two
-		-- melee abilities can never disagree about what the player is holding --
-		-- it resolves per-stack meta before the item definition, which is how
-		-- WP5's rolled affixes will reach this for free.
-		--
-		-- Empty slot: `swing_stats` answers the hand's own fleshy damage (1),
-		-- i.e. exactly what the old scan produced with no weapon in the hotbar,
-		-- so an unarmed Mighty Blow is worth floor(1 * 1.5) + melee bonus as
-		-- before -- weak, never uncastable (C2).
-		local weapon_damage = swing_stats(user)
-		local amount = math.floor(weapon_damage * 1.5)
-			+ grug_classes.get_melee_bonus(user)
-		-- Position BEFORE the damage: a lethal punch invalidates mob refs.
-		local tpos = target:get_pos()
-		grug_core.deal_ability_damage(user, target, amount, {threat_mult = 3})
-		burst(tpos, "mobs_blood.png", 6)
-		return true
+	-- The proc REPLACES the plain hit (classes.md §3): floor(weapon x 1.5) +
+	-- melee bonus, x3 threat. No charge timer -- the rage cost IS the limiter
+	-- (about every other swing at +12 rage per landed hit).
+	proc_swing = function(user, target, ctx)
+		local tpos = target:get_pos() -- before the punch (lethal invalidates refs)
+		return math.floor(ctx.weapon_damage * 1.5) + ctx.melee_bonus, 3,
+			function() burst(tpos, "mobs_blood.png", 6) end
 	end,
 })
 
@@ -620,37 +514,31 @@ grug_abilities.register_ability({
 -- outrun players, the snare is the Warrior's identity.
 grug_abilities.register_ability({
 	id = "hamstring",
+	kind = "swing",
 	class = "warrior",
 	name = "Hamstring",
-	description = "Cripples the enemy: 2 damage and 50% slow for 5 s.",
+	description = "A landed swing cripples: slows the enemy by 50% for 5 s. Charges over 6 s.",
 	color = "#a8324e",
+	charge = 6,
 	cost = {rage = 10},
-	cooldown = 6,
 	-- Melee at 4 m: same pre-existing elf-range bug as Mighty Blow above, same
 	-- one-flag fix (E7).
 	melee = true,
 	range = 4,
-	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
-		if not target then
-			return false, "No target."
-		end
-		-- Capture BEFORE the damage: a lethal punch removes a mob without a
-		-- die animation synchronously, invalidating the ObjectRef.
+	-- The swing lands as usual; the proc adds the slow (classes.md §3).
+	-- `post` runs only on a LANDED swing, so a dodged Hamstring does not
+	-- snare (the old cast's dealt > 0 gate).
+	proc_swing = function(user, target, ctx)
 		local ent = mob_ent(target)
 		local tpos = target:get_pos()
-		-- Damage first: a dodged Hamstring (player targets) must not snare.
-		local dealt = grug_core.deal_ability_damage(user, target, 2,
-			{threat_mult = 3})
-		if dealt > 0 then
+		return ctx.weapon_damage + ctx.melee_bonus, 3, function()
 			if ent then
-				grug_mobs.slow(ent, 5, 0.5) -- harmless no-op on a removed mob
+				grug_mobs.slow(ent, 5, 0.5)
 			elseif target:get_hp() > 0 then
 				apply_player_speed_stages(target, {{speed = 0.5, time = 5}})
 			end
 			burst(tpos, "mobs_blood.png", 4)
 		end
-		return true
 	end,
 })
 
@@ -658,6 +546,7 @@ grug_abilities.register_ability({
 	id = "taunt",
 	class = "warrior",
 	name = "Taunt",
+	kind = "cast",
 	description = "Forces the target mob to attack you.",
 	color = "#e07b39",
 	cost = {},
@@ -691,6 +580,7 @@ grug_abilities.register_ability({
 	id = "fireball",
 	class = "mage",
 	name = "Fireball",
+	kind = "cast",
 	description = "Hurls fire at an enemy up to 20 m away:\n" ..
 		"6 + spell power damage.",
 	color = "#ff8833",
@@ -716,6 +606,7 @@ grug_abilities.register_ability({
 	id = "frost_nova",
 	class = "mage",
 	name = "Frost Nova",
+	kind = "cast",
 	description = "Roots all enemies within 5 m for 4 s,\n" ..
 		"then slows them by 50% for 3 s.",
 	color = "#66b8ff",
@@ -755,6 +646,7 @@ grug_abilities.register_ability({
 	id = "blink",
 	class = "mage",
 	name = "Blink",
+	kind = "cast",
 	description = "Teleport up to 10 m in your look direction\n" ..
 		"(blocked by walls).",
 	color = "#b06aff",
@@ -809,6 +701,7 @@ grug_abilities.register_ability({
 	id = "smite",
 	class = "priest",
 	name = "Smite",
+	kind = "cast",
 	description = "Smites an enemy up to 20 m away:\n" ..
 		"4 + spell power damage.",
 	color = "#ffd97a",
@@ -832,6 +725,7 @@ grug_abilities.register_ability({
 	id = "flash_heal",
 	class = "priest",
 	name = "Flash Heal",
+	kind = "cast",
 	description = "Heals the pointed ally (or yourself) for\n" ..
 		"8 + 2x spell power.",
 	color = "#7ae08a",
@@ -858,6 +752,7 @@ grug_abilities.register_ability({
 	id = "power_word_shield",
 	class = "priest",
 	name = "Power Word: Shield",
+	kind = "cast",
 	description = "Shields the pointed ally (or yourself): absorbs\n" ..
 		"8 + 2x spell power damage for 15 s or until consumed.",
 	color = "#e8e07a",
@@ -885,6 +780,7 @@ grug_abilities.register_ability({
 	id = "renew",
 	class = "priest",
 	name = "Renew",
+	kind = "cast",
 	talent_gated = true,
 	description = "Heal over time on the pointed ally (or yourself):\n" ..
 		"3 + spell power every 3 s for 12 s.\nUnlocked via talents.",
