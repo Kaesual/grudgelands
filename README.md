@@ -268,10 +268,11 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (13 of 39 work packages):** the foundation, the whole
+**Shipped (14 of 39 work packages):** the foundation, the whole
 world/combat layer, the money economy, the material ladder's rock and
-ores, the fix round that came out of the second runtime test, and the
-weapon slot that turned auto-attack into a skill.
+ores, the fix round that came out of the second runtime test, the
+weapon slot that turned auto-attack into a skill, and the proc model
+that made skills ride on the swing instead of owning it.
 *(The total is 39 — WP0 through WP38, up from 35 earlier on 2026-08-08:
 the weapon-slot design pass cut WP35, the runtime test cut WP36, WP36
 spun off WP37 while it ran, and WP35 spun off WP38.)*
@@ -297,7 +298,7 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   sight, but they fight back) and everything else.
 - **Character**: faction → race → class creation, Warrior/Mage/Priest with
   attribute and HP formulas, the XP curve to 60 with death penalty, 3
-  abilities per class with cooldowns, global cooldown and soft target
+  abilities per class with cooldowns and the soft target
   lock, visible race passives, and the character screen with equipment
   slots and bags (WP3, WP4, WP15, WP19). WP35 added the **weapon slot**:
   the item in it is the single source of a skill's damage and of its look,
@@ -306,7 +307,15 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   universal ability, **Strike**, that swings at the weapon's own speed
   until you switch it off. Two-handed weapons declare themselves here too,
   though that rule stays dormant until there is something to put in the
-  offhand.
+  offhand. WP38 then split swing timing from skill
+  timing: melee damage is proportional with a remainder accumulator (no
+  swing ever rounds to nothing), every skill is the plain weapon attack
+  plus an effect that fires when its own charge is full — the 1 s global
+  cooldown is gone, retired for per-skill charges and resource costs —
+  the auto-attack loop follows whatever skill is selected (switching to
+  a pick stops it), PvP melee runs through the same dodge/armor pipeline
+  with rage on landed damage only, ability items pick up dropped loot,
+  and empty equipment slots show ghost icons of their type.
 - **Money & vendors**: copper/silver/gold as one integer with a HUD
   line, eight vendor NPCs at the six race capitals (two faction
   Quartermasters, six race-exclusive ones with a 10 % discount), six
@@ -337,10 +346,7 @@ the arrival pulse that makes deep mining dangerous, the depth level
 curve's overdue recalibration, camp-only ore respawn, lava lakes and the
 continental Abyssal Crystal), the two-slot
 furnace and the alloy chain (WP26, the next link in the material chain),
-the melee path (WP38 — re-scoped on 2026-08-09 from a two-defect fix into
-the design revision that makes swing timing and skill timing independent;
-it deletes the shared swing clock instead of repairing it and closes the
-ungated PvP punch on the way), the denser surface spawns
+the denser surface spawns
 (WP37 — decided long ago, never rolled out across the roster), guilds
 (WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
 talent trees (WP11), world structures (WP13 — which now also owns the
@@ -358,8 +364,9 @@ unblocked and built on 2026-08-08.)
 
 **Caveats:** the shipped work packages were runtime-tested on 2026-08-07
 (six findings on the WP1–WP19 pass, all fixed; WP7 passed without
-findings), **except WP25 (the material ladder), WP36 (the fix round) and
-WP35 (the weapon slot) — none of which has been runtime-tested at all**:
+findings), **except WP25 (the material ladder), WP36 (the fix round),
+WP35 (the weapon slot) and WP38 (the proc model) — none of which has been
+runtime-tested at all**:
 they have only been reviewed and syntax-checked. WP36 and WP35 both
 merged on 2026-08-08. The second runtime test, on that same day, is
 what produced WP36 in the first place, and WP36's own fixes are
@@ -367,17 +374,11 @@ therefore still unverified in-game. **Two design questions are open, not
 decided**: whether the jungle fringe should follow the deep jungle's new
 ground texture (`TODO-design-jungle-fringe.md`), and the extra badlands
 band WP36 added on the Throng side, which is deliberately cheap to
-revert if the owner disagrees with the reading behind it. The melee path
-carries three measured defects, all queued as WP38: punches at *players*
-still run the engine's raw scaling — so a held button can deal 0 damage
-in PvP, and since WP35 that ungated stream also *stacks* with the
-auto-attack skill (5.17× over 30 s in the worst measured case); the
-one swing clock the two melee paths share is decided by whoever asks for
-the shorter interval, so tapping the dig key with a fast item can starve
-a greataxe down to 0.35× its damage; and the same ungated PvP path hands
-out rage per punch *packet* rather than per landed hit, which is 60 rage
-a second. WP38 was re-scoped on 2026-08-09 to fix the cause rather than
-the three symptoms. The two-handed rule is built and
+revert if the owner disagrees with the reading behind it. The melee path's three measured
+defects (ungated PvP punches stacking with the auto-attack, the
+winner-takes-all swing clock, rage per punch packet) are closed by
+WP38's redesign — merged 2026-08-09, and like the rest of that package
+not yet verified in-game. The two-handed rule is built and
 tested but **dormant**: no item can enter the offhand until WP14, so
 neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea

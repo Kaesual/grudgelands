@@ -162,7 +162,7 @@ game (not a mod pack), written in Lua.
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
       **Not runtime tested**
-- [ ] **Swing timing and skill timing become independent** (WP38, decided
+- [x] **Swing timing and skill timing become independent** (WP38, decided
       2026-08-09): no skill restricts how fast you swing, damage is
       proportional with a remainder accumulator so short swings never
       round to nothing, and every skill is the ordinary weapon attack
