@@ -25,6 +25,13 @@ local gcd_expiry = {} -- player name -> expiry (us time) of the global cooldown
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
+-- Skill-name line (classes.md §2c) and the wield watcher that feeds it
+-- (WP38 T3). The watcher keeps the last noticed wielded stack per player:
+-- the index alone is not the item — a same-index content swap has to raise
+-- `dirty` or it reads as "unchanged".
+local skillname_huds = {} -- player name -> {id = hud id, token = n}
+local wield_watch = {} -- player name -> {index = hotbar index, item = name}
+local dirty = {} -- player name -> true (inventory action since last pass)
 
 -- Global cooldown across all abilities of a class (classes.md core
 -- principles): turns button mashing into a rotation. Deliberately NOT
@@ -203,6 +210,85 @@ function grug_abilities.flash(player, msg)
 			p:hud_change(r.id, "text", "")
 		end
 	end)
+end
+
+--
+-- Skill-name HUD and the wield watcher (WP38 T3, classes.md §2c). The
+-- engine has no callback for a wield change, so the watcher polls it per
+-- globalstep (cost model documented above the globalstep). The name line
+-- answers "which skill is this?" at the moment the player asks it; it is
+-- deliberately the neutral white of the resource line, not the error
+-- flash's red.
+--
+
+local function show_skill_name(player, text)
+	local name = player:get_player_name()
+	local rec = skillname_huds[name]
+	if not rec then
+		return
+	end
+	rec.token = rec.token + 1
+	local token = rec.token
+	player:hud_change(rec.id, "text", text)
+	core.after(1.5, function()
+		local p = core.get_player_by_name(name)
+		local r = skillname_huds[name]
+		if p and r and r.token == token then
+			p:hud_change(r.id, "text", "")
+		end
+	end)
+end
+
+-- Any player inventory action (signature: player, action, inventory,
+-- inventory_info) marks the wield slot possibly changed. Not filtered: the
+-- filter would have to read the inventory to decide, and a spurious flag
+-- costs exactly one item-name read on the next step — filtering would pay
+-- the read once per action anyway, plus the branches to skip the rest.
+core.register_on_player_inventory_action(function(player)
+	dirty[player:get_player_name()] = true
+end)
+
+-- `repeating` lives in the auto-repeat section below; forward-declared so
+-- the watcher sees the LOCAL, not an undeclared global (strict.lua).
+local repeating
+local function watch_wield()
+	for _, player in ipairs(core.get_connected_players()) do
+		local name = player:get_player_name()
+		local rec = wield_watch[name]
+		local idx = player:get_wield_index()
+		if not rec then
+			-- Join already initialises (below); this is the belt-and-braces
+			-- first sight: record without any feedback.
+			dirty[name] = nil
+			wield_watch[name] = {
+				index = idx,
+				item = player:get_wielded_item():get_name(),
+			}
+		elseif rec.index ~= idx or dirty[name] then
+			dirty[name] = nil
+			-- The one inventory read of the change path, and the read that
+			-- makes a same-index content swap visible.
+			local item = player:get_wielded_item():get_name()
+			wield_watch[name] = {index = idx, item = item}
+			if item == rec.item then
+				-- Dirty from an unrelated action (bag rearranging): the
+				-- wielded stack is untouched, nothing to do.
+			elseif item_defs[item] == nil then
+				-- Not an ability item: the loop follows the selected item
+				-- (classes.md §2b) — switching to a pick STOPS it, with the
+				-- same text as the manual toggle-off.
+				local running = repeating[name]
+				if running then
+					grug_abilities.stop_repeat(player)
+					grug_abilities.flash(player, running.name .. " off.")
+				end
+			else
+				-- An ability item was selected: name it. The loop is left
+				-- running — re-arming it on the selected skill is WP38 T5.
+				show_skill_name(player, item_defs[item].name)
+			end
+		end
+	end
 end
 
 --
@@ -389,7 +475,7 @@ end
 -- when the next swing is due — are all of that.
 --
 
-local repeating = {} -- player name -> ability def of the running loop
+repeating = {} -- player name -> ability def of the running loop (forward-declared above)
 local repeat_due = {} -- player name -> us time the last armed swing was DUE at
 
 -- How much of a LATE swing the loop may reclaim, in seconds.
@@ -1237,7 +1323,23 @@ core.register_globalstep(function(dtime)
 	--     attacking, against a 90 ms step budget.
 	-- The rule stands for passes whose work does not scale down to nothing on
 	-- an idle server; this one does, and it is the throttle that would cost.
+	--
+	-- The wield watcher also runs on every step, and for a correctness
+	-- reason rather than a precision one: switching the hotbar to a pick is
+	-- a COMBAT STOP CONDITION (classes.md §2b) and must bite within one
+	-- step, not within the 0.5 s window the ticker below gates on — a
+	-- throttled watcher would keep the player auto-attacking from the
+	-- weapon slot for up to half a second after the hotbar changed. Its
+	-- cost model: per step, one core.get_connected_players() list, and per
+	-- connected player one get_wield_index() call plus an int compare —
+	-- nothing allocated and no inventory read while nothing changed.
+	-- `dirty` (set by any player inventory action) forces exactly one
+	-- get_wielded_item() on the next step, which is also the read that
+	-- sees a same-index content swap: an index is not the item. It is
+	-- deliberately not folded into the 0.5 s body below, which already
+	-- iterates the players — throttling is the point.
 	run_repeat_tick()
+	watch_wield()
 	acc = acc + dtime
 	if acc < 0.5 then
 		return
@@ -1338,9 +1440,24 @@ core.register_on_joinplayer(function(player)
 		number = 0xff4444,
 		text = "",
 	})}
+	skillname_huds[name] = {token = 0, id = player:hud_add({
+		type = "text",
+		position = {x = 0.5, y = 1},
+		offset = {x = 0, y = -70},
+		alignment = {x = 0, y = 0},
+		number = 0xffffff,
+		text = "",
+	})}
 	rage[name] = 0
 	refill_mana(player)
 	sync_kit(player)
+	-- Watcher baseline AFTER the kit sync, so the snapshot is the post-grant
+	-- wielded slot. Recording is feedback-free by design: nothing changed,
+	-- so no "Strike" popup on login.
+	wield_watch[name] = {
+		index = player:get_wield_index(),
+		item = player:get_wielded_item():get_name(),
+	}
 	hud_update(player)
 end)
 
@@ -1376,6 +1493,9 @@ core.register_on_leaveplayer(function(player)
 	slot_cache[name] = nil
 	resource_huds[name] = nil
 	flash_huds[name] = nil
+	skillname_huds[name] = nil
+	wield_watch[name] = nil
+	dirty[name] = nil
 end)
 
 -- Mana pool grows with Int on level up: clamp/refresh the HUD (no refill).
