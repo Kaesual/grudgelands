@@ -16,12 +16,9 @@ local item_defs = {} -- item name -> ability def
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
 -- player name -> {ability id -> {expiry = us time, duration = seconds}}. The
--- DURATION is stored per cast, not looked up from the def: an ability may
--- compute its cooldown at cast time (def.cooldown_for -- the auto-attack's
--- cooldown is the equipped weapon's full_punch_interval, E2), and the wear
+-- duration is stored per cast, not looked up from the def, because the wear
 -- ticker needs the value THIS cast used to draw a fraction of it.
 local cooldowns = {}
-local gcd_expiry = {} -- player name -> expiry (us time) of the global cooldown
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
@@ -32,19 +29,6 @@ local flash_huds = {} -- player name -> {id = hud id, token = n}
 local skillname_huds = {} -- player name -> {id = hud id, token = n}
 local wield_watch = {} -- player name -> {index = hotbar index, item = name}
 local dirty = {} -- player name -> true (inventory action since last pass)
-
--- Global cooldown across all abilities of a class (classes.md core
--- principles): turns button mashing into a rotation. Deliberately NOT
--- displayed via item wear — 1 s of wear flicker on every kit item would
--- multiply inventory re-sends for zero information (AGENTS performance
--- rules); try_cast just gates silently.
---
--- `def.off_gcd` takes an ability out of it entirely — it neither waits for a
--- running GCD nor starts one. Exactly one ability may want that and it is the
--- auto-attack (weapon-slot design E2): a 1 s GCD would cap a 0.7 s dagger at
--- 1.0 s and make attack speed a dead stat, and a swing starting a GCD would
--- lock the class kit out for as long as the player keeps attacking.
-grug_abilities.GCD = 1.0
 
 -- Soft target lock (classes.md core principles): the last punched/pointed
 -- enemy or ally stays the implicit target this long; abilities fall back
@@ -106,6 +90,20 @@ local function affordable(player, cost)
 	local name = player:get_player_name()
 	return (not cost.mana or (mana[name] or 0) >= cost.mana)
 		and (not cost.rage or (rage[name] or 0) >= cost.rage)
+end
+
+-- kits.lua (separate chunk) reads the def behind an item name and pays
+-- proc costs through these three; the locals stay private.
+function grug_abilities.ability_of_item(itemname)
+	return item_defs[itemname]
+end
+
+function grug_abilities.can_afford(player, cost)
+	return affordable(player, cost)
+end
+
+function grug_abilities.pay(player, cost)
+	spend(player, cost)
 end
 
 --
@@ -298,8 +296,8 @@ end
 --
 
 function grug_abilities.register_ability(def)
-	assert(def.id and def.cast and def.cooldown,
-		"incomplete ability definition")
+	assert(def.id and (def.kind == "swing" or def.kind == "cast"),
+		"ability needs kind = \"swing\" or \"cast\"")
 	-- Class ability or universal one, never both (weapon-slot design E1). A
 	-- universal ability has NO class at all -- it is granted on join whatever
 	-- the character is, because class selection happens after the
@@ -307,6 +305,21 @@ function grug_abilities.register_ability(def)
 	-- with no way to fight back.
 	assert((def.class ~= nil) ~= (def.universal == true),
 		"an ability needs either a class or universal = true")
+	-- Kind-dependent shape (classes.md §2b): a CAST skill is a discrete
+	-- action with a cast function and a cooldown; a SWING skill's click IS
+	-- a weapon swing — it has no cast and no cooldown, only an optional
+	-- charge timer and an optional proc_swing (defined in kits.lua).
+	if def.kind == "cast" then
+		assert(def.cast and def.cooldown ~= nil,
+			"a cast ability needs cast and cooldown")
+		assert(def.charge == nil,
+			"charge timers belong to swing abilities")
+	else
+		assert(not def.cast and def.cooldown == nil and def.off_gcd == nil,
+			"swing abilities have no cast/cooldown — the swing IS the cast")
+		assert(def.charge == nil or def.charge > 0,
+			"charge must be seconds > 0")
+	end
 	def.cost = def.cost or {}
 	-- Which equipment slot's item this ability wears and (from T4 on) swings
 	-- (weapon-slot design C1). "weapon" is the default and every shipped
@@ -333,11 +346,15 @@ function grug_abilities.register_ability(def)
 	local owner_line = class_def and class_def.name or "every class"
 	local cost_line = def.cost.mana and (def.cost.mana .. " mana")
 		or def.cost.rage and (def.cost.rage .. " rage") or "free"
-	-- def.cooldown_text is what an ability with a PER-CAST cooldown says
-	-- instead of a number (the auto-attack's is its weapon's swing time).
-	local cd_line = def.cooldown_text
-		or (def.cooldown > 0 and (def.cooldown .. " s cooldown"))
-		or "no cooldown"
+	-- Timing line: swing skills show their CHARGE (classes.md §2b), cast
+	-- skills their cooldown. The old per-cast text flag is gone with WP38.
+	local cd_line
+	if def.kind == "swing" then
+		cd_line = def.charge and (def.charge .. " s charge") or "no charge"
+	else
+		cd_line = (def.cooldown > 0 and (def.cooldown .. " s cooldown"))
+			or "no cooldown"
+	end
 	local itemname = "grug_abilities:" .. def.id
 	item_defs[itemname] = def
 
@@ -410,23 +427,12 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 end)
 
 --
--- Cooldowns. Three public calls because the auto-attack's swing loop lives in
--- kits.lua (a separate chunk) and drives the very same clock the manual cast
--- does: one timer per ability, whether the swing came from a click or from
--- the repeat loop.
+-- Cooldowns. Two public calls for the repeat loop in kits.lua (a separate
+-- chunk), which drives the very same clock the manual cast does: one timer
+-- per ability, whether the swing came from a click or from the repeat loop.
+-- The duration is passed in per call — the cast computes what THIS cast
+-- earns (def.cooldown), the swing loop what its swing earned.
 --
-
--- The cooldown THIS cast starts, in seconds. `def.cooldown` is the fixed
--- value and the documentation default; `def.cooldown_for(player, def)` is the
--- per-cast one (weapon-slot design E2: the auto-attack's cooldown is the
--- equipped weapon's full_punch_interval, read fresh on every swing, which is
--- what makes a weapon swap change the cadence from the next swing on).
-function grug_abilities.cooldown_for(player, def)
-	if def.cooldown_for then
-		return def.cooldown_for(player, def) or def.cooldown
-	end
-	return def.cooldown
-end
 
 -- Is this ability off cooldown for this player right now?
 function grug_abilities.ready(player, id)
@@ -437,14 +443,7 @@ end
 
 -- Start (or restart) an ability's cooldown. `duration` <= 0 is "no cooldown"
 -- and stores nothing at all, so a free ability never enters the ticker.
---
--- `def.no_cooldown_display` suppresses the wear bar (E2's third point) and is
--- what makes a continuously swinging ability affordable: the ticker writes up
--- to 2 inventory updates per second per player while a cooldown runs, and
--- every inventory write re-sends the whole list to the client — for an
--- auto-attack that would be continuous for every player in combat. Same
--- rationale as the GCD's deliberate invisibility above; the swing timer is
--- not worth a packet per 500 ms.
+-- Every remaining user is a cast skill and displays its wear bar.
 function grug_abilities.arm_cooldown(player, def, duration)
 	if not duration or duration <= 0 then
 		return
@@ -455,22 +454,67 @@ function grug_abilities.arm_cooldown(player, def, duration)
 		expiry = core.get_us_time() + duration * 1e6,
 		duration = duration,
 	}
-	if def.no_cooldown_display then
-		return
-	end
 	wear_steps[name] = wear_steps[name] or {}
 	wear_steps[name][def.id] = WEAR_STEPS
 	set_item_wear(player, def.id, 65534)
 end
 
 --
--- Auto-repeat, a.k.a. the toggle (weapon-slot design E3). The first cast of
--- such an ability starts it, the next one stops it, and in between the loop
--- below re-casts it at the ability's own cadence.
+-- Skill charge timers (classes.md §2b, WP38 T5). Every swing skill charges
+-- on its own timer, and the timer runs ALWAYS — including while the skill
+-- is not selected (a timestamp needs no ticking): several skills come up
+-- during a fight and are spent in consecutive swings. Charges do not stack
+-- (one maximum), a full charge never decays, the start state is CHARGED
+-- (join/grant/class switch = no record = ready), and the ONLY reset is a
+-- fired proc (kits.lua). Runtime-only, never persisted.
+--
+
+local charges = {} -- player name -> {ability id -> ready_at us time}
+
+-- A def WITHOUT def.charge is always ready (Mighty Blow: limited by its
+-- resource alone). An absent record means charged (the join/grant state).
+function grug_abilities.charge_ready(player, def)
+	if not def.charge then
+		return true
+	end
+	local per_player = charges[player:get_player_name()]
+	return core.get_us_time() >= ((per_player and per_player[def.id]) or 0)
+end
+
+-- The one reset: a fired proc starts the timer over.
+function grug_abilities.reset_charge(player, def)
+	if not def.charge then
+		return
+	end
+	local name = player:get_player_name()
+	charges[name] = charges[name] or {}
+	charges[name][def.id] = core.get_us_time() + def.charge * 1e6
+end
+
+-- 0..1, for the charge bar (T6 drives the wear bar with it).
+function grug_abilities.charge_fraction(player, def)
+	if not def.charge then
+		return 1
+	end
+	local per_player = charges[player:get_player_name()]
+	local ready_at = (per_player and per_player[def.id]) or 0
+	local remaining = (ready_at - core.get_us_time()) / 1e6
+	if remaining <= 0 then
+		return 1
+	end
+	return 1 - remaining / def.charge
+end
+
+--
+-- The melee auto-attack loop (classes.md §2b). Any swing skill starts or
+-- toggles it; the proc identity is the live selected item — melee_swing reads
+-- it every swing — and the def in `repeating` is toggle identity only. Cast
+-- skills are unaffected: they arm their cooldown and are never looped.
+-- (Weapon-slot design E3's repeat_swing toggle is the history of this loop.)
 --
 -- The loop is deliberately not a core.after chain: it re-fetches the player
 -- by name every tick (an ObjectRef does not survive a disconnect), it drives
--- an ability whose interval CHANGES underneath it (weapon swap), and it has
+-- a swing whose interval CHANGES underneath it (weapon swap), and it has
 -- to be stoppable from six different places. Two tables — who is swinging and
 -- when the next swing is due — are all of that.
 --
@@ -505,11 +549,11 @@ local repeat_due = {} -- player name -> us time the last armed swing was DUE at
 -- guard below guards).
 local SWING_CATCHUP = 0.1
 
--- Starts (or restarts) the loop for `def`. Public, so it validates: without
--- this an unregistered def, or one without a `repeat_swing`, would throw from
--- inside run_repeat_tick. The registration check is not decoration either:
--- arm_cooldown files the record under `def.id` and the wear ticker looks that
--- id back up in `registered`.
+-- Starts (or restarts) the loop for `def` after a click's swing, with `fpi`
+-- the interval that swing earned: the click's immediate swing already
+-- happened, so the next loop swing is one interval out. Public, so it
+-- validates: without this an unregistered def would throw from inside
+-- run_repeat_tick.
 --
 -- The validation LOGS AND REFUSES rather than asserting (review LOW C). A
 -- LuaError raised from a mod callback does not stay local to that callback: it
@@ -519,20 +563,22 @@ local SWING_CATCHUP = 0.1
 -- the server down. For a guard whose whole point is that it should be
 -- unreachable, killing everyone's session is the worst available outcome:
 -- refusing to start a broken loop costs one player one ability.
-function grug_abilities.start_repeat(player, def)
+function grug_abilities.start_repeat(player, def, fpi)
 	if type(def) ~= "table" or grug_abilities.registered[def.id] ~= def then
 		core.log("error", "[grug_abilities] start_repeat called with something" ..
 			" that is not a registered ability definition -- no loop started")
 		return
 	end
-	if type(def.repeat_swing) ~= "function" then
+	if def.kind ~= "swing" then
 		core.log("error", "[grug_abilities] ability \"" .. tostring(def.id) ..
-			"\" has no repeat_swing -- no loop started")
+			"\" is not a swing ability -- no loop started")
 		return
 	end
 	local name = player:get_player_name()
+	-- Toggle identity only — the swing itself comes from melee_swing, which
+	-- reads the SELECTED skill live every swing (classes.md §2b).
 	repeating[name] = def
-	repeat_due[name] = nil -- a fresh toggle carries nothing from the last one
+	repeat_due[name] = core.get_us_time() + fpi * 1e6
 end
 
 -- Stops a running loop. With `def`, only that ability's loop is stopped (a
@@ -555,10 +601,13 @@ function grug_abilities.is_repeating(player, def)
 	return running ~= nil and (def == nil or running == def)
 end
 
--- Arms the next swing of a repeating ability, carrying the remainder of the
--- current one (see SWING_CATCHUP). `cooldown` is what the swing earned; what is
--- actually armed is that minus however late this swing was, capped.
-local function arm_repeat(player, def, cooldown)
+-- Arms the next swing of the loop, carrying the remainder of the current
+-- one (see SWING_CATCHUP). `cooldown` is the interval the swing earned; what
+-- is actually armed is that minus however late this swing was, capped. It
+-- writes ONLY repeat_due — the loop no longer touches the cooldown table at
+-- all (WP38): swing skills display their CHARGE (T6), cast skills their
+-- cooldown, and the loop's cadence is repeat_due alone.
+local function arm_repeat(player, cooldown)
 	local name = player:get_player_name()
 	local now = core.get_us_time()
 	local due = repeat_due[name]
@@ -574,18 +623,22 @@ local function arm_repeat(player, def, cooldown)
 	end
 	local duration = cooldown - late
 	repeat_due[name] = now + duration * 1e6
-	grug_abilities.arm_cooldown(player, def, duration)
 end
 
 -- One pass over the running loops, once per globalstep.
 --
--- `def.repeat_swing(player, def)` answers one of two things:
---   * a POSITIVE number — it swung; that is the cooldown the swing earned,
+-- `grug_abilities.melee_swing(player, nil)` answers one of two things:
+--   * a POSITIVE number — it swung; that is the interval the swing earned,
 --   * `nil` plus an optional message — STOP, which is where target dead / out
---     of range / out of LOS arrive, since the ability re-validates every swing.
+--     of range / out of LOS arrive, since melee_swing re-validates every
+--     swing.
 -- The former `false` answer ("declined, the shared swing clock is held") is
 -- gone with WP38 — the clock was deleted, the Strike now always swings when
 -- it has a target (kits.lua).
+--
+-- The loop is the generic melee auto-attack loop (classes.md §2b):
+-- `repeating[name]`'s def is the toggle identity ONLY — what actually swings
+-- is the live selected skill, read by melee_swing every pass.
 --
 -- The pass deliberately has NO accumulator of its own. One at 0.1 s used to
 -- coarsen the swing grid from `dtime` to ceil(0.1 / dtime) * dtime — 0.18 s at
@@ -601,9 +654,9 @@ local function run_repeat_tick()
 			-- stale player name, whatever a future caller forgets.
 			repeating[name] = nil
 			repeat_due[name] = nil
-		elseif grug_abilities.ready(player, def.id) then
-			local cooldown, stop_msg = def.repeat_swing(player, def)
-			if cooldown == nil then
+		elseif core.get_us_time() >= (repeat_due[name] or 0) then
+			local fpi, stop_msg = grug_abilities.melee_swing(player, nil)
+			if fpi == nil then
 				-- STOP. Tested for explicitly and BEFORE the guard below, which
 				-- would otherwise swallow it: `nil` is not a positive number
 				-- either, and an ordinary "the target died" would have been
@@ -613,13 +666,13 @@ local function run_repeat_tick()
 				if stop_msg then
 					grug_abilities.flash(player, stop_msg)
 				end
-			elseif type(cooldown) ~= "number" or cooldown <= 0 then
-				-- A repeating ability whose cooldown comes back 0 (or anything
-				-- but a positive number) stores no record at all, so `ready` is
+			elseif type(fpi) ~= "number" or fpi <= 0 then
+				-- A swing whose interval comes back 0 (or anything but a
+				-- positive number) stores no record at all, so the gate is
 				-- instantly true again and the loop degenerates into one swing
-				-- per globalstep. The Strike cannot reach this — swing_stats
+				-- per globalstep. melee_swing cannot reach this — swing_stats
 				-- clamps a non-positive full_punch_interval — so this is a
-				-- guard for the NEXT repeating ability.
+				-- guard for the NEXT swing source.
 				--
 				-- It logs and STOPS the loop instead of asserting (review
 				-- LOW C). This runs inside a registered globalstep, and a
@@ -633,14 +686,14 @@ local function run_repeat_tick()
 				-- message on every PASSING call: Lua evaluates the second
 				-- argument eagerly, so the concatenation ran once per swing per
 				-- player. This branch builds it only when it fires.)
-				core.log("error", "[grug_abilities] repeat_swing of ability \"" ..
-					tostring(def.id) .. "\" returned a non-positive cooldown (" ..
-					tostring(cooldown) .. ") -- loop stopped for player \"" ..
+				core.log("error", "[grug_abilities] melee_swing of ability \"" ..
+					tostring(def.id) .. "\" returned a non-positive interval (" ..
+					tostring(fpi) .. ") -- loop stopped for player \"" ..
 					name .. "\"")
 				repeating[name] = nil
 				repeat_due[name] = nil
 			else
-				arm_repeat(player, def, cooldown)
+				arm_repeat(player, fpi)
 			end
 		end
 	end
@@ -665,13 +718,33 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 			grug_classes.registered_classes[def.class].name .. ".")
 		return
 	end
-	local name = user:get_player_name()
-	local now = core.get_us_time()
-	-- Global cooldown: silent gate (mashing during the GCD is normal, a
-	-- flash per blocked click would be pure noise).
-	if not def.off_gcd and gcd_expiry[name] and now < gcd_expiry[name] then
+	-- The swing/cast fork IS the toggle (classes.md §2b, WP38). The T3
+	-- watcher never touches `repeating`, and melee_swing reads the SELECTED
+	-- skill live every swing — so selecting another swing skill mid-fight
+	-- re-arms the proc with zero interruption, and the first CLICK on it only
+	-- updates the toggle identity (+ target refresh). Only a click on the
+	-- swing skill the loop already counts as stops it: "second click on the
+	-- same slot stops."
+	if def.kind == "swing" then
+		if grug_abilities.is_repeating(user) then
+			-- Loop already running: re-arm ONLY (toggle identity + target
+			-- refresh from the click), NO extra swing — click spam must not
+			-- be a second damage stream (classes.md §2b).
+			repeating[user:get_player_name()] = def
+			grug_abilities.refresh_melee_target(user, pointed_thing)
+			return
+		end
+		local fpi, err = grug_abilities.melee_swing(user, pointed_thing)
+		if fpi == nil then
+			grug_abilities.flash(user, err or "Invalid target.")
+			return
+		end
+		grug_abilities.start_repeat(user, def, fpi)
 		return
 	end
+	-- Cast skills: ready check, affordable check, cast, spend, arm the
+	-- cooldown. No GCD anywhere (classes.md core principles, WP38).
+	local name = user:get_player_name()
 	cooldowns[name] = cooldowns[name] or {}
 	if not grug_abilities.ready(user, def.id) then
 		grug_abilities.flash(user, def.name .. " is not ready.")
@@ -683,21 +756,16 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
-	-- cooldown, no GCD. def is passed through for the target-lock helpers
-	-- (range checks). There is only ever ONE cooldown to arm: the cast
-	-- succeeds, so it earns cooldown_for() — the former third return value
-	-- ("this cast earned 0", the Strike's toggle when the shared melee clock
-	-- refused the first swing) died with that clock in WP38.
+	-- cooldown. def is passed through for the target-lock helpers
+	-- (range checks). The cast succeeded, so it arms the one cooldown it
+	-- earned; a swing skill's charge reset is the proc's job in kits.lua.
 	local ok, err = def.cast(user, pointed_thing, def)
 	if not ok then
 		grug_abilities.flash(user, err or "Invalid target.")
 		return
 	end
 	spend(user, def.cost)
-	if not def.off_gcd then
-		gcd_expiry[name] = core.get_us_time() + grug_abilities.GCD * 1e6
-	end
-	grug_abilities.arm_cooldown(user, def, grug_abilities.cooldown_for(user, def))
+	grug_abilities.arm_cooldown(user, def, def.cooldown)
 end
 
 --
@@ -728,8 +796,8 @@ local ORB_BACKDROP_ALPHA = 150
 -- The skin token: what a stack has to say about itself so a sync can decide, in
 -- ONE string compare, that it is already correct. Load-bearing, not polish --
 -- every inventory write re-sends the whole list to the client, which is why the
--- cooldown-wear path above is so stingy and why the GCD is not displayed at all
--- (D2/2). Without it, dragging any item would rewrite four stacks.
+-- cooldown-wear path above is so stingy (D2/2). Without it, dragging any item
+-- would rewrite four stacks.
 --
 -- Shape: "<version>|<colour>|<inventory source>|<wield source>", or the empty
 -- string for "no skin" (which is also what an untouched stack answers, so a
@@ -1127,11 +1195,13 @@ local function sync_kit(player)
 	local name = player:get_player_name()
 	-- Join, class pick and class SWITCH all land here, and a class switch can
 	-- happen mid-fight: whatever was auto-attacking a moment ago has just had
-	-- its cooldowns wiped and its items re-granted, so the loop stops with
-	-- them (E3 — no loop may survive a purge/re-grant pass).
+	-- its cooldowns and charges wiped and its items re-granted, so the loop
+	-- stops with them (E3 — no loop may survive a purge/re-grant pass).
+	-- Wiping the charges makes the new kit start fully charged: no record
+	-- IS the charged state (see the charge timers section).
 	grug_abilities.stop_repeat(player)
 	cooldowns[name] = {}
-	gcd_expiry[name] = nil
+	charges[name] = {}
 	wear_steps[name] = {}
 	slot_cache[name] = {}
 	local source_of = skin_source_cache(player)
@@ -1484,23 +1554,16 @@ core.register_globalstep(function(dtime)
 			wear_steps[name] = steps
 			for id, rec in pairs(cds) do
 				local remaining = (rec.expiry - now) / 1e6
-				-- An ability that does not display its cooldown (E2: the
-				-- auto-attack) touches the inventory NOWHERE in this loop --
-				-- not for a step change and not for the reset at the end.
-				-- A wear write costs a full inventory re-send, and this
-				-- ability's cooldown restarts every 0.7-1.4 s for as long as
-				-- the player is in combat.
-				local display = not grug_abilities.registered[id].no_cooldown_display
+				-- Every remaining cooldown user is a cast skill and displays
+				-- its wear bar. A wear write costs a full inventory re-send,
+				-- which is why the step quantization above exists.
 				if remaining <= 0 then
 					cds[id] = nil
 					steps[id] = nil
-					if display then
-						set_item_wear(player, id, 0)
-					end
-				elseif display then
-					-- The duration of THIS cast, not def.cooldown: a per-cast
-					-- cooldown (def.cooldown_for) has no fixed number to
-					-- divide by.
+					set_item_wear(player, id, 0)
+				else
+					-- The duration of THIS cast (stored in the record), not
+					-- def.cooldown.
 					local frac = remaining / rec.duration
 					local step = math.max(1,
 						math.min(WEAR_STEPS, math.ceil(frac * WEAR_STEPS)))
@@ -1584,7 +1647,7 @@ core.register_on_leaveplayer(function(player)
 	rage[name] = nil
 	repeat_due[name] = nil
 	cooldowns[name] = nil
-	gcd_expiry[name] = nil
+	charges[name] = nil
 	targets[name] = nil
 	wear_steps[name] = nil
 	slot_cache[name] = nil
