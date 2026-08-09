@@ -382,10 +382,14 @@ end
 -- slot indices are cached (no full-list scan per tick) and the wear bar is
 -- quantized to WEAR_STEPS — a write happens only when the visible step
 -- changes, not every tick.
-local WEAR_STEPS = 12
+-- 32 since WP38 T6 (classes.md §2b): the bar's resolution is set by the
+-- TICKER (one shared 0.5 s globalstep), not by WEAR_STEPS — set WEAR_STEPS
+-- to 32 so the quantizer is never the binding constraint.
+local WEAR_STEPS = 32
 
 local slot_cache = {} -- player name -> {ability id -> main list index}
 local wear_steps = {} -- player name -> {ability id -> last written step}
+local charge_steps = {} -- player name -> {ability id -> last written charge step}
 
 local function set_item_wear(player, ability_id, wear)
 	local inv = player:get_inventory()
@@ -481,7 +485,10 @@ function grug_abilities.charge_ready(player, def)
 	return core.get_us_time() >= ((per_player and per_player[def.id]) or 0)
 end
 
--- The one reset: a fired proc starts the timer over.
+-- The one reset: a fired proc starts the timer over. Also restarts the
+-- charge bar immediately — an empty bar under the icon from the swing on,
+-- instead of up to 0.5 s later when the ticker next looks. One inventory
+-- write per proc, and procs are rare: worth it.
 function grug_abilities.reset_charge(player, def)
 	if not def.charge then
 		return
@@ -489,6 +496,9 @@ function grug_abilities.reset_charge(player, def)
 	local name = player:get_player_name()
 	charges[name] = charges[name] or {}
 	charges[name][def.id] = core.get_us_time() + def.charge * 1e6
+	charge_steps[name] = charge_steps[name] or {}
+	charge_steps[name][def.id] = 0
+	set_item_wear(player, def.id, 65534)
 end
 
 -- 0..1, for the charge bar (T6 drives the wear bar with it).
@@ -1017,6 +1027,26 @@ local function apply_skin(stack, def, src)
 	return true
 end
 
+-- Wear bar params for CHARGING skills (classes.md §2b), applied like the
+-- skin: compare first, write once, or not at all. There is no getter for
+-- wear bar params, so the token is the compare — every inventory write
+-- re-sends the list, and a newly granted item must not spend a second
+-- write on the ramp once the sync pass established it.
+local function apply_charge_bar(stack, def)
+	if not def.charge then
+		return false
+	end
+	local meta = stack:get_meta()
+	if meta:get_string("grug_charge_bar") == "1" then
+		return false
+	end
+	meta:set_wear_bar_params({wear_color = {blend = "linear",
+		color_stops = {[0.0] = "#ff0000", [0.5] = "#ffff00",
+		[1.0] = "#00ff00"}}})
+	meta:set_string("grug_charge_bar", "1")
+	return true
+end
+
 -- Resolve each hand at most once per pass, and only when a stack actually asks
 -- for it. The entry is the {inv, wield} source pair, so one hand is read once
 -- even though two images come out of it.
@@ -1203,6 +1233,7 @@ local function sync_kit(player)
 	cooldowns[name] = {}
 	charges[name] = {}
 	wear_steps[name] = {}
+	charge_steps[name] = {}
 	slot_cache[name] = {}
 	local source_of = skin_source_cache(player)
 	local inv = player:get_inventory()
@@ -1258,6 +1289,12 @@ local function sync_kit(player)
 						if apply_skin(stack, def, source_of(def)) then
 							changed = true
 						end
+						-- The charge bar ramp, same discipline (classes.md
+						-- §2b): the params either exist or not, and the
+						-- token answers that.
+						if apply_charge_bar(stack, def) then
+							changed = true
+						end
 						if changed then
 							inv:set_stack(listname, i, stack)
 						end
@@ -1278,6 +1315,9 @@ local function sync_kit(player)
 			-- must not spend one write appearing as an orb and a second one
 			-- turning into the weapon.
 			apply_skin(stack, def, source_of(def))
+			-- Charge bar ramp, same "before it reaches the inventory" rule:
+			-- a charging skill must never appear without its ramp.
+			apply_charge_bar(stack, def)
 			grant_at(inv, stack, index)
 		end
 	end
@@ -1575,6 +1615,34 @@ core.register_globalstep(function(dtime)
 				end
 			end
 		end
+		-- charge bars (classes.md §2b): wear = (1 - charge) * 65534,
+		-- quantized to WEAR_STEPS, written only when the visible step
+		-- changes; a full charge writes 0 ONCE (no bar = ready) and drops
+		-- the record. This iterates the REGISTRY, not the inventory — a
+		-- handful of defs (today exactly one) — and costs a few table
+		-- reads per player per tick.
+		local charge_recs = charge_steps[name]
+		if charge_recs then
+			for id, def in pairs(grug_abilities.registered) do
+				if def.kind == "swing" and def.charge then
+					local frac = grug_abilities.charge_fraction(player, def)
+					if frac >= 1 then
+						if charge_recs[id] then
+							charge_recs[id] = nil
+							set_item_wear(player, id, 0)
+						end
+					else
+						local step = math.max(0,
+							math.min(WEAR_STEPS, math.floor(frac * WEAR_STEPS)))
+						if step ~= charge_recs[id] then
+							charge_recs[id] = step
+							set_item_wear(player, id, math.floor(
+								(WEAR_STEPS - step) / WEAR_STEPS * 65534))
+						end
+					end
+				end
+			end
+		end
 	end
 end)
 
@@ -1650,6 +1718,7 @@ core.register_on_leaveplayer(function(player)
 	charges[name] = nil
 	targets[name] = nil
 	wear_steps[name] = nil
+	charge_steps[name] = nil
 	slot_cache[name] = nil
 	resource_huds[name] = nil
 	flash_huds[name] = nil
