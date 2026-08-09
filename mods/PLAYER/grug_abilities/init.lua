@@ -371,8 +371,24 @@ function grug_abilities.register_ability(def)
 			return itemstack -- ability items cannot be dropped
 		end,
 		on_use = function(itemstack, user, pointed_thing)
+			-- Loot pickup (classes.md core principles, WP38): an item with an
+			-- on_use makes the client send INTERACT_USE instead of a punch, so a
+			-- click on dropped loot never reached the item entity's on_punch.
+			-- Run the builtin item entity's own on_punch — the exact pickup path
+			-- a weapon punch takes (on_pickup callback, inventory add, entity
+			-- removal, item_entity.lua:325-347) — and do NOT cast.
+			-- Pointing is limited by this ability item's own range (up to 20 m
+			-- on ranged skills), so a long-range skill picks up loot from
+			-- further away than a sword — accepted, a convenience, not an
+			-- exploit.
+			if pointed_thing and pointed_thing.type == "object" then
+				local ent = pointed_thing.ref and pointed_thing.ref:get_luaentity()
+				if ent and ent.name == "__builtin:item" then
+					ent:on_punch(user)
+					return
+				end
+			end
 			grug_abilities.try_cast(user, def, pointed_thing)
-			return nil
 		end,
 	})
 end
