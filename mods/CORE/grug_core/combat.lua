@@ -554,6 +554,66 @@ function grug_core.melee_crit(player, damage, target)
 	return math.floor(damage * 1.5)
 end
 
+--
+-- Fractional melee remainder accumulator (combat_stats.md §2, WP38). The
+-- proportional-damage revision accepts sub-1 swings, and flooring each
+-- punch separately leaks the fraction forever — a 3-damage weapon at a 1 s
+-- interval would deal 3 DPS instead of the proportional 3.75. So fractions
+-- accumulate per player and are floored only when applied: the health
+-- subtraction and the death check run on the accumulated INTEGER, never on
+-- the raw fraction ("the rounding hole is closed by a remainder
+-- accumulator, never by a minimum").
+--
+-- One accumulator per player, holding a target object id and a remainder
+-- below 1; a punch on a DIFFERENT target resets the remainder to 0 first.
+-- Switching targets forfeits at most 0.999 damage — deliberate (that is
+-- what keeps this a single field instead of a per-target table) — so a
+-- target-guard player slapping a row of rabbits hands each of them the same
+-- full fresh accumulator, and nothing sharper than 1 HP is ever lost.
+--
+-- Target identity is `ObjectRef:get_guid()` (lua_api.md:9050): the player
+-- name for players, a unique collision-free string for entities, stable
+-- across reloads, so a remainder survives neither an object swap nor a mob
+-- respawn.
+--
+-- Runtime-only by design. A stale entry costs at most 0.999 damage of the
+-- NEXT punch, so a player who logs off mid-fight has no meaningful remainder
+-- to collect — the entry is dropped on leave, like the swing clock above.
+--
+-- Consumed by the api.lua GRUG PATCH (#22) on the cadence path (the
+-- accumulated integer doubles as the death-check gate there) and, later, by
+-- the PvP melee path (same pipeline, combat_stats.md §2).
+--
+
+local melee_remainder = {} -- player name -> {target = guid, remainder = [0,1)}
+
+-- Applies the fractional part of a melee hit against `target`. Returns the
+-- integer damage to subtract from the target's health: `remainder +
+-- raw_damage` floored, with the new remainder carried for the next punch.
+-- A non-positive raw hit returns 0 WITHOUT touching state. `raw_damage` is
+-- the mobs_redo damage after armor scaling and the crit roll.
+function grug_core.apply_accumulated_melee(player, target, raw_damage)
+	if raw_damage <= 0 then
+		return 0
+	end
+	local name = player:get_player_name()
+	local guid = target:get_guid()
+	local entry = melee_remainder[name]
+	if not entry or entry.target ~= guid then
+		-- Different target: reset first (at most 0.999 damage forfeited).
+		entry = {target = guid, remainder = 0}
+		melee_remainder[name] = entry
+	end
+	local total = entry.remainder + raw_damage
+	local applied = math.floor(total)
+	entry.remainder = total - applied
+	return applied
+end
+
+core.register_on_leaveplayer(function(player)
+	melee_remainder[player:get_player_name()] = nil
+end)
+
 -- True while an ability punch is running — lets the rage-on-hit hook skip
 -- ability hits (rage comes from auto-attacks only, classes.md §1) and the
 -- central dodge modifier skip the roll (abilities pre-roll it below).

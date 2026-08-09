@@ -352,8 +352,15 @@ function grug_mobs.register_mob(name, def)
 			grug_core.run_player_hit_mob(hitter, self, damage or 0)
 			-- Lethal? mobs_redo subtracts the damage right after this wrapper
 			-- returns (api.lua:2698ff), so this is the earliest — and only —
-			-- place where killer AND victim are both known.
-			local lethal = self.health - math.floor(damage or 0) <= 0
+			-- place where killer AND victim are both known. On the
+			-- accumulator path (api.lua GRUG PATCH #22, combat_stats.md §2)
+			-- the health subtraction uses the accumulated INTEGER, so the
+			-- lethal check must use the same number or kill credit/XP and
+			-- the rare-respawn timer fire one punch early/late. `nil`
+			-- (ability punches, immune_to) falls back to the old
+			-- expression — ability damage is already integer.
+			local applied = self.temp and self.temp.grug_applied
+			local lethal = self.health - (applied or math.floor(damage or 0)) <= 0
 			-- Named rare killed by a player: start its respawn timer
 			-- (rares.lua). Deliberately OUTSIDE the XP branch below — the
 			-- gray rule can zero the XP, the kill still counts.
