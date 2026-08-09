@@ -406,17 +406,17 @@ local repeat_due = {} -- player name -> us time the last armed swing was DUE at
 -- remainder, so the mean cadence is the weapon's interval exactly, at any step
 -- size.
 --
--- The clamp is what reconciles that with the OTHER rounding rule in this game.
--- grug_core's per-player swing clock (`accept_melee_swing`,
--- mods/CORE/grug_core/combat.lua:511) refuses two melee swings closer together
--- than `interval - SWING_SLACK`, with SWING_SLACK = 0.1 — and the Strike
--- consumes that very clock, which is what keeps it and the held-button punch
--- path from stacking into two damage streams. Reclaiming at most SWING_SLACK
--- guarantees the loop can never schedule a swing its own clock would then
--- refuse. **Keep this value <= grug_core's SWING_SLACK.** If the two ever
--- drift, the failure is benign and self-healing (a refused swing simply retries
--- on the next step) but it is a silent DPS loss, so they are documented as a
--- pair rather than derived — grug_core does not export its constant.
+-- The clamp is what bounds how much LATENESS one swing may reclaim. There is
+-- no shared melee clock any more (WP38, combat_stats.md §2 — the cadence gate
+-- and the per-player swing clock are deleted), so nothing outside this loop
+-- constrains the value; what it reconciles now is only the loop against
+-- itself: a swing that lands late (a busy server step, a lag spike) forgives
+-- up to SWING_CATCHUP of its lateness — and never more than half the
+-- interval, so a badly delayed swing cannot cascade into several swings
+-- firing back to back. An absurdly fast weapon is clamped into a
+-- non-positive duration by the half-interval rule alone (which would store
+-- no record at all and fire once per step — the very failure the cooldown
+-- guard below guards).
 local SWING_CATCHUP = 0.1
 
 -- Starts (or restarts) the loop for `def`. Public, so it validates: without
@@ -493,13 +493,13 @@ end
 
 -- One pass over the running loops, once per globalstep.
 --
--- `def.repeat_swing(player, def)` answers one of three things:
+-- `def.repeat_swing(player, def)` answers one of two things:
 --   * a POSITIVE number — it swung; that is the cooldown the swing earned,
---   * `false` — "not this step": it declined without stopping (the Strike's
---     shared swing clock is still held by a punch the player made with a
---     wielded tool), so nothing is armed and the loop retries next step,
 --   * `nil` plus an optional message — STOP, which is where target dead / out
 --     of range / out of LOS arrive, since the ability re-validates every swing.
+-- The former `false` answer ("declined, the shared swing clock is held") is
+-- gone with WP38 — the clock was deleted, the Strike now always swings when
+-- it has a target (kits.lua).
 --
 -- The pass deliberately has NO accumulator of its own. One at 0.1 s used to
 -- coarsen the swing grid from `dtime` to ceil(0.1 / dtime) * dtime — 0.18 s at
@@ -517,9 +517,7 @@ local function run_repeat_tick()
 			repeat_due[name] = nil
 		elseif grug_abilities.ready(player, def.id) then
 			local cooldown, stop_msg = def.repeat_swing(player, def)
-			if cooldown == false then
-				-- Declined, not stopped: retry on the next step.
-			elseif cooldown == nil then
+			if cooldown == nil then
 				-- STOP. Tested for explicitly and BEFORE the guard below, which
 				-- would otherwise swallow it: `nil` is not a positive number
 				-- either, and an ordinary "the target died" would have been
@@ -600,17 +598,11 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
 	-- cooldown, no GCD. def is passed through for the target-lock helpers
-	-- (range checks).
-	--
-	-- The THIRD return value is the cooldown this particular cast earned, and
-	-- it overrides cooldown_for() when it is present (review LOW D). It exists
-	-- for the one case a cast can succeed without doing its work: the
-	-- auto-attack's toggle turns on even when the shared melee clock refused
-	-- the swing, and charging that refusal a full swing interval delayed the
-	-- first real swing by one whole cadence — with the toggle's own cooldown
-	-- running, the loop could not "take the next legal swing" at all. `0` means
-	-- "arm nothing"; nil (every other ability) means "the usual".
-	local ok, err, cast_cooldown = def.cast(user, pointed_thing, def)
+	-- (range checks). There is only ever ONE cooldown to arm: the cast
+	-- succeeds, so it earns cooldown_for() — the former third return value
+	-- ("this cast earned 0", the Strike's toggle when the shared melee clock
+	-- refused the first swing) died with that clock in WP38.
+	local ok, err = def.cast(user, pointed_thing, def)
 	if not ok then
 		grug_abilities.flash(user, err or "Invalid target.")
 		return
@@ -619,10 +611,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if not def.off_gcd then
 		gcd_expiry[name] = core.get_us_time() + grug_abilities.GCD * 1e6
 	end
-	if cast_cooldown == nil then
-		cast_cooldown = grug_abilities.cooldown_for(user, def)
-	end
-	grug_abilities.arm_cooldown(user, def, cast_cooldown)
+	grug_abilities.arm_cooldown(user, def, grug_abilities.cooldown_for(user, def))
 end
 
 --
@@ -1146,28 +1135,50 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 end)
 
 --
--- Rage generation (classes.md §1): +12 per melee auto-attack hit dealt
--- (ability punches excluded via grug_core.in_ability_punch), +4 per hit
--- taken (+1 with the orc passive, world.md §7). Charge's +15 lives in the
--- ability itself. Punches also refresh the soft target lock ("last
--- punched enemy or ally").
+-- Rage generation (classes.md §1, WP38): +12 × clamp(tflp/fpi, 0, 1) per
+-- HELD-BUTTON melee punch, granted only when hit points actually came off
+-- the mob (never for the punch EVENT: while the dig key is held the
+-- callback fires once per punch packet, ≈5/s, so per-event rage would be
+-- 60/s — the exact defect combat_stats.md §2's "rage on damage that
+-- landed" rule exists to prevent), +4 per hit taken (+1 with the orc
+-- passive, world.md §7). Charge's +15 lives in the ability itself. Punches
+-- also refresh the soft target lock ("last punched enemy or ally"). Rage is
+-- fractional-capable already: the `rage` table holds doubles and the HUD
+-- floors.
 --
--- SINCE THE AUTO-ATTACK IS AN ABILITY (E1) the hooks below no longer see the
--- swing that classes.md §1 actually means: an ability punch sets
+-- "HP sank" is tested against the remainder accumulator's APPLIED integer:
+-- on the accumulator path the health subtraction right after this hook
+-- removes exactly `applied`, so `applied >= 1` and "hit points came off"
+-- are the same statement; on the non-accumulator path (immune_to, which
+-- SETS damage rather than scaling it) the subtraction removes floor(damage),
+-- so floor(damage) >= 1 — floors absolutely. Nothing else reaches the
+-- hook with a landed hit: a vendor NPC never reaches this wrapper at all
+-- (plain mobs:register_mob, no grug wrapper), an evading mob cancels the
+-- punch before it.
+--
+-- SINCE THE AUTO-ATTACK IS AN ABILITY (E1) the hooks below no longer see
+-- the swing that classes.md §1 actually means: an ability punch sets
 -- in_ability_punch and is skipped here by design (rage must not come from
--- Fireball). The Strike therefore grants its own +12 per LANDED hit, in
--- kits.lua, next to the damage it granted it for. Without that the Warrior's
--- whole resource economy would have stopped the day auto-attack became a
--- skill: Mighty Blow costs 25 rage and Hamstring 10, and the only remaining
--- income would have been +4 per hit TAKEN.
+-- Fireball). The Strike therefore grants its own FLAT +12 per LANDED loop
+-- swing, in kits.lua, next to the damage it granted it for — the loop
+-- swings once per weapon interval at full damage, so there is no fraction
+-- to multiply there. Without that the Warrior's whole resource economy
+-- would have stopped the day auto-attack became a skill: Mighty Blow costs
+-- 25 rage and Hamstring 10, and the only remaining income would have been
+-- +4 per hit TAKEN.
 --
 
-grug_core.register_on_player_hit_mob(function(player, mob_ent, damage)
+grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, fraction)
 	if mob_ent.object and (mob_ent.health or 0) > 0 then
 		grug_abilities.set_target(player, mob_ent.object, false)
 	end
-	if not grug_core.in_ability_punch and damage > 0 then
-		grug_abilities.add_rage(player, 12)
+	if grug_core.in_ability_punch then
+		return
+	end
+	local landed = (applied ~= nil and applied >= 1)
+		or (applied == nil and math.floor(damage or 0) >= 1)
+	if landed then
+		grug_abilities.add_rage(player, 12 * (fraction or 1))
 	end
 end)
 

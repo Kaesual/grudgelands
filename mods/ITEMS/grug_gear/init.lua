@@ -114,12 +114,13 @@ end
 --
 -- Verified against the §3.8 row: ilvl 3/10/20/30/40/50 -> 5/8/11/15/18/22.
 --
--- How the damage actually reaches a mob (mobs/api.lua on_punch, WP6 cadence
--- patch): fleshy damage + floor(Str/10), scaled by the mob's armor group,
--- then the auto-attack crit roll. `full_punch_interval` is the auto-attack
--- CADENCE GATE (grug_core.accept_melee_swing), not a damage scaler -- an
--- accepted swing always lands at full weapon damage. Those two fields are
--- therefore the whole contract; nothing else in tool_capabilities is read.
+-- How the damage actually reaches a mob (mobs/api.lua on_punch, WP38
+-- proportional melee): fleshy damage × clamp(tflp/fpi, 0, 1) + floor(Str/10),
+-- scaled by the mob's armor group, then the melee crit roll. The
+-- `full_punch_interval` is therefore BOTH the damage-scaler denominator and
+-- the swing time of the Strike loop, and `damage_groups.fleshy` is the
+-- strength of one full swing. Those two fields are the whole contract;
+-- nothing else in tool_capabilities is read.
 --
 
 local function dmg1h(ilvl)
