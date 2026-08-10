@@ -269,7 +269,7 @@ local strike_def = {
 	kind = "swing",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = "A full melee swing with your equipped weapon. Hold LMB against your soft target or click it directly; the shared weapon clock prevents click spam. Generates 12 rage when it lands.",
+	description = "A full melee swing with your equipped weapon. Hold LMB and keep a hostile in your crosshair; the shared weapon clock prevents click spam. Generates 12 rage when it lands.",
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
 	-- empty weapon slot the item falls back to this orb, which reads correctly
@@ -411,6 +411,10 @@ grug_abilities.register_ability({
 grug_projectiles.register("fireball", {
 	speed = 20,
 	max_distance = 20,
+	-- Normal native use arrives at roughly five inputs per second and a flight
+	-- lasts one second. Eight preserves that behavior while bounding a modified
+	-- client's zero-cooldown burst per owner/session.
+	active_limit = 8,
 	-- Distance expires after one second at the decided speed. The longer
 	-- lifetime is only a stalled/unloaded-motion safety guard.
 	lifetime = 2,

@@ -14,6 +14,7 @@ local debug_enabled_calls = 0
 local debug_due_calls = 0
 local debug_log_calls = 0
 local fail_add_entity = false
+local fail_velocity = false
 
 vector = {}
 function vector.new(x, y, z)
@@ -63,6 +64,8 @@ core = {
 	register_on_dieplayer = function(fn) callbacks.die[#callbacks.die + 1] = fn end,
 	register_on_leaveplayer = function(fn) callbacks.leave[#callbacks.leave + 1] = fn end,
 	register_entity = function(_, def) registered_entity = def end,
+	register_on_mods_loaded = function() end,
+	register_globalstep = function() end,
 	get_player_by_name = function(name) return online[name] end,
 	get_node_or_nil = function(pos)
 		return pos and pos.name and {name = pos.name} or nil
@@ -90,6 +93,10 @@ core = {
 	log = function(level, message)
 		logs[#logs + 1] = {level = level, message = message}
 	end,
+	after = function() end,
+	add_particle = function() end,
+	add_particlespawner = function() end,
+	get_objects_inside_radius = function() return {} end,
 }
 
 function core.add_entity(pos, _, staticdata)
@@ -104,7 +111,10 @@ function core.add_entity(pos, _, staticdata)
 	function object:get_pos()
 		return not self.removed and self.pos or nil
 	end
-	function object:set_velocity(value) self.velocity = vector.new(value) end
+	function object:set_velocity(value)
+		if fail_velocity then error("intentional velocity failure") end
+		self.velocity = vector.new(value)
+	end
 	function object:set_acceleration(value) self.acceleration = vector.new(value) end
 	function object:set_properties(value) self.properties = value end
 	function object:is_player() return false end
@@ -158,6 +168,7 @@ local function player(name, faction)
 	function obj:get_player_name() return self.name end
 	function obj:get_hp() return self.hp end
 	function obj:get_pos() return self.pos end
+	function obj:get_look_dir() return {x=1,y=0,z=0} end
 	function obj:get_luaentity() return nil end
 	return obj
 end
@@ -374,6 +385,113 @@ for name, covered in pairs(matrix) do
 	assert(covered, "missing projectile matrix case: " .. name)
 end
 
+-- Optional active limit: exactly eight per owner/session, checked before
+-- add_entity. Every terminal/deactivation edge reopens exactly one slot.
+grug_projectiles.register("limited", {
+	speed = 20, max_distance = 20, lifetime = 2, active_limit = 8,
+	on_hit = function() end,
+})
+local limited_hit_count = 0
+grug_projectiles.register("limited_hit", {
+	speed = 20, max_distance = 20, lifetime = 2, active_limit = 1,
+	on_hit = function() limited_hit_count = limited_hit_count + 1 end,
+})
+grug_projectiles.register("limited_error", {
+	speed = 20, max_distance = 20, lifetime = 2, active_limit = 1,
+	on_hit = function() error("intentional limited callback failure") end,
+})
+local limited = player("limited", "accord")
+online.limited = limited
+run_callbacks(callbacks.join, limited)
+
+-- The distinct hit settlement path releases before both successful and
+-- failing callbacks; a callback-triggered spawn could therefore use the slot.
+local limited_hit = spawn("limited_hit", {owner=limited})
+assert(grug_projectiles.spawn("limited_hit", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+assert(step(limited_hit, {x=3,y=0,z=0}, 0.15,
+	{point(hostile, 2)}) == 1 and limited_hit_count == 1)
+limited_hit = spawn("limited_hit", {owner=limited})
+registered_entity.on_deactivate(limited_hit, false)
+
+local limited_error = spawn("limited_error", {owner=limited})
+assert(step(limited_error, {x=3,y=0,z=0}, 0.15,
+	{point(hostile, 2)}) == 1)
+limited_error = spawn("limited_error", {owner=limited})
+registered_entity.on_deactivate(limited_error, false)
+
+local limited_shots = {}
+for i = 1, 8 do
+	limited_shots[i] = spawn("limited", {owner=limited})
+end
+local entity_count = #entities
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+assert(#entities == entity_count, "limit must reject before add_entity")
+
+registered_entity.on_deactivate(limited_shots[1], false)
+limited_shots[1] = spawn("limited", {owner=limited})
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+assert(step(limited_shots[2], {x=25,y=0,z=0}, 1.25, {}) == 1)
+limited_shots[2] = spawn("limited", {owner=limited})
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+
+-- add_entity and set_velocity failures release their reservation. A fresh
+-- session still accepts the exact full maximum after both failures.
+run_callbacks(callbacks.leave, limited)
+limited = player("limited", "accord")
+online.limited = limited
+run_callbacks(callbacks.join, limited)
+fail_add_entity = true
+entity_count = #entities
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false and #entities == entity_count)
+fail_add_entity = false
+fail_velocity = true
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+assert(entities[#entities].object.removed)
+fail_velocity = false
+for i = 1, 8 do
+	limited_shots[i] = spawn("limited", {owner=limited})
+end
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+
+-- Same-name reconnect and death/respawn each get a distinct empty budget;
+-- old projectile deactivation cannot decrement the replacement session.
+local old_limited = limited
+local old_session_shot = limited_shots[1]
+run_callbacks(callbacks.leave, old_limited)
+limited = player("limited", "accord")
+online.limited = limited
+run_callbacks(callbacks.join, limited)
+for i = 1, 8 do limited_shots[i] = spawn("limited", {owner=limited}) end
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+registered_entity.on_deactivate(old_session_shot, false)
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false, "old-session deactivate changed new-session count")
+limited.hp = 0
+run_callbacks(callbacks.die, limited)
+limited.hp = 20
+run_callbacks(callbacks.respawn, limited)
+for i = 1, 8 do limited_shots[i] = spawn("limited", {owner=limited}) end
+assert(grug_projectiles.spawn("limited", {
+	owner=limited, origin={x=0,y=0,z=0}, direction={x=1,y=0,z=0},
+}) == false)
+
 -- Owner leave/death/session replacement all remove before any collision ray.
 shot = spawn("test")
 run_callbacks(callbacks.leave, owner)
@@ -445,6 +563,85 @@ shot = spawn("test")
 registered_entity.on_deactivate(shot, false)
 step(shot, {x = 3, y = 0, z = 0}, 0.15, {point(hostile, 2)})
 assert(hit_count == 1)
+
+-- Combined real-code seam: load the actual kits.lua Fireball registration and
+-- cast callback onto this actual foundation. No projectile/collision logic is
+-- copied into the test.
+local abilities = {}
+grug_abilities = {
+	register_ability = function(def) abilities[def.id] = def end,
+	get_range = function(_, def) return def.range or 4 end,
+	set_target = function() end,
+	get_target = function() return nil end,
+	add_rage = function() end,
+}
+local spell_bonus = 4
+grug_classes = {
+	get_spell_power_bonus = function() return spell_bonus end,
+	get_race_perk = function() return nil end,
+}
+grug_mobs = {slow=function() end, root=function() end}
+local real_fireball_damage = {}
+grug_core.combat_eye_pos = function(caster)
+	return vector.add(caster:get_pos(), {x=0,y=1.5,z=0})
+end
+grug_core.deal_ability_damage = function(caster, target, amount)
+	real_fireball_damage[#real_fireball_damage + 1] = {
+		caster=caster, target=target, amount=amount,
+	}
+end
+grug_core.combat_ray = function()
+	error("Fireball must not acquire a cast-time target")
+end
+grug_core.mark_in_combat = function() end
+grug_core.heal_player = function() end
+grug_core.set_absorb = function() end
+grug_core.taunt = function() end
+
+dofile(repo .. "/mods/PLAYER/grug_abilities/kits.lua")
+local fireball = abilities.fireball
+assert(fireball and fireball.cost.mana == 8)
+
+local fire_owner = player("fire_owner", "accord")
+online.fire_owner = fire_owner
+run_callbacks(callbacks.join, fire_owner)
+local fire_ally = mob("test:fire_ally", "accord", 20, {x=1,y=0,z=0})
+local fire_enemy = mob("test:fire_enemy", "throng", 20, {x=3,y=0,z=0})
+local function fire_point(obj, distance)
+	return {type="object", ref=obj,
+		intersection_point={x=distance,y=1.5,z=0}}
+end
+local function fire_node(name, distance)
+	return {type="node", under={name=name},
+		intersection_point={x=distance,y=1.5,z=0}}
+end
+
+assert(fireball.cast(fire_owner) == true)
+local real_shot = entities[#entities]
+assert(real_shot._grug_projectile_id == "fireball")
+assert(real_shot._grug_data.damage == 10)
+assert(real_shot.object.velocity.x == 20)
+spell_bonus = 100 -- the in-flight payload must remain the cast-time snapshot
+assert(step(real_shot, {x=4,y=1.5,z=0}, 0.2,
+	{fire_point(fire_ally, 1), fire_point(fire_enemy, 3)}) == 1)
+assert(#real_fireball_damage == 1)
+assert(real_fireball_damage[1].target == fire_enemy
+	and real_fireball_damage[1].amount == 10)
+registered_entity.on_step(real_shot, 1)
+registered_entity.on_deactivate(real_shot, true)
+assert(#real_fireball_damage == 1)
+
+assert(fireball.cast(fire_owner) == true)
+real_shot = entities[#entities]
+assert(step(real_shot, {x=4,y=1.5,z=0}, 0.2,
+	{fire_point(fire_enemy, 3), fire_node("stone", 2)}) == 1)
+assert(real_shot.object.removed and #real_fireball_damage == 1)
+
+assert(fireball.cast(fire_owner) == true)
+real_shot = entities[#entities]
+assert(step(real_shot, {x=25,y=1.5,z=0}, 1.25, {}) == 1)
+assert(real_shot.object.removed and #real_fireball_damage == 1)
+assert(math.abs(ray_segments[#ray_segments].destination.x - 20) < 0.000001)
 
 -- add_entity failure is a clean spawn refusal. Disabled diagnostics reached
 -- exactly their cheap enabled lookup, never due/log. Also keep detail-string

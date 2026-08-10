@@ -232,7 +232,8 @@ end
 dofile(repo .. "/mods/PLAYER/grug_abilities/init.lua")
 assert(projectile_defs.fireball and projectile_defs.fireball.speed == 20)
 assert(projectile_defs.fireball.max_distance == 20
-	and projectile_defs.fireball.lifetime > 1)
+	and projectile_defs.fireball.lifetime > 1
+	and projectile_defs.fireball.active_limit == 8)
 
 local function join(obj)
 	for _, callback in ipairs(callbacks.join) do callback(obj) end

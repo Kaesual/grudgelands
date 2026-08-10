@@ -7,10 +7,55 @@ local ENTITY_NAME = "grug_projectiles:projectile"
 local definitions = {}
 local sessions = {} -- player name -> runtime identity
 local next_session = 0
+local active_counts = {} -- session -> projectile id -> count
+local active_tokens = {} -- token -> {session, projectile_id}
+local session_tokens = {} -- session -> token -> true
+local next_active_token = 0
 
 dofile(modpath .. "/collision.lua")
 
+local function release_active(token)
+	local rec = token and active_tokens[token]
+	if not rec then
+		return
+	end
+	active_tokens[token] = nil
+	local tokens = session_tokens[rec.session]
+	if tokens then
+		tokens[token] = nil
+	end
+	local counts = active_counts[rec.session]
+	if counts then
+		counts[rec.projectile_id] = math.max(0,
+			(counts[rec.projectile_id] or 0) - 1)
+	end
+end
+
+local function clear_active_session(session)
+	local tokens = session and session_tokens[session]
+	if tokens then
+		for token in pairs(tokens) do
+			active_tokens[token] = nil
+		end
+	end
+	session_tokens[session] = nil
+	active_counts[session] = nil
+end
+
+local function clear_session(player)
+	local name = player:get_player_name()
+	local session = sessions[name]
+	sessions[name] = nil
+	if session then
+		clear_active_session(session)
+	end
+end
+
 local function new_session(player)
+	-- Respawn replaces the combat identity even if a foreign callback skipped
+	-- the ordinary death edge. Old same-name projectiles can never consume the
+	-- new session's limit.
+	clear_session(player)
 	next_session = next_session + 1
 	sessions[player:get_player_name()] = next_session
 end
@@ -18,12 +63,33 @@ end
 core.register_on_joinplayer(new_session)
 core.register_on_respawnplayer(new_session)
 
-local function clear_session(player)
-	sessions[player:get_player_name()] = nil
-end
-
 core.register_on_dieplayer(clear_session)
 core.register_on_leaveplayer(clear_session)
+
+local function reserve_active(session, projectile_id, limit)
+	if not limit then
+		return nil, true
+	end
+	local counts = active_counts[session]
+	if not counts then
+		counts = {}
+		active_counts[session] = counts
+	end
+	if (counts[projectile_id] or 0) >= limit then
+		return nil, false
+	end
+	next_active_token = next_active_token + 1
+	local token = next_active_token
+	counts[projectile_id] = (counts[projectile_id] or 0) + 1
+	active_tokens[token] = {session = session, projectile_id = projectile_id}
+	local tokens = session_tokens[session]
+	if not tokens then
+		tokens = {}
+		session_tokens[session] = tokens
+	end
+	tokens[token] = true
+	return token, true
+end
 
 local function serializable_copy(value, seen)
 	local kind = type(value)
@@ -93,6 +159,9 @@ function grug_projectiles.register(id, def)
 		"projectile max_distance must be positive")
 	assert(type(def.lifetime) == "number" and def.lifetime > 0,
 		"projectile lifetime must be positive")
+	assert(def.active_limit == nil or (type(def.active_limit) == "number"
+		and def.active_limit > 0 and def.active_limit % 1 == 0),
+		"projectile active_limit must be a positive integer")
 	definitions[id] = def
 end
 
@@ -130,6 +199,14 @@ function grug_projectiles.spawn(id, params)
 			or type(lifetime) ~= "number" or lifetime <= 0 then
 		return false
 	end
+	-- Reserve before add_entity so a modified client cannot interleave a ninth
+	-- spawn. The opaque token makes every failure/deactivation release
+	-- idempotent, including add_entity returning nil after on_activate removed.
+	local active_token, active = reserve_active(owner_session, id,
+		def.active_limit)
+	if not active then
+		return false
+	end
 	local payload = {
 		projectile_id = id,
 		owner_name = owner_name,
@@ -137,9 +214,11 @@ function grug_projectiles.spawn(id, params)
 		max_distance = max_distance,
 		lifetime = lifetime,
 		data = data,
+		active_token = active_token,
 	}
 	local object = core.add_entity(origin, ENTITY_NAME, core.serialize(payload))
 	if not object then
+		release_active(active_token)
 		return false
 	end
 	local velocity = vector.multiply(direction, speed)
@@ -149,6 +228,7 @@ function grug_projectiles.spawn(id, params)
 			vector.new(params.acceleration))
 	end
 	if not ok then
+		release_active(active_token)
 		object:remove()
 		return false
 	end
@@ -156,11 +236,18 @@ function grug_projectiles.spawn(id, params)
 	return true
 end
 
+local function release_projectile(self)
+	local token = self._grug_active_token
+	self._grug_active_token = nil
+	release_active(token)
+end
+
 local function remove_projectile(self, event, value_a, value_b)
 	if self._grug_settled then
 		return
 	end
 	self._grug_settled = true
+	release_projectile(self)
 	debug_event(self._grug_owner_name, event, self._grug_projectile_id,
 		value_a, value_b)
 	self.object:remove()
@@ -173,6 +260,7 @@ local function settle_hit(self, owner, hit, def)
 	-- Settle before any consumer callback. A lethal damage callback may remove
 	-- the target synchronously; nothing below reads it afterwards.
 	self._grug_settled = true
+	release_projectile(self)
 	debug_event(self._grug_owner_name, "hit", self._grug_projectile_id,
 		self._grug_travelled + hit.distance)
 	local ok, err = pcall(def.on_hit, owner, hit.target,
@@ -198,6 +286,8 @@ core.register_entity(ENTITY_NAME, {
 
 	on_activate = function(self, staticdata)
 		local payload = core.deserialize(staticdata)
+		self._grug_active_token = type(payload) == "table"
+			and payload.active_token or nil
 		local def = type(payload) == "table"
 			and definitions[payload.projectile_id] or nil
 		if not def or type(payload.owner_name) ~= "string"
@@ -206,6 +296,7 @@ core.register_entity(ENTITY_NAME, {
 				or type(payload.lifetime) ~= "number"
 				or type(payload.data) ~= "table" then
 			self._grug_settled = true
+			release_projectile(self)
 			self.object:remove()
 			return
 		end
@@ -307,5 +398,6 @@ core.register_entity(ENTITY_NAME, {
 	-- is marked before callbacks/removal, so unload/remove cannot apply a hit.
 	on_deactivate = function(self)
 		self._grug_settled = true
+		release_projectile(self)
 	end,
 })
