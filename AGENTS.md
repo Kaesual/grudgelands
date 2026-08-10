@@ -255,41 +255,55 @@ Details + line numbers in [docs/research/](docs/research/).
   exactly one Character-page refresh consumer; normal equip, class change
   and join add no direct duplicate refresh (a genuine nested write may still
   earn the second pass).
-  **Auto-attack is the melee loop ability** (`classes.md` §2b; WP35 made
-  it an ability, WP38 made it the proc chassis): an item with `on_use`
-  makes the client send `INTERACT_USE` instead of a punch, so a slot-fed
-  auto-attack is only reachable as an ability. Since WP38 every ability
-  is `kind = "swing"` (Strike, Mighty Blow, Hamstring) or `"cast"`
-  (everything else), asserted at registration. The swing click IS the
-  ordinary weapon attack; a landed loop/click swing with the SELECTED,
-  charged, affordable swing skill procs (cost paid at the proc, charge
-  reset; unaffordable = no proc, charge kept, no warning). Charge timers
-  are runtime timestamps (`grug_abilities.charge_ready/reset_charge/
-  charge_fraction`), tick always, one charge max, no decay, charged at
-  join/grant — and the **GCD is deleted** (per-skill charges and
-  resource costs replaced it; Fireball is mana-limited only). The loop
-  (`grug_abilities.melee_swing` in kits.lua, cadence in `repeat_due`
-  only, never the cooldown table) reads the selected skill live every
-  swing: a hotbar switch re-arms the proc with zero interruption, a
-  click while running is re-arm/target-refresh only (never a second
-  damage stream), a second click on the same slot stops, and the wield
-  watcher (`watch_wield`, per-step `get_wield_index` plus a dirty flag
-  from inventory actions) stops the loop within one step when a
-  non-ability item is selected. **`repeat_due` OUTLIVES the loop** —
-  it is the loop cadence and the swing clock in one, reset only on
-  respawn/class change/disconnect. Clearing it on toggle-off made
-  click-stop-click a full-damage swing per click pair with no rate
-  bound at all (~4×). "No punch is discarded" is a statement about the
-  HELD path, whose `tflp` scaling is DPS-exact at any click rate; a
-  loop swing deals a FULL swing and needs the clock. **Melee damage is
-  proportional**
-  (combat_stats.md §2): the held-button path deals `(weapon damage +
-  Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
+  **Swing skills use native LMB input** (`classes.md` §2b; corrected
+  2026-08-10 after WP38): exactly Strike, Mighty Blow and Hamstring have
+  `kind = "swing"` and **no `on_use`**. Luanti therefore owns object-punch
+  input, held repeat and first-person animation; releasing LMB means no later
+  attacks. Cast skills keep `on_use`, cooldowns and the explicit dropped-loot
+  pickup bridge. On kit/equipment sync every swing ItemStack mirrors the
+  equipped slot's fleshy damage and `full_punch_interval` via per-stack
+  toolcaps, with empty `groupcaps`, `max_drop_level = 0` and
+  `punch_attack_uses = 0`; empty slot = registered hand baseline, never a
+  wielded fallback. Compare tokens prevent inventory churn and the charge bar
+  remains independent ItemMeta. The three hand groupcaps plus the engine's
+  independent `dig_immediate` node-group entry in `pointabilities.nodes` are
+  `"blocking"` on swing definitions, so held LMB keeps native object punches
+  but cannot continue into digging after a mob dies.
+  **Melee damage is proportional** (combat_stats.md §2): native input deals
+  `(weapon damage + Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
   and fractions ride the per-player remainder accumulator
-  `grug_core.apply_accumulated_melee` (keyed by target `get_guid()`,
-  reset on target switch, max forfeit 0.999; PvP optionally banks the
-  matching pending swing fraction for commit-time rage) — the 2026-08-07
-  cadence gate and the 2026-08-08 shared melee clock are deleted, not repaired.
+  (keyed by target `get_guid()`, reset on target switch, max forfeit 0.999;
+  PvP optionally banks the matching pending swing fraction for commit-time
+  rage). mobs_redo uses `prepare_accumulated_melee` before `do_punch` only for
+  lethal bookkeeping and commits after `do_punch`/CMI acceptance, so cancelled
+  damage cannot leak into the next punch. The cadence gate, shared clock and
+  server auto-repeat/toggle loop are deleted.
+  **Proc cadence is a separate bounded [0,1) swing-progress accumulator**:
+  target or concrete equipped-weapon changes reset it; selection among swing
+  skills does not. The selected skill is read live at one completion per
+  packet. A charged, affordable proc pays/resets only after acceptance; evade,
+  immunity, PvP refusal, dodge and full absorb leave it armed. Mighty Blow's
+  replacement delta is folded into that same native punch before its one
+  crit/mitigation/dodge path — never a recursive bonus punch. Charge timers
+  tick independently (one max, no decay, charged at join/grant), and there is
+  no GCD. A bank-only PvP completion is frozen beside the damage remainder:
+  its resource is reserved (excluded from affordability and rage decay, but
+  not paid/display-subtracted) and the later integer commit settles that exact
+  proc once. HP loss pays/resets/runs it; dodge/full absorb releases the
+  reservation and leaves charge armed, while the accepted progress stays
+  consumed. Target/concrete-weapon reset discards damage remainder, rage
+  credit and pending proc together. Player target leave/death invalidates every
+  attacker's Core bank synchronously; death clears remaining ability-only swing
+  progress next step after the killing punch settles (the committed proc was
+  already moved into that punch's local preview before `set_hp`). Same name/GUID
+  on reconnect is still a new ObjectRef.
+  `grug_core.invalidate_melee_target` clears every attacker's core remainder
+  and pending rage credit, including tool/fist-only state. The existing 0.5 s
+  watcher is a fallback for invalid pending PvP ObjectRefs and catches
+  non-swing wield boundaries; mob progress resets by target identity on the
+  next swing. Cast item `on_use` clears before loot/validity/affordability and
+  `try_cast` repeats the idempotent clear for direct callers, while switching
+  among swing skills never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
@@ -309,16 +323,17 @@ Details + line numbers in [docs/research/](docs/research/).
   `return true` always suppresses hostile engine damage. PvP fractions bank
   with the damage remainder and pay `12 × committed_pending_fraction` only
   when a commit actually lowers HP; bank-only packets pay nothing, target
-  switches discard both banks, and dodge/full absorb consume the credit for
+  switches discard both banks and any pending proc, and dodge/full absorb consume the credit for
   0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
   totalling 1 pay +12 independent of weapon damage, without the old 60 rage/s
   packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players keeps coming from builtin off the engine's damage
-  argument (deferred, MVP). What the held-button path still lacks vs.
-  the loop: the damage SOURCE (wielded stack, not the slot), it wears
-  that stack, no ability threat multiplier, no target-lock swing.
+  argument (deferred, MVP). Tools/fists keep their wielded source and wear;
+  swing ability items use the slot source, do not wear and can carry the
+  selected proc's threat multiplier. Soft target lock never synthesizes a
+  melee swing.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -384,7 +399,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **28 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **31 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack
@@ -399,8 +414,8 @@ Details + line numbers in [docs/research/](docs/research/).
     when the accumulated hit lands (`subtract >= 1`), and the
     feedback/subtraction split moves hit sound/blood/flash in front of
     the `damage >= 1` gate while the health subtraction and
-    `check_for_death` run on the accumulated integer (bridged to the
-    do_punch wrapper as `self.temp.grug_applied` for its lethal check).
+    `check_for_death` run on the accumulated integer (passed directly to the
+    post-cancellation accepted-hit hook for its lethal check).
     The WP38 review added two more: `grug_fraction` (the punch's
     clamp(tflp/fpi, 0, 1), computed once from the normalized `tflp`) and
     the wear gate that spends a swing's wear only when
@@ -409,7 +424,14 @@ Details + line numbers in [docs/research/](docs/research/).
     `punch_attack_uses` adjustments, so a wear-free punch never gets an id or
     consumes the accumulator. A newly assigned id is written back once even before wear is
     due; a broken stack's runtime entry and every leaving player's table are
-    cleared.
+    cleared. The 2026-08-10 native-input correction added two sites: proc
+    preparation folds a completed skill's replacement delta into the same
+    punch before crit, and accepted commit after `do_punch`/CMI is the only
+    place that mutates the damage remainder and proc state. The review added
+    the 31st site: `grug_mobs.accepted_player_punch` runs provocation, loot
+    tag, threat/rage and lethal rare/XP work only after both `do_punch` and CMI
+    accept, before health subtraction; the melee-crit visual is deferred to the
+    same boundary, so neither cancel path has irreversible hit side effects.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

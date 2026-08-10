@@ -156,21 +156,25 @@ game (not a mod pack), written in Lua.
       every skill of its type — no fallback to whatever is in the hand.
       Every ability item wears the equipped weapon's skin on its own color
       orb (which retires the deferred "own ability icons"), and the held
-      attack button becomes a universal ability, **Strike**: off the global
-      cooldown, swinging at the weapon's own speed, toggled on and off
+      attack button becomes a universal ability, **Strike**, swinging at the
+      weapon's own speed (WP35's original toggle was replaced by native LMB
+      input in WP38's 2026-08-10 correction)
       (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
       **Not runtime tested**
-- [x] **Swing timing and skill timing become independent** (WP38, decided
-      2026-08-09): no skill restricts how fast you swing, damage is
+- [x] **Swing timing and skill timing become independent** (WP38, corrected
+      2026-08-10): swing items use Luanti's native click/hold punch and
+      animation; releasing LMB stops attacks. No skill restricts how fast you swing, damage is
       proportional with a remainder accumulator so short swings never
       round to nothing, and every skill is the ordinary weapon attack
       **plus** an effect that fires when its own charge is full — shown as
       a bar that fills red→yellow→green and vanishes when ready. That
       deletes the shared melee clock instead of repairing it, closes the
       ungated PvP punch, and **retires the 1 s global cooldown** of WP19:
-      per-skill charges and resource costs are the limiters now
+      per-skill charges and resource costs are the limiters now. A separate
+      fractional progress accumulator fires at most one selected proc per
+      completed landed swing
       (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
 
 ### 1.4 Mobs & combat

@@ -26,7 +26,7 @@ function grug_core.get_armor_percent(player)
 	return 0
 end
 
--- A held-button PvP punch applies armor to the FULL-swing equivalent before
+-- A native PvP melee punch applies armor to the FULL-swing equivalent before
 -- scaling it by the partial-swing fraction (combat_stats.md §2). Publish the
 -- exact player-armor formula here so that path and the central hp-change
 -- modifier cannot drift apart: clamp to 0..60%, and only round when armor is
@@ -169,7 +169,7 @@ end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
 -- melee damage = weapon damage + floor(Str/10)). Consumed by the
--- auto-attack patch in mobs/api.lua on_punch.
+-- native melee patch in mobs/api.lua on_punch.
 function grug_core.get_melee_bonus(player)
 	return 0
 end
@@ -445,8 +445,8 @@ function grug_core.taunt(mob_ent, player)
 end
 
 --
--- Player hit mob hook: fired by grug_mobs' do_punch wrapper for every player
--- punch that reaches a mob (rage generation, combat marking, threat).
+-- Player hit mob hook: fired by grug_mobs' accepted-player-hit seam after
+-- do_punch/CMI accept (rage generation, combat marking, threat).
 -- func(player, mob_ent, damage, applied, fraction)
 -- `applied` is the accumulated integer from the api.lua patch (combat_stats
 -- §2), nil on the ability-punch and immune_to paths. `fraction` is
@@ -462,9 +462,9 @@ end
 function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction)
 	grug_core.mark_in_combat(player)
 	-- THE ONE base-threat site. Every player hit on a mob passes through
-	-- here: auto-attacks go player -> object:punch -> grug_mobs' do_punch
-	-- wrapper -> here, and ability damage goes deal_ability_damage ->
-	-- object:punch -> the SAME wrapper -> here. Adding damage-as-threat in
+	-- here: native swings go player -> object:punch -> grug_mobs' accepted
+	-- hook -> here, and ability damage goes deal_ability_damage ->
+	-- object:punch -> the SAME hook -> here. Adding damage-as-threat in
 	-- deal_ability_damage as well would double-count every ability hit;
 	-- that call only adds the tank multiplier BONUS on top (see there).
 	-- Base threat stays the raw, possibly FRACTIONAL damage: threat is a
@@ -518,8 +518,8 @@ end
 
 -- Crit roll for a player melee punch (combat_stats.md §2): same ×1.5 and
 -- the same particle burst as ability crits above — player melee was the one
--- damage source that could never crit. `target` only supplies the particle
--- position. Returns the (possibly critical) damage.
+-- damage source that could never crit. Resolution is deliberately pure so a
+-- mobs_redo caller can defer the visual until do_punch and CMI accept.
 --
 -- Deliberately NOT floored here: on the proportional path (WP38) the
 -- remainder accumulator floors at application time, so flooring the crit
@@ -527,15 +527,17 @@ end
 -- pre-crit and the post-crit fraction have to ride the SAME accumulator.
 -- Only the plain ×1.5 is rolled; the `damage <= 0` guard below keeps an
 -- immunity-zeroed hit from rolling at all.
-function grug_core.melee_crit(player, damage, target)
+function grug_core.roll_melee_crit(player, damage)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
-		return damage
+		return damage, 1, false
 	end
-	local pos = target and target:get_pos()
+	return damage * 1.5, 1.5, true
+end
+
+function grug_core.emit_melee_crit(pos)
 	if pos then
 		crit_particles(pos)
 	end
-	return damage * 1.5
 end
 
 --
@@ -565,48 +567,180 @@ end
 -- to collect — the entry is dropped on leave like every other piece of this
 -- per-player combat state.
 --
--- Consumed by the api.lua GRUG PATCH (#22) on the player-melee path (the
--- accumulated integer doubles as the death-check gate there) and by the PvP
--- melee path (same pipeline, combat_stats.md §2).
+-- Consumed by the api.lua GRUG PATCH on the player-melee path (a previewed
+-- integer doubles as the death-check gate and commits only after acceptance)
+-- and by the PvP melee path (same pipeline, combat_stats.md §2).
 --
 
+local native_melee_prepare
+local native_melee_finish
 local melee_remainder = {}
--- player name -> {target = guid, remainder = [0,1), pending_fraction >= 0}
+-- player name -> {
+--   target = guid, remainder = [0,1), pending_fraction >= 0,
+--   pending_proc = opaque native-melee transaction or nil,
+-- }
 
--- Applies the fractional part of a melee hit against `target`. Returns the
--- integer damage to subtract from the target's health: `remainder +
--- raw_damage` floored, with the new remainder carried for the next punch.
--- `pending_fraction` is optional. PvP supplies the partial-swing fraction so
--- rage can be delayed until damage commits and the central modifier proves HP
--- was actually lost. The second return is the entire fraction banked since
--- the previous integer commit, cleared immediately at that commit. Mob callers
--- omit it and keep their original one-return behavior.
-function grug_core.apply_accumulated_melee(player, target, raw_damage,
+-- Damage remainder, rage credit and a deferred PvP proc are one transaction.
+-- The native-melee owner gets a cancellation callback so it can release a
+-- resource reservation without paying the cost or resetting the charge.
+local function discard_melee_entry(name, entry)
+	if entry and entry.pending_proc and native_melee_finish then
+		native_melee_finish(entry.pending_proc, {
+			settle_only = true,
+			cancelled = true,
+			landed = false,
+		})
+	end
+	melee_remainder[name] = nil
+end
+
+function grug_core.reset_accumulated_melee(player)
+	local name = player:get_player_name()
+	discard_melee_entry(name, melee_remainder[name])
+end
+
+-- A player GUID is the player name and therefore survives disconnect and
+-- respawn. Clear every attacker's transaction by TARGET, not only the target
+-- owner's ability state, so tool/fist damage remainder and pending rage credit
+-- cannot cross death or reconnect. Pending ability owners receive the same
+-- cancellation callback as an attacker-side reset.
+function grug_core.invalidate_melee_target(target)
+	local guid = target and target:get_guid()
+	if not guid then
+		return
+	end
+	for name, entry in pairs(melee_remainder) do
+		if entry.target == guid then
+			discard_melee_entry(name, entry)
+		end
+	end
+end
+
+-- Preview an accumulator update without committing its damage remainder.
+-- mobs_redo asks before `do_punch` because its wrapper needs the exact integer
+-- for lethal credit, but any truthy `do_punch` return cancels the hit. Mutating
+-- the accumulator at preview time would leak a cancelled Mighty Blow's bonus
+-- into the next punch. Target changes are the one immediate mutation: their
+-- old remainder is deliberately forfeited whether the new target accepts the
+-- punch or not (combat_stats.md §2).
+function grug_core.prepare_accumulated_melee(player, target, raw_damage,
 		pending_fraction)
 	local name = player:get_player_name()
 	local guid = target:get_guid()
 	local entry = melee_remainder[name]
 	if not entry or entry.target ~= guid then
-		-- Different target: damage remainder and pending rage credit are one
-		-- transaction and are both forfeited together.
-		entry = {target = guid, remainder = 0, pending_fraction = 0}
+		-- Different target: damage remainder, pending rage credit and deferred
+		-- proc are one transaction and are all forfeited together.
+		if entry then
+			grug_core.reset_accumulated_melee(player)
+		end
+		entry = {
+			target = guid,
+			remainder = 0,
+			pending_fraction = 0,
+			pending_proc = nil,
+		}
 		melee_remainder[name] = entry
 	end
 	if raw_damage <= 0 then
-		return 0, 0
+		return {
+			name = name,
+			entry = entry,
+			applied = 0,
+			committed_fraction = 0,
+			committed_proc = nil,
+			remainder = entry.remainder,
+			pending_fraction = entry.pending_fraction,
+			pending_proc = entry.pending_proc,
+		}
 	end
+	local next_pending = entry.pending_fraction
+	local next_proc = entry.pending_proc
 	if pending_fraction and pending_fraction > 0 then
-		entry.pending_fraction = entry.pending_fraction + pending_fraction
+		next_pending = next_pending + pending_fraction
 	end
 	local total = entry.remainder + raw_damage
 	local applied = math.floor(total)
-	entry.remainder = total - applied
+	local committed_fraction = 0
+	local committed_proc
 	if applied >= 1 then
-		local committed_fraction = entry.pending_fraction
-		entry.pending_fraction = 0
-		return applied, committed_fraction
+		committed_fraction = next_pending
+		next_pending = 0
+		committed_proc = next_proc
+		next_proc = nil
 	end
-	return 0, 0
+	return {
+		name = name,
+		entry = entry,
+		applied = applied,
+		committed_fraction = committed_fraction,
+		committed_proc = committed_proc,
+		remainder = total - applied,
+		pending_fraction = next_pending,
+		pending_proc = next_proc,
+	}
+end
+
+-- Attach one accepted bank-only PvP proc to the same transaction as the
+-- damage remainder. Exactly one may wait: while it does, the ability layer
+-- suppresses further proc arming but ordinary swing progress still advances.
+function grug_core.defer_accumulated_melee_proc(preview, pending_proc)
+	if not preview or preview.applied >= 1 or preview.pending_proc ~= nil
+			or pending_proc == nil then
+		return false
+	end
+	preview.pending_proc = pending_proc
+	return true
+end
+
+-- Commit a preview after the target has accepted the punch. The identity
+-- check protects against a nested punch replacing this player's accumulator
+-- before the outer callback resumes.
+function grug_core.commit_accumulated_melee(preview)
+	if not preview or melee_remainder[preview.name] ~= preview.entry then
+		return false
+	end
+	preview.entry.remainder = preview.remainder
+	preview.entry.pending_fraction = preview.pending_fraction
+	preview.entry.pending_proc = preview.pending_proc
+	return true
+end
+
+-- Convenience path for targets whose acceptance is already known (PvP).
+-- Returns the integer damage and the pending swing fraction committed with it.
+function grug_core.apply_accumulated_melee(player, target, raw_damage,
+		pending_fraction)
+	local preview = grug_core.prepare_accumulated_melee(player, target,
+		raw_damage, pending_fraction)
+	grug_core.commit_accumulated_melee(preview)
+	return preview.applied, preview.committed_fraction
+end
+
+-- One optional consumer owns native melee skill procs. grug_core is below the
+-- ability mod in the dependency graph, while vendored mobs_redo must not know
+-- about grug_abilities; this seam lets both mob and PvP punches use the same
+-- two-phase progress transaction without a reverse dependency.
+function grug_core.register_native_melee_handler(prepare, finish)
+	assert(native_melee_prepare == nil and native_melee_finish == nil,
+		"native melee handler already registered")
+	assert(type(prepare) == "function" and type(finish) == "function",
+		"native melee handler needs prepare and finish functions")
+	native_melee_prepare = prepare
+	native_melee_finish = finish
+end
+
+function grug_core.prepare_native_melee(player, target, fraction)
+	if native_melee_prepare then
+		return native_melee_prepare(player, target, fraction)
+	end
+	return nil
+end
+
+function grug_core.finish_native_melee(context, result)
+	if context and native_melee_finish then
+		return native_melee_finish(context, result or {})
+	end
+	return false
 end
 
 --
@@ -701,12 +835,12 @@ end
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	melee_remainder[name] = nil
+	grug_core.reset_accumulated_melee(player)
 	melee_wear_fraction[name] = nil
 end)
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip
--- ability hits (rage comes from auto-attacks only, classes.md §1) and the
+-- ability hits (rage comes from native melee swings only, classes.md §1) and the
 -- central dodge modifier skip the roll (abilities pre-roll it below).
 grug_core.in_ability_punch = false
 
@@ -765,7 +899,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		return 0
 	end
 	-- BONUS-ONLY threat site. The punch above already ran through grug_mobs'
-	-- do_punch wrapper -> run_player_hit_mob, which added the base threat
+	-- accepted hit hook -> run_player_hit_mob, which added the base threat
 	-- (= damage) exactly once. Adding `amount * threat_mult` here would
 	-- double-count the base for every ability, so only the extra factor of a
 	-- tank ability (×3 -> +2×damage) is added on top; ×1 adds nothing.

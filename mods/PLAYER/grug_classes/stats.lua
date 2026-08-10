@@ -72,8 +72,8 @@ end
 -- same pattern as grug_core.get_player_faction).
 grug_core.get_crit_chance = grug_classes.get_crit_chance
 grug_core.get_dodge_chance = grug_classes.get_dodge_chance
--- Auto-attack Strength bonus (combat_stats.md §2); read by the weapon-cadence
--- patch in mobs/api.lua on_punch.
+-- Native proportional melee Strength bonus (combat_stats.md §2); read by the
+-- player-melee patch in mobs/api.lua and the hostile-PvP handler.
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
 
 -- FIRST equipment-change consumer. grug_classes is a dependency of both

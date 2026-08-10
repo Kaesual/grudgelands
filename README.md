@@ -141,9 +141,10 @@ tiers behind a real fight — and *enemies* are everything else.
 - **MVP classes**: Warrior (rage), Mage and Priest (mana), 3–4 instant
   abilities each as hotbar items, plus a soft target lock. Talent trees add
   the rest.
-- **Skills never slow your swing** (decided 2026-08-09, WP38). Melee timing
-  and skill timing are two independent systems: you swing as fast or as
-  slow as you like and no punch is thrown away, while every melee skill is
+- **Skills never slow your swing** (corrected 2026-08-10, WP38). Swing
+  skills use Luanti's native click/hold punch and weapon animation; releasing
+  LMB stops immediately, and hold versus fast clicking has identical aggregate
+  DPS. Melee timing and skill timing are independent: every melee skill is
   the ordinary weapon attack **plus** an effect that fires when that
   skill's own charge is full — shown as a bar under the icon that fills
   red→yellow→green and disappears when the skill is ready. Rotation is the
@@ -154,8 +155,8 @@ tiers behind a real fight — and *enemies* are everything else.
   thing that decides what a skill hits for and what it looks like. Every
   ability shows your own sword, in the bar and in your hand, and swapping
   the weapon reskins all of them at once; an empty slot means bare fists,
-  never a blocked button. **Auto-attack is itself a skill**: one click
-  starts swinging at the weapon's own speed, a second one stops it. A
+  never a blocked button. **Strike is the universal swing skill**: click or
+  hold LMB for Luanti's native weapon-speed punch, and release stops it. A
   two-handed weapon costs you the offhand, so a greataxe and a carried
   torch are a choice between the two.
 - **Pace**: level 60 in ~10–20 hours. The endgame is the game. Death costs
@@ -264,7 +265,7 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 
 ## Current State
 
-*Last updated: 2026-08-09. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-10. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
@@ -303,17 +304,17 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   slots and bags (WP3, WP4, WP15, WP19). WP35 added the **weapon slot**:
   the item in it is the single source of a skill's damage and of its look,
   so every ability now shows your own sword instead of a colored orb and
-  no skill reads the hotbar any more — and the held attack button became a
-  universal ability, **Strike**, that swings at the weapon's own speed
-  until you switch it off. Two-handed weapons declare themselves here too,
+  no skill reads a hotbar weapon any more — and the held attack button became
+  a universal ability, **Strike**. Two-handed weapons declare themselves here too,
   though that rule stays dormant until there is something to put in the
   offhand. WP38 then split swing timing from skill
   timing: melee damage is proportional with a remainder accumulator (no
   swing ever rounds to nothing), every skill is the plain weapon attack
   plus an effect that fires when its own charge is full — the 1 s global
   cooldown is gone, retired for per-skill charges and resource costs —
-  the auto-attack loop follows whatever skill is selected (switching to
-  a pick stops it), PvP melee runs through the same dodge/armor pipeline
+  native held/click input drives all three swing skills with the equipped
+  weapon's speed and visible animation, proc progress follows the selected
+  skill without any server auto-attack loop, PvP melee runs through the same dodge/armor pipeline
   with rage on landed damage only, ability items pick up dropped loot,
   and empty equipment slots show ghost icons of their type.
 - **Money & vendors**: copper/silver/gold as one integer with a HUD
@@ -365,10 +366,12 @@ unblocked and built on 2026-08-08.)
 **Caveats:** the shipped work packages were runtime-tested on 2026-08-07
 (six findings on the WP1–WP19 pass, all fixed; WP7 passed without
 findings), **except WP25 (the material ladder), WP36 (the fix round),
-WP35 (the weapon slot) and WP38 (the proc model) — none of which has been
-runtime-tested at all**:
-they have only been reviewed and syntax-checked. WP36 and WP35 both
-merged on 2026-08-08. The second runtime test, on that same day, is
+WP35 (the weapon slot) and the current WP38 native-input correction**:
+those revisions have only been reviewed and syntax-checked. WP38's earlier
+proc/loop implementation **was** exercised by the user's runtime test; that
+test exposed the one-click repeated-damage and missing held-animation bug
+which the still-unverified native-input correction replaces. Both WP36 and
+WP35 merged on 2026-08-08. The second runtime test, on that same day, is
 what produced WP36 in the first place, and WP36's own fixes are
 therefore still unverified in-game. **Two design questions are open, not
 decided**: whether the jungle fringe should follow the deep jungle's new
@@ -377,8 +380,9 @@ band WP36 added on the Throng side, which is deliberately cheap to
 revert if the owner disagrees with the reading behind it. The melee path's three measured
 defects (ungated PvP punches stacking with the auto-attack, the
 winner-takes-all swing clock, rage per punch packet) are closed by
-WP38's redesign — merged 2026-08-09, and like the rest of that package
-not yet verified in-game. The two-handed rule is built and
+WP38's redesign. Its 2026-08-10 native-input correction also removes the
+invisible server toggle that looked like repeated bleeding after one click;
+this correction is not yet verified in-game. The two-handed rule is built and
 tested but **dormant**: no item can enter the offhand until WP14, so
 neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea

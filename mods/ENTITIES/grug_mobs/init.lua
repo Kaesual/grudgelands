@@ -59,13 +59,55 @@ local spawn_zones = {} -- mob name -> set of allowed zone names
 local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 
 -- Every mob registered through the wrapper below (entity name -> true).
--- Read per punch by the weapon-cadence GRUG PATCH in mobs/api.lua on_punch:
--- only OUR mobs use the auto-attack model (cadence gate, full damage per
--- accepted swing, Strength bonus, crit) — a vanilla mobs_redo mob keeps
--- vanilla behavior. A table lookup keyed on `self.name` costs nothing per
+-- Read per punch by the native-melee GRUG PATCH in mobs/api.lua on_punch:
+-- only OUR mobs use proportional slot-fed swing damage, Strength, crit and
+-- the accepted-hit seam — a vanilla mobs_redo mob keeps vanilla behavior.
+-- A table lookup keyed on `self.name` costs nothing per
 -- punch and — unlike the runtime-installed `_grug_*` entity fields — is
 -- already complete before the very first punch on a freshly activated mob.
 grug_mobs.registered_cadence = {}
+
+-- Formal accepted-hit hook called by the vendored on_punch path only AFTER
+-- both do_punch and CMI decline to cancel, but before health subtraction. All
+-- irreversible player-hit work lives here: a cancelled custom mob cannot be
+-- provoked/tagged, gain threat, award rage/XP or schedule a rare respawn.
+function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction,
+		crit_pos)
+	-- The multiplier was already resolved before the custom/CMI gates; only
+	-- its captured visual waits for acceptance.
+	grug_core.emit_melee_crit(crit_pos)
+	-- Provocation memory (runtime only, self.temp is never persisted): the
+	-- undead night truce excludes players who attacked this mob.
+	self.temp = self.temp or {}
+	self.temp.grug_provoked = self.temp.grug_provoked or {}
+	self.temp.grug_provoked[hitter:get_player_name()] = true
+	-- Loot rights: every accepted player hit renews the 60 s tag.
+	grug_mobs.tag_player(self, hitter)
+	-- Base threat, combat marking, target lock and non-swing rage. Native swing
+	-- rage is deferred to the proc finish after the same acceptance gates.
+	grug_core.run_player_hit_mob(hitter, self, damage or 0, applied, fraction)
+	-- The health subtraction immediately after this hook uses the same
+	-- accumulated integer. Ability/immune paths have nil and keep the original
+	-- floored-damage behavior.
+	local lethal = self.health - (applied or math.floor(damage or 0)) <= 0
+	if lethal and self._grug_rare_id and
+			not self.temp.grug_rare_death_sent then
+		self.temp.grug_rare_death_sent = true
+		grug_mobs.rare_killed(self._grug_rare_id)
+	end
+	if lethal and not self.temp.grug_xp_awarded then
+		self.temp.grug_xp_awarded = true
+		local xp = grug_mobs.kill_xp(self)
+		if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
+			xp = 0
+		end
+		if xp > 0 then
+			grug_xp.add_xp(hitter, xp, "kill")
+			core.chat_send_player(hitter:get_player_name(),
+				core.colorize("#aa66ff", "+" .. xp .. " XP"))
+		end
+	end
+end
 
 -- mobs_redo's global hook for additional spawn checks (an empty stub
 -- upstream; returning true BLOCKS the spawn). A mob with neither zones nor
@@ -292,13 +334,10 @@ function grug_mobs.register_mob(name, def)
 		spawn_checks[name] = def._grug_spawn_check
 	end
 
-	-- Player punches (auto-attacks AND ability punches) pass through here:
-	-- feeds combat marking + rage generation via grug_core. NB mobs_redo's
-	-- do_punch handling cancels the punch on any truthy return — return nil
-	-- when unconcerned.
-	-- Kill credit/XP is ALSO detected here (lethal punch): both of
-	-- mobs_redo's death hooks (on_death/on_die) skip the death animation,
-	-- so we must not install one.
+	-- This wrapper owns the early evade veto, runtime-field installation and
+	-- the mob definition's original do_punch. Player-hit side effects and lethal
+	-- credit run later through accepted_player_punch, after this callback and
+	-- CMI have both accepted. NB any truthy do_punch return cancels.
 	local old_do_punch = def.do_punch
 	def.do_punch = function(self, hitter, tflp, tool_capabilities, dir, damage)
 		--
@@ -320,14 +359,10 @@ function grug_mobs.register_mob(name, def)
 		-- would otherwise hand the evader a fresh target (2978ff). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
-		-- What it does NOT undo: on_punch runs its damage computation and its
-		-- remainder-accumulator commit BEFORE calling do_punch (api.lua GRUG
-		-- PATCH #22), so a punch spent on an evading mob has already consumed
-		-- its raw fraction into the accumulator — the committed integer is
-		-- then discarded with the cancel, and only the remainder below 1
-		-- carries. Accepted: attacking something untouchable costing its
-		-- damage is honest feedback. There is no swing clock any more (WP38)
-		-- and no gate that a cancelled punch would have advanced.
+		-- on_punch previews the damage remainder before this wrapper only so the
+		-- later accepted hook sees the right lethal integer. The accepted-commit
+		-- patch sits after do_punch/CMI, so this cancel advances neither damage
+		-- remainder nor swing-proc progress and cannot leak a Mighty Blow bonus.
 		-- Environmental damage (lava, drowning) bypasses on_punch altogether
 		-- and is not an "attack"; it still applies.
 		--
@@ -341,69 +376,6 @@ function grug_mobs.register_mob(name, def)
 		-- below needs its level: initialize here too (idempotent).
 		grug_mobs.ensure_init(self)
 		grug_mobs.apply_aggro_fields(self, aggro_cfg)
-		if hitter and hitter:is_player() then
-			-- Provocation memory (runtime only, self.temp is never
-			-- persisted): the undead night truce below excludes players
-			-- who attacked this mob.
-			self.temp = self.temp or {}
-			self.temp.grug_provoked = self.temp.grug_provoked or {}
-			self.temp.grug_provoked[hitter:get_player_name()] = true
-			-- Loot rights (combat_stats.md §3): every player hit renews the
-			-- 60 s drop tag. Plain field -> survives unload (aggro.lua).
-			grug_mobs.tag_player(self, hitter)
-			-- The accumulated integer (api.lua GRUG PATCH #22) — nil on the
-			-- ability-punch and immune_to paths. The hit hook below needs it
-			-- for its landed test; the lethal check needs it as well (below).
-			local applied = self.temp and self.temp.grug_applied
-			-- The punch fraction clamp(tflp/fpi, 0, 1): what the rage hook
-			-- multiplies its +12 by. `tflp`'s nil guard mirrors api.lua's own
-			-- `if tflp == 0 then tflp = 0.2 end`.
-			local fpi = tool_capabilities and tool_capabilities.full_punch_interval or 1.4
-			local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
-			-- Base threat + combat marking + rage; also refreshes the leash
-			-- contact clock (grug_core/combat.lua). The applied integer and
-			-- the punch fraction are what let the rage hook pay
-			-- 12 × fraction on damage that actually LANDED (combat_stats.md
-			-- §2, classes.md §1).
-			grug_core.run_player_hit_mob(hitter, self, damage or 0, applied, fraction)
-			-- Lethal? mobs_redo subtracts the damage right after this wrapper
-			-- returns (api.lua:2698ff), so this is the earliest — and only —
-			-- place where killer AND victim are both known. On the
-			-- accumulator path (api.lua GRUG PATCH #22, combat_stats.md §2)
-			-- the health subtraction uses the accumulated INTEGER, so the
-			-- lethal check must use the same number or kill credit/XP and
-			-- the rare-respawn timer fire one punch early/late. `nil`
-			-- (ability punches, immune_to) falls back to the old
-			-- expression — ability damage is already integer.
-			local lethal = self.health - (applied or math.floor(damage or 0)) <= 0
-			-- Named rare killed by a player: start its respawn timer
-			-- (rares.lua). Deliberately OUTSIDE the XP branch below — the
-			-- gray rule can zero the XP, the kill still counts.
-			if lethal and self._grug_rare_id and
-					not self.temp.grug_rare_death_sent then
-				self.temp.grug_rare_death_sent = true
-				grug_mobs.rare_killed(self._grug_rare_id)
-			end
-			-- Kill XP. The kill_xp() lookup lives INSIDE the lethal branch on
-			-- purpose: it is a level_cfg lookup plus a stats_for()
-			-- computation, and this wrapper runs on EVERY player punch in the
-			-- game — paying for it on the ~99 % of punches that kill nothing
-			-- was pure waste.
-			if lethal and not self.temp.grug_xp_awarded then
-				self.temp.grug_xp_awarded = true
-				local xp = grug_mobs.kill_xp(self)
-				-- Gray rule (combat_stats.md §6): a mob at killer level - 10
-				-- or below pays nothing, and says nothing.
-				if (self._grug_level or 1) <= grug_xp.get_level(hitter) - 10 then
-					xp = 0
-				end
-				if xp > 0 then
-					grug_xp.add_xp(hitter, xp, "kill")
-					core.chat_send_player(hitter:get_player_name(),
-						core.colorize("#aa66ff", "+" .. xp .. " XP"))
-				end
-			end
-		end
 		if old_do_punch then
 			return old_do_punch(self, hitter, tflp, tool_capabilities, dir, damage)
 		end
