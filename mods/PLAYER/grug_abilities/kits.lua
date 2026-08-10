@@ -182,13 +182,16 @@ core.register_on_leaveplayer(function(player)
 end)
 
 --
--- Universal native attack (classes.md §2b, combat_stats.md §2).
+-- Universal authoritative swing (classes.md §2b, combat_stats.md §2).
 --
--- Swing ability items intentionally have NO on_use. Luanti therefore owns
--- object-punch input, held-LMB repeat and first-person animation. init.lua
--- mirrors the equipped slot's damage/interval into each swing ItemStack and
--- the shared native-melee handler adds one charged proc when fractional swing
--- progress reaches 1. There is no server-generated attack loop.
+-- Swing ability items intentionally have NO on_use. Luanti therefore keeps
+-- direct object acquisition and first-person held animation; init.lua restores
+-- ground-level dropped-loot pickup on a bounded server ray because the no-dig
+-- pointabilities can mask its native selection box. Enemy packets are
+-- zero-damage input only; init.lua latches a direct click once and runs held
+-- repeats against the soft lock on the shared equipped-weapon clock. Every due
+-- attack is one full slot-fed swing, with the selected charged proc folded into
+-- that one accepted transaction.
 --
 
 -- An empty weapon slot is an empty slot (B1): no fallback to whatever is in
@@ -228,25 +231,31 @@ core.register_on_mods_loaded(function()
 	end
 end)
 
--- What the equipped weapon is worth this swing: fleshy damage and swing time.
+-- What the equipped weapon is worth for one authoritative full swing: fleshy
+-- damage and the shared soft-lock clock interval.
 --
--- Read during kit/equipment synchronization and proc preparation. Unequipping
--- drops every swing item to fist capabilities; swapping a weapon updates the
--- granted stacks before the next native punch.
+-- Read during kit/equipment synchronization, clock validation and proc
+-- preparation. Callers that already fetched the equipped stack pass that copy
+-- to avoid a duplicate slot/cache read. Unequipping drops every swing to the
+-- bare-hand baseline; swapping a weapon updates the granted stacks before the
+-- next authoritative attempt.
 -- grug_inventory caches the slot itself, so this costs one ItemStack copy.
 --
 -- get_tool_capabilities() resolves the per-stack meta override before the item
 -- definition, which is how WP5's rolled attack-speed affix will reach this
 -- without a line of change here.
-function grug_abilities.swing_stats(player)
-	local stack = grug_core.get_equipped_weapon(player)
+function grug_abilities.swing_stats(player, equipped)
+	local stack = equipped
+	if stack == nil then
+		stack = grug_core.get_equipped_weapon(player)
+	end
 	if not stack or stack:is_empty() then
 		return bare_hand.damage, bare_hand.interval
 	end
 	local caps = stack:get_tool_capabilities() or {}
 	local damage = caps.damage_groups and caps.damage_groups.fleshy or 0
 	local fpi = caps.full_punch_interval
-	-- A non-positive interval would break the native proportional formula.
+	-- A non-positive interval would break the authoritative attack clock.
 	-- Nothing equippable declares one -- but the interval comes out of item
 	-- meta, and meta is data.
 	if type(fpi) ~= "number" or fpi <= 0 then
@@ -262,7 +271,7 @@ local strike_def = {
 	kind = "swing",
 	universal = true, -- every class, and a character with no class yet (E1)
 	name = "Strike",
-	description = "Melee attack with your equipped weapon. Hold or click at your weapon's speed; generates 12 rage per landed swing.",
+	description = "A full melee swing with your equipped weapon. Hold LMB against your soft target or click it directly; the shared weapon clock prevents click spam. Generates 12 rage when it lands.",
 	-- Bone white, deliberately neutral (E8): the four class colours carry the
 	-- ability identities and a fifth colour would compete with them. With an
 	-- empty weapon slot the item falls back to this orb, which reads correctly

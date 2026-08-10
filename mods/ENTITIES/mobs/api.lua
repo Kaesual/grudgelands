@@ -2655,6 +2655,30 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		return true
 	end
 
+	-- GRUG PATCH (native swing input, WP38 runtime correction): a client
+	-- object-punch packet made with a swing ability is target acquisition/input
+	-- only. grug_abilities records the lock through this seam; a later server
+	-- step may make one shared-clock authoritative swing. That server punch
+	-- carries an opaque attacker+target token which this exact entry claims once.
+	-- Any callback-triggered same-player punch while it is active is suppressed,
+	-- including a reentrant punch on this same target. The original packet must
+	-- return before protection, do_punch, damage, threat, rage, proc, wear or
+	-- feedback. Ordinary tools/fists and builtin item entities do not take the
+	-- swing-input branch.
+	local grug_authoritative
+	if is_player(hitter) then
+		grug_authoritative = grug_core.claim_authoritative_swing(
+			hitter, self.object)
+		if not grug_authoritative
+				and grug_core.authoritative_swing_active(hitter) then
+			return true
+		end
+		if not grug_authoritative
+				and grug_core.handle_native_swing_input(hitter, self.object) then
+			return true
+		end
+	end
+
 	if self.protected then -- are we protected ?
 
 		if is_player(hitter) then -- only protect from players
@@ -2679,12 +2703,13 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
-	-- GRUG PATCH (player melee, combat_stats.md §2, WP38): the cadence gate
-	-- of 2026-08-07 and the shared per-player swing clock of 2026-08-08 are
-	-- deleted — no punch is discarded, damage is proportional. `grug_melee`
-	-- marks a player punch on a grug_mobs-registered mob that is NOT an
-	-- ability punch: the Strength bonus below needs it, the accumulator
-	-- application needs it, and the knockback rule needs it.
+	-- GRUG PATCH (player melee, combat_stats.md §2, WP38): `grug_melee`
+	-- marks a player punch on a grug_mobs-registered mob that is NOT a cast
+	-- ability punch. Ordinary tools/fists remain proportional and need the
+	-- Strength bonus, accumulator and wear rules below. A swing ability's native
+	-- packet already returned through the input seam above; its server-owned
+	-- authoritative punch carries a full interval and uses the same Strength,
+	-- crit and accepted-proc path without the accumulator or wear.
 	-- Why the damage formula divides by the interval instead of gating on
 	-- it: the engine resets `tflp` on every punch PACKET and the client
 	-- sends one every 0.2 s while the dig key is held, which is exactly
@@ -2733,6 +2758,11 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			grug_melee = true
 		end
 	end
+	if grug_melee and not grug_authoritative then
+		-- The proportional tool/fist packet remains below, but first moves the
+		-- shared ability clock and performs one transition-bank cleanup.
+		grug_core.handle_ordinary_melee_input(hitter, self.object)
+	end
 
 	local weapon = hitter:get_wielded_item()
 	local weapon_def = weapon:get_definition() or {}
@@ -2751,7 +2781,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	grug_fraction = min(1, max(0, tflp / (tool_capabilities.full_punch_interval or 1.4)))
 	if grug_melee then
 		grug_proc_context = grug_core.prepare_native_melee(
-			hitter, self.object, grug_fraction)
+			hitter, self.object, grug_fraction, grug_authoritative)
 	end
 
 	if use_cmi then
@@ -2772,11 +2802,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			-- group BEFORE the armor scaling so a tough mob's armor reduces
 			-- the whole hit, exactly like it does for the ability damage
 			-- that arrives through the same loop. `tmp` above keeps vanilla
-			-- mobs_redo's `tflp / full_punch_interval` clamp — that IS the
-			-- proportional model of combat_stats.md §2 (no punch is
-			-- discarded: the client holds nothing gated, it just sends a
-			-- punch every 0.2 s and each deals a fraction of a swing), so
-			-- melee punches no longer override it to 1.0.
+			-- mobs_redo's `tflp / full_punch_interval` clamp: ordinary native
+			-- tools/fists use the proportional model, while the authoritative
+			-- ability caller supplies `tflp == full_punch_interval` for one full
+			-- swing.
 			if grug_melee and group == "fleshy" then
 				base = base + grug_core.get_melee_bonus(hitter)
 			end
@@ -2855,7 +2884,8 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- vanilla mobs), which keeps them on vanilla behavior below.
 	local grug_applied -- nil = not on the accumulator path
 	local grug_accumulation
-	if grug_melee and not grug_immune and damage > 0 then
+	if grug_melee and not grug_authoritative
+	and not grug_immune and damage > 0 then
 		grug_accumulation = grug_core.prepare_accumulated_melee(
 			hitter, self.object, damage)
 		grug_applied = grug_accumulation.applied
@@ -2899,11 +2929,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		return true
 	end
 
-	-- GRUG PATCH (accepted native melee commit, WP38 correction): do_punch and
-	-- CMI cancellation are now behind us. Only now may the fractional damage
-	-- remainder and swing-skill progress become real. In particular an evaded
-	-- Mighty Blow cannot leave its bonus in the next hit's remainder while its
-	-- rage and charge correctly stayed unspent.
+	-- GRUG PATCH (accepted melee commit, WP38 correction): do_punch and CMI
+	-- cancellation are now behind us. Only now may an ordinary tool's fractional
+	-- remainder or an authoritative swing skill's cost/charge/effect become real.
+	-- In particular an evaded Mighty Blow leaves all proc state armed/unspent.
 	local grug_accumulation_committed = true
 	if grug_accumulation then
 		grug_accumulation_committed =
@@ -2925,7 +2954,9 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			grug_applied, grug_fraction, grug_crit_pos)
 	end
 	grug_core.finish_native_melee(grug_proc_context, {
-		landed = not grug_immune and damage > 0,
+		landed = not grug_immune and
+			((grug_applied ~= nil and grug_applied >= 1)
+				or (grug_applied == nil and floor(damage) >= 1)),
 		damage = damage,
 		proc_extra = grug_proc_extra,
 		mob = self,
@@ -3004,9 +3035,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- with `wear == 0` this call re-sends the inventory to say the item is
 	-- exactly what the client already has.
 	--
-	-- It is load-bearing for swing ability tools: their synchronized native
-	-- capabilities carry `punch_attack_uses = 0`, so held LMB reaches this block
-	-- at wear 0 about five times per second. That packet count is the rationale --
+	-- It remains load-bearing for every wear-free tool path. Swing ability
+	-- stacks also carry `punch_attack_uses = 0`; their client packets now return
+	-- through the input seam and their authoritative full swing reaches this
+	-- block at wear 0 only on cadence. The packet count is the rationale --
 	-- an earlier version of this comment also claimed the skipped write closes
 	-- a lost-update window against the cooldown wear ticker, and it does not:
 	-- Lua here is single-threaded, on_punch runs to completion synchronously,

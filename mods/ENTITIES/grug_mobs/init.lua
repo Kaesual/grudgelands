@@ -60,8 +60,9 @@ local spawn_checks = {} -- mob name -> function(pos) -> allowed?
 
 -- Every mob registered through the wrapper below (entity name -> true).
 -- Read per punch by the native-melee GRUG PATCH in mobs/api.lua on_punch:
--- only OUR mobs use proportional slot-fed swing damage, Strength, crit and
--- the accepted-hit seam — a vanilla mobs_redo mob keeps vanilla behavior.
+-- only OUR mobs use the ordinary proportional tool/fist path plus the
+-- authoritative full slot-fed swing path, Strength, crit and the accepted-hit
+-- seam — a vanilla mobs_redo mob keeps vanilla behavior.
 -- A table lookup keyed on `self.name` costs nothing per
 -- punch and — unlike the runtime-installed `_grug_*` entity fields — is
 -- already complete before the very first punch on a freshly activated mob.

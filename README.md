@@ -139,24 +139,33 @@ tiers behind a real fight — and *enemies* are everything else.
   frontal cone that requires line of sight. Stepping aside is a clean
   miss. Named rares broadcast their spawn faction-wide.
 - **MVP classes**: Warrior (rage), Mage and Priest (mana), 3–4 instant
-  abilities each as hotbar items, plus a soft target lock. Talent trees add
-  the rest.
-- **Skills never slow your swing** (corrected 2026-08-10, WP38). Swing
-  skills use Luanti's native click/hold punch and weapon animation; releasing
-  LMB stops immediately, and hold versus fast clicking has identical aggregate
-  DPS. Melee timing and skill timing are independent: every melee skill is
+  abilities each as hotbar items. Enemy target memory feeds the Target Frame
+  only; ally memory remains a heal/shield fallback. Talent trees add the rest.
+- **Skills never slow your swing** (WP38 base, WP39 targeting revision).
+  Swing skills keep Luanti's fast native weapon animation while one
+  server-authoritative weapon clock permits a full hit at the equipped
+  interval. WP39 makes the current crosshair ray authoritative: a ready attack
+  waits without being consumed while aim is empty/blocked, then fires on the
+  first held pass that sees a valid hostile. Click spam cannot outrun hold. A
+  fresh Swing click also restores dropped-loot pickup through one
+  blocked-by-world 4 m server ray where the no-dig item pointabilities hide a
+  ground-level drop. Even ordinary tool/fist combat pushes the next full skill
+  swing out. Melee timing and skill timing are independent: every melee skill is
   the ordinary weapon attack **plus** an effect that fires when that
   skill's own charge is full — shown as a bar under the icon that fills
   red→yellow→green and disappears when the skill is ready. Rotation is the
   hotbar: keys 1–8 pick which effect is armed next, without ever
-  interrupting the attack. Heals, shields and gap closers stay ordinary
-  casts.
+  interrupting the attack. A small gold crosshair ring shows binary weapon
+  readiness. Hostile casts require current aim, while Fireball travels straight
+  from the cast-time crosshair and can miss; heals and shields retain ally
+  target memory.
 - **Your weapon lives in a slot, not in the hotbar** — and it is the only
   thing that decides what a skill hits for and what it looks like. Every
   ability shows your own sword, in the bar and in your hand, and swapping
   the weapon reskins all of them at once; an empty slot means bare fists,
   never a blocked button. **Strike is the universal swing skill**: click or
-  hold LMB for Luanti's native weapon-speed punch, and release stops it. A
+  hold LMB for a clocked full swing at the hostile currently under the
+  crosshair, and release stops it. A
   two-handed weapon costs you the offhand, so a greataxe and a carried
   torch are a choice between the two.
 - **Pace**: level 60 in ~10–20 hours. The endgame is the game. Death costs
@@ -269,14 +278,15 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (14 of 39 work packages):** the foundation, the whole
+**Shipped (14 of 40 work packages):** the foundation, the whole
 world/combat layer, the money economy, the material ladder's rock and
 ores, the fix round that came out of the second runtime test, the
 weapon slot that turned auto-attack into a skill, and the proc model
 that made skills ride on the swing instead of owning it.
-*(The total is 39 — WP0 through WP38, up from 35 earlier on 2026-08-08:
+*(The total is 40 — WP0 through WP39, up from 35 earlier on 2026-08-08:
 the weapon-slot design pass cut WP35, the runtime test cut WP36, WP36
-spun off WP37 while it ran, and WP35 spun off WP38.)*
+spun off WP37 while it ran, WP35 spun off WP38, and WP38's runtime tests
+and Mage playtest cut the crosshair-authority follow-up WP39.)*
 
 - **World**: two ocean-separated continents with soft coasts, 13 mirrored
   biome bands, six race-capital spawn platforms, the radial mob-level field
@@ -298,9 +308,10 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   swamp), **passive prey** (the large grazers: they never attack on
   sight, but they fight back) and everything else.
 - **Character**: faction → race → class creation, Warrior/Mage/Priest with
-  attribute and HP formulas, the XP curve to 60 with death penalty, 3
-  abilities per class with cooldowns and the soft target
-  lock, visible race passives, and the character screen with equipment
+  attribute and HP formulas, the XP curve to 60 with death penalty, 3–4 class
+  abilities as hotbar items plus universal Strike, with cast cooldown/resource
+  limits and Warrior swing-charge/resource procs; the soft target lock, visible
+  race passives, and the character screen with equipment
   slots and bags (WP3, WP4, WP15, WP19). WP35 added the **weapon slot**:
   the item in it is the single source of a skill's damage and of its look,
   so every ability now shows your own sword instead of a colored orb and
@@ -308,13 +319,17 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   a universal ability, **Strike**. Two-handed weapons declare themselves here too,
   though that rule stays dormant until there is something to put in the
   offhand. WP38 then split swing timing from skill
-  timing: melee damage is proportional with a remainder accumulator (no
-  swing ever rounds to nothing), every skill is the plain weapon attack
+  timing: ability swings are full clocked attacks while ordinary tools/fists
+  retain proportional damage with a remainder accumulator, and every skill is the plain weapon attack
   plus an effect that fires when its own charge is full — the 1 s global
   cooldown is gone, retired for per-skill charges and resource costs —
-  native held/click input drives all three swing skills with the equipped
-  weapon's speed and visible animation, proc progress follows the selected
-  skill without any server auto-attack loop, PvP melee runs through the same dodge/armor pipeline
+  native held/click interaction keeps visible animation, while one
+  server-authoritative soft-lock clock currently drives all three swing skills
+  at the equipped weapon's speed, shares its cadence bound with ordinary melee,
+  and reads the selected proc live; WP39 is the decided next replacement for
+  that target authority — current crosshair aim, a binary weapon-ready reticle
+  and a directional Fireball — without restoring partial/fast ability damage.
+  PvP melee runs through the same dodge/armor pipeline
   with rage on landed damage only, ability items pick up dropped loot,
   and empty equipment slots show ghost icons of their type.
 - **Money & vendors**: copper/silver/gold as one integer with a HUD
@@ -328,7 +343,9 @@ spun off WP37 while it ran, and WP35 spun off WP38.)*
   those six tiers — three new ores (quartz, silver, garnet), Abyssal
   Crystal, and mese renamed to Emberstone (WP25).
 
-**Not in the game yet:** quests and quest NPCs, professions and crafting
+**Not in the game yet:** WP39's crosshair-authoritative hostile hits, binary
+weapon-ready reticle, permanent combat diagnostics and true directional
+Fireball; quests and quest NPCs, professions and crafting
 recipes, talent trees, the fog-of-war map, guilds, housing isles,
 travel/waypoints, shields and the carried torch light (the offhand slot
 and its rules exist, but no item can go into it yet), loot rolls on class
@@ -342,7 +359,8 @@ smelted yet — and neither can armor recipes (the vendored base game has
 none at all), the herb and food nodes, or the rename of the shipped gear
 catalog to material names.
 
-**Ready to start next** (no design blockers): the depth economy (WP34 —
+**Ready to start next** (no design blockers): **crosshair-authoritative combat
+(WP39 — explicitly next by owner direction)**, then the depth economy (WP34 —
 the arrival pulse that makes deep mining dangerous, the depth level
 curve's overdue recalibration, camp-only ore respawn, lava lakes and the
 continental Abyssal Crystal), the two-slot
@@ -365,12 +383,25 @@ unblocked and built on 2026-08-08.)
 
 **Caveats:** the shipped work packages were runtime-tested on 2026-08-07
 (six findings on the WP1–WP19 pass, all fixed; WP7 passed without
-findings), **except WP25 (the material ladder), WP36 (the fix round),
-WP35 (the weapon slot) and the current WP38 native-input correction**:
-those revisions have only been reviewed and syntax-checked. WP38's earlier
+findings), **except WP25 (the material ladder), WP36 (the fix round) and
+WP35 (the weapon slot)**: those revisions have only been reviewed and
+syntax-checked. WP38's earlier
 proc/loop implementation **was** exercised by the user's runtime test; that
 test exposed the one-click repeated-damage and missing held-animation bug
-which the still-unverified native-input correction replaces. Both WP36 and
+which the native-input correction replaced. That correction was then also
+runtime-tested: server `control.dig` stayed true, but the exact client ray
+became `nothing` after one punch and sent no further object-punch callbacks.
+The current server-clock/soft-lock combat path has now been runtime-tested:
+held damage and blood landed at the equipped weapon interval independently of
+click speed. The subsequent Mage/Warrior playtest rejected its implicit enemy
+lock as damage authority: looking away still hit the remembered mob and
+Fireball was effectively auto-aimed. WP39 is fully decided and next; it keeps
+the tested cadence/animation but requires current crosshair aim and makes
+Fireball a real directional projectile. The earlier test also exposed one
+pickup regression — Swing
+pointabilities hid ground-level drops although Hands Free and Charge could
+select them. Its bounded fresh-press pickup bridge then passed a second
+in-game test with both Strike and Hamstring. Both WP36 and
 WP35 merged on 2026-08-08. The second runtime test, on that same day, is
 what produced WP36 in the first place, and WP36's own fixes are
 therefore still unverified in-game. **Two design questions are open, not
@@ -380,9 +411,9 @@ band WP36 added on the Throng side, which is deliberately cheap to
 revert if the owner disagrees with the reading behind it. The melee path's three measured
 defects (ungated PvP punches stacking with the auto-attack, the
 winner-takes-all swing clock, rage per punch packet) are closed by
-WP38's redesign. Its 2026-08-10 native-input correction also removes the
-invisible server toggle that looked like repeated bleeding after one click;
-this correction is not yet verified in-game. The two-handed rule is built and
+WP38's redesign. Its 2026-08-10 correction removes the invisible toggle that
+looked like repeated bleeding and preserves native held animation; WP39 now
+owns the decided replacement of its soft-lock target authority. The two-handed rule is built and
 tested but **dormant**: no item can enter the offhand until WP14, so
 neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea

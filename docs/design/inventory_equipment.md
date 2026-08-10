@@ -49,15 +49,22 @@ hand count), WP38 (native swing capability/pointability bridge).
   skills carry no item, look as they did before the slot existed and hit
   for the bare-handed baseline. **Weapons are therefore no longer hotbar
   items** — a sword lying in the hotbar drives no skill and no skin.
-  - Native swing ability stacks mirror this slot's `fleshy` damage and
-    `full_punch_interval` in a per-stack tool-capability override whenever the
-    kit or equipment syncs. They receive no digging groupcaps and no attack
-    wear. This is the input bridge that keeps the slot the sole damage/speed
-    source while allowing Luanti's native held-LMB repeat and animation. Their
+  - Swing ability stacks mirror this slot's `full_punch_interval` in a
+    per-stack tool-capability override whenever the kit or equipment syncs,
+    but publish `fleshy = 0`, no digging groupcaps and no attack wear. The
+    interval keeps native animation and direct object acquisition aligned with
+    the slot; zero damage prevents acquisition-only PvP packets from causing
+    builtin knockback. The authoritative held-LMB clock rebuilds the real full
+    damage capabilities from this same slot only after WP39's current server
+    crosshair ray finds a valid hostile; enemy target memory is not an attack
+    source. Their
     item definitions additionally mark the `crumbly`, `snappy` and
     `oddly_breakable_by_hand` groupcaps plus the engine's independent
     `dig_immediate` path as pointability `"blocking"`, so objects remain
-    natively punchable without held LMB continuing into node digging.
+    natively punchable without held LMB continuing into node digging. Because
+    blocked ground can mask a resting drop's native selection box, a fresh
+    Swing LMB press additionally restores builtin-item pickup through a 4 m
+    first-visible-object server ray; nodes and other objects stop that ray.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
     and the twelve vendored `default:` swords and axes (that list shrinks
