@@ -26,9 +26,10 @@ function grug_core.get_armor_percent(player)
 	return 0
 end
 
--- A native PvP melee punch applies armor to the FULL-swing equivalent before
--- scaling it by the partial-swing fraction (combat_stats.md §2). Publish the
--- exact player-armor formula here so that path and the central hp-change
+-- PvP melee applies armor to the FULL-swing equivalent: authoritative swing
+-- abilities then commit it whole, while ordinary tools/fists scale it by their
+-- native packet fraction (combat_stats.md §2). Publish the exact formula here
+-- so those paths and the central hp-change
 -- modifier cannot drift apart: clamp to 0..60%, and only round when armor is
 -- actually present. At 0% this deliberately returns fractional damage
 -- unchanged; the melee remainder accumulator owns that rounding.
@@ -574,23 +575,15 @@ end
 
 local native_melee_prepare
 local native_melee_finish
+local native_swing_input
+local ordinary_melee_input
+local authoritative_swing
 local melee_remainder = {}
 -- player name -> {
 --   target = guid, remainder = [0,1), pending_fraction >= 0,
---   pending_proc = opaque native-melee transaction or nil,
 -- }
 
--- Damage remainder, rage credit and a deferred PvP proc are one transaction.
--- The native-melee owner gets a cancellation callback so it can release a
--- resource reservation without paying the cost or resetting the charge.
 local function discard_melee_entry(name, entry)
-	if entry and entry.pending_proc and native_melee_finish then
-		native_melee_finish(entry.pending_proc, {
-			settle_only = true,
-			cancelled = true,
-			landed = false,
-		})
-	end
 	melee_remainder[name] = nil
 end
 
@@ -602,8 +595,7 @@ end
 -- A player GUID is the player name and therefore survives disconnect and
 -- respawn. Clear every attacker's transaction by TARGET, not only the target
 -- owner's ability state, so tool/fist damage remainder and pending rage credit
--- cannot cross death or reconnect. Pending ability owners receive the same
--- cancellation callback as an attacker-side reset.
+-- cannot cross death or reconnect.
 function grug_core.invalidate_melee_target(target)
 	local guid = target and target:get_guid()
 	if not guid then
@@ -619,7 +611,7 @@ end
 -- Preview an accumulator update without committing its damage remainder.
 -- mobs_redo asks before `do_punch` because its wrapper needs the exact integer
 -- for lethal credit, but any truthy `do_punch` return cancels the hit. Mutating
--- the accumulator at preview time would leak a cancelled Mighty Blow's bonus
+-- the accumulator at preview time would leak a cancelled ordinary tool hit
 -- into the next punch. Target changes are the one immediate mutation: their
 -- old remainder is deliberately forfeited whether the new target accepts the
 -- punch or not (combat_stats.md §2).
@@ -629,17 +621,16 @@ function grug_core.prepare_accumulated_melee(player, target, raw_damage,
 	local guid = target:get_guid()
 	local entry = melee_remainder[name]
 	if not entry or entry.target ~= guid then
-		-- Different target: damage remainder, pending rage credit and deferred
-		-- proc are one transaction and are all forfeited together.
+		-- Different target: damage remainder and pending rage credit are one
+		-- transaction and are forfeited together.
 		if entry then
 			grug_core.reset_accumulated_melee(player)
 		end
 		entry = {
-			target = guid,
-			remainder = 0,
-			pending_fraction = 0,
-			pending_proc = nil,
-		}
+				target = guid,
+				remainder = 0,
+				pending_fraction = 0,
+			}
 		melee_remainder[name] = entry
 	end
 	if raw_damage <= 0 then
@@ -648,49 +639,29 @@ function grug_core.prepare_accumulated_melee(player, target, raw_damage,
 			entry = entry,
 			applied = 0,
 			committed_fraction = 0,
-			committed_proc = nil,
 			remainder = entry.remainder,
 			pending_fraction = entry.pending_fraction,
-			pending_proc = entry.pending_proc,
 		}
 	end
 	local next_pending = entry.pending_fraction
-	local next_proc = entry.pending_proc
 	if pending_fraction and pending_fraction > 0 then
 		next_pending = next_pending + pending_fraction
 	end
 	local total = entry.remainder + raw_damage
 	local applied = math.floor(total)
 	local committed_fraction = 0
-	local committed_proc
 	if applied >= 1 then
 		committed_fraction = next_pending
 		next_pending = 0
-		committed_proc = next_proc
-		next_proc = nil
 	end
 	return {
 		name = name,
 		entry = entry,
 		applied = applied,
 		committed_fraction = committed_fraction,
-		committed_proc = committed_proc,
 		remainder = total - applied,
 		pending_fraction = next_pending,
-		pending_proc = next_proc,
 	}
-end
-
--- Attach one accepted bank-only PvP proc to the same transaction as the
--- damage remainder. Exactly one may wait: while it does, the ability layer
--- suppresses further proc arming but ordinary swing progress still advances.
-function grug_core.defer_accumulated_melee_proc(preview, pending_proc)
-	if not preview or preview.applied >= 1 or preview.pending_proc ~= nil
-			or pending_proc == nil then
-		return false
-	end
-	preview.pending_proc = pending_proc
-	return true
 end
 
 -- Commit a preview after the target has accepted the punch. The identity
@@ -702,7 +673,6 @@ function grug_core.commit_accumulated_melee(preview)
 	end
 	preview.entry.remainder = preview.remainder
 	preview.entry.pending_fraction = preview.pending_fraction
-	preview.entry.pending_proc = preview.pending_proc
 	return true
 end
 
@@ -716,10 +686,10 @@ function grug_core.apply_accumulated_melee(player, target, raw_damage,
 	return preview.applied, preview.committed_fraction
 end
 
--- One optional consumer owns native melee skill procs. grug_core is below the
+-- One optional consumer owns authoritative swing-skill procs. grug_core is below the
 -- ability mod in the dependency graph, while vendored mobs_redo must not know
--- about grug_abilities; this seam lets both mob and PvP punches use the same
--- two-phase progress transaction without a reverse dependency.
+-- about grug_abilities; this seam lets both mob and PvP full swings use the
+-- same two-phase accepted-hit transaction without a reverse dependency.
 function grug_core.register_native_melee_handler(prepare, finish)
 	assert(native_melee_prepare == nil and native_melee_finish == nil,
 		"native melee handler already registered")
@@ -729,9 +699,9 @@ function grug_core.register_native_melee_handler(prepare, finish)
 	native_melee_finish = finish
 end
 
-function grug_core.prepare_native_melee(player, target, fraction)
+function grug_core.prepare_native_melee(player, target, fraction, token)
 	if native_melee_prepare then
-		return native_melee_prepare(player, target, fraction)
+		return native_melee_prepare(player, target, fraction, token)
 	end
 	return nil
 end
@@ -739,6 +709,93 @@ end
 function grug_core.finish_native_melee(context, result)
 	if context and native_melee_finish then
 		return native_melee_finish(context, result or {})
+	end
+	return false
+end
+
+-- Swing ability items keep their native no-on_use object interaction so the
+-- client still animates held LMB and builtin dropped items still receive
+-- on_punch. Against combat objects, however, that packet is input/targeting
+-- only: grug_abilities owns the authoritative soft-lock clock. This seam keeps
+-- vendored mobs_redo below the player-mod dependency boundary.
+function grug_core.register_native_swing_input_handler(handler)
+	assert(native_swing_input == nil, "native swing input handler already registered")
+	assert(type(handler) == "function", "native swing input handler must be a function")
+	native_swing_input = handler
+end
+
+function grug_core.handle_native_swing_input(player, target)
+	return native_swing_input and native_swing_input(player, target) or false
+end
+
+-- Ordinary hostile tool/fist packets remain on the proportional damage path,
+-- but must also move the ability weapon clock so the two inputs cannot stack.
+-- grug_abilities owns that clock; this seam avoids a reverse dependency from
+-- vendored mobs_redo into the player mod.
+function grug_core.register_ordinary_melee_input_handler(handler)
+	assert(ordinary_melee_input == nil,
+		"ordinary melee input handler already registered")
+	assert(type(handler) == "function",
+		"ordinary melee input handler must be a function")
+	ordinary_melee_input = handler
+end
+
+function grug_core.handle_ordinary_melee_input(player, target)
+	if ordinary_melee_input then
+		ordinary_melee_input(player, target)
+	end
+end
+
+-- An authoritative swing is a synchronous exactly-once transaction. The
+-- vendored mob/PvP entry must claim the opaque token for the exact attacker
+-- and target before it can bypass native-input suppression. Once claimed, a
+-- callback-triggered nested punch by the same attacker cannot claim again,
+-- even when it targets the same ObjectRef.
+function grug_core.begin_authoritative_swing(player, target, context)
+	if authoritative_swing then
+		return nil
+	end
+	local token = {
+		player = player,
+		target = target,
+		claimed = false,
+		context = context,
+	}
+	authoritative_swing = token
+	return token
+end
+
+function grug_core.claim_authoritative_swing(player, target)
+	local token = authoritative_swing
+	if token and not token.claimed and token.player == player
+			and token.target == target then
+		token.claimed = true
+		return token
+	end
+	return nil
+end
+
+function grug_core.authoritative_swing_active(player)
+	return authoritative_swing ~= nil
+		and (player == nil or authoritative_swing.player == player)
+end
+
+function grug_core.valid_authoritative_swing(token, player, target)
+	return token ~= nil and token == authoritative_swing and token.claimed
+		and token.player == player and token.target == target
+end
+
+function grug_core.get_authoritative_swing_context(token)
+	if token == authoritative_swing and token.claimed then
+		return token.context
+	end
+	return nil
+end
+
+function grug_core.end_authoritative_swing(token)
+	if authoritative_swing == token then
+		authoritative_swing = nil
+		return true
 	end
 	return false
 end
@@ -840,7 +897,7 @@ core.register_on_leaveplayer(function(player)
 end)
 
 -- True while an ability punch is running — lets the rage-on-hit hook skip
--- ability hits (rage comes from native melee swings only, classes.md §1) and the
+-- ability hits (rage comes from authoritative melee swings only, classes.md §1) and the
 -- central dodge modifier skip the roll (abilities pre-roll it below).
 grug_core.in_ability_punch = false
 

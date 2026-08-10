@@ -255,56 +255,65 @@ Details + line numbers in [docs/research/](docs/research/).
   exactly one Character-page refresh consumer; normal equip, class change
   and join add no direct duplicate refresh (a genuine nested write may still
   earn the second pass).
-  **Swing skills use native LMB input** (`classes.md` §2b; corrected
-  2026-08-10 after WP38): exactly Strike, Mighty Blow and Hamstring have
-  `kind = "swing"` and **no `on_use`**. Luanti therefore owns object-punch
-  input, held repeat and first-person animation; releasing LMB means no later
-  attacks. Cast skills keep `on_use`, cooldowns and the explicit dropped-loot
-  pickup bridge. On kit/equipment sync every swing ItemStack mirrors the
-  equipped slot's fleshy damage and `full_punch_interval` via per-stack
-  toolcaps, with empty `groupcaps`, `max_drop_level = 0` and
-  `punch_attack_uses = 0`; empty slot = registered hand baseline, never a
-  wielded fallback. Compare tokens prevent inventory churn and the charge bar
-  remains independent ItemMeta. The three hand groupcaps plus the engine's
-  independent `dig_immediate` node-group entry in `pointabilities.nodes` are
-  `"blocking"` on swing definitions, so held LMB keeps native object punches
-  but cannot continue into digging after a mob dies.
-  **Melee damage is proportional** (combat_stats.md §2): native input deals
-  `(weapon damage + Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
-  and fractions ride the per-player remainder accumulator
-  (keyed by target `get_guid()`, reset on target switch, max forfeit 0.999;
-  PvP optionally banks the matching pending swing fraction for commit-time
-  rage). mobs_redo uses `prepare_accumulated_melee` before `do_punch` only for
-  lethal bookkeeping and commits after `do_punch`/CMI acceptance, so cancelled
-  damage cannot leak into the next punch. The cadence gate, shared clock and
-  server auto-repeat/toggle loop are deleted.
-  **Proc cadence is a separate bounded [0,1) swing-progress accumulator**:
-  target or concrete equipped-weapon changes reset it; selection among swing
-  skills does not. The selected skill is read live at one completion per
-  packet. A charged, affordable proc pays/resets only after acceptance; evade,
-  immunity, PvP refusal, dodge and full absorb leave it armed. Mighty Blow's
-  replacement delta is folded into that same native punch before its one
-  crit/mitigation/dodge path — never a recursive bonus punch. Charge timers
-  tick independently (one max, no decay, charged at join/grant), and there is
-  no GCD. A bank-only PvP completion is frozen beside the damage remainder:
-  its resource is reserved (excluded from affordability and rage decay, but
-  not paid/display-subtracted) and the later integer commit settles that exact
-  proc once. HP loss pays/resets/runs it; dodge/full absorb releases the
-  reservation and leaves charge armed, while the accepted progress stays
-  consumed. Target/concrete-weapon reset discards damage remainder, rage
-  credit and pending proc together. Player target leave/death invalidates every
-  attacker's Core bank synchronously; death clears remaining ability-only swing
-  progress next step after the killing punch settles (the committed proc was
-  already moved into that punch's local preview before `set_hp`). Same name/GUID
-  on reconnect is still a new ObjectRef.
-  `grug_core.invalidate_melee_target` clears every attacker's core remainder
-  and pending rage credit, including tool/fist-only state. The existing 0.5 s
-  watcher is a fallback for invalid pending PvP ObjectRefs and catches
-  non-swing wield boundaries; mob progress resets by target identity on the
-  next swing. Cast item `on_use` clears before loot/validity/affordability and
-  `try_cast` repeats the idempotent clear for direct callers, while switching
-  among swing skills never reinterprets it.
-  **Weapon WEAR is spent per swing, not per punch**
+  **Swing skills use native interaction plus an authoritative held clock**
+  (`classes.md` §2b; WP38 held-soft-target correction, 2026-08-10): exactly
+  Strike, Mighty Blow and Hamstring have `kind = "swing"` and **no `on_use`**.
+  Luanti therefore keeps first-person held animation and direct object
+  acquisition. Its no-dig pointabilities can mask a drop against blocked
+  ground, so each fresh server-visible LMB press runs one bounded 4 m eye ray:
+  only a first-visible `__builtin:item` receives the builtin pickup callback;
+  nodes/other objects block it and held repeats do not re-run it. Against a
+  mob/player, however, the native
+  swing packet is input only and returns before damage/rage/threat/wear/proc;
+  ordinary tools/fists and loot entities do not enter that branch. One
+  per-player server clock attacks the enemy soft lock with a full slot-fed
+  swing while `get_player_control().dig` is true. A direct hostile object
+  packet additionally creates one next-throttled-attack-pass latch: the pass
+  has a 0.05 s accumulator threshold but runs only on an actual engine step
+  (currently often 0.09 s); it attempts once even if `dig` is already false,
+  but an early/invalid latch is consumed, never
+  queued until due. Release stops held repeats; early click spam neither
+  attacks nor moves the due time. Swing-to-swing selection preserves the clock
+  and reads the selected proc live. A non-swing/cast boundary stops input but
+  preserves the due time (switch-away spam cannot re-arm it); death, respawn,
+  class sync or leave clears it. A concrete weapon swap starts the new weapon
+  at one full interval, preventing A→B→A instant-hit abuse. At most one due
+  swing runs per player per throttled attack pass. Its threshold is 0.05 s,
+  while actual scheduling follows the engine step (currently often 0.09 s).
+  Due advancement carries normal server-step lateness, capped at 0.1 s and half
+  the FPI, so 0.09 s steps do not
+  accumulate cadence drift and a long gap cannot create a backlog burst.
+  Every due swing revalidates a live hostile concrete ObjectRef, selected range
+  (today 4 m) and cast-style eye-to-body LOS. Range/LOS failure deals nothing
+  and leaves the 8 s lock to expire; invalid/dead/unloaded/left targets clear.
+  A directly punched hostile overwrites the enemy lock and an accepted hit
+  refreshes it. Owner lifecycle clears both enemy and ally slots. Swing
+  ItemStacks mirror equipped-slot FPI compare-first but publish `fleshy = 0`,
+  empty `groupcaps`, `max_drop_level = 0` and `punch_attack_uses = 0`; empty
+  slot = registered hand interval and there is no wielded fallback. Zero
+  acquisition damage preserves native animation/send while preventing builtin
+  PvP knockback before the OR callback suppresses the packet. Their
+  hand/dig_immediate node
+  pointabilities remain `"blocking"`. Neither the ability stack nor equipped
+  slot weapon wears on an authoritative ability swing.
+  The mobs_redo two-phase seam prepares a full selected proc but pays cost,
+  resets charge and applies post-effect only after `do_punch` and CMI accept;
+  hostile PvP likewise waits for actual HP loss after its one armor/dodge/
+  absorb path. Evade, immunity, PvP refusal/off, dodge and full absorb produce
+  no proc/rage/effect. Mighty Blow remains exactly `floor(weapon*1.5)+melee
+  bonus` before the shared crit/mitigation path; Hamstring is only the existing
+  50% slow. Charge timers remain independent (one max, no decay, ready on
+  join/grant), and there is no GCD. The authoritative transaction carries an
+  opaque expected attacker+target token claimed exactly once; callback-driven
+  same-/different-target reentrant punches are suppressed. Cast `on_use` and
+  direct `try_cast` stop swing input and clear tool remainder synchronously,
+  while preserving the anti-spam due time.
+  Every actual hostile ordinary mob/PvP tool/fist packet pushes the next full
+  ability swing to at least `now + equipped FPI`. Its transition clears an old
+  tool bank once; consecutive ordinary packets keep accumulating, and the
+  return to an ability clears the remaining bank once. Cast use alone does not
+  move the clock.
+  **Ordinary tool WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
   partial wear to B, returning to A resumes it, and empty/non-tool,
@@ -314,26 +323,30 @@ Details + line numbers in [docs/research/](docs/research/).
   times faster and fires `set_wielded_item` — a full inventory
   serialization plus packet — per punch, ~500/s at the 100-player target.
   **PvP melee runs through the same pipeline** (the on_punchplayer
-  handler in grug_abilities): build the wielded-stack FULL swing, add
-  Strength, roll crit, apply `grug_core.apply_player_armor` (0..60%, ceil
-  only when pct > 0), THEN scale by fraction and accumulate. On integer
-  commit, `set_hp` keeps `type="punch"`/`object` and adds
+  handler in grug_abilities): an authoritative ability swing builds the
+  slot-fed full swing, adds Strength/proc, rolls crit once, applies
+  `grug_core.apply_player_armor` (0..60%, ceil only when pct > 0), then enters
+  dodge/absorb once. A native swing-item packet only acquires input/target and
+  is suppressed. Ordinary tools/fists still scale their wielded-stack full
+  equivalent by `fraction` and accumulate. Their integer commit uses `set_hp`
+  with `type="punch"`/`object` and
   `custom_type="grug_core:player_armor_applied"`; the central modifier skips
   only the already-run armor step while dodge and absorb still run once.
-  `return true` always suppresses hostile engine damage. PvP fractions bank
+  `return true` always suppresses handled hostile engine damage. Tool/fist PvP fractions bank
   with the damage remainder and pay `12 × committed_pending_fraction` only
   when a commit actually lowers HP; bank-only packets pay nothing, target
-  switches discard both banks and any pending proc, and dodge/full absorb consume the credit for
+  switches discard both banks, and dodge/full absorb consume the credit for
   0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
   totalling 1 pay +12 independent of weapon damage, without the old 60 rage/s
   packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players keeps coming from builtin off the engine's damage
-  argument (deferred, MVP). Tools/fists keep their wielded source and wear;
+  argument (deferred, MVP): acquisition caps are zero, while the one
+  authoritative punch supplies the real full caps. Tools/fists keep their wielded source and wear;
   swing ability items use the slot source, do not wear and can carry the
-  selected proc's threat multiplier. Soft target lock never synthesizes a
-  melee swing.
+  selected proc's threat multiplier. The enemy soft lock is the authoritative
+  ability loop target while LMB is held.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
@@ -399,7 +412,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **31 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **32 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack
@@ -424,14 +437,18 @@ Details + line numbers in [docs/research/](docs/research/).
     `punch_attack_uses` adjustments, so a wear-free punch never gets an id or
     consumes the accumulator. A newly assigned id is written back once even before wear is
     due; a broken stack's runtime entry and every leaving player's table are
-    cleared. The 2026-08-10 native-input correction added two sites: proc
-    preparation folds a completed skill's replacement delta into the same
-    punch before crit, and accepted commit after `do_punch`/CMI is the only
-    place that mutates the damage remainder and proc state. The review added
-    the 31st site: `grug_mobs.accepted_player_punch` runs provocation, loot
+    cleared. The 2026-08-10 native-input correction added two sites: full
+    authoritative proc preparation folds the selected skill's replacement
+    delta into the same punch before crit, and accepted finish after
+    `do_punch`/CMI is the only place that pays/resets/applies it. The review
+    added the 31st site: `grug_mobs.accepted_player_punch` runs provocation, loot
     tag, threat/rage and lethal rare/XP work only after both `do_punch` and CMI
     accept, before health subtraction; the melee-crit visual is deferred to the
     same boundary, so neither cancel path has irreversible hit side effects.
+    The held-soft-target correction adds the 32nd marker: a native swing-item
+    combat packet calls the Core input/acquisition seam and returns before all
+    mobs_redo combat side effects; only the exact-target, claim-once token of a
+    server-owned full punch may continue.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

@@ -86,9 +86,10 @@ local function describe(bracket, noun, ilvl, stat_line)
 		"\n" .. core.colorize(STAT_COLOR, stat_line)
 end
 
--- "5 damage, 1.0 s swing" -- full_punch_interval is the native fraction's
--- denominator and one completed swing's interval (combat_stats.md §2), so it
--- belongs next to the damage number: a dagger
+-- "5 damage, 1.0 s swing" -- full_punch_interval is the authoritative
+-- soft-lock clock interval for swing abilities and the native fraction's
+-- denominator for ordinary tools/fists (combat_stats.md §2), so it belongs
+-- next to the damage number: a dagger
 -- doing less per swing but swinging faster is otherwise invisible.
 --
 -- Two-handed weapons say so HERE as well as in the equip refusal (B4): the
@@ -115,13 +116,12 @@ end
 --
 -- Verified against the §3.8 row: ilvl 3/10/20/30/40/50 -> 5/8/11/15/18/22.
 --
--- How the damage actually reaches a mob (mobs/api.lua on_punch, WP38
--- proportional melee): fleshy damage × clamp(tflp/fpi, 0, 1) + floor(Str/10),
--- scaled by the mob's armor group, then the melee crit roll. The
--- `full_punch_interval` is therefore both the damage-scaler denominator and
--- the interval of one complete native swing, and `damage_groups.fleshy` is the
--- strength of one full swing. Those two fields are the whole contract;
--- nothing else in tool_capabilities is read.
+-- How damage reaches a mob (WP38): a swing ability builds one authoritative
+-- full hit from this fleshy value + floor(Str/10) at this interval, then armor
+-- and one crit roll. Ordinary wielded tools/fists keep mobs_redo's proportional
+-- `clamp(tflp/fpi, 0, 1)` path. `full_punch_interval` is therefore both the
+-- ability clock and the ordinary path's damage-scaler denominator;
+-- `damage_groups.fleshy` is one full swing's base strength.
 --
 
 local function dmg1h(ilvl)

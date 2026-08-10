@@ -19,10 +19,11 @@ Core principles:
   at the pointed target; the item's wear bar displays the skill's **charge
   bar** (§2b). What the item *looks* like is §2c.
 - **An ability item picks up dropped items like a weapon does.** Swing skills
-  have no `on_use`, so their native punch reaches the builtin item entity
-  directly. Cast skills retain the WP38 pickup bridge because their `on_use`
-  makes the client send `INTERACT_USE`; clicking loot calls the entity's
-  pickup path and does **not** cast.
+  have no `on_use`, but their no-dig pointabilities can mask a ground-level
+  item's native selection box. A fresh LMB press therefore checks the first
+  visible object on the same 4 m eye ray server-side and calls the builtin
+  pickup path only when it is a dropped item. Cast skills retain the WP38
+  `on_use` pickup bridge; clicking loot does **not** cast.
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and
@@ -30,9 +31,11 @@ Core principles:
   a **resource**. A flat second on top of both only added an invisible
   delay — and against §2b's swing skills it would have capped attack speed,
   which is the defect that already made the Strike an exception.
-- **Soft target lock** (WP19): the last punched/pointed enemy or ally
-  stays the implicit target for ~8 s; abilities default to it (makes
-  healing moving allies possible).
+- **Soft target lock** (WP19): enemy and ally use separate slots. The last
+  punched/pointed object stays the implicit target for 8 s; accepted hits
+  refresh it. Owner death, respawn, disconnect or class sync clears both
+  slots, and a dead/unloaded/left target is invalidated. Swing range or LOS
+  failure does not delete an enemy lock early; its ordinary expiry continues.
 - Three to four abilities per class in the MVP; **new active "main
   skills" come from talent capstones** (WP11, progression.md) — talents
   otherwise improve existing buttons rather than adding many new ones.
@@ -46,14 +49,12 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | 10 + 2×Int (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | +12 per landed native melee swing (all §2b swing skills, plus tools and fists — combat_stats §2), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
+| Rage | Warrior | 0–100, starts at 0 | +12 per landed §2b authoritative swing; ordinary tools/fists retain proportional native credit (combat_stats §2); +4 per hit taken, +15 from Charge; decays 2/s out of combat |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
   mob), an `immune_to` mob or a player with PvP off yields **0 rage**.
-  Held-button PvP banks partial-swing credit until an integer damage commit;
-  a commit that loses HP pays the whole pending credit, while a dodge or full
-  absorb pays 0 and discards it (`combat_stats.md` §2).
+  PvP refusal, dodge and full absorb likewise pay 0 (`combat_stats.md` §2).
 - **In combat** = dealt or received damage within the last 5 s. The
   definition lives in `grug_core` (`mark_in_combat`/`in_combat`) and is
   shared with recovery (combat_stats §5) and mob leashing (WP6).
@@ -69,10 +70,12 @@ Core principles:
   knockback and mob death handling (XP, loot) keep working.
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
-- **Native melee carries the melee bonus and rolls crit** (combat_stats §2).
-  Swing ability stacks mirror the equipped weapon's damage and interval in a
-  per-stack `tool_capabilities` override; tools and fists use their own
-  capabilities. Both then enter the same proportional mob/PvP pipeline.
+- **Melee carries the melee bonus and rolls crit** (combat_stats §2). Swing
+  ability stacks mirror the equipped weapon's interval for native
+  animation/interaction but publish zero damage; their combat packets are
+  input only, and the authoritative held loop builds a full slot-fed swing.
+  Tools and fists keep their own native proportional pipeline while moving the
+  next full ability swing out on the shared cadence bound.
 - **Threat hooks are stubs in WP4** (`grug_core.add_threat`,
   `add_heal_threat`): abilities already report their threat values
   (combat_stats §4: tank abilities ×3, healing ×0.5); WP6 replaces the
@@ -90,10 +93,12 @@ the melee side of it: `combat_stats.md` §2.
 Every ability is one of **two kinds**, and the kind is a property of the
 ability, declared where it is registered:
 
-1. **Swing skills** — LMB **is Luanti's native object punch**. The skill item
-   has no `on_use`; holding LMB repeats and animates natively, while clicks
-   use the same `time_from_last_punch` damage fraction. The skill's own effect
-   rides along on a completed landed swing, but only when charged. Today
+1. **Swing skills** — the item has no `on_use`, so Luanti keeps native
+   first-person held-LMB animation and direct object acquisition. A bounded
+   server ray restores dropped-item pickup where the no-dig pointabilities
+   mask it. Against enemies the native punch packet is input only: a
+   server-authoritative loop attacks the enemy soft lock on one weapon clock.
+   The selected skill's effect rides on a due landed swing when charged. Today
    exactly the three melee abilities: Strike, Mighty Blow, Hamstring.
 2. **Cast skills** — a discrete action that is not a weapon swing: heals,
    shields, Blink, Frost Nova, Smite, Charge, Taunt. A gap closer is
@@ -107,16 +112,19 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 ### Rules for swing skills
 
 - **A skill never makes you slower or weaker than the bare weapon.** Every
-  granted swing ItemStack mirrors `fleshy` damage and
-  `full_punch_interval` from the equipped weapon slot, with no digging
-  groupcaps and no item wear. Its item definition also marks the hand digging
+  granted swing ItemStack mirrors `full_punch_interval` from the equipped
+  weapon slot, but advertises `fleshy = 0`, with no digging groupcaps and no
+  item wear. Zero native damage prevents the acquisition packet from producing
+  builtin PvP knockback before the server callback suppresses it; the
+  authoritative swing rebuilds real damage from the slot. Its item definition
+  also marks the hand digging
   groups (`crumbly`, `snappy`, `oddly_breakable_by_hand`) and the engine's
   independent `dig_immediate` path as `pointabilities.nodes = "blocking"`:
-  objects remain natively punchable, but killing a mob while holding LMB
-  cannot roll straight into digging the ground or leaves. An empty slot
+  objects remain natively punchable when their ray wins; the fresh-press loot
+  bridge covers ground-level drops without making nodes transparent. Killing a
+  mob while holding LMB cannot roll straight into digging the ground or leaves. An empty slot
   mirrors the registered hand.
-  Holding and click-spamming therefore integrate to identical damage; only
-  clicking slower than the interval loses DPS (`combat_stats.md` §2).
+  The capabilities are interaction metadata, not a second damage stream.
 - **Every skill charges on its own timer, and the timer runs always** —
   including while the skill is *not* selected. That is what makes the
   hotbar a rotation: several skills come up during a fight and are spent in
@@ -124,39 +132,49 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 - **Charges do not stack.** One charge maximum, and a full charge never
   decays. Stacking would bring back burst hoarding; decay would punish a
   player for looking at the map.
-- **One bounded proc-progress accumulator tracks native punch fractions.** It
-  carries overflow, completes at 1, and can complete at most once per packet.
-  It resets on target or concrete equipped-weapon change, death, respawn,
-  class sync and disconnect — **not** on a switch between swing skills.
-- **A completed landed swing with a charged skill selected fires the effect
+- **Hold, click-spam and ordinary hostile tool/fist input share one per-player
+  ability cadence bound.** A direct hostile-object swing packet creates one
+  latch for the next throttled attack pass, so a real click that arrived on the
+  object may swing even if LMB was released before that pass. The accumulator
+  threshold is 0.05 s, but execution waits for an actual engine step (currently
+  often 0.09 s); it is not a 0.05 s maximum-latency promise. The latch is
+  consumed on that pass: if the clock is early or target/range/LOS validation
+  fails, it is discarded rather than queued. Held soft-lock repeats require
+  live LMB because Lua receives no click event while pointing at `nothing`.
+  Early clicks neither attack nor move the due time. Every actual hostile
+  tool/fist combat packet pushes the next full ability swing at least one
+  equipped-weapon interval out, preventing a second damage stream; consecutive
+  tool packets retain their own proportional accumulator. Cast use alone keeps
+  the due time unchanged. A due swing carries at most 0.1 s, and never more
+  than half an interval, of server-step lateness into the next due time. At
+  most one swing runs per pass, so lag or validation gaps never replay missed
+  swings.
+- **A due landed swing with a charged skill selected fires the effect
   and resets that skill's charge.** Only the *selected* skill is read at the
-  completion, so only one effect can ride on one swing. Evade, immunity, PvP
+  due instant, so only one effect can ride on one swing. Evade, immunity, PvP
   refusal, dodge and full absorb pay no cost, consume no charge and fire no
   effect.
-- **A bank-only PvP completion waits for an HP outcome.** If its fractional
-  damage has not yet reached an integer, the exact selected proc is frozen
-  beside the damage remainder and its cost is reserved but not paid. The
-  reservation cannot be spent by another skill or out-of-combat decay. The
-  later integer commit fires and pays it exactly once only if HP falls; dodge
-  or full absorb releases the reservation and leaves the charge armed. The
-  already accepted swing progress remains consumed in that case. Target or
-  concrete-weapon change discards damage remainder, rage credit and pending
-  proc together; a switch among swing skills never changes the frozen proc's
-  identity.
-  Target leave and death invalidate every attacker's Core damage/rage/pending
-  bank synchronously. Death clears the remaining ability-only swing progress
-  on the next engine step, after the killing punch settles; a committed proc is
-  already held in that punch's local preview before HP changes. The shared 0.5 s
-  wield watcher is a fallback for an invalid pending PvP ObjectRef. Ordinary
-  mob progress has no pending reservation and resets by target identity on the
-  next swing. A new concrete player ObjectRef never inherits the same name's
-  old transaction.
-  Wielding a non-swing item is likewise a reset boundary; switching among
-  swing skills is not. Entering any cast clears synchronously before its
-  affordability check, so a cast-and-switch-back inside one watcher interval
-  cannot preserve or spend a frozen proc. The cast item's `on_use` clears
-  before even its dropped-loot early return; direct `try_cast` callers repeat
-  the operation idempotently.
+- **Every due swing revalidates the enemy lock.** The concrete ObjectRef must
+  be alive and hostile, within the selected skill's range (4 m for today's
+  swings), and visible by the same eye-to-body LOS test as cast fallback.
+  Invalid/dead/unloaded targets are cleared. Range or LOS failure deals no
+  damage and produces no rage, threat, cost, charge reset or effect, but leaves
+  the lock to expire normally; holding may resume before then without a burst.
+  A new directly punched hostile overwrites the enemy lock. An accepted hit
+  refreshes its 8 s expiry.
+- **Clock boundaries are explicit.** Switching among swing skills preserves
+  the clock and reads the new selection live. Wielding a non-swing item or
+  entering a cast stops loop input and discards ordinary tool/fist remainder,
+  but preserves the weapon due time: swing → tool/cast → swing cannot grant an
+  instant hit. Death, respawn, class sync and disconnect clear clock state. A
+  concrete equipped-weapon change starts the new weapon at one full interval,
+  so A→B→A cannot manufacture immediate hits. Owner lifecycle also clears both
+  target slots; player target death/leave clears all locks that reference that
+  ObjectRef.
+- **The authoritative entry is exact and single-use.** Its opaque transaction
+  token names the expected attacker and concrete target and can be claimed
+  once. A synchronous callback-triggered second punch by that attacker, on the
+  same or another target, is suppressed before damage or proc preparation.
 - **The resource cost is paid at the proc, and an unaffordable proc does
   not consume the charge.** This is the decision layer: Mighty Blow's rage
   is the reason to keep swinging with it rather than to spend the rage
@@ -164,14 +182,12 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   would be noise.
 - **Rotation is the hotbar.** Keys 1–8 pick which effect is armed; no cast
   click is needed to switch. Switching between swing skills preserves proc
-  progress, so the newly selected charged skill rides on the next completed
-  swing. Switching away stops attacks naturally because there is no
-  server-generated stream.
-- **There is no auto-repeat toggle and no server swing loop.** Pressing LMB
-  attacks; holding it uses the client's native repeat and animation; releasing
-  it means no later attacks. Swing skills hit only the object currently under
-  the crosshair. The soft target lock remains for cast targeting, not for an
-  invisible auto-swing.
+  cadence, so the newly selected charged skill rides on the next due swing.
+- **There is no toggle.** Native no-`on_use` interaction supplies animation
+  and direct target acquisition; the bounded fresh-press ray supplies loot
+  pickup; the server loop supplies the one
+  authoritative damage stream against the enemy soft lock only while LMB is
+  held. Native combat packets themselves deal no damage/rage/threat/wear/proc.
 
 ### The charge bar
 

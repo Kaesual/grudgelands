@@ -157,24 +157,31 @@ game (not a mod pack), written in Lua.
       Every ability item wears the equipped weapon's skin on its own color
       orb (which retires the deferred "own ability icons"), and the held
       attack button becomes a universal ability, **Strike**, swinging at the
-      weapon's own speed (WP35's original toggle was replaced by native LMB
-      input in WP38's 2026-08-10 correction)
+      weapon's own speed (WP35's original toggle was replaced by native
+      interaction plus an authoritative held soft-lock clock in WP38's
+      2026-08-10 correction)
       (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
       **Not runtime tested**
 - [x] **Swing timing and skill timing become independent** (WP38, corrected
-      2026-08-10): swing items use Luanti's native click/hold punch and
-      animation; releasing LMB stops attacks. No skill restricts how fast you swing, damage is
-      proportional with a remainder accumulator so short swings never
-      round to nothing, and every skill is the ordinary weapon attack
+      2026-08-10): swing items retain Luanti's native animation and direct
+      object targeting; a bounded fresh-press server ray restores dropped-loot
+      pickup where no-dig pointabilities mask it. Native enemy packets carry zero damage
+      and one server-authoritative clock attacks the enemy soft lock only while
+      LMB is held (plus one direct-click latch consumed on the next throttled
+      attack pass; 0.05 s threshold, scheduled on the actual engine step).
+      Release stops
+      held repeats; click spam and ordinary tool/fist packets share the same
+      equipped-weapon cadence bound. Every due ability attack is one full swing,
+      and every skill is that ordinary weapon attack
       **plus** an effect that fires when its own charge is full — shown as
       a bar that fills red→yellow→green and vanishes when ready. That
-      deletes the shared melee clock instead of repairing it, closes the
-      ungated PvP punch, and **retires the 1 s global cooldown** of WP19:
+      closes the old competing damage streams and ungated PvP punch, and
+      **retires the 1 s global cooldown** of WP19:
       per-skill charges and resource costs are the limiters now. A separate
-      fractional progress accumulator fires at most one selected proc per
-      completed landed swing
+      accepted-hit transaction fires at most one selected proc per due landed
+      full swing
       (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
 
 ### 1.4 Mobs & combat
