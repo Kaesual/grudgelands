@@ -1251,4 +1251,5 @@ end
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/protection.lua")
+dofile(modpath .. "/combat_debug.lua")
 dofile(modpath .. "/combat.lua")
