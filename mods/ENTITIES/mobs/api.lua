@@ -2703,14 +2703,11 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- GRUG PATCH (fractional-remainder accumulator, WP38, combat_stats.md
 	-- §2): the flag block additionally records `grug_mob_hit` — ANY player
 	-- punch on a grug_mobs-registered mob, ability punches included. The
-	-- accumulator result must reach grug_mobs' do_punch wrapper as
-	-- `self.temp.grug_applied` (its lethal check runs on the same integer
-	-- the health subtraction will use), and an ability punch on the same
-	-- mob must see nil rather than a stale value — so the write happens
-	-- on every such punch, not only on accumulator punches. `grug_melee`
-	-- itself is unchanged — the same condition it always had, exactly as
-	-- before. `grug_immune` marks a hit that matched the `immune_to` loop
-	-- below (see there).
+	-- accumulator result reaches grug_mobs' accepted-hit hook directly after
+	-- both cancellation gates, so its lethal check and the later health
+	-- subtraction use the same integer. `grug_melee` itself is unchanged — the
+	-- same condition it always had. `grug_immune` marks a hit that matched the
+	-- `immune_to` loop below (see there).
 	local grug_melee = false
 	local grug_mob_hit = false
 	local grug_immune = false
@@ -2857,16 +2854,8 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			hitter, self.object, damage)
 		grug_applied = grug_accumulation.applied
 	end
-	-- The wrapper (grug_mobs' do_punch, runs right after this) needs the
-	-- same integer for its lethal check — kill credit/XP and the rare
-	-- respawn timer must fire on the exact punch that kills. Written on
-	-- EVERY player punch on a registered mob so an ability punch on the
-	-- same mob rewrites the stale value with nil. `self.temp` is
-	-- mobs_redo's runtime-only store, never serialized.
-	if grug_mob_hit then
-		self.temp = self.temp or {}
-		self.temp.grug_applied = grug_applied
-	end
+	-- The accepted-hit hook receives this local after both cancellation gates,
+	-- so its lethal prediction and the later subtraction cannot drift.
 
 	local enchants = {}
 
@@ -2914,8 +2903,23 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		grug_accumulation_committed =
 			grug_core.commit_accumulated_melee(grug_accumulation)
 	end
+	if not grug_accumulation_committed then
+		-- A nested punch replaced the preview transaction. Applying its stale
+		-- integer would desynchronize damage, rage and proc state; cancel cleanly.
+		return true
+	end
+
+	-- GRUG PATCH (accepted player-hit seam, WP38 correction review): every
+	-- irreversible wrapper side effect runs only after BOTH cancellation gates
+	-- above, while health has not yet been subtracted. This keeps custom
+	-- do_punch and CMI cancels free of provocation, tags, threat, rage, rare
+	-- scheduling and XP, while preserving exact lethal prediction.
+	if grug_mob_hit then
+		grug_mobs.accepted_player_punch(self, hitter, damage,
+			grug_applied, grug_fraction)
+	end
 	grug_core.finish_native_melee(grug_proc_context, {
-		landed = grug_accumulation_committed and not grug_immune and damage > 0,
+		landed = not grug_immune and damage > 0,
 		damage = damage,
 		proc_extra = grug_proc_extra,
 		mob = self,

@@ -295,7 +295,7 @@ end
 -- Death -> respawn timer
 --
 
--- Called from init.lua's do_punch wrapper on the lethal player punch.
+-- Called from init.lua's accepted-player-hit hook on the lethal player punch.
 function grug_mobs.rare_killed(id)
 	local spec = grug_mobs.registered_rares[id]
 	local st = state[id]

@@ -1,8 +1,9 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (2026-08-06). Implementation: WP15 (character screen +
+Decided spec (last revised 2026-08-10; established 2026-08-06).
+Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
-hand count).
+hand count), WP38 (native swing capability/pointability bridge).
 
 ## 1. Character screen (the "i" key)
 
@@ -52,7 +53,10 @@ hand count).
     `full_punch_interval` in a per-stack tool-capability override whenever the
     kit or equipment syncs. They receive no digging groupcaps and no attack
     wear. This is the input bridge that keeps the slot the sole damage/speed
-    source while allowing Luanti's native held-LMB repeat and animation.
+    source while allowing Luanti's native held-LMB repeat and animation. Their
+    item definitions additionally mark `crumbly`, `snappy` and
+    `oddly_breakable_by_hand` nodes as pointability `"blocking"`, so objects
+    remain natively punchable without held LMB continuing into node digging.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
     and the twelve vendored `default:` swords and axes (that list shrinks

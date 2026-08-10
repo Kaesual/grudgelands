@@ -1,6 +1,7 @@
 # Class Kits — Resources & Abilities (MVP)
 
-Decided spec (2026-08-06). Implementation: WP4 (`grug_abilities`, resource
+Decided spec (last revised 2026-08-10; established 2026-08-06).
+Implementation: WP4 (`grug_abilities`, resource
 HUD, damage pipeline hooks in `grug_core`), WP19 (kit tuning, GCD, target
 lock), WP35 (§2b's universal ability and §2c's ability-item skins), WP38
 (§2b's proc model, which retires WP19's GCD); skill trees extend these
@@ -108,7 +109,11 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 - **A skill never makes you slower or weaker than the bare weapon.** Every
   granted swing ItemStack mirrors `fleshy` damage and
   `full_punch_interval` from the equipped weapon slot, with no digging
-  groupcaps and no item wear. An empty slot mirrors the registered hand.
+  groupcaps and no item wear. Its item definition also marks the final hand
+  digging groups (`crumbly`, `snappy`, `oddly_breakable_by_hand`) as
+  `pointabilities.nodes = "blocking"`: objects remain natively punchable,
+  but killing a mob while holding LMB cannot roll straight into digging the
+  ground or leaves. An empty slot mirrors the registered hand.
   Holding and click-spamming therefore integrate to identical damage; only
   clicking slower than the interval loses DPS (`combat_stats.md` §2).
 - **Every skill charges on its own timer, and the timer runs always** —
@@ -127,6 +132,15 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   completion, so only one effect can ride on one swing. Evade, immunity, PvP
   refusal, dodge and full absorb pay no cost, consume no charge and fire no
   effect.
+- **A bank-only PvP completion waits for an HP outcome.** If its fractional
+  damage has not yet reached an integer, the exact selected proc is frozen
+  beside the damage remainder and its cost is reserved but not paid. The
+  reservation cannot be spent by another skill or out-of-combat decay. The
+  later integer commit fires and pays it exactly once only if HP falls; dodge
+  or full absorb releases the reservation and leaves the charge armed. The
+  already accepted swing progress remains consumed in that case. Target or
+  concrete-weapon change discards damage remainder, rage credit and pending
+  proc together; a hotbar switch never changes the frozen proc's identity.
 - **The resource cost is paid at the proc, and an unaffordable proc does
   not consume the charge.** This is the decision layer: Mighty Blow's rage
   is the reason to keep swinging with it rather than to spend the rage

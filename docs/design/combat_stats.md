@@ -1,9 +1,10 @@
 # Combat, Attributes & Progression Mechanics
 
-Decided spec (2026-08-06). Implementation: WP3 (classes/stats pipeline),
+Decided spec (last revised 2026-08-10; established 2026-08-06).
+Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
-consumable values), WP35 (weapon slot, auto-attack as a skill, the
-two-handed rule). Damage pipeline and threat live in `grug_core`.
+consumable values), WP35 (weapon slot and the two-handed rule), WP38
+(native swing/proc timing). Damage pipeline and threat live in `grug_core`.
 
 Core principles:
 
@@ -157,6 +158,14 @@ bug inside the gate.
   totalling 1 pay exactly +12 independently of weapon damage, without paying
   before the hit outcome is known. A punch the target refuses, an `immune_to`
   mob and PvP off also pay nothing.
+  A proc whose completing packet is bank-only joins the same transaction:
+  its already-added replacement delta is never added again, its exact skill
+  identity is frozen, and its resource is reserved but not paid. The later
+  integer commit pays/resets/runs it once on any real HP loss (partial absorb
+  included); dodge or full absorb releases the reservation with no cost,
+  charge reset or effect. Its accepted swing progress stays consumed. Target
+  or concrete-weapon change discards damage remainder, rage credit and the
+  pending proc together; hotbar selection does not reinterpret it.
 - **There is exactly one native melee stream and no server swing clock.** The
   three swing ability definitions omit `on_use`; Luanti therefore sends its
   ordinary object-punch interaction for both clicks and held LMB. The former
@@ -169,7 +178,11 @@ bug inside the gate.
   `max_drop_level = 0` and `punch_attack_uses = 0`. The empty slot uses the
   registered hand baseline. The compare-before-write token prevents inventory
   churn, and charge-bar wear metadata remains independent. There is no
-  wielded-item fallback.
+  wielded-item fallback. The swing definition additionally overrides the
+  three final hand-dig node groups (`crumbly`, `snappy`,
+  `oddly_breakable_by_hand`) to pointability `"blocking"`. That keeps objects
+  on the native punch path while preventing held LMB from starting a node dig
+  after the object disappears.
 - **Proc cadence has its own bounded fractional accumulator.** One value per
   player integrates native punch fractions to 1, carries overflow and allows
   at most one completion per packet. It resets on target or concrete equipped
@@ -180,6 +193,10 @@ bug inside the gate.
   Blow contributes only the delta needed for its exact specified total to the
   same punch before the single crit/mitigation/dodge path; it is never a bonus
   punch.
+- **Mob hit side effects share the accepted boundary.** Provocation, the loot
+  tag, combat/threat/rage callbacks and lethal rare/XP credit run after both
+  mobs_redo `do_punch` and CMI accept, immediately before health subtraction.
+  A cancel at either gate produces none of them.
 - **Tools and fists use the same native timing but keep their own source.** A
   wielded pick, axe or bare hand still uses that wielded item's damage and
   interval, plus Strength, crit, rage, base threat and the soft target lock.

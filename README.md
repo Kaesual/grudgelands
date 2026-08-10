@@ -155,8 +155,8 @@ tiers behind a real fight — and *enemies* are everything else.
   thing that decides what a skill hits for and what it looks like. Every
   ability shows your own sword, in the bar and in your hand, and swapping
   the weapon reskins all of them at once; an empty slot means bare fists,
-  never a blocked button. **Auto-attack is itself a skill**: one click
-  starts swinging at the weapon's own speed, a second one stops it. A
+  never a blocked button. **Strike is the universal swing skill**: click or
+  hold LMB for Luanti's native weapon-speed punch, and release stops it. A
   two-handed weapon costs you the offhand, so a greataxe and a carried
   torch are a choice between the two.
 - **Pace**: level 60 in ~10–20 hours. The endgame is the game. Death costs
@@ -366,10 +366,12 @@ unblocked and built on 2026-08-08.)
 **Caveats:** the shipped work packages were runtime-tested on 2026-08-07
 (six findings on the WP1–WP19 pass, all fixed; WP7 passed without
 findings), **except WP25 (the material ladder), WP36 (the fix round),
-WP35 (the weapon slot) and WP38 (the proc model) — none of which has been
-runtime-tested at all**:
-they have only been reviewed and syntax-checked. WP36 and WP35 both
-merged on 2026-08-08. The second runtime test, on that same day, is
+WP35 (the weapon slot) and the current WP38 native-input correction**:
+those revisions have only been reviewed and syntax-checked. WP38's earlier
+proc/loop implementation **was** exercised by the user's runtime test; that
+test exposed the one-click repeated-damage and missing held-animation bug
+which the still-unverified native-input correction replaces. Both WP36 and
+WP35 merged on 2026-08-08. The second runtime test, on that same day, is
 what produced WP36 in the first place, and WP36's own fixes are
 therefore still unverified in-game. **Two design questions are open, not
 decided**: whether the jungle fringe should follow the deep jungle's new
@@ -380,7 +382,7 @@ defects (ungated PvP punches stacking with the auto-attack, the
 winner-takes-all swing clock, rage per punch packet) are closed by
 WP38's redesign. Its 2026-08-10 native-input correction also removes the
 invisible server toggle that looked like repeated bleeding after one click;
-like the rest of that package it is not yet verified in-game. The two-handed rule is built and
+this correction is not yet verified in-game. The two-handed rule is built and
 tested but **dormant**: no item can enter the offhand until WP14, so
 neither half of the rule can fire.
 `grug_core.open_sea_at` still puts open sea

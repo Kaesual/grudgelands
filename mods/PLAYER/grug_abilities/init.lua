@@ -15,6 +15,11 @@ local item_defs = {} -- item name -> ability def
 
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
+-- A deferred PvP proc has already contributed its damage to the fractional
+-- remainder but must not pay until that remainder commits and actually lowers
+-- HP. Its cost is reserved here: still displayed, not yet spent, but excluded
+-- from every affordability check and from rage decay.
+local reserved = {} -- player name -> {mana = n, rage = n}
 -- player name -> {ability id -> {expiry = us time, duration = seconds}}. The
 -- duration is stored per cast, not looked up from the def, because the wear
 -- ticker needs the value THIS cast used to draw a fraction of it.
@@ -88,8 +93,41 @@ end
 
 local function affordable(player, cost)
 	local name = player:get_player_name()
-	return (not cost.mana or (mana[name] or 0) >= cost.mana)
-		and (not cost.rage or (rage[name] or 0) >= cost.rage)
+	local held = reserved[name] or {}
+	return (not cost.mana or (mana[name] or 0) - (held.mana or 0) >= cost.mana)
+		and (not cost.rage or (rage[name] or 0) - (held.rage or 0) >= cost.rage)
+end
+
+local function reserve_cost(player, context)
+	if context.reserved then
+		return true
+	end
+	if not affordable(player, context.proc.cost) then
+		return false
+	end
+	local name = player:get_player_name()
+	local held = reserved[name] or {mana = 0, rage = 0}
+	reserved[name] = held
+	held.mana = held.mana + (context.proc.cost.mana or 0)
+	held.rage = held.rage + (context.proc.cost.rage or 0)
+	context.reserved = true
+	return true
+end
+
+local function release_cost(player, context)
+	if not context.reserved then
+		return
+	end
+	local name = player:get_player_name()
+	local held = reserved[name]
+	if held then
+		held.mana = math.max(0, held.mana - (context.proc.cost.mana or 0))
+		held.rage = math.max(0, held.rage - (context.proc.cost.rage or 0))
+		if held.mana == 0 and held.rage == 0 then
+			reserved[name] = nil
+		end
+	end
+	context.reserved = false
 end
 
 --
@@ -132,7 +170,7 @@ end
 -- can never disagree.
 --
 -- `def.melee = true` opts an ability OUT of the perk (weapon-slot design E7).
--- The perk is written as "+5 m on every ability", and on the auto-attack that
+-- The perk is written as "+5 m on every ability", and on native Strike that
 -- is a 9 m sword: an elf would hit things it cannot reach with a weapon,
 -- through the one ability every character has. The opt-out is an explicit
 -- flag rather than a range threshold because a threshold silently re-tunes
@@ -346,7 +384,19 @@ function grug_abilities.register_ability(def)
 			return itemstack -- ability items cannot be dropped
 		end,
 	}
-	if def.kind == "cast" then
+	if def.kind == "swing" then
+		-- Empty groupcaps stop digging server-side, but without item-specific
+		-- pointabilities the client can immediately retarget the ground/leaves
+		-- after a mob dies and begin a native dig. These are the three final hand
+		-- digging groups registered by the game. "blocking" keeps the ray hit as
+		-- a blocker without making the node an interaction target; objects retain
+		-- their ordinary pointability and native punch path.
+		tool_def.pointabilities = {nodes = {
+			["group:crumbly"] = "blocking",
+			["group:snappy"] = "blocking",
+			["group:oddly_breakable_by_hand"] = "blocking",
+		}}
+	else
 		tool_def.on_use = function(itemstack, user, pointed_thing)
 			-- Loot pickup (classes.md core principles, WP38): an item with an
 			-- on_use makes the client send INTERACT_USE instead of a punch, so a
@@ -515,10 +565,17 @@ end
 -- ride on a landed native punch. Target or concrete equipped-weapon changes
 -- reset it; hotbar selection changes do not.
 local swing_progress = {}
--- player name -> {target, weapon = ItemStack copy, progress, threat_damage}
+-- player name -> {
+--   target, weapon = ItemStack copy, progress, threat_damage,
+--   pending = deferred PvP proc context or nil,
+-- }
 
 local function clear_swing_progress(player)
-	swing_progress[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	-- This also cancels a deferred PvP proc and releases its reservation.
+	grug_core.reset_accumulated_melee(player)
+	swing_progress[name] = nil
+	reserved[name] = nil
 end
 
 local function selected_swing_def(player)
@@ -540,6 +597,11 @@ local function prepare_native_swing(player, target, fraction)
 	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
 	local entry = swing_progress[name]
 	if not entry or entry.target ~= guid or not entry.weapon:equals(weapon) then
+		-- Damage remainder, rage credit and a deferred proc must reset with the
+		-- same target/concrete-weapon boundary as swing progress.
+		if entry then
+			grug_core.reset_accumulated_melee(player)
+		end
 		entry = {
 			target = guid,
 			weapon = ItemStack(weapon),
@@ -567,7 +629,7 @@ local function prepare_native_swing(player, target, fraction)
 	-- Read the selected skill live only when a whole swing completes. A charge
 	-- that is unavailable or unaffordable stays untouched and the ordinary
 	-- swing still completes.
-	if complete and selected.proc_swing
+	if complete and not entry.pending and selected.proc_swing
 			and grug_abilities.charge_ready(player, selected)
 			and affordable(player, selected.cost) then
 		local amount, threat_mult, post = selected.proc_swing(player, target, {
@@ -583,15 +645,57 @@ local function prepare_native_swing(player, target, fraction)
 	return context
 end
 
+local function settle_native_proc(context, result)
+	if context.settled then
+		return false
+	end
+	context.settled = true
+	if context.entry.pending == context then
+		context.entry.pending = nil
+	end
+	-- Releasing precedes the real spend: the reserved amount becomes available
+	-- to this transaction, then immediately becomes the paid cost. Normal casts
+	-- and rage decay could not consume it while the proc waited.
+	release_cost(context.player, context)
+	if result.cancelled or not result.landed then
+		return false
+	end
+	if not spend(context.player, context.proc.cost) then
+		-- Reservation makes this unreachable unless foreign code mutates the
+		-- resource tables behind the public API. Do not reset the charge or run
+		-- the effect if that contract is ever broken; log the free damage loudly.
+		core.log("error", "[grug_abilities] native proc lost its affordable " ..
+			"resource before commit: " .. context.proc.id)
+		return false
+	end
+	grug_abilities.reset_charge(context.player, context.proc)
+	if result.mob and context.threat_mult ~= 1 then
+		grug_core.add_threat(result.mob, context.player,
+			(context.completed_damage or 0) * (context.threat_mult - 1))
+	end
+	if context.post then
+		context.post()
+	end
+	return true
+end
+
 local function finish_native_swing(context, result)
 	local player = context.player
 	local name = player:get_player_name()
-	if swing_progress[name] ~= context.entry or not result.landed then
+	if result.settle_only then
+		return settle_native_proc(context, result)
+	end
+	local accepted = result.accepted
+	if accepted == nil then
+		accepted = result.landed
+	end
+	if swing_progress[name] ~= context.entry or not accepted then
 		return false
 	end
 	local entry = context.entry
 	local raw = math.max(0, result.damage or 0)
 	local extra = math.max(0, result.proc_extra or 0)
+	local proc_fired = false
 	if context.complete then
 		-- A packet may carry the end of one swing plus overflow into the next.
 		-- Keep only the proportional baseline overflow; the proc delta belongs
@@ -601,20 +705,21 @@ local function finish_native_swing(context, result)
 		local base_raw = math.max(0, raw - extra)
 		local completed_damage = entry.threat_damage
 			+ base_raw * share + extra
+		context.completed_damage = completed_damage
 		entry.threat_damage = base_raw * (1 - share)
 		entry.progress = context.progress
 		if context.proc then
-			-- Cost and charge move only after acceptance. The effect closure is
-			-- therefore never run for evade, immunity, PvP dodge or full absorb.
-			spend(player, context.proc.cost)
-			grug_abilities.reset_charge(player, context.proc)
-			if result.mob and context.threat_mult ~= 1 then
-				grug_core.add_threat(result.mob, player,
-					completed_damage * (context.threat_mult - 1))
+			if result.defer_proc then
+				-- PvP has accepted and banked the raw fraction, but no HP outcome
+				-- exists yet. Reserve the cost and freeze this exact selected proc;
+				-- later hotbar switches cannot reinterpret it.
+				if not reserve_cost(player, context) then
+					return false
+				end
+				entry.pending = context
+				return context
 			end
-			if context.post then
-				context.post()
-			end
+			proc_fired = settle_native_proc(context, result)
 		end
 	else
 		entry.progress = context.progress
@@ -625,7 +730,7 @@ local function finish_native_swing(context, result)
 	if result.grant_rage then
 		grug_abilities.add_rage(player, 12 * context.fraction)
 	end
-	return context.proc ~= nil
+	return proc_fired
 end
 
 grug_core.register_native_melee_handler(prepare_native_swing,
@@ -641,7 +746,7 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 		return
 	end
 	-- Universal abilities have no class to be (E1) — without this a Mage
-	-- clicking the auto-attack was told "You are no Warrior".
+	-- using the universal Strike was told "You are no Warrior".
 	if not def.universal and grug_classes.get_class(user) ~= def.class then
 		grug_abilities.flash(user, "You are no " ..
 			grug_classes.registered_classes[def.class].name .. ".")
@@ -1128,14 +1233,14 @@ end)
 
 -- Does this ability belong in THIS character's kit? One predicate, used by both
 -- the purge below and the grant loop, so the two can never disagree about what
--- a kit is. The universal auto-attack is granted to every class and must be
+-- a kit is. Universal Strike is granted to every class and must be
 -- exempt from the purge (or it is granted and destroyed in the same pass).
 local function in_kit(def, class)
 	return def.universal or def.class == class
 end
 
 -- Every ability this character gets, in hotbar order: universal first (E1 —
--- the auto-attack lands on key 1 for everyone), then the class kit. Talent-
+-- Strike lands on key 1 for everyone), then the class kit. Talent-
 -- gated abilities are left out entirely, so a def's position in this list IS
 -- its hotbar slot (Renew must not push Power Word: Shield off key 4).
 local function kit_of(class)
@@ -1340,13 +1445,13 @@ end)
 -- real damage — it is banked, not lost), and floor(damage) >= 1 on the
 -- non-accumulator path (immune_to SETS damage rather than scaling it, so
 -- there is no fraction to bank and the usual immunity value of 0 must pay
--- nothing). Nothing else reaches the hook with a landed hit: a vendor NPC
--- never reaches this wrapper at all (plain mobs:register_mob, no grug
--- wrapper), an evading mob cancels the punch before it.
+-- nothing). Nothing else reaches the accepted hook with a landed hit: a vendor
+-- NPC is a plain mobs:register_mob entity and an evading mob cancels before
+-- the hook.
 --
 -- Native swing ability punches are deferred to finish_native_swing below:
--- unlike this wrapper hook, that finish point is after mobs_redo's cancellation
--- gates. Tools and fists keep this hook. Cast damage sets in_ability_punch and
+-- both it and this hook are after mobs_redo's cancellation gates. Tools and
+-- fists keep this hook. Cast damage sets in_ability_punch and
 -- remains excluded, so Fireball can never generate melee rage.
 --
 
@@ -1476,13 +1581,48 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 			- armored_damage
 	end
 	local raw = armored_damage * fraction + proc_extra
-	local applied, committed_fraction = grug_core.apply_accumulated_melee(
+	local accumulation = grug_core.prepare_accumulated_melee(
 		hitter, player, raw, fraction)
+	local applied = accumulation.applied
+	local committed_fraction = accumulation.committed_fraction
+	local deferred_proc
+	if raw > 0 and applied < 1 and proc_context then
+		-- This packet is accepted into the damage remainder, so its swing
+		-- progress is real. A completed proc cannot settle yet: freeze it and
+		-- reserve its resource beside that SAME remainder transaction.
+		deferred_proc = grug_core.finish_native_melee(proc_context, {
+			accepted = true,
+			landed = false,
+			defer_proc = proc_context.proc ~= nil,
+			damage = raw,
+			proc_extra = proc_extra,
+			grant_rage = false,
+		})
+		if deferred_proc and not grug_core.defer_accumulated_melee_proc(
+				accumulation, deferred_proc) then
+			grug_core.finish_native_melee(deferred_proc, {
+				settle_only = true,
+				cancelled = true,
+				landed = false,
+			})
+			deferred_proc = nil
+		end
+	end
+	if not grug_core.commit_accumulated_melee(accumulation) then
+		if deferred_proc then
+			grug_core.finish_native_melee(deferred_proc, {
+				settle_only = true,
+				cancelled = true,
+				landed = false,
+			})
+		end
+		return true
+	end
 	-- Bank-only packets pay nothing. At an integer commit the accumulator
 	-- returns ALL fractions since the previous commit and clears them at once;
 	-- a dodge or full absorb then discards that credit, while any real HP loss
 	-- (including after a partial absorb) pays it in full.
-	local landed = raw > 0 and applied < 1
+	local landed = false
 	if applied >= 1 then
 		local hp_before = player:get_hp()
 		-- set_hp with the punch reason routes through the central hp-change
@@ -1496,15 +1636,22 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		})
 		landed = player:get_hp() < hp_before
 	end
-	-- Commit the proc before rage so a near-cap Mighty Blow pays its cost and
-	-- then earns the swing's rage, matching the former full-swing path. A
-	-- dodge or full absorb leaves charge/cost/progress untouched.
-	grug_core.finish_native_melee(proc_context, {
-		landed = landed,
-		damage = raw,
-		proc_extra = proc_extra,
-		grant_rage = false,
-	})
+	if applied >= 1 then
+		-- The current packet advances only when its integer commit lowers HP.
+		-- A proc banked by an earlier accepted packet already consumed that
+		-- earlier swing progress; this outcome only settles its reservation.
+		grug_core.finish_native_melee(proc_context, {
+			accepted = landed,
+			landed = landed,
+			damage = raw,
+			proc_extra = proc_extra,
+			grant_rage = false,
+		})
+		grug_core.finish_native_melee(accumulation.committed_proc, {
+			settle_only = true,
+			landed = landed,
+		})
+	end
 	if landed and applied >= 1 and committed_fraction > 0 then
 			-- Across any number of bank-only packets this integrates to +12
 			-- per total swing fraction 1, independent of weapon damage.
@@ -1566,7 +1713,10 @@ core.register_globalstep(function(dtime)
 		elseif res == "rage" and not grug_core.in_combat(player) then
 			local cur = rage[name] or 0
 			if cur > 0 then
-				local new = math.max(0, cur - 2 * elapsed)
+				-- Deferred PvP procs reserve, but do not yet spend, their rage.
+				-- Decay may consume only the unreserved portion.
+				local floor = (reserved[name] and reserved[name].rage) or 0
+				local new = math.max(floor, cur - 2 * elapsed)
 				rage[name] = new
 				if math.floor(new) ~= math.floor(cur) then
 					hud_update(player)
@@ -1694,6 +1844,7 @@ core.register_on_leaveplayer(function(player)
 	rage[name] = nil
 	cooldowns[name] = nil
 	charges[name] = nil
+	reserved[name] = nil
 	targets[name] = nil
 	wear_steps[name] = nil
 	charge_steps[name] = nil

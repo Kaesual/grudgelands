@@ -265,7 +265,9 @@ Details + line numbers in [docs/research/](docs/research/).
   toolcaps, with empty `groupcaps`, `max_drop_level = 0` and
   `punch_attack_uses = 0`; empty slot = registered hand baseline, never a
   wielded fallback. Compare tokens prevent inventory churn and the charge bar
-  remains independent ItemMeta.
+  remains independent ItemMeta. The three final hand-dig node-group entries in
+  `pointabilities.nodes` are `"blocking"` on swing definitions, so held LMB
+  keeps native object punches but cannot continue into digging after a mob dies.
   **Melee damage is proportional** (combat_stats.md §2): native input deals
   `(weapon damage + Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
   and fractions ride the per-player remainder accumulator
@@ -283,7 +285,13 @@ Details + line numbers in [docs/research/](docs/research/).
   replacement delta is folded into that same native punch before its one
   crit/mitigation/dodge path — never a recursive bonus punch. Charge timers
   tick independently (one max, no decay, charged at join/grant), and there is
-  no GCD.
+  no GCD. A bank-only PvP completion is frozen beside the damage remainder:
+  its resource is reserved (excluded from affordability and rage decay, but
+  not paid/display-subtracted) and the later integer commit settles that exact
+  proc once. HP loss pays/resets/runs it; dodge/full absorb releases the
+  reservation and leaves charge armed, while the accepted progress stays
+  consumed. Target/concrete-weapon reset discards damage remainder, rage
+  credit and pending proc together; selection never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
@@ -303,7 +311,7 @@ Details + line numbers in [docs/research/](docs/research/).
   `return true` always suppresses hostile engine damage. PvP fractions bank
   with the damage remainder and pay `12 × committed_pending_fraction` only
   when a commit actually lowers HP; bank-only packets pay nothing, target
-  switches discard both banks, and dodge/full absorb consume the credit for
+  switches discard both banks and any pending proc, and dodge/full absorb consume the credit for
   0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
   totalling 1 pay +12 independent of weapon damage, without the old 60 rage/s
   packet firehose. Base mob threat still takes raw fractional damage.
@@ -379,7 +387,7 @@ Details + line numbers in [docs/research/](docs/research/).
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **30 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
+  - **31 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
     the end of the wear block runs only when wear/toolranks changed the stack
@@ -394,8 +402,8 @@ Details + line numbers in [docs/research/](docs/research/).
     when the accumulated hit lands (`subtract >= 1`), and the
     feedback/subtraction split moves hit sound/blood/flash in front of
     the `damage >= 1` gate while the health subtraction and
-    `check_for_death` run on the accumulated integer (bridged to the
-    do_punch wrapper as `self.temp.grug_applied` for its lethal check).
+    `check_for_death` run on the accumulated integer (passed directly to the
+    post-cancellation accepted-hit hook for its lethal check).
     The WP38 review added two more: `grug_fraction` (the punch's
     clamp(tflp/fpi, 0, 1), computed once from the normalized `tflp`) and
     the wear gate that spends a swing's wear only when
@@ -407,7 +415,11 @@ Details + line numbers in [docs/research/](docs/research/).
     cleared. The 2026-08-10 native-input correction added two sites: proc
     preparation folds a completed skill's replacement delta into the same
     punch before crit, and accepted commit after `do_punch`/CMI is the only
-    place that mutates the damage remainder and proc state.
+    place that mutates the damage remainder and proc state. The review added
+    the 31st site: `grug_mobs.accepted_player_punch` runs provocation, loot
+    tag, threat/rage and lethal rare/XP work only after both `do_punch` and CMI
+    accept, before health subtraction; neither cancel path has irreversible
+    hit side effects.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

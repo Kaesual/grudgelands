@@ -75,7 +75,11 @@ damage preview/commit plus two new vendored seam sites folds Mighty Blow's
 exact replacement delta into the same crit/mitigation/dodge path and commits
 cost, charge and effect only after acceptance; mob and hostile-PvP punches
 share this handler. The wield watcher is now part of the existing throttled
-0.5 s ticker. Vendored `api.lua` has **30** patch markers.
+0.5 s ticker. The correction review added a damage-remainder-coupled pending
+PvP proc transaction with resource reservation, moved all mob hit side effects
+behind both `do_punch`/CMI acceptance gates, and blocks the three hand-dig node
+groups through swing-item pointabilities. Vendored `api.lua` has **31** patch
+markers.
 
 ### Readiness (2026-08-08)
 
