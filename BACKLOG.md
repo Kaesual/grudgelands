@@ -79,10 +79,12 @@ share this handler. The wield watcher is now part of the existing throttled
 PvP proc transaction with resource reservation, moved all mob hit side effects
 behind both `do_punch`/CMI acceptance gates, and blocks the three hand groupcaps
 plus the independent `dig_immediate` path through swing-item pointabilities.
-The same accepted boundary now owns the prepared melee-crit visual; player
-target leave invalidates every attacker's pending transaction immediately,
-death does so after the killing callback settles, and the shared watcher
-catches invalid mobs and non-swing wield boundaries.
+The same accepted boundary now owns the prepared melee-crit visual. Player
+target leave/death invalidates every attacker's Core bank synchronously; death
+clears ability-only progress next step after the killing proc (already moved to
+the punch-local preview) settles. The shared watcher is a fallback for invalid
+pending PvP ObjectRefs and catches non-swing wield boundaries; mob progress
+resets by target identity on the next swing.
 Core target invalidation also clears tool/fist-only damage and rage banks, and
 cast-item `on_use` is a synchronous reset before loot/validity/affordability
 (`try_cast` repeats it for direct callers) rather than relying on the watcher.

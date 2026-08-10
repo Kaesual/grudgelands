@@ -143,11 +143,14 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   concrete-weapon change discards damage remainder, rage credit and pending
   proc together; a switch among swing skills never changes the frozen proc's
   identity.
-  Target leave cancels every attacker's bound transaction immediately; death
-  schedules the same cancellation for the next engine step, after the killing
-  punch settles. The shared 0.5 s wield watcher also catches an invalid mob
-  target. A new concrete player ObjectRef never inherits the same name's old
-  transaction.
+  Target leave and death invalidate every attacker's Core damage/rage/pending
+  bank synchronously. Death clears the remaining ability-only swing progress
+  on the next engine step, after the killing punch settles; a committed proc is
+  already held in that punch's local preview before HP changes. The shared 0.5 s
+  wield watcher is a fallback for an invalid pending PvP ObjectRef. Ordinary
+  mob progress has no pending reservation and resets by target identity on the
+  next swing. A new concrete player ObjectRef never inherits the same name's
+  old transaction.
   Wielding a non-swing item is likewise a reset boundary; switching among
   swing skills is not. Entering any cast clears synchronously before its
   affordability check, so a cast-and-switch-back inside one watcher interval

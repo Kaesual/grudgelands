@@ -166,11 +166,15 @@ bug inside the gate.
   charge reset or effect. Its accepted swing progress stays consumed. Target
   or concrete-weapon change discards damage remainder, rage credit and the
   pending proc together; selection among swing skills does not reinterpret it.
-  Player target leave invalidates every attacker's transaction immediately;
-  death does so on the next engine step after the killing punch settles (a
-  reconnect has the same GUID/name but a new ObjectRef). The shared watcher
-  cancels an invalid mob target within 0.5 s. Crossing to a non-swing wielded
-  item is also a reset boundary, while switching among swing skills is not.
+  Player target leave and death invalidate every attacker's Core damage/rage/
+  pending bank synchronously. Death clears remaining ability-only swing
+  progress on the next engine step after the killing punch settles; its
+  committed proc was moved to the punch's local preview before HP changed. A
+  reconnect has the same GUID/name but a new ObjectRef. The shared watcher is a
+  fallback for an invalid pending PvP ObjectRef. Mob progress has no pending
+  reservation and resets by target identity on the next swing. Crossing to a
+  non-swing wielded item is also a reset boundary; switching among swing skills
+  is not.
   Cast entry clears synchronously before affordability, independent of that
   watcher; the cast-item `on_use` does so before its dropped-loot/validity
   branches, and `try_cast` repeats it for direct callers.

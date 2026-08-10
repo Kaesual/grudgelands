@@ -292,13 +292,16 @@ Details + line numbers in [docs/research/](docs/research/).
   proc once. HP loss pays/resets/runs it; dodge/full absorb releases the
   reservation and leaves charge armed, while the accepted progress stays
   consumed. Target/concrete-weapon reset discards damage remainder, rage
-  credit and pending proc together. Player target leave invalidates all
-  attackers immediately; death schedules it for the next engine step after the
-  killing punch settles (same name/GUID on reconnect is still a new ObjectRef).
+  credit and pending proc together. Player target leave/death invalidates every
+  attacker's Core bank synchronously; death clears remaining ability-only swing
+  progress next step after the killing punch settles (the committed proc was
+  already moved into that punch's local preview before `set_hp`). Same name/GUID
+  on reconnect is still a new ObjectRef.
   `grug_core.invalidate_melee_target` clears every attacker's core remainder
   and pending rage credit, including tool/fist-only state. The existing 0.5 s
-  watcher catches invalid mob targets and non-swing wield boundaries; cast
-  item `on_use` clears synchronously before loot/validity/affordability and
+  watcher is a fallback for invalid pending PvP ObjectRefs and catches
+  non-swing wield boundaries; mob progress resets by target identity on the
+  next swing. Cast item `on_use` clears before loot/validity/affordability and
   `try_cast` repeats the idempotent clear for direct callers, while switching
   among swing skills never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**

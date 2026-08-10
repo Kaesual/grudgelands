@@ -313,13 +313,11 @@ local function watch_wield()
 		end
 		if entry and entry.pending then
 			local target = entry.target_ref
+			-- Deferred transactions exist only on hostile PvP. This is a fallback
+			-- for an invalid/dead player ObjectRef; ordinary mob progress has no
+			-- reservation and resets by target identity on the next swing.
 			local valid = target and target:get_pos() ~= nil
-			if valid and target:is_player() then
-				valid = target:get_hp() > 0
-			elseif valid then
-				local ent = target:get_luaentity()
-				valid = ent ~= nil and (ent.health or 0) > 0
-			end
+				and target:is_player() and target:get_hp() > 0
 			if not valid then
 				-- No future punch can settle this transaction. Release its reserved
 				-- resource without paying or consuming the armed charge.
@@ -412,9 +410,11 @@ function grug_abilities.register_ability(def)
 		end,
 	}
 	if def.kind == "swing" then
-		-- Empty groupcaps stop digging server-side, but without item-specific
-		-- pointabilities the client can immediately retarget the ground/leaves
-		-- after a mob dies and begin a native dig. These are the three hand
+		-- Empty groupcaps remove this tool's explicit dig capabilities, but the
+		-- engine can still fall back to the registered hand. Item-specific
+		-- pointabilities prevent the standard client from retargeting the
+		-- ground/leaves after a mob dies and sending a native dig. These are the
+		-- three hand
 		-- groupcaps plus the engine's independent dig_immediate path. "blocking"
 		-- keeps the ray hit as
 		-- a blocker without making the node an interaction target; objects retain
@@ -1075,8 +1075,10 @@ end
 -- This per-stack override is what makes the client animate/repeat at the slot
 -- weapon's speed and what makes the server receive the same damage source.
 -- Empty equipment resolves to the registered hand baseline in kits.lua. No
--- groupcaps means an ability remains unable to dig nodes, and use 0 keeps the
--- ability item indestructible. The token is the compare-before-write gate;
+-- Empty groupcaps keep the ability from supplying its own dig capability;
+-- definition pointabilities above block the standard client's hand fallback.
+-- Use 0 keeps the ability item indestructible. The token is the
+-- compare-before-write gate;
 -- the override has no Lua getter distinct from the resolved capabilities.
 local SWING_CAPS_VERSION = 1
 local SWING_CAPS_TOKEN_KEY = "grug_swing_caps"
