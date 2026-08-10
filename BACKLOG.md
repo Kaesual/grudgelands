@@ -84,8 +84,8 @@ target leave invalidates every attacker's pending transaction immediately,
 death does so after the killing callback settles, and the shared watcher
 catches invalid mobs and non-swing wield boundaries.
 Core target invalidation also clears tool/fist-only damage and rage banks, and
-cast entry is a synchronous reset before affordability rather than relying on
-the watcher.
+cast-item `on_use` is a synchronous reset before loot/validity/affordability
+(`try_cast` repeats it for direct callers) rather than relying on the watcher.
 Vendored `api.lua` still has **31** patch markers.
 
 ### Readiness (2026-08-08)

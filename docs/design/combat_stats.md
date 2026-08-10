@@ -172,7 +172,8 @@ bug inside the gate.
   cancels an invalid mob target within 0.5 s. Crossing to a non-swing wielded
   item is also a reset boundary, while switching among swing skills is not.
   Cast entry clears synchronously before affordability, independent of that
-  watcher.
+  watcher; the cast-item `on_use` does so before its dropped-loot/validity
+  branches, and `try_cast` repeats it for direct callers.
   Core target invalidation scans every attacker's damage transaction, including
   tool/fist-only remainder and pending rage credit that has no ability progress.
 - **There is exactly one native melee stream and no server swing clock.** The

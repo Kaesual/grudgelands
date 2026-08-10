@@ -151,7 +151,9 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   Wielding a non-swing item is likewise a reset boundary; switching among
   swing skills is not. Entering any cast clears synchronously before its
   affordability check, so a cast-and-switch-back inside one watcher interval
-  cannot preserve or spend a frozen proc.
+  cannot preserve or spend a frozen proc. The cast item's `on_use` clears
+  before even its dropped-loot early return; direct `try_cast` callers repeat
+  the operation idempotently.
 - **The resource cost is paid at the proc, and an unaffordable proc does
   not consume the charge.** This is the decision layer: Mighty Blow's rage
   is the reason to keep swinging with it rather than to spend the rage

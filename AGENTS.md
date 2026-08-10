@@ -298,8 +298,9 @@ Details + line numbers in [docs/research/](docs/research/).
   `grug_core.invalidate_melee_target` clears every attacker's core remainder
   and pending rage credit, including tool/fist-only state. The existing 0.5 s
   watcher catches invalid mob targets and non-swing wield boundaries; cast
-  entry clears synchronously before affordability, while switching among swing
-  skills never reinterprets it.
+  item `on_use` clears synchronously before loot/validity/affordability and
+  `try_cast` repeats the idempotent clear for direct callers, while switching
+  among swing skills never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's

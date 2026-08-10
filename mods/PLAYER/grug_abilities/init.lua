@@ -427,6 +427,10 @@ function grug_abilities.register_ability(def)
 		}}
 	else
 		tool_def.on_use = function(itemstack, user, pointed_thing)
+			-- Every observable cast-item use is a synchronous non-swing boundary,
+			-- including the builtin-loot early return below. try_cast repeats this
+			-- idempotently for direct callers that bypass the item definition.
+			clear_swing_progress(user)
 			-- Loot pickup (classes.md core principles, WP38): an item with an
 			-- on_use makes the client send INTERACT_USE instead of a punch, so a
 			-- click on dropped loot never reached the item entity's on_punch.
