@@ -416,5 +416,71 @@ now=7600000
 swing_step()
 assert(a.punches == before+1 and ray_calls == rays_before)
 
+-- Holding and repeated native click packets use the same weapon clock. Run the
+-- same relative timeline across three full 1 s FPIs in lifecycle-isolated
+-- scenarios; only hold's fresh-press loot bridge accounts for an extra ray.
+local cadence_offsets = {
+	0, 400000, 1000000, 1400000, 2000000, 2400000, 3000000,
+}
+local cadence_due = {true, false, true, false, true, false, true}
+
+local function lifecycle_reset()
+	hero.dig = false
+	for _, fn in ipairs(callbacks.respawn) do
+		fn(hero)
+	end
+	assert(authoritative == nil and #ray_queue == 0)
+end
+
+local hold_target = enemy("mob:hold-cadence")
+lifecycle_reset()
+local hold_rays_before = ray_calls
+hero.dig = true
+for i, offset in ipairs(cadence_offsets) do
+	now = 10000000 + offset
+	if cadence_due[i] then
+		if i == 1 then
+			queue({}, {pointed(hold_target)})
+		else
+			queue({pointed(hold_target)})
+		end
+	end
+	local step_rays_before = ray_calls
+	swing_step()
+	if not cadence_due[i] then
+		assert(ray_calls == step_rays_before)
+	end
+end
+local hold_punches = hold_target.punches
+assert(hold_punches == 4 and ray_calls == hold_rays_before + 5)
+
+local click_packet_target = enemy("mob:click-packet")
+local click_ray_target = enemy("mob:click-crosshair")
+lifecycle_reset()
+local click_rays_before = ray_calls
+for i, offset in ipairs(cadence_offsets) do
+	now = 20000000 + offset
+	local punch_before = click_ray_target.punches
+	local step_rays_before = ray_calls
+	assert(native_input_handler(hero, click_packet_target) == true)
+	if cadence_due[i] then
+		queue({pointed(click_ray_target)})
+	end
+	swing_step()
+	if cadence_due[i] then
+		-- The packet target remains input/UI context; the current ray owns damage.
+		assert(click_ray_target.punches == punch_before + 1)
+	else
+		-- An early click consumes its latch without a ray or hit. The next exact
+		-- due-time assertion also proves it did not push next_due backwards.
+		assert(ray_calls == step_rays_before)
+		assert(click_ray_target.punches == punch_before)
+	end
+end
+local click_punches = click_ray_target.punches
+assert(click_punches == hold_punches and ray_calls == click_rays_before + 4)
+assert(click_packet_target.punches == 0)
+lifecycle_reset()
+
 assert(inventory.writes == 0)
 print("swing_aim_test: ok")
