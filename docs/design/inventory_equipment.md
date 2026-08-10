@@ -54,8 +54,10 @@ hand count), WP38 (native swing capability/pointability bridge).
     but publish `fleshy = 0`, no digging groupcaps and no attack wear. The
     interval keeps native animation and direct object acquisition aligned with
     the slot; zero damage prevents acquisition-only PvP packets from causing
-    builtin knockback. The authoritative held-LMB soft-lock clock rebuilds the
-    real full damage capabilities from this same slot. Their
+    builtin knockback. The authoritative held-LMB clock rebuilds the real full
+    damage capabilities from this same slot only after WP39's current server
+    crosshair ray finds a valid hostile; enemy target memory is not an attack
+    source. Their
     item definitions additionally mark the `crumbly`, `snappy` and
     `oddly_breakable_by_hand` groupcaps plus the engine's independent
     `dig_immediate` path as pointability `"blocking"`, so objects remain

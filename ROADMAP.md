@@ -158,8 +158,9 @@ game (not a mod pack), written in Lua.
       orb (which retires the deferred "own ability icons"), and the held
       attack button becomes a universal ability, **Strike**, swinging at the
       weapon's own speed (WP35's original toggle was replaced by native
-      interaction plus an authoritative held soft-lock clock in WP38's
-      2026-08-10 correction)
+      interaction plus an authoritative held clock in WP38's 2026-08-10
+      correction; WP39 replaces only that correction's enemy-lock target
+      authority with current crosshair aim)
       (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
@@ -183,6 +184,18 @@ game (not a mod pack), written in Lua.
       accepted-hit transaction fires at most one selected proc per due landed
       full swing
       (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
+- [ ] **Crosshair-authoritative combat** (WP39 — next): keep WP38's fast
+      cosmetic held animation and one full slot-fed swing per equipped weapon
+      interval, but a ready attack waits until the current server eye ray finds
+      a hostile in range. Aim misses do not consume readiness; a valid attack
+      consumes cadence even when it is later dodged/cancelled. Enemy target
+      memory becomes Target-Frame/UI state only, ally memory remains a heal
+      fallback, and a binary gold ring on the crosshair shows weapon readiness
+      without inventory writes. Charge/Taunt/Smite require current aim;
+      Fireball becomes a straight 20 m/s, 20 m maximum, non-homing swept
+      projectile that spends mana on a miss. Permanent admin-only
+      `/combatdebug` is the first task (`docs/design/combat_stats.md` §2,
+      `classes.md` §2b; full contract in `BACKLOG.md` WP39).
 
 ### 1.4 Mobs & combat
 - [x] Faction guards (attack the enemy faction), spawned by military
