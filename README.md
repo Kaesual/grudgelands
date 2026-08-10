@@ -278,165 +278,48 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (14 of 40 work packages):** the foundation, the whole
-world/combat layer, the money economy, the material ladder's rock and
-ores, the fix round that came out of the second runtime test, the
-weapon slot that turned auto-attack into a skill, and the proc model
-that made skills ride on the swing instead of owning it.
-*(The total is 40 — WP0 through WP39, up from 35 earlier on 2026-08-08:
-the weapon-slot design pass cut WP35, the runtime test cut WP36, WP36
-spun off WP37 while it ran, WP35 spun off WP38, and WP38's runtime tests
-and Mage playtest cut the crosshair-authority follow-up WP39.)*
+**Shipped (15 of 40 work packages):** the playable foundation now spans two
+continents, 42 level-scaled mobs, three classes, equipment and bags, XP,
+threat, money/vendors, the six rock strata and their ore bands. The weapon slot
+is the sole source of skill damage and appearance, while native held animation,
+one full slot-fed swing cadence and charged procs replace the old GCD-driven
+melee. WP39 makes the current server eye/look ray the sole hostile ability aim,
+with ready-until-aimed swings, exact-once PvE/PvP settlement, a binary
+weapon-ready reticle and opt-in `/combatdebug`. It also ships reusable swept
+projectiles and a straight, missable Fireball bounded to eight active shots per
+owner/session.
 
-- **World**: two ocean-separated continents with soft coasts, 13 mirrored
-  biome bands, six race-capital spawn platforms, the radial mob-level field
-  plus the inverse guard field, the ocean build lock and the deep-sea
-  Kraken Guard (WP2, WP18). WP36 finished the coastline (no more tree
-  crowns floating over the water, and older worlds heal themselves),
-  gave every race capital a level-1 bubble so the four side capitals no
-  longer greet a fresh character with level-8 wildlife, made the capital
-  platform height a single decider instead of a guess, and broke the
-  Throng's biome monopoly — 41 % of that continent used to have exactly
-  one possible look.
-- **Mobs & combat feel**: 42 mobs on a level/tier engine, 10 named rares
-  with faction broadcast, faction guards on 24 deterministic outposts with
-  hourly patrol legs, 12 bandit camps, the threat table, leash/evade, the
-  elite/rare telegraph, nametags and the con-color target frame, ore
-  respawn, and a pathfinding/density pass (WP1, WP6). WP36 sorted the
-  animals into three classes: **critters** (small, always level 1, food
-  drops only — plus four new ones for the caves, the bone forest and the
-  swamp), **passive prey** (the large grazers: they never attack on
-  sight, but they fight back) and everything else.
-- **Character**: faction → race → class creation, Warrior/Mage/Priest with
-  attribute and HP formulas, the XP curve to 60 with death penalty, 3–4 class
-  abilities as hotbar items plus universal Strike, with cast cooldown/resource
-  limits and Warrior swing-charge/resource procs; the soft target lock, visible
-  race passives, and the character screen with equipment
-  slots and bags (WP3, WP4, WP15, WP19). WP35 added the **weapon slot**:
-  the item in it is the single source of a skill's damage and of its look,
-  so every ability now shows your own sword instead of a colored orb and
-  no skill reads a hotbar weapon any more — and the held attack button became
-  a universal ability, **Strike**. Two-handed weapons declare themselves here too,
-  though that rule stays dormant until there is something to put in the
-  offhand. WP38 then split swing timing from skill
-  timing: ability swings are full clocked attacks while ordinary tools/fists
-  retain proportional damage with a remainder accumulator, and every skill is the plain weapon attack
-  plus an effect that fires when its own charge is full — the 1 s global
-  cooldown is gone, retired for per-skill charges and resource costs —
-  native held/click interaction keeps visible animation, while one
-  server-authoritative soft-lock clock currently drives all three swing skills
-  at the equipped weapon's speed, shares its cadence bound with ordinary melee,
-  and reads the selected proc live; WP39 is the decided next replacement for
-  that target authority — current crosshair aim, a binary weapon-ready reticle
-  and a directional Fireball — without restoring partial/fast ability damage.
-  PvP melee runs through the same dodge/armor pipeline
-  with rage on landed damage only, ability items pick up dropped loot,
-  and empty equipment slots show ghost icons of their type.
-- **Money & vendors**: copper/silver/gold as one integer with a HUD
-  line, eight vendor NPCs at the six race capitals (two faction
-  Quartermasters, six race-exclusive ones with a 10 % discount), six
-  generated gear catalogs of ten levels each on an hourly rotation, a
-  weak healing potion, and armor that finally mitigates damage — with
-  cloth and plate bound to the character class (WP7).
-- **Materials**: the six rock strata under the whole world, each one
-  refusing any pickaxe below its tier, with the ore bands re-cut onto
-  those six tiers — three new ores (quartz, silver, garnet), Abyssal
-  Crystal, and mese renamed to Emberstone (WP25).
+**Not in the game yet:** quests and quest NPCs, professions, recipes, talent
+trees, the fog-of-war map, guilds, housing, travel, offhand items, loot affixes,
+durability, parties, recovery, bosses, mounts and real capital/outpost
+structures remain unbuilt. The material ladder still lacks its two-slot
+furnace, alloy bars, armor recipes, gathering nodes and material-name catalog
+conversion. Loot/affixes and professions remain design-blocked by the affix
+words, signature recipes, keystones, material grades and cooking lists in
+`TODO-design-crafting-rework.md`.
 
-**Not in the game yet:** WP39's crosshair-authoritative hostile hits, binary
-weapon-ready reticle, permanent combat diagnostics and true directional
-Fireball; quests and quest NPCs, professions and crafting
-recipes, talent trees, the fog-of-war map, guilds, housing isles,
-travel/waypoints, shields and the carried torch light (the offhand slot
-and its rules exist, but no item can go into it yet), loot rolls on class
-items,
-refinement and affixes, durability and repair, parties, food and rest,
-apex bosses, mounts, and the real capital/outpost structures (WP6 ships
-anchors and banners, not buildings). Most of the **material layer** is
-still on paper too: the rock and the ores are in, but the two-slot
-furnace and the alloy chain are not, so no bar of the six tiers can be
-smelted yet — and neither can armor recipes (the vendored base game has
-none at all), the herb and food nodes, or the rename of the shipped gear
-catalog to material names.
+**Ready to start next:** WP34 is first in the dependency/owner order and owns
+the depth arrival pressure, corrected level curve, camp-only ore respawn, deep
+lava and continental Abyssal Crystal. WP26 and WP37 follow as the alloy-chain
+and surface-density increments. Guilds, trader rotation, gathering nodes,
+talents, structures, offhand, travel, parties, recovery and apex bosses also
+have no design blocker; their exact order remains in `BACKLOG.md`.
 
-**Ready to start next** (no design blockers): **crosshair-authoritative combat
-(WP39 — explicitly next by owner direction)**, then the depth economy (WP34 —
-the arrival pulse that makes deep mining dangerous, the depth level
-curve's overdue recalibration, camp-only ore respawn, lava lakes and the
-continental Abyssal Crystal), the two-slot
-furnace and the alloy chain (WP26, the next link in the material chain),
-the denser surface spawns
-(WP37 — decided long ago, never rolled out across the roster), guilds
-(WP16), the trader rotation fix (WP30), herb & food nodes (WP33),
-talent trees (WP11), world structures (WP13 — which now also owns the
-mining camps), offhand and shields (WP14 — which now only has to ship
-the items, since WP35 built the equip rules around the slot), travel
-(WP17), party system (WP20),
-recovery & innkeeper (WP21), apex world bosses (WP23).
-
-**Still blocked by design work**: loot & affixes (WP5) and professions
-(WP10) were ready before the 2026-08-07 crafting rework and still wait on
-`TODO-design-crafting-rework.md` — the affix word lists for WP5, and the
-signature recipes, keystones, material grades and cooking recipes for
-WP10. (The material ladder, WP25, was blocked by the same file and was
-unblocked and built on 2026-08-08.)
-
-**Caveats:** the shipped work packages were runtime-tested on 2026-08-07
-(six findings on the WP1–WP19 pass, all fixed; WP7 passed without
-findings), **except WP25 (the material ladder), WP36 (the fix round) and
-WP35 (the weapon slot)**: those revisions have only been reviewed and
-syntax-checked. WP38's earlier
-proc/loop implementation **was** exercised by the user's runtime test; that
-test exposed the one-click repeated-damage and missing held-animation bug
-which the native-input correction replaced. That correction was then also
-runtime-tested: server `control.dig` stayed true, but the exact client ray
-became `nothing` after one punch and sent no further object-punch callbacks.
-The current server-clock/soft-lock combat path has now been runtime-tested:
-held damage and blood landed at the equipped weapon interval independently of
-click speed. The subsequent Mage/Warrior playtest rejected its implicit enemy
-lock as damage authority: looking away still hit the remembered mob and
-Fireball was effectively auto-aimed. WP39 is fully decided and next; it keeps
-the tested cadence/animation but requires current crosshair aim and makes
-Fireball a real directional projectile. The earlier test also exposed one
-pickup regression — Swing
-pointabilities hid ground-level drops although Hands Free and Charge could
-select them. Its bounded fresh-press pickup bridge then passed a second
-in-game test with both Strike and Hamstring. Both WP36 and
-WP35 merged on 2026-08-08. The second runtime test, on that same day, is
-what produced WP36 in the first place, and WP36's own fixes are
-therefore still unverified in-game. **Two design questions are open, not
-decided**: whether the jungle fringe should follow the deep jungle's new
-ground texture (`TODO-design-jungle-fringe.md`), and the extra badlands
-band WP36 added on the Throng side, which is deliberately cheap to
-revert if the owner disagrees with the reading behind it. The melee path's three measured
-defects (ungated PvP punches stacking with the auto-attack, the
-winner-takes-all swing clock, rage per punch packet) are closed by
-WP38's redesign. Its 2026-08-10 correction removes the invisible toggle that
-looked like repeated bleeding and preserves native held animation; WP39 now
-owns the decided replacement of its soft-lock target authority. The two-handed rule is built and
-tested but **dormant**: no item can enter the offhand until WP14, so
-neither half of the rule can fire.
-`grug_core.open_sea_at` still puts open sea
-3200 nodes out, which is too far for the housing isles and for the mount
-rule that now depends on it. The shipped gear still carries its old
-bracket names ("Crude Sword") and its mod header still claims to sit
-10–15 % behind crafted gear — both were superseded on 2026-08-07 and are
-queued work, not defects. Two more of the same kind came out of the
-2026-08-08 depth design pass, both queued into WP34: the shipped **ore
-respawn** still runs the old world-wide 15–30 min rule, although the
-design now lets nothing regrow outside a mining camp; and the **depth
-level curve** in `grug_core` still adds a level every 20 nodes instead of
-three every 50, so the documented anchors (−500 = level 30, −1000 = the
-cap) do not hold in the running game yet. A third: the surface spawn
-density was raised on paper on 2026-08-08 and still has not been rolled
-out to the mob roster (WP37). Mapgen
-changed in WP18, again in WP25 (the
-rock strata are placed by the mapgen's ore stage, so an existing world
-gets them only in freshly generated chunks, with seams at the border)
-and again in WP36 (the biome layer and the coastline), so
-**existing worlds are incompatible; always start a fresh one**. All art
-is currently vendored from reference projects (vendors still look like
-faction guards); own assets are Phase 3.
+**Caveats:** WP39 passed its headless Lua 5.1 gates, a mandatory Full Review
+with 0 findings after two Low fixes, and a clean Engine/Perf Review after one
+Medium and one Low fix, but its GUI runtime plan is still user-owned and has
+not been performed; WP25, WP35 and WP36 are likewise not runtime-tested. WP38's
+native-animation/cadence base and bounded fresh-press loot bridge were tested
+in game, but that does not validate WP39's current-ray targeting, binary HUD
+reticle, hostile casts, projectile visuals/collision or session limit. The
+jungle-fringe ground and WP36's extra Throng badlands band remain open design
+questions, while the two-handed rule remains dormant until WP14 supplies an
+offhand item. WP34 still owns the running game's stale world-wide ore respawn
+and depth-level curve, WP37 owns the unshipped surface-density increase, and
+`grug_core.open_sea_at` still starts too far out for housing and mounts.
+Mapgen changes from WP18, WP25 and WP36 make existing worlds incompatible, so
+runtime tests need a fresh world; the shipped bracket gear names and vendored
+art are also still provisional.
 
 ---
 

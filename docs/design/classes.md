@@ -5,7 +5,8 @@ Implementation: WP4 (`grug_abilities`, resource HUD, damage pipeline hooks in
 `grug_core`), WP19 (kit tuning, GCD, target memory), WP35 (§2b's universal
 ability and §2c's ability-item skins), WP38 (§2b's proc model, which retires
 WP19's GCD), and WP39 (crosshair-authoritative hostile combat, weapon-ready
-reticle and directional Fireball); skill trees extend these kits in WP11.
+reticle and directional Fireball, shipped 2026-08-10); skill trees extend these
+kits in WP11.
 Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 `combat_stats.md` §4.
 
@@ -32,7 +33,7 @@ Core principles:
   a **resource**. A flat second on top of both only added an invisible
   delay — and against §2b's swing skills it would have capped attack speed,
   which is the defect that already made the Strike an exception.
-- **Target memory is not hostile aim authority** (revised for WP39). Enemy and
+- **Target memory is not hostile aim authority** (shipped with WP39). Enemy and
   ally use separate 8 s slots. The enemy slot feeds only the Target Frame and
   other UI context: no melee hit, hostile cast or projectile may fall back to
   it. Hostile damage always follows the current crosshair ray. The ally slot
@@ -88,7 +89,7 @@ Core principles:
 
 ## 2b. How a skill fires — swing skills and cast skills
 
-Revised **2026-08-10** for WP39. It retains WP38's proven separation of native
+Shipped with **WP39 on 2026-08-10**. It retains WP38's proven separation of native
 animation from authoritative full-swing damage, but replaces WP38's implicit
 enemy-lock targeting with current crosshair authority. It also replaces both
 the model of
@@ -112,9 +113,10 @@ ability, declared where it is registered:
    wanted *now*, from 10 m, and a heal must not require punching the
    patient. These keep the familiar shape: a cost, a cooldown, a target.
 
-The whole Mage and Priest kit remains cast skills in WP39. Future ranged
-auto-attacks may arm their own ranged procs, but equipping a bow or wand does
-not replace Fireball's decided directional-projectile behavior.
+The whole Mage and Priest kit consists of cast skills; WP39 did not change
+that. Future ranged auto-attacks may arm their own ranged procs, but equipping a
+bow or wand does not replace Fireball's decided directional-projectile
+behavior.
 
 ### Rules for swing skills
 
@@ -382,7 +384,7 @@ Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Fireball | 8 | none (mana-limited) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: 6 + spell power damage on first attackable target. A miss still spends mana. |
+| Fireball | 8 | none (mana-limited) | Straight 20 m/s projectile along the cast-time crosshair, maximum 20 m, no homing/gravity/splash: 6 + spell power damage on first attackable target. A miss still spends mana; at most eight shots per owner/session may be active. |
 | Frost Nova | 10 | 12 s | Roots all enemies within 5 m for 4 s, then 50% slow for 3 s (no damage — pure control; rooted mobs keep attacking in melee range). |
 | Blink | 8 | 15 s | Teleport up to 10 m in look direction (blocked by walls). Escape valve. |
 
