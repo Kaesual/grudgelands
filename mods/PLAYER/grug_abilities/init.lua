@@ -664,6 +664,8 @@ end
 -- thing on the ordinary eye ray, exact swing range, and builtin items only.
 -- Nodes and non-item objects stop the ray; this is neither auto-loot nor a
 -- through-wall/proximity pickup.
+local LOOT_DISTANCE_TIE_EPSILON = 0.000001
+
 local function pickup_swing_loot(player, selected)
 	local eye = grug_core.combat_eye_pos(player)
 	if not eye then
@@ -671,20 +673,38 @@ local function pickup_swing_loot(player, selected)
 	end
 	local dest = vector.add(eye, vector.multiply(player:get_look_dir(),
 		grug_abilities.get_range(player, selected)))
+	local best_distance
+	local best_is_drop = false
+	local best_drop
 	for pointed in core.raycast(eye, dest, true, false) do
 		if pointed.type == "object" and pointed.ref == player then
 			-- The server ray includes the player whose eye starts inside their
 			-- own selection box. It is not an interaction blocker.
-		elseif pointed.type == "object" then
-			local ent = pointed.ref and pointed.ref:get_luaentity()
-			if ent and ent.name == "__builtin:item" then
-				ent:on_punch(player)
-				return true
-			end
-			return false
 		else
-			return false
+			-- RaycastSort gives objects a BS^2 preference over nodes, so the
+			-- iterator's first hit is not necessarily the physically nearest one.
+			-- Exhaust this same ray and compare its exact selection-box points.
+			local distance = pointed.intersection_point and
+				vector.distance(eye, pointed.intersection_point) or math.huge
+			local ent = pointed.type == "object" and pointed.ref and
+				pointed.ref:get_luaentity()
+			local is_drop = pointed.intersection_point and ent and
+				ent.name == "__builtin:item" or false
+			local nearer = not best_distance or
+				distance < best_distance - LOOT_DISTANCE_TIE_EPSILON
+			local blocker_tie = best_distance and
+				math.abs(distance - best_distance) <=
+					LOOT_DISTANCE_TIE_EPSILON and not is_drop and best_is_drop
+			if nearer or blocker_tie then
+				best_distance = distance
+				best_is_drop = is_drop
+				best_drop = is_drop and ent or nil
+			end
 		end
+	end
+	if best_drop then
+		best_drop:on_punch(player)
+		return true
 	end
 	return false
 end

@@ -136,6 +136,10 @@ grug_factions = {
 }
 grug_xp = {register_on_level_change=function() end}
 grug_mobs = {slow=function() end, root=function() end}
+grug_projectiles = {
+	register = function() end,
+	spawn = function() return true end,
+}
 
 local authoritative
 local reset_count = 0
@@ -260,8 +264,15 @@ function item:get_pos() return self.pos end
 function item:is_player() return false end
 function item:get_luaentity() return item_ent end
 
+local expected_eye = {x=1,y=2,z=2}
 local function pointed(obj, distance)
-	return {type="object",ref=obj,intersection_point={x=0,y=1.5,z=distance or 2}}
+	return {type="object",ref=obj,intersection_point={x=expected_eye.x,
+		y=expected_eye.y,z=expected_eye.z+(distance or 2)}}
+end
+local function node_pointed(distance)
+	return {type="node",under={name="stone"},
+		intersection_point={x=expected_eye.x,y=expected_eye.y,
+			z=expected_eye.z+distance}}
 end
 local function queue(...)
 	for i=1,select("#",...) do ray_queue[#ray_queue+1]=select(i,...) end
@@ -288,7 +299,6 @@ queue({}, {})
 swing_step()
 assert(a.punches == 0 and reticle.text == "grug_abilities_weapon_ready.png")
 assert(inventory.writes == 0 and ray_calls == 2)
-local expected_eye = {x=1,y=2,z=2}
 assert(vector.distance(ray_origins[1], expected_eye) < 0.000001)
 assert(vector.distance(ray_origins[2], expected_eye) < 0.000001)
 
@@ -341,6 +351,55 @@ local rays_before=ray_calls
 swing_step()
 assert(item_ent.picked == 1 and a.punches+b.punches == before)
 assert(ray_calls == rays_before+1)
+
+-- RaycastSort may yield an object behind a wall first. Physical distance owns
+-- loot visibility, and a failed pickup leaves the due combat ray as aim miss.
+hero.dig=false
+swing_step()
+hero.dig=true
+now=6600000
+local picked_before=item_ent.picked
+before=a.punches+b.punches
+rays_before=ray_calls
+queue({pointed(item,3),node_pointed(2)}, {})
+swing_step()
+assert(item_ent.picked == picked_before and a.punches+b.punches == before)
+assert(ray_calls == rays_before+2)
+
+-- A physically nearer drop remains pickable even when the iterator supplies
+-- the farther node after it.
+hero.dig=false
+swing_step()
+hero.dig=true
+now=6700000
+rays_before=ray_calls
+queue({pointed(item,1),node_pointed(2)})
+swing_step()
+assert(item_ent.picked == picked_before+1 and a.punches+b.punches == before)
+assert(ray_calls == rays_before+1)
+picked_before=item_ent.picked
+
+-- Exact distance ties fail closed: a blocker beats a drop.
+hero.dig=false
+swing_step()
+hero.dig=true
+now=6800000
+rays_before=ray_calls
+queue({pointed(item,2),node_pointed(2)}, {})
+swing_step()
+assert(item_ent.picked == picked_before and a.punches+b.punches == before)
+assert(ray_calls == rays_before+2)
+
+-- Every other object is terminal too, regardless of iterator order.
+hero.dig=false
+swing_step()
+hero.dig=true
+now=6900000
+rays_before=ray_calls
+queue({pointed(item,2),pointed(a,1)}, {})
+swing_step()
+assert(item_ent.picked == picked_before and a.punches+b.punches == before)
+assert(ray_calls == rays_before+2)
 
 -- A valid post-aim callback refusal still consumes cadence.
 hero.dig=false
