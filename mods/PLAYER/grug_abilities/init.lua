@@ -669,7 +669,6 @@ local function pickup_swing_loot(player, selected)
 	if not eye then
 		return false
 	end
-	eye.y = eye.y + (player:get_properties().eye_height or 1.5)
 	local dest = vector.add(eye, vector.multiply(player:get_look_dir(),
 		grug_abilities.get_range(player, selected)))
 	for pointed in core.raycast(eye, dest, true, false) do

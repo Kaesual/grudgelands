@@ -7,6 +7,7 @@
 
 local EYE_OFFSET_SCALE = 0.1
 local RANGE_EPSILON = 0.001
+local DISTANCE_TIE_EPSILON = 0.000001
 
 -- First-person interaction starts at the camera head. Eye offsets are stored
 -- in tenths of a node: the engine's own pointed-face helper applies
@@ -110,6 +111,25 @@ local function classify_object(player, origin, range, pointed)
 	return result
 end
 
+local function nearer_terminal(candidate, candidate_is_node, best,
+		best_is_node)
+	if not best then
+		return true
+	end
+	-- RaycastSort deliberately gives objects a BS^2 preference over nodes
+	-- (src/raycast.cpp:11-41), so iterator order is not line-of-sight order.
+	-- Raycast hit records do carry the exact selection-box intersection point;
+	-- compare that physical distance instead. Missing points are impossible for
+	-- engine Raycast hits, but treating one as infinitely far fails closed.
+	local candidate_distance = candidate.distance or math.huge
+	local best_distance = best.distance or math.huge
+	if candidate_distance < best_distance - DISTANCE_TIE_EPSILON then
+		return true
+	end
+	return math.abs(candidate_distance - best_distance) <=
+		DISTANCE_TIE_EPSILON and candidate_is_node and not best_is_node
+end
+
 -- Returns one structured result:
 --   status = "target" | "aim_miss"
 --   reason = hostile | friendly | dead | object | node | empty |
@@ -132,6 +152,8 @@ function grug_core.combat_ray(player, range, opts)
 		direction = direction,
 		range = range,
 	}
+	local best
+	local best_is_node = false
 	for pointed in core.raycast(origin, destination, true,
 			opts.liquids == true, opts.pointabilities) do
 		if pointed.type == "object" and pointed.ref == player then
@@ -141,22 +163,34 @@ function grug_core.combat_ray(player, range, opts)
 			local node = pointed.under and core.get_node_or_nil(pointed.under)
 			local def = node and core.registered_nodes[node.name]
 			if def and def.walkable then
-				base.reason = "node"
-				base.pointed = pointed
-				base.blocker = pointed.under
-				base.node = node.name
-				base.distance = intersection_distance(origin, pointed)
-				return base
+				local candidate = {
+					status = "aim_miss",
+					reason = "node",
+					pointed = pointed,
+					blocker = pointed.under,
+					node = node.name,
+					distance = intersection_distance(origin, pointed),
+				}
+				if nearer_terminal(candidate, true, best, best_is_node) then
+					best = candidate
+					best_is_node = true
+				end
 			end
 		elseif pointed.type == "object" then
 			local object_result = classify_object(player, origin, range, pointed)
-			for key, value in pairs(base) do
-				if object_result[key] == nil then
-					object_result[key] = value
-				end
+			if nearer_terminal(object_result, false, best, best_is_node) then
+				best = object_result
+				best_is_node = false
 			end
-			return object_result
 		end
+	end
+	if best then
+		for key, value in pairs(base) do
+			if best[key] == nil then
+				best[key] = value
+			end
+		end
+		return best
 	end
 	return base
 end

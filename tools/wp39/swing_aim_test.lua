@@ -4,6 +4,7 @@ local repo = arg[1] or "."
 local now = 0
 local ray_queue = {}
 local ray_calls = 0
+local ray_origins = {}
 local globalsteps = {}
 local joins = {}
 local mods_loaded = {}
@@ -100,8 +101,9 @@ core = {
 	register_allow_player_inventory_action = function() end,
 	get_connected_players = function() return {} end,
 	global_exists = function() return false end,
-	raycast = function()
+	raycast = function(origin)
 		ray_calls = ray_calls + 1
+		ray_origins[#ray_origins+1] = vector.new(origin)
 		local hits = table.remove(ray_queue, 1) or {}
 		local index = 0
 		return function() index=index+1 return hits[index] end
@@ -217,7 +219,7 @@ local hero = {name="hero", faction="accord", hp=20, dig=false, wield=1,
 function hero:get_player_name() return self.name end
 function hero:get_pos() return self.pos end
 function hero:get_properties() return {eye_height=1.5, hp_max=20} end
-function hero:get_eye_offset() return {x=0,y=0,z=0} end
+function hero:get_eye_offset() return {x=10,y=5,z=20} end
 function hero:get_look_dir() return {x=0,y=0,z=1} end
 function hero:get_look_horizontal() return 0 end
 function hero:get_hp() return self.hp end
@@ -286,6 +288,9 @@ queue({}, {})
 swing_step()
 assert(a.punches == 0 and reticle.text == "grug_abilities_weapon_ready.png")
 assert(inventory.writes == 0 and ray_calls == 2)
+local expected_eye = {x=1,y=2,z=2}
+assert(vector.distance(ray_origins[1], expected_eye) < 0.000001)
+assert(vector.distance(ray_origins[2], expected_eye) < 0.000001)
 
 -- The first later ray target consumes readiness and hides the ring.
 now=100000

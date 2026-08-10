@@ -107,6 +107,23 @@ assert(result.target == hostile and result.blocker == nil)
 assert(result.object_kind == "mob" and result.alive == true)
 assert(math.abs(vector.distance(result.origin, result.destination) - 4) < 0.000001)
 
+-- Engine RaycastSort biases objects ahead of nodes by BS^2. The helper must
+-- exhaust the same iterator and restore physical intersection order.
+ray_hits = {point(hostile, 3), {type = "node", under = {name = "stone"},
+	intersection_point = {x = eye.x, y = eye.y, z = eye.z + 2}}}
+result = grug_core.combat_ray(attacker, 4)
+assert(result.reason == "node" and result.node == "stone")
+
+ray_hits = {point(hostile, 1), {type = "node", under = {name = "stone"},
+	intersection_point = {x = eye.x, y = eye.y, z = eye.z + 2}}}
+result = grug_core.combat_ray(attacker, 4)
+assert(result.status == "target" and result.target == hostile)
+
+ray_hits = {point(hostile, 2), {type = "node", under = {name = "stone"},
+	intersection_point = {x = eye.x, y = eye.y, z = eye.z + 2}}}
+result = grug_core.combat_ray(attacker, 4)
+assert(result.reason == "node" and result.node == "stone")
+
 ray_hits = {point(friendly, 2), point(hostile, 3)}
 result = grug_core.combat_ray(attacker, 4)
 assert(result.status == "aim_miss" and result.reason == "friendly")
