@@ -1877,11 +1877,11 @@ end)
 
 core.register_on_dieplayer(function(player)
 	grug_core.invalidate_melee_target(player)
-	-- A player's death invalidates every OTHER attacker's pending transaction
-	-- immediately. Player GUIDs are names and therefore survive respawn; keeping
-	-- the old ObjectRef would otherwise let a deferred proc settle on the new
-	-- life. Defer to the next engine step so a punch that CAUSED this death can
-	-- finish its own accepted proc before the target-wide invalidation runs.
+	-- The call above synchronously invalidates every attacker's Core damage,
+	-- rage and pending-proc bank. Only the remaining ability-only swing_progress
+	-- sweep is deferred: a punch that CAUSED this death must finish its accepted
+	-- proc (already moved into its local preview) before that progress is cleared.
+	-- Player GUIDs are names, so none of this state may survive into the new life.
 	core.after(0, function()
 		for owner, entry in pairs(swing_progress) do
 			if entry.target_ref == player then
