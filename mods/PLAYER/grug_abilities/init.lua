@@ -771,6 +771,12 @@ grug_core.register_native_melee_handler(prepare_native_swing,
 	finish_native_swing)
 
 function grug_abilities.try_cast(user, def, pointed_thing)
+	-- A cast is a synchronous boundary even if the player switches back before
+	-- the 0.5 s wield watcher sees it. Release any frozen proc reservation before
+	-- affordability is evaluated; swing-to-swing selection remains untouched.
+	if def.kind == "cast" then
+		clear_swing_progress(user)
+	end
 	if user:get_hp() <= 0 then
 		return
 	end
@@ -1864,6 +1870,7 @@ core.register_on_joinplayer(function(player)
 end)
 
 core.register_on_dieplayer(function(player)
+	grug_core.invalidate_melee_target(player)
 	-- A player's death invalidates every OTHER attacker's pending transaction
 	-- immediately. Player GUIDs are names and therefore survive respawn; keeping
 	-- the old ObjectRef would otherwise let a deferred proc settle on the new
@@ -1891,6 +1898,7 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	grug_core.invalidate_melee_target(player)
 	-- Same concrete-ObjectRef boundary as death: reconnecting with the same
 	-- player name must not inherit another attacker's damage/proc transaction.
 	for owner, entry in pairs(swing_progress) do

@@ -583,9 +583,7 @@ local melee_remainder = {}
 -- Damage remainder, rage credit and a deferred PvP proc are one transaction.
 -- The native-melee owner gets a cancellation callback so it can release a
 -- resource reservation without paying the cost or resetting the charge.
-function grug_core.reset_accumulated_melee(player)
-	local name = player:get_player_name()
-	local entry = melee_remainder[name]
+local function discard_melee_entry(name, entry)
 	if entry and entry.pending_proc and native_melee_finish then
 		native_melee_finish(entry.pending_proc, {
 			settle_only = true,
@@ -594,6 +592,28 @@ function grug_core.reset_accumulated_melee(player)
 		})
 	end
 	melee_remainder[name] = nil
+end
+
+function grug_core.reset_accumulated_melee(player)
+	local name = player:get_player_name()
+	discard_melee_entry(name, melee_remainder[name])
+end
+
+-- A player GUID is the player name and therefore survives disconnect and
+-- respawn. Clear every attacker's transaction by TARGET, not only the target
+-- owner's ability state, so tool/fist damage remainder and pending rage credit
+-- cannot cross death or reconnect. Pending ability owners receive the same
+-- cancellation callback as an attacker-side reset.
+function grug_core.invalidate_melee_target(target)
+	local guid = target and target:get_guid()
+	if not guid then
+		return
+	end
+	for name, entry in pairs(melee_remainder) do
+		if entry.target == guid then
+			discard_melee_entry(name, entry)
+		end
+	end
 end
 
 -- Preview an accumulator update without committing its damage remainder.

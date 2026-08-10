@@ -295,8 +295,11 @@ Details + line numbers in [docs/research/](docs/research/).
   credit and pending proc together. Player target leave invalidates all
   attackers immediately; death schedules it for the next engine step after the
   killing punch settles (same name/GUID on reconnect is still a new ObjectRef).
-  The existing 0.5 s watcher catches invalid mob targets and non-swing wield
-  boundaries, while switching among swing skills never reinterprets it.
+  `grug_core.invalidate_melee_target` clears every attacker's core remainder
+  and pending rage credit, including tool/fist-only state. The existing 0.5 s
+  watcher catches invalid mob targets and non-swing wield boundaries; cast
+  entry clears synchronously before affordability, while switching among swing
+  skills never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's

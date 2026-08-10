@@ -171,6 +171,10 @@ bug inside the gate.
   reconnect has the same GUID/name but a new ObjectRef). The shared watcher
   cancels an invalid mob target within 0.5 s. Crossing to a non-swing wielded
   item is also a reset boundary, while switching among swing skills is not.
+  Cast entry clears synchronously before affordability, independent of that
+  watcher.
+  Core target invalidation scans every attacker's damage transaction, including
+  tool/fist-only remainder and pending rage credit that has no ability progress.
 - **There is exactly one native melee stream and no server swing clock.** The
   three swing ability definitions omit `on_use`; Luanti therefore sends its
   ordinary object-punch interaction for both clicks and held LMB. The former

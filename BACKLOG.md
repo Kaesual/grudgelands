@@ -83,6 +83,9 @@ The same accepted boundary now owns the prepared melee-crit visual; player
 target leave invalidates every attacker's pending transaction immediately,
 death does so after the killing callback settles, and the shared watcher
 catches invalid mobs and non-swing wield boundaries.
+Core target invalidation also clears tool/fist-only damage and rage banks, and
+cast entry is a synchronous reset before affordability rather than relying on
+the watcher.
 Vendored `api.lua` still has **31** patch markers.
 
 ### Readiness (2026-08-08)
