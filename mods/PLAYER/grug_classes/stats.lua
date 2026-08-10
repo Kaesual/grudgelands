@@ -76,6 +76,17 @@ grug_core.get_dodge_chance = grug_classes.get_dodge_chance
 -- patch in mobs/api.lua on_punch.
 grug_core.get_melee_bonus = grug_classes.get_melee_bonus
 
+-- FIRST equipment-change consumer. grug_classes is a dependency of both
+-- grug_inventory and grug_abilities, so registering here is earlier by the mod
+-- graph, not by incidental sibling-mod/alphabetical order. Stats are therefore
+-- current before the Character-page and skin consumers run.
+--
+-- Keep the wrapper: registering apply_stats directly would pass `listname` as
+-- its `heal_gain` argument and turn an equipment drag into unintended healing.
+grug_core.register_on_equipment_change(function(player, listname)
+	grug_classes.apply_stats(player)
+end)
+
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	grug_classes.apply_stats(player,
 		old_level ~= nil and new_level > old_level)

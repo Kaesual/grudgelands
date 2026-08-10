@@ -248,7 +248,13 @@ Details + line numbers in [docs/research/](docs/research/).
   the list to the client), **may be called twice for one change** (the
   notifier coalesces a nested equipment write into a second pass) and run
   **unwrapped**, so an error in one is loud. Never write an equipment list
-  without going through `grug_inventory.equipment_changed`.
+  without going through `grug_inventory.equipment_changed`. That notifier is
+  the sole equipment-driven stats/page refresh source:
+  `grug_classes.apply_stats` is the deliberately first consumer (through a
+  wrapper so `listname` is not mistaken for its `heal_gain` argument), then
+  exactly one Character-page refresh consumer; normal equip, class change
+  and join add no direct duplicate refresh (a genuine nested write may still
+  earn the second pass).
   **Auto-attack is the melee loop ability** (`classes.md` §2b; WP35 made
   it an ability, WP38 made it the proc chassis): an item with `on_use`
   makes the client send `INTERACT_USE` instead of a punch, so a slot-fed
@@ -277,32 +283,36 @@ Details + line numbers in [docs/research/](docs/research/).
   HELD path, whose `tflp` scaling is DPS-exact at any click rate; a
   loop swing deals a FULL swing and needs the clock. **Melee damage is
   proportional**
-  (combat_stats.md §2): the held-button path deals `weapon damage ×
-  clamp(tflp/fpi, 0, 1)` + Strength (added before the factor) + crit,
+  (combat_stats.md §2): the held-button path deals `(weapon damage +
+  Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
   and fractions ride the per-player remainder accumulator
   `grug_core.apply_accumulated_melee` (keyed by target `get_guid()`,
-  reset on target switch, max forfeit 0.999) — the 2026-08-07 cadence
-  gate and the 2026-08-08 shared melee clock are deleted, not repaired.
+  reset on target switch, max forfeit 0.999; PvP optionally banks the
+  matching pending swing fraction for commit-time rage) — the 2026-08-07
+  cadence gate and the 2026-08-08 shared melee clock are deleted, not repaired.
   **Weapon WEAR is spent per swing, not per punch**
-  (`grug_core.melee_wear_due`, the same fraction accumulator shape, per
-  player): the wear block in api.lua now runs on all ~5 packets/s, and
+  (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
+  `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
+  partial wear to B, returning to A resumes it, and empty/non-tool,
+  creative/use-0 punches neither assign an id nor consume state. The wear
+  block in api.lua now runs on all ~5 packets/s, and
   paying a full swing's wear each time both wears the tool `1/fraction`
   times faster and fires `set_wielded_item` — a full inventory
   serialization plus packet — per punch, ~500/s at the 100-player target.
   **PvP melee runs through the same pipeline** (the on_punchplayer
-  handler in grug_abilities): wielded-stack proportional damage, the
-  same accumulator, `set_hp(hp - applied, {type="punch", object=...})`
-  so dodge/armor/absorb run exactly once through the central hp-change
-  modifier, `return true` suppresses the engine damage, and rage is
-  12 × fraction only on damage that LANDED (the 60 rage/s punch-packet
-  firehose is dead). **"LANDED" = the punch was not cancelled**, NOT
-  "the accumulator carried this packet": those fractions sum to +12 per
-  weapon interval only if every punch pays, so testing `applied >= 1`
-  makes rage income scale with the weapon's DAMAGE instead of its speed
-  (−40 % for a 3-damage weapon, −78 % bare-handed) — the rounding hole
-  the accumulator closes, re-opened in the resource economy. Base threat
-  never had it: it takes the raw fractional damage. Cancels that pay
-  nothing: refused punch, `immune_to`, PvP off, dodge, full absorb.
+  handler in grug_abilities): build the wielded-stack FULL swing, add
+  Strength, roll crit, apply `grug_core.apply_player_armor` (0..60%, ceil
+  only when pct > 0), THEN scale by fraction and accumulate. On integer
+  commit, `set_hp` keeps `type="punch"`/`object` and adds
+  `custom_type="grug_core:player_armor_applied"`; the central modifier skips
+  only the already-run armor step while dodge and absorb still run once.
+  `return true` always suppresses hostile engine damage. PvP fractions bank
+  with the damage remainder and pay `12 × committed_pending_fraction` only
+  when a commit actually lowers HP; bank-only packets pay nothing, target
+  switches discard both banks, and dodge/full absorb consume the credit for
+  0 rage (partial absorb with HP loss still lands). Thus unmitigated fractions
+  totalling 1 pay +12 independent of weapon damage, without the old 60 rage/s
+  packet firehose. Base mob threat still takes raw fractional damage.
   Same-faction pairs stay with grug_factions' handler
   (RUN_CALLBACKS_MODE_OR, s_player.cpp:63 — neither vetoes the other);
   knockback on players keeps coming from builtin off the engine's damage
@@ -377,9 +387,10 @@ Details + line numbers in [docs/research/](docs/research/).
   - **28 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
     inventory and rationale live in VENDOR.md; re-apply them on any
     mobs_redo update. WP35's 21st: the `set_wielded_item` write-back at
-    the end of the wear block runs only when wear actually changed (on a
-    player that call is a full inventory serialization plus packet,
-    ~140/s at the 100-player target with the auto-attack swinging). WP38
+    the end of the wear block runs only when wear/toolranks changed the stack
+    or WP38's per-stack wear id was newly assigned (on a player that call is a
+    full inventory serialization plus packet; the skipped no-op ability writes
+    were ~140/s at the 100-player target). WP38
     reshaped the melee patches: the 2026-08-07 cadence gate is deleted;
     the player-melee flag is `grug_melee`, the damage loop keeps
     vanilla's `tflp/fpi` factor (that IS the proportional model) and
@@ -393,9 +404,12 @@ Details + line numbers in [docs/research/](docs/research/).
     The WP38 review added two more: `grug_fraction` (the punch's
     clamp(tflp/fpi, 0, 1), computed once from the normalized `tflp`) and
     the wear gate that spends a swing's wear only when
-    `grug_core.melee_wear_due` says the fractions add up to a whole swing
-    — placed AFTER the creative/`punch_attack_uses` adjustments, so a
-    wear-free punch never consumes the accumulator.
+    `grug_core.melee_wear_due` says that concrete stack's fractions add up
+    to a whole swing — placed AFTER the item-type, creative and
+    `punch_attack_uses` adjustments, so a wear-free punch never gets an id or
+    consumes the accumulator. A newly assigned id is written back once even before wear is
+    due; a broken stack's runtime entry and every leaving player's table are
+    cleared.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre
