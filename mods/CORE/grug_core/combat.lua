@@ -26,7 +26,7 @@ function grug_core.get_armor_percent(player)
 	return 0
 end
 
--- A held-button PvP punch applies armor to the FULL-swing equivalent before
+-- A native PvP melee punch applies armor to the FULL-swing equivalent before
 -- scaling it by the partial-swing fraction (combat_stats.md §2). Publish the
 -- exact player-armor formula here so that path and the central hp-change
 -- modifier cannot drift apart: clamp to 0..60%, and only round when armor is
@@ -169,7 +169,7 @@ end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
 -- melee damage = weapon damage + floor(Str/10)). Consumed by the
--- auto-attack patch in mobs/api.lua on_punch.
+-- native melee patch in mobs/api.lua on_punch.
 function grug_core.get_melee_bonus(player)
 	return 0
 end
@@ -529,13 +529,13 @@ end
 -- immunity-zeroed hit from rolling at all.
 function grug_core.melee_crit(player, damage, target)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
-		return damage
+		return damage, 1
 	end
 	local pos = target and target:get_pos()
 	if pos then
 		crit_particles(pos)
 	end
-	return damage * 1.5
+	return damage * 1.5, 1.5
 end
 
 --
@@ -565,23 +565,22 @@ end
 -- to collect — the entry is dropped on leave like every other piece of this
 -- per-player combat state.
 --
--- Consumed by the api.lua GRUG PATCH (#22) on the player-melee path (the
--- accumulated integer doubles as the death-check gate there) and by the PvP
--- melee path (same pipeline, combat_stats.md §2).
+-- Consumed by the api.lua GRUG PATCH on the player-melee path (a previewed
+-- integer doubles as the death-check gate and commits only after acceptance)
+-- and by the PvP melee path (same pipeline, combat_stats.md §2).
 --
 
 local melee_remainder = {}
 -- player name -> {target = guid, remainder = [0,1), pending_fraction >= 0}
 
--- Applies the fractional part of a melee hit against `target`. Returns the
--- integer damage to subtract from the target's health: `remainder +
--- raw_damage` floored, with the new remainder carried for the next punch.
--- `pending_fraction` is optional. PvP supplies the partial-swing fraction so
--- rage can be delayed until damage commits and the central modifier proves HP
--- was actually lost. The second return is the entire fraction banked since
--- the previous integer commit, cleared immediately at that commit. Mob callers
--- omit it and keep their original one-return behavior.
-function grug_core.apply_accumulated_melee(player, target, raw_damage,
+-- Preview an accumulator update without committing its damage remainder.
+-- mobs_redo asks before `do_punch` because its wrapper needs the exact integer
+-- for lethal credit, but any truthy `do_punch` return cancels the hit. Mutating
+-- the accumulator at preview time would leak a cancelled Mighty Blow's bonus
+-- into the next punch. Target changes are the one immediate mutation: their
+-- old remainder is deliberately forfeited whether the new target accepts the
+-- punch or not (combat_stats.md §2).
+function grug_core.prepare_accumulated_melee(player, target, raw_damage,
 		pending_fraction)
 	local name = player:get_player_name()
 	local guid = target:get_guid()
@@ -593,20 +592,86 @@ function grug_core.apply_accumulated_melee(player, target, raw_damage,
 		melee_remainder[name] = entry
 	end
 	if raw_damage <= 0 then
-		return 0, 0
+		return {
+			name = name,
+			entry = entry,
+			applied = 0,
+			committed_fraction = 0,
+			remainder = entry.remainder,
+			pending_fraction = entry.pending_fraction,
+		}
 	end
+	local next_pending = entry.pending_fraction
 	if pending_fraction and pending_fraction > 0 then
-		entry.pending_fraction = entry.pending_fraction + pending_fraction
+		next_pending = next_pending + pending_fraction
 	end
 	local total = entry.remainder + raw_damage
 	local applied = math.floor(total)
-	entry.remainder = total - applied
+	local committed_fraction = 0
 	if applied >= 1 then
-		local committed_fraction = entry.pending_fraction
-		entry.pending_fraction = 0
-		return applied, committed_fraction
+		committed_fraction = next_pending
+		next_pending = 0
 	end
-	return 0, 0
+	return {
+		name = name,
+		entry = entry,
+		applied = applied,
+		committed_fraction = committed_fraction,
+		remainder = total - applied,
+		pending_fraction = next_pending,
+	}
+end
+
+-- Commit a preview after the target has accepted the punch. The identity
+-- check protects against a nested punch replacing this player's accumulator
+-- before the outer callback resumes.
+function grug_core.commit_accumulated_melee(preview)
+	if not preview or melee_remainder[preview.name] ~= preview.entry then
+		return false
+	end
+	preview.entry.remainder = preview.remainder
+	preview.entry.pending_fraction = preview.pending_fraction
+	return true
+end
+
+-- Convenience path for targets whose acceptance is already known (PvP).
+-- Returns the integer damage and the pending swing fraction committed with it.
+function grug_core.apply_accumulated_melee(player, target, raw_damage,
+		pending_fraction)
+	local preview = grug_core.prepare_accumulated_melee(player, target,
+		raw_damage, pending_fraction)
+	grug_core.commit_accumulated_melee(preview)
+	return preview.applied, preview.committed_fraction
+end
+
+-- One optional consumer owns native melee skill procs. grug_core is below the
+-- ability mod in the dependency graph, while vendored mobs_redo must not know
+-- about grug_abilities; this seam lets both mob and PvP punches use the same
+-- two-phase progress transaction without a reverse dependency.
+local native_melee_prepare
+local native_melee_finish
+
+function grug_core.register_native_melee_handler(prepare, finish)
+	assert(native_melee_prepare == nil and native_melee_finish == nil,
+		"native melee handler already registered")
+	assert(type(prepare) == "function" and type(finish) == "function",
+		"native melee handler needs prepare and finish functions")
+	native_melee_prepare = prepare
+	native_melee_finish = finish
+end
+
+function grug_core.prepare_native_melee(player, target, fraction)
+	if native_melee_prepare then
+		return native_melee_prepare(player, target, fraction)
+	end
+	return nil
+end
+
+function grug_core.finish_native_melee(context, result)
+	if context and native_melee_finish then
+		return native_melee_finish(context, result or {})
+	end
+	return false
 end
 
 --

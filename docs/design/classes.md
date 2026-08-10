@@ -17,12 +17,11 @@ Core principles:
   universal Strike, which is granted on join). Left click = attack or cast
   at the pointed target; the item's wear bar displays the skill's **charge
   bar** (§2b). What the item *looks* like is §2c.
-- **An ability item picks up dropped items like a weapon does** (fixed
-  2026-08-09, WP38). Item pickup rides on the `on_punch` of the builtin
-  item entity, and an item with an `on_use` makes the client send
-  `INTERACT_USE` instead of a punch — so with a skill selected, walking
-  over loot and clicking it did nothing. A click on an item entity picks it
-  up and does **not** cast.
+- **An ability item picks up dropped items like a weapon does.** Swing skills
+  have no `on_use`, so their native punch reaches the builtin item entity
+  directly. Cast skills retain the WP38 pickup bridge because their `on_use`
+  makes the client send `INTERACT_USE`; clicking loot calls the entity's
+  pickup path and does **not** cast.
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and
@@ -46,7 +45,7 @@ Core principles:
 | Resource | Classes | Pool | Regeneration |
 |----------|---------|------|--------------|
 | Mana | Mage, Priest | 10 + 2×Int (combat_stats §2) | 2%/s out of combat, 0.5%/s in combat (combat_stats §5) |
-| Rage | Warrior | 0–100, starts at 0 | +12 per landed melee auto-attack hit (the **Strike** of §2b, and the surviving held-button path for tools and fists — combat_stats §2; the class abilities generate no rage), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
+| Rage | Warrior | 0–100, starts at 0 | +12 per landed native melee swing (all §2b swing skills, plus tools and fists — combat_stats §2), +4 per hit taken, +15 from Charge; decays 2/s out of combat |
 
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
@@ -69,15 +68,10 @@ Core principles:
   knockback and mob death handling (XP, loot) keep working.
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
-- **Auto-attacks carry the melee bonus and roll crit since 2026-08-07**
-  (combat_stats §2), on both paths: the Strike of §2b routes through the
-  same `grug_core` helpers as every other ability, and the held-button
-  path for tools and fists gets them from the `mobs/api.lua` patch (whose
-  *cadence gate* half WP38 removes — the Strength bonus and the crit roll
-  stay). WP5's equip-time stack-meta `tool_capabilities` override
-  (enchant design in AGENTS.md) is what will carry a rolled attack-speed
-  affix into the Strike's cadence — it is read per swing, so that needs
-  no further ability work.
+- **Native melee carries the melee bonus and rolls crit** (combat_stats §2).
+  Swing ability stacks mirror the equipped weapon's damage and interval in a
+  per-stack `tool_capabilities` override; tools and fists use their own
+  capabilities. Both then enter the same proportional mob/PvP pipeline.
 - **Threat hooks are stubs in WP4** (`grug_core.add_threat`,
   `add_heal_threat`): abilities already report their threat values
   (combat_stats §4: tank abilities ×3, healing ×0.5); WP6 replaces the
@@ -86,17 +80,20 @@ Core principles:
 
 ## 2b. How a skill fires — swing skills and cast skills
 
-Revised **2026-08-09**, ships with WP38. It replaces the model of
+Revised **2026-08-10**, ships as the WP38 native-input correction. It replaces
+both the model of
 2026-08-08, in which every skill owned the melee clock while its own
-cooldown ran. Rationale and the melee side of it: `combat_stats.md` §2.
+cooldown ran, and WP38's short-lived server-side toggle loop. Rationale and
+the melee side of it: `combat_stats.md` §2.
 
 Every ability is one of **two kinds**, and the kind is a property of the
 ability, declared where it is registered:
 
-1. **Swing skills** — the click **is** an ordinary weapon attack. The
-   skill's own effect rides along on a landed swing, but only when the
-   skill is **charged**. Today exactly the three melee abilities: Strike,
-   Mighty Blow, Hamstring.
+1. **Swing skills** — LMB **is Luanti's native object punch**. The skill item
+   has no `on_use`; holding LMB repeats and animates natively, while clicks
+   use the same `time_from_last_punch` damage fraction. The skill's own effect
+   rides along on a completed landed swing, but only when charged. Today
+   exactly the three melee abilities: Strike, Mighty Blow, Hamstring.
 2. **Cast skills** — a discrete action that is not a weapon swing: heals,
    shields, Blink, Frost Nova, Smite, Charge, Taunt. A gap closer is
    wanted *now*, from 10 m, and a heal must not require punching the
@@ -108,10 +105,12 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 
 ### Rules for swing skills
 
-- **A skill never makes you slower or weaker than the bare weapon.**
-  Holding any swing skill and attacking always deals ordinary weapon damage
-  at the weapon's own rhythm (`combat_stats.md` §2). The effect is a bonus
-  on top; there is no state in which selecting a skill costs you damage.
+- **A skill never makes you slower or weaker than the bare weapon.** Every
+  granted swing ItemStack mirrors `fleshy` damage and
+  `full_punch_interval` from the equipped weapon slot, with no digging
+  groupcaps and no item wear. An empty slot mirrors the registered hand.
+  Holding and click-spamming therefore integrate to identical damage; only
+  clicking slower than the interval loses DPS (`combat_stats.md` §2).
 - **Every skill charges on its own timer, and the timer runs always** —
   including while the skill is *not* selected. That is what makes the
   hotbar a rotation: several skills come up during a fight and are spent in
@@ -119,29 +118,30 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 - **Charges do not stack.** One charge maximum, and a full charge never
   decays. Stacking would bring back burst hoarding; decay would punish a
   player for looking at the map.
-- **A landed swing with a charged skill selected fires the effect and
-  resets that skill's charge.** Only the *selected* skill can proc, so only
-  one effect can ride on one swing.
+- **One bounded proc-progress accumulator tracks native punch fractions.** It
+  carries overflow, completes at 1, and can complete at most once per packet.
+  It resets on target or concrete equipped-weapon change, death, respawn,
+  class sync and disconnect — **not** on a switch between swing skills.
+- **A completed landed swing with a charged skill selected fires the effect
+  and resets that skill's charge.** Only the *selected* skill is read at the
+  completion, so only one effect can ride on one swing. Evade, immunity, PvP
+  refusal, dodge and full absorb pay no cost, consume no charge and fire no
+  effect.
 - **The resource cost is paid at the proc, and an unaffordable proc does
   not consume the charge.** This is the decision layer: Mighty Blow's rage
   is the reason to keep swinging with it rather than to spend the rage
   elsewhere. Silently not firing is correct — a warning on every swing
   would be noise.
 - **Rotation is the hotbar.** Keys 1–8 pick which effect is armed; no cast
-  click is needed to switch. The auto-repeat loop **follows the selected
-  ability item**, so switching slots mid-fight re-arms the proc without
-  interrupting the attack, and switching to a non-ability item stops the
-  loop. That is also the whole stacking defence: two melee damage streams
-  are structurally impossible (`combat_stats.md` §2).
-- **Auto-repeat stays a toggle** on the same item: the first click starts
-  swinging at the soft-locked target, a **second click on the same slot**
-  stops it. It also stops on target dead or gone, out of range, out of line
-  of sight, death, disconnect, respawn or a class change. The weapon is
-  re-read **every swing**, so unequipping mid-fight drops to fist damage
-  instead of stopping the attack. **Toggling off does not reset the swing
-  timer**: a restart inside the running interval waits out the remainder
-  rather than swinging at once, or the toggle itself would be a way to
-  swing faster than the weapon (`combat_stats.md` §2).
+  click is needed to switch. Switching between swing skills preserves proc
+  progress, so the newly selected charged skill rides on the next completed
+  swing. Switching away stops attacks naturally because there is no
+  server-generated stream.
+- **There is no auto-repeat toggle and no server swing loop.** Pressing LMB
+  attacks; holding it uses the client's native repeat and animation; releasing
+  it means no later attacks. Swing skills hit only the object currently under
+  the crosshair. The soft target lock remains for cast targeting, not for an
+  invisible auto-swing.
 
 ### The charge bar
 
@@ -192,7 +192,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 12 rage per landed hit (§1). Toggles auto-repeat. |
+| Strike | free | none — it is the plain attack | Native melee (4 m) with the item in the weapon slot: weapon damage + floor(Str/10), crit ×1.5, threat ×1. Grants the Warrior 12 rage per landed swing (§1). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
@@ -272,7 +272,7 @@ an engine where mobs outrun players, the snare is the Warrior's identity).
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Charge | — (generates 15 rage) | cast, 10 s | Dash to an enemy up to 12 m away, 3 damage. Engage tool. |
-| Mighty Blow | 25 rage | **swing**, no charge | The swing lands as usual and the effect rides along whenever the rage is there: floor(weapon damage × 1.5) + melee bonus instead of the plain hit. The rage dump. |
+| Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. |
 | Taunt | free | cast, 8 s | Target mob (8 m) is forced onto the Warrior for 3 s; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
 

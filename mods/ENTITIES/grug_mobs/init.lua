@@ -320,14 +320,10 @@ function grug_mobs.register_mob(name, def)
 		-- would otherwise hand the evader a fresh target (2978ff). So: no
 		-- damage, no wear, no feedback, no aggro — exactly the spec.
 		--
-		-- What it does NOT undo: on_punch runs its damage computation and its
-		-- remainder-accumulator commit BEFORE calling do_punch (api.lua GRUG
-		-- PATCH #22), so a punch spent on an evading mob has already consumed
-		-- its raw fraction into the accumulator — the committed integer is
-		-- then discarded with the cancel, and only the remainder below 1
-		-- carries. Accepted: attacking something untouchable costing its
-		-- damage is honest feedback. There is no swing clock any more (WP38)
-		-- and no gate that a cancelled punch would have advanced.
+		-- on_punch previews the damage remainder before this wrapper only so the
+		-- lethal check below sees the right integer. The accepted-commit patch
+		-- sits after do_punch/CMI, so this cancel advances neither damage
+		-- remainder nor swing-proc progress and cannot leak a Mighty Blow bonus.
 		-- Environmental damage (lava, drowning) bypasses on_punch altogether
 		-- and is not an "attack"; it still applies.
 		--
@@ -351,7 +347,7 @@ function grug_mobs.register_mob(name, def)
 			-- Loot rights (combat_stats.md §3): every player hit renews the
 			-- 60 s drop tag. Plain field -> survives unload (aggro.lua).
 			grug_mobs.tag_player(self, hitter)
-			-- The accumulated integer (api.lua GRUG PATCH #22) — nil on the
+			-- The accumulated integer preview (api.lua GRUG PATCH #22) — nil on the
 			-- ability-punch and immune_to paths. The hit hook below needs it
 			-- for its landed test; the lethal check needs it as well (below).
 			local applied = self.temp and self.temp.grug_applied

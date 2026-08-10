@@ -48,6 +48,11 @@ hand count).
   skills carry no item, look as they did before the slot existed and hit
   for the bare-handed baseline. **Weapons are therefore no longer hotbar
   items** — a sword lying in the hotbar drives no skill and no skin.
+  - Native swing ability stacks mirror this slot's `fleshy` damage and
+    `full_punch_interval` in a per-stack tool-capability override whenever the
+    kit or equipment syncs. They receive no digging groupcaps and no attack
+    wear. This is the input bridge that keeps the slot the sole damage/speed
+    source while allowing Luanti's native held-LMB repeat and animation.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
     and the twelve vendored `default:` swords and axes (that list shrinks

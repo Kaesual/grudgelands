@@ -22,8 +22,8 @@ local cooldowns = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
--- Skill-name line (classes.md §2c) and the wield watcher that feeds it
--- (WP38 T3). The watcher keeps the last noticed wielded stack per player:
+-- Skill-name line (classes.md §2c) and the throttled wield watcher that feeds
+-- it (WP38 T3). The watcher keeps the last noticed wielded stack per player:
 -- the index alone is not the item — a same-index content swap has to raise
 -- `dirty` or it reads as "unchanged".
 local skillname_huds = {} -- player name -> {id = hud id, token = n}
@@ -90,20 +90,6 @@ local function affordable(player, cost)
 	local name = player:get_player_name()
 	return (not cost.mana or (mana[name] or 0) >= cost.mana)
 		and (not cost.rage or (rage[name] or 0) >= cost.rage)
-end
-
--- kits.lua (separate chunk) reads the def behind an item name and pays
--- proc costs through these three; the locals stay private.
-function grug_abilities.ability_of_item(itemname)
-	return item_defs[itemname]
-end
-
-function grug_abilities.can_afford(player, cost)
-	return affordable(player, cost)
-end
-
-function grug_abilities.pay(player, cost)
-	spend(player, cost)
 end
 
 --
@@ -212,8 +198,8 @@ end
 
 --
 -- Skill-name HUD and the wield watcher (WP38 T3, classes.md §2c). The
--- engine has no callback for a wield change, so the watcher polls it per
--- globalstep (cost model documented above the globalstep). The name line
+-- engine has no callback for a wield change, so the watcher polls it in the
+-- shared 0.5 s HUD/resource pass. The name line
 -- answers "which skill is this?" at the moment the player asks it; it is
 -- deliberately the neutral white of the resource line, not the error
 -- flash's red.
@@ -246,9 +232,6 @@ core.register_on_player_inventory_action(function(player)
 	dirty[player:get_player_name()] = true
 end)
 
--- `repeating` lives in the auto-repeat section below; forward-declared so
--- the watcher sees the LOCAL, not an undeclared global (strict.lua).
-local repeating
 local function watch_wield()
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
@@ -271,18 +254,10 @@ local function watch_wield()
 			if item == rec.item then
 				-- Dirty from an unrelated action (bag rearranging): the
 				-- wielded stack is untouched, nothing to do.
-			elseif item_defs[item] == nil then
-				-- Not an ability item: the loop follows the selected item
-				-- (classes.md §2b) — switching to a pick STOPS it, with the
-				-- same text as the manual toggle-off.
-				local running = repeating[name]
-				if running then
-					grug_abilities.stop_repeat(player)
-					grug_abilities.flash(player, running.name .. " off.")
-				end
-			else
-				-- An ability item was selected: name it. The loop is left
-				-- running — re-arming it on the selected skill is WP38 T5.
+			elseif item_defs[item] then
+				-- An ability item was selected: name it. Native LMB reads the
+				-- selected swing skill live on each punch, so no combat state or
+				-- inventory write belongs in this watcher.
 				show_skill_name(player, item_defs[item].name)
 			end
 		end
@@ -358,7 +333,7 @@ function grug_abilities.register_ability(def)
 	local itemname = "grug_abilities:" .. def.id
 	item_defs[itemname] = def
 
-	core.register_tool(itemname, {
+	local tool_def = {
 		description = def.name .. " (" .. owner_line .. ")\n" ..
 			cost_line .. ", " .. cd_line .. "\n" ..
 			def.description,
@@ -370,7 +345,9 @@ function grug_abilities.register_ability(def)
 		on_drop = function(itemstack)
 			return itemstack -- ability items cannot be dropped
 		end,
-		on_use = function(itemstack, user, pointed_thing)
+	}
+	if def.kind == "cast" then
+		tool_def.on_use = function(itemstack, user, pointed_thing)
 			-- Loot pickup (classes.md core principles, WP38): an item with an
 			-- on_use makes the client send INTERACT_USE instead of a punch, so a
 			-- click on dropped loot never reached the item entity's on_punch.
@@ -389,8 +366,12 @@ function grug_abilities.register_ability(def)
 				end
 			end
 			grug_abilities.try_cast(user, def, pointed_thing)
-		end,
-	})
+		end
+	end
+	-- Swing tools deliberately have no on_use. The client therefore takes its
+	-- native object-punch path for click and held LMB, including first-person
+	-- animation/repeat and the builtin dropped-item on_punch pickup path.
+	core.register_tool(itemname, tool_def)
 end
 
 -- Cooldown display via item wear. Inventory writes re-send the whole
@@ -447,11 +428,8 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 end)
 
 --
--- Cooldowns. Two public calls for the repeat loop in kits.lua (a separate
--- chunk), which drives the very same clock the manual cast does: one timer
--- per ability, whether the swing came from a click or from the repeat loop.
--- The duration is passed in per call — the cast computes what THIS cast
--- earns (def.cooldown), the swing loop what its swing earned.
+-- Cooldowns belong to cast skills. Swing timing is the native punch path;
+-- swing effects use the independent charge timers below.
 --
 
 -- Is this ability off cooldown for this player right now?
@@ -531,245 +509,135 @@ function grug_abilities.charge_fraction(player, def)
 	return 1 - remaining / def.charge
 end
 
---
--- The melee auto-attack loop (classes.md §2b). Any swing skill starts or
--- toggles it; the proc identity is the live selected item — melee_swing reads
--- it every swing — and the def in `repeating` is toggle identity only. Cast
--- skills are unaffected: they arm their cooldown and are never looped.
--- (Weapon-slot design E3's repeat_swing toggle is the history of this loop.)
---
--- The loop is deliberately not a core.after chain: it re-fetches the player
--- by name every tick (an ObjectRef does not survive a disconnect), it drives
--- a swing whose interval CHANGES underneath it (weapon swap), and it has
--- to be stoppable from six different places. Two tables — who is swinging and
--- when the next swing is due — are all of that.
---
+-- Native swing progress (classes.md §2b). Damage fractions and proc cadence
+-- are deliberately separate accumulators: HP rounding belongs to grug_core,
+-- while this bounded [0,1) value decides when one selected swing effect may
+-- ride on a landed native punch. Target or concrete equipped-weapon changes
+-- reset it; hotbar selection changes do not.
+local swing_progress = {}
+-- player name -> {target, weapon = ItemStack copy, progress, threat_damage}
 
-repeating = {} -- player name -> ability def of the running loop (forward-declared above)
-
--- Player name -> us time the next loop-path swing is DUE at.
---
--- It is the loop's cadence AND the swing clock, and it deliberately
--- OUTLIVES the loop (WP38 review). While the loop runs, `repeating` and this
--- table move together; when the loop stops, this one stays. Clearing it on
--- stop is what made the click toggle a damage exploit: `try_cast` swings
--- immediately on a start, `stop_repeat` threw the clock away, so
--- click-stop-click delivered a FULL-damage swing per click pair with no
--- bound at all — ~4 swings/s against 1/s for a 1.0 s weapon, plus the rage
--- and the procs that ride on them. The held-button path needs no such clock
--- (its `tflp` scaling is DPS-exact at any click rate, combat_stats.md §2),
--- but a loop swing deals a FULL swing's damage and therefore does.
---
--- Reset only where the character itself is reset — respawn, class change,
--- disconnect — never on an ordinary toggle-off. A stale entry can only ever
--- DELAY the next swing, and by at most one weapon interval.
-local repeat_due = {}
-
--- How much of a LATE swing the loop may reclaim, in seconds.
---
--- The loop can only swing on a globalstep boundary, so a swing due at t lands
--- at the first step at or after t. Arming the next one from `now` throws that
--- overshoot away and makes the real cadence ceil(fpi / step) * step — which
--- re-tunes every weapon UPWARD, and each by a different amount: at the engine's
--- shipped dedicated_server_step of 0.09 s
--- (reference_projects/luanti/src/defaultsettings.cpp:498) a 1.0 s sword would
--- swing at 1.08 (−7.4 % DPS) while a 0.7 s dagger swings at 0.72 (−2.8 %). That
--- is a non-uniform re-tune of the very numbers combat_stats.md §2 balances
--- against. Arming the next swing from the previous DUE time instead CARRIES the
--- remainder, so the mean cadence is the weapon's interval exactly, at any step
--- size.
---
--- The clamp is what bounds how much LATENESS one swing may reclaim. There is
--- no shared melee clock any more (WP38, combat_stats.md §2 — the cadence gate
--- and the per-player swing clock are deleted), so nothing outside this loop
--- constrains the value; what it reconciles now is only the loop against
--- itself: a swing that lands late (a busy server step, a lag spike) forgives
--- up to SWING_CATCHUP of its lateness — and never more than half the
--- interval, so a badly delayed swing cannot cascade into several swings
--- firing back to back. An absurdly fast weapon is clamped into a
--- non-positive duration by the half-interval rule alone (which would store
--- no record at all and fire once per step — the very failure the cooldown
--- guard below guards).
-local SWING_CATCHUP = 0.1
-
--- Starts (or restarts) the loop for `def` after a click's swing, with `fpi`
--- the interval that swing earned: the click's immediate swing already
--- happened, so the next loop swing is one interval out. Public, so it
--- validates: without this an unregistered def would throw from inside
--- run_repeat_tick.
---
--- The validation LOGS AND REFUSES rather than asserting (review LOW C). A
--- LuaError raised from a mod callback does not stay local to that callback: it
--- propagates out of Server::AsyncRunStep, and the ServerThread catches
--- `LuaError` only to call `setAsyncFatalError`
--- (reference_projects/luanti/src/server.cpp:128-132 and :163-167), which shuts
--- the server down. For a guard whose whole point is that it should be
--- unreachable, killing everyone's session is the worst available outcome:
--- refusing to start a broken loop costs one player one ability.
-function grug_abilities.start_repeat(player, def, fpi)
-	if type(def) ~= "table" or grug_abilities.registered[def.id] ~= def then
-		core.log("error", "[grug_abilities] start_repeat called with something" ..
-			" that is not a registered ability definition -- no loop started")
-		return
-	end
-	if def.kind ~= "swing" then
-		core.log("error", "[grug_abilities] ability \"" .. tostring(def.id) ..
-			"\" is not a swing ability -- no loop started")
-		return
-	end
-	local name = player:get_player_name()
-	-- Toggle identity only — the swing itself comes from melee_swing, which
-	-- reads the SELECTED skill live every swing (classes.md §2b).
-	repeating[name] = def
-	repeat_due[name] = core.get_us_time() + fpi * 1e6
+local function clear_swing_progress(player)
+	swing_progress[player:get_player_name()] = nil
 end
 
--- Stops a running loop. With `def`, only that ability's loop is stopped (a
--- Fireball must not switch the auto-attack off). Returns true when something
--- was actually running — that is what makes the "second cast" stop condition
--- a single test at the top of try_cast.
---
--- `repeat_due` is deliberately NOT cleared here (see its declaration): the
--- swing clock outlives the loop, or stopping and restarting would be a free
--- swing.
-function grug_abilities.stop_repeat(player, def)
+local function selected_swing_def(player)
+	local def = item_defs[player:get_wielded_item():get_name()]
+	return (def and def.kind == "swing") and def or nil
+end
+
+local function prepare_native_swing(player, target, fraction)
+	local selected = selected_swing_def(player)
+	if not selected then
+		return nil
+	end
+	fraction = math.max(0, math.min(1, fraction or 0))
+	if fraction <= 0 then
+		return nil
+	end
 	local name = player:get_player_name()
-	local running = repeating[name]
-	if not running or (def and running ~= def) then
+	local guid = target:get_guid()
+	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+	local entry = swing_progress[name]
+	if not entry or entry.target ~= guid or not entry.weapon:equals(weapon) then
+		entry = {
+			target = guid,
+			weapon = ItemStack(weapon),
+			progress = 0,
+			threat_damage = 0,
+		}
+		swing_progress[name] = entry
+	end
+	local total = entry.progress + fraction
+	local complete = total >= 1
+	local weapon_damage, fpi = grug_abilities.swing_stats(player)
+	local melee_bonus = grug_classes.get_melee_bonus(player)
+	local normal_damage = weapon_damage + melee_bonus
+	local context = {
+		player = player,
+		target = target,
+		entry = entry,
+		fraction = fraction,
+		previous_progress = entry.progress,
+		progress = complete and (total - 1) or total,
+		complete = complete,
+		extra_damage = 0,
+		threat_mult = 1,
+	}
+	-- Read the selected skill live only when a whole swing completes. A charge
+	-- that is unavailable or unaffordable stays untouched and the ordinary
+	-- swing still completes.
+	if complete and selected.proc_swing
+			and grug_abilities.charge_ready(player, selected)
+			and affordable(player, selected.cost) then
+		local amount, threat_mult, post = selected.proc_swing(player, target, {
+			weapon_damage = weapon_damage,
+			fpi = fpi,
+			melee_bonus = melee_bonus,
+		})
+		context.proc = selected
+		context.extra_damage = amount - normal_damage
+		context.threat_mult = threat_mult or 1
+		context.post = post
+	end
+	return context
+end
+
+local function finish_native_swing(context, result)
+	local player = context.player
+	local name = player:get_player_name()
+	if swing_progress[name] ~= context.entry or not result.landed then
 		return false
 	end
-	repeating[name] = nil
-	return true
-end
-
--- Seconds until the next loop-path swing may land, 0 when one is due now.
-local function swing_wait(name)
-	local due = repeat_due[name]
-	if not due then
-		return 0
-	end
-	local wait = (due - core.get_us_time()) / 1e6
-	return wait > 0 and wait or 0
-end
-
-function grug_abilities.is_repeating(player, def)
-	local running = repeating[player:get_player_name()]
-	return running ~= nil and (def == nil or running == def)
-end
-
--- Arms the next swing of the loop, carrying the remainder of the current
--- one (see SWING_CATCHUP). `cooldown` is the interval the swing earned; what
--- is actually armed is that minus however late this swing was, capped. It
--- writes ONLY repeat_due — the loop no longer touches the cooldown table at
--- all (WP38): swing skills display their CHARGE (T6), cast skills their
--- cooldown, and the loop's cadence is repeat_due alone.
-local function arm_repeat(player, cooldown)
-	local name = player:get_player_name()
-	local now = core.get_us_time()
-	local due = repeat_due[name]
-	local late = due and (now - due) / 1e6 or 0
-	-- Never more than half the interval, so an absurdly fast weapon cannot be
-	-- clamped into a non-positive duration (which would store no record at all
-	-- and fire once per step — the very failure the assert below guards).
-	local budget = math.min(SWING_CATCHUP, cooldown * 0.5)
-	if late < 0 then
-		late = 0
-	elseif late > budget then
-		late = budget
-	end
-	local duration = cooldown - late
-	repeat_due[name] = now + duration * 1e6
-end
-
--- One pass over the running loops, once per globalstep.
---
--- `grug_abilities.melee_swing(player, nil)` answers one of two things:
---   * a POSITIVE number — it swung; that is the interval the swing earned,
---   * `nil` plus an optional message — STOP, which is where target dead / out
---     of range / out of LOS arrive, since melee_swing re-validates every
---     swing.
--- The former `false` answer ("declined, the shared swing clock is held") is
--- gone with WP38 — the clock was deleted, the Strike now always swings when
--- it has a target (kits.lua).
---
--- The loop is the generic melee auto-attack loop (classes.md §2b):
--- `repeating[name]`'s def is the toggle identity ONLY — what actually swings
--- is the live selected skill, read by melee_swing every pass.
---
--- The pass deliberately has NO accumulator of its own. One at 0.1 s used to
--- coarsen the swing grid from `dtime` to ceil(0.1 / dtime) * dtime — 0.18 s at
--- the shipped server step, i.e. twice the error SWING_CATCHUP is able to
--- reclaim — and it saved nothing: with nobody attacking, `repeating` is empty
--- and this is one `next()` on an empty table.
-local function run_repeat_tick()
-	for name, def in pairs(repeating) do
-		local player = core.get_player_by_name(name)
-		if not player or player:get_hp() <= 0 then
-			-- Disconnect and death. Both have their own hooks below; this is
-			-- the backstop that guarantees no loop can ever run against a
-			-- stale player name, whatever a future caller forgets. The swing
-			-- clock is left alone here for the same reason stop_repeat leaves
-			-- it: leaveplayer and respawn are the sites that reset it.
-			repeating[name] = nil
-		elseif core.get_us_time() >= (repeat_due[name] or 0) then
-			local fpi, stop_msg = grug_abilities.melee_swing(player, nil)
-			if fpi == nil then
-				-- STOP. Tested for explicitly and BEFORE the guard below, which
-				-- would otherwise swallow it: `nil` is not a positive number
-				-- either, and an ordinary "the target died" would have been
-				-- reported as a broken ability. No swing happened, so the
-				-- clock keeps the due time this pass did not spend — the
-				-- player is owed that swing and a click gets it at once.
-				repeating[name] = nil
-				if stop_msg then
-					grug_abilities.flash(player, stop_msg)
-				end
-			elseif type(fpi) ~= "number" or fpi <= 0 then
-				-- A swing whose interval comes back 0 (or anything but a
-				-- positive number) stores no record at all, so the gate is
-				-- instantly true again and the loop degenerates into one swing
-				-- per globalstep. melee_swing cannot reach this — swing_stats
-				-- clamps a non-positive full_punch_interval — so this is a
-				-- guard for the NEXT swing source.
-				--
-				-- It logs and STOPS the loop instead of asserting (review
-				-- LOW C). This runs inside a registered globalstep, and a
-				-- LuaError from there reaches ServerThread's `catch (LuaError)`
-				-- -> setAsyncFatalError -> server shutdown
-				-- (reference_projects/luanti/src/server.cpp:128-132, :163-167)
-				-- — and because the record in `repeating` would never be
-				-- cleared, every following step would raise it again. Stopping
-				-- the one loop leaves the other players' game running and puts
-				-- the reason in the log. (The old assert also paid for its
-				-- message on every PASSING call: Lua evaluates the second
-				-- argument eagerly, so the concatenation ran once per swing per
-				-- player. This branch builds it only when it fires.)
-				core.log("error", "[grug_abilities] melee_swing of ability \"" ..
-					tostring(def.id) .. "\" returned a non-positive interval (" ..
-					tostring(fpi) .. ") -- loop stopped for player \"" ..
-					name .. "\"")
-				-- The swing clock keeps its last VALID due time: this branch
-				-- cannot arm one from a non-positive interval, and leaving
-				-- the old value is the conservative half (it can only delay
-				-- the next swing, never hand out a free one).
-				repeating[name] = nil
-			else
-				arm_repeat(player, fpi)
+	local entry = context.entry
+	local raw = math.max(0, result.damage or 0)
+	local extra = math.max(0, result.proc_extra or 0)
+	if context.complete then
+		-- A packet may carry the end of one swing plus overflow into the next.
+		-- Keep only the proportional baseline overflow; the proc delta belongs
+		-- wholly to the one completed swing.
+		local needed = 1 - context.previous_progress
+		local share = math.min(1, needed / context.fraction)
+		local base_raw = math.max(0, raw - extra)
+		local completed_damage = entry.threat_damage
+			+ base_raw * share + extra
+		entry.threat_damage = base_raw * (1 - share)
+		entry.progress = context.progress
+		if context.proc then
+			-- Cost and charge move only after acceptance. The effect closure is
+			-- therefore never run for evade, immunity, PvP dodge or full absorb.
+			spend(player, context.proc.cost)
+			grug_abilities.reset_charge(player, context.proc)
+			if result.mob and context.threat_mult ~= 1 then
+				grug_core.add_threat(result.mob, player,
+					completed_damage * (context.threat_mult - 1))
+			end
+			if context.post then
+				context.post()
 			end
 		end
+	else
+		entry.progress = context.progress
+		entry.threat_damage = entry.threat_damage + raw
 	end
+	-- Mob punches know acceptance immediately. PvP defers its fraction bank
+	-- until an integer HP commit, so its caller grants rage separately.
+	if result.grant_rage then
+		grug_abilities.add_rage(player, 12 * context.fraction)
+	end
+	return context.proc ~= nil
 end
+
+grug_core.register_native_melee_handler(prepare_native_swing,
+	finish_native_swing)
 
 function grug_abilities.try_cast(user, def, pointed_thing)
 	if user:get_hp() <= 0 then
 		return
 	end
-	-- The "second cast" stop condition (E3), and it sits BEFORE every gate on
-	-- purpose: the ability's own cooldown is running for most of the time its
-	-- loop is, so an off switch behind that gate would only be reachable in
-	-- the sliver between two swings — i.e. not at all.
-	if grug_abilities.stop_repeat(user, def) then
-		grug_abilities.flash(user, def.name .. " off.")
+	-- Swing items have no on_use and never enter this function. Their native
+	-- object punches are prepared and committed through the melee handler.
+	if def.kind ~= "cast" then
 		return
 	end
 	-- Universal abilities have no class to be (E1) — without this a Mage
@@ -777,52 +645,6 @@ function grug_abilities.try_cast(user, def, pointed_thing)
 	if not def.universal and grug_classes.get_class(user) ~= def.class then
 		grug_abilities.flash(user, "You are no " ..
 			grug_classes.registered_classes[def.class].name .. ".")
-		return
-	end
-	-- The swing/cast fork IS the toggle (classes.md §2b, WP38). The T3
-	-- watcher never touches `repeating`, and melee_swing reads the SELECTED
-	-- skill live every swing — so selecting another swing skill mid-fight
-	-- re-arms the proc with zero interruption, and the first CLICK on it only
-	-- updates the toggle identity (+ target refresh). Only a click on the
-	-- swing skill the loop already counts as stops it: "second click on the
-	-- same slot stops."
-	if def.kind == "swing" then
-		local swinger = user:get_player_name()
-		if grug_abilities.is_repeating(user) then
-			-- Loop already running: re-arm ONLY (toggle identity + target
-			-- refresh from the click), NO extra swing — click spam must not
-			-- be a second damage stream (classes.md §2b).
-			repeating[swinger] = def
-			grug_abilities.refresh_melee_target(user, pointed_thing)
-			return
-		end
-		-- The loop is not running, so this click starts it — and the START
-		-- is where the second damage stream used to get in (WP38 review).
-		-- `stop_repeat` above answers a click on the RUNNING skill, so
-		-- click-stop-click reached this line every second click and swung
-		-- immediately, at full weapon damage, with nothing bounding the
-		-- rate. The swing clock outlives the loop for exactly this case: a
-		-- start that is still inside the previous swing's interval arms the
-		-- loop for the REMAINDER instead of swinging now. The player loses
-		-- nothing — the loop delivers that swing the moment it is due — and
-		-- gains no way to swing faster than the weapon allows.
-		local wait = swing_wait(swinger)
-		if wait > 0 then
-			-- Validate the target anyway, or a click at thin air would arm a
-			-- loop that reports "No target." a moment later.
-			if not grug_abilities.refresh_melee_target(user, pointed_thing) then
-				grug_abilities.flash(user, "No target.")
-				return
-			end
-			grug_abilities.start_repeat(user, def, wait)
-			return
-		end
-		local fpi, err = grug_abilities.melee_swing(user, pointed_thing)
-		if fpi == nil then
-			grug_abilities.flash(user, err or "Invalid target.")
-			return
-		end
-		grug_abilities.start_repeat(user, def, fpi)
 		return
 	end
 	-- Cast skills: ready check, affordable check, cast, spend, arm the
@@ -1100,6 +922,38 @@ local function apply_skin(stack, def, src)
 	return true
 end
 
+-- Native swing items carry only the equipped weapon's combat capabilities.
+-- This per-stack override is what makes the client animate/repeat at the slot
+-- weapon's speed and what makes the server receive the same damage source.
+-- Empty equipment resolves to the registered hand baseline in kits.lua. No
+-- groupcaps means an ability remains unable to dig nodes, and use 0 keeps the
+-- ability item indestructible. The token is the compare-before-write gate;
+-- the override has no Lua getter distinct from the resolved capabilities.
+local SWING_CAPS_VERSION = 1
+local SWING_CAPS_TOKEN_KEY = "grug_swing_caps"
+
+local function apply_swing_caps(stack, def, player)
+	if def.kind ~= "swing" then
+		return false
+	end
+	local damage, interval = grug_abilities.swing_stats(player)
+	local token = SWING_CAPS_VERSION .. "|" ..
+		string.format("%.17g|%.17g", damage, interval)
+	local meta = stack:get_meta()
+	if meta:get_string(SWING_CAPS_TOKEN_KEY) == token then
+		return false
+	end
+	meta:set_tool_capabilities({
+		full_punch_interval = interval,
+		max_drop_level = 0,
+		groupcaps = {},
+		damage_groups = {fleshy = damage},
+		punch_attack_uses = 0,
+	})
+	meta:set_string(SWING_CAPS_TOKEN_KEY, token)
+	return true
+end
+
 -- Wear bar params for CHARGING skills (classes.md §2b), applied like the
 -- skin: compare first, write once, or not at all. There is no getter for
 -- wear bar params, so the token is the compare — every inventory write
@@ -1183,7 +1037,11 @@ local function sync_skins(player, slot)
 		local stack = list[i]
 		local def = item_defs[stack:get_name()]
 		if def and (slot == nil or def.slot == slot) then
-			if apply_skin(stack, def, source_of(def)) then
+			local changed = apply_skin(stack, def, source_of(def))
+			if def.slot == "weapon" and apply_swing_caps(stack, def, player) then
+				changed = true
+			end
+			if changed then
 				inv:set_stack("main", i, stack)
 			end
 		end
@@ -1209,6 +1067,17 @@ end
 grug_core.register_on_equipment_change(function(player, listname)
 	if listname and SKIN_IRRELEVANT_LIST[listname] then
 		return
+	end
+	-- After the proven-irrelevant return above, only the known offhand can
+	-- avoid changing the weapon. Compare the actual concrete stack so a nested
+	-- second notifier pass does not erase newly earned progress; A -> B -> A
+	-- still resets on the first change.
+	if listname ~= "grug_offhand" then
+		local entry = swing_progress[player:get_player_name()]
+		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+		if entry and not entry.weapon:equals(weapon) then
+			clear_swing_progress(player)
+		end
 	end
 	-- nil (or an unrecognised name) -> nil -> both hands.
 	sync_skins(player, listname and SLOT_OF_LIST[listname])
@@ -1328,16 +1197,11 @@ end
 local function sync_kit(player)
 	local class = grug_classes.get_class(player)
 	local name = player:get_player_name()
-	-- Join, class pick and class SWITCH all land here, and a class switch can
-	-- happen mid-fight: whatever was auto-attacking a moment ago has just had
-	-- its cooldowns and charges wiped and its items re-granted, so the loop
-	-- stops with them (E3 — no loop may survive a purge/re-grant pass).
+	-- Join, class pick and class SWITCH all land here. A class switch wipes
+	-- runtime cooldowns, charges and partial proc progress before re-granting.
 	-- Wiping the charges makes the new kit start fully charged: no record
-	-- IS the charged state (see the charge timers section). The swing clock
-	-- goes with them — it survives an ordinary toggle-off, but a re-granted
-	-- kit is a fresh character as far as timing is concerned.
-	grug_abilities.stop_repeat(player)
-	repeat_due[name] = nil
+	-- IS the charged state (see the charge timers section).
+	clear_swing_progress(player)
 	cooldowns[name] = {}
 	charges[name] = {}
 	wear_steps[name] = {}
@@ -1397,6 +1261,10 @@ local function sync_kit(player)
 						if apply_skin(stack, def, source_of(def)) then
 							changed = true
 						end
+						if def.slot == "weapon" and
+								apply_swing_caps(stack, def, player) then
+							changed = true
+						end
 						-- The charge bar ramp, same discipline (classes.md
 						-- §2b): the params either exist or not, and the
 						-- token answers that.
@@ -1423,6 +1291,9 @@ local function sync_kit(player)
 			-- must not spend one write appearing as an orb and a second one
 			-- turning into the weapon.
 			apply_skin(stack, def, source_of(def))
+			if def.slot == "weapon" then
+				apply_swing_caps(stack, def, player)
+			end
 			-- Charge bar ramp, same "before it reaches the inventory" rule:
 			-- a charging skill must never appear without its ramp.
 			apply_charge_bar(stack, def)
@@ -1473,16 +1344,10 @@ end)
 -- never reaches this wrapper at all (plain mobs:register_mob, no grug
 -- wrapper), an evading mob cancels the punch before it.
 --
--- SINCE THE AUTO-ATTACK IS AN ABILITY (E1) the hooks below no longer see
--- the swing that classes.md §1 actually means: an ability punch sets
--- in_ability_punch and is skipped here by design (rage must not come from
--- Fireball). The Strike therefore grants its own FLAT +12 per LANDED loop
--- swing, in kits.lua, next to the damage it granted it for — the loop
--- swings once per weapon interval at full damage, so there is no fraction
--- to multiply there. Without that the Warrior's whole resource economy
--- would have stopped the day auto-attack became a skill: Mighty Blow costs
--- 25 rage and Hamstring 10, and the only remaining income would have been
--- +4 per hit TAKEN.
+-- Native swing ability punches are deferred to finish_native_swing below:
+-- unlike this wrapper hook, that finish point is after mobs_redo's cancellation
+-- gates. Tools and fists keep this hook. Cast damage sets in_ability_punch and
+-- remains excluded, so Fireball can never generate melee rage.
 --
 
 grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, fraction)
@@ -1490,6 +1355,13 @@ grug_core.register_on_player_hit_mob(function(player, mob_ent, damage, applied, 
 		grug_abilities.set_target(player, mob_ent.object, false)
 	end
 	if grug_core.in_ability_punch then
+		return
+	end
+	-- Native swing ability items pay through finish_native_swing, after
+	-- mobs_redo's do_punch/CMI cancellation gates. Paying here would precede
+	-- those gates and would also put rage before a Mighty Blow's cost at cap.
+	local selected = item_defs[player:get_wielded_item():get_name()]
+	if selected and selected.kind == "swing" then
 		return
 	end
 	local landed
@@ -1570,12 +1442,10 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	grug_abilities.set_target(hitter, player, false)
 	grug_core.mark_in_combat(hitter)
 
-	-- Damage source is the WIELDED stack (combat_stats.md §2: the
-	-- held-button path stays wielded-item damage — the weapon SLOT feeds
-	-- only the ability swings; this path is the tools-and-fists one). The
-	-- callback's tool_capabilities are normally present; when absent,
-	-- get_tool_capabilities resolves an empty hand to the hand item's own
-	-- caps (the engine always registers the "" item, inventory.cpp:344-346).
+	-- Damage source is the capabilities the native punch carried. A swing
+	-- ability stack mirrors the equipped weapon slot; tools and fists retain
+	-- their own capabilities. The callback normally supplies them, with the
+	-- wielded/hand lookup as a defensive fallback.
 	local caps = tool_capabilities or
 		hitter:get_wielded_item():get_tool_capabilities()
 	local fleshy = caps.damage_groups and caps.damage_groups.fleshy or 0
@@ -1591,16 +1461,28 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	-- The accumulator floors only after scaling and banks the same swing
 	-- fractions for the eventual rage commit.
 	local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
+	local proc_context = grug_core.prepare_native_melee(hitter, player, fraction)
 	local full_damage = fleshy + grug_core.get_melee_bonus(hitter)
-	full_damage = grug_core.melee_crit(hitter, full_damage, player)
-	full_damage = grug_core.apply_player_armor(player, full_damage)
-	local raw = full_damage * fraction
+	local crit_damage, crit_mult = grug_core.melee_crit(
+		hitter, full_damage, player)
+	local armored_damage = grug_core.apply_player_armor(player, crit_damage)
+	local proc_extra = 0
+	if proc_context and proc_context.extra_damage ~= 0 then
+		-- Resolve the replacement total with the SAME crit outcome and armor
+		-- formula, then add only its delta to the completing packet. One native
+		-- punch reaches the central dodge/absorb modifier once.
+		local proc_total = (full_damage + proc_context.extra_damage) * crit_mult
+		proc_extra = grug_core.apply_player_armor(player, proc_total)
+			- armored_damage
+	end
+	local raw = armored_damage * fraction + proc_extra
 	local applied, committed_fraction = grug_core.apply_accumulated_melee(
 		hitter, player, raw, fraction)
 	-- Bank-only packets pay nothing. At an integer commit the accumulator
 	-- returns ALL fractions since the previous commit and clears them at once;
 	-- a dodge or full absorb then discards that credit, while any real HP loss
 	-- (including after a partial absorb) pays it in full.
+	local landed = raw > 0 and applied < 1
 	if applied >= 1 then
 		local hp_before = player:get_hp()
 		-- set_hp with the punch reason routes through the central hp-change
@@ -1612,11 +1494,21 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 			object = hitter,
 			custom_type = grug_core.ARMOR_APPLIED_CUSTOM_TYPE,
 		})
-		if player:get_hp() < hp_before and committed_fraction > 0 then
+		landed = player:get_hp() < hp_before
+	end
+	-- Commit the proc before rage so a near-cap Mighty Blow pays its cost and
+	-- then earns the swing's rage, matching the former full-swing path. A
+	-- dodge or full absorb leaves charge/cost/progress untouched.
+	grug_core.finish_native_melee(proc_context, {
+		landed = landed,
+		damage = raw,
+		proc_extra = proc_extra,
+		grant_rage = false,
+	})
+	if landed and applied >= 1 and committed_fraction > 0 then
 			-- Across any number of bank-only packets this integrates to +12
 			-- per total swing fraction 1, independent of weapon damage.
 			grug_abilities.add_rage(hitter, 12 * committed_fraction)
-		end
 	end
 	-- The engine's own damage is suppressed on the hostile path ALWAYS —
 	-- even when nothing landed (applied 0, absorbed, dodged): the
@@ -1634,60 +1526,20 @@ end, false)
 --
 -- Regen / decay / cooldown ticker (0.5 s): mana 2%/s out of combat,
 -- 0.5%/s in combat; rage decays 2/s out of combat (combat_stats §5,
--- classes.md §1). Cooldown wear is updated here too — and, at a finer step
--- of its own, the auto-repeat swing pass (E3).
+-- classes.md §1). Cooldown/charge wear and the skill-name watcher share this
+-- one throttled pass; native melee itself needs no globalstep.
 --
 
 local acc = 0
 
 core.register_globalstep(function(dtime)
-	-- The swing pass FIRST, and before the 0.5 s gate returns: quantised to
-	-- 0.5 s every weapon would become a 1.0 s weapon (0.7 s dagger included).
-	--
-	-- IT RUNS ON EVERY STEP, WITHOUT AN ACCUMULATOR — a deliberate, measured
-	-- exception to AGENTS.md's performance rule "always throttle
-	-- register_globalstep with a dtime accumulator", and to E3's own "with its
-	-- own finer accumulator". Recorded here rather than left to be
-	-- rediscovered (review LOW E). Two reasons, in this order:
-	--   * an accumulator does not just cost precision, it takes it. Any period
-	--     p coarsens the swing grid from `dtime` to ceil(p / dtime) * dtime;
-	--     at p = 0.1 and the engine's shipped dedicated_server_step of 0.09
-	--     (reference_projects/luanti/src/defaultsettings.cpp:498) that is
-	--     0.18 s, twice the error SWING_CATCHUP is able to reclaim, so every
-	--     weapon's cadence would be re-tuned and each by a different amount.
-	--   * it would save nothing measurable. `repeating` is keyed by player and
-	--     is EMPTY unless somebody is actually auto-attacking, so the idle
-	--     cost of this call is one `next()` on an empty table — measured at
-	--     0.0003 ms/step idle, and 0.093 ms/step with 100 players all
-	--     attacking, against a 90 ms step budget.
-	-- The rule stands for passes whose work does not scale down to nothing on
-	-- an idle server; this one does, and it is the throttle that would cost.
-	--
-	-- The wield watcher also runs on every step, and for a correctness
-	-- reason rather than a precision one: switching the hotbar to a pick is
-	-- a COMBAT STOP CONDITION (classes.md §2b) and must bite within one
-	-- step, not within the 0.5 s window the ticker below gates on — a
-	-- throttled watcher would keep the player auto-attacking from the
-	-- weapon slot for up to half a second after the hotbar changed. Its
-	-- cost model: per step, one core.get_connected_players() list, and per
-	-- connected player one get_wield_index() call plus an int compare —
-	-- nothing allocated and no inventory read while nothing changed.
-	-- `dirty` (set by any player inventory action) forces exactly one
-	-- get_wielded_item() on the next step, which is also the read that
-	-- sees a same-index content swap: an index is not the item. It is
-	-- deliberately not folded into the 0.5 s body below, which already
-	-- iterates the players — throttling is the point.
-	-- The watcher runs BEFORE the loop tick (review LOW 3): with the reverse
-	-- order a swing due on the exact switch step landed once more from the
-	-- weapon slot the player had just left.
-	watch_wield()
-	run_repeat_tick()
 	acc = acc + dtime
 	if acc < 0.5 then
 		return
 	end
 	local elapsed = acc
 	acc = 0
+	watch_wield()
 	for _, player in ipairs(core.get_connected_players()) do
 		local name = player:get_player_name()
 		local res = resource_of(player)
@@ -1824,22 +1676,12 @@ core.register_on_joinplayer(function(player)
 	hud_update(player)
 end)
 
--- Death and respawn are two of E3's stop conditions and are hooked
--- separately: dying stops the loop AT the death (the tick's own hp check is
--- the backstop, one globalstep later — it has no accumulator of its own, so
--- there is no 0.1 s window any more), and the respawn stops it a second time
--- because a respawn is also a re-grant path -- a loop that somehow outlived
--- the death must not be handed the fresh character.
 core.register_on_dieplayer(function(player)
-	grug_abilities.stop_repeat(player)
+	clear_swing_progress(player)
 end)
 
 core.register_on_respawnplayer(function(player)
-	grug_abilities.stop_repeat(player)
-	-- A fresh body starts on a fresh swing clock (see repeat_due): dying is
-	-- not a way to skip a swing interval, but it is also not a reason to owe
-	-- one after the corpse run.
-	repeat_due[player:get_player_name()] = nil
+	clear_swing_progress(player)
 	refill_mana(player)
 	rage[player:get_player_name()] = 0
 	hud_update(player)
@@ -1847,12 +1689,9 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	-- A disconnect drops the loop with everything else: it is keyed by NAME,
-	-- so a reconnect under the same name must not resume the old fight.
-	grug_abilities.stop_repeat(player)
+	clear_swing_progress(player)
 	mana[name] = nil
 	rage[name] = nil
-	repeat_due[name] = nil
 	cooldowns[name] = nil
 	charges[name] = nil
 	targets[name] = nil

@@ -2718,6 +2718,13 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- `tflp` has been normalized below. It is the proportional model's own
 	-- factor (`tmp` in the damage loop) and the wear accumulator's input.
 	local grug_fraction = 0
+	-- GRUG PATCH (native swing-skill transaction, WP38 correction): optional
+	-- prepare/finish context supplied by grug_abilities through grug_core. The
+	-- prepare phase may contribute a completed swing's proc delta to THIS
+	-- punch; the finish phase pays cost/resets charge/applies the effect only
+	-- after do_punch and CMI have accepted it.
+	local grug_proc_context
+	local grug_proc_extra = 0
 
 	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name] then
@@ -2744,6 +2751,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- normalized `tflp` — the damage loop below derives the same number as
 	-- `tmp`, and the wear block feeds it to grug_core's wear accumulator.
 	grug_fraction = min(1, max(0, tflp / (tool_capabilities.full_punch_interval or 1.4)))
+	if grug_melee then
+		grug_proc_context = grug_core.prepare_native_melee(
+			hitter, self.object, grug_fraction)
+	end
 
 	if use_cmi then
 		damage = cmi.calculate_damage(self.object, hitter, tflp, tool_capabilities, dir)
@@ -2775,6 +2786,16 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			damage = damage + base * tmp * ((armor[group] or 0) / 100.0)
 		end
 	end
+	if grug_proc_context and grug_proc_context.extra_damage ~= 0 then
+		-- Mighty Blow replaces one completed ordinary swing with its specified
+		-- total. Earlier partial packets already carried their baseline, so only
+		-- the unscaled full-swing delta belongs on the completing packet. It is
+		-- folded before the ONE crit roll below: no recursive punch, second crit
+		-- or second dodge path.
+		grug_proc_extra = grug_proc_context.extra_damage
+			* ((armor.fleshy or 0) / 100.0)
+		damage = damage + grug_proc_extra
+	end
 
 	-- check if hit by player item or entity
 	local hit_item = weapon_def.name
@@ -2795,12 +2816,14 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 			damage = self.immune_to[n][2] or 0
 			grug_immune = true
+			grug_proc_extra = 0
 			break
 
 		-- if "all" then no tools deal damage unless it's specified in list
 		elseif self.immune_to[n][1] == "all" then
 			damage = self.immune_to[n][2] or 0
 			grug_immune = true
+			grug_proc_extra = 0
 		end
 	end
 
@@ -2813,7 +2836,9 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- hit the mob is immune to. melee_crit's own `damage <= 0` guard now
 	-- covers the usual immunity value of 0, so no burst and no roll.
 	if grug_melee then
-		damage = grug_core.melee_crit(hitter, damage, self.object)
+		local crit_mult
+		damage, crit_mult = grug_core.melee_crit(hitter, damage, self.object)
+		grug_proc_extra = grug_proc_extra * crit_mult
 	end
 
 	-- GRUG PATCH (WP38, combat_stats.md §2): fractional melee damage goes
@@ -2826,8 +2851,11 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- nil on every other path (ability punches, non-melee punches,
 	-- vanilla mobs), which keeps them on vanilla behavior below.
 	local grug_applied -- nil = not on the accumulator path
+	local grug_accumulation
 	if grug_melee and not grug_immune and damage > 0 then
-		grug_applied = grug_core.apply_accumulated_melee(hitter, self.object, damage)
+		grug_accumulation = grug_core.prepare_accumulated_melee(
+			hitter, self.object, damage)
+		grug_applied = grug_accumulation.applied
 	end
 	-- The wrapper (grug_mobs' do_punch, runs right after this) needs the
 	-- same integer for its lethal check — kill credit/XP and the rare
@@ -2875,6 +2903,24 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	and cmi.notify_punch(self.object, hitter, tflp, tool_capabilities, dir, damage) then
 		return true
 	end
+
+	-- GRUG PATCH (accepted native melee commit, WP38 correction): do_punch and
+	-- CMI cancellation are now behind us. Only now may the fractional damage
+	-- remainder and swing-skill progress become real. In particular an evaded
+	-- Mighty Blow cannot leave its bonus in the next hit's remainder while its
+	-- rage and charge correctly stayed unspent.
+	local grug_accumulation_committed = true
+	if grug_accumulation then
+		grug_accumulation_committed =
+			grug_core.commit_accumulated_melee(grug_accumulation)
+	end
+	grug_core.finish_native_melee(grug_proc_context, {
+		landed = grug_accumulation_committed and not grug_immune and damage > 0,
+		damage = damage,
+		proc_extra = grug_proc_extra,
+		mob = self,
+		grant_rage = true,
+	})
 
 	-- add weapon wear
 	local punch_interval = tool_capabilities.full_punch_interval or 1.4
@@ -2948,11 +2994,9 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- with `wear == 0` this call re-sends the inventory to say the item is
 	-- exactly what the client already has.
 	--
-	-- It became load-bearing with the auto-attack skill: ability punches carry
-	-- `punch_attack_uses = 0` (grug_core.deal_ability_damage), so EVERY swing
-	-- of a continuously auto-attacking player took this branch at wear 0 --
-	-- ~1.4 packets per second per player, ~140/s at the 100-player design
-	-- target, for zero information. That packet count is the whole rationale --
+	-- It is load-bearing for swing ability tools: their synchronized native
+	-- capabilities carry `punch_attack_uses = 0`, so held LMB reaches this block
+	-- at wear 0 about five times per second. That packet count is the rationale --
 	-- an earlier version of this comment also claimed the skipped write closes
 	-- a lost-update window against the cooldown wear ticker, and it does not:
 	-- Lua here is single-threaded, on_punch runs to completion synchronously,
