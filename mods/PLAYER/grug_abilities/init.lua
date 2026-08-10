@@ -28,6 +28,7 @@ local cooldowns = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
 local resource_huds = {} -- player name -> hud id
 local flash_huds = {} -- player name -> {id = hud id, token = n}
+local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
 -- Skill-name line (classes.md §2c) and the throttled wield watcher that feeds
 -- it (WP38 T3). The watcher keeps the last noticed wielded stack per player:
 -- the index alone is not the item — a same-index content swap has to raise
@@ -244,6 +245,21 @@ local function show_skill_name(player, text)
 			p:hud_change(r.id, "text", "")
 		end
 	end)
+end
+
+-- Binary weapon-ready overlay (classes.md §2b). Lua HUD elements are drawn
+-- after the builtin crosshair (src/client/render/plain.cpp:48-52); z_index 1
+-- also orders this explicitly above the conventional z_index-0 gameplay HUD.
+-- Only a changed boolean sends a HUD packet. This is never an inventory bar.
+local READY_RETICLE_TEXTURE = "grug_abilities_weapon_ready.png"
+
+local function set_ready_reticle(player, visible)
+	local rec = ready_reticle_huds[player:get_player_name()]
+	if not rec or rec.visible == visible then
+		return
+	end
+	rec.visible = visible
+	player:hud_change(rec.id, "text", visible and READY_RETICLE_TEXTURE or "")
 end
 
 -- Any player inventory action (signature: player, action, inventory,
@@ -594,6 +610,7 @@ clear_swing_progress = function(player)
 	swing_progress[name] = nil
 	swing_input_latch[name] = nil
 	swing_pickup_dig[name] = nil
+	set_ready_reticle(player, false)
 end
 
 -- A non-swing/cast boundary stops the loop and discards tool fractions, but
@@ -604,6 +621,7 @@ reset_swing_boundary = function(player)
 	local entry = swing_progress[name]
 	swing_input_latch[name] = nil
 	swing_pickup_dig[name] = nil
+	set_ready_reticle(player, false)
 	if not entry then
 		grug_core.reset_accumulated_melee(player)
 		return
@@ -638,13 +656,6 @@ local function valid_swing_enemy(player, target)
 		ent._grug_faction == grug_factions.get_faction(player))
 end
 
-local function swing_has_los(player, target)
-	local eye = player:get_pos()
-	eye.y = eye.y + (player:get_properties().eye_height or 1.5)
-	return core.line_of_sight(eye,
-		vector.offset(target:get_pos(), 0, 1, 0))
-end
-
 -- Swing items need node pointabilities = "blocking" so the engine cannot
 -- fall back to hand digging after a mob dies. Runtime testing showed that this
 -- can also hide a dropped item's small selection box when it rests against the
@@ -654,7 +665,7 @@ end
 -- Nodes and non-item objects stop the ray; this is neither auto-loot nor a
 -- through-wall/proximity pickup.
 local function pickup_swing_loot(player, selected)
-	local eye = player:get_pos()
+	local eye = grug_core.combat_eye_pos(player)
 	if not eye then
 		return false
 	end
@@ -704,6 +715,8 @@ local function prepare_authoritative_swing(player, target, fraction, token)
 		target = target,
 		extra_damage = 0,
 		threat_mult = 1,
+		debug_name = swing.debug_name,
+		transaction = swing.debug_name and swing or nil,
 	}
 	-- Selection is read live at the actual due swing. An unavailable or
 	-- unaffordable proc stays armed and the ordinary swing still lands.
@@ -728,6 +741,19 @@ local function finish_authoritative_swing(context, result)
 		return false
 	end
 	context.settled = true
+	if context.transaction then
+		context.transaction.outcome = result
+		context.transaction.proc = context.proc and context.proc.id or "none"
+	end
+	if context.debug_name and grug_core.combat_debug_due(
+			context.debug_name, "swing:settlement", 0.05) then
+		grug_core.combat_debug_log(context.debug_name, "swing_settlement",
+			"proc=" .. context.transaction.proc ..
+			" cancelled=" .. tostring(result.cancelled == true) ..
+			" landed=" .. tostring(result.landed == true) ..
+			" damage=" .. tostring(result.damage or 0) ..
+			" rage=" .. tostring(result.grant_rage == true))
+	end
 	if result.cancelled or not result.landed then
 		return false
 	end
@@ -768,11 +794,20 @@ end
 grug_core.register_native_melee_handler(prepare_authoritative_swing,
 	finish_authoritative_swing)
 
--- One due full swing against the enemy soft lock. A failed range/LOS/validity
--- check does not consume the ready clock and does not refresh/delete the lock;
--- the held loop may resume as soon as the gap closes, until the normal 8 s
--- lock expiry. A real attempt carries only bounded lateness from `next_due`,
--- so normal step quantization does not drift and a long gap cannot burst.
+local function debug_target_name(target)
+	if not target then
+		return "none"
+	end
+	if target:is_player() then
+		return "player:" .. target:get_player_name()
+	end
+	local ent = target:get_luaentity()
+	return "entity:" .. (ent and ent.name or "unknown")
+end
+
+-- One due full swing against the current server eye/look ray. Aim misses leave
+-- `next_due` untouched; the first live hostile consumes it before punch and
+-- then enters WP38's exact claim-once/two-phase settlement unchanged.
 attempt_swing = function(player, selected, held, latched)
 	local name = player:get_player_name()
 	if player:get_hp() <= 0 then
@@ -816,20 +851,39 @@ attempt_swing = function(player, selected, held, latched)
 		entry.ordinary = nil
 	end
 	entry.inactive = nil
+	if grug_core.combat_debug_due(name, "swing:readiness", 0.25) then
+		grug_core.combat_debug_log(name, "swing_readiness",
+			"held=" .. tostring(held == true) ..
+			" latched=" .. tostring(latched == true) ..
+			" ready=" .. tostring(now >= entry.next_due) ..
+			" now=" .. now .. " next_due=" .. entry.next_due ..
+			" fpi=" .. fpi)
+	end
 	if now < entry.next_due then
 		return false
 	end
 
-	local target = grug_abilities.get_target(player, false)
-	if not valid_swing_enemy(player, target) then
+	-- The combat ray runs only after input and readiness gates. Its structured
+	-- result is also the one debug record; diagnostics never cast a second ray.
+	local ray = grug_core.combat_ray(player,
+		grug_abilities.get_range(player, selected))
+	if grug_core.combat_debug_due(name, "swing:ray", 0.25) then
+		grug_core.combat_debug_log(name, "swing_ray",
+			"status=" .. ray.status .. " reason=" .. ray.reason ..
+			" target=" .. debug_target_name(ray.target) ..
+			" kind=" .. tostring(ray.object_kind or "none") ..
+			" relation=" .. tostring(ray.relation or "none") ..
+			" distance=" .. tostring(ray.distance or "none") ..
+			" range=" .. tostring(ray.range or "none") ..
+			" blocker=" .. tostring(ray.node or ray.blocker or "none"))
+	end
+	if ray.status ~= "target" then
 		return false
 	end
-	local ppos = player:get_pos()
-	local tpos = target:get_pos()
-	if vector.distance(ppos, tpos) > grug_abilities.get_range(player, selected)
-			or not swing_has_los(player, target) then
-		return false
-	end
+	local target = ray.target
+	-- Presentation memory may follow an attempted/current pointed hostile, but
+	-- it is never read back as aim by this path.
+	grug_abilities.set_target(player, target, false)
 
 	local late = 0
 	if entry.next_due > 0 then
@@ -837,6 +891,8 @@ attempt_swing = function(player, selected, held, latched)
 		late = math.min(late, SWING_CATCHUP, fpi * 0.5)
 	end
 	entry.next_due = now + (fpi - late) * 1e6
+	-- A valid attack hides readiness before any dodge/refusal/callback outcome.
+	set_ready_reticle(player, false)
 	local caps = {
 		full_punch_interval = fpi,
 		damage_groups = {fleshy = weapon_damage},
@@ -844,17 +900,26 @@ attempt_swing = function(player, selected, held, latched)
 		max_drop_level = 0,
 		punch_attack_uses = 0,
 	}
-	local dir = vector.direction(ppos, tpos)
-	local token = grug_core.begin_authoritative_swing(player, target, {
+	local transaction = {
 		weapon_damage = weapon_damage,
 		fpi = fpi,
 		melee_bonus = grug_classes.get_melee_bonus(player),
-	})
+		debug_name = grug_core.combat_debug_enabled(name) and name or nil,
+	}
+	local token = grug_core.begin_authoritative_swing(player, target, transaction)
 	if not token then
 		core.log("warning", "[grug_abilities] authoritative swing could not " ..
 			"start while another transaction is active")
 		return false
 	end
+	if grug_core.combat_debug_due(name, "swing:attempt", 0.05) then
+		grug_core.combat_debug_log(name, "swing_attempt",
+			"target=" .. debug_target_name(target) .. " fpi=" .. fpi ..
+			" late=" .. late .. " next_due=" .. entry.next_due)
+	end
+	local ppos = player:get_pos()
+	local tpos = target:get_pos()
+	local dir = ppos and tpos and vector.direction(ppos, tpos) or ray.direction
 	local ok, err = pcall(target.punch, target, player, fpi, caps, dir)
 	grug_core.end_authoritative_swing(token)
 	if not ok then
@@ -863,6 +928,15 @@ attempt_swing = function(player, selected, held, latched)
 		core.log("warning", "[grug_abilities] authoritative swing failed: " ..
 			tostring(err))
 		return false
+	end
+	if transaction.debug_name and grug_core.combat_debug_due(
+			name, "swing:outcome", 0.05) then
+		local outcome = transaction.outcome
+		grug_core.combat_debug_log(name, "swing_outcome", outcome and
+			("landed=" .. tostring(outcome.landed == true) ..
+			" cancelled=" .. tostring(outcome.cancelled == true) ..
+			" damage=" .. tostring(outcome.damage or 0)) or
+			"no accepted settlement (protection/PvP/do_punch/CMI refusal)")
 	end
 	return true
 end
@@ -891,6 +965,12 @@ grug_core.register_native_swing_input_handler(function(player, target)
 	elseif target and target:is_player()
 			and grug_factions.same_faction(player, target) then
 		grug_abilities.set_target(player, target, true)
+	end
+	local name = player:get_player_name()
+	if grug_core.combat_debug_due(name, "swing:input", 0.25) then
+		grug_core.combat_debug_log(name, "swing_input",
+			"native target=" .. debug_target_name(target) ..
+			" hostile_latch=" .. tostring(swing_input_latch[name] == true))
 	end
 	return true
 end)
@@ -1385,7 +1465,8 @@ grug_core.register_on_equipment_change(function(player, listname)
 		local name = player:get_player_name()
 		local entry = swing_progress[name]
 		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
-		if entry and not entry.weapon:equals(weapon) then
+		if (entry and not entry.weapon:equals(weapon))
+				or (not entry and listname == "grug_weapon") then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
 			grug_core.reset_accumulated_melee(player)
 			swing_progress[name] = {
@@ -1393,6 +1474,7 @@ grug_core.register_on_equipment_change(function(player, listname)
 				next_due = core.get_us_time() + fpi * 1e6,
 			}
 			swing_input_latch[name] = nil
+			set_ready_reticle(player, false)
 		end
 	end
 	-- nil (or an unrecognised name) -> nil -> both hands.
@@ -1854,9 +1936,24 @@ end, false)
 
 local SWING_STEP = 0.05
 
+local function weapon_clock_ready(player, selected)
+	if not selected or player:get_hp() <= 0 then
+		return false
+	end
+	local name = player:get_player_name()
+	local entry = swing_progress[name]
+	if not entry then
+		return true
+	end
+	-- The equipment-change callback below re-arms a concrete swap immediately.
+	-- Do not copy the equipped ItemStack in this 20 Hz HUD check; readiness
+	-- needs only the already-authoritative due time.
+	return core.get_us_time() >= entry.next_due
+end
+
 -- Held-LMB authoritative loop. The client continues to animate the no-on_use
--- swing tool, while the server reads the control state and attacks the enemy
--- soft lock at the one shared weapon clock. A direct hostile-object packet
+-- swing tool, while the server reads control state and one current combat ray
+-- at the shared weapon clock. A direct hostile-object packet
 -- contributes one latch for the next throttled attack pass, even after release;
 -- the latch is consumed immediately and never waits for a later due time.
 -- One player can produce at most one attempt per pass.
@@ -1881,6 +1978,7 @@ core.register_globalstep(function(dtime)
 			if not picked_up and (dig or latched) then
 				attempt_swing(player, selected, dig, latched)
 			end
+			set_ready_reticle(player, weapon_clock_ready(player, selected))
 		elseif swing_progress[name] and not swing_progress[name].inactive then
 			swing_pickup_dig[name] = nil
 			-- This throttled attack pass (0.05 s threshold, actual engine-step
@@ -1889,6 +1987,7 @@ core.register_globalstep(function(dtime)
 			reset_swing_boundary(player)
 		else
 			swing_pickup_dig[name] = nil
+			set_ready_reticle(player, false)
 		end
 	end
 end)
@@ -2035,6 +2134,15 @@ core.register_on_joinplayer(function(player)
 		number = 0xffffff,
 		text = "",
 	})}
+	ready_reticle_huds[name] = {visible = false, id = player:hud_add({
+		type = "image",
+		position = {x = 0.5, y = 0.5},
+		offset = {x = 0, y = 0},
+		alignment = {x = 0, y = 0},
+		scale = {x = 1, y = 1},
+		text = "",
+		z_index = 1,
+	})}
 	rage[name] = 0
 	refill_mana(player)
 	sync_kit(player)
@@ -2083,6 +2191,7 @@ core.register_on_leaveplayer(function(player)
 	resource_huds[name] = nil
 	flash_huds[name] = nil
 	skillname_huds[name] = nil
+	ready_reticle_huds[name] = nil
 	wield_watch[name] = nil
 	dirty[name] = nil
 end)
