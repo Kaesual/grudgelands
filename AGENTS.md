@@ -266,9 +266,9 @@ Details + line numbers in [docs/research/](docs/research/).
   fresh LMB press retains the bounded first-visible 4 m builtin-item pickup ray;
   nodes/other objects block it and held repeats do not become auto-loot.
   **WP39 is open and explicitly next.** Its implementation must start from
-  current `main` and use the unmerged runtime proof `924b2cc` only as source:
-  that commit's soft-locked damage target is rejected and must not merge
-  unchanged. Preserve its full slot-fed shared clock, zero native damage,
+  current `main`, where the runtime-tested base `924b2cc` is already merged.
+  That commit's soft-locked damage target is rejected and must be replaced.
+  Preserve its full slot-fed shared clock, zero native damage,
   claim-once/two-phase settlement, phase carry, tool/fist anti-second-stream
   boundary and loot fix.
   The final WP39 clock attacks only a live hostile returned by one current

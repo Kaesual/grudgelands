@@ -101,14 +101,15 @@ native-input early-return seam.
 
 ### WP39 — Crosshair-authoritative combat
 
-**Handoff/base.** The runtime-tested but unmerged proof commit `924b2cc`
-contains valuable shared-clock, held-input, claim-once, zero-native-damage and
-fresh-press loot-pickup work, but its enemy soft lock as the damage target is
-explicitly rejected by the WP39 design and must not be merged unchanged. The
-fresh orchestrator follows `docs/process/wp-workflow.md`: create
-`wp39-crosshair-combat` from current `main`, use `924b2cc` as a source/reference
-patch, and retain only the parts that satisfy the WP39 spec. Do not implement
-the WP in the planning context that created this row.
+**Handoff/base.** The runtime-tested commit `924b2cc` is merged on `main` and
+provides the shared clock, held input, claim-once settlement,
+zero-native-damage path and fresh-press loot pickup. Its enemy soft lock as the
+damage target is explicitly rejected by the WP39 design and must be replaced,
+not preserved. The fresh orchestrator follows `docs/process/wp-workflow.md`:
+create `wp39-crosshair-combat` from current `main`, treat `924b2cc` as the base
+implementation to revise, and retain its tested invariants while replacing
+target authority according to this WP. Do not implement the WP in the planning
+context that created this row.
 
 **Build order:**
 
