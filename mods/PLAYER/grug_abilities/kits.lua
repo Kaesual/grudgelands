@@ -2,9 +2,9 @@
 -- design doc — change them there first.
 
 --
--- Targeting helpers. The ability item's `range` limits pointed_thing, so
--- cast functions can rely on it for the pointed path; the soft-target-lock
--- fallback re-checks range explicitly (grug_abilities.get_range).
+-- Targeting helpers. Hostile casts use one current server eye/look ray;
+-- pointed_thing and enemy memory are presentation/input context only. Friendly
+-- heals retain their separate ally-memory fallback.
 --
 
 local function mob_ent(obj)
@@ -13,20 +13,6 @@ local function mob_ent(obj)
 	end
 	local ent = obj:get_luaentity()
 	return (ent and ent._cmi_is_mob) and ent or nil
-end
-
--- Is obj a valid enemy for user right now? (mob not of the own faction /
--- hostile living player)
-local function valid_enemy(user, obj)
-	if obj:is_player() then
-		return grug_factions.hostile(user, obj) and obj:get_hp() > 0
-	end
-	local ent = mob_ent(obj)
-	if not ent or (ent.health or 0) <= 0 then
-		return false
-	end
-	return not (ent._grug_faction and
-		ent._grug_faction == grug_factions.get_faction(user))
 end
 
 local function valid_ally(user, obj)
@@ -40,30 +26,42 @@ local function in_lock_range(user, obj, def)
 		<= grug_abilities.get_range(user, def)
 end
 
--- Eye-to-body line of sight — the pointed path gets this for free from
--- the engine raycast; the lock fallback must check it itself, otherwise
--- ranged abilities could be spammed through walls at a locked target.
-local function lock_los(user, obj)
-	local eye = user:get_pos()
-	eye.y = eye.y + (user:get_properties().eye_height or 1.5)
-	return core.line_of_sight(eye, vector.offset(obj:get_pos(), 0, 1, 0))
+local function debug_cast_ray(user, def, ray)
+	local name = user:get_player_name()
+	if not grug_core.combat_debug_enabled(name) then
+		return
+	end
+	if not grug_core.combat_debug_due(name, "cast:ray", 0.1) then
+		return
+	end
+	local target = ray.target
+	local target_name = "none"
+	if target then
+		if target:is_player() then
+			target_name = "player:" .. target:get_player_name()
+		else
+			local ent = target:get_luaentity()
+			target_name = "entity:" .. (ent and ent.name or "unknown")
+		end
+	end
+	grug_core.combat_debug_log(name, "cast_ray",
+		"ability=" .. def.id .. " status=" .. tostring(ray.status) ..
+		" reason=" .. tostring(ray.reason) .. " target=" .. target_name ..
+		" distance=" .. tostring(ray.distance or "none") ..
+		" range=" .. tostring(ray.range or "none"))
 end
 
--- Attackable target: the pointed object if valid (locks it), otherwise the
--- soft-locked enemy target if still valid, in range and in line of sight.
-local function enemy_target(user, pointed, def)
-	if pointed and pointed.type == "object" and pointed.ref
-			and valid_enemy(user, pointed.ref) then
-		grug_abilities.set_target(user, pointed.ref, false)
-		return pointed.ref
+-- One current server ray owns direct hostile casts. The structured result is
+-- reused for diagnostics; enemy memory is written for the Target Frame but is
+-- never read here.
+local function current_enemy_target(user, def)
+	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def))
+	debug_cast_ray(user, def, ray)
+	if ray.status ~= "target" then
+		return nil
 	end
-	local obj = grug_abilities.get_target(user, false)
-	if obj and valid_enemy(user, obj)
-			and in_lock_range(user, obj, def) and lock_los(user, obj) then
-		grug_abilities.set_target(user, obj, false) -- refresh the lock
-		return obj
-	end
-	return nil
+	grug_abilities.set_target(user, ray.target, false)
+	return ray.target
 end
 
 -- Friendly target for heals: pointed ally (locks it), otherwise the
@@ -301,9 +299,9 @@ grug_abilities.register_ability({
 	cooldown = 10,
 	range = 12,
 	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
+		local target = current_enemy_target(user, def)
 		if not target then
-			return false, "No target."
+			return false, "No hostile target in your crosshair."
 		end
 		local tpos = target:get_pos()
 		local dir = vector.direction(tpos, user:get_pos())
@@ -389,9 +387,9 @@ grug_abilities.register_ability({
 	cooldown = 8,
 	range = 8,
 	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
+		local target = current_enemy_target(user, def)
 		if not target then
-			return false, "No target."
+			return false, "No hostile target in your crosshair."
 		end
 		local ent = mob_ent(target)
 		if not ent or not ent.attack_type then
@@ -410,28 +408,62 @@ grug_abilities.register_ability({
 -- Mage (mana)
 --
 
+grug_projectiles.register("fireball", {
+	speed = 20,
+	max_distance = 20,
+	-- Distance expires after one second at the decided speed. The longer
+	-- lifetime is only a stalled/unloaded-motion safety guard.
+	lifetime = 2,
+	properties = {
+		is_visible = true,
+		visual = "sprite",
+		textures = {"mobs_fire_particle.png"},
+		visual_size = {x = 0.7, y = 0.7},
+		glow = 12,
+	},
+	on_hit = function(owner, target, data)
+		grug_core.deal_ability_damage(owner, target, data.damage)
+	end,
+})
+
 -- Bread-and-butter nuke (kit tuning 2026-08-06): pays with mana instead
--- of a cooldown — 5 mana against a 240+ pool was free.
+-- of a cooldown — 5 mana against a 240+ pool was free. It is directional:
+-- target acquisition belongs to the projectile, not cast-time enemy memory.
 grug_abilities.register_ability({
 	id = "fireball",
 	class = "mage",
 	name = "Fireball",
 	kind = "cast",
-	description = "Hurls fire at an enemy up to 20 m away:\n" ..
-		"6 + spell power damage.",
+	description = "Hurls fire along your crosshair for up to 20 m:\n" ..
+		"6 + spell power damage; misses still cost mana.",
 	color = "#ff8833",
 	cost = {mana = 8},
 	cooldown = 0,
 	range = 20,
-	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
-		if not target then
-			return false, "No target."
+	cast = function(user)
+		local origin = grug_core.combat_eye_pos(user)
+		local direction = user:get_look_dir()
+		if not origin or not direction then
+			return false, "Cannot determine your aim."
 		end
-		beam(user, target, "mobs_fire_particle.png")
-		burst(target:get_pos(), "mobs_fire_particle.png")
-		grug_core.deal_ability_damage(user, target,
-			6 + grug_classes.get_spell_power_bonus(user))
+		local spawned = grug_projectiles.spawn("fireball", {
+			owner = user,
+			origin = origin,
+			direction = direction,
+			data = {
+				damage = 6 + grug_classes.get_spell_power_bonus(user),
+			},
+		})
+		if not spawned then
+			return false, "The fireball could not be launched."
+		end
+		local name = user:get_player_name()
+		if grug_core.combat_debug_enabled(name)
+				and grug_core.combat_debug_due(name, "cast:fireball", 0.1) then
+			grug_core.combat_debug_log(name, "cast_fireball",
+				"spawned direction=" .. tostring(direction.x) .. "," ..
+				tostring(direction.y) .. "," .. tostring(direction.z))
+		end
 		return true
 	end,
 })
@@ -545,9 +577,9 @@ grug_abilities.register_ability({
 	cooldown = 2,
 	range = 20,
 	cast = function(user, pointed, def)
-		local target = enemy_target(user, pointed, def)
+		local target = current_enemy_target(user, def)
 		if not target then
-			return false, "No target."
+			return false, "No hostile target in your crosshair."
 		end
 		beam(user, target, "default_item_smoke.png^[multiply:#ffe9a0")
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0")
