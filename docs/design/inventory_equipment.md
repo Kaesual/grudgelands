@@ -3,7 +3,8 @@
 Decided spec (last revised 2026-08-10; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
-hand count), WP38 (native swing capability/pointability bridge).
+hand count), WP38 (native swing capability/pointability bridge), WP39
+(current-ray swing authority, shipped 2026-08-10).
 
 ## 1. Character screen (the "i" key)
 
@@ -55,7 +56,7 @@ hand count), WP38 (native swing capability/pointability bridge).
     interval keeps native animation and direct object acquisition aligned with
     the slot; zero damage prevents acquisition-only PvP packets from causing
     builtin knockback. The authoritative held-LMB clock rebuilds the real full
-    damage capabilities from this same slot only after WP39's current server
+    damage capabilities from this same slot only when WP39's current server
     crosshair ray finds a valid hostile; enemy target memory is not an attack
     source. Their
     item definitions additionally mark the `crumbly`, `snappy` and

@@ -159,19 +159,21 @@ game (not a mod pack), written in Lua.
       attack button becomes a universal ability, **Strike**, swinging at the
       weapon's own speed (WP35's original toggle was replaced by native
       interaction plus an authoritative held clock in WP38's 2026-08-10
-      correction; WP39 replaces only that correction's enemy-lock target
-      authority with current crosshair aim)
+      correction; WP39 has since replaced only that correction's enemy-lock
+      target authority with current crosshair aim)
       (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
       `classes.md` §2b/§2c). Two-handed weapons declare their hand count
       here, but the rule stays dormant until WP14 ships an offhand item.
       **Not runtime tested**
 - [x] **Swing timing and skill timing become independent** (WP38, corrected
       2026-08-10): swing items retain Luanti's native animation and direct
-      object targeting; a bounded fresh-press server ray restores dropped-loot
-      pickup where no-dig pointabilities mask it. Native enemy packets carry zero damage
-      and one server-authoritative clock attacks the enemy soft lock only while
-      LMB is held (plus one direct-click latch consumed on the next throttled
-      attack pass; 0.05 s threshold, scheduled on the actual engine step).
+      object input/interaction; a bounded fresh-press server ray restores
+      dropped-loot pickup where no-dig pointabilities mask it. Native enemy
+      packets carry zero damage
+      and one server-authoritative clock attacks only the current hostile under
+      the server eye/look ray while LMB is held (plus one direct-click latch
+      consumed on the next throttled attack pass; 0.05 s threshold, scheduled
+      on the actual engine step).
       Release stops
       held repeats; click spam and ordinary tool/fist packets share the same
       equipped-weapon cadence bound. Every due ability attack is one full swing,
@@ -184,18 +186,19 @@ game (not a mod pack), written in Lua.
       accepted-hit transaction fires at most one selected proc per due landed
       full swing
       (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
-- [ ] **Crosshair-authoritative combat** (WP39 — next): keep WP38's fast
-      cosmetic held animation and one full slot-fed swing per equipped weapon
-      interval, but a ready attack waits until the current server eye ray finds
-      a hostile in range. Aim misses do not consume readiness; a valid attack
-      consumes cadence even when it is later dodged/cancelled. Enemy target
-      memory becomes Target-Frame/UI state only, ally memory remains a heal
-      fallback, and a binary gold ring on the crosshair shows weapon readiness
-      without inventory writes. Charge/Taunt/Smite require current aim;
-      Fireball becomes a straight 20 m/s, 20 m maximum, non-homing swept
-      projectile that spends mana on a miss. Permanent admin-only
-      `/combatdebug` is the first task (`docs/design/combat_stats.md` §2,
-      `classes.md` §2b; full contract in `BACKLOG.md` WP39).
+- [x] **Crosshair-authoritative combat** (WP39, shipped 2026-08-10): WP38's
+      fast cosmetic held animation and one full slot-fed swing per equipped
+      weapon interval remain, while a ready attack waits until the current
+      server eye ray finds a hostile in range. Aim misses preserve readiness; a
+      valid attack consumes cadence even when later dodged or cancelled. Enemy
+      target memory is Target-Frame/UI state only, ally memory remains a heal
+      fallback, and a binary gold ring shows weapon readiness without inventory
+      writes. Charge/Taunt/Smite require current aim; Fireball uses the reusable
+      swept-projectile foundation to travel straight at 20 m/s for at most 20 m,
+      spends mana on a miss and is bounded to eight active shots per owner/
+      session. Permanent admin-only `/combatdebug` ships with it
+      (`docs/design/combat_stats.md` §2, `classes.md` §2b; full shipped contract
+      and outstanding GUI runtime plan in `BACKLOG.md` WP39).
 
 ### 1.4 Mobs & combat
 - [x] Faction guards (attack the enemy faction), spawned by military

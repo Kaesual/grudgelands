@@ -4,7 +4,9 @@ Decided spec (last revised 2026-08-10; established 2026-08-06).
 Implementation: WP3 (classes/stats pipeline),
 WP4 (abilities/threat tools), WP6 (mob tiers/speed), WP5+WP7 (item/
 consumable values), WP35 (weapon slot and the two-handed rule), WP38
-(native swing/proc timing). Damage pipeline and threat live in `grug_core`.
+(native swing/proc timing) and WP39 (current-ray hostile authority, reticle,
+diagnostics and swept projectiles; shipped 2026-08-10). Damage pipeline and
+threat live in `grug_core`.
 
 Core principles:
 
@@ -90,7 +92,7 @@ Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
 
-### Melee timing and aim authority (revised 2026-08-10, WP39)
+### Melee timing and aim authority (shipped 2026-08-10, WP39)
 
 Swing ability timing, aim and skill charge timing are separate. The equipped
 weapon supplies damage and `full_punch_interval`; the current crosshair ray
@@ -187,7 +189,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   completed native tool swing; empty/non-tool, creative and use-0 hits consume
   no wear state. Swing ability items never enter this proportional path.
 
-### Hostile casts and projectiles (WP39)
+### Hostile casts and projectiles (shipped with WP39)
 
 - **Hostile direct casts require current aim.** Charge, Taunt and Smite accept
   only a currently pointed valid hostile within their individual range and a
@@ -201,6 +203,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   blocking node or **20 m** travelled. A shot into empty space is still a cast
   and still spends mana. Friendly players/allied entities and dropped items are
   ignored instead of body-blocking it.
+- **Active Fireballs are bounded per owner session.** At most eight may exist
+  for one owner/session; the ninth spawn fails before entity creation and does
+  not spend mana. Hit, range, lifetime, node collision, deactivation, invalid
+  activation and spawn/velocity failure release the slot exactly once. A
+  reconnect or respawn starts a fresh session, and an old projectile cannot
+  consume its new limit.
 - **Fast projectiles use swept collision.** Each step raycasts the whole segment
   from the previous position to the new one so walls and thin/moving targets
   cannot be skipped by a large `dtime`. Owner/faction validation, one-hit
@@ -211,7 +219,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   time; gravity supplies the trajectory and a lifetime/distance guard still
   cleans the entity. The item/ammo numbers stay in `items_crafting.md` §9.
 
-### Combat diagnostics (WP39)
+### Combat diagnostics (shipped with WP39)
 
 - `/combatdebug on|off` is a permanent, server/admin-only, per-player runtime
   diagnostic. It automatically clears on leave and never persists.
@@ -224,7 +232,7 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 Balance note: the swing-ability DPS baseline remains one full slot-fed swing
 per weapon interval while a continuously tracked hostile stays in the current
 ray. Aim gaps may delay a ready swing but never bank more than one. Ordinary
-tool/fist accumulation remains proportional and target-keyed. WP39 changes
+tool/fist accumulation remains proportional and target-keyed. WP39 changed
 target authority and Fireball travel, not the melee damage tables.
 
 ## 3. Mobs

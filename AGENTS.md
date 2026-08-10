@@ -265,14 +265,13 @@ Details + line numbers in [docs/research/](docs/research/).
   wear/proc. The no-dig pointabilities can mask a ground-level drop, so each
   fresh LMB press retains the bounded first-visible 4 m builtin-item pickup ray;
   nodes/other objects block it and held repeats do not become auto-loot.
-  **WP39 is open and explicitly next.** Its implementation must start from
-  current `main`, where the runtime-tested base `924b2cc` is already merged.
-  That commit's soft-locked damage target is rejected and must be replaced.
-  Preserve its full slot-fed shared clock, zero native damage,
-  claim-once/two-phase settlement, phase carry, tool/fist anti-second-stream
-  boundary and loot fix.
-  The final WP39 clock attacks only a live hostile returned by one current
-  server eye/look ray while `get_player_control().dig` is true. When due, no
+  **WP39 shipped the current-ray authority on 2026-08-10.**
+  `grug_core.combat_eye_pos(player)` and
+  `grug_core.combat_ray(player, range, opts)` are the shared server-side
+  acquisition seam: the latter returns one physically ordered structured ray
+  result for combat and diagnostics, so callers do not raycast again for logs.
+  The held clock attacks only a live hostile returned by that current server
+  eye/look ray while `get_player_control().dig` is true. When due, no
   target/friendly/blocker/out-of-range aim is an **aim miss** and leaves the
   attack ready; the first valid ray target consumes the interval before its
   punch. Later evade/immunity/PvP refusal/dodge/full absorb/do_punch/CMI cancel
@@ -294,18 +293,26 @@ Details + line numbers in [docs/research/](docs/research/).
   cost, resets charge, grants rage and applies post-effects only on its existing
   accepted/HP-loss conditions. Mighty Blow remains
   `floor(weapon*1.5)+melee bonus`; Hamstring remains a 50% slow.
-  WP39 adds a binary small gold crosshair ring: shown once while a selected
+  WP39's binary small gold crosshair ring is shown once while a selected
   swing is weapon-ready, hidden on a valid attempt, absent for non-swings, no
-  smooth progress and no inventory writes. It also adds permanent admin-only
-  per-player `/combatdebug`; disabled sites do no ray/log formatting/globalstep
-  work beyond the enabled check.
+  smooth progress and no inventory writes; a weapon swap follows the new
+  clock's readiness and lifecycle cleanup removes it. It also ships permanent
+  admin-only per-player `/combatdebug`; disabled sites do no ray/log
+  formatting/globalstep work beyond the enabled check.
   Hostile casts no longer use enemy memory: Charge/Taunt/Smite need current
-  pointed/server-validated aim. Fireball becomes a straight 20 m/s swept
+  pointed/server-validated aim. Fireball is a straight 20 m/s swept
   projectile, max 20 m, no gravity/homing/splash, 8 mana even on a miss,
   `6 + spell power` once; nodes/attackable targets stop it, while allies and
-  dropped items are ignored. Build the ownership/collision/lifetime foundation
-  as `grug_projectiles` for later ballistic, draw-impulse arrows; bows themselves
-  remain out of WP39.
+  dropped items are ignored. The public
+  `grug_projectiles.register(id, def)` and
+  `grug_projectiles.spawn(id, params)` foundation owns swept collision,
+  ownership, exact-once settlement and terminal cleanup for later ballistic,
+  draw-impulse arrows; bows themselves remain later work. Fireball uses
+  `active_limit = 8` per owner/session: failure happens before entity creation,
+  every terminal/failure path releases its opaque token idempotently, and a
+  reconnect/respawn creates a fresh session that old shots cannot charge.
+  Real-code Lua 5.1 regressions live under `tools/wp39/` and must stay green
+  when changing the ray, clock, settlement, reticle, casts or projectiles.
   **Ordinary tool WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
@@ -338,8 +345,9 @@ Details + line numbers in [docs/research/](docs/research/).
   argument (deferred, MVP): acquisition caps are zero, while the one
   authoritative punch supplies the real full caps. Tools/fists keep their wielded source and wear;
   swing ability items use the slot source, do not wear and can carry the
-  selected proc's threat multiplier. After WP39 the current server ray is the
-  sole authoritative ability target while LMB is held; enemy memory is UI-only.
+  selected proc's threat multiplier. The current server ray is the sole
+  authoritative hostile ability target while LMB is held; enemy memory is
+  UI-only.
 - **Mobs**: embed and patch mobs_redo (MIT). Faction targeting: condition
   in `general_attack()` (api.lua:1699ff) following the LotT pattern
   (`race` field in the mob def + ally check); territory/tier gating via
