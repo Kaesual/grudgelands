@@ -2887,8 +2887,16 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		wear = 0
 	end
 
-	if mobs.is_creative(hitter:get_player_name()) then
+	local grug_creative = mobs.is_creative(hitter:get_player_name())
+	if grug_creative then
 		wear = use_tr and 1 or 0
+	end
+	-- ItemStack:add_wear is a no-op unless the registered item type is a
+	-- tool (lua_api.md ItemStack methods; inventory.cpp:358-371). In
+	-- particular the empty hand inherits hand tool capabilities but is not a
+	-- concrete wear-capable stack. Do not tokenize it or resend it forever.
+	if weapon_def.type ~= "tool" then
+		wear = 0
 	end
 
 	-- GRUG PATCH (WP38 review, combat_stats.md §2): one swing's wear per
@@ -2898,23 +2906,36 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- times faster than before WP38 AND puts a full inventory serialization
 	-- plus packet (`set_wielded_item`, l_object.cpp:362-369) on every one of
 	-- those punches, ~500/s at the 100-player target. grug_core accumulates
-	-- the swing fractions and answers true once they add up to a whole
-	-- swing, so durability per unit of damage dealt is unchanged at any
-	-- click rate and the write is back to once per swing (the `wear > 0`
-	-- guard below then skips the rest of the packets for free).
+	-- the swing fractions PER CONCRETE STACK and answers true once that
+	-- stack reaches a whole swing, so switching tools cannot transfer a
+	-- partial wear charge. The first wear-capable punch gives the ItemStack
+	-- a persistent opaque id; that one metadata mutation is written back
+	-- even when the fraction did not complete a swing. Every later punch is
+	-- read-only until wear is due.
 	--
 	-- Ordered AFTER the two adjustments above on purpose: a punch that
-	-- spends no wear at all (creative, `punch_attack_uses = 0`) must not
-	-- consume the accumulator, or a creative session would eat the wear of
-	-- the next real fight. Short-circuit `and` is what guarantees that.
-	if grug_melee and wear > 0 and not grug_core.melee_wear_due(hitter, grug_fraction) then
-		wear = 0
+	-- spends no wear at all (empty/non-tool, creative,
+	-- `punch_attack_uses = 0`) must not
+	-- acquire an id or consume the accumulator, or a creative session would
+	-- eat the wear of the next real fight.
+	local grug_wear_id_created = false
+	local grug_wear_id
+	if grug_melee and wear > 0 and not grug_creative then
+		local wear_due
+		wear_due, grug_wear_id_created, grug_wear_id =
+			grug_core.melee_wear_due(hitter, weapon, grug_fraction)
+		if not wear_due then
+			wear = 0
+		end
 	end
 
 	if use_tr and weapon_def.original_description then
 		toolranks.new_afteruse(weapon, hitter, nil, {wear = wear})
 	else
 		weapon:add_wear(wear)
+	end
+	if grug_wear_id and weapon:is_empty() then
+		grug_core.forget_melee_wear(hitter, grug_wear_id)
 	end
 
 	-- GRUG PATCH: do not write the wielded stack back when nothing changed
@@ -2942,7 +2963,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- `use_tr` keeps the write unconditional whenever toolranks is installed
 	-- (we do not ship it): `new_afteruse` may rewrite the stack's description
 	-- meta even at wear 0, and that IS a change worth sending.
-	if wear > 0 or use_tr then
+	-- `grug_wear_id_created` is the one extra write: persist a new stack id
+	-- even when this packet only banked its fraction. The same stack never
+	-- writes that id again.
+	if wear > 0 or use_tr or grug_wear_id_created then
 		hitter:set_wielded_item(weapon)
 	end
 

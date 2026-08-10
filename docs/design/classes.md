@@ -51,6 +51,9 @@ Core principles:
 - **Rage is granted on damage that actually landed**, not on a swing
   attempted: a target that cancels the punch (a vendor NPC, an evading
   mob), an `immune_to` mob or a player with PvP off yields **0 rage**.
+  Held-button PvP banks partial-swing credit until an integer damage commit;
+  a commit that loses HP pays the whole pending credit, while a dodge or full
+  absorb pays 0 and discards it (`combat_stats.md` §2).
 - **In combat** = dealt or received damage within the last 5 s. The
   definition lives in `grug_core` (`mark_in_combat`/`in_combat`) and is
   shared with recovery (combat_stats §5) and mob leashing (WP6).

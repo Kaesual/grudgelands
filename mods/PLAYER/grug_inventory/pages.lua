@@ -30,8 +30,8 @@ end
 -- (src/server/player_sao.cpp:32-36): visual "upright_sprite" with textures
 -- {"player.png", "player_back.png"} -- NON-empty, so emptiness checks miss it.
 -- `visual ~= "mesh"` is the reliable "player_api has not run yet" signal.
--- (grug_inventory additionally rebuilds the formspec from its own join
--- callback at the end of this file, which closes the race for real.)
+-- (grug_inventory's dependency-ordered equipment join hook fires the page's
+-- one equipment-change refresh consumer, which closes the race for real.)
 local DEFAULT_MODEL = "character.b3d"
 
 local function preview_model(player)
@@ -292,16 +292,7 @@ grug_core.register_on_equipment_change(function(player, listname)
 	grug_inventory.refresh(player)
 end)
 
--- Rebuild the inventory formspec once more on join. sfinv already built one
--- from its own join callback, but sfinv and player_api are dependency-free
--- BASE mods whose callback order is undefined, so that first build may have
--- captured the engine's default player appearance (see preview_model above).
--- grug_inventory depends on BOTH (mod.conf), and this file is dofile'd last,
--- so this callback is guaranteed to run after player_api applied the model
--- and after equipment.lua/bags.lua sized their inventory lists.
--- Cheap: exactly one extra formspec build per join, no repeated work.
-core.register_on_joinplayer(function(player)
-	if sfinv.enabled then
-		sfinv.set_player_inventory_formspec(player)
-	end
-end)
+-- Join needs no second callback here. grug_inventory depends on both sfinv
+-- and player_api, so their join callbacks run first. equipment.lua's later
+-- join callback sizes the slots and calls equipment_changed, which reaches
+-- the single refresh consumer above after the model and sfinv context exist.

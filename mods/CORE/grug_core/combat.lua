@@ -26,6 +26,26 @@ function grug_core.get_armor_percent(player)
 	return 0
 end
 
+-- A held-button PvP punch applies armor to the FULL-swing equivalent before
+-- scaling it by the partial-swing fraction (combat_stats.md §2). Publish the
+-- exact player-armor formula here so that path and the central hp-change
+-- modifier cannot drift apart: clamp to 0..60%, and only round when armor is
+-- actually present. At 0% this deliberately returns fractional damage
+-- unchanged; the melee remainder accumulator owns that rounding.
+function grug_core.apply_player_armor(player, damage)
+	local pct = grug_core.get_armor_percent(player) or 0
+	pct = math.max(0, math.min(60, pct))
+	if pct > 0 then
+		return math.ceil(damage * (100 - pct) / 100)
+	end
+	return damage
+end
+
+-- Official PlayerHPChangeReason.custom_type for damage on which the caller
+-- already applied the helper above. The central modifier skips ONLY armor for
+-- this reason; dodge, combat marking, absorbs and later callbacks still run.
+grug_core.ARMOR_APPLIED_CUSTOM_TYPE = "grug_core:player_armor_applied"
+
 --
 -- The equipment seam (weapon-slot design C4). grug_abilities needs to know
 -- what is in the two hand slots and when it changes; grug_inventory owns the
@@ -546,33 +566,47 @@ end
 -- per-player combat state.
 --
 -- Consumed by the api.lua GRUG PATCH (#22) on the player-melee path (the
--- accumulated integer doubles as the death-check gate there) and, later, by
--- the PvP melee path (same pipeline, combat_stats.md §2).
+-- accumulated integer doubles as the death-check gate there) and by the PvP
+-- melee path (same pipeline, combat_stats.md §2).
 --
 
-local melee_remainder = {} -- player name -> {target = guid, remainder = [0,1)}
+local melee_remainder = {}
+-- player name -> {target = guid, remainder = [0,1), pending_fraction >= 0}
 
 -- Applies the fractional part of a melee hit against `target`. Returns the
 -- integer damage to subtract from the target's health: `remainder +
 -- raw_damage` floored, with the new remainder carried for the next punch.
--- A non-positive raw hit returns 0 WITHOUT touching state. `raw_damage` is
--- the mobs_redo damage after armor scaling and the crit roll.
-function grug_core.apply_accumulated_melee(player, target, raw_damage)
-	if raw_damage <= 0 then
-		return 0
-	end
+-- `pending_fraction` is optional. PvP supplies the partial-swing fraction so
+-- rage can be delayed until damage commits and the central modifier proves HP
+-- was actually lost. The second return is the entire fraction banked since
+-- the previous integer commit, cleared immediately at that commit. Mob callers
+-- omit it and keep their original one-return behavior.
+function grug_core.apply_accumulated_melee(player, target, raw_damage,
+		pending_fraction)
 	local name = player:get_player_name()
 	local guid = target:get_guid()
 	local entry = melee_remainder[name]
 	if not entry or entry.target ~= guid then
-		-- Different target: reset first (at most 0.999 damage forfeited).
-		entry = {target = guid, remainder = 0}
+		-- Different target: damage remainder and pending rage credit are one
+		-- transaction and are both forfeited together.
+		entry = {target = guid, remainder = 0, pending_fraction = 0}
 		melee_remainder[name] = entry
+	end
+	if raw_damage <= 0 then
+		return 0, 0
+	end
+	if pending_fraction and pending_fraction > 0 then
+		entry.pending_fraction = entry.pending_fraction + pending_fraction
 	end
 	local total = entry.remainder + raw_damage
 	local applied = math.floor(total)
 	entry.remainder = total - applied
-	return applied
+	if applied >= 1 then
+		local committed_fraction = entry.pending_fraction
+		entry.pending_fraction = 0
+		return applied, committed_fraction
+	end
+	return 0, 0
 end
 
 --
@@ -591,31 +625,78 @@ end
 -- So the fractions accumulate here and the wear is spent WHOLE, once per
 -- completed swing: durability per unit of damage dealt is exactly what it
 -- was before WP38, at any click rate, and the inventory write is back to
--- once per swing. Per PLAYER, not per target — attack speed and tool wear
--- are properties of the attacker, and a target switch must not hand out a
--- free swing's worth of durability.
+-- once per swing. The remainder belongs to a concrete ItemStack, not merely
+-- to the player: switching A -> B cannot transfer A's almost-complete swing
+-- to B, and returning to A resumes A's own remainder.
 --
--- Runtime-only, like every other piece of this per-player combat state: a
--- dropped remainder costs at most one swing's wear, in the player's favour.
+-- Each wear-capable stack receives one persistent opaque id in ItemMeta on
+-- first use. Creating the id mutates the caller's ItemStack COPY, so the
+-- caller must write it back once; all later punches only read the id, and
+-- inventory writes remain capped at one per completed swing. Runtime
+-- remainders are still cleared on leave. A broken stack is explicitly
+-- forgotten by forget_melee_wear below.
 --
 
-local melee_wear_fraction = {} -- player name -> [0,1)
+local MELEE_WEAR_ID_KEY = "_grug_melee_wear_id"
+local MELEE_WEAR_ID_PREFIX = "v1:"
+local melee_wear_rng
+local melee_wear_fraction = {} -- player name -> {stack id -> [0,1)}
 
--- Did this punch complete a whole swing's worth of wear? `fraction` is
--- clamp(tflp / full_punch_interval, 0, 1) of this punch — the same number
--- the damage is scaled by. Call it ONCE per punch that would actually spend
--- wear (a wear-free punch must not consume the accumulator).
-function grug_core.melee_wear_due(player, fraction)
+local function new_melee_wear_id()
+	-- 256 random bits, rendered as printable hex for ItemMeta. The prefix makes
+	-- malformed/stale values detectable and leaves room for a future format.
+	-- Instantiate lazily: a world that never uses held wear needs no random
+	-- device, and the first-use operation stays the only tokenization work.
+	melee_wear_rng = melee_wear_rng or SecureRandom()
+	return MELEE_WEAR_ID_PREFIX ..
+		core.sha256(melee_wear_rng:next_bytes(32))
+end
+
+local function melee_wear_id(stack)
+	local meta = stack:get_meta()
+	local id = meta:get_string(MELEE_WEAR_ID_KEY)
+	if not id:match("^v1:[0-9a-f]+$") or #id ~= 67 then
+		id = new_melee_wear_id()
+		meta:set_string(MELEE_WEAR_ID_KEY, id)
+		return id, true
+	end
+	return id, false
+end
+
+-- Did this punch complete a whole swing's worth of wear? `stack` is the
+-- caller-owned wielded ItemStack copy and may receive its persistent id.
+-- Returns (wear_due, id_created, stack_id); the caller writes the copy back
+-- when id_created is true even if no wear was due. `fraction` is
+-- clamp(tflp / full_punch_interval, 0, 1). Call ONCE per punch that would
+-- actually spend wear: the caller excludes empty/non-tool, creative and use-0
+-- punches so none can acquire an id or consume runtime state.
+function grug_core.melee_wear_due(player, stack, fraction)
 	local name = player:get_player_name()
-	local total = (melee_wear_fraction[name] or 0) + (fraction or 0)
+	local id, id_created = melee_wear_id(stack)
+	local per_stack = melee_wear_fraction[name]
+	if not per_stack then
+		per_stack = {}
+		melee_wear_fraction[name] = per_stack
+	end
+	local total = (per_stack[id] or 0) + (fraction or 0)
 	if total >= 1 then
 		-- One swing spent; carry only what is left over. A full-interval
-		-- punch (fraction 1) is due immediately and leaves nothing behind.
-		melee_wear_fraction[name] = total - math.floor(total)
-		return true
+		-- punch (fraction 1) is due immediately and leaves no stale zero entry.
+		local remainder = total - math.floor(total)
+		per_stack[id] = remainder > 0 and remainder or nil
+		return true, id_created, id
 	end
-	melee_wear_fraction[name] = total
-	return false
+	per_stack[id] = total
+	return false, id_created, id
+end
+
+-- A broken stack cannot ever resume its remainder. Drop that bounded stale
+-- entry immediately instead of keeping it until disconnect.
+function grug_core.forget_melee_wear(player, id)
+	local per_stack = melee_wear_fraction[player:get_player_name()]
+	if per_stack and id then
+		per_stack[id] = nil
+	end
 end
 
 core.register_on_leaveplayer(function(player)
@@ -781,11 +862,11 @@ core.register_on_leaveplayer(function(player)
 end)
 
 --
--- Central damage modifier for players: dodge roll (mob melee, PvP) plus
--- combat marking, then equipped-armor mitigation (physical hits only), then
--- race mitigation (dwarf fall damage), then the absorb shield. Runs as an hp
--- change modifier so a dodge cancels the whole hit before armor/sounds, and
--- absorbs are consumed after mitigation but before HP.
+-- Central damage modifier for players: punch combat marking and dodge,
+-- equipped-armor mitigation for physical hits that have not already applied
+-- it, race mitigation for dwarf fall damage, then the absorb shield. Runs as
+-- an hp-change modifier so a dodge cancels the whole committed hit and absorbs
+-- are consumed after mitigation but before HP.
 --
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -810,25 +891,13 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	-- cancelled the hit) and before the absorb shield, so the shield soaks
 	-- what armor let through -- shield points are worth full damage, not
 	-- pre-mitigation damage.
-	-- math.ceil is deliberate: armor alone can never reduce a landed hit to
-	-- 0 damage, however much of it a tank stacks.
-	--
-	-- The 60% clamp is applied HERE as well, not only in grug_inventory's
-	-- override: this modifier is registered with `true` (it may raise HP), so
-	-- an override that ever forgot the cap and returned pct > 100 would turn
-	-- a punch into a heal. Cheap invariant, catastrophic failure mode
-	-- (WP14's shields are already slated to extend that override).
-	--
-	-- (100 - pct) / 100, NOT (1 - pct / 100): the latter double-rounds,
-	-- because 1 - pct/100 is not exactly representable as a double (e.g.
-	-- pct 42, dmg 50 gave 30 instead of 29). -hp_change and pct are whole
-	-- numbers and their product stays far inside the exact-integer range, so
-	-- this division is exact whenever the true result is an integer.
-	if reason.type == "punch" then
-		local pct = math.min(60, grug_core.get_armor_percent(player) or 0)
-		if pct > 0 then
-			hp_change = -math.ceil(-hp_change * (100 - pct) / 100)
-		end
+	-- apply_player_armor owns the clamp and rounding formula. Held-button PvP
+	-- applies that formula to the FULL swing before fractional scaling; its
+	-- official custom_type skips only this duplicate armor step. Dodge above,
+	-- absorb below and later hp callbacks still run normally.
+	if reason.type == "punch" and
+			reason.custom_type ~= grug_core.ARMOR_APPLIED_CUSTOM_TYPE then
+		hp_change = -grug_core.apply_player_armor(player, -hp_change)
 	end
 	-- Dwarf passive (world.md §7): -20% fall damage, before the absorb so
 	-- the shield only soaks what would actually land.

@@ -1505,9 +1505,10 @@ end)
 
 --
 -- PvP melee (combat_stats.md §2, WP38 T4): the held-button path against
--- PLAYERS runs through the same pipeline as the mob path — proportional
--- partial-swing damage, the remainder accumulator, then the central
--- dodge → armor → absorb modifier, rage on damage that LANDED. The hook
+-- PLAYERS runs through the same pipeline as the mob path — crit and armor on
+-- the full-swing equivalent, then proportional partial-swing damage and the
+-- remainder accumulator, then the central dodge → absorb modifier at the
+-- integer commit. Rage is paid only on committed damage that lost HP. The hook
 -- this replaces granted +12 rage per punch EVENT: while the dig key is
 -- held the callback fires once per punch packet (≈5/s, combat_stats.md
 -- §2), so that was 60 rage/s against a hostile player — the exact
@@ -1583,39 +1584,39 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		fpi = 1.4
 	end
 
-	-- Mirror the mob path (the api.lua GRUG PATCH): partial-swing factor,
-	-- Strength added BEFORE the factor so the factor scales the whole hit,
-	-- unfloored crit (the accumulator floors at application time — a ×1.5
-	-- on a 0.4 swing must ride the same remainder as the pre-crit
-	-- fraction), then the accumulated integer applied.
+	-- Build the FULL-swing equivalent first. Crit and armor both resolve on
+	-- that full swing, then the packet fraction scales the result. Applying
+	-- armor after each fractional packet would ceil five times per weapon
+	-- interval and make held-button damage much larger than one full swing.
+	-- The accumulator floors only after scaling and banks the same swing
+	-- fractions for the eventual rage commit.
 	local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
-	local raw = (fleshy + grug_core.get_melee_bonus(hitter)) * fraction
-	raw = grug_core.melee_crit(hitter, raw, player)
-	local applied = grug_core.apply_accumulated_melee(hitter, player, raw)
-	-- A packet whose commit was NULLIFIED pays no rage; a packet that only
-	-- banked its fraction does (WP38 review — same correction as the mob
-	-- hook above: gating the payment on the accumulator's carry made the
-	-- rage income scale with the weapon's damage instead of its speed).
-	-- Nullified is the dodge and the absorb shield, i.e. the two things
-	-- classes.md §1 means by "damage that actually landed"; they are
-	-- visible only on a packet that applied something.
-	local nullified = false
+	local full_damage = fleshy + grug_core.get_melee_bonus(hitter)
+	full_damage = grug_core.melee_crit(hitter, full_damage, player)
+	full_damage = grug_core.apply_player_armor(player, full_damage)
+	local raw = full_damage * fraction
+	local applied, committed_fraction = grug_core.apply_accumulated_melee(
+		hitter, player, raw, fraction)
+	-- Bank-only packets pay nothing. At an integer commit the accumulator
+	-- returns ALL fractions since the previous commit and clears them at once;
+	-- a dodge or full absorb then discards that credit, while any real HP loss
+	-- (including after a partial absorb) pays it in full.
 	if applied >= 1 then
 		local hp_before = player:get_hp()
 		-- set_hp with the punch reason routes through the central hp-change
-		-- modifier ONCE (player_sao.cpp:519): the dodge roll happens here,
-		-- not pre-rolled like deal_ability_damage does, then armor, then
-		-- the absorb shield.
-		player:set_hp(hp_before - applied, {type = "punch", object = hitter})
-		nullified = player:get_hp() >= hp_before
-	end
-	if raw > 0 and not nullified then
-		-- 12 × fraction per punch packet: at a held button (5 packets/s at
-		-- fraction ≈ 0.2/fpi each) that integrates to exactly 12 rage per
-		-- weapon interval, instead of the 60 rage/s the old per-EVENT hook
-		-- paid. An opponent who dodges or absorbs starves the attacker's
-		-- rage in proportion, because those packets drop out.
-		grug_abilities.add_rage(hitter, 12 * fraction)
+		-- modifier ONCE (player_sao.cpp:519): dodge happens here and the
+		-- absorb shield follows. Armor already ran on the full-swing
+		-- equivalent, so the official custom_type skips ONLY that step.
+		player:set_hp(hp_before - applied, {
+			type = "punch",
+			object = hitter,
+			custom_type = grug_core.ARMOR_APPLIED_CUSTOM_TYPE,
+		})
+		if player:get_hp() < hp_before and committed_fraction > 0 then
+			-- Across any number of bank-only packets this integrates to +12
+			-- per total swing fraction 1, independent of weapon damage.
+			grug_abilities.add_rage(hitter, 12 * committed_fraction)
+		end
 	end
 	-- The engine's own damage is suppressed on the hostile path ALWAYS —
 	-- even when nothing landed (applied 0, absorbed, dodged): the

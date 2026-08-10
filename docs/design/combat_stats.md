@@ -57,11 +57,16 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     damage-type system, so that IS the whole definition of "physical":
     fall damage has its own race perk (world.md §7) and drowning, lava
     and starvation are never reduced by a breastplate.
-  - **Resolution order** in the central hp-change modifier:
-    **dodge (cancels the hit entirely) → armor → fall-damage race perk
-    → absorb shield.** A shield therefore soaks *post*-mitigation
-    damage, i.e. shield points are worth full damage rather than
-    pre-armor damage.
+  - **Resolution order** for an ordinary punch in the central hp-change
+    modifier: **dodge (cancels the hit entirely) → armor → absorb shield.**
+    Held-button PvP preserves that logical order while moving armor's
+    arithmetic earlier: crit and armor resolve on the full-swing equivalent,
+    the result is scaled by the swing fraction and accumulated, and only an
+    integer commit enters the modifier for dodge and absorb. Its namespaced
+    `custom_type` skips the already-performed armor step only. Fall damage is
+    separate: its race perk runs before absorb. A shield therefore always
+    soaks *post*-mitigation damage, i.e. shield points are worth full damage
+    rather than pre-armor damage.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
@@ -129,22 +134,27 @@ bug inside the gate.
   death check run on the **accumulated integer**.
 - **PvP melee runs through the same pipeline** — this closes the carry-over
   that stood here since 2026-08-07. A `core.register_on_punchplayer` returns
-  true to suppress the engine's own damage and applies ours instead: the same
-  proportional damage, the same accumulator, then dodge, armor and threat.
+  true to suppress the engine's own damage and applies ours instead. The exact
+  order is **full-swing weapon damage + Strength → crit → armor (cap 60%,
+  reduced full-swing damage rounded up when armor is present) → multiply by
+  `fraction` → remainder accumulator → integer commit → dodge → absorb → HP**.
+  For the same crit outcome, this guarantees that five 0.2 swings sum to the
+  same armored damage as one full swing; rounding armor on each packet would
+  not.
   Rage is granted on damage that **landed**, never on the punch event: the
   callback fires once per punch packet (≈5/s), so granting per event is worth
   60 rage/s against a hostile player — the same defect that was fixed for
   mobs on 2026-08-08 by sampling the target's hit points before and after.
-  **The payment is `12 × fraction` per punch, and "landed" means the punch
-  was not cancelled** — not "this packet pushed the accumulator over an
-  integer". Those fractions sum to exactly +12 per weapon interval only if
-  every punch pays; gating on the accumulator's carry instead skips the
-  punches whose fraction was *banked*, which makes rage income scale with the
-  weapon's damage rather than its speed (measured: −40 % for a 3-damage
-  weapon, −78 % bare-handed). It is the rounding hole of the bullet above,
-  re-opened in the resource economy. The three cancels `classes.md` §1 names
-  — a punch the target refuses, an `immune_to` mob, PvP off — pay nothing,
-  and so does a hit the victim dodges or fully absorbs.
+  PvP banks each packet's `fraction` beside the damage remainder. **Bank-only
+  packets pay no rage.** When damage first commits an integer, the whole
+  pending fraction since the previous commit is consumed immediately; if the
+  commit actually lowers HP, it pays `12 × committed pending fraction`. A
+  dodge or full absorb pays 0 and discards that credit; a partial absorb with
+  real HP loss still counts as landed. Switching targets discards the damage
+  remainder and pending rage fraction together. Thus unmitigated fractions
+  totalling 1 pay exactly +12 independently of weapon damage, without paying
+  before the hit outcome is known. A punch the target refuses, an `immune_to`
+  mob and PvP off also pay nothing.
 - **The two damage streams cannot coexist, and no clock is needed to say
   so.** An ability item disables punching while it is selected (the engine
   sends `INTERACT_USE` instead of a punch whenever the wielded item has an
@@ -171,12 +181,18 @@ bug inside the gate.
   than the weapon slot — the one place the single-fixed-source rule above is
   bypassed — it **wears** that stack (an ability punch does not), it carries
   **no ability threat multiplier**, and it cannot swing at the target lock.
-  **Wear is spent per SWING, not per punch**: the swing fractions accumulate
-  the same way the damage does, and one swing's worth of wear is written when
-  they add up to a whole one. Charging it per punch packet would wear a tool
-  `1/fraction` times faster than it did before this revision *and* put a full
-  inventory serialization on every punch — `set_wielded_item` on a player is
-  a packet, not a field assignment, and there are five punches a second.
+  **Wear is spent per SWING and per concrete ItemStack, not per punch or per
+  player.** A wear-capable stack receives one persistent opaque ItemMeta id on
+  first use; runtime swing fractions are keyed by player plus that id. A→B
+  cannot transfer A's remainder to B, and returning to A resumes A. One
+  swing's wear is written when that stack's fractions reach a whole one; the
+  id itself causes exactly one earlier write if first use was partial.
+  Empty hands, non-tools, creative and `punch_attack_uses = 0` punches neither
+  assign an id nor consume wear state. Charging wear per punch packet would
+  wear a tool `1/fraction` times faster than before this revision *and* put a
+  full inventory serialization on every punch — `set_wielded_item` on a
+  player is a packet, not a field assignment, and there are five punches a
+  second.
 - **Ranged weapons are deferred, but their shape is decided.** A bow is
   *drawn*, not clicked: hold to charge up to a maximum, release to fire, with
   arrow speed, damage and range scaling with the draw — an early release

@@ -345,8 +345,9 @@ local function touched_equipment_list(action, info)
 	return from or to or false
 end
 
--- Equipment changed: recompute stats (gear stats land with WP5 — the hook
--- is already the right place) and refresh an open character page.
+-- Equipment changed: the single notifier invalidates caches, recomputes
+-- stats through its first consumer and refreshes the page through the one
+-- pages.lua consumer. Do not duplicate either update after this call.
 core.register_on_player_inventory_action(function(player, action, inventory, info)
 	local touched = touched_equipment_list(action, info)
 	if touched then
@@ -357,8 +358,6 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 		-- also where the equipment-change hook fires for a normal equip/swap
 		-- (see grug_inventory.equipment_changed).
 		grug_inventory.equipment_changed(player, listname)
-		grug_classes.apply_stats(player)
-		grug_inventory.refresh(player)
 	end
 end)
 
@@ -533,15 +532,15 @@ grug_classes.register_on_class_chosen(function(player)
 			end
 		end
 	end
+	-- Server-side list writes bypass the inventory action callbacks. A class
+	-- change not moving an item still reaches the hook once: derived
+	-- stats and the Character page changed even if all worn gear remained
+	-- legal. This is the sole Character-page refresh and equipment-derived
+	-- stat update source; set_class's one heal-gain application is separate.
+	grug_inventory.equipment_changed(player)
 	if #removed == 0 and #stuck == 0 then
 		return
 	end
-	-- Server-side list writes bypass the inventory action callbacks, so the
-	-- caches have to be dropped -- and the equipment-change hook fired --
-	-- explicitly.
-	grug_inventory.equipment_changed(player)
-	grug_classes.apply_stats(player)
-	grug_inventory.refresh(player)
 	local name = player:get_player_name()
 	if #removed > 0 then
 		core.chat_send_player(name, core.colorize("#ff9955",

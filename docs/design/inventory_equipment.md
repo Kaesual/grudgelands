@@ -103,8 +103,12 @@ hand count).
 - No ring/neck/shoulder slots in the MVP.
 - Slots are **player-inventory lists** with group-filtered `allow_put`
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
-  detached-inventory pattern originally sketched here); stat effects
-  recompute on change.
+  detached-inventory pattern originally sketched here). Every tracked
+  equipment write goes through the one equipment-change notification: caches
+  invalidate first, equipment-derived stats recompute before consumers render
+  them, and the open Character page refreshes exactly once. Join uses that
+  notification after `sfinv` and `player_api`; a genuine nested equipment
+  write may cause the documented second notification pass.
 - **Level requirement enforced here** (2026-08-07; **lands with WP5** —
   WP7's equip filter deliberately ships without it): the same `allow_put`
   filter rejects any item whose `grug_req_level` exceeds the character's
