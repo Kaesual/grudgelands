@@ -109,11 +109,12 @@ turns Fireball into the same kind of proc that Mighty Blow is.
 - **A skill never makes you slower or weaker than the bare weapon.** Every
   granted swing ItemStack mirrors `fleshy` damage and
   `full_punch_interval` from the equipped weapon slot, with no digging
-  groupcaps and no item wear. Its item definition also marks the final hand
-  digging groups (`crumbly`, `snappy`, `oddly_breakable_by_hand`) as
-  `pointabilities.nodes = "blocking"`: objects remain natively punchable,
-  but killing a mob while holding LMB cannot roll straight into digging the
-  ground or leaves. An empty slot mirrors the registered hand.
+  groupcaps and no item wear. Its item definition also marks the hand digging
+  groups (`crumbly`, `snappy`, `oddly_breakable_by_hand`) and the engine's
+  independent `dig_immediate` path as `pointabilities.nodes = "blocking"`:
+  objects remain natively punchable, but killing a mob while holding LMB
+  cannot roll straight into digging the ground or leaves. An empty slot
+  mirrors the registered hand.
   Holding and click-spamming therefore integrate to identical damage; only
   clicking slower than the interval loses DPS (`combat_stats.md` §2).
 - **Every skill charges on its own timer, and the timer runs always** —
@@ -140,7 +141,15 @@ turns Fireball into the same kind of proc that Mighty Blow is.
   or full absorb releases the reservation and leaves the charge armed. The
   already accepted swing progress remains consumed in that case. Target or
   concrete-weapon change discards damage remainder, rage credit and pending
-  proc together; a hotbar switch never changes the frozen proc's identity.
+  proc together; a switch among swing skills never changes the frozen proc's
+  identity.
+  Target leave cancels every attacker's bound transaction immediately; death
+  schedules the same cancellation for the next engine step, after the killing
+  punch settles. The shared 0.5 s wield watcher also catches an invalid mob
+  target. A new concrete player ObjectRef never inherits the same name's old
+  transaction.
+  Wielding a non-swing item is likewise a reset boundary; switching among
+  swing skills is not.
 - **The resource cost is paid at the proc, and an unaffordable proc does
   not consume the charge.** This is the decision layer: Mighty Blow's rage
   is the reason to keep swinging with it rather than to spend the rage

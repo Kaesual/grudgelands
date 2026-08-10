@@ -71,7 +71,11 @@ grug_mobs.registered_cadence = {}
 -- both do_punch and CMI decline to cancel, but before health subtraction. All
 -- irreversible player-hit work lives here: a cancelled custom mob cannot be
 -- provoked/tagged, gain threat, award rage/XP or schedule a rare respawn.
-function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction)
+function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction,
+		crit_pos)
+	-- The multiplier was already resolved before the custom/CMI gates; only
+	-- its captured visual waits for acceptance.
+	grug_core.emit_melee_crit(crit_pos)
 	-- Provocation memory (runtime only, self.temp is never persisted): the
 	-- undead night truce excludes players who attacked this mob.
 	self.temp = self.temp or {}

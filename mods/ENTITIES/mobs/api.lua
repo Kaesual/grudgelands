@@ -2722,6 +2722,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- after do_punch and CMI have accepted it.
 	local grug_proc_context
 	local grug_proc_extra = 0
+	local grug_crit_pos
 
 	if is_player(hitter) and grug_mobs and grug_mobs.registered_cadence
 	and grug_mobs.registered_cadence[self.name] then
@@ -2825,17 +2826,22 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	end
 
 	-- GRUG PATCH (player melee): melee crit — ×1.5 plus the same particle
-	-- burst ability crits use (combat_stats.md §2), both inside
-	-- grug_core.melee_crit. Rolled after the armor scaling (a factor
+	-- burst ability crits use (combat_stats.md §2). Damage is rolled here after
+	-- the armor scaling (a factor
 	-- commutes) and, crucially, AFTER the `immune_to` loop above: that loop
-	-- OVERWRITES damage rather than scaling it, so a roll placed before it
-	-- was thrown away — and the burst had already fired, showing a crit on a
-	-- hit the mob is immune to. melee_crit's own `damage <= 0` guard now
-	-- covers the usual immunity value of 0, so no burst and no roll.
+	-- OVERWRITES damage rather than scaling it. The visual is only prepared;
+	-- it fires after do_punch and CMI accept below, so neither cancel gate can
+	-- leak a false crit. The damage <= 0 guard covers ordinary immunity.
 	if grug_melee then
-		local crit_mult
-		damage, crit_mult = grug_core.melee_crit(hitter, damage, self.object)
+		local crit_mult, critical
+		damage, crit_mult, critical = grug_core.roll_melee_crit(hitter, damage)
 		grug_proc_extra = grug_proc_extra * crit_mult
+		if critical then
+			local pos = self.object:get_pos()
+			if pos then
+				grug_crit_pos = {x = pos.x, y = pos.y, z = pos.z}
+			end
+		end
 	end
 
 	-- GRUG PATCH (WP38, combat_stats.md §2): fractional melee damage goes
@@ -2916,7 +2922,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 	-- scheduling and XP, while preserving exact lethal prediction.
 	if grug_mob_hit then
 		grug_mobs.accepted_player_punch(self, hitter, damage,
-			grug_applied, grug_fraction)
+			grug_applied, grug_fraction, grug_crit_pos)
 	end
 	grug_core.finish_native_melee(grug_proc_context, {
 		landed = not grug_immune and damage > 0,

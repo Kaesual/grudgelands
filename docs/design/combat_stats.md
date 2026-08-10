@@ -165,7 +165,12 @@ bug inside the gate.
   included); dodge or full absorb releases the reservation with no cost,
   charge reset or effect. Its accepted swing progress stays consumed. Target
   or concrete-weapon change discards damage remainder, rage credit and the
-  pending proc together; hotbar selection does not reinterpret it.
+  pending proc together; selection among swing skills does not reinterpret it.
+  Player target leave invalidates every attacker's transaction immediately;
+  death does so on the next engine step after the killing punch settles (a
+  reconnect has the same GUID/name but a new ObjectRef). The shared watcher
+  cancels an invalid mob target within 0.5 s. Crossing to a non-swing wielded
+  item is also a reset boundary, while switching among swing skills is not.
 - **There is exactly one native melee stream and no server swing clock.** The
   three swing ability definitions omit `on_use`; Luanti therefore sends its
   ordinary object-punch interaction for both clicks and held LMB. The former
@@ -179,10 +184,10 @@ bug inside the gate.
   registered hand baseline. The compare-before-write token prevents inventory
   churn, and charge-bar wear metadata remains independent. There is no
   wielded-item fallback. The swing definition additionally overrides the
-  three final hand-dig node groups (`crumbly`, `snappy`,
-  `oddly_breakable_by_hand`) to pointability `"blocking"`. That keeps objects
-  on the native punch path while preventing held LMB from starting a node dig
-  after the object disappears.
+  three hand groupcaps (`crumbly`, `snappy`, `oddly_breakable_by_hand`) plus
+  the engine's independent `dig_immediate` path to pointability `"blocking"`.
+  That keeps objects on the native punch path while preventing held LMB from
+  starting a node dig after the object disappears.
 - **Proc cadence has its own bounded fractional accumulator.** One value per
   player integrates native punch fractions to 1, carries overflow and allows
   at most one completion per packet. It resets on target or concrete equipped
@@ -194,9 +199,10 @@ bug inside the gate.
   same punch before the single crit/mitigation/dodge path; it is never a bonus
   punch.
 - **Mob hit side effects share the accepted boundary.** Provocation, the loot
-  tag, combat/threat/rage callbacks and lethal rare/XP credit run after both
-  mobs_redo `do_punch` and CMI accept, immediately before health subtraction.
-  A cancel at either gate produces none of them.
+  tag, combat/threat/rage callbacks, the prepared melee-crit visual and lethal
+  rare/XP credit run after both mobs_redo `do_punch` and CMI accept,
+  immediately before health subtraction. A cancel at either gate produces
+  none of them.
 - **Tools and fists use the same native timing but keep their own source.** A
   wielded pick, axe or bare hand still uses that wielded item's damage and
   interval, plus Strength, crit, rage, base threat and the soft target lock.

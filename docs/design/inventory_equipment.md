@@ -54,9 +54,10 @@ hand count), WP38 (native swing capability/pointability bridge).
     kit or equipment syncs. They receive no digging groupcaps and no attack
     wear. This is the input bridge that keeps the slot the sole damage/speed
     source while allowing Luanti's native held-LMB repeat and animation. Their
-    item definitions additionally mark `crumbly`, `snappy` and
-    `oddly_breakable_by_hand` nodes as pointability `"blocking"`, so objects
-    remain natively punchable without held LMB continuing into node digging.
+    item definitions additionally mark the `crumbly`, `snappy` and
+    `oddly_breakable_by_hand` groupcaps plus the engine's independent
+    `dig_immediate` path as pointability `"blocking"`, so objects remain
+    natively punchable without held LMB continuing into node digging.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
     and the twelve vendored `default:` swords and axes (that list shrinks

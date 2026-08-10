@@ -77,9 +77,13 @@ cost, charge and effect only after acceptance; mob and hostile-PvP punches
 share this handler. The wield watcher is now part of the existing throttled
 0.5 s ticker. The correction review added a damage-remainder-coupled pending
 PvP proc transaction with resource reservation, moved all mob hit side effects
-behind both `do_punch`/CMI acceptance gates, and blocks the three hand-dig node
-groups through swing-item pointabilities. Vendored `api.lua` has **31** patch
-markers.
+behind both `do_punch`/CMI acceptance gates, and blocks the three hand groupcaps
+plus the independent `dig_immediate` path through swing-item pointabilities.
+The same accepted boundary now owns the prepared melee-crit visual; player
+target leave invalidates every attacker's pending transaction immediately,
+death does so after the killing callback settles, and the shared watcher
+catches invalid mobs and non-swing wield boundaries.
+Vendored `api.lua` still has **31** patch markers.
 
 ### Readiness (2026-08-08)
 

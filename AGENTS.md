@@ -265,9 +265,10 @@ Details + line numbers in [docs/research/](docs/research/).
   toolcaps, with empty `groupcaps`, `max_drop_level = 0` and
   `punch_attack_uses = 0`; empty slot = registered hand baseline, never a
   wielded fallback. Compare tokens prevent inventory churn and the charge bar
-  remains independent ItemMeta. The three final hand-dig node-group entries in
-  `pointabilities.nodes` are `"blocking"` on swing definitions, so held LMB
-  keeps native object punches but cannot continue into digging after a mob dies.
+  remains independent ItemMeta. The three hand groupcaps plus the engine's
+  independent `dig_immediate` node-group entry in `pointabilities.nodes` are
+  `"blocking"` on swing definitions, so held LMB keeps native object punches
+  but cannot continue into digging after a mob dies.
   **Melee damage is proportional** (combat_stats.md §2): native input deals
   `(weapon damage + Strength) × clamp(tflp/fpi, 0, 1)`, then crit,
   and fractions ride the per-player remainder accumulator
@@ -291,7 +292,11 @@ Details + line numbers in [docs/research/](docs/research/).
   proc once. HP loss pays/resets/runs it; dodge/full absorb releases the
   reservation and leaves charge armed, while the accepted progress stays
   consumed. Target/concrete-weapon reset discards damage remainder, rage
-  credit and pending proc together; selection never reinterprets it.
+  credit and pending proc together. Player target leave invalidates all
+  attackers immediately; death schedules it for the next engine step after the
+  killing punch settles (same name/GUID on reconnect is still a new ObjectRef).
+  The existing 0.5 s watcher catches invalid mob targets and non-swing wield
+  boundaries, while switching among swing skills never reinterprets it.
   **Weapon WEAR is spent per swing, not per punch**
   (`grug_core.melee_wear_due`, keyed per player AND per persistent opaque
   `_grug_melee_wear_id` on the concrete ItemStack): A→B cannot transfer A's
@@ -418,8 +423,8 @@ Details + line numbers in [docs/research/](docs/research/).
     place that mutates the damage remainder and proc state. The review added
     the 31st site: `grug_mobs.accepted_player_punch` runs provocation, loot
     tag, threat/rage and lethal rare/XP work only after both `do_punch` and CMI
-    accept, before health subtraction; neither cancel path has irreversible
-    hit side effects.
+    accept, before health subtraction; the melee-crit visual is deferred to the
+    same boundary, so neither cancel path has irreversible hit side effects.
 - **Loot/enchantments**: class items (wand, mage/warlock robe, iron
   armor/sword, dagger, …) drop with **random roll ranges** (e.g. strength
   +1..+3, attack speed +5..+20%). Implementation like VoxeLibre

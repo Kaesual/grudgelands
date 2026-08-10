@@ -12,6 +12,8 @@ grug_abilities.by_class = {} -- class id -> ordered list of defs
 -- on hotbar key 1 for everyone.
 grug_abilities.universal = {}
 local item_defs = {} -- item name -> ability def
+local clear_swing_progress -- assigned after the swing-state declaration
+local swing_progress -- assigned after ability registration helpers
 
 local mana = {} -- player name -> current mana (fractional)
 local rage = {} -- player name -> current rage (fractional)
@@ -299,6 +301,31 @@ local function watch_wield()
 				show_skill_name(player, item_defs[item].name)
 			end
 		end
+		local entry = swing_progress and swing_progress[name]
+		local selected
+		if entry then
+			selected = item_defs[player:get_wielded_item():get_name()]
+		end
+		if entry and (not selected or selected.kind ~= "swing") then
+			-- Crossing out of the swing-item family is a real melee boundary.
+			clear_swing_progress(player)
+			entry = nil
+		end
+		if entry and entry.pending then
+			local target = entry.target_ref
+			local valid = target and target:get_pos() ~= nil
+			if valid and target:is_player() then
+				valid = target:get_hp() > 0
+			elseif valid then
+				local ent = target:get_luaentity()
+				valid = ent ~= nil and (ent.health or 0) > 0
+			end
+			if not valid then
+				-- No future punch can settle this transaction. Release its reserved
+				-- resource without paying or consuming the armed charge.
+				clear_swing_progress(player)
+			end
+		end
 	end
 end
 
@@ -387,14 +414,16 @@ function grug_abilities.register_ability(def)
 	if def.kind == "swing" then
 		-- Empty groupcaps stop digging server-side, but without item-specific
 		-- pointabilities the client can immediately retarget the ground/leaves
-		-- after a mob dies and begin a native dig. These are the three final hand
-		-- digging groups registered by the game. "blocking" keeps the ray hit as
+		-- after a mob dies and begin a native dig. These are the three hand
+		-- groupcaps plus the engine's independent dig_immediate path. "blocking"
+		-- keeps the ray hit as
 		-- a blocker without making the node an interaction target; objects retain
 		-- their ordinary pointability and native punch path.
 		tool_def.pointabilities = {nodes = {
 			["group:crumbly"] = "blocking",
 			["group:snappy"] = "blocking",
 			["group:oddly_breakable_by_hand"] = "blocking",
+			["group:dig_immediate"] = "blocking",
 		}}
 	else
 		tool_def.on_use = function(itemstack, user, pointed_thing)
@@ -563,14 +592,14 @@ end
 -- are deliberately separate accumulators: HP rounding belongs to grug_core,
 -- while this bounded [0,1) value decides when one selected swing effect may
 -- ride on a landed native punch. Target or concrete equipped-weapon changes
--- reset it; hotbar selection changes do not.
-local swing_progress = {}
+-- reset it; selection among swing skills does not, crossing to non-swing does.
+swing_progress = {}
 -- player name -> {
---   target, weapon = ItemStack copy, progress, threat_damage,
+--   target, target_ref, weapon = ItemStack copy, progress, threat_damage,
 --   pending = deferred PvP proc context or nil,
 -- }
 
-local function clear_swing_progress(player)
+clear_swing_progress = function(player)
 	local name = player:get_player_name()
 	-- This also cancels a deferred PvP proc and releases its reservation.
 	grug_core.reset_accumulated_melee(player)
@@ -586,6 +615,9 @@ end
 local function prepare_native_swing(player, target, fraction)
 	local selected = selected_swing_def(player)
 	if not selected then
+		if swing_progress[player:get_player_name()] then
+			clear_swing_progress(player)
+		end
 		return nil
 	end
 	fraction = math.max(0, math.min(1, fraction or 0))
@@ -596,7 +628,8 @@ local function prepare_native_swing(player, target, fraction)
 	local guid = target:get_guid()
 	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
 	local entry = swing_progress[name]
-	if not entry or entry.target ~= guid or not entry.weapon:equals(weapon) then
+	if not entry or entry.target ~= guid or entry.target_ref ~= target
+			or not entry.weapon:equals(weapon) then
 		-- Damage remainder, rage credit and a deferred proc must reset with the
 		-- same target/concrete-weapon boundary as swing progress.
 		if entry then
@@ -604,6 +637,7 @@ local function prepare_native_swing(player, target, fraction)
 		end
 		entry = {
 			target = guid,
+			target_ref = target,
 			weapon = ItemStack(weapon),
 			progress = 0,
 			threat_damage = 0,
@@ -1568,8 +1602,11 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	local fraction = math.max(0, math.min(1, (tflp or 0.2) / fpi))
 	local proc_context = grug_core.prepare_native_melee(hitter, player, fraction)
 	local full_damage = fleshy + grug_core.get_melee_bonus(hitter)
-	local crit_damage, crit_mult = grug_core.melee_crit(
-		hitter, full_damage, player)
+	local crit_damage, crit_mult, critical = grug_core.roll_melee_crit(
+		hitter, full_damage)
+	if critical then
+		grug_core.emit_melee_crit(player:get_pos())
+	end
 	local armored_damage = grug_core.apply_player_armor(player, crit_damage)
 	local proc_extra = 0
 	if proc_context and proc_context.extra_damage ~= 0 then
@@ -1827,6 +1864,21 @@ core.register_on_joinplayer(function(player)
 end)
 
 core.register_on_dieplayer(function(player)
+	-- A player's death invalidates every OTHER attacker's pending transaction
+	-- immediately. Player GUIDs are names and therefore survive respawn; keeping
+	-- the old ObjectRef would otherwise let a deferred proc settle on the new
+	-- life. Defer to the next engine step so a punch that CAUSED this death can
+	-- finish its own accepted proc before the target-wide invalidation runs.
+	core.after(0, function()
+		for owner, entry in pairs(swing_progress) do
+			if entry.target_ref == player then
+				local attacker = core.get_player_by_name(owner)
+				if attacker then
+					clear_swing_progress(attacker)
+				end
+			end
+		end
+	end)
 	clear_swing_progress(player)
 end)
 
@@ -1839,6 +1891,16 @@ end)
 
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
+	-- Same concrete-ObjectRef boundary as death: reconnecting with the same
+	-- player name must not inherit another attacker's damage/proc transaction.
+	for owner, entry in pairs(swing_progress) do
+		if entry.target_ref == player then
+			local attacker = core.get_player_by_name(owner)
+			if attacker then
+				clear_swing_progress(attacker)
+			end
+		end
+	end
 	clear_swing_progress(player)
 	mana[name] = nil
 	rage[name] = nil

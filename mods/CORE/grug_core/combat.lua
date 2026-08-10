@@ -518,8 +518,8 @@ end
 
 -- Crit roll for a player melee punch (combat_stats.md §2): same ×1.5 and
 -- the same particle burst as ability crits above — player melee was the one
--- damage source that could never crit. `target` only supplies the particle
--- position. Returns the (possibly critical) damage.
+-- damage source that could never crit. Resolution is deliberately pure so a
+-- mobs_redo caller can defer the visual until do_punch and CMI accept.
 --
 -- Deliberately NOT floored here: on the proportional path (WP38) the
 -- remainder accumulator floors at application time, so flooring the crit
@@ -527,15 +527,17 @@ end
 -- pre-crit and the post-crit fraction have to ride the SAME accumulator.
 -- Only the plain ×1.5 is rolled; the `damage <= 0` guard below keeps an
 -- immunity-zeroed hit from rolling at all.
-function grug_core.melee_crit(player, damage, target)
+function grug_core.roll_melee_crit(player, damage)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
-		return damage, 1
+		return damage, 1, false
 	end
-	local pos = target and target:get_pos()
+	return damage * 1.5, 1.5, true
+end
+
+function grug_core.emit_melee_crit(pos)
 	if pos then
 		crit_particles(pos)
 	end
-	return damage * 1.5, 1.5
 end
 
 --
