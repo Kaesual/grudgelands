@@ -1,5 +1,14 @@
 # TODO — Housing: remaining open points
 
+> **Current staging override (2026-08-11):** the private-island and guild
+> design described below has been retired in favor of bounded open-world
+> housing claims; the later coordinated housing integration must replace this
+> obsolete body rather than implement it. Players may place and use their own
+> profession workstations inside valid housing claims. Exact eligible stations,
+> placement costs, ownership, friend-ACL permissions and public-station
+> coexistence remain housing/profession-stream work; housing must not make a
+> workstation an exclusive material-progression gate.
+
 **Most of this file was decided on 2026-08-07 and folded into
 `docs/design/world.md` §5** (the King's isles: per-character grant at
 level 30, 100×100 build box, seabed at −30, **six** depth steps — one
