@@ -24,7 +24,7 @@ storytelling (per the vision — a light layer, not cutscene opera).
 
 ## 2. Main questline
 
-- One mirrored main questline per faction that carries the premise:
+- One equivalent but faction-specific main questline per side carries the premise:
   early quests are local and mundane (boars, bandits, guard duty), then
   signs of corruption appear, and the questline progressively reveals
   the demonic influence behind local troubles.
@@ -32,17 +32,18 @@ storytelling (per the vision — a light layer, not cutscene opera).
   carry a `min_level`; main-questline beats use them as hard level
   gates — e.g. only at level 30 comes the order to kill a corrupted
   outpost leader that advances the main story.
-- Existing mandatory-quest beats (kill border guards, elite kill in
-  enemy territory — ROADMAP 1.5) get framed by this premise:
+- Existing mandatory-quest beats (fight at the contested land front, kill
+  enemy war-front guards, elite kill in hostile territory — ROADMAP 1.5) get
+  framed by this premise:
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
 - **The King's grant** (decided 2026-08-07, `min_level` 30): a
-  questline of service to the realm ends at the throne of the own
-  faction seat, and the King grants the player one of the **unspoiled
+  questline of service to the realm ends at the throne of the character's own
+  race capital, and that race's King grants the player one of the **unspoiled
   isles** behind the continent — the housing unlock (world.md §5). It
-  is the story's one warm beat in an otherwise grim premise, the only
-  scene in which a player meets their own King instead of raiding the
-  enemy's, and it explains what housing is *doing* in this world:
+  is the story's one warm beat in an otherwise grim premise, the first
+  mandatory royal audience in that race's capital, and it explains what
+  housing is *doing* in this world:
   a reward for merit, not a real-estate purchase.
 - Phase 2 payoff: the Nether becomes walkable (island crossings), its
   **world bosses are demonic lords** behind challenges

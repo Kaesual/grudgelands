@@ -33,6 +33,8 @@ players spawn.
 
 ## State
 
-**Open** — revisit with **WP13**, where real capital structures replace
-the platforms and shrink the problem (a proper capital brings its own
-footprint, its own ≥ 10 node terrain protection and no ad-hoc clearing).
+**Open for the shipped WP18 platforms only.** WP40 moves new-character and
+fallback respawn points to six safe outer race settlements; WP13 then replaces
+the capital platforms with protected city zones. Revisit the generic apron and
+anti-griefing rules while authoring those starting settlements, because they —
+not the capitals — become the permanent spawn-safety surface.

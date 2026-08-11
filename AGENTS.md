@@ -621,6 +621,11 @@ Details + line numbers in [docs/research/](docs/research/).
   **mapgen env** (`core.register_mapgen_script`), a pass that needs
   `grug_core`, mod storage or the POI registry cannot go there at all
   and stays in `register_on_generated` in the main env.
+  **Everything in the following ocean-mask/capital paragraph describes the
+  shipped WP18/WP36 map, not the target surface design.** WP40 replaces its
+  radial rings, rectangular coast ownership and mandatory strait with the
+  named-zone graph in `docs/design/world_zones.md`; do not place new permanent
+  content against the legacy coordinates.
   The **continent ocean mask** is the first kind
   (`grug_mapgen/ocean_mask_mapgen.lua`; two mirrored continent
   rectangles; a coast noise insets them by 0..150 nodes INWARD only — so
@@ -679,7 +684,7 @@ Details + line numbers in [docs/research/](docs/research/).
   first-writer-wins would make a half-generated reading permanent.
   NEVER decide a platform y from the mapchunk heightmap alone: it exists per
   chunk, so the value and the build order become chunk-order-dependent and
-  can deadlock. Zone/level queries:
+  can deadlock. Current WP18 zone/level queries:
   `grug_core.territory_at` (accord/throng/ocean), `zone_at`
   (underground/ocean/strait/war_coast/coast/core/inner/outer — the
   `_grug_spawn_zones` vocabulary), `difficulty_at`, `mob_level_at`
@@ -688,7 +693,24 @@ Details + line numbers in [docs/research/](docs/research/).
   LotT trick: biome signature nodes drive mob spawns via a node whitelist
   — those tops live in `grug_nodes` (blight_dirt, bone/forest/silver
   litter, mesa_clay, mud) and exist FOR the trick; `_grug_spawn_zones`
-  (and the generic `_grug_spawn_check`) do the ring gating on top.
+  (and the generic `_grug_spawn_check`) do the current ring gating on top.
+  WP40 preserves central lookup APIs and the independent depth floor, but
+  replaces the surface vocabulary with stable named-zone ids, authored
+  adjacency and zone-owned biome palettes.
+  **WP40 target contract (decided 2026-08-11):** exactly **38** land zones in
+  `docs/design/world_zones.md` §§8–9, each with one `race_region`; six
+  start/home/capital chains, a mixed mirrored 31–40 central PvP corridor, all
+  41+ front zones contested, and two level-60 dragon endpoints. The hybrid-v7
+  pass and `grug_zones` API are §13; the 32-seed acceptance gate is §14.
+  Race region, territory and PvP rule are independent fields. The six shared
+  front zones have no construction owner: both factions may dig registered
+  resource nodes there, but neither may alter ordinary terrain or place nodes.
+  Gameplay consumers use `grug_zones.biome_at`, never the engine biomemap,
+  because the authored surface pass—not climate competition—owns logical
+  biome identity. The six regional gemstone names remain material-design
+  data; map code stores race-gem slots. Each endpoint apex camp has exactly
+  12 renewable nodes, two per gem, and both factions can mine them while the
+  camp shell remains protected.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
   (`colors.json`, height shading) and pushes them via
   `core.dynamic_add_media` — the best base for our global map. Minimap

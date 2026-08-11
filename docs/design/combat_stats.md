@@ -235,6 +235,19 @@ ray. Aim gaps may delay a ready swing but never bank more than one. Ordinary
 tool/fist accumulation remains proportional and target-keyed. WP39 changed
 target authority and Fireball travel, not the melee damage tables.
 
+### PvP eligibility and tag
+
+All player-damage paths call the central geographic/tag rule from
+`world_zones.md` §4. Contested-zone entry tags automatically; peaceful-zone
+players remain immune to unprovoked enemy-player damage. A voluntary hostile
+action tags its user before eligibility/damage resolution; the both-safe
+first-hit outcome remains a WP41 edge decision. Outside contested zones the tag
+clears after 60 seconds without dealing or receiving PvP damage; contested
+entry forces it, leaving starts a full 60-second tail, and death clears it
+immediately. Melee, casts, area effects and projectiles may not diverge on this
+rule. This is target design for WP41; the shipped callbacks currently gate only
+by faction and global `enable_pvp`.
+
 ## 3. Mobs
 
 Normal tier at level L:
@@ -295,13 +308,14 @@ Normal tier at level L:
   `run_velocity` 4.4/4.2 — was 3.4/2.6, shipped slow on purpose until
   the soft de-aggro above landed in the same WP).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
-  later ring keeps its floor even where the field reads lower — zombie 3,
+  later zone keeps its floor even where the field reads lower — zombie 3,
   wolf/hyena/jungle lynx 10, guard 20. The floor is also the fallback
   where the level field has no value.
 - **Guard levels** come from the separate `grug_core.guard_level_at`
   field (world.md §1) with its own cap of **70** (the mob axis stays
   1–60), and a guard at level **≥ 60 is promoted to elite
-  automatically** — that is the capital watch of world.md §3. Only a
+  automatically**. Every capital guard is fixed at level 60; other guards
+  follow their named zone/POI role. Only a
   hand-set `_grug_fixed_level` bypasses field and cap (Kraken Guard,
   L100).
 
@@ -315,14 +329,13 @@ Normal tier at level L:
 ### Position → mob level
 
 `grug_core.difficulty_at(pos)` returns **0..1** (= (mob_level−1)/59);
-helper `grug_core.mob_level_at(pos)` returns the level directly. Geometry
-(continent redesign 2026-08-06, single source: `world.md` §1): radial
-from the capital in the continent center — safe core 1–10, inner ring
-10–25, outer ring 25–45, flank/back coasts 45–60; the strait-facing
-**war coast is capped at ~20–30**. The ocean spawns no hostiles except
-the deep-sea guards (world.md §2b). Guards use the SEPARATE inverse
-field `guard_level_at` (world.md §1): elite in the safe core, ~mob
-level +5 at war-coast outposts. **Depth axis** (decided 2026-08-06,
+helper `grug_core.mob_level_at(pos)` returns the level directly. Target
+surface geometry (`world_zones.md` §2): the named zone and its authored local
+progression supply levels 1–60, rising from outer race starts toward the
+faction front; capital city zones contain no ambient hostile mobs. Guards use
+the separate `guard_level_at`, with level 60 fixed in every capital. The ocean
+spawns no hostiles except the deep-sea guards (world.md §2b). **Depth axis**
+(decided 2026-08-06,
 WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —
 `mob_level_at = max(surface_level(x,z), depth_level(y))`, **3 levels per
 50 nodes** below y=0, capped at 60; ore tiers follow the same depth
@@ -331,13 +344,13 @@ out. Both anchors sit exactly on a rock-stratum boundary
 (`items_crafting.md` §3.0.4): **−500 = level 30** (top of the Granite
 stratum), **−1000 = level 60** (top of the Abyssal Rock stratum and the
 cap). What the rate really says is where depth **overtakes** the surface
-field: at `y = −surface_level / 0.06`, i.e. **−83** in the safe core
-(L5), **−417** in the inner ring (L25) and **−750** in the outer ring
-(L45) — in the beginner zone depth takes over almost immediately, and
-the outermost surface band (60) meets the depth cap exactly at −1000.
-(The Nether is NOT part of this axis — its y-band is unreachable by
-digging, portals only.) The radial field shipped with WP18; WP6's mobs
-and guards read it.
+field: at `y = −surface_level / 0.06`, e.g. **−83** in a level-5 start
+area, **−417** in a level-25 heartland area and **−750** in a level-45 front
+area — in the beginner zone depth takes over almost immediately, and a
+level-60 surface zone meets the depth cap exactly at −1000.
+(The Nether is NOT part of this axis — its y-band is unreachable by digging,
+portals only.) The retired radial field remains in the shipped WP18 code until
+WP40 migrates WP6's mobs and guards to named zones.
 
 **Depth buys frequency, not stats.** Past the level-60 cap the axis
 keeps going as *spawn pressure*: a player-centric arrival pulse whose

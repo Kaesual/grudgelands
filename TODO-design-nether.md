@@ -5,21 +5,20 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
 
 - The Nether is a **deadly place** where "the magic of the world created
   connections between places" — story layer + travel layer in one.
-- **Island crossings**: portals in own territory (first in the midlands,
-  lvl 10+) lead to a Nether island surrounded by lava with two exit
-  portals — one per faction, far apart; Nether mobs at the level of the
-  connected areas. **Mirror pairing (x, z) ↔ (x, −z)** links both ends:
-  same difficulty ring and mirrored race regions automatically
-  (rings are |z|-based) — gameplay symmetry for free.
+- **Island crossings**: portals in own territory (first in a level-10+ named
+  home/heartland zone) lead to a Nether island surrounded by lava with two exit
+  portals — one per faction, far apart; Nether mobs match the connected areas.
+  Pairing is deterministic by authored zone ids and equivalent level access,
+  not by mirrored overworld coordinates.
 - Portals are two-way → a crossed island is a persistent raid route;
   exit camping is PvP content, kept fair by multiple islands across the
   x-width and exit scatter.
 - **The Nether is a farmable, active game zone with its own rules** (not
   pure transit): own materials (tie into the material tier system),
   own mobs, and later **world bosses gated behind challenges**.
-- Technical route: own layer in a deep y-band via our mapgen
-  (`on_generated` pass like wall/camps); portal pairing deterministic
-  from coordinates; portal frames protected. No external mod needed.
+- Technical route: own layer in a deep y-band via our mapgen; portal pairing
+  deterministic from the authored portal registry; portal frames protected.
+  No external mod needed.
 - **The overworld:nether distance ratio is entirely ours** — Luanti has
   no built-in Nether; Minecraft's 1:8 is that game's convention, not an
   engine rule. With the island model no global ratio is needed at all:
@@ -45,11 +44,11 @@ and already live in `docs/design/world.md` §6 / `economy.md`):
   **heat damage only in specific lava fields**, never globally.
 - **Portal activation**: first portal quest-unlocked (story beat), the
   rest always on.
-- **Gating hole + fix**: two-way mirror portals bypass the war-coast
-  funnel (world.md §1). Either land exits inside the enemy's war-coast
-  band, or arrivals carry a visible "Rift-Touched" marker (~10 min) so
-  defenders can hunt them (leaning: marker — keeps the mirror pairing
-  intact and manufactures PvP events). Pick in Phase 2 planning.
+- **Gating hole + fix**: two-way portals must not become a safe bypass around
+  WP40's authored land fronts or WP41's PvP eligibility. Enemy-side exits must
+  land in a contested zone, force a visible PvP state such as "Rift-Touched",
+  or use another explicitly authored interception rule. Pick the exact rule in
+  Phase 2 planning after WP40/WP41 define the shared APIs.
 
 ## Open (to spec before the Phase 2 WP)
 

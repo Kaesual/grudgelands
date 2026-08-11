@@ -10,6 +10,12 @@ the item catalog (§3.3–§3.6b, §6b), and there is **exactly one item per
 concept** — the vendor bracket catalog and the base craft ladder are the
 same, material-named items (§3.0.3). Resolutions in §10.
 
+**World-zone revision 2026-08-10.** Surface progression is now keyed by the
+stable named zones and level bands in `world_zones.md`, not by WP18's radial
+ring names. Any surviving ring wording below describes shipped calibration;
+WP40 must translate placement to the named-zone catalog without changing the
+item, tier, depth or economy rules.
+
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
 `inventory_equipment.md` §4 (3×3 grid, multi-stage, craft_predict
@@ -263,7 +269,8 @@ Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
   "requires: 6 steel bars + 2 stone cores". Redeeming the keystone once
   (§2.3) opens the group permanently. This is why keystones survive the
   rework: a pure level gate would lose the **zone** requirement, and
-  being in the outer ring is what the keystone actually proves.
+  obtaining materials from the appropriate named source region is what the
+  keystone actually proves.
 - **Unlock state lives in player meta**, not in the item: `grug_prof:
   <prof>` holds the highest opened group (idempotent writes). The book
   is interface, never progression storage.
@@ -289,7 +296,7 @@ Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
 **Reframed 2026-08-07.** The keystone is no longer a tome *ingredient*;
 it is the **redemption token that opens a group in the book** (§2.2). The
 materials are unchanged — they were always chosen as proof that the
-player has been in the ring that produces them, and that is exactly the
+player has reached the region that produces them, and that is exactly the
 job the new model needs them for. Redemption is a one-off action at the
 profession's workbench; the materials are consumed, nothing is produced,
 the meta key advances.
@@ -332,9 +339,9 @@ all recipes at once, materials are the only gate.
 
 ### 2.4 Pacing check (10–20 h to level 60)
 
-~10–20 min per level → ring transits land at: L15 after ~2.5–5 h, L30
-after ~5–10 h, L45 after ~7.5–15 h. Each keystone is ~30–60 min of
-natural play in the ring you just reached (6 iron bars ≈ one dig to
+~10–20 min per level → progression milestones land at: L15 after ~2.5–5 h,
+L30 after ~5–10 h, L45 after ~7.5–15 h. Each keystone is ~30–60 min of
+natural play in the source region you just reached (6 iron bars ≈ one dig to
 y −300 or a golem hunt; 2 bear claws ≈ 8 bear kills at 1/4). A player
 who levels two professions alongside questing reaches Master at 50–55
 without detour grinding; a pure fighter buys refined and enchanted gear
@@ -902,11 +909,12 @@ the book group instead of a second profession. For everyone without the
 Alchemist profession, alchemy herbs stay scenery; food-grade plants stay
 universal (professions.md §1).
 
-**Material chain**: herbs and spices in **three grades**, not six — the
-herb map is cut by ring, not by metal tier: T1 sunleaf/gravemoss (inner),
-T2 dragonweed/marshbloom (outer), T3 crimson lotus/stormkelp (coast);
-biomes_mobs §2/§6 owns the biome binding and the healing-herb / spice
-split. Vendor supply: vials. All effects percent-based or flat-small
+**Material chain**: herbs and spices in **three grades**, not six. The named
+zone catalog places T1 sunleaf/gravemoss in low-level home regions, T2
+dragonweed/marshbloom in the heartland and T3 crimson lotus/stormkelp in
+high-level front/coastal regions; `biomes_mobs.md` §2/§6 owns the biome
+binding and the healing-herb / spice split. Vendor supply: vials. All effects
+percent-based or flat-small
 (combat_stats §5: no consumable treadmill). **One shared 60 s cooldown
 for instant potions; one "elixir" buff active at a time** (§10 P3). The
 cooldown is an absolute wall-clock expiry in player meta, so a relog
@@ -1207,8 +1215,9 @@ mage robe") with the Silvercanopy Robe.
 Drops obey the player-tag rule (combat_stats §3), quality/roll windows
 per §6.3, **gear-drop ilvl = mob level** — and since §6.3's roll band is
 chosen by the item's ilvl, that one number is all a drop needs: a drop
-has no crafter whose mastery could be read instead. Ring → materials is
-binding via biomes_mobs §6; this table adds the gear/special layer.
+has no crafter whose mastery could be read instead. Named zone → materials is
+binding through each zone's fixed biome/gathering palette; the level band adds
+the gear/special layer.
 
 **A dropped item's material tier must match the mob's tier** (added
 2026-08-07). `ilvl = mob level` already implied it; stated outright
@@ -1217,15 +1226,16 @@ level 21–30 mobs** and nowhere else. A mob may not drop gear from a tier
 its level band does not cover — that is what stops the drop table from
 becoming a side door around the depth gate of §3.0.4.
 
-| Ring (levels) | Materials (recap) | Gear drops | Special |
+| Named-zone band | Materials | Gear drops | Special |
 |---|---|---|---|
-| Safe core 1–10 | light leather, linen scrap, T1 ores | 3% Uncommon **base variants** (WP5 class items) | — |
-| Inner 10–25 | leather, linen cloth, T1 herbs | base variants | Grimtusk/Ashmaw (L12); bandit camps = linen |
-| War coast 20–30 | heavy cloth (raiders), linen | base variants | PvP quests ≥20; Captain Bonerattle (L28); **outpost supply crates** (§5.6) |
-| Outer 25–45 | heavy leather, scaled hide, heavy cloth, spider silk, T2 herbs, stone cores, iron/steel | **improved variants** on elites (20% Unc / 3% Rare) | named rares L32–42; apex dragon lair (L50) |
-| Coast 45–60 | scaled hide, silk, T3 herbs, gold, garnet/diamond | improved variants; elites common | coast named rares L48–50; Reef Lurker |
+| Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, source windows per §5.1 | no PvP objective |
+| Peaceful home zones 11–20 | equivalent T2 access | T2, source windows per §5.1 | first named rares; no contested zone |
+| Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
+| Mixed frontier 31–40 | equivalent T4 access | T4, improved windows on qualifying elites | Human/Orc/shared-centre contested; four flank approaches peaceful |
+| Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
+| High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and all-six-gem apex camps |
 | Depth axis | the six strata of §3.0.4, each behind a tier-n tool; which ore lies in which band is §3.0.1's placement table: copper/tin/coal/**iron** (0…−100) → quartz (−300) → silver (−500) → garnet + emberstone (−700) → emberstone deep band **and Abyssal Crystal** (−1000) → diamond (below); gold keeps its vendored depth and its coast veins | cave mobs as per surface tier | **no drop layer of its own**, at any depth (below) |
-| Enemy territory | identical base tables (mirrored biomes) | identical | enemy named rares + enemy King = the raid incentive |
+| Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**
 (decided 2026-08-08). The deep band below −1000 (`world.md` §4c) is a
@@ -1302,14 +1312,15 @@ only one. What an isle sells exclusively instead are its **six
 step-exclusive materials** (`world.md` §5.4), of which one is live in the
 MVP — the **Amplifier** of §6b.8.
 
-### 5.6 War-coast PvP incentive (proposal)
+### 5.6 Contested-front reward hook
 
-Enemy **outpost supply crates**: one lootable crate per military
-outpost, openable only by the ENEMY faction, node-timer refill 60 min:
-3–6 heavy cloth + 2–4 iron bars + 20% 1 gem. Raiding the war coast
-feeds your crafters without any player-item loss (death rules stay
-untouched). Faction NPC kills additionally drop war trophies (vendor
-5–10c) + heavy cloth 1/3 (combat_stats player-tag PvP rule).
+The authored war front feeds crafting only through the existing
+player-involvement war-trophy/heavy-cloth rules and later explicit quests.
+WP42 ships no refilling supply crate. Each contested zone reserves one
+non-loot quest-interaction slot for WP9; it is not a free material source.
+The two endpoint apex mining camps are the sole map-side addition: each has
+the 12 all-six-gem nodes specified by `world_zones.md` §6 and
+`world.md` §2 R4.
 
 ## 6. Quality tiers & enchant roll ranges (WP5 numbers)
 
@@ -1328,7 +1339,7 @@ with a chat message**, enforced in the slots' group-filtered `allow_put`
 an invisible failure. Drops keep `ilvl = mob level` (§5), so gear above
 your level is lootable and tradeable, just not wearable yet — that is
 intended, and it is also what stops one level-60 friend from outfitting
-a level-5 character and flattening the entire ring progression. Description
+a level-5 character and flattening the entire surface progression. Description
 regenerated from meta on every change (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant).
@@ -1716,7 +1727,7 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
 ### 8.1 Income
 
 - **Quest reward** = 2c + 1.5c × quest level, rounded to 5c steps
-  (L1 ≈ 5c, L20 ≈ 30c, L60 ≈ 90c); elite/group and war-coast PvP
+  (L1 ≈ 5c, L20 ≈ 30c, L60 ≈ 90c); elite/group and war-front PvP
   quests ×2. ~80 quests to 60 ≈ 35–40s total.
 - **Trash/vendor loot** per kill (expected): 1–2c (L1–15), 2–4c
   (16–30), 4–7c (31–45), 6–10c (46–60); elites ×3 quantity, named
@@ -1730,8 +1741,9 @@ endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
   like a bone would make the tier ladder invisible). Still a floor; the
   real market is player trade.
 - **Known deviation — the bandit runs hot.** A bandit's expected vendor
-  yield is ≈ **6c** in the core/inner rings and ≈ **9c** in the outer
-  ring, i.e. roughly **2–3× the trash-loot band of its own ring**. The
+  yield is ≈ **6c** in WP18's core/inner bands and ≈ **9c** in its outer
+  band, i.e. roughly **2–3× the trash-loot band of its current source
+  region**. The
   purse is not the cause (1/3 × 5c ≈ 1.7c); the dominant term is WP6's
   **guaranteed** 1–2 cloth drop, which was priced as a Tailor material
   rather than as trash income. Flagged for a balance pass (drop the

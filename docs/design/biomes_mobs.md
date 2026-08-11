@@ -1,21 +1,27 @@
 # Biomes & Mobs — Catalog
 
-**Decided spec** (authored + approved 2026-08-06, incl. the flagged open
-points — resolutions in §8; WP6 outcomes folded in 2026-08-07). This is
-the implementation spec for
-**WP18** (biome/mapgen registrations) and **WP6** (mob rosters & spawn
-parameters).
+**Content catalog and current implementation contract** (authored 2026-08-06,
+WP6 outcomes folded in 2026-08-07/08). Sections 2–7 remain the source for
+biome properties, mobs, gathering, woods and materials. The old ring geometry
+in §1 and the `core/inner/outer/coast/war_coast` spawn cells in §4 describe the
+shipped WP18/WP36 map only: `world_zones.md` superseded that surface placement
+on 2026-08-10, and WP40 must reassign this catalog to fixed named-zone palettes
+before WP13/WP33 author new surface content.
 
 ## 0. Decided framework (recap, binding)
 
-- Ring model (world.md §1/§8): settled race biomes in safe core + inner
-  ring, wild nature variants outward; flank/back coasts 45–60; **war
-  coast stays capped 20–30**; strait beaches 1–5 neutral wildlife.
-- Mob level ALWAYS from `grug_core.mob_level_at(pos)` (radial field +
-  depth axis, combat_stats.md §3). Biome level bands in this catalog are
-  *descriptive* (where the biome sits in the rings), never hand-set per
-  mob. Where older drafts said e.g. "bone-forest 40–60", the radial
-  field wins (bone forest spans the west outer ring → 25–60).
+- Target surface model (`world_zones.md`): every named zone owns a fixed
+  allowed-biome list and level range; outer race starts are 1–10, home zones
+  11–20, heartland 21–40 and most faction-contact land 41–60. The complete
+  38-zone palette is `world_zones.md` §8. No biome outside a zone's list may
+  win there.
+- Mob level ALWAYS comes from `grug_core.mob_level_at(pos)`: named-zone
+  surface level plus the independent depth axis (`combat_stats.md` §3).
+  Biome labels never hand-set a mob's level.
+- **Migration note:** until WP40, the running game still uses the retired
+  radial field and the old ring vocabulary printed in §1/§4. Those tables must
+  stay internally consistent with the shipped spawn code, but they are not the
+  placement brief for new structures, quests or gathering nodes.
 - Stats derived, never hand-rolled: **HP = 15+5L, dmg = 2+0.4L,
   XP = 10L**; elite armor 80 (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70
   (×5 / ×2.2 / ×6). Speeds: aggressive 4.4, heartland hunters 4.6
@@ -33,9 +39,9 @@ parameters).
   slot is family-flavored** by design (§3.2).
 - Nature mobs aggro on sight vs players AND NPCs; density target ~1
   visible mob per 15–20 m of wilderness travel.
-- Patch model: race biomes recur as patches across their band; patches
-  outside the core have a high chance of a small village, lower chance
-  of an outpost. Elves live in tree-integrated settlements.
+- Target patch model: logical biomes vary only inside their zone-owned
+  weighted palette. Fixed village/outpost/camp slots come from
+  `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
 
 Stats quick reference (normal tier; compute, don't copy):
 
@@ -45,7 +51,7 @@ Stats quick reference (normal tier; compute, don't copy):
 | 10 | 65 | 6 | 100 | | 45 | 240 | 20 | 450 |
 | 20 | 115 | 10 | 200 | | 60 | 315 | 26 | 600 |
 
-## 1. World biome map
+## 1. Current WP18 world biome map (WP40 migration baseline)
 
 ### 1.1 Geometry anchors (from grug_core / world.md §1)
 
@@ -259,14 +265,12 @@ Three changes, all of them on the Throng side:
 1. **`grug_deep_jungle` got its own top**,
    `grug_nodes:dirt_with_canopy_litter` (the shaded floor under the closed
    canopy; retint recipe and licence row in `grug_nodes/LICENSE-media.md`).
-   **`grug_jungle_fringe` keeps `default:dirt_with_rainforest_litter`** —
-   that is what ships and what every number in this section was measured
-   against. Which of the two Troll jungle biomes §8.4's "the fringe reuses
-   the troll jungle nodes 1:1" binds the fringe to is **not settled by this
-   document**: see **[TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)**.
-   Either way both continents end up with three distinct eastern tops, and
-   deep jungle / fringe — until WP36 the only mirrored pair in the world
-   whose halves shared a look — no longer share one.
+   The shipped WP36 `grug_jungle_fringe` keeps
+   `default:dirt_with_rainforest_litter`; every legacy number in this
+   section was measured against it. The named-zone target decided 2026-08-11
+   instead pairs the Skyglass fringe with `grug_deep_jungle` and therefore
+   uses `grug_nodes:dirt_with_canopy_litter`. WP40 makes that swap while
+   replacing the old registrations and re-derives its logical spawn cells.
 2. **`grug_badlands_east`** fills the empty Throng half of the
    `grug_deep_forest_east` row: the centre-back wild reaching into the
    neighbouring band's wild ring, which is what the Accord has shipped
@@ -279,6 +283,10 @@ Three changes, all of them on the Throng side:
    Troll east into a grey dead forest. `grug_badlands`' 75/20 measures
    35.6 % against the jungle edge's 52.5 % — within a point of the Accord
    mirror (deep-forest slabs 36.1 %, elf forest 54.3 %).
+   **Named-zone decision 2026-08-11:** retain this family as the ochre
+   outcrop component of Thunderroot Wilds and Stormscale Summit. It is
+   Troll-region geology there, not a claim that the whole Orc badlands family
+   belongs to Trolls.
 3. **`grug_deep_jungle` 90/90 → 80/88.** 90/90 was +1.8 / +2.2 σ out and
    over 12 seeds only **0.1 %** of the biome's own land sat inside
    x ≤ 1250 — i.e. it was its uncontested flank strip and nothing else
@@ -434,6 +442,11 @@ Notes:
 
 ### 1.4 Patch model & settlements
 
+**Retired target, retained as a shipped-map record.** WP13 must not implement
+this ring/band settlement pass. WP40 first replaces it with the named-zone POI
+slots and adjacency graph from `world_zones.md` §§8–11; the probabilities
+below remain useful calibration data, not future placement authority.
+
 - **Patches**: the wide cuboid overlaps (§1.3) make each band a voronoi
   mosaic: settled patches deep in the wild zone and wild patches near
   the core, pure only at the extremes. No extra noise machinery needed
@@ -509,6 +522,10 @@ Notes:
   settlement by itself.
 
 ### 1.5 Level-continuity check (no holes, no >5 jumps)
+
+This verifies the current WP18/WP36 map. WP40 must produce the equivalent
+continuity and spawn-coverage proof for every named-zone boundary before it
+removes any old spawn cell.
 
 Walking from the village belt (core, L1–10) in any direction:
 
@@ -687,7 +704,7 @@ farming system are one later package.
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora and roster on both sides, but **not the same ground node since WP36**: the deep jungle stands on `grug_nodes:dirt_with_canopy_litter`, the fringe still on `default:dirt_with_rainforest_litter` (which of the two the fringe *should* reuse under §8.4 is open — [TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)). Every deco of this row therefore names **both** nodes in `place_on` — a `place_on` is as silent as a `biomes` list |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -863,7 +880,7 @@ what makes the war coast worth walking by day.
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.4 (WP6 retune) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
 | Zombie (exists) | never leashes | night (in grug_blight: 24 h — Undead identity) | 4.2 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
-| Bandit (camp humanoid; camps placed by §1.4, inner+outer, both continents) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (inner camps) / heavy cloth (outer camps); copper coins | character.b3d + bandit skins (LotT-derived) |
+| Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 
 **Forest pair — grug_deep_forest (A) ↔ grug_bone_forest (T)** (outer,
 25–60; Throng names in parentheses, same drop tables):
@@ -983,23 +1000,22 @@ identical third item would erase the flavor for no balance gain.
 
 ### 3.3 Named rares (rare tier: armor 70, ×5 HP, ×2.2 dmg, ×6 XP, ×2 scale + tint, faction-wide spawn broadcast)
 
-One per band + one shared war-coast rare per continent. Spawned by a
-scheduled spawner (not ABM): respawn 2–4 h after kill, patrol route
-between 2–3 fixed points. They inherit their base family's drop table
-(×6 XP and the rare multipliers are the reward WP6 ships); the special
-loot ROLLS ride on WP5's item/enchantment tables.
+Spawned by a scheduled spawner (not ABM): respawn 2–4 h after kill, patrol
+route between 2–3 fixed zone anchors. They inherit their base family's drop
+table (×6 XP and the rare multipliers are the reward WP6 ships); special loot
+rolls ride on WP5's item/enchantment tables.
 
-| Name | Base family | Where (band, ring) | ~L |
-|------|-------------|--------------------|----|
-| Grimtusk | Boar | A-center meadows, inner | 12 |
-| Old Whitefang | Wolf | A-center deep forest, outer | 32 |
-| Korgan's Bane | Stone Golem | A-west crags, outer | 42 |
-| Silkfang | Giant Spider | A-east jungle fringe, coast | 50 |
-| Marrowclaw | Plaguehide Bear | H-west bone forest, outer | 35 |
-| Dustwing | Vulture | H-center badlands, outer | 38 |
-| Emerald Coil | Serpent | H-east deep jungle, coast | 48 |
-| Ashmaw | Boar (plague) | H-center savanna, inner | 12 |
-| Captain Bonerattle (×2, one per continent) | Skeleton Raider | war coast | 28 |
+| Name | Base family | Named-zone route | ~L |
+|------|-------------|------------------|----|
+| Grimtusk | Boar | Goldmead Vale | 12 |
+| Old Whitefang | Wolf | Ashenward March | 36 |
+| Korgan's Bane | Stone Golem | Stormvault Heights | 40 |
+| Silkfang | Giant Spider | The Skyglass Canopy | 55 |
+| Marrowclaw | Plaguehide Bear | Blackwind Rise | 35 |
+| Dustwing | Vulture | Bannerbreak Mesa | 38 |
+| Emerald Coil | Serpent | Stormscale Summit approach | 60 |
+| Ashmaw | Boar (plague) | Redtusk Savanna | 12 |
+| Captain Bonerattle (×2) | Skeleton Raider | The Broken Causeway (36) / The Shattered Line (46) | zone |
 
 ## 4. Spawn parameter table
 
@@ -1320,8 +1336,8 @@ license-clean, keep attribution.
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
 | Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
-| Linen cloth | 10–30 | **bandit camps** (core/inner), mirefolk | same |
-| Heavy cloth | 25–45 | outer bandit camps, war-coast raiders | same |
+| Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
+| Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
 | Spider silk (Tailor T3) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 25–60 | mushrooms (deep forest/swamp), wild cocoa (jungle fringe), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (deep jungle), rock salt (coast beaches) |
@@ -1351,12 +1367,12 @@ is behind a fight on both sides.
 
 **Cloth supply, precisely** (resolved in WP6): zombies and skeletons
 drop **linen scrap**, which is vendor trash, *not* the tailoring
-material. The cloth line comes from **humanoids** — bandit camps for
-linen (core/inner) and heavy cloth (everything further out), mirefolk
-camps for linen. The camp supply is therefore the whole cloth economy,
-and WP6 ships it as **12 deterministic bandit camps, two per race band**
-(one inner at |z| ≈ 550, one outer at |z| ≈ 1350, offset from the
-capital's x so they never collide with the outpost column). The
+material. The cloth line comes from **humanoids** — home bandit camps for
+linen, frontier bandit camps for heavy cloth, and mirefolk camps for linen.
+The camp supply is therefore the whole cloth economy, and WP6 ships **12
+deterministic bandit camps**. WP40 migrates them to the catalog's exact two
+per race region: one home-zone linen camp and one frontier heavy-cloth camp
+(`world_zones.md` §8). The
 patch-driven camps of §1.4 — the ones rolled per settlement candidate —
 land with WP13's structure pass and thicken that supply; they do not
 create it.
@@ -1395,15 +1411,11 @@ and 5 record what WP6 then actually shipped.
    only. WP6 confirmed the deferral: neither Shore Crab nor its elite
    Reef Lurker is registered, and the §3.1/§4 rows for both stay in
    this catalog as the spec to implement once a model exists.
-4. **Jungle fringe reuses the troll jungle nodes 1:1** on the Accord
-   side (max drop symmetry, zero new assets). Until WP36 the Throng had
-   only one jungle ground node, so "the troll jungle" named one thing;
-   since `grug_deep_jungle` got a top of its own (§1.3) it names two, and
-   **which one this point meant is not decided here**. What ships is the
-   fringe on `default:dirt_with_rainforest_litter`, i.e. the
-   `grug_jungle_edge` reading. The open question, both readings and what a
-   change would cost:
-   **[TODO-design-jungle-fringe.md](../../TODO-design-jungle-fringe.md)**.
+4. **Jungle fringe reuses the deep Troll jungle nodes 1:1** on the Accord
+   side (max drop symmetry, zero new assets). Since 2026-08-11 this names
+   `grug_deep_jungle` explicitly: target top
+   `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 legacy registration
+   remains on rainforest litter until WP40's replacement pass.
 5. **The boar's "charges"** is implemented as a **mid-range rush**, not
    a wind-up gallop: the same impulse the panther's pounce uses,
    flattened horizontally, fired at 4–10 m with an 8 s cooldown. One

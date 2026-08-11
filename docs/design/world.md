@@ -1,9 +1,10 @@
 # World Design
 
-Decided spec (2026-08-05/06; continent redesign 2026-08-06). Implementation:
-WP2 (mapgen, difficulty function, build restrictions), WP18 (continent
-rework), WP6 (guards/outposts), WP13 (structures, villages); housing/Home
-Stone get their own WPs when scheduled.
+Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
+redesign 2026-08-10). Implementation: WP2/WP18 are the currently shipped
+map, WP6 supplies guards/outposts, WP40 replaces the surface geography with
+the named-zone map, and WP13 then supplies structures and villages. The
+binding macro-map and PvP rules are in `world_zones.md`.
 
 ## 0. Canonical names
 
@@ -37,115 +38,53 @@ and when a continent ever becomes a first-class id.
   stay untranslated. Docs remain English — this is recorded here only so
   the translation layer has a canonical source.
 
-## 1. Geography: two continents
+## 1. Geography: two continents and named zones
 
-The world map is **two huge, separate islands — one continent per
-faction** (WoW's two-continent memory): **Kragmar** in the north, home
-of the Throng, and **Elandor** in the south, home of the Accord,
-mirrored at z=0. Everything else is ocean.
+**Kragmar remains north and Elandor remains south.** They are distinct
+faction continents joined through three strategic contact areas: a broad
+multi-lane central war front and two high-level mountain ends where that front
+reaches the western and eastern ocean. Ocean separates the remaining coast.
+The old mandatory open-water strait and exact geometric mirroring are retired.
 
-- **Ocean strait along z=0**: water at least until z=±100; there the
-  faction continents begin. Minimum 200 nodes of open water between the
-  continents. Crossing to the enemy continent means crossing the strait
-  (swimming; boats later) — the strait itself is NOT extra dangerous
-  (section 2b).
-- **Continent gameplay rectangle**: z = ±100 … ±1700, x = −1500 … +1500
-  (3000×1600 per faction; shrunk 2026-08-06 from the 4000×2000 draft for
-  a realistic population — the world should FEEL big through content
-  density and travel pacing, not through emptiness). This rectangle is
-  the *legal* bound (build rights, ring math); the **visible coastline
-  is soft/noisy** and wanders inside it, like biome transitions — no
-  straight-edge continents, no mountain wall (the old x=±2000 wall was
-  dropped in WP18; a post-generation ocean mask carves the coast instead).
-- Each continent contains 3 race-flavored biome regions (section 7).
-- **Fixed base layout, randomized within**: which race region lies in
-  which compass direction is FIXED per faction (section 7); noise only
-  jitters region borders and coastlines.
-- **Civilization gradient** (decided 2026-08-06): the safe core + inner
-  ring carry the settled race biomes (villages, roads, fields); outward
-  every race band tips into its **wild nature variant** — shared nature
-  biomes that exist on BOTH continents with identical base drops
-  (section 8). **Made binding 2026-08-08**: a **carve box** of
-  |x| ≤ 800, 600 ≤ |z| ≤ 1200 per continent (~20 % of the land) is
-  reserved for the settled bands — no wild band may be *registered*
-  there at all, and the centre band may not reach into the side
-  capitals' ground. That is what turns the gradient from a tendency
-  into a guarantee (§3); §8's "wild patches near the core" flavour is
-  what it costs, and this settles the contradiction between the two
-  sections in favour of the guarantee.
-- All anchors (capital position, ring radii, coast caps) derive from the
-  continent size constants in `grug_core` — world size is configurable at
-  world creation (3000×1600 default; changing it requires a new world).
+The target surface map is a stable graph of named zones. Position, neighbors,
+level range, PvP status, biome palette and strategic landmarks are fixed;
+bounded noise may vary only local borders and terrain detail. Both faction
+sides have equivalent progression and content budgets but deliberately
+different shapes and zone identities. Full contract: `world_zones.md` §1.
 
-### Difficulty layout: "safe core + war coast"
+### Difficulty layout: outer starts to high-level front
 
-Decided 2026-08-06. Two **decoupled** level fields, both centralized in
-`grug_core`:
+Surface progression moves from the outer side of each continent toward the
+faction front:
 
-**Mob level** (`mob_level_at` — where you level): radial distance from
-the **continent seat** (~(0, ±900)), with a per-direction cap, plus a
-**level-1 bubble around every capital** (see below). Overworld caves add a
-depth axis on top (combat_stats.md §3: level also grows 3 levels per 50
-nodes below y=0 — the safe core is only safe on the surface, depth already
-overtakes it at −83):
+| World layer | Level | Role |
+|-------------|-------|------|
+| Outer race starting zones | 1–10 | safe spawn settlements, one per race |
+| Home zones | 11–20 | safe early questing; roads toward the capitals |
+| Central heartland | 21–30 / 31–40 | capital approaches and middle progression |
+| Front-facing regions | 41–50 / 51–59 / 60 | war infrastructure, dangerous wildlife and contested access |
+| Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
 
-| Zone | Location | Mob level |
-|------|----------|-----------|
-| Capital bubble | ≤ 40 nodes from any of the six capital anchors (§3) | **1**, blending back into the field by 240 nodes |
-| Safe core | x-elongated belt (≈ ±600 × ±300): the three race capitals (§3; the central one is the faction seat) | 1–10 |
-| Inner ring | core edge … ~550 from the capital | 10–25 |
-| Outer ring | ~550 … toward flank/back coasts | 25–45 |
-| Flank & back coasts | shorelines at x≈±1500 / z≈±1700 | 45–60, elites |
-| **War coast** (strait-facing band, z ≈ ±100…±300) | capped at | **~20–30**; outposts, first PvP quests (min level ~20) |
-| Strait & beaches | z 0 … ±100 | lvl 1–5 neutral wildlife |
+No level-1–30 zone is contested. Automatic PvP begins in designated
+level-31–40 frontier zones. Most contact land is level 41–60; one such
+frontier zone may reach the central contact area for the first PvP destination.
+Named zones and an authored within-zone gradient replace radial distance as
+the surface input to `mob_level_at`. The depth floor remains unchanged and
+can still overtake the local surface level underground.
 
-**The capital bubble** (decided with WP36, after a runtime report). The
-radial field is centred on the continent *seat*, not on each capital, so
-only the two central capitals (human/orc, x = 0) sat at field value n ≈ 0.
-The four side capitals (dwarf/elf/undead/troll, x = ±550) sit at n = 0.217,
-which the field reads as **level 8** — `zone_at` answered "core" there while
-a fresh level-1 player's first neighbour was a level-8 boar (55 HP,
-5.2 damage, against 30 player HP). Fix, inside `mob_level_at` only:
+Every capital sits centrally in its own city zone with four cardinal roads.
+The road toward the outer side reaches a level-10–20 neighbor, lateral roads
+along the capital axis reach medium-level heartland, and the road toward the
+faction front reaches high-level territory. Capital defense is the one fixed
+guard rule: its guards and important NPCs are level 60.
 
-- **Level 1 within 40 nodes** of any of the six capital anchors (the spawn
-  platform is 25×25, so the whole camp and a wide apron are level 1).
-- **Linear blend back to the ambient field over the next 200 nodes**, fully
-  restored at 240 nodes. 200 nodes is the width the "no jumps > 5" rule of
-  biomes_mobs.md §1.5 needs: the steepest walk out of a side capital climbs
-  1 → 17.6 across it, i.e. under 1 level per 10 nodes.
-- **Lowering only** — a bubble never raises a level, and outside 240 nodes
-  the field is bit-identical to what it was.
-- It is a term of the *radial* part: the war-coast/strait caps and, above
-  all, the **depth floor** still run afterwards. Caves under a capital are
-  not level 1 — at y = −200 every capital reads level 11, exactly as before.
-  Below the capitals the depth axis alone now decides at all six (the side
-  capitals used to read a flat 8 down to −140).
-- The radial field itself is deliberately **not** re-shaped: `zone_at`, the
-  guard field, the 24 outpost anchors and the 12 bandit-camp anchors keep
-  their values to the node. `difficulty_at` is the one derived quantity that
-  necessarily moves, because it is *defined* as (mob level − 1)/59: inside a
-  bubble it now reads 0. Nothing consumes it yet.
+### Current implementation before WP40
 
-**Guard level** (`guard_level_at` — anti-invasion gating; the field exists
-since WP18, the guards that read it arrive with WP6): runs
-**inverse** to mob level — elite city watch (60+) in the capital, spawn
-village and safe core, solid guards at villages/roads, moderate at the
-war coast (~local mob level +5). Rationale: the safe core must be safe
-against high-level *invaders*, not just low-level mobs; pushing deeper
-means weaker mobs but ever harder guards (classic WoW capitals).
-
-- Invasion is funneled by design: the strait leads to the enemy's
-  mid-level war coast (the PvP stage); landings at flank/back coasts
-  fail against lvl 50–60 zones — scoped to |z| ≳ 450 (decided with
-  WP18): the war-coast cap fades continuously over z 300..600, so the
-  flank corners nearest the strait ramp 30→60 instead of being elite.
-  A landing that comes in slightly wide of the war coast still lands
-  next to the PvP stage, which is the funnel working as intended; any
-  x-dependent cap would reintroduce a level cliff at the band edge.
-  Nether crossings (Phase 2) are the endgame deep strike into the
-  hinterland.
-- Players level 1–15 play deep inland — no forced early PvP; quests
-  first send players to the war coast at ~lvl 20+.
+WP18/WP36 still ship two 3000×1600 rectangles, a 200-node strait, radial
+`core/inner/outer/coast/war_coast` fields, capital spawn bubbles and exact
+z-mirroring. Those values remain a description of the running code only; they
+are not constraints on the new macro-map. WP40 removes or migrates every
+consumer before WP13 authors permanent structures.
 
 ## 2. Destructibility
 
@@ -154,7 +93,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 
 - **R1 — Own faction territory**: digging and building allowed at any
   depth, except in protected zones (capital, outposts, villages, quest
-  structures, small radius around spawn).
+  structures and the protected starting settlement around a spawn).
   - **Shape of a POI protection zone**: vertically it starts **30 nodes
     below the POI's base level and runs upward without a limit** — nobody
     towers over a capital, nobody tunnels in from directly beneath it,
@@ -181,10 +120,18 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R2 — Enemy territory**: no digging, no node placement of any kind —
   **including torches, ladders etc.** Items remain usable. Darkness and
   danger in enemy land are a feature.
-- **R3 — Ocean**: everything outside the two continent rectangles
-  (strait, coastal ocean, open sea) is locked for everyone — no digging,
-  no placement. Each faction can only build INSIDE its own continent
-  rectangle. Sole exception: the player housing isles (R5, section 5).
+- **R2b — Shared contested front**: the six shared-front zones have no
+  construction owner. Neither faction may dig ordinary terrain or place
+  nodes there. Both factions may dig explicitly registered ore/resource
+  nodes, including exposed natural deposits and the two apex camps' renewable
+  gem nodes; protected walls, roads and war structures remain immutable.
+  A zone's cultural `race_region` never grants territory rights
+  (`world_zones.md` §§8.3/11).
+- **R3 — Ocean**: every surface position classified as ocean by the authored
+  land/coast mask is locked for everyone — no digging, no placement. Each
+  faction can build only on its own land zones. Sole exception: the player
+  housing isles (R5, section 5). WP18 currently derives this classification
+  from two rectangles; WP40 replaces the geometry, not the protection rule.
 - **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -199,6 +146,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     camp's own region** (§2 R6 / `items_crafting.md` §3.0.1) — so a camp
     is where a player gets T3 stock without a −400 expedition, and the
     camp's garrison is the price.
+    - The two level-60 apex camps at the dragon endpoints are the fixed
+      exception to the single regional-tier content rule: each has exactly
+      **12 nodes, two for each of the six race-gem slots**. Both factions may
+      mine those nodes under R2b while the camp shell remains protected. They
+      remain mining camps, so they do not create a second renewable-structure
+      kind.
   - **Respawn 2–4 hours per node**, not minutes. A camp is a destination
     worth a trip every few sessions, never a farm rotation; the interval
     is deliberately an order of magnitude above the 15–30 min the removed
@@ -242,12 +195,12 @@ Implementation: one central `core.is_protected` override in `grug_core`
 
 ## 2b. Ocean zones & deep-sea danger
 
-The ocean is layered by distance from the nearest land — and since
+The ocean is layered by authored distance from the nearest land — and since
 2026-08-07 "land" includes the housing isles (§5), so every isle carries
 its own coastal ring:
 
-- **Coastal sea** (~1500 nodes around each continent, **150 nodes around
-  each housing isle**): guaranteed real ocean — the terrain generates,
+- **Coastal sea** (an authored mainland buffer, **150 nodes around each
+  housing isle**): guaranteed real ocean — the terrain generates,
   but it MUST be water, no islands. This is the **reef band** and active
   gameplay space: coral, kelp, fish and harmless-to-low-level shore
   wildlife (decided 2026-08-07; the biome registration and its roster
@@ -260,27 +213,73 @@ its own coastal ring:
   for whoever adds one — otherwise a boat turns the deterrent into a
   ferry. Players are not meant to reach the world edge, and not meant to
   travel between housing isles by sea.
-- **The housing band** (|z| ≥ 4000 behind each continent, §5.6) is open
+- **The housing band** behind the outer side of each continent (§5.6) is open
   sea with allocated isles punched into it: deadly water between the
   isles, safe inside each isle's 150-node ring. **`open_sea_at` must
   therefore answer false inside those rings** — today it is a pure
   distance-from-the-continent test (`OCEAN_COASTAL_WIDTH` 1500, so open
   sea starts at |z| = 3200) and would happily spawn Kraken Guards on
   somebody's beach.
-- **The strait between the continents is NOT extra dangerous** — danger
-  only guards the places players are not supposed to go, never the
-  faction-vs-faction crossing.
+- **Faction-contact coast**: the ocean reaches the two endpoints where the
+  authored land front meets the sea. Those endpoint mountains are contested
+  level-60 world-boss regions (`world_zones.md` §6), not safe coastal water.
+  Between them, the normal faction crossing is by the authored land
+  connections rather than by a mandatory boat trip.
+- The shipped WP18 map still has a full open-water strait. WP40 redraws this
+  coastline; the coastal/open-sea distinction and the housing-isle exception
+  remain binding.
+
+## 2c. PvP geography and player tag
+
+Peaceful and contested status belongs to the named surface zone. No level
+1–30 zone is contested. The Human and Orc level-31–40 approaches plus the
+shared central low route are the mirrored first contested corridor; the four
+flank approaches remain peaceful and every level-41+ front zone is contested.
+Entering a contested zone automatically applies the player's PvP tag; an
+untagged player in a peaceful zone cannot receive unprovoked enemy-player
+damage.
+
+An untagged peaceful-zone player who makes a server-valid hostile contact is
+tagged before resolution. Against an equally safe player that first effect is
+blocked; against an already tagged player it may land. Effective PvP
+HP/absorb damage and effective support of a tagged ally refresh the timer;
+misses, dodge, immunity and zero effect do not. Outside contested zones the
+tag lasts **60 seconds** after the last qualifying contact, death clears it,
+disconnect does not, and leaving contested ground starts a full tail. Every
+melee, cast, area and projectile path uses the central eligibility seam. Full
+transaction, boundary, lifecycle, visitor and HUD rules:
+`world_zones.md` §§4/15.
 
 ## 3. Capitals
 
-**Three race capitals per continent** (decided 2026-08-06, WoW model):
-each race's capital sits in the safe-core belt of its band, centrally
-in the race's own biome, and is protected (indestructible) per the POI
-rule of §2 — the structure plus ≥ 10 nodes of surrounding terrain, from
-30 nodes below its base level upward. The
-**central race's capital (Humans/Orcs, ~(0, ±900)) doubles as the
-faction seat**: the faction King (raid boss), guild manager, and
-faction-wide services live there.
+There are **three race capitals per continent**, one per race and six total.
+Each sits in its own central named city zone and is protected
+(indestructible) per the POI rule of §2 — the structure plus ≥ 10 nodes of
+surrounding terrain, from 30 nodes below its base level upward.
+
+- A capital is a safe civic hub with **no hostile ambient enemies**.
+- Its guards and important faction NPCs are level 60.
+- Its center has main roads in all four cardinal directions: toward level
+  10–20 home territory, laterally into medium-level heartland and toward the
+  high-level contested front (`world_zones.md` §3).
+- New characters and ordinary fallback respawns use their race's outer
+  level-1–10 starting settlement, not the capital.
+- Every race has its own king in its own capital: **six kings total**. The
+  character's own race king grants the level-30 housing isle.
+- Capitals hold class trainers, class POIs, traders, quest givers, job
+  trainers and a major waypoint. No capital is a superior faction-wide
+  administrative seat in the MVP; shared faction services use the same
+  service definition in all three faction capitals.
+- Race flair comes from architecture and NPCs (per-race wood/build sets,
+  `biomes_mobs.md` §5; elven capital = treehouses). Mechanical race perks hang
+  on individual vendors (§7).
+
+### Current WP18/WP36 capital anchors
+
+The running map still places the six placeholder platforms at x = 0/±550,
+z = ±900 and uses them as spawn points. Its following carve guarantee is an
+implementation record until WP40/WP13 replace the platforms; it does not
+constrain the new city-zone geometry.
 
 **"In the race's own biome" is a guarantee, not a hope (decided
 2026-08-08).** It used to be neither enforced nor true: on a random
@@ -330,35 +329,15 @@ capital meadows, undead and troll savanna. What ships now:
   case, and the cost would be six more registrations plus their deco
   lists.
 
-Each capital contains:
-
-- The **spawn point for characters of its race** — players start (and
-  respawn) in their own race's capital.
-- Class trainers + class POIs (e.g. special quest NPCs à la mount
-  unlocks).
-- Traders, quest givers, job trainers.
-- A waypoint of the travel network (section 6).
-- Elite guards — a capital raid is a Phase-2+ group event, not a solo
-  gank. **Real since WP6**: each spawn platform carries a **guard
-  banner** node that keeps 2–3 faction guards standing on it, and
-  because the capitals sit in zone `core` the guard field floors them at
-  60 → every capital guard is an automatic elite (scale, tint,
-  telegraph). Capital banners get **no patrol leg** — that garrison
-  holds the platform. The faction **King** sits in the faction seat as a
-  heavily guarded raid boss with top-tier loot rolls (see items/crafting
-  design); his **bodyguards are character-bound** — they follow him,
-  run free while he is dead, and are replaced by a fresh set when he
-  respawns (binding model: §4a). To his OWN faction he is the **liege
-  who grants the housing isles** (§5, decided 2026-08-07): the level-30
-  housing questline ends at his throne, which is the one time a player
-  meets their own King as something other than the enemy's raid target.
-- Race flair through architecture and NPCs (per-race wood/build sets,
-  biomes_mobs.md §5; elven capital = treehouses). Mechanical race perks hang
-  on individual vendors (§7).
+The shipped platform watch remains level 60 and continues to use its guard
+banner until the real cities land. If a king encounter uses bodyguards, their
+binding follows the generic character-bound NPC rule in §4a; the individual
+raid role of the six kings is resolved before their encounters are authored.
 
 ## 4. Outposts & patrols
 
-Military outposts across each territory enforce the level gating:
+Military outposts, road forts and war-front anchors are reserved by named
+zones. They enforce authored routes and make the zone's strategic role visible:
 
 - Roles: guard spawner/anchor, quest hub, graveyard/respawn point for the
   own faction, protector of resource-rich mining sites (e.g. a dwarven
@@ -375,34 +354,20 @@ Military outposts across each territory enforce the level gating:
   section has so far named them only as a *role* an outpost can carry;
   authoring them (schematic, garrison, protection footprint) belongs to
   the world-structures package.
-- **Guard level follows the inverse guard field** (`guard_level_at`,
-  section 1): elite garrisons in the core, ~local mob level +5 at the
-  war coast — guards beat equal-level intruders; groups or higher-level
-  players can push through. A guard at level ≥ 60 is automatically an
-  elite (scale/tint/telegraph, combat_stats.md §3).
-- **The guaranteed minimum is FOUR outposts per race band** — one per
-  ring — i.e. **24 in the world** (6 bands × 4). All are deterministic,
-  derived from the band's capital anchor (`grug_core.outpost_anchors`):
-  they sit at the capital's own x, at |z| = **250** (war coast), **500**
-  (inner) and **1350** (outer); the **coast** post goes to the band's
-  own shoreline — the two flank bands to x = **±1350** at the capital's
-  z, the centre band to the back shore at |z| = **1550**. An anchor whose
-  terrain resolves flooded or too steep is skipped (best-effort, §9).
-  Anything denser than this minimum — the old "roughly one outpost per
-  ring per ~500 m east–west" — is the job of WP13's patch/settlement
-  pass (biomes_mobs.md §1.4), not of the guaranteed layout.
-- Between outposts: **ambient patrols** on the same guard field — closes
-  the "just walk around the outpost" hole. One guard per post is
-  designated **patroller** and walks the leg toward the next ring inward
-  (coast → outer → inner → war coast, and the war-coast post walks back
-  inward so the chain has no dead end); the designation rotates
-  **hourly**. The patroller is exempt from the leash's evade-home rule —
-  being far from its post is the whole point.
-- **Guards attack enemy players and monsters, never other NPCs**
-  (`attack_npcs = false`): a deliberate MVP simplification, so faction
-  NPC brawls cannot start themselves. Own-faction and *factionless*
-  players (brand-new characters still on the spawn platform) are vetoed
-  during target acquisition.
+- Guard level normally follows the local named zone and the post's role;
+  capital guards are the fixed exception at level 60. A guard at level ≥ 60
+  is automatically an elite (scale/tint/telegraph, `combat_stats.md` §3).
+- Each named zone reserves its required outposts, road patrol legs and special
+  camps explicitly. The old fixed minimum of 24 ring outposts is not a target
+  budget; the complete zone catalog must replace it with equivalent faction
+  coverage before any old anchor is removed.
+- **Ordinary guards attack enemy players and monsters, never arbitrary NPCs**
+  (`attack_npcs = false`). Dedicated war-front soldiers are the scoped
+  exception: their authored encounter anchors may target the opposing
+  war-front population, hostile players and dangerous local creatures.
+- War-front squads use fixed population caps, place-bound respawn slots and
+  fixed clash points. Their fights are ambient life only and do not capture a
+  zone or move the faction boundary in the MVP (`world_zones.md` §5).
 - **Rare patrol mobs**: some areas have hard-to-kill rare mobs with
   limited/low spawn rates and special loot — a deliberate incentive for
   cross-faction raids (loot details: items/crafting design).
@@ -420,7 +385,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   they **roam only a small radius around it** — **20 nodes**,
   horizontal, enforced as a gentle steer home once a second while the
   NPC is idle. The patroller role is the one designed exception.
-- **Character-bound NPCs** (the king's bodyguards, later escort NPCs)
+- **Character-bound NPCs** (bodyguards used by a future king encounter, later
+  escort NPCs)
   are bound to a character instead of a place: they follow their
   character wherever it goes while it lives. When the character dies
   they become **unbound** (roam free where they stand); when the
@@ -451,24 +417,26 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
 
 ## 4b. Apex world bosses (dragons & kin)
 
-Decided 2026-08-06 (staged; first stage is a late-Phase-1/early-Phase-2
-WP). Every apex boss shares the same tech — oversized entity
+Every apex boss shares the same tech — oversized entity
 (`visual_size` 4–6×), fixed lair POI with hoard chest, **stationary
 arena fight** (holds its ledge, hops between ~3 fixed positions; never
 kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 (the elite wind-up mechanic scaled up), respawn timer — but each has a
 **distinct skill set** so it threatens in its own way.
 
-- **Stage 1 — one dragon per continent**: "the Mountain Wyrm" in the
-  mountain/badlands race region at the outer ring (~lvl 50). Visible
-  from far away — a progression carrot you can see at level 8 and fight
-  at 50. Skill sketch: ranged breath line (`dogshoot` + telegraph) +
-  ground-slam AoE.
-- **Stage 2 (Phase 2) — the enemy's dragon is the flagship PvP raid**:
-  killing it mounts its head in your capital + grants a temporary
-  faction-wide buff — visible prestige that guarantees the retaliation
-  raid.
-- **Stage 3 (Phase 2+) — one apex per race region**, same code, own
+- The old stage-one rule **one dragon per continent is retired**. The world
+  gets two shared-front overworld dragons, one at each endpoint, implemented
+  through one encounter chassis with two regional variants.
+- Every overworld dragon occupies an **ocean endpoint of the shared faction
+  front**, equally reachable by both factions over land. The endpoint is a
+  contested level-60 mountain zone with strong level-60 mountain creatures,
+  war remains and a culminating dragon mountain, summit or hoard.
+- An overworld dragon is a PvP world boss from its first stage, not a private
+  home-continent boss. Its skill sketch remains ranged breath line
+  (`dogshoot` + telegraph) plus ground-slam AoE.
+- Each endpoint also contains the all-six-gem apex mining camp defined by §2
+  R4. Both the boss and the mine are contested endgame objectives.
+- **Phase 2+ — additional regional apex creatures**, same code, own
   kits: e.g. jungle giant serpent (poison pools, submerges), blight bone
   colossus (knockback slam, summons adds). The dragon stays the biggest.
 - **Phase 3 — the Nether dragon lord** as the demonic story capstone
@@ -715,13 +683,15 @@ Two grantable levels, managed by the owner at the pad:
 ### 5.6 Placement & generation
 
 - Isles sit on a **deterministic allocation grid**: one slot per
-  **1000 × 1000** cell in the housing band (|z| ≥ 4000 behind the own
-  continent). Slot index → coordinates is a computation, never a search.
+  **1000 × 1000** cell in the housing band beyond the outer coast of the own
+  continent. Slot index → coordinates is a computation, never a search. WP18's
+  provisional band begins at |z| ≥ 4000; WP40 re-anchors it to the authored
+  coast without changing the grid pitch.
 - The band's seabed is flat at **y = −30**, which makes generation cheap:
   the mapgen pass fills only the skirt cone and the isle body, and only
   where the registry marks a slot **allocated**. An unallocated slot
-  generates as plain ocean — the same VoxelManip cap-and-flood pattern
-  the continent mask already uses everywhere else (WP18).
+  generates as plain ocean. WP40 chooses whether this reuses a revised
+  VoxelManip coast pass or the new mapgen's native land mask.
   *Implementation note*: Luanti generates deterministically from the
   seed, so an isle cannot appear in chunks that were already emerged as
   ocean. Either skip such slots at allocation time or accept a one-time
@@ -772,25 +742,24 @@ Two grantable levels, managed by the owner at the pad:
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
-- Waypoints: spawn camp, capital, the own housing isle's pad (plus the
-  pads of isles you are allowed to visit, §5.5), and
-  **~1 waypoint per ring per race region** across each territory
-  (density is the tuning knob for how relaxed world travel feels).
+- Waypoints: the race starting settlement, every capital, the own housing
+  isle's pad (plus the pads of isles you are allowed to visit, §5.5), and the
+  authored travel hubs reserved by named zones. Exact density is part of the
+  zone catalog; every main progression route must connect to the network.
 - **Unlocked by visiting, per character** (player meta); the fog-of-war
   world map (section on WP12) shows discovered waypoints.
 - Teleporting works **only while standing at a waypoint**
   (waypoint → waypoint), instant and free — travel time is the cost;
   mounts stay relevant.
-- **No waypoints in enemy territory** (not claimable or usable there)
-  and **none in the strait/ocean** (except the housing isles' pads,
-  section 5).
-- Phase 2 extension: **Nether crossings** link mirrored points
-  (x, z) ↔ (x, −z) into enemy territory
-  (TODO-design-nether.md until specced).
+- **No waypoints in enemy territory** (not claimable or usable there) and
+  none in ordinary ocean (except the housing isles' pads, section 5).
+- Phase 2 extension: **Nether crossings** link authored, level-equivalent
+  named-zone portal pairs into enemy territory
+  (`TODO-design-nether.md` until specced).
 
 **Home Stone** (kept as the emergency/return valve):
 
-- Teleport to the **own faction capital only**.
+- Teleport to the character's **own race capital only**.
 - **10 s cast time; taking damage interrupts** — not a combat escape.
 - **60 min cooldown.**
 - `/unstuck` (suicide command) remains the last resort for hard stuck
@@ -798,9 +767,10 @@ Two grantable levels, managed by the owner at the pad:
 
 ## 7. Races
 
-Races are a light-weight layer: no separate starting zones or capitals
-per race; instead race-flavored regions within the faction territory,
-small villages, and perks around vendors/professions.
+Races are a light-weight character layer with strong geographic identity:
+each race has one outer level-1–10 starting zone and settlement, one central
+capital and additional race-flavored zones/settlements within faction
+territory.
 
 | Faction | Race | Region flavor |
 |---------|------|---------------|
@@ -813,16 +783,13 @@ small villages, and perks around vendors/professions.
 
 (Own names/flavor later — no 1:1 Blizzard copies.)
 
-- 3 races per faction = 3 biome regions per territory (satisfies the "≥2
-  biomes per territory" mapgen requirement). The compass layout is FIXED
-  per faction (e.g. Accord: dwarves always west) — only region borders
-  and coastlines are noise-randomized (section 1).
-- **Each race region holds its race village inside the safe core** (the
-  core is x-elongated exactly so the village belt fits, section 1); from
-  its village outward through its band to its coast, every race region
-  spans nearly the full progression — a player can level mostly inside
-  their race's flavor region; changing biomes is an invitation, not a
-  must.
+- The authored zone graph fixes every race's approximate compass position,
+  starting zone, capital and cultural routes. Seed variation may jitter local
+  borders but never move or exchange them.
+- The two factions receive equivalent access to all level/material bands, but
+  race geography is not required to be a geometric mirror. A character begins
+  in its race's outer starting settlement and reaches its central capital
+  through the safe early-level roads.
 - Race choice at character creation (after faction, before class), stored
   in player meta. Visuals (skins) can come later.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
@@ -855,62 +822,52 @@ small villages, and perks around vendors/professions.
 - **No class restrictions per race in the MVP** (only 3 classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.
-- Small race villages in the race regions (traders, flavor, later
-  race-specific job trainers) — content for WP13.
+- Small race villages in the named race zones (traders, flavor, later
+  race-specific job trainers) — content for WP13 after WP40 fixes their slots.
 
 ## 8. Nature biomes (shared wilderness)
 
-Decided 2026-08-06 (ring model); the full biome/mob catalog is being
-specced in `biomes_mobs.md` (implementation spec for WP18 mapgen + WP6 mob
-rosters).
+The full biome/mob inventory lives in `biomes_mobs.md`; WP40 assigns that
+inventory to named-zone palettes without changing its cross-faction material
+symmetry.
 
 - Nature biomes are **unsettled** (no faction NPCs except passing
   patrols), exist on **both continents with identical base drops** (base
   recipes work everywhere), and are the designated **quest wilderness**
   ("go into the adjacent jungle and kill a snake").
-- Placement follows the difficulty rings: each race band's outer part IS
-  its nature variant (dwarven pine hills → high crags; elven forest →
-  deep forest; troll jungle edge → deep jungle …). Difficulty and biome
-  reinforce each other: jungle/high mountains are high-level BY
-  POSITION. **Since 2026-08-08 no nature biome is registered inside the
-  carve box** (§1/§3): wild patches start outside |x| ≤ 800,
-  600 ≤ |z| ≤ 1200, not "anywhere, thinning inward".
-- Working level bands (final in the biome TODO): coast/beach 5–25,
-  deep forest 10–30, swamp 25–40, jungle 35–55, high mountains 40–60.
+- Placement follows each named zone's fixed allowed-biome list. Every zone may
+  contain several biomes, but no biome outside its list may appear there.
+  Difficulty and biome still reinforce each other: high mountains and the
+  dragon endpoints are high-level because their named zones say so, not
+  because a global ring happened to reach them.
 - **Nature mobs are aggressive on sight against players AND NPCs**
   (patrols visibly fight wolves — free world "life").
-- **Mob density is deliberately high**: target ~1 visible mob per
-  15–20 m of travel in wilderness rings (per-biome spawn parameters in
-  the biome TODO; the WP6 pathfinding/performance pass is the blocker
-  for this density).
+- **Mob density is deliberately high**: target ~1 visible mob per 15–20 m of
+  travel in wilderness zones. WP40 must re-derive every `biome × named zone`
+  spawn cell before replacing the old ring vocabulary.
 
 ## 9. Settlements & world life
 
-POI budget **per race band** (deterministic anchors + patch-driven
-extras, WP13/WP18):
+POI budgets are authored **per named zone**. Every faction receives an
+equivalent total and equivalent progression access, but the positions and
+local compositions need not mirror.
 
-- 1 **race capital** in the safe core (section 3) — spawn, trainers,
-  traders, waypoint; the central band's capital is the faction seat.
-- **Race-biome patches across the band** (section 8, catalog: biomes_mobs.md): high
-  chance of a small village/settlement with NPCs per patch, lower
-  chance of a military outpost — settlements thin out and level up
-  with the rings.
-- 1 **flavor camp** in the inner ring (e.g. a race-owned miners' camp:
-  small building, chests, 2–3 NPCs; doubles as the mining-zone anchor
-  of section 4).
-- 1 **military outpost per ring** as the guaranteed minimum — four per
-  band, 24 in the world, at the deterministic anchors of section 4
-  (patch outposts come on top with WP13).
-- 1 **apex lair** in the outer ring (section 4b, staged).
+- 1 safe outer starting settlement per race (six total).
+- 1 central race capital and king per race (six total).
+- Authored village, flavor-camp, mining-camp, outpost, patrol and quest slots
+  appropriate to each zone's identity and level.
+- Dedicated fort, camp and clash-point slots in contested war-front zones.
+- Dragon lairs only at the contested level-60 ocean endpoints (§4b).
 
-Life measures (cheap on a voxel budget): named NPCs with one-liner
-barks, visible patrols between the outposts that really fight nature
-mobs on the way, light/smoke details, a quest board per village. Guards
-and patrols fight **monsters and enemy players only** — NPC-vs-NPC is
-off (`attack_npcs = false`, section 4), so the "free world life" is
-guards versus wildlife, never a faction brawl starting itself.
-**NPC and guard levels always match the surrounding wilderness**
-(`guard_level_at` reflects the local ring).
+WP18/WP6 currently provide 24 ring-derived outpost anchors and 12 bandit
+camps. These stay live until WP40 proves and installs the replacement zone
+budget; WP13 then turns the reserved slots into real structures.
+
+Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
+visible patrols, light/smoke details and a quest board per village. Ordinary
+guards fight monsters and eligible enemy players; only dedicated war-front
+units fight opposing faction NPCs. NPC and guard levels match the named zone
+except for the fixed level-60 capital defense.
 
 **Drop rule (anti-litter, decided 2026-08-06)**: mobs and NPCs drop
 loot ONLY when a player was involved — details in combat_stats.md §3

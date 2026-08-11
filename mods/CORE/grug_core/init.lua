@@ -673,8 +673,9 @@ end
 --
 -- Everything else is DECIDABLE, deliberately, because deciding beats
 -- deadlocking (that is what WP18 got wrong):
---   * a column with no ground anywhere in [PROBE_BOTTOM, PROBE_TOP] — an
---     ocean-floor capital, TODO-design-capitals §1 — contributes PROBE_BOTTOM.
+--   * a column with no ground anywhere in [PROBE_BOTTOM, PROBE_TOP] — the
+--     legacy ocean-floor-capital case superseded by the authored envelopes in
+--     docs/design/world_zones.md §12 — contributes PROBE_BOTTOM.
 --     That is not a guess: the surface is then BELOW PROBE_BOTTOM, and
 --     set_camp_platform_y clamps every value below CAMP_PLATFORM_Y to
 --     CAMP_PLATFORM_Y, so every possible true height maps to the same answer.
@@ -682,7 +683,7 @@ end
 --     platform and a session-dependent fallback.
 --   * a column whose ground reaches PROBE_TOP contributes PROBE_TOP, which
 --     clamps to CAMP_PLATFORM_MAX_Y. Logged, because a capital inside a
---     mountain is a design problem (TODO-design-capitals §1-3), not a
+--     mountain is a violation of docs/design/world_zones.md §12, not a
 --     measurement problem.
 -- Every column therefore contributes exactly one sample and the median is a
 -- true median of the footprint.

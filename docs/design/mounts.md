@@ -5,7 +5,7 @@ built yet**: this file is the spec a later work package implements, not
 a description of shipped behaviour. It exists so that the WP can be cut
 without re-opening the design.
 
-Neighbouring rules: the war-coast funnel `world.md` §1, travel and
+Neighbouring rules: the named-zone faction front `world_zones.md`, travel and
 waypoints `world.md` §6, ocean zones
 `world.md` §2b, housing isles `world.md` §5, the four mastery tiers
 `items_crafting.md` §2.1, universal skills `professions.md` §1, the mob
@@ -257,9 +257,9 @@ separate concern of it.
 
 - **Land mounts are allowed everywhere**, enemy territory included. A
   rider on a horse still walks the ground, still meets whatever
-  `guard_level_at` has put on it (`world.md` §1) and still reaches the
-  enemy continent by crossing the strait. Nothing about a land mount
-  routes around the funnel, so nothing about it needs a rule.
+  `guard_level_at` has put on it (`world.md` §1), and still has to use an
+  authored land connection or another physical route. Nothing about a land
+  mount bypasses terrain, so nothing about it needs a rule.
 - **Flying mounts are banned in enemy territory.** Two halves, both
   binding:
   - **A flying mount cannot be summoned there.** The mount action is
@@ -270,55 +270,38 @@ separate concern of it.
     a 10-second grace**, warned for the whole window, exactly as in
     §4.1. Turning back cancels it; letting it run out sets the rider
     down where they are — on enemy ground, inside the enemy's guard
-    field, on foot. **The 10 seconds are checked against the map, not
-    just borrowed**: at 8 nodes/s a Master flyer covers 80 nodes in
-    them, and the war coast is a ~200-node band (z ≈ ±100…±300,
-    `world.md` §1) — so the grace always expires *inside* the war coast
-    and never carries a rider past it into the hinterland. The window is
-    long enough to be a warning and too short to be a delivery.
+    field, on foot. WP40 must validate this 80-node maximum travel against
+    every authored border approach; no narrow zone or boundary may turn the
+    grace period into delivery past the intended defenders.
 - The two **land** tiers are untouched by this rule, and the two flying
   tiers (Expert, Master — §1.1) are untouched by it at home.
 
-**Why the ban exists.** `world.md` §1 funnels every invasion through the
-strait onto the enemy's **war coast**: a band capped at levels 20–30,
-carrying the outposts, the border guards and the first PvP quests, and
-it is the one place the design wants faction contact to happen. A flying
-mount is the first system in the game that could ignore it. The strait
-is 200 nodes wide (`world.md` §1) and a Master mount does 8 nodes/s
-(§1.1), so the crossing takes about **25 seconds** — and the "Exhausted"
-rule of §4.1 does **not** fire on the way: `open_sea_at` measures
-distance from the two continent rectangles, and the strait at z = 0 lies
-*between* them, deep inside the coastal band. Without the border rule a
-Master rider therefore crosses unopposed and lands anywhere on the enemy
-continent they like. The war coast would stop being a funnel and become
-a formality, and `world.md` §6's "no waypoints in enemy territory" —
-written to deny exactly this — would be bypassed by a mount instead of
-by a teleport.
+**Why the ban exists.** `world_zones.md` makes the authored land connections
+the places where faction contact, defenders and PvP objectives meet. A flying
+mount is the first travel system that could ignore the roads, passes, walls and
+approach terrain that make those fronts work. Without the border rule a Master
+rider could cross a coast or mountain boundary and land beyond the intended
+defence instead of engaging with it. `world.md` §6's ban on enemy-territory
+waypoints closes the same bypass for teleportation.
 
-**The mechanism is `grug_core.territory_at(pos)`, never a hand-picked
-coordinate** (`mods/CORE/grug_core/init.lua:586-596`). It returns
-`"accord"`, `"throng"` or `"ocean"`, and the rule is a single
-comparison: flight is refused wherever `territory_at(pos)` equals the
-**opposing** id of the rider's own faction
+**The mechanism is the central territory/zone lookup, never a hand-picked
+coordinate.** In the shipped WP18 map `grug_core.territory_at(pos)` returns
+`"accord"`, `"throng"` or `"ocean"`; WP40 replaces the rectangular geometry
+behind that answer without changing the ownership question. Flight is refused
+wherever the lookup equals the **opposing** id of the rider's own faction
 (`grug_factions.get_faction(player)`,
 `mods/PLAYER/grug_factions/init.lua:20-26`; the opposing id from
-`grug_core.opposing_faction`, `grug_core/init.lua:576-578`). This is the
-same derived-geometry discipline §4.1 states for `open_sea_at`: a
-literal like "z > 0 is enemy ground" is wrong the moment the world size
-constants change, and `territory_at` hangs off exactly those constants
-(`grug_core/init.lua:13-15`). A character without a faction cannot have
-bought a mount, so the nil case needs no rule of its own.
+`grug_core.opposing_faction`, `grug_core/init.lua:576-578`). This is the same
+derived-geometry discipline §4.1 states for `open_sea_at`: literal coordinates
+are invalid once the authored zone graph replaces WP18. A character without a
+faction cannot have bought a mount, so the nil case needs no rule of its own.
 
-**Over water nothing changes.** `territory_at` answers `"ocean"` for the
-strait, the coastal ocean and the open sea alike — none of them is
-anybody's territory, so the border rule is simply silent there. Flight
-over the strait and the open ocean stays governed by §4.1's Exhausted
-rule and by nothing else; **the border rule takes over on landfall**,
-the moment `territory_at` first answers the enemy's id. Read along a
-flight path the three rules are one system with no gap and no overlap:
-own land and coastal water are free, open sea exhausts you, an isle
-refuses you, enemy land grounds you — and every hand-over sits on a
-boundary `grug_core` already draws.
+**Over water nothing changes.** Ocean is not faction-owned, so the border rule
+is silent there; §4.1's Exhausted rule governs open sea. The enemy-territory
+rule takes over on landfall. Read along a flight path the three rules remain
+one system: own land and coastal water are free, open sea exhausts you, an isle
+refuses you, enemy land grounds you. WP40 must re-prove that these derived
+boundaries meet without a gap after the old strait geometry is removed.
 
 ## 5. Reference implementations & licences
 

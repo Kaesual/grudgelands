@@ -1,0 +1,647 @@
+# Named World Zones & PvP Geography
+
+Decided 2026-08-10; complete named-zone pass 2026-08-11. This document supersedes the old radial
+"safe core + war coast" surface layout in `world.md` and
+`biomes_mobs.md`. The shipped WP18/WP36 map still uses that old layout;
+WP40 replaces it with the complete catalog and contracts below.
+
+## 1. Authored macro-map, procedural local detail
+
+- **Kragmar remains north and Elandor remains south.** They are distinct
+  faction continents, but they are no longer separated along their whole
+  front by mandatory open water.
+- The continent parts meet through **three strategic contact areas**: a broad
+  central war front and two high-level mountain ends where that front reaches
+  the western and eastern ocean. These are the only normal overland routes
+  between the factions and are designed as active war fronts. The central
+  area must provide several parallel traversable lanes rather than one
+  blockable bridge; ocean still separates the rest of the coastlines.
+- The macro-map is reproducible: every named zone has a stable approximate
+  position, shape, level range, biome palette and fixed neighbors. Zone and
+  coastline boundaries may vary only inside a bounded corridor; world seed
+  noise must never change the adjacency graph or move a landmark into another
+  zone.
+- The two faction sides are **progression and content-budget mirrors, not
+  geometric mirrors**. They receive equivalent access to level bands,
+  materials, PvP fronts, travel services and POI budgets, while their shapes,
+  zone names, biome combinations and landmarks may differ.
+- Each zone definition owns: display name and id, `territory_rule`, exactly one
+  `race_region`, level range, PvP rule, fixed neighbors, authored boundary,
+  allowed biome list, signature terrain/property, mob and gathering palette,
+  and reserved POI slots. `race_region` means cultural/geological provenance;
+  it selects architecture, regional loot and the race-gem slot, but does not
+  make a contested zone safe or politically controlled. `territory_rule`
+  separately controls building and digging. Later quests and post-MVP POIs
+  attach to the stable zone id.
+- Every surface land zone belongs to one of the six race regions. Open sea and
+  housing isles are outside this catalog. No neutral land zone may silently
+  lose the regional material, architecture or quest hooks.
+- A zone may contain several biomes, but its allowed biome list is fixed. A
+  biome outside that list may never win inside the zone.
+
+## 2. Surface progression
+
+- Progression runs from the **outer side furthest from the enemy front** of
+  each continent toward the faction contact front:
+  1. outer race starting zones: levels **1–10**;
+  2. adjacent home zones: levels **11–20**;
+  3. central heartland: levels **21–30** and **31–40**;
+  4. front-facing regions: levels **41–50**, **51–59** and the
+     level-**60** endpoint summits.
+- No level-1–20 or level-21–30 zone is contested. Automatic PvP begins in
+  designated level-31–40 frontier zones. Level-21–30 heartland may show
+  military preparation and lead toward the front, but remains peaceful under
+  the voluntary-tag rules of §4.
+- The level-31–40 bracket is deliberately mixed and mirrored: the Dwarf,
+  Undead, Elf and Troll frontier approaches remain peaceful, while the Human
+  and Orc approaches and the shared central low route are contested. Every
+  level-41+ front zone is contested.
+- Most land where the faction continents meet is level 40–50 or 50–60. A
+  lower-level heartland zone may extend to one contact point to create the
+  first PvP destination without turning the whole front into a mid-level band.
+- Surface mob level comes from the named zone and its authored within-zone
+  progression, with continuous blends at legal neighboring boundaries. The
+  old radial distance from a faction seat is not part of the target model.
+- The existing depth floor remains independent: underground level is the
+  maximum of the local surface-zone level and the depth level from
+  `combat_stats.md`.
+
+## 3. Starting zones and capitals
+
+- Every race has its own **outer level-1–10 starting zone and starting
+  settlement**. New characters start there rather than in a capital. Until
+  local graveyards exist, ordinary respawns return to that race's safe
+  starting settlement.
+- There are **six race capitals**, one for every race and three per faction.
+  Every capital has its own named city zone in the central part of its
+  continent.
+- A capital zone is a peaceful, safe civic hub with **no hostile ambient
+  enemies** and no automatic PvP tag. Its guards and important faction NPCs
+  are level 60. The city itself is not a level-60 hostile leveling area.
+- Each race has its own king, for **six kings total**. The race's capital is
+  that king's seat; the level-30 royal housing-grant quest ends at the
+  character's own race king.
+- A capital is centered inside its city zone and has main roads in all four
+  cardinal directions. Its directional neighbors follow the world
+  progression:
+  - toward the outer starting side: a level-10–20 zone;
+  - laterally along the central faction/capital axis: medium-level heartland;
+  - toward the contested front: high-level territory.
+- Capitals remain protected POIs and major waypoint/service hubs. They are
+  destinations reached from the starting zones, not spawn bubbles.
+- Capital zones are the one non-leveling exception to a single bracket. Their
+  technical surface profile rises smoothly from level 20 at the outer/home
+  road gate through level 25 at the civic centre and lateral gates to level 30
+  at the front-facing gate. This keeps all four approaches continuous; no
+  ambient enemy uses the profile inside the protected city itself.
+
+## 4. PvP zones and voluntary flagging
+
+- PvP state is explicit per player. A player is either **safe** or
+  **PvP-tagged**.
+- Entering a contested zone applies the PvP tag automatically. Leaving the
+  zone does not remove it early.
+- In a peaceful zone, an untagged player cannot receive unprovoked damage from
+  an enemy player and cannot be selected as a valid hostile PvP damage target.
+- An untagged player who voluntarily uses a hostile action against an enemy
+  player is tagged before PvP eligibility and damage are resolved. They are
+  then attackable by every enemy player, including in peaceful zones. The
+  first-hit outcome when both players were safe is still an edge rule, not a
+  licence to bypass the target's safety.
+- A tagged player may attack tagged enemies but may not use their own tag to
+  initiate damage against an untagged player in a peaceful zone.
+- Outside a contested zone, the tag expires after **60 seconds without dealing
+  or receiving PvP damage**. Dealing or receiving PvP damage resets the full
+  timer. A contested zone keeps the tag forced; leaving it starts at least one
+  full 60-second safe-zone tail even if no damage happened inside.
+- Player death clears the tag immediately. The safe outer starting zones plus
+  death cleanup make repeated spawn ganking impossible by rule.
+- Melee, targeted skills, area effects and projectiles all use one central
+  PvP-eligibility rule; no combat path may implement its own geographic
+  exception.
+
+## 5. War-front life
+
+- The land connections are visibly active battlefields: walls, damaged
+  fortresses, siege equipment, burned ground and other war remains form their
+  shared visual layer.
+- Faction NPC battles occur only through dedicated, bounded war-front
+  populations and encounter anchors. Ordinary guards do not globally acquire
+  every NPC.
+- War-front squads have fixed population caps, place-bound respawn slots and
+  authored clash points. They fight the opposing war-front faction, hostile
+  players and dangerous local creatures.
+- The MVP front is strategically static: NPC skirmishes do not permanently
+  capture zones or move the faction boundary. Later quests may trigger local
+  assaults without changing the macro-map.
+- Existing anti-litter rules remain: NPC-versus-NPC and NPC-versus-mob kills
+  produce no loot unless a player was involved.
+
+## 6. Dragon endpoints
+
+- The old plan of one dragon placed separately on each continent is retired.
+- The macro-map has **two** endpoint regions, one where the western end of the
+  shared front reaches the ocean and one at its eastern end. WP23 populates
+  both with an overworld dragon through one shared encounter chassis and two
+  regional variants.
+- Any overworld dragon lair is placed at an **ocean endpoint of the shared
+  faction contact front**, where the two continent parts meet the sea. Both
+  factions receive equivalent overland access to every such lair.
+- Every dragon endpoint is a contested level-60 mountain region with strong
+  level-60 mountain creatures. Its silhouette culminates in a dragon mountain,
+  summit or hoard.
+- An overworld dragon is therefore always a PvP world boss. Reaching and
+  fighting it exposes both factions to each other; it is never a private
+  home-continent boss.
+- Each endpoint reserves an indestructible apex mining camp in the dangerous
+  approach to the lair. It contains all **six race-gem slots** at equal node
+  counts: exactly **12 renewable nodes, two per gem**. Natural veins remain finite; only these protected camp nodes
+  use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
+  catalog supplies the six item/node ids; zone code stores race-gem slots and
+  never hard-codes provisional gem names.
+
+## 7. World frame, scale and authored variation
+
+- World axes stay conventional: west/east is x, Kragmar lies north at positive
+  z, Elandor lies south at negative z, and the shared front is centred on z = 0.
+- The target authored envelope is approximately x = −2600..2600 and
+  z = −3000..3000. Coastlines taper inside that box; it is not a rectangular
+  land claim. Open sea continues outside it.
+- The three capital axes sit approximately at x = −1500 / 0 / 1500. Capital
+  bands sit near z = +1450 in Kragmar and z = −1450 in Elandor; race starts
+  sit near z = +2550 / −2550, and frontier approaches near z = +650 / −650.
+  These are authoring guides, not public coordinate promises.
+
+Orientation schematic; §9, not this table, defines exact adjacency:
+
+| North → south | West | Centre | East |
+|---|---|---|---|
+| Kragmar outer/home | Stillgrave Hollow → Mournfen | Sunscar Flats → Redtusk Savanna | Kapok Cradle → Raincall Basin |
+| Kragmar capitals/heartland | Nhal Veyr / Ossuary Reach | Gor Drazhak / Speargrass Reach | Kezamba / Whispering Reedlands / Totemwater Reach |
+| Kragmar frontier | Blackwind Rise | Bannerbreak Mesa | Thunderroot Wilds |
+| shared contact | Wyrmglass Crown / Gravesalt Escarpment | Broken Causeway / Shattered Line | Skyglass Canopy / Stormscale Summit |
+| Elandor frontier | Stormvault Heights | Ashenward March | Glassroot Wilds |
+| Elandor capitals/heartland | Dur Brannoc / Frostbarrow Shelf | Highcourt / Whitebridge Shire | Lethariel / Lorindor / Moonfall Wood |
+| Elandor home/outer | Copperfell Foothills → Hearthpine Vale | Goldmead Vale → Dawnmere Fields | Starbough Vale → Silverleaf Glades |
+- At the base walk speed of 4 nodes/s, authored roads target 4–6 minutes from
+  a race start to its capital, 5–7 minutes from a capital to the shared front,
+  and 12–16 minutes between the western and eastern capitals. Terrain may add
+  time; the direct road may not exceed these targets by more than 20%.
+- Ordinary zone boundaries may move at most **64 nodes** from their authored
+  base edge, coastlines at most **96**, and a peaceful/contested boundary at
+  most **32**. Boundary noise has a wavelength of at least 256 nodes. A
+  96-node buffer around fixed anchors and road gates has no boundary jitter.
+- No zone core may narrow below 256 nodes and no authored travel corridor below
+  96 nodes. Seed variation may not remove a route, create a new neighbor or
+  cut a POI off from its road.
+- Strategic separators are visible terrain, never invisible walls: western
+  and eastern ocean, two deep bays between the three contact areas, cliff and
+  ravine chains behind those bays, rivers, fortress walls and mountain passes.
+  The central contact has at least three traversable lanes; each endpoint
+  contact has a high pass and a coastal/terrace alternative.
+
+## 8. Zone catalog
+
+Biome percentages are target shares of ordinary land surface after fixed
+roads and structures. A ±5 percentage-point per-zone tolerance is allowed;
+the faction resource audit in §11 is binding. “Settled”, “forest”,
+“mountain”, “savanna”, “jungle”, “swamp” and “war” refer to the existing mob
+families and paired drop tables in `biomes_mobs.md` §3. A palette does not
+automatically enable every gatherable or mob of that biome: the zone's level
+and explicit content palette still gate them.
+
+POI abbreviations:
+
+- **S** = starting settlement, graveyard and waypoint;
+- **C** = capital, king, service hub and waypoint;
+- **V** = mandatory village; **O×n** = n ordinary outpost slots;
+- **B** = one of the two fixed bandit camps for that race;
+- **M** = that race's one peaceful renewable mining camp;
+- **W** = a fixed Mirefolk wetland camp;
+- **K×n** = n dedicated war-front clash anchors;
+- **D/M6** = dragon lair plus the all-six-gem apex mining camp;
+- **R:name** = the migrated named-rare route.
+
+All §8.1 zones use `territory_rule = "accord_home"`; all §8.2 zones use
+`territory_rule = "throng_home"`. This remains true for the internally
+contested Ashenward March and Bannerbreak Mesa. Only §8.3 uses
+`"shared_front"`.
+
+### 8.1 Elandor — Accord
+
+| Stable id | Display name | Race | Level / PvP | Allowed biome share | Identity, content and reserved POIs |
+|---|---|---|---|---|---|
+| `elandor_hearthpine_vale` | Hearthpine Vale | Dwarf | 1–10 peaceful | pine hills 90 / crags 10 | Sheltered pine bowl, warm springs and a novice quarry; settled mobs; **S** |
+| `elandor_copperfell_foothills` | Copperfell Foothills | Dwarf | 11–20 peaceful | pine hills 75 / crags 25 | Copper-stained streams, switchback road and pine terraces; settled mobs; gravemoss; **V, O, B** |
+| `elandor_dur_brannoc` | Dur Brannoc | Dwarf | capital, civic L20–30 profile, peaceful | pine hills 60 / crags 40 | Terraced granite citadel around a forge chasm; no ambient hostiles; **C** |
+| `elandor_frostbarrow_shelf` | Frostbarrow Shelf | Dwarf | 21–30 peaceful | pine hills 55 / crags 40 / swamp 5 | Wind shelf, burial cairns and frozen tarns; mountain mobs, dragonweed; **V, O, M** |
+| `elandor_stormvault_heights` | Stormvault Heights | Dwarf | 31–40 peaceful | crags 75 / snowy crags 25 | Lightning-scarred ridge and a giant natural arch; mountain mobs; **O×2, B, R:Korgan's Bane** |
+| `elandor_dawnmere_fields` | Dawnmere Fields | Human | 1–10 peaceful | meadows 85 / deep forest 5 / swamp 10 | Sunrise fields, ponds and hedgerows; settled mobs; **S** |
+| `elandor_goldmead_vale` | Goldmead Vale | Human | 11–20 peaceful | meadows 65 / deep forest 20 / swamp 15 | River mills, orchards and old farm roads; settled mobs, sunleaf; **V, O, B, R:Grimtusk** |
+| `elandor_highcourt` | Highcourt | Human | capital, civic L20–30 profile, peaceful | meadows 80 / deep forest 20 | Brick-and-white-stone city on a river fork; no ambient hostiles; **C** |
+| `elandor_whitebridge_shire` | Whitebridge Shire | Human | 21–30 peaceful | meadows 50 / deep forest 35 / swamp 15 | Old arched bridge, oak copses and market villages; settled/forest mobs, marshbloom; **V, O, M, W** |
+| `elandor_ashenward_march` | Ashenward March | Human | 31–40 **contested** | deep forest 50 / meadows 30 / swamp 20 | Burned woodland, trenches and the first active frontier; forest/war mobs; **O×2, B, K×2, R:Old Whitefang** |
+| `elandor_silverleaf_glades` | Silverleaf Glades | Elf | 1–10 peaceful | elf forest 95 / deep forest 5 | Pale trees, clear streams and circular glades; settled mobs; **S** |
+| `elandor_starbough_vale` | Starbough Vale | Elf | 11–20 peaceful | elf forest 80 / deep forest 20 | Terraced silverwood slopes and early canopy paths; settled mobs, sunleaf; **V, O, B** |
+| `elandor_lethariel` | Lethariel | Elf | capital, civic L20–30 profile, peaceful | elf forest 90 / deep forest 10 | Treehouse crown around a lake and white-marble roots; no ambient hostiles; **C** |
+| `elandor_lorindor` | Lorindor | Elf | 21–30 peaceful | elf forest 50 / deep forest 30 / swamp 20 | Small woodland state southwest of Lethariel, remembered for pale stags, silverwood orchards, white flowers and marsh-fed berry terraces; **V, O, M, W** |
+| `elandor_moonfall_wood` | Moonfall Wood | Elf | 21–30 peaceful | elf forest 40 / deep forest 45 / swamp 15 | Crescent lake beneath a fallen great silverwood; forest mobs; **O** |
+| `elandor_glassroot_wilds` | Glassroot Wilds | Elf | 31–40 peaceful | deep forest 45 / jungle fringe 35 / elf forest 10 / swamp 10 | Huge roots gripping glassy pale cliffs; forest and lower-jungle mobs; **O, B** |
+
+### 8.2 Kragmar — Throng
+
+| Stable id | Display name | Race | Level / PvP | Allowed biome share | Identity, content and reserved POIs |
+|---|---|---|---|---|---|
+| `kragmar_stillgrave_hollow` | Stillgrave Hollow | Undead | 1–10 peaceful | blight 90 / bone forest 5 / swamp 5 | Quiet cemetery basin and sheltered gravewood; settled mobs; **S** |
+| `kragmar_mournfen` | Mournfen | Undead | 11–20 peaceful | blight 60 / bone forest 10 / swamp 30 | Drowned grave roads, black reeds and low mist; settled/swamp mobs, gravemoss; **V, O, B, W** |
+| `kragmar_nhal_veyr` | Nhal Veyr | Undead | capital, civic L20–30 profile, peaceful | blight 75 / bone forest 25 | Black-stone necropolis on stepped terraces; no ambient hostiles; **C** |
+| `kragmar_ossuary_reach` | Ossuary Reach | Undead | 21–30 peaceful | blight 40 / bone forest 50 / swamp 10 | Fossil ridges and gravewood copses; forest mobs, dragonweed; **V, O, M** |
+| `kragmar_blackwind_rise` | Blackwind Rise | Undead | 31–40 peaceful | bone forest 65 / blight 30 / swamp 5 | Ash-wind upland crossed by natural bone arches; forest mobs; **O×2, B, R:Marrowclaw** |
+| `kragmar_sunscar_flats` | Sunscar Flats | Orc | 1–10 peaceful | savanna 95 / badlands 5 | Dry golden grass, shade rocks and shallow waterholes; settled mobs; **S** |
+| `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; **V, O, B, R:Ashmaw** |
+| `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
+| `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; **V, O, M** |
+| `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, dragonweed; **O×2, B, K×2, R:Dustwing** |
+| `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; **S** |
+| `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools and waterfall stairs; settled/jungle-edge mobs, sunleaf; **V, O, B** |
+| `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
+| `kragmar_whispering_reedlands` | Whispering Reedlands | Troll | 21–30 peaceful | jungle edge 45 / deep jungle 25 / swamp 30 | Flooded reed maze crossed by raised totem paths; jungle-edge/swamp mobs, marshbloom; **V, O, M, W** |
+| `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river delta marked by colossal carved totems; jungle-edge/swamp mobs; **O** |
+| `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 peaceful | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; **O, B** |
+
+### 8.3 Shared contested front
+
+All six zones below have one cultural `race_region`, `territory_rule =
+"shared_front"` and automatic-PvP status `contested`. Travel, exposed-resource
+mining and encounter eligibility are equal for both factions. Neither faction
+may freely reshape or build on this strategic ground; §11 defines the narrow
+resource-node exception.
+
+| Stable id | Display name | Race region | Level | Allowed biome share | Identity, content and reserved POIs |
+|---|---|---|---|---|---|
+| `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Ring mountain descending into the western sea, crystalline fault terraces and dragon hoard; mountain/war mobs; **D/M6, K×1** |
+| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs, stormkelp; **K×2** |
+| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river: raised causeway, ford and aqueduct path form three routes; war mobs; **K×3, R:Captain Bonerattle** |
+| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; **K×3, R:Captain Bonerattle** |
+| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–59 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
+| `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Jungle-clad volcanic mountain at the eastern sea, thunder terraces and dragon hoard; high-jungle/war mobs, stormkelp; **D/M6, K×1, R:Emerald Coil** |
+
+## 9. Fixed adjacency graph
+
+The graph is undirected. Commas mean direct zone neighbors; no omitted pair may
+become adjacent through seed variation.
+
+### 9.1 Accord internal graph
+
+- Dwarf spine: Hearthpine Vale — Copperfell Foothills — Dur Brannoc —
+  Stormvault Heights.
+- Human spine: Dawnmere Fields — Goldmead Vale — Highcourt —
+  Ashenward March.
+- Elf spine: Silverleaf Glades — Starbough Vale — Lethariel —
+  Glassroot Wilds.
+- Capital axis, west to east: Frostbarrow Shelf — Dur Brannoc —
+  Whitebridge Shire — Highcourt — Lorindor — Lethariel — Moonfall Wood.
+- Heartland/front cross-links: Frostbarrow Shelf — Stormvault Heights;
+  Whitebridge Shire — Ashenward March; Lorindor — Glassroot Wilds;
+  Moonfall Wood — Glassroot Wilds; Stormvault Heights — Ashenward March —
+  Glassroot Wilds.
+
+### 9.2 Throng internal graph
+
+- Undead spine: Stillgrave Hollow — Mournfen — Nhal Veyr —
+  Blackwind Rise.
+- Orc spine: Sunscar Flats — Redtusk Savanna — Gor Drazhak —
+  Bannerbreak Mesa.
+- Troll spine: Kapok Cradle — Raincall Basin — Kezamba —
+  Thunderroot Wilds.
+- Capital axis, west to east: Ossuary Reach — Nhal Veyr —
+  Speargrass Reach — Gor Drazhak — Whispering Reedlands — Kezamba —
+  Totemwater Reach.
+- Heartland/front cross-links: Ossuary Reach — Blackwind Rise;
+  Speargrass Reach — Bannerbreak Mesa; Whispering Reedlands —
+  Thunderroot Wilds; Totemwater Reach — Thunderroot Wilds;
+  Blackwind Rise — Bannerbreak Mesa — Thunderroot Wilds.
+
+### 9.3 Three contact areas
+
+- West: both Stormvault Heights and Blackwind Rise neighbor both
+  The Wyrmglass Crown and Gravesalt Escarpment; the two contested west zones
+  neighbor each other.
+- Centre: both Ashenward March and Bannerbreak Mesa neighbor both
+  The Broken Causeway and The Shattered Line; the two shared central zones
+  neighbor each other.
+- East: both Glassroot Wilds and Thunderroot Wilds neighbor both
+  The Skyglass Canopy and Stormscale Summit; the two contested east zones
+  neighbor each other.
+
+This gives every contact area a loop instead of a single bridge. The central
+four-zone mesh is the primary mass-PvP space; the endpoint loops are higher,
+more dangerous alternatives.
+
+## 10. Race-region character
+
+| Race region | Geographic language | Architecture/build set | Core mob/loot language |
+|---|---|---|---|
+| Dwarf | pine shelves, granite, snow ridges, quarries and lightning scars | pine, stonebrick, carved granite, terraces and vault mouths | mountain prey/predators, golems, feathers, heavy leather, gravemoss/dragonweed |
+| Human | fields, oak woods, river forks, marsh roads and old masonry | oak, brick, cobble, thatch, bridges and walled market towns | boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
+| Elf | silverwood, pale cliffs, lakes, canopy paths and warm cloud forest | silverwood, white stone, tree platforms and light bridges | forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
+| Undead | blight basins, gravewood, bone ridges, salt cliffs and drowned roads | gravewood, cursed cobble, bone and black terraces | undead/forest families, cloth, leather, gravemoss/dragonweed |
+| Orc | ochre grass, dry rivers, red mesas, badland cliffs and siege earthworks | acacia, adobe, basalt and bone palisades | savanna/mountain families, feathers, leather, golem materials and dragonweed |
+| Troll | kapok basins, rivers, reed mazes, storm jungle and volcanic terraces | junglewood, mossycobble, stilt paths and carved totems | jungle/swamp families, silk, scaled hide, marshbloom and high-tier lotus |
+
+Race visuals may use different trophies and building materials, while the
+paired base drop tables remain economically equivalent.
+
+## 11. Resource, loot and POI budgets
+
+- Each race has exactly one safe start, one home zone, one capital, at least
+  one level-21–30 heartland and one level-31–40 frontier; exactly one
+  shared-front zone is culturally assigned to its `race_region`. Elf and Troll
+  each have a second heartland; their zones are correspondingly smaller so
+  this is not extra resource volume.
+- Each race receives exactly **two mandatory villages, four ordinary outpost
+  slots, two bandit camps and one peaceful mining camp**. Each faction
+  therefore retains WP6's 12 outposts and 6 bandit camps.
+- For every race, the first bandit slot is in its 11–20 home zone and supplies
+  linen cloth; the second is in its 31–40 frontier and supplies heavy cloth.
+  This fixed one-to-one layout keeps Tailoring access equal despite different
+  geography.
+- Fixed Mirefolk camps are Whitebridge Shire and Lorindor for the Accord,
+  Mournfen and Whispering Reedlands for the Throng.
+- Named rares migrate as listed in §8. Their level is clamped into the owning
+  zone's band; no old ring coordinate survives.
+- Every non-city zone exposes its race's signature-gem slot only where the
+  material catalog allows that gem's tier. The total expected natural vein
+  count plus the one ordinary camp budget is equal for all six races within
+  **±5%**, normalized by accessible land volume rather than number of zones.
+- Both apex camps contain the same count of every one of the six race gems.
+  Endpoint deposits are a shared bonus and do not compensate a deficient home
+  budget.
+- A shared-front zone has no home-faction construction owner. Both factions
+  may dig explicitly registered ore/resource nodes there, including exposed
+  natural deposits and the 12 apex-camp nodes, but may not dig ordinary
+  terrain or place nodes. Camp walls, roads and war structures remain
+  protected. This makes the endpoint a real shared mining destination without
+  turning the front into a player-built fortification or griefing field.
+- Ashenward March and Bannerbreak Mesa remain Accord and Throng territory
+  respectively even though their PvP rule is contested: the home faction keeps
+  its normal terrain rights and the enemy faction does not. `race_region`,
+  `territory_rule` and `pvp_rule` are three independent registry fields.
+- For paired base resources—leather grades, cloth, silk, feathers, healing
+  herbs, spices and alchemy reagents—the expected gather/drop opportunity per
+  faction must be within **±10%** over the reachable zone area of each level
+  bracket. Different families may carry the same paired table.
+- T1 gravemoss is supplied by Copperfell Foothills / Mournfen; T2 dragonweed
+  by the Dwarf/forest side and Undead/Orc wilds; T3 crimson lotus only by the
+  level-51–59 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
+  uses the four fixed wetland-source zones; stormkelp uses both endpoint coasts
+  and both high coastal approaches.
+- Zone level controls gear tier. A visual biome patch never authorizes a mob,
+  drop or gathering tier above the zone's content palette.
+
+## 12. Capital and start envelopes
+
+- Every capital zone has a 512×512 fixed build envelope and a terrain blend
+  ring extending to 704×704. The protected POI is the final build envelope
+  plus the existing 10-node surround. Capital zone lookup reports the smooth
+  directional civic profile from §3: level 20 at the home gate, 25 at the
+  centre and lateral gates, and 30 at the front gate. Elandor rises northward;
+  Kragmar rises southward. Hostile ambient spawning is disabled and level-60
+  guards remain explicit.
+- A fixed 96×96 civic core contains the king's hall, waypoint and principal
+  service court. Four 32-node-wide no-jitter road gates leave north/east/south/
+  west. The road itself is authored by WP13 inside that reserved corridor.
+
+| Capital | Outer/home gate | Front gate | West gate | East gate |
+|---|---|---|---|---|
+| Dur Brannoc | south → Copperfell Foothills | north → Stormvault Heights | Frostbarrow Shelf | Whitebridge Shire |
+| Highcourt | south → Goldmead Vale | north → Ashenward March | Whitebridge Shire | Lorindor |
+| Lethariel | south → Starbough Vale | north → Glassroot Wilds | Lorindor | Moonfall Wood |
+| Nhal Veyr | north → Mournfen | south → Blackwind Rise | Ossuary Reach | Speargrass Reach |
+| Gor Drazhak | north → Redtusk Savanna | south → Bannerbreak Mesa | Speargrass Reach | Whispering Reedlands |
+| Kezamba | north → Raincall Basin | south → Thunderroot Wilds | Whispering Reedlands | Totemwater Reach |
+- Four quadrant slots hold Market/Professions, Martial/Garrison,
+  Lore/Spiritual and Residential/Cultural districts. The four roles are fixed;
+  the world seed may permute their quadrants and choose a building variant.
+- Terrain forms differ by race: Dur Brannoc is a granite terrace, Highcourt a
+  gentle river plateau, Lethariel a terraced grove, Nhal Veyr a raised
+  necropolis, Gor Drazhak a mesa shelf and Kezamba a drained/stilted cenote
+  terrace. None is allowed to depend on accidental v7 land.
+- The six kings are equal civic rulers and invulnerable essential quest NPCs
+  in the MVP; capital raids are later scope. No capital is a superior faction
+  seat. Shared faction services use the same service definition in all three
+  capitals; race services and the king remain local.
+- Each starting settlement has a 128×128 build envelope, a blend ring out to
+  256×256, protected spawn/waypoint/graveyard and a guaranteed road to the
+  home zone. The first mandatory road beat reaches the race capital at level
+  10 and unlocks its waypoint and civic-service introduction.
+
+## 13. Mapgen and public zone contract
+
+- WP40 keeps v7 for base relief, caves, ores and dungeons, then applies one
+  authoritative authored land/zone/surface pass. A fully custom terrain
+  generator is rejected.
+- Engine climate competition is not authoritative inside the authored world.
+  The surface pass chooses a logical biome only from the owning zone's
+  weighted palette, rewrites the top/filler column where needed and places the
+  matching decorations. Gameplay consumers use the logical zone-biome API,
+  not `core.get_biome_data`.
+- The land pass may carve ocean or fill an authored land connection, but must
+  preserve caves, registered depth strata, ore veins and dungeons below the
+  rewritten surface shell. Capital/start envelopes own their terrain after
+  the general pass.
+- Every ordinary zone stores authored surface-level control points at its core
+  and road gates. Home-facing gates use the low end of the zone bracket,
+  front-facing gates the high end and lateral gates the neighboring
+  progression value; the interior field interpolates smoothly and clamps to
+  the zone's published range. Neighboring ordinary gates share a value within
+  two levels. The only exceptions are the visibly gated western/eastern
+  endgame jumps in §14. A level-60 endpoint is flat 60 before the independent
+  depth floor.
+- `grug_zones` owns the registry and exposes at least:
+  `get(id)`, `at(pos)`, `id_at(x, z)`, `biome_at(pos)`,
+  `race_region_at(pos)`, `faction_at(pos)`, `territory_rule_at(pos)`,
+  `pvp_rule_at(pos)`, `surface_level_at(pos)`, `neighbors(id)` and
+  `anchor(zone_id, slot_id)`. Returned definitions are caller-owned copies
+  or read-only by convention; consumers may not mutate the registry.
+- `faction_at(pos)` returns `"accord"`, `"throng"` or `nil` for shared/open
+  ground; it never derives ownership from `race_region`. `territory_rule_at`
+  returns the complete construction/mining policy, including the shared-front
+  resource-node exception.
+- `grug_core.difficulty_at`, `mob_level_at`, `guard_level_at`,
+  territory protection and open-sea checks become compatibility consumers of
+  that API. The independent depth floor remains
+  `max(surface_level_at(pos), depth_level_at(y))`.
+- Zone lookup uses a prebuilt spatial grid plus exact boundary resolution;
+  hot paths may not scan all 38 definitions. Boundary variation is derived
+  from the full world seed without converting an unsafe 64-bit seed through a
+  Lua number.
+- All fixed placements resolve through zone anchor ids. No dependent WP may
+  retain a raw WP18 ring name or coordinate.
+- Anchor slot ids are stable data: `start`, `capital`, `village_<n>`,
+  `outpost_<n>`, `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
+  `apex_mine` and `rare_<stable_rare_id>`. The §8 abbreviations determine
+  which slots exist; absent slots return `nil` rather than being synthesized
+  by a consumer.
+
+## 14. WP40 acceptance gate
+
+- Registry: exactly 38 unique zones, every land zone has one valid race
+  region, the undirected graph equals §9, and all six start→capital paths are
+  peaceful.
+- Geography: all three contact loops exist on every tested seed; no zone
+  vanishes, no fixed anchor changes zone, no route neck violates §7 and both
+  endpoint approach distances differ by at most 10% between factions.
+- Level/PvP: every ordinary progression and capital road-gate transition is
+  continuous within 2 mob levels. The optional western/eastern high-front
+  gates are deliberate endgame jumps from 31–40 into 51–60; each requires a
+  visible fortified threshold, destination-level map label, contested-zone
+  warning and unobstructed turnaround before hostile population. The only
+  31–40 automatic-PvP corridor is the mirrored central set in §8, and every
+  41+ front zone is contested.
+- Biomes/content: no logical biome, mob family or gathering node appears
+  outside its zone palette. Every `logical biome × zone` cell has at least
+  one valid ambient spawn or is explicitly marked civic/no-hostiles.
+- Economy: the §11 race-gem, faction-material, POI, rare and loot-source
+  audits pass over at least 32 representative seeds.
+- Territory: `race_region` never grants construction rights; shared-front
+  ordinary terrain is immutable, both factions can dig only registered
+  resource nodes there, and all 24 apex gem slots are reachable and diggable
+  with their required tool while every camp wall remains protected.
+- Migration: starts/respawns, 24 outposts, 12 bandit camps, rare routes,
+  patrols, camps, surface mobs, gathering slots, waypoint/map/boss anchors,
+  territory checks and mount boundaries all use zone ids. Only then may the
+  retired `core/inner/outer/coast/war_coast` fields and full-water strait be
+  deleted.
+- Mapgen: fresh-world-only; Lua 5.1 syntax, deterministic registry tests,
+  headless generation samples, sunlight/content-ignore checks and a
+  representative chunk-time comparison against WP18 are mandatory before the
+  user's fresh-world GUI test.
+
+## 15. Exact PvP eligibility contract (WP41)
+
+### 15.1 Peaceful-zone transaction
+
+“Hostile attempt” means a server-validated contact with an enemy player or a
+protected enemy-faction combatant/object. Clicking air, missing the
+authoritative ray, a filtered ally or an invalid/out-of-range target does not
+tag anybody.
+
+| Attacker before | Player target before | Peaceful-zone result |
+|---|---|---|
+| safe | safe | attacker becomes tagged; this first effect is blocked and target stays safe |
+| safe | tagged | attacker becomes tagged before resolution; effect may land |
+| tagged | safe | effect is blocked; target stays safe |
+| tagged | tagged | effect may land |
+
+- A valid blocked swing consumes its weapon cadence as a combat miss but pays
+  no landed-hit proc, rage or on-hit effect. A launched cast/projectile keeps
+  its ordinary launch cost; target-dependent settlement effects do not run.
+- Entering or already standing in contested ground forces both enemy players
+  tagged before the same table is evaluated.
+- A hostile action against an enemy capital/outpost guard, war-front unit or
+  protected faction combat object tags the player before PvE/NPC damage is
+  resolved. Ordinary hostile creatures do not affect PvP state.
+
+### 15.2 Support and timer refresh
+
+- A heal that restores HP, a shield that adds absorb, a cleanse that removes a
+  harmful PvP effect, or a combat-relevant buff applied to a tagged ally tags
+  the helper and refreshes both players. A failed, rejected or zero-effect
+  support action does neither.
+- Effective periodic support ticks repeat that contact while their source is
+  online and attributable. Merely standing near a tagged player has no effect.
+- PvP damage refreshes both participants only when accepted damage lowers HP
+  or consumes at least one point of absorb. Miss, dodge, immunity, eligibility
+  refusal and zero post-mitigation damage do not refresh the timer.
+- Combat with a protected enemy-faction combatant refreshes the involved
+  player's timer on the same HP/absorb rule. NPCs themselves have no player tag.
+- Outside contested ground, the displayed expiry is 60 seconds after the last
+  qualifying hostile/support contact. Leaving contested ground sets it to at
+  least `now + 60` even if no fight occurred.
+
+### 15.3 AoE, projectiles and boundaries
+
+- Eligibility is resolved at the instant each target would receive an effect,
+  using both current positions, current zone lookups and a snapshot of player
+  states for that resolution. The launch zone does not grant future damage.
+- Direct projectiles use their owner as attacker. Collision with a safe enemy
+  in peaceful ground tags the owner but does not damage that first safe target.
+- A one-shot AoE snapshots all targets before tagging its owner, tags the owner
+  once if it made a valid hostile contact, then resolves every target from the
+  same snapshot so iteration order cannot change who is protected.
+- A persistent area remembers the targets eligible at creation. A safe enemy
+  who deliberately walks into an already active field is ignored and cannot
+  force the remote owner into PvP. Newly entering tagged enemies may be
+  affected if the owner is tagged; each real HP/absorb result refreshes normally.
+- The central eligibility function rechecks zone state synchronously, so a
+  high-speed crossing or teleport cannot fit between the movement poll and a
+  combat callback.
+
+### 15.4 Lifecycle, visibility and enemy visitors
+
+- PvP expiry is stored as an absolute timestamp in player meta. Disconnect
+  never clears it; offline wall time counts down. Reconnecting in a contested
+  zone forces the tag again.
+- Death clears the tag and every attributable hostile player DoT/field that
+  could immediately re-tag the respawned character. Respawning inside
+  contested ground would force it again, although the MVP respawns are safe.
+- HUD: tagged players see a crossed-swords status and `PvP 0:SS`; forced
+  contested state reads `PvP — CONTESTED`. Entry shows the zone title plus
+  “Contested Territory — PvP enabled” for 2.5 seconds. The Target Frame shows
+  a sword for tagged enemies and a shield for protected safe enemies.
+- Enemy visitors may physically traverse peaceful territory and fight ordinary
+  creatures. Faction guards still acquire them; PvP safety protects only from
+  enemy players. Enemy vendors, kings, quest objects, protected storage,
+  waypoint unlock/use and faction POIs refuse interaction.
+- Essential kings and service NPCs are invulnerable in the MVP. Attacking a
+  damageable enemy guard tags the visitor, which lets defending players join.
+
+### 15.5 WP41 public seam and acceptance
+
+- One `grug_pvp` service owns `state(player)`, `tag(player, reason)`,
+  `hostile_attempt(attacker, target, context)`,
+  `support_contact(helper, target, context)` and
+  `damage_committed(attacker, target, hp_loss, absorb_loss)`. The precise
+  return record is implementation-owned, but it must distinguish blocked,
+  combat-miss and damage-eligible outcomes.
+- Ordinary tools/fists, authoritative swings, hostile casts, AoE,
+  `grug_projectiles`, guards and later effects call this seam. No caller
+  reads player meta or zone PvP flags directly.
+- Automated coverage crosses the four-row table with peaceful/contested,
+  ordinary melee, ability swing, targeted cast, projectile and AoE; it also
+  covers full absorb, dodge, support, boundary crossing, death and reconnect.
+  Existing WP39 exact-once, cadence, rage, proc and projectile tests remain
+  green.
+
+## 16. Bounded war-front life (WP42)
+
+- The eight contested zones are Ashenward March, Bannerbreak Mesa and the six
+  shared-front zones. Their §8 **K** slots total 16 clash anchors.
+- One zone may run at most one clash at a time. A clash is two mechanically
+  matched four-NPC squads: one veteran/captain, two melee guards and one
+  ranged guard. Regional skins, names and weapons differ; level comes from the
+  zone, with level 60 fixed at both endpoints.
+- An anchor becomes eligible when a player is within 128 nodes and its
+  deterministic 8–14 minute cooldown has elapsed. It spawns one complete
+  clash, never refills individual casualties, never catches up multiple missed
+  fights and schedules the next cooldown only after resolution or withdrawal.
+- If no player remains within 160 nodes for 90 seconds, surviving dedicated
+  units withdraw/despawn and the anchor schedules its next window. With all
+  eight zones observed simultaneously the hard maximum is 64 dedicated war
+  NPCs; ordinary wildlife and guards keep their existing budgets.
+- War units acquire only opposing dedicated war units, eligible hostile
+  players and dangerous creatures that attack a squad member. Ordinary guards
+  retain `attack_npcs = false`; war units do not roam out of their authored
+  encounter leash.
+- NPC-only kills produce no drops. With enemy-player involvement, existing
+  guard war-trophy/heavy-cloth rules apply; own-faction units never become a
+  farm. The MVP has no refilling supply crates. Every contested zone reserves
+  a non-loot quest-interaction slot for WP9 instead.
+- Clash outcomes do not move borders, alter zone ownership, disable roads or
+  grant a persistent buff. WP13 supplies walls, forts and siege art; WP42 owns
+  units, schedules and place-bound encounter state only.
+- Automated tests prove the per-zone/global caps, no catch-up, unload cleanup,
+  exact opposing-target filter, player-involvement loot rule and unchanged
+  ordinary-guard behavior. A headless soak observes all eight zones at once
+  before the user's visual battlefield test.

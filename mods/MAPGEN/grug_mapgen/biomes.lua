@@ -396,12 +396,11 @@ register_mirrored({
 -- East band: Troll jungle edge (T) / Elf forest (A), wild variants
 -- deep jungle (T) / jungle fringe (A).
 --
--- §8.4 says the fringe reuses "the troll jungle" nodes one-to-one. That named
--- ONE node set until WP36 gave grug_deep_jungle a top of its own; it now names
--- two, and which one it meant is an OPEN design question --
--- TODO-design-jungle-fringe.md at the repo root has both readings. What ships
--- is the grug_jungle_edge reading: the fringe keeps
--- default:dirt_with_rainforest_litter (see the fringe block below).
+-- WP36 shipped the fringe with the grug_jungle_edge top while the old design
+-- phrase "the troll jungle" was ambiguous. The named-zone target has since
+-- resolved that ambiguity: WP40 assigns grug_jungle_fringe the deep-jungle
+-- canopy-litter top (docs/design/biomes_mobs.md §1.3). This legacy global
+-- biome registry stays unchanged until WP40 replaces its placement model.
 --
 
 register_mirrored({
@@ -442,11 +441,10 @@ register_mirrored({
 --     41.1 % of Throng land had exactly ONE eligible node_top, against
 --     29.5 % of the Accord land, whose mirror position carries
 --     grug_deep_forest_east with a different top. The fringe keeps the
---     rainforest litter -- that is what SHIPS; whether §8.4 binds it to
---     grug_jungle_edge or to grug_deep_jungle is open, see the east-band
---     header above and TODO-design-jungle-fringe.md. Either way this is now
---     the only mirrored pair whose two halves differ, which is what every
---     other pair in this file already does.
+--     rainforest litter -- that is what WP36 SHIPS. WP40's decided target is
+--     the deep-jungle canopy-litter top; see the east-band header above.
+--     Until then this is the only mirrored pair whose two halves differ,
+--     which is what every other pair in this file already does.
 --
 --  2. THE POINT, 90/90 -> 80/88. 90/90 sat +1.8 / +2.2 sigma from the field
 --     mean and lost EVERY contested column: measured over 12 seeds it won

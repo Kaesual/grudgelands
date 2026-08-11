@@ -27,7 +27,8 @@ Levels must keep delivering *decisions and buttons*, not just stats:
   Renew; further capstones designed with WP11).
 - **Respec at the class trainer for gold**, price rising with level —
   repeatable per-character gold sink and the class trainer's purpose.
-- **Level 30 — the King's grant** (added 2026-08-07): the housing
+- **Level 30 — the race King's grant** (added 2026-08-07, placement revised
+  2026-08-10): the housing
   questline hands over a personal isle (world.md §5). The one big
   non-combat reward beat in the curve, deliberately placed mid-run where
   talent points alone stop feeling like news, and the point from which
@@ -38,7 +39,8 @@ Levels must keep delivering *decisions and buttons*, not just stats:
 Decided 2026-08-06; refinements (graveyards at outposts, res sickness,
 Priest resurrection) come later with WP6/WP19:
 
-- Death = **respawn at the own faction spawn** with **full inventory**
+- Death = **respawn at the own race's safe outer starting settlement** with
+  **full inventory**
   (no corpse run, no item loss, no durability-on-death mechanic).
 - **XP loss: 25% of the progress within the current level, permanent**
   (never de-levels; grug_xp as shipped).
@@ -49,6 +51,7 @@ Priest resurrection) come later with WP6/WP19:
 
 ## 4. Quest structure & level gates — OPEN
 
-To spec before WP8/WP9 (story frame: story.md): main-questline beats
-with hard `min_level` gates; first PvP quests at the war coast from
-~lvl 20 (world.md §1); gather/kill quests forcing biome exploration.
+To spec before WP8/WP9 (story frame: story.md): main-questline beats with hard
+`min_level` gates; first PvP quests in the level-31–40 central contested
+corridor, never below level 31 (`world_zones.md` §§2/8); gather/kill quests forcing named-zone
+and biome exploration.

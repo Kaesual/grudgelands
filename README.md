@@ -17,8 +17,9 @@ standalone game (not a mod pack) in Lua.
 
 Two peoples share a world and hate each other for it. **The Accord** holds
 the southern continent of **Elandor**, **The Throng** the northern
-**Kragmar**; between them lies nothing but a strait of open water. The war
-over territory and pride is generations old, and it is not going to end.
+**Kragmar**. Their continent parts meet at a handful of scarred land
+connections; the remaining coast falls away into ocean. The war over territory
+and pride is generations old, and it is not going to end.
 
 What is new is what comes from below. The **Nether** — this world's hell of
 lava and demons — has opened portals into the overworld, and they were not
@@ -27,14 +28,13 @@ threatens both factions equally. It does not unite them. Each side fights
 the darkness alone, in parallel, in competition — while still raiding the
 other's coast.
 
-You pick a faction, a race and a class, wake up in your race's capital, and
-the world gets more dangerous the further you walk from it. Boars and
-bandits at home; corrupted outposts, named beasts and elite packs further
-out; a dragon on the mountain you can see at level 8 and only kill at 50;
-and across the strait an enemy king in a guarded throne room whose crown is
-a crafting ingredient.
+You pick a faction, a race and a class, wake up in your race's outer starting
+settlement, and travel inward through stable named regions toward your central
+capital and the high-level faction front. Boars and bandits at home; corrupted
+outposts, named beasts and elite packs further in; and at the ocean ends of the
+war front, level-60 mountains crowned by a contested dragon lair.
 
-Your own king, meanwhile, is the one who rewards you. Behind each continent,
+Your own race king, meanwhile, is the one who rewards you. Behind each continent,
 past the deadly open sea, lies a chain of unspoiled isles — barren above the
 rock and rich below it. Serve the realm well enough and the crown grants you
 one: your isle, your build, and a shaft going down as deep as you can afford
@@ -50,25 +50,24 @@ The game design is a living specification under
 **[docs/design/](docs/design/)** — only *decided* rules, numbers and lists
 live there. This section is the tour; the docs are the truth.
 
-### The world — [`world.md`](docs/design/world.md)
+### The world — [`world.md`](docs/design/world.md) · [`world_zones.md`](docs/design/world_zones.md)
 
-- **Two continents, one per faction**, mirrored at z=0, 3000×1600 nodes
-  each, with soft noisy coastlines and a guaranteed 200-node strait.
-  Everything else is ocean.
-- **Difficulty is geography.** Mob level grows radially outward from your
-  capital: safe core 1–10, inner ring 10–25, outer ring 25–45, the far
-  coasts 45–60. Every capital sits in a **level-1 bubble** 40 nodes wide
-  that fades back into the field over the next 200, so wherever you wake
-  up, the first animal you meet is a level-1 one. Caves add a depth axis
-  (3 levels per 50 nodes down, −500 = level 30, −1000 = the level-60
-  cap) — and the bubble does not reach down there, so mining deep is an
-  alternative to travelling out even under your own city.
-- **The war coast is capped at 20–30** — the strait-facing band is the PvP
-  stage, and the first PvP quests arrive around level 20. Nobody is forced
-  into PvP before that.
-- **Guard strength runs inverse**: the capital watch is elite, war-coast
-  guards are only local level +5. Invading is funnelled to where PvP is
-  meant to happen; landing anywhere else means facing level-60 wildlife.
+- **Two faction continents with an authored shared front.** Kragmar stays
+  north and Elandor south, but their shapes are not mirrors. The complete
+  catalog has 38 stable zones and three contact loops; ocean separates the
+  remaining coast.
+- **The macro-map is memorable and reproducible.** Every named zone keeps its
+  approximate shape, neighbors, level range, biome palette and landmark slots;
+  seeds vary only bounded borders and local terrain detail.
+- **Difficulty rises toward the enemy:** outer race starts 1–10, safe home
+  zones 11–20, central heartland 21–40 and mostly 41–60 contact land. Caves
+  retain the independent depth axis (3 levels per 50 nodes down, −500 = level
+  30, −1000 = the level-60 cap).
+- **PvP is geographic and voluntary.** Peaceful-zone players cannot take
+  unprovoked enemy-player damage; a safe first hostile contact tags the
+  attacker but is blocked against an equally safe target. Contested zones tag
+  everyone automatically. Effective PvP damage/support refreshes 60 seconds,
+  disconnect does not clear it, and death does.
 - **Controlled destructibility**: build and dig freely at home, never in
   enemy territory (not even a torch), never in the ocean. Nothing regrows:
   a mined-out vein is gone for good, and the world stays supplied by going
@@ -92,11 +91,18 @@ live there. This section is the tour; the docs are the truth.
   mob; what makes it dangerous is that it never quite stops arriving.
   What the depth pays out is raw material — there is no special gear
   layer down there, because the best gear is made, not found.
-- **Three race capitals per continent** (you spawn in your own race's),
-  24 deterministic military outposts, ambient patrols between them,
-  villages and flavor camps.
-- **Apex world bosses**: one visible dragon POI per continent first, the
-  enemy's dragon as the flagship PvP raid later.
+- **Three race capitals per continent, six kings total.** Characters spawn in
+  six safe outer race settlements instead. Each capital is a central four-road
+  civic zone with no ambient hostile enemies and level-60 defenders.
+- **The faction front has three strategic contact areas:** a broad multi-lane
+  central war front and two level-60 mountain ends at the western and eastern
+  ocean. Automatic PvP begins only in the mirrored central level-31–40
+  corridor; four flank approaches remain peaceful.
+- **Apex dragons are shared PvP bosses:** two total, each at an equally
+  reachable contested level-60 mountain where an end of the faction front
+  meets the ocean. Both endpoint mines contain two renewable nodes of every
+  one of the six race-gem slots; both factions can mine those resources while
+  neither faction may reshape or build on the shared front.
 - **Travel** is a Diablo-style waypoint network (unlocked by visiting,
   teleport only waypoint-to-waypoint, none in enemy land) plus a Home
   Stone with a 10 s cast and a 60 min cooldown.
@@ -114,10 +120,12 @@ live there. This section is the tour; the docs are the truth.
 
 ### Biomes & mobs — [`biomes_mobs.md`](docs/design/biomes_mobs.md)
 
-13 mirrored biome bands (20 registrations), each race band tipping from
-its settled variant into its wild nature variant as you move outward. Identical base drops on both
-continents ("same loot, different look"), a full mob roster per biome
-group, spawn parameters, per-race woods and the base-material map.
+The shipped map has 20 biome registrations and a fully populated biome/mob
+catalog. The target catalog now assigns weighted palettes, rare routes and
+content slots to all 38 named zones; WP40 implements them. Equivalent base
+drops remain guaranteed on both faction sides without requiring mirrored
+shapes. The mob rosters, spawn parameters, race woods and base-material map
+remain the content inventory.
 Animals come in **three classes**: *critters* are scenery with a use
 (always level 1, food drops only, so a full larder ends the hunt by
 itself), *passive prey* are the large grazers — they never attack on
@@ -198,7 +206,7 @@ tiers behind a real fight — and *enemies* are everything else.
   vendors: the two top roll windows belong to masterwork recipes and boss
   loot, and no vendor ever sells a refined or enchanted item.
 - **One recipe book per profession**, six T1–T6 groups in one list:
-  your level makes a group visible, a **tier keystone** from the ring
+  your level makes a group visible, a **tier keystone** from the source region
   you just reached unlocks it. One mechanism, no skill-up grind.
 - **Race-exclusive signature recipes** at the top end: production is
   race-locked, the item is tradeable — every race+profession combination
@@ -274,11 +282,11 @@ Full plan with checkboxes: **[ROADMAP.md](ROADMAP.md)**.
 
 ## Current State
 
-*Last updated: 2026-08-10. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-11. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md) — those are the source of truth; this is the
 summary.*
 
-**Shipped (15 of 40 work packages):** the playable foundation now spans two
+**Shipped (15 of 43 work packages):** the playable foundation now spans two
 continents, 42 level-scaled mobs, three classes, equipment and bags, XP,
 threat, money/vendors, the six rock strata and their ore bands. The weapon slot
 is the sole source of skill damage and appearance, while native held animation,
@@ -294,16 +302,21 @@ trees, the fog-of-war map, guilds, housing, travel, offhand items, loot affixes,
 durability, parties, recovery, bosses, mounts and real capital/outpost
 structures remain unbuilt. The material ladder still lacks its two-slot
 furnace, alloy bars, armor recipes, gathering nodes and material-name catalog
-conversion. Loot/affixes and professions remain design-blocked by the affix
+conversion. The newly decided named-zone surface, outer race spawns, central
+capital zones, geographic PvP tag and bounded war-front NPC battles are also
+not implemented; WP18's radial rings and full water strait remain the running
+map. Loot/affixes and professions remain design-blocked by the affix
 words, signature recipes, keystones, material grades and cooking lists in
 `TODO-design-crafting-rework.md`.
 
 **Ready to start next:** WP34 is first in the dependency/owner order and owns
 the depth arrival pressure, corrected level curve, camp-only ore respawn, deep
 lava and continental Abyssal Crystal. WP26 and WP37 follow as the alloy-chain
-and surface-density increments. Guilds, trader rotation, gathering nodes,
-talents, structures, offhand, travel, parties, recovery and apex bosses also
-have no design blocker; their exact order remains in `BACKLOG.md`.
+and surface-density increments. **WP40 is now design-ready** with a complete
+38-zone catalog and acceptance gate; WP41 and WP42 are fully specified behind
+it. Guilds, trader rotation, talents, offhand, parties and recovery also have
+no design blocker. Structures, gathering, travel, the map and apex bosses wait
+for WP40; exact order remains in `BACKLOG.md`.
 
 **Caveats:** WP39 passed its headless Lua 5.1 gates, a mandatory Full Review
 with 0 findings after two Low fixes, and a clean Engine/Perf Review after one
@@ -312,14 +325,17 @@ not been performed; WP25, WP35 and WP36 are likewise not runtime-tested. WP38's
 native-animation/cadence base and bounded fresh-press loot bridge were tested
 in game, but that does not validate WP39's current-ray targeting, binary HUD
 reticle, hostile casts, projectile visuals/collision or session limit. The
-jungle-fringe ground and WP36's extra Throng badlands band remain open design
-questions, while the two-handed rule remains dormant until WP14 supplies an
+named-zone pass retained WP36's east badlands as Troll-region ochre outcrops
+and paired the target jungle fringe with deep-jungle canopy litter; the
+two-handed rule remains dormant until WP14 supplies an
 offhand item. WP34 still owns the running game's stale world-wide ore respawn
 and depth-level curve, WP37 owns the unshipped surface-density increase, and
 `grug_core.open_sea_at` still starts too far out for housing and mounts.
-Mapgen changes from WP18, WP25 and WP36 make existing worlds incompatible, so
-runtime tests need a fresh world; the shipped bracket gear names and vendored
-art are also still provisional.
+The six race-gem names and their relation to Quartz/Garnet/Diamond remain in
+the parallel material review; WP40 stores race-gem slots and is not blocked by
+their names. Mapgen changes from WP18, WP25 and WP36 already require fresh
+test worlds, and WP40 will be fresh-world-only as well; the shipped bracket
+gear names and vendored art are also still provisional.
 
 ---
 

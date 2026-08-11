@@ -11,6 +11,12 @@ prefix/suffix affixes (§6b), the six-step housing depth ladder
 removal of the continental mining claims (`guilds.md` §3.2), the herb /
 spice split (`biomes_mobs.md` §2) and the new `mounts.md`.
 
+**World-zone revision 2026-08-10:** references in older reasoning below to
+`core`/`inner`/`outer` rings, the war coast or the 200-node strait describe the
+shipped WP18 geometry only. `world_zones.md` and WP40 replace those boundaries;
+mount and gathering decisions keep their gameplay intent but must be re-derived
+against named zones before implementation.
+
 **Everything in this file is open unless its *Decision* line says
 otherwise.** No decided *rule* lives here — a decided question keeps only
 a one-line stub naming the design file it landed in, so the reasoning
@@ -26,6 +32,31 @@ Groups: **A** crafting & items · **B** materials & world · **C** two
 design tensions · **D** mounts · **E** cooking.
 
 ---
+
+## Map handoff — six race-signature gemstones
+
+The named-zone plan decided on 2026-08-11 gives every surface zone exactly one
+`race_region`, provides each race one signature-gem slot, and places all six
+slots together in both contested dragon-endpoint mining camps
+(`docs/design/world_zones.md` §§6/11). The map deliberately stores slots,
+not provisional node names.
+
+The material review must resolve:
+
+- the six names, colors, visual forms and one-to-one race assignment;
+- whether Quartz/Garnet/Diamond are three of the six, are replaced by them, or
+  remain universal ladder gems beside six regional special gems;
+- tier/unlock roles, recipes and whether an ordinary regional vein appears
+  only once its zone bracket can legally supply that gem;
+- the public `grug_materials` mapping from `race_id` to gem node/item ids.
+
+Binding map constraints: no universal base progression recipe may require
+visiting enemy territory; all six ordinary race budgets are equal within 5%;
+both apex camps contain exactly two renewable nodes of every gem and therefore
+never substitute for a missing home-region source.
+
+**Decision:** names and ladder relationship open in the parallel material
+review. This blocks gemstone placement, not WP40's zone/anchor foundation.
 
 ## A. Crafting & items
 

@@ -7,42 +7,43 @@ game (not a mod pack), written in Lua.
 ## Vision
 
 - Two factions — **The Throng** and **The Accord** — each with **its own
-  huge continent** (multi-biome): the Throng holds **Kragmar** in the
-  north, the Accord **Elandor** in the south, separated by an ocean
-  strait at z=0; everything beyond the continents is ocean, deadly far
-  offshore (`docs/design/world.md` §0/§1/§2b).
+  huge continent** (multi-biome): the Throng holds **Kragmar** in the north,
+  the Accord **Elandor** in the south. Three strategic contact areas form the
+  contested faction front: a broad multi-lane centre and two high-level
+  mountain ends at the western/eastern ocean. Ocean separates the remaining coast and is
+  deadly far offshore (`docs/design/world_zones.md`, `world.md` §0/§1/§2b).
 - **Races, kept deliberately simple**: each faction consists of several
-  races. **Three race capitals per continent** in the safe-core belt
-  (players spawn in their race's capital); the central one doubles as
-  the faction seat (King, guild services). The faction territory is
-  divided into race-flavored regions (mountains = dwarves, forests =
-  elves, …) with additional patch villages and settlements.
+  races. Every race has an outer level-1–10 starting zone and a central
+  capital; **three race capitals per continent, six kings total**. Capitals
+  are safe four-road hubs with level-60 defenders. The faction territory is
+  divided into stable named zones with race-flavored biomes and settlements.
   Race perks: vendor discounts among your own race, race-exclusive
   vendors, race-exclusive professions/recipes (Phase 2). Details:
   `docs/design/world.md`.
 - Classes with XP, levels and simplified skill trees.
 - Quests that drive progression and deliberately force PvP and exploration.
 - Professions ("jobs"), a gold economy and trader NPCs.
-- Difficulty scales spatially ("safe core + war coast",
-  `docs/design/world.md` §1): capital + starter villages in the safe
-  continent center, mob levels grow toward the coasts; only the
-  strait-facing **war coast is capped mid-level** as the PvP stage
-  (first PvP quests ~lvl 20–30 — no forced early PvP). **Guard strength
-  runs inverse** (elite in the core): military outposts and ambient
-  patrols gate invaders in both directions.
+- Difficulty scales through stable named zones: outer race starts 1–10,
+  home zones 11–20, central heartland 21–40 and mostly 41–60 land at the
+  faction front. No 1–30 zone is contested; automatic PvP begins in designated
+  31–40 frontier zones. Capital city zones contain no
+  ambient hostile enemies and use level-60 defenders. Peaceful-zone players
+  are safe until they initiate PvP; contested zones tag automatically and the
+  tag lasts 60 seconds without PvP damage (`docs/design/world_zones.md`).
 - **Controlled destructibility**: digging/building is free only inside
   your own faction's territory (outside protected zones such as capitals,
-  outposts and quest structures); enemy territory and the border zone
-  cannot be modified. Ores respawn so a persistent world does not run dry.
+  outposts and quest structures); enemy territory and ocean cannot be
+  modified. Natural resources do not respawn; depth remains unbounded, while
+  guarded mining camps are the one slow renewable exception.
 - **Player housing — the King's isles**: beyond the coastal sea behind
   each continent lies a chain of unspoiled isles; the **King grants one
   per character** for merit (questline, level 30). A 100×100 build box,
   free digging down to the seabed, and below it a **ladder of six
   purchased depth rights** — one per rock stratum, 50c/2s/6s/20s/60s/1g
   ≈ 1.9g — whose finite treasure clusters (no respawn, detector items to
-  find them) are the central gold sink. The main outlet for
-  free building, and the only place a player meets their own King as an
-  ally (`docs/design/world.md` §5).
+  find them) are the central gold sink. They are the main outlet for free
+  building, granted by the character's own race king at the end of the royal
+  level-30 questline (`docs/design/world.md` §5).
 - **Travel**: waypoint network (Diablo/PoE style — teleport only from
   waypoint to waypoint, unlocked by visiting, none in enemy territory)
   + a Home Stone to the own capital (10 s cast, damage interrupts,
@@ -75,10 +76,10 @@ game (not a mod pack), written in Lua.
   content is sized for **2–3 players**, everything is **beatable
   without a healer**, and leveling is fast (**level 60 in ~10–20 h**,
   `docs/design/progression.md`) — the endgame is the game.
-- **Apex world bosses**: one visible dragon POI per continent first
-  ("see it at level 8, fight it at 50"), the enemy's dragon as the
-  flagship PvP raid, later one apex creature per race region — same
-  tech, distinct skill sets (`docs/design/world.md` §4b).
+- **Apex world bosses**: two overworld dragons, each at an
+  ocean endpoint of the shared faction front in an equally reachable,
+  contested level-60 mountain zone; later regional apex creatures use the
+  same tech with distinct skill sets (`docs/design/world.md` §4b).
 - A light layer of lore and story, delivered through quests, setting and
   environmental storytelling. Premise: **"A darkness has befallen the
   land"** — the Accord–Throng conflict is old, but a new demonic evil
@@ -104,8 +105,10 @@ game (not a mod pack), written in Lua.
 
 ### 1.2 Factions & world
 - [x] Faction choice at character creation (Throng/Accord), persistent
-- [x] World design spec decided (`docs/design/world.md`): geography/
-      rings, destructibility rules, capitals/outposts, housing, races
+- [x] Core world rules decided (`docs/design/world.md`, `world_zones.md`):
+      destructibility, named-zone progression framework, capitals/outposts,
+      PvP tag, housing and races; the complete 38-zone/WP40–WP42 contracts
+      were fixed on 2026-08-11
 - [x] Mapgen: two large contiguous faction territories (north/south), each
       composed of several race-flavored biome regions
 - [x] Continent rework (WP18): two ocean-separated continents with soft
@@ -117,20 +120,34 @@ game (not a mod pack), written in Lua.
       finished the coastline: the mask carves to `emax.y` (no more
       floating tree crowns over the water), runs in the mapgen
       environment, and a `run_at_every_load` LBM heals older worlds
+- [ ] **Named-zone world rework (WP40):** replace WP18's radial rings and
+      full-water strait with `world_zones.md`'s 38-zone graph, outer race
+      starts, central city envelopes, three strategic contact loops,
+      separate race-region/territory/PvP rules, logical biome palettes and two
+      dragon endpoints with equal resource-only mining rights; §14 is the
+      implementation gate, fresh world only
 - [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
       field + `guard_level_at` (mobs and guards actually scale with them
       since WP6; WP36 added the level-1 bubble at every race capital, so
       the four side capitals no longer start a fresh player against
       level-8 wildlife)
-- [x] Faction spawn points: walkable camp platforms at the three race
-      capitals per continent (players spawn in their own race's capital;
+- [x] Shipped WP18 faction spawn points: walkable camp platforms at the three
+      race capitals per continent (the running map still spawns a player in
+      their race capital; WP40 replaces this with the six outer starts, and
       real capital structures follow with WP13). WP36 made the platform
       height a single decider that is forced when undecided, instead of
-      an invented fallback that read differently in two sessions
+      an invented fallback that read differently in two sessions. This is
+      current WP18 behavior; WP40 moves spawn/respawn to the six safe outer
+      race settlements
 - [x] Build/dig restrictions per territory (own continent free, enemy
       continent and the whole ocean locked; capital protected zones +
-      the WP6 POI registry for outposts; R4 ore respawn shipped with WP6)
-- [x] PvP basis: friendly-fire protection within the faction;
+      the WP6 POI registry for outposts; WP6's legacy world-wide ore respawn
+      remains live until WP34 replaces it with R4's camp-only exception)
+- [x] PvP basis: friendly-fire protection within the faction
+- [ ] Geographic/voluntary PvP tag (WP41): automatic in contested zones,
+      protected safe-first-hit transaction, effective damage/support refresh,
+      60 s tail, death clear, persisted reconnect and central boundary-aware
+      eligibility per `world_zones.md` §15;
       quest-driven PvP follows with 1.5
 
 ### 1.3 Classes & progression (MVP: 3 classes)
@@ -208,8 +225,9 @@ game (not a mod pack), written in Lua.
 - [x] WoW-style starter-zone mobs: aggressive boar (day) and zombie
       (night, burns in daylight) with XP rewards and loot; more (wolves, …)
       follow with WP6
-- [x] Neutral/hostile mobs in tiers: safe core = weak, outer ring and
-      coasts = strong, elite mobs that require groups; incl. neutral
+- [x] Neutral/hostile mobs in tiers: the shipped WP18 safe core is weak and
+      outer/coast rings strong; WP40 remaps the same level engine to named
+      zones rising from outer starts toward the faction front; incl. neutral
       **bandit camps**
       (humanoid loot source — cloth — in both territories)
       (WP6: 38 mobs on the level/tier engine, elite/rare telegraph,
@@ -261,7 +279,8 @@ game (not a mod pack), written in Lua.
       hard level gates, `docs/design/story.md` §2)
 - [ ] Quest-giver NPCs in the faction camps
 - [ ] Mandatory questlines for level progression (level gates), including:
-  - [ ] "Kill 5 guards at the enemy war coast" (PvP trigger, min level ~20)
+  - [ ] "Defeat 5 enemy war-front guards" in the first contested named zone
+        (PvP trigger, min level ≥20; exact first bracket pending)
   - [ ] "Push into enemy territory and kill an elite mob" (exploration + risk)
   - [ ] Gather/kill quests across different biomes (forced exploration)
 
@@ -346,13 +365,14 @@ game (not a mod pack), written in Lua.
       race-restricted classes (decide once more classes exist)
 - [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
 - [ ] Dungeon/instance-like structures (fixed elite areas with boss + loot)
-- [ ] Apex world bosses stage 2/3: enemy-dragon PvP raid (head trophy +
-      faction buff), one apex creature per race region with distinct
-      skill sets (`docs/design/world.md` §4b)
+- [ ] Apex world bosses stage 2/3: two shared overworld dragons at
+      the contested level-60 ocean endpoints (head trophy + faction buff),
+      followed later by regional apex creatures with distinct skill sets
+      (`docs/design/world.md` §4b)
 - [ ] **The Nether**: farmable active zone with its own rules, story
       layer ("the world's magic created connections"), island crossings
-      into enemy territory (mirror pairing), later world bosses behind
-      challenges (spec in progress: TODO-design-nether.md)
+      into enemy territory (deterministic named-zone pairing), later world
+      bosses behind challenges (spec in progress: TODO-design-nether.md)
 - [ ] **Mounts** (spec decided 2026-08-07: `docs/design/mounts.md`):
       riding is a universal skill on the same four mastery tiers,
       **bought with gold, never tamed** — slow land, fast land, slow
