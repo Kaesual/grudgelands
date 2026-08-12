@@ -23,6 +23,10 @@ core.register_on_mods_loaded(function()
 				(node.groups or {}).grug_resource ~= resource.harvest_tier then
 			fail("missing or misclassified resource node " .. resource.natural_node)
 		end
+		if (node.groups or {}).cracky then
+			fail("resource node retains competing cracky group: " ..
+				resource.natural_node)
+		end
 		if not core.registered_items[resource.raw_item] then
 			fail("missing raw resource item " .. resource.raw_item)
 		end
@@ -88,9 +92,80 @@ core.register_on_mods_loaded(function()
 
 	-- The retired engine level gate must not survive in any loaded node.
 	for name, def in pairs(core.registered_nodes) do
-		if tonumber((def.groups or {}).level) and (def.groups or {}).level > 0 then
+		local groups = def.groups or {}
+		if tonumber(groups.level) and groups.level > 0 then
 			fail("node retains non-zero level group: " .. name)
 		end
+		if groups.grug_resource then
+			local resource = grug_materials.resource_for_node(name)
+			if not resource or groups.grug_resource ~= resource.harvest_tier or
+				groups.cracky then
+				fail("unregistered or malformed resource group: " .. name)
+			end
+		end
+	end
+
+	for name, def in pairs(core.registered_items) do
+		local groups = def.groups or {}
+		if groups.grug_pick_tier then
+			local tier = tonumber(groups.grug_pick_tier)
+			local caps = def.tool_capabilities and def.tool_capabilities.groupcaps or {}
+			if not tier or tier ~= math.floor(tier) or tier < 1 or tier > 6 or
+				not caps.cracky or not caps.grug_resource or
+				caps.cracky.maxlevel ~= 0 or caps.grug_resource.maxlevel ~= 0 or
+				def.tool_capabilities.max_drop_level ~= 0 then
+				fail("invalid Grudgelands pick contract: " .. name)
+			end
+			for harvest_tier = 1, 5 do
+				if not caps.grug_resource.times[harvest_tier] then
+					fail("incomplete resource capability on " .. name)
+				end
+			end
+		end
+	end
+
+	for tier = 1, 6 do
+		local profile = grug_materials.PICK_PROFILES[tier]
+		local caps = grug_materials.build_pick_capabilities(tier)
+		if not profile or profile.tier ~= tier or
+			caps.groupcaps.cracky.maxlevel ~= 0 or
+			caps.groupcaps.grug_resource.maxlevel ~= 0 or
+			profile.key ~= grug_materials.TIERS[tier].key or
+			profile.ordinary_time <= 0 or profile.uses <= 0 then
+			fail("invalid pure pick profile at tier " .. tier)
+		end
+		for rating = 1, 3 do
+			if not profile.cracky_times[rating] or
+				profile.cracky_times[rating] <= 0 then
+				fail("incomplete cracky profile at tier " .. tier)
+			end
+		end
+		for harvest_tier = 1, 5 do
+			local shortfall = math.max(0, harvest_tier - tier)
+			local multiplier = grug_materials.SHORTFALL_MULTIPLIERS[shortfall] or 10
+			if caps.groupcaps.grug_resource.times[harvest_tier] ~=
+				profile.ordinary_time * multiplier then
+				fail("incorrect harvest multiplier at pick tier " .. tier ..
+					", resource tier " .. harvest_tier)
+			end
+		end
+		if tier > 1 then
+			local previous = grug_materials.PICK_PROFILES[tier - 1]
+			if profile.ordinary_time > previous.ordinary_time then
+				fail("ordinary resource time slows at tier " .. tier)
+			end
+			for rating, seconds in pairs(profile.cracky_times) do
+				local previous_seconds = previous.cracky_times[rating]
+				if previous_seconds and seconds > previous_seconds then
+					fail("pick profile slows at tier " .. tier ..
+						", cracky rating " .. rating)
+				end
+			end
+		end
+	end
+
+	if core.node_dig ~= grug_materials.node_dig_wrapper then
+		fail("core.node_dig wrapper was replaced after grug_materials loaded")
 	end
 
 	core.log("action", "[grug_materials] registry audit passed: 6 tiers, " ..

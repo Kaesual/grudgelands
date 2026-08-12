@@ -1,16 +1,16 @@
 -- Canonical natural resources and material items (WP43).
 
 local ORE_VISUALS = {
-	quartz = {"default_mineral_diamond.png", "#eaf6ff:120", 2},
-	silver = {"default_mineral_iron.png", "#e8edf2:200", 2},
-	citrine = {"default_mineral_diamond.png", "#d9a21b:190", 2},
-	garnet = {"default_mineral_diamond.png", "#9e1526:210", 2},
-	jade = {"default_mineral_diamond.png", "#3d9b65:190", 2},
-	emberglass = {"default_mineral_mese.png", "#ff7a2e:65", 1},
-	diamond = {"default_mineral_diamond.png", "#ffffff:20", 1},
-	sapphire = {"default_mineral_diamond.png", "#235ac7:190", 1},
-	ruby = {"default_mineral_diamond.png", "#c51d35:195", 1},
-	abyssal_crystal = {"default_mineral_diamond.png", "#3a1f6e:210", 1},
+	quartz = {"default_mineral_diamond.png", "#eaf6ff:120"},
+	silver = {"default_mineral_iron.png", "#e8edf2:200"},
+	citrine = {"default_mineral_diamond.png", "#d9a21b:190"},
+	garnet = {"default_mineral_diamond.png", "#9e1526:210"},
+	jade = {"default_mineral_diamond.png", "#3d9b65:190"},
+	emberglass = {"default_mineral_mese.png", "#ff7a2e:65"},
+	diamond = {"default_mineral_diamond.png", "#ffffff:20"},
+	sapphire = {"default_mineral_diamond.png", "#235ac7:190"},
+	ruby = {"default_mineral_diamond.png", "#c51d35:195"},
+	abyssal_crystal = {"default_mineral_diamond.png", "#3a1f6e:210"},
 }
 
 local ITEM_VISUALS = {
@@ -39,8 +39,7 @@ local function register_owned_resource(resource)
 	core.register_node(resource.natural_node, {
 		description = resource.name .. " Ore",
 		tiles = {"default_stone.png^(" .. ore[1] .. "^[colorize:" .. ore[2] .. ")"},
-		groups = {cracky = ore[3], grug_natural = 1,
-			grug_resource = resource.harvest_tier},
+		groups = {grug_natural = 1, grug_resource = resource.harvest_tier},
 		drop = resource.raw_item,
 		is_ground_content = true,
 		sounds = default.node_sound_stone_defaults(),

@@ -4,6 +4,7 @@ grug_materials = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/registry.lua")
+dofile(modpath .. "/mining.lua")
 
 local STRATUM_COLORS = {
 	slate = "#4a5a6e:70",

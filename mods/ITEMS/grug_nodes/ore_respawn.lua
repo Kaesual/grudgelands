@@ -69,6 +69,7 @@ end
 
 core.register_node(DEPLETED, {
 	description = "Depleted Vein",
+	is_ground_content = false,
 	-- Plain stone with the pockets the vein left behind; the overlay is our
 	-- own art, the stone below is default's tile (LICENSE-media.md).
 	tiles = {"default_stone.png^grug_nodes_depleted_vein.png"},
@@ -76,12 +77,9 @@ core.register_node(DEPLETED, {
 	-- source in recipes or be treated as stone by other mods. `cracky = 3`
 	-- matches the ore it replaces, so it digs like the rest of the wall.
 	--
-	-- NO `level` EITHER, and that is not an oversight (§3.0.1/§3.0.4): a
-	-- depleted vein only ever appears where somebody could already break the
-	-- ore that stood there, it drops nothing, and the ores that produce it in
-	-- practice (coal, tin, copper, iron, gold) carry no `level` themselves
-	-- because they are deliberately not gate-relevant. The rock AROUND the
-	-- pocket is the depth gate, never the single pocket.
+	-- It is neither natural ground nor a resource. The authoritative mining
+	-- transaction already accepted the ore that produced this placeholder;
+	-- clearing the empty pocket therefore needs no second depth/harvest check.
 	groups = {cracky = 3, grug_depleted = 1},
 	drop = "",
 	sounds = default.node_sound_stone_defaults(),

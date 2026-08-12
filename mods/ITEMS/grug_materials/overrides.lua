@@ -15,6 +15,7 @@ end
 local function natural_resource(item_name, tier)
 	edit_groups(item_name, function(groups)
 		groups.level = nil
+		groups.cracky = nil
 		groups.grug_natural = 1
 		groups.grug_resource = tier
 	end)
@@ -43,40 +44,39 @@ for _, item_name in ipairs(normalized_blocks) do
 	end)
 end
 
+local function pick_groups(item_name, tier)
+	edit_groups(item_name, function(groups)
+		groups.grug_pick_tier = tier
+	end)
+end
+
 -- Preserve WP25's effective ordinary-rock values while retiring maxlevel as
--- an authority. Package B supplies the full six-pick capability builder.
+-- an authority. The three starter picks deliberately share T1 depth access;
+-- their differing speeds and uses remain their ordinary equipment quality.
+pick_groups("default:pick_wood", 1)
 core.override_item("default:pick_wood", {
-	tool_capabilities = {
-		full_punch_interval = 1.2,
-		max_drop_level = 0,
-		groupcaps = {
-			cracky = {times = {[3] = 1.60}, uses = 30, maxlevel = 0},
-		},
-		damage_groups = {fleshy = 2},
-	},
+	tool_capabilities = grug_materials.build_pick_capabilities(1, {
+		ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
+		cracky_times = {[3] = 1.60}, damage_groups = {fleshy = 2},
+	}),
 })
 
+pick_groups("default:pick_stone", 1)
 core.override_item("default:pick_stone", {
-	tool_capabilities = {
-		full_punch_interval = 1.3,
-		max_drop_level = 0,
-		groupcaps = {
-			cracky = {times = {[2] = 2.0, [3] = 1.00}, uses = 60, maxlevel = 0},
-		},
-		damage_groups = {fleshy = 3},
-	},
+	tool_capabilities = grug_materials.build_pick_capabilities(1, {
+		ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
+		cracky_times = {[2] = 2.0, [3] = 1.00}, damage_groups = {fleshy = 3},
+	}),
 })
 
+pick_groups("default:pick_bronze", 1)
 core.override_item("default:pick_bronze", {
-	tool_capabilities = {
-		full_punch_interval = 1.0,
-		max_drop_level = 1,
-		groupcaps = {
-			cracky = {times = {[1] = 2.25, [2] = 0.90, [3] = 0.45},
-				uses = 180, maxlevel = 0},
-		},
-		damage_groups = {fleshy = 4},
-	},
+	tool_capabilities = grug_materials.build_pick_capabilities(1),
+})
+
+pick_groups("default:pick_steel", 3)
+core.override_item("default:pick_steel", {
+	tool_capabilities = grug_materials.build_pick_capabilities(3),
 })
 
 -- stairs is optional for a standalone grug_materials load, but ordered before
