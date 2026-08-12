@@ -61,7 +61,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     fall damage has its own race perk (world.md §7) and drowning, lava
     and starvation are never reduced by a breastplate.
   - **Resolution order** for an ordinary punch in the central hp-change
-    modifier: **dodge (cancels the hit entirely) → armor → absorb shield.**
+    modifier: **dodge (cancels the hit entirely) → armor → applicable
+    target-race Warding Draught → absorb shield.**
     Authoritative swing abilities resolve crit and armor on one full swing,
     then enter the modifier for dodge and absorb. Ordinary native tools/fists
     resolve crit and armor on the full-swing equivalent before proportional
@@ -91,6 +92,29 @@ Anchors (computed):
 Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
+
+Equipment sources, ordinary affixes and cultural finishes add before final
+consumer caps. The caps remain 30% Crit, 30% Dodge and 60% armor. Values above
+a cap remain present on their stacks but have no further combat effect; the
+Character page exposes effective and raw values, for example
+`Armor 60% (67% raw)`. There is no automatic overflow conversion or cap raise.
+
+Two optional target-race systems use the central pipeline:
+
+- A permanent T4/T5/T6 weapon-counter special adds **+1/+2/+3 flat damage**
+  against the selected race. Only the equipped weapon contributes. Add it
+  after ordinary crit has resolved and before armor/absorb, so armor mitigates
+  it and Crit never multiplies it. It applies to hostile players and
+  combat-capable NPCs/mobs with that race identity; passive invulnerable
+  service NPCs are never valid targets. No percentage target-race damage ships
+  in the MVP.
+- A five-minute T4/T5/T6 Warding Draught reduces incoming damage from the
+  selected race by **5%/7.5%/10%** after armor and before absorb. Only one
+  target-race ward may be active; a new one replaces the old one. It affects
+  hostile players and combat-capable NPCs/mobs carrying that race identity,
+  shares the 60-second potion-use cooldown and is not modified by Apothecary
+  Loop. The ward has its own PvP-buff category and may coexist with one
+  ordinary elixir and Well Fed.
 
 ### Melee timing and aim authority (shipped 2026-08-10, WP39)
 
@@ -250,6 +274,12 @@ immediately. Melee, casts, area effects, projectiles and support may not diverge
 from `world_zones.md` §15. This is target design for WP41; the shipped callbacks
 currently gate only by faction and global `enable_pvp`.
 
+Every non-ocean land position at **y = −701 and below** is contested even when
+its surface zone is peaceful. Crossing down forces the tag; returning above
+the boundary starts the same full 60-second peaceful-zone tail as leaving any
+other contested area. Deep ocean and immutable dragon channels remain outside
+the editable land rule.
+
 ## 3. Mobs
 
 Normal tier at level L:
@@ -353,6 +383,11 @@ level-60 surface zone meets the depth cap exactly at −1000.
 (The Nether is NOT part of this axis — its y-band is unreachable by digging,
 portals only.) The retired radial field remains in the shipped WP18 code until
 WP40 migrates WP6's mobs and guards to named zones.
+
+The political/tool boundary is independent of the level formula: y = −700 is
+the last shallow T4 node, y = −701 begins contested T5 and y = −1001 begins T6.
+The surface column's race region continues to select deep regional resources,
+but never changes the universal PvP/terrain rule below −700.
 
 **Depth buys frequency, not stats.** Past the level-60 cap the axis
 keeps going as *spawn pressure*: a player-centric arrival pulse whose

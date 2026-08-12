@@ -6,16 +6,10 @@ folded into `docs/design/` (commit `d5baf03`): the two ladders
 per concept (§3.0.3), depth gating by rock strata (§3.0.4), the six
 material-cut professions (`professions.md` §2), the one recipe book per
 profession (§2.2) with the surviving keystones (§2.3), refinement and the
-prefix/suffix affixes (§6b), the six-step housing depth ladder
-(`world.md` §5.3 / `economy.md` §4.1 / `items_crafting.md` §8.4), the
-removal of the continental mining claims (`guilds.md` §3.2), the herb /
-spice split (`biomes_mobs.md` §2) and the new `mounts.md`.
-
-**World-zone revision 2026-08-10:** references in older reasoning below to
-`core`/`inner`/`outer` rings, the war coast or the 200-node strait describe the
-shipped WP18 geometry only. `world_zones.md` and WP40 replace those boundaries;
-mount and gathering decisions keep their gameplay intent but must be re-derived
-against named zones before implementation.
+prefix/suffix affixes (§6b), the herb/spice split
+(`biomes_mobs.md` §2) and the new `mounts.md`. The later material, map,
+open-world housing and mount-geography decisions live in their design docs;
+this file retains only the crafting/content questions they did not answer.
 
 **Everything in this file is open unless its *Decision* line says
 otherwise.** No decided *rule* lives here — a decided question keeps only
@@ -33,30 +27,12 @@ design tensions · **D** mounts · **E** cooking.
 
 ---
 
-## Map handoff — six race-signature gemstones
+## Map handoff — resolved
 
-The named-zone plan decided on 2026-08-11 gives every surface zone exactly one
-`race_region`, provides each race one signature-gem slot, and places all six
-slots together in both contested dragon-endpoint mining camps
-(`docs/design/world_zones.md` §§6/11). The map deliberately stores slots,
-not provisional node names.
-
-The material review must resolve:
-
-- the six names, colors, visual forms and one-to-one race assignment;
-- whether Quartz/Garnet/Diamond are three of the six, are replaced by them, or
-  remain universal ladder gems beside six regional special gems;
-- tier/unlock roles, recipes and whether an ordinary regional vein appears
-  only once its zone bracket can legally supply that gem;
-- the public `grug_materials` mapping from `race_id` to gem node/item ids.
-
-Binding map constraints: no universal base progression recipe may require
-visiting enemy territory; all six ordinary race budgets are equal within 5%;
-both apex camps contain exactly two renewable nodes of every gem and therefore
-never substitute for a missing home-region source.
-
-**Decision:** names and ladder relationship open in the parallel material
-review. This blocks gemstone placement, not WP40's zone/anchor foundation.
+**Decision:** the G1/G2 names, race-region distribution, ordinary depth curves,
+cultural materials, signature woods and all-six-gem apex camps are decided in
+`docs/design/world_zones.md` §§10–11 and `docs/design/biomes_mobs.md` §6. No
+map-material question remains in this file.
 
 ## A. Crafting & items
 
@@ -81,8 +57,8 @@ What is already authored:
 - Prose, but **not** cut by tier: Blacksmith shields "Journeyman+",
   metal fittings, whetstone/polish kits (§3.3, §7); Leatherworker armor
   kits "from Journeyman up" and the quiver (§3.4); Woodcarver bows
-  (Phase 2, §3.6a); Goldsmith trinkets, Gem Detector, the 10 → 20 %
-  mining gem bonus (§3.6b).
+  (Phase 2, §3.6a); Goldsmith trinkets and the 10 → 20 % mining gem bonus
+  (§3.6b).
 
 Open: an explicit **profession × mastery tier** table with the material
 cost of every row, for Blacksmith, Leatherworker, Woodcarver and
@@ -249,7 +225,7 @@ with no damage and no armor number).
 refinement question for both bags and trinkets. Blocks WP5's roller for
 trinkets only, nothing else.
 
-### A4 — T5/T6 keystones, and the two new professions' keystone rows
+### A4 — Remaining profession keystones
 
 `items_crafting.md` §2.3 carries keystones for **T2/T3/T4 only**, and its
 Woodcarver and Goldsmith rows are empty and point here. The rule is
@@ -257,8 +233,13 @@ decided (a keystone is the redemption token that opens a book group; the
 materials prove the player has been in the ring that produces them); the
 lists are not.
 
-Missing: **T5 and T6 columns for all six professions**, and the **T2–T6
-rows for Woodcarver and Goldsmith**.
+The material review has since fixed the **Goldsmith T2–T6 row**: it uses Gold
+plus universal bars and level-appropriate mob drops, and never consumes a G2
+gem, loose Abyssal Crystal or a rare trophy. That decided row belongs in
+`items_crafting.md` §2.3 and is no longer an open question here.
+
+Still missing: **T5 and T6 columns for Blacksmith, Leatherworker, Tailor,
+Alchemist and Woodcarver**, plus the **T2–T4 Woodcarver rows**.
 
 Constraints the lists must respect:
 
@@ -267,25 +248,19 @@ Constraints the lists must respect:
   `group:grug_rare_trophy`.
 - §2.4's pacing: a keystone is ~30–60 min of natural play in the ring
   just reached.
-- **T6 is behind a purchase.** Abyssal Crystal is a housing-depth
-  resource (§5.5, world.md §5.4 step 6 — the 1g step) plus the 10 %
-  apex-hoard bridge (§10 P5). §3.0.1 already accepts this for the T6
-  *metal*; a T6 keystone that also demands Abyssal Crystal doubles the
-  gate. Decide whether that is intended.
+- Universal metal/pick progression must remain non-circular. Profession
+  keystones may prove arrival through bars and level-appropriate ordinary mob
+  drops, but must not require a foreign G2 gem or loose Abyssal Crystal.
 
-Recommendation: T5 = 6 × the tier material + 2 × an outer/coast drop;
-T6 = 6 × the tier material + 1 rare trophy **and no Abyssal Crystal** —
-the crystal is already spent on every Grudgesteel bar (§3.0.2), so
-charging it twice makes T6 crafting hostage to the depth ladder in two
-places. Woodcarver rows key off the per-race woods and the Blacksmith
-fittings it cross-buys (§3.6a); Goldsmith rows key off gold bars plus the
-tier's gem (Quartz T2, Garnet T4, Diamond T6) — which also makes B8's
-scarcity values load-bearing.
+Recommendation for the still-open rows: T5 = 6 × the tier material + 2 ×
+a level-41–50 drop; T6 = 6 × the tier material + 2 × a level-51–60 elite
+drop. Woodcarver rows key off the universal processed wood grades and the
+Blacksmith fittings it cross-buys (§3.6a), not a race-exclusive wood.
 
 *Lands in*: `items_crafting.md` §2.3 (extend the table to T2–T6 × 6
 professions).
-**Decision:** _open_ — **blocks WP10** (the book cannot gate groups
-without them).
+**Decision:** Goldsmith decided; all rows listed above remain _open_ and
+**block WP10** (the book cannot gate groups without them).
 
 ### A5 — T5/T6 leather and bolt grades, and the Woodcarver's wood grades
 
@@ -373,168 +348,50 @@ before WP5 writes it.
 
 ### B7 — Rock-stratum node names and textures (six strata)
 
-**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.4
-and `world.md` §2 R6/§5.3. The rules, names, bands, textures and
-`maxlevel`s live there; only the reasoning stays here.
-
-What the decision turned on:
-
-- **Keeping the ordinary world stone as the first stratum** was worth
-  more than a clean six-new-nodes symmetry: that node is already the
-  mapgen filler, the cobble source, the `wherein` of every ore
-  registration and a recipe ingredient, and a separate T1 node would
-  have had to be dragged through all of it for nothing.
-- **Cave walls were the real question in this item.** Plain-stone cave
-  walls would have made every deep cave a free bypass of the depth gate
-  for a low-level character. Registering the strata as stratum *ores*,
-  last of all ores, solves it for free, because in mgv7 the ore stage
-  runs after cave generation and before the dungeons and registration
-  order is placement order. A hand-written VoxelManip pass would have
-  had to re-solve that problem by hand.
-- **The engine already had the mechanism in both directions** — the
-  vendored `default` gates its hardest nodes exactly this way — so the
-  strata are a re-parameterisation of a live system, not new engine
-  work. The picks are re-parameterised from outside via
-  `core.override_item` so the vendored mod stays unpatched (VENDOR.md).
-  Caveat found while implementing: `maxlevel` also drives durability and
-  dig speed, so re-parameterising the gate means compensating those too,
-  or the starter picks get nerfed as a side effect (§3.0.4).
-- **The isle generator cannot ride on the ore stage** (`register_ore`
-  only runs in the mapgen), which is why WP24 asks `grug_materials` for
-  the rock of a depth instead — the one interface both ladders share.
-
-Rejected: a separate T1 stratum node; the y-band VoxelManip pass;
-hand-made 16px textures (Phase 3 work — engine `^[colorize` modifiers
-were taken instead); and reusing `default`'s existing stone family
-(stone / desert_stone / sandstone), which already carries biome meaning
-and would have made depth and biome say the same thing.
-
-*Landed in*: `items_crafting.md` §3.0.4, `world.md` §2 R6/§5.3.
+**Decision:** resolved by the six visual strata and the separate natural-depth
+and resource-harvest checks in `world.md` §2 R6. Rock identity no longer gates
+progression, and no private-island generator consumes a parallel stratum
+ladder.
 
 ### B8 — Quartz and Garnet: depth placement and scarcity
 
-**Decision:** decided 2026-08-08 → landed in `items_crafting.md` §3.0.1.
-Silver, iron and Emberstone were authored in the same pass. The bands,
-scarcities and the ore `level` rule live there; only the reasoning stays
-here.
+**Decision:** resolved. Quartz is the universal T1 jewelry mineral; G1 and G2
+species use the race-region distribution and depth curves in
+`docs/design/biomes_mobs.md` §6; Emberglass and Abyssal Crystal are universal
+progression resources; and `world.md` §2 R6 defines their minimum harvest
+tiers. No placement or scarcity question remains here.
 
-What the decision turned on:
+### B9 — Ocean classification
 
-- **A lead metal has to be findable one band shallower than its own
-  tier, a gem does not.** Otherwise a tier-n tool would be needed to
-  reach the material a tier-n tool is made of. That also settles how
-  §3.0.1's "Digging depth" column reads: it is a *tool* depth, not a
-  find depth.
-- **The iron deadlock**, found while checking that rule against the
-  vendored ores: iron only started *below* the stratum that already
-  demands an iron or steel pick, so the ladder was locked shut at T2.
-  The new shallow iron band is a deadlock fix, not tuning.
-- **The ore `level` leak**, found while checking B7's cave-wall
-  inheritance: if an ore carried the `level` of its own tier, a deep
-  cave would expose Silver to any starter pick. Fixed by giving an ore
-  the `level` of the *band* it lies in — an ore is exactly as hard as
-  the rock around it — which deadlocks nothing, because the band rule
-  already put the metal one tier shallower.
-- **The same leak reached the vendored mese *block*** (found in review):
-  it is scattered as an ore deep down, carries a low `level` upstream
-  and crafts into a stack of the T5 material — the deposit was
-  dropped outright rather than hardened, because the block is also a
-  placeable building item and a gated block cannot be picked back up by
-  the player who set it.
-- **Gems are a reagent, not a rarity** (§6.4 spends one on every fine
-  recipe), which is why the gem densities look generous. Re-tune against
-  §2.4 after the first runtime test rather than on paper (pattern:
-  `docs/research/wp6_spawn_budget.md`).
-- **Abyssal Crystal gets no continental deposit at all** — WP25
-  registers node and item, WP24 (isle treasure clusters) and WP23 (the
-  dragon hoard) place them. That keeps §3.0.2's binding statement
-  literally true: Grudgesteel needs the level-30 isle grant and its
-  deepest depth step. **Superseded on 2026-08-08** by
-  `TODO-design-depth.md` C7: the crystal is a base resource and gets a
-  continental band in the T5 rock, so the isle no longer holds T6
-  hostage. The rest of this entry stands.
-
-*Landed in*: `items_crafting.md` §3.0.1.
-
-### B9 — `grug_core.open_sea_at` starts open sea 3200 nodes out
-
-`open_sea_at(pos)` is a pure Chebyshev distance from the nearer continent
-rectangle compared against `OCEAN_COASTAL_WIDTH` (1500), so open sea
-begins at |z| = 3200. `BACKLOG.md` already flags this in the WP24
-readiness note (it would spawn Kraken Guards on housing beaches,
-`world.md` §2b), and `mounts.md` §4.1 now inherits it one-for-one:
-until it is fixed, the "Exhausted" debuff fires on a player's own isle
-beach.
-
-**This is now a hard precondition for two systems, not one** — WP24 and
-the mount rule. `mounts.md` §4.2 additionally requires that the isle
-no-mount zone and the open-sea rule **meet exactly at the isle's
-150-node safe ring with no gap**.
-
-Options:
-
-- **(a) Make the function isle-aware** — it returns false inside every
-  isle's 150-node safe ring, and keeps its continental semantics
-  unchanged. The housing band lives inside the open sea by construction
-  (`world.md` §5.6), so an exception is the honest model.
-- **(b) Shrink `OCEAN_COASTAL_WIDTH`** — moves the Kraken Guard *toward*
-  the continents, which is the opposite of what §2b wants, and does
-  nothing for the isles.
-- **(c) A separate "safe water" predicate** consulted by every caller —
-  more surface, and every future caller has to remember both.
-
-Recommendation: **(a)**. Keep one predicate; `mounts.md` §4.1's "the
-mount rule calls the function and nothing else" then stays true.
-
-*Lands in*: implementation, not design — `world.md` §2b's wording only
-needs the isle exception spelled out.
-**Decision:** _open_ (mechanism) — the *need* is decided. Owner: WP24;
-the mount WP consumes it.
+**Decision:** resolved in `world.md` §2b and `world_zones.md` §7. Planned
+zone water, the editable 80-node shelf, immutable deep ocean and immutable
+dragon channels are distinct authored classes. The compatibility predicate is
+true only for deep ocean; open-world housing has no island exception.
 
 ### B22 — The six picks' dig-speed progression: the actual `times`
 
-`items_crafting.md` §3.0.4 decided the **rule** on 2026-08-08 — a
-tier-n pick digs its own stratum and every stratum above it faster than
-the tier below, the gate is access and the `times` are the reward. It
-deliberately did **not** decide the numbers, and today there is no
-authored progression at all: what a player feels is the vendored
-`default` times, re-scaled by WP25 only to *undo* a `maxlevel` side
-effect, not to build a ladder.
+The material review keeps the **rule** — every higher-tier pick is faster on
+ordinary rock, including its own current band — but retires engine level
+difference as the progression mechanism. Every Grudgelands pick uses
+`groupcaps.cracky.maxlevel = 0`; natural-depth access and resource harvesting
+are separate checks in `world.md` §2 R6.
 
-**The engine subtlety that makes this more than a table of six
-numbers.** `leveldiff = maxlevel − node level` feeds `real_uses =
-uses · 3^leveldiff` **and**, for `leveldiff > 1`, `time =
-time / leveldiff` (`reference_projects/luanti/src/tool.cpp:394-414`,
-`lua_api.md:2715-2731`). Two consequences for whoever authors this:
-
-- The number a player experiences on a stratum is **not** the `times`
-  entry — it is that entry divided by the leveldiff against *that*
-  stratum. So a part of the wanted speed-up is already free (a pick two
-  tiers above the rock is halved), and it has to be **measured before**
-  more is stacked on top, or the top of the ladder overshoots.
-- Any `times` change has to be re-checked against `uses`, because the
-  same `leveldiff` scales both. That is exactly how WP25's re-tiered
-  bronze pick silently fell from 180 usable blocks to 20.
+The six effective `times` and `uses` sets are still unauthored. They must form
+an explicit six-pick progression, preserve sensible durability and be measured
+against representative ordinary rock in a runtime calibration. Wood and Stone
+starter picks share the T1 depth cap but still need a deliberate relative
+speed below Bronze.
 
 Options:
 
-- **(a) Author one `times` set per tier from a curve**, then verify the
-  ladder as *effective* seconds in a six-picks × six-strata table — the
-  same shape §3.0.4 already uses for the durability side.
-- **(b) Rely on the engine's `leveldiff` division alone** and author no
-  progression. Free, but it only rewards digging rock *below* your tier
-  and gives nothing at all on your own stratum, which is the half of the
-  rule the owner actually asked for.
-- **(c) A flat per-tier multiplier on the vendored base times.** One
-  number per tier, but it compounds with the leveldiff division instead
-  of accounting for it, so the effective spread at the ends of the
-  ladder is not what the table says.
+- **(a) Author one `times`/`uses` set per tier from a curve**, then verify the
+  effective seconds and blocks-per-tool values in a six-pick table.
+- **(b) Reuse one vendored profile for every tier.** Cheapest, but it makes
+  access the only reward and contradicts the decided speed progression.
 
-Recommendation: **(a)**, with the effective-value table as the
-acceptance check, and calibrated in a runtime test rather than derived
-on paper (pattern: `docs/research/wp6_spawn_budget.md`). Author it
-together with the missing picks — T2 has no pick of its own today
-(§3.0.4), so the ladder is being written anyway.
+Recommendation: **(a)**, calibrated in a runtime test rather than derived on
+paper (pattern: `docs/research/wp6_spawn_budget.md`). Author it together with
+the missing Iron, Silversteel, Embersteel and Abyssal Steel picks.
 
 *Lands in*: `items_crafting.md` §3.0.4.
 **Decision:** _open_ (the numbers; the **rule** is decided 2026-08-08).
@@ -622,67 +479,10 @@ today it states as fact something the shipped filter contradicts.
 
 ### C11 — The Goldsmith's headline product is post-MVP
 
-**Decision:** decided 2026-08-08, option **(b)** — **trinkets are pulled
-into the MVP** → landed in `inventory_equipment.md` §2 (the two slots
-are no longer reserved; trinket items ship as the Goldsmith's exclusive
-family, no armor class, no rank binding), `items_crafting.md` §3.6b (the
-profession's headline is a product, not a promise), `items_crafting.md`
-§6.2/§6.3 (the pool row and the re-run cap arithmetic — A3) and
-`professions.md` §2.1 (the coverage bullet). The situation and the
-options below are kept for the reasoning.
-
-**The situation.** `professions.md` §2.1 celebrates that "both trinket
-slots finally have an owner" — the Goldsmith (`items_crafting.md`
-§3.6b). But `inventory_equipment.md` §2 keeps both trinket slots
-**reserved**: UI and meta shipped with WP15, the items are post-MVP. So
-in the MVP the profession stands on three things, and two of them depend
-on other unshipped work:
-
-- **Gem refinement** — cutting raw gems into the reagent every fine and
-  masterwork recipe wants (§6.4). Real and central, but only once WP5
-  and WP10 exist.
-- **The Gem Detector** (`world.md` §5.4) — only useful on a housing
-  isle, i.e. after **WP24**.
-- **The mining bonus gem chance** (10 % → 20 % at Journeyman) — the one
-  thing that works on day one, and it is a passive, not a product.
-
-It is the only one of the six professions with no wearable output of its
-own in the MVP, and A3 shows the gap is doubled: trinkets have no
-enchant pool either.
-
-Options:
-
-- **(a) Ship as decided.** The Goldsmith is a supplier profession in
-  the MVP. Honest, cheap, and it makes gem supply a real market. Risk: a
-  player picking it at level 5 gets almost nothing for a long time — so
-  it should at least not be offered before WP24 ships, or be flagged in
-  the trainer text.
-- **(b) Pull trinkets into the MVP.** The slots, the meta and the
-  `allow_put` filter already exist (WP15); what is missing is an item
-  family, a curve and the §6.2 pool row of A3. No model, no armor class,
-  no rank binding — trinkets are the cheapest missing content in the
-  game. It also fixes A3 by construction and gives the sixth profession
-  its own product.
-- **(c) An interim line — gem sockets/inlays** applied to other
-  professions' refined items. Rejected on sight: a fifth stat channel
-  next to §6b's hard 4-slot ceiling, and it re-opens §6.3's cap
-  arithmetic for no design gain.
-- **(d) Defer the Goldsmith to Phase 2** and hand gems back to the
-  Blacksmith. Breaks §2.1's coverage argument and re-creates the
-  ownerless trinket slots the re-cut was made to fix.
-
-Recommendation: **(b)**. Two slots that already exist, one curve, one
-pool row — and it turns the profession's headline from a promise into a
-product. If (b) is rejected, take **(a)** *plus* the explicit note that
-the Goldsmith's value in the MVP is the gem reagent, and say so at the
-trainer.
-
-*Lands in*: `inventory_equipment.md` §2 (slot status),
-`items_crafting.md` §3.6b, §6.2 (with A3).
-**Decision:** **(b), decided 2026-08-08** — see the stub at the top of
-this question. What (b) does **not** answer is the trinket base-stat
-curve and the refinement bonus for a family with neither damage nor
-armor; that stays with A3.
+**Decision:** trinkets ship in the MVP as the Goldsmith's exclusive wearable
+family. The resulting profession identity and regional-material rules live in
+`items_crafting.md` §3.6b and the equipment docs. A3 still owns the open
+trinket refinement numbers.
 
 ---
 
@@ -798,45 +598,24 @@ cast-like remount delay.
 **Decision:** damage half **decided 2026-08-08**; **mounting while in
 combat is still open** and wanted before the mount WP, not during it.
 
-### D16 — Is riding restricted in enemy territory, on the war coast, in PvP, or underground?
+### D16 — May flying tiers operate underground?
 
-**Decided surface switches:**
-
-- The two land tiers are legal on enemy land. The two flying tiers cannot be
-  summoned there; crossing into enemy territory while flying retains the
-  existing ten-second warned grace before forced dismount.
-- Both factions may summon and fly throughout the shared Holy Grounds. This
-  replaces the obsolete own-side/enemy-side war-coast question: the shared
-  front is deliberately an aerial PvP area, while actual enemy territory is
-  not.
-- A PvP tag alone adds no mount-zone rule. Any incoming damage dismounts under
-  D15/`mounts.md` §3.1.
-- Every ocean column is non-flyable under D17/`mounts.md` §4.1, independently
-  of faction territory or altitude.
+Enemy territory, Holy Grounds, PvP-tag and ocean behavior are decided in
+`mounts.md` §4 and no longer belong to this TODO.
 
 **Still open:** whether either flying tier may operate underground. The earlier
-recommendation remains unrestricted underground because digging depth, rather
-than physical arrival, owns material access.
+recommendation remains unrestricted underground because the pick's natural
+depth limit, rather than physical arrival, owns material access.
 
-### D17 — Is there a flight ceiling, and what happens over the strait?
+### D17 — Flight ceiling and post-dismount drift
 
-**Ocean/front decision revised 2026-08-11:** the obsolete 200-node strait no
-longer defines the target map. Both factions may fly above the land-classified
-Holy Grounds. Every actual ocean column is non-flyable at every altitude:
-leaving legal land enters an approximately 50-node spatial warning band, then
-a hard column forces immediate dismount. A flying mount cannot be summoned in
-ocean.
+The authored ocean/channel warning and hard-flight boundaries are decided in
+`mounts.md` §4.1.
 
-WP40 authors that boundary together with the offshore dragon-island channels.
-The islands must lie beyond a non-zero hard no-flight strip and be unreachable
-by flyer in either direction; boat access remains mandatory. This invariant,
-not a copied coordinate or time window, is binding.
-
-**Still open:** the general flight ceiling. It now has a concrete dependency:
-the eventual ceiling and forced-dismount implementation must bound
-post-dismount air drift so a high-altitude rider cannot cross the dragon-channel
-hard strip after losing the mount. `mounts.md` §4.1 assigns that acceptance test
-to WP31/WP40 but does not silently choose a ceiling value.
+**Still open:** the general flight ceiling. The eventual ceiling and forced-
+dismount implementation must bound post-dismount air drift so a high-altitude
+rider cannot cross a dragon-channel hard strip after losing the mount. The
+design deliberately does not choose a ceiling value yet.
 
 ### D18 — What does "Exhausted" do to an un-mounted player?
 
@@ -985,14 +764,14 @@ cooking book.
 | A1 | Signature recipes per profession × mastery tier | WP10 |
 | A2 | Affix word lists + stat mapping (poison ruled out 2026-08-08) | **WP5** |
 | A3 | ~~Trinket enchant pool~~ (decided 2026-08-08) — refinement for bags **and** trinkets still open | WP5 (trinkets only) |
-| A4 | T5/T6 keystones + Woodcarver/Goldsmith rows | **WP10** |
+| A4 | Remaining T5/T6 keystones + Woodcarver rows; Goldsmith decided | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
-| B7 | ~~Rock-stratum node names & textures~~ — **decided 2026-08-08**: five new nodes below `default:stone`, placed as stratum ores registered last (`items_crafting.md` §3.0.4, `world.md` §2 R6) | — (WP25 and WP24's isle rock are design-unblocked) |
-| B8 | ~~Quartz/Garnet/Silver depth & scarcity~~ — **decided 2026-08-08**: ore bands, scarcities and the ore `level` rule (`items_crafting.md` §3.0.1) | — |
-| B9 | Legacy `open_sea_at` boundary fix for ocean mobs/swimmers; target flight uses WP40's authored ocean-column state instead | ocean/map integration |
-| B22 | The six picks' dig-speed `times` (the **rule** — higher tier digs faster, not only deeper — is decided 2026-08-08, `items_crafting.md` §3.0.4) | WP26/WP29 |
+| B7 | ~~Rock strata and their progression role~~ — decided in `world.md` §2 R6 | — |
+| B8 | ~~Universal/regional resource placement and harvest tiers~~ — decided in `biomes_mobs.md` §6 / `world.md` §2 R6 | — |
+| B9 | ~~Ocean classification~~ — decided in `world.md` §2b / `world_zones.md` §7 | — |
+| B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |
-| D12–D20 | Mounts: **item and persistence decided 2026-08-11** (persistent owner-bound item, ephemeral entity); level/speeds, Holy/ocean/enemy geography and damage dismount landed in `mounts.md`. Still open: D12 assets, D14 entity damage, mounting in combat, underground, flight ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
+| D12–D20 | Mounts: item, persistence, levels/speeds, geography and damage dismount are decided in `mounts.md`. Still open: D12 assets, D14 entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
 | E21 | Cooking recipe lists per tier — plus the restore % and buff magnitudes; **the food structure is decided 2026-08-08** (`items_crafting.md` §3.7, `combat_stats.md` §5) | **WP10** |

@@ -33,7 +33,8 @@ WP40 replaces it with the complete catalog and contracts below.
   `race_region`, level range, PvP rule, fixed neighbors, authored boundary,
   allowed biome list, signature terrain/property, mob and gathering palette,
   and reserved POI slots. `race_region` means cultural/geological provenance;
-  it selects architecture, regional loot and the race-gem slot, but does not
+  it selects architecture, regional loot, one G1 gem, one G2 gem, one cultural
+  material and one signature wood, but does not
   make a contested zone safe or politically controlled. `territory_rule`
   separately controls building and digging. Later quests and post-MVP POIs
   attach to the stable zone id.
@@ -70,6 +71,9 @@ WP40 replaces it with the complete catalog and contracts below.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
+- At **y = −701 and below**, every non-ocean land column is contested even
+  beneath a peaceful surface zone, capital, functional anchor or active claim.
+  Deep ocean and immutable dragon channels remain full-column exceptions.
 
 ## 3. Starting zones and capitals
 
@@ -86,7 +90,7 @@ WP40 replaces it with the complete catalog and contracts below.
 - Each race has its own king, for **six kings total**. The race's capital is
   that king's seat. Housing is not a royal level-30 grant: the separate
   passive, invulnerable Housing Steward owns the free level-20 Claim Stone
-  introduction staged in `TODO-design-housing.md`.
+  introduction defined in `world.md` §5.
 - A capital is centered inside its city zone and has main roads in all four
   cardinal directions. Its directional neighbors follow the world
   progression:
@@ -107,6 +111,9 @@ WP40 replaces it with the complete catalog and contracts below.
   **PvP-tagged**.
 - Entering a contested zone applies the PvP tag automatically. Leaving the
   zone does not remove it early.
+- Entering y = −701 or below on any non-ocean land column applies the same
+  automatic tag. Returning above that boundary under a peaceful surface zone
+  starts the ordinary full safe-zone tail; it never clears the tag early.
 - In a peaceful zone, an untagged player cannot receive unprovoked damage from
   an enemy player and cannot be selected as a valid hostile PvP damage target.
 - An untagged player who voluntarily uses a hostile action against an enemy
@@ -164,11 +171,13 @@ WP40 replaces it with the complete catalog and contracts below.
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
 - Each endpoint reserves an indestructible apex mining camp in the dangerous
-  approach to the lair. It contains all **six race-gem slots** at equal node
-  counts: exactly **12 renewable nodes, two per gem**. Natural veins remain finite; only these protected camp nodes
+  approach to the lair. It contains all six regional gem species at equal node
+  counts: exactly **12 renewable nodes—two Citrine, two Garnet, two Jade, two
+  Diamond, two Sapphire and two Ruby**. Natural veins remain finite; only
+  these protected camp nodes
   use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
-  catalog supplies the six item/node ids; zone code stores race-gem slots and
-  never hard-codes provisional gem names.
+  catalog supplies the item/node ids; zone code stores the six semantic gem
+  species and never owns their registered itemstrings.
 
 ## 7. World frame, scale and authored variation
 
@@ -784,17 +793,24 @@ band and prevent one bridge or zone from becoming the sole faction route.
 
 ## 10. Race-region character
 
-| Race region | Geographic language | Architecture/build set | Core mob/loot language |
+| Race region | G1 / G2 | Cultural material / wood | Geographic and content language |
 |---|---|---|---|
-| Dwarf | pine shelves, granite, snow ridges, quarries and lightning scars | pine, stonebrick, carved granite, terraces and vault mouths | mountain prey/predators, golems, feathers, heavy leather, gravemoss/dragonweed |
-| Human | fields, oak woods, river forks, marsh roads and old masonry | oak, brick, cobble, thatch, bridges and walled market towns | boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
-| Elf | silverwood, pale cliffs, lakes, canopy paths and warm cloud forest | silverwood, white stone, tree platforms and light bridges | forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
-| Undead | blight basins, gravewood, bone ridges, salt cliffs and drowned roads | gravewood, cursed cobble, bone and black terraces | undead/forest families, cloth, leather, gravemoss/dragonweed |
-| Orc | ochre grass, dry rivers, red mesas, badland cliffs and siege earthworks | acacia, adobe, basalt and bone palisades | savanna/mountain families, feathers, leather, golem materials and dragonweed |
-| Troll | kapok basins, rivers, reed mazes, storm jungle and volcanic terraces | junglewood, mossycobble, stilt paths and carved totems | jungle/swamp families, silk, scaled hide, marshbloom and high-tier lotus |
+| Dwarf | Garnet / Sapphire | Runeslate / Mountain Pine | pine shelves, granite, snow ridges, quarries, golems, feathers, heavy leather and gravemoss/dragonweed |
+| Human | Citrine / Diamond | Sunwax / Oak | fields, oak woods, river forks, marsh roads, boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
+| Elf | Jade / Sapphire | Moonresin / Silverwood | silverwood, pale cliffs, lakes, canopy paths, forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
+| Undead | Citrine / Ruby | Gravesalt / Gravewood | blight basins, bone ridges, salt cliffs, drowned roads, undead/forest families, cloth, leather and gravemoss/dragonweed |
+| Orc | Garnet / Diamond | Red Ochre / Spikethorn Acacia | ochre grass, dry rivers, red mesas, siege earthworks, savanna/mountain families, feathers, leather and golem materials |
+| Troll | Jade / Ruby | Spirit Resin / Kapok | kapok basins, rivers, reed mazes, storm jungle, swamp/jungle families, silk, scaled hide, marshbloom and high-tier lotus |
 
 Race visuals may use different trophies and building materials, while the
 paired base drop tables remain economically equivalent.
+
+G1 comprises Citrine, Garnet and Jade; G2 comprises Diamond, Sapphire and
+Ruby. Accord therefore has native Diamond/Sapphire and seeks foreign Ruby;
+Throng has native Diamond/Ruby and seeks foreign Sapphire. The six universal
+metal/pick tiers never consume these regional gems or cultural materials, so a
+player can reach the contested source before an ordinary high-tier gear recipe
+asks for it.
 
 ## 11. Resource, loot and POI budgets
 
@@ -814,16 +830,32 @@ paired base drop tables remain economically equivalent.
   Mournfen and Whispering Reedlands for the Throng.
 - Named rares migrate as listed in §8. Their level is clamped into the owning
   zone's band; no old ring coordinate survives.
-- Every non-city zone exposes its race's signature-gem slot only where the
-  material catalog allows that gem's tier. The total expected natural vein
-  count plus the one ordinary camp budget is equal for all six races within
-  **±5%**, normalized by accessible land volume rather than number of zones.
-- Both apex camps contain the same count of every one of the six race gems.
+- Every non-city zone exposes its race region's assigned G1 and G2 species only
+  where their authored depth/tier curves permit them. G1 rises through T4,
+  retains its T4 density in T5/ordinary T6 and then receives the shared deep-T6
+  multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
+  ordinary T6 (4×), with initial targets of approximately one eligible ore per
+  12,000/6,000/3,000 host nodes per species. All G2 requires a T4 pick to
+  harvest. The total expected natural vein count plus the one ordinary camp
+  budget is equal for all six race regions within **±5%**, normalized by
+  accessible host volume rather than number of zones.
+- Every race region supplies its cultural material ordinarily at the surface
+  for its own architecture, trade and quests, and supplies a concentrated T4
+  source in contested level-31+ land or its projected deep column. Foreign
+  cultural material is optional PvP-counter input and never a universal
+  progression requirement.
+- Both apex camps contain the same count of every one of the six gem species:
+  exactly two renewable sockets per species per island.
   Endpoint deposits are a shared bonus and do not compensate a deficient home
   budget.
+- Each faction-native exclusive G2 species has at least one practical
+  contested level-31+ surface route: Ruby for Accord raiders and Sapphire for
+  Throng raiders. The y = −701 deep opening also permits cross-border mining
+  beneath the opposing race-region columns, and both islands provide all six
+  species by boat. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
-  subject to tools, active claims and explicit hard-protected capital,
+  subject to tools and explicit hard-protected capital,
   functional-anchor or irreplaceable-route envelopes. Ordinary road and camp
   envelopes exclude claims and grade mapgen but do not block terrain mutation.
   This applies equally to all six faction frontier approaches and to both
@@ -958,7 +990,8 @@ paired base drop tables remain economically equivalent.
   ground; it never derives ownership from `race_region`. `territory_rule_at`
   returns the complete 3D construction/mining policy, including
   `contested_land`, `holy_grounds`, protected envelopes and immutable ocean
-  channels.
+  channels. `pvp_rule_at(pos)` likewise applies the y = −701 contested-deep
+  override rather than returning only the surface zone's rule.
 - `grug_core.difficulty_at`, `mob_level_at`, `guard_level_at`,
   territory protection and open-sea checks become compatibility consumers of
   that API. The independent depth floor remains
@@ -1049,12 +1082,14 @@ paired base drop tables remain economically equivalent.
 - Biomes/content: no logical biome, mob family or gathering node appears
   outside its zone palette. Every `logical biome × zone` cell has at least
   one valid ambient spawn or is explicitly marked civic/no-hostiles.
-- Economy: the §11 race-gem, faction-material, POI, rare and loot-source
-  audits pass over at least 32 representative seeds.
+- Economy: the §11 G1/G2, cultural-material, signature-wood, POI, rare and
+  loot-source audits pass over at least 32 representative seeds. They prove
+  native, enemy-contested, deep-cross-border, apex-camp and trade routes,
+  including practical T4 access to the opposing faction-exclusive G2.
 - Territory: `race_region` never grants construction rights; ordinary
   level-31–60 frontier/island terrain is editable by both factions, Holy
   Grounds is immutable through y = -700 and contested/editable at y = -701,
-  dragon channels are immutable at every y, and all 24 apex gem slots are
+  dragon channels are immutable at every y, and all 24 apex gem sockets are
   reachable and diggable with their required tool. Every camp's small
   functional anchor remains protected, while ordinary walls, tents and
   battlefield dressing follow the zone's mutable terrain policy.
@@ -1105,7 +1140,9 @@ tag anybody.
   no landed-hit proc, rage or on-hit effect. A launched cast/projectile keeps
   its ordinary launch cost; target-dependent settlement effects do not run.
 - Entering or already standing in contested ground forces both enemy players
-  tagged before the same table is evaluated.
+  tagged before the same table is evaluated. Contested ground includes every
+  non-ocean land position at y = −701 and below, regardless of the surface
+  zone's peaceful status.
 - A hostile action against an enemy capital/outpost guard, war-front unit or
   protected faction combat object tags the player before PvE/NPC damage is
   resolved. Ordinary hostile creatures do not affect PvP state.
