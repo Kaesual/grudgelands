@@ -79,15 +79,9 @@ end
 --                           grug_mobs:light_leather (2c) it sits next to in
 --                           the wolf/stag/panther drop tables
 --   default:iron_lump   3c  ore lump, top of the band
---   default:steel_ingot 3c  zombie drop at 1-in-10. NOT a copper above the
---                           lump: default registers a `cooking` recipe
---                           lump -> ingot (mods/BASE/default/craftitems.lua),
---                           so any premium on the ingot would be free copper
---                           per smelt. items_crafting.md §3.8: "vendor value
---                           of a crafted item < summed vendor value of its
---                           ingredients -- vendors are a floor, never a
---                           factory profit". Audit 3 below enforces exactly
---                           that, for every priced item and every recipe.
+-- Canonical Iron Bar is owned by grug_materials and carries its 3c price on
+-- the item definition. It is not worth more than the Iron Lump consumed by
+-- the temporary upstream furnace recipe, so smelting cannot print money.
 -- Rough Diamond is owned by grug_materials and therefore carries its 3c
 -- `_grug_sell_price` on the canonical item definition instead of this foreign
 -- override table.
@@ -95,7 +89,6 @@ end
 grug_traders.set_price("mobs:meat_raw", 2)
 grug_traders.set_price("mobs:leather", 2)
 grug_traders.set_price("default:iron_lump", 3)
-grug_traders.set_price("default:steel_ingot", 3)
 
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/potion.lua")

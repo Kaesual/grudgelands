@@ -7,22 +7,31 @@
 grug_materials.TIERS = {
 	{id = 1, key = "bronze", name = "Bronze", min_level = 1, max_level = 10,
 		ilvl = 3, max_depth = -100, y_max = 31000, y_min = -100,
-		node = "default:stone"},
+		node = "default:stone", bar_item = "grug_materials:bronze_bar",
+		block_node = "grug_materials:bronze_block"},
 	{id = 2, key = "iron", name = "Iron", min_level = 11, max_level = 20,
 		ilvl = 10, max_depth = -300, y_max = -101, y_min = -300,
-		node = "grug_materials:slate"},
+		node = "grug_materials:slate", bar_item = "grug_materials:iron_bar",
+		block_node = "grug_materials:iron_block"},
 	{id = 3, key = "steel", name = "Steel", min_level = 21, max_level = 30,
 		ilvl = 20, max_depth = -500, y_max = -301, y_min = -500,
-		node = "grug_materials:basalt"},
+		node = "grug_materials:basalt", bar_item = "grug_materials:steel_bar",
+		block_node = "grug_materials:steel_block"},
 	{id = 4, key = "silversteel", name = "Silversteel", min_level = 31,
 		max_level = 40, ilvl = 30, max_depth = -700, y_max = -501,
-		y_min = -700, node = "grug_materials:granite"},
+		y_min = -700, node = "grug_materials:granite",
+		bar_item = "grug_materials:silversteel_bar",
+		block_node = "grug_materials:silversteel_block"},
 	{id = 5, key = "embersteel", name = "Embersteel", min_level = 41,
 		max_level = 50, ilvl = 40, max_depth = -1000, y_max = -701,
-		y_min = -1000, node = "grug_materials:emberrock"},
+		y_min = -1000, node = "grug_materials:emberrock",
+		bar_item = "grug_materials:embersteel_bar",
+		block_node = "grug_materials:embersteel_block"},
 	{id = 6, key = "abyssal_steel", name = "Abyssal Steel", min_level = 51,
 		max_level = 60, ilvl = 50, max_depth = -31000, y_max = -1001,
-		y_min = -31000, node = "grug_materials:abyssal_rock"},
+		y_min = -31000, node = "grug_materials:abyssal_rock",
+		bar_item = "grug_materials:abyssal_steel_bar",
+		block_node = "grug_materials:abyssal_steel_block"},
 }
 
 local TIERS = grug_materials.TIERS
@@ -123,8 +132,9 @@ grug_materials.RESOURCES = {
 		harvest_tier = 4, scope = "regional", grade = "G2"},
 	{key = "abyssal_crystal", name = "Abyssal Crystal",
 		natural_node = "grug_materials:abyssal_crystal_ore",
-		raw_item = "grug_materials:abyssal_crystal", harvest_tier = 5,
-		scope = "universal"},
+		raw_item = "grug_materials:abyssal_crystal",
+		block_node = "grug_materials:abyssal_crystal_block",
+		harvest_tier = 5, scope = "universal"},
 }
 
 grug_materials.RESOURCE_BY_KEY = {}
@@ -145,6 +155,61 @@ end
 function grug_materials.resource_node(key)
 	local resource = grug_materials.RESOURCE_BY_KEY[key]
 	return resource and resource.natural_node or nil
+end
+
+-- Universal processed forms. Recipes are deliberately not part of this
+-- registry: WP26 owns smelting/alloying and WP10 owns cut-gem storage. `item`
+-- is the nine-unit storage input; bars also publish the more specific
+-- `bar_item` field consumed by tier/equipment code.
+grug_materials.PROCESSED_MATERIALS = {
+	{key = "copper", name = "Copper", kind = "bar",
+		item = "grug_materials:copper_bar", bar_item = "grug_materials:copper_bar",
+		block_node = "grug_materials:copper_block"},
+	{key = "tin", name = "Tin", kind = "bar",
+		item = "grug_materials:tin_bar", bar_item = "grug_materials:tin_bar",
+		block_node = "grug_materials:tin_block"},
+	{key = "bronze", name = "Bronze", kind = "bar", tier = 1,
+		item = "grug_materials:bronze_bar", bar_item = "grug_materials:bronze_bar",
+		block_node = "grug_materials:bronze_block"},
+	{key = "iron", name = "Iron", kind = "bar", tier = 2,
+		item = "grug_materials:iron_bar", bar_item = "grug_materials:iron_bar",
+		block_node = "grug_materials:iron_block", sell_price = 3},
+	{key = "steel", name = "Steel", kind = "bar", tier = 3,
+		item = "grug_materials:steel_bar", bar_item = "grug_materials:steel_bar",
+		block_node = "grug_materials:steel_block"},
+	{key = "silver", name = "Silver", kind = "bar",
+		item = "grug_materials:silver_bar", bar_item = "grug_materials:silver_bar",
+		block_node = "grug_materials:silver_block"},
+	{key = "silversteel", name = "Silversteel", kind = "bar", tier = 4,
+		item = "grug_materials:silversteel_bar",
+		bar_item = "grug_materials:silversteel_bar",
+		block_node = "grug_materials:silversteel_block"},
+	{key = "emberglass", name = "Emberglass", kind = "resource",
+		item = "grug_materials:emberglass",
+		block_node = "grug_materials:emberglass_block"},
+	{key = "embersteel", name = "Embersteel", kind = "bar", tier = 5,
+		item = "grug_materials:embersteel_bar",
+		bar_item = "grug_materials:embersteel_bar",
+		block_node = "grug_materials:embersteel_block"},
+	{key = "abyssal_crystal", name = "Abyssal Crystal", kind = "resource",
+		item = "grug_materials:abyssal_crystal",
+		block_node = "grug_materials:abyssal_crystal_block"},
+	{key = "abyssal_steel", name = "Abyssal Steel", kind = "bar", tier = 6,
+		item = "grug_materials:abyssal_steel_bar",
+		bar_item = "grug_materials:abyssal_steel_bar",
+		block_node = "grug_materials:abyssal_steel_block"},
+	{key = "gold", name = "Gold", kind = "bar",
+		item = "grug_materials:gold_bar", bar_item = "grug_materials:gold_bar",
+		block_node = "grug_materials:gold_block"},
+}
+
+grug_materials.PROCESSED_BY_KEY = {}
+for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
+	grug_materials.PROCESSED_BY_KEY[material.key] = material
+end
+
+function grug_materials.processed(key)
+	return grug_materials.PROCESSED_BY_KEY[key]
 end
 
 grug_materials.GEM_GRADES = {
@@ -251,6 +316,18 @@ grug_materials.LEGACY_ALIASES = {
 	["default:stone_with_diamond"] = "grug_materials:stone_with_diamond",
 	["default:diamond"] = "grug_materials:rough_diamond",
 	["default:diamondblock"] = "grug_materials:diamond_block",
+	["steel_ingot"] = "grug_materials:iron_bar",
+	["steelblock"] = "grug_materials:iron_block",
+	["default:copper_ingot"] = "grug_materials:copper_bar",
+	["default:copperblock"] = "grug_materials:copper_block",
+	["default:tin_ingot"] = "grug_materials:tin_bar",
+	["default:tinblock"] = "grug_materials:tin_block",
+	["default:bronze_ingot"] = "grug_materials:bronze_bar",
+	["default:bronzeblock"] = "grug_materials:bronze_block",
+	["default:steel_ingot"] = "grug_materials:iron_bar",
+	["default:steelblock"] = "grug_materials:iron_block",
+	["default:gold_ingot"] = "grug_materials:gold_bar",
+	["default:goldblock"] = "grug_materials:gold_block",
 	["default:pick_mese"] = "default:pick_steel",
 	["default:shovel_mese"] = "default:shovel_steel",
 	["default:axe_mese"] = "default:axe_steel",
@@ -286,9 +363,10 @@ local function validate_registry()
 	if TIER_COUNT ~= 6 then
 		registry_error("expected exactly six tiers, got " .. TIER_COUNT)
 	end
-	local tier_keys, tier_nodes = {}, {}
+	local tier_keys, tier_nodes, tier_bars, tier_blocks = {}, {}, {}, {}
 	for i, tier in ipairs(TIERS) do
-		if tier.id ~= i or tier_keys[tier.key] or tier_nodes[tier.node] then
+		if tier.id ~= i or tier_keys[tier.key] or tier_nodes[tier.node] or
+				tier_bars[tier.bar_item] or tier_blocks[tier.block_node] then
 			registry_error("duplicate or non-contiguous tier at index " .. i)
 		end
 		if tier.max_depth ~= tier.y_min then
@@ -298,6 +376,7 @@ local function validate_registry()
 			registry_error("gap or overlap above tier " .. tier.key)
 		end
 		tier_keys[tier.key], tier_nodes[tier.node] = true, true
+		tier_bars[tier.bar_item], tier_blocks[tier.block_node] = true, true
 	end
 
 	local resource_keys, nodes, items = {}, {}, {}
@@ -312,6 +391,45 @@ local function validate_registry()
 		resource_keys[resource.key] = true
 		nodes[resource.natural_node] = true
 		items[resource.raw_item] = true
+	end
+
+	local processed_keys, processed_items, processed_blocks = {}, {}, {}
+	for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
+		if processed_keys[material.key] or processed_items[material.item] or
+				processed_blocks[material.block_node] then
+			registry_error("duplicate processed material " .. material.key)
+		end
+		if material.item:match("^grug_materials:") == nil or
+				material.block_node:match("^grug_materials:") == nil then
+			registry_error("non-canonical processed id for " .. material.key)
+		end
+		if material.kind == "bar" and material.bar_item ~= material.item then
+			registry_error("invalid bar id for " .. material.key)
+		elseif material.kind ~= "bar" and material.kind ~= "resource" then
+			registry_error("invalid processed kind for " .. material.key)
+		end
+		processed_keys[material.key] = true
+		processed_items[material.item] = true
+		processed_blocks[material.block_node] = true
+	end
+	if #grug_materials.PROCESSED_MATERIALS ~= 12 then
+		registry_error("expected twelve processed material rows")
+	end
+	for _, tier in ipairs(TIERS) do
+		local material = grug_materials.PROCESSED_BY_KEY[tier.key]
+		if not material or material.tier ~= tier.id or
+				material.bar_item ~= tier.bar_item or
+				material.block_node ~= tier.block_node then
+			registry_error("tier processed forms disagree for " .. tier.key)
+		end
+	end
+	for _, key in ipairs({"emberglass", "abyssal_crystal"}) do
+		local resource = grug_materials.RESOURCE_BY_KEY[key]
+		local material = grug_materials.PROCESSED_BY_KEY[key]
+		if not resource or not material or resource.raw_item ~= material.item or
+				resource.block_node ~= material.block_node then
+			registry_error("resource storage form disagrees for " .. key)
+		end
 	end
 
 	for grade, keys in pairs(grug_materials.GEM_GRADES) do

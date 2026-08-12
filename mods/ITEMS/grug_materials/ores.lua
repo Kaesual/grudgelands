@@ -83,6 +83,53 @@ for _, resource in ipairs(grug_materials.RESOURCES) do
 	end
 end
 
+-- Canonical processed/storage concepts. No recipes are registered here;
+-- WP26 owns furnace/alloy outputs and the storage recipe families.
+local PROCESSED_VISUALS = {
+	copper = {"default_copper_ingot.png", "default_copper_block.png"},
+	tin = {"default_tin_ingot.png", "default_tin_block.png"},
+	bronze = {"default_bronze_ingot.png", "default_bronze_block.png"},
+	iron = {"default_steel_ingot.png", "default_steel_block.png"},
+	steel = {"default_steel_ingot.png^[colorize:#34404a:75",
+		"default_steel_block.png^[colorize:#34404a:75"},
+	silver = {"default_tin_ingot.png^[colorize:#f4f6fa:90",
+		"default_tin_block.png^[colorize:#f4f6fa:90"},
+	silversteel = {"default_steel_ingot.png^[colorize:#b7c9df:95",
+		"default_steel_block.png^[colorize:#b7c9df:95"},
+	embersteel = {"default_steel_ingot.png^[colorize:#b94b24:110",
+		"default_steel_block.png^[colorize:#b94b24:110"},
+	abyssal_steel = {"default_steel_ingot.png^[colorize:#3a245d:135",
+		"default_steel_block.png^[colorize:#3a245d:135"},
+	gold = {"default_gold_ingot.png", "default_gold_block.png"},
+}
+
+for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
+	local visual = PROCESSED_VISUALS[material.key]
+	if material.kind == "bar" and not core.registered_items[material.item] then
+		if not visual then
+			error("grug_materials: missing processed visual for " .. material.key)
+		end
+		core.register_craftitem(material.item, {
+			description = material.name .. " Bar",
+			inventory_image = visual[1],
+			_grug_sell_price = material.sell_price,
+		})
+	end
+	if not core.registered_nodes[material.block_node] then
+		if not visual then
+			error("grug_materials: missing storage visual for " .. material.key)
+		end
+		core.register_node(material.block_node, {
+			description = material.name .. " Block",
+			tiles = {visual[2]},
+			is_ground_content = false,
+			groups = {cracky = 1},
+			drop = material.block_node,
+			sounds = default.node_sound_metal_defaults(),
+		})
+	end
+end
+
 core.register_craftitem("grug_materials:emberglass_shard", {
 	description = "Emberglass Shard",
 	inventory_image = "default_mese_crystal_fragment.png^[colorize:#ff7a2e:45",

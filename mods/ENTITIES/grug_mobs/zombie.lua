@@ -56,11 +56,12 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	},
 
 	-- Zombie table (biomes_mobs.md §3.1): flesh 1/1, linen scrap 1/2,
-	-- steel ingot 1/10.
+	-- Iron Bar 1/10. The old upstream Steel Ingot represented furnace-smelted
+	-- iron and migrated to this canonical processed id in WP43.
 	drops = {
 		{name = "grug_mobs:zombie_flesh", chance = 1, min = 1, max = 1},
 		{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
-		{name = "default:steel_ingot", chance = 10, min = 1, max = 1},
+		{name = "grug_materials:iron_bar", chance = 10, min = 1, max = 1},
 	},
 
 	water_damage = 0,

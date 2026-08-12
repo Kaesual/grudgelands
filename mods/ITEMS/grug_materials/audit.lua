@@ -34,6 +34,27 @@ core.register_on_mods_loaded(function()
 		end
 	end
 
+	for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
+		if not raw_item(material.item) then
+			fail("missing concrete processed item " .. material.item)
+		end
+		local block = rawget(core.registered_nodes, material.block_node)
+		local groups = block and block.groups or {}
+		if not block or groups.grug_natural or groups.grug_resource or
+				groups.grug_stratum or (tonumber(groups.level) or 0) > 0 then
+			fail("missing or misclassified storage node " .. material.block_node)
+		end
+		if block.drop ~= material.block_node then
+			fail("storage node must drop itself: " .. material.block_node)
+		end
+	end
+	for _, tier in ipairs(grug_materials.TIERS) do
+		if not raw_item(tier.bar_item) or
+				not rawget(core.registered_nodes, tier.block_node) then
+			fail("missing processed tier forms for " .. tier.key)
+		end
+	end
+
 	for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do
 		if not core.registered_items[material.item] then
 			fail("missing cultural material for " .. material.race)
@@ -73,5 +94,7 @@ core.register_on_mods_loaded(function()
 	end
 
 	core.log("action", "[grug_materials] registry audit passed: 6 tiers, " ..
-		#grug_materials.RESOURCES .. " resources, 6 race regions")
+		#grug_materials.RESOURCES .. " resources, " ..
+		#grug_materials.PROCESSED_MATERIALS ..
+		" processed forms, 6 race regions")
 end)
