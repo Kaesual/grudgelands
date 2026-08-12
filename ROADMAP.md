@@ -374,12 +374,13 @@ game (not a mod pack), written in Lua.
       into enemy territory (deterministic named-zone pairing), later world
       bosses behind challenges (spec in progress: TODO-design-nether.md)
 - [ ] **Mounts** (spec decided 2026-08-07: `docs/design/mounts.md`):
-      riding is a universal skill on the same four mastery tiers,
-      **bought with gold, never tamed** — slow land, fast land, slow
-      flying, fast flying at 1s/8s/30s/60s ≈ 1g, a welcome second
-      long-term sink next to housing. Open sea throws a rider off after
-      10 s of "Exhausted"; housing isles forbid riding and flying
-      outright
+      riding is a universal skill using the same four mastery names,
+      **bought with gold, never tamed** — level 15/30 land mounts at
+      +50%/+100% and level 45/60 flying mounts at +75%/+150%, priced from
+      15m/45m/2h/5h net-income targets. A permanent hotbar item summons an
+      ephemeral attached entity. Holy Grounds permit both factions to fly;
+      ocean warns for about 50 nodes then dismounts at every altitude, and
+      enemy territory permits only land mounts
 - [ ] **Farming** — Minecraft-like, adapted from VoxeLibre or Lord of the
       Test, together with the extra herbs and cooking recipes as one
       later expansion package. **Spices are farmable, healing herbs never
@@ -411,5 +412,7 @@ game (not a mod pack), written in Lua.
 - A seventh "Enchanter" profession — enchanting belongs to all six
 
 *(**Flying mounts left this list on 2026-08-07**: `docs/design/mounts.md`
-makes the two flying tiers the travel milestone of the second half of the
-game, fenced in by the open-sea "Exhausted" rule and the no-mount isles.)*
+makes the level-45/+75% and level-60/+150% flying tiers the late-game travel
+milestones. Both factions may fly above Holy Grounds, while a spatial ocean
+warning and hard dismount keep the offshore dragon islands boat-only and enemy
+territory remains land-mount-only.)*

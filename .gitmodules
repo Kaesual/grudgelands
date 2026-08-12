@@ -22,3 +22,6 @@
 [submodule "reference_projects/mobs_monster"]
 	path = reference_projects/mobs_monster
 	url = https://codeberg.org/tenplus1/mobs_monster
+[submodule "reference_projects/protector"]
+	path = reference_projects/protector
+	url = https://codeberg.org/tenplus1/protector

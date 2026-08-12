@@ -1,16 +1,17 @@
 # Mounts — Riding, Speed Tiers & No-Mount Zones
 
-Decided 2026-08-07 (crafting/mounts design session). **Nothing here is
-built yet**: this file is the spec a later work package implements, not
-a description of shipped behaviour. It exists so that the WP can be cut
-without re-opening the design.
+Decided 2026-08-07; revised 2026-08-11 for open-world housing, the authored
+front and the level-15/30/45/60 travel ladder. **Nothing here is built yet**:
+this file is the spec a later work package implements, not a description of
+shipped behaviour. It exists so that the WP can be cut without re-opening the
+design.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel and
-waypoints `world.md` §6, ocean zones
-`world.md` §2b, housing isles `world.md` §5, the four mastery tiers
-`items_crafting.md` §2.1, universal skills `professions.md` §1, the mob
-speed pillar `combat_stats.md` §3 and the chase/leash model
-`combat_stats.md` §4, sinks `economy.md` §4 and `items_crafting.md` §8.4.
+waypoints `world.md` §6, the revised ocean/dragon-island rules staged in
+`TODO-design-material-progression.md`, open-world claims staged in
+`TODO-design-housing.md`, the four mastery names in `items_crafting.md` §2.1,
+universal skills `professions.md` §1, the mob speed pillar
+`combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
 
 ## 1. Riding is a universal skill
 
@@ -18,24 +19,26 @@ speed pillar `combat_stats.md` §3 and the chase/leash model
   **First Aid** (`professions.md` §1) it is universal — every character
   can learn it, and the two main profession slots stay free for the six
   crafting professions.
-- Riding is learned **from a trainer in a race capital**, in four steps.
-  A learned step is **player state, permanent and per character** (like
-  a profession tier), and it hands over the mount of that step.
+- Riding is learned **from a trainer in a race capital**, in four steps at
+  character levels 15, 30, 45 and 60. A learned step is **player state,
+  permanent and per character**, and it hands over the owner-bound mount item
+  of that step.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 
 ### 1.1 The four tiers
 
-Riding uses the **same four mastery tiers as the crafting professions**
-(`items_crafting.md` §2.1), with the same names and the same character
-level anchors — a player learns one vocabulary, not two:
+Riding reuses the **names and order** of the four crafting mastery tiers
+(`items_crafting.md` §2.1), but its purchase levels are the exact travel
+milestones 15/30/45/60. Riding and profession mastery remain independent
+character state:
 
-| Mastery | Learn at ~char level | Mount | Speed | Mount speed |
+| Mastery | Learn at character level | Mount | Speed | Mount speed |
 |---|---|---|---|---|
-| Apprentice | 1 | slow land mount | +50 % | 6 nodes/s |
-| Journeyman | ~16 | fast land mount | +100 % | 8 nodes/s |
-| Expert | ~31 | slow flying mount | +50 % | 6 nodes/s |
-| Master | ~46 | fast flying mount | +100 % | 8 nodes/s |
+| Apprentice | 15 | slow land mount | +50 % | 6 nodes/s |
+| Journeyman | 30 | fast land mount | +100 % | 8 nodes/s |
+| Expert | 45 | slow flying mount | +75 % | 7 nodes/s |
+| Master | 60 | fast flying mount | +150 % | 10 nodes/s |
 
 - Percentages are relative to a player's **default walking speed of 4
   nodes/s** (engine default `movement_speed_walk = 4`,
@@ -45,49 +48,48 @@ level anchors — a player learns one vocabulary, not two:
   (`combat_stats.md` §3). That is deliberate, and it is exactly why
   **incoming damage dismounts the rider** (§3.1): the speed is
   permanent, the immunity to the mob game is not.
-- The two flying tiers are the milestones — a flying mount is **the**
-  travel upgrade of the second half of the game, and Expert is
-  deliberately no faster than Journeyman: the first flight buys
-  *terrain*, not speed. Master buys speed on top.
-- **Flight buys terrain at home, not abroad.** The two flying tiers are
-  the only ones any zone rule of §4 treats differently: they are refused
-  on the housing isles (§4.2) and in enemy territory (§4.3). The two land
-  tiers go everywhere the isles allow.
-- The level anchor is the **visibility** gate; the price (§2) is the
-  real gate at the low end — an Apprentice mount is nominally available
-  at level 1 and costs about the first hour of income.
+- The two flying tiers are the late-game milestones. Expert is deliberately
+  slower than the level-30 fast land mount: its +75% buys direct aerial routes
+  and terrain access, not the next linear speed step. Master buys both flight
+  and the top +150% travel speed.
+- **Flight buys terrain at home and over the shared Holy Grounds, not in enemy
+  territory or across ocean.** The two land tiers remain legal in enemy
+  territory; §4 owns the complete geographic rule.
+- Each exact character-level anchor is both the visibility and purchase gate.
+  Price is calibrated by reliable net earning time rather than preserving the
+  obsolete 1s/8s/30s/60s table.
 
-*Rationale for reusing the ladder*: the four names already carry a
-meaning for every player (their profession book, their enchant slots,
-their signature recipes — `items_crafting.md` §2.1 binds a few
-profession-exclusive recipes to every mastery tier). A fifth, separate
-ladder for riding would be pure vocabulary tax; sharing it makes "I am
-Expert" a statement about where a character stands, not about which
-system is being talked about.
+*Rationale for reusing the names*: the four names already carry a meaning for
+every player. A fifth vocabulary for four sequential purchases would be pure
+terminology tax; the exact mount levels are nevertheless authored independently
+so the travel unlocks land cleanly at 15/30/45/60.
+
+### 1.2 Map-scale consequence
+
+Mount speeds do not define a target journey duration. The three capital x
+anchors are fixed at −1,800, 0 and +1,800 by `world_zones.md`; authored roads,
+terrain and the geographic restrictions in §4 determine how long a particular
+journey actually takes. Mount balance is therefore expressed only by the
+movement speeds and unlock levels in §1.1, not by promised capital-to-capital
+minutes.
 
 ## 2. Prices — the riding gold sink
 
-All values copper (`economy.md` §1). Bought once, permanent.
+Each tier is bought once and remains permanent character state. Exact Gold
+prices are derived only after the revised per-tier net-income calibration; the
+old 1s/8s/30s/60s table is superseded.
 
-| Tier | Price |
-|---|---|
-| Apprentice — slow land mount | **1s** |
-| Journeyman — fast land mount | **8s** |
-| Expert — slow flying mount | **30s** |
-| Master — fast flying mount | **60s** |
+| Tier | Level | Target reliable net solo earning time |
+|---|---:|---:|
+| Apprentice — slow land mount | 15 | about 15 minutes |
+| Journeyman — fast land mount | 30 | about 45 minutes |
+| Expert — slow flying mount | 45 | about 2 hours |
+| Master — fast flying mount | 60 | about 5 hours |
 
-**≈ 99s ≈ 1g for the complete ladder.**
-
-*Rationale*: against a lifetime gross income to level 60 of ≈ 1g and
-endgame farming of 6–12s/hour (`items_crafting.md` §8/§8.1), the whole
-riding ladder costs about one full playthrough's income while the
-housing depth ladder costs ≈ 1.9g (`world.md` §5.3) — housing stays
-**the** anchor sink (`economy.md` §4.1) and riding is the second-largest
-long-term goal, not a rival. **No single riding purchase reaches a full
-gold**, so `economy.md` §2's "a full gold is a fortune" stays reserved
-for the deepest housing step, the guild founding fee and nothing else;
-the biggest riding purchase (Master, 60s) matches housing step 5 and
-sits clearly under its 1g flagship step.
+The measurement is after routine repairs and consumables and excludes rare
+jackpots or an assumed player market. The first mount is readily achievable;
+the fast level-60 flyer is an aspirational farming goal without becoming an
+arbitrary fixed-price wall.
 
 ## 3. What a mount is, mechanically
 
@@ -97,11 +99,25 @@ sits clearly under its 1g flagship step.
   (`mods/ENTITIES/mobs/crafts.lua:119`, `:138`, `:231`) — are removed with the
   vendored-recipe cleanup. A mount is a purchase, exactly like a tome or
   a depth step.
-- **A mount is an entity the player is attached to.** The player calls
+- **Each purchased tier is an owner-bound inventory/hotbar item.** The item is
+  the summon/dismount action; it is never consumed, removed from the inventory
+  or dropped into the world while mounting or dismounting. Permanent player
+  state is the authority for ownership, so the trainer can restore a missing
+  representation without permitting duplicates or trading.
+- Using the item on foot creates one ephemeral mount entity at the player's
+  exact position and rotation. The entity takes over that position as the
+  movement and collision authority, and the player's visible character is
+  attached on top. While mounted, movement controls drive only the mount entity;
+  the player's independent movement is disabled.
+- **A mount is therefore an entity the player is attached to.** The player calls
   `player:set_attach(mount_entity, ...)`
   (`reference_projects/luanti/doc/lua_api.md:8948`); while attached the
   player's `get_pos`/`get_rotation` return the parent entity's values
   and their own setters are ignored (`lua_api.md:8864-8870`).
+- Only one active mount entity may exist per player. Using the active mount item
+  again dismounts. Every dismount removes the ephemeral entity; no horse or
+  flying creature remains parked in the world, and the unchanged item was in
+  the inventory throughout.
 - **Mount speed is the entity's velocity, never
   `physics_override.speed`.** That follows from the attachment above and
   it matters: `physics_override.speed` already has two declared owners
@@ -112,17 +128,17 @@ sits clearly under its 1g flagship step.
   registered through `grug_mobs.register_mob` — that wrapper *is* the
   level/XP engine (AGENTS.md, WP6 patterns) and would give a horse a
   level, a health bar and a con colour.
-- **Dismounting** detaches the player and places them on a free
-  neighbouring node — the `mobs.detach` / `find_free_pos` pattern of the
-  vendored `mods/ENTITIES/mobs/mount.lua:183-198` and `:107-120`.
+- **Dismounting** detaches the player, removes the ephemeral mount and places
+  the player on a free neighbouring node where geography permits — the
+  `mobs.detach` / `find_free_pos` pattern of the vendored
+  `mods/ENTITIES/mobs/mount.lua:183-198` and `:107-120`.
 - **Death, logout and server shutdown dismount automatically.** The
   vendored mount API already registers `on_dieplayer`, `on_leaveplayer`
   and `on_shutdown` force-detach handlers
   (`mods/ENTITIES/mobs/mount.lua:47-97`), so no separate rule is needed:
   you always come back on foot.
-- **Entering a no-mount zone dismounts you** (§4) — via the same detach
-  path, so the player lands on a valid node rather than inside the
-  mount's model.
+- **Entering a no-mount zone dismounts you** (§4) — via the same detach and
+  entity-removal transaction.
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
 
 ### 3.1 Incoming damage dismounts the rider (decided 2026-08-08)
@@ -130,9 +146,9 @@ sits clearly under its 1g flagship step.
 - **Any incoming damage dismounts the rider, immediately.** Damage from
   any source counts — a mob's melee swing, a ranged attack, an enemy
   player in PvP, the environment. There is **no threshold and no grace
-  period**: the two crossing rules of §4 warn for 10 seconds because a
-  player cannot see a border, while a hit is unambiguous and the whole
-  point of this rule is that it lands at the moment of the hit.
+  period**: geographic warnings exist because a player cannot see an exact
+  rules boundary, while a hit is unambiguous and the whole point of this rule
+  is that it lands at the moment of the hit.
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model.
@@ -144,7 +160,7 @@ whole mob game is built on top of that one inequality: the **25 m soft
 de-aggro** (`combat_stats.md` §3 — a chasing mob drops to walk speed, so
 fleeing is hard but not impossible) and the **45 m chase give-up** and
 **40 m leash** of `combat_stats.md` §4 all assume the mob can close the
-distance. A mount does **6–8 nodes/s
+distance. A mount does **6–10 nodes/s
 permanently** (§1.1) and is therefore faster than every mob in the game.
 Without this rule a mounted player is simply immune to the mob game: no
 chase can ever be won, the soft de-aggro and the leash become
@@ -172,90 +188,57 @@ other.
 
 ## 4. Where riding is forbidden
 
-Three independent rules. The housing rule (§4.2) is **not** an exception
-to the open-sea rule (§4.1), and the border rule (§4.3) is not an
-exception to either; each stands on its own. What the two **crossing**
-rules share is a shape: entering the open sea (§4.1) and entering enemy
-territory while flying (§4.3) both give the same **10-second grace with
-a visible warning** before they dismount — one number and one shape for
-"you are somewhere your mount may not be", never two. The isle rule
-(§4.2) is the deliberate exception and dismounts on the spot: the build
-box is only 100 × 100 nodes (`world.md` §5.1) and 10 seconds of Master
-flight covers 80 of them (8 nodes/s, §1.1), so a grace period there
-would let a flyer cross almost the whole isle before the rule ever
-fired.
+Mount legality is derived from the authored territory and ocean-column lookup,
+never from literal coordinates. Horizontal classification applies at every y:
+climbing above a boundary never changes its rule. Land riding, flight, ocean
+warning and forced dismount are separate states returned by one central lookup
+owned by WP40.
 
-### 4.1 Open sea: the "Exhausted" debuff
+### 4.1 Ocean: warned edge, then forced flight dismount
 
-- **Outside the continents a player gets an "Exhausted" debuff** —
-  mounted, swimming or flying alike. Movement mode makes no difference
-  to whether the debuff applies.
-- **A mounted player who carries "Exhausted" for more than 10 seconds is
-  dismounted and falls into the ocean.** The window is what keeps a
-  clipped corner of open water from throwing a rider off; crossing the
-  band on purpose does not work.
-- **The 10 seconds are warned, not silent** — the player sees the
-  countdown for its whole duration and turning back cancels it. The
-  border rule of §4.3 reuses this window, this warning and this
-  wording unchanged.
-- This is the same system as the deep sea of `world.md` §2b, seen from
-  the player's side: the open sea is where the Kraken Guard lives, where
-  deep-sea creatures destroy boats, and where players are simply not
-  meant to be. A flying mount must not turn that deterrent into a ferry
-  any more than a boat may.
+- Flying is forbidden over every authored ocean column: the coastal-water
+  shelf, deep ocean and the channels around both dragon islands. The rule is
+  independent of altitude. Planned bays, lakes, rivers, marsh channels and
+  other water inside a mainland footprint remain part of their named zone,
+  inherit its flight rule and do not become ocean merely because they contain
+  water nodes or connect to the outer sea.
+- A flying mount cannot be summoned in an ocean column. A flyer leaving legal
+  land first enters a visible warning band exactly **48 horizontal nodes**
+  wide. The HUD warns that continuing will force a dismount; returning to legal
+  land clears the warning immediately.
+- Width is spatial, not a timer, so the +75% and +150% flyers receive the same
+  geographic boundary. At the far edge, entry into the hard no-flight column
+  dismounts immediately with no second grace period, at every y.
+- WP40 derives flight from the exact channel geometry in `world_zones.md` §7.
+  Both shore-side warning bands leave a certified hard no-flight strip at least
+  **104 nodes** wide, so neither island is reachable by flying mount from a
+  continent. The hard strip and dismount behavior must also prevent
+  high-altitude post-dismount drift from carrying a player onto the island.
+- The two dragon islands remain boat destinations. Their complete water
+  channels are immutable at every depth, and the flight classification may not
+  accidentally create a bridge, tunnel or aerial-access exception.
+- The obsolete ten-second mounted `Exhausted` rule and the rectangular
+  `grug_core.open_sea_at` geometry do not govern flight in the target map.
+  Swimming, boats and any later deep-ocean damage effect remain ocean-system
+  concerns rather than mount movement rules.
 
-**The boundary is `grug_core.open_sea_at(pos)`, never a hand-picked
-coordinate** (`mods/CORE/grug_core/init.lua:741-745`). The function is a
-Chebyshev distance from the nearer of the two continent rectangles
-(`rect_distance`, `init.lua:733-737`) compared against
-`OCEAN_COASTAL_WIDTH`. Every number in it is derived:
+### 4.2 Holy Grounds and housing claims
 
-| Constant | Value | Source |
-|---|---|---|
-| `grug_core.CONTINENT_X_HALF` | 1500 | `grug_core/init.lua:13` |
-| `grug_core.CONTINENT_Z_MIN` | 100 | `grug_core/init.lua:14` |
-| `grug_core.CONTINENT_Z_MAX` | 1700 | `grug_core/init.lua:15` |
-| `grug_core.OCEAN_COASTAL_WIDTH` | 1500 | `grug_core/init.lua:19` |
+- **Both factions may summon and use either flying tier throughout the Holy
+  Grounds.** The shared-front territory is an intentional aerial PvP space,
+  not enemy territory. Its planned water inherits this permission because it
+  is not an ocean column.
+- PvP and NPC combat remain active there. Any incoming damage still dismounts
+  immediately under §3.1, so permission to fly is not safety or immunity.
+- Open-world housing claims add no special mount ban. They inherit the ordinary
+  mount rule of their peaceful home-faction zone; a claim boundary itself never
+  summons or dismounts a mount.
+- The retired private housing isles, their no-mount rings and their waypoint
+  access no longer exist in the target design.
 
-So the real geometry a mount rule has to respect is |x| ≤ 1500 and
-100 ≤ |z| ≤ 1700 for the land rectangle, plus a 1500-node coastal band
-around it. Any literal copied out of that — "z > 2300", "x > ±2200",
-"|z| > 3200" — is wrong the moment the world size changes, because the
-whole derived geometry of `grug_core` hangs off those four constants by
-construction (`grug_core/init.lua:21-25`). The mount rule therefore
-calls the function and nothing else.
+### 4.3 Enemy territory: land tiers yes, flying tiers no
 
-**Known issue, inherited.** `open_sea_at` today is a pure
-distance-from-the-continent test, so open sea starts at |z| = 3200 —
-`BACKLOG.md` already flags this as too far in its WP24 readiness note
-(it would spawn Kraken Guards on housing beaches, `world.md` §2b: the
-function must answer false inside each isle's 150-node safe ring). The
-mount rule inherits the bug one-for-one: until `open_sea_at` learns
-about the isles, "Exhausted" fires on somebody's own beach. Fixing
-`open_sea_at` is a precondition for shipping the mount rule, not a
-separate concern of it.
-
-### 4.2 Housing isles: no riding and no flying at all
-
-- **On a housing isle there is no riding and no flying, at any mastery
-  tier.** Not a speed penalty, not a timer — mounting is refused and an
-  arriving rider is dismounted on the spot.
-- **Being dismounted on an isle is intended, not an accident.** The
-  build box is 100 × 100 nodes (`world.md` §5.1); a mount saves no time
-  there, a flying mount trivialises the one thing the isle is about
-  (digging down, `world.md` §5.3), and the isles must not become a
-  substitute capital (`world.md` §5.6).
-- The no-mount zone is **the isle and its 150-node safe ring**
-  (`world.md` §2b/§5.6) — the same ring `open_sea_at` has to learn
-  about. The two rules then meet exactly at the ring boundary with no
-  gap in between: inside the ring riding is refused outright, outside it
-  the water is open sea and "Exhausted" takes over.
-- Isles are reached by **waypoint** (`world.md` §6) — the teleport pad
-  is the only intended way in or out, and that is unchanged by mounts.
-
-### 4.3 Enemy territory: riding yes, flying no (decided 2026-08-08)
-
-- **Land mounts are allowed everywhere**, enemy territory included. A
+- **The two land tiers are allowed on enemy land.** A
   rider on a horse still walks the ground, still meets whatever
   `guard_level_at` has put on it (`world.md` §1), and still has to use an
   authored land connection or another physical route. Nothing about a land
@@ -263,18 +246,19 @@ separate concern of it.
 - **Flying mounts are banned in enemy territory.** Two halves, both
   binding:
   - **A flying mount cannot be summoned there.** The mount action is
-    refused outright with a message — the same refusal shape as the
-    isles (§4.2), because a refusal at the moment of a deliberate
-    action needs no grace period.
+    refused outright with a message because a deliberate action needs no grace
+    period.
   - **A rider who crosses the border while flying is dismounted after
-    a 10-second grace**, warned for the whole window, exactly as in
-    §4.1. Turning back cancels it; letting it run out sets the rider
+    the existing 10-second warned grace.** Turning back cancels it; letting it
+    run out sets the rider
     down where they are — on enemy ground, inside the enemy's guard
-    field, on foot. WP40 must validate this 80-node maximum travel against
+    field, on foot. WP40 must validate the Master tier's 100-node maximum
+    grace travel against
     every authored border approach; no narrow zone or boundary may turn the
     grace period into delivery past the intended defenders.
 - The two **land** tiers are untouched by this rule, and the two flying
-  tiers (Expert, Master — §1.1) are untouched by it at home.
+  tiers (Expert, Master — §1.1) are untouched by it at home and throughout the
+  Holy Grounds (§4.2).
 
 **Why the ban exists.** `world_zones.md` makes the authored land connections
 the places where faction contact, defenders and PvP objectives meet. A flying
@@ -296,12 +280,12 @@ derived-geometry discipline §4.1 states for `open_sea_at`: literal coordinates
 are invalid once the authored zone graph replaces WP18. A character without a
 faction cannot have bought a mount, so the nil case needs no rule of its own.
 
-**Over water nothing changes.** Ocean is not faction-owned, so the border rule
-is silent there; §4.1's Exhausted rule governs open sea. The enemy-territory
-rule takes over on landfall. Read along a flight path the three rules remain
-one system: own land and coastal water are free, open sea exhausts you, an isle
-refuses you, enemy land grounds you. WP40 must re-prove that these derived
-boundaries meet without a gap after the old strait geometry is removed.
+**Ocean is a separate and stricter classification.** The enemy-territory rule
+does not legalize flight over neutral water: §4.1 warns and then dismounts at
+every altitude. Read along a legal invasion path, the system is therefore own
+land → flyable Holy Grounds → warned enemy border → forced ground travel; the
+dragon islands instead require a boat because their ocean channel reaches the
+hard no-flight state first.
 
 ## 5. Reference implementations & licences
 
@@ -333,8 +317,10 @@ GPL-3.0-or-later):
   (`Lord-of-the-Test/mods/lottmobs/horse.lua:26`) registers a
   **craftitem whose `on_place` spawns the mount entity** (`:31-41`) next
   to a plain `core.register_entity` mount (`:305`) with attach/detach on
-  right-click (`:200-222`). That is the shape a bought mount wants: an
-  item you own, placed to summon, with no taming step anywhere.
+  right-click (`:200-222`). Reuse only the item-to-entity registration shape:
+  Grudgelands uses the persistent, non-consuming toggle lifecycle of §3 and
+  removes the ephemeral entity on every dismount. It must not copy a placed,
+  parked or consumed-horse lifecycle.
 - **VoxeLibre**'s `mcl_mobs/mount.lua` (`mcl_mobs.attach` at `:52`,
   `detach` `:82`, `drive` `:89`, `fly` `:222`) is the same lib_mount
   ancestry, better maintained; `mobs_mc/horse.lua:226` is the reference

@@ -688,25 +688,23 @@ armor; that stays with A3.
 
 ## D. Mounts
 
-`docs/design/mounts.md` (new, 2026-08-07) decides the four tiers and
-their speeds (§1.1), the prices (§2 — 1s/8s/30s/60s ≈ 1g total), that a
-mount is an attached entity and never `physics_override.speed` (§3), the
-open-sea "Exhausted" rule (§4.1) and the isle no-mount rule (§4.2), plus
-the licence-checked reference implementations (§5). It **deliberately
-left everything below out** — none of it is needed to keep the design
-coherent, all of it is needed before a work package can ship.
+`docs/design/mounts.md` decides the four level-15/30/45/60 tiers and their
+6/8/7/10-node speeds (§1.1), income-time price targets (§2), the persistent
+inventory item plus ephemeral attached entity (§3), ocean warning/hard-flight
+boundaries, flyable Holy Grounds and the enemy-territory flight ban (§4), plus
+the licence-checked references (§5). The unresolved parts below must close
+before the work package can ship.
 
 ### D12 — Is there a saddle ITEM, and what are the mount assets?
 
-`items_crafting.md` §3.0.3's cleanup removes `mobs:saddle` / `lasso` /
-`net` (`mounts.md` §3 — taming was rejected). But the acquisition
-pattern §5 recommends, LotT's `lottmobs:register_horse`, is exactly *a
-craftitem whose `on_place` spawns the mount entity* — that item **is** a
-saddle in all but name.
+**Item half decided 2026-08-11:** each purchase hands over one owner-bound
+inventory/hotbar mount item for that tier. Using it summons or dismounts; the
+item remains in the inventory throughout and is never a consumed or separately
+placed saddle. Permanent per-character purchase state is authoritative and
+allows idempotent restoration without trading or duplication. Landed in
+`mounts.md` §3.
 
-Open: (i) does the purchase hand over an inventory item, or a permanent
-per-character flag plus a summon action; (ii) which models for four
-mounts, and from where.
+Still open: which models represent the four tiers, and from where.
 
 On (ii): `mounts.md` §5 clears the *code* licences (mobs_redo MIT, LotT
 LGPL 2.1, VoxeLibre GPL-3.0-or-later) but names **no model** for a
@@ -715,32 +713,16 @@ covers the land tiers. Assets have to go through the AGENTS.md licence
 rule (re-verify in the source repo before import) and the shopping-list
 pattern of `docs/research/assets/`.
 
-Recommendation: **one item per tier, no separate saddle** — a second
-token for the same act would violate one item per concept
-(`items_crafting.md` §3.0.3), and the removal of `mobs:saddle` was
-decided on exactly that ground. Tie the choice to D13.
-
-**Decision:** _open_.
+**Decision:** item/lifecycle decided; **assets remain open**.
 
 ### D13 — Does a mount persist in the world after dismount?
 
-Open: after `mobs.detach`, does the mount entity stay standing where it
-was left (Minecraft/LotT-like) or return to the owner's inventory as the
-D12 item (WoW-like)?
-
-Options:
-
-- **(a) Back to the inventory.** No entity budget cost, nothing to
-  steal or grief, no despawn timer, and it matches §1's "bought,
-  permanent, per character".
-- **(b) Stays in the world.** Needs an owner check, a despawn or
-  reclaim rule, and it competes with the active-object budget the WP6
-  spawn audit (`docs/research/wp6_spawn_budget.md`) measured. A lost
-  mount also becomes a support question.
-
-Recommendation: **(a)** — it also makes D14 nearly moot.
-
-**Decision:** _open_.
+**Decision 2026-08-11:** the summoned entity is ephemeral. It spawns at the
+player's exact position when the persistent item is used, owns movement while
+the player is attached, and is removed on every manual, damage, death, logout,
+shutdown or zone-forced dismount. The mount item never left the inventory, so
+there is no return/drop transaction and no parked entity budget. Landed in
+`mounts.md` §3.
 
 ### D14 — Can mounts be attacked, damaged or killed, and do they drop anything?
 
@@ -779,7 +761,7 @@ What the decision turned on:
   `run_velocity` 4.4 against a player's 4.0 (`combat_stats.md` §3), and
   the entire chase model hangs off that one inequality — the 25 m soft
   de-aggro (§3), the 45 m give-up and the 40 m leash (§4). A mount does
-  **6–8 nodes/s permanently** (`mounts.md` §1.1), so without a rule a
+  **6–10 nodes/s permanently** (`mounts.md` §1.1), so without a rule a
   mounted player is immune to the whole mob game and three shipped WP6
   numbers become unreachable by design.
 - **The Swiftness Draught is the precedent.** It is capped at +8 % for
@@ -818,118 +800,62 @@ combat is still open** and wanted before the mount WP, not during it.
 
 ### D16 — Is riding restricted in enemy territory, on the war coast, in PvP, or underground?
 
-**Decision (enemy-territory switch only):** decided 2026-08-08 → landed
-in `mounts.md` §4.3. **Land mounts are allowed everywhere**, enemy
-territory included; **flying mounts are banned in enemy territory** — a
-flying mount cannot be summoned there, and a rider who crosses the
-border while flying is dismounted after the **same 10-second warned
-grace** as §4.1's "Exhausted", so the game has one number and one shape
-for "you are somewhere your mount may not be". The mechanism is
-`grug_core.territory_at(pos)` (`mods/CORE/grug_core/init.lua:586-596`,
-returns `accord`/`throng`/`ocean`) compared against the rider's own
-faction; over water it is silent, so §4.1 keeps the strait and the open
-sea and the border rule takes over on landfall. `mounts.md` §1.1 carries
-the one-line summary.
+**Decided surface switches:**
 
-**The other three switches were not answered and stay open:**
+- The two land tiers are legal on enemy land. The two flying tiers cannot be
+  summoned there; crossing into enemy territory while flying retains the
+  existing ten-second warned grace before forced dismount.
+- Both factions may summon and fly throughout the shared Holy Grounds. This
+  replaces the obsolete own-side/enemy-side war-coast question: the shared
+  front is deliberately an aerial PvP area, while actual enemy territory is
+  not.
+- A PvP tag alone adds no mount-zone rule. Any incoming damage dismounts under
+  D15/`mounts.md` §3.1.
+- Every ocean column is non-flyable under D17/`mounts.md` §4.1, independently
+  of faction territory or altitude.
 
-- **The war coast.** The recommendation below asks for flight to be
-  refused over **both** war coasts, i.e. also over one's *own*. The
-  enemy-side half is now covered by the territory ban; the **own-side
-  half is undecided** — a defender flying along their own war coast is
-  still legal under §4.3.
-- **While flagged for PvP.** **Answered 2026-08-08 by D15**, exactly as
-  the recommendation asked: any incoming damage dismounts the rider
-  (`mounts.md` §3.1) and a player's damage is damage, so PvP never
-  became a fifth zone rule. Nothing is left open in this switch.
-- **Underground.** Untouched. The recommendation below (unrestricted —
-  the §3.0.4 depth ladder gates *breaking* rock, not reaching it) is
-  still only a recommendation, and D17's flight-ceiling half is its
-  mirror image upward.
-
-The original context and options are kept below.
-
-`world.md` §1 builds the whole invasion model on the war-coast funnel
-(guard strength runs inverse, the strait-facing band is capped 20–30 and
-is where PvP is meant to happen), and §6 already denies waypoints in
-enemy territory for the same reason. Mounts are the first system since
-that could route around it.
-
-Open, and they are four separate switches: enemy territory · the war
-coast · while flagged for PvP · underground.
-
-Recommendation: **land riding allowed everywhere except the isles**
-(`mounts.md` §4.2 already covers those); **flying refused in enemy
-territory and over both war coasts**, because a flying mount otherwise
-delivers a raider anywhere on the enemy continent without passing a
-guard; **underground unrestricted** — the depth ladder of §3.0.4 gates
-*breaking rock*, not reaching it, so a flyer in a cave takes nothing
-away. Fold the PvP switch into D15 rather than making it a fifth zone
-rule.
-
-**Decision:** **enemy territory decided 2026-08-08** (→ `mounts.md`
-§4.3, land yes / flying no); **the PvP flag is decided 2026-08-08 too**,
-by D15's damage dismount (→ `mounts.md` §3.1). **Still open**: the
-*own*-side war coast and underground.
+**Still open:** whether either flying tier may operate underground. The earlier
+recommendation remains unrestricted underground because digging depth, rather
+than physical arrival, owns material access.
 
 ### D17 — Is there a flight ceiling, and what happens over the strait?
 
-**Decision (strait half):** decided 2026-08-08 with D16 → landed in
-`mounts.md` §4.3. Option **(a)** was taken and the strait itself needs
-**no rule of its own**: flight over the strait stays legal and stays
-governed by §4.1's Exhausted rule, and the **enemy-territory flight ban
-closes the hole on landfall** instead. Option (b) — a third no-mount
-zone over the strait — was rejected for the reason listed below (it
-strands flyers in water), and (c) was rejected as contradicting
-`world.md` §1. **The ceiling half is still open** (see below); nothing
-in the game caps a flying mount's altitude today.
+**Ocean/front decision revised 2026-08-11:** the obsolete 200-node strait no
+longer defines the target map. Both factions may fly above the land-classified
+Holy Grounds. Every actual ocean column is non-flyable at every altitude:
+leaving legal land enters an approximately 50-node spatial warning band, then
+a hard column forces immediate dismount. A flying mount cannot be summoned in
+ocean.
 
-Two halves of one question.
+WP40 authors that boundary together with the offshore dragon-island channels.
+The islands must lie beyond a non-zero hard no-flight strip and be unreachable
+by flyer in either direction; boat access remains mandatory. This invariant,
+not a copied coordinate or time window, is binding.
 
-- **Ceiling**: nothing stops a flying mount from climbing until the
-  engine does. Open: a hard y cap, and whether it is a design rule or
-  just the map limit.
-- **The strait is not open sea.** `open_sea_at` measures distance from
-  the continent rectangles, and the strait at z = 0 lies *between* them,
-  inside the coastal band — so "Exhausted" (`mounts.md` §4.1) never
-  fires there. A Master flying mount crosses the 200-node strait
-  (`world.md` §1) in roughly 25 s at 8 nodes/s and lands wherever the
-  rider likes. That is the war-coast funnel bypassed, in the one place
-  the design cares most about.
-
-Options: **(a)** a flat ceiling plus D16's enemy-territory flight ban
-(the ban is what actually closes the hole); **(b)** make the strait a
-third no-mount zone, dismounting flyers over it — blunt, and it strands
-them in water; **(c)** leave it open and accept air invasion as
-intended PvP content — a real option, but it contradicts `world.md` §1
-and should be taken deliberately if at all.
-
-Recommendation: **(a)**.
-
-**Decision:** **strait half decided 2026-08-08** with D16, option (a)
-minus the ceiling (→ `mounts.md` §4.3). **Open**: whether there is a
-**flight ceiling** at all, and whether it would be a design rule or just
-the map limit.
+**Still open:** the general flight ceiling. It now has a concrete dependency:
+the eventual ceiling and forced-dismount implementation must bound
+post-dismount air drift so a high-altitude rider cannot cross the dragon-channel
+hard strip after losing the mount. `mounts.md` §4.1 assigns that acceptance test
+to WP31/WP40 but does not silently choose a ceiling value.
 
 ### D18 — What does "Exhausted" do to an un-mounted player?
 
-`mounts.md` §4.1 states the debuff applies "mounted, swimming or flying
-alike", then fixes **only** the mounted consequence (dismount after
-10 s). A swimmer today gets a debuff that does nothing; the open sea's
-actual deterrent is the Kraken Guard and the boat-destruction rule of
-`world.md` §2b.
+The revised `mounts.md` §4.1 no longer uses `Exhausted` for flight: flyers have
+a spatial warning band and a hard no-flight column. Whether an unmounted
+swimmer in deep ocean receives an `Exhausted` effect is therefore purely an
+ocean-survival question. The present deterrents are the Kraken Guard, immutable
+deep-ocean terrain and the boat-threat rules.
 
 Options: **(a)** cosmetic for swimmers — the Kraken does the killing;
 **(b)** escalating damage over time after the same 10 s window;
 **(c)** a stamina model — swim speed decays to zero and the player
 sinks.
 
-Recommendation: **(b)**. It uses the clock the mount rule already needs,
-it does not depend on one mob's spawn roll, and it makes the deterrent
-legible ("the sea is killing me") instead of arbitrary.
+Recommendation: **(b)**. It does not depend on one mob's spawn roll and makes
+the deterrent legible ("the sea is killing me") instead of arbitrary.
 
-*Lands in*: `world.md` §2b as much as `mounts.md` §4.1 — the debuff is
-an ocean rule that mounts merely consume.
+*Lands in*: the revised ocean section of `world.md`, not the mount movement
+system.
 **Decision:** _open_.
 
 ### D19 — Are skins/variants separate purchases, and are the four tiers four creatures?
@@ -1064,9 +990,9 @@ cooking book.
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
 | B7 | ~~Rock-stratum node names & textures~~ — **decided 2026-08-08**: five new nodes below `default:stone`, placed as stratum ores registered last (`items_crafting.md` §3.0.4, `world.md` §2 R6) | — (WP25 and WP24's isle rock are design-unblocked) |
 | B8 | ~~Quartz/Garnet/Silver depth & scarcity~~ — **decided 2026-08-08**: ore bands, scarcities and the ore `level` rule (`items_crafting.md` §3.0.1) | — |
-| B9 | `open_sea_at` boundary fix | **WP24**, mounts WP |
+| B9 | Legacy `open_sea_at` boundary fix for ocean mobs/swimmers; target flight uses WP40's authored ocean-column state instead | ocean/map integration |
 | B22 | The six picks' dig-speed `times` (the **rule** — higher tier digs faster, not only deeper — is decided 2026-08-08, `items_crafting.md` §3.0.4) | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |
-| D12–D20 | Mounts: item/assets, persistence, damage, combat dismount, zones, ceiling, Exhausted, skins, trainer. **Decided 2026-08-08**: D15's damage half (any incoming damage dismounts → `mounts.md` §3.1, which also settles D16's PvP-flag switch), D16's enemy-territory switch and D17's strait half (`mounts.md` §4.3); still open in those: **mounting while in combat**, the own-side war coast, underground, the flight ceiling | **mounts WP**; D20 also WP13 |
+| D12–D20 | Mounts: **item and persistence decided 2026-08-11** (persistent owner-bound item, ephemeral entity); level/speeds, Holy/ocean/enemy geography and damage dismount landed in `mounts.md`. Still open: D12 assets, D14 entity damage, mounting in combat, underground, flight ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
 | E21 | Cooking recipe lists per tier — plus the restore % and buff magnitudes; **the food structure is decided 2026-08-08** (`items_crafting.md` §3.7, `combat_stats.md` §5) | **WP10** |

@@ -4,7 +4,7 @@ Policy (decided 2026-08-06): third-party mods are **vendored** (copied into
 the repo), NOT git submodules. Rationale: a standalone Luanti game must
 bundle everything it ships; we patch vendored code in place where needed
 (submodules would force fork repos and non-atomic commits); upstream
-coupling is kept through this file plus the eight read-only checkouts in
+coupling is kept through this file plus the nine read-only checkouts in
 `reference_projects/`, pinned as git submodules and never shipped as part of
 the game.
 

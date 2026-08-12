@@ -82,7 +82,7 @@ current state). It is **derived, never authoritative**:
   (`grug_mobs` pattern) over in-place edits. Details/update procedure:
   VENDOR.md.
 - `reference_projects/` contains **references only — never change anything
-  in there**. The eight sources are **git submodules** (converted 2026-08-08,
+  in there**. The nine sources are **git submodules** (converted 2026-08-08,
   WP36) — not part of the build (the game runs with the directory empty), but
   required to develop this codebase: every engine-behaviour claim, licence
   verification and `file:line` citation in the design docs points into them.
@@ -105,7 +105,7 @@ current state). It is **derived, never authoritative**:
   - **Imported meshes must be animated.** A mesh without `ANIM`/`BONE`/`KEYS`
     chunks slides instead of moving; choose another source rather than
     shipping it.
-  - The eight sources and what each is for: see
+  - The nine sources and what each is for: see
     [docs/reference_projects.md](docs/reference_projects.md).
 
 ## Lua & Luanti environment (IMPORTANT)

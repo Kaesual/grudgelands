@@ -248,16 +248,18 @@ Deliberately no guild levels, perks or wars.
 ### Mounts — [`mounts.md`](docs/design/mounts.md)
 
 Specced, not built. Riding is a **universal skill** on the same four
-mastery tiers, and mounts are **bought with gold, never tamed**: slow
-land, fast land, slow flying, fast flying at 1s / 8s / 30s / 60s — about
-one gold for the whole ladder, and the second-largest thing to save
-towards after housing. The first flight buys *terrain*, not speed.
+mastery names, and mounts are **bought with gold, never tamed**: level-15
+slow land (+50%), level-30 fast land (+100%), level-45 slow flight (+75%)
+and level-60 fast flight (+150%). Exact prices follow reliable net-income
+targets of roughly 15 minutes / 45 minutes / 2 hours / 5 hours.
+The persistent owner-bound hotbar item remains in the inventory while its
+ephemeral entity replaces the player's movement and is removed on dismount.
 **Taking damage throws you off** — a mount is faster than every mob in
 the game, so it buys travel between fights, never an exit from one.
-Three places refuse you as well: out over the open sea an
-**"Exhausted"** debuff drops a rider into the water after ten seconds,
-on a housing isle there is no riding and no flying at all, and in enemy
-territory a land mount is fine while a flying one is not.
+Both factions may fly over the Holy Grounds, but ocean gives an approximately
+50-node warning band and then forces a dismount at every altitude; this keeps
+the dragon islands boat-only. In enemy territory the two land mounts remain
+legal while both flying mounts are forbidden.
 
 ### Where the journey goes
 
@@ -330,7 +332,8 @@ and paired the target jungle fringe with deep-jungle canopy litter; the
 two-handed rule remains dormant until WP14 supplies an
 offhand item. WP34 still owns the running game's stale world-wide ore respawn
 and depth-level curve, WP37 owns the unshipped surface-density increase, and
-`grug_core.open_sea_at` still starts too far out for housing and mounts.
+`grug_core.open_sea_at` still starts too far out for the legacy ocean-mob
+geometry; WP40 replaces mount flight boundaries with authored ocean columns.
 The six race-gem names and their relation to Quartz/Garnet/Diamond remain in
 the parallel material review; WP40 stores race-gem slots and is not blocked by
 their names. Mapgen changes from WP18, WP25 and WP36 already require fresh
@@ -360,7 +363,7 @@ Engine log for diagnosis:
 git submodule update --init --recursive --depth 1
 ```
 
-`reference_projects/` holds the eight upstream sources this codebase is
+`reference_projects/` holds the nine upstream sources this codebase is
 developed against, as git submodules. **The game builds and runs without
 them** — they are never loaded by the engine and nothing in `mods/` reads
 them. They are needed to *develop* the codebase: every engine-behaviour
@@ -382,7 +385,7 @@ the update discipline: [docs/reference_projects.md](docs/reference_projects.md).
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | goals and phases · work packages with status |
 | [AGENTS.md](AGENTS.md) | conventions, Lua/Luanti rules, patterns — read this first before contributing |
 | [VENDOR.md](VENDOR.md) | vendored third-party mods: upstream commit, license, patch inventory |
-| [docs/reference_projects.md](docs/reference_projects.md) · `reference_projects/` | the eight read-only upstream sources as git submodules — not part of the build |
+| [docs/reference_projects.md](docs/reference_projects.md) · `reference_projects/` | the nine read-only upstream sources as git submodules — not part of the build |
 
 ## License
 

@@ -240,13 +240,15 @@ target authority and Fireball travel, not the melee damage tables.
 All player-damage paths call the central geographic/tag rule from
 `world_zones.md` §4. Contested-zone entry tags automatically; peaceful-zone
 players remain immune to unprovoked enemy-player damage. A voluntary hostile
-action tags its user before eligibility/damage resolution; the both-safe
-first-hit outcome remains a WP41 edge decision. Outside contested zones the tag
-clears after 60 seconds without dealing or receiving PvP damage; contested
-entry forces it, leaving starts a full 60-second tail, and death clears it
-immediately. Melee, casts, area effects and projectiles may not diverge on this
-rule. This is target design for WP41; the shipped callbacks currently gate only
-by faction and global `enable_pvp`.
+action tags its user before eligibility/damage resolution. Safe→safe blocks
+that first effect while tagging the attacker; safe→tagged may land after
+tagging; tagged→safe blocks; tagged→tagged may land. Outside contested zones
+the tag clears 60 seconds after the last qualifying effective HP/absorb damage
+or support contact; misses and zero effects do not refresh it. Contested entry
+forces the tag, leaving starts a full 60-second tail, and death clears it
+immediately. Melee, casts, area effects, projectiles and support may not diverge
+from `world_zones.md` §15. This is target design for WP41; the shipped callbacks
+currently gate only by faction and global `enable_pvp`.
 
 ## 3. Mobs
 

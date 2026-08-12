@@ -374,12 +374,16 @@ Mese/Diamond test picks only after the revised test path can reach every band.
 - All level-1–30 zones are peaceful, faction-protected territory.
 - Enemy players may not dig, place nodes or otherwise modify their terrain
   from the surface through y = −700, inclusive.
-- Level-31–60 zones are contested. Outside protected POIs, roads, housing
-  claims and the Holy Grounds exception, both factions may dig, mine and place
-  nodes.
+- Level-31–60 zones are contested. Outside bounded hard-protected functional
+  POI anchors, housing claims and the Holy Grounds exception, both factions may
+  dig, mine and place nodes. Ordinary roads, bridges, camp shells, ruins and
+  battlefield dressing are mutable but remain claim-excluded; only a critical
+  bridge/gate without an adequate alternate route receives hard protection.
 - Permanent protected player building exists only through housing claims.
-- Housing claims exist only in authored level-21–30 homestead areas between
-  the capitals and protect a bounded surface/basement volume.
+- Housing claims exist only in the ten authored level-11–30 housing zones: all
+  six level-11–20 home zones plus Whitebridge Shire, Lorindor, Speargrass Reach
+  and Whispering Reedlands at level 21–30. They protect a bounded
+  surface/basement volume under `TODO-design-housing.md`.
 - A housing claim never reaches or privatizes y = −701 and below.
 
 Territory permission does not grant tool access. A player allowed to edit a
@@ -392,15 +396,26 @@ tier.
   faction owns the surface.
 - Both factions may mine, dig and place blocks there, subject to ordinary tool
   depth and resource harvest rules.
+- This deep rule overrides every land-side faction, capital, POI, road and
+  housing-claim terrain restriction. There are no protected land columns at
+  T5/T6: beneath a capital or other protected surface structure, both factions
+  have the same terrain rights as everywhere else in the deep layer.
 - Players may cross beneath the central border and tunnel through the opposing
   faction's deep race-region columns to obtain its G2 gemstones and cultural
   deposits.
-- Such a tunnel can theoretically approach an enemy capital, but the distance
-  should make it less attractive than the authored surface route.
-- Capital and protected-POI columns remain protected against enemy terrain
-  changes at every depth. Players may approach but not tunnel through them.
+- Such a tunnel can theoretically pass below an enemy capital, but the distance
+  should make it less attractive than the authored surface route. It still
+  cannot break upward through the capital's protected shallow layer.
 - The deep layer is PvP-contested and uses the normal depth-spawn system; it is
   not Nether space.
+- **The sole geographic exception is deep ocean and an immutable dragon
+  channel.** Authored bays, lakes, rivers and other planned water inside a
+  mainland footprint remain part of their named zone and can never classify as
+  deep ocean. The first 80 nodes outside the final analytic footprint perimeter
+  are an editable coastal-water shelf inheriting the adjacent perimeter zone's
+  policy. Beyond that begins full-column immutable deep ocean. Dragon-channel
+  2D masks override shelf distance and are immutable at every y, so neither
+  immutable class can be used for tunnels, bridges or seabed mines.
 
 The geographic implementation must answer race-region lookup at depth from the
 surface column so deep gem/cultural placement retains a cultural owner even
@@ -408,8 +423,11 @@ though territorial edit rights become contested.
 
 ### 3.3 Holy Grounds working exception
 
-The narrow central land connection is the **Holy Grounds** for working-design
-purposes. Its final name and exact geometry belong to the map-planning stream.
+The narrow central land connection is the **Holy Grounds**, fixed at
+x = −2500..+2500 and z = −250..+250. Its four-zone west/east chain is
+Gravesalt Escarpment — The Broken Causeway — The Shattered Line — The Skyglass
+Canopy, with nominal internal x edges −1500 / 0 / +1500. It is land rather
+than ocean and may contain fixed authored inland lakes.
 
 - PvP and NPC warfare occur there.
 - Neither faction may dig or place nodes from the surface through y = −700,
@@ -428,9 +446,11 @@ level-31–60 contested-zone rule.
 The Wyrmglass Crown and Stormscale Summit become contested offshore islands at
 the western and eastern ends of the Holy Grounds/front.
 
+- their centres are fixed at (−3150, 0) and (+3150, 0), each within a 600×700
+  authoring envelope;
 - neither island touches a continental landmass;
-- a short ocean channel separates each from the mainland and is comfortably
-  crossable by boat;
+- a short ocean channel of at least 200 nodes separates each from all mainland
+  land and is comfortably crossable by boat;
 - both factions receive equivalent boat access;
 - the complete ocean corridor/column is immutable: no digging, placement,
   tunnels or player-built bridges;
@@ -1377,8 +1397,9 @@ fractional Rage internally; the normal resource HUD remains the display owner.
   guards.
 - Essential service NPCs are separate, passive and invulnerable.
 - An invulnerable NPC is always passive and never participates in combat.
-- AI, leash, capital geometry and encounter rules belong to the world/encounter
-  specification, not this material staging file.
+- `world_zones.md` §12 owns the decided king-authoritative guard follow,
+  leash/teleport, group reset, death cleanup and persistent 15-minute group
+  respawn. This material staging file owns only the loot budget below.
 
 ### 7.2 Material-review resolution: Fallen Crown
 
@@ -1388,8 +1409,19 @@ than six mechanically different trophy currencies.
 
 Loot/economy rules:
 
-- every king uses the same crown quantity/chance, vendor-value budget and
-  eligibility rules;
+- every eligible, unlocked participant receives exactly one Crown; all kings
+  use the same quantity, vendor-value budget and eligibility rules;
+- king rewards are personal encounter loot, never a shared Crown item on the
+  ground. Every qualifying participant gets an independent Crown entitlement
+  with the defeated king's race provenance; the killing blow has no special
+  ownership;
+- the current-attempt participation ledger accepts enemy-faction players who
+  deal accepted damage to the king or a royal guard, or provide effective
+  healing or shielding to an eligible participating attacker. Qualifying
+  living participants must be within 60 nodes at the kill; a participating
+  player slain by the encounter, another encounter NPC or an enemy player
+  keeps eligibility for 60 seconds. Proximity without ledger contribution is
+  insufficient, and a full reset clears the ledger and death grace;
 - guard loot is ordinary level-60 elite loot and never substitutes for the
   crown;
 - a Fallen Crown is accepted in the existing trophy slot of an ordinary
@@ -1402,8 +1434,11 @@ Loot/economy rules:
   requires a crown;
 - no power-bearing recipe is crown-only. Named-rare and other qualifying boss
   trophies remain valid and more broadly available masterwork sources;
-- encounter loot distribution/lockout may control farming, but all six kings
-  must remain economically equivalent.
+- each king has its own rolling 24-hour wall-clock Crown lockout per character.
+  Its successful award starts only that king's timer; repeat kills are allowed
+  but give no additional Crown from that king, while the other two enemy kings
+  remain independently rewarding. All six kings remain economically
+  equivalent.
 
 This keeps king raids prestigious without making repetitive king killing the
 only rational path to the masterwork ceiling.
@@ -1433,9 +1468,10 @@ The following are final decisions, not open alternatives:
 - farming/housing access and Home Stone consequences move to the housing/travel
   stream.
 
-Permanent player protection now exists only in authored level-21–30 homestead
-claims. Exact size, shape, prices, reclaim policy and ACL UI are not material
-decisions and remain listed in §11.
+Permanent player protection now exists only through claims in the ten authored
+level-11–30 housing zones defined by `TODO-design-housing.md`. Exact claim
+geometry, prices, reclaim policy and ACL UI are housing decisions rather than
+material decisions.
 
 ### 8.2 Material-review resolution: deleted finder/amplifier items
 
@@ -1627,9 +1663,10 @@ pixel-cluster inspection.
 Retain A1/A2/A4's depth-level and spawn-pressure principles, subject to the new
 territorial deep layer. Reconcile or remove:
 
-- **B6:** “renewable nodes only in mining camps” is too narrow. The protected
-  renewable sockets on both dragon islands are a second explicit scope while
-  world-wide ore respawn remains removed.
+- **B6:** retain “renewable nodes only in mining camps.” The protected sockets
+  on both dragon islands belong to the two special all-six-gem apex mining
+  camps; they extend camp content but do not create a second renewable
+  structure kind. World-wide ore respawn remains removed.
 - **C7:** retain continental pre-T6 Abyssal Crystal access, but remove every
   statement treating an isle as its safe source; replace the old density with
   §8.3's starting target.
@@ -1645,20 +1682,13 @@ spawn content or be deleted if those questions move to a narrower TODO.
 
 ### 10.2 `TODO-design-housing.md`
 
-The current file is based entirely on private isles and should not be patched
-piecemeal:
-
-- Q1 cluster contents — obsolete;
-- Q2 Dowsing/Gem Detector tuning — obsolete;
-- Q3 isle styles — obsolete;
-- Q4 housing-isle reef content — obsolete; general ocean/dragon-channel art may
-  survive only in the world stream;
-- Q5 boats versus housing-isle deep sea — obsolete in that framing; boat access
-  to the two dragon islands is now a separate world/travel requirement;
-- Q6 allocation/generation edge case — obsolete.
-
-Replace the file with a claim-focused housing TODO or delete it after the
-housing decisions are folded into authoritative docs.
+The former private-island questions were replaced on 2026-08-12 by the
+claim-focused `TODO-design-housing.md`. Its stable-ID state machine, ten
+level-11–30 zones, geometry, ACL, Home Stone, decay/reissue and world-mutability
+contracts are the binding housing handoff. General ocean and dragon-channel
+art remains in the world stream, and playable boat access to the two dragon
+islands remains a separate travel requirement. Delete the housing TODO only
+after those decided rules are folded into authoritative docs.
 
 ### 10.3 `TODO-design-crafting-rework.md`
 
@@ -1692,39 +1722,53 @@ Reconcile these exact areas:
 
 ---
 
-## 11. Questions owned outside the material stream
+## 11. Decisions and remaining work owned outside the material stream
 
-These do not block WP26's universal furnace/bar work and must not be answered by
-the later material integration agent without the map/housing owner:
+These do not block WP26's universal furnace/bar work. The map/housing owner has
+resolved the entries identified below; the material integration agent must
+consume those contracts rather than reopen them.
 
 ### 11.1 Map/world planning
 
-- final name and exact polygon/width of the Holy Grounds;
-- exact x/z/y geometry and immutable columns of its T4 no-change layer;
-- final offshore coordinates, coast profiles and boat-channel widths for both
-  dragon islands;
-- practical surface and deep route-length parity between factions;
-- capital/POI/road column footprints at every depth;
-- exact authored zone assignment for homestead areas;
-- placement geometry for deep arrival spawns and the final deep-servant roster.
+- `docs/design/world_zones.md` now fixes the complete coast profiles, Holy
+  Grounds rectangle, two island envelopes, channel/flight bands, paired boat
+  approaches, land/boat graphs and the 32-seed route-parity audits;
+- it also fixes planned-footprint/zone-water masks, the exterior 80-node shelf,
+  full-depth deep ocean and all ten authored housing zones;
+- land-side capitals, functional POI anchors and irreplaceable route structures
+  share the shallow y = −700 hard-protection floor, with exact x/z bounds from
+  the authored registry; ordinary road/camp envelopes remain 2D claim
+  exclusions and mapgen grading inputs, not mutation protection;
+- only deep-arrival placement geometry and the final deep-servant roster remain
+  in the independent depth-content stream.
 
 ### 11.2 Housing/travel planning
 
-- claim footprint/height/basement dimensions and upgrade ladder;
-- claim price curve, additional-claim prerequisite and hard claim limit;
-- expansion-reservation/safety spacing inside authored homestead cells;
-- inactivity/reclamation/recovery policy;
-- friend ACL flags and whether co-ownership exists;
-- Home Stone bind, cooldown, combat/PvP restrictions and fallback;
-- farming placement after the isle is removed;
-- boat implementation and travel presentation for the dragon islands.
+- `TODO-design-housing.md` now fixes claim dimensions, four-tier upgrade
+  ladder, maximum reservation and spacing, stable IDs, ACL, recovery,
+  dormancy/decay/reissue, claim-bound Home Stone and claim farming;
+- claim expansion uses the decided 4/8/12 Silversteel/Embersteel/Abyssal-Steel
+  bar costs plus 30m/90m/3h of measured T4/T5/T6 reliable net solo income;
+  additional stones require level 60, every existing stone at tier IV and
+  escalating 12/24 Abyssal Steel plus 5h/10h T6 income;
+- only the calibrated ledger amounts and measured per-faction live-Stone
+  limits remain implementation outputs rather than design choices;
+- playable boat ownership, acquisition, speed, damage/destruction and respawn
+  still require a travel contract before the dragon encounter loop ships.
 
 ### 11.3 Encounter planning
 
-- king/guard AI, leash, respawn and capital-raid eligibility;
-- crown loot allocation/lockout mechanics after the equal material budget is
-  applied;
-- dragon AI, hoard and encounter reset behavior.
+- king/guard loot implementation. Guaranteed personal allocation, 60-node
+  living radius, 60-second combat-death grace, reset cleanup, per-king 24-hour
+  lockouts, participation sources and equal king budgets are decided;
+  king/guard AI, leash, respawn and capital-raid eligibility are decided in
+  `world_zones.md` §12;
+- dragon AI, hoard and encounter reset behavior. Its participation bounds and
+  cleanup match the kings. World respawn is decided: a
+  persistent 30-minute base timer, full 60-second lair warning before the
+  actual spawn, unload-safe delayed warning, and no temporary invulnerability.
+  The two dragons have separate per-character 24-hour boss-loot lockouts, and
+  their islands remain contested throughout every boss state.
 
 ### 11.4 Economy and mount planning
 
@@ -1902,7 +1946,7 @@ After the authoritative specs agree:
 | WP32 | Move farming from private isles to the decided housing-claim model without adding island materials. |
 | WP33 | Place ordinary cultural surface sources if this remains the gathering-node owner, or split them into a dedicated cultural-resource WP. |
 | WP34 | Recut depth economy for revised Abyssal density, G1/G2 deep multipliers, deep contested access and protected renewable dragon sockets; keep ordinary depth spawns. |
-| WP40 | Own Holy Grounds geometry, deep territory projection, protected columns, offshore dragon islands, homestead areas and every supply/route/capacity audit. |
+| WP40 | Own Holy Grounds geometry, the exception-free land-side T5/T6 territory projection, shallow protected volumes, coastal shelf versus full-depth immutable deep ocean, offshore dragon islands, homestead areas and every supply/route/capacity audit. |
 | WP41 | Apply PvP eligibility to contested deep space and Holy Grounds while respecting no-change terrain; integrate target-race counter effects into the PvP seam. |
 | WP42 | Re-anchor war-front activity to the Holy Grounds/offshore-front map without assuming editable battlefield terrain. |
 
