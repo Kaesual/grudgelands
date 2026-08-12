@@ -163,7 +163,7 @@ Constraints the lists must respect:
 - The shape of the existing rows: ~6 units of the tier's own material
   plus 2–4 units of a ring-specific mob drop; T4 already adds
   `group:grug_rare_trophy`.
-- §2.4's pacing: a keystone is ~30–60 min of natural play in the ring
+- §2.4's pacing: a keystone is ~30–60 min of natural play in the source region
   just reached.
 - Universal metal/pick progression must remain non-circular. Profession
   keystones may prove arrival through bars and level-appropriate ordinary mob

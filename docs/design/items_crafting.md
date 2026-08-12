@@ -2172,19 +2172,15 @@ raw food's 4 %) rather than being made instant: the Alchemist's Healing
 Potion owns the instant slot by design (§3.6), and a cooked dish
 restoring 30 % instantly would have deleted the potion's reason to
 exist. Cooking therefore buys a **faster rest**, not a second potion.
-The per-tier magnitudes (Well Fed's three steps against the cooking
-book's six groups, and the restore % per group) stay open in
-`TODO-design-crafting-rework.md` E21.
 
 **D10 — A higher-tier pick digs faster, not only deeper.** §3.0.4
 documented the `maxlevel` *gate* thoroughly but never stated the other
 half of the tool ladder: each tier's pick digs its own stratum, and
 every stratum above it, faster than the tier below. The gate is
-**access**, the `times` are the **reward**. Numbers open in
-`TODO-design-crafting-rework.md` B22, to be authored against
-**effective** values — `maxlevel` silently rescales both `uses` and dig
-`times` through `leveldiff`, which is the trap WP25 already hit from the
-durability side.
+**access**, the `times` are the **reward**. In the legacy model,
+**effective** values matter because `maxlevel` silently rescales both `uses`
+and dig `times` through `leveldiff`, which is the trap WP25 already hit from
+the durability side.
 
 **D11 — Trinkets get their own §6.2 pool row, and the cap check is re-run
 for 8 slots** (resolves the trinket half of A3). Pool: **+Str, +Int,
