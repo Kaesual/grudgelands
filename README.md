@@ -183,40 +183,38 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 *Last updated: 2026-08-12. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
-**Shipped (15 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
-WP19, WP25, WP35, WP36, WP38 and WP39 provide the playable foundation,
-42 mobs, three classes, equipment/bags, XP, threat, money/vendors, visual
-strata and current-ray combat/projectiles. WP16 is a canceled tombstone and
-is not shipped. No planning-only retrofit is counted as delivered.
+**Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
+WP19, WP25, WP35, WP36, WP38, WP39 and WP43 provide the playable foundation,
+42 mobs, three classes, equipment/bags, XP, threat, money/vendors, the
+canonical six-tier material/depth/harvest contract and current-ray
+combat/projectiles. WP16 is a canceled tombstone and is not shipped.
+WP43 supersedes WP25's running legacy while preserving saved-world migration.
 
 **Not in the game yet:** quests, professions/recipes, talent trees, parties,
 recovery, offhand items, affixes, durability, final structures, travel/map,
 Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface,
-geographic PvP transaction, bounded war-front life, final material identities,
-natural-depth/harvest checks and rebased economy are also pending. The
-playable-boat contract, several mount details, deep-content questions and
-PvP-death XP rule remain explicitly open in
+geographic PvP transaction, bounded war-front life and rebased economy are
+also pending. The playable-boat contract, several mount details, deep-content
+questions and PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
 [the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
-**Ready to start next:** WP43 is first because it replaces the material legacy
-used by the map/item/economy chain; WP37 follows in prerequisite priority.
-Then WP11, WP14, WP20, WP21 and WP8 are independently ready behind shipped
-dependencies. WP40 is design-ready, but implementation waits for WP43 and its
-reviewed six-part engineering brief plus seed/capacity/performance evidence;
-WP44 also follows WP43. WP34 is not next: it waits for map, materials,
-structures and economy.
+**Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
+material/map/economy roots. WP40 still requires its independently reviewed
+six-part engineering brief plus fixed seed/capacity/performance evidence before
+code begins. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
+dependencies; WP34 is not next because it still waits for map, structures and
+economy.
 
 **Caveats:** the running WP18/WP36 world still uses rectangular continents,
 radial difficulty and mandatory water separation until WP40. WP7 still runs
-its old price curve and 25% buy-back until WP44; WP25 still runs Emberstone and
-the coupled `level`/`maxlevel`/`leveldiff` gate until WP43. WP39 passed its
-headless and independent review gates but still needs the recorded GUI combat
-test; WP25, WP35 and WP36 retain their existing not-runtime-tested status.
-Mapgen work from WP18/WP25/WP36 already needs fresh test worlds, and WP40 will
-be fresh-world-only.
+its old price curve and 25% buy-back until WP44. WP43 passed its headless and
+independent-review gates but has not received a GUI/runtime pass; validate
+mapgen in a fresh world and migration in a backed-up WP25 world. WP39 still
+needs its recorded GUI combat test, while WP25, WP35 and WP36 retain their
+historical not-runtime-tested labels; WP40 will also be fresh-world-only.
 
 ## Running it
 

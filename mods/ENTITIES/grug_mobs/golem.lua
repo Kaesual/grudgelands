@@ -140,12 +140,10 @@ local function golem_def(description, texture)
 		},
 
 		-- Golem table (§3.2): shared verbatim between Stone and Mesa Golem.
-		-- "gem" is the design's working item name; default:diamond is the
-		-- stand-in until items_crafting.md decides the real gem line.
 		drops = {
 			{name = "grug_mobs:stone_core", chance = 1, min = 1, max = 1},
 			{name = "default:iron_lump", chance = 2, min = 1, max = 1},
-			{name = "default:diamond", chance = 8, min = 1, max = 1},
+			{name = "grug_materials:rough_diamond", chance = 8, min = 1, max = 1},
 		},
 
 		water_damage = 0,
