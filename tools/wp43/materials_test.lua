@@ -912,6 +912,21 @@ for _, ground_name in ipairs({"default:dirt", "default:clay",
 	assert_contains(counts.last_chat, "T1 pick", ground_name .. " feedback")
 end
 
+pos = {x = 37, y = -2000, z = 37}
+set_world_node(pos, "default:stone")
+reset_counts()
+now_us = now_us + 1500000
+digger = make_digger(ItemStack(""))
+assert_equal(core.node_dig(pos, core.get_node(pos), digger), false,
+	"deep hand refusal")
+assert_equal(counts.builtin, 0, "deep hand refusal builtin")
+assert_equal(counts.wear, 0, "deep hand refusal wear")
+assert_equal(counts.drop_calls, 0, "deep hand refusal drops")
+assert_equal(counts.harvest, 0, "deep hand refusal settlement")
+assert_contains(counts.last_chat, "T6 pick", "deep hand refusal tier")
+assert(not counts.last_chat:find("T1 pick", 1, true),
+	"deep hand refusal must not claim T1")
+
 -- Crafted/storage nodes bypass both gates, while a natural node requires a
 -- pick even for a creative player.
 pos = {x = 40, y = -2000, z = 40}

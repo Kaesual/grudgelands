@@ -248,7 +248,8 @@ local FEEDBACK_INTERVAL_US = 1500000
 
 local function failure_message(decision)
 	if decision.reason == "no_pick" then
-		return "A T1 pick is required to mine natural ground."
+		return "A T" .. decision.depth_required_tier ..
+			" pick is required to mine natural ground at this depth."
 	elseif decision.reason == "depth" then
 		return "This natural ground requires a T" ..
 			decision.depth_required_tier .. " pick. Your T" .. decision.pick_tier ..
