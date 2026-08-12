@@ -1,7 +1,7 @@
 # Items, Crafting & Loot — Full Design Spec
 
-**Decided spec** (authored + approved 2026-08-06; the five flagged
-points P1–P5 were all decided per recommendation — resolutions in §10).
+**Decided spec** (authored + approved 2026-08-06; the surviving four flagged
+points P1–P4 are recorded in §10).
 
 **Reworked 2026-08-07** (crafting rework session): the material ladder is
 now six tiers (§3.0), the tome chain is replaced by one recipe book per
@@ -2026,7 +2026,8 @@ material.
 
 Private housing isles, paid depth rights and the complete guild system are
 retired. The first open-world Claim Stone is free after the level-20 Housing
-Steward introduction. Sequential upgrades consume:
+Steward introduction. Claim geometry, placement, ownership and lifecycle are
+defined by [housing.md](housing.md). Sequential upgrades consume:
 
 | Claim upgrade | Level | Universal metal | Ledger target |
 |---|---:|---:|---:|
@@ -2110,20 +2111,6 @@ outrun players" pillar (4.0 × 1.08 = 4.32 < 4.4 keeps mobs faster, but
 PvP chases change). Recommendation: **ship at +8%/15 s**, tag as
 balance-watch in the WP7 playtest.
 **Decided as recommended (2026-08-06).**
-
-**P5 — Abyssal-gem bridge.** Until guild housing ships, race
-signatures would be uncraftable. Recommendation: **apex hoards drop 1
-abyssal gem** as interim source; remove (or reduce to 10% chance) once
-housing depths are live.
-**Decided as recommended (2026-08-06).** *Amended 2026-08-07*: with
-personal isles the source is no longer guild-gated, but the **Abyssal
-Crystal** (renamed, §5.5) sits in depth step 6 — the 1g step, the single
-most expensive purchase in the game (§8.4) — so the bridge is **kept at
-the reduced 10%** rather than removed. *Amended 2026-08-08*: the
-continental band of §3.0.1 did not change that, because it lies below
-−1000 and needs the very pick the crystal makes — the 10 % hoard drop is
-now the **only** ungated source of the material and is therefore
-permanent, not interim (§3.0.1, "The T6 entry point is the apex hoard").
 
 ### 10.2 2026-08-07 (crafting rework)
 
@@ -2270,13 +2257,10 @@ pick.
 by volume the scarcest entry in the placement table by a wide margin.
 The band is the T5 one, not the deep one, because §3.0.1's binding rule
 puts a lead metal one band above its own tier — below −1000 the T6 pick
-would have been needed to mine the material the T6 pick is made of, and
-the 10 % apex hoard would have become the tier's only door instead of a
-bridge. The crystal is a **base resource**, and the earlier
-arrangement made the entire T6 alloy depend on a 1.9 g gold sink. What
-replaces the isle's hold on T6 is its six step-exclusive materials
-(`world.md` §5.4). Rejected: leaving T6 behind the purchase, which had
-been chosen only to keep one sentence in §3.0.1 literally true.
+would have been needed to mine the material the T6 pick is made of. This
+records the shipped WP25 legacy placement only; the target natural-depth and
+harvest-tier rules in §3.0.1/§3.0.4 supersede its engine-level mechanism and
+WP43 owns the migration.
 
 **D16 — The depth gets no drop layer of its own** (resolves the loot half
 of `TODO-design-depth.md` D10). Underground mobs drop what their families
@@ -2286,12 +2270,3 @@ crafter nor a boss behind it, against §0's promise that the best items
 come from crafting and hard bosses — and the band already pays the
 endgame *material* that the crafted endgame item is made of. Rejected:
 T6 gear drops on the level-60 deep roster.
-
-**D17 — The Amplifier is the one live isle-exclusive material in the
-MVP** (resolves the effect half of `TODO-design-depth.md` C9). Once per
-item, **+10 % on all prefix and suffix values** (§6b.8); the other five
-isle materials are named and placed but inert, so later recipes can hang
-off stock that is already in the ground and no mapgen change is needed
-to add them. Two follow-ups are **tasks, not open questions**: §6.3's cap
-arithmetic is re-run against the multiplier, and WP5 owns the
-once-per-item marker in item meta.

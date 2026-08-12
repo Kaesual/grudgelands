@@ -43,7 +43,7 @@ cutscene opera).
   the character's service and issues the first free owner-bound Claim Stone
   when faction capacity permits. The home is claimed in one of the ten
   authored level-11–30 housing zones; it is not an island, a king's personal
-  gift or a purchase of underground rights.
+  gift or a purchase of underground rights ([housing.md](housing.md) §2).
 - Each race still has its own king, for six kings total. Kings and their royal
   guards are killable high-end raid combatants, unlike passive service NPCs.
   Their Fallen Crowns are optional personal masterwork trophies with race

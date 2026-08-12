@@ -13,8 +13,8 @@ Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 Core principles:
 
 - **Instant abilities + cooldowns, no cast times in the MVP.** Cast bars
-  (and pushback) may come later for selected spells; the Home Stone's
-  10 s cast (world.md §6) is its own mechanic and stays.
+  (and pushback) may come later for selected spells; the Home Stone's 10 s
+  cast ([housing.md](housing.md) §4) is its own mechanic and stays.
 - **Abilities are hotbar items** (indestructible, not droppable/tradeable,
   locked to the main inventory; granted at class pick, except §2b's
   universal Strike, which is granted on join). Left click = attack or cast

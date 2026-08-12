@@ -11,28 +11,18 @@ prefix/suffix affixes (§6b), the herb/spice split
 open-world housing and mount-geography decisions live in their design docs;
 this file retains only the crafting/content questions they did not answer.
 
-**Everything in this file is open unless its *Decision* line says
-otherwise.** No decided *rule* lives here — a decided question keeps only
-a one-line stub naming the design file it landed in, so the reasoning
-behind it stays findable; the rule itself lives in `docs/design/`.
-Several design sections point here by name for exactly these lists.
+**Everything in this file is open.** No decided rule or resolved-question
+stub lives here; those rules and their rationale belong to `docs/design/` and
+the repository history. Several design sections point here by name for exactly
+these remaining lists.
 
 Once a question is decided: fold it into the design doc named in its
-*Lands in* line, update ROADMAP/BACKLOG where affected, and replace the
-question with that stub. When nothing open is left, delete the file
+*Lands in* line, update ROADMAP/BACKLOG where affected, and remove the resolved
+question from this file. When nothing open is left, delete the file
 (AGENTS.md "Documentation layers").
 
-Groups: **A** crafting & items · **B** materials & world · **C** two
-design tensions · **D** mounts · **E** cooking.
-
----
-
-## Map handoff — resolved
-
-**Decision:** the G1/G2 names, race-region distribution, ordinary depth curves,
-cultural materials, signature woods and all-six-gem apex camps are decided in
-`docs/design/world_zones.md` §§10–11 and `docs/design/biomes_mobs.md` §6. No
-map-material question remains in this file.
+Groups: **A** crafting & items · **B** material calibration · **C** profession
+identity · **D** mounts · **E** cooking.
 
 ## A. Crafting & items
 
@@ -42,7 +32,7 @@ map-material question remains in this file.
 brings a few profession-exclusive recipes per tier**, and §3.0.3 forbids
 a profession from ever making a *parallel* base item. So a signature
 recipe can only be a consumable, a kit, a container, an offhand, a
-trinket, a fitting or a detector — never a sword or a chestplate that
+trinket or a fitting — never a sword or a chestplate that
 already exists on the base ladder.
 
 What is already authored:
@@ -108,17 +98,11 @@ Two constraints the list must satisfy:
   roller rule (WP5), but it constrains the vocabulary: a word must
   identify its stat unambiguously.
 
-**The example list was not conformant, and is fixed.** §6b.4's *of the
-snake* mapped to "+poison", and there is no poison stat anywhere in
-`combat_stats.md` or in §6.2/§6.3 — it was an off-hand example, never a
-decision. **Poison is out of scope for the MVP affix list** (decided
-2026-08-08): the example is now *of the cat* (+dodge), a stat the §6.2
-pools actually contain, and poison is recorded in `classes.md` §6 as
-arriving with the **Rogue in Phase 2** as its signature damage type. Any
-word list authored for this question must map every word to a stat that
-exists in §6.2 — no candidate may reintroduce poison, and promoting
-poison to a real stat is Rogue work (a damage-over-time consumer in the
-`classes.md` §2 pipeline), not affix work.
+The authoritative example is *of the cat* (+dodge), not the retired
+non-conformant *of the snake* (+poison). Poison is outside the MVP affix stat
+set and belongs to the Phase-2 Rogue direction in `classes.md` §6. Any word
+list authored here must map every word to a stat that exists in §6.2; promoting
+poison would be Rogue pipeline work, not affix vocabulary work.
 
 Options:
 
@@ -142,88 +126,27 @@ of §6.2, and adding the trinket row of A3 extends it for free.
 
 *Lands in*: `items_crafting.md` §6b.4 (word table) — §6.2 stays the
 legality source.
-**Decision:** _open_ — **blocks WP5** (the roller needs the words to
-build a display name). The **poison sub-question is decided
-2026-08-08**: out of scope for the MVP affix list → landed in
-`items_crafting.md` §6b.4 (example replaced by *of the cat*) and
-`classes.md` §6 (poison arrives with the Rogue in Phase 2). The word
-list itself is untouched by that and still has to be authored.
+**Decision:** _open_ — **blocks WP5** (the roller needs the words to build a
+display name).
 
-### A3 — Trinkets (and bags) have no enchant pool
+### A3 — Do bags participate in refinement and enchanting?
 
-**Decision (trinket half):** decided 2026-08-08 → landed in
-`items_crafting.md` §6.2 (the new **Trinkets** pool row — +Str, +Int,
-+Dex, +HP, +mana, +crit%, universal-ish because every class wears both
-slots, deliberately no +armor%/+dodge%/+attack speed%) and
-`items_crafting.md` §6.3 (the cap check **re-run for 8 slots**: crit
-worst case ≈ 36 % against a 30 % cap — it clamps, dodge ≈ 19 % and the
-60 % armor cap are untouched). Option **(a)** below was taken, together
-with C11's option (b). The reasoning stays here; the rule lives there.
+`items_crafting.md` §6b.1 still names bags as an Ornate refinable family, but
+§6b.2's bonus modifies base damage or armor and ordinary durability. A bag has
+none of those values, so "Ornate Bag" currently has no defined effect. The
+separate trinket exception in §6.2 is complete and does not belong to this
+question.
 
-**Owner steer, 2026-08-08 — trinkets are NOT finished planning and must
-not be implemented before they are.** The direction to work out: a
-trinket probably deserves **its own kind of enchantment rather than the
-normal prefix/suffix affixes**, because it has **no base value at all** —
-no damage number, no armor number — so both the refinement bonus and the
-affix model that hang off a base value have nothing to bite on. That
-makes option **(b)** below (fixed special effects, §6b.7 shape) the more
-likely resolution than the pool row that was provisionally landed under
-(a). Re-open this before WP5 or WP10 touches trinkets: the §6.2 pool row
-already in the doc is a placeholder, not a settled rule.
+Options: **(a)** define a bag-specific refinement benefit without colliding
+with the fixed 8/16/24/32-slot ladder; **(b)** remove bags from the refinable
+families entirely and reserve the Ornate word for cloth armor and spell tomes.
 
-**Still open below: the bag half — and the same gap now applies to
-trinkets.** §6b.1's refinement-word table has no row for trinkets, and
-§6b.2's refinement bonus ("+15 % base damage or the armor equivalent,
-+100 % durability") has nothing to attach to on an item that has neither
-a damage number nor an armor number. Since §6b.3 makes refinement the
-prerequisite for *every* affix, the new §6.2 trinket row needs that
-answered before WP5 can roll one — it is exactly the bag problem, on a
-second family. Options (d)/(e) below were written for bags; whatever is
-chosen has to cover trinkets too, or trinkets need their own base-stat
-line in §3.1/§3.2 for the +15 % to bite.
+Recommendation: **(b)**. The four mastery sizes already supply the bag line's
+progression, and removing one unsupported family is clearer than adding a
+second bag axis.
 
-The bag hole as originally written: §6b.1 makes **bags** an
-"Ornate" refinable family, but §6b.2's refinement bonus is "+15 % base
-damage or the armor equivalent, +100 % durability" — a bag has neither a
-damage number nor durability, and no §6.2 pool. Today "Ornate Bag" is a
-name with no effect behind it.
-
-Options for trinkets (**(a) was taken**, see the decision stub above):
-
-- **(a) Own pool row.** Proposal: +Str / +Int / +Dex (one primary),
-  +HP, +Mana, +Crit% — deliberately *no* +Armor%, so trinkets never
-  compete with armor for the 60 % cap (§6.3's cap safety note is
-  computed for 6 slots: weapon, offhand, 4 armor — adding 2 trinket
-  slots re-opens that arithmetic and has to be re-checked).
-- **(b) Trinkets are enchant-free and carry a fixed effect each**, in
-  the shape of §6b.7's special variants. Distinct identity, no pool
-  needed, but it makes the Goldsmith the one profession whose product
-  ignores the whole affix system.
-- **(c) The pool follows the wearer's class** — rejected on sight: item
-  meta is rolled at craft time and cannot know its future wearer.
-
-Options for bags: **(d)** bags carry no affixes and refinement gives
-them a defined bag-specific bonus (e.g. +4 slots, which collides with
-the four fixed sizes of `inventory_equipment.md` §3); **(e)** bags are
-removed from §6b.1's refinable families entirely and the "Ornate" word
-covers cloth armor and spell tomes only.
-
-Recommendation: **(a)** for trinkets — with the §6.3 cap arithmetic
-re-run for 8 slots — and **(e)** for bags: the bag line is already the
-Tailor's four-tier signature ladder (A1), it needs no second progression
-axis, and "you cannot refine a bag" is one sentence rather than a new
-bonus type. **(e) cannot simply be extended to trinkets**: a trinket
-that may not be refined may not be enchanted either (§6b.3), which would
-empty the §6.2 row just added.
-
-*Lands in*: `items_crafting.md` §6.2 (new row — **done 2026-08-08**),
-§6.3 (cap re-check — **done 2026-08-08**), §6b.1 (the refinement-word
-row for bags **and** trinkets) and §6b.2 (what refinement gives an item
-with no damage and no armor number).
-**Decision:** trinket pool + cap arithmetic **decided 2026-08-08**
-(→ `items_crafting.md` §6.2/§6.3). **Open**: the bag half, and the
-refinement question for both bags and trinkets. Blocks WP5's roller for
-trinkets only, nothing else.
+*Lands in*: `items_crafting.md` §§6b.1/6b.2.
+**Decision:** _open_ — affects WP10's Tailor book.
 
 ### A4 — Remaining profession keystones
 
@@ -232,11 +155,6 @@ Woodcarver and Goldsmith rows are empty and point here. The rule is
 decided (a keystone is the redemption token that opens a book group; the
 materials prove the player has been in the ring that produces them); the
 lists are not.
-
-The material review has since fixed the **Goldsmith T2–T6 row**: it uses Gold
-plus universal bars and level-appropriate mob drops, and never consumes a G2
-gem, loose Abyssal Crystal or a rare trophy. That decided row belongs in
-`items_crafting.md` §2.3 and is no longer an open question here.
 
 Still missing: **T5 and T6 columns for Blacksmith, Leatherworker, Tailor,
 Alchemist and Woodcarver**, plus the **T2–T4 Woodcarver rows**.
@@ -344,37 +262,15 @@ before WP5 writes it.
 
 ---
 
-## B. Materials & world
-
-### B7 — Rock-stratum node names and textures (six strata)
-
-**Decision:** resolved by the six visual strata and the separate natural-depth
-and resource-harvest checks in `world.md` §2 R6. Rock identity no longer gates
-progression, and no private-island generator consumes a parallel stratum
-ladder.
-
-### B8 — Quartz and Garnet: depth placement and scarcity
-
-**Decision:** resolved. Quartz is the universal T1 jewelry mineral; G1 and G2
-species use the race-region distribution and depth curves in
-`docs/design/biomes_mobs.md` §6; Emberglass and Abyssal Crystal are universal
-progression resources; and `world.md` §2 R6 defines their minimum harvest
-tiers. No placement or scarcity question remains here.
-
-### B9 — Ocean classification
-
-**Decision:** resolved in `world.md` §2b and `world_zones.md` §7. Planned
-zone water, the editable 80-node shelf, immutable deep ocean and immutable
-dragon channels are distinct authored classes. The compatibility predicate is
-true only for deep ocean; open-world housing has no island exception.
+## B. Material calibration
 
 ### B22 — The six picks' dig-speed progression: the actual `times`
 
 The material review keeps the **rule** — every higher-tier pick is faster on
 ordinary rock, including its own current band — but retires engine level
-difference as the progression mechanism. Every Grudgelands pick uses
-`groupcaps.cracky.maxlevel = 0`; natural-depth access and resource harvesting
-are separate checks in `world.md` §2 R6.
+difference as the progression mechanism. Natural-depth access and resource
+harvesting are separate checks in `world.md` §2 R6 and do not set the speed
+curve.
 
 The six effective `times` and `uses` sets are still unauthored. They must form
 an explicit six-pick progression, preserve sensible durability and be measured
@@ -394,16 +290,16 @@ paper (pattern: `docs/research/wp6_spawn_budget.md`). Author it together with
 the missing Iron, Silversteel, Embersteel and Abyssal Steel picks.
 
 *Lands in*: `items_crafting.md` §3.0.4.
-**Decision:** _open_ (the numbers; the **rule** is decided 2026-08-08).
-Owner: **WP26/WP29**, which author the iron+ picks.
+**Decision:** _open_ (the `times` and `uses` numbers). Owner:
+**WP26/WP29**, which author the iron+ picks.
 
 ---
 
-## C. Two design tensions
+## C. Profession identity
 
-These two are not gaps in a list. Both are consequences the rework
-produced deliberately, and both leave a profession standing on very
-little in the MVP. They want a decision, not an author.
+This is not a gap in a list. It is a consequence the rework produced
+deliberately, and it leaves one profession standing on very little in the MVP.
+It wants a decision, not an author.
 
 ### C10 — Leather is wearable but nobody wants it
 
@@ -477,13 +373,6 @@ today it states as fact something the shipped filter contradicts.
 (if (c)) `inventory_equipment.md` §2's rationale.
 **Decision:** _open_ — affects WP5's drop tables and WP10's scope.
 
-### C11 — The Goldsmith's headline product is post-MVP
-
-**Decision:** trinkets ship in the MVP as the Goldsmith's exclusive wearable
-family. The resulting profession identity and regional-material rules live in
-`items_crafting.md` §3.6b and the equipment docs. A3 still owns the open
-trinket refinement numbers.
-
 ---
 
 ## D. Mounts
@@ -495,34 +384,18 @@ boundaries, flyable Holy Grounds and the enemy-territory flight ban (§4), plus
 the licence-checked references (§5). The unresolved parts below must close
 before the work package can ship.
 
-### D12 — Is there a saddle ITEM, and what are the mount assets?
+### D12 — Which assets represent the four mount tiers?
 
-**Item half decided 2026-08-11:** each purchase hands over one owner-bound
-inventory/hotbar mount item for that tier. Using it summons or dismounts; the
-item remains in the inventory throughout and is never a consumed or separately
-placed saddle. Permanent per-character purchase state is authoritative and
-allows idempotent restoration without trading or duplication. Landed in
-`mounts.md` §3.
+Open: which models represent the four tiers, and from where.
 
-Still open: which models represent the four tiers, and from where.
-
-On (ii): `mounts.md` §5 clears the *code* licences (mobs_redo MIT, LotT
+`mounts.md` §5 clears the *code* licences (mobs_redo MIT, LotT
 LGPL 2.1, VoxeLibre GPL-3.0-or-later) but names **no model** for a
 flying mount. mobs_redo ships none; VoxeLibre's `mobs_mc/horse.lua`
 covers the land tiers. Assets have to go through the AGENTS.md licence
 rule (re-verify in the source repo before import) and the shopping-list
 pattern of `docs/research/assets/`.
 
-**Decision:** item/lifecycle decided; **assets remain open**.
-
-### D13 — Does a mount persist in the world after dismount?
-
-**Decision 2026-08-11:** the summoned entity is ephemeral. It spawns at the
-player's exact position when the persistent item is used, owns movement while
-the player is attached, and is removed on every manual, damage, death, logout,
-shutdown or zone-forced dismount. The mount item never left the inventory, so
-there is no return/drop transaction and no parked entity budget. Landed in
-`mounts.md` §3.
+**Decision:** _open_.
 
 ### D14 — Can mounts be attacked, damaged or killed, and do they drop anything?
 
@@ -546,57 +419,22 @@ was rejected for.
 
 **Decision:** _open_.
 
-### D15 — Does damage or combat dismount the rider?
+### D15 — May a player mount while in combat?
 
-**Decision (the damage half):** decided 2026-08-08 → landed in
-`mounts.md` §3.1. **Any incoming damage dismounts the rider
-immediately** — a mob's melee or ranged hit, an enemy player, the
-environment — with **no threshold and no grace period**, through the
-same detach path as every other dismount. That is option **(a)** below,
-not the recommended **(c)**.
-
-What the decision turned on:
-
-- **It is a pillar question, not a mount question.** Aggressive mobs run
-  `run_velocity` 4.4 against a player's 4.0 (`combat_stats.md` §3), and
-  the entire chase model hangs off that one inequality — the 25 m soft
-  de-aggro (§3), the 45 m give-up and the 40 m leash (§4). A mount does
-  **6–10 nodes/s permanently** (`mounts.md` §1.1), so without a rule a
-  mounted player is immune to the whole mob game and three shipped WP6
-  numbers become unreachable by design.
-- **The Swiftness Draught is the precedent.** It is capped at +8 % for
-  15 s precisely so that 4.0 × 1.08 = 4.32 stays under 4.4
-  (`items_crafting.md` §3.6, §10 P4). A permanent mount with no rule
-  would have been the one system in the game allowed to ignore a limit
-  a *consumable* has to respect.
-- **Ranged attackers turn it from a formality into a threat.** Skeleton
-  archers already use `dogshoot` (`combat_stats.md` §3), bows are
-  catalogued as a Phase-2 enabler (`items_crafting.md` §9) and the
-  Rogue/Hunter direction is deferred Phase-2 work (`classes.md` §6) — so
-  the rule's teeth grow with the roster instead of needing a second
-  mechanic later.
-
-**One sliver stays open — mounting *while* in combat.** The decided rule
-answers damage; it does not say whether the mount action is **refused**
+Incoming damage already dismounts immediately under `mounts.md` §3.1. Open:
+whether the mount action is also **refused**
 while `grug_core.mark_in_combat` / `in_combat` is true (the 5 s window
 shipped with WP4 and reused by WP6's leash and by recovery). Under the
 damage rule alone a player can remount between two hits and ride away
-from a fight already started, which is the hole the old recommendation
-(c) wanted closed. The hook exists and costs nothing; this needs a
+from a fight already started. The hook exists and costs nothing; this needs a
 decision, not an author.
 
-**This also answers D16's PvP-flag switch**: a player's damage dismounts
-exactly like a mob's, so PvP needs no fifth zone rule of its own — the
-old recommendation to fold that switch into D15 is hereby carried out.
-
-The original options are kept for the record: **(a)** any damage
-dismounts immediately; **(b)** being `in_combat` blocks *mounting* but
-does not dismount; **(c)** both; **(d)** a damage threshold or a
-cast-like remount delay.
+Options: **(a)** refuse mounting for the complete 5 s combat window;
+**(b)** allow mounting between hits and rely on the next damage event to
+dismount again; **(c)** add a separate cast-like remount delay.
 
 *Landed in*: `mounts.md` §3.1.
-**Decision:** damage half **decided 2026-08-08**; **mounting while in
-combat is still open** and wanted before the mount WP, not during it.
+**Decision:** _open_ and wanted before the mount WP, not during it.
 
 ### D16 — May flying tiers operate underground?
 
@@ -682,7 +520,7 @@ architecture anyway.
 
 ### E21 — Cooking's per-tier recipe lists
 
-Decided already: Cooking has a recipe book with the same **six T1–T6
+Cooking has a recipe book with the same **six T1–T6
 groups** and level gates as a profession book but **no keystones** — a
 group opens on its **ingredients**, which are regional, so T6 cooking
 needs ingredients that only exist in level-50+ areas
@@ -693,19 +531,12 @@ ingredient set is decided too, including the found-only three:
 wild cocoa and rock salt as deliberately never-farmable, and §6 maps them
 to both continents.
 
-**Decided 2026-08-08, and it changed what this question is about**: food
-now has a **structure**, landed in `items_crafting.md` §3.7 and
-`combat_stats.md` §5. **Raw / plain food gives regeneration only, no
-buff; cooked food gives both** — a restore *and* a buff. The restore
-runs through §5's **resting** channel (standing still, interrupted by
-damage or movement) at **8 % max HP/s**, twice raw food's 4 %, so cooked
-food is the *faster rest* and the Alchemist's Healing Potion keeps the
-**instant** slot it was given for (30 % instantly, in combat, 60 s
-cooldown, `items_crafting.md` §3.6). And **only one food buff is active
-at a time — the most recently eaten food replaces the running one** (the
-food-side twin of §10 P3's one-elixir rule; food and elixir still stack
-with each other). What is left open is what it always was: the numbers
-per group.
+The authoritative food structure in `items_crafting.md` §3.7 and
+`combat_stats.md` §5 supplies the constraints for this question: raw food uses
+the 4%/s resting channel without a buff; cooked food restores through that
+channel at 8%/s and adds one replace-on-eat food buff; the Alchemist's Healing
+Potion retains the instant in-combat slot. The open work is the recipe and
+magnitude table per group.
 
 Open: the **recipes**, and now also the **magnitudes**.
 
@@ -750,10 +581,8 @@ primary stat, a short buff) and let (a)'s ramp set the size, or the
 single dish.
 
 *Lands in*: `items_crafting.md` §3.7.
-**Decision:** structure **decided 2026-08-08** (raw restores, cooked
-restores + buffs, one food buff at a time); the **per-group recipes,
-restore percentages and buff magnitudes stay open** — **blocks WP10**'s
-cooking book.
+**Decision:** _open_ — the per-group recipes, restore percentages and buff
+magnitudes **block WP10**'s cooking book.
 
 ---
 
@@ -762,16 +591,12 @@ cooking book.
 | # | Question | Blocks |
 |---|---|---|
 | A1 | Signature recipes per profession × mastery tier | WP10 |
-| A2 | Affix word lists + stat mapping (poison ruled out 2026-08-08) | **WP5** |
-| A3 | ~~Trinket enchant pool~~ (decided 2026-08-08) — refinement for bags **and** trinkets still open | WP5 (trinkets only) |
-| A4 | Remaining T5/T6 keystones + Woodcarver rows; Goldsmith decided | **WP10** |
+| A2 | Affix word lists + stat mapping | **WP5** |
+| A3 | Whether bags participate in refinement and enchanting | WP10 |
+| A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
-| B7 | ~~Rock strata and their progression role~~ — decided in `world.md` §2 R6 | — |
-| B8 | ~~Universal/regional resource placement and harvest tiers~~ — decided in `biomes_mobs.md` §6 / `world.md` §2 R6 | — |
-| B9 | ~~Ocean classification~~ — decided in `world.md` §2b / `world_zones.md` §7 | — |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
-| C11 | ~~Goldsmith's headline product is post-MVP~~ — **decided 2026-08-08**: trinkets ship in the MVP | — |
-| D12–D20 | Mounts: item, persistence, levels/speeds, geography and damage dismount are decided in `mounts.md`. Still open: D12 assets, D14 entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
-| E21 | Cooking recipe lists per tier — plus the restore % and buff magnitudes; **the food structure is decided 2026-08-08** (`items_crafting.md` §3.7, `combat_stats.md` §5) | **WP10** |
+| D12, D14–D20 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
+| E21 | Cooking recipe lists per tier, restore percentages and buff magnitudes | **WP10** |

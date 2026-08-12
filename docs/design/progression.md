@@ -31,7 +31,8 @@ Levels must keep delivering *decisions and buttons*, not just stats:
 - **Level 20 — first Claim Stone:** a short introduction from the passive,
   invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
   It may be placed only in the authored level-11–30 housing zones and starts
-  the non-combat home-progression line (`economy.md` §4.1).
+  the non-combat home-progression line ([housing.md](housing.md) §2;
+  `economy.md` §4.1).
 - **Levels 35 / 50 / 60 — claim upgrades:** the same stable stone may reach
   tiers II / III / IV by paying the universal-metal and measured-income costs.
   Claims never buy mining depth or a private material source.

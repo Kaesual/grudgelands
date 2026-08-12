@@ -109,7 +109,9 @@ prices take precedence over preserving the exact mathematical ratio.
 
 Private housing isles, purchased depth rights, guild founding and every guild
 bank/claim fee are retired. Permanent player protection comes from open-world
-Claim Stones in the ten eligible level-11–30 housing zones.
+Claim Stones in the ten eligible level-11–30 housing zones. The authoritative
+claim tiers, issuance, lifecycle and capacity contract is
+[housing.md](housing.md).
 
 - The first owner-bound Claim Stone is free after the level-20 Housing Steward
   introduction. A claim never grants private ore, purchased mining depth or a

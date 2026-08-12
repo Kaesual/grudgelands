@@ -224,5 +224,6 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   capitals/villages** (placement with WP13); job-supply vendors (thread,
   flux, vials) stand next to them (materials design:
   items_crafting.md). Player-owned profession workstations may also stand
-  inside a valid open-world housing claim. Claim ACL access never grants a
-  recipe, profession tier or material the character has not unlocked.
+  inside a valid open-world housing claim under
+  [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
+  profession tier or material the character has not unlocked.

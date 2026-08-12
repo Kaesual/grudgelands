@@ -2,9 +2,10 @@
 
 Status: technical research complete. The game-design inputs that were open
 when this study was written were resolved on 2026-08-12 in
-`docs/design/world_zones.md` and `TODO-design-housing.md`. The remaining
-choices are implementation engineering owned by WP40's mandatory pre-code
-brief; this document does not change game-design decisions.
+[world_zones.md](../design/world_zones.md) and
+[housing.md](../design/housing.md). The remaining choices are implementation
+engineering owned by WP40's mandatory pre-code brief; this document does not
+change game-design decisions.
 
 Evidence labels used throughout:
 
@@ -885,9 +886,9 @@ the no-tunnel/no-bridge/no-seabed-mine rule.
 **Verified design input.** The material-progression model fixes the
 north/south edges at z = -250 and z = +250, makes Holy Grounds authored land,
 protects it through y = -700 inclusive, and reopens ordinary contested depth at
-y = -701 (`TODO-design-material-progression.md:424-443`). The completed map
-plan fixes the west/east extent at x = -2500..+2500
-(`docs/design/world_zones.md` §7.1).
+y = -701 ([world.md](../design/world.md) §2 R2/R2b). The completed map plan
+fixes the west/east extent at x = -2500..+2500
+([world_zones.md](../design/world_zones.md) §7.1).
 
 **Recommendation.** Encode Holy Grounds as a stable polygon with the two fixed
 z edges and separately authored west/east coast transitions. Do not derive it
@@ -1483,8 +1484,8 @@ correction was required.
 | Four level-31-40 frontier approaches were peaceful. | Every level-31-60 ordinary zone is contested; `world_zones.md` §8 carries the corrected rows. |
 | Shared-front terrain had a blanket immutable/resource-only rule. | Ordinary contested terrain is mutable; only bounded functional anchors, irreplaceable route structures, claims and Holy Grounds receive their explicit protection. |
 | Dragon endpoints were mainland contact zones in one overloaded graph. | Both endpoints are offshore and retain stable IDs; §9 separates land adjacency from four exact boat-route edges. |
-| `world.md` still contained private housing-island target geometry. | WP40 generates no housing islands; the ten-zone dry-land eligibility masks and exclusions are its only housing geometry inputs. Remaining island text elsewhere is shipped-history/integration debt, never mapgen authority. |
-| Material notes mentioned only four level-21-30 homestead zones. | Both TODOs now name all ten level-11-30 housing zones: six home zones and four inter-capital zones. |
+| `world.md` still contained private housing-island target geometry. | WP40 generates no housing islands; the ten-zone dry-land eligibility masks and exclusions in `housing.md` are its only housing geometry inputs. Earlier island branches are repository history, never mapgen authority. |
+| Material notes mentioned only four level-21-30 homestead zones. | `housing.md` and `world_zones.md` now name all ten level-11-30 housing zones: six home zones and four inter-capital zones. |
 | WP40 was called design-ready before the geometry and audits were complete. | Its Backlog contract now names the completed geometry/audits and requires a reviewed pre-code engineering brief plus measured capacity/performance outputs. |
 
 ### Technical risk register
@@ -1675,10 +1676,9 @@ separate.
 - **Problem/inference:** If eligibility excludes actual inland water and steep
   terrain, native seed variation changes usable area and fragments 101x101
   reservations. A simple authored-zone-area calculation overstates capacity.
-- **Primary evidence:** the housing model requires the complete future footprint
-  and excludes boundaries, civic/POI/road corridors, shelf, selected inland
-  water, and deep ocean (`TODO-design-housing.md:91-113`,
-  `TODO-design-housing.md:249-271`).
+- **Primary evidence:** the housing model requires the complete future
+  footprint and excludes boundaries, civic/POI/road corridors, shelf, selected
+  inland water, and deep ocean ([housing.md](../design/housing.md) §§2.1/6).
 - **Alternatives:** normalize terrain/water in housing cells; evaluate masks
   from the final generated terrain for every seed; reserve large authored flat
   housing subareas.
@@ -1698,7 +1698,11 @@ separate.
   flight access.
 - **Recommendation:** derive terrain, immutable column, warning, and hard-flight
   masks from one channel geometry and simulate maximum-speed/height approaches.
-  Exact width remains a design question.
+  The binding geometry is a minimum 200-node final-shore channel, exactly 48
+  ocean nodes of warning from either shore, at least 104 nodes of hard
+  no-flight ocean between them, and two distinct 96-node-wide boat approaches
+  centred at z = -125 and z = +125
+  ([world_zones.md](../design/world_zones.md) §§7.1/14).
 
 #### R16 — Engine setting or geometry changes silently create seams
 
@@ -1713,11 +1717,12 @@ separate.
 
 ### WP40 pre-code engineering brief and measured outputs
 
-No owner-design question remains. `world_zones.md` §§7-14 and
-`TODO-design-housing.md` bind items formerly listed here: Holy Grounds and
-island geometry, all water classes, stable IDs and separate land/boat graphs,
-the common y = -700 shallow floor, planned surface water, exact housing zones
-and static eligibility, and the 32-seed capacity/audit model.
+No owner-design question remains. [world_zones.md](../design/world_zones.md)
+§§7-14 and [housing.md](../design/housing.md) bind the inputs formerly listed
+here: Holy Grounds and island geometry, all water classes, stable IDs and
+separate land/boat graphs, the common y = -700 shallow floor, planned surface
+water, exact housing zones and static eligibility, and the 32-seed
+capacity/audit model.
 
 Before an implementation subagent changes mapgen code, the WP40 orchestrator
 must write and review a short engineering brief that freezes:
@@ -1750,15 +1755,15 @@ outputs and must be recorded before its final integration gate.
 - `AGENTS.md` — repository rules, current mapgen architecture notes, Lua 5.1
   and pinned-engine constraints.
 - `docs/design/world_zones.md` — 38 stable zone catalog, current adjacency,
-  fixed anchors/envelopes, boundary budgets, and the older rules identified as
-  conflicts above.
-- `docs/design/world.md` — current terrain/protection/depth/structure rules and
-  the obsolete shared-front, mainland-dragon, and housing-island assumptions.
-- `TODO-design-material-progression.md`, especially §§3 and 11 plus the final
-  integration handoff — newer territory, y=-701, Holy Grounds, offshore dragon,
-  shelf/deep-ocean, and WP40 requirements.
-- `TODO-design-housing.md` — newer ten-zone open-world claims, 101x101 future
-  reservation, exclusions, spatial indices, persistence, and capacity audit.
+  fixed anchors/envelopes, boundary budgets, water/channel geometry and WP40
+  acceptance gate.
+- `docs/design/world.md` — current terrain, protection, depth, water and
+  structure rules.
+- `docs/design/items_crafting.md` and `docs/design/biomes_mobs.md` — material
+  identities, natural-depth and harvest-tier contracts, cultural placement and
+  supply audits consumed by WP40.
+- `docs/design/housing.md` — ten-zone open-world claims, 101x101 maximum
+  reservation, exclusions, spatial indices, persistence and capacity audit.
 - `docs/design/mounts.md` — altitude-independent ocean/territory lookup,
   warning/hard-flight bands, Holy flight, and dragon-island access proof.
 - `docs/research/luanti-lua.md` — project briefing on Lua 5.1, mapgen Lua-state
