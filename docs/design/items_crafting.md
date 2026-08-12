@@ -16,6 +16,15 @@ ring names. Any surviving ring wording below describes shipped calibration;
 WP40 must translate placement to the named-zone catalog without changing the
 item, tier, depth or economy rules.
 
+**Material-system integration 2026-08-12.** Six universal metals now form a
+non-circular pick/depth spine; natural-depth permission and resource harvest
+tier are separate checks. Emberglass and Abyssal Steel replace the old
+Emberstone/Mese and Grudgesteel targets. Six regional G1/G2 gems, cultural
+finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
+the rebased 25c→25s Common-price axis are authoritative below. Private housing
+isles, guild systems, finder items and the Amplifier are absent from the target
+design. Historical decisions in §10 remain migration context only.
+
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
 `inventory_equipment.md` §4 (3×3 grid, multi-stage, craft_predict
@@ -31,7 +40,8 @@ ladders are independent; §2.1 spells out how they meet.
 - **Quality tiers: Common (white), Uncommon (blue), Rare (yellow),
   Unique (orange)**. MVP ships without Uniques, but quality field +
   enchant list live in item meta from day one.
-- **Uncommon = 1–2 weak enchantments; Rare = 3–4 enchantments.**
+- **Ordinary equipment:** Uncommon = 1–2 weak enchantments; Rare = 3–4.
+  Trinkets use their fixed one-prefix/one-suffix/one-special exception (§6.2).
 - Vendors sell simple (Common) gear — available but painfully expensive;
   better gear comes from **crafting** or **special bosses**. *Sharpened
   2026-08-07*: "crafting" means **refinement + enchanting** (§6b) — the
@@ -41,12 +51,16 @@ ladders are independent; §2.1 spells out how they meet.
 - **The harder the enemy, the better the loot** — boss/elite multipliers
   act on the enchant roll ranges, same mechanic everywhere.
 - **Rare patrol mobs** with special loot as raid incentive into enemy
-  territory; the faction **King** is a heavily guarded raid boss with
-  top-tier rolls.
+  territory; each of the six race **Kings** is a heavily guarded raid boss
+  with top-tier rolls.
 - **Class/profession synergy intended** (Warrior+Blacksmith,
   Priest/Mage+Tailor, …).
-- Housing depth treasures (limited gems) are high-end ingredients.
-- Race-exclusive recipes exist (world.md §7) — concretized in §4.
+- Regional materials and contested routes make high-tier equipment and
+  optional target-race counters trade goods; universal picks never require a
+  regional gem, cultural material or trophy.
+- Cultural finishing is crafter-culture-bound but finished items remain
+  tradeable and wearable by anyone; target-race PvP specials are a separate
+  channel (§4).
 - Material tiers mirror WoW: vendor supplies (thread/flux/vials) as
   small gold sink; world materials tiered by source level; workbenches
   uncraftable, capitals/villages only; bags are Tailor products.
@@ -117,10 +131,10 @@ node our §3.0.2 alloys run on.
   "Licenses"). The **media** in `lottblocks` is CC BY-SA 3.0 (Amaz et
   al.), which is why the port takes the *code* and ships our own front
   textures — no CC BY-SA attribution debt for a node we re-skin anyway.
-- **One porting change** (decided 2026-08-07): our T6 alloy has **three**
-  inputs (§3.0.2), LotT's `check_craft` matches exactly two. The port
-  widens the `input` list and the matcher to **3** slots. Nothing else in
-  the node changes.
+- **Target port:** retain LotT's two material inputs plus its separate fuel
+  slot. The historical three-material T6 alloy and the corresponding third
+  material port were retired on 2026-08-12; every universal alloy in §3.0.2
+  fits the ordinary two-input matcher.
 
 Race-specific items: races are **privileges** (`GAMEelf`, `GAMEorc`, …,
 `lottclasses/init.lua:1-17`) driving skins/allies/immunity — but **LotT
@@ -135,9 +149,10 @@ teleport ACLs, same-race trader discounts (`lottmobs/trader_goods.lua`)
 and orc food (screen penalty for non-orcs); gear "race identity" is
 starting kits + naming/textures, tiers are purely material-based
 (wood→…→galvorn→mithril). Lesson: LotT race gating is soft flavor.
-Ours (§4) is a deliberate tightening — hard on the *crafter* (race in
-player meta checked in craft_predict) and free on the *wearer* — that
-is what makes race+profession combos tradeable.
+Ours (§4) is a deliberate tightening — hard on the *finish author* (culture
+and profession checked by the workstation transaction) and free on the
+wearer. Culture is per-stack metadata on a universal base item, not a parallel
+registered catalog.
 
 ### 1.2 VoxeLibre: harvestable item-family templates (verified per mod)
 
@@ -210,10 +225,10 @@ tiers, one per quarter of the level curve. Mastery is a property of the
 
 | Tier | Name | Item levels | Learn at ~char level | Ring that feeds it |
 |---|---|---|---|---|
-| 1 | Apprentice | 1–15 | 1 (trainer) | safe core + inner |
-| 2 | Journeyman | 16–30 | ~15–18 | inner (+depth mining) |
-| 3 | Expert | 31–45 | ~30–33 | outer |
-| 4 | Master | 46–60 | ~46–50 | coast + named rares |
+| 1 | Apprentice | 1–15 | 1 (trainer) | start + home zones |
+| 2 | Journeyman | 16–30 | ~15–18 | home + heartland (+depth mining) |
+| 3 | Expert | 31–45 | ~30–33 | contested approaches/front |
+| 4 | Master | 46–60 | ~46–50 | high front + named rares |
 
 **Ladder 2 — gear/material, T1–T6** (§3.0). Six tiers, one per ten
 character levels, matching the six vendor brackets of §3.8 exactly:
@@ -274,8 +289,8 @@ Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
 - **Unlock state lives in player meta**, not in the item: `grug_prof:
   <prof>` holds the highest opened group (idempotent writes). The book
   is interface, never progression storage.
-- **Quest and boss recipes unlock inside the same book** — race
-  signatures (§4), masterworks (§6.4) and any future quest reward appear
+- **Quest and boss recipes unlock inside the same book** — cultural finishing
+  operations (§4), masterworks (§6.4) and any future quest reward appear
   in the group of their own material tier once earned. There is **no
   second book** and no separate unique-recipe list.
 - **A player can craft only what is in their books, plus the universal
@@ -310,20 +325,26 @@ Columns are **book groups**, i.e. gear tiers (§3.0):
 | Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
 | Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
 | Woodcarver | — (`TODO-design-crafting-rework`) | — | — |
-| Goldsmith | — (`TODO-design-crafting-rework`) | — | — |
+| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass |
 
 - **T1 opens with the profession** — no keystone; it is the tier every
   player already crafts from (§3.0.3).
-- **T5 and T6 keystones** follow the same shape at their own tier's
-  materials and are listed with the signature recipes in
-  `TODO-design-crafting-rework.md`. The *rule* is decided; the two lists
-  are not yet authored.
+- **Goldsmith T5/T6:** T5 consumes 4 Gold Bars + 2 Embersteel Bars + 2
+  suitable level-41–50 zone mob drops; T6 consumes 4 Gold Bars + 2 Abyssal
+  Steel Bars + 2 suitable level-51–60 elite drops. The concrete drop
+  itemstrings come from useful existing regional loot and must give both
+  factions equivalent acquisition time. They are ordinary combat proofs,
+  never G2 gems, loose Abyssal Crystal, `group:grug_rare_trophy` or Fallen
+  Crowns.
+- Other professions' T5/T6 rows follow their decided material-chain shape.
+  No profession keystone may make a universal pick circular.
 - The **Herbalism and Gem Hunter rows are deleted** (2026-08-07):
   Herbalism merged into the Alchemist, Gem Hunter into the Goldsmith
   (professions.md §2), so the asymmetric "3 tiers"/"2 tiers" stubs have
   no owner. Their mechanics survive inside the merged professions —
-  herb gathering is an Alchemist ability (§3.6), the mining bonus gem
-  chance and the Gem Detector are Goldsmith (§3.6b).
+  herb gathering is an Alchemist ability (§3.6), and natural-gem bonus
+  yield is Goldsmith (§3.6b). The Gem Detector is retired with private-island
+  treasure clusters.
 
 `group:grug_rare_trophy` = the signature drop any **named rare** carries
 (§5.4) — every named rare on your own continent qualifies; both
@@ -341,8 +362,8 @@ all recipes at once, materials are the only gate.
 
 ~10–20 min per level → progression milestones land at: L15 after ~2.5–5 h,
 L30 after ~5–10 h, L45 after ~7.5–15 h. Each keystone is ~30–60 min of
-natural play in the source region you just reached (6 iron bars ≈ one dig to
-y −300 or a golem hunt; 2 bear claws ≈ 8 bear kills at 1/4). A player
+natural play in the source region you just reached (6 iron bars ≈ one dig in
+the shallow T1 band or a golem hunt; 2 bear claws ≈ 8 bear kills at 1/4). A player
 who levels two professions alongside questing reaches Master at 50–55
 without detour grinding; a pure fighter buys refined and enchanted gear
 from crafters instead — both paths inside the 10–20 h envelope.
@@ -369,134 +390,114 @@ Six tiers, one per ten character levels. This is gear ladder 2 of §2.1;
 the level bands and ilvl anchors are the §3.8 vendor brackets verbatim,
 because under §3.0.3 they are the same items.
 
-#### 3.0.1 The ore table
+#### 3.0.1 Universal materials and resource taxonomy
 
-| Tier | Levels | ilvl | Lead metal | Ore node | Digging depth | Gem |
-|---|---|---|---|---|---|---|
-| T1 | 1–10 | 3 | **Bronze** | Copper, Tin (exist) | 0 … −100 | — |
-| T2 | 11–20 | 10 | **Iron** | Iron (exists) | −100 … −300 | **Quartz** (new, common) |
-| T3 | 21–30 | 20 | **Steel** | — (alloy) | −300 … −500 | — |
-| T4 | 31–40 | 30 | **Silversteel** | **Silver (new)** | −500 … −700 | **Garnet** (new) |
-| T5 | 41–50 | 40 | **Embersteel** | **Emberstone** (repurposed mese) | −700 … −1000 | — |
-| T6 | 51–60 | 50 | **Grudgesteel** | Abyssal Crystal (T5 band + §5.5) | below −1000 (`world.md` §4c) | **Diamond** (exists) |
+All six race regions use the same mandatory metal, pickaxe and natural-depth
+progression. A faction or race never controls a material needed for the next
+universal pick.
 
-- **Wood and stone are the pre-metal T1 floor** — the starter kit and the
-  vendor floor. T1 therefore spans wood / stone / bronze. Wood and stone
-  keep the stats `default` ships and sit **below the ilvl anchors**: they
-  carry no level requirement, and they are the one rung that is not
-  generated from the §3.1/§3.2 curves.
-- **Gold is no longer a tool metal.** It becomes the **jewelry** material
-  — the Goldsmith, the two trinket slots (§3.6b) — plus the gem-hunting
-  bonus. No gold weapon, no gold armor, no gold pick.
-- **The mese tool tier is retired**, and so is the diamond tool tier.
-  The mese **ore node** is repurposed as **Emberstone**, a glowing yellow
-  crystal — the existing `default` texture already reads that way. Both
-  vendored tool ladders above steel are deleted (§3.0.3).
-- **Diamond is a gem, not a tool material.**
-- **New ore nodes to create: Silver, Quartz, Garnet.** Everything else
-  exists in the vendored `default` (copper, tin, iron, coal, mese →
-  Emberstone, diamond) or is already sketched as the abyssal gem of
-  §5.5, now named **Abyssal Crystal**.
-- **Abyssal Crystal is a base resource, not a privilege** (decided
-  2026-08-08, reversing the same day's earlier "no continental deposit at
-  all"). It gets a **continental deposit**, because a material the whole
-  T6 ladder depends on must not sit behind a 1.9 g purchase. It stays a
-  housing treasure too (§5.5) and keeps the 10 % apex-hoard bridge (§10
-  P5); what changes is that **Grudgesteel no longer needs the level-30
-  isle grant**. The isle keeps its own reason to exist through its six
-  exclusive materials (`world.md` §5.4) instead of by holding the T6
-  alloy hostage. The node is `grug_materials:abyssal_crystal_ore`
-  (`level = 4`, i.e. the Emberrock around it) dropping
-  `grug_materials:abyssal_crystal`; WP25 registered both and placed
-  neither, so the band below is the first thing that places it.
-- **The continental band is the T5 band, not the deep one — and that is
-  the binding rule, not a preference.** A lead metal lies one band
-  *above* its own tier (the rule at the end of this section), so Abyssal
-  Crystal sits in **−701 … −1000**, the Emberrock the T5 pick opens, and
-  the ore node carries `level = 4` to match the rock around it. Putting
-  it below −1000 instead would have closed the ladder into a circle: T6
-  rock needs a Grudgesteel pick, Grudgesteel needs Abyssal Crystal, and
-  the tier would have been reachable only through the 10 % apex-hoard
-  drop. The hoard therefore stays what §10 P5 always called it — a
-  **bridge**, not the door. The isle's step 6 is unaffected: it holds
-  crystal too, and there the depth payment is the point.
-- **The "Digging depth" column is a *tool* depth, not a find depth.** It
-  names the band that this tier's own pick unlocks (§3.0.4), not the band
-  its material lies in. Where the ores actually sit is the placement
-  table below.
-- **The T6 row's band is also endgame content territory.** Everything
-  below −1000 needs a T6 tool, which makes it the one part of the world
-  gated by the top of this very table — so `world.md` §4c gives it a
-  role beyond its ores: dangerous underground environments (lava lakes)
-  with a level-appropriate creature roster. The T6 row therefore buys a
-  *place*, not only a metal.
-- **Binding: a lead metal lies one band *above* its own tier, a gem lies
-  in its own band.** Otherwise a tier-n tool would be needed to reach the
-  material a tier-n tool is made of. Iron (T2 metal) is mined in the T1
-  band, Silver (T4) in the T3 band, Emberstone (T5) in the T4 band; the
-  gems Quartz, Garnet and Diamond sit in the T2, T4 and T6 bands they
-  belong to, and a gem is always reachable by the pick of its own tier.
+| Tier | Levels | ilvl | Metal | Processing | Maximum natural depth | Next-pick material available no deeper than |
+|---|---:|---:|---|---|---:|---:|
+| T1 | 1–10 | 3 | **Bronze** | Copper + Tin, dual furnace | y = **−100** | Iron: y ≥ −100 |
+| T2 | 11–20 | 10 | **Iron** | Iron ore, normal furnace | y = **−300** | mined Coal/Steel inputs: y ≥ −300 |
+| T3 | 21–30 | 20 | **Steel** | Iron Bar + mined Coal, dual furnace | y = **−500** | Silver: y ≥ −500 |
+| T4 | 31–40 | 30 | **Silversteel** | Steel + Silver, dual furnace | y = **−700** | Emberglass: y ≥ −700 |
+| T5 | 41–50 | 40 | **Embersteel** | Silversteel + Emberglass, dual furnace | y = **−1000** | Abyssal Crystal: y ≥ −1000 |
+| T6 | 51–60 | 50 | **Abyssal Steel** | Embersteel + Abyssal Crystal, dual furnace | map floor (**−31000**) | no T7 prerequisite |
 
-Ore placement (decided 2026-08-08). `clust_scarcity` is the
-`register_ore` volume, i.e. one cluster per that many nodes:
+- Wood and Stone starter picks are not extra material tiers. They share T1's
+  y = −100 limit; Bronze is the best T1 pick. Wood and Stone gear stays below
+  the generated ilvl anchors and carries no level requirement.
+- Gold is a universal luxury, jewelry and building material, never a tool
+  metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
+  are separate systems (`economy.md` §1).
+- Diamond is a regional G2 gem, never a tool material. The Mese and Diamond
+  tool tiers remain retired.
+- **Emberglass** is a real `grug_materials` item/node family. Old Mese and
+  Emberstone aliases may exist only as an explicit one-time migration path;
+  they are not parallel usable materials or player-facing names.
+- **Abyssal Steel** is the ordinary craftable T6 metal. **Grudgeforged** is an
+  optional final masterwork state applied to a qualifying equipment stack by
+  consuming a named-rare trophy or Fallen Crown. No trophy enters an Abyssal
+  Steel bar or pick.
+- Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
+  upstream itemstrings. Reinterpreted fantastic materials, processed outputs
+  and all regional gems use the Grudgelands namespace. `grug_materials` owns
+  the taxonomy even where a mundane itemstring remains upstream.
 
-| Ore | Role | Band (y) | `clust_scarcity` | `clust_num_ores` | `clust_size` |
+Natural resources have a separate minimum **harvest tier**. This tier controls
+whether a destroyed node yields its resource; it does not grant permission to
+mine at the node's y.
+
+| Minimum pick tier | Natural resources |
+|---|---|
+| T1 | Copper, Tin, mined Coal, Iron, Quartz |
+| T2 | Gold; Citrine, Garnet and Jade (G1) |
+| T3 | Silver |
+| T4 | Emberglass; Diamond, Sapphire and Ruby (G2) |
+| T5 | Abyssal Crystal |
+| T6 | no universal progression resource; the tier grants deep access and better density |
+
+Quartz is the universal T1 jewelry mineral. Regional gems use **Rough
+<Gem> → Cut <Gem>**; `G1` and `G2` are internal grade labels, not
+player-facing substitutes for species names. Emberglass and Abyssal Crystal
+are universal fantastic progression resources and are never called regional
+gems.
+
+Each surface/depth column has exactly one cultural race region. It chooses the
+eligible regional gem species and cultural source independently of political
+territory or PvP state:
+
+| Faction | Race region | G1 | G2 | Cultural material | Signature wood |
 |---|---|---|---|---|---|
-| Iron (new shallow band) | T2 metal | −1 … −100 | 10³ | 5 | 3 |
-| Quartz | T2 gem | −101 … −300 | 8³ | 6 | 3 |
-| Silver | T4 metal | −301 … −500 | 9³ | 5 | 3 |
-| Garnet | T4 gem | −501 … −700 | 10³ | 4 | 3 |
-| Emberstone | T5 metal | −501 … −700 | 12³ | 4 | 3 |
-| Emberstone (deep) | T5 metal | −701 … −31000 | 14³ | 5 | 3 |
-| Diamond | T6 gem | −1001 … −31000 | 15³ | 4 | 3 |
-| Abyssal Crystal | T6 material | −701 … −1000 | 20³ | 2 | 2 |
+| Accord | Human | Citrine | Diamond | Sunwax | Oak |
+| Accord | Dwarf | Garnet | Sapphire | Runeslate | Mountain Pine |
+| Accord | Elf | Jade | Sapphire | Moonresin | Silverwood |
+| Throng | Orc | Garnet | Diamond | Red Ochre | Spikethorn Acacia |
+| Throng | Troll | Jade | Ruby | Spirit Resin | Kapok |
+| Throng | Undead | Citrine | Ruby | Gravesalt | Gravewood |
 
-- Copper, tin, coal and gold keep their vendored `default` placement
-  unchanged.
-- The three new ore nodes are `grug_materials:stone_with_quartz`,
-  `:stone_with_silver` and `:stone_with_garnet`, dropping
-  `grug_materials:quartz_crystal`, `:silver_lump` and `:garnet_crystal`.
-  Emberstone stays the vendored `default:stone_with_mese` (renamed, not
-  re-registered) and Diamond stays `default:stone_with_diamond`. WP26's
-  alloy recipes consume exactly these names.
-- **Abyssal Crystal is deliberately the scarcest thing in the table** —
-  by volume roughly a quarter of Diamond's, and its clusters are half the
-  size of everything else's. It is the one material whose scarcity
-  decides how fast the endgame alloy can move at all, and it sits in the
-  band that carries the deepest phase-in pressure a T5 character can
-  stand in (`biomes_mobs.md` §4.1), so what it really costs is time under
-  fire. Re-tune it against §2.4 after the first runtime test rather than
-  on paper (same pattern as the calibration line below).
-- **The iron band is a deadlock fix, not tuning.** Vendored iron starts
-  at −128, i.e. *below* the T2 stratum that already demands an iron or
-  steel pick. Without an iron deposit above −100 the ladder is blocked
-  shut at T2.
-- **Calibration** ("reagent calibration"): Quartz at iron's density,
-  Garnet just under copper's, Silver denser than Garnet — because §6.4
-  makes one cut gem the cost of *every* fine recipe, a gem is a reagent,
-  not a rarity. Re-tune against §2.4 after the first runtime test rather
-  than deriving it on paper (pattern:
-  `docs/research/wp6_spawn_budget.md`). The numbers in the table are the
-  decision; this line only names the intent.
-- **There is no natural Mese-block deposit any more.** minetest_game
-  scatters `default:mese` (the *block*) as an ore below −2048; WP25
-  removed those rows. The block carries `level = 2` upstream, so it sat
-  inside the T6 band while a steel pick could still break it, and one
-  block yields nine Emberstone crystals — the T5 lead material, handed
-  out at T3 tooling. The Emberstone source is the *ore* node
-  `default:stone_with_mese`; the craftable block is untouched (raising
-  its `level` was rejected — it is a placeable building block, and a
-  level-5 block would lock out the player who placed it).
-- **An ore node carries the `level` of the band it lies in, not of its
-  own tier** — an ore is exactly as hard as the rock around it. This
-  closes the cave leak (a cave at −600 would otherwise expose Silver to
-  any bronze pick) without creating a deadlock: Silver is a T4 metal but
-  lies in the T3 band, carries `level = 2` and is therefore the steel
-  pick's prey, exactly as intended. Concretely: Quartz `level = 1`,
-  Silver `2`, Garnet `3`, Emberstone (`default:stone_with_mese`) `3`,
-  Diamond `5`, Abyssal Crystal `4`. Copper, tin, coal, iron and gold get **no** `level` — they are not
-  gate-relevant and the rock around them is the gate. **An ore may never
-  carry a higher `level` than the stratum it lies in.**
+Thus both factions have all three G1 species and Diamond; Ruby is Accord's
+foreign G2 and Sapphire is Throng's. The authored supply routes are native
+faction regions, enemy contested level-31+ regions, cross-border deep T5/T6
+columns, both all-six-gem dragon-island camps and trade. A practical T4
+contested route to the missing G2 must exist before the level-60 islands.
+
+**Density shape and calibration targets:**
+
+- G1 starts sparse in the upper progression, rises through T4, retains exactly
+  its T4 ordinary density in T5 and ordinary T6, and rises again only through
+  the shared deep-T6 multiplier.
+- G2 is sparse in T4 (about one ore per 12,000 eligible host nodes per species),
+  doubles in T5 (one per 6,000) and reaches four times the T4 rate in ordinary
+  T6 y = −1001…−1499 (one per 3,000). All three require a T4 pick.
+- Continental Abyssal Crystal exists for both factions throughout T5 and T6.
+  The first calibration starts near **one crystal per 2,048 eligible host
+  nodes**; the y = −701…−1000 entry band alone must yield enough for an
+  Abyssal Steel pick without T6 access.
+- At y = −1500…−1999, ordinary continental ores, G1, G2 and Abyssal
+  Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
+  receive **+50%**, capped. Trophies, king loot, dragon sockets, claims and
+  unique quest sources never receive this multiplier. It is mapgen placement,
+  not runtime ore respawn.
+- Map generation measures actual exposed yield and route time before freezing
+  ore-registration literals. The acceptance audit compares both factions'
+  native volume, T4/T5/T6 foreign routes, dragon refill/yield including the
+  Goldsmith bonus, a full gear set's demand, two-handed equivalence and vendor/
+  drop substitution pressure.
+
+Crafted material blocks are storage/building nodes, never natural resources.
+They have no harvest tier, any real pick recovers them wherever territory
+permission allows, and they always drop themselves. Mapgen never places a
+craftable nine-unit storage block. Citrine, Garnet, Jade, Diamond, Sapphire and
+Ruby each pack from **9 Cut Gems** into one matching non-luminous luxury block
+and unpack to the same 9 Cut Gems; Rough Gems cannot be packed. Emberglass,
+Embersteel, Abyssal Crystal, Abyssal Steel, Gold and mundane metal blocks obey
+the same non-gated building-node rule.
+
+The Gold Block specifically packs from 9 Gold Ingots and unpacks to the same
+9 ingots. It is a storage/status/decor node, not ledger currency or a housing
+purchase token; no claim upgrade or universal progression step requires it.
 
 #### 3.0.2 Alloys and the two-slot furnace
 
@@ -507,14 +508,15 @@ the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
 |---|---|---|
 | Bronze bar | Copper + Tin | dual furnace |
 | Iron bar | Iron lump | normal furnace |
-| Steel bar | 1 iron bar, ~2 coal of fuel | normal furnace |
+| Steel bar | 1 Iron Bar + 1 mined Coal | dual furnace |
 | Silversteel bar | Steel + Silver | dual furnace |
-| Embersteel bar | Silversteel + Emberstone | dual furnace |
-| Grudgesteel bar | Embersteel + Abyssal Crystal + 1 `group:grug_rare_trophy` | dual furnace (3-input port, §1.1) |
+| Embersteel bar | Silversteel + Emberglass | dual furnace |
+| Abyssal Steel bar | Embersteel + Abyssal Crystal | dual furnace |
 
-The T6 bar is the only three-input recipe in the game, and the trophy
-slot is deliberate: Grudgesteel cannot be farmed, it is spent from the
-same named-rare drop that opens the T4 book group (§2.3, §5.2).
+Steel has two material inputs. Mined Coal occupies the second material slot;
+burning Coal or Charcoal as fuel never substitutes for it. The dual furnace
+therefore keeps two material slots plus fuel. No universal bar consumes a
+regional gem, cultural material or trophy.
 
 #### 3.0.3 One item per concept — NO duplicates (binding)
 
@@ -526,7 +528,8 @@ from `grug_gear`. Consequences, all binding:
   items**, and they are **material-named** — Bronze Sword, Iron
   Chestplate, Steel Greaves — never bracket-named. The 72 items WP7
   shipped under the adjectives *Crude / Plain / Tempered / Reinforced /
-  Superior / Grand* merge into that one ladder. That is a **rename plus a
+  Superior / Grand* merge into that one ladder. That shipped naming is a
+  migration source for the **rename plus
   merge with the tool ladder — planned work, not a defect**; the
   generator, the six bracket catalogs, the prices and the ilvl anchors of
   §3.8/§8.2 are untouched by it.
@@ -537,7 +540,7 @@ from `grug_gear`. Consequences, all binding:
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
 - **`default`'s tool ladder is replaced** by the six-tier ladder: wood
-  and stone stay, bronze/iron/steel/silversteel/embersteel/grudgesteel
+  and stone stay, bronze/iron/steel/silversteel/embersteel/abyssal steel
   replace the rest, and the **mese and diamond tool tiers are deleted**
   (that is `pick`/`shovel`/`axe`/`sword` × mese, diamond in
   `mods/BASE/default/tools.lua` — twelve registrations to drop, plus
@@ -550,146 +553,104 @@ from `grug_gear`. Consequences, all binding:
   top of the base item is the **refinement, the enchant and the special
   variant** (§6b), plus its handful of exclusive recipes.
 
-#### 3.0.4 Depth gating: rock strata need a tool of their tier
+#### 3.0.4 Natural depth, harvest tier and cosmetic strata
 
-The rock **below each tier's depth boundary can only be broken by a tool
-of that tier**. This — not a level check — is what gates metal
-availability by character level, and it is identical on the continent and
-on the housing isles (world.md §5).
+Mining evaluates three independent questions in this order:
 
-Engine mechanism, verified in `reference_projects/luanti/doc/lua_api.md`:
-the stratum node carries a **`level` group**, the tool declares
-**`groupcaps.<dig group>.maxlevel`**. Per `lua_api.md:2715-2731`, the
-usable-uses count is multiplied by `3^leveldiff` where `leveldiff` is the
-tool's `maxlevel` minus the node's `level`, and **"the node cannot be dug
-if `leveldiff` is less than zero"** (`lua_api.md:2722`); the worked
-example at `lua_api.md:2806` states it outright — *"At `level > 2`, the
-node is not diggable, because it's `level > maxlevel`."* The gate is
-therefore a hard engine refusal, not a slow dig, which is what we want.
+1. **Territory/protection:** may the player modify this position?
+2. **Natural depth:** does the wielded pick reach the target node's y?
+3. **Resource harvest:** if the target is a natural ore/gem, does the pick meet
+   its minimum harvest tier?
 
-The vendored `default` already uses the mechanism in both directions —
-its tools declare `maxlevel` 1/1/2/2/3/3 up the ladder
-(`mods/BASE/default/tools.lua`) and its hardest nodes carry
-`groups = {cracky = 1, level = 2}` — so the six strata are a
-re-parameterisation of a live system, not new engine work.
+Permission never implies tool access. Tool capability never expresses
+political ownership, and failure to earn an ore drop never grants access below
+the pick's maximum depth.
 
-Six strata, one per tier — but only **five new nodes**, because
-**`default:stone` *is* the T1 stratum** (`level` 0, unchanged). It is the
-mapgen filler, the cobble source, the `wherein` of every ore
-registration and an ingredient in several recipes; a separate T1 node
-would have had to drag all of that along for no gain.
+| Pick tier | Canonical pick | Maximum natural depth | Natural band opened |
+|---|---|---:|---|
+| T1 | Bronze (Wood/Stone share its limit) | y = −100 | surface/T1 Stone |
+| T2 | Iron | y = −300 | Slate |
+| T3 | Steel | y = −500 | Basalt |
+| T4 | Silversteel | y = −700 | Granite |
+| T5 | Embersteel | y = −1000 | Emberrock |
+| T6 | Abyssal Steel | y = −31000 | Abyssal Rock and all deeper T6 |
 
-| Tier | Band (y, inclusive) | Node | Description | `level` | Texture |
-|---|---|---|---|---|---|
-| T1 | ≥ −100 | `default:stone` | Stone | 0 | unchanged |
-| T2 | −101 … −300 | `grug_materials:slate` | Slate | 1 | `default_stone.png^[colorize:#4a5a6e:70` |
-| T3 | −301 … −500 | `grug_materials:basalt` | Basalt | 2 | `default_stone.png^[colorize:#2a2a2e:90` |
-| T4 | −501 … −700 | `grug_materials:granite` | Granite | 3 | `default_stone.png^[colorize:#8a5a52:60` |
-| T5 | −701 … −1000 | `grug_materials:emberrock` | Emberrock | 4 | `default_stone.png^[colorize:#7a2a10:90` |
-| T6 | −1001 … −31000 | `grug_materials:abyssal_rock` | Abyssal Rock | 5 | `default_stone.png^[colorize:#241830:150` |
+The boundaries are inclusive at the bottom shown. Therefore y = −700 is the
+last protected shallow/T4 node, y = −701 is the first contested deep node,
+T5 is y = −701…−1000 and T6 is y = −1001…−31000. There is no T7.
 
-- **Naming**: real rock up to T4, flavour for T5/T6 — the two deepest
-  strata are named after the resource that lives in them (Emberstone T5,
-  Abyssal Crystal T6), so a player can read the tier off the wall.
-- **Textures** are engine texture modifiers (`^[colorize`) on
-  `default_stone.png`, no own art. Hand-made 16px textures stay Phase-3
-  work.
-- **Every stratum drops `default:cobble`.** The gate is *access*, not
-  building material (`world.md` §2).
-- **Placement**: five `core.register_ore{ore_type = "stratum",
-  clust_scarcity = 1, wherein = "default:stone"}` without noise
-  parameters, registered **last of all ores**. In mgv7 ores run after
-  cave generation and before the dungeons
-  (`mapgen_v7.cpp:335/355/359`), and registration order is placement
-  order.
-- **Cave walls inherit their stratum** — they fall out of that order for
-  free, and that was the actual question: otherwise every deep cave
-  would be a free bypass for a level-10 player.
-- **Group `grug_stratum = <tier>`** on every stratum as the dispatch
-  group. `stone = 1` is deliberately absent: `default:furnace` and the
-  stone-tool recipes take `group:stone`, and an abyssal-rock wall must
-  not be furnace material.
-- **`cracky = 3` on all six** — the gate is the hard refusal via `level`,
-  not a slower dig.
-- **Isles**: the same ladder applies on the housing isles (`world.md`
-  §5.3). The stratum node for a depth is obtained through
-  `grug_materials.stratum_node_for(y)`; that is the interface WP24's isle
-  generator uses, because a VoxelManip pass does not get the strata for
-  free (`register_ore` only runs in the mapgen).
+The natural-depth gate covers generated excavation material: natural strata,
+ore/gem nodes and any other generated ground node that could bypass a stone
+layer. Target y is authoritative even in an exposed cavern, cliff or another
+player's tunnel. If the pick is too shallow, digging is refused before node
+damage, tool wear or any resource/profession roll, and shared feedback names
+the required pick tier or maximum depth. Natural classification uses item
+groups/API data; mapgen does not write metadata to every node.
 
-Six `level` steps need six `groupcaps.cracky.maxlevel` thresholds and
-`default` ships only three, so the vendored picks are re-parameterised
-via `core.override_item` (`default` stays unpatched, VENDOR.md). Picks
-only — strata are `cracky` and nothing else.
+The six strata remain visual depth language:
 
-| Tool | `maxlevel` | Role |
-|---|---|---|
-| `default:pick_wood` | 0 | T1 |
-| `default:pick_stone` | 0 | T1 |
-| `default:pick_bronze` | 0 | T1 (bronze *is* T1) |
-| `default:pick_steel` | 2 | T3, unchanged |
-| `default:pick_mese` | 4 | temporary test bridge |
-| `default:pick_diamond` | 5 | temporary test bridge |
+| Tier | Band (inclusive) | Node | Description | Texture |
+|---|---|---|---|---|
+| T1 | y ≥ −100 | `default:stone` | Stone | unchanged |
+| T2 | −101…−300 | `grug_materials:slate` | Slate | `default_stone.png^[colorize:#4a5a6e:70` |
+| T3 | −301…−500 | `grug_materials:basalt` | Basalt | `default_stone.png^[colorize:#2a2a2e:90` |
+| T4 | −501…−700 | `grug_materials:granite` | Granite | `default_stone.png^[colorize:#8a5a52:60` |
+| T5 | −701…−1000 | `grug_materials:emberrock` | Emberrock | `default_stone.png^[colorize:#7a2a10:90` |
+| T6 | −1001…−31000 | `grug_materials:abyssal_rock` | Abyssal Rock | `default_stone.png^[colorize:#241830:150` |
 
-- **`uses` and `times` are compensated with the `maxlevel` change.**
-  `maxlevel` is not only the gate: the engine derives
-  `leveldiff = maxlevel − node level` and feeds it into two more
-  formulas — `real_uses = uses · 3^leveldiff` and, for
-  `leveldiff > 1`, `time = time / leveldiff` (`src/tool.cpp:394-414`).
-  Lowering a `maxlevel` therefore silently shreds durability and dig
-  speed. The three lowered picks get their `uses` and dig `times`
-  re-scaled so their **effective** values against ordinary level-0 rock
-  are exactly the pre-WP25 ones: wood `uses` 10 → 30, stone 20 → 60,
-  bronze 20 → 180 with all three `times` halved (bronze alone had
-  `leveldiff = 2` before and thus the time division). This is a
-  re-parameterisation of the *gate*, not a nerf of the starter tools.
-- The mese and diamond picks are **deliberately not compensated**: their
-  `maxlevel` goes *up*, which makes them 3× resp. 9× more durable and
-  faster against level-0 rock. They are test bridges, not game items
-  (see below), so those numbers state nothing about balance and must not
-  seed a wear-budget check (§8.3).
-- Accepted side effect: bronze no longer breaks default's `level = 2`
-  nodes — obsidian and its two variants, the steel/copper/tin/bronze
-  blocks and the mese block, plus the `stairs` registrations of all of
-  those. Steel still breaks every one of them.
-  `default:diamondblock` (`level = 3`) was already out of bronze's reach
-  before WP25, and `default` has no `level = 1` node at all.
-- **T2 has no tool of its own today** — the iron pick arrives with
-  WP26/WP29. The steel pick (maxlevel 2) covers T2 *and* T3, and iron
-  lies in the T1 band, so the ladder is unbroken as far as it goes:
-  with today's item set a player digs down to **−500**, and T4 downward
-  opens with WP26/WP29.
-- **A pick is at its most fragile in the rock of its own tier**, and that
-  is the intended shape of the ladder rather than a defect. `uses` is
-  multiplied by `3^leveldiff`, so the steel pick gets 180 digs out of
-  surface stone, 60 out of slate and only its bare 20 out of basalt —
-  and the next tier's pick makes that same basalt cheap again. Whether
-  the *base* `uses` of the six picks need raising for deep mining to feel
-  fair is a durability question and belongs to **WP22**, not here.
-- The mese and diamond picks are unreachable in game and are deleted by
-  **WP28** (§3.0.3). Their maxlevel 4/5 exist only so a runtime tester
-  can open T5/T6 at all.
+- Strata are cosmetic rock, not ore, crystal, metal or alloy. All use ordinary
+  stone-like pick diggability, carry `grug_stratum = <tier>` for dispatch and
+  drop ordinary Cobble. Deep rock encountered or placed near the surface is
+  ordinary breakable material, never an indestructible PvP wall.
+- Higher picks dig ordinary rock faster through explicitly authored `times`.
+  For every stratum a higher-tier pick may reach, it is never slower than the
+  preceding pick. Durability and speed are authored directly and verified in a
+  six-pick × six-strata matrix.
+- The five replacement strata remain `ore_type = "stratum"` registrations
+  placed last, so natural cave walls inherit the correct visual band. That
+  placement mechanism does not make their node identity the access gate.
 
-**A higher tier does not only dig *deeper*, it digs *faster*** (decided
-2026-08-08). The `maxlevel` gate above is the **access** half of the tool
-ladder; the dig `times` are the other half, and they are the **reward**.
-The rule: **each tier's pick digs its own stratum — and every stratum
-above it — faster than the pick of the tier below.** So the next pick is
-felt on the rock a player is already mining, not only on the rock they
-could not touch before, and the ladder is monotone by construction —
-using a higher pick is never slower on any stratum it can break at all.
+The old node-`level`/pick-`maxlevel` progression is retired. Every Grudgelands
+pick uses `groupcaps.cracky.maxlevel = 0`; natural resources, cosmetic strata
+and crafted blocks in this system carry no non-zero `level`. Reachable vendored
+exceptions, including Obsidian and metal/gem storage blocks and stairs, are
+normalized so an unrelated default node cannot preserve the retired gate.
+`times` and `uses` are then set to the intended effective values without any
+`leveldiff` speed/durability multiplication. The shipped WP25 overrides and
+its temporary Mese/Diamond test bridges are migration history, not balance
+inputs; the revised test path must reach every band before those tools vanish.
 
-**The per-tier numbers are open** and live in
-`TODO-design-crafting-rework.md` **B22**. One subtlety this section
-already documents has to be respected while authoring them: `maxlevel`
-silently rescales **both** `uses` and dig `times` through `leveldiff`
-(`real_uses = uses · 3^leveldiff`, and `time = time / leveldiff` for
-`leveldiff > 1`), so the progression has to be authored against
-**effective** values per stratum, never against the raw `times` in the
-item def. Part of the wanted speed-up therefore already exists for free
-and must be measured before more is stacked on top — and every `times`
-change has to be re-checked against `uses`, which the same `leveldiff`
-scales. WP25 walked into exactly this trap from the durability side.
+If depth permission succeeds but the pick is below a natural resource's
+minimum harvest tier, the node may be deliberately destroyed without a drop:
+
+| Harvest-tier shortfall | Dig-time multiplier | Result |
+|---:|---:|---|
+| 1 | ×4 | node destroyed, no resource drop |
+| 2 | ×6 | node destroyed, no resource drop |
+| 3 | ×8 | node destroyed, no resource drop |
+| 4+ | ×10 cap | node destroyed, no resource drop |
+
+- The multiplier applies to that pick's normal effective dig time. One
+  completed attempt consumes one ordinary pick-use event; there is no second
+  wear penalty. Bare hands and non-picks cannot destroy ore/gem nodes.
+- Descriptions/inspection state `Requires a T<n> pick to harvest`. Completion
+  uses a dull fracture sound, a shattered particle cue and rate-limited HUD/
+  chat feedback naming the lost resource and required tier.
+- No raw item, Goldsmith bonus yield, XP or quest harvest credit is granted. A
+  renewable socket still enters its ordinary depleted state and starts its
+  refill timer, preventing free retries.
+- Crafted storage/building blocks never enter this path: any real pick recovers
+  them as themselves at any permitted position.
+
+`grug_materials` remains the sole public owner of depth and harvest taxonomy.
+It retains `TIERS`, `tier_at(y)` and `stratum_node_for(y)`, replaces
+`level_for_tier` with a depth-oriented lookup such as
+`max_depth_for_pick_tier(tier)`, exposes one
+`can_mine_natural_at(pick_tier, y)` predicate, resolves group-backed resource
+minimum tiers and settles successful harvest/bonus yield only after the tier
+check. It returns structured failure data for the shared feedback path.
+Callers always apply protection first; no other mod hard-codes a depth boundary,
+harvest tier or stratum node name.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
@@ -810,7 +771,7 @@ Coverage across the six professions is complete and overlap-free
 ### 3.3 Blacksmith (forge) — metal, and everything made of it
 
 **Material chain**: T1 **Bronze** → T2 **Iron** → T3 **Steel** → T4
-**Silversteel** → T5 **Embersteel** → T6 **Grudgesteel** (§3.0.1/§3.0.2).
+**Silversteel** → T5 **Embersteel** → T6 **Abyssal Steel** (§3.0.1/§3.0.2).
 Vendor supply: flux. *Revised 2026-08-07*: the old four-step chain
 (bronze / iron / steel / gem-tempered steel) is superseded by the
 six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
@@ -824,7 +785,7 @@ pick 3.
 
 **Exclusive recipes**: shields (Journeyman+ — no other profession makes
 an offhand of metal), the **metal fittings** the Woodcarver buys (§3.6a),
-armor polish and whetstone kits (§7), and the race signatures of §4.
+armor polish and whetstone kits (§7), and the cultural/PvP operations of §4.
 
 Ore access gating is now the depth/stratum rule of §3.0.4, not a
 hand-written ore whitelist: a tier-n pick opens the tier-n stratum, and
@@ -875,7 +836,7 @@ line's intended main customer.
 ### 3.5 Tailor (tailor bench) — cloth, bags, the caster offhand
 
 **Material chain**: 2 cloth + thread → bolt. **T1 linen scrap → patch
-bolt** (zombies drop scraps from L1 — Tailors start in the safe core),
+bolt** (zombies drop scraps from L1 — Tailors start in safe starting zones),
 **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy bolt**, **T4
 heavy + spider silk → silkweave bolt**; the T5 and T6 bolts are listed in
 `TODO-design-crafting-rework.md`.
@@ -979,34 +940,51 @@ alone is what keeps the market alive.
 ### 3.6b Goldsmith (jeweller's bench) — gold, gems, both trinket slots
 
 New profession, 2026-08-07 (professions.md §2). **Gem Hunter is merged
-into it** and disappears as a separate profession; the mining bonus gem
-chance and the Gem Detector come along as Goldsmith abilities.
+into it** and disappears as a separate profession. The useful gathering hook
+survives; the private-island Gem Detector does not.
 
-**Material chain**: **Gold** — demoted from tool metal to jewelry metal
-in §3.0.1 and now with exactly one consumer — plus the three gems of the
-ore table: **Quartz (T2), Garnet (T4), Diamond (T6)**.
+**Material chain:** physical **Gold**, universal Quartz, and the six regional
+gems Citrine/Garnet/Jade/Diamond/Sapphire/Ruby. Natural regional nodes drop
+Rough Gems. The Goldsmith alone refines Rough → Cut; every storage block and
+equipment recipe consumes Cut Gems where a gem is required.
 
-**Refines and enchants**: trinkets, and **gem refinement** — cutting a
-raw gem into the reagent every other profession's fine and masterwork
-recipes want (§6.4).
+**Owns exclusively:**
 
-**Exclusive recipes**:
+- both generic trinket slots and the six core trinket identities of §6.2;
+- Rough → Cut gem refinement;
+- jewelry Settings, ornament components and trinket assembly;
+- bonus yield from a **successfully harvested** natural or renewable gem node.
+  The bonus can add only that node's species. It never fires on stone, an
+  under-tier shattered node or a failed harvest, and never converts one gem
+  into another. Dragon-camp yield audits include it.
 
-- **Both trinket slots** (`inventory_equipment.md` §2). They had no owner
-  in the old roster at all; the Goldsmith is the first profession to hold
-  a slot pair outright. **Trinkets ship in the MVP** (decided
-  2026-08-08 — the slots are no longer reserved): the Goldsmith's
-  headline is a **product, not a promise**, it is the profession's own
-  wearable output on day one, and it is the reason the profession is no
-  longer the one exception to `professions.md` §2.1's coverage claim.
-  Trinkets carry no armor class and no class rank binding, so every
-  class is a customer; their enchant pool is the trinket row of §6.2.
-- **The Gem Detector** (world.md §5.4) — locates treasure clusters on a
-  housing isle better than the vendor's Dowsing Rod. Carried over from
-  the Gem Hunter unchanged, including its role as the profession's second
-  pillar.
-- The **bonus gem chance while mining** (10 % → 20 % at Journeyman) —
-  carried over from the old Gem Hunter tier-2 effect.
+The Gem Detector and Dowsing Rod are retired. Continental mining remains
+exploration rather than direction/radar gameplay, and the Goldsmith already
+has trinkets, cutting, components and real-node bonus yield as its complete
+identity.
+
+Use **Setting** consistently for the tiered jewelry component:
+
+| Tier | Setting | Gem use per core trinket |
+|---|---|---|
+| T1 | Tin Setting | 1 Cut Quartz |
+| T2 | Iron Setting | one authored Cut G1 variant |
+| T3 | Copper-inlaid Steel Setting | one authored Cut G1 variant |
+| T4 | Gold Setting | 1 Cut Sapphire for Manawell/Mercy Seal/Last Light; 1 Cut Ruby for Battlebeat/Reclaimer's Mark/Apothecary Loop |
+| T5 | Gold-filigreed Embersteel Setting | 1 Cut Sapphire + 1 Cut Ruby |
+| T6 | Gold-filigreed Abyssal Steel Setting | 1 Cut Diamond + 1 Cut Sapphire + 1 Cut Ruby |
+
+Copper-inlaid Steel and the two filigree Settings are Goldsmith components,
+not universal bars or tool materials. At T2/T3, Citrine supplies Manawell and
+Mercy Seal, Garnet supplies Battlebeat and Reclaimer's Mark, and Jade supplies
+Last Light and Apothecary Loop. The complete tier list opens with the matching
+book group: all six T4 recipes are learned together, so foreign-gem acquisition
+rather than recipe rarity is the gate. No recipe scroll, reputation grind or
+enemy unlock is involved. Goldsmith keystones are specified in §2.3 and never
+consume G2 gems or masterwork trophies.
+Each core trinket recipe consumes only its tier-appropriate Setting and the
+listed Cut gem(s): there is no special-specific herb, catalyst, mob drop,
+trophy or cross-profession component.
 
 ### 3.7 Universal secondaries & vendor floor
 
@@ -1080,7 +1058,7 @@ changes:
   Grand* over the six brackets — is replaced by the material the item is
   actually made of: **metal items take the lead metal** of §3.0.1
   (Bronze Sword, Iron Helm, Steel Chestplate, Silversteel Greaves,
-  Embersteel Sabatons, Grudgesteel Greataxe), **cloth items take their
+  Embersteel Sabatons, Abyssal Steel Greataxe), **cloth items take their
   bolt grade** and **leather items their leather grade** (§3.4/§3.5) —
   Linen Robe, Silkweave Cowl. The slot nouns are unchanged (Helm /
   Chestplate / Greaves / Sabatons, Cowl / Robe / Leggings / Slippers),
@@ -1112,6 +1090,38 @@ changes:
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
 | refined, +15 % (§6b.2) | 6 | 9 | 13 | 17 | 21 | 25 |
 
+  **T4–T6 regional-G2 base cost.** Every ordinary crafted combat weapon,
+  armor piece and offhand at these tiers consumes one specific Cut G2 gem in
+  addition to its universal material recipe:
+
+  | Gear tier | Main-hand weapons | Head/chest/legs/feet | Offhand |
+  |---|---|---|---|
+  | T4 | Ruby | Diamond | Sapphire |
+  | T5 | Diamond | Sapphire | Ruby |
+  | T6 | Sapphire | Ruby | Diamond |
+
+  One reference main hand, four armor pieces and one offhand across all three
+  tiers therefore consumes exactly **6 Diamond / 6 Sapphire / 6 Ruby**. A
+  two-handed weapon consumes its tier's main-hand gem and its offhand gem,
+  preserving the demand of the displaced slot. Pickaxes, shovels, axes and
+  other gathering tools, bars, furnaces, repair and profession keystones are
+  excluded. Refinement and ordinary affixes do not charge the base G2 again.
+  Species grants no hidden stat; it is the recipe's material identity.
+  Trinkets use their explicit symmetric recipes in §3.6b/§6.2.
+
+  Adding two native-family T4 trinkets and two current trinkets at each of T5
+  and T6 yields this lifetime reference demand:
+
+  | Faction | Diamond | Sapphire | Ruby | Foreign native-exclusive G2 |
+  |---|---:|---:|---:|---:|
+  | Accord | 8 | 12 | 10 | 10 Ruby |
+  | Throng | 8 | 10 | 12 | 10 Sapphire |
+
+  Choosing a foreign-family T4 special deliberately raises foreign demand;
+  the baseline burden remains symmetric. Dropped/vendor gear stays a usable
+  floor for contesting the source but is audited so it cannot erase crafted
+  G2 demand.
+
   **The refined row is the whole design in one line** (added 2026-08-07,
   computed from the row above with §3.2's half-up rounding). A refined
   item of tier n is strictly better than a base item of tier n — and
@@ -1132,7 +1142,8 @@ changes:
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled in the
   **world window** (frac 0.00–0.60, §6.3 — the weakest rolls in the
-  game, strictly below crafted-fine's 0.30–0.80) and priced ×3. That is
+  game, strictly below crafted-fine's 0.30–0.80) and priced above the Common
+  baseline by the authoritative quality multiplier. That is
   the "today the trader had something good" moment, without a second
   gear source.
 
@@ -1156,13 +1167,13 @@ changes:
   - The **1-in-5 Uncommon is rolled per vendor and per bracket** (so two
     vendors in the same hour differ, and a player's own brackets differ
     from each other), replaces one of the rotating slots and is priced
-    **×3**.
+    by the final enchanted/quality purchase multiplier.
   - The Uncommon is **only offered once WP5's enchant roller exists.**
     Common is enchant-free by definition, so an Uncommon without rolls
     is mechanically identical to the Common beside it while costing
-    three times as much — a blue-named trap, not a luxury. The whole
-    ×3/quality/description machinery ships regardless; WP5 lights it up
-    without a rule change here.
+    more than the Common beside it — a blue-named trap, not a luxury. The
+    quality/description machinery ships regardless; WP5 lights it up only
+    after the economy/loot pass fixes the multiplier.
   - The rotation is **deterministic**: a pure function of (real hour,
     vendor, bracket). Two players at the same vendor in the same hour
     see the same shelf, and a restart does not re-roll it.
@@ -1177,38 +1188,239 @@ changes:
   with WP5's drop tables, whichever lands first. Under the §3.0.3 merge
   this decision now covers the **craft** ladder too — there is one
   catalog, so a line that does not ship does not ship anywhere (§3.4).
-- Race-exclusive vendors and the same-race discount (world.md §7) layer
-  on top of this unchanged.
+- Cultural-region vendor presentation and the same-race purchase discount
+  layer on top without changing catalog strength or buy-back (§8.2).
 
 Every craft output carries `_grug_sell_price` with the **anti-loop rule:
 vendor value of a crafted item < summed vendor value of its
 ingredients** — vendors are a floor, never a factory profit.
 
-## 4. Race-exclusive signature recipes (top end, one per race)
+## 4. Cultural materials, finishing and PvP counters
 
-Gate: crafter's race (player meta, checked in craft_predict) + Master
-tier + the recipe. **Production is race-locked; the item is tradeable
-and wearable by anyone in the faction** — that makes every
-race+profession combo a market niche. All are Rare quality, ilvl 60,
-rolled at the crafted-masterwork window (§6.3), **first enchant fixed**
-(signature stat), remainder rolled. Shared mats: 2× Abyssal Crystal
-(housing depths, §5.5) + **T6 bases** + one specific trophy. The recipe
-unlocks **inside the profession's own book**, in its T6 group — there is
-no separate signature book (§2.2).
+The old six fixed ilvl-60 race-signature recipes are retired. Cultural identity
+now scales across T1–T6 as an in-place finish on universal base equipment. A
+separate PvP-special channel represents deliberate preparation against a
+target race; cultural appearance never implies that the item counters its own
+culture.
 
-| Race (faction) | Profession | Item | Slot/type | Fixed enchant |
-|---|---|---|---|---|
-| Dwarf (A) | Blacksmith | Deepforge Warhammer | 2H, dmg 36 | +Str (max roll) |
-| Orc (H) | Blacksmith | Warfury Cleaver | 2H axe, dmg 36 | +Str (max roll) |
-| Elf (A) | Tailor | Silvercanopy Robe | chest cloth, armor 5 | +Int (max roll) |
-| Undead (H) | Tailor | Gloomweave Robe | chest cloth, armor 5 | +Int (max roll) |
-| Troll (H) | Leatherworker | Serpentscale Harness | chest leather, armor 14 | +Dex (max roll) |
-| Human (A) | Alchemist | Sovereign's Flask | consumable: +8 all attributes, 30 min | — |
+### 4.1 Cultural resources and ownership
 
-Dwarf/Orc and Elf/Undead are exact cross-faction stat mirrors (different
-look/name). Troll vs Human is deliberately asymmetric — see §10 P2.
-This fulfills the world.md §7 hook ("only elven tailors craft the top
-mage robe") with the Silvercanopy Robe.
+| Culture | Material | Ordinary cultural/architectural uses | Concentrated contested form |
+|---|---|---|---|
+| Human | Sunwax | candles, seals, polish, gilded accents | wild waxcomb/apiary cache |
+| Dwarf | Runeslate | tablets, hearths, carved inlay | slate inscription seam |
+| Elf | Moonresin | varnish, bows, pale wood ornament | resin root/fossil-resin nodule |
+| Orc | Red Ochre | pigment, adobe decoration, war paint | ochre clay/outcrop deposit |
+| Troll | Spirit Resin | totem lacquer, incense, masks | resinous root/amber nodule |
+| Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
+
+- Each culture has an ordinary home-region surface source sufficient for its
+  architecture, quests and trade, plus a higher-yield source in its contested
+  level-31+ zones or deep race-region column. The concentrated source requires
+  T4 harvesting; an ordinary surface source retains its natural axe/shovel/
+  hand-gathering behavior.
+- A material is not forced into every cultural object: Gravewood furniture
+  need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
+  palette; Spirit Resin uses warm amber or toxic green.
+- Foreign cultural materials are used almost exclusively for optional
+  level-40+ PvP counters. They never enter universal bars/tools, ordinary G2
+  base costs, ordinary recovery consumables, solo-leveling requirements or
+  profession keystones. Regional G2 demand and optional cultural-counter
+  demand are independent economies.
+- Signature woods remain universal `group:wood` inputs. Their distinct value
+  is cultural builds, furniture and optional recipes, never mandatory tool
+  progression.
+
+### 4.2 Cultural finishing
+
+A cultural finish is a permanent per-stack workstation operation. It preserves
+the base item, material tier, refinement, quality, durability, ordinary
+prefixes/suffixes, masterwork state and PvP-special data; it creates no kit or
+parallel registered item.
+
+- Eligible families are exactly **weapon, offhand, head, chest, legs and
+  feet**. Trinkets are excluded. Each eligible stack carries at most one
+  cultural finish, while a character may freely mix any number of cultures
+  across its six slots.
+- Every culture has one fixed deterministic effect for each eligible family.
+  The user never chooses a culture-local random/smart stat, and a sword and
+  hammer do not select different signatures merely because their visual
+  subtype differs.
+- Direct player production requires the base family's owning Blacksmith,
+  Leatherworker, Tailor or other explicitly assigned profession at the
+  matching tier, and the crafter may apply only their own culture's finish.
+  Finished stacks are tradeable and function for any wearer without race or
+  faction restriction.
+- Each culture's passive, invulnerable cultural master offers the identical
+  operation to allied players who supply all inputs and pay §8.4's ledger fee.
+  The customer needs no owning profession. An enemy master refuses service;
+  foreign finishes arrive through trade or transferred finished items.
+- A different cultural finish overwrites the old finish and appearance at full
+  material/service cost without refund; the preview shows old effect, new
+  effect and complete cost. Reapplying the same culture is rejected before any
+  consumption.
+
+Direct inputs by item family and material tier:
+
+| Eligible family | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Weapon | 1 | 2 | 3 | 4 | 4 | 5 |
+| Offhand | 1 | 2 | 2 | 3 | 4 | 4 |
+| Chest / legs | 1 | 2 | 2 | 2 | 3 | 3 |
+| Head / feet | 1 | 1 | 1 | 2 | 2 | 2 |
+
+The number is units of the selected culture's material. Weapon and offhand
+also consume one unit of that culture's signature wood for a grip/core/focus;
+armor consumes no wood. The operation adds no G1/G2 gem, universal bar or
+trophy because the base item has already paid its ordinary recipe.
+
+The fixed effect matrix is:
+
+| Culture | Weapon | Offhand | Head | Chest | Legs | Feet |
+|---|---|---|---|---|---|---|
+| Human | Strength | Intelligence | Mana | HP | Armor | Dexterity |
+| Dwarf | HP | Armor | Strength | HP | Armor | Strength |
+| Elf | Crit | Dodge | Crit | Dexterity | Dexterity | Dodge |
+| Orc | Strength | HP | Crit | HP | Strength | Crit |
+| Troll | Intelligence | Mana | HP | HP | Dodge | Dodge |
+| Undead | Intelligence | Crit | Mana | Mana | Intelligence | Crit |
+
+Effects consume normalized value points. A point is a balancing unit with an
+explicit conversion, not a generic +1%:
+
+| Family | T6 point budget |
+|---|---:|
+| One- or two-handed weapon | 5 |
+| Offhand | 4 |
+| Chest | 3 |
+| Legs | 3 |
+| Head | 2 |
+| Feet | 2 |
+
+| Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Share of T6 budget | 20% | 35% | 50% | 65% | 80% | 100% |
+
+| Effect | Per value point after tier scaling |
+|---|---:|
+| Strength / Intelligence / Dexterity | +3 |
+| Maximum HP | +6 |
+| Maximum Mana | +10 |
+| Crit / Dodge | +1 percentage point |
+| Armor | +1 armor point (= 1 percentage point before cap) |
+
+Primary attributes, HP and Mana round half-up to whole numbers. Crit, Dodge
+and armor show one decimal where needed. Every tier must be strictly stronger
+in effective and displayed value; if a conversion would collapse two adjacent
+tiers, its display/conversion quantum changes. A two-handed weapon retains the
+five-point weapon budget and receives no compensation for its unavailable
+offhand.
+
+The resulting T6 per-stack values are:
+
+| Culture | Weapon | Offhand | Head | Chest | Legs | Feet |
+|---|---|---|---|---|---|---|
+| Human | +15 Str | +12 Int | +20 Mana | +18 HP | +3 armor | +6 Dex |
+| Dwarf | +30 HP | +4 armor | +6 Str | +18 HP | +3 armor | +6 Str |
+| Elf | +5% Crit | +4% Dodge | +2% Crit | +9 Dex | +9 Dex | +2% Dodge |
+| Orc | +15 Str | +24 HP | +2% Crit | +18 HP | +9 Str | +2% Crit |
+| Troll | +15 Int | +40 Mana | +12 HP | +18 HP | +3% Dodge | +2% Dodge |
+| Undead | +15 Int | +4% Crit | +20 Mana | +30 Mana | +9 Int | +2% Crit |
+
+All finish, affix, attribute and base-equipment sources add before the existing
+final caps: Crit 30%, Dodge 30% and armor 60%. Overcap remains on its source
+stacks but has no combat effect. The Character page displays effective and raw
+values, for example `Armor 60% (67% raw)`; there is no reroll, overflow
+conversion, diminishing-return curve or cap increase. The theoretical T6
+cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
+(including compatible Dexterity), +9.9 Dodge points and +7 armor points.
+
+Every cell grants exactly one existing central stat. Cultural finishes add no
+proc engine, periodic step, regeneration, steal/execute/control effect,
+cooldown reduction or knockback resistance. Cells are intentionally not
+class-adaptive: some are unattractive to a particular build, while each culture
+retains at least two economically desirable cells and each faction's three
+cultures collectively cover damage, mitigation and healing/casting roles.
+
+### 4.3 PvP-special channel and target-race recipes
+
+Every item may carry at most one **PvP special**, stored independently of
+ordinary affixes and the cultural finish. Identical target-race specials never
+stack; if two legal sources affect one action, use the highest value. Applying
+a new target overwrites the old special at full material/service cost and no
+refund; applying the identical target is rejected as a no-op.
+
+The MVP ships exactly two data-driven families, parameterized by the six target
+cultures:
+
+1. **Weapon counter finish.** A permanent in-place operation on an equipped
+   weapon, owned by the profession that owns that weapon family.
+
+   | Weapon tier | Target cultural material | Target-race damage |
+   |---|---:|---:|
+   | T4 | 1 | +1 flat |
+   | T5 | 2 | +2 flat |
+   | T6 | 3 | +3 flat |
+
+   It consumes no additional bar, gem, wood or trophy. Only an accepted attack
+   sourced from the currently equipped weapon contributes counter damage; a
+   spell does not inherit it from the ability icon's weapon appearance. Add
+   the flat amount after the ordinary Crit result and before armor and absorb,
+   so armor mitigates it and Crit never multiplies it. It affects hostile
+   players and combat-capable
+   NPCs/mobs with the matching race identity, never passive invulnerable
+   service NPCs. An allied passive profession helper performs the same
+   supplied-material operation for 50% of that tier's Common weapon reference
+   price (§8.4); it supplies no foreign material.
+
+2. **Warding Draught.** An Alchemist-only T4–T6 recipe reducing incoming
+   damage from one selected target race for five minutes.
+
+   | Tier | Mitigation | Cultural material | Complete recipe |
+   |---|---:|---:|---|
+   | T4 | 5% | 1 | 1 Vial + 1 Dragonweed + 1 Marshbloom + 1 target material |
+   | T5 | 7.5% | 2 | 1 Vial + 1 Crimson Lotus + 1 Stormkelp + 2 target materials |
+   | T6 | 10% | 3 | 1 Vial + 2 Crimson Lotus + 2 Stormkelp + 3 target materials |
+
+   Apply its multiplier after armor and before absorb. Only one target-race
+   ward is active; a new draught replaces the old ward and its remaining
+   duration. It is its own PvP-buff category and may coexist with one ordinary
+   elixir and Well Fed, but it shares the global 60-second potion-use clock and
+   does not require missing HP/Mana. Apothecary Loop changes neither its
+   percentage nor duration. An allied passive Alchemist helper consumes the
+   same supplied ingredients and charges 50% of the draught's authoritative
+   reference price. The ward recognizes hostile players and combat-capable
+   NPCs/mobs carrying the selected race identity; passive invulnerable service
+   NPCs never enter the damage interaction.
+
+Armor-wide counter stacking, percentage counter damage, coatings, counter-kit
+items, taunt trinkets, effigies and other race gadgets are outside the MVP and
+receive no placeholder registrations or recipes.
+All six target cultures use the same tier/effect budget. Population statistics
+never make a currently common race's permanent counter stronger.
+
+### 4.4 Material art contract
+
+Use a hybrid source strategy: derive mundane bases/tree palettes from
+license-cleared references, adapt the proven per-stack trim/meta technique, and
+author Grudgelands' six cultural motifs plus fantastic-material language. Every
+reused asset records file provenance, author, exact license, pinned source
+commit and modifications in the owning `LICENSE-media.md`.
+
+Each of the six regional gems has exactly four visual roles: natural ore node,
+Rough Gem, Cut Gem and polished non-luminous storage block — **24 roles total**
+before equipment overlays. Each cultural material has an inventory identity
+and at least one source-node/gather presentation. Signature woods receive a
+full tree/build palette only where an existing licensed wood cannot carry the
+culture cleanly.
+
+Before bulk production, one 16×16 art spike verifies: a complete gem family
+through trinket use; Emberglass → Embersteel item/bar/block language; one armor
+base with two cultural trims and a separate PvP-special marker; one cultural
+material in ordinary architecture and a counter recipe; and the complete
+sheet at native resolution plus nearest-neighbor enlargement. AI-generated
+concepts/variants require manual limited-palette, hard-edge and pixel-cluster
+cleanup before they become final game art.
 
 ## 5. Loot zones — what drops where
 
@@ -1231,10 +1443,10 @@ becoming a side door around the depth gate of §3.0.4.
 | Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, source windows per §5.1 | no PvP objective |
 | Peaceful home zones 11–20 | equivalent T2 access | T2, source windows per §5.1 | first named rares; no contested zone |
 | Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
-| Mixed frontier 31–40 | equivalent T4 access | T4, improved windows on qualifying elites | Human/Orc/shared-centre contested; four flank approaches peaceful |
+| Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Holy Grounds entry are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
 | High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and all-six-gem apex camps |
-| Depth axis | the six strata of §3.0.4, each behind a tier-n tool; which ore lies in which band is §3.0.1's placement table: copper/tin/coal/**iron** (0…−100) → quartz (−300) → silver (−500) → garnet + emberstone (−700) → emberstone deep band **and Abyssal Crystal** (−1000) → diamond (below); gold keeps its vendored depth and its coast veins | cave mobs as per surface tier | **no drop layer of its own**, at any depth (below) |
+| Depth axis | six cosmetic strata behind the position-based limits of §3.0.4; Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**
@@ -1263,7 +1475,7 @@ involved. The two systems never meet.
 | Normal mob | 3% | — | world |
 | Elite (armor 80) | 20% | 3% | elite |
 | Named rare (armor 70) | 100% | 25% | rare |
-| Apex boss / faction King | — | 100% | boss |
+| Apex boss / race King | — | 100% | boss |
 
 A dropped item that carries enchants is by definition also **refined**
 (§6b.3 admits no other state) — which is why the refinement word never
@@ -1273,46 +1485,54 @@ appears in a drop's name (§6b.4).
 
 2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill:
 guaranteed Uncommon (rare window) + 25% Rare + **100% signature trophy**
-(`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): the
-T4 book-group keystone, the third input of the T6 alloy and the
-masterwork ingredient (§2.3, §3.0.2, §6.4). Anti-camping:
+(`group:grug_rare_trophy` — Grimtusk's Tusk, Silkfang's Gland, …): a
+qualifying optional masterwork ingredient and, where explicitly listed, a
+profession-book proof. It never enters a universal bar or pick (§2.3,
+§3.0.2, §6.4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
 
 ### 5.3 Apex world bosses (world.md §4b)
 
-Respawn 20–28 h (rolled). Lair **hoard chest** unlocks on the kill, one
-withdrawal per tagged player: 1 Rare item (boss window) + 3–5 wyrmscale
-(Master-tier leatherworking masterwork mat) + 20–50c + **1 Abyssal
-Crystal** (the bridge source until housing ships, §10 P5).
+The two offshore dragons are separate contested encounters and use personal
+boss rewards with independent per-character 24-hour loot lockouts. Their
+participation and reset accounting matches the king ledger below. A boss
+reward may include Rare gear in the boss window and authored materials, but it
+never pays ledger money directly and no universal bar/pick depends on it:
+continental T5 Abyssal Crystal is the ordinary T6 entry. Dragon-island gem
+sockets are a separate renewable gathering source, not boss loot.
 
-### 5.4 The faction King (enemy capital raid)
+### 5.4 Six race Kings and Fallen Crowns
 
-Respawn 20–28 h. Per tagged raider: 1 Rare (boss window) + 30–60c;
-once per kill: **Fallen Crown** (masterwork ingredient usable in any
-profession's Master-tier masterwork as the trophy slot). Elite guard ring
-makes it a group raid by design; kills broadcast world-wide.
+Each race has one killable level-65 elite King protected by four level-60
+elite royal guards. Essential service NPCs are separate, passive and
+invulnerable.
 
-### 5.5 Housing depth treasures
+- **Fallen Crown** is one registered item with per-stack defeated-race
+  provenance, cultural overlay and generated name, not six currencies.
+- Every eligible participant receives exactly one Crown entitlement. Personal
+  allocation replaces a shared ground drop; the killing blow has no special
+  ownership. All six Kings use the same quantity, reference-value budget and
+  eligibility rules.
+- The current-attempt ledger accepts a player who deals accepted damage to the
+  King or a royal guard, or provides effective healing/shielding to an eligible
+  attacker. A qualifying living player must be within 60 nodes at the kill. A
+  participant slain by the encounter, another encounter NPC or an enemy player
+  retains eligibility for 60 seconds. Proximity alone is insufficient; a full
+  encounter reset clears the ledger and grace.
+- A successful award starts that King's rolling 24-hour wall-clock Crown
+  lockout for the character. Other enemy Kings remain independently rewarding;
+  repeat kills during one lockout may proceed but grant no Crown.
+- The Crown substitutes one-for-one for a qualifying named-rare trophy in the
+  existing trophy slot of an ordinary Master-tier masterwork, including a T6
+  Grudgeforged item. It grants the same stat/affix budget and quality window;
+  royal provenance supplies visual identity.
+- No universal bar, pick, profession keystone or ordinary base gear requires a
+  Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
+  level-60 elite loot and never substitutes for a Crown. Rewards enter the
+  ledger only if their sellable items are later sold.
 
-**Abyssal Crystal** (renamed 2026-08-07 from "abyssal gem" — it is the T6
-alloy input of §3.0.2, not a Goldsmith gem): finite nodes in the deepest
-purchased step of a **personal** housing isle (world.md §5.4 — no
-respawn, R4); ingredients for race signatures (×2) and optional
-Master-tier masterworks.
-Revised 2026-08-07: since every character is granted an isle at level 30
-and the depths are a bought treasure-cluster ladder rather than guild
-property, the supply is personal progression, not a guild privilege —
-but the deep steps are endgame-priced, so the apex-hoard bridge stays
-(§10 P5).
-
-Revised 2026-08-08: the crystal also has a **continental deposit below
-−1000** (§3.0.1), so an isle is now the *safe* source rather than the
-only one. What an isle sells exclusively instead are its **six
-step-exclusive materials** (`world.md` §5.4), of which one is live in the
-MVP — the **Amplifier** of §6b.8.
-
-### 5.6 Contested-front reward hook
+### 5.5 Contested-front reward hook
 
 The authored war front feeds crafting only through the existing
 player-involvement war-trophy/heavy-cloth rules and later explicit quests.
@@ -1320,15 +1540,22 @@ WP42 ships no refilling supply crate. Each contested zone reserves one
 non-loot quest-interaction slot for WP9; it is not a free material source.
 The two endpoint apex mining camps are the sole map-side addition: each has
 the 12 all-six-gem nodes specified by `world_zones.md` §6 and
-`world.md` §2 R4.
+`world.md` §2 R4 — exactly two renewable sockets per species. Each depleted
+socket refills independently after a randomized 2–4 hour interval; an
+under-tier destruction still depletes it, and the Goldsmith bonus is included
+in the yield audit. Runtime economy calibration may tune the interval while
+preserving the confirmed two-live-nodes-per-species budget.
 
 ## 6. Quality tiers & enchant roll ranges (WP5 numbers)
 
 ### 6.1 Meta model
 
-Item meta: `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4 Unique-
-reserved), `grug_ench` = one serialized `{stat = value, …}` table (mcl
-pattern §1.2), `grug_upgrades` (0–2, §7), `grug_req_level`.
+Item meta carries `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4
+Unique-reserved), one serialized ordinary-affix table (`grug_ench`),
+`grug_upgrades` (0–2, §7), `grug_req_level`, and separate structured
+masterwork, cultural-finish and PvP-special state where applicable. These
+channels never overwrite one another. Exact migration keys are implementation
+owned; one idempotent description/stat regeneration path reads them all.
 
 **`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —
 WP7 ships 72 equippable vendor items that carry the ilvl but no check):
@@ -1344,7 +1571,7 @@ regenerated from meta on every change (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
 enchant).
 
-**Item descriptions always show the BASE stat** (decided 2026-08-07 in
+**Ordinary equipment descriptions always show the BASE stat** (decided 2026-08-07 in
 WP7): under the name and the item level, one grey line carrying the
 number the item actually contributes — `5 damage, 1.0 s swing` for
 weapons (the swing interval belongs next to the damage, or a dagger's
@@ -1358,6 +1585,11 @@ full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
 (70/30)** — the decided budgets, and from 2026-08-07 also the prefix and
 suffix count of §6b.
+
+Cultural finish and PvP-special lines are displayed separately, naming their
+culture/target and exact value. Trinkets are the exception to the ordinary
+base/refinement model: §6.2 gives them no base-stat line, refinement or
+durability, only their one prefix, one suffix and authored special.
 
 **Refinement and the base-stat line** (2026-08-07): a refined item's grey
 line shows the **refined** number — the +15 % damage or armor of §6b.2,
@@ -1385,34 +1617,75 @@ edit in one place, not a rewrite of the catalog.
 | Metal armor | +Str, +HP, +armor%, +dodge% |
 | Leather armor | +Dex, +HP, +crit%, +dodge% |
 | Cloth armor | +Int, +mana, +HP, +crit% |
-| **Trinkets** (both slots) | **+Str, +Int, +Dex, +HP, +mana, +crit%** |
 
-**The trinket row** (added 2026-08-08 with the MVP trinkets,
-`inventory_equipment.md` §2). Every other row is bound to a wearer by
-its armor class or its weapon family, so its pool can be narrow;
-trinkets are worn by **every class** (no armor class, no rank binding,
-§3.6b), so theirs is the one **universal-ish** pool: all three primaries
-so any class finds its own, +HP and +mana as the two flat resources, and
-+crit% as the single percentage. It is deliberately **not** a superset:
+Ordinary equipment keeps the no-duplicate-stat rule inside its up-to-four
+prefix/suffix slots. Cultural finish and PvP-special stats are separate named
+sources and may match an ordinary affix; all sources add before final caps.
 
-- **No +armor%** — armor is what the four armor slots are *for*, and a
-  fifth and sixth source would push the 60 % cap (`combat_stats.md` §2)
-  without any class having to wear armor for it.
-- **No +dodge%** — avoidance stays an armor property, so the
-  mitigation-vs-avoidance choice between the metal and leather rows
-  keeps its meaning; a trinket that hands out dodge would let a cloth
-  wearer buy the leather row's identity.
-- **No +attack speed%** — that is the melee-weapon row's identity and
-  the one stat that multiplies with everything else on a character.
+#### Trinket exception: one prefix, one suffix, one special
 
-Six entries against the other rows' four or five is intended: with the
-hard 4-slot ceiling of §6b.4, a wider pool means a trinket is a *roll*
-rather than a predictable stat stick, which is what makes two of them
-worth comparing. This section's **"no duplicate stat per item"** rule
-applies to trinkets unchanged — a single trinket may never carry +Str
-twice, so its up-to-four affixes are four *different* stats out of the
-six. The two trinket slots hold two separate items, so the same stat may
-legally appear once in each.
+A passive trinket has exactly:
+
+- one prefix rolling **Strength, Intelligence or Dexterity**;
+- one suffix rolling **maximum HP, maximum Mana or Crit**;
+- one authored trinket special.
+
+The pools make nine possible prefix/suffix pairs and structurally prevent a
+duplicate stat. Armor, Dodge and attack speed are excluded. Rolls reuse
+§6.3's ordinary equipment ranges for the item's ilvl band and source window;
+prefix and suffix roll independently. A trinket has **no separate base-stat
+line, armor, durability or refinement state**. Material tier scales only the
+authored special. Common/Uncommon/Rare presentation may communicate source and
+roll window, but never changes the fixed channel count or multiplies a special.
+This is the explicit exception to §6b's ordinary refine-before-enchant rule.
+
+Register exactly six ordinary core identities, each craftable in T1–T6.
+Setting, tier, item level, required level, affix rolls, special strength,
+generated display name/color and image composition are per-stack data, yielding
+six item ids rather than 36:
+
+| Visual family | Core identities |
+|---|---|
+| Amulet | **Manawell Pendant**, **Last Light Locket** |
+| Ring | **Battlebeat Band**, **Apothecary Loop** |
+| Medallion/ornament | **Mercy Seal**, **Reclaimer's Mark** |
+
+Either generic trinket slot accepts every form; the form grants no stat or
+restriction. The same registered identity may not occupy both slots, even at
+different material tiers. Different identities combine freely. Each special
+defines its own two-slot rule; no consumer invents a default.
+A later boss/quest trinket may use a distinct registered identity with one of
+the same specials; it remains subject to that special's authored two-slot rule.
+
+| Special | T1 | T2 | T3 | T4 | T5 | T6 | Two-slot behavior |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Manawell, flat Mana/s | 0.05 | 0.10 | 0.15 | 0.25 | 0.35 | 0.50 | additive, cap 1.00/s |
+| Battlebeat, Rage/accepted hit | 0.25 | 0.50 | 0.75 | 1.00 | 1.50 | 2.00 | additive, cap 4 Rage/hit |
+| Mercy Seal, outgoing healing | 1% | 2% | 3% | 4% | 5% | 6% | additive, cap 12% |
+| Last Light, max-HP absorb | 3% | 4% | 5% | 6% | 8% | 10% | highest only, shared 120 s cooldown |
+| Reclaimer's Mark, max HP/Mana | 1% | 1.5% | 2% | 2.5% | 3% | 4% | highest only, shared 10 s cooldown |
+| Reclaimer's Mark, Rage | 1 | 2 | 3 | 4 | 5 | 6 | same trigger/cooldown as its HP restore |
+| Apothecary Loop, instant potion amount | 2.5% | 5% | 7.5% | 10% | 12.5% | 15% | additive, cap 30% |
+
+- Manawell piggybacks the existing Mana-regeneration tick.
+- Battlebeat settles only on an accepted equipped-weapon hit. Miss, dodge,
+  full absorb and refused PvP grant nothing; fractional Rage may accumulate
+  internally.
+- Mercy Seal runs through the central outgoing-heal path.
+- Last Light triggers after a survived hit leaves the wearer below 25% maximum
+  HP. It grants an absorb from post-hit maximum HP and cannot save an already
+  lethal hit.
+- Reclaimer's Mark triggers only on an XP-eligible kill, settles its shared
+  cooldown first, then restores HP plus maximum-Mana percentage for Mage/
+  Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
+- Apothecary Loop increases only the restored amount of instant HP/Mana
+  potions. It neither shortens nor resets the shared 60-second cooldown and
+  does not modify Warding Draughts.
+
+Direct damage procs, ability cooldown reduction, movement speed, gathering
+yield, durability and vendor bonuses are excluded from the six-special MVP.
+A future race-taunt trinket would consume its one authored-special channel,
+not add a fourth channel; no such placeholder ships now.
 
 ### 6.3 Roll ranges by the item's ilvl bracket and source window
 
@@ -1463,53 +1736,27 @@ comparable.
 | crafted-fine | 0.30–0.80 | crafted Uncommon ("fine" recipes) |
 | elite | 0.30–0.90 | elite drops, dungeon/crate loot |
 | rare | 0.50–1.00 | named-rare drops |
-| crafted-masterwork | 0.60–1.00 | crafted Rare incl. race signatures |
-| boss | 0.80–1.00 | apex hoards, faction King |
+| crafted-masterwork | 0.60–1.00 | crafted Rare incl. Grudgeforged items |
+| boss | 0.80–1.00 | apex hoards, race Kings |
 
-**Cap safety at 60 — re-run for 8 slots (2026-08-08).** The original
-check assumed **6** enchantable slots (weapon, offhand, 4 armor) and
-read: worst-case crit ≈ 6×3 % + 5 % base + ~7 % from Dex ≈ 30 %, landing
-exactly on the cap. With the MVP trinkets (`inventory_equipment.md` §2)
-the count is **8**, and the arithmetic changes:
+**Combined cap policy (re-run 2026-08-12).** Ordinary affixes, trinket
+prefixes/suffixes, cultural finishes, attributes and base equipment all add
+before the unchanged final caps: Crit 30%, Dodge 30% and armor 60%. Values over
+a cap remain on their source stacks but add no combat power. The Character page
+shows both effective and raw totals, and no automatic reroll, overflow
+conversion, diminishing return or cap increase hides the waste.
 
-| Stat | Slots that can roll it | Worst case at 60 | Cap (`combat_stats.md` §2) | Verdict |
-|---|---|---|---|---|
-| **Crit** | 8 (weapon, offhand, 4 armor, 2 trinkets) | 8×3 % = 24 % + 5 % base + ~7 % Dex ≈ **36 %** | **30 %** | over by ~6 points, **clamps** |
-| **Dodge** | 4 (armor only — no trinket, no weapon) | 4×3 % = 12 % + ~7 % Dex ≈ **19 %** | **30 %** | under, no clamp |
-| **Armor %** | 4 (armor only) | unchanged by trinkets | **60 %** | unchanged |
-
-Where the numbers come from: **3 %** is the top of the 46–60
-`+Crit%/+Dodge%` band in the table above, and one item may carry a given
-stat **once** (§6.2), so 3 % per slot is the ceiling per item. The
-**5 %** is crit's flat base and the **~7 %** is `0.1 %×Dex` at a
-level-60 Dex of ≈ 70 (`combat_stats.md` §1/§2 — base 10 plus 1 per
-level); dodge has the Dex term but no base, which is the whole
-difference between the two rows.
-
-**A stricter upper bound, for completeness.** Nothing stops one item
-from carrying `+Dex` *and* `+crit%` (different stats, so §6.2's rule is
-satisfied). Eight items at the band's top `+Dex` of 12 add 96 Dex, i.e.
-another ~9.6 % crit, for an absolute ceiling of ≈ **45 %** — and dodge
-by the same route reaches ≈ 12 % + 16.6 % ≈ **29 %**, still under its
-cap by a hair. Both are deliberately generous — they need a full Rare
-set rolled at the top of every range on both stats on every slot, and
-they over-count anyway, because `+Dex` is in neither the metal-armor,
-the cloth-armor nor the caster-weapon pool. No reachable set gets there;
-the bound exists so nobody has to wonder.
-
-**Verdict: the flat caps still absorb it, and no new rule is needed.**
-Crit clamps at 30 %, dodge lands under its cap even in the stricter
-bound above, and the 60 % armor cap is not touched at all because
-trinkets roll no `+armor%`. What is gone is the *headroom*: the 6-slot
-check landed on the cap with nothing to spare, the 8-slot one
-**overshoots it by about 6 points** in the plain case and by ~15 in the
-stacked one — a fully crit-stacked endgame set wastes roughly its last
-two crit affixes. That is a clamp, not a balance break: nothing
-overflows into a stat the design does not bound, and no number outside
-this section changes. Since `+crit%` is the only percentage in the
-trinket pool, it is also the **only** cap the two new slots move at all.
-If the wasted affixes ever become a real complaint, the fix belongs in
-WP5's affix distribution, not in a new cap.
+The old eight-identical-affix-slot calculation is retired: each trinket now has
+one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.
+At T6, two trinkets can therefore add at most two direct Crit suffixes, while
+the six ordinary combat stacks retain their family pools. Cultural finishes
+add at most approximately +14.8 Crit points (including compatible Dexterity),
++9.9 Dodge points or +7 armor points across a freely mixed T6 six-slot set.
+These maxima can intentionally overcap a specialized build. Full plate plus a
+shield may already reach 60% armor, so Dwarf armor finishes can be partly or
+fully wasted there and remain useful to lighter, incomplete or two-handed
+configurations. The cap/demand audit evaluates all three source channels
+together and verifies at least two desirable finish cells per culture.
 
 ### 6.4 Crafted quality (how crafting reaches Uncommon/Rare)
 
@@ -1522,20 +1769,24 @@ the quality thresholds are unchanged.
 - **Refinement → Common, refined** (§6b.1/§6b.2). Still Common — a
   refined item has no enchants yet, so it cannot be blue. Professions
   only.
-- **Fine recipes** = refine + **1–2 affixes** (each tier, +1 cut gem or
-  tier reagent — venom sac, slime gel, sleek pelt, …) → **Uncommon**,
-  crafted-fine window.
+- **Fine recipes** = refine + **1–2 affixes** plus an authored tier reagent
+  (venom sac, slime gel, sleek pelt, etc.) → **Uncommon**, crafted-fine
+  window. A generic Cut Gem is not charged automatically: T4–T6 base combat
+  gear already pays its specific G2, and refinement/affix application never
+  repeats that tax.
 - **Masterwork recipes** = refine + **3–4 affixes** (Expert/Master only;
-  + named-rare trophy or Fallen Crown, at Master also an Abyssal Crystal
-  option) → **Rare**, crafted-masterwork window. Race signatures (§4) are
-  masterworks with a fixed first affix. This keeps "better gear comes
+  + one qualifying named-rare trophy or Fallen Crown in the trophy slot) →
+  **Rare**, crafted-masterwork window. The trophy is consumed when the final
+  masterwork state is applied; an Abyssal Steel item names that state
+  **Grudgeforged**. Cultural finishes and PvP specials remain separate and may
+  coexist. This keeps "better gear comes
   from crafting or hard bosses" literally true: the two 0.60–1.00 windows
   are crafting and bosses.
 
 The mapping is exact: §0's **Uncommon = 1–2 enchants, Rare = 3–4** and
 §6b.4's **2 prefixes + 2 suffixes = 4 slots** are the same budget counted
-two ways. Nothing had to be re-balanced for the prefix/suffix model —
-that is why it was chosen.
+two ways. Trinkets follow §6.2's fixed two-affix exception rather than this
+ordinary equipment count.
 
 ## 6b. Refinement, affixes and special variants (decided 2026-08-07)
 
@@ -1637,7 +1888,7 @@ one-affix item an Apprentice made, up to four. This is the second reason
 mastery matters (the first is the exclusive recipes, §2.1) and it is what
 makes a Master crafter worth seeking out on a server.
 
-### 6b.6 Quality follows the slot count
+### 6b.6 Ordinary-equipment quality follows the slot count
 
 No new rule — §6.1's budgets, read through the affix model:
 
@@ -1647,11 +1898,13 @@ No new rule — §6.1's budgets, read through the affix model:
 | 1–2 | Uncommon | blue |
 | 3–4 | Rare | yellow |
 
-So an Apprentice and a Journeyman produce Uncommon items, an Expert and a
-Master produce Rare ones. The roll **values** come from the §6.3 band of
+So an Apprentice and a Journeyman produce Uncommon ordinary items; an Expert
+and a Master produce Rare ones. The roll **values** come from the §6.3 band of
 the **item's** ilvl (sharpened 2026-08-08), in the crafted-fine or
 crafted-masterwork window (§6.4): mastery buys the number of slots on
-this table, never the size of what goes into one.
+this table, never the size of what goes into one. Trinket quality instead
+communicates source/roll window and never changes its fixed two-affix-plus-
+special shape (§6.2).
 
 ### 6b.7 Special variants
 
@@ -1659,9 +1912,10 @@ A profession can turn a **refined but not yet enchanted** item into a
 **special variant** with an effect of its own — an "Iron Frost Armor"
 that slows attackers, for instance.
 
-- A special variant **keeps its full 2 prefix + 2 suffix slots on top of
-  its special effect.** The effect is not one of the four; it is a fifth
-  thing the item does.
+- An ordinary special variant **keeps its full 2 prefix + 2 suffix slots on
+  top of its one authored effect.** The effect is not one of the four. It is
+  also distinct from §4's cultural-finish and PvP-special metadata; every
+  legal combination participates in the combined cap audit.
 - The input must be unenchanted: the special variant is a step *between*
   refinement and enchanting, not an alternative to either.
 - **Visual treatment**: adapt VoxeLibre's armor **trim/colouring** system
@@ -1669,33 +1923,6 @@ that slows attackers, for instance.
   baked onto the armor texture, e.g. Iron armor carrying a diamond trim.
   That gives every special variant a look without one texture per
   combination.
-
-### 6b.8 The Amplifier (isle-exclusive, decided 2026-08-08)
-
-The **Amplifier** is one of the six materials that exist only in a
-housing isle's purchased depth steps (`world.md` §5.4) and the only one
-of the six that does anything in the MVP.
-
-- **Effect: it raises *all* prefix and suffix values on one item by
-  10 %**, rounded the way the affix line is displayed. It multiplies what
-  §6.3 already rolled; it never adds a slot, never changes an item's
-  quality tier (§6b.6) and never turns an unenchanted item into an
-  enchanted one.
-- **Applicable once per item**, ever. The used-up state is a marker in
-  the item's meta next to `grug_ench` (§6.1) — the roller/description
-  side of WP5 owns it, and it must be a marker rather than a counter on
-  the values, because the effect has to be idempotent against a second
-  application no matter how the item travelled.
-- The input is an item that already carries affixes: the Amplifier is a
-  step *after* enchanting, unlike the special variant of §6b.7, which is
-  a step before it.
-- **The §6.3 cap arithmetic has to be re-run against this multiplier
-  before it ships** — the same check §6.3 already ran for eight slots.
-  The caps sit in the consumer (crit clamps at 30 %, armor at 60 %,
-  `combat_stats.md` §2), so a 10 % lift on already-clamping values is
-  expected to absorb cleanly, but that is a prediction and it is to be
-  verified, not assumed. This is a task, not an open design question: the
-  effect is decided.
 
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 
@@ -1718,139 +1945,106 @@ apothecary gear):
   below a fresh Rare (3–4 affixes): the decided "upgraded mediocre item
   never becomes a top item", enforced structurally, not by caps.
 
-## 8. Prices & the gold-income curve (resolves the old §4; seeds economy.md numbers)
+## 8. Prices and money pacing
 
-All values copper (100c = 1s, 100s = 1g). Design target: **lifetime
-gross income to 60 ≈ 1g**, arriving at 60 with ~20–40s after sinks;
-endgame farming ≈ 6–12s/hour — "a full gold is a fortune" holds.
+All values use ledger copper (100c = 1s, 100s = 1g). No creature, NPC or
+world node drops currency or a physical coin. Tiered combat income is the
+expected vendor value of sellable loot; physical Gold remains a separate
+Goldsmith/build material.
 
-### 8.1 Income
+### 8.1 Income and reference values
 
-- **Quest reward** = 2c + 1.5c × quest level, rounded to 5c steps
-  (L1 ≈ 5c, L20 ≈ 30c, L60 ≈ 90c); elite/group and war-front PvP
-  quests ×2. ~80 quests to 60 ≈ 35–40s total.
-- **Trash/vendor loot** per kill (expected): 1–2c (L1–15), 2–4c
-  (16–30), 4–7c (31–45), 6–10c (46–60); elites ×3 quantity, named
-  rares ×6 (mob-tier multipliers). ≈ 35s over ~1000 kills to 60.
-  Bandit "coin" drops become a *stolen purse* trash item (5c) at a
-  **drop chance of 1/3** (fixed 2026-08-07) — no physical currency
-  items (economy.md §1 upheld).
-- Herbs/materials sold to vendors: **1–6c each, scaling with material
-  tier** (widened 2026-08-07 — the shipped material scale already runs
-  to 6c for heavy leather and scaled hide, and a T3/T4 reagent priced
-  like a bone would make the tier ladder invisible). Still a floor; the
-  real market is player trade.
-- **Known deviation — the bandit runs hot.** A bandit's expected vendor
-  yield is ≈ **6c** in WP18's core/inner bands and ≈ **9c** in its outer
-  band, i.e. roughly **2–3× the trash-loot band of its current source
-  region**. The
-  purse is not the cause (1/3 × 5c ≈ 1.7c); the dominant term is WP6's
-  **guaranteed** 1–2 cloth drop, which was priced as a Tailor material
-  rather than as trash income. Flagged for a balance pass (drop the
-  cloth to a chance roll, or re-price the band for humanoids) rather
-  than silently accepted — bandits are the intended cloth source, so
-  the fix is a tuning call, not a bug fix.
+- Ordinary quest rewards and expected level-appropriate loot value rise on the
+  same approximate **×2.5 tier index** as Common gear. Scaling both preserves
+  baseline time-to-buy. Elites and named encounters improve item/source
+  budgets rather than bypassing the ledger with direct money drops.
+- Reliable net solo income is measured after routine tier-appropriate repair
+  and consumables, excluding rare jackpots, boss rewards and player trade.
+  Claim and mount Gold targets derive from those measured tier rates.
+- Every mob drop has a positive `_grug_sell_price` or registered foreign-item
+  override; zero means unsellable. Material values rise with tier and scarcity,
+  while player trade remains their intended high-value market. Rough/Cut Gem,
+  Gold, Emberglass, Abyssal Crystal, trophies and processed bars each receive
+  an explicit reference value before recipes ship.
+- Every craft/cook, nine-unit pack/unpack and service path passes the anti-loop
+  audit: output vendor value stays below consumed-input value after discounts
+  and rounding, while reversible storage shares one value budget.
 
-### 8.2 Vendor prices (sell to players)
+### 8.2 Vendor prices and buy-back
 
-| Item | Price |
-|---|---|
-| Thread / flux / vial / parchment / whetstone blank | 1c / 2c / 3c / 5c / 4c |
-| Torch | 1c |
-| Weak healing potion (15%) | 8c |
-| Small bag (8 slots) | 80c |
-| Vendor Common gear: weapon / chest / other piece | 50c / 40c / 25c |
-| Wood & stone tools / bronze pick | 5–15c / 40c |
-| Recipe book (any profession; also the replacement) | 25c |
-| Dowsing Rod (housing cluster finder, world.md §5.4) | 15c |
+The exact unenchanted Common slot ladder is:
 
-*Book prices revised 2026-08-07*: the four tome rows collapse into one.
-There is one book per profession (§2.2), so there is one price, and it is
-the old Apprentice-tome price unchanged. The 1s/3s/10s replacement rows
-are **deleted** — they priced a *progression carrier*, and progression
-now lives in player meta, so a re-bought book immediately shows every
-group the character has opened. Losing a book costs 25c at any level.
+| Common slot | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Weapon | 25c | 65c | 1s60c | 4s | 10s | 25s |
+| Chest | 20c | 50c | 1s30c | 3s20c | 8s | 20s |
+| Offhand/head/legs/feet | 15c | 35c | 80c | 2s | 5s | 12s50c |
 
-**Bracket gear ladder** (§3.8, decided 2026-08-07): the bracket-1 prices
-above are the anchor and every further bracket costs **×1.4**; chest =
-0.8 × weapon, every other piece = 0.5 × weapon.
+The table prices slots, not weapon families. Quality/enchanted gear costs more
+than Common, but no premium may alter these baseline references. The rotating
+Uncommon shelf remains a luxury source and must be priced against its final
+quality multiplier before activation.
 
-| Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
-|---|---|---|---|---|---|---|
-| Weapon | 50c | 70c | 98c | 137c | 192c | 269c |
-| Chest | 40c | 56c | 78c | 110c | 154c | 215c |
-| Other piece | 25c | 35c | 49c | 69c | 96c | 134c |
-| Full set | 165c | 231c | 323c | 454c | 634c | 886c |
+Vendor buy-back is capped at **5% of the applicable purchase or authoritative
+reference price, rounded up to the next copper**. A T1 Common weapon therefore
+returns 2c and a T6 weapon returns 1s25c. Same-race purchase discounts never
+raise buy-back. For an item the vendor does not sell, the economy catalog
+assigns a reference price and `_grug_sell_price` stores the resulting final
+payout; foreign definitions use `grug_traders.set_price`. Zero means
+unsellable, while every mob drop receives a positive payout.
 
-Two notes on the table (2026-08-07):
-
-- **The table prices SLOTS, not families.** Every weapon family of
-  §3.2 shares the single "weapon" price, so a dagger costs exactly what a
-  two-hander costs. Deliberate — the families are class flavor, not a
-  power ladder, and one price per bracket keeps the ×1.4 ladder legible.
-  Revisit only if a family ever becomes strictly better.
-- **Buy-back is 25 % of the sale price** (economy.md §2), applied to the
-  prices above and to every other vendor good.
-
-Outfitting completely from vendors in **every** bracket costs ≈ **27s**,
-about a quarter of the lifetime income to 60 (§8) — affordable
-selectively, deliberately painful as a habit. That pressure is what
-keeps drops and crafting primary; the rotating Uncommon at ×3 is priced
-as a luxury, not as an upgrade path.
+Core supplies remain simple fixed-price goods. A profession replacement book
+costs 25c and immediately reflects player-meta progression. Finder-item rows
+are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
 
 ### 8.3 Recurring sinks
 
-- **Repair** (WP22): per piece = ceil(ilvl × 0.5c) × quality factor
-  (Common ×1, Uncommon ×1.5, Rare ×2). Starter piece 1–3c; full Rare
-  set at 60 ≈ 3s per full repair. Wear budget ≈ 3000 combat events per
-  item (broken = stops working, never destroyed — decided), **6000 on a
-  refined item** (§6b.2). The price, not the frequency, is the tier
-  lever — and refinement halves the frequency, which is exactly the
-  convenience a player pays a crafter for.
-- **Respec**: 5c × character level (min 25c) → 3s at 60, repeatable.
-- Job supplies + vendor consumables: the steady trickle (≈15–25% of
-  leveling income re-sunk by design).
+- **Repair:** broken gear stops functioning but is never destroyed. Repair
+  cost scales with item level/quality on the same tiered money axis. The wear
+  target remains approximately 3,000 combat events per ordinary item and
+  6,000 for a refined item; exact prices participate in the reliable-net-
+  income measurement rather than using the retired flat formula.
+- **Respec:** repeatable at the class trainer and rising with level.
+- Job supplies, vendor consumables and profession-helper fees provide the
+  ordinary steady drain.
 
-### 8.4 Big one-time sinks
+### 8.4 Services, claims and mounts
 
-Revised 2026-08-07 with the housing rework (world.md §5): the isle is a
-**free royal grant at level 30**, and the old split of build-rights and
-mining-rights purchases collapses into **one depth ladder**.
+Cultural masters charge 50% of the matching Common slot price, rounded to the
+confirmed clean table. The normal same-race vendor discount does not apply:
 
-**Re-cut 2026-08-07 to six depth steps**, one per rock stratum (§3.0.4),
-so the ten arbitrary 50-node steps become the six the mining ladder
-already needs. Use this table verbatim; world.md §5.3 carries the same
-one.
+| Cultural-master service | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Weapon | 15c | 35c | 80c | 2s | 5s | 12s50c |
+| Chest | 10c | 25c | 65c | 1s60c | 4s | 10s |
+| Offhand/head/legs/feet | 10c | 20c | 40c | 1s | 2s50c | 6s25c |
 
-| Sink | Price |
-|---|---|
-| Housing isle itself | free (questline grant, min_level 30) |
-| Housing depth step 1 → −100 (T1 rock) | **50c** |
-| Housing depth step 2 → −300 (T2) | **2s** |
-| Housing depth step 3 → −500 (T3) | **6s** |
-| Housing depth step 4 → −700 (T4) | **20s** |
-| Housing depth step 5 → −1000 (T5) | **60s** |
-| Housing depth step 6 → bedrock (T6) | **1g** |
-| Guild founding | **5g** |
-| Dowsing Rod (vendor) / Gem Detector (Goldsmith craft) | 15c / crafted |
+The allied weapon-counter helper uses the weapon row. The allied Alchemist
+helper charges 50% of the Warding Draught's authoritative reference price.
+Both consume the player's complete physical inputs and create no regional
+material.
 
-Six steps total ≈ **1.9g** (was ≈ 2.4g over ten steps). The 1g final step
-is still the flagship purchase, so economy.md §2's "a full gold is a
-fortune" holds; economy.md §4.1 carries the reduced total. Down to −30
-is free (the seabed layer, world.md §5).
+Private housing isles, paid depth rights and the complete guild system are
+retired. The first open-world Claim Stone is free after the level-20 Housing
+Steward introduction. Sequential upgrades consume:
 
-**Continental mining claims are removed** (2026-08-07): guilds are
-social, chat and the guild bank, nothing else, so the 2g/5g claim rows
-are deleted here, in `guilds.md` §3.2, in `world.md` §4 and in the
-economy.md §4 sink list. Guild founding at 5g stays.
+| Claim upgrade | Level | Universal metal | Ledger target |
+|---|---:|---:|---:|
+| I → II | 35 | 4 Silversteel Bars | 30 minutes of reliable T4 net solo income |
+| II → III | 50 | 8 Embersteel Bars | 90 minutes of reliable T5 net solo income |
+| III → IV | 60 | 12 Abyssal Steel Bars | 3 hours of reliable T6 net solo income |
 
-The depth ladder is the **anchor sink** (economy.md §4.1): it opens at
-level 30, is per character rather than per guild, and each step buys a
-finite cluster payout (world.md §5.4) that can never fund the next step.
-A 5-player guild pools its 5g founding fee at 1g per head — **8–17
-hours of endgame income each** at the 6–12s/hour rate of §8. (The
-earlier "~1–2 evenings each" did not survive the arithmetic; corrected
-2026-08-07. `guilds.md` §1 carries the same figure.)
+The measured copper target uses the coarsest denomination in
+`1s / 25c / 5c / 1c` whose nearest multiple is within 5%; exact midpoints
+round upward. If configured above one stone, the second and third require
+level 60 and all existing stones at tier IV. They cost 12/24 Abyssal Steel
+Bars plus 5/10 hours of reliable T6 income. Claims never consume gems,
+cultural materials, foreign materials or profession-exclusive components.
+
+Mounts at levels 15/30/45/60 target **15 minutes / 45 minutes / 2 hours /
+5 hours** of reliable tier-appropriate net solo income. Their copper prices
+are derived only after those rates are measured; the retired fixed
+1s/8s/30s/60s table is not a fallback.
 
 ## 9. Bows & arrows (Phase-2 enabler — catalogued, class NOT decided)
 
@@ -1876,7 +2070,12 @@ Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
   owner; the only open questions left are class kit + balance.
   **Explicitly not decided here.**
 
-## 10. Resolved decision points
+## 10. Historical decision log (non-authoritative migration context)
+
+This section records how shipped and staged work reached the current design.
+It deliberately preserves retired names and mechanisms so migrations and
+reverts can be understood. **Nothing in §10 is an active target rule; §§0–9
+override every conflicting statement below.**
 
 ### 10.1 2026-08-06
 

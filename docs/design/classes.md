@@ -1,6 +1,6 @@
 # Class Kits — Resources & Abilities (MVP)
 
-Decided spec (last revised 2026-08-10; established 2026-08-06).
+Decided spec (last revised 2026-08-12; established 2026-08-06).
 Implementation: WP4 (`grug_abilities`, resource HUD, damage pipeline hooks in
 `grug_core`), WP19 (kit tuning, GCD, target memory), WP35 (§2b's universal
 ability and §2c's ability-item skins), WP38 (§2b's proc model, which retires
@@ -74,6 +74,15 @@ Core principles:
   knockback and mob death handling (XP, loot) keep working.
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
+- **Target-race equipment effects use the same central transaction.** A
+  weapon's T4/T5/T6 counter finish adds +1/+2/+3 flat damage to an accepted
+  attack sourced from that equipped weapon, after the one ordinary Crit result
+  and before armor/absorb; Crit never multiplies it. It does not ride on a
+  spell merely because ability icons inherit the weapon's appearance. An
+  active Warding Draught applies its 5/7.5/10% target-race reduction after
+  armor and before absorb. Both require matching race identity on a hostile
+  player or combat-capable NPC/mob and ignore passive invulnerable service
+  NPCs. Stacking and recipe rules: `items_crafting.md` §4.3.
 - **Melee carries the melee bonus and rolls crit** (combat_stats §2). Swing
   ability stacks mirror the equipped weapon's interval for native
   animation/interaction but publish zero damage; their combat packets are

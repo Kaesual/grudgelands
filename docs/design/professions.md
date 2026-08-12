@@ -1,6 +1,7 @@
 # Professions
 
-Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework).
+Decided 2026-08-06, roster **re-cut 2026-08-07** (crafting rework) and
+material identities integrated 2026-08-12.
 Crafting mechanics: `inventory_equipment.md` §4 (3×3 + recipe unlock +
 workbench proximity). Recipe/material details: `items_crafting.md` —
 the material ladder is its §3.0, the per-profession catalogs are
@@ -43,11 +44,11 @@ Two free main professions per player, unchanged. The roster is organised
 
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
-| **Blacksmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Grudgesteel | Metal armor (4 slots), 1H weapons, daggers, 2H weapons, **shields** |
+| **Blacksmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots), 1H weapons, daggers, 2H weapons, **shields** |
 | **Leatherworker** | light → cured → heavy → scaled leather | Leather armor (4 slots), later **quivers** |
 | **Tailor** | linen → woven → heavy → silkweave | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
 | **Woodcarver** | wood incl. silverwood/gravewood; **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
-| **Goldsmith** | Gold + Quartz / Garnet / Diamond | **Both trinket slots**, gem refinement, the **Gem Detector** |
+| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and natural-gem bonus yield |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
 **One MVP caveat, on the Leatherworker.** The **Warrior can wear
@@ -79,10 +80,9 @@ That is the property the re-cut was made for, and it is checkable:
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
   old roster they had none at all. **The items ship in the MVP**
   (decided 2026-08-08): the slots are no longer reserved
-  (`inventory_equipment.md` §2) and trinkets have their own enchant pool
-  (`items_crafting.md` §6.2), so the Goldsmith's headline is a product
-  and not a promise, and it is not the one profession in the roster
-  whose exclusive output arrives after the MVP.
+  (`inventory_equipment.md` §2). Each trinket has exactly one primary-
+  attribute prefix, one HP/Mana/Crit suffix and one authored special
+  (`items_crafting.md` §6.2); cultural finishes never apply to trinkets.
 - **The offhand is split, not shared**: the Tailor makes the **spell
   tome**, the Blacksmith makes the **shield**. Different items, different
   armor classes, different users — one item per concept holds
@@ -115,9 +115,11 @@ Leatherworker (§3 below).
 - **Herbalism merges into the Alchemist.** The Alchemist gathers its own
   herbs; the old gathering gate becomes the Alchemist's own book group
   (`items_crafting.md` §3.6).
-- **Gem Hunter merges into the Goldsmith.** The bonus gem chance while
-  mining and the Gem Detector come along unchanged
-  (`items_crafting.md` §3.6b).
+- **Gem Hunter merges into the Goldsmith.** Its useful gathering identity
+  survives as bonus yield from a successfully harvested natural or renewable
+  gem node (`items_crafting.md` §3.6b). The old Gem Detector was tied to
+  deleted private-island treasure clusters and is retired rather than given a
+  continental radar role.
 
 Both disappear as separate professions. They were the two asymmetric
 stubs in the old roster — three tiers and two tiers against everyone
@@ -200,6 +202,8 @@ in the game still comes from a crafter or a boss.
   Whether a bow system + a ranged class come is a Phase 2 decision to
   make explicitly. The item path is specced and has an owner
   (`items_crafting.md` §9); only the class decision is missing.
-- Race-exclusive recipes stay the planned race-perk hook (world.md §7,
-  Phase 2), one per race across four of the six professions
-  (`items_crafting.md` §4).
+- Cultural finishing is the scalable race/profession hook
+  (`items_crafting.md` §4): a crafter applies only their own culture's fixed
+  effects to families their profession owns, while finished stacks remain
+  tradeable and wearable by anyone. The retired one-recipe-per-race model does
+  not return in Phase 2.

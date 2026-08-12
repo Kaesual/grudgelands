@@ -1,7 +1,8 @@
 # Progression — Pacing, Death, Reward Cadence
 
-Partially decided (2026-08-06, from the design review). Quest structure
-and level gates are still open — they land here before WP8/WP9.
+Partially decided rules (established 2026-08-06; housing cadence integrated
+2026-08-12). The sole deliberately unresolved rules question is the PvP-death
+XP-loss exemption in §3; detailed quest catalogs are authored with WP8/WP9.
 
 ## 1. Leveling pace
 
@@ -27,12 +28,16 @@ Levels must keep delivering *decisions and buttons*, not just stats:
   Renew; further capstones designed with WP11).
 - **Respec at the class trainer for gold**, price rising with level —
   repeatable per-character gold sink and the class trainer's purpose.
-- **Level 30 — the race King's grant** (added 2026-08-07, placement revised
-  2026-08-10): the housing
-  questline hands over a personal isle (world.md §5). The one big
-  non-combat reward beat in the curve, deliberately placed mid-run where
-  talent points alone stop feeling like news, and the point from which
-  gold gains a long-term purpose (economy.md §4.1).
+- **Level 20 — first Claim Stone:** a short introduction from the passive,
+  invulnerable Housing Steward unlocks the first free owner-bound Claim Stone.
+  It may be placed only in the authored level-11–30 housing zones and starts
+  the non-combat home-progression line (`economy.md` §4.1).
+- **Levels 35 / 50 / 60 — claim upgrades:** the same stable stone may reach
+  tiers II / III / IV by paying the universal-metal and measured-income costs.
+  Claims never buy mining depth or a private material source.
+- **Level 60 — additional claims when enabled:** a second or third stone is an
+  endgame sink gated by all existing stones being tier IV, the configured
+  per-character limit and the faction live-stone capacity.
 
 ## 3. Death rules (MVP — deliberately simple)
 
@@ -46,12 +51,16 @@ Priest resurrection) come later with WP6/WP19:
   (never de-levels; grug_xp as shipped).
 - The *distance* back is the real penalty: dying far from the spawn
   costs travel time — which scales naturally with how deep you pushed.
-- **Open (decide before WP9):** whether PvP deaths skip the XP loss
-  (leaning yes: PvP should not punish participation).
+- **Deliberately unresolved before WP9:** whether a PvP death skips the XP
+  loss. Until that decision is made, the shipped universal 25%-of-current-
+  level-progress loss remains the operative rule; no document may silently
+  infer an exemption from contested-zone participation.
 
-## 4. Quest structure & level gates — OPEN
+## 4. Quest structure & level gates
 
-To spec before WP8/WP9 (story frame: story.md): main-questline beats with hard
-`min_level` gates; first PvP quests in the level-31–40 central contested
-corridor, never below level 31 (`world_zones.md` §§2/8); gather/kill quests forcing named-zone
-and biome exploration.
+- Main-questline beats use hard `min_level` gates (`story.md`).
+- First PvP quests begin in the level-31–40 contested approaches and Holy
+  Grounds entry, never below level 31 (`world_zones.md` §§2/8).
+- Gather and kill objectives use stable named-zone ids and authored biome/
+  resource palettes so progression teaches exploration rather than old radial
+  ring coordinates.
