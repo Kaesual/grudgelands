@@ -93,10 +93,9 @@ core.register_node(DEPLETED, {
 			-- upgraded, list changed): never leave the placeholder in the
 			-- world forever -- fall back to the wall it sits in.
 			--
-			-- Not a hardcoded `default:stone`: that is only the tier-1
-			-- stratum. At -600 it would punch a level-0 hole into a level-3
-			-- granite wall, i.e. a free bypass of the §3.0.4 depth gate,
-			-- reachable by anyone who waits out a timer next to a lost meta.
+			-- Use the local stratum node only for cosmetic wall consistency.
+			-- Natural access remains authoritatively target-y-based and is not
+			-- determined by the identity of the surrounding stratum.
 			core.set_node(pos, {name = grug_materials.stratum_node_for(pos.y)})
 		end
 		-- set_node dropped the timer with the node anyway; be explicit.
