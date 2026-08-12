@@ -71,12 +71,16 @@ core.override_item("default:pick_stone", {
 
 pick_groups("default:pick_bronze", 1)
 core.override_item("default:pick_bronze", {
-	tool_capabilities = grug_materials.build_pick_capabilities(1),
+	tool_capabilities = grug_materials.build_pick_capabilities(1, {
+		max_drop_level = 1,
+	}),
 })
 
 pick_groups("default:pick_steel", 3)
 core.override_item("default:pick_steel", {
-	tool_capabilities = grug_materials.build_pick_capabilities(3),
+	tool_capabilities = grug_materials.build_pick_capabilities(3, {
+		max_drop_level = 1,
+	}),
 })
 
 -- stairs is optional for a standalone grug_materials load, but ordered before

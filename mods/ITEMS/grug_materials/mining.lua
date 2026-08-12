@@ -64,22 +64,29 @@ function grug_materials.build_pick_capabilities(tier, values)
 		error("grug_materials: invalid pick tier")
 	end
 	local profile = grug_materials.PICK_PROFILES[tier]
-	values = values or profile
-	local ordinary_time = tonumber(values.ordinary_time)
-	local uses = tonumber(values.uses)
+	values = values or {}
+	local ordinary_time = tonumber(values.ordinary_time or profile.ordinary_time)
+	local uses = tonumber(values.uses or profile.uses)
+	local max_drop_level = tonumber(values.max_drop_level)
+	if max_drop_level == nil then
+		max_drop_level = tonumber(profile.max_drop_level) or 0
+	end
 	if not ordinary_time or ordinary_time <= 0 or not uses or uses <= 0 then
 		error("grug_materials: invalid pick capability values")
 	end
 	return {
-		full_punch_interval = values.full_punch_interval or 1.0,
-		max_drop_level = 0,
+		full_punch_interval = values.full_punch_interval or
+			profile.full_punch_interval or 1.0,
+		max_drop_level = max_drop_level,
 		groupcaps = {
-			cracky = {times = copy_times(values.cracky_times), uses = uses,
+			cracky = {times = copy_times(values.cracky_times or
+				profile.cracky_times), uses = uses,
 				maxlevel = 0},
 			grug_resource = {times = resource_times(tier, ordinary_time),
 				uses = uses, maxlevel = 0},
 		},
-		damage_groups = table.copy(values.damage_groups or {fleshy = 4}),
+		damage_groups = table.copy(values.damage_groups or profile.damage_groups or
+			{fleshy = 4}),
 	}
 end
 

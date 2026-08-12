@@ -112,8 +112,7 @@ core.register_on_mods_loaded(function()
 			local caps = def.tool_capabilities and def.tool_capabilities.groupcaps or {}
 			if not tier or tier ~= math.floor(tier) or tier < 1 or tier > 6 or
 				not caps.cracky or not caps.grug_resource or
-				caps.cracky.maxlevel ~= 0 or caps.grug_resource.maxlevel ~= 0 or
-				def.tool_capabilities.max_drop_level ~= 0 then
+				caps.cracky.maxlevel ~= 0 or caps.grug_resource.maxlevel ~= 0 then
 				fail("invalid Grudgelands pick contract: " .. name)
 			end
 			for harvest_tier = 1, 5 do
@@ -121,6 +120,20 @@ core.register_on_mods_loaded(function()
 					fail("incomplete resource capability on " .. name)
 				end
 			end
+		end
+	end
+	local active_max_drop_levels = {
+		["default:pick_wood"] = 0,
+		["default:pick_stone"] = 0,
+		["default:pick_bronze"] = 1,
+		["default:pick_steel"] = 1,
+	}
+	for name, expected in pairs(active_max_drop_levels) do
+		local def = core.registered_items[name]
+		local actual = def and def.tool_capabilities and
+			def.tool_capabilities.max_drop_level
+		if actual ~= expected then
+			fail("unexpected max_drop_level on " .. name)
 		end
 	end
 
