@@ -1,7 +1,7 @@
 # WP40 Named-Zone World Foundation — Engineering Brief
 
 Status: **Final pre-code engineering contract; independently reviewed
-2026-08-12; not an implementation or shipped-WP claim.**
+2026-08-13; not an implementation or shipped-WP claim.**
 
 This brief freezes the engineering contract that must be reviewed before any
 WP40 mapgen implementation begins. It consumes the decided game design in
@@ -187,7 +187,7 @@ seams, and main/mapgen/offline identity before any geometry consumer is
 enabled.
 
 The native v7 heightmap and a bounded scan of a native-only audit VoxelManip
-are observation inputs only. In the dedicated audit world, before any WP40
+are observation inputs only. In the dedicated audit worlds, before any WP40
 overlay runs, they may be used to:
 
 - measure native `N` in the one validation-owner slice and prove the
@@ -204,23 +204,45 @@ order, a first-writer storage decision, or the observed `N` value.
 `core.get_spawn_level` is not a height authority or fallback.
 
 For each x/z column, the audit validation owner is the unique half-open
-vertical mapchunk whose central y range contains `H(x, z)`. An accepted column
-has `N` within `H +/- 16`, so that callback's 16-node emerge border contains
-the complete validation scan. With the WP40 overlay disabled, the harness
-requests this owner before any overlapping slice, selects the highest
-registered native natural-ground/resource/stratum surface candidate in that
-closed interval after excluding decorations and liquids, and proves
-`abs(N - H) <= 16`. Missing or ambiguous candidates fail validation. The
-heightmap may accelerate this scan only when it belongs to that same callback.
+vertical mapchunk whose central y range contains `H(x, z)`. With the WP40
+overlay disabled, the harness generates that owner plus its immediate upper and
+lower vertical neighbors in bottom-up and top-down order in two independently
+created disposable worlds, then reads only their completed central mapblocks.
+This avoids treating the emerge halo as generated native data. In each
+combined result it selects the highest exposed registered native
+natural-ground/resource/stratum surface candidate in
+`H - 16 .. H + 16`, after excluding decorations and liquids. The node directly
+above a candidate must not be another registered natural solid/resource/
+stratum node. No candidate, multiple ambiguous exposed candidates, continuation
+of natural terrain above `H + 16`, or a result below `H - 16` fails validation.
+Both vertical orders must report the same `N`. The callback-local heightmap may
+accelerate rejection, but the post-generation central-mapblock oracle is
+authoritative for this audit.
 
-Production callbacks neither need nor attempt to recover `N`; they render the
-analytic Chapter 2 envelope from `H` and `T`. This separation is mandatory:
+Production callbacks neither need nor attempt to recover `N` as a height input;
+they render the analytic Chapter 2 envelope from `H` and `T`. This separation
+is mandatory:
 an emerged halo can already contain a neighboring WP40-owned slice, so a later
 runtime scan would not be a reliable native snapshot under arbitrary vertical
-request order. The complete production seed is therefore prevalidated in the
-native-only disposable audit world before rollout. Runtime still classifies
-the local pre-overlay nodes needed by Chapter 2's typed replacement/veto rules,
-but it never treats a reconstructed surface height as authority or a gate.
+request order. Before rollout, the native-only disposable audit therefore
+validates every integer x/z column in the complete finite authored mainland,
+island, planned-water, route, anchor, and decoration extent, plus every named
+feature-envelope column, for the production seed. Exterior deep ocean outside
+that finite extent follows Section 2.9 and does not use the `N`-to-`H` premise.
+The Section 6.2 native-v7 control schedules cover this complete finite audit
+extent for the production seed, not merely the smaller rendering feature
+corpus; native horizontal or vertical request-order instability therefore
+invalidates the same manifest before any observed `N` is accepted.
+
+Production retains one failure-only guard that cannot influence an authored
+answer: for an ordinary column, if the current callback's central heightmap
+reports any native base-terrain walkable node above `shell_ceiling`, the
+manifest is invalid and generation fails before commit. The guard never
+changes `H`, `T`, a bound, a candidate, or a node operation, and it never reads
+a neighboring halo as native evidence. Runtime otherwise classifies only the
+current central owner slice's pre-overlay nodes for Chapter 2's typed
+replacement/veto rules; it never treats a reconstructed surface height as
+authority.
 
 If the native-only audit observes terrain that would require a rewrite outside
 Chapter 2's limits, it rejects the rollout manifest. If two immutable geometry
@@ -231,10 +253,14 @@ native value or conflict class, and the violated limit. It must not silently
 choose a local fallback height.
 
 The world geometry manifest verifies the full-seed hash, geometry and algorithm
-schema, authored dataset checksum, critical v7 settings and noise parameters,
-chunksize, engine pin, and production emerge-thread setting. The exact handling
-of cached height products is frozen with the registry/IPC decision in Chapter
-5; they remain derivatives of `H`, never persistent first-writer decisions.
+schema, authored dataset checksum, exact `mgv7_spflags` bitset, every active v7
+noise parameter, chunksize, engine pin, and production emerge-thread setting.
+The production bitset is `mountains`, `ridges`, and `caverns`; `floatlands` is
+disabled. Enabling floatlands or changing any of those frozen inputs is a
+world-format change that requires a new complete native-only audit rather than
+relying on the surface-shell production guard. The exact handling of cached
+height products is frozen with the registry/IPC decision in Chapter 5; they
+remain derivatives of `H`, never persistent first-writer decisions.
 
 ### 1.2 Exact envelope fitting
 
@@ -318,10 +344,11 @@ nodes of generated natural-ground relief and meet all water, cliff, ravine, and
 exclusion rules.
 
 Inside a blend region, the effective per-column limits taper with the exact
-Section 1.4 template weight `w`: `C_i = floor(C_max * w)` and
-`F_i = floor(F_max * w)`. Thus both limits are exactly zero on the outer blend
-boundary. Validation uses the final integer `target_y`, after the shared
-half-away-from-zero rounding rule, against those integer limits. A more
+Section 1.4 template weight `w`: `C_i = round_half_away(C_max * w)` and
+`F_i = round_half_away(F_max * w)`. Thus both limits are exactly zero on the
+outer blend boundary, and the same rounding used to obtain the final integer
+`target_y` cannot make the template reject its own tapered output. Validation
+uses that final integer target against the equally rounded integer limits. A more
 specific named feature may use a lower limit but may exceed the table only
 through a separately named, bounded force-authored envelope frozen in Chapter
 2, such as a tunnel excavation or water channel; it may not silently widen an
@@ -603,11 +630,12 @@ shell, so crossing a vertical or horizontal chunk edge neither widens the
 shell nor gives the first-requested chunk ownership of its neighbor's nodes.
 
 Tunnel excavations, rivers and lakes, exterior ocean and shelf construction,
-dragon channels, and capital or other structure volumes that need greater
-vertical reach require separately named and bounded envelopes with their own
-replacement rules. Merely intersecting the ordinary shell does not grant such
-an envelope. Conversely, a named envelope may not be used as an unbounded
-escape from the ordinary rule.
+dragon channels, capital or other structure volumes, and accepted authored
+decoration occupancy footprints that extend outside the ordinary shell require
+separately named and bounded envelopes with their own replacement rules.
+Merely intersecting the ordinary shell does not grant such an envelope.
+Conversely, a named envelope may not be used as an unbounded escape from the
+ordinary rule.
 
 This is a fresh-generation transaction, not an existing-world migration. For
 the same native pre-overlay VoxelManip snapshot, manifest, and central owner
@@ -652,10 +680,11 @@ adjustments cancel in the actual column delta. Every column must pass both the
 total delta is insufficient.
 
 An observed native surface outside the `N`-to-`H` cap is a hard native-only
-seed-audit failure and blocks the rollout manifest. Production mapgen may not
-repeat that order-sensitive observation, clamp `H` to `N`, widen the rewrite
-shell, or persist a first observed surface as replacement authority. Before the
-world-format manifest is frozen, the implementation team may revise the
+seed-audit failure and blocks the rollout manifest. Production mapgen may use
+only Section 1.1's central heightmap violation guard; it may not recover `N`,
+clamp `H` to `N`, widen the rewrite shell, or persist a first observed surface
+as replacement authority. Before the world-format manifest is frozen, the
+implementation team may revise the
 authored height schema or the pinned v7 settings as an explicit reviewed input
 change and rerun the complete 32-seed and chunk-order corpus. After that
 freeze, either change is a world-format change rather than runtime recovery.
@@ -690,16 +719,28 @@ All newly constructed rock is selected by the final WP43
 ore generator again: added rock therefore contains no generic native ore unless
 Chapter 4 assigns it to a separate exact authored resource pass.
 
-For every ordinary owner slice, each face between an owned voxel and preserved
-content is available in the emerged halo and is checked before that slice
-commits. No owned solid/air change may open, close, or divide a preserved
-cave-air component across such a face. Put more conservatively: preserved cave
-air may not be face-adjacent to an ordinary solid-support fill or newly opened
-clearance voxel. A wholly enclosed cave-air component inside the owned support
-volume may be filled. Named tunnel portals, planned-water openings, and other
-intentional connections require their own exact resolver and bounded lighting/
-liquid contract. This symmetric local rule prevents both arbitrarily deep new
-sunlight and arbitrarily deep removal of existing sunlight.
+Every boundary face is classified first from the immutable global operation
+plan. If both voxels are analytically owned, their expected final categories
+decide the cave/opening interface even when the other voxel belongs to another
+owner slice. If the adjacent voxel is analytically unowned, its native cave-air
+state is evidence only in the native-only preflight; production never treats a
+halo node as a native snapshot. The preflight rejects any owned solid/air
+change that would open, close, or divide a preserved cave-air component across
+such a face. Put more conservatively: preserved cave air may not be
+face-adjacent to an ordinary solid-support fill or newly opened clearance
+voxel. A wholly enclosed cave-air component inside the owned support volume may
+be filled.
+
+At runtime, native cave/liquid/dungeon/foreign-content classification is valid
+only for a voxel inside the callback's central owner slice before WP40 commits
+it. A halo voxel may be native-overgenerated data, an already committed
+neighbor slice, or `CONTENT_IGNORE`; all three are ignored as native evidence.
+`CONTENT_IGNORE` in any position where central native evidence is required is
+a hard incomplete-input failure. Named tunnel portals, planned-water openings,
+and other intentional connections require their own exact resolver and bounded
+lighting/liquid contract. This analytic-plus-preflight rule prevents both
+arbitrarily deep new sunlight and arbitrarily deep removal of existing
+sunlight without introducing an order-dependent runtime veto.
 
 The implementation records changed cave-air and generic-ore node counts by
 seed, feature class, zone, cut/fill/top-filler reason, and depth band. The
@@ -778,23 +819,29 @@ volume. Those replacements are counted by original liquid identity, seed,
 zone, feature class, depth, and reason.
 
 Underground liquid outside an exact changed or separately named hydrology
-volume remains byte-identical, including lava and cave water. Before an owner
-slice commits, it examines every face between one of its central changed voxels
-and preserved content; the one-node neighbor is always inside the emerged
-halo. A final dry air voxel may not become face-adjacent to a preserved liquid,
-and a solid fill may not cut off a preserved liquid/air connection across that
-face. The slice fails locally on either condition. WP40 does not need or claim
-access to native content elsewhere along a multi-chunk feature, invent a
-retaining wall, drain a larger cave, delete the preserved source, or defer
-geometry validity to the liquid simulator.
+volume remains byte-identical, including lava and cave water. The global
+operation plan classifies both sides of every analytically owned boundary face.
+For a face leading to analytically unowned content, the native-only preflight
+proves that a final dry air voxel does not become face-adjacent to preserved
+liquid and that a solid fill does not cut off a preserved liquid/air connection.
+Production consults native content only for changed voxels in its central owner
+slice; it never fails from an observed halo neighbor or treats
+`CONTENT_IGNORE` as air, solid, or liquid. WP40 does not need or claim access to
+native content elsewhere along a multi-chunk feature, invent a retaining wall,
+drain a larger cave, delete the preserved source, or defer geometry validity to
+the liquid simulator.
 
 The compiler proves the complete analytic bed/bank/lining seal and every named
-opening without native nodes. Runtime native collision/leak checks are
-owner-slice-local and deterministic. There is no impossible promise to inspect
-a whole 128-node tunnel or river's native boundary atomically before its first
-slice. The complete production-seed headless preflight renders every slice in a
-disposable world before rollout; an unexpected later local failure invalidates
-the manifest as described in Section 1.1 rather than rewriting prior slices.
+opening without native nodes. Runtime native collision checks are confined to
+the central owner slice and never use halo content; native leak/connectivity
+checks at analytically unowned faces belong to the native-only preflight. There
+is no impossible promise to inspect a whole 128-node tunnel or river's native
+boundary atomically during production. The complete production-seed headless
+preflight is a separate run from that native-only preflight: it renders and
+validates every relevant owner slice with the WP40 overlay enabled in another
+disposable world before rollout. An unexpected later central-input failure
+invalidates the manifest as described in Section 1.1 rather than rewriting
+prior slices.
 
 Planned water applies its analytic bed, bank, water column, and sealing rules
 inside its named envelope, so this conservative leak failure does not replace
@@ -958,9 +1005,10 @@ Inside the exact bed, water-column, and seal mask, planned hydrology may replace
 native natural rock, generic native ore, cave air, and native liquid. Native
 dungeon and unknown/foreign-structure handling still follows Section 2.4; an
 ordinary water profile grants no force authority. The complete seal must pass
-the pure analytic boundary/leak/light-interface checks before rendering; each
-owner slice then passes its local native boundary and collision checks before
-that slice is written.
+the pure analytic boundary/leak/light-interface checks before rendering; the
+native-only preflight then checks every analytically unowned native boundary
+face, while production checks only native collisions inside each central owner
+slice before it is written.
 
 All surface water remains `default:water_source`; the profile changes only
 geometry and dressing. A landmark may choose a non-ordinary depth only through
@@ -974,28 +1022,32 @@ road/bridge/ford crossing.
 **Decision (2026-08-12): grade every exterior shore analytically from one node
 of water depth to a 32-node seabed over the exact 80-node shelf.**
 
-Let `W` be the configured mapgen water level and `d` the non-negative analytic
-distance outward from the final mainland or island shore. For
-`0 <= d <= 80`, define:
+Let `W` be the configured mapgen water level. The exact fixed-point signed
+distance is zero on the final mainland or island perimeter and positive
+outside it. An exterior water column's one-based outward band is
+`d = max(1, ceil(positive_distance))`; perimeter/land columns have no exterior
+`d`. Exactly `1 <= d <= 80` is `coastal_shelf`, and `d >= 81` is
+`deep_ocean`. For the shelf, define:
 
 ```text
-u = clamp(d / 80, 0, 1)
+u = (d - 1) / 79
 D = 1 + round_half_away_from_zero(31 * smootherstep(u))
 bed_y = W - D
 ```
 
 The smootherstep is the shared Section 1.4 function. Thus the first exterior
-water column is one node deep, shelf depth increases monotonically, and the
-80th node reaches 32. Every ordinary `deep_ocean` column beyond the shelf has
-`D = 32`. Planned mainland bays remain zone-owned eight-node inland-water
-profiles under Section 2.8 and never enter this calculation.
+water band is one node deep, shelf depth increases monotonically, and the 80th
+band reaches 32. Every ordinary `deep_ocean` column beyond the shelf has
+`D = 32`. This half-open land/exterior rule prevents `d = 0` from becoming an
+81st shelf band. Planned mainland bays remain zone-owned eight-node inland-
+water profiles under Section 2.8 and never enter this calculation.
 
 An `immutable_dragon_channel` overrides policy classification but uses the same
 terrain profile from each final mainland or island shore. Its local `d` is the
-distance to the nearest incident final shore. Where that distance is at least
-80, channel depth is 32. The two fixed 96-node approach corridors and landing
-beaches are constraints on the same continuous profile, not separately sampled
-seabeds.
+one-based outward band derived from the nearest incident final shore. Where
+that band is at least 80, channel depth is 32. The two fixed 96-node approach
+corridors and landing beaches are constraints on the same continuous profile,
+not separately sampled seabeds.
 
 The bed at `bed_y` uses the stable `coast_source_zone_id` logical-biome palette;
 three solid sealing layers occupy `bed_y - 1 .. bed_y - 3`. Nearest-perimeter
@@ -1013,8 +1065,8 @@ content rule is analytic:
 
 This rule extends upward to the map limit, but the no-op prefilter performs no
 write in already-correct air. It does not require the surface-containing chunk
-to generate first and cannot leave a high native island or floatland bridge in
-a later vertical request. Native content below `bed_y - 3` remains byte-identical;
+to generate first and cannot leave a high native island or other high-terrain
+remnant in a later vertical request. Native content below `bed_y - 3` remains byte-identical;
 generation stops there even though runtime `deep_ocean` and
 `immutable_dragon_channel` policy remains immutable for the full x/z column at
 every y.
@@ -1064,9 +1116,11 @@ road backing, and portal masks may replace native natural rock, generic native
 ore, cave air, and native liquid. The pass does not preserve an accidental cave
 door or water inflow through the lining. Boundary validation must prove a
 complete analytic two-node seal everywhere except the declared portals before
-rendering begins. Each owner slice separately verifies only the native content
-and one-face halo intersections it can observe before committing its central
-slice; no callback claims atomic access to the whole tunnel's native boundary.
+rendering begins. The native-only preflight verifies the complete unowned
+native boundary; each production owner slice checks only native content inside
+its central slice and resolves every cross-slice interface from the global
+operation plan. No callback interprets a halo observation as native or claims
+atomic access to the whole tunnel's native boundary.
 
 An ordinary tunnel preserves native dungeons and fails on a collision. Only a
 mandatory route section that has no adequate alternate and explicitly carries
@@ -1192,6 +1246,15 @@ collision group, compatibility layer, allowed logical biomes/zones, and stable
 decoration ID. Cells are half-open world-coordinate boxes aligned to integer
 multiples of the cell size. Cell coordinates use mathematical floor division
 for negative x/z; implementation-language truncation toward zero is forbidden.
+
+For an accepted candidate, its exact oriented per-voxel occupancy footprint is
+a named authored-decoration envelope and part of the immutable global operation
+plan. That envelope, including a crown or schematic above `shell_ceiling`, owns
+only its listed final-air/replaceable-surface intersections; it does not widen
+the terrain shell or authorize replacement of native dungeon, foreign
+structure, planned water, route, or other non-replaceable content. Every
+intersecting owner chunk renders only its central slice of this same envelope,
+and the preservation oracle treats it as an exact owned volume.
 
 For each cell and candidate index, domain-separated full-seed hashes determine
 the integer in-cell x/z offset, density admission, stable priority, variant,
@@ -1436,7 +1499,11 @@ listed pair that lacks its required interface record, is a hard geometry
 failure. There is no universal numeric "higher feature wins" fallback.
 
 After authored geometry resolves to at most one target operation per voxel,
-native-content precedence is:
+production applies native-content precedence only to pre-overlay nodes in the
+current central owner slice. Cross-owner content categories come from the
+global operation plan; native facts at analytically unowned boundary faces come
+from the completed native-only preflight. Halo content and `CONTENT_IGNORE`
+never participate in the following runtime precedence:
 
 1. unknown or foreign structure content always vetoes replacement;
 2. positively identified native dungeon content vetoes replacement except in
@@ -1560,6 +1627,15 @@ value locally. A missing payload or mismatch is a fatal startup error before a
 chunk callback is registered. There is no IPC access in `H`, `id_at`, a spatial
 query, column loop, candidate loop, or generated-chunk callback.
 
+This readiness order follows the pinned server lifecycle: main-state mods load
+and execute before `initMapgens` creates the emerge states
+(`reference_projects/luanti/src/server.cpp:534-577`), and each emerge state
+registers the IPC API during its initialization
+(`reference_projects/luanti/src/script/scripting_emerge.cpp:55-80`). The
+publishing main mod therefore fails startup before mapgen initialization if it
+cannot compile/set the payload; an emerge consumer never polls or waits for a
+value that might appear later.
+
 IPC is a transport rather than shared Lua memory: Luanti stores a packed value
 and every `ipc_get` unpacks a distinct table graph. The packed IPC value remains
 available for every configured mapgen state and any state reinitialization; a
@@ -1671,6 +1747,15 @@ and keep dynamic claim authorization outside the immutable zone registry.**
 The immutable rule catalog stores the complete flags behind each ID. A rare
 definition accessor returns a defensive copy; the hot query returns only the
 interned string and allocates no table.
+
+Zone-definition vocabulary and effective-query vocabulary are intentionally
+distinct. Authored peaceful rows retain the exact source values `accord_home`
+or `throng_home`; Stage 1 accepts and validates those values. At query time
+both map to effective `home_faction`, while `faction_at(pos)` supplies the
+corresponding `accord` or `throng` owner. `contested_land` and `holy_grounds`
+retain their names until a stronger 3D precedence rule replaces them. No source
+zone row stores `home_faction`, `contested_deep`, `hard_protected`, or
+`immutable_ocean` as if those effective results were horizontal zone identity.
 
 The static precedence is exact:
 
@@ -1838,6 +1923,12 @@ bytes of `grudgelands-wp40-seed-01` through `-07`:
 14570731025329063210
 ```
 
+T1 records each label, complete raw SHA-256 digest, first-eight-byte hex value,
+and decimal value as a known-answer golden vector. An independent offline
+SHA-256 implementation verifies the checked literals, while main and mapgen
+Lua verify the same raw digest through `core.sha256`; any mismatch rejects the
+corpus before an authored random field is tested.
+
 Entries 28--31 are selected reproducibly from candidates 0--4095. Candidate
 `n` is the unsigned big-endian value of the first eight SHA-256 bytes of
 `grudgelands-wp40-extreme-` followed by exactly four zero-padded decimal digits.
@@ -1938,6 +2029,17 @@ event, both node names/`param1`/`param2` values, authored operation/category,
 native observation category, feature/resolver ID, and request schedules. A
 single mismatch fails the seed; aggregate equality cannot hide compensating
 differences.
+
+Each one-thread schedule also has a WP40-disabled native-v7 control world with
+the same frozen seed, settings, and request order. For the production seed,
+these controls additionally generate the complete finite Section 1.1
+native-only audit extent rather than only the frozen feature corpus. This
+localizes order effects caused by v7's own overgenerated cave border writes,
+but does not waive them:
+if either the native controls or the WP40 worlds differ across schedules, the
+rollout manifest fails. A native-only mismatch must be corrected by changing
+and re-auditing the frozen engine/settings contract; WP40 must not mask it,
+persist a first result, or weaken the bit-for-bit gate.
 
 Explicit two- and four-emerge-thread runs are diagnostic only because pinned
 v7 does not promise arbitrary parallel slice independence. Their authored
