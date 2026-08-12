@@ -36,4 +36,31 @@ if rg -n -i 'description[[:space:]]*=[^\n]*(mese|emberstone|grudgesteel)' \
 	exit 1
 fi
 
+mining="$repo/mods/ITEMS/grug_materials/mining.lua"
+migration="$repo/mods/ITEMS/grug_materials/migration.lua"
+derivatives="$repo/mods/ITEMS/grug_materials/derivatives.lua"
+
+if rg -n 'is_ground_content[[:space:]]*==[[:space:]]*true' "$mining"; then
+	echo "WP43 source audit: unsafe nodedef-default natural classifier remains" >&2
+	exit 1
+fi
+
+for contract in 'punch_attack_uses' 'emit_mining_failure' \
+		'resource_ore_description' 'record_protection_violation'; do
+	if ! rg -q "$contract" "$mining"; then
+		echo "WP43 source audit: mining contract missing $contract" >&2
+		exit 1
+	fi
+done
+
+if ! rg -q 'clear_craft\(\{output = "default:pick_steel"\}\)' "$migration"; then
+	echo "WP43 source audit: Steel verification pick is craftable" >&2
+	exit 1
+fi
+
+if rg -n 'register_craft' "$derivatives"; then
+	echo "WP43 source audit: canonical derivatives pulled WP26 recipes forward" >&2
+	exit 1
+fi
+
 echo "WP43 material source audit passed"

@@ -17,16 +17,22 @@ grug_materials.SHORTFALL_MULTIPLIERS = {
 -- table instead of copying its values.
 grug_materials.PICK_PROFILES = {
 	[1] = {tier = 1, key = "bronze", ordinary_time = 0.45, uses = 180,
+		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.25, [2] = 0.90, [3] = 0.45}},
 	[2] = {tier = 2, key = "iron", ordinary_time = 0.425, uses = 180,
+		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.125, [2] = 0.85, [3] = 0.425}},
 	[3] = {tier = 3, key = "steel", ordinary_time = 0.40, uses = 180,
+		punch_attack_uses = 180,
 		cracky_times = {[1] = 2.00, [2] = 0.80, [3] = 0.40}},
 	[4] = {tier = 4, key = "silversteel", ordinary_time = 0.35, uses = 240,
+		punch_attack_uses = 240,
 		cracky_times = {[1] = 1.75, [2] = 0.70, [3] = 0.35}},
 	[5] = {tier = 5, key = "embersteel", ordinary_time = 0.30, uses = 300,
+		punch_attack_uses = 300,
 		cracky_times = {[1] = 1.50, [2] = 0.60, [3] = 0.30}},
 	[6] = {tier = 6, key = "abyssal_steel", ordinary_time = 0.25, uses = 360,
+		punch_attack_uses = 360,
 		cracky_times = {[1] = 1.25, [2] = 0.50, [3] = 0.25}},
 }
 
@@ -67,17 +73,21 @@ function grug_materials.build_pick_capabilities(tier, values)
 	values = values or {}
 	local ordinary_time = tonumber(values.ordinary_time or profile.ordinary_time)
 	local uses = tonumber(values.uses or profile.uses)
+	local punch_attack_uses = tonumber(values.punch_attack_uses) or
+		profile.punch_attack_uses
 	local max_drop_level = tonumber(values.max_drop_level)
 	if max_drop_level == nil then
 		max_drop_level = tonumber(profile.max_drop_level) or 0
 	end
-	if not ordinary_time or ordinary_time <= 0 or not uses or uses <= 0 then
+	if not ordinary_time or ordinary_time <= 0 or not uses or uses <= 0 or
+			not punch_attack_uses or punch_attack_uses <= 0 then
 		error("grug_materials: invalid pick capability values")
 	end
 	return {
 		full_punch_interval = values.full_punch_interval or
 			profile.full_punch_interval or 1.0,
 		max_drop_level = max_drop_level,
+		punch_attack_uses = punch_attack_uses,
 		groupcaps = {
 			cracky = {times = copy_times(values.cracky_times or
 				profile.cracky_times), uses = uses,
@@ -126,7 +136,8 @@ function grug_materials.is_natural_node(node_name, def)
 		return false
 	end
 	local groups = def.groups or {}
-	return groups.grug_natural == 1 or def.is_ground_content == true
+	return groups.grug_natural == 1 or groups.grug_resource ~= nil or
+		groups.grug_stratum ~= nil
 end
 
 local function digger_name(digger)
@@ -136,8 +147,8 @@ local function digger_name(digger)
 	return ""
 end
 
--- The full public decision is deliberately side-effect free except for the
--- normal protection-violation record required by the engine contract.
+-- The full public decision is read-only. The authoritative dig wrapper owns
+-- the one protection-violation record on an actual refused transaction.
 function grug_materials.mining_decision(pos, node, digger)
 	node = node or core.get_node(pos)
 	local def = node and core.registered_nodes[node.name] or nil
@@ -164,7 +175,6 @@ function grug_materials.mining_decision(pos, node, digger)
 		result.allowed = false
 		result.reason = "protected"
 		result.protected = true
-		core.record_protection_violation(pos, name)
 		return result
 	end
 
@@ -201,6 +211,11 @@ function grug_materials.mining_decision(pos, node, digger)
 	return result
 end
 
+function grug_materials.resource_ore_description(resource)
+	return resource.name .. " Ore\nRequires a T" .. resource.harvest_tier ..
+		" pick to harvest"
+end
+
 local harvest_callbacks = {}
 
 function grug_materials.register_on_harvest(callback)
@@ -228,18 +243,59 @@ local function settle_harvest(pos, node, digger, decision)
 	end
 end
 
-function grug_materials.emit_shatter_feedback(pos, digger, decision)
-	core.sound_play("default_break_glass", {
-		pos = pos,
-		gain = 0.7,
-		max_hear_distance = 12,
-	}, true)
+local feedback_at = {}
+local FEEDBACK_INTERVAL_US = 1500000
+
+local function failure_message(decision)
+	if decision.reason == "no_pick" then
+		return "A T1 pick is required to mine natural ground."
+	elseif decision.reason == "depth" then
+		return "This natural ground requires a T" ..
+			decision.depth_required_tier .. " pick. Your T" .. decision.pick_tier ..
+			" pick reaches only y=" .. decision.max_depth .. "."
+	elseif decision.reason == "shatter" then
+		local resource = grug_materials.resource_for_node(decision.node_name)
+		local name = resource and resource.name or "Resource"
+		return name .. " shatters: a T" .. decision.resource_harvest_tier ..
+			" pick is required to harvest it."
+	end
+	return nil
+end
+
+function grug_materials.emit_mining_failure(pos, digger, decision)
 	local name = digger_name(digger)
-	if name ~= "" then
-		core.chat_send_player(name, "The resource shatters: a tier " ..
-			decision.resource_harvest_tier .. " pick is required to recover it.")
+	local now = core.get_us_time()
+	local message = failure_message(decision)
+	if message and name ~= "" and
+			(not feedback_at[name] or now - feedback_at[name] >= FEEDBACK_INTERVAL_US) then
+		feedback_at[name] = now
+		core.chat_send_player(name, message)
+	end
+	if decision.reason == "shatter" then
+		core.sound_play("default_dig_cracky", {
+			pos = pos,
+			gain = 0.55,
+			max_hear_distance = 12,
+		}, true)
+		core.add_particlespawner({
+			amount = 12,
+			time = 0.05,
+			minpos = vector.offset(pos, -0.35, -0.35, -0.35),
+			maxpos = vector.offset(pos, 0.35, 0.35, 0.35),
+			minvel = vector.new(-1.2, 0.4, -1.2),
+			maxvel = vector.new(1.2, 2.0, 1.2),
+			minexptime = 0.2,
+			maxexptime = 0.6,
+			minsize = 0.8,
+			maxsize = 1.8,
+			texture = "default_stone.png^[colorize:#777777:180",
+		})
 	end
 end
+
+core.register_on_leaveplayer(function(player)
+	feedback_at[player:get_player_name()] = nil
+end)
 
 local active_shatter
 
@@ -288,6 +344,11 @@ local function node_dig(pos, node, digger)
 	end
 	local decision = grug_materials.mining_decision(pos, node, digger)
 	if not decision.allowed then
+		if decision.reason == "protected" then
+			core.record_protection_violation(pos, digger_name(digger))
+		else
+			grug_materials.emit_mining_failure(pos, digger, decision)
+		end
 		return false
 	end
 
@@ -301,7 +362,7 @@ local function node_dig(pos, node, digger)
 		return dug
 	end
 	if decision.shatter then
-		grug_materials.emit_shatter_feedback(pos, digger, decision)
+		grug_materials.emit_mining_failure(pos, digger, decision)
 	elseif decision.resource_harvest_tier then
 		settle_harvest(pos, node, digger, decision)
 	end

@@ -36,6 +36,7 @@ for i = 2, #grug_materials.TIERS do
 end
 
 dofile(modpath .. "/ores.lua")
+dofile(modpath .. "/derivatives.lua")
 dofile(modpath .. "/overrides.lua")
 dofile(modpath .. "/migration.lua")
 dofile(modpath .. "/audit.lua")

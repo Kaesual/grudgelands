@@ -38,6 +38,13 @@ core.register_on_mods_loaded(function()
 		end
 	end
 
+	for _, node_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
+		local def = core.registered_nodes[node_name]
+		if not def or (def.groups or {}).grug_natural ~= 1 then
+			fail("generated ground lacks natural marker: " .. node_name)
+		end
+	end
+
 	for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 		if not raw_item(material.item) then
 			fail("missing concrete processed item " .. material.item)
@@ -80,6 +87,13 @@ core.register_on_mods_loaded(function()
 		end
 		if not core.registered_items[target] then
 			fail("migration target is not registered: " .. target)
+		end
+	end
+	for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
+		local target = raw_item(derivative.target)
+		if not target or target.description ~= derivative.description or
+			(target.groups or {}).grug_natural then
+			fail("invalid canonical storage derivative: " .. derivative.target)
 		end
 	end
 	for name in pairs(core.registered_items) do
@@ -128,12 +142,21 @@ core.register_on_mods_loaded(function()
 		["default:pick_bronze"] = 1,
 		["default:pick_steel"] = 1,
 	}
+	local active_punch_uses = {
+		["default:pick_wood"] = 10,
+		["default:pick_stone"] = 20,
+		["default:pick_bronze"] = 60,
+		["default:pick_steel"] = 60,
+	}
 	for name, expected in pairs(active_max_drop_levels) do
 		local def = core.registered_items[name]
 		local actual = def and def.tool_capabilities and
 			def.tool_capabilities.max_drop_level
 		if actual ~= expected then
 			fail("unexpected max_drop_level on " .. name)
+		end
+		if def.tool_capabilities.punch_attack_uses ~= active_punch_uses[name] then
+			fail("unexpected punch_attack_uses on " .. name)
 		end
 	end
 

@@ -13,12 +13,19 @@ local function edit_groups(item_name, edit)
 end
 
 local function natural_resource(item_name, tier)
+	local resource = grug_materials.resource_for_node(item_name)
+	if not resource then
+		error("grug_materials: missing resource registry row for " .. item_name)
+	end
 	edit_groups(item_name, function(groups)
 		groups.level = nil
 		groups.cracky = nil
 		groups.grug_natural = 1
 		groups.grug_resource = tier
 	end)
+	core.override_item(item_name, {
+		description = grug_materials.resource_ore_description(resource),
+	})
 end
 
 natural_resource("default:stone_with_coal", 1)
@@ -32,6 +39,18 @@ edit_groups("default:stone", function(groups)
 	groups.grug_natural = 1
 	groups.grug_stratum = 1
 end)
+
+-- Explicit generated-ground taxonomy. `is_ground_content` is not a safe
+-- predicate because the engine's node-definition default is true (including
+-- saplings and many decorations). Only the owner list above receives the
+-- natural marker.
+for _, item_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
+	if item_name:match("^default:") and item_name ~= "default:stone" then
+		edit_groups(item_name, function(groups)
+			groups.grug_natural = 1
+		end)
+	end
+end
 
 local normalized_blocks = {
 	"default:obsidian", "default:obsidianbrick", "default:obsidian_block",
@@ -50,6 +69,14 @@ local function pick_groups(item_name, tier)
 	end)
 end
 
+local function current_pick_values(item_name, values)
+	local def = core.registered_items[item_name]
+	local caps = def and def.tool_capabilities or {}
+	values = values or {}
+	values.punch_attack_uses = caps.punch_attack_uses
+	return values
+end
+
 -- Preserve WP25's effective ordinary-rock values while retiring maxlevel as
 -- an authority. The three starter picks deliberately share T1 depth access;
 -- their differing speeds and uses remain their ordinary equipment quality.
@@ -58,6 +85,7 @@ core.override_item("default:pick_wood", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.60, uses = 30, full_punch_interval = 1.2,
 		cracky_times = {[3] = 1.60}, damage_groups = {fleshy = 2},
+		punch_attack_uses = current_pick_values("default:pick_wood").punch_attack_uses,
 	}),
 })
 
@@ -66,28 +94,30 @@ core.override_item("default:pick_stone", {
 	tool_capabilities = grug_materials.build_pick_capabilities(1, {
 		ordinary_time = 1.00, uses = 60, full_punch_interval = 1.3,
 		cracky_times = {[2] = 2.0, [3] = 1.00}, damage_groups = {fleshy = 3},
+		punch_attack_uses = current_pick_values("default:pick_stone").punch_attack_uses,
 	}),
 })
 
 pick_groups("default:pick_bronze", 1)
 core.override_item("default:pick_bronze", {
-	tool_capabilities = grug_materials.build_pick_capabilities(1, {
+	tool_capabilities = grug_materials.build_pick_capabilities(1, current_pick_values(
+		"default:pick_bronze", {
 		max_drop_level = 1,
-	}),
+	})),
 })
 
 pick_groups("default:pick_steel", 3)
 core.override_item("default:pick_steel", {
-	tool_capabilities = grug_materials.build_pick_capabilities(3, {
+	tool_capabilities = grug_materials.build_pick_capabilities(3, current_pick_values(
+		"default:pick_steel", {
 		max_drop_level = 1,
-	}),
+	})),
 })
 
 -- stairs is optional for a standalone grug_materials load, but ordered before
 -- us when present through mod.conf. Normalize all four generated shapes.
 if core.get_modpath("stairs") then
-	local bases = {"obsidian", "obsidianbrick", "obsidian_block", "steelblock",
-		"tinblock", "copperblock", "bronzeblock"}
+	local bases = {"obsidian", "obsidianbrick", "obsidian_block"}
 	local shapes = {"stair_", "stair_inner_", "stair_outer_", "slab_"}
 	for _, base in ipairs(bases) do
 		for _, shape in ipairs(shapes) do

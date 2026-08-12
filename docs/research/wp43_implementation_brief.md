@@ -186,4 +186,3 @@ unchanged and clean. An independent reviewer must inspect the entire branch
 against `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md` and the
 WP43 transaction/migration lenses. Confirmed findings are fixed by an
 implementer; High/Critical fixes receive focused re-review.
-

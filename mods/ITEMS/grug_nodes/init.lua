@@ -29,7 +29,7 @@ local function dirt_groups(extra)
 			groups[k] = v
 		end
 	end
-	return groups
+	return grug_materials.natural_groups(groups)
 end
 
 local litter_sounds = default.node_sound_dirt_defaults({
@@ -101,7 +101,7 @@ core.register_node("grug_nodes:mud", {
 core.register_node("grug_nodes:mesa_clay", {
 	description = "Mesa Clay",
 	tiles = {"grug_nodes_mesa_clay.png"},
-	groups = {cracky = 3, crumbly = 2},
+	groups = grug_materials.natural_groups({cracky = 3, crumbly = 2}),
 	sounds = default.node_sound_dirt_defaults(),
 })
 

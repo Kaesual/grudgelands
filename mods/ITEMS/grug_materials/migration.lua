@@ -13,6 +13,24 @@ for _, item_name in ipairs(LEGACY_TOOLS) do
 	core.clear_craft({output = item_name})
 end
 
+-- The surviving Steel pick is a saved-world/creative verification tool until
+-- WP29 registers the final ladder. It must not be craftable from the Iron Bar
+-- that legacy `default:steel_ingot` now resolves to.
+core.clear_craft({output = "default:pick_steel"})
+
+-- Do not let old pack/unpack or furnace recipes become undeclared canonical
+-- material recipes through alias resolution. WP26 owns those recipes.
+local legacy_processed_outputs = {
+	"default:copper_ingot", "default:copperblock",
+	"default:tin_ingot", "default:tinblock",
+	"default:bronze_ingot", "default:bronzeblock",
+	"default:steel_ingot", "default:steelblock",
+	"default:gold_ingot", "default:goldblock",
+}
+for _, item_name in ipairs(legacy_processed_outputs) do
+	core.clear_craft({output = item_name})
+end
+
 -- Rough regional gems cannot pack. WP10 owns the later Cut Diamond block
 -- recipes, so remove both vendored rough-diamond conversions without adding a
 -- replacement recipe here.

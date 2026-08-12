@@ -68,6 +68,48 @@ function grug_materials.max_depth_for_pick_tier(tier)
 	return TIERS[tier].max_depth
 end
 
+-- Generated excavation/ground nodes owned by the current mapgen. The mining
+-- transaction classifies by this explicit group contract, never by
+-- `is_ground_content`: that engine field defaults to true even for nodes such
+-- as saplings. Entries owned by default are normalized in overrides.lua;
+-- grug_nodes consumes `natural_groups()` when it registers its own surfaces.
+grug_materials.NATURAL_GROUND_NODES = {
+	"default:stone",
+	"default:dirt",
+	"default:dirt_with_grass",
+	"default:dirt_with_grass_footsteps",
+	"default:dirt_with_dry_grass",
+	"default:dirt_with_snow",
+	"default:dirt_with_rainforest_litter",
+	"default:dirt_with_coniferous_litter",
+	"default:dry_dirt",
+	"default:dry_dirt_with_dry_grass",
+	"default:sand",
+	"default:silver_sand",
+	"default:gravel",
+	"default:clay",
+	"default:snow",
+	"default:snowblock",
+	"grug_nodes:blight_dirt",
+	"grug_nodes:dirt_with_bone_litter",
+	"grug_nodes:dirt_with_forest_litter",
+	"grug_nodes:dirt_with_silver_litter",
+	"grug_nodes:dirt_with_canopy_litter",
+	"grug_nodes:mud",
+	"grug_nodes:mesa_clay",
+}
+
+grug_materials.NATURAL_GROUND_SET = {}
+for _, node_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
+	grug_materials.NATURAL_GROUND_SET[node_name] = true
+end
+
+function grug_materials.natural_groups(groups)
+	groups = table.copy(groups or {})
+	groups.grug_natural = 1
+	return groups
+end
+
 -- Natural resource taxonomy. `scope` distinguishes universal progression
 -- inputs from the G1/G2 species selected by a race-region column.
 grug_materials.RESOURCES = {
@@ -346,6 +388,48 @@ grug_materials.LEGACY_ALIASES = {
 	["grug_materials:garnet_crystal"] = "grug_materials:rough_garnet",
 }
 
+-- Existing non-material objects whose recipes consumed default's historical
+-- "Steel" ingot. That item now migrates to the canonical Iron Bar, so the
+-- visible object names must migrate with it instead of claiming to be Steel.
+grug_materials.STORAGE_DERIVATIVES = {
+	{source = "default:sign_wall_steel",
+		target = "grug_materials:iron_sign_wall", description = "Iron Sign"},
+	{source = "default:ladder_steel",
+		target = "grug_materials:iron_ladder", description = "Iron Ladder"},
+}
+
+if core.get_modpath("stairs") then
+	local derivative_materials = {
+		{legacy = "steelblock", canonical = "iron_block", name = "Iron"},
+		{legacy = "tinblock", canonical = "tin_block", name = "Tin"},
+		{legacy = "copperblock", canonical = "copper_block", name = "Copper"},
+		{legacy = "bronzeblock", canonical = "bronze_block", name = "Bronze"},
+		{legacy = "goldblock", canonical = "gold_block", name = "Gold"},
+	}
+	local derivative_shapes = {
+		{legacy = "stair_", canonical = "stair_", label = "Block Stair"},
+		{legacy = "stair_inner_", canonical = "stair_inner_",
+			label = "Inner Block Stair"},
+		{legacy = "stair_outer_", canonical = "stair_outer_",
+			label = "Outer Block Stair"},
+		{legacy = "slab_", canonical = "slab_", label = "Block Slab"},
+	}
+	for _, material in ipairs(derivative_materials) do
+		for _, shape in ipairs(derivative_shapes) do
+			grug_materials.STORAGE_DERIVATIVES[
+				#grug_materials.STORAGE_DERIVATIVES + 1] = {
+				source = "stairs:" .. shape.legacy .. material.legacy,
+				target = "grug_materials:" .. shape.canonical .. material.canonical,
+				description = material.name .. " " .. shape.label,
+			}
+		end
+	end
+end
+
+for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
+	grug_materials.LEGACY_ALIASES[derivative.source] = derivative.target
+end
+
 -- No Grudgesteel runtime id ever shipped. Publishing the forbidden stems
 -- prevents WP40/WP29 from accidentally creating migration sources as new
 -- content while keeping the actual alias table target-resolvable today.
@@ -377,6 +461,13 @@ local function validate_registry()
 		end
 		tier_keys[tier.key], tier_nodes[tier.node] = true, true
 		tier_bars[tier.bar_item], tier_blocks[tier.block_node] = true, true
+	end
+	local natural_nodes = {}
+	for _, node_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
+		if natural_nodes[node_name] or not grug_materials.NATURAL_GROUND_SET[node_name] then
+			registry_error("duplicate or unindexed natural ground " .. node_name)
+		end
+		natural_nodes[node_name] = true
 	end
 
 	local resource_keys, nodes, items = {}, {}, {}
@@ -467,6 +558,17 @@ local function validate_registry()
 		if source == target or grug_materials.LEGACY_ALIASES[target] then
 			registry_error("alias must be a one-hop edge: " .. source .. " -> " .. target)
 		end
+	end
+	local derivative_sources, derivative_targets = {}, {}
+	for _, derivative in ipairs(grug_materials.STORAGE_DERIVATIVES) do
+		if derivative_sources[derivative.source] or
+				derivative_targets[derivative.target] or
+				derivative.target:match("^grug_materials:") == nil or
+				grug_materials.LEGACY_ALIASES[derivative.source] ~= derivative.target then
+			registry_error("invalid storage derivative " .. derivative.source)
+		end
+		derivative_sources[derivative.source] = true
+		derivative_targets[derivative.target] = true
 	end
 end
 
