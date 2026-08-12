@@ -1,7 +1,8 @@
 # Story & Main Questline
 
-Decided premise (2026-08-06). Delivery: quests, setting, environmental
-storytelling (per the vision — a light layer, not cutscene opera).
+Decided premise (2026-08-06; housing and royal roles revised 2026-08-12).
+Delivery: quests, setting and environmental storytelling (a light layer, not
+cutscene opera).
 
 ## 1. Premise
 
@@ -37,15 +38,19 @@ storytelling (per the vision — a light layer, not cutscene opera).
   framed by this premise:
   the enemy faction is suspected of dealings with the darkness,
   intelligence must be gathered behind enemy lines, etc.
-- **The King's grant** (decided 2026-08-07, `min_level` 30): a
-  questline of service to the realm ends at the throne of the character's own
-  race capital, and that race's King grants the player one of the **unspoiled
-  isles** behind the continent — the housing unlock (world.md §5). It
-  is the story's one warm beat in an otherwise grim premise, the first
-  mandatory royal audience in that race's capital, and it explains what
-  housing is *doing* in this world:
-  a reward for merit, not a real-estate purchase.
-- Phase 2 payoff: the Nether becomes walkable (island crossings), its
+- **The housing introduction** is a level-20 civic beat, separate from royal
+  combat. A passive, invulnerable Housing Steward in each capital recognizes
+  the character's service and issues the first free owner-bound Claim Stone
+  when faction capacity permits. The home is claimed in one of the ten
+  authored level-11–30 housing zones; it is not an island, a king's personal
+  gift or a purchase of underground rights ([housing.md](housing.md) §2).
+- Each race still has its own king, for six kings total. Kings and their royal
+  guards are killable high-end raid combatants, unlike passive service NPCs.
+  Their Fallen Crowns are optional personal masterwork trophies with race
+  provenance, never housing deeds or universal progression ingredients
+  (`items_crafting.md` §5.4).
+- Phase 2 payoff: the Nether becomes walkable through its own later travel
+  contract, and its
   **world bosses are demonic lords** behind challenges
   (TODO-design-nether.md) — the questline's late chapters point there.
 

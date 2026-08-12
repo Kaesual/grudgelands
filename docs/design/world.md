@@ -173,7 +173,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
-  §5.3, `combat_stats.md` §3) — the price of a material is paid in danger
+  §4c, `combat_stats.md` §3) — the price of a material is paid in danger
   and travel, never in waiting for a timer. Renewable ore would have
   capped every material's value at its respawn interval and turned mining
   into a rotation instead of an expedition. **Sole exception: renewable
@@ -188,7 +188,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     camp's garrison is the price.
     - The two level-60 apex camps at the dragon endpoints are the fixed
       exception to the single regional-tier content rule: each has exactly
-      **12 nodes, two for each of the six race-gem slots**. Both factions may
+      **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and
+      Ruby**. Both factions may
       mine those nodes under R2b while each functional socket/anchor remains
       protected. Ordinary camp construction remains mutable. They remain
       mining camps, so they do not create a second renewable-structure kind.
@@ -200,35 +201,57 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   - Other POI kinds may join the exception later, one renewable node type
     per kind, once camps have proven the shape. Nothing else regrows
     today.
-- **R5 — Housing isles**: a housing isle's 100×100 build
-  box belongs to its **owner, a character rather than a guild** (§5):
-  the owner and the characters on their *trusted* list build and dig
-  there down to the purchased depth, everyone else may look and not
-  touch. A guild owns no land anywhere (`guilds.md` §3).
-- **R6 — Rock strata** (decided 2026-08-07): below the surface the stone
-  is layered into **six strata, one per material tier**, with boundaries
-  at **−100 / −300 / −500 / −700 / −1000 / bedrock**. A stratum can only
-  be broken by a tool of its own tier or better (engine mechanism: the
-  node's `level` group against the tool's `groupcaps.maxlevel`). Depth
-  — and with it the whole metal ladder — is therefore gated by the tool
-  a character can already make, not by a rule the server has to police.
-  **The layering is identical on the continent and on the housing
-  isles**: on the continent the tool tier alone gates you, on an isle
-  you need the tool tier **and** the purchased depth step (§5.3). The
-  six tiers and their materials live in `items_crafting.md`.
-  - The strata are, top to bottom, **`default:stone` (T1 — the ordinary
-    world stone *is* the first stratum, no new node), then
-    `grug_materials:slate`, `:basalt`, `:granite`, `:emberrock` and
-    `:abyssal_rock`** down to bedrock.
-  - **Every stratum drops ordinary cobble.** The gate is about *access*,
-    not about building material — the build economy of this section does
-    not end at −100.
-  - **Cave walls inherit their stratum**, so a deep cave is not a free
-    bypass: walking into a cave at −600 does not hand a low-level
-    character rock or ore they could not have dug from above.
-- **Per-character Claim Stones provide the only permanent player-owned
-  protection.** They are placed in the ten authored level-11–30 housing zones
-  under `TODO-design-housing.md`; private housing islands are retired.
+- **R5 — Active Claim Stones**: per-character Claim Stones provide the only
+  permanent player-owned protection (§5). The owner and same-faction trusted
+  characters may change ordinary nodes and use ordinary functional content
+  inside the active cube; every applicable world, faction, immutable-water,
+  hard-anchor and depth rule is evaluated first. A claim never grants terrain
+  rights outside its current active volume, never privatizes its complete
+  future reservation and never reaches the contested deep layer.
+- **R6 — Natural depth and resource harvesting**: six visual strata retain the
+  boundaries at **−100 / −300 / −500 / −700 / −1000 / bedrock**, but rock
+  identity and engine `level`/`groupcaps.maxlevel` no longer gate progression.
+  Every dig resolves three independent questions in order:
+  1. territory/protection: may this player change this position;
+  2. natural depth: does the wielded pick reach the target y;
+  3. resource harvest: is that pick tier high enough to receive this natural
+     ore or gem's drop.
+
+  | Tier | Canonical metal/pick | Maximum natural depth | Visual stratum opened |
+  |---|---|---:|---|
+  | T1 | Bronze | y = −100 | Stone |
+  | T2 | Iron | y = −300 | Slate |
+  | T3 | Steel | y = −500 | Basalt |
+  | T4 | Silversteel | y = −700 | Granite |
+  | T5 | Embersteel | y = −1000 | Emberrock |
+  | T6 | Abyssal Steel | map floor (−31000) | Abyssal Rock |
+
+  Wood and Stone starter picks share the T1 maximum. The strata, top to
+  bottom, remain `default:stone`, `grug_materials:slate`, `:basalt`,
+  `:granite`, `:emberrock` and `:abyssal_rock`; they are cosmetic stone-like
+  excavation material and all drop ordinary cobble. Every real pick may break
+  one when its y is legal, including a player-placed decorative copy near the
+  surface. Higher tiers gain speed through explicit tool `times`, never
+  `leveldiff`. Cave walls inherit the local stratum, but an exposed cave wall
+  does not bypass the target-y check.
+
+  The exact political split follows those boundaries: **y = −700 is the last
+  protected shallow node; y = −701 is the first universally contested deep
+  node**. T5 occupies y = −701..−1000 and T6 y = −1001..−31000. On every
+  non-ocean land column, both factions may dig and place at y = −701 and below,
+  even beneath a capital, hard-protected anchor, road or active claim. Deep
+  ocean and immutable dragon channels remain full-column exceptions.
+
+  Natural resources use a separate minimum-pick property: T1 harvests Copper,
+  Tin, Coal, Iron and Quartz; T2 harvests Gold and all G1 gems (Citrine,
+  Garnet, Jade); T3 harvests Silver; T4 harvests Emberglass and all G2 gems
+  (Diamond, Sapphire, Ruby); T5 harvests Abyssal Crystal. An under-tier real
+  pick at an otherwise legal y destroys the resource with no drop, profession
+  yield, XP or quest credit at ×4/×6/×8/×10 effective dig time for a shortfall
+  of one/two/three/four-or-more tiers, consumes one ordinary pick use and gives
+  explicit shatter feedback. Bare hands and non-picks cannot do this. Crafted
+  storage/building blocks are never natural resources: any real pick recovers
+  them where territory allows, and they always drop themselves.
 
 Implementation: one central `core.is_protected` override in `grug_core`
 (faction + position check).
@@ -252,8 +275,9 @@ occupying a position (`world_zones.md` §7):
   coastal materials and shore wildlife. It is never housing-claim ground.
 - **Deep ocean:** every ordinary ocean column beyond the shelf, immutable at
   every y. This remains the deliberately deadly open sea patrolled by the
-  level-100 Kraken Guard (no drops or XP); deep-sea creatures may destroy boats
-  so a boat does not bypass the world boundary.
+  level-100 Kraken Guard (no drops or XP). Playable-boat ownership,
+  acquisition, speed, damage, destruction and return/respawn behavior are not
+  defined by this world-geometry rule (`TODO-design-boats.md`).
 - **Dragon channels:** separate full-column immutable masks between the
   mainland and the two offshore islands. They are required boat routes and do
   not inherit the deep-ocean Kraken/boat-destruction rule. Their warning and
@@ -270,8 +294,9 @@ replaced by WP40.
 ## 2c. PvP geography and player tag
 
 Peaceful and contested status belongs to the named surface zone. No level
-1–30 zone is contested; every ordinary level-31–60 frontier, Holy Grounds and
-dragon-island zone is contested.
+1–30 surface zone is contested; every ordinary level-31–60 frontier, Holy
+Grounds and dragon-island zone is contested. Independently of the surface
+zone, every non-ocean land position at **y = −701 and below** is contested.
 Entering a contested zone automatically applies the player's PvP tag; an
 untagged player in a peaceful zone cannot receive unprovoked enemy-player
 damage.
@@ -291,8 +316,9 @@ transaction, boundary, lifecycle, visitor and HUD rules:
 
 There are **three race capitals per continent**, one per race and six total.
 Each sits in its own central named city zone and is protected
-(indestructible) per the POI rule of §2 — the structure plus ≥ 10 nodes of
-surrounding terrain, from 30 nodes below its base level upward.
+(indestructible) per the POI rule of §2 — the final build envelope plus its
+authored 10-node apron, upward without limit and downward through y = −700.
+The ordinary contested deep rule resumes at y = −701 even below a capital.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
 - Its guards and important faction NPCs are level 60; the killable race king
@@ -305,8 +331,8 @@ surrounding terrain, from 30 nodes below its base level upward.
   level-1–10 starting settlement, not the capital.
 - Every race has its own king in its own capital: **six kings total**. Housing
   is instead unlocked at level 20 through the separate passive, invulnerable
-  Housing Steward and open-world Claim Stone design in
-  `TODO-design-housing.md`; no king grants a housing isle.
+  Housing Steward and the open-world Claim Stone design of §5; no king grants
+  land or housing.
 - Capitals hold class trainers, class POIs, traders, quest givers, job
   trainers and a major waypoint. No capital is a superior faction-wide
   administrative seat in the MVP; shared faction services use the same
@@ -384,8 +410,8 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   own faction, protector of resource-rich mining sites (e.g. a dwarven
   mining camp — resource site + conflict point in one). Such a site is
   **world content, not a purchasable claim**: it is guarded, never owned,
-  and anyone who fights past the garrison may dig it (guilds hold no
-  land — `guilds.md` §3). Under R4 a **mining camp is the only place in
+  and anyone permitted by the zone rule who fights past the garrison may mine
+  it. Under R4 a **mining camp is the only place in
   the world where anything regrows at all**, precisely because its
   small functional anchor and renewable sockets are indestructible: 10–15
   renewable nodes in the region's own material tier on a 2–4 h respawn
@@ -513,326 +539,242 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 - **Phase 3 — the Nether dragon lord** as the demonic story capstone
   (story.md; only if the population supports larger raids).
 
-## 4c. The T6 band below −1000 is endgame territory (decided 2026-08-08)
+## 4c. Deep T5/T6 is contested endgame territory
 
-**The deepest stratum is content, not only a material tier.** Below
-**−1000** the rock is Abyssal Rock (§2 R6, `items_crafting.md` §3.0.4)
-and nothing but a **T6 tool** breaks it, so the band is unreachable
-until the very top of the material ladder. That makes it the one region
-of the world whose *entry requirement* is endgame by construction — the
-same role §4b's apex bosses fill by level, expressed as a depth instead
-of as a boss, which is why the rule lives next to them and not in §2:
-§2 R6 owns **who may break the rock**, this section owns **what is down
-there waiting**.
+The political deep layer begins at **y = −701**, independently of the surface
+zone. T5 occupies y = −701..−1000; T6 begins at y = −1001 and continues to the
+map floor. Both factions may excavate, place and fight there under §2 R6. Race
+region still projects down from the surface column for regional resource and
+content selection, but it grants no territorial ownership.
 
-**Decided: the band's role is to carry endgame content** — dangerous
-underground *environments*, the worked example being **lava lakes**,
-together with a creature roster appropriate to the players who can get
-there. The depth axis has always been the "alternative progression path
-to travelling out" (`combat_stats.md` §3); below −1000 it stops being
-only a resource axis and becomes a destination, so that the last pick on
-the ladder buys a place to go and not merely a harder wall.
+T6 is a destination as well as the last material band. Regular mobs remain
+capped at level 60; danger beyond the cap comes from the environment and the
+player-centric depth-arrival pulse in `biomes_mobs.md` §4.1, not level-80
+statistics. Flat connected lava lakes with an air dome and a usable shore are
+the authored environment example. Cheap `ore_type = "blob"` lava pockets may
+add ambience, but do not replace the lake pass. Pure chunk-local voxel work
+belongs in the mapgen environment and uses a y-range fast path above the band.
 
-Two constraints the content has to respect, both already decided
-elsewhere:
+Deep mining pays in raw materials rather than a separate gear-drop layer. The
+first resource-calibration pass uses these bounded density multipliers for
+ordinary continental ores, G1/G2 gems and Abyssal Crystal:
 
-- **Regular mobs still cap at level 60** (`combat_stats.md` §3). What
-  makes the band deadly is the environment and the **rate of arrival**,
-  not bigger numbers — a level-60 roster under permanent pressure, never
-  a level-80 one. The rate itself is the **depth phase-in pulse**, and
-  it is a spawn rule: it lives in `biomes_mobs.md` §4.1, which also owns
-  the roster the pulse delivers below −1000.
-- **This is a continental band, not an isle one.** A housing isle runs
-  through the same six strata (§5.3) but is protected, private and free
-  of hostile spawns (§5.6); an isle's step 6 buys **treasure** (§5.4),
-  the continent's −1000 buys **danger**. The two must not converge, or
-  the isle becomes the safe way to farm the deep band.
+| Depth | Resource density |
+|---|---:|
+| y = −1001..−1499 | normal T6 density |
+| y = −1500..−1999 | +25% |
+| y ≤ −2000 | +50%, capped |
 
-**Lava lakes are a `register_on_generated` VoxelManip pass** (decided
-2026-08-08), next to the continent ocean mask
-(`grug_mapgen/ocean_mask_mapgen.lua`, in the mapgen environment since
-WP36) and the camp platforms (`grug_mapgen/structures.lua`, main
-environment) — pure voxel work with no need of `grug_core`, mod storage
-or the POI registry belongs in the mapgen env — plus **cheap
-`ore_type = "blob"` lava pockets** in `group:grug_stratum` rock for
-ambience. Only a pass can express what the worked example actually
-promises — a *flat, connected* lava surface with an air dome over it and
-a shore to stand on; a blob has no shape control and yields pockets, not
-lakes. The pass carries a **chunk-box fast path** so it costs nothing
-above −1000, the way the ocean mask already skips inland chunks.
+The bonus is a deterministic placement budget, never runtime ore respawn. It
+does not multiply trophies, king or dragon loot, protected camp sockets,
+claims or quest rewards. The band has no dedicated apex boss in the MVP and
+its creatures retain their ordinary family drops.
 
-A *deep biome* buys less here than it looks like it does, which is why
-it is not the mechanism: the six strata are **stratum ores registered
-last** and convert `default:stone` wholesale (`items_crafting.md`
-§3.0.4), so a biome's own `node_stone` would simply be overwritten and
-only its cave/decoration layer would survive.
+## 5. Housing: open-world Claim Stones
 
-**No apex boss of its own in the MVP** (decided 2026-08-08). The band
-carries itself on the phase-in roster, the lava lakes and its resource
-density. §4b's apex bosses are deliberately **visible outdoor carrots**
-— the Mountain Wyrm is a thing you see at level 8 and fight at 50 — and
-a boss behind a T6 pickaxe is the exact opposite of that, so a deep apex
-is not the same design object under a different sky. It arrives later as
-its own §4b stage, once the band has content at all; the lair/hoard/
-arena tech is generic and waits. Authoring the zone and its boss at the
-same time would mean inventing both against nothing.
+The complete authoritative Claim Stone contract is `housing.md`; this section
+summarizes its world-facing integration and does not replace it. Housing is
+per-character protected land inside the authored mainland. Private housing
+islands, royal land grants, purchased depth rights and any guild land or
+administration system do not exist in the target design.
 
-**The band gets no drop layer of its own.** What it pays out is raw
-material; its creatures drop exactly what their families drop everywhere
-else, and being deep adds nothing to a loot table (`items_crafting.md`
-§5, which carries the argument).
+### 5.1 Eligibility, tiers and reservation
 
-## 5. Housing: the King's isles (player-owned)
+- Claim Stones may be placed only in ten peaceful housing zones: Copperfell
+  Foothills, Goldmead Vale, Starbough Vale, Mournfen, Redtusk Savanna,
+  Raincall Basin, Whitebridge Shire, Lorindor, Speargrass Reach and Whispering
+  Reedlands. The six level-1–10 starting zones are claim-free.
+- A passive, invulnerable Housing Steward in every capital unlocks the first
+  free owner-bound stone through a level-20 introduction quest. The configured
+  faction pool must have a live slot; a failed issuance creates and consumes
+  nothing. The MVP default is one stone per character. The integer setting
+  `grug_housing_max_claims_per_character` supports 1..3 without migration and
+  defaults to 1.
+- The stone is the centre of an active protection cube:
 
-Decided 2026-08-07 — replaces the guild-owned ocean plots of the
-2026-08-06 continent redesign. **Fiction first**: beyond the coastal sea
-behind each continent lies a scattered chain of unspoiled isles, barren
-above the rock and rich below it. The **King grants one isle to subjects
-who have earned merit** — housing is *unlocked by a questline* with
-`min_level` **30** (story.md §2), never bought. Rationale: housing used
-to be pure mechanics with no reason to exist in the world; tying it to
-the crown also gives the own faction's King his first friendly role
-(§3).
+  | Tier | Required level | Radius | Active volume |
+  |---|---:|---:|---:|
+  | I | 20 | 20 | 41³ |
+  | II | 35 | 30 | 61³ |
+  | III | 50 | 40 | 81³ |
+  | IV | 60 | 50 | 101³ |
 
-### 5.1 Ownership & the isle
+- A tier-I placement immediately reserves the complete future 101×101 x/z
+  footprint. Different owners' projected reservations may never overlap at
+  any y and require ten completely unclaimed nodes between edges. The exact
+  pair test expands only the candidate radius-50 AABB by ten nodes and rejects
+  an intersection with another owner's stored radius-50 AABB; two radius-50
+  centres therefore differ by at least 111 nodes on a critical axis. Same-owner
+  reservations may overlap, but each stone consumes its own faction slot.
+- The complete reservation must pass the authored housing mask and must not
+  intersect a zone/peace boundary, planned water, coastal shelf, capital,
+  starting core, road/corridor, waypoint, graveyard, village/outpost/camp/POI
+  envelope, dynamic-POI candidate envelope or other static exclusion. Roads
+  and ordinary POI shells remain mutable even though their analytic envelopes
+  exclude claims.
+- Placement is forbidden below y = −50, derived from the T1 natural-depth
+  limit minus the maximum radius. No claim can therefore reach deep T5/T6.
+  Claims are dry-land housing only: no protected underwater claims or private
+  harbors.
+- Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
+  a continuous gentle coastal housing core with at least 600 shoreline nodes,
+  300 nodes of buildable inland depth and at most 12 nodes of natural-ground
+  relief in every wholly contained 101×101 reservation. Elsewhere there is no
+  general runtime slope test.
 
-- **One isle per character** (changed 2026-08-07 from per-guild; guilds
-  keep the bank and the roles — `guilds.md`). Granted is granted: no
-  upkeep, no decay, no way to lose it.
-- **Build box: 100 × 100 nodes in x/z, from the purchased depth to the
-  sky.** The box IS the extent of the build and dig right (§2 R5), which
-  keeps `is_protected` a plain box test on a hot path.
-- **Free digging down to the seabed plane at y = −30** — that is the
-  isle's own worthless body. Everything below it is bought (§5.3).
-- A **skirt of ~50 nodes radius** falls from the box edge to the seabed.
-  The skirt is scenery and is protected for **everyone including the
-  owner**: isles keep their silhouette seen from the water, and nobody
-  floods their own cellar by landscaping the shoreline.
-- **Teleport pad**: a small indestructible platform on the isle's
-  continent-facing shore, protected as its own footprint from 5 below to
-  6 above — deliberately NOT the unlimited-upward POI rule of §2, or the
-  owner could never roof it over. The pad is a waypoint of the travel
-  network (§6) and the only intended way in or out.
+### 5.2 Ownership, ACL and active-world behavior
 
-### 5.2 Isle styles
+- Every stable claim id has one owner. Up to ten same-faction characters may
+  be trusted. Trust permits digging, placement and ordinary door, workstation
+  and unsealed-inventory use; it grants no ownership. Only the owner may edit
+  trust, upgrade, recover or relocate the stone. Claim Stone items are
+  owner-bound and non-tradeable.
+- At overlapping same-owner claims, a non-owner must be trusted by every
+  covering claim; denial wins. The registry, not per-node placer metadata,
+  owns ordinary content in the active volume. There are no separately
+  player-locked chests in the MVP.
+- The outer world rule always wins before the ACL. Deep ocean, dragon
+  channels, hard-protected world content, the reserved Home-Stone arrival
+  column and y = −701 contested depth cannot be overridden by a claim.
+- The two nodes directly above the Claim Stone are a permanent clear arrival
+  column. No player may place a node, torch or liquid there.
+- Natural spawn candidates of every class are rejected inside the active cube,
+  but claims do not despawn, repel, pacify or block creatures that enter from
+  outside. Combat rules remain unchanged inside a home.
+- Claim protection covers indirect mutation as well as direct digging:
+  explosions, fire, liquids, falling nodes, terrain-changing mobs, machines
+  and scripted effects require attributable owner/trusted/admin permission and
+  fail closed when attribution is unavailable. Ordinary crop/tree growth and
+  normal workstation operation are the bounded benign exceptions.
+- Crops and player-grown plants may extend beyond a boundary. Nodes outside the
+  active cube are ordinary unprotected world content. Every ordinary shipped
+  growable must stay within ten horizontal nodes of its source; larger future
+  growables need a separate rule.
+- Owners may place every ordinary block they legitimately possess; there is no
+  race, faction, biome or material-tier palette. Player workstations, cooking
+  stations, doors and unsealed inventories use the claim ACL but grant no
+  profession, recipe or material permission.
+- Claim farming may grow `[food]` crops and `[spice Tn]` plants only. Healing
+  herbs, ores, race/cultural materials and found-only mushrooms, wild cocoa and
+  rock salt remain world resources. Housing adds no livestock or stable system.
+- Claim boundaries are transient and client-scoped, never permanent nodes,
+  walls or entities. Crossing a boundary or receiving a denied action briefly
+  shows that claim's sparse cube-edge outline to the affected player; a denial
+  also identifies the owner. Events are throttled per player and claim. Owners
+  and trusted characters may request a temporary full outline, while placement
+  preview distinguishes the active cube from the radius-50 reservation.
 
-A **one-time style choice** when the isle is granted. Styles differ in
-surface palette, vegetation and skirt profile only — **the resource
-content below the seabed is identical**, so no style is the good one:
+### 5.3 Costs, recovery and persistence
 
-| Style | Look | Skirt |
-|---|---|---|
-| Coral Shore | white sand, palms, shallow reef | gentle |
-| Pinecrag | grey stone, conifers, boulder fields | steep |
-| Ashen Rock | black volcanic rock, basalt columns, sparse growth | steep, cliffed |
-| Mistwood | dark soil, gravewood, heavy undergrowth | gentle |
+- Each stone owns stable id, owner and tier. Upgrades are sequential,
+  transactional and performed through the placed stone; failure consumes
+  nothing. Recovery, relocation, inactivity and reissue preserve paid tier.
 
-Re-styling an existing isle for gold is a reserved Phase-2 sink, not MVP.
+  | Upgrade | Level | Material | Ledger-money target |
+  |---|---:|---:|---:|
+  | I → II | 35 | 4 Silversteel Bars | 30 min reliable T4 net solo income |
+  | II → III | 50 | 8 Embersteel Bars | 90 min reliable T5 net solo income |
+  | III → IV | 60 | 12 Abyssal Steel Bars | 3 h reliable T6 net solo income |
 
-### 5.3 Depth rights — the central gold sink
-
-The only paid axis (x/z is a gift — you do not buy land from your
-liege). **Six steps, one per rock stratum** (revised 2026-08-07 from ten
-steps of 50 nodes to −530): every step opens exactly the stratum that
-the matching tool tier can break, so an isle's ladder and the
-continent's are the same six layers (§2 R6).
-
-| Step | Opens down to | Rock tier | Price |
-|---|---|---|---|
-| free | −30 (the seabed) | — | — |
-| 1 | −100 | T1 | 50c |
-| 2 | −300 | T2 | 2s |
-| 3 | −500 | T3 | 6s |
-| 4 | −700 | T4 | 20s |
-| 5 | −1000 | T5 | 60s |
-| 6 | bedrock | T6 | **1g** |
-
-≈ **1.9 g for the full ladder**. **Both gates apply and neither
-substitutes for the other**: a bought step is worthless without a tool
-of that tier, and a T6 pick digs nothing on an isle whose step 6 is
-unpaid. Against a lifetime income to level 60 of
-about 1 g and endgame farming of 6–12 s/h (items_crafting.md §8), the
-first steps are reachable soon after the level-30 grant and the last are
-a genuine endgame fortune — the ladder deliberately outlives the level
-cap. Bought steps are permanent.
-
-This price table is the same one in `economy.md` §4.1 and
-`items_crafting.md` §8.4 — the three must not drift apart.
-
-The isle is built by a VoxelManip pass, which does not get the strata
-for free the way the continent does (they ride on the mapgen's ore
-stage, §2 R6) — the generator asks
-`grug_materials.stratum_node_for(y)` for the rock of a depth and places
-it itself, so the two ladders cannot drift apart.
-
-### 5.4 What is down there: treasure clusters, not a mine
-
-**Housing mining is a treasure hunt, not a second ore economy** (decided
-2026-08-07, **re-affirmed and made generous 2026-08-08**). The
-continental depth axis — ores by biome and depth, cave mobs scaling 3
-levels per 50 nodes (combat_stats.md §3) — stays the world's mining
-game, and a safe private isle must not undercut it by selling the same
-ore without the danger.
-
-**Why the shape, and not a continental ore field**: an isle is 100×100
-and runs from the seabed at −30 to bedrock, i.e. **~9.7 million nodes**.
-At continental ore density that is tens of thousands of ore nodes on
-protected (R5), mob-free, PvP-free, travel-free ground — an owner would
-never mine the continent again, and the whole depth danger of §4c would
-be a rule that applies to other people. The second argument is the
-sink's own: the depth ladder is the game's central gold sink (§5.3), and
-**a sink must pay out a known amount**. An ore field pays out whatever
-the seed felt like.
-
-- The isle's rock is **barren between the clusters**. Each depth step
-  holds a **fixed, deterministic set of clusters** — positions rolled
-  per isle, count and contents identical for everyone. A step is
-  therefore a *calculable payout*, which is what makes its price
-  balanceable at all. The count does **not** scale with a stratum's
-  height: a deeper step costs more because its clusters carry a higher
-  material tier, not because it holds more of them.
-- **The clusters are deliberately generous** (2026-08-08): the
-  2026-08-07 working value of 8 clusters × 20–40 nodes is a floor, not a
-  target, and each step's clusters are filled **in that step's own rock
-  tier** (§5.3). Every bought step has to read as a real payday for the
-  gold it cost — that, not an ore field, is how "mining an isle is worth
-  it" is delivered. The exact count and fill per step is authored in the
-  housing package against the price ladder above.
-- **No respawn** (R4, the world-wide rule): a mined-out cluster is gone.
-  That is precisely why the ladder keeps costing — the next payout is the
-  next step.
-- Contents follow the strata (§5.3): steps 1–3 ordinary building and
-  smithing stock, steps 4–5 the deep metals and their gems, **step 6
-  Abyssal Crystal**, the T6 material and the race-signature ingredient
-  (items_crafting.md §4 / §5.5). Since 2026-08-08 the crystal also has a
-  continental deposit below −1000 (items_crafting.md §3.0.1), so the
-  isle is the *safe* source of it, no longer the only one — what the
-  ladder sells exclusively is the six materials below.
-- **Six isle-exclusive materials, one per depth step** (decided
-  2026-08-08). Each step additionally holds **one rare material that
-  exists nowhere else in the world** — not on the continent, not in any
-  drop table. Non-renewable like everything else on an isle (R4: an isle
-  is editable ground, so nothing regrows there), and reserved for
-  special recipes. This is what gives the 1.9 g ladder a reason to exist
-  of its own now that the T6 alloy is no longer hostage to it.
-  - **All six are named, textured and placed; exactly one of them does
-    anything in the MVP** — the **Amplifier**, applicable **once per
-    item**, raising **all of that item's prefix and suffix values by
-    10 %** (`items_crafting.md` §6b.8 owns the effect and its rules).
-  - The other five are visible, collectable forerunners. Placing them
-    now and wiring their recipes later is what keeps every future
-    material addition **out of mapgen**: the isles already hold the
-    stock, so a later recipe package needs no world change and no
-    regenerated isle.
-- **Finder items are mandatory infrastructure, not flavor**: a step is
-  100×100 nodes wide and up to 300 deep, and nobody strip-mines millions
-  of them. From
-  the moment housing unlocks, vendors sell a cheap **Dowsing Rod**
-  (nearest un-mined cluster within 64 m, direction only, 30 s cooldown);
-  the **Goldsmith** profession crafts the better **Gem Detector**
-  (longer range, distance readout) — one of that profession's two
-  reasons to exist (professions.md §2).
-
-### 5.5 Access rights
-
-Two grantable levels, managed by the owner at the pad:
-
-| Level | May | Who |
-|---|---|---|
-| Visitor | enter, look | own guild members automatically, plus a per-character whitelist |
-| Trusted | build, dig, open containers | per-character whitelist only; implies Visitor |
-| Owner | everything, both lists, buys depth steps | the grantee |
-
-- Deliberately **guild-wide for visiting, character-wise for trust**:
-  "who may see my isle" is a social question, "who may empty my chests"
-  is a friendship question. There is one toggle, not three — trust
-  covers building, digging and containers together.
-- **One documented exception**: the guild-bank terminal (`guilds.md`
-  §3.1) is usable by every guild member standing on the isle regardless of
-  trust level, subject to the guild's own role rules.
-
-### 5.6 Placement & generation
-
-- Isles sit on a **deterministic allocation grid**: one slot per
-  **1000 × 1000** cell in the housing band beyond the outer coast of the own
-  continent. Slot index → coordinates is a computation, never a search. WP18's
-  provisional band begins at |z| ≥ 4000; WP40 re-anchors it to the authored
-  coast without changing the grid pitch.
-- The band's seabed is flat at **y = −30**, which makes generation cheap:
-  the mapgen pass fills only the skirt cone and the isle body, and only
-  where the registry marks a slot **allocated**. An unallocated slot
-  generates as plain ocean. WP40 chooses whether this reuses a revised
-  VoxelManip coast pass or the new mapgen's native land mask.
-  *Implementation note*: Luanti generates deterministically from the
-  seed, so an isle cannot appear in chunks that were already emerged as
-  ocean. Either skip such slots at allocation time or accept a one-time
-  forced regeneration of those few chunks.
-- **1000 nodes of pitch minus the 150-node safe ring ⇒ ≥ 700 nodes of
-  deadly open water between neighbours.** Swimming to the isle next door
-  is a long trip through §2b's deep sea, and that is the point: isles are
-  reached by waypoint, not by water.
-- No hostile spawns, no PvP, and **no workbenches, trainers or vendors**
-  on isles (inventory_equipment.md §4 keeps workbenches in capitals and
-  villages) — the isles must not become a substitute capital.
-
-### 5.7 Farming on the isle: cooking ingredients only (decided 2026-08-08)
-
-- **A player may farm on their own isle.** It is protected ground (§2
-  R5) inside the owner's own build box (§5.1), which makes it the one
-  place in the world where a planted crop is safe from somebody else's
-  spade — so the isle is where farming belongs, and the isle grant is
-  what hands a character a field.
-- **Only cooking ingredients grow there.** That is exactly the `[food]`
-  and `[spice Tn]` lines of `biomes_mobs.md` §2 — potatoes, corn,
-  apples, berries, melon, plus the three spices sunleaf, marshbloom and
-  stormkelp — and nothing else.
-- **Never the healing herbs.** Gravemoss, dragonweed and crimson lotus
-  are Alchemist-gathered and **never farmable, anywhere**
-  (`biomes_mobs.md` §2): they grow on bare stone, gravel, mesa clay,
-  dead-wood litter and jungle floor — ground no plough touches — and
-  that is what keeps every healing herb bound to a journey into its own
-  biome. A private isle must not become the shortcut around that.
-- **Never the found-only ingredients.** Mushrooms, wild cocoa and rock
-  salt stay found in the world (`biomes_mobs.md` §2), so the top of the
-  cooking ladder stays a reason to travel — T6 cooking needs
-  level-50+ ingredients (`items_crafting.md` §3.7) — and "find cocoa in
-  the jungle" stays usable as a quest goal.
-- **The restriction is on the plant set, not on who uses the harvest.**
-  Spices are cooking ingredients *and* Alchemist reagents
-  (`biomes_mobs.md` §2), so a farmed spice is still a spice. What an
-  isle can never produce is a **healing herb** — and the Alchemist's
-  tier keystones (`items_crafting.md` §2.3) and its potion recipes
-  (§3.6) all call for one, so no part of the alchemy ladder becomes
-  farmable.
-- **Farming itself is post-MVP**: the crop layer is `BACKLOG.md`'s
-  **WP32** (Phase 2), and it adapts an existing farming mod rather than
-  inventing one. This section decides the *place* and the *permitted
-  set*; the plant list stays `biomes_mobs.md` §2's.
+  Measured income excludes rare jackpots and player trade and is net of routine
+  repairs/consumables. Copper outputs use the fixed coarsest-denomination,
+  within-5%, midpoint-up rounding rule.
+- A second/third stone is available only at level 60, when every owned stone is
+  tier IV and the configured personal limit and faction pool both permit it.
+  They cost 12/24 Abyssal Steel Bars plus 5 h/10 h of reliable T6 net solo
+  income and create a new stable tier-I id. Existing ids are grandfathered if
+  the setting is later lowered.
+- A placement is bound for four real wall-clock hours; offline and server-down
+  time count. Only an administrator may remove it early. Afterward the owner
+  may recover it through the controlled menu. Recovery deactivates protection,
+  reservation, ACL and Home destination, leaves all construction/inventories
+  in place and returns the live item or persistent recovery escrow. Each new
+  placement starts a new binding; an upgrade does not.
+- The canonical registry distinguishes live `placed`, `inventory`,
+  `recovery_escrow` and transient transaction locations from slot-free
+  `dormant`. Every live location consumes one faction slot. Registry generation
+  numbers and one canonical live location invalidate stale ItemStacks without
+  cloning or reviving protection; spatial indexes are rebuilt from mod storage.
+- Each faction has an administrator-configurable live-Stone limit. Its safe
+  default is selected below the measured capacity of the real exclusion masks
+  over 32 representative seeds, never inferred from gross zone area or an
+  arbitrary population quota.
+- Issuance is first come, first served, with no wait list or reservation. The
+  integer `grug_housing_inactivity_days` setting ranges 0..3650 and defaults to
+  0 (disabled). With decay enabled and a full legal pool, an issuance request
+  atomically makes the oldest eligible live id dormant and transfers exactly
+  that released slot. The requester receives one of their already owned dormant
+  ids when applicable; otherwise a new id is created within the personal limit.
+  Owner activity is the latest successful login; it refreshes every owned live
+  id before issuance is checked. Equal inactivity timestamps resolve by stable
+  claim id.
+  When assigned exceeds a lowered limit, new issuance pauses and ordinary
+  decay/reissue removes nobody.
+- Every Housing Steward shows an interaction-time snapshot for the visitor's
+  faction: assigned, free and configured-limit counts. Assigned includes
+  placed, inventory and recovery-escrow stones; free is never negative. At a
+  full pool with decay enabled the UI shows only the aggregate number currently
+  eligible for on-demand reclamation, never owner names or positions; during an
+  administrative overhang it reports that issuance is paused. A snapshot
+  creates no reservation or queue position.
+- Dormancy removes the live stone/item/escrow, protection, reservation, ACL and
+  Home destination but retains stable id, owner, paid tier and audit/notice
+  state. Buildings and inventories remain unarchived in the world and become
+  ordinary unclaimed content. Voluntary dormancy uses the same result and is
+  owner-available after the four-hour binding; administrators may force it.
+  Reissue is free, preserves tier and competes for a faction slot normally.
+- With decay enabled, the stone menu states the exact eligibility time and the
+  first issuance warns that buildings and inventories are never archived. A
+  successful reclamation persists a one-shot notice for the previous owner
+  with zone/coordinates when placed, reclamation time, inactivity duration and
+  retained tier; it remains available through the Steward until acknowledged.
+- Administrators receive inspect, index-rebuild, forced-recovery,
+  forced-dormancy and stone-recovery tools. Every forced operation is logged
+  and never deletes buildings or inventory contents.
+- Runtime protection uses a persistent registry mirrored into separate spatial
+  indexes for active 3D volumes, maximum-radius x/z reservation projections and
+  claim-exclusion envelopes. Dig/place and natural-spawn checks are point
+  queries, never node scans or protection globalsteps.
 
 ## 6. Travel: waypoints & Home Stone
 
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06):
 
-- Waypoints: the race starting settlement, every capital, the own housing
-  isle's pad (plus the pads of isles you are allowed to visit, §5.5), and the
-  authored travel hubs reserved by named zones. Exact density is part of the
-  zone catalog; every main progression route must connect to the network.
+- Waypoints: every race starting settlement, every capital and the authored
+  travel hubs reserved by named zones. Exact density is part of the zone
+  catalog; every main progression route must connect to the network.
 - **Unlocked by visiting, per character** (player meta); the fog-of-war
   world map (section on WP12) shows discovered waypoints.
 - Teleporting works **only while standing at a waypoint**
   (waypoint → waypoint), instant and free — travel time is the cost;
   mounts stay relevant.
-- **No waypoints in enemy territory** (not claimable or usable there) and
-  none in ordinary ocean (except the housing isles' pads, section 5).
+- **No waypoints in enemy territory** (not unlockable or usable there) and
+  none in ordinary ocean or on the dragon islands.
 - Phase 2 extension: **Nether crossings** link authored, level-equivalent
   named-zone portal pairs into enemy territory
   (`TODO-design-nether.md` until specced).
 
-**Home Stone** (kept as the emergency/return valve):
+**Home Stone** is bound to housing rather than a capital:
 
-- Teleport to the character's **own race capital only**.
-- **10 s cast time; taking damage interrupts** — not a combat escape.
-- **60 min cooldown.**
+- It teleports only to the owner's currently bound, active Claim Stone and has
+  no capital fallback. Player state stores a stable `home_claim_id`; the first
+  placed claim binds automatically, and with later multiple claims the owner
+  rebinds by physically interacting with the chosen stone. Recovery/dormancy
+  disables the destination; re-placing the same stable id makes it valid again.
+- The cast is a **10-second stationary channel** and cannot begin while
+  `grug_core.in_combat(player)` is true. Movement more than 0.1 nodes, death or
+  logout interrupts; camera rotation and smaller engine correction do not.
+- PvP interruption uses the central events from `world_zones.md` §15. A
+  server-valid hostile attempt or effective support performed by the channeler
+  interrupts even when a safe→safe effect is blocked. Accepted hostile damage
+  that lowers HP or consumes absorb, and effective support received by the
+  channeler, also interrupt. Misses, dodge, immunity, eligibility refusal,
+  zero-effect support and the PvP tag alone do not.
+- The destination is loaded/emerged and its claim, stone and clear arrival
+  column are validated before the cast and again at completion. Arrival is the
+  standing node above the stone; temporary entity overlap cannot grief it.
+- The **60-minute cooldown** starts only after a successful teleport and is a
+  persisted wall-clock timestamp. Failure or interruption consumes no cooldown.
 - `/unstuck` (suicide command) remains the last resort for hard stuck
   states.
 
@@ -884,12 +826,17 @@ territory.
     five races cannot open at all, not a discount tag on a shared one.
   - **Same-race discount: 10 %** off that vendor's buy prices, rounded
     down and never below 1c. **Buy-back prices are not discounted**
-    (economy.md §2 — discounting both ends would close the 25 % spread).
+    (`economy.md` §2): the target payout remains ceiling-rounded 5% of the
+    applicable purchase or authoritative reference price.
   - Both are the *bonus* on top of the visible passive, in line with the
     rule above that a perk must be FELT from level 1: the passive does
     the felt work, the vendor is the flavor that pays off later.
-- Race-exclusive professions/recipes (e.g. only elven tailors craft the
-  top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.
+- Universal base recipes and professions are never race-exclusive. Cultural
+  Finishing is the identity seam: the profession owning an item family may
+  apply only the player crafter's own character culture, while an allied
+  cultural-master service offers the same supplied-material operation. WP10
+  owns those workstation/service paths; WP5 owns the per-stack finish/effect
+  channel. Finished equipment remains tradeable and wearable by every race.
 - **No class restrictions per race in the MVP** (only 3 classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.

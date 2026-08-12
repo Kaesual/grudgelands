@@ -1,145 +1,146 @@
 # Economy — Currency & Money Flow
 
-Decided spec (2026-08-06; sinks re-cut 2026-08-07). This file fixes the
-currency structure, the qualitative bands and the sinks; the concrete
-price and gold-income numbers live in `items_crafting.md` §8
-(cross-reference corrected 2026-08-07 — it pointed at §7).
+Decided spec (established 2026-08-06; material and housing economy rebased
+2026-08-12). Concrete item and service prices are catalogued in
+`items_crafting.md` §8; this file owns the currency rules, shared price axis,
+income relationship and sink structure.
 
 ## 1. Currency: copper / silver / gold
 
-- Base-100 chain: **100 copper = 1 silver, 100 silver = 1 gold** —
-  conversion is automatic, players never hold ≥100 copper or silver
-  (the tiers act as "decimal places").
-- **Storage: ONE integer in copper units** in player meta (1 = 1c,
-  100 = 1s, 10000 = 1g). Corrected 2026-08-07: the Lua number is a
-  double, but the storage path is not — `PlayerMetaRef:set_int` is a
-  genuine **32-bit signed** store, so the balance is clamped at
-  **2,147,483,647c ≈ 214,748g**. That ceiling is still five orders of
-  magnitude above "a full gold is a fortune" (§2), i.e. unreachable by
-  play; it exists so a sale crossing it cannot wrap the balance
-  negative. Conversion is display-only: UI always renders `Xg Ys Zc`.
-- **Display rule** (decided 2026-08-07): **leading zero units are
-  omitted, copper is always shown, interior zeros are kept** — `5c`,
-  `1s 5c`, `1g 0s 5c`. One format function for HUD, chat and every
-  trade UI.
-- **No physical coin items in the MVP** — money is a counter; traders
-  and NPCs adjust it. (Coin items as loot flavor: revisit later.)
-- **Vendor floor rule** (decided 2026-08-06, revised 2026-08-07):
-  vendors sell only the LOWEST tier of each item category (smallest bag,
-  weak heal potion, basic tools) — everything above is player-crafted
-  (`professions.md` §4). Revision: **the floor moves with the player**.
-  Gear comes in six **bracket catalogs** of 10 levels each, every
-  bracket offering what a normal mob of that bracket drops — Common and
-  therefore **always without enchants**, within roughly ±15 % of crafted
-  gear of the same era (`items_crafting.md` §3.8; the enchants, not the
-  base numbers, are the crafting advantage).
+- Base-100 chain: **100 copper = 1 silver, 100 silver = 1 gold**.
+  Conversion is display-only; players hold one balance rather than separate
+  denominations.
+- **Storage is one integer in copper units** in player meta (1 = 1c,
+  100 = 1s, 10000 = 1g). `PlayerMetaRef:set_int` is a genuine 32-bit signed
+  store, so the balance is clamped at **2,147,483,647c ≈ 214,748g**. Every
+  transaction uses the shared `grug_money` API; no consumer reads or writes
+  the meta key directly.
+- **Display rule:** leading zero units are omitted, copper is always shown and
+  interior zeros are retained: `5c`, `1s 5c`, `1g 0s 5c`. One formatter owns
+  HUD, chat and trade UI output.
+- Money is a **ledger-only universal transaction currency**. No NPC, mob or
+  world node drops money or a physical coin item. Currency enters or moves
+  only through explicit transactions: quest rewards, NPC purchases of
+  sellable loot, NPC/player sales and player-to-player trade.
+- Physical Gold is a separate universal luxury/jewelry/build material. Gold
+  ore, ingots and blocks never add to the money balance, and a ledger payment
+  never consumes inventory Gold.
+- The vendor floor moves with the player. Six Common gear catalogs cover
+  levels 1–10 through 51–60; a player sees the current and all lower brackets.
+  Vendors never sell refined or enchanted gear. See `items_crafting.md`
+  §3.8.
 
-## 2. Price bands (qualitative)
+## 2. Ordinary price axis and buy-back
 
-- Starter-zone items and trash loot: **a few copper**.
-- **Vendor gear rises ×1.4 per level bracket** (50c for the first
-  weapon, 269c for the last — `items_crafting.md` §8.2): buying the one
-  piece you are missing is affordable, outfitting fully at every bracket
-  costs about a quarter of the lifetime income and is meant to hurt.
-- High-tier weapons/armor pieces: **a few silver**.
-- Valuable rare items: **several silver — never a full gold**.
-- **A full gold is a fortune**, reserved for the big sinks: the last
-  housing depth step (1g, §4.1) and the guild founding fee (5g).
-- **Buy-back rate: vendors buy an item back at 25 % of their own sale
-  price**, rounded down, never below 1c (decided 2026-08-07 — the docs
-  had fixed sale prices but never a spread). Without a spread, a vendor
-  is a free storage service and any later price edit risks an income
-  loop; 25 % also keeps the `items_crafting.md` §3.8 anti-loop rule
-  ("vendor value of a crafted item < summed vendor value of its
-  ingredients") true **by construction** for everything a vendor sells.
-  The same-race discount (world.md §7) applies to the sale price only —
-  discounting the buy-back too would narrow the spread from both ends.
-  **Mob-drop materials are unaffected**: they are never sold by a
-  vendor, so their `_grug_sell_price` is their only price and is paid
-  in full (§8.1 bands in `items_crafting.md`).
+The ordinary money axis follows one approximate **×2.5 tier index**. The
+binding Common weapon anchors are 25c at T1 and 25s at T6; clean displayed
+prices take precedence over preserving the exact mathematical ratio.
 
-## 3. Income streams
+| Common vendor slot | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Weapon | 25c | 65c | 1s60c | 4s | 10s | 25s |
+| Chest | 20c | 50c | 1s30c | 3s20c | 8s | 20s |
+| Offhand/head/legs/feet | 15c | 35c | 80c | 2s | 5s | 12s50c |
 
-- **Quest rewards** — the baseline, paying from the very first starter
-  quest on (a few copper for "kill 5 boars").
-- **Selling loot** — traders buy EVERY mob drop (trickle income).
-- No mob-only gold farming mechanic: "gold drops only from humanoids"
-  was considered and rejected — traders buying everything already makes
-  every mob a money source; steering happens via prices, not bans.
-- **Bandit camps** (neutral-hostile humanoid camps in both territories)
-  are the home-territory source of cloth; their loot sells like any
-  other drop.
+- The table prices slots, not weapon families. Every ordinary weapon family in
+  one tier uses the same Common reference price. Common gear is the unrefined,
+  enchant-free baseline; quality and enchantment premiums are applied above
+  it and may never redefine the table.
+- A vendor's **buy-back is capped at 5%** of the item's applicable purchase or
+  authoritative reference price, **rounded up to the next copper**. Thus a T1
+  Common weapon returns 2c and a T6 Common weapon returns 1s25c. The same-race
+  purchase discount never increases buy-back.
+- Items a vendor never sells still receive an authoritative **reference
+  price** in the economy catalog. `_grug_sell_price` stores the resulting
+  vendor payout (never more than the 5%-ceiling rule), while
+  `grug_traders.set_price` supplies that payout for foreign definitions. Zero
+  means not sellable. Every mob drop has a positive payout so selling loot
+  remains a universal income stream; "paid in full" means the trader pays that
+  authored `_grug_sell_price`, not 100% of the item's reference value.
+- A craft, cook, pack/unpack or service loop may not print money. The vendor
+  value of an output must stay below the summed vendor value of consumed
+  inputs after every discount and rounding rule. Reversible storage recipes
+  preserve one shared reference-value budget in both directions.
+
+## 3. Income streams and tier pacing
+
+- **Quest rewards** provide the baseline from the first starter quest.
+- **Selling loot** provides the universal combat income. Traders buy every mob
+  drop; humanoids are not a privileged money source. A stolen purse may exist
+  as an ordinary sellable trash item, but opening or dropping it never changes
+  the ledger directly.
+- Gathered materials enter the same sell-price system. Player trade is their
+  intended high-value market; NPC prices remain a floor.
+- Ordinary quest income and the expected vendor value of level-appropriate
+  mob/NPC loot grow on the same approximate ×2.5 tier index as Common gear.
+  "Loot income scales" always means expected sellable-loot value, never direct
+  coin drops. Scaling prices and ordinary income together preserves the
+  intended time-to-buy for baseline gear.
+- Reliable net solo income is measured after routine level-appropriate repair
+  and consumable costs and excludes rare jackpots, boss rewards and a
+  functioning player market. Time-priced aspirational sinks derive their
+  ledger amount from that measured tier rate rather than from a stale global
+  copper ratio.
 
 ## 4. Sinks
 
-- Small/steady: vendor goods, job supplies (thread, flux, vials),
-  vendor bags, weak healing potions.
-- **Repair** (decided 2026-08-06, WP22): gear has durability, but a
-  broken item is **never destroyed** — at 0 durability it merely stops
-  working (weapons deal no damage, armor stops protecting, item bonuses
-  turn off) until repaired at an NPC for gold. Cost scales with quality
-  tier: gray starter gear costs a few copper, rare lategame gear real
-  money. The per-character steady sink from hour one.
-- **Talent respec** at the class trainer, price rising with level
-  (progression.md §2, WP11).
-- Big/long-term: exactly two, since the removal of the guild mining
-  claims (2026-08-07) — **housing depth rights** (§4.1, the main one,
-  per character) and the **guild founding fee** (5g, per guild;
-  `guilds.md` §1). Continental mining claims are gone: guilds own no
-  ground, so there is no land purchase in the game at all.
+- Small/steady: vendor goods, job supplies, bags, potions and other ordinary
+  consumables.
+- **Repair:** broken gear is never destroyed; at zero durability its effects
+  stop until an NPC repair paid from the ledger. Cost scales with item level,
+  quality and wear (`items_crafting.md` §8.3).
+- **Talent respec:** repeatable at the class trainer, rising with level
+  (`progression.md` §2).
+- **Profession-replacement services:** allied passive helper NPCs perform
+  supplied-material cultural finishes, weapon-counter operations and Warding
+  Draught crafts when the relevant player crafter is absent. They never create
+  the supplied regional material. Cultural masters charge the fixed table
+  below; the weapon helper charges the matching weapon entry; an Alchemist
+  helper charges 50% of the draught's authoritative reference price. Ordinary
+  same-race vendor discounts do not apply.
 
-### 4.1 Housing depth rights — the central long-term sink
+| Cultural-master service | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|
+| Weapon | 15c | 35c | 80c | 2s | 5s | 12s50c |
+| Chest | 10c | 25c | 65c | 1s60c | 4s | 10s |
+| Offhand/head/legs/feet | 10c | 20c | 40c | 1s | 2s50c | 6s25c |
 
-Revised 2026-08-07 with the housing rework (`world.md` §5), **re-cut
-2026-08-07** with the crafting rework. The isle itself is **free** — a
-royal grant at level 30, not a purchase — and the only paid axis is
-**depth**. The ladder is now **six steps ≈ 1.9g** (previously ten steps
-of 50 nodes down to −530, ≈ 2.4g):
+### 4.1 Housing claims — the long-term per-character sink
 
-| Step | Opens down to | Rock tier | Price |
-|---|---|---|---|
-| free | −30 | (seabed) | — |
-| 1 | −100 | T1 | 50c |
-| 2 | −300 | T2 | 2s |
-| 3 | −500 | T3 | 6s |
-| 4 | −700 | T4 | 20s |
-| 5 | −1000 | T5 | 60s |
-| 6 | bedrock | T6 | **1g** |
+Private housing isles, purchased depth rights, guild founding and every guild
+bank/claim fee are retired. Permanent player protection comes from open-world
+Claim Stones in the ten eligible level-11–30 housing zones. The authoritative
+claim tiers, issuance, lifecycle and capacity contract is
+[housing.md](housing.md).
 
-The identical table lives in `world.md` §5.3 and the price list in
-`items_crafting.md` §8.4 — the three must not drift.
+- The first owner-bound Claim Stone is free after the level-20 Housing Steward
+  introduction. A claim never grants private ore, purchased mining depth or a
+  material unavailable in the ordinary world.
+- Each placed stone upgrades sequentially. Every upgrade consumes the listed
+  universal metal plus a ledger amount derived from reliable net solo income:
 
-**Why six steps and not ten**: each step opens **the next rock
-stratum**, and the strata are the six material tiers T1–T6 that gate
-tools, weapons and armor everywhere else in the game. The depth
-boundaries are therefore not price points chosen for the ladder, they
-are the continent's own rock layers (`world.md` §5.3). Buying step 4 and
-being able to swing a T4 pick are the same statement about a character,
-so the isle runs on **one rhythm with the rest of the game** instead of
-a second, private progression scale. Ten arbitrary 50-node steps could
-not do that.
+  | Upgrade | Level | Material | Money target |
+  |---|---:|---:|---:|
+  | Tier I → II | 35 | 4 Silversteel Bars | 30 minutes of T4 income |
+  | Tier II → III | 50 | 8 Embersteel Bars | 90 minutes of T5 income |
+  | Tier III → IV | 60 | 12 Abyssal Steel Bars | 3 hours of T6 income |
 
-Why it still works as the anchor sink:
+  The measured copper result is rounded with the coarsest denomination in
+  `1s / 25c / 5c / 1c` whose nearest multiple stays within 5% of the target;
+  exact midpoints round upward.
+- When server settings allow more than one stone, a second or third may be
+  issued only at level 60 after every existing stone reaches tier IV. The
+  second costs 12 Abyssal Steel Bars plus five hours of reliable T6 income;
+  the third costs 24 bars plus ten hours. No available faction slot means the
+  transaction consumes nothing.
+- Claims and upgrades consume no gem, cultural material, foreign-faction
+  material or profession-exclusive component. They remain separate from the
+  regional gear economy.
 
-- It starts at **level 30**, so the *long-term* sink opens well before
-  the level cap. The early sinks (vendor gear, bags, consumables, job
-  supplies, repair — §4) keep gold meaningful from hour one; what was
-  missing was something to save *towards*.
-- It is **per character, not per guild**, so the drain scales with the
-  player count instead of the guild count — which matters more now that
-  the guild founding fee is the only other big sink left.
-- Every step buys a **finite** payout (world.md §5.4, no respawn), so it
-  can never turn into an income source that pays for its own next step.
-- The ladder is **back-loaded**: steps 1–3 together cost 8.5s, the last
-  two cost 1.6g. The cheap half is affordable at the level it unlocks,
-  and the flagship 1g step stays the endgame purchase §2 calls a
-  fortune.
+### 4.2 Mount pacing
 
-**The total fell (2.4g → 1.9g) and a second big sink disappeared with
-it.** Removing the continental mining claims took 2g/5g one-time
-purchases out of the economy, so the long-term drain now rests on this
-ladder plus the 5g guild fee. That is a deliberate narrowing, not an
-oversight: the ladder scales with the number of *characters* and is
-therefore the only sink that grows with a server, while the guild fee is
-a one-off per group. The claims scaled with neither — a handful of
-guilds bought them once and the sink was spent.
+Mount prices are derived after tier income is measured. The level-15,
+level-30, level-45 and level-60 mounts target approximately **15 minutes,
+45 minutes, 2 hours and 5 hours** of reliable level-appropriate net solo
+income respectively. This replaces the obsolete fixed 1s/8s/30s/60s table;
+the fast level-60 flying mount is a substantial but bounded farming goal.

@@ -470,29 +470,30 @@ Details + line numbers in [docs/research/](docs/research/).
   apply stats to player stats on equip/swap. Drop source: a `drops`
   function in the mob def rolls on kill (base variant everywhere, improved
   variant with better ranges only on elite/heartland mobs).
-- **Materials & depth gating** (shipped with WP25; `items_crafting.md`
-  §3.0.1/§3.0.4, `world.md` §2 R6):
-  - **The material ladder has a public interface** —
-    `grug_materials.TIERS`, `tier_at(y)`, `stratum_node_for(y)`,
-    `level_for_tier(tier)`. Nothing outside `grug_materials` hardcodes a
-    depth boundary or a stratum node name; ask the mod. WP24's isle
-    generator is the first consumer, because a VoxelManip pass does not
-    get the strata from the mapgen ore stage the way the continent does
-    (`grug_nodes/ore_respawn.lua` is the second — its fallback would
-    otherwise punch level-0 stone into a level-3 wall).
-  - **Engine contract, `groupcaps.<group>.maxlevel`**: it is not only the
-    diggability gate. `leveldiff = maxlevel − node level` feeds three
-    formulas at once (`reference_projects/luanti/src/tool.cpp:394-414`,
-    documented in `lua_api.md:2715-2731`): `leveldiff < 0` → not diggable
-    at all, `leveldiff > 1` → `time = time / leveldiff`, and
-    `real_uses = uses · 3^leveldiff`. **Changing a `maxlevel` therefore
-    changes durability and dig speed with it** and has to be compensated
-    in `uses`/`times` — WP25 walked into exactly this (the re-tiered
-    bronze pick silently fell from 180 usable blocks to 20). Such
-    re-parameterisations of vendored items go through
-    `core.override_item`, which **replaces a named field wholesale, it
-    does not merge** — so an override must restate the full upstream
-    `groups` / `tool_capabilities` with one field changed.
+- **Materials & depth gating** (`items_crafting.md` §3.0,
+  `world.md` §2 R6):
+  - **Authoritative target, to be implemented by WP43:** Bronze, Iron, Steel,
+    Silversteel, Embersteel and Abyssal Steel form the six universal tiers.
+    Mining evaluates territory/protection, the pick's exact maximum natural
+    y-depth and then the natural resource's separate minimum harvest tier.
+    Cosmetic strata never grant or deny access. `grug_materials` remains the
+    sole owner of `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, a
+    depth-oriented lookup such as `max_depth_for_pick_tier`, the central
+    `can_mine_natural_at` predicate and group-backed harvest requirements.
+    Nothing outside that mod hardcodes a depth boundary, harvest tier or
+    stratum node name.
+  - **Shipped WP25 legacy, still running until WP43:** code and saved worlds
+    currently use Emberstone names, `level_for_tier`, non-zero node `level`,
+    pick `groupcaps.<group>.maxlevel` and the resulting `leveldiff` coupling;
+    temporary Mese/Diamond bridges also remain live. In that legacy engine
+    contract, `leveldiff = maxlevel − node level` controls refusal, speed and
+    `real_uses = uses · 3^leveldiff` together
+    (`reference_projects/luanti/src/tool.cpp:394-414`). Do not describe the
+    replacement Emberglass/Abyssal Steel APIs as shipped before WP43. Until
+    migration, `core.override_item` still replaces whole named fields rather
+    than merging them, so the complete upstream `groups` and
+    `tool_capabilities` snapshots in `grug_materials/overrides.lua` remain an
+    update dependency.
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
   `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
   (binding):**
@@ -513,8 +514,11 @@ Details + line numbers in [docs/research/](docs/research/).
     the six bracket catalogs come out of the §3.1/§3.2 curves at load
     time. Public surface for anything that sells gear:
     `grug_gear.BRACKETS`, `bracket_for_level`, `get_price`,
-    `get_sell_price`, `catalog[b].fixed/.extras/.all`. Buy-back is 25 %
-    of the sale price everywhere.
+    `get_sell_price`, `catalog[b].fixed/.extras/.all`. **Running WP7 legacy
+    still buys back at 25%** and still uses its old generated price curve.
+    The authoritative target is the Common-price axis plus ceiling-rounded
+    **5%** buy-back in `economy.md`; WP44 migrates the catalog and payout
+    tables without bypassing these APIs.
   - **Armor pipeline** (armor was inert before WP7): item def
     `_grug_armor` → `grug_inventory.get_equipped_armor` (sums the four
     armor slots, **cached per player**, invalidated from the equipment
@@ -699,18 +703,23 @@ Details + line numbers in [docs/research/](docs/research/).
   adjacency and zone-owned biome palettes.
   **WP40 target contract (decided 2026-08-11):** exactly **38** land zones in
   `docs/design/world_zones.md` §§8–9, each with one `race_region`; six
-  start/home/capital chains, a mixed mirrored 31–40 central PvP corridor, all
-  41+ front zones contested, and two level-60 dragon endpoints. The hybrid-v7
+  start/home/capital chains, every ordinary level-31–60 zone contested, and
+  two level-60 dragon endpoints. The hybrid-v7
   pass and `grug_zones` API are §13; the 32-seed acceptance gate is §14.
-  Race region, territory and PvP rule are independent fields. The six shared
-  front zones have no construction owner: both factions may dig registered
-  resource nodes there, but neither may alter ordinary terrain or place nodes.
+  Race region, territory and PvP rule are independent fields. Every ordinary
+  level-31–60 land zone is contested and editable by both factions. Roads,
+  camp shells, tents, fences and battlefield dressing remain mutable but
+  claim-excluded; only bounded functional anchors, irreplaceable route pieces
+  and renewable-resource sockets receive hard protection.
   Gameplay consumers use `grug_zones.biome_at`, never the engine biomemap,
   because the authored surface pass—not climate competition—owns logical
-  biome identity. The six regional gemstone names remain material-design
-  data; map code stores race-gem slots. Each endpoint apex camp has exactly
-  12 renewable nodes, two per gem, and both factions can mine them while the
-  camp shell remains protected.
+  biome identity. Material design owns the complete `race_region` mapping of
+  G1, G2, cultural material and signature wood; map code stores only the
+  region identity and placement data needed to consume that mapping. Each
+  endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
+  factions may mine them; the small functional anchor and sockets are
+  protected, while the surrounding camp shell remains mutable and
+  claim-excluded.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
   (`colors.json`, height shading) and pushes them via
   `core.dynamic_add_media` — the best base for our global map. Minimap

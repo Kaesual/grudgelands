@@ -12,7 +12,7 @@ before WP13/WP33 author new surface content.
 
 - Target surface model (`world_zones.md`): every named zone owns a fixed
   allowed-biome list and level range; outer race starts are 1–10, home zones
-  11–20, heartland 21–40 and most faction-contact land 41–60. The complete
+  11–20, heartland 21–30 and every frontier/contact zone 31–60. The complete
   38-zone palette is `world_zones.md` §8. No biome outside a zone's list may
   win there.
 - Mob level ALWAYS comes from `grug_core.mob_level_at(pos)`: named-zone
@@ -335,14 +335,14 @@ as the "rainforest-litter-only 18.8 %" above — they are the same columns.
 (An earlier revision of this paragraph named x −800..−351 and x −200..200 as
 the residual; those two are 13.75 pp together, a third of it.)
 
-What the table actually shows is **one defect repeated once per band, not an
-east/west asymmetry**: wherever a band's settled cuboid, its wild partner and
-the flank strip do not all overlap, the leftover strip has a single eligible
-registration. Closing it is a geometry question — a further registration
-whose cuboid covers x 201..800, and the mirrored gaps in the centre and the
-west, where the Throng still has no equivalent of `grug_deep_forest_front`
-or of the deep forest's x −900..1250 back slab (`grug_badlands` is only
-x −700..700, z 1201..1700). **Still open**, deliberately not fixed in WP36.
+What the table actually shows is **one shipped WP36 legacy gap repeated once
+per band, not an east/west asymmetry**: wherever a band's settled cuboid, its
+wild partner and the flank strip do not all overlap, the leftover strip has a
+single eligible registration. The old cuboid layout therefore lacks a Throng
+equivalent of `grug_deep_forest_front` and the deep forest's x −900..1250 back
+slab (`grug_badlands` is only x −700..700, z 1201..1700). WP40 replaces these
+registrations with authoritative named-zone palettes and must prove the final
+coverage; extending the obsolete cuboids is not target work.
 
 † The three universal biomes are registered **once**, not as a mirrored
 pair — a biome name may exist only once in the engine. Swamp and beach
@@ -411,16 +411,12 @@ Notes:
 - The single shared `grug_ocean` above replaces the per-biome
   sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
   one ocean is simpler and the only way to cover the open sea).
-- **Reef band — decided 2026-08-07, not yet catalogued**: the coastal
-  sea around the continents *and* around every housing isle
-  (world.md §2b: 1500 / 150 nodes) becomes a real biome with coral,
-  kelp, fish and harmless-to-low-level shore wildlife, distinct from the
-  bare `grug_ocean` sand bottom that carries the strait and the open
-  sea. It is the counterpart to the deep sea's lethality: pretty and
-  inhabited near land, deadly away from it. The registration, the flora
-  and the mob rows are open work for the ocean-content WP — including
-  whether Shore Crab and Reef Lurker (§8.3, deferred for want of a
-  licensed model) come back with it.
+- **Target coastal habitat**: the exact 80-node exterior shelf around each
+  planned mainland or dragon-island footprint carries coral, kelp, fish and
+  harmless-to-low-level shore wildlife, distinct from immutable deep ocean.
+  Planned bays/lakes/rivers remain zone water and receive their logical-biome
+  dressing instead. Shore Crab and Reef Lurker remain deferred for want of a
+  licensed model (§8.3).
 - **Where the beaches really are**: the ocean mask carves the coastline
   0..150 nodes INSIDE the rectangle, so the strait-facing shoreline sits
   at |z| ≈ 100..250 — i.e. inside the **war_coast** zone (|z| ≤ 300),
@@ -681,12 +677,12 @@ keeps every healing herb bound to a journey into its own biome, and it
 gives Cooking a supply line that farming can later take over without
 ever touching alchemy's.
 
-**Where farming happens** (decided 2026-08-08): on a player's **own
-housing isle** (`world.md` §5.7) — protected ground, so a crop is safe
-from another player's spade — and **only cooking ingredients grow
-there**: the `[food]` and `[spice Tn]` lines of this section, never a
-`[herb Tn]` and never a `[food found-only]`. The "Farmable later" column
-above is therefore also the isle's permitted plant set.
+**Where farming happens**: inside an active open-world housing claim
+(`housing.md`; world integration summary in `world.md` §5), where the
+owner/trusted ACL protects the crop. Only cooking ingredients grow there: the
+`[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]`, cultural
+resource or `[food found-only]`. The "Farmable later" column above is therefore
+also the claim's permitted plant set.
 
 **MVP scope**: only the plants listed below spawn — a handful of cooking
 ingredients plus the six herbs. More herbs, more cooking recipes and the
@@ -1288,10 +1284,9 @@ player is warned by the world rather than ambushed by a rule.
   everything else. The fiction reads as the local dead being drawn
   upward from below rather than as an invasion, which is exactly what
   this band is.
-- **below −1000: the deep band's own servants** (`story.md` §1 — the
-  ancient thing below stretches its hands up; these are its household,
-  not local wildlife). Their families are catalogued in §3 as they are
-  authored.
+- **below −1000: the deep band's own servants**, not local wildlife. The
+  dedicated content roster plugs into this same pulse and accounting model;
+  the ordinary surface/cave ABM rows do not become a second deep-spawn source.
 
 The consequence is worth stating: because the shallow half reuses rows
 that already exist, **the depth work can ship without a single new
@@ -1328,6 +1323,46 @@ license-clean, keep attribution.
 
 ## 6. Base-material map (both continents feed all base recipes)
 
+The universal metal/pick spine is available on both faction sides and never
+requires a regional gem or cultural material: Bronze (Copper + Tin), Iron,
+Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
+(Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
+Quartz is the universal T1 jewelry mineral. Emberglass and Abyssal Crystal are
+universal fantastic progression resources rather than regional gems.
+
+Regional geology follows the owning `race_region` column at every depth:
+
+| Faction | Race region | G1 | G2 | Cultural material | Signature wood |
+|---|---|---|---|---|---|
+| Accord | Human | Citrine | Diamond | Sunwax | Oak |
+| Accord | Dwarf | Garnet | Sapphire | Runeslate | Mountain Pine |
+| Accord | Elf | Jade | Sapphire | Moonresin | Silverwood |
+| Throng | Orc | Garnet | Diamond | Red Ochre | Spikethorn Acacia |
+| Throng | Troll | Jade | Ruby | Spirit Resin | Kapok |
+| Throng | Undead | Citrine | Ruby | Gravesalt | Gravewood |
+
+- G1 begins sparsely in the upper progression, rises through T4 and retains
+  its T4 density in T5 and ordinary T6. G2 is sparse in T4, doubles in T5 and
+  reaches four times its T4 density in ordinary T6; first-pass targets are
+  approximately one eligible ore per species per 12,000/6,000/3,000 host
+  nodes. Every G2 node requires a T4 pick to harvest.
+- Every culture has an ordinary home-region surface source sufficient for
+  architecture, decoration, quests and trade. A concentrated T4 source also
+  exists in its contested level-31+ zones or projected deep column. Foreign
+  cultural material is optional PvP-counter input, never base progression.
+- At y = −701 and below, territory is contested but the surface race region
+  continues to select G1/G2 and cultural deposits. Players can mine through
+  opposing deep columns without gaining ownership of the surface above.
+- Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The
+  initial density target is approximately one crystal per 2,048 eligible host
+  nodes through T5/T6. Ordinary ores, G1/G2 and Abyssal Crystal receive +25%
+  density at y = −1500..−1999 and +50% at y ≤ −2000, capped and implemented as
+  placement rather than respawn.
+- The Wyrmglass Crown and Stormscale Summit apex camps each contain exactly 12
+  protected renewable gem sockets: two Citrine, two Garnet, two Jade, two
+  Diamond, two Sapphire and two Ruby. They are a shared bonus and never replace
+  deficient finite regional supply.
+
 | Material | Tier | Accord sources | Throng sources |
 |----------|------|------------------|---------------|
 | Light leather `[leather]` | 1–15 | boars | plague boars |
@@ -1349,7 +1384,9 @@ license-clean, keep attribution.
 | Spices T3 | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
-| Ores/gems | depth axis | universal underground + golem drops | same |
+| Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
+| G1/G2 regional gems | depth + race-region axis | Citrine/Garnet/Jade + Diamond/Sapphire; foreign Ruby through contested/deep/island/trade routes | Citrine/Garnet/Jade + Diamond/Ruby; foreign Sapphire through contested/deep/island/trade routes |
+| Cultural materials | surface + contested concentration | Sunwax, Runeslate, Moonresin | Red Ochre, Spirit Resin, Gravesalt |
 
 Every row has at least one source per continent. Race woods are
 deliberately asymmetric (identity); base recipes accept `group:wood`.

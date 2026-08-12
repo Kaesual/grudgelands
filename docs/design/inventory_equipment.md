@@ -1,6 +1,6 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-08-10; established 2026-08-06).
+Decided spec (last revised 2026-08-12; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
@@ -111,13 +111,37 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
   MVP** as the **Goldsmith's** exclusive family (professions.md §2,
-  items_crafting.md §3.6b) with their own enchant pool
-  (items_crafting.md §6.2). Trinkets carry **no armor class and no class
+  items_crafting.md §3.6b). A passive trinket has exactly **one primary-
+  attribute prefix, one HP/Mana/Crit suffix and one authored trinket
+  special** (items_crafting.md §6.2). It has no base-stat line, armor,
+  durability, refinement state, cultural finish or extra ordinary-special
+  channel. Trinkets carry **no armor class and no class
   rank binding** — every class wears both slots, and they add no armor
   points (combat_stats.md §2), which is why the 60 % armor cap is
   untouched by them. The Unique quality tier keeps the
   ship-the-frame-first strategy on its own; the trinket slots no longer
-  share it.
+  share it. The same registered trinket identity may not occupy both slots;
+  different identities may, with each special's authored two-slot stacking
+  rule controlling their combined effect.
+- **Equipment effect channels are separate per stack** (integrated
+  2026-08-12):
+  - Ordinary equipment retains its refinement plus up to two prefixes and two
+    suffixes.
+  - Exactly the six combat families weapon, offhand, head, chest, legs and feet
+    may additionally carry one **cultural finish**. The finish is an in-place,
+    deterministic culture/family effect; trinkets are never eligible. Different
+    cultures may be mixed freely across the six slots.
+  - An item may also carry at most one **PvP special**, independent of its
+    prefix/suffix and cultural-finish data. Applying another target-race special
+    overwrites that channel at full cost; applying the identical target again
+    is rejected before consuming anything.
+  - A cultural finish and a PvP special may coexist on the same eligible item.
+    Neither consumes an affix slot, changes the base identity/material tier,
+    nor creates a parallel registered-item catalog. Ordinary stat caps apply
+    after all equipment sources have been summed; the Character page displays
+    capped and raw overcap values.
+  The complete effect, replacement, recipe and tooltip rules live in
+  `items_crafting.md` §4/§6.
 - No ring/neck/shoulder slots in the MVP.
 - Slots are **player-inventory lists** with group-filtered `allow_put`
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
@@ -173,9 +197,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 
 ## 4. Crafting model (revised 2026-08-06 — replaces the workbench-UI split)
 
-- **Everything is crafted in the 3×3 grid**, base recipes and profession
+- **Ordinary items are crafted in the 3×3 grid**, base recipes and profession
   recipes alike; profession items are **multi-stage** (ore → ingot →
-  component → item).
+  component → item). Cultural finishing and weapon-counter preparation are
+  deliberate exceptions: each is a transactional in-place workstation
+  operation on one specific stack, so its refinement, quality, affixes,
+  durability and unrelated metadata survive. They create no intermediate kit
+  or parallel item identity (`items_crafting.md` §4).
 - **Recipes are gated by profession progression**: laying the right
   materials into the grid without having unlocked the recipe produces
   nothing (`craft_predict` veto). What a character has unlocked is
@@ -192,7 +220,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   tanning rack, tailor bench, alchemy table, and one each for the
   Woodcarver and the Goldsmith). Keeps cities/camps as crafting magnets;
   base recipes work anywhere.
-- Workbenches are initially **uncraftable and stand only in the
+- Public workbenches are initially **uncraftable and stand in the
   capitals/villages** (placement with WP13); job-supply vendors (thread,
   flux, vials) stand next to them (materials design:
-  items_crafting.md).
+  items_crafting.md). Player-owned profession workstations may also stand
+  inside a valid open-world housing claim under
+  [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
+  profession tier or material the character has not unlocked.

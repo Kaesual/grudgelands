@@ -6,10 +6,10 @@ this file is the spec a later work package implements, not a description of
 shipped behaviour. It exists so that the WP can be cut without re-opening the
 design.
 
-Neighbouring rules: the named-zone faction front `world_zones.md`, travel and
-waypoints `world.md` §6, the revised ocean/dragon-island rules staged in
-`TODO-design-material-progression.md`, open-world claims staged in
-`TODO-design-housing.md`, the four mastery names in `items_crafting.md` §2.1,
+Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
+ocean/dragon-island integration in `world.md`, the complete open-world Claim
+Stone contract in `housing.md`, playable-boat behavior tracked in
+`TODO-design-boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
 
@@ -98,7 +98,7 @@ arbitrary fixed-price wall.
   taming items — `mobs:saddle`, `mobs:lasso`, `mobs:net`
   (`mods/ENTITIES/mobs/crafts.lua:119`, `:138`, `:231`) — are removed with the
   vendored-recipe cleanup. A mount is a purchase, exactly like a tome or
-  a depth step.
+  a permanent character upgrade.
 - **Each purchased tier is an owner-bound inventory/hotbar item.** The item is
   the summon/dismount action; it is never consumed, removed from the inventory
   or dropped into the world while mounting or dismounting. Permanent player
@@ -218,7 +218,7 @@ owned by WP40.
   channels are immutable at every depth, and the flight classification may not
   accidentally create a bridge, tunnel or aerial-access exception.
 - The obsolete ten-second mounted `Exhausted` rule and the rectangular
-  `grug_core.open_sea_at` geometry do not govern flight in the target map.
+  legacy open-sea geometry do not govern flight in the target map.
   Swimming, boats and any later deep-ocean damage effect remain ocean-system
   concerns rather than mount movement rules.
 
@@ -232,9 +232,7 @@ owned by WP40.
   immediately under §3.1, so permission to fly is not safety or immunity.
 - Open-world housing claims add no special mount ban. They inherit the ordinary
   mount rule of their peaceful home-faction zone; a claim boundary itself never
-  summons or dismounts a mount.
-- The retired private housing isles, their no-mount rings and their waypoint
-  access no longer exist in the target design.
+  summons or dismounts a mount (`housing.md`; `world.md` §5).
 
 ### 4.3 Enemy territory: land tiers yes, flying tiers no
 
@@ -269,14 +267,13 @@ defence instead of engaging with it. `world.md` §6's ban on enemy-territory
 waypoints closes the same bypass for teleportation.
 
 **The mechanism is the central territory/zone lookup, never a hand-picked
-coordinate.** In the shipped WP18 map `grug_core.territory_at(pos)` returns
-`"accord"`, `"throng"` or `"ocean"`; WP40 replaces the rectangular geometry
-behind that answer without changing the ownership question. Flight is refused
-wherever the lookup equals the **opposing** id of the rider's own faction
+coordinate.** The target `grug_zones.faction_at(pos)` returns `"accord"`,
+`"throng"` or nil independently from `race_region`; its companion mount/ocean
+classification supplies the warning and hard-flight states. Flight is refused
+wherever faction lookup equals the **opposing** id of the rider's own faction
 (`grug_factions.get_faction(player)`,
 `mods/PLAYER/grug_factions/init.lua:20-26`; the opposing id from
-`grug_core.opposing_faction`, `grug_core/init.lua:576-578`). This is the same
-derived-geometry discipline §4.1 states for `open_sea_at`: literal coordinates
+`grug_core.opposing_faction`, `grug_core/init.lua:576-578`). Literal coordinates
 are invalid once the authored zone graph replaces WP18. A character without a
 faction cannot have bought a mount, so the nil case needs no rule of its own.
 
