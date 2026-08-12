@@ -731,7 +731,8 @@ identity or adjacency.
 
 **Recommendation.** Keep horizontal classification and vertical policy
 separate. A policy query should first classify x/z, then apply precedence in a
-documented order. Against the newer TODO model, the feasibility ordering is:
+documented order. Against the authoritative world and housing specifications,
+the feasibility ordering is:
 
 1. deep ocean or an immutable dragon channel: immutable for every y;
 2. any non-deep-ocean column at y <= -701: universal contested/editable;
@@ -825,8 +826,8 @@ needs the final current top, scan the VoxelManip content within a bounded band
 and classify nodes by an explicit replaceable-content set.
 
 **Recommendation.** Make the ordinary surface rewrite band shallow and
-design-owned. Its exact thickness is an open WP40 parameter, but its semantics
-must be:
+design-owned. Its exact thickness is an engineering parameter assigned to
+item 2 of WP40's mandatory reviewed pre-code brief; its semantics must be:
 
 - no write below the band unless a named feature (ocean, river, road cut,
   structure foundation, safety clearance) owns a deeper envelope;
@@ -937,7 +938,9 @@ immutable authored structure/channel shell
 ```
 
 This is an implementation recommendation, not a design change. The exact
-resource-versus-dungeon rule remains an open content decision.
+resource-versus-dungeon precedence is an engineering choice assigned to items
+2 and 4 of WP40's mandatory reviewed pre-code brief; it is not an open content
+or owner-design question.
 
 ### Rivers and lakes
 
@@ -1589,9 +1592,11 @@ separate.
   (`mods/MAPGEN/grug_mapgen/structures.lua:78-126`).
 - **Alternatives:** fixed authored y; global analytic v7-point sampling; an
   immutable precomputed anchor-height table.
-- **Recommendation:** define one of these in design before implementation,
-  preferably a fixed/seed-derived analytic plateau profile. Do not persist a
-  height chosen by whichever generated chunk arrives first.
+- **Recommendation:** freeze one project-owned analytic choice in item 1 of
+  WP40's mandatory reviewed pre-code engineering brief, preferably a
+  fixed/seed-derived analytic plateau profile. Do not persist a height chosen
+  by whichever generated chunk arrives first; no further owner-design decision
+  is required.
 
 #### R8 — A broad main-environment overlay would duplicate writes and cause lag
 
@@ -1683,8 +1688,9 @@ separate.
   from the final generated terrain for every seed; reserve large authored flat
   housing subareas.
 - **Recommendation:** combine authored capacity corridors with exact final-node
-  validation and use simulated packing on all 32 seeds. Decide the treatment of
-  incidental lakes before accepting capacity.
+  validation and use simulated packing on all 32 seeds. Apply the planned-water
+  normalization fixed in the WP40 engineering resolution before accepting
+  capacity.
 
 #### R15 — Flight-proof island channels require more than a coastline test
 
@@ -1889,6 +1895,8 @@ This study does not rely on web documentation or behavior from a newer Luanti
 release. It does not benchmark the proposed implementation because no
 implementation was authorized or created. Performance conclusions are
 operation-count models derived from the pinned source and must be replaced by
-measurements during WP40 prototyping. Design conflicts are reported rather
-than resolved; where they conflict, the newer material-progression and housing
-TODO model is the feasibility target as instructed.
+measurements during WP40 prototyping. The final design conflicts were resolved
+in the authoritative material, world-zone and housing specifications; those
+documents are the target. Only the engineering choices assigned to the
+reviewed six-part pre-code brief and the required 32-seed, capacity and
+performance measurements remain as WP40 integration gates.

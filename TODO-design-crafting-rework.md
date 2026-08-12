@@ -3,7 +3,8 @@
 The crafting/professions/materials rework was decided on 2026-08-07 and
 folded into `docs/design/` (commit `d5baf03`): the two ladders
 (`items_crafting.md` §2.1), the six-tier material ladder (§3.0), one item
-per concept (§3.0.3), depth gating by rock strata (§3.0.4), the six
+per concept (§3.0.3), exact natural pick depths plus separate harvest tiers
+(§3.0.4), the six
 material-cut professions (`professions.md` §2), the one recipe book per
 profession (§2.2) with the surviving keystones (§2.3), refinement and the
 prefix/suffix affixes (§6b), the herb/spice split
@@ -47,8 +48,7 @@ What is already authored:
 - Prose, but **not** cut by tier: Blacksmith shields "Journeyman+",
   metal fittings, whetstone/polish kits (§3.3, §7); Leatherworker armor
   kits "from Journeyman up" and the quiver (§3.4); Woodcarver bows
-  (Phase 2, §3.6a); Goldsmith trinkets and the 10 → 20 % mining gem bonus
-  (§3.6b).
+  (Phase 2, §3.6a); Goldsmith trinkets (§3.6b).
 
 Open: an explicit **profession × mastery tier** table with the material
 cost of every row, for Blacksmith, Leatherworker, Woodcarver and
@@ -150,11 +150,10 @@ second bag axis.
 
 ### A4 — Remaining profession keystones
 
-`items_crafting.md` §2.3 carries keystones for **T2/T3/T4 only**, and its
-Woodcarver and Goldsmith rows are empty and point here. The rule is
-decided (a keystone is the redemption token that opens a book group; the
-materials prove the player has been in the ring that produces them); the
-lists are not.
+`items_crafting.md` §2.3 carries only the keystone cells whose materials are
+authored and omits this question's missing rows. The rule is decided (a
+keystone is the redemption token that opens a book group; the materials prove
+the player has been in the region that produces them); the lists below are not.
 
 Still missing: **T5 and T6 columns for Blacksmith, Leatherworker, Tailor,
 Alchemist and Woodcarver**, plus the **T2–T4 Woodcarver rows**.
@@ -177,8 +176,8 @@ Blacksmith fittings it cross-buys (§3.6a), not a race-exclusive wood.
 
 *Lands in*: `items_crafting.md` §2.3 (extend the table to T2–T6 × 6
 professions).
-**Decision:** Goldsmith decided; all rows listed above remain _open_ and
-**block WP10** (the book cannot gate groups without them).
+**Decision:** _open_ — all rows listed above **block WP10** (the book cannot
+gate groups without them).
 
 ### A5 — T5/T6 leather and bolt grades, and the Woodcarver's wood grades
 
@@ -372,6 +371,32 @@ today it states as fact something the shipped filter contradicts.
 *Lands in*: `items_crafting.md` §3.4/§3.8, `professions.md` §2, and
 (if (c)) `inventory_equipment.md` §2's rationale.
 **Decision:** _open_ — affects WP5's drop tables and WP10's scope.
+
+### C12 — Does the bow foundation receive a playable ranged class?
+
+The item foundation is already decided: bows follow the material weapon curve,
+arrows are stackable ammunition, the Woodcarver owns bows and the Leatherworker
+owns quivers. The current MVP classes and the named Phase-2 additions contain
+no Hunter-like bow user, so those registrations would have no designed combat
+consumer.
+
+Options:
+
+- **(a) Add a Hunter-like ranged class** and author its resource, baseline
+  attack, abilities, armor rank and talent identity around the bow foundation.
+- **(b) Keep the foundation inactive** until a later class package explicitly
+  adopts it; no player-facing bow, arrow or quiver recipe ships in advance.
+- **(c) Assign bows to one already planned Phase-2 class**, then revise that
+  class's kit around a ranged baseline rather than adding another class.
+
+Recommendation: **(b)** until a class package can evaluate (a) and (c) against
+the complete seven-class role roster. It preserves the license-checked item
+work without shipping a dead equipment line or silently redesigning a class.
+
+*Lands in*: `docs/design/classes.md`, `docs/design/items_crafting.md` §9 and
+`docs/design/professions.md` §5.
+**Decision:** _open_ — blocks any playable bow consumer, not the existing item
+foundation or its profession ownership.
 
 ---
 
@@ -598,5 +623,6 @@ magnitudes **block WP10**'s cooking book.
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
+| C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D20 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
 | E21 | Cooking recipe lists per tier, restore percentages and buff magnitudes | **WP10** |

@@ -77,10 +77,11 @@ reissue. The Home Stone stores a bound claim id, channels for ten seconds and
 has no capital fallback.
 
 The Wyrmglass Crown and Stormscale Summit are equivalent contested offshore
-dragon destinations. Each contains one protected apex camp with twelve
-renewable sockets: two each of Citrine, Garnet, Jade, Diamond, Sapphire and
-Ruby. Both factions may use them while no player may privatize their
-functional anchors.
+dragon destinations. Each contains an apex camp whose shell, tents and
+dressing remain mutable and claim-excluded. Only its small functional anchor
+and twelve renewable sockets—two each of Citrine, Garnet, Jade, Diamond,
+Sapphire and Ruby—are protected; both factions may use them and no player may
+privatize them.
 
 ### Materials, items and professions
 
@@ -111,8 +112,8 @@ slots, an offhand, two trinkets and four Tailor-made bags.
 than class: Blacksmith, Leatherworker, Tailor, Woodcarver, Goldsmith and
 Alchemist. Characters freely choose two; Cooking and First Aid are universal.
 Goldsmith owns Quartz, the six regional gems, Rough-to-Cut processing,
-Settings and both trinket slots. Mining, smelting and universal base-item
-crafting remain open to everyone.
+Settings, both trinket slots and the exact natural-gem yield bonus. Mining,
+smelting and universal base-item crafting remain open to everyone.
 
 ### Economy
 
@@ -149,9 +150,10 @@ cooldown.
 [Progression](docs/design/progression.md) targets level 60 in roughly 10–20
 played hours, with one talent point every three levels and active capstones.
 Death returns a player to their race's starting settlement with inventory
-intact and currently removes 25% of the current level's XP progress without
-de-leveling. Whether PvP deaths should be exempt remains deliberately open
-before WP9; no other document assumes an answer.
+intact; the decided PvE penalty removes 25% of current-level XP progress
+without de-leveling. The separate treatment of authoritatively attributed PvP
+deaths remains in [TODO-design-pvp-death.md](TODO-design-pvp-death.md) before
+WP9; no target-design document assumes an answer.
 
 ### Biomes, mobs and mounts
 
@@ -197,12 +199,12 @@ PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
-[progression §3](docs/design/progression.md), respectively.
+[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
 **Ready to start next:** WP43 is first because it replaces the material legacy
 used by the map/item/economy chain; WP37 follows in prerequisite priority.
 Then WP11, WP14, WP20, WP21 and WP8 are independently ready behind shipped
-dependencies. WP40 is design-ready only after WP43 and still requires its
+dependencies. WP40 is design-ready, but implementation waits for WP43 and its
 reviewed six-part engineering brief plus seed/capacity/performance evidence;
 WP44 also follows WP43. WP34 is not next: it waits for map, materials,
 structures and economy.

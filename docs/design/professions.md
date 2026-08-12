@@ -48,19 +48,8 @@ Two free main professions per player, unchanged. The roster is organised
 | **Leatherworker** | light → cured → heavy → scaled leather | Leather armor (4 slots), later **quivers** |
 | **Tailor** | linen → woven → heavy → silkweave | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
 | **Woodcarver** | wood incl. silverwood/gravewood; **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
-| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and natural-gem bonus yield |
+| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and the 10%/20% natural-gem yield roll |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
-
-**One MVP caveat, on the Leatherworker.** The **Warrior can wear
-leather** — a class wears its own rank and everything below
-(`inventory_equipment.md` §2), so rank-2 armor is legal for rank-3
-characters. But at equal tier leather is strictly less armor than metal,
-so a Warrior has no *reason* to choose it, and the Rogue who would is
-Phase 2. Whether the leather line registers in the MVP and what would
-make it attractive is open in `TODO-design-crafting-rework.md` (C10).
-The chain, the curve and the recipes are authored either way, and the
-profession also ships on its armor kits, its quiver and its cross-supply
-to Tailors and Alchemists (§3).
 
 ### 2.1 The coverage is complete and overlap-free
 
@@ -117,9 +106,11 @@ Leatherworker (§3 below).
   (`items_crafting.md` §3.6).
 - **Gem Hunter merges into the Goldsmith.** Its useful gathering identity
   survives as bonus yield from a successfully harvested natural or renewable
-  gem node (`items_crafting.md` §3.6b). The old Gem Detector was tied to
-  deleted private-island treasure clusters and is retired rather than given a
-  continental radar role.
+  gem node (`items_crafting.md` §3.6b): **10% base chance at Apprentice, 20%
+  from Journeyman onward**, rolled once after a valid harvest and granting one
+  additional raw gem item of the harvested species. The old Gem Detector was
+  tied to deleted private-island treasure clusters and is retired rather than
+  given a continental radar role.
 
 Both disappear as separate professions. They were the two asymmetric
 stubs in the old roster — three tiers and two tiers against everyone
@@ -196,12 +187,10 @@ in the game still comes from a crafter or a boss.
   what every profession does to its own refined items
   (`items_crafting.md` §6b), not a seventh profession that would take a
   cut of all six.
-- **Ranged-weapon prerequisite — still open**: there is no ranged-weapon
-  system and no Hunter-like class in the current plan (MVP:
-  Warrior/Mage/Priest; Phase 2 adds Paladin/Rogue/Warlock/Shaman).
-  Whether a bow system + a ranged class come is a Phase 2 decision to
-  make explicitly. The item path is specced and has an owner
-  (`items_crafting.md` §9); only the class decision is missing.
+- **The bow foundation has no current consumer.** Its item path and profession
+  ownership are fixed (`items_crafting.md` §9), but no current or committed
+  class uses a bow baseline. Bows, arrows and quivers therefore remain an
+  inactive Phase-2 substrate rather than player-facing recipes.
 - Cultural finishing is the scalable race/profession hook
   (`items_crafting.md` §4): a crafter applies only their own culture's fixed
   effects to families their profession owns, while finished stacks remain

@@ -306,7 +306,7 @@ Item: `grug_items:book_<prof>` ("Book of Smithing"), tool, stack_max 1,
   This overrides the old "Cooking and First Aid have no tomes" line in
   §2.3.
 
-### 2.3 Tier keystones (the zone gate — materials, exact)
+### 2.3 Authored tier keystones (the zone gate)
 
 **Reframed 2026-08-07.** The keystone is no longer a tome *ingredient*;
 it is the **redemption token that opens a group in the book** (§2.2). The
@@ -318,13 +318,12 @@ the meta key advances.
 
 Columns are **book groups**, i.e. gear tiers (§3.0):
 
-| Profession | T2 group | T3 group | T4 group |
+| Profession with authored rows | T2 group | T3 group | T4 group |
 |---|---|---|---|
 | Blacksmith | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` |
 | Leatherworker | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy |
 | Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
 | Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
-| Woodcarver | — (`TODO-design-crafting-rework`) | — | — |
 | Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass |
 
 - **T1 opens with the profession** — no keystone; it is the tier every
@@ -336,8 +335,7 @@ Columns are **book groups**, i.e. gear tiers (§3.0):
   factions equivalent acquisition time. They are ordinary combat proofs,
   never G2 gems, loose Abyssal Crystal, `group:grug_rare_trophy` or Fallen
   Crowns.
-- Other professions' T5/T6 rows follow their decided material-chain shape.
-  No profession keystone may make a universal pick circular.
+- No profession keystone may make a universal pick circular.
 - The **Herbalism and Gem Hunter rows are deleted** (2026-08-07):
   Herbalism merged into the Alchemist, Gem Hunter into the Goldsmith
   (professions.md §2), so the asymmetric "3 tiers"/"2 tiers" stubs have
@@ -787,10 +785,11 @@ pick 3.
 an offhand of metal), the **metal fittings** the Woodcarver buys (§3.6a),
 armor polish and whetstone kits (§7), and the cultural/PvP operations of §4.
 
-Ore access gating is now the depth/stratum rule of §3.0.4, not a
-hand-written ore whitelist: a tier-n pick opens the tier-n stratum, and
-§3.0.1's placement table says which ore lives there — a lead metal one
-band above its own tier, a gem in its own band.
+Ore access follows §3.0.4's three separate checks: territory/protection, the
+pick's exact maximum natural y-depth and the resource's independent minimum
+harvest tier. Cosmetic strata never grant access. Natural distribution comes
+from §3.0.1 and the column's `race_region`, not from a tier-matched stratum or
+a lead-metal-band rule.
 
 > **Superseded 2026-08-07 (§3.0.3):** ~~"Vendor floor sells up to the
 > bronze pick — iron+ picks are smith products (mining stays open to
@@ -803,9 +802,8 @@ band above its own tier, a gem in its own band.
 
 ### 3.4 Leatherworker (tanning rack) — leather
 
-**Material chain**: hide + thread → leather, 1:1 per grade. **T1 light
-leather, T2 cured leather, T3 heavy leather, T4 scaled hide**; the T5 and
-T6 grades are listed in `TODO-design-crafting-rework.md`.
+**Material chain**: hide + thread → leather, 1:1 per grade. Authored grades are
+**T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**.
 
 **Refines and enchants**: leather armor, all four slots. Base recipes use
 the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather.
@@ -819,27 +817,12 @@ Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
 buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
 grips.
 
-**MVP note (corrected 2026-08-07):** an earlier draft of this section
-claimed no MVP class could wear rank-2 armor. That is **wrong** — a
-class wears its own rank *and everything below* (`inventory_equipment.md`
-§2), so the **Warrior (rank 3) can wear leather**, and the equip filter
-in `grug_inventory/equipment.lua` refuses only ranks *above* the
-character's. What is genuinely unsettled is whether a Warrior ever
-*wants* leather: at equal tier it is strictly less armor than metal, so
-without a dodge or speed advantage the line is a legal but pointless
-choice. Whether the leather line therefore registers in the MVP, and
-what would make it worth wearing, is open in
-`TODO-design-crafting-rework.md` (C10). The curve, the chain and the
-recipes above are authored either way, and the Rogue (Phase 2) is the
-line's intended main customer.
-
 ### 3.5 Tailor (tailor bench) — cloth, bags, the caster offhand
 
-**Material chain**: 2 cloth + thread → bolt. **T1 linen scrap → patch
-bolt** (zombies drop scraps from L1 — Tailors start in safe starting zones),
-**T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy bolt**, **T4
-heavy + spider silk → silkweave bolt**; the T5 and T6 bolts are listed in
-`TODO-design-crafting-rework.md`.
+**Material chain**: 2 cloth + thread → bolt. Authored grades are **T1 linen
+scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
+starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
+bolt** and **T4 heavy + spider silk → silkweave bolt**.
 
 **Refines and enchants**: cloth armor, all four slots. Base recipes:
 robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
@@ -918,9 +901,9 @@ left wands and orbs drop-only: before the Woodcarver, a Mage or Priest
 had **no craftable weapon at all**, which is the only outright hole the
 old roster had.
 
-**Material chain**: wood, including the per-race woods of biomes_mobs §5
-— silverwood and gravewood among them. Grades follow the six tiers; the
-tier grade list is in `TODO-design-crafting-rework.md`.
+**Material chain**: wood, including the per-race woods of biomes_mobs §5 —
+silverwood and gravewood among them. Signature woods remain cultural inputs,
+not a mandatory universal tier ladder.
 
 **Refines and enchants**: staves, wands, scepters, orbs — the whole
 caster weapon family of §3.2, main hand, 1H and 2H.
@@ -953,10 +936,12 @@ equipment recipe consumes Cut Gems where a gem is required.
 - both generic trinket slots and the six core trinket identities of §6.2;
 - Rough → Cut gem refinement;
 - jewelry Settings, ornament components and trinket assembly;
-- bonus yield from a **successfully harvested** natural or renewable gem node.
-  The bonus can add only that node's species. It never fires on stone, an
-  under-tier shattered node or a failed harvest, and never converts one gem
-  into another. Dragon-camp yield audits include it.
+- one bonus-yield roll after a **successfully harvested** natural or renewable
+  gem node: **10% base chance at Apprentice, 20% from Journeyman onward**. A
+  success grants exactly one additional raw gem item of the harvested species.
+  The roll never fires on stone, an under-tier shattered node or any failed
+  harvest and never converts one gem into another. Dragon-camp yield audits
+  include it.
 
 The Gem Detector and Dowsing Rod are retired. Continental mining remains
 exploration rather than direction/radar gameplay, and the Goldsmith already
@@ -990,8 +975,8 @@ trophy or cross-profession component.
 
 Neither of these costs a main profession slot (professions.md §1).
 
-- **Cooking** (trainer, free): cooked meat/fish, Hearty Stew (meat +
-  potato/corn), Hunter's Feast (meat ×2 + melon + mushroom).
+- **Cooking** (trainer, free): cooked foods use regional ingredients and the
+  Cooking recipe book described below.
   **Raw food restores; cooked food restores AND buffs** (decided
   2026-08-08 — this replaces the old "raw food still fuels resting
   regen, cooking adds the buff, not the regen", which had the shape
@@ -1002,14 +987,13 @@ Neither of these costs a main profession slot (professions.md §1).
     interrupted by damage or by movement — at **4 % max HP/s**.
   - **Cooked food gives both**: a restore *and* a buff. The restore runs
     through the **same resting channel at twice the rate, 8 % max HP/s**,
-    and a dish carries the percentage of max HP one serving delivers
-    (worked example: potatoes with boar steak, **30 % of max HP** plus a
-    Strength buff). Cooking is therefore the **faster rest**, never a
+    and each dish carries its authored percentage of max HP per serving.
+    Cooking is therefore the **faster rest**, never a
     second instant heal: the instant slot stays the Alchemist's
     (§3.6 Healing Potion — 30 % max HP instantly, usable in combat, 60 s
-    shared cooldown). A cooked dish that restores the same 30 % costs
-    ~4 s of standing still and dies to a single hit or a single step;
-    the potion costs a cooldown and nothing else. That is the entire
+    shared cooldown). A cooked restore costs uninterrupted standing time and
+    dies to a single hit or a single step; the potion costs a cooldown and
+    nothing else. That is the entire
     difference between the two, and it is what keeps the potion worth
     carrying.
   - **Only one food buff is active at a time, and the most recently
@@ -1018,13 +1002,8 @@ Neither of these costs a main profession slot (professions.md §1).
     twin of §3.6's "one elixir active at a time" (§10 P3), and a food
     buff and an elixir still stack **with each other**, exactly as
     before.
-  - The buff is **Well Fed: +1/+2/+3 Str AND Int for 15 min by tier**
-    (unchanged since 2026-08-06). **Its tier mapping is the open part**:
-    three buff steps stand against the **six** T1–T6 groups the cooking
-    book below now has, and no per-group restore percentage is authored
-    either. Both live in `TODO-design-crafting-rework.md` **E21**, which
-    already owns the per-tier recipe lists — the structure above is
-    decided, the per-tier magnitudes are not.
+  - Every cooked-food buff occupies the single **Well Fed** category governed
+    by the replacement rule above.
 
   **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
   groups and the same level gates as a profession book, but **no
@@ -1869,10 +1848,6 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   under the grey stat lines. The word says which stat, the line says how
   much.
 
-The word lists and the stat each word maps to — including which affixes
-are legal on which item family (§6.2 has the pools) — are in
-`TODO-design-crafting-rework.md`.
-
 ### 6b.5 Mastery tier = fillable slots
 
 | Mastery | Fillable enchant slots |
@@ -2047,7 +2022,7 @@ Mounts at levels 15/30/45/60 target **15 minutes / 45 minutes / 2 hours /
 are derived only after those rates are measured; the retired fixed
 1s/8s/30s/60s table is not a fallback.
 
-## 9. Bows & arrows (Phase-2 enabler — catalogued, class NOT decided)
+## 9. Bow and arrow item foundation (inactive Phase-2 substrate)
 
 Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
 2 attribution sounds; port ≈ 1000 lines incl. `vl_projectile`, §1.2):
@@ -2066,10 +2041,10 @@ Item path (source: `mcl_bows`, code LGPL 3.0 ✓, media CC BY-SA 4.0 +
   owns every other wooden ranged/caster weapon (§3.6a), so the bow needs
   no new profession and the Bowyer split is dropped from professions.md
   §5 entirely.
-- This section makes the OPEN Phase-2 Archer/Hunter decision cheap: the
-  entire item/ammo/entity path is specced, license-clean and now has an
-  owner; the only open questions left are class kit + balance.
-  **Explicitly not decided here.**
+- No current or committed class consumes a bow baseline. The item/ammo/entity
+  foundation is license-clean and has an owner, but it creates no player-facing
+  bow, arrow or quiver registrations or recipes until a class package explicitly
+  adopts it.
 
 ## 10. Historical decision log (non-authoritative migration context)
 

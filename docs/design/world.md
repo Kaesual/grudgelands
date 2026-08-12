@@ -826,12 +826,17 @@ territory.
     five races cannot open at all, not a discount tag on a shared one.
   - **Same-race discount: 10 %** off that vendor's buy prices, rounded
     down and never below 1c. **Buy-back prices are not discounted**
-    (economy.md §2 — discounting both ends would close the 25 % spread).
+    (`economy.md` §2): the target payout remains ceiling-rounded 5% of the
+    applicable purchase or authoritative reference price.
   - Both are the *bonus* on top of the visible passive, in line with the
     rule above that a perk must be FELT from level 1: the passive does
     the felt work, the vendor is the flavor that pays off later.
-- Race-exclusive professions/recipes (e.g. only elven tailors craft the
-  top mage robe): design hook now, implemented with jobs (WP10)/Phase 2.
+- Universal base recipes and professions are never race-exclusive. Cultural
+  Finishing is the identity seam: the profession owning an item family may
+  apply only the player crafter's own character culture, while an allied
+  cultural-master service offers the same supplied-material operation. WP10
+  owns those workstation/service paths; WP5 owns the per-stack finish/effect
+  channel. Finished equipment remains tradeable and wearable by every race.
 - **No class restrictions per race in the MVP** (only 3 classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.

@@ -8,7 +8,7 @@ design.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
-Stone contract in `housing.md`, the unresolved playable-boat contract in
+Stone contract in `housing.md`, playable-boat behavior tracked in
 `TODO-design-boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.

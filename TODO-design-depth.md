@@ -31,13 +31,13 @@ max(surface_level(x,z), depth_level(y))`, cap 60. Only the *rate* is
 recalibrated, so that the two anchors the owner set fall exactly on
 stratum boundaries.
 
-Why `max()` and not an additive term, since the question came up: the
-material ladder is absolute in y — silver sits at −301…−500 everywhere. An
-additive depth term would make the same vein a different game depending on
-where the player stands horizontally, would make the newbie zone the safest
-place to mine T4, and would blow the level cap. `max()` binds the danger to
-the resource, which is what makes depth the "alternative progression path"
-that `combat_stats.md` §3 already claims it is.
+Why `max()` and not an additive term, since the question came up: depth danger
+is absolute in y, while natural-resource placement and minimum harvest tier are
+separate contracts. An additive depth term would make the same y position a
+different game depending on where the player stands horizontally, would make
+the newbie zone the safest place to pursue deep resources, and would blow the
+level cap. `max()` binds danger to depth, which is what makes mining the
+"alternative progression path" that `combat_stats.md` §3 already claims it is.
 
 ### A2 — Spawn pressure by depth: the phase-in
 
@@ -125,8 +125,8 @@ group A solves that better: an effectively unbounded supply priced in
 against the design — it caps the value of every mined material at the
 respawn timer and turns mining into a rotation rather than an expedition.
 
-The sole renewable exception is the bounded protected mining-camp socket
-mechanism in B6.
+The sole renewable exception is the bounded hard-protected mining-camp socket
+mechanism in B6. Its surrounding camp construction remains mutable.
 
 Implementation note, so nobody deletes the wrong thing: the machinery in
 `mods/ITEMS/grug_nodes/ore_respawn.lua` is **re-scoped, not removed** — the
@@ -138,17 +138,18 @@ world-wide respawn, so it now contradicts the design docs (which are the
 spec); re-hanging it onto mining camps belongs to **WP34**, and the same
 note sits in `BACKLOG.md`'s readiness section.
 
-### B6 — Renewable nodes live only where the world is not editable
+### B6 — Renewable nodes use hard-protected functional sockets
 
 **Decision:** decided 2026-08-08 → **landed in `world.md` §2 R4** (the
 exception, with the counts, the tier rule and the interval) **and §4**
 (the camp's role and the fact that the structure does not exist yet).
 
-The rule, as the owner put it: **renewable resources exist only where the
-world is not editable.** That is the line the design already draws with
-the POI protection registry (`grug_core.add_poi`, `world.md` §2 R1), and
-it is self-enforcing — a player who cannot dig the walls cannot build a
-farm around the node.
+Renewable resources exist only in bounded hard-protected functional sockets.
+The socket mechanism and its small functional anchor are immutable; the
+surrounding camp walls, tents, fences and dressing remain ordinary mutable,
+claim-excluded terrain. The POI/protection registry (`grug_core.add_poi`,
+`world.md` §2 R1) records those two envelopes separately, so renewable nodes
+cannot be privatized without turning the whole camp shell indestructible.
 
 Scoped to **mining camps only** in the MVP. Rejected: opening the
 exception to every POI kind at once — the owner's own later idea (a gem
@@ -159,9 +160,9 @@ guarded destination is a different object from a vein under every hill: a
 camp should be worth a trip every few sessions, never a rotation.
 
 Mining camps still have to be **built** — `world.md` §4 had named them
-only as a *role* an outpost can carry. That is WP13's job (structure,
-garrison, protection footprint), and WP34 owns the respawn mechanic that
-runs inside them.
+only as a *role* an outpost can carry. WP13 owns the mutable structure,
+garrison and bounded functional-anchor/socket footprints; WP34 owns the
+respawn mechanic that runs inside those sockets.
 
 ---
 

@@ -706,15 +706,20 @@ Details + line numbers in [docs/research/](docs/research/).
   start/home/capital chains, every ordinary level-31–60 zone contested, and
   two level-60 dragon endpoints. The hybrid-v7
   pass and `grug_zones` API are §13; the 32-seed acceptance gate is §14.
-  Race region, territory and PvP rule are independent fields. The six shared
-  front zones have no construction owner: both factions may dig registered
-  resource nodes there, but neither may alter ordinary terrain or place nodes.
+  Race region, territory and PvP rule are independent fields. Every ordinary
+  level-31–60 land zone is contested and editable by both factions. Roads,
+  camp shells, tents, fences and battlefield dressing remain mutable but
+  claim-excluded; only bounded functional anchors, irreplaceable route pieces
+  and renewable-resource sockets receive hard protection.
   Gameplay consumers use `grug_zones.biome_at`, never the engine biomemap,
   because the authored surface pass—not climate competition—owns logical
-  biome identity. The six regional gemstone names remain material-design
-  data; map code stores race-gem slots. Each endpoint apex camp has exactly
-  12 renewable nodes, two per gem, and both factions can mine them while the
-  camp shell remains protected.
+  biome identity. Material design owns the complete `race_region` mapping of
+  G1, G2, cultural material and signature wood; map code stores only the
+  region identity and placement data needed to consume that mapping. Each
+  endpoint apex camp has exactly 12 renewable sockets, two per gem. Both
+  factions may mine them; the small functional anchor and sockets are
+  protected, while the surrounding camp shell remains mutable and
+  claim-excluded.
 - **Map/fog of war**: VoxeLibre `mcl_maps` renders explored chunks as PNG
   (`colors.json`, height shading) and pushes them via
   `core.dynamic_add_media` — the best base for our global map. Minimap

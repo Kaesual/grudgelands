@@ -171,11 +171,12 @@ WP40 replaces it with the complete catalog and contracts below.
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
-- Each endpoint reserves an indestructible apex mining camp in the dangerous
-  approach to the lair. It contains all six regional gem species at equal node
-  counts: exactly **12 renewable nodes—two Citrine, two Garnet, two Jade, two
-  Diamond, two Sapphire and two Ruby**. Natural veins remain finite; only
-  these protected camp nodes
+- Each endpoint reserves an apex mining camp in the dangerous approach to the
+  lair. Its ordinary walls, tents, fences and dressing are mutable and
+  claim-excluded. Only its bounded functional anchor and exactly **12 protected
+  renewable sockets—two Citrine, two Garnet, two Jade, two Diamond, two
+  Sapphire and two Ruby**—are hard-protected. Natural veins remain finite;
+  only these protected sockets
   use `world.md` §2 R4's existing 2–4 h renewable-node exception. The material
   catalog supplies the item/node ids; zone code stores the six semantic gem
   species and never owns their registered itemstrings.

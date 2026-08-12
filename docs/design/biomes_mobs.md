@@ -335,14 +335,14 @@ as the "rainforest-litter-only 18.8 %" above — they are the same columns.
 (An earlier revision of this paragraph named x −800..−351 and x −200..200 as
 the residual; those two are 13.75 pp together, a third of it.)
 
-What the table actually shows is **one defect repeated once per band, not an
-east/west asymmetry**: wherever a band's settled cuboid, its wild partner and
-the flank strip do not all overlap, the leftover strip has a single eligible
-registration. Closing it is a geometry question — a further registration
-whose cuboid covers x 201..800, and the mirrored gaps in the centre and the
-west, where the Throng still has no equivalent of `grug_deep_forest_front`
-or of the deep forest's x −900..1250 back slab (`grug_badlands` is only
-x −700..700, z 1201..1700). **Still open**, deliberately not fixed in WP36.
+What the table actually shows is **one shipped WP36 legacy gap repeated once
+per band, not an east/west asymmetry**: wherever a band's settled cuboid, its
+wild partner and the flank strip do not all overlap, the leftover strip has a
+single eligible registration. The old cuboid layout therefore lacks a Throng
+equivalent of `grug_deep_forest_front` and the deep forest's x −900..1250 back
+slab (`grug_badlands` is only x −700..700, z 1201..1700). WP40 replaces these
+registrations with authoritative named-zone palettes and must prove the final
+coverage; extending the obsolete cuboids is not target work.
 
 † The three universal biomes are registered **once**, not as a mirrored
 pair — a biome name may exist only once in the engine. Swamp and beach

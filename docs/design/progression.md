@@ -1,8 +1,7 @@
 # Progression — Pacing, Death, Reward Cadence
 
-Partially decided rules (established 2026-08-06; housing cadence integrated
-2026-08-12). The sole deliberately unresolved rules question is the PvP-death
-XP-loss exemption in §3; detailed quest catalogs are authored with WP8/WP9.
+Decided rules (established 2026-08-06; housing cadence integrated 2026-08-12).
+Detailed quest catalogs are authored with WP8/WP9.
 
 ## 1. Leveling pace
 
@@ -45,18 +44,16 @@ Levels must keep delivering *decisions and buttons*, not just stats:
 Decided 2026-08-06; refinements (graveyards at outposts, res sickness,
 Priest resurrection) come later with WP6/WP19:
 
+The respawn and inventory rules apply to every death. The XP penalty specified
+here applies only to PvE deaths.
+
 - Death = **respawn at the own race's safe outer starting settlement** with
   **full inventory**
   (no corpse run, no item loss, no durability-on-death mechanic).
-- **XP loss: 25% of the progress within the current level, permanent**
-  (never de-levels; grug_xp as shipped).
+- **PvE XP loss: 25% of the progress within the current level, permanent**
+  (never de-levels; the PvE target preserves `grug_xp`'s shipped amount).
 - The *distance* back is the real penalty: dying far from the spawn
   costs travel time — which scales naturally with how deep you pushed.
-- **Deliberately unresolved before WP9:** whether a PvP death skips the XP
-  loss. Until that decision is made, the shipped universal 25%-of-current-
-  level-progress loss remains the operative rule; no document may silently
-  infer an exemption from contested-zone participation.
-
 ## 4. Quest structure & level gates
 
 - Main-questline beats use hard `min_level` gates (`story.md`).
