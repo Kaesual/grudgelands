@@ -54,22 +54,14 @@ local RESPAWN_MAX = 1800
 -- states that isle clusters explicitly do NOT respawn under R4 -- a mined-out
 -- step is what makes the next step worth buying. Listing it here would only
 -- earn a startup warning from check_ore_list().
-local respawning_ores = {
-	["default:stone_with_coal"] = true,
-	["default:stone_with_tin"] = true,
-	["default:stone_with_copper"] = true,
-	["default:stone_with_iron"] = true,
-	["default:stone_with_gold"] = true,
-	["default:stone_with_mese"] = true,
-	["default:stone_with_diamond"] = true,
-	-- `default:mese` (the mese BLOCK) is deliberately absent since WP25:
-	-- grug_mapgen no longer registers a scatter ore for it (it was a level-2
-	-- node sitting in the level-5 band, i.e. a hole in the depth gate), so
-	-- listing it here would only earn a startup warning from check_ore_list().
-	["grug_materials:stone_with_quartz"] = true,
-	["grug_materials:stone_with_silver"] = true,
-	["grug_materials:stone_with_garnet"] = true,
-}
+local respawning_ores = {}
+for _, key in ipairs(grug_materials.CURRENT_SCATTER_RESOURCES) do
+	local node = grug_materials.resource_node(key)
+	if not node then
+		error("grug_nodes: unknown respawn resource " .. key)
+	end
+	respawning_ores[node] = true
+end
 
 --
 -- The placeholder node
@@ -94,7 +86,8 @@ core.register_node(DEPLETED, {
 	drop = "",
 	sounds = default.node_sound_stone_defaults(),
 	on_timer = function(pos)
-		local ore = core.get_meta(pos):get_string(META_ORE)
+		local ore = grug_materials.canonical_name(
+			core.get_meta(pos):get_string(META_ORE))
 		if respawning_ores[ore] then
 			core.set_node(pos, {name = ore})
 		else

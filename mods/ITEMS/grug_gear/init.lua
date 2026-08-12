@@ -322,9 +322,8 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- tools, and punching a mob with a pick keeps working through the ordinary
 -- wielded-item path either way.
 --
--- TEMPORARY BY CONSTRUCTION: WP28 deletes the mese and diamond tool tiers and
--- WP29 folds the rest into the material ladder, so this list only ever
--- shrinks — hence a loop over names instead of hand-copied override blocks.
+-- Mese and Diamond tools are migration aliases to Steel since WP43, so only
+-- the four live vendored material steps belong in this compatibility list.
 --
 -- `core.override_item` REPLACES a named field wholesale, it does not merge
 -- (AGENTS.md, learned in WP25): handing it `groups = {grug_equip_weapon = 1}`
@@ -347,9 +346,9 @@ core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 -- decision is visible at the site it applies to.
 local VENDORED_WEAPONS = {
 	"default:sword_wood", "default:sword_stone", "default:sword_bronze",
-	"default:sword_steel", "default:sword_mese", "default:sword_diamond",
+	"default:sword_steel",
 	"default:axe_wood", "default:axe_stone", "default:axe_bronze",
-	"default:axe_steel", "default:axe_mese", "default:axe_diamond",
+	"default:axe_steel",
 }
 
 for _, itemname in ipairs(VENDORED_WEAPONS) do

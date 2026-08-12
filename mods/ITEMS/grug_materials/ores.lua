@@ -1,118 +1,135 @@
--- The new ore nodes and their raw items (items_crafting.md §3.0.1).
---
--- BINDING RULE, and the reason every `level` below looks "too low":
---
---   An ore node carries the `level` of the BAND IT SITS IN, never the level
---   of its own material tier.
---
--- Silver is the T4 lead metal but its vein sits in the T3 band, so it is a
--- level-2 node. Giving it level 3 would demand a T4 pickaxe -- which is made
--- of silversteel, which needs silver: a hard deadlock. The rule also closes
--- the cave leak from the other side: an ore is exactly as hard as the rock
--- around it, so a natural cavern at −600 does not hand out free silver to a
--- player who could never have dug down to it. Corollary (see overrides.lua):
--- an ore may never carry a HIGHER level than its stratum either.
---
--- Backgrounds stay `default_stone.png` even though after the stratum
--- conversion these veins actually sit in slate/basalt/granite. That is
--- deliberate: the pale vein reads clearly against the dark wall it is
--- embedded in -- a vein reads by its overlay, not by its backdrop. There is
--- also nothing to match it to: every mineral ore in the game, ours and
--- default's alike, is registered with `wherein = "default:stone"` and carries
--- the one stone background, so a per-stratum ore variant would mean five
--- extra node registrations per ore for a backdrop nobody looks at.
---
--- Tiles are engine texture modifiers over vendored minetest_game art -- no
--- new PNG is shipped (LICENSE-media.md). The parenthesised grouping applies
--- `[colorize:` to the overlay ONLY, not to the stone behind it.
+-- Canonical natural resources and material items (WP43).
 
--- NB deliberately NOT called `register_ore`: `core.register_ore` is the mapgen
--- placement call and lives in grug_mapgen/ores.lua. This one only registers the
--- node an ore vein is made of; nothing here decides where it spawns.
-local function register_ore_node(name, description, tiles, groups, drop)
-	core.register_node("grug_materials:" .. name, {
-		description = description,
-		tiles = {tiles},
-		groups = groups,
-		drop = "grug_materials:" .. drop,
+local ORE_VISUALS = {
+	quartz = {"default_mineral_diamond.png", "#eaf6ff:120", 2},
+	silver = {"default_mineral_iron.png", "#e8edf2:200", 2},
+	citrine = {"default_mineral_diamond.png", "#d9a21b:190", 2},
+	garnet = {"default_mineral_diamond.png", "#9e1526:210", 2},
+	jade = {"default_mineral_diamond.png", "#3d9b65:190", 2},
+	emberglass = {"default_mineral_mese.png", "#ff7a2e:65", 1},
+	diamond = {"default_mineral_diamond.png", "#ffffff:20", 1},
+	sapphire = {"default_mineral_diamond.png", "#235ac7:190", 1},
+	ruby = {"default_mineral_diamond.png", "#c51d35:195", 1},
+	abyssal_crystal = {"default_mineral_diamond.png", "#3a1f6e:210", 1},
+}
+
+local ITEM_VISUALS = {
+	quartz = {"default_diamond.png", "#eaf6ff:120", 2},
+	silver = {"default_iron_lump.png", "#e8edf2:200", 4},
+	citrine = {"default_diamond.png", "#d9a21b:190", 3},
+	garnet = {"default_diamond.png", "#9e1526:210", 3},
+	jade = {"default_diamond.png", "#3d9b65:190", 3},
+	emberglass = {"default_mese_crystal.png", "#ff7a2e:45", 5},
+	diamond = {"default_diamond.png", "#ffffff:20", 3},
+	sapphire = {"default_diamond.png", "#235ac7:190", 3},
+	ruby = {"default_diamond.png", "#c51d35:195", 3},
+	abyssal_crystal = {"default_diamond.png", "#3a1f6e:210", 6},
+}
+
+local function item_texture(key)
+	local visual = ITEM_VISUALS[key]
+	return visual[1] .. "^[colorize:" .. visual[2]
+end
+
+local function register_owned_resource(resource)
+	local ore = ORE_VISUALS[resource.key]
+	if not ore then
+		return
+	end
+	core.register_node(resource.natural_node, {
+		description = resource.name .. " Ore",
+		tiles = {"default_stone.png^(" .. ore[1] .. "^[colorize:" .. ore[2] .. ")"},
+		groups = {cracky = ore[3], grug_natural = 1,
+			grug_resource = resource.harvest_tier},
+		drop = resource.raw_item,
 		is_ground_content = true,
 		sounds = default.node_sound_stone_defaults(),
 	})
+
+	local visual = ITEM_VISUALS[resource.key]
+	local raw_description = resource.name
+	if resource.grade then
+		raw_description = "Rough " .. resource.name
+	elseif resource.key == "quartz" then
+		raw_description = "Quartz"
+	end
+	core.register_craftitem(resource.raw_item, {
+		description = raw_description,
+		inventory_image = item_texture(resource.key),
+		_grug_sell_price = visual[3],
+	})
+
+	if resource.cut_item then
+		core.register_craftitem(resource.cut_item, {
+			description = "Cut " .. resource.name,
+			inventory_image = item_texture(resource.key) .. "^[brighten",
+		})
+	end
+	if resource.block_node then
+		core.register_node(resource.block_node, {
+			description = resource.name .. " Block",
+			tiles = {item_texture(resource.key)},
+			is_ground_content = false,
+			groups = {cracky = 1},
+			drop = resource.block_node,
+			sounds = default.node_sound_stone_defaults(),
+		})
+	end
 end
 
--- Quartz -- T2 gem, common, sits in the slate band (level 1).
-register_ore_node("stone_with_quartz", "Quartz Ore",
-	"default_stone.png^(default_mineral_diamond.png^[colorize:#eaf6ff:120)",
-	{cracky = 2, level = 1}, "quartz_crystal")
+for _, resource in ipairs(grug_materials.RESOURCES) do
+	if resource.natural_node:match("^grug_materials:") then
+		register_owned_resource(resource)
+	end
+end
 
--- Silver -- T4 lead metal, vein in the basalt band (level 2). See the rule
--- above: this is the deadlock breaker, not an oversight.
-register_ore_node("stone_with_silver", "Silver Ore",
-	"default_stone.png^(default_mineral_iron.png^[colorize:#e8edf2:200)",
-	{cracky = 2, level = 2}, "silver_lump")
+core.register_craftitem("grug_materials:emberglass_shard", {
+	description = "Emberglass Shard",
+	inventory_image = "default_mese_crystal_fragment.png^[colorize:#ff7a2e:45",
+	_grug_sell_price = 1,
+})
 
--- Garnet -- T4 gem, granite band (level 3).
-register_ore_node("stone_with_garnet", "Garnet Ore",
-	"default_stone.png^(default_mineral_diamond.png^[colorize:#9e1526:210)",
-	{cracky = 2, level = 3}, "garnet_crystal")
+local cultural_images = {
+	human = "default_mese_crystal_fragment.png^[colorize:#f0c45a:120",
+	dwarf = "default_stone.png^[colorize:#64758a:110",
+	elf = "default_mese_crystal_fragment.png^[colorize:#a9c9ee:130",
+	orc = "default_clay_lump.png^[colorize:#a54122:150",
+	troll = "default_mese_crystal_fragment.png^[colorize:#8ca833:130",
+	undead = "default_mese_crystal_fragment.png^[colorize:#ddd8c8:145",
+}
 
--- Abyssal Crystal -- the T6 lead material, and therefore in the T5 band
--- (Emberrock, level 4), exactly like every other lead metal sits one band
--- above its own tier. Putting it in the T6 rock it is *named* after would
--- have closed the ladder into a circle: T6 rock needs a Grudgesteel pick,
--- and Grudgesteel is made of this. See items_crafting.md §3.0.1.
---
--- INTERFACE NOTE: WP25 registers this node and places it nowhere. Three work
--- packages own its placement:
---   * WP34 -- the continental scatter band, -701 … -1000 (items_crafting.md
---     §3.0.1). Decided 2026-08-08, reversing the same day's earlier "no
---     continental deposit": the crystal is a base resource, and a material
---     the whole T6 ladder hangs on must not sit behind a 1.9 g purchase.
---   * WP24 -- treasure cluster of the purchased isle depth step (world.md §5.4)
---   * WP23 -- 10 % apex dragon hoard (items_crafting.md §10 P5), which is a
---     bridge into T6 and no longer its only door.
-register_ore_node("abyssal_crystal_ore", "Abyssal Crystal Ore",
-	"default_stone.png^(default_mineral_diamond.png^[colorize:#3a1f6e:210)",
-	{cracky = 1, level = 4}, "abyssal_crystal")
-
---
--- The raw items
---
--- `_grug_sell_price` is the trader buy price in COPPER (economy.md §1).
---
--- THE BAND IS BINDING: items_crafting.md §8.1 says "herbs/materials sold to
--- vendors: 1-6c each, scaling with material tier". Every value here lives
--- inside 1..6 -- these are raw materials, not gear, and the tier shows as a
--- position in that band, never as a bigger number.
---
--- Two fixed points inside the band, both pre-existing:
---   * `default:iron_lump` = 3c, the anchor (mods/ENTITIES/grug_traders).
---   * `default:diamond`   = 3c, capped there ON PURPOSE so the vendor floor
---     can never out-pay using a diamond (same file). Diamond is the T6 gem,
---     so no lower-tier gem may be priced above it.
---
--- Hence the ordering: quartz 2c (common T2 gem, below the iron anchor) <
--- garnet 3c = diamond 3c (both gems; diamond's 3c is the existing anti-loop
--- cap and garnet may only reach it, not pass it) < silver 4c (a T4 metal
--- lump, one step above the iron-lump anchor) < abyssal crystal 6c (the band
--- ceiling, and by far the scarcest thing the placement table places).
---
--- None of them has a recipe yet (smelting is WP26, cutting is WP10), so no
--- vendor loop can exist around these prices today -- when the recipes land,
--- grug_traders' audit 3 re-proves that on every start.
-local function register_raw(name, description, image, price)
-	core.register_craftitem("grug_materials:" .. name, {
-		description = description,
-		inventory_image = image,
-		_grug_sell_price = price,
+for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do
+	core.register_craftitem(material.item, {
+		description = material.name,
+		inventory_image = cultural_images[material.race],
 	})
 end
 
-register_raw("quartz_crystal", "Quartz Crystal",
-	"default_diamond.png^[colorize:#eaf6ff:120", 2)
-register_raw("silver_lump", "Silver Lump",
-	"default_iron_lump.png^[colorize:#e8edf2:200", 4)
-register_raw("garnet_crystal", "Garnet Crystal",
-	"default_diamond.png^[colorize:#9e1526:210", 3)
-register_raw("abyssal_crystal", "Abyssal Crystal",
-	"default_diamond.png^[colorize:#3a1f6e:210", 6)
+core.register_node("grug_materials:emberglass_lamp", {
+	description = "Emberglass Lamp",
+	drawtype = "glasslike",
+	tiles = {"default_meselamp.png^[colorize:#ff7a2e:25"},
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 3, oddly_breakable_by_hand = 3},
+	sounds = default.node_sound_glass_defaults(),
+	light_source = default.LIGHT_MAX,
+})
+
+local posts = {
+	{"emberglass_post_light", "Oak Emberglass Post Light", "default_fence_wood.png"},
+	{"emberglass_post_light_acacia_wood", "Acacia Emberglass Post Light",
+		"default_fence_acacia_wood.png"},
+	{"emberglass_post_light_junglewood", "Jungle Wood Emberglass Post Light",
+		"default_fence_junglewood.png"},
+	{"emberglass_post_light_pine_wood", "Pine Emberglass Post Light",
+		"default_fence_pine_wood.png"},
+	{"emberglass_post_light_aspen_wood", "Aspen Emberglass Post Light",
+		"default_fence_aspen_wood.png"},
+}
+for _, post in ipairs(posts) do
+	default.register_mesepost("grug_materials:" .. post[1], {
+		description = post[2], texture = post[3],
+	})
+end
