@@ -1,418 +1,191 @@
 # Roadmap — Grudgelands
 
-A Luanti game that captures the game mechanics, story and character of
-World of Warcraft as well as possible in a voxel world — as a standalone
-game (not a mod pack), written in Lua.
+Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
+two factions, races, classes, fast leveling, threat-based combat, professions,
+an item economy, open-world housing and geographic PvP in an authored but
+procedurally detailed world.
+
+The decided game rules live in [docs/design/](docs/design/). Implementation
+status and exact dependencies live in [BACKLOG.md](BACKLOG.md); this roadmap is
+the goal-level view.
 
 ## Vision
 
-- Two factions — **The Throng** and **The Accord** — each with **its own
-  huge continent** (multi-biome): the Throng holds **Kragmar** in the north,
-  the Accord **Elandor** in the south. Three strategic contact areas form the
-  contested faction front: a broad multi-lane centre and two high-level
-  mountain ends at the western/eastern ocean. Ocean separates the remaining coast and is
-  deadly far offshore (`docs/design/world_zones.md`, `world.md` §0/§1/§2b).
-- **Races, kept deliberately simple**: each faction consists of several
-  races. Every race has an outer level-1–10 starting zone and a central
-  capital; **three race capitals per continent, six kings total**. Capitals
-  are safe four-road hubs with level-60 defenders. The faction territory is
-  divided into stable named zones with race-flavored biomes and settlements.
-  Race perks: vendor discounts among your own race, race-exclusive
-  vendors, race-exclusive professions/recipes (Phase 2). Details:
-  `docs/design/world.md`.
-- Classes with XP, levels and simplified skill trees.
-- Quests that drive progression and deliberately force PvP and exploration.
-- Professions ("jobs"), a gold economy and trader NPCs.
-- Difficulty scales through stable named zones: outer race starts 1–10,
-  home zones 11–20, central heartland 21–40 and mostly 41–60 land at the
-  faction front. No 1–30 zone is contested; automatic PvP begins in designated
-  31–40 frontier zones. Capital city zones contain no
-  ambient hostile enemies and use level-60 defenders. Peaceful-zone players
-  are safe until they initiate PvP; contested zones tag automatically and the
-  tag lasts 60 seconds without PvP damage (`docs/design/world_zones.md`).
-- **Controlled destructibility**: digging/building is free only inside
-  your own faction's territory (outside protected zones such as capitals,
-  outposts and quest structures); enemy territory and ocean cannot be
-  modified. Natural resources do not respawn; depth remains unbounded, while
-  guarded mining camps are the one slow renewable exception.
-- **Player housing — the King's isles**: beyond the coastal sea behind
-  each continent lies a chain of unspoiled isles; the **King grants one
-  per character** for merit (questline, level 30). A 100×100 build box,
-  free digging down to the seabed, and below it a **ladder of six
-  purchased depth rights** — one per rock stratum, 50c/2s/6s/20s/60s/1g
-  ≈ 1.9g — whose finite treasure clusters (no respawn, detector items to
-  find them) are the central gold sink. They are the main outlet for free
-  building, granted by the character's own race king at the end of the royal
-  level-30 questline (`docs/design/world.md` §5).
-- **Travel**: waypoint network (Diablo/PoE style — teleport only from
-  waypoint to waypoint, unlocked by visiting, none in enemy territory)
-  + a Home Stone to the own capital (10 s cast, damage interrupts,
-  60 min cooldown) as emergency valve (`docs/design/world.md` §6).
-- Class-specific points of interest (trainers, special quest NPCs) in the
-  capitals and out in the world.
-- A global per-player map with fog of war (everyone uncovers it
-  themselves).
-- Item quality tiers **Common/Uncommon/Rare/Unique** (white/blue/yellow/
-  orange; Uniques post-MVP); better gear comes from crafting and hard
-  bosses, not vendors — "the harder the enemy, the better the loot".
-- **One material ladder, six tiers** (decided 2026-08-07,
-  `docs/design/items_crafting.md` §3.0): Bronze → Iron → Steel →
-  Silversteel → Embersteel → Grudgesteel, one per ten character levels,
-  with gems at T2/T4/T6 and alloys smelted in a two-slot furnace. Six
-  **rock strata** gate digging by tool tier, so how deep you can mine is
-  the same statement as what you can wear. **One item per concept**:
-  the vendor catalog and the base craft ladder are the *same*
-  material-named items, everyone can craft the base tier, and what a
-  profession adds on top is **refinement** (+15 % damage, +100 %
-  durability) and **prefix/suffix enchants** — never a parallel item.
-- **Combat rests on an aggro/threat system** (it shaped WoW's fights):
-  groups play the tank/healer/damage trinity; solo players stay viable
-  via food (out-of-combat recovery) and healing potions. Mobs are
-  slightly faster than players — pulling several same-level mobs solo is
-  dangerous.
-- **Scaled for reality, built for headroom** (decided 2026-08-06): a
-  Luanti server handles 100+ concurrent players and our Lua must too
-  (performance rules in AGENTS.md) — but content assumes few: group
-  content is sized for **2–3 players**, everything is **beatable
-  without a healer**, and leveling is fast (**level 60 in ~10–20 h**,
-  `docs/design/progression.md`) — the endgame is the game.
-- **Apex world bosses**: two overworld dragons, each at an
-  ocean endpoint of the shared faction front in an equally reachable,
-  contested level-60 mountain zone; later regional apex creatures use the
-  same tech with distinct skill sets (`docs/design/world.md` §4b).
-- A light layer of lore and story, delivered through quests, setting and
-  environmental storytelling. Premise: **"A darkness has befallen the
-  land"** — the Accord–Throng conflict is old, but a new demonic evil
-  rises from the Nether and threatens both factions equally
-  (`docs/design/story.md`).
-- **Guilds as a pure social and access layer** (a shared bank account
-  reachable from members' isles, mutual isle visiting, fixed roles,
-  guild chat): `docs/design/guilds.md`. **Continental mining claims were
-  removed on 2026-08-07** — a guild owns no ground, so there is no land
-  purchase in the game at all. Deliberately NO guild levels/perks/wars —
-  Luanti is not MMORPG enough for that.
-- **License: GPL** (non-commercial project) — so we can adopt and adapt
-  code from all reference projects (incl. VoxeLibre).
+- **Two distinct faction continents.** The Accord holds southern Elandor and
+  the Throng northern Kragmar. Their independently authored three-lobed
+  silhouettes meet along the continuous four-zone Holy Grounds; ocean
+  separates the rest of the coast. The stable 38-zone graph fixes names,
+  neighbors, level ranges, race regions, PvP rules, biome palettes and POI
+  budgets while seeds vary bounded borders and local terrain.
+- **Six races, six starts, six capitals and six kings.** Each race begins in
+  its own outer level-1–10 settlement and later reaches a central four-road
+  capital. Capitals are peaceful civic hubs with level-60 guards and no
+  ambient hostile mobs. Kings and royal guards are killable high-end
+  combatants; essential service NPCs are separate and invulnerable.
+- **Progression moves toward conflict.** All level-1–30 surface zones are
+  peaceful. Every ordinary level-31–60 frontier, Holy-Grounds or dragon-island
+  zone is contested. At y = −701 and below, every non-ocean land column is
+  contested independently of its surface zone.
+- **PvP uses one exact transaction.** A safe player who initiates a valid
+  hostile action becomes tagged before resolution; safe→safe is blocked,
+  safe→tagged may land, tagged→safe is blocked and tagged→tagged may land.
+  Effective PvP damage or support refreshes the 60-second tail, contested
+  ground forces the tag, reconnect preserves it and death clears it. Melee,
+  casts, AoE, projectiles and support all use the same seam.
+- **Controlled destructibility keeps the world playable.** Peaceful home
+  terrain is editable by its faction; peaceful enemy land is not. Ordinary
+  contested land is editable by both sides. The shallow Holy Grounds, deep
+  ocean and full dragon channels are immutable. Roads, village/outpost/camp
+  shells and battlefield dressing are mutable but claim-excluded; only
+  bounded functional anchors, complete civic cores and irreplaceable route
+  pieces are hard-protected.
+- **The ocean has authored classes.** Planned mainland water stays part of its
+  named zone. An editable 80-node coastal shelf follows the analytic outer
+  perimeter; immutable deep ocean begins beyond it. Two immutable channels
+  separate the offshore level-60 dragon islands and keep them boat-only. The
+  playable boat contract remains intentionally open in
+  [TODO-design-boats.md](TODO-design-boats.md).
+- **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
+  Summit are contested offshore dragon islands. Each reserves an all-six-gem
+  apex camp with exactly twelve protected renewable sockets: two each of
+  Citrine, Garnet, Jade, Diamond, Sapphire and Ruby.
+- **Housing lives in the open world.** Exactly ten peaceful level-11–30 home
+  zones accept Claim Stones. Four stone tiers protect radii 20/30/40/50 while
+  every placement immediately reserves its future 101×101 footprint. Stable
+  ids survive recovery, dormancy, decay and reissue; a claim-bound Home Stone
+  has no capital fallback. Private housing islands do not exist.
+- **One six-tier material spine serves every race.** Bronze, Iron, Steel,
+  Silversteel, Embersteel and Abyssal Steel open exact natural depths of
+  −100/−300/−500/−700/−1000/map floor. Resource harvest tier is a
+  separate check: a pick can reach a node yet destroy it without a drop when
+  under-tier. Cosmetic strata no longer drive access.
+- **Regional materials add identity without blocking universal progression.**
+  Quartz is universal; Citrine/Garnet/Jade are G1 and
+  Diamond/Sapphire/Ruby G2. Each race region selects one G1, one G2, one
+  cultural material and one signature wood. Foreign G2 and cultural resources
+  come through contested/deep routes, both apex camps and trade, never through
+  a mandatory faction monopoly.
+- **The economy stays ledger-only.** Copper/silver/gold are one integer;
+  physical Gold is a separate crafting material. The target Common weapon
+  axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
+  An Income Ledger measures reliable net solo income after ordinary costs and
+  calibrates Claim Stone and mount prices.
+- **Combat supports solo play and the tank/healer/damage trinity.** Threat,
+  taunt and healing threat make group roles matter, but content is sized for
+  two or three players and remains beatable without a healer. Level 60 takes
+  roughly 10–20 played hours; endgame PvP, bosses, crafting and housing are
+  the destination.
+- **Travel is earned.** Visit-unlocked waypoints connect authored hubs. A Home
+  Stone channels to the active bound claim only. Universal riding unlocks at
+  levels 15/30/45/60 with land speeds 6/8 and flight speeds 7/10 nodes per
+  second; damage dismounts. Holy Grounds permit flight, enemy territory allows
+  land mounts only, and every exterior-ocean column forbids flight.
+- **Story remains light and environmental.** The Accord–Throng war is old; an
+  ancient demonic threat reaches upward through the Nether. Both factions face
+  it in parallel without becoming allies.
 
----
+## Phase 1 — Playable core and world foundation
 
-## Phase 1 — MVP
+### Shipped foundation
 
-### 1.1 Foundation
-- [x] Game skeleton: `game.conf`, mod structure, namespace conventions (see AGENTS.md)
-- [x] Base world: blocks/tools/crafting (BASE modpack from minetest_game)
-- [x] Mob engine integrated (mobs_redo embedded; faction patch follows with 1.4)
+- [x] WP0–WP4: standalone game skeleton, factions, XP, three classes and the
+  first ability kits.
+- [x] WP6: complete mob roster, level/tier engine, threat, leash/evade,
+  pathfinding pass, guards, camps and named rares.
+- [x] WP7: ledger currency, generated gear catalogs, armor pipeline and eight
+  trader NPCs. **Legacy boundary:** the running implementation still uses its
+  old price curve and 25% buy-back until WP44.
+- [x] WP15: Character/Bags pages, equipment lists and four bag slots.
+- [x] WP18, WP36: the current two-continent map, biome baseline, repaired
+  coastline/capital generation, reference submodules and critter/prey pass.
+  **Legacy boundary:** the running surface still uses rectangles, radial
+  difficulty and the mandatory water separation until WP40.
+- [x] WP19, WP35, WP38, WP39: tuned class kits, race passives, weapon slot,
+  native-animation held swings, exact current-ray aim, PvP/PvE settlement,
+  ready reticle, diagnostics and swept Fireball projectiles.
+- [x] WP25: six visual strata and a first material implementation.
+  **Legacy boundary:** running code still exposes Emberstone plus coupled
+  node-`level`/pick-`maxlevel` behavior until WP43; the final natural-depth,
+  harvest-tier and material-name contract is not shipped yet.
 
-### 1.2 Factions & world
-- [x] Faction choice at character creation (Throng/Accord), persistent
-- [x] Core world rules decided (`docs/design/world.md`, `world_zones.md`):
-      destructibility, named-zone progression framework, capitals/outposts,
-      PvP tag, housing and races; the complete 38-zone/WP40–WP42 contracts
-      were fixed on 2026-08-11
-- [x] Mapgen: two large contiguous faction territories (north/south), each
-      composed of several race-flavored biome regions
-- [x] Continent rework (WP18): two ocean-separated continents with soft
-      noisy coastlines (continent ocean mask instead of the old mountain
-      wall), mirrored biome bands per
-      `docs/design/biomes_mobs.md` §1.3 (20 registrations after the
-      2026-08-08 capital-biome carve and WP36's `grug_badlands_east`),
-      guaranteed strait and coastal ocean, deep-sea guard mob. WP36
-      finished the coastline: the mask carves to `emax.y` (no more
-      floating tree crowns over the water), runs in the mapgen
-      environment, and a `run_at_every_load` LBM heals older worlds
-- [ ] **Named-zone world rework (WP40):** replace WP18's radial rings and
-      full-water strait with `world_zones.md`'s 38-zone graph, outer race
-      starts, central city envelopes, three strategic contact loops,
-      separate race-region/territory/PvP rules, logical biome palettes and two
-      dragon endpoints with equal resource-only mining rights; §14 is the
-      implementation gate, fresh world only
-- [x] Difficulty gradient: `grug_core.difficulty_at/mob_level_at` radial
-      field + `guard_level_at` (mobs and guards actually scale with them
-      since WP6; WP36 added the level-1 bubble at every race capital, so
-      the four side capitals no longer start a fresh player against
-      level-8 wildlife)
-- [x] Shipped WP18 faction spawn points: walkable camp platforms at the three
-      race capitals per continent (the running map still spawns a player in
-      their race capital; WP40 replaces this with the six outer starts, and
-      real capital structures follow with WP13). WP36 made the platform
-      height a single decider that is forced when undecided, instead of
-      an invented fallback that read differently in two sessions. This is
-      current WP18 behavior; WP40 moves spawn/respawn to the six safe outer
-      race settlements
-- [x] Build/dig restrictions per territory (own continent free, enemy
-      continent and the whole ocean locked; capital protected zones +
-      the WP6 POI registry for outposts; WP6's legacy world-wide ore respawn
-      remains live until WP34 replaces it with R4's camp-only exception)
-- [x] PvP basis: friendly-fire protection within the faction
-- [ ] Geographic/voluntary PvP tag (WP41): automatic in contested zones,
-      protected safe-first-hit transaction, effective damage/support refresh,
-      60 s tail, death clear, persisted reconnect and central boundary-aware
-      eligibility per `world_zones.md` §15;
-      quest-driven PvP follows with 1.5
+### Next prerequisite roots
 
-### 1.3 Classes & progression (MVP: 3 classes)
-- [x] **Warrior** (melee, simple — reference class), **Mage**
-      (ranged/caster), **Priest** (healer/support) — selection dialog
-      (faction → race → class) and registry in `grug_classes`
-- [x] XP system: level curve 1–60, XP loss on death (25% of level
-      progress), HUD; XP sources (mob kills, quests) follow with 1.4/1.5
-- [x] Level system with stat growth: attributes + HP via
-      `register_on_level_change`; damage consumption follows with the
-      WP4 damage pipeline
-- [ ] Simplified skill trees: 2 trees × 5 talents × 3 ranks per class,
-      1 point per 3 levels, capstones = new active main skills, respec
-      for gold (`docs/design/progression.md` §2), formspec UI
-- [x] 2–4 active abilities per class (hotbar/item based), cooldowns
-      (`grug_abilities`, 3–4 per class; spec `docs/design/classes.md`)
-- [x] Combat feel (WP19): global cooldown 1 s, soft target lock 8 s,
-      kit tuning per classes.md tables (rage dump, Hamstring snare,
-      Frost Nova root→slow, Power Word: Shield absorb), one visible
-      passive per race (world.md §7)
-- [x] **Weapon slot, and auto-attack as a skill** (WP35): one equipment
-      slot whose item is the single source of damage *and* appearance for
-      every skill of its type — no fallback to whatever is in the hand.
-      Every ability item wears the equipped weapon's skin on its own color
-      orb (which retires the deferred "own ability icons"), and the held
-      attack button becomes a universal ability, **Strike**, swinging at the
-      weapon's own speed (WP35's original toggle was replaced by native
-      interaction plus an authoritative held clock in WP38's 2026-08-10
-      correction; WP39 has since replaced only that correction's enemy-lock
-      target authority with current crosshair aim)
-      (`docs/design/inventory_equipment.md` §2, `combat_stats.md` §2,
-      `classes.md` §2b/§2c). Two-handed weapons declare their hand count
-      here, but the rule stays dormant until WP14 ships an offhand item.
-      **Not runtime tested**
-- [x] **Swing timing and skill timing become independent** (WP38, corrected
-      2026-08-10): swing items retain Luanti's native animation and direct
-      object input/interaction; a bounded fresh-press server ray restores
-      dropped-loot pickup where no-dig pointabilities mask it. Native enemy
-      packets carry zero damage
-      and one server-authoritative clock attacks only the current hostile under
-      the server eye/look ray while LMB is held (plus one direct-click latch
-      consumed on the next throttled attack pass; 0.05 s threshold, scheduled
-      on the actual engine step).
-      Release stops
-      held repeats; click spam and ordinary tool/fist packets share the same
-      equipped-weapon cadence bound. Every due ability attack is one full swing,
-      and every skill is that ordinary weapon attack
-      **plus** an effect that fires when its own charge is full — shown as
-      a bar that fills red→yellow→green and vanishes when ready. That
-      closes the old competing damage streams and ungated PvP punch, and
-      **retires the 1 s global cooldown** of WP19:
-      per-skill charges and resource costs are the limiters now. A separate
-      accepted-hit transaction fires at most one selected proc per due landed
-      full swing
-      (`docs/design/combat_stats.md` §2, `classes.md` §2b/§2c)
-- [x] **Crosshair-authoritative combat** (WP39, shipped 2026-08-10): WP38's
-      fast cosmetic held animation and one full slot-fed swing per equipped
-      weapon interval remain, while a ready attack waits until the current
-      server eye ray finds a hostile in range. Aim misses preserve readiness; a
-      valid attack consumes cadence even when later dodged or cancelled. Enemy
-      target memory is Target-Frame/UI state only, ally memory remains a heal
-      fallback, and a binary gold ring shows weapon readiness without inventory
-      writes. Charge/Taunt/Smite require current aim; Fireball uses the reusable
-      swept-projectile foundation to travel straight at 20 m/s for at most 20 m,
-      spends mana on a miss and is bounded to eight active shots per owner/
-      session. Permanent admin-only `/combatdebug` ships with it
-      (`docs/design/combat_stats.md` §2, `classes.md` §2b; full shipped contract
-      and outstanding GUI runtime plan in `BACKLOG.md` WP39).
+- [ ] **WP43 — Material Progression Retrofit:** migrate the WP25 legacy to
+  Emberglass/Abyssal Steel, exact natural depth, separate harvest tier,
+  final G1/G2/cultural ids and migration diagnostics.
+- [ ] **WP37 — Surface density:** apply the already-decided 0.75 multiplier
+  and re-run the spawn-budget audit.
+- [ ] **WP11 / WP14 / WP20 / WP21 / WP8:** skill trees, live offhand/carried
+  light, parties, recovery/rest and the quest framework are independently
+  ready behind their shipped prerequisites.
+- [ ] **WP40 — Named-zone world foundation:** after WP43, replace the WP18
+  surface with the 38-zone hybrid-v7 target. Before any code change, author
+  and independently review the six-part engineering brief required by
+  [docs/research/mapgen-control.md](docs/research/mapgen-control.md). Record
+  the fixed 32-seed geometry/topology/route/housing/supply audit, capacity
+  simulation and reproducible WP18/WP36-relative performance measurements.
+  These are implementation gates, not open game-design questions.
+- [ ] **WP44 — Economy Rebase:** after WP43, migrate the Common-price axis,
+  5% buy-back and Income Ledger; calibrate exact Claim Stone and mount costs.
 
-### 1.4 Mobs & combat
-- [x] Faction guards (attack the enemy faction), spawned by military
-      outposts + ambient patrols, levels scaling with territory depth
-      (WP6: 24 deterministic outposts, hourly patrol legs, `guard_level_at`
-      with auto-elite ≥ 60; real outpost structures follow with WP13)
-- [x] WoW-style starter-zone mobs: aggressive boar (day) and zombie
-      (night, burns in daylight) with XP rewards and loot; more (wolves, …)
-      follow with WP6
-- [x] Neutral/hostile mobs in tiers: the shipped WP18 safe core is weak and
-      outer/coast rings strong; WP40 remaps the same level engine to named
-      zones rising from outer starts toward the faction front; incl. neutral
-      **bandit camps**
-      (humanoid loot source — cloth — in both territories)
-      (WP6: 38 mobs on the level/tier engine, elite/rare telegraph,
-      named rares with faction broadcast, 12 deterministic camps;
-      WP36: **42 mobs** — a `critter` tier for the small animals plus
-      four new ones for the caves, the bone forest and the swamp — and
-      the large grazers became **passive prey**: they never attack on
-      sight and they fight back when attacked)
-- [x] **Aggro/threat system**: mobs pick targets by threat (damage +
-      healing × factor); tank threat tools/taunt follow with class
-      abilities (1.3) — WP6: threat table in `grug_core`, 120 %
-      hysteresis, heal threat, taunt, leash/evade
-- [ ] Food & recovery basics: slow natural HP regen, food for
-      out-of-combat recovery, healing potions (alchemy, 1.6) for
-      in-combat emergencies
-- [x] **Good pathfinding** — dangerous mobs must reliably reach their
-      targets (not get stuck in ravines etc.); evaluate and if necessary
-      improve the mob engine's pathfinding quality (quality criterion, not
-      a nice-to-have). Mobs run slightly faster than players so evading
-      is never trivially easy (WP6-T10 + review: four `api.lua` fixes,
-      the 45 m chase model, `fear_height` 6 cliff rule)
-- [x] Loot drops (trash loot to sell, crafting materials) — WP6: the
-      shared material/food items plus every family's drop table, gated by
-      the player-tag rule
+### Dependent world and item loop
 
-### 1.4b Loot, refinement & affixes
-- [ ] Item quality tiers Common/Uncommon/Rare (color-coded; Unique
-      reserved in the architecture, ships post-MVP) — quality now follows
-      the **affix count**: 0 Common, 1–2 Uncommon, 3–4 Rare
-- [ ] Class items as drops: wand, mage robe, warlock robe, iron armor,
-      iron sword, dagger, … (a few items per class); **a drop's material
-      tier matches the mob's tier** (a Steel item drops from level 21–30
-      mobs and nowhere else)
-- [ ] Simple enchantment system with **roll ranges**: items drop with
-      randomly rolled bonuses, e.g. strength +1 to +3, attack speed +5% to
-      +20% (values in item meta, visible in the description)
-- [ ] **Refinement and the prefix/suffix system**
-      (`docs/design/items_crafting.md` §6b): only a profession can refine
-      a base item, only a refined item can be enchanted, and enchants are
-      **max 2 prefixes + 2 suffixes** written into the item name
-      ("Lucky Stone Sword of the Bear"). Mastery tier decides how many of
-      the four slots a crafter can fill
-- [ ] For each class item an improved variant that only drops from hard
-      mobs (elite/heartland) — with better roll ranges
+- [ ] WP26–WP30: dual-input furnace and universal bars; base armor; the
+  six-tier gear/tool merge; safe removal of superseded vendored recipes; and
+  trader-catalog migration onto WP44 prices.
+- [ ] WP5 and WP10: loot/affixes and the six professions after their remaining
+  genuine recipe/wording questions are decided.
+- [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
+  all-six-gem apex camps on WP40 geometry and WP43 materials.
+- [ ] WP33: gathering plants, signature woods and cultural sources on final
+  zone/race-region ownership.
+- [ ] WP34: deep spawn pressure, corrected depth-level curve, camp-only
+  renewable resources, deep lava and final Abyssal/G1/G2 density. It follows
+  map, materials, structures and economy; it is not an independent next WP.
+- [ ] WP24: complete Claim Stone state machine, protection/indexing and
+  capacity-calibrated placement after WP40/WP43/WP44.
+- [ ] WP17 and WP12: claim-bound Home Stone, authored waypoint travel and the
+  fog-of-war map after claims and final zones. Boat integration remains
+  blocked on the focused boat TODO.
+- [ ] WP41: implement the exact geographic PvP transaction after WP40.
+- [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone
+  questlines after final structures/map/PvP.
+- [ ] WP23: both dragon encounters after structures, playable boats, final
+  map, contested PvP and renewable apex resources.
+- [ ] WP22: durability/repair and explicit six-pick speed/use calibration
+  after loot, materials and economy.
+- [ ] WP31: mounts after final map/economy plus the remaining explicit mount
+  questions in `TODO-design-crafting-rework.md`.
 
-### 1.5 Quests (MVP: forced progression)
-- [ ] Quest framework (quest log UI, quest state in player meta,
-      **minimum level per quest** — main-questline beats use them as
-      hard level gates, `docs/design/story.md` §2)
-- [ ] Quest-giver NPCs in the faction camps
-- [ ] Mandatory questlines for level progression (level gates), including:
-  - [ ] "Defeat 5 enemy war-front guards" in the first contested named zone
-        (PvP trigger, min level ≥20; exact first bracket pending)
-  - [ ] "Push into enemy territory and kill an elite mob" (exploration + risk)
-  - [ ] Gather/kill quests across different biomes (forced exploration)
+## Phase 2 — Expansion
 
-### 1.6 Professions & economy
-- [ ] Job system (`docs/design/professions.md`): 2 main professions per
-      player, freely chosen at job trainers; **Cooking + First Aid as
-      universal secondaries** for everyone; gathering split (food plants
-      and spices for all, healing herbs need the Alchemist)
-- [ ] MVP jobs — **six, cut by material and never by class** (re-cut
-      2026-08-07): **Blacksmith**, **Leatherworker** (×5 leather via the
-      player-tag loot hook), **Tailor** (bags), **Woodcarver** (staves,
-      wands, scepters, orbs — casters had no craftable weapon before),
-      **Goldsmith** (both trinket slots, gem refinement, Gem Detector),
-      **Alchemist** (gathers its own herbs). Herbalism merged into the
-      Alchemist, Gem Hunter into the Goldsmith; mining and smelting stay
-      open to everyone, and so does crafting the base item of every tier
-- [ ] Crafting model: everything in the 3×3 grid, multi-stage,
-      recipe-unlock gated + workbench proximity for profession recipes,
-      **one recipe book per profession** with six T1–T6 groups — level
-      controls visibility, the tier keystone controls the unlock
-      (`docs/design/items_crafting.md` §2.2,
-      `docs/design/inventory_equipment.md` §4). Cooking gets a book too,
-      without keystones and without costing a main slot
-- [x] Material ladder — world materials (WP25): the three new ore nodes
-      (Silver, Quartz, Garnet) plus Abyssal Crystal, mese repurposed as
-      Emberstone, and the **six rock strata with their digging gates** —
-      five new nodes below `default:stone` (the T1 stratum), placed as
-      `stratum` ores registered last so cave walls inherit their tier,
-      and a re-parameterised pickaxe `maxlevel` ladder to open them
-      (`docs/design/items_crafting.md` §3.0.1/§3.0.4, `world.md` §2 R6).
-      Walkable to −500 with today's items; T4–T6 need the picks of
-      WP26/WP29. **Needs a fresh world, not runtime tested yet**
-- [ ] Material ladder — the two-slot furnace and the alloy chain on top
-      of it (WP26, `docs/design/items_crafting.md` §3.0.2)
-- [x] Gold system (currency, persistent) — WP7: one copper integer in
-      player meta, 100c = 1s / 100s = 1g display-only, HUD + `/money`
-      (`docs/design/economy.md` §1)
-- [x] Trader NPCs: buy EVERY mob drop for gold; sell only the lowest
-      tier per category (vendor floor rule, economy.md) — WP7: 8 vendors
-      at the six race capitals, six bracket catalogs with the hourly
-      rotation, race-exclusive vendors + 10 % same-race discount, 25 %
-      buy-back (job supplies and the one 25c profession recipe book per
-      profession follow with WP10; the rotating extras pool grows to four
-      families with WP30, so casters can buy a floor weapon)
-
-### 1.7 Map
-- [ ] Global map with fog of war, uncovered per player
-      (evaluate existing map mods, e.g. mapserver/"map" mods; otherwise a
-      custom solution via HUD/formspec); shows discovered waypoints
-      (travel: `docs/design/world.md` §6)
-
----
-
-## Phase 2 — Expansion (after MVP)
-
-- [ ] More classes: **Paladin**, **Rogue**, **Warlock**, **Shaman**.
-      Rogue stealth sketch (decided direction, details later): slower
-      movement while stealthed (improvable via talents), opener bonus
-      (crit/stun) only from stealth, no threat until the opener; NB
-      engine visibility is global — no per-viewer invisibility, so
-      stealth is semi-transparent/invisible for everyone
-- [ ] Profession split once the population supports it: Blacksmith →
-      Weapon-/Armorsmith (`docs/design/professions.md` §5). **The Bowyer
-      and Enchanter splits are dropped** (2026-08-07): bows belong to the
-      Woodcarver and the quiver to the Leatherworker, and enchanting is
-      what every profession does to its own refined items rather than a
-      seventh profession taking a cut of all six
-- [ ] **Decide: bow/ranged-weapon system + a Hunter-like class** — not in
-      the current class plan. The item half is already specced,
-      licence-clean and owned (bows = Woodcarver, quiver = Leatherworker,
-      `docs/design/items_crafting.md` §9), so only the class decision is
-      missing
-- [ ] **Player housing — the King's isles** (per-character grant at
-      level 30, 100×100 build box, **six** purchased depth steps — one
-      per rock stratum, ≈ 1.9g — with finite treasure clusters, isle
-      styles, visitor/trusted access, guild-bank terminal; spec:
-      `docs/design/world.md` §5, open tuning:
-      TODO-design-housing.md) — **strong candidate to pull into Phase 1**:
-      it is the central gold sink AND the only sink that opens before
-      level 60, so Phase 1 without it has nowhere for gold to go
-- [ ] Race perks beyond the basics: race-exclusive professions/recipes,
-      race-restricted classes (decide once more classes exist)
-- [ ] More questlines, story arcs per faction (WoW-inspired lore adaption)
-- [ ] Dungeon/instance-like structures (fixed elite areas with boss + loot)
-- [ ] Apex world bosses stage 2/3: two shared overworld dragons at
-      the contested level-60 ocean endpoints (head trophy + faction buff),
-      followed later by regional apex creatures with distinct skill sets
-      (`docs/design/world.md` §4b)
-- [ ] **The Nether**: farmable active zone with its own rules, story
-      layer ("the world's magic created connections"), island crossings
-      into enemy territory (deterministic named-zone pairing), later world
-      bosses behind challenges (spec in progress: TODO-design-nether.md)
-- [ ] **Mounts** (spec decided 2026-08-07: `docs/design/mounts.md`):
-      riding is a universal skill using the same four mastery names,
-      **bought with gold, never tamed** — level 15/30 land mounts at
-      +50%/+100% and level 45/60 flying mounts at +75%/+150%, priced from
-      15m/45m/2h/5h net-income targets. A permanent hotbar item summons an
-      ephemeral attached entity. Holy Grounds permit both factions to fly;
-      ocean warns for about 50 nodes then dismounts at every altitude, and
-      enemy territory permits only land mounts
-- [ ] **Farming** — Minecraft-like, adapted from VoxeLibre or Lord of the
-      Test, together with the extra herbs and cooking recipes as one
-      later expansion package. **Spices are farmable, healing herbs never
-      are**, and the found-only cooking ingredients never become crops
-      (`docs/design/biomes_mobs.md` §2)
-- [ ] Reputation system (simplified)
-- [ ] Auction-house-like trading between players
-- [ ] **Ocean content**: the reef band around continents and housing
-      isles (coral/kelp flora, fish, shore wildlife) — decided in
-      `docs/design/world.md` §2b, catalog open (`biomes_mobs.md` §1.2)
+- [ ] Paladin, Rogue, Warlock and Shaman; decide the separate ranged-weapon
+  class direction before activating the already-catalogued bow family.
+- [ ] Farming inside active claims: only cooking foods and universal spices
+  become crops; healing herbs, cultural materials, ores and found-only foods
+  do not.
+- [ ] Coastal-shelf life: coral, kelp, fish, coastal materials and shore
+  wildlife inside the authored editable shelf, without redefining deep ocean
+  or the dragon channels.
+- [ ] Walkable Nether content and later demonic bosses after its focused
+  design questions are resolved.
+- [ ] Dungeons, regional apex encounters, reputation and player trading.
 
 ## Phase 3 — Polish
 
-- [ ] Own textures/sounds/models (WoW character, but original assets!)
-- [ ] Localization via Luanti's translation system (`locale/` files +
-      `core.get_translator`); first target: German translation of all
-      in-game texts
-- [ ] Balancing pass (classes, mob tiers, economy)
-- [ ] Server performance pass (active object limits, ABM budget)
-- [ ] Onboarding/tutorial quests
+- [ ] Original textures, sounds and animated models with complete provenance.
+- [ ] Localization through Luanti's translation system; German first.
+- [ ] Balance, accessibility, onboarding and a measured 100-player
+  performance pass.
 
-## Deliberately NOT planned
+## Deliberately outside the target
 
-- Guild progression (levels, perks, guild wars) — guilds stay a pure
-  social and access layer
-- Guild-owned land: continental mining claims were designed and then
-  **removed** (2026-08-07) — there is no land purchase in the game
-- Battlegrounds/arenas (maybe much later)
-- A seventh "Enchanter" profession — enchanting belongs to all six
-
-*(**Flying mounts left this list on 2026-08-07**: `docs/design/mounts.md`
-makes the level-45/+75% and level-60/+150% flying tiers the late-game travel
-milestones. Both factions may fly above Holy Grounds, while a spatial ocean
-warning and hard dismount keep the offshore dragon islands boat-only and enemy
-territory remains land-mount-only.)*
+- Private housing islands, purchased mining-depth rights and private material
+  sources.
+- A social-organization system, shared organization bank/chat or
+  organization-owned land.
+- Battlegrounds/arenas and permanent war-front capture in the current scope.
+- A separate Enchanter profession; each profession enchants the families it
+  owns.
+- Taming mounts; riding is a permanent purchase and summons an ephemeral
+  owner-bound entity.
