@@ -90,7 +90,8 @@ WP40 replaces it with the complete catalog and contracts below.
 - Each race has its own king, for **six kings total**. The race's capital is
   that king's seat. Housing is not a royal level-30 grant: the separate
   passive, invulnerable Housing Steward owns the free level-20 Claim Stone
-  introduction defined in `world.md` §5.
+  introduction defined by `housing.md`; `world.md` §5 summarizes its
+  world-facing integration.
 - A capital is centered inside its city zone and has main roads in all four
   cardinal directions. Its directional neighbors follow the world
   progression:

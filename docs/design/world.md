@@ -572,9 +572,11 @@ its creatures retain their ordinary family drops.
 
 ## 5. Housing: open-world Claim Stones
 
-Housing is per-character protected land inside the authored mainland. Private
-housing islands, royal land grants, purchased depth rights and any guild land
-or administration system do not exist in the target design.
+The complete authoritative Claim Stone contract is `housing.md`; this section
+summarizes its world-facing integration and does not replace it. Housing is
+per-character protected land inside the authored mainland. Private housing
+islands, royal land grants, purchased depth rights and any guild land or
+administration system do not exist in the target design.
 
 ### 5.1 Eligibility, tiers and reservation
 

@@ -678,10 +678,11 @@ gives Cooking a supply line that farming can later take over without
 ever touching alchemy's.
 
 **Where farming happens**: inside an active open-world housing claim
-(`world.md` §5), where the owner/trusted ACL protects the crop. Only cooking
-ingredients grow there: the `[food]` and `[spice Tn]` lines of this section,
-never a `[herb Tn]`, cultural resource or `[food found-only]`. The "Farmable
-later" column above is therefore also the claim's permitted plant set.
+(`housing.md`; world integration summary in `world.md` §5), where the
+owner/trusted ACL protects the crop. Only cooking ingredients grow there: the
+`[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]`, cultural
+resource or `[food found-only]`. The "Farmable later" column above is therefore
+also the claim's permitted plant set.
 
 **MVP scope**: only the plants listed below spawn — a handful of cooking
 ingredients plus the six herbs. More herbs, more cooking recipes and the

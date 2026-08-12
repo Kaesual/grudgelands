@@ -6,10 +6,10 @@ this file is the spec a later work package implements, not a description of
 shipped behaviour. It exists so that the WP can be cut without re-opening the
 design.
 
-Neighbouring rules: the named-zone faction front `world_zones.md`, travel and
-waypoints plus ocean/dragon-island and open-world claim rules in `world.md`,
-the unresolved playable-boat contract in `TODO-design-boats.md`, the four
-mastery names in `items_crafting.md` §2.1,
+Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
+ocean/dragon-island integration in `world.md`, the complete open-world Claim
+Stone contract in `housing.md`, the unresolved playable-boat contract in
+`TODO-design-boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
 
@@ -232,7 +232,7 @@ owned by WP40.
   immediately under §3.1, so permission to fly is not safety or immunity.
 - Open-world housing claims add no special mount ban. They inherit the ordinary
   mount rule of their peaceful home-faction zone; a claim boundary itself never
-  summons or dismounts a mount.
+  summons or dismounts a mount (`housing.md`; `world.md` §5).
 
 ### 4.3 Enemy territory: land tiers yes, flying tiers no
 
