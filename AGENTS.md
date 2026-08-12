@@ -472,28 +472,58 @@ Details + line numbers in [docs/research/](docs/research/).
   variant with better ranges only on elite/heartland mobs).
 - **Materials & depth gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
-  - **Authoritative target, to be implemented by WP43:** Bronze, Iron, Steel,
-    Silversteel, Embersteel and Abyssal Steel form the six universal tiers.
-    Mining evaluates territory/protection, the pick's exact maximum natural
-    y-depth and then the natural resource's separate minimum harvest tier.
-    Cosmetic strata never grant or deny access. `grug_materials` remains the
-    sole owner of `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, a
-    depth-oriented lookup such as `max_depth_for_pick_tier`, the central
-    `can_mine_natural_at` predicate and group-backed harvest requirements.
-    Nothing outside that mod hardcodes a depth boundary, harvest tier or
-    stratum node name.
-  - **Shipped WP25 legacy, still running until WP43:** code and saved worlds
-    currently use Emberstone names, `level_for_tier`, non-zero node `level`,
-    pick `groupcaps.<group>.maxlevel` and the resulting `leveldiff` coupling;
-    temporary Mese/Diamond bridges also remain live. In that legacy engine
-    contract, `leveldiff = maxlevel − node level` controls refusal, speed and
-    `real_uses = uses · 3^leveldiff` together
-    (`reference_projects/luanti/src/tool.cpp:394-414`). Do not describe the
-    replacement Emberglass/Abyssal Steel APIs as shipped before WP43. Until
-    migration, `core.override_item` still replaces whole named fields rather
-    than merging them, so the complete upstream `groups` and
-    `tool_capabilities` snapshots in `grug_materials/overrides.lua` remain an
-    update dependency.
+  - **Shipped WP43 contract:** Bronze, Iron, Steel, Silversteel, Embersteel
+    and Abyssal Steel are the six universal tiers, with inclusive natural
+    depth limits y = -100/-300/-500/-700/-1000/-31000. `grug_materials` is
+    the sole owner of `TIERS`, `TIER_BY_KEY`, `tier_at(y)`,
+    `stratum_node_for(y)`, `max_depth_for_pick_tier(tier)` and
+    `can_mine_natural_at(pick_tier, y)`. Consumers never copy a depth
+    boundary, harvest tier, stratum name or race-region assignment.
+  - Registry consumers use `RESOURCES`, `RESOURCE_BY_KEY`,
+    `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`, `GEM_GRADES`,
+    `CULTURAL_MATERIALS`, `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
+    with the `resource`, `resource_for_node`, `resource_node` and `processed`
+    accessors. `CURRENT_SCATTER_RESOURCES` is only the pre-WP40 placement
+    roster. WP40 replaces its geometry with race-region columns; it does not
+    replace or duplicate this taxonomy.
+  - The natural-node contract is explicit. Picks carry
+    `grug_pick_tier = 1..6`; generated ground carries `grug_natural = 1`;
+    resources additionally carry `grug_resource = 1..5`. Mapgen owners must
+    add every new generated ground node to `NATURAL_GROUND_NODES` and apply
+    `natural_groups(groups)` when registering their own nodes. Never infer
+    natural ground from `is_ground_content`: the engine defaults that field
+    to true even for saplings and decorations. `NATURAL_GROUND_SET` is the
+    audited lookup, not a second extension point.
+  - The server-authoritative `core.node_dig` wrapper evaluates protection,
+    exact target y and then the separate harvest tier. `mining_decision`
+    returns structured `protected`/`no_pick`/`depth`/`shatter`/`allowed`
+    state; `emit_mining_failure` owns the throttled player feedback. A depth
+    refusal happens before node damage, wear, drops or settlement. A
+    completed under-tier resource dig takes ×4/×6/×8/×10 time, spends exactly
+    one ordinary pick use, suppresses drops and every harvest callback, emits
+    shatter feedback and still lets a renewable socket enter its depleted
+    state. Successful sufficient-tier settlement uses `register_on_harvest`;
+    socket consumers distinguish the no-drop transaction with
+    `is_shattering`.
+  - All material-system nodes have no engine `level`, and every Grudgelands
+    pick groupcap has `maxlevel = 0`; `max_drop_level` is a separate ordinary
+    drop property and may remain non-zero. `build_pick_capabilities` and the
+    six `PICK_PROFILES` are the verification/consumer seam. WP29 owns the
+    final playable pick catalog and recipes, while WP22 owns runtime
+    speed/durability calibration. Canonical storage blocks, Iron Sign/Ladder
+    and the 20 canonical metal stair/slab nodes are storage/building
+    derivatives, not natural ground and never harvest-gated.
+  - Emberglass and Abyssal Steel are the only target names.
+    `LEGACY_ALIASES`/`canonical_name` migrate saved WP25, Mese, Diamond and
+    upstream processed/storage derivatives in one hop; retired material,
+    furnace, pack, light and tool recipes are cleared before force aliases
+    are installed, while reachable sign/ladder/stair recipes migrate through
+    their canonical derivative aliases. Upstream
+    `default:steel_ingot` means smelted iron and therefore migrates to
+    `grug_materials:iron_bar`, not the canonical Steel Bar. WP26 owns all
+    furnace/alloy/storage recipes, WP10 owns gem processing, and WP29 owns
+    the final gear catalog; WP43 deliberately registers none of those recipe
+    families.
 - **Traders/gold** (shipped with WP7; `docs/design/economy.md`,
   `items_crafting.md` §3.8/§8.2, `world.md` §7). **WP7 patterns
   (binding):**

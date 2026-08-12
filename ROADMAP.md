@@ -104,37 +104,43 @@ the goal-level view.
   native-animation held swings, exact current-ray aim, PvP/PvE settlement,
   ready reticle, diagnostics and swept Fireball projectiles.
 - [x] WP25: six visual strata and a first material implementation.
-  **Legacy boundary:** running code still exposes Emberstone plus coupled
-  node-`level`/pick-`maxlevel` behavior until WP43; the final natural-depth,
-  harvest-tier and material-name contract is not shipped yet.
+  **Historical boundary:** its 2026-08-08 Completion Record describes the
+  Emberstone and coupled node-`level`/pick-`maxlevel` implementation that
+  WP43 now supersedes while preserving one-way saved-world migration.
+- [x] WP43: canonical Bronze→Abyssal Steel registry, Emberglass/Abyssal Steel
+  namespaces, exact natural depth, separate harvest tier, complete
+  G1/G2/cultural/race-region data, migration diagnostics and the
+  protection-first mining transaction.
 
 ### Next prerequisite roots
 
-- [ ] **WP43 — Material Progression Retrofit:** migrate the WP25 legacy to
-  Emberglass/Abyssal Steel, exact natural depth, separate harvest tier,
-  final G1/G2/cultural ids and migration diagnostics.
+- [ ] **WP26 — Universal bars and furnace:** implement the dual-input furnace
+  and the six-tier alloy chain against WP43's shipped canonical registry.
+- [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
+  the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
+  contract. Before any code change, author and independently review the
+  six-part engineering brief required by
+  [docs/research/mapgen-control.md](docs/research/mapgen-control.md). Record
+  the fixed 32-seed geometry/topology/route/housing/supply audit, capacity
+  simulation and reproducible WP18/WP36-relative performance measurements.
+  These are implementation gates, not open game-design questions.
+- [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
+  and Income Ledger against the final material ids; calibrate exact Claim
+  Stone and mount costs.
 - [ ] **WP37 — Surface density:** apply the already-decided 0.75 multiplier
   and re-run the spawn-budget audit.
 - [ ] **WP11 / WP14 / WP20 / WP21 / WP8:** skill trees, live offhand/carried
   light, parties, recovery/rest and the quest framework are independently
   ready behind their shipped prerequisites.
-- [ ] **WP40 — Named-zone world foundation:** after WP43, replace the WP18
-  surface with the 38-zone hybrid-v7 target. Before any code change, author
-  and independently review the six-part engineering brief required by
-  [docs/research/mapgen-control.md](docs/research/mapgen-control.md). Record
-  the fixed 32-seed geometry/topology/route/housing/supply audit, capacity
-  simulation and reproducible WP18/WP36-relative performance measurements.
-  These are implementation gates, not open game-design questions.
-- [ ] **WP44 — Economy Rebase:** after WP43, migrate the Common-price axis,
-  5% buy-back and Income Ledger; calibrate exact Claim Stone and mount costs.
 
 ### Dependent world and item loop
 
-- [ ] WP26–WP30: dual-input furnace and universal bars; base armor; the
+- [ ] WP27–WP30: base armor; the
   six-tier gear/tool merge; safe removal of superseded vendored recipes; and
   trader-catalog migration onto WP44 prices.
-- [ ] WP5 and WP10: loot/affixes and the six professions after their remaining
-  genuine recipe/wording questions are decided.
+- [ ] WP5 remains blocked on `TODO-design-crafting-rework.md` A2/A6; WP10
+  remains blocked on that file's A1/A4/A5/E21. They resume only after those
+  genuine affix/recipe/content questions are decided.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
 - [ ] WP33: gathering plants, signature woods and cultural sources on final

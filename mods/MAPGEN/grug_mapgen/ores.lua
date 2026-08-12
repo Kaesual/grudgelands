@@ -5,11 +5,12 @@
 -- Origin: the blob ores and the general shape are minetest_game's
 -- default.register_ores(), minus the desert stratum ores (we have no desert
 -- biomes) and with the blob biome lists mapped to our biome names. The scatter
--- VALUES are no longer minetest_game's: gold, mese and diamond were pushed
--- deeper early on, iron and copper were retuned, and WP25 re-cut the deep half
--- of the table onto the six material tiers of docs/design/items_crafting.md
--- §3.0.1. Canonical itemstrings and tier boundaries come from
--- grug_materials; do not "restore" legacy Mese/Diamond ids here.
+-- VALUES are no longer minetest_game's: Gold and the resources now called
+-- Emberglass and Diamond were pushed deeper early on, Iron and Copper were
+-- retuned, and WP25 re-cut the deep half of the table. WP43 keeps that useful
+-- scatter geometry only as the pre-WP40 migration baseline. Canonical IDs,
+-- tiers and placement data come from grug_materials; do not restore legacy
+-- names or treat these bands as the final regional supply map.
 --
 -- REGISTRATION ORDER IS THE MECHANISM OF THIS FILE. Read this before moving
 -- anything:
@@ -27,8 +28,9 @@
 --     added below the loop would silently be swallowed by them.
 --  2. Ores run AFTER the caves, so a cave wall dug out at −600 is stone that
 --     the granite stratum then converts: cave walls inherit their stratum for
---     free. Deliberate (decision B7, 2026-08-08) — otherwise every deep cave
---     would be a free bypass of the §3.0.4 tool gate for a level-10 player.
+--     free. Natural access is still decided from the exact target y by the
+--     WP43 mining transaction; the inherited stratum is visual language and
+--     makes the generated cave wall part of the explicit natural taxonomy.
 --  3. Dungeons run after the ores, so dungeon walls are NOT stratum rock.
 --     Accepted: dungeon rooms are loot, not a mining shortcut.
 --
@@ -132,15 +134,12 @@ core.register_ore({
 
 -- Scatter ores: {ore, {clust_scarcity, clust_num_ores, clust_size, y_max, y_min}, ...}
 --
--- BINDING PLACEMENT RULE (WP25): a tier's LEAD METAL lies one band ABOVE its
--- own tier, a tier's GEM lies inside its own band. Anything else deadlocks the
--- ladder — you would need a tier-n tool to reach the material a tier-n tool is
--- made of, because the rock of band n only breaks for a tier-n tool
--- (items_crafting.md §3.0.4). So: iron (T2 metal) in the T1 band, silver (T4
--- metal) in the T3 band, Emberglass in the T4 band; quartz (T2 gem)
--- in the T2 band, garnet (T4 gem) in the T4 band, diamond (T6 gem) in the T6
--- band. Gems are safe in their own band because a gem is never needed to make
--- the tool that opens that band.
+-- TRANSITIONAL PLACEMENT (WP43): these are the surviving WP25 scatter bands,
+-- not an access rule and not WP40's final universal/regional distribution.
+-- Exact target y controls natural pick access, while each resource registry
+-- row independently controls the minimum harvest tier. WP40 replaces this
+-- geometry from RACE_REGIONS/DENSITY; until then mapgen resolves every node
+-- through resource_node() so no second itemstring inventory can drift.
 --
 -- GEM DENSITY ("reagent calibration", decided 2026-08-08): quartz sits at iron
 -- density, garnet at copper density, silver denser than garnet. That looks
@@ -169,12 +168,8 @@ local scatter_ores = {
 		{9 * 9 * 9, 5, 3, 31000, 1025},
 		{12 * 12 * 12, 4, 3, -64, -127},
 		{9 * 9 * 9, 5, 3, -128, -31000}},
-	-- Iron is the T2 lead metal and therefore MUST be reachable inside the T1
-	-- band (0 … −100), which plain default:stone allows any pick to break.
-	-- Before WP25 iron started at −128, i.e. below the T2 boundary: the T2
-	-- rock from −101 down needs an iron/steel pick, so the ladder was hard
-	-- locked at T2. The −1 … −100 band is what opens it; the second band then
-	-- starts at −101 instead of −128 so no dead gap is left behind it.
+	-- The WP25 Iron bands remain as running scatter geometry. Iron is a T1
+	-- harvest resource; natural-depth access still follows the exact target y.
 	{resource_node("iron"),
 		{9 * 9 * 9, 12, 3, 31000, 1025},
 		{10 * 10 * 10, 5, 3, -1, -100},
@@ -184,9 +179,8 @@ local scatter_ores = {
 		{13 * 13 * 13, 5, 3, 31000, 1025},
 		{15 * 15 * 15, 3, 2, -256, -511},
 		{13 * 13 * 13, 5, 3, -512, -31000}},
-	-- Emberglass is the T5 alloy input, so its main band is T4
-	-- (−501 … −700); the second band keeps
-	-- it available all the way down for T5/T6 play.
+	-- Emberglass currently starts in the T4 depth band (−501 … −700) and stays
+	-- available below it. Its independent minimum harvest tier is T4.
 	-- The old mountain band (y >= 1025) is dropped, not moved: no terrain in
 	-- this game reaches it. Our base terrain (init.lua, mgv7_np_terrain_base
 	-- offset 14 / scale 70, 5 octaves, persist 0.6) tops out around y 175, and
@@ -203,12 +197,12 @@ local scatter_ores = {
 	{resource_node("emberglass"),
 		{12 * 12 * 12, 4, 3, -501, -700},
 		{14 * 14 * 14, 5, 3, -701, -31000}},
-	-- Diamond is a gem now, not a tool metal, and it is the T6 gem — so it
-	-- lives in the T6 band and nowhere else.
+	-- Diamond is a regional G2 resource with harvest tier T4. Its current global
+	-- deep placement is transitional; WP40 replaces it with race-region supply.
 	{resource_node("diamond"),
 		{15 * 15 * 15, 4, 3, -1001, -31000}},
-	-- The three new WP25 ores. Quartz/garnet are gems in their own band,
-	-- silver is the T4 lead metal one band up in T3 (see the rule above).
+	-- Quartz, Silver and Garnet retain their current bands until WP40. Their
+	-- harvest tiers are T1, T3 and T2 respectively, owned by the registry.
 	{resource_node("quartz"),
 		{8 * 8 * 8, 6, 3, -101, -300}},
 	{resource_node("silver"),
@@ -242,9 +236,9 @@ end
 -- every vein above is already placed and is no longer `default:stone`, so the
 -- strata cannot eat it.
 --
--- Tier 1 gets NO registration at all: `default:stone` IS the T1 stratum
--- (level 0, breakable by any pick). Registering a "T1 stone" would mean
--- rewriting the whole surface layer for nothing and would break every
+-- Tier 1 gets NO registration at all: `default:stone` IS the T1 stratum and
+-- carries the explicit natural/stratum groups. Registering a second T1 stone
+-- would rewrite the whole surface layer for nothing and would break every
 -- `wherein = "default:stone"` above it.
 --
 -- No `noise_params` and no `np_stratum_thickness`: per lua_api.md:5244-5245 an
