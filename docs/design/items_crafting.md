@@ -718,6 +718,45 @@ pattern) — never derived on paper, and never through the retired engine
 a `times` or `uses` value (`TODO-design-crafting-rework.md` B22 holds
 the open numbers).
 
+#### 3.0.5 The two boat recipes (decided 2026-08-13)
+
+Water travel is specified in [boats.md](boats.md); this section owns only the
+two recipes. Both are ordinary 3×3 grid recipes and need no workbench.
+
+**Base boat** — a universal base recipe under §3.0.3: every character can
+craft it from level 1, with no profession, trainer, vendor or quest. Five
+`group:wood` in the hull shape (the arrangement of Lord of the Test's
+`mods/boats/init.lua:201-208`, whose row boat is our reference
+implementation):
+
+| | | |
+|---|---|---|
+| — | — | — |
+| `group:wood` | — | `group:wood` |
+| `group:wood` | `group:wood` | `group:wood` |
+
+**Improved boat** — craftable only by a character carrying the Improved Boat
+unlock (`boats.md` §1), which the shipwright teaches from level 30. It
+consumes one base boat plus T4 materials, so the level-30 unlock still costs
+a level-31–40 material run:
+
+| | | |
+|---|---|---|
+| — | Silkweave Bolt | — |
+| Silversteel Bar | Silkweave Bolt | Silversteel Bar |
+| thread | base boat | thread |
+
+The two bolts are the sail and the two bars the fittings; `thread` is the
+ordinary level-independent vendor job supply of §3.7, not a new item and not
+a Tailor product. Bolts and bars are material stages and therefore base
+recipes themselves (§3.0.3, "cloth → bolt"), so the improved boat binds no
+profession anywhere in its chain.
+
+The shipwright's teaching transaction consumes exactly this ingredient list
+once and returns one finished improved boat (`boats.md` §2). Boats are never
+sold by a vendor and carry no ledger price; `_grug_sell_price` follows the
+ordinary §8 rules for their material value.
+
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
 1 armor point = 1% damage reduction; equipped pieces sum, **clamped at
