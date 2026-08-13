@@ -77,6 +77,39 @@ registering production mapgen scripts and a real payload that do not yet
 exist. Real headless main/mapgen identity therefore remains an explicit T2/T9
 gate and is not claimed here.
 
+## T2 compiled schema/core
+
+Run:
+
+```sh
+tools/wp40/run_t2_schema_core.sh
+```
+
+This narrow T2 gate freezes the data-only compiled transport shape, its single
+schema-owned canonical projection, the deferred T4/T6/T7 coverage namespaces,
+and the production compiler's private fixed-path trust boundary. The foundation
+exposes only a narrow `compile(full_seed_string, wp43_vocabulary)` wrapper;
+initialization consumers capture it, while the compiler module and its authority
+remain private. An engine-free compiler-module instance alone exposes the test
+adapter. Before the expected `compiled_geometry_unavailable` result, both paths
+exercise the fixed source Stage-1 validator, raw-SHA closure and one compiled
+canonicalizer. The later geometry compiler is intentionally absent at this
+checkpoint, so no path publishes data, registers a callback or makes a T2-
+readiness claim.
+
+For non-authoritative local iteration on the expensive T2 source oracle, use:
+
+```sh
+tools/wp40/run_t2_source_fast.sh
+```
+
+This runs the exact `t2_source_test.lua` harness under LuaJIT and normalizes
+only LuaJIT's successful `os.execute` return tuple to the numeric Lua 5.1
+result expected by that shared harness. On the review host it measured 30.05 s
+versus 195.56 s under PUC Lua 5.1 (about 6.5x faster). It never replaces the
+plain-5.1 `luac51` syntax gate, the full PUC-5.1 freeze/review runners, or a
+Flatpak Luanti runtime test.
+
 ### Pinned engine facts used by T1
 
 - `core.sha256(data, true)` returns the raw 32-byte digest, and the utility is
