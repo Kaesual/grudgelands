@@ -1865,6 +1865,11 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
   the Ox". Since only refined items can be enchanted (§6b.3), the refined
   state is *implied* by any affix — the word would carry no information
   and would crowd out the affixes that do.
+- **An enchanted item still declares its refined state in the tooltip**
+  (decided 2026-08-13): one grey line, "Refined", above the affix lines —
+  no name-length cost, no art. A refined but unenchanted item needs no
+  such line; its name still carries the refinement word. §6b.7's special
+  variants state their authored effect in the same tooltip block.
 - The affix **words** are the display layer; the rolled **values** live
   in `grug_ench` exactly as before (§6.1) and are shown one per line
   under the grey stat lines. The word says which stat, the line says how
@@ -1920,6 +1925,10 @@ that slows attackers, for instance.
   baked onto the armor texture, e.g. Iron armor carrying a diamond trim.
   That gives every special variant a look without one texture per
   combination.
+- **Tooltip statement** (decided 2026-08-13 with the refined-marker
+  rule): a special variant states its authored effect as one grey
+  tooltip line in the same block as §6b.4's "Refined" line, above the
+  affix lines — the effect is readable without art or name cost.
 
 ## 7. Upgrade mechanics (resolves the old §2 — no failure chance)
 

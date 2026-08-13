@@ -204,8 +204,8 @@ deep-content questions remain explicitly open in
 **Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
 material/map/economy roots. WP40 still requires its independently reviewed
 six-part engineering brief plus fixed seed/capacity/performance evidence before
-code begins. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
-dependencies; WP34 is not next because it still waits for map, structures and
+code begins. WP37, WP11, WP14, WP20, WP21, WP8 and — since the 2026-08-13 affix/marker
+decisions — WP5 are also ready behind shipped dependencies; WP34 is not next because it still waits for map, structures and
 economy.
 
 **Caveats:** the running WP18/WP36 world still uses rectangular continents,

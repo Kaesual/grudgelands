@@ -170,42 +170,6 @@ existing outer/coast drops rather than inventing new mobs.
 `biomes_mobs.md` §6.
 **Decision:** _open_.
 
-### A6 — Does a refined item show a marker once it is enchanted?
-
-`items_crafting.md` §6b.4 removes the refinement word from the name as
-soon as an affix is present ("Stone Sword of the Ox", never "Honed Stone
-Sword of the Ox"), on the argument that §6b.3 makes "enchanted" imply
-"refined". The **grey stat line still shows the number** (§6b.2), so the
-+15 % is visible; what is not visible is the *word*.
-
-Open: whether an enchanted item should carry any other visible sign that
-it is refined.
-
-Options:
-
-- **(a) Nothing** — the status quo of §6b.4. An affix implies
-  refinement, and a player who wants proof reads the stat line or the
-  doubled durability.
-- **(b) A tooltip line** — one extra grey line, "Refined", above the
-  affix lines. No art, no name-length cost, and it gives §6b.7's
-  **special variants** somewhere to state their effect, which they
-  currently do not have.
-- **(c) An icon marker** — a corner overlay or a colour tint, reusing
-  the trim/colourise technique §6b.7 already adopts from
-  VoxeLibre `mcl_armor/trims.lua`. Visible in the inventory grid without
-  hovering; costs an overlay texture per family.
-- **(d) The durability bar carries it** — 6000 vs 3000 wear (§6b.2,
-  §8.3) is already rendered by the engine. Free, but unreadable on a
-  fresh item, which is exactly when a buyer looks.
-
-Recommendation: **(b)**. It is the only option that also solves the
-special-variant display problem, and it costs one string.
-
-*Lands in*: `items_crafting.md` §6b.4 (and §6b.7 if the variant line
-comes with it).
-**Decision:** _open_ — WP5 owns the description builder, so decide
-before WP5 writes it.
-
 ---
 
 ## B. Material calibration
@@ -547,7 +511,6 @@ magnitudes **block WP10**'s cooking book.
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
-| A6 | Visible marker on an enchanted refined item | WP5 (description) |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
