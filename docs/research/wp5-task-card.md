@@ -28,8 +28,11 @@ rolled. It owns no recipe, no profession, no catalog and no price.
   stack in place, with the window passed as the §6.3 window name as a
   string. The shipped three-argument call must keep working unchanged — it
   omits `count` and gets the crafterless roll — while WP10 passes an
-  explicit `count` for a crafted item, whose affix number is its crafter's
-  mastery slots rather than a roll (§6.1/§6b.5). The
+  explicit `count` for a crafted **ordinary** item, whose affix number is
+  its crafter's mastery slots rather than a roll (§6.1/§6b.5). `count` has
+  no meaning for a trinket: §6.2 fixes those at one prefix and one suffix
+  regardless of quality or mastery, and the roller ignores the argument
+  there. The
   probe tests the *global*, not the registered mod name — naming the mod
   `grug_items` is the ordinary project convention (AGENTS.md: one global
   per mod), but choosing a different global or signature silently keeps
@@ -220,12 +223,15 @@ why no refinement word appears in a drop's name (§6b.4).
 **The distribution is decided in the design, not here** (§5, 2026-08-13):
 **one uniform draw over the concrete registered base items of the mob's own
 tier** — the bracket catalog's whole list, no slot pre-selection, no
-per-family weighting. Ordinary found gear stays below crafted gear by
-construction (`world` 0.00-0.60, `elite` 0.30-0.90 and `rare` 0.50-1.00
-against crafted-masterwork's 0.60-1.00, with different affix counts on
-top), so no rate tuning carries that guarantee. **Boss and King loot is the
-deliberate peer**, not a lesser source: §6.4 names crafting and bosses as
-the two 0.60-1.00 windows. What the BACKLOG row
+per-family weighting. Ordinary found gear stays below crafted gear **in
+expectation** through the windows, not through rate tuning (`world`
+0.00-0.60, `elite` 0.30-0.90, `rare` 0.50-1.00 against crafted-masterwork's
+0.60-1.00, with different affix counts on top). The windows **overlap on
+purpose**: a lucky four-affix named-rare drop can beat an unlucky
+masterwork, and no gate may assert per-item dominance. **Boss and King loot
+is a deliberate peer of crafting**, at `boss` 0.80-1.00 against
+crafted-masterwork 0.60-1.00 — the two windows §6.4 calls "the two
+0.60-1.00 windows", meaning the two that reach 1.00 from at least 0.60. What the BACKLOG row
 means by "retune elite/high-tier gear drops against G2 and trophy demand" is
 therefore an **audit** (task 8): if it shows the §5.1 rates erasing demand
 for crafted G2 gear or named-rare trophies, the fix is a change to §5.1 in
@@ -374,9 +380,12 @@ defeated-race provenance, not six currencies.
    duplicate stat across the four slots, no affix outside its §6.2 pool,
    observed 1/2 and 3/4 frequencies matching 60/40 and 70/30, and slot
    order prefix/suffix/prefix/suffix in the generated name. The same matrix
-   covers the **fixed-count** path: `count = 1..4` must produce exactly that
-   many affixes every time, so a Master's four-slot masterwork can never
-   come back with three.
+   covers the **fixed-count** path **for ordinary equipment**: `count = 1..4`
+   must produce exactly that many affixes every time, so a Master's
+   four-slot masterwork can never come back with three. **Trinkets are
+   outside that parameter entirely** — §6.2 gives them exactly one prefix
+   and one suffix whatever the quality, mastery or `count`, and they are
+   tested against that fixed shape instead.
 6. A T3 item never drops from a mob outside level 21–30; no drop appears
    at any depth that would not appear on the surface; a King drops at
    ilvl 60, never 65; a named rare yields Uncommon + independent 25% Rare +
@@ -386,7 +395,9 @@ defeated-race provenance, not six currencies.
 8. Every one of the nine stats is measurably consumed by its **existing
    authoritative consumer**, and those are not one function: attributes
    through `grug_classes.get_attributes`, HP through `get_max_hp` (which
-   `apply_stats` pushes into `hp_max` — that function sets nothing else),
+   `apply_stats` pushes into `hp_max`; it sets no other stat, but it does
+   touch current HP — level-up healing when called with a truthy
+   `heal_gain`, and clamping when the maximum drops),
    Mana through `get_max_mana` and the resource clamp/ticker, crit and dodge
    through `get_crit_chance`/`get_dodge_chance`, armor through
    `grug_core.get_armor_percent`, attack speed through

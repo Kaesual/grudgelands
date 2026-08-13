@@ -1670,14 +1670,18 @@ item list, with no slot pre-selection and no per-family weighting, so a
 tier with four weapon families and eight armor pieces drops a weapon a
 third of the time. No weighted table exists anywhere in this design.
 
-Ordinary found gear sits **below** crafted gear by construction rather than
-by rate tuning: §6.3 gives a normal-mob drop the `world` window 0.00-0.60,
-an elite 0.30-0.90 and a named rare 0.50-1.00, against crafted-masterwork's
-0.60-1.00, and the affix counts differ on top of that. **Boss loot is the
-deliberate exception and a peer, not a lesser source**: §6.4 says outright
-that the two 0.60-1.00 windows are crafting and bosses, so an apex or King
-item may match or beat a masterwork. That is the intended shape of "the
-best items come from crafting and from hard bosses". What WP5 still owes is the **audit** that the rates in the
+Ordinary found gear sits below crafted gear **in expectation**, through the
+windows rather than through rate tuning: §6.3 gives a normal-mob drop
+`world` 0.00-0.60, an elite 0.30-0.90 and a named rare 0.50-1.00, against
+crafted-masterwork's 0.60-1.00, and the affix counts differ on top of that.
+The windows **overlap by design**, so a lucky four-affix elite or named-rare
+drop can beat an unlucky masterwork on a single item; what is guaranteed is
+the distribution, not per-item dominance. **Boss loot is not an ordinary
+found source at all but a deliberate peer of crafting**, at `boss`
+0.80-1.00 against crafted-masterwork 0.60-1.00 — those two are what §6.4
+means by "the two 0.60-1.00 windows", i.e. the two that reach 1.00 from at
+least 0.60, and they are the shape of "the best items come from crafting and
+from hard bosses". What WP5 still owes is the **audit** that the rates in the
 table above, at elite and high-tier sources, do not flood the market far
 enough to erase demand for crafted G2 gear and named-rare trophies; if that
 audit contradicts the table, the table is what changes, and it changes in
