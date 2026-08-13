@@ -960,6 +960,27 @@ one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
 
+Three fields carry the boat contract of `boats.md` and are decided
+2026-08-13, replacing the WP18 values the mob shipped with:
+
+- **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
+  (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
+  `combat_stats.md` §3's speed pillar gives an ordinary mob over a walking
+  player (4.4 against 4.0). It is the one documented exception to that
+  section's 3.4–4.6 speed band.
+- **`view_range` 40** (shipped: 20) — the same 40 m that is already the
+  threat-validity and leash radius of `combat_stats.md` §4, so the guard
+  notices a boat before the boat is past it. Large, deliberately not unfair.
+- **`reach` 4 is unchanged.** It is already double the roster's 2 because the
+  model is ×6 and mobs_redo measures centre to centre
+  (`mods/ENTITIES/mobs/api.lua:238-245`); the reason a fleeing target used to
+  be nearly unhittable was the attack cadence, not the reach, and that is
+  fixed once for every mob in `combat_stats.md` §4.
+
+The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
+evade everywhere else, never spawning in a dragon channel — are owned by
+`world.md` §2b.
+
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
 of `mob_level_at`. **Two cave-only critters since 2026-08-08** (§3.0 —
