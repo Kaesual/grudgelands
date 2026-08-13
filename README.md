@@ -153,9 +153,8 @@ cooldown.
 played hours, with one talent point every three levels and active capstones.
 Death returns a player to their race's starting settlement with inventory
 intact; the decided PvE penalty removes 25% of current-level XP progress
-without de-leveling. The separate treatment of authoritatively attributed PvP
-deaths remains in [TODO-design-pvp-death.md](TODO-design-pvp-death.md) before
-WP9; no target-design document assumes an answer.
+without de-leveling, while a death authoritatively attributed to an eligible
+hostile player by the PvP transaction costs no XP.
 
 ### Biomes, mobs and mounts
 
@@ -196,12 +195,11 @@ WP43 supersedes WP25's running legacy while preserving saved-world migration.
 recovery, offhand items, affixes, durability, final structures, travel/map,
 Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface,
 geographic PvP transaction, bounded war-front life and rebased economy are
-also pending. The playable-boat contract, several mount details, deep-content
-questions and PvP-death XP rule remain explicitly open in
+also pending. The playable-boat contract, several mount details and
+deep-content questions remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
-[the crafting/mount TODO](TODO-design-crafting-rework.md),
-[the depth TODO](TODO-design-depth.md) and
-[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
+[the crafting/mount TODO](TODO-design-crafting-rework.md) and
+[the depth TODO](TODO-design-depth.md), respectively.
 
 **Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
 material/map/economy roots. WP40 still requires its independently reviewed

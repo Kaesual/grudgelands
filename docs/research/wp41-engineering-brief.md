@@ -393,12 +393,12 @@ assertion suite, recorded in the WP's review evidence.
 
 - **WP9 (quests):** consumes the event bus and `classify_death`'s
   attribution record; WP41 ships no quest content and no death *penalty*
-  logic. The **PvP-death/XP consequence stays open** in
-  `TODO-design-pvp-death.md`: WP41 delivers the attribution seam that TODO
+  logic. The **PvP-death/XP consequence is decided** (2026-08-13,
+  `progression.md` §3): confirmed PvP deaths cost no XP; every other death
+  keeps the 25% rule. WP41 delivers exactly the attribution seam that rule
   requires ("an exact attribution boundary") — the recorded final
-  HP-lowering committed transaction — while `grug_xp`'s universal 25% rule
-  remains untouched until the TODO is decided. No WP41 code branches on
-  the undecided answer.
+  HP-lowering committed transaction — while `grug_xp`'s death penalty
+  remains untouched by WP41; applying the exemption is WP9's wiring.
 - **WP13 (structures):** kings, guards and civic services are WP6/WP13
   content; WP41 only supplies §4.6's seam through the existing hooks and
   changes no NPC roster, level or placement.

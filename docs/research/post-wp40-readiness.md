@@ -60,7 +60,7 @@ WP40 (in progress, root)
 | WP | Genuine blockers | Labeled later inputs (not blockers) |
 |---|---|---|
 | WP37 | none (WP6 ✅) | if run before WP40: WP40 T8 carries values through migration |
-| WP41 | WP40 zone API shipped | PvP-death/XP rule (`TODO-design-pvp-death.md`) — seam ships, consequence stays open; WP5 finish/draught effects consumed later |
+| WP41 | WP40 zone API shipped | PvP-death/XP rule decided 2026-08-13 (`progression.md` §3: confirmed PvP deaths cost no XP) — seam ships, the exemption is WP9's wiring; WP5 finish/draught effects consumed later |
 | WP44 | none (WP7 ✅, WP43 ✅) | per-band sanity sessions (user time); WP8 quest-income rerun later; WP40 world-label rerun |
 | WP13 | WP40 shipped map + anchor/protection APIs | none design-side after Phase A; asset-pipeline risk §2.6; WP42 (units) and WP21 (innkeeper service) attach later |
 | WP33 | WP40 shipped zone/source masks | WP34 refill economy explicitly out of scope |
