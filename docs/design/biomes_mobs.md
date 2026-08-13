@@ -960,10 +960,10 @@ one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
 
-Three fields carry the boat contract of `boats.md`. All three were **decided
-by the design owner on 2026-08-13**, replacing the values the mob shipped
-with; the anchors quoted below are the rationale for each choice, not the
-authority for it:
+Three fields carry the boat contract of `boats.md`. All three target values
+were **decided by the design owner on 2026-08-13**; two of them replace what
+the mob ships with and the third confirms it unchanged. The anchors quoted
+below are the rationale for each choice, not the authority for it:
 
 - **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
   (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
@@ -981,9 +981,13 @@ authority for it:
 
 The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
 evade everywhere else, never spawning in a dragon channel — are owned by
-`world.md` §2b. They **replace** what the mob ships today: `_grug_no_leash`
-plus its own 200-node coastal `LEASH_SLACK`
-(`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`) both retire. Its
+`world.md` §2b. They **replace** all three blanket exceptions the mob ships
+today — `_grug_no_leash`, its own 200-node coastal `LEASH_SLACK` and
+`_grug_soft_deaggro = false` (`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`,
+`:38`) — with the position-dependent state: the same suspensions inside a
+deep-ocean column, ordinary behaviour outside it. The shipped comment at
+`:32-36` states the reason those exceptions are global today, and that reason
+survives exactly where it is true, on the open sea. Its
 `_grug_spawn_check` already is `grug_core.open_sea_at` (`kraken.lua:31`),
 which `world.md` §2b narrows to `deep_ocean`, so deep-ocean-only spawning
 needs no separate mechanism.

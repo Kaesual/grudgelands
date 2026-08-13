@@ -757,11 +757,20 @@ The shipwright's teaching transaction consumes exactly this ingredient list
 once and returns one finished improved boat (`boats.md` §2). **Vendors never
 stock a boat**, but like every other unsold item both boats still receive an
 authoritative reference price and the ordinary ceiling-rounded 5% buy-back of
-`economy.md` §2 — "not stocked" is not "worth nothing". Both recipes are
-ordinary `normal` craft recipes and are therefore walked by the third
-`grug_traders` startup audit, so §3.8's anti-loop rule binds them: a boat's
-payout must stay below the summed payout of the wood, bars, bolts and thread
-consumed to make it.
+`economy.md` §2 — "not stocked" is not "worth nothing". §3.8's anti-loop rule
+binds both recipes: a boat's payout must stay **strictly below** the summed
+payout of the wood, bars, bolts and thread consumed to make it.
+
+The shipped audit only partly enforces that, so the pricing WP owes two
+explicit tests instead of trusting it. The improved boat's inputs are all
+concrete items and are walked normally, but the base boat's are `group:wood`,
+and the third `grug_traders` audit **skips any recipe with an unpriced input**
+— a group never carries a price of its own
+(`mods/ENTITIES/grug_traders/init.lua:257-261`). Its comparison is also
+`out_price > input_total` (`:269`), so an exactly break-even output passes.
+The base boat must therefore be priced below the five cheapest `group:wood`
+members by construction, and both boats verified by test rather than by the
+audit's silence.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 

@@ -308,14 +308,16 @@ because of what the guard does, not because water damages a boat:
 
 - The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
   nor planned zone water, nor a dragon channel ever spawns one.
-- **In deep ocean it never gives up.** Neither the 40-metre drag leash nor the
-  45-metre chase limit of `combat_stats.md` §4 applies while the guard itself
-  stands in a deep-ocean column: a player who stays on the open sea is caught.
-  The guard is faster than the fastest boat, so this is not a race.
+- **In deep ocean it never gives up.** While the guard itself stands in a
+  deep-ocean column, three §3/§4 rules are suspended: the 40-metre drag leash,
+  the 45-metre chase give-up and the 25-metre soft de-aggro that would drop it
+  to walking speed. A player who stays on the open sea is caught; the guard is
+  faster than the fastest boat, so this is not a race.
 - **Everywhere else it behaves like an ordinary land mob.** In shelf water, in
-  planned zone water and inside a dragon channel the complete §4 model applies
-  unchanged — drag leash, chase give-up, threat reset, the accelerated
-  untouchable run home to its post and the teleport backstop.
+  planned zone water and inside a dragon channel all three of those rules
+  apply again, together with the rest of the §4 model — threat reset, the
+  accelerated untouchable run home to its post and the teleport backstop. Full
+  hunting speed is a deep-ocean privilege, not a property of the mob.
 - **The switch is evaluated at the guard's own current position and takes
   effect immediately**, and a guard that has begun to evade never reverses
   that decision until it is home. Crossing the boundary is not itself a reset:

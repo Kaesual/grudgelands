@@ -451,11 +451,13 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   zeroes the mob's velocity as soon as the target is inside `reach`
   (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
   in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
-  receding target leaves reach after one server step — 0.09 s, the engine's
-  `dedicated_server_step` default
-  (`reference_projects/luanti/src/defaultsettings.cpp:498`, the value the
-  server pins) — so the timer gains 0.09 s while the mob loses ~0.36 m that
-  it needs ~0.9 s to re-close at its
+  receding target leaves reach after one server step, so the timer gains one
+  step while the mob loses the ground the target covered in it. Worked at the
+  **dedicated-server default** `dedicated_server_step = 0.09`
+  (`reference_projects/luanti/src/defaultsettings.cpp:498`; the setting is
+  configurable and a singleplayer session does not use it, so this is the
+  shape of the defect rather than a measurement): the timer gains 0.09 s while
+  the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
   0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
   one per second. Raising `reach` cannot repair this (a stopped mob always
   leaves its own radius, whatever the radius) and would silently widen the
