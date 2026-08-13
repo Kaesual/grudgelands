@@ -191,7 +191,8 @@ exactly once per would-be effect.
 The shipped PvP melee handler (`on_punchplayer` in `grug_abilities`,
 WP38/WP39) gains the transaction at its top: enemy-player pair →
 `hostile_attempt`. `blocked` → `return true` (suppresses default damage,
-`doc/lua_api.md:6589`), consume cadence per §15.1, discard the punch's
+`reference_projects/luanti/doc/lua_api.md:6600`), consume cadence per
+§15.1, discard the punch's
 fraction bank contribution for procs/rage, count no wear beyond the
 ordinary per-swing rule. `eligible` → unchanged WP38/WP39 resolution;
 `damage_committed` fires exactly where the integer commit lowers HP or
