@@ -62,7 +62,28 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q '005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710' "$stage1"
+grep -q '5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0' "$stage1"
+grep -q '^source\.relief_junctions={' "$catalog"
+[[ $(grep -c '^\s*relief_junction(' "$catalog") -eq 38 ]]
+grep -q 'junction_candidate_eligibility="strictly_positive_weight_only_all_quantized_zero_weights_excluded_including_distance_96"' "$catalog"
+grep -q 'junction_zero_weight_rule="return_post_landmark_H_exactly_without_division"' "$catalog"
+grep -q 'junction_seed_rule="intersection_band_uses_domain_relief_junction_v1_feature_junction_x_z_coordinates_x_z_candidate_zero_lane_two_full_seed_unbiased_singleton_midpoint_uses_no_hash"' "$catalog"
+grep -q 'junction_candidate_edge_dedup="one_candidate_per_unique_land_edge_from_ordinary_nearest_segment_and_projection_tie_never_one_pair_per_junction_endpoint"' "$catalog"
+grep -q 'junction_endpoint_support_proof="stage1_raw_control_endpoint_chebyshev_minimum_400_and_undisplaced_attachment_joint_raster_minimum_297_steps_are_baseline_KATs_only_stage2_measures_each_final_raster_and_hard_rejects_station_steps_below_192_before_endpoint_support"' "$catalog"
+grep -q 'junction_final_edge_short_rule="stage2_hard_reject_final_edge_raster_station_steps_less_than_192"' "$catalog"
+grep -q 'hash_domain="relief_junction_v1"' "$catalog"
+grep -q 'hash_feature_id="junction:"..x..":"..z' "$catalog"
+grep -q 'hash_candidate_index=0' "$catalog"
+grep -q 'hash_lane=2' "$catalog"
+grep -q 'raw_height_delta="max_above_water_minus_min_above_water_not_inclusive_value_count"' "$catalog"
+grep -q 'raw_noise_input="clamp_noise_q_to_minus_Q_through_plus_Q_before_height_product"' "$catalog"
+grep -q 'effective_width_square_max_4243584391840000_actual_guarded_cross_square_times_L_max_4251571423760000_and_conservative_early_cross_bound_4251754341463400' "$catalog"
+grep -q 'minimum_exact_squared_euclidean_distance_to_canonical_stations_of_evaluated_authored_segment' "$catalog"
+grep -q 'joint_perimeter_station_endpoint_before_final_raster_v1' "$catalog"
+if grep -qE 'bay_displacement_lanes|side_half_width_q16|left_lane|right_lane|nearest_perimeter_station_then_snap' "$catalog"; then
+	echo 'T2 source audit: superseded asymmetric Bay or attachment authority returned' >&2
+	exit 1
+fi
 [[ $(grep -c '^\s*perimeter_attachment("perimeter_attachment:' "$catalog") -eq 8 ]]
 grep -q 'geometry_authority="ordered_face_arc_authority_components_v2"' "$catalog"
 grep -q 'bay_base_predicate_id="strict_rational_variable_width_capsule_union_v1"' "$catalog"

@@ -64,7 +64,7 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710"
+local EXPECTED_SOURCE_CHECKSUM="5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"production and independent source KAT differ")
 assert(production_stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
@@ -227,6 +227,17 @@ do
 		end
 		return winding~=0
 	end
+	local function point_strictly_in_polygon(x,z,polygon)
+		local winding=0
+		for i=1,#polygon-1 do local a,b=polygon[i],polygon[i+1]
+			local side=(b.x-a.x)*(z-a.z)-(b.z-a.z)*(x-a.x)
+			if side==0 and x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
+					z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then return false end
+			if a.z<=z then if b.z>z and side>0 then winding=winding+1 end
+			elseif b.z<=z and side<0 then winding=winding-1 end
+		end
+		return winding~=0
+	end
 	local function raster_segment(authored_a,authored_b)
 		local reverse=authored_a.x>authored_b.x or
 			(authored_a.x==authored_b.x and authored_a.z>authored_b.z)
@@ -287,8 +298,8 @@ do
 	for i=1,#source.perimeter_attachments do local attachment=source.perimeter_attachments[i]
 		attachment_by_id[attachment.id]=attachment attachment_by_edge[attachment.edge_id]=attachment
 	end
-	local attachment_point,clipped_edge_point_set={},{}
-	local clipped_edge={}
+	local attachment_point={}
+	local clipped_edge_point_set,clipped_edge={},{}
 	for edge_id,attachment in pairs(attachment_by_edge) do
 		local edge=edge_by_id[edge_id]
 		local points=raster_polyline(edge.control)
@@ -299,13 +310,34 @@ do
 		end end
 		assert(first and last)
 		local kept={}
-		for i=first,last do kept[#kept+1]=points[i] end
-		clipped_edge[edge_id]=kept
-		local point_set={} clipped_edge_point_set[edge_id]=point_set
-		for i=1,#kept do point_set[kept[i].x..":"..kept[i].z]=true end
+		for i=first,last do
+			assert(point_in_polygon(points[i].x,points[i].z,perimeter),
+				"attachment candidate retained run is not consecutive")
+			kept[#kept+1]=points[i]
+		end
 		attachment_point[attachment.id]=attachment.edge_endpoint=="from" and kept[1] or kept[#kept]
 	end
 	local attachment_perimeter_station={}
+	-- This is deliberately the undisplaced literal Stage-1 baseline. Final
+	-- seed-zero and corpus attachment geometry belongs to Stage 2.
+	local baseline_exact_attachment_count,baseline_adjacent_attachment_count=0,0
+	local baseline_reviewed_short_attachment_minimum=9007199254740991
+	local expected_attachment_station_steps={
+		["perimeter_attachment:elandor:land_031"]=298,
+		["perimeter_attachment:elandor:land_034"]=297,
+	}
+	local expected_undisplaced_attachment_delta={
+		["perimeter_attachment:elandor:land_031"]={-2497,-1100,-2498,-1099,1},
+		["perimeter_attachment:elandor:land_007"]={2511,-2662,2512,-2663,1},
+		["perimeter_attachment:elandor:land_034"]={2496,-1100,2497,-1101,1},
+		["perimeter_attachment:kragmar:land_010"]={-2520,2664,-2521,2664,1},
+		["perimeter_attachment:kragmar:land_016"]={2517,2678,2517,2679,1},
+	}
+	local expected_undisplaced_exact_attachment={
+		["perimeter_attachment:elandor:land_001"]=true,
+		["perimeter_attachment:kragmar:land_037"]=true,
+		["perimeter_attachment:kragmar:land_040"]=true,
+	}
 	for attachment_id,point in pairs(attachment_point) do local attachment=attachment_by_id[attachment_id]
 		local perimeter=perimeter_by_id[attachment.perimeter_id]
 		local segment=raster_segment(perimeter.polygon[attachment.perimeter_segment_index],
@@ -325,6 +357,87 @@ do
 			"attachment requires an adjacent perimeter station: "..attachment_id..
 			" point="..point.x..":"..point.z.." distance="..best_distance)
 		attachment_perimeter_station[attachment_id]=best
+		local witness=expected_undisplaced_attachment_delta[attachment_id]
+		if witness then
+			assert(point.x==witness[1] and point.z==witness[2] and
+				best.x==witness[3] and best.z==witness[4] and
+				best_distance==witness[5],"undisplaced attachment E/A baseline drift: "..attachment_id)
+		else
+			assert(expected_undisplaced_exact_attachment[attachment_id] and best_distance==0 and
+				point.x==best.x and point.z==best.z,
+				"undisplaced attachment exact E=A baseline drift: "..attachment_id)
+		end
+		if best_distance==0 then
+			baseline_exact_attachment_count=baseline_exact_attachment_count+1
+		else baseline_adjacent_attachment_count=baseline_adjacent_attachment_count+1 end
+
+		-- E chooses A but is not emitted. A replaces the authored outside terminal
+		-- control before the one authoritative final edge raster.
+		local edge=edge_by_id[attachment.edge_id]
+		local final_control={}
+		if attachment.edge_endpoint=="from" then
+			final_control[1]=best
+			for i=2,#edge.control do final_control[#final_control+1]=edge.control[i] end
+		else
+			for i=1,#edge.control-1 do final_control[#final_control+1]=edge.control[i] end
+			final_control[#final_control+1]=best
+		end
+		local final_points=raster_polyline(final_control)
+		local first_point,last_point=final_points[1],final_points[#final_points]
+		local endpoint_chebyshev=math.max(
+			math.abs(last_point.x-first_point.x),
+			math.abs(last_point.z-first_point.z))
+		local expected_station_steps=expected_attachment_station_steps[attachment_id]
+		if expected_station_steps then
+			baseline_reviewed_short_attachment_minimum=math.min(
+				baseline_reviewed_short_attachment_minimum,endpoint_chebyshev)
+			assert(endpoint_chebyshev==expected_station_steps,
+				"undisplaced attachment station-step KAT drift: "..attachment_id)
+		end
+		local terminal=attachment.edge_endpoint=="from" and final_points[1] or
+			final_points[#final_points]
+		assert(terminal.x==best.x and terminal.z==best.z,
+			"attachment final raster misses joint station A")
+		local perimeter_polygon=perimeter_by_id[attachment.perimeter_id].polygon
+		for i=1,#final_points do
+			local is_terminal=attachment.edge_endpoint=="from" and i==1 or
+				attachment.edge_endpoint=="to" and i==#final_points
+			if not is_terminal then assert(point_strictly_in_polygon(
+				final_points[i].x,final_points[i].z,perimeter_polygon),
+				"attachment final edge station is not strict interior: "..attachment_id)
+			end
+			if i>1 then assert(math.max(math.abs(final_points[i].x-final_points[i-1].x),
+				math.abs(final_points[i].z-final_points[i-1].z))==1,
+				"attachment final edge is not 8-connected") end
+		end
+		clipped_edge[attachment.edge_id]=final_points
+		local point_set={} clipped_edge_point_set[attachment.edge_id]=point_set
+		for i=1,#final_points do
+			point_set[final_points[i].x..":"..final_points[i].z]=true
+		end
+	end
+	assert(baseline_exact_attachment_count==3 and
+		baseline_adjacent_attachment_count==5,
+		"undisplaced attachment exact/adjacent baseline drift")
+	assert(baseline_reviewed_short_attachment_minimum==297,
+		"undisplaced attachment minimum station-step baseline drift: "..
+			baseline_reviewed_short_attachment_minimum)
+	do
+		local attachment=attachment_by_id["perimeter_attachment:kragmar:land_016"]
+		local raw_points=raster_polyline(edge_by_id[attachment.edge_id].control)
+		local raw_set={}
+		for i=1,#raw_points do raw_set[raw_points[i].x..":"..raw_points[i].z]=true end
+		local perimeter=perimeter_by_id[attachment.perimeter_id]
+		local perimeter_points=raster_segment(
+			perimeter.polygon[attachment.perimeter_segment_index],
+			perimeter.polygon[attachment.perimeter_segment_index+1])
+		local common=0
+		for i=1,#perimeter_points do
+			if raw_set[perimeter_points[i].x..":"..perimeter_points[i].z] then
+				common=common+1
+			end
+		end
+		assert(common==0,"land_016 unexpectedly regained a common raw raster station")
 	end
 	local span_by_id={}
 	for i=1,#source.perimeter_spans do span_by_id[source.perimeter_spans[i].id]=source.perimeter_spans[i] end
@@ -357,6 +470,8 @@ do
 		for i=1,#arc.authority_components do local component=arc.authority_components[i]
 			local part=component.kind=="perimeter_span" and
 				materialize_span(span_by_id[component.ref_id]) or component.control
+			if #points>0 then assert(points[#points].x==part[1].x and
+				points[#points].z==part[1].z,"face arc authority components do not join") end
 			for j=1,#part do if #points==0 or j>1 then points[#points+1]=part[j] end end
 		end
 		return points
@@ -372,12 +487,13 @@ do
 					points[#points+1]=base[j] end
 				else for j=#base,1,-1 do points[#points+1]=base[j] end end
 			else points=materialize_arc(arc_by_id[ref.ref_id]) end
+			if #polygon>0 then assert(polygon[#polygon].x==points[1].x and
+				polygon[#polygon].z==points[1].z,"zone face authority components do not join") end
 			for j=1,#points do if #polygon==0 or j>1 then
 				polygon[#polygon+1]=points[j] end end
 		end
-		if polygon[#polygon].x~=polygon[1].x or polygon[#polygon].z~=polygon[1].z then
-			polygon[#polygon+1]=polygon[1]
-		end
+		assert(polygon[#polygon].x==polygon[1].x and polygon[#polygon].z==polygon[1].z,
+			"zone face authority cycle does not close exactly")
 		face_by_zone[face.zone_id]=polygon
 	end
 	local ceil_isqrt
@@ -1257,6 +1373,89 @@ local function raster_canonical_points(x0,z0,x1,z1)
 	end
 	return points
 end
+
+-- Exhaustive reviewed Bay-projection Reality corpus. Enumerate every integer
+-- column of every authored segment bbox enlarged by its maximum varied radius,
+-- retain only strict segment-body columns inside the exact +48 envelope, and
+-- compare the specified Euclidean raster-station owner with parameter round.
+do
+	local relevant_columns=0
+	local maximum_executed_lhs=0
+	local first_divergence
+	local function ceil_isqrt_exact(value)
+		local low,high=0,1
+		while high<=value/high do high=high*2 end
+		while low+1<high do local middle=math.floor((low+high)/2)
+			if middle<=value/middle then low=middle else high=middle end
+		end
+		return low*low==value and low or low+1
+	end
+	for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+		for segment_index=1,#bay.centreline-1 do
+			local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+			local vx,vz=b.x-a.x,b.z-a.z
+			local length_squared=vx*vx+vz*vz
+			local maximum_varied_radius=math.max(a.half_width,b.half_width)+48
+			local early_cross_bound=maximum_varied_radius*
+				ceil_isqrt_exact(length_squared)
+			local points=raster_canonical_points(a.x,a.z,b.x,b.z)
+			for x=math.min(a.x,b.x)-maximum_varied_radius,
+					math.max(a.x,b.x)+maximum_varied_radius do
+				for z=math.min(a.z,b.z)-maximum_varied_radius,
+						math.max(a.z,b.z)+maximum_varied_radius do
+					local px,pz=x-a.x,z-a.z
+					local projection=px*vx+pz*vz
+					if projection>0 and projection<length_squared then
+						local cross=vx*pz-vz*px
+						if math.abs(cross)<early_cross_bound then
+							local lhs=cross*cross*length_squared
+							maximum_executed_lhs=math.max(maximum_executed_lhs,lhs)
+							local effective_width=(a.half_width+48)*
+								(length_squared-projection)+
+								(b.half_width+48)*projection
+						if lhs<effective_width*effective_width then
+							relevant_columns=relevant_columns+1
+							local euclidean_index,euclidean_distance
+							for station_index=1,#points do
+								local sx,sz=points[station_index].x-x,
+									points[station_index].z-z
+								local squared=sx*sx+sz*sz
+								if not euclidean_distance or squared<euclidean_distance then
+									euclidean_index,euclidean_distance=
+										station_index,squared
+								end
+							end
+							local parametric_index=math.floor(
+								(2*projection*(#points-1)+length_squared)/
+								(2*length_squared))+1
+							if not first_divergence and
+									euclidean_index~=parametric_index then
+								first_divergence={bay.id,segment_index,x,z,
+									euclidean_index-1,points[euclidean_index].x,
+									points[euclidean_index].z,parametric_index-1,
+									points[parametric_index].x,points[parametric_index].z}
+							end
+						end end
+					end
+				end
+			end
+		end
+	end
+	assert(relevant_columns==2290129,
+		"Bay projection exhaustive relevant-column count drift: "..relevant_columns)
+	local reviewed_algebraic_early_cross_bound=4251754341463400
+	assert(maximum_executed_lhs==4251571423760000 and
+		maximum_executed_lhs<=reviewed_algebraic_early_cross_bound,
+		"Bay projection exhaustive guarded LHS maximum drift: "..
+			maximum_executed_lhs)
+	assert(first_divergence and first_divergence[1]=="bay_elandor_west" and
+		first_divergence[2]==1 and first_divergence[3]==-1376 and
+		first_divergence[4]==-2846 and first_divergence[5]==2 and
+		first_divergence[6]==-980 and first_divergence[7]==-2938 and
+		first_divergence[8]==1 and first_divergence[9]==-980 and
+		first_divergence[10]==-2939,
+		"Bay projection exhaustive first-divergence KAT drift")
+end
 local function raster_signature(points)
 	local parts={}
 	for i=1,#points do parts[i]=points[i].x..":"..points[i].z end
@@ -1295,6 +1494,190 @@ assert(joint_count==1 and joined[1].x==0 and joined[#joined].x==6,
 	"route joint suppression/station retention drift")
 
 local Q=65536
+
+-- The junction tuple is part of authored full-seed geometry. Seed zero must
+-- select 38 from the first junction's inclusive 24..56 intersection.
+do
+	local junction=source.relief_junctions[1]
+	local hash=deterministic.new_hash(canonical,raw_sha256,
+		"grug_wp40_geometry_source_v1","0")
+	local selected=junction.gate_min_above_water+hash.range(
+		junction.hash_domain,junction.hash_feature_id,
+		{junction.position.x,junction.position.z},junction.hash_candidate_index,
+		junction.hash_lane,junction.gate_max_above_water-
+			junction.gate_min_above_water+1)
+	assert(junction.id=="relief_junction:-1050:-2250" and selected==38,
+		"relief junction seed-zero hash tuple KAT drift")
+end
+
+-- Reality-correction KATs: raw relief uses the numeric inclusive span
+-- (max-min), not the number of representable integer results.
+local function raw_relief_offset(profile,noise_q)
+	noise_q=math.max(-Q,math.min(Q,noise_q))
+	local delta=profile.max_above_water-profile.min_above_water
+	return profile.min_above_water+
+		math.floor((noise_q+Q)*delta/(2*Q))
+end
+for i=1,#source.relief_profiles do local profile=source.relief_profiles[i]
+	local delta=profile.max_above_water-profile.min_above_water
+	assert(raw_relief_offset(profile,-Q)==profile.min_above_water and
+		raw_relief_offset(profile,-Q-1)==profile.min_above_water and
+		raw_relief_offset(profile,-2*Q)==profile.min_above_water and
+		raw_relief_offset(profile,-1000000000)==profile.min_above_water and
+		raw_relief_offset(profile,0)==profile.min_above_water+math.floor(delta/2) and
+		raw_relief_offset(profile,Q)==profile.max_above_water and
+		raw_relief_offset(profile,Q+1)==profile.max_above_water and
+		raw_relief_offset(profile,2*Q)==profile.max_above_water and
+		raw_relief_offset(profile,1000000000)==profile.max_above_water,
+		"raw relief inclusive-span KAT drift: "..profile.id)
+end
+assert(40+math.floor((Q)*(40-40)/(2*Q))==40,
+	"raw relief singleton KAT drift")
+
+local function junction_weight(distance)
+	return Q-deterministic.smootherstep(
+		deterministic.qfrom_ratio(distance,96))
+end
+assert(junction_weight(94)>0 and junction_weight(95)==0 and
+	junction_weight(96)==0 and junction_weight(97)==0 and
+	Q-deterministic.smootherstep(Q-1)==0,
+	"junction quantized support boundary KAT drift")
+local function aggregate_junction(post_landmark_h,candidates)
+	local weighted_sum,denominator,strength=0,0,0
+	for i=1,#candidates do local candidate=candidates[i]
+		local weight=junction_weight(candidate.distance)
+		if weight>0 then
+			weighted_sum=weighted_sum+
+				deterministic.qmul(candidate.height_q,weight)
+			denominator=denominator+weight
+			strength=math.max(strength,weight)
+		end
+	end
+	if denominator==0 then return post_landmark_h,0,0 end
+	return deterministic.qdiv(weighted_sum,denominator),strength,denominator
+end
+local unchanged,strength,denominator=aggregate_junction(77*Q,
+	{{distance=96,height_q=200*Q}})
+assert(unchanged==77*Q and strength==0 and denominator==0,
+	"junction zero-weight fallback divided or changed post-landmark H")
+local averaged=aggregate_junction(1*Q,{{distance=0,height_q=20*Q},
+	{distance=0,height_q=40*Q}})
+assert(averaged==30*Q,"junction ordered Q16 weighted average KAT drift")
+
+-- One ordinary edge projection can select at most one locally supported
+-- endpoint. Stage 1 freezes only the raw-control baseline; Stage 2 must reject
+-- each final raster below 192 steps before the two strict supports are used.
+local minimum_raw_endpoint_chebyshev=9007199254740991
+for i=1,#source.land_edges do local edge=source.land_edges[i]
+	local first,last=edge.control[1],edge.control[#edge.control]
+	minimum_raw_endpoint_chebyshev=math.min(minimum_raw_endpoint_chebyshev,
+		math.max(math.abs(last.x-first.x),math.abs(last.z-first.z)))
+end
+assert(minimum_raw_endpoint_chebyshev==400,
+	"junction raw-control endpoint-separation baseline drift")
+local function supported_endpoint(station,last_station)
+	if last_station<192 then return false,"short_final_edge" end
+	local start_distance=station
+	local end_distance=last_station-station
+	assert(not (start_distance<96 and end_distance<96),
+		"junction endpoint supports overlap")
+	if start_distance<96 then return "start",start_distance end
+	if end_distance<96 then return "end",end_distance end
+	return false,false
+end
+local final_stage2_minimum=192
+local side,distance=supported_endpoint(95,final_stage2_minimum)
+assert(side=="start" and distance==95)
+side,distance=supported_endpoint(96,final_stage2_minimum)
+assert(side==false and distance==false)
+side,distance=supported_endpoint(final_stage2_minimum-95,
+	final_stage2_minimum)
+assert(side=="end" and distance==95)
+side,distance=supported_endpoint(final_stage2_minimum-96,
+	final_stage2_minimum)
+assert(side==false and distance==false)
+side,distance=supported_endpoint(95,191)
+assert(side==false and distance=="short_final_edge",
+	"junction short final edge was not rejected before endpoint support")
+local function nearest_projection_station(points,numerator_x,numerator_z,denominator)
+	local best_index,best_distance
+	for i=1,#points do
+		local dx=points[i].x*denominator-numerator_x
+		local dz=points[i].z*denominator-numerator_z
+		local squared=dx*dx+dz*dz
+		if not best_distance or squared<best_distance then
+			best_index,best_distance=i,squared
+		end
+	end
+	return best_index
+end
+assert(nearest_projection_station({{x=0,z=0},{x=1,z=0}},1,0,2)==1,
+	"junction projection-station lower-index tie drift")
+
+local function control_taper(station,total)
+	return deterministic.smootherstep(deterministic.qfrom_ratio(
+		math.min(station,total-station),96))
+end
+local function no_jitter_damping(distance)
+	if distance<=96 then return 0 end
+	if distance>=192 then return Q end
+	return deterministic.smootherstep(
+		deterministic.qfrom_ratio(distance-96,96))
+end
+assert(control_taper(0,240)==0 and control_taper(96,240)==Q and
+	control_taper(37,240)==control_taper(203,240) and
+	no_jitter_damping(95)==0 and no_jitter_damping(96)==0 and
+	no_jitter_damping(144)==32768 and no_jitter_damping(192)==Q and
+	math.min(no_jitter_damping(120),no_jitter_damping(180))==
+		no_jitter_damping(120) and
+	deterministic.qmul(control_taper(37,240),
+		math.min(no_jitter_damping(120),no_jitter_damping(180)))==
+		deterministic.qmul(control_taper(203,240),no_jitter_damping(120)),
+	"boundary damping metric/reversal/overlap KAT drift")
+
+-- The Bay projection is an exact station-distance decision, not a rounded
+-- parametric projection. This witness is the reviewed divergent case.
+do
+	local points=raster_canonical_points(-980,-2940,-900,-2600)
+	local px,pz=-1376,-2846
+	local dx,dz=80,340
+	local length_squared=dx*dx+dz*dz
+	local projection_n=(px+980)*dx+(pz+2940)*dz
+	local best_index,best_distance
+	for i=1,#points do
+		local dx,dz=points[i].x-px,points[i].z-pz
+		local distance=dx*dx+dz*dz
+		if not best_distance or distance<best_distance then
+			best_index,best_distance=i,distance
+		end
+	end
+	local rounded_parametric_index=math.floor(
+		(2*projection_n*(#points-1)+length_squared)/(2*length_squared))+1
+	assert(best_index==3 and points[best_index].x==-980 and
+		points[best_index].z==-2938 and rounded_parametric_index==2 and
+		points[rounded_parametric_index].x==-980 and
+		points[rounded_parametric_index].z==-2939,
+		"Bay exact station projection KAT drift")
+end
+local function bay_delta(noise_q,taper_q)
+	return deterministic.qround(deterministic.qmul(
+		deterministic.qmul(noise_q,48*Q),taper_q))
+end
+for _,fixture in ipairs({{Q,Q,48},{-Q,Q,-48},{0,Q,0},{Q,0,0},
+		{Q,32768,24}}) do
+	assert(bay_delta(fixture[1],fixture[2])==fixture[3],
+		"Bay symmetric radius-delta KAT drift")
+end
+local synthetic_e,synthetic_l=10,1
+assert((-9)*(-9)*synthetic_l<synthetic_e*synthetic_e and
+	9*9*synthetic_l<synthetic_e*synthetic_e and
+	not ((-10)*(-10)*synthetic_l<synthetic_e*synthetic_e) and
+	not (10*10*synthetic_l<synthetic_e*synthetic_e),
+	"Bay symmetric strict dry-equality KAT drift")
+assert(4243584391840000<9007199254740991 and
+	4251754341463400<9007199254740991,
+	"Bay displacement safe-product KAT drift")
+
 local function route_cross_section_weight(offset,visible_width,corridor_width)
 	local distance=math.abs(offset)*Q
 	local visible_half=deterministic.qfrom_ratio(visible_width,2)
@@ -1554,6 +1937,21 @@ end)
 expect_failure("old_land_edge_fixture",function(s) s.land_edges[57].boundary_only=true end)
 expect_failure("exact_source_checksum", function(s) s.zones[1].display_name="Wrong" end)
 expect_failure("face_edge_junctions", function(s) s.land_edges[1].control[1].x=-2699 end)
+expect_failure("exact_count_relief_junctions",function(s)
+	table.remove(s.relief_junctions,38)
+end)
+expect_failure("relief_junction_incidence",function(s)
+	s.relief_junctions[1].incident_edge_ids[1],
+		s.relief_junctions[1].incident_edge_ids[2]=
+		s.relief_junctions[1].incident_edge_ids[2],
+		s.relief_junctions[1].incident_edge_ids[1]
+end)
+expect_failure("relief_junction_band",function(s)
+	s.relief_junctions[10].transition_midpoint_above_water=75
+end)
+expect_failure("relief_junction_contract",function(s)
+	s.relief_junctions[1].hash_lane=0
+end)
 expect_failure("route_crosses_boundary", function(s) s.routes[1].centreline[s.routes[1].crossing_station].x=999 end)
 expect_failure("route_station_ref", function(s) s.routes[1].station_a_id="station:elandor_copperfell_foothills:hub" end)
 expect_failure("route_crossing_sides", function(s) local r=s.routes[1] r.centreline[2].x=r.centreline[4].x r.centreline[2].z=r.centreline[4].z end)
@@ -1633,6 +2031,9 @@ expect_failure("perimeter_attachment_contract",function(s)
 end)
 expect_failure("perimeter_attachment_contract",function(s)
 	s.perimeter_attachments[1].perimeter_segment_index=4
+end)
+expect_failure("perimeter_attachment_contract",function(s)
+	s.perimeter_attachments[1].joint_station_rule="nearest_with_snap"
 end)
 expect_failure("zone_face_edge_ref",function(s)
 	for i=1,#s.zone_faces do for j=1,#s.zone_faces[i].cycle do
@@ -1820,6 +2221,30 @@ expect_failure("relief_shared_gate_policy",function(s)
 	s.geometry_policies.relief_field.nearest_edge_distance=
 		"nearest_raster_station"
 end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.raw_height_delta=
+		"inclusive_value_count"
+end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.raw_noise_input=
+		"assume_noise_already_clamped"
+end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.junction_zero_weight_rule=
+		"divide_all_candidates"
+end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.junction_candidate_eligibility=
+		"nonnegative_weight"
+end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.junction_candidate_edge_dedup=
+		"one_candidate_per_junction_edge_pair"
+end)
+expect_failure("relief_shared_gate_policy",function(s)
+	s.geometry_policies.relief_field.junction_endpoint_support_proof=
+		"assume_supports_do_not_overlap"
+end)
 expect_failure("relief_edge_gate_authority",function(s)
 	s.land_edges[11].gate_min_above_water=39
 end)
@@ -1844,6 +2269,21 @@ end)
 expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_owner_segment_tie=
 		"exact_equal_rational_distance_then_lower_segment_index"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_displacement_lanes={left=0,right=1}
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_displacement_projection_station=
+		"rounded_parametric_projection"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.shared_boundary_attachment_rule=
+		"nearest_perimeter_station_then_snap"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.no_jitter_metric=
+		"euclidean_world_distance"
 end)
 expect_failure("geometry_fixture_selector_policy",function(s)
 	s.geometry_policies.geometry_fixture_selector.classes[7].predicate_id=""

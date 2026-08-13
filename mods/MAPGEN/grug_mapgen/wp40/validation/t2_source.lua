@@ -2,18 +2,18 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710"
+	"5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
 	primitive_formulas="03365f8654bdb4ffac4af9a1123f6df2f5231bcec7bf999b859cc115cf839f8b",
-	boundary_displacement="026e42bffbbad9a515dc20e0a55ac97af59265fc95f85bcf771253cab5724cb6",
+	boundary_displacement="a285d8d82e4b7b588fdf0b13508b8f6c070ec632dfa97b5ae7f428e3e49295fa",
 	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
 	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
-	relief_field="a1fd4f4083590093a25b4df518bc15fdf811f327b50e73fe130e1e66bc8ce7ea",
-	landmark_masks="bdd827f7173b110e977e879e98492ea6b5f472d12de830e6758f53d14bcd9a0f",
+	relief_field="21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200",
+	landmark_masks="99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e",
 	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
-	world_partition="fc747096ec4646dc1a9185c579aabb309f81a769fca3c9e6b687ed4b42017c22",
+	world_partition="0e33b43be13f096aee2b6f8fbe40e3e1e6a44605bb66436672b69de6efb01f9d",
 	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
 	requester_trace="1c8bb210b53bb50bb6a661dfaaf8e3f771cc1ae2674a0a405783a6ca19dd69ff",
 	geometry_extreme_selector="7d9e796c64ae4b975a029ad2ad3311c4f2a930036a0c8ab6173664111e3637c7",
@@ -24,7 +24,8 @@ local EXPECTED_POLICY_CHECKSUMS={
 local SOURCE_ARRAY_FIELDS={section_order=true,relief_profiles=true,
 	mg_flags=true,mgv7_special_flags=true,flags=true,
 	route_classes=true,water_classes=true,landmark_role_vocabulary=true,
-	template_primitives=true,zones=true,land_edges=true,
+	template_primitives=true,zones=true,land_edges=true,relief_junctions=true,
+	incident_edge_ids=true,
 	perimeter_attachments=true,perimeter_spans=true,face_arcs=true,
 	zone_faces=true,cycle=true,source_refs=true,authority_components=true,
 	ordered_outer_components=true,route_stations=true,
@@ -467,7 +468,7 @@ local function polygon_valid(row, label)
 end
 
 local EXPECTED_COUNTS = {
-	{"zones",38},{"land_edges",61},{"perimeter_attachments",8},
+	{"zones",38},{"land_edges",61},{"relief_junctions",38},{"perimeter_attachments",8},
 	{"perimeter_spans",18},{"face_arcs",34},{"zone_faces",38},
 	{"route_stations",68},{"routes",57},{"route_interfaces",171},
 	{"surface_level_controls",162},
@@ -668,7 +669,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local expected_sections={"critical_source_manifest","constants",
 		"geometry_policies","relief_profiles","route_classes",
 		"water_classes","landmark_role_vocabulary","template_primitives",
-		"zones","land_edges","perimeter_attachments","perimeter_spans",
+		"zones","land_edges","relief_junctions","perimeter_attachments","perimeter_spans",
 		"face_arcs","zone_faces",
 		"route_stations","routes","route_interfaces","surface_level_controls",
 		"route_crossing_interfaces","boat_edges","island_landings",
@@ -700,6 +701,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	for i=1,#source.zones do zone_by_id[source.zones[i].id]=source.zones[i] end
 	for _, family in ipairs({"relief_profiles","route_classes","water_classes",
 			"template_primitives","perimeter_attachments","perimeter_spans",
+			"relief_junctions",
 			"face_arcs","zone_faces","perimeters","bays","bay_mouth_apertures",
 			"bay_closure_wings","islands","channels",
 			"landmarks","anchors","templates","template_compositions",
@@ -715,9 +717,43 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		if not ok then return nil, failure end
 	end
 	local relief_ids,relief_by_id = {},{}
+	local relief_expected={
+		wetland_delta={2,24},lowland={8,56},rolling_hills={24,96},
+		plateau={56,144},highland={96,224},mountain={160,360},
+	}
 	for i = 1, #source.relief_profiles do
-		relief_ids[source.relief_profiles[i].id] = true
-		relief_by_id[source.relief_profiles[i].id]=source.relief_profiles[i]
+		local profile=source.relief_profiles[i]
+		local expected=relief_expected[profile.id]
+		if not expected or profile.min_above_water~=expected[1] or
+				profile.max_above_water~=expected[2] then
+			return diag("relief_profile_band",profile.id,
+				expected and expected[1]..".."..expected[2] or "known profile",
+				tostring(profile.min_above_water)..".."..tostring(profile.max_above_water))
+		end
+		local delta=profile.max_above_water-profile.min_above_water
+		if delta<0 or (2*65536)*delta>9007199254740991 then
+			return diag("relief_raw_height_product",profile.id,
+				"nonnegative exact delta product","unsafe")
+		end
+		for _,noise_q in ipairs({-1000000000,-131072,-65537,-65536,-65535,0,
+			65535,65536,65537,131072,1000000000}) do
+			local clamped_noise=math.max(-65536,math.min(65536,noise_q))
+			local mapped=profile.min_above_water+
+				math.floor((clamped_noise+65536)*delta/(2*65536))
+			if mapped<profile.min_above_water or mapped>profile.max_above_water or
+					(noise_q<=-65536 and mapped~=profile.min_above_water) or
+					(noise_q==0 and mapped~=
+						profile.min_above_water+math.floor(delta/2)) or
+					(noise_q>=65536 and mapped~=profile.max_above_water) then
+				return diag("relief_raw_height_kat",profile.id,
+					"inclusive min/max exact mapping",mapped)
+			end
+		end
+		relief_ids[profile.id] = true
+		relief_by_id[profile.id]=profile
+	end
+	if 40+math.floor((0+65536)*(40-40)/(2*65536))~=40 then
+		return diag("relief_raw_height_kat","singleton",40,"changed")
 	end
 	local policies=source.geometry_policies
 	if type(policies)~="table" or policies.id~="geometry_policies" or
@@ -866,9 +902,65 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	end
 	if policies.relief_field.boundary_blend_width~=
 			policies.relief_composition.boundary_blend_width or
+			policies.relief_field.raw_height_equation_id~=
+				"relief_noise_to_inclusive_height_delta_floor_v2" or
+			policies.relief_field.raw_noise_input~=
+				"clamp_noise_q_to_minus_Q_through_plus_Q_before_height_product" or
+			policies.relief_field.raw_height_delta~=
+				"max_above_water_minus_min_above_water_not_inclusive_value_count" or
+			policies.relief_field.raw_height_rule~=
+				"water_level_plus_min_plus_floor_div_clamped_noise_plus_Q_times_delta_by_two_Q" or
+			policies.relief_field.raw_height_product_guard~=
+				"clamped_noise_plus_Q_times_delta_at_most_2_pow_53_minus_1" or
 			policies.relief_field.gate_lane~=2 or
 			policies.relief_field.gate_identity_rule~=
 				"one_G_per_shared_edge_station_consumed_by_both_incident_faces" or
+			policies.relief_field.junction_policy_id~=
+				"shared_relief_junction_gate_v1" or
+			policies.relief_field.junction_source~=
+				"one_checksum_covered_record_per_multi_edge_endpoint" or
+			policies.relief_field.junction_seed_rule~=
+				"intersection_band_uses_domain_relief_junction_v1_feature_junction_x_z_coordinates_x_z_candidate_zero_lane_two_full_seed_unbiased_singleton_midpoint_uses_no_hash" or
+			policies.relief_field.junction_empty_rule~=
+				"lower_midpoint_floor_max_incident_min_plus_min_incident_max_div_two" or
+			policies.relief_field.junction_transition_distance~=96 or
+			policies.relief_field.junction_transition_metric~=
+				"canonical_incident_edge_raster_station_steps_from_endpoint" or
+			policies.relief_field.junction_edge_gate_rule~=
+				"qlerp_junction_G_to_ordinary_edge_G_by_smootherstep_clamped_station_steps_div_96" or
+			policies.relief_field.junction_candidate_weight~=
+				"one_minus_smootherstep_clamped_exact_edge_distance_div_96" or
+			policies.relief_field.junction_candidate_edge_dedup~=
+				"one_candidate_per_unique_land_edge_from_ordinary_nearest_segment_and_projection_tie_never_one_pair_per_junction_endpoint" or
+			policies.relief_field.junction_projection_station~=
+				"on_selected_nearest_segment_exact_rational_nearest_canonical_raster_station_to_projection_lower_global_station_index_tie" or
+			policies.relief_field.junction_endpoint_support~=
+				"select_start_if_zero_based_global_station_s_less_than_96_else_end_if_total_steps_minus_s_less_than_96_else_no_local_junction" or
+			policies.relief_field.junction_raw_endpoint_minimum_chebyshev~=400 or
+			policies.relief_field.junction_undisplaced_attachment_minimum_station_steps~=297 or
+			policies.relief_field.junction_final_edge_minimum_station_steps~=192 or
+			policies.relief_field.junction_endpoint_support_proof~=
+				"stage1_raw_control_endpoint_chebyshev_minimum_400_and_undisplaced_attachment_joint_raster_minimum_297_steps_are_baseline_KATs_only_stage2_measures_each_final_raster_and_hard_rejects_station_steps_below_192_before_endpoint_support" or
+			policies.relief_field.junction_final_edge_short_rule~=
+				"stage2_hard_reject_final_edge_raster_station_steps_less_than_192" or
+			policies.relief_field.junction_unsupported_edge_gate~=
+				"ordinary_native_edge_G_without_separate_far_endpoint_junction_candidate" or
+			policies.relief_field.junction_candidate_eligibility~=
+				"strictly_positive_weight_only_all_quantized_zero_weights_excluded_including_distance_96" or
+			policies.relief_field.junction_candidate_aggregation~=
+				"ordered_checked_Q16_weighted_sum_all_positive_weight_incident_candidates" or
+			policies.relief_field.junction_candidate_average~=
+				"t1_qdiv_ordered_sum_qmul_effective_gate_q_and_weight_q_by_ordered_sum_weight_q" or
+			policies.relief_field.junction_zero_weight_rule~=
+				"return_post_landmark_H_exactly_without_division" or
+			policies.relief_field.junction_boundary_strength~=
+				"maximum_candidate_weight_q16" or
+			policies.relief_field.junction_final_rule~=
+				"qlerp_ordinary_relief_to_weighted_junction_candidates_by_boundary_strength" or
+			policies.relief_field.junction_candidate_order~=
+				"unique_land_edge_numeric_id" or
+			policies.relief_field.junction_band_exception~=
+				"empty_intersection_midpoint_is_bounded_shared_transition_and_may_be_outside_incident_raw_profile_band" or
 			policies.relief_field.nearest_edge_distance~=
 				"minimum_exact_squared_q16_distance_to_closed_displaced_edge_segment" or
 			policies.relief_field.nearest_edge_projection~=
@@ -881,6 +973,12 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			policies.landmark_masks.priority_tie_rule~="reject" or
 			policies.landmark_masks.replacement_rule~=
 				"highest_priority_replace_profile_height" or
+			policies.landmark_masks.replacement_noise_domain~=
+				"landmark_record_noise_domain" or
+			policies.landmark_masks.replacement_profile~=
+				"landmark_secondary_relief_id_ordered_octaves_and_inclusive_band" or
+			policies.landmark_masks.replacement_hash_binding~=
+				"feature_empty_candidate_zero_with_landmark_noise_domain" or
 			policies.landmark_masks.distance_unit~=
 				"all_shape_signed_distances_are_world_node_Q16" or
 			policies.landmark_masks.ellipse_signed_distance~=
@@ -928,6 +1026,45 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				"each_segment_max_r_squared_times_L_squared_and_guarded_cross_bound_squared_times_L_at_most_2_pow_53_minus_1" or
 			partition.bay_base_arithmetic~=
 				"exact_safe_integer_products_only_no_q16_projection_width_rounding_or_float_division" or
+			partition.bay_displacement_lane~=0 or
+			partition.bay_displacement_symmetry~=
+				"one_radius_delta_applied_equally_to_both_banks_unchanged_centreline" or
+			partition.bay_displacement_projection_station~=
+				"minimum_exact_squared_euclidean_distance_to_canonical_stations_of_evaluated_authored_segment_lower_canonical_station_index_tie" or
+			partition.bay_displacement_projection_kat~=
+				"bay_elandor_west_segment_1_point_minus1376_minus2846_selects_zero_based_station_2_minus980_minus2938_not_parametric_round_station_1" or
+			partition.bay_displacement_source~=
+				"bay_record_noise_domain_and_max_displacement" or
+			partition.bay_displacement_hash~=
+				"deterministic.new_hash_grug_wp40_geometry_source_v1_empty_feature_candidate_zero" or
+			partition.bay_displacement_noise~=
+				"ordered_two_octave_t1_value_noise_q16_sum_clamped_minus_Q_to_plus_Q_at_selected_station" or
+			not dense(partition.bay_displacement_octave_periods) or
+			#partition.bay_displacement_octave_periods~=2 or
+			partition.bay_displacement_octave_periods[1]~=256 or
+			partition.bay_displacement_octave_periods[2]~=512 or
+			not dense(partition.bay_displacement_octave_hash_lanes) or
+			#partition.bay_displacement_octave_hash_lanes~=2 or
+			partition.bay_displacement_octave_hash_lanes[1]~=0 or
+			partition.bay_displacement_octave_hash_lanes[2]~=1 or
+			not dense(partition.bay_displacement_octave_amplitudes) or
+			#partition.bay_displacement_octave_amplitudes~=2 or
+			partition.bay_displacement_octave_amplitudes[1].numerator~=2 or
+			partition.bay_displacement_octave_amplitudes[1].denominator~=3 or
+			partition.bay_displacement_octave_amplitudes[2].numerator~=1 or
+			partition.bay_displacement_octave_amplitudes[2].denominator~=3 or
+			partition.bay_displacement_taper_metric~=
+				"canonical_segment_station_steps_to_nearest_authored_sample" or
+			partition.bay_displacement_taper~=
+				"smootherstep_clamped_min_station_steps_from_segment_ends_div_96_zero_at_every_sample" or
+			partition.bay_displacement_delta_rule~=
+				"delta_nodes_equals_qround_qmul_qmul_noise_q_max_displacement_times_Q_taper_q" or
+			partition.bay_displacement_exact_body~=
+				"effective_width_num_equals_base_width_num_plus_delta_nodes_times_L_then_C_squared_times_L_strictly_less_effective_width_num_squared" or
+			partition.bay_displacement_product_guard~=
+				"effective_width_square_max_4243584391840000_actual_guarded_cross_square_times_L_max_4251571423760000_and_conservative_early_cross_bound_4251754341463400_all_below_2_pow_53_minus_1" or
+			partition.bay_displacement_lanes~=nil or
+			partition.bay_displacement_width_rule~=nil or
 			partition.bay_mask_membership~=
 				"strict_rational_variable_width_capsule_union_v1" or
 			partition.bay_boundary_tie~=
@@ -1086,7 +1223,29 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	end
 	local hydro_mask=policies.hydrology_mask
 	local boundary_policy=policies.boundary_displacement
-	if boundary_policy.shared_boundary_clip_policy_id~=
+	local expected_no_jitter_sources={"all_literal_polyline_control_vertices",
+		"all_route_interface_positions","all_fixed_anchor_positions",
+		"holy_rectangle_corners_and_junctions"}
+	if boundary_policy.control_taper_distance~=96 or
+			boundary_policy.control_taper_metric~=
+			"canonical_eight_connected_segment_station_steps_equal_chebyshev_arclength" or
+			boundary_policy.control_taper_rule~=
+				"smootherstep_clamped_min_station_steps_from_segment_ends_div_96" or
+			boundary_policy.no_jitter_metric~=
+				"exact_world_chebyshev_distance_to_source_point" or
+			boundary_policy.no_jitter_distance~=96 or
+			boundary_policy.no_jitter_transition_distance~=96 or
+			boundary_policy.no_jitter_rule~=
+				"zero_through_distance_96_then_smootherstep_distance_minus_96_div_96_full_at_192" or
+			boundary_policy.no_jitter_aggregation~=
+				"minimum_damping_q16_over_all_sources" or
+			not dense(boundary_policy.no_jitter_sources) or
+			#boundary_policy.no_jitter_sources~=#expected_no_jitter_sources or
+			table.concat(boundary_policy.no_jitter_sources,"\0")~=
+				table.concat(expected_no_jitter_sources,"\0") or
+			boundary_policy.damping_rule~=
+				"t1_qmul_control_taper_q16_and_no_jitter_minimum_q16" or
+			boundary_policy.shared_boundary_clip_policy_id~=
 			"canonical_integer_land_run_prefix_suffix_v1" or
 			boundary_policy.shared_boundary_clip_raster~=
 				"route_raster_policy_integer_sequence" or
@@ -1095,11 +1254,20 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			boundary_policy.shared_boundary_clip_retained_rule~=
 				"exactly_one_consecutive_retained_station_interval" or
 			boundary_policy.shared_boundary_clip_endpoint_rule~=
-				"first_and_last_retained_integer_stations" or
-			boundary_policy.shared_boundary_attachment_rule~=
-				"clipped_endpoint_to_nearest_chebyshev_perimeter_station_lower_canonical_index_tie_without_inserted_station" or
+				"nonattached_first_and_last_retained_integer_stations_attached_endpoint_uses_joint_station" or
+			boundary_policy.shared_boundary_attachment_policy_id~=
+				"joint_perimeter_station_endpoint_before_final_raster_v1" or
+			boundary_policy.shared_boundary_attachment_candidate~=
+				"final_displaced_perimeter_then_provisional_edge_selection_only_run_yields_E_then_final_displaced_declared_perimeter_segment_yields_A" or
+			boundary_policy.shared_boundary_attachment_selection~=
+				"minimum_chebyshev_E_to_A_then_lower_canonical_perimeter_index_tie_distance_at_most_one" or
+			boundary_policy.shared_boundary_attachment_final~=
+				"discarded_prefix_or_suffix_controls_are_removed_A_is_zero_displacement_terminal_control_and_both_span_boundaries_before_sole_final_edge_raster_provisional_run_not_exported" or
+			boundary_policy.shared_boundary_attachment_interior~=
+				"all_final_stations_after_A_strict_footprint_interior_eight_connected_one_run" or
+			boundary_policy.shared_boundary_attachment_rule~=nil or
 			boundary_policy.shared_boundary_clip_forbidden~=
-				"inserted_float_or_rational_intersection_and_private_connector_geometry" then
+				"emitted_E_to_A_connector_post_raster_snap_inserted_float_or_rational_intersection_and_private_connector_geometry" then
 		return diag("boundary_clip_policy","geometry_policies.boundary_displacement",
 			"sole canonical integer prefix/suffix clip without inserted intersection","invalid")
 	end
@@ -1187,6 +1355,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local function junction_id(point)
 		return "junction:"..point.x..":"..point.z
 	end
+	local minimum_edge_endpoint_chebyshev=9007199254740991
 	for i = 1, #source.land_edges do
 		local row = source.land_edges[i]
 		if not zone_ids[row.zone_a] or not zone_ids[row.zone_b] then return diag("land_edge_zone",row.id,"known zones",row.zone_a..":"..row.zone_b) end
@@ -1218,6 +1387,11 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		for j=1,#row.control do
 			if not point_valid(row.control[j],false) then return diag("edge_control_point",row.id,"integer x/z point","invalid") end
 		end
+		local first,last=row.control[1],row.control[#row.control]
+		local endpoint_chebyshev=math.max(math.abs(last.x-first.x),
+			math.abs(last.z-first.z))
+		minimum_edge_endpoint_chebyshev=math.min(
+			minimum_edge_endpoint_chebyshev,endpoint_chebyshev)
 		if not point_valid(row.left_probe,false) or
 				not point_valid(row.right_probe,false) or
 				type(row.probe_segment_index)~="number" or
@@ -1270,6 +1444,103 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			end
 		end end
 		edge_by_id[row.id]=row
+	end
+	if minimum_edge_endpoint_chebyshev~=400 then
+		return diag("relief_junction_raw_endpoint_baseline","land_edges",
+			"minimum raw-control endpoint Chebyshev separation 400",
+			minimum_edge_endpoint_chebyshev)
+	end
+	local junction_incidence={}
+	for edge_index=1,#source.land_edges do local edge=source.land_edges[edge_index]
+		for _,point in ipairs({edge.control[1],edge.control[#edge.control]}) do
+			local key=point.x..":"..point.z
+			local row=junction_incidence[key] or {x=point.x,z=point.z,edges={}}
+			junction_incidence[key]=row row.edges[#row.edges+1]=edge
+		end
+	end
+	local expected_junctions={}
+	for _,row in pairs(junction_incidence) do
+		if #row.edges>=2 then expected_junctions[#expected_junctions+1]=row end
+	end
+	table.sort(expected_junctions,function(a,b)
+		return a.z==b.z and a.x<b.x or a.z<b.z
+	end)
+	if #expected_junctions~=38 then
+		return diag("relief_junction_count","derived endpoints",38,#expected_junctions)
+	end
+	local empty_junctions=0
+	for junction_index=1,#expected_junctions do
+		local derived=expected_junctions[junction_index]
+		table.sort(derived.edges,function(a,b) return a.numeric_id<b.numeric_id end)
+		local row=source.relief_junctions[junction_index]
+		local expected_id="relief_junction:"..derived.x..":"..derived.z
+		local ok_fields,field_failure=closed_fields(row,
+			"relief_junctions["..junction_index.."]",
+			{"id","position","incident_edge_ids","gate_min_above_water",
+				"gate_max_above_water","empty_intersection",
+				"transition_midpoint_above_water","hash_domain",
+				"hash_feature_id","hash_coordinates","hash_candidate_index",
+				"hash_lane","transition_station_steps",
+				"policy_id","numeric_id"},"relief_junction_fields")
+		if not ok_fields then return nil,field_failure end
+		if row.id~=expected_id or not point_valid(row.position,false) or
+				row.position.x~=derived.x or row.position.z~=derived.z or
+				row.hash_domain~="relief_junction_v1" or
+				row.hash_feature_id~="junction:"..derived.x..":"..derived.z or
+				row.hash_coordinates~="position_x_z" or
+				row.hash_candidate_index~=0 or row.hash_lane~=2 or
+				row.transition_station_steps~=96 or
+				row.policy_id~="shared_relief_junction_gate_v1" or
+				not dense(row.incident_edge_ids) or
+				#row.incident_edge_ids~=#derived.edges then
+			return diag("relief_junction_contract",row.id,
+				"exact coordinate/incidence/hash/transition record","changed")
+		end
+		local band_min,band_max=-9007199254740991,9007199254740991
+		for incidence_index=1,#derived.edges do local edge=derived.edges[incidence_index]
+			if row.incident_edge_ids[incidence_index]~=edge.id then
+				return diag("relief_junction_incidence",row.id,edge.id,
+					row.incident_edge_ids[incidence_index])
+			end
+			band_min=math.max(band_min,edge.gate_min_above_water)
+			band_max=math.min(band_max,edge.gate_max_above_water)
+		end
+		local empty=band_min>band_max
+		local midpoint=empty and math.floor((band_min+band_max)/2) or false
+		if row.gate_min_above_water~=band_min or
+				row.gate_max_above_water~=band_max or
+				row.empty_intersection~=empty or
+				row.transition_midpoint_above_water~=midpoint then
+			return diag("relief_junction_band",row.id,
+				band_min..".."..band_max..":"..tostring(midpoint),
+				tostring(row.gate_min_above_water)..".."..
+					tostring(row.gate_max_above_water)..":"..
+					tostring(row.transition_midpoint_above_water))
+		end
+		if empty then empty_junctions=empty_junctions+1 end
+	end
+	if empty_junctions~=16 then
+		return diag("relief_junction_empty_count","relief_junctions",16,
+			empty_junctions)
+	end
+	local relief_junction_by_id={}
+	for i=1,#source.relief_junctions do
+		relief_junction_by_id[source.relief_junctions[i].id]=source.relief_junctions[i]
+	end
+	local witness_a=relief_junction_by_id["relief_junction:-1400:-1100"]
+	local witness_b=relief_junction_by_id["relief_junction:-2200:1900"]
+	if not witness_a or witness_a.gate_min_above_water~=96 or
+			witness_a.gate_max_above_water~=56 or
+			witness_a.transition_midpoint_above_water~=76 or
+			table.concat(witness_a.incident_edge_ids,"/")~=
+				"land_003/land_020/land_032/land_035" or
+			not witness_b or witness_b.gate_min_above_water~=56 or
+			witness_b.gate_max_above_water~=24 or
+			witness_b.transition_midpoint_above_water~=40 or
+			table.concat(witness_b.incident_edge_ids,"/")~=
+				"land_011/land_025/land_060" then
+		return diag("relief_junction_witnesses","relief_junctions",
+			"exact two reviewed empty-intersection fixtures","changed")
 	end
 	for first_index=1,#source.land_edges do
 		local first=source.land_edges[first_index]
@@ -1339,10 +1610,14 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				row.perimeter_segment_index~=expected[5] or row.retained_run~=expected[6] or
 				row.canonical_before_span_id~=expected[7] or
 				row.canonical_after_span_id~=expected[8] or
-				row.clip_policy_id~="canonical_integer_land_run_prefix_suffix_v1" or
-				row.geometry_rule~="symbolic_edge_to_perimeter_attachment_no_connector_polyline" or
+				row.clip_policy_id~="joint_perimeter_station_endpoint_before_final_raster_v1" or
+				row.geometry_rule~="symbolic_edge_to_perimeter_joint_station_no_connector_or_snap" or
+				row.selection_station_rule~=
+					"first_or_last_retained_candidate_station_E_stage2_only" or
+				row.joint_station_rule~=
+					"final_displaced_declared_perimeter_segment_station_A_min_chebyshev_to_E_lower_canonical_index_tie_max_one" or
 				row.compiled_endpoint_rule~=
-					"first_or_last_retained_integer_boundary_station_stage2_only" or
+					"discard_outside_terminal_controls_A_is_shared_zero_displacement_terminal_control_before_sole_final_edge_raster_provisional_run_not_exported" or
 				row.control~=nil or row.position~=nil then
 			return diag("perimeter_attachment_contract",row.id,
 				"exact symbolic reviewed edge/perimeter attachment","changed")
@@ -2050,6 +2325,8 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		end
 	end
 	local bay_by_id={}
+	local bay_displacement_max_width_square=0
+	local bay_displacement_max_early_cross=0
 	for i=1,#source.bays do local bay=source.bays[i]
 		bay_by_id[bay.id]=bay
 		if bay.geometry_authority~=
@@ -2098,6 +2375,27 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				return diag("bay_base_safe_product",bay.id..":"..segment_index,
 					"max_r^2*L^2 and (max_r*ceil_isqrt(L)-1)^2*L <= 2^53-1","overflow")
 			end
+			if bay.max_displacement~=48 then
+				return diag("bay_displacement_limit",bay.id,48,bay.max_displacement)
+			end
+			local varied_radius=max_radius+bay.max_displacement
+			local varied_radius_squared=safe_nonnegative_product(
+				varied_radius,varied_radius)
+			local varied_full_guard=varied_radius_squared and length_fourth and
+				safe_nonnegative_product(varied_radius_squared,length_fourth)
+			local varied_open_bound=varied_radius*root-1
+			local varied_open_squared=safe_nonnegative_product(
+				varied_open_bound,varied_open_bound)
+			local varied_open_guard=varied_open_squared and
+				safe_nonnegative_product(varied_open_squared,length_squared)
+			if not varied_full_guard or not varied_open_guard then
+				return diag("bay_displacement_safe_product",bay.id..":"..segment_index,
+					"varied E^2 and early C guard below 2^53","overflow")
+			end
+			bay_displacement_max_width_square=math.max(
+				bay_displacement_max_width_square,varied_full_guard)
+			bay_displacement_max_early_cross=math.max(
+				bay_displacement_max_early_cross,varied_open_guard)
 		end
 		local shore_seen={}
 		for j=1,#bay.shore_zone_ids do local zone_id=bay.shore_zone_ids[j]
@@ -2141,6 +2439,13 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 					bay.shore_zone_ids[shore_index],"missing")
 			end
 		end
+	end
+	if bay_displacement_max_width_square~=4243584391840000 or
+			bay_displacement_max_early_cross~=4251754341463400 then
+		return diag("bay_displacement_product_kat","bays",
+			"4243584391840000/4251754341463400",
+			bay_displacement_max_width_square.."/"..
+				bay_displacement_max_early_cross)
 	end
 	local bay_divergence_goldens={
 		{"bay_elandor_west",-896,-2053},
@@ -2314,7 +2619,9 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		if not zone_ids[row.zone_id] or not landmark_primitive_allowed[row.primitive] or
 				not point_valid(row.center,false) or type(row.radius_x)~="number" or
 				type(row.radius_z)~="number" or row.radius_x<=0 or row.radius_z<=0 or
-				not dense(row.roles) or #row.roles==0 then return diag("landmark_contract",row.id,"known zone/primitive/mask/roles","invalid") end
+				not relief_ids[row.secondary_relief_id] or
+				row.noise_domain~="landmark_"..row.id or
+				not dense(row.roles) or #row.roles==0 then return diag("landmark_contract",row.id,"known zone/primitive/mask/secondary relief/noise domain/roles","invalid") end
 		for j=1,#row.roles do if not role_allowed[row.roles[j]] then return diag("landmark_role",row.id,"allowed role",row.roles[j]) end end
 		if row.roles[1]~="base_H" or row.base_h_priority~=i or
 				base_h_priorities[row.base_h_priority] or

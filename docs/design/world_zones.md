@@ -335,6 +335,24 @@ WP40 replaces it with the complete catalog and contracts below.
   The directed centreline is also the deterministic base-water ownership seam
   between the two adjacent shore-side zones; an exact tie resolves by
   stable zone id, and the seam never enters the land-adjacency graph.
+  This variation leaves the authored centreline and four base samples
+  unchanged and varies one symmetric effective half-width, never independent
+  left/right banks. For the currently evaluated authored segment, the owner
+  chooses the nearest station of its canonical 8-connected centreline raster
+  by exact squared Euclidean distance, with the lower canonical station index
+  on a tie. In particular, Elandor-west segment 1 at `P=(-1376,-2846)` selects
+  zero-based station 2, `(-980,-2938)`, rather than rounded-parametric station
+  1. One domain-separated field uses periods 256/512, hash lanes
+  0/1 and amplitudes 2/3 + 1/3; it is consumed through one symmetric lane.
+  Canonical station-step distance to the nearest authored sample supplies the
+  96-station smootherstep taper. With Q = 65536, `delta_nodes =
+  qround(qmul(qmul(noise_q, 48*Q), taper_q))`; both banks use `r +
+  delta_nodes`, samples and endpoint caps retain zero taper, and strict bank
+  equality remains dry. The exact body predicate substitutes
+  `E = base_width_num + delta_nodes*L` into `C^2*L < E^2`. Stage 1 proves the
+  current maximum `E^2 = 4,243,584,391,840,000`, actual guarded corpus
+  `C^2*L = 4,251,571,423,760,000`, and conservative algebraic early-cross
+  bound `4,251,754,341,463,400`, all below `2^53 - 1`.
 - The Wyrmglass Crown and Stormscale Summit island centres are fixed at
   **(−3150, 0)** and **(+3150, 0)**. Each has a binding 600×700 authoring
   envelope (x radius 300, z radius 350); its authored, culturally distinct
@@ -483,6 +501,24 @@ WP40 replaces it with the complete catalog and contracts below.
   one shoreline endpoint on each side of its cultural peninsula; water and
   out-of-frame remnants are discarded. The start zone is always the seaward
   side and the home zone the landward side.
+  A declared edge/perimeter attachment has one joint endpoint, not a connector
+  or post-raster snap. After the final displaced perimeter exists, a
+  provisional displaced edge raster is used only to derive the first/last
+  retained candidate station `E`. On the attachment's declared final displaced
+  perimeter segment, `A` minimizes the tuple `(Chebyshev(E,A), canonical
+  perimeter station index)` and must be at distance at most one. The discarded
+  outside prefix/suffix controls are removed, `A` replaces the terminal
+  control with zero displacement and is also both incident perimeter-span
+  boundaries, and the edge is then emitted by the sole final raster. The
+  provisional run is never exported; no `E -> A` segment is emitted. The final
+  endpoint equals `A` exactly, every other final station is strict footprint
+  interior, and the result is one 8-connected retained run. Nonattached ends
+  retain ordinary prefix/suffix clipping. In the undisplaced literal Stage-1
+  baseline, three attachments have `E=A`, five have Chebyshev distance one,
+  and `land_016` has no common raw edge/perimeter raster station before this
+  joint selection. Those counts are not seed-zero compiled evidence: Stage 2
+  must separately validate all eight final displaced attachments at seed zero
+  and every corpus seed against the distance-at-most-one contract.
 - Shared start/home boundaries use the ordinary maximum 64-node displacement,
   wavelength and shared-edge rules, tapering to zero at every listed control
   vertex. Their base geometry stays at least 96 nodes from the corresponding
@@ -594,6 +630,14 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   peaceful/contested boundary at most **32**. Boundary noise has a wavelength
   of at least 256 nodes. A
   96-node buffer around fixed anchors and road gates has no boundary jitter.
+  Control/sample taper distance is the station-step distance of the canonical
+  8-connected raster, equivalently its Chebyshev arclength, not Euclidean
+  distance between authored controls. For every no-jitter source, damping is
+  exactly zero at world Chebyshev distance `d∞ <= 96`, smootherstep of
+  `(d∞-96)/96` for `96 < d∞ < 192`, and one at `d∞ >= 192`. Multiple sources
+  use their minimum factor, and the final displacement factor is the checked
+  Q16 product of control taper and that minimum. Reversing an authored segment
+  therefore reverses the same factors rather than changing them.
 - No zone core may narrow below 256 nodes and no authored travel corridor below
   96 nodes. This is the macro-terrain neck that keeps a route traversable, not
   the narrower road/claim-exclusion width below. Seed variation may not remove
@@ -616,6 +660,15 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   not implicitly change relief. V7 supplies natural fine structure inside the
   authored envelope, while the authoritative surface overlay keeps ordinary
   terrain inside the selected band.
+  Raw relief first clamps every input `noise_q` to `[-Q,+Q]`, then maps it to a profile with
+  `delta = max_above_water - min_above_water` and
+  `H = water_level + min_above_water + floor((noise_q+Q)*delta/(2*Q))`.
+  Thus `delta` is the inclusive endpoint span, not the count of integer
+  results; `-Q`, `0`, and `+Q` map to the lower endpoint, lower midpoint, and
+  upper endpoint respectively. A singleton profile remains constant.
+  Inputs at `Q+1`, `-Q-1`, `+/-2Q`, and larger magnitudes still map to the
+  corresponding exact endpoint; the height product never sees an unclamped
+  input.
 - Ordinary profile and zone transitions blend smoothly. A forced cliff,
   ravine, escarpment or abrupt elevation step exists only through a named,
   authored landmark mask. Roads, capital and starting-settlement terrain,
@@ -623,6 +676,43 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   their own grading after general relief and take precedence where they
   overlap. The per-zone profile and landmark assignment is binding registry
   data rather than an emergent result of v7 noise.
+  Each of the 38 multi-edge endpoint junctions owns one checksum-covered
+  `relief_junction` record with its coordinate and sorted incident edge IDs.
+  If all incident edge gate bands intersect, its common `J` is selected from
+  that inclusive intersection with the full decimal seed and the exact hash
+  tuple domain `relief_junction_v1`, feature `junction:x:z`, coordinates
+  `(x,z)`, candidate 0 and lane 2; a singleton uses its sole value. At seed 0,
+  `(-1050,-2250)` selects `J=38` from `24..56`. If the intersection is empty, `J` is
+  the floor of the midpoint between the maximum lower bound and minimum upper
+  bound. Exactly 16 current junctions need that bounded common transition; it
+  may temporarily lie outside an incident raw profile band, while remaining
+  inside the global safe relief envelope. `(-1400,-1100)` has incident bands
+  from `land_003/020/032/035`, empty bounds `96..56`, and `J=76`;
+  `(-2200,1900)` has empty bounds `56..24` and `J=40`.
+  At a column, the ordinary exact nearest-segment/projection tie produces at
+  most one record for each unique land edge, its perpendicular distance `d`,
+  and the exact-rational nearest canonical raster station to that projection
+  (lower global station index on a tie). Let its zero-based global station be
+  `s` and its last station index be `S`. The start junction is supported only
+  for `s < 96`, the end only for `S-s < 96`; a supported endpoint supplies
+  `qlerp(J, native_G, smootherstep(endpoint_distance/96))`, otherwise the edge
+  supplies `native_G`. It never contributes a separate far-end junction pair.
+  Raw authored controls have minimum endpoint Chebyshev separation 400, while
+  the undisplaced attachment-joint raster baseline has minimum 297 station
+  steps (`land_034`; `land_031` is 298). Neither Stage-1 fact proves the length after final seeded
+  displacement and attachment selection. Stage 2 measures each final edge
+  raster and hard-rejects fewer than 192 station steps before endpoint support;
+  this runtime gate proves the two strict 96-station supports cannot overlap.
+  Each unique edge record has
+  weight `1-smootherstep(d/96)` and records are accumulated in land-edge
+  numeric order with checked Q16 products. Zero-weight candidates—including the quantized-zero support
+  near and at distance 96—are excluded. The common candidate height is the
+  ordered weighted result, boundary strength is the maximum positive weight,
+  and the final relief is its qlerp from post-landmark `H`. With no positive
+  weight, the result is exactly post-landmark `H` and no division occurs.
+  Landmark replacement hashes the landmark record's `noise_domain`, its
+  `secondary_relief_id` profile's ordered octaves and band, an empty feature
+  ID, and candidate 0.
 - Authored land roads use exactly three classes. A **primary road** has a
   7-node visible surface inside a 16-node-wide claim-exclusion corridor; it
   carries the race spines, capital axis and other principal capital routes. A

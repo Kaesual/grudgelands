@@ -130,6 +130,67 @@ through the exact authored classification at `(x, z)`. Anchor/route/template
 IDs affect their later candidate, solver, or shaping records, never the common
 ungraded relief queried by another feature at the same column.
 
+For a primary or secondary relief profile, let `Q = 65536`, first clamp every
+input `noise_q` to `[-Q,+Q]`, and define
+`delta = max_above_water - min_above_water`. The
+exact raw mapping is:
+
+```text
+H_raw = water_level + min_above_water
+        + floor((noise_q + Q) * delta / (2 * Q))
+```
+
+`delta` is the numeric inclusive endpoint span, not the number of representable
+integer values. `-Q`, zero and `+Q` therefore reach the lower endpoint, lower
+midpoint and upper endpoint; `delta = 0` remains constant. Both products are
+checked before evaluation. `Q+1`, `-Q-1`, `+/-2Q` and large-magnitude KATs
+must reach the same exact endpoints and prove that no height product receives
+the unclamped value. Landmark replacement uses the landmark record's
+`noise_domain`, the referenced `secondary_relief_id` profile's ordered octaves
+and inclusive band, empty feature ID and candidate zero. It is not hashed with
+the primary zone domain or landmark ID as feature text.
+
+Shared relief has one checksum-covered record for every multi-edge endpoint,
+38 in the current source. Each record stores stable coordinate-derived ID,
+coordinate, sorted incident edge IDs and the common gate band. A nonempty
+intersection of every incident edge band selects junction value `J` from that
+inclusive intersection with the full decimal seed and the exact hash tuple
+schema `grug_wp40_geometry_source_v1`, domain `relief_junction_v1`, stable
+feature `junction:x:z`, coordinates `(x,z)`, candidate zero and lane 2; a
+singleton is constant. The seed-zero KAT at `(-1050,-2250)` selects `J=38`
+from `24..56`. For an empty intersection, `J =
+floor((max(incident minima) + min(incident maxima))/2)`. Exactly 16 current
+junctions use that latter rule. Its common 96-station transition may be outside
+one incident raw band but remains inside the global safe relief envelope; this
+is a bounded continuity rule, not a profile or gate fallback. The fixtures
+`(-1400,-1100)` (`land_003/020/032/035`, `96..56`, `J=76`) and
+`(-2200,1900)` (`land_011/025/060`, `56..24`, `J=40`) are binding.
+
+At an evaluated column, the ordinary exact nearest-segment/projection tie
+produces at most one record per unique land edge, its perpendicular boundary
+distance `d`, and the exact-rational nearest canonical raster station to the
+projection, with lower global station index on a tie. Let that station's
+zero-based global index be `s` and the edge's last index be `S`. The start
+endpoint is locally supported only when `s < 96`, and the end only when
+`S-s < 96`. A supported endpoint uses `effective_G = qlerp(J, native_G,
+smootherstep(endpoint_distance/96))`; without one, `effective_G = native_G`.
+No far endpoint produces a second junction/edge pair. Stage 1 freezes a raw-
+control minimum endpoint Chebyshev separation of 400 and an undisplaced
+attachment-joint raster baseline minimum of 297 station steps (`land_034`;
+`land_031` is 298).
+Neither lower-bounds all final seeded attachment geometry. Stage 2 must measure
+the final edge raster and hard-reject `S < 192` before endpoint support is
+evaluated; accepted rasters therefore cannot have overlapping strict
+96-station supports. Each unique edge's distance gives `w = 1 -
+smootherstep(clamp(d/96))`. Sort by land-edge numeric ID, discard every
+`w = 0`, and compute the checked Q16 weighted result over positive weights
+only. Boundary strength is their maximum weight; qlerp the post-landmark `H`
+to the weighted result with that strength. If no positive
+weight remains—including a sole distance-96 or quantized-zero candidate—return
+post-landmark `H` and strength zero exactly, without division. KATs cover
+distances 95/96/97, the last quantized-zero point inside the analytic support,
+and candidate sets whose denominator is zero.
+
 The implementation must derive every authored random lane from the complete
 decimal seed string with a schema- and domain-separated hash. It must never
 convert the complete seed to a Lua number. The same geometry module and inputs
@@ -436,6 +497,35 @@ it may not fall back to Q16 rounding or a host float. No Q16 projection,
 binary floating closest point, rounded interpolated width, or approximate
 distance decides membership.
 
+Bay displacement does not replace those base samples or the centreline and
+never creates independent bank fields. For each evaluated authored segment,
+select the nearest station of its canonical 8-connected centreline raster by
+exact squared Euclidean distance and lower canonical station index on a tie.
+This is not a rounded parametric projection: the binding divergent witness is
+Elandor-west segment 1, `P=(-1376,-2846)`, where zero-based station 2
+`(-980,-2938)` wins and rounded parameter selection would choose station 1.
+Hash the Bay record's noise domain with empty feature ID and candidate zero;
+the one symmetric field sums the ordered period-256/lane-0/amplitude-2/3 and
+period-512/lane-1/amplitude-1/3 T1 value-noise octaves and clamps to
+`[-Q,+Q]`. The taper is smootherstep of canonical segment-station steps to the
+nearest authored sample divided by 96, so it is zero at every sample and cap.
+The exact node delta is
+
+```text
+delta_nodes = qround(qmul(qmul(noise_q, max_displacement * Q), taper_q))
+E           = base_width_num + delta_nodes * L
+```
+
+Both banks use the same `delta_nodes`; centreline, side-owner seam and strict
+dry equality are unchanged. The final body test is `C^2 * L < E^2`. Stage 1
+must prove the largest current `E^2` product is
+`4,243,584,391,840,000`, the largest actually executed post-guard `C^2*L` is
+`4,251,571,423,760,000`, and the separately computed conservative varied
+early-`C` algebraic bound is `4,251,754,341,463,400`, all below `2^53 - 1`.
+KATs include
+`noise_q = +/-Q`, zero delta, zero taper, five geometry witnesses and left/
+right symmetry.
+
 The same exact projection records select the base-water owner rather than
 feeding a second mask. Endpoint distance is an integer squared distance and
 interior distance is the exact rational `C^2/L`; a checked exact rational
@@ -548,6 +638,35 @@ aperture, its shared-edge half-open/lower-numeric tie precedes the incident span
 owner. Source records
 provide the controls, displacement
 parameters and ownership; they do not duplicate this generic algorithm.
+
+The eight declared perimeter attachments refine that generic sequence without
+adding geometry. Compile the final displaced perimeter first. A provisional
+displaced boundary raster is a selection oracle only: its one candidate
+retained run supplies terminal `E`. On the declared final displaced perimeter
+segment, choose joint station `A` by the tuple `(Chebyshev(E,A), canonical
+perimeter station index)` and require distance at most one. Remove the discarded
+outside prefix/suffix controls, make `A` the zero-displacement terminal control
+and both incident span boundaries, and only then perform the sole final edge
+raster. `A` must be that raster's exact terminal; every other station is strict
+footprint interior, 8-connected and in one retained run. The provisional run
+is never exported and no `E -> A` connector, post-raster snap, inserted
+intersection or private face geometry exists. Nonattached ends keep ordinary
+prefix/suffix clipping. The undisplaced literal Stage-1 baseline has three
+`E=A` and five Chebyshev-one cases;
+`land_016` has no common raw edge/perimeter raster station there and is
+deliberately closed only by this shared `A` authority. This baseline is not
+compiled seed-zero evidence. Stage 2 must measure all eight attachments after
+final displacement for seed zero and every corpus seed and enforce distance at
+most one without assuming the baseline 3/5 distribution.
+
+All boundary/coast/Bay control tapers use station steps of their canonical
+8-connected raster, equivalently Chebyshev arclength; they do not use a
+continuous Euclidean control distance. A no-jitter source at exact world
+Chebyshev distance `d_inf` contributes factor zero for `d_inf <= 96`,
+`smootherstep((d_inf-96)/96)` for `96 < d_inf < 192`, and one for
+`d_inf >= 192`. Take the minimum over every source and Q16-multiply it with the
+control taper. KATs cover endpoints and midpoint, 95/96/97 and 192, reversed
+station order and overlapping sources.
 
 Feature classes use the solver as follows:
 
@@ -2361,6 +2480,15 @@ Stage 1 validates the authored source before compilation. It proves at least:
   capital-road gate product, travel promise or content-operation field, while
   each has the ordinary checksum-covered shared-boundary relief gate `G`
   controls with no route semantics;
+- exactly 38 checksum-covered multi-edge `relief_junction` records derived
+  from endpoint incidence, sorted incident edges, 22 nonempty intersections
+  and the exact 16 empty-intersection midpoint records; raw profile endpoint/
+  midpoint/singleton mapping uses `delta=max-min`; positive-weight-only
+  unique-edge junction aggregation, exact raw-control 400 and undisplaced
+  attachment-joint 297/298 raster-station-step baselines, the mandatory
+  Stage-2 hard rejection of final rasters below 192 steps, zero-denominator identity,
+  the seed-zero `J=38` hash-tuple KAT, both reviewed empty-intersection
+  witnesses and landmark replacement-domain binding are closed source policy;
 - exactly one canonical half-open dry-face authority record per zone and one
   checksum-covered, symbolically closed authority graph; every literal shared-
   edge, non-coast arc and perimeter component polyline is individually simple,
@@ -2397,6 +2525,11 @@ Stage 1 validates the authored source before compilation. It proves at least:
   sample `C`, plus one independent literal outer-perimeter record per mainland;
   each Base Bay binds exactly one mouth-aperture record, no Q16 or float decides
   membership, and neither face nor water geometry is perimeter authority;
+  one symmetric displacement lane preserves every centreline/base sample,
+  uses exact nearest canonical raster station on the evaluated segment,
+  ordered 256/512 octaves, 96 station-step taper, exact delta/body equation and
+  both reviewed maximum products; stale left/right-bank or rounded-parametric
+  policy is rejected;
 - exactly eight zero-jitter closure-wing records, two per bay, each binding its
   bay and exact `C` sample to a different existing head-flanking dry triple
   junction `J`, radius 80 to zero, the adjacent outer-bank and central-head zone
@@ -2419,6 +2552,10 @@ Stage 1 validates the authored source before compilation. It proves at least:
   assert that pre-displacement concatenations are final concrete face polygons,
   because their attachment endpoints exist only after canonical integer
   displacement and clipping; and
+- all displacement control tapers use canonical 8-connected station steps;
+  no-jitter damping uses the exact piecewise world-Chebyshev metric, minimum
+  aggregation and Q16 multiplication; every attachment record names the one
+  `E/A` joint-station policy with no connector or snap; and
 - exact Holy, start, capital, island, channel, coast, water, route-class, and
   road-interface constants required by the design source.
 
@@ -2429,6 +2566,17 @@ Stage 2 validates the complete compiled seed dataset. It proves at least:
   every resulting concrete dry face is closed, counterclockwise and simple,
   with no heuristic or coordinate connector, floating intersection, inserted
   station or alternate face-construction path;
+  the final displaced perimeter precedes selection-only candidate clipping;
+  `A` is chosen from `E` by the exact Chebyshev/index tuple at distance at most
+  one, outside terminal controls are discarded, and `A` is the common zero-
+  displacement terminal/span station before the sole final edge raster; the
+  provisional run is absent from output and all other stations are strict
+  interior/8-connected/one-run; the undisplaced Stage-1 baseline retains the
+  exact 3/5 split plus the `land_016` no-common-raw-station fixture, while seed
+  zero and every corpus seed separately prove every final displaced `E/A`
+  distance at most one without a prescribed distribution, and every final
+  land-edge raster has at least 192 station steps before junction endpoint
+  support is evaluated;
 - exactly four compiled nonempty, contiguous, non-wrapping and pairwise-
   nonoverlapping half-open mouth-aperture station intervals, each with exact
   source references and the binding 720/660/640/740-node analytic width; every
@@ -3403,60 +3551,58 @@ contract defects, not permission to weaken the 61-edge decision, the original
 57-route graph, the eight closure wings, the independent perimeter authority,
 or any corpus case.
 
-**Final T2a Stage-1/freeze evidence (not T2 completion).** The frozen source
-checksum is
+**Superseded T2a Stage-1/freeze evidence (not T2 completion).** At source
+commit `0a8f2fd`, the then-frozen checksum was
 `005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710`; its
 `world_partition` policy checksum is
-`fc747096ec4646dc1a9185c579aabb309f81a769fca3c9e6b687ed4b42017c22`
-([Stage-1 pin](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):4-17).
+`fc747096ec4646dc1a9185c579aabb309f81a769fca3c9e6b687ed4b42017c22`.
+Those values are historical reproduction inputs, not claims about the current
+Stage-1 pin.
 The one exact partition authority defines strict rational Base-Bay membership,
 nearest-owner ties, aperture-before-dry perimeter equality, attachment and
 unattached-vertex precedence, and strict-interior-only Wings
-([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):458-520).
-The frozen source contains the four zero-jitter/no-route boundary additions
+([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):497).
+That superseded source contained the four zero-jitter/no-route boundary additions
 `land_058`--`land_061` and their ordinary shared-relief `G` controls
-([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):849-858;
-[side and G records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):869-918), the
+([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):832), the
 eight symbolic perimeter attachments and 18 canonical spans
-([attachments and spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):972-1034),
+([attachments and spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1083),
 the ordered symbolic face records and all opposing uses of the four additions
-([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1040-1107;
-[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1120-1165),
+([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1185;
+[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1239),
 four Base Bays plus four reference-only mouth apertures
-([Bays and apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1515-1584),
-and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1590-1677).
+([Bays and apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1685),
+and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1705).
 
 Stage 1 evaluates the sole exact Base-Bay predicate without Q16 projection,
 rounded width, division, or floating membership decision
-([predicate](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):325-357),
+([predicate](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):329),
 checks the core partition/equality policy explicitly and closes the complete
-source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):906-977;
-[checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3042-3051),
+source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1004;
+[checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3352),
 and rejects copied attachment geometry while checking all eight exact
 attachments, span ownership, and ordered face incidence
-([attachment and span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1323-1417;
-[face-arc validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1420-1529;
-[face incidence validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1530-1602).
+([attachment and span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1594).
 It retains the five dry rational-divergence witnesses and the guarded Base-Bay
-records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2052-2101;
-[witnesses and aperture validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2145-2200).
+records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2327;
+[witnesses](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2450).
 
 The independent offline harness implements a separate rational comparator and
 owner oracle, including the decisive synthetic later-lower numeric tie KAT
-([oracle and KAT](../../tools/wp40/t2_source_test.lua):487-681). It derives
+([oracle and KAT](../../tools/wp40/t2_source_test.lua):699). It derives
 actual runs and widths from referenced Bay/perimeter geometry and compares them
 with KAT expected values: runs
 `711/664/638/719`, widths `720/660/640/740`
-([aperture oracle](../../tools/wp40/t2_source_test.lua):702-730). Its full
+([aperture oracle](../../tools/wp40/t2_source_test.lua):818). Its full
 literal-mainland Stage-1 loop reports local Bay results `g=0/o=0/w=0/u=0` and
-whole-footprint `g=0/o=0/r=0` ([local and equality checks](../../tools/wp40/t2_source_test.lua):840-973;
-[whole-footprint oracle](../../tools/wp40/t2_source_test.lua):975-1091), with
+whole-footprint `g=0/o=0/r=0` ([local and equality checks](../../tools/wp40/t2_source_test.lua):968;
+[whole-footprint oracle](../../tools/wp40/t2_source_test.lua):1091), with
 `1,905,915` owner columns, `191,990` segment ties, and maximum checked product
 `816,036,075,626`. The audit also enforces the no-copied-width/no-loophole
 rules, rejects forgeable validation or premature compiler/IPC authority, and
 runs the five Lua-5.1 sweeps plus the offline harness
-([static audit](../../tools/wp40/t2_source_audit.sh):65-107;
-[Lua and harness gates](../../tools/wp40/t2_source_audit.sh):111-158).
+([static audit](../../tools/wp40/t2_source_audit.sh):65;
+[Lua and harness gates](../../tools/wp40/t2_source_audit.sh):132).
 
 This freezes only T2a's Stage-1 source and evidence. T2b must still compile
 the source and run the complete 32-seed Stage-2 geometry/topology/route/anchor
@@ -3568,6 +3714,128 @@ concrete face closure and half-open ties; and the exhaustive whole-mainland
 The `846` diagnostic and first witness explain the correction; they are not a
 substitute for retained green release evidence or the pending final frozen-
 source citations.
+
+The next T2b implementation pass reproduced five independent Stage-2 blockers
+against that frozen T2a source. This Reality correction supersedes only the
+affected T2a source/policy/checksum and validator fixtures; it preserves 38
+zones, 61 land edges, the original 57 controls/routes and 30/24/3 classes,
+every Bay sample/Wing/perimeter, all seeds/cases and every numerical acceptance
+threshold. It is not Stage-2 or 32-seed completion evidence.
+
+1. **Shared-relief junction authority was missing.** Independent per-edge
+   `G` values are not continuous at a multi-edge endpoint and can have no
+   common legal value: at `(-1400,-1100)`, `land_003` admits `96..144`,
+   `land_020` exactly 56, `land_032` `24..56`, and `land_035` exactly 96.
+   The source contract, not a seed or topology gate, was wrong. The correction
+   adds all 38 checksum-covered junction-incidence records: 22 intersecting
+   bands and 16 lower-midpoint empty intersections, including `J=76` there and
+   `J=40` at `(-2200,1900)`. Section 1.1's common 96-station transition and
+   ordered positive-weight aggregation are authoritative. Independent review
+   additionally found that Q16 smootherstep can quantize a near-boundary
+   candidate to `w=0`; such candidates are excluded, and an empty denominator
+   returns post-landmark `H` exactly. Final review then reproduced two further
+   source-contract defects: the provisional tuple
+   `relief_junction_gate_v1`/`relief_junction:x:z`/lane 0 selected `J=36`, not
+   the approved seed-zero `J=38`, at `(-1050,-2250)`; and representing
+   junction/edge pairs separately let the same edge's unsupported far endpoint
+   dilute its local common `J`. The exact domain `relief_junction_v1`, feature
+   `junction:x:z`, coordinates, candidate zero and lane 2 now freeze `J=38`.
+   One ordinary nearest projection now creates one unique edge record and
+   selects at most one locally supported endpoint. Final review rejected an
+   initial overclaim that the 400-node raw-control minimum proved final-raster
+   nonoverlap: the undisplaced joint raster already gives `land_034` 297
+   station steps and `land_031` 298, and Stage 1 does not own seeded
+   displacement. Those
+   values are separate baselines; Stage 2 must hard-reject every final raster
+   below 192 steps before using strict 96-station endpoint support. The old per-edge-only source, provisional hash tuple,
+   pair-based candidate wording, and a harness that divided a zero total were
+   defective.
+2. **Raw relief said “inclusive” without defining the span.** `max-min` and
+   the integer result count `max-min+1` give different seeded heights. The
+   documentation was ambiguous; the intended fixed endpoints support the exact
+   `delta=max-min` floor equation in Section 1.1. Stage 1 now freezes lower,
+   midpoint, upper and singleton KATs for all profiles with checked products.
+3. **Bay variation admitted two incompatible readings.** Independent bank
+   lanes would make the unchanged Base-Bay mask asymmetric, while rounded
+   parameter projection differs from exact station proximity. The source/
+   brief policy was underspecified, not the fixed centreline or widths. One
+   symmetric radius delta, exact nearest canonical station on the evaluated
+   segment and the two ordered T1 octave lanes resolve it. The corrected
+   witness `P=(-1376,-2846)` distinguishes zero-based station 2 from rounded-
+   parametric station 1. This was the first divergence in an exhaustive ordered
+   scan of all 12 authored Bay-segment bounding boxes, restricted to body
+   projections `0 < N < L` and the strict maximum varied-width envelope;
+   `2,290,129` relevant integer columns were evaluated. A proposed
+   `(-629,-2774)`/235 witness was itself false—station 236 has smaller squared
+   distance—and was rejected by this Reality procedure before the KAT was
+   frozen.
+   Separate exhaustive guards establish maximum `E^2` product
+   `4,243,584,391,840,000`, actual post-guard corpus maximum `C^2*L`
+   `4,251,571,423,760,000`, and conservative algebraic early-`C` bound
+   `4,251,754,341,463,400`; conflating these numbers was a harness/reporting
+   defect. None approaches `2^53-1`.
+4. **Displacement damping named distances but not metrics.** That ambiguity
+   could make reversal, corner and overlap results implementation-dependent.
+   Section 1.2 now requires canonical 8-connected station steps for control
+   taper and the exact piecewise world-Chebyshev no-jitter factor, minimum over
+   sources, combined by T1 `qmul`. This is a brief/source defect; no authored
+   envelope or distance changes.
+5. **Attachment closure mixed a retained raster endpoint with a nearest
+   perimeter substitution.** The undisplaced literal Stage-1 baseline
+   reproduced three exact intersections and five one-station mismatches;
+   `land_016` has no point common to its raw edge raster and declared
+   perimeter-segment raster. Requiring a common raw
+   point is impossible, while emitting a connector or snapping after raster
+   creates a second geometry path. The corrected sole authority derives
+   selection-only `E`, chooses `A` on the final displaced declared perimeter
+   by `(Chebyshev(E,A), canonical index)` with distance at most one, removes
+   discarded outside controls, and makes `A` the shared zero-displacement
+   terminal/span control before the sole final raster. The provisional run is
+   never emitted. The former source wording was wrong. Final review also found
+   that the Stage-1 harness honestly evaluates only literal, undisplaced
+   geometry but its labels and this evidence had called those results seed
+   zero. The labels and evidence now say undisplaced baseline; actual seed-zero
+   and 32-seed final displaced attachment results remain mandatory Stage-2
+   work. The perimeter, face graph and clipping thresholds were not wrong.
+
+The correction requires rerunning the complete affected corpus: source-policy
+mutation/checksum and Lua-5.1 gates; all 38 junction records, 16 empty bands,
+full-seed selection, 95/96/97/quantized-zero/zero-denominator fixtures and
+relief continuity; every raw-profile and landmark hash fixture; all Bay
+projection, +/-Q, zero/taper, symmetry, five prior dry-divergence and both
+product-bound fixtures; damping endpoint/reversal/overlap fixtures; all eight
+undisplaced attachment baselines plus final displaced attachments on
+seed zero and every corpus seed; concrete face closure/
+CCW/simplicity, whole-footprint `g=0/o=0/r=0`, unchanged 61-edge dual,
+57-route split, topology, routes, anchors, housing, supply and performance.
+The frozen T2a checksum/evidence paragraph above remains historical evidence
+for the superseded source. Only a new retained T2b Stage-2/32-seed run may
+claim those later gates.
+
+**Corrected Stage-1 source evidence (not T2b completion).** The replacement
+source checksum is
+`5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0`.
+The affected policy checksums are boundary displacement
+`a285d8d82e4b7b588fdf0b13508b8f6c070ec632dfa97b5ae7f428e3e49295fa`,
+relief field
+`21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200`,
+landmark masks
+`99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e`,
+and world partition
+`0e33b43be13f096aee2b6f8fbe40e3e1e6a44605bb66436672b69de6efb01f9d`
+([checksum pins](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):4).
+The checksum-covered policies are the sole source for damping/attachments,
+raw/junction relief, landmark replacement, and symmetric Bay displacement
+([policy records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):284),
+and the 38 literal junction records and eight symbolic attachment records are
+also source data ([junction records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):998;
+[attachment records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1083).
+The independent harness covers the relief, zero-weight, damping, Bay projection,
+symmetry and product KATs
+([exhaustive Bay projection oracle](../../tools/wp40/t2_source_test.lua):1377;
+[Reality KATs](../../tools/wp40/t2_source_test.lua):1496). The complete
+`tools/wp40/t2_source_audit.sh .` run must remain green after any later source
+edit; it proves Stage 1 only and leaves every mandated Stage-2 rerun above open.
 
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
