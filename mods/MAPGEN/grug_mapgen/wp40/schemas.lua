@@ -1,0 +1,12 @@
+-- T1 schema identities. Changing any value is a reviewed world-format change.
+
+return {
+	canonical = "grug_wp40_canonical_v1",
+	hash = "grug_wp40_hash_v1",
+	fixed = "grug_wp40_q16_16_v1",
+	value_noise = "grug_wp40_value_noise_2d_v1",
+	index = "grug_wp40_grid_128_v1",
+	transport = "grug_wp40_ipc_v1",
+	algorithm = "grug_wp40_foundation_v1",
+	ipc_key = "grug_mapgen:wp40_world_v1",
+}

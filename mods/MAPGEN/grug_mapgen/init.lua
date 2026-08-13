@@ -91,6 +91,7 @@ core.set_mapgen_setting_noiseparams("mg_biome_np_humidity_blend", {
 }, true)
 
 local path = core.get_modpath(core.get_current_modname())
+grug_mapgen.wp40 = dofile(path .. "/wp40/init.lua")(path .. "/wp40")
 dofile(path .. "/biomes.lua")
 dofile(path .. "/ores.lua")
 dofile(path .. "/decorations.lua")

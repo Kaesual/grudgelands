@@ -21,6 +21,86 @@ resource, density or race-region literal. It deliberately exposes no encoder
 or checksum: T1 owns the single tagged big-endian integer/Q encoder and the
 only registry-checksum seam.
 
+## T1 deterministic foundation
+
+Run:
+
+```sh
+tools/wp40/run_t1.sh
+```
+
+The T1 runner exercises the project-owned canonical binary grammar, raw
+SHA-256 hash lanes and rejection sampling, Q16.16/value-noise primitives,
+generic three-stage validation, the single checked IPC transport seam, and the
+world-aligned 128-node index. It loads the same pure files as three independent
+offline/main/mapgen stubs and requires byte-identical encodings, checksums,
+hash words, noise values, and index answers. Stage 1/2 corruption prevents
+publication; Stage 3 corruption performs one IPC read and prevents callback
+readiness. The index fixture compares dense negative/edge/tie samples against a
+slow oracle and proves that subsequent hot queries perform no IPC access.
+Both `index128.compile(definition, expected_schema)` and
+`index128.attach(compiled, expected_schema, evaluators)` fail closed on a
+missing or mismatched schema. Direct and outside classifications are scalars;
+functions, tables, userdata, and threads cannot enter the compiled grid.
+Attach performs the full transport-side structural gate without copying the
+grid: safe non-empty extents, unique layer IDs, exact cell coverage, boolean
+direct flags, direct-cell shape, and non-empty strictly sorted/unique scalar
+candidate IDs of one comparable type. A corrupted IPC grid therefore fails
+before any query can observe it.
+
+The compiled checksum is not accepted as an unrelated caller-supplied graph.
+The owning schema supplies one `canonicalize_compiled(data, semantic_ids,
+canonical)` function; main derives the digest from the exact retained payload
+data and sorted semantic registration IDs, and every consumer rebuilds the same
+canonical graph before retaining the IPC copy. Stage 3 also requires locally
+expected source and compiled checksums, so even a coherent mutation that
+rewrites both payload data and its declared digest is rejected. T2/T9 must
+supply those expected values from their reviewed/frozen manifest contract;
+reading them back from the same IPC payload would not be an independent check.
+This schema-owned projection only constructs typed nodes for the one
+`canonical.encode`/`canonical.checksum` implementation and is not a second
+encoder.
+
+`fixtures/t1_seed_corpus.tsv` freezes slots 1-27. The seven label-derived rows
+are checked independently with `sha256sum` and again through the injected raw
+SHA function used by the Lua tests. Slots 28-31 remain explicitly
+`T2_MEASURED`, and slot 32 remains `T9_PRODUCTION`; T1 does not invent geometry
+extremes or a production seed.
+The executable T1 harness compares its exact header, fields, order, labels,
+decimals, and pending markers against `seed_corpus.lua`; the TSV is a checked
+rendering of that module, not a second corpus authority.
+
+Production remains deliberately disabled with no placeholder dataset until T2
+provides the checked geometry source and compiler. T1 uses a deterministic
+mapgen-state stub because a disposable real emerge-state smoke would require
+registering production mapgen scripts and a real payload that do not yet
+exist. Real headless main/mapgen identity therefore remains an explicit T2/T9
+gate and is not claimed here.
+
+### Pinned engine facts used by T1
+
+- `core.sha256(data, true)` returns the raw 32-byte digest, and the utility is
+  registered in emerge states
+  (`reference_projects/luanti/src/script/lua_api/l_util.cpp:587-602,862-895`;
+  `reference_projects/luanti/doc/lua_api.md:6398-6403`).
+- IPC packs on set and unpacks a fresh graph on each get; userdata is rejected
+  (`reference_projects/luanti/src/script/lua_api/l_ipc.cpp:17-63`;
+  `reference_projects/luanti/doc/lua_api.md:7826-7849`). This is why T1 has one
+  initialization read and no query-time recovery/poll path.
+- Main-state mods finish loading before `initMapgens`, while each emerge state
+  then loads the registered mapgen scripts and fires `on_mods_loaded`
+  (`reference_projects/luanti/src/server.cpp:523-577`;
+  `reference_projects/luanti/src/emerge.cpp:641-667`).
+- Emerge states register IPC, hashing, mapgen settings, and mapgen callbacks,
+  but have their own Lua globals
+  (`reference_projects/luanti/src/script/scripting_emerge.cpp:45-80`;
+  `reference_projects/luanti/doc/lua_api.md:7684-7708`).
+- Luanti installs the `string.pack` backport in every server-side Lua state
+  (`reference_projects/luanti/src/script/cpp_api/s_base.cpp:81-87`;
+  `reference_projects/luanti/doc/lua_api.md:4597-4600`). T1 nevertheless uses
+  one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
+  the exact production algorithm rather than a replacement stub.
+
 ## Isolated headless capture
 
 The designated-host raw T0 capture is:
