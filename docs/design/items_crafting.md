@@ -516,6 +516,12 @@ burning Coal or Charcoal as fuel never substitutes for it. The dual furnace
 therefore keeps two material slots plus fuel. No universal bar consumes a
 regional gem, cultural material or trophy.
 
+The dual furnace itself is crafted from one normal furnace plus the first
+alloy's two metals — **2 Copper Bars and 1 Tin Bar** in LotT's T-arrangement
+(one Copper Bar centered on top; Copper Bar, furnace, Tin Bar across the
+bottom row). The alloy station is therefore strictly T1-accessible and is
+built after the normal furnace, never before it (decided 2026-08-13).
+
 #### 3.0.3 One item per concept — NO duplicates (binding)
 
 **There is exactly one item per concept.** No two items may fill the same

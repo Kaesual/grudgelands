@@ -25,34 +25,50 @@ recipe table is [`items_crafting.md`](../design/items_crafting.md)
     (`grug_materials/registry.lua:206-246`,
     `grug_materials/ores.lua:105-130`).
 - **No number freezing.** Cook durations and fuel budgets are runtime
-  calibration inside WP26's own testing, and B22's tool `times`/`uses`
-  remain WP26/WP29 runtime work — this card fixes recipe identities and
-  gates, never those literals.
+  calibration inside WP26's own testing. B22's tool `times`/`uses`
+  (`TODO-design-crafting-rework.md` B22) belong to the pick-implementing
+  and pick-calibrating WPs — WP29 (catalog/recipes) and WP22 (runtime
+  speed/durability calibration) — and WP26 ships no picks at all; this
+  card fixes recipe identities and gates, never those literals.
 - **No prices.** Reference values belong to WP44's ledger methodology.
   WP26 adds or changes no `_grug_sell_price` and no trader override;
   the audit gate below runs against shipped values only.
 
 ## 2. Shipped baseline this card builds on
 
-- All 12 processed materials exist with registered bar craftitems and
-  storage block nodes (`registry.lua:206-246`, registered at
-  `ores.lua:105-130`).
-- WP43 cleared every legacy furnace/pack/tool recipe
-  (`migration.lua:12-60`); **today no bar has any recipe**, and WP26 is
-  the declared sole owner (`registry.lua:202-205`, `ores.lua:85-86`).
+- All 12 processed materials exist with storage block nodes, and the ten
+  `kind = "bar"` rows have registered bar craftitems
+  (`registry.lua:206-246`, registered at `ores.lua:105-130`). Emberglass
+  and Abyssal Crystal are `kind = "resource"`: their storage input is
+  the mined item itself, registered with the resource family
+  (`ores.lua:34-83`); no bar form exists or may be invented for them.
+- WP43 cleared the legacy furnace/pack outputs, the Mese/Diamond tool
+  family, the Steel pick and the Mese light recipes
+  (`migration.lua:12-60`); the surviving wood/stone/bronze/steel tool
+  recipes stay registered until WP28/WP29. **Today no bar has any
+  recipe**, and WP26 is the declared sole owner of the bar recipe
+  families (`registry.lua:202-205`, `ores.lua:85-86`).
 - The normal furnace is `default:furnace` with its upstream craft
   recipe (`mods/BASE/default/furnace.lua:452`).
 - Dual furnace source, verified at the pinned LotT v1.2.7 submodule:
   `lottblocks/crafting.lua` — node pair `:201`, either-order
-  `check_craft` `:54-71`, `add_craft` `:30-33`, slot layout
-  `on_construct` `:230-236` (input 2 / output 2 / fuel 1), node-timer
-  driven (`:84`, `:220` — already the AGENTS workstation pattern).
+  `check_craft` `:55-73`, `add_craft` `:31-34`, `on_construct`
+  `:222-230` with the slot layout at `:225-227` (input 2 / output 2 /
+  fuel 1), node-timer driven (`:84`, `:220` — already the AGENTS
+  workstation pattern).
   Code is LGPL 2.1 (GPL-3.0-or-later compatible, `items_crafting.md`
   §1.1 licence note); `lottblocks` **media is CC BY-SA 3.0 and is not
   taken** — the port ships its own textures.
 - `grug_traders`' three startup audits (incl. the §3.8 anti-loop rule)
-  are live and silent; Iron Lump 3c → Iron Bar 3c is the documented
-  audited smelting pair (`grug_traders/init.lua:81-91,100ff`).
+  are live; failures report at **error** level, while two informational
+  `action` lines are always printed (the function-drop audit count,
+  `grug_traders/init.lua:157`, and `[grug_materials] registry audit
+  passed`, `grug_materials/audit.lua:207`). Iron Lump 3c → Iron Bar 3c
+  is the documented audited smelting pair
+  (`grug_traders/init.lua:81-91,100ff`). The recipe walk judges only
+  engine recipes of the `normal` and `cooking` methods
+  (`CONSUMING_METHODS`, `grug_traders/init.lua:221`) — `dualfurn`
+  recipes are invisible to it, which §3.5 and gate 4 close.
 
 ## 3. Recipe inventory (the complete WP26 recipe surface)
 
@@ -111,10 +127,27 @@ the Gold Block sentence). No gem-block recipe (WP10).
   stays the recipe-free registry WP43 froze. It owns the ported node
   pair, the `dualfurn` recipe registrar and every §3.2–§3.4
   registration.
-- The dual furnace's own craft recipe must be **T1-accessible**
-  (ordinary stone/T1 outputs only — Bronze is the first alloy, and a
-  deeper gate would deadlock the ladder). Exact shape is implementer
-  latitude inside that constraint, audited like every recipe.
+- The dual furnace's own craft recipe is decided (2026-08-13,
+  `items_crafting.md` §3.0.2): **one `default:furnace` plus 2 Copper
+  Bars and 1 Tin Bar** in LotT's T-arrangement — top row
+  `{"", "grug_materials:copper_bar", ""}`, bottom row
+  `{"grug_materials:copper_bar", "default:furnace",
+  "grug_materials:tin_bar"}`. The alloy station is built from the first
+  alloy's two metals, strictly T1-accessible, after the normal furnace,
+  never before it (LotT's steel-tier original at `crafting.lua:271-277`
+  would deadlock the ladder — Steel is T3 and needs the dual furnace).
+- **Auditable recipe registry (binding):** `grug_smelting` publishes
+  its complete `dualfurn` recipe set through one public, iterable read
+  surface (`grug_smelting.RECIPES`: output plus the two material
+  inputs), stable by `register_on_mods_loaded` time. The §3.8 anti-loop
+  audit cannot see these recipes through the engine — `grug_traders`'
+  recipe walk judges only `normal`/`cooking` engine recipes
+  (`CONSUMING_METHODS`) — so WP26 extends `grug_traders`' third audit
+  to walk `grug_smelting.RECIPES` when the mod is present
+  (`optional_depends`), with the same `grug_traders.sell_price`
+  resolution and error-level report, plus a negative test proving a
+  deliberately overpriced synthetic `dualfurn` recipe is caught.
+  WP44's later repricing reuses exactly this audited path.
 - Own front textures (re-skin); a VENDOR.md row (upstream repo, commit
   pin, LGPL 2.1, patch list) and LICENSE-media.md rows for the new
   textures land with the port.
@@ -130,8 +163,9 @@ the Gold Block sentence). No gem-block recipe (WP10).
 4. **T4 — storage family** (§3.4).
 5. **T5 — regression + audits**: gates 1–7 below; real-code Lua 5.1
    tests under `tools/wp26/` for the matcher (either-order,
-   coal-not-fuel, one-of-each consumption) where headless-testable
-   (WP39 pattern).
+   coal-not-fuel, one-of-each consumption) and the §3.5 audit
+   extension incl. its overpriced-recipe negative test, where
+   headless-testable (WP39 pattern).
 6. **T6 — docs**: BACKLOG WP26 → ✅ with a one-liner; ROADMAP tick;
    README "Current State" in the same commit (AGENTS.md rule); AGENTS
    delta only if a new binding pattern emerged.
@@ -148,8 +182,10 @@ Sequencing: T1 → (T2, T3, T4 parallel) → T5 → T6. Review per
    nothing; coal in a material slot + any fuel produces steel.
 3. **Either-order**: every §3.3 row crafts with swapped slots; exactly
    one of each input is consumed per output.
-4. **WP7 audits**: all three startup audits stay silent with the new
-   recipes; zero price fields added or changed (diff shows no
+4. **WP7 audits**: all three startup audits report no error/warning
+   finding with the new recipes, and the extended anti-loop walk
+   covers every `grug_smelting.RECIPES` row (the negative test proves
+   coverage); zero price fields added or changed (diff shows no
    `_grug_sell_price` change).
 5. **Scope grep**: no `grug_smelting` recipe references rough/cut gem,
    cultural, trinket, gear or pick ids.
@@ -162,7 +198,9 @@ Sequencing: T1 → (T2, T3, T4 parallel) → T5 → T6. Review per
    change): craft and place both furnaces; smelt the five §3.2 bars;
    alloy the five §3.3 bars in both slot orders; verify the steel
    fuel-slot refusal; pack/unpack a metal block, a resource block and
-   the Gold Block; confirm `debug.txt` shows no audit lines.
+   the Gold Block; confirm `debug.txt` shows no error/warning audit
+   finding (the two informational `action` lines — the drop-audit count
+   and "registry audit passed" — are expected).
 
 ## 6. Composition
 
@@ -170,7 +208,7 @@ Sequencing: T1 → (T2, T3, T4 parallel) → T5 → T6. Review per
   (professions) all depend on WP26 (BACKLOG). Nothing else consumes
   `dualfurn` recipes yet.
 - **WP44**: bars beyond Iron stay unpriced; when the ledger later
-  prices them, the §3.8 audit re-proves the chain at every start by
-  construction.
+  prices them, the §3.8 audit — including its §3.5 `dualfurn`
+  extension — re-proves the chain at every start by construction.
 - **WP40-independent**: no mapgen, zone or spawn interaction; existing
   worlds gain the recipes on update.

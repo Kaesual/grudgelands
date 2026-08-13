@@ -290,7 +290,9 @@ the missing Iron, Silversteel, Embersteel and Abyssal Steel picks.
 
 *Lands in*: `items_crafting.md` §3.0.4.
 **Decision:** _open_ (the `times` and `uses` numbers). Owner:
-**WP26/WP29**, which author the iron+ picks.
+**WP29/WP22** — WP29 authors the pick catalog and recipes, WP22
+runtime-calibrates dig times and durability (BACKLOG WP22 row). WP26
+ships bars and furnaces only, no picks.
 
 ---
 
@@ -600,7 +602,7 @@ magnitudes **block WP10**'s cooking book.
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | A6 | Visible marker on an enchanted refined item | WP5 (description) |
-| B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP26/WP29 |
+| B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |
