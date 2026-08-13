@@ -960,8 +960,10 @@ one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
 
-Three fields carry the boat contract of `boats.md` and are decided
-2026-08-13, replacing the WP18 values the mob shipped with:
+Three fields carry the boat contract of `boats.md`. All three were **decided
+by the design owner on 2026-08-13**, replacing the values the mob shipped
+with; the anchors quoted below are the rationale for each choice, not the
+authority for it:
 
 - **`run_velocity` 8.8** (shipped: 5). The improved boat does 8 nodes/s
   (`boats.md` §5), so the guard keeps exactly the 1.1× margin that
@@ -979,7 +981,12 @@ Three fields carry the boat contract of `boats.md` and are decided
 
 The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
 evade everywhere else, never spawning in a dragon channel — are owned by
-`world.md` §2b.
+`world.md` §2b. They **replace** what the mob ships today: `_grug_no_leash`
+plus its own 200-node coastal `LEASH_SLACK`
+(`mods/ENTITIES/grug_mobs/kraken.lua:10`, `:37`) both retire. Its
+`_grug_spawn_check` already is `grug_core.open_sea_at` (`kraken.lua:31`),
+which `world.md` §2b narrows to `deep_ocean`, so deep-ocean-only spawning
+needs no separate mechanism.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term

@@ -17,16 +17,19 @@ two recipes in `items_crafting.md` §3.0.5 and the Kraken Guard in
   vendor, quest, level or profession is involved. Water travel is not a
   reward and the sea is not a gated resource.
 - **The improved boat** is built from one base boat plus universal T4
-  materials. Only its *recipe* is gated: a character learns it once from a
-  **shipwright** (§2), from character level 30.
+  materials, and it is the one gated part of water travel: a character learns
+  it once from a **shipwright** (§2), from character level 30.
 - **Boat building belongs to no profession.** It consumes neither of the two
   main profession slots (`professions.md` §1), and it is not a universal
   skill with a trainer ladder like Cooking, First Aid or Riding. The
   improved-boat unlock is a single permanent per-character flag in player
   meta, in the same spirit as the riding steps of `mounts.md` §1.
-- Player-facing, that flag is one entry named **Improved Boat**, and it
-  covers **crafting and driving** the improved boat. It never affects the
-  base boat.
+- Player-facing, that flag is one entry named **Improved Boat**, and it gates
+  **both crafting and driving** it. A character without the flag may still
+  carry, trade, place and pick up an improved boat but cannot sit in one; the
+  base boat is never affected. *Rationale*: the item is craftable and
+  tradeable, so gating only the recipe would let one taught player hand the
+  level-30 speed to a whole starting zone.
 
 *Rationale*: the two dragon islands are reachable only by boat
 (`world_zones.md` §6), and both apex camps are one of the three decided
@@ -56,9 +59,10 @@ channels lie in level-51–59 contested zones.
 - His plot carries **one improved boat floating in the adjacent water as
   scenery**. It cannot be entered, driven or collected, and it is not a
   spawned boat entity that decays under §3. The shipwright, his plot and that
-  display water form one **bounded functional anchor** and are hard-protected
-  under the ordinary anchor rule of `world_zones.md` §11; the surrounding
-  village shell stays mutable and claim-excluded like every other village.
+  display water form one **bounded functional anchor**: `world.md` §2 R1
+  hard-protects "small functional NPC and renewable-resource anchors" with an
+  exact authored footprint, and this is one of them. The surrounding village
+  shell stays mutable and claim-excluded like every other village.
 
 ## 3. What a boat is, mechanically
 
@@ -146,9 +150,11 @@ craftable only with the Improved Boat unlock.
 The water classes, the Kraken Guard's pursuit rules and the dragon channels
 are owned by `world.md` §2b. What matters for a boat:
 
-- **The coastal shelf is safe passage.** No Kraken Guard spawns there, and a
-  pursuit that reaches shelf water ends under the ordinary leash/evade model
-  of `combat_stats.md` §4.
+- **The coastal shelf is not patrolled.** No Kraken Guard spawns there. One
+  that followed a boat in behaves like any ordinary mob — it may spend the
+  rest of its 40-metre drag allowance and then leashes and runs home
+  (`world.md` §2b, `combat_stats.md` §4) — so hugging the coast is safe
+  travel but the shelf edge is not a safe firing position.
 - **Deep ocean is not survivable in a boat.** The Kraken Guard is faster than
   the improved boat and does not give up while both stay in deep ocean.
   Crossing open sea is a deliberate death, not a shortcut.

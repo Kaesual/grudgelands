@@ -159,7 +159,7 @@ the goal-level view.
   capacity-calibrated placement after WP40/WP43/WP44.
 - [ ] WP17 and WP12: claim-bound Home Stone, authored waypoint travel and the
   fog-of-war map after claims and final zones. WP17 also implements the
-  decided boat contract plus the two ocean-danger prerequisites it needs, so
+  decided boat contract plus the three ocean-danger prerequisites it needs, so
   its runtime test covers the whole mob roster.
 - [ ] WP41: implement the exact geographic PvP transaction after WP40.
 - [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone

@@ -318,11 +318,15 @@ because of what the guard does, not because water damages a boat:
   untouchable run home to its post and the teleport backstop.
 - **The switch is evaluated at the guard's own current position and takes
   effect immediately**, and a guard that has begun to evade never reverses
-  that decision until it is home. A pursuit that starts in deep ocean and
-  reaches the shelf therefore ends at once: the guard has long exceeded its
-  drag allowance, so the first tick under ordinary rules leashes it. This is
-  what keeps a shelf-edge guard dangerous instead of farmable, without letting
-  one follow a boat to the beach.
+  that decision until it is home. Crossing the boundary is not itself a reset:
+  a pursuit dragged in from open water ends as soon as its **ordinary**
+  allowance is spent. A guard already pulled more than 40 metres from where
+  that chase began therefore leashes on its first tick under ordinary rules,
+  while one that crossed early keeps whatever remains of the 40-metre drag and
+  the 15-second contact window. That residual is deliberate — it is what keeps
+  a guard at the shelf edge dangerous instead of farmable from safe water —
+  and it is bounded by the same 40 metres, so a single chase can never be
+  walked across the whole 80-node shelf.
 - A dragon channel is safe passage for that reason alone; no separate
   channel exception is needed.
 

@@ -725,9 +725,9 @@ two recipes. Both are ordinary 3×3 grid recipes and need no workbench.
 
 **Base boat** — a universal base recipe under §3.0.3: every character can
 craft it from level 1, with no profession, trainer, vendor or quest. Five
-`group:wood` in the hull shape (the arrangement of Lord of the Test's
-`mods/boats/init.lua:201-208`, whose row boat is our reference
-implementation):
+`group:wood` in the hull shape (the arrangement of
+`reference_projects/Lord-of-the-Test/mods/boats/init.lua:201-208`, whose row
+boat is our reference implementation):
 
 | | | |
 |---|---|---|
@@ -748,14 +748,20 @@ a level-31–40 material run:
 
 The two bolts are the sail and the two bars the fittings; `thread` is the
 ordinary level-independent vendor job supply of §3.7, not a new item and not
-a Tailor product. Bolts and bars are material stages and therefore base
-recipes themselves (§3.0.3, "cloth → bolt"), so the improved boat binds no
-profession anywhere in its chain.
+a Tailor product. Bolts and bars are material stages, and every stage is a
+base recipe on its own grid (§3's "ore → bar → component → item; hide → cured
+leather; cloth → bolt", with the bolt grades in §3.5), so the improved boat
+binds no profession anywhere in its chain.
 
 The shipwright's teaching transaction consumes exactly this ingredient list
-once and returns one finished improved boat (`boats.md` §2). Boats are never
-sold by a vendor and carry no ledger price; `_grug_sell_price` follows the
-ordinary §8 rules for their material value.
+once and returns one finished improved boat (`boats.md` §2). **Vendors never
+stock a boat**, but like every other unsold item both boats still receive an
+authoritative reference price and the ordinary ceiling-rounded 5% buy-back of
+`economy.md` §2 — "not stocked" is not "worth nothing". Both recipes are
+ordinary `normal` craft recipes and are therefore walked by the third
+`grug_traders` startup audit, so §3.8's anti-loop rule binds them: a boat's
+payout must stay below the summed payout of the wood, bars, bolts and thread
+consumed to make it.
 
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
