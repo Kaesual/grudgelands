@@ -74,9 +74,11 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **Every equippable item carries a level requirement** (`grug_req_level`
-  = its ilvl; equipping below it is blocked — items_crafting.md §6.1;
-  **enforced from WP5**, WP7's vendor gear carries the ilvl only);
+- **Every equippable item that has an item level carries a level
+  requirement** (`grug_req_level` = its ilvl; equipping below it is
+  blocked — items_crafting.md §6.1, which also exempts the equippables that
+  have no ilvl at all; **enforced from WP5**, WP7's vendor gear carries the
+  ilvl only);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 
@@ -568,7 +570,9 @@ design (`group_attack` stays on).
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
   items declare a hand count in `_grug_hands` (**greataxe 2, staff 2,
-  sword/dagger 1**, the twelve vendored `default:` swords and axes 1, no
+  sword/dagger 1**, the vendored `default:` swords and axes 1 — twelve when
+  WP35 wrote this, **eight since WP25/WP43 deleted the mese and diamond tool
+  tiers** (`grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list) —, no
   field = one-handed), and the weapon/offhand `allow_put` refuses any pair
   whose **two occupied hands add up to more than two**, in both
   directions, with a chat message that names the trade. Numbers, the

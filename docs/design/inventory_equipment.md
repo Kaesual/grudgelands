@@ -68,9 +68,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     first-visible-object server ray; nodes and other objects stop that ray.
   - **Eligible is whatever carries the item group `grug_equip_weapon`**:
     all four `grug_gear` weapon families (sword, dagger, greataxe, staff)
-    and the twelve vendored `default:` swords and axes (that list shrinks
-    by construction as WP28/WP29 fold those items into the material
-    ladder). Mining tools stay mining tools — **picks and shovels are not
+    and the vendored `default:` swords and axes — twelve when this was
+    written, **eight today**, because WP25/WP43 deleted the mese and diamond
+    tool tiers; `grug_gear/init.lua`'s `VENDORED_WEAPONS` is the live list,
+    and it shrinks to nothing by construction as WP28/WP29 fold those items
+    into the material ladder. Mining tools stay mining tools — **picks and shovels are not
     eligible**.
   - **No class gate.** Weapon families are class *flavor*, not a power
     ladder (`items_crafting.md` §8.2), so a Mage may equip a greataxe and

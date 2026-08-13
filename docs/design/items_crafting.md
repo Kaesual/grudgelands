@@ -1614,7 +1614,8 @@ binding through each zone's fixed biome/gathering palette; the level band adds
 the gear/special layer.
 
 **A dropped item's material tier must match the mob's tier** (added
-2026-08-07). `ilvl = mob level` already implied it; stated outright
+2026-08-07). The clamped `ilvl = min(mob level, 60)` of §5 already implied
+it; stated outright
 because the item is now material-named: a **T3 (Steel) item drops from
 level 21–30 mobs** and nowhere else. A mob may not drop gear from a tier
 its level band does not cover — that is what stops the drop table from
@@ -1662,6 +1663,17 @@ involved. The two systems never meet.
 A dropped item that carries enchants is by definition also **refined**
 (§6b.3 admits no other state) — which is why the refinement word never
 appears in a drop's name (§6b.4).
+
+**Which item drops is a uniform draw over the eligible slot families of the
+mob's own tier** (stated 2026-08-13; no weighted table exists anywhere in
+this design). Found gear cannot undercut crafted gear by construction
+rather than by rate tuning: §6.3 gives a normal-mob drop the `world` window
+0.00-0.60 against crafted-masterwork 0.60-1.00, and the affix counts differ
+on top of that. What WP5 still owes is the **audit** that the rates in the
+table above, at elite and high-tier sources, do not flood the market far
+enough to erase demand for crafted G2 gear and named-rare trophies; if that
+audit contradicts the table, the table is what changes, and it changes in
+this document.
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 
@@ -1750,7 +1762,7 @@ Stone starter line, which §3.0.1 already exempts. The exemption disappears
 by construction when WP29 folds those items into the material ladder.
 Equipping below the requirement is **blocked with a chat message**, enforced in the slots' group-filtered `allow_put`
 (inventory_equipment.md §2); "equips but grants nothing" was rejected as
-an invisible failure. Drops keep `ilvl = mob level` (§5), so gear above
+an invisible failure. Drops keep `ilvl = min(mob level, 60)` (§5), so gear above
 your level is lootable and tradeable, just not wearable yet — that is
 intended, and it is also what stops one level-60 friend from outfitting
 a level-5 character and flattening the entire surface progression. Description
@@ -1777,7 +1789,13 @@ The override must be written as a **complete** tool-capability table — a
 plain meta float named `full_punch_interval` is not read by the engine —
 and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
 (70/30)** — the decided budgets, and from 2026-08-07 also the prefix and
-suffix count of §6b.
+suffix count of §6b. **Those two probabilities govern sources that have no
+crafter** — mob drops and vendor stock (sharpened 2026-08-13). A *crafted*
+item's affix count is not rolled at all: it is exactly the number of slots
+the crafter's mastery may fill (§6b.5), which is also what makes an
+Apprentice's work Uncommon and a Master's Rare (§6b.6). Both readings spend
+the same 1–4 budget; only the source decides whether the count is rolled or
+determined.
 
 Cultural finish and PvP-special lines are displayed separately, naming their
 culture/target and exact value. Trinkets are the exception to the ordinary
@@ -1906,7 +1924,8 @@ Two consequences, both intended:
   item whose single roll is a full 46–60 roll.
 
 **Mob drops have no crafter at all**, which is the other half of the
-argument: §5 sets gear-drop ilvl = mob level and points at this table, so
+argument: §5 sets gear-drop ilvl = min(mob level, 60) and points at this
+table, so
 for a drop only the item reading can work at all. One rule for both
 sources is what keeps a dropped and a crafted item of the same ilvl
 comparable.
@@ -2415,7 +2434,7 @@ level* while ilvl follows the *item's material tier*. The crafter
 reading broke two things at once: a level-50 Master's T1 Bronze Sword
 (ilvl 3) would have carried band-4 rolls, violating "a T2 enchant cannot
 be applied to a T1 item"; and **mob drops have no crafter at all**, while
-§5 sets gear-drop ilvl = mob level and sends the roller to §6.3. That
+§5 sets gear-drop ilvl = min(mob level, 60) and sends the roller to §6.3. That
 the band boundaries coincide with the four mastery level anchors is a
 property of the numbers, not a rule. Rejected: two roll tables, one for
 crafted and one for dropped gear — the same ilvl would then have meant
