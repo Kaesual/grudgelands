@@ -301,7 +301,10 @@ Normal tier at level L:
   name and the one engine trap).
 - **Speed**: aggressive mobs `run_velocity` **4.4** (player: 4.0) —
   evading must never be trivially easy; harmless critters 3.4; heartland
-  hunters 4.6, partly with ranged attacks (`dogshoot`).
+  hunters 4.6, partly with ranged attacks (`dogshoot`). The deep-sea Kraken
+  Guard at **8.8** is the one documented exception: it holds the same 1.1×
+  margin over the 8 nodes/s improved boat (`boats.md` §5,
+  `biomes_mobs.md` §3).
 - Pacing property: ~**20 same-level mob kills per level** (XP=10L vs.
   quadratic level curve); quests supply the rest.
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
@@ -438,6 +441,25 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   neither the 25 m soft de-aggro nor the 40 m leash could ever fire). The
   45 m sits deliberately above the leash so the LEASH is what ends a
   chase, with a little hysteresis.
+- **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
+  closed to within its `reach` lands its attacks on a target fleeing at full
+  speed. The **attack cadence therefore runs during the chase**, not only
+  while the target is inside reach; the only condition an attack still
+  carries is being in reach at the moment the cadence is due. Fleeing costs
+  HP — it is not a free escape from a fight already lost.
+  *Rationale, because the defect is invisible on paper*: vendored mobs_redo
+  zeroes the mob's velocity as soon as the target is inside `reach`
+  (`mods/ENTITIES/mobs/api.lua:2493`) while `punch_timer` accumulates **only
+  in that same branch** (`:2495-2497`; default interval 1 s at `:3768`). A
+  receding target leaves reach after one server step, so the timer gains
+  0.09 s while the mob loses ~0.36 m that it needs ~0.9 s to re-close at its
+  0.4 nodes/s margin — roughly **one landed hit per ten seconds** instead of
+  one per second. Raising `reach` cannot repair this (a stopped mob always
+  leaves its own radius, whatever the radius) and would silently widen the
+  elite/rare telegraph cone, which is `reach + 1.5` (§3), and make
+  `dogshoot` mobs switch to melee earlier. The fix is one vendored api.lua
+  patch; because it changes every mob's feel, the WP that ships it owes a
+  runtime test.
 
 Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:
