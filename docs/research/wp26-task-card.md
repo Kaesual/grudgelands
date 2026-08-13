@@ -61,15 +61,15 @@ recipe table is [`items_crafting.md`](../design/items_crafting.md)
   taken** — the port ships its own textures.
 - `grug_traders`' three startup audits (incl. the §3.8 anti-loop rule)
   are live; findings report at **warning or error** level (a missing
-  drop price warns, `grug_traders/init.lua:165`; money and craft loops
+  drop price warns, `grug_traders/init.lua:167`; money and craft loops
   error), while two informational `action` lines are always printed
-  (the function-drop audit count, `grug_traders/init.lua:157`, and
+  (the function-drop audit count, `grug_traders/init.lua:159`, and
   `[grug_materials] registry audit passed`,
   `grug_materials/audit.lua:207`). Iron Lump 3c → Iron Bar 3c
   is the documented audited smelting pair
   (`grug_traders/init.lua:81-91,100ff`). The recipe walk judges only
   engine recipes of the `normal` and `cooking` methods
-  (`CONSUMING_METHODS`, `grug_traders/init.lua:221`) — `dualfurn`
+  (`CONSUMING_METHODS`, `grug_traders/init.lua:223`) — `dualfurn`
   recipes are invisible to it, which §3.5 and gate 4 close.
 
 ## 3. Recipe inventory (the complete WP26 recipe surface)
