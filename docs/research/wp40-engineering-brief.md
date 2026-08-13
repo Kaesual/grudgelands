@@ -2172,11 +2172,26 @@ lower unsigned decimal seed. This selection rule is part of the pre-code
 corpus, while its four resulting numbers are measured compiler outputs checked
 into the final corpus file before rollout.
 
+T2 owns and freezes those four measured outputs. Its authoritative geometry
+corpus therefore contains entries 1--31: the 27 T1 values plus the four T2
+extremes. T2 also performs one explicitly staging-only 32-entry run so that no
+32-seed geometry/topology/route/anchor gate waits for production-seed selection.
+The staging entry is the next unique broad-sample label beginning at
+`grudgelands-wp40-seed-08`, converted by the same unsigned first-eight-SHA-256-
+bytes rule as entries 21--27 after skipping every value already present in
+entries 1--31. Its label, digest, decimal value, staging status, and the complete
+32-run result are checked fixtures, but the staging entry is not the final
+corpus slot and has no production-seed authority.
+
 Entry 32 is the production seed selected only after it passes the complete
 geometry, capacity, supply, headless, performance, and disposable visual-world
 audits. If it already occupies another slot, entry 32 instead uses the next
 unique broad-sample label beginning at `grudgelands-wp40-seed-08`; the
-production seed remains represented at its existing position.
+production seed remains represented at its existing position. T9 owns this
+selection. It replaces T2's staging-only entry, then reruns the unchanged
+complete geometry, topology, route, and anchor oracle over all 32 final entries.
+No T2 coordinate, extreme selection, seed case, or oracle is dropped or
+reselected during that replacement.
 
 Before the world-format freeze, the exact 32 newline-terminated decimal strings
 and their SHA-256 are checked into the repository and copied into the release
@@ -2494,15 +2509,24 @@ classes:
 10. the densest authored surface-decoration slice; and
 11. the densest exact-region resource slice.
 
-The compiler resolves those cases to exact coordinates and stable feature IDs;
-the checked result is input to the benchmark rather than a best-looking set
-chosen after timings are known. The generation micro-corpus runs for the
-visual-baseline seed, unsigned-64 maximum, the four measured extreme seeds,
-and the selected production seed. Registry initialization is measured for all
-32 fixed seeds. The complete 32-seed geometry, route, housing, and supply
-audits remain acceptance runs and publish their own wall time and peak memory,
-but their capacity and supply results are not replaced by this smaller timing
-corpus.
+T2 freezes the versioned micro-corpus schema, the deterministic selection rule,
+and exact geometry-only coordinates plus stable feature IDs for classes 1--9.
+It also freezes the complete 100-requester JSON trace below. T6 appends class 10
+deterministically only after the authored surface catalog is frozen, and T7
+appends class 11 deterministically only after the exact-region resource catalog
+is frozen. Those append-only steps use the T2 selector and compiled geometry;
+they may not move, replace, or conveniently reselect any T2 class-1--9
+coordinate after timings are known.
+
+T9 selects the production seed under Section 6.1, materializes the combined
+11-class fixture for that seed and the other required timing seeds, and runs the
+complete benchmark. The generation micro-corpus therefore runs for the visual-
+baseline seed, unsigned-64 maximum, the four measured extreme seeds, and the
+selected production seed only after all owning catalogs exist. Registry
+initialization is measured for all 32 final fixed seeds. The complete 32-seed
+geometry, route, housing, and supply audits remain acceptance runs and publish
+their own wall time and peak memory, but their capacity and supply results are
+not replaced by this smaller timing corpus.
 
 Every result records at least CPU model and effective core configuration, RAM,
 storage/filesystem, OS and kernel, power/governor state where available,
@@ -2689,6 +2713,26 @@ unsatisfiable, a new reviewed Reality Check is required; only a verified
 node-exact provenance API/origin channel can reopen replacement authority or
 justify revisiting the vertical cutoff.
 
+The 2026-08-13 corpus-staging review also triggered this rule. Reproduction is
+direct: the checked T1 fixture has 27 fixed entries and deliberately assigns
+slots 28--31 to T2 but slot 32 to T9
+([seed-corpus fixture](../../mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua):1-42),
+while the pre-correction T2 task row required all 32 final seeds and the
+pre-correction Section 6.5 assigned T2 a micro-corpus that already included the
+surface- and resource-density cases whose authoritative catalogs belong to T6
+and T7. T2 could therefore satisfy the old wording only by inventing a future
+production seed and future content-authority outputs. The root cause was task
+staging, not the geometry, seed-selection, corpus, or performance design.
+
+The correction keeps every case and gate: T2 freezes final entries 1--31,
+classes 1--9, and the complete requester trace, and runs the full 32-entry pure-
+geometry corpus with one explicit non-production staging entry. T6 and T7 append
+classes 10 and 11 only after their catalogs freeze. T9 replaces only the staging
+entry with final slot 32, reruns the unchanged complete 32-seed geometry,
+topology, route, and anchor corpus, materializes all 11 micro-corpus classes,
+and executes the full benchmark. No T2 coordinate is reselected and no seed,
+case, numerical threshold, or final Chapter 6 gate is removed or weakened.
+
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
 conflicts with a stronger correctness/operability requirement. The reviewed
@@ -2710,14 +2754,14 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | --- | --- | --- | --- |
 | T0 — WP43 handoff and baseline | exact material/resource API adapter, designated-host/harness manifest, post-WP43 WP18/WP36 fixed-corpus baseline and raw capture | merged WP43 `main` | every symbol/registration resolved; benchmark host/harness reproducible; no WP25 identity in target data |
 | T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
-| T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, exact benchmark-coordinate/100-requester fixtures | T1 | all 32 seeds pass pure geometry/topology/route/anchor oracles; fixture JSON and digests frozen |
+| T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor oracles; extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests frozen |
 | T3 — public geography and policy | immutable `grug_zones` APIs, water/mount classifier, territory/PvP fields, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | scalar hot paths agree with slow oracle; no 38-definition scan or dynamic-claim coupling |
 | T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; enumerate every non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, deep host-only skips, and exact dirty sets |
 | T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, deep typed order, seam, no-op and operation-count gates |
-| T6 — authored surface catalog | logical biome top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement | T4, T5 | palette/share, collision, tree-boundary, water-family and settled-hash gates |
-| T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records | T0, T4, T5 | host/clipping/final-node counts, deep order fixtures, and all Section 6.4 access routes across 32 seeds |
+| T6 — authored surface catalog | logical biome top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement, deterministic micro-corpus class 10 | T4, T5 | palette/share, collision, tree-boundary, water-family and settled-hash gates; class-10 fixture appended through the frozen T2 selector without moving a T2 coordinate |
+| T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records, deterministic micro-corpus class 11 | T0, T4, T5 | host/clipping/final-node counts, deep order fixtures, all Section 6.4 access routes across 32 seeds, and class-11 fixture appended through the frozen T2 selector without moving an earlier coordinate |
 | T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |
-| T9 — release evidence and rollout | canonical hash/order suite, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
+| T9 — release evidence and rollout | final slot-32 replacement and 32-seed corpus, canonical hash/order suite, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, combined 11-class micro-corpus, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | staging entry alone replaced; unchanged complete geometry/topology/route/anchor oracle passes all 32 final entries; reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
 
 T3's API signatures, adapters, and slow-oracle test scaffolding may proceed in
 parallel with T2 after T1; no T3 authoritative answer or completion gate may
@@ -2726,12 +2770,17 @@ T6 and T7 may build separate pure catalogs after T4 freezes the resolver
 interface, but only T5 owns the VoxelManip adapter and transaction. T8 deletes
 legacy authority only after the corresponding target path and consumer tests
 are green. T0 owns the measurement harness and initial baseline; T2 freezes the
-geometry-derived fixtures, which are then replayed against the preserved
-baseline checkout before terrain cutover. The native-only dungeon guard remains finite offline evidence: T4 tests audited
-plan intersection against it, while T5 production neither receives it over IPC
-nor derives it from halo content. T1/T4/T5 instead enforce the global vertical/
-typed contract. T9 reruns and freezes both proofs but owns no early harness work
-or production terrain logic.
+geometry-derived class-1--9 fixtures, corpus slots 28--31, the staging-only
+32-entry run, and the complete requester trace, which are then replayed against
+the preserved baseline checkout before terrain cutover. T6 and T7 append their
+catalog-dependent classes without reselecting T2 coordinates. T9 replaces only
+the staging entry, reruns the complete final 32-seed pure-geometry corpus, and
+materializes the combined 11-class benchmark. The native-only dungeon guard
+remains finite offline evidence: T4 tests audited plan intersection against it,
+while T5 production neither receives it over IPC nor derives it from halo
+content. T1/T4/T5 instead enforce the global vertical/typed contract. T9 reruns
+and freezes both proofs but owns no early harness work or production terrain
+logic.
 
 WP13, WP17, WP24, WP33, WP34, WP37, WP41, WP42, WP44, and later mount/boat work
 remain separate work packages. WP40 supplies their stable IDs, masks, terrain
