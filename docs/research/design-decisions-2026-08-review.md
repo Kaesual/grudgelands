@@ -97,4 +97,67 @@ Round-3 Low RESOLVED. Final verdict: **CLEAN**.
 
 ## Phase 2 — crafting-rework decision round
 
-Pending; recorded here after its own review reaches CLEAN.
+Review scope: `git diff 839d676...HEAD` (start = the CLEAN end of
+Phase 1). Ten user-confirmed decisions (2026-08-13), folded one commit
+each (`f580b54..3f1702c`), documentation-only:
+
+1. **A2** — affix vocabulary: one prefix + one suffix word per §6.3
+   stat (18 words, `items_crafting.md` §6b.4); the eight 2026-08-08
+   example mappings preserved verbatim.
+2. **A6** — refined marker: one grey "Refined" tooltip line; §6b.7
+   special variants state their effect in the same block. WP5 fully
+   design-unblocked.
+3. **A5** — material grades: leather sleek/nightscale, bolts
+   silk/stormweave, wood Seasoned→Heartwood; `biomes_mobs.md` §6
+   source rows added.
+4. **C10** — leather ships as the Warrior's rank-2 light avoidance set
+   (option c); the false "nothing can wear leather" clause retired
+   across four documents.
+5. **A1** — signature table (profession × mastery, §2.1) with the
+   uniform §7 kit rule and two documented deliberately-empty cells.
+6. **A4** — keystone table §2.3 completed to T2–T6 × 6 professions;
+   every T5/T6 drop is existing both-faction loot; trophy stays
+   T4-only.
+7. **E21** — six cooking groups (gates, recipes, 20–40% restore ramp,
+   Well Fed I–III) plus the user-driven food-model revision (restore =
+   movement-tolerant out-of-combat buff, canceled on combat entry;
+   percent-only consumables reaffirmed) and the new buff/debuff icon
+   framework (`inventory_equipment.md` §5, ships with WP10).
+8. **B22 frame** — monotonic six-point speed/durability curves, WP29
+   authors, WP22 calibrates; no `times`/`uses` literal frozen.
+9. **A3** — bags are not refinable; Ornate reserved for cloth armor
+   and spell tomes.
+10. **Iron metal-pick gate** — starter picks shatter iron; iron needs a
+    Bronze+ pick (`grug_metal_pick` flag, `metal_only` row; runtime
+    with WP29).
+
+### Round 1 — full review of `839d676..3f1702c`: NOT CLEAN (1 High, 5 Medium, 4 Low)
+
+All findings verified against the sources and confirmed; resolution
+commit `aa095c6`. High: the Alchemist section still described the
+retired resting-channel food delivery (rewritten to the buff model; the
+§10 D9 entry marked superseded). Medium: the HP span corrected to
+30–325 (base attributes); the missing Alchemist imbuing-oil kits added
+to the A1 table; the trophy sentence made Goldsmith-safe; wild cocoa —
+whose biome palette reached level-21–30 zones — restricted to the
+level-51–60 jungle zones (The Skyglass Canopy / Stormscale Summit) so
+the T6 gate claim is literally true; the WP22 row reduced to
+calibrating the WP29-authored B22 table. Low: Goldsmith keystone
+itemstrings (`grug_mobs:sleek_pelt`/`bear_claw`), the grips cross-buy
+added to `professions.md` §3, the icon-countdown wording made
+churn-consistent, ROADMAP's A3 omission.
+
+### Round 2 — focused re-review of `3f1702c..aa095c6`: NOT CLEAN (1 Medium, 1 Low)
+
+Nine of ten findings RESOLVED; finding 5 left two residuals — the E21
+intro still claimed per-continent existence of every gate ingredient,
+and the found-only row labeled Stormscale Summit as part of the shared
+front. Resolution commit `2e89bfb` (reachable-by-both-factions wording
+with the explicit Skyglass/Stormscale exception; island-bonus label).
+
+### Round 3 — focused re-review of `aa095c6..2e89bfb`: **CLEAN**
+
+Both residuals RESOLVED against `world_zones.md`'s zone and travel-graph
+definitions; a repository-wide sweep found no remaining per-continent
+cocoa claim; the commit verified to change nothing else. Final verdict:
+**CLEAN**.
