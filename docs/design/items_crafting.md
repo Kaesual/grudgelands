@@ -2541,8 +2541,8 @@ WP43 owns the migration.
 **D16 — The depth gets no drop layer of its own** (resolves the loot half
 of `TODO-design-depth.md` D10). Underground mobs drop what their families
 drop on the surface; being deep adds nothing (§5). A T6 gear layer down
-there would have been a third 0.60–1.00-window source with neither a
-crafter nor a boss behind it, against §0's promise that the best items
+there would have been a third top source — beside crafted-masterwork
+0.60–1.00 and boss 0.80–1.00 — with neither a crafter nor a boss behind it, against §0's promise that the best items
 come from crafting and hard bosses — and the band already pays the
 endgame *material* that the crafted endgame item is made of. Rejected:
 T6 gear drops on the level-60 deep roster.
