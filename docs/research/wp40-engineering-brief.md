@@ -3401,12 +3401,66 @@ The subsequent independent T2a freeze review found two further defects in that
 moving pre-freeze source and its Stage-1 harness. These are implementation-
 contract defects, not permission to weaken the 61-edge decision, the original
 57-route graph, the eight closure wings, the independent perimeter authority,
-or any corpus case. Stable final source/test `file:line` citations remain
-explicitly pending until the corrected T2a source freezes; citing its current
-dirty line numbers here would create false evidence. The freeze follow-up must
-replace this pending statement with exact citations to the policy record,
-validator, five Bay witnesses, eight face cases, perimeter-equality fixtures,
-and full affected rerun.
+or any corpus case.
+
+**Final T2a Stage-1/freeze evidence (not T2 completion).** The frozen source
+checksum is
+`005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710`; its
+`world_partition` policy checksum is
+`fc747096ec4646dc1a9185c579aabb309f81a769fca3c9e6b687ed4b42017c22`
+([Stage-1 pin](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):4-17).
+The one exact partition authority defines strict rational Base-Bay membership,
+nearest-owner ties, aperture-before-dry perimeter equality, attachment and
+unattached-vertex precedence, and strict-interior-only Wings
+([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):458-520).
+The frozen source contains the four zero-jitter/no-route boundary additions
+`land_058`--`land_061` and their ordinary shared-relief `G` controls
+([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):849-858;
+[side and G records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):869-918), the
+eight symbolic perimeter attachments and 18 canonical spans
+([attachments and spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):972-1034),
+the ordered symbolic face records and all opposing uses of the four additions
+([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1040-1107;
+[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1120-1165),
+four Base Bays plus four reference-only mouth apertures
+([Bays and apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1515-1584),
+and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1590-1677).
+
+Stage 1 evaluates the sole exact Base-Bay predicate without Q16 projection,
+rounded width, division, or floating membership decision
+([predicate](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):325-357),
+checks the core partition/equality policy explicitly and closes the complete
+source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):906-977;
+[checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3042-3051),
+and rejects copied attachment geometry while checking all eight exact
+attachments, span ownership, and ordered face incidence
+([attachment and span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1323-1417;
+[face-arc validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1420-1529;
+[face incidence validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1530-1602).
+It retains the five dry rational-divergence witnesses and the guarded Base-Bay
+records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2052-2101;
+[witnesses and aperture validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2145-2200).
+
+The independent offline harness implements a separate rational comparator and
+owner oracle, including the decisive synthetic later-lower numeric tie KAT
+([oracle and KAT](../../tools/wp40/t2_source_test.lua):487-681). It derives
+actual runs and widths from referenced Bay/perimeter geometry and compares them
+with KAT expected values: runs
+`711/664/638/719`, widths `720/660/640/740`
+([aperture oracle](../../tools/wp40/t2_source_test.lua):702-730). Its full
+literal-mainland Stage-1 loop reports local Bay results `g=0/o=0/w=0/u=0` and
+whole-footprint `g=0/o=0/r=0` ([local and equality checks](../../tools/wp40/t2_source_test.lua):840-973;
+[whole-footprint oracle](../../tools/wp40/t2_source_test.lua):975-1091), with
+`1,905,915` owner columns, `191,990` segment ties, and maximum checked product
+`816,036,075,626`. The audit also enforces the no-copied-width/no-loophole
+rules, rejects forgeable validation or premature compiler/IPC authority, and
+runs the five Lua-5.1 sweeps plus the offline harness
+([static audit](../../tools/wp40/t2_source_audit.sh):65-107;
+[Lua and harness gates](../../tools/wp40/t2_source_audit.sh):111-158).
+
+This freezes only T2a's Stage-1 source and evidence. T2b must still compile
+the source and run the complete 32-seed Stage-2 geometry/topology/route/anchor
+corpus; no T2 completion or final 32-seed claim follows from this record.
 
 First, Stage 1 concatenated source components as if their literal endpoints
 were already the seed-derived clipped face endpoints, then admitted one

@@ -2,23 +2,54 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"50258d6d9cec7f67de77c61b7e672ed23de623580518297703003ba2ba8bee15"
+	"005a37a211d9e07ce4b7d01b6988977625f618cc079750ef5c046c6d398ff710"
+local EXPECTED_POLICY_CHECKSUMS={
+	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
+	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
+	primitive_formulas="03365f8654bdb4ffac4af9a1123f6df2f5231bcec7bf999b859cc115cf839f8b",
+	boundary_displacement="026e42bffbbad9a515dc20e0a55ac97af59265fc95f85bcf771253cab5724cb6",
+	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
+	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
+	relief_field="a1fd4f4083590093a25b4df518bc15fdf811f327b50e73fe130e1e66bc8ce7ea",
+	landmark_masks="bdd827f7173b110e977e879e98492ea6b5f472d12de830e6758f53d14bcd9a0f",
+	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
+	world_partition="fc747096ec4646dc1a9185c579aabb309f81a769fca3c9e6b687ed4b42017c22",
+	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
+	requester_trace="1c8bb210b53bb50bb6a661dfaaf8e3f771cc1ae2674a0a405783a6ca19dd69ff",
+	geometry_extreme_selector="7d9e796c64ae4b975a029ad2ad3311c4f2a930036a0c8ab6173664111e3637c7",
+	hydrology_mask="8d52ca635a2fccd3ccc337dd11c7f37c268657b66b5eee30d550bd4183e20d27",
+	route_vertical_interfaces="14f849ac48bad0bf888a46d975a73acbb34be1c34d5d51ea2648ad3ee7b1ce09",
+}
 
 local SOURCE_ARRAY_FIELDS={section_order=true,relief_profiles=true,
 	mg_flags=true,mgv7_special_flags=true,flags=true,
 	route_classes=true,water_classes=true,landmark_role_vocabulary=true,
-	template_primitives=true,zones=true,land_edges=true,route_stations=true,
-	routes=true,route_interfaces=true,route_crossing_interfaces=true,
+	template_primitives=true,zones=true,land_edges=true,
+	perimeter_attachments=true,perimeter_spans=true,face_arcs=true,
+	zone_faces=true,cycle=true,source_refs=true,authority_components=true,
+	ordered_outer_components=true,route_stations=true,
+	routes=true,route_interfaces=true,surface_level_controls=true,
+	route_crossing_interfaces=true,
 	boat_edges=true,island_landings=true,island_route_stations=true,
 	island_routes=true,island_route_interfaces=true,perimeters=true,bays=true,
+	bay_mouth_apertures=true,bay_closure_wings=true,junction_edge_ids=true,closure_wing_ids=true,
 	islands=true,channels=true,landmarks=true,anchors=true,templates=true,
-	template_compositions=true,hydrology=true,hydrology_interfaces=true,
+	poi_spurs=true,template_compositions=true,hydrology_profiles=true,
+	hydrology_transition_profiles=true,hydrology=true,hydrology_interfaces=true,
+	hard_protection_recipes=true,hard_protection=true,
+	pending_static_recipes=true,pending_static_reservations=true,
+	claim_exclusion_recipes=true,claim_exclusions=true,
 	housing_masks=true,coastal_housing_cores=true,octaves=true,biomes=true,
 	control=true,polygon=true,centreline=true,roles=true,candidates=true,
-	patrol_route=true,socket_resource_keys=true,operations=true,
+	patrol_offsets=true,socket_reservations=true,candidate_paths=true,
+	containment_exclusion_ids=true,
+	shore_zone_ids=true,owner_spans=true,operations=true,anchor_connection_policy=true,
 	parameters=false,from_ids=true,approach_edge_ids=true,race_regions=true,
 	regional_resource_keys=true,cultural_material_keys=true,
 	signature_wood_keys=true,race_region_assignments=true,
+	footprint_policy_ids=true,relief_ids=true,template_shape_ids=true,
+	route_semantic_ids=true,water_class_ids=true,hydrology_profile_ids=true,
+	protection_recipe_ids=true,exclusion_recipe_ids=true,
 	holy_junction_x=true,dragon_approach_z=true}
 
 local function source_table_shape(value)
@@ -247,6 +278,84 @@ local function between(a, b, c)
 		c.z >= math.min(a.z,b.z) and c.z <= math.max(a.z,b.z)
 end
 
+local SAFE_INTEGER=9007199254740991
+local function safe_nonnegative_product(a,b)
+	if type(a)~="number" or type(b)~="number" or a<0 or b<0 or
+		math.floor(a)~=a or math.floor(b)~=b or
+		(a~=0 and b>SAFE_INTEGER/a) then return nil end
+	return a*b
+end
+
+local function ceil_isqrt(value)
+	if type(value)~="number" or value<0 or math.floor(value)~=value then return nil end
+	local low,high=0,1
+	while high<=value/high do high=high*2 end
+	while low+1<high do
+		local middle=math.floor((low+high)/2)
+		if middle<=value/middle then low=middle else high=middle end
+	end
+	if low*low==value then return low end
+	return low+1
+end
+
+-- Exact integer-column closure-wing predicate.  The early cross bound keeps
+-- both squared products inside the source-proven Lua double integer domain.
+local function point_in_closure_wing(point,wing)
+	local dx,dz=wing.junction.x-wing.head.x,wing.junction.z-wing.head.z
+	local px,pz=point.x-wing.head.x,point.z-wing.head.z
+	local length_squared=dx*dx+dz*dz
+	local projection=px*dx+pz*dz
+	if projection<0 or projection>=length_squared then return false end
+	local area=dx*pz-dz*px
+	local root=ceil_isqrt(length_squared)
+	local bound=wing.head_half_width*root
+	if math.abs(area)>=bound then return false,area end
+	local remaining=length_squared-projection
+	local area_squared=safe_nonnegative_product(math.abs(area),math.abs(area))
+	local left=area_squared and safe_nonnegative_product(area_squared,length_squared)
+	local radius_squared=safe_nonnegative_product(wing.head_half_width,
+		wing.head_half_width)
+	local remaining_squared=safe_nonnegative_product(remaining,remaining)
+	local right=radius_squared and remaining_squared and
+		safe_nonnegative_product(radius_squared,remaining_squared)
+	if not left or not right then return nil,area end
+	return left<right,area
+end
+
+-- Sole exact base-bay predicate. Segment interpolation stays rational: no
+-- projected Q16 point, rounded width, division, or floating comparison enters
+-- the authority decision. Strict equality belongs to dry land.
+local function point_in_base_bay(point,bay)
+	for segment_index=1,#bay.centreline-1 do
+		local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+		local vx,vz=b.x-a.x,b.z-a.z
+		local px,pz=point.x-a.x,point.z-a.z
+		local length_squared=vx*vx+vz*vz
+		local projection=px*vx+pz*vz
+		if projection<=0 then
+			if px*px+pz*pz<a.half_width*a.half_width then return true end
+		elseif projection>=length_squared then
+			local ex,ez=point.x-b.x,point.z-b.z
+			if ex*ex+ez*ez<b.half_width*b.half_width then return true end
+		else
+			local area=vx*pz-vz*px
+			local root=ceil_isqrt(length_squared)
+			local max_radius=math.max(a.half_width,b.half_width)
+			if math.abs(area)<max_radius*root then
+				local width_numerator=a.half_width*(length_squared-projection)+
+					b.half_width*projection
+				local area_squared=safe_nonnegative_product(math.abs(area),math.abs(area))
+				local left=area_squared and
+					safe_nonnegative_product(area_squared,length_squared)
+				local right=safe_nonnegative_product(width_numerator,width_numerator)
+				if not left or not right then return nil end
+				if left<right then return true end
+			end
+		end
+	end
+	return false
+end
+
 -- Exact integer incidence. Interior segment distance compares cross^2 with
 -- width^2 * length^2; endpoint cases compare squared Euclidean distance.
 -- The narrower endpoint width owns the segment, so validation never widens a
@@ -358,14 +467,23 @@ local function polygon_valid(row, label)
 end
 
 local EXPECTED_COUNTS = {
-	{"zones",38},{"land_edges",57},{"route_stations",68},{"routes",57},{"route_interfaces",171},
+	{"zones",38},{"land_edges",61},{"perimeter_attachments",8},
+	{"perimeter_spans",18},{"face_arcs",34},{"zone_faces",38},
+	{"route_stations",68},{"routes",57},{"route_interfaces",171},
+	{"surface_level_controls",162},
 	{"route_crossing_interfaces",7},{"boat_edges",4},{"island_landings",4},
 	{"island_route_stations",10},{"island_routes",8},{"island_route_interfaces",16},{"landmarks",70},
-	{"anchors",100},{"perimeters",3},{"bays",4},{"islands",2},
+	{"anchors",100},{"perimeters",3},{"bays",4},{"bay_mouth_apertures",4},{"islands",2},
+	{"bay_closure_wings",8},
 	{"channels",2},{"relief_profiles",6},{"route_classes",3},
 	{"water_classes",5},{"template_primitives",9},{"templates",17},
-	{"template_compositions",18},{"hydrology",22},
+	{"poi_spurs",74},{"template_compositions",18},
+	{"hydrology_profiles",11},{"hydrology_transition_profiles",6},
+	{"hydrology",25},
 	{"hydrology_interfaces",10},{"housing_masks",10},
+	{"hard_protection_recipes",3},{"hard_protection",36},
+	{"pending_static_recipes",3},{"pending_static_reservations",86},
+	{"claim_exclusion_recipes",6},{"claim_exclusions",540},
 	{"coastal_housing_cores",4},
 }
 
@@ -548,13 +666,20 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		return diag("source_schema", "source", "grug_wp40_authored_source_v1", source.schema)
 	end
 	local expected_sections={"critical_source_manifest","constants",
-		"relief_profiles","route_classes",
+		"geometry_policies","relief_profiles","route_classes",
 		"water_classes","landmark_role_vocabulary","template_primitives",
-		"zones","land_edges","route_stations","routes","route_interfaces",
+		"zones","land_edges","perimeter_attachments","perimeter_spans",
+		"face_arcs","zone_faces",
+		"route_stations","routes","route_interfaces","surface_level_controls",
 		"route_crossing_interfaces","boat_edges","island_landings",
 		"island_route_stations","island_routes","island_route_interfaces",
-		"perimeters","bays","islands","channels","landmarks","anchors","templates",
-		"template_compositions","hydrology","hydrology_interfaces",
+		"perimeters","bays","bay_mouth_apertures","bay_closure_wings",
+		"islands","channels","landmarks","anchors","templates",
+		"poi_spurs","template_compositions","hydrology_profiles",
+		"hydrology_transition_profiles","hydrology","hydrology_interfaces",
+		"hard_protection_recipes","hard_protection",
+		"pending_static_recipes","pending_static_reservations",
+		"claim_exclusion_recipes","claim_exclusions",
 		"housing_masks","coastal_housing_cores","semantics"}
 	if not dense(source.section_order) or #source.section_order~=#expected_sections then return diag("section_order","source","exact ordered sections","changed") end
 	for i=1,#expected_sections do if source.section_order[i]~=expected_sections[i] then return diag("section_order","source["..i.."]",expected_sections[i],source.section_order[i]) end end
@@ -571,18 +696,458 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local zone_ids
 	ok, zone_ids = unique_ordered(source.zones, "zones")
 	if not ok then return nil, zone_ids end
+	local zone_by_id={}
+	for i=1,#source.zones do zone_by_id[source.zones[i].id]=source.zones[i] end
 	for _, family in ipairs({"relief_profiles","route_classes","water_classes",
-			"template_primitives","perimeters","bays","islands","channels",
+			"template_primitives","perimeter_attachments","perimeter_spans",
+			"face_arcs","zone_faces","perimeters","bays","bay_mouth_apertures",
+			"bay_closure_wings","islands","channels",
 			"landmarks","anchors","templates","template_compositions",
+			"poi_spurs","hydrology_profiles","hydrology_transition_profiles",
 			"hydrology","hydrology_interfaces","route_stations","routes","route_interfaces",
+			"surface_level_controls",
 			"route_crossing_interfaces","island_landings","island_route_stations",
-			"island_routes","island_route_interfaces","housing_masks",
+			"island_routes","island_route_interfaces","hard_protection_recipes",
+			"hard_protection","pending_static_recipes","pending_static_reservations",
+			"claim_exclusion_recipes","claim_exclusions","housing_masks",
 			"coastal_housing_cores"}) do
 		ok, failure = unique_ordered(source[family], family)
 		if not ok then return nil, failure end
 	end
-	local relief_ids = {}
-	for i = 1, #source.relief_profiles do relief_ids[source.relief_profiles[i].id] = true end
+	local relief_ids,relief_by_id = {},{}
+	for i = 1, #source.relief_profiles do
+		relief_ids[source.relief_profiles[i].id] = true
+		relief_by_id[source.relief_profiles[i].id]=source.relief_profiles[i]
+	end
+	local policies=source.geometry_policies
+	if type(policies)~="table" or policies.id~="geometry_policies" or
+			policies.schema~="grug_wp40_geometry_source_v1" or
+			type(policies.template_footprint)~="table" or
+			policies.template_footprint.id~="centered_half_open_square_v1" or
+			policies.template_footprint.interval_rule~="centered_half_open_total_width" or
+			type(policies.relief_composition)~="table" or
+			policies.relief_composition.landmark_overlap_rule~=
+				"highest_priority_replace_profile" or
+			policies.relief_composition.landmark_priority_order~=
+				"greater_integer_priority_wins" or
+			policies.relief_composition.landmark_priority_tie~="reject" or
+			not dense(policies.relief_composition.evaluation_order) or
+			#policies.relief_composition.evaluation_order~=3 or
+			policies.relief_composition.evaluation_order[1]~=
+				"raw_owning_zone_profile" or
+			policies.relief_composition.evaluation_order[2]~=
+				"highest_priority_landmark_replacement_and_64_node_blend" or
+			policies.relief_composition.evaluation_order[3]~=
+				"shared_edge_G_and_96_node_blend" or
+			type(policies.surface_level_interpolation)~="table" or
+			policies.surface_level_interpolation.id~="inverse_distance_squared_q16_v1" or
+			policies.surface_level_interpolation.schema_version~=1 or
+			policies.surface_level_interpolation.control_selection~="all_controls_owned_by_zone" or
+			policies.surface_level_interpolation.distance_metric~="squared_euclidean_xz" or
+			policies.surface_level_interpolation.exact_control_rule~=
+				"exact_position_level_or_reject_conflict" or
+			policies.surface_level_interpolation.weight_rule~=
+				"floor_q_squared_div_distance_squared" or
+			policies.surface_level_interpolation.gcd_reduction~=
+				"reduce_weighted_sum_before_multiply" or
+			policies.surface_level_interpolation.max_coordinate_delta~=8192 or
+			policies.surface_level_interpolation.max_control_count~=16 or
+			policies.surface_level_interpolation.overflow_rule~=
+				"reject_outside_safe_double_integer_range" or
+			policies.surface_level_interpolation.weighted_rounding~=
+				"nearest_integer_ties_lower" or
+			policies.surface_level_interpolation.edge_vertex_rule~=
+				"owning_face_then_lower_zone_numeric_tie" or
+			policies.surface_level_interpolation.outside_rule~="reject_outside_owning_face" or
+			policies.surface_level_interpolation.clamp_rule~="published_zone_level_bracket" then
+		return diag("geometry_policy_contract","geometry_policies",
+			"closed footprint/H-overlap/surface interpolation authority","invalid")
+	end
+	local biome_selector=policies.logical_biome_selector
+	ok,failure=closed_fields(biome_selector,
+		"geometry_policies.logical_biome_selector",{
+			"id","schema_version","coordinate_space","seed_input","hash_api",
+			"hash_schema","hash_domain","hash_feature_id","hash_coordinates",
+			"hash_candidate_index","hash_lanes","cell_size","cell_index_rule",
+			"candidate_neighborhood","site_offset_min","site_offset_span",
+			"site_offset_rule","distance_rule","nearest_tie_rule",
+			"palette_roll_rule","palette_mapping_rule","ownership_rule",
+			"arithmetic_rule","share_audit_domain",
+			"share_audit_tolerance_percentage_points"},
+		"logical_biome_selector_fields")
+	if not ok then return nil,failure end
+	ok,failure=closed_fields(biome_selector.hash_lanes,
+		"geometry_policies.logical_biome_selector.hash_lanes",
+		{"site_x","site_z","palette"},"logical_biome_selector_fields")
+	if not ok then return nil,failure end
+	if biome_selector.id~="zone_palette_jittered_voronoi_t1_hash_v1" or
+			biome_selector.schema_version~=1 or
+			biome_selector.coordinate_space~="world_xz_integer_columns" or
+			biome_selector.seed_input~="t1_canonical_unsigned_u64_decimal_text" or
+			biome_selector.hash_api~="deterministic.new_hash" or
+			biome_selector.hash_schema~="grug_wp40_geometry_source_v1" or
+			biome_selector.hash_domain~="logical_biome_patch_v1" or
+			biome_selector.hash_feature_id~="" or
+			biome_selector.hash_coordinates~="signed_cell_x_z" or
+			biome_selector.hash_candidate_index~=0 or
+			biome_selector.hash_lanes.site_x~=0 or
+			biome_selector.hash_lanes.site_z~=1 or
+			biome_selector.hash_lanes.palette~=2 or
+			biome_selector.cell_size~=192 or
+			biome_selector.cell_index_rule~=
+				"mathematical_floor_coordinate_div_cell_size" or
+			biome_selector.candidate_neighborhood~=
+				"own_and_eight_adjacent_cells" or
+			biome_selector.site_offset_min~=32 or
+			biome_selector.site_offset_span~=128 or
+			biome_selector.site_offset_rule~=
+				"min_plus_t1_unbiased_range_lane" or
+			biome_selector.distance_rule~=
+				"squared_euclidean_integer_world_xz" or
+			biome_selector.nearest_tie_rule~=
+				"lowest_cell_x_then_lowest_cell_z" or
+			biome_selector.palette_roll_rule~=
+				"t1_unbiased_range_lane_size_100" or
+			biome_selector.palette_mapping_rule~=
+				"first_authored_cumulative_share_strictly_greater_than_roll" or
+			biome_selector.ownership_rule~=
+				"resolve_zone_first_and_use_only_owning_zone_palette" or
+			biome_selector.arithmetic_rule~=
+				"t1_safe_integer_and_floor_division" or
+			biome_selector.share_audit_domain~=
+				"ordinary_land_columns_after_fixed_roads_and_structures" or
+			biome_selector.share_audit_tolerance_percentage_points~=5 then
+		return diag("logical_biome_selector_contract",
+			"geometry_policies.logical_biome_selector",
+			"closed coherent full-seed zone-palette selector","invalid")
+	end
+	local generic_policy_ids={
+		primitive_evaluator="template_primitive_q16_composition_v1",
+		primitive_formulas="template_primitive_formulas_v1",
+		boundary_displacement="shared_polyline_normal_displacement_t1_hash_v1",
+		route_raster="symmetric_bresenham_8_connected_stations_v1",
+		route_profile_solver="route_profile_dynamic_program_v1",
+		relief_field="shared_edge_gate_relief_q16_v1",
+		landmark_masks="landmark_masks_and_replacement_blend_v1",
+		coastal_housing_core="displaced_coast_interval_inward_core_v1",
+		world_partition="face_partition_with_bay_capsule_water_v1",
+		geometry_fixture_selector="geometry_microcorpus_selector_v1",
+		requester_trace="requester_trace_manifest_v1",
+		geometry_extreme_selector="geometry_extreme_seed_selector_v1",
+		hydrology_mask="analytic_reach_round_union_sealed_v1",
+		route_vertical_interfaces="route_water_vertical_interfaces_v1",
+	}
+	for _,key in ipairs({"primitive_evaluator","primitive_formulas",
+			"boundary_displacement","route_raster","route_profile_solver",
+			"relief_field","landmark_masks","coastal_housing_core",
+			"world_partition","geometry_fixture_selector","requester_trace",
+			"geometry_extreme_selector",
+			"hydrology_mask","route_vertical_interfaces"}) do
+		if type(policies[key])~="table" or policies[key].id~=generic_policy_ids[key] or
+				policies[key].schema_version~=1 then
+			return diag("generic_geometry_policy_contract","geometry_policies."..key,
+				generic_policy_ids[key],"invalid")
+		end
+	end
+	local vertical=policies.route_vertical_interfaces
+	if type(vertical.bridge)~="table" or
+			vertical.bridge.id~="bridge_clearance_v1" or
+			vertical.bridge.minimum_clearance_nodes~=3 or
+			type(vertical.ford)~="table" or vertical.ford.id~="ford_bed_v1" or
+			type(vertical.causeway)~="table" or
+			vertical.causeway.id~="causeway_culvert_v1" or
+			type(vertical.tunnel)~="table" or
+			vertical.tunnel.id~="tunnel_lumen_v1" or
+			vertical.tunnel.clear_nodes_above_road~=5 or
+			vertical.tunnel.lining_thickness~=2 or
+			vertical.tunnel.portal_length~=16 then
+		return diag("route_vertical_interface_policy","geometry_policies.route_vertical_interfaces",
+			"closed bridge/ford/causeway/tunnel vertical rules","invalid")
+	end
+	if policies.relief_field.boundary_blend_width~=
+			policies.relief_composition.boundary_blend_width or
+			policies.relief_field.gate_lane~=2 or
+			policies.relief_field.gate_identity_rule~=
+				"one_G_per_shared_edge_station_consumed_by_both_incident_faces" or
+			policies.relief_field.nearest_edge_distance~=
+				"minimum_exact_squared_q16_distance_to_closed_displaced_edge_segment" or
+			policies.relief_field.nearest_edge_projection~=
+				"clamped_dot_over_segment_length_squared_q16_half_away_from_zero" then
+		return diag("relief_shared_gate_policy","geometry_policies.relief_field",
+			"one common 96-node G field for both incident faces","invalid")
+	end
+	if policies.landmark_masks.blend_width~=
+			policies.relief_composition.secondary_blend_width or
+			policies.landmark_masks.priority_tie_rule~="reject" or
+			policies.landmark_masks.replacement_rule~=
+				"highest_priority_replace_profile_height" or
+			policies.landmark_masks.distance_unit~=
+				"all_shape_signed_distances_are_world_node_Q16" or
+			policies.landmark_masks.ellipse_signed_distance~=
+				"u_q16=qdiv(dx_Q,radius_x_Q);v_q16=qdiv(dz_Q,radius_z_Q);rho_q16=isqrt_Q(qmul(u,u)+qmul(v,v));sd_node_q16=qmul(rho_q16-Q,min_radius_Q)" or
+			policies.landmark_masks.blend_rule~=
+				"qlerp_previous_H_to_replacement_H_by_Q_minus_smootherstep(max_zero_sd_node_q16_div_64Q)" or
+			policies.landmark_masks.blend_endpoints~=
+				"replacement_at_inside_and_boundary_previous_at_64_nodes_outside" then
+		return diag("landmark_mask_policy","geometry_policies.landmark_masks",
+			"closed shapes and 64-node priority replacement blend","invalid")
+	end
+	local coastal_policy=policies.coastal_housing_core
+	if coastal_policy.frontage_minimum~=600 or coastal_policy.inland_depth~=300 or
+			coastal_policy.relief_limit~=12 or
+			coastal_policy.frontage_distance~=
+				"sum_integer_station_euclidean_q16_in_interval" or
+			coastal_policy.inward_side_rule~="authored_face_arc_zone_inside_side" or
+			coastal_policy.endpoint_cap_rule~=
+				"closed_half_discs_radius_inland_depth_at_both_interval_endpoints" then
+		return diag("coastal_core_policy","geometry_policies.coastal_housing_core",
+			"exact displaced coast interval/inward 600x300 core policy","invalid")
+	end
+	local partition=policies.world_partition
+	if not dense(partition.classification_precedence) or
+			#partition.classification_precedence~=6 or
+			partition.classification_precedence[1]~="strict_exterior" or
+			partition.classification_precedence[2]~="base_bay_mouth_aperture_equality_owner" or
+			partition.classification_precedence[3]~="ordinary_perimeter_equality_owner" or
+			partition.classification_precedence[4]~="strict_interior_base_bay_owner" or
+			partition.classification_precedence[5]~="strict_interior_closure_wing_owner" or
+			partition.classification_precedence[6]~="strict_interior_dry_zone_face_owner" or
+			partition.bay_mask_authority~=
+				"unchanged_four_sample_round_capsule_union_then_two_literal_head_closure_wings" or
+			partition.bay_base_predicate_id~=
+				"strict_rational_variable_width_capsule_union_v1" or
+			partition.bay_base_terms~=
+				"v_equals_B_minus_A_L_equals_dot_v_v_N_equals_dot_P_minus_A_v_C_equals_cross_v_P_minus_A_width_num_equals_rA_times_L_minus_N_plus_rB_times_N" or
+			partition.bay_base_segment_membership~=
+				"zero_strictly_less_N_and_N_strictly_less_L_and_C_squared_times_L_strictly_less_than_width_num_squared" or
+			partition.bay_base_cap_membership~=
+				"N_less_equal_zero_uses_strict_squared_distance_to_A_less_than_rA_squared_N_greater_equal_L_uses_B_and_rB" or
+			partition.bay_base_early_reject~=
+				"for_segment_body_absolute_C_greater_equal_max_r_times_ceil_isqrt_L_is_outside_before_products" or
+			partition.bay_base_product_guard~=
+				"each_segment_max_r_squared_times_L_squared_and_guarded_cross_bound_squared_times_L_at_most_2_pow_53_minus_1" or
+			partition.bay_base_arithmetic~=
+				"exact_safe_integer_products_only_no_q16_projection_width_rounding_or_float_division" or
+			partition.bay_mask_membership~=
+				"strict_rational_variable_width_capsule_union_v1" or
+			partition.bay_boundary_tie~=
+				"analytic_bank_and_cap_equality_belongs_to_adjacent_dry_face" or
+			partition.bay_owner_projection_segment~=
+				"minimum_exact_rational_segment_distance_compare_cross_squared_over_L_with_caps" or
+			partition.bay_owner_distance_compare~=
+				"reduce_cross_squared_times_other_L_by_gcd_before_safe_product_compare_caps_use_squared_integer_distance" or
+			partition.bay_owner_side_rule~=
+				"signed_integer_cross_C_of_selected_authored_segment_and_point" or
+			partition.bay_owner_policy_id~=
+				"exact_rational_minimum_segment_set_owner_v1" or
+			partition.bay_owner_rule~=
+				"literal_owner_span_for_each_exact_nearest_segment_then_lower_numeric_candidate_zone" or
+			partition.bay_owner_segment_tie~=
+				"exact_equal_rational_distance_collect_each_segment_candidate_owner_then_lower_numeric_zone_id" or
+			partition.outer_footprint_authority~=
+				"literal_perimeter_polygon_after_sole_boundary_displacement" or
+			partition.perimeter_equality_rule~=
+				"inside_footprint_and_dry_except_matching_base_bay_mouth_aperture" or
+			partition.perimeter_equality_span_owner~="incident_perimeter_span_zone_id" or
+			partition.perimeter_equality_attachment_precedence~=
+				"shared_edge_half_open_lower_numeric_incident_zone_before_span_owner" or
+			partition.perimeter_equality_vertex_tie~=
+				"lower_numeric_zone_id_among_two_incident_unattached_spans" or
+			partition.bay_mouth_aperture_policy_id~=
+				"maximal_contiguous_nonwrapping_half_open_exact_base_bay_perimeter_stations_v1" or
+			partition.bay_mouth_aperture_station_order~=
+				"canonical_deduplicated_final_perimeter_integer_raster_order" or
+			partition.bay_mouth_aperture_predicate~=
+				"strict_rational_variable_width_capsule_union_v1_for_referenced_bay" or
+			partition.wing_footprint_clip~=
+				"strict_footprint_interior_only_never_mouth_aperture_equality" or
+			partition.outer_footprint_rule~=
+				"independent_final_literal_perimeter_not_face_union" or
+			partition.closure_wing_policy_id~=
+				"strict_tapered_bay_closure_wing_v1" or
+			partition.closure_wing_membership~=
+				"zero_less_equal_N_and_N_strictly_less_than_L_and_cross_squared_times_L_strictly_less_than_r_squared_times_M_squared" or
+			partition.closure_wing_early_reject~=
+				"absolute_cross_greater_equal_r_times_ceil_isqrt_L_is_outside_before_any_square_product" or
+			partition.closure_wing_boundary_tie~=
+				"side_equality_and_zero_width_terminal_junction_are_dry" or
+			partition.ordered_component_oracle~=
+				"stage2_composed_union_outer_boundary_equals_perimeter_ordered_outer_components" then
+		return diag("world_partition_policy","geometry_policies.world_partition",
+			"base water, literal wings, dry face, exterior with exact strict ties","invalid")
+	end
+	local fixture=policies.geometry_fixture_selector
+	if fixture.coordinate_space~="signed_mapchunk_coordinates" or
+			fixture.mapchunk_width~=80 or fixture.candidate_min~=-40 or
+			fixture.candidate_max~=39 or not dense(fixture.classes) or
+			#fixture.classes~=9 or not dense(fixture.final_tie_order) or
+			table.concat(fixture.final_tie_order,"\0")~=
+				"cy_least\0cz_least\0cx_least\0feature_numeric_id_least" then
+		return diag("geometry_fixture_selector_policy",
+			"geometry_policies.geometry_fixture_selector",
+			"closed class-1..9 finite deterministic selector","invalid")
+	end
+	for class_index=1,9 do local class=fixture.classes[class_index]
+		if class.id~=class_index or type(class.predicate_id)~="string" or
+				class.predicate_id=="" or not dense(class.feature_family_ids) or
+				not dense(class.score) then
+			return diag("geometry_fixture_selector_policy",
+				"geometry_policies.geometry_fixture_selector.classes["..class_index.."]",
+				"ordered predicate/families/score","invalid")
+		end
+	end
+	local trace=policies.requester_trace
+	if trace.requester_count~=100 or trace.requester_index_min~=0 or
+			trace.requester_index_max~=99 or not dense(trace.road_profile_family_ids) or
+			table.concat(trace.road_profile_family_ids,"\0")~=
+				"routes\0island_routes\0poi_spurs" or
+			trace.active_tick_first~=0 or trace.active_tick_last~=3333 or
+			trace.active_tick_count~=3334 or trace.recovery_tick_count~=2000 or
+			type(trace.recovery_dtime)~="table" or
+			trace.recovery_dtime.numerator~=9 or trace.recovery_dtime.denominator~=100 or
+			trace.recovery_duration_seconds~=180 or
+			trace.flight_legal_predicate_id~=
+				"not_holy_not_warning_not_hard_no_flight_and_inside_compiled_land" then
+		return diag("requester_trace_policy","geometry_policies.requester_trace",
+			"exact final manifest/tick/recovery contract","invalid")
+	end
+	local extreme=policies.geometry_extreme_selector
+	if extreme.candidate_count~=4096 or extreme.score_all_candidates_before_stage2~=true or
+			extreme.scalar_stage~=
+				"final_signed_q16_after_noise_damping_and_local_magnitude_clip_before_x_z_component_rounding" or
+			extreme.normalization_denominator~=
+				"record_max_displacement_times_Q_not_local_damped_amplitude" or
+				not dense(extreme.slots) or #extreme.slots~=4 or
+			extreme.score_tie~="numerically_smaller_unsigned_decimal_seed" or
+			extreme.selected_stage2_rule~=
+				"compile_and_validate_four_selected_seeds_invalid_selected_seed_fails_without_fallback" then
+		return diag("geometry_extreme_selector_policy",
+			"geometry_policies.geometry_extreme_selector",
+			"closed 4096-candidate exact rational extreme selector","invalid")
+	end
+	local axis_frame=policies.primitive_evaluator.axis_frame
+	if policies.primitive_evaluator.initial_accumulator_q16~=0 or
+			policies.primitive_evaluator.initial_accumulator_rule~=
+				"zero_height_offset_at_every_fitting_envelope_column" or
+			policies.primitive_evaluator.default_weight_rule~=
+				"Q_inside_support_zero_outside_unless_formula_weight_rule_present" or
+			policies.primitive_evaluator.feature_blend_source~=
+				"composition_fitting_footprint_signed_chebyshev_q16" or
+			policies.primitive_evaluator.feature_blend_width~=
+				"template_blend_width_minus_fitting_width_div_two_per_side" or
+			policies.primitive_evaluator.feature_blend_endpoints~=
+				"composition_offset_at_fitting_boundary_zero_offset_at_blend_envelope_boundary" or
+			type(axis_frame)~="table" or
+			axis_frame.id~="canonical_oriented_tangent_frame_q16_v1" or
+			axis_frame.zero_segment_rule~="skip_to_nearest_distinct_station" or
+			axis_frame.opposite_turn_tie~="use_outgoing_tangent" then
+		return diag("primitive_axis_frame_policy","geometry_policies.primitive_evaluator.axis_frame",
+			"closed route/trail/patrol tangent frame","invalid")
+	end
+	local rim_formula=policies.primitive_formulas.formulas[6]
+	if type(rim_formula)~="table" or rim_formula.id~="rim" or
+			rim_formula.formula_id~="primitive_continuous_rim_q16_v1" or
+			rim_formula.continuity_rule~=
+				"zero_at_inner_and_outer_support_boundaries_height_at_peak" then
+		return diag("primitive_rim_continuity","geometry_policies.primitive_formulas.rim",
+			"continuous inner rise/peak/outer fall to zero","invalid")
+	end
+	local terrace_formula=policies.primitive_formulas.formulas[3]
+	if type(terrace_formula)~="table" or terrace_formula.id~="terrace" or
+			terrace_formula.formula_id~="primitive_terrace_q16_v2" or
+			terrace_formula.support~="composition_fitting_footprint" or
+			terrace_formula.continuity_rule~=
+				"capped_outer_terrace_reaches_fitting_boundary_then_generic_feature_blend_returns_offset_to_zero" then
+		return diag("primitive_terrace_continuity",
+			"geometry_policies.primitive_formulas.terrace",
+			"non-flat capped terrace plus generic continuous envelope blend","invalid")
+	end
+	local raster=policies.route_raster
+	if raster.canonical_endpoint_order~="lower_x_then_lower_z" or
+			raster.canonical_execution_rule~=
+				"raster_once_from_lexicographically_lower_endpoint_to_higher_endpoint" or
+			raster.authored_reversal_rule~=
+				"reverse_finished_canonical_point_sequence_when_authored_direction_is_opposite" then
+		return diag("route_raster_reversal_policy","geometry_policies.route_raster",
+			"lex-canonical execution and whole-sequence authored reversal","invalid")
+	end
+	local route_solver=policies.route_profile_solver
+	if route_solver.world_column_membership~=
+			"signed_lateral_q16_greater_equal_minus_floor_width_div_two_Q_and_strictly_less_than_ceil_width_div_two_Q" or
+			route_solver.final_target_rule~=
+				"qround_qlerp_H_to_route_y_Q_by_cross_section_weight_half_away_from_zero" or
+			route_solver.earthwork_rule~=
+				"absolute_final_rounded_cross_section_target_minus_H_at_owned_lateral_column" or
+			route_solver.interface_phase_rule~=
+				"for_interface_station_i_flat_run_12_requires_delta_j_zero_for_j=max_2_i-11_through_min_last_i_plus_11" then
+		return diag("route_profile_solver_policy",
+			"geometry_policies.route_profile_solver",
+			"half-open columns, final-target earthwork and exact phase","invalid")
+	end
+	local hydro_mask=policies.hydrology_mask
+	local boundary_policy=policies.boundary_displacement
+	if boundary_policy.shared_boundary_clip_policy_id~=
+			"canonical_integer_land_run_prefix_suffix_v1" or
+			boundary_policy.shared_boundary_clip_raster~=
+				"route_raster_policy_integer_sequence" or
+			boundary_policy.shared_boundary_clip_classifier~=
+				"final_literal_perimeter_land_mask_after_displacement" or
+			boundary_policy.shared_boundary_clip_retained_rule~=
+				"exactly_one_consecutive_retained_station_interval" or
+			boundary_policy.shared_boundary_clip_endpoint_rule~=
+				"first_and_last_retained_integer_stations" or
+			boundary_policy.shared_boundary_attachment_rule~=
+				"clipped_endpoint_to_nearest_chebyshev_perimeter_station_lower_canonical_index_tie_without_inserted_station" or
+			boundary_policy.shared_boundary_clip_forbidden~=
+				"inserted_float_or_rational_intersection_and_private_connector_geometry" then
+		return diag("boundary_clip_policy","geometry_policies.boundary_displacement",
+			"sole canonical integer prefix/suffix clip without inserted intersection","invalid")
+	end
+	if hydro_mask.rapid_run_interval~=
+			"floor_run_div_two_stations_upstream_plus_interface_plus_remaining_stations_downstream" or
+			hydro_mask.interface_axis_rule~=
+				"last_distinct_upper_reach_station_to_first_distinct_lower_reach_station" or
+			hydro_mask.transition_volume_rule~=
+				"union_profile_seals_then_remove_only_declared_open_faces" then
+		return diag("hydrology_mask_policy","geometry_policies.hydrology_mask",
+			"closed rapid placement/axis/seal policy","invalid")
+	end
+	if type(canonical)~="table" or type(raw_sha256)~="function" then
+		return diag("exact_source_seam","source",
+			"T1 canonical module and raw SHA injection","missing")
+	end
+	for _,key in ipairs({"logical_biome_selector","primitive_evaluator",
+			"primitive_formulas","boundary_displacement","route_raster",
+			"route_profile_solver","relief_field","landmark_masks",
+			"coastal_housing_core","world_partition","geometry_fixture_selector",
+			"requester_trace","geometry_extreme_selector",
+			"hydrology_mask","route_vertical_interfaces"}) do
+		local projected_ok,projected=pcall(canonicalize_source_node,
+			policies[key],key,canonical)
+		if not projected_ok then return diag("generic_geometry_policy_contract",
+			"geometry_policies."..key,"canonical policy",projected) end
+		local checksum_ok,checksum=pcall(function()
+			return canonical.hex(canonical.checksum(projected,raw_sha256))
+		end)
+		local invariant=key=="logical_biome_selector" and
+			"logical_biome_selector_contract" or "generic_geometry_policy_contract"
+		if not checksum_ok or checksum~=EXPECTED_POLICY_CHECKSUMS[key] then
+			return diag(invariant,"geometry_policies."..key,
+				EXPECTED_POLICY_CHECKSUMS[key],checksum)
+		end
+	end
+	local connection_policy={}
+	if not dense(policies.anchor_connection_policy) or
+			#policies.anchor_connection_policy~=11 then
+		return diag("anchor_connection_policy","geometry_policies",11,"changed")
+	end
+	for i=1,#policies.anchor_connection_policy do local row=policies.anchor_connection_policy[i]
+		if connection_policy[row.id] or (row.class~="primary" and
+				row.class~="secondary" and row.class~="trail") then
+			return diag("anchor_connection_policy",row.id,"unique closed route class","invalid")
+		end
+		connection_policy[row.id]=row
+	end
 	local race_allowed = {dwarf=true,human=true,elf=true,undead=true,orc=true,troll=true}
 	local territory_allowed = {accord_home=true,throng_home=true,contested_land=true,holy_grounds=true}
 	local biome_allowed={grug_meadows=true,grug_deep_forest=true,
@@ -612,6 +1177,16 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	ok, edge_ids = unique_ordered(source.land_edges, "land_edges")
 	if not ok then return nil, edge_ids end
 	local pairs_seen = {}
+	local edge_by_id = {}
+	local boundary_only_expected={
+		land_058={"elandor_copperfell_foothills","elandor_frostbarrow_shelf",-2600,-1900,-2200,-1900},
+		land_059={"elandor_starbough_vale","elandor_moonfall_wood",2200,-1900,2600,-1900},
+		land_060={"kragmar_mournfen","kragmar_ossuary_reach",-2600,1900,-2200,1900},
+		land_061={"kragmar_raincall_basin","kragmar_totemwater_reach",2200,1900,2600,1900},
+	}
+	local function junction_id(point)
+		return "junction:"..point.x..":"..point.z
+	end
 	for i = 1, #source.land_edges do
 		local row = source.land_edges[i]
 		if not zone_ids[row.zone_a] or not zone_ids[row.zone_b] then return diag("land_edge_zone",row.id,"known zones",row.zone_a..":"..row.zone_b) end
@@ -621,11 +1196,485 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		local key = a .. "\0" .. b
 		if pairs_seen[key] then return diag("land_edge_duplicate",row.id,false,true) end
 		pairs_seen[key] = true
-		if row.route_class~=nil then return diag("boundary_route_separation",row.id,"no route-owned fields","route_class") end
+		local profile_a=relief_by_id[zone_by_id[row.zone_a].primary_relief_id]
+		local profile_b=relief_by_id[zone_by_id[row.zone_b].primary_relief_id]
+		local gate_min=math.max(profile_a.min_above_water,profile_b.min_above_water)
+		local gate_max=math.min(profile_a.max_above_water,profile_b.max_above_water)
+		if gate_min>gate_max then
+			local lower_max=math.min(profile_a.max_above_water,profile_b.max_above_water)
+			local upper_min=math.max(profile_a.min_above_water,profile_b.min_above_water)
+			gate_min=math.floor((lower_max+upper_min)/2)
+			gate_max=gate_min
+		end
+		if row.gate_selector_id~="shared_edge_gate_relief_q16_v1" or
+				row.gate_min_above_water~=gate_min or
+				row.gate_max_above_water~=gate_max then
+			return diag("relief_edge_gate_authority",row.id,
+				gate_min..".."..gate_max,
+				tostring(row.gate_min_above_water)..".."..
+					tostring(row.gate_max_above_water))
+		end
 		if not dense(row.control) or #row.control < 2 then return diag("edge_control",row.id,"two or more points","invalid") end
 		for j=1,#row.control do
 			if not point_valid(row.control[j],false) then return diag("edge_control_point",row.id,"integer x/z point","invalid") end
 		end
+		if not point_valid(row.left_probe,false) or
+				not point_valid(row.right_probe,false) or
+				type(row.probe_segment_index)~="number" or
+				row.probe_segment_index<1 or
+				row.probe_segment_index>#row.control-1 then
+			return diag("face_edge_probe_contract",row.id,
+				"two explicit probes on one authored segment","invalid")
+		end
+		if row.left_zone==row.right_zone or
+				(row.left_zone~=row.zone_a and row.left_zone~=row.zone_b) or
+				(row.right_zone~=row.zone_a and row.right_zone~=row.zone_b) then
+			return diag("face_edge_probe_contract",row.id,
+				"two distinct incident declared sides","invalid")
+		end
+		local numeric_a,numeric_b
+		for zone_index=1,#source.zones do local zone_row=source.zones[zone_index]
+			if zone_row.id==row.zone_a then numeric_a=zone_row.numeric_id end
+			if zone_row.id==row.zone_b then numeric_b=zone_row.numeric_id end
+		end
+		local tie_zone=numeric_a<numeric_b and row.zone_a or row.zone_b
+		if row.tie_rule~="lower_zone_numeric_id" or row.tie_zone_id~=tie_zone then
+			return diag("face_edge_tie",row.id,tie_zone,row.tie_zone_id)
+		end
+		if row.from_junction_id~=junction_id(row.control[1]) or
+				row.to_junction_id~=junction_id(row.control[#row.control]) then
+			return diag("face_edge_junctions",row.id,
+				"coordinate-bound stable endpoint junctions","changed")
+		end
+		if row.route_class~=nil then return diag("boundary_route_separation",row.id,"no route-owned fields","route_class") end
+		local boundary_expected=boundary_only_expected[row.id]
+		if i<=57 then
+			if row.boundary_only~=nil then return diag("old_land_edge_fixture",row.id,
+				"original 57 record has no boundary-only field","changed") end
+		elseif not boundary_expected or row.boundary_only~=true or
+				row.zone_a~=boundary_expected[1] or row.zone_b~=boundary_expected[2] or
+				row.max_displacement~=0 or row.noise_domain~="boundary_"..row.id or
+				#row.control~=2 or row.control[1].x~=boundary_expected[3] or
+				row.control[1].z~=boundary_expected[4] or
+				row.control[2].x~=boundary_expected[5] or row.control[2].z~=boundary_expected[6] then
+			return diag("boundary_only_land_edge",row.id,
+				"exact reviewed pair/endpoints/zero jitter/no route","changed")
+		end
+		if not dense(row.control) or #row.control < 2 then return diag("edge_control",row.id,"two or more points","invalid") end
+		for j=1,#row.control do
+			if not point_valid(row.control[j],false) then return diag("edge_control_point",row.id,"integer x/z point","invalid") end
+		end
+		for a=1,#row.control-1 do for b=a+2,#row.control-1 do
+			if intersects(row.control[a],row.control[a+1],row.control[b],row.control[b+1]) then
+				return diag("face_edge_planarity",row.id,"simple control polyline",a..":"..b)
+			end
+		end end
+		edge_by_id[row.id]=row
+	end
+	for first_index=1,#source.land_edges do
+		local first=source.land_edges[first_index]
+		for second_index=first_index+1,#source.land_edges do
+			local second=source.land_edges[second_index]
+			for a=1,#first.control-1 do for b=1,#second.control-1 do
+				if intersects(first.control[a],first.control[a+1],
+						second.control[b],second.control[b+1]) then
+					local p,q=first.control[a],first.control[a+1]
+					local r,s=second.control[b],second.control[b+1]
+					local shared_endpoint=(p.x==r.x and p.z==r.z) or
+						(p.x==s.x and p.z==s.z) or (q.x==r.x and q.z==r.z) or
+						(q.x==s.x and q.z==s.z)
+					if not shared_endpoint then return diag("land_edge_planarity",
+						first.id..":"..second.id,"no crossing away from shared junction",
+						a..":"..b) end
+				end
+			end end
+		end
+	end
+	-- Close literal wing endpoints before those records can relax the global
+	-- face-intersection oracle.  This ordering makes malformed water authority
+	-- fail deterministically rather than hiding a dry crossing.
+	local early_wing_endpoints={
+		{"bay_wing:elandor_west:left",-980,-2000,-1400,-1900},
+		{"bay_wing:elandor_west:right",-980,-2000,-400,-1900},
+		{"bay_wing:elandor_east:left",1020,-1990,400,-1900},
+		{"bay_wing:elandor_east:right",1020,-1990,1400,-1900},
+		{"bay_wing:kragmar_west:left",-1060,2010,-1400,1900},
+		{"bay_wing:kragmar_west:right",-1060,2010,-400,1900},
+		{"bay_wing:kragmar_east:left",900,1980,400,1900},
+		{"bay_wing:kragmar_east:right",900,1980,1400,1900},
+	}
+	for wing_index=1,#early_wing_endpoints do local wing=source.bay_closure_wings[wing_index]
+		local expected=early_wing_endpoints[wing_index]
+		if wing.id~=expected[1] or not point_valid(wing.head,false) or
+				not point_valid(wing.junction,false) or wing.head.x~=expected[2] or
+				wing.head.z~=expected[3] or wing.junction.x~=expected[4] or
+				wing.junction.z~=expected[5] then
+			return diag("bay_closure_wing_literal",wing.id,
+				"reviewed fixed head and triple-junction endpoints","invalid")
+		end
+	end
+	local geometry_ref_ids,geometry_ref_by_id={},{ }
+	for _,collection in ipairs({source.perimeters,source.bays,source.islands}) do
+		for i=1,#collection do
+			geometry_ref_ids[collection[i].id]=true
+			geometry_ref_by_id[collection[i].id]=collection[i]
+		end
+	end
+	local attachment_expected={
+		{"perimeter_attachment:elandor:land_031","land_031","from","perimeter_elandor_mainland",3,"suffix","perimeter_span:elandor:stormvault","perimeter_span:elandor:frostbarrow"},
+		{"perimeter_attachment:elandor:land_001","land_001","from","perimeter_elandor_mainland",7,"suffix","perimeter_span:elandor:copperfell","perimeter_span:elandor:hearthpine"},
+		{"perimeter_attachment:elandor:land_007","land_007","to","perimeter_elandor_mainland",20,"prefix","perimeter_span:elandor:silverleaf","perimeter_span:elandor:starbough"},
+		{"perimeter_attachment:elandor:land_034","land_034","to","perimeter_elandor_mainland",24,"prefix","perimeter_span:elandor:moonfall","perimeter_span:elandor:glassroot"},
+		{"perimeter_attachment:kragmar:land_037","land_037","from","perimeter_kragmar_mainland",3,"suffix","perimeter_span:kragmar:blackwind","perimeter_span:kragmar:ossuary"},
+		{"perimeter_attachment:kragmar:land_010","land_010","from","perimeter_kragmar_mainland",7,"suffix","perimeter_span:kragmar:mournfen","perimeter_span:kragmar:stillgrave"},
+		{"perimeter_attachment:kragmar:land_016","land_016","to","perimeter_kragmar_mainland",20,"prefix","perimeter_span:kragmar:kapok","perimeter_span:kragmar:raincall"},
+		{"perimeter_attachment:kragmar:land_040","land_040","to","perimeter_kragmar_mainland",24,"prefix","perimeter_span:kragmar:totemwater","perimeter_span:kragmar:thunderroot"},
+	}
+	local attachment_by_id,attachment_by_edge={},{}
+	for attachment_index=1,#source.perimeter_attachments do
+		local row=source.perimeter_attachments[attachment_index]
+		local expected=attachment_expected[attachment_index]
+		if row.id~=expected[1] or row.edge_id~=expected[2] or
+				row.edge_endpoint~=expected[3] or row.perimeter_id~=expected[4] or
+				row.perimeter_segment_index~=expected[5] or row.retained_run~=expected[6] or
+				row.canonical_before_span_id~=expected[7] or
+				row.canonical_after_span_id~=expected[8] or
+				row.clip_policy_id~="canonical_integer_land_run_prefix_suffix_v1" or
+				row.geometry_rule~="symbolic_edge_to_perimeter_attachment_no_connector_polyline" or
+				row.compiled_endpoint_rule~=
+					"first_or_last_retained_integer_boundary_station_stage2_only" or
+				row.control~=nil or row.position~=nil then
+			return diag("perimeter_attachment_contract",row.id,
+				"exact symbolic reviewed edge/perimeter attachment","changed")
+		end
+		local edge,perimeter=edge_by_id[row.edge_id],geometry_ref_by_id[row.perimeter_id]
+		if not edge or not perimeter or perimeter.kind~="planned_mainland_footprint" then
+			return diag("perimeter_attachment_ref",row.id,"known edge and mainland perimeter","invalid")
+		end
+		local crossing_count=0
+		for edge_segment=1,#edge.control-1 do
+			for perimeter_segment=1,#perimeter.polygon-1 do
+				if intersects(edge.control[edge_segment],edge.control[edge_segment+1],
+						perimeter.polygon[perimeter_segment],perimeter.polygon[perimeter_segment+1]) then
+					crossing_count=crossing_count+1
+					if perimeter_segment~=row.perimeter_segment_index then
+						return diag("perimeter_attachment_incidence",row.id,
+							row.perimeter_segment_index,perimeter_segment)
+					end
+				end
+			end
+		end
+		if crossing_count~=1 then return diag("perimeter_attachment_incidence",row.id,1,crossing_count) end
+		attachment_by_id[row.id]=row attachment_by_edge[row.edge_id]=row
+	end
+	local function boundary_key(boundary)
+		if type(boundary)~="table" then return nil end
+		if boundary.kind=="perimeter_attachment" and attachment_by_id[boundary.attachment_id] then
+			return boundary.attachment_id
+		end
+		if boundary.kind=="perimeter_vertex" then
+			local perimeter=geometry_ref_by_id[boundary.perimeter_id]
+			local point=perimeter and perimeter.polygon[boundary.index]
+			if point then return junction_id(point) end
+		end
+		return nil
+	end
+	local expected_spans={
+		{"perimeter_span:elandor:stormvault","elandor_stormvault_heights","perimeter_elandor_mainland",1,3,"forward","junction:-2500:-250","perimeter_attachment:elandor:land_031"},
+		{"perimeter_span:elandor:frostbarrow","elandor_frostbarrow_shelf","perimeter_elandor_mainland",3,4,"forward","perimeter_attachment:elandor:land_031","junction:-2600:-1900"},
+		{"perimeter_span:elandor:copperfell","elandor_copperfell_foothills","perimeter_elandor_mainland",5,7,"forward","junction:-2600:-1900","perimeter_attachment:elandor:land_001"},
+		{"perimeter_span:elandor:hearthpine","elandor_hearthpine_vale","perimeter_elandor_mainland",7,11,"forward","perimeter_attachment:elandor:land_001","junction:-980:-2940"},
+		{"perimeter_span:elandor:dawnmere","elandor_dawnmere_fields","perimeter_elandor_mainland",12,15,"forward","junction:-980:-2940","junction:900:-2920"},
+		{"perimeter_span:elandor:silverleaf","elandor_silverleaf_glades","perimeter_elandor_mainland",16,20,"forward","junction:900:-2920","perimeter_attachment:elandor:land_007"},
+		{"perimeter_span:elandor:starbough","elandor_starbough_vale","perimeter_elandor_mainland",20,22,"forward","perimeter_attachment:elandor:land_007","junction:2600:-1900"},
+		{"perimeter_span:elandor:moonfall","elandor_moonfall_wood","perimeter_elandor_mainland",23,24,"forward","junction:2600:-1900","perimeter_attachment:elandor:land_034"},
+		{"perimeter_span:elandor:glassroot","elandor_glassroot_wilds","perimeter_elandor_mainland",24,26,"forward","perimeter_attachment:elandor:land_034","junction:2500:-250"},
+		{"perimeter_span:kragmar:blackwind","kragmar_blackwind_rise","perimeter_kragmar_mainland",1,3,"reverse","junction:-2500:250","perimeter_attachment:kragmar:land_037"},
+		{"perimeter_span:kragmar:ossuary","kragmar_ossuary_reach","perimeter_kragmar_mainland",3,4,"reverse","perimeter_attachment:kragmar:land_037","junction:-2600:1900"},
+		{"perimeter_span:kragmar:mournfen","kragmar_mournfen","perimeter_kragmar_mainland",5,7,"reverse","junction:-2600:1900","perimeter_attachment:kragmar:land_010"},
+		{"perimeter_span:kragmar:stillgrave","kragmar_stillgrave_hollow","perimeter_kragmar_mainland",7,11,"reverse","perimeter_attachment:kragmar:land_010","junction:-1080:2930"},
+		{"perimeter_span:kragmar:sunscar","kragmar_sunscar_flats","perimeter_kragmar_mainland",12,15,"reverse","junction:-1080:2930","junction:820:2960"},
+		{"perimeter_span:kragmar:kapok","kragmar_kapok_cradle","perimeter_kragmar_mainland",16,20,"reverse","junction:820:2960","perimeter_attachment:kragmar:land_016"},
+		{"perimeter_span:kragmar:raincall","kragmar_raincall_basin","perimeter_kragmar_mainland",20,22,"reverse","perimeter_attachment:kragmar:land_016","junction:2600:1900"},
+		{"perimeter_span:kragmar:totemwater","kragmar_totemwater_reach","perimeter_kragmar_mainland",23,24,"reverse","junction:2600:1900","perimeter_attachment:kragmar:land_040"},
+		{"perimeter_span:kragmar:thunderroot","kragmar_thunderroot_wilds","perimeter_kragmar_mainland",24,26,"reverse","perimeter_attachment:kragmar:land_040","junction:2500:250"},
+	}
+	local span_by_id={}
+	for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[span_index]
+		local expected=expected_spans[span_index]
+		if span.id~=expected[1] or span.zone_id~=expected[2] or span.perimeter_id~=expected[3] or
+				span.first_segment~=expected[4] or span.last_segment~=expected[5] or
+				span.face_direction~=expected[6] or boundary_key(span.start_boundary)~=expected[7] or
+				boundary_key(span.end_boundary)~=expected[8] or
+				span.geometry_authority~="directed_canonical_perimeter_segment_span_v2" or
+				span.displacement_source_ref~=span.perimeter_id or
+				span.tie_rule~="perimeter_station_then_lower_zone_numeric_id" or
+				span.control~=nil then
+			return diag("perimeter_span_contract",span.id,
+				"exact symbolic canonical segment span without copied geometry","changed")
+		end
+		span_by_id[span.id]=span
+	end
+	local island_by_id={}
+	for i=1,#source.islands do island_by_id[source.islands[i].id]=source.islands[i] end
+	local arc_by_id={}
+	for i=1,#source.face_arcs do local row=source.face_arcs[i]
+		if not zone_ids[row.zone_id] or type(row.from_boundary_id)~="string" or
+				type(row.to_boundary_id)~="string" or type(row.kind)~="string" or
+				row.geometry_ref~=row.id or
+				row.geometry_authority~="ordered_face_arc_authority_components_v2" or
+				not dense(row.source_refs) or not dense(row.authority_components) or
+				row.control~=nil or row.segment_spans~=nil or
+				row.perimeter_span_ids~=nil or
+				row.shore_owner_zone_id~=row.zone_id or
+				row.shore_tie_rule~="lower_zone_numeric_id" or
+				row.projection_rule~="zone_inside_coast_outside" then
+			return diag("face_arc_contract",row.id,
+				"ordered symbolic perimeter/literal authority graph","invalid")
+		end
+		for ref_index=1,#row.source_refs do
+			if type(row.source_refs[ref_index])~="string" or
+					not geometry_ref_ids[row.source_refs[ref_index]] then
+				return diag("face_arc_source_ref",row.id,
+					"declared perimeter/bay/island source",
+					tostring(row.source_refs[ref_index]))
+			end
+		end
+		local previous_end
+		for component_index=1,#row.authority_components do
+			local component=row.authority_components[component_index]
+			if component.kind=="perimeter_span" then
+				local span=span_by_id[component.ref_id]
+				local first_key,last_key=span and boundary_key(span.start_boundary),
+					span and boundary_key(span.end_boundary)
+				if span and span.face_direction=="reverse" then first_key,last_key=last_key,first_key end
+				if not span or span.zone_id~=row.zone_id or
+						component.direction~=span.face_direction or
+						component.from_boundary_id~=first_key or
+						component.to_boundary_id~=last_key or component.control~=nil then
+					return diag("face_arc_perimeter_span",row.id..":"..component_index,
+						"exact owning symbolic directed perimeter span","invalid")
+				end
+			elseif component.kind=="literal_arc" then
+				local role_allowed={bay_shore=true,fixed_holy=true,island_coast=true}
+				if not role_allowed[component.boundary_role] or
+						not geometry_ref_ids[component.source_ref] or
+						not dense(component.control) or #component.control<2 or
+						component.from_boundary_id~=junction_id(component.control[1]) or
+						component.to_boundary_id~=junction_id(component.control[#component.control]) then
+					return diag("face_arc_literal_component",row.id..":"..component_index,
+						"simple literal bay/Holy/island sub-polyline","invalid")
+				end
+				for point_index=1,#component.control do
+					if not point_valid(component.control[point_index],false) then
+						return diag("face_arc_control",row.id,"integer literal component",point_index)
+					end
+				end
+				for first=1,#component.control-1 do
+					for second=first+2,#component.control-1 do
+						local closed=component.control[1].x==component.control[#component.control].x and
+							component.control[1].z==component.control[#component.control].z
+						if not (closed and first==1 and second==#component.control-1) and
+								intersects(component.control[first],component.control[first+1],
+								component.control[second],component.control[second+1]) then
+							return diag("face_arc_literal_planarity",row.id..":"..component_index,
+								"simple literal sub-polyline",first..":"..second)
+						end
+					end
+				end
+			else return diag("face_arc_component_kind",row.id,
+				"perimeter_span or literal_arc",tostring(component.kind)) end
+			if previous_end and previous_end~=component.from_boundary_id then
+				return diag("face_arc_component_closure",row.id,previous_end,
+					component.from_boundary_id)
+			end
+			previous_end=component.to_boundary_id
+		end
+		if row.from_boundary_id~=row.authority_components[1].from_boundary_id or
+				row.to_boundary_id~=previous_end then
+			return diag("face_arc_component_endpoints",row.id,
+				"arc endpoints equal first/last component boundary","changed")
+		end
+		local kind_allowed={coast_shore=true,bay_shore=true,
+			coast_bay_shore=true,fixed_holy_arc=true,island_perimeter_arc=true}
+		if not kind_allowed[row.kind] then
+			return diag("face_arc_kind",row.id,"closed arc kind",row.kind)
+		end
+		if row.kind=="island_perimeter_arc" then
+			local island=#row.source_refs==1 and island_by_id[row.source_refs[1]]
+			local control=row.authority_components[1] and row.authority_components[1].control
+			if not island or island.zone_id~=row.zone_id or row.from_boundary_id~=row.to_boundary_id or
+					#row.authority_components~=1 or not control or #control~=#island.polygon then
+				return diag("face_island_arc",row.id,
+					"exact owning closed island polygon","invalid")
+			end
+			for point_index=1,#control do local a,b=control[point_index],island.polygon[point_index]
+				if a.x~=b.x or a.z~=b.z then return diag("face_island_arc_geometry",row.id,
+					"exact island polygon",point_index) end
+			end
+		elseif row.kind=="fixed_holy_arc" then
+			if #row.source_refs~=1 or row.source_refs[1]~="perimeter_holy_grounds" then
+				return diag("face_fixed_holy_arc",row.id,
+					"Holy Grounds perimeter source","invalid")
+			end
+		else
+			local continent=row.zone_id:match("^(elandor)_") or row.zone_id:match("^(kragmar)_")
+			for ref_index=1,#row.source_refs do
+				if not continent or not row.source_refs[ref_index]:match("_"..continent) then
+					return diag("face_arc_continent_ref",row.id,continent,row.source_refs[ref_index])
+				end
+			end
+		end
+		arc_by_id[row.id]=row
+	end
+	local edge_incidence,arc_incidence={},{}
+	local edge_forward_face,edge_reverse_face={},{}
+	local face_zone_seen={}
+	for i=1,#source.zone_faces do local face=source.zone_faces[i]
+		if not zone_ids[face.zone_id] or face_zone_seen[face.zone_id] or
+				face.orientation~="counterclockwise" or
+				face.tie_rule~="lower_zone_numeric_id" or not dense(face.cycle) or
+				#face.cycle==0 then
+			return diag("zone_face_contract",face.id,"one canonical oriented cycle per zone","invalid")
+		end
+		face_zone_seen[face.zone_id]=true
+		local first_junction,previous_end
+		local boundary_junction_seen={}
+		for j=1,#face.cycle do local ref=face.cycle[j]
+			local start_id,end_id
+			if ref.kind=="shared_edge" then
+				local edge=edge_by_id[ref.ref_id]
+				local attachment=attachment_by_edge[ref.ref_id]
+				if not edge or (edge.left_zone~=face.zone_id and edge.right_zone~=face.zone_id) or
+						(ref.direction~="forward" and ref.direction~="reverse") or
+						ref.clip_attachment_id~=(attachment and attachment.id or false) or
+						ref.first_control~=nil or ref.last_control~=nil or ref.clip_rule~=nil then
+					return diag("zone_face_edge_ref",face.id,"incident oriented shared edge",ref.ref_id)
+				end
+				local expected_direction=edge.left_zone==face.zone_id and "forward" or "reverse"
+				if ref.direction~=expected_direction then
+					return diag("face_edge_probe_zone",face.id..":"..ref.ref_id,
+						expected_direction,ref.direction)
+				end
+				local from_id=edge.from_junction_id
+				local to_id=edge.to_junction_id
+				if attachment then
+					if attachment.edge_endpoint=="from" then from_id=attachment.id else to_id=attachment.id end
+				end
+				start_id=ref.direction=="forward" and from_id or to_id
+				end_id=ref.direction=="forward" and to_id or from_id
+				edge_incidence[ref.ref_id]=edge_incidence[ref.ref_id] or {}
+				edge_incidence[ref.ref_id][#edge_incidence[ref.ref_id]+1]=ref.direction
+				if ref.direction=="forward" then edge_forward_face[ref.ref_id]=face.zone_id
+				else edge_reverse_face[ref.ref_id]=face.zone_id end
+			elseif ref.kind=="arc" then
+				local arc=arc_by_id[ref.ref_id]
+				if not arc or arc.zone_id~=face.zone_id or ref.direction~="forward" then
+					return diag("zone_face_arc_ref",face.id,"own forward arc",ref.ref_id)
+				end
+				start_id,end_id=arc.from_boundary_id,arc.to_boundary_id
+				arc_incidence[ref.ref_id]=(arc_incidence[ref.ref_id] or 0)+1
+			else return diag("zone_face_ref_kind",face.id,"shared_edge/arc",ref.kind) end
+			if previous_end and previous_end~=start_id then
+				return diag("zone_face_closure",face.id,previous_end,start_id)
+			end
+			first_junction=first_junction or start_id
+			if boundary_junction_seen[end_id] and j<#face.cycle then
+				return diag("zone_face_planarity",face.id,"no repeated interior junction",end_id)
+			end
+			boundary_junction_seen[end_id]=true previous_end=end_id
+		end
+		if previous_end~=first_junction then return diag("zone_face_closure",face.id,first_junction,previous_end) end
+	end
+	for i=1,#source.land_edges do local edge=source.land_edges[i]
+		if edge_forward_face[edge.id]~=edge.left_zone or
+				edge_reverse_face[edge.id]~=edge.right_zone then
+			return diag("face_edge_probe_zone",edge.id,
+				"declared left/right owner equals abstract face incidence","invalid")
+		end
+		local probe_index=edge.probe_segment_index
+		local first,second=edge.control[probe_index],edge.control[probe_index+1]
+		local left_cross=cross(first,second,edge.left_probe)
+		local right_cross=cross(first,second,edge.right_probe)
+		if left_cross<=0 or right_cross>=0 then return diag("face_edge_probe_side",
+			edge.id,"left probe > 0 and right probe < 0 for directed control",
+			left_cross..":"..right_cross) end
+	end
+	local global_segments={}
+	local function add_segments(owner,points,water_ref)
+		for i=1,#points-1 do global_segments[#global_segments+1]={
+			owner=owner,index=i,a=points[i],b=points[i+1],water_ref=water_ref} end
+	end
+	for i=1,#source.land_edges do add_segments(source.land_edges[i].id,
+		source.land_edges[i].control) end
+	for i=1,#source.face_arcs do local arc=source.face_arcs[i]
+		for component_index=1,#arc.authority_components do local component=arc.authority_components[component_index]
+			if component.kind=="literal_arc" then
+				local water_ref=component.boundary_role=="bay_shore" and component.source_ref or false
+				add_segments(arc.id..":"..component_index,component.control,water_ref)
+			end
+		end
+	end
+	local function same_point(a,b) return a.x==b.x and a.z==b.z end
+	for i=1,#global_segments do local a=global_segments[i]
+		for j=i+1,#global_segments do local b=global_segments[j]
+			if a.owner~=b.owner and intersects(a.a,a.b,b.a,b.b) then
+				if (a.water_ref and not b.water_ref) or (b.water_ref and not a.water_ref) or
+						(a.water_ref and a.water_ref==b.water_ref) then
+					-- A literal bay-shore component declares this as a possible raw-water
+					-- intersection class. Exact location/precedence is a Stage-2 integer
+					-- proof; two different bays are never interchangeable.
+				else
+				local common=0
+				if same_point(a.a,b.a) or same_point(a.a,b.b) then common=common+1 end
+				if same_point(a.b,b.a) or same_point(a.b,b.b) then common=common+1 end
+				local collinear=cross(a.a,a.b,b.a)==0 and cross(a.a,a.b,b.b)==0
+				if common~=1 or collinear and
+						((between(a.a,a.b,b.a) and not same_point(b.a,a.a) and not same_point(b.a,a.b)) or
+						 (between(a.a,a.b,b.b) and not same_point(b.b,a.a) and not same_point(b.b,a.b)) or
+						 (between(b.a,b.b,a.a) and not same_point(a.a,b.a) and not same_point(a.a,b.b)) or
+						 (between(b.a,b.b,a.b) and not same_point(a.b,b.a) and not same_point(a.b,b.b))) then
+					return diag("face_global_planarity",a.owner..":"..b.owner,
+						"one exact declared endpoint or same authored bay component class",
+						a.index..":"..b.index)
+				end
+				end
+			end
+		end
+	end
+	for edge_index=1,#source.land_edges do local edge=source.land_edges[edge_index]
+		local edge_id=edge.id local incidence=edge_incidence[edge_id]
+		if not incidence or #incidence~=2 or incidence[1]==incidence[2] then
+			return diag("zone_face_edge_incidence",edge_id,"twice in opposite directions","invalid")
+		end
+	end
+	for arc_index=1,#source.face_arcs do local arc_id=source.face_arcs[arc_index].id
+		if arc_incidence[arc_id]~=1 then
+		return diag("zone_face_arc_incidence",arc_id,1,arc_incidence[arc_id])
+	end end
+	local dual={}
+	for zone_id in pairs(zone_ids) do dual[zone_id]={} end
+	for edge_index=1,#source.land_edges do local edge=source.land_edges[edge_index]
+		dual[edge.zone_a][#dual[edge.zone_a]+1]=edge.zone_b
+		dual[edge.zone_b][#dual[edge.zone_b]+1]=edge.zone_a
+	end
+	local queue={"elandor_hearthpine_vale"} local head=1
+	local reached={[queue[1]]=true}
+	while head<=#queue do local current=queue[head] head=head+1
+		for i=1,#dual[current] do local next_id=dual[current][i]
+			if not reached[next_id] then reached[next_id]=true queue[#queue+1]=next_id end
+		end
+	end
+	local reached_count=0 for _ in pairs(reached) do reached_count=reached_count+1 end
+	if #source.land_edges~=61 or reached_count~=36 then
+		return diag("zone_face_dual_graph","land_edges","61 edges/36 connected mainland zones",
+			#source.land_edges.."/"..reached_count)
+	end
+	for _,island_zone in ipairs({"front_wyrmglass_crown","front_stormscale_summit"}) do
+		for edge_index=1,#source.land_edges do local edge=source.land_edges[edge_index]
+			if edge.zone_a==island_zone or edge.zone_b==island_zone then
+			return diag("island_land_edge_forbidden",edge.id,"no island land edge",island_zone)
+		end end
 	end
 	local station_ids,station_by_id={},{}
 	local station_kind_allowed={hub=true,start_gate=true,capital_gate=true}
@@ -633,15 +1682,36 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		if not zone_ids[row.zone_id] or not station_kind_allowed[row.kind] or not point_valid(row.position,false) or (row.gate_ref~=false and type(row.gate_ref)~="string") then return diag("route_station_contract",row.id,"known zone/kind/point/gate","invalid") end
 		station_ids[row.id]=true station_by_id[row.id]=row
 	end
+	local route_class_by_id={}
+	local route_class_expected={primary={1,12,12,7,16,"road_primary_v1",8},
+		secondary={1,8,8,5,12,"road_secondary_v1",6},
+		trail={1,4,4,3,8,"road_trail_v1",4}}
+	for i=1,#source.route_classes do local row=source.route_classes[i]
+		local expected=route_class_expected[row.id]
+		if not expected or type(row.max_grade)~="table" or
+				row.max_grade.numerator~=expected[1] or
+				row.max_grade.denominator~=expected[2] or
+				row.minimum_transition_run~=expected[3] or row.grade_step~=1 or
+				row.visible_width~=expected[4] or row.exclusion_width~=expected[5] or
+				row.cross_section_id~=expected[6] or row.lateral_blend_width~=expected[7] or
+				row.grade_phase_rule~="flat_run_at_fixed_interface" or
+				row.transition_semantic_id~="road_climb_stair_v1" then
+			return diag("route_class_profile",row.id,
+				"closed grade/spacing/cross-section/blend/transition","invalid")
+		end
+		route_class_by_id[row.id]=row
+	end
 	local route_classes={primary=true,secondary=true,trail=true}
 	local route_ids,route_by_id,route_counts={},{},{primary=0,secondary=0,trail=0}
 	for i=1,#source.routes do
 		local row=source.routes[i]
-		local edge=source.land_edges[i]
-		if row.boundary_id~=edge.id or row.zone_a~=edge.zone_a or
+		local edge=edge_by_id[row.boundary_id]
+		if not edge or row.zone_a~=edge.zone_a or
 				row.zone_b~=edge.zone_b then
-			return diag("route_boundary_reference",row.id,edge.id,"mismatch")
+			return diag("route_boundary_reference",row.id,row.boundary_id,"mismatch")
 		end
+		if edge.boundary_only then return diag("boundary_only_route_forbidden",row.id,
+			"boundary-only edges absent from routes",row.boundary_id) end
 		if not route_classes[row.class] or not dense(row.centreline) or
 				#row.centreline<5 or type(row.crossing_station)~="number" or row.crossing_station<2 or row.crossing_station>#row.centreline-1 then return diag("route_geometry",row.id,"valid class and complete centreline","invalid") end
 		route_counts[row.class]=route_counts[row.class]+1
@@ -651,20 +1721,30 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		for j=1,#edge.control-1 do if cross(edge.control[j],edge.control[j+1],crossing)==0 and between(edge.control[j],edge.control[j+1],crossing) then on_boundary=true side_a=cross(edge.control[j],edge.control[j+1],row.centreline[row.crossing_station-1]) side_b=cross(edge.control[j],edge.control[j+1],row.centreline[row.crossing_station+1]) break end end
 		if not on_boundary then return diag("route_crosses_boundary",row.id,true,false) end
 		if side_a==0 or side_b==0 or side_a*side_b>=0 then return diag("route_crossing_sides",row.id,"opposite nonzero boundary sides",tostring(side_a)..":"..tostring(side_b)) end
+		local expected_a_sign=edge.left_zone==row.zone_a and 1 or -1
+		if side_a*expected_a_sign<=0 then
+			return diag("route_face_incidence",edge.id,
+				"route zone_a approach on its independently declared face",side_a)
+		end
 		local station_a,station_b=station_by_id[row.station_a_id],station_by_id[row.station_b_id]
 		if not station_a or not station_b or station_a.zone_id~=row.zone_a or station_b.zone_id~=row.zone_b or row.centreline[1].x~=station_a.position.x or row.centreline[1].z~=station_a.position.z or row.centreline[#row.centreline].x~=station_b.position.x or row.centreline[#row.centreline].z~=station_b.position.z then return diag("route_station_ref",row.id,"matching endpoint stations","mismatch") end
 		if station_a.gate_ref~=row.gate_ref_a or station_b.gate_ref~=row.gate_ref_b then return diag("route_gate_ref",row.id,"station-owned gate refs","mismatch") end
-		if row.endpoint_a_id==row.endpoint_b_id or type(row.boundary_interface_id)~="string" or type(row.grade_phase)~="number" then return diag("route_interfaces",row.id,"distinct endpoints/crossing/phase","invalid") end
+		if row.endpoint_a_id==row.endpoint_b_id or type(row.boundary_interface_id)~="string" or row.grade_phase~="class_default" then return diag("route_interfaces",row.id,"distinct endpoints/crossing/class-default phase","invalid") end
 		route_ids[row.id]=true route_by_id[row.id]=row
 	end
 	for _,expected_row in ipairs({{"primary",30},{"secondary",24},{"trail",3}}) do local class,expected=expected_row[1],expected_row[2] if route_counts[class]~=expected then return diag("route_class_count",class,expected,route_counts[class]) end end
-	local route_interface_ids={}
+	local route_interface_ids,route_interface_by_id={},{}
 	for i=1,#source.route_interfaces do local row=source.route_interfaces[i]
 		if not route_ids[row.route_id] or not point_valid(row.position,false) or
 				type(row.direction)~="string" or row.direction=="" then return diag("route_interface_contract",row.id,"route/point/direction","invalid") end
+		if type(row.grade_limit)~="table" or row.grade_limit.numerator~=1 or
+				row.grade_limit.denominator~=12 or row.grade_phase~="flat_run_12" or
+				row.transition_semantic_id~="road_climb_stair_v1" then
+			return diag("route_interface_grade",row.id,"fixed 1:12 flat phase and climb semantic","invalid")
+		end
 		if row.kind=="endpoint" and not station_ids[row.station_id] then return diag("route_interface_station_ref",row.id,"known station",row.station_id) end
 		if row.kind~="endpoint" and row.kind~="boundary_crossing" then return diag("route_interface_kind",row.id,"endpoint/boundary_crossing",row.kind) end
-		route_interface_ids[row.id]=true
+		route_interface_ids[row.id]=true route_interface_by_id[row.id]=row
 	end
 	for i=1,#source.routes do local row=source.routes[i]
 		if not route_interface_ids[row.endpoint_a_id] or not route_interface_ids[row.endpoint_b_id] or not route_interface_ids[row.boundary_interface_id] then return diag("route_interface_ref",row.id,"three known interfaces","missing") end
@@ -710,13 +1790,18 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		slot_seen[slot_key] = true
 		if row.placement_mode == "fixed" then
 			if not point_valid(row.position,false) then return diag("fixed_anchor_position",row.id,"integer x/z point","invalid") end
+			if row.candidates~=nil then return diag("anchor_placement_fields",row.id,"fixed position only","candidates present") end
 		elseif row.placement_mode == "candidate_set" then
 			if not dense(row.candidates) or #row.candidates == 0 then return diag("candidate_anchor_set",row.id,"non-empty dense array","invalid") end
 			for j=1,#row.candidates do if not point_valid(row.candidates[j],false) then return diag("candidate_anchor_point",row.id,"integer x/z point","invalid") end end
+			if row.position~=nil then return diag("anchor_placement_fields",row.id,"candidate set only","position present") end
 		else return diag("anchor_placement_mode",row.id,"fixed/candidate_set",row.placement_mode) end
 		if family=="rare" then
-			if not dense(row.patrol_route) or #row.patrol_route<2 or #row.patrol_route>3 then return diag("rare_patrol_route",row.id,"2..3 fixed points","invalid") end
-			for j=1,#row.patrol_route do if not point_valid(row.patrol_route[j],false) then return diag("rare_patrol_point",row.id,"integer x/z point","invalid") end end
+			if row.placement_mode~="candidate_set" then return diag("rare_anchor_placement_mode",row.id,"candidate_set",row.placement_mode) end
+			if row.patrol_route~=nil then return diag("rare_patrol_absolute_forbidden",row.id,"candidate-relative offsets only","patrol_route present") end
+			if row.patrol_coordinate_space~="selected_candidate_relative" then return diag("rare_patrol_coordinate_space",row.id,"selected_candidate_relative",row.patrol_coordinate_space) end
+			if not dense(row.patrol_offsets) or #row.patrol_offsets<2 or #row.patrol_offsets>3 then return diag("rare_patrol_offsets",row.id,"2..3 ordered offsets","invalid") end
+			for j=1,#row.patrol_offsets do if not point_valid(row.patrol_offsets[j],false) then return diag("rare_patrol_offset",row.id..":"..j,"integer x/z offset","invalid") end end
 		end
 	end
 	for count_index=1,#SLOT_COUNTS do
@@ -733,7 +1818,18 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		for i=1,count do if not suffixes[i] then return diag("anchor_local_suffixes",key,"contiguous 1.."..count,"gap") end end
 	end
 	local island_ids,island_by_id={},{}
-	for i=1,#source.islands do local row=source.islands[i] island_ids[row.id]=true island_by_id[row.id]=row end
+	for i=1,#source.islands do local row=source.islands[i]
+		if row.geometry_authority~="closed_island_face_arc" or
+				row.source_geometry_role~="constraint_projection_and_envelope_only" or
+				row.ordered_component_rule~="closed_face_arc_forward" or
+				not arc_by_id[row.closed_arc_id] or
+				arc_by_id[row.closed_arc_id].source_refs[1]~=row.id then
+			return diag("face_arc_sole_geometry_authority",row.id,
+				"one exact closed forward island face arc; polygon only constrains envelope",
+				"invalid")
+		end
+		island_ids[row.id]=true island_by_id[row.id]=row
+	end
 	local landing_ids,landing_by_id={},{}
 	for i=1,#source.island_landings do local row=source.island_landings[i]
 		if not island_ids[row.island_id] or not zone_ids[row.zone_id] or
@@ -750,7 +1846,11 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	for i=1,#source.island_route_stations do local row=source.island_route_stations[i]
 		if not island_ids[row.island_id] or not island_station_kind[row.kind] or not point_valid(row.position,false) then return diag("island_route_station_contract",row.id,"island/kind/point","invalid") end
 		if (row.kind=="dragon" or row.kind=="apex_mine") and not anchor_ids[row.anchor_id] then return diag("island_target_anchor_ref",row.id,"known target anchor",row.anchor_id) end
-		if row.anchor_id then local anchor=anchor_by_id[row.anchor_id] local candidate=anchor and anchor.candidates and anchor.candidates[1] if not candidate or candidate.x~=row.position.x or candidate.z~=row.position.z then return diag("island_target_anchor_position",row.id,"anchor first candidate",row.anchor_id) end end
+		if row.anchor_id then
+			local anchor=anchor_by_id[row.anchor_id]
+			if not anchor or anchor.placement_mode~="fixed" or anchor.slot_id~=row.kind then return diag("island_target_anchor_mode",row.id,"fixed matching target anchor",row.anchor_id) end
+			if not anchor.position or anchor.position.x~=row.position.x or anchor.position.z~=row.position.z then return diag("island_target_anchor_position",row.id,"fixed anchor position",row.anchor_id) end
+		end
 		island_station_ids[row.id]=true island_station_by_id[row.id]=row
 	end
 	for i=1,#source.island_landings do local row=source.island_landings[i] local station=island_station_by_id[row.station_id]
@@ -768,11 +1868,108 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		island_route_ids[row.id]=true island_route_by_id[row.id]=row
 	end
 	local interface_counts={}
+	local island_route_interface_by_id={}
 	for i=1,#source.island_route_interfaces do local row=source.island_route_interfaces[i] local route=island_route_by_id[row.route_id] local station=island_station_by_id[row.station_id]
 		if not route or not station or row.kind~="endpoint" or not point_valid(row.position,false) or row.position.x~=station.position.x or row.position.z~=station.position.z or (station.id~=route.from_station_id and station.id~=route.to_station_id) then return diag("island_route_interface_contract",row.id,"route endpoint station/point","invalid") end
 		interface_counts[row.route_id]=(interface_counts[row.route_id] or 0)+1
+		island_route_interface_by_id[row.id]=row
 	end
 	for i=1,#source.island_routes do if interface_counts[source.island_routes[i].id]~=2 then return diag("island_route_interface_count",source.island_routes[i].id,2,interface_counts[source.island_routes[i].id]) end end
+	local surface_core_seen,surface_gate_by_route,surface_position_levels={},{},{}
+	local surface_control_count_by_zone={}
+	local surface_role={home_low=true,front_high=true,lateral_neighbor=true}
+	for i=1,#source.surface_level_controls do local row=source.surface_level_controls[i]
+		local zone=zone_by_id[row.zone_id]
+		local control_position=row.position
+		if not zone or type(row.level)~="number" or row.level%1~=0 or
+				row.level<zone.level_min or row.level>zone.level_max then
+			return diag("surface_level_bracket",row.id,
+				zone and zone.level_min..".."..zone.level_max or "known zone",row.level)
+		end
+		surface_control_count_by_zone[row.zone_id]=
+			(surface_control_count_by_zone[row.zone_id] or 0)+1
+		if row.kind=="zone_core" then
+			local station=station_by_id[row.station_id]
+			if surface_core_seen[row.zone_id] or not station or
+					station.zone_id~=row.zone_id or
+					row.interpolation_id~="inverse_distance_squared_q16_v1" then
+				return diag("surface_level_core",row.id,
+					"one core control at own hub with closed interpolation","invalid")
+			end
+			surface_core_seen[row.zone_id]=true
+			control_position=station.position
+		elseif row.kind=="road_gate" then
+			local route=route_by_id[row.route_id]
+			local interface=route_interface_by_id[row.interface_id]
+			if not route or not interface or interface.kind~="endpoint" or
+					interface.route_id~=route.id or not surface_role[row.progression_role] or
+					not point_valid(row.position,false) or
+					type(row.endgame_exception)~="boolean" or
+					row.interpolation_id~="inverse_distance_squared_q16_v1" then
+				return diag("surface_level_gate",row.id,
+					"route endpoint/role/exception/closed interpolation","invalid")
+			end
+			local side=interface.id==route.endpoint_a_id and "a" or
+				(interface.id==route.endpoint_b_id and "b" or nil)
+			if not side or (side=="a" and route.zone_a or route.zone_b)~=row.zone_id then
+				return diag("surface_level_gate_zone",row.id,row.zone_id,"mismatch")
+			end
+			local expected_position=side=="a" and route.centreline[2] or
+				route.centreline[#route.centreline-1]
+			if row.position.x~=expected_position.x or row.position.z~=expected_position.z then
+				return diag("surface_level_gate_position",row.id,
+					expected_position.x..":"..expected_position.z,
+					row.position.x..":"..row.position.z)
+			end
+			surface_gate_by_route[route.id]=surface_gate_by_route[route.id] or {}
+			if surface_gate_by_route[route.id][side] then return diag("surface_level_gate_duplicate",
+				row.id,"one control per side",side) end
+			surface_gate_by_route[route.id][side]=row
+		elseif row.kind=="level_60_endpoint" then
+			local station=island_station_by_id[row.island_station_id]
+			if not station or row.level~=60 or zone.level_min~=60 or zone.level_max~=60 or
+					row.interpolation_id~="flat_level_60_v1" then
+				return diag("surface_level_60_endpoint",row.id,
+					"own island station, exact flat level 60","invalid")
+			end
+			control_position=station.position
+		else return diag("surface_level_kind",row.id,
+			"zone_core/road_gate/level_60_endpoint",row.kind) end
+		local position_key=row.zone_id..":"..control_position.x..":"..control_position.z
+		if surface_position_levels[position_key] and
+				surface_position_levels[position_key]~=row.level then
+			return diag("surface_level_control_conflict",row.id,
+				surface_position_levels[position_key],row.level)
+		end
+		surface_position_levels[position_key]=row.level
+	end
+	for i=1,#source.zones do local zone_id=source.zones[i].id
+		if not surface_core_seen[zone_id] then
+			return diag("surface_level_core_missing",zone_id,"one core","missing")
+		end
+		if surface_control_count_by_zone[zone_id]>
+				policies.surface_level_interpolation.max_control_count then
+			return diag("surface_level_control_count",zone_id,
+				policies.surface_level_interpolation.max_control_count,
+				surface_control_count_by_zone[zone_id])
+		end
+	end
+	local endgame_routes={route_043=true,route_048=true,route_049=true,
+		route_054=true,route_055=true,route_057=true}
+	for i=1,#source.routes do local route=source.routes[i]
+		local pair=surface_gate_by_route[route.id]
+		if not pair or not pair.a or not pair.b then return diag("surface_level_gate_missing",
+			route.id,"two endpoint controls","missing") end
+		local declared=endgame_routes[route.id]==true
+		if pair.a.endgame_exception~=declared or pair.b.endgame_exception~=declared then
+			return diag("surface_level_endgame_exception",route.id,declared,
+				tostring(pair.a.endgame_exception)..":"..tostring(pair.b.endgame_exception))
+		end
+		if not declared and math.abs(pair.a.level-pair.b.level)>2 then
+			return diag("surface_level_gate_agreement",route.id,"difference <= 2",
+				math.abs(pair.a.level-pair.b.level))
+		end
+	end
 	local function reachable(start_id,target_id,blocked_id)
 		local queue={start_id} local head=1 local seen={[start_id]=true}
 		while head<=#queue do local current=queue[head] head=head+1 if current==target_id then return true end
@@ -791,20 +1988,376 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			if not ok then return nil, failure end
 		end
 	end
+	local perimeter_by_id={}
+	local outer_component_seen={}
+	for i=1,#source.perimeters do local row=source.perimeters[i]
+		if row.geometry_authority~=
+				"literal_perimeter_polygon_after_sole_boundary_displacement" or
+				row.source_geometry_role~="independent_outer_footprint_and_shelf_authority" or
+				not dense(row.ordered_outer_components) or
+				type(row.component_rule)~="string" then
+			return diag("face_arc_sole_geometry_authority",row.id,
+				"ordered zone-face outer components; polygon only constrains projection/envelope",
+				"invalid")
+		end
+		for component_index=1,#row.ordered_outer_components do
+			local component=row.ordered_outer_components[component_index]
+			local span_id=component:match("^(perimeter_span:.*):canonical_forward$")
+			local arc_id,first,last,direction=component:match(
+				"^(face_arc:.-)#(%d+)%-(%d+):(forward)$")
+			if not arc_id then arc_id,first,last,direction=component:match(
+				"^(face_arc:.-)#(%d+)%-(%d+):(reverse)$") end
+			if span_id then
+				local span=span_by_id[span_id]
+				if not span or span.perimeter_id~=row.id or outer_component_seen[span_id] then
+					return diag("perimeter_component_ref",row.id,
+						"unique canonical span of owning perimeter",component)
+				end
+				outer_component_seen[span_id]=true
+			elseif arc_id then
+				local arc=arc_by_id[arc_id]
+				first,last=tonumber(first),tonumber(last)
+				local literal=arc and arc.authority_components[1]
+				local matched=literal and #arc.authority_components==1 and
+					literal.kind=="literal_arc" and literal.boundary_role=="fixed_holy" and
+					first==1 and last==#literal.control-1 and direction=="forward"
+				if not matched then return diag("perimeter_component_ref",row.id,
+					"outer-coast/fixed-Holy segment span",component) end
+				outer_component_seen[component]=true
+			else
+				local bay_id,bay_direction=component:match(
+					"^(bay_.-):mouth_outer_union:(forward)$")
+				local land_id,land_direction=component:match("^(land_%d+):(.*)$")
+				if bay_id then
+					if not geometry_ref_by_id[bay_id] or bay_direction~="forward" then
+						return diag("perimeter_component_ref",row.id,"known bay mouth",component)
+					end
+				elseif land_id then
+					if not edge_by_id[land_id] or
+							(land_direction~="forward" and land_direction~="reverse") then
+						return diag("perimeter_component_ref",row.id,"known directed edge",component)
+					end
+				else return diag("perimeter_component_ref",row.id,
+					"closed directed component vocabulary",component) end
+			end
+		end
+		perimeter_by_id[row.id]=row
+	end
+	for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[span_index]
+		if not outer_component_seen[span.id] then
+			return diag("perimeter_component_coverage",span.id,
+				"canonical span used exactly once","missing")
+		end
+	end
+	local bay_by_id={}
+	for i=1,#source.bays do local bay=source.bays[i]
+		bay_by_id[bay.id]=bay
+		if bay.geometry_authority~=
+				"unchanged_base_bay_centreline_half_width_round_capsule_union" or
+				bay.source_geometry_role~="sole_base_planned_water_mask_and_owner_seam" or
+				bay.mouth_closure_rule~=
+					"open_round_capsule_intersection_with_projected_outer_perimeter" or
+				bay.head_closure_rule~=
+					"closed_round_cap_at_final_centreline_sample" or
+				bay.ordered_component_rule~="authored_centreline_segments_in_array_order" then
+			return diag("face_arc_sole_geometry_authority",bay.id,
+				"sole ordered centreline capsule mask with open mouth and closed head",
+				"invalid")
+		end
+		local projection=bay.perimeter_projection
+		local perimeter=type(projection)=="table" and perimeter_by_id[projection.perimeter_id]
+		if not dense(bay.shore_zone_ids) or #bay.shore_zone_ids~=4 or
+				not perimeter or type(projection.mouth_vertex_index)~="number" or
+				not zone_ids[projection.coast_left_zone_id] or
+				not zone_ids[projection.coast_right_zone_id] or
+				bay.owner_seam_tie~="lower_zone_numeric_id" then
+			return diag("bay_face_projection",bay.id,
+				"four shore zones and exact perimeter-to-zone/coast projection","invalid")
+		end
+		local mouth=perimeter.polygon[projection.mouth_vertex_index]
+		local sample=bay.centreline[1]
+		if not mouth or mouth.x~=sample.x or mouth.z~=sample.z then
+			return diag("bay_mouth_perimeter_incidence",bay.id,
+				sample.x..","..sample.z,mouth and mouth.x..","..mouth.z or "missing")
+		end
+		for segment_index=1,#bay.centreline-1 do
+			local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+			local dx,dz=b.x-a.x,b.z-a.z
+			local length_squared=dx*dx+dz*dz
+			local max_radius=math.max(a.half_width,b.half_width)
+			local radius_squared=safe_nonnegative_product(max_radius,max_radius)
+			local length_fourth=safe_nonnegative_product(length_squared,length_squared)
+			local full_guard=radius_squared and length_fourth and
+				safe_nonnegative_product(radius_squared,length_fourth)
+			local root=ceil_isqrt(length_squared)
+			local open_bound=max_radius*root-1
+			local open_bound_squared=safe_nonnegative_product(open_bound,open_bound)
+			local open_guard=open_bound_squared and
+				safe_nonnegative_product(open_bound_squared,length_squared)
+			if not full_guard or not open_guard then
+				return diag("bay_base_safe_product",bay.id..":"..segment_index,
+					"max_r^2*L^2 and (max_r*ceil_isqrt(L)-1)^2*L <= 2^53-1","overflow")
+			end
+		end
+		local shore_seen={}
+		for j=1,#bay.shore_zone_ids do local zone_id=bay.shore_zone_ids[j]
+			if not zone_ids[zone_id] or shore_seen[zone_id] then
+				return diag("bay_shore_zone",bay.id,"four unique known shore zones",zone_id)
+			end
+			shore_seen[zone_id]=true
+		end
+		if not shore_seen[projection.coast_left_zone_id] or
+				not shore_seen[projection.coast_right_zone_id] then
+			return diag("bay_coast_projection_zone",bay.id,"projected zones among shores","invalid")
+		end
+		if not dense(bay.owner_spans) or
+				bay.owner_span_transition_rule~=
+					"adjacent_spans_meet_at_authored_centreline_station" or
+				bay.owner_span_transition_tie~="lower_zone_numeric_id_on_selected_side" then
+			return diag("bay_owner_spans",bay.id,
+				"complete literal left/right centreline owner spans","invalid")
+		end
+		local next_segment=1
+		local owner_seen={}
+		for span_index=1,#bay.owner_spans do local span=bay.owner_spans[span_index]
+			if span.first_segment~=next_segment or type(span.last_segment)~="number" or
+					span.last_segment<span.first_segment or
+					span.last_segment>#bay.centreline-1 or
+					not shore_seen[span.left_zone_id] or
+					not shore_seen[span.right_zone_id] or
+					span.left_zone_id==span.right_zone_id then
+				return diag("bay_owner_spans",bay.id..":"..span_index,
+					"ordered complete listed left/right owners","invalid")
+			end
+			owner_seen[span.left_zone_id]=true owner_seen[span.right_zone_id]=true
+			next_segment=span.last_segment+1
+		end
+		if next_segment~=#bay.centreline then
+			return diag("bay_owner_spans",bay.id,#bay.centreline-1,next_segment-1)
+		end
+		for shore_index=1,#bay.shore_zone_ids do
+			if not owner_seen[bay.shore_zone_ids[shore_index]] then
+				return diag("bay_owner_span_coverage",bay.id,
+					bay.shore_zone_ids[shore_index],"missing")
+			end
+		end
+	end
+	local bay_divergence_goldens={
+		{"bay_elandor_west",-896,-2053},
+		{"bay_elandor_east",1252,-2866},
+		{"bay_elandor_east",771,-2398},
+		{"bay_elandor_east",1101,-2222},
+		{"bay_kragmar_east",787,2286},
+	}
+	for golden_index=1,#bay_divergence_goldens do local golden=bay_divergence_goldens[golden_index]
+		local inside=point_in_base_bay({x=golden[2],z=golden[3]},bay_by_id[golden[1]])
+		if inside~=false then return diag("bay_base_rational_divergence_golden",
+			golden[1]..":"..golden[2]..":"..golden[3],false,inside) end
+	end
+	local expected_apertures={
+		{"bay_mouth_aperture:elandor_west","bay_elandor_west","perimeter_elandor_mainland",12,"perimeter_span:elandor:hearthpine","perimeter_span:elandor:dawnmere",720},
+		{"bay_mouth_aperture:elandor_east","bay_elandor_east","perimeter_elandor_mainland",16,"perimeter_span:elandor:dawnmere","perimeter_span:elandor:silverleaf",660},
+		{"bay_mouth_aperture:kragmar_west","bay_kragmar_west","perimeter_kragmar_mainland",12,"perimeter_span:kragmar:stillgrave","perimeter_span:kragmar:sunscar",640},
+		{"bay_mouth_aperture:kragmar_east","bay_kragmar_east","perimeter_kragmar_mainland",16,"perimeter_span:kragmar:sunscar","perimeter_span:kragmar:kapok",740},
+	}
+	local aperture_by_bay={}
+	for aperture_index=1,#source.bay_mouth_apertures do
+		local row=source.bay_mouth_apertures[aperture_index]
+		local fields_ok,fields_failure=closed_fields(row,row.id,
+			{"id","numeric_id","bay_id","mouth_sample_index","perimeter_id",
+				"mouth_vertex_index","before_span_id","after_span_id","policy_id",
+				"station_order","geometry_rule","owner_rule","boundary_tie"},
+			"bay_mouth_aperture_fields")
+		if not fields_ok then return nil,fields_failure end
+		local expected=expected_apertures[aperture_index]
+		local bay=bay_by_id[row.bay_id]
+		local before_span,after_span=span_by_id[row.before_span_id],span_by_id[row.after_span_id]
+		local perimeter=geometry_ref_by_id[row.perimeter_id]
+		local mouth=perimeter and perimeter.polygon[row.mouth_vertex_index]
+		local sample=bay and bay.centreline[row.mouth_sample_index]
+		local derived_width=sample and 2*sample.half_width
+		if row.id~=expected[1] or row.bay_id~=expected[2] or row.perimeter_id~=expected[3] or
+				row.mouth_vertex_index~=expected[4] or row.before_span_id~=expected[5] or
+				row.after_span_id~=expected[6] or derived_width~=expected[7] or
+				row.mouth_sample_index~=1 or
+				row.policy_id~="maximal_contiguous_nonwrapping_half_open_exact_base_bay_perimeter_stations_v1" or
+				row.station_order~="canonical_deduplicated_final_perimeter_integer_raster_order" or
+				row.geometry_rule~="derive_from_referenced_bay_and_perimeter_no_copied_shape" or
+				row.owner_rule~="same_exact_base_bay_projection_and_owner" or
+				row.boundary_tie~="first_and_last_included_end_and_preceding_start_excluded_dry" or
+				row.control~=nil or row.position~=nil or not bay or
+				bay.mouth_aperture_id~=row.id or aperture_by_bay[row.bay_id] or
+				not before_span or not after_span or before_span.zone_id~=
+					bay.perimeter_projection.coast_left_zone_id or after_span.zone_id~=
+					bay.perimeter_projection.coast_right_zone_id or
+					not mouth or mouth.x~=sample.x or mouth.z~=sample.z then
+			return diag("bay_mouth_aperture_contract",row.id,
+				"exact Bay/mouth/perimeter/two-span derived aperture record","changed")
+		end
+		aperture_by_bay[row.bay_id]=row
+	end
+	for bay_index=1,#source.bays do if not aperture_by_bay[source.bays[bay_index].id] then
+		return diag("bay_mouth_aperture_coverage",source.bays[bay_index].id,1,0)
+	end end
+	local expected_wings={
+		{"bay_wing:elandor_west:left","bay_elandor_west",-980,-2000,-1400,-1900,
+			"junction:-1400:-1900","land_002","land_020",
+			"elandor_copperfell_foothills","elandor_whitebridge_shire",-1195,-1971,-1185,-1929,
+			"elandor_copperfell_foothills"},
+		{"bay_wing:elandor_west:right","bay_elandor_west",-980,-2000,-400,-1900,
+			"junction:-400:-1900","land_005","land_021",
+			"elandor_whitebridge_shire","elandor_goldmead_vale",-695,-1921,-685,-1979,
+			"elandor_goldmead_vale"},
+		{"bay_wing:elandor_east:left","bay_elandor_east",1020,-1990,400,-1900,
+			"junction:400:-1900","land_005","land_022",
+			"elandor_goldmead_vale","elandor_lorindor",706,-1975,714,-1915,
+			"elandor_goldmead_vale"},
+		{"bay_wing:elandor_east:right","bay_elandor_east",1020,-1990,1400,-1900,
+			"junction:1400:-1900","land_008","land_023",
+			"elandor_lorindor","elandor_starbough_vale",1206,-1926,1214,-1964,
+			"elandor_starbough_vale"},
+		{"bay_wing:kragmar_west:left","bay_kragmar_west",-1060,2010,-1400,1900,
+			"junction:-1400:1900","land_011","land_026",
+			"kragmar_speargrass_reach","kragmar_mournfen",-1219,1921,-1241,1989,
+			"kragmar_mournfen"},
+		{"bay_wing:kragmar_west:right","bay_kragmar_west",-1060,2010,-400,1900,
+			"junction:-400:1900","land_014","land_027",
+			"kragmar_redtusk_savanna","kragmar_speargrass_reach",-725,1985,-735,1925,
+			"kragmar_redtusk_savanna"},
+		{"bay_wing:kragmar_east:left","bay_kragmar_east",900,1980,400,1900,
+			"junction:400:1900","land_014","land_028",
+			"kragmar_whispering_reedlands","kragmar_redtusk_savanna",655,1910,645,1970,
+			"kragmar_redtusk_savanna"},
+		{"bay_wing:kragmar_east:right","bay_kragmar_east",900,1980,1400,1900,
+			"junction:1400:1900","land_017","land_029",
+			"kragmar_raincall_basin","kragmar_whispering_reedlands",1155,1970,1145,1910,
+			"kragmar_raincall_basin"},
+	}
+	local wings_by_bay={}
+	for wing_index=1,#source.bay_closure_wings do local wing=source.bay_closure_wings[wing_index]
+		local expected=expected_wings[wing_index]
+		local bay=bay_by_id[wing.bay_id]
+		local head=bay and bay.centreline[wing.head_sample_index]
+		if wing.id~=expected[1] or wing.bay_id~=expected[2] or
+				wing.head.x~=expected[3] or wing.head.z~=expected[4] or
+				wing.junction.x~=expected[5] or wing.junction.z~=expected[6] or
+				wing.junction_ref~=expected[7] or not dense(wing.junction_edge_ids) or
+				#wing.junction_edge_ids~=2 or wing.junction_edge_ids[1]~=expected[8] or
+				wing.junction_edge_ids[2]~=expected[9] or wing.left_zone_id~=expected[10] or
+				wing.right_zone_id~=expected[11] or wing.left_probe.x~=expected[12] or
+				wing.left_probe.z~=expected[13] or wing.right_probe.x~=expected[14] or
+				wing.right_probe.z~=expected[15] or wing.tie_zone_id~=expected[16] or
+				wing.head_sample_index~=4 or wing.head_half_width~=80 or
+				wing.geometry_policy_id~="strict_tapered_bay_closure_wing_v1" or
+				wing.noise_domain~="fixed" or wing.max_displacement~=0 or not head or
+				head.x~=wing.head.x or head.z~=wing.head.z or
+				head.half_width~=wing.head_half_width then
+			return diag("bay_closure_wing_literal",wing.id,
+				"reviewed fixed head/junction/owner/probe record","invalid")
+		end
+		if not zone_ids[wing.left_zone_id] or not zone_ids[wing.right_zone_id] or
+				wing.left_zone_id==wing.right_zone_id or
+				wing.tie_zone_id~=(zone_by_id[wing.left_zone_id].numeric_id<
+				zone_by_id[wing.right_zone_id].numeric_id and wing.left_zone_id or wing.right_zone_id) then
+			return diag("bay_closure_wing_owner",wing.id,
+				"two known owners and lower numeric seam tie","invalid")
+		end
+		for edge_ref_index=1,2 do local edge=edge_by_id[wing.junction_edge_ids[edge_ref_index]]
+			if not edge or (edge.from_junction_id~=wing.junction_ref and
+					edge.to_junction_id~=wing.junction_ref) then
+				return diag("bay_closure_wing_junction_ref",wing.id,
+					"two existing land-edge endpoints at fixed triple junction","invalid")
+			end
+		end
+		local dx,dz=wing.junction.x-wing.head.x,wing.junction.z-wing.head.z
+		local length_squared=dx*dx+dz*dz
+		local radius_squared=safe_nonnegative_product(wing.head_half_width,wing.head_half_width)
+		local length_fourth=safe_nonnegative_product(length_squared,length_squared)
+		local full_guard=radius_squared and length_fourth and
+			safe_nonnegative_product(radius_squared,length_fourth)
+		local root=ceil_isqrt(length_squared)
+		local open_bound=wing.head_half_width*root-1
+		local open_bound_squared=safe_nonnegative_product(open_bound,open_bound)
+		local open_guard=open_bound_squared and
+			safe_nonnegative_product(open_bound_squared,length_squared)
+		if not full_guard or not open_guard then
+			return diag("bay_closure_wing_safe_product",wing.id,
+				"r^2*L^2 and (r*ceil_isqrt(L)-1)^2*L <= 2^53-1","overflow")
+		end
+		local left_inside,left_cross=point_in_closure_wing(wing.left_probe,wing)
+		local right_inside,right_cross=point_in_closure_wing(wing.right_probe,wing)
+		local terminal_inside=point_in_closure_wing(wing.junction,wing)
+		if left_inside~=true or right_inside~=true or left_cross<=0 or right_cross>=0 or
+				terminal_inside~=false then
+			return diag("bay_closure_wing_probe_side",wing.id,
+				"left/right probes strict inside by authored A-to-B cross and J dry",
+				tostring(left_cross)..":"..tostring(right_cross))
+		end
+		wings_by_bay[wing.bay_id]=wings_by_bay[wing.bay_id] or {}
+		wings_by_bay[wing.bay_id][#wings_by_bay[wing.bay_id]+1]=wing.id
+	end
+	for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+		local wing_ids=wings_by_bay[bay.id]
+		if not dense(bay.closure_wing_ids) or #bay.closure_wing_ids~=2 or
+				not wing_ids or bay.closure_wing_ids[1]~=wing_ids[1] or
+				bay.closure_wing_ids[2]~=wing_ids[2] then
+			return diag("bay_closure_wing_coverage",bay.id,
+				"exactly two source-ordered literal wings","invalid")
+		end
+	end
 	local role_allowed={base_H=true,target_T=true,hydrology=true,route=true,
 		interface=true,dressing=true}
 	local landmark_primitive_allowed={rectangle=true,ellipse=true,capsule=true}
 	local landmark_ids,landmark_by_id={},{}
+	local base_h_priorities={}
 	for i=1,#source.landmarks do local row=source.landmarks[i]
 		if not zone_ids[row.zone_id] or not landmark_primitive_allowed[row.primitive] or
 				not point_valid(row.center,false) or type(row.radius_x)~="number" or
 				type(row.radius_z)~="number" or row.radius_x<=0 or row.radius_z<=0 or
 				not dense(row.roles) or #row.roles==0 then return diag("landmark_contract",row.id,"known zone/primitive/mask/roles","invalid") end
 		for j=1,#row.roles do if not role_allowed[row.roles[j]] then return diag("landmark_role",row.id,"allowed role",row.roles[j]) end end
+		if row.roles[1]~="base_H" or row.base_h_priority~=i or
+				base_h_priorities[row.base_h_priority] or
+				row.base_h_composition~="replace_profile_height" or
+				row.base_h_blend_width~=64 then
+			return diag("landmark_base_h_contract",row.id,
+				"unique priority and explicit replacement composition","invalid")
+		end
+		base_h_priorities[row.base_h_priority]=true
 		landmark_ids[row.id]=true landmark_by_id[row.id]=row
 	end
 	local primitive_ids={}
-	for i=1,#source.template_primitives do primitive_ids[source.template_primitives[i].id]=true end
+	local formula_rows=policies.primitive_formulas.formulas
+	if not dense(formula_rows) or #formula_rows~=#source.template_primitives then
+		return diag("primitive_formula_coverage","geometry_policies.primitive_formulas",
+			#source.template_primitives,"changed")
+	end
+	local primitive_parameters={flat={"height_offset"},
+		tilt={"axis_x","axis_z","rise","run"},
+		terrace={"step_height","step_run","rings"},
+		plateau={"inner_radius","shoulder_width"},
+		basin={"inner_radius","depth","rim_width"},
+		rim={"inner_radius","peak_radius","outer_radius","height"},
+		causeway={"surface_width","backing_depth"},
+		cross_section={"surface_width","corridor_width"},
+		housing_smoothing={"radius","relief_limit"}}
+	for i=1,#source.template_primitives do local primitive=source.template_primitives[i]
+		local expected=primitive_parameters[primitive.id]
+		if formula_rows[i].id~=primitive.id then
+			return diag("primitive_formula_coverage",primitive.id,primitive.id,
+				formula_rows[i].id)
+		end
+		if primitive.version~=1 or not expected or not dense(primitive.parameters) or
+				#primitive.parameters~=#expected or primitive.degree~=nil then
+			return diag("template_primitive_contract",primitive.id,
+				"feature-specific closed parameter vocabulary","invalid")
+		end
+		for j=1,#expected do if primitive.parameters[j]~=expected[j] then
+			return diag("template_primitive_parameters",primitive.id..":"..j,
+				expected[j],primitive.parameters[j])
+		end end
+		primitive_ids[primitive.id]=true
+	end
 	local operation_allowed={apply=true,overlay=true,blend=true,subtract=true}
 	local composition_ids,composition_by_id={},{}
 	for i=1,#source.template_compositions do local row=source.template_compositions[i]
@@ -812,6 +2365,45 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		if row.version~=1 or not dense(row.operations) or #row.operations==0 then return diag("template_composition",row.id,"versioned operations","invalid") end
 		for j=1,#row.operations do local operation=row.operations[j]
 			if not operation_allowed[operation.op] or not primitive_ids[operation.primitive_id] or type(operation.parameters)~="table" then return diag("template_operation",row.id,"known op/primitive/parameters","invalid") end
+			local expected_parameters=primitive_parameters[operation.primitive_id]
+			local operation_parameter_count=0
+			for _ in pairs(operation.parameters) do
+				operation_parameter_count=operation_parameter_count+1
+			end
+			if operation_parameter_count~=#expected_parameters then
+				return diag("template_operation_parameters",row.id..":"..j,
+					#expected_parameters,operation_parameter_count)
+			end
+			for parameter_index=1,#expected_parameters do
+				local name=expected_parameters[parameter_index]
+				if type(operation.parameters[name])~="number" then
+					return diag("template_operation_parameters",
+						row.id..":"..j..":"..name,"numeric authored parameter",
+						type(operation.parameters[name]))
+				end
+			end
+			if operation.primitive_id=="rim" then local p=operation.parameters
+				if p.inner_radius<0 or p.inner_radius>=p.peak_radius or
+						p.peak_radius>=p.outer_radius or p.height<0 then
+					return diag("primitive_rim_parameters",row.id..":"..j,
+						"0 <= inner < peak < outer and height >= 0","invalid")
+				end
+			end
+			local axis_expected
+			if row.id=="compose_mirefolk" or row.id=="compose_clash" then
+				axis_expected="selected_candidate_trail_spur_endpoint_tangent"
+			elseif row.id=="compose_rare_route" then
+				axis_expected="selected_candidate_patrol_first_segment_tangent"
+			end
+			local axis_dependent=operation.primitive_id=="causeway" or
+				operation.primitive_id=="cross_section"
+			if axis_dependent and operation.axis_source~=axis_expected then
+				return diag("primitive_axis_source",row.id..":"..j,
+					axis_expected,operation.axis_source)
+			elseif not axis_dependent and operation.axis_source~=nil then
+				return diag("primitive_axis_source",row.id..":"..j,"absent",
+					operation.axis_source)
+			end
 		end
 	end
 	local housing_composition=composition_by_id.compose_coastal_housing_core
@@ -829,37 +2421,229 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local template_ids={}
 	for i=1,#source.templates do local row=source.templates[i]
 		if not composition_ids[row.composition_id] then return diag("template_composition_ref",row.id,"known composition",row.composition_id) end
+		if row.fitting_width<=0 or row.blend_width<row.fitting_width or
+				row.force_native_dungeon~=false then
+			return diag("template_footprint_contract",row.id,
+				"positive centered fitting inside blend; no dungeon force","invalid")
+		end
 		template_ids[row.id]=true
 	end
 	for i=1,#source.anchors do if not template_ids[source.anchors[i].template_id] then return diag("anchor_template_ref",source.anchors[i].id,"known template",source.anchors[i].template_id) end end
+	local spur_anchor_seen={}
+	for i=1,#source.poi_spurs do local row=source.poi_spurs[i]
+		local anchor=anchor_by_id[row.anchor_id]
+		local family=anchor and slot_family(anchor.slot_id)
+		local major=family=="village" or family=="outpost" or family=="mine"
+		local minor=family=="bandit" or family=="mirefolk" or family=="clash"
+		local route=route_by_id[row.target_route_id] or
+			island_route_by_id[row.target_route_id]
+		local island_route=island_route_by_id[row.target_route_id]~=nil
+		local station=station_by_id[row.target_station_id] or
+			island_station_by_id[row.target_station_id]
+		local interface=route_interface_by_id[row.target_interface_id] or
+			island_route_interface_by_id[row.target_interface_id]
+		if not anchor or anchor.placement_mode~="candidate_set" or
+				(not major and not minor) or spur_anchor_seen[row.anchor_id] or
+				row.class~=(major and "secondary" or "trail") or
+				row.coordinate_space~="candidate_specific_relative_to_fixed_world_station" or
+				row.terminal_rule~="fixed_station_exact" or
+				not dense(row.candidate_paths) or
+				#row.candidate_paths~=#anchor.candidates or not point_valid(row.target_position,false) or
+				not route or not station or not interface then
+			return diag("poi_spur_contract",row.id,
+				"unique required candidate trail/secondary paths to fixed route station interface","invalid")
+		end
+		local route_zone_matches=(not island_route and
+			(route.zone_a==anchor.zone_id or route.zone_b==anchor.zone_id)) or
+			(island_route and island_by_id[route.island_id] and
+				island_by_id[route.island_id].zone_id==anchor.zone_id)
+		if not route_zone_matches then
+			return diag("poi_spur_target_zone",row.id,anchor.zone_id,"route outside zone")
+		end
+		local route_station_a=island_route and route.from_station_id or route.station_a_id
+		local route_station_b=island_route and route.to_station_id or route.station_b_id
+		if row.target_station_id~=route_station_a and
+				row.target_station_id~=route_station_b then
+			return diag("poi_spur_station_ref",row.id,"route endpoint station",row.target_station_id)
+		end
+		local route_interface_a=island_route and route.id..":from" or route.endpoint_a_id
+		local route_interface_b=island_route and route.id..":to" or route.endpoint_b_id
+		if row.target_interface_id~=route_interface_a and
+				row.target_interface_id~=route_interface_b then
+			return diag("poi_spur_interface_ref",row.id,"route endpoint interface",row.target_interface_id)
+		end
+		local expected_interface=route_station_a==row.target_station_id and
+			route_interface_a or route_interface_b
+		if row.target_interface_id~=expected_interface or
+				row.target_position.x~=station.position.x or
+				row.target_position.z~=station.position.z then
+			return diag("poi_spur_target_incidence",row.id,
+				"same route endpoint/station/interface world position","mismatch")
+		end
+		for candidate_index=1,#row.candidate_paths do
+			local path=row.candidate_paths[candidate_index]
+			if not dense(path) or #path<3 then return diag("poi_spur_path",row.id..":"..candidate_index,
+				"complete three-or-more-point authored path","invalid") end
+			for j=1,#path do if not point_valid(path[j],false) then
+				return diag("poi_spur_path_offset",row.id..":"..candidate_index,
+					"integer candidate-relative offset","invalid")
+			end
+			end
+			if path[1].x~=0 or path[1].z~=0 then return diag("poi_spur_candidate_origin",
+				row.id..":"..candidate_index,"0,0",path[1].x..","..path[1].z) end
+			local candidate=anchor.candidates[candidate_index]
+			local terminal=path[#path]
+			if candidate.x+terminal.x~=row.target_position.x or
+					candidate.z+terminal.z~=row.target_position.z then
+				return diag("poi_spur_world_terminus",row.id..":"..candidate_index,
+					row.target_position.x..":"..row.target_position.z,
+					(candidate.x+terminal.x)..":"..(candidate.z+terminal.z))
+			end
+		end
+		spur_anchor_seen[row.anchor_id]=true
+	end
+	for i=1,#source.anchors do local family=slot_family(source.anchors[i].slot_id)
+		if (family=="village" or family=="outpost" or family=="mine" or
+				family=="bandit" or family=="mirefolk" or family=="clash") and
+				not spur_anchor_seen[source.anchors[i].id] then
+			return diag("poi_spur_required",source.anchors[i].id,"one secondary spur","missing")
+		end
+	end
+	local hydrology_profile_ids,hydrology_profile_by_id={},{}
+	local profile_expected={dry_channel=0,ford=1,shallow_marsh=1,stream=2,
+		spring=2,shallow_pond=2,river=4,delta_arm=4,ordinary_lake=8,
+		plunge_pool=12,deep_cenote=12}
+	for i=1,#source.hydrology_profiles do local row=source.hydrology_profiles[i]
+		if profile_expected[row.id]~=row.depth or row.bed_seal_layers~=3 or
+				row.bank_seal_nodes~=2 or type(row.bank_blend_width)~="number" or
+				row.bank_blend_width<=0 or type(row.mask_semantic_id)~="string" then
+			return diag("hydrology_profile_contract",row.id,
+				"closed depth/blend/two-bank/three-bed profile","invalid")
+		end
+		hydrology_profile_ids[row.id]=true hydrology_profile_by_id[row.id]=row
+	end
+	local transition_ids,transition_by_id={},{}
+	local transition_vertical={bridge_clearance="bridge_clearance_v1",
+		ford_bed="ford_bed_v1",causeway_deck="causeway_culvert_v1"}
+	for i=1,#source.hydrology_transition_profiles do local row=source.hydrology_transition_profiles[i]
+		if transition_ids[row.id] or type(row.kind)~="string" or
+				type(row.run)~="number" or row.run<0 or type(row.drop)~="number" or
+				row.drop<0 or type(row.open_face)~="string" or
+				type(row.seal_semantic_id)~="string" then
+			return diag("hydrology_transition_profile",row.id,"closed transition parameters","invalid")
+		end
+		if transition_vertical[row.id] and row.vertical_rule_id~=
+				transition_vertical[row.id] then
+			return diag("hydrology_transition_vertical",row.id,
+				transition_vertical[row.id],row.vertical_rule_id)
+		end
+		if row.id=="bridge_clearance" and row.minimum_clearance_nodes~=3 then
+			return diag("hydrology_transition_vertical",row.id,3,
+				row.minimum_clearance_nodes)
+		elseif row.id=="ford_bed" and row.road_y_offset_from_bed~=0 then
+			return diag("hydrology_transition_vertical",row.id,0,
+				row.road_y_offset_from_bed)
+		elseif row.id=="causeway_deck" and row.deck_y_offset_from_W~=1 then
+			return diag("hydrology_transition_vertical",row.id,1,
+				row.deck_y_offset_from_W)
+		end
+		transition_ids[row.id]=true transition_by_id[row.id]=row
+	end
 	local hydrology_ids,hydrology_by_id={},{}
-	local depth_allowed={[0]=true,[1]=true,[2]=true,[4]=true,[8]=true,[12]=true}
 	for i=1,#source.hydrology do local row=source.hydrology[i]
 		hydrology_ids[row.id]=true hydrology_by_id[row.id]=row
 		if not zone_ids[row.zone_id] or not landmark_ids[row.landmark_id] or
-				not depth_allowed[row.depth] or not dense(row.centreline) or
-				#row.centreline<2 or row.bed_seal_layers~=3 or
-				row.bank_seal_nodes~=2 or type(row.from_id)~="string" or
-				type(row.to_id)~="string" or type(row.water_surface)~="table" or
-				row.water_surface.reference~="mapgen_water_level" or
-				type(row.water_surface.offset)~="number" then return diag("hydrology_contract",row.id,"typed connected sealed reach with W/D","invalid") end
-		if row.depth==0 and row.profile~="dry_channel" then return diag("hydrology_dry_profile",row.id,"dry_channel",row.profile) end
+				not hydrology_profile_ids[row.profile_id] or not dense(row.centreline) or
+				#row.centreline<2 or type(row.from_id)~="string" or
+				type(row.to_id)~="string" or
+				row.water_surface_reference~="mapgen_water_level" or
+				type(row.water_surface_offset)~="number" or
+				row.water_node_semantic~="surface_water" or row.depth~=nil or
+				row.water_surface~=nil then
+			return diag("hydrology_contract",row.id,
+				"one W, one closed profile, connected reach, surface_water semantic","invalid")
+		end
 		for j=1,#row.centreline do if not point_valid(row.centreline[j],true) then return diag("hydrology_point",row.id,"x/z/positive half_width","invalid") end end
 	end
-	local crossing_ids={}
-	for i=1,#source.route_crossing_interfaces do crossing_ids[source.route_crossing_interfaces[i].id]=true end
+	local crossing_ids,crossing_by_id={},{}
+	for i=1,#source.route_crossing_interfaces do local row=source.route_crossing_interfaces[i]
+		crossing_ids[row.id]=true crossing_by_id[row.id]=row
+	end
 	local hydrology_interface_kinds={confluence=true,bridge=true,ford=true,
 		waterfall=true,causeway=true,rapid=true}
 	for i=1,#source.hydrology_interfaces do local row=source.hydrology_interfaces[i]
 		if not hydrology_interface_kinds[row.kind] then return diag("hydrology_interface_kind",row.id,"closed kind",row.kind) end
 		if row.hydrology_id and not hydrology_ids[row.hydrology_id] then return diag("hydrology_interface_ref",row.id,"known reach",row.hydrology_id) end
 		if row.route_interface_id and not crossing_ids[row.route_interface_id] then return diag("hydrology_route_interface_ref",row.id,"known route crossing",row.route_interface_id) end
-		if row.upper_id and (not hydrology_ids[row.upper_id] or not hydrology_ids[row.lower_id] or not point_valid(row.position,false) or type(row.lip_id)~="string" or type(row.drop_id)~="string" or type(row.plunge_id)~="string" or row.drop_height<=0 or row.bed_seal_layers~=3 or row.bank_seal_nodes~=2) then return diag("waterfall_interface",row.id,"connected lip/drop/plunge/seals","invalid") end
-		if row.kind=="rapid" and (not point_valid(row.position,false) or row.run<=0 or row.drop<=0 or row.sealed~=true) then return diag("rapid_interface",row.id,"position/run/drop/seal","invalid") end
+		local transition=transition_by_id[row.transition_profile_id]
+		if not transition then return diag("hydrology_transition_ref",row.id,"closed transition profile",row.transition_profile_id) end
+		if transition.kind~=row.kind then return diag("hydrology_transition_kind",row.id,row.kind,transition.kind) end
+		if row.route_interface_id then local crossing=crossing_by_id[row.route_interface_id]
+			if not point_valid(row.position,false) or row.position.x~=crossing.position.x or
+					row.position.z~=crossing.position.z or row.hydrology_id~=crossing.hydrology_id then
+				return diag("hydrology_route_interface_incidence",row.id,
+					"same route/hydrology interface point","mismatch")
+			end
+		end
+		if row.kind=="confluence" then
+			if not dense(row.from_ids) or #row.from_ids<2 or
+					not hydrology_ids[row.outgoing_reach_id] or
+					not point_valid(row.position,false) or row.sealed~=true then
+				return diag("confluence_interface",row.id,"incoming reaches/position/outgoing reach/seal","invalid")
+			end
+			for j=1,#row.from_ids do if not hydrology_ids[row.from_ids[j]] or
+					not point_in_reach(row.position,hydrology_by_id[row.from_ids[j]].centreline) then
+				return diag("confluence_incidence",row.id,"position in every incoming reach",row.from_ids[j])
+			end end
+			if not point_in_reach(row.position,
+					hydrology_by_id[row.outgoing_reach_id].centreline) then
+				return diag("confluence_incidence",row.id,"position in outgoing reach",false)
+			end
+		elseif row.kind=="rapid" or row.kind=="waterfall" then
+			local upper,lower=hydrology_by_id[row.upper_id],hydrology_by_id[row.lower_id]
+			if not upper or not lower or not point_valid(row.position,false) or
+					row.upper_level_offset~=upper.water_surface_offset or
+					row.lower_level_offset~=lower.water_surface_offset or
+					row.upper_level_offset-row.lower_level_offset~=row.drop or
+					row.drop<=0 or row.bed_seal_layers~=3 or
+					row.bank_seal_nodes~=2 or row.sealed~=true or
+					not point_in_reach(row.position,upper.centreline) or
+					not point_in_reach(row.position,lower.centreline) then
+				return diag(row.kind=="rapid" and "rapid_interface" or
+					"waterfall_interface",row.id,
+					"upper/lower W, incidence, drop and closed seals","invalid")
+			end
+			if row.kind=="rapid" then
+				if row.run<=0 or row.width<=0 then return diag("rapid_interface",row.id,"positive run/width","invalid") end
+			else
+				if type(row.lip_id)~="string" or type(row.drop_id)~="string" or
+						type(row.plunge_id)~="string" or row.drop_height~=row.drop or
+						row.drop_mask_width<=0 or row.drop_mask_length<=0 or
+						not hydrology_profile_ids[row.plunge_profile_id] or
+						row.plunge_width<=0 or row.plunge_length<=0 then
+					return diag("waterfall_dimensions",row.id,
+						"exact lip/drop/plunge dimensions/profile","invalid")
+				end
+			end
+		elseif row.sealed~=true or not point_valid(row.position,false) then
+			if row.kind=="bridge" or row.kind=="ford" then
+				return diag("hydrology_crossing_interface",row.id,"position and seal","invalid")
+			end
+		end
 	end
 	local crossing_kind_allowed={bridge=true,ford=true,causeway=true,tunnel=true}
+	local crossing_vertical_rule={bridge="bridge_clearance_v1",ford="ford_bed_v1",
+		causeway="causeway_culvert_v1",tunnel="tunnel_lumen_v1"}
 	for i=1,#source.route_crossing_interfaces do local row=source.route_crossing_interfaces[i]
 		if not route_ids[row.route_id] or not crossing_kind_allowed[row.kind] or not point_valid(row.position,false) or row.span<=0 or row.width<=0 or type(row.grade_limit)~="table" then return diag("route_crossing_contract",row.id,"route/kind/point/span/width/grade","invalid") end
+		if row.grade_limit.numerator~=1 or row.grade_limit.denominator~=12 or
+				row.grade_phase~="flat_run_12" or
+				row.transition_semantic_id~="road_climb_stair_v1" or
+				row.vertical_rule_id~=crossing_vertical_rule[row.kind] or
+				row.hard_protected~=false then
+			return diag("route_crossing_grade_policy",row.id,
+				"1:12 flat phase/climb semantic/mutable crossing","invalid")
+		end
 		if row.hydrology_id and not hydrology_ids[row.hydrology_id] then return diag("route_crossing_hydrology_ref",row.id,"known hydrology",row.hydrology_id) end
 		if row.landmark_id and not landmark_ids[row.landmark_id] then return diag("route_crossing_landmark_ref",row.id,"known landmark",row.landmark_id) end
 		local route=route_by_id[row.route_id]
@@ -873,18 +2657,264 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	end
 	if source.hydrology[5].centreline[1].x==source.hydrology[6].centreline[1].x then return diag("highcourt_arms_distinct","highcourt",true,false) end
 	for _,index in ipairs({89,90}) do local counts={citrine=0,garnet=0,jade=0,diamond=0,sapphire=0,ruby=0}
-		local sockets=source.anchors[index].socket_resource_keys
-		if not dense(sockets) or #sockets~=12 then return diag("apex_socket_count",source.anchors[index].id,12,type(sockets)=="table" and #sockets or "invalid") end
-		for j=1,#sockets do if counts[sockets[j]]==nil then return diag("apex_socket_species",source.anchors[index].id,"six gem keys",sockets[j]) end counts[sockets[j]]=counts[sockets[j]]+1 end
+		local anchor=source.anchors[index]
+		local sockets=anchor.socket_reservations
+		if anchor.placement_mode~="fixed" or
+				anchor.socket_coordinate_space~="anchor_relative" or
+				not dense(sockets) or #sockets~=12 then return diag("apex_socket_count",anchor.id,12,type(sockets)=="table" and #sockets or "invalid") end
+		local ids,offsets={},{ }
+		for j=1,#sockets do local socket=sockets[j]
+			local expected_route=index==89 and
+				"island_route_wyrmglass_junction_apex" or
+				"island_route_stormscale_junction_apex"
+			if type(socket.id)~="string" or ids[socket.id] or
+					not point_valid(socket.offset,false) or not point_valid(socket.position,false) or
+					socket.position.x~=anchor.position.x+socket.offset.x or
+					socket.position.z~=anchor.position.z+socket.offset.z or
+					socket.implementation_owner~="WP40" or socket.refill_owner~="WP34" or
+					socket.approach_route_id~=expected_route or
+					not island_route_ids[socket.approach_route_id] or
+					math.abs(socket.offset.x)>=48 or math.abs(socket.offset.z)>=48 or
+					not point_in_polygon(socket.position,
+						island_by_id[index==89 and "island_wyrmglass" or
+							"island_stormscale"].polygon) or
+					socket.status~="active" or socket.active~=true then
+				return diag("apex_socket_reservation",anchor.id..":"..j,
+					"unique active reachable WP40 position with WP34 refill owner","invalid")
+			end
+			local offset_key=socket.offset.x..":"..socket.offset.z
+			if offsets[offset_key] then return diag("apex_socket_offset_unique",anchor.id,12,offset_key) end
+			ids[socket.id]=true offsets[offset_key]=true
+			if counts[socket.resource_key]==nil then return diag("apex_socket_species",anchor.id,"six gem keys",socket.resource_key) end
+			counts[socket.resource_key]=counts[socket.resource_key]+1
+		end
 		for _,key in ipairs({"citrine","garnet","jade","diamond","sapphire","ruby"}) do if counts[key]~=2 then return diag("apex_socket_species_count",source.anchors[index].id..":"..key,2,counts[key]) end end
 	end
-	local housing_zones={elandor_copperfell_foothills=true,elandor_goldmead_vale=true,elandor_starbough_vale=true,elandor_whitebridge_shire=true,elandor_lorindor=true,kragmar_mournfen=true,kragmar_redtusk_savanna=true,kragmar_raincall_basin=true,kragmar_speargrass_reach=true,kragmar_whispering_reedlands=true}
-	local housing_ids={}
-	for i=1,#source.housing_masks do local row=source.housing_masks[i] if not housing_zones[row.zone_id] then return diag("housing_zone",row.id,"exact housing-zone catalog",row.zone_id) end housing_ids[row.id]=true end
-	for i=1,#source.coastal_housing_cores do local row=source.coastal_housing_cores[i]
-		if not housing_ids[row.housing_mask_id] or row.composition_id~="compose_coastal_housing_core" or row.frontage_min~=600 or row.inland_depth_min~=300 or row.relief_max~=12 or not dense(row.centerline) or #row.centerline<2 then return diag("coastal_core_contract",row.id,"mask/composition/minima/centreline","invalid") end
-		for j=1,#row.centerline do if not point_valid(row.centerline[j],false) then return diag("coastal_core_point",row.id,"integer x/z point","invalid") end end
+	local hard_recipe_by_id={}
+	for i=1,#source.hard_protection_recipes do local row=source.hard_protection_recipes[i]
+		local ordinary=row.id=="hard_capital_build_plus_apron_v1" or
+			row.id=="hard_start_core_v1"
+		local ordinary_width=row.id=="hard_capital_build_plus_apron_v1" and 532 or 128
+		local socket=row.id=="hard_apex_socket_column_v1"
+		if not ((ordinary and row.shape=="centered_half_open_square" and
+			row.footprint_policy_id=="centered_half_open_square_v1" and
+			row.total_width==ordinary_width and
+			row.y_policy_id=="shallow_land_upward_to_world_top" and
+			row.y_min==-700 and row.upward_unbounded==true) or
+			(socket and row.shape=="exact_column" and
+			row.footprint_policy_id=="exact_column_v1" and row.column_count==1 and
+			row.y_policy_id=="shallow_land_upward_to_world_top" and
+			row.y_min==-700 and row.upward_unbounded==true)) then
+			return diag("hard_protection_recipe",row.id,"exact active footprint recipe","invalid")
+		end
+		hard_recipe_by_id[row.id]=row
 	end
+	local hard_source_ids,hard_socket_ids={},{ }
+	for i=1,#source.hard_protection do local row=source.hard_protection[i]
+		local anchor=anchor_by_id[row.source_anchor_id]
+		local expected_recipe
+		if i<=12 then expected_recipe=anchor and anchor.slot_id=="capital" and
+			"hard_capital_build_plus_apron_v1" or "hard_start_core_v1"
+		else expected_recipe="hard_apex_socket_column_v1" end
+		if not anchor or not hard_recipe_by_id[row.recipe_id] or
+				row.recipe_id~=expected_recipe or not point_valid(row.center,false) or
+				row.active~=true or row.status~="active" or
+				row.activation_owner~="WP40" then
+			return diag("hard_protection_active",row.id,
+				"12 exact cores plus 24 exact apex socket columns","invalid")
+		end
+		if i<=12 then
+			if anchor~=source.anchors[i] or row.center.x~=anchor.position.x or
+					row.center.z~=anchor.position.z or row.socket_reservation_id~=nil then
+				return diag("hard_protection_core",row.id,"ordered exact start/capital core","invalid")
+			end
+		else
+			local socket_record
+			for j=1,#anchor.socket_reservations do
+				if anchor.socket_reservations[j].id==row.socket_reservation_id then
+					socket_record=anchor.socket_reservations[j] break end
+			end
+			if not socket_record or hard_socket_ids[row.socket_reservation_id] or
+					row.resource_key~=socket_record.resource_key or
+					row.center.x~=socket_record.position.x or
+					row.center.z~=socket_record.position.z then
+				return diag("hard_apex_socket",row.id,
+					"unique exact semantic socket column","invalid")
+			end
+			hard_socket_ids[row.socket_reservation_id]=true
+		end
+		hard_source_ids[row.source_anchor_id]=true
+	end
+	for i=1,12 do
+		if source.hard_protection[i].source_anchor_id~=source.anchors[i].id then
+			return diag("hard_protection_order",source.hard_protection[i].id,
+				source.anchors[i].id,source.hard_protection[i].source_anchor_id)
+		end
+	end
+	local pending_recipe_by_id={}
+	for i=1,#source.pending_static_recipes do local row=source.pending_static_recipes[i]
+		if row.status~="pending" or row.geometry_authority~=
+				"activation_owner" or type(row.activation_owner)~="string" or
+				row.total_width~=nil or row.radius~=nil then
+			return diag("pending_recipe_contract",row.id,
+				"owner/status only; no future dimensions","invalid")
+		end
+		pending_recipe_by_id[row.id]=row
+	end
+	local pending_ids={}
+	local pending_counts={wp13=0,wp17=0,wp34=0}
+	for i=1,#source.pending_static_reservations do local row=source.pending_static_reservations[i]
+		local recipe=pending_recipe_by_id[row.recipe_id]
+		local pending_anchor=anchor_by_id[row.anchor_id]
+		if not recipe or not pending_anchor or
+				row.activation_owner~=recipe.activation_owner or row.status~="pending" or
+				row.active~=false or hard_socket_ids[row.id] or
+				row.center~=nil or row.position~=nil or row.total_width~=nil or
+				row.radius~=nil or row.polygon~=nil or row.corridor_width~=nil or
+				row.half_width~=nil or row.node_id~=nil or row.yield~=nil or
+				row.refill_seconds~=nil or row.deep_multiplier~=nil or
+				row.hard_protected~=nil or row.protection_recipe_id~=nil then
+			return diag("pending_reservation_contract",row.id,
+				"known owner/anchor, inactive ownership handoff without geometry or behavior",
+				"invalid")
+		end
+		local expected_containment={}
+		if row.socket_reservation_id then
+			expected_containment[1]="exclude:active:hard:"..row.socket_reservation_id
+		else
+			local count=pending_anchor.placement_mode=="candidate_set" and
+				#pending_anchor.candidates or 1
+			for candidate_index=1,count do
+				expected_containment[candidate_index]=
+					("exclude:anchor:%s:%02d"):format(row.anchor_id,candidate_index)
+			end
+		end
+		if not dense(row.containment_exclusion_ids) or
+				#row.containment_exclusion_ids~=#expected_containment then
+			return diag("pending_containment",row.id,
+				"all exact current anchor/socket exclusion containers","invalid")
+		end
+		for containment_index=1,#expected_containment do
+			if row.containment_exclusion_ids[containment_index]~=
+					expected_containment[containment_index] then
+				return diag("pending_containment",row.id,
+					expected_containment[containment_index],
+					row.containment_exclusion_ids[containment_index])
+			end
+		end
+		if row.activation_owner=="WP13" then
+			local family=slot_family(anchor_by_id[row.anchor_id].slot_id)
+			if (family~="mine" and family~="apex_mine") or
+					row.reservation_kind~="mining_camp_functional_anchor" then
+				return diag("pending_wp13_scope",row.id,"six mines plus two apex mines",family)
+			end
+			pending_counts.wp13=pending_counts.wp13+1
+		elseif row.activation_owner=="WP17" then pending_counts.wp17=pending_counts.wp17+1
+		elseif row.activation_owner=="WP34" then pending_counts.wp34=pending_counts.wp34+1 end
+		pending_ids[row.id]=true
+	end
+	if pending_counts.wp13~=8 or pending_counts.wp17~=48 or pending_counts.wp34~=30 then
+		return diag("pending_exact_scope","pending_static_reservations","8/48/30",
+			pending_counts.wp13.."/"..pending_counts.wp17.."/"..pending_counts.wp34)
+	end
+	local exclusion_recipe_by_id={}
+	for i=1,#source.claim_exclusion_recipes do local row=source.claim_exclusion_recipes[i]
+		if type(row.kind)~="string" or type(row.footprint_policy_id)~="string" then
+			return diag("claim_exclusion_recipe",row.id,"closed kind/footprint policy","invalid")
+		end
+		exclusion_recipe_by_id[row.id]=row
+	end
+	local expected_exclusions,expected_exclusion_order={},{}
+	local function expect_exclusion(id,recipe_id,source_id,value_name,value)
+		expected_exclusions[id]={recipe_id=recipe_id,source_id=source_id,
+			value_name=value_name,value=value}
+		expected_exclusion_order[#expected_exclusion_order+1]=id
+	end
+	local template_record_by_id={}
+	for i=1,#source.templates do template_record_by_id[source.templates[i].id]=source.templates[i] end
+	for i=1,#source.anchors do local anchor=source.anchors[i]
+		local candidates=anchor.placement_mode=="fixed" and {anchor.position} or anchor.candidates
+		for j=1,#candidates do expect_exclusion(("exclude:anchor:%s:%02d"):format(anchor.id,j),
+			"exclude_anchor_blend_v1",anchor.id,"total_width",
+			template_record_by_id[anchor.template_id].blend_width) end
+	end
+	local route_width={primary=16,secondary=12,trail=8}
+	for i=1,#source.routes do local row=source.routes[i]
+		expect_exclusion("exclude:route:"..row.id,"exclude_route_corridor_v1",
+			row.id,"corridor_width",route_width[row.class]) end
+	for i=1,#source.island_routes do local row=source.island_routes[i]
+		expect_exclusion("exclude:route:"..row.id,"exclude_route_corridor_v1",
+			row.id,"corridor_width",12) end
+	for i=1,#source.poi_spurs do local row=source.poi_spurs[i]
+		expect_exclusion("exclude:route:"..row.id,"exclude_route_corridor_v1",
+			row.id,"corridor_width",route_width[row.class]) end
+	for i=1,#source.hydrology do local row=source.hydrology[i]
+		expect_exclusion("exclude:water:"..row.id,"exclude_planned_water_v1",row.id) end
+	for i=1,#source.bays do local row=source.bays[i]
+		expect_exclusion("exclude:water:"..row.id,"exclude_planned_water_v1",row.id) end
+	for _,collection in ipairs({source.perimeters,source.islands,source.channels}) do
+		for i=1,#collection do local row=collection[i]
+			expect_exclusion("exclude:coast:"..row.id,"exclude_coast_v1",row.id) end
+	end
+	for i=1,#source.land_edges do local row=source.land_edges[i]
+		expect_exclusion("exclude:boundary:"..row.id,"exclude_boundary_v1",row.id) end
+	for i=1,#source.hard_protection do local row=source.hard_protection[i]
+		expect_exclusion("exclude:active:"..row.id,"exclude_active_core_v1",row.id) end
+	local exclusion_seen,first_invalid_exclusion={}
+	for i=1,#source.claim_exclusions do local row=source.claim_exclusions[i]
+		local expected=expected_exclusions[row.id]
+		local duplicate=expected and exclusion_seen[row.id]
+		if not expected or duplicate or
+				row.recipe_id~=expected.recipe_id or row.source_id~=expected.source_id or
+				not exclusion_recipe_by_id[row.recipe_id] or
+				(expected.value_name and row[expected.value_name]~=expected.value) then
+			first_invalid_exclusion=first_invalid_exclusion or row
+		end
+		if expected and not duplicate then
+			exclusion_seen[row.id]=true
+		end
+		if expected and row.recipe_id=="exclude_anchor_blend_v1" and
+				(row.coverage~="complete_fitting_plus_blend_envelope" or
+				not point_valid(row.center,false)) then
+			return diag("claim_anchor_envelope",row.id,"full candidate fitting+blend envelope","invalid")
+		end
+	end
+	for i=1,#expected_exclusion_order do local id=expected_exclusion_order[i]
+		if not exclusion_seen[id] then
+		return diag("claim_exclusion_missing",id,"present","missing")
+	end end
+	if first_invalid_exclusion then return diag("claim_exclusion_contract",
+		first_invalid_exclusion.id,
+		"complete current anchor/route/water/coast/boundary/active-core exclusion","invalid") end
+	local housing_zones={elandor_copperfell_foothills=true,elandor_goldmead_vale=true,elandor_starbough_vale=true,elandor_whitebridge_shire=true,elandor_lorindor=true,kragmar_mournfen=true,kragmar_redtusk_savanna=true,kragmar_raincall_basin=true,kragmar_speargrass_reach=true,kragmar_whispering_reedlands=true}
+	local housing_ids,housing_by_id={},{}
+	for i=1,#source.housing_masks do local row=source.housing_masks[i] if not housing_zones[row.zone_id] then return diag("housing_zone",row.id,"exact housing-zone catalog",row.zone_id) end housing_ids[row.id]=true housing_by_id[row.id]=row end
+	local coastal_zone_seen={}
+	for i=1,#source.coastal_housing_cores do local row=source.coastal_housing_cores[i]
+		local housing=housing_by_id[row.housing_mask_id]
+		local span=span_by_id[row.perimeter_span_id]
+		if not housing or housing.zone_id~=row.zone_id or coastal_zone_seen[row.zone_id] or
+				row.composition_id~="compose_coastal_housing_core" or
+				row.policy_id~="displaced_coast_interval_inward_core_v1" or
+				row.frontage_min~=600 or row.inland_depth_min~=300 or
+				row.relief_max~=12 or not span or span.zone_id~=row.zone_id or
+				row.direction~="forward" or row.inward_side~="left" or
+				type(row.start_segment)~="number" or type(row.end_segment)~="number" or
+				row.start_segment<1 or row.end_segment<row.start_segment or
+				row.end_segment>span.last_segment-span.first_segment+2 then
+			return diag("coastal_core_contract",row.id,
+				"exact mask/zone/displaced-coast interval/inward 600x300 policy","invalid")
+		end
+		if row.start_segment>row.end_segment then return diag("coastal_core_coast_ref",row.id,
+			"interval wholly in one canonical perimeter span","invalid") end
+		-- Stage 1 owns source identity, span direction, dimensions and policy
+		-- references only. Stage 2 sums the final displaced one-node station
+		-- sequence in Q16 and proves the binding 600-node frontage; an authored
+		-- control chord is deliberately not a frontage authority.
+		coastal_zone_seen[row.zone_id]=true
+	end
+	if #source.coastal_housing_cores~=4 then return diag("coastal_core_count",
+		"coastal_housing_cores",4,#source.coastal_housing_cores) end
 	if source.constants.holy_grounds.min_x ~= -2500 or source.constants.holy_grounds.max_x ~= 2500 or source.constants.holy_grounds.min_z ~= -250 or source.constants.holy_grounds.max_z ~= 250 then
 		return diag("fixed_holy_rectangle","holy_grounds","-2500..2500/-250..250","changed")
 	end
@@ -932,6 +2962,26 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	if source.constants.dragon_approach_z[1] ~= -125 or
 			source.constants.dragon_approach_z[2] ~= 125 then
 		return diag("fixed_dragon_approaches","dragon_approach_z","-125,125","changed")
+	end
+	if source.semantics.semantic_water_node~="surface_water" then
+		return diag("surface_water_semantic","semantics","surface_water",
+			source.semantics.semantic_water_node)
+	end
+	local semantic_lists={
+		{source.semantics.relief_ids,source.relief_profiles,"relief"},
+		{source.semantics.water_class_ids,source.water_classes,"water_class"},
+		{source.semantics.hydrology_profile_ids,source.hydrology_profiles,"hydrology_profile"},
+		{source.semantics.protection_recipe_ids,source.hard_protection_recipes,"protection_recipe"},
+		{source.semantics.exclusion_recipe_ids,source.claim_exclusion_recipes,"exclusion_recipe"},
+	}
+	for list_index=1,#semantic_lists do local item=semantic_lists[list_index]
+		if not dense(item[1]) or #item[1]~=#item[2] then
+			return diag("closed_semantic_vocabulary",item[3],#item[2],"changed")
+		end
+		for i=1,#item[2] do if item[1][i]~=item[2][i].id then
+			return diag("closed_semantic_vocabulary",item[3]..":"..i,
+				item[2][i].id,item[1][i])
+		end end
 	end
 	local function point_signature(points, widths)
 		local parts={}
@@ -981,7 +3031,13 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			if row.race_region~=expected[1] or row.g1~=expected[2] or row.g2~=expected[3] or row.cultural~=expected[4] or row.signature_wood~=expected[5] then return diag("exact_race_assignment",row.race_region,"WP43 published assignment","changed") end
 			if not resource_rows[row.g1] or resource_rows[row.g1].scope~="regional" or resource_rows[row.g1].grade~="G1" or not resource_rows[row.g2] or resource_rows[row.g2].scope~="regional" or resource_rows[row.g2].grade~="G2" then return diag("semantic_resource_grade",row.race_region,"regional G1/G2","mismatch") end
 		end
-		for _, index in ipairs({89,90}) do for j=1,#source.anchors[index].socket_resource_keys do local key=source.anchors[index].socket_resource_keys[j] if not resources[key] then return diag("semantic_reference",source.anchors[index].id,"published WP43 resource key",key) end end end
+		for _, index in ipairs({89,90}) do
+			for j=1,#source.anchors[index].socket_reservations do
+				local key=source.anchors[index].socket_reservations[j].resource_key
+				if not resources[key] then return diag("semantic_reference",
+					source.anchors[index].id,"published WP43 resource key",key) end
+			end
+		end
 	end
 	if type(canonical)~="table" or type(raw_sha256)~="function" then
 		return diag("exact_source_seam","source","T1 canonical module and raw SHA injection","missing")
