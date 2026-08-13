@@ -8,8 +8,8 @@ design.
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
-Stone contract in `housing.md`, playable-boat behavior tracked in
-`TODO-design-boats.md`, the four mastery names in `items_crafting.md` §2.1,
+Stone contract in `housing.md`, the playable-boat contract in
+`boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the chase/leash model `combat_stats.md` §4.
 
@@ -159,6 +159,16 @@ arbitrary fixed-price wall.
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model.
+- **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
+  punches *what the player is attached to* —
+  `local target = self.attack:get_attach() or self.attack`
+  (`mods/ENTITIES/mobs/api.lua:2525-2526`) — so a mob's melee swing lands on
+  the mount entity and the rider loses no HP from it. That swallowed swing is
+  what has to trigger the dismount; damage aimed at the player directly (our
+  own PvP pipeline, projectiles, drowning, environment) reaches the rider
+  normally. The rule above therefore needs **two** hooks, the mount entity's
+  `on_punch` and the central HP-change hook in `grug_core` — the same seam
+  pair `boats.md` §6 uses for the identical rule on water.
 
 **Why this rule exists: it is what keeps the speed pillar intact.**
 `combat_stats.md` §3 gives aggressive mobs `run_velocity` **4.4** against
