@@ -256,7 +256,9 @@ WP40 replaces it with the complete catalog and contracts below.
   rational squared distances choose the nearest centreline segment; its cross
   sign selects the declared side owner, and an exact distance or centreline
   tie belongs to the lower numeric zone ID. The inner head has a round cap and
-  the outer mouth is clipped open by the final planned-footprint perimeter.
+  the outer mouth reaches the final planned-footprint perimeter, where the
+  one declared mouth aperture retains exact Base-Bay water on perimeter
+  equality and the strict exterior is discarded.
   The last listed sample is the fixed positive-width **head shoulder** `C`,
   with radius 80 and the original 160-node cross-section.
 - Final planned bay water adds exactly two zero-jitter analytic **closure
@@ -274,15 +276,49 @@ WP40 replaces it with the complete catalog and contracts below.
   adding those sides to the land graph. The original centreline samples, round
   head shoulder and outer mouth remain unchanged even though the final planned-
   water mask is explicitly larger than the base mask at the two closures.
-- The horizontal classifier applies one exact precedence: base bay water and
-  its existing centreline owner; then closure-wing-exclusive water and its
-  explicit side owner; then the canonical half-open dry-face result; then
-  exterior. The two wings of one bay have a stable order, permitted only after
-  validation proves that their integer interiors do not overlap outside the
-  base mask. A wing-centre tie belongs to the lower numeric zone ID. Raw dry
-  membership may overlap on a declared shared edge or junction, but its
-  half-open tie still returns one zone. Any undeclared dry cross-face seam or
-  intersection outside final planned water is invalid.
+- The horizontal classifier first evaluates the independent final literal
+  planned-footprint perimeter. A point strictly outside is exterior. Exactly
+  four checksum-covered mouth-aperture records—one for each Base Bay—bind the
+  existing Bay ID and first centreline sample to the incident perimeter and
+  its two spans, without copying a second mouth shape. On perimeter equality
+  inside one such aperture, exact
+  `strict_rational_variable_width_capsule_union_v1` membership and its existing
+  owner rule take precedence and return planned water. The four perpendicular
+  analytic cross-sections remain exactly 720, 660, 640 and 740 nodes for
+  Elandor west/east and Kragmar west/east respectively. Immediately strictly
+  outside an aperture begins that coast's `coastal_shelf`.
+- Every other exact perimeter-equality point remains inside the finite mainland
+  footprint and is dry land owned by the incident `perimeter_span.zone_id`. At
+  an exact declared clipped shared-edge-to-perimeter
+  attachment, the canonical shared-edge half-open rule takes precedence and a
+  geometric equality belongs to the lower numeric incident zone ID. At a
+  perimeter vertex between two incident spans with no attachment, the lower
+  numeric span-zone ID wins. Outside the four apertures, `coastal_shelf` begins
+  strictly outside the dry equality boundary.
+- Each compiled aperture is one nonempty contiguous half-open interval
+  `[first_station, end_station)` in the canonical deduplicated perimeter-
+  station order. `first_station` and the station immediately preceding
+  `end_station` are included planned water with the exact Base-Bay owner;
+  `end_station` is excluded, and both it and the station immediately before
+  `first_station` must fail the strict Base-Bay predicate and fall through to
+  dry perimeter ownership. Every included station must pass that predicate for
+  the one referenced Bay. The interval may not wrap, overlap another aperture
+  or acquire a second run. An
+  exact Base-Bay segment/centreline tie inside it retains the existing lower-
+  numeric shore-owner rule; exact analytic bank equality is not strict water
+  and therefore falls through to the dry span/attachment/vertex precedence.
+- In the strict footprint interior the classifier tests base bay water and its
+  exact centreline owner, then closure-wing-exclusive water and its explicit
+  side owner, then the canonical half-open dry-face result. Closure wings are
+  always clipped to strict footprint interior and may never use a mouth-
+  aperture exception. Base-Bay water may reach perimeter equality only through
+  its one declared aperture; no other perimeter water is permitted.
+- The two wings of one bay have a stable order, permitted only after validation
+  proves that their integer interiors do not overlap outside the base mask. A
+  wing-centre tie belongs to the lower numeric zone ID. Raw dry membership may
+  overlap on a declared shared edge or junction, but its half-open tie still
+  returns one zone. Any undeclared dry cross-face seam or intersection outside
+  final planned water is invalid.
 - The 61-edge land-boundary dual is reconstructed only from its declared edge
   IDs: the pre-existing 57 records remain byte-identical and §7 adds four
   boundary-only flank records. Water wings confer no land adjacency. The
@@ -312,9 +348,11 @@ WP40 replaces it with the complete catalog and contracts below.
   flight and boat-route validation derive these masks from the same geometry.
 - Ordinary exterior coasts use an analytic horizontal water classification
   derived from the final outer perimeter of the planned mainland or island
-  footprint, never from the nodes currently present. The first **80 nodes
-  outside that perimeter** form `coastal_shelf`; beyond them begins
-  `deep_ocean`. Shelf columns inherit the adjacent perimeter zone's
+  footprint, never from the nodes currently present. Equality on the final
+  mainland perimeter is dry land except for the four exact planned-water mouth
+  apertures above. The first **80 nodes strictly outside that perimeter** form
+  `coastal_shelf`, and beyond them begins `deep_ocean`. Shelf columns inherit
+  the adjacent perimeter zone's
   `race_region`, PvP state and terrain policy: the home faction may edit a
   peaceful shelf, both factions may edit a contested shelf, and the universal
   contested deep rule applies at y = -701 and below. `deep_ocean` is immutable
@@ -497,8 +535,11 @@ WP40 replaces it with the complete catalog and contracts below.
   600×300 coastal-housing geometry.
 - The four first bay samples `(-980,-2940)`, `(+900,-2920)`,
   `(-1080,+2930)` and `(+820,+2960)` are exact outer-perimeter vertices. Bay
-  masks open through the perimeter there; subtracting them from the dry-land
-  mask creates the bay shores without making those shores exterior shelf.
+  geometry meets the perimeter there, and each sample owns exactly one of the
+  four mouth-aperture records above. Base-Bay water crosses equality only in
+  that record's exact half-open interval; all remaining equality is dry.
+  Subtracting the resulting mask from dry land creates the bay shores without
+  making those shores exterior shelf.
 - Ordinary outer-coast displacement is at most 96 nodes, uses wavelength at
   least 256 and tapers to zero at every listed perimeter vertex. It stays
   inside the binding mainland frame, retains at least 32 nodes from every dry
@@ -1176,6 +1217,17 @@ asks for it.
   and the Elandor and Kragmar chains/noise are independently authored rather
   than reflected. The four `|z| = 1900..2500` side arcs stay inside `|x| =
   2580..2600` and retain their complete housing depth.
+  Exhaustive equality fixtures prove exactly four nonempty, contiguous,
+  non-overlapping half-open Base-Bay mouth apertures with their exact source
+  references and 720/660/640/740-node analytic cross-sections. Every included
+  equality station is planned water under the exact Base-Bay predicate and
+  opens to shelf immediately outside; the first and last included stations,
+  the excluded end, both outside-adjacent probes and their ties are
+  deterministic. Every other final perimeter station is dry mainland: an
+  ordinary span station returns its `perimeter_span.zone_id`; a declared
+  clipped shared-edge attachment uses the shared-edge half-open/lower-numeric
+  tie first; and an unattached vertex between two spans returns the lower
+  numeric span-zone ID.
 - Starts/homes: every fixed start anchor retains its complete centred 600×500
   dry core, and its 256×256 settlement blend plus primary-road exit lies wholly
   inside that core. Each start cap has exactly one land neighbor—its own home
@@ -1186,14 +1238,17 @@ asks for it.
   clips to exactly one connected land component with two shoreline endpoints
   and keeps at least 32 nodes from its dry start core after variation.
 - Bays: all four base masks pass through their complete §7 sample tables,
-  remain open at the outer perimeter, retain the unchanged round radius-80 head
-  shoulder outside the capital belt and never narrow below 64 nodes after
-  variation. Each bay has exactly two zero-jitter closure wings from that
+  retain exactly one half-open planned-water mouth aperture through the outer
+  perimeter, retain the unchanged round radius-80 head shoulder outside the
+  capital belt and never narrow below 64 nodes after variation. Each bay has
+  exactly two zero-jitter closure wings from that
   shoulder to its two existing head-flanking dry triple junctions. Both wings
   are present, their side equality and terminal junctions are dry, and no wing
   water enters the capital-belt interior. The base centre seam and explicit
   wing-side owners assign every planned-water point deterministically without
-  adding a land neighbor; no bay point classifies as shelf or deep ocean.
+  adding a land neighbor. Base masks are clipped to strict footprint interior
+  plus their own mouth aperture; Wings remain strict-interior-only. No Bay
+  point classifies as shelf or deep ocean.
 - The exhaustive finite mainland-footprint oracle assigns every integer x/z
   column to exactly one final planned-bay-water owner or one dry zone face, with
   zero final gap and zero final overlap. It proves exact
@@ -1212,10 +1267,13 @@ asks for it.
   57 edge records and the exact four added boundary-only records. Each added
   edge occurs in its two incident face cycles with opposing directions; its
   half-open boundary tie is unique, and only the existing perimeter-span
-  records own coast and shelf. The whole-footprint oracle reports zero gaps,
-  zero overlaps and zero invalid cross-face intersections, and reconstructs
-  the exact 61-edge land dual. All 32 seeds rerun the same partition and
-  topology oracle; no visual inspection substitutes for it.
+  records own coast and shelf. The oracle separately exhausts the four mouth
+  apertures, ordinary dry-span equality, declared clipped attachments and
+  unattached perimeter vertices under the exact precedence above. The whole-
+  footprint oracle reports zero
+  gaps, zero overlaps and zero invalid cross-face intersections, and
+  reconstructs the exact 61-edge land dual. All 32 seeds rerun the same
+  partition and topology oracle; no visual inspection substitutes for it.
 - Authored-source validation does not pretend that the seed-independent source
   already contains final concrete face polygons. Before displacement it proves
   one checksum-covered, symbolically closed authority graph: every literal
