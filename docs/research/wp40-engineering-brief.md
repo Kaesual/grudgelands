@@ -405,6 +405,73 @@ Stable template and blend functions return to the ungraded `H` field at the
 outer edge. A valid median never excuses a slope, local rewrite, water, landmark,
 or conflict violation elsewhere in that full envelope.
 
+Finite zone partition closure uses the same complete-column standard rather
+than a sampled or independently drawn approximation. The four original
+mouth-to-head records remain the exact **base bay masks**: strict capsule
+interior is base water, exact base bank/cap equality is dry under that test,
+and the last sample `C` remains the fixed positive-width round head shoulder
+with `r = 80`. The checksum-covered source adds exactly two zero-jitter closure-
+wing records per bay, eight total. A record binds its bay ID, exact `C` sample,
+one existing head-flanking dry triple-junction reference `J`, adjacent outer-
+bank and central-head zone owners, and fixed side probes/tie data. It may not
+change a dry land-edge control, ID, incident pair or junction.
+
+One schema-versioned integer evaluator owns every closure wing. For integer
+column `p`, let `A = C`, `B = J`, `v = B - A`, `L = v dot v`,
+`N = (p - A) dot v`, `X = cross(v, p - A)`, and `M = L - N`. The wing is
+eligible only when `0 <= N < L`; its strict interior is exactly
+
+```text
+X^2 * L < r^2 * M^2
+```
+
+Thus its width tapers linearly from 80 at `C` to zero at `J`, while wing-side
+equality and `J` are dry. Production first rejects
+`abs(X) >= r * ceil_sqrt(L)`, then performs the strict comparison through the
+common safe-product primitive. Stage 1 computes `ceil_sqrt(L)` with exact
+integer arithmetic and proves both `r^2 * L^2 <= 2^53 - 1` and
+`(r * ceil_sqrt(L) - 1)^2 * L <= 2^53 - 1` for all eight records. No floating
+point square root, division or approximate distance participates.
+
+The final evaluator applies one precedence: original base-mask water with its
+existing centreline seam; closure-wing-exclusive water; canonical half-open
+dry face; exterior. A wing's cross sign selects its explicitly recorded
+adjacent owner, with `X = 0` assigned to the lower numeric zone ID. The two
+wings of one bay use stable record order only after Stage 2 proves no integer
+overlap outside the base mask. Raw dry membership may overlap on a declared
+shared edge or junction, where the canonical half-open tie still selects one
+zone; any undeclared dry cross-face seam or intersection outside final planned
+water is fatal. Both wings are required and together fill exactly the two
+otherwise-unowned head wedges. All pre-existing records `land_001` through
+`land_057` remain literal and byte-identical in IDs, pairs and controls, and
+water wings create no land adjacency.
+
+The dry partition has exactly four additional zero-jitter, boundary-only
+records: `land_058` from `(-2600,-1900)` to `(-2200,-1900)`, Copperfell
+Foothills/Frostbarrow Shelf; `land_059` from `(2200,-1900)` to
+`(2600,-1900)`, Starbough Vale/Moonfall Wood; `land_060` from
+`(-2600,1900)` to `(-2200,1900)`, Mournfen/Ossuary Reach; and `land_061` from
+`(2200,1900)` to `(2600,1900)`, Raincall Basin/Totemwater Reach. They join
+existing literal perimeter vertices to existing belt junctions and bring the
+land-boundary dual to exactly 61. They have no displacement, route class,
+route station/profile/interface, road corridor/surface, route or capital-road
+gate product, travel promise or content operation. They retain the ordinary
+checksum-covered shared-boundary relief gate `G` controls, with no route
+semantics. The separate routed graph remains the byte-identical original 57
+edges: 30 primary, 24 secondary and 3 trail. The independent literal outer
+perimeter and its `perimeter_span` records remain the sole footprint, coast and
+shelf authority.
+
+Shared-boundary clipping is likewise one code-owned, schema-versioned integer
+operation over source-owned controls. The compiler rasterizes a displaced
+boundary once into canonical station order, classifies every station through
+the final land/water evaluator, and permits the retained land stations to form
+exactly one consecutive interval. Clipping may remove only a prefix and a
+suffix; an interior rejected station, a second retained run, or an inserted
+floating intersection is fatal. The clipped endpoints are the first and last
+retained integer stations. Source records provide the controls, displacement
+parameters and ownership; they do not duplicate this generic algorithm.
+
 Feature classes use the solver as follows:
 
 - starts and ordinary camp envelopes use their stable flat or gently graded
@@ -592,6 +659,13 @@ dynamic-programming solver selects the complete station sequence. Transitions
 that violate an endpoint, maximum grade, grade-change/curvature, cut/fill,
 crossing, structure, planned-water, or reserved-corridor rule do not exist in
 the solver graph.
+
+The solver chooses exactly one integer height variable for each canonical x/z
+station. The shaped centre and every lateral cross-section sample owned by that
+station use that same selected value; earthwork and grade constraints evaluate
+the same variable. Road surfaces, bridge/tunnel interfaces, corridor masks and
+later renderers consume the one frozen sequence and may not derive a second
+per-side, per-segment or per-consumer station height.
 
 Among valid complete profiles, the solver minimizes this lexicographic cost:
 
@@ -1854,10 +1928,12 @@ in the main Lua state and transfer it once into each mapgen state.**
 After all registrations are available and before mapgen states begin serving
 chunks, the main state validates the authored source and WP43 handoff, then
 compiles exactly one immutable dataset containing the 38-zone registry,
-canonical/displaced shared boundaries, land and boat graphs, anchor/candidate
-records, selected heights and route profiles, hydrology and coast/channel
-geometry, typed resolver records, protection/exclusion geometry, and the
-prebuilt spatial acceleration grid.
+canonical/displaced shared boundaries, the 61-edge land-boundary dual, the
+separate 57-edge land-route graph and boat graph, anchor/candidate records,
+selected heights and route profiles, hydrology and coast/channel geometry, the
+four base-bay and eight closure-wing records, canonical dry-face records, typed
+resolver records, protection/exclusion geometry, and the prebuilt spatial
+acceleration grid.
 
 The payload is compact analytic data. It never contains a whole-world height
 raster, voxel map, decoration/resource placement list, generated native-node
@@ -1970,6 +2046,25 @@ for both incident zones; an exact point tie belongs to the lower canonical zone
 ID. Outer coasts, Holy endpoints, channel overrides, water-ownership seams, and
 other exceptional boundaries carry their explicit half-open ownership rule in
 the shared edge record rather than inheriting a generic tie accidentally.
+Bay-intersecting cells apply the common four-step evaluator. First, strict
+interior of the original base mask returns its existing centreline owner; base
+bank/cap equality proceeds. Second, each closure wing is eligible only on
+`0 <= N < L`, the exact safe-product inequality returns strict interior, and
+the cross sign or numeric-ID centre tie returns the record's adjacent owner.
+Wing-side equality and `J` proceed. The two stable-ordered records are consulted
+only after Stage 2 has proved that their integer interiors cannot overlap
+outside the base mask. Third, the canonical half-open dry-face evaluator
+returns its unique owner. Otherwise the coordinate is exterior. Raw dry
+membership may overlap only on a declared shared edge or junction, where that
+same half-open rule is authoritative; any undeclared cross-face seam or
+intersection outside final planned water is invalid.
+
+The literal displaced outer-perimeter records, not the union or exterior arcs
+of zone faces, are the sole mainland-footprint authority. Dry faces, base bay
+masks and closure wings are clipped and validated against that independent
+perimeter. The shelf index and exterior-distance query derive only from it; a
+face or wing edit can neither move a footprint nor become a second coast/shelf
+authority.
 
 The grid is an acceleration product, not geometry authority. Mapgen, runtime,
 and offline tools use the same exact evaluator and compiled records. AreaStore,
@@ -2165,6 +2260,39 @@ Stage 1 validates the authored source before compilation. It proves at least:
   domain IDs, and zone-palette references are covered by the source checksum;
 - exact symmetric land adjacency, a separate exact boat/travel graph, no
   duplicate/self edge, and no boat edge promoted to polygon adjacency;
+- exactly 61 shared land-boundary records: the original `land_001` through
+  `land_057` remain byte-identical in ID, endpoints/controls, incident pair,
+  displacement and route data; `land_058` through `land_061` exactly match
+  `world_zones.md` §7's endpoints and incident pairs, have zero jitter, and
+  have no route class/station/profile/interface, road corridor/surface, route or
+  capital-road gate product, travel promise or content-operation field, while
+  each has the ordinary checksum-covered shared-boundary relief gate `G`
+  controls with no route semantics;
+- exactly one canonical half-open dry-face record per zone; each new boundary-
+  only record occurs exactly once in each incident face cycle with opposing
+  directions, while the corresponding outer-coast segment remains referenced
+  only through the existing `perimeter_span` authority; dry-face controls may
+  not add or infer another shared edge;
+- a separate route graph contains exactly the unchanged original 57 edges—30
+  primary, 24 secondary and 3 trail—and contains none of `land_058` through
+  `land_061`;
+- four fixed base-bay sample/width records with strict-interior water under the
+  base test, exact base equality dry under that test, unchanged centreline
+  seam/tie and radius-80 final sample `C`, plus one independent literal outer-
+  perimeter record per mainland; neither face nor water geometry is perimeter
+  authority;
+- exactly eight zero-jitter closure-wing records, two per bay, each binding its
+  bay and exact `C` sample to a different existing head-flanking dry triple
+  junction `J`, radius 80 to zero, the adjacent outer-bank and central-head zone
+  owners, side probes and the numeric-ID centre tie; no wing changes a dry edge,
+  ID, pair or junction, and exact integer proof establishes
+  `r^2 * L^2 <= 2^53 - 1` and
+  `(r * ceil_sqrt(L) - 1)^2 * L <= 2^53 - 1` for every record;
+- each guaranteed Coastal housing-frontage record structurally references one
+  owning shoreline interval, its exact source controls/endpoints and canonical
+  traversal direction; Stage 1 may check those references and conservative
+  undisplaced bounds, but may not claim the final 600-node frontage before the
+  displaced station sequence exists;
 - legal stable anchor-slot names, required/absent slot cardinality, six starts,
   six capitals, and the binding POI budgets;
 - `water_level = 1`, `chunksize = 5`, both dungeon y limits, dungeon noise/
@@ -2177,7 +2305,40 @@ Stage 1 validates the authored source before compilation. It proves at least:
 
 Stage 2 validates the complete compiled seed dataset. It proves at least:
 
-- no land gap or overlap except the explicit half-open/tie ownership rule;
+- every integer column in each finite mainland footprint has exactly one final
+  base-water, closure-wing-water or half-open dry-face owner, with zero final
+  gap/overlap; each bay's two wings have no integer overlap outside its base
+  mask and together fill exactly the two otherwise-unowned head wedges;
+- strict base-mask, strict-wing and equality-dry wing-side fixtures; the owner
+  on both sides and the lower-numeric-ID `X = 0` tie; all eight exact `J` points
+  plus adjacent columns; no water at a junction or inside the capital belt; and
+  unchanged base samples, mouths and radius-80/160-node head shoulders;
+- raw dry membership overlap only on declared shared edges and junctions, one
+  canonical half-open owner there, no undeclared dry cross-face seam or
+  intersection outside final planned water, and an exact 61-edge land-boundary
+  dual derived only from the declared IDs; the original 57 records remain
+  byte-identical, all four boundary-only pairs/endpoints/ties agree with their
+  opposing face-cycle uses, and closure wings confer no land adjacency;
+- the routed graph remains exactly 57 edges with the unchanged 30 primary, 24
+  secondary and 3 trail classification, and no boundary-only edge acquires a
+  route station/interface, corridor, route or capital-road gate product,
+  traversability promise or content operation; every such edge retains its
+  ordinary shared-boundary relief gate `G` controls without route semantics;
+- an independent-perimeter oracle that proves face/water clipping, the final
+  outer footprint and shelf all agree without deriving the perimeter from face
+  or water union;
+- for each guaranteed Coastal housing core, the final displaced integer
+  shoreline interval remains consecutive and the compiler sums every adjacent
+  station's floored-Q16 Euclidean length as
+  `isqrt((dx^2 + dz^2) * Q^2)` in canonical order; the exact sum is at least
+  `600 * Q`, and the complete inland 300-node/101-by-101 constraints pass;
+- every displaced shared-boundary raster clips to one nonempty consecutive
+  integer-station interval by prefix/suffix removal only, with compiled
+  endpoints equal to its first/last retained stations and no interior rejection
+  or second land run;
+- every route profile has one selected integer y per canonical x/z station,
+  and its centre, full lateral cross section, interfaces, rendered surface and
+  corridor records all reproduce that identical station-y sequence;
 - every displacement, core width, travel neck, boundary buffer, coast/channel
   clearance, envelope, and minimum route constraint;
 - complete feasible anchor heights, feature templates, route profiles,
@@ -2326,15 +2487,30 @@ for a corpus entry or weakens a fixed-seed failure.
 
 Every seed executes the complete `world_zones.md` Section 14 contract, not a
 representative subset. The oracle covers exactly 38 IDs and the closed land/
-boat graphs; polygon/displacement/core/corridor integrity; three outer prongs,
-two open bays per mainland, capital belt and closed frontier; independent
-non-reflected continents; Holy coordinates/crossings; island envelopes,
+boat graphs; the exact 61-edge land-boundary dual; the byte-identical original
+57-edge routed graph with 30 primary, 24 secondary and 3 trail edges; the four
+zero-jitter boundary-only IDs/pairs/endpoints/opposing-face uses and their
+absence from all route/content products; polygon/displacement/core/corridor
+integrity; three outer prongs, two open bays per mainland, four exact base masks
+and exactly eight closure wings, one final base-water/wing-water/dry owner per
+integer footprint column, strict wing-side and terminal equality dry, no same-
+bay wing overlap outside the base mask, correct side/tie owners, unchanged base
+samples and 160-node head shoulders, all eight dry junction/adjacent-column
+fixtures, a water-free capital-belt interior, an independently identical
+literal outer perimeter, and the closed frontier; independent non-reflected
+continents; Holy coordinates/crossings; island envelopes,
 separation, dual approaches, landing access and route parity; all anchor,
 fallback, no-jitter and dry-start envelopes; exact one-neighbor start/home
 topology; relief bands/landmarks; route graph/classes/interfaces; planned-water,
 closed coast, shelf/deep/channel classes; logical-biome shares; housing masks;
 and full-seed sensitivity. A failure rejects that seed or source dataset rather
 than becoming a visual-inspection exception.
+
+The exhaustive whole-mainland partition counters are exactly `g=0/o=0/r=0`:
+zero unowned final columns, zero multiply-owned final columns and zero raw dry-
+face violations outside the declared half-open shared-edge/junction rules. This
+is required independently for every corpus seed; a bay-local pass cannot
+substitute for the whole-footprint result.
 
 ### 6.2 Chunk-order and canonical hash gate
 
@@ -2487,6 +2663,27 @@ The following deterministic portfolio runs on each exact center mask:
 - separate distance-ranked edge-, route-, and POI-biased sequences, each in
   near-first and far-first order with canonical ties; and
 - canonical z/x row-major and reverse orders.
+
+Each of the 16 hash sequences uses the Chapter 1.1 T1 grammar without a
+shortcut. For eligible center `(x, z)` in housing mask `mask_id`, the tuple is:
+
+```text
+prefix = ASCII "GRUGWP40HASH" followed by 00
+text(geometry_schema)
+text("housing-pack-" followed by exactly two decimal digits 00..15)
+text(full_seed_string)
+text(mask_id)
+array(signed x, signed z)
+unsigned(candidate_index = 0)
+unsigned(hash_block = 0)
+unsigned(rejection_counter = 0)
+```
+
+The priority is digest word zero interpreted as unsigned big-endian 32-bit;
+centers sort by ascending priority, then canonical z and x. This complete tuple,
+including mask ID, schema and full decimal seed, is a T1 hash known-answer
+fixture. A housing implementation may not replace it with concatenation, a
+low-32 seed or an ambient PRNG.
 
 For either greedy run, `U` initially contains every eligible center and an
 edge joins exactly the conflicting pairs defined above. Best-first chooses a
@@ -2755,13 +2952,36 @@ the final T2 route/anchor manifest:
 - 75--99 jump every ten seconds through the canonical sorted stable-anchor
   list, starting at list offset equal to their requester index.
 
-Profiles are assigned round-robin by requester index; multiple requesters on
-one profile start at equal rational arc-length phases in index order. Ground
-height follows the compiled profile, flight is rejected if any sampled column
-is not flight-legal, and a rejected fixture fails rather than silently choosing
-a new path. Positions are advanced in Q16.16 at each rational `9/100`-second
-tick and floored to integer node coordinates for requests. On the first tick
-and whenever a requester enters a new 16-node mapblock, the harness queues the
+Profiles are assigned round-robin by requester index. For each adjacent pair in
+a canonical profile, the horizontal station-step length is exactly
+`ell_i = isqrt((dx^2 + dz^2) * Q^2)`, a floored-Q16 Euclidean length computed by
+the T1 integer primitive. Vertical profile change does not enter this horizontal
+movement metric. Every `ell_i` is positive and every product is Stage-1 safe;
+their canonical sum is `D`. This exact metric, not host floating point, defines
+phases, speed and reflection. If `k` requesters share a profile, their
+requester-ID order gives local ranks `j = 0..k-1`; rank `j` starts at the exact
+rational phase `j*D/k`, and all start in the forward direction.
+
+At active tick index `t = 0, 1, ...`, elapsed seconds are exactly `9*t/100`.
+The trace compiler advances each moving requester by its integer speed times
+`Q` times that rational duration from its initial phase, retains every division
+quotient and remainder exactly, and maps distance onto the triangular period
+`2*D`. Positions `0` and `D` occur once at a reflection; an exact endpoint tie
+uses the endpoint position and the next positive advance runs in the reflected
+direction. Cumulative `ell_i` selects the station step, with half-open intervals
+in the current direction. Only after that mapping does the compiler interpolate
+the adjacent integer station coordinates into Q16.16 with Chapter 1.1 half-
+away rounding. It does not round a per-tick delta and accumulate drift.
+
+For requester 75--99, the anchor epoch at tick `t` is exactly
+`floor(9*t/1000)`. Its anchor index is `(requester_index + epoch) mod
+anchor_count`; epoch zero therefore uses the authored starting offset. When a
+tick falls exactly on a ten-second boundary, the new epoch is selected before
+the query/request for that tick. Ground height follows the compiled profile,
+flight is rejected if any sampled column is not flight-legal, and a rejected
+fixture fails rather than silently choosing a new path. Q16.16 positions are
+floored to integer node coordinates for requests. On the first tick and
+whenever a requester enters a new 16-node mapblock, the harness queues the
 inclusive axis-aligned integer box at plus/minus 80 nodes on all three axes
 around that floored position. Independently, each active tick calls the same
 four shipped compatibility consumers for every requester:
@@ -2941,6 +3161,90 @@ index and Stage 2 proof slightly larger, make malformed public calls fail
 immediately, and remove possible second authorities before T3 implementation
 begins. The complete T9 coordinate/coverage gate remains mandatory.
 
+The 2026-08-13 bay/partition review triggered a geometry Reality Check. The
+pre-freeze implementation source had independent literal mainland perimeters,
+four fixed variable-width base capsules ending at positive-width head
+shoulders, 57 routed shared land edges, and dry-face cycles. Its stable evidence
+surfaces are `source.bays`, `source.bay_closure_wings`, `source.land_edges`,
+`source.face_arcs`, `source.geometry_policies.world_partition`, and the
+exhaustive command `tools/wp40/t2_source_audit.sh .`; exact source line
+citations must be added only after that moving T2 source freezes.
+
+The first failure was at the bay heads. Each base capsule stopped at its fixed
+radius-80 head shoulder while two head-flanking dry triple junctions lay beyond
+it. That left two head wedges per bay which neither strict base water nor the
+dry dual could own. Requiring face controls alone was formally impossible: an
+arc between the external junctions has a dry portion and needs another face
+contact outside the base bay, which is an undeclared seam. Dry-edge
+continuations, chords, fans and lobes were rejected because they alter a
+declared dry edge or produce point-attached, self-intersecting or unpaired dry
+geometry. A single water wedge was rejected because it did not bind both
+flanking junctions, side owners and the belt equality case.
+
+The accepted bay correction is exactly two analytic closure wings per bay,
+eight total, from the unchanged shoulder `C` to the two existing flanking
+junctions `J`. Section 1.2's integer formula tapers each from radius 80 to zero.
+Strict wing interior is planned water; side equality and `J` are dry. The
+classifier is base water, then wing-exclusive water, then canonical half-open
+dry face, then exterior. The wings fill the two head wedges, have no integer
+overlap outside their base mask, confer no land adjacency and change no pre-
+existing land edge.
+
+The subsequent whole-footprint oracle exposed an independent defect outside
+the bay heads. A new in-session run of the then-live source reported
+`g=373290/o=0/r=0` with first failure `elandor:(-2580,-2199)`. This was a
+reproducible development diagnostic, but no versioned raw artifact and manifest
+digest were retained; the tuple and witness are therefore not release evidence
+and cannot satisfy any gate. The final implementation must replace them with
+retained `g=0/o=0/r=0` artifacts for the complete 32-seed corpus.
+
+The second root cause was formal: the original 57 adjacency pairs contain no
+nonzero shared boundary between the outer home and outer heartland zones on
+either flank of either continent. A complete dry partition must change owner
+across each of those four spans. With only the 57 pairs, it must leave a gap,
+overlap faces across an undeclared seam, or assign the wrong zone; half-open
+ties cannot create a missing boundary authority. Point-attaching or extending
+an existing edge was rejected because it does not supply the required opposing
+face span and creates a lobe or wrong incident pair. Adding water pockets was
+rejected because it changes planned-water and land topology. Moving the literal
+perimeter inward was rejected because it changes the footprint, shelf and
+coastal-housing/start guarantees; the discarded development estimate affected
+approximately 564,000 columns and is not release evidence.
+
+The user approved option B: retain `land_001` through `land_057` byte-for-byte
+and add exactly four zero-jitter boundary-only records. `land_058` is
+Copperfell Foothills/Frostbarrow Shelf from `(-2600,-1900)` to
+`(-2200,-1900)`; `land_059` is Starbough Vale/Moonfall Wood from
+`(2200,-1900)` to `(2600,-1900)`; `land_060` is Mournfen/Ossuary Reach from
+`(-2600,1900)` to `(-2200,1900)`; and `land_061` is Raincall Basin/Totemwater
+Reach from `(2200,1900)` to `(2600,1900)`. Each joins an existing literal
+perimeter vertex to an existing belt junction and appears in both incident face
+cycles with opposing direction. The corresponding `perimeter_span`, never the
+new land edge, remains sole coast/shelf authority.
+
+This option changes the land-boundary dual from 57 to 61 and explicitly adds
+the four §9 polygon adjacencies. It does not add traversability content: the
+four records have no route class/station/profile/interface, road surface/
+corridor, route or capital-road gate product, travel promise or content
+operation. Their ordinary checksum-covered shared-boundary relief gate `G`
+controls remain required and carry no route semantics. The routed graph remains
+the original 57 edges with exactly 30 primary, 24 secondary and 3 trail. The
+perimeter, shelf, base bays, eight wings, capital belt, start cores, housing
+masks and 600×300 frontage guarantees remain unchanged.
+
+Stage 1 must prove the four base records, eight wing records and their integer
+bounds; exactly 61 land-boundary records; byte identity of the original 57;
+the four exact new IDs, endpoints, pairs, zero-jitter/no-route schema and
+ordinary relief-`G` controls; two opposing face-cycle uses per new edge; and
+exclusive coast authority of the existing perimeter spans. Stage 2 must
+exhaust every integer mainland column and prove `g=0/o=0/r=0`, half-open ties,
+exact 61-edge dual, unchanged 57-edge route graph and 30/24/3 classification,
+all wing/J/belt fixtures, and unchanged perimeter/shelf/start/housing results.
+The complete 32-seed topology and
+partition corpus must be rerun. Until retained evidence passes, this remains a
+blocking Reality Check; no seed, case, coordinate, width, distance or threshold
+is removed or weakened.
+
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
 conflicts with a stronger correctness/operability requirement. The reviewed
@@ -2962,7 +3266,7 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | --- | --- | --- | --- |
 | T0 — WP43 handoff and baseline | exact material/resource API adapter, designated-host/harness manifest, post-WP43 WP18/WP36 fixed-corpus baseline and raw capture | merged WP43 `main` | every symbol/registration resolved; benchmark host/harness reproducible; no WP25 identity in target data |
 | T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
-| T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, checksum-covered full-seed logical-biome selector and compiled IDs, exact nearest-feature layers, final housing-center predicate, versioned deferred operation-coverage manifest, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor/selector oracles; every biome ID stays in palette, all six capital anchors are centered/contained, geometry volumes/interfaces and pending T4/T6/T7 coverage namespaces are frozen without future coordinates, nearest/housing layers match slow oracles, and extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests are frozen |
+| T2 — compiled world geometry | 38-zone source, exact 61-edge land-boundary dual with byte-identical original 57 plus four zero-jitter boundary-only flank records, unchanged separate 57-edge route graph, four exact base-bay masks plus exactly eight analytic closure wings, canonical half-open dry faces and independent literal perimeters, `H`, templates, fixed/candidate anchors, route profiles, hydrology and shared-boundary relief-`G` controls, coast/shelf/channel/island geometry, checksum-covered full-seed logical-biome selector and compiled IDs, exact nearest-feature layers, final housing-center predicate, versioned deferred operation-coverage manifest, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor/selector oracles; whole-footprint `g=0/o=0/r=0`, exact half-open 61-edge dual and new-edge IDs/pairs/endpoints/opposing-face/no-route-product/ordinary-relief-`G`/perimeter-span gates pass; the route graph stays exactly 30 primary/24 secondary/3 trail; both head wedges close per bay; wing formula/bounds/side/tie/J/belt/no-overlap cases pass; base masks, perimeter, shelf, starts and housing remain unchanged; every biome ID stays in palette; all six capital anchors are centered/contained; geometry volumes/interfaces and pending T4/T6/T7 coverage namespaces are frozen without future coordinates; nearest/housing layers match slow oracles; and extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests are frozen |
 | T3 — public geography and policy | immutable `grug_zones` APIs over one validated T2 payload/index, closed node-coordinate normalization, water/mount classifier, exact nearest-feature and housing-center queries, total exterior level results, territory/PvP fields, shallow-capital positional guard base, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | normalized scalar hot paths, exact distance/tie results, housing boolean, y=-700/-701 capital center/edge/outside guard precedence, shelf surface/mob/guard cases, and Kraken separation agree with slow oracles; invalid/unsafe inputs and aliasing fail; no 38-definition/feature-family scan, T6 selector, post-role/WP13-anchor invention, or dynamic-claim coupling |
 | T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; extend and rerun the T2 deferred-coverage manifest with every T4 typed operation, enumerating every then-known non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type with provenance-neutral production skips; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, complete T4 coverage with only named T6/T7 catalog slots pending, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, `eligible_host_replacement`/`non_host` deep outcomes with no production dungeon label, and exact dirty sets |
 | T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting with canonical `set_lighting` preparation, one `calc_lighting`, and one final restored `set_light_data`; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, provenance-neutral deep typed order, seam, no-op and exact API operation-count gates |

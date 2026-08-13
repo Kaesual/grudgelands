@@ -241,15 +241,51 @@ WP40 replaces it with the complete catalog and contracts below.
   centre and half-width interpolate linearly along each segment, the inner head
   has a round cap, and the outer mouth is clipped open by the final planned
   footprint perimeter. This deliberately simple representation is shared by
-  mapgen, zone-water lookup and geometry audits.
+  mapgen, zone-water lookup and geometry audits. Base-mask membership is
+  strict: squared distance less than the interpolated squared half-width is
+  base bay water; exact bank or round-cap equality is dry under that test. The
+  last listed sample is the fixed positive-width **head shoulder** `C`, with
+  radius 80 and the original 160-node cross-section.
+- Final planned bay water adds exactly two zero-jitter analytic **closure
+  wings** per bay, eight in total. Each wing runs from `C` to one of the two
+  existing dry triple junctions that flank that bay head and tapers linearly
+  from radius 80 at `C` to radius zero at the junction `J`. Wing interiors are
+  water; exact wing-side equality and `J` itself are dry. Both wings are
+  required: together they close exactly the two otherwise-unowned head wedges.
+  They approach the capital-belt boundary but put no water at a junction or in
+  the belt interior.
+- Closure wings change none of the pre-existing 57 dry land-edge controls, IDs
+  or incident-zone pairs and create no dry edge or junction themselves. They
+  are not a chord, dry fan or land-face continuation. Each wing's two sides
+  continue the adjacent outer-bank and central-head zone ownership without
+  adding those sides to the land graph. The original centreline samples, round
+  head shoulder and outer mouth remain unchanged even though the final planned-
+  water mask is explicitly larger than the base mask at the two closures.
+- The horizontal classifier applies one exact precedence: base bay water and
+  its existing centreline owner; then closure-wing-exclusive water and its
+  explicit side owner; then the canonical half-open dry-face result; then
+  exterior. The two wings of one bay have a stable order, permitted only after
+  validation proves that their integer interiors do not overlap outside the
+  base mask. A wing-centre tie belongs to the lower numeric zone ID. Raw dry
+  membership may overlap on a declared shared edge or junction, but its
+  half-open tie still returns one zone. Any undeclared dry cross-face seam or
+  intersection outside final planned water is invalid.
+- The 61-edge land-boundary dual is reconstructed only from its declared edge
+  IDs: the pre-existing 57 records remain byte-identical and §7 adds four
+  boundary-only flank records. Water wings confer no land adjacency. The
+  literal analytic outer footprint and its perimeter remain independent
+  authority: dry faces and water masks are clipped and validated against that
+  perimeter, never unioned to infer it, and the exterior shelf is measured only
+  from that perimeter.
 - Each bay shoreline may displace normally from that base by at most **48
   nodes**, with wavelength at least 256, and tapers to zero at every listed
-  sample. The mouths are 640–740 nodes wide and the heads 160 before variation;
-  no accepted seed may leave less than 64 nodes of open water at a head. The
-  heads remain 80–110 nodes outside the capital-belt base edge. The directed
-  centreline is also the deterministic water-ownership seam between the two
-  shore-side zone continuations; an exact tie resolves by stable zone id, and
-  the seam never enters the land-adjacency graph.
+  sample. The mouths are 640–740 nodes wide and the base head shoulders are 160
+  before variation; no accepted seed may leave less than 64 nodes of open base
+  water at a shoulder. The base head shoulders remain 80–110 nodes outside the
+  capital-belt base edge.
+  The directed centreline is also the deterministic base-water ownership seam
+  between the two adjacent shore-side zones; an exact tie resolves by
+  stable zone id, and the seam never enters the land-adjacency graph.
 - The Wyrmglass Crown and Stormscale Summit island centres are fixed at
   **(−3150, 0)** and **(+3150, 0)**. Each has a binding 600×700 authoring
   envelope (x radius 300, z radius 350); its authored, culturally distinct
@@ -426,6 +462,26 @@ WP40 replaces it with the complete catalog and contracts below.
     (+820,+2960) → (+1280,+2920) → (+1800,+2960) → (+2250,+2920) →
     (+2480,+2760) → (+2600,+2500) → (+2580,+2200) → (+2600,+1900) →
     (+2540,+1500) → (+2500,+1000) → (+2550,+600) → (+2500,+250)`.
+- Four zero-jitter land-boundary records close the outer home/heartland flanks
+  without changing any of the pre-existing 57 edge records:
+
+  | Edge | Directed endpoints | Incident zones |
+  |---|---|---|
+  | `land_058` | `(-2600,-1900) -> (-2200,-1900)` | Copperfell Foothills / Frostbarrow Shelf |
+  | `land_059` | `(2200,-1900) -> (2600,-1900)` | Starbough Vale / Moonfall Wood |
+  | `land_060` | `(-2600,1900) -> (-2200,1900)` | Mournfen / Ossuary Reach |
+  | `land_061` | `(2200,1900) -> (2600,1900)` | Raincall Basin / Totemwater Reach |
+
+  Each segment joins an existing literal outer-perimeter vertex to an existing
+  capital-belt junction. These four adjacencies are **boundary-only**: they
+  carry no route class/station/interface, road surface/corridor, route or
+  capital-road gate product, travel/traversability promise, or content
+  operation. They do carry the ordinary checksum-covered shared-boundary
+  relief gate `G` controls required by §7, with no route semantics. Touching a
+  perimeter vertex does not grant coast authority; the existing literal
+  perimeter spans remain the sole outer-coast and shelf source. The four
+  records change no perimeter, shelf, base bay, closure wing, start core or
+  600×300 coastal-housing geometry.
 - The four first bay samples `(-980,-2940)`, `(+900,-2920)`,
   `(-1080,+2930)` and `(+820,+2960)` are exact outer-perimeter vertices. Bay
   masks open through the perimeter there; subtracting them from the dry-land
@@ -711,7 +767,12 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 ## 9. Fixed adjacency graph
 
 The graph is undirected. Commas mean direct zone neighbors; no omitted pair may
-become adjacent through seed variation.
+become adjacent through seed variation. Its land-boundary dual has exactly 61
+edges: the original 57 routed edges plus the four boundary-only outer-flank
+edges `land_058` through `land_061`. The latter establish polygon adjacency but
+do not imply a road, route profile/station/interface, corridor, route or
+capital-road gate product, traversability guarantee or content operation. Their
+ordinary shared-boundary relief gate `G` controls have no route semantics.
 
 ### 9.1 Accord internal graph
 
@@ -727,6 +788,8 @@ become adjacent through seed variation.
   Whitebridge Shire — Ashenward March; Lorindor — Glassroot Wilds;
   Moonfall Wood — Glassroot Wilds; Stormvault Heights — Ashenward March —
   Glassroot Wilds.
+- Boundary-only outer-flank contacts: Copperfell Foothills — Frostbarrow
+  Shelf; Starbough Vale — Moonfall Wood.
 
 ### 9.2 Throng internal graph
 
@@ -743,6 +806,8 @@ become adjacent through seed variation.
   Speargrass Reach — Bannerbreak Mesa; Whispering Reedlands —
   Thunderroot Wilds; Totemwater Reach — Thunderroot Wilds;
   Blackwind Rise — Bannerbreak Mesa — Thunderroot Wilds.
+- Boundary-only outer-flank contacts: Mournfen — Ossuary Reach; Raincall Basin
+  — Totemwater Reach.
 
 ### 9.3 Holy Grounds land graph and offshore travel
 
@@ -766,6 +831,11 @@ The overlapping frontier-to-Holy edges distribute crossings across the whole
 band and prevent one bridge or zone from becoming the sole faction route.
 
 ### 9.4 Authored land-route classes
+
+The authored land-route graph remains exactly the original 57 edges: 30
+primary, 24 secondary and 3 trail. It is intentionally not identical to the
+61-edge land-boundary dual. `land_058` through `land_061` are excluded from the
+route graph and have no route class or station sequence.
 
 - Every edge in the six race spines and both west/east capital axes is a
   **primary road**. The primary classification ends at the race frontier; it
@@ -1061,7 +1131,11 @@ asks for it.
 
 - Registry: exactly 38 unique zones, every land zone has one valid race
   region and one valid primary relief id, the undirected graph equals §9, and
-  all six start→capital paths are peaceful. The checksum-covered selector
+  all six start→capital paths are peaceful. The graph has exactly 61 land-
+  boundary edges: the original 57 records are byte-identical and `land_058`
+  through `land_061` have their exact §7 endpoints, pairs and zero-jitter
+  boundary-only contract. The separate route graph remains exactly 57 edges,
+  split 30 primary, 24 secondary and 3 trail. The checksum-covered selector
   policy produces one coherent compiled logical biome ID inside the owning
   palette at every authored result. Every secondary relief or sharp terrain
   feature has an explicit bounded mask, stable landmark id and owning zone.
@@ -1094,15 +1168,39 @@ asks for it.
   inside that core. Each start cap has exactly one land neighbor—its own home
   zone—and every home zone remains connected from both start flanks to its
   exact west, centre or east capital-belt base interval. No coast or shared-edge
-  variation changes those contacts or the §9 land graph. Every shared boundary
-  passes through all of its §7 control vertices before variation, clips to
-  exactly one connected land component with two shoreline endpoints and keeps
-  at least 32 nodes from its dry start core after variation.
-- Bays: all four masks pass through their complete §7 sample tables, remain
-  open at the outer perimeter, retain a round inner head outside the capital
-  belt and never narrow below 64 nodes after variation. Their centre seams
-  assign every water point deterministically without adding a land neighbor;
-  no bay point classifies as shelf or deep ocean.
+  variation changes those contacts or the §9 land graph. Every start/home
+  boundary passes through all of its §7 control vertices before variation,
+  clips to exactly one connected land component with two shoreline endpoints
+  and keeps at least 32 nodes from its dry start core after variation.
+- Bays: all four base masks pass through their complete §7 sample tables,
+  remain open at the outer perimeter, retain the unchanged round radius-80 head
+  shoulder outside the capital belt and never narrow below 64 nodes after
+  variation. Each bay has exactly two zero-jitter closure wings from that
+  shoulder to its two existing head-flanking dry triple junctions. Both wings
+  are present, their side equality and terminal junctions are dry, and no wing
+  water enters the capital-belt interior. The base centre seam and explicit
+  wing-side owners assign every planned-water point deterministically without
+  adding a land neighbor; no bay point classifies as shelf or deep ocean.
+- The exhaustive finite mainland-footprint oracle assigns every integer x/z
+  column to exactly one final planned-bay-water owner or one dry zone face, with
+  zero final gap and zero final overlap. It proves strict base-mask membership;
+  strict wing membership and equality-dry sides; exactly two otherwise-unowned
+  head wedges closed per bay; no integer overlap between a bay's two wings
+  outside its base mask; and the correct owner on both sides and centre tie.
+  It exercises all eight exact `J` points and adjacent columns, proving each
+  junction dry and the capital-belt interior water-free. A separate dry-face
+  oracle permits raw multiplicity only on declared shared edges and junctions,
+  applies the canonical half-open owner there, and rejects every undeclared
+  cross-face seam or intersection outside final planned water. The oracles also
+  prove unchanged base capsules, samples and 160-node head shoulders, an
+  unchanged independent outer perimeter and shelf, the byte-identical original
+  57 edge records and the exact four added boundary-only records. Each added
+  edge occurs in its two incident face cycles with opposing directions; its
+  half-open boundary tie is unique, and only the existing perimeter-span
+  records own coast and shelf. The whole-footprint oracle reports zero gaps,
+  zero overlaps and zero invalid cross-face intersections, and reconstructs
+  the exact 61-edge land dual. All 32 seeds rerun the same partition and
+  topology oracle; no visual inspection substitutes for it.
 - Roads: every required route connects its authored endpoints, keeps its
   primary 7/16, secondary 5/12 or trail 3/8 surface/corridor class, and exposes
   the identical deterministic corridor to Claim-Stone validation. Seed
@@ -1111,7 +1209,12 @@ asks for it.
   route receive hard protection. The exact §9.4 edge classification holds:
   every spine and capital-axis edge is primary, every listed cross-link and
   frontier/Holy edge is secondary, all six north/south Holy crossings remain
-  complete, and every internal Holy edge retains a trail.
+  complete, and every internal Holy edge retains a trail. The result is exactly
+  30 primary, 24 secondary and 3 trail edges. The four boundary-only flank
+  edges have no route class/station/interface, surface/corridor, route or
+  capital-road gate product, travel promise or content operation and do not
+  alter those counts. Their ordinary checksum-covered shared-boundary relief
+  gate `G` controls remain mandatory and carry no route semantics.
 - Relief: outside explicit coasts, named landmarks and grading overrides,
   generated natural ground remains inside its active relief profile's
   water-level-relative band. Ordinary transitions contain no accidental cliff
