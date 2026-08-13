@@ -62,7 +62,30 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q '5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0' "$stage1"
+grep -q 'f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188' "$stage1"
+grep -q '913b0d4184a9a51125413f69621e78e4643c84d2af545362b308f56ad01ba1a4' "$stage1"
+grep -q 'eb70c52d82fbb0d93ab53cf2d6d276b59f69c4fbf387b56311acfd9a0820c1e2' "$stage1"
+grep -q '3c87964998f48fc71d92aa361c0584cd6dc0ddd04ccc8992214775df138c132a' "$stage1"
+grep -q 'id="shared_polyline_normal_displacement_t1_hash_v2"' "$catalog"
+grep -q 'step_left_normal_rule="normal_x_q_equals_t1_qdiv_minus_dz_times_Q_by_step_length_q_normal_z_q_equals_t1_qdiv_dx_times_Q_by_step_length_q"' "$catalog"
+grep -q 'clip_loop_rule="test_exact_damped_scalar_first_if_outside_scan_integer_magnitude_nodes' "$catalog"
+grep -q 'final_raster_rule="route_raster_once_between_consecutive_shifted_controls' "$catalog"
+grep -q 'no_second_displacement_clip_or_snap' "$catalog"
+grep -q 'base_bay_symmetric_effective_half_width_uses_world_partition_policy_not_polyline_normal_displacement' "$catalog"
+grep -q 'pre_displacement_canonical_source_segment_raster_only_never_final_reraster_stations' "$catalog"
+grep -q 'perimeter_span_overlap_never_duplicates_a_source_segment_or_station_in_the_union' "$catalog"
+grep -q 'provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence' "$catalog"
+grep -q 'id="face_partition_with_bay_capsule_water_v2"' "$catalog"
+grep -q 'outside_every_final_mainland_island_and_fixed_holy_grounds_closed_footprint' "$catalog"
+grep -q 'strict_exterior_closed_integer_polygon_channel_v1' "$catalog"
+grep -q 'exact_rational_nearest_allowed_outer_coast_component_v1' "$catalog"
+grep -q 'face_arc:gravesalt:holy_west' "$catalog"
+grep -q 'face_arc:skyglass:holy_east' "$catalog"
+grep -q 'lower_zone_numeric_id_then_stable_component_id_then_zero_based_compiled_component_segment_index' "$catalog"
+if grep -q 'math\.sqrt' "$catalog" "$stage1" "$test_file"; then
+	echo 'T2 source audit: host floating square root entered R7-R9 authority/oracle' >&2
+	exit 1
+fi
 grep -q '^source\.relief_junctions={' "$catalog"
 [[ $(grep -c '^\s*relief_junction(' "$catalog") -eq 38 ]]
 grep -q 'junction_candidate_eligibility="strictly_positive_weight_only_all_quantized_zero_weights_excluded_including_distance_96"' "$catalog"
@@ -163,7 +186,7 @@ done
 for pattern_index in 0 1 2 3 4; do
 	hits=$(grep -nE "${patterns[$pattern_index]}" tools/wp40/t2_source_test.lua || true)
 	if [[ $pattern_index -eq 4 ]]; then
-		hits=$(printf '%s\n' "$hits" | grep -vF 'assert(os.execute("sha256sum " .. input .. " > " .. output) == 0)' || true)
+		hits=$(printf '%s\n' "$hits" | grep -vF 'os.execute("sha256sum " .. input .. " > " .. output)' || true)
 	fi
 	if [[ -n "$hits" ]]; then
 		printf '%s\n' "$hits"

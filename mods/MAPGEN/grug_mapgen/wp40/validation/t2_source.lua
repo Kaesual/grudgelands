@@ -2,21 +2,21 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0"
+	"f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
 	primitive_formulas="03365f8654bdb4ffac4af9a1123f6df2f5231bcec7bf999b859cc115cf839f8b",
-	boundary_displacement="a285d8d82e4b7b588fdf0b13508b8f6c070ec632dfa97b5ae7f428e3e49295fa",
+	boundary_displacement="913b0d4184a9a51125413f69621e78e4643c84d2af545362b308f56ad01ba1a4",
 	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
 	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
 	relief_field="21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200",
 	landmark_masks="99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e",
 	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
-	world_partition="0e33b43be13f096aee2b6f8fbe40e3e1e6a44605bb66436672b69de6efb01f9d",
+	world_partition="eb70c52d82fbb0d93ab53cf2d6d276b59f69c4fbf387b56311acfd9a0820c1e2",
 	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
 	requester_trace="1c8bb210b53bb50bb6a661dfaaf8e3f771cc1ae2674a0a405783a6ca19dd69ff",
-	geometry_extreme_selector="7d9e796c64ae4b975a029ad2ad3311c4f2a930036a0c8ab6173664111e3637c7",
+	geometry_extreme_selector="3c87964998f48fc71d92aa361c0584cd6dc0ddd04ccc8992214775df138c132a",
 	hydrology_mask="8d52ca635a2fccd3ccc337dd11c7f37c268657b66b5eee30d550bd4183e20d27",
 	route_vertical_interfaces="14f849ac48bad0bf888a46d975a73acbb34be1c34d5d51ea2648ad3ee7b1ce09",
 }
@@ -860,19 +860,20 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local generic_policy_ids={
 		primitive_evaluator="template_primitive_q16_composition_v1",
 		primitive_formulas="template_primitive_formulas_v1",
-		boundary_displacement="shared_polyline_normal_displacement_t1_hash_v1",
+		boundary_displacement="shared_polyline_normal_displacement_t1_hash_v2",
 		route_raster="symmetric_bresenham_8_connected_stations_v1",
 		route_profile_solver="route_profile_dynamic_program_v1",
 		relief_field="shared_edge_gate_relief_q16_v1",
 		landmark_masks="landmark_masks_and_replacement_blend_v1",
 		coastal_housing_core="displaced_coast_interval_inward_core_v1",
-		world_partition="face_partition_with_bay_capsule_water_v1",
+		world_partition="face_partition_with_bay_capsule_water_v2",
 		geometry_fixture_selector="geometry_microcorpus_selector_v1",
 		requester_trace="requester_trace_manifest_v1",
 		geometry_extreme_selector="geometry_extreme_seed_selector_v1",
 		hydrology_mask="analytic_reach_round_union_sealed_v1",
 		route_vertical_interfaces="route_water_vertical_interfaces_v1",
 	}
+	local generic_policy_versions={boundary_displacement=2,world_partition=2}
 	for _,key in ipairs({"primitive_evaluator","primitive_formulas",
 			"boundary_displacement","route_raster","route_profile_solver",
 			"relief_field","landmark_masks","coastal_housing_core",
@@ -880,7 +881,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			"geometry_extreme_selector",
 			"hydrology_mask","route_vertical_interfaces"}) do
 		if type(policies[key])~="table" or policies[key].id~=generic_policy_ids[key] or
-				policies[key].schema_version~=1 then
+				policies[key].schema_version~=(generic_policy_versions[key] or 1) then
 			return diag("generic_geometry_policy_contract","geometry_policies."..key,
 				generic_policy_ids[key],"invalid")
 		end
@@ -1003,13 +1004,55 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	end
 	local partition=policies.world_partition
 	if not dense(partition.classification_precedence) or
-			#partition.classification_precedence~=6 or
-			partition.classification_precedence[1]~="strict_exterior" or
-			partition.classification_precedence[2]~="base_bay_mouth_aperture_equality_owner" or
-			partition.classification_precedence[3]~="ordinary_perimeter_equality_owner" or
-			partition.classification_precedence[4]~="strict_interior_base_bay_owner" or
-			partition.classification_precedence[5]~="strict_interior_closure_wing_owner" or
-			partition.classification_precedence[6]~="strict_interior_dry_zone_face_owner" or
+			#partition.classification_precedence~=4 or
+			partition.classification_precedence[1]~=
+				"planned_base_bay_water_in_strict_mainland_interior_or_own_mouth_aperture_equality_then_closure_wing_water_in_strict_mainland_interior_only" or
+			partition.classification_precedence[2]~=
+				"mainland_island_or_fixed_holy_land_strict_interior_or_remaining_perimeter_equality_owner" or
+			partition.classification_precedence[3]~=
+				"strict_exterior_closed_dragon_channel_including_own_polygon_boundary" or
+			partition.classification_precedence[4]~=
+				"strict_exterior_coastal_shelf_or_deep_ocean" or
+			partition.strict_exterior_rule~=
+				"outside_every_final_mainland_island_and_fixed_holy_grounds_closed_footprint_after_all_planned_water_and_dry_land_equality_resolution" or
+			partition.holy_land_authority~=
+				"constants_holy_grounds_closed_rectangle_and_its_four_zone_face_partition_including_rectangle_equality" or
+			partition.channel_policy_id~=
+				"strict_exterior_closed_integer_polygon_channel_v1" or
+			partition.channel_membership~=
+				"nonzero_integer_winding_or_exact_channel_segment_equality" or
+			partition.channel_boundary_rule~=
+				"channel_polygon_boundary_is_included_only_when_point_is_already_strict_exterior" or
+			partition.channel_precedence_rule~=
+				"never_preempts_mainland_island_or_fixed_holy_interior_perimeter_aperture_base_bay_or_closure_wing_equality" or
+			partition.coast_source_policy_id~=
+				"exact_rational_nearest_allowed_outer_coast_component_v1" or
+			partition.coast_source_role~=
+				"dressing_and_policy_inheritance_only_never_zone_membership_race_region_territory_or_adjacency" or
+			not dense(partition.coast_source_allowed_component_ids) or
+			#partition.coast_source_allowed_component_ids~=22 or
+			partition.coast_source_allowed_component_ids[19]~=
+				"face_arc:gravesalt:holy_west" or
+			partition.coast_source_allowed_component_ids[20]~=
+				"face_arc:skyglass:holy_east" or
+			partition.coast_source_allowed_component_ids[21]~=
+				"face_arc:wyrmglass:island" or
+			partition.coast_source_allowed_component_ids[22]~=
+				"face_arc:stormscale:island" or
+			partition.coast_source_component_owner~=
+				"compiled_perimeter_span_zone_id_or_compiled_outer_coast_face_arc_zone_id_including_fixed_holy_and_island_arcs" or
+			partition.coast_source_segment_distance~=
+				"for_projection_N_less_equal_zero_endpoint_A_squared_distance_over_one_N_greater_equal_L_endpoint_B_else_cross_C_squared_over_L" or
+			partition.coast_source_minimum_rule~=
+				"collect_every_exact_minimum_using_gcd_reduced_positive_rational_cross_multiplication_before_ownership_ties" or
+			partition.coast_source_tie_rule~=
+				"lower_zone_numeric_id_then_stable_component_id_then_zero_based_compiled_component_segment_index" or
+			partition.coast_source_query_domain~=
+				"compiled_interesting_extent_only_nil_outside" or
+			partition.coast_source_max_coordinate_delta~=8192 or
+			partition.coast_source_max_compiled_segment_delta~=1 or
+			partition.coast_source_safe_bounds~=
+				"endpoint_distance_squared_at_most_134217728_cross_squared_at_most_268435456_reduced_compare_product_at_most_536870912" or
 			partition.bay_mask_authority~=
 				"unchanged_four_sample_round_capsule_union_then_two_literal_head_closure_wings" or
 			partition.bay_base_predicate_id~=
@@ -1150,6 +1193,30 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	end
 	local extreme=policies.geometry_extreme_selector
 	if extreme.candidate_count~=4096 or extreme.score_all_candidates_before_stage2~=true or
+			extreme.sample_sequence~=
+				"pre_displacement_canonical_source_segment_raster_only_never_final_reraster_stations" or
+			extreme.coast_mainland_sequence~=
+				"union_of_eligible_outer_source_perimeter_segments_in_perimeter_id_then_zero_based_source_segment_then_local_station_order" or
+			extreme.coast_mainland_identity~=
+				"perimeter_id_zero_based_source_segment_index_zero_based_local_station_index" or
+			extreme.coast_mainland_overlap_rule~=
+				"perimeter_span_overlap_never_duplicates_a_source_segment_or_station_in_the_union" or
+			extreme.island_sequence~=
+				"eligible_island_outer_arc_id_then_zero_based_source_segment_then_local_station_order" or
+			extreme.island_identity~=
+				"arc_id_zero_based_source_segment_index_zero_based_local_station_index" or
+			extreme.noncoast_sequence~=
+				"eligible_positive_shared_land_edge_numeric_id_then_zero_based_source_segment_then_local_station_order" or
+			extreme.noncoast_identity~=
+				"edge_id_zero_based_source_segment_index_zero_based_local_station_index" or
+			extreme.source_join_dedup~=
+				"duplicate_segment_join_and_closed_seam_station_keeps_the_stable_earlier_identity_in_the_declared_sequence" or
+			extreme.scalar_sample_rule~=
+				"each_unique_source_station_scores_its_post_noise_damping_local_clip_pre_component_scalar_q_exactly_once" or
+			extreme.attachment_rule~=
+				"provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence" or
+			extreme.no_interpolation_rule~=
+				"never_interpolate_resample_or_rehash_a_selector_scalar" or
 			extreme.scalar_stage~=
 				"final_signed_q16_after_noise_damping_and_local_magnitude_clip_before_x_z_component_rounding" or
 			extreme.normalization_denominator~=
@@ -1226,11 +1293,48 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	local expected_no_jitter_sources={"all_literal_polyline_control_vertices",
 		"all_route_interface_positions","all_fixed_anchor_positions",
 		"holy_rectangle_corners_and_junctions"}
-	if boundary_policy.control_taper_distance~=96 or
+	if boundary_policy.input_rule~=
+			"literal_control_polyline_authored_order_retained_only_for_final_output_mapping" or
+			boundary_policy.sampling_rule~=
+			"one_route_raster_policy_integer_sequence_with_consecutive_join_duplicates_suppressed" or
+			boundary_policy.open_orientation_rule~=
+				"lexicographically_smaller_complete_station_sequence_of_forward_and_reverse_is_calculation_order" or
+			boundary_policy.closed_orientation_rule~=
+				"remove_repeated_terminal_station_rotate_each_direction_to_lexicographically_lowest_x_then_z_station_then_choose_lexicographically_smaller_cycle" or
+			boundary_policy.orientation_restore_rule~=
+				"map_displaced_controls_back_to_authored_rotation_and_direction_only_after_all_scalar_and_component_results_exist" or
+			boundary_policy.reversal_identity_rule~=
+				"canonical_calculation_order_makes_reversal_change_only_output_order_never_displaced_world_columns" or
+			boundary_policy.normal_and_scalar_orientation~=
+				"canonical_calculation_direction_exclusively_authored_direction_never_changes_normal_or_scalar_sign" or
+			boundary_policy.step_rule~=
+				"incoming_equals_current_minus_previous_distinct_outgoing_equals_next_distinct_minus_current_each_component_minus_one_zero_or_one" or
+			boundary_policy.step_length_q_rule~=
+				"t1_isqrt_of_dx_squared_plus_dz_squared_times_Q_squared" or
+			boundary_policy.step_left_normal_rule~=
+				"normal_x_q_equals_t1_qdiv_minus_dz_times_Q_by_step_length_q_normal_z_q_equals_t1_qdiv_dx_times_Q_by_step_length_q" or
+			boundary_policy.endpoint_normal_rule~=
+				"single_available_directed_step_left_unit_normal" or
+			boundary_policy.joint_rule~=
+				"sum_incoming_and_outgoing_left_unit_q16_normals_then_t1_isqrt_sum_squares_and_t1_qdiv_each_sum_component_by_sum_length_q" or
+			boundary_policy.joint_degenerate_rule~=
+				"reject_zero_length_step_or_zero_opposite_joint_sum" or
+			boundary_policy.normal_safe_bounds~=
+				"step_length_radicand_at_most_8589934592_joint_sum_square_at_most_34359738368" or
+			boundary_policy.raw_scalar_rule~=
+				"raw_scalar_q_equals_t1_qmul_clamped_noise_q_and_record_max_displacement_times_Q" or
+			boundary_policy.displacement_rule~=nil or
+			boundary_policy.control_taper_distance~=96 or
 			boundary_policy.control_taper_metric~=
 			"canonical_eight_connected_segment_station_steps_equal_chebyshev_arclength" or
 			boundary_policy.control_taper_rule~=
 				"smootherstep_clamped_min_station_steps_from_segment_ends_div_96" or
+			boundary_policy.control_taper_metadata~=
+				"each_base_station_retains_authored_source_segment_numeric_index_zero_based_local_station_index_and_local_last_index" or
+			boundary_policy.control_join_taper~=
+				"deduplicated_shared_control_join_has_zero_taper_for_both_incident_segments" or
+			boundary_policy.control_orientation_remap~=
+				"open_reverse_and_closed_rotate_or_reverse_remap_segment_and_local_station_metadata_with_points_never_rederive_segment_boundaries_from_canonical_whole_sequence" or
 			boundary_policy.no_jitter_metric~=
 				"exact_world_chebyshev_distance_to_source_point" or
 			boundary_policy.no_jitter_distance~=96 or
@@ -1245,6 +1349,56 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				table.concat(expected_no_jitter_sources,"\0") or
 			boundary_policy.damping_rule~=
 				"t1_qmul_control_taper_q16_and_no_jitter_minimum_q16" or
+			boundary_policy.damped_scalar_rule~=
+				"damped_scalar_q_equals_t1_qmul_raw_scalar_q_and_damping_q" or
+			type(boundary_policy.clip_envelope_by_kind)~="table" or
+			boundary_policy.clip_envelope_by_kind.land_edge~=
+				"closed_chebyshev_square_about_base_station_with_radius_record_max_displacement" or
+			boundary_policy.clip_envelope_by_kind.mainland_coast~=
+				"closed_constants_mainland_frame_rectangle" or
+			boundary_policy.clip_envelope_by_kind.island_coast~=
+				"closed_authored_island_ellipse" or
+			boundary_policy.clip_envelope_by_kind.fixed~="exact_base_station_only" or
+			boundary_policy.clip_envelope_by_kind.bay~=nil or
+			boundary_policy.land_edge_envelope_predicate~=
+				"absolute_candidate_x_minus_base_x_less_equal_record_max_displacement_and_absolute_candidate_z_minus_base_z_less_equal_record_max_displacement" or
+			boundary_policy.mainland_coast_envelope_predicate~=
+				"mainland_frame_min_x_less_equal_candidate_x_less_equal_max_x_and_min_z_less_equal_candidate_z_less_equal_max_z" or
+			boundary_policy.island_coast_envelope_predicate~=
+				"reject_absolute_dx_greater_radius_x_or_absolute_dz_greater_radius_z_before_products_else_dx_squared_times_radius_z_squared_plus_dz_squared_times_radius_x_squared_less_equal_radius_x_squared_times_radius_z_squared" or
+			boundary_policy.fixed_envelope_predicate~=
+				"candidate_x_equals_base_x_and_candidate_z_equals_base_z" or
+			boundary_policy.envelope_boundary_tie~="equality_inside_for_every_kind" or
+			boundary_policy.envelope_arithmetic~=
+				"checked_exact_integer_products_no_face_polygon_final_geometry_or_float_dependency" or
+			boundary_policy.envelope_safe_bounds~=
+				"land_and_frame_use_comparisons_island_axis_reject_makes_each_term_and_right_side_at_most_11025000000" or
+			not dense(boundary_policy.excluded_parameterized_geometry) or
+			#boundary_policy.excluded_parameterized_geometry~=1 or
+			boundary_policy.excluded_parameterized_geometry[1]~=
+				"base_bay_symmetric_effective_half_width_uses_world_partition_policy_not_polyline_normal_displacement" or
+			boundary_policy.clip_loop_rule~=
+				"test_exact_damped_scalar_first_if_outside_scan_integer_magnitude_nodes_from_minimum_record_max_displacement_and_floor_absolute_damped_scalar_q_div_Q_down_to_zero_with_fixed_damped_sign" or
+			boundary_policy.clip_probe_rule~=
+				"for_each_magnitude_m_probe_station_plus_qround_qmul_normal_x_q_sign_m_Q_and_qround_qmul_normal_z_q_sign_m_Q" or
+			boundary_policy.clip_selection_rule~=
+				"exact_damped_scalar_if_its_probe_is_inside_else_first_integer_probe_is_greatest_tested_admissible_not_exceeding_desired_magnitude_no_monotonicity_assumption" or
+			boundary_policy.clip_scalar_rule~=
+				"displacement_scalar_q_equals_exact_damped_scalar_or_sign_damped_times_selected_integer_magnitude_times_Q_zero_damped_skips_loop_and_returns_zero_no_untested_fractional_result" or
+			boundary_policy.component_rule~=
+				"dx_equals_t1_qround_t1_qmul_normal_x_q_displacement_scalar_q_then_dz_analogously" or
+			boundary_policy.component_rounding~=
+				"qmul_half_away_to_Q16_then_qround_half_away_to_integer_in_that_order_including_positive_and_negative_half_ties" or
+			boundary_policy.scalar_component_product_bound_decimal~=
+				"412316860416" or
+			boundary_policy.shifted_station_rule~=
+				"every_shifted_base_raster_station_is_a_final_reraster_control_not_a_final_emitted_station" or
+			boundary_policy.final_raster_rule~=
+				"route_raster_once_between_consecutive_shifted_controls_closed_cycle_also_last_to_first_suppress_only_consecutive_duplicates_remove_repeated_cycle_terminal" or
+			boundary_policy.final_validation_rule~=
+				"no_second_displacement_clip_or_snap_final_raster_envelope_topology_width_or_connectivity_failure_rejects_seed" or
+			boundary_policy.displacement_scalar_authority~=
+				"sole_final_signed_Q16_value_after_noise_damping_and_local_magnitude_clip_before_component_rounding" or
 			boundary_policy.shared_boundary_clip_policy_id~=
 			"canonical_integer_land_run_prefix_suffix_v1" or
 			boundary_policy.shared_boundary_clip_raster~=
@@ -2261,6 +2415,72 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		for i = 1, #collection do
 			ok, failure = polygon_valid(collection[i],collection[i].id)
 			if not ok then return nil, failure end
+		end
+	end
+	local expected_coast_components={}
+	for span_index=1,#source.perimeter_spans do
+		expected_coast_components[#expected_coast_components+1]=
+			source.perimeter_spans[span_index].id
+	end
+	expected_coast_components[#expected_coast_components+1]=
+		"face_arc:gravesalt:holy_west"
+	expected_coast_components[#expected_coast_components+1]=
+		"face_arc:skyglass:holy_east"
+	expected_coast_components[#expected_coast_components+1]=
+		"face_arc:wyrmglass:island"
+	expected_coast_components[#expected_coast_components+1]=
+		"face_arc:stormscale:island"
+	if #expected_coast_components~=#partition.coast_source_allowed_component_ids then
+		return diag("coast_source_component_roster","geometry_policies.world_partition",
+			#expected_coast_components,#partition.coast_source_allowed_component_ids)
+	end
+	for component_index=1,#expected_coast_components do
+		local expected=expected_coast_components[component_index]
+		local observed=partition.coast_source_allowed_component_ids[component_index]
+		local arc=arc_by_id[observed]
+		local literal=arc and #arc.authority_components==1 and
+			arc.authority_components[1]
+		local expected_role
+		if component_index>#source.perimeter_spans and
+				component_index<=#source.perimeter_spans+2 then
+			expected_role="fixed_holy"
+		elseif component_index>#source.perimeter_spans+2 then
+			expected_role="island_coast"
+		end
+		if observed~=expected or expected_role and
+				(not literal or literal.boundary_role~=expected_role) then
+			return diag("coast_source_component_roster",
+				"geometry_policies.world_partition.coast_source_allowed_component_ids["..
+					component_index.."]",expected,observed)
+		end
+	end
+	local channel_expected={
+		{"channel_wyrmglass","island_wyrmglass","front_gravesalt_escarpment",
+			-2850,-350,-2500,350},
+		{"channel_stormscale","island_stormscale","front_skyglass_canopy",
+			2500,-350,2860,350},
+	}
+	for channel_index=1,#source.channels do
+		local channel=source.channels[channel_index]
+		local expected=channel_expected[channel_index]
+		local polygon=channel.polygon
+		if channel.id~=expected[1] or channel.island_id~=expected[2] or
+				channel.mainland_zone_id~=expected[3] or
+				channel.classification_policy_id~=
+					"strict_exterior_closed_integer_polygon_channel_v1" or
+				channel.membership_rule~=
+					"nonzero_integer_winding_or_exact_segment_equality_after_strict_exterior" or
+				channel.boundary_rule~=
+					"included_channel_only_after_land_and_planned_water_precedence" or
+				#polygon~=5 or polygon[1].x~=expected[4] or
+				polygon[1].z~=expected[5] or polygon[2].x~=expected[6] or
+				polygon[2].z~=expected[5] or polygon[3].x~=expected[6] or
+				polygon[3].z~=expected[7] or polygon[4].x~=expected[4] or
+				polygon[4].z~=expected[7] or polygon[5].x~=expected[4] or
+				polygon[5].z~=expected[5] then
+			return diag("channel_strict_exterior_contract",channel.id,
+				"exact closed rectangle and post-land/water strict-exterior policy",
+				"changed")
 		end
 	end
 	local perimeter_by_id={}

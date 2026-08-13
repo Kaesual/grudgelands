@@ -380,6 +380,27 @@ WP40 replaces it with the complete catalog and contracts below.
   of whether its current node is water, air, seabed or deep rock. Players
   therefore cannot fill, drain, bridge or tunnel through a channel. Both the
   warning and hard-flight sub-bands remain terrain-immutable.
+- Horizontal classification has one exact precedence. Planned Base-Bay water
+  is considered first in strict mainland interior or on its own mouth-
+  aperture equality; closure-wing water is strict-mainland-interior-only.
+  Mainland, island and the
+  fixed Holy Grounds footprint—including every perimeter equality—then return
+  land. Only a point outside all three closed land authorities is strict
+  exterior, where membership in either closed integer dragon-channel polygon,
+  including its own segment equality, returns `immutable_dragon_channel`;
+  remaining strict exterior becomes shelf or deep ocean. A channel therefore
+  never steals land, a land-perimeter equality, an aperture, Base-Bay water or
+  closure-wing water.
+- Exterior dressing inherits one `coast_source_zone_id` from the nearest
+  allowed compiled outer-coast component. The closed roster is the 18
+  mainland `perimeter_span` components, the Gravesalt west and Skyglass east
+  fixed Holy outer-coast arcs, and the Wyrmglass and Stormscale island arcs;
+  closing edges are excluded. Each final 8-connected compiled segment uses
+  endpoint squared distance over one or interior `C^2/L`. All exact rational
+  minima are collected before choosing lower zone numeric ID, then stable
+  component ID, then zero-based component-segment index. This value is
+  inheritance only and never changes zone membership, race region, territory
+  or adjacency. It is `nil` outside the compiled interesting extent.
 - Each dragon channel contains two guaranteed **96-node-wide boat approach
   corridors**, centred at **z = -125** and **z = +125**. On each island, the
   southern route is the shorter approach from Elandor and the northern route
@@ -638,6 +659,54 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   use their minimum factor, and the final displacement factor is the checked
   Q16 product of control taper and that minimum. Reversing an authored segment
   therefore reverses the same factors rather than changing them.
+  Each base station keeps its authored source-segment index, zero-based local
+  index and local last index through canonicalization; a deduplicated shared
+  control join has taper zero for both incident segments. Open calculation
+  chooses the lexicographically lower complete forward/reverse station
+  sequence. A closed sequence removes its repeated terminal, rotates each
+  direction to the lowest `(x,z)` station and chooses the lexicographically
+  lower cycle. These canonical calculation directions alone determine normal
+  and signed-scalar direction; authored direction is restored only for output.
+  Segment boundaries and taper metadata are remapped, never re-derived from
+  the canonical whole sequence.
+- For a directed 8-connected step `(dx,dz)`, let
+  `len_q=isqrt((dx^2+dz^2)*Q^2)` and its left normal be
+  `(qdiv(-dz*Q,len_q), qdiv(dx*Q,len_q))`. An endpoint uses its only step. An
+  interior station normalizes the sum of incoming and outgoing left normals;
+  a zero step or opposite zero sum rejects the seed. Clamp noise to
+  `[-Q,+Q]`, compute `raw_scalar_q=qmul(noise_q,max_displacement*Q)`, and
+  compute `damping_q=qmul(control_taper_q,min_no_jitter_q)` followed by
+  `damped_scalar_q=qmul(raw_scalar_q,damping_q)`. That damped signed scalar has
+  exactly one local clip: first test its exact rounded
+  candidate; if outside, test same-sign integer magnitudes descending from
+  `min(max_displacement,floor(abs(damped_scalar_q)/Q))` to zero and take the first
+  valid probe. The closed envelopes are a base-centered Chebyshev square for
+  a land edge, the fixed mainland frame for mainland coast, the authored
+  island ellipse with axis rejection before products, and the exact base
+  station for fixed geometry. Base Bays use their separate symmetric-width
+  rule, not this polyline clip. Equality is inside every local envelope.
+- The sole component conversion is
+  `dx=qround(qmul(normal_x_q,displacement_scalar_q))` and likewise for `dz`,
+  with both Q16 and integer half ties away from zero. Every shifted base
+  station is then a control—not an emitted answer—for one final canonical
+  8-connected reraster between consecutive controls; a closed cycle also
+  rasterizes last to first, suppresses consecutive joins and removes a
+  repeated terminal. There is no second displacement, clip, snap, noise query
+  or scalar interpolation. Any final envelope, topology, width or connectivity
+  failure rejects the seed.
+- The four measured extreme-corpus seeds score only scalar-bearing,
+  pre-displacement canonical **source** raster stations after noise, damping
+  and local clip but before component rounding. Mainland coast uses the union
+  of eligible outer source-perimeter segments, keyed and ordered by perimeter
+  ID, zero-based source-segment index and zero-based local index; overlapping
+  `perimeter_span` ranges never double-count a segment or station. Island
+  coast uses `(arc_id, segment, local index)`, and positive shared boundaries
+  use `(edge_id, segment, local index)` in numeric edge order. At a source
+  segment join or closed seam, the stable earlier identity wins. Provisional
+  attachment `E`, perimeter `A`, discarded prefix/suffix stations and stations
+  inserted by the final reraster are never scored. No selector scalar is
+  interpolated, resampled or rehashed; if selected final geometry later fails,
+  Stage 2 rejects it without choosing a fallback seed.
 - No zone core may narrow below 256 nodes and no authored travel corridor below
   96 nodes. This is the macro-terrain neck that keeps a route traversable, not
   the narrower road/claim-exclusion width below. Seed variation may not remove
@@ -1217,6 +1286,10 @@ asks for it.
   numeric ID, then stable string ID. `housing_eligible_at(x, z)` is the
   separate boolean for the complete static radius-50 center mask and never
   checks dynamic claims.
+- `coast_source_zone_id_at(x, z)` applies the closed 22-component roster and
+  exact rational distance/tie rule in §7. It returns that dressing/inheritance
+  zone ID inside the compiled interesting extent or `nil` outside it; the
+  result never participates in `id_at`, footprint membership or adjacency.
 - Every node-addressed public query accepts only finite Lua-number coordinates
   in `-(2^53 - 1)..(2^53 - 1)` before and after normalization. Each coordinate
   rounds to its nearest integer with exact half ties away from zero. Invalid,

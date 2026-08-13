@@ -40,7 +40,10 @@ local function raw_sha256(data)
 	local input = scratch .. "/source-" .. sha_counter .. ".bin"
 	local output = scratch .. "/source-" .. sha_counter .. ".sha"
 	local file = assert(io.open(input,"wb")) assert(file:write(data)) assert(file:close())
-	assert(os.execute("sha256sum " .. input .. " > " .. output) == 0)
+	local execute_ok,execute_why,execute_code=
+		os.execute("sha256sum " .. input .. " > " .. output)
+	assert(execute_ok==0 or execute_ok==true and execute_why=="exit" and
+		execute_code==0)
 	file = assert(io.open(output,"rb")) local line=assert(file:read("*l")) assert(file:close())
 	return from_hex(assert(line:match("^([0-9a-f]+)")))
 end
@@ -64,7 +67,7 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0"
+local EXPECTED_SOURCE_CHECKSUM="f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"production and independent source KAT differ")
 assert(production_stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
@@ -1635,6 +1638,421 @@ assert(control_taper(0,240)==0 and control_taper(96,240)==Q and
 		deterministic.qmul(control_taper(203,240),no_jitter_damping(120)),
 	"boundary damping metric/reversal/overlap KAT drift")
 
+-- R7 independent displacement oracle. It deliberately consumes only T1
+-- arithmetic and the public raster KAT above; no compiler implementation is
+-- available to hide a second normal, clip, component, or reraster path.
+local function displacement_step_normal(dx,dz)
+	assert(math.abs(dx)<=1 and math.abs(dz)<=1 and (dx~=0 or dz~=0))
+	local length_q=deterministic.isqrt((dx*dx+dz*dz)*Q*Q)
+	return deterministic.qdiv(-dz*Q,length_q),
+		deterministic.qdiv(dx*Q,length_q)
+end
+local function displacement_joint_normal(in_dx,in_dz,out_dx,out_dz)
+	local in_x,in_z=displacement_step_normal(in_dx,in_dz)
+	local out_x,out_z=displacement_step_normal(out_dx,out_dz)
+	local sum_x,sum_z=in_x+out_x,in_z+out_z
+	assert(sum_x~=0 or sum_z~=0,"opposite displacement joint accepted")
+	local length_q=deterministic.isqrt(sum_x*sum_x+sum_z*sum_z)
+	return deterministic.qdiv(sum_x,length_q),deterministic.qdiv(sum_z,length_q)
+end
+local function displacement_components(normal_x_q,normal_z_q,scalar_q)
+	return deterministic.qround(deterministic.qmul(normal_x_q,scalar_q)),
+		deterministic.qround(deterministic.qmul(normal_z_q,scalar_q))
+end
+local function displacement_clip(base,normal_x_q,normal_z_q,desired_q,
+		maximum,predicate)
+	local function accepted(scalar_q)
+		local dx,dz=displacement_components(normal_x_q,normal_z_q,scalar_q)
+		return predicate(base.x+dx,base.z+dz),dx,dz
+	end
+	if desired_q==0 then
+		local ok=accepted(0) assert(ok,"zero displacement outside local envelope")
+		return 0
+	end
+	local ok=accepted(desired_q)
+	if ok then return desired_q end
+	local sign=desired_q<0 and -1 or 1
+	local magnitude=math.min(maximum,math.floor(math.abs(desired_q)/Q))
+	for nodes=magnitude,0,-1 do
+		local candidate=sign*nodes*Q
+		if accepted(candidate) then return candidate end
+	end
+	error("no displacement magnitude inside local envelope")
+end
+local horizontal_x,horizontal_z=displacement_step_normal(1,0)
+local vertical_x,vertical_z=displacement_step_normal(0,1)
+local diagonal_x,diagonal_z=displacement_step_normal(1,1)
+local negative_horizontal_x,negative_horizontal_z=displacement_step_normal(-1,0)
+local negative_vertical_x,negative_vertical_z=displacement_step_normal(0,-1)
+assert(horizontal_x==0 and horizontal_z==Q and vertical_x==-Q and
+	vertical_z==0 and diagonal_x==-46341 and diagonal_z==46341 and
+	negative_horizontal_x==0 and negative_horizontal_z==-Q and
+	negative_vertical_x==Q and negative_vertical_z==0,
+	"boundary exact step-normal KAT drift")
+local corner_x,corner_z=displacement_joint_normal(1,0,0,1)
+assert(corner_x==-46341 and corner_z==46341,
+	"boundary exact corner-normal KAT drift")
+local dx,dz=displacement_components(Q,0,Q/2)
+local negative_dx,negative_dz=displacement_components(Q,0,-Q/2)
+assert(dx==1 and dz==0 and negative_dx==-1 and negative_dz==0,
+	"boundary signed half-tie component rounding drift")
+do
+	local base={x=2599,z=-2200}
+	local frame=function(x,z) return x>=-2600 and x<=2600 and
+		z>=-3000 and z<=3000 end
+	local clipped=displacement_clip(base,Q,0,5*Q+Q/2,96,frame)
+	assert(clipped==Q,"boundary exact-desired then descending clip drift")
+	local accepted=displacement_clip({x=0,z=0},Q,0,5*Q+Q/4,64,
+		function(x) return x<=6 end)
+	assert(accepted==5*Q+Q/4,
+		"boundary valid fractional displacement was unnecessarily clipped")
+	local island=function(x,z)
+		local ix,iz=x+3150,z
+		if math.abs(ix)>300 or math.abs(iz)>350 then return false end
+		return ix*ix*350*350+iz*iz*300*300<=300*300*350*350
+	end
+	assert(island(-2850,0) and not island(-2849,0),
+		"boundary closed island-envelope equality drift")
+	local land=function(x,z) return math.abs(x)<=64 and math.abs(z)<=64 end
+	assert(displacement_clip({x=0,z=0},diagonal_x,diagonal_z,64*Q,64,land)==64*Q)
+	local fixed=function(x,z) return x==12 and z==-7 end
+	assert(displacement_clip({x=12,z=-7},Q,0,8*Q,8,fixed)==0,
+		"boundary fixed envelope failed to clip to exact base station")
+end
+local function raster_displaced_controls(controls,closed)
+	local result={}
+	local limit=closed and #controls or #controls-1
+	for control_index=1,limit do
+		local next_index=control_index+1
+		if next_index>#controls then next_index=1 end
+		local segment=raster_canonical_points(controls[control_index].x,
+			controls[control_index].z,controls[next_index].x,controls[next_index].z)
+		for station_index=1,#segment do local point=segment[station_index]
+			if #result==0 or result[#result].x~=point.x or
+					result[#result].z~=point.z then result[#result+1]=point end
+		end
+	end
+	if closed and #result>1 and result[1].x==result[#result].x and
+			result[1].z==result[#result].z then table.remove(result) end
+	return result
+end
+local rerastered=raster_displaced_controls({{x=0,z=0},{x=3,z=2},{x=5,z=0}},false)
+assert(rerastered[1].x==0 and rerastered[#rerastered].x==5 and
+	raster_signature(rerastered)=="0:0,1:1,2:1,3:2,4:1,5:0",
+	"boundary shifted-control sole reraster/join drift")
+local closed_reraster=raster_displaced_controls(
+	{{x=0,z=0},{x=2,z=0},{x=2,z=2},{x=0,z=2}},true)
+local closed_seen={}
+for i=1,#closed_reraster do
+	local key=closed_reraster[i].x..":"..closed_reraster[i].z
+	assert(not closed_seen[key] or key~="0:0","boundary closed seam duplicated")
+	closed_seen[key]=true
+end
+assert(closed_reraster[1].x==0 and closed_reraster[1].z==0 and
+	closed_reraster[#closed_reraster].x==0 and closed_reraster[#closed_reraster].z==1,
+	"boundary closed seam reraster drift")
+do
+	local function sequence_less(a,b)
+		for i=1,#a do
+			if a[i].x~=b[i].x then return a[i].x<b[i].x end
+			if a[i].z~=b[i].z then return a[i].z<b[i].z end
+		end
+		return false
+	end
+	local function reversed_copy(points)
+		local result={}
+		for i=#points,1,-1 do result[#result+1]={x=points[i].x,z=points[i].z} end
+		return result
+	end
+	local function canonical_open(points)
+		local reversed=reversed_copy(points)
+		return sequence_less(reversed,points) and reversed or points
+	end
+	local function canonical_closed(points)
+		local count=#points
+		if count>1 and points[1].x==points[count].x and points[1].z==points[count].z then
+			count=count-1
+		end
+		local base={}
+		for i=1,count do base[i]={x=points[i].x,z=points[i].z} end
+		local best
+		for direction=-1,1,2 do
+			for start=1,count do
+				local candidate={}
+				for offset=0,count-1 do
+					local index=(start-1+direction*offset)%count+1
+					candidate[#candidate+1]={x=base[index].x,z=base[index].z}
+				end
+				if not best or sequence_less(candidate,best) then best=candidate end
+			end
+		end
+		return best
+	end
+	local function displace_canonical_open(input,scalar_q)
+		local points=canonical_open(input)
+		local result={}
+		for i=1,#points do
+		local nx,nz
+		if i==1 then nx,nz=displacement_step_normal(
+			points[2].x-points[1].x,points[2].z-points[1].z)
+		elseif i==#points then nx,nz=displacement_step_normal(
+			points[i].x-points[i-1].x,points[i].z-points[i-1].z)
+		else nx,nz=displacement_joint_normal(
+			points[i].x-points[i-1].x,points[i].z-points[i-1].z,
+			points[i+1].x-points[i].x,points[i+1].z-points[i].z) end
+		local sx,sz=displacement_components(nx,nz,scalar_q)
+		result[i]={x=points[i].x+sx,z=points[i].z+sz}
+		end
+		return result
+	end
+	local function displace_canonical_closed(input,scalar_q)
+		local points=canonical_closed(input)
+		local result={}
+		for i=1,#points do
+			local previous=i==1 and #points or i-1
+			local following=i==#points and 1 or i+1
+			local nx,nz=displacement_joint_normal(
+				points[i].x-points[previous].x,points[i].z-points[previous].z,
+				points[following].x-points[i].x,points[following].z-points[i].z)
+			local sx,sz=displacement_components(nx,nz,scalar_q)
+			result[i]={x=points[i].x+sx,z=points[i].z+sz}
+		end
+		return result
+	end
+	local authored_forward=raster_canonical_points(-2,-1,3,1)
+	local authored_reverse=reversed_copy(authored_forward)
+	local displaced_forward=displace_canonical_open(authored_forward,3*Q)
+	local displaced_from_reverse=displace_canonical_open(authored_reverse,3*Q)
+	assert(raster_signature(displaced_from_reverse)==raster_signature(displaced_forward),
+		"boundary canonical normal/scalar reversal identity drift")
+	local cycle={{x=2,z=0},{x=2,z=2},{x=0,z=2},{x=0,z=0},{x=2,z=0}}
+	local rotated={{x=0,z=2},{x=0,z=0},{x=2,z=0},{x=2,z=2},{x=0,z=2}}
+	local reversed_cycle=reversed_copy(cycle)
+	assert(raster_signature(canonical_closed(cycle))==
+		raster_signature(canonical_closed(rotated)) and
+		raster_signature(canonical_closed(cycle))==
+		raster_signature(canonical_closed(reversed_cycle)),
+		"boundary closed-cycle rotation/reversal canonicalization drift")
+	local base_cycle=raster_displaced_controls(
+		{{x=0,z=0},{x=5,z=1},{x=3,z=6},{x=-2,z=4}},true)
+	local base_rotated={}
+	for offset=0,#base_cycle-1 do
+		local index=(3+offset-1)%#base_cycle+1
+		base_rotated[#base_rotated+1]=base_cycle[index]
+	end
+	local base_reversed=reversed_copy(base_cycle)
+	local displaced_cycle=displace_canonical_closed(base_cycle,2*Q)
+	local displaced_rotated=displace_canonical_closed(base_rotated,2*Q)
+	local displaced_reversed=displace_canonical_closed(base_reversed,2*Q)
+	local final_cycle=raster_displaced_controls(displaced_cycle,true)
+	local final_rotated=raster_displaced_controls(displaced_rotated,true)
+	local final_reversed=raster_displaced_controls(displaced_reversed,true)
+	assert(raster_signature(final_cycle)==raster_signature(final_rotated) and
+		raster_signature(final_cycle)==raster_signature(final_reversed),
+		"boundary closed-cycle full displacement/reraster identity drift")
+	local zero_ok=pcall(displacement_step_normal,0,0)
+	local opposite_ok=pcall(displacement_joint_normal,1,0,-1,0)
+	assert(not zero_ok and not opposite_ok,
+		"boundary degenerate step or opposite joint was accepted")
+end
+
+-- R8 independently freezes land/planned-water precedence. A channel uses a
+-- closed polygon only after mainland, island, and fixed Holy land authority.
+local function closed_polygon_member(x,z,polygon)
+	local winding=0
+	for i=1,#polygon-1 do local a,b=polygon[i],polygon[i+1]
+		local side=(b.x-a.x)*(z-a.z)-(b.z-a.z)*(x-a.x)
+		if side==0 and x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
+				z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then return true end
+		if a.z<=z then if b.z>z and side>0 then winding=winding+1 end
+		elseif b.z<=z and side<0 then winding=winding-1 end
+	end
+	return winding~=0
+end
+local function r8_base_bay_member(x,z,bay)
+	for i=1,#bay.centreline-1 do local a,b=bay.centreline[i],bay.centreline[i+1]
+		local vx,vz=b.x-a.x,b.z-a.z
+		local px,pz=x-a.x,z-a.z
+		local length=vx*vx+vz*vz
+		local projection=px*vx+pz*vz
+		if projection<=0 then
+			if px*px+pz*pz<a.half_width*a.half_width then return true end
+		elseif projection>=length then
+			local ex,ez=x-b.x,z-b.z
+			if ex*ex+ez*ez<b.half_width*b.half_width then return true end
+		else
+			local area=vx*pz-vz*px
+			local width=a.half_width*(length-projection)+b.half_width*projection
+			if area*area*length<width*width then return true end
+		end
+	end
+	return false
+end
+local function r8_wing_member(x,z,wing)
+	local vx,vz=wing.junction.x-wing.head.x,wing.junction.z-wing.head.z
+	local px,pz=x-wing.head.x,z-wing.head.z
+	local length=vx*vx+vz*vz
+	local projection=px*vx+pz*vz
+	if projection<0 or projection>=length then return false end
+	local area=vx*pz-vz*px
+	local remaining=length-projection
+	return area*area*length<wing.head_half_width*wing.head_half_width*
+		remaining*remaining
+end
+local function r8_class(x,z)
+	local bay_index_by_id={bay_elandor_west=1,bay_elandor_east=2,
+		bay_kragmar_west=3,bay_kragmar_east=4}
+	for perimeter_index=1,2 do
+		if closed_polygon_member(x,z,source.perimeters[perimeter_index].polygon) then
+			local continent=perimeter_index==1 and "elandor" or "kragmar"
+			for i=1,#source.bays do local bay=source.bays[i]
+				if bay.continent==continent and r8_base_bay_member(x,z,bay) then
+					return "planned_water"
+				end
+			end
+			for i=1,#source.bay_closure_wings do local wing=source.bay_closure_wings[i]
+				local bay=source.bays[bay_index_by_id[wing.bay_id]]
+				if bay and bay.continent==continent and r8_wing_member(x,z,wing) then
+					return "planned_water"
+				end
+			end
+			return "land"
+		end
+	end
+	for i=1,#source.islands do
+		if closed_polygon_member(x,z,source.islands[i].polygon) then return "land" end
+	end
+	local holy=source.constants.holy_grounds
+	if x>=holy.min_x and x<=holy.max_x and z>=holy.min_z and z<=holy.max_z then
+		return "land"
+	end
+	for i=1,#source.channels do
+		if closed_polygon_member(x,z,source.channels[i].polygon) then
+			return "immutable_dragon_channel"
+		end
+	end
+	return "ordinary_exterior"
+end
+assert(r8_class(0,0)=="land" and r8_class(-2500,0)=="land" and
+	r8_class(2500,0)=="land" and
+	r8_class(source.islands[1].polygon[1].x,source.islands[1].polygon[1].z)=="land" and
+	r8_class(-2850,0)=="immutable_dragon_channel" and
+	r8_class(2860,0)=="immutable_dragon_channel" and
+	r8_class(-980,-2940)=="planned_water" and
+	r8_class(-900,-2600)=="planned_water" and
+	r8_class(source.bay_closure_wings[1].left_probe.x,
+		source.bay_closure_wings[1].left_probe.z)=="planned_water",
+	"channel strict-exterior/equality precedence KAT drift")
+for i=1,#source.channels do local channel=source.channels[i]
+	assert(closed_polygon_member(channel.polygon[1].x,channel.polygon[1].z,
+		channel.polygon),"channel own polygon boundary became open")
+end
+
+-- R9 exact coast-source inheritance oracle. Segment distance is represented
+-- by numerator/positive denominator and all minima are collected before the
+-- zone/component/segment tie tuple is applied.
+local function gcd_positive(a,b)
+	while b~=0 do a,b=b,a%b end
+	return a
+end
+local function rational_compare(an,ad,bn,bd)
+	local g=gcd_positive(ad,bd)
+	ad,bd=ad/g,bd/g
+	local g1=gcd_positive(an,ad) an,ad=an/g1,ad/g1
+	local g2=gcd_positive(bn,bd) bn,bd=bn/g2,bd/g2
+	return an*bd-bn*ad
+end
+local function exact_segment_distance(px,pz,a,b)
+	local dx,dz=b.x-a.x,b.z-a.z
+	local qx,qz=px-a.x,pz-a.z
+	local length=dx*dx+dz*dz
+	local projection=qx*dx+qz*dz
+	if projection<=0 then return qx*qx+qz*qz,1 end
+	if projection>=length then
+		local ex,ez=px-b.x,pz-b.z return ex*ex+ez*ez,1
+	end
+	local area=dx*qz-dz*qx
+	return area*area,length
+end
+local function coast_source(candidates,px,pz)
+	local minima,best_n,best_d={}
+	for i=1,#candidates do local row=candidates[i]
+		local n,d=exact_segment_distance(px,pz,row.a,row.b)
+		local compare=best_n and rational_compare(n,d,best_n,best_d) or -1
+		if compare<0 then minima,best_n,best_d={row},n,d
+		elseif compare==0 then minima[#minima+1]=row end
+	end
+	table.sort(minima,function(a,b)
+		if a.zone_numeric~=b.zone_numeric then return a.zone_numeric<b.zone_numeric end
+		if a.component_id~=b.component_id then return a.component_id<b.component_id end
+		return a.segment_index<b.segment_index
+	end)
+	return minima[1],best_n,best_d,#minima
+end
+local high_first={
+	{zone_numeric=35,component_id="z_component",segment_index=7,
+		a={x=-1,z=0},b={x=0,z=1}},
+	{zone_numeric=34,component_id="a_component",segment_index=9,
+		a={x=0,z=-1},b={x=1,z=0}},
+}
+local coast,numerator,denominator,ties=coast_source(high_first,0,0)
+assert(coast.zone_numeric==34 and numerator==1 and denominator==2 and ties==2,
+	"coast-source exact geometry tie failed to override iteration order")
+local component_tie={
+	{zone_numeric=5,component_id="b",segment_index=1,
+		a={x=-1,z=0},b={x=0,z=1}},
+	{zone_numeric=5,component_id="a",segment_index=2,
+		a={x=0,z=-1},b={x=1,z=0}},
+}
+local component_winner=coast_source(component_tie,0,0)
+assert(component_winner.component_id=="a",
+	"coast-source stable component tie drift")
+do
+	local endpoint_a_n,endpoint_a_d=exact_segment_distance(-1,0,
+		{x=0,z=0},{x=1,z=0})
+	local endpoint_b_n,endpoint_b_d=exact_segment_distance(2,0,
+		{x=0,z=0},{x=1,z=0})
+	assert(endpoint_a_n==1 and endpoint_a_d==1 and endpoint_b_n==1 and
+		endpoint_b_d==1,"coast-source endpoint distance branches drift")
+	local unequal={
+		{zone_numeric=9,component_id="endpoint",segment_index=0,
+			a={x=2,z=0},b={x=3,z=0}},
+		{zone_numeric=10,component_id="body",segment_index=0,
+			a={x=0,z=0},b={x=1,z=1}},
+	}
+	local unequal_winner,unequal_n,unequal_d=coast_source(unequal,1,0)
+	local reordered={unequal[2],unequal[1]}
+	local reordered_winner=coast_source(reordered,1,0)
+	assert(unequal_winner.component_id=="body" and unequal_n==1 and
+		unequal_d==2 and reordered_winner.component_id=="body",
+		"coast-source unequal rational/iteration-order comparison drift")
+	local segment_tie={
+		{zone_numeric=5,component_id="same",segment_index=1,
+			a={x=0,z=0},b={x=1,z=1}},
+		{zone_numeric=5,component_id="same",segment_index=0,
+			a={x=0,z=0},b={x=1,z=1}},
+	}
+	local segment_winner=coast_source(segment_tie,1,0)
+	assert(segment_winner.segment_index==0,
+		"coast-source lower zero-based segment-index tie drift")
+end
+local coast_roster=source.geometry_policies.world_partition.
+	coast_source_allowed_component_ids
+assert(#coast_roster==22 and coast_roster[1]=="perimeter_span:elandor:stormvault" and
+	coast_roster[18]=="perimeter_span:kragmar:thunderroot" and
+	coast_roster[19]=="face_arc:gravesalt:holy_west" and
+	coast_roster[20]=="face_arc:skyglass:holy_east" and
+	coast_roster[21]=="face_arc:wyrmglass:island" and
+	coast_roster[22]=="face_arc:stormscale:island" and
+	8192*8192*2==134217728 and (2*8192)*(2*8192)==268435456 and
+	268435456*2==536870912,
+	"coast-source roster or safe-integer bound drift")
+do
+	local false_is_not_a_lua_ternary=true and false or "fallback"
+	assert(false_is_not_a_lua_ternary=="fallback",
+		"Lua false/nil ternary trap KAT drift")
+end
+
 -- The Bay projection is an exact station-distance decision, not a rounded
 -- parametric projection. This witness is the reviewed divergent case.
 do
@@ -1745,9 +2163,35 @@ local extreme_record_max_q=96*Q
 assert(extreme_sample_q*2==extreme_record_max_q and
 	extreme_policy.normalization_denominator==
 		"record_max_displacement_times_Q_not_local_damped_amplitude" and
+	extreme_policy.sample_sequence==
+		"pre_displacement_canonical_source_segment_raster_only_never_final_reraster_stations" and
+	extreme_policy.scalar_sample_rule==
+		"each_unique_source_station_scores_its_post_noise_damping_local_clip_pre_component_scalar_q_exactly_once" and
+	extreme_policy.attachment_rule==
+		"provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence" and
 	extreme_policy.score_all_candidates_before_stage2==true and
 	extreme_policy.candidate_count==4096,
 	"geometry extreme exact normalization KAT drift")
+do
+	local segment_owners={}
+	for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[span_index]
+		if span.perimeter_id=="perimeter_elandor_mainland" then
+			for segment_index=span.first_segment,span.last_segment do
+				segment_owners[segment_index]=(segment_owners[segment_index] or 0)+1
+			end
+		end
+	end
+	assert(segment_owners[3]==2 and
+		extreme_policy.coast_mainland_overlap_rule==
+			"perimeter_span_overlap_never_duplicates_a_source_segment_or_station_in_the_union" and
+		extreme_policy.coast_mainland_identity==
+			"perimeter_id_zero_based_source_segment_index_zero_based_local_station_index" and
+		extreme_policy.source_join_dedup==
+			"duplicate_segment_join_and_closed_seam_station_keeps_the_stable_earlier_identity_in_the_declared_sequence" and
+		extreme_policy.no_interpolation_rule==
+			"never_interpolate_resample_or_rehash_a_selector_scalar",
+		"geometry extreme overlapping perimeter span was not union-deduplicated")
+end
 
 local function clone(value, seen)
 	if type(value) ~= "table" then return value end
@@ -2263,6 +2707,18 @@ expect_failure("world_partition_policy",function(s)
 		"dry_zone_face_partition"
 end)
 expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.strict_exterior_rule=
+		"outside_every_final_mainland_and_island"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.coast_source_allowed_component_ids[19]=
+		"face_arc:wyrmglass:island"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.coast_source_tie_rule=
+		"first_component_iteration_order"
+end)
+expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_mask_membership=
 		"squared_distance_less_than_or_equal_width_squared"
 end)
@@ -2285,6 +2741,25 @@ expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.no_jitter_metric=
 		"euclidean_world_distance"
 end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.control_taper_metadata=
+		"rederive_from_whole_polyline"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.clip_loop_rule=
+		"scan_full_integer_record_range"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.component_rounding=
+		"round_normal_and_scalar_before_multiply"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.final_raster_rule=
+		"emit_shifted_base_stations_directly"
+end)
+expect_failure("channel_strict_exterior_contract",function(s)
+	s.channels[1].membership_rule="caller_supplied_planned_water_precedence"
+end)
 expect_failure("geometry_fixture_selector_policy",function(s)
 	s.geometry_policies.geometry_fixture_selector.classes[7].predicate_id=""
 end)
@@ -2304,6 +2779,14 @@ end)
 expect_failure("geometry_extreme_selector_policy",function(s)
 	s.geometry_policies.geometry_extreme_selector.selected_stage2_rule=
 		"fallback_to_next_candidate"
+end)
+expect_failure("geometry_extreme_selector_policy",function(s)
+	s.geometry_policies.geometry_extreme_selector.sample_sequence=
+		"final_displaced_reraster_stations"
+end)
+expect_failure("geometry_extreme_selector_policy",function(s)
+	s.geometry_policies.geometry_extreme_selector.coast_mainland_overlap_rule=
+		"score_each_perimeter_span_independently"
 end)
 expect_failure("generic_geometry_policy_contract",function(s)
 	s.geometry_policies.hydrology_mask.bank_skirt_horizontal_nodes=3

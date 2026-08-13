@@ -668,6 +668,68 @@ Chebyshev distance `d_inf` contributes factor zero for `d_inf <= 96`,
 control taper. KATs cover endpoints and midpoint, 95/96/97 and 192, reversed
 station order and overlapping sources.
 
+The common polyline displacement pipeline is exact and unique. Raster each
+authored source segment once and suppress consecutive duplicate joins while
+retaining, on every base station, its authored source-segment index,
+zero-based local index and local last index. A shared control join has taper
+zero for both incident segments. For an open polyline, the lexicographically
+lower complete forward/reverse station sequence is calculation order. For a
+closed polyline, remove a repeated terminal, rotate both directions to their
+lowest `(x,z)` station, and choose the lexicographically lower cycle. The same
+operation remaps segment/local metadata; it may not infer new segment
+boundaries from the whole canonical sequence. Only that canonical direction
+defines normal and scalar sign. Authored rotation/direction is restored after
+the scalar and component results exist and can change only output order.
+
+For each directed 8-connected step `(dx,dz)`, calculate
+
+```text
+len_q = isqrt((dx^2 + dz^2) * Q^2)
+step_normal_q = (qdiv(-dz * Q, len_q), qdiv(dx * Q, len_q))
+```
+
+An endpoint uses the only available step normal. An interior station sums its
+incoming and outgoing step normals and normalizes that Q16 pair through the
+same `isqrt`/`qdiv` primitives. A zero step or opposite zero sum rejects.
+Step and joint radicands are bounded by `8,589,934,592` and
+`34,359,738,368`. Clamp the two-lane T1 noise to `[-Q,+Q]`, compute
+`raw_scalar_q = qmul(noise_q, max_displacement*Q)`, then Q16-multiply the
+control taper and minimum no-jitter factor as
+`damping_q=qmul(control_taper_q,min_no_jitter_q)`, followed exactly by
+`damped_scalar_q=qmul(raw_scalar_q,damping_q)`.
+
+Exactly one local, noncyclic envelope clips that signed scalar. A land-edge
+station uses the closed Chebyshev square of radius `max_displacement` about
+its base station; mainland coast uses the closed constant mainland frame;
+island coast uses its closed authored ellipse; and fixed geometry admits only
+the exact base station. The island predicate first rejects `abs(dx)>rx` or
+`abs(dz)>rz`, then evaluates
+`dx^2*rz^2 + dz^2*rx^2 <= rx^2*rz^2`; after that axis reject, each term and
+the right side is at most `11,025,000,000`. Base Bays are excluded because
+Section 1.1's symmetric effective-width rule is their sole variation path.
+No final face polygon or host float participates.
+
+First evaluate the exact damped scalar by component-rounding its probe. If it
+is outside, retain its sign and test integer-node magnitudes descending from
+`min(max_displacement,floor(abs(damped_scalar_q)/Q))` through zero. The first
+valid probe is the result; no untested fractional scalar is reconstructed and
+no monotonic-envelope assumption is needed. The sole component conversion is
+
+```text
+dx = qround(qmul(normal_x_q, displacement_scalar_q))
+dz = qround(qmul(normal_z_q, displacement_scalar_q))
+```
+
+with the Q16 multiplication and final integer rounding in that order and both
+positive and negative half ties away from zero. The maximum normal/scalar
+pre-rounding product is `412,316,860,416`. Shifted base stations are controls,
+not final emitted samples: route-raster once between consecutive controls,
+also last-to-first for a closed cycle, suppress consecutive duplicates and
+remove a repeated cycle terminal. This is the sole final raster emission;
+there is no second displacement, envelope clip, snap, noise evaluation or
+interpolated scalar. Any final envelope, topology, width or connectivity
+failure rejects the seed.
+
 Feature classes use the solver as follows:
 
 - starts and ordinary camp envelopes use their stable flat or gently graded
@@ -1508,6 +1570,19 @@ band reaches 32. Every ordinary `deep_ocean` column beyond the shelf has
 81st shelf band. Planned mainland bays remain zone-owned eight-node inland-
 water profiles under Section 2.8 and never enter this calculation.
 
+Classification resolves equality before exterior distance. Base-Bay water is
+first in strict mainland interior or on its own mouth-aperture equality;
+closure-wing water is strict-mainland-interior-only. Mainland, island, and the fixed Holy Grounds
+closed footprint—including all remaining perimeter equality—then return land.
+Only a point outside all three closed land authorities is strict exterior.
+Within strict exterior, either closed integer dragon-channel polygon uses
+nonzero integer winding or exact segment equality and returns
+`immutable_dragon_channel`; all remaining strict exterior becomes shelf or
+deep ocean. A channel never preempts land, any land/perimeter equality, an
+aperture, Base Bay or closure wing. In particular `(0,0)` is fixed Holy land,
+and the Holy outer-coast equality at `x=+/-2500` remains land rather than
+channel or ordinary exterior.
+
 An `immutable_dragon_channel` overrides policy classification but uses the same
 terrain profile from each final mainland or island shore. Its local `d` is the
 one-based outward band derived from the nearest incident final shore. Where
@@ -1520,6 +1595,22 @@ three solid sealing layers occupy `bed_y - 1 .. bed_y - 3`. Nearest-perimeter
 projection with the shared exact tie rule supplies that dressing-only source
 for open sea. It does not create zone membership, a race region, territory, or
 land adjacency.
+
+That projection considers exactly 22 allowed compiled outer-coast components:
+the 18 mainland `perimeter_span` records in source order, the fixed Holy
+`face_arc:gravesalt:holy_west` and `face_arc:skyglass:holy_east`, and the
+Wyrmglass and Stormscale island outer arcs. Closing edges are not candidates.
+For each final 8-connected component segment `A -> B`, let `v=B-A`,
+`L=v dot v`, `N=(P-A) dot v`, and `C=cross(v,P-A)`. Its exact squared distance
+is endpoint `|P-A|^2/1` for `N<=0`, endpoint `|P-B|^2/1` for `N>=L`, or
+`C^2/L` otherwise. Collect every exact minimum through gcd-reduced positive
+rational cross multiplication, then choose lower owner-zone numeric ID, stable
+component ID, and zero-based compiled component-segment index in that order.
+The compiled interesting extent bounds coordinate deltas by 8192 and segment
+deltas by one, so endpoint distance squared is at most `134,217,728`, `C^2`
+at most `268,435,456`, and a reduced compare product at most `536,870,912`.
+The API returns `nil` outside that extent. This tie supplies inheritance only;
+it is never a second zone-membership or adjacency classifier.
 
 For every generated vertical slice of an exterior water column, the final
 content rule is analytic:
@@ -2733,8 +2824,19 @@ Entries 28--31 are selected reproducibly from candidates 0--4095. Candidate
 `n` is the unsigned big-endian value of the first eight SHA-256 bytes of
 `grudgelands-wp40-extreme-` followed by exactly four zero-padded decimal digits.
 Duplicates of an earlier corpus value are skipped. For each candidate, the
-geometry oracle evaluates every canonical integer sample on every variable
-outer coast and every variable non-coast shared boundary. It computes:
+geometry oracle evaluates only scalar-bearing stations on the canonical
+pre-displacement **source-segment** raster. Mainland coast is the union of
+eligible outer source-perimeter segments, ordered and keyed by
+`(perimeter_id, zero-based source segment, zero-based local station)`; the
+overlapping ranges of its 18 owner spans never double-count a segment or
+station. Island coast uses `(arc_id, segment, local station)`, and positive
+non-coast shared boundaries use `(edge_id, segment, local station)` in numeric
+edge order. Duplicate source-segment joins and a closed seam keep the stable
+earlier identity. Each station supplies its one post-noise, post-damping,
+post-local-clip signed scalar before component rounding. Provisional attachment
+`E`, perimeter `A`, discarded prefix/suffix samples and stations inserted by
+the sole final reraster are absent; the selector never interpolates, resamples
+or rehashes a scalar. It computes:
 
 - mean signed coast displacement divided by that sample's allowed amplitude;
   and
@@ -2747,6 +2849,9 @@ for an earlier extreme slot is skipped; equal scores choose the numerically
 lower unsigned decimal seed. This selection rule is part of the pre-code
 corpus, while its four resulting numbers are measured compiler outputs checked
 into the final corpus file before rollout.
+If any selected candidate's final Stage-2 geometry fails after attachment,
+component rounding or reraster, selection fails without a next-candidate
+fallback.
 
 T2 owns and freezes those four measured outputs. Its authoritative geometry
 corpus therefore contains entries 1--31: the 27 T1 values plus the four T2
@@ -3561,48 +3666,52 @@ Stage-1 pin.
 The one exact partition authority defines strict rational Base-Bay membership,
 nearest-owner ties, aperture-before-dry perimeter equality, attachment and
 unattached-vertex precedence, and strict-interior-only Wings
-([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):497).
-That superseded source contained the four zero-jitter/no-route boundary additions
+([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):528).
+The retained source records include the four zero-jitter/no-route boundary additions
 `land_058`--`land_061` and their ordinary shared-relief `G` controls
-([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):832), the
+([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):970), the
 eight symbolic perimeter attachments and 18 canonical spans
-([attachments and spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1083),
+([attachments](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1169;
+[spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1200),
 the ordered symbolic face records and all opposing uses of the four additions
-([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1185;
-[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1239),
+([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1257;
+[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1311),
 four Base Bays plus four reference-only mouth apertures
-([Bays and apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1685),
-and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1705).
+([Bays](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1700;
+[apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1757),
+and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1777).
 
 Stage 1 evaluates the sole exact Base-Bay predicate without Q16 projection,
 rounded width, division, or floating membership decision
 ([predicate](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):329),
 checks the core partition/equality policy explicitly and closes the complete
-source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1004;
-[checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3352),
+source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1005;
+[policy checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1441;
+[source checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3577),
 and rejects copied attachment geometry while checking all eight exact
 attachments, span ownership, and ordered face incidence
-([attachment and span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1594).
+([attachment validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1759;
+[span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1832).
 It retains the five dry rational-divergence witnesses and the guarded Base-Bay
-records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2327;
-[witnesses](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2450).
+records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2550;
+[witnesses](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2670).
 
 The independent offline harness implements a separate rational comparator and
 owner oracle, including the decisive synthetic later-lower numeric tie KAT
-([oracle and KAT](../../tools/wp40/t2_source_test.lua):699). It derives
+([oracle and KAT](../../tools/wp40/t2_source_test.lua):702). It derives
 actual runs and widths from referenced Bay/perimeter geometry and compares them
 with KAT expected values: runs
 `711/664/638/719`, widths `720/660/640/740`
-([aperture oracle](../../tools/wp40/t2_source_test.lua):818). Its full
+([aperture oracle](../../tools/wp40/t2_source_test.lua):821). Its full
 literal-mainland Stage-1 loop reports local Bay results `g=0/o=0/w=0/u=0` and
-whole-footprint `g=0/o=0/r=0` ([local and equality checks](../../tools/wp40/t2_source_test.lua):968;
-[whole-footprint oracle](../../tools/wp40/t2_source_test.lua):1091), with
+whole-footprint `g=0/o=0/r=0` ([local and equality checks](../../tools/wp40/t2_source_test.lua):961;
+[whole-footprint oracle](../../tools/wp40/t2_source_test.lua):1094), with
 `1,905,915` owner columns, `191,990` segment ties, and maximum checked product
 `816,036,075,626`. The audit also enforces the no-copied-width/no-loophole
 rules, rejects forgeable validation or premature compiler/IPC authority, and
 runs the five Lua-5.1 sweeps plus the offline harness
 ([static audit](../../tools/wp40/t2_source_audit.sh):65;
-[Lua and harness gates](../../tools/wp40/t2_source_audit.sh):132).
+[Lua and harness gates](../../tools/wp40/t2_source_audit.sh):168).
 
 This freezes only T2a's Stage-1 source and evidence. T2b must still compile
 the source and run the complete 32-seed Stage-2 geometry/topology/route/anchor
@@ -3797,6 +3906,50 @@ threshold. It is not Stage-2 or 32-seed completion evidence.
    zero. The labels and evidence now say undisplaced baseline; actual seed-zero
    and 32-seed final displaced attachment results remain mandatory Stage-2
    work. The perimeter, face graph and clipping thresholds were not wrong.
+6. **Landmark replacement hash binding needed one explicit tuple.** The
+   replacement stage could otherwise reuse the primary relief field or
+   landmark ID as a second random authority. The clarification is source/
+   brief-only: it hashes the landmark record's `noise_domain`, consumes the
+   selected `secondary_relief_id` profile's ordered octaves and band, uses an
+   empty feature ID and candidate zero. It changes no landmark mask, profile,
+   amplitude, seed, case or threshold.
+7. **Boundary displacement stopped before an executable final pipeline.** The
+   source named normal displacement and local clipping but did not bind normal
+   normalization, signed component rounding, per-kind executable envelopes,
+   one safe clip search, canonical reversal, or whether displaced samples were
+   emitted directly or rerastered. Those omissions admitted different world
+   columns and, in one rejected draft, a non-monotone clip could accept an
+   untested fractional result. The source and brief were wrong; authored
+   controls, amplitudes and envelopes were not. Section 1.2 now owns the one
+   Lua-5.1-safe integer pipeline: canonical calculation direction and retained
+   segment metadata, exact Q16 normals, `noise -> damping -> local clip ->
+   component` order, executable closed local predicates, exact-desired-first
+   descending fallback, and one final shifted-control reraster with no second
+   clip, snap, noise or interpolation. Independent review also found that the
+   extreme selector's old “canonical boundary raster” could mean final
+   inserted stations that have no pre-component scalar. The correction scores
+   unique scalar-bearing pre-displacement source-station identities only;
+   overlapping mainland owner spans are union-deduplicated, and attachment or
+   final-reraster artifacts never enter the score. Invalid selected final
+   geometry still rejects without a fallback candidate.
+8. **Exterior/channel precedence omitted a fixed land authority.** A draft
+   defined strict exterior only as outside mainland and island footprints, so
+   `(0,0)` and the fixed Holy coastline could become exterior; an early harness
+   also let a caller-provided planned-water flag preempt a channel outside any
+   Bay or aperture. This was a source/brief/harness defect, not a channel or
+   Holy-geometry defect. Section 2.9 now resolves Base-Bay/aperture and strict-
+   interior Wing water, then all closed mainland/island/fixed-Holy land and
+   equality, then closed channel membership/equality only within strict
+   exterior, then shelf/deep. No arbitrary caller flag is an authority.
+9. **Coast inheritance lacked a complete roster and exact final tie.** The
+   first corrected roster accidentally omitted both allowed fixed Holy outer
+   coasts, and the prior prose did not state an exact rational distance/tie
+   across compiled components. The source/brief were wrong; this never
+   authorizes zone membership. Section 2.9 closes the 22-component roster,
+   endpoint/body rational distance, all-minima collection and
+   zone/component/zero-based-segment tie. Closing edges remain excluded. The
+   conservative exact bounds cover only final 8-connected compiled segments;
+   review removed earlier synthetic KAT segments outside that premise.
 
 The correction requires rerunning the complete affected corpus: source-policy
 mutation/checksum and Lua-5.1 gates; all 38 junction records, 16 empty bands,
@@ -3807,7 +3960,14 @@ product-bound fixtures; damping endpoint/reversal/overlap fixtures; all eight
 undisplaced attachment baselines plus final displaced attachments on
 seed zero and every corpus seed; concrete face closure/
 CCW/simplicity, whole-footprint `g=0/o=0/r=0`, unchanged 61-edge dual,
-57-route split, topology, routes, anchors, housing, supply and performance.
+57-route split, topology, routes, anchors, housing, supply and performance;
+all R7 horizontal/vertical/diagonal/signed-half/corner/control/join/envelope/
+clip cases, open reversal and closed rotation/reversal through final reraster,
+degenerate rejects and selector source-identity/overlap cases; all R8
+mainland/island/Holy/channel interior and equality precedence plus real Bay/
+aperture/Wing witnesses; and all R9 endpoint/body unequal-rational,
+iteration/zone/component/segment ties, exact 22-component roster and safe
+bounds.
 The frozen T2a checksum/evidence paragraph above remains historical evidence
 for the superseded source. Only a new retained T2b Stage-2/32-seed run may
 claim those later gates.
@@ -3828,14 +3988,44 @@ The checksum-covered policies are the sole source for damping/attachments,
 raw/junction relief, landmark replacement, and symmetric Bay displacement
 ([policy records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):284),
 and the 38 literal junction records and eight symbolic attachment records are
-also source data ([junction records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):998;
-[attachment records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1083).
+also source data ([junction records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1088;
+[attachment records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1169).
 The independent harness covers the relief, zero-weight, damping, Bay projection,
 symmetry and product KATs
-([exhaustive Bay projection oracle](../../tools/wp40/t2_source_test.lua):1377;
-[Reality KATs](../../tools/wp40/t2_source_test.lua):1496). The complete
+([exhaustive Bay projection oracle](../../tools/wp40/t2_source_test.lua):1380;
+[relief Reality KATs](../../tools/wp40/t2_source_test.lua):1518). The complete
 `tools/wp40/t2_source_audit.sh .` run must remain green after any later source
 edit; it proves Stage 1 only and leaves every mandated Stage-2 rerun above open.
+
+**R7--R9 corrected Stage-1 source evidence (not T2b or 32-seed
+completion).** The next checksum-covered replacement source is
+`f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188`.
+Its boundary-displacement policy checksum is
+`913b0d4184a9a51125413f69621e78e4643c84d2af545362b308f56ad01ba1a4`,
+world-partition policy checksum is
+`eb70c52d82fbb0d93ab53cf2d6d276b59f69c4fbf387b56311acfd9a0820c1e2`,
+and extreme-selector policy checksum is
+`3c87964998f48fc71d92aa361c0584cd6dc0ddd04ccc8992214775df138c132a`.
+The preceding `5f0cd9...` source and its policy hashes remain historical
+evidence for the superseded pre-R7 (R1--R6) state. The replacement keeps the 38 zones,
+61 land edges, original 57 routes and all seeds, cases and thresholds. Stage 1
+covers exact normal, damping, clip, component, reraster, reversal, equality,
+rational-distance and selector-identity mutations/KATs. Seed-zero and full-
+corpus displaced geometry, partition, attachment, topology, capacity, supply
+and performance remain mandatory Stage-2/release work and are not claimed
+here.
+The executable R7 source policy begins at the sole boundary-displacement
+record ([boundary policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):284),
+while R8/R9 share the one partition record
+([partition policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):528).
+The independent Stage-1 harness exercises the displacement pipeline
+([R7 oracle](../../tools/wp40/t2_source_test.lua):1641), classification
+precedence ([R8 oracle](../../tools/wp40/t2_source_test.lua):1859), exact coast
+inheritance ([R9 oracle](../../tools/wp40/t2_source_test.lua):1951), and the
+source-identity selector overlap rule
+([selector KAT](../../tools/wp40/t2_source_test.lua):2158). The static audit
+pins all four current checksums and bans a floating square-root path
+([R7--R9 audit](../../tools/wp40/t2_source_audit.sh):65).
 
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
