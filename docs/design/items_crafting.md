@@ -1600,7 +1600,14 @@ cleanup before they become final game art.
 ## 5. Loot zones — what drops where
 
 Drops obey the player-tag rule (combat_stats §3), quality/roll windows
-per §6.3, **gear-drop ilvl = mob level** — and since §6.3's roll band is
+per §6.3, **gear-drop ilvl = min(mob level, 60)** (decided 2026-08-13: the
+clamp exists because the six race Kings are level 65 (§5.4) while the top
+roll band and the character cap both end at 60, so a literal ilvl 65 item
+would have no band and, through §6.1's `grug_req_level = ilvl`, could never
+be worn by anyone; a King is made special by the **boss** roll window and
+the Fallen Crown, not by five item levels. It is the only case: the
+level-100 Kraken Guard drops nothing, and every other source sits inside a
+band) — and since §6.3's roll band is
 chosen by the item's ilvl, that one number is all a drop needs: a drop
 has no crafter whose mastery could be read instead. Named zone → materials is
 binding through each zone's fixed biome/gathering palette; the level band adds
@@ -1734,9 +1741,14 @@ owned; one idempotent description/stat regeneration path reads them all.
 
 **`grug_req_level` scope** (sharpened 2026-08-07; **enforced from WP5** —
 WP7 ships 72 equippable vendor items that carry the ilvl but no check):
-**every equippable item** carries it — weapons, armor, offhands and trinkets — and it
-equals the item's ilvl. Equipping below the requirement is **blocked
-with a chat message**, enforced in the slots' group-filtered `allow_put`
+**every equippable item that has an item level** carries it — weapons,
+armor, offhands and trinkets — and it equals the item's ilvl. **An
+equippable item with no ilvl at all carries no requirement** (2026-08-13):
+that is exactly the eight vendored `default:` swords and axes, which are
+slot-eligible today and carry no `_grug_ilvl`, and it matches the Wood and
+Stone starter line, which §3.0.1 already exempts. The exemption disappears
+by construction when WP29 folds those items into the material ladder.
+Equipping below the requirement is **blocked with a chat message**, enforced in the slots' group-filtered `allow_put`
 (inventory_equipment.md §2); "equips but grants nothing" was rejected as
 an invisible failure. Drops keep `ilvl = mob level` (§5), so gear above
 your level is lootable and tradeable, just not wearable yet — that is
@@ -1757,7 +1769,13 @@ without re-deriving the §3.1/§3.2 curves by hand. The base stat does
 roll, so the regeneration above must **preserve these lines and append
 the enchant lines below them**. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
-(WP15 hook). Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
+(WP15 hook). **The conversion is `fpi_new = fpi_base / (1 + p)`** for a
+rolled `+p` (2026-08-13): "attack speed +16%" means sixteen percent more
+swings per second, which is the only reading under which §6.3's 3–16%
+band is a linear DPS gain; `fpi × (1 − p)` would pay more than it says.
+The override must be written as a **complete** tool-capability table — a
+plain meta float named `full_punch_interval` is not read by the engine —
+and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls 1–2 (60/40), Rare 3–4
 (70/30)** — the decided budgets, and from 2026-08-07 also the prefix and
 suffix count of §6b.
 
@@ -2021,6 +2039,16 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
 
 - **Maximum 2 prefixes + 2 suffixes = 4 enchant slots.** That is the hard
   ceiling for any item in the game.
+- **Which side a rolled affix takes is positional, not random** (decided
+  2026-08-13): the four slots are filled in the fixed order **prefix,
+  suffix, prefix, suffix**. One affix is a prefix, two are one of each,
+  three are two prefixes and one suffix, four are the full pair. The side
+  therefore follows from the slot number, an affix never changes side when
+  a higher-mastery crafter fills a later slot (§6b.5), and the description
+  pipeline can regenerate a name deterministically — which §6.1 requires.
+  Both word lists stay fully in play; a stat-fixed assignment (attributes
+  always prefix, secondaries always suffix) was rejected because it would
+  retire nine of the eighteen decided words.
 - **Prefixes** name a stat the item gives its wielder as an adjective;
   **suffixes** do the same in the genitive. The complete vocabulary is
   decided (2026-08-13): **exactly one prefix word and one suffix word
