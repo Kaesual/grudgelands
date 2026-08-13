@@ -290,3 +290,121 @@ minutes with zero events and zero CPU time. `codex exec` prints "Reading
 additional input from stdin..." and can block there; re-running the identical
 command with `< /dev/null` produced events within a minute. Every review in
 this phase otherwise used the invocation documented at the top of this file.
+
+## Phase 4 — WP5 task card (session phase B)
+
+Review scope: `git diff 5c4bb2e..HEAD` (start = the CLEAN end of Phase 3).
+`docs/research/wp5-task-card.md` authored after the `wp26-task-card.md`
+pattern, plus the WP5 rows in BACKLOG/ROADMAP/README. Seven rounds; the card
+required no new design of its own, but writing it exposed **eight** rules
+that were open or only implicit, all of which were folded into
+`items_crafting.md` rather than into the card — a task card may quote a game
+rule, never own one. Two were user decisions (2026-08-13), six were
+derivations recorded with their rationale:
+
+1. **§6b.4 — affix side is positional.** Slots fill prefix, suffix, prefix,
+   suffix, so the side follows from the slot number, an affix never changes
+   side when a later slot is filled, and regeneration stays deterministic as
+   §6.1 requires (user decision).
+2. **§5 — gear-drop ilvl is `min(mob level, 60)`.** The six Kings are level
+   65 while the top roll band and the character cap end at 60, so a literal
+   drop would have no band and, through `grug_req_level = ilvl`, could never
+   be worn. It is the only case: the level-100 Kraken drops nothing (user
+   decision).
+3. **§6.1 — attack speed converts as `fpi / (1 + p)`**, written as a
+   complete tool-capability table, since a bare meta float of that name is
+   not read by the engine.
+4. **§6.1 — an equippable with no ilvl carries no requirement**, which is
+   the eight vendored `default:` weapons and matches §3.0.1's starter line.
+5. **§6.1 — the 60/40 and 70/30 affix counts apply only to sources without
+   a crafter.** A crafted item's count is its crafter's mastery slots
+   (§6b.5/§6b.6), so the roller needs an optional `count` argument for
+   WP10 — scoped to ordinary equipment, since §6.2 fixes trinkets at one
+   prefix plus one suffix regardless.
+6. **§7 — the imbue kit uses the crafterless 60/40 roll**, because a kit is
+   applied with no crafter present.
+7. **§5 — the drop is one uniform draw over the tier's concrete registered
+   base items**, no slot pre-selection and no per-family weighting.
+8. **§5 — what the windows fix is the expected value per affix**, they
+   overlap on purpose, and the whole-item promise of §0 covers the Master
+   four-slot masterwork and the boss hoard only.
+
+### Round 1 — full review of `5c4bb2e..53a7075`: NOT CLEAN (8 High, 7 Medium, 4 Low)
+
+All nineteen findings verified and accepted; none rejected. Resolution
+commits `c04f8a3` (design) and `b8a56b2` (card). The three that would have
+broken an implementation outright:
+
+- **The card told the implementer to preserve `grug_gear`'s baked base-stat
+  numbers.** Drops land off-anchor — the design says so at
+  `items_crafting.md:813`, "No shipped vendor bracket touches ilvl 27 or 42,
+  but WP5's drop tables will" — so an ilvl-27 drop would have shown the
+  ilvl-20 catalog value. Corrected to a per-stack ilvl with the base stat
+  recomputed from the §3.1/§3.2 curves.
+- **Affixes that display and do nothing.** The tasks built storage, display
+  and caps but never consumed the nine stats; a "Heavy" item would have
+  looked right and granted no Strength. Stat consumption and the +15%
+  refinement bonus became their own task and gate.
+- **The Fallen Crown conversion was missing**, although the BACKLOG row
+  demands it; the whole masterwork path had been pushed to WP10. WP5 owns
+  the transaction, WP10 the recipe.
+
+Also: a clause labelled "implementer latitude" in fact froze a uniform draw
+— the very thing the BACKLOG row's "retune against G2 and trophy demand"
+exists to prevent — and the cultural-finish rule was inverted (§4.2 rejects
+only the *same* culture and overwrites a *different* one at full cost).
+
+### Round 2 — `53a7075..b8a56b2`: NOT CLEAN (5 still open, 4 new)
+
+Resolution commits `09a2189`, `5c23cfa`. The King clamp had been stated once
+and contradicted three times in the same authoritative document; the affix
+counts collided with §6b.5's mastery slots; and a Common vendor item carries
+its ilvl on the **definition**, never passing the drop roller, so without a
+shared effective-ilvl resolver a level-1 character could wear a vendor
+ilvl-30 Common while an identical drop was refused. Two gates demanded work
+WP5 does not own (material consumption and cost, a character-sheet layout)
+and were narrowed.
+
+### Round 3 — `5c23cfa..6de9ad6`: NOT CLEAN (6)
+
+Resolution commit `6de9ad6`. "Uniform draw over the eligible slot families"
+never defined the drawn unit — uniform over five slots then four weapon
+families yields a 20% weapon share, uniform over the concrete catalog 33%.
+Gate 8 named `grug_classes.apply_stats` as the consumer for attributes and
+Mana, but that function only pushes `hp_max`, so a `+Mana` implementation
+would have passed the gate while doing nothing.
+
+### Round 4 — `6de9ad6..b8cc30d`: NOT CLEAN (3)
+
+Resolution commit `b8cc30d`. The new `count` argument collided with §6.2's
+trinket exception; the boss window was mis-stated as 0.60–1.00 (it is
+0.80–1.00, and §6.4's "two 0.60–1.00 windows" is shorthand for the two that
+reach 1.00 from at least 0.60); and `apply_stats` also heals on level-up and
+clamps current HP, which "sets nothing else" denied.
+
+### Round 5 — `b8cc30d..4a834b3`: NOT CLEAN (2)
+
+Resolution commit `4a834b3`. The reviewer's arithmetic refuted the round-4
+correction itself: a named rare rolls 3.3 affixes on average in the
+0.50–1.00 window, so its expected 3.3 × 0.75 = 2.475 edges out an **Expert**
+masterwork's 3 × 0.80 = 2.400. "Found gear stays below crafted in
+expectation" is therefore false; §5 now states only the per-affix
+expectation, names the overlap as intended, and limits the whole-item claim
+to the Master masterwork and the boss hoard. Three older loose restatements
+of §6.3 were corrected with it.
+
+### Round 6 — `4a834b3..5e7202b`: NOT CLEAN (1 Low)
+
+Resolution commit `5e7202b`. The shorthand appeared in **four** places and
+round 5 had caught three; the historical D16 note still called the rejected
+depth layer "a third 0.60–1.00-window source".
+
+### Round 7 — focused re-review of `4a834b3..5e7202b`: **CLEAN**
+
+The reviewer re-derived the arithmetic independently and confirmed every
+printed number — window means 0.30/0.55/0.60/0.75/0.80/0.90, Master
+masterwork 3.20 against the strongest ordinary found item 2.475, and the
+Expert overlap of exactly 0.075. A repository-wide sweep found no remaining
+0.60–1.00 boss window and no strict per-item dominance claim. The WP5
+readiness statements in BACKLOG, ROADMAP and README were confirmed true.
+Final verdict: **CLEAN**.
