@@ -136,12 +136,18 @@ at join. Every synchronous state read — `state()`, `would_block` and step
 `last_rule`; observing `contested → non-contested` applies the tail to
 meta **before** any snapshot or table evaluation, then updates
 `last_rule`. The shared ticker performs the same check only as the
-HUD/persistence backstop, and the leave-player handler applies the tail
-when a player logs out standing in contested ground (a reconnect inside
-contested is forced again anyway). A player who teleports or sprints out
-of contested ground is therefore never observable as safe by any
-transaction, even within the same server step as the crossing; in-memory
-seeding at join is safe because an offline player cannot move.
+HUD/persistence backstop. The leave-player handler runs the **same
+transition observer before discarding session state**: if `last_rule`
+is still `contested` **or** the current logout position is contested, it
+persists `max(expiry, now + 60)` — so crossing out of contested ground
+and logging out before any tick or transaction still records the tail
+(the leave callback receives a valid player ObjectRef,
+`doc/lua_api.md:6635`). Because that callback does not run for connected
+players on shutdown (`doc/lua_api.md:6637`), a `core.register_on_shutdown`
+sweep runs the same observer for every connected player. A player who
+teleports or sprints out of contested ground is therefore never
+observable as safe by any transaction, disconnect race or shutdown race;
+in-memory seeding at join is safe because an offline player cannot move.
 
 ## 3. Public API and ownership
 
@@ -166,8 +172,11 @@ grug_pvp.npc_damage_committed(player, npc_ref, hp_loss, absorb_loss)
     -- refreshes the involved player on the same HP/absorb rule; the NPC
     -- itself has no tag (§15.2).
 grug_pvp.would_block(attacker, target)
-    -- pure pre-state four-row evaluation, no mutation; the knockback
-    -- suppressor (§5.1) and UI previews use it.
+    -- pre-state four-row evaluation used by the knockback suppressor
+    -- (§5.1) and UI previews. Like every synchronous read it first runs
+    -- §2's transition observer, whose only possible mutation is
+    -- extending an expiry (the leave-contested tail); the four-row
+    -- evaluation itself never tags, refreshes or writes.
 grug_pvp.begin_aoe(owner)
     -- returns one single-use AoE batch implementing world_zones.md
     -- §15.3's snapshot semantics: it snapshots the owner state; each
@@ -296,9 +305,12 @@ interaction at all (their `do_punch` truthy-return invulnerability stands).
 - Respawns are safe by design (the six protected starting settlements);
   the code still evaluates geography on respawn so a future contested
   respawn would force the tag rather than leak safety.
-- Disconnect: nothing to do (absolute timestamp persists). Reconnect: state
-  derives; a contested-zone reconnect is forced by derivation, and the
-  entry banner (§6) replays.
+- Disconnect: the leave-player handler runs §2's transition observer —
+  `last_rule == contested` or a contested logout position persists the
+  60-second tail before session state is discarded; beyond that the
+  absolute timestamp simply persists. Reconnect: state derives; a
+  contested-zone reconnect is forced by derivation, and the entry banner
+  (§6) replays.
 
 ## 5. Bypass protection
 
@@ -405,7 +417,7 @@ assertion suite, recorded in the WP's review evidence.
 | --- | --- | --- | --- |
 | T0 — WP40 gate | resolved zone-API adapter, startup hard-fail without it; `pvp_rule_at` conformance fixtures (peaceful/contested/outside, y = −701, shelf inheritance) | merged WP40 | fixtures green against the live API |
 | T1 — state core | `grug_pvp` mod, state model §1.1, tag/expiry/death/reconnect lifecycle, meta persistence, event bus skeleton | T0 | pure-Lua 5.1 unit tests under `tools/wp41/` for every lifecycle edge |
-| T2 — transaction engine | §2's atomic sequence, four-row table, AoE snapshot context, support contact, refresh rules, outcome records, claim token | T1 | full four-row × geography matrix in headless tests |
+| T2 — transaction engine | §2's atomic sequence, four-row table, AoE snapshot batch (`begin_aoe`), support contact, refresh rules, outcome records, claim token | T1 | full four-row × geography matrix in headless tests |
 | T3 — melee/swing integration | §4.1/§4.2 wiring incl. cadence/rage/bank interplay and §5.1 knockback suppression | T2 | WP39 regression suites (`tools/wp39/`) stay green; blocked-swing side-effect matrix passes |
 | T4 — casts/projectiles/AoE/support | §4.3–§4.5 wiring incl. launch-cost retention and snapshot ordering | T2 | per-path matrices; Fireball exact-once tests stay green |
 | T5 — protected NPCs | §4.6 seam in `grug_mobs` hooks; guard/king tagging and refresh | T2 | NPC matrix incl. ordinary-creature non-effect |
@@ -442,8 +454,11 @@ state rows (§15.5). Beyond that product, the named cases:
 7. Leave-contested tail: expiry ≥ now + 60 even with no contact inside,
    applied synchronously — a hostile attempt in the same server step
    after teleporting out of contested ground still sees the leaver
-   tagged; a logout inside contested ground persists the tail. Display
-   switches CONTESTED → countdown.
+   tagged; a logout inside contested ground persists the tail; a logout
+   **immediately after crossing out**, before any tick or transaction,
+   also persists it (leave-handler transition observer), as does a
+   shutdown with connected players (shutdown sweep). Display switches
+   CONTESTED → countdown.
 8. Death: tag cleared, attributable effects cleared, respawn safe, no
    re-tag from stale fields; `classify_death` records the lethal
    committed transaction's attacker exactly.

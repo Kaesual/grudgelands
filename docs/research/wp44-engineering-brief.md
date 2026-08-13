@@ -54,6 +54,15 @@ WP44 changes the running WP7 legacy economy to the target rules:
    mounts receive their ledger copper values from §3's derivation with the
    published rounding rule. They are stored as data with full provenance
    (§5), not hardcoded magic numbers.
+6. **Repair-price data**: WP44 authors the shipped repair-price data/API
+   surface for the complete `items_crafting.md` §8.3 axis — cost as a
+   function of item level (via the Common reference price), quality and
+   the wear actually restored, with the quality purchase multiplier and
+   its rounding authored here as constrained catalog outputs (§3.8 names
+   the economy pass as the multiplier's owner; WP5/WP30 consume it
+   later). WP22 consumes this data for the runtime repair transaction;
+   the ledger's §3.3 deduction is exactly this data's Common
+   full-cycle case.
 
 ## 2. Income Ledger — data schema
 
@@ -232,9 +241,11 @@ reference values (§1.3) and rerunning, never by weakening an audit.
   the same commit: sorted keys, fixed decimal rendering, and no
   timestamp, date or host data anywhere in the canonical body — all run
   metadata lives in the uncommitted sidecar.
-- The report embeds the manifest (§2) including SHA-256 checksums of every
-  input file and of the report body itself; raw sanity-session logs are
-  archived beside it. Repository evidence: the frozen report and manifest
+- The report embeds the manifest (§2) with SHA-256 checksums of every
+  **input** file; the report's own digest is never embedded (that would be
+  self-referential) — the wrapper writes it to an external
+  `wp44-ledger.json.sha256` beside the report. Raw sanity-session logs are
+  archived beside both. Repository evidence: the frozen report and manifest
   land under `docs/research/` (summary) with raw JSON in the tool's
   `report/` directory; no invented value can enter — every published
   copper output must be recomputable from the command above.
@@ -264,16 +275,18 @@ Constants (pacing midpoint, repair fraction, potion rate, roster weights)
 change only through a reviewed commit that states old value, new value,
 evidence and consequence, followed by a full ledger + audit rerun — the
 WP40 brief's reality-check rule applies by analogy. After WP44 ships, a
-later WP that changes drop tables, prices or pacing must rerun the ledger
+later WP that changes drop tables, prices, pacing **or spawn rows —
+`chance`, `aoc`, zone/node lists or cell coverage, including WP37's 0.75
+multiplication and WP40's spawn-cell migration** — must rerun the ledger
 command and update the derived sink prices in the same change or record
-why not.
+why not; the roster weights derive from exactly those rows.
 
 ## 8. Task DAG
 
 | Task | Owned result | Requires | Completion gate |
 | --- | --- | --- | --- |
 | T0 — harness + manifest | `tools/wp44/` stub-env loader for gear/drops/xp/price tables; manifest with input checksums; frozen legacy price/buy-back fixture extracted from the running WP7 generator and committed | merged WP43 `main` | tables load byte-identically; checksums stable; legacy fixture checksummed before any T2 price change |
-| T1 — reference-value catalog | one owner module with every §1.3 value under the four constraints; constraint checker | T0 | checker green; no unsold sellable concept missing |
+| T1 — reference-value catalog | one owner module with every §1.3 value under the four constraints; constraint checker; the §1.6 repair-price data (item level × quality × restored-wear axis incl. the quality multiplier and rounding) | T0 | checker green; no unsold sellable concept missing; repair function unit-tested across level × quality × partial-wear cases |
 | T2 — price migration | §8.2 catalog prices verbatim; 5%-ceil buy-back; discount interplay | T0 | anchor checks (2c/1s25c); generated catalog diff reviewed |
 | T3 — ledger derivation | §3 computation, baseline-vs-candidate run, canonical report + checksums | T1, T2 | byte-identical rerun; every §3.4 exclusion logged; the baseline leg reads only T0's frozen fixture |
 | T4 — sanity validation | instrumented session aid; per-band validation records; constant freeze | T3 | each reachable band within ±30% or reviewed revision + rerun; unreachable bands labeled deferred |
@@ -303,3 +316,6 @@ in T7's same commit that flips the BACKLOG row.
    untouched; BACKLOG/ROADMAP/README synchronized.
 7. `tools/bin/luac51 -p` and the five Lua 5.1 grep sweeps clean on every
    touched file; WP39/WP43 regression suites unaffected.
+8. The shipped §1.6 repair-price data passes its item level × quality ×
+   restored-wear unit tests, and the ledger's repair deduction equals that
+   data's Common full-cycle case.

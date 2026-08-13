@@ -107,6 +107,13 @@ registered (`biomes_mobs.md` §8.3) — and are untouched by this WP.
   proof then already uses the target numbers. Either order is legal; do
   not run the multiplication twice (the acceptance gate below is
   idempotence-safe because it checks absolute values, not factors).
+- **Composition with WP44**: the Income Ledger's roster weights derive
+  from the shipped spawn `chance` values
+  (`wp44-engineering-brief.md` §3.2/§7). In the recommended order (WP37
+  before WP44) nothing extra is needed. If WP44 has already shipped when
+  WP37 lands, the same WP37 change must rerun the ledger command and
+  update the derived sink prices, or record why not — WP44's §7 trigger
+  list names this WP explicitly.
 
 ## 5. Acceptance gates
 
@@ -124,3 +131,6 @@ registered (`biomes_mobs.md` §8.3) — and are untouched by this WP.
    settled band and a wild band, confirm visibly busier surface (~1 mob
    per 15–20 m target in wilderness), confirm cave density unchanged, no
    spawn-related warnings in debug.txt.
+7. If WP44 shipped first: the WP44 ledger rerun and updated sink prices
+   land in the same change (or the recorded why-not), per
+   `wp44-engineering-brief.md` §7.

@@ -49,6 +49,11 @@ WP40 (in progress, root)
 - WP33 and WP24 do not depend on each other; WP33 and WP13 share only
   WP40 inputs. The sequence above is a review/merge order, not a
   parallelism ban — every listed edge is the real dependency.
+- **Ordering interplay WP37 ↔ WP44**: the Income Ledger's roster weights
+  derive from the shipped spawn `chance` values, so the recommended order
+  (WP37 before WP44) avoids a rerun. If WP44 completes first, WP37's
+  multiplication is an explicit ledger-rerun trigger
+  (`wp44-engineering-brief.md` §7; `wp37-task-card.md` §4/§5).
 
 ### 1.1 Open inputs versus genuine blockers
 
