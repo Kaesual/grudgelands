@@ -1826,18 +1826,34 @@ Enchants are expressed in the item name as **prefixes and suffixes**.
 
 - **Maximum 2 prefixes + 2 suffixes = 4 enchant slots.** That is the hard
   ceiling for any item in the game.
-- **Prefixes** name a stat the item gives its wielder: *lucky*
-  (+crit%), *quick* (+Dex), *heavy* (+Str), *clever* (+Int).
-- **Suffixes** do the same in the genitive: *of the bear* (+Str), *of the
-  ox* (**+HP**), *of the cat* (+dodge%), *of the eagle* (+crit%).
-  **The stat names above are §6.2's own, verbatim** (aligned 2026-08-08:
-  the ox used to be written "+health", which is not a stat this game
-  has) — an example that models a wrong stat name is exactly what A2's
-  affix→stat mapping must not inherit.
-  Every word maps to a stat that a §6.2 pool actually contains — there
-  is **no poison stat** in this game (see §6.2 and `combat_stats.md` §2;
-  poison arrives with the Rogue in Phase 2, `classes.md` §6), and an
-  affix word for a stat nothing consumes is a bug, not flavour.
+- **Prefixes** name a stat the item gives its wielder as an adjective;
+  **suffixes** do the same in the genitive. The complete vocabulary is
+  decided (2026-08-13): **exactly one prefix word and one suffix word
+  per §6.3 stat, no synonyms** — the word says which stat,
+  unambiguously:
+
+  | Stat | Prefix | Suffix |
+  |---|---|---|
+  | +Str | Heavy | of the Bear |
+  | +Dex | Quick | of the Fox |
+  | +Int | Clever | of the Owl |
+  | +HP | Stout | of the Ox |
+  | +Mana | Attuned | of the Raven |
+  | +crit% | Lucky | of the Eagle |
+  | +attack speed% | Swift | of the Hornet |
+  | +dodge% | Elusive | of the Cat |
+  | +armor% | Stalwart | of the Tortoise |
+
+  **The stat names are §6.2's own, verbatim** (aligned 2026-08-08: the
+  ox used to be written "+health", which is not a stat this game has).
+  **§6.2 remains the sole legality source**: an affix is legal on an
+  item family iff its stat is in that family's pool (the +armor% words
+  can therefore only ever appear on metal armor), and the trinket
+  exception in §6.2 constrains its two slots the same way. Every word
+  maps to exactly one stat — there is **no poison stat** in this game
+  (see §6.2 and `combat_stats.md` §2; poison arrives with the Rogue in
+  Phase 2, `classes.md` §6), and an affix word for a stat nothing
+  consumes is a bug, not flavour.
 - **Two suffixes combine into one phrase**: "of Bear and Ox" — the "the"
   is dropped when combining, because "of the Bear and the Ox" reads
   badly. One suffix keeps it: "of the Ox".

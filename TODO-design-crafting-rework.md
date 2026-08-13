@@ -76,59 +76,6 @@ plus a summary column in §2.1.
 **Decision:** _open_ — blocks nothing, but WP10 cannot ship the books
 without it.
 
-### A2 — The affix word lists and their stat mapping
-
-`items_crafting.md` §6b.4 decided the **grammar** and points here for the
-**vocabulary**: max 2 prefixes + 2 suffixes, prefixes as adjectives
-(*lucky*, *quick*, *heavy*, *clever*), suffixes in the genitive (*of the
-bear*), two suffixes combining as "of Bear and Ox", the refinement word
-dropping as soon as an affix appears. §6.2 holds the stat **pools** per
-item family and §6.3 the **values**.
-
-Open: the word list, the stat each word maps to, and which affix is legal
-on which item family.
-
-Two constraints the list must satisfy:
-
-- §6.2 is the legality table already — an affix is legal on a family iff
-  its stat is in that family's pool. Nothing new has to be invented for
-  legality *if* every affix maps to exactly one §6.3 stat.
-- §6.2's "no duplicate stat per item" means the two prefixes must carry
-  different stats, and a suffix may not repeat a prefix's stat. That is a
-  roller rule (WP5), but it constrains the vocabulary: a word must
-  identify its stat unambiguously.
-
-The authoritative example is *of the cat* (+dodge), not the retired
-non-conformant *of the snake* (+poison). Poison is outside the MVP affix stat
-set and belongs to the Phase-2 Rogue direction in `classes.md` §6. Any word
-list authored here must map every word to a stat that exists in §6.2; promoting
-poison would be Rogue pipeline work, not affix vocabulary work.
-
-Options:
-
-- **(a) One word per stat, one set** — 9 stats in §6.3 (+Str, +Int,
-  +Dex, +HP, +Mana, +Crit%, +Dodge%, +Attack speed%, +Armor%), 9 words,
-  used as prefix or suffix depending on where the roller puts them.
-  Smallest list, but "Sword of the Heavy" reads badly.
-- **(b) A prefix word and a suffix word per stat** — 9 + 9 = 18 words,
-  adjectives for prefixes and animals for suffixes exactly as §6b.4
-  sketches. The stat space is covered twice, so any roll can be phrased
-  either way.
-- **(c) Several synonyms per stat, chosen by roll strength** — "heavy"
-  vs "massive" for a low vs high +Str roll. Flavourful, but it makes the
-  word a second, redundant display of the number that the grey stat line
-  already shows (§6b.4's own division of labour: "the word says which
-  stat, the line says how much").
-
-Recommendation: **(b)** — 18 words, one per (position, stat) pair, no
-synonyms. Legality then needs no table of its own: it falls straight out
-of §6.2, and adding the trinket row of A3 extends it for free.
-
-*Lands in*: `items_crafting.md` §6b.4 (word table) — §6.2 stays the
-legality source.
-**Decision:** _open_ — **blocks WP5** (the roller needs the words to build a
-display name).
-
 ### A3 — Do bags participate in refinement and enchanting?
 
 `items_crafting.md` §6b.1 still names bags as an Ornate refinable family, but
@@ -597,7 +544,6 @@ magnitudes **block WP10**'s cooking book.
 | # | Question | Blocks |
 |---|---|---|
 | A1 | Signature recipes per profession × mastery tier | WP10 |
-| A2 | Affix word lists + stat mapping | **WP5** |
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |

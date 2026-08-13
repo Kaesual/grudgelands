@@ -139,9 +139,10 @@ the goal-level view.
 - [ ] WP27–WP30: base armor; the
   six-tier gear/tool merge; safe removal of superseded vendored recipes; and
   trader-catalog migration onto WP44 prices.
-- [ ] WP5 remains blocked on `TODO-design-crafting-rework.md` A2/A6; WP10
-  remains blocked on that file's A1/A4/A5/E21. They resume only after those
-  genuine affix/recipe/content questions are decided.
+- [ ] WP5 remains blocked on `TODO-design-crafting-rework.md` A6 (the A2
+  affix vocabulary is decided, `items_crafting.md` §6b.4); WP10 remains
+  blocked on that file's A1/A4/A5/E21. They resume only after those
+  genuine marker/recipe/content questions are decided.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
 - [ ] WP33: gathering plants, signature woods and cultural sources on final
