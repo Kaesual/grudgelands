@@ -592,7 +592,9 @@ Details + line numbers in [docs/research/](docs/research/).
     POSITION not an ObjectRef, access rule, and prices/counts recomputed
     server-side against the snapshot the player was shown).
   - **Three startup audits** in `grug_traders/init.lua`
-    (`register_on_mods_loaded`, silent when clean): every mob drop has a
+    (`register_on_mods_loaded`; no warning/error finding when clean —
+    one informational action line, the function-drop audit count,
+    always prints): every mob drop has a
     price; no vendor buy/sell spread that prints money (discount
     included); no craft/cook recipe whose output is worth more than its
     priced inputs (the §3.8 anti-loop rule — the real case was smelting

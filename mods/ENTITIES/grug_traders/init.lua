@@ -100,7 +100,9 @@ dofile(modpath .. "/trade.lua")
 -- Startup audits
 --
 -- Three invariants that are cheap to check once and expensive to notice late.
--- All of them are SILENT when everything is in order.
+-- None of them emits a warning/error finding when everything is in
+-- order; one informational action line (the function-drop audit count
+-- below) always prints.
 --
 
 -- Drop items a `drops` FUNCTION can return. Function-form drop tables cannot

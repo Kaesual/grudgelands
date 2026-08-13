@@ -60,10 +60,12 @@ recipe table is [`items_crafting.md`](../design/items_crafting.md)
   §1.1 licence note); `lottblocks` **media is CC BY-SA 3.0 and is not
   taken** — the port ships its own textures.
 - `grug_traders`' three startup audits (incl. the §3.8 anti-loop rule)
-  are live; failures report at **error** level, while two informational
-  `action` lines are always printed (the function-drop audit count,
-  `grug_traders/init.lua:157`, and `[grug_materials] registry audit
-  passed`, `grug_materials/audit.lua:207`). Iron Lump 3c → Iron Bar 3c
+  are live; findings report at **warning or error** level (a missing
+  drop price warns, `grug_traders/init.lua:165`; money and craft loops
+  error), while two informational `action` lines are always printed
+  (the function-drop audit count, `grug_traders/init.lua:157`, and
+  `[grug_materials] registry audit passed`,
+  `grug_materials/audit.lua:207`). Iron Lump 3c → Iron Bar 3c
   is the documented audited smelting pair
   (`grug_traders/init.lua:81-91,100ff`). The recipe walk judges only
   engine recipes of the `normal` and `cooking` methods
