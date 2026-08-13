@@ -323,11 +323,15 @@ callback combination, `s_player.cpp:63`). A blocked safe-target punch must
 have **no** combat effect, knockback included. Frozen mechanism: wrap
 `core.calculate_knockback` (`builtin/game/knockback.lua:2`, invoked at
 `:40`) to return 0 when both objects are enemy players and
-`grug_pvp.would_block(hitter, player)` is true. `would_block` is pure and
-uses the same pre-state table as the transaction, so the suppression is
-deterministic and order-independent even though it runs before the
-transaction itself. All other pairs delegate to the original function
-unchanged.
+`grug_pvp.would_block(hitter, player)` is true. `would_block` first runs
+§2's transition observer for both players — its only possible mutation is
+extending an expiry, exactly as §3 specifies — and then evaluates the
+pure four-row pre-state table. A knockback evaluated in the same server
+step as a contested→peaceful crossing therefore already sees the leaver
+tagged, and the suppressor and the subsequent transaction always judge
+one punch from the same states: deterministic and order-independent even
+though the suppressor runs before the transaction itself. All other pairs
+delegate to the original function unchanged.
 
 ### 5.2 Central backstop in the HP pipeline
 
@@ -480,7 +484,10 @@ state rows (§15.5). Beyond that product, the named cases:
     player-attributed reason, no token) is zeroed, logged and surfaced in
     `/combatdebug`; the token cannot be replayed (claim-once).
 15. Knockback suppression: blocked punches move the target 0 nodes;
-    eligible punches keep builtin knockback; PvE knockback untouched.
+    eligible punches keep builtin knockback; PvE knockback untouched; a
+    knockback evaluated first in the same step as a contested→peaceful
+    crossing agrees with the subsequent transaction (the observer runs
+    inside `would_block`).
 16. NPC seam: attacking a king/royal guard/enemy guard tags before PvE
     damage; damaging them refreshes on the HP/absorb rule; ordinary
     creatures and passive invulnerable services never change PvP state.

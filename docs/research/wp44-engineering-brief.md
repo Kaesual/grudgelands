@@ -72,12 +72,15 @@ canonically so the report serializes deterministically.
 
 ```
 ledger_manifest:
-  schema_version, game_commit, data_checksums[ (file, sha256) … ],
+  schema_version, data_checksums[ (file, sha256) … ],
   constants{ pacing_minutes_per_level_band[], potion_use_per_min[],
              per_slot_event_rates[], roster_weights[],
              repair_fraction, validation_band = 0.30 },
   world_label (WP18/WP36 or WP40 map)
-  -- run date/host live ONLY in the uncommitted sidecar, never here
+  -- run date/host AND the checkout commit live ONLY in the uncommitted
+  -- sidecar: committing the frozen report would change the repo commit,
+  -- so canonical identity is carried entirely by the input content
+  -- checksums, never by a git SHA inside the body
 
 per_tier[T1..T6]:
   level_band, reference_roster[ (mob, level, weight) … ],
