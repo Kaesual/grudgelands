@@ -42,11 +42,13 @@ loaded instead of regenerated on later emerge requests
 
 **Inference.** The most realistic foundation is therefore v7 plus one
 authoritative, deterministic mapgen-environment terrain/surface overlay. It can
-retain the existing native caves, dungeons, ores, and depth strata wherever it
-does not rewrite their nodes, while enforcing the authored continent, ocean,
-zone, anchor, Holy Grounds, road, and island geometry before the first map
-write. A broad equivalent pass in the main environment would perform a second
-map write and consume main-thread time. Full `singlenode` Lua mapgen would give
+retain existing native caves, ores, and depth strata wherever it does not
+rewrite their nodes. Native dungeons require the stricter unconditional
+preservation/preflight-veto contract documented below. The overlay can still
+enforce the authored continent, ocean, zone, anchor, Holy Grounds, road, and
+island geometry before the first map write. A broad equivalent pass in the
+main environment would perform a second map write and consume main-thread time.
+Full `singlenode` Lua mapgen would give
 maximum control but would also require Grudgelands to recreate terrain,
 biomes, caves, dungeons, liquids, lighting, and most placement behavior: the
 native singlenode implementation merely fills the central chunk with one node
@@ -391,11 +393,11 @@ The control levels in this matrix mean:
 
 | Concern | Verified engine capability | Realistic control with v7 + overlay | Preservation cost or limitation |
 |---|---|---|---|
-| Base heights and relief | Four v7 noise fields choose base height; mountain terrain adds a 3D density field (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:390-440`). | Native parameter control globally; exact authored caps, floors, terraces, blends, or height profiles by VoxelManip. | Filling above native terrain creates new solid volume without native caves/ores/dungeons. Lowering removes all native results in the cut volume. Exact preservation is possible only below an explicitly bounded rewrite shell. |
+| Base heights and relief | Four v7 noise fields choose base height; mountain terrain adds a 3D density field (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:390-440`). | Native parameter control globally; exact authored caps, floors, terraces, blends, or height profiles by VoxelManip. | Filling above native terrain creates new solid volume without native caves/ores/dungeons. Lowering may replace permitted cave/ore/stratum categories in the typed shell; the manifest-bound y contract keeps that complete broad callback collar above every dungeon-writing VM. |
 | Land/ocean mask | v7 fills stone below its terrain level, water at/below water level, and air above; it has no arbitrary continent mask (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:524-570`). | Full authored 2D column mask and coastline control, including immutable channels and later island footprints. | A full-depth ocean/channel rule is primarily a runtime protection/classification rule; generation only needs to author the relevant seabed/water volume. Already generated land is not automatically converted. |
 | Engine biomes and surfaces | Biomes are cuboid-filtered nearest points in heat/humidity space and replace top/filler/stone/water before caves (`reference_projects/luanti/src/mapgen/mg_biome.cpp:231-278`, `reference_projects/luanti/src/mapgen/mapgen.cpp:623-765`). | Engine biomes remain useful as a first-pass material palette. Exact logical zone biome and final top/filler can be authored after v7. | The native biomemap cannot encode the 38-zone graph and is stale after terrain edits. Returned heightmap/biomemap tables are copies (`reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:606-645`). Runtime gameplay must query Grudgelands geometry, not engine biome IDs. |
 | Caves and caverns | Native stages run before ores and Lua (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:332-355`). | Preserve all unchanged nodes below the surface rewrite band. Optionally seal caves only inside explicit safe/structure envelopes. | Moving a surface downward can expose or erase caves; raising it does not extend native caves into the added volume. "Preserve caves" cannot be absolute inside rewritten cells. |
-| Dungeons | Native dungeons run after ores and before decorations (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:353-363`). Dungeon generation avoids non-ground and existing/ungenerated-neighbor conditions (`reference_projects/luanti/src/mapgen/dungeongen.cpp:64-105`). | Preserve outside explicit authored replacement envelopes. Use generation notifications if later metadata/loot initialization is required. | A surface pass can cut a dungeon that intersects its shell; structures need an explicit conflict rule. Lua cannot ask v7 to regenerate a clipped dungeon elsewhere. |
+| Dungeons | Native dungeons run after ores and before decorations ([`mapgen_v7.cpp`](../../reference_projects/luanti/src/mapgen/mapgen_v7.cpp):353-363). DungeonGen uses private working flags ([`dungeongen.h`](../../reference_projects/luanti/src/mapgen/dungeongen.h):12-15; [`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):65-105), but Lua exposes neither a dungeon mapgen object nor a VoxelManip flag accessor ([`mapgen.h`](../../reference_projects/luanti/src/mapgen/mapgen.h):44-51; [`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):40-48; [`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):499-518). | Preserve unconditionally. `gennotify.dungeon` supplies room-bottom-center positions only ([`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):676-710; [`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):181-189), never a node-exact origin mask. WP40 obtains global safety from manifest-bound y-disjoint broad callback collars plus exact-final-stratum-host-only deep writes. A finite native-only preflight still marks the complete emerged VM area of every observed positive callback as a conservative proof-oracle veto. | Content names cannot prove writer provenance, production/halo observations cannot narrow the guard, and Lua cannot regenerate a clipped dungeon elsewhere. The finite guard is not global exterior coverage. `force_native_dungeon = true` is a fail-closed manifest error until a verified node-exact provenance API exists. See the [WP40 brief](wp40-engineering-brief.md#24-native-dungeons-and-non-replaceable-structures) and [probe evidence](../../tools/wp40/dungeon_probe/README.md). |
 | Ores and depth strata | All registered ores run in registration order and replace only configured `wherein` nodes (`reference_projects/luanti/src/mapgen/mg_ore.cpp:31-45`, `reference_projects/luanti/src/mapgen/mg_ore.cpp:521-582`). Public `generate_ores` also truncates the map seed to 32 bits (`reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:1571-1602`). | Keep current native ores and last-registered strata in unchanged rock. For exact race-region or logical-zone deposits, add a project-owned ore pass keyed to authored geometry. | New rock added above v7 contains neither native ore nor the correct stratum unless the overlay fills it through `grug_materials.stratum_node_for(y)` and deliberately adds authored deposits. Re-running all registered ores can double-place or change ordering. |
 | Decorations | Native decorations run before Lua, use native heightmap/biomemap, and can place simple or schematic content (`reference_projects/luanti/src/mapgen/mg_decoration.cpp:37-47`, `reference_projects/luanti/src/mapgen/mg_decoration.cpp:231-251`). | Keep only decorations that cannot conflict with surface edits; replace final-surface vegetation and zone dressing with an authored candidate system after terrain. | Moving the ground leaves native trees floating or buried. Calling `core.generate_decorations(..., true)` again still uses the native mapgen biome data and requires exact chunk extents (`reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:1606-1667`); it is not a way to update that data. |
 | Native ridge channels | v7's "rivers" are a threshold over ridge noise near water level (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:444-457`, `reference_projects/luanti/src/mapgen/mapgen_v7.cpp:515-522`). | Accept them as incidental terrain where harmless, or disable/normalize them inside authored envelopes. | They do not connect chosen endpoints, enforce navigability, or model a drainage graph. They are unsuitable as authoritative rivers. |
@@ -413,11 +415,13 @@ of relief; they cannot guarantee the mainland frame, fixed edges, anchors,
 topology, channels, or authored routes. Every exact guarantee needs a
 project-owned spatial function or a deterministic voxel overlay.
 
-**Inference.** The phrase "preserve v7 caves, dungeons, ores, and strata" is
-technically achievable only with a qualified meaning: preserve every existing
-node outside the authored replacement volume. It is impossible to both replace
-a voxel and preserve the different native result that previously occupied that
-same voxel.
+**Inference.** The phrase "preserve v7 caves, dungeons, ores, and strata" needs
+category-specific meaning. Caves, ores, and strata can be preserved outside
+their exact authored replacement volumes because it is impossible to both
+replace a voxel and preserve its prior native result. Native dungeons are the
+stricter exception: WP40 preserves them unconditionally through the global
+vertical/typed contract, with the finite conservative native-only guard as an
+additional corpus proof oracle.
 
 **Recommendation.** The WP40 specification should enumerate replacement
 volumes by feature and priority. At minimum distinguish:
@@ -835,21 +839,24 @@ item 2 of WP40's mandatory reviewed pre-code brief; its semantics must be:
   always using `default:stone`;
 - replace only known natural terrain/surface/vegetation content in ordinary
   blending, preserving dungeon/structure/foreign nodes;
-- allow deliberate force replacement only inside explicitly protected authored
-  structure or channel volumes;
+- allow deliberate force replacement of otherwise permitted natural categories
+  only inside explicitly protected authored structure or channel volumes;
+  native dungeons are never in that set, and `force_native_dungeon = true`
+  fails source/compiled-data/manifest validation;
 - never use a content-name heuristic at runtime to reconstruct whether an old
   generated column was meant to be cut. The current healing LBM demonstrates
   that such inference has unavoidable ambiguous cases
   (`mods/MAPGEN/grug_mapgen/ocean_mask.lua:88-178`).
 
 **Inference.** A shallow shell preserves native underground results below its
-floor byte-for-byte. It does not preserve features that intersect the shell,
-and it cannot cause caves, ores, or dungeons to appear inside newly added
-terrain. Where a capital plateau adds a large volume, the choices are to accept
-solid authored fill, add an authored cave/ore rule for that volume, or cap the
-maximum upward adjustment. Re-running all native ore registrations after fill
-is unsafe because it can process existing rock a second time and does not
-recreate caves or dungeons.
+floor byte-for-byte. It cannot cause caves, ores, or dungeons to appear inside
+newly added terrain. Caves and ores that intersect an authorized shell follow
+their typed replacement contract; the y-disjoint callback collars prevent the
+shell from reaching native DungeonGen at all. Where a capital plateau adds a
+large volume, the choices are to accept solid authored fill, add an authored
+cave/ore rule for that volume, or cap the maximum upward adjustment. Re-running
+all native ore registrations after fill is unsafe because it can process
+existing rock a second time and does not recreate caves or dungeons.
 
 ### Land, coast, ocean, and immutable channels
 
@@ -912,6 +919,91 @@ biome generation precedes both and its biomemap can filter cave and ore
 behavior. Ores receive the native `mg->biomemap` and native signed-32-bit map
 seed (`reference_projects/luanti/src/mapgen/mg_ore.cpp:82-96`).
 
+**Verified fact (2026-08-13 Reality Check).** Lua has no node-exact positive
+native-dungeon provenance. The only dungeon notification is added after a room
+write at its bottom center
+([`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):181-189),
+and Lua receives only the resulting position list
+([`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):676-710).
+The internal dungeon flags are not in the complete Lua VoxelManip method list
+([`dungeongen.h`](../../reference_projects/luanti/src/mapgen/dungeongen.h):12-15;
+[`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):499-518),
+while `get_data()` exposes only content IDs and maps `VOXELFLAG_NO_DATA` to
+`CONTENT_IGNORE`
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):92-114).
+The [isolated WP40 probe](../../tools/wp40/dungeon_probe/README.md) reproduces
+the public API result; the pinned 5.17-dev source remains authoritative.
+
+**Resolution.** Native dungeons are unconditionally preserved, with no
+content-name inference. The global proof is vertical and typed. With the
+fresh-world manifest fixed at `water_level = 1` and `chunksize = 5`, the
+WP40 brief derives `broad_content_y_min = -37`. The chunksize-five engine
+lattice has central/full y ranges `[-32 + 80k,47 + 80k]` and
+`[-48 + 80k,63 + 80k]`: this follows the containing-chunk formula
+([`emerge.cpp`](../../reference_projects/luanti/src/emerge.cpp):339-345), the
+one-mapblock emerge border
+([`servermap.h`](../../reference_projects/luanti/src/servermap.h):172-175),
+and the v7 range construction
+([`mapgen_v7.cpp`](../../reference_projects/luanti/src/mapgen/mapgen_v7.cpp):309-318).
+The manifest pins `mgv7_dungeon_ymin = -31000` and
+`mgv7_dungeon_ymax = -193`. Dungeon eligibility uses the central range, then
+DungeonGen writes the full range
+([`mapgen.cpp`](../../reference_projects/luanti/src/mapgen/mapgen.cpp):890-952).
+Consequently the highest eligible dungeon slice is central `[-272,-193]`,
+full `[-288,-177]`, while the first broad slice is central `[-112,-33]`, full
+`[-128,-17]`; even later-neighbor collars are disjoint by 48 nodes.
+
+This resolution deliberately changes the fresh-world native-dungeon content
+contract. Pinned v7 defaults `mgv7_dungeon_ymin = -31000` and
+`mgv7_dungeon_ymax = 31000`
+([`mapgen_v7.h`](../../reference_projects/luanti/src/mapgen/mapgen_v7.h):40-41),
+and the current pre-WP40 game has not overridden those limits; its effective
+values are recorded in the
+[baseline map metadata](../../tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.map_meta.txt):175,206.
+WP40 retains the lower value but changes the upper value to `-193`; v7
+therefore performs no dungeon attempt in `k = -2` or any shallower slice. The
+resulting world has fewer native dungeons and none near the authored surface.
+That visible content and world-format change is explicitly accepted because it
+makes unconditional preservation compatible with WP40's broad authored
+rewrite. Existing generated worlds are not migrated, and a fresh world using
+the old setting fails the manifest before mapgen registration.
+
+Rejected alternatives were: treating room centers, content names, or an
+unverified deterministic rerun as positive provenance; claiming a finite
+full-emerged-area corpus guard covers arbitrary exterior/neighbor influence;
+preflighting the complete map limit or adding a hard world border; making a
+runtime halo/veto decision that depends on emerge order; dropping the broad
+authored terrain/water/route rewrite; or patching Luanti/replacing its dungeon
+generator inside WP40. The first choices are unsound, the next choices violate
+the world or callback architecture, and the final choices are out of scope.
+The full decision record and rerun rule are in the
+[WP40 Reality Check](wp40-engineering-brief.md#reality-check-correction-rule).
+
+Below -37, the sole allowed authored content operation is a typed regional
+resource write that replaces only the exact registered final WP43 stratum host
+for y. It never replaces generic native ore, air, liquid, cobble/stair dungeon
+nodes, ignore, unknown, or foreign content and performs no param2/light/liquid
+work. Current explicit biome dungeon nodes are pairwise disjoint from the six
+final stratum hosts, and both host/output registrations are manifest-validated.
+Names define the positive eligible-host type, never dungeon provenance.
+
+Native-only preflight additionally records
+`VoxelManip:get_emerged_area()` for every callback with a positive dungeon
+notification; the accessor returns the VM's exact min/max edges
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):377-386),
+and native DungeonGen receives that full range
+([`mapgen.cpp`](../../reference_projects/luanti/src/mapgen/mapgen.cpp):951-952).
+The areas are unioned and projected onto canonical owner slices offline. Any
+audited target-operation intersection rejects the seed or geometry. This guard
+is sound for each observed positive callback but covers only the finite audit
+extent; it is a corpus/proof oracle, not global safety authority. Production
+and halo content make no dungeon decision and no hard world/map-limit border is
+introduced. `force_native_dungeon = true` remains a fail-closed error until a
+reviewed node-exact provenance API/origin channel exists. If the complete
+corpus becomes unsatisfiable, or a future operation cannot satisfy the
+vertical/typed proof, WP40 performs another Reality Check rather than narrowing
+the guard or weakening a gate.
+
 **Inference.** If future G1/G2 cultural resources must follow the authored
 `race_region_at(x, z)` projection exactly at depth, engine biome-filtered ore
 registrations are the wrong authority. Engine biomes may differ from logical
@@ -922,25 +1014,29 @@ project-owned ore placement pass, or their registration must use broad
 **Recommendation.** Preserve the current native generic ore and stratum order,
 then add only exact-geometry resource categories in a deterministic authored
 stage. Each candidate should be derived from world-aligned 3D cells and a
-domain seed; test host-node and depth/race policy before replacement. This
-avoids a scan of every rock node for most chunks and avoids using logical zone
-IDs as native biome names.
+domain seed; replace only the exact final stratum host for y after depth/race
+policy passes. Generic native ore clips the authored vein. This avoids a scan
+of every rock node for most chunks and avoids using logical zone IDs as native
+biome names.
 
 **Recommendation.** Establish explicit conflict priorities:
 
 ```text
-immutable authored structure/channel shell
+global dungeon y/typed separation plus foreign-structure veto
+  > finite native-dungeon proof guard
+  > immutable authored structure/channel shell
   > authored structure interior and road/river engineering
-  > native dungeon/foreign structure preservation outside those envelopes
   > authored exact-region resource
-  > existing generic ore/stratum node
+  > existing generic ore / eligible exact stratum host
   > ordinary terrain/surface dressing
 ```
 
 This is an implementation recommendation, not a design change. The exact
-resource-versus-dungeon precedence is an engineering choice assigned to items
-2 and 4 of WP40's mandatory reviewed pre-code brief; it is not an open content
-or owner-design question.
+resource-versus-dungeon precedence is no longer an implementation choice: a
+deep operation can match only an eligible final stratum host, while a finite-
+guard intersection still rejects the audit. Other typed resource conflicts
+remain engineering owned by items 2 and 4 of WP40's mandatory reviewed
+pre-code brief; they are not open content or owner-design questions.
 
 ### Rivers and lakes
 
@@ -1119,8 +1215,8 @@ increase garbage pressure.
 
 - classify x/z chunk overlap and y band before fetching a VoxelManip buffer;
 - return immediately for deep chunks with no exact-region ore work;
-- do not assume remote surface ocean can skip the mask unless an explicit
-  finite world-generation boundary makes native out-of-frame land irrelevant;
+- keep remote surface-ocean classification analytic through the map limit; do
+  not introduce a world hard border or infer safety from a finite audit extent;
 - reuse per-mapgen-state arrays for voxel data, 2D noise, zone IDs, heights,
   candidates, and modified-column flags;
 - combine terrain, surface, road, structure, and authored decoration writes
@@ -1411,7 +1507,17 @@ output:
   replaceable set, unless marked force-authored;
 - generic ore/stratum counts below the floor must match;
 - cave connectivity samples below the floor must match;
-- dungeon nodes outside force-authored envelopes must match;
+- native-only dungeon events must produce canonical full-emerged-area,
+  owner-sliced finite proof guards in every request schedule;
+- every audited target operation must have zero intersection with those guards;
+- the pinned y-lattice proof must keep every dungeon-writing full VM below
+  every broad-content callback full VM, including later neighbor collars;
+- every deeper authored write must replace only its exact final stratum host,
+  while generic ore/cave/liquid/dungeon/ignore/unknown/foreign fixtures remain
+  unchanged in both native-before-authored and later-neighbor orders;
+- native dungeon content must remain byte-identical everywhere;
+- `force_native_dungeon = true` and any content-name dungeon classifier must
+  fail validation;
 - newly filled rock must use the correct `grug_materials` stratum for y;
 - no native surface decoration may remain floating, buried, inside a road, or
   inside a fixed exclusion envelope;
@@ -1539,18 +1645,26 @@ separate.
 - **Recommendation:** use the third option. Keep only native categories proven
   independent of the changed surface.
 
-#### R4 — "Preserve all caves, dungeons, ores, and strata" is overbroad
+#### R4 — Cave/ore/stratum preservation needs bounded volumes; dungeons do not
 
 - **Problem/inference:** Replacing a voxel cannot preserve its prior content.
   Raising terrain creates a volume native stages never processed; lowering
-  terrain deletes features in the cut.
+  terrain deletes cave/ore/stratum features in the cut. Native dungeons cannot
+  safely join that exception because Lua has no node-exact provenance mask.
 - **Primary evidence:** caves, ores, dungeons, and decorations are complete
-  before Lua (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:332-379`).
-- **Alternatives:** no terrain height changes; bound the rewrite shell and
-  qualify preservation; recreate features in added/cut volumes.
-- **Recommendation:** specify byte-for-byte preservation below named rewrite
-  floors and explicit exceptions inside feature envelopes. Do not promise the
-  impossible absolute form.
+  before Lua (`reference_projects/luanti/src/mapgen/mapgen_v7.cpp:332-379`),
+  but dungeon gennotify exports room centers rather than changed voxels
+  ([`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):181-189;
+  [`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):676-710).
+- **Alternatives:** no terrain height changes; bound and type the cave/ore/
+  stratum rewrite volumes; for dungeons either add a verified engine provenance
+  API or prove global writer separation while retaining a conservative finite
+  native-only guard as an additional oracle.
+- **Resolution:** qualify cave/ore/stratum preservation by exact volumes, but
+  preserve native dungeons unconditionally through the manifest-bound y/typed
+  proof. The full-emerged-area preflight remains a finite proof veto, not global
+  coverage. Do not infer dungeon origin from content names or enable a force
+  flag without verified node-exact provenance.
 
 #### R5 — Shell writes can make results order-dependent
 
@@ -1736,7 +1850,10 @@ must write and review a short engineering brief that freezes:
 1. the analytic, chunk-order-independent terrain-derived target-height
    function for every capital, start and mandatory structure envelope;
 2. the authored terrain rewrite shell, maximum cut/fill behavior and exact
-   treatment of caves, dungeons, liquids and strata intersecting that shell;
+   treatment of caves, liquids and strata intersecting that shell, plus
+   unconditional native-dungeon preservation through manifest-bound vertical
+   separation and exact-host-only deep writes, with the conservative finite
+   native-only preflight veto retained as a corpus proof oracle;
 3. the category table for native versus authored surface/cave decorations and
    the deterministic normalization of unregistered v7 surface water;
 4. the resource-placement split: generic depth resources that remain native
@@ -1857,8 +1974,16 @@ outputs and must be recorded before its final integration gate.
   optional-node randomness, rotation, and complete-fit result.
 - `reference_projects/luanti/src/mapgen/cavegen.cpp:55-120` — native noise-cave
   iteration and biome interaction.
-- `reference_projects/luanti/src/mapgen/dungeongen.cpp:64-105` — dungeon ground,
-  neighbor, and non-ground preservation checks.
+- `reference_projects/luanti/src/mapgen/dungeongen.h:12-15` and
+  `reference_projects/luanti/src/mapgen/dungeongen.cpp:65-120,127-189` —
+  private dungeon working flags, full-range generation, alternative-wall
+  content scan, and room-center notification.
+- `reference_projects/luanti/src/mapgen/mapgen.h:44-51` and
+  `reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:40-48,676-710` —
+  complete Lua mapgen-object surface and position-only gennotify export.
+- `reference_projects/luanti/src/script/lua_api/l_vmanip.cpp:92-114,377-386,499-518`
+  — content-only observation, emerged-area bounds, and the complete VoxelManip
+  method surface with no dungeon/flag accessor.
 - `reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:588-646` — copied
   mapgen objects and VoxelManip emerged bounds.
 - `reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:739-799` and

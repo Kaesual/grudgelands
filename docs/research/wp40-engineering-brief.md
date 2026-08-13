@@ -52,11 +52,27 @@ depends on are:
   `reference_projects/luanti/src/script/scripting_emerge.cpp:29-80` and
   `reference_projects/luanti/src/emerge.cpp:175-226,545-770`;
 - central mapchunk versus emerged border ownership and the final whole-VM
-  blit: `reference_projects/luanti/src/servermap.cpp:200-350`;
+  blit: `reference_projects/luanti/src/servermap.h:172-175` and
+  `reference_projects/luanti/src/servermap.cpp:200-350`;
+- chunksize-five containing-chunk lattice and its negative-coordinate fixture:
+  `reference_projects/luanti/src/emerge.cpp:339-345` and
+  `reference_projects/luanti/src/unittest/test_map_settings_manager.cpp:255-267`;
+- v7 central/full node ranges, dungeon-stage eligibility, full-VM DungeonGen
+  call, and dungeon setting/noise reads:
+  `reference_projects/luanti/src/mapgen/mapgen_v7.cpp:150-193,309-318`,
+  `reference_projects/luanti/src/mapgen/mapgen.cpp:890-952`, and
+  `reference_projects/luanti/src/mapgen/mapgen_v7.h:30-41`;
 - full-volume VoxelManip copy costs, content-only `set_data`, and mapgen-state
   liquid/lighting calls:
-  `reference_projects/luanti/src/script/lua_api/l_vmanip.cpp:35-55,92-228`
+  `reference_projects/luanti/src/script/lua_api/l_vmanip.cpp:35-55,92-228,308-355,499-518`
   and `reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:1980-2016`;
+- native-dungeon order, internal working flags, room-center-only notification,
+  and the absence of any Lua provenance/flag accessor:
+  [`mapgen_v7.cpp`](../../reference_projects/luanti/src/mapgen/mapgen_v7.cpp):353-363,
+  [`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):65-120,127-189,
+  [`mapgen.h`](../../reference_projects/luanti/src/mapgen/mapgen.h):44-51,
+  [`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):40-48,676-710,
+  and [`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):92-114,499-518;
 - native surface decoration's prior use of the native heightmap/biomemap:
   `reference_projects/luanti/src/mapgen/mg_decoration.cpp:125-256`; and
 - IPC copy/unpack semantics and blocking warning:
@@ -252,13 +268,93 @@ full-seed hash, stable feature ID, world coordinates, authored target, observed
 native value or conflict class, and the violated limit. It must not silently
 choose a local fallback height.
 
-The world geometry manifest verifies the full-seed hash, geometry and algorithm
-schema, authored dataset checksum, exact `mgv7_spflags` bitset, every active v7
-noise parameter, chunksize, engine pin, and production emerge-thread setting.
-The production bitset is `mountains`, `ridges`, and `caverns`; `floatlands` is
-disabled. Enabling floatlands or changing any of those frozen inputs is a
-world-format change that requires a new complete native-only audit rather than
-relying on the surface-shell production guard. The exact handling of cached
+The fresh-world geometry manifest verifies the full-seed hash, geometry and
+algorithm schema, authored dataset checksum, exact `mgv7_spflags` bitset,
+every active v7 noise parameter, chunksize, engine pin, and production
+emerge-thread setting. It binds `water_level = 1`, `chunksize = 5`, one emerge
+thread, `mgv7_dungeon_ymin = -31000`, `mgv7_dungeon_ymax = -193`, the exact
+active `mgv7_np_dungeons`, and the critical derived constant
+`broad_content_y_min = -37`. The production special-flag bitset is
+`mountains`, `ridges`, and `caverns`; `floatlands` is disabled. The normal
+mapgen flags retain dungeons, biomes, caves, ores, decorations, and light.
+Stage 1 and Stage 3 compare these values to the running mapgen settings rather
+than accepting defaults.
+
+The same manifest binds the complete registered biome dungeon wall/alternate/
+stair triples, the six exact final WP43 stratum-host node names, and every
+authored natural-resource output registration needed by the typed deep path.
+A missing dungeon triple, a fallback to an inferred biome stone/cobble alias,
+an overlap between a dungeon registration and an eligible host name, or an
+output without `is_ground_content = true`, `grug_natural`, and
+`grug_resource` is fatal before mapgen callback registration. This registration
+check proves typed-operation closure; it is never used to infer whether an
+individual node came from DungeonGen.
+
+The lower bound is derived, not calibrated. `world_zones.md` fixes the six
+relief bands at `W + 2..24`, `W + 8..56`, `W + 24..96`, `W + 56..144`,
+`W + 96..224`, and `W + 160..360`; therefore the global land minimum is
+`H_min = W + 2 = 3`. The largest ordinary/template cut is the capital's 24
+nodes. Applying Section 2.1's exact shell formula gives the deepest broad
+surface/template/foundation result:
+
+```text
+T_min                   = H_min - 24
+broad_content_y_min     = min(H_min - 16, T_min) - 16
+                        = W - 38 = -37
+```
+
+Every other Section 2 lower extreme is enumerated against that constant. The
+32-node exterior bed plus three seals reaches `W - 35 = -34`. Current planned
+water reaches use offsets at least `W + 8`; their deepest offset/depth/seal
+combination is `W + 8 - 8 - 3 = -2`; the named 12-node Raincall plunge and
+Kezamba cenote bottoms are respectively `W + 44 - 12 - 3 = 30` and
+`W + 64 - 12 - 3 = 50`. A tunnel route can cut eight nodes below `H`, and its
+two backing nodes reach only `W + 2 - 8 - 2 = -7`; the named Mirefolk
+causeway's three-node backing reaches `W + 2 - 8 - 3 = -8`. The troll basin's
+12-node subtraction remains inside the capital's binding 24-node maximum cut.
+Decorations, every other template/foundation/road mask, every waterfall
+drop/seal, and every exact
+resolver occupancy are Stage-2-enumerated by their final voxel coordinates and
+must satisfy `y >= broad_content_y_min`; a new T2--T7 operation kind that does
+not satisfy it rejects the schema and requires a new Reality Check. Exterior
+air continuing upward to the map limit does not change this lower bound.
+
+Only exact eligible-host-typed authored underground resource operations may
+exist at `y < broad_content_y_min`. They may replace only the registered final
+stratum node for that exact y, never cave air, liquid, generic native ore,
+dungeon wall/stair/air, `CONTENT_IGNORE`, unknown content, or foreign content.
+They do no lighting, liquid, or `param2` work. Their registered natural outputs
+remain ground content so a later native DungeonGen pass treats them exactly as
+the host it replaced; if DungeonGen writes the position, the same native
+dungeon final node wins in either callback order.
+
+The engine lattice makes that content rule global without a world hard border.
+For `chunksize = 5`, `getContainingChunk` yields mapblock minima `-2 + 5k`.
+With 16-node mapblocks and the engine's one-mapblock emerge border, the central
+and full-VM y ranges are therefore:
+
+```text
+central(k) = [-32 + 80k,  47 + 80k]
+full(k)    = [-48 + 80k,  63 + 80k]
+```
+
+The first owner slice that can contain broad content at y = -37 is `k = -1`:
+central `[-112,-33]`, full VM `[-128,-17]`. Dungeon eligibility compares the
+central `node_min`/`node_max` to the configured limits and then passes the full
+VM to DungeonGen. With `mgv7_dungeon_ymax = -193`, slice `k = -2` is disabled
+because its central minimum is -192. The highest eligible slice is `k = -3`,
+central `[-272,-193]`, full VM `[-288,-177]`. Thus every dungeon-writing VM,
+including a later horizontal or vertical neighbor's complete blit, ends below
+the first broad callback's full influence area. Nodes -176 through -129 form a
+48-node gap. The smaller content-only cutoff -113 would be unsound because its
+dungeon VM would overlap the broad callback's lighting/emerge collar.
+
+This y-disjointness, not a finite dungeon-event corpus, is the global native-
+dungeon preservation authority. Enabling floatlands or changing water level,
+chunksize, either dungeon y bound/noise, dungeon/biome flags or registrations,
+stratum/resource registrations, another active v7 noise, or any derived lower
+extreme is a world-format change that requires recompilation, the complete
+native-only audit, and this proof to pass again. The exact handling of cached
 height products is frozen with the registry/IPC decision in Chapter 5; they
 remain derivatives of `H`, never persistent first-writer decisions.
 
@@ -755,47 +851,127 @@ transaction order.
 
 ### 2.4 Native dungeons and non-replaceable structures
 
-**Decision (2026-08-12): preserve native dungeons by default and permit their
-replacement only through an explicit force-authority flag on a named mandatory
-envelope. Never force-replace an unknown or foreign structure.**
+**Decision corrected by focused Reality Check (2026-08-13): preserve native
+dungeons unconditionally. On the pinned Luanti engine, Lua cannot derive a
+node-exact positive native-dungeon provenance mask, so
+`force_native_dungeon = true` is a fail-closed manifest error until a verified
+provenance API exists. Never classify or replace a dungeon by content name.**
 
-Ordinary terrain, roads, housing grading, and ordinary or relocatable POI
-volumes may not replace a positively identified native dungeon node. If their
-required final content conflicts with one, the seed or geometry dataset fails.
-The same failure rule applies to every non-replaceable node whose provenance is
-unknown or foreign.
+This is a fresh-world mapgen-contract change, not merely a stricter candidate
+veto. Pinned v7 defaults both dungeon limits to the mapgen extremes
+([`mapgen_v7.h`](../../reference_projects/luanti/src/mapgen/mapgen_v7.h):40-41),
+and the pre-WP40 game did not override that default: its current baseline has
+`mgv7_dungeon_ymin = -31000` and `mgv7_dungeon_ymax = 31000`
+([baseline map metadata](../../tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.map_meta.txt):175,206).
+WP40 instead binds `mgv7_dungeon_ymin = -31000` and
+`mgv7_dungeon_ymax = -193`. Under the
+chunksize-five lattice, `-193` leaves `k = -3` as the highest eligible central
+slice (`[-272,-193]`, with full DungeonGen VM `[-288,-177]`) and prevents
+dungeon attempts in `k = -2` and every shallower slice. Players therefore get
+fewer native dungeons and no native dungeon attempts near the authored surface;
+the team explicitly accepts that visible world-generation consequence in
+exchange for unconditional native-dungeon preservation without an engine
+patch. Existing generated worlds are not migrated; creating a WP40 world with
+the old vertical setting or later changing this setting is a fatal
+world-format/manifest mismatch.
 
-A named envelope may set `force_native_dungeon = true` only when it belongs to
-one of these closed classes:
+The pinned Luanti 5.17-dev sources are authoritative. Native v7 runs the
+dungeon stage after ores and before decorations
+([`mapgen_v7.cpp`](../../reference_projects/luanti/src/mapgen/mapgen_v7.cpp):353-363),
+and the mapgen-state callback runs only after the complete native `makeChunk`
+([`emerge.cpp`](../../reference_projects/luanti/src/emerge.cpp):727-750).
+DungeonGen clears and uses private `DUNGEON_INSIDE`/`DUNGEON_PRESERVE` working
+flags ([`dungeongen.h`](../../reference_projects/luanti/src/mapgen/dungeongen.h):12-15;
+[`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):65-105),
+but Lua's complete mapgen-object list contains no dungeon mask
+([`mapgen.h`](../../reference_projects/luanti/src/mapgen/mapgen.h):44-51;
+[`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):40-48)
+and its complete VoxelManip method list contains no flag accessor
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):499-518).
+`get_data()` returns content IDs, exposing only `VOXELFLAG_NO_DATA` as
+`CONTENT_IGNORE`, not the dungeon flags
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):92-114).
 
-- a fixed start or capital foundation;
-- a mandatory hard-protected gate, bridge, or tunnel section for which no
-  adequate alternate route exists; or
-- mandatory continent, island, exterior deep-ocean, or dragon-channel terrain.
+`gennotify.dungeon` exports positions only
+([`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):676-710),
+specifically each room's bottom center
+([`lua_api.md`](../../reference_projects/luanti/doc/lua_api.md):5775-5788;
+[`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):181-189).
+It omits room dimensions, walls, floors, corridors, stairs, and every changed
+voxel. The generator derives its count, shape parameters, and C++ random state
+internally ([`mapgen.cpp`](../../reference_projects/luanti/src/mapgen/mapgen.cpp):890-952;
+[`dungeongen.h`](../../reference_projects/luanti/src/mapgen/dungeongen.h):70-107),
+and Lua sees only the later post-dungeon/post-decoration buffer. Reimplementing
+that generator in Lua would therefore be an unverified parallel generator, not
+engine provenance. Content-name inference is additionally unsound because the
+alternative-wall pass scans every matching wall content in its full range
+without an origin test
+([`dungeongen.cpp`](../../reference_projects/luanti/src/mapgen/dungeongen.cpp):107-120),
+and current biomes use the ordinary shared names `default:cobble`,
+`default:mossycobble`, and `stairs:stair_cobble`
+([`biomes.lua`](../../mods/MAPGEN/grug_mapgen/biomes.lua):112-115).
 
-The flag is registry data covered by the manifest; it cannot be inferred from
-feature priority, protection status, node names, or a runtime collision. It
-authorizes replacement only inside that envelope's exact voxel mask and only
-for content positively classified as native dungeon output. It does not grant
-territorial ownership, claim exclusion, hard protection, or authority over any
-other content category.
+The reproducible probe documented in
+[`dungeon_probe/README.md`](../../tools/wp40/dungeon_probe/README.md) and run by
+[`run_dungeon_probe.sh`](../../tools/wp40/run_dungeon_probe.sh) checks these
+source contracts under plain Lua 5.1 and optionally builds a fresh isolated
+Flatpak world under a temporary `LUANTI_USER_PATH`. The accepted manifest-bound
+host run on Luanti 5.16.1, seed `40200517`, completed exactly 81 requested
+mapchunks with zero emerge errors and observed 31 positive dungeon callbacks;
+content/node/param2/emerged-area accessors were functions, while `get_flags`,
+`get_voxel_flags`, and `get_dungeon_flags` were all `nil`. Its raw log and
+machine summary are retained below the probe's manifest-digest evidence
+directory. An earlier exploratory run under the old unrestricted dungeon-y
+setting observed 38 positive callbacks. Both counts are non-portable
+observations rather than golden values. Host runs corroborate but do not replace
+the 5.17-dev source pin.
 
-Luanti's native `dungeon` generation notification reports room positions, not
-a node-complete provenance mask. A configured dungeon material such as cobble
-is likewise not proof of origin by name alone. The WP40 implementation must
-therefore establish a reviewed positive classifier from the pinned native
-dungeon registrations, same-callback generation evidence, pipeline ordering,
-and any project-owned origin mask. If it cannot prove native-dungeon origin for
-an intersecting node, the node remains non-replaceable and the conflict fails;
-the force flag may not guess.
+The native-only preflight enables dungeon gennotify and, for every callback
+with at least one positive dungeon event, marks that callback's complete
+`VoxelManip:get_emerged_area()` as a conservative `native_dungeon_uncertain`
+guard. For every positive callback that it actually observes, this complete-
+area mark is a sound over-approximation: the accessor is part of the pinned
+VoxelManip surface
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):377-386,499-518),
+and DungeonGen is called with that full VM range
+([`mapgen.cpp`](../../reference_projects/luanti/src/mapgen/mapgen.cpp):951-952).
+The preflight unions all such areas offline, projects the union onto canonical
+owner slices, and rejects the seed or geometry dataset if any audited target
+operation intersects it. This is deliberately a sound over-approximation and
+a veto, not a positive per-node classifier.
 
-Every forced native-dungeon replacement is counted by seed, named envelope,
-zone, node category, and depth. All dungeon content outside the exact force
-mask remains byte-identical. WP40 neither repairs nor relocates a partially
-intersected dungeon, and the audit reports the surviving cut boundary. A
-`candidate_set` POI does not select another candidate after native generation:
-candidate choice remains an immutable pre-generation result, so a later
-dungeon conflict either follows the fixed table above or fails.
+The guard is a finite corpus/proof oracle, not a global runtime safety
+authority. It proves only the explicitly emerged native-only audit extent and
+cannot close over first exploration of arbitrary exterior ocean or every
+future neighbor-overgeneration schedule. Global preservation instead comes
+from Section 1.1's manifest-bound vertical separation: no broad WP40 callback
+full VM can overlap any dungeon-writing VM, and the only deeper authored
+operations are exact final-stratum-host-typed resource writes. Those writes
+skip dungeon air/walls/stairs and all non-host content, perform no lighting,
+liquid, or `param2` mutation, and leave a later DungeonGen write authoritative.
+
+The finite guard and raw native observations are release evidence, never
+production IPC or mod-storage authority. Production does not inspect a halo,
+a room center, a guard bit, or a content name to make a placement decision.
+Within the frozen corpus, one plan/guard intersection rejects the seed or
+geometry exactly as before. `force_native_dungeon = true` is rejected during
+source, compiled-data, and manifest validation and never reaches runtime as
+replacement permission. Every native dungeon remains byte-identical under the
+combined vertical/typed proof, independent of whether its callback was in the
+finite preflight. WP40 neither cuts, repairs, relocates, nor replaces one.
+
+An exact future replacement path requires an independently reviewed engine API
+or project-owned origin channel that exposes node-exact writer provenance for
+walls, floors, interiors, corridors, and stairs; exposing the current working
+flags alone is not automatically sufficient. If the conservative finite guard
+makes the complete fixed corpus unsatisfiable, or any new operation cannot
+meet the vertical/typed separation contract, the team performs a new Reality Check
+instead of removing a seed/case, narrowing the guard without proof, enabling a
+name heuristic, or weakening an acceptance gate.
+
+A `candidate_set` POI does not select another candidate after native
+generation: candidate choice remains an immutable pre-generation result, so a
+dungeon-uncertainty collision fails the frozen seed or geometry dataset.
 
 Sections 2.5--2.10 define liquid, lighting, and named deeper-envelope behavior;
 Section 4.3 supplies their common precedence and transaction rules.
@@ -1071,14 +1247,19 @@ generation stops there even though runtime `deep_ocean` and
 `immutable_dragon_channel` policy remains immutable for the full x/z column at
 every y.
 
-Deep-ocean and dragon-channel definitions carry the Section 2.4
-`force_native_dungeon` authority for this exact generation volume. Editable
-coastal shelf does not: a positively identified native dungeon or unknown/
-foreign structure that prevents its required final profile is a hard failure.
-Unknown or foreign content remains non-replaceable in every class. Each class
-reports cut/fill/water/seal volume, replaced native categories, liquid and
-lighting calls, continuous channel components, approach depth, and below-seal
-byte preservation for all 32 seeds.
+Deep-ocean and dragon-channel definitions carry no native-dungeon replacement
+authority. Their deepest content is `W - 35 = -34`, above the manifest's -37
+broad-content floor; every callback capable of applying them is therefore
+full-VM-disjoint from native DungeonGen. This remains true for first exploration
+at arbitrary deep-ocean x/z coordinates and for a later neighbor callback,
+without a finite world border or a runtime halo veto. Section 2.4's finite
+native-only guard still rejects any audited seed/geometry intersection as a
+proof-oracle failure, but it is not claimed to cover the exterior through the
+map limit. The same typed central-slice hard failure applies to unknown or
+foreign structure content in every class. Each class reports cut/fill/water/
+seal volume, replaced native categories, finite dungeon-guard intersections,
+liquid and lighting calls, continuous channel components, approach depth, and
+below-seal byte preservation for all 32 seeds.
 
 ### 2.10 Road-tunnel envelopes
 
@@ -1122,13 +1303,14 @@ its central slice and resolves every cross-slice interface from the global
 operation plan. No callback interprets a halo observation as native or claims
 atomic access to the whole tunnel's native boundary.
 
-An ordinary tunnel preserves native dungeons and fails on a collision. Only a
-mandatory route section that has no adequate alternate and explicitly carries
-both `force_native_dungeon = true` and its hard-protection classification may
-replace positively identified native dungeon output. Unknown or foreign
-structures remain non-replaceable in all tunnels. Force authority, route
-criticality, claim exclusion, and runtime hard protection are separate
-registry fields even where that exceptional tunnel sets all of them.
+Every tunnel stays above the global broad-content floor and therefore outside
+every dungeon-writing callback collar. It also fails the seed or geometry
+dataset when its audited exact operation mask intersects Section 2.4's finite
+dungeon-uncertainty proof guard. Route criticality, lack of an adequate
+alternate, claim exclusion, or runtime hard protection never grants dungeon
+replacement authority. `force_native_dungeon = true` remains a fail-closed
+validation error, and unknown or foreign structures remain non-replaceable in
+all tunnels.
 
 Tunnel excavation and lining participate in the single content, liquid, and
 lighting transaction. Each portal is the only intentional connection to
@@ -1152,7 +1334,7 @@ Every generated category has exactly one target owner and one placement path:
 | universal depth-only ores | native engine ore registrations using WP43 definitions | retained where final host survives; never rerun in new fill |
 | six cosmetic strata | last native engine stratum registrations from WP43 | retained in unchanged rock; every new/changed rock asks `stratum_node_for(y)` |
 | G1/G2 and cultural regional veins | consolidated authored WP40 resource phase | removed from native climate/biome placement |
-| native dungeons | native C++ dungeon stage | preserved except exact positively identified force masks from Section 2.4 |
+| native dungeons | native C++ dungeon stage | unconditionally preserved by manifest-bound vertical/typed separation; Section 2.4's finite offline full-emerged-area guard remains a proof oracle |
 | pure cave/underground decorations | native engine decoration stage | retained outside exact changed volumes; mixed surface/cave definitions must be split |
 | native surface biome top/filler and dust | v7 staging input, then consolidated authored WP40 surface phase | final surface always follows logical zone biome; native biomemap is not public authority |
 | trees, shrubs, ground cover, and other natural surface dressing | consolidated authored WP40 decoration phase | native surface registrations disabled; suitable assets migrate, native placement rolls do not |
@@ -1396,23 +1578,28 @@ The ordinary authored-vein host at world y is exactly the registered node
 returned by `grug_materials.stratum_node_for(y)` in the already composed final
 terrain plan. The broad `grug_natural` group is not sufficient: it also covers
 dirt, sand, beaches, and other generated ground that must not become a vein.
-An existing generic native ore is the one separately named replaceable non-host
-category below.
+At `y < broad_content_y_min`, an eligible final stratum node is the only
+replaceable category. A generic native ore is not an eligible host and remains
+unchanged; supply is calibrated against the actually surviving exact-host
+volume rather than granting a second replacement category.
 
-Within an accepted exact authored vein mask, an eligible final stratum node or
-generic native ore node may be replaced by the regional G1/G2 resource. The
-authored vein therefore wins this one explicit conflict so required regional
-supply cannot disappear behind native ore coincidence. Every displaced generic
-ore is counted by identity, depth, zone, region, and vein. Authored resources
-may not replace cave air, liquid, top/filler or constructed surface nodes,
-native dungeon, or unknown/foreign structure; an invalid mandatory vein follows
-its frozen candidate/failure rule instead of widening its mask.
+Within an accepted exact authored vein mask, the regional G1/G2 resource may
+replace only that exact final stratum host. It may not replace generic native
+ore, cave air, liquid, top/filler or constructed surface nodes, native dungeon,
+`CONTENT_IGNORE`, unknown, or foreign structure content. The runtime test is a
+closed content-ID allowlist resolved from the manifest-bound WP43 host set,
+never `grug_natural`, `is_ground_content`, or a negative name list. An invalid
+mandatory vein follows its frozen candidate/failure rule instead of widening
+its mask.
 
 New rock created by terrain fill is intentionally sterile for universal native
 ores because WP40 never reruns the C++ ore registrations. It may host an exact
 authored G1/G2 natural resource when all final geometry, y, region, and WP43
-host rules pass. The supply audit measures actual accessible host volume
-and changed-volume sterility rather than assuming gross x/z area.
+host rules pass at or above the broad floor. Below that floor the native input
+itself must already be the exact final stratum host; a broad terrain fill cannot
+create it there. The supply audit measures actual accessible eligible-host
+volume, native-ore clipping, and changed-volume sterility rather than assuming
+gross x/z area.
 
 WP33 remains the owner of actual surface herb, spice, cultural wood/material,
 and other gatherable registrations and placements. WP40 supplies their stable
@@ -1448,12 +1635,11 @@ offline audits. One global mask may cross any number of chunk boundaries, and
 each owner chunk writes only its central slice.
 
 The mask is decided before native-content inspection. Rendering replaces only
-the exact final stratum host from Section 4.1. Cave air, liquid,
-dungeon, surface/constructed nodes, or unknown/foreign structure clips the
-intersecting part; it does not move the anchor, change the shape, or trigger a
-new roll. Generic native ore inside the accepted mask remains the one explicit
-replaceable non-host category. Clipped and displaced-node counts are included
-in the supply audit.
+the exact final stratum host from Section 4.1. Cave air, liquid, dungeon,
+surface/constructed nodes, or unknown/foreign structure clips the intersecting
+part; it does not move the anchor, change the shape, or trigger a new roll.
+Generic native ore also clips the vein and remains native. Clipped counts are
+reported by exact encountered category in the supply audit.
 
 When two authored resource masks claim the same eligible voxel, an immutable
 resource-priority rank wins; equal rank resolves by candidate priority, stable
@@ -1506,17 +1692,29 @@ from the completed native-only preflight. Halo content and `CONTENT_IGNORE`
 never participate in the following runtime precedence:
 
 1. unknown or foreign structure content always vetoes replacement;
-2. positively identified native dungeon content vetoes replacement except in
-   the exact Section 2.4 force-authorized mask;
+2. native dungeon content is never replaceable; global preservation follows
+   the manifest-bound vertical/typed proof, while the finite offline
+   `native_dungeon_uncertain` guard rejects every audited target-operation
+   intersection before production manifest freeze;
 3. an exact resolved terrain, planned-water, foundation, road, or tunnel volume
    replaces the natural rock, cave air, generic native ore, native decoration,
    or liquid categories its own contract explicitly permits;
-4. an authored regional G1/G2 vein replaces its exact final stratum host or
-   generic native ore under Chapter 4, and nothing else;
+4. an authored regional G1/G2 vein replaces its exact final stratum host under
+   Chapter 4 and nothing else; generic native ore clips it and remains native;
 5. registered landmark dressing resolves before ordinary authored surface
    dressing; and
 6. every native node not claimed by one of those exact operations remains
    byte-identical.
+
+At `y < broad_content_y_min`, items 1, 3, and 5 admit no operation at all.
+Item 4 is the sole possible authored content change and uses the manifest-
+resolved exact host ID. A wrong host is a typed skip, not a fatal production
+collision; counters distinguish expected generic ore/cave/dungeon/foreign/
+unknown clipping from eligible-host replacement. Missing or drifted host/
+output registrations are fatal at startup. No deep typed operation sets
+`param2`, changes liquid topology/light behavior, or schedules metadata or an
+entity. These restrictions are part of the operation type, so a plugin catalog
+cannot request a deep broad write through a nominal resource record.
 
 Hard protection, territory, PvP, and claim exclusion are parallel analytic
 outputs, not extra voxel priorities. A terrain resolver cannot acquire or
@@ -1534,7 +1732,10 @@ The consolidated pass uses this fixed execution pipeline:
    host plan;
 5. compose landmark and ordinary surface-decoration operations against every
    prior exclusion and occupancy result;
-6. write final content and `param2` through one combined buffer commit;
+6. upload final content exactly once with `set_data()` when the content dirty
+   set is nonempty, and upload final `param2` exactly once with
+   `set_param2_data()` when its separate dirty set is nonempty, both on the same
+   mapgen VoxelManip and inside the one transaction before the engine blit;
 7. perform the one bounded Section 2.6 lighting reset/recalculation if and only
    if light-relevant content changed;
 8. call `update_liquids()` once if and only if liquid topology changed, thereby
@@ -1542,11 +1743,14 @@ The consolidated pass uses this fixed execution pipeline:
 9. emit only compact custom gennotify records required for later metadata,
    entity initialization, diagnostics, or main-environment consumers.
 
-No phase rereads committed nodes to make a new placement decision, invokes a
-second content transaction, or relies on another callback's registration
-order. The no-op path skips the buffer write, liquid call, lighting work, and
-gennotify output. Tests enumerate every matrix pair, every legal resolver, and
-every veto class, including chunk-edge intersections and reversed feature
+“One content commit” means at most one `set_data()` upload; it does not conflate
+the engine's distinct content and `param2` arrays or permit a second VoxelManip
+transaction. No phase rereads uploaded nodes to make a new placement decision,
+invokes another content upload/transaction, or relies on another callback's
+registration order. The no-op path skips both buffer uploads, liquid call,
+lighting work, and gennotify output. Tests enumerate every matrix pair, every
+legal resolver, every veto class, and content-only/param2-only/combined/no-op
+dirty sets, including chunk-edge intersections and reversed feature
 registration order.
 
 ### 4.4 Verified WP43 runtime handoff
@@ -1619,6 +1823,16 @@ observation, function, closure, userdata, or metatable. Pure evaluators are
 loaded from the same project source files in every environment; IPC carries
 only their immutable inputs and compiled indices.
 
+Section 2.4's native-dungeon uncertainty guards do not weaken this rule. They
+are native-only preflight/release evidence used to accept or reject a candidate
+seed and compiled geometry within the finite audit corpus before manifest
+freeze, not production inputs or global coverage. The release evidence retains
+their canonical owner-slice projection and digest; neither IPC nor mod storage
+carries per-callback areas, room centers, or generated native observations.
+The compact dataset instead carries the critical vertical-separation constants
+and exact registered host/output/dungeon sets needed for each consumer to
+revalidate Section 1.1 locally.
+
 The main state publishes the dataset under one schema-versioned IPC key. Each
 mapgen state performs exactly one `core.ipc_get` during initialization, checks
 the schema, complete-seed hash, source checksum, compiled-dataset checksum,
@@ -1671,8 +1885,9 @@ manifest and sparse later runtime records. It never stores anchor heights,
 route profiles, polygons, generated-node observations, per-chunk completion,
 or a cache used to answer geometry. The manifest records the full-seed hash,
 source/compiled checksums, schema and algorithm versions, engine/game pins,
-critical mapgen settings, WP43 registry checksum, and rollout state. Its bytes
-are compared before the IPC payload is published.
+critical mapgen settings, WP43 registry checksum, accepted native-only evidence
+digest, and rollout state. Its bytes are compared before the IPC payload is
+published.
 
 A missing manifest may be created only through the explicit fresh-world
 initialization path before any WP40 chunk callback is enabled. A missing
@@ -1836,6 +2051,9 @@ Stage 1 validates the authored source before compilation. It proves at least:
   duplicate/self edge, and no boat edge promoted to polygon adjacency;
 - legal stable anchor-slot names, required/absent slot cardinality, six starts,
   six capitals, and the binding POI budgets;
+- `water_level = 1`, `chunksize = 5`, both dungeon y limits, dungeon noise/
+  flags, `broad_content_y_min = -37`, and an always-false
+  `force_native_dungeon` in the critical source manifest;
 - closed, consistently oriented, non-self-intersecting authored polygons and
   one shared source record for every incident boundary; and
 - exact Holy, start, capital, island, channel, coast, water, route-class, and
@@ -1848,6 +2066,9 @@ Stage 2 validates the complete compiled seed dataset. It proves at least:
   clearance, envelope, and minimum route constraint;
 - complete feasible anchor heights, feature templates, route profiles,
   hydrology components, tunnel/water seals, and typed resolver interfaces;
+- enumeration of every final T2--T7 content-operation coordinate, proving all
+  non-resource operations stay at y >= -37 and every deeper operation is the
+  exact-host-only typed resource kind;
 - exact graph/polygon agreement, all anchors inside their intended zone and
   no-jitter clearance, and no orphan/unreachable compiled record; and
 - the Section 5.2 grid agrees with the slow complete oracle for all exhaustive
@@ -1860,6 +2081,9 @@ fixed-point fields. `core.sha256` of those bytes supplies separate source and
 compiled-dataset digests. The consumer verifies both digests, full-seed hash,
 schema and algorithm versions, all record counts, critical manifest settings,
 and every local node/material/resource registration resolved by its adapter.
+That last check compares all explicit biome dungeon triples, six final stratum
+hosts, natural resource outputs/groups/ground-content behavior, and their
+pairwise disjointness; it does not classify generated nodes by name.
 
 Any failure is fatal before `register_on_generated` or public runtime consumers
 are enabled. There is no partial registry, missing-zone substitution,
@@ -1978,9 +2202,11 @@ than becoming a visual-inspection exception.
 nine fixed request schedules in the supported one-thread configuration.**
 
 Every schedule begins from an empty disposable world with one v7 emerge thread
-and identical manifest-pinned game, engine, seed, chunksize, mapgen flags,
-noise, water level, and liquid settings. The requested mapchunk set is the
-same; only request order changes:
+and identical manifest-pinned game, engine, seed, `chunksize = 5`, mapgen
+flags/noise, `water_level = 1`, `mgv7_dungeon_ymin = -31000`,
+`mgv7_dungeon_ymax = -193`, `broad_content_y_min = -37`, registration digests,
+and liquid settings. The requested mapchunk set is the same; only request order
+changes:
 
 1. canonical z-major rows, then x, then y;
 2. the complete reverse of schedule 1;
@@ -2004,6 +2230,12 @@ anchor/envelope classes, all route classes and bridge/ford/tunnel interfaces,
 planned hydrology and waterfalls, both islands/channels/approaches, dense
 surface decoration, authored veins, native dungeon/cave/liquid intersections,
 and vertical slices across the surface shell and every relevant depth boundary.
+The native-dungeon cases include positive callbacks whose room centers lie in
+the central slice, positive callbacks whose rooms/corridors reach the emerged
+border, the `k = -3/-2/-1` vertical-separation boundaries, later horizontal and
+vertical neighbor influence collars, planned masks near but outside the finite
+conservative guard, and deliberate finite-guard intersections that must reject
+the seed/geometry before production.
 
 Database bytes, compression order, timestamps, and block serialization layout
 are not compared. After the frozen liquid-settling procedure, each generated
@@ -2041,6 +2273,27 @@ rollout manifest fails. A native-only mismatch must be corrected by changing
 and re-auditing the frozen engine/settings contract; WP40 must not mask it,
 persist a first result, or weaken the bit-for-bit gate.
 
+For every native-only schedule, the harness records each positive dungeon
+callback's complete emerged VM area, unions those areas, projects the result
+onto canonical owner slices, and hashes both the event/area evidence and final
+guard. All nine schedules must produce the same canonical guard for an
+accepted seed within the frozen requested extent. Every audited pre-commit
+target operation is intersected with that guard offline; one overlap is a
+seed/geometry failure even when the source declares
+`force_native_dungeon = true`. This finite oracle does not claim unexplored
+exterior coverage. The production run never reconstructs or consults it from
+runtime halo observations.
+
+An independent mathematical/source harness enumerates all chunksize-five y
+lattice boundary cases. It proves the Section 1.1 formulas from pinned engine
+source, verifies that the highest eligible dungeon central/full ranges are
+`[-272,-193]`/`[-288,-177]`, verifies the first broad central/full ranges are
+`[-112,-33]`/`[-128,-17]`, and checks both vertical-neighbor directions plus
+the horizontal same-y collar. Runtime schedules include deep typed resources
+before and after every native neighbor case: a dungeon result must win in both
+orders, while non-dungeon generic ore, air, liquid, unknown, and foreign nodes
+remain unchanged because none is an exact final-stratum host.
+
 Explicit two- and four-emerge-thread runs are diagnostic only because pinned
 v7 does not promise arbitrary parallel slice independence. Their authored
 geometry and pre-commit operation-plan hashes must still match the one-thread
@@ -2051,9 +2304,11 @@ waive an authored-layer race.
 Each schedule also keeps a native-v7 pre-overlay snapshot. The preservation
 oracle asserts byte identity below every ordinary/named content floor and
 outside every exact owned envelope; correct final stratum for new rock; cave
-connectivity and generic ore/stratum counts below/outside; dungeon identity
-outside force masks; no floating/buried/colliding native surface decoration;
-closed liquid/light boundaries; and the one combined content/liquid/light work
+connectivity and generic ore/stratum counts below/outside; byte-identical native
+dungeons everywhere, zero audited target-operation intersections with the
+finite conservative dungeon guard, and the global vertical/typed invariant;
+no floating/buried/colliding native surface decoration; closed liquid/light
+boundaries; and the one content/optional-param2/liquid/light transaction
 contract. This is evaluated as final nodes and light, not inferred from write
 counters alone.
 
@@ -2143,7 +2398,7 @@ rules. For each seed, resource, race region, zone, and depth band it records:
 - practically accessible host volume after immutable/protected, liquid,
   dungeon, cave, route/tool, and final-terrain constraints;
 - admitted authored candidates, theoretical mask voxels, final placed nodes,
-  generic ore displaced, and every clipping reason;
+  generic ore preserved/clipped, and every other clipping reason;
 - native final nodes for universal resources, including changed-volume sterile
   host; and
 - graph/tool route, travel class, earliest legal pick tier, and whether the
@@ -2252,8 +2507,10 @@ corpus.
 Every result records at least CPU model and effective core configuration, RAM,
 storage/filesystem, OS and kernel, power/governor state where available,
 engine build/commit/compiler, game and baseline commits, LuaJIT or bundled Lua
-5.1, chunksize, v7 flags and noise settings, water level, lighting/liquid
-settings, one production emerge thread, full seed string and manifest digest.
+5.1, `chunksize = 5`, v7 flags and noise settings,
+`mgv7_dungeon_ymin = -31000`, `mgv7_dungeon_ymax = -193`, `water_level = 1`,
+`broad_content_y_min = -37`, registration digests, lighting/liquid settings,
+one production emerge thread, full seed string and manifest digest.
 The same relative gates are evaluated against the corresponding baseline for
 both Lua runtimes; two- and four-state runs are explicitly labelled memory and
 determinism diagnostics, never production-throughput evidence.
@@ -2301,18 +2558,22 @@ On the designated target host, for each Lua runtime and cache class:
   growth after explicit supported GC/settling points. A positive trend outside
   recorded measurement noise is a leak failure, not an allowable peak.
 
-Every changed chunk performs at most one combined content-buffer commit, one
-WP40 `VoxelManip:calc_lighting` call, and one WP40
+Every changed chunk performs at most one `VoxelManip:set_data` content upload,
+at most one `VoxelManip:set_param2_data` upload in that same sole VM
+transaction, one WP40 `VoxelManip:calc_lighting` call, and one WP40
 `VoxelManip:update_liquids` queueing call; a category is zero when its
-corresponding dirty set is empty. Unchanged chunks perform all three zero
-times. Engine liquid transforms and any light-node updates they trigger later
+corresponding dirty set is empty. Unchanged chunks perform all four zero times.
+Engine liquid transforms and any light-node updates they trigger later
 in `finishBlockMake` are measured and reported separately; they neither count
 as extra WP40 API calls nor disappear from settled latency/light evidence.
 Modified-voxel count has no invented gross cap: it must equal the
 analytic expected dirty set, with every modification inside its typed
 envelope/replaceable set and every excess or missing write a correctness
-failure. The report records full-buffer gets/sets, classified columns, scanned
-and modified voxels, candidates considered/accepted, liquid-changing voxels,
+failure. The report records full-buffer gets/sets by content and `param2`,
+classified columns, scanned and modified voxels, candidates considered/
+accepted, positive native-dungeon callbacks, emerged guard volume, owner-slice
+finite-guard volume and rejected intersections, deepest broad-operation y,
+typed-deep host hits/skips by encountered category, liquid-changing voxels,
 lighting volume/calls, Lua allocation/GC, process RSS, callback and total chunk
 time, chunks per second, main-step latency, and emerge-queue depth.
 
@@ -2393,6 +2654,41 @@ fault. An engine-contract or correctness mismatch blocks the affected work and
 is corrected in this brief with cited evidence before code proceeds. A WP40
 defect or avoidable cost is corrected before any threshold is reconsidered.
 
+The 2026-08-13 native-dungeon prototype triggered this rule. The pinned
+5.17-dev engine exposes room-center notifications but neither its private
+dungeon working flags nor node-exact writer provenance to Lua; the isolated
+5.16.1 target-host run confirmed the same public surface. Before this Reality
+Check, v7's default and the current pre-WP40 baseline admitted dungeons through
+`mgv7_dungeon_ymax = 31000`
+([baseline map metadata](../../tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.map_meta.txt):175,206);
+the corrected fresh-world manifest changes that
+critical value to `-193`, retaining `mgv7_dungeon_ymin = -31000`. The root cause
+is the impossibility of proving node-exact positive provenance in Lua while the
+broad WP40 rewrite must remain exact and order-independent.
+
+The review rejected all narrower-looking alternatives: room centers,
+content-name inference, and a deterministic parallel rerun do not prove writer
+provenance; a finite full-emerged-area audit cannot prove arbitrary unexplored
+exterior or future neighbor influence; a map-limit preflight or hard world
+border contradicts the unbounded analytic exterior contract; a runtime halo
+veto is request-order dependent; disabling the broad terrain/water/route rewrite
+would abandon WP40's authored-world requirements; and a Luanti engine patch or
+project-owned dungeon replacement is outside WP40. The finite native-only guard
+remains a conservative corpus proof oracle, but global safety comes from the
+new vertical separation plus exact-final-stratum-host-only deep writes.
+
+The explicit player/server and world-format consequence is fewer native
+dungeons: the highest eligible central slice is `[-272,-193]` (its full VM can
+reach `-177`), and v7 makes no dungeon attempt in `k = -2` or any shallower
+slice. The team accepts the loss of shallow native dungeons as the stronger
+preservation/architecture tradeoff. No corpus seed, request schedule,
+performance threshold, or preservation gate is weakened. Existing generated
+worlds are not rewritten, and any world created with the old setting is
+incompatible with the corrected WP40 manifest. If the complete corpus becomes
+unsatisfiable, a new reviewed Reality Check is required; only a verified
+node-exact provenance API/origin channel can reopen replacement authority or
+justify revisiting the vertical cutoff.
+
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
 conflicts with a stronger correctness/operability requirement. The reviewed
@@ -2413,15 +2709,15 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | Task | Owned result | Requires | Completion gate |
 | --- | --- | --- | --- |
 | T0 — WP43 handoff and baseline | exact material/resource API adapter, designated-host/harness manifest, post-WP43 WP18/WP36 fixed-corpus baseline and raw capture | merged WP43 `main` | every symbol/registration resolved; benchmark host/harness reproducible; no WP25 identity in target data |
-| T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption tests |
+| T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
 | T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, exact benchmark-coordinate/100-requester fixtures | T1 | all 32 seeds pass pure geometry/topology/route/anchor oracles; fixture JSON and digests frozen |
 | T3 — public geography and policy | immutable `grug_zones` APIs, water/mount classifier, territory/PvP fields, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | scalar hot paths agree with slow oracle; no 38-definition scan or dynamic-claim coupling |
-| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation | T0, T2 | exhaustive resolver/veto/owner-slice fixtures and exact dirty sets |
-| T5 — consolidated terrain adapter | native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one buffer commit, bounded liquids/lighting | T3, T4 | preservation, seam, vertical-order, no-op and operation-count gates |
+| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; enumerate every non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, deep host-only skips, and exact dirty sets |
+| T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, deep typed order, seam, no-op and operation-count gates |
 | T6 — authored surface catalog | logical biome top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement | T4, T5 | palette/share, collision, tree-boundary, water-family and settled-hash gates |
-| T7 — resource placement | universal-native adapter, authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records | T0, T4, T5 | final-node/host counts and all Section 6.4 access routes across 32 seeds |
-| T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority |
-| T9 — release evidence and rollout | canonical hash/order suite, housing/supply exports, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
+| T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records | T0, T4, T5 | host/clipping/final-node counts, deep order fixtures, and all Section 6.4 access routes across 32 seeds |
+| T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |
+| T9 — release evidence and rollout | canonical hash/order suite, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
 
 T3's API signatures, adapters, and slow-oracle test scaffolding may proceed in
 parallel with T2 after T1; no T3 authoritative answer or completion gate may
@@ -2431,8 +2727,11 @@ interface, but only T5 owns the VoxelManip adapter and transaction. T8 deletes
 legacy authority only after the corresponding target path and consumer tests
 are green. T0 owns the measurement harness and initial baseline; T2 freezes the
 geometry-derived fixtures, which are then replayed against the preserved
-baseline checkout before terrain cutover. T9 owns only final evidence and
-rollout, not early harness work or production terrain logic.
+baseline checkout before terrain cutover. The native-only dungeon guard remains finite offline evidence: T4 tests audited
+plan intersection against it, while T5 production neither receives it over IPC
+nor derives it from halo content. T1/T4/T5 instead enforce the global vertical/
+typed contract. T9 reruns and freezes both proofs but owns no early harness work
+or production terrain logic.
 
 WP13, WP17, WP24, WP33, WP34, WP37, WP41, WP42, WP44, and later mount/boat work
 remain separate work packages. WP40 supplies their stable IDs, masks, terrain
