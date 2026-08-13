@@ -43,9 +43,9 @@ the goal-level view.
 - **The ocean has authored classes.** Planned mainland water stays part of its
   named zone. An editable 80-node coastal shelf follows the analytic outer
   perimeter; immutable deep ocean begins beyond it. Two immutable channels
-  separate the offshore level-60 dragon islands and keep them boat-only. The
-  playable boat contract remains intentionally open in
-  [TODO-design-boats.md](TODO-design-boats.md).
+  separate the offshore level-60 dragon islands and keep them boat-only.
+  Deep ocean is deadly through the Kraken Guard, which never breaks off a
+  pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
   Summit are contested offshore dragon islands. Each reserves an all-six-gem
   apex camp with exactly twelve protected renewable sockets: two each of
@@ -80,7 +80,11 @@ the goal-level view.
   Stone channels to the active bound claim only. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6/8 and flight speeds 7/10 nodes per
   second; damage dismounts. Holy Grounds permit flight, enemy territory allows
-  land mounts only, and every exterior-ocean column forbids flight.
+  land mounts only, and every exterior-ocean column forbids flight. Boats are
+  the deliberate exception to earning travel: the base boat costs five wood at
+  level 1, and only the twice-as-fast improved boat needs a recipe taught once
+  by a shipwright from level 30. Any damage ejects a rider from a boat exactly
+  as it dismounts one from a mount.
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
   it in parallel without becoming allies.
@@ -154,8 +158,9 @@ the goal-level view.
 - [ ] WP24: complete Claim Stone state machine, protection/indexing and
   capacity-calibrated placement after WP40/WP43/WP44.
 - [ ] WP17 and WP12: claim-bound Home Stone, authored waypoint travel and the
-  fog-of-war map after claims and final zones. Boat integration remains
-  blocked on the focused boat TODO.
+  fog-of-war map after claims and final zones. WP17 also implements the
+  decided boat contract plus the two ocean-danger prerequisites it needs, so
+  its runtime test covers the whole mob roster.
 - [ ] WP41: implement the exact geographic PvP transaction after WP40.
 - [ ] WP42 and WP9: bounded war-front clashes and mandatory named-zone
   questlines after final structures/map/PvP.

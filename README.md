@@ -66,9 +66,8 @@ route pieces are hard-protected and fail closed against indirect mutation;
 roads, villages, outpost/camp shells and battlefield dressing remain mutable
 but claim-excluded. Planned mainland water stays part
 of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
-immutable, and full-column dragon channels keep the offshore islands boat-only.
-The still-open playable-boat behavior is isolated in
-[TODO-design-boats.md](TODO-design-boats.md).
+immutable, and full-column dragon channels keep the offshore islands
+boat-only.
 
 [Open-world housing](docs/design/housing.md) uses Claim Stones in exactly ten
 peaceful level-11–30 zones. Four tiers protect cube radii 20/30/40/50, while
@@ -177,6 +176,18 @@ trainers. Asset selection, mount attackability, mounting in combat,
 underground flight, ceiling/drift, swimmer exhaustion and variants remain
 open in [TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
 
+[Boats](docs/design/boats.md) are specified but not built, and they are
+deliberately not an earned unlock: the base boat is five wood on any
+character's first day, moving at the player's own 4 nodes per second. A
+shipwright on each continent teaches the improved boat once from level 30 —
+paid in exactly one boat's worth of materials, rewarded with that boat — and
+it matches the 8 nodes per second of the land mount unlocked at the same
+level. One player per boat, never a mob; an empty boat may be picked up by
+anyone and disappears after 24 unused hours; any hit ejects the rider while
+the boat itself is indestructible. The open sea stays lethal through the
+Kraken Guard rather than through boat damage, and the dragon channels carry
+none.
+
 Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
@@ -195,11 +206,11 @@ WP43 supersedes WP25's running legacy while preserving saved-world migration.
 recovery, offhand items, affixes, durability, final structures, travel/map,
 Claim Stone housing, mounts and bosses remain unbuilt. The 38-zone surface,
 geographic PvP transaction, bounded war-front life and rebased economy are
-also pending. The playable-boat contract, several mount details and
-deep-content questions remain explicitly open in
-[the boat TODO](TODO-design-boats.md),
+also pending. Several mount details and deep-content questions remain
+explicitly open in
 [the crafting/mount TODO](TODO-design-crafting-rework.md) and
-[the depth TODO](TODO-design-depth.md), respectively.
+[the depth TODO](TODO-design-depth.md); the playable-boat contract is no
+longer among them and is decided in [boats.md](docs/design/boats.md).
 
 **Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
 material/map/economy roots. WP40 still requires its independently reviewed
