@@ -809,7 +809,12 @@ a lead-metal-band rule.
 ### 3.4 Leatherworker (tanning rack) — leather
 
 **Material chain**: hide + thread → leather, 1:1 per grade. Authored grades are
-**T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**.
+**T1 light leather, T2 cured leather, T3 heavy leather and T4 scaled hide**;
+decided 2026-08-13: **T5 sleek leather** (from the panther's sleek pelt —
+`biomes_mobs.md` §3.1/§6, both continents via jungle fringe/deep jungle) and
+**T6 nightscale leather**, a composite of scaled hide + sleek pelt following
+the Tailor's T4 silkweave precedent (serpents and panthers carry the
+level-51–60 zones on both continents; no new mob is required).
 
 **Refines and enchants**: leather armor, all four slots. Base recipes use
 the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather.
@@ -828,7 +833,13 @@ grips.
 **Material chain**: 2 cloth + thread → bolt. Authored grades are **T1 linen
 scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
-bolt** and **T4 heavy + spider silk → silkweave bolt**.
+bolt** and **T4 heavy + spider silk → silkweave bolt**; decided 2026-08-13:
+**T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
+spiders exist 25–60 on both continents) and **T6 spider silk + stormkelp →
+stormweave bolt** — stormkelp (coast 45–60, both continents,
+`biomes_mobs.md` §6) doubles as a weaving fiber here; its spice role is
+unchanged, and the T6 bolt gives the level-45–60 coast zones an economic
+pull.
 
 **Refines and enchants**: cloth armor, all four slots. Base recipes:
 robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
@@ -909,7 +920,12 @@ old roster had.
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
 silverwood and gravewood among them. Signature woods remain cultural inputs,
-not a mandatory universal tier ladder.
+not a mandatory universal tier ladder. The six processed grades are decided
+(2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
+Heartwood** (T1→T6), each craftable from any `group:wood` — both continents
+reach every grade by construction, and the per-race woods stay a cosmetic/
+cultural skin on top, never a tier gate. These grade words are the item
+names WP29 uses (§3.8): a Hardened Staff, a Heartwood Orb.
 
 **Refines and enchants**: staves, wands, scepters, orbs — the whole
 caster weapon family of §3.2, main hand, 1H and 2H.

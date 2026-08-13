@@ -1370,10 +1370,11 @@ Regional geology follows the owning `race_region` column at every depth:
 | Leather `[leather]` | 10–45 | wolves, stags | hyenas, jungle lynxes, blightfang wolves, zebras, panthers* (*fringe gives A access too) |
 | Heavy leather `[leather]` | 25–60 | bears, elder bears, rams | plaguehide bears, jungle apes |
 | Scaled hide `[leather]` | 25–60 | crocodiles (swamp), serpents (fringe) | crocodiles, serpents |
+| Sleek pelt (Leatherworker T5/T6 input) | 38–60 | panthers (jungle fringe) | panthers (deep jungle) |
 | Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
 | Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
-| Spider silk (Tailor T3) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
+| Spider silk (Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 25–60 | mushrooms (deep forest/swamp), wild cocoa (jungle fringe), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (deep jungle), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
@@ -1381,7 +1382,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Healing herbs T3 | 45–60 | crimson lotus (jungle fringe — the east flank strip x 1251..1500, which the fringe only got on 2026-08-08, §1.3) | crimson lotus (deep jungle) |
 | Spices T1 (everyone gathers; Alchemist + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
-| Spices T3 | 45–60 | stormkelp (coast) | stormkelp (coast) |
+| Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |

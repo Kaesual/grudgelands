@@ -126,50 +126,6 @@ professions).
 **Decision:** _open_ — all rows listed above **block WP10** (the book cannot
 gate groups without them).
 
-### A5 — T5/T6 leather and bolt grades, and the Woodcarver's wood grades
-
-The material chains stop short of six tiers in three places:
-
-- **Leatherworker** (§3.4): T1 light, T2 cured, T3 heavy, T4 scaled —
-  **T5 and T6 open**.
-- **Tailor** (§3.5): T1 patch bolt, T2 woven, T3 heavy, T4 silkweave —
-  **T5 and T6 open**.
-- **Woodcarver** (§3.6a): "grades follow the six tiers", **no grade
-  named at all**.
-
-These are not internal labels. §3.8 makes them **item names**: cloth
-items take their bolt grade and leather items their leather grade
-(Linen Robe, Silkweave Cowl), and under §3.0.3 a Woodcarver staff must
-be material-named like everything else. Whatever is chosen is what
-players read on the item.
-
-Two constraints:
-
-- **Both continents must reach every grade** (`biomes_mobs.md` §3.2's
-  binding cross-continent drop-table pairs, §6's base-material map).
-  A T5 hide from a mob that exists on one continent only is not
-  acceptable.
-- Level 41–60 sources have to exist. Check the T5/T6 grades against the
-  outer/coast rosters of `biomes_mobs.md` §3.1 before naming them.
-
-Options for wood specifically:
-
-- **(a) Six processed grades of any wood** (seasoned → hardened → …),
-  with the per-race woods of `biomes_mobs.md` §5 (silverwood, gravewood)
-  as a cosmetic skin. Satisfies the both-continents rule by
-  construction.
-- **(b) Six distinct tree species**, one per tier. Flavourful, but it
-  needs six mirrored tree registrations and six mapgen bands, and the
-  per-race woods then compete with the tier ladder for the same name
-  slot.
-
-Recommendation: **(a)** for wood; for leather and cloth, name T5/T6 from
-existing outer/coast drops rather than inventing new mobs.
-
-*Lands in*: `items_crafting.md` §3.4, §3.5, §3.6a; cross-check
-`biomes_mobs.md` §6.
-**Decision:** _open_.
-
 ---
 
 ## B. Material calibration
@@ -510,7 +466,6 @@ magnitudes **block WP10**'s cooking book.
 | A1 | Signature recipes per profession × mastery tier | WP10 |
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
-| A5 | T5/T6 leather & bolt grades, wood grades | material ladder, WP10 |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
