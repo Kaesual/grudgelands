@@ -1664,12 +1664,20 @@ A dropped item that carries enchants is by definition also **refined**
 (§6b.3 admits no other state) — which is why the refinement word never
 appears in a drop's name (§6b.4).
 
-**Which item drops is a uniform draw over the eligible slot families of the
-mob's own tier** (stated 2026-08-13; no weighted table exists anywhere in
-this design). Found gear cannot undercut crafted gear by construction
-rather than by rate tuning: §6.3 gives a normal-mob drop the `world` window
-0.00-0.60 against crafted-masterwork 0.60-1.00, and the affix counts differ
-on top of that. What WP5 still owes is the **audit** that the rates in the
+**Which item drops is one uniform draw over the concrete registered base
+items of the mob's own tier** (stated 2026-08-13) — the bracket's whole
+item list, with no slot pre-selection and no per-family weighting, so a
+tier with four weapon families and eight armor pieces drops a weapon a
+third of the time. No weighted table exists anywhere in this design.
+
+Ordinary found gear sits **below** crafted gear by construction rather than
+by rate tuning: §6.3 gives a normal-mob drop the `world` window 0.00-0.60,
+an elite 0.30-0.90 and a named rare 0.50-1.00, against crafted-masterwork's
+0.60-1.00, and the affix counts differ on top of that. **Boss loot is the
+deliberate exception and a peer, not a lesser source**: §6.4 says outright
+that the two 0.60-1.00 windows are crafting and bosses, so an apex or King
+item may match or beat a masterwork. That is the intended shape of "the
+best items come from crafting and from hard bosses". What WP5 still owes is the **audit** that the rates in the
 table above, at elite and high-tier sources, do not flood the market far
 enough to erase demand for crafted G2 gear and named-rare trophies; if that
 audit contradicts the table, the table is what changes, and it changes in
@@ -2181,7 +2189,11 @@ wood oils = Woodcarver, gem settings = Goldsmith, imbuing oils =
 apothecary gear):
 
 - **Imbue kit** (per material tier): **refined** Common → Uncommon; rolls
-  1–2 affixes in the crafted-fine window. Cost ≈ 1 tier reagent + tier
+  1–2 affixes in the crafted-fine window, and **that count is rolled 60/40
+  like any crafterless source** (§6.1, sharpened 2026-08-13): the kit is
+  applied without a crafter present, which is exactly why §7 describes its
+  outcome as a range instead of a mastery slot count. The maker's mastery
+  gates which kit exists at all, not how many affixes it lands. Cost ≈ 1 tier reagent + tier
   materials. *Sharpened 2026-08-07*: the input must be **refined**
   (§6b.3) — a kit is a way to apply affixes, and affixes need a refined
   item like every other route to them. The kit is bought from a

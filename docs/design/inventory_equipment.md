@@ -88,7 +88,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   (decided 2026-08-08): every weapon declares `_grug_hands` —
   **greataxe 2, staff 2, sword 1, dagger 1** (the caster 1H family of
   `items_crafting.md` §3.2 is one-handed too when WP30 registers it), and
-  the twelve vendored
+  the eight vendored
   `default:` swords and axes **1** (a `default:` axe is a hatchet, not the
   Greataxe: 4 fleshy at a 1.0 s interval against the same tier's sword at 6
   and 0.8 s, i.e. strictly worse in combat, and it is the woodcutting tool

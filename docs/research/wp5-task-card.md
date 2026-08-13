@@ -24,8 +24,12 @@ rolled. It owns no recipe, no profession, no catalog and no price.
   function on it (`mods/ENTITIES/grug_traders/stock.lua:183-189`) and calls
   it as **`roll(stack, entry.ilvl, "world")`** (`stock.lua:200-203`). The
   binding contract is therefore
-  `grug_items.roll_enchants(stack, ilvl, window)`, mutating the stack in
-  place, with the window passed as the §6.3 window name as a string. The
+  **`grug_items.roll_enchants(stack, ilvl, window[, count])`**, mutating the
+  stack in place, with the window passed as the §6.3 window name as a
+  string. The shipped three-argument call must keep working unchanged — it
+  omits `count` and gets the crafterless roll — while WP10 passes an
+  explicit `count` for a crafted item, whose affix number is its crafter's
+  mastery slots rather than a roll (§6.1/§6b.5). The
   probe tests the *global*, not the registered mod name — naming the mod
   `grug_items` is the ordinary project convention (AGENTS.md: one global
   per mod), but choosing a different global or signature silently keeps
@@ -214,10 +218,14 @@ A dropped item carrying affixes is by definition refined (§6b.3), which is
 why no refinement word appears in a drop's name (§6b.4).
 
 **The distribution is decided in the design, not here** (§5, 2026-08-13):
-a uniform draw over the eligible slot families of the mob's own tier. Found
-gear stays below crafted gear by construction — the `world` window is
-0.00-0.60 against crafted-masterwork's 0.60-1.00, and the affix counts
-differ too — so no rate tuning carries that guarantee. What the BACKLOG row
+**one uniform draw over the concrete registered base items of the mob's own
+tier** — the bracket catalog's whole list, no slot pre-selection, no
+per-family weighting. Ordinary found gear stays below crafted gear by
+construction (`world` 0.00-0.60, `elite` 0.30-0.90 and `rare` 0.50-1.00
+against crafted-masterwork's 0.60-1.00, with different affix counts on
+top), so no rate tuning carries that guarantee. **Boss and King loot is the
+deliberate peer**, not a lesser source: §6.4 names crafting and bosses as
+the two 0.60-1.00 windows. What the BACKLOG row
 means by "retune elite/high-tier gear drops against G2 and trophy demand" is
 therefore an **audit** (task 8): if it shows the §5.1 rates erasing demand
 for crafted G2 gear or named-rare trophies, the fix is a change to §5.1 in
@@ -305,8 +313,10 @@ defeated-race provenance, not six currencies.
    regeneration entry point. No behavior yet.
 2. **Roll engine** — §3.2's tables as data, the six windows, §6.2 pool
    legality plus the no-duplicate-stat rule, and the public
-   `grug_items.roll_enchants(stack, ilvl, window)` exactly as WP7 already
-   calls it (`stock.lua:200-203`). Vendor Uncommons must light up without
+   `grug_items.roll_enchants(stack, ilvl, window[, count])` — the
+   three-argument form exactly as WP7 already calls it
+   (`stock.lua:200-203`), plus the optional fourth argument that fixes the
+   count for WP10's crafted path. Vendor Uncommons must light up without
    touching `grug_traders`.
 3. **Description regeneration** — name (prefixes + noun + combined
    suffixes), quality color, preserved `Item level` and grey base-stat
@@ -363,7 +373,10 @@ defeated-race provenance, not six currencies.
    family × band × window × quality with an injected fixed-seed RNG — no
    duplicate stat across the four slots, no affix outside its §6.2 pool,
    observed 1/2 and 3/4 frequencies matching 60/40 and 70/30, and slot
-   order prefix/suffix/prefix/suffix in the generated name.
+   order prefix/suffix/prefix/suffix in the generated name. The same matrix
+   covers the **fixed-count** path: `count = 1..4` must produce exactly that
+   many affixes every time, so a Master's four-slot masterwork can never
+   come back with three.
 6. A T3 item never drops from a mob outside level 21–30; no drop appears
    at any depth that would not appear on the surface; a King drops at
    ilvl 60, never 65; a named rare yields Uncommon + independent 25% Rare +
@@ -371,10 +384,14 @@ defeated-race provenance, not six currencies.
 7. Cap audit: a deliberately overcapped set shows `raw > effective` and
    grants no combat power above the cap.
 8. Every one of the nine stats is measurably consumed by its **existing
-   authoritative consumer** — attributes and HP/Mana through
-   `grug_classes.apply_stats`, crit/dodge/armor through their `grug_core`
-   accessors, attack speed through `swing_stats` — and a refined weapon
-   deals the +15% (half-up) damage. The display-only failure mode is what
+   authoritative consumer**, and those are not one function: attributes
+   through `grug_classes.get_attributes`, HP through `get_max_hp` (which
+   `apply_stats` pushes into `hp_max` — that function sets nothing else),
+   Mana through `get_max_mana` and the resource clamp/ticker, crit and dodge
+   through `get_crit_chance`/`get_dodge_chance`, armor through
+   `grug_core.get_armor_percent`, attack speed through
+   `grug_abilities.swing_stats`. A refined weapon deals the +15% (half-up)
+   damage. The display-only failure mode is what
    this gate exists for; it prescribes no new character-sheet layout, which
    `inventory_equipment.md` would have to own.
 9. The channel transitions behave as specified at the **data layer** WP5
@@ -404,11 +421,18 @@ Opus review per `docs/process/wp-workflow.md` with a second reviewer on the
 roll/cap arithmetic and the stat aggregation. WP5 changes no mapgen and
 needs no fresh world.
 
-**Design provenance:** six rules this card depends on were open or implicit
+**Known stale comment (not fixed here, no code changes in a design round):**
+`mods/ITEMS/grug_gear/init.lua:335` still reads "ALL TWELVE ARE ONE-HANDED"
+directly above a `VENDORED_WEAPONS` list of eight. The rule is unchanged —
+every entry is one-handed — only the count is stale since the mese and
+diamond tool tiers were deleted. Whoever next touches that file corrects it.
+
+**Design provenance:** eight rules this card depends on were open or implicit
 when it was first drafted and were settled on 2026-08-13 in
 `items_crafting.md`, not here — the positional prefix/suffix side (§6b.4),
 the `min(mob level, 60)` drop clamp (§5), the `fpi / (1 + p)` attack-speed
 conversion and the no-ilvl-no-requirement exemption (both §6.1), the scope
 of the 60/40 and 70/30 affix counts to sources without a crafter (§6.1), and
-the uniform slot-family draw for drops (§5). The card quotes them; the
-design document owns them.
+the uniform draw over the tier's concrete base items for drops (§5), the
+imbue kit's crafterless 60/40 count (§7) and the boss window's peer status
+(§5). The card quotes them; the design document owns them.
