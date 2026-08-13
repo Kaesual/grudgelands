@@ -237,15 +237,28 @@ WP40 replaces it with the complete catalog and contracts below.
   | Kragmar west | (-1080,+2930;320) → (-1200,+2620;260) → (-940,+2300;190) → (-1060,+2010;80) |
   | Kragmar east | (+820,+2960;370) → (+700,+2630;250) → (+1050,+2320;170) → (+900,+1980;80) |
 
-  The analytic base mask is the union of round-joined segment capsules:
-  centre and half-width interpolate linearly along each segment, the inner head
-  has a round cap, and the outer mouth is clipped open by the final planned
-  footprint perimeter. This deliberately simple representation is shared by
-  mapgen, zone-water lookup and geometry audits. Base-mask membership is
-  strict: squared distance less than the interpolated squared half-width is
-  base bay water; exact bank or round-cap equality is dry under that test. The
-  last listed sample is the fixed positive-width **head shoulder** `C`, with
-  radius 80 and the original 160-node cross-section.
+  The analytic base mask is the union of round-joined, variable-width segment
+  capsules. For a directed sample segment `A -> B`, integer column `P`,
+  `v = B - A`, `L = v dot v`, `N = (P - A) dot v` and
+  `C = cross(v, P - A)`. At `N <= 0` or `N >= L`, strict squared distance to
+  the corresponding endpoint is compared with that endpoint's squared
+  half-width. At `0 < N < L`, let
+  `width_num = rA * (L - N) + rB * N`; the column is base water exactly when
+  `C^2 * L < width_num^2`. Equality is dry. This exact integer-rational
+  predicate, `strict_rational_variable_width_capsule_union_v1`, is the one
+  membership authority shared by mapgen, zone-water lookup and geometry
+  audits; a Q16-rounded projection, host-float closest point or approximate
+  distance may not decide membership. The implementation performs only
+  semantics-preserving conservative early rejects and checked products whose
+  exact values fit within `2^53 - 1`.
+- The base-water owner is selected from the same exact segment projections,
+  not from a second mask. Exact endpoint squared distances and interior
+  rational squared distances choose the nearest centreline segment; its cross
+  sign selects the declared side owner, and an exact distance or centreline
+  tie belongs to the lower numeric zone ID. The inner head has a round cap and
+  the outer mouth is clipped open by the final planned-footprint perimeter.
+  The last listed sample is the fixed positive-width **head shoulder** `C`,
+  with radius 80 and the original 160-node cross-section.
 - Final planned bay water adds exactly two zero-jitter analytic **closure
   wings** per bay, eight in total. Each wing runs from `C` to one of the two
   existing dry triple junctions that flank that bay head and tapers linearly
@@ -1183,10 +1196,12 @@ asks for it.
   adding a land neighbor; no bay point classifies as shelf or deep ocean.
 - The exhaustive finite mainland-footprint oracle assigns every integer x/z
   column to exactly one final planned-bay-water owner or one dry zone face, with
-  zero final gap and zero final overlap. It proves strict base-mask membership;
-  strict wing membership and equality-dry sides; exactly two otherwise-unowned
-  head wedges closed per bay; no integer overlap between a bay's two wings
-  outside its base mask; and the correct owner on both sides and centre tie.
+  zero final gap and zero final overlap. It proves exact
+  `strict_rational_variable_width_capsule_union_v1` base-mask membership and
+  same-projection owner selection; strict wing membership and equality-dry
+  sides; exactly two otherwise-unowned head wedges closed per bay; no integer
+  overlap between a bay's two wings outside its base mask; and the correct
+  owner on both sides and centre tie.
   It exercises all eight exact `J` points and adjacent columns, proving each
   junction dry and the capital-belt interior water-free. A separate dry-face
   oracle permits raw multiplicity only on declared shared edges and junctions,
@@ -1201,6 +1216,18 @@ asks for it.
   zero overlaps and zero invalid cross-face intersections, and reconstructs
   the exact 61-edge land dual. All 32 seeds rerun the same partition and
   topology oracle; no visual inspection substitutes for it.
+- Authored-source validation does not pretend that the seed-independent source
+  already contains final concrete face polygons. Before displacement it proves
+  one checksum-covered, symbolically closed authority graph: every literal
+  component polyline is simple, all shared-edge and perimeter-span references
+  have exact orientation and incidence, and the eight shared-edge-to-perimeter-
+  span clip attachments are structured references. A heuristic connector,
+  coordinate-inferred connector or floating intersection is invalid. Only the
+  compiled per-seed stage materializes the canonical integer boundary rasters,
+  clips a shared edge by removing at most one prefix and one suffix, and then
+  proves every concrete face closed, counterclockwise and simple. It reruns the
+  complete footprint `g=0/o=0/r=0` proof for every corpus seed. This staging
+  distinction changes neither the final topology nor any acceptance case.
 - Roads: every required route connects its authored endpoints, keeps its
   primary 7/16, secondary 5/12 or trail 3/8 surface/corridor class, and exposes
   the identical deterministic corridor to Claim-Stone validation. Seed

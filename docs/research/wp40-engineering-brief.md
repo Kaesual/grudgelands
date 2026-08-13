@@ -407,14 +407,47 @@ or conflict violation elsewhere in that full envelope.
 
 Finite zone partition closure uses the same complete-column standard rather
 than a sampled or independently drawn approximation. The four original
-mouth-to-head records remain the exact **base bay masks**: strict capsule
-interior is base water, exact base bank/cap equality is dry under that test,
-and the last sample `C` remains the fixed positive-width round head shoulder
-with `r = 80`. The checksum-covered source adds exactly two zero-jitter closure-
-wing records per bay, eight total. A record binds its bay ID, exact `C` sample,
-one existing head-flanking dry triple-junction reference `J`, adjacent outer-
-bank and central-head zone owners, and fixed side probes/tie data. It may not
-change a dry land-edge control, ID, incident pair or junction.
+mouth-to-head records remain the exact **base bay masks** under policy
+`strict_rational_variable_width_capsule_union_v1`. For an integer column `P`
+and one directed sample segment `A -> B`, let `v = B - A`, `L = v dot v`,
+`N = (P - A) dot v`, and `C = cross(v, P - A)`. For `N <= 0`, membership is
+the strict endpoint comparison `dot(P - A, P - A) < rA^2`; for `N >= L`, it is
+`dot(P - B, P - B) < rB^2`. For `0 < N < L`, define
+
+```text
+width_num = rA * (L - N) + rB * N
+```
+
+and accept the segment interior exactly when
+
+```text
+C^2 * L < width_num^2
+```
+
+Exact endpoint-cap or bank equality is dry. Before either interior square,
+production may reject `abs(C) >= max(rA, rB) * ceil_isqrt(L)`. Stage 1 proves
+for every current segment that
+`max(rA,rB)^2 * L^2 <= 2^53 - 1` and
+`(max(rA,rB) * ceil_isqrt(L) - 1)^2 * L <= 2^53 - 1`; every multiplication is
+checked before it executes. These guards make the comparison exact in a Lua
+number. A future record that cannot satisfy them must change the reviewed
+schema and provide an exact reduced-product or quotient/remainder comparator;
+it may not fall back to Q16 rounding or a host float. No Q16 projection,
+binary floating closest point, rounded interpolated width, or approximate
+distance decides membership.
+
+The same exact projection records select the base-water owner rather than
+feeding a second mask. Endpoint distance is an integer squared distance and
+interior distance is the exact rational `C^2/L`; a checked exact rational
+comparison selects the nearest segment. That segment's cross sign selects its
+declared side owner, while an exact distance or `C = 0` tie returns the lower
+numeric zone ID. The last sample `C` remains the fixed positive-width round
+head shoulder with `r = 80`. The checksum-covered source adds exactly two
+zero-jitter closure-wing records per bay, eight total. A record binds its bay
+ID, exact `C` sample, one existing head-flanking dry triple-junction reference
+`J`, adjacent outer-bank and central-head zone owners, and fixed side probes/
+tie data. It may not change a dry land-edge control, ID, incident pair or
+junction.
 
 One schema-versioned integer evaluator owns every closure wing. For integer
 column `p`, let `A = C`, `B = J`, `v = B - A`, `L = v dot v`,
@@ -2047,8 +2080,11 @@ ID. Outer coasts, Holy endpoints, channel overrides, water-ownership seams, and
 other exceptional boundaries carry their explicit half-open ownership rule in
 the shared edge record rather than inheriting a generic tie accidentally.
 Bay-intersecting cells apply the common four-step evaluator. First, strict
-interior of the original base mask returns its existing centreline owner; base
-bank/cap equality proceeds. Second, each closure wing is eligible only on
+interior of the original base mask under
+`strict_rational_variable_width_capsule_union_v1` returns the existing owner
+selected from the same exact segment projections; base bank/cap equality
+proceeds. No Q16- or float-derived approximation participates in either
+membership or owner selection. Second, each closure wing is eligible only on
 `0 <= N < L`, the exact safe-product inequality returns strict interior, and
 the cross sign or numeric-ID centre tie returns the record's adjacent owner.
 Wing-side equality and `J` proceed. The two stable-ordered records are consulted
@@ -2268,19 +2304,28 @@ Stage 1 validates the authored source before compilation. It proves at least:
   capital-road gate product, travel promise or content-operation field, while
   each has the ordinary checksum-covered shared-boundary relief gate `G`
   controls with no route semantics;
-- exactly one canonical half-open dry-face record per zone; each new boundary-
-  only record occurs exactly once in each incident face cycle with opposing
-  directions, while the corresponding outer-coast segment remains referenced
-  only through the existing `perimeter_span` authority; dry-face controls may
-  not add or infer another shared edge;
+- exactly one canonical half-open dry-face authority record per zone and one
+  checksum-covered, symbolically closed authority graph; every literal shared-
+  edge, non-coast arc and perimeter component polyline is individually simple,
+  every reference has exact orientation/incidence, and exactly eight shared-
+  edge-to-perimeter-span clipping attachments use structured edge/span/endpoint
+  references rather than copied coordinates; each new boundary-only record
+  occurs exactly once in each incident face cycle with opposing directions,
+  while the corresponding outer-coast segment remains referenced only through
+  the existing `perimeter_span` authority; dry-face controls may not add or
+  infer another shared edge, and no heuristic connector, coordinate-inferred
+  connector or floating intersection is accepted;
 - a separate route graph contains exactly the unchanged original 57 edges—30
   primary, 24 secondary and 3 trail—and contains none of `land_058` through
   `land_061`;
-- four fixed base-bay sample/width records with strict-interior water under the
-  base test, exact base equality dry under that test, unchanged centreline
-  seam/tie and radius-80 final sample `C`, plus one independent literal outer-
-  perimeter record per mainland; neither face nor water geometry is perimeter
-  authority;
+- four fixed base-bay sample/width records under
+  `strict_rational_variable_width_capsule_union_v1`, with exact `L/N/C` and
+  `width_num` integer-rational strict-interior water, exact equality dry,
+  checked early rejects and `2^53 - 1` product guards for all 12 segments,
+  unchanged exact nearest-segment/centreline owner ties and radius-80 final
+  sample `C`, plus one independent literal outer-perimeter record per mainland;
+  no Q16 or float decides membership, and neither face nor water geometry is
+  perimeter authority;
 - exactly eight zero-jitter closure-wing records, two per bay, each binding its
   bay and exact `C` sample to a different existing head-flanking dry triple
   junction `J`, radius 80 to zero, the adjacent outer-bank and central-head zone
@@ -2298,21 +2343,31 @@ Stage 1 validates the authored source before compilation. It proves at least:
 - `water_level = 1`, `chunksize = 5`, both dungeon y limits, dungeon noise/
   flags, `broad_content_y_min = -37`, and an always-false
   `force_native_dungeon` in the critical source manifest;
-- closed, consistently oriented, non-self-intersecting authored polygons and
-  one shared source record for every incident boundary; and
+- the symbolic closure/orientation/incidence contract above and one shared
+  source record for every incident boundary; Stage 1 deliberately does not
+  assert that pre-displacement concatenations are final concrete face polygons,
+  because their attachment endpoints exist only after canonical integer
+  displacement and clipping; and
 - exact Holy, start, capital, island, channel, coast, water, route-class, and
   road-interface constants required by the design source.
 
 Stage 2 validates the complete compiled seed dataset. It proves at least:
 
+- canonical integer materialization of every shared boundary and all eight
+  structured perimeter attachments, followed only by prefix/suffix clipping;
+  every resulting concrete dry face is closed, counterclockwise and simple,
+  with no heuristic or coordinate connector, floating intersection, inserted
+  station or alternate face-construction path;
 - every integer column in each finite mainland footprint has exactly one final
   base-water, closure-wing-water or half-open dry-face owner, with zero final
   gap/overlap; each bay's two wings have no integer overlap outside its base
   mask and together fill exactly the two otherwise-unowned head wedges;
-- strict base-mask, strict-wing and equality-dry wing-side fixtures; the owner
-  on both sides and the lower-numeric-ID `X = 0` tie; all eight exact `J` points
-  plus adjacent columns; no water at a junction or inside the capital belt; and
-  unchanged base samples, mouths and radius-80/160-node head shoulders;
+- strict exact-rational base-mask, strict-wing and equality-dry wing-side
+  fixtures; base-mask owner selection from the same exact projections; the
+  owner on both wing sides and the lower-numeric-ID `X = 0` tie; all eight
+  exact `J` points plus adjacent columns; no water at a junction or inside the
+  capital belt; unchanged base samples, mouths and radius-80/160-node head
+  shoulders; and all five frozen Q16-divergence witnesses exact-rational dry;
 - raw dry membership overlap only on declared shared edges and junctions, one
   canonical half-open owner there, no undeclared dry cross-face seam or
   intersection outside final planned water, and an exact 61-edge land-boundary
@@ -2492,7 +2547,9 @@ boat graphs; the exact 61-edge land-boundary dual; the byte-identical original
 zero-jitter boundary-only IDs/pairs/endpoints/opposing-face uses and their
 absence from all route/content products; polygon/displacement/core/corridor
 integrity; three outer prongs, two open bays per mainland, four exact base masks
-and exactly eight closure wings, one final base-water/wing-water/dry owner per
+under `strict_rational_variable_width_capsule_union_v1`, the five frozen
+Q16-divergence witnesses, exactly eight closure wings, one final base-water/
+wing-water/dry owner per
 integer footprint column, strict wing-side and terminal equality dry, no same-
 bay wing overlap outside the base mask, correct side/tie owners, unchanged base
 samples and 160-node head shoulders, all eight dry junction/adjacent-column
@@ -3245,6 +3302,71 @@ partition corpus must be rerun. Until retained evidence passes, this remains a
 blocking Reality Check; no seed, case, coordinate, width, distance or threshold
 is removed or weakened.
 
+The subsequent independent T2a freeze review found two further defects in that
+moving pre-freeze source and its Stage-1 harness. These are implementation-
+contract defects, not permission to weaken the 61-edge decision, the original
+57-route graph, the eight closure wings, the independent perimeter authority,
+or any corpus case. Stable final source/test `file:line` citations remain
+explicitly pending until the corrected T2a source freezes; citing its current
+dirty line numbers here would create false evidence. The freeze follow-up must
+replace this pending statement with exact citations to the policy record,
+validator, five Bay witnesses, eight face cases, and full affected rerun.
+
+First, Stage 1 concatenated source components as if their literal endpoints
+were already the seed-derived clipped face endpoints, then admitted one
+self-intersection through an approximate outer-clip exception. Reproduction
+finds eight self-crossing preview concatenations:
+`elandor_copperfell_foothills`, `elandor_stormvault_heights`,
+`elandor_starbough_vale`, `elandor_glassroot_wilds`, `kragmar_mournfen`,
+`kragmar_blackwind_rise`, `kragmar_raincall_basin`, and
+`kragmar_thunderroot_wilds`. The Copperfell preview has one representative
+crossing near `(-2515.051546,-2669.896907)` between its first and thirteenth
+segments. The root cause is staging: seed-dependent displacement and canonical
+integer prefix/suffix clipping determine the concrete attachment endpoint only
+during compilation. Stage 1 therefore cannot honestly prove that this preview
+concatenation is a final simple polygon.
+
+The correction does not waive final polygon validity. Stage 1 instead proves
+the checksum-covered symbolically closed authority graph, simple literal
+component polylines, exact shared-edge orientation/incidence, and exactly eight
+structured shared-edge-to-perimeter-span clip attachments. A heuristic or
+coordinate-inferred connector and any floating intersection are forbidden.
+Stage 2 materializes the one canonical integer raster per shared boundary,
+permits only prefix and suffix removal, installs those exact clipped endpoints,
+and proves every resulting face closed, counterclockwise and simple. It then
+reruns the exhaustive footprint and reports `g=0/o=0/r=0` for every corpus
+seed. Thus the concrete guarantee moves to the first stage at which its inputs
+exist; it is not removed or approximated.
+
+Second, the base-Bay mask appeared in three inequivalent forms: a Q16-rounded
+projection in the intended production policy, a host-float closest-point test
+in one validator path, and an exact rational comparison in the exhaustive
+oracle. Five integer columns reproduce a decisive disagreement: Elandor west
+`(-896,-2053)`; Elandor east `(1252,-2866)`, `(771,-2398)`, and
+`(1101,-2222)`; and Kragmar east `(787,2286)`. Each is dry under the exact
+rational predicate but water under the old Q16-rounded predicate. The unsafe
+old comparison is not merely theoretical: one exercised product is
+`29,053,568,000,000,000`, greater than Lua's exact-integer ceiling
+`2^53 - 1`.
+
+The accepted correction is one policy,
+`strict_rational_variable_width_capsule_union_v1`, with Section 1.2's exact
+`L/N/C/width_num` endpoint and interior comparisons, strict equality dry,
+conservative exact early reject and checked current-record product bounds.
+No Q16-rounded or floating result decides membership. Base-water nearest-
+segment ownership and its side/distance ties use the same exact projection
+records, so there is no second owner mask. A wider future source record that
+cannot meet the guards requires a reviewed schema change and exact comparator,
+not an approximate fallback.
+
+Both corrections require the complete affected corpus to be rerun: Stage-1
+source mutation/KAT tests; all 12 segment bound proofs and the five divergence
+witnesses; all eight symbolic attachment cases; per-seed canonical clipping,
+closed/CCW/simple concrete faces and exact Bay ownership; the exhaustive
+32-seed topology/partition result with `g=0/o=0/r=0`; and unchanged perimeter,
+shelf, 61-edge land dual, 57-route `30/24/3` split, starts and housing. No seed,
+case, coordinate, width, route, threshold or final guarantee is dropped.
+
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
 conflicts with a stronger correctness/operability requirement. The reviewed
@@ -3266,7 +3388,7 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | --- | --- | --- | --- |
 | T0 — WP43 handoff and baseline | exact material/resource API adapter, designated-host/harness manifest, post-WP43 WP18/WP36 fixed-corpus baseline and raw capture | merged WP43 `main` | every symbol/registration resolved; benchmark host/harness reproducible; no WP25 identity in target data |
 | T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
-| T2 — compiled world geometry | 38-zone source, exact 61-edge land-boundary dual with byte-identical original 57 plus four zero-jitter boundary-only flank records, unchanged separate 57-edge route graph, four exact base-bay masks plus exactly eight analytic closure wings, canonical half-open dry faces and independent literal perimeters, `H`, templates, fixed/candidate anchors, route profiles, hydrology and shared-boundary relief-`G` controls, coast/shelf/channel/island geometry, checksum-covered full-seed logical-biome selector and compiled IDs, exact nearest-feature layers, final housing-center predicate, versioned deferred operation-coverage manifest, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor/selector oracles; whole-footprint `g=0/o=0/r=0`, exact half-open 61-edge dual and new-edge IDs/pairs/endpoints/opposing-face/no-route-product/ordinary-relief-`G`/perimeter-span gates pass; the route graph stays exactly 30 primary/24 secondary/3 trail; both head wedges close per bay; wing formula/bounds/side/tie/J/belt/no-overlap cases pass; base masks, perimeter, shelf, starts and housing remain unchanged; every biome ID stays in palette; all six capital anchors are centered/contained; geometry volumes/interfaces and pending T4/T6/T7 coverage namespaces are frozen without future coordinates; nearest/housing layers match slow oracles; and extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests are frozen |
+| T2 — compiled world geometry | 38-zone source, exact 61-edge land-boundary dual with byte-identical original 57 plus four zero-jitter boundary-only flank records, unchanged separate 57-edge route graph, four exact-rational base-bay masks plus exactly eight analytic closure wings, checksum-covered symbolic face-authority graph with eight structured perimeter attachments, canonical compiled half-open dry faces and independent literal perimeters, `H`, templates, fixed/candidate anchors, route profiles, hydrology and shared-boundary relief-`G` controls, coast/shelf/channel/island geometry, checksum-covered full-seed logical-biome selector and compiled IDs, exact nearest-feature layers, final housing-center predicate, versioned deferred operation-coverage manifest, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor/selector oracles; whole-footprint `g=0/o=0/r=0`, exact half-open 61-edge dual and new-edge IDs/pairs/endpoints/opposing-face/no-route-product/ordinary-relief-`G`/perimeter-span gates pass; the route graph stays exactly 30 primary/24 secondary/3 trail; all concrete faces are closed/CCW/simple after canonical integer prefix/suffix clipping; both head wedges close per bay; exact base policy/bounds/five divergence witnesses and wing formula/bounds/side/tie/J/belt/no-overlap cases pass; base masks, perimeter, shelf, starts and housing remain unchanged; every biome ID stays in palette; all six capital anchors are centered/contained; geometry volumes/interfaces and pending T4/T6/T7 coverage namespaces are frozen without future coordinates; nearest/housing layers match slow oracles; and extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests are frozen |
 | T3 — public geography and policy | immutable `grug_zones` APIs over one validated T2 payload/index, closed node-coordinate normalization, water/mount classifier, exact nearest-feature and housing-center queries, total exterior level results, territory/PvP fields, shallow-capital positional guard base, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | normalized scalar hot paths, exact distance/tie results, housing boolean, y=-700/-701 capital center/edge/outside guard precedence, shelf surface/mob/guard cases, and Kraken separation agree with slow oracles; invalid/unsafe inputs and aliasing fail; no 38-definition/feature-family scan, T6 selector, post-role/WP13-anchor invention, or dynamic-claim coupling |
 | T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; extend and rerun the T2 deferred-coverage manifest with every T4 typed operation, enumerating every then-known non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type with provenance-neutral production skips; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, complete T4 coverage with only named T6/T7 catalog slots pending, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, `eligible_host_replacement`/`non_host` deep outcomes with no production dungeon label, and exact dirty sets |
 | T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting with canonical `set_lighting` preparation, one `calc_lighting`, and one final restored `set_light_data`; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, provenance-neutral deep typed order, seam, no-op and exact API operation-count gates |
