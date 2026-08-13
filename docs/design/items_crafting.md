@@ -459,12 +459,26 @@ mine at the node's y.
 
 | Minimum pick tier | Natural resources |
 |---|---|
-| T1 | Copper, Tin, mined Coal, Iron, Quartz |
+| T1 — any pick, incl. the Wood/Stone starters | Copper, Tin, mined Coal, Quartz |
+| T1 — **metal pick required** (Bronze or better) | Iron |
 | T2 | Gold; Citrine, Garnet and Jade (G1) |
 | T3 | Silver |
 | T4 | Emberglass; Diamond, Sapphire and Ruby (G2) |
 | T5 | Abyssal Crystal |
 | T6 | no universal progression resource; the tier grants deep access and better density |
+
+**Iron requires a metal pick** (decided 2026-08-13): the Wood and Stone
+starter picks harvest Copper, Tin, Coal and Quartz but **shatter** iron
+ore (the ordinary §3.0.4 under-tier path — ×4 time, node destroyed, no
+drop, feedback naming the required Bronze pick). The ladder is therefore
+strictly sequential — starter pick → Copper + Tin → dual furnace →
+Bronze pick → Iron — and non-circular, since Bronze consumes only
+any-pick resources. Mechanism: Bronze+ picks additionally carry
+`grug_metal_pick = 1` and the iron resource row is flagged
+`metal_only`, evaluated inside `grug_materials`' central
+`mining_decision` (a group value of 0 cannot encode a starter tier —
+group 0 means "group absent" — which is why this is a flag, not a
+renumbering of the shipped 1..6 taxonomy). Runtime lands with WP29.
 
 Quartz is the universal T1 jewelry mineral. Regional gems use **Rough
 <Gem> → Cut <Gem>**; `G1` and `G2` are internal grade labels, not
@@ -667,6 +681,9 @@ minimum harvest tier, the node may be deliberately destroyed without a drop:
 - The multiplier applies to that pick's normal effective dig time. One
   completed attempt consumes one ordinary pick-use event; there is no second
   wear penalty. Bare hands and non-picks cannot destroy ore/gem nodes.
+- A `metal_only` resource (today exactly iron, §3.0.1) treats a
+  same-tier starter pick as one shortfall step: ×4, destroyed, no drop,
+  feedback naming the required Bronze pick.
 - Descriptions/inspection state `Requires a T<n> pick to harvest`. Completion
   uses a dull fracture sound, a shattered particle cue and rate-limited HUD/
   chat feedback naming the lost resource and required tier.
