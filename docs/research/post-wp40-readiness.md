@@ -59,7 +59,7 @@ WP40 (in progress, root)
 | WP44 | none (WP7 ✅, WP43 ✅) | per-band sanity sessions (user time); WP8 quest-income rerun later; WP40 world-label rerun |
 | WP13 | WP40 shipped map + anchor/protection APIs | none design-side after Phase A; asset-pipeline risk §2.6; WP42 (units) and WP21 (innkeeper service) attach later |
 | WP33 | WP40 shipped zone/source masks | WP34 refill economy explicitly out of scope |
-| WP24 | WP40 housing masks + 32-seed capacity report; WP44 claim prices | per-faction live limits are WP40 measured outputs; decay setting defaults |
+| WP24 | WP40 housing masks + 32-seed capacity report; WP44 claim prices | the capacity **portfolio** is a WP40 measured report — explicitly not a quota; WP24 itself selects the per-faction live-limit defaults below that capacity (`housing.md` §10) |
 
 ## 2. WP13 — World Structures: handoff card
 
@@ -97,11 +97,15 @@ table); no first-writer platform heights exist anymore.
 ### 2.3 Spawn-safety decisions applied (Phase A, decided)
 
 Starts and capitals register their complete envelope + 10-node apron in
-the world-content registry; indirect mutation fails closed through the
-shared central predicate (built by WP24 — WP13 registers volumes against
-the same seam, and until WP24 lands the registry's direct
-dig/place protection is already live via `grug_core.is_protected`);
-no rollback system; no runtime pit/flood detection.
+the world-content registry, and **WP13 itself ships the world-content
+half of the fail-closed indirect-mutation authority**: the central
+mutation predicate lives in `grug_core` with liquid-inflow
+suppression/restore, fire, falling-node and unattributed-effect handling
+for hard-protected volumes, alongside the already-live direct dig/place
+protection. WP24 later extends that same predicate — never a second one —
+to claim volumes and ACL semantics (`housing.md` §6.4/§8). WP13's
+protection contract is therefore complete at WP13's own merge, with no
+WP24 dependency. No rollback system; no runtime pit/flood detection.
 
 ### 2.4 Dependency boundaries
 
@@ -222,9 +226,10 @@ implementation shape and the placeholders.
 The **central mutation predicate serves two volume classes**: active
 claims and hard-protected world content share the fail-closed
 indirect-mutation model and the spatial indexes (`world.md` §2 R1,
-`housing.md` §6.4/§8). WP24 builds the predicate and the world-content
-side registers through the same seam — design intends one implementation,
-not a claims-only special case.
+`housing.md` §6.4/§8). The world-content half ships with WP13 (§2.3);
+WP24 extends that same predicate to claim volumes and ACL semantics —
+one implementation, never a claims-only special case or a second
+evaluator.
 
 ### 4.3 Test model (crash/reconnect/duplicate)
 
@@ -241,9 +246,11 @@ equivalence after unclean shutdown.
 
 ### 4.4 Explicit placeholders (later inputs, labeled)
 
-- **Per-faction live-Stone limits**: selected below the measured 32-seed
-  packing capacity — a WP40 audit output (`wp40-engineering-brief.md`
-  §6.3). Until it exists, the setting ships conservative and documented.
+- **Per-faction live-Stone limits**: WP40 owns only the measured 32-seed
+  packing **portfolio** (`wp40-engineering-brief.md` §6.3 — explicitly not
+  a claim-count quota); WP24 itself selects and configures the per-faction
+  defaults below that demonstrated capacity (`housing.md` §10). Until the
+  portfolio exists, the setting ships conservative and documented.
 - **Claim upgrade / additional-stone copper values**: WP44 ledger outputs
   consumed by reference (`wp44-engineering-brief.md` §6); material halves
   (4/8/12/12/24 bars) are already decided data.

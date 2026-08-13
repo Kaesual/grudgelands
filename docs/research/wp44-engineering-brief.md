@@ -65,8 +65,10 @@ canonically so the report serializes deterministically.
 ledger_manifest:
   schema_version, game_commit, data_checksums[ (file, sha256) … ],
   constants{ pacing_minutes_per_level_band[], potion_use_per_min[],
+             per_slot_event_rates[], roster_weights[],
              repair_fraction, validation_band = 0.30 },
-  world_label (WP18/WP36 or WP40 map), date
+  world_label (WP18/WP36 or WP40 map)
+  -- run date/host live ONLY in the uncommitted sidecar, never here
 
 per_tier[T1..T6]:
   level_band, reference_roster[ (mob, level, weight) … ],
@@ -89,7 +91,11 @@ derived_prices:
 baseline_vs_candidate:
   per-tier gross/net income under the legacy WP7 economy (25% buy-back,
   old curve) and under the candidate rebased economy, same roster and
-  constants — the migration's income effect, recorded once.
+  constants — the migration's income effect, recorded once. The legacy
+  leg reads a frozen legacy fixture: T0 extracts the running WP7
+  generator's prices and buy-back into one canonical checksummed JSON
+  fixture, committed before T2 changes any price, so the comparison
+  remains reproducible on every later checkout.
 ```
 
 ## 3. Income Ledger — deterministic derivation
@@ -119,10 +125,15 @@ envelope and the constants change under version control, not silently.
 Exact expectation over the band's reference roster: for each mob, the sum
 over its drop table of `chance × count_expectation × payout`, where payout
 is the candidate `_grug_sell_price`/reference value. The reference roster
-per band is the §4 spawn-table families whose level range intersects the
-band, weighted by their spawn budget share (`wp6_spawn_budget.md` cell
-Σaoc weights) — a deterministic, checksummed input, not a modeled hunt
-route. Elite/rare **windows** and named-rare/boss tables are excluded
+per band is the set of **`biomes_mobs.md` §4** spawn-table families whose
+level range intersects the band. Its weights are an **explicit modeled
+input**, computed from the shipped spawn rows — attempt rate proportional
+to `1/chance` per eligible spawn cell, bounded by the per-name `aoc`
+population cap and the cell coverage recorded in `wp6_spawn_budget.md` —
+recorded in the manifest and validated against the encounter mix the
+§3.5 sanity sessions actually observe. `aoc` alone is a live-population
+cap, never a spawn share, and is never used as a weight by itself.
+Elite/rare **windows** and named-rare/boss tables are excluded
 (§3.4); the ordinary 1-in-10 elite spawn roll of the two elite-variant
 families stays included at its authored probability because it is ordinary
 ambient income, not a jackpot.
@@ -133,12 +144,21 @@ ambient income, not a jackpot.
   Common_reference_price(slot, tier) / wear_budget`, with the decided wear
   budgets (≈3,000 events ordinary, 6,000 refined —
   `items_crafting.md` §8.3) and a full Common kit (weapon + 4 armor +
-  offhand) at the band's tier. `repair_fraction` — the fraction of an
-  item's Common price a full wear cycle costs — is a WP44 implementation
-  input frozen in the manifest before calibration, bounded to 10%–40%,
-  and it is also the repair-price table the game ships (§1). Combat
-  events per minute derive from the same §3.1 throughput (events ≈ swings:
-  weapon FPI over active fighting time, recorded formula in the tool).
+  offhand) at the band's tier. Wear accrues **per item with its own
+  trigger class**: the weapon's events are outgoing swings (from §3.1's
+  throughput and the weapon FPI over active fighting time), while
+  armor/offhand events are incoming hits from an explicit per-band
+  hits-received-per-kill constant in the manifest — outgoing swing rate
+  never charges armor wear. WP22 owns the eventual runtime wear triggers;
+  these per-slot event-rate constants are labeled ledger model inputs
+  under §7's change discipline and are reconciled against WP22 when it
+  ships. `repair_fraction` — the fraction of an item's Common price a
+  full wear cycle costs — is a WP44 implementation input frozen in the
+  manifest before calibration, bounded to 10%–40%. The repair-price data
+  the game ships (§1) covers the complete decided §8.3 axis — item level,
+  quality and current wear, with cost proportional to the wear actually
+  restored and the authoritative quality multiplier applied — while the
+  ledger deducts its Common full-cycle case from that same data.
 - **Consumables**: potion/bandage usage per active minute is a frozen
   manifest constant per band (starting proposal: one weak/standard healing
   potion per 3 active minutes, adjusted only through the reviewed-change
@@ -161,10 +181,15 @@ small logging aid records kills/min and gross loot copper/min. The
 derived constants must fall within **±30%** of the session values. A miss
 is a finding: the constant (or the roster weighting) is revised through a
 reviewed change and the full ledger reruns. Session logs are archived as
-evidence; they never become the published axis. Bands the user cannot yet
-reach at test time (T5/T6 before content exists) record
-`validation = deferred` explicitly — the derived value stands, labeled,
-and the deferred validation is a listed follow-up, not a silent pass.
+evidence; they never become the published axis. **Every band is validated
+before any sink price derived from it is published**: all six level bands
+exist on the shipped WP18/WP36 map (the level-41–60 families populate the
+outer/coast rings), so validation is short and feasible today. If a band
+were ever genuinely unreachable at execution time, the sink prices
+derived from it remain **unpublished** — WP24/WP31 consume them only once
+the validated values exist. No provisional or deferred-validation price
+ships, preserving the decided rule that these prices derive from measured
+tier rates.
 
 ## 4. Audits (rerun and extended)
 
@@ -200,11 +225,13 @@ reference values (§1.3) and rerunning, never by weakening an audit.
   data tables (`grug_gear` generator, drop tables, price/reference module,
   `grug_xp` curve) in the stub environment via `tools/bin/lua51` — no
   number is re-typed into the tool.
-- One documented command reproduces everything, e.g.
-  `tools/bin/lua51 tools/wp44/ledger.lua > report/wp44-ledger.json` plus a
-  checksum step; the canonical JSON report is byte-identical across reruns
-  on the same commit (sorted keys, fixed decimal rendering, no
-  timestamps inside the canonical body — run metadata lives in a sidecar).
+- One wrapper script is the single reproduction command —
+  `tools/wp44/run_ledger.sh` invokes the Lua harness through
+  `tools/bin/lua51`, writes the canonical report and emits its SHA-256 in
+  one run. The canonical JSON report is byte-identical across reruns on
+  the same commit: sorted keys, fixed decimal rendering, and no
+  timestamp, date or host data anywhere in the canonical body — all run
+  metadata lives in the uncommitted sidecar.
 - The report embeds the manifest (§2) including SHA-256 checksums of every
   input file and of the report body itself; raw sanity-session logs are
   archived beside it. Repository evidence: the frozen report and manifest
@@ -245,10 +272,10 @@ why not.
 
 | Task | Owned result | Requires | Completion gate |
 | --- | --- | --- | --- |
-| T0 — harness + manifest | `tools/wp44/` stub-env loader for gear/drops/xp/price tables; manifest with input checksums | merged WP43 `main` | tables load byte-identically; checksums stable |
+| T0 — harness + manifest | `tools/wp44/` stub-env loader for gear/drops/xp/price tables; manifest with input checksums; frozen legacy price/buy-back fixture extracted from the running WP7 generator and committed | merged WP43 `main` | tables load byte-identically; checksums stable; legacy fixture checksummed before any T2 price change |
 | T1 — reference-value catalog | one owner module with every §1.3 value under the four constraints; constraint checker | T0 | checker green; no unsold sellable concept missing |
 | T2 — price migration | §8.2 catalog prices verbatim; 5%-ceil buy-back; discount interplay | T0 | anchor checks (2c/1s25c); generated catalog diff reviewed |
-| T3 — ledger derivation | §3 computation, baseline-vs-candidate run, canonical report + checksums | T1, T2 | byte-identical rerun; every §3.4 exclusion logged |
+| T3 — ledger derivation | §3 computation, baseline-vs-candidate run, canonical report + checksums | T1, T2 | byte-identical rerun; every §3.4 exclusion logged; the baseline leg reads only T0's frozen fixture |
 | T4 — sanity validation | instrumented session aid; per-band validation records; constant freeze | T3 | each reachable band within ±30% or reviewed revision + rerun; unreachable bands labeled deferred |
 | T5 — sink derivation | claim I→II/II→III/III→IV, 2nd/3rd stone, four mounts through the rounding rule; provenance data | T3 (T4 for freeze) | recomputable from the command; denominations legal; housing/economy tables' material halves untouched |
 | T6 — audits | §4 suite green on candidate values | T1–T3 | zero failures; substitution report archived |
@@ -269,8 +296,9 @@ in T7's same commit that flips the BACKLOG row.
 4. Every published claim/mount copper value is recomputable, correctly
    rounded, and carries provenance (tier, minutes, raw value,
    denomination).
-5. No "measured" number exists without a derivation or an archived
-   validation record; deferred validations are explicitly labeled.
+5. No "measured" number exists without both its derivation and an
+   archived band-validation record; a sink price whose band is not yet
+   validated is not published at all (§3.5).
 6. Baseline-vs-candidate income table archived; WP7 Completion Record
    untouched; BACKLOG/ROADMAP/README synchronized.
 7. `tools/bin/luac51 -p` and the five Lua 5.1 grep sweeps clean on every

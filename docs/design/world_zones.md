@@ -1150,6 +1150,12 @@ tag anybody.
   tagged before the same table is evaluated. Contested ground includes every
   non-ocean land position at y = −701 and below, regardless of the surface
   zone's peaceful status.
+- Deep-ocean and immutable dragon-channel columns — the geography class that
+  is neither peaceful nor contested — use the same four-row table above and
+  never force the tag (decided 2026-08-13). Only contested ground forces it;
+  the contested islands and shores force it on arrival as usual, so a boat
+  approach is not a forced-PvP corridor while voluntary flagging still works
+  everywhere.
 - A hostile action against an enemy capital/outpost guard, war-front unit or
   protected faction combat object tags the player before PvE/NPC damage is
   resolved. Ordinary hostile creatures do not affect PvP state.

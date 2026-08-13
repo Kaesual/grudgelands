@@ -60,9 +60,11 @@ y = −701 and below, non-ocean land is contested regardless of the peaceful
 surface above.
 
 Destructibility distinguishes actual anchors from scenery. Complete civic
-cores, small functional NPC/resource anchors and irreplaceable route pieces
-are hard-protected; roads, villages, outpost/camp shells and battlefield
-dressing remain mutable but claim-excluded. Planned mainland water stays part
+cores — capitals and starting settlements as whole build envelopes with
+10-node aprons — small functional NPC/resource anchors and irreplaceable
+route pieces are hard-protected and fail closed against indirect mutation;
+roads, villages, outpost/camp shells and battlefield dressing remain mutable
+but claim-excluded. Planned mainland water stays part
 of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
 immutable, and full-column dragon channels keep the offshore islands boat-only.
 The still-open playable-boat behavior is isolated in

@@ -38,7 +38,10 @@ the shipped WP38/WP39 contracts recorded in AGENTS.md and
   (`world_zones.md` §15.4).
 - Derived, never persisted: `contested(player)` — the result of
   `pvp_rule_at(player pos)` == `"contested"`; recomputed synchronously
-  inside every transaction and on the shared ticker for HUD only.
+  inside every transaction and on the shared ticker for HUD. One
+  in-memory `last_rule` per online player carries the previous
+  observation for §2's synchronous leave-contested tail; it is seeded
+  from the current position at join and never persisted.
 - `tagged(player)` := `contested(player) or now < pvp_expiry`. There is no
   separate boolean flag that could desynchronize from the timestamp.
 - Death sets `pvp_expiry = 0` and runs the attributable-effect cleanup
@@ -58,11 +61,11 @@ the shipped WP38/WP39 contracts recorded in AGENTS.md and
   eligibility inputs. Enemy identity comes from `grug_factions`
   (`get_faction` + `grug_core.opposing_faction`); geography comes from
   `pvp_rule_at`; the two never substitute for each other.
-- `outside` (deep ocean / dragon channel) positions are treated as
-  contested for nothing and peaceful for nothing: a hostile attempt whose
-  attacker or target stands in an `outside` column resolves with the
-  peaceful-zone table (no forced tag from `outside` ground). This preserves
-  §15.1 exactly: only *contested ground* forces the tag.
+- `outside` (deep ocean / dragon channel) positions use the four-row
+  peaceful-zone table and never force the tag — the rule decided
+  2026-08-13 and recorded in `world_zones.md` §15.1. The contested islands
+  and shores force it on arrival as usual. WP41 consumes this rule; it
+  does not interpret geography.
 
 ## 2. The atomic transaction
 
@@ -125,12 +128,20 @@ effective by the caller; periodic effective ticks repeat the contact while
 the source is online and attributable.
 
 Boundary tail: leaving contested ground sets
-`pvp_expiry = max(pvp_expiry, now + 60)` (§15.2 last bullet). The
-transition is detected on the shared ticker (§6), but because `tagged()`
-derives from geography synchronously, a fast crossing between two ticks
-cannot create a wrong eligibility result — the tail write is a display and
-persistence matter, and the transaction's own step (a) always sees the
-true current zone (§15.3 last bullet).
+`pvp_expiry = max(pvp_expiry, now + 60)` (§15.2 last bullet), and this
+write is **synchronous, never ticker-deferred**. `grug_pvp` keeps one
+in-memory `last_rule` per online player, seeded from the current position
+at join. Every synchronous state read — `state()`, `would_block` and step
+(a) of every transaction — first compares the current rule against
+`last_rule`; observing `contested → non-contested` applies the tail to
+meta **before** any snapshot or table evaluation, then updates
+`last_rule`. The shared ticker performs the same check only as the
+HUD/persistence backstop, and the leave-player handler applies the tail
+when a player logs out standing in contested ground (a reconnect inside
+contested is forced again anyway). A player who teleports or sprints out
+of contested ground is therefore never observable as safe by any
+transaction, even within the same server step as the crossing; in-memory
+seeding at join is safe because an offline player cannot move.
 
 ## 3. Public API and ownership
 
@@ -157,6 +168,17 @@ grug_pvp.npc_damage_committed(player, npc_ref, hp_loss, absorb_loss)
 grug_pvp.would_block(attacker, target)
     -- pure pre-state four-row evaluation, no mutation; the knockback
     -- suppressor (§5.1) and UI previews use it.
+grug_pvp.begin_aoe(owner)
+    -- returns one single-use AoE batch implementing world_zones.md
+    -- §15.3's snapshot semantics: it snapshots the owner state; each
+    -- batch:evaluate(target, context) records and returns that target's
+    -- four-row outcome against the snapshot; one batch:commit() then
+    -- applies the owner tag exactly once iff at least one valid hostile
+    -- contact was recorded, and freezes the recorded outcomes for effect
+    -- application. Effects and damage_committed run only after commit();
+    -- batch:abort() discards everything with no state change. A batch is
+    -- synchronous within one server step; reuse, evaluate-after-commit
+    -- or commit-after-abort is a loud error.
 grug_pvp.register_attributable_effect(owner_name, handle)
 grug_pvp.clear_attributable_effects(player)   -- death cleanup, §4.7
 grug_pvp.classify_death(player)
@@ -179,7 +201,9 @@ grug_pvp.register_on_tag(fn) / register_on_hostile_attempt(fn)
   per-punch allocation: `blocked` **is** the combat-miss outcome.
 - `context` is a small constant table per call site
   (`{kind="melee"|"swing"|"cast"|"projectile"|"aoe"|"support", ability=id}`),
-  interned at integration time, never built per punch.
+  interned at integration time, never built per punch. It is static
+  call-site identity only; the dynamic AoE owner/target snapshot lives in
+  the batch object above, never in `context`.
 
 ## 4. Integration per combat path
 
@@ -238,9 +262,12 @@ on every path.
   snapshot** taken before the first tag write: the owner is tagged once if
   any valid hostile contact exists, and every target resolves from the
   same pre-tag snapshot so iteration order cannot change who is protected
-  (§15.3). Implementation: pass an explicit `snapshot` context created by
-  `grug_pvp.begin_aoe(owner)`; inside it, rows 1–2's "attacker becomes
-  tagged" is recorded once and applied after the loop.
+  (§15.3). Implementation: exactly the frozen §3 batch API —
+  `begin_aoe(owner)`, one `batch:evaluate(target, context)` per candidate,
+  then one `batch:commit()` that applies the owner tag exactly once
+  before any effect resolves; every per-target outcome was frozen at
+  evaluate time from the pre-tag snapshot, so iteration order cannot
+  change who is protected.
 - Persistent areas remember creation-time eligibility: a safe enemy who
   walks into an active field is ignored and cannot force the remote owner
   into PvP; newly entering **tagged** enemies may be affected while the
@@ -383,7 +410,7 @@ assertion suite, recorded in the WP's review evidence.
 | T4 — casts/projectiles/AoE/support | §4.3–§4.5 wiring incl. launch-cost retention and snapshot ordering | T2 | per-path matrices; Fireball exact-once tests stay green |
 | T5 — protected NPCs | §4.6 seam in `grug_mobs` hooks; guard/king tagging and refresh | T2 | NPC matrix incl. ordinary-creature non-effect |
 | T6 — HUD/UI/diagnostics | §6 complete; `/combatdebug` PvP channel | T1 | manual checklist + no-allocation ticker audit |
-| T7 — backstop and exploit suite | §5.2/§5.3 guard, path audit, micro bench, full exploit matrix §10 | T3–T5 | every §10 row automated where headless-testable; bench within §7 budgets |
+| T7 — backstop and exploit suite | §5.2/§5.3 guard, path audit, micro bench, full exploit matrix §10 | T3–T6 (`/combatdebug` evidence needs T6) | every §10 row automated where headless-testable; bench within §7 budgets |
 | T8 — docs and gates | BACKLOG ✅ row, ROADMAP/README sync, AGENTS combat-section delta, review rounds per `wp-workflow.md` | T1–T7 | clean mandatory review; runtime test plan delivered |
 
 T3, T4 and T5 are parallel after T2. Nothing in T1–T8 introduces a second
@@ -403,7 +430,8 @@ state rows (§15.5). Beyond that product, the named cases:
 3. Tagged→safe blocked in peaceful ground incl. via projectile collision
    and AoE membership.
 4. Contested forcing: both players forced before the table on entry,
-   presence and reconnect; `outside` (deep ocean/channel) forces nothing.
+   presence and reconnect; `outside` (deep ocean/channel) forces nothing
+   and resolves with the peaceful-zone table (the decided §15.1 rule).
 5. Deep override: y = −701 contested beneath a peaceful capital column;
    y = −700 remains peaceful; returning above starts the full tail and
    never clears early.
@@ -411,8 +439,11 @@ state rows (§15.5). Beyond that product, the named cases:
    heal/shield/cleanse/buff of tagged ally → refresh both; miss, dodge,
    immunity, refusal, zero-effect damage/support, standing near a tagged
    player → no refresh. Periodic effective ticks repeat the contact.
-7. Leave-contested tail: expiry ≥ now + 60 even with no contact inside;
-   display switches CONTESTED → countdown.
+7. Leave-contested tail: expiry ≥ now + 60 even with no contact inside,
+   applied synchronously — a hostile attempt in the same server step
+   after teleporting out of contested ground still sees the leaver
+   tagged; a logout inside contested ground persists the tail. Display
+   switches CONTESTED → countdown.
 8. Death: tag cleared, attributable effects cleared, respawn safe, no
    re-tag from stale fields; `classify_death` records the lethal
    committed transaction's attacker exactly.
