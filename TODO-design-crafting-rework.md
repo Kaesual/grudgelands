@@ -23,7 +23,7 @@ question from this file. When nothing open is left, delete the file
 (AGENTS.md "Documentation layers").
 
 Groups: **A** crafting & items · **B** material calibration · **C** profession
-identity · **D** mounts · **E** cooking.
+identity · **D** mounts.
 
 ## A. Crafting & items
 
@@ -237,76 +237,6 @@ sink today, and inventing one is a bigger decision than mounts.
 
 ---
 
-## E. Cooking
-
-### E21 — Cooking's per-tier recipe lists
-
-Cooking has a recipe book with the same **six T1–T6
-groups** and level gates as a profession book but **no keystones** — a
-group opens on its **ingredients**, which are regional, so T6 cooking
-needs ingredients that only exist in level-50+ areas
-(`items_crafting.md` §2.2/§2.3/§3.7, `professions.md` §1). The
-ingredient set is decided too, including the found-only three:
-`biomes_mobs.md` §2 lists every plant per biome with its `[food]` /
-`[food found-only]` / `[herb Tn]` / `[spice Tn]` marker, names mushrooms,
-wild cocoa and rock salt as deliberately never-farmable, and §6 maps them
-to both continents.
-
-The authoritative food structure in `items_crafting.md` §3.7 and
-`combat_stats.md` §5 supplies the constraints for this question: raw food uses
-the 4%/s resting channel without a buff; cooked food restores through that
-channel at 8%/s and adds one replace-on-eat food buff; the Alchemist's Healing
-Potion retains the instant in-combat slot. The open work is the recipe and
-magnitude table per group.
-
-Open: the **recipes**, and now also the **magnitudes**.
-
-- **The recipes per group.** §3.7 names three today — cooked meat/fish,
-  Hearty Stew (meat + potato/corn), Hunter's Feast (meat ×2 + melon +
-  mushroom) — against six groups.
-- **Which ingredient opens each group.** With no keystone, the
-  ingredient *is* the gate, so this list is the level gate.
-- **How Well Fed maps.** §3.7's buff is "+1/+2/+3 Str AND Int for
-  15 min **by tier**" — three steps against six groups.
-- **The restore percentage per group** (new with the structure above).
-  §3.7 carries one worked example, the owner's: potatoes with boar
-  steak, **30 % of max HP**. Six groups need six numbers, and they are
-  bounded from above by the potion: a cooked dish may match the potion's
-  30 % because it is paid for in ~4 s of standing still, but a dish that
-  restores *more* than a potion would make the potion pointless outside
-  combat as well as inside it.
-- **The example's own magnitudes do not match the shipped ones**, and
-  E21 has to reconcile them rather than pick silently: the worked
-  example is **+5 Strength for 5 minutes**, while §3.7's Well Fed is
-  **+1/+2/+3 Str *and* Int for 15 minutes**. Different size, different
-  duration, and one stat against two. The structure is what was decided
-  on 2026-08-08; these numbers were not.
-
-Options for the buff mapping: **(a)** two groups per step
-(T1–T2 → +1, T3–T4 → +2, T5–T6 → +3) — no new numbers, nothing to
-re-balance; **(b)** six steps +1…+6 — a straight consumable treadmill,
-which `combat_stats.md` §5 rules out; **(c)** keep three steps and let
-T4–T6 add duration or a second effect instead of a bigger number.
-
-Recommendation: **(a)** for the buff, 2–3 recipes per group, and gate
-each group on the ingredient `biomes_mobs.md` §2 already places in that
-ring — roughly potato/corn (T1), berries/apples (T2), mushrooms (T3),
-melon + marshbloom (T4), rock salt + stormkelp (T5), wild cocoa + outer
-or coast meat (T6). That makes the "find cocoa in the jungle" quest goal
-of §3.7 land on the top group by construction, and keeps every tier
-reachable on both continents (`biomes_mobs.md` §6). For the restore, a
-matching six-step ramp topping out at the potion's 30 % rather than
-above it; for the example's +5/5 min, read it as the *shape* (one
-primary stat, a short buff) and let (a)'s ramp set the size, or the
-"no consumable treadmill" rule of `combat_stats.md` §5 is reopened by a
-single dish.
-
-*Lands in*: `items_crafting.md` §3.7.
-**Decision:** _open_ — the per-group recipes, restore percentages and buff
-magnitudes **block WP10**'s cooking book.
-
----
-
 ## Status summary
 
 | # | Question | Blocks |
@@ -315,4 +245,3 @@ magnitudes **block WP10**'s cooking book.
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |
-| E21 | Cooking recipe lists per tier, restore percentages and buff magnitudes | **WP10** |

@@ -140,10 +140,10 @@ the goal-level view.
   six-tier gear/tool merge; safe removal of superseded vendored recipes; and
   trader-catalog migration onto WP44 prices.
 - [ ] WP5 is design-unblocked (A2 affix vocabulary and A6 refined marker
-  decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7); WP10 remains
-  blocked on `TODO-design-crafting-rework.md` E21 until the cooking
-  lists are decided (the A5 grade names, A1 signature table and A4
-  keystone rows are decided 2026-08-13).
+  decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7); WP10 is
+  design-unblocked (A1/A4/A5/E21 decided 2026-08-13, incl. the revised
+  food-restore buff model and the buff/debuff icon framework); it still
+  follows WP26/WP33/WP43/WP44.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
 - [ ] WP33: gathering plants, signature woods and cultural sources on final

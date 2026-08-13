@@ -1049,25 +1049,30 @@ Neither of these costs a main profession slot (professions.md §1).
 
 - **Cooking** (trainer, free): cooked foods use regional ingredients and the
   Cooking recipe book described below.
-  **Raw food restores; cooked food restores AND buffs** (decided
-  2026-08-08 — this replaces the old "raw food still fuels resting
-  regen, cooking adds the buff, not the regen", which had the shape
-  backwards). `combat_stats.md` §5 carries the same three rules from the
-  recovery side; the two must not drift apart.
-  - **Raw / plain food gives regeneration only, no buff.** It is the
-    resting channel of `combat_stats.md` §5 — standing still,
-    interrupted by damage or by movement — at **4 % max HP/s**.
-  - **Cooked food gives both**: a restore *and* a buff. The restore runs
-    through the **same resting channel at twice the rate, 8 % max HP/s**,
-    and each dish carries its authored percentage of max HP per serving.
-    Cooking is therefore the **faster rest**, never a
-    second instant heal: the instant slot stays the Alchemist's
-    (§3.6 Healing Potion — 30 % max HP instantly, usable in combat, 60 s
-    shared cooldown). A cooked restore costs uninterrupted standing time and
-    dies to a single hit or a single step; the potion costs a cooldown and
-    nothing else. That is the entire
-    difference between the two, and it is what keeps the potion worth
-    carrying.
+  **Raw food restores; cooked food restores AND buffs** (structure decided
+  2026-08-08; restore mechanics and the per-group lists decided 2026-08-13
+  with E21). `combat_stats.md` §5 carries the same rules from the recovery
+  side; the two must not drift apart.
+  - **A food restore is a buff, not a standing channel** (2026-08-13,
+    replacing the old resting-channel delivery): eating grants a
+    restore-over-time effect that **tolerates movement** but is
+    **canceled by entering combat** (PvE or PvP, the shared `in_combat`
+    window) — the remaining restore is lost. **Eating in combat is
+    refused** (message, nothing consumed — the potion's full-HP refusal
+    pattern). Exactly one food restore runs at a time; eating again
+    replaces it.
+  - **Raw / plain food: regeneration only, no buff** — **4 % max HP/s
+    for up to 25 s** (a full heal if uninterrupted; the solo detour,
+    unchanged in rate).
+  - **Cooked food gives both**: the serving's authored percentage of max
+    HP, delivered at **8 % max HP/s**, plus **Well Fed** — the buff
+    persists into combat, only the restore dies. The instant slot stays
+    the Alchemist's (§3.6 Healing Potion — 30 % max HP instantly, usable
+    in combat, 60 s shared cooldown): the potion holds the **in-combat
+    monopoly**, food is out-of-combat acceleration, and **both stay
+    percent-based** — no absolute values, no consumable treadmill
+    (`combat_stats.md` §5; Max HP = 20 + 2×(level−1) + Str spans ~22 to
+    ~170, so one absolute item could never serve both ends).
   - **Only one food buff is active at a time, and the most recently
     eaten food wins** — eating again *replaces* the running buff; food
     buffs never stack and never extend one another. This is the food-side
@@ -1075,7 +1080,10 @@ Neither of these costs a main profession slot (professions.md §1).
     buff and an elixir still stack **with each other**, exactly as
     before.
   - Every cooked-food buff occupies the single **Well Fed** category governed
-    by the replacement rule above.
+    by the replacement rule above. **Well Fed is decided (E21)**:
+    **I = +1 Str and Int** (T1–T2 dishes), **II = +2** (T3–T4),
+    **III = +3** (T5–T6), **15 minutes**. The old "+5 Strength, 5 min"
+    worked example is superseded — it was the shape, this is the size.
 
   **Cooking gets a recipe book** (2026-08-07, §2.2): the same six T1–T6
   groups and the same level gates as a profession book, but **no
@@ -1084,6 +1092,24 @@ Neither of these costs a main profession slot (professions.md §1).
   50+ areas**. Tier unlocks are explicitly wanted as quest goals ("find
   cocoa in the jungle"). Cooking is free and universal *and* gated; the
   book is what makes both true at once.
+
+  **The six groups are decided (E21, 2026-08-13)** — gate ingredient,
+  recipes, restore per serving, Well Fed step; every gate ingredient
+  exists on both continents (`biomes_mobs.md` §2/§6):
+
+  | Group | Gate ingredient | Recipes | Restore/serving | Well Fed |
+  |---|---|---|---|---|
+  | T1 | potato/corn | Cooked Meat / Cooked Fish; Hearty Stew (meat + potato/corn) | 20% | I |
+  | T2 | berries (apples as Accord extra) | Berry Preserve (2 berries); Fruit-Glazed Roast (meat + fruit) | 24% | I |
+  | T3 | mushrooms (found-only) | Mushroom Skewer (2 mushrooms); Forager's Pot (mushroom + meat + potato/corn) | 28% | II |
+  | T4 | melon + marshbloom | Marshbloom Chowder (fish + marshbloom); Hunter's Feast (2 meat + melon + mushroom) | 32% | II |
+  | T5 | rock salt + stormkelp | Salt-Crusted Fish (fish + rock salt); Kelp-Wrapped Roast (meat + stormkelp + rock salt) | 36% | III |
+  | T6 | wild cocoa | Jungle Cocoa (2 wild cocoa + rock salt); Grand Feast (2 meat + wild cocoa + stormkelp) | 40% | III |
+
+  A serving may exceed the potion's 30% because the two no longer
+  compete — food never works in combat. One restore value per **group**,
+  not per dish. The worked "potatoes with boar steak" example is the T1
+  Hearty Stew at 20%; its old 30% reading predates this table.
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.

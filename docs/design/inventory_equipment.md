@@ -232,3 +232,31 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   inside a valid open-world housing claim under
   [housing.md](housing.md) §6.5. Claim ACL access never grants a recipe,
   profession tier or material the character has not unlocked.
+
+## 5. Buff/debuff icons (decided 2026-08-13)
+
+Every timed effect on the player — Well Fed, food restores, elixirs,
+Rested XP, king-participation effects, res sickness, later debuffs — is
+visible in two places. The framework is generic: an effect registers an
+icon, a category (buff/debuff) and an expiry, nothing per-consumer.
+
+- **Game screen**: one small icon row, unobtrusive but individually
+  recognizable. Implemented as HUD `image` elements plus one centered
+  text element per icon carrying the remaining duration. **Only the
+  largest unit is shown**: above 48 h as days ("4d"), then hours ("4h"),
+  under one hour minutes ("58m"), under one minute seconds ("45s").
+  Text writes only when the displayed value changes (the shared-ticker
+  rule — no per-second churn, no new globalstep). The HUD has no hover,
+  so the screen row carries no description.
+- **Character page**: the same effects as a formspec `image[]` row with
+  `tooltip[]` hover — icon, effect name, one-line description and the
+  same largest-unit remaining duration.
+- **Buffs carry a green frame, debuffs a red frame** — one shared
+  overlay texture per category composited over the effect icon
+  (`^`-modifier), never one framed asset per effect.
+- Specialized HUD elements keep their own decided displays: WP41's PvP
+  tag icon/countdown and the target frame are not migrated into this
+  row.
+- Ships with **WP10**, the first WP that grants real player buffs; the
+  registry lives centrally so later WPs (rested XP, PvP debuffs,
+  king effects) enroll instead of inventing parallel displays.
