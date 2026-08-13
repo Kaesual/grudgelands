@@ -1,0 +1,84 @@
+{
+  "schema": "wp40_benchmark_manifest_v1",
+  "phase": "T0",
+  "capture_id": "70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc",
+  "status": "raw_capture_complete",
+  "comparison_role": "post_wp43_wp18_wp36_baseline",
+  "commits": {
+    "baseline": "7b6c8763224006630f967659047ffae88de6685d",
+    "checkout": "7b6c8763224006630f967659047ffae88de6685d"
+  },
+  "seed": {
+    "decimal_string": "1181064378178512398",
+    "converted_to_lua_number": false
+  },
+  "host": {
+    "manifest": "host.json",
+    "gate": "pass",
+    "designated": {
+      "cpu": "AMD Ryzen 7 9800X3D",
+      "physical_cores": 8,
+      "logical_cpus": 16,
+      "memory": "58 GiB OS-visible",
+      "storage": "WD_BLACK SN850X 2 TB encrypted ext4",
+      "os": "Fedora Linux 44",
+      "governor": "performance"
+    }
+  },
+  "harness": {
+    "digest": "84243978250a6c25758dafc556c0c384aec969c57294ddbfc15a65cb8953bc2b",
+    "command": "tools/wp40/capture_t0_baseline.sh",
+    "repetitions": 1,
+    "cpu_affinity": "0-7",
+    "controlled_shutdown": "core.request_shutdown after complete event",
+    "observed_engine_exit_status": 0,
+    "harness_exit_2": "preflight or immutable-result overwrite refusal; never a successful controlled shutdown"
+  },
+  "runtime": {
+    "kind": "luajit",
+    "version_raw": "raw/flatpak-version.txt",
+    "version_digest": "6cfaf59bc2b53418176cf517956fdf3cad34a980c7b48a7124a5da42eb7efb60",
+    "installed_flatpak": "5.16.1",
+    "pinned_source_reference": "Luanti 5.17.0-dev df04879066de6eb94ca43996822a6dfacc74feca",
+    "version_match": false
+  },
+  "settings": {
+    "source": "settings.conf",
+    "digest": "811fcc9aae192f4bbf6c6a377a3f4ef908fa55830d30502447900035451da210",
+    "realized_map_meta": "raw/run-001.map_meta.txt",
+    "realized_map_meta_digest": "c3e79c7d6fd7f324ef056bcaaf365b6c985729a856f9530a1741ac51199430c0",
+    "production_emerge_threads": 1
+  },
+  "cache": {
+    "process": "new_process_new_disposable_world",
+    "filesystem_page_cache": "unknown_uncontrolled",
+    "cold_cache_claim": false
+  },
+  "corpus": {
+    "source": "corpus.tsv",
+    "digest": "e31ef7e58147f5163e09705908ea27cd111523884f38c18ebe9ca170bce1b468",
+    "kind": "t0_legacy_substrate",
+    "chapter6_final": false,
+    "replacement_gate": "T2 geometry-derived fixture required before T9 replay"
+  },
+  "raw_paths": {
+    "samples": "raw/run-*.probe.jsonl",
+    "server_logs": "raw/run-*.server.log",
+    "launcher_metrics": "raw/run-*.time.txt",
+    "process_metrics": "raw/run-*.probe.jsonl",
+    "summary": "summary.json"
+  },
+  "instrumentation": {
+    "clock": "core.get_us_time",
+    "process_cpu": "insecure os.clock in trusted disposable probe",
+    "process_memory": "/proc/self/status VmRSS/VmHWM/VmSize",
+    "lua_heap": "collectgarbage count",
+    "launcher_metrics_note": "GNU time observes the Flatpak launcher, not the engine process; engine memory/CPU values come from probe JSONL"
+  },
+  "limitations": [
+    "Flatpak runtime is LuaJIT only; bundled Lua 5.1 engine measurements remain required.",
+    "Installed Luanti 5.16.1 differs from the pinned 5.17.0-dev source checkout.",
+    "Filesystem page-cache state is uncontrolled and is not cold-cache evidence.",
+    "T2 has not yet frozen the final microcorpus or 100-requester trace; this T0 corpus cannot satisfy those T9 gates."
+  ]
+}

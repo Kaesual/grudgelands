@@ -1,0 +1,259 @@
+{
+	"case_count" : 8,
+	"chunksize" : "5",
+	"engine" : "5.16.1",
+	"event" : "start",
+	"loaded_at_us" : 3990884180,
+	"lua_runtime" : "LuaJIT 2.1.1784272936",
+	"mapgen" : "v7",
+	"process" : 
+	{
+		"cpu_seconds" : 0.035463000000000001,
+		"lua_bytes" : 5478470,
+		"rss_bytes" : 35225600,
+		"rss_peak_bytes" : 35225600,
+		"virtual_bytes" : 209055744
+	},
+	"project" : "Luanti",
+	"seed" : "1181064378178512398",
+	"water_level" : "1"
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 30923,
+	"event" : "case",
+	"id" : "deep_noop",
+	"position" : 
+	{
+		"x" : 0,
+		"y" : -2040,
+		"z" : 900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.079858999999999999,
+		"lua_bytes" : 6394194,
+		"rss_bytes" : 73510912,
+		"rss_peak_bytes" : 73510912,
+		"virtual_bytes" : 463900672
+	},
+	"query_checksum" : 7300,
+	"query_iterations" : 100,
+	"query_us" : 142
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 26466,
+	"event" : "case",
+	"id" : "ordinary_inland",
+	"position" : 
+	{
+		"x" : 0,
+		"y" : 8,
+		"z" : 1300
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.106502,
+		"lua_bytes" : 6420666,
+		"rss_bytes" : 82051072,
+		"rss_peak_bytes" : 82051072,
+		"virtual_bytes" : 458276864
+	},
+	"query_checksum" : 2800,
+	"query_iterations" : 100,
+	"query_us" : 127
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 28269,
+	"event" : "case",
+	"id" : "legacy_band_boundary",
+	"position" : 
+	{
+		"x" : 350,
+		"y" : 8,
+		"z" : 900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.13504099999999999,
+		"lua_bytes" : 6438298,
+		"rss_bytes" : 83775488,
+		"rss_peak_bytes" : 83775488,
+		"virtual_bytes" : 458276864
+	},
+	"query_checksum" : 600,
+	"query_iterations" : 100,
+	"query_us" : 233
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 53760,
+	"event" : "case",
+	"id" : "coast_ramp",
+	"position" : 
+	{
+		"x" : 1450,
+		"y" : 8,
+		"z" : 900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.18884899999999999,
+		"lua_bytes" : 6451334,
+		"rss_bytes" : 105742336,
+		"rss_peak_bytes" : 105742336,
+		"virtual_bytes" : 476631040
+	},
+	"query_checksum" : 6800,
+	"query_iterations" : 100,
+	"query_us" : 130
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 52508,
+	"event" : "case",
+	"id" : "shelf_transition",
+	"position" : 
+	{
+		"x" : 1540,
+		"y" : -8,
+		"z" : 900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.241646,
+		"lua_bytes" : 6462686,
+		"rss_bytes" : 109232128,
+		"rss_peak_bytes" : 109232128,
+		"virtual_bytes" : 478072832
+	},
+	"query_checksum" : 7500,
+	"query_iterations" : 100,
+	"query_us" : 218
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 47204,
+	"event" : "case",
+	"id" : "open_ocean",
+	"position" : 
+	{
+		"x" : 2100,
+		"y" : -8,
+		"z" : 900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.28912199999999999,
+		"lua_bytes" : 6470234,
+		"rss_bytes" : 111099904,
+		"rss_peak_bytes" : 111099904,
+		"virtual_bytes" : 478072832
+	},
+	"query_checksum" : 6500,
+	"query_iterations" : 100,
+	"query_us" : 87
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 50446,
+	"event" : "case",
+	"id" : "strait",
+	"position" : 
+	{
+		"x" : 0,
+		"y" : -8,
+		"z" : 0
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.33959699999999998,
+		"lua_bytes" : 6481594,
+		"rss_bytes" : 115322880,
+		"rss_peak_bytes" : 115322880,
+		"virtual_bytes" : 478793728
+	},
+	"query_checksum" : 1100,
+	"query_iterations" : 100,
+	"query_us" : 83
+}
+
+{
+	"actions" : 
+	{
+		"generated" : 1
+	},
+	"compatibility_queries" : 400,
+	"emerge_us" : 47940,
+	"event" : "case",
+	"id" : "human_capital",
+	"position" : 
+	{
+		"x" : 0,
+		"y" : 8,
+		"z" : -900
+	},
+	"process" : 
+	{
+		"cpu_seconds" : 0.38778299999999999,
+		"lua_bytes" : 23280378,
+		"rss_bytes" : 134279168,
+		"rss_peak_bytes" : 134279168,
+		"virtual_bytes" : 495640576
+	},
+	"query_checksum" : 700,
+	"query_iterations" : 100,
+	"query_us" : 143
+}
+
+{
+	"case_count" : 8,
+	"elapsed_us" : 743297,
+	"event" : "complete",
+	"process" : 
+	{
+		"cpu_seconds" : 0.38823099999999999,
+		"lua_bytes" : 23283370,
+		"rss_bytes" : 120500224,
+		"rss_peak_bytes" : 133672960,
+		"virtual_bytes" : 495640576
+	}
+}
+

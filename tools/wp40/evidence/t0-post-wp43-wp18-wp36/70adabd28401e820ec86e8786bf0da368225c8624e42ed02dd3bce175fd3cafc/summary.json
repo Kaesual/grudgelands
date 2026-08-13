@@ -1,0 +1,222 @@
+{
+  "schema": "wp40_t0_raw_summary_v1",
+  "runs": 1,
+  "cases": [
+    {
+      "id": "coast_ramp",
+      "samples": 1,
+      "emerge_us": [
+        53760
+      ],
+      "compatibility_query_us": [
+        130
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.18884899999999999,
+          "lua_bytes": 6451334,
+          "rss_bytes": 105742336,
+          "rss_peak_bytes": 105742336,
+          "virtual_bytes": 476631040
+        }
+      ]
+    },
+    {
+      "id": "deep_noop",
+      "samples": 1,
+      "emerge_us": [
+        30923
+      ],
+      "compatibility_query_us": [
+        142
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.079858999999999999,
+          "lua_bytes": 6394194,
+          "rss_bytes": 73510912,
+          "rss_peak_bytes": 73510912,
+          "virtual_bytes": 463900672
+        }
+      ]
+    },
+    {
+      "id": "human_capital",
+      "samples": 1,
+      "emerge_us": [
+        47940
+      ],
+      "compatibility_query_us": [
+        143
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.38778299999999999,
+          "lua_bytes": 23280378,
+          "rss_bytes": 134279168,
+          "rss_peak_bytes": 134279168,
+          "virtual_bytes": 495640576
+        }
+      ]
+    },
+    {
+      "id": "legacy_band_boundary",
+      "samples": 1,
+      "emerge_us": [
+        28269
+      ],
+      "compatibility_query_us": [
+        233
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.13504099999999999,
+          "lua_bytes": 6438298,
+          "rss_bytes": 83775488,
+          "rss_peak_bytes": 83775488,
+          "virtual_bytes": 458276864
+        }
+      ]
+    },
+    {
+      "id": "open_ocean",
+      "samples": 1,
+      "emerge_us": [
+        47204
+      ],
+      "compatibility_query_us": [
+        87
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.28912199999999999,
+          "lua_bytes": 6470234,
+          "rss_bytes": 111099904,
+          "rss_peak_bytes": 111099904,
+          "virtual_bytes": 478072832
+        }
+      ]
+    },
+    {
+      "id": "ordinary_inland",
+      "samples": 1,
+      "emerge_us": [
+        26466
+      ],
+      "compatibility_query_us": [
+        127
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.106502,
+          "lua_bytes": 6420666,
+          "rss_bytes": 82051072,
+          "rss_peak_bytes": 82051072,
+          "virtual_bytes": 458276864
+        }
+      ]
+    },
+    {
+      "id": "shelf_transition",
+      "samples": 1,
+      "emerge_us": [
+        52508
+      ],
+      "compatibility_query_us": [
+        218
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.241646,
+          "lua_bytes": 6462686,
+          "rss_bytes": 109232128,
+          "rss_peak_bytes": 109232128,
+          "virtual_bytes": 478072832
+        }
+      ]
+    },
+    {
+      "id": "strait",
+      "samples": 1,
+      "emerge_us": [
+        50446
+      ],
+      "compatibility_query_us": [
+        83
+      ],
+      "compatibility_query_count": [
+        400
+      ],
+      "actions": [
+        {
+          "generated": 1
+        }
+      ],
+      "process": [
+        {
+          "cpu_seconds": 0.33959699999999998,
+          "lua_bytes": 6481594,
+          "rss_bytes": 115322880,
+          "rss_peak_bytes": 115322880,
+          "virtual_bytes": 478793728
+        }
+      ]
+    }
+  ]
+}

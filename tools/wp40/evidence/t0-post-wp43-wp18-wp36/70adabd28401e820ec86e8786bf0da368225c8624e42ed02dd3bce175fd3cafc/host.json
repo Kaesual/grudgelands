@@ -1,0 +1,174 @@
+{
+  "schema": "wp40_host_manifest_v1",
+  "observed_at": "2026-08-13T09:18:40+0200",
+  "cpu": {
+    "model": "AMD Ryzen 7 9800X3D 8-Core Processor",
+    "physical_cores": 8,
+    "logical_cpus": 16,
+    "governor": "performance"
+  },
+  "memory": {
+    "total_bytes": 62825226240,
+    "available_bytes": 47139217408,
+    "swap_total_bytes": 8589930496,
+    "swap_free_bytes": 8589930496
+  },
+  "software": {
+    "kernel": "Linux 7.1.8-200.fc44.x86_64 #1 SMP PREEMPT_DYNAMIC Mon Aug 10 03:35:23 UTC 2026 x86_64",
+    "os_release": "NAME=\"Fedora Linux\" VERSION=\"44 (Workstation Edition)\" RELEASE_TYPE=stable ID=fedora VERSION_ID=44 VERSION_CODENAME=\"\" PRETTY_NAME=\"Fedora Linux 44 (Workstation Edition)\" ANSI_COLOR=\"0;38;2;60;110;180\" LOGO=fedora-logo-icon CPE_NAME=\"cpe:/o:fedoraproject:fedora:44\" DEFAULT_HOSTNAME=\"fedora\" HOME_URL=\"https://fedoraproject.org/\" DOCUMENTATION_URL=\"https://docs.fedoraproject.org/en-US/fedora/f44/\" SUPPORT_URL=\"https://ask.fedoraproject.org/\" BUG_REPORT_URL=\"https://bugzilla.redhat.com/\" REDHAT_BUGZILLA_PRODUCT=\"Fedora\" REDHAT_BUGZILLA_PRODUCT_VERSION=44 REDHAT_SUPPORT_PRODUCT=\"Fedora\" REDHAT_SUPPORT_PRODUCT_VERSION=44 SUPPORT_END=2027-05-19 VARIANT=\"Workstation Edition\" VARIANT_ID=workstation "
+  },
+  "firmware": {
+    "bios_version": "3257",
+    "bios_date": "06/02/2025"
+  },
+  "storage": {
+    "project_mount": {
+      "filesystems": [
+        {
+          "fstype": "ext4",
+          "options": "rw,relatime,seclabel",
+          "target": "/"
+        }
+      ]
+    },
+    "block_devices": {
+      "blockdevices": [
+        {
+          "name": "sda",
+          "model": "SanDisk SDSSDH3 2T00",
+          "size": "1,8T",
+          "type": "disk",
+          "fstype": null,
+          "mountpoints": [],
+          "children": [
+            {
+              "name": "sda1",
+              "model": null,
+              "size": "845,8G",
+              "type": "part",
+              "fstype": "crypto_LUKS",
+              "mountpoints": []
+            },
+            {
+              "name": "sda2",
+              "model": null,
+              "size": "1017,2G",
+              "type": "part",
+              "fstype": "ntfs",
+              "mountpoints": []
+            }
+          ]
+        },
+        {
+          "name": "sdb",
+          "model": "PSSD T9",
+          "size": "1,8T",
+          "type": "disk",
+          "fstype": null,
+          "mountpoints": [],
+          "children": [
+            {
+              "name": "sdb1",
+              "model": null,
+              "size": "1,4T",
+              "type": "part",
+              "fstype": "exfat",
+              "mountpoints": [
+                "/run/media/jan/content"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "zram0",
+          "model": null,
+          "size": "8G",
+          "type": "disk",
+          "fstype": "swap",
+          "mountpoints": [
+            "[SWAP]"
+          ]
+        },
+        {
+          "name": "nvme0n1",
+          "model": "WD_BLACK SN850X 2000GB",
+          "size": "1,8T",
+          "type": "disk",
+          "fstype": null,
+          "mountpoints": [],
+          "children": [
+            {
+              "name": "nvme0n1p1",
+              "model": null,
+              "size": "1,5G",
+              "type": "part",
+              "fstype": "vfat",
+              "mountpoints": [
+                "/boot/efi"
+              ]
+            },
+            {
+              "name": "nvme0n1p2",
+              "model": null,
+              "size": "16M",
+              "type": "part",
+              "fstype": null,
+              "mountpoints": []
+            },
+            {
+              "name": "nvme0n1p3",
+              "model": null,
+              "size": "974,8G",
+              "type": "part",
+              "fstype": "ntfs",
+              "mountpoints": []
+            },
+            {
+              "name": "nvme0n1p4",
+              "model": null,
+              "size": "813M",
+              "type": "part",
+              "fstype": "ntfs",
+              "mountpoints": []
+            },
+            {
+              "name": "nvme0n1p5",
+              "model": null,
+              "size": "1,5G",
+              "type": "part",
+              "fstype": "ext4",
+              "mountpoints": [
+                "/boot"
+              ]
+            },
+            {
+              "name": "nvme0n1p6",
+              "model": null,
+              "size": "884,5G",
+              "type": "part",
+              "fstype": "crypto_LUKS",
+              "mountpoints": [],
+              "children": [
+                {
+                  "name": "luks-ff2bbcb5-63e7-446a-8b0d-04dc2c530cae",
+                  "model": null,
+                  "size": "884,4G",
+                  "type": "crypt",
+                  "fstype": "ext4",
+                  "mountpoints": [
+                    "/"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "load": {
+    "loadavg": "0.75 0.89 0.72 1/3085 193610",
+    "uptime": " 09:18:40 up  1:06,  1 user,  load average: 0,75, 0,89, 0,72",
+    "temperatures": "mt7921_phy0-pci-0800\nAdapter: PCI adapter\ntemp1:        +40.0°C  \n\nspd5118-i2c-4-51\nAdapter: SMBus PIIX4 adapter port 0 at 0b00\ntemp1:        +43.0°C  (low  =  +0.0°C, high = +55.0°C)\n                       (crit low =  +0.0°C, crit = +85.0°C)\n\nk10temp-pci-00c3\nAdapter: PCI adapter\nTctl:         +47.5°C  \nTccd1:        +45.6°C  \n\nnvme-pci-0b00\nAdapter: PCI adapter\nComposite:    +44.9°C  (low  =  -5.2°C, high = +89.8°C)\n                       (crit = +93.8°C)\n\nspd5118-i2c-4-53\nAdapter: SMBus PIIX4 adapter port 0 at 0b00\ntemp1:        +43.2°C  (low  =  +0.0°C, high = +55.0°C)\n                       (crit low =  +0.0°C, crit = +85.0°C)\n\namdgpu-pci-0c00\nAdapter: PCI adapter\nvddgfx:        1.25 V  \nvddnb:         1.24 V  \nedge:         +42.0°C  \nPPT:          93.00 mW "
+  }
+}

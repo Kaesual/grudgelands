@@ -1,0 +1,23 @@
+	Command being timed: "timeout --foreground --kill-after=10 240 taskset -c 0-7 flatpak run --command=luanti --filesystem=/tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9 --filesystem=/home/jan/projects/grudgelands/tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc --env=XDG_DATA_HOME=/tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/xdg/data --env=XDG_CONFIG_HOME=/tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/xdg/config --env=XDG_CACHE_HOME=/tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/xdg/cache --env=LUANTI_USER_PATH=/tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/user org.luanti.luanti --server --gameid grudgelands --world /tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/world --config /tmp/grudgelands-wp40-t0.2RLgvTx2/run-001.MMf7vai9/luanti.conf --logfile /home/jan/projects/grudgelands/tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.server.log --log-timestamp none --color never"
+	User time (seconds): 0.00
+	System time (seconds): 0.00
+	Percent of CPU this job got: 1%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:01.06
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 18864
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1645
+	Voluntary context switches: 131
+	Involuntary context switches: 6
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
