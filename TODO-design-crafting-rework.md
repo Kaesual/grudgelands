@@ -27,55 +27,6 @@ identity · **D** mounts · **E** cooking.
 
 ## A. Crafting & items
 
-### A1 — Signature recipes per profession per mastery tier
-
-`items_crafting.md` §2.1 statement 3 makes it binding that **mastery
-brings a few profession-exclusive recipes per tier**, and §3.0.3 forbids
-a profession from ever making a *parallel* base item. So a signature
-recipe can only be a consumable, a kit, a container, an offhand, a
-trinket or a fitting — never a sword or a chestplate that
-already exists on the base ladder.
-
-What is already authored:
-
-- **Tailor — bags, all four tiers**: 8 / 16 / 24 / 32 slots (§3.5,
-  `inventory_equipment.md` §3). The one fully decided line.
-- **Alchemist** — §3.6's table is already cut by mastery tier
-  (Apprentice/Journeyman/Expert/Master) and needs only its material
-  costs.
-- **Tailor — spell tome** at Journeyman / Expert / Master (+10/+20/+30
-  mana, §3.5).
-- Prose, but **not** cut by tier: Blacksmith shields "Journeyman+",
-  metal fittings, whetstone/polish kits (§3.3, §7); Leatherworker armor
-  kits "from Journeyman up" and the quiver (§3.4); Woodcarver bows
-  (Phase 2, §3.6a); Goldsmith trinkets (§3.6b).
-
-Open: an explicit **profession × mastery tier** table with the material
-cost of every row, for Blacksmith, Leatherworker, Woodcarver and
-Goldsmith, plus the tier cut of the Tailor's non-bag rows.
-
-Options:
-
-- **(a) Two rows per tier per profession** — 6 × 4 × 2 = 48 rows, hand
-  authored. Symmetric, easy to check against §2.1.
-- **(b) One row per tier, plus more at Master** — front-loads the
-  interesting recipes at the end of the ladder, matching §2.4's "at 60
-  the professions stay load-bearing".
-- **(c) Derive from the existing lines only** — every profession gets
-  its §7 kit line cut across four tiers and nothing else. Cheapest,
-  thinnest.
-
-Recommendation: **(a)**, because the four mastery tiers are also the
-enchant-slot ladder (§6b.5) and a tier that hands over *only* a slot
-count reads as an empty level-up. Author them against the §3.0.3 filter
-above — if a proposed row duplicates a base item, it is not a signature
-recipe.
-
-*Lands in*: `items_crafting.md` §3.3–§3.6b (per-profession sections),
-plus a summary column in §2.1.
-**Decision:** _open_ — blocks nothing, but WP10 cannot ship the books
-without it.
-
 ### A3 — Do bags participate in refinement and enchanting?
 
 `items_crafting.md` §6b.1 still names bags as an Ornate refinable family, but
@@ -391,7 +342,6 @@ magnitudes **block WP10**'s cooking book.
 
 | # | Question | Blocks |
 |---|---|---|
-| A1 | Signature recipes per profession × mastery tier | WP10 |
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |

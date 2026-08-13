@@ -261,6 +261,27 @@ Learning a mastery tier unlocks its exclusive recipes and raises the
 fillable slot count. Learning a **book group** (below) unlocks a material
 tier's recipes. The two unlocks are separate and both are needed.
 
+**The signature table is decided (2026-08-13)** — per-profession detail
+in §3.3–§3.6b, the kit rule in §7. Deliberately thin cells are design,
+not gaps: filler recipes would collide with decided systems (repair is
+WP22's ledger sink, light sources are R2-gated, combat buff consumables
+belong to the Alchemist's no-treadmill line). Material tier is always
+the book group's business; this table cuts only mastery:
+
+| Profession | Apprentice | Journeyman | Expert | Master |
+|---|---|---|---|---|
+| Blacksmith | metal fittings | shield; whetstone imbue kit | whetstone temper kit; armor-polish imbue kit | armor-polish temper kit |
+| Leatherworker | weapon grips | leather-armor imbue kit | leather temper kit | quiver (cataloged; ships with §9) |
+| Tailor | 8-slot bag | 16-slot bag; spell tome +10; embroidery imbue kit | 24-slot bag; spell tome +20; embroidery temper kit | 32-slot bag; spell tome +30 |
+| Woodcarver | — (the base caster ladder is the Apprentice value) | wood-oil imbue kit | wood-oil temper kit | bows (cataloged; ship with §9) |
+| Goldsmith | Rough→Cut refinement; Settings (§3.6b ladder) | trinket assembly (all six §6.2 identities); gem-setting imbue kit | gem-setting temper kit; ornament components | — (§4 cultural jewelry services ride §2.2's earned unlocks) |
+| Alchemist | §3.6 Apprentice row | §3.6 Journeyman row; Apothecary Hood | §3.6 Expert row; Apothecary Garb | §3.6 Master row; Master's Regalia |
+
+Costs follow only existing patterns — fittings 2 bars (§3.3), grips 2
+leather of the item's tier (professions.md §3's cross-buy as a concrete
+component item), kits ≈ 1 tier reagent + tier materials (§7), bags/
+tomes/consumables unchanged. No new numbers are introduced here.
+
 ### 2.2 The recipe book — one per profession (replaces the tome chain 2026-08-07)
 
 **The LotT-style tome chain is retired.** Each better tome consuming the
@@ -787,9 +808,12 @@ daggers, 2H weapons, shields. Bar costs for the base recipes: chest 5,
 legs 4, head 3, feet 2, shield 4, 1H 3, dagger 2, 2H 5, staff fitting 2,
 pick 3.
 
-**Exclusive recipes**: shields (Journeyman+ — no other profession makes
-an offhand of metal), the **metal fittings** the Woodcarver buys (§3.6a),
-armor polish and whetstone kits (§7), and the cultural/PvP operations of §4.
+**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **metal
+fittings** at Apprentice (the Woodcarver cross-buy, §3.6a); **shields**
+at Journeyman (no other profession makes an offhand of metal) plus the
+whetstone imbue kit; the whetstone temper and armor-polish imbue kits at
+Expert; the armor-polish temper kit at Master (§7's kit rule); and the
+cultural/PvP operations of §4 as earned unlocks (§2.2).
 
 Ore access follows §3.0.4's three separate checks: territory/protection, the
 pick's exact maximum natural y-depth and the resource's independent minimum
@@ -821,10 +845,13 @@ the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather. Its MVP
 wearer is the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13); the Rogue joins in Phase 2.
 
-**Exclusive recipes**: armor kits from Journeyman up (§7), and the
-**quiver** — a bag-slot item that holds only arrows, catalogued here and
-shipping with §9's Phase-2 bow decision. The bow itself is a Woodcarver
-product (§3.6a, §9), the quiver is not.
+**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
+grips** at Apprentice — 2 leather of the item's tier, the
+professions.md §3 cross-buy as a concrete component item; the
+leather-armor imbue kit at Journeyman and its temper kit at Expert
+(§7); and at Master the **quiver** — a bag-slot item that holds only
+arrows, catalogued here and shipping with §9's Phase-2 bow decision.
+The bow itself is a Woodcarver product (§3.6a, §9), the quiver is not.
 
 Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
 buy leather for bags, Alchemists for apothecary gear, Woodcarvers for
@@ -860,6 +887,9 @@ robe 6 / leggings 5 / cowl 4 / slippers 3 bolts.
   It is one of exactly **two** offhands in the game; the other is the
   Blacksmith's shield (§3.3). Different item, different armor class, no
   duplicate.
+- **Embroidery kits** (§7): imbue at Journeyman, temper at Expert
+  (mastery cut decided 2026-08-13, §2.1). With one bag size per tier and
+  the tome at J/E/M, the Tailor's signature row is full at every tier.
 
 ### 3.6 Alchemist (alchemy table) — herbs, potions, elixirs, apothecary gear
 
@@ -932,10 +962,12 @@ names WP29 uses (§3.8): a Hardened Staff, a Heartwood Orb.
 **Refines and enchants**: staves, wands, scepters, orbs — the whole
 caster weapon family of §3.2, main hand, 1H and 2H.
 
-**Exclusive recipes**: the caster families themselves have base recipes
-like everything else (§3.0.3), and the Woodcarver additionally owns
-**bows** from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker
-split" assignment; the quiver stays Leatherworker, §3.4).
+**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): the
+Apprentice cell is deliberately empty — the base caster ladder itself is
+the Apprentice value (§3.0.3); **wood-oil kits** (§7) arrive at
+Journeyman (imbue) and Expert (temper); **bows** are the Master line
+from Phase 2 (§9 — this replaces the old "Bowyer = Leatherworker split"
+assignment; the quiver stays Leatherworker, §3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Blacksmith.**
 The §3.2 family is literally called "metal-shod staff"; from T2 up every
@@ -966,6 +998,13 @@ equipment recipe consumes Cut Gems where a gem is required.
   The roll never fires on stone, an under-tier shattered node or any failed
   harvest and never converts one gem into another. Dragon-camp yield audits
   include it.
+
+**Mastery cut** (decided 2026-08-13, §2.1): Rough→Cut refinement and the
+Settings of the ladder below at Apprentice; **trinket assembly** (all
+six §6.2 identities — which material tier is the book group's business,
+§2.2) and the gem-setting imbue kit at Journeyman; the gem-setting
+temper kit and **ornament components** at Expert; Master adds no new
+row — §4's cultural jewelry services ride §2.2's earned unlocks.
 
 The Gem Detector and Dowsing Rod are retired. Continental mining remains
 exploration rather than direction/radar gameplay, and the Goldsmith already
@@ -1972,6 +2011,11 @@ apothecary gear):
   tier — an imbued Common (now Uncommon, 1–2 affixes) stays strictly
   below a fresh Rare (3–4 affixes): the decided "upgraded mediocre item
   never becomes a top item", enforced structurally, not by caps.
+- **Kit mastery rule** (decided 2026-08-13): imbue kits unlock at
+  Journeyman and temper kits at Expert; a profession's second kit
+  family — the Blacksmith's armor polish — sits one tier later (imbue
+  Expert, temper Master). §2.1's signature table is the authoritative
+  cut.
 
 ## 8. Prices and money pacing
 

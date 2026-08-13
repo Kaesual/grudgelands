@@ -141,9 +141,9 @@ the goal-level view.
   trader-catalog migration onto WP44 prices.
 - [ ] WP5 is design-unblocked (A2 affix vocabulary and A6 refined marker
   decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7); WP10 remains
-  blocked on `TODO-design-crafting-rework.md` A1/A4/E21 until those
-  genuine recipe/content questions are decided (the A5 grade names are
-  decided 2026-08-13).
+  blocked on `TODO-design-crafting-rework.md` A4/E21 until those
+  genuine recipe/content questions are decided (the A5 grade names and
+  the A1 signature table are decided 2026-08-13).
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both
   all-six-gem apex camps on WP40 geometry and WP43 materials.
 - [ ] WP33: gathering plants, signature woods and cultural sources on final
