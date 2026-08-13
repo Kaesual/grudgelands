@@ -686,6 +686,20 @@ check. It returns structured failure data for the shared feedback path.
 Callers always apply protection first; no other mod hard-codes a depth boundary,
 harvest tier or stratum node name.
 
+**Pick speed/durability frame (the B22 shape, decided 2026-08-13 — the
+numbers stay open):** effective dig speed on ordinary rock and total
+durability each follow **one monotonic six-point curve** — every
+higher-tier pick is strictly faster than the previous, including inside
+its own current band, and no tier reuses a vendored profile unchanged.
+Wood and Stone starter picks sit deliberately **below Bronze in speed**
+while sharing T1's depth cap. The concrete `times`/`uses` literals are
+authored as a table by WP29 and **runtime-calibrated by WP22** against
+representative ordinary rock (the `wp6_spawn_budget.md` measurement
+pattern) — never derived on paper, and never through the retired engine
+`leveldiff` coupling. Until that calibration lands, no document freezes
+a `times` or `uses` value (`TODO-design-crafting-rework.md` B22 holds
+the open numbers).
+
 ### 3.1 Armor curve (decided; shipped as the generated curve in WP7)
 
 1 armor point = 1% damage reduction; equipped pieces sum, **clamped at
@@ -1884,7 +1898,12 @@ refinement is expressed in the item **name** by a family word:
 |---|---|---|
 | Weapons, tools | **Honed** | Honed Stone Sword |
 | Metal & leather armor, shields | **Reinforced** | Reinforced Iron Chestplate |
-| Cloth armor, bags, spell tomes | **Ornate** | Ornate Robe |
+| Cloth armor, spell tomes | **Ornate** | Ornate Robe |
+
+**Bags are not refinable** (A3, decided 2026-08-13): a bag has no
+damage, armor or wear value for §6b.2's bonus to touch, and the four
+mastery sizes 8/16/24/32 already are the bag line's progression. The
+Ornate word is reserved for cloth armor and spell tomes.
 
 A profession may only refine the families it owns (§3.3–§3.6b). No
 player without the profession can produce a refined item by any means.

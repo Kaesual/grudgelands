@@ -22,58 +22,20 @@ Once a question is decided: fold it into the design doc named in its
 question from this file. When nothing open is left, delete the file
 (AGENTS.md "Documentation layers").
 
-Groups: **A** crafting & items · **B** material calibration · **C** profession
-identity · **D** mounts.
-
-## A. Crafting & items
-
-### A3 — Do bags participate in refinement and enchanting?
-
-`items_crafting.md` §6b.1 still names bags as an Ornate refinable family, but
-§6b.2's bonus modifies base damage or armor and ordinary durability. A bag has
-none of those values, so "Ornate Bag" currently has no defined effect. The
-separate trinket exception in §6.2 is complete and does not belong to this
-question.
-
-Options: **(a)** define a bag-specific refinement benefit without colliding
-with the fixed 8/16/24/32-slot ladder; **(b)** remove bags from the refinable
-families entirely and reserve the Ornate word for cloth armor and spell tomes.
-
-Recommendation: **(b)**. The four mastery sizes already supply the bag line's
-progression, and removing one unsupported family is clearer than adding a
-second bag axis.
-
-*Lands in*: `items_crafting.md` §§6b.1/6b.2.
-**Decision:** _open_ — affects WP10's Tailor book.
-
----
+Groups: **B** material calibration · **C** profession identity · **D** mounts.
 
 ## B. Material calibration
 
 ### B22 — The six picks' dig-speed progression: the actual `times`
 
-The material review keeps the **rule** — every higher-tier pick is faster on
-ordinary rock, including its own current band — but retires engine level
-difference as the progression mechanism. Natural-depth access and resource
-harvesting are separate checks in `world.md` §2 R6 and do not set the speed
-curve.
+The curve **shape** is decided (2026-08-13, `items_crafting.md` §3.0.4):
+one monotonic six-point curve each for speed and durability, Wood/Stone
+deliberately below Bronze at the shared T1 depth cap, authored as a WP29
+table and runtime-calibrated by WP22 against representative ordinary rock
+(pattern: `docs/research/wp6_spawn_budget.md`) — never vendored-profile
+reuse, never the retired engine `leveldiff` coupling.
 
-The six effective `times` and `uses` sets are still unauthored. They must form
-an explicit six-pick progression, preserve sensible durability and be measured
-against representative ordinary rock in a runtime calibration. Wood and Stone
-starter picks share the T1 depth cap but still need a deliberate relative
-speed below Bronze.
-
-Options:
-
-- **(a) Author one `times`/`uses` set per tier from a curve**, then verify the
-  effective seconds and blocks-per-tool values in a six-pick table.
-- **(b) Reuse one vendored profile for every tier.** Cheapest, but it makes
-  access the only reward and contradicts the decided speed progression.
-
-Recommendation: **(a)**, calibrated in a runtime test rather than derived on
-paper (pattern: `docs/research/wp6_spawn_budget.md`). Author it together with
-the missing Iron, Silversteel, Embersteel and Abyssal Steel picks.
+Open here: **only the six effective `times` and `uses` sets themselves.**
 
 *Lands in*: `items_crafting.md` §3.0.4.
 **Decision:** _open_ (the `times` and `uses` numbers). Owner:
@@ -241,7 +203,6 @@ sink today, and inventing one is a bigger decision than mounts.
 
 | # | Question | Blocks |
 |---|---|---|
-| A3 | Whether bags participate in refinement and enchanting | WP10 |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |
