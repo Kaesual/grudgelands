@@ -171,16 +171,16 @@ flyers at 7/10, with price targets of 15 minutes/45 minutes/2 hours/5 hours of
 reliable net income. A permanent owner-bound item summons one ephemeral
 entity; incoming damage dismounts. Holy Grounds allow flight, enemy territory
 allows land mounts only, and an exact 48-node warning precedes forced flight
-dismount over exterior ocean columns. Asset selection, mount attackability,
-mounting in combat, underground flight, ceiling/drift, swimmer exhaustion,
-variants and trainer presentation remain open in
-[TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
+dismount over exterior ocean columns. Riding is taught by the capital job
+trainers. Asset selection, mount attackability, mounting in combat,
+underground flight, ceiling/drift, swimmer exhaustion and variants remain
+open in [TODO-design-crafting-rework.md](TODO-design-crafting-rework.md).
 
 Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-12. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-13. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,

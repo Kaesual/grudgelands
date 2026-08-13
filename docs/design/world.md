@@ -124,12 +124,18 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R1 — Own faction territory**: digging and building is allowed except in an
   active housing claim or a bounded hard-protected world-content volume.
   Hard-protected content is limited to complete capitals/gates/aprons,
-  starting/respawn cores, essential service/quest/waypoint/graveyard platforms,
+  complete starting settlements (decided 2026-08-13: the full 128×128 build
+  envelope plus a 10-node apron — the same envelope-plus-apron rule as a
+  capital; spawn, waypoint, graveyard and service platforms all lie inside
+  it), essential service/quest/waypoint/graveyard platforms,
   small functional NPC and renewable-resource anchors, and a bridge or gate
   for which no adequate alternate route exists. Ordinary roads, villages,
   outpost/camp shells, ruins, tents, fences and battlefield dressing are
   generated once, remain claim-excluded and may be changed under their zone's
-  terrain rule.
+  terrain rule. A start settlement needs no runtime pit or flood detection:
+  by construction of `world_zones.md` §7's 600×500 dry start core (no planned
+  water, forced cliff or ravine; gentle start grading only), an enclosed or
+  flooded start cannot generate.
   - **Shape of a hard-protected world volume**: its authored x/z footprint is
     exact and protection runs upward without limit and downward through
     y = -700 inclusive. At y = -701 and below, the universal contested deep
@@ -137,6 +143,17 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     only the functional/core structure plus its explicitly authored apron; a
     structure type does not gain a blanket ten-node surround merely from its
     name.
+  - **Indirect mutation fails closed** (decided 2026-08-13): hard-protected
+    volumes are guarded against indirect mutation exactly like active claims
+    (`housing.md` §6.4). Explosions, fire, liquid flow — including downhill
+    flow originating outside the footprint — falling nodes, terrain-changing
+    mobs, machines and scripted effects cannot alter protected state; inside
+    hard-protected world content no player permission exists, so every such
+    path is suppressed or the affected nodes are restored. The central
+    mutation predicate and spatial indexes are shared with the claim system
+    (`housing.md` §8). There is no rollback system: protected volumes need
+    none, and destruction of the mutable layer deliberately persists
+    (`housing.md` §7.2).
   - **World-content registry**: every hard-protected non-capital anchor
     registers a stable id and final x/z extent rather than hard-coding a zone.
     The registry separately stores mutable claim-exclusion/grading envelopes

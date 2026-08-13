@@ -518,27 +518,6 @@ sink today, and inventing one is a bigger decision than mounts.
 
 **Decision:** _open_.
 
-### D20 — Is the riding trainer a new NPC or a role on the existing trainers?
-
-`mounts.md` §1 says riding is learned "from a trainer in a race
-capital". The capitals will already hold job trainers
-(`professions.md` §1), class trainers (WP11's respec) and the WP7
-vendors, and **WP13 owns the real capital structures** — so the NPC
-placement decision has to be made before WP13 authors them.
-
-Options: **(a)** a role on the existing **job** trainer — riding is a
-universal skill exactly like Cooking and First Aid, which that NPC
-already teaches; **(b)** a dedicated stable master, which is more
-readable and gives the mount line a place in the world; **(c)** the
-faction Quartermaster (already a shipped NPC).
-
-Recommendation: **(a)** — no new NPC, no new model, and it keeps the
-"universal skill" framing of `mounts.md` §1 literally true at the point
-of sale. **(b)** is the better answer if WP13 wants stables as
-architecture anyway.
-
-**Decision:** _open_.
-
 ---
 
 ## E. Cooking
@@ -624,5 +603,5 @@ magnitudes **block WP10**'s cooking book.
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP26/WP29 |
 | C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
-| D12, D14–D20 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins and trainer | **mounts WP**; D20 also WP13 |
+| D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |
 | E21 | Cooking recipe lists per tier, restore percentages and buff magnitudes | **WP10** |

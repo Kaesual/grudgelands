@@ -27,6 +27,10 @@ the material ladder is its §3.0, the per-profession catalogs are
     makes all three true at once.
   - **First Aid keeps no book**: all recipes at once, materials are the
     only gate.
+  - **Riding is likewise universal** and is taught and sold by the same job
+    trainers in four steps at levels 15/30/45/60 (`mounts.md` §1, D20 decided
+    2026-08-13). It costs no main profession slot and adds no separate
+    trainer NPC.
 - **Gathering split**: food-grade plants (potatoes, berries, cooking
   ingredients) are gatherable by EVERYONE; **alchemy herbs
   ("dragonweed") require the Alchemist main profession** — for everyone

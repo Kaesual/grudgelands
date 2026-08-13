@@ -19,10 +19,17 @@ universal skills `professions.md` §1, the mob speed pillar
   **First Aid** (`professions.md` §1) it is universal — every character
   can learn it, and the two main profession slots stay free for the six
   crafting professions.
-- Riding is learned **from a trainer in a race capital**, in four steps at
-  character levels 15, 30, 45 and 60. A learned step is **player state,
-  permanent and per character**, and it hands over the owner-bound mount item
-  of that step.
+- Riding is learned **from the job trainer in every race capital**, in four
+  steps at character levels 15, 30, 45 and 60 (D20 decided 2026-08-13:
+  riding is a role on the existing job trainer, exactly like Cooking and
+  First Aid — no dedicated stable master and no Quartermaster involvement in
+  the MVP). A learned step is **player state, permanent and per character**,
+  and it hands over the owner-bound mount item of that step.
+- WP13 reserves only a **cosmetic stable/hitching-post dressing slot** near
+  the job trainer's court in the Market/Professions capital quadrant. It is
+  ordinary mutable, claim-excluded dressing, never a functional anchor; a
+  later dedicated stable master (Phase 2+, e.g. with D19 variants) can attach
+  there without moving NPCs or roads.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
 
