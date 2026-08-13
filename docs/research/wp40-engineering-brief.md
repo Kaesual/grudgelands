@@ -953,6 +953,9 @@ liquid, or `param2` mutation, and leave a later DungeonGen write authoritative.
 The finite guard and raw native observations are release evidence, never
 production IPC or mod-storage authority. Production does not inspect a halo,
 a room center, a guard bit, or a content name to make a placement decision.
+An observed ID matching a manifest-registered dungeon-node name may be counted
+only as `registered_dungeon_name_collision_non_provenance`; it does not identify
+a dungeon voxel and is never reported as dungeon clipping.
 Within the frozen corpus, one plan/guard intersection rejects the seed or
 geometry exactly as before. `force_native_dungeon = true` is rejected during
 source, compiled-data, and manifest validation and never reaches runtime as
@@ -1066,21 +1069,37 @@ neighborhood available inside Luanti's 16-node emerge border. Otherwise the
 transaction fails rather than accepting a truncated correction.
 
 The pass snapshots the original emerged `param1` buffer. After the single
-content commit, it:
+content commit, it performs all lighting work on that same mapgen
+VoxelManip, without an intervening map write or second light transaction:
 
-1. sets both day and night `param1` banks to zero throughout the light-dirty
-   region;
-2. sets day light 15 and night light 0 only on final air runs that the analytic
-   geometry proves open to sky through the available upper border; it never
-   stamps water or an inferred cave opening; and
+1. uses zero or more bounded, mapgen-only `VoxelManip:set_lighting` preparation
+   calls to set both day and night `param1` banks to zero throughout the
+   canonical light-dirty boxes;
+2. uses only further bounded `set_lighting` preparation calls to set day light
+   15 and night light 0 on final-air boxes that the analytic geometry proves
+   open to sky through the available upper border; it never stamps water or an
+   inferred cave opening;
 3. calls `VoxelManip:calc_lighting` exactly once with
    `propagate_shadow = true`, using the complete emerged x/z extent and the
    central owner chunk's y range as its sunlight-propagation range. Luanti's
    spread phase then covers the complete emerged VoxelManip and rediscovers
    final registered light-source nodes; and
-4. restores the snapshotted `param1` byte outside the analytically allowed
-   dirty/owned light result before its one final light-buffer commit. Any
-   computed difference there is also reported as a preservation failure.
+4. reads the calculated light buffer, restores the snapshotted `param1` byte
+   outside the analytically allowed dirty/owned light result, and performs
+   exactly one final full-buffer `VoxelManip:set_light_data` upload. Any
+   computed difference outside the allowed result is also reported as a
+   preservation failure.
+
+The preparation-call count is the canonical bounded box count produced for
+that dirty set; it is not a second upload count. The pinned API validates every
+`set_lighting` box against the emerged VM and writes the requested packed
+day/night value directly into that VM
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):231-256;
+[`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):2019-2028).
+`set_light_data` then replaces the complete VM `param1` array from the restored
+Lua buffer
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):259-305).
+There is still exactly one later engine blit of this VM.
 
 This reset is required because `set_data` changes content without clearing old
 `param1`, and Luanti's spreading pass does not reliably reduce stale light.
@@ -1095,12 +1114,13 @@ queues engine transformation. That later engine phase may perform its own node-
 light updates; those are engine-owned liquid settlement work, not a second
 WP40 `calc_lighting` call. The settled hash gate includes them.
 
-If the transaction has no light-relevant content change, it performs no light
-reset and no lighting call. The chunk-order corpus compares final `param1`
-hashes for row-major, reverse, random, vertical, anchor-first/last, and sparse
-requests. Named tunnels and other deeper envelopes must finish all lighting
-effects within the same complete neighborhood or declare and prove a separate
-bounded strategy before they are accepted.
+If the transaction has no light-relevant content change, it performs zero
+`set_lighting`, `calc_lighting`, and `set_light_data` calls. The chunk-order
+corpus compares final `param1` hashes for row-major, reverse, random, vertical,
+anchor-first/last, and sparse requests. Named tunnels and other deeper
+envelopes must finish all lighting effects within the same complete
+neighborhood or declare and prove a separate bounded strategy before they are
+accepted.
 
 ### 2.7 Strata in changed volumes
 
@@ -1638,8 +1658,15 @@ The mask is decided before native-content inspection. Rendering replaces only
 the exact final stratum host from Section 4.1. Cave air, liquid, dungeon,
 surface/constructed nodes, or unknown/foreign structure clips the intersecting
 part; it does not move the anchor, change the shape, or trigger a new roll.
-Generic native ore also clips the vein and remains native. Clipped counts are
-reported by exact encountered category in the supply audit.
+Generic native ore also clips the vein and remains native. Production reports
+an encountered ineligible target only as the provenance-neutral deep-skip
+category `non_host`. It may additionally report
+`registered_dungeon_name_collision_non_provenance` when the observed content ID
+matches one of the manifest-bound biome dungeon-node registrations, but that is
+diagnostic name collision only: it is never a `dungeon` category, writer
+provenance, or placement input. A controlled offline fixture may retain its own
+authored provenance label for an oracle; production cannot derive that label
+from the node.
 
 When two authored resource masks claim the same eligible voxel, an immutable
 resource-priority rank wins; equal rank resolves by candidate priority, stable
@@ -1709,9 +1736,14 @@ never participate in the following runtime precedence:
 At `y < broad_content_y_min`, items 1, 3, and 5 admit no operation at all.
 Item 4 is the sole possible authored content change and uses the manifest-
 resolved exact host ID. A wrong host is a typed skip, not a fatal production
-collision; counters distinguish expected generic ore/cave/dungeon/foreign/
-unknown clipping from eligible-host replacement. Missing or drifted host/
-output registrations are fatal at startup. No deep typed operation sets
+collision; production counters distinguish only `eligible_host_replacement`
+from provenance-neutral `non_host` skips. The optional
+`registered_dungeon_name_collision_non_provenance` diagnostic may identify a
+registered-name collision but must never be aggregated or described as dungeon
+clipping. Positive native-dungeon evidence remains confined to Section 2.4's
+isolated native-only callback/emerged-area guard and finite offline
+intersection proof. Missing or drifted host/output registrations are fatal at
+startup. No deep typed operation sets
 `param2`, changes liquid topology/light behavior, or schedules metadata or an
 entity. These restrictions are part of the operation type, so a plugin catalog
 cannot request a deep broad write through a nominal resource record.
@@ -1736,8 +1768,10 @@ The consolidated pass uses this fixed execution pipeline:
    set is nonempty, and upload final `param2` exactly once with
    `set_param2_data()` when its separate dirty set is nonempty, both on the same
    mapgen VoxelManip and inside the one transaction before the engine blit;
-7. perform the one bounded Section 2.6 lighting reset/recalculation if and only
-   if light-relevant content changed;
+7. if and only if light-relevant content changed, perform Section 2.6's
+   canonical bounded `set_lighting` preparation calls, exactly one
+   `calc_lighting`, snapshot restore, and exactly one final `set_light_data`
+   upload on the same VM;
 8. call `update_liquids()` once if and only if liquid topology changed, thereby
    queuing the later engine-owned transform rather than settling it in Lua; and
 9. emit only compact custom gennotify records required for later metadata,
@@ -2582,11 +2616,15 @@ On the designated target host, for each Lua runtime and cache class:
   growth after explicit supported GC/settling points. A positive trend outside
   recorded measurement noise is a leak failure, not an allowable peak.
 
-Every changed chunk performs at most one `VoxelManip:set_data` content upload,
-at most one `VoxelManip:set_param2_data` upload in that same sole VM
-transaction, one WP40 `VoxelManip:calc_lighting` call, and one WP40
-`VoxelManip:update_liquids` queueing call; a category is zero when its
-corresponding dirty set is empty. Unchanged chunks perform all four zero times.
+Every changed chunk performs at most one `VoxelManip:set_data` content upload
+and at most one `VoxelManip:set_param2_data` upload in that same sole VM
+transaction. Light-dirty chunks perform the canonical bounded number of
+mapgen-only `VoxelManip:set_lighting` preparation calls, exactly one WP40
+`VoxelManip:calc_lighting` call, and exactly one final full-buffer
+`VoxelManip:set_light_data` upload; non-light-dirty chunks perform all three
+lighting categories zero times. `VoxelManip:update_liquids` is called at most
+once and only for a nonempty liquid-topology dirty set. Completely unchanged
+chunks perform every content, `param2`, lighting, and liquid call zero times.
 Engine liquid transforms and any light-node updates they trigger later
 in `finishBlockMake` are measured and reported separately; they neither count
 as extra WP40 API calls nor disappear from settled latency/light evidence.
@@ -2597,9 +2635,12 @@ failure. The report records full-buffer gets/sets by content and `param2`,
 classified columns, scanned and modified voxels, candidates considered/
 accepted, positive native-dungeon callbacks, emerged guard volume, owner-slice
 finite-guard volume and rejected intersections, deepest broad-operation y,
-typed-deep host hits/skips by encountered category, liquid-changing voxels,
-lighting volume/calls, Lua allocation/GC, process RSS, callback and total chunk
-time, chunks per second, main-step latency, and emerge-queue depth.
+typed-deep eligible-host replacements and provenance-neutral `non_host` skips,
+optional `registered_dungeon_name_collision_non_provenance` diagnostics,
+liquid-changing voxels, lighting volume plus preparation/calculate/final-upload
+calls, Lua allocation/GC, process RSS, callback and total chunk time, chunks per
+second, main-step latency, and emerge-queue depth. No production counter may
+label an encountered node as a dungeon or dungeon clipping.
 
 The deterministic 100-requester exploration trace is a separate synthetic
 mapgen/system gate, not a substitute for the micro-corpus and not a claim to
@@ -2713,6 +2754,27 @@ unsatisfiable, a new reviewed Reality Check is required; only a verified
 node-exact provenance API/origin channel can reopen replacement authority or
 justify revisiting the vertical cutoff.
 
+The same 2026-08-13 review found two narrower documentation ambiguities. First,
+the earlier supply/performance wording asked production to report deep skips by
+an encountered `dungeon` category even though the engine evidence above proves
+that only content IDs, not writer provenance, are visible there. The corrected
+runtime categories are `eligible_host_replacement` and provenance-neutral
+`non_host`; a manifest-registered dungeon-node-name match may be emitted only
+as `registered_dungeon_name_collision_non_provenance`. Positive dungeon events,
+full-emerged-area guards, and plan intersections remain isolated native-only
+finite proof evidence, so neither replacement behavior nor its zero-
+intersection gate changes. Second, “one final light-buffer commit” did not state
+the API call boundary precisely. The pinned engine supports zero or more
+bounded mapgen-only `set_lighting` range preparations on one VM
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):231-256;
+[`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):2019-2028),
+then one `calc_lighting`, followed by one restored full-buffer
+`set_light_data` write
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):259-305).
+This clarifies the existing bounded-light algorithm; it adds no second light or
+VoxelManip transaction and changes no numerical threshold, seed, case,
+preservation rule, or acceptance gate.
+
 The 2026-08-13 corpus-staging review also triggered this rule. Reproduction is
 direct: the checked T1 fixture has 27 fixed entries and deliberately assigns
 slots 28--31 to T2 but slot 32 to T9
@@ -2756,8 +2818,8 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
 | T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor oracles; extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests frozen |
 | T3 — public geography and policy | immutable `grug_zones` APIs, water/mount classifier, territory/PvP fields, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | scalar hot paths agree with slow oracle; no 38-definition scan or dynamic-claim coupling |
-| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; enumerate every non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, deep host-only skips, and exact dirty sets |
-| T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, deep typed order, seam, no-op and operation-count gates |
+| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; enumerate every non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type with provenance-neutral production skips; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, `eligible_host_replacement`/`non_host` deep outcomes with no production dungeon label, and exact dirty sets |
+| T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting with canonical `set_lighting` preparation, one `calc_lighting`, and one final restored `set_light_data`; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, provenance-neutral deep typed order, seam, no-op and exact API operation-count gates |
 | T6 — authored surface catalog | logical biome top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement, deterministic micro-corpus class 10 | T4, T5 | palette/share, collision, tree-boundary, water-family and settled-hash gates; class-10 fixture appended through the frozen T2 selector without moving a T2 coordinate |
 | T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records, deterministic micro-corpus class 11 | T0, T4, T5 | host/clipping/final-node counts, deep order fixtures, all Section 6.4 access routes across 32 seeds, and class-11 fixture appended through the frozen T2 selector without moving an earlier coordinate |
 | T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |

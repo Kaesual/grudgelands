@@ -373,12 +373,22 @@ the old light behind. Blindly setting all changed nodes to sunlight or calling
 `calc_lighting` with an arbitrary top boundary is also unsafe, because the
 sunlight seed-row rule is material.
 
-**Recommendation.** Perform content changes once, call `set_data` once, queue
-liquids once if and only if liquid topology changed, and perform one final
-lighting correction. The precise lighting range and any explicit sunlight
-seeding used by the existing ocean pass should be retained only after tests
-prove that opened sky, sealed caves, water columns, chunk tops, and vertical
-generation order all converge to the same result.
+**Recommendation.** Perform content changes once and call `set_data` at most
+once. For a nonempty light-dirty set, use the canonical bounded number of
+mapgen-only `VoxelManip:set_lighting` range calls to zero both banks and install
+only analytically proved sky seeds on the same VM, call `calc_lighting` exactly
+once, restore the original light bytes outside the permitted result, and call
+`set_light_data` exactly once with that final full buffer. The engine validates
+and applies each range preparation directly to the mapgen VM
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):231-256;
+[`l_mapgen.cpp`](../../reference_projects/luanti/src/script/lua_api/l_mapgen.cpp):2019-2028),
+while the final full-buffer setter is a separate API operation on the same VM
+([`l_vmanip.cpp`](../../reference_projects/luanti/src/script/lua_api/l_vmanip.cpp):259-305).
+This is one light transaction and one later engine blit, not multiple commits.
+A non-light-dirty chunk performs all three lighting categories zero times.
+Queue liquids once if and only if liquid topology changed, after authored
+lighting. Tests must prove that opened sky, sealed caves, water columns, chunk
+tops, and vertical generation order all converge to the same result.
 
 ## Capability matrix
 
@@ -986,6 +996,13 @@ nodes, ignore, unknown, or foreign content and performs no param2/light/liquid
 work. Current explicit biome dungeon nodes are pairwise disjoint from the six
 final stratum hosts, and both host/output registrations are manifest-validated.
 Names define the positive eligible-host type, never dungeon provenance.
+Production records every ineligible encountered target only as the provenance-
+neutral deep skip `non_host`. A matching manifest-registered biome dungeon-node
+name may additionally emit
+`registered_dungeon_name_collision_non_provenance` for diagnostics, but never a
+`dungeon` or dungeon-clipping category and never a placement decision. Positive
+dungeon callbacks, complete emerged-area guards, and plan intersections remain
+exclusive to the isolated native-only finite proof.
 
 Native-only preflight additionally records
 `VoxelManip:get_emerged_area()` for every callback with a positive dungeon
@@ -1513,8 +1530,10 @@ output:
 - the pinned y-lattice proof must keep every dungeon-writing full VM below
   every broad-content callback full VM, including later neighbor collars;
 - every deeper authored write must replace only its exact final stratum host,
-  while generic ore/cave/liquid/dungeon/ignore/unknown/foreign fixtures remain
-  unchanged in both native-before-authored and later-neighbor orders;
+  while controlled generic-ore/cave/liquid/dungeon/ignore/unknown/foreign
+  fixtures remain unchanged in both native-before-authored and later-neighbor
+  orders; those labels are harness-owned provenance, while production reports
+  the encountered skip only as `non_host`;
 - native dungeon content must remain byte-identical everywhere;
 - `force_native_dungeon = true` and any content-name dungeon classifier must
   fail validation;
