@@ -144,7 +144,9 @@ the goal-level view.
   six-tier gear/tool merge; safe removal of superseded vendored recipes; and
   trader-catalog migration onto WP44 prices.
 - [ ] WP5 is design-unblocked (A2 affix vocabulary and A6 refined marker
-  decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7); WP10 is
+  decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7) and **startable now**:
+  all three dependencies are shipped and the executable card is
+  [docs/research/wp5-task-card.md](docs/research/wp5-task-card.md). WP10 is
   design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
   food-restore buff model and the buff/debuff icon framework); it still
   follows WP26/WP33/WP43/WP44.

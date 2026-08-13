@@ -216,8 +216,9 @@ longer among them and is decided in [boats.md](docs/design/boats.md).
 material/map/economy roots. WP40 still requires its independently reviewed
 six-part engineering brief plus fixed seed/capacity/performance evidence before
 code begins. WP37, WP11, WP14, WP20, WP21, WP8 and — since the 2026-08-13 affix/marker
-decisions — WP5 are also ready behind shipped dependencies; WP34 is not next because it still waits for map, structures and
-economy.
+decisions — WP5 are also ready behind shipped dependencies; WP5 and WP26 each
+carry an executable task card. WP34 is not next because it still waits for map,
+structures and economy.
 
 **Caveats:** the running WP18/WP36 world still uses rectangular continents,
 radial difficulty and mandatory water separation until WP40. WP7 still runs
