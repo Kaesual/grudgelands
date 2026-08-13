@@ -46,37 +46,6 @@ second bag axis.
 *Lands in*: `items_crafting.md` §§6b.1/6b.2.
 **Decision:** _open_ — affects WP10's Tailor book.
 
-### A4 — Remaining profession keystones
-
-`items_crafting.md` §2.3 carries only the keystone cells whose materials are
-authored and omits this question's missing rows. The rule is decided (a
-keystone is the redemption token that opens a book group; the materials prove
-the player has been in the region that produces them); the lists below are not.
-
-Still missing: **T5 and T6 columns for Blacksmith, Leatherworker, Tailor,
-Alchemist and Woodcarver**, plus the **T2–T4 Woodcarver rows**.
-
-Constraints the lists must respect:
-
-- The shape of the existing rows: ~6 units of the tier's own material
-  plus 2–4 units of a ring-specific mob drop; T4 already adds
-  `group:grug_rare_trophy`.
-- §2.4's pacing: a keystone is ~30–60 min of natural play in the source region
-  just reached.
-- Universal metal/pick progression must remain non-circular. Profession
-  keystones may prove arrival through bars and level-appropriate ordinary mob
-  drops, but must not require a foreign G2 gem or loose Abyssal Crystal.
-
-Recommendation for the still-open rows: T5 = 6 × the tier material + 2 ×
-a level-41–50 drop; T6 = 6 × the tier material + 2 × a level-51–60 elite
-drop. Woodcarver rows key off the universal processed wood grades and the
-Blacksmith fittings it cross-buys (§3.6a), not a race-exclusive wood.
-
-*Lands in*: `items_crafting.md` §2.3 (extend the table to T2–T6 × 6
-professions).
-**Decision:** _open_ — all rows listed above **block WP10** (the book cannot
-gate groups without them).
-
 ---
 
 ## B. Material calibration
@@ -343,7 +312,6 @@ magnitudes **block WP10**'s cooking book.
 | # | Question | Blocks |
 |---|---|---|
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
-| A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |

@@ -339,23 +339,32 @@ the meta key advances.
 
 Columns are **book groups**, i.e. gear tiers (§3.0):
 
-| Profession with authored rows | T2 group | T3 group | T4 group |
-|---|---|---|---|
-| Blacksmith | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` |
-| Leatherworker | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy |
-| Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy |
-| Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy |
-| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass |
+| Profession | T2 group | T3 group | T4 group | T5 group | T6 group |
+|---|---|---|---|---|---|
+| Blacksmith | 6 iron bar | 6 steel bar + 2 stone core | 3 gem + 1 `group:grug_rare_trophy` | 6 embersteel bar + 2 venom sac | 6 abyssal steel bar + 2 stone core |
+| Leatherworker | 6 cured leather | 6 heavy leather + 2 bear claw | 6 scaled hide + 1 rare trophy | 6 sleek leather + 2 fang | 6 nightscale leather + 2 venom sac |
+| Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy | 6 silk bolt + 2 venom gland | 6 stormweave bolt + 2 sleek pelt |
+| Woodcarver | 6 polished wood + 1 iron staff fitting | 6 hardened wood + 1 steel staff fitting | 6 inlaid wood + 1 silversteel fitting + 1 rare trophy | 6 lacquered wood + 1 embersteel fitting + 2 sharp feather | 6 heartwood + 1 abyssal steel fitting + 4 spider silk |
+| Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy | 8 crimson lotus + 2 venom sac | 8 stormkelp + 2 bear claw |
+| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass | 4 Gold Bars + 2 Embersteel Bars + 2 sleek pelt | 4 Gold Bars + 2 Abyssal Steel Bars + 2 bear claw |
 
 - **T1 opens with the profession** — no keystone; it is the tier every
   player already crafts from (§3.0.3).
-- **Goldsmith T5/T6:** T5 consumes 4 Gold Bars + 2 Embersteel Bars + 2
-  suitable level-41–50 zone mob drops; T6 consumes 4 Gold Bars + 2 Abyssal
-  Steel Bars + 2 suitable level-51–60 elite drops. The concrete drop
-  itemstrings come from useful existing regional loot and must give both
-  factions equivalent acquisition time. They are ordinary combat proofs,
-  never G2 gems, loose Abyssal Crystal, `group:grug_rare_trophy` or Fallen
-  Crowns.
+- **The table is complete since 2026-08-13** (the A4 decision). Every
+  T5/T6 drop is existing regional loot with both-faction sources
+  (`biomes_mobs.md` §3.1/§3.2/§6): venom sac/gland from serpents and
+  spiders, fang from the shared wolf table, sleek pelt from the panther
+  pair, bear claw from the bear pair, stone core from the elite golems,
+  sharp feather from the bird-of-prey pair, crimson lotus and stormkelp
+  from both jungles/coasts. The Goldsmith rows keep their rule: ordinary
+  combat proofs, never G2 gems, loose Abyssal Crystal,
+  `group:grug_rare_trophy` or Fallen Crowns. The rare trophy appears
+  exactly once per profession, at T4. Processed tier bars are legal
+  keystone inputs and create no circularity — book groups gate
+  profession recipes, never the universal bars or picks. The
+  Woodcarver's fitting requirement is the §3.6a Blacksmith cross-buy as
+  arrival proof; its wood grades are the universal §3.6a ladder, never a
+  race wood.
 - No profession keystone may make a universal pick circular.
 - The **Herbalism and Gem Hunter rows are deleted** (2026-08-07):
   Herbalism merged into the Alchemist, Gem Hunter into the Goldsmith
