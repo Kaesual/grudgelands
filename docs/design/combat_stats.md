@@ -346,10 +346,19 @@ Normal tier at level L:
 - **Guard levels** come from the separate `grug_core.guard_level_at`
   field (world.md §1) with its own cap of **70** (the mob axis stays
   1–60), and a guard at level **≥ 60 is promoted to elite
-  automatically**. Every capital guard is fixed at level 60; other guards
-  follow their named zone/POI role. Only a
-  hand-set `_grug_fixed_level` bypasses field and cap (Kraken Guard,
-  L100).
+  automatically**. Its T3 positional base is `nil` in every exterior class,
+  including shelf. Inside the exact capital build-plus-10 hard-protection x/z
+  mask it is exactly 60 only at normalized y >= -700; at y <= -701 and all
+  other non-exterior positions it is
+  `min(70, max(20, surface_level_at(pos)))`. It does not apply the mob depth
+  floor. WP13 may later raise that non-nil generic base outside the shallow
+  capital hard volume, capped at 70, but may never lower it; exterior nil
+  remains nil and permits no guard post. Ordinary and royal guards inside
+  remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
+  mechanism and bypasses positional and post-role fields only for a deliberately
+  designed fixed entity. Its current implemented use is the Kraken Guard at
+  L100; WP13 later uses the same mechanism for the not-yet-implemented king at
+  L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | XP |
 |-----------|----|---------|----|
@@ -365,8 +374,12 @@ helper `grug_core.mob_level_at(pos)` returns the level directly. Target
 surface geometry (`world_zones.md` §2): the named zone and its authored local
 progression supply levels 1–60, rising from outer race starts toward the
 faction front; capital city zones contain no ambient hostile mobs. Guards use
-the separate `guard_level_at`, with level 60 fixed in every capital. The ocean
-spawns no hostiles except the deep-sea guards (world.md §2b). **Depth axis**
+the separate positional `guard_level_at` contract above; the depth formula
+does not affect that guard base. Every exterior class has no surface level.
+Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
+at normalized y < 0; deep ocean and immutable channels have no ordinary mob-
+level result. The fixed level-100 Kraken is the explicit deep-ocean exception
+and bypasses the resolver. **Depth axis**
 (decided 2026-08-06,
 WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —
 `mob_level_at = max(surface_level(x,z), depth_level(y))`, **3 levels per
@@ -382,6 +395,8 @@ field: at `y = −surface_level / 0.06`, e.g. **−83** in a level-5 start
 area, **−417** in a level-25 heartland area and **−750** in a level-45 front
 area — in the beginner zone depth takes over almost immediately, and a
 level-60 surface zone meets the depth cap exactly at −1000.
+(For normalized `y < 0`, the exact standard term is
+`depth_level(y) = min(60, max(1, round_half_away_from_zero(-3*y/50)))`.)
 (The Nether is NOT part of this axis — its y-band is unreachable by digging,
 portals only.) The retired radial field remains in the shipped WP18 code until
 WP40 migrates WP6's mobs and guards to named zones.

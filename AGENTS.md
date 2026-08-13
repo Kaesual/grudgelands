@@ -370,9 +370,12 @@ Details + line numbers in [docs/research/](docs/research/).
   - **Level/tier engine contract** (`grug_mobs/levels.lua`): a mob def
     NEVER hand-sets `hp_min`/`hp_max`/`damage`/XP/`armor` — they are
     derived from `grug_core.mob_level_at`/`guard_level_at` plus the tier
-    multipliers on the first active tick. `_grug_fixed_level` is the one
-    documented exception (Kraken L100). Everything else (speeds,
-    view_range, drops, visuals) stays def-owned.
+    multipliers on the first active tick. `_grug_fixed_level` is the sole
+    explicit fixed-entity mechanism: it bypasses positional/role fields only
+    for deliberately designed fixed entities. Its current implemented use is
+    the Kraken L100; future WP13 uses the same mechanism for the still-
+    unimplemented king L65. There is no second king-specific level path.
+    Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —
     fixed L1, 1 HP, 10 XP, no fall damage, never promotable; the second
     documented exception to "stats derived") plus `normal`/`elite`/`rare`,

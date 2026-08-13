@@ -961,10 +961,12 @@ asks for it.
   authoritative authored land/zone/surface pass. A fully custom terrain
   generator is rejected.
 - Engine climate competition is not authoritative inside the authored world.
-  The surface pass chooses a logical biome only from the owning zone's
-  weighted palette, rewrites the top/filler column where needed and places the
-  matching decorations. Gameplay consumers use the logical zone-biome API,
-  not `core.get_biome_data`.
+  T2 geometry applies one full-seed, source-policy-bound coherent selector to
+  the owning zone's weighted palette and compiles the resulting logical biome
+  IDs. The selector policy and results are checksum-covered geometry. T6 maps
+  those IDs to top, filler and decoration content but never selects or remaps
+  an ID. Gameplay consumers use the logical zone-biome API, not
+  `core.get_biome_data`.
 - The land pass may carve ocean or fill an authored land connection, but must
   preserve caves, registered depth strata, ore veins and dungeons below the
   rewritten surface shell. Capital/start envelopes own their terrain after
@@ -988,6 +990,31 @@ asks for it.
   `pvp_rule_at(pos)`, `surface_level_at(pos)`, `neighbors(id)` and
   `anchor(zone_id, slot_id)`. Returned definitions are caller-owned copies
   or read-only by convention; consumers may not mutate the registry.
+- The allocation-free feature surface is
+  `nearest_boundary_at(x, z)`, `nearest_route_at(x, z)` and
+  `nearest_hydrology_at(x, z)`. Each returns
+  `(stable_id, nonnegative_integer_distance)` or `(nil, nil)` outside the
+  compiled interesting extent or when that validated family contains zero
+  records. It selects by exact Euclidean distance to, respectively, the closed
+  compiled boundary geometry, closed route-corridor envelope or closed x/z
+  hydrology-exclusion envelope. Zero means exactly on a boundary or on/inside
+  an envelope; every positive distance rounds up so a distinct feature less
+  than one node away cannot alias zero. Exact-distance ties use canonical
+  numeric ID, then stable string ID. `housing_eligible_at(x, z)` is the
+  separate boolean for the complete static radius-50 center mask and never
+  checks dynamic claims.
+- Every node-addressed public query accepts only finite Lua-number coordinates
+  in `-(2^53 - 1)..(2^53 - 1)` before and after normalization. Each coordinate
+  rounds to its nearest integer with exact half ties away from zero. Invalid,
+  unsafe, absent or malformed coordinates are programmer errors; there is no
+  string coercion, clamp or fallback. This matches Luanti's
+  [`math.round` and `math.isfinite`](../../reference_projects/luanti/builtin/common/math.lua):35-48,
+  documented
+  [`vector.round`](../../reference_projects/luanti/doc/lua_api.md):4319-4325,
+  and engine node conversion through
+  [`read_v3s16`](../../reference_projects/luanti/src/script/common/c_converter.cpp):260-271
+  and
+  [`doubleToInt`](../../reference_projects/luanti/src/util/numeric.h):341-363.
 - `faction_at(pos)` returns `"accord"`, `"throng"` or `nil` for contested/open
   ground; it never derives ownership from `race_region`. `territory_rule_at`
   returns the complete 3D construction/mining policy, including
@@ -996,12 +1023,32 @@ asks for it.
   override rather than returning only the surface zone's rule.
 - `grug_core.difficulty_at`, `mob_level_at`, `guard_level_at`,
   territory protection and open-sea checks become compatibility consumers of
-  that API. The independent depth floor remains
+  that API. `surface_level_at(pos)` returns `nil` for every exterior class:
+  shelf, deep ocean and immutable dragon channel. On land and zone-owned
+  planned water, the independent depth floor remains
   `max(surface_level_at(pos), depth_level_at(y))`.
+- On exterior shelf, `mob_level_at(pos)` returns `nil` at normalized `y >= 0`
+  and the standard capped/rounded depth level alone at normalized `y < 0`.
+  Harmless or fixed shore wildlife does not use an ordinary surface level.
+  Deep ocean and immutable dragon channels have no ordinary mob-level result;
+  the hand-set deep-ocean Kraken Guard remains fixed level 100 outside this
+  resolver, and channels do not inherit it.
+- T3's positional `grug_core.guard_level_at(pos)` base returns `nil` in every
+  exterior class, including editable shelf. It returns exactly 60 inside the
+  exact capital 512×512 build envelope plus its 10-node hard-protection apron
+  only at normalized `y >= -700`; at `y <= -701` and everywhere else on
+  non-exterior columns it returns
+  `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that generic
+  non-nil base outside the shallow capital hard volume, capped at 70, but may
+  never lower it. Exterior nil remains nil and permits no guard post. Ordinary
+  and royal guards inside the shallow capital volume remain exactly 60. The
+  king is a separate fixed level-65 entity and uses neither resolver. T3 does
+  not invent post roles.
 - Zone lookup uses a prebuilt spatial grid plus exact boundary resolution;
-  hot paths may not scan all 38 definitions. Boundary variation is derived
-  from the full world seed without converting an unsafe 64-bit seed through a
-  Lua number.
+  hot paths may not scan all 38 definitions or a complete feature family. The
+  same compiled index/evaluator proves nearest-feature results and the final
+  housing-center predicate. Boundary variation is derived from the full world
+  seed without converting an unsafe 64-bit seed through a Lua number.
 - All fixed placements resolve through zone anchor ids. No dependent WP may
   retain a raw WP18 ring name or coordinate.
 - Anchor slot ids are stable data: `start`, `capital`, `village_<n>`,
@@ -1014,10 +1061,15 @@ asks for it.
 
 - Registry: exactly 38 unique zones, every land zone has one valid race
   region and one valid primary relief id, the undirected graph equals §9, and
-  all six start→capital paths are peaceful. Every secondary relief or sharp
-  terrain feature has an explicit bounded mask, stable landmark id and owning
-  zone. Every §8.4 landmark exists exactly once and satisfies its local route,
-  anchor and grading constraints.
+  all six start→capital paths are peaceful. The checksum-covered selector
+  policy produces one coherent compiled logical biome ID inside the owning
+  palette at every authored result. Every secondary relief or sharp terrain
+  feature has an explicit bounded mask, stable landmark id and owning zone.
+  Every §8.4 landmark exists exactly once and satisfies its local route,
+  anchor and grading constraints. Each of the six existing capital anchors is
+  centered in and contained by its exact build-plus-10 hard-protection mask.
+  T2 creates no WP13 capital guard, defense, king or structure anchor; WP13
+  later validates those authored anchors against the same mask.
 - Geography: the complete four-zone Holy Grounds land chain and all six paired
   frontier contacts exist on every tested seed. Each continent retains exactly
   three connected outer peninsulas separated by two open bays, one continuous
@@ -1081,9 +1133,18 @@ asks for it.
   visible fortified threshold, destination-level map label, contested-zone
   warning and unobstructed turnaround before hostile population. Every
   level-31–60 ordinary zone is contested; no level-1–30 zone is.
-- Biomes/content: no logical biome, mob family or gathering node appears
-  outside its zone palette. Every `logical biome × zone` cell has at least
-  one valid ambient spawn or is explicitly marked civic/no-hostiles.
+- Level-query edges: after coordinate normalization, capital center and exact
+  hard-mask-edge samples return guard level 60 at y = -700, while the sample
+  one node outside returns the generic base. At y = -701 all three return the
+  generic base. Surface and guard level are nil on every exterior class; shelf
+  mob level is nil at normalized y = 0 and depth-only at y = -1. Deep ocean and
+  channel ordinary mob level remain nil, without changing the fixed level-100
+  deep-ocean Kraken.
+- Biomes/content: T2's compiled selector agrees with the full-seed slow oracle
+  and no logical biome, mob family or gathering node appears outside its zone
+  palette. T6 only maps the compiled IDs to content. Every
+  `logical biome × zone` cell has at least one valid ambient spawn or is
+  explicitly marked civic/no-hostiles.
 - Economy: the §11 G1/G2, cultural-material, signature-wood, POI, rare and
   loot-source audits pass over at least 32 representative seeds. They prove
   native, enemy-contested, deep-cross-border, apex-camp and trade routes,

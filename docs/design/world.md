@@ -273,9 +273,15 @@ occupying a position (`world_zones.md` §7):
   a planned mainland or island footprint. This is editable under the adjacent
   perimeter zone's terrain policy and reserved for later coral, kelp, fish,
   coastal materials and shore wildlife. It is never housing-claim ground.
+  As exterior water it has no authored surface or guard level. Ordinary
+  `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
+  independently levelled. Below normalized y = 0, shelf caves use the standard
+  capped/rounded depth level alone.
 - **Deep ocean:** every ordinary ocean column beyond the shelf, immutable at
   every y. This remains the deliberately deadly open sea patrolled by the
-  level-100 Kraken Guard (no drops or XP). Playable-boat ownership,
+  level-100 Kraken Guard (no drops or XP). It has no ordinary surface, guard or
+  mob-level result: the Kraken is a hand-set fixed entity outside those
+  resolvers. Playable-boat ownership,
   acquisition, speed, damage, destruction and return/respawn behavior are not
   defined by this world-geometry rule (`TODO-design-boats.md`).
 - **Dragon channels:** separate full-column immutable masks between the
@@ -285,7 +291,8 @@ occupying a position (`world_zones.md` §7):
   two distinct 96-node-wide approaches centred at z = -125 and z = +125,
   joining its Holy Grounds endpoint to two inward-shore island beaches. Both
   are usable by both factions; their north/south orientation only equalizes
-  travel from Kragmar and Elandor.
+  travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
+  level result.
 The compatibility `open_sea_at` predicate must become true only for
 `deep_ocean`; it is false for planned zone water, shelf and dragon channel. The
 shipped WP18 rectangle/strait lookup remains running-code history only and is
@@ -423,9 +430,18 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   section has so far named them only as a *role* an outpost can carry;
   authoring them (schematic, garrison, protection footprint) belongs to
   the world-structures package.
-- Guard level normally follows the local named zone and the post's role;
-  capital guards are the fixed exception at level 60. A guard at level ≥ 60
-  is automatically an elite (scale/tint/telegraph, `combat_stats.md` §3).
+- The T3 positional guard base is `nil` in every exterior class, including
+  editable shelf, where no guard post may exist. It is exactly level 60 inside
+  a capital's exact 512×512 build envelope plus 10-node hard-protection apron
+  only at normalized y >= -700.
+  At y <= -701 and everywhere else on non-exterior columns it is
+  `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that non-nil
+  generic base outside the shallow capital hard volume, capped at 70, but may
+  never lower it; exterior nil remains nil. Ordinary and royal capital guards
+  inside the shallow hard volume remain exactly 60. The fixed level-65 king is
+  separate from both resolvers.
+  A guard at level ≥ 60 is automatically an elite (scale/tint/telegraph,
+  `combat_stats.md` §3).
 - Each named zone reserves its required outposts, road patrol legs and special
   camps explicitly. The old fixed minimum of 24 ring outposts is not a target
   budget; the complete zone catalog must replace it with equivalent faction
@@ -884,8 +900,11 @@ budget; WP13 then turns the reserved slots into real structures.
 Life measures (cheap on a voxel budget): named NPCs with one-liner barks,
 visible patrols, light/smoke details and a quest board per village. Ordinary
 guards fight monsters and eligible enemy players; only dedicated war-front
-units fight opposing faction NPCs. NPC and guard levels match the named zone
-except for the fixed level-60 capital defense.
+units fight opposing faction NPCs. NPC levels follow their named zone/role.
+Guard levels use the positional base above, with exact level-60 capital
+defense in the shallow capital hard volume; a later authored post role may only
+raise the generic base outside that volume within its cap. Kings retain their
+separate fixed level 65.
 
 **Drop rule (anti-litter, decided 2026-08-06)**: mobs and NPCs drop
 loot ONLY when a player was involved — details in combat_stats.md §3

@@ -1398,10 +1398,15 @@ native.**
 
 Inside the authored world, trees, shrubs, grasses, flowers, surface fungi,
 loose surface rocks, and comparable natural surface dressing have exactly one
-owner: the consolidated WP40 authored pass. Selection uses
-`grug_zones.biome_at`, the owning zone's decided weighted palette, the complete
-decimal seed, and stable decoration/candidate IDs. Engine climate, the native
-biomemap, and `core.get_biome_data` are not placement authorities.
+owner: the consolidated WP40 authored pass. T2 geometry owns the full-seed,
+source-policy-bound coherent logical-biome selector and compiles its logical
+biome ID for every authored column. The selector policy and every selected ID
+are covered by the source/compiled checksums; `grug_zones.biome_at` reads that
+compiled result. T6 only maps a compiled logical biome ID to its surface,
+filler, and decoration content and may not select, perturb, or remap the ID.
+Decoration placement then uses the compiled ID and stable decoration/candidate
+IDs. Engine climate, the native biomemap, and `core.get_biome_data` are not
+selection or placement authorities.
 
 Native surface-decoration registrations are omitted or disabled rather than
 allowed to run and then guessed away from node names. Existing suitable tree,
@@ -1426,11 +1431,14 @@ dressing. A landmark's registered decoration set has priority over ordinary
 vegetation only inside its exact mask; it gains no territory or protection
 authority from that priority.
 
-WP40 owns the placement architecture, logical palette coverage, deterministic
-candidates, and future semantic source/slot geometry. It does not register or
-place WP33's herbs, spices, cultural woods/material gatherables, or other later
-surface content. Those consumers must use the stable zone, biome, landmark,
-and exclusion queries rather than restore a native climate/ring placement.
+T2 owns the selector geometry and compiled logical biome IDs; T6 owns the
+content mapping and placement catalog. Together WP40 owns the placement
+architecture, logical palette coverage, deterministic candidates, and future
+semantic source/slot geometry without creating a second selector. It does not
+register or place WP33's herbs, spices, cultural woods/material gatherables,
+or other later surface content. Those consumers must use the stable zone,
+biome, landmark, and exclusion queries rather than restore a native climate/
+ring placement.
 
 Every authored placement records its zone ID, logical biome ID, decoration ID,
 candidate ID, rejection reason, and owning owner-chunk. The 32-seed audit
@@ -1945,11 +1953,15 @@ or polygon work. Grid coordinates use mathematical floor division for negative
 x/z and cells are half-open.
 
 Each cell contains separate sorted layers for zone/coast classification,
-logical-water masks, routes, hydrology, anchors/POIs, hard-protection masks,
-and claim-exclusion geometry. A homogeneous classification cell stores its
-direct scalar result. A boundary cell stores only the candidate polygon/edge
-IDs and integer/fixed-point bounding boxes that can intersect it. It never
-stores an approximate sampled answer.
+compiled logical-biome IDs, logical-water masks, routes, hydrology,
+anchors/POIs, hard-protection masks, claim-exclusion geometry, and the
+candidate records required to prove the exact nearest boundary, route, and
+hydrology result. A homogeneous classification cell stores its direct scalar
+result. A boundary or nearest-feature cell stores only the candidate polygon/
+feature IDs and integer/fixed-point bounds that can affect any point in that
+cell. It never stores an approximate sampled answer. Outside the finite
+interesting extent, the direct `deep_ocean` path returns `nil, nil` from all
+three nearest-feature queries.
 
 `id_at(x, z)` first takes the O(1) cell path and invokes the common exact
 point-in-polygon/side-of-shared-edge evaluator only for that boundary cell's
@@ -1965,8 +1977,9 @@ engine biomemap, generated nodes, and a second main-state approximation cannot
 replace it.
 
 Hot scalar queries, including `id_at`, `biome_at`, `race_region_at`,
-`faction_at`, `surface_level_at`, water class, boundary distance, and route
-distance/ID, allocate no result table and never scan all 38 definitions.
+`faction_at`, `surface_level_at`, water class, the three nearest-feature
+queries, and the final housing-center predicate, allocate no result table and
+never scan all 38 definitions or all records in a feature family.
 Definition-oriented `get`, `at`, `neighbors`, and `anchor` return defensive
 copies. Their convenience allocations are forbidden inside per-column and
 per-voxel loops.
@@ -2039,8 +2052,43 @@ The public surface is at least:
 - `coast_source_zone_id_at(x, z)` returns the nearest exact perimeter-zone ID
   for an exterior shelf/deep/channel dressing or inheritance query, and `nil`
   where that projection is not defined; it does not confer zone membership; and
-- static distance/ID/exclusion queries for boundaries, routes, hydrology, and
-  claim eligibility consume the same index and exact tie rules.
+- `nearest_boundary_at(x, z)`, `nearest_route_at(x, z)`, and
+  `nearest_hydrology_at(x, z)` each return two scalars,
+  `stable_id, integer_distance`, or `nil, nil` outside the compiled interesting
+  extent or when that validated family contains zero records; and
+- `housing_eligible_at(x, z)` returns one boolean for the final static
+  radius-50 center mask. It is not a distance query and does not inspect
+  dynamic claims.
+
+Every node-addressed public query first normalizes each supplied coordinate.
+An input must be a Lua number, finite, and within the exact safe-integer range
+`-(2^53 - 1)..(2^53 - 1)` before and after rounding. It is rounded to the
+nearest integer, with exact `+/-0.5` ties away from zero. Strings are not
+coerced and out-of-range, NaN, infinite, absent, or malformed coordinates are
+programmer errors that raise before index access; they are never clamped or
+given a fallback classification. This follows Luanti's exposed
+[`math.round` and `math.isfinite`](../../reference_projects/luanti/builtin/common/math.lua):35-48
+and [`vector.round`](../../reference_projects/luanti/doc/lua_api.md):4319-4325
+contract and matches engine node-position conversion through
+[`read_v3s16`](../../reference_projects/luanti/src/script/common/c_converter.cpp):260-271
+and
+[`doubleToInt`](../../reference_projects/luanti/src/util/numeric.h):341-363.
+It is necessary because an `ObjectRef` position is exposed as a floating
+vector
+([`l_object.cpp`](../../reference_projects/luanti/src/script/lua_api/l_object.cpp):140-150).
+
+The three nearest-feature functions choose the least exact Euclidean distance
+before integer conversion. Boundary distance is to the closed compiled
+boundary geometry itself; route distance is to the closed route-corridor
+envelope; hydrology distance is to the closed x/z hydrology-exclusion
+envelope. A point on a boundary or on/inside either envelope returns distance
+zero. Every positive exact distance is rounded **up** to the least positive
+integer node distance, so zero cannot also mean a distinct feature less than
+one node away. Comparisons use the common exact fixed-point/squared-distance
+evaluator, not host `math.sqrt`. Equal exact distances resolve by canonical
+numeric feature ID and then stable string ID. The same index contains a
+provably sufficient candidate set for every point in each covered cell; none
+of these calls may scan the complete feature family.
 
 The only stable anchor-slot families are `start`, `capital`, `village_n`,
 `outpost_n`, `bandit_n`, `mine`, `mirefolk`, `clash_n`, `dragon`, `apex_mine`,
@@ -2067,9 +2115,41 @@ not reinterpret this geography.
 The compatibility `open_sea_at` is true only for `deep_ocean`, not planned
 water, shelf, or channel. Existing `grug_core` difficulty, mob/guard level,
 protection, PvP-geography, and open-sea entry points become consumers of this
-API before old ring/rectangle fields are removed. Surface level remains
-separate from depth; consumers compose mob level as
+API before old ring/rectangle fields are removed. `surface_level_at(pos)`
+returns `nil` for every exterior class: `coastal_shelf`, `deep_ocean`, and
+`immutable_dragon_channel`. On land and zone-owned planned water, surface level
+remains separate from depth and ordinary consumers compose mob level as
 `max(surface_level_at(pos), depth_level_at(pos.y))`.
+
+The compatibility `mob_level_at(pos)` has one closed exterior exception. On an
+exterior shelf it returns `nil` at normalized `y >= 0`; harmless or fixed shore
+wildlife does not obtain an ordinary positional level there. At normalized
+`y < 0`, it returns the standard `depth_level(y)` alone, with the same cap and
+half-away-from-zero rounding as a land cave. Deep ocean and immutable dragon
+channels have no ordinary `mob_level_at` result at any y. The deep-ocean Kraken
+Guard remains a hand-set fixed level-100 entity and never enters this surface/
+depth resolver; channels do not inherit it.
+
+T3's positional `grug_core.guard_level_at(pos)` compatibility base is also
+exact and does not apply the mob depth floor. It returns `nil` in every
+exterior class, including editable shelf. Inside a capital's exact 512-by-512
+build envelope plus its 10-node hard-protection apron, it returns exactly `60`
+only at normalized `y >= -700`; at `y <= -701` the generic land base resumes.
+Every other non-exterior position returns
+`min(70, max(20, grug_zones.surface_level_at(pos)))`. A later WP13
+post-role-aware resolver may raise a non-nil generic base outside the shallow
+capital hard volume, capped at 70, but may never lower it. Exterior nil remains
+nil and permits no guard post. Inside the shallow capital volume ordinary and
+royal capital guards remain exactly 60. The king's fixed entity level 65 is
+separate from both `guard_level_at` and the post-role resolver. T3 does not
+define or infer post roles.
+
+T3 fixtures normalize first, then test the capital center, exact x/z mask edge,
+and one node outside it at both `y = -700` and `y = -701`. Center and edge are
+60 only at -700; the outside point at -700 and all three points at -701 use the
+generic land base. Further fixtures prove every exterior class returns nil,
+shelf `mob_level_at` changes from nil at normalized y=0 to depth-only at y=-1,
+and the fixed Kraken path remains independent.
 
 ### 5.4 Three-stage fail-fast validation
 
@@ -2081,6 +2161,8 @@ Stage 1 validates the authored source before compilation. It proves at least:
 - exactly 38 unique canonical string and numeric zone IDs, with every required
   field, one valid `race_region`, valid policy IDs, and complete allowed
   logical-biome palettes;
+- one complete source-policy-bound logical-biome selector policy whose inputs,
+  domain IDs, and zone-palette references are covered by the source checksum;
 - exact symmetric land adjacency, a separate exact boat/travel graph, no
   duplicate/self edge, and no boat edge promoted to polygon adjacency;
 - legal stable anchor-slot names, required/absent slot cardinality, six starts,
@@ -2099,14 +2181,23 @@ Stage 2 validates the complete compiled seed dataset. It proves at least:
 - every displacement, core width, travel neck, boundary buffer, coast/channel
   clearance, envelope, and minimum route constraint;
 - complete feasible anchor heights, feature templates, route profiles,
-  hydrology components, tunnel/water seals, and typed resolver interfaces;
-- enumeration of every final T2--T7 content-operation coordinate, proving all
-  non-resource operations stay at y >= -37 and every deeper operation is the
-  exact-host-only typed resource kind;
+  hydrology components, tunnel/water-seal geometry volumes, and their versioned
+  resolver interfaces;
+- one coherent compiled logical-biome ID at every authored selector result,
+  always inside its owning zone's allowed palette and identical to the slow
+  full-seed selector oracle;
 - exact graph/polygon agreement, all anchors inside their intended zone and
-  no-jitter clearance, and no orphan/unreachable compiled record; and
-- the Section 5.2 grid agrees with the slow complete oracle for all exhaustive
-  compiler checks.
+  no-jitter clearance, each of the six existing capital anchors centered in and
+  contained by its exact build-plus-10 hard-protection mask, and no orphan/
+  unreachable compiled record; T2 creates no WP13 capital guard, defense, king,
+  or structure anchor; WP13 later validates those against the same mask;
+- a versioned deferred-coverage manifest lists every T2 geometry volume and
+  resolver interface available to later operation owners, plus explicit pending
+  namespaces for T4, T6, and T7; it contains no fabricated future operation
+  coordinate or catalog entry; and
+- the Section 5.2 grid, exact nearest-feature candidate layers, and compiled
+  housing-center predicate agree with their slow complete oracles for all
+  exhaustive compiler checks.
 
 Stage 3 runs independently in every IPC consumer before its adapter becomes
 available. One schema-versioned canonical encoder writes fixed tags,
@@ -2374,6 +2465,11 @@ integer columns in its inclusive `x - 50 .. x + 50`,
 boundary, route, POI/candidate, hard-protection, planned-water, shelf/deep,
 coast, sight-line, arrival, and other static exclusion. Center/corner sampling
 or gross polygon area is never accepted as an equivalent test.
+
+T2 compiles this exact final center predicate into the shared index; T3 exposes
+it only as allocation-free `housing_eligible_at(x, z) -> boolean`. `true` means
+the complete 10,201-column footprint passed. The query neither exposes a
+distance nor checks WP24's future dynamic reservations, ACLs, or ownership.
 
 Two maximum reservations conflict exactly when both absolute center-coordinate
 differences are at most 110. A legal packing therefore has at least one axis
@@ -2795,6 +2891,56 @@ topology, route, and anchor corpus, materializes all 11 micro-corpus classes,
 and executes the full benchmark. No T2 coordinate is reselected and no seed,
 case, numerical threshold, or final Chapter 6 gate is removed or weakened.
 
+The 2026-08-13 T2-to-T3 contract review triggered this rule as well. The
+pre-correction Section 3.2 assigned logical-biome selection to the authored
+surface pass without separating T2 geometry from T6 content, Section 5.3 left
+boundary/route/hydrology distance and claim eligibility as unnamed queries,
+and the design mixed a positional guard field with future post-role behavior.
+It also failed to normalize floating positions even though Luanti exposes
+object positions as floats
+([`l_object.cpp`](../../reference_projects/luanti/src/script/lua_api/l_object.cpp):140-150),
+defines half-away-from-zero rounding in the builtin
+([`math.lua`](../../reference_projects/luanti/builtin/common/math.lua):35-48),
+and uses the same rule for engine node conversion
+([`c_converter.cpp`](../../reference_projects/luanti/src/script/common/c_converter.cpp):260-271;
+[`numeric.h`](../../reference_projects/luanti/src/util/numeric.h):341-363).
+The root cause was an incomplete T2-to-T3 staging contract: T3 cannot be a
+compiled-data-only facade if T2 has not already compiled every geometry answer,
+while T6 content and WP13 post roles do not yet exist.
+
+The correction makes T2 the sole owner of the checksum-covered full-seed
+logical-biome selector and IDs, exact nearest-feature acceleration, final
+housing-center predicate, six capital-anchor mask proofs, geometry-volume/
+resolver interfaces, and a versioned deferred-coverage manifest. T3 only
+validates and serves those immutable results, applies one closed coordinate-
+normalization rule, and exposes the positional guard base; T4 extends and
+reruns typed-operation coverage, T6/T7 append their catalog-owned coverage,
+and future WP13 owns and validates any capital guard/defense/king/structure
+anchors.
+The earlier Stage 2 wording incorrectly required T2 to enumerate final T4--T7
+operation coordinates before those authorities existed; deferring named
+coverage slots removes that impossible staging dependency without removing the
+final T9 enumeration gate. T6 maps compiled biome IDs to content. The initially
+suggested floor of Euclidean distance was rejected because every exact
+`0 < d < 1` would incorrectly return zero. The closed API therefore returns
+zero only on/inside the relevant feature set and rounds every positive distance
+up.
+
+The focused review then closed two remaining policy gaps. The capital hard
+volume ends at y = -700, so its exact guard-60 rule cannot leak into the generic
+contested depth beginning at -701; future post roles may raise only the generic
+base outside that shallow volume, while ordinary/royal guards inside remain 60
+and the king remains a separate fixed level-65 entity. It also established
+total exterior results: surface and guard level are nil for shelf/deep/channel;
+shelf ordinary mob level is nil at/above normalized y=0 and depth-only below;
+deep/channel have no ordinary mob result, without changing the fixed level-100
+Kraken exception. T2 proves only its six capital anchors; it does not invent
+WP13 anchors. These corrections change no game-design level, feature envelope,
+seed, corpus case, or acceptance threshold. They make the T2 compiled schema/
+index and Stage 2 proof slightly larger, make malformed public calls fail
+immediately, and remove possible second authorities before T3 implementation
+begins. The complete T9 coordinate/coverage gate remains mandatory.
+
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
 conflicts with a stronger correctness/operability requirement. The reviewed
@@ -2816,20 +2962,26 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | --- | --- | --- | --- |
 | T0 — WP43 handoff and baseline | exact material/resource API adapter, designated-host/harness manifest, post-WP43 WP18/WP36 fixed-corpus baseline and raw capture | merged WP43 `main` | every symbol/registration resolved; benchmark host/harness reproducible; no WP25 identity in target data |
 | T1 — deterministic foundation | full-seed hash lanes, fixed-point/tie rules, canonical encoder, schemas, manifest including the Section 1.1 vertical constants/registrations, three-stage validation, IPC transport, 128-node index | T0 | identical main/mapgen/offline fixtures; fail-fast corruption and mapgen-setting/registration-drift tests |
-| T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor oracles; extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests frozen |
-| T3 — public geography and policy | immutable `grug_zones` APIs, water/mount classifier, territory/PvP fields, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | scalar hot paths agree with slow oracle; no 38-definition scan or dynamic-claim coupling |
-| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; enumerate every non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type with provenance-neutral production skips; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, `eligible_host_replacement`/`non_host` deep outcomes with no production dungeon label, and exact dirty sets |
+| T2 — compiled world geometry | 38-zone source, shared edges, `H`, templates, fixed/candidate anchors, route profiles, hydrology, coast/shelf/channel/island geometry, checksum-covered full-seed logical-biome selector and compiled IDs, exact nearest-feature layers, final housing-center predicate, versioned deferred operation-coverage manifest, measured corpus slots 28--31, staging-only slot-32 run, exact geometry-only micro-corpus classes 1--9, complete 100-requester JSON trace | T1 | final entries 1--31 plus the explicit staging entry pass the complete pure geometry/topology/route/anchor/selector oracles; every biome ID stays in palette, all six capital anchors are centered/contained, geometry volumes/interfaces and pending T4/T6/T7 coverage namespaces are frozen without future coordinates, nearest/housing layers match slow oracles, and extreme selection, staging identity/status, class-1--9 fixtures, requester trace JSON, and digests are frozen |
+| T3 — public geography and policy | immutable `grug_zones` APIs over one validated T2 payload/index, closed node-coordinate normalization, water/mount classifier, exact nearest-feature and housing-center queries, total exterior level results, territory/PvP fields, shallow-capital positional guard base, hard-protection and claim-exclusion masks, compatibility consumers | T1, T2 | normalized scalar hot paths, exact distance/tie results, housing boolean, y=-700/-701 capital center/edge/outside guard precedence, shelf surface/mob/guard cases, and Kraken separation agree with slow oracles; invalid/unsafe inputs and aliasing fail; no 38-definition/feature-family scan, T6 selector, post-role/WP13-anchor invention, or dynamic-claim coupling |
+| T4 — pure content planner | closed typed resolver matrix and one final per-voxel operation plan, independent of VoxelManip mutation; extend and rerun the T2 deferred-coverage manifest with every T4 typed operation, enumerating every then-known non-resource operation at/above `broad_content_y_min`; exact-host-only deep resource type with provenance-neutral production skips; finite offline intersection oracle for Section 2.4's owner-sliced dungeon guard | T0, T2 | exhaustive resolver/veto/owner-slice fixtures, complete T4 coverage with only named T6/T7 catalog slots pending, derived-bound/lattice proof, zero dungeon-guard intersections, rejected `force_native_dungeon = true`, `eligible_host_replacement`/`non_host` deep outcomes with no production dungeon label, and exact dirty sets |
 | T5 — consolidated terrain adapter | central-slice native observation, surface rewrite, strata, planned/exterior water, roads/tunnels, one content plus optional `param2` upload in the sole VM transaction, bounded liquids/lighting with canonical `set_lighting` preparation, one `calc_lighting`, and one final restored `set_light_data`; validate vertical/registration manifest; no runtime dungeon/guard/halo inference | T3, T4 | unconditional dungeon preservation across `k=-3/-2/-1` and later-neighbor orders, fail-closed force/settings drift, provenance-neutral deep typed order, seam, no-op and exact API operation-count gates |
-| T6 — authored surface catalog | logical biome top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement, deterministic micro-corpus class 10 | T4, T5 | palette/share, collision, tree-boundary, water-family and settled-hash gates; class-10 fixture appended through the frozen T2 selector without moving a T2 coordinate |
-| T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records, deterministic micro-corpus class 11 | T0, T4, T5 | host/clipping/final-node counts, deep order fixtures, all Section 6.4 access routes across 32 seeds, and class-11 fixture appended through the frozen T2 selector without moving an earlier coordinate |
+| T6 — authored surface catalog | content mappings for T2-compiled logical biome IDs, logical top/filler, deterministic decoration candidates/slices, native-surface cutover and water normalization/falls settlement, T6 catalog coverage appended to the deferred manifest, deterministic micro-corpus class 10 | T4, T5 | no selector/remap authority; all T6 operation coordinates pass the extended coverage/bound gates; palette/share, collision, tree-boundary, water-family and settled-hash gates; class-10 fixture appended through the frozen T2 selector without moving a T2 coordinate |
+| T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records, T7 catalog coverage appended to the deferred manifest, deterministic micro-corpus class 11 | T0, T4, T5 | all T7 coordinates close the T7 coverage namespace; host/clipping/final-node counts, deep order fixtures, all Section 6.4 access routes across 32 seeds, and class-11 fixture appended through the frozen T2 selector without moving an earlier coordinate |
 | T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |
-| T9 — release evidence and rollout | final slot-32 replacement and 32-seed corpus, canonical hash/order suite, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, combined 11-class micro-corpus, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | staging entry alone replaced; unchanged complete geometry/topology/route/anchor oracle passes all 32 final entries; reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
+| T9 — release evidence and rollout | final slot-32 replacement and 32-seed corpus, canonical hash/order suite, final T2--T7 operation-coordinate coverage manifest, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, combined 11-class micro-corpus, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | staging entry alone replaced; unchanged complete geometry/topology/route/anchor oracle passes all 32 final entries; every final non-resource operation is enumerated at/above `broad_content_y_min`, every deeper operation is exact-host-only typed resource, no deferred namespace remains, reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
 
 T3's API signatures, adapters, and slow-oracle test scaffolding may proceed in
 parallel with T2 after T1; no T3 authoritative answer or completion gate may
-run before T2 freezes the compiled geometry.
-T6 and T7 may build separate pure catalogs after T4 freezes the resolver
-interface, but only T5 owns the VoxelManip adapter and transaction. T8 deletes
+run before T2 freezes the compiled geometry, logical-biome IDs, nearest-feature
+layers, housing-center predicate, and hard-protection masks. T6 consumes the
+frozen logical-biome IDs and never adds a selector to either state.
+T2's deferred-coverage manifest freezes only geometry volumes/interfaces and
+pending versioned namespaces. T4 extends and reruns it for typed operations;
+T6 and T7 append only their catalog-owned operation coverage after T4 freezes
+the resolver interface. T9 rejects any pending namespace and reruns the full
+final T2--T7 coordinate/bound proof. Only T5 owns the VoxelManip adapter and
+transaction. T8 deletes
 legacy authority only after the corresponding target path and consumer tests
 are green. T0 owns the measurement harness and initial baseline; T2 freezes the
 geometry-derived class-1--9 fixtures, corpus slots 28--31, the staging-only
