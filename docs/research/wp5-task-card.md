@@ -223,15 +223,15 @@ why no refinement word appears in a drop's name (§6b.4).
 **The distribution is decided in the design, not here** (§5, 2026-08-13):
 **one uniform draw over the concrete registered base items of the mob's own
 tier** — the bracket catalog's whole list, no slot pre-selection, no
-per-family weighting. Ordinary found gear stays below crafted gear **in
-expectation** through the windows, not through rate tuning (`world`
-0.00-0.60, `elite` 0.30-0.90, `rare` 0.50-1.00 against crafted-masterwork's
-0.60-1.00, with different affix counts on top). The windows **overlap on
-purpose**: a lucky four-affix named-rare drop can beat an unlucky
-masterwork, and no gate may assert per-item dominance. **Boss and King loot
-is a deliberate peer of crafting**, at `boss` 0.80-1.00 against
-crafted-masterwork 0.60-1.00 — the two windows §6.4 calls "the two
-0.60-1.00 windows", meaning the two that reach 1.00 from at least 0.60. What the BACKLOG row
+per-family weighting. What the windows fix is the **expected value per
+affix** — `world` 0.30, `crafted-fine` 0.55, `elite` 0.60, `rare` 0.75,
+`crafted-masterwork` 0.80 — and they **overlap on purpose**, so **no gate
+may assert per-item dominance**. Whole-item ordering is deliberately not
+total either: a Master's four-slot masterwork beats every ordinary found
+source, while a named rare (3.3 affixes on average at 0.75) edges out an
+Expert's three-slot masterwork (3 at 0.80). **Boss and King loot is a
+deliberate peer of crafting**, at `boss` 0.80-1.00 against
+`crafted-masterwork` 0.60-1.00 — §6.4's two top windows. What the BACKLOG row
 means by "retune elite/high-tier gear drops against G2 and trophy demand" is
 therefore an **audit** (task 8): if it shows the §5.1 rates erasing demand
 for crafted G2 gear or named-rare trophies, the fix is a change to §5.1 in

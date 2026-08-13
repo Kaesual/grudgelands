@@ -1313,7 +1313,8 @@ changes:
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled in the
   **world window** (frac 0.00–0.60, §6.3 — the weakest rolls in the
-  game, strictly below crafted-fine's 0.30–0.80) and priced above the Common
+  game; expected 0.30 against crafted-fine's 0.55, though the ranges do
+  overlap between 0.30 and 0.60) and priced above the Common
   baseline by the authoritative quality multiplier. That is
   the "today the trader had something good" moment, without a second
   gear source.
@@ -1639,8 +1640,8 @@ for a T6 gear layer — and deliberately does not become one. Underground
 mobs keep dropping exactly what their families drop on the surface (the
 Gear drops column above); nothing is added for being deep. Two reasons,
 both structural: **the best items come from crafting and from hard
-bosses** (§0, §6.4 — the two 0.60–1.00 windows of §6.3 are exactly those
-two), and a depth layer would be a third top source with neither a
+bosses** (§0, §6.4 — §6.3's two top windows, crafted-masterwork 0.60–1.00
+and boss 0.80–1.00, are exactly those two), and a depth layer would be a third top source with neither a
 crafter nor a boss behind it; and the depth already pays the endgame
 *material*, which is the input the crafted endgame item is made of.
 Depth buys danger and volume; the gear it feeds is made, not found.
@@ -1670,18 +1671,25 @@ item list, with no slot pre-selection and no per-family weighting, so a
 tier with four weapon families and eight armor pieces drops a weapon a
 third of the time. No weighted table exists anywhere in this design.
 
-Ordinary found gear sits below crafted gear **in expectation**, through the
-windows rather than through rate tuning: §6.3 gives a normal-mob drop
-`world` 0.00-0.60, an elite 0.30-0.90 and a named rare 0.50-1.00, against
-crafted-masterwork's 0.60-1.00, and the affix counts differ on top of that.
-The windows **overlap by design**, so a lucky four-affix elite or named-rare
-drop can beat an unlucky masterwork on a single item; what is guaranteed is
-the distribution, not per-item dominance. **Boss loot is not an ordinary
-found source at all but a deliberate peer of crafting**, at `boss`
-0.80-1.00 against crafted-masterwork 0.60-1.00 — those two are what §6.4
-means by "the two 0.60-1.00 windows", i.e. the two that reach 1.00 from at
-least 0.60, and they are the shape of "the best items come from crafting and
-from hard bosses". What WP5 still owes is the **audit** that the rates in the
+What the windows guarantee exactly is the **expected value per affix**:
+`world` 0.30 and `crafted-fine` 0.55, `elite` 0.60, `rare` 0.75 and
+`crafted-masterwork` 0.80. They **overlap by design**, so no per-item
+ordering follows from them — a lucky named-rare roll beats an unlucky
+masterwork on a single item, and that is intended.
+
+Whole-item strength is a separate question because the affix *count* enters
+it, and the ordering is deliberately not total. A Master's four-slot
+masterwork stands above every ordinary found source. An **Expert's
+three-slot masterwork does not**: a named rare rolls 3 or 4 affixes at 70/30
+(3.3 on average), so its expected 3.3 x 0.75 sits slightly above the
+Expert's 3 x 0.80. That overlap is accepted, and measuring it is part of
+WP5's drop audit. §0's promise is about the **best** items — the Master
+masterwork and the boss hoard — not about every crafted item outranking
+every drop.
+
+**Boss loot is not an ordinary found source but a deliberate peer of
+crafting**, at `boss` 0.80-1.00 against `crafted-masterwork` 0.60-1.00:
+§6.4's two top windows. What WP5 still owes is the **audit** that the rates in the
 table above, at elite and high-tier sources, do not flood the market far
 enough to erase demand for crafted G2 gear and named-rare trophies; if that
 audit contradicts the table, the table is what changes, and it changes in
@@ -2004,8 +2012,8 @@ the quality thresholds are unchanged.
   masterwork state is applied; an Abyssal Steel item names that state
   **Grudgeforged**. Cultural finishes and PvP specials remain separate and may
   coexist. This keeps "better gear comes
-  from crafting or hard bosses" literally true: the two 0.60–1.00 windows
-  are crafting and bosses.
+  from crafting or hard bosses" literally true: the two top windows are
+  crafted-masterwork 0.60–1.00 and boss 0.80–1.00.
 
 The mapping is exact: §0's **Uncommon = 1–2 enchants, Rare = 3–4** and
 §6b.4's **2 prefixes + 2 suffixes = 4 slots** are the same budget counted
