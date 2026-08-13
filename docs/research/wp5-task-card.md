@@ -90,14 +90,18 @@ Non-goals, all binding:
   **with no edit in that file**. `core.global_exists` is used to probe
   without tripping `strict.lua`.
 - **Attack speed already flows through per-stack tool capabilities.** The
-  equipped weapon's `full_punch_interval` override is read by the swing
-  clock (`grug_abilities/kits.lua:243`, `grug_abilities/init.lua:1233`), so
+  equipped weapon's `full_punch_interval` override is resolved by
+  `grug_abilities.swing_stats` through `stack:get_tool_capabilities()`
+  (`grug_abilities/kits.lua:240-256`, whose comment names this WP) and read
+  by the swing clock and the swing-caps mirror
+  (`grug_abilities/init.lua:849`, `:1347`), so
   a rolled `+attack speed%` affix needs no new plumbing — it writes the
   same per-stack override, as `fpi / (1 + p)` and as a **complete**
   capability table (`items_crafting.md` §6.1; a bare meta float of that
   name is not read by the engine, and every other capability of the base
-  item must survive). `grug_abilities/init.lua:1115` requires that a
-  changed override must not read as unchanged.
+  item must survive). The swing-caps mirror compares first on a token built
+  from the interval (`init.lua:1347`), so a changed override must not read
+  as unchanged.
 - **Writes to an equipped stack have one legal path.** Mutating a stack
   that already sits in an equipment list means writing it back and then
   calling `grug_inventory.equipment_changed`
@@ -107,7 +111,13 @@ Non-goals, all binding:
   no owner — a fresh drop, a vendor stack, an item in `main` — are ordinary
   ItemStacks and need no notification.
 - **WP7 ships 72 equippable items that carry an ilvl and enforce nothing**
-  (§6.1) — that is the gap WP5 closes in one place.
+  (§6.1) — that is the gap WP5 closes in one place. Note that those stacks
+  carry the ilvl **on the item definition**, not in stack meta, and a
+  Common vendor purchase never passes through the drop roller. The equip
+  check must therefore read one **effective-ilvl resolver** — per-stack
+  value if present, otherwise the definition's `_grug_ilvl` — or a level-1
+  character could equip an ilvl-30 Common bought from a vendor while an
+  ilvl-30 drop is correctly refused.
 
 ## 3. The complete WP5 surface
 
@@ -161,10 +171,15 @@ Legality is **§6.2 and only §6.2**: an affix is legal on a family iff its
 stat is in that family's pool, and no item may carry the same stat twice
 across its four ordinary slots.
 
-**Affix counts are decided, not free** (§6.1): Uncommon rolls **1 or 2
-affixes at 60/40**, Rare rolls **3 or 4 at 70/30**. A vendor Uncommon that
-always produced two affixes would silently be the best-value item on the
-shelf.
+**Affix counts are decided, not free** (§6.1): for a source **without a
+crafter** — mob drops and vendor stock — Uncommon rolls **1 or 2 affixes at
+60/40** and Rare **3 or 4 at 70/30**. A vendor Uncommon that always produced
+two affixes would silently be the best-value item on the shelf. For a
+**crafted** item the count is not rolled at all: it is the crafter's mastery
+slot count (§6b.5/§6b.6). The shipped three-argument call therefore keeps
+rolling the count, and WP10's path needs an **optional fourth argument that
+fixes it** — `roll_enchants(stack, ilvl, window, count)` — so a Master's
+four-slot masterwork cannot come back with three.
 
 **Temper re-roll windows** (§7), needed as a WP5 data seam because WP10's
 kits write through it: first application **0.50–0.95**, second
@@ -198,13 +213,15 @@ drop function.
 A dropped item carrying affixes is by definition refined (§6b.3), which is
 why no refinement word appears in a drop's name (§6b.4).
 
-**Which concrete item a qualifying drop selects is not decided here and
-must not be frozen by the implementer either.** The tier follows from the
-mob's level band, but the distribution inside that bracket is exactly what
-the BACKLOG row means by "retune elite/high-tier gear drops against G2 and
-trophy demand": a flat draw over `grug_gear.catalog[b].all` would let
-high-tier drops undercut crafted G2 gear. Task 8 owns that audit and its
-result is the distribution.
+**The distribution is decided in the design, not here** (§5, 2026-08-13):
+a uniform draw over the eligible slot families of the mob's own tier. Found
+gear stays below crafted gear by construction — the `world` window is
+0.00-0.60 against crafted-masterwork's 0.60-1.00, and the affix counts
+differ too — so no rate tuning carries that guarantee. What the BACKLOG row
+means by "retune elite/high-tier gear drops against G2 and trophy demand" is
+therefore an **audit** (task 8): if it shows the §5.1 rates erasing demand
+for crafted G2 gear or named-rare trophies, the fix is a change to §5.1 in
+`items_crafting.md`, never a private weighting in the drop code.
 
 ### 3.4 Names, colors and the tooltip block (§6b.4, §6b.6, §6b.7)
 
@@ -296,10 +313,12 @@ defeated-race provenance, not six currencies.
    lines, the "Refined" line, one line per affix, then the separate
    cultural-finish and PvP-special lines naming culture/target and value.
    Idempotent: regenerating twice must produce a byte-identical string.
-4. **`grug_req_level` enforcement** — one branch in the existing
-   group-filtered `allow_put` (`equipment.lua:304`), refusal with a chat
-   message through the **existing throttled channel** (`:111`), never a
-   silent "equips but grants nothing".
+4. **`grug_req_level` enforcement** — the effective-ilvl resolver (§2) plus
+   one branch in the existing group-filtered `allow_put`
+   (`equipment.lua:304`), refusal with a chat message through the
+   **existing throttled channel** (`:111`), never a silent "equips but
+   grants nothing". It must refuse a Common vendor item exactly as it
+   refuses a rolled drop.
 5. **Drop layer** — §3.3's table wired into the shipped `drops` functions,
    respecting the player-tag rule, the tier match and the ilvl clamp; the
    named-rare row stays additive and keeps its trophy.
@@ -312,8 +331,11 @@ defeated-race provenance, not six currencies.
    substitution of §3.7.
 8. **Drop-distribution audit** — a reproducible script that reports, per
    level band, the expected value of found gear against crafted G2 gear and
-   named-rare trophy demand, and the distribution chosen from its result
-   (§3.3). Record it like `wp6_spawn_budget.md` records spawn calibration.
+   named-rare trophy demand, run against §5's decided uniform draw and
+   §5.1's decided rates (§3.3). Record it like `wp6_spawn_budget.md` records
+   spawn calibration. If it finds a problem, the fix is a change to §5.1 in
+   `items_crafting.md`, proposed to the design owner — never a private
+   weighting inside the drop code.
 9. **Trinket exception path** — one prefix, one suffix, no base-stat line,
    no refinement, no durability, in the shared code so WP10 only registers
    items. Temper windows and the special-variant field ship as seams here.
@@ -326,7 +348,10 @@ defeated-race provenance, not six currencies.
    `luac51 -l -p … | grep SETGLOBAL`).
 2. **Vendor Uncommons appear with no edit to `grug_traders`** — the proof
    that the global and the signature are right.
-3. A level-1 character cannot equip a level-30 drop, and the refusal uses
+3. A level-1 character cannot equip a level-30 drop **nor a level-30 Common
+   bought from a vendor** — both paths go through the effective-ilvl
+   resolver — and an equippable with no ilvl at all (a `default:` sword)
+   stays freely equippable. The refusal uses
    the existing throttled channel: **at most one burst per 2 s per player**,
    distinct reasons allowed inside a burst
    (`grug_inventory/equipment.lua:118-124`) — not "once per drag", which
@@ -345,15 +370,27 @@ defeated-race provenance, not six currencies.
    trophy in the same kill.
 7. Cap audit: a deliberately overcapped set shows `raw > effective` and
    grants no combat power above the cap.
-8. Every one of the nine stats measurably changes the character sheet and
-   the combat result, and a refined weapon deals the +15% (half-up)
-   damage — the display-only failure mode is what this gate exists for.
-9. Reapplying the same culture is rejected before consumption; a different
-   culture overwrites at full cost with no refund; an identical PvP target
-   is a no-op and a different one overwrites at full cost.
-10. The drop-distribution audit of task 8 is reproducible and its report is
+8. Every one of the nine stats is measurably consumed by its **existing
+   authoritative consumer** — attributes and HP/Mana through
+   `grug_classes.apply_stats`, crit/dodge/armor through their `grug_core`
+   accessors, attack speed through `swing_stats` — and a refined weapon
+   deals the +15% (half-up) damage. The display-only failure mode is what
+   this gate exists for; it prescribes no new character-sheet layout, which
+   `inventory_equipment.md` would have to own.
+9. The channel transitions behave as specified at the **data layer** WP5
+   owns: applying the same culture is a rejected no-op, a different culture
+   replaces the stored finish, an identical PvP target is a no-op and a
+   different target replaces the stored special. Material consumption, the
+   full-cost charge and the no-refund rule belong to WP10's recipes and are
+   gated there.
+10. The Fallen Crown substitutes one-for-one for a qualifying named-rare
+    trophy in an ordinary Master-tier masterwork **and** in a T6
+    Grudgeforged item, yields the same affix budget and roll window as the
+    trophy path, consumes exactly one Crown, and preserves its per-stack
+    defeated-race provenance through description regeneration.
+11. The drop-distribution audit of task 8 is reproducible and its report is
     committed.
-11. **Runtime test plan for the user** (agents cannot run the Flatpak GUI):
+12. **Runtime test plan for the user** (agents cannot run the Flatpak GUI):
     kill boars until an Uncommon drops and read its name/lines; try to
     equip an over-level item; buy an Uncommon from a vendor; confirm a
     rolled attack-speed affix visibly changes the swing rate and that a
@@ -367,9 +404,11 @@ Opus review per `docs/process/wp-workflow.md` with a second reviewer on the
 roll/cap arithmetic and the stat aggregation. WP5 changes no mapgen and
 needs no fresh world.
 
-**Design provenance:** four rules this card depends on were open when it was
-first drafted and were decided on 2026-08-13 into `items_crafting.md`, not
-here — the positional prefix/suffix side (§6b.4), the `min(mob level, 60)`
-drop clamp (§5), the `fpi / (1 + p)` attack-speed conversion and the
-no-ilvl-no-requirement exemption (both §6.1). The card quotes them; the
+**Design provenance:** six rules this card depends on were open or implicit
+when it was first drafted and were settled on 2026-08-13 in
+`items_crafting.md`, not here — the positional prefix/suffix side (§6b.4),
+the `min(mob level, 60)` drop clamp (§5), the `fpi / (1 + p)` attack-speed
+conversion and the no-ilvl-no-requirement exemption (both §6.1), the scope
+of the 60/40 and 70/30 affix counts to sources without a crafter (§6.1), and
+the uniform slot-family draw for drops (§5). The card quotes them; the
 design document owns them.
