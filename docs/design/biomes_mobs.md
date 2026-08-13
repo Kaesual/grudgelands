@@ -700,7 +700,7 @@ farming system are one later package.
 | grug_blight | gravewood (custom dead tree, no leaves) sparse | grey grass tufts, bone piles (deco); gravemoss `[herb T1]` | fireflies/wisp particles optional |
 | grug_bone_forest | gravewood dense (fill 0.015), bone piles | mushrooms `[food found-only]`; dragonweed `[herb T2]` | shares deep-forest drop tables (§3.2) |
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
-| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
+| grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]` — **level-51–60 zones only** (§2 tightening 2026-08-13); wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
@@ -732,12 +732,17 @@ the region an ingredient comes from):
   potato, corn, apples, berries, melon, mushrooms, sunleaf, marshbloom,
   plus meat and fish from anywhere.
 - **T6 needs ingredients from level 50+ ground, and the coast/outer
-  rows do carry them**: **wild cocoa** in deep jungle / jungle fringe
-  (38–60), **stormkelp** and **rock salt** on the coast-zone beaches
+  rows do carry them**: **wild cocoa places only in the level-51–60
+  jungle-palette zones** (tightened 2026-08-13 so the T6 gate claim is
+  literally true — today exactly The Skyglass Canopy on the shared
+  contested front, both factions on foot, plus Stormscale Summit as the
+  island bonus; the WP40 authored surface pass owns the zone binding),
+  **stormkelp** and **rock salt** on the coast-zone beaches
   (45–60), and the meat of the outer/coast families (bear, jungle ape,
   panther, crocodile), whose level comes from `mob_level_at` and is
-  45–60 out there. Every one of them exists on both continents (§6), so
-  neither faction is cut off from the top of the cooking ladder.
+  45–60 out there. Every one of them is reachable by both factions
+  (§6) — every level-41+ zone is contested and shared — so neither
+  faction is cut off from the top of the cooking ladder.
 - **Deliberately found-only** (never a crop): mushrooms, wild cocoa,
   rock salt. That keeps the top of the cooking ladder a reason to
   travel, and it keeps a tier unlock ("find cocoa in the jungle") usable
@@ -1376,7 +1381,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
 | Spider silk (Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
-| Food plants, **found-only** (everyone, never farmable) | 25–60 | mushrooms (deep forest/swamp), wild cocoa (jungle fringe), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (deep jungle), rock salt (coast beaches) |
+| Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy / Stormscale Summit — shared contested front, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
 | Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
 | Healing herbs T3 | 45–60 | crimson lotus (jungle fringe — the east flank strip x 1251..1500, which the fringe only got on 2026-08-08, §1.3) | crimson lotus (deep jungle) |

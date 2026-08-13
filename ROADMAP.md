@@ -141,7 +141,7 @@ the goal-level view.
   trader-catalog migration onto WP44 prices.
 - [ ] WP5 is design-unblocked (A2 affix vocabulary and A6 refined marker
   decided 2026-08-13, `items_crafting.md` §§6b.4/6b.7); WP10 is
-  design-unblocked (A1/A4/A5/E21 decided 2026-08-13, incl. the revised
+  design-unblocked (A1/A3/A4/A5/E21 decided 2026-08-13, incl. the revised
   food-restore buff model and the buff/debuff icon framework); it still
   follows WP26/WP33/WP43/WP44.
 - [ ] WP13: final starts, capitals, settlements, camps, kings/guards and both

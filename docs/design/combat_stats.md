@@ -477,9 +477,11 @@ design (`group_attack` stays on).
 - Mana regen: 2%/s out of combat, 0.5%/s in combat.
 - Food/potions are **percent-based** — level-agnostic, no consumable item
   treadmill in the MVP. Reaffirmed 2026-08-13: Max HP = 20 + 2×(level−1)
-  + Str spans ~22 to ~170, so one absolute-value consumable could never
-  serve both ends of the curve; the knob against HP-stacked builds in
-  PvP is §6.3-of-`items_crafting.md`'s bounded +HP affix ranges, not the
+  + Str spans 30 at level 1 to 325 on a level-60 Warrior from base
+  attributes alone (§1's 10/10/10 base and +4 points per level), so one
+  absolute-value consumable could never serve both ends of the curve;
+  the knob against HP-stacked builds in PvP is
+  §6.3-of-`items_crafting.md`'s bounded +HP affix ranges, not the
   consumable system.
 - Every timed effect on the player is shown through the **buff/debuff
   icon framework** (`inventory_equipment.md` §5, decided 2026-08-13):

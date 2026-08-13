@@ -144,8 +144,14 @@ Added 2026-08-07, the same pattern in the other direction: **the
 Woodcarver buys metal fittings from the Blacksmith.** Every caster weapon
 from T2 up needs a Blacksmith-made fitting of its own tier
 (`items_crafting.md` §3.6a) — the §3.2 family is literally called
-"metal-shod staff". A profession that cannot finish its own top item
-alone is the mechanism this section exists for; it is now used twice.
+"metal-shod staff".
+
+Added 2026-08-13 with the A1 signature table, the third relationship:
+**the Woodcarver buys weapon grips from the Leatherworker** — the
+Leatherworker's Apprentice signature component, 2 leather of the item's
+tier (`items_crafting.md` §2.1/§3.4). A profession that cannot finish
+its own top item alone is the mechanism this section exists for; it is
+now used three times.
 
 ## 4. Vendor floor rule
 

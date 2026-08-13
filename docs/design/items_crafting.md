@@ -275,7 +275,7 @@ the book group's business; this table cuts only mastery:
 | Tailor | 8-slot bag | 16-slot bag; spell tome +10; embroidery imbue kit | 24-slot bag; spell tome +20; embroidery temper kit | 32-slot bag; spell tome +30 |
 | Woodcarver | — (the base caster ladder is the Apprentice value) | wood-oil imbue kit | wood-oil temper kit | bows (cataloged; ship with §9) |
 | Goldsmith | Rough→Cut refinement; Settings (§3.6b ladder) | trinket assembly (all six §6.2 identities); gem-setting imbue kit | gem-setting temper kit; ornament components | — (§4 cultural jewelry services ride §2.2's earned unlocks) |
-| Alchemist | §3.6 Apprentice row | §3.6 Journeyman row; Apothecary Hood | §3.6 Expert row; Apothecary Garb | §3.6 Master row; Master's Regalia |
+| Alchemist | §3.6 Apprentice row | §3.6 Journeyman row; Apothecary Hood; imbuing-oil imbue kit | §3.6 Expert row; Apothecary Garb; imbuing-oil temper kit | §3.6 Master row; Master's Regalia |
 
 Costs follow only existing patterns — fittings 2 bars (§3.3), grips 2
 leather of the item's tier (professions.md §3's cross-buy as a concrete
@@ -346,7 +346,7 @@ Columns are **book groups**, i.e. gear tiers (§3.0):
 | Tailor | 6 woven bolt | 6 heavy bolt + 4 spider silk | 6 silkweave bolt + 1 rare trophy | 6 silk bolt + 2 venom gland | 6 stormweave bolt + 2 sleek pelt |
 | Woodcarver | 6 polished wood + 1 iron staff fitting | 6 hardened wood + 1 steel staff fitting | 6 inlaid wood + 1 silversteel fitting + 1 rare trophy | 6 lacquered wood + 1 embersteel fitting + 2 sharp feather | 6 heartwood + 1 abyssal steel fitting + 4 spider silk |
 | Alchemist | 8 sunleaf + 8 gravemoss | 8 dragonweed + 2 venom gland | 8 crimson lotus + 4 stormkelp + 1 rare trophy | 8 crimson lotus + 2 venom sac | 8 stormkelp + 2 bear claw |
-| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass | 4 Gold Bars + 2 Embersteel Bars + 2 sleek pelt | 4 Gold Bars + 2 Abyssal Steel Bars + 2 bear claw |
+| Goldsmith | 4 Iron Bars + 2 Cut Quartz | 3 Steel Bars + 1 Cut Citrine + 1 Cut Garnet + 1 Cut Jade | 4 Gold Bars + 2 Emberglass | 4 Gold Bars + 2 Embersteel Bars + 2 `grug_mobs:sleek_pelt` | 4 Gold Bars + 2 Abyssal Steel Bars + 2 `grug_mobs:bear_claw` |
 
 - **T1 opens with the profession** — no keystone; it is the tier every
   player already crafts from (§3.0.3).
@@ -358,8 +358,9 @@ Columns are **book groups**, i.e. gear tiers (§3.0):
   sharp feather from the bird-of-prey pair, crimson lotus and stormkelp
   from both jungles/coasts. The Goldsmith rows keep their rule: ordinary
   combat proofs, never G2 gems, loose Abyssal Crystal,
-  `group:grug_rare_trophy` or Fallen Crowns. The rare trophy appears
-  exactly once per profession, at T4. Processed tier bars are legal
+  `group:grug_rare_trophy` or Fallen Crowns. Where a keystone consumes
+  a rare trophy at all, it does so exactly once and always at T4; the
+  Goldsmith never does. Processed tier bars are legal
   keystone inputs and create no circularity — book groups gate
   profession recipes, never the universal bars or picks. The
   Woodcarver's fitting requirement is the §3.6a Blacksmith cross-buy as
@@ -957,13 +958,13 @@ consumption, no cooldown — decided 2026-08-07 in WP7: burning a potion
 and a 60 s lockout on a misclick is a tax, not a rule).
 
 **The potion keeps the instant slot; cooked food does not take it**
-(decided 2026-08-08). Cooked food restores a comparable percentage —
-the worked example is the same 30 % — but it does so through
-`combat_stats.md` §5's **resting** channel (§3.7): standing still, at
-8 % max HP/s, interrupted by any damage and by any movement. The Healing
-Potion is the only thing in the game that restores health **instantly
-and in combat**, and that, not the size of the number, is what it is
-bought for.
+(decided 2026-08-08; delivery revised 2026-08-13). Cooked food restores
+comparable percentages — §3.7's ramp even tops out above the potion —
+but only **out of combat**: the restore is a movement-tolerant buff at
+8 % max HP/s that is canceled by entering combat, and eating in combat
+is refused outright (§3.7). The Healing Potion is the only thing in the
+game that restores health **instantly and in combat**, and that, not
+the size of the number, is what it is bought for.
 
 **Exclusive recipes** — the entire consumable line is Alchemist-only;
 nothing here has a base recipe (mastery names, relabelled 2026-08-07):
@@ -982,6 +983,9 @@ Worn
 pieces add +10% potion/elixir duration and +1 elixir attribute each
 (max 2 pieces counted) — profession identity you can see. Template:
 slot pieces à la mcl_armor + effect hooks à la mcl_potions (both §1.2).
+The Alchemist's §7 kit family — the **imbuing oils** applied to
+apothecary gear — follows the uniform kit rule: imbue at Journeyman,
+temper at Expert (§2.1).
 
 ### 3.6a Woodcarver (carving bench) — wood, and every caster weapon
 
@@ -1102,8 +1106,9 @@ Neither of these costs a main profession slot (professions.md §1).
     in combat, 60 s shared cooldown): the potion holds the **in-combat
     monopoly**, food is out-of-combat acceleration, and **both stay
     percent-based** — no absolute values, no consumable treadmill
-    (`combat_stats.md` §5; Max HP = 20 + 2×(level−1) + Str spans ~22 to
-    ~170, so one absolute item could never serve both ends).
+    (`combat_stats.md` §5; Max HP = 20 + 2×(level−1) + Str spans 30 at
+    level 1 to 325 on a level-60 Warrior from base attributes alone, so
+    one absolute item could never serve both ends).
   - **Only one food buff is active at a time, and the most recently
     eaten food wins** — eating again *replaces* the running buff; food
     buffs never stack and never extend one another. This is the food-side
@@ -2330,7 +2335,10 @@ property of the numbers, not a rule. Rejected: two roll tables, one for
 crafted and one for dropped gear — the same ilvl would then have meant
 two different items.
 
-**D9 — Raw food restores, cooked food restores AND buffs.** §3.7 had it
+**D9 — Raw food restores, cooked food restores AND buffs.** *(Delivery
+superseded 2026-08-13: the restore is now a movement-tolerant
+out-of-combat buff, not a standing resting channel — §3.7 is
+authoritative.)* §3.7 had it
 backwards ("cooking adds the buff, not the regen"). Raw/plain food gives
 **regeneration only**; cooked food gives a **restore and a buff**, and
 only **one food buff** is ever active — the most recently eaten food

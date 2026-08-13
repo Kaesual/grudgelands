@@ -245,8 +245,9 @@ icon, a category (buff/debuff) and an expiry, nothing per-consumer.
   text element per icon carrying the remaining duration. **Only the
   largest unit is shown**: above 48 h as days ("4d"), then hours ("4h"),
   under one hour minutes ("58m"), under one minute seconds ("45s").
-  Text writes only when the displayed value changes (the shared-ticker
-  rule — no per-second churn, no new globalstep). The HUD has no hover,
+  Text writes only when the displayed string changes — at most once per
+  second inside an icon's final minute, far rarer above it (the
+  shared-ticker rule; no new globalstep). The HUD has no hover,
   so the screen row carries no description.
 - **Character page**: the same effects as a formspec `image[]` row with
   `tooltip[]` hover — icon, effect name, one-line description and the
