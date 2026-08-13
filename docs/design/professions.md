@@ -49,9 +49,9 @@ Two free main professions per player, unchanged. The roster is organised
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
 | **Blacksmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor (4 slots), 1H weapons, daggers, 2H weapons, **shields** |
-| **Leatherworker** | light → cured → heavy → scaled leather | Leather armor (4 slots), later **quivers** |
-| **Tailor** | linen → woven → heavy → silkweave | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
-| **Woodcarver** | wood incl. silverwood/gravewood; **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
+| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor (4 slots — the Warrior's light set since the 2026-08-13 C10 decision, `items_crafting.md` §3.8), later **quivers** |
+| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor (4 slots), **bags**, **spell tome** (offhand) |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (race woods are cultural skins); **buys metal fittings from the Blacksmith** | Staves, wands, scepters, orbs — later bows |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | **Both trinket slots**, Rough → Cut gem refinement, Settings, jewelry components, and the 10%/20% natural-gem yield roll |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 

@@ -169,78 +169,6 @@ This is not a gap in a list. It is a consequence the rework produced
 deliberately, and it leaves one profession standing on very little in the MVP.
 It wants a decision, not an author.
 
-### C10 — Leather is wearable but nobody wants it
-
-**The situation.** Leather is armor class 2 (`inventory_equipment.md`
-§2). The MVP classes are Warrior 3, Mage 1, Priest 1; the Rogue, the
-class leather was designed for, is Phase 2 (ROADMAP). WP7 therefore
-shipped the leather curve in the generator with `register = false`, and
-`items_crafting.md` §3.4/§3.8 kept the items unregistered. Under
-§3.0.3's one-item-per-concept merge, the vendor catalog and the base
-craft ladder are the same items — so a line that does not register does
-not exist **anywhere**, vendor or craft.
-
-What is left for the profession in the MVP:
-
-- **Armor kits** (§7, Journeyman up) — real, but they upgrade armor the
-  profession itself cannot make anyone wear.
-- **The quiver** (§3.4) — dead until §9's bows, i.e. Phase 2.
-- **Cross-supply**: leather to Tailors (bags), Alchemists (apothecary
-  gear), Woodcarvers (grips) — `professions.md` §3.
-
-Against the Blacksmith's five families that is one active line and two
-feeders. And WP6 already wired the ×5 leather loot hook
-(`register_drop_hook`, `grug_leather` group), which rewards a profession
-whose output nobody wears.
-
-**A factual correction the options depend on** (applied to the design
-docs on 2026-08-07). An earlier draft of `items_crafting.md` §3.4 and
-`professions.md` §2 said "no MVP class can wear rank-2 armor". That is
-**not** what the shipped rule says: `inventory_equipment.md` §2 grants
-each class "its own rank **and everything below**", and
-`grug_inventory/equipment.lua:113-116` refuses only `rank > max`. A
-**Warrior (rank 3) can already equip leather (rank 2) today** — the
-filter allows it, there are simply no items. Both doc passages have
-been corrected to say so and to point here; the real question is not
-*may* a Warrior wear leather but *why would he*, since at equal tier
-leather is strictly less armor than metal.
-
-Options:
-
-- **(a) Ship as decided.** Accept an asymmetric MVP roster; the line
-  switches on with the Rogue or with WP5's drop tables, whichever lands
-  first. Zero cost, and it is the status quo of §3.4/§3.8.
-- **(b) Pull the Rogue into the MVP.** Solves it completely and solves
-  nothing else cheaply — a class kit, a talent tree, the stealth
-  research of ROADMAP Phase 2, and it grows the MVP by a class.
-- **(c) Register the leather line and make it the Warrior's light
-  set.** The rank filter already permits it, the curve is already in
-  the generator, and §6.2's leather pool (+Dex, +HP, +crit%, +dodge%)
-  against metal's (+Str, +HP, +armor%, +dodge%) is exactly a
-  mitigation-vs-avoidance choice. Cost: 24 registrations and one
-  balance question — a Warrior in leather must not out-perform plate
-  badly enough to make plate pointless. §3.1's curve already prices
-  leather below metal, so the tuning knob exists.
-- **(d) Broaden the profession's exclusives.** Thin: belts and gloves
-  would need new equipment slots, and `inventory_equipment.md` §2
-  deliberately has none free in the MVP.
-- **(e) Drop the Leatherworker from the MVP roster**, merging leather
-  into the Tailor until the Rogue arrives. Smallest roster, but it
-  breaks `professions.md` §2.1's "three armor classes, three
-  professions" and has to be un-merged later.
-
-Recommendation: **(c)**, with **(a)** as the fallback if the balance
-work is unwanted this phase. It costs no new class and no new slot, it
-lights up 24 items that are already generated, it gives the Warrior a
-real gearing decision instead of a single upgrade line, and it retires
-the "nothing can wear leather" clause instead of carrying it into
-Phase 2. Whichever is chosen, **§3.8's sentence needs correcting** —
-today it states as fact something the shipped filter contradicts.
-
-*Lands in*: `items_crafting.md` §3.4/§3.8, `professions.md` §2, and
-(if (c)) `inventory_equipment.md` §2's rationale.
-**Decision:** _open_ — affects WP5's drop tables and WP10's scope.
-
 ### C12 — Does the bow foundation receive a playable ranged class?
 
 The item foundation is already decided: bows follow the material weapon curve,
@@ -467,7 +395,6 @@ magnitudes **block WP10**'s cooking book.
 | A3 | Whether bags participate in refinement and enchanting | WP10 |
 | A4 | Remaining T5/T6 keystones + Woodcarver rows | **WP10** |
 | B22 | The six picks' explicit dig-speed `times` and durability `uses` | WP29/WP22 |
-| C10 | Leatherworker has no armor customers | WP5 drops, WP10 scope |
 | C12 | Whether the bow foundation receives a Hunter-like or existing ranged class | future class/bow package |
 | D12, D14–D19 | Mount assets, entity damage, mounting in combat, underground flight, ceiling/post-dismount drift, swimmer exhaustion, skins | **mounts WP** (D20 decided 2026-08-13 → `mounts.md` §1) |
 | E21 | Cooking recipe lists per tier, restore percentages and buff magnitudes | **WP10** |

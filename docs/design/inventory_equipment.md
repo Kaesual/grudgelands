@@ -165,7 +165,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     group are unaffected.
   - Each character class has a **maximum rank** and may wear its own
     rank **and everything below**: **Warrior 3, Mage 1, Priest 1**. A
-    character without a class counts as cloth (rank 1).
+    character without a class counts as cloth (rank 1). This
+    below-inclusive rule is load-bearing since 2026-08-13: leather
+    (rank 2) ships as the **Warrior's light avoidance set**
+    (`items_crafting.md` §3.8) — a Warrior chooses between metal's
+    mitigation pool and leather's avoidance pool, not between wearing
+    and not wearing.
   - Enforced in the **same group-filtered `allow_put`** as the rest of
     the slot rules, with a throttled chat refusal (the allow callback
     fires repeatedly while a stack is dragged).

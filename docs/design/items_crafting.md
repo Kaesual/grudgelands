@@ -817,7 +817,9 @@ the Tailor's T4 silkweave precedent (serpents and panthers carry the
 level-51–60 zones on both continents; no new mob is required).
 
 **Refines and enchants**: leather armor, all four slots. Base recipes use
-the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather.
+the §3.1 shapes at jerkin 6 / pants 5 / hood 4 / boots 3 leather. Its MVP
+wearer is the **Warrior** (light avoidance set, §3.8 — decided
+2026-08-13); the Rogue joins in Phase 2.
 
 **Exclusive recipes**: armor kits from Journeyman up (§7), and the
 **quiver** — a bag-slot item that holds only arrows, catalogued here and
@@ -1180,15 +1182,19 @@ changes:
     see the same shelf, and a restart does not re-roll it.
 - Catalogs are **generated from the curves** of §3.1/§3.2, not authored
   by hand — six brackets cost the same as three.
-- **Shipped armor lines: metal and cloth; leather does not ship**
-  (decided 2026-08-07). The MVP classes are Warrior / Mage / Priest
-  (`inventory_equipment.md` §2: ranks 3 / 1 / 1), so **nothing can wear
-  leather** and 24 leather items would be dead weight in every catalog.
-  The leather curve stays in the generator so its coefficients never
-  have to be re-derived; the line registers with the Rogue (Phase 2) or
-  with WP5's drop tables, whichever lands first. Under the §3.0.3 merge
-  this decision now covers the **craft** ladder too — there is one
-  catalog, so a line that does not ship does not ship anywhere (§3.4).
+- **Shipped armor lines: metal, cloth and leather** (leather decided
+  2026-08-13, superseding 2026-08-07's "does not ship"). The rank rule
+  grants each class its own rank **and everything below**
+  (`inventory_equipment.md` §2: Warrior 3 / Mage 1 / Priest 1), so
+  leather (rank 2) ships as the **Warrior's light set**: §6.2's leather
+  pool (+Dex, +HP, +crit%, +dodge%) against metal's (+Str, +HP,
+  +armor%, +dodge%) is a real mitigation-versus-avoidance choice, and
+  §3.1 already prices leather below metal at equal tier, so plate stays
+  the mitigation king. The curve sits in the generator; the 24 leather
+  registrations land with WP29's catalog merge. Under the §3.0.3 merge
+  this covers the **craft** ladder too — one catalog, so the line ships
+  vendor and craft at once (§3.4). The Rogue (Phase 2) later joins as
+  the intended primary wearer.
 - Cultural-region vendor presentation and the same-race purchase discount
   layer on top without changing catalog strength or buy-back (§8.2).
 
