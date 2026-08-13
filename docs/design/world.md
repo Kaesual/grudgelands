@@ -292,17 +292,40 @@ occupying a position (`world_zones.md` §7):
   coastal materials and shore wildlife. It is never housing-claim ground.
 - **Deep ocean:** every ordinary ocean column beyond the shelf, immutable at
   every y. This remains the deliberately deadly open sea patrolled by the
-  level-100 Kraken Guard (no drops or XP). Playable-boat ownership,
-  acquisition, speed, damage, destruction and return/respawn behavior are not
-  defined by this world-geometry rule (`TODO-design-boats.md`).
+  level-100 Kraken Guard (no drops or XP). Boat acquisition, ownership,
+  movement, damage and decay are decided in [boats.md](boats.md); what this
+  world-geometry rule owns is the pursuit contract below.
 - **Dragon channels:** separate full-column immutable masks between the
-  mainland and the two offshore islands. They are required boat routes and do
-  not inherit the deep-ocean Kraken/boat-destruction rule. Their warning and
+  mainland and the two offshore islands. They are required boat routes and
+  carry no Kraken Guard at all. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two distinct 96-node-wide approaches centred at z = -125 and z = +125,
   joining its Holy Grounds endpoint to two inward-shore island beaches. Both
   are usable by both factions; their north/south orientation only equalizes
   travel from Kragmar and Elandor.
+**Kraken Guard pursuit** (decided 2026-08-13) — the deep sea is dangerous
+because of what the guard does, not because water damages a boat:
+
+- The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
+  nor planned zone water, nor a dragon channel ever spawns one.
+- **In deep ocean it never gives up.** Neither the 40-metre drag leash nor the
+  45-metre chase limit of `combat_stats.md` §4 applies while the guard itself
+  stands in a deep-ocean column: a player who stays on the open sea is caught.
+  The guard is faster than the fastest boat, so this is not a race.
+- **Everywhere else it behaves like an ordinary land mob.** In shelf water, in
+  planned zone water and inside a dragon channel the complete §4 model applies
+  unchanged — drag leash, chase give-up, threat reset, the accelerated
+  untouchable run home to its post and the teleport backstop.
+- **The switch is evaluated at the guard's own current position and takes
+  effect immediately**, and a guard that has begun to evade never reverses
+  that decision until it is home. A pursuit that starts in deep ocean and
+  reaches the shelf therefore ends at once: the guard has long exceeded its
+  drag allowance, so the first tick under ordinary rules leashes it. This is
+  what keeps a shelf-edge guard dangerous instead of farmable, without letting
+  one follow a boat to the beach.
+- A dragon channel is safe passage for that reason alone; no separate
+  channel exception is needed.
+
 The compatibility `open_sea_at` predicate must become true only for
 `deep_ocean`; it is false for planned zone water, shelf and dragon channel. The
 shipped WP18 rectangle/strait lookup remains running-code history only and is
@@ -794,6 +817,13 @@ administration system do not exist in the target design.
   persisted wall-clock timestamp. Failure or interruption consumes no cooldown.
 - `/unstuck` (suicide command) remains the last resort for hard stuck
   states.
+
+**Boats** are the third travel mode next to walking/riding and the waypoint
+network, and the only access to both dragon islands. Their complete contract —
+always-craftable base boat, the shipwright's level-30 improved boat, one
+player per boat, eject on damage and the 24-hour decay of an unused boat —
+lives in [boats.md](boats.md); the water they move through is classified in
+§2b above. Boats never teleport and are not part of the waypoint network.
 
 ## 7. Races
 
