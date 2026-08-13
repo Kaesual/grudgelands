@@ -19,16 +19,18 @@ rolled. It owns no recipe, no profession, no catalog and no price.
   masterwork, cultural-finish and PvP-special channels), one idempotent
   description regeneration path, the §6.3 roll engine with its six source
   windows, the §5/§5.1 drop layer, and the §6b.4 prefix/suffix naming.
-- **The mod is `grug_items`, and its entry point's signature is already
-  fixed by a shipped call site.** WP7 probes exactly that global and
-  exactly one function (`mods/ENTITIES/grug_traders/stock.lua:183-189`)
-  and calls it as **`roll(stack, entry.ilvl, "world")`**
-  (`stock.lua:200-203`). So the contract is
+- **The global name and the entry point's signature are already fixed by a
+  shipped call site.** WP7 probes the global table `grug_items` and one
+  function on it (`mods/ENTITIES/grug_traders/stock.lua:183-189`) and calls
+  it as **`roll(stack, entry.ilvl, "world")`** (`stock.lua:200-203`). The
+  binding contract is therefore
   `grug_items.roll_enchants(stack, ilvl, window)`, mutating the stack in
-  place, with the window passed as the §6.3 window name as a string.
-  Registering the mod under another name, or choosing another signature,
-  silently keeps every vendor Uncommon switched off — the probe fails
-  closed by design.
+  place, with the window passed as the §6.3 window name as a string. The
+  probe tests the *global*, not the registered mod name — naming the mod
+  `grug_items` is the ordinary project convention (AGENTS.md: one global
+  per mod), but choosing a different global or signature silently keeps
+  every vendor Uncommon switched off, because the probe fails closed by
+  design.
 
 Non-goals, all binding:
 
@@ -50,9 +52,10 @@ Non-goals, all binding:
 - **No durability.** Refinement doubles a budget WP22 owns; WP5 stores the
   refined boolean and shows the doubled number, it does not implement wear.
 - **Nothing to remove.** The BACKLOG row's "remove the retired Amplifier
-  path" is stale: `Amplifier` occurs in no design document and in no Lua
-  file in `mods/`. There is no code, item, recipe or alias to retire, and
-  this card treats that clause as already satisfied.
+  path" is already satisfied. The only mention anywhere in `docs/design/`
+  is the tombstone in `items_crafting.md:25`, which lists the Amplifier
+  among the things "absent from the target", and no Lua file under `mods/`
+  contains the word. There is no code, item, recipe or alias to retire.
 
 ## 2. Shipped baseline this card builds on
 
@@ -62,12 +65,18 @@ Non-goals, all binding:
   `:285-287`). WP5 derives the per-stack `grug_req_level` and the rolls
   from those fields; the catalog needs no second list of levels
   (§6.1 hand-off).
-- **The description helper already emits the two lines WP5 must
-  preserve** (`grug_gear/init.lua:66-87`): name plus `Item level N` plus
-  one grey base-stat line. The base stat does **not** live in meta and
-  cannot be reconstructed from a roll, so regeneration appends affix lines
-  below these and never rebuilds them. The name is deliberately
-  un-colorized: WP5 owns the quality colors.
+- **The description helper shows the shape WP5 must reproduce — not
+  numbers it may reuse** (`grug_gear/init.lua:66-87`): name, `Item level N`,
+  one grey base-stat line. Those numbers are baked per registered item at
+  the six bracket anchors (ilvl 3/10/20/30/40/50), while a drop carries
+  `ilvl = min(mob level, 60)` and therefore lands off-anchor — the design
+  says so outright: "No shipped vendor bracket touches ilvl 27 or 42, but
+  **WP5's drop tables will**" (`items_crafting.md:813`). **So WP5 stores the
+  per-stack ilvl and recomputes the base stat from the §3.1/§3.2 curves**,
+  preserving the line *format* and its position above the affix lines, not
+  the definition's literal values. The base stat is still not stored in
+  meta and still cannot be reconstructed from a roll. The name is
+  deliberately un-colorized: WP5 owns the quality colors.
 - **The equip filter exists and has no level branch.** The group-filtered
   `allow_put` in `mods/PLAYER/grug_inventory/equipment.lua` already
   enforces the armor rank (`:311`) and the two-handed rule, with one
@@ -80,17 +89,23 @@ Non-goals, all binding:
   exist. The moment `grug_items.roll_enchants` exists, Uncommons light up
   **with no edit in that file**. `core.global_exists` is used to probe
   without tripping `strict.lua`.
-- **Attack speed already flows through per-stack meta.** The equipped
-  weapon's `full_punch_interval` override is read by the swing clock
-  (`grug_abilities/kits.lua:243`, `grug_abilities/init.lua:1233`), so a
-  rolled `+attack speed%` affix needs no new plumbing — it writes the
-  same key. `grug_abilities/init.lua:1115` requires that a changed
-  override must not read as unchanged.
-- **Equipment writes have one legal path.** Any per-stack mutation must go
-  through `grug_inventory.equipment_changed`
+- **Attack speed already flows through per-stack tool capabilities.** The
+  equipped weapon's `full_punch_interval` override is read by the swing
+  clock (`grug_abilities/kits.lua:243`, `grug_abilities/init.lua:1233`), so
+  a rolled `+attack speed%` affix needs no new plumbing — it writes the
+  same per-stack override, as `fpi / (1 + p)` and as a **complete**
+  capability table (`items_crafting.md` §6.1; a bare meta float of that
+  name is not read by the engine, and every other capability of the base
+  item must survive). `grug_abilities/init.lua:1115` requires that a
+  changed override must not read as unchanged.
+- **Writes to an equipped stack have one legal path.** Mutating a stack
+  that already sits in an equipment list means writing it back and then
+  calling `grug_inventory.equipment_changed`
   (`mods/CORE/grug_core/combat.lua:66`, `:110` name WP5's affix work
   explicitly); `get_equipped_weapon` hands out the caller's **own copy**,
-  so a modified stack is not equipped until written back.
+  so a modified copy is not equipped until it is written back. Stacks with
+  no owner — a fresh drop, a vendor stack, an item in `main` — are ordinary
+  ItemStacks and need no notification.
 - **WP7 ships 72 equippable items that carry an ilvl and enforce nothing**
   (§6.1) — that is the gap WP5 closes in one place.
 
@@ -101,11 +116,17 @@ Non-goals, all binding:
 | Key | Contents | Written by |
 |---|---|---|
 | `grug_quality` | 1 Common / 2 Uncommon / 3 Rare / 4 Unique-reserved | drop roller, WP10 recipes |
-| `grug_ench` | one serialized ordinary-affix table (stat → rolled value) | roll engine |
+| `grug_ench` | the **ordered** affix slots 1–4, each carrying stat and rolled value; the slot number is also its side (§6b.4) | roll engine |
 | `grug_upgrades` | 0–2, temper applications (§7) | WP10 kits |
-| `grug_req_level` | equals the item's ilvl, on **every** equippable item | WP5 on first touch |
+| ilvl | per-stack item level; equals the def's `_grug_ilvl` for a shop item and `min(mob level, 60)` for a drop | drop roller |
+| `grug_req_level` | equals the stack's ilvl; **absent on an item that has no ilvl at all** (§6.1) | WP5 on first touch |
 | refined | plain boolean, alongside `grug_quality` | WP10 refinement |
 | masterwork / cultural finish / PvP special | separate structured channels | WP10 |
+
+`grug_ench` must be an **ordered** record, not a `stat → value` map: §6b.4
+fills the four slots as prefix, suffix, prefix, suffix, so the slot index is
+what decides whether a rolled `+Str` appears as *Heavy* or *of the Bear*,
+and a map cannot represent that.
 
 These channels never overwrite one another. Exact key names are
 implementation-owned; **one idempotent regeneration path reads them all**
@@ -129,24 +150,37 @@ have, since a drop has no crafter.
 
 | Window | frac | Used by |
 |---|---|---|
-| world | 0.00–0.60 | normal-mob drops, vendor Uncommons |
-| crafted-fine | 0.30–0.80 | WP10 fine recipes |
-| elite | 0.30–0.90 | elite drops |
+| world | 0.00–0.60 | normal-mob drops (and the shipped vendor Uncommon call) |
+| crafted-fine | 0.30–0.80 | crafted Uncommon ("fine" recipes) — WP10 |
+| elite | 0.30–0.90 | elite drops, dungeon/crate loot |
 | rare | 0.50–1.00 | named-rare drops |
-| crafted-masterwork | 0.60–1.00 | WP10 masterworks |
+| crafted-masterwork | 0.60–1.00 | crafted Rare incl. Grudgeforged items — WP10 |
 | boss | 0.80–1.00 | apex hoards, race Kings |
 
 Legality is **§6.2 and only §6.2**: an affix is legal on a family iff its
 stat is in that family's pool, and no item may carry the same stat twice
 across its four ordinary slots.
 
+**Affix counts are decided, not free** (§6.1): Uncommon rolls **1 or 2
+affixes at 60/40**, Rare rolls **3 or 4 at 70/30**. A vendor Uncommon that
+always produced two affixes would silently be the best-value item on the
+shelf.
+
+**Temper re-roll windows** (§7), needed as a WP5 data seam because WP10's
+kits write through it: first application **0.50–0.95**, second
+**0.60–1.00**, `grug_upgrades` caps at **2**, and a temper never changes
+the affix count or the quality tier. §6b.7's ordinary special variant is a
+further structured per-stack field which keeps its full 2+2 slots on top of
+its one authored effect; WP5 stores and displays it, WP10 writes it.
+
 ### 3.3 Drop layer (§5, §5.1)
 
-Drops obey the shipped player-tag rule. `ilvl = mob level`, and **a
-dropped item's material tier must match the mob's tier** — a T3 item drops
-from level-21–30 mobs and nowhere else, which is what stops the drop table
-from becoming a side door around the depth gate of §3.0.4. The depth axis
-adds **no** gear layer at any depth.
+Drops obey the shipped player-tag rule. `ilvl = min(mob level, 60)` (§5;
+the clamp exists for the level-65 Kings), and **a dropped item's material
+tier must match the mob's tier** — a T3 item drops from level-21–30 mobs
+and nowhere else, which is what stops the drop table from becoming a side
+door around the depth gate of §3.0.4. The depth axis adds **no** gear layer
+at any depth.
 
 | Source | Uncommon | Rare | Window |
 |---|---|---|---|
@@ -155,15 +189,22 @@ adds **no** gear layer at any depth.
 | Named rare (armor 70) | 100% | 25% | rare |
 | Apex boss / race King | — | 100% | boss |
 
+The named-rare row is **additive, not a ladder** (§5.2): every kill yields
+the guaranteed Uncommon *and* rolls the 25% Rare independently *and* keeps
+the shipped 100% signature trophy. The Rare never replaces or upgrades the
+guaranteed Uncommon, and the trophy must survive this WP's changes to the
+drop function.
+
 A dropped item carrying affixes is by definition refined (§6b.3), which is
 why no refinement word appears in a drop's name (§6b.4).
 
-**Implementer latitude, deliberately not frozen:** which concrete item a
-qualifying drop selects. The tier is fixed by the mob's level band, so the
-selection is a uniform draw from that bracket's existing catalog
-(`grug_gear.catalog[b].all`); a weighted table is a tuning question for
-the runtime pass, not a design rule. Everything else on this page is
-binding.
+**Which concrete item a qualifying drop selects is not decided here and
+must not be frozen by the implementer either.** The tier follows from the
+mob's level band, but the distribution inside that bracket is exactly what
+the BACKLOG row means by "retune elite/high-tier gear drops against G2 and
+trophy demand": a flat draw over `grug_gear.catalog[b].all` would let
+high-tier drops undercut crafted G2 gear. Task 8 owns that audit and its
+result is the distribution.
 
 ### 3.4 Names, colors and the tooltip block (§6b.4, §6b.6, §6b.7)
 
@@ -198,7 +239,10 @@ WP5 stores, caps and displays them; WP10 writes them.
   head, chest, legs and feet only (never trinkets). One fixed deterministic
   effect per culture × family (§4.2's table); it preserves base item,
   tier, refinement, quality, durability, ordinary affixes, masterwork state
-  and PvP-special data.
+  and PvP-special data. **A different culture overwrites** the old finish
+  and appearance at full material/service cost with no refund; only
+  **reapplying the same culture** is rejected, and it is rejected before any
+  consumption (§4.2).
 - **PvP special** — at most **one per item**, stored independently.
   Identical target-race specials never stack (highest value wins); a new
   target **overwrites** the old at full cost with no refund; the identical
@@ -209,6 +253,33 @@ WP5 stores, caps and displays them; WP10 writes them.
   grants nothing; the Character page shows effective and raw values
   (`Armor 60% (67% raw)`). No reroll, overflow conversion, diminishing
   return or cap increase may hide the waste.
+
+### 3.6 The stats must actually apply
+
+An affix that displays correctly and changes nothing is the failure mode
+this WP exists to avoid, so WP5 owns the **consumption** of all nine
+stats — Str, Int, Dex, HP, Mana, Crit%, Dodge%, attack speed%, armor% —
+not only their storage. They aggregate per player, cached, refreshed from
+the equipment-change notifier and applied **before** `grug_classes.apply_stats`,
+which is the deliberately first consumer of that notifier (AGENTS.md).
+Crit, dodge and armor feed the existing `grug_core` accessors; attack speed
+writes the per-stack capability override of §3.2.
+
+WP5 also applies the **refinement bonus** itself: `+15%` base damage or the
+armor equivalent, rounded half-up like every other value on the curve, plus
+the doubled durability *number* in the grey line (§6b.2). WP22 keeps wear
+and the durability calibration; the bonus is item data and belongs here.
+
+### 3.7 Fallen Crown conversion (§5.4)
+
+The BACKLOG row names this explicitly, and it is per-stack data rather than
+a recipe, so WP5 owns the transaction and WP10 owns the recipe that
+triggers it: a Fallen Crown substitutes **one-for-one** for a qualifying
+named-rare trophy in the trophy slot of an ordinary Master-tier masterwork,
+including a T6 Grudgeforged item, and grants the **same** stat/affix budget
+and quality window — the crown adds royal provenance and visual identity,
+never a bigger roll. The Crown is one registered item carrying per-stack
+defeated-race provenance, not six currencies.
 
 ## 4. Tasks
 
@@ -230,42 +301,75 @@ WP5 stores, caps and displays them; WP10 writes them.
    message through the **existing throttled channel** (`:111`), never a
    silent "equips but grants nothing".
 5. **Drop layer** — §3.3's table wired into the shipped `drops` functions,
-   respecting the player-tag rule and the tier match; elite and named-rare
-   sources use their own windows.
-6. **The two channels** — storage, the overwrite/no-op rules, the shared
-   cap evaluation and the Character page's effective/raw display.
-7. **Trinket exception path** — one prefix, one suffix, no base-stat line,
+   respecting the player-tag rule, the tier match and the ilvl clamp; the
+   named-rare row stays additive and keeps its trophy.
+6. **Stat aggregation and the refinement bonus** — §3.6: the cached
+   per-player aggregate ahead of `apply_stats`, all nine stats live, and
+   the +15%/×2 durability application.
+7. **The two channels** — storage, the different-culture overwrite and
+   same-culture/same-target rejections, the shared cap evaluation and the
+   Character page's effective/raw display; plus the Fallen Crown
+   substitution of §3.7.
+8. **Drop-distribution audit** — a reproducible script that reports, per
+   level band, the expected value of found gear against crafted G2 gear and
+   named-rare trophy demand, and the distribution chosen from its result
+   (§3.3). Record it like `wp6_spawn_budget.md` records spawn calibration.
+9. **Trinket exception path** — one prefix, one suffix, no base-stat line,
    no refinement, no durability, in the shared code so WP10 only registers
-   items.
+   items. Temper windows and the special-variant field ship as seams here.
 
 ## 5. Acceptance gates
 
 1. `tools/bin/luac51 -p` clean on every changed file; the five
-   `luanti-lua.md` grep sweeps clean; no new global (verify with
-   `luac51 -l -p … | grep SETGLOBAL` when in doubt).
+   `luanti-lua.md` grep sweeps clean; **exactly one intentional
+   `SETGLOBAL grug_items` and no other** (verify with
+   `luac51 -l -p … | grep SETGLOBAL`).
 2. **Vendor Uncommons appear with no edit to `grug_traders`** — the proof
-   that the seam name is right.
-3. A level-1 character cannot equip a level-30 drop; the refusal prints
-   once per drag, not per callback.
-4. Regeneration is idempotent and preserves the base-stat line for all 72
-   shipped `grug_gear` items.
-5. No item carries a duplicate stat across its four ordinary slots, and no
-   affix appears outside its §6.2 family pool — assert over a large
-   generated sample, not by inspection.
-6. A T3 item never drops from a mob outside level 21–30, and no drop
-   appears at any depth that would not appear on the surface.
+   that the global and the signature are right.
+3. A level-1 character cannot equip a level-30 drop, and the refusal uses
+   the existing throttled channel: **at most one burst per 2 s per player**,
+   distinct reasons allowed inside a burst
+   (`grug_inventory/equipment.lua:118-124`) — not "once per drag", which
+   that channel does not promise.
+4. Regeneration is idempotent (twice → byte-identical) and produces the
+   correct base-stat line for **off-anchor** ilvls: an ilvl-27 drop shows
+   the §3.1/§3.2 curve value for 27, not the catalog's ilvl-20 number.
+5. Affix legality and counts are proven by an **exhaustive matrix** over
+   family × band × window × quality with an injected fixed-seed RNG — no
+   duplicate stat across the four slots, no affix outside its §6.2 pool,
+   observed 1/2 and 3/4 frequencies matching 60/40 and 70/30, and slot
+   order prefix/suffix/prefix/suffix in the generated name.
+6. A T3 item never drops from a mob outside level 21–30; no drop appears
+   at any depth that would not appear on the surface; a King drops at
+   ilvl 60, never 65; a named rare yields Uncommon + independent 25% Rare +
+   trophy in the same kill.
 7. Cap audit: a deliberately overcapped set shows `raw > effective` and
    grants no combat power above the cap.
-8. Applying a second cultural finish or an identical PvP special is
-   rejected; a different PvP target overwrites at full cost.
-9. **Runtime test plan for the user** (agents cannot run the Flatpak GUI):
-   kill boars until an Uncommon drops and read its name/lines; try to
-   equip an over-level item; buy an Uncommon from a vendor; confirm a
-   rolled attack-speed affix changes the swing interval.
+8. Every one of the nine stats measurably changes the character sheet and
+   the combat result, and a refined weapon deals the +15% (half-up)
+   damage — the display-only failure mode is what this gate exists for.
+9. Reapplying the same culture is rejected before consumption; a different
+   culture overwrites at full cost with no refund; an identical PvP target
+   is a no-op and a different one overwrites at full cost.
+10. The drop-distribution audit of task 8 is reproducible and its report is
+    committed.
+11. **Runtime test plan for the user** (agents cannot run the Flatpak GUI):
+    kill boars until an Uncommon drops and read its name/lines; try to
+    equip an over-level item; buy an Uncommon from a vendor; confirm a
+    rolled attack-speed affix visibly changes the swing rate and that a
+    +Str affix moves the Character page number.
 
 ## 6. Composition
 
-One implementation agent per task group (1–3 data/display, 4–5 rules/drops,
-6–7 channels), then the mandatory Opus review per
-`docs/process/wp-workflow.md` with a second reviewer on the roll/cap
-arithmetic. WP5 changes no mapgen and needs no fresh world.
+One implementation agent per task group (1–3 data/display, 4–6
+rules/drops/stats, 7–9 channels/audit/trinket seam), then the mandatory
+Opus review per `docs/process/wp-workflow.md` with a second reviewer on the
+roll/cap arithmetic and the stat aggregation. WP5 changes no mapgen and
+needs no fresh world.
+
+**Design provenance:** four rules this card depends on were open when it was
+first drafted and were decided on 2026-08-13 into `items_crafting.md`, not
+here — the positional prefix/suffix side (§6b.4), the `min(mob level, 60)`
+drop clamp (§5), the `fpi / (1 + p)` attack-speed conversion and the
+no-ilvl-no-requirement exemption (both §6.1). The card quotes them; the
+design document owns them.
