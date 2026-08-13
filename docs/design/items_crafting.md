@@ -1130,8 +1130,12 @@ Neither of these costs a main profession slot (professions.md §1).
   book is what makes both true at once.
 
   **The six groups are decided (E21, 2026-08-13)** — gate ingredient,
-  recipes, restore per serving, Well Fed step; every gate ingredient
-  exists on both continents (`biomes_mobs.md` §2/§6):
+  recipes, restore per serving, Well Fed step; every gate ingredient is
+  **reachable by both factions** (`biomes_mobs.md` §2/§6): T1–T5 gates
+  exist on both continents, while wild cocoa deliberately lives only on
+  the shared contested front — The Skyglass Canopy on foot, Stormscale
+  Summit as the offshore island bonus — so no continent-local placement
+  may reintroduce it below level 51:
 
   | Group | Gate ingredient | Recipes | Restore/serving | Well Fed |
   |---|---|---|---|---|
