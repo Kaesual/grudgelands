@@ -443,6 +443,177 @@ local compiler = dofile(wp40 .. "/geometry/partition.lua")({
 	canonical = canonical, deterministic = deterministic, exact = exact,
 	raster = raster, raw_sha256 = raw_sha256, source = source,
 	source_validator = source_validator, vocabulary = vocabulary})
+if arg[3] ~= nil then
+	assert(arg[3] == "selected_stage2_blocked" and arg[4] == nil,
+		"unknown T2 partition focused mode")
+	do
+		local fixture = dofile(repo ..
+			"/tools/wp40/fixtures/t2_extreme_e0/selected_stage2_blocked.lua")
+		local gate = dofile(repo ..
+			"/tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua")
+		local function closed(value, names, label)
+			assert(type(value) == "table" and getmetatable(value) == nil, label)
+			local allowed, count = {}, 0
+			for index = 1, #names do allowed[names[index]] = true end
+			for name in pairs(value) do assert(allowed[name], label .. " has an extra field")
+				count = count + 1 end
+			assert(count == #names, label .. " has a missing field")
+		end
+		closed(fixture, {"schema", "status", "scope", "stage2_status",
+			"measurement_commit", "measurement_tree", "authority_dag_sha256",
+			"conformance_commit", "conformance_tree", "conformance_dag_sha256",
+			"artifact_sha256", "manifest_sha256", "candidate_rows_sha256",
+			"interpreter_id", "interpreter_path", "interpreter_version",
+			"interpreter_sha256", "source_checksum", "boundary_policy_checksum",
+			"partition_sha256", "cases"},
+			"selected Stage-2 blocker fixture")
+		assert(fixture.schema == "grug_wp40_extreme_selected_stage2_blocked_v1" and
+			fixture.status == "selected_stage2_blocked" and
+			fixture.scope == "T2C_E0_SELECTED_STAGE2_NEGATIVE_WITNESS_ONLY" and
+			fixture.stage2_status == "blocked_without_fallback" and #fixture.cases == 2 and
+			fixture.measurement_commit == gate.measurement_commit and
+			fixture.measurement_tree == gate.measurement_tree and
+			fixture.authority_dag_sha256 == gate.authority_dag_sha256 and
+			fixture.artifact_sha256 == gate.artifact_sha256 and
+			fixture.manifest_sha256 == gate.manifest_sha256 and
+			fixture.candidate_rows_sha256 == gate.candidate_rows_sha256 and
+			fixture.source_checksum == source_validator.EXPECTED_SOURCE_CHECKSUM and
+			fixture.boundary_policy_checksum ==
+				source_validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM and
+			fixture.partition_sha256 == gate.partition_sha256)
+		local expected_provenance = {
+			conformance_commit = "5a2fc0d49276b7cded481fb9758782af967e2b0a",
+			conformance_tree = "0f81de16572753a5d1b34959b38168d47c592e41",
+			conformance_dag_sha256 =
+				"086855378ed15a5781d57335308f9ff62e6731e376c4cca8591bee4337478d6c",
+			manifest_sha256 =
+				"23b909d2b4d30ccffce3c09b9a1a987ffe1123136583fe409377a27fd0649a52",
+			interpreter_id = "puc_lua51",
+			interpreter_path = repo .. "/tools/bin/lua51",
+			interpreter_version =
+				"Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio",
+			interpreter_sha256 =
+				"a1a427f38260513b64158630bc2b7d2fccfa31b48129efbfbcc60e02e4960a4f",
+		}
+		local function validate_provenance(value)
+			for name, expected in pairs(expected_provenance) do
+				assert(value[name] == expected,
+					"selected Stage-2 blocker " .. name .. " changed")
+			end
+		end
+		validate_provenance(fixture)
+		for name in pairs(expected_provenance) do
+			local corrupt = {}
+			for field, value in pairs(fixture) do corrupt[field] = value end
+			corrupt[name] = (corrupt[name]:sub(1, 1) == "0" and "1" or "0") ..
+				corrupt[name]:sub(2)
+			assert(not pcall(validate_provenance, corrupt),
+				"selected Stage-2 blocker accepted corrupt " .. name)
+		end
+		local conformance_authority = dofile(repo ..
+			"/tools/wp40/t2_extreme_conformance_authority.lua")({
+				raw_sha256 = raw_sha256})
+		assert(conformance_authority.validate_provenance(repo, scratch, {
+			commit = fixture.conformance_commit, tree = fixture.conformance_tree}))
+		assert(conformance_authority.capture_git(repo, scratch,
+			fixture.conformance_commit).dag_sha256 == fixture.conformance_dag_sha256,
+			"selected Stage-2 blocker conformance commit/DAG changed")
+		local function read_evidence(path)
+			local file = assert(io.open(path, "rb"))
+			local bytes = assert(file:read("*a"))
+			assert(file:close())
+			return bytes
+		end
+		assert(raw_sha256(read_evidence(repo ..
+			"/tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv")) ==
+			from_hex(fixture.manifest_sha256),
+			"selected Stage-2 blocker manifest bytes changed")
+		assert(raw_sha256(read_evidence(fixture.interpreter_path)) ==
+			from_hex(fixture.interpreter_sha256),
+			"selected Stage-2 blocker PUC interpreter bytes changed")
+		local function validate_cases(value)
+			closed(value, {1, 2}, "selected Stage-2 blocker cases")
+		end
+		validate_cases(fixture.cases)
+		for _, mutation in ipairs({"extra", "zero", "hole", "metatable"}) do
+			local corrupt = {}
+			for index, value in pairs(fixture.cases) do corrupt[index] = value end
+			if mutation == "extra" then corrupt[3] = fixture.cases[1]
+			elseif mutation == "zero" then corrupt[0] = fixture.cases[1]
+			elseif mutation == "hole" then corrupt[2] = nil
+			else setmetatable(corrupt, {}) end
+			assert(not pcall(validate_cases, corrupt),
+				"selected Stage-2 blocker accepted " .. mutation .. " cases")
+		end
+		local partition_file = assert(io.open(wp40 .. "/geometry/partition.lua", "rb"))
+		local partition_bytes = assert(partition_file:read("*a"))
+		assert(partition_file:close())
+		assert(raw_sha256(partition_bytes) == from_hex(fixture.partition_sha256),
+			"selected Stage-2 blocker partition pin changed")
+		local expected_slots = {29, 30}
+		for index = 1, #fixture.cases do
+			local row = fixture.cases[index]
+			local winner = assert(gate.winners[row.slot - 27])
+			assert(winner.slot == row.slot and winner.candidate_index == row.candidate_index and
+				winner.decimal == row.seed, "selected Stage-2 blocker is not an artifact winner")
+			if row.kind == "invalid_aperture_bank_start" then
+				closed(row, {"slot", "candidate_index", "seed", "kind", "bank_id",
+					"aperture_id", "aperture_side", "transition_id", "diagnostic"},
+					"selected aperture blocker")
+				local bank
+				for source_index = 1, #source.bay_bank_components do
+					if source.bay_bank_components[source_index].id == row.bank_id then
+						bank = source.bay_bank_components[source_index] break
+					end
+				end
+				assert(bank and bank.start_terminal.kind == "aperture_dry" and
+					bank.start_terminal.aperture_id == row.aperture_id and
+					bank.start_terminal.side == row.aperture_side and
+					bank.end_terminal.kind == "land_edge_transition" and
+					"bay_edge_transition:" .. bank.end_terminal.edge_id .. ":" ..
+						bank.end_terminal.edge_endpoint == row.transition_id)
+			else
+				assert(row.kind == "second_retained_land_run")
+				closed(row, {"slot", "candidate_index", "seed", "kind", "edge_id",
+					"transition_id", "attachment_id", "diagnostic"},
+					"selected retained-run blocker")
+				local transition, attachment
+				for source_index = 1, #source.bay_edge_transitions do
+					local value = source.bay_edge_transitions[source_index]
+					if value.id == row.transition_id then transition = value break end
+				end
+				for source_index = 1, #source.perimeter_attachments do
+					local value = source.perimeter_attachments[source_index]
+					if value.id == row.attachment_id then attachment = value break end
+				end
+				assert(transition and transition.edge_id == row.edge_id and
+					transition.edge_endpoint == "from" and attachment and
+					attachment.edge_id == row.edge_id and attachment.edge_endpoint == "to" and
+					attachment.retained_run == "prefix")
+			end
+			assert(row.slot == expected_slots[index] and type(row.seed) == "string" and
+				type(row.candidate_index) == "number" and type(row.diagnostic) == "string")
+			local ok, diagnostic = pcall(compiler.compile, row.seed)
+			assert(not ok and tostring(diagnostic) == row.diagnostic,
+				"selected Stage-2 blocker diagnostic changed: " .. tostring(diagnostic))
+		end
+		local corrupt = {}
+		for name, value in pairs(fixture) do corrupt[name] = value end
+		corrupt.extra = true
+		local ok = pcall(closed, corrupt, {"schema", "status", "scope",
+			"stage2_status", "measurement_commit", "measurement_tree",
+			"authority_dag_sha256", "conformance_commit", "conformance_tree",
+			"conformance_dag_sha256", "artifact_sha256", "manifest_sha256",
+			"candidate_rows_sha256", "interpreter_id", "interpreter_path",
+			"interpreter_version", "interpreter_sha256", "source_checksum",
+			"boundary_policy_checksum", "partition_sha256", "cases"},
+			"selected Stage-2 blocker fixture")
+		assert(not ok, "selected Stage-2 blocker fixture accepted an extra field")
+		print("WP40 T2 selected Stage-2 blockers reproduced exactly slots=29/30 " ..
+			"status=blocked_without_fallback")
+	end
+	return
+end
 local compiled = compiler.compile("0")
 local fresh_source = dofile(wp40 .. "/source/catalog.lua")
 assert(deep_equal(source, fresh_source), "partition compiler mutated Source")
@@ -1930,8 +2101,6 @@ assert(#max_u64_compiled.families.land_boundaries == 61 and
 	#max_u64_compiled.families.bays == 4)
 local max_u64_world = build_independent_oracle_world(max_u64_compiled)
 local max_u64_apertures = derive_authored_apertures(max_u64_compiled)
-local max_u64_edges = extract_final_edge_points(max_u64_compiled)
-local max_u64_envelopes = count_bank_envelopes(max_u64_world)
 local max_u64_bank_payload, max_u64_bank_count =
 	extract_bank_payload(max_u64_compiled)
 assert(max_u64_bank_count == 20)
@@ -1954,7 +2123,6 @@ local function compiled_wing_authority(compiled_value)
 	end
 	return result
 end
-local max_u64_wings = compiled_wing_authority(max_u64_compiled)
 
 local function independent_transition_expectations(oracle_world, r7_edges)
 	local result, direct_count, elbow_count = {}, 0, 0
@@ -2064,15 +2232,37 @@ local function assert_transition_payload(compiled_value, expectations)
 	assert(count == 8)
 end
 
+-- C1 selected winners consume the same independent Bank/transition authority
+-- as the retained Seed0/max-u64 proof.  Keep every helper lexical to this
+-- closure: none of these names is a public test global or a second resolver.
+r16_max.bank_transition_oracle = function(compiled_value, oracle_world,
+		r7_edges, authored_apertures, payload)
+	local edges = extract_final_edge_points(compiled_value)
+	local envelopes = count_bank_envelopes(oracle_world)
+	local wings = compiled_wing_authority(compiled_value)
+	local banks = trace_independent_banks(oracle_world, wings, edges,
+		authored_apertures, envelopes, payload, true)
+	local transitions, direct, elbows = independent_transition_expectations(
+		oracle_world, r7_edges)
+	assert_transition_payload(compiled_value, transitions)
+	return {edges = edges, envelopes = envelopes, wings = wings, banks = banks,
+		transition_expectations = transitions, direct = direct, elbows = elbows}
+end
+
 local seed0_transition_expectations, seed0_direct, seed0_elbows =
 	independent_transition_expectations(seed0_oracle_world, selected_r7_edge_by_id)
 assert(seed0_direct == 8 and seed0_elbows == 0)
 assert_transition_payload(compiled, seed0_transition_expectations)
 local max_u64_selected_r7 = materialize_selected_r7(max_u64_seed)
-local max_u64_transition_expectations, max_u64_direct, max_u64_elbows =
-	independent_transition_expectations(max_u64_world, max_u64_selected_r7)
+local max_u64_authority = r16_max.bank_transition_oracle(max_u64_compiled,
+	max_u64_world, max_u64_selected_r7, max_u64_apertures, max_u64_bank_payload)
+local max_u64_transition_expectations = max_u64_authority.transition_expectations
+local max_u64_direct, max_u64_elbows = max_u64_authority.direct,
+	max_u64_authority.elbows
+local max_u64_edges, max_u64_envelopes, max_u64_wings, max_u64_banks =
+	max_u64_authority.edges, max_u64_authority.envelopes,
+	max_u64_authority.wings, max_u64_authority.banks
 assert(max_u64_direct == 7 and max_u64_elbows == 1)
-assert_transition_payload(max_u64_compiled, max_u64_transition_expectations)
 local max_transition = assert(max_u64_transition_expectations[
 	"bay_edge_transition:land_010:to"])
 assert(max_transition.mode == "diagonal_elbow" and
@@ -2094,9 +2284,6 @@ for station_index = 1, #max_w_segment.stations do
 end
 assert(max_w_nearest - 1 == 259 and max_w_segment.deltas[max_w_nearest] == -12)
 
-local max_u64_banks = trace_independent_banks(max_u64_world, max_u64_wings,
-	max_u64_edges, max_u64_apertures, max_u64_envelopes,
-	max_u64_bank_payload, true)
 local max_stillgrave = max_u64_banks["bay_bank:kragmar_west:stillgrave"]
 local max_mournfen = max_u64_banks["bay_bank:kragmar_west:mournfen"]
 assert(max_stillgrave[1].x == max_transition.point.x and
@@ -4658,18 +4845,13 @@ end
 	local selected_compiled = compiler.compile(selected_request.seed)
 	local selected_world = build_independent_oracle_world(selected_compiled)
 	local selected_apertures = derive_authored_apertures(selected_compiled)
-	local selected_edges = extract_final_edge_points(selected_compiled)
-	local selected_envelopes = count_bank_envelopes(selected_world)
 	local selected_payload, selected_bank_count = extract_bank_payload(selected_compiled)
 	assert(selected_bank_count == 20)
-	local selected_wings = compiled_wing_authority(selected_compiled)
-	local selected_banks = trace_independent_banks(selected_world, selected_wings,
-		selected_edges, selected_apertures, selected_envelopes, selected_payload, true)
 	local selected_r7 = materialize_selected_r7(selected_request.seed)
-	local selected_transitions, selected_direct, selected_elbows =
-		independent_transition_expectations(selected_world, selected_r7)
-	assert(selected_direct + selected_elbows == 8)
-	assert_transition_payload(selected_compiled, selected_transitions)
+	local selected_authority = r16_max.bank_transition_oracle(
+		selected_compiled, selected_world, selected_r7, selected_apertures,
+		selected_payload)
+	assert(selected_authority.direct + selected_authority.elbows == 8)
 	local selected_perimeters = materialize_independent_perimeters(
 		selected_request.seed, selected_compiled)
 	local selected_attachments = derive_attachment_oracles(selected_world, selected_r7,
@@ -4682,15 +4864,17 @@ end
 		r16_max.coast_oracle.bytes(selected_coast))
 	r16_max.coast_oracle.validate_evaluator(selected_compiled, selected_coast,
 		selected_world, "selected winner")
-	local selected_bundle = {wings = selected_wings, edges = selected_edges,
-		apertures = selected_apertures, envelopes = selected_envelopes,
-		banks = selected_banks, transition_expectations = selected_transitions,
+	local selected_bundle = {wings = selected_authority.wings,
+		edges = selected_authority.edges, apertures = selected_apertures,
+		envelopes = selected_authority.envelopes,
+		banks = selected_authority.banks,
+		transition_expectations = selected_authority.transition_expectations,
 		attachments = selected_attachments}
 	local selected_report = run_exhaustive_partition_oracle(selected_compiled,
 		selected_request.seed, selected_world, selected_perimeters,
 		{mode = "selected", bundle = selected_bundle})
 	selected_request.result = {compiled = selected_compiled, report = selected_report,
-		transition_count = selected_direct + selected_elbows,
+		transition_count = selected_authority.direct + selected_authority.elbows,
 		bank_count = selected_bank_count, wing_count = #selected_compiled.families.closure_wings,
 		coast_count = #selected_compiled.families.coast_shelf,
 		face_count = #selected_compiled.families.dry_faces}
