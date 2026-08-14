@@ -1,0 +1,30 @@
+-- Retained R16 reproduction from the current Production fatal only.  The
+-- proposed diagonal-elbow policy and its independent reachability oracle
+-- belong to the following R16 Source/Stage-2 slice, not this scalar slice.
+return {
+	status = "STAGE2_BLOCKED",
+	scope = "R7_SCALAR_MEASUREMENT_ONLY",
+	seed = "18446744073709551615",
+	fixed_slot = 19,
+	bank_id = "bay_bank:kragmar_west:stillgrave",
+	previous = {x = -1141, z = 2241},
+	current = {x = -1140, z = 2241},
+	target = {x = -1406, z = 2939},
+	end_terminal = "bay_mouth_aperture:kragmar_west:before",
+	authored_index = 3581,
+	authored_away_index = 3580,
+	distance = 1,
+	candidate = false,
+	own_cardinal_water_eswn = "0000",
+	foreign_cardinal_water_eswn = "0000",
+	in_envelope = true,
+	dry = true,
+	footprint_class = 1,
+	aperture_member = false,
+	source_checksum = "9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68",
+	boundary_policy_checksum = "3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140",
+	partition_sha256 = "cfb415d5ae4b5f2ba157d6d7bacfa216cd5e681c6620a0ef3c7a64ee5adb668d",
+	interpreter = "/usr/bin/luajit",
+	reproduce = "WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh",
+	diagnostic = "WP40 geometry partition: bay_bank:kragmar_west:stillgrave has an invalid start half-edge distance=1 candidate=false -1141:2241->-1140:2241 target=-1406:2939 end=bay_mouth_aperture:kragmar_west:before authored=3581/3580 own_ESWN=0000 foreign_ESWN=0000 envelope=true dry=true footprint=1 aperture=false",
+}

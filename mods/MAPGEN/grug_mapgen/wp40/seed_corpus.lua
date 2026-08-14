@@ -85,6 +85,32 @@ local function first_eight_decimal(raw)
 	return decimal
 end
 
+-- T2/T9 label-derived seeds use this one checked conversion. Full u64 values
+-- remain canonical decimal text and never pass through a Lua number.
+local function label_seed(label, raw_sha256)
+	if type(label) ~= "string" or label == "" or
+			not label:match("^grudgelands%-wp40%-%l[%l%d%-]*$") then
+		error("WP40 corpus label is invalid", 0)
+	end
+	if type(raw_sha256) ~= "function" then error("WP40 corpus SHA missing", 0) end
+	local raw = raw_sha256(label)
+	if type(raw) ~= "string" or #raw ~= 32 then
+		error("WP40 corpus label SHA is invalid", 0)
+	end
+	return {label = label, digest = hex(raw), first8 = hex(raw:sub(1, 8)),
+		decimal = first_eight_decimal(raw)}
+end
+corpus.label_seed = label_seed
+
+local function extreme_candidate(index, raw_sha256)
+	if type(index) ~= "number" or index % 1 ~= 0 or index < 0 or index > 4095 then
+		error("WP40 extreme candidate index is invalid", 0)
+	end
+	return label_seed(("grudgelands-wp40-extreme-%04d"):format(index),
+		raw_sha256)
+end
+corpus.extreme_candidate = extreme_candidate
+
 function corpus.verify(raw_sha256)
 	if type(raw_sha256) ~= "function" then error("WP40 corpus SHA missing", 0) end
 	if #corpus.fixed ~= 27 then error("WP40 fixed seed count changed", 0) end

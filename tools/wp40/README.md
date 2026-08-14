@@ -130,6 +130,55 @@ remain later work. The private analytic compiler exists only in this focused
 runner and is not yet integrated into the fixed compiler entrypoint, which
 intentionally continues to fail closed with `compiled_geometry_unavailable`.
 
+## T2 extreme-selector measurement slice
+
+Run the private E0 selector foundation with plain Lua 5.1:
+
+```sh
+tools/wp40/run_t2_extreme.sh
+```
+
+The runner accepts no positional arguments, prints its resolved interpreter,
+and keeps the same PUC-default/LuaJIT-iteration rule as the partition runner.
+It checks the single shared R7 boundary materializer, fresh scalar-only
+projections, exact normalized rational scores, frozen candidate identities,
+and canonical pinned range-shard parsing and merging. A measurement worker sets
+no environment range. After R16 is refrozen and its checked-in gate is enabled,
+the internal `run_t2_extreme_shard.sh START END OUTPUT` interface accepts
+exactly the eight 512-candidate ranges `0..511` through `3584..4095`. Before
+that refreeze both the single-shard worker and the orchestrator fail closed.
+The launcher exports immutable `HEAD`,
+derives and records its commit/tree, and runs the captured worker with the
+reviewed `/usr/bin/luajit` symlink, resolved target, version, and binary hash.
+It copies a verified shard back only after that export run succeeds. Set
+`WP40_EXTREME_MERGE=1` on this runner to parse, exact-cover, rank, and merge the
+eight retained shards under the vendored PUC Lua 5.1 interpreter. Focused 16-
+and 64-candidate sizing runs use `WP40_EXTREME_BENCHMARK_COUNT` and report wall
+time as well as direct/batched hash evidence.
+
+`run_t2_extreme_shards.sh` is the eight-worker launcher. Each worker flushes a
+range/current/completed/ETA line every 32 candidates; the launcher reports
+aggregate completion out of 4096 and a global ETA. On restart it skips only a
+pre-existing shard that passes the pinned PUC verifier, lets independent valid
+workers finish if a peer fails, and exits nonzero until all eight canonical
+ranges verify. Progress text is diagnostic and is never hashed as candidate
+authority.
+The launcher currently fails closed at its checked-in R16 gate. It may be
+enabled only after the six-file R16 Reality fix is reviewed/refrozen and the
+gate records the new Source, boundary-policy, and partition pins; running the
+4096 pool against the known blocked snapshot would only create stale evidence.
+
+The complete 4096-row artifact is explicitly a LuaJIT-origin
+`R7_SCALAR_MEASUREMENT_ONLY` pool with `stage2=blocked`; PUC parses and ranks
+that pool but does not relabel its origin. Separate PUC conformance evidence
+rematerializes deterministic shard endpoints, the four winners, and their
+full partition gates; it is not a second 4096-origin claim. This slice does not publish geometry,
+integrate `compiler.lua`, promote measured slots into the fixed corpus, or
+claim Stage 2/T2/32-seed readiness. The retained Stage-2 blocker for fixed
+slot 19 and every selected-extreme full-partition failure remain fatal with no
+fallback; slots 28--31 stay pending until that Reality case is resolved and
+the selected four pass the unchanged complete partition gate.
+
 ### Pinned engine facts used by T1
 
 - `core.sha256(data, true)` returns the raw 32-byte digest, and the utility is

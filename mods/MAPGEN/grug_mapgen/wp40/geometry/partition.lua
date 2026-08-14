@@ -24,7 +24,7 @@ local function exact_dependencies(value)
 	if type(value.raw_sha256) ~= "function" then fail("raw SHA dependency missing") end
 end
 
-return function(dependencies)
+local function new_partition(dependencies)
 	exact_dependencies(dependencies)
 	local canonical = dependencies.canonical
 	local deterministic = dependencies.deterministic
@@ -609,7 +609,11 @@ return function(dependencies)
 		return false
 	end
 
-	local function compile_impl(seed)
+	-- Sole seed-dependent R7 boundary materialization authority. Partition
+	-- compilation and the extreme selector consume this same result; neither
+	-- path may prepare effective controls, no-jitter sources, fixed closure, or
+	-- displacement independently.
+	local function materialize_boundary_seed(seed)
 		deterministic.validate_seed(seed)
 		source_validator()
 		local zone_numeric = {}
@@ -732,6 +736,33 @@ return function(dependencies)
 			displaced.polygon_index = polygon_index(displaced.stations)
 			island_by_id[row.id] = displaced
 		end
+		local provisional_edges, edge_by_id = {}, {}
+		for index = 1, #source.land_edges do
+			local row = source.land_edges[index]
+			local displaced = raster.displace({id = row.id, kind = "land_edge",
+				control = effective_control_by_edge[row.id] or row.control, closed = false,
+				noise_domain = row.noise_domain,
+				max_displacement = row.max_displacement}, seed, no_jitter)
+			displaced.source = row provisional_edges[index] = displaced
+			edge_by_id[row.id] = displaced
+		end
+		return {zone_numeric = zone_numeric,
+			edge_source_by_id = edge_source_by_id,
+			departure_by_edge = departure_by_edge,
+			perimeter_rows = perimeter_rows, perimeter_by_id = perimeter_by_id,
+			island_rows = island_rows, island_by_id = island_by_id,
+			provisional_edges = provisional_edges, edge_by_id = edge_by_id}
+	end
+
+	local function compile_impl(seed)
+		local boundary = materialize_boundary_seed(seed)
+		local zone_numeric = boundary.zone_numeric
+		local departure_by_edge = boundary.departure_by_edge
+		local perimeter_rows, perimeter_by_id = boundary.perimeter_rows,
+			boundary.perimeter_by_id
+		local island_rows, island_by_id = boundary.island_rows, boundary.island_by_id
+		local provisional_edges, edge_by_id = boundary.provisional_edges,
+			boundary.edge_by_id
 		local bays, bay_by_id = bay_data(seed)
 		local aperture_rows, aperture_by_bay, aperture_by_id = {}, {}, {}
 		local aperture_station_owner = {}
@@ -874,16 +905,6 @@ return function(dependencies)
 			local class = footprint_class(x, z)
 			if class < 0 then return false end
 			return not planned_water(x, z, class == 0)
-		end
-		local provisional_edges, edge_by_id = {}, {}
-		for index = 1, #source.land_edges do
-			local row = source.land_edges[index]
-			local displaced = raster.displace({id = row.id, kind = "land_edge",
-				control = effective_control_by_edge[row.id] or row.control, closed = false,
-				noise_domain = row.noise_domain,
-				max_displacement = row.max_displacement}, seed, no_jitter)
-			displaced.source = row provisional_edges[index] = displaced
-			edge_by_id[row.id] = displaced
 		end
 		local function validate_all_junction_pairs(stage)
 			local junction_pair_count = 0
@@ -1437,6 +1458,10 @@ return function(dependencies)
 				end
 				resolved.point = copy_points({perimeter.stations[point_index]})[1]
 				resolved.previous = copy_points({perimeter.stations[away_index]})[1]
+				resolved.aperture_id = terminal.aperture_id
+				resolved.aperture_side = terminal.side
+				resolved.authored_index = point_index - 1
+				resolved.authored_away_index = away_index - 1
 			elseif terminal.kind == "land_edge_transition" then
 				local edge = edge_by_id[terminal.edge_id]
 				if not edge then fail(cache_key .. " references an absent edge") end
@@ -1584,9 +1609,31 @@ return function(dependencies)
 			local start_distance = chebyshev(previous, current)
 			local start_candidate = bay_candidate(context, current.x, current.z)
 			if start_distance ~= 1 or not start_candidate then
+				local own_bits, foreign_bits = {}, {}
+				for direction_index = 1, #cardinal do
+					local direction = cardinal[direction_index]
+					local nx, nz = current.x + direction.x, current.z + direction.z
+					local own = bay_water(context, nx, nz)
+					own_bits[direction_index] = own and "1" or "0"
+					foreign_bits[direction_index] = final_water(nx, nz) and not own and
+						"1" or "0"
+				end
+				local current_key = key(current)
+				local aperture = aperture_by_bay[bank.bay_id]
 				fail(bank.id .. " has an invalid start half-edge distance=" ..
 					start_distance .. " candidate=" .. tostring(start_candidate) .. " " ..
-					key(previous) .. "->" .. key(current))
+					key(previous) .. "->" .. key(current) .. " target=" .. key(target) ..
+					" end=" .. tostring(finish.aperture_id or finish.edge_id or
+						finish.id) .. ":" .. tostring(finish.aperture_side or
+						finish.edge_endpoint or "") .. " authored=" ..
+					tostring(finish.authored_index) .. "/" ..
+					tostring(finish.authored_away_index) .. " own_ESWN=" ..
+					table.concat(own_bits) .. " foreign_ESWN=" ..
+					table.concat(foreign_bits) .. " envelope=" ..
+					tostring(in_bay_envelope(context, current.x, current.z)) ..
+					" dry=" .. tostring(bay_dry(context, current.x, current.z)) ..
+					" footprint=" .. tostring(footprint_class(current.x, current.z)) ..
+					" aperture=" .. tostring(aperture.included[current_key] == true))
 			end
 			if not bay_candidate(context, target.x, target.z) then
 				fail(bank.id .. " has a noncandidate target")
@@ -1982,6 +2029,74 @@ return function(dependencies)
 					signed_arrays = {polygon_xz = coordinates(row.polygon, false)}})
 		end
 		return {families = families}
+	end
+
+	-- Fresh data-only projection of the sole R7 materialization. Extreme
+	-- selection consumes provenance-bearing pre-component scalar identities,
+	-- never internal geometry tables or final partition artifacts.
+	local function extreme_scalar_records(seed)
+		local boundary = materialize_boundary_seed(seed)
+		local records = {}
+		local function append(family, row, numeric_id)
+			local samples = {}
+			for sample_index = 1, #row.scalar_samples do
+				local sample = row.scalar_samples[sample_index]
+				samples[sample_index] = {x = sample.x, z = sample.z,
+					scalar_q = sample.scalar_q,
+					source_segment = sample.source_segment,
+					local_station = sample.local_station}
+			end
+			records[#records + 1] = {family = family, id = row.id,
+				numeric_id = numeric_id, max_displacement = row.source.max_displacement,
+				topology_ceiling_nodes = row.topology_ceiling_nodes,
+				samples = samples}
+		end
+		for index = 1, #boundary.perimeter_rows do
+			append("perimeter", boundary.perimeter_rows[index], index)
+		end
+		for index = 1, #boundary.island_rows do
+			append("island", boundary.island_rows[index], index)
+		end
+		for index = 1, #boundary.provisional_edges do
+			append("land_edge", boundary.provisional_edges[index],
+				boundary.provisional_edges[index].source.numeric_id)
+		end
+		return records
+	end
+
+	local function private_plain_copy(value, seen)
+		if type(value) ~= "table" then return value end
+		if getmetatable(value) ~= nil then fail("extreme session input has a metatable") end
+		seen = seen or {}
+		if seen[value] then return seen[value] end
+		local result = {}
+		seen[value] = result
+		for key, child in pairs(value) do
+			result[private_plain_copy(key, seen)] = private_plain_copy(child, seen)
+		end
+		return result
+	end
+
+	-- The long extreme scan validates Stage 1 exactly once, then reads an
+	-- isolated copy through a closure. The unchecked validator is unreachable
+	-- outside this already-validated private session; mutating the factory's
+	-- original Source or vocabulary cannot affect later candidate rows.
+	local function new_extreme_scalar_session()
+		source_validator()
+		local isolated_source = private_plain_copy(source)
+		local isolated_vocabulary = private_plain_copy(dependencies.vocabulary)
+		local isolated = new_partition({canonical = canonical,
+			deterministic = deterministic, exact = exact, raster = raster,
+			raw_sha256 = dependencies.raw_sha256, source = isolated_source,
+			source_validator = {validate = function() return true end},
+			vocabulary = isolated_vocabulary})
+		local reader = isolated.extreme_scalar_records
+		return function(...)
+			if select("#", ...) ~= 1 then
+				fail("extreme scalar reader requires exactly one seed")
+			end
+			return reader(...)
+		end
 	end
 
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;
@@ -2405,6 +2520,8 @@ return function(dependencies)
 	end
 
 	partition.compile = compile_impl
+	partition.extreme_scalar_records = extreme_scalar_records
+	partition.new_extreme_scalar_session = new_extreme_scalar_session
 	partition.bay_owner = bay_owner
 	partition.validate_bay_payload = validate_bay_payload
 	partition.coast_source = coast_source
@@ -2421,3 +2538,5 @@ return function(dependencies)
 	partition.reverse_materialized = reverse_points
 	return partition
 end
+
+return new_partition
