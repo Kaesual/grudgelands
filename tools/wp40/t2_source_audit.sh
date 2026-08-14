@@ -31,6 +31,45 @@ grep -q 'changed_manifest_checksum~=checksum_a' "$test_file"
 grep -q '^source\.face_arcs = {' "$catalog"
 grep -q '^source\.zone_faces = {' "$catalog"
 grep -q '^source\.bay_closure_wings = {' "$catalog"
+grep -q '^source\.bay_bank_components={' "$catalog"
+[[ $(grep -c '^\s*bank("bay_bank:' "$catalog") -eq 20 ]]
+if grep -q 'lc("bay_shore"' "$catalog"; then
+	echo 'T2 source audit: superseded literal Bay-shore authority returned' >&2
+	exit 1
+fi
+grep -q 'bay_bank_candidate="final_classifier_dry_mainland_column' "$catalog"
+grep -q 'bay_bank_trace_state="bounded_depth_first_search_state_previous_current_plus_seen_directed_state_set' "$catalog"
+grep -q 'bay_bank_neighbor_order="base_clockwise_east_southeast_south_southwest_west_northwest_north_northeast' "$catalog"
+grep -q 'bay_bank_branch_rule="evaluate_admissible_successors_in_the_fixed_Moore_order_and_select_the_first_with_a_complete_valid_path_to_the_declared_terminal' "$catalog"
+grep -q 'bay_bank_reachability_bound="per_successor_bounded_DFS_counts_every_pushed_frame_including_the_start' "$catalog"
+grep -q 'bay_bank_aperture_terminal_order="deduplicated_final_authored_declared_perimeter_integer_raster_order_separate_from_the_canonical_mouth_aperture_membership_indices_payload_and_attachment_tie"' "$catalog"
+grep -q 'bay_bank_water_side="for_each_proposed_materialized_bank_step_current_to_successor' "$catalog"
+grep -q 'bay_bank_wing_k_set="all_final_dry_candidates_in_the_declared_wing_bbox_with_a_cardinal_neighbor_in_strict_water_owned_by_that_referenced_closure_wing' "$catalog"
+grep -q 'bay_bank_wing_k_rank="greatest_exact_wing_axis_projection_N_then_lexicographically_least_x_then_z' "$catalog"
+grep -q 'bay_bank_edge_transition_identity="for_each_of_eight_transitions_the_inward_candidate_scan_offset_from_the_declared_final_endpoint_must_equal_zero' "$catalog"
+grep -q 'bay_bank_tail_pair_selection="enumerate_all_complete_path_pairs_filter_interior_disjoint_distinct_J_predecessor' "$catalog"
+grep -q 'then_apply_wedge_validity_then_lexicographically_least_full_negative_path_coordinate_sequence' "$catalog"
+grep -q 'bay_bank_tail_wedge_polygon="analysis_only_exact_polygon_follows_negative_Kminus_to_J_then_reverse_positive_J_to_Kplus_then_direct_exact_chord_Kplus_to_Kminus' "$catalog"
+grep -q 'bay_bank_tail_wedge_radius="R_equals_one_plus_maximum_Chebyshev_Kminus_to_J_or_Kplus_to_J_scan_inclusive_J_centered_R_bbox_current_source_R_at_most_five"' "$catalog"
+grep -q 'bay_bank_tail_wedge_scan="for_each_integer_column_in_the_inclusive_J_centered_R_bbox_with_exact_polygon_class_greater_equal_zero_exempt_only_exact_negative_or_positive_tail_stations' "$catalog"
+grep -q 'bay_bank_tail_wedge_chord="direct_exact_chord_Kplus_to_Kminus_is_analysis_only_and_never_rastered_materialized_serialized_or_used_for_ownership"' "$catalog"
+grep -q 'bay_bank_materialization="resolve_each_terminal_and_each_joint_wing_tail_pair_once_then_materialize_one_shared_integer_column_chain_per_component' "$catalog"
+grep -q 'raw_dry_multiplicity_rule="outside_final_planned_water_raw_dry_face_multiplicity_at_least_one_multiples_only_on_declared_shared_edge_or_junction_with_canonical_half_open_owner_inside_final_planned_water_has_no_raw_dry_face_requirement"' "$catalog"
+grep -q 'WP40 T2 R15 Wing-wedge oracle passed: 100 raw pairs, 8 wedge pairs, ' "$test_file"
+grep -q 'R15 all-Wing 100/8 and 15-to-0 corpus drift' "$test_file"
+grep -q 'R15 dry nonterminal chord-column mutation was accepted' "$test_file"
+grep -q 'R15 self-intersecting wedge mutation was accepted' "$test_file"
+grep -q 'R15 multiple wedge-valid pairs did not select lexicographically first' "$test_file"
+for invariant in bay_bank_component_fields bay_bank_terminal_fields \
+	bay_bank_incidence_fields bay_bank_component_contract \
+	bay_bank_component_incidence face_arc_fields face_arc_component_fields \
+	face_arc_source_projection face_arc_kind_composition \
+	perimeter_bank_terminal_fields; do
+	grep -q "\"$invariant\"" "$stage1"
+	grep -q "expect_failure(\"$invariant\"" "$test_file"
+done
+grep -q 'R11 Bay-bank Reality correction' docs/research/wp40-engineering-brief.md
+grep -q 'exactly 20' docs/design/world_zones.md
 [[ $(grep -c 'geometry_policy_id="strict_tapered_bay_closure_wing_v1"' "$catalog") -eq 1 ]]
 grep -q 'closure_wing_membership="zero_less_equal_N_and_N_strictly_less_than_L' "$catalog"
 if grep -qE 'head_continuation|dry_fan|fan_chord|head_closure_junction|side_edge_continuation' "$catalog"; then
@@ -62,19 +101,45 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q 'f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188' "$stage1"
-grep -q '913b0d4184a9a51125413f69621e78e4643c84d2af545362b308f56ad01ba1a4' "$stage1"
-grep -q 'eb70c52d82fbb0d93ab53cf2d6d276b59f69c4fbf387b56311acfd9a0820c1e2' "$stage1"
-grep -q '3c87964998f48fc71d92aa361c0584cd6dc0ddd04ccc8992214775df138c132a' "$stage1"
-grep -q 'id="shared_polyline_normal_displacement_t1_hash_v2"' "$catalog"
+grep -q '9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68' "$stage1"
+grep -q '3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140' "$stage1"
+grep -q 'e5c17a5a084b0f13a5779b7c84aa823c8dae64e711020be5f46087db80a24693' "$stage1"
+grep -q 'b983c61c6740dfea9ff7821a3bfbda0da08c3475d4965995814cb71fff53f255' "$stage1"
+grep -q 'id="shared_polyline_normal_displacement_t1_hash_v3",schema_version=3' "$catalog"
 grep -q 'step_left_normal_rule="normal_x_q_equals_t1_qdiv_minus_dz_times_Q_by_step_length_q_normal_z_q_equals_t1_qdiv_dx_times_Q_by_step_length_q"' "$catalog"
 grep -q 'clip_loop_rule="test_exact_damped_scalar_first_if_outside_scan_integer_magnitude_nodes' "$catalog"
+grep -q 'topology_ceiling_policy_id="record_uniform_integer_magnitude_ceiling_v1"' "$catalog"
+grep -q 'topology_ceiling_domain="integer_C_descending_from_record_max_displacement_through_zero_inclusive"' "$catalog"
+grep -q 'topology_ceiling_candidate_order="strictly_descending_C_no_binary_search_or_monotonicity_assumption"' "$catalog"
+grep -q 'topology_ceiling_output_field="compiled_record_unsigned_topology_ceiling_nodes"' "$catalog"
+grep -q 'mainland_fixed_closure_policy_id="referenced_fixed_holy_edge_union_r7_v1"' "$catalog"
+grep -q 'mainland_fixed_closure_resolution="route_raster_each_referenced_land_edge_in_declared_direction' "$catalog"
+grep -q 'mainland_fixed_closure_remap="for_each_equivalent_authored_control_rotation_or_reversal_refind_the_unique_complete_source_segment_by_full_union_byte_sequence' "$catalog"
+grep -q 'mainland_fixed_closure_scalar="inside_the_ordinary_local_scalar_loop_every_tagged_closure_row_has_local_scalar_q_exactly_zero_and_both_closure_to_ordinary_coast_ring_joins' "$catalog"
+grep -q 'mainland_fixed_closure_topology="one_unchanged_record_wide_C_and_one_candidate_validity_and_final_reraster' "$catalog"
+grep -q 'mainland_fixed_closure_forbidden="no_post_R7_replace_snap_owner_fallback' "$catalog"
+[[ $(grep -c 'r7_fixed_closure = {kind="fixed_holy_land_edge_union"' "$catalog") -eq 2 ]]
+[[ $(grep -c '{edge_id="land_0[45][0-9]",direction="reverse"}' "$catalog") -eq 12 ]]
+grep -q 'ordered_outer_components=true,edge_refs=true' "$stage1"
+grep -q 'WP40 T2 H55 fixed-closure oracle passed: 2 x 6 refs, 5001 stations each' "$test_file"
+grep -q 'bf7880fea20624378a8c177e513af637b61b8f169be6cf1e03a45a86fe538534' "$test_file"
+for invariant in perimeter_fixed_closure_fields \
+		perimeter_fixed_closure_ref_fields perimeter_fixed_closure_contract \
+		perimeter_fixed_closure_ref perimeter_fixed_closure_fixed_edge \
+		perimeter_fixed_closure_join perimeter_fixed_closure_repeat \
+		perimeter_fixed_closure_scope perimeter_fixed_closure_projection \
+	perimeter_fixed_closure_geometry; do
+	grep -q "\"$invariant\"" "$stage1"
+	grep -q "expect_failure(\"$invariant\"" "$test_file"
+done
 grep -q 'final_raster_rule="route_raster_once_between_consecutive_shifted_controls' "$catalog"
-grep -q 'no_second_displacement_clip_or_snap' "$catalog"
+grep -q 'rejects_seed_without_second_clip_snap_or_seed_fallback' "$catalog"
+grep -q 'closed_centered_axis_aligned_record_authoring_rectangle' "$catalog"
 grep -q 'base_bay_symmetric_effective_half_width_uses_world_partition_policy_not_polyline_normal_displacement' "$catalog"
 grep -q 'pre_displacement_canonical_source_segment_raster_only_never_final_reraster_stations' "$catalog"
 grep -q 'perimeter_span_overlap_never_duplicates_a_source_segment_or_station_in_the_union' "$catalog"
 grep -q 'provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence' "$catalog"
+grep -q 'post_noise_damping_local_clip_selected_topology_ceiling_pre_component_scalar_q_exactly_once' "$catalog"
 grep -q 'id="face_partition_with_bay_capsule_water_v2"' "$catalog"
 grep -q 'outside_every_final_mainland_island_and_fixed_holy_grounds_closed_footprint' "$catalog"
 grep -q 'strict_exterior_closed_integer_polygon_channel_v1' "$catalog"
@@ -88,6 +153,21 @@ if grep -q 'math\.sqrt' "$catalog" "$stage1" "$test_file"; then
 fi
 grep -q '^source\.relief_junctions={' "$catalog"
 [[ $(grep -c '^\s*relief_junction(' "$catalog") -eq 38 ]]
+grep -q '^source\.junction_departures={' "$catalog"
+[[ $(grep -c '^\s*junction_departure("land_' "$catalog") -eq 4 ]]
+grep -q 'junction_departure_policy_id="derived_diagonal_endpoint_precontrol_v1"' "$catalog"
+grep -q 'junction_departure_application="copy_the_original_land_edge_control_array_insert_fixed_D_at_position_two' "$catalog"
+grep -q 'junction_departure_safe_arithmetic="compare_adjacent_and_endpoint_coordinates_without_subtraction' "$catalog"
+grep -q 'expect_failure("exact_count_junction_departures"' "$test_file"
+grep -q 'independent R13 38-junction/102-pair raster oracle drift' "$test_file"
+for invariant in junction_departure_fields junction_departure_contract \
+	junction_departure_duplicate junction_departure_reference \
+	junction_departure_incidence junction_departure_diagonal \
+	junction_departure_safe_arithmetic junction_departure_derived_station \
+	junction_pair_base_overlap junction_pair_base_x_cross; do
+	grep -q "\"$invariant\"" "$stage1"
+	grep -q "expect_failure(\"$invariant\"" "$test_file"
+done
 grep -q 'junction_candidate_eligibility="strictly_positive_weight_only_all_quantized_zero_weights_excluded_including_distance_96"' "$catalog"
 grep -q 'junction_zero_weight_rule="return_post_landmark_H_exactly_without_division"' "$catalog"
 grep -q 'junction_seed_rule="intersection_band_uses_domain_relief_junction_v1_feature_junction_x_z_coordinates_x_z_candidate_zero_lane_two_full_seed_unbiased_singleton_midpoint_uses_no_hash"' "$catalog"

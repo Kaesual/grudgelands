@@ -276,6 +276,98 @@ WP40 replaces it with the complete catalog and contracts below.
   adding those sides to the land graph. The original centreline samples, round
   head shoulder and outer mouth remain unchanged even though the final planned-
   water mask is explicitly larger than the base mask at the two closures.
+- Bay banks are integer-column boundaries derived from the final planned-water
+  classifier, not literal shore polylines. The source contains exactly 20
+  coordinate-free ordered `bay_bank_component` records, five per Bay. Each
+  record names one Bay, two structured terminal references, its one incident
+  face arc, canonical direction and water-right orientation; it contains no
+  coordinates, controls or copied shape. The compiler resolves every terminal
+  and materializes every chain once. All consumers use its one component ID
+  and byte-identical canonical stations; defensive table copies are allowed,
+  but a private connector, snap, inferred endpoint, second resolution or
+  second trace is forbidden.
+- The three terminal kinds share one resolution authority. `aperture_dry`
+  resolves by coordinate lookup in the deduplicated final **authored/declared**
+  perimeter order to the dry station immediately before or after the
+  aperture. This Bank-only order does not change the canonical mouth-aperture
+  membership indices, compiled aperture payload or Attachment tie.
+  `land_edge_transition` resolves to the declared endpoint of
+  the final clipped dry edge raster, and that endpoint itself must be the
+  adjacent Bay-bank candidate: the inward scan offset is zero for each of the
+  eight transitions (`land_001:to`, `land_004:from`, `land_004:to`,
+  `land_007:from`, `land_010:to`, `land_013:from`, `land_013:to` and
+  `land_016:from`) in every corpus seed. The edge and bank consume the same
+  resolved station ID and exact canonical x/z bytes; a nonzero offset, inward
+  shift or retained dry tail rejects the
+  seed and requires a new reviewed partition. `wing_junction_tail_side`
+  resolves through the one joint tail-pair result for its Wing; `J` remains
+  dry and is the only common terminal of the two sides.
+- For a non-Wing start, `current` is that resolved terminal candidate. At an
+  aperture, `previous` is the next dry authored perimeter station away from
+  the aperture; at an edge transition it is the immediately adjacent retained
+  dry edge station away from the declared endpoint. This 8-connected,
+  candidate-valid half-edge supplies Moore rotation only; it has no water-side
+  requirement. No other start heading is inferred.
+- A Moore candidate is a final-classifier dry mainland column, including
+  permitted dry perimeter equality, with a cardinal neighbour owned as final
+  water by the same Bay's Base mask or either Wing. Search is finite: the
+  Base-Bay and two Wing bounding boxes are expanded by one column and clipped
+  to the final mainland footprint. Trace state is `(previous,current,seen
+  directed states)`. Starting half-edges are 8-connected and candidate-valid;
+  they supply rotation only. Every materialized outgoing Bank step is
+  water-right compatible. The fixed clockwise base order is east, southeast,
+  south, southwest, west, northwest, north, northeast. The first probe is
+  immediately clockwise after the current-to-previous direction for
+  water-left and immediately counterclockwise for water-right; all 20 current
+  records declare water-right. A next column must be an unseen 8-neighbour
+  candidate, not `previous`; the proposed materialized Bank step
+  `current -> successor`, including the first one, must satisfy the exact
+  cardinal-water cross-sign rule. Successors are tested in the fixed Moore
+  order, and the first one from which the already-resolved terminal has a
+  complete valid path is selected; later reachable successors are permitted.
+  Reachability is a bounded DFS over `(previous,current,seen directed states)`.
+  Each successor call counts every pushed frame including its start and may
+  push at most eight times the finite envelope-column count; its stack depth
+  is at most that column count, and the materialized main trace has at most
+  envelope columns minus one steps. Zero reachable successors, a repeated
+  state/column, X-cross, foreign-water contact, undeclared endpoint or any
+  frame/stack/trace/envelope exhaustion rejects. Reversing a component returns
+  only the byte-exact reverse of the once-selected canonical station sequence;
+  it never reruns reachability.
+- Wing endpoint `K` is trace-independent. For each signed Wing side, enumerate
+  final-dry columns in that Wing's box which have a cardinal neighbour in the
+  strict interior water of that specific Wing, satisfy `0 <= N < L`, and have
+  the declared strict sign of `X = cross(J-A,P-A)`. Choose greatest exact `N`,
+  then lexicographically least `(x,z)`; an empty set rejects. Existing Wing
+  dot/cross bounds guard `abs(N)`, `abs(X)` and every product below `2^53`.
+  Select the negative and positive tails jointly from the two complete
+  8-connected dry distance-layer DAGs whose Chebyshev distance to `J`
+  decreases by one at every step. A structurally valid pair is strict-side
+  except at `J`, interior-disjoint, has distinct predecessors of `J`, and has
+  no intra- or inter-tail diagonal X-cross. Every such pair must then pass the
+  inclusive dry-wedge analysis before ranking. Its analysis-only exact polygon
+  follows the negative tail `K- -> J`, the byte-reverse of the positive tail
+  `J -> K+`, and the direct exact chord `K+ -> K-`. The polygon must be simple
+  and have nonzero signed area. Set `R` to one plus the larger Chebyshev
+  distance from `K-` or `K+` to `J`; the current hard bound is `R <= 5`.
+  Scan every integer column in the inclusive `J +/- R` box whose exact polygon
+  class is inside or on its boundary. Only exact negative- or positive-tail
+  stations—including `K-`, `K+` and `J`—are exempt; every other such column
+  must be strict water of that referenced Wing. The chord is never rastered,
+  materialized, serialized or used for ownership. Among all wedge-valid
+  pairs, choose the least by negative path then positive path, comparing every
+  coordinate by `(x,z)` and treating a shorter exact prefix as less. Multiple
+  wedge-valid pairs are permitted; none rejects. Current sources require
+  `Chebyshev(K,J) <= 4`; the general finite path bound remains
+  `ceil(isqrt(L)) + 1` stations.
+- A negative Wing terminal is always a component start: its joint tail is
+  emitted byte-exact as `J -> K`, and its last two stations supply the Moore
+  `(previous,current=K)` rotation-only start state. Its first outgoing
+  `current -> successor` Bank step must pass the water-right rule.
+  A positive Wing terminal is always a component end: Moore tracing targets
+  its independently selected `K`, then appends `K -> J` with the join `K`
+  deduplicated. Tail selection precedes every component trace, so a
+  Wing-to-Wing head-bank component has no circular start inference.
 - The horizontal classifier first evaluates the independent final literal
   planned-footprint perimeter. A point strictly outside is exterior. Exactly
   four checksum-covered mouth-aperture records—one for each Base Bay—bind the
@@ -355,8 +447,9 @@ WP40 replaces it with the complete catalog and contracts below.
   bound `4,251,754,341,463,400`, all below `2^53 - 1`.
 - The Wyrmglass Crown and Stormscale Summit island centres are fixed at
   **(−3150, 0)** and **(+3150, 0)**. Each has a binding 600×700 authoring
-  envelope (x radius 300, z radius 350); its authored, culturally distinct
-  coastline stays inside that envelope. After all mainland and island coast
+  envelope: the centered closed axis-aligned rectangle with x radius 300 and
+  z radius 350. Its authored, culturally distinct coastline stays inside that
+  rectangle. After all mainland and island coast
   variation, every island shore remains separated from every mainland land
   point by at least **200 ocean nodes**.
 - From either final shore, the first **48 ocean nodes** form the flight warning
@@ -682,9 +775,26 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   `min(max_displacement,floor(abs(damped_scalar_q)/Q))` to zero and take the first
   valid probe. The closed envelopes are a base-centered Chebyshev square for
   a land edge, the fixed mainland frame for mainland coast, the authored
-  island ellipse with axis rejection before products, and the exact base
+  centered closed 600×700 island authoring rectangle, and the exact base
   station for fixed geometry. Base Bays use their separate symmetric-width
   rule, not this polyline clip. Equality is inside every local envelope.
+- The locally clipped values are `local_scalar_q`; they are not yet the
+  exported scalar. One record-wide topology correction tests integer ceilings
+  `C` in strict descending order from that record's `max_displacement` through
+  zero. At a candidate `C`, every station uses
+  `clamp(local_scalar_q,-C*Q,+C*Q)`: values at or below the ceiling remain
+  bit-identical. The ordinary component conversion and sole final reraster are
+  then evaluated once for that candidate. A candidate is valid only when all
+  shifted controls and final stations remain in the record envelope, stations
+  are unique and 8-connected, no diagonal cell contains an X-cross, and a
+  closed record is simple with its declared orientation. The first valid
+  candidate is the greatest admissible `C`; its scalars and its already-built
+  raster are the only exported result. Higher invalid candidates are selection
+  probes, never geometry or selector input. The scan does not assume validity
+  is monotone and does not use binary search. Stage 1 proves that the
+  zero-displacement authored base raster is valid, so the finite scan takes at
+  most `max_displacement+1` candidates (currently at most 97); failure at
+  `C=0` is invalid source rather than a seed failure or alternate fallback.
 - The sole component conversion is
   `dx=qround(qmul(normal_x_q,displacement_scalar_q))` and likewise for `dz`,
   with both Q16 and integer half ties away from zero. Every shifted base
@@ -692,11 +802,80 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   8-connected reraster between consecutive controls; a closed cycle also
   rasterizes last to first, suppresses consecutive joins and removes a
   repeated terminal. There is no second displacement, clip, snap, noise query
-  or scalar interpolation. Any final envelope, topology, width or connectivity
-  failure rejects the seed.
+  or scalar interpolation. After the selected record ceiling, any remaining
+  final envelope, width or cross-record connectivity failure rejects the seed
+  without selecting another ceiling or seed.
+- Each planned mainland closes inside that same R7 record through one
+  checksum-covered `r7_fixed_closure`. It contains no coordinate or perimeter-
+  segment index: Elandor references `land_048` through `land_043` in descending
+  order and reverse direction, and Kragmar references `land_054` through
+  `land_049` in the same way. All twelve referenced land edges have zero
+  displacement. The resolver applies the sole route raster to the six directed
+  references, suppresses only their consecutive shared endpoints, and requires
+  the resulting 5,001-station union to be byte-identical to exactly one complete
+  authored perimeter base segment. The other 26 source segments remain the
+  ordinary movable coast. An equivalent authored closed rotation or reversal
+  must rediscover that complete geometric match; it may not retain or infer a
+  canonical array index.
+  The uniquely matched source-segment membership is tagged before closed-cycle
+  canonicalization and travels with the station metadata through rotation or
+  reversal. Its ordinary local-scalar rows are exactly zero. The two closure-
+  to-ordinary-coast ring joins also remain exactly zero through the existing
+  Holy-corner no-jitter authority; all five internal six-edge union joins are
+  closure-tagged zero rows. The same single record-wide `C`, candidate topology test
+  and final reraster cover the displaced 26-segment coast plus this fixed
+  closure; there is no post-R7 replacement. The selected closure must equal the
+  same directed six-edge union byte for byte. Its six refs are also the exact
+  suffix of `ordered_outer_components`, while all 18 Coast spans remain
+  unchanged. Missing, reordered, reversed, duplicated, moving, discontinuous,
+  repeated or nonmatching refs, a second/full-segment ambiguity, a changed
+  component suffix, or any snap, owner fallback, second ceiling or private
+  coordinate match rejects.
+- Four checksum-covered `junction_departure` records prevent a digital
+  one-edge trunk at the Ashenward/Bannerbreak four-way junctions without
+  changing an authored land-edge record. They bind `land_035`, `land_036`,
+  `land_041` and `land_042` at their `from` endpoints, respectively. For
+  endpoint `J` and the adjacent original authored control `C`, both axis
+  deltas must be nonzero and the fixed departure is derived exactly as
+  `D = J + (sign(C.x-J.x), sign(C.z-J.z))`. The current derived stations are
+  `(-1399,-1099)`, `(401,-1099)`, `(-1399,1099)` and `(401,1099)`.
+  Each sign is selected by ordered coordinate comparison without evaluating
+  the potentially unsafe difference; the adjacent source control must remain
+  inside the exact mainland frame and each `J +/- 1` sum is checked inside
+  the safe integer range.
+  Compilation copies the original control array, inserts `D` at position two,
+  and feeds that effective copy into the same sole displacement/reraster
+  pipeline. `D` is fixed, zero-jitter and is not a separately displaced
+  station. The original 57 source controls, route source and route payload
+  remain unchanged; the four compiled boundary rasters intentionally differ
+  from the pre-correction result.
+  Stage 1 rasterizes the effective `C=0` controls and checks every one of the
+  102 unordered incident-edge pairs at all 38 junctions. Stage 2 repeats this
+  R13 proof on the selected R7/effective-control displacement rasters after
+  their final canonical reraster but before R11 planned-water clipping and
+  perimeter-attachment selection. At that pre-partition stage all 38 source
+  junctions and all 102 pairs still exist: only `J` may coincide, with no
+  shared nonterminal station or segment and no opposing diagonal X-cross.
+  Missing, duplicate, malformed, nonincident, nonendpoint, nondiagonal or
+  incorrectly derived records and any pair overlap reject. There is no
+  shared-trunk, connector, snap or joint-topology-ceiling retry.
+- Post-partition topology has a separate exact gate. The degree-two source
+  junctions `(-1050,-2250)`, `(+950,-2250)`, `(-970,+2260)` and
+  `(+1020,+2250)` are fully dissolved because their raw `J` columns are Bay
+  water; their eight incidences are the declared R11 edge-to-Bank transition
+  identities, not four surviving edge pairs. The remaining 34 ordinary
+  relief junctions retain exactly 98 unordered incident-edge pairs at their
+  raw `J`. All eight perimeter attachments are disjoint terminal authorities
+  outside the relief-junction roster and retain their edge/perimeter/span
+  identity gates. A junction with a mixture of transition and ordinary
+  incidences, an attachment endpoint that also claims relief-junction
+  authority, or any roster/count drift rejects as a new Reality case. After
+  these three categories resolve, all 38 dry faces must still be closed,
+  counterclockwise and simple.
 - The four measured extreme-corpus seeds score only scalar-bearing,
-  pre-displacement canonical **source** raster stations after noise, damping
-  and local clip but before component rounding. Mainland coast uses the union
+  pre-displacement canonical **source** raster stations after noise, damping,
+  local clip and the selected record-wide topology ceiling but before
+  component rounding. Mainland coast uses the union
   of eligible outer source-perimeter segments, keyed and ordered by perimeter
   ID, zero-based source-segment index and zero-based local index; overlapping
   `perimeter_span` ranges never double-count a segment or station. Island
@@ -1422,9 +1601,12 @@ asks for it.
   owner on both sides and centre tie.
   It exercises all eight exact `J` points and adjacent columns, proving each
   junction dry and the capital-belt interior water-free. A separate dry-face
-  oracle permits raw multiplicity only on declared shared edges and junctions,
-  applies the canonical half-open owner there, and rejects every undeclared
-  cross-face seam or intersection outside final planned water. The oracles also
+  oracle requires at least one raw dry face outside final planned water. Raw
+  multiplicity there is permitted only on declared shared edges and junctions,
+  where the canonical half-open rule selects the owner; every undeclared
+  cross-face seam or intersection rejects. Inside final planned water there is
+  no raw-dry-face requirement because water precedence owns the column. The
+  oracles also
   prove unchanged base capsules, samples and 160-node head shoulders, an
   unchanged independent outer perimeter and shelf, the byte-identical original
   57 edge records and the exact four added boundary-only records. Each added
@@ -1437,6 +1619,19 @@ asks for it.
   gaps, zero overlaps and zero invalid cross-face intersections, and
   reconstructs the exact 61-edge land dual. All 32 seeds rerun the same
   partition and topology oracle; no visual inspection substitutes for it.
+- The retained R15 Stage-1 source oracle enumerates the complete structural
+  Wing-tail-pair corpus in existing source Wing order while binding each row by
+  Wing ID. Current raw-pair counts are
+  `4,18,18,4,2,18,18,18`; wedge-valid counts are exactly one each; selected
+  raw ranks are `1,10,2,1,2,17,9,17`; radii are `4,5,5,4,3,5,5,5`; and
+  negative/positive tail lengths are `4/3,4/5,5/4,3/4,2/3,5/4,4/5,5/4`.
+  The former structural-only lexicographic selection left dry-Wing counts
+  `0,1,1,0,1,4,4,4`, totaling 15; wedge-valid selection reduces every entry
+  to zero. The original `/tmp` PUC run is exploratory feasibility evidence;
+  the retained source oracle proves Stage-1 arithmetic only. The first R15
+  compiler run reproduced all eight rows and exact selected tail bytes; the
+  later H55 perimeter-closure witness reopened Source before any final
+  Compiler/Partition freeze. Full per-seed partition/face gates remain open.
 - Authored-source validation does not pretend that the seed-independent source
   already contains final concrete face polygons. Before displacement it proves
   one checksum-covered, symbolically closed authority graph: every literal

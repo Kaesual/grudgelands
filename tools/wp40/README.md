@@ -110,6 +110,26 @@ versus 195.56 s under PUC Lua 5.1 (about 6.5x faster). It never replaces the
 plain-5.1 `luac51` syntax gate, the full PUC-5.1 freeze/review runners, or a
 Flatpak Luanti runtime test.
 
+## T2 exact/raster/partition slice
+
+Run the engine-free analytic slice with plain Lua 5.1:
+
+```sh
+tools/wp40/run_t2_partition.sh
+```
+
+For quick local iteration only, set `WP40_LUA_BIN=/usr/bin/luajit`. The runner
+accepts no positional arguments and prints the resolved interpreter path used
+for the test. Its default remains the project PUC Lua 5.1 binary; LuaJIT never
+replaces the plain-5.1 freeze/review run. This focused runner owns
+exact/rational and raster regression fixtures plus the private partition-family
+construction exercised by this slice. It fails closed on any incomplete or
+invalid seeded geometry and makes no full-T2 claim. The measured extreme seeds,
+complete 32-seed report, publication, readiness, and Flatpak runtime gates
+remain later work. The private analytic compiler exists only in this focused
+runner and is not yet integrated into the fixed compiler entrypoint, which
+intentionally continues to fail closed with `compiled_geometry_unavailable`.
+
 ### Pinned engine facts used by T1
 
 - `core.sha256(data, true)` returns the raw 32-byte digest, and the utility is

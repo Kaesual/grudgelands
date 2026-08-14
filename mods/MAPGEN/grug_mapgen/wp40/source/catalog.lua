@@ -45,7 +45,9 @@ local source = {
 		"relief_profiles",
 		"route_classes", "water_classes",
 		"landmark_role_vocabulary", "template_primitives", "zones",
-		"land_edges", "relief_junctions", "perimeter_attachments", "perimeter_spans", "face_arcs", "zone_faces",
+		"land_edges", "relief_junctions", "junction_departures",
+		"perimeter_attachments", "perimeter_spans",
+		"bay_bank_components", "face_arcs", "zone_faces",
 		"route_stations", "routes", "route_interfaces", "surface_level_controls",
 		"route_crossing_interfaces", "boat_edges", "island_landings",
 		"island_route_stations", "island_routes", "island_route_interfaces",
@@ -282,7 +284,7 @@ source.geometry_policies = {
 		boundary_rule="support_distance_zero_is_inside",
 	},
 	boundary_displacement = {
-		id="shared_polyline_normal_displacement_t1_hash_v2",schema_version=2,
+		id="shared_polyline_normal_displacement_t1_hash_v3",schema_version=3,
 		input_rule="literal_control_polyline_authored_order_retained_only_for_final_output_mapping",
 		sampling_rule="one_route_raster_policy_integer_sequence_with_consecutive_join_duplicates_suppressed",
 		open_orientation_rule="lexicographically_smaller_complete_station_sequence_of_forward_and_reverse_is_calculation_order",
@@ -326,27 +328,52 @@ source.geometry_policies = {
 		clip_envelope_by_kind={
 			land_edge="closed_chebyshev_square_about_base_station_with_radius_record_max_displacement",
 			mainland_coast="closed_constants_mainland_frame_rectangle",
-			island_coast="closed_authored_island_ellipse",
+			island_coast="closed_centered_axis_aligned_record_authoring_rectangle",
 			fixed="exact_base_station_only"},
 		land_edge_envelope_predicate="absolute_candidate_x_minus_base_x_less_equal_record_max_displacement_and_absolute_candidate_z_minus_base_z_less_equal_record_max_displacement",
 		mainland_coast_envelope_predicate="mainland_frame_min_x_less_equal_candidate_x_less_equal_max_x_and_min_z_less_equal_candidate_z_less_equal_max_z",
-		island_coast_envelope_predicate="reject_absolute_dx_greater_radius_x_or_absolute_dz_greater_radius_z_before_products_else_dx_squared_times_radius_z_squared_plus_dz_squared_times_radius_x_squared_less_equal_radius_x_squared_times_radius_z_squared",
+		island_coast_envelope_predicate="absolute_candidate_x_minus_center_x_less_equal_radius_x_and_absolute_candidate_z_minus_center_z_less_equal_radius_z",
 		fixed_envelope_predicate="candidate_x_equals_base_x_and_candidate_z_equals_base_z",
 		envelope_boundary_tie="equality_inside_for_every_kind",
-		envelope_arithmetic="checked_exact_integer_products_no_face_polygon_final_geometry_or_float_dependency",
-		envelope_safe_bounds="land_and_frame_use_comparisons_island_axis_reject_makes_each_term_and_right_side_at_most_11025000000",
+		envelope_arithmetic="checked_exact_integer_comparisons_no_face_polygon_final_geometry_or_float_dependency",
+		envelope_safe_bounds="every_kind_uses_only_safe_integer_subtraction_absolute_value_and_ordered_comparison",
 		excluded_parameterized_geometry={"base_bay_symmetric_effective_half_width_uses_world_partition_policy_not_polyline_normal_displacement"},
 		clip_loop_rule="test_exact_damped_scalar_first_if_outside_scan_integer_magnitude_nodes_from_minimum_record_max_displacement_and_floor_absolute_damped_scalar_q_div_Q_down_to_zero_with_fixed_damped_sign",
 		clip_probe_rule="for_each_magnitude_m_probe_station_plus_qround_qmul_normal_x_q_sign_m_Q_and_qround_qmul_normal_z_q_sign_m_Q",
 		clip_selection_rule="exact_damped_scalar_if_its_probe_is_inside_else_first_integer_probe_is_greatest_tested_admissible_not_exceeding_desired_magnitude_no_monotonicity_assumption",
-		clip_scalar_rule="displacement_scalar_q_equals_exact_damped_scalar_or_sign_damped_times_selected_integer_magnitude_times_Q_zero_damped_skips_loop_and_returns_zero_no_untested_fractional_result",
+		clip_scalar_rule="local_scalar_q_equals_exact_damped_scalar_or_sign_damped_times_selected_integer_magnitude_times_Q_zero_damped_skips_loop_and_returns_zero_no_untested_fractional_result",
+		local_scalar_stage="post_noise_damping_exact_local_envelope_clip_pre_topology_ceiling",
+		mainland_fixed_closure_policy_id="referenced_fixed_holy_edge_union_r7_v1",
+		mainland_fixed_closure_source="each_planned_mainland_footprint_has_one_structured_ordered_directed_union_of_exactly_six_max_displacement_zero_land_edge_references_no_copied_coordinates_or_authored_perimeter_segment_index",
+		mainland_fixed_closure_resolution="route_raster_each_referenced_land_edge_in_declared_direction_suppress_only_consecutive_shared_endpoints_and_require_the_complete_union_byte_equal_exactly_one_complete_authored_perimeter_base_segment_with_exactly_twenty_six_other_source_segments",
+		mainland_fixed_closure_remap="for_each_equivalent_authored_control_rotation_or_reversal_refind_the_unique_complete_source_segment_by_full_union_byte_sequence_then_tag_its_authored_segment_membership_before_canonicalization_and_carry_that_tag_with_station_metadata_never_rederive_from_canonical_array_position_or_point_membership",
+		mainland_fixed_closure_scalar="inside_the_ordinary_local_scalar_loop_every_tagged_closure_row_has_local_scalar_q_exactly_zero_and_both_closure_to_ordinary_coast_ring_joins_must_also_be_zero_by_existing_no_jitter_before_the_record_wide_topology_ceiling",
+		mainland_fixed_closure_topology="one_unchanged_record_wide_C_and_one_candidate_validity_and_final_reraster_cover_the_displaced_twenty_six_segment_coast_plus_fixed_closure_union",
+		mainland_fixed_closure_output="selected_final_mainland_perimeter_closure_must_be_byte_exact_to_the_same_resolved_six_edge_union_in_declared_perimeter_order",
+		mainland_fixed_closure_forbidden="no_post_R7_replace_snap_owner_fallback_private_coordinate_match_second_ceiling_or_change_to_the_eighteen_coast_components",
+		topology_ceiling_policy_id="record_uniform_integer_magnitude_ceiling_v1",
+		topology_ceiling_domain="integer_C_descending_from_record_max_displacement_through_zero_inclusive",
+		topology_ceiling_scalar_rule="candidate_scalar_q_equals_clamp_local_scalar_q_to_minus_C_times_Q_through_plus_C_times_Q_preserving_values_with_absolute_value_not_greater_than_C_times_Q",
+		topology_ceiling_candidate_order="strictly_descending_C_no_binary_search_or_monotonicity_assumption",
+		topology_ceiling_validity="all_shifted_controls_and_final_raster_stations_inside_record_envelope_unique_stations_no_diagonal_X_cross_eight_connected_and_closed_records_simple_with_declared_orientation",
+		topology_ceiling_selection="first_valid_candidate_is_greatest_admissible_C_and_its_scalar_rows_and_already_computed_raster_are_authoritative",
+		topology_ceiling_provisional_rule="higher_invalid_candidate_rasters_are_selection_probes_never_exported_or_scored",
+		topology_ceiling_termination="stage1_validates_zero_displacement_base_raster_C_zero_must_pass_max_displacement_plus_one_candidates_at_most_97_else_source_invalid",
+		topology_ceiling_output_field="compiled_record_unsigned_topology_ceiling_nodes",
+		junction_departure_policy_id="derived_diagonal_endpoint_precontrol_v1",
+		junction_departure_derivation="for_the_declared_edge_endpoint_J_and_its_adjacent_original_authored_control_C_D_equals_J_plus_sign_C_minus_J_per_axis_both_axis_deltas_must_be_nonzero",
+		junction_departure_safe_arithmetic="compare_adjacent_and_endpoint_coordinates_without_subtraction_to_select_each_sign_then_checked_safe_integer_plus_or_minus_one_source_adjacent_control_must_remain_inside_mainland_frame",
+		junction_departure_application="copy_the_original_land_edge_control_array_insert_fixed_D_at_position_two_for_a_from_endpoint_or_before_the_last_control_for_a_to_endpoint_then_use_that_effective_copy_in_the_sole_boundary_displacement_pipeline",
+		junction_departure_displacement="D_is_a_checksum_declared_derived_no_jitter_source_and_never_mutates_the_original_land_edge_control_array",
+		junction_departure_topology="stage1_C_zero_and_stage2_selected_final_rasters_check_every_unordered_incident_edge_pair_at_all_38_junctions_only_J_may_be_shared_with_no_nonterminal_station_segment_or_opposing_diagonal_X_cross",
+		junction_departure_failure="missing_duplicate_malformed_nonincident_nonendpoint_nondiagonal_wrong_derived_station_or_pairwise_overlap_rejects_without_shared_trunk_snap_connector_or_joint_ceiling_retry",
 		component_rule="dx_equals_t1_qround_t1_qmul_normal_x_q_displacement_scalar_q_then_dz_analogously",
 		component_rounding="qmul_half_away_to_Q16_then_qround_half_away_to_integer_in_that_order_including_positive_and_negative_half_ties",
 		scalar_component_product_bound_decimal="412316860416",
 		shifted_station_rule="every_shifted_base_raster_station_is_a_final_reraster_control_not_a_final_emitted_station",
 		final_raster_rule="route_raster_once_between_consecutive_shifted_controls_closed_cycle_also_last_to_first_suppress_only_consecutive_duplicates_remove_repeated_cycle_terminal",
-		final_validation_rule="no_second_displacement_clip_or_snap_final_raster_envelope_topology_width_or_connectivity_failure_rejects_seed",
-		displacement_scalar_authority="sole_final_signed_Q16_value_after_noise_damping_and_local_magnitude_clip_before_component_rounding",
+		final_validation_rule="selected_ceiling_final_raster_rechecks_envelope_and_record_local_topology_width_or_cross_record_connectivity_failure_rejects_seed_without_second_clip_snap_or_seed_fallback",
+		displacement_scalar_authority="sole_final_signed_Q16_value_after_noise_damping_local_magnitude_clip_and_selected_record_topology_ceiling_before_component_rounding",
 		shared_boundary_clip_policy_id="canonical_integer_land_run_prefix_suffix_v1",
 		shared_boundary_clip_raster="route_raster_policy_integer_sequence",
 		shared_boundary_clip_classifier="final_literal_perimeter_land_mask_after_displacement",
@@ -566,6 +593,36 @@ source.geometry_policies = {
 		closure_wing_boundary_tie="side_equality_and_zero_width_terminal_junction_are_dry",
 		closure_wing_owner_rule="signed_cross_selects_literal_left_or_right_zone_cross_zero_lower_numeric_zone",
 		closure_wing_overlap_oracle="stage2_no_integer_column_in_two_wings_outside_unchanged_base_mask",
+		bay_bank_policy_id="same_bay_final_water_union_dry_column_boundary_v1",
+		bay_bank_candidate="final_classifier_dry_mainland_column_including_permitted_dry_perimeter_equality_with_four_neighbor_owned_by_same_final_base_bay_or_either_closure_wing",
+		bay_bank_trace_envelope="referenced_bay_all_base_segment_and_two_wing_bounding_boxes_expanded_one_then_clipped_to_referenced_final_mainland_footprint",
+		bay_bank_trace_state="bounded_depth_first_search_state_previous_current_plus_seen_directed_state_set_the_resolved_start_anchor_supplies_rotation_only_and_the_independently_resolved_end_terminal_is_the_target",
+		bay_bank_neighbor_order="base_clockwise_east_southeast_south_southwest_west_northwest_north_northeast_rotate_so_first_is_immediately_clockwise_after_direction_current_to_previous_for_water_left_and_immediately_counterclockwise_for_water_right_then_continue_that_rotation",
+		bay_bank_water_side="for_each_proposed_materialized_bank_step_current_to_successor_at_least_one_cardinal_same_bay_water_neighbor_of_current_must_have_strictly_positive_cross_for_water_left_or_strictly_negative_cross_for_water_right_zero_cross_does_not_satisfy_side_the_start_anchor_previous_to_current_has_no_water_side_requirement",
+		bay_bank_admissible_successor="ordered_eight_neighbor_final_dry_same_bay_boundary_candidate_whose_outgoing_current_to_successor_step_satisfies_the_exact_water_side_rule_and_is_not_previous_or_in_the_seen_directed_state_set",
+		bay_bank_branch_rule="evaluate_admissible_successors_in_the_fixed_Moore_order_and_select_the_first_with_a_complete_valid_path_to_the_declared_terminal_later_reachable_successors_are_permitted_zero_reachable_rejects",
+		bay_bank_reachability_bound="per_successor_bounded_DFS_counts_every_pushed_frame_including_the_start_and_rejects_above_eight_times_the_finite_envelope_column_count_stack_depth_at_most_envelope_columns_main_trace_steps_at_most_envelope_columns_minus_one",
+		bay_bank_terminal_authority="structured_aperture_dry_land_edge_transition_or_wing_junction_tail_side_reference_only_resolved_once_for_every_incident_arc",
+		bay_bank_aperture_terminal_order="deduplicated_final_authored_declared_perimeter_integer_raster_order_separate_from_the_canonical_mouth_aperture_membership_indices_payload_and_attachment_tie",
+		bay_bank_nonwing_terminal_resolution="aperture_dry_is_the_adjacent_dry_station_on_the_declared_side_in_the_separate_authored_bank_terminal_order_land_edge_transition_is_the_declared_endpoint_of_the_final_clipped_dry_edge_raster_and_that_endpoint_itself_must_be_a_final_dry_same_bay_boundary_candidate_no_inward_shift_is_permitted",
+		bay_bank_edge_transition_identity="for_each_of_eight_transitions_the_inward_candidate_scan_offset_from_the_declared_final_endpoint_must_equal_zero_in_every_corpus_seed_edge_and_bank_consume_the_same_resolved_station_id_and_exact_canonical_x_z_bytes_without_a_second_resolution_defensive_copies_are_permitted_nonzero_rejects_and_requires_a_new_Reality_partition",
+		bay_bank_nonwing_start_half_edge="aperture_previous_is_the_next_dry_authored_perimeter_station_away_from_the_aperture_land_edge_previous_is_the_immediately_adjacent_retained_dry_edge_station_away_from_the_resolved_endpoint_current_is_the_resolved_candidate_the_anchor_half_edge_must_be_eight_connected_and_current_candidate_valid_but_water_right_begins_only_on_the_first_materialized_bank_step_current_to_successor",
+		bay_bank_wing_k_set="all_final_dry_candidates_in_the_declared_wing_bbox_with_a_cardinal_neighbor_in_strict_water_owned_by_that_referenced_closure_wing_zero_less_equal_N_and_N_strictly_less_than_L_and_strict_declared_cross_X_sign_independent_of_any_Moore_trace",
+		bay_bank_wing_k_rank="greatest_exact_wing_axis_projection_N_then_lexicographically_least_x_then_z_unique_selected_coordinate_or_reject_empty_K_set",
+		bay_bank_wing_k_guard="absolute_N_and_absolute_X_are_checked_against_the_existing_closure_wing_dot_cross_bounds_before_ranking_and_every_product_must_be_at_most_2_pow_53_minus_1",
+		bay_bank_wing_terminal_direction="negative_tail_is_component_start_and_byte_exact_J_to_K_positive_tail_is_component_end_and_K_to_J_with_the_K_join_deduplicated",
+		bay_bank_wing_start_half_edge="joint_tail_is_selected_before_any_component_trace_and_the_last_two_stations_of_negative_J_to_K_are_the_rotation_only_previous_current_start_anchor_while_positive_K_is_the_fixed_independent_target_for_a_wing_end_the_first_current_to_successor_bank_step_must_be_water_right_or_reject",
+		bay_bank_tail_graph="two_complete_strict_side_dry_eight_neighbor_chebyshev_distance_layer_DAGs_from_K_to_J",
+		bay_bank_tail_pair_selection="enumerate_all_complete_path_pairs_filter_interior_disjoint_distinct_J_predecessor_and_no_intra_or_inter_path_diagonal_X_cross_then_apply_wedge_validity_then_lexicographically_least_full_negative_path_coordinate_sequence_then_full_positive_sequence_coordinate_compare_x_then_z_and_shorter_sequence_first_on_exact_prefix_multiple_wedge_valid_pairs_permitted_none_rejects",
+		bay_bank_tail_side="nonterminal_X_strictly_negative_or_positive_as_declared_X_zero_only_at_common_J",
+		bay_bank_tail_bound="each_path_length_at_most_ceil_isqrt_wing_L_plus_one_finite_layer_DAG_has_no_cycles_and_current_source_requires_chebyshev_K_to_J_at_most_four",
+		bay_bank_tail_wedge_polygon="analysis_only_exact_polygon_follows_negative_Kminus_to_J_then_reverse_positive_J_to_Kplus_then_direct_exact_chord_Kplus_to_Kminus_and_must_be_simple_with_nonzero_signed_area",
+		bay_bank_tail_wedge_radius="R_equals_one_plus_maximum_Chebyshev_Kminus_to_J_or_Kplus_to_J_scan_inclusive_J_centered_R_bbox_current_source_R_at_most_five",
+		bay_bank_tail_wedge_scan="for_each_integer_column_in_the_inclusive_J_centered_R_bbox_with_exact_polygon_class_greater_equal_zero_exempt_only_exact_negative_or_positive_tail_stations_including_Kminus_Kplus_and_J_every_other_column_must_be_strict_water_of_the_referenced_closure_wing",
+		bay_bank_tail_wedge_chord="direct_exact_chord_Kplus_to_Kminus_is_analysis_only_and_never_rastered_materialized_serialized_or_used_for_ownership",
+		bay_bank_tail_reversal="select_once_in_canonical_direction_reverse_output_is_byte_exact_sequence_reverse",
+		bay_bank_reject="missing_K_malformed_nonadjacent_or_noncandidate_start_anchor_zero_terminal_reachable_successor_outgoing_bank_step_water_side_failure_reachability_frame_cap_stack_or_main_trace_bound_exhaustion_repeated_column_or_state_intra_or_inter_X_cross_foreign_bay_or_nonreferenced_water_contact_undeclared_endpoint_non_simple_or_zero_area_wedge_wedge_radius_above_five_nonwing_column_inside_wedge_or_no_wedge_valid_joint_tail_pair",
+		bay_bank_materialization="resolve_each_terminal_and_each_joint_wing_tail_pair_once_then_materialize_one_shared_integer_column_chain_per_component_consumed_by_its_face_arc_no_literal_polyline_connector_snap_or_alternate_trace",
 		bay_owner_projection_segment="minimum_exact_rational_segment_distance_compare_cross_squared_over_L_with_caps",
 		bay_owner_distance_compare="reduce_cross_squared_times_other_L_by_gcd_before_safe_product_compare_caps_use_squared_integer_distance",
 		bay_owner_side_rule="signed_integer_cross_C_of_selected_authored_segment_and_point",
@@ -624,7 +681,7 @@ source.geometry_policies = {
 		shelf_rule="outward_from_outer_footprint_never_from_internal_bay_shore",
 		ordered_component_oracle="stage2_composed_union_outer_boundary_equals_perimeter_ordered_outer_components",
 		stage2_partition_oracle="every_finite_footprint_column_exactly_one_dry_face_or_bay_water_owner",
-		raw_dry_multiplicity_rule="exactly_one_outside_strict_final_bay_masks_at_least_one_inside",
+		raw_dry_multiplicity_rule="outside_final_planned_water_raw_dry_face_multiplicity_at_least_one_multiples_only_on_declared_shared_edge_or_junction_with_canonical_half_open_owner_inside_final_planned_water_has_no_raw_dry_face_requirement",
 		cross_face_intersection_rule="forbidden_outside_strict_final_bay_masks_allowed_under_bay_precedence",
 		dual_graph_rule="derive_only_from_the_61_shared_land_edges_never_from_underwater_raw_face_overlap",
 		stage2_mouth_oracle="each_mouth_open_at_projection_head_closed_positive_width",
@@ -690,10 +747,10 @@ source.geometry_policies = {
 		noncoast_sequence="eligible_positive_shared_land_edge_numeric_id_then_zero_based_source_segment_then_local_station_order",
 		noncoast_identity="edge_id_zero_based_source_segment_index_zero_based_local_station_index",
 		source_join_dedup="duplicate_segment_join_and_closed_seam_station_keeps_the_stable_earlier_identity_in_the_declared_sequence",
-		scalar_sample_rule="each_unique_source_station_scores_its_post_noise_damping_local_clip_pre_component_scalar_q_exactly_once",
+		scalar_sample_rule="each_unique_source_station_scores_its_post_noise_damping_local_clip_selected_topology_ceiling_pre_component_scalar_q_exactly_once",
 		attachment_rule="provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence",
 		no_interpolation_rule="never_interpolate_resample_or_rehash_a_selector_scalar",
-		scalar_stage="final_signed_q16_after_noise_damping_and_local_magnitude_clip_before_x_z_component_rounding",
+		scalar_stage="final_signed_q16_after_noise_damping_local_magnitude_clip_and_selected_record_topology_ceiling_before_x_z_component_rounding",
 		normalization_denominator="record_max_displacement_times_Q_not_local_damped_amplitude",
 		score_rule="exact_mean_of_normalized_signed_q16_scalars",
 		exact_sum_rule="gcd_reduce_each_term_and_accumulator_before_cross_multiply",
@@ -1126,6 +1183,26 @@ source.relief_junctions={
 	relief_junction(-970,2260,{"land_010","land_013"},24,24,false),
 }
 
+-- Four old boundary controls leave their shared junction with the same first
+-- integer station as an incident horizontal edge.  The old 57 land-edge rows
+-- remain byte-identical: these coordinate-free records derive one fixed
+-- diagonal precontrol in a copied effective control array before the sole
+-- boundary-displacement pipeline.  Routes never consume this collection.
+local function junction_departure(edge_id,junction_id)
+	return {id="junction_departure:"..edge_id..":from",edge_id=edge_id,
+		junction_id=junction_id,edge_endpoint="from",
+		departure_rule="diagonal_sign_step_toward_adjacent_authored_control_v1",
+		application_rule="copied_effective_control_position_two_before_sole_boundary_displacement",
+		displacement_rule="fixed_zero_no_jitter_derived_station",
+		route_rule="boundary_geometry_only_route_source_and_payload_unchanged"}
+end
+source.junction_departures={
+	junction_departure("land_035","relief_junction:-1400:-1100"),
+	junction_departure("land_036","relief_junction:400:-1100"),
+	junction_departure("land_041","relief_junction:-1400:1100"),
+	junction_departure("land_042","relief_junction:400:1100"),
+}
+
 -- The literal perimeter polygons are the sole outer-footprint and shelf
 -- authority. Face arcs below may consume only structured directed slices of
 -- these polygons; they never carry a second handwritten coast polyline.
@@ -1133,12 +1210,28 @@ source.perimeters = {
 	{id = "perimeter_elandor_mainland", kind = "planned_mainland_footprint",
 		continent = "elandor", orientation = "counterclockwise",
 		noise_domain = "coast_elandor_independent", max_displacement = 96,
+		r7_fixed_closure = {kind="fixed_holy_land_edge_union",edge_refs={
+			{edge_id="land_048",direction="reverse"},
+			{edge_id="land_047",direction="reverse"},
+			{edge_id="land_046",direction="reverse"},
+			{edge_id="land_045",direction="reverse"},
+			{edge_id="land_044",direction="reverse"},
+			{edge_id="land_043",direction="reverse"},
+		}},
 		polygon = {
 			point(-2500,-250),point(-2470,-650),point(-2490,-1050),point(-2560,-1500),point(-2600,-1900),point(-2580,-2200),point(-2600,-2500),point(-2470,-2760),point(-2250,-2920),point(-1800,-2960),point(-1350,-2920),point(-980,-2940),point(-520,-2910),point(0,-2960),point(460,-2930),point(900,-2920),point(1320,-2930),point(1800,-2950),point(2240,-2925),point(2470,-2740),point(2600,-2500),point(2580,-2200),point(2600,-1900),point(2550,-1500),point(2490,-1050),point(2530,-650),point(2500,-250),point(-2500,-250),
 		}},
 	{id = "perimeter_kragmar_mainland", kind = "planned_mainland_footprint",
 		continent = "kragmar", orientation = "clockwise",
 		noise_domain = "coast_kragmar_independent", max_displacement = 96,
+		r7_fixed_closure = {kind="fixed_holy_land_edge_union",edge_refs={
+			{edge_id="land_054",direction="reverse"},
+			{edge_id="land_053",direction="reverse"},
+			{edge_id="land_052",direction="reverse"},
+			{edge_id="land_051",direction="reverse"},
+			{edge_id="land_050",direction="reverse"},
+			{edge_id="land_049",direction="reverse"},
+		}},
 		polygon = {
 			point(-2500,250),point(-2540,620),point(-2480,1050),point(-2560,1480),point(-2600,1900),point(-2580,2200),point(-2600,2500),point(-2480,2750),point(-2260,2920),point(-1800,2960),point(-1440,2940),point(-1080,2930),point(-560,2940),point(0,2970),point(440,2920),point(820,2960),point(1280,2920),point(1800,2960),point(2250,2920),point(2480,2760),point(2600,2500),point(2580,2200),point(2600,1900),point(2540,1500),point(2500,1000),point(2550,600),point(2500,250),point(-2500,250),
 		}},
@@ -1222,21 +1315,89 @@ for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[sp
 	perimeter_span_by_id_source[span.id]=span
 end
 
--- Face arcs are ordered authority-component graphs. Literal bay/Holy/island
--- sub-polylines remain source geometry; outer coast components reference the
--- canonical perimeter span directly. A symbolic attachment never materializes
--- a connector or a pre-Stage-2 intersection coordinate.
+local function aperture_dry(aperture_id,side)
+	return {kind="aperture_dry",aperture_id=aperture_id,side=side}
+end
+local function edge_transition(edge_id,endpoint)
+	return {kind="land_edge_transition",edge_id=edge_id,edge_endpoint=endpoint}
+end
+local function wing_tail(wing_id,side)
+	return {kind="wing_junction_tail_side",wing_id=wing_id,tail_side=side}
+end
+local function bank(id,bay_id,arc_id,start_terminal,end_terminal)
+	return {id=id,bay_id=bay_id,direction="canonical_start_to_end",
+		water_side="right",start_terminal=start_terminal,end_terminal=end_terminal,
+		endpoint_face_incidence={
+			{terminal_side="start",face_arc_id=arc_id,face_arc_end="component_start"},
+			{terminal_side="end",face_arc_id=arc_id,face_arc_end="component_end"},
+		},
+		geometry_authority="materialized_same_bay_dry_column_bank_v1"}
+end
+local AP_EW="bay_mouth_aperture:elandor_west"
+local AP_EE="bay_mouth_aperture:elandor_east"
+local AP_KW="bay_mouth_aperture:kragmar_west"
+local AP_KE="bay_mouth_aperture:kragmar_east"
+local W_EWL="bay_wing:elandor_west:left"
+local W_EWR="bay_wing:elandor_west:right"
+local W_EEL="bay_wing:elandor_east:left"
+local W_EER="bay_wing:elandor_east:right"
+local W_KWL="bay_wing:kragmar_west:left"
+local W_KWR="bay_wing:kragmar_west:right"
+local W_KEL="bay_wing:kragmar_east:left"
+local W_KER="bay_wing:kragmar_east:right"
+source.bay_bank_components={
+	bank("bay_bank:elandor_west:hearthpine","bay_elandor_west","face_arc:hearthpine:outer",aperture_dry(AP_EW,"before"),edge_transition("land_001","to")),
+	bank("bay_bank:elandor_west:copperfell","bay_elandor_west","face_arc:copperfell:bay",edge_transition("land_001","to"),wing_tail(W_EWL,"positive")),
+	bank("bay_bank:elandor_west:whitebridge","bay_elandor_west","face_arc:whitebridge:bay_head",wing_tail(W_EWL,"negative"),wing_tail(W_EWR,"positive")),
+	bank("bay_bank:elandor_west:goldmead","bay_elandor_west","face_arc:goldmead:west_bay",wing_tail(W_EWR,"negative"),edge_transition("land_004","from")),
+	bank("bay_bank:elandor_west:dawnmere","bay_elandor_west","face_arc:dawnmere:outer",edge_transition("land_004","from"),aperture_dry(AP_EW,"after")),
+	bank("bay_bank:elandor_east:dawnmere","bay_elandor_east","face_arc:dawnmere:outer",aperture_dry(AP_EE,"before"),edge_transition("land_004","to")),
+	bank("bay_bank:elandor_east:goldmead","bay_elandor_east","face_arc:goldmead:east_bay",edge_transition("land_004","to"),wing_tail(W_EEL,"positive")),
+	bank("bay_bank:elandor_east:lorindor","bay_elandor_east","face_arc:lorindor:bay_head",wing_tail(W_EEL,"negative"),wing_tail(W_EER,"positive")),
+	bank("bay_bank:elandor_east:starbough","bay_elandor_east","face_arc:starbough:bay",wing_tail(W_EER,"negative"),edge_transition("land_007","from")),
+	bank("bay_bank:elandor_east:silverleaf","bay_elandor_east","face_arc:silverleaf:outer",edge_transition("land_007","from"),aperture_dry(AP_EE,"after")),
+	bank("bay_bank:kragmar_west:stillgrave","bay_kragmar_west","face_arc:stillgrave:outer",edge_transition("land_010","to"),aperture_dry(AP_KW,"before")),
+	bank("bay_bank:kragmar_west:mournfen","bay_kragmar_west","face_arc:mournfen:bay",wing_tail(W_KWL,"negative"),edge_transition("land_010","to")),
+	bank("bay_bank:kragmar_west:speargrass","bay_kragmar_west","face_arc:speargrass:bay_head",wing_tail(W_KWR,"negative"),wing_tail(W_KWL,"positive")),
+	bank("bay_bank:kragmar_west:redtusk","bay_kragmar_west","face_arc:redtusk:west_bay",edge_transition("land_013","from"),wing_tail(W_KWR,"positive")),
+	bank("bay_bank:kragmar_west:sunscar","bay_kragmar_west","face_arc:sunscar:outer",aperture_dry(AP_KW,"after"),edge_transition("land_013","from")),
+	bank("bay_bank:kragmar_east:sunscar","bay_kragmar_east","face_arc:sunscar:outer",edge_transition("land_013","to"),aperture_dry(AP_KE,"before")),
+	bank("bay_bank:kragmar_east:redtusk","bay_kragmar_east","face_arc:redtusk:east_bay",wing_tail(W_KEL,"negative"),edge_transition("land_013","to")),
+	bank("bay_bank:kragmar_east:whispering","bay_kragmar_east","face_arc:whispering:bay_head",wing_tail(W_KER,"negative"),wing_tail(W_KEL,"positive")),
+	bank("bay_bank:kragmar_east:raincall","bay_kragmar_east","face_arc:raincall:bay",edge_transition("land_016","from"),wing_tail(W_KER,"positive")),
+	bank("bay_bank:kragmar_east:kapok","bay_kragmar_east","face_arc:kapok:outer",aperture_dry(AP_KE,"after"),edge_transition("land_016","from")),
+}
+local bay_bank_by_id_source={}
+for bank_index=1,#source.bay_bank_components do local row=source.bay_bank_components[bank_index]
+	bay_bank_by_id_source[row.id]=row
+end
+
+-- Face arcs are ordered authority-component graphs. Bay banks reference the
+-- structured seed-materialized dry-column components above; only fixed Holy
+-- and island arcs retain literal geometry. Outer coast components reference
+-- canonical perimeter spans directly. A symbolic terminal never materializes
+-- a connector, snap, or pre-Stage-2 coordinate.
 local function boundary_id(boundary)
 	if boundary.kind=="perimeter_attachment" then return boundary.attachment_id end
 	local perimeter=perimeter_by_id_source[boundary.perimeter_id]
 	return junction_id(perimeter.polygon[boundary.index])
 end
-local function perimeter_component(span_id)
+local function bank_terminal_id(terminal)
+	if terminal.kind=="aperture_dry" then
+		return "bay_bank_terminal:"..terminal.aperture_id..":"..terminal.side
+	elseif terminal.kind=="land_edge_transition" then
+		return "bay_bank_terminal:"..terminal.edge_id..":"..terminal.edge_endpoint
+	end
+	return "bay_bank_terminal:"..terminal.wing_id..":junction"
+end
+local function perimeter_component(span_id,from_terminal,to_terminal)
 	local span=perimeter_span_by_id_source[span_id]
 	local first,last=span.start_boundary,span.end_boundary
 	if span.face_direction=="reverse" then first,last=last,first end
 	return {kind="perimeter_span",ref_id=span_id,direction=span.face_direction,
-		from_boundary_id=boundary_id(first),to_boundary_id=boundary_id(last)}
+		from_boundary_id=from_terminal and bank_terminal_id(from_terminal) or boundary_id(first),
+		to_boundary_id=to_terminal and bank_terminal_id(to_terminal) or boundary_id(last),
+		from_terminal=from_terminal or false,to_terminal=to_terminal or false}
 end
 local function literal_component(role,source_ref,control)
 	return {kind="literal_arc",boundary_role=role,source_ref=source_ref,
@@ -1252,37 +1413,45 @@ local function face_arc(id,zone_id,kind,refs,components)
 		shore_owner_zone_id=zone_id,shore_tie_rule="lower_zone_numeric_id",
 		projection_rule="zone_inside_coast_outside"}
 end
-local function pc(id) return perimeter_component(id) end
+local function bank_component(id)
+	local row=bay_bank_by_id_source[id]
+	return {kind="bay_bank",ref_id=id,direction="forward",
+		from_boundary_id=bank_terminal_id(row.start_terminal),
+		to_boundary_id=bank_terminal_id(row.end_terminal)}
+end
+local function pc(id,from_terminal,to_terminal)
+	return perimeter_component(id,from_terminal,to_terminal)
+end
 local function lc(role,ref,control) return literal_component(role,ref,control) end
 source.face_arcs = {
-	face_arc("face_arc:hearthpine:outer","elandor_hearthpine_vale","coast_bay_shore",{"perimeter_elandor_mainland","bay_elandor_west"},{pc("perimeter_span:elandor:hearthpine"),lc("bay_shore","bay_elandor_west",{point(-980,-2940),point(-900,-2600),point(-1040,-2300),point(-1050,-2250)})}),
-	face_arc("face_arc:copperfell:bay","elandor_copperfell_foothills","bay_shore",{"bay_elandor_west"},{lc("bay_shore","bay_elandor_west",{point(-1050,-2250),point(-1040,-2300),point(-980,-2000),point(-1400,-1900)})}),
+	face_arc("face_arc:hearthpine:outer","elandor_hearthpine_vale","coast_bay_shore",{"perimeter_elandor_mainland","bay_elandor_west"},{pc("perimeter_span:elandor:hearthpine",nil,aperture_dry(AP_EW,"before")),bank_component("bay_bank:elandor_west:hearthpine")}),
+	face_arc("face_arc:copperfell:bay","elandor_copperfell_foothills","bay_shore",{"bay_elandor_west"},{bank_component("bay_bank:elandor_west:copperfell")}),
 	face_arc("face_arc:copperfell:coast","elandor_copperfell_foothills","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:copperfell")}),
 	face_arc("face_arc:frostbarrow:coast","elandor_frostbarrow_shelf","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:frostbarrow")}),
 	face_arc("face_arc:stormvault:coast","elandor_stormvault_heights","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:stormvault")}),
-	face_arc("face_arc:dawnmere:outer","elandor_dawnmere_fields","coast_bay_shore",{"bay_elandor_west","perimeter_elandor_mainland","bay_elandor_east"},{lc("bay_shore","bay_elandor_west",{point(-1050,-2250),point(-1040,-2300),point(-900,-2600),point(-980,-2940)}),pc("perimeter_span:elandor:dawnmere"),lc("bay_shore","bay_elandor_east",{point(900,-2920),point(1080,-2580),point(920,-2280),point(950,-2250)})}),
-	face_arc("face_arc:goldmead:east_bay","elandor_goldmead_vale","bay_shore",{"bay_elandor_east"},{lc("bay_shore","bay_elandor_east",{point(950,-2250),point(1020,-1990),point(400,-1900)})}),
-	face_arc("face_arc:goldmead:west_bay","elandor_goldmead_vale","bay_shore",{"bay_elandor_west"},{lc("bay_shore","bay_elandor_west",{point(-400,-1900),point(-980,-2000),point(-1050,-2250)})}),
-	face_arc("face_arc:whitebridge:bay_head","elandor_whitebridge_shire","bay_shore",{"bay_elandor_west"},{lc("bay_shore","bay_elandor_west",{point(-1400,-1900),point(-980,-2000),point(-400,-1900)})}),
-	face_arc("face_arc:silverleaf:outer","elandor_silverleaf_glades","coast_bay_shore",{"bay_elandor_east","perimeter_elandor_mainland"},{lc("bay_shore","bay_elandor_east",{point(950,-2250),point(920,-2280),point(1080,-2580),point(900,-2920)}),pc("perimeter_span:elandor:silverleaf")}),
+	face_arc("face_arc:dawnmere:outer","elandor_dawnmere_fields","coast_bay_shore",{"bay_elandor_west","perimeter_elandor_mainland","bay_elandor_east"},{bank_component("bay_bank:elandor_west:dawnmere"),pc("perimeter_span:elandor:dawnmere",aperture_dry(AP_EW,"after"),aperture_dry(AP_EE,"before")),bank_component("bay_bank:elandor_east:dawnmere")}),
+	face_arc("face_arc:goldmead:east_bay","elandor_goldmead_vale","bay_shore",{"bay_elandor_east"},{bank_component("bay_bank:elandor_east:goldmead")}),
+	face_arc("face_arc:goldmead:west_bay","elandor_goldmead_vale","bay_shore",{"bay_elandor_west"},{bank_component("bay_bank:elandor_west:goldmead")}),
+	face_arc("face_arc:whitebridge:bay_head","elandor_whitebridge_shire","bay_shore",{"bay_elandor_west"},{bank_component("bay_bank:elandor_west:whitebridge")}),
+	face_arc("face_arc:silverleaf:outer","elandor_silverleaf_glades","coast_bay_shore",{"bay_elandor_east","perimeter_elandor_mainland"},{bank_component("bay_bank:elandor_east:silverleaf"),pc("perimeter_span:elandor:silverleaf",aperture_dry(AP_EE,"after"),nil)}),
 	face_arc("face_arc:starbough:coast","elandor_starbough_vale","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:starbough")}),
-	face_arc("face_arc:starbough:bay","elandor_starbough_vale","bay_shore",{"bay_elandor_east"},{lc("bay_shore","bay_elandor_east",{point(1400,-1900),point(1020,-1990),point(920,-2280),point(950,-2250)})}),
-	face_arc("face_arc:lorindor:bay_head","elandor_lorindor","bay_shore",{"bay_elandor_east"},{lc("bay_shore","bay_elandor_east",{point(400,-1900),point(1020,-1990),point(1400,-1900)})}),
+	face_arc("face_arc:starbough:bay","elandor_starbough_vale","bay_shore",{"bay_elandor_east"},{bank_component("bay_bank:elandor_east:starbough")}),
+	face_arc("face_arc:lorindor:bay_head","elandor_lorindor","bay_shore",{"bay_elandor_east"},{bank_component("bay_bank:elandor_east:lorindor")}),
 	face_arc("face_arc:moonfall:coast","elandor_moonfall_wood","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:moonfall")}),
 	face_arc("face_arc:glassroot:coast","elandor_glassroot_wilds","coast_shore",{"perimeter_elandor_mainland"},{pc("perimeter_span:elandor:glassroot")}),
-	face_arc("face_arc:stillgrave:outer","kragmar_stillgrave_hollow","coast_bay_shore",{"perimeter_kragmar_mainland","bay_kragmar_west"},{lc("bay_shore","bay_kragmar_west",{point(-970,2260),point(-940,2300),point(-1200,2620),point(-1080,2930)}),pc("perimeter_span:kragmar:stillgrave")}),
-	face_arc("face_arc:mournfen:bay","kragmar_mournfen","bay_shore",{"bay_kragmar_west"},{lc("bay_shore","bay_kragmar_west",{point(-1400,1900),point(-1060,2010),point(-940,2300),point(-970,2260)})}),
+	face_arc("face_arc:stillgrave:outer","kragmar_stillgrave_hollow","coast_bay_shore",{"bay_kragmar_west","perimeter_kragmar_mainland"},{bank_component("bay_bank:kragmar_west:stillgrave"),pc("perimeter_span:kragmar:stillgrave",aperture_dry(AP_KW,"before"),nil)}),
+	face_arc("face_arc:mournfen:bay","kragmar_mournfen","bay_shore",{"bay_kragmar_west"},{bank_component("bay_bank:kragmar_west:mournfen")}),
 	face_arc("face_arc:mournfen:coast","kragmar_mournfen","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:mournfen")}),
 	face_arc("face_arc:ossuary:coast","kragmar_ossuary_reach","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:ossuary")}),
 	face_arc("face_arc:blackwind:coast","kragmar_blackwind_rise","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:blackwind")}),
-	face_arc("face_arc:sunscar:outer","kragmar_sunscar_flats","coast_bay_shore",{"bay_kragmar_east","perimeter_kragmar_mainland","bay_kragmar_west"},{lc("bay_shore","bay_kragmar_east",{point(1020,2250),point(1050,2320),point(700,2630),point(820,2960)}),pc("perimeter_span:kragmar:sunscar"),lc("bay_shore","bay_kragmar_west",{point(-1080,2930),point(-1200,2620),point(-940,2300),point(-970,2260)})}),
-	face_arc("face_arc:redtusk:west_bay","kragmar_redtusk_savanna","bay_shore",{"bay_kragmar_west"},{lc("bay_shore","bay_kragmar_west",{point(-970,2260),point(-1060,2010),point(-400,1900)})}),
-	face_arc("face_arc:redtusk:east_bay","kragmar_redtusk_savanna","bay_shore",{"bay_kragmar_east"},{lc("bay_shore","bay_kragmar_east",{point(400,1900),point(900,1980),point(1020,2250)})}),
-	face_arc("face_arc:speargrass:bay_head","kragmar_speargrass_reach","bay_shore",{"bay_kragmar_west"},{lc("bay_shore","bay_kragmar_west",{point(-400,1900),point(-1060,2010),point(-1400,1900)})}),
-	face_arc("face_arc:kapok:outer","kragmar_kapok_cradle","coast_bay_shore",{"bay_kragmar_east","perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:kapok"),lc("bay_shore","bay_kragmar_east",{point(820,2960),point(700,2630),point(1050,2320),point(1020,2250)})}),
-	face_arc("face_arc:raincall:bay","kragmar_raincall_basin","bay_shore",{"bay_kragmar_east"},{lc("bay_shore","bay_kragmar_east",{point(1020,2250),point(1050,2320),point(900,1980),point(1400,1900)})}),
+	face_arc("face_arc:sunscar:outer","kragmar_sunscar_flats","coast_bay_shore",{"bay_kragmar_east","perimeter_kragmar_mainland","bay_kragmar_west"},{bank_component("bay_bank:kragmar_east:sunscar"),pc("perimeter_span:kragmar:sunscar",aperture_dry(AP_KE,"before"),aperture_dry(AP_KW,"after")),bank_component("bay_bank:kragmar_west:sunscar")}),
+	face_arc("face_arc:redtusk:west_bay","kragmar_redtusk_savanna","bay_shore",{"bay_kragmar_west"},{bank_component("bay_bank:kragmar_west:redtusk")}),
+	face_arc("face_arc:redtusk:east_bay","kragmar_redtusk_savanna","bay_shore",{"bay_kragmar_east"},{bank_component("bay_bank:kragmar_east:redtusk")}),
+	face_arc("face_arc:speargrass:bay_head","kragmar_speargrass_reach","bay_shore",{"bay_kragmar_west"},{bank_component("bay_bank:kragmar_west:speargrass")}),
+	face_arc("face_arc:kapok:outer","kragmar_kapok_cradle","coast_bay_shore",{"perimeter_kragmar_mainland","bay_kragmar_east"},{pc("perimeter_span:kragmar:kapok",nil,aperture_dry(AP_KE,"after")),bank_component("bay_bank:kragmar_east:kapok")}),
+	face_arc("face_arc:raincall:bay","kragmar_raincall_basin","bay_shore",{"bay_kragmar_east"},{bank_component("bay_bank:kragmar_east:raincall")}),
 	face_arc("face_arc:raincall:coast","kragmar_raincall_basin","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:raincall")}),
-	face_arc("face_arc:whispering:bay_head","kragmar_whispering_reedlands","bay_shore",{"bay_kragmar_east"},{lc("bay_shore","bay_kragmar_east",{point(1400,1900),point(900,1980),point(400,1900)})}),
+	face_arc("face_arc:whispering:bay_head","kragmar_whispering_reedlands","bay_shore",{"bay_kragmar_east"},{bank_component("bay_bank:kragmar_east:whispering")}),
 	face_arc("face_arc:totemwater:coast","kragmar_totemwater_reach","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:totemwater")}),
 	face_arc("face_arc:thunderroot:coast","kragmar_thunderroot_wilds","coast_shore",{"perimeter_kragmar_mainland"},{pc("perimeter_span:kragmar:thunderroot")}),
 	face_arc("face_arc:gravesalt:holy_west","front_gravesalt_escarpment","fixed_holy_arc",{"perimeter_holy_grounds"},{lc("fixed_holy","perimeter_holy_grounds",{point(-2500,250),point(-2500,-250)})}),
@@ -1291,9 +1460,9 @@ source.face_arcs = {
 	face_arc("face_arc:stormscale:island","front_stormscale_summit","island_perimeter_arc",{"island_stormscale"},{lc("island_coast","island_stormscale",{point(2870,-130),point(2970,-310),point(3200,-340),point(3400,-220),point(3440,20),point(3370,260),point(3150,330),point(2940,230),point(2860,60),point(2870,-130)})}),
 }
 
--- Face-arc controls are the sole zone-face and dry-land/exterior partition
--- authority. Bay centreline/half-width capsules separately own planned-water
--- masks; bay-shore arcs express only the resulting zone-face boundary.
+-- Face arcs plus the shared Bay-bank records are the sole dry-face authority.
+-- Bay centreline/half-width capsules and Wings separately own planned water;
+-- no literal Bay-shore polyline remains.
 
 local edge_attachment_id = {
 	land_001=EA.."land_001",land_007=EA.."land_007",
@@ -2780,8 +2949,8 @@ source.semantics = {
 local numeric_collections = {
 	source.relief_profiles, source.route_classes, source.water_classes,
 	source.template_primitives, source.zones, source.land_edges,
-	source.relief_junctions,
-	source.perimeter_attachments,source.perimeter_spans,
+	source.relief_junctions, source.junction_departures,
+	source.perimeter_attachments,source.perimeter_spans,source.bay_bank_components,
 	source.face_arcs,source.zone_faces,
 	source.route_stations,source.routes,source.route_interfaces,
 	source.surface_level_controls,

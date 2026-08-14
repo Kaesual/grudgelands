@@ -67,7 +67,7 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="f38332e77ada4bf8b3215bfc79da7e5822beb6f6269fbd3679b089ede508e188"
+local EXPECTED_SOURCE_CHECKSUM="9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"production and independent source KAT differ")
 assert(production_stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
@@ -99,11 +99,12 @@ for i = 1, #source.anchors do
 	counts[family] = counts[family] + 1
 end
 assert(#source.zones == 38 and #source.land_edges == 61 and
+	#source.relief_junctions==38 and #source.junction_departures==4 and
 	#source.perimeter_attachments==8 and #source.perimeter_spans==18 and #source.routes==57 and
 	#source.bay_mouth_apertures==4 and
 	#source.boat_edges == 4 and #source.landmarks == 70 and
 	#source.anchors == 100)
-assert(#source.face_arcs==34 and #source.zone_faces==38 and
+assert(#source.bay_bank_components==20 and #source.face_arcs==34 and #source.zone_faces==38 and
 	#source.bay_closure_wings==8 and
 	#source.surface_level_controls==162 and
 	#source.poi_spurs==74 and #source.hydrology_profiles==11 and
@@ -209,15 +210,12 @@ do
 		"literal spur bindings collapsed to old first-route heuristic")
 end
 
--- Exhaustive integer-column audit around all four final bay footprints. The
--- outer perimeter is independent authority: every interior column in a bay
--- neighbourhood must be covered by either a dry face, the unchanged analytic
--- base capsule, or one of its two exact tapered closure wings. This catches
--- literal face/water cavities before displaced-corpus testing in Stage 2.
+-- Exhaustive Stage-1 integer-column audit of exact Base-Bay membership and
+-- owner arithmetic. Coordinate-free R11 bank materialization, dry-face
+-- coverage and the combined Base/Wing partition remain Stage-2 obligations.
 do
-	local edge_by_id,arc_by_id,face_by_zone,perimeter_by_id={},{},{},{}
+	local edge_by_id,perimeter_by_id={},{}
 	for i=1,#source.land_edges do edge_by_id[source.land_edges[i].id]=source.land_edges[i] end
-	for i=1,#source.face_arcs do arc_by_id[source.face_arcs[i].id]=source.face_arcs[i] end
 	for i=1,#source.perimeters do perimeter_by_id[source.perimeters[i].id]=source.perimeters[i] end
 	local function point_in_polygon(x,z,polygon)
 		local winding=0
@@ -302,7 +300,6 @@ do
 		attachment_by_id[attachment.id]=attachment attachment_by_edge[attachment.edge_id]=attachment
 	end
 	local attachment_point={}
-	local clipped_edge_point_set,clipped_edge={},{}
 	for edge_id,attachment in pairs(attachment_by_edge) do
 		local edge=edge_by_id[edge_id]
 		local points=raster_polyline(edge.control)
@@ -320,7 +317,6 @@ do
 		end
 		attachment_point[attachment.id]=attachment.edge_endpoint=="from" and kept[1] or kept[#kept]
 	end
-	local attachment_perimeter_station={}
 	-- This is deliberately the undisplaced literal Stage-1 baseline. Final
 	-- seed-zero and corpus attachment geometry belongs to Stage 2.
 	local baseline_exact_attachment_count,baseline_adjacent_attachment_count=0,0
@@ -359,7 +355,6 @@ do
 		assert(best_distance<=1,
 			"attachment requires an adjacent perimeter station: "..attachment_id..
 			" point="..point.x..":"..point.z.." distance="..best_distance)
-		attachment_perimeter_station[attachment_id]=best
 		local witness=expected_undisplaced_attachment_delta[attachment_id]
 		if witness then
 			assert(point.x==witness[1] and point.z==witness[2] and
@@ -413,11 +408,6 @@ do
 				math.abs(final_points[i].z-final_points[i-1].z))==1,
 				"attachment final edge is not 8-connected") end
 		end
-		clipped_edge[attachment.edge_id]=final_points
-		local point_set={} clipped_edge_point_set[attachment.edge_id]=point_set
-		for i=1,#final_points do
-			point_set[final_points[i].x..":"..final_points[i].z]=true
-		end
 	end
 	assert(baseline_exact_attachment_count==3 and
 		baseline_adjacent_attachment_count==5,
@@ -441,63 +431,6 @@ do
 			end
 		end
 		assert(common==0,"land_016 unexpectedly regained a common raw raster station")
-	end
-	local span_by_id={}
-	for i=1,#source.perimeter_spans do span_by_id[source.perimeter_spans[i].id]=source.perimeter_spans[i] end
-	local function boundary_point(boundary)
-		if boundary.kind=="perimeter_attachment" then
-			return attachment_perimeter_station[boundary.attachment_id]
-		end
-		return perimeter_by_id[boundary.perimeter_id].polygon[boundary.index]
-	end
-	local function materialize_span(span)
-		local stations=perimeter_stations_by_id[span.perimeter_id]
-		local lookup=perimeter_station_lookup[span.perimeter_id]
-		local first_point,last_point=boundary_point(span.start_boundary),
-			boundary_point(span.end_boundary)
-		local first_index=assert(lookup[first_point.x..":"..first_point.z],
-			span.id.." missing first "..first_point.x..":"..first_point.z)
-		local last_index=assert(lookup[last_point.x..":"..last_point.z],
-			span.id.." missing last "..last_point.x..":"..last_point.z)
-		assert(first_index<=last_index,"symbolic perimeter span must not wrap")
-		local points={}
-		for index=first_index,last_index do points[#points+1]=stations[index] end
-		if span.face_direction=="reverse" then local reversed={}
-			for i=#points,1,-1 do reversed[#reversed+1]=points[i] end
-			return reversed
-		end
-		return points
-	end
-	local function materialize_arc(arc)
-		local points={}
-		for i=1,#arc.authority_components do local component=arc.authority_components[i]
-			local part=component.kind=="perimeter_span" and
-				materialize_span(span_by_id[component.ref_id]) or component.control
-			if #points>0 then assert(points[#points].x==part[1].x and
-				points[#points].z==part[1].z,"face arc authority components do not join") end
-			for j=1,#part do if #points==0 or j>1 then points[#points+1]=part[j] end end
-		end
-		return points
-	end
-	for i=1,#source.zone_faces do local face=source.zone_faces[i]
-		local polygon={}
-		for ref_index=1,#face.cycle do local ref=face.cycle[ref_index]
-			local points
-			if ref.kind=="shared_edge" then
-				local edge=edge_by_id[ref.ref_id]
-				local base=clipped_edge[ref.ref_id] or edge.control points={}
-				if ref.direction=="forward" then for j=1,#base do
-					points[#points+1]=base[j] end
-				else for j=#base,1,-1 do points[#points+1]=base[j] end end
-			else points=materialize_arc(arc_by_id[ref.ref_id]) end
-			if #polygon>0 then assert(polygon[#polygon].x==points[1].x and
-				polygon[#polygon].z==points[1].z,"zone face authority components do not join") end
-			for j=1,#points do if #polygon==0 or j>1 then
-				polygon[#polygon+1]=points[j] end end
-		end
-		assert(polygon[#polygon].x==polygon[1].x and polygon[#polygon].z==polygon[1].z,
-			"zone face authority cycle does not close exactly")
-		face_by_zone[face.zone_id]=polygon
 	end
 	local ceil_isqrt
 	local function point_in_base_bay(x,z,bay)
@@ -848,131 +781,382 @@ do
 			2*mouth.half_width==aperture_expected_widths[aperture_index],
 			"derived Bay aperture run/width KAT drift: "..bay.id)
 	end
-	local perimeter_dry_owner={}
-	for perimeter_id in pairs(perimeter_by_id) do perimeter_dry_owner[perimeter_id]={} end
-	for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[span_index]
-		local points=raster_polyline(materialize_span(span))
-		local lookup=perimeter_station_lookup[span.perimeter_id]
-		for station_index=1,#points do local point=points[station_index] local key=point.x..":"..point.z
-			if lookup[key] then local row=perimeter_dry_owner[span.perimeter_id][key] or {}
-				perimeter_dry_owner[span.perimeter_id][key]=row row[#row+1]=span.zone_id
-			end
+
+	-- Independent R15 joint-tail wedge oracle. The closing K+ -> K- chord is
+	-- used only by the exact point classifier below; it is never rasterized or
+	-- returned as materialized geometry.
+	do
+		local wing_by_id,bay_by_id={},{ }
+		for i=1,#source.bays do bay_by_id[source.bays[i].id]=source.bays[i] end
+		for i=1,#source.bay_closure_wings do
+			wing_by_id[source.bay_closure_wings[i].id]=source.bay_closure_wings[i]
 		end
-	end
-	-- The two mainland footprints close on the authored Holy shared-edge
-	-- chain.  Those equality stations use that existing shared authority,
-	-- not a synthetic coast span.
-	for edge_index=1,#source.land_edges do local edge=source.land_edges[edge_index]
-		local points=clipped_edge[edge.id] or raster_polyline(edge.control)
-		for perimeter_id,lookup in pairs(perimeter_station_lookup) do
-			if perimeter_dry_owner[perimeter_id] then
-				for station_index=1,#points do local point=points[station_index]
-					local key=point.x..":"..point.z
-					if lookup[key] then perimeter_dry_owner[perimeter_id][key]={edge.tie_zone_id} end
+		local function point_key(point) return point.x..":"..point.z end
+		local function point_signature(points)
+			local result={}
+			for i=1,#points do result[i]=point_key(points[i]) end
+			return table.concat(result,",")
+		end
+		local function final_planned_water(x,z)
+			for bay_index=1,#source.bays do
+				if point_in_final_bay(x,z,source.bays[bay_index]) then return true end
+			end
+			return false
+		end
+		local function final_dry(bay,x,z)
+			return point_in_polygon(x,z,
+				perimeter_by_id[bay.perimeter_projection.perimeter_id].polygon) and
+				not final_planned_water(x,z)
+		end
+		local cardinals={{x=1,z=0},{x=0,z=1},{x=-1,z=0},{x=0,z=-1}}
+		local function select_wing_k(wing,sign)
+			local bay=assert(bay_by_id[wing.bay_id])
+			local vx,vz=wing.junction.x-wing.head.x,wing.junction.z-wing.head.z
+			local length=vx*vx+vz*vz
+			local best
+			for z=math.min(wing.head.z,wing.junction.z)-wing.head_half_width,
+					math.max(wing.head.z,wing.junction.z)+wing.head_half_width do
+				for x=math.min(wing.head.x,wing.junction.x)-wing.head_half_width,
+						math.max(wing.head.x,wing.junction.x)+wing.head_half_width do
+					local px,pz=x-wing.head.x,z-wing.head.z
+					local projection=px*vx+pz*vz
+					local cross=vx*pz-vz*px
+					local adjacent_own_water=false
+					for direction_index=1,#cardinals do local direction=cardinals[direction_index]
+						if point_in_wing(x+direction.x,z+direction.z,wing) then
+							adjacent_own_water=true break
+						end
+					end
+					if final_dry(bay,x,z) and adjacent_own_water and projection>=0 and
+							projection<length and
+							(sign<0 and cross<0 or sign>0 and cross>0) and
+							(not best or projection>best.projection or
+							projection==best.projection and
+								(x<best.x or x==best.x and z<best.z)) then
+						best={x=x,z=z,projection=projection}
+					end
 				end
 			end
+			assert(best,"R15 K set is empty: "..wing.id)
+			return {x=best.x,z=best.z}
 		end
-	end
-	for attachment_id,point in pairs(attachment_perimeter_station) do local attachment=attachment_by_id[attachment_id]
-		perimeter_dry_owner[attachment.perimeter_id][point.x..":"..point.z]=
-			{edge_by_id[attachment.edge_id].tie_zone_id}
-	end
-	local function perimeter_equality_owner(perimeter_id,x,z)
-		local candidates=perimeter_dry_owner[perimeter_id][x..":"..z]
-		if not candidates then return nil end
-		local owner=candidates[1]
-		for i=2,#candidates do if zone_numeric[candidates[i]]<zone_numeric[owner] then
-			owner=candidates[i]
-		end end
-		return owner
-	end
-	local function point_on_edge(x,z,edge)
-		for i=1,#edge.control-1 do local a,b=edge.control[i],edge.control[i+1]
-			if (b.x-a.x)*(z-a.z)-(b.z-a.z)*(x-a.x)==0 and
-				x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
-				z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then return true end
-		end
-		return false
-	end
-	local function declared_dry_equality(x,z,zone_ids)
-		local declared={}
-		for i=1,#source.land_edges do local edge=source.land_edges[i]
-			if point_on_edge(x,z,edge) or
-					(clipped_edge_point_set[edge.id] and clipped_edge_point_set[edge.id][x..":"..z]) then
-				declared[edge.left_zone]=true declared[edge.right_zone]=true
-			end
-		end
-		if next(declared)==nil then return false end
-		for i=1,#zone_ids do if not declared[zone_ids[i]] then return false end end
-		return true
-	end
-	local function ceil_div(n,d) return -math.floor(-n/d) end
-	local function polygon_scanlines(polygon,zone_id)
-		local rows={}
-		for i=1,#polygon-1 do local a,b=polygon[i],polygon[i+1]
-			if a.z==b.z then
-				local row=rows[a.z] or {crossings={},horizontal={}}
-				rows[a.z]=row row.horizontal[#row.horizontal+1]={math.min(a.x,b.x),math.max(a.x,b.x)}
-			else
-				local first_z,last_z=math.min(a.z,b.z),math.max(a.z,b.z)-1
-				for z=first_z,last_z do
-					local denominator=b.z-a.z
-					local numerator=a.x*denominator+(z-a.z)*(b.x-a.x)
-					if denominator<0 then numerator,denominator=-numerator,-denominator end
-					local row=rows[z] or {crossings={},horizontal={}}
-					rows[z]=row row.crossings[#row.crossings+1]={numerator,denominator}
+		local function enumerate_side_paths(wing,k,sign)
+			local bay=assert(bay_by_id[wing.bay_id])
+			local junction=wing.junction
+			local vx,vz=junction.x-wing.head.x,junction.z-wing.head.z
+			local result,path={},{ {x=k.x,z=k.z} }
+			local function visit(current)
+				local distance=math.max(math.abs(current.x-junction.x),
+					math.abs(current.z-junction.z))
+				if distance==0 then
+					local copy={}
+					for i=1,#path do copy[i]={x=path[i].x,z=path[i].z} end
+					result[#result+1]=copy
+					return
+				end
+				local next_points={}
+				for dz=-1,1 do for dx=-1,1 do
+					if dx~=0 or dz~=0 then
+						local x,z=current.x+dx,current.z+dz
+						local next_distance=math.max(math.abs(x-junction.x),
+							math.abs(z-junction.z))
+						if next_distance==distance-1 then
+							local cross=vx*(z-wing.head.z)-vz*(x-wing.head.x)
+							if x==junction.x and z==junction.z or
+									(final_dry(bay,x,z) and
+									(sign<0 and cross<0 or sign>0 and cross>0)) then
+								next_points[#next_points+1]={x=x,z=z}
+							end
+						end
+					end
+				end end
+				table.sort(next_points,function(a,b)
+					return a.x<b.x or a.x==b.x and a.z<b.z
+				end)
+				for next_index=1,#next_points do
+					path[#path+1]=next_points[next_index]
+					visit(next_points[next_index])
+					path[#path]=nil
 				end
 			end
+			visit(k)
+			return result
 		end
-		local result={}
-		for z,row in pairs(rows) do
-			table.sort(row.crossings,function(a,b) return a[1]*b[2]<b[1]*a[2] end)
-			assert(#row.crossings%2==0,"odd exact polygon scanline crossing count: "..
-				tostring(zone_id).." z="..z.." crossings="..#row.crossings)
-			local intervals=row.horizontal
-			for i=1,#row.crossings,2 do local left,right=row.crossings[i],row.crossings[i+1]
-				local first,last=ceil_div(left[1],left[2]),math.floor(right[1]/right[2])
-				if first<=last then intervals[#intervals+1]={first,last} end
+		local function add_diagonals(path,diagonals)
+			for i=1,#path-1 do local a,b=path[i],path[i+1]
+				local dx,dz=b.x-a.x,b.z-a.z
+				if math.abs(dx)==1 and math.abs(dz)==1 then
+					local cell=math.min(a.x,b.x)..":"..math.min(a.z,b.z)
+					local slope=dx==dz and 1 or -1
+					if diagonals[cell] and diagonals[cell]~=slope then return false end
+					diagonals[cell]=slope
+				end
 			end
-			table.sort(intervals,function(a,b) return a[1]<b[1] or a[1]==b[1] and a[2]<b[2] end)
-			local merged={}
-			for i=1,#intervals do local interval=intervals[i] local previous=merged[#merged]
-				if previous and interval[1]<=previous[2]+1 then previous[2]=math.max(previous[2],interval[2])
-				else merged[#merged+1]={interval[1],interval[2]} end
-			end
-			result[z]=merged
+			return true
 		end
-		return result
+		local function structural_pair(negative,positive)
+			local occupied={}
+			for i=1,#negative-1 do occupied[point_key(negative[i])]=true end
+			for i=1,#positive-1 do
+				if occupied[point_key(positive[i])] then return false end
+			end
+			if point_key(negative[#negative-1])==point_key(positive[#positive-1]) then
+				return false
+			end
+			local diagonals={}
+			return add_diagonals(negative,diagonals) and
+				add_diagonals(positive,diagonals)
+		end
+		local function path_less(a,b)
+			for i=1,math.min(#a,#b) do
+				if a[i].x~=b[i].x then return a[i].x<b[i].x end
+				if a[i].z~=b[i].z then return a[i].z<b[i].z end
+			end
+			return #a<#b
+		end
+		local function pair_less(a,b)
+			if path_less(a.negative,b.negative) then return true end
+			if path_less(b.negative,a.negative) then return false end
+			return path_less(a.positive,b.positive)
+		end
+		local function orientation(a,b,c)
+			return (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x)
+		end
+		local function on_segment(a,b,p)
+			return orientation(a,b,p)==0 and p.x>=math.min(a.x,b.x) and
+				p.x<=math.max(a.x,b.x) and p.z>=math.min(a.z,b.z) and
+				p.z<=math.max(a.z,b.z)
+		end
+		local function segments_intersect(a,b,c,d)
+			local ab_c,ab_d=orientation(a,b,c),orientation(a,b,d)
+			local cd_a,cd_b=orientation(c,d,a),orientation(c,d,b)
+			return ab_c==0 and on_segment(a,b,c) or
+				ab_d==0 and on_segment(a,b,d) or
+				cd_a==0 and on_segment(c,d,a) or
+				cd_b==0 and on_segment(c,d,b) or
+				((ab_c<0)~=(ab_d<0) and (cd_a<0)~=(cd_b<0))
+		end
+		local function wedge_polygon(pair)
+			local polygon={}
+			for i=1,#pair.negative do
+				polygon[#polygon+1]={x=pair.negative[i].x,z=pair.negative[i].z}
+			end
+			for i=#pair.positive-1,1,-1 do
+				polygon[#polygon+1]={x=pair.positive[i].x,z=pair.positive[i].z}
+			end
+			local seen={}
+			for i=1,#polygon do
+				if seen[point_key(polygon[i])] then return nil,"tail_wedge_not_simple" end
+				seen[point_key(polygon[i])]=true
+			end
+			local area2=0
+			for i=1,#polygon do local a,b=polygon[i],polygon[i%#polygon+1]
+				area2=area2+a.x*b.z-b.x*a.z
+			end
+			if area2==0 then return nil,"tail_wedge_zero_area" end
+			for first=1,#polygon do local a,b=polygon[first],polygon[first%#polygon+1]
+				for second=first+1,#polygon do
+					if second~=first+1 and not (first==1 and second==#polygon) then
+						local c,d=polygon[second],polygon[second%#polygon+1]
+						if segments_intersect(a,b,c,d) then
+							return nil,"tail_wedge_not_simple"
+						end
+					end
+				end
+			end
+			return polygon
+		end
+		local function classify_polygon(x,z,polygon)
+			local winding=0
+			for i=1,#polygon do local a,b=polygon[i],polygon[i%#polygon+1]
+				local side=(b.x-a.x)*(z-a.z)-(b.z-a.z)*(x-a.x)
+				if side==0 and x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
+						z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then
+					return 0
+				end
+				if a.z<=z then
+					if b.z>z and side>0 then winding=winding+1 end
+				elseif b.z<=z and side<0 then winding=winding-1 end
+			end
+			return winding==0 and -1 or 1
+		end
+		local function analyze_wedge(wing,pair)
+			local polygon,polygon_failure=wedge_polygon(pair)
+			if not polygon then return nil,polygon_failure end
+			local junction=wing.junction
+			local negative_distance=math.max(
+				math.abs(pair.negative[1].x-junction.x),
+				math.abs(pair.negative[1].z-junction.z))
+			local positive_distance=math.max(
+				math.abs(pair.positive[1].x-junction.x),
+				math.abs(pair.positive[1].z-junction.z))
+			local radius=math.max(negative_distance,positive_distance)+1
+			if radius>5 then return nil,"tail_wedge_radius" end
+			local exempt={}
+			for i=1,#pair.negative do exempt[point_key(pair.negative[i])]=true end
+			for i=1,#pair.positive do exempt[point_key(pair.positive[i])]=true end
+			local dry_columns={}
+			for z=junction.z-radius,junction.z+radius do
+				for x=junction.x-radius,junction.x+radius do
+					if classify_polygon(x,z,polygon)>=0 and not exempt[x..":"..z] and
+							not point_in_wing(x,z,wing) then
+						dry_columns[#dry_columns+1]={x=x,z=z}
+					end
+				end
+			end
+			return {radius=radius,dry_columns=dry_columns,polygon=polygon}
+		end
+		local function select_wedge_valid_pair(wing,pairs)
+			table.sort(pairs,pair_less)
+			local wedge_valid={}
+			for pair_index=1,#pairs do
+				local analysis=analyze_wedge(wing,pairs[pair_index])
+				if analysis and #analysis.dry_columns==0 then
+					wedge_valid[#wedge_valid+1]={rank=pair_index,pair=pairs[pair_index],
+						analysis=analysis}
+				end
+			end
+			return wedge_valid[1],wedge_valid
+		end
+		local expected={
+			["bay_wing:elandor_west:left"]={4,1,1,4,4,3,0,
+				"-1397:-1900,-1398:-1900,-1399:-1900,-1400:-1900",
+				"-1398:-1901,-1399:-1901,-1400:-1900",""},
+			["bay_wing:elandor_west:right"]={18,1,10,5,4,5,1,
+				"-403:-1901,-402:-1901,-401:-1901,-400:-1900",
+				"-404:-1900,-403:-1900,-402:-1900,-401:-1900,-400:-1900",
+				"-402:-1901"},
+			["bay_wing:elandor_east:left"]={18,1,2,5,5,4,1,
+				"404:-1900,403:-1900,402:-1900,401:-1900,400:-1900",
+				"403:-1901,402:-1901,401:-1901,400:-1900","402:-1901"},
+			["bay_wing:elandor_east:right"]={4,1,1,4,3,4,0,
+				"1398:-1901,1399:-1901,1400:-1900",
+				"1397:-1900,1398:-1900,1399:-1900,1400:-1900",""},
+			["bay_wing:kragmar_west:left"]={2,1,2,3,2,3,1,
+				"-1399:1901,-1400:1900","-1398:1900,-1399:1900,-1400:1900",
+				"-1399:1900"},
+			["bay_wing:kragmar_west:right"]={18,1,17,5,5,4,4,
+				"-404:1900,-403:1900,-402:1900,-401:1900,-400:1900",
+				"-403:1901,-402:1901,-401:1901,-400:1900",
+				"-402:1899,-403:1900,-402:1900,-401:1900"},
+			["bay_wing:kragmar_east:left"]={18,1,9,5,4,5,4,
+				"403:1901,402:1901,401:1901,400:1900",
+				"404:1900,403:1900,402:1900,401:1900,400:1900",
+				"402:1899,401:1900,402:1900,403:1900"},
+			["bay_wing:kragmar_east:right"]={18,1,17,5,5,4,4,
+				"1396:1900,1397:1900,1398:1900,1399:1900,1400:1900",
+				"1397:1901,1398:1901,1399:1901,1400:1900",
+				"1398:1899,1397:1900,1398:1900,1399:1900"},
+		}
+		local raw_total,wedge_total,old_dry_total,new_dry_total=0,0,0,0
+		local selected_by_wing={}
+		for wing_index=1,#source.bay_closure_wings do
+			local wing=source.bay_closure_wings[wing_index]
+			local golden=assert(expected[wing.id],"unknown R15 Wing: "..wing.id)
+			local negative_k=select_wing_k(wing,-1)
+			local positive_k=select_wing_k(wing,1)
+			local negative_paths=enumerate_side_paths(wing,negative_k,-1)
+			local positive_paths=enumerate_side_paths(wing,positive_k,1)
+			local pairs={}
+			for negative_index=1,#negative_paths do
+				for positive_index=1,#positive_paths do
+					if structural_pair(negative_paths[negative_index],
+							positive_paths[positive_index]) then
+						pairs[#pairs+1]={negative=negative_paths[negative_index],
+							positive=positive_paths[positive_index]}
+					end
+				end
+			end
+			local selected,wedge_valid=select_wedge_valid_pair(wing,pairs)
+			assert(selected,"R15 has no wedge-valid pair: "..wing.id)
+			local old_analysis=assert(analyze_wedge(wing,pairs[1]))
+			assert(#pairs==golden[1] and #wedge_valid==golden[2] and
+				selected.rank==golden[3] and selected.analysis.radius==golden[4] and
+				#selected.pair.negative==golden[5] and
+				#selected.pair.positive==golden[6] and
+				#old_analysis.dry_columns==golden[7] and
+				point_signature(selected.pair.negative)==golden[8] and
+				point_signature(selected.pair.positive)==golden[9] and
+				point_signature(old_analysis.dry_columns)==golden[10],
+				"R15 Wing golden drift: "..wing.id)
+			assert(#selected.analysis.dry_columns==0,
+				"R15 selected wedge retained a dry column: "..wing.id)
+			local reversed={}
+			for i=#selected.pair.negative,1,-1 do
+				reversed[#reversed+1]=selected.pair.negative[i]
+			end
+			for i=1,#reversed do
+				assert(point_key(reversed[i])==
+					point_key(selected.pair.negative[#selected.pair.negative-i+1]),
+					"R15 reverse is not byte-exact: "..wing.id)
+			end
+			selected_by_wing[wing.id]={pair=selected.pair,pairs=pairs}
+			raw_total=raw_total+#pairs
+			wedge_total=wedge_total+#wedge_valid
+			old_dry_total=old_dry_total+#old_analysis.dry_columns
+			new_dry_total=new_dry_total+#selected.analysis.dry_columns
+			expected[wing.id]=nil
+		end
+		assert(next(expected)==nil and raw_total==100 and wedge_total==8 and
+			old_dry_total==15 and new_dry_total==0,
+			"R15 all-Wing 100/8 and 15-to-0 corpus drift")
+		do
+			local wing=assert(wing_by_id["bay_wing:elandor_west:right"])
+			local selected=selected_by_wing[wing.id]
+			local old_only=assert(analyze_wedge(wing,selected.pairs[1]))
+			assert(#old_only.dry_columns==1,
+				"R15 old lex-first dry-gap mutation was not rejected")
+			local no_pair=select_wedge_valid_pair(wing,{selected.pairs[1]})
+			assert(not no_pair,"R15 no-wedge-valid-pair mutation was accepted")
+			local zero_area={negative={{x=0,z=0},{x=1,z=0}},
+				positive={{x=2,z=0},{x=1,z=0}}}
+			local _,failure=analyze_wedge(wing,zero_area)
+			assert(failure=="tail_wedge_zero_area",
+				"R15 zero-area wedge mutation was accepted")
+			local self_crossing={negative={{x=0,z=0},{x=3,z=3},{x=0,z=3}},
+				positive={{x=2,z=0},{x=0,z=3}}}
+			_,failure=analyze_wedge(wing,self_crossing)
+			assert(failure=="tail_wedge_not_simple",
+				"R15 self-intersecting wedge mutation was accepted")
+			local over_radius={negative={{x=wing.junction.x-6,z=wing.junction.z},
+				{x=wing.junction.x,z=wing.junction.z}},
+				positive={{x=wing.junction.x,z=wing.junction.z-1},
+				{x=wing.junction.x,z=wing.junction.z}}}
+			_,failure=analyze_wedge(wing,over_radius)
+			assert(failure=="tail_wedge_radius",
+				"R15 radius-above-five mutation was accepted")
+			local synthetic_wing={id="synthetic_wedge",bay_id=wing.bay_id,
+				head={x=0,z=-4},junction={x=0,z=0},head_half_width=4}
+			local chord_pair={
+				negative={{x=2,z=-2},{x=1,z=-1},{x=0,z=0}},
+				positive={{x=-2,z=-2},{x=-1,z=-1},{x=0,z=0}},
+			}
+			local chord_analysis=assert(analyze_wedge(synthetic_wing,chord_pair))
+			assert(#chord_analysis.dry_columns==0,
+				"R15 strict-Wing chord-interior fixture did not pass")
+			synthetic_wing.head_half_width=2
+			chord_analysis=assert(analyze_wedge(synthetic_wing,chord_pair))
+			assert(#chord_analysis.dry_columns>0,
+				"R15 dry nonterminal chord-column mutation was accepted")
+			synthetic_wing.head_half_width=8
+			local lex_later={negative={{x=2,z=-1},{x=1,z=0},{x=0,z=0}},
+				positive={{x=-2,z=-2},{x=-1,z=-1},{x=0,z=0}}}
+			local lex_first={negative={{x=2,z=-1},{x=1,z=-1},{x=0,z=0}},
+				positive={{x=-2,z=-2},{x=-1,z=-1},{x=0,z=0}}}
+			local selected_synthetic,valid_synthetic=select_wedge_valid_pair(
+				synthetic_wing,{lex_later,lex_first})
+			assert(selected_synthetic and #valid_synthetic==2 and
+				point_signature(selected_synthetic.pair.negative)==
+					point_signature(lex_first.negative),
+				"R15 multiple wedge-valid pairs did not select lexicographically first")
+		end
+		print("WP40 T2 R15 Wing-wedge oracle passed: 100 raw pairs, 8 wedge pairs, "..
+			"15->0 dry columns, R<=5")
 	end
-	local face_scanlines={}
-	for zone_id,polygon in pairs(face_by_zone) do face_scanlines[zone_id]=polygon_scanlines(polygon,zone_id) end
-	local function intervals_contain(intervals,x)
-		if not intervals then return false end
-		for i=1,#intervals do if x>=intervals[i][1] and x<=intervals[i][2] then return true end end
-		return false
-	end
-	local function point_in_face(zone_id,x,z)
-		return intervals_contain(face_scanlines[zone_id][z],x)
-	end
-	for bay_index,fixture in ipairs({
-		{-980,-1920,-980,-1921},{1020,-1910,1020,-1911},
-		{-1060,1930,-1060,1931},{900,1900,900,1901},
-	}) do local bay=source.bays[bay_index]
-		assert(not point_in_base_bay(fixture[1],fixture[2],bay) and
-			point_in_base_bay(fixture[3],fixture[4],bay),
-			"bay strict dry-boundary/head-interior KAT drift: "..bay.id)
-	end
-	for _,fixture in ipairs({
-		{1,-896,-2053},{2,1252,-2866},{2,771,-2398},{2,1101,-2222},{4,787,2286},
-	}) do
-		assert(not point_in_base_bay(fixture[2],fixture[3],source.bays[fixture[1]]),
-			"exact rational Bay divergence golden became water")
-	end
-	local gap_summaries={}
+	-- With coordinate-free R11 banks, Stage 1 independently exhausts water
+	-- membership/owner arithmetic only. Closed dry-face coverage belongs to
+	-- the complete Stage-2 materialization corpus.
 	for bay_index=1,#source.bays do local bay=source.bays[bay_index]
-		local gap_count,overlap_count,wing_overlap_count,owner_failure_count,
-			first_gap,first_overlap,gap_min_x,gap_max_x,gap_min_z,gap_max_z=0,0,0,0
-		local gap_bands={}
 		local min_x,max_x,min_z,max_z
 		for i=1,#bay.centreline do local p=bay.centreline[i]
 			min_x=math.min(min_x or p.x-p.half_width,p.x-p.half_width)
@@ -980,217 +1164,24 @@ do
 			min_z=math.min(min_z or p.z-p.half_width,p.z-p.half_width)
 			max_z=math.max(max_z or p.z+p.half_width,p.z+p.half_width)
 		end
-		for i=1,#wings_by_bay[bay.id] do local wing=wings_by_bay[bay.id][i]
-			min_x=math.min(min_x,wing.junction.x,wing.head.x-wing.head_half_width)
-			max_x=math.max(max_x,wing.junction.x,wing.head.x+wing.head_half_width)
-			min_z=math.min(min_z,wing.junction.z,wing.head.z-wing.head_half_width)
-			max_z=math.max(max_z,wing.junction.z,wing.head.z+wing.head_half_width)
-		end
-		local perimeter=perimeter_by_id[bay.perimeter_projection.perimeter_id].polygon
 		for z=min_z,max_z do for x=min_x,max_x do
-			if point_in_polygon(x,z,perimeter) then
-				local under_any_bay=false
-				local water_owner
-				for other_index=1,#source.bays do local other=source.bays[other_index]
-					if other.continent==bay.continent and point_in_final_bay(x,z,other) then
-						under_any_bay=true
-						local owner,wing_count=final_bay_owner(x,z,other)
-						water_owner=owner
-						if point_in_base_bay(x,z,other) then
-			local actual,actual_segment,tied,legacy_owner=base_bay_owner(x,z,other)
-							local expected,expected_segment,oracle_tied=
-								oracle_base_bay_owner(x,z,other)
-							assert(actual==expected and actual_segment==expected_segment and
-								tied==oracle_tied,"independent exact Base-Bay owner oracle drift: "..
-								other.id..":"..x..","..z)
+			if point_in_base_bay(x,z,bay) then
+				local actual,actual_segment,tied,legacy_owner=base_bay_owner(x,z,bay)
+				local expected,expected_segment,oracle_tied=oracle_base_bay_owner(x,z,bay)
+				assert(actual==expected and actual_segment==expected_segment and
+					tied==oracle_tied,"R11 Base-Bay owner oracle drift: "..bay.id)
 				owner_oracle_columns=owner_oracle_columns+1
-				if tied then
-					owner_segment_ties=owner_segment_ties+1
-					owner_ties_by_bay[other.id]=owner_ties_by_bay[other.id]+1
-					if actual~=legacy_owner then
-						owner_changed_ties=owner_changed_ties+1
-						owner_changes_by_bay[other.id]=owner_changes_by_bay[other.id]+1
+				if tied then owner_segment_ties=owner_segment_ties+1
+					owner_ties_by_bay[bay.id]=owner_ties_by_bay[bay.id]+1
+					if actual~=legacy_owner then owner_changed_ties=owner_changed_ties+1
+						owner_changes_by_bay[bay.id]=owner_changes_by_bay[bay.id]+1
 						first_owner_change=first_owner_change or
-							(other.id..":"..x..","..z..":"..legacy_owner.."->"..actual)
+							(bay.id..":"..x..","..z..":"..legacy_owner.."->"..actual)
 					end
-				end
-						end
-						if not point_in_base_bay(x,z,other) and wing_count~=1 then
-							wing_overlap_count=wing_overlap_count+1
-						end
-						break
-					end
-				end
-				if under_any_bay then
-					if not water_owner or not zone_numeric[water_owner] then
-						owner_failure_count=owner_failure_count+1
-					end
-				else
-					local dry_count,dry_zones=0,{}
-					for zone_id,polygon in pairs(face_by_zone) do
-						if zone_id:match("^"..bay.continent.."_") and point_in_face(zone_id,x,z) then
-							dry_count=dry_count+1 dry_zones[#dry_zones+1]=zone_id
-						end
-					end
-				if dry_count==0 then gap_count=gap_count+1
-					local band=math.floor(z/100)*100
-					local band_row=gap_bands[band]
-					if not band_row then band_row={count=0,min_x=x,max_x=x}
-						gap_bands[band]=band_row end
-					band_row.count=band_row.count+1
-					band_row.min_x=math.min(band_row.min_x,x)
-					band_row.max_x=math.max(band_row.max_x,x)
-					first_gap=first_gap or (x..","..z)
-					gap_min_x=math.min(gap_min_x or x,x)
-					gap_max_x=math.max(gap_max_x or x,x)
-					gap_min_z=math.min(gap_min_z or z,z)
-					gap_max_z=math.max(gap_max_z or z,z)
-					elseif dry_count>1 and not declared_dry_equality(x,z,dry_zones) then
-						overlap_count=overlap_count+1
-						first_overlap=first_overlap or (x..","..z..":"..table.concat(dry_zones,"+"))
-				else
-					local canonical_owner=dry_zones[1]
-					for i=2,#dry_zones do if zone_numeric[dry_zones[i]]<
-						zone_numeric[canonical_owner] then canonical_owner=dry_zones[i] end end
-					if not canonical_owner then owner_failure_count=owner_failure_count+1 end
-				end
 				end
 			end
 		end end
-		if gap_count>0 or overlap_count>0 or wing_overlap_count>0 or
-				owner_failure_count>0 then local band_rows={}
-			for band,row in pairs(gap_bands) do band_rows[#band_rows+1]={band,row} end
-			table.sort(band_rows,function(a,b) return a[1]<b[1] end)
-			local band_text={}
-			for i=1,#band_rows do local row=band_rows[i][2]
-				band_text[#band_text+1]=band_rows[i][1]..":"..row.count..
-					"["..row.min_x..".."..row.max_x.."]" end
-			gap_summaries[#gap_summaries+1]=
-			bay.id.."=g"..gap_count.."/o"..overlap_count.."/w"..wing_overlap_count..
-				"/u"..owner_failure_count.."@"..tostring(first_gap).." overlap="..tostring(first_overlap)..
-			"["..tostring(gap_min_x)..".."..tostring(gap_max_x)..","..
-			tostring(gap_min_z)..".."..tostring(gap_max_z).."]{"..
-			table.concat(band_text,",").."}" end
 	end
-	for _,fixture in ipairs({
-		{"land_005",0,-1900},{"land_014",0,1900},
-		{"land_043",-2000,-250},{"land_049",-2000,250},
-	}) do
-		local edge=edge_by_id[fixture[1]]
-		local containing={}
-		for zone_id,polygon in pairs(face_by_zone) do
-			if point_in_face(zone_id,fixture[2],fixture[3]) then containing[#containing+1]=zone_id end
-		end
-		assert(#containing>=2 and declared_dry_equality(fixture[2],fixture[3],containing),
-			"declared shared-edge equality KAT drift: "..fixture[1])
-		local owner=containing[1]
-		for i=2,#containing do if zone_numeric[containing[i]]<zone_numeric[owner] then
-			owner=containing[i] end end
-		assert(owner==edge.tie_zone_id,"canonical shared-edge tie KAT drift: "..fixture[1])
-	end
-	assert(#gap_summaries==0,"final bay partition gaps-or-dry-overlaps "..
-		table.concat(gap_summaries,";"))
-
-	-- Exhaustive whole-mainland oracle.  Exact rational scanline endpoints
-	-- avoid a floating polygon test at every column while preserving all
-	-- integer boundary columns.  Bay precedence is then evaluated by the same
-	-- exact integer capsule/wing predicates used above.
-	local faces_by_continent={elandor={},kragmar={}}
-	for zone_id,polygon in pairs(face_by_zone) do
-		local continent=zone_id:match("^(elandor)_") or zone_id:match("^(kragmar)_")
-		if continent then faces_by_continent[continent][#faces_by_continent[continent]+1]=
-			{zone_id=zone_id,polygon=polygon} end
-	end
-	for _,rows in pairs(faces_by_continent) do
-		table.sort(rows,function(a,b) return zone_numeric[a.zone_id]<zone_numeric[b.zone_id] end)
-	end
-	local bays_by_continent={elandor={},kragmar={}}
-	for i=1,#source.bays do local bay=source.bays[i]
-		bays_by_continent[bay.continent][#bays_by_continent[bay.continent]+1]=bay
-	end
-	local whole_gap,whole_final_overlap,whole_raw_violation=0,0,0
-	local first_whole_failure
-	for _,continent in ipairs({"elandor","kragmar"}) do
-		local perimeter=perimeter_by_id["perimeter_"..continent.."_mainland"].polygon
-		local perimeter_scanlines=polygon_scanlines(perimeter)
-		local minimum_z,maximum_z=perimeter[1].z,perimeter[1].z
-		for i=2,#perimeter do minimum_z=math.min(minimum_z,perimeter[i].z)
-			maximum_z=math.max(maximum_z,perimeter[i].z) end
-		for z=minimum_z,maximum_z do
-			local events={}
-			for face_index=1,#faces_by_continent[continent] do
-				local intervals=face_scanlines[faces_by_continent[continent][face_index].zone_id][z] or {}
-				for interval_index=1,#intervals do local interval=intervals[interval_index]
-					events[interval[1]]=(events[interval[1]] or 0)+1
-					events[interval[2]+1]=(events[interval[2]+1] or 0)-1
-				end
-			end
-			local event_x={}
-			for x in pairs(events) do event_x[#event_x+1]=x end
-			table.sort(event_x)
-			local perimeter_intervals=perimeter_scanlines[z] or {}
-			for interval_index=1,#perimeter_intervals do local interval=perimeter_intervals[interval_index]
-				local event_index,dry_count=1,0
-				while event_index<=#event_x and event_x[event_index]<interval[1] do
-					dry_count=dry_count+events[event_x[event_index]] event_index=event_index+1
-				end
-				for x=interval[1],interval[2] do
-					while event_index<=#event_x and event_x[event_index]==x do
-						dry_count=dry_count+events[event_x[event_index]] event_index=event_index+1
-					end
-					local water_count,water_owner=0
-					local perimeter_key=x..":"..z
-					local on_perimeter=perimeter_station_lookup[
-						"perimeter_"..continent.."_mainland"][perimeter_key]~=nil
-					for bay_index=1,#bays_by_continent[continent] do local bay=bays_by_continent[continent][bay_index]
-						if point_in_final_bay(x,z,bay) then
-							local owner,wing_count=final_bay_owner(x,z,bay)
-							water_count=water_count+1 water_owner=owner
-							if not point_in_base_bay(x,z,bay) and wing_count~=1 then
-								whole_final_overlap=whole_final_overlap+1
-							end
-						end
-					end
-					if water_count>1 or water_count==1 and not zone_numeric[water_owner] then
-						whole_final_overlap=whole_final_overlap+1
-						first_whole_failure=first_whole_failure or (continent..":"..x..","..z)
-					elseif water_count==0 and on_perimeter then
-						local equality_owner=perimeter_equality_owner(
-							"perimeter_"..continent.."_mainland",x,z)
-						if not equality_owner then
-							whole_gap=whole_gap+1
-							first_whole_failure=first_whole_failure or (continent..":"..x..","..z)
-						end
-					elseif water_count==0 and dry_count==0 then
-						whole_gap=whole_gap+1
-						if not first_whole_failure then local direct={}
-							for face_index=1,#faces_by_continent[continent] do local face=faces_by_continent[continent][face_index]
-								if point_in_polygon(x,z,face.polygon) then direct[#direct+1]=face.zone_id end
-							end
-							first_whole_failure=continent..":"..x..","..z..":direct="..table.concat(direct,"+")
-						end
-					elseif water_count==0 and dry_count>1 then
-						local zones={}
-						for face_index=1,#faces_by_continent[continent] do local face=faces_by_continent[continent][face_index]
-							if point_in_face(face.zone_id,x,z) then zones[#zones+1]=face.zone_id end
-						end
-						if not declared_dry_equality(x,z,zones) then
-							whole_raw_violation=whole_raw_violation+1
-							first_whole_failure=first_whole_failure or (continent..":"..x..","..z)
-						end
-					end
-				end
-			end
-		end
-	end
-	local aperture_run_text={}
-	for i=1,#source.bays do local run=aperture_runs[source.bays[i].id]
-		aperture_run_text[#aperture_run_text+1]=source.bays[i].id..":"..run.count
-	end
-	assert(whole_gap==0 and whole_final_overlap==0 and whole_raw_violation==0,
-		("whole mainland partition g%d/o%d/r%d first=%s"):format(whole_gap,
-			whole_final_overlap,whole_raw_violation,tostring(first_whole_failure))..
-			" apertures="..table.concat(aperture_run_text,","))
 	assert(owner_oracle_columns>0 and owner_segment_ties>0 and
 		owner_max_checked_product<=OWNER_SAFE_INTEGER,
 		("Base-Bay owner exhaustive proof did not exercise its exact contracts: "..
@@ -1513,6 +1504,147 @@ do
 		"relief junction seed-zero hash tuple KAT drift")
 end
 
+-- R13 has four coordinate-free departure declarations.  The executable
+-- station is derived from the untouched authored edge control and enters the
+-- copied effective boundary control before the one displacement pipeline.
+do
+	local expected={
+		{"land_035","relief_junction:-1400:-1100",-1399,-1099},
+		{"land_036","relief_junction:400:-1100",401,-1099},
+		{"land_041","relief_junction:-1400:1100",-1399,1099},
+		{"land_042","relief_junction:400:1100",401,1099},
+	}
+	for i=1,#expected do local row=source.junction_departures[i]
+		local edge=source.land_edges[tonumber(row.edge_id:sub(6))]
+		local junction=edge.control[1]
+		local adjacent=edge.control[2]
+		local derived_x=junction.x+(adjacent.x<junction.x and -1 or 1)
+		local derived_z=junction.z+(adjacent.z<junction.z and -1 or 1)
+		assert(row.edge_id==expected[i][1] and row.junction_id==expected[i][2] and
+			row.edge_endpoint=="from" and derived_x==expected[i][3] and
+			derived_z==expected[i][4] and row.position==nil and row.control==nil and
+			row.route_id==nil,
+			"junction departure coordinate-free derivation KAT drift")
+	end
+end
+
+-- Independent R13 lattice oracle.  It uses this harness's raster rather than
+-- the production validator, proves the old four conflicts, then proves the
+-- effective copied controls remove every conflict across all 102 pairs.
+do
+	local departure_by_edge={}
+	for i=1,#source.junction_departures do
+		departure_by_edge[source.junction_departures[i].edge_id]=
+			source.junction_departures[i]
+	end
+	local function raster_controls(edge,use_departures)
+		local controls={}
+		for i=1,#edge.control do controls[i]=edge.control[i] end
+		if use_departures and departure_by_edge[edge.id] then
+			local endpoint,adjacent=controls[1],controls[2]
+			local derived={
+				x=endpoint.x+(adjacent.x<endpoint.x and -1 or 1),
+				z=endpoint.z+(adjacent.z<endpoint.z and -1 or 1),
+			}
+			table.insert(controls,2,derived)
+		end
+		local result={}
+		for control_index=1,#controls-1 do
+			local part=raster_canonical_points(controls[control_index].x,
+				controls[control_index].z,controls[control_index+1].x,
+				controls[control_index+1].z)
+			for station_index=1,#part do local point=part[station_index]
+				if #result==0 or result[#result].x~=point.x or
+						result[#result].z~=point.z then
+					result[#result+1]={x=point.x,z=point.z}
+				end
+			end
+		end
+		return result
+	end
+	local function reverse_copy(points)
+		local result={}
+		for i=#points,1,-1 do result[#result+1]=points[i] end
+		return result
+	end
+	local function pair_audit(use_departures)
+		local rasters={}
+		for i=1,#source.land_edges do
+			rasters[source.land_edges[i].id]=
+				raster_controls(source.land_edges[i],use_departures)
+		end
+		local pair_count,conflicts=0,{}
+		for junction_index=1,#source.relief_junctions do
+			local junction=source.relief_junctions[junction_index]
+			local oriented={}
+			for incidence_index=1,#junction.incident_edge_ids do
+				local raster=rasters[junction.incident_edge_ids[incidence_index]]
+				if raster[1].x==junction.position.x and
+						raster[1].z==junction.position.z then
+					oriented[incidence_index]=raster
+				else
+					assert(raster[#raster].x==junction.position.x and
+						raster[#raster].z==junction.position.z)
+					oriented[incidence_index]=reverse_copy(raster)
+				end
+			end
+			for first_index=1,#oriented-1 do
+				for second_index=first_index+1,#oriented do
+					pair_count=pair_count+1
+					local pair=junction.incident_edge_ids[first_index].."/"..
+						junction.incident_edge_ids[second_index]
+					local seen={}
+					for i=2,#oriented[first_index] do local point=oriented[first_index][i]
+						seen[point.x..":"..point.z]=true
+					end
+					for i=2,#oriented[second_index] do local point=oriented[second_index][i]
+						local key=point.x..":"..point.z
+						if seen[key] then conflicts[#conflicts+1]=pair.."@"..key end
+					end
+					local diagonals={}
+					for i=1,#oriented[first_index]-1 do
+						local a,b=oriented[first_index][i],oriented[first_index][i+1]
+						local dx,dz=b.x-a.x,b.z-a.z
+						if math.abs(dx)==1 and math.abs(dz)==1 then
+							diagonals[math.min(a.x,b.x)..":"..math.min(a.z,b.z)]=
+								dx==dz and 1 or -1
+						end
+					end
+					for i=1,#oriented[second_index]-1 do
+						local a,b=oriented[second_index][i],oriented[second_index][i+1]
+						local dx,dz=b.x-a.x,b.z-a.z
+						if math.abs(dx)==1 and math.abs(dz)==1 then
+							local key=math.min(a.x,b.x)..":"..math.min(a.z,b.z)
+							local slope=dx==dz and 1 or -1
+							if diagonals[key] and diagonals[key]~=slope then
+								conflicts[#conflicts+1]=pair.."@X:"..key
+							end
+						end
+					end
+				end
+			end
+		end
+		table.sort(conflicts)
+		return pair_count,conflicts
+	end
+	local old_count,old_conflicts=pair_audit(false)
+	local effective_count,effective_conflicts=pair_audit(true)
+	assert(old_count==102 and effective_count==102 and
+		table.concat(old_conflicts,";")==
+			"land_032/land_035@-1399:-1100;"..
+			"land_033/land_036@401:-1100;"..
+			"land_038/land_041@-1399:1100;"..
+			"land_039/land_042@401:1100" and
+		#effective_conflicts==0,
+		"independent R13 38-junction/102-pair raster oracle drift")
+end
+
+assert(source.bay_mouth_apertures[1].station_order==
+		"canonical_deduplicated_final_perimeter_integer_raster_order" and
+	source.geometry_policies.world_partition.bay_bank_aperture_terminal_order==
+		"deduplicated_final_authored_declared_perimeter_integer_raster_order_separate_from_the_canonical_mouth_aperture_membership_indices_payload_and_attachment_tie",
+	"R12 canonical aperture payload / authored Bank terminal split drift")
+
 -- Reality-correction KATs: raw relief uses the numeric inclusive span
 -- (max-min), not the number of representable integer results.
 local function raw_relief_offset(profile,noise_q)
@@ -1707,12 +1839,18 @@ do
 	assert(accepted==5*Q+Q/4,
 		"boundary valid fractional displacement was unnecessarily clipped")
 	local island=function(x,z)
-		local ix,iz=x+3150,z
-		if math.abs(ix)>300 or math.abs(iz)>350 then return false end
-		return ix*ix*350*350+iz*iz*300*300<=300*300*350*350
+		return math.abs(x+3150)<=300 and math.abs(z)<=350
 	end
-	assert(island(-2850,0) and not island(-2849,0),
-		"boundary closed island-envelope equality drift")
+	assert(island(-2850,350) and not island(-2849,350) and
+		not island(-2850,351),
+		"boundary closed island authoring-rectangle equality drift")
+	for island_index=1,#source.islands do local record=source.islands[island_index]
+		for point_index=1,#record.polygon do local point=record.polygon[point_index]
+			assert(math.abs(point.x-record.center.x)<=record.envelope.radius_x and
+				math.abs(point.z-record.center.z)<=record.envelope.radius_z,
+				"authored island control outside binding rectangle")
+		end
+	end
 	local land=function(x,z) return math.abs(x)<=64 and math.abs(z)<=64 end
 	assert(displacement_clip({x=0,z=0},diagonal_x,diagonal_z,64*Q,64,land)==64*Q)
 	local fixed=function(x,z) return x==12 and z==-7 end
@@ -1751,6 +1889,40 @@ end
 assert(closed_reraster[1].x==0 and closed_reraster[1].z==0 and
 	closed_reraster[#closed_reraster].x==0 and closed_reraster[#closed_reraster].z==1,
 	"boundary closed seam reraster drift")
+local function topology_ceiling(local_scalars,maximum,valid)
+	local probes={}
+	for ceiling=maximum,0,-1 do
+		local candidate={}
+		for index=1,#local_scalars do
+			candidate[index]=math.max(-ceiling*Q,
+				math.min(ceiling*Q,local_scalars[index]))
+		end
+		probes[#probes+1]=ceiling
+		if valid(candidate,ceiling) then return ceiling,candidate,probes end
+	end
+	error("zero topology ceiling rejected")
+end
+do
+	local ceiling,scalars,probes=topology_ceiling(
+		{39*Q,40*Q,42*Q,40*Q,39*Q},48,
+		function(_,candidate) return candidate==41 end)
+	assert(ceiling==41 and table.concat(probes,",")=="48,47,46,45,44,43,42,41" and
+		scalars[1]==39*Q and scalars[2]==40*Q and scalars[3]==41*Q and
+		scalars[4]==40*Q and scalars[5]==39*Q,
+		"R10 local synthetic V-peak ceiling fixture drift")
+	local unchanged,unchanged_scalars=topology_ceiling(
+		{12*Q,-9*Q,Q/2},48,function() return true end)
+	assert(unchanged==48 and unchanged_scalars[1]==12*Q and
+		unchanged_scalars[2]==-9*Q and unchanged_scalars[3]==Q/2,
+		"R10 clean record was not bit-identical")
+	local nonmonotone=topology_ceiling({48*Q},48,
+		function(_,candidate) return candidate==46 or candidate==44 end)
+	assert(nonmonotone==46,"R10 descending ceiling scan assumed monotonicity")
+	local zero,_,zero_probes=topology_ceiling({48*Q},48,
+		function(_,candidate) return candidate==0 end)
+	assert(zero==0 and #zero_probes==49,
+		"R10 finite C=0 termination drift")
+end
 do
 	local function sequence_less(a,b)
 		for i=1,#a do
@@ -1854,6 +2026,203 @@ do
 	local opposite_ok=pcall(displacement_joint_normal,1,0,-1,0)
 	assert(not zero_ok and not opposite_ok,
 		"boundary degenerate step or opposite joint was accepted")
+end
+
+do
+	-- H55 independently resolves each fixed mainland closure from its six
+	-- directed, max-zero Holy-contact edges.  No source-segment index is an
+	-- input: equivalent closed rotations/reversals must rediscover the one full
+	-- matching segment and carry that segment tag into canonical calculation.
+	local edge_by_id={}
+	for index=1,#source.land_edges do edge_by_id[source.land_edges[index].id]=
+		source.land_edges[index] end
+	local function reverse_path(points)
+		local result={}
+		for index=#points,1,-1 do
+			result[#result+1]={x=points[index].x,z=points[index].z}
+		end
+		return result
+	end
+	local function same_path(a,b)
+		if #a~=#b then return false end
+		for index=1,#a do
+			if a[index].x~=b[index].x or a[index].z~=b[index].z then return false end
+		end
+		return true
+	end
+	local function canonical_rows(points)
+		local minimum=1
+		for index=2,#points do
+			if points[index].x<points[minimum].x or
+					points[index].x==points[minimum].x and
+					points[index].z<points[minimum].z then minimum=index end
+		end
+		local forward,backward={},{}
+		for offset=0,#points-1 do
+			forward[offset+1]=points[(minimum-1+offset)%#points+1]
+			backward[offset+1]=points[(minimum-1-offset)%#points+1]
+		end
+		local function less(a,b)
+			for index=1,#a do
+				if a[index].x~=b[index].x then return a[index].x<b[index].x end
+				if a[index].z~=b[index].z then return a[index].z<b[index].z end
+			end
+			return false
+		end
+		return less(backward,forward) and backward or forward
+	end
+	local function fixed_union(perimeter,edges)
+		local union,seen={},{ }
+		local closure=assert(perimeter.r7_fixed_closure)
+		assert(closure.kind=="fixed_holy_land_edge_union" and #closure.edge_refs==6)
+		for ref_index=1,#closure.edge_refs do local ref=closure.edge_refs[ref_index]
+			local edge=assert(edges[ref.edge_id])
+			assert(edge.max_displacement==0 and ref.direction=="reverse")
+			local part=raster_displaced_controls(edge.control,false)
+			part=reverse_path(part)
+			if #union>0 then assert(union[#union].x==part[1].x and
+				union[#union].z==part[1].z,"H55 fixed union join drift") end
+			for point_index=1,#part do local point=part[point_index]
+				if #union==0 or union[#union].x~=point.x or union[#union].z~=point.z then
+					local key=point.x..":"..point.z
+					assert(not seen[key],"H55 fixed union repeated station")
+					seen[key]=true
+					union[#union+1]={x=point.x,z=point.z}
+				end
+			end
+		end
+		return union
+	end
+	local function resolve(perimeter,controls,edges)
+		local union=fixed_union(perimeter,edges or edge_by_id)
+		local count=#controls
+		if count>1 and controls[1].x==controls[count].x and
+				controls[1].z==controls[count].z then count=count-1 end
+		local parts,matches={},{}
+		local reversed_union=reverse_path(union)
+		for segment_index=1,count do
+			local following=segment_index==count and 1 or segment_index+1
+			local a,b=controls[segment_index],controls[following]
+			local part=raster_canonical_points(a.x,a.z,b.x,b.z)
+			parts[segment_index]=part
+			if same_path(part,union) or same_path(part,reversed_union) then
+				matches[#matches+1]=segment_index
+			end
+		end
+		assert(#matches==1 and count==27,
+			"H55 closure did not resolve to one full segment plus 26 ordinary segments")
+		local matched=matches[1]
+		local ring={}
+		for segment_index=1,count do local part=parts[segment_index]
+			for point_index=1,#part do local point=part[point_index]
+				if #ring==0 or ring[#ring].x~=point.x or ring[#ring].z~=point.z then
+					ring[#ring+1]={x=point.x,z=point.z,
+						closure=segment_index==matched}
+				elseif segment_index==matched then ring[#ring].closure=true end
+			end
+		end
+		if ring[1].x==ring[#ring].x and ring[1].z==ring[#ring].z then
+			if ring[#ring].closure then ring[1].closure=true end
+			table.remove(ring)
+		end
+		local canonical_ring=canonical_rows(ring)
+		local scalar_parts,closure_count={},0
+		for index=1,#canonical_ring do local point=canonical_ring[index]
+			local scalar
+			if point.closure then scalar,closure_count=0,closure_count+1
+			else scalar=(math.abs(point.x*17+point.z*31)%95+1)*Q end
+			scalar_parts[index]=point.x..":"..point.z..":"..scalar
+		end
+		return {union=union,match=matched,
+			canonical_bytes=raster_signature(canonical_ring),
+			scalar_bytes=table.concat(scalar_parts,","),closure_count=closure_count}
+	end
+	local function equivalent_controls(polygon,start,reverse)
+		local count=#polygon-1
+		local result={}
+		for offset=0,count-1 do
+			local signed=reverse and -offset or offset
+			local index=(start-1+signed)%count+1
+			result[#result+1]={x=polygon[index].x,z=polygon[index].z}
+		end
+		result[#result+1]={x=result[1].x,z=result[1].z}
+		return result
+	end
+	for perimeter_index=1,2 do local perimeter=source.perimeters[perimeter_index]
+		local ordinary=resolve(perimeter,perimeter.polygon)
+		local rotated=resolve(perimeter,equivalent_controls(perimeter.polygon,7,false))
+		local reversed=resolve(perimeter,equivalent_controls(perimeter.polygon,4,true))
+		assert(#ordinary.union==5001 and ordinary.closure_count==5001 and
+			ordinary.canonical_bytes==rotated.canonical_bytes and
+			ordinary.canonical_bytes==reversed.canonical_bytes and
+			ordinary.scalar_bytes==rotated.scalar_bytes and
+			ordinary.scalar_bytes==reversed.scalar_bytes and
+			(ordinary.match~=rotated.match or ordinary.match~=reversed.match),
+			"H55 closure rotation/reversal remap or scalar-zero KAT drift")
+	end
+	local function clone_closure(perimeter)
+		local copy={r7_fixed_closure={kind=perimeter.r7_fixed_closure.kind,edge_refs={}}}
+		for index=1,#perimeter.r7_fixed_closure.edge_refs do local ref=
+			perimeter.r7_fixed_closure.edge_refs[index]
+			copy.r7_fixed_closure.edge_refs[index]={edge_id=ref.edge_id,direction=ref.direction}
+		end
+		return copy
+	end
+	local first=source.perimeters[1]
+	local function rejects(mutator,controls,edges)
+		local copy=clone_closure(first)
+		mutator(copy)
+		return not pcall(resolve,copy,controls or first.polygon,edges or edge_by_id)
+	end
+	assert(rejects(function(p) p.r7_fixed_closure.edge_refs[1],
+		p.r7_fixed_closure.edge_refs[2]=p.r7_fixed_closure.edge_refs[2],
+		p.r7_fixed_closure.edge_refs[1] end) and
+		rejects(function(p) p.r7_fixed_closure.edge_refs[3].direction="forward" end) and
+		rejects(function(p) table.remove(p.r7_fixed_closure.edge_refs,4) end) and
+		rejects(function(p) p.r7_fixed_closure.edge_refs[3].edge_id="land_047" end) and
+		rejects(function(p) p.r7_fixed_closure.edge_refs[2].edge_id="land_055" end),
+		"H55 fixed closure ref reorder/reverse/delete/duplicate/wrong-edge mutation accepted")
+	local moved_edges={}
+	for id,edge in pairs(edge_by_id) do moved_edges[id]=edge end
+	local moved={}
+	for key,value in pairs(edge_by_id.land_046) do moved[key]=value end
+	moved.max_displacement=1 moved_edges.land_046=moved
+	assert(rejects(function() end,nil,moved_edges),
+		"H55 nonfixed referenced closure edge mutation accepted")
+	local split_controls={}
+	for index=1,#first.polygon-1 do split_controls[#split_controls+1]=
+		{x=first.polygon[index].x,z=first.polygon[index].z} end
+	split_controls[#split_controls+1]={x=0,z=-250}
+	split_controls[#split_controls+1]={x=split_controls[1].x,z=split_controls[1].z}
+	assert(rejects(function() end,split_controls),
+		"H55 split/no-full closure segment mutation accepted")
+	local changed_edges={}
+	for id,edge in pairs(edge_by_id) do changed_edges[id]=edge end
+	local changed={}
+	for key,value in pairs(edge_by_id.land_046) do changed[key]=value end
+	changed.control={{x=0,z=-250},{x=750,z=-249}}
+	changed_edges.land_046=changed
+	assert(rejects(function() end,nil,changed_edges),
+		"H55 changed fixed-union station mutation accepted")
+	print("WP40 T2 H55 fixed-closure oracle passed: 2 x 6 refs, 5001 stations each")
+
+	local function boundary_bytes(value)
+		if value.kind=="perimeter_vertex" then
+			return "v:"..value.perimeter_id..":"..value.index
+		end
+		return "a:"..value.attachment_id
+	end
+	local span_bytes={}
+	for index=1,#source.perimeter_spans do local span=source.perimeter_spans[index]
+		span_bytes[index]=table.concat({span.id,span.zone_id,span.perimeter_id,
+			span.first_segment,span.last_segment,span.face_direction,
+			boundary_bytes(span.start_boundary),boundary_bytes(span.end_boundary),
+			span.geometry_authority,span.displacement_source_ref,span.tie_rule},"\31")
+	end
+	local coast_source_span_hash=canonical.hex(raw_sha256(table.concat(span_bytes,"\30")))
+	assert(coast_source_span_hash==
+		"bf7880fea20624378a8c177e513af637b61b8f169be6cf1e03a45a86fe538534",
+		"H55 18 Coast source-span definitions changed: "..coast_source_span_hash)
 end
 
 -- R8 independently freezes land/planned-water precedence. A channel uses a
@@ -2166,7 +2535,9 @@ assert(extreme_sample_q*2==extreme_record_max_q and
 	extreme_policy.sample_sequence==
 		"pre_displacement_canonical_source_segment_raster_only_never_final_reraster_stations" and
 	extreme_policy.scalar_sample_rule==
-		"each_unique_source_station_scores_its_post_noise_damping_local_clip_pre_component_scalar_q_exactly_once" and
+		"each_unique_source_station_scores_its_post_noise_damping_local_clip_selected_topology_ceiling_pre_component_scalar_q_exactly_once" and
+	extreme_policy.scalar_stage==
+		"final_signed_q16_after_noise_damping_local_magnitude_clip_and_selected_record_topology_ceiling_before_x_z_component_rounding" and
 	extreme_policy.attachment_rule==
 		"provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence" and
 	extreme_policy.score_all_candidates_before_stage2==true and
@@ -2223,6 +2594,71 @@ local function expect_failure_at(id,record_id,mutate)
 		tostring(failure and failure.invariant)..":"..
 		tostring(failure and failure.record_id))
 end
+
+expect_failure("perimeter_fixed_closure_fields",function(s)
+	s.perimeters[1].r7_fixed_closure.kind=nil
+end)
+expect_failure("perimeter_fixed_closure_fields",function(s)
+	s.perimeters[1].r7_fixed_closure.extra=true
+end)
+expect_failure("perimeter_fixed_closure_ref_fields",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs[1].direction=nil
+end)
+expect_failure("perimeter_fixed_closure_ref_fields",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs[1].extra=true
+end)
+expect_failure("perimeter_fixed_closure_contract",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs={}
+end)
+expect_failure("perimeter_fixed_closure_contract",function(s)
+	s.perimeters[1].r7_fixed_closure.kind="copied_polyline"
+end)
+expect_failure("perimeter_fixed_closure_ref",function(s)
+	local refs=s.perimeters[1].r7_fixed_closure.edge_refs
+	refs[1],refs[2]=refs[2],refs[1]
+end)
+expect_failure("perimeter_fixed_closure_ref",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs[3].direction="forward"
+end)
+expect_failure("perimeter_fixed_closure_contract",function(s)
+	table.remove(s.perimeters[1].r7_fixed_closure.edge_refs,4)
+end)
+expect_failure("perimeter_fixed_closure_ref",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs[3]=
+		clone(s.perimeters[1].r7_fixed_closure.edge_refs[2])
+end)
+expect_failure("perimeter_fixed_closure_ref",function(s)
+	s.perimeters[1].r7_fixed_closure.edge_refs[2].edge_id="land_055"
+end)
+expect_failure("perimeter_fixed_closure_fixed_edge",function(s)
+	s.land_edges[46].max_displacement=1
+end)
+expect_failure("perimeter_fixed_closure_join",function(s)
+	s.land_edges[47].control[2].x=1501
+	s.land_edges[47].to_junction_id="junction:1501:-250"
+end)
+expect_failure("perimeter_fixed_closure_repeat",function(s)
+	s.land_edges[46].control={
+		{x=0,z=-250},{x=1500,z=-500},{x=1500,z=-250},{x=750,z=-250},
+	}
+end)
+expect_failure("perimeter_fixed_closure_scope",function(s)
+	s.perimeters[3].r7_fixed_closure=clone(s.perimeters[1].r7_fixed_closure)
+end)
+expect_failure("perimeter_fixed_closure_projection",function(s)
+	local components=s.perimeters[1].ordered_outer_components
+	components[#components]="land_043:forward"
+end)
+expect_failure("perimeter_fixed_closure_geometry",function(s)
+	local polygon=s.perimeters[1].polygon
+	table.insert(polygon,#polygon,{x=0,z=-250})
+end)
+expect_failure("perimeter_fixed_closure_geometry",function(s)
+	local polygon=s.perimeters[1].polygon
+	local first,last=polygon[1],polygon[#polygon-1]
+	polygon[#polygon+1]={x=last.x,z=last.z}
+	polygon[#polygon+1]={x=first.x,z=first.z}
+end)
 
 expect_failure("section_order",function(s)
 	s.section_order[1],s.section_order[2]=s.section_order[2],s.section_order[1]
@@ -2396,6 +2832,46 @@ end)
 expect_failure("relief_junction_contract",function(s)
 	s.relief_junctions[1].hash_lane=0
 end)
+expect_failure("exact_count_junction_departures",function(s)
+	table.remove(s.junction_departures,4)
+end)
+expect_failure("junction_departure_fields",function(s)
+	s.junction_departures[1].position={x=-1399,z=-1099}
+end)
+expect_failure("junction_departure_contract",function(s)
+	s.junction_departures[1].departure_rule="literal_departure_coordinate"
+end)
+expect_failure("junction_departure_duplicate",function(s)
+	local duplicate=s.junction_departures[2]
+	duplicate.id="junction_departure:land_035:from:duplicate"
+	duplicate.edge_id="land_035"
+	duplicate.junction_id="relief_junction:-1400:-1100"
+end)
+expect_failure("junction_departure_reference",function(s)
+	s.junction_departures[1].edge_id="land_999"
+end)
+expect_failure("junction_departure_incidence",function(s)
+	s.junction_departures[1].junction_id="relief_junction:400:-1100"
+end)
+expect_failure("junction_departure_incidence",function(s)
+	s.junction_departures[1].edge_endpoint="to"
+end)
+expect_failure("junction_departure_diagonal",function(s)
+	s.land_edges[35].control[2].x=s.land_edges[35].control[1].x
+end)
+expect_failure("junction_departure_safe_arithmetic",function(s)
+	s.land_edges[35].control[2].x=9007199254740991
+end)
+expect_failure("junction_departure_derived_station",function(s)
+	s.land_edges[35].control[2].x=-1500
+end)
+expect_failure("junction_pair_base_overlap",function(s)
+	table.insert(s.land_edges[32].control,2,{x=-1399,z=-1099})
+end)
+expect_failure("junction_pair_base_x_cross",function(s)
+	table.insert(s.land_edges[32].control,2,{x=-1400,z=-1099})
+	table.insert(s.land_edges[32].control,3,{x=-1399,z=-1100})
+end)
 expect_failure("route_crosses_boundary", function(s) s.routes[1].centreline[s.routes[1].crossing_station].x=999 end)
 expect_failure("route_station_ref", function(s) s.routes[1].station_a_id="station:elandor_copperfell_foothills:hub" end)
 expect_failure("route_crossing_sides", function(s) local r=s.routes[1] r.centreline[2].x=r.centreline[4].x r.centreline[2].z=r.centreline[4].z end)
@@ -2491,11 +2967,107 @@ end)
 expect_failure("face_arc_perimeter_span",function(s)
 	s.face_arcs[1].authority_components[1].ref_id="perimeter_span:elandor:frostbarrow"
 end)
-expect_failure("face_arc_literal_component",function(s)
-	s.face_arcs[1].authority_components[2].boundary_role="outer_coast"
+expect_failure("bay_bank_component_incidence",function(s)
+	s.face_arcs[1].authority_components[2].ref_id="bay_bank:elandor_west:copperfell"
 end)
-expect_failure("face_arc_literal_component",function(s)
+expect_failure("face_arc_bay_bank",function(s)
 	s.face_arcs[1].authority_components[2].from_boundary_id="changed"
+end)
+expect_failure("exact_count_bay_bank_components",function(s)
+	table.remove(s.bay_bank_components,20)
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[1].start_terminal.side="after"
+end)
+expect_failure("bay_bank_component_fields",function(s)
+	s.bay_bank_components[1].control={{x=-980,z=-2940},{x=-1050,z=-2250}}
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[1].endpoint_face_incidence[2].face_arc_id=
+		"face_arc:copperfell:bay"
+end)
+expect_failure("bay_bank_component_fields",function(s)
+	s.bay_bank_components[1].extra=false
+end)
+expect_failure("bay_bank_terminal_fields",function(s)
+	s.bay_bank_components[1].start_terminal.extra=false
+end)
+expect_failure("bay_bank_terminal_fields",function(s)
+	s.bay_bank_components[1].end_terminal.extra=false
+end)
+expect_failure("bay_bank_terminal_fields",function(s)
+	s.bay_bank_components[2].end_terminal.extra=false
+end)
+expect_failure("bay_bank_terminal_fields",function(s)
+	s.bay_bank_components[1].start_terminal=false
+end)
+expect_failure("bay_bank_incidence_fields",function(s)
+	s.bay_bank_components[1].endpoint_face_incidence=false
+end)
+expect_failure("bay_bank_incidence_fields",function(s)
+	s.bay_bank_components[1].endpoint_face_incidence[1].extra=false
+end)
+expect_failure("face_arc_fields",function(s)
+	s.face_arcs[1].extra=false
+end)
+expect_failure("face_arc_contract",function(s)
+	s.face_arcs[1].authority_components=false
+end)
+expect_failure("face_arc_component_fields",function(s)
+	s.face_arcs[3].authority_components[1].extra=false
+end)
+expect_failure("face_arc_component_fields",function(s)
+	s.face_arcs[2].authority_components[1].extra=false
+end)
+expect_failure("face_arc_component_fields",function(s)
+	s.face_arcs[31].authority_components[1].extra=false
+end)
+expect_failure("perimeter_bank_terminal_fields",function(s)
+	s.face_arcs[1].authority_components[1].to_terminal.extra=false
+end)
+expect_failure("perimeter_bank_terminal_fields",function(s)
+	s.face_arcs[3].authority_components[1].from_terminal=true
+end)
+expect_failure("face_arc_source_projection",function(s)
+	table.remove(s.face_arcs[6].source_refs,2)
+end)
+expect_failure("face_arc_source_projection",function(s)
+	table.insert(s.face_arcs[6].source_refs,"bay_elandor_east")
+end)
+expect_failure("face_arc_source_projection",function(s)
+	local refs=s.face_arcs[6].source_refs
+	refs[1],refs[2]=refs[2],refs[1]
+end)
+expect_failure("face_arc_kind_composition",function(s)
+	s.face_arcs[2].kind="coast_shore"
+end)
+expect_failure("bay_bank_component_incidence",function(s)
+	s.face_arcs[2].authority_components[1].ref_id=
+		s.face_arcs[7].authority_components[1].ref_id
+end)
+expect_failure("bay_bank_component_incidence",function(s)
+	s.face_arcs[2].authority_components[1].ref_id="bay_bank:missing"
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[2].end_terminal.tail_side="negative"
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[1].end_terminal.edge_endpoint="from"
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[1].endpoint_face_incidence[1].terminal_side="end"
+end)
+expect_failure("bay_bank_component_contract",function(s)
+	s.bay_bank_components[1].endpoint_face_incidence[2].face_arc_end="component_start"
+end)
+expect_failure("bay_closure_wing_junction_ref",function(s)
+	s.bay_closure_wings[1].junction_edge_ids[1]="land_003"
+end)
+expect_failure("face_arc_perimeter_span",function(s)
+	s.face_arcs[1].authority_components[1].to_terminal.side="after"
+end)
+expect_failure("face_arc_component_fields",function(s)
+	s.face_arcs[1].authority_components[2]=false
 end)
 expect_failure("perimeter_span_contract",function(s)
 	s.perimeter_spans[1].first_segment=2
@@ -2733,6 +3305,62 @@ expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_displacement_projection_station=
 		"rounded_parametric_projection"
 end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_wing_k_set=
+		"directed_trace_occurrence"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_edge_transition_identity=
+		"nearest_dry_then_snap"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_nonwing_start_half_edge=
+		"first_neighbor"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_aperture_terminal_order=
+		"canonical_deduplicated_final_perimeter_integer_raster_order"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_water_side=
+		"test_the_resolved_start_anchor_previous_to_current"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_branch_rule=
+		"require_exactly_one_terminal_reachable_successor"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_reachability_bound=
+		"unbounded_recursive_search"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_tail_pair_selection=
+		"lexicographically_least_structural_pair_before_wedge_validation"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_tail_wedge_polygon=
+		"raster_the_closing_chord"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_tail_wedge_radius=
+		"unbounded_polygon_bbox"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_tail_wedge_scan=
+		"exempt_every_chord_station"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_tail_wedge_chord=
+		"serialize_the_analysis_chord"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_reject=
+		"fall_back_to_the_old_lex_first_pair"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.raw_dry_multiplicity_rule=
+		"exactly_one_outside_strict_final_bay_masks_at_least_one_inside"
+end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.shared_boundary_attachment_rule=
 		"nearest_perimeter_station_then_snap"
@@ -2756,6 +3384,37 @@ end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.final_raster_rule=
 		"emit_shifted_base_stations_directly"
+end)
+expect_failure("base_raster_repeat",function(s)
+	s.land_edges[1].control={{x=0,z=0},{x=4,z=2},{x=0,z=3}}
+end)
+expect_failure("base_raster_x_cross",function(s)
+	s.land_edges[1].control={{x=0,z=0},{x=1,z=1},{x=0,z=1},{x=1,z=0}}
+end)
+expect_failure("base_raster_envelope",function(s)
+	local changed={x=-3451,z=-260}
+	s.islands[1].polygon[2]=changed
+	for i=1,#s.face_arcs do
+		if s.face_arcs[i].id=="face_arc:wyrmglass:island" then
+			s.face_arcs[i].authority_components[1].control[2]=changed
+		end
+	end
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.topology_ceiling_candidate_order=
+		"binary_search_assuming_monotone_validity"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.junction_departure_application=
+		"append_after_final_raster"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.junction_departure_safe_arithmetic=
+		"subtract_unchecked_then_take_sign"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.island_coast_envelope_predicate=
+		"authored_island_ellipse"
 end)
 expect_failure("channel_strict_exterior_contract",function(s)
 	s.channels[1].membership_rule="caller_supplied_planned_water_precedence"
@@ -2787,6 +3446,10 @@ end)
 expect_failure("geometry_extreme_selector_policy",function(s)
 	s.geometry_policies.geometry_extreme_selector.coast_mainland_overlap_rule=
 		"score_each_perimeter_span_independently"
+end)
+expect_failure("geometry_extreme_selector_policy",function(s)
+	s.geometry_policies.geometry_extreme_selector.scalar_stage=
+		"post_local_clip_pre_topology_ceiling"
 end)
 expect_failure("generic_geometry_policy_contract",function(s)
 	s.geometry_policies.hydrology_mask.bank_skirt_horizontal_nodes=3
