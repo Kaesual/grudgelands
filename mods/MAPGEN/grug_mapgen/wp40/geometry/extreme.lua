@@ -577,6 +577,7 @@ return function(dependencies)
 	end
 
 	local pin_fields = {"source_checksum", "boundary_policy_checksum",
+		"partition_sha256",
 		"authority_dag_sha256", "authority_commit", "authority_tree",
 		"interpreter_id", "interpreter_launcher", "interpreter_path",
 		"interpreter_version", "interpreter_sha256", "measurement_scope",
@@ -584,6 +585,7 @@ return function(dependencies)
 	local function validate_pins(pins)
 		exact_fields(pins, pin_fields, "candidate shard pins")
 		for _, field in ipairs({"source_checksum", "boundary_policy_checksum",
+				"partition_sha256",
 				"authority_dag_sha256", "interpreter_sha256"}) do
 			if type(pins[field]) ~= "string" or #pins[field] ~= 64 or
 					not pins[field]:match("^[0-9a-f]+$") then
@@ -614,7 +616,7 @@ return function(dependencies)
 			fail("candidate shard interpreter provenance is invalid")
 		end
 		if pins.measurement_scope ~= "R7_SCALAR_MEASUREMENT_ONLY" or
-				pins.stage2_status ~= "blocked" then
+				pins.stage2_status ~= "pending_selected_four" then
 			fail("candidate shard scope status changed")
 		end
 		return pins
@@ -645,7 +647,7 @@ return function(dependencies)
 			copy[index] = private_plain_copy(row)
 		end
 		local pin_copy = private_plain_copy(pins)
-		return {schema = "grug_wp40_extreme_candidate_shard_v1",
+		return {schema = "grug_wp40_extreme_candidate_shard_v2",
 			first_index = first_index, last_index = last_index, count = #copy,
 			pins = pin_copy, rows_sha256 = hex(raw_sha256(rows_blob(copy))), rows = copy}
 	end
@@ -654,7 +656,7 @@ return function(dependencies)
 		"pins", "rows_sha256", "rows"}
 	local function validate_candidate_shard(shard)
 		exact_fields(shard, shard_fields, "candidate shard")
-		if shard.schema ~= "grug_wp40_extreme_candidate_shard_v1" then
+		if shard.schema ~= "grug_wp40_extreme_candidate_shard_v2" then
 			fail("candidate shard schema changed")
 		end
 		exact.integer(shard.first_index, 0, 4095, "candidate shard first index")
@@ -694,6 +696,7 @@ return function(dependencies)
 				tostring(shard.count),
 			"source_checksum\t" .. pins.source_checksum,
 			"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
+			"partition_sha256\t" .. pins.partition_sha256,
 			"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 			"authority_commit\t" .. pins.authority_commit,
 			"authority_tree\t" .. pins.authority_tree,
@@ -739,16 +742,17 @@ return function(dependencies)
 			if line == "" then fail("candidate shard blob has an empty line") end
 			lines[#lines + 1] = line
 		end
-		if #lines < 18 or lines[17] ~= candidate_header then
+		if #lines < 19 or lines[18] ~= candidate_header then
 			fail("candidate shard blob header changed")
 		end
 		local expected_headers = {"schema", "range", "source_checksum",
-			"boundary_policy_checksum", "authority_dag_sha256", "authority_commit",
+			"boundary_policy_checksum", "partition_sha256", "authority_dag_sha256",
+			"authority_commit",
 			"authority_tree", "interpreter_id", "interpreter_launcher", "interpreter_path",
 			"interpreter_version", "interpreter_sha256",
 			"measurement_scope", "stage2_status", "scorer_schema", "rows_sha256"}
 		local headers = {}
-		for index = 1, 16 do
+		for index = 1, 17 do
 			local fields = split_tabs(lines[index])
 			if fields[1] ~= expected_headers[index] then
 				fail("candidate shard blob header order changed")
@@ -758,10 +762,10 @@ return function(dependencies)
 		if #headers[1] ~= 2 or #headers[2] ~= 4 then
 			fail("candidate shard blob header width changed")
 		end
-		for index = 3, 16 do if #headers[index] ~= 2 then
+		for index = 3, 17 do if #headers[index] ~= 2 then
 			fail("candidate shard blob header width changed") end end
 		local rows = {}
-		for line_index = 18, #lines do
+		for line_index = 19, #lines do
 			local fields = split_tabs(lines[line_index])
 			if #fields ~= 16 then fail("candidate shard row width changed") end
 			local row = {candidate_index = parsed_integer(fields[1], "candidate index"),
@@ -793,13 +797,14 @@ return function(dependencies)
 			count = parsed_integer(headers[2][4], "candidate shard count"),
 			pins = {source_checksum = headers[3][2],
 				boundary_policy_checksum = headers[4][2],
-				authority_dag_sha256 = headers[5][2], authority_commit = headers[6][2],
-				authority_tree = headers[7][2], interpreter_id = headers[8][2],
-				interpreter_launcher = headers[9][2], interpreter_path = headers[10][2],
-				interpreter_version = headers[11][2], interpreter_sha256 = headers[12][2],
-				measurement_scope = headers[13][2], stage2_status = headers[14][2],
-				scorer_schema = headers[15][2]},
-			rows_sha256 = headers[16][2], rows = rows}
+				partition_sha256 = headers[5][2],
+				authority_dag_sha256 = headers[6][2], authority_commit = headers[7][2],
+				authority_tree = headers[8][2], interpreter_id = headers[9][2],
+				interpreter_launcher = headers[10][2], interpreter_path = headers[11][2],
+				interpreter_version = headers[12][2], interpreter_sha256 = headers[13][2],
+				measurement_scope = headers[14][2], stage2_status = headers[15][2],
+				scorer_schema = headers[16][2]},
+			rows_sha256 = headers[17][2], rows = rows}
 		return validate_candidate_shard(shard)
 	end
 

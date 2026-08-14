@@ -7,13 +7,6 @@ if (( $# != 0 )); then
 fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
-gate_file="$script_dir/fixtures/t2_extreme_e0/full_scan_gate.lua"
-gate_status="$("$repo/tools/bin/lua51" -e \
-	"local value=dofile(\"$gate_file\"); assert(type(value)==\"table\"); print(value.status)")"
-if [[ "$gate_status" != enabled_after_r16_refreeze ]]; then
-	echo "WP40 T2 E0 full corpus is blocked until R16 Source/partition refreeze" >&2
-	exit 1
-fi
 scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme-orchestrator.XXXXXXXX)"
 cleanup() {
 	if [[ "$scratch" == /tmp/grudgelands-wp40-t2-extreme-orchestrator.* ]]; then
@@ -21,9 +14,34 @@ cleanup() {
 	fi
 }
 trap cleanup EXIT
+authority_commit="$(git -C "$repo" rev-parse --verify HEAD)"
+authority_tree="$(git -C "$repo" rev-parse --verify "${authority_commit}^{tree}")"
+launcher_authority=(
+	"tools/wp40/run_t2_extreme_shards.sh"
+	"tools/wp40/run_t2_extreme_shard.sh"
+	"tools/wp40/t2_extreme_authority.lua"
+	"tools/wp40/t2_extreme_gate_check.lua"
+	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua"
+)
+for path in "${launcher_authority[@]}"; do
+	git -C "$repo" ls-files --error-unmatch "$path" >/dev/null 2>&1 || {
+		echo "WP40 T2 extreme launcher authority is untracked: $path" >&2
+		exit 2
+	}
+done
+if ! git -C "$repo" diff --quiet "$authority_commit" -- \
+	"${launcher_authority[@]}"; then
+	echo "WP40 T2 extreme launcher authority differs from commit $authority_commit" >&2
+	exit 2
+fi
+echo "WP40 T2 extreme launcher authority: commit=$authority_commit tree=$authority_tree"
+"$repo/tools/bin/lua51" "$script_dir/t2_extreme_gate_check.lua" "$repo" "$scratch"
 
 "$repo/tools/bin/luac51" -p \
 	"$script_dir/t2_extreme_authority.lua" \
+	"$script_dir/t2_extreme_gate_check.lua" \
+	"$script_dir/fixtures/t2_extreme_e0/full_scan_gate.lua" \
+	"$script_dir/fixtures/t2_extreme_e0/vocabulary.lua" \
 	"$script_dir/t2_extreme_shard_worker.lua" \
 	"$script_dir/t2_extreme_verify_shard.lua"
 bash -n "$script_dir/run_t2_extreme_shard.sh" \
@@ -108,4 +126,4 @@ for shard_index in {0..7}; do
 		"${lasts[$shard_index]}" "${outputs[$shard_index]}"
 	rm -rf -- "$verify_scratch"
 done
-echo "WP40 T2 E0 corpus progress global_completed=4096/4096 shards_done=8 stage2=blocked"
+echo "WP40 T2 E0 corpus progress global_completed=4096/4096 shards_done=8 stage2=pending_selected_four"

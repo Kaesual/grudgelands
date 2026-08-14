@@ -73,6 +73,27 @@ local authority = authority_chunk()({raw_sha256 = raw_sha256})
 local file_snapshot = authority.capture_files(repo,
 	{[authority_path] = authority_bytes})
 local authority_snapshot = authority.bind_expected_vocabulary(file_snapshot)
+local first_shard_path = repo .. "/" .. authority.retained_shard_path(0, 511)
+local first_shard_provenance = authority.preparse_shard_provenance(
+	read_file(first_shard_path))
+local pinned_snapshot = authority.validate_pinned_authority(repo, scratch,
+	first_shard_provenance)
+assert(pinned_snapshot.authority_dag_sha256 ==
+	authority_snapshot.authority_dag_sha256,
+	"current merge Authority-DAG differs from the pinned measurement commit")
+local full_scan_gate = authority.load_module(file_snapshot,
+	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
+local source_validator = authority.load_module(file_snapshot,
+	"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua")
+local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
+local partition_sha256 = (raw_sha256(file_snapshot.files[partition_path]):gsub(".",
+	function(byte) return ("%02x"):format(string.byte(byte)) end))
+assert(authority.validate_full_scan_gate(full_scan_gate, {
+	source_checksum = source_validator.EXPECTED_SOURCE_CHECKSUM,
+	boundary_policy_checksum =
+		source_validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+	partition_sha256 = partition_sha256,
+}))
 
 -- Preload the 4096 candidate-label hashes in one bounded process. Parsing a
 -- retained shard then performs zero per-row hash forks while still deriving
@@ -143,14 +164,17 @@ for index = 1, #measurement_ranges do
 end
 assert(pins)
 assert(pins.source_checksum ==
-	"9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68")
+	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d")
 assert(pins.boundary_policy_checksum ==
-	"3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140")
+	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f")
+assert(pins.partition_sha256 == partition_sha256 and
+	pins.partition_sha256 == full_scan_gate.partition_sha256)
 assert(pins.scorer_schema == "grug_wp40_extreme_selector_e0_v1")
 assert(authority.verify_git_provenance(repo, scratch, pins.authority_commit,
 	pins.authority_tree))
 assert(pins.measurement_scope == "R7_SCALAR_MEASUREMENT_ONLY" and
-	pins.stage2_status == "blocked", "retained measurement scope changed")
+	pins.stage2_status == "pending_selected_four",
+	"retained measurement scope changed")
 assert(pins.interpreter_id == "luajit" and
 	pins.interpreter_launcher == "/usr/bin/luajit" and
 	pins.interpreter_path == "/usr/bin/luajit-2.1.1767980792" and
@@ -165,11 +189,12 @@ local rows = extreme.merge_shards(shards, pins)
 local candidates = extreme.candidate_blob(rows)
 local candidate_sha = canonical.hex(raw_sha256(candidates))
 local artifact = table.concat({
-	"schema\tgrug_wp40_extreme_measurement_artifact_v1",
+	"schema\tgrug_wp40_extreme_measurement_artifact_v2",
 	"measurement_scope\t" .. pins.measurement_scope,
 	"stage2_status\t" .. pins.stage2_status,
 	"source_checksum\t" .. pins.source_checksum,
 	"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
+	"partition_sha256\t" .. pins.partition_sha256,
 	"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 	"authority_commit\t" .. pins.authority_commit,
 	"authority_tree\t" .. pins.authority_tree,
@@ -189,11 +214,12 @@ local artifact_sha = canonical.hex(raw_sha256(artifact))
 local slots = extreme.select_slots(rows)
 local staging = extreme.staging_seed(slots)
 local manifest_lines = {
-	"grug_wp40_extreme_shard_manifest_v1",
+	"grug_wp40_extreme_shard_manifest_v2",
 	"measurement_scope\t" .. pins.measurement_scope,
 	"stage2_status\t" .. pins.stage2_status,
 	"source_checksum\t" .. pins.source_checksum,
 	"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
+	"partition_sha256\t" .. pins.partition_sha256,
 	"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 	"authority_commit\t" .. pins.authority_commit,
 	"authority_tree\t" .. pins.authority_tree,

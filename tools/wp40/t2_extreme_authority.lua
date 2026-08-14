@@ -22,9 +22,11 @@ return function(dependencies)
 		"mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua",
 		"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua",
+		"tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua",
 		"tools/wp40/run_t2_extreme_shard.sh",
 		"tools/wp40/run_t2_extreme_shards.sh",
 		"tools/wp40/t2_extreme_authority.lua",
+		"tools/wp40/t2_extreme_gate_check.lua",
 		"tools/wp40/t2_extreme_merge.lua",
 		"tools/wp40/t2_extreme_shard_worker.lua",
 		"tools/wp40/t2_extreme_verify_shard.lua",
@@ -76,6 +78,33 @@ return function(dependencies)
 			lines[index] = path .. "\t" .. hex(raw_sha256(bytes))
 		end
 		return {files = files, file_manifest = table.concat(lines, "\n") .. "\n"}
+	end
+
+	local function capture_git_files(repo, scratch, commit)
+		safe_root(repo)
+		safe_root(scratch)
+		if type(commit) ~= "string" or #commit ~= 40 or
+				not commit:match("^[0-9a-f]+$") then
+			fail("pinned Authority-DAG commit is invalid")
+		end
+		local type_output = scratch .. "/authority-pinned-type.txt"
+		local status, reason, code = os.execute("git -C " .. repo ..
+			" cat-file -t " .. commit .. " > " .. type_output)
+		if not (status == 0 or status == true and reason == "exit" and code == 0) or
+				read_file(type_output) ~= "commit\n" then
+			fail("pinned Authority-DAG commit is invalid")
+		end
+		local seeded = {}
+		for index = 1, #paths do
+			local output = scratch .. "/authority-pinned-file-" .. index .. ".bin"
+			status, reason, code = os.execute("git -C " .. repo .. " show " ..
+				commit .. ":" .. paths[index] .. " > " .. output)
+			if not (status == 0 or status == true and reason == "exit" and code == 0) then
+				fail("pinned Authority-DAG file is missing")
+			end
+			seeded[paths[index]] = read_file(output)
+		end
+		return capture_files(repo, seeded)
 	end
 
 	local function plain_array(value, context)
@@ -218,8 +247,28 @@ return function(dependencies)
 	end
 
 	local function verify_git_provenance(repo, scratch, commit, tree)
-		local actual = git_provenance(repo, scratch)
-		if commit ~= actual.commit or tree ~= actual.tree then
+		safe_root(repo)
+		safe_root(scratch)
+		if type(commit) ~= "string" or #commit ~= 40 or
+				not commit:match("^[0-9a-f]+$") or type(tree) ~= "string" or
+				#tree ~= 40 or not tree:match("^[0-9a-f]+$") then
+			fail("commit/tree provenance changed")
+		end
+		local type_output = scratch .. "/authority-git-pinned-type.txt"
+		local status, reason, code = os.execute("git -C " .. repo ..
+			" cat-file -t " .. commit .. " > " .. type_output)
+		if not (status == 0 or status == true and reason == "exit" and code == 0) or
+				read_file(type_output) ~= "commit\n" then
+			fail("commit/tree provenance changed")
+		end
+		local output = scratch .. "/authority-git-pinned-tree.txt"
+		status, reason, code = os.execute("git -C " .. repo ..
+			" rev-parse --verify " .. commit .. "^{tree} > " .. output)
+		if not (status == 0 or status == true and reason == "exit" and code == 0) then
+			fail("commit/tree provenance changed")
+		end
+		local actual_tree = read_file(output):match("^([0-9a-f]+)\n$")
+		if actual_tree ~= tree then
 			fail("commit/tree provenance changed")
 		end
 		return true
@@ -283,9 +332,133 @@ return function(dependencies)
 		return true
 	end
 
+	local function validate_full_scan_gate(gate, expected)
+		if type(gate) ~= "table" or getmetatable(gate) ~= nil then
+			fail("full-scan gate is not a plain table")
+		end
+		local fields = {status = true, source_checksum = true,
+			boundary_policy_checksum = true, partition_sha256 = true}
+		local count = 0
+		for key, value in pairs(gate) do
+			if not fields[key] or type(value) ~= "string" then
+				fail("full-scan gate has an unknown field")
+			end
+			count = count + 1
+		end
+		if count ~= 4 or gate.status ~= "enabled_after_r16_r17_refreeze" then
+			fail("full-scan gate is not enabled")
+		end
+		for _, field in ipairs({"source_checksum", "boundary_policy_checksum",
+				"partition_sha256"}) do
+			if #gate[field] ~= 64 or not gate[field]:match("^[0-9a-f]+$") then
+				fail("full-scan gate " .. field .. " is invalid")
+			end
+		end
+		if expected ~= nil then
+			if type(expected) ~= "table" or getmetatable(expected) ~= nil then
+				fail("full-scan expected pins are invalid")
+			end
+			for key, value in pairs(expected) do
+				if not fields[key] or key == "status" or type(value) ~= "string" then
+					fail("full-scan expected pins are invalid")
+				end
+				if gate[key] ~= value then fail("full-scan " .. key .. " differs") end
+			end
+		end
+		return true
+	end
+
+	local function preparse_shard_provenance(blob)
+		if type(blob) ~= "string" or blob == "" or blob:sub(-1) ~= "\n" or
+				blob:find("\r", 1, true) or blob:find(string.char(0), 1, true) then
+			fail("candidate shard provenance framing is invalid")
+		end
+		local lines = {}
+		for line in blob:gmatch("([^\n]*)\n") do
+			lines[#lines + 1] = line
+			if #lines == 18 then break end
+		end
+		local names = {"schema", "range", "source_checksum",
+			"boundary_policy_checksum", "partition_sha256", "authority_dag_sha256",
+			"authority_commit", "authority_tree", "interpreter_id",
+			"interpreter_launcher", "interpreter_path", "interpreter_version",
+			"interpreter_sha256", "measurement_scope", "stage2_status",
+			"scorer_schema", "rows_sha256"}
+		if #lines ~= 18 or lines[18] == "" or
+				lines[18]:sub(1, 16) ~= "candidate_index\t" then
+			fail("candidate shard provenance header changed")
+		end
+		local values = {}
+		for index = 1, 17 do
+			local name, value = lines[index]:match("^([^\t]+)\t([^\t]+)$")
+			if index == 2 then
+				name = lines[index]:match("^([^\t]+)\t")
+				value = "range"
+			end
+			if name ~= names[index] or not value then
+				fail("candidate shard provenance header changed")
+			end
+			values[names[index]] = value
+		end
+		if values.schema ~= "grug_wp40_extreme_candidate_shard_v2" then
+			fail("candidate shard provenance schema changed")
+		end
+		for _, field in ipairs({"authority_dag_sha256", "partition_sha256"}) do
+			if #values[field] ~= 64 or not values[field]:match("^[0-9a-f]+$") then
+				fail("candidate shard provenance digest is invalid")
+			end
+		end
+		for _, field in ipairs({"authority_commit", "authority_tree"}) do
+			if #values[field] ~= 40 or not values[field]:match("^[0-9a-f]+$") then
+				fail("candidate shard provenance commit/tree is invalid")
+			end
+		end
+		return {authority_dag_sha256 = values.authority_dag_sha256,
+			authority_commit = values.authority_commit,
+			authority_tree = values.authority_tree,
+			partition_sha256 = values.partition_sha256}
+	end
+
+	local function validate_pinned_authority(repo, scratch, provenance)
+		if type(provenance) ~= "table" or getmetatable(provenance) ~= nil then
+			fail("pinned shard provenance is invalid")
+		end
+		local allowed = {authority_commit = true, authority_tree = true,
+			authority_dag_sha256 = true, partition_sha256 = true}
+		local count = 0
+		for key, value in pairs(provenance) do
+			if not allowed[key] or type(value) ~= "string" then
+				fail("pinned shard provenance is invalid")
+			end
+			count = count + 1
+		end
+		if count ~= 4 then fail("pinned shard provenance is invalid") end
+		for _, field in ipairs({"authority_dag_sha256", "partition_sha256"}) do
+			local value = provenance[field]
+			if #value ~= 64 or not value:match("^[0-9a-f]+$") then
+				fail("pinned shard provenance is invalid")
+			end
+		end
+		verify_git_provenance(repo, scratch, provenance.authority_commit,
+			provenance.authority_tree)
+		local pinned = bind_expected_vocabulary(capture_git_files(repo, scratch,
+			provenance.authority_commit))
+		if pinned.authority_dag_sha256 ~= provenance.authority_dag_sha256 then
+			fail("pinned commit Authority-DAG differs")
+		end
+		local partition_path =
+			"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
+		if hex(raw_sha256(pinned.files[partition_path])) ~=
+				provenance.partition_sha256 then
+			fail("pinned commit partition bytes differ")
+		end
+		return pinned
+	end
+
 	authority.paths = paths
 	authority.expected_vocabulary_sha256 = expected_vocabulary_sha256
 	authority.capture_files = capture_files
+	authority.capture_git_files = capture_git_files
 	authority.vocabulary_blob = vocabulary_blob
 	authority.bind_vocabulary = bind_vocabulary
 	authority.bind_expected_vocabulary = bind_expected_vocabulary
@@ -297,5 +470,8 @@ return function(dependencies)
 	authority.validate_measurement_ranges = validate_measurement_ranges
 	authority.retained_shard_path = retained_shard_path
 	authority.validate_retained_shard_path = validate_retained_shard_path
+	authority.validate_full_scan_gate = validate_full_scan_gate
+	authority.preparse_shard_provenance = preparse_shard_provenance
+	authority.validate_pinned_authority = validate_pinned_authority
 	return authority
 end

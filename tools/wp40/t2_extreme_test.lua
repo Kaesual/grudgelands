@@ -12,6 +12,30 @@ assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-extreme%.[A-Za-z0-9]+$"),
 safe_absolute_path(scratch)
 assert(not pcall(safe_absolute_path, "/tmp/unsafe;false"))
 
+local range_first_text, range_last_text = os.getenv("WP40_EXTREME_RANGE_FIRST"),
+	os.getenv("WP40_EXTREME_RANGE_LAST")
+assert((range_first_text == nil) == (range_last_text == nil),
+	"both WP40 extreme range endpoints are required")
+local benchmark_first, benchmark_last, benchmark_count
+if range_first_text then
+	benchmark_first, benchmark_last = tonumber(range_first_text), tonumber(range_last_text)
+	assert(benchmark_first and benchmark_last and benchmark_first % 1 == 0 and
+		benchmark_last % 1 == 0 and benchmark_first >= 0 and
+		benchmark_last >= benchmark_first and benchmark_last <= 4095 and
+		tostring(benchmark_first) == range_first_text and
+		tostring(benchmark_last) == range_last_text and
+		benchmark_last - benchmark_first + 1 <= 64,
+		"WP40 extreme sizing range must contain at most 64 candidates")
+	benchmark_count = benchmark_last - benchmark_first + 1
+else
+	local benchmark_text = os.getenv("WP40_EXTREME_BENCHMARK_COUNT") or "0"
+	assert(benchmark_text == "0" or benchmark_text == "16" or
+		benchmark_text == "64",
+		"WP40_EXTREME_BENCHMARK_COUNT must be 0, 16, or 64")
+	benchmark_count = tonumber(benchmark_text)
+	benchmark_first, benchmark_last = 0, benchmark_count - 1
+end
+
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local sha_cache, sha_counter, sha_calls, sha_misses = {}, 0, 0, 0
 local function from_hex(value)
@@ -39,7 +63,7 @@ local function raw_sha256(data)
 end
 
 -- The Foundation runner proves the length-framed Python batch helper against
--- direct sha256sum even while the retained worker is R16-gated. Each eventual
+-- direct sha256sum independently of the retained worker. Each eventual
 -- shard repeats these vectors and additionally compares its first eight real
 -- pending noise inputs before candidate 1.
 local foundation_batch_vectors = {
@@ -151,9 +175,55 @@ local authority_snapshot = authority.bind_vocabulary(authority_files, vocabulary
 assert(authority_snapshot.vocabulary_sha256 ==
 	"6d77298bb1861e91fb306bfe59cc8996bc64d7544034b47ed7465ba9c4aa164f")
 assert(authority.verify(repo, authority_snapshot, vocabulary))
+local full_scan_gate = authority.load_module(authority_files,
+	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
+local frozen_partition_path =
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
+local frozen_partition_sha256 = canonical.hex(raw_sha256(
+	authority_files.files[frozen_partition_path]))
+assert(authority.validate_full_scan_gate(full_scan_gate, {
+	source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
+	boundary_policy_checksum =
+		source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+	partition_sha256 = frozen_partition_sha256,
+}))
+for _, mutate in ipairs({
+	function(gate) gate.status = "blocked" end,
+	function(gate) gate.source_checksum = string.rep("0", 64) end,
+	function(gate) gate.boundary_policy_checksum = string.rep("0", 64) end,
+	function(gate) gate.partition_sha256 = string.rep("0", 64) end,
+	function(gate) gate.extra = "forged" end,
+}) do
+	local corrupt = deep_copy(full_scan_gate)
+	mutate(corrupt)
+	expect_error("full-scan", function()
+		authority.validate_full_scan_gate(corrupt, {
+			source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
+			boundary_policy_checksum =
+				source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+			partition_sha256 = frozen_partition_sha256,
+		})
+	end)
+end
 local git_provenance = authority.git_provenance(repo, scratch)
 assert(authority.verify_git_provenance(repo, scratch, git_provenance.commit,
 	git_provenance.tree))
+local function git_line(argument, label)
+	local output = scratch .. "/git-" .. label .. ".txt"
+	local status, reason, code = os.execute("git -C " .. repo ..
+		" rev-parse --verify " .. argument .. " > " .. output)
+	assert(status == 0 or status == true and reason == "exit" and code == 0)
+	local file = assert(io.open(output, "rb"))
+	local value = assert(assert(file:read("*a")):match("^([0-9a-f]+)\n$"))
+	assert(file:close() and #value == 40)
+	return value
+end
+-- A later artifact-only HEAD must not invalidate a shard pinned to an older
+-- existing commit/tree. HEAD^ is the local executable witness for that shape.
+local prior_commit = git_line("HEAD^", "prior-commit")
+local prior_tree = git_line(prior_commit .. "^{tree}", "prior-tree")
+assert(prior_commit ~= git_provenance.commit and
+	authority.verify_git_provenance(repo, scratch, prior_commit, prior_tree))
 expect_error("commit/tree provenance changed", function()
 	authority.verify_git_provenance(repo, scratch, string.rep("0", 40),
 		git_provenance.tree)
@@ -189,6 +259,88 @@ expect_error("commit/tree provenance changed", function()
 	authority.verify_git_provenance(repo, scratch, git_provenance.commit,
 		string.rep("0", 40))
 end)
+
+-- Retained provenance binds the Authority-DAG bytes from the measurement
+-- commit itself. A later artifact-only commit is allowed, but combining the
+-- old commit/tree with a newer Authority-DAG digest is rejected.
+local function run_pinned_authority_kats()
+	local pinned_repo = scratch .. "/pinned-authority-repo"
+	local function shell_ok(command)
+		local status, reason, code = os.execute(command)
+		return status == 0 or status == true and reason == "exit" and code == 0
+	end
+	assert(shell_ok("mkdir -p " .. pinned_repo))
+	for index = 1, #authority.paths do
+		local path = authority.paths[index]
+		local directory = path:match("^(.*)/[^/]+$")
+		assert(directory and shell_ok("mkdir -p " .. pinned_repo .. "/" .. directory))
+		local file = assert(io.open(pinned_repo .. "/" .. path, "wb"))
+		assert(file:write(authority_files.files[path]))
+		assert(file:close())
+	end
+	assert(shell_ok("git -C " .. pinned_repo .. " init -q"))
+	assert(shell_ok("git -C " .. pinned_repo .. " config user.name wp40-test"))
+	assert(shell_ok("git -C " .. pinned_repo ..
+		" config user.email wp40-test@example.invalid"))
+	assert(shell_ok("git -C " .. pinned_repo .. " config commit.gpgsign false"))
+	assert(shell_ok("git -C " .. pinned_repo .. " add ."))
+	assert(shell_ok("git -C " .. pinned_repo .. " commit -qm authority-a"))
+	local pinned_a_provenance = authority.git_provenance(pinned_repo, scratch)
+	local pinned_a = authority.bind_expected_vocabulary(authority.capture_git_files(
+		pinned_repo, scratch, pinned_a_provenance.commit))
+	local pinned_a_row = {authority_commit = pinned_a_provenance.commit,
+		authority_tree = pinned_a_provenance.tree,
+		authority_dag_sha256 = pinned_a.authority_dag_sha256,
+		partition_sha256 = frozen_partition_sha256}
+	assert(authority.validate_pinned_authority(pinned_repo, scratch, pinned_a_row).
+		authority_dag_sha256 == pinned_a.authority_dag_sha256)
+
+	local artifact_file = assert(io.open(pinned_repo .. "/retained-artifact.txt", "wb"))
+	assert(artifact_file:write("artifact-only\n"))
+	assert(artifact_file:close())
+	assert(shell_ok("git -C " .. pinned_repo .. " add retained-artifact.txt"))
+	assert(shell_ok("git -C " .. pinned_repo .. " commit -qm artifact-b"))
+	local artifact_b_provenance = authority.git_provenance(pinned_repo, scratch)
+	assert(artifact_b_provenance.commit ~= pinned_a_provenance.commit and
+		authority.validate_pinned_authority(pinned_repo, scratch, pinned_a_row).
+			authority_dag_sha256 == pinned_a.authority_dag_sha256,
+		"artifact-only HEAD invalidated the pinned measurement commit")
+
+	local changed_authority_path = authority.paths[1]
+	local changed_file = assert(io.open(pinned_repo .. "/" ..
+		changed_authority_path, "ab"))
+	assert(changed_file:write("\n-- later authority change\n"))
+	assert(changed_file:close())
+	assert(shell_ok("git -C " .. pinned_repo .. " add " .. changed_authority_path))
+	assert(shell_ok("git -C " .. pinned_repo .. " commit -qm authority-c"))
+	local pinned_c_provenance = authority.git_provenance(pinned_repo, scratch)
+	local pinned_c = authority.bind_expected_vocabulary(authority.capture_git_files(
+		pinned_repo, scratch, pinned_c_provenance.commit))
+	local forged_old_commit_new_dag = deep_copy(pinned_a_row)
+	forged_old_commit_new_dag.authority_dag_sha256 = pinned_c.authority_dag_sha256
+	expect_error("pinned commit Authority-DAG differs", function()
+		authority.validate_pinned_authority(pinned_repo, scratch,
+			forged_old_commit_new_dag)
+	end)
+	local malformed_pinned = deep_copy(pinned_a_row)
+	malformed_pinned.extra = "forged"
+	expect_error("pinned shard provenance is invalid", function()
+		authority.validate_pinned_authority(pinned_repo, scratch, malformed_pinned)
+	end)
+	local missing_pinned = deep_copy(pinned_a_row)
+	missing_pinned.partition_sha256 = nil
+	expect_error("pinned shard provenance is invalid", function()
+		authority.validate_pinned_authority(pinned_repo, scratch, missing_pinned)
+	end)
+	local wrong_partition_pinned = deep_copy(pinned_a_row)
+	wrong_partition_pinned.partition_sha256 = string.rep("0", 64)
+	expect_error("pinned commit partition bytes differ", function()
+		authority.validate_pinned_authority(pinned_repo, scratch,
+			wrong_partition_pinned)
+	end)
+end
+run_pinned_authority_kats()
+
 local changed_vocabulary = deep_copy(vocabulary)
 changed_vocabulary.resource_keys[1] = changed_vocabulary.resource_keys[1] .. "_wrong"
 expect_error("vocabulary projection changed", function()
@@ -310,6 +462,18 @@ local function plain_bytes(value, seen)
 	return table.concat(parts)
 end
 
+local seed_zero_scalar_sha256 = canonical.hex(raw_sha256(plain_bytes(
+	seed_zero_records)))
+local high_scalar_sha256 = canonical.hex(raw_sha256(plain_bytes(
+	high_seed_records)))
+assert(seed_zero_scalar_sha256 ==
+	"f3faae90bc897caca481cd774a5c20b00bdc88385d3e12b037f89ebd1e0701c0" and
+	high_scalar_sha256 ==
+	"f29a6231471bc6a712c2aba582fc2e5e5c60ec148acbc095ca29266f9aaff0af",
+	"R7 scalar projection bytes changed across R16/R17")
+print("WP40 T2 E0 scalar projection SHA-256 seed0=" ..
+	seed_zero_scalar_sha256 .. " max_u64=" .. high_scalar_sha256)
+
 -- Session isolation: caller mutation after validation cannot affect the
 -- isolated reader, and each result is a fresh alias-free projection.
 local isolated_again = session("0")
@@ -343,85 +507,241 @@ assert(deep_equal(compiled_scalar_records(compiled_zero), isolated_again),
 	"Seed0 scalar projection differs from the compile consumer")
 local compiled_zero_sha256 = canonical.hex(raw_sha256(plain_bytes(compiled_zero)))
 assert(compiled_zero_sha256 ==
-	"1e1b60dc0b636d718b9b0f3154904fa6ae78733179dc687e41542c878bf20969",
-	"Seed0 compiled family bytes changed from db62f43")
+	"5fb0c7345b05775060bf7f647b2ae19dda65f2403c45c29ed3562a297f866ab8",
+	"Seed0 compiled family bytes changed after the R17 freeze: " ..
+		compiled_zero_sha256)
 print("WP40 T2 E0 Seed0 full partition SHA-256 " .. compiled_zero_sha256)
 local partition_module_file = assert(io.open(wp40 .. "/geometry/partition.lua", "rb"))
 local partition_module_bytes = assert(partition_module_file:read("*a"))
 assert(partition_module_file:close())
 local partition_module_sha256 = canonical.hex(raw_sha256(partition_module_bytes))
-local stage2_fixture = dofile(repo ..
-	"/tools/wp40/fixtures/t2_extreme_e0/stage2_blocked.lua")
-local stage2_fixture_fields = {
-	"status", "scope", "seed", "fixed_slot", "bank_id", "previous", "current",
-	"target", "end_terminal", "authored_index", "authored_away_index", "distance",
-	"candidate",
-	"own_cardinal_water_eswn", "foreign_cardinal_water_eswn", "in_envelope",
-	"dry", "footprint_class", "aperture_member",
+local prerequisite_fixture = dofile(repo ..
+	"/tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua")
+local prerequisite_fixture_fields = {
+	"status", "scope", "stage2_status", "seed", "fixed_slot", "transitions",
+	"stillgrave_bank_id",
+	"stillgrave_first_xz", "mournfen_bank_id", "mournfen_station_count",
+	"mournfen_tail_xz", "notch_fill_policy_id", "notch_fill",
 	"source_checksum", "boundary_policy_checksum", "partition_sha256",
-	"interpreter", "reproduce", "diagnostic",
+	"compiled_sha256", "reproduce",
 }
-local function validate_stage2_fixture(row, actual_diagnostic)
-	assert_data_only(row, nil, "Stage2 blocker fixture")
+local function record_by_id(rows, id)
+	for index = 1, #rows do if rows[index].id == id then return rows[index] end end
+	error("compiled record is missing " .. id)
+end
+local function optional_scalar(record, field, name)
+	for index = 1, #record[field] do
+		if record[field][index].name == name then return record[field][index].value end
+	end
+end
+local function validate_prerequisite_fixture(row, compiled, compiled_sha256)
+	assert_data_only(row, nil, "R16/R17 prerequisite fixture")
 	local expected_fields = {}
-	for index = 1, #stage2_fixture_fields do
-		expected_fields[stage2_fixture_fields[index]] = true
+	for index = 1, #prerequisite_fixture_fields do
+		expected_fields[prerequisite_fixture_fields[index]] = true
 	end
 	local count = 0
 	for key in pairs(row) do
-		assert(expected_fields[key], "Stage2 blocker fixture has unknown field")
+		assert(expected_fields[key], "R16/R17 prerequisite fixture has unknown field")
 		count = count + 1
 	end
-	assert(count == #stage2_fixture_fields,
-		"Stage2 blocker fixture field roster changed")
-	assert(row.status == "STAGE2_BLOCKED" and
-		row.scope == "R7_SCALAR_MEASUREMENT_ONLY" and row.fixed_slot == 19 and
+	assert(count == #prerequisite_fixture_fields,
+		"R16/R17 prerequisite fixture field roster changed")
+	assert(row.status == "R16_R17_PREREQUISITE_PASSED" and
+		row.scope == "R16_R17_FULL_PARTITION_PREREQUISITE_ONLY" and
+		row.stage2_status == "pending_selected_four" and row.fixed_slot == 19 and
 		row.seed == "18446744073709551615")
-	assert(row.bank_id == "bay_bank:kragmar_west:stillgrave" and
-		row.end_terminal == "bay_mouth_aperture:kragmar_west:before" and
-		row.authored_index == 3581 and row.authored_away_index == 3580)
 	local function point(point, x, z)
 		assert(type(point) == "table" and getmetatable(point) == nil and
 			point.x == x and point.z == z)
 	end
-	point(row.previous, -1141, 2241)
-	point(row.current, -1140, 2241)
-	point(row.target, -1406, 2939)
-	assert(row.distance == 1 and row.candidate == false and row.dry == true and
-		row.in_envelope == true and row.footprint_class == 1 and
-		row.aperture_member == false and row.own_cardinal_water_eswn == "0000" and
-		row.foreign_cardinal_water_eswn == "0000")
+	assert(row.stillgrave_bank_id == "bay_bank:kragmar_west:stillgrave" and
+		row.mournfen_bank_id == "bay_bank:kragmar_west:mournfen" and
+		row.mournfen_station_count == 453 and row.notch_fill_policy_id ==
+			"single_pass_same_bay_raw_mask_degree_one_notch_v1")
+	assert(#row.stillgrave_first_xz == 4 and
+		table.concat(row.stillgrave_first_xz, ",") == "-1140,2242,-1141,2242")
+	assert(#row.mournfen_tail_xz == 12 and table.concat(row.mournfen_tail_xz, ",") ==
+		"-1135,2237,-1136,2238,-1137,2239,-1138,2240,-1139,2241,-1140,2242")
+	assert(#row.notch_fill == 3)
+	local expected_notches = {
+		{"bay_elandor_west", -775, -2349}, {"bay_elandor_east", 887, -2036},
+		{"bay_kragmar_west", -1121, 2220},
+	}
+	for index = 1, #expected_notches do
+		local expected, actual = expected_notches[index], row.notch_fill[index]
+		assert(actual.bay_id == expected[1] and actual.x == expected[2] and
+			actual.z == expected[3])
+	end
 	assert(row.source_checksum ==
-		"9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68" and
+		"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d" and
 		row.boundary_policy_checksum ==
-		"3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140" and
+		"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f" and
 		row.partition_sha256 == partition_module_sha256 and
-		(type(actual_diagnostic) ~= "string" or row.diagnostic == actual_diagnostic))
-	return true
+		row.compiled_sha256 == compiled_sha256 and
+		row.reproduce ==
+			"WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh")
+
+	-- These eight E/W facts are the retained output of the independent R16
+	-- Source/R7/Bay oracle. Derive the mode and selected point here from the
+	-- frozen direct-or-two-elbows policy; aggregate counts are never inputs.
+	assert(#row.transitions == 8 and #source.bay_edge_transitions == 8)
+	local expected_by_compiled_id, direct_count, elbow_count = {}, 0, 0
+	for transition_index = 1, #row.transitions do
+		local evidence = row.transitions[transition_index]
+		local source_transition = source.bay_edge_transitions[transition_index]
+		assert(evidence.source_id == source_transition.id and
+			evidence.edge_id == source_transition.edge_id and
+			evidence.endpoint == source_transition.edge_endpoint and
+			evidence.bay_id == source_transition.bay_id)
+		local allowed = {source_id = true, edge_id = true, endpoint = true,
+			bay_id = true, direct_candidate = true, e = true, selected = true}
+		if not evidence.direct_candidate then allowed.w, allowed.elbows = true, true end
+		local field_count = 0
+		for key in pairs(evidence) do assert(allowed[key]); field_count = field_count + 1 end
+		assert(field_count == (evidence.direct_candidate and 7 or 9))
+		local selected, mode
+		if evidence.direct_candidate then
+			assert(evidence.w == nil and evidence.elbows == nil)
+			selected, mode = evidence.e, "direct"
+			direct_count = direct_count + 1
+		else
+			assert(math.abs(evidence.w.x - evidence.e.x) == 1 and
+				math.abs(evidence.w.z - evidence.e.z) == 1 and #evidence.elbows == 2)
+			local elbows = {{x = evidence.e.x, z = evidence.w.z},
+				{x = evidence.w.x, z = evidence.e.z}}
+			table.sort(elbows, function(a, b)
+				return a.x < b.x or a.x == b.x and a.z < b.z
+			end)
+			for index = 1, 2 do
+				point(evidence.elbows[index], elbows[index].x, elbows[index].z)
+			end
+			selected, mode = elbows[1], "diagonal_elbow"
+			elbow_count = elbow_count + 1
+		end
+		point(evidence.selected, selected.x, selected.z)
+		local compiled_id = "land_edge_transition:" .. evidence.edge_id .. ":" ..
+			evidence.endpoint
+		assert(not expected_by_compiled_id[compiled_id])
+		expected_by_compiled_id[compiled_id] = {source = source_transition,
+			e = evidence.e, selected = selected, mode = mode}
+	end
+	assert(direct_count == 7 and elbow_count == 1)
+
+	local transition_total, seen = 0, {}
+	for edge_index = 1, #compiled.families.land_boundaries do
+		local edge = compiled.families.land_boundaries[edge_index]
+		local edge_count = optional_scalar(edge, "unsigned_values",
+			"bank_transition_count")
+		if edge_count then
+			local ids = named_array(edge, "text_arrays", "bank_transition_ids")
+			local bays = named_array(edge, "text_arrays", "bank_transition_bay_ids")
+			local endpoints = named_array(edge, "text_arrays", "bank_transition_endpoints")
+			local positions = named_array(edge, "signed_arrays", "bank_transition_xz")
+			local offsets = named_array(edge, "unsigned_arrays", "bank_transition_offsets")
+			local stations = named_array(edge, "signed_arrays", "stations_xz")
+			assert(#ids == edge_count and #bays == edge_count and
+				#endpoints == edge_count and #positions == edge_count * 2 and
+				#offsets == edge_count)
+			transition_total = transition_total + edge_count
+			for index = 1, edge_count do
+				local expected = assert(expected_by_compiled_id[ids[index]])
+				assert(not seen[ids[index]] and edge.id == expected.source.edge_id and
+					bays[index] == expected.source.bay_id and
+					endpoints[index] == expected.source.edge_endpoint and
+					offsets[index] == 0 and
+					positions[index * 2 - 1] == expected.selected.x and
+					positions[index * 2] == expected.selected.z)
+				local endpoint_offset = endpoints[index] == "from" and 1 or #stations - 1
+				assert(stations[endpoint_offset] == expected.selected.x and
+					stations[endpoint_offset + 1] == expected.selected.z)
+				if expected.mode == "diagonal_elbow" then
+					local away_offset = endpoints[index] == "from" and 3 or #stations - 3
+					assert(stations[away_offset] == expected.e.x and
+						stations[away_offset + 1] == expected.e.z)
+				end
+				seen[ids[index]] = true
+			end
+		end
+	end
+	assert(transition_total == 8)
+	for compiled_id in pairs(expected_by_compiled_id) do assert(seen[compiled_id]) end
+
+	local bay = record_by_id(compiled.families.bays, "bay_kragmar_west")
+	local bank_ids = named_array(bay, "text_arrays", "bank_component_ids")
+	local bank_offsets = named_array(bay, "unsigned_arrays", "bank_station_offsets")
+	local bank_counts = named_array(bay, "unsigned_arrays", "bank_station_counts")
+	local bank_xz = named_array(bay, "signed_arrays", "bank_stations_xz")
+	local function bank_values(id)
+		for index = 1, #bank_ids do
+			if bank_ids[index] == id then
+				local values, first = {}, bank_offsets[index] * 2 + 1
+				for value_index = first, first + bank_counts[index] * 2 - 1 do
+					values[#values + 1] = bank_xz[value_index]
+				end
+				return values, bank_counts[index]
+			end
+		end
+		error("compiled Bay is missing " .. id)
+	end
+	local stillgrave = bank_values(row.stillgrave_bank_id)
+	for index = 1, #row.stillgrave_first_xz do
+		assert(stillgrave[index] == row.stillgrave_first_xz[index])
+	end
+	local mournfen, mournfen_count = bank_values(row.mournfen_bank_id)
+	assert(mournfen_count == row.mournfen_station_count)
+	for index = 1, #row.mournfen_tail_xz do
+		assert(mournfen[#mournfen - #row.mournfen_tail_xz + index] ==
+			row.mournfen_tail_xz[index])
+	end
+
+	local notch_by_bay = {}
+	for index = 1, #row.notch_fill do notch_by_bay[row.notch_fill[index].bay_id] =
+		{row.notch_fill[index].x, row.notch_fill[index].z} end
+	local notch_total = 0
+	for index = 1, #compiled.families.bays do
+		local compiled_bay = compiled.families.bays[index]
+		assert(named_scalar(compiled_bay, "text_values", "notch_fill_policy_id") ==
+			row.notch_fill_policy_id)
+		local notch_count = named_scalar(compiled_bay, "unsigned_values",
+			"notch_fill_count")
+		local notch_xz = named_array(compiled_bay, "signed_arrays", "notch_fill_xz")
+		local expected = notch_by_bay[compiled_bay.id]
+		assert(notch_count == (expected and 1 or 0) and #notch_xz == notch_count * 2)
+		if expected then assert(notch_xz[1] == expected[1] and notch_xz[2] == expected[2]) end
+		notch_total = notch_total + notch_count
+	end
+	assert(notch_total == 3)
+	return true, direct_count, elbow_count
 end
-local high_compile_ok, high_compile_error = pcall(partition.compile,
-	"18446744073709551615")
-assert(not high_compile_ok and tostring(high_compile_error):find(
-	"bay_bank:kragmar_west:stillgrave has an invalid start half-edge", 1, true),
-	tostring(high_compile_error))
-assert(validate_stage2_fixture(stage2_fixture, tostring(high_compile_error)))
+local high_compile_ok, compiled_high = pcall(partition.compile,
+	prerequisite_fixture.seed)
+assert(high_compile_ok, tostring(compiled_high))
+local compiled_high_sha256 = canonical.hex(raw_sha256(plain_bytes(compiled_high)))
+print("WP40 T2 E0 max-u64 full partition SHA-256 " .. compiled_high_sha256)
+local fixture_ok, fixture_direct, fixture_elbows = validate_prerequisite_fixture(
+	prerequisite_fixture, compiled_high, compiled_high_sha256)
+assert(fixture_ok and fixture_direct == 7 and fixture_elbows == 1)
 for _, mutate in ipairs({
-	function(row) row.current.x = row.current.x + 1 end,
-	function(row) row.candidate = true end,
-	function(row) row.distance = 2 end,
-	function(row) row.diagnostic = row.diagnostic .. " changed" end,
+	function(row) row.transitions[1].e.x = row.transitions[1].e.x + 1 end,
+	function(row) row.transitions[1].direct_candidate = false end,
+	function(row) row.transitions[5].w.z = row.transitions[5].w.z + 1 end,
+	function(row) row.transitions[5].elbows[1].x = row.transitions[5].elbows[1].x + 1 end,
+	function(row) row.transitions[5].selected.x = row.transitions[5].selected.x + 1 end,
+	function(row) row.mournfen_tail_xz[1] = row.mournfen_tail_xz[1] + 1 end,
+	function(row) row.notch_fill[1].x = row.notch_fill[1].x + 1 end,
+	function(row) row.compiled_sha256 = string.rep("0", 64) end,
 	function(row) row.source_checksum = string.rep("0", 64) end,
 }) do
-	local corrupt = deep_copy(stage2_fixture)
+	local corrupt = deep_copy(prerequisite_fixture)
 	mutate(corrupt)
-	assert(not pcall(validate_stage2_fixture, corrupt, tostring(high_compile_error)),
-		"Stage2 blocker fixture corruption was accepted")
+	assert(not pcall(validate_prerequisite_fixture, corrupt, compiled_high,
+		compiled_high_sha256), "R16/R17 prerequisite fixture corruption was accepted")
 end
-print("WP40 T2 E0 STAGE2_BLOCKED seed=18446744073709551615 " ..
-	"source=9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68 " ..
-	"boundary=3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140 " ..
-	"partition=" .. partition_module_sha256 .. " diagnostic=" ..
-	tostring(high_compile_error))
+print("WP40 T2 E0 R16/R17 prerequisite seed=" .. prerequisite_fixture.seed ..
+	" transition=7/1 notch_fill=3 partition=" .. partition_module_sha256 ..
+	" compiled_sha256=" .. compiled_high_sha256 ..
+	" stage2=pending_selected_four")
 
 local invalid_source = deep_copy(source)
 invalid_source.perimeters[1].polygon[1].x =
@@ -857,41 +1177,46 @@ end
 local synthetic_rows = {}
 for index = 0, 4095 do synthetic_rows[index + 1] = synthetic_candidate(index) end
 local shard_pins = {source_checksum =
-	"9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68",
+	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d",
 	boundary_policy_checksum =
-	"3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140",
+	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f",
+	partition_sha256 =
+	"de53e1b5cc0cc3fcaee2d58ce3cc391c637b123d430f234c74e4960ad4bee967",
 	authority_dag_sha256 = string.rep("3", 64), interpreter_id = "test_only",
 	authority_commit = string.rep("a", 40), authority_tree = string.rep("b", 40),
 	interpreter_launcher = "test_only", interpreter_path = "test_only",
 	interpreter_version = "test_only",
 	interpreter_sha256 = string.rep("4", 64),
-	measurement_scope = "R7_SCALAR_MEASUREMENT_ONLY", stage2_status = "blocked",
+	measurement_scope = "R7_SCALAR_MEASUREMENT_ONLY",
+	stage2_status = "pending_selected_four",
 	scorer_schema = "grug_wp40_extreme_selector_e0_v1"}
 local shards = {}
-for shard_index = 0, 3 do
-	local first, last = shard_index * 1024, shard_index * 1024 + 1023
+for shard_index = 0, 7 do
+	local first, last = shard_index * 512, shard_index * 512 + 511
 	local rows = {}
 	for index = first, last do rows[#rows + 1] = synthetic_rows[index + 1] end
 	shards[#shards + 1] = shard_extreme.candidate_shard(rows, first, last, shard_pins)
 	shard_extreme.validate_candidate_shard(shards[#shards])
 	local shard_bytes = shard_extreme.shard_blob(shards[#shards])
 	assert(shard_bytes:match(
-		"^schema\tgrug_wp40_extreme_candidate_shard_v1\n"))
+		"^schema\tgrug_wp40_extreme_candidate_shard_v2\n"))
 	assert(shard_extreme.shard_blob(shard_extreme.parse_shard_blob(shard_bytes)) ==
 		shard_bytes, "candidate shard parser changed canonical bytes")
 end
 local merged_forward = shard_extreme.merge_shards(shards, shard_pins)
 local merged_reverse = shard_extreme.merge_shards(
-	{shards[4], shards[3], shards[2], shards[1]}, shard_pins)
+	{shards[8], shards[7], shards[6], shards[5], shards[4], shards[3],
+		shards[2], shards[1]}, shard_pins)
 assert(shard_extreme.candidate_blob(merged_forward) ==
 	shard_extreme.candidate_blob(merged_reverse),
 	"candidate shard merge depends on shard order")
 expect_error("do not cover", function()
-	shard_extreme.merge_shards({shards[1], shards[2], shards[3]}, shard_pins)
+	shard_extreme.merge_shards({shards[1], shards[2], shards[3], shards[4],
+		shards[5], shards[6], shards[7]}, shard_pins)
 end)
 expect_error("overlap", function()
 	shard_extreme.merge_shards({shards[1], shards[1], shards[2], shards[3],
-		shards[4]}, shard_pins)
+		shards[4], shards[5], shards[6], shards[7], shards[8]}, shard_pins)
 end)
 local corrupt_shard = deep_copy(shards[1])
 corrupt_shard.rows[1].coast_n = corrupt_shard.rows[1].coast_n + 1
@@ -901,8 +1226,8 @@ end)
 local corrupt_pin = deep_copy(shards[1])
 corrupt_pin.pins.authority_dag_sha256 = string.rep("4", 64)
 expect_error("pins differ", function()
-	shard_extreme.merge_shards({corrupt_pin, shards[2], shards[3], shards[4]},
-		shard_pins)
+	shard_extreme.merge_shards({corrupt_pin, shards[2], shards[3], shards[4],
+		shards[5], shards[6], shards[7], shards[8]}, shard_pins)
 end)
 local corrupt_range = deep_copy(shards[1])
 corrupt_range.last_index = corrupt_range.last_index - 1
@@ -939,28 +1264,6 @@ print(("WP40 T2 E0 candidate0 decimal=%s coast=%d/%d noncoast=%d/%d " ..
 	score_zero.coast_identity_sha256, score_zero.noncoast_identity_sha256,
 	score_seconds, sha_calls, sha_misses))
 
-local range_first_text, range_last_text = os.getenv("WP40_EXTREME_RANGE_FIRST"),
-	os.getenv("WP40_EXTREME_RANGE_LAST")
-assert((range_first_text == nil) == (range_last_text == nil),
-	"both WP40 extreme range endpoints are required")
-local benchmark_first, benchmark_last, benchmark_count
-if range_first_text then
-	benchmark_first, benchmark_last = tonumber(range_first_text), tonumber(range_last_text)
-	assert(benchmark_first and benchmark_last and benchmark_first % 1 == 0 and
-		benchmark_last % 1 == 0 and benchmark_first >= 0 and
-		benchmark_last >= benchmark_first and benchmark_last <= 4095 and
-		tostring(benchmark_first) == range_first_text and
-		tostring(benchmark_last) == range_last_text,
-		"WP40 extreme range is not canonical 0..4095")
-	benchmark_count = benchmark_last - benchmark_first + 1
-else
-	local benchmark_text = os.getenv("WP40_EXTREME_BENCHMARK_COUNT") or "0"
-	assert(benchmark_text == "0" or benchmark_text == "16" or
-		benchmark_text == "64" or benchmark_text == "4096",
-		"WP40_EXTREME_BENCHMARK_COUNT must be 0, 16, 64, or 4096")
-	benchmark_count = tonumber(benchmark_text)
-	benchmark_first, benchmark_last = 0, benchmark_count - 1
-end
 if benchmark_count > 0 then
 	local rows = {}
 	local start_cpu = os.clock()
@@ -1027,20 +1330,6 @@ if benchmark_count > 0 then
 		batch_calls - calls_before,
 		batch_cache_misses - misses_before, batch_processes - processes_before,
 		#noise_lattices, summary_sha))
-	if benchmark_first == 0 and benchmark_last == 4095 then
-		local slots = batch_extreme.select_slots(rows)
-		local artifact = batch_extreme.candidate_blob(rows)
-		local staging = batch_extreme.staging_seed(slots)
-		print("WP40 T2 E0 candidate artifact SHA-256 " ..
-			canonical.hex(batch_raw_sha256(artifact)))
-		for index = 1, #slots do
-			local slot = slots[index]
-			print(("WP40 T2 E0 measured slot=%d id=%s candidate=%04d decimal=%s " ..
-				"score=%d/%d"):format(slot.slot, slot.id, slot.candidate_index,
-				slot.decimal, slot.score_n, slot.score_d))
-		end
-		print("WP40 T2 E0 staging " .. staging.label .. " " .. staging.decimal)
-	end
 end
 
 print("WP40 T2 extreme selector foundation tests passed")

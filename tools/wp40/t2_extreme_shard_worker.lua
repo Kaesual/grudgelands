@@ -94,29 +94,14 @@ local file_snapshot = authority.capture_files(repo,
 	{[authority_path] = authority_bytes})
 local full_scan_gate = authority.load_module(file_snapshot,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
-local gate_fields = {status = true, source_checksum = true,
-	boundary_policy_checksum = true, partition_sha256 = true}
-local gate_count = 0
-assert(type(full_scan_gate) == "table" and getmetatable(full_scan_gate) == nil)
-for key, value in pairs(full_scan_gate) do
-	assert(gate_fields[key] and type(value) == "string")
-	gate_count = gate_count + 1
-end
-assert(gate_count == 4, "full-scan gate schema changed")
-assert(full_scan_gate.status == "enabled_after_r16_refreeze",
-	"full corpus is blocked until R16 Source/partition refreeze")
-assert(#full_scan_gate.source_checksum == 64 and
-	#full_scan_gate.boundary_policy_checksum == 64 and
-	#full_scan_gate.partition_sha256 == 64 and
-	full_scan_gate.source_checksum:match("^[0-9a-f]+$") and
-	full_scan_gate.boundary_policy_checksum:match("^[0-9a-f]+$") and
-	full_scan_gate.partition_sha256:match("^[0-9a-f]+$"),
-	"full-scan R16 pins are invalid")
+assert(authority.validate_full_scan_gate(full_scan_gate))
 local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 local partition_sha256 = (direct_raw_sha256(file_snapshot.files[partition_path]):gsub(
 	".", function(byte) return ("%02x"):format(string.byte(byte)) end))
 assert(partition_sha256 == full_scan_gate.partition_sha256,
 	"full-scan partition pin differs")
+assert(authority.validate_full_scan_gate(full_scan_gate,
+	{partition_sha256 = partition_sha256}))
 local interpreter_bytes = read_file(interpreter_path)
 local interpreter_sha256 = (direct_raw_sha256(interpreter_bytes):gsub(".",
 	function(byte) return ("%02x"):format(string.byte(byte)) end))
@@ -141,22 +126,15 @@ assert(full_scan_gate.source_checksum ==
 assert(full_scan_gate.boundary_policy_checksum ==
 	source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
 	"full-scan boundary-policy pin differs from the accepted Stage-1 checksum")
+assert(authority.validate_full_scan_gate(full_scan_gate, {
+	source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
+	boundary_policy_checksum =
+		source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+	partition_sha256 = partition_sha256,
+}))
 
-local old_arg = arg
-arg = {repo}
-dofile(repo .. "/tools/wp43/materials_test.lua")
-arg = old_arg
-local handoff = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp43_handoff.lua")
-local projection = handoff.project(grug_materials)
-local function projection_keys(rows)
-	local result = {}
-	for index = 1, #rows do result[index] = rows[index].key or rows[index]._projection_key end
-	return result
-end
-local vocabulary = {resource_keys = projection_keys(projection.resources),
-	resource_rows = projection.resources,
-	cultural_keys = projection_keys(projection.cultural_materials),
-	wood_keys = projection_keys(projection.signature_woods)}
+local vocabulary = authority.load_module(file_snapshot,
+	"tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua")
 local authority_snapshot = authority.bind_vocabulary(file_snapshot, vocabulary)
 
 local batch_cache, permanent_cache, pending, pending_seen = {}, {}, {}, {}
@@ -392,13 +370,15 @@ assert(read_file(interpreter_path) == interpreter_bytes,
 	"interpreter binary changed during shard measurement")
 local pins = {source_checksum = full_scan_gate.source_checksum,
 	boundary_policy_checksum = full_scan_gate.boundary_policy_checksum,
+	partition_sha256 = partition_sha256,
 	authority_dag_sha256 = authority_snapshot.authority_dag_sha256,
 	authority_commit = authority_commit, authority_tree = authority_tree,
 	interpreter_id = interpreter_id,
 	interpreter_launcher = interpreter_launcher, interpreter_path = interpreter_path,
 	interpreter_version = interpreter_version,
 	interpreter_sha256 = interpreter_sha256,
-	measurement_scope = "R7_SCALAR_MEASUREMENT_ONLY", stage2_status = "blocked",
+	measurement_scope = "R7_SCALAR_MEASUREMENT_ONLY",
+	stage2_status = "pending_selected_four",
 	scorer_schema = "grug_wp40_extreme_selector_e0_v1"}
 local shard = extreme.candidate_shard(rows, first, last, pins)
 local shard_bytes = extreme.shard_blob(shard)
