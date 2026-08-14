@@ -97,7 +97,7 @@ canonicalizer. The later geometry compiler is intentionally absent at this
 checkpoint, so no path publishes data, registers a callback or makes a T2-
 readiness claim.
 
-For non-authoritative local iteration on the expensive T2 source oracle, use:
+For exhaustive development iteration on the expensive T2 source oracle, use:
 
 ```sh
 tools/wp40/run_t2_source_fast.sh
@@ -106,22 +106,27 @@ tools/wp40/run_t2_source_fast.sh
 This runs the exact `t2_source_test.lua` harness under LuaJIT and normalizes
 only LuaJIT's successful `os.execute` return tuple to the numeric Lua 5.1
 result expected by that shared harness. On the review host it measured 30.05 s
-versus 195.56 s under PUC Lua 5.1 (about 6.5x faster). It never replaces the
-plain-5.1 `luac51` syntax gate, the full PUC-5.1 freeze/review runners, or a
-Flatpak Luanti runtime test.
+versus 195.56 s under PUC Lua 5.1 (about 6.5x faster). Every change still gets
+the plain-5.1 `luac51`/`SETGLOBAL`/five-sweep gates. Intermediate milestones
+use targeted representative PUC KATs with byte-identical canonical evidence;
+comprehensive parallelized WP40 PUC rounds are reserved for T2-final and
+T9-final. A real fallback-engine runtime test remains a separate gate.
 
 ## T2 exact/raster/partition slice
 
-Run the engine-free analytic slice with plain Lua 5.1:
+The engine-free analytic-slice runner defaults to plain Lua 5.1:
 
 ```sh
 tools/wp40/run_t2_partition.sh
 ```
 
-For quick local iteration only, set `WP40_LUA_BIN=/usr/bin/luajit`. The runner
-accepts no positional arguments and prints the resolved interpreter path used
-for the test. Its default remains the project PUC Lua 5.1 binary; LuaJIT never
-replaces the plain-5.1 freeze/review run. This focused runner owns
+For exhaustive development iteration, set `WP40_LUA_BIN=/usr/bin/luajit`.
+The runner accepts no positional arguments and prints the resolved interpreter
+path used for the test. Its default remains the project PUC Lua 5.1 binary for
+focused compatibility gates. Do not automatically duplicate the complete
+expensive run under PUC at each milestone: retain immutable LuaJIT
+artifacts/logs/hashes, compare targeted representative PUC KATs byte-for-byte,
+and reserve the parallelized comprehensive PUC round for T2-final. This focused runner owns
 exact/rational and raster regression fixtures plus the private partition-family
 construction exercised by this slice. It fails closed on any incomplete or
 invalid seeded geometry and makes no full-T2 claim. The measured extreme seeds,
@@ -132,18 +137,18 @@ intentionally continues to fail closed with `compiled_geometry_unavailable`.
 
 ## T2 extreme-selector measurement slice
 
-Run the private E0 selector foundation with plain Lua 5.1:
+The private E0 selector-foundation runner defaults to plain Lua 5.1:
 
 ```sh
 tools/wp40/run_t2_extreme.sh
 ```
 
 The runner accepts no positional arguments, prints its resolved interpreter,
-and keeps the same PUC-default/LuaJIT-iteration rule as the partition runner.
-It checks the single shared R7 boundary materializer, fresh scalar-only
-projections, exact normalized rational scores, frozen candidate identities,
-and canonical pinned range-shard parsing and merging. A measurement worker sets
-no environment range. After R16 is refrozen and its checked-in gate is enabled,
+and keeps the same LuaJIT-exhaustive/targeted-PUC conformance layers as the
+partition runner. It checks the single shared R7 boundary materializer, fresh
+scalar-only projections, exact normalized rational scores, frozen candidate
+identities, and canonical pinned range-shard parsing and merging. A measurement
+worker sets no environment range. After R16 is refrozen and its checked-in gate is enabled,
 the internal `run_t2_extreme_shard.sh START END OUTPUT` interface accepts
 exactly the eight 512-candidate ranges `0..511` through `3584..4095`. Before
 that refreeze both the single-shard worker and the orchestrator fail closed.

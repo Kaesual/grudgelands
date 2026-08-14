@@ -316,12 +316,44 @@ Sweeps 1 and 4 also match prose in comments (`|` in a design-doc table row,
 C++ `Class::method` references) — read each hit, do not just count them.
 Zero hits outside comments is the passing state.
 
-### Does LuaJIT still have a use?
+### Interpreter and test strategy
 
-Only where LuaJIT-specific output is wanted (`luajit -bl … | grep GSET`) or
-as a second opinion. Everything the project needs — the syntax gate, the
-global-leak check, running `tools/biomecheck/dump_biomes.lua` (byte-identical
-CSV under both) — works on `tools/bin/lua51`, and only that one answers the
-question we actually care about. **Neither replaces a runtime test in the
-real engine**: these binaries have no `builtin/`, no sandbox and no `core.*`,
-so they parse and stub, never run a mod.
+LuaJIT is the preferred interpreter for as much development and exhaustive
+iteration as a harness supports. It is substantially faster on the large
+deterministic WP40 oracles, which makes complete search-space checks practical
+while code and fixtures are still changing. That speed does **not** make
+LuaJIT a compatibility gate: it remains a superset of the language accepted by
+the fallback build.
+
+Use these layers together, in this order:
+
+1. **Every Lua change:** run `tools/bin/luac51 -p`, inspect `SETGLOBAL` for
+   changed mod files, and run all five grep sweeps above. These checks are
+   mandatory even when every executable test uses LuaJIT.
+2. **Development and exhaustive checks:** run the complete applicable search,
+   seed corpus, geometry scan or other expensive suite under LuaJIT whenever
+   the harness supports selecting it.
+3. **Intermediate milestones:** run targeted representative KATs under the
+   vendored PUC Lua 5.1 and compare their canonical artifacts or digests
+   byte-for-byte with the LuaJIT results. Choose cases that exercise the
+   changed arithmetic, control flow and boundary conditions; do not replace
+   this with a second exhaustive serial run.
+4. **Comprehensive WP40 PUC rounds:** reserve the full, expensive PUC suites
+   for T2-final and T9-final. Split independent seed ranges or test groups into
+   parallel processes, then verify exact coverage and canonical merged
+   evidence fail-closed.
+5. **Review:** a reviewer does not automatically duplicate an identical long
+   PUC run. The reviewer checks the immutable input/output artifacts, logs,
+   interpreter evidence and hashes, and runs focused independent PUC KATs.
+   For WP40 outside T2-final and T9-final, missing evidence or a finding blocks
+   the milestone and must be closed with targeted PUC KATs and newly bound
+   immutable evidence; it never authorizes another comprehensive PUC round.
+6. **Engine fallback:** a real fallback-engine runtime test remains a separate
+   release/runtime gate. Neither standalone interpreter has Luanti's
+   `builtin/`, sandbox or `core.*`, so offline equality cannot replace it.
+
+The vendored `tools/bin/lua51` and `tools/bin/luac51` therefore remain the
+plain-5.1 authority, but they are used deliberately: the parser and static
+checks on every change, representative executable conformance at milestones,
+and comprehensive executable rounds at the defined final gates. LuaJIT owns
+the high-volume feedback loop, not the language contract.

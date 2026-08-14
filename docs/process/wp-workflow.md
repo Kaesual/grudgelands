@@ -37,14 +37,21 @@ contested findings) — the role is the same either way; pick per WP.
    syntax check per changed file with **`tools/bin/luac51 -p`** (the
    engine's own bundled 5.1.5 — build once via `tools/build_lua51.sh`;
    `luajit` is a superset and green-lights `goto`, see "Verifying a
-   change" in `docs/research/luanti-lua.md`) — commits in coherent
-   steps. Do NOT run `tools/sync_to_luanti.sh` from a branch unless the
+   change" in `docs/research/luanti-lua.md`). Use LuaJIT for exhaustive
+   development loops where the harness supports it; this changes test cost,
+   never the accepted language. Commit in coherent steps. Do NOT run
+   `tools/sync_to_luanti.sh` from a branch unless the
    user asked to runtime-test that branch — the sync overwrites the
    shared Luanti install.
 4. **Self-check** before review: run the five grep sweeps from
    "Verifying a change" in `docs/research/luanti-lua.md` (they cover the
    do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
-   AGENTS performance rules
+   inspect `SETGLOBAL` for every changed mod file, and run representative
+   PUC-5.1 KATs with byte-identical canonical digest/artifact comparison at
+   intermediate milestones. For WP40, reserve comprehensive PUC rounds for
+   T2-final and T9-final and parallelize independent seed ranges or test
+   groups with exact-cover evidence. Exhaustive iteration before those final
+   gates belongs under LuaJIT. Also check the AGENTS performance rules
    (globalstep throttling, inventory churn, 100-player target).
 5. **Mandatory code review**: at least **one full Opus code review of
    the WP diff** using the checklist below. **Run review/research
@@ -54,7 +61,13 @@ contested findings) — the role is the same either way; pick per WP.
    a notification that never arrives. Larger WPs: split lenses
    across 2–3 Opus agents (correctness / Lua+perf / design-adherence)
    and adversarially verify High findings. Findings are fixed on the
-   branch; High/Critical fixes get a focused re-review.
+   branch; High/Critical fixes get a focused re-review. A reviewer does not
+   automatically duplicate an identical long PUC suite: inspect immutable
+   artifacts, logs, interpreter evidence and hashes, then run targeted
+   independent PUC KATs. For WP40 outside T2-final and T9-final, missing
+   evidence or a finding blocks the milestone and must be closed with targeted
+   PUC KATs and newly bound immutable evidence; it never authorizes another
+   comprehensive PUC round.
 6. **Docs**: BACKLOG row → ✅ with summary; ROADMAP checkboxes; new
    insights → AGENTS.md or docs/; design-doc deltas folded in.
 7. **Merge to main** after the review is clean (merge commit, no
@@ -63,6 +76,8 @@ contested findings) — the role is the same either way; pick per WP.
    plan**: the 5-minute checklist of what to click/verify in-game
    (agents cannot run the Flatpak GUI — the user is the runtime
    tester). Regressions found there become fix commits on main.
+   A real fallback-engine run is a separate runtime gate and is never inferred
+   from standalone LuaJIT/PUC equality.
 
 ## Code review checklist (for the Opus reviewers)
 

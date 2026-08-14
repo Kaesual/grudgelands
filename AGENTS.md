@@ -125,6 +125,16 @@ current state). It is **derived, never authoritative**:
     compare positions with `vector.equals`, never `==`.
   - Backported from 5.4 (engine-injected, both builds):
     `string.pack`/`unpack`/`packsize`.
+- **Interpreter/test layers are binding:** on every Lua change run
+  `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
+  `docs/research/luanti-lua.md`. Use LuaJIT for exhaustive development runs
+  where supported. At intermediate milestones, run representative PUC-5.1
+  KATs and require byte-identical canonical artifacts/digests. For WP40, full
+  expensive PUC rounds happen only at T2-final and T9-final and independent
+  seed/test groups are parallelized. Reviewers verify immutable artifacts,
+  logs and hashes plus targeted independent PUC KATs instead of automatically
+  duplicating a long identical suite. The real fallback-engine runtime test is
+  still a separate user-run gate.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
   checkout after 5.16). That pin is the *engine* version of a read-only
   source reference — **the language version is decoupled and stays Lua
