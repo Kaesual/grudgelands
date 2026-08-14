@@ -47,6 +47,13 @@ local function new_partition(dependencies)
 		return count
 	end
 
+	local function checked_coordinate(value, delta, label)
+		exact.integer(value, -2147483648, 2147483647, label .. " coordinate")
+		exact.integer(delta, -2147483648, 2147483647, label .. " delta")
+		return exact.integer(exact.safe_sum(value, delta, label),
+			-2147483648, 2147483647, label .. " result")
+	end
+
 	local function copy_points(points)
 		local result = {}
 		for index = 1, dense(points, "points") do
@@ -227,6 +234,140 @@ local function new_partition(dependencies)
 		end
 		if not best or best_distance > 1 then fail("Attachment E/A distance exceeds one") end
 		return {x = best.x, z = best.z}, best_distance, best_index
+	end
+
+	local function transition_water_owned(final_water_value, same_bay_final_value)
+		if type(final_water_value) ~= "boolean" or
+				type(same_bay_final_value) ~= "boolean" then
+			fail("Bay edge transition water evidence is not boolean")
+		end
+		return final_water_value and same_bay_final_value
+	end
+
+	-- Production-consumed closed decision seam for one declared Bay edge
+	-- transition. Geometry classifiers are evaluated by compile_impl; this seam
+	-- owns the exact direct/fallback decision, elbow derivation, and lex tie.
+	local function select_edge_transition(evidence)
+		if type(evidence) ~= "table" or getmetatable(evidence) ~= nil or
+				type(evidence.id) ~= "string" or
+				type(evidence.direct_candidate) ~= "boolean" then
+			fail("Bay edge transition evidence is malformed")
+		end
+		exact.point(evidence.e, evidence.id .. " E")
+		if evidence.direct_candidate then
+			local allowed = {id = true, e = true, direct_candidate = true}
+			for field in pairs(evidence) do
+				if not allowed[field] then
+					fail(evidence.id .. " direct evidence has an unknown field")
+				end
+			end
+			return {point = {x = evidence.e.x, z = evidence.e.z}, mode = "direct"}
+		end
+		local allowed = {id = true, e = true, direct_candidate = true, w = true,
+			e_strict_dry = true, e_cardinal_water = true, w_owned_by_bay = true,
+			w_foreign_water = true, elbow_valid = true}
+		for field in pairs(evidence) do
+			if not allowed[field] then
+				fail(evidence.id .. " fallback evidence has an unknown field")
+			end
+		end
+		if type(evidence.e_strict_dry) ~= "boolean" or
+				type(evidence.e_cardinal_water) ~= "boolean" or
+				type(evidence.w_owned_by_bay) ~= "boolean" or
+				type(evidence.w_foreign_water) ~= "boolean" or
+				type(evidence.elbow_valid) ~= "table" or
+				getmetatable(evidence.elbow_valid) ~= nil or
+				dense(evidence.elbow_valid, evidence.id .. " elbow validity") ~= 2 or
+				type(evidence.elbow_valid[1]) ~= "boolean" or
+				type(evidence.elbow_valid[2]) ~= "boolean" then
+			fail(evidence.id .. " fallback evidence is malformed")
+		end
+		exact.point(evidence.w, evidence.id .. " W")
+		local dx = exact.safe_difference(evidence.w.x, evidence.e.x,
+			evidence.id .. " E/W dx")
+		local dz = exact.safe_difference(evidence.w.z, evidence.e.z,
+			evidence.id .. " E/W dz")
+		if not evidence.e_strict_dry then fail(evidence.id .. " has a nondry E") end
+		if evidence.e_cardinal_water then
+			fail(evidence.id .. " noncandidate E has cardinal water")
+		end
+		if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 then
+			fail(evidence.id .. " E/W is not exactly diagonal")
+		end
+		if not evidence.w_owned_by_bay then
+			fail(evidence.id .. " W is not referenced-Bay water")
+		end
+		if evidence.w_foreign_water then fail(evidence.id .. " W is foreign-Bay water") end
+		local elbows = {{x = evidence.w.x, z = evidence.e.z},
+			{x = evidence.e.x, z = evidence.w.z}}
+		if key(elbows[1]) == key(elbows[2]) then
+			fail(evidence.id .. " has duplicate orthogonal elbows")
+		end
+		if not evidence.elbow_valid[1] or not evidence.elbow_valid[2] then
+			fail(evidence.id .. " has an invalid orthogonal elbow")
+		end
+		if elbows[2].x < elbows[1].x or
+				elbows[2].x == elbows[1].x and elbows[2].z < elbows[1].z then
+			elbows[1], elbows[2] = elbows[2], elbows[1]
+		end
+		return {point = {x = elbows[1].x, z = elbows[1].z}, mode = "diagonal_elbow",
+			w = {x = evidence.w.x, z = evidence.w.z}, elbows = copy_points(elbows)}
+	end
+
+	local function add_edge_transition_control(controls, transition, endpoint, e)
+		dense(controls, "Bay edge transition controls")
+		local result = copy_points(controls)
+		if not transition then return result end
+		if endpoint ~= "from" and endpoint ~= "to" then
+			fail("Bay edge transition endpoint is invalid")
+		end
+		exact.point(e, "Bay edge transition E")
+		if type(transition) ~= "table" or getmetatable(transition) ~= nil or
+				(transition.mode ~= "direct" and transition.mode ~= "diagonal_elbow") then
+			fail("Bay edge transition selection is malformed")
+		end
+		exact.point(transition.point, "Bay edge transition selected point")
+		if transition.mode == "direct" then
+			local allowed = {mode = true, point = true}
+			for field in pairs(transition) do
+				if not allowed[field] then fail("direct transition selection has an unknown field") end
+			end
+			if key(transition.point) ~= key(e) then
+				fail("direct transition selection differs from E")
+			end
+			return result
+		end
+		local allowed = {mode = true, point = true, w = true, elbows = true}
+		for field in pairs(transition) do
+			if not allowed[field] then fail("elbow transition selection has an unknown field") end
+		end
+		exact.point(transition.w, "Bay edge transition W")
+		if dense(transition.elbows, "Bay edge transition elbows") ~= 2 then
+			fail("elbow transition selection must contain two elbows")
+		end
+		exact.point(transition.elbows[1], "Bay edge transition first elbow")
+		exact.point(transition.elbows[2], "Bay edge transition second elbow")
+		local derived = {{x = transition.w.x, z = e.z}, {x = e.x, z = transition.w.z}}
+		if derived[2].x < derived[1].x or
+				derived[2].x == derived[1].x and derived[2].z < derived[1].z then
+			derived[1], derived[2] = derived[2], derived[1]
+		end
+		local dx = exact.safe_difference(transition.w.x, e.x,
+			"Bay edge transition assembly E/W dx")
+		local dz = exact.safe_difference(transition.w.z, e.z,
+			"Bay edge transition assembly E/W dz")
+		if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 or
+				key(transition.elbows[1]) ~= key(derived[1]) or
+				key(transition.elbows[2]) ~= key(derived[2]) or
+				key(transition.point) ~= key(derived[1]) or
+				math.abs(transition.point.x - e.x) +
+					math.abs(transition.point.z - e.z) ~= 1 then
+			fail("elbow transition selection is not the exact lex E/W elbow")
+		end
+		local point = {x = transition.point.x, z = transition.point.z}
+		if endpoint == "from" then table.insert(result, 1, point)
+		else result[#result + 1] = point end
+		return result
 	end
 
 	-- Private ordered decision seam used by the R12 trace and its synthetic
@@ -462,7 +603,10 @@ local function new_partition(dependencies)
 		local valid, diagnostic = validator.validate(source, dependencies.vocabulary)
 		if not valid then
 			fail("checksum-validated source rejected: " ..
-				tostring(diagnostic and diagnostic.invariant))
+				tostring(diagnostic and diagnostic.invariant) .. " at " ..
+				tostring(diagnostic and diagnostic.record_id) .. " expected " ..
+				tostring(diagnostic and diagnostic.expected) .. " observed " ..
+				tostring(diagnostic and diagnostic.observed))
 		end
 	end
 
@@ -886,266 +1030,42 @@ local function new_partition(dependencies)
 			wing_by_bay[wing.bay_id] = wing_by_bay[wing.bay_id] or {}
 			wing_by_bay[wing.bay_id][#wing_by_bay[wing.bay_id] + 1] = wing
 		end
-		local function planned_water(x, z, perimeter_equality)
-			for index = 1, #bays do
-				local bay = bays[index]
-				local on_own_aperture = aperture_by_bay[bay.source.id].included[x .. ":" .. z]
-				if base_bay_member(bay, x, z) and
-						(not perimeter_equality or on_own_aperture) then return true end
-				if not perimeter_equality then
-					local wings = wing_by_bay[bay.source.id]
-					for wing_index = 1, #wings do
-						if exact.wing_member(x, z, wings[wing_index]) then return true end
-					end
-				end
-			end
-			return false
-		end
-		local function dry_land(x, z)
-			local class = footprint_class(x, z)
-			if class < 0 then return false end
-			return not planned_water(x, z, class == 0)
-		end
-		local function validate_all_junction_pairs(stage)
-			local junction_pair_count = 0
-			for junction_index = 1, #source.relief_junctions do
-				local junction = source.relief_junctions[junction_index]
-				local incident = junction.incident_edge_ids
-				for left_index = 1, #incident - 1 do
-					local left = edge_by_id[incident[left_index]]
-					if not left then fail(junction.id .. " lacks an incident edge") end
-					for right_index = left_index + 1, #incident do
-						local right = edge_by_id[incident[right_index]]
-						if not right then fail(junction.id .. " lacks an incident edge") end
-						validate_junction_pair(junction.position, left.stations,
-							right.stations, stage .. " " .. junction.id .. " " ..
-								left.id .. "/" .. right.id)
-						junction_pair_count = junction_pair_count + 1
-					end
-				end
-			end
-			if #source.relief_junctions ~= 38 or junction_pair_count ~= 102 then
-				fail(stage .. " junction gate did not cover 38/102")
-			end
-			return junction_pair_count
-		end
-		-- Binding R13 proof for the seed-selected R7/effective-control rasters.
-		-- Partition clipping and attachment rerastering are later topology stages.
-		validate_all_junction_pairs("selected-r7")
-		local attachment_by_edge = {}
-		for index = 1, #source.perimeter_attachments do
-			attachment_by_edge[source.perimeter_attachments[index].edge_id] =
-				source.perimeter_attachments[index]
-		end
-		local attachment_result = {}
-		for index = 1, #provisional_edges do
-			local edge = provisional_edges[index]
-			local attachment = attachment_by_edge[edge.id]
-			local retained = {}
-			for station_index = 1, #edge.stations do
-				if dry_land(edge.stations[station_index].x, edge.stations[station_index].z) then
-					retained[#retained + 1] = station_index
-				end
-			end
-			if #retained == 0 then fail(edge.id .. " has no retained land run") end
-			for retained_index = 2, #retained do
-				if retained[retained_index] ~= retained[retained_index - 1] + 1 then
-					fail(edge.id .. " has a second retained land run")
-				end
-			end
-			local controls = {}
-			if attachment then
-				local e_index = attachment.retained_run == "suffix" and retained[1] or
-					retained[#retained]
-				local e = edge.stations[e_index]
-				local perimeter = perimeter_by_id[attachment.perimeter_id]
-				local candidates = perimeter.segment_parts[attachment.perimeter_segment_index]
-				local canonical_indices = {}
-				for station_index = 1, #perimeter.canonical_stations do
-					canonical_indices[key(perimeter.canonical_stations[station_index])] = station_index
-				end
-				local best, best_distance, best_index = select_attachment_station(e,
-					candidates, canonical_indices)
-				local retained_controls = {}
-				for control_index = 1, #edge.shifted_controls do
-					local point = edge.shifted_controls[control_index]
-					if dry_land(point.x, point.z) then
-						retained_controls[#retained_controls + 1] = control_index
-					end
-				end
-				if #retained_controls == 0 then
-					fail(attachment.id .. " has no retained controls")
-				end
-				for retained_index = 2, #retained_controls do
-					if retained_controls[retained_index] ~=
-							retained_controls[retained_index - 1] + 1 then
-						fail(attachment.id .. " retained controls form a second run")
-					end
-				end
-				local opposite
-				if attachment.edge_endpoint == "from" then
-					if attachment.retained_run ~= "suffix" then
-						fail(attachment.id .. " endpoint/run declaration disagrees")
-					end
-					controls[1] = {x = best.x, z = best.z}
-					for retained_index = 1, #retained_controls do
-						local point = edge.shifted_controls[retained_controls[retained_index]]
-						controls[#controls + 1] = {x = point.x, z = point.z}
-					end
-					opposite = edge.stations[retained[#retained]]
-					controls[#controls + 1] = {x = opposite.x, z = opposite.z}
-				else
-					if attachment.edge_endpoint ~= "to" or
-							attachment.retained_run ~= "prefix" then
-						fail(attachment.id .. " endpoint/run declaration disagrees")
-					end
-					opposite = edge.stations[retained[1]]
-					controls[1] = {x = opposite.x, z = opposite.z}
-					for retained_index = 1, #retained_controls do
-						local point = edge.shifted_controls[retained_controls[retained_index]]
-						controls[#controls + 1] = {x = point.x, z = point.z}
-					end
-					controls[#controls + 1] = {x = best.x, z = best.z}
-				end
-				edge.stations = raster.final_raster(controls, false)
-				local terminal = attachment.edge_endpoint == "from" and
-					edge.stations[1] or edge.stations[#edge.stations]
-				if key(terminal) ~= key(best) then
-					fail(attachment.id .. " A is not the exact final terminal")
-				end
-				local other_terminal = attachment.edge_endpoint == "from" and
-					edge.stations[#edge.stations] or edge.stations[1]
-				if key(other_terminal) ~= key(opposite) then
-					fail(attachment.id ..
-						" opposite retained integer terminal changed during reraster")
-				end
-				raster.validate_final({id = edge.id, kind = "land_edge", closed = false,
-					max_displacement = edge.source.max_displacement},
-					edge.base_stations, edge.stations)
-				for station_index = 1, #edge.stations do
-					if key(edge.stations[station_index]) ~= key(best) then
-						local class = footprint_class(edge.stations[station_index].x,
-							edge.stations[station_index].z)
-						if class ~= 1 or planned_water(edge.stations[station_index].x,
-								edge.stations[station_index].z, false) then
-							fail(attachment.id .. " has a non-strict-interior station")
-						end
-					end
-					if station_index > 1 then
-						local previous = edge.stations[station_index - 1]
-						local dx = math.abs(previous.x - edge.stations[station_index].x)
-						local dz = math.abs(previous.z - edge.stations[station_index].z)
-						if math.max(dx, dz) ~= 1 then
-							fail(attachment.id .. " final raster is not eight-connected")
-						end
-					end
-				end
-				attachment_result[attachment.id] = {source = attachment, e = e,
-					a = best, distance = best_distance, canonical_index = best_index}
-			else
-				for station_index = retained[1], retained[#retained] do
-					controls[#controls + 1] = edge.stations[station_index]
-				end
-				edge.stations = controls
-			end
-			if #edge.stations - 1 < 192 then fail(edge.id .. " final raster is shorter than 192") end
-		end
-		local span_by_id = {}
-		for index = 1, #source.perimeter_spans do
-			local span = source.perimeter_spans[index]
-			local perimeter = perimeter_by_id[span.perimeter_id]
-			local first_point = span.start_boundary.kind == "perimeter_attachment" and
-				attachment_result[span.start_boundary.attachment_id].a or
-				perimeter.source.polygon[span.start_boundary.index]
-			local last_point = span.end_boundary.kind == "perimeter_attachment" and
-				attachment_result[span.end_boundary.attachment_id].a or
-				perimeter.source.polygon[span.end_boundary.index]
-			local points = {}
-			local collecting = false
-			for station_index = 1, #perimeter.stations do
-				local point = perimeter.stations[station_index]
-				if key(point) == key(first_point) then collecting = true end
-				if collecting then points[#points + 1] = point end
-				if collecting and key(point) == key(last_point) then break end
-			end
-			if #points == 0 or key(points[#points]) ~= key(last_point) then
-				fail(span.id .. " final endpoints are absent")
-			end
-			if span.face_direction == "reverse" then points = reverse_points(points) end
-			span_by_id[span.id] = {source = span, stations = points}
-		end
-
 		local cardinal = {{x = 1, z = 0}, {x = 0, z = -1},
 			{x = -1, z = 0}, {x = 0, z = 1}}
-		local clockwise = {{x = 1, z = 0}, {x = 1, z = -1},
-			{x = 0, z = -1}, {x = -1, z = -1}, {x = -1, z = 0},
-			{x = -1, z = 1}, {x = 0, z = 1}, {x = 1, z = 1}}
-
+		local diagonal = {{x = 1, z = 1}, {x = 1, z = -1},
+			{x = -1, z = 1}, {x = -1, z = -1}}
 		local function point_less(a, b)
 			return a.x < b.x or a.x == b.x and a.z < b.z
 		end
 
-		local function sequence_less(a, b)
-			local count = math.min(#a, #b)
-			for index = 1, count do
-				if point_less(a[index], b[index]) then return true end
-				if point_less(b[index], a[index]) then return false end
-			end
-			return #a < #b
-		end
-
-		local function chebyshev(a, b)
-			return math.max(math.abs(a.x - b.x), math.abs(a.z - b.z))
-		end
-
-		local function diagonal_signature(a, b)
-			local dx, dz = b.x - a.x, b.z - a.z
-			if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 then return nil end
-			return math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z),
-				dx == dz and 1 or -1
-		end
-
-		local function add_diagonal(diagonals, a, b)
-			local cell, slope = diagonal_signature(a, b)
-			if not cell then return nil end
-			if diagonals[cell] and diagonals[cell] ~= slope then return false end
-			if not diagonals[cell] then diagonals[cell] = slope return cell end
-			return nil
-		end
-
-		local function wing_terms(wing, point)
-			local vx = exact.safe_difference(wing.junction.x, wing.head.x,
-				wing.id .. " axis")
-			local vz = exact.safe_difference(wing.junction.z, wing.head.z,
-				wing.id .. " axis")
-			local px = exact.safe_difference(point.x, wing.head.x,
-				wing.id .. " query")
-			local pz = exact.safe_difference(point.z, wing.head.z,
-				wing.id .. " query")
-			local length = exact.safe_sum(exact.safe_square(vx, wing.id .. " length"),
-				exact.safe_square(vz, wing.id .. " length"), wing.id .. " length")
-			local projection = exact.dot(px, pz, vx, vz, wing.id .. " projection")
-			local determinant = exact.cross(vx, vz, px, pz, wing.id .. " cross")
-			return projection, determinant, length
-		end
-
+		-- Bay boundary classification is shared by transition resolution and the
+		-- later Bank tracer.  Building it once here prevents a transition elbow
+		-- from becoming a second, privately interpreted candidate authority.
 		local bay_context_by_id = {}
 		for bay_index = 1, #bays do
 			local bay = bays[bay_index]
 			local context = {bay = bay,
 				perimeter = perimeter_by_id[bay.source.perimeter_projection.perimeter_id],
-				wings = wing_by_bay[bay.source.id], water_cache = {}, dry_cache = {},
-				candidate_cache = {}, boxes = {}}
+				aperture = aperture_by_bay[bay.source.id],
+				wings = wing_by_bay[bay.source.id], raw_rows = {}, fill = {},
+				fill_points = {},
+				water_cache = {}, dry_cache = {}, candidate_cache = {}, boxes = {}}
 			local min_x, max_x, min_z, max_z
 			for segment_index = 1, #bay.source.centreline - 1 do
 				local a, b = bay.source.centreline[segment_index],
 					bay.source.centreline[segment_index + 1]
-				local radius = math.max(a.half_width, b.half_width) +
-					bay.source.max_displacement + 1
-				local box = {min_x = math.min(a.x, b.x) - radius,
-					max_x = math.max(a.x, b.x) + radius,
-					min_z = math.min(a.z, b.z) - radius,
-					max_z = math.max(a.z, b.z) + radius}
+				local radius = exact.safe_sum(exact.safe_sum(
+					math.max(a.half_width, b.half_width),
+					bay.source.max_displacement, bay.source.id .. " Base envelope"),
+					1, bay.source.id .. " Base envelope")
+				local box = {min_x = checked_coordinate(math.min(a.x, b.x), -radius,
+					bay.source.id .. " Base envelope x"),
+					max_x = checked_coordinate(math.max(a.x, b.x), radius,
+						bay.source.id .. " Base envelope x"),
+					min_z = checked_coordinate(math.min(a.z, b.z), -radius,
+						bay.source.id .. " Base envelope z"),
+					max_z = checked_coordinate(math.max(a.z, b.z), radius,
+						bay.source.id .. " Base envelope z")}
 				context.boxes[#context.boxes + 1] = box
 				min_x = min_x and math.min(min_x, box.min_x) or box.min_x
 				max_x = max_x and math.max(max_x, box.max_x) or box.max_x
@@ -1154,11 +1074,17 @@ local function new_partition(dependencies)
 			end
 			for wing_index = 1, #context.wings do
 				local wing = context.wings[wing_index]
-				local radius = wing.head_half_width + 1
-				local box = {min_x = math.min(wing.head.x, wing.junction.x) - radius,
-					max_x = math.max(wing.head.x, wing.junction.x) + radius,
-					min_z = math.min(wing.head.z, wing.junction.z) - radius,
-					max_z = math.max(wing.head.z, wing.junction.z) + radius}
+				local radius = exact.safe_sum(wing.head_half_width, 1,
+					wing.id .. " envelope")
+				local box = {min_x = checked_coordinate(
+					math.min(wing.head.x, wing.junction.x), -radius,
+					wing.id .. " envelope x"),
+					max_x = checked_coordinate(math.max(wing.head.x, wing.junction.x),
+						radius, wing.id .. " envelope x"),
+					min_z = checked_coordinate(math.min(wing.head.z, wing.junction.z),
+						-radius, wing.id .. " envelope z"),
+					max_z = checked_coordinate(math.max(wing.head.z, wing.junction.z),
+						radius, wing.id .. " envelope z")}
 				context.boxes[#context.boxes + 1] = box
 				min_x, max_x = math.min(min_x, box.min_x), math.max(max_x, box.max_x)
 				min_z, max_z = math.min(min_z, box.min_z), math.max(max_z, box.max_z)
@@ -1177,37 +1103,267 @@ local function new_partition(dependencies)
 			return false
 		end
 
-		-- The R12 caps count the finite search envelope itself, not its larger
-		-- outer rectangle: exact union of expanded Base/Wing boxes, clipped to
-		-- the referenced final mainland footprint.
+		local function row_contains(rows, x, z)
+			local runs = rows[z]
+			if not runs then return false end
+			for index = 1, #runs do
+				local run = runs[index]
+				if x < run.first then return false end
+				if x <= run.finish then return true end
+			end
+			return false
+		end
+
+		-- For one integer z row, remove the common x^2 term from every squared
+		-- station distance.  The lower envelope below retains the exact lower
+		-- canonical station-index tie and avoids a station scan per mask column.
+		local function nearest_schedule(stations, z, label)
+			local lines = {}
+			for index = 1, #stations do
+				local point = stations[index]
+				local dz = exact.safe_difference(z, point.z, label .. " row distance")
+				lines[index] = {m = exact.safe_signed_product(-2, point.x,
+					label .. " row slope"), b = exact.safe_sum(
+					exact.safe_square(point.x, label .. " row intercept"),
+					exact.safe_square(dz, label .. " row intercept"),
+					label .. " row intercept"), index = index}
+			end
+			table.sort(lines, function(a, b)
+				return a.m > b.m or a.m == b.m and
+					(a.b < b.b or a.b == b.b and a.index < b.index)
+			end)
+			local unique = {}
+			for index = 1, #lines do
+				if #unique == 0 or lines[index].m ~= unique[#unique].m then
+					unique[#unique + 1] = lines[index]
+				end
+			end
+			local hull = {}
+			for index = 1, #unique do
+				local line, start = unique[index], -2147483648
+				while #hull > 0 do
+					local previous = hull[#hull]
+					local numerator = exact.safe_difference(line.b, previous.b,
+						label .. " row intersection")
+					local denominator = exact.safe_difference(previous.m, line.m,
+						label .. " row intersection")
+					if denominator <= 0 then fail(label .. " row slopes are not ordered") end
+					if line.index < previous.index then
+						start = -deterministic.floor_div(-numerator, denominator)
+					else
+						start = exact.safe_sum(deterministic.floor_div(numerator,
+							denominator), 1, label .. " row intersection")
+					end
+					if start > previous.start then break end
+					table.remove(hull)
+				end
+				if #hull == 0 then start = -2147483648 end
+				line.start = start
+				hull[#hull + 1] = line
+			end
+			return hull
+		end
+
+		local function schedule_station(schedule, x, cursor)
+			while cursor < #schedule and schedule[cursor + 1].start <= x do
+				cursor = cursor + 1
+			end
+			return schedule[cursor].index, cursor
+		end
+
+		-- Materialize the immutable raw per-Bay mask exactly once.  Its row runs
+		-- are then the only input to the simultaneous R17 fill; a filled point is
+		-- never visible while another fill decision is made.
 		for bay_index = 1, #bays do
 			local context = bay_context_by_id[bays[bay_index].source.id]
-			local column_count = count_trace_envelope(context.boxes,
-				context.perimeter.polygon_index, context.bay.source.id)
-			context.step_bound = column_count
-			context.trace_bounds = trace_bounds(column_count)
+			for z = context.min_z, context.max_z do
+				local schedules, cursors = {}, {}
+				for segment_index = 1, #context.bay.segments do
+					schedules[segment_index] = nearest_schedule(
+						context.bay.segments[segment_index].stations, z,
+						context.bay.source.id)
+					cursors[segment_index] = 1
+				end
+				local runs, first = {}, nil
+				for x = context.min_x, context.max_x do
+					local point_key = x .. ":" .. z
+					local class = exact.indexed_polygon_class(
+						context.perimeter.polygon_index, x, z)
+					local raw = false
+					if class >= 0 then
+						local base = false
+						for segment_index = 1, #context.bay.segments do
+							local station_index
+							station_index, cursors[segment_index] = schedule_station(
+								schedules[segment_index], x, cursors[segment_index])
+							if exact.bay_segment(x, z,
+									context.bay.source.centreline[segment_index],
+									context.bay.source.centreline[segment_index + 1],
+									context.bay.segments[segment_index].deltas[station_index]) then
+								base = true break
+							end
+						end
+						if base and (class > 0 or context.aperture.included[point_key]) then
+							raw = true
+						elseif class > 0 then
+							for wing_index = 1, #context.wings do
+								if exact.wing_member(x, z, context.wings[wing_index]) then
+									raw = true break
+								end
+							end
+						end
+					end
+					if raw and not first then first = x end
+					if not raw and first then
+						runs[#runs + 1] = {first = first, finish =
+							checked_coordinate(x, -1,
+								context.bay.source.id .. " raw run")}
+						first = nil
+					end
+				end
+				if first then runs[#runs + 1] = {first = first, finish = context.max_x} end
+				if #runs > 0 then context.raw_rows[z] = runs end
+			end
+		end
+
+		local function raw_bay_water(context, x, z)
+			return row_contains(context.raw_rows, x, z)
+		end
+
+		local function raw_owner_count(x, z)
+			local count, owner = 0, nil
+			for bay_index = 1, #bays do
+				local context = bay_context_by_id[bays[bay_index].source.id]
+				if raw_bay_water(context, x, z) then
+					count, owner = count + 1, context
+				end
+			end
+			return count, owner
+		end
+
+		local fill_owner = {}
+		for bay_index = 1, #bays do
+			local context = bay_context_by_id[bays[bay_index].source.id]
+			local candidates = {}
+			for z = context.min_z, context.max_z do
+				local runs = context.raw_rows[z] or {}
+				for run_index = 1, #runs do
+					local run = runs[run_index]
+					for _, x in ipairs({checked_coordinate(run.first, -1,
+							context.bay.source.id .. " notch candidate"),
+						checked_coordinate(run.finish, 1,
+							context.bay.source.id .. " notch candidate")}) do
+						if x >= context.min_x and x <= context.max_x then
+							candidates[x .. ":" .. z] = {x = x, z = z}
+						end
+					end
+				end
+			end
+			local ordered = {}
+			for _, point in pairs(candidates) do ordered[#ordered + 1] = point end
+			table.sort(ordered, point_less)
+			for candidate_index = 1, #ordered do
+				local point = ordered[candidate_index]
+				local strict = in_bay_envelope(context, point.x, point.z)
+				for dx = -1, 1 do
+					for dz = -1, 1 do
+						local nx = checked_coordinate(point.x, dx,
+							context.bay.source.id .. " notch neighborhood x")
+						local nz = checked_coordinate(point.z, dz,
+							context.bay.source.id .. " notch neighborhood z")
+						if exact.indexed_polygon_class(context.perimeter.polygon_index,
+								nx, nz) ~= 1 then strict = false end
+					end
+				end
+				if strict then
+					local point_count = raw_owner_count(point.x, point.z)
+					local cardinal_count, fourth = 0, nil
+					for direction_index = 1, #cardinal do
+						local direction = cardinal[direction_index]
+						local nx = checked_coordinate(point.x, direction.x,
+							context.bay.source.id .. " notch cardinal x")
+						local nz = checked_coordinate(point.z, direction.z,
+							context.bay.source.id .. " notch cardinal z")
+						if raw_bay_water(context, nx, nz) then
+							cardinal_count = cardinal_count + 1
+						else
+							fourth = {x = nx, z = nz}
+						end
+					end
+					local diagonals_water = true
+					for direction_index = 1, #diagonal do
+						local direction = diagonal[direction_index]
+						local nx = checked_coordinate(point.x, direction.x,
+							context.bay.source.id .. " notch diagonal x")
+						local nz = checked_coordinate(point.z, direction.z,
+							context.bay.source.id .. " notch diagonal z")
+						if not raw_bay_water(context, nx, nz) then
+							diagonals_water = false break
+						end
+					end
+					if point_count == 0 and cardinal_count == 3 and fourth and
+							raw_owner_count(fourth.x, fourth.z) == 0 and diagonals_water then
+						for direction_index = 1, #cardinal do
+							local direction = cardinal[direction_index]
+							local nx = checked_coordinate(point.x, direction.x,
+								context.bay.source.id .. " notch owner x")
+							local nz = checked_coordinate(point.z, direction.z,
+								context.bay.source.id .. " notch owner z")
+							if raw_bay_water(context, nx, nz) then
+								local count, owner = raw_owner_count(nx, nz)
+								if count ~= 1 or owner ~= context then
+									fail("Bay notch has foreign or multiple cardinal water")
+								end
+							end
+						end
+						for direction_index = 1, #diagonal do
+							local direction = diagonal[direction_index]
+							local nx = checked_coordinate(point.x, direction.x,
+								context.bay.source.id .. " notch owner x")
+							local nz = checked_coordinate(point.z, direction.z,
+								context.bay.source.id .. " notch owner z")
+							local count, owner = raw_owner_count(nx, nz)
+							if count ~= 1 or owner ~= context then
+								fail("Bay notch has foreign or multiple diagonal water")
+							end
+						end
+						local point_key = point.x .. ":" .. point.z
+						if fill_owner[point_key] then
+							fail("Bay notch qualifies for more than one Bay")
+						end
+						fill_owner[point_key], context.fill[point_key] = context, true
+						context.fill_points[#context.fill_points + 1] =
+							{x = point.x, z = point.z}
+					end
+				end
+			end
 		end
 
 		local function bay_water(context, x, z)
 			local point_key = x .. ":" .. z
 			local cached = context.water_cache[point_key]
 			if cached ~= nil then return cached end
-			local class = exact.indexed_polygon_class(context.perimeter.polygon_index, x, z)
-			local water = false
-			if class >= 0 then
-				if base_bay_member(context.bay, x, z) and (class > 0 or
-						aperture_by_bay[context.bay.source.id].included[point_key]) then
-					water = true
-				elseif class > 0 then
-					for index = 1, #context.wings do
-						if exact.wing_member(x, z, context.wings[index]) then
-							water = true break
-						end
+			local water = raw_bay_water(context, x, z) or context.fill[point_key] == true
+			context.water_cache[point_key] = water
+			return water
+		end
+
+		local function planned_water(x, z, perimeter_equality)
+			for bay_index = 1, #bays do
+				local context = bay_context_by_id[bays[bay_index].source.id]
+				if bay_water(context, x, z) then
+					if not perimeter_equality or context.aperture.included[x .. ":" .. z] then
+						return true
 					end
 				end
 			end
-			context.water_cache[point_key] = water
-			return water
+			return false
+		end
+
+		local function dry_land(x, z)
+			local class = footprint_class(x, z)
+			if class < 0 then return false end
+			return not planned_water(x, z, class == 0)
 		end
 
 		local function wing_water(context, wing, x, z)
@@ -1267,6 +1423,411 @@ local function new_partition(dependencies)
 							"Bay-bank water side") < 0 then return true end
 			end
 			return false
+		end
+		local function validate_all_junction_pairs(stage)
+			local junction_pair_count = 0
+			for junction_index = 1, #source.relief_junctions do
+				local junction = source.relief_junctions[junction_index]
+				local incident = junction.incident_edge_ids
+				for left_index = 1, #incident - 1 do
+					local left = edge_by_id[incident[left_index]]
+					if not left then fail(junction.id .. " lacks an incident edge") end
+					for right_index = left_index + 1, #incident do
+						local right = edge_by_id[incident[right_index]]
+						if not right then fail(junction.id .. " lacks an incident edge") end
+						validate_junction_pair(junction.position, left.stations,
+							right.stations, stage .. " " .. junction.id .. " " ..
+								left.id .. "/" .. right.id)
+						junction_pair_count = junction_pair_count + 1
+					end
+				end
+			end
+			if #source.relief_junctions ~= 38 or junction_pair_count ~= 102 then
+				fail(stage .. " junction gate did not cover 38/102")
+			end
+			return junction_pair_count
+		end
+		-- Binding R13 proof for the seed-selected R7/effective-control rasters.
+		-- Partition clipping and attachment rerastering are later topology stages.
+		validate_all_junction_pairs("selected-r7")
+		local attachment_by_edge = {}
+		for index = 1, #source.perimeter_attachments do
+			attachment_by_edge[source.perimeter_attachments[index].edge_id] =
+				source.perimeter_attachments[index]
+		end
+		local function land_transition_key(edge_id, endpoint)
+			return "land_edge_transition:" .. edge_id .. ":" .. endpoint
+		end
+		local declared_transition_by_key, transitions_by_edge = {}, {}
+		local projected_incidence = {}
+		for bank_index = 1, #source.bay_bank_components do
+			local bank = source.bay_bank_components[bank_index]
+			for _, terminal in ipairs({bank.start_terminal, bank.end_terminal}) do
+				if terminal.kind == "land_edge_transition" then
+					local transition_key = land_transition_key(terminal.edge_id,
+						terminal.edge_endpoint)
+					local rows = projected_incidence[transition_key] or {}
+					projected_incidence[transition_key] = rows
+					rows[#rows + 1] = bank.id
+				end
+			end
+		end
+		if dense(source.bay_edge_transitions, "Bay edge transitions") ~= 8 then
+			fail("Bay edge transition roster must contain eight rows")
+		end
+		for transition_index = 1, #source.bay_edge_transitions do
+			local row = source.bay_edge_transitions[transition_index]
+			if type(row) ~= "table" or getmetatable(row) ~= nil or
+					type(row.id) ~= "string" or type(row.bay_id) ~= "string" or
+					type(row.edge_id) ~= "string" or
+					(row.edge_endpoint ~= "from" and row.edge_endpoint ~= "to") or
+					row.resolution_policy_id ~=
+						"direct_candidate_or_same_bay_diagonal_elbow_v1" or
+					row.candidate_tie_rule ~= "lexicographically_least_x_then_z" or
+					dense(row.incident_bank_component_ids,
+						row.id .. " incident Banks") ~= 2 then
+				fail("malformed Bay edge transition row")
+			end
+			local transition_key = land_transition_key(row.edge_id, row.edge_endpoint)
+			if declared_transition_by_key[transition_key] then
+				fail(row.id .. " duplicates a Bay edge transition endpoint")
+			end
+			local incident = projected_incidence[transition_key]
+			if not incident or #incident ~= 2 or
+					incident[1] ~= row.incident_bank_component_ids[1] or
+					incident[2] ~= row.incident_bank_component_ids[2] then
+				fail(row.id .. " does not match its two incident Banks")
+			end
+			declared_transition_by_key[transition_key] = row
+			local edge_rows = transitions_by_edge[row.edge_id] or {}
+			transitions_by_edge[row.edge_id] = edge_rows
+			edge_rows[#edge_rows + 1] = row
+		end
+		for transition_key in pairs(projected_incidence) do
+			if not declared_transition_by_key[transition_key] then
+				fail(transition_key .. " lacks a declared Bay edge transition")
+			end
+		end
+
+		local resolved_transition_by_key, transition_by_edge = {}, {}
+		local function resolve_edge_transition(row, edge, retained)
+			local context = bay_context_by_id[row.bay_id]
+			if not context then fail(row.id .. " references an absent Bay") end
+			local e_index = row.edge_endpoint == "from" and retained[1] or
+				retained[#retained]
+			local e = edge.stations[e_index]
+			local evidence = {id = row.id, e = {x = e.x, z = e.z},
+				direct_candidate = bay_candidate(context, e.x, e.z)}
+			if not evidence.direct_candidate then
+				evidence.e_strict_dry = footprint_class(e.x, e.z) == 1 and
+					bay_dry(context, e.x, e.z)
+				evidence.e_cardinal_water = false
+				for direction_index = 1, #cardinal do
+					local direction = cardinal[direction_index]
+					if final_water(e.x + direction.x, e.z + direction.z) then
+						evidence.e_cardinal_water = true break
+					end
+				end
+				local w_index = row.edge_endpoint == "from" and e_index - 1 or e_index + 1
+				local w = edge.stations[w_index]
+				if not w then fail(row.id .. " lacks an immediate discarded W") end
+				evidence.w = {x = w.x, z = w.z}
+				evidence.w_owned_by_bay = transition_water_owned(
+					final_water(w.x, w.z), bay_water(context, w.x, w.z))
+				evidence.w_foreign_water = false
+				for bay_id, other_context in pairs(bay_context_by_id) do
+					if bay_id ~= row.bay_id and bay_water(other_context, w.x, w.z) then
+						evidence.w_foreign_water = true break
+					end
+				end
+				local elbows = {{x = w.x, z = e.z}, {x = e.x, z = w.z}}
+				evidence.elbow_valid = {}
+				for elbow_index = 1, 2 do
+					local elbow = elbows[elbow_index]
+					exact.point(elbow, row.id .. " elbow")
+					evidence.elbow_valid[elbow_index] =
+						footprint_class(elbow.x, elbow.z) == 1 and
+							bay_dry(context, elbow.x, elbow.z) and
+							bay_candidate(context, elbow.x, elbow.z)
+				end
+			end
+			local selected = select_edge_transition(evidence)
+			local resolved = {source = row, e = {x = e.x, z = e.z},
+				point = selected.point, mode = selected.mode,
+				w = selected.w, elbows = selected.elbows, selection = selected}
+			return resolved
+		end
+		local attachment_result = {}
+		for index = 1, #provisional_edges do
+			local edge = provisional_edges[index]
+			local attachment = attachment_by_edge[edge.id]
+			local edge_transitions = transitions_by_edge[edge.id]
+			local retained = {}
+			for station_index = 1, #edge.stations do
+				if dry_land(edge.stations[station_index].x, edge.stations[station_index].z) then
+					retained[#retained + 1] = station_index
+				end
+			end
+			if #retained == 0 then fail(edge.id .. " has no retained land run") end
+			for retained_index = 2, #retained do
+				if retained[retained_index] ~= retained[retained_index - 1] + 1 then
+					fail(edge.id .. " has a second retained land run")
+				end
+			end
+			local controls = {}
+			local from_transition, to_transition
+			if edge_transitions then
+				for transition_index = 1, #edge_transitions do
+					local transition = resolve_edge_transition(edge_transitions[transition_index],
+						edge, retained)
+					if transition.source.edge_endpoint == "from" then
+						if from_transition then fail(edge.id .. " has two from transitions") end
+						from_transition = transition
+					else
+						if to_transition then fail(edge.id .. " has two to transitions") end
+						to_transition = transition
+					end
+				end
+			end
+			if attachment and ((attachment.edge_endpoint == "from" and from_transition) or
+					(attachment.edge_endpoint == "to" and to_transition)) then
+				fail(edge.id .. " mixes Attachment and transition at one endpoint")
+			end
+			local function retain_resolved_transition(transition)
+				if not transition then return end
+				local endpoint_index = transition.source.edge_endpoint == "from" and
+					1 or #edge.stations
+				local away_index = transition.source.edge_endpoint == "from" and
+					2 or #edge.stations - 1
+				if key(edge.stations[endpoint_index]) ~= key(transition.point) then
+					fail(transition.source.id .. " changed during sole final reraster")
+				end
+				transition.previous = {x = edge.stations[away_index].x,
+					z = edge.stations[away_index].z}
+				local transition_key = land_transition_key(edge.id,
+					transition.source.edge_endpoint)
+				resolved_transition_by_key[transition_key] = transition
+				local rows = transition_by_edge[edge.id] or {}
+				transition_by_edge[edge.id] = rows
+				rows[#rows + 1] = {id = transition_key,
+					bay_id = transition.source.bay_id,
+					endpoint = transition.source.edge_endpoint,
+					point = {x = transition.point.x, z = transition.point.z}, offset = 0}
+			end
+			if attachment then
+				local e_index = attachment.retained_run == "suffix" and retained[1] or
+					retained[#retained]
+				local e = edge.stations[e_index]
+				local perimeter = perimeter_by_id[attachment.perimeter_id]
+				local candidates = perimeter.segment_parts[attachment.perimeter_segment_index]
+				local canonical_indices = {}
+				for station_index = 1, #perimeter.canonical_stations do
+					canonical_indices[key(perimeter.canonical_stations[station_index])] = station_index
+				end
+				local best, best_distance, best_index = select_attachment_station(e,
+					candidates, canonical_indices)
+				local retained_controls = {}
+				for control_index = 1, #edge.shifted_controls do
+					local point = edge.shifted_controls[control_index]
+					if dry_land(point.x, point.z) then
+						retained_controls[#retained_controls + 1] = control_index
+					end
+				end
+				if #retained_controls == 0 then
+					fail(attachment.id .. " has no retained controls")
+				end
+				for retained_index = 2, #retained_controls do
+					if retained_controls[retained_index] ~=
+							retained_controls[retained_index - 1] + 1 then
+						fail(attachment.id .. " retained controls form a second run")
+					end
+				end
+				local opposite
+				if attachment.edge_endpoint == "from" then
+					if attachment.retained_run ~= "suffix" then
+						fail(attachment.id .. " endpoint/run declaration disagrees")
+					end
+					controls[1] = {x = best.x, z = best.z}
+					for retained_index = 1, #retained_controls do
+						local point = edge.shifted_controls[retained_controls[retained_index]]
+						controls[#controls + 1] = {x = point.x, z = point.z}
+					end
+					opposite = edge.stations[retained[#retained]]
+					controls[#controls + 1] = {x = opposite.x, z = opposite.z}
+					controls = add_edge_transition_control(controls,
+						to_transition and to_transition.selection, "to", opposite)
+				else
+					if attachment.edge_endpoint ~= "to" or
+							attachment.retained_run ~= "prefix" then
+						fail(attachment.id .. " endpoint/run declaration disagrees")
+					end
+					opposite = edge.stations[retained[1]]
+					controls[1] = {x = opposite.x, z = opposite.z}
+					for retained_index = 1, #retained_controls do
+						local point = edge.shifted_controls[retained_controls[retained_index]]
+						controls[#controls + 1] = {x = point.x, z = point.z}
+					end
+					controls[#controls + 1] = {x = best.x, z = best.z}
+					controls = add_edge_transition_control(controls,
+						from_transition and from_transition.selection, "from", opposite)
+				end
+				edge.stations = raster.final_raster(controls, false)
+				local terminal = attachment.edge_endpoint == "from" and
+					edge.stations[1] or edge.stations[#edge.stations]
+				if key(terminal) ~= key(best) then
+					fail(attachment.id .. " A is not the exact final terminal")
+				end
+				local other_terminal = attachment.edge_endpoint == "from" and
+					edge.stations[#edge.stations] or edge.stations[1]
+				local opposite_transition = attachment.edge_endpoint == "from" and
+					to_transition or from_transition
+				local expected_other_terminal = opposite_transition and
+					opposite_transition.point or opposite
+				if key(other_terminal) ~= key(expected_other_terminal) then
+					fail(attachment.id ..
+						" opposite resolved terminal changed during reraster")
+				end
+				raster.validate_final({id = edge.id, kind = "land_edge", closed = false,
+					max_displacement = edge.source.max_displacement},
+					edge.base_stations, edge.stations)
+				for station_index = 1, #edge.stations do
+					if key(edge.stations[station_index]) ~= key(best) then
+						local class = footprint_class(edge.stations[station_index].x,
+							edge.stations[station_index].z)
+						if class ~= 1 or planned_water(edge.stations[station_index].x,
+								edge.stations[station_index].z, false) then
+							fail(attachment.id .. " has a non-strict-interior station")
+						end
+					end
+					if station_index > 1 then
+						local previous = edge.stations[station_index - 1]
+						local dx = math.abs(previous.x - edge.stations[station_index].x)
+						local dz = math.abs(previous.z - edge.stations[station_index].z)
+						if math.max(dx, dz) ~= 1 then
+							fail(attachment.id .. " final raster is not eight-connected")
+						end
+					end
+				end
+				attachment_result[attachment.id] = {source = attachment, e = e,
+					a = best, distance = best_distance, canonical_index = best_index}
+				retain_resolved_transition(from_transition)
+				retain_resolved_transition(to_transition)
+			else
+				local first_e = edge.stations[retained[1]]
+				for station_index = retained[1], retained[#retained] do
+					controls[#controls + 1] = {x = edge.stations[station_index].x,
+						z = edge.stations[station_index].z}
+				end
+				local last_e = edge.stations[retained[#retained]]
+				controls = add_edge_transition_control(controls,
+					from_transition and from_transition.selection, "from", first_e)
+				controls = add_edge_transition_control(controls,
+					to_transition and to_transition.selection, "to", last_e)
+				if edge_transitions then
+					edge.stations = raster.final_raster(controls, false)
+					raster.validate_final({id = edge.id, kind = "land_edge", closed = false,
+						max_displacement = edge.source.max_displacement},
+						edge.base_stations, edge.stations)
+					retain_resolved_transition(from_transition)
+					retain_resolved_transition(to_transition)
+				else
+					edge.stations = controls
+				end
+			end
+			if #edge.stations - 1 < 192 then fail(edge.id .. " final raster is shorter than 192") end
+		end
+		local resolved_transition_count = 0
+		for transition_key in pairs(declared_transition_by_key) do
+			if not resolved_transition_by_key[transition_key] then
+				fail(transition_key .. " was not materialized by its final edge")
+			end
+			resolved_transition_count = resolved_transition_count + 1
+		end
+		if resolved_transition_count ~= 8 then
+			fail("final Bay edge transition roster does not contain eight rows")
+		end
+		local span_by_id = {}
+		for index = 1, #source.perimeter_spans do
+			local span = source.perimeter_spans[index]
+			local perimeter = perimeter_by_id[span.perimeter_id]
+			local first_point = span.start_boundary.kind == "perimeter_attachment" and
+				attachment_result[span.start_boundary.attachment_id].a or
+				perimeter.source.polygon[span.start_boundary.index]
+			local last_point = span.end_boundary.kind == "perimeter_attachment" and
+				attachment_result[span.end_boundary.attachment_id].a or
+				perimeter.source.polygon[span.end_boundary.index]
+			local points = {}
+			local collecting = false
+			for station_index = 1, #perimeter.stations do
+				local point = perimeter.stations[station_index]
+				if key(point) == key(first_point) then collecting = true end
+				if collecting then points[#points + 1] = point end
+				if collecting and key(point) == key(last_point) then break end
+			end
+			if #points == 0 or key(points[#points]) ~= key(last_point) then
+				fail(span.id .. " final endpoints are absent")
+			end
+			if span.face_direction == "reverse" then points = reverse_points(points) end
+			span_by_id[span.id] = {source = span, stations = points}
+		end
+
+		local clockwise = {{x = 1, z = 0}, {x = 1, z = -1},
+			{x = 0, z = -1}, {x = -1, z = -1}, {x = -1, z = 0},
+			{x = -1, z = 1}, {x = 0, z = 1}, {x = 1, z = 1}}
+
+		local function sequence_less(a, b)
+			local count = math.min(#a, #b)
+			for index = 1, count do
+				if point_less(a[index], b[index]) then return true end
+				if point_less(b[index], a[index]) then return false end
+			end
+			return #a < #b
+		end
+
+		local function chebyshev(a, b)
+			return math.max(math.abs(a.x - b.x), math.abs(a.z - b.z))
+		end
+
+		local function diagonal_signature(a, b)
+			local dx, dz = b.x - a.x, b.z - a.z
+			if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 then return nil end
+			return math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z),
+				dx == dz and 1 or -1
+		end
+
+		local function add_diagonal(diagonals, a, b)
+			local cell, slope = diagonal_signature(a, b)
+			if not cell then return nil end
+			if diagonals[cell] and diagonals[cell] ~= slope then return false end
+			if not diagonals[cell] then diagonals[cell] = slope return cell end
+			return nil
+		end
+
+		local function wing_terms(wing, point)
+			local vx = exact.safe_difference(wing.junction.x, wing.head.x,
+				wing.id .. " axis")
+			local vz = exact.safe_difference(wing.junction.z, wing.head.z,
+				wing.id .. " axis")
+			local px = exact.safe_difference(point.x, wing.head.x,
+				wing.id .. " query")
+			local pz = exact.safe_difference(point.z, wing.head.z,
+				wing.id .. " query")
+			local length = exact.safe_sum(exact.safe_square(vx, wing.id .. " length"),
+				exact.safe_square(vz, wing.id .. " length"), wing.id .. " length")
+			local projection = exact.dot(px, pz, vx, vz, wing.id .. " projection")
+			local determinant = exact.cross(vx, vz, px, pz, wing.id .. " cross")
+			return projection, determinant, length
+		end
+
+		-- The R12 caps count the finite search envelope itself, not its larger
+		-- outer rectangle: exact union of expanded Base/Wing boxes, clipped to
+		-- the referenced final mainland footprint.
+		for bay_index = 1, #bays do
+			local context = bay_context_by_id[bays[bay_index].source.id]
+			local column_count = count_trace_envelope(context.boxes,
+				context.perimeter.polygon_index, context.bay.source.id)
+			context.step_bound = column_count
+			context.trace_bounds = trace_bounds(column_count)
 		end
 
 		local wing_tail_by_id = {}
@@ -1429,7 +1990,7 @@ local function new_partition(dependencies)
 			return terminal.kind .. ":" .. terminal.wing_id .. ":" .. terminal.tail_side
 		end
 
-		local terminal_cache, transition_by_edge = {}, {}
+		local terminal_cache = {}
 		local function resolve_terminal(terminal, bay_id)
 			local cache_key = terminal_key(terminal)
 			local cached = terminal_cache[cache_key]
@@ -1463,14 +2024,17 @@ local function new_partition(dependencies)
 				resolved.authored_index = point_index - 1
 				resolved.authored_away_index = away_index - 1
 			elseif terminal.kind == "land_edge_transition" then
-				local edge = edge_by_id[terminal.edge_id]
-				if not edge then fail(cache_key .. " references an absent edge") end
-				local endpoint_index = terminal.edge_endpoint == "from" and 1 or #edge.stations
-				local away_index = terminal.edge_endpoint == "from" and 2 or #edge.stations - 1
-				resolved.point = copy_points({edge.stations[endpoint_index]})[1]
-				resolved.previous = copy_points({edge.stations[away_index]})[1]
+				local materialized = resolved_transition_by_key[cache_key]
+				if not materialized then
+					fail(cache_key .. " lacks a once-resolved final edge transition")
+				end
+				resolved.bay_id = materialized.source.bay_id
+				resolved.point = {x = materialized.point.x, z = materialized.point.z}
+				resolved.previous = {x = materialized.previous.x,
+					z = materialized.previous.z}
 				resolved.edge_id = terminal.edge_id
 				resolved.edge_endpoint = terminal.edge_endpoint
+				resolved.transition_id = materialized.source.id
 			elseif terminal.kind == "wing_junction_tail_side" then
 				local wing = wing_by_id[terminal.wing_id]
 				local tails = wing_tail_by_id[terminal.wing_id]
@@ -1676,34 +2240,37 @@ local function new_partition(dependencies)
 			bank_by_id[bank.id] = {source = bank, stations = points}
 		end
 
-		-- Resolve and retain exact offset-zero evidence after every incident Bank
-		-- has consumed the same terminal object.
+		-- Every declared incident Bank consumes the one materialized terminal;
+		-- no Bank is permitted to scan or resolve the edge a second time.
+		local transition_consumers = {}
 		for _, bank in ipairs(source.bay_bank_components) do
-			for _, terminal in ipairs({bank.start_terminal, bank.end_terminal}) do
+			for terminal_index, terminal in ipairs({bank.start_terminal,
+					bank.end_terminal}) do
 				if terminal.kind == "land_edge_transition" then
 					local resolved = resolve_terminal(terminal, bank.bay_id)
-					local context = bay_context_by_id[bank.bay_id]
 					local edge = edge_by_id[terminal.edge_id]
 					local first = terminal.edge_endpoint == "from" and 1 or #edge.stations
-					local direction = terminal.edge_endpoint == "from" and 1 or -1
-					local offset
-					for index = first, terminal.edge_endpoint == "from" and #edge.stations or 1,
-							direction do
-						if bay_candidate(context, edge.stations[index].x, edge.stations[index].z) then
-							offset = math.abs(index - first) break
-						end
+					if key(edge.stations[first]) ~= key(resolved.point) then
+						fail(resolved.id .. " is not the final edge endpoint")
 					end
-					if offset ~= 0 or key(edge.stations[first]) ~= key(resolved.point) then
-						fail(resolved.id .. " does not resolve at edge offset zero")
+					local bank_points = bank_by_id[bank.id].stations
+					local bank_terminal = terminal_index == 1 and bank_points[1] or
+						bank_points[#bank_points]
+					if key(bank_terminal) ~= key(resolved.point) then
+						fail(resolved.id .. " is not the incident Bank endpoint")
 					end
-					local rows = transition_by_edge[terminal.edge_id] or {}
-					transition_by_edge[terminal.edge_id] = rows
-					local duplicate = false
-					for index = 1, #rows do if rows[index].id == resolved.id then duplicate = true end end
-					if not duplicate then rows[#rows + 1] = {id = resolved.id,
-						bay_id = bank.bay_id, endpoint = terminal.edge_endpoint,
-						point = resolved.point, offset = offset} end
+					local consumers = transition_consumers[resolved.id] or {}
+					transition_consumers[resolved.id] = consumers
+					consumers[#consumers + 1] = bank.id
 				end
+			end
+		end
+		for transition_key, row in pairs(declared_transition_by_key) do
+			local consumers = transition_consumers[transition_key]
+			if not consumers or #consumers ~= 2 or
+					consumers[1] ~= row.incident_bank_component_ids[1] or
+					consumers[2] ~= row.incident_bank_component_ids[2] then
+				fail(row.id .. " was not consumed by its two ordered incident Banks")
 			end
 		end
 
@@ -1884,6 +2451,7 @@ local function new_partition(dependencies)
 		end
 		for index = 1, #bays do local row = bays[index]
 			local centreline, deltas = {}, {}
+			local fill_points = bay_context_by_id[row.source.id].fill_points
 			local owner_first, owner_last, owner_left, owner_right = {}, {}, {}, {}
 			local owner_left_numeric, owner_right_numeric = {}, {}
 			local bank_ids, bank_offsets, bank_counts, bank_stations = {}, {}, {}, {}
@@ -1920,8 +2488,10 @@ local function new_partition(dependencies)
 				end
 			end
 			if #bank_ids ~= 5 then fail(row.source.id .. " does not materialize five Banks") end
-			families.bays[index] = record("grug_wp40_bay_v1", row.source.id, index,
+			families.bays[index] = record("grug_wp40_bay_v2", row.source.id, index,
 				{text = {continent = row.source.continent,
+					notch_fill_policy_id = source.geometry_policies.world_partition.
+						bay_notch_fill_policy_id,
 					perimeter_id = row.source.perimeter_projection.perimeter_id,
 					owner_policy_id = source.geometry_policies.world_partition.
 						bay_owner_policy_id,
@@ -1933,11 +2503,13 @@ local function new_partition(dependencies)
 						bay_owner_side_zero_rule,
 					owner_span_transition_rule = row.source.owner_span_transition_rule,
 					owner_span_transition_tie = row.source.owner_span_transition_tie},
+					unsigned = {notch_fill_count = #fill_points},
 					text_arrays = {shore_zone_ids = array_copy(row.source.shore_zone_ids),
 						owner_left_zone_ids = owner_left,
 						owner_right_zone_ids = owner_right,
 						bank_component_ids = bank_ids},
 						signed_arrays = {centreline_xz_width = centreline,
+						notch_fill_xz = coordinates(fill_points, false),
 						station_radius_delta = deltas,
 						bank_stations_xz = bank_stations},
 					unsigned_arrays = {shore_zone_numeric_ids = shore_numeric,
@@ -2155,7 +2727,7 @@ local function new_partition(dependencies)
 
 	local function validate_bay_payload(bay)
 		if type(bay) ~= "table" or getmetatable(bay) ~= nil or
-				bay.record_schema ~= "grug_wp40_bay_v1" then
+				bay.record_schema ~= "grug_wp40_bay_v2" then
 			fail("Bay owner payload is invalid")
 		end
 		validate_plain_tree(bay, bay.id or "Bay payload")
@@ -2171,16 +2743,17 @@ local function new_partition(dependencies)
 		if bay.numeric_id ~= bay_source_numeric[bay.id] then
 			fail(bay.id .. " Bay numeric ID changed")
 		end
-		exact_named_rows(bay, "text_values", {"continent", "owner_policy_id",
+		exact_named_rows(bay, "text_values", {"continent", "notch_fill_policy_id",
+			"owner_policy_id",
 			"owner_segment_tie", "owner_side_rule", "owner_side_zero_rule",
 			"owner_span_transition_rule", "owner_span_transition_tie", "perimeter_id"})
 		exact_named_rows(bay, "signed_values", {})
-		exact_named_rows(bay, "unsigned_values", {})
+		exact_named_rows(bay, "unsigned_values", {"notch_fill_count"})
 		exact_named_rows(bay, "boolean_values", {})
 		exact_named_rows(bay, "text_arrays", {"bank_component_ids", "owner_left_zone_ids",
 			"owner_right_zone_ids", "shore_zone_ids"})
 		exact_named_rows(bay, "signed_arrays", {"bank_stations_xz",
-			"centreline_xz_width", "station_radius_delta"})
+			"centreline_xz_width", "notch_fill_xz", "station_radius_delta"})
 		exact_named_rows(bay, "unsigned_arrays", {"bank_station_counts",
 			"bank_station_offsets", "owner_left_zone_numeric_ids",
 			"owner_right_zone_numeric_ids", "owner_span_first_segments",
@@ -2191,6 +2764,8 @@ local function new_partition(dependencies)
 			fail(bay.id .. " Bay record tail changed")
 		end
 		if named_scalar(bay, "text_values", "continent") ~= authored.continent or
+				named_scalar(bay, "text_values", "notch_fill_policy_id") ~=
+					source.geometry_policies.world_partition.bay_notch_fill_policy_id or
 				named_scalar(bay, "text_values", "perimeter_id") ~=
 					authored.perimeter_projection.perimeter_id or
 				named_scalar(bay, "text_values", "owner_policy_id") ~=
@@ -2260,6 +2835,23 @@ local function new_partition(dependencies)
 		end
 		if #bank_stations ~= station_offset * 2 then
 			fail(bay.id .. " Bank station count changed")
+		end
+		local notch_count = named_scalar(bay, "unsigned_values", "notch_fill_count")
+		exact.integer(notch_count, 0, exact.MAX_SAFE, "Bay notch fill count")
+		local notch_values = named_values(bay, "signed_arrays", "notch_fill_xz")
+		if dense(notch_values, bay.id .. " Bay notch fill") ~= exact.safe_product(
+				notch_count, 2, "Bay notch fill coordinate count") then
+			fail(bay.id .. " Bay notch fill count changed")
+		end
+		local previous_x, previous_z
+		for index = 1, notch_count do
+			local x, z = notch_values[index * 2 - 1], notch_values[index * 2]
+			exact.integer(x, -2147483648, 2147483647, "Bay notch fill x")
+			exact.integer(z, -2147483648, 2147483647, "Bay notch fill z")
+			if previous_x and (x < previous_x or x == previous_x and z <= previous_z) then
+				fail(bay.id .. " Bay notch fill is not canonical")
+			end
+			previous_x, previous_z = x, z
 		end
 		local centreline = named_values(bay, "signed_arrays", "centreline_xz_width")
 		if #centreline ~= #authored.centreline * 3 then
@@ -2529,6 +3121,9 @@ local function new_partition(dependencies)
 	partition.validate_coast_payload = validate_coast_payload
 	partition.validate_junction_pair = validate_junction_pair
 	partition.select_attachment_station = select_attachment_station
+	partition.transition_water_owned = transition_water_owned
+	partition.select_edge_transition = select_edge_transition
+	partition.add_edge_transition_control = add_edge_transition_control
 	partition.select_first_reachable = select_first_reachable
 	partition.horizontal_precedence = horizontal_precedence
 	partition.shelf_from_distance = shelf_from_distance

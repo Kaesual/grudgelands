@@ -31,11 +31,13 @@ local vocabulary = {
 	wood_keys = projection_keys(projection.signature_woods),
 }
 
-local sha_counter = 0
+local sha_counter,sha_cache = 0,{}
 local function from_hex(value)
 	return (value:gsub("..", function(pair) return string.char(assert(tonumber(pair,16))) end))
 end
 local function raw_sha256(data)
+	local cached=sha_cache[data]
+	if cached then return cached end
 	sha_counter = sha_counter + 1
 	local input = scratch .. "/source-" .. sha_counter .. ".bin"
 	local output = scratch .. "/source-" .. sha_counter .. ".sha"
@@ -45,7 +47,11 @@ local function raw_sha256(data)
 	assert(execute_ok==0 or execute_ok==true and execute_why=="exit" and
 		execute_code==0)
 	file = assert(io.open(output,"rb")) local line=assert(file:read("*l")) assert(file:close())
-	return from_hex(assert(line:match("^([0-9a-f]+)")))
+	assert(os.remove(input))
+	assert(os.remove(output))
+	local digest=from_hex(assert(line:match("^([0-9a-f]+)")))
+	sha_cache[data]=digest
+	return digest
 end
 
 -- Load a second copy through the production-owned binding path. This faithful
@@ -67,11 +73,25 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68"
+local EXPECTED_SOURCE_CHECKSUM="154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d"
+local EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM=
+	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f"
+local EXPECTED_WORLD_PARTITION_CHECKSUM=
+	"b3173a764329c85c501b34c2e71b1d77abab661c931a18ac1e153cd7eebd6994"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"production and independent source KAT differ")
 assert(production_stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"bound production source KAT differs")
+assert(stage1.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM==
+	EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM and
+	production_stage1.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM==
+	EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+	"boundary-displacement export KAT differs")
+assert(stage1.EXPECTED_WORLD_PARTITION_CHECKSUM==
+	EXPECTED_WORLD_PARTITION_CHECKSUM and
+	production_stage1.EXPECTED_WORLD_PARTITION_CHECKSUM==
+	EXPECTED_WORLD_PARTITION_CHECKSUM,
+	"world-partition export KAT differs")
 local offline=assert(stage1.new_offline_test_adapter,
 	"offline Stage1 adapter missing")(canonical,raw_sha256)
 
@@ -104,7 +124,8 @@ assert(#source.zones == 38 and #source.land_edges == 61 and
 	#source.bay_mouth_apertures==4 and
 	#source.boat_edges == 4 and #source.landmarks == 70 and
 	#source.anchors == 100)
-assert(#source.bay_bank_components==20 and #source.face_arcs==34 and #source.zone_faces==38 and
+assert(#source.bay_bank_components==20 and #source.bay_edge_transitions==8 and
+	#source.face_arcs==34 and #source.zone_faces==38 and
 	#source.bay_closure_wings==8 and
 	#source.surface_level_controls==162 and
 	#source.poi_spurs==74 and #source.hydrology_profiles==11 and
@@ -2317,6 +2338,1268 @@ for i=1,#source.channels do local channel=source.channels[i]
 		channel.polygon),"channel own polygon boundary became open")
 end
 
+-- R16 independent Slot-19 Reality oracle. It reconstructs land_010's R7
+-- lattice from Source + T1 arithmetic, derives the seed-dependent Bay mask,
+-- resolves the coordinate-free transition row, and runs an independent
+-- water-right Moore/DFS trace from the declared Kragmar-west negative Wing K.
+-- It deliberately never loads or calls geometry/partition.lua or raster.lua.
+local function run_r16_r17_source_oracle()
+	local seed="18446744073709551615"
+	local function point_key(point) return point.x..":"..point.z end
+	local function point_less(a,b)
+		return a.x<b.x or a.x==b.x and a.z<b.z
+	end
+	local function sequence_less(a,b)
+		local count=math.min(#a,#b)
+		for i=1,count do
+			if point_less(a[i],b[i]) then return true end
+			if point_less(b[i],a[i]) then return false end
+		end
+		return #a<#b
+	end
+	local function reverse_rows(values)
+		local result={}
+		for i=#values,1,-1 do result[#result+1]=values[i] end
+		return result
+	end
+	local no_jitter,no_jitter_seen={},{}
+	local function add_no_jitter(point)
+		if type(point)=="table" and type(point.x)=="number" and
+				type(point.z)=="number" then
+			local key=point_key(point)
+			if not no_jitter_seen[key] then
+				no_jitter_seen[key]=true
+				no_jitter[#no_jitter+1]={x=point.x,z=point.z}
+			end
+		end
+	end
+	local function add_polylines(collection,field)
+		for i=1,#collection do local points=collection[i][field]
+			if points then for j=1,#points do add_no_jitter(points[j]) end end
+		end
+	end
+	add_polylines(source.land_edges,"control")
+	add_polylines(source.perimeters,"polygon")
+	add_polylines(source.bays,"centreline")
+	add_polylines(source.islands,"polygon")
+	add_polylines(source.channels,"polygon")
+	add_polylines(source.routes,"centreline")
+	add_polylines(source.island_routes,"centreline")
+	add_polylines(source.hydrology,"centreline")
+	add_polylines(source.housing_masks,"polygon")
+	for i=1,#source.poi_spurs do
+		for j=1,#source.poi_spurs[i].candidate_paths do
+			for k=1,#source.poi_spurs[i].candidate_paths[j] do
+				add_no_jitter(source.poi_spurs[i].candidate_paths[j][k])
+			end
+		end
+	end
+	for i=1,#source.face_arcs do
+		for j=1,#source.face_arcs[i].authority_components do
+			local component=source.face_arcs[i].authority_components[j]
+			if component.kind=="literal_arc" then
+				for k=1,#component.control do add_no_jitter(component.control[k]) end
+			end
+		end
+	end
+	for _,collection in ipairs({source.route_interfaces,
+			source.island_route_interfaces}) do
+		for i=1,#collection do add_no_jitter(collection[i].position) end
+	end
+	for i=1,#source.anchors do
+		if source.anchors[i].placement_mode=="fixed" then
+			add_no_jitter(source.anchors[i].position)
+		end
+	end
+	local holy=source.constants.holy_grounds
+	for _,x in ipairs({holy.min_x,holy.max_x}) do
+		for _,z in ipairs({holy.min_z,holy.max_z}) do add_no_jitter({x=x,z=z}) end
+	end
+	for i=1,#source.constants.holy_junction_x do
+		local x=source.constants.holy_junction_x[i]
+		add_no_jitter({x=x,z=holy.min_z}) add_no_jitter({x=x,z=holy.max_z})
+	end
+	for i=1,#source.junction_departures do
+		local row=source.junction_departures[i]
+		local edge=source.land_edges[tonumber(row.edge_id:sub(6))]
+		local from=row.edge_endpoint=="from"
+		local endpoint=edge.control[from and 1 or #edge.control]
+		local adjacent=edge.control[from and 2 or #edge.control-1]
+		add_no_jitter({x=endpoint.x+(adjacent.x<endpoint.x and -1 or 1),
+			z=endpoint.z+(adjacent.z<endpoint.z and -1 or 1)})
+	end
+	table.sort(no_jitter,point_less)
+
+	local edge=source.land_edges[10]
+	assert(edge.id=="land_010" and edge.max_displacement==64)
+	local authored={}
+	for segment_index=1,#edge.control-1 do
+		local part=raster_canonical_points(edge.control[segment_index].x,
+			edge.control[segment_index].z,edge.control[segment_index+1].x,
+			edge.control[segment_index+1].z)
+		for local_index=1,#part do local point=part[local_index]
+			if #authored==0 or point_key(authored[#authored])~=point_key(point) then
+				authored[#authored+1]={x=point.x,z=point.z,
+					source_segment=segment_index-1,local_station=local_index-1,
+					local_last=#part-1,authored_order=#authored+1}
+			end
+		end
+	end
+	local calculation=authored
+	local reversed=reverse_rows(authored)
+	if sequence_less(reversed,authored) then calculation=reversed end
+	local boundary_noise={schema="grug_wp40_geometry_source_v1",seed=seed,
+		domain=edge.noise_domain,feature="",octaves={
+			{period=384,amplitude_numerator=2,amplitude_denominator=3},
+			{period=768,amplitude_numerator=1,amplitude_denominator=3}}}
+	local local_rows={}
+	for i=1,#calculation do local point=calculation[i]
+		local previous=i>1 and calculation[i-1] or nil
+		local following=i<#calculation and calculation[i+1] or nil
+		local nx,nz
+		if previous and following then
+			nx,nz=displacement_joint_normal(point.x-previous.x,point.z-previous.z,
+				following.x-point.x,following.z-point.z)
+		elseif following then
+			nx,nz=displacement_step_normal(following.x-point.x,following.z-point.z)
+		else
+			nx,nz=displacement_step_normal(point.x-previous.x,point.z-previous.z)
+		end
+		local noise_q=deterministic.clamp(deterministic.value_noise_2d(
+			canonical,raw_sha256,boundary_noise,point.x,point.z),-Q,Q)
+		local taper_q=deterministic.smootherstep(deterministic.qfrom_ratio(
+			math.min(math.min(point.local_station,
+				point.local_last-point.local_station),96),96))
+		local minimum_damping=Q
+		for source_index=1,#no_jitter do
+			local fixed=no_jitter[source_index]
+			local distance=math.max(math.abs(point.x-fixed.x),math.abs(point.z-fixed.z))
+			local damping=no_jitter_damping(distance)
+			if damping<minimum_damping then minimum_damping=damping end
+			if minimum_damping==0 then break end
+		end
+		local desired_q=deterministic.qmul(
+			deterministic.qmul(noise_q,edge.max_displacement*Q),
+			deterministic.qmul(taper_q,minimum_damping))
+		local_rows[i]={x=point.x,z=point.z,authored_order=point.authored_order,
+			scalar_q=desired_q,nx=nx,nz=nz}
+	end
+	local bucket_size=64
+	local base_buckets={}
+	for i=1,#authored do local point=authored[i]
+		local bucket=deterministic.floor_div(point.x,bucket_size)..":"..
+			deterministic.floor_div(point.z,bucket_size)
+		base_buckets[bucket]=base_buckets[bucket] or {}
+		base_buckets[bucket][#base_buckets[bucket]+1]=point
+	end
+	local function final_valid(points)
+		local seen,diagonals={},{}
+		for i=1,#points do local point=points[i]
+			local key=point_key(point)
+			if seen[key] then return false end
+			seen[key]=true
+			local bx,bz=deterministic.floor_div(point.x,bucket_size),
+				deterministic.floor_div(point.z,bucket_size)
+			local inside=false
+			for ox=-1,1 do for oz=-1,1 do
+				local bucket=base_buckets[(bx+ox)..":"..(bz+oz)] or {}
+				for j=1,#bucket do
+					if math.abs(point.x-bucket[j].x)<=edge.max_displacement and
+							math.abs(point.z-bucket[j].z)<=edge.max_displacement then
+						inside=true break
+					end
+				end
+				if inside then break end
+			end if inside then break end end
+			if not inside then return false end
+			if i>1 then
+				local previous=points[i-1]
+				local dx,dz=point.x-previous.x,point.z-previous.z
+				if math.max(math.abs(dx),math.abs(dz))~=1 then return false end
+				if math.abs(dx)==1 and math.abs(dz)==1 then
+					local cell=math.min(point.x,previous.x)..":"..math.min(point.z,previous.z)
+					local slope=dx==dz and 1 or -1
+					if diagonals[cell] and diagonals[cell]~=slope then return false end
+					diagonals[cell]=slope
+				end
+			end
+		end
+		return #points>=2
+	end
+	local provisional,selected_ceiling
+	for ceiling=edge.max_displacement,0,-1 do
+		local controls={}
+		for i=1,#local_rows do local row=local_rows[i]
+			local scalar=deterministic.clamp(row.scalar_q,-ceiling*Q,ceiling*Q)
+			local sx,sz=displacement_components(row.nx,row.nz,scalar)
+			controls[row.authored_order]={x=row.x+sx,z=row.z+sz}
+		end
+		local points=raster_displaced_controls(controls,false)
+		if final_valid(points) then provisional,selected_ceiling=points,ceiling break end
+	end
+	assert(provisional and selected_ceiling==3,
+		"R16 independent land_010 R7 ceiling drift: "..tostring(selected_ceiling))
+
+	-- Independently materialize both selected mainland R7 perimeters.  Candidate
+	-- scope below therefore uses the final footprint and perimeter-equality
+	-- rules rather than treating every dry coordinate as mainland.
+	local land_edge_by_id={}
+	for edge_index=1,#source.land_edges do
+		land_edge_by_id[source.land_edges[edge_index].id]=source.land_edges[edge_index]
+	end
+	local function same_sequence(a,b)
+		if #a~=#b then return false end
+		for index=1,#a do
+			if a[index].x~=b[index].x or a[index].z~=b[index].z then return false end
+		end
+		return true
+	end
+	local function fixed_closure_union(perimeter)
+		local result={}
+		for ref_index=1,#perimeter.r7_fixed_closure.edge_refs do
+			local ref=perimeter.r7_fixed_closure.edge_refs[ref_index]
+			local fixed_edge=assert(land_edge_by_id[ref.edge_id])
+			assert(fixed_edge.max_displacement==0)
+			local part=raster_displaced_controls(fixed_edge.control,false)
+			if ref.direction=="reverse" then part=reverse_rows(part)
+			elseif ref.direction~="forward" then error("R16 invalid fixed-closure direction") end
+			if #result>0 then assert(point_key(result[#result])==point_key(part[1])) end
+			for point_index=1,#part do
+				if #result==0 or point_key(result[#result])~=point_key(part[point_index]) then
+					result[#result+1]={x=part[point_index].x,z=part[point_index].z}
+				end
+			end
+		end
+		return result
+	end
+	local function authored_perimeter_rows(perimeter)
+		local union=fixed_closure_union(perimeter)
+		local union_reverse=reverse_rows(union)
+		local matched
+		for segment_index=1,#perimeter.polygon-1 do
+			local a,b=perimeter.polygon[segment_index],perimeter.polygon[segment_index+1]
+			local part=raster_canonical_points(a.x,a.z,b.x,b.z)
+			if same_sequence(part,union) or same_sequence(part,union_reverse) then
+				assert(not matched,"R16 fixed closure matched twice")
+				matched=segment_index
+			end
+		end
+		assert(matched,"R16 fixed closure did not match a full source segment")
+		local rows={}
+		for segment_index=1,#perimeter.polygon-1 do
+			local a,b=perimeter.polygon[segment_index],perimeter.polygon[segment_index+1]
+			local part=raster_canonical_points(a.x,a.z,b.x,b.z)
+			for local_index=1,#part do local point=part[local_index]
+				if #rows==0 or point_key(rows[#rows])~=point_key(point) then
+					rows[#rows+1]={x=point.x,z=point.z,source_segment=segment_index-1,
+						local_station=local_index-1,local_last=#part-1,
+						fixed_closure=segment_index==matched}
+				elseif segment_index==matched then rows[#rows].fixed_closure=true end
+			end
+		end
+		if point_key(rows[1])==point_key(rows[#rows]) then
+			if rows[#rows].fixed_closure then rows[1].fixed_closure=true end
+			table.remove(rows)
+		end
+		for index=1,#rows do rows[index].authored_order=index end
+		return rows
+	end
+	local function canonical_closed_rows(rows)
+		local minimum=1
+		for index=2,#rows do
+			assert(point_key(rows[index])~=point_key(rows[minimum]) or
+				index==minimum,"R16 closed perimeter repeated its minimum")
+			if point_less(rows[index],rows[minimum]) then minimum=index end
+		end
+		local forward,backward={},{}
+		for offset=0,#rows-1 do
+			forward[offset+1]=rows[(minimum-1+offset)%#rows+1]
+			backward[offset+1]=rows[(minimum-1-offset)%#rows+1]
+		end
+		return sequence_less(backward,forward) and backward or forward
+	end
+	local mainland_frame=source.constants.mainland_frame
+	local function valid_closed_perimeter(perimeter,points)
+		if #points<3 then return false end
+		local seen,diagonals={},{}
+		for index=1,#points do local point=points[index]
+			local key=point_key(point)
+			if seen[key] or point.x<mainland_frame.min_x or
+					point.x>mainland_frame.max_x or
+					point.z<mainland_frame.min_z or
+					point.z>mainland_frame.max_z then return false end
+			seen[key]=true
+		end
+		local area2=0
+		for index=1,#points do
+			local following=index==#points and 1 or index+1
+			local a,b=points[index],points[following]
+			local dx,dz=b.x-a.x,b.z-a.z
+			if math.max(math.abs(dx),math.abs(dz))~=1 then return false end
+			if math.abs(dx)==1 and math.abs(dz)==1 then
+				local cell=math.min(a.x,b.x)..":"..math.min(a.z,b.z)
+				local slope=dx==dz and 1 or -1
+				if diagonals[cell] and diagonals[cell]~=slope then return false end
+				diagonals[cell]=slope
+			end
+			area2=area2+a.x*b.z-b.x*a.z
+		end
+		if perimeter.orientation=="counterclockwise" then return area2>0 end
+		if perimeter.orientation=="clockwise" then return area2<0 end
+		return false
+	end
+	local function polygon_class(points,x,z)
+		local winding=0
+		for index=1,#points do
+			local following=index==#points and 1 or index+1
+			local a,b=points[index],points[following]
+			local side=(b.x-a.x)*(z-a.z)-(b.z-a.z)*(x-a.x)
+			if side==0 and x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
+					z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then return 0 end
+			if a.z<=z then
+				if b.z>z and side>0 then winding=winding+1 end
+			elseif b.z<=z and side<0 then winding=winding-1 end
+		end
+		return winding==0 and -1 or 1
+	end
+	local function build_polygon_classifier(points)
+		local boundary,events_by_z={},{}
+		for index=1,#points do
+			local following=index==#points and 1 or index+1
+			local a,b=points[index],points[following]
+			boundary[point_key(a)]=true
+			if b.z>a.z then
+				events_by_z[a.z]=events_by_z[a.z] or {}
+				events_by_z[a.z][#events_by_z[a.z]+1]={x=a.x,delta=1}
+			elseif b.z<a.z then
+				events_by_z[b.z]=events_by_z[b.z] or {}
+				events_by_z[b.z][#events_by_z[b.z]+1]={x=b.x,delta=-1}
+			end
+		end
+		return function(x,z)
+			if boundary[x..":"..z] then return 0 end
+			local winding=0
+			for _,event in ipairs(events_by_z[z] or {}) do
+				if x<event.x then winding=winding+event.delta end
+			end
+			return winding==0 and -1 or 1
+		end
+	end
+	local wing_by_bay={}
+	for i=1,#source.bay_closure_wings do local wing=source.bay_closure_wings[i]
+		wing_by_bay[wing.bay_id]=wing_by_bay[wing.bay_id] or {}
+		wing_by_bay[wing.bay_id][#wing_by_bay[wing.bay_id]+1]=wing
+	end
+	local MAX_SAFE_INTEGER=9007199254740991
+	local function checked_integer_sum(value,delta)
+		assert(value==math.floor(value) and delta==math.floor(delta) and
+			value>=-MAX_SAFE_INTEGER and value<=MAX_SAFE_INTEGER and
+			delta>=-MAX_SAFE_INTEGER and delta<=MAX_SAFE_INTEGER and
+			(value>=0 and delta>=0 and value<=MAX_SAFE_INTEGER-delta or
+			 value<=0 and delta<=0 and value>=-MAX_SAFE_INTEGER-delta or
+			 value<0 and delta>0 or value>0 and delta<0 or value==0 or delta==0),
+			"R17 unsafe integer sum")
+		local result=value+delta
+		assert(result>=-MAX_SAFE_INTEGER and result<=MAX_SAFE_INTEGER and
+			result-delta==value)
+		return result
+	end
+	local function build_raw_world(world_seed)
+		local final_perimeter_by_id,perimeter_ceiling={},{}
+		for perimeter_index=1,2 do local perimeter=source.perimeters[perimeter_index]
+			local authored=authored_perimeter_rows(perimeter)
+			local calculation=canonical_closed_rows(authored)
+			local noise={schema="grug_wp40_geometry_source_v1",seed=world_seed,
+				domain=perimeter.noise_domain,feature="",octaves={
+					{period=512,amplitude_numerator=2,amplitude_denominator=3},
+					{period=1024,amplitude_numerator=1,amplitude_denominator=3}}}
+			local rows={}
+			for index=1,#calculation do local point=calculation[index]
+				local previous=calculation[index==1 and #calculation or index-1]
+				local following=calculation[index==#calculation and 1 or index+1]
+				local nx,nz=displacement_joint_normal(point.x-previous.x,
+					point.z-previous.z,following.x-point.x,following.z-point.z)
+				local noise_q=deterministic.clamp(deterministic.value_noise_2d(
+					canonical,raw_sha256,noise,point.x,point.z),-Q,Q)
+				local distance=math.min(point.local_station,
+					point.local_last-point.local_station)
+				local taper=deterministic.smootherstep(deterministic.qfrom_ratio(
+					math.min(distance,96),96))
+				local desired=deterministic.qmul(
+					deterministic.qmul(noise_q,perimeter.max_displacement*Q),
+					deterministic.qmul(taper,no_jitter_damping((function()
+						local minimum=2147483647
+						for source_index=1,#no_jitter do local fixed=no_jitter[source_index]
+							minimum=math.min(minimum,math.max(math.abs(point.x-fixed.x),
+								math.abs(point.z-fixed.z)))
+						end
+						return minimum
+					end)())))
+				local scalar=point.fixed_closure and 0 or displacement_clip(point,nx,nz,
+					desired,perimeter.max_displacement,function(x,z)
+						return x>=mainland_frame.min_x and x<=mainland_frame.max_x and
+							z>=mainland_frame.min_z and z<=mainland_frame.max_z
+					end)
+				rows[index]={x=point.x,z=point.z,authored_order=point.authored_order,
+					scalar_q=scalar,nx=nx,nz=nz}
+			end
+			for ceiling=perimeter.max_displacement,0,-1 do
+				local controls={}
+				for index=1,#rows do local row=rows[index]
+					local scalar=deterministic.clamp(row.scalar_q,-ceiling*Q,ceiling*Q)
+					local sx,sz=displacement_components(row.nx,row.nz,scalar)
+					controls[row.authored_order]={x=row.x+sx,z=row.z+sz}
+				end
+				local points=raster_displaced_controls(controls,true)
+				if valid_closed_perimeter(perimeter,points) then
+					final_perimeter_by_id[perimeter.id]=points
+					perimeter_ceiling[perimeter.id]=ceiling
+					break
+				end
+			end
+			assert(final_perimeter_by_id[perimeter.id],"R17 final perimeter absent")
+		end
+		local footprint_classifier={}
+		for id,points in pairs(final_perimeter_by_id) do
+			footprint_classifier[id]=build_polygon_classifier(points)
+			for probe_index=1,math.min(#points,16) do local point=points[probe_index]
+				assert(footprint_classifier[id](point.x,point.z)==0 and
+					polygon_class(points,point.x,point.z)==0)
+			end
+		end
+		local bay_by_id={}
+		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+			local compiled={source=bay,segments={}}
+			for segment_index=1,#bay.centreline-1 do
+				local stations=raster_canonical_points(bay.centreline[segment_index].x,
+					bay.centreline[segment_index].z,bay.centreline[segment_index+1].x,
+					bay.centreline[segment_index+1].z)
+				local noise={schema="grug_wp40_geometry_source_v1",seed=world_seed,
+					domain=bay.noise_domain,feature="",octaves={
+						{period=256,amplitude_numerator=2,amplitude_denominator=3},
+						{period=512,amplitude_numerator=1,amplitude_denominator=3}}}
+				local deltas,buckets={},{ }
+				for station_index=1,#stations do local point=stations[station_index]
+					local noise_q=deterministic.clamp(deterministic.value_noise_2d(
+						canonical,raw_sha256,noise,point.x,point.z),-Q,Q)
+					local distance=math.min(station_index-1,#stations-station_index)
+					local taper=deterministic.smootherstep(deterministic.qfrom_ratio(
+						math.min(distance,96),96))
+					deltas[station_index]=deterministic.qround(deterministic.qmul(
+						deterministic.qmul(noise_q,bay.max_displacement*Q),taper))
+				end
+				for first=1,#stations,32 do
+					local bucket={first=first,last=math.min(first+31,#stations)}
+					for station_index=bucket.first,bucket.last do local point=stations[station_index]
+						bucket.min_x=bucket.min_x and math.min(bucket.min_x,point.x) or point.x
+						bucket.max_x=bucket.max_x and math.max(bucket.max_x,point.x) or point.x
+						bucket.min_z=bucket.min_z and math.min(bucket.min_z,point.z) or point.z
+						bucket.max_z=bucket.max_z and math.max(bucket.max_z,point.z) or point.z
+					end
+					buckets[#buckets+1]=bucket
+				end
+				compiled.segments[segment_index]={stations=stations,deltas=deltas,
+					buckets=buckets}
+			end
+			bay_by_id[bay.id]=compiled
+		end
+		local function bucket_lower(bucket,x,z)
+			local dx=x<bucket.min_x and bucket.min_x-x or
+				x>bucket.max_x and x-bucket.max_x or 0
+			local dz=z<bucket.min_z and bucket.min_z-z or
+				z>bucket.max_z and z-bucket.max_z or 0
+			return dx*dx+dz*dz
+		end
+		local function nearest_delta(segment,x,z)
+			local first_bucket,first_lower
+			for bucket_index=1,#segment.buckets do
+				local lower=bucket_lower(segment.buckets[bucket_index],x,z)
+				if not first_lower or lower<first_lower then
+					first_bucket,first_lower=bucket_index,lower
+				end
+			end
+			local best_index,best_distance
+			local function inspect(bucket)
+				for station_index=bucket.first,bucket.last do
+					local station=segment.stations[station_index]
+					local dx,dz=station.x-x,station.z-z
+					local distance=dx*dx+dz*dz
+					if not best_distance or distance<best_distance or
+							distance==best_distance and station_index<best_index then
+						best_index,best_distance=station_index,distance
+					end
+				end
+			end
+			inspect(segment.buckets[first_bucket])
+			for bucket_index=1,#segment.buckets do
+				if bucket_index~=first_bucket and
+						bucket_lower(segment.buckets[bucket_index],x,z)<=best_distance then
+					inspect(segment.buckets[bucket_index])
+				end
+			end
+			return segment.deltas[best_index]
+		end
+		local function base_member(compiled,x,z)
+			local bay=compiled.source
+			for segment_index=1,#bay.centreline-1 do
+				local segment=compiled.segments[segment_index]
+				local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+				local vx,vz=b.x-a.x,b.z-a.z
+				local px,pz=x-a.x,z-a.z
+				local length=vx*vx+vz*vz
+				local projection=px*vx+pz*vz
+				local max_width=math.max(a.half_width,b.half_width)+bay.max_displacement
+				local possible
+				if projection<=0 then possible=px*px+pz*pz<max_width*max_width
+				elseif projection>=length then local ex,ez=x-b.x,z-b.z
+					possible=ex*ex+ez*ez<max_width*max_width
+				else local cross=vx*pz-vz*px
+					possible=cross*cross*length<(max_width*length)*(max_width*length) end
+				if possible then
+					local delta=nearest_delta(segment,x,z)
+					if projection<=0 then local width=a.half_width+delta
+						if px*px+pz*pz<width*width then return true end
+					elseif projection>=length then local ex,ez=x-b.x,z-b.z
+						local width=b.half_width+delta
+						if ex*ex+ez*ez<width*width then return true end
+					else local cross=vx*pz-vz*px
+						local width=(a.half_width+delta)*(length-projection)+
+							(b.half_width+delta)*projection
+						if cross*cross*length<width*width then return true end
+					end
+				end
+			end
+			return false
+		end
+		local aperture_station_by_bay={}
+		for aperture_index=1,#source.bay_mouth_apertures do
+			local aperture=source.bay_mouth_apertures[aperture_index]
+			local compiled=assert(bay_by_id[aperture.bay_id])
+			local stations=assert(final_perimeter_by_id[aperture.perimeter_id])
+			local mouth=compiled.source.centreline[1]
+			local mouth_index
+			for station_index=1,#stations do
+				if stations[station_index].x==mouth.x and stations[station_index].z==mouth.z then
+					assert(not mouth_index,"R17 mouth appears twice on final perimeter")
+					mouth_index=station_index
+				end
+			end
+			assert(mouth_index,"R17 mouth absent from final perimeter")
+			local first,last=mouth_index,mouth_index
+			while first>1 and base_member(compiled,stations[first-1].x,
+					stations[first-1].z) do first=first-1 end
+			while last<#stations and base_member(compiled,stations[last+1].x,
+					stations[last+1].z) do last=last+1 end
+			assert(first>1 and last<#stations,"R17 aperture wrapped final perimeter")
+			local included={}
+			for station_index=first,last do included[point_key(stations[station_index])]=true end
+			aperture_station_by_bay[aperture.bay_id]=included
+		end
+		local bay_context_by_id={}
+		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+			local perimeter_id=bay.perimeter_projection.perimeter_id
+			local context={bay_id=bay.id,compiled=bay_by_id[bay.id],
+				perimeter=final_perimeter_by_id[perimeter_id],
+				footprint_class=footprint_classifier[perimeter_id],boxes={}}
+			for segment_index=1,#bay.centreline-1 do
+				local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+				local radius=checked_integer_sum(checked_integer_sum(
+					math.max(a.half_width,b.half_width),bay.max_displacement),1)
+				context.boxes[#context.boxes+1]={
+					min_x=checked_integer_sum(math.min(a.x,b.x),-radius),
+					max_x=checked_integer_sum(math.max(a.x,b.x),radius),
+					min_z=checked_integer_sum(math.min(a.z,b.z),-radius),
+					max_z=checked_integer_sum(math.max(a.z,b.z),radius)}
+			end
+			for wing_index=1,#wing_by_bay[bay.id] do local closure=wing_by_bay[bay.id][wing_index]
+				local radius=checked_integer_sum(closure.head_half_width,1)
+				context.boxes[#context.boxes+1]={
+					min_x=checked_integer_sum(math.min(closure.head.x,closure.junction.x),-radius),
+					max_x=checked_integer_sum(math.max(closure.head.x,closure.junction.x),radius),
+					min_z=checked_integer_sum(math.min(closure.head.z,closure.junction.z),-radius),
+					max_z=checked_integer_sum(math.max(closure.head.z,closure.junction.z),radius)}
+			end
+			for box_index=1,#context.boxes do local box=context.boxes[box_index]
+				context.min_x=context.min_x and math.min(context.min_x,box.min_x) or box.min_x
+				context.max_x=context.max_x and math.max(context.max_x,box.max_x) or box.max_x
+				context.min_z=context.min_z and math.min(context.min_z,box.min_z) or box.min_z
+				context.max_z=context.max_z and math.max(context.max_z,box.max_z) or box.max_z
+			end
+			bay_context_by_id[bay.id]=context
+		end
+		local function in_bay_envelope(context,x,z)
+			for box_index=1,#context.boxes do local box=context.boxes[box_index]
+				if x>=box.min_x and x<=box.max_x and z>=box.min_z and z<=box.max_z then
+					return true
+				end
+			end
+			return false
+		end
+		local function bay_water(bay_id,x,z)
+			local context=bay_context_by_id[bay_id]
+			local class=context.footprint_class(x,z)
+			if class<0 then return false end
+			if base_member(context.compiled,x,z) and
+					(class>0 or aperture_station_by_bay[bay_id][x..":"..z]) then return true end
+			if class>0 then
+				for wing_index=1,#wing_by_bay[bay_id] do
+					if r8_wing_member(x,z,wing_by_bay[bay_id][wing_index]) then return true end
+				end
+			end
+			return false
+		end
+		local owner_cache={}
+		local function raw_owner(x,z)
+			local key=x..":"..z
+			local cached=owner_cache[key]
+			if cached then return cached.count,cached.owner end
+			local count,owner=0
+			for bay_index=1,#source.bays do local bay_id=source.bays[bay_index].id
+				if bay_water(bay_id,x,z) then count=count+1 owner=owner or bay_id end
+			end
+			owner_cache[key]={count=count,owner=owner}
+			return count,owner
+		end
+		return {seed=world_seed,final_perimeter_by_id=final_perimeter_by_id,
+			perimeter_ceiling=perimeter_ceiling,bay_context_by_id=bay_context_by_id,
+			in_bay_envelope=in_bay_envelope,bay_water=bay_water,raw_owner=raw_owner,
+			clear_owner_cache=function() owner_cache={} end}
+	end
+	local max_raw_world=build_raw_world(seed)
+	local final_perimeter_by_id=max_raw_world.final_perimeter_by_id
+	local perimeter_ceiling=max_raw_world.perimeter_ceiling
+	local bay_context_by_id=max_raw_world.bay_context_by_id
+	local in_bay_envelope=max_raw_world.in_bay_envelope
+	local raw_bay_water=max_raw_world.bay_water
+	local raw_water_owner_count=max_raw_world.raw_owner
+	local cardinal={{x=1,z=0},{x=0,z=-1},{x=-1,z=0},{x=0,z=1}}
+	local diagonal={{x=1,z=-1},{x=-1,z=-1},{x=-1,z=1},{x=1,z=1}}
+	local function checked_neighbour(value,delta)
+		assert(value==math.floor(value) and (delta==0 or delta==1 or delta==-1) and
+			value>-MAX_SAFE_INTEGER and value<MAX_SAFE_INTEGER,
+			"R17 unsafe neighbour coordinate")
+		return checked_integer_sum(value,delta)
+	end
+	assert(not pcall(checked_neighbour,MAX_SAFE_INTEGER,1) and
+		not pcall(checked_integer_sum,-MAX_SAFE_INTEGER,-1),
+		"R17 unsafe envelope/neighbour arithmetic was accepted")
+	local function raw_notch_predicate(bay_id,x,z,strict_inside,raw_owner)
+		if not strict_inside(x,z) then return false end
+		local center_count=raw_owner(x,z)
+		if center_count~=0 then return false end
+		local water_count,dry_neighbor=0
+		for direction_index=1,4 do local direction=cardinal[direction_index]
+			local nx,nz=checked_neighbour(x,direction.x),
+				checked_neighbour(z,direction.z)
+			local count,owner=raw_owner(nx,nz)
+			if count==1 and owner==bay_id and strict_inside(nx,nz) then
+				water_count=water_count+1
+			elseif count==0 and strict_inside(nx,nz) and not dry_neighbor then
+				dry_neighbor={x=nx,z=nz}
+			else return false end
+		end
+		if water_count~=3 or not dry_neighbor then return false end
+		for direction_index=1,4 do local direction=diagonal[direction_index]
+			local nx,nz=checked_neighbour(x,direction.x),
+				checked_neighbour(z,direction.z)
+			local count,owner=raw_owner(nx,nz)
+			if not strict_inside(nx,nz) or count~=1 or owner~=bay_id then
+				return false
+			end
+		end
+		return true,dry_neighbor
+	end
+	local function raw_notch_candidate(world,bay_id,x,z,synthetic_owner)
+		local context=world.bay_context_by_id[bay_id]
+		if not world.in_bay_envelope(context,x,z) then return false end
+		return raw_notch_predicate(bay_id,x,z,function(px,pz)
+			return context.footprint_class(px,pz)==1
+		end,synthetic_owner or world.raw_owner)
+	end
+	local zone_numeric={}
+	for zone_index=1,#source.zones do zone_numeric[source.zones[zone_index].id]=zone_index end
+	local function rational_compare(an,ad,bn,bd)
+		local reverse=false
+		while true do
+			local aq,bq=math.floor(an/ad),math.floor(bn/bd)
+			if aq~=bq then local result=aq<bq and -1 or 1
+				return reverse and -result or result end
+			local ar,br=an-aq*ad,bn-bq*bd
+			if ar==0 or br==0 then local result
+				if ar==br then result=0 elseif ar==0 then result=-1 else result=1 end
+				return reverse and -result or result
+			end
+			an,ad,bn,bd=ad,ar,bd,br reverse=not reverse
+		end
+	end
+	local function exact_base_owner(bay,x,z)
+		local best_n,best_d,best_owner
+		for segment_index=1,#bay.centreline-1 do
+			local a,b=bay.centreline[segment_index],bay.centreline[segment_index+1]
+			local vx,vz=b.x-a.x,b.z-a.z
+			local px,pz=x-a.x,z-a.z
+			local length=vx*vx+vz*vz
+			local projection=px*vx+pz*vz
+			local cross=vx*pz-vz*px
+			local numerator,denominator
+			if projection<=0 then numerator,denominator=px*px+pz*pz,1
+			elseif projection>=length then local ex,ez=x-b.x,z-b.z
+				numerator,denominator=ex*ex+ez*ez,1
+			else numerator,denominator=cross*cross,length end
+			local span
+			for span_index=1,#bay.owner_spans do local candidate=bay.owner_spans[span_index]
+				if segment_index>=candidate.first_segment and
+						segment_index<=candidate.last_segment then span=candidate break end
+			end
+			assert(span)
+			local owner=cross>0 and span.left_zone_id or cross<0 and
+				span.right_zone_id or (zone_numeric[span.left_zone_id]<
+				zone_numeric[span.right_zone_id] and span.left_zone_id or span.right_zone_id)
+			local comparison=best_n and rational_compare(numerator,denominator,
+				best_n,best_d) or -1
+			if comparison<0 then best_n,best_d,best_owner=numerator,denominator,owner
+			elseif comparison==0 and zone_numeric[owner]<zone_numeric[best_owner] then
+				best_owner=owner
+			end
+		end
+		return best_owner
+	end
+	local function enumerate_raw_notches(world,label)
+		local result,counts,by_point={},{},{}
+		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+			local context=world.bay_context_by_id[bay.id]
+			counts[bay.id]=0
+			for x=context.min_x,context.max_x do for z=context.min_z,context.max_z do
+				if world.in_bay_envelope(context,x,z) then
+					local accepted,dry=raw_notch_predicate(bay.id,x,z,function(px,pz)
+						return context.footprint_class(px,pz)==1
+					end,world.raw_owner)
+					if accepted then
+						local key=x..":"..z
+						assert(not by_point[key],"R17 P qualified for multiple Bays: "..key)
+						by_point[key]=bay.id counts[bay.id]=counts[bay.id]+1
+						result[#result+1]={bay_id=bay.id,x=x,z=z,dry_x=dry.x,dry_z=dry.z,
+							owner=exact_base_owner(bay,x,z)}
+					end
+				end
+			end end
+		end
+		print(("WP40 T2 R17 exhaustive raw-notch %s EW/EE/KW/KE=%d/%d/%d/%d total=%d"):
+			format(label,counts.bay_elandor_west,counts.bay_elandor_east,
+			counts.bay_kragmar_west,counts.bay_kragmar_east,#result))
+		return result,counts,by_point
+	end
+	local function verify_row_endpoint_superset(world,label,exhaustive)
+		local selected={}
+		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+			local context=world.bay_context_by_id[bay.id]
+			local candidates={}
+			for z=context.min_z,context.max_z do
+				local first
+				for x=context.min_x,context.max_x do
+					local water=world.bay_water(bay.id,x,z)
+					if water and not first then first=x end
+					if not water and first then
+						local finish=checked_integer_sum(x,-1)
+						for _,candidate_x in ipairs({checked_integer_sum(first,-1),
+							checked_integer_sum(finish,1)}) do
+							if candidate_x>=context.min_x and candidate_x<=context.max_x and
+								world.in_bay_envelope(context,candidate_x,z) then
+								candidates[candidate_x..":"..z]={x=candidate_x,z=z}
+							end
+						end
+						first=nil
+					end
+				end
+				if first then local candidate_x=checked_integer_sum(first,-1)
+					if candidate_x>=context.min_x and
+							world.in_bay_envelope(context,candidate_x,z) then
+						candidates[candidate_x..":"..z]={x=candidate_x,z=z}
+					end
+				end
+			end
+			for _,point in pairs(candidates) do
+				if raw_notch_candidate(world,bay.id,point.x,point.z) then
+					local key=point.x..":"..point.z
+					assert(not selected[key] or selected[key]==bay.id)
+					selected[key]=bay.id
+				end
+			end
+		end
+		for key,bay_id in pairs(exhaustive) do
+			assert(selected[key]==bay_id,
+				"R17 row-end theorem missed exhaustive P: "..label..":"..key)
+		end
+		for key,bay_id in pairs(selected) do
+			assert(exhaustive[key]==bay_id,
+				"R17 row-end theorem added nonsemantic P: "..label..":"..key)
+		end
+	end
+	do
+		for dry_direction=1,4 do
+			local raw={}
+			for direction_index=1,4 do if direction_index~=dry_direction then
+				local direction=cardinal[direction_index]
+				raw[direction.x..":"..direction.z]=true
+			end end
+			local row_runs={}
+			local first
+			for x=-1,1 do
+				if raw[x..":0"] and not first then first=x end
+				if not raw[x..":0"] and first then
+					row_runs[#row_runs+1]={first=first,finish=x-1}
+					first=nil
+				end
+			end
+			if first then row_runs[#row_runs+1]={first=first,finish=1} end
+			local represented=false
+			for run_index=1,#row_runs do local run=row_runs[run_index]
+				if run.first-1==0 or run.finish+1==0 then represented=true end
+			end
+			assert(represented,
+				"R17 row-end theorem lost a dry-cardinal orientation")
+		end
+	end
+	local seed0_raw_world=build_raw_world("0")
+	local seed0_notches,seed0_counts,seed0_by_point=
+		enumerate_raw_notches(seed0_raw_world,"Seed0")
+	assert(#seed0_notches==0 and seed0_counts.bay_elandor_west==0 and
+		seed0_counts.bay_elandor_east==0 and seed0_counts.bay_kragmar_west==0 and
+		seed0_counts.bay_kragmar_east==0,"R17 Seed0 raw-notch count drift")
+	verify_row_endpoint_superset(seed0_raw_world,"Seed0",seed0_by_point)
+	seed0_raw_world.clear_owner_cache() seed0_raw_world=nil collectgarbage("collect")
+	local max_notches,max_counts,max_fill_by_point=
+		enumerate_raw_notches(max_raw_world,"max-u64")
+	verify_row_endpoint_superset(max_raw_world,"max-u64",max_fill_by_point)
+	local function materialize_fill_payloads(rows)
+		local payloads={}
+		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
+			payloads[bay.id]={policy_id=source.geometry_policies.world_partition.
+				bay_notch_fill_policy_id,count=0,columns={}}
+		end
+		for row_index=1,#rows do local row=rows[row_index]
+			local payload=assert(payloads[row.bay_id])
+			payload.columns[#payload.columns+1]={x=row.x,z=row.z}
+		end
+		for _,payload in pairs(payloads) do
+			table.sort(payload.columns,function(a,b)
+				return a.x<b.x or a.x==b.x and a.z<b.z
+			end)
+			payload.count=#payload.columns
+		end
+		return payloads
+	end
+	local fill_payloads=materialize_fill_payloads(max_notches)
+	local synthetic_payload=materialize_fill_payloads({
+		{bay_id="bay_elandor_west",x=2,z=-1},
+		{bay_id="bay_elandor_west",x=-3,z=4},
+		{bay_id="bay_elandor_west",x=2,z=-2},
+	}).bay_elandor_west
+	assert(synthetic_payload.count==3 and synthetic_payload.columns[1].x==-3 and
+		synthetic_payload.columns[2].x==2 and synthetic_payload.columns[2].z==-2 and
+		synthetic_payload.columns[3].z==-1,
+		"R17 compiled fill payload lexicographic order drift")
+	local notch_witnesses={
+		{"bay_elandor_west",-775,-2349,-774,-2349,"elandor_goldmead_vale"},
+		{"bay_elandor_east",887,-2036,886,-2036,"elandor_goldmead_vale"},
+		{"bay_kragmar_west",-1121,2220,-1122,2220,"kragmar_mournfen"},
+	}
+	assert(#max_notches==#notch_witnesses and max_counts.bay_elandor_west==1 and
+		max_counts.bay_elandor_east==1 and max_counts.bay_kragmar_west==1 and
+		max_counts.bay_kragmar_east==0 and
+		fill_payloads.bay_elandor_west.count==1 and
+		fill_payloads.bay_elandor_east.count==1 and
+		fill_payloads.bay_kragmar_west.count==1 and
+		fill_payloads.bay_kragmar_east.count==0,
+		"R17 max-u64 raw-notch/payload count drift")
+	for witness_index=1,#notch_witnesses do local expected=notch_witnesses[witness_index]
+		local actual=max_notches[witness_index]
+		local payload=fill_payloads[expected[1]]
+		assert(actual and actual.bay_id==expected[1] and actual.x==expected[2] and
+			actual.z==expected[3] and actual.dry_x==expected[4] and
+			actual.dry_z==expected[5] and actual.owner==expected[6] and
+			payload.policy_id=="single_pass_same_bay_raw_mask_degree_one_notch_v1" and
+			payload.columns[1].x==actual.x and payload.columns[1].z==actual.z,
+			"R17 max-u64 notch/bay/connector/owner bijection drift: "..
+				tostring(actual and (actual.bay_id.." "..actual.x..":"..actual.z..
+				" dry="..actual.dry_x..":"..actual.dry_z.." owner="..actual.owner)))
+		local context=max_raw_world.bay_context_by_id[actual.bay_id]
+		for _,direction in ipairs({{x=0,z=0},cardinal[1],cardinal[2],cardinal[3],
+				cardinal[4],diagonal[1],diagonal[2],diagonal[3],diagonal[4]}) do
+			local px,pz=actual.x+direction.x,actual.z+direction.z
+			assert(context.footprint_class(px,pz)==
+				polygon_class(context.perimeter,px,pz),"R17 fast footprint classifier drift")
+		end
+	end
+	local foreign_row=notch_witnesses[1]
+	local foreign_key
+	for direction_index=1,4 do local direction=cardinal[direction_index]
+		local nx,nz=foreign_row[2]+direction.x,foreign_row[3]+direction.z
+		local count,owner=raw_water_owner_count(nx,nz)
+		if count==1 and owner==foreign_row[1] then foreign_key=nx..":"..nz break end
+	end
+	assert(foreign_key,"R17 witness has no same-Bay cardinal water")
+	local function corrupt_owner(mode)
+		return function(px,pz)
+			local count,owner=raw_water_owner_count(px,pz)
+			if px..":"..pz==foreign_key and count==1 and owner==foreign_row[1] then
+				if mode=="foreign" then return 1,"bay_kragmar_east" end
+				return 2,owner
+			end
+			return count,owner
+		end
+	end
+	assert(not raw_notch_candidate(max_raw_world,foreign_row[1],foreign_row[2],
+		foreign_row[3],corrupt_owner("foreign")),
+		"R17 count-one foreign raw-water owner was accepted")
+	assert(not raw_notch_candidate(max_raw_world,foreign_row[1],foreign_row[2],
+		foreign_row[3],corrupt_owner("multiple")),
+		"R17 multiple raw-water owners were accepted")
+	do
+		local raw={}
+		local function set_water(x,z) raw[x..":"..z]="bay_fixture" end
+		for _,point in ipairs({{-1,0},{0,-1},{0,1},{-1,-1},{1,-1},
+				{-1,1},{1,1},{2,-1},{2,1}}) do set_water(point[1],point[2]) end
+		local function inside() return true end
+		local function owner(x,z)
+			return raw[x..":"..z] and 1 or 0,raw[x..":"..z]
+		end
+		assert(raw_notch_predicate("bay_fixture",0,0,inside,owner) and
+			not raw_notch_predicate("bay_fixture",1,0,inside,owner),
+			"R17 synthetic raw-mask notch fixture drift")
+		raw["0:0"]="bay_fixture"
+		assert(raw_notch_predicate("bay_fixture",1,0,inside,owner),
+			"R17 synthetic fixture no longer distinguishes recursive fill")
+		raw["0:0"]=nil
+		assert(not raw_notch_predicate("bay_fixture",0,0,
+			function(x,z) return not (x==0 and z==0) end,owner),
+			"R17 perimeter-equality center was accepted as strict interior")
+		assert(not raw_notch_predicate("bay_fixture",0,0,
+			function(x,z) return not (x==-1 and z==0) end,owner),
+			"R17 non-interior cardinal water neighbour was accepted")
+	end
+	local function bay_water(bay_id,x,z)
+		return raw_bay_water(bay_id,x,z) or max_fill_by_point[x..":"..z]==bay_id
+	end
+	local function final_water_owner_count(x,z)
+		local count,owner=raw_water_owner_count(x,z)
+		local fill=max_fill_by_point[x..":"..z]
+		if fill then assert(count==0 and not owner) return 1,fill end
+		return count,owner
+	end
+	print("WP40 T2 R17 exhaustive raw-notch oracle passed: Seed0=0 max-u64=1/1/1/0 "..
+		"single-pass/nonrecursive/foreign/strict-interior guards")
+	local function bay_dry(bay_id,x,z)
+		local context=bay_context_by_id[bay_id]
+		return context.footprint_class(x,z)>=0 and
+			final_water_owner_count(x,z)==0
+	end
+	local function candidate(bay_id,x,z,synthetic_foreign_water)
+		local context=bay_context_by_id[bay_id]
+		if not in_bay_envelope(context,x,z) or not bay_dry(bay_id,x,z) then return false end
+		local own=false
+		for i=1,4 do local direction=cardinal[i]
+			local nx,nz=x+direction.x,z+direction.z
+			local own_neighbor=bay_water(bay_id,nx,nz)
+			if own_neighbor then own=true end
+			if (synthetic_foreign_water and synthetic_foreign_water(nx,nz)) or
+					(final_water_owner_count(nx,nz)>0 and not own_neighbor) then return false end
+		end
+		return own
+	end
+	local function raw_candidate(bay_id,x,z)
+		local context=bay_context_by_id[bay_id]
+		if not in_bay_envelope(context,x,z) or context.footprint_class(x,z)<0 or
+				raw_water_owner_count(x,z)>0 then return false end
+		local own=false
+		for i=1,4 do local direction=cardinal[i]
+			local nx,nz=x+direction.x,z+direction.z
+			local own_neighbor=raw_bay_water(bay_id,nx,nz)
+			if own_neighbor then own=true end
+			if raw_water_owner_count(nx,nz)>0 and not own_neighbor then return false end
+		end
+		return own
+	end
+	local retained={}
+	for i=1,#provisional do
+		if final_water_owner_count(provisional[i].x,provisional[i].z)==0 then
+			retained[#retained+1]=i
+		end
+	end
+	assert(#retained>0)
+	for i=2,#retained do
+		assert(retained[i]==retained[i-1]+1,"R16 land_010 gained a second dry run")
+	end
+	local e=provisional[retained[#retained]]
+	local w=provisional[retained[#retained]+1]
+	assert(e and w and e.x==-1140 and e.z==2241 and w.x==-1139 and w.z==2242,
+		"R16 Slot-19 E/W drift: "..tostring(e and point_key(e)).."/"..
+			tostring(w and point_key(w)))
+	local transition_resolution_calls=0
+	local function resolve_transition(bay_id,endpoint,discarded)
+		transition_resolution_calls=transition_resolution_calls+1
+		if candidate(bay_id,endpoint.x,endpoint.z) then
+			return {x=endpoint.x,z=endpoint.z},"direct"
+		end
+		local context=bay_context_by_id[bay_id]
+		assert(context.footprint_class(endpoint.x,endpoint.z)==1 and
+			bay_dry(bay_id,endpoint.x,endpoint.z))
+		for i=1,4 do local direction=cardinal[i]
+			assert(final_water_owner_count(endpoint.x+direction.x,
+				endpoint.z+direction.z)==0)
+		end
+		assert(math.abs(discarded.x-endpoint.x)==1 and
+			math.abs(discarded.z-endpoint.z)==1)
+		local count,owner=final_water_owner_count(discarded.x,discarded.z)
+		assert(count==1 and owner==bay_id)
+		local elbows={{x=discarded.x,z=endpoint.z},{x=endpoint.x,z=discarded.z}}
+		assert(point_key(elbows[1])~=point_key(elbows[2]))
+		for i=1,2 do assert(candidate(bay_id,elbows[i].x,elbows[i].z)) end
+		table.sort(elbows,point_less)
+		return elbows[1],"diagonal_elbow"
+	end
+	local terminal,mode=resolve_transition("bay_kragmar_west",e,w)
+	assert(mode=="diagonal_elbow" and terminal.x==-1140 and terminal.z==2242 and
+		candidate("bay_kragmar_west",terminal.x,terminal.z) and
+		transition_resolution_calls==1 and not max_fill_by_point[point_key(terminal)],
+		"R16 Slot-19 lex elbow drift")
+	local trace_context=bay_context_by_id.bay_kragmar_west
+	local min_x,max_x,min_z,max_z
+	for box_index=1,#trace_context.boxes do local box=trace_context.boxes[box_index]
+		min_x=min_x and math.min(min_x,box.min_x) or box.min_x
+		max_x=max_x and math.max(max_x,box.max_x) or box.max_x
+		min_z=min_z and math.min(min_z,box.min_z) or box.min_z
+		max_z=max_z and math.max(max_z,box.max_z) or box.max_z
+	end
+	local envelope_columns,outside_footprint=0
+	for x=min_x,max_x do for z=min_z,max_z do
+		if in_bay_envelope(trace_context,x,z) then
+			if trace_context.footprint_class(x,z)>=0 then
+				envelope_columns=envelope_columns+1
+			elseif not outside_footprint then outside_footprint={x=x,z=z} end
+		end
+	end end
+	assert(perimeter_ceiling.perimeter_elandor_mainland==3 and
+		perimeter_ceiling.perimeter_kragmar_mainland==2 and
+		envelope_columns==1132870 and outside_footprint and
+		not candidate("bay_kragmar_west",outside_footprint.x,outside_footprint.z) and
+		not candidate("bay_kragmar_west",min_x-1,min_z),
+		"R16 envelope/footprint candidate scope drift")
+	local foreign_key
+	for direction_index=1,4 do local direction=cardinal[direction_index]
+		local nx,nz=terminal.x+direction.x,terminal.z+direction.z
+		if not bay_water("bay_kragmar_west",nx,nz) then foreign_key=nx..":"..nz break end
+	end
+	assert(foreign_key and not candidate("bay_kragmar_west",terminal.x,terminal.z,
+		function(x,z) return x..":"..z==foreign_key end),
+		"R16 synthetic foreign-water candidate corruption was accepted")
+
+	local wing
+	for i=1,#source.bay_closure_wings do
+		if source.bay_closure_wings[i].id=="bay_wing:kragmar_west:left" then
+			wing=source.bay_closure_wings[i] break
+		end
+	end
+	assert(wing)
+	local vx,vz=wing.junction.x-wing.head.x,wing.junction.z-wing.head.z
+	local length=vx*vx+vz*vz
+	local k,k_projection
+	local radius=wing.head_half_width
+	for x=math.min(wing.head.x,wing.junction.x)-radius,
+			math.max(wing.head.x,wing.junction.x)+radius do
+		for z=math.min(wing.head.z,wing.junction.z)-radius,
+				math.max(wing.head.z,wing.junction.z)+radius do
+			local own_neighbor=false
+			for direction_index=1,4 do local direction=cardinal[direction_index]
+				if r8_wing_member(x+direction.x,z+direction.z,wing) then
+					own_neighbor=true break
+				end
+			end
+			if own_neighbor and bay_dry("bay_kragmar_west",x,z) then
+				local px,pz=x-wing.head.x,z-wing.head.z
+				local projection=px*vx+pz*vz
+				local cross=vx*pz-vz*px
+				local point={x=x,z=z}
+				if projection>=0 and projection<length and cross<0 and
+						(not k or projection>k_projection or
+						projection==k_projection and point_less(point,k)) then
+					k,k_projection=point,projection
+				end
+			end
+		end
+	end
+	assert(k and k.x==-1399 and k.z==1901,"R16 independent negative K drift")
+	local clockwise={{x=1,z=0},{x=1,z=-1},{x=0,z=-1},{x=-1,z=-1},
+		{x=-1,z=0},{x=-1,z=1},{x=0,z=1},{x=1,z=1}}
+	local function diagonal_signature(a,b)
+		local dx,dz=b.x-a.x,b.z-a.z
+		if math.abs(dx)~=1 or math.abs(dz)~=1 then return nil end
+		return math.min(a.x,b.x)..":"..math.min(a.z,b.z),dx==dz and 1 or -1
+	end
+	local function add_diagonal(diagonals,a,b)
+		local cell,slope=diagonal_signature(a,b)
+		if not cell then return true,nil end
+		if diagonals[cell] and diagonals[cell]~=slope then return false,nil end
+		if diagonals[cell] then return true,nil end
+		diagonals[cell]=slope
+		return true,cell
+	end
+	local function state_key(previous,current)
+		return point_key(previous)..">"..point_key(current)
+	end
+	local function water_right_for(water,current,following)
+		local dx,dz=following.x-current.x,following.z-current.z
+		for i=1,4 do local direction=cardinal[i]
+			if water("bay_kragmar_west",current.x+direction.x,
+					current.z+direction.z) and
+					dx*direction.z-dz*direction.x<0 then return true end
+		end
+		return false
+	end
+	local function successors_for(candidate_fn,water,previous,current,states,columns,
+			diagonals)
+		local bx,bz=previous.x-current.x,previous.z-current.z
+		local back
+		for i=1,8 do if clockwise[i].x==bx and clockwise[i].z==bz then back=i break end end
+		assert(back,"R16 non-eight-connected Moore state")
+		local result={}
+		for offset=1,8 do
+			local index=((back-offset-1)%8)+1
+			local direction=clockwise[index]
+			local following={x=current.x+direction.x,z=current.z+direction.z}
+			local key=point_key(following)
+			local state=state_key(current,following)
+			local cell,slope=diagonal_signature(current,following)
+			if key~=point_key(previous) and not states[state] and not columns[key] and
+					(not cell or not diagonals[cell] or diagonals[cell]==slope) and
+					candidate_fn("bay_kragmar_west",following.x,following.z) and
+					water_right_for(water,current,following) then result[#result+1]=following end
+		end
+		return result
+	end
+	local function trace_bank(candidate_fn,water)
+	local pushed_total,max_pushed_per_call,max_stack=0,0,0
+	local function reachable(previous,current,target,base_states,base_columns,base_diagonals)
+		local states,columns,diagonals={},{},{}
+		for key in pairs(base_states) do states[key]=true end
+		for key in pairs(base_columns) do columns[key]=true end
+		for key,value in pairs(base_diagonals) do diagonals[key]=value end
+		local first_state,first_column=state_key(previous,current),point_key(current)
+		if states[first_state] or columns[first_column] then return false end
+		states[first_state],columns[first_column]=true,true
+		local diagonal_ok,first_cell=add_diagonal(diagonals,previous,current)
+		if not diagonal_ok then return false end
+		local stack={{previous=previous,current=current,state=first_state,
+			column=first_column,diagonal=first_cell}}
+		local pushed_frames=1
+		pushed_total=pushed_total+1
+		max_pushed_per_call=math.max(max_pushed_per_call,pushed_frames)
+		max_stack=math.max(max_stack,#stack)
+		assert(pushed_frames<=8*envelope_columns and #stack<=envelope_columns,
+			"R16 independent DFS initial bound")
+		while #stack>0 do
+			local frame=stack[#stack]
+			if point_key(frame.current)==point_key(target) then return true end
+			if not frame.nexts then
+				frame.nexts=successors_for(candidate_fn,water,frame.previous,
+					frame.current,states,columns,diagonals)
+				frame.next_index=1
+			end
+			local following=frame.nexts[frame.next_index]
+			if following then
+				frame.next_index=frame.next_index+1
+				local state=state_key(frame.current,following)
+				local column=point_key(following)
+				states[state],columns[column]=true,true
+				local diagonal_valid,cell=add_diagonal(diagonals,frame.current,following)
+				assert(diagonal_valid,"R16 successor diagonal validity drift")
+				stack[#stack+1]={previous=frame.current,current=following,
+					state=state,column=column,diagonal=cell}
+				pushed_frames=pushed_frames+1
+				pushed_total=pushed_total+1
+				max_pushed_per_call=math.max(max_pushed_per_call,pushed_frames)
+				max_stack=math.max(max_stack,#stack)
+				assert(pushed_frames<=8*envelope_columns and #stack<=envelope_columns,
+					"R16 independent DFS exact envelope bound")
+			else
+				states[frame.state],columns[frame.column]=nil,nil
+				if frame.diagonal then diagonals[frame.diagonal]=nil end
+				stack[#stack]=nil
+			end
+		end
+		return false
+	end
+	local points={{x=wing.junction.x,z=wing.junction.z},{x=k.x,z=k.z}}
+	local previous,current=points[1],points[2]
+	local states={[state_key(previous,current)]=true}
+	local columns={[point_key(previous)]=true,[point_key(current)]=true}
+	local diagonals={}
+	local first_valid=add_diagonal(diagonals,previous,current)
+	assert(first_valid,"R16 negative Wing tail gained an X-cross")
+	local branch_count,main_steps=0,0
+	while point_key(current)~=point_key(terminal) do
+		local nexts=successors_for(candidate_fn,water,previous,current,states,
+			columns,diagonals)
+		local following
+		if #nexts==1 then following=nexts[1]
+		elseif #nexts>1 then
+			branch_count=branch_count+1
+			for i=1,#nexts do
+				if reachable(current,nexts[i],terminal,states,columns,diagonals) then
+					following=nexts[i] break
+				end
+			end
+		end
+		assert(following,"R16 independent Mournfen DFS cannot reach elbow")
+		local state=state_key(current,following)
+		local diagonal_valid=add_diagonal(diagonals,current,following)
+		assert(diagonal_valid,"R16 main trace gained an X-cross")
+		states[state],columns[point_key(following)]=true,true
+		points[#points+1]={x=following.x,z=following.z}
+		previous,current=current,following
+		main_steps=main_steps+1
+		assert(main_steps<=envelope_columns-1,"R16 independent main trace bound")
+	end
+	return {points=points,branch_count=branch_count,pushed_total=pushed_total,
+		max_pushed_per_call=max_pushed_per_call,max_stack=max_stack,
+		main_steps=main_steps}
+	end
+	local raw_trace=trace_bank(raw_candidate,raw_bay_water)
+	local final_trace=trace_bank(candidate,bay_water)
+	local points=final_trace.points
+	local tail={}
+	for i=math.max(1,#points-5),#points do tail[#tail+1]=point_key(points[i]) end
+	local path_sha=canonical.hex(raw_sha256(raster_signature(points)))
+	assert(#points==453 and table.concat(tail,",")==
+		"-1135:2237,-1136:2238,-1137:2239,-1138:2240,-1139:2241,-1140:2242",
+		"R16 independent Mournfen path drift: "..#points.."/"..table.concat(tail,","))
+	assert(raw_trace.branch_count==1 and raw_trace.pushed_total==24 and
+		raw_trace.max_pushed_per_call==23 and raw_trace.max_stack==23 and
+		raw_trace.main_steps==451 and final_trace.branch_count==0 and
+		final_trace.pushed_total==0 and final_trace.max_pushed_per_call==0 and
+		final_trace.max_stack==0 and final_trace.main_steps==451 and
+		raster_signature(raw_trace.points)==raster_signature(final_trace.points) and
+		final_trace.main_steps<=envelope_columns-1 and
+		path_sha=="1f528c5671fe69254049b03c3ef5047093bb743f9ddcfdb3967b73a000740cca",
+		"R16/R17 raw-before/final-mask DFS branch/frame/hash drift: "..
+			raw_trace.branch_count.."/"..raw_trace.pushed_total.."->"..
+			final_trace.branch_count.."/"..final_trace.pushed_total.."/"..path_sha)
+	local stillgrave_nexts=successors_for(candidate,bay_water,e,terminal,{},
+		{[point_key(terminal)]=true},{})
+	assert(#stillgrave_nexts==1 and stillgrave_nexts[1].x==-1141 and
+		stillgrave_nexts[1].z==2242,"R16 Stillgrave first successor drift")
+	print(("WP40 T2 R16 Slot-19 oracle passed: C=%d perimeter-C=%d/%d N=%d "..
+		"E=%s W=%s T=%s Mournfen=%d steps=%d branches=%d frames=%d/%d stack=%d "..
+		"Stillgrave-nexts=%d sha=%s"):format(selected_ceiling,
+		perimeter_ceiling.perimeter_elandor_mainland,
+		perimeter_ceiling.perimeter_kragmar_mainland,envelope_columns,
+		point_key(e),point_key(w),point_key(terminal),#points,final_trace.main_steps,
+		final_trace.branch_count,final_trace.pushed_total,
+		final_trace.max_pushed_per_call,final_trace.max_stack,
+		#stillgrave_nexts,path_sha))
+end
+run_r16_r17_source_oracle()
+
 -- R9 exact coast-source inheritance oracle. Segment distance is represented
 -- by numerator/positive denominator and all minima are collected before the
 -- zone/component/segment tie tuple is applied.
@@ -2976,6 +4259,58 @@ end)
 expect_failure("exact_count_bay_bank_components",function(s)
 	table.remove(s.bay_bank_components,20)
 end)
+expect_failure("exact_count_bay_edge_transitions",function(s)
+	table.remove(s.bay_edge_transitions,8)
+end)
+expect_failure("bay_edge_transition_fields",function(s)
+	s.bay_edge_transitions[1].control={{x=-1050,z=-2250}}
+end)
+expect_failure("bay_edge_transition_fields",function(s)
+	s.bay_edge_transitions[1].candidate_tie_rule=nil
+end)
+expect_failure("bay_edge_transition_incidence_fields",function(s)
+	s.bay_edge_transitions[1].incident_bank_component_ids=false
+end)
+expect_failure("bay_edge_transition_incidence_fields",function(s)
+	s.bay_edge_transitions[1].incident_bank_component_ids={}
+end)
+expect_failure("bay_edge_transition_incidence",function(s)
+	local ids=s.bay_edge_transitions[1].incident_bank_component_ids
+	ids[1],ids[2]=ids[2],ids[1]
+end)
+expect_failure("bay_edge_transition_incidence",function(s)
+	s.bay_edge_transitions[1].incident_bank_component_ids[2]=
+		s.bay_edge_transitions[1].incident_bank_component_ids[1]
+end)
+expect_failure("bay_edge_transition_reference",function(s)
+	s.bay_edge_transitions[1].bay_id="bay_missing"
+end)
+expect_failure("bay_edge_transition_reference",function(s)
+	s.bay_edge_transitions[1].edge_id="land_999"
+end)
+expect_failure("bay_edge_transition_projection",function(s)
+	s.bay_edge_transitions[1].edge_endpoint="from"
+end)
+expect_failure("bay_edge_transition_projection",function(s)
+	s.bay_edge_transitions[2].edge_id="land_001"
+	s.bay_edge_transitions[2].edge_endpoint="to"
+end)
+expect_failure("bay_edge_transition_projection",function(s)
+	s.bay_bank_components[11].start_terminal.edge_id="land_009"
+end)
+expect_failure("bay_edge_transition_incidence",function(s)
+	s.bay_bank_components[12].bay_id="bay_kragmar_east"
+end)
+expect_failure("bay_edge_transition_terminal_sides",function(s)
+	local bank=s.bay_bank_components[12]
+	bank.start_terminal,bank.end_terminal=bank.end_terminal,bank.start_terminal
+end)
+expect_failure("bay_edge_transition_contract",function(s)
+	s.bay_edge_transitions[1].resolution_policy_id="direct_only"
+end)
+expect_failure("bay_edge_transition_contract",function(s)
+	s.bay_edge_transitions[1].candidate_tie_rule="lexicographically_greatest_x_then_z"
+end)
 expect_failure("bay_bank_component_contract",function(s)
 	s.bay_bank_components[1].start_terminal.side="after"
 end)
@@ -3051,7 +4386,7 @@ end)
 expect_failure("bay_bank_component_contract",function(s)
 	s.bay_bank_components[2].end_terminal.tail_side="negative"
 end)
-expect_failure("bay_bank_component_contract",function(s)
+expect_failure("bay_edge_transition_projection",function(s)
 	s.bay_bank_components[1].end_terminal.edge_endpoint="from"
 end)
 expect_failure("bay_bank_component_contract",function(s)
@@ -3279,6 +4614,54 @@ expect_failure("world_partition_policy",function(s)
 		"dry_zone_face_partition"
 end)
 expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_policy_id=
+		"iterative_dry_leaf_fill"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_input=
+		"read_the_already_filled_final_mask"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_scope=
+		"permit_mouth_aperture_equality"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_enumeration=
+		"scan_only_the_left_endpoint_of_each_raw_row"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_predicate=
+		"three_cardinal_same_bay_water_neighbours_only"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_application=
+		"repeat_until_no_dry_leaf_remains"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_owner=
+		"copy_the_first_neighbour_owner"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_precedence=
+		"fill_before_footprint_and_aperture_clipping"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_safe_arithmetic=
+		"raw_coordinate_plus_direction"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_stage=
+		"repair_faces_after_bank_materialization"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_notch_fill_payload=
+		"each_consumer_recomputes_the_fill_from_its_face"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_candidate=
+		"same_bay_Base_or_Wing_neighbour_only"
+end)
+expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.strict_exterior_rule=
 		"outside_every_final_mainland_and_island"
 end)
@@ -3312,6 +4695,10 @@ end)
 expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_bank_edge_transition_identity=
 		"nearest_dry_then_snap"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_nonwing_terminal_resolution=
+		"raw_clipped_endpoint_only"
 end)
 expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_bank_nonwing_start_half_edge=
@@ -3364,6 +4751,22 @@ end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.shared_boundary_attachment_rule=
 		"nearest_perimeter_station_then_snap"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_policy_id=
+		"direct_candidate_only"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_elbows=
+		"choose_first_iteration_order"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_scalar_scope=
+		"score_the_elbow_as_a_new_scalar_row"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_mask_source=
+		"select_against_raw_water_then_revalidate_after_fill"
 end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.no_jitter_metric=
@@ -3613,6 +5016,11 @@ end
 assert(canonical.encode(stage1.canonicalize_source({roles={}},canonical))==
 	canonical.encode(canonical.map({{canonical.text("roles"),canonical.array({})}})),
 	"schema-declared empty array encoded as map")
+assert(canonical.encode(stage1.canonicalize_source(
+	{incident_bank_component_ids={}},canonical))==
+	canonical.encode(canonical.map({{canonical.text("incident_bank_component_ids"),
+		canonical.array({})}})),
+	"transition incident-bank empty array encoded as map")
 assert(canonical.encode(stage1.canonicalize_source({parameters={}},canonical))==
 	canonical.encode(canonical.map({{canonical.text("parameters"),canonical.map({})}})),
 	"schema-declared empty map encoded as array")

@@ -2,18 +2,18 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"9516083203f23eb0f90b3cd87bd95d28483e8420ec0718e68831ebf175a9cc68"
+	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
 	primitive_formulas="03365f8654bdb4ffac4af9a1123f6df2f5231bcec7bf999b859cc115cf839f8b",
-	boundary_displacement="3d1e6e39f5c2f6f140f40277ebe2af8886a9a58cf4679a7804e05ee354b3c140",
+	boundary_displacement="a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f",
 	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
 	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
 	relief_field="21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200",
 	landmark_masks="99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e",
 	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
-	world_partition="e5c17a5a084b0f13a5779b7c84aa823c8dae64e711020be5f46087db80a24693",
+	world_partition="b3173a764329c85c501b34c2e71b1d77abab661c931a18ac1e153cd7eebd6994",
 	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
 	requester_trace="1c8bb210b53bb50bb6a661dfaaf8e3f771cc1ae2674a0a405783a6ca19dd69ff",
 	geometry_extreme_selector="b983c61c6740dfea9ff7821a3bfbda0da08c3475d4965995814cb71fff53f255",
@@ -28,6 +28,7 @@ local SOURCE_ARRAY_FIELDS={section_order=true,relief_profiles=true,
 	junction_departures=true,
 	incident_edge_ids=true,
 	perimeter_attachments=true,perimeter_spans=true,bay_bank_components=true,
+	bay_edge_transitions=true,incident_bank_component_ids=true,
 	endpoint_face_incidence=true,face_arcs=true,
 	zone_faces=true,cycle=true,source_refs=true,authority_components=true,
 		ordered_outer_components=true,edge_refs=true,route_stations=true,
@@ -603,7 +604,8 @@ end
 local EXPECTED_COUNTS = {
 	{"zones",38},{"land_edges",61},{"relief_junctions",38},{"junction_departures",4},
 	{"perimeter_attachments",8},
-	{"perimeter_spans",18},{"bay_bank_components",20},{"face_arcs",34},{"zone_faces",38},
+	{"perimeter_spans",18},{"bay_bank_components",20},{"bay_edge_transitions",8},
+	{"face_arcs",34},{"zone_faces",38},
 	{"route_stations",68},{"routes",57},{"route_interfaces",171},
 	{"surface_level_controls",162},
 	{"route_crossing_interfaces",7},{"boat_edges",4},{"island_landings",4},
@@ -906,7 +908,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		"water_classes","landmark_role_vocabulary","template_primitives",
 		"zones","land_edges","relief_junctions","junction_departures",
 		"perimeter_attachments","perimeter_spans",
-		"bay_bank_components","face_arcs","zone_faces",
+		"bay_bank_components","bay_edge_transitions","face_arcs","zone_faces",
 		"route_stations","routes","route_interfaces","surface_level_controls",
 		"route_crossing_interfaces","boat_edges","island_landings",
 		"island_route_stations","island_routes","island_route_interfaces",
@@ -937,7 +939,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	for i=1,#source.zones do zone_by_id[source.zones[i].id]=source.zones[i] end
 	for _, family in ipairs({"relief_profiles","route_classes","water_classes",
 			"template_primitives","perimeter_attachments","perimeter_spans",
-			"bay_bank_components",
+			"bay_bank_components","bay_edge_transitions",
 			"relief_junctions","junction_departures",
 			"face_arcs","zone_faces","perimeters","bays","bay_mouth_apertures",
 			"bay_closure_wings","islands","channels",
@@ -1103,14 +1105,14 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		relief_field="shared_edge_gate_relief_q16_v1",
 		landmark_masks="landmark_masks_and_replacement_blend_v1",
 		coastal_housing_core="displaced_coast_interval_inward_core_v1",
-		world_partition="face_partition_with_bay_capsule_water_v2",
+		world_partition="face_partition_with_bay_capsule_water_v3",
 		geometry_fixture_selector="geometry_microcorpus_selector_v1",
 		requester_trace="requester_trace_manifest_v1",
 		geometry_extreme_selector="geometry_extreme_seed_selector_v1",
 		hydrology_mask="analytic_reach_round_union_sealed_v1",
 		route_vertical_interfaces="route_water_vertical_interfaces_v1",
 	}
-	local generic_policy_versions={boundary_displacement=3,world_partition=2}
+	local generic_policy_versions={boundary_displacement=3,world_partition=3}
 	for _,key in ipairs({"primitive_evaluator","primitive_formulas",
 			"boundary_displacement","route_raster","route_profile_solver",
 			"relief_field","landmark_masks","coastal_housing_core",
@@ -1243,7 +1245,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 	if not dense(partition.classification_precedence) or
 			#partition.classification_precedence~=4 or
 			partition.classification_precedence[1]~=
-				"planned_base_bay_water_in_strict_mainland_interior_or_own_mouth_aperture_equality_then_closure_wing_water_in_strict_mainland_interior_only" or
+				"raw_planned_Base_bay_water_in_strict_mainland_interior_or_own_mouth_aperture_equality_then_closure_Wing_water_in_strict_mainland_interior_then_single_pass_same_bay_notch_fill_in_strict_mainland_interior_only" or
 			partition.classification_precedence[2]~=
 				"mainland_island_or_fixed_holy_land_strict_interior_or_remaining_perimeter_equality_owner" or
 			partition.classification_precedence[3]~=
@@ -1291,7 +1293,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			partition.coast_source_safe_bounds~=
 				"endpoint_distance_squared_at_most_134217728_cross_squared_at_most_268435456_reduced_compare_product_at_most_536870912" or
 			partition.bay_mask_authority~=
-				"unchanged_four_sample_round_capsule_union_then_two_literal_head_closure_wings" or
+				"raw_four_sample_round_capsule_union_then_two_literal_head_closure_wings_then_one_simultaneous_same_bay_notch_fill" or
 			partition.bay_base_predicate_id~=
 				"strict_rational_variable_width_capsule_union_v1" or
 			partition.bay_base_terms~=
@@ -1345,6 +1347,28 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				"effective_width_square_max_4243584391840000_actual_guarded_cross_square_times_L_max_4251571423760000_and_conservative_early_cross_bound_4251754341463400_all_below_2_pow_53_minus_1" or
 			partition.bay_displacement_lanes~=nil or
 			partition.bay_displacement_width_rule~=nil or
+			partition.bay_notch_fill_policy_id~=
+				"single_pass_same_bay_raw_mask_degree_one_notch_v1" or
+			partition.bay_notch_fill_input~=
+				"immutable_raw_final_planned_water_per_bay_equals_displaced_Base_union_closure_Wings_after_footprint_and_mouth_aperture_equality_precedence_before_any_notch_fill" or
+			partition.bay_notch_fill_scope~=
+				"for_each_bay_scan_only_its_finite_expanded_Base_and_Wing_envelope_and_require_P_and_all_eight_neighbours_strictly_inside_that_bay_final_mainland_footprint" or
+			partition.bay_notch_fill_enumeration~=
+				"semantic_domain_is_every_integer_P_in_the_deduplicated_envelope_the_complete_finite_candidate_superset_is_each_referenced_bay_raw_water_row_run_first_minus_one_and_finish_plus_one_because_every_three_of_four_cardinal_water_pattern_has_a_horizontal_water_neighbour_and_raw_dry_P_is_immediately_outside_that_run" or
+			partition.bay_notch_fill_predicate~=
+				"raw_dry_P_has_exactly_three_cardinal_and_all_four_diagonal_raw_water_neighbours_each_owned_only_by_the_same_referenced_bay_while_the_fourth_cardinal_neighbour_is_raw_dry" or
+			partition.bay_notch_fill_application~=
+				"evaluate_every_P_against_the_immutable_raw_mask_collect_all_unique_qualifying_Bay_P_pairs_then_union_them_simultaneously_once_never_iterate_or_feed_a_filled_cell_into_another_decision" or
+			partition.bay_notch_fill_owner~=
+				"each_filled_P_is_planned_water_of_its_unique_qualifying_bay_and_uses_that_bay_existing_exact_rational_owner_policy_no_neighbour_owner_copy_rank_snap_or_new_tie" or
+			partition.bay_notch_fill_precedence~=
+				"strict_mainland_interior_only_never_perimeter_or_mouth_aperture_equality_and_any_foreign_or_multiple_bay_water_contact_or_multiple_bay_qualification_rejects" or
+			partition.bay_notch_fill_safe_arithmetic~=
+				"Base_and_Wing_envelope_min_max_expansion_and_each_of_eight_neighbour_coordinates_use_checked_safe_integer_addition_or_subtraction_before_lookup_all_raw_mask_predicates_reuse_their_existing_exact_product_guards" or
+			partition.bay_notch_fill_stage~=
+				"extreme_scalar_records_and_their_4096_selector_identity_and_values_remain_upstream_unchanged_then_raw_mask_then_simultaneous_fill_produces_final_planned_water_then_R16_transition_selection_runs_once_then_bank_trace_face_partition_and_water_owner_resolution_use_that_same_final_mask" or
+			partition.bay_notch_fill_payload~=
+				"each_compiled_Bay_carries_policy_id_count_and_one_lexicographically_x_then_z_sorted_dense_array_of_exact_fill_x_z_columns_materialized_once_from_the_raw_mask_all_transition_bank_face_partition_and_owner_consumers_use_those_bytes_without_retracing_reclassification_or_face_inference" or
 			partition.bay_mask_membership~=
 				"strict_rational_variable_width_capsule_union_v1" or
 			partition.bay_boundary_tie~=
@@ -1391,7 +1415,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			partition.bay_bank_policy_id~=
 				"same_bay_final_water_union_dry_column_boundary_v1" or
 			partition.bay_bank_candidate~=
-				"final_classifier_dry_mainland_column_including_permitted_dry_perimeter_equality_with_four_neighbor_owned_by_same_final_base_bay_or_either_closure_wing" or
+				"final_classifier_dry_mainland_column_including_permitted_dry_perimeter_equality_with_four_neighbor_owned_by_same_final_planned_bay_mask_including_Base_Wings_and_single_pass_notch_fill" or
 			partition.bay_bank_trace_envelope~=
 				"referenced_bay_all_base_segment_and_two_wing_bounding_boxes_expanded_one_then_clipped_to_referenced_final_mainland_footprint" or
 			partition.bay_bank_trace_state~=
@@ -1411,9 +1435,9 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			partition.bay_bank_aperture_terminal_order~=
 				"deduplicated_final_authored_declared_perimeter_integer_raster_order_separate_from_the_canonical_mouth_aperture_membership_indices_payload_and_attachment_tie" or
 			partition.bay_bank_nonwing_terminal_resolution~=
-				"aperture_dry_is_the_adjacent_dry_station_on_the_declared_side_in_the_separate_authored_bank_terminal_order_land_edge_transition_is_the_declared_endpoint_of_the_final_clipped_dry_edge_raster_and_that_endpoint_itself_must_be_a_final_dry_same_bay_boundary_candidate_no_inward_shift_is_permitted" or
+				"aperture_dry_is_the_adjacent_dry_station_on_the_declared_side_in_the_separate_authored_bank_terminal_order_land_edge_transition_is_the_once_resolved_direct_candidate_or_same_bay_diagonal_elbow_terminal_of_the_final_dry_edge_raster_no_inward_scan_or_private_shift_is_permitted" or
 			partition.bay_bank_edge_transition_identity~=
-				"for_each_of_eight_transitions_the_inward_candidate_scan_offset_from_the_declared_final_endpoint_must_equal_zero_in_every_corpus_seed_edge_and_bank_consume_the_same_resolved_station_id_and_exact_canonical_x_z_bytes_without_a_second_resolution_defensive_copies_are_permitted_nonzero_rejects_and_requires_a_new_Reality_partition" or
+				"for_each_of_eight_coordinate_free_transition_rows_the_final_edge_and_both_declared_incident_banks_consume_the_same_once_resolved_station_id_and_exact_canonical_x_z_bytes_without_a_second_resolution_defensive_alias_free_copies_are_permitted" or
 			partition.bay_bank_nonwing_start_half_edge~=
 				"aperture_previous_is_the_next_dry_authored_perimeter_station_away_from_the_aperture_land_edge_previous_is_the_immediately_adjacent_retained_dry_edge_station_away_from_the_resolved_endpoint_current_is_the_resolved_candidate_the_anchor_half_edge_must_be_eight_connected_and_current_candidate_valid_but_water_right_begins_only_on_the_first_materialized_bank_step_current_to_successor" or
 			partition.bay_bank_wing_k_set~=
@@ -1759,7 +1783,27 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			boundary_policy.shared_boundary_clip_retained_rule~=
 				"exactly_one_consecutive_retained_station_interval" or
 			boundary_policy.shared_boundary_clip_endpoint_rule~=
-				"nonattached_first_and_last_retained_integer_stations_attached_endpoint_uses_joint_station" or
+				"nonattached_first_and_last_retained_integer_stations_except_a_declared_bay_edge_transition_may_resolve_that_retained_endpoint_through_the_checksum_bound_direct_candidate_or_same_bay_diagonal_elbow_policy_attached_endpoint_uses_joint_station" or
+			boundary_policy.bay_edge_transition_policy_id~=
+				"direct_candidate_or_same_bay_diagonal_elbow_v1" or
+			boundary_policy.bay_edge_transition_source~=
+				"exactly_eight_coordinate_free_rows_bind_referenced_bay_land_edge_endpoint_and_the_two_incident_bank_components_in_source_component_order" or
+			boundary_policy.bay_edge_transition_direct~=
+				"E_is_the_declared_first_or_last_retained_dry_provisional_edge_station_if_E_is_a_same_bay_final_dry_boundary_candidate_select_E_unchanged" or
+			boundary_policy.bay_edge_transition_diagonal_precondition~=
+				"otherwise_E_must_be_final_strict_dry_and_have_no_cardinal_same_bay_or_foreign_water_neighbor_W_is_the_immediate_discarded_provisional_edge_station_toward_the_bay_E_to_W_must_be_exactly_diagonal_and_W_must_be_final_water_owned_only_by_the_referenced_base_bay_or_its_wings" or
+			boundary_policy.bay_edge_transition_elbows~=
+				"the_two_exact_orthogonal_elbows_W_x_E_z_and_E_x_W_z_must_be_distinct_strict_dry_in_footprint_same_bay_boundary_candidates_select_lexicographically_least_x_then_z" or
+			boundary_policy.bay_edge_transition_application~=
+				"insert_the_selected_elbow_as_terminal_control_after_prefix_suffix_selection_and_before_the_existing_sole_final_edge_raster_then_run_all_ordinary_edge_validation_no_post_raster_append_or_snap" or
+			boundary_policy.bay_edge_transition_identity~=
+				"edge_and_both_declared_incident_bank_components_consume_one_resolved_terminal_station_id_and_byte_exact_x_z_without_second_resolution_defensive_alias_free_copies_are_permitted" or
+			boundary_policy.bay_edge_transition_mask_source~=
+				"resolve_each_transition_exactly_once_against_world_partition_final_planned_water_after_single_pass_same_bay_raw_mask_degree_one_notch_v1_never_select_against_raw_water_then_revalidate_or_reselect" or
+			boundary_policy.bay_edge_transition_scalar_scope~=
+				"E_W_and_the_derived_elbow_are_resolved_only_after_record_scalar_materialization_R16_never_enters_or_changes_extreme_scalar_record_identity_or_value_and_the_complete_4096_pool_and_selected_extreme_winners_are_generated_once_only_after_the_R16_source_freeze" or
+			boundary_policy.bay_edge_transition_reject~=
+				"missing_duplicate_malformed_or_mixed_transition_row_nonincident_bank_foreign_bay_nondry_E_cardinal_water_at_noncandidate_E_nondiagonal_or_nonadjacent_W_wrong_W_owner_invalid_elbow_repeat_X_cross_or_final_edge_validation_failure_rejects_without_fallback" or
 			boundary_policy.shared_boundary_attachment_policy_id~=
 				"joint_perimeter_station_endpoint_before_final_raster_v1" or
 			boundary_policy.shared_boundary_attachment_candidate~=
@@ -1772,7 +1816,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				"all_final_stations_after_A_strict_footprint_interior_eight_connected_one_run" or
 			boundary_policy.shared_boundary_attachment_rule~=nil or
 			boundary_policy.shared_boundary_clip_forbidden~=
-				"emitted_E_to_A_connector_post_raster_snap_inserted_float_or_rational_intersection_and_private_connector_geometry" then
+				"emitted_E_to_A_connector_post_raster_snap_inserted_float_or_rational_intersection_private_connector_geometry_or_undeclared_bay_transition_elbow" then
 		return diag("boundary_clip_policy","geometry_policies.boundary_displacement",
 			"sole canonical integer prefix/suffix clip without inserted intersection","invalid")
 	end
@@ -2475,6 +2519,108 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				"bay_bank_incidence_fields")
 			if not fields_ok then return nil,fields_failure end
 		end
+		bank_by_id[row.id]=row
+	end
+	do
+		local expected_transitions={
+			{"bay_edge_transition:land_001:to","bay_elandor_west","land_001","to",
+				"bay_bank:elandor_west:hearthpine","bay_bank:elandor_west:copperfell"},
+			{"bay_edge_transition:land_004:from","bay_elandor_west","land_004","from",
+				"bay_bank:elandor_west:goldmead","bay_bank:elandor_west:dawnmere"},
+			{"bay_edge_transition:land_004:to","bay_elandor_east","land_004","to",
+				"bay_bank:elandor_east:dawnmere","bay_bank:elandor_east:goldmead"},
+			{"bay_edge_transition:land_007:from","bay_elandor_east","land_007","from",
+				"bay_bank:elandor_east:starbough","bay_bank:elandor_east:silverleaf"},
+			{"bay_edge_transition:land_010:to","bay_kragmar_west","land_010","to",
+				"bay_bank:kragmar_west:stillgrave","bay_bank:kragmar_west:mournfen"},
+			{"bay_edge_transition:land_013:from","bay_kragmar_west","land_013","from",
+				"bay_bank:kragmar_west:redtusk","bay_bank:kragmar_west:sunscar"},
+			{"bay_edge_transition:land_013:to","bay_kragmar_east","land_013","to",
+				"bay_bank:kragmar_east:sunscar","bay_bank:kragmar_east:redtusk"},
+			{"bay_edge_transition:land_016:from","bay_kragmar_east","land_016","from",
+				"bay_bank:kragmar_east:raincall","bay_bank:kragmar_east:kapok"},
+		}
+		local projected,projected_sides={},{}
+		for bank_index=1,#source.bay_bank_components do
+			local bank=source.bay_bank_components[bank_index]
+			for terminal_index=1,2 do
+				local terminal=terminal_index==1 and bank.start_terminal or bank.end_terminal
+				if terminal.kind=="land_edge_transition" then
+					local key=terminal.edge_id..":"..terminal.edge_endpoint
+					projected[key]=projected[key] or {}
+					projected_sides[key]=projected_sides[key] or {}
+					projected[key][#projected[key]+1]=bank.id
+					projected_sides[key][#projected_sides[key]+1]=
+						terminal_index==1 and "start" or "end"
+				end
+			end
+		end
+		local bay_ids={}
+		for bay_index=1,#source.bays do bay_ids[source.bays[bay_index].id]=true end
+		local seen={}
+		for transition_index=1,#source.bay_edge_transitions do
+			local row=source.bay_edge_transitions[transition_index]
+			local expected=expected_transitions[transition_index]
+			local path="bay_edge_transitions["..transition_index.."]"
+			local fields_ok,fields_failure=closed_fields(row,path,
+				{"id","bay_id","edge_id","edge_endpoint","incident_bank_component_ids",
+					"resolution_policy_id","candidate_tie_rule","numeric_id"},
+				"bay_edge_transition_fields")
+			if not fields_ok then return nil,fields_failure end
+			local incident=row.incident_bank_component_ids
+			if not dense(incident) or #incident~=2 then
+				return diag("bay_edge_transition_incidence_fields",row.id,
+					"two ordered bank component IDs",type(incident)=="table" and #incident or type(incident))
+			end
+			local key=row.edge_id..":"..row.edge_endpoint
+			if seen[key] then
+				return diag("bay_edge_transition_projection",row.id,"unique edge endpoint",key)
+			end
+			seen[key]=true
+			if not edge_by_id[row.edge_id] or not bay_ids[row.bay_id] then
+				return diag("bay_edge_transition_reference",row.id,
+					"known edge and Bay",row.edge_id..":"..row.bay_id)
+			end
+			local actual=projected[key]
+			local sides=projected_sides[key]
+			if not actual or #actual~=2 or not sides or #sides~=2 then
+				return diag("bay_edge_transition_projection",row.id,
+					"exactly two projected bank terminals",actual and #actual or 0)
+			end
+			for incident_index=1,2 do
+				local bank=bank_by_id[incident[incident_index]]
+				if incident[incident_index]~=actual[incident_index] or
+						not bank or bank.bay_id~=row.bay_id then
+					return diag("bay_edge_transition_incidence",row.id,
+						"source-ordered same-Bay bank projection",incident[incident_index])
+				end
+			end
+			if sides[1]==sides[2] or
+					(sides[1]~="start" and sides[2]~="start") or
+					(sides[1]~="end" and sides[2]~="end") then
+				return diag("bay_edge_transition_terminal_sides",row.id,
+					"one start and one end terminal",sides[1]..":"..sides[2])
+			end
+			if row.id~=expected[1] or row.bay_id~=expected[2] or
+					row.edge_id~=expected[3] or row.edge_endpoint~=expected[4] or
+					incident[1]~=expected[5] or incident[2]~=expected[6] or
+					row.resolution_policy_id~="direct_candidate_or_same_bay_diagonal_elbow_v1" or
+					row.candidate_tie_rule~="lexicographically_least_x_then_z" or
+					row.numeric_id~=transition_index then
+				return diag("bay_edge_transition_contract",row.id,
+					"exact coordinate-free ordered eight-transition roster","changed")
+			end
+		end
+		for key in pairs(projected) do
+			if not seen[key] then
+				return diag("bay_edge_transition_projection",key,
+					"one declared transition row","missing")
+			end
+		end
+	end
+	for i=1,#source.bay_bank_components do local row=source.bay_bank_components[i]
+		local expected=expected_banks[i]
+		local incidence=row.endpoint_face_incidence
 		if row.id~=expected[1] or row.bay_id~=expected[2] or
 				terminal_key(row.start_terminal)~=expected[4] or
 				terminal_key(row.end_terminal)~=expected[5] or
@@ -2489,7 +2635,6 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			return diag("bay_bank_component_contract",row.id,
 				"exact coordinate-free ordered 20-component roster","changed")
 		end
-		bank_by_id[row.id]=row
 	end
 	local perimeter_bank_terminals={
 		["perimeter_span:elandor:hearthpine"]={false,"a:bay_mouth_aperture:elandor_west:before"},
@@ -4409,5 +4554,9 @@ end
 
 validator.EXPECTED_COUNTS = EXPECTED_COUNTS
 validator.EXPECTED_SOURCE_CHECKSUM = EXPECTED_SOURCE_CHECKSUM
+validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM =
+	EXPECTED_POLICY_CHECKSUMS.boundary_displacement
+validator.EXPECTED_WORLD_PARTITION_CHECKSUM =
+	EXPECTED_POLICY_CHECKSUMS.world_partition
 
 return validator

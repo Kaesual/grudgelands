@@ -3689,43 +3689,43 @@ Stage-1 pin.
 The one exact partition authority defines strict rational Base-Bay membership,
 nearest-owner ties, aperture-before-dry perimeter equality, attachment and
 unattached-vertex precedence, and strict-interior-only Wings
-([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):556).
+([policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):565).
 The retained source records include the four zero-jitter/no-route boundary additions
 `land_058`--`land_061` and their ordinary shared-relief `G` controls
-([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1028), the
+([boundary-only records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1047), the
 eight symbolic perimeter attachments and 18 canonical spans
-([attachments](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1262;
-[spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1293),
+([attachments](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1283;
+[spans](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1314),
 the ordered symbolic face records and all opposing uses of the four additions
-([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1426;
-[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1480),
+([face authority](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1473;
+[face cycles](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1527),
 four Base Bays plus four reference-only mouth apertures
-([Bays](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1869;
-[apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1926),
-and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1946).
+([Bays](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1916;
+[apertures](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1973),
+and exactly eight fixed Wings ([Wings](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1993).
 
 Stage 1 evaluates the sole exact Base-Bay predicate without Q16 projection,
 rounded width, division, or floating membership decision
 ([predicate](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):359),
 checks the core partition/equality policy explicitly and closes the complete
-source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1242;
-[policy checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1807;
-[source checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):4374),
+source record by checksum ([policy validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1244;
+[policy checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1846;
+[source checksum closure](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):4516),
 and rejects copied attachment geometry while checking all eight exact
 attachments, span ownership, and ordered face incidence
-([attachment validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2305;
-[span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2378).
+([attachment validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2338;
+[span validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2401).
 It retains the five dry rational-divergence witnesses and the guarded Base-Bay
-records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3339;
-[witnesses](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3459).
+records ([Bay validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3481;
+[witnesses](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):3604).
 
 The independent offline harness implements a separate rational comparator and
 owner oracle, including the decisive synthetic later-lower numeric tie KAT
-([oracle and KAT](../../tools/wp40/t2_source_test.lua):716). It derives
+([oracle and KAT](../../tools/wp40/t2_source_test.lua):576). It derives
 actual runs and widths from referenced Bay/perimeter geometry and compares them
 with KAT expected values: runs
 `711/664/638/719`, widths `720/660/640/740`
-([aperture oracle](../../tools/wp40/t2_source_test.lua):754). Its superseded
+([aperture oracle](../../tools/wp40/t2_source_test.lua):775). Its superseded
 literal-mainland Stage-1 loop reported local Bay results `g=0/o=0/w=0/u=0` and
 whole-footprint `g=0/o=0/r=0`, with
 `1,905,915` owner columns, `191,990` segment ties, and maximum checked product
@@ -3736,7 +3736,7 @@ acceptance claim. The audit also enforces the no-copied-width/no-loophole
 rules, rejects forgeable validation or premature compiler/IPC authority, and
 runs the five Lua-5.1 sweeps plus the offline harness
 ([static audit](../../tools/wp40/t2_source_audit.sh):31;
-[Lua sweeps and harness gate](../../tools/wp40/t2_source_audit.sh):247).
+[Lua sweeps and harness gate](../../tools/wp40/t2_source_audit.sh):298).
 
 This freezes only T2a's Stage-1 source and evidence. T2b must still compile
 the source and run the complete 32-seed Stage-2 geometry/topology/route/anchor
@@ -4013,12 +4013,12 @@ The checksum-covered policies are the sole source for damping/attachments,
 raw/junction relief, landmark replacement, and symmetric Bay displacement
 ([policy records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):286),
 and the 38 literal junction records and eight symbolic attachment records are
-also source data ([junction records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1145;
-[attachment records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1262).
+also source data ([junction records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1166;
+[attachment records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1283).
 The independent harness covers the relief, zero-weight, damping, Bay projection,
 symmetry and product KATs
-([exhaustive Bay projection oracle](../../tools/wp40/t2_source_test.lua):1371;
-[relief and zero-weight Reality KATs](../../tools/wp40/t2_source_test.lua):1650). The complete
+([exhaustive Bay projection oracle](../../tools/wp40/t2_source_test.lua):1217;
+[relief and zero-weight Reality KATs](../../tools/wp40/t2_source_test.lua):1671). The complete
 `tools/wp40/t2_source_audit.sh .` run must remain green after any later source
 edit; it proves Stage 1 only and leaves every mandated Stage-2 rerun above open.
 
@@ -4042,16 +4042,16 @@ here.
 The executable R7 source policy begins at the sole boundary-displacement
 record ([boundary policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):286),
 while R8/R9 share the one partition record
-([partition policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):556).
+([partition policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):565).
 The independent Stage-1 harness exercises the displacement pipeline
-([R7 oracle](../../tools/wp40/t2_source_test.lua):1773), classification
-precedence ([R8 oracle](../../tools/wp40/t2_source_test.lua):2228), exact coast
-inheritance ([R9 oracle](../../tools/wp40/t2_source_test.lua):2320), and the
+([R7 oracle](../../tools/wp40/t2_source_test.lua):1794), classification
+precedence ([R8 oracle](../../tools/wp40/t2_source_test.lua):2249), exact coast
+inheritance ([R9 oracle](../../tools/wp40/t2_source_test.lua):3603), and the
 source-identity selector overlap rule
-([selector KAT](../../tools/wp40/t2_source_test.lua):2555). The static audit
+([selector KAT](../../tools/wp40/t2_source_test.lua):3839). The static audit
 pins all four current checksums and bans a floating square-root path
-([checksum audit](../../tools/wp40/t2_source_audit.sh):104;
-[floating-square-root ban](../../tools/wp40/t2_source_audit.sh):150).
+([checksum audit](../../tools/wp40/t2_source_audit.sh):155;
+[floating-square-root ban](../../tools/wp40/t2_source_audit.sh):201).
 
 **R11 Bay-bank Reality correction (Stage 1 only; Stage 2 remains pending).**
 The first T2b face compiler demonstrated that the Base-Bay/Wing classifier is
@@ -4079,23 +4079,22 @@ materialization each happen once. Consumers bind the same IDs and byte-exact
 canonical x/z encodings; alias-free defensive payload copies are permitted,
 but no consumer may retrace, snap, infer a connector or copy a private shape.
 The executable policy and roster are the checksum-covered
-[Bay-bank policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):596
-and [20 component records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1348.
+[Bay-bank policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):617
+and [20 component records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1369.
 
 The aperture terminal is its adjacent dry station found by coordinate in the
 deduplicated final authored/declared perimeter order. This Bank-only terminal
 order is separate from, and changes none of, the canonical mouth-aperture
 membership indices/payload or Attachment tie. A land-edge terminal is the
-declared endpoint of the final clipped dry edge
-raster, and that endpoint itself must be the final dry Bay-bank candidate.
-Exploratory pre-freeze probes reported scan offset zero for all eight
-transitions, but that probe is not retained acceptance evidence. Stage 2 must
-provide the first executable reproducible oracle, freeze the offset-zero result
-per seed, and verify the same resolved station ID plus exact x/z bytes at the
-bank and edge consumers. Any nonzero offset rejects and requires a new Reality
-partition rather than an inward shift or unowned retained dry tail. The
+once-resolved terminal of the final clipped dry edge raster. R11 originally
+required the raw retained endpoint itself to be a candidate and recorded an
+unretained exploratory offset-zero probe. R16 below supersedes that claim after
+the fixed extreme slot 19 produced a strict-dry noncandidate endpoint next to
+same-Bay water only diagonally. The replacement is the checksum-covered direct-
+candidate-or-same-Bay-diagonal-elbow authority, never an inward scan, arbitrary
+shift or unowned retained dry tail. The
 previous half-edge at an edge start is the immediately adjacent retained
-station away from that endpoint; at an aperture it is the next dry perimeter
+final edge station away from the resolved endpoint; at an aperture it is the next dry perimeter
 station away from the aperture in the authored order. Every start half-edge
 must be 8-connected and candidate-valid, but supplies rotation only and has no
 water-side requirement.
@@ -4175,10 +4174,10 @@ cases. Its pre-H55 R15 source checksum was
 the world-partition policy checksum is
 `e5c17a5a084b0f13a5779b7c84aa823c8dae64e711020be5f46087db80a24693`.
 The retained Stage-1 bindings are the
-[exact roster and terminal validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2420,
-[component incidence and central identity](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2696,
-[record/component mutation KATs](../../tools/wp40/t2_source_test.lua):2970,
-[policy mutation KATs](../../tools/wp40/t2_source_test.lua):3277, and
+[exact roster and terminal validation](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2464,
+[component incidence and central identity](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2841,
+[record/component mutation KATs](../../tools/wp40/t2_source_test.lua):4314,
+[policy mutation KATs](../../tools/wp40/t2_source_test.lua):4691, and
 [R11 static audit](../../tools/wp40/t2_source_audit.sh):34.
 These are source/schema evidence only. T2b must still materialize the exact
 chains for all 32 seeds; prove every transition, reverse, branch/X/repeat and
@@ -4221,9 +4220,9 @@ Those numbers justify the finite policy but are not acceptance evidence.
 Stage 2 must retain the full 20-component/32-seed oracle, including the
 Hearthpine first-divergence fixture, frame/stack/trace bounds and mutations.
 The retained Stage-1 authority is the
-[R12 policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):603;
+[R12 policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):624;
 its rollback mutations begin at the
-[partition-policy KATs](../../tools/wp40/t2_source_test.lua):3277.
+[partition-policy KATs](../../tools/wp40/t2_source_test.lua):4715.
 
 **R13 digital-junction Reality correction (Stage 1 base proof; Stage 2 final
 proof remains pending).** After R12 materialized all Bay banks, the first
@@ -4266,11 +4265,11 @@ perimeter-attachment selection. It must then prove the separate
 post-partition topology and all 38 faces closed, counterclockwise and simple
 before a new Source/Compiler freeze.
 The retained R13 bindings are the
-[coordinate-free records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1199,
-[Stage-1 exact4 and 102-pair validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2077,
-[independent old/effective 102-pair oracle](../../tools/wp40/t2_source_test.lua):1531,
-[targeted mutations](../../tools/wp40/t2_source_test.lua):2835, and
-[static audit pins](../../tools/wp40/t2_source_audit.sh):154.
+[coordinate-free records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1207,
+[Stage-1 exact4 and 102-pair validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2129,
+[independent old/effective 102-pair oracle](../../tools/wp40/t2_source_test.lua):1528,
+[targeted mutations](../../tools/wp40/t2_source_test.lua):4118, and
+[static audit pins](../../tools/wp40/t2_source_audit.sh):207.
 The pre-H55 boundary-displacement policy checksum was
 `d36ce91c175cd7949385850c11f4e17f5480561ffb00f9a891d524cb92e236bd`.
 
@@ -4281,7 +4280,7 @@ stage with the later post-partition land-edge payload. The exhaustive R13 gate
 is pre-partition 38/102: all 38 authored `relief_junctions` and all 102 unordered
 incident-edge pairs are checked on the selected displacement rasters before
 any R11 clip. The source roster is retained at
-[relief junctions](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1145.
+[relief junctions](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1166.
 
 Post-partition H33 uses three disjoint topology categories. Four degree-two
 source junctions are fully dissolved by Bay water:
@@ -4289,10 +4288,11 @@ source junctions are fully dissolved by Bay water:
 (`land_004:to`, `land_007:from`), `(-970,+2260)` (`land_010:to`,
 `land_013:from`) and `(+1020,+2250)` (`land_013:to`, `land_016:from`). Their
 four old edge pairs do not survive; the eight incidences instead use the
-once-resolved offset-zero Bank transition identities in the
-[Bay-bank records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1348.
+once-resolved direct-candidate-or-same-Bay-diagonal-elbow transition identities
+in the [Bay-bank](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1369
+and [transition records](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1399.
 The other 34 relief junctions retain exactly 98 ordinary pairs. The eight
-[perimeter attachments](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1262
+[perimeter attachments](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1283
 are separate endpoint authorities outside the relief-junction roster and keep
 their final edge/perimeter/span identity gates. A mixed transition/ordinary
 junction, an attachment endpoint that also claims relief-junction authority,
@@ -4323,7 +4323,7 @@ the lexicographically least wedge-valid pair under the existing negative-path-
 then-positive-path order. Multiple wedge-valid pairs are legal; none rejects.
 The current hard bound is `R <= 5`, and reversal remains only the byte-exact
 reverse of the once-selected tails. The checksum-covered authority begins at
-the [Wing-wedge policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):616.
+the [Wing-wedge policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):640.
 
 The retained Stage-1 golden is keyed by Wing ID while iterating the existing
 source Wing order. Positive sequences below are shown in their stored
@@ -4352,10 +4352,10 @@ planned water, at least one raw dry face is required; multiplicity is legal
 only on a declared shared edge or junction, where the half-open rule chooses
 the owner. Inside final planned water there is no raw dry-face requirement,
 because water precedence owns the column. The retained bindings are the
-[exact policy validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1431,
-[independent eight-Wing oracle and goldens](../../tools/wp40/t2_source_test.lua):785,
-[policy mutations](../../tools/wp40/t2_source_test.lua):3336, and
-[static pins](../../tools/wp40/t2_source_audit.sh):52.
+[exact policy validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1455,
+[independent eight-Wing oracle and goldens](../../tools/wp40/t2_source_test.lua):806,
+[policy mutations](../../tools/wp40/t2_source_test.lua):4723, and
+[static pins](../../tools/wp40/t2_source_audit.sh):58.
 
 An exploratory plain-PUC script under `/tmp` first established feasibility at
 100 structural pairs, eight wedge-valid pairs and 15-to-zero dry columns. That
@@ -4422,12 +4422,224 @@ its boundary-displacement policy checksum is
 The world-partition checksum remains
 `e5c17a5a084b0f13a5779b7c84aa823c8dae64e711020be5f46087db80a24693`.
 The retained bindings are the [R7 closure policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):346,
-[structured refs](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1213,
-[closed resolver validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):701,
-[independent resolver and mutations](../../tools/wp40/t2_source_test.lua):2032,
-and [static audit](../../tools/wp40/t2_source_audit.sh):115. This is Stage-1
+[structured refs](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1234,
+[closed resolver validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):703,
+[independent resolver](../../tools/wp40/t2_source_test.lua):2097,
+[mutations](../../tools/wp40/t2_source_test.lua):3881,
+and [static audit](../../tools/wp40/t2_source_audit.sh):177. This is Stage-1
 source/schema evidence only; compiler refreeze and the final 32-seed result
 remain pending.
+
+**R16 Bay-edge terminal Reality correction (Stage-1 authority and retained
+Source oracle; compiler acceptance pending).** After the H55 compiler gates had
+closed, extreme selector slot 19 (`18446744073709551615`) reached
+`bay_bank:kragmar_west:stillgrave` with the old start half-edge
+`(-1141,2241) -> (-1140,2241)`. The latter column was strict dry and inside the
+finite Bay envelope, but was not a Bank candidate: its cardinal same-Bay and
+foreign-water bitsets were both `0000`. The immediately discarded provisional
+`land_010` station toward the Bay was `W=(-1139,2242)`, exactly diagonal from
+`E=(-1140,2241)` and final water owned only by `bay_kragmar_west`. Both exact
+orthogonal elbows were strict-dry same-Bay candidates:
+`(-1139,2241)` and `(-1140,2242)`. A private compiler shift would contradict
+the frozen terminal authority, while rejecting this seed would make the
+already-selected extreme corpus non-compilable. R16 therefore consciously
+reopens Source and replaces the false all-seed offset-zero claim.
+
+The source now contains exactly eight coordinate-free `bay_edge_transitions`
+rows. Each row binds the Bay, edge ID and endpoint plus its two incident Bank
+component IDs in existing Source component order; it contains no station,
+control, polygon or copied shape.
+
+| Transition | Bay | Incident Banks in Source order |
+|---|---|---|
+| `land_001:to` | `bay_elandor_west` | Hearthpine, Copperfell |
+| `land_004:from` | `bay_elandor_west` | Goldmead, Dawnmere |
+| `land_004:to` | `bay_elandor_east` | Dawnmere, Goldmead |
+| `land_007:from` | `bay_elandor_east` | Starbough, Silverleaf |
+| `land_010:to` | `bay_kragmar_west` | Stillgrave, Mournfen |
+| `land_013:from` | `bay_kragmar_west` | Redtusk, Sunscar |
+| `land_013:to` | `bay_kragmar_east` | Sunscar, Redtusk |
+| `land_016:from` | `bay_kragmar_east` | Raincall, Kapok |
+
+The sole resolution policy is
+`direct_candidate_or_same_bay_diagonal_elbow_v1`. Let `E` be the declared
+first or last retained dry provisional edge station. If `E` is a final
+same-Bay candidate, select it unchanged. Otherwise all of the following are
+mandatory: `E` is final strict dry; none of its four cardinal neighbours is
+same-Bay or foreign planned water; `W` is the immediate adjacent discarded
+provisional station toward the Bay; `E -> W` is an exact diagonal step; and
+`W` is final water owned only by the referenced Bay's Base/Wing union. Form the
+two orthogonal elbows `(W.x,E.z)` and `(E.x,W.z)`. They must be distinct,
+strict-dry in-footprint same-Bay candidates. The least `(x,z)` wins. A missing,
+mixed or duplicate row, wrong Bay/edge/Bank incidence, failed predicate,
+foreign water, invalid elbow, repeat, X-cross or final edge validation failure
+rejects with no fallback.
+
+The selected elbow is inserted as the terminal control after provisional
+prefix/suffix selection and before the existing sole final edge reraster. It is
+not a post-raster connector, append or snap. The edge and both declared Banks
+consume one once-resolved terminal station ID and byte-exact x/z; alias-free
+defensive copies may carry that identity without a second resolution. The
+immediately adjacent final edge station away from the terminal is `previous`
+(`E` itself in the diagonal case), while the resolved candidate is `current`.
+The anchor remains rotation-only; water-right begins on the first emitted Bank
+step. `E`, `W` and the derived elbow are resolved strictly after the immutable
+extreme-scalar records and never enter or change their identities or values.
+The complete 4,096 pool and selected four winners are generated once, only
+after the R16 Source freeze; there is no pre-R16 pool or before/after winner
+claim.
+
+Stage 1 closes the seven authored fields (plus generated `numeric_id`) and
+projects all 16 embedded land-edge terminal incidences from the 20 Bank records.
+It requires exactly eight unique edge/endpoint keys, two distinct same-Bay
+Banks in Source order and exactly one start plus one end terminal per row. Its
+targeted mutations independently reach field, incidence-array, exact-contract,
+projection, reference, Bank-incidence and terminal-side diagnostics. The
+retained Source oracle does not load the Partition or raster implementation: it
+reconstructs max-seed `land_010` and both final R7 mainland perimeters from
+Source and T1 arithmetic, including H55 closure, orientation, final footprint
+equality and aperture-only Base water. It independently builds the expanded
+Base/Wing union boxes, counts the final-footprint-clipped Kragmar-west envelope
+and runs its own water-right Moore/DFS trace with exact `8N`, `N` and `N-1`
+frame, stack and main-step caps. Outside-envelope, outside-footprint and
+synthetic foreign-water candidate corruptions reject. It freezes edge `C=3`,
+Elandor/Kragmar perimeter `C=3/2`, `N=1,132,870`, `E=(-1140,2241)`,
+`W=(-1139,2242)`, selected `T=(-1140,2242)`, the 453-station/451-step Mournfen
+path, one reachable-branch decision, 24 total pushed reachability frames
+including both per-call start frames, maximum call/stack `23/23`, and path SHA-256
+`1f528c5671fe69254049b03c3ef5047093bb743f9ddcfdb3967b73a000740cca`;
+the Stillgrave ordering begins at `(-1141,2242)`. These are retained Stage-1
+Reality witnesses, not compiler or 4,096-seed acceptance.
+
+The provisional R16 source checksum is
+`27c40804ad83b22d3c9e88bc48fddfdc4e44c7d2e8d78d1c6d28792691b59940`;
+the boundary-displacement checksum is
+`888037c92c4176cf55f8638452fcd92e66fe2b5fd909f5e3a3d2e574b303dd1c`;
+the world-partition checksum is
+`4ad284848e09cdbcdb7c578a3e5b8dd30b48d6180dc7c3b6af7a2a93b5bb69f2`.
+The retained bindings are the [structured transition
+roster](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):1399,
+[closed Stage-1 projection](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):2525,
+[independent Slot-19 oracle](../../tools/wp40/t2_source_test.lua):2341,
+[targeted mutations](../../tools/wp40/t2_source_test.lua):4265 and
+[static audit](../../tools/wp40/t2_source_audit.sh):89. The R16 Source/Reality
+candidate is refrozen only after the Source/PUC-5.1 gates and the compiler's
+Slot-19/all-eight transition gates reproduce these pins. Only then may the one
+complete 4,096-selector run and selected-four Whole/no-fallback run execute
+against that immutable commit/archive pin. Those later measurements do not
+reopen or silently mutate their input; any new Reality defect is recorded and
+reviewed separately. T2/32-seed and WP40 completion remain pending.
+
+**R17 raw-Bay-notch Reality correction (coordinate-free Source authority;
+compiler acceptance pending).** The first final max-u64 whole-footprint pass
+after R16 reported three dry degree-one leaves and no overlap or invalid
+intersection: Elandor-west `(-775,-2349)` with sole dry cardinal connector
+`(-774,-2349)`, Elandor-east `(887,-2036)` with connector `(886,-2036)`, and
+Kragmar-west `(-1121,2220)` with connector `(-1122,2220)`. Each leaf had the
+other three cardinal and all four diagonal neighbours in raw planned water,
+each with exactly one actual raw-water Bay owner. Kragmar-east had no leaf.
+An owner repair, face inference, Bank-path tie or point-specific snap would be
+downstream of the defect and was rejected.
+
+R17 upgrades `world_partition` to
+`face_partition_with_bay_capsule_water_v3` and defines
+`single_pass_same_bay_raw_mask_degree_one_notch_v1` in the checksum-covered
+[partition policy](../../mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua):565,
+with the complete closed-field contract enforced by the
+[Stage-1 validator](../../mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua):1350.
+The input is the immutable
+raw final Bay mask after displaced Base membership, closure Wings, final
+footprint clipping and mouth-aperture equality precedence, but before any
+fill. For each Bay, enumerate every integer `P` in the deduplicated union of
+its expanded Base-segment and two Wing boxes. `P` qualifies only when `P` and
+all eight neighbours are strict final-mainland interior, `P` is globally raw
+dry, exactly three cardinal and all four diagonal neighbours are raw water
+owned only by that Bay, and the remaining cardinal neighbour is globally raw
+dry. A foreign/multiple water owner or a second qualifying Bay rejects. All
+envelope expansion and neighbour `+/-1` arithmetic is checked inside the safe
+integer range; the underlying exact mask predicates retain their existing
+product guards.
+
+Every qualification reads the same raw mask. The compiler collects the unique
+`(Bay,P)` pairs and unions them simultaneously once; it never iterates or lets
+a filled column enable another decision. Each filled `P` becomes planned water
+of its qualifying Bay and uses that Bay's existing exact rational Base-owner
+projection. It does not copy a neighbour owner and introduces no rank, tie,
+snap or fallback. Each compiled Bay carries the policy ID, exact count and one
+lexicographically `(x,z)` sorted dense fill array. That once-materialized
+payload is consumed byte-for-byte by the final classifier, R16 transitions,
+Bank candidates/traces, Faces, partition and water ownership; consumers do not
+re-enumerate from a face or path.
+
+The evaluation DAG is binding. Extreme-scalar record identities and values,
+including the fixed 4,096 selector inputs, are upstream and unchanged. The raw
+mask is materialized next; R17 produces final planned water; then each R16
+transition is selected exactly once against that final mask; Banks, Faces and
+owners consume the same final payload. Selecting a transition against raw
+water and later validating or reselecting it is forbidden. Thus R17 changes no
+selector scalar identity or value, but there is still no pre-R17 4,096 pool or
+before/after-winner claim: the one final pool is generated only from immutable
+R17 pins.
+
+The retained Source/T1-only oracle independently rebuilds the two seed-specific
+R7 mainland perimeters, four displaced Base masks, all eight Wings, exact
+apertures and finite envelopes without loading the Partition or raster
+compiler. Its memoized four-Bay raw owner count exhausts every integer `P` in
+each deduplicated envelope. Seed 0 is `0/0/0/0`; max-u64 is `1/1/1/0` in
+Elandor-west/Elandor-east/Kragmar-west/Kragmar-east order, with exactly the
+three columns and connectors above and a global `P`-to-Bay bijection. Exact
+Base-owner results are Goldmead Vale, Goldmead Vale and Mournfen respectively.
+The literal finite scan begins at the
+[every-P oracle](../../tools/wp40/t2_source_test.lua):3067, and its independent
+[row-end equivalence proof](../../tools/wp40/t2_source_test.lua):3092 checks
+the complete implementation superset rather than replacing the semantic domain.
+Separate corruptions reject a count-one foreign owner, multiple owners, a
+non-interior water neighbour, perimeter equality, unsafe neighbour/envelope
+arithmetic and recursive second-pass behaviour; a multi-row synthetic payload
+binds lexicographic sorting. The max-u64 transition is then resolved once from
+the R17 final mask and retains the R16 elbow/path witness. The historical raw-
+mask trace has one multi-reachable branch and pushes 24 reachability frames
+(23 in its largest call and stack). Filling the Kragmar-west notch removes
+that dead alternative before final-mask tracing, so the authoritative final
+trace has zero branches and pushes zero reachability frames while retaining
+the exact same 453 stations, 451 steps and SHA-256
+`1f528c5671fe69254049b03c3ef5047093bb743f9ddcfdb3967b73a000740cca`.
+The oracle compares the complete raw/final byte sequences; this is not a
+transition reselection or a changed materialized Bank
+([raw/final DFS KAT](../../tools/wp40/t2_source_test.lua):3576).
+
+The semantic domain is still every integer `P`; a compiler may enumerate the
+complete finite candidate superset formed by `first - 1` and `finish + 1` for
+every horizontal raw-water run of the referenced Bay. Every three-of-four
+cardinal-water pattern has a horizontal water neighbour, so its raw-dry centre
+is immediately outside at least one such run. The retained oracle checks all
+four possible dry-cardinal orientations and independently compares that row-
+end result with literal every-`P` enumeration for both Seed 0 and max-u64.
+
+A moving compiler feasibility handoff reports the same Seed0/max `0` and
+`1/1/1/0` counts, all 20 Bank byte sequences unchanged, unchanged Faces and
+whole-footprint `g/o/r/m=0` after the three fills. This is not yet compiler
+freeze evidence. Its sole raw-mask/fill implementation and once-serialized Bay
+payload are visible at the moving
+[compiler fill](../../mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua):1174
+and [payload projection](../../mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua):2491;
+the independent moving compiler-side schema/corruption oracle begins at
+[R17 payload tests](../../tools/wp40/t2_partition_test.lua):5174. Source-side
+rollback mutations begin at the
+[policy KATs](../../tools/wp40/t2_source_test.lua):4616 and the
+[static audit](../../tools/wp40/t2_source_audit.sh):65 binds the policy,
+enumeration, final-mask DFS and checksum surfaces. R17 Source/Reality remains provisional until fresh LuaJIT and
+PUC-5.1 Source gates plus the compiler's exhaustive two-seed fill/payload,
+all-transition, all-Bank, Face and Whole gates reproduce the immutable pins.
+The later one-time 4,096 selector and selected-four Whole run then executes on
+those pins; T2/32-seed and WP40 completion remain pending.
+
+The provisional R17 source checksum is
+`154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d`;
+the unchanged boundary-displacement checksum is
+`a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f`;
+the R17 world-partition checksum is
+`b3173a764329c85c501b34c2e71b1d77abab661c931a18ac1e153cd7eebd6994`.
 
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or

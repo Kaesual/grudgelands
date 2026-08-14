@@ -538,14 +538,18 @@ end
 table.sort(independent_no_jitter, function(a, b)
 	return a.x < b.x or a.x == b.x and a.z < b.z
 end)
-local selected_r7_edge_by_id = {}
-for index = 1, #source.land_edges do
-	local edge = source.land_edges[index]
-	selected_r7_edge_by_id[edge.id] = raster.displace({id = edge.id,
-		kind = "land_edge", control = effective_land_control[edge.id] or edge.control,
-		closed = false, noise_domain = edge.noise_domain,
-		max_displacement = edge.max_displacement}, "0", independent_no_jitter)
+local function materialize_selected_r7(seed)
+	local by_edge_id = {}
+	for index = 1, #source.land_edges do
+		local edge = source.land_edges[index]
+		by_edge_id[edge.id] = raster.displace({id = edge.id,
+			kind = "land_edge", control = effective_land_control[edge.id] or edge.control,
+			closed = false, noise_domain = edge.noise_domain,
+			max_displacement = edge.max_displacement}, seed, independent_no_jitter)
+	end
+	return by_edge_id
 end
+local selected_r7_edge_by_id = materialize_selected_r7("0")
 
 local function by_id(rows, id)
 	for index = 1, #rows do if rows[index].id == id then return rows[index] end end
@@ -577,9 +581,10 @@ end
 
 -- R12 materializes the 20 canonical Banks once in Bay payloads and every
 -- incident dry face consumes an alias-free byte-identical defensive copy.
-local bank_payload, expected_bank_count = {}, 0
-for bay_index = 1, #compiled.families.bays do
-	local bay = compiled.families.bays[bay_index]
+local function extract_bank_payload(compiled_value)
+	local payload, expected_count = {}, 0
+	for bay_index = 1, #compiled_value.families.bays do
+	local bay = compiled_value.families.bays[bay_index]
 	local ids = named_array_value(bay, "text_arrays", "bank_component_ids")
 	local offsets = named_array_value(bay, "unsigned_arrays", "bank_station_offsets")
 	local counts = named_array_value(bay, "unsigned_arrays", "bank_station_counts")
@@ -587,7 +592,7 @@ for bay_index = 1, #compiled.families.bays do
 	assert(#ids == 5 and #offsets == 5 and #counts == 5)
 	local running = 0
 	for index = 1, 5 do
-		assert(offsets[index] == running and not bank_payload[ids[index]])
+		assert(offsets[index] == running and not payload[ids[index]])
 		local part = {}
 		for station = 1, counts[index] do
 			local offset = (running + station - 1) * 2
@@ -598,12 +603,15 @@ for bay_index = 1, #compiled.families.bays do
 					math.abs(part[#part] - part[#part - 2])) == 1)
 			end
 		end
-		bank_payload[ids[index]] = part
+		payload[ids[index]] = part
 		running = running + counts[index]
-		expected_bank_count = expected_bank_count + 1
+		expected_count = expected_count + 1
 	end
 	assert(#values == running * 2)
 end
+	return payload, expected_count
+end
+local bank_payload, expected_bank_count = extract_bank_payload(compiled)
 assert(expected_bank_count == 20)
 for index = 1, #source.bay_bank_components do
 	assert(bank_payload[source.bay_bank_components[index].id])
@@ -763,14 +771,15 @@ local function final_authored_perimeter(payload, authored)
 	return result
 end
 
-local authored_aperture_by_id, aperture_order_divergences = {}, 0
-for index = 1, #source.bay_mouth_apertures do
+local function derive_authored_apertures(compiled_value)
+	local result, divergences = {}, 0
+	for index = 1, #source.bay_mouth_apertures do
 	local authored = source.bay_mouth_apertures[index]
-	local aperture = by_id(compiled.families.mouth_apertures, authored.id)
-	local perimeter = by_id(compiled.families.perimeters, authored.perimeter_id)
+	local aperture = by_id(compiled_value.families.mouth_apertures, authored.id)
+	local perimeter = by_id(compiled_value.families.perimeters, authored.perimeter_id)
 	local perimeter_source = assert(perimeter_source_by_id[authored.perimeter_id])
 	local authored_points = final_authored_perimeter(perimeter, perimeter_source)
-	local bay_payload = by_id(compiled.families.bays, authored.bay_id)
+	local bay_payload = by_id(compiled_value.families.bays, authored.bay_id)
 	local bay_source = assert(bay_source_by_id[authored.bay_id])
 	local mouth = bay_source.centreline[authored.mouth_sample_index]
 	local mouth_index
@@ -794,7 +803,7 @@ for index = 1, #source.bay_mouth_apertures do
 	local derived = {before = {point = authored_points[first - 1],
 		away = authored_points[first - 2]}, after = {point = authored_points[last + 1],
 		away = authored_points[last + 2]}}
-	authored_aperture_by_id[authored.id] = derived
+	result[authored.id] = derived
 	local perimeter_values = signed_array(perimeter, "stations_xz")
 	local canonical_first = named_scalar(aperture, "unsigned_values", "first")
 	local canonical_finish = named_scalar(aperture, "unsigned_values", "finish")
@@ -806,9 +815,13 @@ for index = 1, #source.bay_mouth_apertures do
 			derived.before.point.z ~= canonical_dry[2] or
 			derived.after.point.x ~= canonical_dry[3] or
 			derived.after.point.z ~= canonical_dry[4] then
-		aperture_order_divergences = aperture_order_divergences + 1
+		divergences = divergences + 1
 	end
 end
+	return result, divergences
+end
+local authored_aperture_by_id, aperture_order_divergences =
+	derive_authored_apertures(compiled)
 assert(aperture_order_divergences > 0)
 for index = 1, #source.bay_bank_components do
 	local bank = source.bay_bank_components[index]
@@ -878,18 +891,21 @@ local function payload_points(record_value, array_name)
 	end
 	return points
 end
-local mainland_indices = {}
-for index = 1, 2 do
-	mainland_indices[index] = exact.polygon_index(payload_points(
-		compiled.families.perimeters[index], "stations_xz"))
-end
-local island_indices = {}
-for index = 1, #compiled.families.islands do
-	island_indices[index] = exact.polygon_index(payload_points(
-		compiled.families.islands[index], "stations_xz"))
-end
-local footprint_cache = {}
-local function oracle_footprint_class(x, z)
+local oracle_cardinal = {{x = 1, z = 0}, {x = 0, z = -1},
+	{x = -1, z = 0}, {x = 0, z = 1}}
+local function build_independent_oracle_world(compiled_value)
+	local mainland_indices = {}
+	for index = 1, 2 do
+		mainland_indices[index] = exact.polygon_index(payload_points(
+			compiled_value.families.perimeters[index], "stations_xz"))
+	end
+	local island_indices = {}
+	for index = 1, #compiled_value.families.islands do
+		island_indices[index] = exact.polygon_index(payload_points(
+			compiled_value.families.islands[index], "stations_xz"))
+	end
+	local footprint_cache = {}
+	local function oracle_footprint_class(x, z)
 	local point_key = oracle_key(x, z)
 	if footprint_cache[point_key] ~= nil then return footprint_cache[point_key] end
 	for index = 1, 2 do
@@ -909,12 +925,12 @@ local function oracle_footprint_class(x, z)
 	return -1
 end
 
-local bay_oracles, bay_oracle_by_id = {}, {}
-for bay_index = 1, #source.bays do
+	local bay_oracles, bay_oracle_by_id = {}, {}
+	for bay_index = 1, #source.bays do
 	local authored = source.bays[bay_index]
-	local payload = by_id(compiled.families.bays, authored.id)
+	local payload = by_id(compiled_value.families.bays, authored.id)
 	local deltas = signed_array(payload, "station_radius_delta")
-	local footprint_payload = by_id(compiled.families.perimeters,
+	local footprint_payload = by_id(compiled_value.families.perimeters,
 		authored.perimeter_projection.perimeter_id)
 	local oracle = {source = authored, segments = {}, wings = {}, aperture = {},
 		boxes = {},
@@ -941,9 +957,9 @@ for bay_index = 1, #source.bays do
 	for aperture_index = 1, #source.bay_mouth_apertures do
 		local authored_aperture = source.bay_mouth_apertures[aperture_index]
 		if authored_aperture.bay_id == authored.id then
-			local aperture = by_id(compiled.families.mouth_apertures,
+			local aperture = by_id(compiled_value.families.mouth_apertures,
 				authored_aperture.id)
-			local perimeter = by_id(compiled.families.perimeters,
+			local perimeter = by_id(compiled_value.families.perimeters,
 				authored_aperture.perimeter_id)
 			local perimeter_values = signed_array(perimeter, "stations_xz")
 			local first = named_scalar(aperture, "unsigned_values", "first")
@@ -989,7 +1005,7 @@ for bay_index = 1, #source.bays do
 	bay_oracle_by_id[authored.id] = oracle
 end
 
-local function oracle_base_member(oracle, x, z)
+	local function oracle_base_member(oracle, x, z)
 	local point_key = oracle_key(x, z)
 	if oracle.base_cache[point_key] ~= nil then return oracle.base_cache[point_key] end
 	for segment_index = 1, #oracle.segments do
@@ -1014,8 +1030,8 @@ local function oracle_base_member(oracle, x, z)
 	return false
 end
 
-local planned_cache = {}
-local function oracle_planned_water(x, z, perimeter_equality)
+	local planned_cache = {}
+	local function oracle_planned_water(x, z, perimeter_equality)
 	local cache_key = oracle_key(x, z) .. (perimeter_equality and ":e" or ":i")
 	if planned_cache[cache_key] ~= nil then return planned_cache[cache_key] end
 	for oracle_index = 1, #bay_oracles do
@@ -1038,9 +1054,7 @@ local function oracle_planned_water(x, z, perimeter_equality)
 	return false
 end
 
-local oracle_cardinal = {{x = 1, z = 0}, {x = 0, z = -1},
-	{x = -1, z = 0}, {x = 0, z = 1}}
-local function oracle_bay_water(oracle, x, z)
+	local function oracle_bay_water(oracle, x, z)
 	local point_key = oracle_key(x, z)
 	if oracle.water_cache[point_key] ~= nil then return oracle.water_cache[point_key] end
 	local class = oracle_footprint_class(x, z)
@@ -1062,7 +1076,7 @@ local function oracle_bay_water(oracle, x, z)
 	return water
 end
 
-local function oracle_candidate(oracle, x, z)
+	local function oracle_candidate(oracle, x, z)
 	local point_key = oracle_key(x, z)
 	if oracle.candidate_cache[point_key] ~= nil then
 		return oracle.candidate_cache[point_key]
@@ -1104,7 +1118,7 @@ local function oracle_candidate(oracle, x, z)
 	return candidate
 end
 
-local function oracle_water_right(oracle, from, to)
+	local function oracle_water_right(oracle, from, to)
 	local dx, dz = to.x - from.x, to.z - from.z
 	for index = 1, 4 do
 		local direction = oracle_cardinal[index]
@@ -1113,6 +1127,29 @@ local function oracle_water_right(oracle, from, to)
 					"test Bay-bank water side") < 0 then return true end
 	end
 	return false
+end
+	return {bay_oracles = bay_oracles, bay_oracle_by_id = bay_oracle_by_id,
+		footprint_class = oracle_footprint_class, planned_water = oracle_planned_water,
+		bay_water = oracle_bay_water, candidate = oracle_candidate,
+		water_right = oracle_water_right}
+end
+local seed0_oracle_world = build_independent_oracle_world(compiled)
+local bay_oracles = seed0_oracle_world.bay_oracles
+local bay_oracle_by_id = seed0_oracle_world.bay_oracle_by_id
+local function oracle_footprint_class(x, z)
+	return seed0_oracle_world.footprint_class(x, z)
+end
+local function oracle_planned_water(x, z, perimeter_equality)
+	return seed0_oracle_world.planned_water(x, z, perimeter_equality)
+end
+local function oracle_bay_water(oracle, x, z)
+	return seed0_oracle_world.bay_water(oracle, x, z)
+end
+local function oracle_candidate(oracle, x, z)
+	return seed0_oracle_world.candidate(oracle, x, z)
+end
+local function oracle_water_right(oracle, from, to)
+	return seed0_oracle_world.water_right(oracle, from, to)
 end
 
 local oracle_clockwise = {{x = 1, z = 0}, {x = 1, z = -1},
@@ -1125,6 +1162,8 @@ local function oracle_diagonal(a, b)
 		dx == dz and 1 or -1
 end
 
+local r16_max = {seed0 = {}}
+local trace_independent_banks_again
 local independent_bank_by_id = (function()
 local function oracle_point_less(a, b)
 	return a.x < b.x or a.x == b.x and a.z < b.z
@@ -1630,14 +1669,19 @@ end)
 -- Independent all-20 R12 Bank oracle.  It resolves every terminal from Source
 -- plus final AP/edge/Wing authorities, enforces exact finite caps and the fixed
 -- first-terminal-reachable Moore rule, then compares the complete bytes.
-local final_edge_points_by_id = {}
-for edge_index = 1, #compiled.families.land_boundaries do
-	local edge = compiled.families.land_boundaries[edge_index]
-	final_edge_points_by_id[edge.id] = payload_points(edge, "stations_xz")
+local function extract_final_edge_points(compiled_value)
+	local result = {}
+	for edge_index = 1, #compiled_value.families.land_boundaries do
+		local edge = compiled_value.families.land_boundaries[edge_index]
+		result[edge.id] = payload_points(edge, "stations_xz")
+	end
+	return result
 end
-local bank_envelope_count = {}
-for bay_index = 1, #bay_oracles do
-	local bay_oracle = bay_oracles[bay_index]
+local final_edge_points_by_id = extract_final_edge_points(compiled)
+local function count_bank_envelopes(oracle_world)
+	local result = {}
+	for bay_index = 1, #oracle_world.bay_oracles do
+	local bay_oracle = oracle_world.bay_oracles[bay_index]
 	local count = 0
 	for x = bay_oracle.bounds.min_x, bay_oracle.bounds.max_x do
 		for z = bay_oracle.bounds.min_z, bay_oracle.bounds.max_z do
@@ -1653,16 +1697,20 @@ for bay_index = 1, #bay_oracles do
 		end
 	end
 	assert(count > 0)
-	bank_envelope_count[bay_oracle.source.id] = count
+	result[bay_oracle.source.id] = count
 end
+	return result
+end
+local bank_envelope_count = count_bank_envelopes(seed0_oracle_world)
 
-local function resolve_bank_terminal(terminal, wing_authority)
+local function resolve_bank_terminal(terminal, wing_authority, edge_points,
+		authored_apertures)
 	if terminal.kind == "aperture_dry" then
-		local value = assert(authored_aperture_by_id[terminal.aperture_id])[terminal.side]
+		local value = assert(authored_apertures[terminal.aperture_id])[terminal.side]
 		return {point = {x = value.point.x, z = value.point.z},
 			previous = {x = value.away.x, z = value.away.z}}
 	elseif terminal.kind == "land_edge_transition" then
-		local points = assert(final_edge_points_by_id[terminal.edge_id])
+		local points = assert(edge_points[terminal.edge_id])
 		local endpoint = terminal.edge_endpoint == "from" and 1 or #points
 		local away = terminal.edge_endpoint == "from" and 2 or #points - 1
 		return {point = {x = points[endpoint].x, z = points[endpoint].z},
@@ -1686,8 +1734,8 @@ local function add_bank_diagonal(diagonals, a, b)
 	if not diagonals[cell] then diagonals[cell] = slope return cell end
 	return nil
 end
-local function independent_bank_successors(bay_oracle, previous_point, current_point,
-		seen_states, seen_columns, diagonals)
+local function independent_bank_successors(oracle_world, bay_oracle, previous_point,
+		current_point, seen_states, seen_columns, diagonals)
 	local back_x, back_z = previous_point.x - current_point.x,
 		previous_point.z - current_point.z
 	local back_index
@@ -1709,8 +1757,8 @@ local function independent_bank_successors(bay_oracle, previous_point, current_p
 		if following_key ~= oracle_key(previous_point.x, previous_point.z) and
 				not seen_states[directed_key] and not seen_columns[following_key] and
 				(not cell or not diagonals[cell] or diagonals[cell] == slope) and
-				oracle_candidate(bay_oracle, following.x, following.z) and
-				oracle_water_right(bay_oracle, current_point, following) then
+				oracle_world.candidate(bay_oracle, following.x, following.z) and
+				oracle_world.water_right(bay_oracle, current_point, following) then
 			result[#result + 1] = following
 		end
 	end
@@ -1721,8 +1769,8 @@ local function copy_bank_set(values)
 	for key, value in pairs(values) do result[key] = value end
 	return result
 end
-local function independent_bank_reachable(bay_oracle, previous_point, current_point,
-		target, base_states, base_columns, base_diagonals, envelope_count)
+local function independent_bank_reachable(oracle_world, bay_oracle, previous_point,
+		current_point, target, base_states, base_columns, base_diagonals, envelope_count)
 	local seen_states, seen_columns, diagonals = copy_bank_set(base_states),
 		copy_bank_set(base_columns), copy_bank_set(base_diagonals)
 	local first_state, first_column = bank_state_key(previous_point, current_point),
@@ -1739,8 +1787,8 @@ local function independent_bank_reachable(bay_oracle, previous_point, current_po
 		local frame = stack[#stack]
 		if frame.current.x == target.x and frame.current.z == target.z then return true end
 		if not frame.successors then
-			frame.successors = independent_bank_successors(bay_oracle, frame.previous,
-				frame.current, seen_states, seen_columns, diagonals)
+			frame.successors = independent_bank_successors(oracle_world, bay_oracle,
+				frame.previous, frame.current, seen_states, seen_columns, diagonals)
 			frame.next = 1
 		end
 		local following = frame.successors[frame.next]
@@ -1762,13 +1810,16 @@ local function independent_bank_reachable(bay_oracle, previous_point, current_po
 	end
 	return false
 end
-local function trace_independent_banks(wing_authority, compare_payload)
+local function trace_independent_banks(oracle_world, wing_authority, edge_points,
+		authored_apertures, envelope_counts, payload, compare_payload)
 local bank_results = {}
 for bank_index = 1, #source.bay_bank_components do
 	local bank = source.bay_bank_components[bank_index]
-	local bay_oracle = assert(bay_oracle_by_id[bank.bay_id])
-	local start = resolve_bank_terminal(bank.start_terminal, wing_authority)
-	local finish = resolve_bank_terminal(bank.end_terminal, wing_authority)
+	local bay_oracle = assert(oracle_world.bay_oracle_by_id[bank.bay_id])
+	local start = resolve_bank_terminal(bank.start_terminal, wing_authority,
+		edge_points, authored_apertures)
+	local finish = resolve_bank_terminal(bank.end_terminal, wing_authority,
+		edge_points, authored_apertures)
 	local points, seen_states, seen_columns, diagonals = {}, {}, {}, {}
 	local previous_point, current_point, target, suffix
 	if bank.start_terminal.kind == "wing_junction_tail_side" then
@@ -1798,18 +1849,18 @@ for bank_index = 1, #source.bay_bank_components do
 	end
 	assert(math.max(math.abs(previous_point.x - current_point.x),
 		math.abs(previous_point.z - current_point.z)) == 1 and
-		oracle_candidate(bay_oracle, current_point.x, current_point.z) and
-		oracle_candidate(bay_oracle, target.x, target.z))
-	local main_steps, envelope_count = 0, bank_envelope_count[bank.bay_id]
+		oracle_world.candidate(bay_oracle, current_point.x, current_point.z) and
+		oracle_world.candidate(bay_oracle, target.x, target.z))
+	local main_steps, envelope_count = 0, envelope_counts[bank.bay_id]
 	while current_point.x ~= target.x or current_point.z ~= target.z do
-		local successors = independent_bank_successors(bay_oracle, previous_point,
-			current_point, seen_states, seen_columns, diagonals)
+		local successors = independent_bank_successors(oracle_world, bay_oracle,
+			previous_point, current_point, seen_states, seen_columns, diagonals)
 		local following
 		if #successors == 1 then
 			following = successors[1]
 		else
 			for successor_index = 1, #successors do
-				if independent_bank_reachable(bay_oracle, current_point,
+				if independent_bank_reachable(oracle_world, bay_oracle, current_point,
 						successors[successor_index], target, seen_states, seen_columns,
 						diagonals, envelope_count) then
 					following = successors[successor_index]
@@ -1836,11 +1887,12 @@ for bank_index = 1, #source.bay_bank_components do
 		end
 	end
 	if compare_payload then
-		local payload = assert(bank_payload[bank.id])
-		assert(#payload == #points * 2)
+		local payload_row = assert(payload[bank.id])
+		assert(#payload_row == #points * 2)
 		for index = 1, #points do
-			assert(payload[index * 2 - 1] == points[index].x and
-				payload[index * 2] == points[index].z, bank.id .. " Bank bytes changed")
+			assert(payload_row[index * 2 - 1] == points[index].x and
+				payload_row[index * 2] == points[index].z,
+				bank.id .. " Bank bytes changed")
 		end
 	end
 	bank_results[bank.id] = points
@@ -1848,6 +1900,7 @@ end
 assert(#source.bay_bank_components == 20)
 return bank_results
 end
+trace_independent_banks_again = trace_independent_banks
 local historical_wing_by_id = {}
 for wing_id, expected in pairs(wing_oracle_by_id) do
 	local old_pair = assert(expected.valid_pairs[1])
@@ -1855,8 +1908,224 @@ for wing_id, expected in pairs(wing_oracle_by_id) do
 		negative_k = expected.negative_k, positive_k = expected.positive_k,
 		negative = old_pair.negative, positive = old_pair.positive}
 end
-local bank_results = trace_independent_banks(wing_oracle_by_id, true)
-bank_results.__historical = trace_independent_banks(historical_wing_by_id, false)
+local bank_results = trace_independent_banks(seed0_oracle_world, wing_oracle_by_id,
+	final_edge_points_by_id, authored_aperture_by_id, bank_envelope_count,
+	bank_payload, true)
+r16_max.seed0.wings = wing_oracle_by_id
+r16_max.seed0.edges = final_edge_points_by_id
+r16_max.seed0.apertures = authored_aperture_by_id
+r16_max.seed0.envelopes = bank_envelope_count
+r16_max.seed0.banks = bank_results
+bank_results.__historical = trace_independent_banks(seed0_oracle_world,
+	historical_wing_by_id, final_edge_points_by_id, authored_aperture_by_id,
+	bank_envelope_count, bank_payload, false)
+
+-- R16 turns the former fixed-slot-19 fatal into a positive full compile.  The
+-- same parameterized Source/payload oracle is reused below; no Production Bank
+-- classifier or resolver is called back from this proof.
+local max_u64_seed = "18446744073709551615"
+local max_u64_compiled = compiler.compile(max_u64_seed)
+assert(#max_u64_compiled.families.land_boundaries == 61 and
+	#max_u64_compiled.families.dry_faces == 38 and
+	#max_u64_compiled.families.bays == 4)
+local max_u64_world = build_independent_oracle_world(max_u64_compiled)
+local max_u64_apertures = derive_authored_apertures(max_u64_compiled)
+local max_u64_edges = extract_final_edge_points(max_u64_compiled)
+local max_u64_envelopes = count_bank_envelopes(max_u64_world)
+local max_u64_bank_payload, max_u64_bank_count =
+	extract_bank_payload(max_u64_compiled)
+assert(max_u64_bank_count == 20)
+local function compiled_wing_authority(compiled_value)
+	local result, wing_source_by_id = {}, {}
+	for index = 1, #source.bay_closure_wings do
+		wing_source_by_id[source.bay_closure_wings[index].id] =
+			source.bay_closure_wings[index]
+	end
+	for index = 1, #compiled_value.families.closure_wings do
+		local payload = compiled_value.families.closure_wings[index]
+		local wing = assert(wing_source_by_id[payload.id])
+		result[payload.id] = {wing = wing,
+			negative_k = {x = named_scalar(payload, "signed_values", "negative_k_x"),
+				z = named_scalar(payload, "signed_values", "negative_k_z")},
+			positive_k = {x = named_scalar(payload, "signed_values", "positive_k_x"),
+				z = named_scalar(payload, "signed_values", "positive_k_z")},
+			negative = payload_points(payload, "negative_tail_xz"),
+			positive = payload_points(payload, "positive_tail_xz")}
+	end
+	return result
+end
+local max_u64_wings = compiled_wing_authority(max_u64_compiled)
+
+local function independent_transition_expectations(oracle_world, r7_edges)
+	local result, direct_count, elbow_count = {}, 0, 0
+	for transition_index = 1, #source.bay_edge_transitions do
+		local row = source.bay_edge_transitions[transition_index]
+		local edge = assert(r7_edges[row.edge_id])
+		local bay_oracle = assert(oracle_world.bay_oracle_by_id[row.bay_id])
+		local retained = {}
+		for station_index = 1, #edge.stations do
+			local point = edge.stations[station_index]
+			local class = oracle_world.footprint_class(point.x, point.z)
+			if class >= 0 and not oracle_world.planned_water(point.x, point.z,
+					class == 0) then retained[#retained + 1] = station_index end
+		end
+		assert(#retained > 0)
+		for index = 2, #retained do assert(retained[index] == retained[index - 1] + 1) end
+		local e_index = row.edge_endpoint == "from" and retained[1] or
+			retained[#retained]
+		local e = edge.stations[e_index]
+		local expected = {source = row, e = {x = e.x, z = e.z}}
+		if oracle_world.candidate(bay_oracle, e.x, e.z) then
+			expected.mode = "direct"
+			expected.point = {x = e.x, z = e.z}
+			direct_count = direct_count + 1
+		else
+			local class = oracle_world.footprint_class(e.x, e.z)
+			assert(class == 1 and not oracle_world.planned_water(e.x, e.z, false))
+			for direction_index = 1, #oracle_cardinal do
+				local direction = oracle_cardinal[direction_index]
+				local x, z = e.x + direction.x, e.z + direction.z
+				local neighbor_class = oracle_world.footprint_class(x, z)
+				assert(neighbor_class < 0 or
+					not oracle_world.planned_water(x, z, neighbor_class == 0))
+			end
+			local w_index = row.edge_endpoint == "from" and e_index - 1 or e_index + 1
+			local w = assert(edge.stations[w_index])
+			assert(math.abs(w.x - e.x) == 1 and math.abs(w.z - e.z) == 1 and
+				oracle_world.bay_water(bay_oracle, w.x, w.z))
+			for bay_id, other in pairs(oracle_world.bay_oracle_by_id) do
+				if bay_id ~= row.bay_id then assert(not oracle_world.bay_water(other, w.x, w.z)) end
+			end
+			local elbows = {{x = w.x, z = e.z}, {x = e.x, z = w.z}}
+			for elbow_index = 1, 2 do
+				local elbow = elbows[elbow_index]
+				assert(oracle_world.footprint_class(elbow.x, elbow.z) == 1 and
+					not oracle_world.planned_water(elbow.x, elbow.z, false) and
+					oracle_world.candidate(bay_oracle, elbow.x, elbow.z))
+			end
+			table.sort(elbows, function(a, b)
+				return a.x < b.x or a.x == b.x and a.z < b.z
+			end)
+			expected.mode = "diagonal_elbow"
+			expected.w = {x = w.x, z = w.z}
+			expected.elbows = elbows
+			expected.point = {x = elbows[1].x, z = elbows[1].z}
+			elbow_count = elbow_count + 1
+		end
+		result[row.id] = expected
+	end
+	return result, direct_count, elbow_count
+end
+
+local function assert_transition_payload(compiled_value, expectations)
+	local seen, count, by_terminal = {}, 0, {}
+	for source_id, expected in pairs(expectations) do
+		by_terminal["land_edge_transition:" .. expected.source.edge_id .. ":" ..
+			expected.source.edge_endpoint] = {source_id = source_id, value = expected}
+	end
+	for edge_index = 1, #compiled_value.families.land_boundaries do
+		local edge = compiled_value.families.land_boundaries[edge_index]
+		local transition_count = maybe_named_scalar(edge, "unsigned_values",
+			"bank_transition_count")
+		if transition_count then
+			local ids = named_array_value(edge, "text_arrays", "bank_transition_ids")
+			local bays = named_array_value(edge, "text_arrays",
+				"bank_transition_bay_ids")
+			local endpoints = named_array_value(edge, "text_arrays",
+				"bank_transition_endpoints")
+			local positions = signed_array(edge, "bank_transition_xz")
+			local offsets = named_array_value(edge, "unsigned_arrays",
+				"bank_transition_offsets")
+			local stations = payload_points(edge, "stations_xz")
+			assert(#ids == transition_count and #bays == transition_count and
+				#endpoints == transition_count and #positions == transition_count * 2 and
+				#offsets == transition_count)
+			for index = 1, transition_count do
+				local binding = assert(by_terminal[ids[index]])
+				local id, expected = binding.source_id, binding.value
+				local exact_terminal_id = "land_edge_transition:" ..
+					expected.source.edge_id .. ":" .. expected.source.edge_endpoint
+				assert(ids[index] == exact_terminal_id and not seen[id] and
+					bays[index] == expected.source.bay_id and
+					endpoints[index] == expected.source.edge_endpoint and
+					offsets[index] == 0 and positions[index * 2 - 1] == expected.point.x and
+					positions[index * 2] == expected.point.z)
+				local endpoint = endpoints[index] == "from" and 1 or #stations
+				local away = endpoints[index] == "from" and 2 or #stations - 1
+				assert(stations[endpoint].x == expected.point.x and
+					stations[endpoint].z == expected.point.z)
+				if expected.mode == "diagonal_elbow" then
+					assert(stations[away].x == expected.e.x and stations[away].z == expected.e.z)
+				end
+				seen[id], count = true, count + 1
+			end
+		end
+	end
+	assert(count == 8)
+end
+
+local seed0_transition_expectations, seed0_direct, seed0_elbows =
+	independent_transition_expectations(seed0_oracle_world, selected_r7_edge_by_id)
+assert(seed0_direct == 8 and seed0_elbows == 0)
+assert_transition_payload(compiled, seed0_transition_expectations)
+local max_u64_selected_r7 = materialize_selected_r7(max_u64_seed)
+local max_u64_transition_expectations, max_u64_direct, max_u64_elbows =
+	independent_transition_expectations(max_u64_world, max_u64_selected_r7)
+assert(max_u64_direct == 7 and max_u64_elbows == 1)
+assert_transition_payload(max_u64_compiled, max_u64_transition_expectations)
+local max_transition = assert(max_u64_transition_expectations[
+	"bay_edge_transition:land_010:to"])
+assert(max_transition.mode == "diagonal_elbow" and
+	max_transition.e.x == -1140 and max_transition.e.z == 2241 and
+	max_transition.w.x == -1139 and max_transition.w.z == 2242 and
+	max_transition.elbows[1].x == -1140 and max_transition.elbows[1].z == 2242 and
+	max_transition.elbows[2].x == -1139 and max_transition.elbows[2].z == 2241 and
+	max_transition.point.x == -1140 and max_transition.point.z == 2242)
+local max_kw = assert(max_u64_world.bay_oracle_by_id["bay_kragmar_west"])
+local max_w_segment = assert(max_kw.segments[2])
+local max_w_nearest, max_w_distance
+for station_index = 1, #max_w_segment.stations do
+	local station = max_w_segment.stations[station_index]
+	local dx, dz = station.x - max_transition.w.x, station.z - max_transition.w.z
+	local distance = dx * dx + dz * dz
+	if not max_w_distance or distance < max_w_distance then
+		max_w_nearest, max_w_distance = station_index, distance
+	end
+end
+assert(max_w_nearest - 1 == 259 and max_w_segment.deltas[max_w_nearest] == -12)
+
+local max_u64_banks = trace_independent_banks(max_u64_world, max_u64_wings,
+	max_u64_edges, max_u64_apertures, max_u64_envelopes,
+	max_u64_bank_payload, true)
+local max_stillgrave = max_u64_banks["bay_bank:kragmar_west:stillgrave"]
+local max_mournfen = max_u64_banks["bay_bank:kragmar_west:mournfen"]
+assert(max_stillgrave[1].x == max_transition.point.x and
+	max_stillgrave[1].z == max_transition.point.z and
+	max_stillgrave[2].x == -1141 and max_stillgrave[2].z == 2242 and
+	#max_mournfen == 453 and
+	max_mournfen[#max_mournfen].x == max_transition.point.x and
+	max_mournfen[#max_mournfen].z == max_transition.point.z)
+local max_mournfen_tail = {{-1135,2237},{-1136,2238},{-1137,2239},
+	{-1138,2240},{-1139,2241},{-1140,2242}}
+for index = 1, #max_mournfen_tail do
+	local actual = max_mournfen[#max_mournfen - #max_mournfen_tail + index]
+	assert(actual.x == max_mournfen_tail[index][1] and
+		actual.z == max_mournfen_tail[index][2])
+end
+print("WP40 T2 R16 max-u64 transitions direct/elbow=" .. max_u64_direct .. "/" ..
+	max_u64_elbows .. " land_010:to E/W/T=" .. max_transition.e.x .. ":" ..
+	max_transition.e.z .. "/" .. max_transition.w.x .. ":" ..
+	max_transition.w.z .. "/" .. max_transition.point.x .. ":" ..
+	max_transition.point.z)
+r16_max.compiled = max_u64_compiled
+r16_max.oracle_world = max_u64_world
+r16_max.seed = max_u64_seed
+r16_max.transition_expectations = max_u64_transition_expectations
+r16_max.banks = max_u64_banks
+r16_max.wings = max_u64_wings
+r16_max.edges = max_u64_edges
+r16_max.apertures = max_u64_apertures
+r16_max.envelopes = max_u64_envelopes
 return bank_results
 end)()
 local prefix = {}
@@ -2142,6 +2411,119 @@ for index = 1, #compiled.families.land_boundaries do
 	end
 end
 assert(transition_count == 8)
+
+-- The production-consumed R16 selector and assembly seam is closed,
+-- fail-closed, alias-free, and reversal-identical.
+do
+local transition_e = {x = -1140, z = 2241}
+local transition_w = {x = -1139, z = 2242}
+local synthetic_raw_water = false
+assert(not synthetic_raw_water and compiler.transition_water_owned(true, true) and
+	not compiler.transition_water_owned(false, true) and
+	not compiler.transition_water_owned(true, false),
+	"R17 filled W was not consumed as final same-Bay water")
+expect_error("water evidence", function()
+	compiler.transition_water_owned(true, 1)
+end)
+local transition_fallback = {id = "synthetic transition", e = transition_e,
+	direct_candidate = false, e_strict_dry = true, e_cardinal_water = false,
+	w = transition_w, w_owned_by_bay = true, w_foreign_water = false,
+	elbow_valid = {true, true}}
+local transition_selected = compiler.select_edge_transition(transition_fallback)
+assert(transition_selected.mode == "diagonal_elbow" and
+	transition_selected.point.x == -1140 and transition_selected.point.z == 2242 and
+	transition_selected.elbows[2].x == -1139 and
+	transition_selected.elbows[2].z == 2241)
+local transition_direct = compiler.select_edge_transition({id = "synthetic direct",
+	e = transition_e, direct_candidate = true})
+assert(transition_direct.mode == "direct" and
+	transition_direct.point.x == transition_e.x and
+	transition_direct.point.z == transition_e.z)
+for _, mutate in ipairs({
+	function(row) row.extra = true end,
+	function(row) row.e_strict_dry = false end,
+	function(row) row.e_cardinal_water = true end,
+	function(row) row.w = {x = row.e.x + 2, z = row.e.z + 1} end,
+	function(row) row.w_owned_by_bay = false end,
+	function(row) row.w_foreign_water = true end,
+	function(row) row.elbow_valid[1] = false end,
+}) do
+	local corrupted = {}
+	for field, value in pairs(transition_fallback) do
+		if field == "e" or field == "w" then
+			corrupted[field] = {x = value.x, z = value.z}
+		elseif field == "elbow_valid" then
+			corrupted[field] = {value[1], value[2]}
+		else corrupted[field] = value end
+	end
+	mutate(corrupted)
+	expect_error("transition", function() compiler.select_edge_transition(corrupted) end)
+end
+expect_error("unknown field", function()
+	compiler.select_edge_transition({id = "synthetic direct", e = transition_e,
+		direct_candidate = true, extra = false})
+end)
+local retained_controls = {{x = -1142, z = 2241}, {x = -1141, z = 2241},
+	{x = transition_e.x, z = transition_e.z}}
+local retained_before = raster_signature(retained_controls)
+local forward_controls = compiler.add_edge_transition_control(retained_controls,
+	transition_selected, "to", transition_e)
+assert(raster_signature(retained_controls) == retained_before,
+	"transition assembly mutated caller controls")
+expect_error("direct transition", function()
+	compiler.add_edge_transition_control(retained_controls,
+		{mode = "direct", point = {x = transition_e.x + 1, z = transition_e.z}},
+		"to", transition_e)
+end)
+expect_error("unknown field", function()
+	compiler.add_edge_transition_control(retained_controls,
+		{mode = "direct", point = transition_e, extra = function() end}, "to",
+		transition_e)
+end)
+for _, corrupt in ipairs({
+	{mode = "diagonal_elbow", point = transition_selected.elbows[2],
+		w = transition_selected.w, elbows = transition_selected.elbows},
+	{mode = "diagonal_elbow", point = transition_selected.point,
+		w = transition_selected.w,
+		elbows = {transition_selected.elbows[2], transition_selected.elbows[1]}},
+	{mode = "diagonal_elbow", point = transition_selected.point,
+		w = {x = transition_selected.w.x + 1, z = transition_selected.w.z},
+		elbows = transition_selected.elbows},
+}) do
+	expect_error("elbow transition", function()
+		compiler.add_edge_transition_control(retained_controls, corrupt, "to",
+			transition_e)
+	end)
+end
+local forward_transition_raster = raster.final_raster(forward_controls, false)
+local reversed_controls = compiler.reverse_materialized(retained_controls)
+local backward_controls = compiler.add_edge_transition_control(reversed_controls,
+	transition_selected, "from", transition_e)
+local backward_transition_raster = raster.final_raster(backward_controls, false)
+assert(#forward_transition_raster == #backward_transition_raster)
+for index = 1, #forward_transition_raster do
+	local reverse_index = #backward_transition_raster - index + 1
+	assert(forward_transition_raster[index].x ==
+		backward_transition_raster[reverse_index].x and
+		forward_transition_raster[index].z ==
+		backward_transition_raster[reverse_index].z)
+end
+expect_error("repeats station", function()
+	local repeated = compiler.add_edge_transition_control({
+		{x = transition_selected.point.x, z = transition_selected.point.z},
+		{x = transition_e.x, z = transition_e.z}}, transition_selected, "to",
+		transition_e)
+	local final = raster.final_raster(repeated, false)
+	raster.validate_final({id = "synthetic repeated transition", kind = "land_edge",
+		closed = false, max_displacement = 2}, repeated, final)
+end)
+expect_error("X-cross", function()
+	local crossed = {{x = 0, z = 0}, {x = 1, z = 1}, {x = 0, z = 1},
+		{x = 1, z = 0}}
+	raster.validate_final({id = "synthetic crossed transition", kind = "land_edge",
+		closed = false, max_displacement = 2}, crossed, crossed)
+end)
+end
 
 local expected_tail_counts = {{4,3},{4,5},{5,4},{3,4},{2,3},{5,4},{4,5},{5,4}}
 for index = 1, 8 do
@@ -2526,6 +2908,32 @@ for index = 1, #source.perimeters do
 			displaced.canonical_stations[station_index].z)
 	end
 	independent_perimeter_by_id[authored.id] = displaced
+end
+local function materialize_independent_perimeters(seed, compiled_value)
+	local result = {}
+	for index = 1, #source.perimeters do
+		local authored = source.perimeters[index]
+		local definition = {id = authored.id,
+			kind = authored.kind == "fixed_land_band" and "fixed" or "mainland_coast",
+			control = authored.polygon, closed = true, orientation = authored.orientation,
+			noise_domain = authored.noise_domain,
+			max_displacement = authored.max_displacement,
+			envelope = source.constants.mainland_frame,
+			fixed_closure = independent_fixed_closure(authored)}
+		local displaced = raster.displace(definition, seed, independent_no_jitter)
+		displaced.canonical_stations = raster.canonical_closed(displaced.stations)
+		displaced.segment_parts = independent_segment_parts(displaced, #authored.polygon)
+		local payload = by_id(compiled_value.families.perimeters, authored.id)
+		local values = signed_array(payload, "stations_xz")
+		assert(#values == (#displaced.canonical_stations + 1) * 2)
+		for station_index = 1, #displaced.canonical_stations do
+			assert(values[station_index * 2 - 1] ==
+				displaced.canonical_stations[station_index].x and
+				values[station_index * 2] == displaced.canonical_stations[station_index].z)
+		end
+		result[authored.id] = displaced
+	end
+	return result
 end
 do
 	local authored = source.perimeters[1]
@@ -4053,7 +4461,11 @@ run_classification_precedence_kats()
 -- partition every footprint row at all run boundaries.  Each resulting
 -- interval has one constant Base/Wing/Face membership tuple, so its length is
 -- an exhaustive proof over the full finite footprint rather than a sample.
-local function run_exhaustive_partition_oracle()
+local function run_exhaustive_partition_oracle(compiled_value, seed, oracle_world,
+		perimeter_map, focused_seed0)
+	local compiled = compiled_value
+	local bay_oracles = oracle_world.bay_oracles
+	local independent_perimeter_by_id = perimeter_map
 	local function point_key(x, z) return x .. ":" .. z end
 	local independent_bay_deltas = {}
 	local function expected_bay_delta_values(authored)
@@ -4061,7 +4473,7 @@ local function run_exhaustive_partition_oracle()
 		for segment_index = 1, #authored.centreline - 1 do
 			local stations = raster.segment(authored.centreline[segment_index],
 				authored.centreline[segment_index + 1])
-			local noise = {schema = "grug_wp40_geometry_source_v1", seed = "0",
+			local noise = {schema = "grug_wp40_geometry_source_v1", seed = seed,
 				domain = authored.noise_domain, feature = "", octaves = {
 					{period = 256, amplitude_numerator = 2, amplitude_denominator = 3},
 					{period = 512, amplitude_numerator = 1, amplitude_denominator = 3}}}
@@ -4096,7 +4508,7 @@ local function run_exhaustive_partition_oracle()
 		assert(validate_bay_deltas(by_id(compiled.families.bays, authored.id),
 			authored, expected))
 	end
-	do
+	if focused_seed0 then
 		local authored = source.bays[1]
 		local corrupted = deep_copy(by_id(compiled.families.bays, authored.id))
 		local deltas = signed_array(corrupted, "station_radius_delta")
@@ -4204,7 +4616,7 @@ local function run_exhaustive_partition_oracle()
 		return nil, -1
 	end
 	local function source_bay_owner(authored, x, z)
-		local best, best_n, best_d
+		local best, best_n, best_d, tied
 		for segment_index = 1, #authored.centreline - 1 do
 			local a, b = authored.centreline[segment_index],
 				authored.centreline[segment_index + 1]
@@ -4218,18 +4630,26 @@ local function run_exhaustive_partition_oracle()
 				end
 			end
 			assert(span)
-			local side = (b.x - a.x) * (z - a.z) -
-				(b.z - a.z) * (x - a.x)
+			local dx, dz = exact.vector(a, b, "independent Bay owner segment")
+			local px = exact.safe_difference(x, a.x, "independent Bay owner query")
+			local pz = exact.safe_difference(z, a.z, "independent Bay owner query")
+			local side = exact.cross(dx, dz, px, pz, "independent Bay owner side")
 			local owner = side > 0 and span.left_zone_id or side < 0 and
 				span.right_zone_id or zone_numeric[span.left_zone_id] <
 				zone_numeric[span.right_zone_id] and span.left_zone_id or
 				span.right_zone_id
+			local candidate = {zone_id = owner, zone_numeric = zone_numeric[owner],
+				segment_index = segment_index - 1, side = side}
 			local order = best and exact.rational_compare(n, d, best_n, best_d) or -1
-			if order < 0 or order == 0 and zone_numeric[owner] < zone_numeric[best] then
-				best, best_n, best_d = owner, n, d
+			if order < 0 then
+				best, best_n, best_d, tied = candidate, n, d, false
+			elseif order == 0 then
+				tied = true
+				if candidate.zone_numeric < best.zone_numeric then best = candidate end
 			end
 		end
-		return assert(best)
+		assert(best)
+		return best.zone_id, best, best_n, best_d, tied
 	end
 	local prepared_payload_owner = {}
 	for bay_index = 1, #source.bays do
@@ -4553,7 +4973,7 @@ local function run_exhaustive_partition_oracle()
 	local function evaluate(current_faces, current_water, expected_water)
 		expected_water = expected_water or expected_water_rows
 		local result = {columns = 0, planned_water = 0, dry = 0,
-			g = 0, o = 0, r = 0, m = 0}
+			g = 0, o = 0, r = 0, m = 0, gap_witnesses = {}}
 		for z, footprint_runs in pairs(footprint_rows) do
 			local faces, water = current_faces[z] or {}, current_water[z] or {}
 			local expected = expected_water[z] or {}
@@ -4618,6 +5038,10 @@ local function run_exhaustive_partition_oracle()
 						result.dry = result.dry + length
 						if #active_faces == 0 then
 							result.g = result.g + length
+							if #result.gap_witnesses < 16 then
+								result.gap_witnesses[#result.gap_witnesses + 1] = {
+									x = first, z = z, length = length}
+							end
 						elseif #active_faces > 1 then
 							for x = first, finish do
 								local owners = declared[point_key(x, z)]
@@ -4644,14 +5068,418 @@ local function run_exhaustive_partition_oracle()
 		end
 		return result
 	end
-	local report = evaluate(face_rows, water_rows, expected_water_rows)
-	assert(report.columns == 30312952, "closed footprint column count changed: " ..
-		report.columns)
+	-- H15 authority diagnostic only: enumerate the raw, single-cell Bay-mask
+	-- notches without feeding the result back into Production.  The candidate
+	-- set is complete because every 3-of-4 cardinal pattern has a horizontal
+	-- Bay-water neighbor, hence appears beside a row-run endpoint.
+	local wing_bay_by_id = {}
+	for wing_index = 1, #source.bay_closure_wings do
+		local wing = source.bay_closure_wings[wing_index]
+		wing_bay_by_id[wing.id] = wing.bay_id
+	end
+	local function run_bay_id(run)
+		return run.kind == "base" and run.id or wing_bay_by_id[run.id]
+	end
+	local function point_bay_water(bay_id, x, z)
+		local active = active_runs(water_rows, z, x)
+		for index = 1, #active do
+			if run_bay_id(active[index]) == bay_id then return true end
+		end
+		return false
+	end
+	local notch_by_bay, notch_list, notch_owner_by_key = {}, {}, {}
+	for bay_index = 1, #source.bays do
+		local bay_id = source.bays[bay_index].id
+		local candidates = {}
+		for z, runs in pairs(water_rows) do
+			for run_index = 1, #runs do
+				local run = runs[run_index]
+				if run_bay_id(run) == bay_id then
+					candidates[point_key(run.first - 1, z)] = {x = run.first - 1, z = z}
+					candidates[point_key(run.finish + 1, z)] = {x = run.finish + 1, z = z}
+				end
+			end
+		end
+		local selected, selected_map = {}, {}
+		for _, point in pairs(candidates) do
+			local footprint_kind, class = footprint_class(point.x, point.z)
+			if footprint_kind == "mainland" and class == 1 and
+					#active_runs(water_rows, point.z, point.x) == 0 then
+				local water_count, dry_neighbor = 0, nil
+				for direction_index = 1, #oracle_cardinal do
+					local direction = oracle_cardinal[direction_index]
+					local nx, nz = point.x + direction.x, point.z + direction.z
+					if point_bay_water(bay_id, nx, nz) then
+						water_count = water_count + 1
+					else
+						dry_neighbor = {x = nx, z = nz}
+					end
+				end
+				local dry_kind, dry_class = dry_neighbor and
+					footprint_class(dry_neighbor.x, dry_neighbor.z) or nil, nil
+				if dry_neighbor then
+					_, dry_class = footprint_class(dry_neighbor.x, dry_neighbor.z)
+				end
+				local diagonals_water = true
+				for _, direction in ipairs({{x = 1, z = 1}, {x = 1, z = -1},
+						{x = -1, z = 1}, {x = -1, z = -1}}) do
+					if not point_bay_water(bay_id, point.x + direction.x,
+							point.z + direction.z) then diagonals_water = false break end
+				end
+				if water_count == 3 and dry_kind == "mainland" and dry_class == 1 and
+						#active_runs(water_rows, dry_neighbor.z, dry_neighbor.x) == 0 and
+						diagonals_water then
+					local water_neighbors = {}
+					for direction_index = 1, #oracle_cardinal do
+						local direction = oracle_cardinal[direction_index]
+						local nx, nz = point.x + direction.x, point.z + direction.z
+						if point_bay_water(bay_id, nx, nz) then
+							water_neighbors[#water_neighbors + 1] = {x = nx, z = nz}
+						end
+					end
+					for _, direction in ipairs({{x = 1, z = 1}, {x = 1, z = -1},
+							{x = -1, z = 1}, {x = -1, z = -1}}) do
+						water_neighbors[#water_neighbors + 1] = {
+							x = point.x + direction.x, z = point.z + direction.z}
+					end
+					assert(#water_neighbors == 7)
+					for neighbor_index = 1, #water_neighbors do
+						local neighbor = water_neighbors[neighbor_index]
+						local active = active_runs(water_rows, neighbor.z, neighbor.x)
+						assert(#active == 1 and run_bay_id(active[1]) == bay_id,
+							"H15 notch water neighbor is not uniquely owned by its Bay")
+					end
+					local row = {x = point.x, z = point.z, bay_id = bay_id,
+						dry_neighbor = dry_neighbor}
+					local key = point_key(point.x, point.z)
+					assert(not notch_owner_by_key[key],
+						"H15 notch was selected by more than one Bay")
+					notch_owner_by_key[key] = bay_id
+					selected[#selected + 1], notch_list[#notch_list + 1] = row, row
+					selected_map[key] = true
+				end
+			end
+		end
+		table.sort(selected, function(a, b)
+			return a.x < b.x or a.x == b.x and a.z < b.z
+		end)
+		notch_by_bay[bay_id] = selected_map
+		local evidence = {}
+		for index = 1, #selected do
+			evidence[#evidence + 1] = selected[index].x .. ":" .. selected[index].z ..
+				">" .. selected[index].dry_neighbor.x .. ":" ..
+				selected[index].dry_neighbor.z
+		end
+		local bay_payload = by_id(compiled.families.bays, bay_id)
+		local function validate_fill_projection(payload)
+			compiler.validate_bay_payload(payload)
+			assert(payload.record_schema == "grug_wp40_bay_v2",
+				"R17 Bay notch projection schema changed")
+			assert(named_scalar(payload, "text_values", "notch_fill_policy_id") ==
+				source.geometry_policies.world_partition.bay_notch_fill_policy_id)
+			local count = named_scalar(payload, "unsigned_values", "notch_fill_count")
+			local values = signed_array(payload, "notch_fill_xz")
+			if count ~= #selected or #values ~= #selected * 2 then
+				error("R17 Bay notch projection count changed")
+			end
+			for index = 1, #selected do
+				if values[index * 2 - 1] ~= selected[index].x or
+						values[index * 2] ~= selected[index].z then
+					error("R17 Bay notch projection bytes changed")
+				end
+			end
+			return true
+		end
+		assert(validate_fill_projection(bay_payload))
+		local expected_fill_count = 0
+		if not focused_seed0 and (bay_id == "bay_elandor_west" or
+				bay_id == "bay_elandor_east" or bay_id == "bay_kragmar_west") then
+			expected_fill_count = 1
+		end
+		assert(#selected == expected_fill_count,
+			"R17 per-Bay notch projection count changed")
+		if not focused_seed0 and #selected > 0 then
+			local original_policy = source.geometry_policies.world_partition.
+				bay_notch_fill_policy_id
+			local original_x, original_z = selected[1].x, selected[1].z
+			local corrupted = deep_copy(bay_payload)
+			for row_index = 1, #corrupted.unsigned_values do
+				if corrupted.unsigned_values[row_index].name == "notch_fill_count" then
+					corrupted.unsigned_values[row_index].value =
+						corrupted.unsigned_values[row_index].value + 1
+				end
+			end
+			expect_error("notch fill count", function()
+				compiler.validate_bay_payload(corrupted)
+			end)
+			corrupted = deep_copy(bay_payload)
+			local values = named_array_value(corrupted, "signed_arrays", "notch_fill_xz")
+			values[1] = values[1] + 1
+			expect_error("projection bytes", function() validate_fill_projection(corrupted) end)
+			corrupted = deep_copy(bay_payload)
+			for row_index = 1, #corrupted.text_values do
+				if corrupted.text_values[row_index].name == "notch_fill_policy_id" then
+					corrupted.text_values[row_index].value = "corrupt"
+				end
+			end
+			expect_error("owner policy", function()
+				compiler.validate_bay_payload(corrupted)
+			end)
+			corrupted = deep_copy(bay_payload)
+			local reversed = named_array_value(corrupted, "signed_arrays",
+				"notch_fill_xz")
+			reversed[3], reversed[4] = reversed[1] - 1, reversed[2]
+			for row_index = 1, #corrupted.unsigned_values do
+				if corrupted.unsigned_values[row_index].name == "notch_fill_count" then
+					corrupted.unsigned_values[row_index].value = 2
+				end
+			end
+			expect_error("not canonical", function()
+				compiler.validate_bay_payload(corrupted)
+			end)
+			assert(source.geometry_policies.world_partition.bay_notch_fill_policy_id ==
+				original_policy and selected[1].x == original_x and
+				selected[1].z == original_z and
+				signed_array(bay_payload, "notch_fill_xz")[1] == original_x,
+				"R17 Bay notch projection aliases Source or a copied payload")
+		end
+		print("WP40 T2 H15 raw notches seed=" .. seed .. " " .. bay_id .. "=" ..
+			#selected .. (#evidence > 0 and " [" .. table.concat(evidence, ",") .. "]" or ""))
+	end
+	local raw_report = evaluate(face_rows, water_rows, expected_water_rows)
+	local report
+	do
+		local simulated_water = deep_copy(water_rows)
+		for index = 1, #notch_list do
+			local notch = notch_list[index]
+			append_run(simulated_water, notch.z, {first = notch.x, finish = notch.x,
+				kind = "base", id = notch.bay_id,
+				owner = source_bay_owner(assert((function()
+					for bay_index = 1, #source.bays do
+						if source.bays[bay_index].id == notch.bay_id then
+							return source.bays[bay_index]
+						end
+					end
+				end)()), notch.x, notch.z)})
+		end
+		local simulated = evaluate(face_rows, simulated_water, simulated_water)
+		local any_notch = {}
+		for index = 1, #notch_list do
+			any_notch[point_key(notch_list[index].x, notch_list[index].z)] = true
+		end
+		local patched_world = {bay_oracles = oracle_world.bay_oracles,
+			bay_oracle_by_id = oracle_world.bay_oracle_by_id,
+			footprint_class = oracle_world.footprint_class}
+		patched_world.planned_water = function(x, z, equality)
+			if not equality and any_notch[point_key(x, z)] then return true end
+			return oracle_world.planned_water(x, z, equality)
+		end
+		patched_world.bay_water = function(oracle, x, z)
+			if assert(notch_by_bay[oracle.source.id])[point_key(x, z)] then return true end
+			return oracle_world.bay_water(oracle, x, z)
+		end
+		patched_world.candidate = function(oracle, x, z)
+			local in_bounds = false
+			for box_index = 1, #oracle.boxes do
+				local box = oracle.boxes[box_index]
+				if x >= box.min_x and x <= box.max_x and z >= box.min_z and
+						z <= box.max_z then in_bounds = true break end
+			end
+			if not in_bounds then return false end
+			local own_water = false
+			for direction_index = 1, #oracle_cardinal do
+				local direction = oracle_cardinal[direction_index]
+				if patched_world.bay_water(oracle, x + direction.x, z + direction.z) then
+					own_water = true break
+				end
+			end
+			local class = patched_world.footprint_class(x, z)
+			if not own_water or class < 0 or patched_world.planned_water(x, z,
+					class == 0) then return false end
+			for direction_index = 1, #oracle_cardinal do
+				local direction = oracle_cardinal[direction_index]
+				local nx, nz = x + direction.x, z + direction.z
+				local neighbor_class = patched_world.footprint_class(nx, nz)
+				if neighbor_class >= 0 and patched_world.planned_water(nx, nz,
+						neighbor_class == 0) and not patched_world.bay_water(oracle,
+						nx, nz) then return false end
+			end
+			return true
+		end
+		patched_world.water_right = function(oracle, from, to)
+			local dx, dz = to.x - from.x, to.z - from.z
+			for direction_index = 1, #oracle_cardinal do
+				local direction = oracle_cardinal[direction_index]
+				if patched_world.bay_water(oracle, from.x + direction.x,
+						from.z + direction.z) and exact.cross(dx, dz, direction.x,
+						direction.z, "H15 simulated water side") < 0 then return true end
+			end
+			return false
+		end
+		local wings, edges, apertures, envelopes, current_banks
+		if focused_seed0 then
+			wings, edges, apertures, envelopes, current_banks = r16_max.seed0.wings,
+				r16_max.seed0.edges, r16_max.seed0.apertures,
+				r16_max.seed0.envelopes, r16_max.seed0.banks
+		else
+			wings, edges, apertures, envelopes, current_banks = r16_max.wings,
+				r16_max.edges, r16_max.apertures, r16_max.envelopes, r16_max.banks
+		end
+		local trace_ok, simulated_banks = pcall(trace_independent_banks_again,
+			patched_world, wings, edges, apertures, envelopes, {}, false)
+		assert(trace_ok, "R17 final-mask independent Bank trace failed: " ..
+			tostring(simulated_banks))
+		local bank_drift = 0
+		for bank_index = 1, #source.bay_bank_components do
+			local id = source.bay_bank_components[bank_index].id
+			if not same_point_bytes(assert(current_banks[id]),
+					assert(simulated_banks[id])) then bank_drift = bank_drift + 1 end
+		end
+		assert(bank_drift == 0, "R17 final-mask Bank bytes changed")
+		if focused_seed0 then
+			assert(#notch_list == 0 and raw_report.g == 0,
+				"Seed0 raw Bay-notch baseline changed")
+		else
+			local expected = {["-775:-2349"] = "bay_elandor_west",
+				["887:-2036"] = "bay_elandor_east",
+				["-1121:2220"] = "bay_kragmar_west"}
+			assert(#notch_list == 3 and raw_report.g == 3,
+				"max-u64 raw Bay-notch baseline changed")
+			for index = 1, #notch_list do
+				local notch = notch_list[index]
+				local point_key = notch.x .. ":" .. notch.z
+				assert(expected[point_key] == notch.bay_id,
+					"max-u64 raw Bay-notch identity changed")
+				local authored
+				for bay_index = 1, #source.bays do
+					if source.bays[bay_index].id == notch.bay_id then
+						authored = source.bays[bay_index] break
+					end
+				end
+				assert(authored)
+				local expected_id, expected_owner, expected_n, expected_d, expected_tied =
+					source_bay_owner(authored, notch.x, notch.z)
+				local actual_owner, actual_n, actual_d, actual_tied = compiler.bay_owner(
+					by_id(compiled.families.bays, notch.bay_id), notch.x, notch.z)
+				assert(actual_owner.zone_id == expected_id and
+					actual_owner.zone_numeric == expected_owner.zone_numeric and
+					actual_owner.segment_index == expected_owner.segment_index and
+					actual_owner.side == expected_owner.side and
+					exact.rational_compare(actual_n, actual_d, expected_n, expected_d) == 0 and
+					actual_tied == expected_tied,
+					"R17 filled Bay owner projection changed")
+				expected[point_key] = nil
+			end
+			assert(next(expected) == nil, "max-u64 raw Bay-notch roster is incomplete")
+		end
+		report = simulated
+		water_rows = simulated_water
+		expected_water_rows = deep_copy(simulated_water)
+		print(("WP40 T2 H15 simulated seed=%s cells=%d g/o/r/m=%d/%d/%d/%d " ..
+			"Bank_drift=%d trace=%s"):format(seed, #notch_list, simulated.g,
+			simulated.o, simulated.r, simulated.m, bank_drift,
+			"ok"))
+	end
+	if focused_seed0 then
+		assert(report.columns == 30312952, "closed footprint column count changed: " ..
+			report.columns)
+	else
+		assert(report.columns > 0, "closed footprint scan is empty")
+	end
+	local gap_text = {}
+	for index = 1, #report.gap_witnesses do
+		local witness = report.gap_witnesses[index]
+		gap_text[#gap_text + 1] = witness.x .. ":" .. witness.z .. "+" .. witness.length
+		local footprint_kind, footprint_boundary = footprint_class(witness.x, witness.z)
+		local water = active_runs(water_rows, witness.z, witness.x)
+		local nonnegative, nearest_id, nearest_distance = {}, nil, nil
+		for face_index = 1, #compiled.families.dry_faces do
+			local face = compiled.families.dry_faces[face_index]
+			local points = payload_points(face, "polygon_xz")
+			local class = exact.polygon_class(witness.x, witness.z, points)
+			if class >= 0 then
+				nonnegative[#nonnegative + 1] = face.id .. "=" .. class
+			end
+			for point_index = 1, #points - 1 do
+				local point = points[point_index]
+				local distance = math.max(math.abs(point.x - witness.x),
+					math.abs(point.z - witness.z))
+				if not nearest_distance or distance < nearest_distance or
+						distance == nearest_distance and face.id < nearest_id then
+					nearest_id, nearest_distance = face.id, distance
+				end
+			end
+		end
+		local neighbors = {}
+		for dz = -1, 1 do
+			for dx = -1, 1 do
+				if dx ~= 0 or dz ~= 0 then
+					local active = active_runs(face_rows, witness.z + dz, witness.x + dx)
+					local ids = {}
+					for active_index = 1, #active do ids[#ids + 1] = active[active_index].id end
+					local active_water = active_runs(water_rows, witness.z + dz,
+						witness.x + dx)
+					local water_ids = {}
+					for active_index = 1, #active_water do
+						water_ids[#water_ids + 1] = active_water[active_index].id
+					end
+					neighbors[#neighbors + 1] = dx .. ":" .. dz .. "=" ..
+						(#ids > 0 and table.concat(ids, "+") or "none") .. "/" ..
+						(#water_ids > 0 and table.concat(water_ids, "+") or "dry")
+				end
+			end
+		end
+		local nearest_transition, nearest_transition_distance
+		local nearest_bank, nearest_bank_distance
+		if not focused_seed0 then
+			for id, transition in pairs(assert(r16_max.transition_expectations)) do
+				for _, point in ipairs({transition.e, transition.point, transition.w}) do
+					if point then
+						local distance = math.max(math.abs(point.x - witness.x),
+							math.abs(point.z - witness.z))
+						if not nearest_transition_distance or distance < nearest_transition_distance then
+							nearest_transition = id .. "/" .. transition.mode .. "@" ..
+								point.x .. ":" .. point.z
+							nearest_transition_distance = distance
+						end
+					end
+				end
+			end
+			for id, points in pairs(assert(r16_max.banks)) do
+				for point_index = 1, #points do
+					local point = points[point_index]
+					local distance = math.max(math.abs(point.x - witness.x),
+						math.abs(point.z - witness.z))
+					if not nearest_bank_distance or distance < nearest_bank_distance then
+						nearest_bank = id .. "[" .. point_index .. "]@" ..
+							point.x .. ":" .. point.z
+						nearest_bank_distance = distance
+					end
+				end
+			end
+		end
+		print(("WP40 T2 R16 gap %d:%d footprint=%s/%d water=%d " ..
+			"faces_nonnegative=%s nearest=%s@%d transition=%s@%s bank=%s@%s " ..
+			"neighbors=%s"):format(
+			witness.x, witness.z, tostring(footprint_kind), footprint_boundary,
+			#water, #nonnegative > 0 and table.concat(nonnegative, "+") or "none",
+			nearest_id, nearest_distance, tostring(nearest_transition),
+			tostring(nearest_transition_distance), tostring(nearest_bank),
+			tostring(nearest_bank_distance), table.concat(neighbors, ",")))
+	end
 	assert(report.g == 0 and report.o == 0 and report.r == 0 and report.m == 0,
-		("whole footprint changed g=%d/o=%d/r=%d/m=%d"):format(report.g,
-			report.o, report.r, report.m))
+		("whole footprint changed g=%d/o=%d/r=%d/m=%d gap_runs=%s"):format(report.g,
+			report.o, report.r, report.m, #gap_text > 0 and
+			table.concat(gap_text, ",") or "none"))
 	assert(report.planned_water > 0 and report.dry > 0 and
 		report.planned_water + report.dry == report.columns)
+	if not focused_seed0 then
+		print(("WP40 T2 R16 max-u64 whole-footprint passed: columns=%d Base=%d " ..
+			"planned=%d dry=%d g=%d/o=%d/r=%d/m=%d schedule_intervals=%d"):format(
+			report.columns, base_total, report.planned_water, report.dry,
+			report.g, report.o, report.r, report.m, schedule_certified_intervals))
+		return report
+	end
 
 	-- M57: replay the pre-R15 structural-first tail choice through the same
 	-- independent all-20 Bank tracer, substitute the resulting Bank bytes into
@@ -5049,7 +5877,17 @@ local function run_exhaustive_partition_oracle()
 		aperture_count, attachment_count, dry_count, schedule_certified_intervals))
 	return report
 end
-local exhaustive_partition_report = run_exhaustive_partition_oracle()
+local exhaustive_partition_report = run_exhaustive_partition_oracle(
+	compiled, "0", seed0_oracle_world, independent_perimeter_by_id, true)
+do
+	local max_u64_perimeters = materialize_independent_perimeters(
+		assert(r16_max.seed), assert(r16_max.compiled))
+	local report = run_exhaustive_partition_oracle(r16_max.compiled,
+		r16_max.seed, r16_max.oracle_world, max_u64_perimeters, false)
+	assert(report.g == 0 and report.o == 0 and report.r == 0 and report.m == 0,
+		"R16 max-u64 whole-partition report changed")
+	r16_max.whole_report = report
+end
 
 local function expect_coast_corruption(fragment, mutate)
 	local payload = deep_copy(compiled.families.coast_shelf)

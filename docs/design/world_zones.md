@@ -261,7 +261,7 @@ WP40 replaces it with the complete catalog and contracts below.
   equality and the strict exterior is discarded.
   The last listed sample is the fixed positive-width **head shoulder** `C`,
   with radius 80 and the original 160-node cross-section.
-- Final planned bay water adds exactly two zero-jitter analytic **closure
+- Raw planned Bay water adds exactly two zero-jitter analytic **closure
   wings** per bay, eight in total. Each wing runs from `C` to one of the two
   existing dry triple junctions that flank that bay head and tapers linearly
   from radius 80 at `C` to radius zero at the junction `J`. Wing interiors are
@@ -274,8 +274,31 @@ WP40 replaces it with the complete catalog and contracts below.
   are not a chord, dry fan or land-face continuation. Each wing's two sides
   continue the adjacent outer-bank and central-head zone ownership without
   adding those sides to the land graph. The original centreline samples, round
-  head shoulder and outer mouth remain unchanged even though the final planned-
-  water mask is explicitly larger than the base mask at the two closures.
+  head shoulder and outer mouth remain unchanged even though the raw planned-
+  water mask is explicitly larger than the Base mask at the two closures.
+- Final planned Bay water applies one coordinate-free
+  `single_pass_same_bay_raw_mask_degree_one_notch_v1` pass to that immutable
+  raw Base-plus-Wings mask. For a Bay, a raw-dry column `P` qualifies only
+  inside the deduplicated union of its Base/Wing boxes when `P` and all eight
+  neighbours are strict final-mainland interior, exactly three cardinal and
+  all four diagonal neighbours are raw water owned by that Bay alone, and the
+  fourth cardinal neighbour is raw dry. Every Bay and every integer `P` in
+  that finite union is evaluated against the same raw mask; all unique
+  qualifying `(Bay,P)` pairs are unioned simultaneously once. Filled columns
+  never feed another decision. Foreign or multiple Bay ownership, multiple
+  qualifying Bays, perimeter or mouth-aperture equality, or unsafe envelope/
+  neighbour arithmetic rejects. A filled `P` uses its Bay's existing exact
+  rational owner policy; no neighbour owner, rank, snap or new tie exists.
+  The exhaustive semantic domain remains every `P`; the finite implementation
+  may evaluate the complete superset consisting of `first - 1` and
+  `finish + 1` for every horizontal run of referenced-Bay raw water. This is
+  exact because every three-of-four cardinal-water pattern has at least one
+  horizontal water neighbour, so its raw-dry centre is immediately outside
+  such a run. All four possible dry-cardinal orientations and literal-every-
+  `P` equivalence are acceptance oracles.
+  Each compiled Bay stores the policy ID, count and lexicographically `(x,z)`
+  sorted fill columns once. Transitions, Banks, Faces, partition and ownership
+  consume those exact bytes without reclassification or face inference.
 - Bay banks are integer-column boundaries derived from the final planned-water
   classifier, not literal shore polylines. The source contains exactly 20
   coordinate-free ordered `bay_bank_component` records, five per Bay. Each
@@ -291,26 +314,44 @@ WP40 replaces it with the complete catalog and contracts below.
   perimeter order to the dry station immediately before or after the
   aperture. This Bank-only order does not change the canonical mouth-aperture
   membership indices, compiled aperture payload or Attachment tie.
-  `land_edge_transition` resolves to the declared endpoint of
-  the final clipped dry edge raster, and that endpoint itself must be the
-  adjacent Bay-bank candidate: the inward scan offset is zero for each of the
-  eight transitions (`land_001:to`, `land_004:from`, `land_004:to`,
-  `land_007:from`, `land_010:to`, `land_013:from`, `land_013:to` and
-  `land_016:from`) in every corpus seed. The edge and bank consume the same
-  resolved station ID and exact canonical x/z bytes; a nonzero offset, inward
-  shift or retained dry tail rejects the
-  seed and requires a new reviewed partition. `wing_junction_tail_side`
+  `land_edge_transition` resolves through exactly eight coordinate-free
+  `bay_edge_transitions` records for `land_001:to`, both ends of `land_004`,
+  `land_007:from`, `land_010:to`, both ends of `land_013` and
+  `land_016:from`. Each record binds one Bay, one edge endpoint and its two
+  incident Bank component IDs in Source order; it carries no coordinate or
+  shape. Let `E` be that first/last retained dry provisional edge station. If
+  `E` is already a same-Bay candidate, it is the terminal. Otherwise `E` must
+  be strict dry with no cardinal planned-water neighbour, and the immediately
+  adjacent discarded provisional station `W` toward the Bay must be exactly
+  diagonal from `E` and final water owned only by the referenced Bay, including
+  any materialized notch fill. Both orthogonal elbows `(W.x,E.z)` and
+  `(E.x,W.z)` must be distinct,
+  strict-dry, in-footprint same-Bay candidates; the lexicographically least
+  `(x,z)` is the terminal. Any failed precondition rejects without fallback.
+  The selected elbow is inserted as a terminal control before the existing
+  sole final edge reraster; it is never appended or snapped post-raster and is
+  not a scalar sample. Extreme-scalar record identities and values remain
+  upstream and unchanged. The raw mask is built next, the one simultaneous
+  fill produces final planned water, and only then is each R16 transition
+  selected exactly once against that final mask. Selection against raw water
+  followed by validation or reselection is forbidden. The complete 4,096 pool
+  and selected four extreme winners are generated once, only after the R17
+  Source freeze. The edge and both Banks
+  consume the same once-resolved station ID and exact canonical x/z bytes;
+  defensive alias-free copies are allowed, but there is no inward scan or
+  private shift. `wing_junction_tail_side`
   resolves through the one joint tail-pair result for its Wing; `J` remains
   dry and is the only common terminal of the two sides.
 - For a non-Wing start, `current` is that resolved terminal candidate. At an
   aperture, `previous` is the next dry authored perimeter station away from
   the aperture; at an edge transition it is the immediately adjacent retained
-  dry edge station away from the declared endpoint. This 8-connected,
+  dry final edge station away from the resolved endpoint (for an elbow this
+  is `E`). This 8-connected,
   candidate-valid half-edge supplies Moore rotation only; it has no water-side
   requirement. No other start heading is inferred.
 - A Moore candidate is a final-classifier dry mainland column, including
   permitted dry perimeter equality, with a cardinal neighbour owned as final
-  water by the same Bay's Base mask or either Wing. Search is finite: the
+  water by the same Bay's final Base/Wings/notch-fill mask. Search is finite: the
   Base-Bay and two Wing bounding boxes are expanded by one column and clipped
   to the final mainland footprint. Trace state is `(previous,current,seen
   directed states)`. Starting half-edges are 8-connected and candidate-valid;
@@ -627,7 +668,9 @@ WP40 replaces it with the complete catalog and contracts below.
   provisional run is never exported; no `E -> A` segment is emitted. The final
   endpoint equals `A` exactly, every other final station is strict footprint
   interior, and the result is one 8-connected retained run. Nonattached ends
-  retain ordinary prefix/suffix clipping. In the undisplaced literal Stage-1
+  retain ordinary prefix/suffix clipping except the eight declared Bay-edge
+  ends, whose retained `E` may be replaced by the reviewed same-Bay diagonal
+  elbow as a terminal control before that same final raster. In the undisplaced literal Stage-1
   baseline, three attachments have `E=A`, five have Chebyshev distance one,
   and `land_016` has no common raw edge/perimeter raster station before this
   joint selection. Those counts are not seed-zero compiled evidence: Stage 2
@@ -862,7 +905,7 @@ Orientation schematic; §9, not this table, defines exact adjacency:
 - Post-partition topology has a separate exact gate. The degree-two source
   junctions `(-1050,-2250)`, `(+950,-2250)`, `(-970,+2260)` and
   `(+1020,+2250)` are fully dissolved because their raw `J` columns are Bay
-  water; their eight incidences are the declared R11 edge-to-Bank transition
+  water; their eight incidences are the declared coordinate-free edge-to-Bank transition
   identities, not four surviving edge pairs. The remaining 34 ordinary
   relief junctions retain exactly 98 unordered incident-edge pairs at their
   raw `J`. All eight perimeter attachments are disjoint terminal authorities
@@ -1590,7 +1633,14 @@ asks for it.
   wing-side owners assign every planned-water point deterministically without
   adding a land neighbor. Base masks are clipped to strict footprint interior
   plus their own mouth aperture; Wings remain strict-interior-only. No Bay
-  point classifies as shelf or deep ocean.
+  point classifies as shelf or deep ocean. The coordinate-free raw-mask notch
+  pass then exhausts every integer `P` in each deduplicated finite Bay envelope
+  exactly once. Seed 0 has counts `0/0/0/0`; the max-u64 R16 seed has
+  Elandor-west/Elandor-east/Kragmar-west/Kragmar-east counts `1/1/1/0`.
+  Those three fill columns are globally unique, have one dry cardinal
+  connector and seven raw-water neighbours owned only by their Bay, and use
+  the existing exact Base-Bay owner projection. The sorted per-Bay payload is
+  the only downstream fill authority.
 - The exhaustive finite mainland-footprint oracle assigns every integer x/z
   column to exactly one final planned-bay-water owner or one dry zone face, with
   zero final gap and zero final overlap. It proves exact
