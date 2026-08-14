@@ -21,6 +21,7 @@ owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua"
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 	"$repo/tools/wp40/t2_partition_test.lua"
+	"$repo/tools/wp40/t2_partition_oracle.lua"
 )
 
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"

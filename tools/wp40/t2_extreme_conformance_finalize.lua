@@ -1,0 +1,163 @@
+local repo = assert(arg[1], "repository root required")
+local scratch = assert(arg[2], "finalizer scratch required")
+local output_path = assert(arg[3], "final conformance output required")
+local expected_commit = assert(arg[4], "launch commit required")
+local expected_tree = assert(arg[5], "launch tree required")
+local expected_dag = assert(arg[6], "launch DAG required")
+local mode = arg[7]
+assert((mode == nil or mode == "verify") and arg[8] == nil and
+	_VERSION == "Lua 5.1" and rawget(_G, "jit") == nil,
+	"C1 finalizer requires plain PUC Lua 5.1")
+assert(#expected_commit == 40 and expected_commit:match("^[0-9a-f]+$") and
+	#expected_tree == 40 and expected_tree:match("^[0-9a-f]+$") and
+	#expected_dag == 64 and expected_dag:match("^[0-9a-f]+$"),
+	"expected C1 launch pins are invalid")
+local expected_launch = expected_commit .. ":" .. expected_tree .. ":" .. expected_dag
+assert(arg[-1] == repo .. "/tools/bin/lua51",
+	"C1 finalizer requires the reviewed vendored interpreter")
+local function safe_absolute(path)
+	assert(type(path) == "string" and path:match("^/[A-Za-z0-9._/-]+$") and
+		not path:find("/../", 1, true) and not path:find("/./", 1, true) and
+		path:sub(-3) ~= "/.." and path:sub(-2) ~= "/." and
+		not path:find("/" .. "/", 1, true), "unsafe C1 finalizer path")
+end
+for _, path in ipairs({repo, scratch, output_path}) do safe_absolute(path) end
+assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-conformance%-final%.[A-Za-z0-9]+$"),
+	"unsafe C1 finalizer scratch")
+local retained = repo .. "/tools/wp40/fixtures/t2_extreme_e0/"
+assert(output_path == retained .. "conformance-puc.tsv",
+	"final C1 output path changed")
+local output_file = io.open(output_path, "rb")
+local output_exists = output_file ~= nil
+if output_file then output_file:close() end
+local temporary_file = io.open(output_path .. ".tmp", "rb")
+if temporary_file then temporary_file:close(); error("final C1 temporary exists", 0) end
+if mode == "verify" then
+	assert(output_exists, "final C1 output is missing")
+else
+	assert(not output_exists, "final C1 output already exists")
+end
+local function read_file(path)
+	local file = assert(io.open(path, "rb"))
+	local bytes = assert(file:read("*a"))
+	assert(file:close())
+	return bytes
+end
+local function from_hex(value)
+	return (value:gsub("..", function(pair)
+		return string.char(assert(tonumber(pair, 16)))
+	end))
+end
+local cache, counter = {}, 0
+local function raw_sha256(data)
+	if cache[data] then return cache[data] end
+	counter = counter + 1
+	local input, output = scratch .. "/sha-" .. counter .. ".bin",
+		scratch .. "/sha-" .. counter .. ".txt"
+	local file = assert(io.open(input, "wb"))
+	assert(file:write(data)) assert(file:close())
+	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
+	assert(status == 0 or status == true and reason == "exit" and code == 0)
+	local digest = from_hex(assert(read_file(output):match("^([0-9a-f]+)")))
+	assert(#digest == 32)
+	cache[data] = digest
+	return digest
+end
+local function hex(bytes)
+	return (bytes:gsub(".", function(byte)
+		return ("%02x"):format(string.byte(byte))
+	end))
+end
+local function headers(blob)
+	local result = {}
+	for line in blob:gmatch("([^\n]*)\n") do
+		local name, value = line:match("^([^\t]+)\t([^\t]+)$")
+		if name then result[name] = value end
+	end
+	return result
+end
+local required = {0, 511, 512, 1023, 1024, 1047, 1535, 1536, 1713, 2047,
+	2048, 2192, 2559, 2560, 3071, 3072, 3438, 3583, 3584, 4095}
+local result_lines, common = {}, nil
+local lua = repo .. "/tools/bin/lua51"
+local execution_repo = assert(arg[0]:match("^(.*)/tools/wp40/"),
+	"cannot resolve captured C1 verifier")
+safe_absolute(execution_repo)
+local verifier = execution_repo .. "/tools/wp40/t2_extreme_conformance_verify.lua"
+for index = 1, #required do
+	local candidate = required[index]
+	local path = retained .. ("rescore-puc-%04d.tsv"):format(candidate)
+	local verify_scratch = scratch .. ("/verify-r-%04d"):format(candidate)
+	assert(os.execute("mkdir " .. verify_scratch) == 0)
+	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+		" " .. verify_scratch .. " rescore " .. candidate .. " " .. path .. " " ..
+		expected_commit .. " " .. expected_tree .. " " .. expected_dag)
+	assert(status == 0 or status == true and reason == "exit" and code == 0,
+		"retained rescore verification failed")
+	local bytes = read_file(path)
+	local row = headers(bytes)
+	local pins = row.conformance_commit .. ":" .. row.conformance_tree .. ":" ..
+		row.conformance_dag_sha256
+	assert(pins == expected_launch, "rescore result differs from exact launch pins")
+	common = common or pins
+	assert(pins == common, "C1 results use different conformance pins")
+	result_lines[#result_lines + 1] = table.concat({"rescore", candidate,
+		("tools/wp40/fixtures/t2_extreme_e0/rescore-puc-%04d.tsv"):format(candidate),
+		hex(raw_sha256(bytes))}, "\t")
+end
+local selected_lines = {}
+for slot = 28, 31 do
+	local path = retained .. ("selected-puc-slot%02d.tsv"):format(slot)
+	local verify_scratch = scratch .. ("/verify-s-%02d"):format(slot)
+	assert(os.execute("mkdir " .. verify_scratch) == 0)
+	local status, reason, code = os.execute(lua .. " " .. verifier .. " " .. repo ..
+		" " .. verify_scratch .. " selected " .. slot .. " " .. path .. " " ..
+		expected_commit .. " " .. expected_tree .. " " .. expected_dag)
+	assert(status == 0 or status == true and reason == "exit" and code == 0,
+		"selected partition verification failed")
+	local bytes = read_file(path)
+	local row = headers(bytes)
+	local pins = row.conformance_commit .. ":" .. row.conformance_tree .. ":" ..
+		row.conformance_dag_sha256
+	assert(pins == expected_launch and pins == common,
+		"selected results use different conformance pins")
+	selected_lines[#selected_lines + 1] = table.concat({"selected", slot,
+		row.slot_id, row.candidate_index, row.candidate_decimal, row.compiled_sha256,
+		("tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot%02d.tsv"):format(slot),
+		hex(raw_sha256(bytes))}, "\t")
+end
+local commit, tree, dag = common:match("^([^:]+):([^:]+):([^:]+)$")
+assert(commit and tree and dag)
+local lines = {"schema\tgrug_wp40_extreme_puc_conformance_v1",
+	"status\tpassed", "scope\tT2C_E0_SELECTED_FOUR_CONFORMANCE_ONLY",
+	"stage2_status\tpending_seed_corpus_promotion",
+	"measurement_commit\t53be77ee3dab615be39c2e66b6d24a4adccc3d26",
+	"measurement_tree\tc9ac6639048804f15d76bd02101cf9e3a062e9de",
+	"authority_dag_sha256\td059686fb3668627b1ed153e5f54aa5572fd96624e43487b2c157dbc4c505949",
+	"conformance_commit\t" .. commit, "conformance_tree\t" .. tree,
+	"conformance_dag_sha256\t" .. dag,
+	"artifact_sha256\t1096139ae2f98e5105fd9f19a09954f22c0ac63f7d6a0be95b44de259c034017",
+	"manifest_sha256\t23b909d2b4d30ccffce3c09b9a1a987ffe1123136583fe409377a27fd0649a52",
+	"candidate_rows_sha256\tb08e142a16da23f5b7f07c3ec2e6f894705130d1d72fe409998fb5f028deada3",
+	"interpreter_id\tpuc_lua51", "rescore_count\t20", "selected_count\t4",
+	"staging_label\tgrudgelands-wp40-seed-08",
+	"staging_decimal\t7821741934987559905"}
+for index = 1, #result_lines do lines[#lines + 1] = result_lines[index] end
+for index = 1, #selected_lines do lines[#lines + 1] = selected_lines[index] end
+local blob = table.concat(lines, "\n") .. "\n"
+if mode == "verify" then
+	assert(read_file(output_path) == blob, "final C1 artifact bytes changed")
+	print("WP40 T2 C1 final conformance verified SHA-256 " ..
+		hex(raw_sha256(blob)) .. " rescore=20 selected=4")
+	return
+end
+local temporary = output_path .. ".tmp"
+local published, message = pcall(function()
+	local file = assert(io.open(temporary, "wb"))
+	assert(file:write(blob)) assert(file:close())
+	assert(read_file(temporary) == blob)
+	assert(os.rename(temporary, output_path), "atomic final C1 publish failed")
+end)
+if not published then os.remove(temporary); error(message, 0) end
+print("WP40 T2 C1 final conformance SHA-256 " .. hex(raw_sha256(blob)) ..
+	" rescore=20 selected=4 stage2=pending_seed_corpus_promotion")

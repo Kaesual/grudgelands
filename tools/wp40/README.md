@@ -199,6 +199,26 @@ positive pinned R16/R17 prerequisite; every selected-extreme full-partition
 failure remains fatal with no fallback. Slots 28--31 stay pending until the
 selected four pass the unchanged complete partition gate.
 
+The pending C1 conformance launcher is:
+
+```sh
+tools/wp40/run_t2_extreme_conformance.sh
+```
+
+It accepts no arguments and is deliberately unusable as retained evidence
+until its complete code-and-input DAG is committed unchanged. From that
+immutable archive it first rescores the 16 canonical shard endpoints union the
+four ranked winners under vendored PUC Lua 5.1, with at most eight workers and
+an exact byte-for-byte comparison against the retained LuaJIT rows. Only a
+hard 20/20 barrier may start the four fixed slot workers (28--31); they derive
+their seeds from the closed artifact, accept no seed argument or fallback, and
+run the shared full partition/Whole oracle under PUC. Existing partial results
+are resumed only after pinned verification, peers are allowed to finish after
+a failure, and the final conformance artifact is written last only after all
+20 row checks and all four selected gates pass. These results remain
+`T2C_E0_SELECTED_FOUR_CONFORMANCE_ONLY` with corpus promotion pending; they do
+not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
+
 ### Pinned engine facts used by T1
 
 - `core.sha256(data, true)` returns the raw 32-byte digest, and the utility is

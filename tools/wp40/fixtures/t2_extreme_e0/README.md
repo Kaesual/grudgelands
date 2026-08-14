@@ -11,8 +11,11 @@ checked-in full-scan gate binds the frozen R16/R17 Source, boundary-policy,
 and partition bytes. Once all retained shards exist, PUC Lua 5.1 must
 separately parse and rank every row, rematerialize the deterministic shard
 endpoints plus the four winners, and run the four selected full-partition
-gates. None of that conformance evidence exists yet, and it will not claim a
-second 4096-row origin.
+gates. Implementation bytes alone are not evidence: the C1 launcher may run
+only from an independently reviewed immutable conformance commit, and no
+`rescore-puc-*`, `selected-puc-*`, or `conformance-puc.tsv` file is evidence
+until every closed gate records that commit. It does not claim a second
+4096-row origin.
 
 The former fixed-slot-19 fatal has a positive, pinned max-u64 R16/R17
 prerequisite fixture. Slots 28--31 nevertheless remain unpromoted until the
