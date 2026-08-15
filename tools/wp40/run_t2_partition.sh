@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# A missing rg would make every check below pass vacuously: exit status 127 in
+# an `if` condition reads exactly like "no match found". Fail loudly instead.
+command -v rg >/dev/null 2>&1 || {
+	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
+	exit 1
+}
+
 # T2-final must use the fallback interpreter, bypass the payload cache, and
 # include the retained historical-provenance check:
 #   WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical

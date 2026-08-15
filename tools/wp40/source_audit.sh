@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# A missing rg would make every check below pass vacuously: exit status 127 in
+# an `if` condition reads exactly like "no match found". Fail loudly instead.
+command -v rg >/dev/null 2>&1 || {
+	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
+	exit 1
+}
+
 repo="${1:?repository root is required}"
 handoff="$repo/mods/MAPGEN/grug_mapgen/wp43_handoff.lua"
 probe="$repo/tools/wp40/runtime_probe/init.lua"
