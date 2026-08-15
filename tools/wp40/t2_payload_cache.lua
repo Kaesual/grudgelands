@@ -97,6 +97,7 @@ return function(raw_options)
 	local options = exact_options(raw_options)
 	local dependency_paths = {
 		"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua",

@@ -48,6 +48,7 @@ trap cleanup EXIT
 owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua"
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua"
+	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua"
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 	"$repo/tools/wp40/t2_partition_test.lua"
 	"$repo/tools/wp40/t2_partition_oracle.lua"
@@ -58,7 +59,7 @@ owned_lua=(
 )
 
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
-for file in "${owned_lua[@]:0:3}"; do
+for file in "${owned_lua[@]:0:4}"; do
 	if "$repo/tools/bin/luac51" -l -p "$file" | rg -q 'SETGLOBAL'; then
 		echo "WP40 T2 partition global write in $file" >&2
 		exit 1

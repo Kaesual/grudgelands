@@ -465,8 +465,10 @@ local function deep_equal(a, b, seen)
 	return true
 end
 
+local new_boundary = dofile(wp40 .. "/geometry/boundary.lua")
 local compiler = dofile(wp40 .. "/geometry/partition.lua")({
 	canonical = canonical, deterministic = deterministic, exact = exact,
+	new_boundary = new_boundary,
 	raster = raster, raw_sha256 = raw_sha256, source = source,
 	source_validator = source_validator, vocabulary = vocabulary})
 compiler.compile = dofile(repo .. "/tools/wp40/t2_payload_cache.lua")({

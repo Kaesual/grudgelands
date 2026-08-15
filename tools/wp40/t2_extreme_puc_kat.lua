@@ -144,9 +144,12 @@ for _, mutate in ipairs({
 end
 
 local validator = validator_module.new_offline_test_adapter(canonical, raw_sha256)
+local new_boundary = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")
 local partition = authority.load_module(files,
 	"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua")({
 	canonical = canonical, deterministic = deterministic, exact = exact,
+	new_boundary = new_boundary,
 	raster = raster, raw_sha256 = raw_sha256, source = source,
 	source_validator = validator, vocabulary = vocabulary})
 local session = partition.new_extreme_scalar_session()

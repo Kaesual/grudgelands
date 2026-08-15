@@ -272,9 +272,12 @@ local validator = {validate = function(...)
 end}
 local batch_raster = raster_factory({canonical = canonical,
 	deterministic = deterministic, exact = exact, raw_sha256 = batch_raw_sha256})
+local new_boundary = authority.load_module(file_snapshot,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")
 local partition = authority.load_module(file_snapshot,
 	"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua")({canonical = canonical,
-	deterministic = deterministic, exact = exact, raster = batch_raster,
+	deterministic = deterministic, exact = exact, new_boundary = new_boundary,
+	raster = batch_raster,
 	raw_sha256 = batch_raw_sha256, source = source, source_validator = validator,
 	vocabulary = vocabulary})
 local scalar_reader = partition.new_extreme_scalar_session()

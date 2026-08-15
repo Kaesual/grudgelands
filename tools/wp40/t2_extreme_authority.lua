@@ -32,6 +32,16 @@ return function(dependencies)
 		"tools/wp40/t2_extreme_verify_shard.lua",
 		"tools/wp40/t2_sha256_batch.py",
 	}
+	-- Stage-S1 module bytes travel inside the snapshot so a worker can load the
+	-- extracted S1 stage, but they are deliberately outside the Authority-DAG
+	-- manifest below.  That manifest is also re-materialized from pinned
+	-- pre-extraction commits (validate_pinned_authority), where this file does
+	-- not exist; and S1 has its own, narrower authority that pins the module
+	-- together with the canonical projection of the Source records S1 actually
+	-- reads (tools/wp40/t2_s1_authority.lua).
+	local stage_paths = {
+		"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua",
+	}
 	local expected_vocabulary_sha256 =
 		"6d77298bb1861e91fb306bfe59cc8996bc64d7544034b47ed7465ba9c4aa164f"
 
@@ -76,6 +86,13 @@ return function(dependencies)
 			if type(bytes) ~= "string" then fail("file bytes are invalid") end
 			files[path] = bytes
 			lines[index] = path .. "\t" .. hex(raw_sha256(bytes))
+		end
+		for index = 1, #stage_paths do
+			local path = stage_paths[index]
+			local bytes = seeded and seeded[path] or nil
+			if bytes == nil then bytes = read_file(repo .. "/" .. path) end
+			if type(bytes) ~= "string" then fail("file bytes are invalid") end
+			files[path] = bytes
 		end
 		return {files = files, file_manifest = table.concat(lines, "\n") .. "\n"}
 	end
@@ -208,6 +225,12 @@ return function(dependencies)
 			local path = paths[index]
 			if current.files[path] ~= snapshot.files[path] then
 				fail("Authority-DAG bytes changed during the run")
+			end
+		end
+		for index = 1, #stage_paths do
+			local path = stage_paths[index]
+			if current.files[path] ~= snapshot.files[path] then
+				fail("stage module bytes changed during the run")
 			end
 		end
 		if vocabulary then
@@ -456,6 +479,7 @@ return function(dependencies)
 	end
 
 	authority.paths = paths
+	authority.stage_paths = stage_paths
 	authority.expected_vocabulary_sha256 = expected_vocabulary_sha256
 	authority.capture_files = capture_files
 	authority.capture_git_files = capture_git_files

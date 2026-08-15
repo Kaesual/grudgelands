@@ -103,9 +103,12 @@ local vocabulary = measurement_authority.load_module(files,
 	"tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua")
 local measurement_snapshot = measurement_authority.bind_vocabulary(files, vocabulary)
 local validator = validator_module.new_offline_test_adapter(canonical, raw_sha256)
+local new_boundary = measurement_authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")
 local partition = measurement_authority.load_module(files,
 	"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua")({canonical = canonical,
-	deterministic = deterministic, exact = exact, raster = raster,
+	deterministic = deterministic, exact = exact, new_boundary = new_boundary,
+	raster = raster,
 	raw_sha256 = raw_sha256, source = source, source_validator = validator,
 	vocabulary = vocabulary})
 local scalar_reader = partition.new_extreme_scalar_session()

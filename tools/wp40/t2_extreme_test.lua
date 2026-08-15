@@ -362,10 +362,12 @@ function counted_validator.validate(...)
 end
 
 local partition_factory = dofile(wp40 .. "/geometry/partition.lua")
+local boundary_factory = dofile(wp40 .. "/geometry/boundary.lua")
 local function make_partition(active_source, active_vocabulary, active_validator,
 		active_raw_sha256, active_raster)
 	return partition_factory({canonical = canonical, deterministic = deterministic,
-		exact = exact, raster = active_raster or raster,
+		exact = exact, new_boundary = boundary_factory,
+		raster = active_raster or raster,
 		raw_sha256 = active_raw_sha256 or raw_sha256,
 		source = active_source or source,
 		source_validator = active_validator or counted_validator,

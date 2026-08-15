@@ -10,7 +10,7 @@ local function exact_dependencies(value)
 		fail("dependencies are not a plain table")
 	end
 	local allowed = {canonical = true, deterministic = true, exact = true,
-		raster = true, raw_sha256 = true, source = true,
+		new_boundary = true, raster = true, raw_sha256 = true, source = true,
 		source_validator = true, vocabulary = true}
 	for key in pairs(value) do
 		if not allowed[key] then fail("unknown dependency " .. tostring(key)) end
@@ -22,6 +22,9 @@ local function exact_dependencies(value)
 		end
 	end
 	if type(value.raw_sha256) ~= "function" then fail("raw SHA dependency missing") end
+	if type(value.new_boundary) ~= "function" then
+		fail("stage-S1 boundary factory missing")
+	end
 end
 
 local function new_partition(dependencies)
@@ -33,6 +36,17 @@ local function new_partition(dependencies)
 	local source = dependencies.source
 	local Q = deterministic.Q
 	local partition = {}
+
+	-- Stage S1 -- the whole per-record R7 displacement -- lives in its own
+	-- module.  Everything below is S2..S9: this compiler consumes the S1 result
+	-- and may never re-derive effective controls, no-jitter sources, fixed
+	-- closure or displacement of its own.
+	local boundary = dependencies.new_boundary({canonical = canonical,
+		deterministic = deterministic, exact = exact, raster = raster,
+		raw_sha256 = dependencies.raw_sha256, source = source,
+		source_validator = dependencies.source_validator,
+		vocabulary = dependencies.vocabulary})
+	local materialize_boundary_seed = boundary.materialize
 
 	local function dense(value, label)
 		if type(value) ~= "table" or getmetatable(value) ~= nil then
@@ -172,43 +186,6 @@ local function new_partition(dependencies)
 			result[#result + 1] = {x = points[index].x, z = points[index].z}
 		end
 		return result
-	end
-
-	local function fixed_closure_union(perimeter, edge_by_id)
-		local closure = perimeter.r7_fixed_closure
-		if closure == nil then return nil end
-		if type(closure) ~= "table" or getmetatable(closure) ~= nil or
-				closure.kind ~= "fixed_holy_land_edge_union" or
-				type(closure.edge_refs) ~= "table" or #closure.edge_refs ~= 6 then
-			fail(perimeter.id .. " fixed closure is malformed")
-		end
-		local union, seen = {}, {}
-		for ref_index = 1, #closure.edge_refs do
-			local ref = closure.edge_refs[ref_index]
-			local edge = edge_by_id[ref.edge_id]
-			if not edge or edge.max_displacement ~= 0 or
-					(ref.direction ~= "forward" and ref.direction ~= "reverse") then
-				fail(perimeter.id .. " fixed closure reference is invalid")
-			end
-			local part = raster.final_raster(copy_points(edge.control), false)
-			if ref.direction == "reverse" then part = reverse_points(part) end
-			if #union > 0 and (union[#union].x ~= part[1].x or
-					union[#union].z ~= part[1].z) then
-				fail(perimeter.id .. " fixed closure references do not join")
-			end
-			for point_index = 1, #part do
-				local point = part[point_index]
-				if #union == 0 or union[#union].x ~= point.x or union[#union].z ~= point.z then
-					local point_key = key(point)
-					if seen[point_key] then
-						fail(perimeter.id .. " fixed closure repeats a station")
-					end
-					seen[point_key] = true
-					union[#union + 1] = {x = point.x, z = point.z}
-				end
-			end
-		end
-		return union
 	end
 
 	local function attachment_station_candidate(e, candidates, canonical_indices)
@@ -651,13 +628,6 @@ local function new_partition(dependencies)
 		return exact.rational_compare(numerator, denominator, 6400, 1) <= 0
 	end
 
-	local function closed_polygon(points)
-		local polygon = copy_points(points)
-		if #polygon == 0 then fail("empty closed polygon") end
-		polygon[#polygon + 1] = {x = polygon[1].x, z = polygon[1].z}
-		return polygon
-	end
-
 	-- Every composed face is an eight-connected integer lattice walk. For this
 	-- representation, unique nonterminal stations plus the one possible
 	-- station-free intersection (opposing cell diagonals) are the complete
@@ -692,11 +662,6 @@ local function new_partition(dependencies)
 			end
 		end
 		if exact.signed_area2(polygon) <= 0 then fail(id .. " is not CCW") end
-	end
-
-	local function polygon_index(points)
-		local polygon = closed_polygon(points)
-		return exact.polygon_index(polygon)
 	end
 
 	local function validate_junction_pair(junction, left, right, label)
@@ -832,110 +797,6 @@ local function new_partition(dependencies)
 		return true
 	end
 
-	local function source_validator()
-		local validator = dependencies.source_validator
-		if type(validator.new_offline_test_adapter) == "function" then
-			validator = validator.new_offline_test_adapter(canonical,
-				dependencies.raw_sha256)
-		end
-		local valid, diagnostic = validator.validate(source, dependencies.vocabulary)
-		if not valid then
-			fail("checksum-validated source rejected: " ..
-				tostring(diagnostic and diagnostic.invariant) .. " at " ..
-				tostring(diagnostic and diagnostic.record_id) .. " expected " ..
-				tostring(diagnostic and diagnostic.expected) .. " observed " ..
-				tostring(diagnostic and diagnostic.observed))
-		end
-	end
-
-	local function collect_no_jitter_sources()
-		local points, seen = {}, {}
-		local function add(point)
-			if type(point) == "table" and type(point.x) == "number" and
-					type(point.z) == "number" then
-				local id = key(point)
-				if not seen[id] then
-					seen[id] = true
-					points[#points + 1] = {x = point.x, z = point.z}
-				end
-			end
-		end
-		local function add_polyline_collection(collection, field)
-			for index = 1, #collection do
-				local values = collection[index][field]
-				if values then for point_index = 1, #values do add(values[point_index]) end end
-			end
-		end
-		add_polyline_collection(source.land_edges, "control")
-		add_polyline_collection(source.perimeters, "polygon")
-		add_polyline_collection(source.bays, "centreline")
-		add_polyline_collection(source.islands, "polygon")
-		add_polyline_collection(source.channels, "polygon")
-		add_polyline_collection(source.routes, "centreline")
-		add_polyline_collection(source.island_routes, "centreline")
-		add_polyline_collection(source.hydrology, "centreline")
-		add_polyline_collection(source.housing_masks, "polygon")
-		for spur_index = 1, #source.poi_spurs do
-			local paths = source.poi_spurs[spur_index].candidate_paths
-			for path_index = 1, #paths do
-				for point_index = 1, #paths[path_index] do
-					add(paths[path_index][point_index])
-				end
-			end
-		end
-		for arc_index = 1, #source.face_arcs do
-			for component_index = 1, #source.face_arcs[arc_index].authority_components do
-				local component = source.face_arcs[arc_index].authority_components[component_index]
-				if component.kind == "literal_arc" then
-					for point_index = 1, #component.control do add(component.control[point_index]) end
-				end
-			end
-		end
-		for _, collection in ipairs({source.route_interfaces,
-				source.island_route_interfaces}) do
-			for index = 1, #collection do add(collection[index].position) end
-		end
-		for index = 1, #source.anchors do
-			if source.anchors[index].placement_mode == "fixed" then
-				add(source.anchors[index].position)
-			end
-		end
-		local holy = source.constants.holy_grounds
-		for _, x in ipairs({holy.min_x, holy.max_x}) do
-			for _, z in ipairs({holy.min_z, holy.max_z}) do add({x = x, z = z}) end
-		end
-		for index = 1, #source.constants.holy_junction_x do
-			local x = source.constants.holy_junction_x[index]
-			add({x = x, z = holy.min_z}) add({x = x, z = holy.max_z})
-		end
-		table.sort(points, function(a, b) return a.x < b.x or
-			a.x == b.x and a.z < b.z end)
-		return points
-	end
-
-	local function segment_parts(displaced, control_count, closed)
-		local result = {}
-		local segment_count = closed and control_count - 1 or control_count - 1
-		for segment_index = 0, segment_count - 1 do
-			local controls = {}
-			for station_index = 1, #displaced.base_stations do
-				local station = displaced.base_stations[station_index]
-				if station.source_segment == segment_index then
-					controls[#controls + 1] = displaced.shifted_controls[station.authored_order]
-				elseif station.source_segment == segment_index - 1 and
-						station.local_station == station.local_last then
-					controls[#controls + 1] = displaced.shifted_controls[station.authored_order]
-				end
-			end
-			if segment_index == segment_count - 1 and closed then
-				controls[#controls + 1] = displaced.shifted_controls[1]
-			end
-			if #controls < 2 then fail("displaced source segment lost controls") end
-			result[segment_index + 1] = raster.final_raster(controls, false)
-		end
-		return result
-	end
-
 	local function bay_data(seed)
 		local rows, by_id = {}, {}
 		for bay_index = 1, #source.bays do
@@ -991,160 +852,21 @@ local function new_partition(dependencies)
 		return false
 	end
 
-	-- Sole seed-dependent R7 boundary materialization authority. Partition
-	-- compilation and the extreme selector consume this same result; neither
-	-- path may prepare effective controls, no-jitter sources, fixed closure, or
-	-- displacement independently.
-	local function materialize_boundary_seed(seed)
-		deterministic.validate_seed(seed)
-		source_validator()
+	local function compile_impl(seed)
+		local materialized = materialize_boundary_seed(seed)
+		-- Zone numbering is face/bank payload identity, not S1 displacement
+		-- input, so it is derived here rather than inside the S1 stage.
 		local zone_numeric = {}
 		for index = 1, #source.zones do
 			zone_numeric[source.zones[index].id] = source.zones[index].numeric_id
 		end
-		local edge_source_by_id = {}
-		for index = 1, #source.land_edges do
-			edge_source_by_id[source.land_edges[index].id] = source.land_edges[index]
-		end
-		local departure_by_edge, effective_control_by_edge, departure_points = {}, {}, {}
-		if #source.junction_departures ~= 4 then
-			fail("junction departure roster is not exactly four records")
-		end
-		for index = 1, #source.junction_departures do
-			local departure = source.junction_departures[index]
-			local edge = edge_source_by_id[departure.edge_id]
-			if not edge or departure_by_edge[departure.edge_id] then
-				fail(departure.id .. " has a missing or duplicate edge")
-			end
-			local from = departure.edge_endpoint == "from"
-			local endpoint_index = from and 1 or #edge.control
-			local adjacent_index = from and 2 or #edge.control - 1
-			local junction, adjacent = edge.control[endpoint_index], edge.control[adjacent_index]
-			if adjacent.x == junction.x or adjacent.z == junction.z then
-				fail(departure.id .. " cannot derive a diagonal departure")
-			end
-			local step_x = adjacent.x > junction.x and 1 or -1
-			local step_z = adjacent.z > junction.z and 1 or -1
-			local derived = {x = exact.safe_sum(junction.x, step_x,
-				departure.id .. " x"), z = exact.safe_sum(junction.z, step_z,
-				departure.id .. " z")}
-			local frame = source.constants.mainland_frame
-			if derived.x < frame.min_x or derived.x > frame.max_x or
-					derived.z < frame.min_z or derived.z > frame.max_z then
-				fail(departure.id .. " leaves the mainland frame")
-			end
-			local control = copy_points(edge.control)
-			if from then
-				table.insert(control, 2, derived)
-			else
-				table.insert(control, #control, derived)
-			end
-			departure_by_edge[departure.edge_id] = {source = departure,
-				point = derived, effective_control = control}
-			effective_control_by_edge[departure.edge_id] = control
-			departure_points[#departure_points + 1] = derived
-		end
-		local no_jitter = collect_no_jitter_sources()
-		local no_jitter_seen = {}
-		for index = 1, #no_jitter do no_jitter_seen[key(no_jitter[index])] = true end
-		for index = 1, #departure_points do
-			local point = departure_points[index]
-			if not no_jitter_seen[key(point)] then
-				no_jitter[#no_jitter + 1] = {x = point.x, z = point.z}
-				no_jitter_seen[key(point)] = true
-			end
-		end
-		table.sort(no_jitter, function(a, b) return a.x < b.x or
-			a.x == b.x and a.z < b.z end)
-		local perimeter_rows, perimeter_by_id = {}, {}
-		for index = 1, #source.perimeters do
-			local row = source.perimeters[index]
-			local kind = row.kind == "fixed_land_band" and "fixed" or
-				"mainland_coast"
-			local closure = fixed_closure_union(row, edge_source_by_id)
-			local displaced = raster.displace({id = row.id, kind = kind,
-				control = row.polygon, closed = true,
-				orientation = row.orientation,
-				noise_domain = row.noise_domain,
-				max_displacement = row.max_displacement,
-				fixed_closure = closure,
-				envelope = source.constants.mainland_frame}, seed, no_jitter)
-			displaced.source = row
-			displaced.segment_parts = segment_parts(displaced, #row.polygon, true)
-		local canonical_ok, canonical_stations = pcall(raster.canonical_closed,
-				displaced.stations)
-			if not canonical_ok then
-				local repeated = {}
-				for station_index = 1, #displaced.stations do
-					local station_key = key(displaced.stations[station_index])
-					if repeated[station_key] then
-						local first, second = repeated[station_key], station_index
-						local nearest = {}
-						for sample_index = 1, #displaced.scalar_samples do
-							local sample = displaced.scalar_samples[sample_index]
-							local distance = math.max(math.abs(sample.x - displaced.stations[first].x),
-								math.abs(sample.z - displaced.stations[first].z))
-							if distance <= 4 then nearest[#nearest + 1] =
-								sample.source_segment .. ":" .. sample.local_station .. ":" ..
-								sample.x .. ":" .. sample.z .. ":" .. sample.scalar_q end
-						end
-						fail(row.id .. " repeated final station " .. station_key .. " at " ..
-							first .. "/" .. second .. " samples " .. table.concat(nearest, ","))
-					end
-					repeated[station_key] = station_index
-				end
-				fail(row.id .. " " .. tostring(canonical_stations))
-			end
-			displaced.canonical_stations = canonical_stations
-			displaced.lookup = {}
-			for station_index = 1, #displaced.stations do
-				displaced.lookup[key(displaced.stations[station_index])] = station_index
-			end
-			displaced.polygon_index = polygon_index(displaced.stations)
-			perimeter_rows[#perimeter_rows + 1] = displaced
-			perimeter_by_id[row.id] = displaced
-		end
-		local island_rows, island_by_id = {}, {}
-		for index = 1, #source.islands do
-			local row = source.islands[index]
-			local displaced = raster.displace({id = row.id, kind = "island_coast",
-				control = row.polygon, closed = true,
-				orientation = row.orientation,
-				noise_domain = row.noise_domain,
-				max_displacement = row.max_displacement,
-				envelope = {center = row.center, radius_x = row.envelope.radius_x,
-					radius_z = row.envelope.radius_z}}, seed, no_jitter)
-			displaced.source = row island_rows[#island_rows + 1] = displaced
-			displaced.polygon_index = polygon_index(displaced.stations)
-			island_by_id[row.id] = displaced
-		end
-		local provisional_edges, edge_by_id = {}, {}
-		for index = 1, #source.land_edges do
-			local row = source.land_edges[index]
-			local displaced = raster.displace({id = row.id, kind = "land_edge",
-				control = effective_control_by_edge[row.id] or row.control, closed = false,
-				noise_domain = row.noise_domain,
-				max_displacement = row.max_displacement}, seed, no_jitter)
-			displaced.source = row provisional_edges[index] = displaced
-			edge_by_id[row.id] = displaced
-		end
-		return {zone_numeric = zone_numeric,
-			edge_source_by_id = edge_source_by_id,
-			departure_by_edge = departure_by_edge,
-			perimeter_rows = perimeter_rows, perimeter_by_id = perimeter_by_id,
-			island_rows = island_rows, island_by_id = island_by_id,
-			provisional_edges = provisional_edges, edge_by_id = edge_by_id}
-	end
-
-	local function compile_impl(seed)
-		local boundary = materialize_boundary_seed(seed)
-		local zone_numeric = boundary.zone_numeric
-		local departure_by_edge = boundary.departure_by_edge
-		local perimeter_rows, perimeter_by_id = boundary.perimeter_rows,
-			boundary.perimeter_by_id
-		local island_rows, island_by_id = boundary.island_rows, boundary.island_by_id
-		local provisional_edges, edge_by_id = boundary.provisional_edges,
-			boundary.edge_by_id
+		local departure_by_edge = materialized.departure_by_edge
+		local perimeter_rows, perimeter_by_id = materialized.perimeter_rows,
+			materialized.perimeter_by_id
+		local island_rows, island_by_id = materialized.island_rows,
+			materialized.island_by_id
+		local provisional_edges, edge_by_id = materialized.provisional_edges,
+			materialized.edge_by_id
 		local bays, bay_by_id = bay_data(seed)
 		local aperture_rows, aperture_by_bay, aperture_by_id = {}, {}, {}
 		local aperture_station_owner = {}
@@ -3180,74 +2902,6 @@ local function new_partition(dependencies)
 		return {families = families}
 	end
 
-	-- Fresh data-only projection of the sole R7 materialization. Extreme
-	-- selection consumes provenance-bearing pre-component scalar identities,
-	-- never internal geometry tables or final partition artifacts.
-	local function extreme_scalar_records(seed)
-		local boundary = materialize_boundary_seed(seed)
-		local records = {}
-		local function append(family, row, numeric_id)
-			local samples = {}
-			for sample_index = 1, #row.scalar_samples do
-				local sample = row.scalar_samples[sample_index]
-				samples[sample_index] = {x = sample.x, z = sample.z,
-					scalar_q = sample.scalar_q,
-					source_segment = sample.source_segment,
-					local_station = sample.local_station}
-			end
-			records[#records + 1] = {family = family, id = row.id,
-				numeric_id = numeric_id, max_displacement = row.source.max_displacement,
-				topology_ceiling_nodes = row.topology_ceiling_nodes,
-				samples = samples}
-		end
-		for index = 1, #boundary.perimeter_rows do
-			append("perimeter", boundary.perimeter_rows[index], index)
-		end
-		for index = 1, #boundary.island_rows do
-			append("island", boundary.island_rows[index], index)
-		end
-		for index = 1, #boundary.provisional_edges do
-			append("land_edge", boundary.provisional_edges[index],
-				boundary.provisional_edges[index].source.numeric_id)
-		end
-		return records
-	end
-
-	local function private_plain_copy(value, seen)
-		if type(value) ~= "table" then return value end
-		if getmetatable(value) ~= nil then fail("extreme session input has a metatable") end
-		seen = seen or {}
-		if seen[value] then return seen[value] end
-		local result = {}
-		seen[value] = result
-		for key, child in pairs(value) do
-			result[private_plain_copy(key, seen)] = private_plain_copy(child, seen)
-		end
-		return result
-	end
-
-	-- The long extreme scan validates Stage 1 exactly once, then reads an
-	-- isolated copy through a closure. The unchecked validator is unreachable
-	-- outside this already-validated private session; mutating the factory's
-	-- original Source or vocabulary cannot affect later candidate rows.
-	local function new_extreme_scalar_session()
-		source_validator()
-		local isolated_source = private_plain_copy(source)
-		local isolated_vocabulary = private_plain_copy(dependencies.vocabulary)
-		local isolated = new_partition({canonical = canonical,
-			deterministic = deterministic, exact = exact, raster = raster,
-			raw_sha256 = dependencies.raw_sha256, source = isolated_source,
-			source_validator = {validate = function() return true end},
-			vocabulary = isolated_vocabulary})
-		local reader = isolated.extreme_scalar_records
-		return function(...)
-			if select("#", ...) ~= 1 then
-				fail("extreme scalar reader requires exactly one seed")
-			end
-			return reader(...)
-		end
-	end
-
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;
 	-- the compiled graph carries no closure or mutable Source reference.
 	local bay_source_by_id = {}
@@ -3689,8 +3343,10 @@ local function new_partition(dependencies)
 	end
 
 	partition.compile = compile_impl
-	partition.extreme_scalar_records = extreme_scalar_records
-	partition.new_extreme_scalar_session = new_extreme_scalar_session
+	partition.extreme_scalar_records = boundary.extreme_scalar_records
+	partition.new_extreme_scalar_session = boundary.new_extreme_scalar_session
+	partition.s1_source_projection = boundary.s1_source_projection
+	partition.s1_source_checksum = boundary.s1_source_checksum
 	partition.bay_owner = bay_owner
 	partition.validate_bay_payload = validate_bay_payload
 	partition.coast_source = coast_source
