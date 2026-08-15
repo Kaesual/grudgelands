@@ -22,6 +22,7 @@ owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 	"$repo/tools/wp40/t2_partition_test.lua"
 	"$repo/tools/wp40/t2_partition_oracle.lua"
+	"$repo/tools/wp40/t2_partition_c2_selected.lua"
 	"$repo/tools/wp40/fixtures/t2_extreme_e0/selected_stage2_blocked.lua"
 )
 
@@ -32,6 +33,11 @@ for file in "${owned_lua[@]:0:3}"; do
 		exit 1
 	fi
 done
+if "$repo/tools/bin/luac51" -l -p \
+	"$repo/tools/wp40/t2_partition_c2_selected.lua" | rg -q 'SETGLOBAL'; then
+	echo "WP40 T2 partition selected diagnostic wrapper writes a global" >&2
+	exit 1
+fi
 test_bytecode="$("$repo/tools/bin/luac51" -l -p \
 	"$repo/tools/wp40/t2_partition_test.lua")"
 for forbidden in extract_final_edge_points count_bank_envelopes \
@@ -51,6 +57,6 @@ if [[ -z "$lua_path" || ! -x "$lua_path" ]]; then
 fi
 echo "WP40 T2 partition interpreter: $lua_path"
 "$lua_path" "$script_dir/t2_partition_test.lua" "$repo" "$scratch" \
-	selected_stage2_blocked
+	selected_stage2_historical
 "$lua_path" "$script_dir/t2_partition_test.lua" "$repo" "$scratch"
 bash -n "$script_dir/run_t2_partition.sh"
