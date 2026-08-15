@@ -46,11 +46,11 @@ else
 		"Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio",
 		"PUC interpreter version evidence changed")
 end
-local expected_output = repo .. "/tools/wp40/fixtures/t2_extreme_e0/shard-" ..
-	interpreter_id .. ("-%04d-%04d.tsv"):format(first, last)
-assert(output_path == expected_output, "shard output path is outside retained root")
-local existing = io.open(output_path, "rb")
-if existing then existing:close(); error("shard output already exists", 0) end
+-- The authorized output path is asserted below, as soon as the Authority-DAG
+-- helper is loaded. It deliberately is NOT rebuilt from a local copy of the
+-- naming rule: this file used to carry one, it went stale the moment the v3
+-- pool moved to its own names, and it aborted every fresh launch before a
+-- single seed was measured.
 
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local direct_cache, direct_calls, direct_misses, direct_counter = {}, 0, 0, 0
@@ -90,6 +90,22 @@ local authority_bytes = read_file(repo .. "/" .. authority_path)
 local authority_chunk = assert(loadstring(authority_bytes,
 	"@" .. authority_path))
 local authority = authority_chunk()({raw_sha256 = direct_raw_sha256})
+
+-- Single source of truth for where a measurement may write, shared with
+-- run_t2_extreme_shards.sh and t2_extreme_verify_shard.lua. This runs before
+-- the file snapshot and long before any seed is measured, so it still fails
+-- fast, and it keeps both guarantees the earlier local check provided: a
+-- worker may write only to its own authorized retained path, and may never
+-- overwrite an existing shard. retained_shard_path additionally rejects any
+-- non-canonical range outright.
+assert(interpreter_id == "luajit",
+	"the retained E0 pool is the LuaJIT measurement")
+local expected_output = repo .. "/" .. authority.retained_shard_path(first, last)
+assert(output_path == expected_output,
+	"shard output path is not the authorized retained path")
+local existing = io.open(output_path, "rb")
+if existing then existing:close(); error("shard output already exists", 0) end
+
 local file_snapshot = authority.capture_files(repo,
 	{[authority_path] = authority_bytes})
 local full_scan_gate = authority.load_module(file_snapshot,

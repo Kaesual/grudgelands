@@ -47,12 +47,35 @@ echo "WP40 T2 extreme launcher authority: commit=$authority_commit tree=$authori
 bash -n "$script_dir/run_t2_extreme_shard.sh" \
 	"$script_dir/run_t2_extreme_shards.sh"
 
+# The retained shard name is defined once, in t2_extreme_authority.lua. Ask it
+# rather than restating the rule here: a local copy of that naming rule is
+# exactly what went stale when the v3 pool moved to its own names, aborting a
+# fresh launch before any seed was measured. The authority file has already
+# been checked against its commit above. The hasher is a trap on purpose --
+# retained_shard_path only formats a string -- and the range is validated
+# there, so a non-canonical range fails here rather than reaching a worker.
+retained_shard_path() {
+	WP40_SHARD_REPO="$repo" WP40_SHARD_FIRST="$1" WP40_SHARD_LAST="$2" \
+	"$repo/tools/bin/lua51" -e '
+local repo = assert(os.getenv("WP40_SHARD_REPO"))
+local first = assert(tonumber(os.getenv("WP40_SHARD_FIRST")))
+local last = assert(tonumber(os.getenv("WP40_SHARD_LAST")))
+local path = "tools/wp40/t2_extreme_authority.lua"
+local file = assert(io.open(repo .. "/" .. path, "rb"))
+local bytes = assert(file:read("*a"))
+assert(file:close())
+local authority = assert(loadstring(bytes, "@" .. path))()({
+	raw_sha256 = function() error("the path helper must not hash", 0) end})
+io.write(authority.retained_shard_path(first, last))
+'
+}
+
 declare -a starts=() lasts=() outputs=() logs=() pids=()
 resumed=0
 for shard_index in {0..7}; do
 	first=$((shard_index * 512))
 	last=$((first + 511))
-	output="$script_dir/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+	output="$repo/$(retained_shard_path "$first" "$last")"
 	starts[$shard_index]="$first"
 	lasts[$shard_index]="$last"
 	outputs[$shard_index]="$output"

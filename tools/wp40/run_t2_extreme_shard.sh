@@ -57,7 +57,31 @@ if [[ "$interpreter_path" != /usr/bin/luajit-2.1.1767980792 ]]; then
 fi
 interpreter_id=luajit
 interpreter_version="$("$interpreter_launcher" -v 2>&1)"
-expected="$repo/tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+# The retained shard name is defined once, in t2_extreme_authority.lua. Ask it
+# rather than restating the rule here: a local copy of that naming rule is
+# exactly what went stale when the v3 pool moved to its own names, aborting a
+# fresh launch before any seed was measured. The authority file has already
+# been checked against its commit above. The hasher is a trap on purpose --
+# retained_shard_path only formats a string -- and the range is validated
+# there, so a non-canonical range fails here rather than reaching a worker.
+retained_shard_path() {
+	WP40_SHARD_REPO="$repo" WP40_SHARD_FIRST="$1" WP40_SHARD_LAST="$2" \
+	"$repo/tools/bin/lua51" -e '
+local repo = assert(os.getenv("WP40_SHARD_REPO"))
+local first = assert(tonumber(os.getenv("WP40_SHARD_FIRST")))
+local last = assert(tonumber(os.getenv("WP40_SHARD_LAST")))
+local path = "tools/wp40/t2_extreme_authority.lua"
+local file = assert(io.open(repo .. "/" .. path, "rb"))
+local bytes = assert(file:read("*a"))
+assert(file:close())
+local authority = assert(loadstring(bytes, "@" .. path))()({
+	raw_sha256 = function() error("the path helper must not hash", 0) end})
+io.write(authority.retained_shard_path(first, last))
+'
+}
+
+relative_output="$(retained_shard_path "$first" "$last")"
+expected="$repo/$relative_output"
 if [[ "$output" != "$expected" || -e "$output" ]]; then
 	echo "WP40 T2 extreme shard output must be new: $expected" >&2
 	exit 2
@@ -67,7 +91,7 @@ export_repo="$scratch/export"
 mkdir -p "$export_repo"
 git -C "$repo" archive "$authority_commit" | tar -x -C "$export_repo"
 export_script="$export_repo/tools/wp40"
-export_output="$export_script/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+export_output="$export_repo/$relative_output"
 "$repo/tools/bin/luac51" -p \
 	"$export_repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua" \
 	"$export_repo/mods/MAPGEN/grug_mapgen/wp40/geometry/extreme.lua" \
