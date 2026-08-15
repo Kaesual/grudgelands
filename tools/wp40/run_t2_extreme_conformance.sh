@@ -7,11 +7,16 @@ if (( $# != 0 )); then
 fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
+export WP40_NO_CACHE=1
+unset WP40_T2_ONLY
 lua="$repo/tools/bin/lua51"
 luac="$repo/tools/bin/luac51"
 retained="$script_dir/fixtures/t2_extreme_e0"
 scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance.XXXXXXXX)"
 cleanup() {
+	if [[ -n "${stale_final_backup:-}" && ! -e "${final_output:-}" ]]; then
+		cp -- "$stale_final_backup" "$final_output"
+	fi
 	if [[ "$scratch" == /tmp/grudgelands-wp40-t2-conformance.* ]]; then
 		rm -rf -- "$scratch"
 	fi
@@ -60,14 +65,21 @@ done
 bash -n "$export_script/run_t2_extreme_conformance.sh"
 
 final_output="$retained/conformance-puc.tsv"
+stale_final_backup=""
 if [[ -e "$final_output" ]]; then
 	final_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance-final.XXXXXXXX)"
-	"$lua" "$export_script/t2_extreme_conformance_finalize.lua" "$repo" \
-		"$final_scratch" "$final_output" "$commit" "$tree" "$dag" verify
+	if "$lua" "$export_script/t2_extreme_conformance_finalize.lua" "$repo" \
+			"$final_scratch" "$final_output" "$commit" "$tree" "$dag" verify; then
+		rm -rf -- "$final_scratch"
+		"$lua" "$preflight" "$repo" "$scratch" "$commit" "$tree" >/dev/null
+		echo "WP40 T2 C1 conformance resumed complete rescore=20/20 selected=4/4"
+		exit 0
+	fi
 	rm -rf -- "$final_scratch"
-	"$lua" "$preflight" "$repo" "$scratch" "$commit" "$tree" >/dev/null
-	echo "WP40 T2 C1 conformance resumed complete rescore=20/20 selected=4/4"
-	exit 0
+	stale_final_backup="$scratch/stale-conformance-puc.tsv"
+	cp -- "$final_output" "$stale_final_backup"
+	rm -- "$final_output"
+	echo "WP40 T2 C1 stale final evidence detected; recomputing for current commit=$commit"
 fi
 
 required=(0 511 512 1023 1024 1047 1535 1536 1713 2047 2048 2192
@@ -87,9 +99,9 @@ verify_result() {
 }
 
 publish_result() {
-	local exported="$1" target="$2"
+	local exported="$1" target="$2" replace="${3:-0}"
 	local temporary="$target.tmp"
-	if [[ -e "$target" || -e "$temporary" ]]; then
+	if [[ -e "$temporary" || -e "$target" && "$replace" != 1 ]]; then
 		echo "WP40 T2 C1 result target already exists: $target" >&2
 		return 1
 	fi
@@ -104,24 +116,33 @@ publish_result() {
 
 rescore_complete=0
 rescore_pending=()
+declare -A stale_rescore=()
 for candidate in "${required[@]}"; do
 	path="$retained/rescore-puc-$(printf '%04d' "$candidate").tsv"
 	if [[ -e "$path" ]]; then
-		verify_result rescore "$candidate" "$path"
-		rescore_complete=$((rescore_complete + 1))
-		echo "WP40 T2 C1 rescore resumed candidate=$(printf '%04d' "$candidate") completed=$rescore_complete/20"
+		if verify_result rescore "$candidate" "$path"; then
+			rescore_complete=$((rescore_complete + 1))
+			echo "WP40 T2 C1 rescore resumed candidate=$(printf '%04d' "$candidate") completed=$rescore_complete/20"
+		else
+			stale_rescore[$candidate]=1
+			rescore_pending+=("$candidate")
+			echo "WP40 T2 C1 stale rescore evidence candidate=$(printf '%04d' "$candidate"); recomputing for current commit=$commit"
+		fi
 	else
 		rescore_pending+=("$candidate")
 	fi
 done
 
 rescore_start=$SECONDS
-for ((wave_start=0; wave_start<${#rescore_pending[@]}; wave_start+=8)); do
+# One real retained C1 PUC rescore worker peaked at 455084 KiB; sixteen stay
+# below the 58 GiB host-memory limit even before allowing for shared pages.
+for ((wave_start=0; wave_start<${#rescore_pending[@]}; wave_start+=16)); do
 	declare -a wave_candidates=() wave_pids=() wave_logs=() wave_scratches=()
-	for ((offset=0; offset<8 && wave_start+offset<${#rescore_pending[@]}; offset++)); do
+	for ((offset=0; offset<16 && wave_start+offset<${#rescore_pending[@]}; offset++)); do
 		candidate="${rescore_pending[$((wave_start + offset))]}"
 		worker_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance-worker.XXXXXXXX)"
 		export_output="$export_retained/rescore-puc-$(printf '%04d' "$candidate").tsv"
+		if [[ "${stale_rescore[$candidate]:-0}" == 1 ]]; then rm -f -- "$export_output"; fi
 		log="$scratch/rescore-$(printf '%04d' "$candidate").log"
 		"$lua" "$export_script/t2_extreme_rescore_worker.lua" "$export_repo" \
 			"$worker_scratch" "$candidate" "$export_output" "$commit" "$tree" \
@@ -152,7 +173,7 @@ for ((wave_start=0; wave_start<${#rescore_pending[@]}; wave_start+=8)); do
 			cat "${wave_logs[$index]}"
 			exported="$export_retained/rescore-puc-$(printf '%04d' "$candidate").tsv"
 			target="$retained/rescore-puc-$(printf '%04d' "$candidate").tsv"
-			publish_result "$exported" "$target"
+			publish_result "$exported" "$target" "${stale_rescore[$candidate]:-0}"
 			verify_result rescore "$candidate" "$target"
 			rescore_complete=$((rescore_complete + 1))
 			elapsed=$((SECONDS - rescore_start))
@@ -184,12 +205,18 @@ echo "WP40 T2 C1 hard rescore barrier passed completed=20/20"
 
 selected_complete=0
 selected_pending=()
+declare -A stale_selected=()
 for slot in "${slots[@]}"; do
 	path="$retained/selected-puc-slot$(printf '%02d' "$slot").tsv"
 	if [[ -e "$path" ]]; then
-		verify_result selected "$slot" "$path"
-		selected_complete=$((selected_complete + 1))
-		echo "WP40 T2 C1 selected resumed slot=$slot completed=$selected_complete/4"
+		if verify_result selected "$slot" "$path"; then
+			selected_complete=$((selected_complete + 1))
+			echo "WP40 T2 C1 selected resumed slot=$slot completed=$selected_complete/4"
+		else
+			stale_selected[$slot]=1
+			selected_pending+=("$slot")
+			echo "WP40 T2 C1 stale selected evidence slot=$slot; recomputing for current commit=$commit"
+		fi
 	else
 		selected_pending+=("$slot")
 	fi
@@ -200,6 +227,7 @@ for slot in "${selected_pending[@]}"; do
 	worker_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance-worker.XXXXXXXX)"
 	partition_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-partition.XXXXXXXX)"
 	export_output="$export_retained/selected-puc-slot$(printf '%02d' "$slot").tsv"
+	if [[ "${stale_selected[$slot]:-0}" == 1 ]]; then rm -f -- "$export_output"; fi
 	log="$scratch/selected-slot$(printf '%02d' "$slot").log"
 	"$lua" "$export_script/t2_extreme_selected_worker.lua" "$export_repo" \
 		"$worker_scratch" "$partition_scratch" "$slot" "$export_output" \
@@ -231,7 +259,7 @@ for ((index=0; index<${#selected_pids[@]}; index++)); do
 		cat "${selected_logs[$index]}"
 		exported="$export_retained/selected-puc-slot$(printf '%02d' "$slot").tsv"
 		target="$retained/selected-puc-slot$(printf '%02d' "$slot").tsv"
-		publish_result "$exported" "$target"
+		publish_result "$exported" "$target" "${stale_selected[$slot]:-0}"
 		verify_result selected "$slot" "$target"
 		selected_complete=$((selected_complete + 1))
 		echo "WP40 T2 C1 selected progress slot=$slot completed=$selected_complete/4 wall_seconds=$((SECONDS - selected_start))"
