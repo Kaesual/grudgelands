@@ -24,6 +24,12 @@ correction, with its evidence and digests, stays in
 ## 1. Boundary displacement
 
 ### 1.1 Canonical station metadata, normals, scalars and local clipping
+
+- Control/sample taper distance is the station-step distance of the canonical
+  8-connected raster, equivalently its Chebyshev arclength, not Euclidean
+  distance between authored controls. The damping envelope is smootherstep of
+  `(d∞-96)/96` for `96 < d∞ < 192`. The final displacement factor is the
+  checked Q16 product of control taper and the minimum no-jitter factor.
   Each base station keeps its authored source-segment index, zero-based local
   index and local last index through canonicalization; a deduplicated shared
   control join has taper zero for both incident segments. Open calculation
@@ -443,3 +449,102 @@ correction, with its evidence and digests, stays in
   counterclockwise and simple. It reruns the
   complete footprint `g=0/o=0/r=0` proof for every corpus seed. This staging
   distinction changes neither the final topology nor any acceptance case.
+
+## 7. Planned water, bank width and relief fields
+
+### 7.1 Raw-mask notch fill
+
+- Final planned Bay water applies one coordinate-free
+  `single_pass_same_bay_raw_mask_degree_one_notch_v1` pass to that immutable
+  raw Base-plus-Wings mask. For a Bay, a raw-dry column `P` qualifies only
+  inside the deduplicated union of its Base/Wing boxes when `P` and all eight
+  neighbours are strict final-mainland interior, exactly three cardinal and
+  all four diagonal neighbours are raw water owned by that Bay alone, and the
+  fourth cardinal neighbour is raw dry. Every Bay and every integer `P` in
+  that finite union is evaluated against the same raw mask; all unique
+  qualifying `(Bay,P)` pairs are unioned simultaneously once. Filled columns
+  never feed another decision. Foreign or multiple Bay ownership, multiple
+  qualifying Bays, perimeter or mouth-aperture equality, or unsafe envelope/
+  neighbour arithmetic rejects. A filled `P` uses its Bay's existing exact
+  rational owner policy; no neighbour owner, rank, snap or new tie exists.
+  The exhaustive semantic domain remains every `P`; the finite implementation
+  may evaluate the complete superset consisting of `first - 1` and
+  `finish + 1` for every horizontal run of referenced-Bay raw water. This is
+  exact because every three-of-four cardinal-water pattern has at least one
+  horizontal water neighbour, so its raw-dry centre is immediately outside
+  such a run. All four possible dry-cardinal orientations and literal-every-
+  `P` equivalence are acceptance oracles.
+  Each compiled Bay stores the policy ID, count and lexicographically `(x,z)`
+  sorted fill columns once. Transitions, Banks, Faces, partition and ownership
+  consume those exact bytes without reclassification or face inference.
+
+### 7.2 Bay bank width jitter
+
+  For the currently evaluated authored segment, the owner
+  chooses the nearest station of its canonical 8-connected centreline raster
+  by exact squared Euclidean distance, with the lower canonical station index
+  on a tie. In particular, Elandor-west segment 1 at `P=(-1376,-2846)` selects
+  zero-based station 2, `(-980,-2938)`, rather than rounded-parametric station
+  1. One domain-separated field uses periods 256/512, hash lanes
+  0/1 and amplitudes 2/3 + 1/3; it is consumed through one symmetric lane.
+  Canonical station-step distance to the nearest authored sample supplies the
+  96-station smootherstep taper. With Q = 65536, `delta_nodes =
+  qround(qmul(qmul(noise_q, 48*Q), taper_q))`; both banks use `r +
+  delta_nodes`, samples and endpoint caps retain zero taper, and strict bank
+  equality remains dry. The exact body predicate substitutes
+  `E = base_width_num + delta_nodes*L` into `C^2*L < E^2`. Stage 1 proves the
+  current maximum `E^2 = 4,243,584,391,840,000`, actual guarded corpus
+  `C^2*L = 4,251,571,423,760,000`, and conservative algebraic early-cross
+  bound `4,251,754,341,463,400`, all below `2^53 - 1`.
+
+### 7.3 Raw relief profile mapping
+
+  Raw relief first clamps every input `noise_q` to `[-Q,+Q]`, then maps it to a profile with
+  `delta = max_above_water - min_above_water` and
+  `H = water_level + min_above_water + floor((noise_q+Q)*delta/(2*Q))`.
+  Thus `delta` is the inclusive endpoint span, not the count of integer
+  results; `-Q`, `0`, and `+Q` map to the lower endpoint, lower midpoint, and
+  upper endpoint respectively. A singleton profile remains constant.
+  Inputs at `Q+1`, `-Q-1`, `+/-2Q`, and larger magnitudes still map to the
+  corresponding exact endpoint; the height product never sees an unclamped
+  input.
+
+### 7.4 Relief junctions and shared-boundary blending
+
+  Each of the 38 multi-edge endpoint junctions owns one checksum-covered
+  `relief_junction` record with its coordinate and sorted incident edge IDs.
+  If all incident edge gate bands intersect, its common `J` is selected from
+  that inclusive intersection with the full decimal seed and the exact hash
+  tuple domain `relief_junction_v1`, feature `junction:x:z`, coordinates
+  `(x,z)`, candidate 0 and lane 2; a singleton uses its sole value. At seed 0,
+  `(-1050,-2250)` selects `J=38` from `24..56`. If the intersection is empty, `J` is
+  the floor of the midpoint between the maximum lower bound and minimum upper
+  bound. Exactly 16 current junctions need that bounded common transition; it
+  may temporarily lie outside an incident raw profile band, while remaining
+  inside the global safe relief envelope. `(-1400,-1100)` has incident bands
+  from `land_003/020/032/035`, empty bounds `96..56`, and `J=76`;
+  `(-2200,1900)` has empty bounds `56..24` and `J=40`.
+  At a column, the ordinary exact nearest-segment/projection tie produces at
+  most one record for each unique land edge, its perpendicular distance `d`,
+  and the exact-rational nearest canonical raster station to that projection
+  (lower global station index on a tie). Let its zero-based global station be
+  `s` and its last station index be `S`. The start junction is supported only
+  for `s < 96`, the end only for `S-s < 96`; a supported endpoint supplies
+  `qlerp(J, native_G, smootherstep(endpoint_distance/96))`, otherwise the edge
+  supplies `native_G`. It never contributes a separate far-end junction pair.
+  Raw authored controls have minimum endpoint Chebyshev separation 400, while
+  the undisplaced attachment-joint raster baseline has minimum 297 station
+  steps (`land_034`; `land_031` is 298). Neither Stage-1 fact proves the length after final seeded
+  displacement and attachment selection. Stage 2 measures each final edge
+  raster and hard-rejects fewer than 192 station steps before endpoint support;
+  this runtime gate proves the two strict 96-station supports cannot overlap.
+  Each unique edge record has
+  weight `1-smootherstep(d/96)` and records are accumulated in land-edge
+  numeric order with checked Q16 products. Zero-weight candidates—including the quantized-zero support
+  near and at distance 96—are excluded. The common candidate height is the
+  ordered weighted result, boundary strength is the maximum positive weight,
+  and the final relief is its qlerp from post-landmark `H`. With no positive
+  weight, the result is exactly post-landmark `H` and no division occurs.
+  Landmark replacement hashes the landmark record's `noise_domain`, its
+  `secondary_relief_id` profile's ordered octaves and band, an empty feature
+  ID, and candidate 0.
