@@ -15,8 +15,15 @@
 --     geometry/boundary.lua -- not the bytes of source/catalog.lua.
 --
 -- What is deliberately absent: geometry/partition.lua (S2..S9), the Source
--- catalog bytes, and validation/t2_source.lua.  A record kind that S1 does not
--- read cannot move this digest, which is the whole point.
+-- catalog bytes, validation/t2_source.lua, and the geometry_policies prose.
+-- A record kind that S1 does not read cannot move this digest, which is the
+-- whole point.  Measured against the repository's own history, the projection
+-- is bit-identical from the T2b seed-zero geometry freeze (db62f43) through
+-- HEAD -- across R16, R17, R18 and R19 -- so a pool measured at any of those
+-- commits stays valid.  Every one of those corrections did rewrite the
+-- boundary-displacement policy prose, which is why that prose is provenance
+-- (geometry/boundary.lua: s1_policy_checksums, already frozen independently in
+-- validation/t2_source.lua) and not a pin.
 return function(dependencies)
 	assert(type(dependencies) == "table")
 	local raw_sha256 = assert(dependencies.raw_sha256)

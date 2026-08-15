@@ -479,9 +479,20 @@ local function new_boundary(dependencies)
 	-- and deduplicated station set that displacement actually consumes, which
 	-- is why a new record kind that contributes no new zero-jitter column is
 	-- invisible here even though it is authored inside the same file.
+	--
+	-- Authority prose is deliberately NOT part of the projection.  No line of
+	-- S1 reads geometry_policies, so amending its wording cannot move a scalar,
+	-- and those policy records already carry their own frozen checksums inside
+	-- validation/t2_source.lua.  Binding them here would have re-invalidated a
+	-- measured pool at R16, R18 and R19, each of which rewrote the boundary
+	-- displacement prose while leaving every S1 geometric input bit-identical.
+	-- s1_policy_checksums below republishes those digests as provenance, using
+	-- the same encoding as the production Stage-1 validator.
 	-- ------------------------------------------------------------------
 
 	local PROJECTION_SCHEMA = "grug_wp40_s1_boundary_projection_v1"
+	local POLICY_NAMES = {"boundary_displacement", "route_raster",
+		"geometry_extreme_selector"}
 
 	local function text_node(value, label)
 		if type(value) ~= "string" then fail(label .. " is not projectable text") end
@@ -650,7 +661,6 @@ local function new_boundary(dependencies)
 			departures[index] =
 				departure_node(source_value.junction_departures[index], index)
 		end
-		local policies = source_value.geometry_policies
 		return canonical.map({
 			field("schema", canonical.text(PROJECTION_SCHEMA)),
 			field("perimeters", canonical.array(perimeters)),
@@ -660,14 +670,7 @@ local function new_boundary(dependencies)
 			field("mainland_frame", frame_node(source_value.constants.mainland_frame)),
 			field("no_jitter_stations",
 				points_node(resolve_no_jitter(source_value, departure_points),
-					"no-jitter station")),
-			field("boundary_displacement_policy",
-				policy_node(policies.boundary_displacement, "boundary displacement policy")),
-			field("route_raster_policy",
-				policy_node(policies.route_raster, "route raster policy")),
-			field("extreme_selector_policy",
-				policy_node(policies.geometry_extreme_selector,
-					"extreme selector policy"))})
+					"no-jitter station"))})
 	end
 
 	local function s1_source_checksum(source_value)
@@ -675,13 +678,30 @@ local function new_boundary(dependencies)
 			dependencies.raw_sha256))
 	end
 
+	-- Provenance only.  The encoding is the bare policy record, matching the
+	-- production Stage-1 geometry-policy checksums bit for bit.
+	local function s1_policy_checksums(source_value)
+		source_value = source_value or source
+		local policies = source_value.geometry_policies
+		local result = {}
+		for index = 1, #POLICY_NAMES do
+			local name = POLICY_NAMES[index]
+			result[name] = canonical.hex(canonical.checksum(
+				policy_node(policies[name], name .. " policy"),
+				dependencies.raw_sha256))
+		end
+		return result
+	end
+
 	boundary.materialize = materialize_boundary_seed
 	boundary.extreme_scalar_records = extreme_scalar_records
 	boundary.new_extreme_scalar_session = new_extreme_scalar_session
 	boundary.no_jitter_stations = resolve_no_jitter
 	boundary.PROJECTION_SCHEMA = PROJECTION_SCHEMA
+	boundary.POLICY_NAMES = POLICY_NAMES
 	boundary.s1_source_projection = s1_source_projection
 	boundary.s1_source_checksum = s1_source_checksum
+	boundary.s1_policy_checksums = s1_policy_checksums
 	return boundary
 end
 

@@ -105,7 +105,7 @@ local base_projection = base.s1_source_checksum()
 -- Known answer.  A change here is a real S1 Source change and must invalidate
 -- the measured pool; nothing else may.
 local EXPECTED_S1_SOURCE_PROJECTION =
-	"50138d511a6b00f7ad960c3f26634450558078a841e3eddea2bcb1fcd98a0a79"
+	"83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652"
 assert(base_projection == EXPECTED_S1_SOURCE_PROJECTION,
 	"S1 Source projection checksum drift: " .. base_projection)
 assert(base.PROJECTION_SCHEMA == "grug_wp40_s1_boundary_projection_v1",
@@ -222,18 +222,34 @@ changed("a new fixed anchor column", function(s)
 	probe.position = {x = 12345, z = -12345}
 	s.anchors[#s.anchors + 1] = probe
 end)
-changed("a rewritten boundary-displacement policy string", function(s)
+-- Authority prose is provenance, not input.  R16, R18 and R19 each rewrote the
+-- boundary-displacement prose while leaving every S1 geometric input
+-- bit-identical; binding it here would have re-invalidated the pool exactly
+-- the way whole-file pins did.  The records keep their own frozen Stage-1
+-- checksums, which the encoding below must reproduce bit for bit.
+unchanged("a rewritten boundary-displacement policy string", function(s)
 	s.geometry_policies.boundary_displacement.step_rule =
 		s.geometry_policies.boundary_displacement.step_rule .. "_probe"
 end)
-changed("a rewritten route-raster policy string", function(s)
+unchanged("a rewritten route-raster policy string", function(s)
 	s.geometry_policies.route_raster.major_axis_rule =
 		s.geometry_policies.route_raster.major_axis_rule .. "_probe"
 end)
-changed("a rewritten extreme-selector policy string", function(s)
+unchanged("a rewritten extreme-selector policy string", function(s)
 	s.geometry_policies.geometry_extreme_selector.score_rule =
 		s.geometry_policies.geometry_extreme_selector.score_rule .. "_probe"
 end)
+
+local stage1_validator = dofile(wp40 .. "/validation/t2_source.lua")
+local policies = base.s1_policy_checksums()
+assert(policies.boundary_displacement ==
+	stage1_validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+	"S1 policy provenance disagrees with the production Stage-1 checksum")
+assert(policies.route_raster ==
+	"2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c" and
+	policies.geometry_extreme_selector ==
+	"e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751",
+	"S1 policy provenance drift")
 
 -- (2, strengthened) The checksum claim is only worth what the scalars are.
 -- Score the selector's own S1 records on a Source carrying every unrelated
@@ -247,6 +263,8 @@ unrelated.bay_bank_components[#unrelated.bay_bank_components + 1] =
 unrelated.zone_faces[#unrelated.zone_faces + 1] = copy_value(unrelated.zone_faces[1])
 unrelated.geometry_policies.world_partition.bay_notch_fill_policy_id =
 	"single_pass_same_bay_raw_mask_degree_one_notch_v2"
+unrelated.geometry_policies.boundary_displacement.step_rule =
+	unrelated.geometry_policies.boundary_displacement.step_rule .. "_probe"
 unrelated.zones[1].numeric_id = unrelated.zones[1].numeric_id + 1000
 assert(make(unrelated).s1_source_checksum() == base_projection,
 	"combined non-S1 mutation moved the S1 projection")
