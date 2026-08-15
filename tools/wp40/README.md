@@ -114,16 +114,20 @@ T9-final. A real fallback-engine runtime test remains a separate gate.
 
 ## T2 exact/raster/partition slice
 
-The engine-free analytic-slice runner defaults to plain Lua 5.1:
+The engine-free analytic-slice runner defaults to **LuaJIT**, for iteration:
 
 ```sh
-tools/wp40/run_t2_partition.sh
+tools/wp40/run_t2_partition.sh                    # LuaJIT, cache on
+WP40_FINAL=1 tools/wp40/run_t2_partition.sh       # PUC 5.1 acceptance gate
 ```
 
-For exhaustive development iteration, set `WP40_LUA_BIN=/usr/bin/luajit`.
-The runner accepts no positional arguments and prints the resolved interpreter
-path used for the test. Its default remains the project PUC Lua 5.1 binary for
-focused compatibility gates. Do not automatically duplicate the complete
+`WP40_FINAL=1` is the plain-5.1 compatibility gate that `AGENTS.md` makes a
+hard requirement. It forces the vendored PUC interpreter, bypasses the payload
+cache, runs every phase and includes the historical block, and it rejects
+`WP40_T2_ONLY` so it cannot be run partially. A bare invocation does **not**
+satisfy that requirement. Set `WP40_LUA_BIN` to pin a different interpreter,
+and `--no-cache` / `--historical` to select those individually; the runner
+prints the resolved interpreter path. Do not automatically duplicate the complete
 expensive run under PUC at each milestone: retain immutable LuaJIT
 artifacts/logs/hashes, compare targeted representative PUC KATs byte-for-byte,
 and reserve the parallelized comprehensive PUC round for T2-final. This focused runner owns
@@ -238,20 +242,26 @@ copied from an old artifact.
 ```sh
 tools/wp40/run_t2_source_fast.sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
-tools/bin/lua51 tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
+"$PWD/tools/bin/lua51" tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
 
-# The frozen pre-v3 set (shard-luajit-0000-0511.tsv and its seven peers,
-# candidates-luajit.tsv, manifest-luajit.tsv) is NOT removed: it is
-# content-pinned by t2_extreme_conformance_authority.lua and must stay.
-# Only a previous v3 pool and the PUC conformance outputs are cleared.
+# NOT removed, because they are content-pinned by
+# t2_extreme_conformance_authority.lua and must stay:
+#   * the frozen pre-v3 pool - shard-luajit-0000-0511.tsv and its seven
+#     peers, candidates-luajit.tsv, manifest-luajit.tsv
+#   * conformance_gate.lua, the recorded conclusion of the pre-v3 C1
+#     conformance run
+# Note that shard-luajit-*.tsv now matches sixteen files: the eight frozen
+# pre-v3 shards AND the eight live v3 shards. Never glob on that pattern.
+# The rescore-puc-*.tsv are resume state rather than evidence - each names
+# the measurement_commit it belongs to and nothing pins them - so they are
+# cleared and recomputed.
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
 $EDITOR tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
   tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
 WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh
@@ -263,14 +273,18 @@ git commit -m "test(wp40): re-pin extreme scan authority"
 
 tools/wp40/run_t2_extreme_shards.sh
 WP40_EXTREME_MERGE=1 tools/wp40/run_t2_extreme.sh
-$EDITOR tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
-tools/bin/luac51 -p tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
 git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme pool"
 
+# BLOCKED until the C1 chain is migrated to v3. run_t2_extreme_conformance.sh
+# writes conformance_gate.lua in place, and that file is the content-pinned
+# conclusion of the pre-v3 run, asserted by selected_stage2_blocked.lua as
+# measurement_commit 53be77e / artifact 1096139a. Running it now overwrites
+# pinned evidence and leaves WP40_FINAL=1 run_t2_partition.sh --historical
+# permanently red. The migration must give the v3 gate a distinct name, the
+# same separation the shards, artifact and manifest already have.
 tools/wp40/run_t2_extreme_conformance.sh
 git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
@@ -295,13 +309,20 @@ files remain historical evidence in Git history and must not be relabelled or
 reused as evidence for the new pins.
 
 This applies in full to the stage-S1 migration itself. The retained v2
-artifacts — the eight `shard-luajit-*.tsv`, `candidates-luajit.tsv`,
-`manifest-luajit.tsv`, the twenty `rescore-puc-*.tsv` and `conformance_gate.lua`
+artifacts — the eight pre-v3 `shard-luajit-%04d-%04d.tsv`,
+`candidates-luajit.tsv`, `manifest-luajit.tsv` and `conformance_gate.lua`
 — were measured at `53be77e` under the old byte pins, before
 `geometry/boundary.lua` existed. No stage-S1 authority digest can be computed
 for them, so they cannot be carried forward into v3 and must not be re-headed
 to look current. They stay exactly as they are, as historical evidence for the
 pins they were measured under. The v3 pool is a new measurement.
+
+The twenty `rescore-puc-*.tsv` are deliberately not in that list. They are
+resume state, not evidence: each names in its own header the
+`measurement_commit` it belongs to, nothing pins them, and the historical
+reader does not consult them. They exist so an interrupted conformance run
+does not repeat 249 s of PUC row rescoring. `conformance_gate.lua` is the
+recorded conclusion; the rescores are the working papers behind it.
 
 `grug_wp40_extreme_candidate_shard_v3`, `…_measurement_artifact_v3` and
 `…_shard_manifest_v3` replace `source_checksum`, `boundary_policy_checksum` and

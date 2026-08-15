@@ -7,8 +7,19 @@ the closed selector input manifest, the normalized vocabulary projection, and
 the exact interpreter launcher/target/version/binary. The complete pool is
 eight canonical LuaJIT 512-row shards and is labelled
 `R7_SCALAR_MEASUREMENT_ONLY` with `stage2=pending_selected_four`. The
-checked-in full-scan gate binds the frozen R16/R17 Source, boundary-policy,
-and partition bytes. Once all retained shards exist, PUC Lua 5.1 must
+checked-in full-scan gate binds the stage-S1 authority digest and the S1
+Source projection, and deliberately binds neither `source/catalog.lua`,
+`geometry/partition.lua` nor the boundary-displacement policy checksum — a
+gate still carrying those is rejected. That is what lets a geometry
+correction land without invalidating a measured pool.
+
+Two pool generations live in this directory. The eight
+`shard-luajit-%04d-%04d.tsv`, `candidates-luajit.tsv`, `manifest-luajit.tsv`
+and `conformance_gate.lua` are the frozen pre-v3 measurement from `53be77e`
+and are content-pinned. The eight `shard-luajit-v3-*.tsv`,
+`candidates-luajit-v3.tsv` and `manifest-luajit-v3.tsv` are the live v3
+measurement. `shard-luajit-*.tsv` matches both sets — sixteen files — so
+never glob on it. Once all retained shards exist, PUC Lua 5.1 must
 separately parse and rank every row, rematerialize the deterministic shard
 endpoints plus the four winners, and run the four selected full-partition
 gates. Implementation bytes alone are not evidence: the C1 launcher may run
