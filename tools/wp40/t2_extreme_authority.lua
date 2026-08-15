@@ -333,22 +333,47 @@ return function(dependencies)
 		return true
 	end
 
-	local function retained_shard_path(first, last)
+	-- Two pool generations coexist on disk, and they must never share a path.
+	--
+	-- The unsuffixed names hold the FROZEN v2 measurement taken at 53be77e under
+	-- the old Source/partition byte pins.  They cannot move: their exact paths
+	-- are content-pinned by tools/wp40/t2_extreme_conformance_authority.lua, and
+	-- the conformance DAG digest recorded in the retained rescore evidence is
+	-- computed over those very paths.  Renaming or deleting them would silently
+	-- invalidate historical evidence, and overwriting them in place would
+	-- destroy it outright.
+	--
+	-- The v3 pool therefore writes to its own names.  A fresh v3 run then starts
+	-- against an empty set instead of tripping over v2 files it cannot parse,
+	-- and the historical set stays exactly where its pins expect it.
+	local function shard_path_for(first, last, template, label)
 		if type(first) ~= "number" or type(last) ~= "number" or
 				first % 1 ~= 0 or last % 1 ~= 0 then
-			fail("retained shard range is invalid")
+			fail(label .. " shard range is invalid")
 		end
 		local expected
 		for index = 1, 8 do
 			local range_first = (index - 1) * 512
 			if first == range_first and last == range_first + 511 then
 				expected = ("tools/wp40/fixtures/t2_extreme_e0/" ..
-					"shard-luajit-%04d-%04d.tsv"):format(first, last)
+					template):format(first, last)
 				break
 			end
 		end
-		if not expected then fail("retained shard range is not canonical") end
+		if not expected then fail(label .. " shard range is not canonical") end
 		return expected
+	end
+
+	-- Current pool (v3). This is the only path a measurement may write.
+	local function retained_shard_path(first, last)
+		return shard_path_for(first, last, "shard-luajit-v3-%04d-%04d.tsv",
+			"retained")
+	end
+
+	-- Frozen pre-v3 evidence. Read-only: there is no writer for these names.
+	local function historical_shard_path(first, last)
+		return shard_path_for(first, last, "shard-luajit-%04d-%04d.tsv",
+			"historical")
 	end
 
 	local function validate_retained_shard_path(path, first, last)
@@ -528,6 +553,7 @@ return function(dependencies)
 	authority.canonical_measurement_ranges = canonical_measurement_ranges
 	authority.validate_measurement_ranges = validate_measurement_ranges
 	authority.retained_shard_path = retained_shard_path
+	authority.historical_shard_path = historical_shard_path
 	authority.validate_retained_shard_path = validate_retained_shard_path
 	authority.validate_full_scan_gate = validate_full_scan_gate
 	authority.preparse_shard_provenance = preparse_shard_provenance

@@ -267,11 +267,27 @@ for _, mutate in ipairs({
 	end)
 end
 local retained_path = authority.retained_shard_path(0, 511)
+local historical_path = authority.historical_shard_path(0, 511)
 assert(retained_path ==
-	"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv" and
+	"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-0000-0511.tsv" and
 	authority.validate_retained_shard_path(retained_path, 0, 511))
-for _, path in ipairs({repo .. "/" .. retained_path,
-	"tools/wp40/fixtures/../fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv",
+-- The two pool generations must never collide on disk: the frozen pre-v3
+-- shards are content-pinned by the conformance authority and must stay exactly
+-- where they are, so a v3 measurement may not be allowed to write over them.
+assert(historical_path ==
+	"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv")
+assert(historical_path ~= retained_path,
+	"v3 pool path collides with the frozen pre-v3 evidence path")
+for index = 1, 8 do
+	local first = (index - 1) * 512
+	assert(authority.retained_shard_path(first, first + 511) ~=
+		authority.historical_shard_path(first, first + 511),
+		"v3 and historical shard paths collide")
+end
+-- The historical name is not a resume target: validate_retained_shard_path is
+-- what the launcher trusts, and it must reject it like any other foreign path.
+for _, path in ipairs({repo .. "/" .. retained_path, historical_path,
+	"tools/wp40/fixtures/../fixtures/t2_extreme_e0/shard-luajit-v3-0000-0511.tsv",
 	"tools/wp40/fixtures/t2_extreme_e0/foreign.tsv"}) do
 	expect_error("repo-relative", function()
 		authority.validate_retained_shard_path(path, 0, 511)

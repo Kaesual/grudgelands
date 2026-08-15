@@ -15,9 +15,6 @@ local function safe_absolute_path(value)
 end
 for _, path in ipairs({repo, scratch, shard_path}) do safe_absolute_path(path) end
 assert(first % 512 == 0 and last == first + 511 and first >= 0 and last <= 4095)
-local expected_path = repo .. ("/tools/wp40/fixtures/t2_extreme_e0/" ..
-	"shard-luajit-%04d-%04d.tsv"):format(first, last)
-assert(shard_path == expected_path, "retained shard path changed")
 
 local function read_file(path)
 	local file = assert(io.open(path, "rb"))
@@ -52,6 +49,11 @@ local authority = assert(loadstring(authority_bytes, "@" .. authority_path))()({
 	raw_sha256 = raw_sha256})
 local files = authority.capture_files(repo, {[authority_path] = authority_bytes})
 local snapshot = authority.bind_expected_vocabulary(files)
+-- Only a current-generation (v3) path may be verified or resumed from. The
+-- frozen pre-v3 shards live under their own names and are never a resume
+-- source; pointing this verifier at one is a caller error, not a skip.
+assert(shard_path == repo .. "/" .. authority.retained_shard_path(first, last),
+	"retained shard path changed")
 local shard_bytes = read_file(shard_path)
 local shard_provenance = authority.preparse_shard_provenance(shard_bytes)
 local pinned_snapshot = authority.validate_pinned_authority(repo, scratch,

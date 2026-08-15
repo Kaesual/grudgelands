@@ -19,8 +19,13 @@ end
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-extreme%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
 local retained_root = repo .. "/tools/wp40/fixtures/t2_extreme_e0/"
-local manifest_path = retained_root .. "manifest-luajit.tsv"
-local artifact_path = retained_root .. "candidates-luajit.tsv"
+-- v3 outputs carry their own names. The unsuffixed manifest-luajit.tsv and
+-- candidates-luajit.tsv are the frozen pre-v3 measurement: their exact paths
+-- are content-pinned by t2_extreme_conformance_authority.lua, and the retained
+-- manifest digest is pinned by fixtures/t2_extreme_e0/selected_stage2_blocked.
+-- Writing v3 bytes over them would destroy historical evidence in place.
+local manifest_path = retained_root .. "manifest-luajit-v3.tsv"
+local artifact_path = retained_root .. "candidates-luajit-v3.tsv"
 assert(manifest_path ~= artifact_path)
 for _, path in ipairs({manifest_path, artifact_path, manifest_path .. ".tmp",
 		artifact_path .. ".tmp"}) do

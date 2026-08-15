@@ -240,10 +240,14 @@ tools/wp40/run_t2_source_fast.sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 tools/bin/lua51 tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
 
+# The frozen pre-v3 set (shard-luajit-0000-0511.tsv and its seven peers,
+# candidates-luajit.tsv, manifest-luajit.tsv) is NOT removed: it is
+# content-pinned by t2_extreme_conformance_authority.lua and must stay.
+# Only a previous v3 pool and the PUC conformance outputs are cleared.
 git rm --ignore-unmatch -- \
-  tools/wp40/fixtures/t2_extreme_e0/shard-luajit-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv \
@@ -261,9 +265,9 @@ tools/wp40/run_t2_extreme_shards.sh
 WP40_EXTREME_MERGE=1 tools/wp40/run_t2_extreme.sh
 $EDITOR tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
 tools/bin/luac51 -p tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
-git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv \
+git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
 git commit -m "test(wp40): retain regenerated extreme pool"
 
@@ -305,6 +309,30 @@ pins they were measured under. The v3 pool is a new measurement.
 `s1_source_projection_sha256`. Row bytes are unchanged between v2 and v3 — only
 the provenance header differs — which is why the retained candidate0 row digest
 `a1cf557c…` still reproduces.
+
+The two generations therefore live under different names, and never share a
+path:
+
+| generation | shards | artifact | manifest |
+|---|---|---|---|
+| frozen pre-v3 (53be77e) | `shard-luajit-%04d-%04d.tsv` | `candidates-luajit.tsv` | `manifest-luajit.tsv` |
+| current v3 pool | `shard-luajit-v3-%04d-%04d.tsv` | `candidates-luajit-v3.tsv` | `manifest-luajit-v3.tsv` |
+
+This is not cosmetic. `run_t2_extreme_shards.sh` verifies every already-present
+shard before resuming, so with a shared path the eight frozen v2 files aborted
+every fresh v3 run; and the merge writes the artifact and manifest, so a shared
+path would have overwritten evidence that
+`t2_extreme_conformance_authority.lua` content-pins and that
+`selected_stage2_blocked.lua` pins by digest. `authority.retained_shard_path`
+names the v3 generation and is the only path a measurement may write;
+`authority.historical_shard_path` names the frozen one and has no writer.
+`validate_retained_shard_path` rejects the historical name, so it can never
+become a resume source.
+
+Resume stays fail-closed in both directions: an interrupted v3 run resumes from
+its own verified shards, while anything unparseable at a v3 path — a stale
+pre-v3 file, a truncated or corrupted shard — aborts the launcher loudly
+instead of being skipped.
 
 There is a v3 writer only. The retained v2 artifacts stay readable through
 `extreme.parse_historical_shard_blob`, an explicitly named read-only reader used

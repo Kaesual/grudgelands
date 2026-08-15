@@ -57,7 +57,7 @@ if [[ "$interpreter_path" != /usr/bin/luajit-2.1.1767980792 ]]; then
 fi
 interpreter_id=luajit
 interpreter_version="$("$interpreter_launcher" -v 2>&1)"
-expected="$repo/tools/wp40/fixtures/t2_extreme_e0/shard-luajit-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+expected="$repo/tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
 if [[ "$output" != "$expected" || -e "$output" ]]; then
 	echo "WP40 T2 extreme shard output must be new: $expected" >&2
 	exit 2
@@ -67,7 +67,7 @@ export_repo="$scratch/export"
 mkdir -p "$export_repo"
 git -C "$repo" archive "$authority_commit" | tar -x -C "$export_repo"
 export_script="$export_repo/tools/wp40"
-export_output="$export_script/fixtures/t2_extreme_e0/shard-luajit-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+export_output="$export_script/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
 "$repo/tools/bin/luac51" -p \
 	"$export_repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua" \
 	"$export_repo/mods/MAPGEN/grug_mapgen/wp40/geometry/extreme.lua" \

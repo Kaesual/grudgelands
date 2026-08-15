@@ -52,7 +52,7 @@ resumed=0
 for shard_index in {0..7}; do
 	first=$((shard_index * 512))
 	last=$((first + 511))
-	output="$script_dir/fixtures/t2_extreme_e0/shard-luajit-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
+	output="$script_dir/fixtures/t2_extreme_e0/shard-luajit-v3-$(printf '%04d' "$first")-$(printf '%04d' "$last").tsv"
 	starts[$shard_index]="$first"
 	lasts[$shard_index]="$last"
 	outputs[$shard_index]="$output"
