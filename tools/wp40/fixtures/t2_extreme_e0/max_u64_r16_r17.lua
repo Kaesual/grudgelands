@@ -1,6 +1,19 @@
 -- Positive retained prerequisite evidence for the former fixed-slot-19 fatal.
 -- This closes that one R16/R17 geometry case; selected-four Stage-2 proof and
 -- fixed-corpus promotion remain pending.
+--
+-- Unlike the E0 pool gate, this is compiled-geometry evidence: it records a
+-- full max-u64 partition compile, so it does depend on the Source and
+-- partition bytes and must be re-pinned whenever they change.
+--
+-- Re-pinned at R19 (was R16/R17: source 154cbc31..., boundary a32f35c4...,
+-- partition de53e1b5...). The re-pin asserts only that the byte values below
+-- are the reviewed inputs that reproduce this compiled result; it does not
+-- assert anything about the earlier values. It invalidates nothing measured
+-- here, because every recorded geometry fact -- the eight transitions, both
+-- bank ids, the 453-station Mournfen run and its tail, all three notch fills --
+-- and the compiled digest 852d0a32... are bit-identical to the R16/R17 record.
+-- Only the input identifiers moved.
 return {
 	status = "R16_R17_PREREQUISITE_PASSED",
 	scope = "R16_R17_FULL_PARTITION_PREREQUISITE_ONLY",
@@ -47,9 +60,9 @@ return {
 		{bay_id = "bay_elandor_east", x = 887, z = -2036},
 		{bay_id = "bay_kragmar_west", x = -1121, z = 2220},
 	},
-	source_checksum = "154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d",
-	boundary_policy_checksum = "a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f",
-	partition_sha256 = "de53e1b5cc0cc3fcaee2d58ce3cc391c637b123d430f234c74e4960ad4bee967",
+	source_checksum = "5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000",
+	boundary_policy_checksum = "3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe",
+	partition_sha256 = "58a76713ea4d1b89a9aab2d6c35df7e00b92cb53eb13f5153639a75125638919",
 	compiled_sha256 = "852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95",
 	reproduce = "WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh",
 }

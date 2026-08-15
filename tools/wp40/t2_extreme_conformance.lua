@@ -256,7 +256,9 @@ return function(dependencies)
 			"rows_sha256\t" .. row_digest,
 			candidate_blob,
 		}, "\n")
-		local shard = extreme.parse_shard_blob(fake)
+		-- The retained merged artifact is pre-v3 (v2) historical evidence: read it
+		-- with the explicit historical reader, never with the current v3 parser.
+		local shard = extreme.parse_historical_shard_blob(fake)
 		if extreme.candidate_blob(shard.rows) ~= candidate_blob then
 			fail("measurement candidate rows are not canonical bytes")
 		end

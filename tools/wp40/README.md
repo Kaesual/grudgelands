@@ -183,32 +183,62 @@ pre-existing shard that passes the pinned PUC verifier, lets independent valid
 workers finish if a peer fails, and exits nonzero until all eight canonical
 ranges verify. Progress text is diagnostic and is never hashed as candidate
 authority.
-The launcher gate records the exact committed R16/R17 Source,
-boundary-policy, and partition pins. The worker revalidates those pins from
-its immutable archive before emitting a retained shard.
+The launcher gate records the committed stage-S1 authority digest. The worker
+recomputes that digest from its immutable archive and from the live S1 Source
+projection before emitting a retained shard.
 
-### Extreme-evidence regeneration after a partition change
+### What the pool provenance binds, and what it excludes
 
-A changed `geometry/partition.lua` intentionally makes
-`run_t2_extreme.sh` and `run_t2_extreme_puc_kat.sh` fail before measurement.
-The current full-scan gate still pins partition
-`de53e1b5cc0cc3fcaee2d58ce3cc391c637b123d430f234c74e4960ad4bee967`,
-while the current partition file is
-`03539b8aa39df381d2fb1feb9b93bed24b94e9f6e04eb663e1c16b7e2b7ab340`.
-This is an intentional fail-closed state, not a request to copy the latter
-value into the gate.
+Since the stage-S1 migration the E0 pool binds exactly one thing:
+`s1_authority_sha256`, the digest published by `tools/wp40/t2_s1_authority.lua`
+over the S1 module (`geometry/boundary.lua`), the arithmetic surface S1 reads
+(`canonical.lua`, `deterministic.lua`, `geometry/exact.lua`,
+`geometry/raster.lua`), and the canonical checksum of the S1 Source projection
+(`s1_source_projection_sha256`). The extreme selector consumes stage S1 only,
+so this is the complete set of inputs that can move a pool scalar.
 
-Regeneration starts only from a committed, independently reviewed Source and
-partition snapshot. Run the following sequence from the repository root.
-The two `$EDITOR` commands are deliberate review steps: no program currently
-generates either closed gate, so their complete records must be reconstructed
-from the immediately preceding no-cache evidence rather than copied from an
-old artifact.
+It deliberately excludes `source/catalog.lua` bytes, `geometry/partition.lua`
+bytes (stages S2–S9) and the boundary-displacement policy checksum. Those were
+the old `source_checksum` / `partition_sha256` / `boundary_policy_checksum`
+pins. None of them can change an S1 scalar identity or value, yet pinning them
+invalidated the measured pool on every later-stage geometry correction, which
+is why the pool was unreachable from R16 onward. The S1 projection
+`83b1b16a…` is bit-identical from the T2b seed-zero geometry freeze
+(`db62f43`) through R19, so one measured pool now survives R16–R19 and every
+future correction that leaves S1 alone.
+
+Because `geometry/boundary.lua` and `tools/wp40/t2_s1_authority.lua` do not
+exist at the pinned pre-extraction commits that `validate_pinned_authority`
+re-materializes, both travel as `stage_paths` outside the Authority-DAG
+`paths` manifest and are always read from the live worktree. Consequently the
+stage-S1 digest is a claim about the current tree, never about a
+re-materialized historical commit; `validate_pinned_authority` syntax-checks it
+and does not verify it.
+
+### Extreme-evidence regeneration
+
+The pool no longer needs regeneration when `geometry/partition.lua` changes —
+that coupling was the entire defect this migration removed. Regeneration is
+required only when the stage-S1 authority itself changes: the S1 module, the
+arithmetic surface, `t2_s1_authority.lua`, or a Source edit that moves the S1
+projection. `tools/wp40/t2_extreme_gate_check.lua` is the single place where
+the checked-in gate is re-derived from the live tree, and it fails closed with
+`stage-S1 authority digest differs` when it does not match.
+
+Regeneration starts only from a committed, independently reviewed snapshot.
+Note that `run_t2_extreme_shards.sh` refuses to start unless its launcher
+authority (`run_t2_extreme_shards.sh`, `run_t2_extreme_shard.sh`,
+`t2_extreme_authority.lua`, `t2_extreme_gate_check.lua`, `full_scan_gate.lua`)
+is committed and identical to `HEAD`. Run the following sequence from the
+repository root. The two `$EDITOR` commands are deliberate review steps: no
+program currently generates either closed gate, so their complete records must
+be reconstructed from the immediately preceding no-cache evidence rather than
+copied from an old artifact.
 
 ```sh
 tools/wp40/run_t2_source_fast.sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
-sha256sum mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua
+tools/bin/lua51 tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
 
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-*.tsv \
@@ -244,21 +274,46 @@ git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
 git commit -m "test(wp40): retain regenerated extreme conformance"
 ```
 
-The first fixture edit must bind the reviewed Source checksum,
-boundary-policy checksum, partition bytes, and freshly reproduced max-u64
-prerequisite from that one snapshot. The conformance-gate edit must bind the
-new immutable measurement commit/tree/DAG, all eight shard files, the merged
-artifact and manifest, candidate rows, winners, and staging row printed by the
-PUC merge. Each commit must contain only the files named for that stage; the
-shard launcher and conformance launcher then execute from those immutable
+The first fixture edit must bind the stage-S1 authority digest and S1 Source
+projection printed by `t2_extreme_gate_check.lua`, plus the freshly reproduced
+max-u64 prerequisite, from that one snapshot. The conformance-gate edit must
+bind the new immutable measurement commit/tree/DAG, all eight shard files, the
+merged artifact and manifest, candidate rows, winners, and staging row printed
+by the PUC merge. Each commit must contain only the files named for that stage;
+the shard launcher and conformance launcher then execute from those immutable
 commits.
 
-Re-pinning asserts only that the named Source, boundary policy, and partition
-bytes are the reviewed inputs to the new measurement; it does not assert that
-old results remain valid. It invalidates the earlier eight shards, merged
-candidate artifact, manifest, endpoint/winner rescores, selected results, and
-final conformance result. Those files remain historical evidence in Git
-history and must not be relabelled or reused as evidence for the new pins.
+Re-pinning asserts only that the named stage-S1 authority is the reviewed input
+to the new measurement; it does not assert that old results remain valid. It
+invalidates the earlier eight shards, merged candidate artifact, manifest,
+endpoint/winner rescores, selected results, and final conformance result. Those
+files remain historical evidence in Git history and must not be relabelled or
+reused as evidence for the new pins.
+
+This applies in full to the stage-S1 migration itself. The retained v2
+artifacts — the eight `shard-luajit-*.tsv`, `candidates-luajit.tsv`,
+`manifest-luajit.tsv`, the twenty `rescore-puc-*.tsv` and `conformance_gate.lua`
+— were measured at `53be77e` under the old byte pins, before
+`geometry/boundary.lua` existed. No stage-S1 authority digest can be computed
+for them, so they cannot be carried forward into v3 and must not be re-headed
+to look current. They stay exactly as they are, as historical evidence for the
+pins they were measured under. The v3 pool is a new measurement.
+
+`grug_wp40_extreme_candidate_shard_v3`, `…_measurement_artifact_v3` and
+`…_shard_manifest_v3` replace `source_checksum`, `boundary_policy_checksum` and
+`partition_sha256` with `s1_authority_sha256` and
+`s1_source_projection_sha256`. Row bytes are unchanged between v2 and v3 — only
+the provenance header differs — which is why the retained candidate0 row digest
+`a1cf557c…` still reproduces.
+
+There is a v3 writer only. The retained v2 artifacts stay readable through
+`extreme.parse_historical_shard_blob`, an explicitly named read-only reader used
+by the C1 conformance chain so that the historical measurement stays checkable
+*as historical*. It never validates a v2 record against a current pin, and no
+code path can present a v2 record as current. When the pool is re-measured, the
+whole C1 chain (`t2_extreme_conformance.lua` and the rescore/selected workers)
+must be moved to v3 against the artifacts that run actually produces; that is
+deliberately not done in advance, because it cannot be tested until they exist.
 
 ### Harness acceleration measurements
 

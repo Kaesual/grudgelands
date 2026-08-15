@@ -118,28 +118,30 @@ local gate = authority.load_module(files,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
 local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 local partition_sha256 = hex(raw_sha256(files.files[partition_path]))
-assert(authority.validate_full_scan_gate(gate, {
-	source_checksum = validator_module.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum =
-		validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = partition_sha256,
-}))
+local s1_authority = authority.load_module(files,
+	"tools/wp40/t2_s1_authority.lua")({raw_sha256 = raw_sha256})
+local s1_boundary = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")({canonical = canonical,
+	deterministic = deterministic, exact = exact, raster = raster,
+	raw_sha256 = raw_sha256, source = source,
+	source_validator = validator_module, vocabulary = vocabulary})
+local s1_source_projection_sha256 = s1_boundary.s1_source_checksum()
+local s1_authority_sha256 = s1_authority.digest(files.files,
+	s1_source_projection_sha256, s1_boundary.PROJECTION_SCHEMA)
+local expected_gate_pins = {s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256}
+assert(authority.validate_full_scan_gate(gate, expected_gate_pins))
 for _, mutate in ipairs({
 	function(row) row.status = "blocked" end,
-	function(row) row.source_checksum = string.rep("0", 64) end,
-	function(row) row.boundary_policy_checksum = string.rep("0", 64) end,
-	function(row) row.partition_sha256 = string.rep("0", 64) end,
+	function(row) row.s1_authority_sha256 = string.rep("0", 64) end,
+	function(row) row.s1_source_projection_sha256 = string.rep("0", 64) end,
+	function(row) row.s1_authority_schema = "grug_wp40_s1_authority_v0" end,
 	function(row) row.extra = true end,
 }) do
 	local corrupt = deep_copy(gate)
 	mutate(corrupt)
 	expect_error("full-scan", function()
-		authority.validate_full_scan_gate(corrupt, {
-			source_checksum = validator_module.EXPECTED_SOURCE_CHECKSUM,
-			boundary_policy_checksum =
-				validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-			partition_sha256 = partition_sha256,
-		})
+		authority.validate_full_scan_gate(corrupt, expected_gate_pins)
 	end)
 end
 
@@ -184,9 +186,8 @@ assert(row.status == "scored" and row.candidate_index == 0 and
 	"targeted PUC candidate0 score/identity changed")
 
 local provenance = authority.git_provenance(repo, scratch)
-local pins = {source_checksum = gate.source_checksum,
-	boundary_policy_checksum = gate.boundary_policy_checksum,
-	partition_sha256 = partition_sha256,
+local pins = {s1_authority_sha256 = gate.s1_authority_sha256,
+	s1_source_projection_sha256 = gate.s1_source_projection_sha256,
 	authority_dag_sha256 = snapshot.authority_dag_sha256,
 	authority_commit = provenance.commit, authority_tree = provenance.tree,
 	interpreter_id = "puc_lua51", interpreter_launcher = arg[-1],
@@ -209,4 +210,5 @@ assert(authority.verify(repo, snapshot, vocabulary))
 print("WP40 T2 E0 targeted PUC candidate0 rows SHA-256 " .. shard.rows_sha256)
 print("WP40 T2 E0 targeted PUC passed scalar seed0=" .. seed0_sha256 ..
 	" max_u64=" .. max_sha256 .. " candidate0=" .. candidate.decimal ..
+	" s1_authority=" .. s1_authority_sha256 ..
 	" partition=" .. partition_sha256)

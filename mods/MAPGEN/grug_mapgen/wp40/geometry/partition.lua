@@ -3347,6 +3347,9 @@ local function new_partition(dependencies)
 	partition.new_extreme_scalar_session = boundary.new_extreme_scalar_session
 	partition.s1_source_projection = boundary.s1_source_projection
 	partition.s1_source_checksum = boundary.s1_source_checksum
+	-- Re-exported so an S1-scope consumer can name the projection schema without
+	-- instantiating a second boundary. Provenance only; no compiled geometry.
+	partition.s1_source_projection_schema = boundary.PROJECTION_SCHEMA
 	partition.bay_owner = bay_owner
 	partition.validate_bay_payload = validate_bay_payload
 	partition.coast_source = coast_source

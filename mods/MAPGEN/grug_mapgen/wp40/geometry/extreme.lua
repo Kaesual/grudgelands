@@ -576,16 +576,20 @@ return function(dependencies)
 		return table.concat(lines, "\n") .. "\n"
 	end
 
-	local pin_fields = {"source_checksum", "boundary_policy_checksum",
-		"partition_sha256",
+	-- v3 provenance. The selector reads stage S1 only, so the pool binds the
+	-- stage-S1 authority digest and the S1 Source projection it covers. The
+	-- former source_checksum/boundary_policy_checksum/partition_sha256 pins are
+	-- gone: they described stages the selector never reads, so every later-stage
+	-- geometry correction invalidated a pool that did not depend on it.
+	local pin_fields = {"s1_authority_sha256", "s1_source_projection_sha256",
 		"authority_dag_sha256", "authority_commit", "authority_tree",
 		"interpreter_id", "interpreter_launcher", "interpreter_path",
 		"interpreter_version", "interpreter_sha256", "measurement_scope",
 		"stage2_status", "scorer_schema"}
 	local function validate_pins(pins)
 		exact_fields(pins, pin_fields, "candidate shard pins")
-		for _, field in ipairs({"source_checksum", "boundary_policy_checksum",
-				"partition_sha256",
+		for _, field in ipairs({"s1_authority_sha256",
+				"s1_source_projection_sha256",
 				"authority_dag_sha256", "interpreter_sha256"}) do
 			if type(pins[field]) ~= "string" or #pins[field] ~= 64 or
 					not pins[field]:match("^[0-9a-f]+$") then
@@ -647,7 +651,7 @@ return function(dependencies)
 			copy[index] = private_plain_copy(row)
 		end
 		local pin_copy = private_plain_copy(pins)
-		return {schema = "grug_wp40_extreme_candidate_shard_v2",
+		return {schema = "grug_wp40_extreme_candidate_shard_v3",
 			first_index = first_index, last_index = last_index, count = #copy,
 			pins = pin_copy, rows_sha256 = hex(raw_sha256(rows_blob(copy))), rows = copy}
 	end
@@ -656,7 +660,7 @@ return function(dependencies)
 		"pins", "rows_sha256", "rows"}
 	local function validate_candidate_shard(shard)
 		exact_fields(shard, shard_fields, "candidate shard")
-		if shard.schema ~= "grug_wp40_extreme_candidate_shard_v2" then
+		if shard.schema ~= "grug_wp40_extreme_candidate_shard_v3" then
 			fail("candidate shard schema changed")
 		end
 		exact.integer(shard.first_index, 0, 4095, "candidate shard first index")
@@ -694,9 +698,8 @@ return function(dependencies)
 		local lines = {"schema\t" .. shard.schema,
 			"range\t" .. shard.first_index .. "\t" .. shard.last_index .. "\t" ..
 				tostring(shard.count),
-			"source_checksum\t" .. pins.source_checksum,
-			"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
-			"partition_sha256\t" .. pins.partition_sha256,
+			"s1_authority_sha256\t" .. pins.s1_authority_sha256,
+			"s1_source_projection_sha256\t" .. pins.s1_source_projection_sha256,
 			"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 			"authority_commit\t" .. pins.authority_commit,
 			"authority_tree\t" .. pins.authority_tree,
@@ -732,40 +735,12 @@ return function(dependencies)
 		return value
 	end
 
-	local function parse_shard_blob(blob)
-		if type(blob) ~= "string" or blob == "" or blob:sub(-1) ~= "\n" or
-				blob:find("\r", 1, true) or blob:find(string.char(0), 1, true) then
-			fail("candidate shard blob framing is invalid")
-		end
-		local lines = {}
-		for line in blob:gmatch("([^\n]*)\n") do
-			if line == "" then fail("candidate shard blob has an empty line") end
-			lines[#lines + 1] = line
-		end
-		if #lines < 19 or lines[18] ~= candidate_header then
-			fail("candidate shard blob header changed")
-		end
-		local expected_headers = {"schema", "range", "source_checksum",
-			"boundary_policy_checksum", "partition_sha256", "authority_dag_sha256",
-			"authority_commit",
-			"authority_tree", "interpreter_id", "interpreter_launcher", "interpreter_path",
-			"interpreter_version", "interpreter_sha256",
-			"measurement_scope", "stage2_status", "scorer_schema", "rows_sha256"}
-		local headers = {}
-		for index = 1, 17 do
-			local fields = split_tabs(lines[index])
-			if fields[1] ~= expected_headers[index] then
-				fail("candidate shard blob header order changed")
-			end
-			headers[index] = fields
-		end
-		if #headers[1] ~= 2 or #headers[2] ~= 4 then
-			fail("candidate shard blob header width changed")
-		end
-		for index = 3, 17 do if #headers[index] ~= 2 then
-			fail("candidate shard blob header width changed") end end
+	-- Row bytes are identical in the historical v2 and the current v3 shard
+	-- schemas; only the provenance header differs. Shared so the historical
+	-- reader below cannot drift from the current one.
+	local function parse_row_lines(lines, first_line)
 		local rows = {}
-		for line_index = 19, #lines do
+		for line_index = first_line, #lines do
 			local fields = split_tabs(lines[line_index])
 			if #fields ~= 16 then fail("candidate shard row width changed") end
 			local row = {candidate_index = parsed_integer(fields[1], "candidate index"),
@@ -791,6 +766,55 @@ return function(dependencies)
 			end
 			rows[#rows + 1] = row
 		end
+		return rows
+	end
+
+	local function shard_blob_lines(blob)
+		if type(blob) ~= "string" or blob == "" or blob:sub(-1) ~= "\n" or
+				blob:find("\r", 1, true) or blob:find(string.char(0), 1, true) then
+			fail("candidate shard blob framing is invalid")
+		end
+		local lines = {}
+		for line in blob:gmatch("([^\n]*)\n") do
+			if line == "" then fail("candidate shard blob has an empty line") end
+			lines[#lines + 1] = line
+		end
+		return lines
+	end
+
+	-- Read-only reader for the RETAINED PRE-v3 (v2) pool artifacts measured at
+	-- 53be77e under the old Source/partition byte pins. It exists so that
+	-- historical evidence stays checkable AS HISTORICAL after the stage-S1
+	-- migration; it never validates v2 against a current pin, and there is no
+	-- v2 writer. Nothing here may be used to present a v2 record as current.
+	local function parse_historical_shard_blob(blob)
+		local lines = shard_blob_lines(blob)
+		if #lines < 19 or lines[18] ~= candidate_header then
+			fail("historical candidate shard blob header changed")
+		end
+		local expected_headers = {"schema", "range", "source_checksum",
+			"boundary_policy_checksum", "partition_sha256", "authority_dag_sha256",
+			"authority_commit", "authority_tree", "interpreter_id",
+			"interpreter_launcher", "interpreter_path", "interpreter_version",
+			"interpreter_sha256", "measurement_scope", "stage2_status",
+			"scorer_schema", "rows_sha256"}
+		local headers = {}
+		for index = 1, 17 do
+			local fields = split_tabs(lines[index])
+			if fields[1] ~= expected_headers[index] then
+				fail("historical candidate shard blob header order changed")
+			end
+			headers[index] = fields
+		end
+		if #headers[1] ~= 2 or #headers[2] ~= 4 then
+			fail("historical candidate shard blob header width changed")
+		end
+		for index = 3, 17 do if #headers[index] ~= 2 then
+			fail("historical candidate shard blob header width changed") end end
+		if headers[1][2] ~= "grug_wp40_extreme_candidate_shard_v2" then
+			fail("historical candidate shard schema is not v2")
+		end
+		local rows = parse_row_lines(lines, 19)
 		local shard = {schema = headers[1][2],
 			first_index = parsed_integer(headers[2][2], "candidate shard first"),
 			last_index = parsed_integer(headers[2][3], "candidate shard last"),
@@ -805,6 +829,63 @@ return function(dependencies)
 				measurement_scope = headers[14][2], stage2_status = headers[15][2],
 				scorer_schema = headers[16][2]},
 			rows_sha256 = headers[17][2], rows = rows}
+		if shard.count ~= #shard.rows or
+				shard.count ~= shard.last_index - shard.first_index + 1 then
+			fail("historical candidate shard range/count changed")
+		end
+		for index = 1, #shard.rows do validate_candidate_row(shard.rows[index]) end
+		if hex(raw_sha256(rows_blob(shard.rows))) ~= shard.rows_sha256 then
+			fail("historical candidate shard row digest changed")
+		end
+		return shard
+	end
+
+	local function parse_shard_blob(blob)
+		if type(blob) ~= "string" or blob == "" or blob:sub(-1) ~= "\n" or
+				blob:find("\r", 1, true) or blob:find(string.char(0), 1, true) then
+			fail("candidate shard blob framing is invalid")
+		end
+		local lines = {}
+		for line in blob:gmatch("([^\n]*)\n") do
+			if line == "" then fail("candidate shard blob has an empty line") end
+			lines[#lines + 1] = line
+		end
+		if #lines < 18 or lines[17] ~= candidate_header then
+			fail("candidate shard blob header changed")
+		end
+		local expected_headers = {"schema", "range", "s1_authority_sha256",
+			"s1_source_projection_sha256", "authority_dag_sha256",
+			"authority_commit",
+			"authority_tree", "interpreter_id", "interpreter_launcher", "interpreter_path",
+			"interpreter_version", "interpreter_sha256",
+			"measurement_scope", "stage2_status", "scorer_schema", "rows_sha256"}
+		local headers = {}
+		for index = 1, 16 do
+			local fields = split_tabs(lines[index])
+			if fields[1] ~= expected_headers[index] then
+				fail("candidate shard blob header order changed")
+			end
+			headers[index] = fields
+		end
+		if #headers[1] ~= 2 or #headers[2] ~= 4 then
+			fail("candidate shard blob header width changed")
+		end
+		for index = 3, 16 do if #headers[index] ~= 2 then
+			fail("candidate shard blob header width changed") end end
+		local rows = parse_row_lines(lines, 18)
+		local shard = {schema = headers[1][2],
+			first_index = parsed_integer(headers[2][2], "candidate shard first"),
+			last_index = parsed_integer(headers[2][3], "candidate shard last"),
+			count = parsed_integer(headers[2][4], "candidate shard count"),
+			pins = {s1_authority_sha256 = headers[3][2],
+				s1_source_projection_sha256 = headers[4][2],
+				authority_dag_sha256 = headers[5][2], authority_commit = headers[6][2],
+				authority_tree = headers[7][2], interpreter_id = headers[8][2],
+				interpreter_launcher = headers[9][2], interpreter_path = headers[10][2],
+				interpreter_version = headers[11][2], interpreter_sha256 = headers[12][2],
+				measurement_scope = headers[13][2], stage2_status = headers[14][2],
+				scorer_schema = headers[15][2]},
+			rows_sha256 = headers[16][2], rows = rows}
 		return validate_candidate_shard(shard)
 	end
 
@@ -843,6 +924,7 @@ return function(dependencies)
 	selector.validate_candidate_shard = validate_candidate_shard
 	selector.shard_blob = shard_blob
 	selector.parse_shard_blob = parse_shard_blob
+	selector.parse_historical_shard_blob = parse_historical_shard_blob
 	selector.merge_shards = merge_shards
 	selector.rational_add = rational_add
 	selector.rational_mean = rational_mean

@@ -33,14 +33,17 @@ return function(dependencies)
 		"tools/wp40/t2_sha256_batch.py",
 	}
 	-- Stage-S1 module bytes travel inside the snapshot so a worker can load the
-	-- extracted S1 stage, but they are deliberately outside the Authority-DAG
-	-- manifest below.  That manifest is also re-materialized from pinned
-	-- pre-extraction commits (validate_pinned_authority), where this file does
-	-- not exist; and S1 has its own, narrower authority that pins the module
-	-- together with the canonical projection of the Source records S1 actually
-	-- reads (tools/wp40/t2_s1_authority.lua).
+	-- extracted S1 stage and its authority, but they are deliberately outside
+	-- the Authority-DAG manifest above.  That manifest is also re-materialized
+	-- from pinned pre-extraction commits (validate_pinned_authority), where
+	-- neither file exists; seeding them from git would break every historical
+	-- provenance check.  capture_files therefore reads stage_paths from the live
+	-- worktree even for a pinned capture, and S1 currency is asserted separately
+	-- against the live tree through the stage-S1 authority digest, never through
+	-- a re-materialized historical commit.
 	local stage_paths = {
 		"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua",
+		"tools/wp40/t2_s1_authority.lua",
 	}
 	local expected_vocabulary_sha256 =
 		"6d77298bb1861e91fb306bfe59cc8996bc64d7544034b47ed7465ba9c4aa164f"
@@ -355,12 +358,17 @@ return function(dependencies)
 		return true
 	end
 
+	-- The gate binds the stage-S1 authority only.  Source, partition and
+	-- boundary-policy byte pins are gone on purpose: none of them can move an S1
+	-- scalar, and pinning them invalidated the measured pool on every
+	-- later-stage geometry correction.
 	local function validate_full_scan_gate(gate, expected)
 		if type(gate) ~= "table" or getmetatable(gate) ~= nil then
 			fail("full-scan gate is not a plain table")
 		end
-		local fields = {status = true, source_checksum = true,
-			boundary_policy_checksum = true, partition_sha256 = true}
+		local fields = {status = true, s1_authority_schema = true,
+			s1_authority_sha256 = true, s1_source_projection_schema = true,
+			s1_source_projection_sha256 = true}
 		local count = 0
 		for key, value in pairs(gate) do
 			if not fields[key] or type(value) ~= "string" then
@@ -368,11 +376,16 @@ return function(dependencies)
 			end
 			count = count + 1
 		end
-		if count ~= 4 or gate.status ~= "enabled_after_r16_r17_refreeze" then
+		if count ~= 5 or gate.status ~= "enabled_on_stage_s1_authority" then
 			fail("full-scan gate is not enabled")
 		end
-		for _, field in ipairs({"source_checksum", "boundary_policy_checksum",
-				"partition_sha256"}) do
+		if gate.s1_authority_schema ~= "grug_wp40_s1_authority_v1" or
+				gate.s1_source_projection_schema ~=
+					"grug_wp40_s1_boundary_projection_v1" then
+			fail("full-scan gate stage-S1 schema changed")
+		end
+		for _, field in ipairs({"s1_authority_sha256",
+				"s1_source_projection_sha256"}) do
 			if #gate[field] ~= 64 or not gate[field]:match("^[0-9a-f]+$") then
 				fail("full-scan gate " .. field .. " is invalid")
 			end
@@ -399,20 +412,20 @@ return function(dependencies)
 		local lines = {}
 		for line in blob:gmatch("([^\n]*)\n") do
 			lines[#lines + 1] = line
-			if #lines == 18 then break end
+			if #lines == 17 then break end
 		end
-		local names = {"schema", "range", "source_checksum",
-			"boundary_policy_checksum", "partition_sha256", "authority_dag_sha256",
+		local names = {"schema", "range", "s1_authority_sha256",
+			"s1_source_projection_sha256", "authority_dag_sha256",
 			"authority_commit", "authority_tree", "interpreter_id",
 			"interpreter_launcher", "interpreter_path", "interpreter_version",
 			"interpreter_sha256", "measurement_scope", "stage2_status",
 			"scorer_schema", "rows_sha256"}
-		if #lines ~= 18 or lines[18] == "" or
-				lines[18]:sub(1, 16) ~= "candidate_index\t" then
+		if #lines ~= 17 or lines[17] == "" or
+				lines[17]:sub(1, 16) ~= "candidate_index\t" then
 			fail("candidate shard provenance header changed")
 		end
 		local values = {}
-		for index = 1, 17 do
+		for index = 1, 16 do
 			local name, value = lines[index]:match("^([^\t]+)\t([^\t]+)$")
 			if index == 2 then
 				name = lines[index]:match("^([^\t]+)\t")
@@ -423,10 +436,11 @@ return function(dependencies)
 			end
 			values[names[index]] = value
 		end
-		if values.schema ~= "grug_wp40_extreme_candidate_shard_v2" then
+		if values.schema ~= "grug_wp40_extreme_candidate_shard_v3" then
 			fail("candidate shard provenance schema changed")
 		end
-		for _, field in ipairs({"authority_dag_sha256", "partition_sha256"}) do
+		for _, field in ipairs({"authority_dag_sha256", "s1_authority_sha256",
+				"s1_source_projection_sha256"}) do
 			if #values[field] ~= 64 or not values[field]:match("^[0-9a-f]+$") then
 				fail("candidate shard provenance digest is invalid")
 			end
@@ -439,26 +453,45 @@ return function(dependencies)
 		return {authority_dag_sha256 = values.authority_dag_sha256,
 			authority_commit = values.authority_commit,
 			authority_tree = values.authority_tree,
-			partition_sha256 = values.partition_sha256}
+			s1_authority_sha256 = values.s1_authority_sha256,
+			s1_source_projection_sha256 = values.s1_source_projection_sha256}
 	end
 
 	local function validate_pinned_authority(repo, scratch, provenance)
 		if type(provenance) ~= "table" or getmetatable(provenance) ~= nil then
 			fail("pinned shard provenance is invalid")
 		end
-		local allowed = {authority_commit = true, authority_tree = true,
-			authority_dag_sha256 = true, partition_sha256 = true}
-		local count = 0
+		-- This function answers exactly one question: were the recorded
+		-- commit/tree/Authority-DAG really the immutable inputs of that
+		-- measurement?  It is a HISTORICAL check and it re-materializes the
+		-- pinned commit.
+		--
+		-- partition_sha256 is optional because v3 pool provenance no longer
+		-- carries it: only pre-v3 (historical) records do, and for those the
+		-- pinned partition bytes are still re-materialized and compared.
+		--
+		-- The stage-S1 digests are accepted and syntax-checked but deliberately
+		-- NOT verified here.  stage_paths (boundary.lua, t2_s1_authority.lua) are
+		-- read from the live worktree even for a pinned capture, so a digest
+		-- recomputed here would describe today's tree while claiming to describe
+		-- the pinned commit.  S1 currency is asserted against the live tree by
+		-- the worker and by the entry gate instead.
+		local required = {authority_commit = true, authority_tree = true,
+			authority_dag_sha256 = true}
+		local optional = {partition_sha256 = true, s1_authority_sha256 = true,
+			s1_source_projection_sha256 = true}
 		for key, value in pairs(provenance) do
-			if not allowed[key] or type(value) ~= "string" then
+			if not (required[key] or optional[key]) or type(value) ~= "string" then
 				fail("pinned shard provenance is invalid")
 			end
-			count = count + 1
 		end
-		if count ~= 4 then fail("pinned shard provenance is invalid") end
-		for _, field in ipairs({"authority_dag_sha256", "partition_sha256"}) do
+		for key in pairs(required) do
+			if provenance[key] == nil then fail("pinned shard provenance is invalid") end
+		end
+		for _, field in ipairs({"authority_dag_sha256", "partition_sha256",
+				"s1_authority_sha256", "s1_source_projection_sha256"}) do
 			local value = provenance[field]
-			if #value ~= 64 or not value:match("^[0-9a-f]+$") then
+			if value ~= nil and (#value ~= 64 or not value:match("^[0-9a-f]+$")) then
 				fail("pinned shard provenance is invalid")
 			end
 		end
@@ -469,11 +502,13 @@ return function(dependencies)
 		if pinned.authority_dag_sha256 ~= provenance.authority_dag_sha256 then
 			fail("pinned commit Authority-DAG differs")
 		end
-		local partition_path =
-			"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
-		if hex(raw_sha256(pinned.files[partition_path])) ~=
-				provenance.partition_sha256 then
-			fail("pinned commit partition bytes differ")
+		if provenance.partition_sha256 ~= nil then
+			local partition_path =
+				"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
+			if hex(raw_sha256(pinned.files[partition_path])) ~=
+					provenance.partition_sha256 then
+				fail("pinned commit partition bytes differ")
+			end
 		end
 		return pinned
 	end

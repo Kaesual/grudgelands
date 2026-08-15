@@ -83,17 +83,7 @@ assert(pinned_snapshot.authority_dag_sha256 ==
 	"current merge Authority-DAG differs from the pinned measurement commit")
 local full_scan_gate = authority.load_module(file_snapshot,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
-local source_validator = authority.load_module(file_snapshot,
-	"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua")
-local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
-local partition_sha256 = (raw_sha256(file_snapshot.files[partition_path]):gsub(".",
-	function(byte) return ("%02x"):format(string.byte(byte)) end))
-assert(authority.validate_full_scan_gate(full_scan_gate, {
-	source_checksum = source_validator.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum =
-		source_validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = partition_sha256,
-}))
+assert(authority.validate_full_scan_gate(full_scan_gate))
 
 -- Preload the 4096 candidate-label hashes in one bounded process. Parsing a
 -- retained shard then performs zero per-row hash forks while still deriving
@@ -163,12 +153,15 @@ for index = 1, #measurement_ranges do
 		relative_path, digest}, "\t")
 end
 assert(pins)
-assert(pins.source_checksum ==
-	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d")
-assert(pins.boundary_policy_checksum ==
-	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f")
-assert(pins.partition_sha256 == partition_sha256 and
-	pins.partition_sha256 == full_scan_gate.partition_sha256)
+-- Every shard must agree with the checked-in stage-S1 gate. The gate is
+-- re-derived from the live tree by t2_extreme_gate_check.lua before any
+-- measurement; the merge only has to prove the eight shards and the gate speak
+-- about the same S1.
+assert(pins.s1_authority_sha256 == full_scan_gate.s1_authority_sha256,
+	"retained shard stage-S1 authority differs from the full-scan gate")
+assert(pins.s1_source_projection_sha256 ==
+	full_scan_gate.s1_source_projection_sha256,
+	"retained shard stage-S1 Source projection differs from the full-scan gate")
 assert(pins.scorer_schema == "grug_wp40_extreme_selector_e0_v1")
 assert(authority.verify_git_provenance(repo, scratch, pins.authority_commit,
 	pins.authority_tree))
@@ -189,12 +182,11 @@ local rows = extreme.merge_shards(shards, pins)
 local candidates = extreme.candidate_blob(rows)
 local candidate_sha = canonical.hex(raw_sha256(candidates))
 local artifact = table.concat({
-	"schema\tgrug_wp40_extreme_measurement_artifact_v2",
+	"schema\tgrug_wp40_extreme_measurement_artifact_v3",
 	"measurement_scope\t" .. pins.measurement_scope,
 	"stage2_status\t" .. pins.stage2_status,
-	"source_checksum\t" .. pins.source_checksum,
-	"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
-	"partition_sha256\t" .. pins.partition_sha256,
+	"s1_authority_sha256\t" .. pins.s1_authority_sha256,
+	"s1_source_projection_sha256\t" .. pins.s1_source_projection_sha256,
 	"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 	"authority_commit\t" .. pins.authority_commit,
 	"authority_tree\t" .. pins.authority_tree,
@@ -214,12 +206,11 @@ local artifact_sha = canonical.hex(raw_sha256(artifact))
 local slots = extreme.select_slots(rows)
 local staging = extreme.staging_seed(slots)
 local manifest_lines = {
-	"grug_wp40_extreme_shard_manifest_v2",
+	"grug_wp40_extreme_shard_manifest_v3",
 	"measurement_scope\t" .. pins.measurement_scope,
 	"stage2_status\t" .. pins.stage2_status,
-	"source_checksum\t" .. pins.source_checksum,
-	"boundary_policy_checksum\t" .. pins.boundary_policy_checksum,
-	"partition_sha256\t" .. pins.partition_sha256,
+	"s1_authority_sha256\t" .. pins.s1_authority_sha256,
+	"s1_source_projection_sha256\t" .. pins.s1_source_projection_sha256,
 	"authority_dag_sha256\t" .. pins.authority_dag_sha256,
 	"authority_commit\t" .. pins.authority_commit,
 	"authority_tree\t" .. pins.authority_tree,

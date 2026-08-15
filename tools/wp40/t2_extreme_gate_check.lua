@@ -44,11 +44,6 @@ local function raw_sha256(data)
 	assert(#digest == 32)
 	return digest
 end
-local function hex(bytes)
-	return (bytes:gsub(".", function(byte)
-		return ("%02x"):format(string.byte(byte))
-	end))
-end
 
 local authority_path = "tools/wp40/t2_extreme_authority.lua"
 local authority_bytes = read_file(repo .. "/" .. authority_path)
@@ -57,15 +52,48 @@ local authority = assert(loadstring(authority_bytes, "@" .. authority_path))()({
 local files = authority.capture_files(repo, {[authority_path] = authority_bytes})
 local gate = authority.load_module(files,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
+assert(authority.validate_full_scan_gate(gate))
+
+-- This is the single place where the checked-in pool gate is re-derived from
+-- the live tree. It builds only the stage-S1 Source projection -- a pure
+-- function of the catalog, no seed geometry -- and the stage-S1 authority
+-- digest over the S1 module plus its arithmetic surface. partition.lua,
+-- catalog.lua bytes and the boundary-displacement policy are deliberately not
+-- inputs: the selector cannot read them, so they must not be able to invalidate
+-- a measured pool.
+local canonical = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/canonical.lua")
+local deterministic = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/deterministic.lua")
+local exact = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua")({deterministic = deterministic})
+local raster = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua")({canonical = canonical,
+	deterministic = deterministic, exact = exact, raw_sha256 = raw_sha256})
+local source = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua")
 local validator = authority.load_module(files,
 	"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua")
-local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
-local partition_sha256 = hex(raw_sha256(files.files[partition_path]))
+local vocabulary = authority.load_module(files,
+	"tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua")
+local boundary = authority.load_module(files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")({canonical = canonical,
+	deterministic = deterministic, exact = exact, raster = raster,
+	raw_sha256 = raw_sha256, source = source, source_validator = validator,
+	vocabulary = vocabulary})
+local s1_authority = authority.load_module(files,
+	"tools/wp40/t2_s1_authority.lua")({raw_sha256 = raw_sha256})
+local s1_source_projection_sha256 = boundary.s1_source_checksum()
+local s1_authority_sha256 = s1_authority.digest(files.files,
+	s1_source_projection_sha256, boundary.PROJECTION_SCHEMA)
+assert(gate.s1_source_projection_schema == boundary.PROJECTION_SCHEMA,
+	"full-scan gate names a different stage-S1 projection schema")
+assert(s1_authority.verify(files.files, s1_source_projection_sha256,
+	boundary.PROJECTION_SCHEMA, gate.s1_authority_sha256))
 assert(authority.validate_full_scan_gate(gate, {
-	source_checksum = validator.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum = validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = partition_sha256,
+	s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256,
 }))
-print("WP40 T2 E0 full-scan gate accepted source=" .. gate.source_checksum ..
-	" boundary=" .. gate.boundary_policy_checksum ..
-	" partition=" .. partition_sha256)
+print("WP40 T2 E0 full-scan gate accepted s1_authority=" ..
+	s1_authority_sha256 .. " s1_source_projection=" ..
+	s1_source_projection_sha256)

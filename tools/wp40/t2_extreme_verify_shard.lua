@@ -60,17 +60,7 @@ assert(pinned_snapshot.authority_dag_sha256 == snapshot.authority_dag_sha256,
 	"current verifier Authority-DAG differs from the pinned measurement commit")
 local full_scan_gate = authority.load_module(files,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
-local source_validator = authority.load_module(files,
-	"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua")
-local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
-local partition_sha256 = (raw_sha256(files.files[partition_path]):gsub(".",
-	function(byte) return ("%02x"):format(string.byte(byte)) end))
-assert(authority.validate_full_scan_gate(full_scan_gate, {
-	source_checksum = source_validator.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum =
-		source_validator.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = partition_sha256,
-}))
+assert(authority.validate_full_scan_gate(full_scan_gate))
 
 local input, output = scratch .. "/verify-labels.bin", scratch .. "/verify-labels.out"
 local file = assert(io.open(input, "wb"))
@@ -106,12 +96,15 @@ local extreme = authority.load_module(files,
 local shard = extreme.parse_shard_blob(shard_bytes)
 assert(shard.first_index == first and shard.last_index == last)
 local pins = shard.pins
-assert(pins.source_checksum ==
-	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d" and
-	pins.boundary_policy_checksum ==
-	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f")
-assert(pins.partition_sha256 == partition_sha256 and
-	pins.partition_sha256 == full_scan_gate.partition_sha256)
+-- The shard must carry exactly the stage-S1 authority the checked-in gate
+-- pins. The gate itself is re-derived from the live tree by
+-- t2_extreme_gate_check.lua, which is the entry gate for every measurement;
+-- this verifier deliberately materializes no geometry of its own.
+assert(pins.s1_authority_sha256 == full_scan_gate.s1_authority_sha256,
+	"retained shard stage-S1 authority differs from the full-scan gate")
+assert(pins.s1_source_projection_sha256 ==
+	full_scan_gate.s1_source_projection_sha256,
+	"retained shard stage-S1 Source projection differs from the full-scan gate")
 assert(pins.authority_dag_sha256 == snapshot.authority_dag_sha256 and
 	pins.measurement_scope == "R7_SCALAR_MEASUREMENT_ONLY" and
 	pins.stage2_status == "pending_selected_four")

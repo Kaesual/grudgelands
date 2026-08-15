@@ -181,30 +181,52 @@ local frozen_partition_path =
 	"mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 local frozen_partition_sha256 = canonical.hex(raw_sha256(
 	authority_files.files[frozen_partition_path]))
-assert(authority.validate_full_scan_gate(full_scan_gate, {
-	source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum =
-		source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = frozen_partition_sha256,
-}))
+-- The pool gate binds stage S1 only.  frozen_partition_sha256 stays in scope
+-- because the historical pinned-authority KATs below still exercise the
+-- pre-v3 partition_sha256 shape; it is deliberately NOT a gate pin any more.
+local s1_authority_module = authority.load_module(authority_files,
+	"tools/wp40/t2_s1_authority.lua")({raw_sha256 = raw_sha256})
+-- Built here, before the partition harness exists, so the pool gate is checked
+-- against stage S1 alone and fails before any geometry work is done.
+local s1_gate_boundary = authority.load_module(authority_files,
+	"mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua")({canonical = canonical,
+	deterministic = deterministic, exact = exact, raster = raster,
+	raw_sha256 = raw_sha256, source = source,
+	source_validator = source_validator_module, vocabulary = vocabulary})
+local s1_source_projection_sha256 = s1_gate_boundary.s1_source_checksum()
+local s1_authority_sha256 = s1_authority_module.digest(authority_files.files,
+	s1_source_projection_sha256, s1_gate_boundary.PROJECTION_SCHEMA)
+local expected_gate_pins = {s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256}
+assert(authority.validate_full_scan_gate(full_scan_gate, expected_gate_pins))
+assert(full_scan_gate.s1_authority_sha256 == s1_authority_sha256 and
+	full_scan_gate.s1_source_projection_sha256 == s1_source_projection_sha256,
+	"full-scan gate does not bind the live stage-S1 authority")
 for _, mutate in ipairs({
 	function(gate) gate.status = "blocked" end,
-	function(gate) gate.source_checksum = string.rep("0", 64) end,
-	function(gate) gate.boundary_policy_checksum = string.rep("0", 64) end,
-	function(gate) gate.partition_sha256 = string.rep("0", 64) end,
+	function(gate) gate.s1_authority_sha256 = string.rep("0", 64) end,
+	function(gate) gate.s1_source_projection_sha256 = string.rep("0", 64) end,
+	function(gate) gate.s1_authority_schema = "grug_wp40_s1_authority_v0" end,
+	function(gate) gate.s1_source_projection_schema = "wrong_projection_v1" end,
 	function(gate) gate.extra = "forged" end,
 }) do
 	local corrupt = deep_copy(full_scan_gate)
 	mutate(corrupt)
 	expect_error("full-scan", function()
-		authority.validate_full_scan_gate(corrupt, {
-			source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
-			boundary_policy_checksum =
-				source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-			partition_sha256 = frozen_partition_sha256,
-		})
+		authority.validate_full_scan_gate(corrupt, expected_gate_pins)
 	end)
 end
+-- The exclusion claim, asserted as a rejection: a gate that still carries the
+-- old Source/partition byte pins must not be accepted by the v3 validator.
+expect_error("full-scan", function()
+	authority.validate_full_scan_gate({
+		status = "enabled_after_r16_r17_refreeze",
+		source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
+		boundary_policy_checksum =
+			source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
+		partition_sha256 = frozen_partition_sha256,
+	})
+end)
 local git_provenance = authority.git_provenance(repo, scratch)
 assert(authority.verify_git_provenance(repo, scratch, git_provenance.commit,
 	git_provenance.tree))
@@ -270,8 +292,18 @@ local function run_pinned_authority_kats()
 		return status == 0 or status == true and reason == "exit" and code == 0
 	end
 	assert(shell_ok("mkdir -p " .. pinned_repo))
+	-- stage_paths are materialized here too. capture_files always reads them
+	-- from the live worktree -- never from the pinned commit -- so a synthetic
+	-- pinned root must still carry them, exactly as the real repository does.
+	local synthetic_paths = {}
 	for index = 1, #authority.paths do
-		local path = authority.paths[index]
+		synthetic_paths[#synthetic_paths + 1] = authority.paths[index]
+	end
+	for index = 1, #authority.stage_paths do
+		synthetic_paths[#synthetic_paths + 1] = authority.stage_paths[index]
+	end
+	for index = 1, #synthetic_paths do
+		local path = synthetic_paths[index]
 		local directory = path:match("^(.*)/[^/]+$")
 		assert(directory and shell_ok("mkdir -p " .. pinned_repo .. "/" .. directory))
 		local file = assert(io.open(pinned_repo .. "/" .. path, "wb"))
@@ -327,16 +359,35 @@ local function run_pinned_authority_kats()
 	expect_error("pinned shard provenance is invalid", function()
 		authority.validate_pinned_authority(pinned_repo, scratch, malformed_pinned)
 	end)
-	local missing_pinned = deep_copy(pinned_a_row)
-	missing_pinned.partition_sha256 = nil
-	expect_error("pinned shard provenance is invalid", function()
-		authority.validate_pinned_authority(pinned_repo, scratch, missing_pinned)
-	end)
+	for _, required in ipairs({"authority_commit", "authority_tree",
+			"authority_dag_sha256"}) do
+		local missing_pinned = deep_copy(pinned_a_row)
+		missing_pinned[required] = nil
+		expect_error("pinned shard provenance is invalid", function()
+			authority.validate_pinned_authority(pinned_repo, scratch, missing_pinned)
+		end)
+	end
+	-- partition_sha256 is pre-v3 (historical) provenance: still verified against
+	-- the re-materialized commit when present, simply absent from v3 pool rows.
 	local wrong_partition_pinned = deep_copy(pinned_a_row)
 	wrong_partition_pinned.partition_sha256 = string.rep("0", 64)
 	expect_error("pinned commit partition bytes differ", function()
 		authority.validate_pinned_authority(pinned_repo, scratch,
 			wrong_partition_pinned)
+	end)
+	local v3_pinned = deep_copy(pinned_a_row)
+	v3_pinned.partition_sha256 = nil
+	v3_pinned.s1_authority_sha256 = s1_authority_sha256
+	v3_pinned.s1_source_projection_sha256 = s1_source_projection_sha256
+	assert(authority.validate_pinned_authority(pinned_repo, scratch, v3_pinned).
+		authority_dag_sha256 == pinned_a.authority_dag_sha256,
+		"v3 pool provenance without a partition pin must re-materialize")
+	-- The stage-S1 digests are provenance the pinned commit cannot speak to, so
+	-- they are syntax-checked only; a malformed one must still be rejected.
+	local malformed_s1 = deep_copy(v3_pinned)
+	malformed_s1.s1_authority_sha256 = "not-a-digest"
+	expect_error("pinned shard provenance is invalid", function()
+		authority.validate_pinned_authority(pinned_repo, scratch, malformed_s1)
 	end)
 end
 run_pinned_authority_kats()
@@ -585,10 +636,14 @@ local function validate_prerequisite_fixture(row, compiled, compiled_sha256)
 		assert(actual.bay_id == expected[1] and actual.x == expected[2] and
 			actual.z == expected[3])
 	end
+	-- Compared against the live Stage-1 checksums rather than a second hardcoded
+	-- copy, so this prerequisite has exactly one place to re-pin. Unlike the
+	-- pool gate, this fixture is compiled-geometry evidence and therefore does
+	-- legitimately depend on the Source and partition bytes.
 	assert(row.source_checksum ==
-		"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d" and
+		source_validator_module.EXPECTED_SOURCE_CHECKSUM and
 		row.boundary_policy_checksum ==
-		"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f" and
+		source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM and
 		row.partition_sha256 == partition_module_sha256 and
 		row.compiled_sha256 == compiled_sha256 and
 		row.reproduce ==
@@ -1188,12 +1243,8 @@ local function synthetic_candidate(index, active_raw)
 end
 local synthetic_rows = {}
 for index = 0, 4095 do synthetic_rows[index + 1] = synthetic_candidate(index) end
-local shard_pins = {source_checksum =
-	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d",
-	boundary_policy_checksum =
-	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f",
-	partition_sha256 =
-	"de53e1b5cc0cc3fcaee2d58ce3cc391c637b123d430f234c74e4960ad4bee967",
+local shard_pins = {s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256,
 	authority_dag_sha256 = string.rep("3", 64), interpreter_id = "test_only",
 	authority_commit = string.rep("a", 40), authority_tree = string.rep("b", 40),
 	interpreter_launcher = "test_only", interpreter_path = "test_only",
@@ -1211,7 +1262,7 @@ for shard_index = 0, 7 do
 	shard_extreme.validate_candidate_shard(shards[#shards])
 	local shard_bytes = shard_extreme.shard_blob(shards[#shards])
 	assert(shard_bytes:match(
-		"^schema\tgrug_wp40_extreme_candidate_shard_v2\n"))
+		"^schema\tgrug_wp40_extreme_candidate_shard_v3\n"))
 	assert(shard_extreme.shard_blob(shard_extreme.parse_shard_blob(shard_bytes)) ==
 		shard_bytes, "candidate shard parser changed canonical bytes")
 end
@@ -1248,7 +1299,7 @@ expect_error("range/count", function()
 end)
 expect_error("blob header", function()
 	shard_extreme.parse_shard_blob(shard_extreme.shard_blob(shards[1]):gsub(
-		"source_checksum", "source_checkwrong", 1))
+		"s1_authority_sha256", "s1_authority_wrong", 1))
 end)
 expect_error("blob framing", function()
 	local blob = shard_extreme.shard_blob(shards[1])

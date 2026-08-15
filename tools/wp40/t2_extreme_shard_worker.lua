@@ -95,13 +95,6 @@ local file_snapshot = authority.capture_files(repo,
 local full_scan_gate = authority.load_module(file_snapshot,
 	"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua")
 assert(authority.validate_full_scan_gate(full_scan_gate))
-local partition_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
-local partition_sha256 = (direct_raw_sha256(file_snapshot.files[partition_path]):gsub(
-	".", function(byte) return ("%02x"):format(string.byte(byte)) end))
-assert(partition_sha256 == full_scan_gate.partition_sha256,
-	"full-scan partition pin differs")
-assert(authority.validate_full_scan_gate(full_scan_gate,
-	{partition_sha256 = partition_sha256}))
 local interpreter_bytes = read_file(interpreter_path)
 local interpreter_sha256 = (direct_raw_sha256(interpreter_bytes):gsub(".",
 	function(byte) return ("%02x"):format(string.byte(byte)) end))
@@ -120,18 +113,12 @@ local source_validator_module = authority.load_module(file_snapshot,
 	"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua")
 local seed_corpus = authority.load_module(file_snapshot,
 	"mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
-assert(full_scan_gate.source_checksum ==
-	source_validator_module.EXPECTED_SOURCE_CHECKSUM,
-	"full-scan Source pin differs from the accepted Stage-1 checksum")
-assert(full_scan_gate.boundary_policy_checksum ==
-	source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	"full-scan boundary-policy pin differs from the accepted Stage-1 checksum")
-assert(authority.validate_full_scan_gate(full_scan_gate, {
-	source_checksum = source_validator_module.EXPECTED_SOURCE_CHECKSUM,
-	boundary_policy_checksum =
-		source_validator_module.EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM,
-	partition_sha256 = partition_sha256,
-}))
+-- The Source catalog is still validated by its own Stage-1 checksum below (the
+-- validator runs during partition construction); it is simply no longer a pool
+-- pin.  What the pool binds is the stage-S1 authority, computed after the S1
+-- module is live and re-checked immediately before publication.
+local s1_authority = authority.load_module(file_snapshot,
+	"tools/wp40/t2_s1_authority.lua")({raw_sha256 = direct_raw_sha256})
 
 local vocabulary = authority.load_module(file_snapshot,
 	"tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua")
@@ -282,6 +269,20 @@ local partition = authority.load_module(file_snapshot,
 	vocabulary = vocabulary})
 local scalar_reader = partition.new_extreme_scalar_session()
 assert(validation_calls == 1)
+
+-- Fail closed before a single seed is measured: the live S1 projection and the
+-- captured S1 bytes must reproduce the digest the checked-in gate pins.
+local s1_source_projection_sha256 = partition.s1_source_checksum()
+local s1_authority_sha256 = s1_authority.digest(file_snapshot.files,
+	s1_source_projection_sha256, partition.s1_source_projection_schema)
+assert(s1_source_projection_sha256 == full_scan_gate.s1_source_projection_sha256,
+	"stage-S1 Source projection differs from the full-scan gate")
+assert(s1_authority.verify(file_snapshot.files, s1_source_projection_sha256,
+	partition.s1_source_projection_schema, full_scan_gate.s1_authority_sha256))
+assert(authority.validate_full_scan_gate(full_scan_gate, {
+	s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256,
+}))
 for data, digest in pairs(batch_cache) do permanent_cache[data] = digest end
 batch_cache = {}
 local active_seed, active_records
@@ -371,9 +372,16 @@ batch_mode = "direct"
 assert(authority.verify(repo, authority_snapshot, vocabulary))
 assert(read_file(interpreter_path) == interpreter_bytes,
 	"interpreter binary changed during shard measurement")
-local pins = {source_checksum = full_scan_gate.source_checksum,
-	boundary_policy_checksum = full_scan_gate.boundary_policy_checksum,
-	partition_sha256 = partition_sha256,
+-- Recompute the S1 authority from the live tree, not from the captured
+-- snapshot: authority.verify has just proved the two agree, so a difference
+-- here means S1 moved mid-run and the shard must not be published.
+assert(partition.s1_source_checksum() == s1_source_projection_sha256,
+	"stage-S1 Source projection changed during shard measurement")
+assert(s1_authority.verify(authority.capture_files(repo).files,
+	s1_source_projection_sha256, partition.s1_source_projection_schema,
+	full_scan_gate.s1_authority_sha256))
+local pins = {s1_authority_sha256 = s1_authority_sha256,
+	s1_source_projection_sha256 = s1_source_projection_sha256,
 	authority_dag_sha256 = authority_snapshot.authority_dag_sha256,
 	authority_commit = authority_commit, authority_tree = authority_tree,
 	interpreter_id = interpreter_id,
