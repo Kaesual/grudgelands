@@ -403,12 +403,11 @@ WP40 replaces it with the complete catalog and contracts below.
   allowed compiled outer-coast component. The closed roster is the 18
   mainland `perimeter_span` components, the Gravesalt west and Skyglass east
   fixed Holy outer-coast arcs, and the Wyrmglass and Stormscale island arcs;
-  closing edges are excluded. Each final 8-connected compiled segment uses
-  endpoint squared distance over one or interior `C^2/L`. All exact rational
-  minima are collected before choosing lower zone numeric ID, then stable
-  component ID, then zero-based component-segment index. This value is
+  closing edges are excluded. This value is
   inheritance only and never changes zone membership, race region, territory
-  or adjacency. It is `nil` outside the compiled interesting extent.
+  or adjacency. It is `nil` outside the compiled interesting extent. The exact
+  distance measure and its tie-break order are compiler concerns: see
+  [wp40-source-authority.md](../research/wp40-source-authority.md) §8.
 - Each dragon channel contains two guaranteed **96-node-wide boat approach
   corridors**, centred at **z = -125** and **z = +125**. On each island, the
   southern route is the shorter approach from Elandor and the northern route
@@ -653,7 +652,9 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   For every no-jitter source, damping is exactly zero at world Chebyshev
   distance `d∞ <= 96`, fades by smootherstep to `d∞ = 192`, and is full beyond
   it. Multiple sources use their minimum factor, and reversing an authored
-  segment reverses the same factors rather than changing them.
+  segment reverses the same factors rather than changing them. The exact
+  damping formula and its fixed-point evaluation are in
+  [wp40-source-authority.md](../research/wp40-source-authority.md) §1.1; this paragraph states the guarantee, not the computation.
   Displacement is applied exactly once per record: authored controls shift
   along canonical normals, one record-wide topology ceiling is selected, and a
   single final raster emits the result. There is no second displacement, snap

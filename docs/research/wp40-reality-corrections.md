@@ -11,8 +11,12 @@ them is the reality-check correction rule in
 [wp40-engineering-brief.md](wp40-engineering-brief.md) section 6.5. This file
 is why, not what.
 
-Line numbers in the citations below are as of the commit that recorded each
-correction, not as of current HEAD. The harness files were renumbered on
+Every statement below is as of the correction that recorded it. That includes
+status claims, not only line numbers: where an entry says the 4,096-candidate
+pool "has not been measured and must be generated anew", that was true when
+written. It was measured on 2026-08-16 (commit `527b3a5`, artifact
+`5b5241b3...`), and it reproduced the same four winners as the pre-R16 pool.
+Line numbers likewise are as of the recording commit, not of current HEAD. The harness files were renumbered on
 2026-08-15; locate cited code by symbol name rather than by line.
 
 Extracted from the engineering brief 2026-08-15, verbatim. The brief had grown

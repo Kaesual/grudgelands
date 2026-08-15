@@ -21,6 +21,7 @@ in a chat session until 2026-08-16.
 | boundary topology | `land_boundaries`, `perimeters`, `bays`, `mouth_apertures`, `closure_wings`, `dry_faces` | computed and verified **offline only** |
 | local pure fields | `relief_fields`, `templates`, `route_profiles`, `hydrology` | not started |
 | downstream of a frozen perimeter | `coast_shelf`, `islands`, `channels`, `hard_protection`, `claim_exclusions`, `housing_masks` | not started |
+| downstream of zone faces | `anchors` | not started |
 | other | `zones`, `land_routes`, `boat_routes` | source records exist; not compiled |
 
 Plus three selectors — logical biomes, nearest-feature, housing-centre — all
@@ -91,6 +92,12 @@ fresh ~91-minute measurement and a new winner determination. **No work package
 may touch them as a side effect.** "I need a new arithmetic primitive" is an
 escalation, not a local decision — which matters because Class B builds
 directly on `deterministic.lua` and will be tempted.
+
+The v3 winners are candidates 2192, 1713, 1047 and 3438 — the same four the
+pre-R16 pool ranked, which is the measured evidence that R16 through R19 really
+did change no scalar. They are printed by the merge and recorded in commit
+`527b3a5`, but they are not yet a committed artifact row: that row is written
+by the C1 conformance step, which is still on v2.
 
 The pool's Source side is pinned by projection, not by file bytes, so
 `source/catalog.lua` and `geometry/partition.lua` may change freely; that is

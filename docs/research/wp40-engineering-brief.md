@@ -4015,7 +4015,15 @@ The frozen T2a checksum/evidence paragraph above remains historical evidence
 for the superseded source. Only a new retained T2b Stage-2/32-seed run may
 claim those later gates.
 
-**Corrected Stage-1 source evidence (not T2b completion).** The replacement
+**Corrected Stage-1 source evidence (not T2b completion). Historical: this is
+the pre-R7 (R1--R6) record.** It was superseded first by the R7--R9 replacement
+`f38332e7...` recorded in
+[wp40-reality-corrections.md](wp40-reality-corrections.md), and five
+replacements later by the live pin
+`5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000`
+(`mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua`). Reconciling the code
+to the checksum below would make Stage 1 reject the entire authored Source.
+The historical replacement
 source checksum is
 `5f0cd9afbb56c03a4f69a5d20648e4bc27ed256311ae37bee70e08d5d2d7d0d0`.
 The affected policy checksums are boundary displacement
@@ -4040,11 +4048,14 @@ symmetry and product KATs
 `tools/wp40/t2_source_audit.sh .` run must remain green after any later source
 edit; it proves Stage 1 only and leaves every mandated Stage-2 rerun above open.
 
-The per-correction record of R7--R19 and H55 -- what each exposed, which
+The per-correction record of R11--R19 and H55 -- what each exposed, which
 alternatives were rejected, and the retained evidence -- is in
 [wp40-reality-corrections.md](wp40-reality-corrections.md). Their
 classification by mechanism and the bound on what remains open is in
 [wp40-t2-degeneracy-completeness.md](wp40-t2-degeneracy-completeness.md).
+R7 through R10 were not moved: their narratives are embedded in the height and
+source contracts above, at the `R10` record-wide ceiling and the R7/R8/R9
+Stage-1 evidence blocks preceding this paragraph.
 
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or

@@ -565,6 +565,12 @@ at any stage reopens everything.
    corrections. This is a process/pinning change, not a Source semantic
    change; it needs the user's explicit decision, consistent with the
    existing "pool runs only on explicit GO" rule.
+   **Implemented 2026-08-16** as `tools/wp40/t2_s1_authority.lua`, commits
+   `85c4a71` and `291de57`, and the pool was re-measured under it. One detail
+   of the proposal above was not adopted and must not be: the displacement
+   *policy* prose is deliberately excluded from the pin, because every one of
+   R16--R19 rewrote it while changing no geometric input. Adding it back would
+   change `s1_authority_sha256` and fail the gate closed against a valid pool.
 3. **Order of operations that this enables:** freeze S1 → measure the pool
    once → winners are fixed → run censuses (Scans 1–3) over `W` → close any
    occupied reject class *before* freezing S2–S8 → freeze S2–S8 staged →

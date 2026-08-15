@@ -226,7 +226,9 @@ correction, with its evidence and digests, stays in
   mask is built next, the one simultaneous
   fill produces final planned water, and only then is each R16 transition
   selected exactly once against that final mask. Selection against raw water
-  followed by validation or reselection is forbidden. The complete 4,096 pool
+  followed by validation or reselection is forbidden. (Pool status is recorded
+  in [wp40-t2-plan.md](wp40-t2-plan.md), not here; it was measured on
+  2026-08-16.) The complete 4,096 pool
   and selected four extreme winners have no before/after identity claim: a
   new complete pool is measured only once on the later explicitly approved
   immutable post-correction pins. The edge and both Banks
@@ -548,3 +550,10 @@ correction, with its evidence and digests, stays in
   Landmark replacement hashes the landmark record's `noise_domain`, its
   `secondary_relief_id` profile's ordered octaves and band, an empty feature
   ID, and candidate 0.
+
+## 8. Exterior coast-source selection
+
+- Each final 8-connected compiled segment uses endpoint squared distance over
+  one or interior `C^2/L`. All exact rational minima are collected before
+  choosing lower zone numeric ID, then stable component ID, then zero-based
+  component-segment index.

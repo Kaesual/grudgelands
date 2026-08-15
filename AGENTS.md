@@ -127,7 +127,13 @@ current state). It is **derived, never authoritative**:
     `string.pack`/`unpack`/`packsize`.
 - **Interpreter/test layers are binding:** on every Lua change run
   `tools/bin/luac51 -p`, the `SETGLOBAL` check and all five sweeps in
-  `docs/research/luanti-lua.md`. Use LuaJIT for exhaustive development runs
+  `docs/research/luanti-lua.md`. Two things about those sweeps are easy to
+  get wrong. They are scoped to `mods/*/grug_*`, so Lua under `tools/`
+  is **not** covered by them and needs the check run explicitly. And the
+  harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
+  until 2026-08-15 a missing `rg` made nine of them report success without
+  running, because exit status 127 inside an `if` condition reads exactly
+  like "no match found". Use LuaJIT for exhaustive development runs
   where supported. At intermediate milestones, run representative PUC-5.1
   KATs and require byte-identical canonical artifacts/digests. For WP40, full
   expensive PUC rounds happen only at T2-final and T9-final and independent
