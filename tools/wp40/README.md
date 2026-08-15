@@ -343,6 +343,50 @@ whole C1 chain (`t2_extreme_conformance.lua` and the rescore/selected workers)
 must be moved to v3 against the artifacts that run actually produces; that is
 deliberately not done in advance, because it cannot be tested until they exist.
 
+### Locked surfaces
+
+These six files are covered by the stage-S1 authority digest that pins the
+measured 4,096-candidate pool:
+
+    tools/wp40/t2_s1_authority.lua
+    mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua
+    mods/MAPGEN/grug_mapgen/wp40/canonical.lua
+    mods/MAPGEN/grug_mapgen/wp40/deterministic.lua
+    mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua
+    mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua
+
+Editing any of them invalidates the pool and its four winner seeds, costing a
+fresh ~91-minute measurement. No work package may touch them as a side effect;
+needing a new arithmetic primitive is an escalation, not a local decision.
+
+`source/catalog.lua` and `geometry/partition.lua` may change freely — the pool
+binds the Source by canonical projection rather than by file bytes, verified by
+control experiment. That is the entire purpose of the S1 scoping.
+
+### Measured cost anchors
+
+Use these instead of extrapolating; several plans built on a single guessed
+ratio have been wrong.
+
+| operation | cost |
+|---|---|
+| S1 scalars, one seed | 10.7 s (4,096 candidates / 91 min / 8 LuaJIT workers) |
+| seed-0 compile, LuaJIT, uncached | 32.7 s |
+| seed-0 compile, PUC 5.1, uncached | 868 s |
+| seed-0 + max-u64 + traversal, PUC, uncached | 3,091 s |
+| payload cache hit | 0.37 s LuaJIT / 1.03 s PUC |
+| full partition gate, PUC, 8-way sharded | ~62 min wall |
+| 4,096-candidate pool, 8 LuaJIT workers | 91 min wall |
+
+The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
+16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
+
+Up to 8 concurrent Lua processes are appropriate on this host. Detach anything
+expected to exceed ~8 minutes and poll it; use `/usr/bin/stdbuf -oL -eL` — the
+`stdbuf` first on `PATH` is a broken AppImage shim. Stop runs by explicit PID
+from `pgrep -f extreme_shard`; `pkill -f run_t2_extreme_shards.sh` matches the
+invoking shell and orphans the workers.
+
 ### Harness acceleration measurements
 
 These wall times were recorded on the same development host during the
