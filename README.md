@@ -201,10 +201,13 @@ questions and PvP-death XP rule remain explicitly open in
 [the depth TODO](TODO-design-depth.md) and
 [the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
-**Ready to start next:** WP26, WP40 and WP44 are the newly unblocked
-material/map/economy roots. WP40 still requires its independently reviewed
-six-part engineering brief plus fixed seed/capacity/performance evidence before
-code begins. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
+**In progress:** WP40, the named-zone map foundation, has been under
+implementation since 2026-08-13 on its own branch; its engineering brief is
+written and reviewed, and the fixed seed, capacity and performance evidence
+remains a merge gate.
+
+**Ready to start next:** WP26 and WP44 are the newly unblocked material and
+economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
 dependencies; WP34 is not next because it still waits for map, structures and
 economy.
 

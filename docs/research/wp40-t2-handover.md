@@ -1,5 +1,25 @@
 # WP40 T2 factual handover
 
+> **SUPERSEDED — historical snapshot, 2026-08-15. Do not cite as current.**
+>
+> This file records the state at commits `9a6ad8f` and `44c2739`. Everything
+> after those commits has moved: stage S1 was extracted into
+> `geometry/boundary.lua`, the extreme pool was re-pinned onto the stage-S1
+> authority and re-measured, the design document and the engineering brief
+> were both split, and the payload cache was repaired. Its line-number
+> citations, its LOC figures, its list of freeze blockers and its
+> contamination map are all out of date, and section 3's citations point past
+> the end of a brief that has since shrunk from 4,988 lines to 4,108.
+>
+> For current state, execution order and open items, read
+> [wp40-t2-plan.md](wp40-t2-plan.md). It reverses this file's ordering: the
+> census scans run **before** the C1 selected-four conformance, not after,
+> because that conformance is historically what generated R18 and R19.
+>
+> What remains useful here is the reasoning: section 3's classification of the
+> R-series and section 4's circularity analysis are why the later work took
+> the shape it did.
+
 Snapshot basis: commits `9a6ad8f` (R19 Source/Reality freeze) and `44c2739`
 (unfinished compiler-integration checkpoint). The checkpoint is not a freeze.
 
@@ -130,10 +150,17 @@ The retained run executes eight immutable LuaJIT shards of 512 candidates and em
 
 ## 8. DESIGN-DOC CONTAMINATION
 
+**Retired.** The extraction this section proposed was carried out on
+2026-08-15: the compiler algorithm now lives in
+[wp40-source-authority.md](wp40-source-authority.md) and `world_zones.md`
+shrank from 2,002 to 1,604 lines. The line ranges below therefore no longer
+land on what they name, and the last rows are past end of file. Kept as the
+record of what was moved and why it was classified that way.
+
 Classification: **(a)** game/later-WP contract, **(b)** compiler/raster
 algorithm or acceptance evidence, **(c)** mixed.
 
-| Current `world_zones.md` lines | R-series content | Class |
+| `world_zones.md` lines as of 2026-08-15 | R-series content | Class |
 |---:|---|:---:|
 | 279–301 | R17 final Bay-mask correction and its payload/scan contract | (c) |
 | 302–311 | R11 Bank-component authority | (b) |
@@ -158,6 +185,11 @@ algorithm or acceptance evidence, **(c)** mixed.
 | 1769–1784 | R13/R14/R18 Source-versus-compiled acceptance staging | (b) |
 
 ## 9. OWNERSHIP MAP
+
+**Stale.** LOC figures predate the S1 extraction and the documentation split,
+and `geometry/boundary.lua` - now the stage-S1 pool authority - is missing
+entirely because it did not yet exist. Use it for which file owns which
+concern, not for sizes.
 
 ### Source
 
