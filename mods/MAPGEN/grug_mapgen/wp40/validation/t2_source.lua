@@ -2,21 +2,21 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d"
+	"17936b6823fff2527a9df86415df0f8f6bc4ec12ba130e6f09763c266dff3efb"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
 	primitive_formulas="03365f8654bdb4ffac4af9a1123f6df2f5231bcec7bf999b859cc115cf839f8b",
-	boundary_displacement="a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f",
+	boundary_displacement="7f33822c8650e17ea9029666c800e9001876aada32d597212568b94d74eab935",
 	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
 	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
 	relief_field="21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200",
 	landmark_masks="99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e",
 	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
-	world_partition="b3173a764329c85c501b34c2e71b1d77abab661c931a18ac1e153cd7eebd6994",
+	world_partition="8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45",
 	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
 	requester_trace="1c8bb210b53bb50bb6a661dfaaf8e3f771cc1ae2674a0a405783a6ca19dd69ff",
-	geometry_extreme_selector="b983c61c6740dfea9ff7821a3bfbda0da08c3475d4965995814cb71fff53f255",
+	geometry_extreme_selector="e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751",
 	hydrology_mask="8d52ca635a2fccd3ccc337dd11c7f37c268657b66b5eee30d550bd4183e20d27",
 	route_vertical_interfaces="14f849ac48bad0bf888a46d975a73acbb34be1c34d5d51ea2648ad3ee7b1ce09",
 }
@@ -1434,12 +1434,32 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				"structured_aperture_dry_land_edge_transition_or_wing_junction_tail_side_reference_only_resolved_once_for_every_incident_arc" or
 			partition.bay_bank_aperture_terminal_order~=
 				"deduplicated_final_authored_declared_perimeter_integer_raster_order_separate_from_the_canonical_mouth_aperture_membership_indices_payload_and_attachment_tie" or
+			partition.bay_bank_aperture_transition_policy_id~=
+				"aperture_dry_direct_or_same_bay_diagonal_shoulder_tail_v1" or
+			partition.bay_bank_aperture_transition_roster~=
+				"project_exactly_eight_aperture_dry_terminal_incidences_from_the_twenty_bank_components_one_before_and_one_after_for_each_of_the_four_referenced_mouth_apertures" or
+			partition.bay_bank_aperture_transition_direct~=
+				"let_D_be_the_adjacent_dry_authored_aperture_station_A_the_next_dry_station_away_and_W_the_immediately_included_aperture_water_station_toward_the_mouth_if_D_is_a_final_same_bay_bank_candidate_use_rotation_anchor_A_D_unchanged" or
+			partition.bay_bank_aperture_transition_precondition~=
+				"otherwise_D_must_be_final_dry_footprint_class_zero_with_no_cardinal_same_bay_or_foreign_water_and_W_must_be_raw_and_final_water_owned_only_by_the_referenced_bay_exactly_diagonal_and_immediately_aperture_included" or
+			partition.bay_bank_aperture_transition_elbows~=
+				"evaluate_only_the_two_orthogonal_elbows_W_x_D_z_and_D_x_W_z_exactly_one_must_be_strict_footprint_final_dry_same_bay_candidate_T_zero_or_two_reject_without_order_or_tie" or
+			partition.bay_bank_aperture_transition_materialization~=
+				"at_a_start_emit_canonical_prefix_D_T_and_begin_Moore_at_previous_D_current_T_at_an_end_target_T_then_emit_canonical_suffix_T_D_D_remains_the_shared_perimeter_and_bank_terminal_T_is_internal" or
+			partition.bay_bank_aperture_transition_side~=
+				"the_non_Moore_tail_in_its_materialized_direction_start_D_to_T_or_end_T_to_D_requires_W_on_the_declared_strict_signed_cross_water_side_and_ordinary_water_side_validation_begins_only_on_the_adjacent_Moore_step" or
+			partition.bay_bank_aperture_transition_identity~=
+				"resolve_each_aperture_incidence_once_from_authored_aperture_order_and_membership_without_copied_coordinates_second_resolution_or_changed_canonical_aperture_payload" or
+			partition.bay_bank_aperture_transition_reversal~=
+				"select_once_in_component_direction_and_reverse_only_the_finished_bank_bytes_the_terminal_tail_has_no_reverse_reselection" or
+			partition.bay_bank_aperture_transition_reject~=
+				"missing_duplicate_or_mixed_aperture_incidence_nondry_D_cardinal_water_at_noncandidate_D_nonunique_or_wrong_W_nondiagonal_W_zero_or_two_valid_elbows_wrong_tail_water_side_or_terminal_identity_drift_rejects_without_fallback" or
 			partition.bay_bank_nonwing_terminal_resolution~=
-				"aperture_dry_is_the_adjacent_dry_station_on_the_declared_side_in_the_separate_authored_bank_terminal_order_land_edge_transition_is_the_once_resolved_direct_candidate_or_same_bay_diagonal_elbow_terminal_of_the_final_dry_edge_raster_no_inward_scan_or_private_shift_is_permitted" or
+				"aperture_dry_uses_the_checksum_bound_direct_or_same_bay_diagonal_shoulder_tail_resolution_in_the_separate_authored_bank_terminal_order_land_edge_transition_uses_the_once_resolved_R16_terminal_of_the_final_dry_edge_raster_no_inward_scan_or_private_shift_is_permitted" or
 			partition.bay_bank_edge_transition_identity~=
 				"for_each_of_eight_coordinate_free_transition_rows_the_final_edge_and_both_declared_incident_banks_consume_the_same_once_resolved_station_id_and_exact_canonical_x_z_bytes_without_a_second_resolution_defensive_alias_free_copies_are_permitted" or
 			partition.bay_bank_nonwing_start_half_edge~=
-				"aperture_previous_is_the_next_dry_authored_perimeter_station_away_from_the_aperture_land_edge_previous_is_the_immediately_adjacent_retained_dry_edge_station_away_from_the_resolved_endpoint_current_is_the_resolved_candidate_the_anchor_half_edge_must_be_eight_connected_and_current_candidate_valid_but_water_right_begins_only_on_the_first_materialized_bank_step_current_to_successor" or
+				"a_direct_aperture_start_uses_previous_A_current_D_a_shoulder_tail_start_emits_D_then_uses_previous_D_current_T_a_land_edge_start_uses_the_immediately_adjacent_retained_dry_edge_station_away_then_the_resolved_endpoint_each_anchor_is_eight_connected_and_candidate_valid_where_required_and_ordinary_water_side_begins_only_on_the_first_Moore_step" or
 			partition.bay_bank_wing_k_set~=
 				"all_final_dry_candidates_in_the_declared_wing_bbox_with_a_cardinal_neighbor_in_strict_water_owned_by_that_referenced_closure_wing_zero_less_equal_N_and_N_strictly_less_than_L_and_strict_declared_cross_X_sign_independent_of_any_Moore_trace" or
 			partition.bay_bank_wing_k_rank~=
@@ -1539,7 +1559,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			extreme.scalar_sample_rule~=
 				"each_unique_source_station_scores_its_post_noise_damping_local_clip_selected_topology_ceiling_pre_component_scalar_q_exactly_once" or
 			extreme.attachment_rule~=
-				"provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence" or
+				"every_positive_displacement_canonical_source_station_scores_exactly_once_even_if_its_shifted_control_or_final_interval_is_not_selected_selector_excludes_only_derived_provisional_E_perimeter_A_elbows_and_other_inserted_final_reraster_stations_that_have_no_source_station_identity" or
 			extreme.no_interpolation_rule~=
 				"never_interpolate_resample_or_rehash_a_selector_scalar" or
 			extreme.scalar_stage~=
@@ -1781,44 +1801,68 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			boundary_policy.shared_boundary_clip_classifier~=
 				"final_literal_perimeter_land_mask_after_displacement" or
 			boundary_policy.shared_boundary_clip_retained_rule~=
-				"exactly_one_consecutive_retained_station_interval" or
+				"exactly_one_consecutive_final_dry_station_interval_for_each_of_the_fifty_five_edges_without_a_bay_edge_transition" or
 			boundary_policy.shared_boundary_clip_endpoint_rule~=
-				"nonattached_first_and_last_retained_integer_stations_except_a_declared_bay_edge_transition_may_resolve_that_retained_endpoint_through_the_checksum_bound_direct_candidate_or_same_bay_diagonal_elbow_policy_attached_endpoint_uses_joint_station" or
+				"each_enumerated_interval_supplies_its_authored_from_and_to_integer_endpoint_for_obligation_probes_a_declared_bay_transition_may_resolve_its_endpoint_through_the_checksum_bound_R16_policy_and_an_attachment_uses_the_joint_station_policy" or
+			boundary_policy.shared_boundary_incidence_run_policy_id~=
+				"joint_terminal_incidence_complete_dry_run_v1" or
+			boundary_policy.shared_boundary_incidence_run_scope~=
+				"exactly_the_six_land_edges_projected_in_source_order_from_the_eight_bay_edge_transition_rows_all_other_fifty_five_edges_require_exactly_one_final_dry_station_interval" or
+			boundary_policy.shared_boundary_incidence_run_projection~=
+				"derive_each_six_edge_obligation_tuple_coordinate_free_from_the_existing_transition_and_perimeter_attachment_rows_in_authored_from_then_to_endpoint_order" or
+			boundary_policy.shared_boundary_incidence_run_enumeration~=
+				"enumerate_all_maximal_consecutive_final_dry_intervals_in_the_provisional_selected_R7_station_bytes" or
+			boundary_policy.shared_boundary_incidence_run_obligations~=
+				"for_each_enumerated_interval_E_is_that_intervals_authored_from_or_to_endpoint_and_each_transition_attachment_or_ordinary_junction_obligation_is_probe_resolved_only_against_that_E_an_interval_qualifies_only_if_both_ordered_obligations_pass" or
+			boundary_policy.shared_boundary_incidence_run_selection~=
+				"select_the_exactly_one_interval_satisfying_the_complete_ordered_endpoint_tuple_zero_or_multiple_reject_no_longest_first_or_numeric_index_tie" or
+			boundary_policy.shared_boundary_incidence_control_clip~=
+				"keep_exactly_the_nonempty_unique_contiguous_authored_shifted_control_subsequence_whose_canonical_x_z_identities_belong_to_the_selected_station_interval_then_apply_existing_transition_and_attachment_controls_and_the_sole_final_reraster" or
+			boundary_policy.shared_boundary_incidence_scalar_scope~=
+				"nonselected_shifted_controls_remain_unchanged_upstream_R7_scalar_samples_but_never_enter_final_boundary_geometry_no_re_C_rescore_selector_change_or_post_raster_splice" or
+			boundary_policy.shared_boundary_incidence_excluded_dry~=
+				"every_nonselected_dry_fragment_must_be_owned_exactly_once_by_a_final_Bank_or_dry_Face_and_by_no_final_land_edge_or_terminal_identity_else_reject" or
+			boundary_policy.shared_boundary_incidence_reversal~=
+				"reverse_the_authored_edge_and_swap_from_to_obligations_resolves_the_same_world_interval_and_byte_exact_reversed_final_edge" or
+			boundary_policy.shared_boundary_incidence_reject~=
+				"missing_duplicate_or_mixed_obligation_zero_or_multiple_complete_intervals_empty_nonunique_or_noncontiguous_control_subsequence_discarded_required_terminal_foreign_gap_or_excluded_fragment_missing_duplicate_or_land_edge_owned_rejects_without_fallback" or
 			boundary_policy.bay_edge_transition_policy_id~=
 				"direct_candidate_or_same_bay_diagonal_elbow_v1" or
 			boundary_policy.bay_edge_transition_source~=
 				"exactly_eight_coordinate_free_rows_bind_referenced_bay_land_edge_endpoint_and_the_two_incident_bank_components_in_source_component_order" or
 			boundary_policy.bay_edge_transition_direct~=
-				"E_is_the_declared_first_or_last_retained_dry_provisional_edge_station_if_E_is_a_same_bay_final_dry_boundary_candidate_select_E_unchanged" or
+				"E_is_the_authored_from_or_to_endpoint_of_the_current_enumerated_final_dry_interval_if_E_is_a_same_bay_final_dry_boundary_candidate_select_E_unchanged_for_that_interval_probe" or
 			boundary_policy.bay_edge_transition_diagonal_precondition~=
-				"otherwise_E_must_be_final_strict_dry_and_have_no_cardinal_same_bay_or_foreign_water_neighbor_W_is_the_immediate_discarded_provisional_edge_station_toward_the_bay_E_to_W_must_be_exactly_diagonal_and_W_must_be_final_water_owned_only_by_the_referenced_base_bay_or_its_wings" or
+				"otherwise_E_must_be_final_strict_dry_and_have_no_cardinal_same_bay_or_foreign_water_neighbor_W_is_the_immediate_discarded_provisional_edge_station_toward_the_bay_E_to_W_must_be_exactly_diagonal_and_W_must_be_final_planned_water_owned_only_by_the_referenced_bay_after_Base_Wings_and_single_pass_notch_fill" or
 			boundary_policy.bay_edge_transition_elbows~=
 				"the_two_exact_orthogonal_elbows_W_x_E_z_and_E_x_W_z_must_be_distinct_strict_dry_in_footprint_same_bay_boundary_candidates_select_lexicographically_least_x_then_z" or
 			boundary_policy.bay_edge_transition_application~=
-				"insert_the_selected_elbow_as_terminal_control_after_prefix_suffix_selection_and_before_the_existing_sole_final_edge_raster_then_run_all_ordinary_edge_validation_no_post_raster_append_or_snap" or
+				"insert_the_selected_elbow_as_terminal_control_after_unique_incidence_complete_interval_and_retained_control_subsequence_selection_and_before_the_existing_sole_final_edge_raster_then_run_all_ordinary_edge_validation_no_post_raster_append_or_snap" or
 			boundary_policy.bay_edge_transition_identity~=
 				"edge_and_both_declared_incident_bank_components_consume_one_resolved_terminal_station_id_and_byte_exact_x_z_without_second_resolution_defensive_alias_free_copies_are_permitted" or
 			boundary_policy.bay_edge_transition_mask_source~=
 				"resolve_each_transition_exactly_once_against_world_partition_final_planned_water_after_single_pass_same_bay_raw_mask_degree_one_notch_v1_never_select_against_raw_water_then_revalidate_or_reselect" or
 			boundary_policy.bay_edge_transition_scalar_scope~=
-				"E_W_and_the_derived_elbow_are_resolved_only_after_record_scalar_materialization_R16_never_enters_or_changes_extreme_scalar_record_identity_or_value_and_the_complete_4096_pool_and_selected_extreme_winners_are_generated_once_only_after_the_R16_source_freeze" or
+				"E_W_and_any_derived_elbow_are_resolved_only_after_record_scalar_materialization_R16_R17_and_R18_never_enter_or_change_extreme_scalar_record_identity_or_value_no_pre_correction_C1_pool_is_promotable_and_the_sole_promotable_complete_4096_pool_and_selected_winners_are_generated_only_against_later_approved_immutable_post_R18_Source_and_compiler_pins" or
 			boundary_policy.bay_edge_transition_reject~=
 				"missing_duplicate_malformed_or_mixed_transition_row_nonincident_bank_foreign_bay_nondry_E_cardinal_water_at_noncandidate_E_nondiagonal_or_nonadjacent_W_wrong_W_owner_invalid_elbow_repeat_X_cross_or_final_edge_validation_failure_rejects_without_fallback" or
 			boundary_policy.shared_boundary_attachment_policy_id~=
 				"joint_perimeter_station_endpoint_before_final_raster_v1" or
 			boundary_policy.shared_boundary_attachment_candidate~=
-				"final_displaced_perimeter_then_provisional_edge_selection_only_run_yields_E_then_final_displaced_declared_perimeter_segment_yields_A" or
+				"final_displaced_perimeter_then_each_enumerated_edge_interval_yields_its_authored_endpoint_E_for_a_probe_then_the_final_displaced_declared_perimeter_segment_yields_A" or
 			boundary_policy.shared_boundary_attachment_selection~=
 				"minimum_chebyshev_E_to_A_then_lower_canonical_perimeter_index_tie_distance_at_most_one" or
 			boundary_policy.shared_boundary_attachment_final~=
-				"discarded_prefix_or_suffix_controls_are_removed_A_is_zero_displacement_terminal_control_and_both_span_boundaries_before_sole_final_edge_raster_provisional_run_not_exported" or
+				"controls_outside_the_selected_final_dry_interval_are_removed_where_selection_is_the_sole_ordinary_interval_or_the_unique_exact_six_incidence_complete_interval_A_is_zero_displacement_terminal_control_and_both_span_boundaries_before_sole_final_edge_raster_provisional_run_not_exported" or
 			boundary_policy.shared_boundary_attachment_interior~=
 				"all_final_stations_after_A_strict_footprint_interior_eight_connected_one_run" or
 			boundary_policy.shared_boundary_attachment_rule~=nil or
+			boundary_policy.shared_boundary_clip_reject~=
+				"empty_run_interior_rejection_second_retained_run_on_an_ordinary_edge_or_failure_of_the_declared_six_edge_incidence_complete_run_policy" or
 			boundary_policy.shared_boundary_clip_forbidden~=
 				"emitted_E_to_A_connector_post_raster_snap_inserted_float_or_rational_intersection_private_connector_geometry_or_undeclared_bay_transition_elbow" then
 		return diag("boundary_clip_policy","geometry_policies.boundary_displacement",
-			"sole canonical integer prefix/suffix clip without inserted intersection","invalid")
+			"55 ordinary exact-one prefix/suffix intervals plus the exact six unique incidence-complete intervals without inserted intersection","invalid")
 	end
 	if hydro_mask.rapid_run_interval~=
 			"floor_run_div_two_stations_upstream_plus_interface_plus_remaining_stations_downstream" or
@@ -2357,11 +2401,11 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				row.clip_policy_id~="joint_perimeter_station_endpoint_before_final_raster_v1" or
 				row.geometry_rule~="symbolic_edge_to_perimeter_joint_station_no_connector_or_snap" or
 				row.selection_station_rule~=
-					"first_or_last_retained_candidate_station_E_stage2_only" or
+					"current_enumerated_interval_authored_from_or_to_endpoint_E_probe_stage2_only" or
 				row.joint_station_rule~=
 					"final_displaced_declared_perimeter_segment_station_A_min_chebyshev_to_E_lower_canonical_index_tie_max_one" or
 				row.compiled_endpoint_rule~=
-					"discard_outside_terminal_controls_A_is_shared_zero_displacement_terminal_control_before_sole_final_edge_raster_provisional_run_not_exported" or
+					"after_the_selected_final_dry_interval_is_the_sole_ordinary_or_unique_exact_six_incidence_complete_interval_discard_outside_terminal_controls_A_is_shared_zero_displacement_terminal_control_before_sole_final_edge_raster_provisional_intervals_not_exported" or
 				row.control~=nil or row.position~=nil then
 			return diag("perimeter_attachment_contract",row.id,
 				"exact symbolic reviewed edge/perimeter attachment","changed")
@@ -2558,6 +2602,9 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		local bay_ids={}
 		for bay_index=1,#source.bays do bay_ids[source.bays[bay_index].id]=true end
 		local seen={}
+		local transition_by_endpoint={}
+		local transition_edge_order={}
+		local transition_edge_seen={}
 		for transition_index=1,#source.bay_edge_transitions do
 			local row=source.bay_edge_transitions[transition_index]
 			local expected=expected_transitions[transition_index]
@@ -2577,6 +2624,11 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				return diag("bay_edge_transition_projection",row.id,"unique edge endpoint",key)
 			end
 			seen[key]=true
+			transition_by_endpoint[key]=row.id
+			if not transition_edge_seen[row.edge_id] then
+				transition_edge_seen[row.edge_id]=true
+				transition_edge_order[#transition_edge_order+1]=row.edge_id
+			end
 			if not edge_by_id[row.edge_id] or not bay_ids[row.bay_id] then
 				return diag("bay_edge_transition_reference",row.id,
 					"known edge and Bay",row.edge_id..":"..row.bay_id)
@@ -2601,6 +2653,52 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 				return diag("bay_edge_transition_terminal_sides",row.id,
 					"one start and one end terminal",sides[1]..":"..sides[2])
 			end
+		end
+		for key in pairs(projected) do
+			if not seen[key] then
+				return diag("bay_edge_transition_projection",key,
+					"one declared transition row","missing")
+			end
+		end
+		local expected_obligations={
+			{"land_001","attachment:perimeter_attachment:elandor:land_001","transition:bay_edge_transition:land_001:to"},
+			{"land_004","transition:bay_edge_transition:land_004:from","transition:bay_edge_transition:land_004:to"},
+			{"land_007","transition:bay_edge_transition:land_007:from","attachment:perimeter_attachment:elandor:land_007"},
+			{"land_010","attachment:perimeter_attachment:kragmar:land_010","transition:bay_edge_transition:land_010:to"},
+			{"land_013","transition:bay_edge_transition:land_013:from","transition:bay_edge_transition:land_013:to"},
+			{"land_016","transition:bay_edge_transition:land_016:from","attachment:perimeter_attachment:kragmar:land_016"},
+		}
+		if #transition_edge_order~=#expected_obligations then
+			return diag("shared_boundary_incidence_run_projection","transition edges",
+				#expected_obligations,#transition_edge_order)
+		end
+		for obligation_index=1,#expected_obligations do
+			local expected=expected_obligations[obligation_index]
+			local edge_id=transition_edge_order[obligation_index]
+			if edge_id~=expected[1] then
+				return diag("shared_boundary_incidence_run_scope","edge order",
+					expected[1],edge_id)
+			end
+			local attachment=attachment_by_edge[edge_id]
+			local from_transition=transition_by_endpoint[edge_id..":from"]
+			local to_transition=transition_by_endpoint[edge_id..":to"]
+			local from_obligation=from_transition and "transition:"..from_transition or
+				(attachment and attachment.edge_endpoint=="from" and "attachment:"..attachment.id or nil)
+			local to_obligation=to_transition and "transition:"..to_transition or
+				(attachment and attachment.edge_endpoint=="to" and "attachment:"..attachment.id or nil)
+			if not from_obligation or not to_obligation then
+				return diag("shared_boundary_incidence_run_projection",edge_id,
+					"complete from/to tuple","missing")
+			end
+			if from_obligation~=expected[2] or to_obligation~=expected[3] then
+				return diag("shared_boundary_incidence_run_obligation",edge_id,
+					expected[2]..":"..expected[3],from_obligation..":"..to_obligation)
+			end
+		end
+		for transition_index=1,#source.bay_edge_transitions do
+			local row=source.bay_edge_transitions[transition_index]
+			local expected=expected_transitions[transition_index]
+			local incident=row.incident_bank_component_ids
 			if row.id~=expected[1] or row.bay_id~=expected[2] or
 					row.edge_id~=expected[3] or row.edge_endpoint~=expected[4] or
 					incident[1]~=expected[5] or incident[2]~=expected[6] or
@@ -2611,10 +2709,57 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 					"exact coordinate-free ordered eight-transition roster","changed")
 			end
 		end
-		for key in pairs(projected) do
-			if not seen[key] then
-				return diag("bay_edge_transition_projection",key,
-					"one declared transition row","missing")
+	end
+	do
+		-- C2 does not add coordinates.  These are the two closed projections
+		-- consumed later by the aperture-tail and incidence-complete-run compilers.
+		local expected_aperture_terminals={
+			{"bay_mouth_aperture:elandor_west","before","bay_bank:elandor_west:hearthpine","start","bay_elandor_west"},
+			{"bay_mouth_aperture:elandor_west","after","bay_bank:elandor_west:dawnmere","end","bay_elandor_west"},
+			{"bay_mouth_aperture:elandor_east","before","bay_bank:elandor_east:dawnmere","start","bay_elandor_east"},
+			{"bay_mouth_aperture:elandor_east","after","bay_bank:elandor_east:silverleaf","end","bay_elandor_east"},
+			{"bay_mouth_aperture:kragmar_west","before","bay_bank:kragmar_west:stillgrave","end","bay_kragmar_west"},
+			{"bay_mouth_aperture:kragmar_west","after","bay_bank:kragmar_west:sunscar","start","bay_kragmar_west"},
+			{"bay_mouth_aperture:kragmar_east","before","bay_bank:kragmar_east:sunscar","end","bay_kragmar_east"},
+			{"bay_mouth_aperture:kragmar_east","after","bay_bank:kragmar_east:kapok","start","bay_kragmar_east"},
+		}
+		local actual_aperture_terminals={}
+		for bank_index=1,#source.bay_bank_components do
+			local bank=source.bay_bank_components[bank_index]
+			for terminal_index=1,2 do
+				local terminal=terminal_index==1 and bank.start_terminal or bank.end_terminal
+				if terminal.kind=="aperture_dry" then
+					local key=terminal.aperture_id..":"..terminal.side
+					if actual_aperture_terminals[key] then
+						return diag("bay_aperture_transition_projection",key,
+							"one Bank terminal incidence","duplicate")
+					end
+					if not aperture_ids[terminal.aperture_id] then
+						return diag("bay_aperture_transition_reference",bank.id,
+							"known mouth aperture",terminal.aperture_id)
+					end
+					actual_aperture_terminals[key]={bank.id,
+						terminal_index==1 and "start" or "end",bank.bay_id}
+				end
+			end
+		end
+		local aperture_count=0
+		for _ in pairs(actual_aperture_terminals) do aperture_count=aperture_count+1 end
+		if aperture_count~=8 then
+			return diag("bay_aperture_transition_projection","aperture_dry",8,aperture_count)
+		end
+		for expected_index=1,#expected_aperture_terminals do
+			local expected=expected_aperture_terminals[expected_index]
+			local key=expected[1]..":"..expected[2]
+			local actual=actual_aperture_terminals[key]
+			if not actual then
+				return diag("bay_aperture_transition_projection",key,
+					"declared Bank terminal incidence","missing")
+			end
+			if actual[1]~=expected[3] or actual[2]~=expected[4] or actual[3]~=expected[5] then
+				return diag("bay_aperture_transition_incidence",key,
+					expected[3]..":"..expected[4]..":"..expected[5],
+					actual[1]..":"..actual[2]..":"..actual[3])
 			end
 		end
 	end

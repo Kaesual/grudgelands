@@ -73,11 +73,11 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="154cbc31dea35e0aed06f9525ecb3f2d1ac6fa90f0a71e127da591ed16ed067d"
+local EXPECTED_SOURCE_CHECKSUM="17936b6823fff2527a9df86415df0f8f6bc4ec12ba130e6f09763c266dff3efb"
 local EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM=
-	"a32f35c4621d84b50f93253fa7e046fe79553796d6b2752f6344ebf4cea1380f"
+	"7f33822c8650e17ea9029666c800e9001876aada32d597212568b94d74eab935"
 local EXPECTED_WORLD_PARTITION_CHECKSUM=
-	"b3173a764329c85c501b34c2e71b1d77abab661c931a18ac1e153cd7eebd6994"
+	"8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
 	"production and independent source KAT differ")
 assert(production_stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
@@ -2540,6 +2540,140 @@ local function run_r16_r17_source_oracle()
 	assert(provisional and selected_ceiling==3,
 		"R16 independent land_010 R7 ceiling drift: "..tostring(selected_ceiling))
 
+	-- C2 independently binds the complete upstream selected-R7 station/scalar
+	-- identity for Slot 30's land_007 before any final-dry interval selection.
+	-- This is deliberately a second local oracle rather than a compiler digest.
+	local function selected_land_edge_identity(edge_index,world_seed)
+		local selected_edge=source.land_edges[edge_index]
+		local selected_authored={}
+		for segment_index=1,#selected_edge.control-1 do
+			local part=raster_canonical_points(selected_edge.control[segment_index].x,
+				selected_edge.control[segment_index].z,
+				selected_edge.control[segment_index+1].x,
+				selected_edge.control[segment_index+1].z)
+			for local_index=1,#part do local point=part[local_index]
+				if #selected_authored==0 or
+						point_key(selected_authored[#selected_authored])~=point_key(point) then
+					selected_authored[#selected_authored+1]={x=point.x,z=point.z,
+						source_segment=segment_index-1,local_station=local_index-1,
+						local_last=#part-1,authored_order=#selected_authored+1}
+				end
+			end
+		end
+		local selected_calculation=selected_authored
+		local selected_reversed=reverse_rows(selected_authored)
+		if sequence_less(selected_reversed,selected_authored) then
+			selected_calculation=selected_reversed
+		end
+		local selected_noise={schema="grug_wp40_geometry_source_v1",seed=world_seed,
+			domain=selected_edge.noise_domain,feature="",octaves={
+				{period=384,amplitude_numerator=2,amplitude_denominator=3},
+				{period=768,amplitude_numerator=1,amplitude_denominator=3}}}
+		local selected_rows={}
+		for i=1,#selected_calculation do local point=selected_calculation[i]
+			local previous=i>1 and selected_calculation[i-1] or nil
+			local following=i<#selected_calculation and selected_calculation[i+1] or nil
+			local nx,nz
+			if previous and following then
+				nx,nz=displacement_joint_normal(point.x-previous.x,point.z-previous.z,
+					following.x-point.x,following.z-point.z)
+			elseif following then
+				nx,nz=displacement_step_normal(following.x-point.x,following.z-point.z)
+			else
+				nx,nz=displacement_step_normal(point.x-previous.x,point.z-previous.z)
+			end
+			local noise_q=deterministic.clamp(deterministic.value_noise_2d(
+				canonical,raw_sha256,selected_noise,point.x,point.z),-Q,Q)
+			local taper_q=deterministic.smootherstep(deterministic.qfrom_ratio(
+				math.min(math.min(point.local_station,
+					point.local_last-point.local_station),96),96))
+			local minimum_damping=Q
+			for source_index=1,#no_jitter do local fixed=no_jitter[source_index]
+				local distance=math.max(math.abs(point.x-fixed.x),
+					math.abs(point.z-fixed.z))
+				local damping=no_jitter_damping(distance)
+				if damping<minimum_damping then minimum_damping=damping end
+				if minimum_damping==0 then break end
+			end
+			selected_rows[i]={x=point.x,z=point.z,
+				source_segment=point.source_segment,local_station=point.local_station,
+				authored_order=point.authored_order,
+				desired_q=deterministic.qmul(
+					deterministic.qmul(noise_q,selected_edge.max_displacement*Q),
+					deterministic.qmul(taper_q,minimum_damping)),nx=nx,nz=nz}
+		end
+		local selected_base_buckets={}
+		for i=1,#selected_authored do local point=selected_authored[i]
+			local bucket=deterministic.floor_div(point.x,64)..":"..
+				deterministic.floor_div(point.z,64)
+			selected_base_buckets[bucket]=selected_base_buckets[bucket] or {}
+			selected_base_buckets[bucket][#selected_base_buckets[bucket]+1]=point
+		end
+		local function candidate_valid(points)
+			local seen,diagonals={},{}
+			for i=1,#points do local point=points[i]
+				local key=point_key(point)
+				if seen[key] then return false end
+				seen[key]=true
+				local bx=deterministic.floor_div(point.x,64)
+				local bz=deterministic.floor_div(point.z,64)
+				local inside=false
+				for ox=-1,1 do for oz=-1,1 do
+					local bucket=selected_base_buckets[(bx+ox)..":"..(bz+oz)] or {}
+					for j=1,#bucket do
+						if math.abs(point.x-bucket[j].x)<=selected_edge.max_displacement and
+								math.abs(point.z-bucket[j].z)<=selected_edge.max_displacement then
+							inside=true break
+						end
+					end
+					if inside then break end
+				end if inside then break end end
+				if not inside then return false end
+				if i>1 then
+					local old=points[i-1]
+					local sx,sz=point.x-old.x,point.z-old.z
+					if math.max(math.abs(sx),math.abs(sz))~=1 then return false end
+					if math.abs(sx)==1 and math.abs(sz)==1 then
+						local cell=math.min(point.x,old.x)..":"..math.min(point.z,old.z)
+						local slope=sx==sz and 1 or -1
+						if diagonals[cell] and diagonals[cell]~=slope then return false end
+						diagonals[cell]=slope
+					end
+				end
+			end
+			return #points>=2
+		end
+		for ceiling=selected_edge.max_displacement,0,-1 do
+			local selected_controls,selected_scalars={},{}
+			for i=1,#selected_rows do local row=selected_rows[i]
+				local scalar=deterministic.clamp(row.desired_q,-ceiling*Q,ceiling*Q)
+				local sx,sz=displacement_components(row.nx,row.nz,scalar)
+				selected_controls[row.authored_order]={x=row.x+sx,z=row.z+sz}
+				selected_scalars[row.authored_order]=scalar
+			end
+			local selected_points=raster_displaced_controls(selected_controls,false)
+			if candidate_valid(selected_points) then
+				local bytes={}
+				for i=1,#selected_rows do local row=selected_rows[i]
+					local station=selected_controls[row.authored_order]
+					bytes[#bytes+1]=table.concat({row.x,row.z,row.source_segment,
+						row.local_station,row.authored_order,row.desired_q,
+						selected_scalars[row.authored_order],row.nx,row.nz,
+						station.x,station.z},":")
+				end
+				return ceiling,#selected_rows,table.concat(bytes,";")
+			end
+		end
+		error("C2 no selected R7 land-edge candidate")
+	end
+	local slot30_ceiling,slot30_count,slot30_identity=
+		selected_land_edge_identity(7,"15219119262482319357")
+	local slot30_identity_sha=canonical.hex(raw_sha256(slot30_identity))
+	assert(slot30_ceiling==3 and slot30_count==1941 and
+		slot30_identity_sha=="7145f381da0bcaca60b1fb473397a513fe4974fd48cee185ba71aac68bb50dff",
+		"C2 Slot30 upstream R7 station/scalar identity drift: "..
+			slot30_ceiling..":"..slot30_count..":"..slot30_identity_sha)
+
 	-- Independently materialize both selected mainland R7 perimeters.  Candidate
 	-- scope below therefore uses the final footprint and perimeter-equality
 	-- rules rather than treating every dry coordinate as mainland.
@@ -3822,7 +3956,7 @@ assert(extreme_sample_q*2==extreme_record_max_q and
 	extreme_policy.scalar_stage==
 		"final_signed_q16_after_noise_damping_local_magnitude_clip_and_selected_record_topology_ceiling_before_x_z_component_rounding" and
 	extreme_policy.attachment_rule==
-		"provisional_E_perimeter_A_discarded_prefix_suffix_and_inserted_final_reraster_stations_never_enter_selector_sequence" and
+		"every_positive_displacement_canonical_source_station_scores_exactly_once_even_if_its_shifted_control_or_final_interval_is_not_selected_selector_excludes_only_derived_provisional_E_perimeter_A_elbows_and_other_inserted_final_reraster_stations_that_have_no_source_station_identity" and
 	extreme_policy.score_all_candidates_before_stage2==true and
 	extreme_policy.candidate_count==4096,
 	"geometry extreme exact normalization KAT drift")
@@ -3845,6 +3979,154 @@ do
 		extreme_policy.no_interpolation_rule==
 			"never_interpolate_resample_or_rehash_a_selector_scalar",
 		"geometry extreme overlapping perimeter span was not union-deduplicated")
+end
+
+-- Focused independent C2 algebraic witnesses.  Stage 1 owns no selected-seed
+-- Bank/Face geometry; exhaustive compiler geometry remains a later gate.
+do
+	local function cross(ax,az,bx,bz) return ax*bz-az*bx end
+	local function select_aperture_mode(row)
+		if row.d_candidate then return "direct",row.a,row.d end
+		assert(row.d_class==0 and row.d_own==0 and row.d_foreign==0)
+		assert(row.w_raw_owner==row.bay and row.w_final_owner==row.bay and
+			math.abs(row.w.x-row.d.x)==1 and math.abs(row.w.z-row.d.z)==1)
+		local elbows={{x=row.w.x,z=row.d.z},{x=row.d.x,z=row.w.z}}
+		local valid={}
+		for i=1,2 do if row.candidate(elbows[i]) then valid[#valid+1]=elbows[i] end end
+		assert(#valid==1)
+		local t=valid[1]
+		local from,to
+		if row.terminal_side=="start" then from,to=row.d,t else from,to=t,row.d end
+		assert(cross(to.x-from.x,to.z-from.z,row.w.x-from.x,row.w.z-from.z)<0)
+		return "tail",from,to,t
+	end
+	local slot29={bay="bay_elandor_east",terminal_side="start",
+		a={x=569,z=-2928},d={x=570,z=-2927},w={x=571,z=-2926},
+		d_candidate=false,d_class=0,d_own=0,d_foreign=0,
+		w_raw_owner="bay_elandor_east",w_final_owner="bay_elandor_east",
+		candidate=function(p) return p.x==570 and p.z==-2926 end}
+	local mode,from,to,t=select_aperture_mode(slot29)
+	assert(mode=="tail" and from==slot29.d and to==t and
+		t.x==570 and t.z==-2926,"C2 Slot29 shoulder-tail witness drift")
+	local direct={a={x=1,z=1},d={x=2,z=2},d_candidate=true}
+	assert(select_aperture_mode(direct)=="direct","C2 direct aperture mode drift")
+	local finish={bay="synthetic",terminal_side="end",a={x=2,z=2},
+		d={x=1,z=1},w={x=0,z=2},d_candidate=false,d_class=0,d_own=0,d_foreign=0,
+		w_raw_owner="synthetic",w_final_owner="synthetic",
+		candidate=function(p) return p.x==1 and p.z==2 end}
+	assert(select_aperture_mode(finish)=="tail","C2 end-tail direction witness drift")
+	local function copied_slot29(candidate,w)
+		return {bay=slot29.bay,terminal_side="start",a=slot29.a,d=slot29.d,
+			w=w or slot29.w,d_candidate=false,d_class=0,d_own=0,d_foreign=0,
+			w_raw_owner=slot29.bay,w_final_owner=slot29.bay,candidate=candidate}
+	end
+	local ok=pcall(select_aperture_mode,copied_slot29(function() return false end))
+	assert(not ok,"C2 zero-shoulder aperture tail was accepted")
+	ok=pcall(select_aperture_mode,copied_slot29(function() return true end))
+	assert(not ok,"C2 two-shoulder aperture tail was accepted")
+	ok=pcall(select_aperture_mode,copied_slot29(function(p)
+		return p.x==570 and p.z==-2926
+	end,{x=569,z=-2926}))
+	assert(not ok,"C2 wrong-side aperture tail was accepted")
+	local finished={{x=570,z=-2927},{x=570,z=-2926},{x=571,z=-2925}}
+	local finished_reverse={}
+	for i=#finished,1,-1 do
+		finished_reverse[#finished_reverse+1]={x=finished[i].x,z=finished[i].z}
+	end
+	for i=1,#finished do
+		assert(finished_reverse[i].x==finished[#finished-i+1].x and
+			finished_reverse[i].z==finished[#finished-i+1].z,
+			"C2 aperture finished-byte reversal drift")
+	end
+	local function unique_controls(controls)
+		local seen={}
+		for i=1,#controls do
+			if seen[controls[i]] then return false end
+			seen[controls[i]]=true
+		end
+		return true
+	end
+	local function one_control_direction(controls)
+		local step
+		for i=2,#controls do
+			local delta=controls[i]-controls[i-1]
+			if delta~=1 and delta~=-1 then return false end
+			step=step or delta
+			if delta~=step then return false end
+		end
+		return true
+	end
+
+	local function select_incidence_complete(intervals)
+		local selected
+		for i=1,#intervals do
+			local row=intervals[i]
+			if row.from_ok and row.to_ok then
+				assert(not selected,"multiple incidence-complete intervals")
+				selected=row
+			end
+		end
+		assert(selected,"no incidence-complete interval")
+		assert(#selected.controls>0,"empty selected controls")
+		assert(unique_controls(selected.controls),"repeated selected control")
+		assert(one_control_direction(selected.controls),
+			"noncontiguous or direction-flipped selected controls")
+		for i=1,#intervals do
+			if intervals[i]~=selected then
+				assert(intervals[i].excluded_owner_count==1 and
+					not intervals[i].final_land_identity,
+					"excluded dry fragment ownership")
+			end
+		end
+		return selected
+	end
+	local longer={id="longer",from_ok=true,to_ok=false,controls={1,2,3,4},
+		excluded_owner_count=1,final_land_identity=false}
+	local complete={id="complete",from_ok=true,to_ok=true,controls={7,8},
+		stations={{x=1128,z=-2239},{x=1129,z=-2240}},
+		excluded_owner_count=1,final_land_identity=false}
+	assert(select_incidence_complete({longer,complete})==complete,
+		"C2 selector used length instead of complete incidence")
+	local reversed={id="complete",from_ok=complete.to_ok,to_ok=complete.from_ok,
+		controls={8,7},stations={{x=1129,z=-2240},{x=1128,z=-2239}},
+		excluded_owner_count=1,final_land_identity=false}
+	assert(select_incidence_complete({reversed,longer})==reversed,
+		"C2 reversal did not preserve complete obligation selection")
+	for i=1,#complete.stations do
+		local a=complete.stations[#complete.stations-i+1]
+		local b=reversed.stations[i]
+		assert(a.x==b.x and a.z==b.z,
+			"C2 incidence-run final bytes were not exact reverse")
+	end
+	ok=pcall(select_incidence_complete,{{id="none",from_ok=true,to_ok=false,
+		controls={1},excluded_owner_count=1,final_land_identity=false}})
+	assert(not ok,"C2 accepted zero complete intervals")
+	ok=pcall(select_incidence_complete,{{id="a",from_ok=true,to_ok=true,
+		controls={1},excluded_owner_count=1},{id="b",from_ok=true,to_ok=true,
+		controls={2},excluded_owner_count=1}})
+	assert(not ok,"C2 accepted multiple complete intervals")
+	ok=pcall(select_incidence_complete,{{id="bad",from_ok=true,to_ok=true,
+		controls={1,3},excluded_owner_count=1}})
+	assert(not ok,"C2 accepted noncontiguous selected controls")
+	ok=pcall(select_incidence_complete,{{id="bad",from_ok=true,to_ok=true,
+		controls={1,1},excluded_owner_count=1}})
+	assert(not ok and not unique_controls({1,1}),
+		"C2 accepted a repeated selected control")
+	ok=pcall(select_incidence_complete,{{id="bad",from_ok=true,to_ok=true,
+		controls={1,2,1},excluded_owner_count=1}})
+	assert(not ok and not one_control_direction({1,2,1}),
+		"C2 accepted a selected-control direction flip")
+	for _,bad in ipairs({
+		{id="bad",from_ok=false,to_ok=false,controls={3},excluded_owner_count=0,
+			final_land_identity=false},
+		{id="bad",from_ok=false,to_ok=false,controls={3},excluded_owner_count=2,
+			final_land_identity=false},
+		{id="bad",from_ok=false,to_ok=false,controls={3},excluded_owner_count=1,
+			final_land_identity=true},
+	}) do
+		ok=pcall(select_incidence_complete,{complete,bad})
+		assert(not ok,"C2 accepted invalid excluded dry-fragment ownership")
+	end
 end
 
 local function clone(value, seen)
@@ -4311,8 +4593,36 @@ end)
 expect_failure("bay_edge_transition_contract",function(s)
 	s.bay_edge_transitions[1].candidate_tie_rule="lexicographically_greatest_x_then_z"
 end)
+expect_failure("bay_aperture_transition_projection",function(s)
+	s.bay_bank_components[5].end_terminal.side="before"
+end)
+expect_failure("bay_aperture_transition_reference",function(s)
+	s.bay_bank_components[1].start_terminal.aperture_id="bay_mouth_aperture:missing"
+end)
+expect_failure("bay_aperture_transition_incidence",function(s)
+	local first=s.bay_bank_components[1].start_terminal
+	s.bay_bank_components[1].start_terminal=s.bay_bank_components[6].start_terminal
+	s.bay_bank_components[6].start_terminal=first
+end)
+expect_failure("shared_boundary_incidence_run_scope",function(s)
+	s.bay_edge_transitions[1],s.bay_edge_transitions[2]=
+		s.bay_edge_transitions[2],s.bay_edge_transitions[1]
+	s.bay_edge_transitions[1].numeric_id=1
+	s.bay_edge_transitions[2].numeric_id=2
+end)
+expect_failure("shared_boundary_incidence_run_projection",function(s)
+	s.bay_edge_transitions[2].edge_id="land_001"
+	s.bay_bank_components[4].end_terminal.edge_id="land_001"
+	s.bay_bank_components[5].start_terminal.edge_id="land_001"
+	s.bay_edge_transitions[3].edge_id="land_007"
+	s.bay_bank_components[6].end_terminal.edge_id="land_007"
+	s.bay_bank_components[7].start_terminal.edge_id="land_007"
+end)
+expect_failure("shared_boundary_incidence_run_obligation",function(s)
+	s.bay_edge_transitions[1].id="bay_edge_transition:land_001:to:changed"
+end)
 expect_failure("bay_bank_component_contract",function(s)
-	s.bay_bank_components[1].start_terminal.side="after"
+	s.bay_bank_components[1].direction="reverse"
 end)
 expect_failure("bay_bank_component_fields",function(s)
 	s.bay_bank_components[1].control={{x=-980,z=-2940},{x=-1050,z=-2250}}
@@ -4709,6 +5019,18 @@ expect_failure("world_partition_policy",function(s)
 		"canonical_deduplicated_final_perimeter_integer_raster_order"
 end)
 expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_aperture_transition_policy_id=
+		"direct_aperture_only"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_aperture_transition_side=
+		"always_test_D_to_T"
+end)
+expect_failure("world_partition_policy",function(s)
+	s.geometry_policies.world_partition.bay_bank_aperture_transition_elbows=
+		"select_first_valid_elbow"
+end)
+expect_failure("world_partition_policy",function(s)
 	s.geometry_policies.world_partition.bay_bank_water_side=
 		"test_the_resolved_start_anchor_previous_to_current"
 end)
@@ -4761,12 +5083,32 @@ expect_failure("boundary_clip_policy",function(s)
 		"choose_first_iteration_order"
 end)
 expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_diagonal_precondition=
+		"W_is_water_only_before_notch_fill"
+end)
+expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.bay_edge_transition_scalar_scope=
 		"score_the_elbow_as_a_new_scalar_row"
 end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.bay_edge_transition_mask_source=
 		"select_against_raw_water_then_revalidate_after_fill"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.shared_boundary_incidence_run_selection=
+		"select_longest_then_first"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.shared_boundary_incidence_run_obligations=
+		"resolve_endpoints_after_run_selection"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.shared_boundary_incidence_control_clip=
+		"recompute_scalars_for_retained_controls"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.shared_boundary_incidence_excluded_dry=
+		"discard_without_owner_validation"
 end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.no_jitter_metric=
@@ -4853,6 +5195,10 @@ end)
 expect_failure("geometry_extreme_selector_policy",function(s)
 	s.geometry_policies.geometry_extreme_selector.scalar_stage=
 		"post_local_clip_pre_topology_ceiling"
+end)
+expect_failure("geometry_extreme_selector_policy",function(s)
+	s.geometry_policies.geometry_extreme_selector.attachment_rule=
+		"discard_every_source_control_outside_the_final_interval"
 end)
 expect_failure("generic_geometry_policy_contract",function(s)
 	s.geometry_policies.hydrology_mask.bank_skirt_horizontal_nodes=3

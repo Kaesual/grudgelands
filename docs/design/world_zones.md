@@ -309,18 +309,35 @@ WP40 replaces it with the complete catalog and contracts below.
   and byte-identical canonical stations; defensive table copies are allowed,
   but a private connector, snap, inferred endpoint, second resolution or
   second trace is forbidden.
-- The three terminal kinds share one resolution authority. `aperture_dry`
-  resolves by coordinate lookup in the deduplicated final **authored/declared**
-  perimeter order to the dry station immediately before or after the
-  aperture. This Bank-only order does not change the canonical mouth-aperture
-  membership indices, compiled aperture payload or Attachment tie.
+- The three terminal kinds share one resolution authority. Exactly eight
+  `aperture_dry` incidences are projected from the 20 Bank records: one
+  `before` and one `after` incidence for each mouth aperture. In the
+  deduplicated final **authored/declared** perimeter order, let `D` be the dry
+  station adjacent to the aperture, `A` the next dry station away from it, and
+  `W` the immediately included aperture-water station toward it. If `D` is a
+  final same-Bay Bank candidate, the direct rotation anchor remains `A,D`.
+  Otherwise `D` must be dry footprint equality with no cardinal same-Bay or
+  foreign water, while `W` must be raw and final water owned only by the
+  referenced Bay and exactly diagonal from `D`. Of the two orthogonal elbows
+  `(W.x,D.z)` and `(D.x,W.z)`, exactly one must be a strict-footprint final-dry
+  same-Bay candidate `T`; zero or two reject, with no order or tie rule. At a
+  component start the canonical Bank begins `D,T` and Moore tracing begins at
+  `(previous=D,current=T)`; at an end Moore tracing targets `T` and the Bank
+  ends `T,D`. The non-Moore terminal tail, in its actually emitted direction
+  (`D->T` at a start, `T->D` at an end), must keep `W` on the declared strict
+  water side. Ordinary step-side validation begins only on the adjacent Moore
+  step. `D` remains the shared perimeter/Bank terminal and `T` is internal.
+  This Bank-only resolution changes neither canonical aperture membership
+  indices, compiled aperture payload nor the Attachment tie, and reverse
+  consumption reverses only the finished bytes.
   `land_edge_transition` resolves through exactly eight coordinate-free
   `bay_edge_transitions` records for `land_001:to`, both ends of `land_004`,
   `land_007:from`, `land_010:to`, both ends of `land_013` and
   `land_016:from`. Each record binds one Bay, one edge endpoint and its two
   incident Bank component IDs in Source order; it carries no coordinate or
-  shape. Let `E` be that first/last retained dry provisional edge station. If
-  `E` is already a same-Bay candidate, it is the terminal. Otherwise `E` must
+  shape. For each currently enumerated final-dry edge interval, let `E` be its
+  authored `from` or `to` endpoint for this endpoint's probe. If `E` is already
+  a same-Bay candidate, it is that interval's terminal result. Otherwise `E` must
   be strict dry with no cardinal planned-water neighbour, and the immediately
   adjacent discarded provisional station `W` toward the Bay must be exactly
   diagonal from `E` and final water owned only by the referenced Bay, including
@@ -335,20 +352,22 @@ WP40 replaces it with the complete catalog and contracts below.
   fill produces final planned water, and only then is each R16 transition
   selected exactly once against that final mask. Selection against raw water
   followed by validation or reselection is forbidden. The complete 4,096 pool
-  and selected four extreme winners are generated once, only after the R17
-  Source freeze. The edge and both Banks
+  and selected four extreme winners have no before/after identity claim: a
+  new complete pool is measured only once on the later explicitly approved
+  immutable post-correction pins. The edge and both Banks
   consume the same once-resolved station ID and exact canonical x/z bytes;
   defensive alias-free copies are allowed, but there is no inward scan or
   private shift. `wing_junction_tail_side`
   resolves through the one joint tail-pair result for its Wing; `J` remains
   dry and is the only common terminal of the two sides.
-- For a non-Wing start, `current` is that resolved terminal candidate. At an
-  aperture, `previous` is the next dry authored perimeter station away from
-  the aperture; at an edge transition it is the immediately adjacent retained
+- For a non-Wing start, a direct aperture uses `previous=A,current=D`; an
+  aperture shoulder tail emits `D` and uses `previous=D,current=T`. At an edge
+  transition, `previous` is the immediately adjacent retained
   dry final edge station away from the resolved endpoint (for an elbow this
-  is `E`). This 8-connected,
-  candidate-valid half-edge supplies Moore rotation only; it has no water-side
-  requirement. No other start heading is inferred.
+  is `E`) and `current` is the resolved transition. Each 8-connected,
+  candidate-valid Moore anchor supplies rotation only; it has no water-side
+  requirement. The separate shoulder-tail side rule above still applies. No
+  other start heading is inferred.
 - A Moore candidate is a final-classifier dry mainland column, including
   permitted dry perimeter equality, with a cardinal neighbour owned as final
   water by the same Bay's final Base/Wings/notch-fill mask. Search is finite: the
@@ -658,19 +677,40 @@ WP40 replaces it with the complete catalog and contracts below.
   side and the home zone the landward side.
   A declared edge/perimeter attachment has one joint endpoint, not a connector
   or post-raster snap. After the final displaced perimeter exists, a
-  provisional displaced edge raster is used only to derive the first/last
-  retained candidate station `E`. On the attachment's declared final displaced
-  perimeter segment, `A` minimizes the tuple `(Chebyshev(E,A), canonical
-  perimeter station index)` and must be at distance at most one. The discarded
-  outside prefix/suffix controls are removed, `A` replaces the terminal
+  provisional displaced edge raster is split into all maximal consecutive
+  final-dry intervals. For each interval independently, its authored `from`
+  and `to` endpoints are the two `E` probes: a Bay transition uses the existing
+  R16 final-mask resolver, an attachment uses the existing joint-perimeter
+  resolver, and an ordinary junction uses its declared endpoint. An interval
+  qualifies only if both ordered Source obligations pass; exactly one must
+  qualify. Zero or multiple qualifying intervals reject. Longest, first and
+  numeric-index selection are forbidden.
+  For an attachment probe, on the declared final displaced perimeter segment,
+  `A` minimizes the tuple `(Chebyshev(E,A), canonical perimeter station index)`
+  and must be at distance at most one. After the complete interval is selected,
+  discarded outside prefix/suffix controls are removed, `A` replaces the terminal
   control with zero displacement and is also both incident perimeter-span
   boundaries, and the edge is then emitted by the sole final raster. The
   provisional run is never exported; no `E -> A` segment is emitted. The final
   endpoint equals `A` exactly, every other final station is strict footprint
-  interior, and the result is one 8-connected retained run. Nonattached ends
-  retain ordinary prefix/suffix clipping except the eight declared Bay-edge
+  interior, and the result is one 8-connected retained run. On the six edges
+  carrying the eight Bay transitions (`land_001`, `land_004`, `land_007`,
+  `land_010`, `land_013`, `land_016`), the exact ordered from/to obligation
+  tuples are projected from the existing transition and attachment records;
+  the other 55 edges require exactly one final-dry interval. Nonattached ends
+  retain ordinary clipping except the eight declared Bay-edge
   ends, whose retained `E` may be replaced by the reviewed same-Bay diagonal
-  elbow as a terminal control before that same final raster. In the undisplaced literal Stage-1
+  elbow as a terminal control before that same final raster.
+  From the already selected R7 shifted controls, compilation retains exactly
+  the nonempty, unique, contiguous authored subsequence whose canonical x/z
+  identities belong to the selected station interval. Nonselected controls
+  remain unchanged upstream scalar samples but never enter final boundary
+  geometry; there is no re-ceiling, rescore, selector change or post-raster
+  splice. Every excluded dry fragment must instead be owned exactly once by a
+  final Bank or dry Face and by no final land edge or terminal identity.
+  Reversing the authored edge and swapping its obligations must select the
+  same world interval and exact reversed edge bytes.
+  In the undisplaced literal Stage-1
   baseline, three attachments have `E=A`, five have Chebyshev distance one,
   and `land_016` has no common raw edge/perimeter raster station before this
   joint selection. Those counts are not seed-zero compiled evidence: Stage 2
@@ -924,9 +964,11 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   `perimeter_span` ranges never double-count a segment or station. Island
   coast uses `(arc_id, segment, local index)`, and positive shared boundaries
   use `(edge_id, segment, local index)` in numeric edge order. At a source
-  segment join or closed seam, the stable earlier identity wins. Provisional
-  attachment `E`, perimeter `A`, discarded prefix/suffix stations and stations
-  inserted by the final reraster are never scored. No selector scalar is
+  segment join or closed seam, the stable earlier identity wins. Every
+  positive-displacement canonical source station is scored exactly once, even
+  when its shifted control or final interval is not selected. Only a derived
+  provisional attachment `E`, perimeter `A`, elbow or other final-reraster
+  station without a source-station identity is excluded. No selector scalar is
   interpolated, resampled or rehashed; if selected final geometry later fails,
   Stage 2 rejects it without choosing a fallback seed.
 - No zone core may narrow below 256 nodes and no authored travel corridor below
@@ -1690,8 +1732,12 @@ asks for it.
   span clip attachments are structured references. A heuristic connector,
   coordinate-inferred connector or floating intersection is invalid. Only the
   compiled per-seed stage materializes the canonical integer boundary rasters,
-  clips a shared edge by removing at most one prefix and one suffix, and then
-  proves every concrete face closed, counterclockwise and simple. It reruns the
+  clips each of the 55 ordinary shared edges by removing at most one prefix and
+  one suffix, and selects the unique incidence-complete interval plus
+  contiguous authored control subsequence on the exact six transition-bearing
+  edges. Each excluded dry fragment must have exactly one Bank/Face owner and
+  no land-edge or terminal identity. It then proves every concrete face closed,
+  counterclockwise and simple. It reruns the
   complete footprint `g=0/o=0/r=0` proof for every corpus seed. This staging
   distinction changes neither the final topology nor any acceptance case.
 - Roads: every required route connects its authored endpoints, keeps its
