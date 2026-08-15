@@ -187,6 +187,27 @@ The launcher gate records the exact committed R16/R17 Source,
 boundary-policy, and partition pins. The worker revalidates those pins from
 its immutable archive before emitting a retained shard.
 
+### Extreme-evidence regeneration after a partition change
+
+A changed `geometry/partition.lua` intentionally makes
+`run_t2_extreme.sh` and `run_t2_extreme_puc_kat.sh` fail before measurement.
+Regeneration starts only from a committed, independently reviewed Source and
+partition snapshot. Run the T2 partition acceptance gate with
+`WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical`; then
+record that snapshot's Source, boundary-policy, and partition values in
+`fixtures/t2_extreme_e0/full_scan_gate.lua` and regenerate the prerequisite
+fixture from the same no-cache snapshot. Review the pin-only change before an
+immutable eight-shard run is launched. Merge the eight verified shards under
+PUC Lua 5.1, create a new conformance gate from the resulting artifact and
+manifest, and run conformance from its committed archive.
+
+Re-pinning asserts only that the named Source, boundary policy, and partition
+bytes are the reviewed inputs to the new measurement; it does not assert that
+old results remain valid. It invalidates the earlier eight shards, merged
+candidate artifact, manifest, endpoint/winner rescores, selected results, and
+final conformance result. Those files remain historical evidence and must not
+be relabelled or reused as evidence for the new pins.
+
 The complete 4096-row artifact is explicitly a LuaJIT-origin
 `R7_SCALAR_MEASUREMENT_ONLY` pool with `stage2=pending_selected_four`. Once
 the retained pool exists, PUC must parse and rank it without relabelling its

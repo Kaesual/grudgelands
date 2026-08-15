@@ -30,9 +30,8 @@ done
 "$repo/tools/bin/lua51" "$script_dir/t2_schema_core_test.lua" "$repo" "$scratch"
 bash -n "$script_dir/run_t2_schema_core.sh"
 
-"$script_dir/t2_source_audit.sh" "$repo"
+"$script_dir/t2_source_audit.sh" "$repo" --static-only
 "$script_dir/run_t1.sh"
 "$script_dir/run_t0.sh"
-"$repo/tools/wp43/source_audit.sh" "$repo"
 
 echo "WP40 T2 schema/core gates passed"

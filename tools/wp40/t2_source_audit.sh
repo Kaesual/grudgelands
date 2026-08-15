@@ -2,6 +2,11 @@
 set -euo pipefail
 
 repo=${1:-.}
+mode=${2:-full}
+if [[ "$mode" != full && "$mode" != --static-only ]]; then
+	echo "usage: tools/wp40/t2_source_audit.sh [repo] [--static-only]" >&2
+	exit 2
+fi
 cd "$repo"
 
 scratch=$(mktemp -d /tmp/grudgelands-wp40-t2.XXXXXX)
@@ -10,6 +15,7 @@ trap 'rm -rf "$scratch"' EXIT
 mapfile -t lua_files < <(find mods/MAPGEN/grug_mapgen/wp40/source \
 	mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua \
 	tools/wp40/t2_source_test.lua -type f -name '*.lua' -print | sort)
+lua_files+=(tools/wp40/t2_phase_selector.lua)
 
 tools/bin/luac51 -p "${lua_files[@]}"
 
@@ -173,7 +179,7 @@ grep -q 'R19 accepted non-8-connected candidate-specific final edge' "$test_file
 grep -q '25d19e716fc9ccee106f8bdd33938ac94a939d4f50609db3d0cead808261f255' "$test_file"
 grep -q 'f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70' "$test_file"
 grep -q 'R11 Bay-bank Reality correction' docs/research/wp40-engineering-brief.md
-grep -q 'exactly 20' docs/design/world_zones.md
+grep -q 'exactly 20' docs/research/wp40-source-authority.md
 [[ $(grep -c 'geometry_policy_id="strict_tapered_bay_closure_wing_v1"' "$catalog") -eq 1 ]]
 grep -q 'closure_wing_membership="zero_less_equal_N_and_N_strictly_less_than_L' "$catalog"
 if grep -qE 'head_continuation|dry_fan|fan_chord|head_closure_junction|side_edge_continuation' "$catalog"; then
@@ -368,7 +374,8 @@ done
 # Offline harness exception: one exact reviewed os.execute line invokes
 # sha256sum for an independent digest, as in T1. All five sweeps still run.
 for pattern_index in 0 1 2 3 4; do
-	hits=$(grep -nE "${patterns[$pattern_index]}" tools/wp40/t2_source_test.lua || true)
+	hits=$(grep -nE "${patterns[$pattern_index]}" tools/wp40/t2_source_test.lua \
+		tools/wp40/t2_phase_selector.lua || true)
 	if [[ $pattern_index -eq 4 ]]; then
 		hits=$(printf '%s\n' "$hits" | grep -vF 'os.execute("sha256sum " .. input .. " > " .. output)' || true)
 	fi
@@ -379,8 +386,14 @@ for pattern_index in 0 1 2 3 4; do
 	fi
 done
 
-tools/bin/lua51 tools/wp40/t2_source_test.lua "$repo" "$scratch"
+if [[ "$mode" == full ]]; then
+	env -u WP40_T2_ONLY tools/bin/lua51 tools/wp40/t2_source_test.lua "$repo" "$scratch"
+fi
 
 bash -n tools/wp40/t2_source_audit.sh
 
-echo 'WP40 T2 source audit passed'
+if [[ "$mode" == full ]]; then
+	echo 'WP40 T2 source audit passed'
+else
+	echo 'WP40 T2 source static audit passed'
+fi
