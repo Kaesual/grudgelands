@@ -30,6 +30,7 @@ return function(dependencies)
 
 	local authority = {}
 	local schema = "grug_wp40_s1_authority_v1"
+	local self_path = "tools/wp40/t2_s1_authority.lua"
 	local module_path = "mods/MAPGEN/grug_mapgen/wp40/geometry/boundary.lua"
 	local arithmetic_paths = {
 		"mods/MAPGEN/grug_mapgen/wp40/canonical.lua",
@@ -74,6 +75,8 @@ return function(dependencies)
 	-- sorted order, so the digest has no map/iteration order dependence.
 	local function blob(files, source_projection_sha256, projection_schema)
 		local lines = {schema}
+		lines[#lines + 1] = "s1_authority\t" .. self_path .. "\t" ..
+			hex(raw_sha256(bytes_for(files, self_path)))
 		lines[#lines + 1] = "s1_module\t" .. module_path .. "\t" ..
 			hex(raw_sha256(bytes_for(files, module_path)))
 		for index = 1, #arithmetic_paths do
@@ -107,11 +110,12 @@ return function(dependencies)
 	end
 
 	authority.SCHEMA = schema
+	authority.self_path = self_path
 	authority.module_path = module_path
 	authority.arithmetic_paths = arithmetic_paths
 	authority.excluded_paths = excluded_paths
-	authority.paths = {module_path, arithmetic_paths[1], arithmetic_paths[2],
-		arithmetic_paths[3], arithmetic_paths[4]}
+	authority.paths = {self_path, module_path, arithmetic_paths[1],
+		arithmetic_paths[2], arithmetic_paths[3], arithmetic_paths[4]}
 	authority.blob = blob
 	authority.digest = digest
 	authority.verify = verify

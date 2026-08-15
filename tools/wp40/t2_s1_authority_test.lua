@@ -293,7 +293,7 @@ assert(plain(make(jittered).extreme_scalar_records("0")) ~= base_records,
 
 -- (4) Authority scope.
 local files = {}
-local pinned_paths = {s1_authority.module_path}
+local pinned_paths = {s1_authority.self_path, s1_authority.module_path}
 for index = 1, #s1_authority.arithmetic_paths do
 	pinned_paths[#pinned_paths + 1] = s1_authority.arithmetic_paths[index]
 end
