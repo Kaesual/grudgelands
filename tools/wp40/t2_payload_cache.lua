@@ -50,17 +50,59 @@ local function read_file(path)
 	return bytes
 end
 
+-- The body is compiled by whichever interpreter reads it, so every token has
+-- to decode to the same value under PUC Lua 5.1 and under LuaJIT.
+--
+-- Negative zero is the one number that a decimal literal cannot carry across
+-- both. PUC interns numeric constants by numeric equality and -0 == 0, so a
+-- "-0" literal in a chunk that already interned "0" is folded onto the +0
+-- constant and loses its sign; LuaJIT interns the two separately and keeps it.
+-- The compiler does produce -0: deterministic.round_ratio returns
+-- sign * quotient, so a negative value that rounds to zero comes back as -0
+-- (for example bay station_radius_delta, 285 entries in the seed-0 payload).
+-- That sign carries no meaning the geometry ever reads -- canonical.lua, the
+-- only checksum seam, encodes -0 and 0 to identical bytes -- but the cache
+-- reproduces the compiler's output rather than improving it, so the encoder
+-- stays faithful and emits a run-time negation instead of a literal. IEEE
+-- unary minus on +0 is -0 on both interpreters, with no constant folding
+-- involved, so "n" below decodes exactly.
+local prelude = "local z=0 local n=-z\n"
+
+-- string.format("%q") is host-dependent for bytes outside the printable ASCII
+-- range: PUC emits a raw tab where LuaJIT emits \9, and \000 where LuaJIT
+-- emits \0. Escape explicitly so a payload written by one interpreter still
+-- re-encodes byte-identically under the other. Printable ASCII is untouched,
+-- so the emitted text matches %q for every string the payload holds today.
+local escapes = {["\""] = "\\034", ["\\"] = "\\092"}
+for byte = 0, 255 do
+	if byte < 32 or byte > 126 then
+		escapes[string.char(byte)] = ("\\%03d"):format(byte)
+	end
+end
+
+local function quote(value)
+	return "\"" .. (value:gsub(".", escapes)) .. "\""
+end
+
 local function plain(value, seen)
 	local kind = type(value)
 	if kind == "nil" then return "nil" end
 	if kind == "boolean" then return value and "true" or "false" end
-	if kind == "string" then return string.format("%q", value) end
+	if kind == "string" then return quote(value) end
 	if kind == "number" then
 		if value ~= value or value == math.huge or value == -math.huge or
 				value % 1 ~= 0 then
 			fail("payload contains a non-integer number")
 		end
-		return tostring(value)
+		if value == 0 then return 1 / value < 0 and "n" or "0" end
+		-- tostring uses %.14g on both interpreters, so a magnitude that needs
+		-- more than fourteen digits would round-trip to a different number.
+		-- Reject the exponent and fraction forms instead of storing a lie.
+		local text = tostring(value)
+		if not text:match("^%-?[1-9][0-9]*$") then
+			fail("payload number has no exact decimal form: " .. text)
+		end
+		return text
 	end
 	if kind ~= "table" or getmetatable(value) ~= nil then
 		fail("payload is not data-only")
@@ -86,7 +128,7 @@ local function plain(value, seen)
 			plain(value[numeric[index]], seen) .. ","
 	end
 	for index = 1, #text do
-		parts[#parts + 1] = "[" .. string.format("%q", text[index]) .. "]=" ..
+		parts[#parts + 1] = "[" .. quote(text[index]) .. "]=" ..
 			plain(value[text[index]], seen) .. ","
 	end
 	parts[#parts + 1] = "}"
@@ -104,7 +146,9 @@ return function(raw_options)
 		"mods/MAPGEN/grug_mapgen/wp40/deterministic.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/canonical.lua",
 	}
-	local dependency_parts = {"grug_wp40_t2_payload_cache_v1"}
+	-- v2 is the body grammar above. Bumping it retires v1 entries by key
+	-- instead of leaving them to fail validation on every run.
+	local dependency_parts = {"grug_wp40_t2_payload_cache_v2"}
 	for index = 1, #dependency_paths do
 		local path = dependency_paths[index]
 		dependency_parts[#dependency_parts + 1] = path
@@ -138,7 +182,9 @@ return function(raw_options)
 		local ok, payload = pcall(chunk)
 		if not ok then return nil end
 		local ok_plain, encoded = pcall(plain, payload)
-		if not ok_plain or body ~= "return " .. encoded .. "\n" then return nil end
+		if not ok_plain or body ~= prelude .. "return " .. encoded .. "\n" then
+			return nil
+		end
 		return payload
 	end
 
@@ -157,7 +203,7 @@ return function(raw_options)
 			return payload
 		end
 		local compiled = compile_uncached(seed)
-		local body = "return " .. plain(compiled) .. "\n"
+		local body = prelude .. "return " .. plain(compiled) .. "\n"
 		local bytes = "-- payload " .. hex(options.raw_sha256(body)) .. "\n" .. body
 		-- Keep the temporary beside its destination so the atomic rename does not
 		-- cross filesystems when the harness scratch lives under /tmp.
@@ -167,6 +213,14 @@ return function(raw_options)
 		assert(file:write(bytes))
 		assert(file:close())
 		assert(os.rename(temporary, path))
+		body, bytes = nil, nil
+		-- Read the entry straight back through the same validator. A write this
+		-- interpreter cannot accept is a defect worth reporting at the moment it
+		-- happens, not a silent miss on every later run.
+		if load_payload(path) == nil then
+			fail("the payload just written for seed " .. seed ..
+				" does not load back exactly")
+		end
 		cache.last_status = "miss"
 		print("WP40 T2 payload cache miss seed=" .. seed)
 		return compiled
