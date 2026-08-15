@@ -73,9 +73,9 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="17936b6823fff2527a9df86415df0f8f6bc4ec12ba130e6f09763c266dff3efb"
+local EXPECTED_SOURCE_CHECKSUM="5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000"
 local EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM=
-	"7f33822c8650e17ea9029666c800e9001876aada32d597212568b94d74eab935"
+	"3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe"
 local EXPECTED_WORLD_PARTITION_CHECKSUM=
 	"8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45"
 assert(stage1.EXPECTED_SOURCE_CHECKSUM==EXPECTED_SOURCE_CHECKSUM,
@@ -2661,7 +2661,8 @@ local function run_r16_r17_source_oracle()
 						selected_scalars[row.authored_order],row.nx,row.nz,
 						station.x,station.z},":")
 				end
-				return ceiling,#selected_rows,table.concat(bytes,";")
+				return ceiling,#selected_rows,table.concat(bytes,";"),selected_points,
+					selected_controls,selected_scalars,selected_rows
 			end
 		end
 		error("C2 no selected R7 land-edge candidate")
@@ -2840,6 +2841,7 @@ local function run_r16_r17_source_oracle()
 	end
 	local function build_raw_world(world_seed)
 		local final_perimeter_by_id,perimeter_ceiling={},{}
+		local perimeter_segment_points={}
 		for perimeter_index=1,2 do local perimeter=source.perimeters[perimeter_index]
 			local authored=authored_perimeter_rows(perimeter)
 			local calculation=canonical_closed_rows(authored)
@@ -2888,6 +2890,30 @@ local function run_r16_r17_source_oracle()
 				if valid_closed_perimeter(perimeter,points) then
 					final_perimeter_by_id[perimeter.id]=points
 					perimeter_ceiling[perimeter.id]=ceiling
+					local order_by_key={}
+					for authored_index=1,#authored do
+						order_by_key[point_key(authored[authored_index])]=
+							authored[authored_index].authored_order
+					end
+					local segments={}
+					for segment_index=1,#perimeter.polygon-1 do
+						local start_order=assert(order_by_key[point_key(
+							perimeter.polygon[segment_index])])
+						local finish_order=assert(order_by_key[point_key(
+							perimeter.polygon[segment_index+1])])
+						local segment_controls={}
+						local order=start_order
+						while true do
+							segment_controls[#segment_controls+1]=controls[order]
+							if order==finish_order then break end
+							order=order==#controls and 1 or order+1
+							assert(#segment_controls<=#controls,
+								"R19 perimeter segment control walk exhausted")
+						end
+						segments[segment_index-1]=
+							raster_displaced_controls(segment_controls,false)
+					end
+					perimeter_segment_points[perimeter.id]=segments
 					break
 				end
 			end
@@ -3005,7 +3031,7 @@ local function run_r16_r17_source_oracle()
 			end
 			return false
 		end
-		local aperture_station_by_bay={}
+		local aperture_station_by_bay,aperture_run_by_id={},{}
 		for aperture_index=1,#source.bay_mouth_apertures do
 			local aperture=source.bay_mouth_apertures[aperture_index]
 			local compiled=assert(bay_by_id[aperture.bay_id])
@@ -3028,6 +3054,9 @@ local function run_r16_r17_source_oracle()
 			local included={}
 			for station_index=first,last do included[point_key(stations[station_index])]=true end
 			aperture_station_by_bay[aperture.bay_id]=included
+			aperture_run_by_id[aperture.id]={first=first,last=last,
+				before=stations[first-1],after=stations[last+1],
+				first_point=stations[first],last_point=stations[last]}
 		end
 		local bay_context_by_id={}
 		for bay_index=1,#source.bays do local bay=source.bays[bay_index]
@@ -3096,6 +3125,8 @@ local function run_r16_r17_source_oracle()
 		end
 		return {seed=world_seed,final_perimeter_by_id=final_perimeter_by_id,
 			perimeter_ceiling=perimeter_ceiling,bay_context_by_id=bay_context_by_id,
+			perimeter_segment_points=perimeter_segment_points,
+			aperture_run_by_id=aperture_run_by_id,
 			in_bay_envelope=in_bay_envelope,bay_water=bay_water,raw_owner=raw_owner,
 			clear_owner_cache=function() owner_cache={} end}
 	end
@@ -3611,7 +3642,9 @@ local function run_r16_r17_source_oracle()
 		end
 		return result
 	end
-	local function trace_bank(candidate_fn,water)
+	local function trace_bank(candidate_fn,water,start_previous,start_current,
+			trace_target,trace_envelope_columns)
+	local active_envelope_columns=trace_envelope_columns or envelope_columns
 	local pushed_total,max_pushed_per_call,max_stack=0,0,0
 	local function reachable(previous,current,target,base_states,base_columns,base_diagonals)
 		local states,columns,diagonals={},{},{}
@@ -3629,7 +3662,8 @@ local function run_r16_r17_source_oracle()
 		pushed_total=pushed_total+1
 		max_pushed_per_call=math.max(max_pushed_per_call,pushed_frames)
 		max_stack=math.max(max_stack,#stack)
-		assert(pushed_frames<=8*envelope_columns and #stack<=envelope_columns,
+		assert(pushed_frames<=8*active_envelope_columns and
+			#stack<=active_envelope_columns,
 			"R16 independent DFS initial bound")
 		while #stack>0 do
 			local frame=stack[#stack]
@@ -3653,7 +3687,8 @@ local function run_r16_r17_source_oracle()
 				pushed_total=pushed_total+1
 				max_pushed_per_call=math.max(max_pushed_per_call,pushed_frames)
 				max_stack=math.max(max_stack,#stack)
-				assert(pushed_frames<=8*envelope_columns and #stack<=envelope_columns,
+				assert(pushed_frames<=8*active_envelope_columns and
+					#stack<=active_envelope_columns,
 					"R16 independent DFS exact envelope bound")
 			else
 				states[frame.state],columns[frame.column]=nil,nil
@@ -3663,15 +3698,17 @@ local function run_r16_r17_source_oracle()
 		end
 		return false
 	end
-	local points={{x=wing.junction.x,z=wing.junction.z},{x=k.x,z=k.z}}
+	local points={start_previous or {x=wing.junction.x,z=wing.junction.z},
+		start_current or {x=k.x,z=k.z}}
 	local previous,current=points[1],points[2]
+	local active_target=trace_target or terminal
 	local states={[state_key(previous,current)]=true}
 	local columns={[point_key(previous)]=true,[point_key(current)]=true}
 	local diagonals={}
 	local first_valid=add_diagonal(diagonals,previous,current)
 	assert(first_valid,"R16 negative Wing tail gained an X-cross")
 	local branch_count,main_steps=0,0
-	while point_key(current)~=point_key(terminal) do
+	while point_key(current)~=point_key(active_target) do
 		local nexts=successors_for(candidate_fn,water,previous,current,states,
 			columns,diagonals)
 		local following
@@ -3679,7 +3716,7 @@ local function run_r16_r17_source_oracle()
 		elseif #nexts>1 then
 			branch_count=branch_count+1
 			for i=1,#nexts do
-				if reachable(current,nexts[i],terminal,states,columns,diagonals) then
+				if reachable(current,nexts[i],active_target,states,columns,diagonals) then
 					following=nexts[i] break
 				end
 			end
@@ -3692,7 +3729,8 @@ local function run_r16_r17_source_oracle()
 		points[#points+1]={x=following.x,z=following.z}
 		previous,current=current,following
 		main_steps=main_steps+1
-		assert(main_steps<=envelope_columns-1,"R16 independent main trace bound")
+		assert(main_steps<=active_envelope_columns-1,
+			"R16 independent main trace bound")
 	end
 	return {points=points,branch_count=branch_count,pushed_total=pushed_total,
 		max_pushed_per_call=max_pushed_per_call,max_stack=max_stack,
@@ -3722,6 +3760,550 @@ local function run_r16_r17_source_oracle()
 		{[point_key(terminal)]=true},{})
 	assert(#stillgrave_nexts==1 and stillgrave_nexts[1].x==-1141 and
 		stillgrave_nexts[1].z==2242,"R16 Stillgrave first successor drift")
+
+	-- R19 independently reconstructs the hidden pre-R18 Slot29 seed from the
+	-- same Source+T1-only machinery.  It keeps R18's maximal dry interval,
+	-- probes every R16-resolvable incidence through a candidate-specific final
+	-- edge reraster, and accepts only the tuple whose two incident Banks both
+	-- reach their fixed other terminals.
+	local r19_seed="16178445837170081103"
+	local r19_ceiling,r19_row_count,r19_identity,r19_provisional,
+		r19_controls,r19_scalars=selected_land_edge_identity(10,r19_seed)
+	assert(r19_ceiling==3 and r19_row_count==#r19_controls and
+		#r19_controls==#r19_scalars and #r19_provisional>0 and #r19_identity>0,
+		"R19 selected-R7 land_010 materialization drift")
+	local r19_world=build_raw_world(r19_seed)
+	local r19_fills,_,r19_fill_by_point=enumerate_raw_notches(r19_world,"R19-slot29")
+	local function r19_water(bay_id,x,z)
+		return r19_world.bay_water(bay_id,x,z) or
+			r19_fill_by_point[x..":"..z]==bay_id
+	end
+	local function r19_owner(x,z)
+		local count,owner=r19_world.raw_owner(x,z)
+		local fill=r19_fill_by_point[x..":"..z]
+		if fill then assert(count==0 and not owner) return 1,fill end
+		return count,owner
+	end
+	local function r19_candidate(bay_id,x,z)
+		local context=r19_world.bay_context_by_id[bay_id]
+		if not r19_world.in_bay_envelope(context,x,z) or
+				context.footprint_class(x,z)<0 or r19_owner(x,z)>0 then return false end
+		local own=false
+		for direction_index=1,4 do local direction=cardinal[direction_index]
+			local nx,nz=checked_neighbour(x,direction.x),
+				checked_neighbour(z,direction.z)
+			local own_water=r19_water(bay_id,nx,nz)
+			if own_water then own=true end
+			if r19_owner(nx,nz)>0 and not own_water then return false end
+		end
+		return own
+	end
+	local kw_context=r19_world.bay_context_by_id.bay_kragmar_west
+	local r19_dry_runs={}
+	for point_index=1,#r19_provisional do local point=r19_provisional[point_index]
+		if kw_context and kw_context.footprint_class(point.x,point.z)>=0 and
+				r19_owner(point.x,point.z)==0 then
+			local run=r19_dry_runs[#r19_dry_runs]
+			if not run or run.last~=point_index-1 then
+				run={first=point_index,last=point_index}
+				r19_dry_runs[#r19_dry_runs+1]=run
+			else run.last=point_index end
+		end
+	end
+	assert(#r19_dry_runs==1,"R19 land_010 R18 interval count drift: "..#r19_dry_runs)
+	local r19_run=r19_dry_runs[1]
+	local r19_interval_key={}
+	for point_index=r19_run.first,r19_run.last do
+		r19_interval_key[point_key(r19_provisional[point_index])]=point_index
+	end
+	local r19_control_point_index={}
+	for control_index=1,#r19_controls do
+		r19_control_point_index[control_index]=r19_interval_key[point_key(r19_controls[control_index])]
+	end
+
+	local attachment_segment=assert(r19_world.perimeter_segment_points.
+		perimeter_kragmar_mainland[6])
+	local attachment_e=r19_provisional[r19_run.first]
+	local canonical_perimeter=canonical_closed_rows(
+		r19_world.final_perimeter_by_id.perimeter_kragmar_mainland)
+	local canonical_index={}
+	for index=1,#canonical_perimeter do canonical_index[point_key(canonical_perimeter[index])]=index end
+	local attachment_a,attachment_distance,attachment_index
+	for index=1,#attachment_segment do local point=attachment_segment[index]
+		local distance=math.max(math.abs(point.x-attachment_e.x),
+			math.abs(point.z-attachment_e.z))
+		local order=assert(canonical_index[point_key(point)])
+		if not attachment_distance or distance<attachment_distance or
+				distance==attachment_distance and order<attachment_index then
+			attachment_a,attachment_distance,attachment_index=point,distance,order
+		end
+	end
+	assert(attachment_a and attachment_distance<=1,
+		"R19 land_010 attachment probe failed: E="..point_key(attachment_e)..
+		" A="..tostring(attachment_a and point_key(attachment_a))..
+		" d="..tostring(attachment_distance))
+
+	local r19_min_x,r19_max_x,r19_min_z,r19_max_z
+	for box_index=1,#kw_context.boxes do local box=kw_context.boxes[box_index]
+		r19_min_x=r19_min_x and math.min(r19_min_x,box.min_x) or box.min_x
+		r19_max_x=r19_max_x and math.max(r19_max_x,box.max_x) or box.max_x
+		r19_min_z=r19_min_z and math.min(r19_min_z,box.min_z) or box.min_z
+		r19_max_z=r19_max_z and math.max(r19_max_z,box.max_z) or box.max_z
+	end
+	local r19_envelope_columns=0
+	for x=r19_min_x,r19_max_x do for z=r19_min_z,r19_max_z do
+		if r19_world.in_bay_envelope(kw_context,x,z) and
+				kw_context.footprint_class(x,z)>=0 then
+			r19_envelope_columns=r19_envelope_columns+1
+		end
+	end end
+	assert(r19_envelope_columns>0,"R19 empty exact Kragmar-west trace envelope")
+	local kw_aperture
+	for aperture_index=1,#source.bay_mouth_apertures do local aperture=
+			source.bay_mouth_apertures[aperture_index]
+		if aperture.bay_id=="bay_kragmar_west" then kw_aperture=aperture break end
+	end
+	assert(kw_aperture and kw_aperture.id=="bay_mouth_aperture:kragmar_west" and
+		kw_aperture.perimeter_id=="perimeter_kragmar_mainland",
+		"R19 Kragmar-west aperture Source projection drift")
+	local kw_aperture_run=assert(r19_world.aperture_run_by_id[kw_aperture.id])
+	local aperture_points=r19_world.final_perimeter_by_id.perimeter_kragmar_mainland
+	local final_aperture_first,final_aperture_last,final_aperture_runs
+	for index=1,#aperture_points do local point=aperture_points[index]
+		local included=kw_context.footprint_class(point.x,point.z)==0 and
+			r19_water("bay_kragmar_west",point.x,point.z)
+		if included then
+			if not final_aperture_last or final_aperture_last~=index-1 then
+				final_aperture_runs=(final_aperture_runs or 0)+1
+				final_aperture_first=index
+			end
+			final_aperture_last=index
+		end
+	end
+	assert(final_aperture_runs==1 and final_aperture_first==kw_aperture_run.first and
+		final_aperture_last==kw_aperture_run.last,
+		"R19 final-mask authored-order aperture run differs from Source projection")
+	local aperture_signature={}
+	for index=kw_aperture_run.first,kw_aperture_run.last do
+		aperture_signature[#aperture_signature+1]=point_key(aperture_points[index])
+	end
+	local aperture_sha=canonical.hex(raw_sha256(table.concat(aperture_signature,",")))
+	assert(#aperture_signature==625 and
+		aperture_sha=="864ce08d38aacfa028bac35d82435018c721ee3dd6563ac14021741f28f25837",
+		"R19 final-mask aperture bytes drift: "..#aperture_signature.."/"..
+		aperture_sha)
+	local stillgrave_target=kw_aperture_run.before
+	assert(point_key(stillgrave_target)=="-1386:2938" and
+		kw_context.footprint_class(stillgrave_target.x,stillgrave_target.z)==0 and
+		r19_owner(stillgrave_target.x,stillgrave_target.z)==0 and
+		not r19_fill_by_point[point_key(stillgrave_target)],
+		"R19 final-mask Stillgrave aperture target drift: "..
+		point_key(stillgrave_target))
+
+	local r19_wing
+	for wing_index=1,#source.bay_closure_wings do
+		if source.bay_closure_wings[wing_index].id=="bay_wing:kragmar_west:left" then
+			r19_wing=source.bay_closure_wings[wing_index] break
+		end
+	end
+	assert(r19_wing)
+	local r19_wing_vx,r19_wing_vz=
+		r19_wing.junction.x-r19_wing.head.x,
+		r19_wing.junction.z-r19_wing.head.z
+	local r19_wing_length=r19_wing_vx*r19_wing_vx+
+		r19_wing_vz*r19_wing_vz
+	local function r19_select_wing_k(sign)
+		local best,best_projection
+		for x=math.min(r19_wing.head.x,r19_wing.junction.x)-
+				r19_wing.head_half_width,
+				math.max(r19_wing.head.x,r19_wing.junction.x)+
+				r19_wing.head_half_width do
+			for z=math.min(r19_wing.head.z,r19_wing.junction.z)-
+					r19_wing.head_half_width,
+					math.max(r19_wing.head.z,r19_wing.junction.z)+
+					r19_wing.head_half_width do
+				local own_neighbor=false
+				for direction_index=1,4 do local direction=cardinal[direction_index]
+					if r8_wing_member(checked_neighbour(x,direction.x),
+							checked_neighbour(z,direction.z),r19_wing) then
+						own_neighbor=true break
+					end
+				end
+				local px,pz=x-r19_wing.head.x,z-r19_wing.head.z
+				local projection=px*r19_wing_vx+pz*r19_wing_vz
+				local side=r19_wing_vx*pz-r19_wing_vz*px
+				local point={x=x,z=z}
+				if own_neighbor and kw_context.footprint_class(x,z)>=0 and
+						r19_owner(x,z)==0 and projection>=0 and
+						projection<r19_wing_length and
+						(sign<0 and side<0 or sign>0 and side>0) and
+						(not best or projection>best_projection or
+						projection==best_projection and point_less(point,best)) then
+					best,best_projection=point,projection
+				end
+			end
+		end
+		return assert(best,"R19 R15 Wing K set is empty")
+	end
+	local function r19_tail_paths(k,sign)
+		local result,path={},{ {x=k.x,z=k.z} }
+		local function visit(current)
+			local distance=math.max(math.abs(current.x-r19_wing.junction.x),
+				math.abs(current.z-r19_wing.junction.z))
+			if distance==0 then
+				local copy={}
+				for index=1,#path do copy[index]={x=path[index].x,z=path[index].z} end
+				result[#result+1]=copy return
+			end
+			local next_points={}
+			for dz=-1,1 do for dx=-1,1 do
+				if dx~=0 or dz~=0 then
+					local x,z=checked_neighbour(current.x,dx),
+						checked_neighbour(current.z,dz)
+					if math.max(math.abs(x-r19_wing.junction.x),
+							math.abs(z-r19_wing.junction.z))==distance-1 then
+						local px,pz=x-r19_wing.head.x,z-r19_wing.head.z
+						local side=r19_wing_vx*pz-r19_wing_vz*px
+						if x==r19_wing.junction.x and z==r19_wing.junction.z or
+								(kw_context.footprint_class(x,z)>=0 and
+								r19_owner(x,z)==0 and
+								(sign<0 and side<0 or sign>0 and side>0)) then
+							next_points[#next_points+1]={x=x,z=z}
+						end
+					end
+				end
+			end end
+			table.sort(next_points,point_less)
+			for index=1,#next_points do
+				path[#path+1]=next_points[index] visit(next_points[index]) path[#path]=nil
+			end
+		end
+		visit(k) return result
+	end
+	local function r19_path_less(a,b)
+		for index=1,math.min(#a,#b) do
+			if point_less(a[index],b[index]) then return true end
+			if point_less(b[index],a[index]) then return false end
+		end
+		return #a<#b
+	end
+	local function r19_pair_less(a,b)
+		if r19_path_less(a.negative,b.negative) then return true end
+		if r19_path_less(b.negative,a.negative) then return false end
+		return r19_path_less(a.positive,b.positive)
+	end
+	local function r19_structural_pair(pair)
+		local occupied={}
+		for index=1,#pair.negative-1 do occupied[point_key(pair.negative[index])]=true end
+		for index=1,#pair.positive-1 do
+			if occupied[point_key(pair.positive[index])] then return false end
+		end
+		if point_key(pair.negative[#pair.negative-1])==
+				point_key(pair.positive[#pair.positive-1]) then return false end
+		local diagonals={}
+		for _,path in ipairs({pair.negative,pair.positive}) do
+			for index=1,#path-1 do
+				local ok=add_diagonal(diagonals,path[index],path[index+1])
+				if not ok then return false end
+			end
+		end
+		return true
+	end
+	local function r19_orientation(a,b,c)
+		return (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x)
+	end
+	local function r19_on_segment(a,b,p)
+		return r19_orientation(a,b,p)==0 and p.x>=math.min(a.x,b.x) and
+			p.x<=math.max(a.x,b.x) and p.z>=math.min(a.z,b.z) and
+			p.z<=math.max(a.z,b.z)
+	end
+	local function r19_intersects(a,b,c,d)
+		local ac,ad=r19_orientation(a,b,c),r19_orientation(a,b,d)
+		local ca,cb=r19_orientation(c,d,a),r19_orientation(c,d,b)
+		return ac==0 and r19_on_segment(a,b,c) or
+			ad==0 and r19_on_segment(a,b,d) or
+			ca==0 and r19_on_segment(c,d,a) or
+			cb==0 and r19_on_segment(c,d,b) or
+			((ac<0)~=(ad<0) and (ca<0)~=(cb<0))
+	end
+	local function r19_wedge_valid(pair)
+		local polygon={}
+		for index=1,#pair.negative do polygon[#polygon+1]=pair.negative[index] end
+		for index=#pair.positive-1,1,-1 do polygon[#polygon+1]=pair.positive[index] end
+		local seen={}
+		for index=1,#polygon do
+			if seen[point_key(polygon[index])] then return false end
+			seen[point_key(polygon[index])]=true
+		end
+		local area2=0
+		for index=1,#polygon do local a,b=polygon[index],polygon[index%#polygon+1]
+			area2=area2+a.x*b.z-b.x*a.z
+		end
+		if area2==0 then return false end
+		for first=1,#polygon do local a,b=polygon[first],polygon[first%#polygon+1]
+			for second=first+1,#polygon do
+				if second~=first+1 and not (first==1 and second==#polygon) then
+					if r19_intersects(a,b,polygon[second],polygon[second%#polygon+1]) then
+						return false
+					end
+				end
+			end
+		end
+		local radius=math.max(
+			math.max(math.abs(pair.negative[1].x-r19_wing.junction.x),
+				math.abs(pair.negative[1].z-r19_wing.junction.z)),
+			math.max(math.abs(pair.positive[1].x-r19_wing.junction.x),
+				math.abs(pair.positive[1].z-r19_wing.junction.z)))+1
+		if radius>5 then return false end
+		local exempt={}
+		for _,path in ipairs({pair.negative,pair.positive}) do
+			for index=1,#path do exempt[point_key(path[index])]=true end
+		end
+		for x=r19_wing.junction.x-radius,r19_wing.junction.x+radius do
+			for z=r19_wing.junction.z-radius,r19_wing.junction.z+radius do
+				local winding=0
+				for index=1,#polygon do local a,b=polygon[index],polygon[index%#polygon+1]
+					local side=r19_orientation(a,b,{x=x,z=z})
+					if side==0 and x>=math.min(a.x,b.x) and x<=math.max(a.x,b.x) and
+							z>=math.min(a.z,b.z) and z<=math.max(a.z,b.z) then
+						winding=1 break
+					end
+					if a.z<=z then if b.z>z and side>0 then winding=winding+1 end
+					elseif b.z<=z and side<0 then winding=winding-1 end
+				end
+				if winding~=0 and not exempt[x..":"..z] and
+						not r8_wing_member(x,z,r19_wing) then return false end
+			end
+		end
+		return true,radius
+	end
+	local negative_paths=r19_tail_paths(r19_select_wing_k(-1),-1)
+	local positive_paths=r19_tail_paths(r19_select_wing_k(1),1)
+	local r19_pairs={}
+	for negative_index=1,#negative_paths do for positive_index=1,#positive_paths do
+		local pair={negative=negative_paths[negative_index],
+			positive=positive_paths[positive_index]}
+		if r19_structural_pair(pair) then r19_pairs[#r19_pairs+1]=pair end
+	end end
+	table.sort(r19_pairs,r19_pair_less)
+	local r19_wedge_valid_pairs={}
+	for pair_index=1,#r19_pairs do
+		local valid,radius=r19_wedge_valid(r19_pairs[pair_index])
+		if valid then r19_wedge_valid_pairs[#r19_wedge_valid_pairs+1]=
+			{rank=pair_index,pair=r19_pairs[pair_index],radius=radius} end
+	end
+	assert(#r19_pairs==2 and #r19_wedge_valid_pairs==1 and
+		r19_wedge_valid_pairs[1].rank==2 and r19_wedge_valid_pairs[1].radius==3,
+		"R19 current-seed R15 pair/rank/radius drift")
+	local r19_tail_pair=r19_wedge_valid_pairs[1].pair
+	local r19_negative_tail=r19_tail_pair.negative
+	assert(raster_signature(r19_tail_pair.negative)==
+		"-1399:1901,-1400:1900" and
+		raster_signature(r19_tail_pair.positive)==
+		"-1398:1900,-1399:1900,-1400:1900",
+		"R19 current-seed R15 selected full tail bytes drift")
+	local r19_wing_k=r19_negative_tail[1]
+	assert(point_key(r19_negative_tail[#r19_negative_tail])==
+		point_key(r19_wing.junction) and #r19_negative_tail==2 and
+		point_key(r19_wing_k)=="-1399:1901",
+		"R19 frozen R15 negative tail bytes drift")
+	for tail_index=1,#r19_negative_tail-1 do local tail=r19_negative_tail[tail_index]
+		assert(kw_context.footprint_class(tail.x,tail.z)>=0 and
+			r19_owner(tail.x,tail.z)==0,
+			"R19 selected R15 tail is not final dry")
+	end
+
+	local function r19_resolve_incidence(point_index)
+		local e_point=r19_provisional[point_index]
+		if r19_candidate("bay_kragmar_west",e_point.x,e_point.z) then
+			return {x=e_point.x,z=e_point.z},"direct",e_point
+		end
+		local toward=r19_provisional[point_index+1]
+		if not toward or kw_context.footprint_class(e_point.x,e_point.z)~=1 or
+				r19_owner(e_point.x,e_point.z)>0 or
+				math.abs(toward.x-e_point.x)~=1 or math.abs(toward.z-e_point.z)~=1 then
+			return nil
+		end
+		for direction_index=1,4 do local direction=cardinal[direction_index]
+			if r19_owner(checked_neighbour(e_point.x,direction.x),
+					checked_neighbour(e_point.z,direction.z))>0 then return nil end
+		end
+		local count,owner=r19_owner(toward.x,toward.z)
+		if count~=1 or owner~="bay_kragmar_west" then return nil end
+		local elbows={{x=toward.x,z=e_point.z},{x=e_point.x,z=toward.z}}
+		if not r19_candidate("bay_kragmar_west",elbows[1].x,elbows[1].z) or
+				not r19_candidate("bay_kragmar_west",elbows[2].x,elbows[2].z) then return nil end
+		table.sort(elbows,point_less)
+		return elbows[1],"diagonal_elbow",e_point
+	end
+	local function valid_r19_probe(points)
+		if #points<2 then return false end
+		local seen,diagonals={},{ }
+		for point_index=1,#points do local point=points[point_index]
+			local key=point_key(point)
+			if seen[key] or kw_context.footprint_class(point.x,point.z)<0 or
+					r19_owner(point.x,point.z)>0 then return false end
+			seen[key]=true
+			local bx,bz=deterministic.floor_div(point.x,bucket_size),
+				deterministic.floor_div(point.z,bucket_size)
+			local in_record_envelope=false
+			for ox=-1,1 do for oz=-1,1 do
+				local bucket=base_buckets[(bx+ox)..":"..(bz+oz)] or {}
+				for source_index=1,#bucket do local base= bucket[source_index]
+					if math.abs(point.x-base.x)<=edge.max_displacement and
+							math.abs(point.z-base.z)<=edge.max_displacement then
+						in_record_envelope=true break
+					end
+				end
+				if in_record_envelope then break end
+			end if in_record_envelope then break end end
+			if not in_record_envelope then return false end
+			if point_index>1 then
+				local previous=points[point_index-1]
+				local dx,dz=point.x-previous.x,point.z-previous.z
+				if math.max(math.abs(dx),math.abs(dz))~=1 then return false end
+				if math.abs(dx)==1 and math.abs(dz)==1 then
+					local cell=math.min(point.x,previous.x)..":"..
+						math.min(point.z,previous.z)
+					local slope=dx==dz and 1 or -1
+					if diagonals[cell] and diagonals[cell]~=slope then return false end
+					diagonals[cell]=slope
+				end
+			end
+		end
+		return true
+	end
+	local r19_resolved,r19_complete={},{ }
+	for point_index=r19_run.last,r19_run.first+1,-1 do
+		local resolved,mode,e_point=r19_resolve_incidence(point_index)
+		if resolved then
+			local probe_controls={{x=attachment_a.x,z=attachment_a.z}}
+			local previous_control_index,retained_control_count
+			for control_index=1,#r19_controls do
+				local interval_index=r19_control_point_index[control_index]
+				if interval_index and interval_index>=r19_run.first and
+						interval_index<=point_index then
+					if previous_control_index then
+						assert(control_index==previous_control_index+1,
+							"R19 retained controls are not one contiguous subsequence")
+					end
+					previous_control_index=control_index
+					retained_control_count=(retained_control_count or 0)+1
+					local control=r19_controls[control_index]
+					if point_key(probe_controls[#probe_controls])~=point_key(control) then
+						probe_controls[#probe_controls+1]={x=control.x,z=control.z}
+					end
+				end
+			end
+			assert(retained_control_count and retained_control_count>0,
+				"R19 empty retained R7 control subsequence")
+			if mode=="diagonal_elbow" and
+					point_key(probe_controls[#probe_controls])~=point_key(e_point) then
+				probe_controls[#probe_controls+1]={x=e_point.x,z=e_point.z}
+			end
+			if point_key(probe_controls[#probe_controls])~=point_key(resolved) then
+				probe_controls[#probe_controls+1]={x=resolved.x,z=resolved.z}
+			end
+			local probe_edge=raster_displaced_controls(probe_controls,false)
+			if point_key(probe_edge[#probe_edge])==point_key(resolved) and
+					valid_r19_probe(probe_edge) and
+					r19_candidate("bay_kragmar_west",resolved.x,resolved.z) and
+					r19_candidate("bay_kragmar_west",stillgrave_target.x,
+						stillgrave_target.z) and
+					r19_candidate("bay_kragmar_west",r19_wing_k.x,r19_wing_k.z) then
+				local previous=probe_edge[#probe_edge-1]
+				local still_ok,still=pcall(trace_bank,r19_candidate,r19_water,
+					previous,resolved,stillgrave_target,r19_envelope_columns)
+				local mourn_ok,mourn=pcall(trace_bank,r19_candidate,r19_water,
+					r19_wing.junction,r19_wing_k,resolved,r19_envelope_columns)
+				local row={point_index=point_index,mode=mode,terminal=resolved,
+					previous=previous,edge=probe_edge,stillgrave=still_ok and still or nil,
+					mournfen=mourn_ok and mourn or nil}
+				r19_resolved[#r19_resolved+1]=row
+				if still_ok and mourn_ok then r19_complete[#r19_complete+1]=row end
+			end
+		end
+	end
+	assert(#r19_resolved==2 and #r19_complete==1,
+		"R19 Slot29 resolved/complete candidate count drift: "..
+		#r19_resolved.."/"..#r19_complete)
+	local r19_selected=r19_complete[1]
+	assert(point_key(r19_selected.terminal)=="-1135:2242" and
+		point_key(r19_selected.previous)=="-1136:2242" and
+		#r19_selected.edge==1601,
+		"R19 selected K/B/final-edge drift")
+	local repeated_probe={}
+	for index=1,#r19_selected.edge do local point=r19_selected.edge[index]
+		repeated_probe[index]={x=point.x,z=point.z}
+	end
+	repeated_probe[3]={x=repeated_probe[2].x,z=repeated_probe[2].z}
+	assert(not valid_r19_probe(repeated_probe),
+		"R19 accepted repeated candidate-specific final edge station")
+	local disconnected_probe={}
+	for index=1,#r19_selected.edge do local point=r19_selected.edge[index]
+		disconnected_probe[index]={x=point.x,z=point.z}
+	end
+	disconnected_probe[3]={x=disconnected_probe[2].x+2,
+		z=disconnected_probe[2].z}
+	assert(not valid_r19_probe(disconnected_probe),
+		"R19 accepted non-8-connected candidate-specific final edge")
+	local stillgrave_points={}
+	for index=2,#r19_selected.stillgrave.points do
+		stillgrave_points[#stillgrave_points+1]=r19_selected.stillgrave.points[index]
+	end
+	local mournfen_points=r19_selected.mournfen.points
+	local edge_sha=canonical.hex(raw_sha256(raster_signature(r19_selected.edge)))
+	local stillgrave_sha=canonical.hex(raw_sha256(raster_signature(stillgrave_points)))
+	local mournfen_sha=canonical.hex(raw_sha256(raster_signature(mournfen_points)))
+	assert(edge_sha=="f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70" and
+		canonical.hex(raw_sha256(reversed_signature(r19_selected.edge)))==
+			"d914e97cde5ee07c8a45c6fa7bafa5422aa7877429b4c04656433da60e030dc1" and
+		#stillgrave_points==794 and
+		stillgrave_sha=="f50970d89d04bf992bfb15f898621157e602abf624b09c6dff49fb09bf8d2317" and
+		canonical.hex(raw_sha256(reversed_signature(stillgrave_points)))==
+			"b98009b596c8ed73450523c8a52df9aecfc97a11f32b4babf8377fbd7555617a" and
+		#mournfen_points==456 and
+		mournfen_sha=="457ec6b155f092589972e01d21e6d2c13181a39e26a3eb700fa1e0f4c2071384" and
+		canonical.hex(raw_sha256(reversed_signature(mournfen_points)))==
+			"7229bcfa7ae0a3aa6f1c6027678abd71168eaba596a0e2971ffc411b85dffff4",
+		"R19 computed edge/Bank byte witness drift: "..edge_sha.."/"..
+		stillgrave_sha.."/"..mournfen_sha)
+	local excluded=r19_provisional[r19_run.last]
+	local edge_owner=0
+	for index=1,#r19_selected.edge do
+		if point_key(r19_selected.edge[index])==point_key(excluded) then edge_owner=edge_owner+1 end
+	end
+	local bank_owner=0
+	for _,points_row in ipairs({stillgrave_points,mournfen_points}) do
+		for index=1,#points_row do
+			if point_key(points_row[index])==point_key(excluded) then
+				bank_owner=bank_owner+1 break
+			end
+		end
+	end
+	assert(point_key(excluded)=="-1134:2242" and edge_owner==0 and bank_owner==1 and
+		exact_base_owner(source.bays[3],excluded.x,excluded.z)=="kragmar_mournfen",
+		"R19 excluded E owner witness drift")
+	local r19_control_sha=canonical.hex(raw_sha256(raster_signature(r19_controls)))
+	local r19_identity_sha=canonical.hex(raw_sha256(r19_identity))
+	local scalar_parts={}
+	for index=1,#r19_scalars do scalar_parts[index]=tostring(r19_scalars[index]) end
+	local r19_scalar_sha=canonical.hex(raw_sha256(table.concat(scalar_parts,",")))
+	assert(#r19_fills==0 and r19_control_sha==
+		"c61d4cd4d0152e04b4f3afe4b061ff454ef04f2a5574524da4295b2e49a9c9c9" and
+		r19_scalar_sha=="a251f81728b4aa000a1ed279ab055a7ed38fef81f338ab6d99963bf2b5117295" and
+		r19_identity_sha=="25d19e716fc9ccee106f8bdd33938ac94a939d4f50609db3d0cead808261f255" and
+		r19_envelope_columns==1130890 and 8*r19_envelope_columns==9047120 and
+		r19_envelope_columns-1==1130889,
+		"R19 unchanged upstream R7 control/scalar witness drift: "..
+		r19_control_sha.."/"..r19_scalar_sha.."/"..r19_identity_sha..
+		"/N="..r19_envelope_columns.."/AP="..kw_aperture_run.first..":"..
+		kw_aperture_run.last)
+	print(("WP40 T2 R19 Slot29 Source oracle passed: R16=%d complete=%d "..
+		"K=%s B=%s edge=%d/%s Stillgrave=%d/%s Mournfen=%d/%s"):format(
+		#r19_resolved,#r19_complete,point_key(r19_selected.terminal),
+		point_key(r19_selected.previous),#r19_selected.edge,edge_sha,
+		#stillgrave_points,stillgrave_sha,#mournfen_points,mournfen_sha))
 	print(("WP40 T2 R16 Slot-19 oracle passed: C=%d perimeter-C=%d/%d N=%d "..
 		"E=%s W=%s T=%s Mournfen=%d steps=%d branches=%d frames=%d/%d stack=%d "..
 		"Stillgrave-nexts=%d sha=%s"):format(selected_ceiling,
@@ -4127,6 +4709,232 @@ do
 		ok=pcall(select_incidence_complete,{complete,bad})
 		assert(not ok,"C2 accepted invalid excluded dry-fragment ownership")
 	end
+end
+
+-- Focused independent R19 terminal-tuple authority.  Stage 1 does not
+-- materialize selected-seed geometry; these fixtures bind exhaustive tuple
+-- selection, candidate-specific final-raster anchors, and the retained
+-- compiler handoff witnesses without importing a Stage-2 implementation.
+do
+	local function point_key(point) return point.x..":"..point.z end
+	local function byte_key(points)
+		local parts={}
+		for i=1,#points do parts[i]=point_key(points[i]) end
+		return table.concat(parts,",")
+	end
+	local function reverse_points(points)
+		local reversed={}
+		for i=#points,1,-1 do
+			reversed[#reversed+1]={x=points[i].x,z=points[i].z}
+		end
+		return reversed
+	end
+	local function select_joint_terminal(candidate_sets,probe)
+		assert(#candidate_sets==1 or #candidate_sets==2,
+			"R19 transition edge must have one or two endpoint candidate sets")
+		local MAX_EXACT=9007199254740991
+		local function safe_count_product(a,b)
+			assert(a>=0 and b>=0 and math.floor(a)==a and math.floor(b)==b and
+				(a==0 or b<=MAX_EXACT/a),"R19 candidate-count product overflow")
+			return a*b
+		end
+		local expected_visits=1
+		for endpoint_index=1,#candidate_sets do
+			local candidates=candidate_sets[endpoint_index]
+			assert(#candidates>0 and type(candidates.interval_station_count)=="number" and
+				#candidates<=candidates.interval_station_count-1,
+				"R19 endpoint candidate count exceeds interval bound")
+			expected_visits=safe_count_product(expected_visits,#candidates)
+		end
+		local complete,identities,visited={},{ },0
+		local tuple={}
+		local function visit(endpoint_index)
+			if endpoint_index<=#candidate_sets then
+				local candidates=candidate_sets[endpoint_index]
+				assert(#candidates>0,"R19 empty resolved endpoint candidate set")
+				for candidate_index=1,#candidates do
+					local candidate=candidates[candidate_index]
+					assert(candidate.in_interval and candidate.has_adjacent_away,
+						"R19 ineligible station incidence")
+					tuple[endpoint_index]=candidate
+					visit(endpoint_index+1)
+				end
+				return
+			end
+			visited=visited+1
+			local result=probe(tuple)
+			assert(type(result)=="table" and #result.edge_bytes>=2 and
+				#result.terminals==#candidate_sets and
+				#result.previous==#candidate_sets and
+				#result.bank_pairs_complete==#candidate_sets,
+				"R19 malformed joint probe")
+			local identity_parts={byte_key(result.edge_bytes)}
+			for i=1,#candidate_sets do
+				local side=tuple[i].endpoint
+				assert(side=="from" or side=="to","R19 candidate endpoint side")
+				local endpoint=side=="from" and result.edge_bytes[1] or
+					result.edge_bytes[#result.edge_bytes]
+				local adjacent=side=="from" and result.edge_bytes[2] or
+					result.edge_bytes[#result.edge_bytes-1]
+				assert(point_key(endpoint)==point_key(result.terminals[i]) and
+					point_key(adjacent)==point_key(result.previous[i]),
+					"R19 anchor did not come from candidate-specific final edge bytes")
+				identity_parts[#identity_parts+1]=point_key(result.terminals[i])
+				identity_parts[#identity_parts+1]=point_key(result.previous[i])
+			end
+			local identity=table.concat(identity_parts,";")
+			assert(not identities[identity],"R19 duplicate resolved tuple identity")
+			identities[identity]=true
+			local all_complete=true
+			for i=1,#result.bank_pairs_complete do
+				if not result.bank_pairs_complete[i] then all_complete=false end
+			end
+			if all_complete then complete[#complete+1]=result end
+		end
+		visit(1)
+		assert(visited==expected_visits,"R19 did not enumerate full Cartesian set")
+		assert(#complete==1,"R19 requires exactly one complete joint edge tuple")
+		return complete[1],safe_count_product
+	end
+
+	-- Bresenham subline clipping is not byte stable.  The probe previous
+	-- station must come from the rerasterized bytes, never from provisional
+	-- selected-R7 adjacency.
+	local provisional=raster_canonical_points(0,0,1,3)
+	local probe_subline=raster_canonical_points(0,0,1,2)
+	assert(point_key(provisional[2])=="0:1" and
+		point_key(probe_subline[#probe_subline-1])=="1:1" and
+		point_key(provisional[2])~=point_key(probe_subline[#probe_subline-1]),
+		"R19 synthetic subline-divergence anchor KAT drift")
+	local function synthetic_probe_controls(retained,e,t,mode)
+		assert(#retained>0,"R19 synthetic empty retained controls")
+		local controls={}
+		for index=1,#retained do controls[index]=retained[index] end
+		if mode=="diagonal_elbow" and
+				point_key(controls[#controls])~=point_key(e) then
+			controls[#controls+1]=e
+		end
+		if point_key(controls[#controls])~=point_key(t) then controls[#controls+1]=t end
+		return controls
+	end
+	local diagonal_controls=synthetic_probe_controls({{x=0,z=0}},
+		{x=1,z=1},{x=1,z=2},"diagonal_elbow")
+	assert(byte_key(diagonal_controls)=="0:0,1:1,1:2",
+		"R19 diagonal E-then-T probe control order drift")
+	local empty_ok=pcall(synthetic_probe_controls,{},
+		{x=1,z=1},{x=1,z=2},"diagonal_elbow")
+	assert(not empty_ok,"R19 accepted empty retained probe controls")
+
+	-- This authored-control fixture is deliberately selected twice.  Forward
+	-- selection receives B,K,E and the `to` obligation; reversed selection
+	-- receives E,K,B and the swapped `from` obligation.  Each candidate clips
+	-- and rerasterizes its own control subsequence before Bank completeness is
+	-- evaluated, so this is not a reversal of already-selected output bytes.
+	local forward_controls={{x=-1136,z=2242,id="B"},
+		{x=-1135,z=2242,id="K"},{x=-1134,z=2242,id="E"}}
+	local reverse_controls={{x=-1134,z=2242,id="E"},
+		{x=-1135,z=2242,id="K"},{x=-1136,z=2242,id="B"}}
+	local slot29_E={id="E",x=-1134,z=2242,endpoint="to",authored_index=3,
+		in_interval=true,has_adjacent_away=true}
+	local slot29_K={id="K",x=-1135,z=2242,endpoint="to",authored_index=2,
+		in_interval=true,has_adjacent_away=true}
+	local slot29_candidates={slot29_E,slot29_K,interval_station_count=3}
+	local function authored_candidate_probe(controls,candidate)
+		local retained={}
+		if candidate.endpoint=="to" then
+			for index=1,candidate.authored_index do
+				retained[#retained+1]=controls[index]
+			end
+		else
+			for index=candidate.authored_index,#controls do
+				retained[#retained+1]=controls[index]
+			end
+		end
+		assert(#retained>=2,"R19 authored candidate probe lost its away anchor")
+		local edge_bytes=raster_displaced_controls(retained,false)
+		local terminal=candidate.endpoint=="from" and edge_bytes[1] or
+			edge_bytes[#edge_bytes]
+		local previous=candidate.endpoint=="from" and edge_bytes[2] or
+			edge_bytes[#edge_bytes-1]
+		assert(point_key(terminal)==candidate.x..":"..candidate.z,
+			"R19 authored candidate probe terminal drift")
+		return {edge_bytes=edge_bytes,terminals={terminal},previous={previous},
+			bank_pairs_complete={candidate.id=="K"}}
+	end
+	local function slot29_probe(tuple)
+		return authored_candidate_probe(forward_controls,tuple[1])
+	end
+	local selected,safe_count_product=select_joint_terminal({slot29_candidates},slot29_probe)
+	assert(point_key(selected.terminals[1])=="-1135:2242" and
+		point_key(selected.previous[1])=="-1136:2242",
+		"R19 Slot29 unique complete terminal K drift")
+	local reordered=select_joint_terminal({{slot29_K,slot29_E,
+		interval_station_count=3}},slot29_probe)
+	assert(byte_key(reordered.edge_bytes)==byte_key(selected.edge_bytes),
+		"R19 candidate enumeration order changed selected bytes")
+
+	-- Two-transition edges are selected as one Cartesian tuple because either
+	-- endpoint changes the combined reraster and therefore both anchors.
+	local left_a={id="left_a",endpoint="from",in_interval=true,has_adjacent_away=true}
+	local left_b={id="left_b",endpoint="from",in_interval=true,has_adjacent_away=true}
+	local right_a={id="right_a",endpoint="to",in_interval=true,has_adjacent_away=true}
+	local right_b={id="right_b",endpoint="to",in_interval=true,has_adjacent_away=true}
+	local function paired_probe(tuple)
+		local chosen=tuple[1].id=="left_b" and tuple[2].id=="right_a"
+		local left_previous=tuple[2].id=="right_a" and {x=1,z=0} or {x=1,z=1}
+		local right_previous=tuple[1].id=="left_b" and {x=2,z=0} or {x=2,z=-1}
+		return {edge_bytes={{x=0,z=0},left_previous,right_previous,{x=3,z=0}},
+			terminals={{x=0,z=0},{x=3,z=0}},
+			previous={left_previous,right_previous},
+			bank_pairs_complete={chosen,chosen}}
+	end
+	local pair=select_joint_terminal({{left_a,left_b,interval_station_count=3},
+		{right_a,right_b,interval_station_count=3}},paired_probe)
+	assert(pair.bank_pairs_complete[1] and pair.bank_pairs_complete[2] and
+		point_key(pair.previous[1])=="1:0",
+		"R19 joint two-endpoint tuple selection drift")
+
+	local ok=pcall(select_joint_terminal,{{slot29_E,interval_station_count=2}},slot29_probe)
+	assert(not ok,"R19 accepted zero complete terminal tuples")
+	ok=pcall(select_joint_terminal,{{slot29_K,slot29_K,interval_station_count=3}},slot29_probe)
+	assert(not ok,"R19 accepted duplicate resolved tuple identity")
+	ok=pcall(select_joint_terminal,{{slot29_K,{id="K2",x=-1135,z=2242,
+		endpoint="to",in_interval=true,has_adjacent_away=true},
+		interval_station_count=3}},function(tuple)
+		if tuple[1].id=="K2" then
+			return {edge_bytes={{x=-1138,z=2242},{x=-1137,z=2242}},
+				terminals={{x=-1137,z=2242}},previous={{x=-1138,z=2242}},
+				bank_pairs_complete={true}}
+		end
+		return slot29_probe(tuple)
+	end)
+	assert(not ok,"R19 accepted multiple complete terminal tuples")
+	ok=pcall(select_joint_terminal,{{{id="opposite",endpoint="to",in_interval=true,
+		has_adjacent_away=false},interval_station_count=2}},slot29_probe)
+	assert(not ok,"R19 accepted an incidence without adjacent-away station")
+	ok=pcall(safe_count_product,9007199254740991,2)
+	assert(not ok,"R19 accepted candidate-count product overflow")
+
+	local reversed=reverse_points(selected.edge_bytes)
+	assert(byte_key(reversed)=="-1135:2242,-1136:2242" and
+		byte_key(reverse_points(reversed))==byte_key(selected.edge_bytes),
+		"R19 final-edge finished-byte reversal drift")
+	local reversed_E={id="E",x=-1134,z=2242,endpoint="from",authored_index=1,
+		in_interval=true,has_adjacent_away=true}
+	local reversed_K={id="K",x=-1135,z=2242,endpoint="from",authored_index=2,
+		in_interval=true,has_adjacent_away=true}
+	local reversed_selected=select_joint_terminal({{reversed_E,reversed_K,
+		interval_station_count=3}},function(tuple)
+		return authored_candidate_probe(reverse_controls,tuple[1])
+	end)
+	assert(byte_key(reversed_selected.edge_bytes)==byte_key(reversed) and
+		point_key(reversed_selected.terminals[1])=="-1135:2242" and
+		point_key(reversed_selected.previous[1])=="-1136:2242",
+		"R19 reversed authored controls/obligation re-enumeration drift")
+
+	assert(#source.geometry_policies.boundary_displacement.
+		bay_edge_transition_terminal_policy_id>0,
+		"R19 terminal policy ID disappeared")
 end
 
 local function clone(value, seen)
@@ -4592,6 +5400,16 @@ expect_failure("bay_edge_transition_contract",function(s)
 end)
 expect_failure("bay_edge_transition_contract",function(s)
 	s.bay_edge_transitions[1].candidate_tie_rule="lexicographically_greatest_x_then_z"
+end)
+expect_failure("bay_edge_transition_fields",function(s)
+	s.bay_edge_transitions[1].terminal_selection_policy_id=nil
+end)
+expect_failure("bay_edge_transition_contract",function(s)
+	s.bay_edge_transitions[1].terminal_selection_policy_id="first_reachable_terminal"
+end)
+expect_failure("bay_edge_transition_terminal_dependency",function(s)
+	s.bay_bank_components[1].start_terminal={kind="land_edge_transition",
+		edge_id="land_004",edge_endpoint="from"}
 end)
 expect_failure("bay_aperture_transition_projection",function(s)
 	s.bay_bank_components[5].end_terminal.side="before"
@@ -5093,6 +5911,42 @@ end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.bay_edge_transition_mask_source=
 		"select_against_raw_water_then_revalidate_after_fill"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_policy_id=
+		"first_reachable_transition_terminal"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_candidates=
+		"scan_from_endpoint_until_first_candidate"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_dependency=
+		"permit_chained_edge_transition_banks"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_complete=
+		"trace_only_one_incident_bank"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_selection=
+		"select_endpoints_independently"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_application=
+		"reraster_after_terminal_selection"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_bounds=
+		"unbounded_cartesian_search"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_reversal=
+		"reselect_after_reverse"
+end)
+expect_failure("boundary_clip_policy",function(s)
+	s.geometry_policies.boundary_displacement.bay_edge_transition_terminal_reject=
+		"backstep_to_previous_candidate"
 end)
 expect_failure("boundary_clip_policy",function(s)
 	s.geometry_policies.boundary_displacement.shared_boundary_incidence_run_selection=

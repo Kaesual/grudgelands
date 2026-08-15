@@ -57,16 +57,22 @@ grep -q 'bay_bank_edge_transition_identity="for_each_of_eight_coordinate_free_tr
 grep -q 'bay_edge_transition_policy_id="direct_candidate_or_same_bay_diagonal_elbow_v1"' "$catalog"
 grep -q 'bay_edge_transition_diagonal_precondition="otherwise_E_must_be_final_strict_dry_and_have_no_cardinal_same_bay_or_foreign_water_neighbor.*final_planned_water_owned_only_by_the_referenced_bay_after_Base_Wings_and_single_pass_notch_fill' "$catalog"
 grep -q 'bay_edge_transition_elbows="the_two_exact_orthogonal_elbows_W_x_E_z_and_E_x_W_z' "$catalog"
-grep -q 'bay_edge_transition_application="insert_the_selected_elbow_as_terminal_control_after_unique_incidence_complete_interval_and_retained_control_subsequence_selection_and_before_the_existing_sole_final_edge_raster' "$catalog"
+grep -q 'bay_edge_transition_application="R16_resolve_each_eligible_terminal_incidence_inside_the_R18_selected_maximal_interval_then_for_each_closed_one_or_two_endpoint_candidate_tuple' "$catalog"
 grep -q 'bay_edge_transition_mask_source="resolve_each_transition_exactly_once_against_world_partition_final_planned_water_after_single_pass_same_bay_raw_mask_degree_one_notch_v1' "$catalog"
-grep -q 'bay_edge_transition_scalar_scope="E_W_and_any_derived_elbow_are_resolved_only_after_record_scalar_materialization_R16_R17_and_R18_never_enter_or_change_extreme_scalar_record_identity_or_value_no_pre_correction_C1_pool_is_promotable' "$catalog"
+grep -q 'bay_edge_transition_scalar_scope="E_W_any_derived_elbow_and_the_R19_terminal_are_resolved_only_after_record_scalar_materialization_R16_R17_R18_and_R19_never_enter_or_change_extreme_scalar_record_identity_or_value_no_pre_correction_C1_pool_is_promotable' "$catalog"
+grep -q 'bay_edge_transition_terminal_policy_id="joint_bank_incidence_transition_terminal_v1"' "$catalog"
+grep -q 'bay_edge_transition_terminal_candidates="for_each_declared_transition_endpoint_of_the_fixed_R18_selected_maximal_dry_interval_every_station_incidence_except_the_opposite_interval_endpoint' "$catalog"
+grep -q 'bay_edge_transition_terminal_complete="for_each_candidate_tuple_require_a_nonempty_combined_contiguous_R7_control_subsequence' "$catalog"
+grep -q 'bay_edge_transition_terminal_selection="exactly_one_complete_joint_edge_tuple_across_the_full_finite_cartesian_set' "$catalog"
+grep -q 'bay_edge_transition_terminal_bounds="per_endpoint_at_most_selected_interval_station_count_minus_one_eligible_incidences' "$catalog"
+grep -q 'bay_edge_transition_terminal_reversal="authored_edge_reversal_swaps_endpoint_direction_and_the_one_or_two_endpoint_candidate_tuple_orientation' "$catalog"
 grep -q 'shared_boundary_incidence_run_policy_id="joint_terminal_incidence_complete_dry_run_v1"' "$catalog"
 grep -q 'shared_boundary_incidence_run_scope="exactly_the_six_land_edges_projected_in_source_order_from_the_eight_bay_edge_transition_rows' "$catalog"
-grep -q 'shared_boundary_incidence_run_obligations="for_each_enumerated_interval_E_is_that_intervals_authored_from_or_to_endpoint' "$catalog"
-grep -q 'shared_boundary_incidence_run_selection="select_the_exactly_one_interval_satisfying_the_complete_ordered_endpoint_tuple' "$catalog"
+grep -q 'shared_boundary_incidence_run_obligations="for_each_enumerated_interval_each_attachment_or_ordinary_junction_obligation_uses_that_intervals_authored_endpoint' "$catalog"
+grep -q 'shared_boundary_incidence_run_selection="select_the_exactly_one_interval_with_both_complete_ordered_R18_endpoint_obligations' "$catalog"
 grep -q 'shared_boundary_incidence_control_clip="keep_exactly_the_nonempty_unique_contiguous_authored_shifted_control_subsequence' "$catalog"
 grep -q 'shared_boundary_incidence_scalar_scope="nonselected_shifted_controls_remain_unchanged_upstream_R7_scalar_samples' "$catalog"
-grep -q 'shared_boundary_incidence_excluded_dry="every_nonselected_dry_fragment_must_be_owned_exactly_once' "$catalog"
+grep -q 'shared_boundary_incidence_excluded_dry="every_nonselected_dry_interval_and_every_dry_fragment_between_an_R19_terminal' "$catalog"
 grep -q 'C2 accepted a repeated selected control' "$test_file"
 grep -q 'C2 accepted a selected-control direction flip' "$test_file"
 grep -q 'bay_bank_tail_pair_selection="enumerate_all_complete_path_pairs_filter_interior_disjoint_distinct_J_predecessor' "$catalog"
@@ -103,7 +109,8 @@ done
 for invariant in bay_edge_transition_fields \
 	bay_edge_transition_incidence_fields bay_edge_transition_contract \
 	bay_edge_transition_projection bay_edge_transition_reference \
-	bay_edge_transition_incidence bay_edge_transition_terminal_sides; do
+	bay_edge_transition_incidence bay_edge_transition_terminal_sides \
+	bay_edge_transition_terminal_dependency; do
 	grep -q "\"$invariant\"" "$stage1"
 	grep -q "expect_failure(\"$invariant\"" "$test_file"
 done
@@ -132,8 +139,9 @@ grep -q '^validator\.EXPECTED_WORLD_PARTITION_CHECKSUM =' "$stage1"
 grep -q 'WP40 T2 R16 Slot-19 oracle passed: C=%d perimeter-C=%d/%d N=%d' "$test_file"
 grep -q 'envelope_columns==1132870' "$test_file"
 grep -q 'max_pushed_per_call==23' "$test_file"
-grep -q 'pushed_frames<=8\*envelope_columns and #stack<=envelope_columns' "$test_file"
-grep -q 'main_steps<=envelope_columns-1' "$test_file"
+grep -q 'pushed_frames<=8\*active_envelope_columns and' "$test_file"
+grep -q '#stack<=active_envelope_columns' "$test_file"
+grep -q 'main_steps<=active_envelope_columns-1' "$test_file"
 grep -q 'raw_trace.branch_count==1 and raw_trace.pushed_total==24' "$test_file"
 grep -q 'final_trace.branch_count==0' "$test_file"
 grep -q 'raster_signature(raw_trace.points)==raster_signature(final_trace.points)' "$test_file"
@@ -153,6 +161,17 @@ grep -q 'R17 row-end theorem lost a dry-cardinal orientation' "$test_file"
 grep -q 'bay_notch_fill_application=' "$test_file"
 grep -q 'repeat_until_no_dry_leaf_remains' "$test_file"
 grep -q 'select_against_raw_water_then_revalidate_after_fill' "$test_file"
+grep -q 'WP40 T2 R19 Slot29 Source oracle passed: R16=%d complete=%d' "$test_file"
+grep -q 'r19_envelope_columns==1130890' "$test_file"
+grep -q 'R19 current-seed R15 pair/rank/radius drift' "$test_file"
+grep -q 'R19 final-mask authored-order aperture run differs from Source projection' "$test_file"
+grep -q 'R19 synthetic subline-divergence anchor KAT drift' "$test_file"
+grep -q 'R19 candidate-count product overflow' "$test_file"
+grep -q 'R19 reversed authored controls/obligation re-enumeration drift' "$test_file"
+grep -q 'R19 accepted repeated candidate-specific final edge station' "$test_file"
+grep -q 'R19 accepted non-8-connected candidate-specific final edge' "$test_file"
+grep -q '25d19e716fc9ccee106f8bdd33938ac94a939d4f50609db3d0cead808261f255' "$test_file"
+grep -q 'f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70' "$test_file"
 grep -q 'R11 Bay-bank Reality correction' docs/research/wp40-engineering-brief.md
 grep -q 'exactly 20' docs/design/world_zones.md
 [[ $(grep -c 'geometry_policy_id="strict_tapered_bay_closure_wing_v1"' "$catalog") -eq 1 ]]
@@ -186,8 +205,8 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q '17936b6823fff2527a9df86415df0f8f6bc4ec12ba130e6f09763c266dff3efb' "$stage1"
-grep -q '7f33822c8650e17ea9029666c800e9001876aada32d597212568b94d74eab935' "$stage1"
+grep -q '5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000' "$stage1"
+grep -q '3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe' "$stage1"
 grep -q '8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45' "$stage1"
 grep -q 'e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751' "$stage1"
 grep -q 'id="shared_polyline_normal_displacement_t1_hash_v3",schema_version=3' "$catalog"

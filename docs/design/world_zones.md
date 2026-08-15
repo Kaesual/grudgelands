@@ -345,10 +345,12 @@ WP40 replaces it with the complete catalog and contracts below.
   `(E.x,W.z)` must be distinct,
   strict-dry, in-footprint same-Bay candidates; the lexicographically least
   `(x,z)` is the terminal. Any failed precondition rejects without fallback.
-  The selected elbow is inserted as a terminal control before the existing
-  sole final edge reraster; it is never appended or snapped post-raster and is
-  not a scalar sample. Extreme-scalar record identities and values remain
-  upstream and unchanged. The raw mask is built next, the one simultaneous
+  A resolved elbow is inserted after `E` as a terminal control in that
+  candidate's sole final-edge probe reraster; it is never appended or snapped
+  post-raster and is not a scalar sample. R19 below promotes only the unique
+  complete joint terminal tuple and its already-probed edge bytes. Extreme-
+  scalar record identities and values remain upstream and unchanged. The raw
+  mask is built next, the one simultaneous
   fill produces final planned water, and only then is each R16 transition
   selected exactly once against that final mask. Selection against raw water
   followed by validation or reselection is forbidden. The complete 4,096 pool
@@ -697,19 +699,59 @@ WP40 replaces it with the complete catalog and contracts below.
   carrying the eight Bay transitions (`land_001`, `land_004`, `land_007`,
   `land_010`, `land_013`, `land_016`), the exact ordered from/to obligation
   tuples are projected from the existing transition and attachment records;
-  the other 55 edges require exactly one final-dry interval. Nonattached ends
-  retain ordinary clipping except the eight declared Bay-edge
-  ends, whose retained `E` may be replaced by the reviewed same-Bay diagonal
-  elbow as a terminal control before that same final raster.
-  From the already selected R7 shifted controls, compilation retains exactly
-  the nonempty, unique, contiguous authored subsequence whose canonical x/z
-  identities belong to the selected station interval. Nonselected controls
-  remain unchanged upstream scalar samples but never enter final boundary
-  geometry; there is no re-ceiling, rescore, selector change or post-raster
-  splice. Every excluded dry fragment must instead be owned exactly once by a
+  the other 55 edges require exactly one final-dry interval. This is the R18
+  provisional interval/control set, not a final transition-terminal claim.
+  Ordinary nonattached ends retain their endpoints. At the eight declared Bay-
+  edge ends, R19 may select an interior direct incidence or its reviewed
+  same-Bay diagonal elbow, and that terminal further clips the candidate's
+  probe before the same sole final raster.
+  From the already selected R7 shifted controls, an ordinary edge retains
+  exactly the nonempty, unique, contiguous authored subsequence whose canonical
+  x/z identities belong to its selected interval. An R19 edge instead retains
+  the nonempty, unique, contiguous combined subsequence bounded by its selected
+  joint terminal incidences. Nonselected controls remain unchanged upstream
+  scalar samples but never enter final boundary geometry; there is no re-
+  ceiling, rescore, selector change or post-raster splice. Every excluded dry
+  fragment must instead be owned exactly once by a
   final Bank or dry Face and by no final land edge or terminal identity.
   Reversing the authored edge and swapping its obligations must select the
   same world interval and exact reversed edge bytes.
+  After that R18 interval has been fixed, R19 resolves its declared Bay-edge
+  transition terminals jointly. At each declared transition endpoint, every
+  station incidence in the selected interval except the opposite endpoint is
+  eligible exactly when it has an immediately adjacent in-interval station
+  away from that endpoint. The existing R16 resolver is evaluated for every
+  eligible incidence. An edge has one or two transition endpoints, and the
+  compiler exhaustively evaluates the complete Cartesian product of their
+  successful R16 candidates. It applies no first, nearest, longest, scan,
+  backstep or private-order pruning.
+  For each candidate tuple, the compiler takes the nonempty contiguous R7
+  control subsequence for the combined candidate clip, inserts each R16 `E`
+  and optional elbow `T` in that order, and runs the sole final edge raster as
+  an unretained probe. The probe must be unique, 8-connected, X-cross-free,
+  final dry and inside the record envelope. Each resolved terminal must be its
+  declared probe endpoint; its `previous` station is the immediately adjacent
+  probe station away from it. Both declared incident Banks of every transition
+  must then complete to their already-authorized Aperture or Wing terminals
+  under the unchanged R11 tracing rules. Those other terminals are never edge
+  transitions, so the dependency is finite and acyclic. Exactly one complete
+  joint tuple is required. Two tuples with the same resolved terminal,
+  previous and probe-edge byte identity are duplicate authority and reject;
+  zero or multiple complete tuples reject.
+  Only the selected tuple's probe bytes are materialized once. An unselected
+  probe, R16 result or Bank path is not serialized. Edges with transitions at
+  both endpoints are evaluated as one joint tuple against one combined probe,
+  never as two independent terminal choices. Reversing authored controls and
+  swapping `from`/`to` obligations must re-enumerate the same world terminals
+  and adjacent probe stations and produce the exact byte reverse of the final
+  edge; Bank consumers reverse only finished bytes. Per endpoint, eligible
+  incidences and candidates are bounded by selected interval station count
+  minus one; the one- or two-endpoint Cartesian count uses checked safe-integer
+  multiplication. Every tuple uses the existing per-Bay `8N` reachability-
+  frame, `N` stack and `N-1` main-trace-step bounds. R19 changes no R7 control,
+  scalar, mask, candidate or water-side authority, and the final 4,096 pool may
+  be measured only against later approved immutable post-R19 Source and
+  compiler pins.
   In the undisplaced literal Stage-1
   baseline, three attachments have `E=A`, five have Chebyshev distance one,
   and `land_016` has no common raw edge/perimeter raster station before this
