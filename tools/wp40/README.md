@@ -191,22 +191,97 @@ its immutable archive before emitting a retained shard.
 
 A changed `geometry/partition.lua` intentionally makes
 `run_t2_extreme.sh` and `run_t2_extreme_puc_kat.sh` fail before measurement.
+The current full-scan gate still pins partition
+`de53e1b5cc0cc3fcaee2d58ce3cc391c637b123d430f234c74e4960ad4bee967`,
+while the current partition file is
+`03539b8aa39df381d2fb1feb9b93bed24b94e9f6e04eb663e1c16b7e2b7ab340`.
+This is an intentional fail-closed state, not a request to copy the latter
+value into the gate.
+
 Regeneration starts only from a committed, independently reviewed Source and
-partition snapshot. Run the T2 partition acceptance gate with
-`WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical`; then
-record that snapshot's Source, boundary-policy, and partition values in
-`fixtures/t2_extreme_e0/full_scan_gate.lua` and regenerate the prerequisite
-fixture from the same no-cache snapshot. Review the pin-only change before an
-immutable eight-shard run is launched. Merge the eight verified shards under
-PUC Lua 5.1, create a new conformance gate from the resulting artifact and
-manifest, and run conformance from its committed archive.
+partition snapshot. Run the following sequence from the repository root.
+The two `$EDITOR` commands are deliberate review steps: no program currently
+generates either closed gate, so their complete records must be reconstructed
+from the immediately preceding no-cache evidence rather than copied from an
+old artifact.
+
+```sh
+tools/wp40/run_t2_source_fast.sh
+WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
+sha256sum mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua
+
+git rm --ignore-unmatch -- \
+  tools/wp40/fixtures/t2_extreme_e0/shard-luajit-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+$EDITOR tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
+  tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
+WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh
+tools/wp40/run_t2_extreme_puc_kat.sh
+git diff --check
+git add tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
+  tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
+git commit -m "test(wp40): re-pin extreme scan authority"
+
+tools/wp40/run_t2_extreme_shards.sh
+WP40_EXTREME_MERGE=1 tools/wp40/run_t2_extreme.sh
+$EDITOR tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+tools/bin/luac51 -p tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua
+git commit -m "test(wp40): retain regenerated extreme pool"
+
+tools/wp40/run_t2_extreme_conformance.sh
+git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
+git commit -m "test(wp40): retain regenerated extreme conformance"
+```
+
+The first fixture edit must bind the reviewed Source checksum,
+boundary-policy checksum, partition bytes, and freshly reproduced max-u64
+prerequisite from that one snapshot. The conformance-gate edit must bind the
+new immutable measurement commit/tree/DAG, all eight shard files, the merged
+artifact and manifest, candidate rows, winners, and staging row printed by the
+PUC merge. Each commit must contain only the files named for that stage; the
+shard launcher and conformance launcher then execute from those immutable
+commits.
 
 Re-pinning asserts only that the named Source, boundary policy, and partition
 bytes are the reviewed inputs to the new measurement; it does not assert that
 old results remain valid. It invalidates the earlier eight shards, merged
 candidate artifact, manifest, endpoint/winner rescores, selected results, and
-final conformance result. Those files remain historical evidence and must not
-be relabelled or reused as evidence for the new pins.
+final conformance result. Those files remain historical evidence in Git
+history and must not be relabelled or reused as evidence for the new pins.
+
+### Harness acceleration measurements
+
+These wall times were recorded on the same development host during the
+harness-acceleration task. They were not normalized for concurrent load.
+`$scratch` below was a fresh accepted `/tmp/grudgelands-wp40-*` directory.
+Where no pre-change measurement was retained, the table says so rather than
+substituting an estimate.
+
+| Command or operation | Before | After |
+|---|---:|---:|
+| `tools/wp40/run_t1.sh` | 0.17 s | 0.18 s |
+| `tools/wp40/run_t2_source_fast.sh` | 90.75 s | 90.81 s |
+| `tools/wp40/run_t2_partition.sh` (default LuaJIT) | Not recorded; only a 6--10 min estimate existed | 156.40 s with one cache miss; 134.66 s fully warm |
+| `WP40_T2_ONLY=production_trust_path /usr/bin/luajit tools/wp40/t2_source_test.lua "$PWD" "$scratch"` | Not available; the selector did not exist | 0.25 s |
+| `WP40_NO_CACHE=1 WP40_T2_ONLY=c2_selector_seams /usr/bin/luajit tools/wp40/t2_partition_test.lua "$PWD" "$scratch"` | Not available; the selector did not exist | 0.06 s |
+| One-shot seed-zero `compiler.compile("0")` benchmark | 31.26 s first call; 29.37 s second call, both uncached | 43.20 s forced uncached; 32.99 s cache fill; 0.45 s cache hit |
+
+The compile timings came from the temporary one-shot benchmark used for the
+task; that measurement wrapper was not retained as a repository command. The
+forced-uncached and cache-hit values are the requested like-for-like cache
+comparison. The higher forced-uncached result reflects observed run variance,
+not additional cache work.
 
 The complete 4096-row artifact is explicitly a LuaJIT-origin
 `R7_SCALAR_MEASUREMENT_ONLY` pool with `stage2=pending_selected_four`. Once
@@ -229,8 +304,8 @@ tools/wp40/run_t2_extreme_conformance.sh
 It accepts no arguments and is deliberately unusable as retained evidence
 until its complete code-and-input DAG is committed unchanged. From that
 immutable archive it first rescores the 16 canonical shard endpoints union the
-four ranked winners under vendored PUC Lua 5.1, with at most eight workers and
-an exact byte-for-byte comparison against the retained LuaJIT rows. Only a
+four ranked winners under vendored PUC Lua 5.1, with at most sixteen workers
+and an exact byte-for-byte comparison against the retained LuaJIT rows. Only a
 hard 20/20 barrier may start the four fixed slot workers (28--31); they derive
 their seeds from the closed artifact, accept no seed argument or fallback, and
 run the shared full partition/Whole oracle under PUC. Existing partial results
