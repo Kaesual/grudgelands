@@ -381,6 +381,12 @@ correction, with its evidence and digests, stays in
   scalar, mask, candidate or water-side authority, and the final 4,096 pool may
   be measured only against later approved immutable post-R19 Source and
   compiler pins.
+  In the undisplaced literal Stage-1
+  baseline, three attachments have `E=A`, five have Chebyshev distance one,
+  and `land_016` has no common raw edge/perimeter raster station before this
+  joint selection. Those counts are not seed-zero compiled evidence: Stage 2
+  must separately validate all eight final displaced attachments at seed zero
+  and every corpus seed against the distance-at-most-one contract.
 
 ## 5. Extreme-selector scalar input boundary
 
