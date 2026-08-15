@@ -8,6 +8,7 @@ fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
+export WP40_NO_CACHE=1
 for runner in "$script_dir/run_t2_extreme.sh" \
 	"$script_dir/run_t2_extreme_puc_kat.sh" \
 	"$script_dir/run_t2_extreme_shard.sh" \
@@ -30,6 +31,7 @@ owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/extreme.lua"
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua"
 	"$repo/tools/wp40/t2_extreme_test.lua"
+	"$repo/tools/wp40/t2_payload_cache.lua"
 	"$repo/tools/wp40/t2_extreme_puc_kat.lua"
 	"$repo/tools/wp40/t2_extreme_authority.lua"
 	"$repo/tools/wp40/t2_extreme_gate_check.lua"

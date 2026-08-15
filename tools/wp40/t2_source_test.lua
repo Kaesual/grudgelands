@@ -2,6 +2,8 @@ local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
+arg._wp40_phase = dofile(repo .. "/tools/wp40/t2_phase_selector.lua")(
+	os.getenv("WP40_T2_ONLY"))
 
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local source = dofile(wp40 .. "/source/catalog.lua")
@@ -101,11 +103,12 @@ local function assert_valid(value, vocab)
 end
 
 assert_valid(source, vocabulary)
-do
+if arg._wp40_phase.enabled("production_trust_path") then
 	local ok,failure=production_stage1.validate(source,vocabulary)
 	assert(ok,failure and failure.invariant)
 end
 
+if arg._wp40_phase.enabled("source_roster_contract") then
 local counts = {start=0,capital=0,village=0,outpost=0,bandit=0,mine=0,
 	mirefolk=0,clash=0,dragon=0,apex_mine=0,rare=0}
 for i = 1, #source.anchors do
@@ -175,11 +178,12 @@ for _,anchor_index in ipairs({89,90}) do
 		assert(socket.active==true and socket.status=="active")
 	end
 end
+end
 
 -- Slow semantic oracles deliberately iterate ID maps in reverse source order.
 -- Production remains an ordered/KAT source; these checks prove that face and
 -- spur authority do not secretly depend on array iteration.
-do
+if arg._wp40_phase.enabled("face_edge_order") then
 	local zone_a_right={}
 	for i=1,9 do zone_a_right[i]=true end
 	for i=31,34 do zone_a_right[i]=true end
@@ -206,7 +210,7 @@ do
 	assert(not ok and failure.invariant=="canonical_numeric_order",
 		"ordered production source accepted an edge permutation")
 end
-do
+if arg._wp40_phase.enabled("poi_spur_bindings") then
 	local route_by_id,first_by_zone={},{ }
 	for i=#source.routes,1,-1 do route_by_id[source.routes[i].id]=source.routes[i] end
 	for i=#source.island_routes,1,-1 do
@@ -234,7 +238,7 @@ end
 -- Exhaustive Stage-1 integer-column audit of exact Base-Bay membership and
 -- owner arithmetic. Coordinate-free R11 bank materialization, dry-face
 -- coverage and the combined Base/Wing partition remain Stage-2 obligations.
-do
+if arg._wp40_phase.enabled("base_bay_owner_oracle") then
 	local edge_by_id,perimeter_by_id={},{}
 	for i=1,#source.land_edges do edge_by_id[source.land_edges[i].id]=source.land_edges[i] end
 	for i=1,#source.perimeters do perimeter_by_id[source.perimeters[i].id]=source.perimeters[i] end
@@ -1222,6 +1226,7 @@ do
 		owner_max_checked_product))
 end
 
+if arg._wp40_phase.enabled("source_literal_contract") then
 -- Every relationship above is reconstructed from the one edge authority;
 -- zone rows intentionally contain no copied neighbor arrays.
 for i = 1, #source.zones do assert(source.zones[i].neighbors == nil) end
@@ -1279,7 +1284,9 @@ assert(dungeon_noise.offset.numerator==9 and
 	dungeon_noise.persistence.denominator==5 and
 	dungeon_noise.lacunarity==2 and #dungeon_noise.flags==1 and
 	dungeon_noise.flags[1]=="defaults")
+end
 
+if arg._wp40_phase.enabled("logical_biome_selector") then
 -- Independent logical-biome selector KAT. The deliberately over-53-bit seed
 -- stays a decimal byte string all the way into SHA-256; it is never converted
 -- to a Lua number. This oracle exercises the exact cell, jitter, distance,
@@ -1350,6 +1357,7 @@ assert(palette_at_roll(palette_zone,0)=="grug_pine_hills" and
 	palette_at_roll(palette_zone,94)=="grug_crags" and
 	palette_at_roll(palette_zone,95)=="grug_swamp" and
 	palette_at_roll(palette_zone,99)=="grug_swamp")
+end
 
 -- Generic policy KATs cover the exact tie/rounding equations independently of
 -- the catalog checksums. These values exercise negative floor division,
@@ -1393,7 +1401,7 @@ end
 -- column of every authored segment bbox enlarged by its maximum varied radius,
 -- retain only strict segment-body columns inside the exact +48 envelope, and
 -- compare the specified Euclidean raster-station owner with parameter round.
-do
+if arg._wp40_phase.enabled("bay_projection_oracle") then
 	local relevant_columns=0
 	local maximum_executed_lhs=0
 	local first_divergence
@@ -1512,7 +1520,7 @@ local Q=65536
 
 -- The junction tuple is part of authored full-seed geometry. Seed zero must
 -- select 38 from the first junction's inclusive 24..56 intersection.
-do
+if arg._wp40_phase.enabled("relief_junction_hash") then
 	local junction=source.relief_junctions[1]
 	local hash=deterministic.new_hash(canonical,raw_sha256,
 		"grug_wp40_geometry_source_v1","0")
@@ -1528,7 +1536,7 @@ end
 -- R13 has four coordinate-free departure declarations.  The executable
 -- station is derived from the untouched authored edge control and enters the
 -- copied effective boundary control before the one displacement pipeline.
-do
+if arg._wp40_phase.enabled("junction_departure_projection") then
 	local expected={
 		{"land_035","relief_junction:-1400:-1100",-1399,-1099},
 		{"land_036","relief_junction:400:-1100",401,-1099},
@@ -1552,7 +1560,7 @@ end
 -- Independent R13 lattice oracle.  It uses this harness's raster rather than
 -- the production validator, proves the old four conflicts, then proves the
 -- effective copied controls remove every conflict across all 102 pairs.
-do
+if arg._wp40_phase.enabled("junction_lattice_oracle") then
 	local departure_by_edge={}
 	for i=1,#source.junction_departures do
 		departure_by_edge[source.junction_departures[i].edge_id]=
@@ -1849,7 +1857,7 @@ local dx,dz=displacement_components(Q,0,Q/2)
 local negative_dx,negative_dz=displacement_components(Q,0,-Q/2)
 assert(dx==1 and dz==0 and negative_dx==-1 and negative_dz==0,
 	"boundary signed half-tie component rounding drift")
-do
+if arg._wp40_phase.enabled("displacement_clip_kats") then
 	local base={x=2599,z=-2200}
 	local frame=function(x,z) return x>=-2600 and x<=2600 and
 		z>=-3000 and z<=3000 end
@@ -1923,7 +1931,7 @@ local function topology_ceiling(local_scalars,maximum,valid)
 	end
 	error("zero topology ceiling rejected")
 end
-do
+if arg._wp40_phase.enabled("topology_ceiling_kats") then
 	local ceiling,scalars,probes=topology_ceiling(
 		{39*Q,40*Q,42*Q,40*Q,39*Q},48,
 		function(_,candidate) return candidate==41 end)
@@ -1944,7 +1952,7 @@ do
 	assert(zero==0 and #zero_probes==49,
 		"R10 finite C=0 termination drift")
 end
-do
+if arg._wp40_phase.enabled("displacement_reversal_kats") then
 	local function sequence_less(a,b)
 		for i=1,#a do
 			if a[i].x~=b[i].x then return a[i].x<b[i].x end
@@ -2049,7 +2057,7 @@ do
 		"boundary degenerate step or opposite joint was accepted")
 end
 
-do
+if arg._wp40_phase.enabled("fixed_closure_oracle") then
 	-- H55 independently resolves each fixed mainland closure from its six
 	-- directed, max-zero Holy-contact edges.  No source-segment index is an
 	-- input: equivalent closed rotations/reversals must rediscover the one full
@@ -4314,7 +4322,9 @@ local function run_r16_r17_source_oracle()
 		final_trace.max_pushed_per_call,final_trace.max_stack,
 		#stillgrave_nexts,path_sha))
 end
-run_r16_r17_source_oracle()
+if arg._wp40_phase.enabled("r16_r17_source_oracle") then
+	run_r16_r17_source_oracle()
+end
 
 -- R9 exact coast-source inheritance oracle. Segment distance is represented
 -- by numerator/positive denominator and all minima are collected before the
@@ -4375,7 +4385,7 @@ local component_tie={
 local component_winner=coast_source(component_tie,0,0)
 assert(component_winner.component_id=="a",
 	"coast-source stable component tie drift")
-do
+if arg._wp40_phase.enabled("coast_distance_kats") then
 	local endpoint_a_n,endpoint_a_d=exact_segment_distance(-1,0,
 		{x=0,z=0},{x=1,z=0})
 	local endpoint_b_n,endpoint_b_d=exact_segment_distance(2,0,
@@ -4415,7 +4425,7 @@ assert(#coast_roster==22 and coast_roster[1]=="perimeter_span:elandor:stormvault
 	8192*8192*2==134217728 and (2*8192)*(2*8192)==268435456 and
 	268435456*2==536870912,
 	"coast-source roster or safe-integer bound drift")
-do
+if arg._wp40_phase.enabled("lua_false_kat") then
 	local false_is_not_a_lua_ternary=true and false or "fallback"
 	assert(false_is_not_a_lua_ternary=="fallback",
 		"Lua false/nil ternary trap KAT drift")
@@ -4423,7 +4433,7 @@ end
 
 -- The Bay projection is an exact station-distance decision, not a rounded
 -- parametric projection. This witness is the reviewed divergent case.
-do
+if arg._wp40_phase.enabled("bay_projection_divergence") then
 	local points=raster_canonical_points(-980,-2940,-900,-2600)
 	local px,pz=-1376,-2846
 	local dx,dz=80,340
@@ -4542,7 +4552,7 @@ assert(extreme_sample_q*2==extreme_record_max_q and
 	extreme_policy.score_all_candidates_before_stage2==true and
 	extreme_policy.candidate_count==4096,
 	"geometry extreme exact normalization KAT drift")
-do
+if arg._wp40_phase.enabled("extreme_span_union") then
 	local segment_owners={}
 	for span_index=1,#source.perimeter_spans do local span=source.perimeter_spans[span_index]
 		if span.perimeter_id=="perimeter_elandor_mainland" then
@@ -4565,7 +4575,7 @@ end
 
 -- Focused independent C2 algebraic witnesses.  Stage 1 owns no selected-seed
 -- Bank/Face geometry; exhaustive compiler geometry remains a later gate.
-do
+if arg._wp40_phase.enabled("c2_source_algebra") then
 	local function cross(ax,az,bx,bz) return ax*bz-az*bx end
 	local function select_aperture_mode(row)
 		if row.d_candidate then return "direct",row.a,row.d end
@@ -4715,7 +4725,7 @@ end
 -- materialize selected-seed geometry; these fixtures bind exhaustive tuple
 -- selection, candidate-specific final-raster anchors, and the retained
 -- compiler handoff witnesses without importing a Stage-2 implementation.
-do
+if arg._wp40_phase.enabled("r19_source_oracle") then
 	local function point_key(point) return point.x..":"..point.z end
 	local function byte_key(points)
 		local parts={}
@@ -4968,6 +4978,7 @@ local function expect_failure_at(id,record_id,mutate)
 		tostring(failure and failure.record_id))
 end
 
+if arg._wp40_phase.enabled("source_corruption_kats") then
 expect_failure("perimeter_fixed_closure_fields",function(s)
 	s.perimeters[1].r7_fixed_closure.kind=nil
 end)
@@ -6159,12 +6170,13 @@ end)
 expect_failure("closed_semantic_vocabulary",function(s)
 	s.semantics.hydrology_profile_ids[1]="unknown"
 end)
+end
 
-do
+if arg._wp40_phase.enabled("exact_source_seam") then
 	local ok,failure=stage1.validate(source,vocabulary)
 	assert(not ok and failure.invariant=="exact_source_seam")
 end
-do
+if arg._wp40_phase.enabled("forged_canonical_rejection") then
 	local corrupt=clone(source)
 	corrupt.zones[1].display_name="forged canonical repro"
 	local forged_canonical={}
@@ -6179,7 +6191,7 @@ do
 	assert(not ok and failure.invariant=="exact_source_checksum",
 		"well-formed forged canonical bypassed production validate")
 end
-do
+if arg._wp40_phase.enabled("forged_digest_rejection") then
 	local corrupt=clone(source)
 	corrupt.zones[1].display_name="forged digest repro"
 	local function forged_raw_sha256()
@@ -6190,7 +6202,7 @@ do
 	assert(not ok and failure.invariant=="exact_source_checksum",
 		"well-formed forged digest bypassed production validate")
 end
-do
+if arg._wp40_phase.enabled("forged_projector_rejection") then
 	local corrupt=clone(source)
 	corrupt.zones[1].display_name="forged exported projector repro"
 	local original_export=production_stage1.canonicalize_source
@@ -6202,6 +6214,7 @@ do
 	assert(not ok and failure.invariant=="exact_source_checksum",
 		"mutable exported projector replaced private production authority")
 end
+if arg._wp40_phase.enabled("canonical_source_identity") then
 for iteration=1,200 do
 	local copy=clone(source)
 	local invalid={}
@@ -6256,3 +6269,5 @@ assert(checksum_a == EXPECTED_SOURCE_CHECKSUM,
 
 print(("WP40 T2 source passed: 38 zones, 61 land edges / 57 routes (30/24/3), " ..
 	"4 boat edges, 70 landmarks, 100 anchors, checksum %s"):format(checksum_a))
+end
+arg._wp40_phase.finish()

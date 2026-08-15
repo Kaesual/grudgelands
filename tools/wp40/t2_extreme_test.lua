@@ -373,6 +373,16 @@ local function make_partition(active_source, active_vocabulary, active_validator
 end
 
 local partition = make_partition()
+partition.compile = dofile(repo .. "/tools/wp40/t2_payload_cache.lua")({
+	repo = repo, scratch = scratch,
+	cache_dir = os.getenv("WP40_PAYLOAD_CACHE_DIR") or
+		repo .. "/tools/wp40/results/payload-cache",
+	raw_sha256 = raw_sha256, no_cache = os.getenv("WP40_NO_CACHE"),
+	validate_hit = function()
+		local valid, diagnostic = counted_validator.validate(source, vocabulary)
+		assert(valid, diagnostic and diagnostic.invariant)
+	end,
+}).wrap(partition.compile)
 local session = partition.new_extreme_scalar_session()
 assert(validator_calls == 1, "extreme session did not validate Source exactly once")
 local seed_zero_records = session("0")

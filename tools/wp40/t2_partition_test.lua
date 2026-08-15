@@ -2,6 +2,8 @@ local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-partition%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
+arg._wp40_phase = dofile(repo .. "/tools/wp40/t2_phase_selector.lua")(
+	os.getenv("WP40_T2_ONLY"))
 
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local sha_cache, sha_counter = {}, 0
@@ -66,6 +68,7 @@ local function expect_error(fragment, callback)
 end
 
 -- M1: products are rejected before binary64 can erase a determinant of one.
+if arg._wp40_phase.enabled("exact_arithmetic_kats") then
 assert(exact.cross(1, 0, 0, 1) == 1)
 expect_error("exact Lua integer range", function()
 	exact.cross(134217728, 134217729, 134217729, 134217730,
@@ -93,8 +96,18 @@ local body_n, body_d = exact.segment_distance(1, 0,
 	{x = 0, z = 0}, {x = 1, z = 1})
 assert(endpoint_n == 1 and endpoint_d == 1 and body_n == 1 and body_d == 2 and
 	exact.rational_compare(body_n, body_d, endpoint_n, endpoint_d) < 0)
+end
+
+local function raster_signature(points)
+	local result = {}
+	for index = 1, #points do
+		result[index] = points[index].x .. ":" .. points[index].z
+	end
+	return table.concat(result, ",")
+end
 
 -- M2: one minimum pass and two anchored directions handle a large cycle.
+if arg._wp40_phase.enabled("raster_canonical_kats") then
 local cycle = {}
 for index = 0, 19999 do cycle[#cycle + 1] = {x = index, z = index % 97} end
 local reversed = {}
@@ -105,13 +118,6 @@ assert(#canonical_cycle == #cycle)
 for index = 1, #canonical_cycle do
 	assert(canonical_cycle[index].x == canonical_reversed[index].x and
 		canonical_cycle[index].z == canonical_reversed[index].z)
-end
-local function raster_signature(points)
-	local result = {}
-	for index = 1, #points do
-		result[index] = points[index].x .. ":" .. points[index].z
-	end
-	return table.concat(result, ",")
 end
 local major_tie = raster.segment({x = 0, z = 0}, {x = 4, z = 2})
 assert(raster_signature(major_tie) == "0:0,1:1,2:1,3:2,4:2")
@@ -141,8 +147,10 @@ local seam = raster.final_raster({{x = 0, z = 0}, {x = 3, z = 0},
 	{x = 3, z = 3}, {x = 0, z = 3}}, true)
 assert(seam[1].x == 0 and seam[1].z == 0 and
 	seam[#seam].x == 0 and seam[#seam].z == 1)
+end
 
 -- Indexed polygon lookup is candidate pruning around the same exact predicate.
+if arg._wp40_phase.enabled("indexed_polygon_kats") then
 local indexed_polygon = {{x = -5, z = -3}, {x = 4, z = -1},
 	{x = 3, z = 4}, {x = -4, z = 3}, {x = -5, z = -3}}
 local exact_index = exact.polygon_index(indexed_polygon)
@@ -169,10 +177,12 @@ expect_error("exact integer range", function()
 	exact.polygon_simple({{x = 0, z = 0}, {x = 2147483648, z = 0},
 		{x = 0, z = 2}, {x = 0, z = 0}})
 end)
+end
 
 -- The four attached race-spine landward controls remain in their own Base Bay
 -- at the complete symmetric radius-delta range.  They are ordinary opposite-
 -- side clip inputs, not the attachment-side perimeter station A.
+if arg._wp40_phase.enabled("bay_endpoint_kats") then
 local attached_bay_endpoints = {{x = -1050, z = -2250}, {x = 950, z = -2250},
 	{x = -970, z = 2260}, {x = 1020, z = 2250}}
 for bay_index = 1, #source.bays do
@@ -182,10 +192,12 @@ for bay_index = 1, #source.bays do
 			{delta, delta, delta}), "attached Bay endpoint fixture drift")
 	end
 end
+end
 
 -- Wings are strict on both tapered sides and at J. The authored left/right
 -- probes are inside on opposite signed sides; the synthetic equality witness
 -- proves that a mathematically exact side is dry rather than rounded inward.
+if arg._wp40_phase.enabled("wing_membership_kats") then
 local wing_by_bay = {}
 for index = 1, #source.bay_closure_wings do
 	local wing = source.bay_closure_wings[index]
@@ -231,8 +243,10 @@ for bay_index = 1, #source.bays do
 		end
 	end end
 end
+end
 
 -- H1: exercise both open endpoint normals through the production path.
+if arg._wp40_phase.enabled("raster_endpoint_kats") then
 local no_jitter = {{x = 0, z = 0}, {x = 5, z = 2}}
 local definition = {id = "open_endpoint_kat", kind = "land_edge",
 	control = {{x = 0, z = 0}, {x = 5, z = 2}}, closed = false,
@@ -295,9 +309,11 @@ expect_error("not CCW", function()
 		closed = true, orientation = "counterclockwise", max_displacement = 0},
 		clockwise, clockwise)
 end)
+end
 
 -- R10 scans every integer ceiling in descending order, including C=0.  A
 -- later-valid candidate does not justify binary search or an early reject.
+if arg._wp40_phase.enabled("topology_ceiling_kats") then
 local attempted = {}
 local ceiling, marker = raster.topology_ceiling(5, function(candidate)
 	attempted[#attempted + 1] = candidate
@@ -335,7 +351,9 @@ assert(ceiling == 41 and table.concat(attempted, ",") ==
 expect_error("C=0 base topology", function()
 	raster.topology_ceiling(1, function() return false, "invalid base" end)
 end)
+end
 
+if arg._wp40_phase.enabled("displacement_reversal_kats") then
 local moving_definition = {id = "nonzero_open_reversal", kind = "land_edge",
 	control = {{x = -300, z = -100}, {x = 300, z = 100}}, closed = false,
 	noise_domain = "nonzero_open_reversal", max_displacement = 32}
@@ -355,7 +373,9 @@ for index = 1, #moving_forward.stations do
 	assert(moving_forward.stations[index].x == moving_backward.stations[reverse_index].x and
 		moving_forward.stations[index].z == moving_backward.stations[reverse_index].z)
 end
+end
 
+if arg._wp40_phase.enabled("closed_reversal_kats") then
 local closed_control = {{x = -400, z = -400}, {x = 400, z = -400},
 	{x = 400, z = 400}, {x = -400, z = 400}}
 local function moving_closed(control, orientation)
@@ -378,6 +398,7 @@ for _, result in ipairs({closed_rotated, closed_reversed}) do
 		assert(canonical_result[index].x == canonical_forward[index].x and
 			canonical_result[index].z == canonical_forward[index].z)
 	end
+end
 end
 
 local function geometry_signature(rows, field)
@@ -448,11 +469,25 @@ local compiler = dofile(wp40 .. "/geometry/partition.lua")({
 	canonical = canonical, deterministic = deterministic, exact = exact,
 	raster = raster, raw_sha256 = raw_sha256, source = source,
 	source_validator = source_validator, vocabulary = vocabulary})
+compiler.compile = dofile(repo .. "/tools/wp40/t2_payload_cache.lua")({
+	repo = repo, scratch = scratch,
+	cache_dir = os.getenv("WP40_PAYLOAD_CACHE_DIR") or
+		repo .. "/tools/wp40/results/payload-cache",
+	raw_sha256 = raw_sha256, no_cache = os.getenv("WP40_NO_CACHE"),
+	validate_hit = function()
+		local validator = source_validator
+		if type(validator.new_offline_test_adapter) == "function" then
+			validator = validator.new_offline_test_adapter(canonical, raw_sha256)
+		end
+		local valid, diagnostic = validator.validate(source, vocabulary)
+		assert(valid, diagnostic and diagnostic.invariant)
+	end,
+}).wrap(compiler.compile)
 
 -- C2 production-used selector seams: selection is by complete incidence
 -- tuple, never length/index; collapsed adjacent controls remain one valid
 -- authored subsequence; discarded fragments keep Bank-first ownership.
-do
+if arg._wp40_phase.enabled("c2_selector_seams") then
 	local function kat_copy(value)
 		if type(value) ~= "table" then return value end
 		local result = {}
@@ -588,6 +623,11 @@ do
 			terminal_identity = false, bank_count = 1, face_count = 0}
 		compiler.validate_excluded_fragment_evidence({row, kat_copy(row)})
 	end)
+end
+if os.getenv("WP40_T2_ONLY") == "c2_selector_seams" then
+	arg._wp40_phase.finish()
+	print("WP40 T2 partition phase passed c2_selector_seams")
+	return
 end
 if arg[3] ~= nil then
 	assert(arg[3] == "selected_stage2_historical" and arg[4] == nil,
@@ -781,7 +821,14 @@ if arg[3] ~= nil then
 	return
 end
 local compiled = compiler.compile("0")
+if arg._wp40_phase.enabled("seed0_compile") and
+		os.getenv("WP40_T2_ONLY") == "seed0_compile" then
+	arg._wp40_phase.finish()
+	print("WP40 T2 partition phase passed seed0_compile")
+	return
+end
 local fresh_source = dofile(wp40 .. "/source/catalog.lua")
+if arg._wp40_phase.enabled("seed0_payload_contract") then
 assert(deep_equal(source, fresh_source), "partition compiler mutated Source")
 assert(source_bytes_before == canonical.encode(
 	source_validator.canonicalize_source(source, canonical)) and
@@ -801,6 +848,7 @@ assert(#compiled.families.dry_faces == 38)
 assert(#compiled.families.coast_shelf == 22)
 assert(#compiled.families.islands == 2)
 assert(#compiled.families.channels == 2)
+end
 
 -- Independently rebuild the checksum-declared no-jitter set and all 61
 -- seed-selected R7/effective-control rasters.  These are the objects gated by
@@ -1045,6 +1093,7 @@ end
 	return payload, expected_count
 end
 local bank_payload, expected_bank_count = extract_bank_payload(compiled)
+if arg._wp40_phase.enabled("bank_payload_contract") then
 assert(expected_bank_count == 20)
 for index = 1, #source.bay_bank_components do
 	assert(bank_payload[source.bay_bank_components[index].id])
@@ -1069,9 +1118,11 @@ for face_index = 1, #compiled.families.dry_faces do
 	assert(#values == running * 2)
 end
 assert(face_bank_uses == 20)
+end
 
 -- A reverse consumer reverses only the frozen bytes; it never resolves or
 -- traces a second shape.
+if arg._wp40_phase.enabled("bank_reverse_kats") then
 for id, values in pairs(bank_payload) do
 	local points = {}
 	for index = 1, #values, 2 do
@@ -1083,6 +1134,7 @@ for id, values in pairs(bank_payload) do
 		assert(reversed[index].x == points[#points - index + 1].x and
 			reversed[index].z == points[#points - index + 1].z, id)
 	end
+end
 end
 
 local function payload_bay_member(row, x, z)
@@ -1958,7 +2010,7 @@ for wing_index = 1, #compiled.families.closure_wings do
 	old_dry_total = old_dry_total + #(dry or {})
 end
 assert(wing_nonlex_fixture and old_dry_total == 15)
-do
+if arg._wp40_phase.enabled("wing_wedge_corruptions") then
 	local fixture = wing_oracle_by_id[compiled.families.closure_wings[1].id]
 	local j = fixture.wing.junction
 	local valid, reason = fixture.wedge_valid({{x = 0, z = 0}, {x = 1, z = 0}},
@@ -2856,7 +2908,7 @@ bank_results.__historical = trace_independent_banks(seed0_oracle_world,
 r16_max.seed0.edges = seed0_edge_authority.final_edges
 r16_max.seed0.banks = bank_results
 r16_max.seed0.edge_authority = seed0_edge_authority
-do
+if arg._wp40_phase.enabled("collapsed_control_identity") then
 	local collapsed_edge = assert(selected_r7_edge_by_id.land_001)
 	local collapsed_decision = assert(seed0_edge_authority.edges.land_001)
 	assert(collapsed_edge.shifted_controls[1229].x == -1671 and
@@ -2870,7 +2922,7 @@ do
 	assert(retained[1229] and retained[1230],
 		"C2 adjacent collapsed authored controls left the selected subsequence")
 end
-do
+if arg._wp40_phase.enabled("exact_six_reversal") then
 	-- Actual exact-six land_001 distinguishes Attachment-at-from from
 	-- Transition-at-to. Reverse the provisional R7 order, swap those two
 	-- obligations, and drive the production selector/clip/transition assembly;
@@ -3262,7 +3314,9 @@ local function run_bank_corruption_kats()
 			{x = -1321, z = -2831}, {x = -1320, z = -2832}})
 	end)
 end
-run_bank_corruption_kats()
+if arg._wp40_phase.enabled("bank_corruption_kats") then
+	run_bank_corruption_kats()
+end
 
 -- Exactly eight edge transitions retain zero-offset endpoint identity.
 local transition_ids, transition_count = {}, 0
@@ -3292,7 +3346,7 @@ assert(transition_count == 8)
 
 -- The production-consumed R16 selector and assembly seam is closed,
 -- fail-closed, alias-free, and reversal-identical.
-do
+if arg._wp40_phase.enabled("transition_selector_kats") then
 local transition_e = {x = -1140, z = 2241}
 local transition_w = {x = -1139, z = 2242}
 local synthetic_raw_water = false
@@ -3740,7 +3794,7 @@ for index = 1, #source.perimeters do
 	end
 	independent_perimeter_by_id[authored.id] = displaced
 end
-do
+if arg._wp40_phase.enabled("fixed_closure_corruptions") then
 	local authored = source.perimeters[1]
 	local closure = assert(independent_perimeter_oracle.fixed_closure(authored))
 	local definition = {id = "h55_corruption", kind = "mainland_coast",
@@ -3867,7 +3921,7 @@ local attachment_oracle_by_id = derive_attachment_oracles(seed0_oracle_world,
 	selected_r7_edge_by_id, independent_perimeter_by_id,
 	assert(r16_max.seed0.edge_authority))
 
-do
+if arg._wp40_phase.enabled("attachment_selector_kats") then
 	local chosen, distance, index = compiler.select_attachment_station({x = 0, z = 0},
 		{{x = 0, z = 1}, {x = 1, z = 0}}, {['0:1'] = 9, ['1:0'] = 3})
 	assert(chosen.x == 1 and chosen.z == 0 and distance == 1 and index == 3)
@@ -4057,12 +4111,15 @@ local function run_attachment_corruption_kats()
 		validate(row, control_authored, control_expected)
 	end)
 end
-run_attachment_corruption_kats()
+if arg._wp40_phase.enabled("attachment_corruption_kats") then
+	run_attachment_corruption_kats()
+end
 
 local zone_numeric = {}
 for index = 1, #source.zones do
 	zone_numeric[source.zones[index].id] = source.zones[index].numeric_id
 end
+if arg._wp40_phase.enabled("bay_payload_contract") then
 for bay_index = 1, #source.bays do
 	local authored = source.bays[bay_index]
 	local row = by_id(compiled.families.bays, authored.id)
@@ -4095,7 +4152,9 @@ for bay_index = 1, #source.bays do
 			right_numeric[index] == zone_numeric[right[index]])
 	end
 end
+end
 local owner_bay = by_id(compiled.families.bays, "bay_elandor_west")
+if arg._wp40_phase.enabled("bay_owner_kats") then
 local owner = compiler.bay_owner(owner_bay, -957, -2766)
 assert(owner.zone_id == "elandor_hearthpine_vale" and owner.side > 0)
 owner = compiler.bay_owner(owner_bay, -923, -2774)
@@ -4106,6 +4165,7 @@ local tied
 owner, _, _, tied = compiler.bay_owner(owner_bay, -628, -2664)
 assert(owner.zone_id == "elandor_dawnmere_fields" and
 	owner.segment_index == 0 and tied)
+end
 
 local expected_coast_owners = {
 	"elandor_stormvault_heights", "elandor_frostbarrow_shelf",
@@ -4121,6 +4181,7 @@ local expected_coast_owners = {
 }
 local coast_roster = source.geometry_policies.world_partition.
 	coast_source_allowed_component_ids
+if arg._wp40_phase.enabled("coast_roster_contract") then
 assert(#coast_roster == 22)
 for index = 1, 22 do
 	local row = compiled.families.coast_shelf[index]
@@ -4148,7 +4209,9 @@ for index = 1, 22 do
 		assert(values[1] ~= values[#values - 1] or values[2] ~= values[#values])
 	end
 end
+end
 compiler.validate_coast_payload(compiled.families.coast_shelf)
+if arg._wp40_phase.enabled("coast_face_alias_kats") then
 for _, fixture in ipairs({
 	{"zone_face:front_wyrmglass_crown", "face_arc:wyrmglass:island"},
 	{"zone_face:front_stormscale_summit", "face_arc:stormscale:island"},
@@ -4174,6 +4237,7 @@ for index = 21, 22 do
 	local selected, numerator, denominator = compiler.coast_source(
 		compiled.families.coast_shelf, values[1], values[2])
 	assert(selected.component_id == component.id and numerator == 0 and denominator == 1)
+end
 end
 
 local function deep_copy(value, seen)
@@ -4504,7 +4568,7 @@ print("WP40 T2 M56 all-22 independent Coast SHA256 " ..
 	"0309cd3f2d26705feeb1978ee6ca1903addd7f627bbff12ed816f0960d50e2ac")
 validate_independent_coast_evaluator(compiled, independent_coast, seed0_oracle_world,
 	"Seed0")
-do
+if arg._wp40_phase.enabled("coast_distance_kats") then
 	local corrupted, found = deep_copy(compiled.families.coast_shelf), false
 	for component_index = 1, #corrupted do
 		local values = signed_array(corrupted[component_index], "stations_xz")
@@ -4630,7 +4694,9 @@ local function run_partition_payload_projection_kats()
 		validate_channel(row, source.channels[1], 1)
 	end)
 end
-run_partition_payload_projection_kats()
+if arg._wp40_phase.enabled("payload_projection_kats") then
+	run_partition_payload_projection_kats()
+end
 
 local function run_final_edge_incidence_kats()
 	local edge_points = {}
@@ -4725,7 +4791,9 @@ local function run_final_edge_incidence_kats()
 		validate(faces)
 	end)
 end
-run_final_edge_incidence_kats()
+if arg._wp40_phase.enabled("edge_incidence_kats") then
+	run_final_edge_incidence_kats()
+end
 
 local function run_final_junction_category_kats()
 	local actual = {}
@@ -4821,7 +4889,9 @@ local function run_final_junction_category_kats()
 			"final ordinary corruption")
 	end)
 end
-run_final_junction_category_kats()
+if arg._wp40_phase.enabled("junction_category_kats") then
+	run_final_junction_category_kats()
+end
 
 local function run_coast_oracle_kats()
 	local function gcd(a, b)
@@ -4959,7 +5029,9 @@ local function run_coast_oracle_kats()
 				at ~= fixture.ties then error("coast selection changed") end
 	end)
 end
-run_coast_oracle_kats()
+if arg._wp40_phase.enabled("coast_oracle_kats") then
+	run_coast_oracle_kats()
+end
 
 local function run_classification_precedence_kats()
 	local function key_xz(x, z) return x .. ":" .. z end
@@ -5409,7 +5481,9 @@ local function run_classification_precedence_kats()
 	assert(coast_owner and actual_classify(shelf.x, shelf.z).kind == "coastal_shelf",
 		"coast dressing changed water membership")
 end
-run_classification_precedence_kats()
+if arg._wp40_phase.enabled("classification_kats") then
+	run_classification_precedence_kats()
+end
 
 -- H38: normalize every closed final polygon into exact integer row runs, then
 -- partition every footprint row at all run boundaries.  Each resulting
@@ -5430,10 +5504,13 @@ local run_exhaustive_partition_oracle = dofile(repo ..
 	authored_aperture_by_id = authored_aperture_by_id,
 	bay_source_by_id = bay_source_by_id, zone_numeric = zone_numeric,
 	source_by_id = source_by_id})
-local exhaustive_partition_report = run_exhaustive_partition_oracle(
-	compiled, "0", seed0_oracle_world, independent_perimeter_by_id,
-	{mode = "seed0", bundle = r16_max.seed0})
-do
+local exhaustive_partition_report
+if arg._wp40_phase.enabled("whole_seed0") then
+	exhaustive_partition_report = run_exhaustive_partition_oracle(
+		compiled, "0", seed0_oracle_world, independent_perimeter_by_id,
+		{mode = "seed0", bundle = r16_max.seed0})
+end
+if arg._wp40_phase.enabled("whole_max_u64") then
 	local max_u64_perimeters = independent_perimeter_oracle.materialize(
 		assert(r16_max.seed), assert(r16_max.compiled))
 	local max_u64_attachments = derive_attachment_oracles(r16_max.oracle_world,
@@ -5460,6 +5537,7 @@ end
 -- it binds one exact retained tuple and passes this in-memory request. Seed0,
 -- max-u64 and these diagnostics therefore consume the same independent Bank
 -- preparation and the same extracted exhaustive Whole oracle.
+if arg._wp40_phase.enabled("selected_diagnostic") then
 (function(selected_request)
 	if not selected_request then return end
 	assert(type(selected_request) == "table" and getmetatable(selected_request) == nil and
@@ -5649,12 +5727,14 @@ end
 		face_count = #selected_compiled.families.dry_faces,
 		edge_inventory_sha256 = selected_authority.edge_authority.inventory_sha256}
 end)(rawget(_G, "WP40_T2_SELECTED_REQUEST"))
+end
 
 local function expect_coast_corruption(fragment, mutate)
 	local payload = deep_copy(compiled.families.coast_shelf)
 	mutate(payload)
 	expect_error(fragment, function() compiler.validate_coast_payload(payload) end)
 end
+if arg._wp40_phase.enabled("coast_corruption_kats") then
 expect_coast_corruption("roster or schema", function(payload)
 	payload[1], payload[2] = payload[2], payload[1]
 end)
@@ -5682,11 +5762,13 @@ end)
 expect_coast_corruption("record shape", function(payload)
 	payload[1].unsafe_callback = function() end
 end)
+end
 local function expect_bay_corruption(fragment, mutate)
 	local payload = deep_copy(owner_bay)
 	mutate(payload)
 	expect_error(fragment, function() compiler.validate_bay_payload(payload) end)
 end
+if arg._wp40_phase.enabled("bay_corruption_kats") then
 expect_bay_corruption("policy changed", function(payload)
 	for index = 1, #payload.text_values do
 		if payload.text_values[index].name == "owner_side_rule" then
@@ -5727,6 +5809,7 @@ end)
 expect_bay_corruption("cycle or mutable alias", function(payload)
 	payload.attributes = payload.candidates
 end)
+end
 
 local source_tables = {}
 local function mark_source(value)
@@ -5746,11 +5829,14 @@ local function graph_plain(value, seen)
 	seen[value] = true
 	for key, child in pairs(value) do graph_plain(key, seen) graph_plain(child, seen) end
 end
+if arg._wp40_phase.enabled("compiled_alias_kats") then
 graph_plain(compiled)
+end
 
 -- The focused slice is still private, but every emitted family already fits
 -- the one production compiled-data canonicalizer without callbacks, inferred
 -- scalar tags, aliases, metatables, or schema-side coercion.
+if arg._wp40_phase.enabled("compiled_schema_kats") then
 local schemas = dofile(wp40 .. "/schemas.lua")
 local compiled_schema = dofile(wp40 .. "/compiled_schema.lua")
 local geometry = {}
@@ -5796,5 +5882,7 @@ expect_error("unsigned", function()
 	compiled_schema.canonicalize_compiled(compiled_data, {}, canonical)
 end)
 ceiling_row.value = saved_ceiling
+end
 
+arg._wp40_phase.finish()
 print("WP40 T2 partition slice tests passed")

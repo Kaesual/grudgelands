@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if (( $# != 0 )); then
-	echo "usage: tools/wp40/run_t2_partition_c2_selected.sh" >&2
+no_cache="${WP40_NO_CACHE:-0}"
+if (( $# == 1 )) && [[ "$1" == --no-cache ]]; then
+	no_cache=1
+elif (( $# != 0 )); then
+	echo "usage: tools/wp40/run_t2_partition_c2_selected.sh [--no-cache]" >&2
+	exit 2
+fi
+if [[ "$no_cache" != 0 && "$no_cache" != 1 ]]; then
+	echo "WP40_NO_CACHE must be 0 or 1" >&2
 	exit 2
 fi
 
@@ -17,7 +24,9 @@ fi
 "$repo/tools/bin/luac51" -p \
 	"$script_dir/t2_partition_test.lua" \
 	"$script_dir/t2_partition_oracle.lua" \
-	"$script_dir/t2_partition_c2_selected.lua"
+	"$script_dir/t2_partition_c2_selected.lua" \
+	"$script_dir/t2_payload_cache.lua" \
+	"$script_dir/t2_phase_selector.lua"
 if "$repo/tools/bin/luac51" -l -p \
 	"$script_dir/t2_partition_c2_selected.lua" | rg -q 'SETGLOBAL'; then
 	echo "WP40 T2 C2 selected diagnostic wrapper writes a global" >&2
@@ -39,6 +48,8 @@ for pattern in "${patterns[@]}"; do
 done
 
 run_root="$(mktemp -d -p /tmp grudgelands-wp40-t2-partition.XXXXXXXX)"
+cache_dir="$repo/tools/wp40/results/payload-cache"
+mkdir -p "$cache_dir"
 cleanup() {
 	if [[ "$run_root" == /tmp/grudgelands-wp40-t2-partition.* ]]; then
 		rm -rf -- "$run_root"
@@ -60,6 +71,8 @@ for slot in 28 29 30 31; do
 	# a sibling canonical directory rather than the orchestration parent.
 	worker_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-partition.XXXXXXXX)"
 	worker_scratches+=("$worker_scratch")
+	WP40_NO_CACHE="$no_cache" WP40_PAYLOAD_CACHE_DIR="$cache_dir" \
+	WP40_T2_ONLY=selected_diagnostic \
 	"$lua_bin" "$script_dir/t2_partition_c2_selected.lua" \
 		"$repo" "$worker_scratch" "$slot" > "$scratch/output.log" 2>&1 &
 	pids+=("$!")

@@ -7,6 +7,7 @@ if (( $# != 0 )); then
 fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
+export WP40_NO_CACHE=1
 lua_bin="$repo/tools/bin/lua51"
 if [[ ! -x "$lua_bin" ]]; then
 	echo "WP40 T2 targeted PUC interpreter is not executable: $lua_bin" >&2
