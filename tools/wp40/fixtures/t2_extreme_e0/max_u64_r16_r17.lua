@@ -62,7 +62,7 @@ return {
 	},
 	source_checksum = "5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000",
 	boundary_policy_checksum = "3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe",
-	partition_sha256 = "58a76713ea4d1b89a9aab2d6c35df7e00b92cb53eb13f5153639a75125638919",
+	partition_sha256 = "be87f4ccf29ab5701d95610be97d38e449f189f6e42eddabed700b75323aad2f",
 	compiled_sha256 = "852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95",
 	reproduce = "WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh",
 }
