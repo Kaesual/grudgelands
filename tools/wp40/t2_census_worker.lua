@@ -1,78 +1,163 @@
--- WP40 T2 census worker (plan section 6.6, milestone M1).  One process
--- evaluates an explicit seed list through partition.census_scan1 and emits
--- one canonical TSV: Scan-1 interval/attachment/junction/fill projections
--- plus the verified seed-independent F1 prefilter and a trailing digest.
--- Full-W range sharding, resume and the cost gate are the M2 launcher's job;
--- this worker deliberately caps explicit seed lists (plan section 6.6.7).
+-- WP40 T2 census worker (plan section 6.6, milestones M1 and M2).  One
+-- process evaluates a seed slice through partition.census_scan1 and emits one
+-- canonical TSV: Scan-1 interval/attachment/junction/fill projections plus the
+-- verified seed-independent F1 prefilter and a trailing digest.
+--
+-- Three modes.  `--kat` and an explicit seed list are the M1 free paths and
+-- emit exactly the M1 bytes, which is what keeps the pinned KAT digest a
+-- standing proof that later changes stayed digest-neutral.  `--range FIRST
+-- LAST` is the M2 shard mode over `W`: it adds the shard framing the launcher
+-- resumes and verifies against, streams each record so the launcher can check
+-- the first one while the run continues (section 6.6.2), and refuses to start
+-- above the free seed budget without the GO token (section 6.6.7).  The token
+-- is this `W`'s own digest, so a direct worker call cannot conjure one.
 local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 local output_path = assert(arg[3], "output path required")
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-census%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
+assert(type(output_path) == "string" and output_path:match("^/[A-Za-z0-9._/-]+$") and
+	not output_path:find("/../", 1, true) and not output_path:find("//", 1, true),
+	"unsafe output path")
 
-local seeds, seed_seen, kat_mode = {}, {}, false
-for index = 4, #arg do
-	if arg[index] == "--kat" then
-		kat_mode = true
+local mode = "seeds"
+local seeds, seed_seen = {}, {}
+local range_first, range_last, go_token
+local shard_meta = {}
+local shard_meta_flags = {["--commit"] = "census_commit", ["--tree"] = "census_tree",
+	["--interpreter-id"] = "interpreter_id",
+	["--interpreter-path"] = "interpreter_path",
+	["--interpreter-version"] = "interpreter_version"}
+
+local function add_seed(value)
+	assert(type(value) == "string" and value:match("^%d+$"),
+		"seed must be a decimal string")
+	assert(value == "0" or value:match("^[1-9]"),
+		"seed must be canonical decimal text without leading zeros")
+	assert(#value < 20 or #value == 20 and value <= "18446744073709551615",
+		"seed exceeds the unsigned 64-bit range")
+	assert(not seed_seen[value], "duplicate seed in list")
+	seed_seen[value] = true
+	seeds[#seeds + 1] = value
+end
+
+local argument_index = 4
+while arg[argument_index] do
+	local flag = arg[argument_index]
+	if flag == "--kat" then
+		assert(mode == "seeds", "--kat cannot be combined with another mode")
+		mode = "kat"
+		argument_index = argument_index + 1
+	elseif flag == "--range" then
+		assert(mode == "seeds", "--range cannot be combined with another mode")
+		mode = "range"
+		range_first = tonumber(arg[argument_index + 1])
+		range_last = tonumber(arg[argument_index + 2])
+		assert(range_first and range_last and range_first % 1 == 0 and
+			range_last % 1 == 0 and range_first >= 0 and range_last >= range_first,
+			"--range needs two ascending nonnegative integers")
+		argument_index = argument_index + 3
+	elseif flag == "--go-token" then
+		go_token = assert(arg[argument_index + 1], "--go-token needs a value")
+		argument_index = argument_index + 2
+	elseif shard_meta_flags[flag] then
+		shard_meta[shard_meta_flags[flag]] =
+			assert(arg[argument_index + 1], flag .. " needs a value")
+		argument_index = argument_index + 2
 	else
-		local seed = arg[index]
-		assert(type(seed) == "string" and seed:match("^%d+$"),
-			"seed must be a decimal string")
-		assert(seed == "0" or seed:match("^[1-9]"),
-			"seed must be canonical decimal text without leading zeros")
-		assert(#seed < 20 or #seed == 20 and seed <= "18446744073709551615",
-			"seed exceeds the unsigned 64-bit range")
-		assert(not seed_seen[seed], "duplicate seed in list")
-		seed_seen[seed] = true
-		seeds[#seeds + 1] = seed
+		assert(not flag:match("^%-%-"), "unknown census worker flag " .. flag)
+		add_seed(flag)
+		argument_index = argument_index + 1
 	end
 end
-if kat_mode then
+if mode == "kat" then
 	assert(#seeds == 0, "--kat accepts no explicit seeds")
 	seeds = {"0", "18446744073709551615"}
+elseif mode == "range" then
+	assert(#seeds == 0, "--range accepts no explicit seeds")
 end
-assert(#seeds >= 1, "at least one seed required")
-assert(#seeds <= 64,
-	"explicit census seed lists are capped at 64; the full-W run is the " ..
-	"GO-gated M2 launcher's job")
 
--- Claim the output path up front instead of only checking it: the run takes
--- minutes, and a late-write-only design would let a second worker started in
--- that window clobber the first result.  A crash leaves an empty claim file,
--- which downstream resume logic must treat as unparseable and abort loudly.
-local existing = io.open(output_path, "rb")
-if existing then existing:close() error("census output already exists", 0) end
-local claim = assert(io.open(output_path, "wb"))
-assert(claim:close())
-
-local sha_cache = {}
-local function from_hex(value)
-	return (value:gsub("..", function(pair)
-		return string.char(assert(tonumber(pair, 16)))
-	end))
+local function read_file(path)
+	local file = assert(io.open(path, "rb"), "missing file " .. path)
+	local bytes = assert(file:read("*a"))
+	assert(file:close())
+	return bytes
 end
 local function to_hex(value)
 	return (value:gsub(".", function(byte)
 		return ("%02x"):format(string.byte(byte))
 	end))
 end
--- One fixed tempfile pair: calls are strictly sequential, and per-call names
--- accumulated ~2,000 dead files per seed before the shell trap fired.
-local function raw_sha256(data)
-	local cached = sha_cache[data]
-	if cached then return cached end
-	local input = scratch .. "/sha-input.bin"
-	local output = scratch .. "/sha-output.txt"
-	local file = assert(io.open(input, "wb"))
-	assert(file:write(data)) assert(file:close())
-	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
-	assert(status == 0 or status == true and reason == "exit" and code == 0)
-	file = assert(io.open(output, "rb"))
-	local digest = from_hex(assert(assert(file:read("*l")):match("^([0-9a-f]+)")))
-	assert(file:close()) assert(#digest == 32)
-	sha_cache[data] = digest
-	return digest
+
+local hasher = dofile(repo .. "/tools/wp40/t2_census_hasher.lua")({
+	repo = repo, scratch = scratch})
+local raw_sha256 = hasher.raw_sha256
+local authority = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
+	raw_sha256 = raw_sha256})
+
+-- Pinned before the modules are loaded and re-read before the shard is
+-- published, so a mid-run edit to partition.lua cannot leave half a shard
+-- measured against one tree and half against another.
+local function module_digest()
+	local lines = {}
+	for index = 1, #authority.module_paths do
+		local path = authority.module_paths[index]
+		lines[index] = path .. "\t" .. to_hex(raw_sha256(read_file(repo .. "/" .. path)))
+	end
+	return to_hex(raw_sha256(table.concat(lines, "\n") .. "\n"))
 end
+local pinned_module_digest = module_digest()
+hasher.forget()
+
+-- `W` is derived, never listed: seed 0, max-u64 and the corpus slots from the
+-- committed corpus module, the 4,096 pool candidates from the committed label
+-- rule, cross-checked row for row against the committed candidate artifact
+-- (plan section 6.3).  Deriving it costs 4,096 hashes, so free runs that need
+-- neither the slice nor the token never pay for it.
+local derived_w
+local function require_w()
+	if derived_w then return derived_w end
+	local corpus = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
+	derived_w = authority.derive_w(corpus,
+		read_file(repo .. "/" .. authority.candidates_path), raw_sha256)
+	hasher.forget()
+	return derived_w
+end
+
+if mode == "range" then
+	local w = require_w()
+	assert(range_last < w.total, "range end " .. range_last ..
+		" is outside W (" .. w.total .. " seeds)")
+	for index = range_first, range_last do add_seed(w.seeds[index + 1]) end
+end
+assert(#seeds >= 1, "at least one seed required")
+if #seeds > authority.free_seed_budget or go_token then
+	authority.check_go_token(go_token, require_w().digest, #seeds)
+end
+
+local shard_mode = mode == "range" and #seeds > authority.free_seed_budget
+if shard_mode then
+	authority.validate_shard_range(range_first, range_last, require_w().total)
+	assert(output_path == repo .. "/" ..
+		authority.census_shard_path(range_first, range_last),
+		"a gated census range must publish at its canonical shard path")
+	authority.validate_census_shard_path(
+		authority.census_shard_path(range_first, range_last), range_first, range_last)
+	for _, field in pairs(shard_meta_flags) do
+		assert(shard_meta[field], "shard mode requires " .. field)
+	end
+else
+	authority.validate_free_output_path(output_path)
+end
+
+-- Claim the output path up front instead of only checking it: the run takes
+-- minutes to hours, and a late-write-only design would let a second worker
+-- started in that window clobber the first result.  A crash leaves a file with
+-- no trailing digest line, which resume verification treats as unparseable and
+-- aborts on -- never as an empty shard (plan section 6.6.4).
+local existing = io.open(output_path, "rb")
+if existing then existing:close() error("census output already exists", 0) end
+local output_file = assert(io.open(output_path, "wb"))
 
 local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 local canonical = dofile(wp40 .. "/canonical.lua")
@@ -85,7 +170,7 @@ local source = dofile(wp40 .. "/source/catalog.lua")
 local source_validator = dofile(wp40 .. "/validation/t2_source.lua")
 -- The closed WP43 vocabulary projection retained for the E0 pool; recorded
 -- here so the census manifest names its vocabulary authority explicitly.
-local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
+local vocabulary_path = authority.vocabulary_path
 local vocabulary = dofile(repo .. "/" .. vocabulary_path)
 local new_boundary = dofile(wp40 .. "/geometry/boundary.lua")
 local partition = dofile(wp40 .. "/geometry/partition.lua")({
@@ -94,9 +179,20 @@ local partition = dofile(wp40 .. "/geometry/partition.lua")({
 	source = source, source_validator = source_validator,
 	vocabulary = vocabulary})
 
-local lines = {}
+-- Buffered per line, flushed per seed record.  Section 6.6.2 has the launcher
+-- validate each worker's first completed record while the workers keep
+-- running, which a run that only materializes its output at the end cannot
+-- support.
+local pending, line_count = {}, 0
 local function emit(...)
-	lines[#lines + 1] = table.concat({...}, "\t")
+	pending[#pending + 1] = table.concat({...}, "\t")
+end
+local function flush_record()
+	if #pending == 0 then return end
+	assert(output_file:write(table.concat(pending, "\n"), "\n"))
+	assert(output_file:flush())
+	line_count = line_count + #pending
+	pending = {}
 end
 local function opt(value)
 	if value == nil then return "-" end
@@ -105,14 +201,33 @@ end
 
 emit("schema", partition.census_scan1_schema)
 emit("vocabulary", vocabulary_path)
+if shard_mode then
+	local w = require_w()
+	local header = {schema = partition.census_scan1_schema,
+		vocabulary = vocabulary_path, shard_schema = authority.shard_schema,
+		first = range_first, last = range_last, shard_seeds = #seeds,
+		w_digest = w.digest, w_total = w.total, module_digest = pinned_module_digest,
+		census_commit = shard_meta.census_commit, census_tree = shard_meta.census_tree,
+		interpreter_id = shard_meta.interpreter_id,
+		interpreter_path = shard_meta.interpreter_path,
+		interpreter_version = shard_meta.interpreter_version}
+	local lines = authority.shard_header_lines(header)
+	-- shard_header_lines re-emits schema and vocabulary in the frozen M1 order,
+	-- so the two already queued above are the first two of that list.
+	assert(lines[1] == pending[1] and lines[2] == pending[2],
+		"shard header disagrees with the frozen M1 preamble")
+	for index = 3, #lines do pending[#pending + 1] = lines[index] end
+	flush_record()
+end
 
 local prefilter_serialized
 local scans_by_seed = {}
+local run_started = os.time()
 for seed_index = 1, #seeds do
 	local seed = seeds[seed_index]
 	local started = os.time()
 	local scan = partition.census_scan1(seed)
-	if kat_mode then scans_by_seed[seed] = scan end
+	if mode == "kat" then scans_by_seed[seed] = scan end
 	local serialized_rows = {}
 	for index = 1, #scan.prefilter do
 		local row = scan.prefilter[index]
@@ -123,7 +238,7 @@ for seed_index = 1, #seeds do
 	if seed_index == 1 then
 		prefilter_serialized = serialized
 		for index = 1, #serialized_rows do
-			lines[#lines + 1] = "prefilter\t" .. serialized_rows[index]
+			pending[#pending + 1] = "prefilter\t" .. serialized_rows[index]
 		end
 	elseif serialized ~= prefilter_serialized then
 		error("WP40 census: seed-independent prefilter drifted at seed " ..
@@ -187,24 +302,39 @@ for seed_index = 1, #seeds do
 			#fill_texts > 0 and table.concat(fill_texts, ",") or "-")
 	end
 	emit("seed_end", seed)
-	-- The SHA memo cache has zero cross-seed reuse (every noise input embeds
-	-- the seed), so dropping it bounds worker memory over long seed lists
-	-- without changing a single emitted byte.
-	sha_cache = {}
+	flush_record()
+	-- The SHA memo has zero cross-seed reuse (every noise input embeds the
+	-- seed), so dropping it bounds worker memory over long seed lists without
+	-- changing a single emitted byte.
+	hasher.forget()
 	io.stderr:write("census seed " .. seed .. " done " .. seed_index .. "/" ..
 		#seeds .. " wall=" .. os.difftime(os.time(), started) .. "s cpu=" ..
 		string.format("%.1f", os.clock()) .. "s\n")
 	io.stderr:flush()
+	if shard_mode then
+		local elapsed = math.max(0, os.difftime(os.time(), run_started))
+		local remaining = #seeds - seed_index
+		local eta = math.floor(elapsed * remaining / seed_index)
+		print(("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
+			"completed=%d/%d wall_seconds=%d eta_seconds=%d"):format(
+			range_first, range_last, range_first + seed_index - 1, seed_index,
+			#seeds, elapsed, eta))
+		io.stdout:flush()
+	end
 end
 
-local body = table.concat(lines, "\n") .. "\n"
-local digest = to_hex(raw_sha256(body))
-local file = assert(io.open(output_path, "wb"))
-assert(file:write(body, "digest\tsha256=", digest, "\n"))
-assert(file:close())
-print("census scan1 rows " .. #lines .. " digest " .. digest)
+assert(#pending == 0, "census worker left rows unflushed")
+assert(output_file:close())
+assert(module_digest() == pinned_module_digest,
+	"a census input module changed during the run")
+local digest = to_hex(hasher.raw_sha256_file(output_path))
+local finish = assert(io.open(output_path, "ab"))
+assert(finish:write("digest\tsha256=", digest, "\n"))
+assert(finish:close())
+hasher.close()
+print("census scan1 rows " .. line_count .. " digest " .. digest)
 
-if kat_mode then
+if mode == "kat" then
 	local fixture_path = repo ..
 		"/tools/wp40/fixtures/t2_census/scan1_kat_v1.lua"
 	local fixture_chunk, fixture_diagnostic = loadfile(fixture_path)
