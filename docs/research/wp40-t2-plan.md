@@ -135,8 +135,30 @@ been wrong before.
 
 ## 5. Open items not owned by a package
 
-- **U1, U2, O1** — the complete undecided set from the completeness analysis;
-  U1 is a directly observable contradiction between two policy strings.
+- **U1, U2, O1** — the complete undecided set from the completeness analysis
+  (its sections 3-F2 and 3-F9). Characterised, because "U1" alone tells a
+  reader nothing:
+  - **U1** is a live contradiction between two policy strings.
+    `bay_edge_transition_terminal_complete` requires a nonempty combined
+    contiguous control subsequence per tuple; the R18-level
+    `shared_boundary_incidence_reject` lists an empty subsequence as
+    reject-without-fallback. On a seed where one tuple has an empty combined
+    clip and another completes, the first reading accepts and the second
+    rejects the whole seed. Which is authoritative is not stated. This is a
+    decision, not a documentation fix, and it should be made before the
+    collected correction is written rather than inside it.
+  - **U2** asks whether a one-station raster can satisfy "unique,
+    8-connected", which arises when a two-ended tuple's candidate incidences
+    coincide or cross. Practically vacuous, since Stage 2 hard-rejects final
+    edges under 192 station steps — but *which stage* rejects is exactly the
+    ambiguity R16 was made of, so it wants an answer rather than a shrug.
+  - **O1** is a proof obligation rather than a gap. Aperture-versus-attachment
+    collision is decided by evaluation order, and the interesting claim — that
+    the collision is unreachable, because attachments sit hundreds of nodes
+    from apertures while displacement is bounded by 96/64 with tapers — is
+    asserted nowhere. Either a Stage-2 margin assertion or one sentence
+    declaring the order-based outcome intended closes it. Until then it is
+    formally decided and semantically unreviewed.
 - **A targeted `pairs()`-order divergence test**, as the cheap substitute for a
   full PUC gate at every stage freeze. The canonical encoder sorts before
   emission, so serialisation is provably runtime-independent; control flow that
@@ -146,3 +168,75 @@ been wrong before.
   thirteen corrections so far, and behind three defects found on 2026-08-15
   alone: the vacuous ripgrep gate, the payload-cache regression, and a
   verification run that reported success with zero workers started.
+
+## 6. The census artifact contract
+
+The census is not a search for bugs. It is the step that converts an
+open-ended discovery process into a finite work list, and everything about its
+output shape follows from that. R11 through R19 each cost roughly a day
+because each was found alone, by an expensive reproduction, and closed before
+the next one could surface. The census exists to produce all of them at once.
+
+If its output does not support that, the run is wasted even when it completes.
+
+### 6.1 The unit is a configuration, not a seed
+
+Key every row by **(site, local-configuration bytes)**, never by (site, seed).
+Sites realize identical local neighbourhoods across many seeds, so
+configuration keying collapses the seed multiplier and matches the hypothesis
+under test — which is about configurations the policy does or does not decide,
+not about seeds. Retain, per distinct configuration, the count of seeds that
+realized it and the lexicographically least realizing seed as its witness.
+
+A scan that emits one report per seed has produced 4,130 reports and no list.
+
+### 6.2 Required outputs
+
+Four artifacts, all derived in one pass:
+
+1. **Occupied-class table.** One row per (site class, decision class) actually
+   realized, with its realization count and witness seed. A row whose decision
+   class is REJECTED is a finding: it is a future correction, located on paper.
+   This table is the deliverable; the rest supports it.
+2. **Vacuous-branch list.** Every decision branch the §3 tables declare that no
+   configuration realized. Freeze review becomes a coverage report rather than
+   an assertion — a branch nothing exercises is either dead policy or an
+   untested path, and both need saying out loud.
+3. **Per-site extremal seeds.** For each of the roughly 140 structural sites,
+   the seeds realizing the minimum and maximum of its local scalar. This is not
+   a diagnostic: it is Scan-4's input set, and every R-series trigger so far was
+   an extremal seed.
+4. **Distribution histograms** named in the completeness analysis section 5 —
+   interval counts per edge, attachment Chebyshev distances, junction-pair pass
+   rate, fill counts per bay, and the joint (eligible, R16-success, complete)
+   distribution per transition endpoint.
+
+### 6.3 What must be reproducible, and what must not be retained
+
+Commit the four artifacts above and the manifest that pins what produced them:
+commit, tree, interpreter, scan version, and the seed set with its derivation.
+Do not commit per-seed intermediates; they are regenerable and would bury the
+list they exist to support.
+
+Every finding must carry enough to write and test its correction without
+re-running the census: the site, the configuration bytes, the witness seed, and
+the decision the policy currently reaches. A finding that requires a rerun to
+act on has not been recorded properly.
+
+### 6.4 What counts as a finding
+
+An occupied REJECTED class, a vacuous branch, or a configuration the decision
+table does not cover at all. The third is the rarest and the most valuable:
+the completeness analysis argues the tables are total, so an uncovered
+configuration falsifies that argument and is worth stopping for.
+
+Occupancy of a DECIDED class is not a finding, however unusual it looks.
+
+### 6.5 Cost
+
+Scan-1 and Scan-2 are one package. Anchor the estimate on the measured 10.7 s
+per seed for S1 scalars and re-measure on one seed before launching the full
+set — the prefilter is expected to discharge most ordinary edges permanently,
+so the real figure should fall well below a naive 4,130 × 10.7 s. State the
+measured single-seed cost and the projected total in the run manifest, and stop
+rather than proceed if the projection exceeds four hours.
