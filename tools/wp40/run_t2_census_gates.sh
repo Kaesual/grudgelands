@@ -197,7 +197,10 @@ end
 local layout = {{"edge", 61, 13, 5, "ordinary_interval_select", 4, "ordinary"},
 	{"perimeter", 3, 6}, {"aperture", 8, 16},
 	{"attachment", 8, 13, 6, "attachment_equality_select"},
-	{"junction", 38, 7}, {"bay", 4, 5}}
+	{"junction", 38, 7}, {"bay", 4, 5},
+	{"scan2_endpoint", 8, 14, 6, "scan2_counting_evaluated", 7, "false"},
+	{"scan2_edge", 6, 10, 4, "scan2_exactly_one_complete_select", 5, "true"},
+	{"scan2_tuple", 2, 16, 5, "scan2_tuple_complete", 7, "direct"}}
 for index = first, last do
 	local seed = assert(w.seeds[index + 1])
 	parts[#parts + 1] = "seed_begin\t" .. seed
