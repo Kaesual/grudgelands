@@ -429,19 +429,24 @@ return function(dependencies)
 	-- at all": the census witnesses it as an attachment whose edge realized a
 	-- second dry interval, which is the excluded dry fragment itself and the
 	-- shape Slot 30 was the first seed to realize.
+	--
+	-- A hit is reported against the row's declared *site*, not against one
+	-- named column: an aperture incidence is `(id, side)`, and a flagged seed
+	-- whose reason names only the aperture cannot say which of its two
+	-- incidences realized the tail mode.
 	local flag_rules = {
 		{flag = "fills", row = "bay", column = "fill_count", test = "at_least",
-			value = 1, detail = "id"},
+			value = 1},
 		{flag = "tail_mode", row = "scan3_aperture", column = "class",
-			test = "equals", value = "aperture_tail_select", detail = "id"},
+			test = "equals", value = "aperture_tail_select"},
 		{flag = "multi_interval", row = "edge", column = "interval_count",
-			test = "at_least", value = 2, detail = "id"},
+			test = "at_least", value = 2},
 		{flag = "two_or_more_candidates", row = "scan2_endpoint",
-			column = "success_count", test = "at_least", value = 2, detail = "id"},
+			column = "success_count", test = "at_least", value = 2},
 		{flag = "branch", row = "scan3_bank", column = "branch_step_count",
-			test = "at_least", value = 1, detail = "id"},
+			test = "at_least", value = 1},
 		{flag = "fragment", row = "attachment", column = "interval_count",
-			test = "at_least", value = 2, detail = "id"},
+			test = "at_least", value = 2},
 	}
 
 	-- Section-3 table rows that this record cannot witness at all.  Reporting

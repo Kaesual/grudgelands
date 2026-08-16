@@ -424,9 +424,10 @@ check(roster_scanned == 137,
 	"the scans 1-3a extremal coverage moved from 137 sites to " .. roster_scanned)
 for _, rule in ipairs(authority.flag_rules) do
 	local layout = authority.record_row_by_tag[rule.row]
-	check(layout ~= nil and layout.column_index[rule.column] ~= nil and
-		layout.column_index[rule.detail] ~= nil,
+	check(layout ~= nil and layout.column_index[rule.column] ~= nil,
 		"the " .. rule.flag .. " flag reads a column its row does not carry")
+	check(rule.test == "equals" or rule.test == "at_least",
+		"the " .. rule.flag .. " flag uses a test the merge does not implement")
 end
 
 -- Free worker output is the only thing the M5 merge KAT can consume, and it

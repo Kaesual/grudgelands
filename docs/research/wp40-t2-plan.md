@@ -662,8 +662,8 @@ which is a true bound because every column's effective half-width is either
 the clamped interpolation of the two endpoint half-widths or an endpoint cap
 radius, and its delta is always an element of that segment's own array.
 Measured across the four KAT seeds that bound runs **46–80 nodes** — Slot 30's
-46 is the tightest and is 25 below its own station reading — against a
-structural floor of `80 − 48 = 32`. A run where every station is positive but
+46 is the tightest and is 29 below that Bay's own station reading of 75 —
+against a structural floor of `80 − 48 = 32`. A run where every station is positive but
 the bound is not gets its own class, `bay_bank_width_unbounded_event`:
 "measured positive" and "could not be excluded" are different claims and
 collapsing them is how an unasserted universal survives. The KAT now pins the
@@ -753,6 +753,9 @@ vacuously, which is the failure this branch has shipped twice) and an
 invariance half that folds a synthetic record set covering every declared
 class, and the measured records where they fit in memory twice, through the
 whole artifact construction in two orders and requires byte-identical output.
+A merge whose probe comes back sorted aborts rather than recording the fact
+and continuing, since the invariance half would then pass for exactly the
+reason that makes it worthless.
 
 **What section 6.2 left open and M5 decided**, recorded here because the
 artifacts state it and a later reader should not have to re-derive it:

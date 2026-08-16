@@ -697,18 +697,24 @@ The M5 gate is `--merge-kat`: run the four-seed worker KAT, merge it under
 LuaJIT and under `tools/bin/lua51`, compare all five artifacts byte for byte,
 and check the artifacts digest against the fixture's pin. Only the PUC run may
 write into the committed fixtures, so the half that publishes is never the
-half that is merely compared. The digest covers the five artifacts and not the
+half that is merely compared — and it is handed the LuaJIT run's digest as
+`--expect-artifacts-digest`, which it checks *before* it writes anything.
+Comparing only afterwards would leave six unvetted files in the committed tree
+whenever the gate fired, and the retry would then abort on "already exists"
+instead of on the divergence. The digest covers the five artifacts and not the
 manifest, which names the merge interpreter and differs between the two runs
 by construction.
 
 The `pairs()`-order divergence test (plan section 5) rides here because census
 aggregation is the iteration-order-dependent control flow it exists to catch.
 It has two halves: a probe that shows this runtime's `pairs()` really does
-hand out a non-sorted order — without it the second half could pass
-vacuously — and an invariance half that folds a synthetic record set covering
-every declared class, plus the measured records where they fit in memory
-twice, through the whole artifact construction in two different orders and
-requires byte-identical output. It found a real defect on its first run: a
+hand out a non-sorted order, and an invariance half that folds a synthetic
+record set covering every declared class, plus the measured records where they
+fit in memory twice, through the whole artifact construction in two different
+orders and requires byte-identical output. A merge whose probe comes back
+sorted **aborts** rather than recording the fact and continuing: the
+invariance half would then pass for the one reason that makes it meaningless,
+and it is recorded in the manifest, which the compared digest does not cover. It found a real defect on its first run: a
 Wing counts seven pair-exclusion causes on one row, so a site can realize the
 same branch through several rows of one seed and "the first such row" was an
 arrival-order choice. The witness is now the least row of the least seed.
@@ -758,7 +764,7 @@ the four seeds and still 14 above the structural floor of `80 − 48`.
 The record digest moved legitimately at M3 (the record grew the Scan-2 rows),
 again at M4 (the Scan-3a rows) and again at M5 (the fourth seed), and is
 re-pinned at `01b5dd4b...`; it remains the determinism gate for everything
-after. `merge_artifacts_digest` (`f4ef6fdf...`) is its M5 counterpart over the
+after. `merge_artifacts_digest` (`efa560d4...`) is its M5 counterpart over the
 five artifacts. The LuaJIT/PUC comparison is the merge gate; M1-M4 run PUC
 only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
 which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).

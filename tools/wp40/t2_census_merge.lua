@@ -34,7 +34,7 @@ safe_absolute_path(out_dir, "output directory")
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-census%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
 
-local mode, record_paths, cost_projection = nil, {}, nil
+local mode, record_paths, cost_projection, expected_digest = nil, {}, nil, nil
 local argument_index = 4
 while arg[argument_index] do
 	local flag = arg[argument_index]
@@ -52,6 +52,17 @@ while arg[argument_index] do
 			argument_index = argument_index + 1
 		end
 		assert(#record_paths >= 1, "--records needs at least one path")
+	elseif flag == "--expect-artifacts-digest" then
+		-- The determinism gate, moved in front of the write.  Without it the
+		-- publishing run creates the committed artifacts and only then finds out
+		-- that the other interpreter disagreed, leaving six unvetted files in
+		-- the tree and a retry that aborts on "already exists" rather than on
+		-- the divergence that actually happened.
+		expected_digest = assert(arg[argument_index + 1],
+			"--expect-artifacts-digest needs a value")
+		assert(#expected_digest == 64 and not expected_digest:match("[^0-9a-f]"),
+			"the expected artifacts digest is not 64 hex characters")
+		argument_index = argument_index + 2
 	elseif flag == "--cost-projection" then
 		cost_projection = assert(arg[argument_index + 1],
 			"--cost-projection needs a value")
@@ -308,7 +319,7 @@ local function new_census(options)
 						hit = number ~= nil and number >= rule.value
 					end
 					if hit then
-						note_flag(seed, rule.flag, field(rule.row, fields, rule.detail))
+						note_flag(seed, rule.flag, site_of(rule.row, fields))
 					end
 				end
 			end
@@ -494,11 +505,21 @@ local function new_census(options)
 					"raw=" .. field("scan3_wing", fields, "selected_raw_rank") ..
 					" structural=" ..
 					field("scan3_wing", fields, "selected_structural_rank"))
-				local negative = integer(field("scan3_wing", fields, "negative_chebyshev"))
-				local positive = integer(field("scan3_wing", fields, "positive_chebyshev"))
-				local largest = math.max(negative or 0, positive or 0)
-				note_histogram("scan3_wing_chebyshev_k_j", id, count_text(largest))
-				if largest > 4 then
+				-- A Wing that rejects before its K stations resolve emits `-` on
+				-- both sides, and folding that into a measured zero is exactly
+				-- the "measured positive" / "could not be excluded" confusion
+				-- section 6.4 forbids.  The maximum is taken over the sides that
+				-- actually resolved -- a side above four already rejected the
+				-- Wing, so it is still visible -- and a Wing with neither side
+				-- resolved gets the unmeasured bucket.
+				local largest
+				for _, side in ipairs({"negative_chebyshev", "positive_chebyshev"}) do
+					local value = integer(field("scan3_wing", fields, side))
+					if value and (not largest or value > largest) then largest = value end
+				end
+				note_histogram("scan3_wing_chebyshev_k_j", id,
+					largest and count_text(largest) or "-")
+				if largest and largest > 4 then
 					note_histogram("universal_event", "chebyshev_k_j_above_four", id)
 				end
 				local above_five =
@@ -1228,6 +1249,17 @@ end
 -- The divergence test, then the artifacts.
 -- ------------------------------------------------------------------
 local probe_unsorted = probe_pairs_order()
+if not probe_unsorted then
+	-- Recording this and carrying on would leave the invariance half passing
+	-- for the one reason that makes it meaningless, in a manifest that is not
+	-- even covered by the compared digest.  A gate that cannot fail is the
+	-- failure this branch has already shipped twice, so the merge refuses to
+	-- certify anything in a runtime where the probe proves nothing.
+	error("WP40 T2 census merge: this runtime's pairs() handed out a sorted " ..
+		"iteration order for the probe table, so the section 5 divergence test " ..
+		"has nothing to detect and its invariance half would pass vacuously; " ..
+		"widen the probe before trusting a merge here", 0)
+end
 local synthetic_digest = assert_order_invariance(synthetic_records(),
 	{seed_set = "synthetic", strict = false, winners = header.winners,
 		corpus = header.corpus}, "synthetic")
@@ -1274,6 +1306,11 @@ end
 -- interpreter that produced it and therefore differs between the LuaJIT and
 -- PUC runs by construction; folding it in would make the M5 gate unfalsifiable.
 local artifacts_digest = digest_of(table.concat(artifact_lines, "\n") .. "\n")
+if expected_digest and artifacts_digest ~= expected_digest then
+	error("WP40 T2 census merge: this run's artifacts digest is " ..
+		artifacts_digest .. ", the run it is compared against produced " ..
+		expected_digest .. " (plan section 6.6.5); nothing was written", 0)
+end
 
 local manifest = {"schema\tgrug_wp40_census_manifest_v1",
 	"scan_schema\t" .. authority.schema,
