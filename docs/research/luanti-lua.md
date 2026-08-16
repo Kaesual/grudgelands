@@ -325,6 +325,16 @@ while code and fixtures are still changing. That speed does **not** make
 LuaJIT a compatibility gate: it remains a superset of the language accepted by
 the fallback build.
 
+The operating principle, decided 2026-08-16: **plain PUC 5.1 runs only where
+it is the language contract — the static `luac51`/grep gates, defined
+conformance and KAT gates, and the comprehensive final rounds — or where the
+runtime is trivially short. LuaJIT owns everything else.** Consequently every
+new harness with non-trivial runtime must support interpreter selection (the
+`WP40_LUA_BIN` pattern) and must default to LuaJIT; an expensive runner
+hardwired to PUC is a defect, not a conservative choice.
+`run_t2_s1_authority.sh` was the live example — 111 s hardwired PUC against
+21 s under LuaJIT, measured and fixed the day the principle was written down.
+
 Use these layers together, in this order:
 
 1. **Every Lua change:** run `tools/bin/luac51 -p`, inspect `SETGLOBAL` for

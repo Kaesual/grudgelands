@@ -66,7 +66,7 @@ fi
 if [[ "$merge_mode" == 1 ]]; then
 	lua_bin="$repo/tools/bin/lua51"
 else
-	lua_bin="${WP40_LUA_BIN:-$repo/tools/bin/lua51}"
+	lua_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
 fi
 lua_path="$(command -v "$lua_bin" 2>/dev/null || true)"
 if [[ -z "$lua_path" || ! -x "$lua_path" ]]; then

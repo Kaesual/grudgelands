@@ -35,6 +35,13 @@ for file in "${owned_lua[@]}"; do
 	fi
 done
 
-"$repo/tools/bin/lua51" "$script_dir/t2_s1_authority_test.lua" "$repo" "$scratch"
+lua_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
+lua_path="$(command -v "$lua_bin" 2>/dev/null || true)"
+if [[ -z "$lua_path" || ! -x "$lua_path" ]]; then
+	echo "WP40 T2 S1 authority interpreter is not executable: $lua_bin" >&2
+	exit 2
+fi
+echo "WP40 T2 S1 authority interpreter: $lua_path"
+"$lua_path" "$script_dir/t2_s1_authority_test.lua" "$repo" "$scratch"
 bash -n "$script_dir/run_t2_s1_authority.sh"
 echo "WP40 T2 S1 authority gates passed"

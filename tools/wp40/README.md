@@ -143,7 +143,11 @@ intentionally continues to fail closed with `compiled_geometry_unavailable`.
 
 ## T2 extreme-selector measurement slice
 
-The private E0 selector-foundation runner defaults to plain Lua 5.1:
+The private E0 selector-foundation runner defaults to LuaJIT
+(`WP40_LUA_BIN` overrides; merge mode below always uses vendored PUC —
+the foundation's hardwired PUC default was replaced 2026-08-16 after it
+exceeded 31 minutes, aborted, against the interpreter principle in
+[luanti-lua.md](../../docs/research/luanti-lua.md)):
 
 ```sh
 tools/wp40/run_t2_extreme.sh
@@ -266,7 +270,7 @@ git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
 $EDITOR tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
   tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
-WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh
+tools/wp40/run_t2_extreme.sh
 tools/wp40/run_t2_extreme_puc_kat.sh
 git diff --check
 git add tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
@@ -413,6 +417,8 @@ ratio have been wrong.
 | payload cache hit | 0.37 s LuaJIT / 1.03 s PUC |
 | full partition gate, PUC, 8-way sharded | ~62 min wall |
 | 4,096-candidate pool, 8 LuaJIT workers | 91 min wall |
+| `run_t2_s1_authority.sh` test, PUC / LuaJIT | 111 s / 21 s (LuaJIT default since 2026-08-16) |
+| `run_t2_extreme.sh` foundation, LuaJIT / PUC | 181 s / aborted unfinished at 1,975 s (LuaJIT default since 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
