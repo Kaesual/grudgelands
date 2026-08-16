@@ -288,9 +288,14 @@ refuses("a first record missing a scan3 wing row", "expected 8",
 	authority.validate_first_record,
 	(body:gsub("\nscan3_wing\t" .. w.seeds[1] .. "\tscan3_wing1_3[^\n]*", "", 1)),
 	expected)
-refuses("a first record with a short scan3 width row", "fields, expected 19",
-	authority.validate_first_record, (body:gsub("\tscan3_width1_19\n", "\n", 1)),
+refuses("a first record with a short scan3 width row", "fields, expected 20",
+	authority.validate_first_record, (body:gsub("\tscan3_width1_20\n", "\n", 1)),
 	expected)
+-- The exclusion-cause vocabulary is declared here and checked by the worker
+-- against the projection's own ordered list, so a cause added on one side and
+-- not the other cannot silently drop a column out of every shard.
+check(#authority.wing_exclusion_causes == 7,
+	"the F5 exclusion cause list changed width without the wing row")
 -- The M4 schema bump is only worth its cost if a finished v2 shard can never
 -- be resumed into a v3 run.  Two independent refusals: the canonical path no
 -- longer names it, and the free-output rule refuses to write it either.

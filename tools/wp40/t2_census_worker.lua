@@ -347,7 +347,20 @@ for seed_index = 1, #seeds do
 	end
 	for index = 1, #scan.scan3_wings do
 		local row = scan.scan3_wings[index]
-		local excluded = row.excluded
+		-- The exclusion columns are positional over the projection's own
+		-- declared cause order, checked against the authority's copy of it, so
+		-- adding a cause on either side aborts here rather than quietly
+		-- reordering or dropping a column in every shard.
+		assert(#row.exclusion_causes == #authority.wing_exclusion_causes,
+			"census scan3 wing exclusion cause count differs from the authority")
+		for cause_index = 1, #row.exclusion_causes do
+			assert(row.exclusion_causes[cause_index] ==
+				authority.wing_exclusion_causes[cause_index],
+				"census scan3 wing exclusion cause " .. cause_index .. " is " ..
+				tostring(row.exclusion_causes[cause_index]) .. ", the authority " ..
+				"declares " .. tostring(authority.wing_exclusion_causes[cause_index]))
+		end
+		local excluded = row.exclusion_counts
 		emit("scan3_wing", seed, row.id, row.bay_id, row.class,
 			opt(row.negative_k_count), opt(row.positive_k_count),
 			opt(row.negative_k), opt(row.positive_k),
@@ -358,11 +371,9 @@ for seed_index = 1, #seeds do
 			opt(row.raw_pair_count), opt(row.structural_pair_count),
 			opt(row.wedge_valid_count),
 			opt(row.selected_raw_rank), opt(row.selected_structural_rank),
-			opt(excluded.shared_predecessor), opt(excluded.interior_overlap),
-			opt(excluded.intra_tail_x_cross), opt(excluded.inter_tail_x_cross),
-			opt(excluded.wedge_nonsimple_or_zero_area),
-			opt(excluded.wedge_radius_above_five),
-			opt(excluded.wedge_nonwing_water), opt(row.detail))
+			opt(excluded[1]), opt(excluded[2]), opt(excluded[3]), opt(excluded[4]),
+			opt(excluded[5]), opt(excluded[6]), opt(excluded[7]),
+			opt(row.detail))
 	end
 	for index = 1, #scan.scan3_banks do
 		local row = scan.scan3_banks[index]
@@ -382,7 +393,8 @@ for seed_index = 1, #seeds do
 			tostring(row.min_delta_nodes),
 			opt(row.jittered_numerator), opt(row.jittered_length),
 			opt(row.jittered_width_nodes), opt(row.jittered_delta_nodes),
-			tostring(row.min_delta), tostring(row.max_delta))
+			tostring(row.min_delta), tostring(row.max_delta),
+			tostring(row.column_bound_nodes))
 	end
 	for index = 1, #scan.scan3_steps do
 		local row = scan.scan3_steps[index]
@@ -658,6 +670,15 @@ if mode == "kat" then
 				math.abs(row.max_delta) <= fixture.bank_width.delta_bound,
 				"census KAT scan3 width " .. row.id ..
 				" jitter exceeded its declared bound")
+			-- The exact per-column lower bound, which is what actually rules a
+			-- collapse out: the station minimum alone cannot, because the
+			-- compiler evaluates the same numerator at columns between stations.
+			-- The exact value is pinned by the digest; what is asserted by name
+			-- is that it stays positive and above the structural floor.
+			assert(row.column_bound_nodes > 0 and row.column_bound_nodes >=
+				fixture.bank_width.column_bound_floor,
+				"census KAT scan3 width " .. row.id .. " column bound is " ..
+				row.column_bound_nodes .. " seed " .. seed)
 		end
 	end
 	assert(digest == fixture.digest,

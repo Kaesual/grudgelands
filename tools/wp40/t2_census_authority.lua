@@ -137,7 +137,7 @@ return function(dependencies)
 			"bank_zero_reachable_successor_reject", "bank_repeated_column_reject",
 			"bank_x_cross_reject", "bank_reachability_frame_cap_reject",
 			"bank_reachability_stack_cap_reject", "bank_main_trace_cap_reject",
-			"bank_trace_envelope_empty_reject"},
+			"bank_trace_envelope_empty_reject", "bank_shoulder_water_side_reject"},
 		-- The realized step-class space is the cross product of these two:
 		-- eight Moore directions in the declared clockwise base order times the
 		-- first failing successor predicate, plus admission.  Six predicates,
@@ -157,10 +157,25 @@ return function(dependencies)
 			"branch_none_reachable", "zero_admitted_successors"},
 		-- Section 6.4 / source authority section 7.2.  A negative width would
 		-- already have aborted Scan-1 inside exact.bay_segment, so its class
-		-- exists to be reported vacuous rather than to be reached.
+		-- exists to be reported vacuous rather than to be reached.  The
+		-- `unbounded` class is the honest fourth case: the sampled stations were
+		-- all positive but the exact per-column lower bound could not rule out a
+		-- collapse between them, which is a different claim from "measured
+		-- positive" and must not be collapsed into it.
 		scan3_width_class = {"bay_bank_width_positive",
-			"bay_bank_width_zero_event", "bay_bank_width_negative_event"},
+			"bay_bank_width_zero_event", "bay_bank_width_negative_event",
+			"bay_bank_width_unbounded_event"},
 	}
+
+	-- The F5 per-pair exclusion causes, in the order the Wing row's seven count
+	-- columns carry them.  This is census vocabulary, not an implementation
+	-- detail: M5's occupied-class table keys pair exclusions on these names, and
+	-- the worker refuses to emit a row whose projection-side order disagrees --
+	-- which is what stops a new cause from silently vanishing from every shard.
+	local wing_exclusion_causes = {"shared_predecessor", "interior_overlap",
+		"intra_tail_x_cross", "inter_tail_x_cross",
+		"wedge_nonsimple_or_zero_area", "wedge_radius_above_five",
+		"wedge_nonwing_water"}
 	local class_sets = {}
 	for name, values in pairs(classes) do
 		local set = {}
@@ -204,7 +219,7 @@ return function(dependencies)
 			class_set = "scan3_wing_class"},
 		{tag = "scan3_bank", count = 4, fields = 12, class_field = 5,
 			class_set = "scan3_bank_class"},
-		{tag = "scan3_width", count = 4, fields = 19, class_field = 4,
+		{tag = "scan3_width", count = 4, fields = 20, class_field = 4,
 			class_set = "scan3_width_class"},
 		{tag = "scan3_step", fields = 6, class_field = 5,
 			class_set = "scan3_step_outcome", extra_field = 4,
@@ -785,6 +800,7 @@ return function(dependencies)
 	authority.free_seed_budget = free_seed_budget
 	authority.pool_candidate_count = pool_candidate_count
 	authority.classes = classes
+	authority.wing_exclusion_causes = wing_exclusion_causes
 	authority.record_rows = record_rows
 	authority.prefilter_edge_count = prefilter_edge_count
 	authority.module_paths = module_paths

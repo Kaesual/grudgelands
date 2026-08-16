@@ -625,7 +625,16 @@ knowing without opening the file:
   side/disjoint/predecessor/X-cross" row splits into four counted causes,
   whose side clause is vacuous by construction because `collect_paths` emits
   strict-side stations only. `Chebyshev(K,J) > 4` is the section 6.4
-  refuted-frozen-universal event and is the Wing's own class.
+  refuted-frozen-universal event and is the Wing's own class. Two of the
+  declared classes are **dominated rather than merely unoccupied**, which a
+  reader of a permanent zero needs to know: `wedge_radius_above_five` cannot
+  fire because the Chebyshev guard has already hard-failed the Wing
+  (`R = 1 + max Chebyshev(K,J) ≤ 5` identically), and
+  `aperture_w_foreign_water_reject` cannot fire because
+  `w_final_owned_by_bay` is tested first and implies `not w_foreign_water`.
+  `intra_tail_x_cross` is vacuous for a third reason: a distance-layer tail
+  visits one column per Chebyshev level, so two of its diagonal steps can
+  never share a 2×2 cell.
 - **F3** declares six step predicates, not the table's five, and gives the
   lone-admitted-successor case its own selection class. Foreign-water contact
   gets no class: `bay_candidate` absorbs it, so it reaches the census as a

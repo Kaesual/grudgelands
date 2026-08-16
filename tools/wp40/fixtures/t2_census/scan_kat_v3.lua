@@ -71,14 +71,24 @@ return {
 		{id = "bay_bank:kragmar_west:speargrass", steps = 994, stations = 1001},
 		{id = "bay_bank:kragmar_east:whispering", steps = 992, stations = 1001},
 	},
-	-- Section 6.4 / source authority section 7.2.  The minimum jittered bank
-	-- half-width is 80 nodes in every Bay at every KAT seed, and it sits at
-	-- the segment-3 terminal station, where the 96-station taper forces
-	-- delta_nodes to zero -- so the narrowest station is exactly the one the
-	-- jitter cannot move.  Section 7.2's "half-widths of 320-370" describes
+	-- Section 6.4 / source authority section 7.2.  The minimum bank half-width
+	-- over the sampled stations is 80 nodes in every Bay at every KAT seed, and
+	-- it sits at the segment-3 terminal station, where the 96-station taper
+	-- forces delta_nodes to zero -- so the narrowest station is exactly the one
+	-- the jitter cannot move.  Section 7.2's "half-widths of 320-370" describes
 	-- the mouth station only; the authored centrelines taper to 80 at the Bay
 	-- head, against a jitter bound of 48.
-	bank_width = {min_width_nodes = 80, min_segment = 3, delta_bound = 48},
+	--
+	-- The station minimum is not the margin, though: the compiler evaluates the
+	-- same numerator at every column, pairing it with the nearest station's
+	-- delta, so the exact per-column lower bound is what rules a collapse out.
+	-- Measured 2026-08-16 across the three KAT seeds it runs 60-80 nodes, i.e.
+	-- as much as 20 below the station reading. Both the exact values and the
+	-- classes are pinned by the digest; these two numbers are the assertions
+	-- that make a change legible -- the bound must stay strictly positive and
+	-- must never fall below the structural floor of 80 - 48.
+	bank_width = {min_width_nodes = 80, min_segment = 3, delta_bound = 48,
+		column_bound_floor = 32},
 	fills = {
 		["0"] = {0, 0, 0, 0},
 		["16178445837170081103"] = {0, 0, 0, 0},
@@ -154,5 +164,5 @@ return {
 			},
 		},
 	},
-	digest = "902eef21101629efe95ccb460cc3dd7af86db9d3153f8295ee8c1e0d5d8b6217",
+	digest = "8abb10c279d8b3d37cfc66b2fa9015f2265b8c84c0c43ed757906e624ce3d9ff",
 }

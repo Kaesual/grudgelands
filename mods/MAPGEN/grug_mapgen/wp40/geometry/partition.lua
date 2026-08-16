@@ -1858,11 +1858,31 @@ local function new_partition(dependencies)
 		-- reachability frame and stack maxima, and the complete Wing
 		-- candidate/pair/wedge analysis the F5 table asks for but the
 		-- stop-at-first enumeration cannot expose from outside.
+		-- Probing the remaining successors of a branch step costs up to seven
+		-- extra bounded DFS runs on top of the one to seven the decision itself
+		-- pays, so it is budgeted per Bank rather than left open: the cost gate
+		-- is projected from seeds whose head Banks branch zero times, and an
+		-- unbudgeted observer would make that projection say nothing about a
+		-- seed that branches often.  Steps past the budget are reported as
+		-- unprobed, never as zero -- a bound this census keeps must be visible
+		-- in the artifact, not implied by a missing row.
+		local branch_probe_budget = 64
+
 		local observer = nil
 		local function set_observer(value)
-			if value ~= nil and (type(value) ~= "table" or
-					getmetatable(value) ~= nil) then
-				fail("Bank tracer observer is malformed")
+			if value ~= nil then
+				if type(value) ~= "table" or getmetatable(value) ~= nil then
+					fail("Bank tracer observer is malformed")
+				end
+				-- `reachable` compares against these on every pushed frame and
+				-- `observe_selection` decrements the probe budget, so a missing
+				-- counter has to be refused here rather than surface as an
+				-- arithmetic error from inside a bounded DFS.
+				if type(value.max_frames) ~= "number" or
+						type(value.max_stack) ~= "number" then
+					fail("Bank tracer observer lacks its frame counters")
+				end
+				value.probes_left = branch_probe_budget
 			end
 			observer = value
 		end
@@ -2368,22 +2388,22 @@ local function new_partition(dependencies)
 			local stack = {{previous = previous, current = current,
 				state = first_state, column = first_column, diagonal = first_cell}}
 			local pushed_frames = 1
+			-- The section 6.2.3 Bank stress scalars, sampled at exactly the two
+			-- points where the counters change -- here and after each push -- so
+			-- the deepest frame is observed even when the very next iteration
+			-- returns true.  Sampling at the top of the loop instead would miss
+			-- the last push of every successful probe, which is the one the caps
+			-- are checked against and the one Scan-4's extremal seed set is
+			-- chosen on.  Suspended while the observer probes the *remaining*
+			-- successors of a branch, whose frames are an artefact of observing.
+			if observer and not observer.suspend then
+				observer.max_frames = math.max(observer.max_frames, pushed_frames)
+				observer.max_stack = math.max(observer.max_stack, #stack)
+			end
 			while #stack > 0 do
 				local frame = stack[#stack]
 				if key(frame.current) == key(target) then return true end
 				validate_trace_counters(context.trace_bounds, pushed_frames, #stack, nil)
-				-- The section 6.2.3 Bank stress scalars.  Suspended while the
-				-- observer probes the *remaining* successors of a branch, whose
-				-- frames are an artefact of observing and would otherwise inflate
-				-- the very quantity Scan-4's extremal seed set is chosen on.
-				if observer and not observer.suspend then
-					if pushed_frames > observer.max_frames then
-						observer.max_frames = pushed_frames
-					end
-					if #stack > observer.max_stack then
-						observer.max_stack = #stack
-					end
-				end
 				if not frame.successors then
 					frame.successors = ordered_successors(context, frame.previous,
 						frame.current, seen_states, seen_columns, diagonals)
@@ -2402,6 +2422,10 @@ local function new_partition(dependencies)
 						context.bay.source.id .. " reachability frame count")
 					validate_trace_counters(context.trace_bounds, pushed_frames,
 						#stack, nil)
+					if observer and not observer.suspend then
+						observer.max_frames = math.max(observer.max_frames, pushed_frames)
+						observer.max_stack = math.max(observer.max_stack, #stack)
+					end
 				else
 					seen_states[frame.state], seen_columns[frame.column] = nil, nil
 					if frame.diagonal then diagonals[frame.diagonal] = nil end
@@ -2411,13 +2435,21 @@ local function new_partition(dependencies)
 			return false
 		end
 
+		-- The three cap messages an observation probe is allowed to hit.  A probe
+		-- that fails any other way is a defect, not an exhausted budget, and is
+		-- re-raised: `pcall` here is a cap tolerance, never a sink.
+		local probe_tolerated_failures = {
+			"Bay-bank reachability frame cap exhausted",
+			"Bay-bank reachability stack cap exhausted",
+			"Bay-bank main trace cap exhausted",
+		}
+
 		-- The F3 branch-occupancy observation (analysis section 3-F3: "logged by
 		-- the census ... not scanned repeatedly").  `select_first_reachable`
 		-- stops at the first reachable successor, so multi-reachability needs
 		-- the remaining ones probed; those probes are observation only, so they
-		-- run with the frame counters suspended and under pcall -- a cap they
-		-- exhaust must never turn an otherwise complete Bank into a reject, and
-		-- an unfinished probe is reported as unknown rather than as zero.
+		-- run with the frame counters suspended -- a cap they exhaust must never
+		-- turn an otherwise complete Bank into a reject.
 		local function observe_selection(sink, context, current, target, successors,
 				chosen_index, seen_states, seen_columns, diagonals)
 			local width = #successors
@@ -2430,17 +2462,33 @@ local function new_partition(dependencies)
 				-- the decision, so no count is reported.
 				return sink("single_admitted_untested", 1, nil)
 			end
+			local class = chosen_index == 1 and "branch_first_reachable" or
+				"branch_later_reachable"
+			if observer.probes_left <= 0 then return sink(class, width, nil) end
+			observer.probes_left = observer.probes_left - 1
 			local reachable_count, complete = 1, true
 			observer.suspend = true
 			for index = chosen_index + 1, width do
 				local ok, value = pcall(reachable, context, current,
 					successors[index], target, seen_states, seen_columns, diagonals)
-				if not ok then complete = false break end
+				if not ok then
+					local message = tostring(value)
+					local tolerated = false
+					for entry = 1, #probe_tolerated_failures do
+						if message:find(probe_tolerated_failures[entry], 1, true) then
+							tolerated = true break
+						end
+					end
+					if not tolerated then
+						observer.suspend = nil
+						error(value, 0)
+					end
+					complete = false break
+				end
 				if value then reachable_count = reachable_count + 1 end
 			end
 			observer.suspend = nil
-			return sink(chosen_index == 1 and "branch_first_reachable" or
-				"branch_later_reachable", width, complete and reachable_count or nil)
+			return sink(class, width, complete and reachable_count or nil)
 		end
 
 		local function trace_bank(bank, start, finish)
@@ -4365,7 +4413,15 @@ local function new_partition(dependencies)
 	-- underlying failure stays a loud abort rather than a row.  Rows 2 and 3
 	-- are alternatives in the table but ordered in the procedure (`d_class`
 	-- before `d_cardinal_water`); a configuration violating both is classified
-	-- by the first.
+	-- by the first.  For the same ordering reason
+	-- `aperture_w_foreign_water_reject` is *dominated*, not merely unoccupied:
+	-- `w_final_owned_by_bay` implies `not w_foreign_water` and is tested first,
+	-- so a `W` owned by another Bay lands in `aperture_w_not_bay_water_reject`.
+	-- The stage-level "authored aperture neighborhood is absent" stays a loud
+	-- abort rather than becoming F4 row 4's "`W` missing": it is a perimeter /
+	-- aperture-roster consistency failure, and the roster is already proven at
+	-- stage build, so an occurrence is a structural defect and not a seed's
+	-- decision.
 	--
 	-- F5 (section 3-F5, eight Wings).  Under the 2026-08-16 pair-exclusion
 	-- reading the non-simple/zero-area and `R > 5` rows are per-pair
@@ -4377,7 +4433,14 @@ local function new_partition(dependencies)
 	-- have no table row and get their own classes: an empty distance-layer DAG
 	-- (`wing_no_complete_tail_reject`) and the finite path bound
 	-- (`wing_path_bound_exceeded_reject`).  `Chebyshev(K,J) > 4` is the section
-	-- 6.4 refuted-frozen-universal event and is the Wing's own class.
+	-- 6.4 refuted-frozen-universal event and is the Wing's own class -- and it
+	-- *dominates* the `R > 5` exclusion rather than sitting beside it, because
+	-- the radius is derived from the same selected K stations the guard has
+	-- already rejected, so `R = 1 + max Chebyshev(K,J) <= 5` identically.  The
+	-- `intra_tail_x_cross` cause is vacuous for its own reason: a distance-layer
+	-- tail visits exactly one column per Chebyshev level, so two of its diagonal
+	-- steps can never share a 2x2 cell.  Both stay declared -- a dominated class
+	-- reported vacuous is the finding, not a defect.
 	--
 	-- F3 (section 3-F3, four head Banks).  The table's step predicates are
 	-- (candidate, unseen, /= previous, cardinal-water cross-sign,
@@ -4425,7 +4488,26 @@ local function new_partition(dependencies)
 		{" repeats a joint-tail column", "bank_repeated_column_reject"},
 		{" repeats a positive joint-tail column", "bank_repeated_column_reject"},
 		{" X-crosses", "bank_x_cross_reject"},
+		-- Unreachable from Scan-3a -- a head Bank has no aperture shoulder --
+		-- but it is a named `bay_bank_reject` clause with a real failure site,
+		-- so it is declared here rather than left to abort Scan-3b as an
+		-- unmatched message.  M5 will report it vacuous, which is the truth.
+		{" shoulder has water on the wrong side",
+			"bank_shoulder_water_side_reject"},
 	}
+
+	-- The five seed-dependent Wing-tail rejects, as they reach a head Bank's
+	-- terminal resolution.  Their own F5 class is already recorded on the Wing
+	-- row; what this table buys is that everything *else* a terminal resolution
+	-- can raise -- an absent Wing, a foreign-Bay reuse, an exact overflow --
+	-- stays a loud abort instead of becoming a bank_terminal_unresolved row.
+	-- A pcall used as an unfiltered sink is the M3 review's trap, and head-Bank
+	-- terminals are exactly where it would bite next.
+	local wing_reject_fragments = {" has no negative K", " has no positive K",
+		" K exceeds current bound", " lacks a complete negative tail",
+		" lacks a complete positive tail",
+		" has no wedge-valid joint tail pair",
+		" joint tail exceeds finite path bound"}
 
 	local step_direction_names = {"east", "southeast", "south", "southwest",
 		"west", "northwest", "north", "northeast"}
@@ -4486,8 +4568,18 @@ local function new_partition(dependencies)
 				wedge_valid_count = analysis.wedge_valid_count,
 				selected_raw_rank = analysis.selected_raw_rank,
 				selected_structural_rank = analysis.selected_structural_rank,
-				excluded = analysis.excluded,
 				detail = analysis.detail}
+			-- The per-cause counts travel as an ordered pair of arrays keyed by
+			-- the tracer's own declared cause list, not as seven named fields
+			-- the worker looks up by hand: adding a cause then widens the row,
+			-- which the authority's declared field count refuses, instead of
+			-- silently dropping the new column out of the TSV.
+			row.exclusion_causes, row.exclusion_counts = {}, {}
+			for cause_index = 1, #tracer.wing_exclusion_causes do
+				local cause = tracer.wing_exclusion_causes[cause_index]
+				row.exclusion_causes[cause_index] = cause
+				row.exclusion_counts[cause_index] = analysis.excluded[cause]
+			end
 			wing_rows[#wing_rows + 1] = row
 		end
 		tracer.set_observer(nil)
@@ -4560,6 +4652,20 @@ local function new_partition(dependencies)
 			local centreline = bay.source.centreline
 			local label = bay.source.id .. " bank width"
 			local row = {id = bay.source.id, station_count = 0}
+			-- Station sampling answers section 6.4's question as written ("at any
+			-- station"), but the compiler evaluates the same numerator at every
+			-- *column*, pairing it with the delta of the nearest station rather
+			-- than that column's own.  Those two sets are not the same, so the
+			-- station minimum alone cannot decide the universal.  What closes it
+			-- exactly: at any column of a segment the effective half-width is
+			-- either the clamped interpolation of the two endpoint half-widths
+			-- or one of the endpoint cap radii, and the delta is always an
+			-- element of this segment's own array -- so
+			-- `min(h_a, h_b) + min(deltas)` is a true lower bound over every
+			-- column, computed from quantities already in hand.  The exact
+			-- station minimum stays the reported histogram value; the bound
+			-- decides whether a collapse can be ruled out at all.
+			local column_bound
 			for segment_index = 1, #bay.segments do
 				local segment = bay.segments[segment_index]
 				local a, b = centreline[segment_index], centreline[segment_index + 1]
@@ -4568,9 +4674,13 @@ local function new_partition(dependencies)
 				local length = exact.safe_sum(exact.safe_square(dx, label),
 					exact.safe_square(dz, label), label)
 				if length <= 0 then fail(label .. " has a zero-length segment") end
+				local segment_min_delta
 				for station_index = 1, #segment.stations do
 					local station = segment.stations[station_index]
 					local delta = segment.deltas[station_index]
+					if not segment_min_delta or delta < segment_min_delta then
+						segment_min_delta = delta
+					end
 					local projection = exact.dot(
 						exact.safe_difference(station.x, a.x, label),
 						exact.safe_difference(station.z, a.z, label), dx, dz, label)
@@ -4614,20 +4724,40 @@ local function new_partition(dependencies)
 						row.max_delta = delta
 					end
 				end
+				if not segment_min_delta then
+					fail(label .. " segment " .. segment_index .. " has no station")
+				end
+				local segment_bound = math.min(a.half_width, b.half_width) +
+					segment_min_delta
+				if not column_bound or segment_bound < column_bound then
+					column_bound = segment_bound
+				end
 			end
 			if not row.min_numerator then
 				fail(label .. " has no station")
 			end
 			-- The reported width in nodes floors the rational, so it can only
-			-- understate; the class is decided on the exact numerator.
+			-- understate; the classes below are decided on the exact numerator
+			-- and on the exact integer bound, never on this.
 			row.min_width_nodes = math.floor(row.min_numerator / row.min_length)
 			if row.jittered_numerator then
 				row.jittered_width_nodes = math.floor(row.jittered_numerator /
 					row.jittered_length)
 			end
-			row.class = row.min_numerator > 0 and "bay_bank_width_positive" or
-				row.min_numerator == 0 and "bay_bank_width_zero_event" or
-				"bay_bank_width_negative_event"
+			row.column_bound_nodes = column_bound
+			if row.min_numerator < 0 then
+				row.class = "bay_bank_width_negative_event"
+			elseif row.min_numerator == 0 then
+				row.class = "bay_bank_width_zero_event"
+			elseif column_bound <= 0 then
+				-- No sampled station collapsed, but the bound cannot rule out a
+				-- column between them.  Its own class, because "measured
+				-- positive" and "could not be excluded" are different claims and
+				-- collapsing them is how an unasserted universal survives.
+				row.class = "bay_bank_width_unbounded_event"
+			else
+				row.class = "bay_bank_width_positive"
+			end
 			width_rows[#width_rows + 1] = row
 		end
 
@@ -4681,8 +4811,16 @@ local function new_partition(dependencies)
 					tracer.resolve_terminal(bank.end_terminal, bank.bay_id)
 			end)
 			if not terminals_ok then
+				local message = tostring(start_resolved)
+				local recognised = false
+				for entry = 1, #wing_reject_fragments do
+					if message:find(wing_reject_fragments[entry], 1, true) then
+						recognised = true break
+					end
+				end
+				if not recognised then error(start_resolved, 0) end
 				row.class = "bank_terminal_unresolved_reject"
-				row.detail = tostring(start_resolved)
+				row.detail = message
 			else
 				tracer.set_observer(observer)
 				local ok, points = pcall(tracer.trace_bank, bank, start_resolved,

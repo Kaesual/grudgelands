@@ -637,19 +637,49 @@ waits on the explicit GO after M5.
 **Two M4 findings that belong on paper, not only in the census output.**
 
 First, the `w = 0` margin is far smaller than section 6.4 implies. The
-minimum jittered bank half-width is **80 nodes** in every Bay at every KAT
-seed, and section 7.2's "half-widths of 320–370 against jitter bounded by
-48 nodes" describes the *mouth* station only: the four authored centrelines
-run 360/330/320/370 at the mouth and taper to **80** at the Bay head. The
-collapse the universal forbids is therefore 80 nodes away, not 272. What
-saves it is not the margin but the taper — the narrowest station is the
-segment endpoint, where the 96-station smootherstep forces `delta_nodes = 0`
-by construction, so jitter cannot move the minimum at all. The census
-records both the overall minimum and the minimum over stations the jitter
-does move, because that second number is the one a correction would have to
-argue about.
+minimum jittered bank half-width over the sampled stations is **80 nodes** in
+every Bay at every KAT seed, and section 7.2's "half-widths of 320–370
+against jitter bounded by 48 nodes" describes the *mouth* station only: the
+four authored centrelines run 360/330/320/370 at the mouth and taper to **80**
+at the Bay head. The collapse the universal forbids is therefore at most 80
+nodes away, not 272. The narrowest *station* is the segment endpoint, where
+the 96-station smootherstep forces `delta_nodes = 0` by construction, so
+jitter cannot move it — but the station set is not the set the compiler
+evaluates. `exact.bay_segment` computes the same numerator at every *column*,
+pairing it with the *nearest* station's delta, so the station minimum alone
+cannot decide the universal. The census therefore also carries an exact
+per-column lower bound, `min(h_a, h_b) + min(deltas)` per segment, which is a
+true bound because every column's effective half-width is either the clamped
+interpolation of the two endpoint half-widths or an endpoint cap radius, and
+its delta is always an element of that segment's own array. Measured across
+the three KAT seeds that bound runs **60–80 nodes**, as much as 20 below the
+station reading, against a structural floor of `80 − 48 = 32`. A run where
+every station is positive but the bound is not gets its own class,
+`bay_bank_width_unbounded_event`: "measured positive" and "could not be
+excluded" are different claims and collapsing them is how an unasserted
+universal survives.
 
-Second, the F3 step-predicate list in the completeness analysis is not the
+Second, **two declared reject classes are dominated rather than merely
+unoccupied**, found by the M4 cold classification review. `R > 5` cannot
+arise at all: `wedge_valid` derives the radius from the selected `K-`, `K+`
+and `J`, and the `Chebyshev(K,J) <= 4` guard has already hard-failed the Wing
+before any pair is enumerated, so `R = 1 + max Chebyshev(K,J) <= 5`
+identically. The section 5 sentence "`R > 5` still forces the
+`no_wedge_valid_joint_tail_pair` reject" is therefore true only vacuously —
+a seed with `Chebyshev(K,J) = 5` dies at the guard under
+`wing_k_chebyshev_above_four_reject`, and the wedge reject is never reached.
+The pair-exclusion reading itself is unaffected; only its stated mechanism
+was wrong. Likewise `aperture_w_foreign_water_reject` is unreachable from
+compiler-built evidence: `w_final_owned_by_bay` implies `not w_foreign_water`
+and is tested first, so an aperture whose `W` is owned by another Bay is
+classified `aperture_w_not_bay_water_reject`. Both classes stay declared —
+that is what the vacuous-branch report is for — but they are dominated, not
+unoccupied, and the difference matters to whoever reads a permanent zero.
+The `intra_tail_x_cross` exclusion cause is vacuous for a third reason: a
+distance-layer tail visits exactly one column per Chebyshev level, so two of
+its diagonal steps can never share a 2x2 cell.
+
+Third, the F3 step-predicate list in the completeness analysis is not the
 predicate space the tracer realizes, in three separable ways: "unseen" is
 two distinct bits (directed state and column); the diagonal X-cross
 compatibility the analysis lists only among the rejects is a *successor
