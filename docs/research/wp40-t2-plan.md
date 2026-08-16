@@ -188,12 +188,26 @@ target host; where a ratio is inferred from two of them, it says so.
 | the same pass, host variance across runs | **22–37 s** (measured 2026-08-16, M2) |
 | the same pass, fork hasher vs persistent responder | **33–35 s / 26 s** wall, four processes in parallel (measured 2026-08-16, M2) |
 | eight census workers, per-seed at first records | **28–36 s** (measured 2026-08-16, M2) |
+| census Scan-1+2 pass, one seed, LuaJIT | **30–43 s** across seeds 0 / Slot 29 / max-u64 and repeat runs, host-load dependent (measured 2026-08-16, M3) |
+| the Scan-2 share, unflagged seed | **~8 s** of a 30-s pass: ~5.4 s the eight lazy Wing tails, ~2.4 s the four per-Bay trace-bound envelopes, ~0.15 s the sixteen completion traces, ~0.13 s counting + probes (measured 2026-08-16, M3) |
+| the flagged Slot-29 second tuple (probe + dead trace) | below run-to-run noise: 30.6 s total pass (measured 2026-08-16, M3) |
 
 The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
 4,123 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
 Scan-2 and Scan-3a are added in M3/M4 — inside the eight-hour cap, but the
 gate must be re-projected from the first fanned completions once those tiers
 exist, not extrapolated from this row.
+
+With M3 measured, the projection from the same-day single-process band
+(30–43 s) scaled by the M2-observed eight-worker inflation lands at roughly
+**5.4–7.9 h wall at 8 workers** — inside the cap, tight at the slow end; the
+first-completions cost gate remains the binding check and aborts if the slow
+end materializes. Two structural notes for M4: the Scan-2 uplift is
+dominated by the eight Wing tails and four trace-bound envelopes, which
+Scan-3a needs anyway and consumes from the same per-seed tracer, so M4's
+marginal cost should be far below M3's; and the flagged case costs no
+measurable extra — the expensive term is the per-seed S5 substrate, not the
+tuples.
 
 The M2 rows say why that re-projection is not a formality. The same seed-0
 pass measured anywhere from 22 s to 37 s on this host depending on concurrent
@@ -302,6 +316,27 @@ been wrong before.
   implementation belongs — after Scans 1–2. Consequence: M3 is larger than
   the milestone list assumed; it builds the tuple enumeration against the
   stage predicates rather than projecting an existing compiler path.
+- **The Scan-2 flagging predicate** — the completeness analysis section 5
+  gates the full tuple+trace tier on "≥ 2 R16 successes or any non-direct
+  resolution", and section 6.6.1 restated that gate as a skip. **Decided
+  2026-08-16 (M3): the tuple tier evaluates on every seed wherever at least
+  one tuple exists; the predicate survives as the per-row `flagged` marker —
+  a cost and reporting distinction, never a skip.** Grounds: section 6.2's
+  artifact 5 requires the joint (eligible, R16-success, complete)
+  distribution per transition endpoint from *this* contract's scans, and the
+  complete component is not computable on the predicate's skipped side; the
+  U2 decision names Scan-2 as the measurement that decides the degenerate
+  tuple's occupancy, and U2's canonical witness shape (coincident
+  single-success direct incidences) is unflagged under the predicate; and a
+  1-success direct endpoint whose only tuple dies at completion is an
+  occupied 0-complete REJECTED class — the R19-genesis shape — that would
+  otherwise surface only after the collected correction, when Scan-3b's own
+  precondition (resolved tuples) fails on exactly that seed. The keying
+  paragraph in section 6 already said the tuple tier "is evaluated on every
+  seed"; this entry closes the contradiction with 6.6.1 in that sentence's
+  favour. Measured consequence (section 4): the always-on tier costs ~8 s
+  per seed, dominated by the S5 substrate (Wing tails, trace bounds) that
+  Scan-3a consumes anyway; the extra tuples themselves are noise-level.
 - **A targeted `pairs()`-order divergence test**, as the cheap substitute for a
   full PUC gate at every stage freeze. The canonical encoder sorts before
   emission, so serialisation is provably runtime-independent; control flow that
@@ -521,7 +556,9 @@ once the runner is built. The pattern throughout is the proven
    census-specific naming scheme that can never collide with pool shards,
    and a deterministic merge into the five section-6.2 artifacts plus the
    manifest. One worker pass per seed computes Scan-1, Scan-2's counting
-   tier, its tuple tier where the counting tier flags it, and Scan-3a. The
+   tier, its tuple tier wherever at least one tuple exists (decided
+   2026-08-16, section 5 — the flagging predicate marks rows, it never
+   skips), and Scan-3a. The
    geometry modules are imported read-only; the six locked surfaces are not
    touched. The runner honours `WP40_LUA_BIN` in the established pattern and
    defaults to LuaJIT ([luanti-lua.md](luanti-lua.md), interpreter

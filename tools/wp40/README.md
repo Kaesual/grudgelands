@@ -420,6 +420,9 @@ ratio have been wrong.
 | `run_t2_s1_authority.sh` test, PUC / LuaJIT | 111 s / 21 s (LuaJIT default since 2026-08-16) |
 | `run_t2_extreme.sh` foundation, LuaJIT / PUC | 181 s / aborted unfinished at 1,975 s (LuaJIT default since 2026-08-16) |
 | census Scan-1 worker pass, one seed, LuaJIT | 22.7 s seed 0 / 24–25 s max-u64 (M1, 2026-08-16) |
+| census Scan-1+2 worker pass, one seed, LuaJIT | 30–43 s across seeds 0/Slot 29/max-u64 and repeat runs, host-load dependent (M3, 2026-08-16) |
+| the Scan-2 share of that pass, unflagged seed | ~8 s in a 30-s run: ~5.4 s the eight lazy Wing tails, ~2.4 s the four trace-bound envelopes, ~0.15 s the 16 completion traces, ~0.13 s counting+probes (M3, 2026-08-16) |
+| the flagged Slot-29 extra tuple (probe + dead trace) | below measurement noise: 30.6 s total, inside the unflagged band (M3, 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -509,17 +512,19 @@ not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
   one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
   the exact production algorithm rather than a replacement stub.
 
-## T2 census scans (Scan-1 worker and launcher, milestones M1-M2)
+## T2 census scans (Scan-1/Scan-2 worker and launcher, milestones M1-M3)
 
 The census contract lives in
 [wp40-t2-plan.md](../../docs/research/wp40-t2-plan.md) section 6; this
 section owns only the runner mechanics. M1 shipped the Scan-1 worker pass and
 the frozen row schema, M2 the eight-shard full-`W` launcher with its GO gate,
-verified resume, first-record validation and cost gate. Scan-2, Scan-3a and
-the merge are M3-M5 and do not exist yet.
+verified resume, first-record validation and cost gate, M3 the Scan-2
+counting and R19 tuple tiers on the same per-seed pass (record schema
+`grug_wp40_census_scan_v2`, shard pattern `census-scan-v2-*`). Scan-3a and
+the merge are M4-M5 and do not exist yet.
 
 ```sh
-tools/wp40/run_t2_census.sh --kat                  # seeds 0 + max-u64, pinned digest
+tools/wp40/run_t2_census.sh --kat                  # seeds 0, Slot 29, max-u64; pinned digest
 WP40_CENSUS_OUTPUT=/path/out.tsv \
   tools/wp40/run_t2_census.sh --seeds 0 7 4096     # small explicit lists run freely
 WP40_CENSUS_OUTPUT=/path/out.tsv \
@@ -530,19 +535,34 @@ tools/wp40/run_t2_census_gates.sh                  # the four gates, proven nega
 ```
 
 LuaJIT by default, `WP40_LUA_BIN` overrides. One worker process evaluates
-`partition.census_scan1` per seed — the S1 R7 compile, Bay masks and fills,
+`partition.census_scan` per seed — the S1 R7 compile, Bay masks and fills,
 then the F1 interval classes for all 61 edges, F7 junction-pair classes plus
-the minimum pair clearance, F8 attachment Chebyshev distances and F6 fill
-counts — and emits one canonical TSV: `schema`/`vocabulary` manifest lines,
-the seed-independent `prefilter` block, per-seed `edge`/`perimeter`/
-`aperture`/`attachment`/`junction`/`junction_pair`/`bay` rows framed by
-`seed_begin`/`seed_end`, and a trailing `digest` line over the exact
-preceding bytes. Reject classes are recorded rows, not errors; the census
-continues scanning. Two exceptions abort hard by design: a discharged edge
-realizing any interval count other than one (plan section 6.6.8), and any
-stage-level global precondition (S1 validity, aperture formation, notch
-ownership) — no Scan-1 class covers those, so their occupancy must surface
-loudly instead of silently becoming a row.
+the minimum pair clearance, F8 attachment Chebyshev distances, F6 fill
+counts, and since M3 the Scan-2 tiers: `scan2_endpoint` rows (the F2
+counting tier — every eligible incidence of the selected interval through
+the exact shared R16 resolver; these are also the section 6.2.3 transition
+stress scalars), `scan2_edge` rows (the R19 joint decision: exactly-one /
+zero / multiple complete, duplicate authority, the 192-station backstop)
+and occupancy-driven `scan2_tuple` witness rows keyed by their read-set
+envelope digest. The tuple tier evaluates on every seed wherever at least
+one tuple exists; the analysis section 5 flagging predicate survives as the
+per-row `flagged` marker (decided 2026-08-16, M3 — the section 6.2
+artifact-5 joint distribution, the U2 occupancy measurement and the
+0-complete class are required outputs and are not measurable on the
+predicate's skipped side). The worker emits one canonical TSV:
+`schema`/`vocabulary` manifest lines, the seed-independent `prefilter`
+block, per-seed `edge`/`perimeter`/`aperture`/`attachment`/`junction`/
+`junction_pair`/`bay`/`scan2_endpoint`/`scan2_edge`/`scan2_tuple` rows
+framed by `seed_begin`/`seed_end` — the M1 rows stay an exact prefix of
+each record — and a trailing `digest` line over the exact preceding bytes.
+Reject classes are recorded rows, not errors; the census continues
+scanning. Per-tuple precondition failures (the decided U1 empty-clip and
+U2 previous-binding readings among them) are DECIDED-with-continuation
+tuple rows, never seed aborts. Two exceptions abort hard by design: a
+discharged edge realizing any interval count other than one (plan section
+6.6.8), and any stage-level global precondition (S1 validity, aperture
+formation, notch ownership) — no census class covers those, so their
+occupancy must surface loudly instead of silently becoming a row.
 
 The prefilter discharges the 14 ordinary edges whose R7 envelope cannot
 reach any Bay capsule-plus-jitter box, wing box, notch adjacency or the
@@ -552,14 +572,21 @@ carries no coast term, and widening the discharge set would need an explicit
 footprint argument first. Discharged edges are still evaluated on every seed;
 the block records verified predictions, not skipped work.
 
-`fixtures/t2_census/scan1_kat_v1.lua` pins the M1 KAT: the section 3-F6
-witness fills (seed 0 `0/0/0/0`, max-u64 `1/1/1/0`), the structural row
-counts, six transition edges with qualifying count one, 102 passing junction
-pairs, attachment distances at most one, the zero-displacement Holy band and
-the determinism digest over both seeds. That digest is also the standing
-proof that later changes stayed byte-neutral, so `--kat` and explicit seed
-lists emit exactly the M1 bytes and only range mode adds framing. The
-LuaJIT/PUC digest comparison is milestone M5's merge gate; M1 and M2 run PUC
+`fixtures/t2_census/scan_kat_v2.lua` pins the M1+M3 KAT: the section 3-F6
+witness fills (seed 0 `0/0/0/0`, Slot 29 `0/0/0/0`, max-u64 `1/1/1/0`), the
+structural row counts, six transition edges with qualifying count one, 102
+passing junction pairs, attachment distances at most one, the
+zero-displacement Holy band, the measured Scan-2 counting and joint-decision
+values per endpoint and edge, and the determinism digest over all three
+seeds. The load-bearing M3 pin is the Slot-29 R19 witness (analysis section
+3-F2): `land_010:to` holds two direct R16 candidates, the endpoint's own
+tuple dies bank-incomplete — the dead-direct-terminal shape that generated
+R19 — and the retreat tuple completes, exactly one complete joint tuple; at
+max-u64 the same endpoint resolves via the diagonal elbow, agreeing with
+the pinned 7-direct/1-elbow R16/R17 prerequisite fixture. The digest moved
+legitimately at M3 (the record grew the Scan-2 rows) and is re-pinned at
+`347f30f6...`; it remains the determinism gate for everything after. The
+LuaJIT/PUC digest comparison is milestone M5's merge gate; M1-M3 run PUC
 only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
 which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 
