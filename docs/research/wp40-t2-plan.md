@@ -256,6 +256,41 @@ been wrong before.
     leaves the quantifier unchecked. Implementation rides in the collected
     correction; until then O1 stays formally decided and semantically
     unreviewed.
+- **The F5 wedge-check reading** — found 2026-08-16 by the M1 read of
+  `partition.lua` against the completeness analysis's section 3-F5 table,
+  **decided 2026-08-16: the pair-level reading is authoritative.** A
+  non-simple or zero-area wedge polygon and a wedge radius above five are
+  per-pair exclusions: the pair is not wedge-valid, enumeration continues,
+  and the seed rejects only through `no_wedge_valid_joint_tail_pair` — the
+  compiler's current behavior. The analysis table reads both as seed-level
+  rejects; that reading is unstable under the no-fallback-seed axiom for
+  exactly the U1 reason — the first wanted seed realizing a non-simple wedge
+  on an early pair while a later pair is valid would force this amendment —
+  so every degenerate wedge shape is an ordinary per-pair failure, uniform
+  with U1 and U2. Nothing observable is lost on the radius bound: `R`
+  depends only on the selected `K-`, `K+` and `J`, which are fixed before
+  pair enumeration, so `R` is constant per wing and seed and `R > 5` still
+  forces the `no_wedge_valid_joint_tail_pair` reject. Scan-3a counts R>5
+  and non-simple-wedge pair exclusions as their own decision classes; the
+  collected correction scopes the `bay_bank_reject` string so
+  `wedge_radius_above_five` and the non-simple clause name pair-level
+  exclusions rather than seed rejects.
+- **The R19 census substrate** — found 2026-08-16 by the same M1 read:
+  `partition.lua` resolves transition endpoints at the R18 level (one `E`
+  probe at the interval endpoint); the R19 joint-tuple machinery of
+  [wp40-source-authority.md](wp40-source-authority.md) section 4 — eligible-
+  incidence enumeration, per-incidence R16, checked Cartesian product,
+  per-tuple probe reraster, Bank completion, exactly-one-complete — exists
+  only as catalog policy strings that no code reads. **Decided 2026-08-16:
+  the census projection layer implements the R19 enumeration itself in M3
+  and the compiler stays unchanged.** Grounds: the census classifies by
+  decided policy, not by compiler behavior (section 6.6.6, the R15 stance);
+  changing the transition resolver now would be a boundary-topology edit
+  under the heavy regime ahead of its occupancy evidence; and the plan's
+  ordering puts the collected correction — where the compiler-side R19
+  implementation belongs — after Scans 1–2. Consequence: M3 is larger than
+  the milestone list assumed; it builds the tuple enumeration against the
+  stage predicates rather than projecting an existing compiler path.
 - **A targeted `pairs()`-order divergence test**, as the cheap substitute for a
   full PUC gate at every stage freeze. The canonical encoder sorts before
   emission, so serialisation is provably runtime-independent; control flow that
@@ -358,9 +393,13 @@ structure and not a requirement imposed here:
    the 63 edge and perimeter records use the selected topology ceiling `C`
    and the maximum `abs(local_scalar_q)` over their stations (Scan-1); the 8
    transition endpoints use eligible-incidence and R16-success counts
-   (Scan-2 counting tier); the 8 aperture incidences use the perimeter
-   `local_scalar_q` at their D, W and A stations (Scan-1 — the perimeter is
-   an R7 record, so the scalar exists there); the 8 wings use
+   (Scan-2 counting tier); the 8 aperture incidences use, per D, W and
+   A station, the `scalar_q` of the Chebyshev-nearest scalar sample of the
+   owning perimeter, ties to the lower sample index (Scan-1; redefined
+   2026-08-16 — the original "the perimeter `local_scalar_q` at their D, W
+   and A stations" was not computable as written, because scalar samples
+   carry pre-displacement base-station identities while D, W and A are
+   displaced final-perimeter stations with no per-station scalar); the 8 wings use
    `Chebyshev(K,J)` and the selected pair's rank (Scan-3a); the 20 banks use
    trace step count and maximum DFS frame count (Scan-3a for the four head
    banks, Scan-3b for the sixteen transition-incident ones); the 38 junctions
@@ -418,8 +457,11 @@ sources hold half-widths of 320–370 against jitter bounded by 48 nodes, and
 nothing asserts that margin. The definition was reconstructed and confirmed
 2026-08-16; the analysis introduced the symbol undefined, and its Scan-3
 specification now carries the same definition.) `R > 5` is deliberately not
-in this list: its exceedance is the explicit `wedge_radius_above_five`
-reject, so it surfaces as an ordinary occupied REJECTED row in output 1. This is mechanism (c), the failure mode
+in this list: under the pair-level F5 reading decided 2026-08-16 (section
+5), its exceedance forces the `no_wedge_valid_joint_tail_pair` reject —
+`R` is constant per wing and seed — so it surfaces as an ordinary occupied
+REJECTED row in output 1, alongside its own pair-exclusion count in the
+Scan-3a histograms. This is mechanism (c), the failure mode
 R16 itself was, and the census is where it is cheapest to catch.
 
 Occupancy of an ordinary DECIDED class is not a finding, however unusual it
@@ -510,7 +552,8 @@ the package. The launcher and merge adapt from existing references
 Milestones: **M1** worker pass for one seed — Scan-1 projections, artifact
 row schema, prefilter verification; **M2** launcher with GO gate, resume,
 first-record validation and cost gate; **M3** Scan-2 counting and tuple
-tiers; **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
+tiers, including the R19 tuple enumeration itself, which the compiler does
+not carry (decided 2026-08-16, section 5); **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
 and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
 max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
 fragment case).
