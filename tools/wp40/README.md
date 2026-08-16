@@ -685,6 +685,14 @@ callback), and no per-seed intermediate is retained.
   Scan-3a's own, with an explicit `universal` line per section-6.4 universal
   including its zero.
 
+Section 6.5 wants the run manifest to state the measured single-seed cost and
+the projected total in wall time at a stated worker count. The merge is a
+separate process hours after the scan, so the launcher persists its
+first-completions projection to the gitignored
+`results/t2_census/cost-projection.txt` beside the shards it describes, and
+`--merge` reads it from there; `WP40_CENSUS_COST_PROJECTION` overrides it for
+a merge of shards whose run predates that file.
+
 The M5 gate is `--merge-kat`: run the four-seed worker KAT, merge it under
 LuaJIT and under `tools/bin/lua51`, compare all five artifacts byte for byte,
 and check the artifacts digest against the fixture's pin. Only the PUC run may

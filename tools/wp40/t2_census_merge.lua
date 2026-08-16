@@ -222,9 +222,9 @@ local function new_census(options)
 		local entry = bucket(flagged, seed)
 		local reasons = entry.reasons
 		if not reasons then reasons = {} entry.reasons = reasons end
+		-- A set, not a list: the same seed can realize one flag at several
+		-- sites and the artifact reports which sites, sorted.
 		reasons[flag .. ":" .. detail] = true
-		entry.flags = entry.flags or {}
-		entry.flags[flag] = true
 	end
 
 	local function note_extremal(family, site, scalar, value, seed)

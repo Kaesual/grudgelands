@@ -789,6 +789,14 @@ artifacts state it and a later reader should not have to re-derive it:
   merge therefore re-checks every classed row against the declared vocabulary
   itself, writes all six outputs, reports the count in the manifest and exits
   non-zero — it completes and reports, it does not swallow.
+- **The merge's own cost at full-`W` scale is not measured**, and is
+  deliberately not projected from the four-record KAT, whose 0.06 s is almost
+  entirely fixed startup. What is bounded by construction is the *output*:
+  every artifact store is keyed by site, branch or a small-domain bucket, so
+  the artifacts do not grow with |`W`| except in the flagged seed list and the
+  per-endpoint joint distribution, and no per-seed record is retained. The
+  run manifest states section 6.5's cost figures for the *scan*, persisted by
+  the launcher beside the shards when its gate measured them.
 - **First occupancy worth naming.** Over the four KAT seeds 19 of 83 declared
   branches are realized and 64 are vacuous, none of them a REJECTED class, so
   there is no finding yet — as expected from four seeds chosen for their
