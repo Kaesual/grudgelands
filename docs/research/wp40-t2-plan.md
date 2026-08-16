@@ -184,6 +184,13 @@ target host; where a ratio is inferred from two of them, it says so.
 | `run_t2_extreme.sh` foundation, LuaJIT / PUC | **181 s / aborted unfinished at 1,975 s** (LuaJIT default since 2026-08-16) |
 | `run_t1.sh` | 0.18 s |
 | `luac51 -p` plus the five grep sweeps, whole owned set | 0.007 s |
+| census Scan-1 worker pass, one seed, LuaJIT | **22.7 s** seed 0 / 24–25 s max-u64 (measured 2026-08-16, M1) |
+
+The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
+4,130 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
+Scan-2 and Scan-3a are added in M3/M4 — inside the eight-hour cap, but the
+gate must be re-projected from the first fanned completions once those tiers
+exist, not extrapolated from this row.
 
 PUC-to-LuaJIT ratio is **not** a single number: measured 2.8x on
 validation-heavy paths, 16.2x on an exhaustive numeric sweep, and 26.5x on a

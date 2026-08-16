@@ -419,6 +419,7 @@ ratio have been wrong.
 | 4,096-candidate pool, 8 LuaJIT workers | 91 min wall |
 | `run_t2_s1_authority.sh` test, PUC / LuaJIT | 111 s / 21 s (LuaJIT default since 2026-08-16) |
 | `run_t2_extreme.sh` foundation, LuaJIT / PUC | 181 s / aborted unfinished at 1,975 s (LuaJIT default since 2026-08-16) |
+| census Scan-1 worker pass, one seed, LuaJIT | 22.7 s seed 0 / 24–25 s max-u64 (M1, 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -507,6 +508,56 @@ not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
   `reference_projects/luanti/doc/lua_api.md:4597-4600`). T1 nevertheless uses
   one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
   the exact production algorithm rather than a replacement stub.
+
+## T2 census scans (Scan-1 worker, milestone M1)
+
+The census contract lives in
+[wp40-t2-plan.md](../../docs/research/wp40-t2-plan.md) section 6; this
+section owns only the runner mechanics. M1 ships the one-seed worker pass;
+the eight-shard full-`W` launcher with GO gate, resume, first-record
+validation and cost gate is milestone M2 and does not exist yet — the worker
+caps explicit seed lists at 64, so a full-`W` run cannot be started by
+accident.
+
+```sh
+tools/wp40/run_t2_census.sh --kat                 # seeds 0 + max-u64, pinned digest
+WP40_CENSUS_OUTPUT=/path/out.tsv \
+  tools/wp40/run_t2_census.sh --seeds 0 7 4096    # small explicit lists run freely
+```
+
+LuaJIT by default, `WP40_LUA_BIN` overrides. One worker process evaluates
+`partition.census_scan1` per seed — the S1 R7 compile, Bay masks and fills,
+then the F1 interval classes for all 61 edges, F7 junction-pair classes plus
+the minimum pair clearance, F8 attachment Chebyshev distances and F6 fill
+counts — and emits one canonical TSV: `schema`/`vocabulary` manifest lines,
+the seed-independent `prefilter` block, per-seed `edge`/`perimeter`/
+`attachment`/`junction`/`junction_pair`/`bay` rows framed by
+`seed_begin`/`seed_end`, and a trailing `digest` line over the exact
+preceding bytes. Reject classes are recorded rows, not errors; the census
+continues scanning. Two exceptions abort hard by design: a discharged edge
+realizing any interval count other than one (plan section 6.6.8), and any
+stage-level global precondition (S1 validity, aperture formation, notch
+ownership) — no Scan-1 class covers those, so their occupancy must surface
+loudly instead of silently becoming a row.
+
+The prefilter discharges the 14 ordinary edges whose R7 envelope cannot
+reach any Bay capsule-plus-jitter box, wing box, notch adjacency or the
+displaced-coast margin. The 23 closure/frame edges that sit on the perimeter
+itself stay conservatively `scanned` — the analysis's section 3-F1 criterion
+carries no coast term, and widening the discharge set would need an explicit
+footprint argument first. Discharged edges are still evaluated on every seed;
+the block records verified predictions, not skipped work.
+
+`fixtures/t2_census/scan1_kat_v1.lua` pins the M1 KAT: the section 3-F6
+witness fills (seed 0 `0/0/0/0`, max-u64 `1/1/1/0`), the structural row
+counts, six transition edges with qualifying count one, 102 passing junction
+pairs, attachment distances at most one, the zero-displacement Holy band and
+the determinism digest over both seeds. The LuaJIT/PUC digest comparison is
+milestone M5's merge gate; M1 runs PUC only as the language contract
+(`luac51 -p`, `SETGLOBAL`, the five sweeps).
+
+Census artifacts never share a path or name pattern with pool shards
+(`shard-luajit-*.tsv`); the worker refuses to overwrite an existing output.
 
 ## Isolated headless capture
 
