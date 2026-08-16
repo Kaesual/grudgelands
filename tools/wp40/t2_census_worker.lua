@@ -1,16 +1,18 @@
--- WP40 T2 census worker (plan section 6.6, milestones M1 and M2).  One
--- process evaluates a seed slice through partition.census_scan1 and emits one
--- canonical TSV: Scan-1 interval/attachment/junction/fill projections plus the
--- verified seed-independent F1 prefilter and a trailing digest.
+-- WP40 T2 census worker (plan section 6.6, milestones M1-M3).  One process
+-- evaluates a seed slice through partition.census_scan and emits one
+-- canonical TSV: the Scan-1 interval/attachment/junction/fill projections,
+-- the Scan-2 counting and tuple tiers (M3), the verified seed-independent F1
+-- prefilter and a trailing digest.
 --
--- Three modes.  `--kat` and an explicit seed list are the M1 free paths and
--- emit exactly the M1 bytes, which is what keeps the pinned KAT digest a
--- standing proof that later changes stayed digest-neutral.  `--range FIRST
--- LAST` is the M2 shard mode over `W`: it adds the shard framing the launcher
--- resumes and verifies against, streams each record so the launcher can check
--- the first one while the run continues (section 6.6.2), and refuses to start
--- above the free seed budget without the GO token (section 6.6.7).  The token
--- is this `W`'s own digest, so a direct worker call cannot conjure one.
+-- Three modes.  `--kat` (seeds 0, the Slot-29 R19 witness and max-u64) and
+-- an explicit seed list are the free paths; their pinned digest is the
+-- determinism gate, re-pinned at M3 because the record legitimately grew
+-- Scan-2 rows.  `--range FIRST LAST` is the M2 shard mode over `W`: it adds
+-- the shard framing the launcher resumes and verifies against, streams each
+-- record so the launcher can check the first one while the run continues
+-- (section 6.6.2), and refuses to start above the free seed budget without
+-- the GO token (section 6.6.7).  The token is this `W`'s own digest, so a
+-- direct worker call cannot conjure one.
 local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 local output_path = assert(arg[3], "output path required")
@@ -72,7 +74,7 @@ while arg[argument_index] do
 end
 if mode == "kat" then
 	assert(#seeds == 0, "--kat accepts no explicit seeds")
-	seeds = {"0", "18446744073709551615"}
+	seeds = {"0", "16178445837170081103", "18446744073709551615"}
 elseif mode == "range" then
 	assert(#seeds == 0, "--range accepts no explicit seeds")
 end
@@ -197,11 +199,11 @@ local function opt(value)
 	return tostring(value)
 end
 
-emit("schema", partition.census_scan1_schema)
+emit("schema", partition.census_scan_schema)
 emit("vocabulary", vocabulary_path)
 if shard_mode then
 	local w = require_w()
-	local header = {schema = partition.census_scan1_schema,
+	local header = {schema = partition.census_scan_schema,
 		vocabulary = vocabulary_path, shard_schema = authority.shard_schema,
 		first = range_first, last = range_last, shard_seeds = #seeds,
 		w_digest = w.digest, w_total = w.total, module_digest = pinned_module_digest,
@@ -224,7 +226,7 @@ local run_started = os.time()
 for seed_index = 1, #seeds do
 	local seed = seeds[seed_index]
 	local started = os.time()
-	local scan = partition.census_scan1(seed)
+	local scan = partition.census_scan(seed)
 	if mode == "kat" then scans_by_seed[seed] = scan end
 	local serialized_rows = {}
 	for index = 1, #scan.prefilter do
@@ -299,6 +301,37 @@ for seed_index = 1, #seeds do
 		emit("bay", seed, row.id, tostring(row.fill_count),
 			#fill_texts > 0 and table.concat(fill_texts, ",") or "-")
 	end
+	-- Scan-2 rows (M3) follow the complete M1 block, so each seed record
+	-- keeps the M1 bytes as an exact prefix.
+	for index = 1, #scan.scan2_endpoints do
+		local row = scan.scan2_endpoints[index]
+		local success_texts = {}
+		for success_index = 1, #(row.successes or {}) do
+			local success = row.successes[success_index]
+			success_texts[success_index] = success.index .. ":" ..
+				success.resolved.mode
+		end
+		emit("scan2_endpoint", seed, row.id, row.edge_id, row.endpoint,
+			row.class, tostring(row.flagged), opt(row.first), opt(row.finish),
+			opt(row.eligible_count), opt(row.success_count),
+			opt(row.direct_count), opt(row.elbow_count),
+			#success_texts > 0 and table.concat(success_texts, ",") or "-")
+	end
+	for index = 1, #scan.scan2_edges do
+		local row = scan.scan2_edges[index]
+		emit("scan2_edge", seed, row.edge_id, row.class, tostring(row.flagged),
+			tostring(row.tuple_count), tostring(row.complete_count),
+			tostring(row.duplicate_count), opt(row.selected_tuple_index),
+			opt(row.selected_station_count))
+	end
+	for index = 1, #scan.scan2_tuples do
+		local row = scan.scan2_tuples[index]
+		emit("scan2_tuple", seed, row.edge_id, tostring(row.tuple_index),
+			row.class, opt(row.from_index), row.from_mode or "-",
+			opt(row.from_point), opt(row.from_previous), opt(row.to_index),
+			row.to_mode or "-", opt(row.to_point), opt(row.to_previous),
+			opt(row.probe_station_count), row.key, opt(row.detail))
+	end
 	emit("seed_end", seed)
 	flush_record()
 	-- The SHA memo has zero cross-seed reuse (every noise input embeds the
@@ -330,15 +363,17 @@ local finish = assert(io.open(output_path, "ab"))
 assert(finish:write("digest\tsha256=", digest, "\n"))
 assert(finish:close())
 hasher.close()
-print("census scan1 rows " .. line_count .. " digest " .. digest)
+print("census scan rows " .. line_count .. " digest " .. digest)
 
 if mode == "kat" then
 	local fixture_path = repo ..
-		"/tools/wp40/fixtures/t2_census/scan1_kat_v1.lua"
+		"/tools/wp40/fixtures/t2_census/scan_kat_v2.lua"
 	local fixture_chunk, fixture_diagnostic = loadfile(fixture_path)
 	assert(fixture_chunk, "census KAT fixture missing or invalid: " ..
 		tostring(fixture_diagnostic))
 	local fixture = fixture_chunk()
+	assert(fixture.schema == partition.census_scan_schema,
+		"census KAT fixture schema differs")
 	for seed_index = 1, #seeds do
 		local seed = seeds[seed_index]
 		local scan = scans_by_seed[seed]
@@ -389,8 +424,57 @@ if mode == "kat" then
 				"census KAT fill count differs at " ..
 				scan.bay_fills[index].id .. " seed " .. seed)
 		end
+		-- Scan-2 (M3): the counting tier and R19 joint decision are pinned
+		-- per endpoint and per edge, on top of the byte digest below.
+		local expected_scan2 = assert(fixture.scan2[seed],
+			"census KAT fixture lacks scan2 for seed " .. seed)
+		assert(#scan.scan2_endpoints == 8,
+			"census KAT expects 8 scan2 endpoint rows")
+		assert(#scan.scan2_edges == 6, "census KAT expects 6 scan2 edge rows")
+		for index = 1, #scan.scan2_endpoints do
+			local row = scan.scan2_endpoints[index]
+			local expected = assert(expected_scan2.endpoints[row.id],
+				"census KAT scan2 endpoint fixture lacks " .. row.id)
+			assert(row.class == "scan2_counting_evaluated" and
+				row.eligible_count == expected.eligible and
+				row.success_count == expected.success and
+				row.direct_count == expected.direct and
+				row.elbow_count == expected.elbow,
+				"census KAT scan2 endpoint differs at " .. row.id ..
+				" seed " .. seed)
+		end
+		for index = 1, #scan.scan2_edges do
+			local row = scan.scan2_edges[index]
+			local expected = assert(expected_scan2.edges[row.edge_id],
+				"census KAT scan2 edge fixture lacks " .. row.edge_id)
+			assert(row.class == expected.class and
+				row.tuple_count == expected.tuples and
+				row.complete_count == expected.complete,
+				"census KAT scan2 edge differs at " .. row.edge_id ..
+				" seed " .. seed)
+		end
+		if seed == "16178445837170081103" then
+			-- The Slot-29 R19 witness (analysis section 3-F2): one endpoint
+			-- carries two R16 candidates and its edge exactly one complete
+			-- tuple.
+			local witnessed = false
+			for index = 1, #scan.scan2_endpoints do
+				local row = scan.scan2_endpoints[index]
+				if row.success_count and row.success_count >= 2 then
+					for edge_index = 1, #scan.scan2_edges do
+						local edge_row = scan.scan2_edges[edge_index]
+						if edge_row.edge_id == row.edge_id and
+								edge_row.complete_count == 1 then
+							witnessed = true
+						end
+					end
+				end
+			end
+			assert(witnessed,
+				"census KAT: the Slot-29 two-candidate/one-complete witness is absent")
+		end
 	end
 	assert(digest == fixture.digest,
 		"census KAT determinism digest differs: " .. digest)
-	print("census scan1 KAT passed (seeds 0 and max-u64, digest pinned)")
+	print("census scan KAT passed (seeds 0, Slot 29 and max-u64, digest pinned)")
 end

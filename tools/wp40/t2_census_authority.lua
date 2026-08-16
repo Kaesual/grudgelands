@@ -45,8 +45,11 @@ return function(dependencies)
 	-- 64-seed list cap now that range mode exists.
 	local free_seed_budget = 64
 
-	local schema = "grug_wp40_census_scan1_v1"
-	local shard_schema = "grug_wp40_census_scan1_shard_v1"
+	-- v2 since M3: the record carries Scan-1 and Scan-2 rows.  The version is
+	-- one unit for the whole record -- the merge and the first-record
+	-- validator consume complete seed records, never one scan's rows alone.
+	local schema = "grug_wp40_census_scan_v2"
+	local shard_schema = "grug_wp40_census_scan_shard_v2"
 	local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
 	local candidates_path =
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"
@@ -71,6 +74,23 @@ return function(dependencies)
 			"junction_pair_not_endpoint", "junction_pair_left_not_eight_connected",
 			"junction_pair_right_not_eight_connected", "junction_pair_shared_station",
 			"junction_pair_x_cross"},
+		-- Scan-2 (M3).  Endpoint rows are the F2 counting tier and the section
+		-- 6.2.3 transition stress scalars; edge rows carry the R19 joint
+		-- decision under the decided U1/U2 readings; tuple rows are the
+		-- per-tuple witnesses, keyed by their read-set envelope digest.
+		scan2_endpoint_class = {"scan2_counting_evaluated",
+			"scan2_no_selected_interval"},
+		scan2_edge_class = {"scan2_exactly_one_complete_select",
+			"scan2_zero_complete_reject", "scan2_multi_complete_reject",
+			"scan2_duplicate_authority_reject", "scan2_selected_below_192_reject",
+			"scan2_no_selected_interval"},
+		scan2_tuple_class = {"scan2_tuple_complete",
+			"scan2_tuple_empty_combined_clip", "scan2_tuple_clip_not_contiguous",
+			"scan2_tuple_probe_invalid", "scan2_tuple_probe_wet",
+			"scan2_tuple_previous_binding_unsatisfiable",
+			"scan2_tuple_bank_incomplete"},
+		scan2_flag = {"true", "false"},
+		scan2_tuple_mode = {"direct", "diagonal_elbow", "-"},
 	}
 	local class_sets = {}
 	for name, values in pairs(classes) do
@@ -94,6 +114,15 @@ return function(dependencies)
 		{tag = "junction_pair", fields = 6, class_field = 6,
 			class_set = "junction_pair_class"},
 		{tag = "bay", count = 4, fields = 5},
+		{tag = "scan2_endpoint", count = 8, fields = 14, class_field = 6,
+			class_set = "scan2_endpoint_class", extra_field = 7,
+			extra_set = "scan2_flag"},
+		{tag = "scan2_edge", count = 6, fields = 10, class_field = 4,
+			class_set = "scan2_edge_class", extra_field = 5,
+			extra_set = "scan2_flag"},
+		{tag = "scan2_tuple", fields = 16, class_field = 5,
+			class_set = "scan2_tuple_class", extra_field = 7,
+			extra_set = "scan2_tuple_mode"},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
@@ -107,7 +136,7 @@ return function(dependencies)
 	-- either pool shard pattern, and `assert_disjoint_from_pool` below proves
 	-- that instead of asserting it in prose (section 6.6.1).
 	local shard_directory = "tools/wp40/results/t2_census"
-	local shard_pattern = "census-scan1-v1-%04d-%04d.tsv"
+	local shard_pattern = "census-scan-v2-%04d-%04d.tsv"
 	local pool_shard_patterns = {"shard-luajit-v3-%04d-%04d.tsv",
 		"shard-luajit-%04d-%04d.tsv"}
 
@@ -184,7 +213,7 @@ return function(dependencies)
 	local function validate_free_output_path(path)
 		if type(path) ~= "string" or path == "" then fail("output path is not text") end
 		local name = path:match("([^/]+)$") or path
-		if name:match("^census%-scan1%-v1%-%d+%-%d+%.tsv$") then
+		if name:match("^census%-scan%d*%-v%d+%-%d+%-%d+%.tsv$") then
 			fail("a free census run must not write a shard file name")
 		end
 		if path:find(shard_directory, 1, true) then

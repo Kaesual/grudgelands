@@ -94,7 +94,7 @@ check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) =
 
 -- ------------------------------------------------------------ shard path names
 local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
-check(shard_path == "tools/wp40/results/t2_census/census-scan1-v1-0000-0515.tsv",
+check(shard_path == "tools/wp40/results/t2_census/census-scan-v2-0000-0515.tsv",
 	"census shard path changed: " .. shard_path)
 check(not shard_path:find("shard-luajit", 1, true),
 	"census shard path collides with the pool pattern")
@@ -103,6 +103,9 @@ refuses("a shard path that is not canonical", "not the canonical census path",
 	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
 	0, 515)
 refuses("a free run writing a shard file name", "must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan-v2-0000-0515.tsv")
+refuses("a free run writing a stale M1 shard file name",
+	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
 refuses("a free run writing into the shard directory", "must not write into",
 	authority.validate_free_output_path,
@@ -150,11 +153,14 @@ refuses("a projection from a shard that completed nothing", "completed no seed",
 -- edit of bytes whose good form has just been accepted.
 local function seed_record(seed)
 	local rows = {"seed_begin\t" .. seed}
-	local function row(count, tag, fields, class_at, class)
+	local function row(count, tag, fields, class_at, class, overrides)
 		for index = 1, count do
 			local cells = {tag, seed}
 			for field = 3, fields do
 				cells[field] = (field == class_at) and class or (tag .. index .. "_" .. field)
+			end
+			if overrides then
+				for position, value in pairs(overrides) do cells[position] = value end
 			end
 			rows[#rows + 1] = table.concat(cells, "\t")
 		end
@@ -171,6 +177,11 @@ local function seed_record(seed)
 	row(8, "attachment", 13, 6, "attachment_equality_select")
 	row(38, "junction", 7)
 	row(4, "bay", 5)
+	row(8, "scan2_endpoint", 14, 6, "scan2_counting_evaluated", {[7] = "false"})
+	row(6, "scan2_edge", 10, 4, "scan2_exactly_one_complete_select",
+		{[5] = "true"})
+	row(2, "scan2_tuple", 16, 5, "scan2_tuple_complete",
+		{[7] = "direct", [11] = "-"})
 	rows[#rows + 1] = "seed_end\t" .. seed
 	return table.concat(rows, "\n") .. "\n"
 end
@@ -201,6 +212,8 @@ local verified = authority.verify_shard(shard, expected)
 check(#verified.seeds == 2 and verified.seeds[1] == w.seeds[1],
 	"a well-formed shard did not verify")
 check(verified.totals.edge == 122, "shard row totals changed")
+check(verified.totals.scan2_endpoint == 16 and verified.totals.scan2_edge == 12
+	and verified.totals.scan2_tuple == 4, "shard scan2 totals changed")
 local first_record = authority.validate_first_record(body, expected)
 check(first_record and first_record.seed == w.seeds[1],
 	"a well-formed first record did not validate")
@@ -229,6 +242,17 @@ refuses("a first record under a foreign W", "different W",
 refuses("a first record with an unknown row tag", "unknown row tag",
 	authority.validate_first_record,
 	(body:gsub("\nbay\t", "\nbays\t", 1)), expected)
+refuses("a first record with an undeclared scan2 edge class", "undeclared class",
+	authority.validate_first_record,
+	(body:gsub("scan2_exactly_one_complete_select", "scan2_probably_complete", 1)),
+	expected)
+refuses("a first record with an undeclared scan2 tuple mode", "undeclared kind",
+	authority.validate_first_record,
+	(body:gsub("\tdirect\t", "\tdirectish\t", 1)), expected)
+refuses("a first record missing a scan2 edge row", "expected 6",
+	authority.validate_first_record,
+	(body:gsub("\nscan2_edge\t" .. w.seeds[1] .. "\tscan2_edge1_3[^\n]*", "", 1)),
+	expected)
 
 -- Section 6.6.4: the empty claim file of a crashed worker, a truncated shard
 -- and a silently edited one all abort; none of them is an empty shard.
@@ -245,8 +269,13 @@ refuses("a shard resealed around an undeclared class", "undeclared class",
 	authority.verify_shard,
 	sealed((body:gsub("attachment_equality_select", "attachment_equality_maybe", 1))),
 	expected)
+-- Removed as a plain suffix: the record bytes now contain `-` cells, which
+-- are pattern-magic and would silently turn a gsub removal into a no-op.
+local record_two = seed_record(w.seeds[2])
+check(body:sub(-#record_two) == record_two,
+	"the second seed record is not the shard body suffix")
 refuses("a shard resealed with a missing seed record", "seed records",
-	authority.verify_shard, sealed((body:gsub(seed_record(w.seeds[2]), "", 1))),
+	authority.verify_shard, sealed(body:sub(1, #body - #record_two)),
 	expected)
 refuses("a shard resealed for another range", "not the range",
 	authority.verify_shard,

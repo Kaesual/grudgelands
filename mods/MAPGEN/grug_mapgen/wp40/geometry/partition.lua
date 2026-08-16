@@ -3272,9 +3272,14 @@ local function new_partition(dependencies)
 		return rows
 	end
 
-	local function census_scan1(seed)
-		local stage = build_scan_stage(seed)
-		local result = {schema = "grug_wp40_census_scan1_v1", seed = seed,
+	-- One worker pass per seed (plan section 6.6.1) computes Scan-1 and Scan-2
+	-- on one shared stage; the record schema is versioned as one unit because
+	-- the M5 merge and the launcher's first-record validator consume the whole
+	-- record, never one scan's rows alone.
+	local census_scan_schema = "grug_wp40_census_scan_v2"
+
+	local function census_scan1(stage, seed)
+		local result = {schema = census_scan_schema, seed = seed,
 			prefilter = census_prefilter(stage), edges = {}, perimeters = {},
 			aperture_stress = {}, attachments = {}, junctions = {},
 			junction_pair_rejects = {}, bay_fills = {}}
@@ -3479,7 +3484,544 @@ local function new_partition(dependencies)
 				fill_count = #context.fill_points,
 				fill_points = copy_points(context.fill_points)}
 		end
+		return result, selected_by_edge
+	end
+
+	-- ------------------------------------------------------------------
+	-- Census Scan-2 projection (plan section 6, milestone M3): the F2
+	-- counting tier and the complete R19 tuple tier of
+	-- wp40-source-authority.md section 4, classified under the decided U1/U2
+	-- readings (plan section 5).  The tuple tier is evaluated on every seed
+	-- wherever at least one tuple exists: the section 6.2 artifact-5 joint
+	-- (eligible, R16-success, complete) distribution, the U2 occupancy
+	-- measurement and the 0-complete reject class are required outputs of
+	-- this contract's scans, and none of them is measurable on the skipped
+	-- side of the analysis section 5 flagging predicate -- Scan-3b cannot
+	-- recover them, because it presupposes resolved, corrected tuples.  The
+	-- predicate survives as the per-row flagged marker: the cost and
+	-- reporting distinction, not a skip.  Per-tuple precondition failures
+	-- are DECIDED-with-continuation; seed-level rejects arise only from the
+	-- complete-tuple count, duplicate authority and the section 7.4
+	-- 192-station backstop on the selected result.
+	-- ------------------------------------------------------------------
+
+	local function census_scan2(stage, seed, result, selected_by_edge)
+		local endpoint_rows, edge_rows, tuple_rows = {}, {}, {}
+		result.scan2_endpoints = endpoint_rows
+		result.scan2_edges = edge_rows
+		result.scan2_tuples = tuple_rows
+		local bank_source_by_id = {}
+		for index = 1, #source.bay_bank_components do
+			bank_source_by_id[source.bay_bank_components[index].id] =
+				source.bay_bank_components[index]
+		end
+		-- The census resolves transition terminals per tuple, never through
+		-- the tracer's land branch; a call reaching that branch is a defect.
+		local tracer = new_bank_tracer(stage, {
+			land_transition = function() return nil end})
+
+		local function hex_digest(text)
+			local raw = dependencies.raw_sha256(text)
+			return (raw:gsub(".", function(byte)
+				return ("%02x"):format(string.byte(byte))
+			end))
+		end
+		local function digest_points(points)
+			local texts = {}
+			for index = 1, #points do
+				texts[index] = points[index].x .. ":" .. points[index].z
+			end
+			return hex_digest(table.concat(texts, ";"))
+		end
+
+		-- Read-set digests for the tuple key (plan section 6, keying decision):
+		-- the tuple decision reads the displaced footprint rasters, the
+		-- referenced Bays' raw rows and fills, the edge record and the probe
+		-- bytes.  The key exists for duplicate detection only and is never a
+		-- skip condition.
+		local footprint_digest
+		local function ensure_footprint_digest()
+			if footprint_digest then return footprint_digest end
+			local parts = {}
+			for index = 1, #stage.perimeter_rows do
+				parts[#parts + 1] = stage.perimeter_rows[index].id .. ":" ..
+					digest_points(stage.perimeter_rows[index].stations)
+			end
+			for index = 1, #stage.island_rows do
+				parts[#parts + 1] = stage.island_rows[index].id .. ":" ..
+					digest_points(stage.island_rows[index].stations)
+			end
+			footprint_digest = hex_digest(table.concat(parts, "\n"))
+			return footprint_digest
+		end
+		local bay_digest_cache = {}
+		local function bay_envelope_digest(bay_id)
+			local cached = bay_digest_cache[bay_id]
+			if cached then return cached end
+			local context = stage.bay_context_by_id[bay_id]
+			local zs = {}
+			for z in pairs(context.raw_rows) do zs[#zs + 1] = z end
+			table.sort(zs)
+			local parts = {}
+			for z_index = 1, #zs do
+				local runs = context.raw_rows[zs[z_index]]
+				local run_texts = {}
+				for run_index = 1, #runs do
+					run_texts[run_index] = runs[run_index].first .. "-" ..
+						runs[run_index].finish
+				end
+				parts[#parts + 1] = zs[z_index] .. ":" ..
+					table.concat(run_texts, ",")
+			end
+			local fills = copy_points(context.fill_points)
+			table.sort(fills, point_less)
+			local fill_texts = {}
+			for index = 1, #fills do
+				fill_texts[index] = fills[index].x .. ":" .. fills[index].z
+			end
+			cached = hex_digest(bay_id .. "\n" .. table.concat(parts, ";") ..
+				"\nfills:" .. table.concat(fill_texts, ","))
+			bay_digest_cache[bay_id] = cached
+			return cached
+		end
+		local function sanitize(text)
+			return (tostring(text):gsub("[\t\n]", " "))
+		end
+
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			local edge_transitions = stage.transitions_by_edge[edge.id]
+			if edge_transitions then
+				local attachment = stage.attachment_by_edge[edge.id]
+				local transition_source = stage.edge_obligations(edge,
+					edge_transitions, attachment)
+				local selected = selected_by_edge[edge.id]
+
+				-- Counting tier: per declared endpoint, every eligible
+				-- incidence of the selected interval -- all stations except
+				-- the opposite endpoint, each with its immediately adjacent
+				-- in-interval station away from the endpoint -- runs the
+				-- exact R16 resolver.  These rows are also the section 6.2.3
+				-- transition stress scalars.
+				local counting = {}
+				for _, endpoint in ipairs({"from", "to"}) do
+					local row = transition_source[endpoint]
+					if row then
+						local out = {edge_id = edge.id, id = row.id,
+							endpoint = endpoint, bay_id = row.bay_id}
+						if not selected then
+							out.class = "scan2_no_selected_interval"
+							out.flagged = false
+						else
+							local from_side = endpoint == "from"
+							local endpoint_index = from_side and selected.first or
+								selected.finish
+							local low = from_side and selected.first or
+								selected.first + 1
+							local high = from_side and selected.finish - 1 or
+								selected.finish
+							local successes = {}
+							local eligible, direct_count, elbow_count = 0, 0, 0
+							local flagged = false
+							for station_index = low, high do
+								eligible = eligible + 1
+								local probed = stage.probe_edge_transition_at(row,
+									edge, station_index)
+								if probed then
+									successes[#successes + 1] = {index = station_index,
+										resolved = probed}
+									if probed.mode == "direct" then
+										direct_count = direct_count + 1
+									else
+										elbow_count = elbow_count + 1
+									end
+									if probed.mode ~= "direct" or
+											station_index ~= endpoint_index then
+										flagged = true
+									end
+								end
+							end
+							if #successes >= 2 then flagged = true end
+							out.class = "scan2_counting_evaluated"
+							out.first, out.finish = selected.first, selected.finish
+							out.eligible_count = eligible
+							out.success_count = #successes
+							out.direct_count = direct_count
+							out.elbow_count = elbow_count
+							out.successes = successes
+							out.flagged = flagged
+						end
+						counting[endpoint] = out
+						endpoint_rows[#endpoint_rows + 1] = out
+					end
+				end
+
+				local edge_row = {edge_id = edge.id}
+				edge_rows[#edge_rows + 1] = edge_row
+				edge_row.flagged = (counting.from and counting.from.flagged or false)
+					or (counting.to and counting.to.flagged or false)
+				if not selected then
+					edge_row.class = "scan2_no_selected_interval"
+					edge_row.tuple_count = 0
+					edge_row.complete_count = 0
+					edge_row.duplicate_count = 0
+				else
+					local from_choices = transition_source.from and
+						counting.from.successes or nil
+					local to_choices = transition_source.to and
+						counting.to.successes or nil
+					local tuple_count
+					if from_choices and to_choices then
+						tuple_count = exact.safe_product(#from_choices, #to_choices,
+							edge.id .. " R19 tuple count")
+					else
+						tuple_count = #(from_choices or to_choices)
+					end
+					edge_row.tuple_count = tuple_count
+
+					local probed_attachment
+					if attachment then
+						probed_attachment = stage.attachment_distance(attachment,
+							edge, selected)
+					end
+
+					-- Probe phase of one tuple: combined clip, control
+					-- subsequence, E/T insertion, the sole final edge raster
+					-- as an unretained probe, terminal and previous bindings.
+					-- Every failure is a per-tuple DECIDED class (U1/U2
+					-- readings); enumeration always continues.
+					local function tuple_probe(from_choice, to_choice)
+						local from_i = from_choice and from_choice.index or
+							selected.first
+						local to_i = to_choice and to_choice.index or
+							selected.finish
+						local out = {from_i = from_i, to_i = to_i}
+						if from_i > to_i then
+							out.class = "scan2_tuple_empty_combined_clip"
+							out.detail = "inverted combined clip"
+							return out
+						end
+						local stations = {}
+						for station_index = from_i, to_i do
+							local point = edge.stations[station_index]
+							stations[#stations + 1] = {x = point.x, z = point.z}
+						end
+						local clip_ok, retained = pcall(select_control_subsequence,
+							edge.shifted_controls, stations)
+						if not clip_ok then
+							local message = tostring(retained)
+							if message:find("is empty", 1, true) then
+								out.class = "scan2_tuple_empty_combined_clip"
+							else
+								out.class = "scan2_tuple_clip_not_contiguous"
+							end
+							out.detail = message
+							return out
+						end
+						local controls = {}
+						local function append_control(point)
+							if #controls == 0 or
+									key(controls[#controls]) ~= key(point) then
+								controls[#controls + 1] = {x = point.x, z = point.z}
+							end
+						end
+						local from_station = edge.stations[from_i]
+						local to_station = edge.stations[to_i]
+						local assembly_ok, assembly_error = pcall(function()
+							if attachment and attachment.edge_endpoint == "from" then
+								append_control(probed_attachment.a)
+								for control_index = 1, #retained do
+									append_control(edge.shifted_controls[retained[control_index]])
+								end
+								append_control(to_station)
+								controls = add_edge_transition_control(controls,
+									to_choice.resolved.selection, "to", to_station)
+							elseif attachment and attachment.edge_endpoint == "to" then
+								append_control(from_station)
+								for control_index = 1, #retained do
+									append_control(edge.shifted_controls[retained[control_index]])
+								end
+								append_control(probed_attachment.a)
+								controls = add_edge_transition_control(controls,
+									from_choice.resolved.selection, "from", from_station)
+							else
+								append_control(from_station)
+								for control_index = 1, #retained do
+									append_control(edge.shifted_controls[retained[control_index]])
+								end
+								append_control(to_station)
+								controls = add_edge_transition_control(controls,
+									from_choice.resolved.selection, "from", from_station)
+								controls = add_edge_transition_control(controls,
+									to_choice.resolved.selection, "to", to_station)
+							end
+						end)
+						if not assembly_ok then
+							out.class = "scan2_tuple_probe_invalid"
+							out.detail = tostring(assembly_error)
+							return out
+						end
+						local raster_ok, probe = pcall(raster.final_raster,
+							controls, false)
+						if not raster_ok then
+							out.class = "scan2_tuple_probe_invalid"
+							out.detail = tostring(probe)
+							return out
+						end
+						local validate_ok, validate_error = pcall(
+							raster.validate_final,
+							{id = edge.id, kind = "land_edge", closed = false,
+								max_displacement = edge.source.max_displacement},
+							edge.base_stations, probe)
+						if not validate_ok then
+							out.class = "scan2_tuple_probe_invalid"
+							out.detail = tostring(validate_error)
+							return out
+						end
+						for station_index = 1, #probe do
+							local station = probe[station_index]
+							if not stage.dry_land(station.x, station.z) then
+								out.class = "scan2_tuple_probe_wet"
+								out.detail = "wet probe station " .. key(station)
+								return out
+							end
+						end
+						local from_terminal = from_choice and
+							from_choice.resolved.point or probed_attachment.a
+						local to_terminal = to_choice and
+							to_choice.resolved.point or probed_attachment.a
+						if key(probe[1]) ~= key(from_terminal) or
+								key(probe[#probe]) ~= key(to_terminal) then
+							out.class = "scan2_tuple_probe_invalid"
+							out.detail = "a resolved terminal is not its probe endpoint"
+							return out
+						end
+						if #probe < 2 then
+							out.class = "scan2_tuple_previous_binding_unsatisfiable"
+							out.detail = "one-station probe has no adjacent station"
+							return out
+						end
+						out.probe = probe
+						out.probe_digest = digest_points(probe)
+						if from_choice then
+							out.from_previous = {x = probe[2].x, z = probe[2].z}
+						end
+						if to_choice then
+							out.to_previous = {x = probe[#probe - 1].x,
+								z = probe[#probe - 1].z}
+						end
+						out.identity = table.concat({
+							from_choice and key(from_choice.resolved.point) or "-",
+							out.from_previous and key(out.from_previous) or "-",
+							to_choice and key(to_choice.resolved.point) or "-",
+							out.to_previous and key(out.to_previous) or "-",
+							out.probe_digest}, "|")
+						return out
+					end
+
+					-- Completion phase: both declared incident Banks of every
+					-- transition in the tuple must complete to their
+					-- already-authorized Aperture or Wing terminals under the
+					-- unchanged R11 rules.  Far terminals resolve lazily
+					-- through the shared tracer; any failure inside --
+					-- including a Wing-tail or aperture resolution failure --
+					-- is this tuple's bank-incomplete witness.
+					local function tuple_complete(probed, from_choice, to_choice)
+						for _, endpoint in ipairs({"from", "to"}) do
+							local choice
+							if endpoint == "from" then choice = from_choice
+							else choice = to_choice end
+							if choice then
+								local row = transition_source[endpoint]
+								local previous = endpoint == "from" and
+									probed.from_previous or probed.to_previous
+								local transition_key = stage.land_transition_key(
+									row.edge_id, row.edge_endpoint)
+								local resolved = {id = transition_key,
+									bay_id = row.bay_id,
+									point = {x = choice.resolved.point.x,
+										z = choice.resolved.point.z},
+									previous = {x = previous.x, z = previous.z},
+									transition_mode = choice.resolved.mode,
+									transition_e = {x = choice.resolved.e.x,
+										z = choice.resolved.e.z},
+									transition_w = choice.resolved.w and
+										{x = choice.resolved.w.x,
+											z = choice.resolved.w.z} or nil,
+									edge_id = row.edge_id,
+									edge_endpoint = row.edge_endpoint,
+									transition_id = row.id}
+								for bank_index = 1, 2 do
+									local bank = bank_source_by_id[
+										row.incident_bank_component_ids[bank_index]]
+									if not bank then
+										fail(row.id .. " references an absent Bank")
+									end
+									local trace_ok, trace_error = pcall(function()
+										local start_resolved, finish_resolved
+										if terminal_key(bank.start_terminal) ==
+												transition_key then
+											start_resolved = resolved
+											finish_resolved = tracer.resolve_terminal(
+												bank.end_terminal, bank.bay_id)
+										elseif terminal_key(bank.end_terminal) ==
+												transition_key then
+											finish_resolved = resolved
+											start_resolved = tracer.resolve_terminal(
+												bank.start_terminal, bank.bay_id)
+										else
+											fail(bank.id .. " is not incident to " ..
+												transition_key)
+										end
+										tracer.trace_bank(bank, start_resolved,
+											finish_resolved)
+									end)
+									if not trace_ok then
+										return false, bank.id, tostring(trace_error)
+									end
+								end
+							end
+						end
+						return true
+					end
+
+					local function tuple_key(probed)
+						local parts = {ensure_footprint_digest()}
+						local bay_ids, seen_bays = {}, {}
+						for _, endpoint in ipairs({"from", "to"}) do
+							local row = transition_source[endpoint]
+							if row and not seen_bays[row.bay_id] then
+								seen_bays[row.bay_id] = true
+								bay_ids[#bay_ids + 1] = row.bay_id
+							end
+						end
+						table.sort(bay_ids)
+						for bay_index = 1, #bay_ids do
+							parts[#parts + 1] = bay_envelope_digest(bay_ids[bay_index])
+						end
+						parts[#parts + 1] = edge.id
+						parts[#parts + 1] = selected.first .. "-" .. selected.finish
+						parts[#parts + 1] = probed.from_i .. "/" .. probed.to_i
+						parts[#parts + 1] = probed.probe_digest or probed.class
+						return hex_digest(table.concat(parts, "\n"))
+					end
+
+					local evaluated = {}
+					local function evaluate_tuple(from_choice, to_choice)
+						local probed = tuple_probe(from_choice, to_choice)
+						probed.from_choice, probed.to_choice = from_choice, to_choice
+						evaluated[#evaluated + 1] = probed
+					end
+					if from_choices and to_choices then
+						for from_index = 1, #from_choices do
+							for to_index = 1, #to_choices do
+								evaluate_tuple(from_choices[from_index],
+									to_choices[to_index])
+							end
+						end
+					elseif from_choices then
+						for from_index = 1, #from_choices do
+							evaluate_tuple(from_choices[from_index], nil)
+						end
+					else
+						for to_index = 1, #to_choices do
+							evaluate_tuple(nil, to_choices[to_index])
+						end
+					end
+
+					-- Duplicate authority (F2 table: identical terminal,
+					-- previous and probe-edge bytes are explicitly not
+					-- collapsed): detected across every probe-valid tuple.
+					-- Completion is still evaluated for duplicates, so the
+					-- joint complete-count stays measured.
+					local identity_counts, duplicate_count = {}, 0
+					for tuple_index = 1, #evaluated do
+						local identity = evaluated[tuple_index].identity
+						if identity then
+							identity_counts[identity] =
+								(identity_counts[identity] or 0) + 1
+						end
+					end
+					for tuple_index = 1, #evaluated do
+						local identity = evaluated[tuple_index].identity
+						if identity and identity_counts[identity] >= 2 then
+							duplicate_count = duplicate_count + 1
+						end
+					end
+					edge_row.duplicate_count = duplicate_count
+
+					local complete_count, selected_tuple = 0, nil
+					for tuple_index = 1, #evaluated do
+						local probed = evaluated[tuple_index]
+						probed.probe_station_count = probed.probe and #probed.probe
+							or nil
+						if probed.probe then
+							local ok, failed_bank, detail = tuple_complete(probed,
+								probed.from_choice, probed.to_choice)
+							if ok then
+								probed.class = "scan2_tuple_complete"
+								complete_count = complete_count + 1
+								if not selected_tuple then
+									selected_tuple = probed
+									selected_tuple.tuple_index = tuple_index
+								end
+							else
+								probed.class = "scan2_tuple_bank_incomplete"
+								probed.detail = failed_bank .. ": " .. detail
+							end
+						end
+						local tuple_row = {edge_id = edge.id,
+							tuple_index = tuple_index,
+							from_index = probed.from_choice and probed.from_i or nil,
+							from_mode = probed.from_choice and
+								probed.from_choice.resolved.mode or nil,
+							to_index = probed.to_choice and probed.to_i or nil,
+							to_mode = probed.to_choice and
+								probed.to_choice.resolved.mode or nil,
+							class = probed.class,
+							probe_station_count = probed.probe_station_count,
+							from_point = probed.from_choice and
+								key(probed.from_choice.resolved.point) or nil,
+							from_previous = probed.from_previous and
+								key(probed.from_previous) or nil,
+							to_point = probed.to_choice and
+								key(probed.to_choice.resolved.point) or nil,
+							to_previous = probed.to_previous and
+								key(probed.to_previous) or nil,
+							key = tuple_key(probed),
+							detail = probed.detail and sanitize(probed.detail) or nil}
+						tuple_rows[#tuple_rows + 1] = tuple_row
+						probed.probe = nil
+					end
+					edge_row.complete_count = complete_count
+
+					if duplicate_count > 0 then
+						edge_row.class = "scan2_duplicate_authority_reject"
+					elseif complete_count == 0 then
+						edge_row.class = "scan2_zero_complete_reject"
+					elseif complete_count >= 2 then
+						edge_row.class = "scan2_multi_complete_reject"
+					elseif selected_tuple.probe_station_count and
+							selected_tuple.probe_station_count - 1 < 192 then
+						edge_row.class = "scan2_selected_below_192_reject"
+					else
+						edge_row.class = "scan2_exactly_one_complete_select"
+					end
+					if complete_count == 1 then
+						edge_row.selected_tuple_index = selected_tuple.tuple_index
+						edge_row.selected_station_count =
+							selected_tuple.probe_station_count
+					end
+				end
+			end
+		end
 		return result
+	end
+
+	local function census_scan(seed)
+		local stage = build_scan_stage(seed)
+		local result, selected_by_edge = census_scan1(stage, seed)
+		return census_scan2(stage, seed, result, selected_by_edge)
 	end
 
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;
@@ -3923,8 +4465,8 @@ local function new_partition(dependencies)
 	end
 
 	partition.compile = compile_impl
-	partition.census_scan1 = census_scan1
-	partition.census_scan1_schema = "grug_wp40_census_scan1_v1"
+	partition.census_scan = census_scan
+	partition.census_scan_schema = census_scan_schema
 	partition.classify_junction_pair = classify_junction_pair
 	partition.pair_clearance = pair_clearance
 	partition.extreme_scalar_records = boundary.extreme_scalar_records

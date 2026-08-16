@@ -34,7 +34,7 @@ owned_lua=(
 	"$repo/tools/wp40/t2_census_gate_test.lua"
 	"$repo/tools/wp40/t2_census_hasher.lua"
 	"$repo/tools/wp40/t2_census_worker.lua"
-	"$repo/tools/wp40/fixtures/t2_census/scan1_kat_v1.lua"
+	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v2.lua"
 )
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
 for file in "${owned_lua[@]}"; do
