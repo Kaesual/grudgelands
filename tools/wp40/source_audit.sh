@@ -40,4 +40,3 @@ if rg -n '\bminetest\.' "$handoff" "$probe"; then
 fi
 
 echo "WP40 T0 source audit passed"
-

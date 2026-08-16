@@ -105,8 +105,10 @@ tools/wp40/run_t2_source_fast.sh
 
 This runs the exact `t2_source_test.lua` harness under LuaJIT and normalizes
 only LuaJIT's successful `os.execute` return tuple to the numeric Lua 5.1
-result expected by that shared harness. On the review host it measured 30.05 s
-versus 195.56 s under PUC Lua 5.1 (about 6.5x faster). Every change still gets
+result expected by that shared harness. It measured 30.05 s versus 195.56 s
+under PUC Lua 5.1 when that was written; the harness has grown since, and the
+current figure is the 90.81 s in the acceleration table below. Plan with the
+later number. Every change still gets
 the plain-5.1 `luac51`/`SETGLOBAL`/five-sweep gates. Intermediate milestones
 use targeted representative PUC KATs with byte-identical canonical evidence;
 comprehensive parallelized WP40 PUC rounds are reserved for T2-final and
@@ -383,6 +385,19 @@ needing a new arithmetic primitive is an escalation, not a local decision.
 `source/catalog.lua` and `geometry/partition.lua` may change freely — the pool
 binds the Source by canonical projection rather than by file bytes, verified by
 control experiment. That is the entire purpose of the S1 scoping.
+
+### `git diff --check` is expected to report this branch
+
+Two categories of whitespace here are correct and must not be "fixed":
+
+- Everything under `evidence/` is a verbatim capture — console logs with box
+  drawing and ASCII art, raw JSONL. Editing it falsifies the record.
+- `t2_partition_oracle.lua` carries eleven trailing-whitespace lines and is
+  content-pinned by `t2_extreme_conformance_authority.lua:33`. Changing its
+  bytes invalidates the conformance authority.
+
+So a clean `git diff --check` is the wrong readiness signal for WP40. Check
+that every reported path is one of those two categories instead.
 
 ### Measured cost anchors
 

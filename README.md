@@ -180,7 +180,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-12. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-16. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,

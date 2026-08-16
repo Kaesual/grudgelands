@@ -174,7 +174,7 @@ refusal and mana spend on a miss. Disable `/combatdebug` and confirm the log is
 silent. Include one hostile-player pass for dodge/absorb/PvP refusal and one
 short high-rate Fireball burst to expose projectile cleanup/performance.
 
-### Readiness (updated 2026-08-12)
+### Readiness (updated 2026-08-16)
 
 The backlog contains **45 stable work-package numbers, WP0–WP44**. Exactly
 **16 are shipped**: WP0–WP4, WP6, WP7, WP15, WP18, WP19, WP25, WP35,

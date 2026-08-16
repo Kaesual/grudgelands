@@ -912,4 +912,3 @@ and unchanged world-partition checksum
 `8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45`.
 This is a Source/Reality freeze surface only. Compiler, Face, Whole, selected-
 winner, 32-seed and WP40 completion remain pending.
-
