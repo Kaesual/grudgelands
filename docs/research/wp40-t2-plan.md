@@ -516,5 +516,8 @@ Census shard names must never match a pool shard pattern (section 6.6.1).
 Division of labour: the projection entry points, worker classification,
 merge semantics and KATs are done in-session; the mechanical launcher and
 merge plumbing may go to a capable subagent after M1 fixes the row schema,
-briefed by goals with a cost cap. M1 is the heavy lift and the cost anchor
-for everything after it: measure M1 before scheduling M3–M5.
+briefed by goals with a cost cap. An Opus-class cold review of the finished
+classification layer against the analysis's §3 tables is part of the package
+(confirmed 2026-08-16); it reviews, it does not rewrite. M1 is the heavy
+lift and the cost anchor for everything after it: measure M1 before
+scheduling M3–M5.
