@@ -45,11 +45,13 @@ return function(dependencies)
 	-- 64-seed list cap now that range mode exists.
 	local free_seed_budget = 64
 
-	-- v2 since M3: the record carries Scan-1 and Scan-2 rows.  The version is
-	-- one unit for the whole record -- the merge and the first-record
-	-- validator consume complete seed records, never one scan's rows alone.
-	local schema = "grug_wp40_census_scan_v2"
-	local shard_schema = "grug_wp40_census_scan_shard_v2"
+	-- v3 since M4: the record carries the Scan-1, Scan-3a and Scan-2 rows.  The
+	-- version is one unit for the whole record -- the merge and the
+	-- first-record validator consume complete seed records, never one scan's
+	-- rows alone -- and the shard name carries it too, so a v2 shard left on
+	-- disk can never be resumed into a v3 run.
+	local schema = "grug_wp40_census_scan_v3"
+	local shard_schema = "grug_wp40_census_scan_shard_v3"
 	local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
 	local candidates_path =
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"
@@ -91,6 +93,73 @@ return function(dependencies)
 			"scan2_tuple_bank_incomplete"},
 		scan2_flag = {"true", "false"},
 		scan2_tuple_mode = {"direct", "diagonal_elbow", "-"},
+		-- Scan-3a (M4).  The table-to-vocabulary map lives beside the
+		-- projection in partition.lua's census_scan3a comment; what belongs
+		-- here is the enumerable class space itself, because the M5
+		-- vacuous-branch report is exactly "declared minus realized" over
+		-- these lists and can never enumerate a branch some seed realized.
+		--
+		-- F4, analysis section 3-F4.  Table row 4 (`W` missing / non-unique /
+		-- non-diagonal / not same-Bay-only raw+final) is four classes here,
+		-- one of which -- W not immediately aperture-included -- that row does
+		-- not name.  The wrong-tail-water-side row is decided in trace_bank
+		-- rather than at resolution and is evaluated directly by Scan-3a, and
+		-- terminal identity drift reads only seed-independent catalog state,
+		-- so it is declared and expected vacuous.
+		scan3_aperture_class = {"aperture_direct_select", "aperture_tail_select",
+			"aperture_d_not_dry_equality_reject",
+			"aperture_d_cardinal_water_reject", "aperture_w_not_diagonal_reject",
+			"aperture_w_not_bay_water_reject", "aperture_w_foreign_water_reject",
+			"aperture_w_not_aperture_included_reject",
+			"aperture_shoulder_elbow_count_reject",
+			"aperture_tail_wrong_water_side_reject",
+			"aperture_terminal_identity_drift_reject"},
+		scan3_aperture_mode = {"direct", "diagonal_shoulder", "-"},
+		-- F5, analysis section 3-F5, under the 2026-08-16 pair-exclusion
+		-- reading: the non-simple/zero-area and `R > 5` rows are per-pair
+		-- exclusions counted on the Wing row, not seed rejects, so the only
+		-- wedge-shaped reject left is the zero-count one.  The last two classes
+		-- have no table row at all (empty distance-layer DAG, finite path
+		-- bound) and the Chebyshev one is the section 6.4 refuted frozen
+		-- universal.
+		scan3_wing_class = {"wing_wedge_valid_select", "wing_missing_k_reject",
+			"wing_k_chebyshev_above_four_reject", "wing_no_complete_tail_reject",
+			"wing_no_wedge_valid_joint_tail_pair_reject",
+			"wing_path_bound_exceeded_reject"},
+		-- F3, analysis section 3-F3, over the four head Banks only; the sixteen
+		-- transition-incident traces are Scan-3b.  Every class is a
+		-- `bay_bank_reject` clause except the select.  Foreign-water contact
+		-- has no class of its own: `bay_candidate` absorbs it, so it reaches
+		-- the census as a zero-reachable-successor reject.
+		scan3_bank_class = {"bank_trace_complete_select",
+			"bank_terminal_unresolved_reject", "bank_start_anchor_invalid_reject",
+			"bank_target_noncandidate_reject",
+			"bank_zero_reachable_successor_reject", "bank_repeated_column_reject",
+			"bank_x_cross_reject", "bank_reachability_frame_cap_reject",
+			"bank_reachability_stack_cap_reject", "bank_main_trace_cap_reject",
+			"bank_trace_envelope_empty_reject"},
+		-- The realized step-class space is the cross product of these two:
+		-- eight Moore directions in the declared clockwise base order times the
+		-- first failing successor predicate, plus admission.  Six predicates,
+		-- not the table's five: "unseen" is two separable bits and the diagonal
+		-- X-cross compatibility the table lists only among the rejects is a
+		-- successor admission predicate.
+		scan3_step_direction = {"east", "southeast", "south", "southwest",
+			"west", "northwest", "north", "northeast"},
+		scan3_step_outcome = {"admitted", "previous", "seen_state",
+			"seen_column", "x_cross", "noncandidate", "water_side"},
+		-- Terminal reachability is not a successor predicate at all: trace_bank
+		-- tests it only at branch width two or more, so a lone admitted
+		-- successor is taken untested.  That asymmetry is the first class here
+		-- rather than a silent case of "first pass selected".
+		scan3_selection_class = {"single_admitted_untested",
+			"branch_first_reachable", "branch_later_reachable",
+			"branch_none_reachable", "zero_admitted_successors"},
+		-- Section 6.4 / source authority section 7.2.  A negative width would
+		-- already have aborted Scan-1 inside exact.bay_segment, so its class
+		-- exists to be reported vacuous rather than to be reached.
+		scan3_width_class = {"bay_bank_width_positive",
+			"bay_bank_width_zero_event", "bay_bank_width_negative_event"},
 	}
 	local class_sets = {}
 	for name, values in pairs(classes) do
@@ -124,6 +193,24 @@ return function(dependencies)
 			class_set = "scan2_tuple_class", extra_field = 7,
 			extra_set = "scan2_tuple_mode", extra2_field = 11,
 			extra2_set = "scan2_tuple_mode"},
+		-- Scan-3a (M4).  Eight aperture incidences, eight Wings, four head
+		-- Banks and four Bay bank-width rows are per-seed rosters; the step and
+		-- selection rows are occupancy-driven, since a direction/outcome pair
+		-- no step realized has no row and that absence is the measurement.
+		{tag = "scan3_aperture", count = 8, fields = 14, class_field = 5,
+			class_set = "scan3_aperture_class", extra_field = 6,
+			extra_set = "scan3_aperture_mode"},
+		{tag = "scan3_wing", count = 8, fields = 30, class_field = 5,
+			class_set = "scan3_wing_class"},
+		{tag = "scan3_bank", count = 4, fields = 12, class_field = 5,
+			class_set = "scan3_bank_class"},
+		{tag = "scan3_width", count = 4, fields = 19, class_field = 4,
+			class_set = "scan3_width_class"},
+		{tag = "scan3_step", fields = 6, class_field = 5,
+			class_set = "scan3_step_outcome", extra_field = 4,
+			extra_set = "scan3_step_direction"},
+		{tag = "scan3_selection", fields = 8, class_field = 4,
+			class_set = "scan3_selection_class"},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
@@ -137,7 +224,7 @@ return function(dependencies)
 	-- either pool shard pattern, and `assert_disjoint_from_pool` below proves
 	-- that instead of asserting it in prose (section 6.6.1).
 	local shard_directory = "tools/wp40/results/t2_census"
-	local shard_pattern = "census-scan-v2-%04d-%04d.tsv"
+	local shard_pattern = "census-scan-v3-%04d-%04d.tsv"
 	local pool_shard_patterns = {"shard-luajit-v3-%04d-%04d.tsv",
 		"shard-luajit-%04d-%04d.tsv"}
 

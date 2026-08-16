@@ -94,7 +94,7 @@ check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) =
 
 -- ------------------------------------------------------------ shard path names
 local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
-check(shard_path == "tools/wp40/results/t2_census/census-scan-v2-0000-0515.tsv",
+check(shard_path == "tools/wp40/results/t2_census/census-scan-v3-0000-0515.tsv",
 	"census shard path changed: " .. shard_path)
 check(not shard_path:find("shard-luajit", 1, true),
 	"census shard path collides with the pool pattern")
@@ -103,7 +103,7 @@ refuses("a shard path that is not canonical", "not the canonical census path",
 	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
 	0, 515)
 refuses("a free run writing a shard file name", "must not write a shard file name",
-	authority.validate_free_output_path, "/tmp/census-scan-v2-0000-0515.tsv")
+	authority.validate_free_output_path, "/tmp/census-scan-v3-0000-0515.tsv")
 refuses("a free run writing a stale M1 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
@@ -206,6 +206,10 @@ check(#verified.seeds == 2 and verified.seeds[1] == w.seeds[1],
 check(verified.totals.edge == 122, "shard row totals changed")
 check(verified.totals.scan2_endpoint == 16 and verified.totals.scan2_edge == 12
 	and verified.totals.scan2_tuple == 4, "shard scan2 totals changed")
+check(verified.totals.scan3_aperture == 16 and verified.totals.scan3_wing == 16
+	and verified.totals.scan3_bank == 8 and verified.totals.scan3_width == 8
+	and verified.totals.scan3_step == 4 and verified.totals.scan3_selection == 4,
+	"shard scan3 totals changed")
 local first_record = authority.validate_first_record(body, expected)
 check(first_record and first_record.seed == w.seeds[1],
 	"a well-formed first record did not validate")
@@ -249,6 +253,53 @@ refuses("a first record missing a scan2 edge row", "expected 6",
 	authority.validate_first_record,
 	(body:gsub("\nscan2_edge\t" .. w.seeds[1] .. "\tscan2_edge1_3[^\n]*", "", 1)),
 	expected)
+
+-- Scan-3a (M4).  Each of the six new row kinds is proven refusable on the
+-- dimension that kind actually carries: its class column, its second
+-- vocabulary column where it has one, its roster count and its width.
+refuses("a first record with an undeclared scan3 aperture class",
+	"undeclared class", authority.validate_first_record,
+	(body:gsub("aperture_direct_select", "aperture_direct_maybe", 1)), expected)
+refuses("a first record with an undeclared scan3 aperture mode",
+	"undeclared kind", authority.validate_first_record,
+	(body:gsub("aperture_direct_select\tdirect\t",
+		"aperture_direct_select\tdirectish\t", 1)),
+	expected)
+refuses("a first record with an undeclared scan3 wing class", "undeclared class",
+	authority.validate_first_record,
+	(body:gsub("wing_wedge_valid_select", "wing_wedge_valid_maybe", 1)), expected)
+refuses("a first record with an undeclared scan3 bank class", "undeclared class",
+	authority.validate_first_record,
+	(body:gsub("bank_trace_complete_select", "bank_trace_complete_maybe", 1)),
+	expected)
+refuses("a first record with an undeclared scan3 width class", "undeclared class",
+	authority.validate_first_record,
+	(body:gsub("bay_bank_width_positive", "bay_bank_width_probably", 1)), expected)
+refuses("a first record with an undeclared scan3 step outcome",
+	"undeclared class", authority.validate_first_record,
+	(body:gsub("\tadmitted\t", "\tadmittedish\t", 1)), expected)
+refuses("a first record with an undeclared scan3 step direction",
+	"undeclared kind", authority.validate_first_record,
+	(body:gsub("\teast\t", "\tnortheastish\t", 1)), expected)
+refuses("a first record with an undeclared scan3 selection class",
+	"undeclared class", authority.validate_first_record,
+	(body:gsub("single_admitted_untested", "single_admitted_maybe", 1)), expected)
+refuses("a first record missing a scan3 wing row", "expected 8",
+	authority.validate_first_record,
+	(body:gsub("\nscan3_wing\t" .. w.seeds[1] .. "\tscan3_wing1_3[^\n]*", "", 1)),
+	expected)
+refuses("a first record with a short scan3 width row", "fields, expected 19",
+	authority.validate_first_record, (body:gsub("\tscan3_width1_19\n", "\n", 1)),
+	expected)
+-- The M4 schema bump is only worth its cost if a finished v2 shard can never
+-- be resumed into a v3 run.  Two independent refusals: the canonical path no
+-- longer names it, and the free-output rule refuses to write it either.
+check(shard_path:find("census-scan-v3-", 1, true) and
+	not shard_path:find("census-scan-v2-", 1, true),
+	"the M4 shard name still admits a v2 shard")
+refuses("a free run writing a stale M3 shard file name",
+	"must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan-v2-0000-0515.tsv")
 
 -- Section 6.6.4: the empty claim file of a crashed worker, a truncated shard
 -- and a silently edited one all abort; none of them is an empty shard.

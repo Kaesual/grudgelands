@@ -1,13 +1,14 @@
--- WP40 T2 census worker (plan section 6.6, milestones M1-M3).  One process
+-- WP40 T2 census worker (plan section 6.6, milestones M1-M4).  One process
 -- evaluates a seed slice through partition.census_scan and emits one
 -- canonical TSV: the Scan-1 interval/attachment/junction/fill projections,
--- the Scan-2 counting and tuple tiers (M3), the verified seed-independent F1
--- prefilter and a trailing digest.
+-- the Scan-2 counting and tuple tiers (M3), the Scan-3a aperture, Wing,
+-- bank-width and head-Bank projections (M4), the verified seed-independent
+-- F1 prefilter and a trailing digest.
 --
 -- Three modes.  `--kat` (seeds 0, the Slot-29 R19 witness and max-u64) and
 -- an explicit seed list are the free paths; their pinned digest is the
--- determinism gate, re-pinned at M3 because the record legitimately grew
--- Scan-2 rows.  `--range FIRST LAST` is the M2 shard mode over `W`: it adds
+-- determinism gate, re-pinned at M4 because the record legitimately grew
+-- Scan-3a rows.  `--range FIRST LAST` is the M2 shard mode over `W`: it adds
 -- the shard framing the launcher resumes and verifies against, streams each
 -- record so the launcher can check the first one while the run continues
 -- (section 6.6.2), and refuses to start above the free seed budget without
@@ -335,6 +336,65 @@ for seed_index = 1, #seeds do
 			row.to_mode or "-", opt(row.to_point), opt(row.to_previous),
 			opt(row.probe_station_count), row.key, opt(row.detail))
 	end
+	-- Scan-3a rows (M4) follow the Scan-2 block, so each seed record keeps the
+	-- M1 bytes and then the M1+M3 bytes as exact prefixes.
+	for index = 1, #scan.scan3_apertures do
+		local row = scan.scan3_apertures[index]
+		emit("scan3_aperture", seed, row.id, row.side, row.class,
+			row.mode or "-", opt(row.d), opt(row.t), opt(row.w),
+			opt(row.selected_elbow), opt(row.water_side_ok), row.bank_id,
+			tostring(row.terminal_index), opt(row.detail))
+	end
+	for index = 1, #scan.scan3_wings do
+		local row = scan.scan3_wings[index]
+		local excluded = row.excluded
+		emit("scan3_wing", seed, row.id, row.bay_id, row.class,
+			opt(row.negative_k_count), opt(row.positive_k_count),
+			opt(row.negative_k), opt(row.positive_k),
+			opt(row.negative_chebyshev), opt(row.positive_chebyshev),
+			opt(row.negative_path_count), opt(row.positive_path_count),
+			opt(row.negative_tail_length), opt(row.positive_tail_length),
+			opt(row.radius), opt(row.path_bound),
+			opt(row.raw_pair_count), opt(row.structural_pair_count),
+			opt(row.wedge_valid_count),
+			opt(row.selected_raw_rank), opt(row.selected_structural_rank),
+			opt(excluded.shared_predecessor), opt(excluded.interior_overlap),
+			opt(excluded.intra_tail_x_cross), opt(excluded.inter_tail_x_cross),
+			opt(excluded.wedge_nonsimple_or_zero_area),
+			opt(excluded.wedge_radius_above_five),
+			opt(excluded.wedge_nonwing_water), opt(row.detail))
+	end
+	for index = 1, #scan.scan3_banks do
+		local row = scan.scan3_banks[index]
+		emit("scan3_bank", seed, row.id, row.bay_id, row.class,
+			tostring(row.step_count), opt(row.station_count),
+			tostring(row.max_frames), tostring(row.max_stack),
+			tostring(row.branch_step_count),
+			tostring(row.multi_reachable_step_count), opt(row.detail))
+	end
+	for index = 1, #scan.scan3_bay_widths do
+		local row = scan.scan3_bay_widths[index]
+		emit("scan3_width", seed, row.id, row.class,
+			tostring(row.station_count), tostring(row.min_numerator),
+			tostring(row.min_length), tostring(row.min_width_nodes),
+			tostring(row.min_segment), tostring(row.min_station),
+			tostring(row.min_x), tostring(row.min_z),
+			tostring(row.min_delta_nodes),
+			opt(row.jittered_numerator), opt(row.jittered_length),
+			opt(row.jittered_width_nodes), opt(row.jittered_delta_nodes),
+			tostring(row.min_delta), tostring(row.max_delta))
+	end
+	for index = 1, #scan.scan3_steps do
+		local row = scan.scan3_steps[index]
+		emit("scan3_step", seed, row.bank_id, row.direction, row.outcome,
+			tostring(row.count))
+	end
+	for index = 1, #scan.scan3_selections do
+		local row = scan.scan3_selections[index]
+		emit("scan3_selection", seed, row.bank_id, row.class,
+			tostring(row.count), tostring(row.max_width),
+			tostring(row.multi_reachable), tostring(row.unknown_reachable))
+	end
 	emit("seed_end", seed)
 	flush_record()
 	-- The SHA memo has zero cross-seed reuse (every noise input embeds the
@@ -370,7 +430,7 @@ print("census scan rows " .. line_count .. " digest " .. digest)
 
 if mode == "kat" then
 	local fixture_path = repo ..
-		"/tools/wp40/fixtures/t2_census/scan_kat_v2.lua"
+		"/tools/wp40/fixtures/t2_census/scan_kat_v3.lua"
 	local fixture_chunk, fixture_diagnostic = loadfile(fixture_path)
 	assert(fixture_chunk, "census KAT fixture missing or invalid: " ..
 		tostring(fixture_diagnostic))
@@ -380,10 +440,18 @@ if mode == "kat" then
 	assert(type(fixture.r19_witness) == "table" and fixture.r19_witness.seed and
 		fixture.r19_witness.endpoint and fixture.r19_witness.edge,
 		"census KAT fixture lacks its R19 witness declaration")
+	assert(type(fixture.tail_mode_witness) == "table" and
+		fixture.tail_mode_witness.seed and fixture.tail_mode_witness.aperture and
+		fixture.tail_mode_witness.side,
+		"census KAT fixture lacks its aperture tail-mode witness declaration")
 	-- A witness seed missing from the roster would silently skip the witness
 	-- assertion below; refuse that shape outright.
 	assert(scans_by_seed[fixture.r19_witness.seed],
 		"census KAT roster does not cover the fixture's R19 witness seed")
+	assert(scans_by_seed[fixture.tail_mode_witness.seed],
+		"census KAT roster does not cover the fixture's tail-mode witness seed")
+	assert(#fixture.r15_corpus == 8,
+		"census KAT fixture expects eight retained R15 corpus rows")
 	for seed_index = 1, #seeds do
 		local seed = seeds[seed_index]
 		local scan = scans_by_seed[seed]
@@ -485,6 +553,111 @@ if mode == "kat" then
 			end
 			assert(witnessed,
 				"census KAT: the R19 two-candidate/one-complete witness is absent")
+		end
+		-- Scan-3a (M4).  F4: every incidence resolves, and the mode split is
+		-- pinned per seed so the first tail-mode occupancy cannot disappear
+		-- unnoticed.
+		assert(#scan.scan3_apertures == 8,
+			"census KAT expects 8 scan3 aperture rows")
+		local modes = {direct = 0, diagonal_shoulder = 0}
+		for index = 1, #scan.scan3_apertures do
+			local row = scan.scan3_apertures[index]
+			assert(row.class == "aperture_direct_select" or
+				row.class == "aperture_tail_select",
+				"census KAT scan3 aperture " .. row.id .. ":" .. row.side ..
+				" class " .. row.class .. " seed " .. seed)
+			modes[row.mode] = assert(modes[row.mode],
+				"census KAT scan3 aperture mode " .. tostring(row.mode)) + 1
+			if row.mode == "diagonal_shoulder" then
+				assert(row.water_side_ok == true,
+					"census KAT: a tail-mode incidence put W on the wrong side")
+			end
+		end
+		local expected_modes = assert(fixture.aperture_modes[seed],
+			"census KAT fixture lacks aperture modes for seed " .. seed)
+		assert(modes.direct == expected_modes.direct and
+			modes.diagonal_shoulder == expected_modes.diagonal_shoulder,
+			"census KAT scan3 aperture mode split differs at seed " .. seed ..
+			": " .. modes.direct .. "/" .. modes.diagonal_shoulder)
+		if seed == fixture.tail_mode_witness.seed then
+			local witnessed = false
+			for index = 1, #scan.scan3_apertures do
+				local row = scan.scan3_apertures[index]
+				if row.id == fixture.tail_mode_witness.aperture and
+						row.side == fixture.tail_mode_witness.side then
+					witnessed = row.class == "aperture_tail_select"
+				end
+			end
+			assert(witnessed,
+				"census KAT: the aperture tail-mode witness is absent")
+		end
+		-- F5: the census Wing analysis is compared row for row against the
+		-- retained R15 Stage-1 corpus (source authority section 6.1).  The
+		-- corpus is an oracle here and never an input -- the projection
+		-- enumerates every pair itself.
+		assert(#scan.scan3_wings == 8, "census KAT expects 8 scan3 wing rows")
+		for index = 1, #scan.scan3_wings do
+			local row = scan.scan3_wings[index]
+			local expected = fixture.r15_corpus[index]
+			assert(expected and expected.id == row.id,
+				"census KAT scan3 wing " .. index .. " is " .. row.id ..
+				", the retained corpus names " ..
+				tostring(expected and expected.id))
+			assert(row.class == "wing_wedge_valid_select",
+				"census KAT scan3 wing " .. row.id .. " class " .. row.class ..
+				" seed " .. seed)
+			assert(row.raw_pair_count == expected.raw and
+				row.structural_pair_count == expected.structural and
+				row.wedge_valid_count == expected.wedge_valid and
+				row.selected_raw_rank == expected.rank and
+				row.radius == expected.radius and
+				row.negative_tail_length == expected.negative_length and
+				row.positive_tail_length == expected.positive_length,
+				"census KAT scan3 wing " .. row.id ..
+				" diverged from the retained R15 corpus at seed " .. seed)
+			assert(row.negative_chebyshev <= 4 and row.positive_chebyshev <= 4,
+				"census KAT: Chebyshev(K,J) exceeded four at " .. row.id)
+		end
+		-- F3: the four head Banks, their trace stress scalars, and the
+		-- branch-occupancy note the analysis asks the census to log.
+		assert(#scan.scan3_banks == 4, "census KAT expects 4 scan3 bank rows")
+		for index = 1, #scan.scan3_banks do
+			local row = scan.scan3_banks[index]
+			local expected = fixture.head_banks[index]
+			assert(expected and expected.id == row.id,
+				"census KAT scan3 bank " .. index .. " is " .. row.id)
+			assert(row.class == "bank_trace_complete_select",
+				"census KAT scan3 bank " .. row.id .. " class " .. row.class ..
+				" seed " .. seed .. " " .. tostring(row.detail))
+			assert(row.step_count == expected.steps and
+				row.station_count == expected.stations,
+				"census KAT scan3 bank " .. row.id .. " trace shape differs: " ..
+				row.step_count .. "/" .. tostring(row.station_count) ..
+				" seed " .. seed)
+			assert(row.branch_step_count == 0 and
+				row.multi_reachable_step_count == 0 and row.max_frames == 0 and
+				row.max_stack == 0,
+				"census KAT scan3 bank " .. row.id ..
+				" gained a branching step; the F3 branch note needs re-reading")
+		end
+		-- Section 6.4: the `w = 0` universal, and the margin behind it.
+		assert(#scan.scan3_bay_widths == 4,
+			"census KAT expects 4 scan3 width rows")
+		for index = 1, #scan.scan3_bay_widths do
+			local row = scan.scan3_bay_widths[index]
+			assert(row.class == "bay_bank_width_positive",
+				"census KAT scan3 width " .. row.id .. " class " .. row.class)
+			assert(row.min_width_nodes == fixture.bank_width.min_width_nodes and
+				row.min_segment == fixture.bank_width.min_segment,
+				"census KAT scan3 width " .. row.id .. " minimum moved to " ..
+				row.min_width_nodes .. " at segment " .. row.min_segment ..
+				" seed " .. seed)
+			assert(row.min_delta_nodes == 0,
+				"census KAT: the narrowest bank width station gained jitter")
+			assert(math.abs(row.min_delta) <= fixture.bank_width.delta_bound and
+				math.abs(row.max_delta) <= fixture.bank_width.delta_bound,
+				"census KAT scan3 width " .. row.id ..
+				" jitter exceeded its declared bound")
 		end
 	end
 	assert(digest == fixture.digest,

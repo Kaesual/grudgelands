@@ -1848,6 +1848,25 @@ local function new_partition(dependencies)
 			{x = 0, z = -1}, {x = -1, z = -1}, {x = -1, z = 0},
 			{x = -1, z = 1}, {x = 0, z = 1}, {x = 1, z = 1}}
 
+		-- Scan-3a observation seam (M4, plan section 6.2.5).  The observer is
+		-- nil on the compile path and on the Scan-2 completion tier, and every
+		-- call site below is guarded by it, so decision order, selection and
+		-- emitted bytes are unchanged without one -- which the standing
+		-- partition and extreme regimes prove.  With an observer the tracer
+		-- additionally reports, without deciding anything differently: the
+		-- realized per-probe step class, the per-step selection class, the
+		-- reachability frame and stack maxima, and the complete Wing
+		-- candidate/pair/wedge analysis the F5 table asks for but the
+		-- stop-at-first enumeration cannot expose from outside.
+		local observer = nil
+		local function set_observer(value)
+			if value ~= nil and (type(value) ~= "table" or
+					getmetatable(value) ~= nil) then
+				fail("Bank tracer observer is malformed")
+			end
+			observer = value
+		end
+
 		local function sequence_less(a, b)
 			local count = math.min(#a, #b)
 			for index = 1, count do
@@ -1888,12 +1907,43 @@ local function new_partition(dependencies)
 			return projection, determinant, length
 		end
 
+		-- Every per-pair exclusion cause the F5 table distinguishes, plus the two
+		-- shapes it names only as one compound "structural" row.  Declared here
+		-- so the analysis record and the census vocabulary cannot drift.
+		local wing_exclusion_causes = {"shared_predecessor", "interior_overlap",
+			"intra_tail_x_cross", "inter_tail_x_cross",
+			"wedge_nonsimple_or_zero_area", "wedge_radius_above_five",
+			"wedge_nonwing_water"}
+
 		local wing_tail_cache = {}
 		local function wing_tails(wing_id)
 			local cached = wing_tail_cache[wing_id]
 			if cached then return cached end
 			local wing = wing_by_id[wing_id]
 			if not wing then fail(wing_id .. " references an absent Wing") end
+			-- With an observer the pair enumeration runs to exhaustion instead
+			-- of stopping at the first wedge-valid pair.  The *selection* is
+			-- untouched -- it stays the first valid pair in the same order -- and
+			-- every failure still fails; the analysis is written to the observer
+			-- before the failure propagates, so a dead Wing is a recorded F5
+			-- class at the tracer edge rather than a lost measurement.
+			local analysis = observer and observer.wing and {id = wing_id,
+				bay_id = wing.bay_id, sides = {}, excluded = {},
+				raw_pair_count = 0, structural_pair_count = 0,
+				wedge_valid_count = 0} or nil
+			if analysis then
+				for index = 1, #wing_exclusion_causes do
+					analysis.excluded[wing_exclusion_causes[index]] = 0
+				end
+			end
+			local function record(class, message)
+				if analysis then
+					analysis.class = class
+					analysis.detail = message
+					observer.wing(analysis)
+				end
+				return message
+			end
 			local context = bay_context_by_id[wing.bay_id]
 			local radius = wing.head_half_width
 			local box = {min_x = math.min(wing.head.x, wing.junction.x) - radius,
@@ -1902,7 +1952,7 @@ local function new_partition(dependencies)
 				max_z = math.max(wing.head.z, wing.junction.z) + radius}
 			local selected = {}
 			for _, side in ipairs({"negative", "positive"}) do
-				local best, best_projection
+				local best, best_projection, candidate_count = nil, nil, 0
 				for x = box.min_x, box.max_x do
 					for z = box.min_z, box.max_z do
 						local own_neighbor = false
@@ -1916,19 +1966,35 @@ local function new_partition(dependencies)
 							local projection, determinant, length = wing_terms(wing, point)
 							local signed = side == "negative" and determinant < 0 or
 								side == "positive" and determinant > 0
-							if projection >= 0 and projection < length and signed and
-									(not best or projection > best_projection or
-									projection == best_projection and point_less(point, best)) then
-								best, best_projection = point, projection
+							if projection >= 0 and projection < length and signed then
+								candidate_count = candidate_count + 1
+								if not best or projection > best_projection or
+										projection == best_projection and
+										point_less(point, best) then
+									best, best_projection = point, projection
+								end
 							end
 						end
 					end
 				end
-				if not best then fail(wing.id .. " has no " .. side .. " K") end
+				if analysis then
+					analysis.sides[side] = {k_count = candidate_count, k = best,
+						chebyshev = best and chebyshev(best, wing.junction) or nil}
+				end
+				if not best then
+					fail(record("wing_missing_k_reject",
+						wing.id .. " has no " .. side .. " K"))
+				end
 				if chebyshev(best, wing.junction) > 4 then
-					fail(wing.id .. " " .. side .. " K exceeds current bound")
+					fail(record("wing_k_chebyshev_above_four_reject",
+						wing.id .. " " .. side .. " K exceeds current bound"))
 				end
 				selected[side] = best
+			end
+			if analysis then
+				analysis.radius = 1 + math.max(
+					chebyshev(selected.negative, wing.junction),
+					chebyshev(selected.positive, wing.junction))
 			end
 
 			local paths = {negative = {}, positive = {}}
@@ -1967,7 +2033,20 @@ local function new_partition(dependencies)
 			collect_paths("positive", {{x = selected.positive.x, z = selected.positive.z}})
 			for _, side in ipairs({"negative", "positive"}) do
 				table.sort(paths[side], sequence_less)
-				if #paths[side] == 0 then fail(wing.id .. " lacks a complete " .. side .. " tail") end
+				if analysis then
+					analysis.sides[side].path_count = #paths[side]
+				end
+				-- The F5 table has no row for this: section 3.4 posits two
+				-- *complete* distance-layer DAGs and never asks what an empty one
+				-- means.  Its own class, so an occurrence lands as an uncovered
+				-- configuration (plan section 6.4) instead of inside a neighbour.
+				if #paths[side] == 0 then
+					fail(record("wing_no_complete_tail_reject",
+						wing.id .. " lacks a complete " .. side .. " tail"))
+				end
+			end
+			if analysis then
+				analysis.raw_pair_count = #paths.negative * #paths.positive
 			end
 
 			local function tail_diagonals(path)
@@ -1979,6 +2058,10 @@ local function new_partition(dependencies)
 				end
 				return diagonals
 			end
+			-- Returns the exclusion cause alongside the verdict.  The compile path
+			-- reads only the verdict, so the fixed order below -- polygon shape,
+			-- then radius, then wedge occupancy -- is the compiler's own and a
+			-- pair failing two clauses is attributed to the first.
 			local function wedge_valid(negative, positive)
 				local polygon = copy_points(negative)
 				for index = #positive - 1, 1, -1 do
@@ -1986,11 +2069,11 @@ local function new_partition(dependencies)
 				end
 				polygon[#polygon + 1] = {x = polygon[1].x, z = polygon[1].z}
 				if exact.signed_area2(polygon) == 0 or not exact.polygon_simple(polygon) then
-					return false
+					return false, "wedge_nonsimple_or_zero_area"
 				end
 				local radius = 1 + math.max(chebyshev(negative[1], wing.junction),
 					chebyshev(positive[1], wing.junction))
-				if radius > 5 then return false end
+				if radius > 5 then return false, "wedge_radius_above_five" end
 				local exempt = {}
 				for index = 1, #negative do exempt[key(negative[index])] = true end
 				for index = 1, #positive do exempt[key(positive[index])] = true end
@@ -1998,44 +2081,93 @@ local function new_partition(dependencies)
 					for z = wing.junction.z - radius, wing.junction.z + radius do
 						if exact.polygon_class(x, z, polygon) >= 0 and
 								not exempt[x .. ":" .. z] and
-								not wing_water(context, wing, x, z) then return false end
+								not wing_water(context, wing, x, z) then
+							return false, "wedge_nonwing_water"
+						end
 					end
 				end
 				return true
 			end
+			local function exclude(cause)
+				if analysis then
+					analysis.excluded[cause] = analysis.excluded[cause] + 1
+				end
+			end
 			local chosen_negative, chosen_positive
+			local pair_rank, structural_rank = 0, 0
 			for negative_index = 1, #paths.negative do
 				local negative = paths.negative[negative_index]
 				local negative_diagonals = tail_diagonals(negative)
-				if negative_diagonals then
+				if not negative_diagonals then
+					-- Every pair on this negative path dies of the same intra-tail
+					-- X-cross; the compile path never enters the inner loop, so the
+					-- ranks advance here instead of there.
+					pair_rank = pair_rank + #paths.positive
+					for _ = 1, #paths.positive do exclude("intra_tail_x_cross") end
+				else
 					local negative_points = {}
 					for index = 1, #negative - 1 do negative_points[key(negative[index])] = true end
 					for positive_index = 1, #paths.positive do
 						local positive = paths.positive[positive_index]
-						local valid = key(negative[#negative - 1]) ~=
-							key(positive[#positive - 1])
+						pair_rank = pair_rank + 1
+						local cause = key(negative[#negative - 1]) ==
+							key(positive[#positive - 1]) and "shared_predecessor" or nil
 						local diagonals = {}
 						for cell, slope in pairs(negative_diagonals) do diagonals[cell] = slope end
 						for index = 1, #positive - 1 do
-							if negative_points[key(positive[index])] then valid = false break end
+							if negative_points[key(positive[index])] then
+								cause = cause or "interior_overlap" break
+							end
 							if add_diagonal(diagonals, positive[index], positive[index + 1]) == false then
-								valid = false break
+								cause = cause or "inter_tail_x_cross" break
 							end
 						end
-						if valid and wedge_valid(negative, positive) then
-							chosen_negative, chosen_positive = negative, positive
-							break
+						if cause then
+							exclude(cause)
+						else
+							structural_rank = structural_rank + 1
+							if analysis then
+								analysis.structural_pair_count =
+									analysis.structural_pair_count + 1
+							end
+							local valid, wedge_cause = wedge_valid(negative, positive)
+							if valid then
+								if analysis then
+									analysis.wedge_valid_count =
+										analysis.wedge_valid_count + 1
+								end
+								if not chosen_negative then
+									chosen_negative, chosen_positive = negative, positive
+									if analysis then
+										analysis.selected_raw_rank = pair_rank
+										analysis.selected_structural_rank = structural_rank
+									end
+								end
+								if not analysis then break end
+							else
+								exclude(wedge_cause)
+							end
 						end
 					end
 				end
-				if chosen_negative then break end
+				if chosen_negative and not analysis then break end
 			end
-			if not chosen_negative then fail(wing.id .. " has no wedge-valid joint tail pair") end
+			if not chosen_negative then
+				fail(record("wing_no_wedge_valid_joint_tail_pair_reject",
+					wing.id .. " has no wedge-valid joint tail pair"))
+			end
 			local length = select(3, wing_terms(wing, wing.junction))
 			local path_bound = exact.ceil_isqrt(length) + 1
-			if #chosen_negative > path_bound or #chosen_positive > path_bound then
-				fail(wing.id .. " joint tail exceeds finite path bound")
+			if analysis then
+				analysis.path_bound = path_bound
+				analysis.sides.negative.tail_length = #chosen_negative
+				analysis.sides.positive.tail_length = #chosen_positive
 			end
+			if #chosen_negative > path_bound or #chosen_positive > path_bound then
+				fail(record("wing_path_bound_exceeded_reject",
+					wing.id .. " joint tail exceeds finite path bound"))
+			end
+			record("wing_wedge_valid_select", nil)
 			wing_tail_cache[wing_id] = {negative = chosen_negative,
 				positive = chosen_positive, negative_k = selected.negative,
 				positive_k = selected.positive}
@@ -2174,8 +2306,15 @@ local function new_partition(dependencies)
 			return key(previous) .. ">" .. key(current)
 		end
 
+		-- `probe_sink` is the Scan-3a per-probe observer and is nil everywhere
+		-- else, including inside the reachability DFS -- only the materialized
+		-- main trace realizes a step class.  The predicate chain below is the
+		-- same six tests in the same short-circuit order the single `and`
+		-- expression used; naming the first failing one costs an interned-string
+		-- assignment and removes the double evaluation an observer would
+		-- otherwise need.
 		local function ordered_successors(context, previous, current, seen_states,
-				seen_columns, diagonals)
+				seen_columns, diagonals, probe_sink)
 			local back_x, back_z = previous.x - current.x, previous.z - current.z
 			local back_index
 			for index = 1, 8 do
@@ -2184,6 +2323,7 @@ local function new_partition(dependencies)
 				end
 			end
 			if not back_index then fail("Bay-bank start half-edge is not eight-connected") end
+			local previous_key = key(previous)
 			local result = {}
 			for offset = 1, 8 do
 				local direction_index = ((back_index - offset - 1) % 8) + 1
@@ -2192,13 +2332,24 @@ local function new_partition(dependencies)
 				local following_key = key(following)
 				local directed_key = state_key(current, following)
 				local cell, slope = diagonal_signature(current, following)
-				if following_key ~= key(previous) and not seen_states[directed_key] and
-						not seen_columns[following_key] and
-						(not cell or not diagonals[cell] or diagonals[cell] == slope) and
-						bay_candidate(context, following.x, following.z) and
-						water_on_right(context, current, following) then
+				local outcome
+				if following_key == previous_key then
+					outcome = "previous"
+				elseif seen_states[directed_key] then
+					outcome = "seen_state"
+				elseif seen_columns[following_key] then
+					outcome = "seen_column"
+				elseif cell and diagonals[cell] and diagonals[cell] ~= slope then
+					outcome = "x_cross"
+				elseif not bay_candidate(context, following.x, following.z) then
+					outcome = "noncandidate"
+				elseif not water_on_right(context, current, following) then
+					outcome = "water_side"
+				else
+					outcome = "admitted"
 					result[#result + 1] = following
 				end
+				if probe_sink then probe_sink(direction_index, outcome) end
 			end
 			return result
 		end
@@ -2221,6 +2372,18 @@ local function new_partition(dependencies)
 				local frame = stack[#stack]
 				if key(frame.current) == key(target) then return true end
 				validate_trace_counters(context.trace_bounds, pushed_frames, #stack, nil)
+				-- The section 6.2.3 Bank stress scalars.  Suspended while the
+				-- observer probes the *remaining* successors of a branch, whose
+				-- frames are an artefact of observing and would otherwise inflate
+				-- the very quantity Scan-4's extremal seed set is chosen on.
+				if observer and not observer.suspend then
+					if pushed_frames > observer.max_frames then
+						observer.max_frames = pushed_frames
+					end
+					if #stack > observer.max_stack then
+						observer.max_stack = #stack
+					end
+				end
 				if not frame.successors then
 					frame.successors = ordered_successors(context, frame.previous,
 						frame.current, seen_states, seen_columns, diagonals)
@@ -2246,6 +2409,38 @@ local function new_partition(dependencies)
 				end
 			end
 			return false
+		end
+
+		-- The F3 branch-occupancy observation (analysis section 3-F3: "logged by
+		-- the census ... not scanned repeatedly").  `select_first_reachable`
+		-- stops at the first reachable successor, so multi-reachability needs
+		-- the remaining ones probed; those probes are observation only, so they
+		-- run with the frame counters suspended and under pcall -- a cap they
+		-- exhaust must never turn an otherwise complete Bank into a reject, and
+		-- an unfinished probe is reported as unknown rather than as zero.
+		local function observe_selection(sink, context, current, target, successors,
+				chosen_index, seen_states, seen_columns, diagonals)
+			local width = #successors
+			if width == 0 then return sink("zero_admitted_successors", 0, 0) end
+			if not chosen_index then return sink("branch_none_reachable", width, 0) end
+			if width == 1 then
+				-- The §3-F3 asymmetry worth its own class: a lone admitted
+				-- successor is taken with no terminal-reachability test at all.
+				-- Reachability is not merely unmeasured here, it is not part of
+				-- the decision, so no count is reported.
+				return sink("single_admitted_untested", 1, nil)
+			end
+			local reachable_count, complete = 1, true
+			observer.suspend = true
+			for index = chosen_index + 1, width do
+				local ok, value = pcall(reachable, context, current,
+					successors[index], target, seen_states, seen_columns, diagonals)
+				if not ok then complete = false break end
+				if value then reachable_count = reachable_count + 1 end
+			end
+			observer.suspend = nil
+			return sink(chosen_index == 1 and "branch_first_reachable" or
+				"branch_later_reachable", width, complete and reachable_count or nil)
 		end
 
 		local function trace_bank(bank, start, finish)
@@ -2341,21 +2536,30 @@ local function new_partition(dependencies)
 			if not bay_candidate(context, target.x, target.z) then
 				fail(bank.id .. " has a noncandidate target")
 			end
+			local probe_sink = observer and observer.probe or nil
+			local selection_sink = observer and observer.selection or nil
 			local steps = 0
 			while key(current) ~= key(target) do
 				local successors = ordered_successors(context, previous, current,
-					seen_states, seen_columns, diagonals)
+					seen_states, seen_columns, diagonals, probe_sink)
 				local following, reachability = nil, {}
+				local chosen_index
 				if #successors == 1 then
 					following = successors[1]
+					chosen_index = 1
 				elseif #successors > 1 then
-					following = select_first_reachable(successors, function(successor)
-						local value = reachable(context, current, successor, target,
-							seen_states, seen_columns, diagonals)
-						reachability[#reachability + 1] = key(successor) .. "=" ..
-							tostring(value)
-						return value
-					end)
+					following, chosen_index = select_first_reachable(successors,
+						function(successor)
+							local value = reachable(context, current, successor, target,
+								seen_states, seen_columns, diagonals)
+							reachability[#reachability + 1] = key(successor) .. "=" ..
+								tostring(value)
+							return value
+						end)
+				end
+				if selection_sink then
+					observe_selection(selection_sink, context, current, target,
+						successors, chosen_index, seen_states, seen_columns, diagonals)
 				end
 				if not following then
 					local identities = {}
@@ -2453,7 +2657,8 @@ local function new_partition(dependencies)
 		return {resolve_terminal = resolve_terminal,
 			resolve_land_transition = resolve_land_transition,
 			trace_bank = trace_bank, wing_tails = wing_tails,
-			terminal_cache = terminal_cache}
+			terminal_cache = terminal_cache, set_observer = set_observer,
+			wing_exclusion_causes = wing_exclusion_causes}
 	end
 
 	local function compile_impl(seed)
@@ -3296,11 +3501,11 @@ local function new_partition(dependencies)
 		return rows
 	end
 
-	-- One worker pass per seed (plan section 6.6.1) computes Scan-1 and Scan-2
-	-- on one shared stage; the record schema is versioned as one unit because
-	-- the M5 merge and the launcher's first-record validator consume the whole
-	-- record, never one scan's rows alone.
-	local census_scan_schema = "grug_wp40_census_scan_v2"
+	-- One worker pass per seed (plan section 6.6.1) computes Scan-1, Scan-3a
+	-- and Scan-2 on one shared stage; the record schema is versioned as one
+	-- unit because the M5 merge and the launcher's first-record validator
+	-- consume the whole record, never one scan's rows alone.  v3 since M4.
+	local census_scan_schema = "grug_wp40_census_scan_v3"
 
 	local function census_scan1(stage, seed)
 		local result = {schema = census_scan_schema, seed = seed,
@@ -3529,20 +3734,24 @@ local function new_partition(dependencies)
 	-- 192-station backstop on the selected result.
 	-- ------------------------------------------------------------------
 
-	local function census_scan2(stage, result, selected_by_edge)
+	-- The Source Bank roster, needed by the Scan-2 completion tier and by the
+	-- Scan-3a aperture and head-Bank passes; it is seed-independent, so it is
+	-- built once rather than per scan.
+	local bank_source_by_id = {}
+	for index = 1, #source.bay_bank_components do
+		bank_source_by_id[source.bay_bank_components[index].id] =
+			source.bay_bank_components[index]
+	end
+
+	-- The tracer is supplied by census_scan and shared with Scan-3a.  The
+	-- census resolves transition terminals per tuple through
+	-- resolve_land_transition, never through the tracer's land hook; a land
+	-- terminal reaching resolve_terminal fails as unresolved.
+	local function census_scan2(stage, result, selected_by_edge, tracer)
 		local endpoint_rows, edge_rows, tuple_rows = {}, {}, {}
 		result.scan2_endpoints = endpoint_rows
 		result.scan2_edges = edge_rows
 		result.scan2_tuples = tuple_rows
-		local bank_source_by_id = {}
-		for index = 1, #source.bay_bank_components do
-			bank_source_by_id[source.bay_bank_components[index].id] =
-				source.bay_bank_components[index]
-		end
-		-- The census resolves transition terminals per tuple through
-		-- resolve_land_transition, never through the tracer's land hook; a
-		-- land terminal reaching resolve_terminal fails as unresolved.
-		local tracer = new_bank_tracer(stage, {})
 
 		local function hex_digest(text)
 			return canonical.hex(dependencies.raw_sha256(text))
@@ -4127,10 +4336,432 @@ local function new_partition(dependencies)
 		return result
 	end
 
+	-- ------------------------------------------------------------------
+	-- Census Scan-3a projection (plan section 6, milestone M4): the F4
+	-- aperture resolution classes, the F5 Wing analyses under the decided
+	-- pair-exclusion reading (plan section 5), the section 6.4 `w = 0` bank
+	-- width event, and the four head-bank traces of F3.  The sixteen
+	-- transition-incident bank traces are Scan-3b and are not run here.
+	--
+	-- Table-to-vocabulary map, the F3/F4/F5 counterpart of the Scan-2 note
+	-- above.  Where the analysis tables and the compiled decision procedure
+	-- differ in granularity the census follows the *procedure* and records the
+	-- difference, because a class no configuration can reach is a vacuous-branch
+	-- row and not a measurement:
+	--
+	-- F4 (analysis section 3-F4, eight aperture incidences).  Rows 1/2/3/5/6
+	-- map one to one onto `select_aperture_transition`.  Row 4 -- "`W` missing /
+	-- non-unique / non-diagonal / not same-Bay-only raw+final" -- is four
+	-- distinct rejects in the procedure (non-diagonal `D/W`, W not raw+final
+	-- Bay water, W foreign water, and W not immediately aperture-included,
+	-- which the table row does not name at all), so the census is finer and
+	-- one table row aggregates four classes.  Row 7, the emitted tail's water
+	-- side, is decided in `trace_bank` rather than at resolution, and all eight
+	-- incidences sit on transition-incident Banks, so a trace-driven reading
+	-- would make it unmeasurable before Scan-3b; the predicate is O(1) from the
+	-- resolved `D,T,W` and the declared water side, and is therefore evaluated
+	-- here.  Row 8, terminal identity drift, reads only catalog and aperture
+	-- source and is seed-independent: declared, expected vacuous, and the
+	-- underlying failure stays a loud abort rather than a row.  Rows 2 and 3
+	-- are alternatives in the table but ordered in the procedure (`d_class`
+	-- before `d_cardinal_water`); a configuration violating both is classified
+	-- by the first.
+	--
+	-- F5 (section 3-F5, eight Wings).  Under the 2026-08-16 pair-exclusion
+	-- reading the non-simple/zero-area and `R > 5` rows are per-pair
+	-- exclusions, counted here per cause, and the seed rejects only through
+	-- `no_wedge_valid_joint_tail_pair`.  The table's single "structural pair
+	-- fails side/disjoint/predecessor/X-cross" row splits into four counted
+	-- causes; its side clause is vacuous by construction, because
+	-- `collect_paths` emits strict-side stations only.  Two procedure failures
+	-- have no table row and get their own classes: an empty distance-layer DAG
+	-- (`wing_no_complete_tail_reject`) and the finite path bound
+	-- (`wing_path_bound_exceeded_reject`).  `Chebyshev(K,J) > 4` is the section
+	-- 6.4 refuted-frozen-universal event and is the Wing's own class.
+	--
+	-- F3 (section 3-F3, four head Banks).  The table's step predicates are
+	-- (candidate, unseen, /= previous, cardinal-water cross-sign,
+	-- terminal-reachable).  `ordered_successors` realizes six: "unseen" is two
+	-- separable bits (directed state and column), and the diagonal X-cross
+	-- compatibility the table lists only among the rejects is a successor
+	-- admission predicate.  Terminal reachability is not among them at all --
+	-- `trace_bank` tests it only at branch width two or more, so a lone
+	-- admitted successor is taken untested; that asymmetry is its own selection
+	-- class rather than a hidden one.  Foreign-water contact has no failure
+	-- site of its own: it is absorbed by `bay_candidate`, so it surfaces as a
+	-- zero-reachable reject.
+	-- ------------------------------------------------------------------
+
+	local aperture_reject_by_suffix = {
+		{" D is not dry equality", "aperture_d_not_dry_equality_reject"},
+		{" D has cardinal water", "aperture_d_cardinal_water_reject"},
+		{" D/W is not exactly diagonal", "aperture_w_not_diagonal_reject"},
+		{" W is not raw and final referenced-Bay water",
+			"aperture_w_not_bay_water_reject"},
+		{" W is foreign-Bay water", "aperture_w_foreign_water_reject"},
+		{" W is not immediately aperture-included",
+			"aperture_w_not_aperture_included_reject"},
+		{" does not have exactly one valid shoulder elbow",
+			"aperture_shoulder_elbow_count_reject"},
+	}
+
+	-- Ordered because one message can contain another's fragment; the first
+	-- match wins and an unmatched message is re-raised, so a structural defect
+	-- can never be absorbed into a decision class.
+	local bank_reject_by_fragment = {
+		{"Bay-bank reachability frame cap exhausted",
+			"bank_reachability_frame_cap_reject"},
+		{"Bay-bank reachability stack cap exhausted",
+			"bank_reachability_stack_cap_reject"},
+		{"Bay-bank main trace cap exhausted", "bank_main_trace_cap_reject"},
+		{"Bay-bank start half-edge is not eight-connected",
+			"bank_start_anchor_invalid_reject"},
+		{" has an empty trace envelope", "bank_trace_envelope_empty_reject"},
+		{" has an invalid start half-edge", "bank_start_anchor_invalid_reject"},
+		{" has a noncandidate target", "bank_target_noncandidate_reject"},
+		{" cannot reach its target", "bank_zero_reachable_successor_reject"},
+		{" joint tail X-crosses", "bank_x_cross_reject"},
+		{" positive joint tail X-crosses", "bank_x_cross_reject"},
+		{" repeats a joint-tail column", "bank_repeated_column_reject"},
+		{" repeats a positive joint-tail column", "bank_repeated_column_reject"},
+		{" X-crosses", "bank_x_cross_reject"},
+	}
+
+	local step_direction_names = {"east", "southeast", "south", "southwest",
+		"west", "northwest", "north", "northeast"}
+
+	local function classify_message(table_of_pairs, message)
+		for index = 1, #table_of_pairs do
+			if message:find(table_of_pairs[index][1], 1, true) then
+				return table_of_pairs[index][2]
+			end
+		end
+		return nil
+	end
+
+	local function census_scan3a(stage, result, tracer)
+		local aperture_rows, wing_rows, bank_rows = {}, {}, {}
+		local width_rows, step_rows, selection_rows = {}, {}, {}
+		result.scan3_apertures = aperture_rows
+		result.scan3_wings = wing_rows
+		result.scan3_banks = bank_rows
+		result.scan3_bay_widths = width_rows
+		result.scan3_steps = step_rows
+		result.scan3_selections = selection_rows
+
+		-- F5 first, and before Scan-2: the tail cache is shared with the
+		-- completion tier, so a Wing resolved without the analysis observer
+		-- would return from cache and lose its measurement entirely.
+		local analysis_by_wing = {}
+		tracer.set_observer({wing = function(analysis)
+			analysis_by_wing[analysis.id] = analysis
+		end, max_frames = 0, max_stack = 0})
+		for wing_index = 1, #source.bay_closure_wings do
+			local wing = source.bay_closure_wings[wing_index]
+			local ok, failure = pcall(tracer.wing_tails, wing.id)
+			local analysis = analysis_by_wing[wing.id]
+			if not analysis then
+				-- No record reached the observer, so the failure happened before
+				-- any F5 decision -- an absent Wing or a broken exact seam.  Loud.
+				error(ok and ("WP40 geometry partition: " .. wing.id ..
+					" produced no Scan-3a analysis") or failure, 0)
+			end
+			local sides = analysis.sides
+			local negative, positive = sides.negative or {}, sides.positive or {}
+			local row = {id = wing.id, bay_id = analysis.bay_id,
+				class = analysis.class,
+				negative_k_count = negative.k_count,
+				positive_k_count = positive.k_count,
+				negative_k = negative.k and key(negative.k) or nil,
+				positive_k = positive.k and key(positive.k) or nil,
+				negative_chebyshev = negative.chebyshev,
+				positive_chebyshev = positive.chebyshev,
+				negative_path_count = negative.path_count,
+				positive_path_count = positive.path_count,
+				negative_tail_length = negative.tail_length,
+				positive_tail_length = positive.tail_length,
+				radius = analysis.radius, path_bound = analysis.path_bound,
+				raw_pair_count = analysis.raw_pair_count,
+				structural_pair_count = analysis.structural_pair_count,
+				wedge_valid_count = analysis.wedge_valid_count,
+				selected_raw_rank = analysis.selected_raw_rank,
+				selected_structural_rank = analysis.selected_structural_rank,
+				excluded = analysis.excluded,
+				detail = analysis.detail}
+			wing_rows[#wing_rows + 1] = row
+		end
+		tracer.set_observer(nil)
+
+		-- F4.  Every incidence is resolved through the compiler's own terminal
+		-- authority; a known reject message becomes its class and anything else
+		-- is re-raised, which keeps the roster and Bay-identity failures loud.
+		for aperture_index = 1, #stage.aperture_rows do
+			local aperture = stage.aperture_rows[aperture_index]
+			for _, side in ipairs({"before", "after"}) do
+				local terminal = {kind = "aperture_dry",
+					aperture_id = aperture.source.id, side = side}
+				local incidence_key = terminal_key(terminal)
+				local incidence = stage.aperture_terminal_incidence[incidence_key]
+				if not incidence then
+					fail(incidence_key .. " lacks a Bank incidence")
+				end
+				local bank = bank_source_by_id[incidence.bank_id]
+				if not bank then fail(incidence_key .. " names an absent Bank") end
+				local row = {id = aperture.source.id, side = side,
+					bank_id = incidence.bank_id,
+					terminal_index = incidence.terminal_index}
+				local ok, resolved = pcall(tracer.resolve_terminal, terminal,
+					incidence.bay_id)
+				if ok then
+					local selection = resolved.aperture_transition
+					row.mode = selection.mode
+					row.d = key(selection.d)
+					if selection.mode == "direct" then
+						row.class = "aperture_direct_select"
+					else
+						row.t, row.w = key(selection.t), key(selection.w)
+						row.selected_elbow = selection.selected_elbow
+						-- The emitted tail direction is D->T at a component start
+						-- and T->D at an end (source authority section 3.1).
+						local first, second = selection.d, selection.t
+						if incidence.terminal_index == 2 then
+							first, second = selection.t, selection.d
+						end
+						row.water_side_ok = aperture_tail_water_side(first, second,
+							selection.w, bank.water_side)
+						row.class = row.water_side_ok and "aperture_tail_select" or
+							"aperture_tail_wrong_water_side_reject"
+					end
+				else
+					local message = tostring(resolved)
+					local class = classify_message(aperture_reject_by_suffix, message)
+					if not class then error(resolved, 0) end
+					row.class = class
+					row.detail = message
+				end
+				aperture_rows[#aperture_rows + 1] = row
+			end
+		end
+
+		-- Section 6.4 / source authority section 7.2: the jittered Bay bank
+		-- half-width `w = r + delta_nodes` at every canonical bank-width
+		-- station, in the exact body form `E = base_width_num + delta_nodes*L`
+		-- so the census reads the same numerator `exact.bay_segment` does
+		-- rather than an approximation of it -- `r` is the interpolation of the
+		-- two segment half-widths at the station's own projection, not either
+		-- endpoint's.  Outside `[0,L]` the compiler uses the endpoint cap
+		-- radius, which is exactly the clamped interpolation.  Widths from
+		-- different segments are compared as the rationals `E/L` they are.
+		-- `exact.bay_segment` already refuses a *negative* radius, so Scan-1
+		-- would have aborted before the census saw one; `w = 0` is the margin
+		-- nothing asserts today.
+		for bay_index = 1, #stage.bays do
+			local bay = stage.bays[bay_index]
+			local centreline = bay.source.centreline
+			local label = bay.source.id .. " bank width"
+			local row = {id = bay.source.id, station_count = 0}
+			for segment_index = 1, #bay.segments do
+				local segment = bay.segments[segment_index]
+				local a, b = centreline[segment_index], centreline[segment_index + 1]
+				local dx = exact.safe_difference(b.x, a.x, label)
+				local dz = exact.safe_difference(b.z, a.z, label)
+				local length = exact.safe_sum(exact.safe_square(dx, label),
+					exact.safe_square(dz, label), label)
+				if length <= 0 then fail(label .. " has a zero-length segment") end
+				for station_index = 1, #segment.stations do
+					local station = segment.stations[station_index]
+					local delta = segment.deltas[station_index]
+					local projection = exact.dot(
+						exact.safe_difference(station.x, a.x, label),
+						exact.safe_difference(station.z, a.z, label), dx, dz, label)
+					if projection < 0 then projection = 0 end
+					if projection > length then projection = length end
+					-- The two half-width terms are nonnegative by construction and
+					-- keep the stricter checked product; `delta` is signed, and so
+					-- is the numerator once the event this measures occurs, so the
+					-- jitter term and the cross-comparison take the signed one.
+					local numerator = exact.safe_sum(exact.safe_sum(
+						exact.safe_product(a.half_width, length - projection, label),
+						exact.safe_product(b.half_width, projection, label), label),
+						exact.safe_signed_product(delta, length, label), label)
+					row.station_count = row.station_count + 1
+					if not row.min_numerator or exact.safe_signed_product(numerator,
+							row.min_length, label) < exact.safe_signed_product(
+							row.min_numerator, length, label) then
+						row.min_numerator, row.min_length = numerator, length
+						row.min_segment = segment_index
+						row.min_station = station_index
+						row.min_x, row.min_z = station.x, station.z
+						row.min_delta_nodes = delta
+					end
+					-- The overall minimum sits where the 96-station taper forces
+					-- `delta = 0`, so it says nothing about how close the jitter
+					-- gets to collapsing a width.  The minimum over the stations
+					-- the jitter actually moves is the margin a correction would
+					-- have to argue about, and it costs nothing to carry.
+					if delta ~= 0 and (not row.jittered_numerator or
+							exact.safe_signed_product(numerator,
+								row.jittered_length, label) <
+							exact.safe_signed_product(row.jittered_numerator,
+								length, label)) then
+						row.jittered_numerator, row.jittered_length = numerator, length
+						row.jittered_delta_nodes = delta
+					end
+					if not row.min_delta or delta < row.min_delta then
+						row.min_delta = delta
+					end
+					if not row.max_delta or delta > row.max_delta then
+						row.max_delta = delta
+					end
+				end
+			end
+			if not row.min_numerator then
+				fail(label .. " has no station")
+			end
+			-- The reported width in nodes floors the rational, so it can only
+			-- understate; the class is decided on the exact numerator.
+			row.min_width_nodes = math.floor(row.min_numerator / row.min_length)
+			if row.jittered_numerator then
+				row.jittered_width_nodes = math.floor(row.jittered_numerator /
+					row.jittered_length)
+			end
+			row.class = row.min_numerator > 0 and "bay_bank_width_positive" or
+				row.min_numerator == 0 and "bay_bank_width_zero_event" or
+				"bay_bank_width_negative_event"
+			width_rows[#width_rows + 1] = row
+		end
+
+		-- F3, the four head Banks.  Both terminals are Wing tails, so no
+		-- transition is consumed and the traces stand independently of the
+		-- collected correction; the other sixteen are Scan-3b.
+		local head_banks = {}
+		for bank_index = 1, #source.bay_bank_components do
+			local bank = source.bay_bank_components[bank_index]
+			if bank.start_terminal.kind == "wing_junction_tail_side" and
+					bank.end_terminal.kind == "wing_junction_tail_side" then
+				head_banks[#head_banks + 1] = bank
+			end
+		end
+		if #head_banks ~= 4 then
+			fail("census Scan-3a expects four head Banks, found " .. #head_banks)
+		end
+		for head_index = 1, #head_banks do
+			local bank = head_banks[head_index]
+			local steps, selections = {}, {}
+			local observer = {max_frames = 0, max_stack = 0,
+				probe = function(direction_index, outcome)
+					local slot = steps[direction_index]
+					if not slot then slot = {} steps[direction_index] = slot end
+					slot[outcome] = (slot[outcome] or 0) + 1
+				end,
+				selection = function(class, width, reachable_count)
+					local slot = selections[class]
+					if not slot then
+						slot = {count = 0, max_width = 0, multi_reachable = 0,
+							unknown_reachable = 0}
+						selections[class] = slot
+					end
+					slot.count = slot.count + 1
+					if width > slot.max_width then slot.max_width = width end
+					-- Only the two branch classes carry a reachability count at
+					-- all; a nil there means the observation probe was cut short
+					-- by a cap, never "no successor was reachable".
+					if class == "branch_first_reachable" or
+							class == "branch_later_reachable" then
+						if reachable_count == nil then
+							slot.unknown_reachable = slot.unknown_reachable + 1
+						elseif reachable_count >= 2 then
+							slot.multi_reachable = slot.multi_reachable + 1
+						end
+					end
+				end}
+			local row = {id = bank.id, bay_id = bank.bay_id}
+			local terminals_ok, start_resolved, finish_resolved = pcall(function()
+				return tracer.resolve_terminal(bank.start_terminal, bank.bay_id),
+					tracer.resolve_terminal(bank.end_terminal, bank.bay_id)
+			end)
+			if not terminals_ok then
+				row.class = "bank_terminal_unresolved_reject"
+				row.detail = tostring(start_resolved)
+			else
+				tracer.set_observer(observer)
+				local ok, points = pcall(tracer.trace_bank, bank, start_resolved,
+					finish_resolved)
+				tracer.set_observer(nil)
+				if ok then
+					row.class = "bank_trace_complete_select"
+					row.station_count = #points
+				else
+					local message = tostring(points)
+					local class = classify_message(bank_reject_by_fragment, message)
+					if not class then error(points, 0) end
+					row.class = class
+					row.detail = message
+				end
+			end
+			row.max_frames = observer.max_frames
+			row.max_stack = observer.max_stack
+			local step_total, branch_total, multi_total = 0, 0, 0
+			for direction_index = 1, #step_direction_names do
+				local slot = steps[direction_index]
+				if slot then
+					for outcome, count in pairs(slot) do
+						step_rows[#step_rows + 1] = {bank_id = bank.id,
+							direction = step_direction_names[direction_index],
+							outcome = outcome, count = count}
+					end
+				end
+			end
+			for _, class in ipairs({"single_admitted_untested",
+					"branch_first_reachable", "branch_later_reachable",
+					"branch_none_reachable", "zero_admitted_successors"}) do
+				local slot = selections[class]
+				if slot then
+					selection_rows[#selection_rows + 1] = {bank_id = bank.id,
+						class = class, count = slot.count,
+						max_width = slot.max_width,
+						multi_reachable = slot.multi_reachable,
+						unknown_reachable = slot.unknown_reachable}
+					step_total = step_total + slot.count
+					if class ~= "single_admitted_untested" and
+							class ~= "zero_admitted_successors" then
+						branch_total = branch_total + slot.count
+						multi_total = multi_total + slot.multi_reachable
+					end
+				end
+			end
+			row.step_count = step_total
+			row.branch_step_count = branch_total
+			row.multi_reachable_step_count = multi_total
+			bank_rows[#bank_rows + 1] = row
+		end
+		-- Deterministic emission order for the occupancy-driven rows: the
+		-- per-direction tables are walked in index order above, but the
+		-- outcome keys inside one direction come out of `pairs`, which the
+		-- section 5 divergence test exists to catch.  Sorting here makes the
+		-- census TSV runtime-independent by construction rather than by luck.
+		table.sort(step_rows, function(left, right)
+			if left.bank_id ~= right.bank_id then
+				return left.bank_id < right.bank_id
+			end
+			if left.direction ~= right.direction then
+				return left.direction < right.direction
+			end
+			return left.outcome < right.outcome
+		end)
+		return result
+	end
+
 	local function census_scan(seed)
 		local stage = build_scan_stage(seed)
 		local result, selected_by_edge = census_scan1(stage, seed)
-		return census_scan2(stage, result, selected_by_edge)
+		-- One tracer for both remaining scans.  Scan-3a runs first so its Wing
+		-- analysis fills the shared tail cache that Scan-2's completion tier
+		-- would otherwise fill unobserved; the terminal cache is shared for the
+		-- same reason, and neither scan changes what the other measures.
+		local tracer = new_bank_tracer(stage, {})
+		census_scan3a(stage, result, tracer)
+		return census_scan2(stage, result, selected_by_edge, tracer)
 	end
 
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;

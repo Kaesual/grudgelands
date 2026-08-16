@@ -84,7 +84,7 @@ token_of() {
 }
 
 shard_one() {
-	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v2-0000-0515.tsv"
+	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v3-0000-0515.tsv"
 }
 
 echo "== module-level gate decisions =="
@@ -123,7 +123,7 @@ mkdir -p "$export_dir/tools/wp40/results/t2_census"
 : >"$(shard_one "$export_dir")"
 expect_failure "the empty claim file of a crashed worker" "shard file is empty" \
 	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
-printf 'schema\tgrug_wp40_census_scan_v2\nvocabulary\tx\n' \
+printf 'schema\tgrug_wp40_census_scan_v3\nvocabulary\tx\n' \
 	>"$(shard_one "$export_dir")"
 expect_failure "a shard that stops before its digest line" \
 	"no trailing digest line" \
