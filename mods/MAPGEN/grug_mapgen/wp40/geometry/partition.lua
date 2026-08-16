@@ -862,6 +862,29 @@ local function new_partition(dependencies)
 		return true
 	end
 
+	-- The R12 caps count the finite search envelope itself, not its larger
+	-- outer rectangle: exact union of expanded Base/Wing boxes, clipped to
+	-- the referenced final mainland footprint.  Idempotent so the census
+	-- completion tier can resolve it lazily per Bay while compile_impl keeps
+	-- walking every Bay eagerly in its historical order.
+	local function ensure_trace_bounds(context)
+		if context.trace_bounds then return end
+		local column_count = count_trace_envelope(context.boxes,
+			context.perimeter.polygon_index, context.bay.source.id)
+		context.step_bound = column_count
+		context.trace_bounds = trace_bounds(column_count)
+	end
+
+	local function terminal_key(terminal)
+		if terminal.kind == "aperture_dry" then
+			return terminal.kind .. ":" .. terminal.aperture_id .. ":" .. terminal.side
+		elseif terminal.kind == "land_edge_transition" then
+			return terminal.kind .. ":" .. terminal.edge_id .. ":" ..
+				terminal.edge_endpoint
+		end
+		return terminal.kind .. ":" .. terminal.wing_id .. ":" .. terminal.tail_side
+	end
+
 	local function bay_data(seed)
 		local rows, by_id = {}, {}
 		for bay_index = 1, #source.bays do
@@ -1551,11 +1574,17 @@ local function new_partition(dependencies)
 			return intervals
 		end
 
-		local function probe_edge_transition(row, edge, interval)
+		-- The R16 resolver at an explicit station incidence.  R19 (source
+		-- authority section 4) evaluates this same resolver for every eligible
+		-- incidence of the selected interval; the interval-endpoint form below
+		-- is the R18 qualification probe and delegates here so the resolver
+		-- exists exactly once.  W is the immediately adjacent provisional
+		-- station toward the Bay: for an interior incidence that station is
+		-- final-dry, so interior incidences can only succeed as direct
+		-- candidates -- the elbow branch is reachable only at the endpoint.
+		local function probe_edge_transition_at(row, edge, e_index)
 			local context = bay_context_by_id[row.bay_id]
 			if not context then fail(row.id .. " references an absent Bay") end
-			local e_index = row.edge_endpoint == "from" and interval.first or
-				interval.finish
 			local e = edge.stations[e_index]
 			local evidence = {id = row.id, e = {x = e.x, z = e.z},
 				direct_candidate = bay_candidate(context, e.x, e.z)}
@@ -1611,6 +1640,12 @@ local function new_partition(dependencies)
 				point = selected.point, mode = selected.mode,
 				w = selected.w, elbows = selected.elbows, selection = selected}
 			return resolved
+		end
+
+		local function probe_edge_transition(row, edge, interval)
+			local e_index = row.edge_endpoint == "from" and interval.first or
+				interval.finish
+			return probe_edge_transition_at(row, edge, e_index)
 		end
 
 		local canonical_index_cache = {}
@@ -1712,6 +1747,26 @@ local function new_partition(dependencies)
 			return point_index, point_index + 1, point_index - 1
 		end
 
+		local aperture_terminal_incidence, aperture_terminal_count = {}, 0
+		for bank_index = 1, #source.bay_bank_components do
+			local bank = source.bay_bank_components[bank_index]
+			for terminal_index, terminal in ipairs({bank.start_terminal,
+					bank.end_terminal}) do
+				if terminal.kind == "aperture_dry" then
+					local incidence_key = terminal_key(terminal)
+					if aperture_terminal_incidence[incidence_key] then
+						fail(incidence_key .. " has two Bank incidences")
+					end
+					aperture_terminal_incidence[incidence_key] = {bank_id = bank.id,
+						terminal_index = terminal_index, bay_id = bank.bay_id}
+					aperture_terminal_count = aperture_terminal_count + 1
+				end
+			end
+		end
+		if aperture_terminal_count ~= 8 then
+			fail("aperture transition roster does not contain eight incidences")
+		end
+
 		return {zone_numeric = zone_numeric,
 			departure_by_edge = departure_by_edge,
 			perimeter_rows = perimeter_rows, perimeter_by_id = perimeter_by_id,
@@ -1736,12 +1791,643 @@ local function new_partition(dependencies)
 			transitions_by_edge = transitions_by_edge,
 			maximal_dry_intervals = maximal_dry_intervals,
 			probe_edge_transition = probe_edge_transition,
+			probe_edge_transition_at = probe_edge_transition_at,
 			attachment_distance = attachment_distance,
 			attachment_probe = attachment_probe,
 			probe_interval = probe_interval,
 			aperture_neighborhood = aperture_neighborhood,
+			aperture_terminal_incidence = aperture_terminal_incidence,
 			selected_control_indices = selected_control_indices,
 			edge_obligations = edge_obligations}
+	end
+
+	-- The complete Bank trace machinery, shared verbatim by compile_impl and
+	-- the census Scan-2 completion tier (M3 surgery, plan section 6.7):
+	-- terminal resolution, Wing-tail selection, Moore successor ordering,
+	-- bounded reachability and the main Bank trace.  compile_impl resolves
+	-- everything eagerly in its historical order; the census resolves lazily
+	-- so Wing tails and trace bounds cost only where a tuple actually traces.
+	-- hooks.land_transition injects the once-resolved final edge transitions:
+	-- the compiler's materialized table, or the census's per-tuple candidate
+	-- resolution.  Scan-3a (M4) consumes wing_tails and resolve_terminal from
+	-- this same seam.
+	local function new_bank_tracer(stage, hooks)
+		if type(hooks) ~= "table" or type(hooks.land_transition) ~= "function" then
+			fail("Bank tracer needs a land-transition hook")
+		end
+		local bays, bay_context_by_id = stage.bays, stage.bay_context_by_id
+		local perimeter_by_id = stage.perimeter_by_id
+		local aperture_by_id, aperture_by_bay = stage.aperture_by_id,
+			stage.aperture_by_bay
+		local aperture_neighborhood = stage.aperture_neighborhood
+		local aperture_terminal_incidence = stage.aperture_terminal_incidence
+		local wing_by_id = stage.wing_by_id
+		local cardinal = stage.cardinal
+		local footprint_class, in_bay_envelope = stage.footprint_class,
+			stage.in_bay_envelope
+		local raw_bay_water, raw_owner_count = stage.raw_bay_water,
+			stage.raw_owner_count
+		local bay_water, bay_dry = stage.bay_water, stage.bay_dry
+		local final_water, wing_water = stage.final_water, stage.wing_water
+		local bay_candidate, water_on_right = stage.bay_candidate,
+			stage.water_on_right
+
+		local clockwise = {{x = 1, z = 0}, {x = 1, z = -1},
+			{x = 0, z = -1}, {x = -1, z = -1}, {x = -1, z = 0},
+			{x = -1, z = 1}, {x = 0, z = 1}, {x = 1, z = 1}}
+
+		local function sequence_less(a, b)
+			local count = math.min(#a, #b)
+			for index = 1, count do
+				if point_less(a[index], b[index]) then return true end
+				if point_less(b[index], a[index]) then return false end
+			end
+			return #a < #b
+		end
+
+		local function diagonal_signature(a, b)
+			local dx, dz = b.x - a.x, b.z - a.z
+			if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 then return nil end
+			return math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z),
+				dx == dz and 1 or -1
+		end
+
+		local function add_diagonal(diagonals, a, b)
+			local cell, slope = diagonal_signature(a, b)
+			if not cell then return nil end
+			if diagonals[cell] and diagonals[cell] ~= slope then return false end
+			if not diagonals[cell] then diagonals[cell] = slope return cell end
+			return nil
+		end
+
+		local function wing_terms(wing, point)
+			local vx = exact.safe_difference(wing.junction.x, wing.head.x,
+				wing.id .. " axis")
+			local vz = exact.safe_difference(wing.junction.z, wing.head.z,
+				wing.id .. " axis")
+			local px = exact.safe_difference(point.x, wing.head.x,
+				wing.id .. " query")
+			local pz = exact.safe_difference(point.z, wing.head.z,
+				wing.id .. " query")
+			local length = exact.safe_sum(exact.safe_square(vx, wing.id .. " length"),
+				exact.safe_square(vz, wing.id .. " length"), wing.id .. " length")
+			local projection = exact.dot(px, pz, vx, vz, wing.id .. " projection")
+			local determinant = exact.cross(vx, vz, px, pz, wing.id .. " cross")
+			return projection, determinant, length
+		end
+
+		local wing_tail_cache = {}
+		local function wing_tails(wing_id)
+			local cached = wing_tail_cache[wing_id]
+			if cached then return cached end
+			local wing = wing_by_id[wing_id]
+			if not wing then fail(wing_id .. " references an absent Wing") end
+			local context = bay_context_by_id[wing.bay_id]
+			local radius = wing.head_half_width
+			local box = {min_x = math.min(wing.head.x, wing.junction.x) - radius,
+				max_x = math.max(wing.head.x, wing.junction.x) + radius,
+				min_z = math.min(wing.head.z, wing.junction.z) - radius,
+				max_z = math.max(wing.head.z, wing.junction.z) + radius}
+			local selected = {}
+			for _, side in ipairs({"negative", "positive"}) do
+				local best, best_projection
+				for x = box.min_x, box.max_x do
+					for z = box.min_z, box.max_z do
+						local own_neighbor = false
+						for direction_index = 1, 4 do
+							local direction = cardinal[direction_index]
+							if wing_water(context, wing, x + direction.x,
+									z + direction.z) then own_neighbor = true break end
+						end
+						if own_neighbor and bay_dry(context, x, z) then
+							local point = {x = x, z = z}
+							local projection, determinant, length = wing_terms(wing, point)
+							local signed = side == "negative" and determinant < 0 or
+								side == "positive" and determinant > 0
+							if projection >= 0 and projection < length and signed and
+									(not best or projection > best_projection or
+									projection == best_projection and point_less(point, best)) then
+								best, best_projection = point, projection
+							end
+						end
+					end
+				end
+				if not best then fail(wing.id .. " has no " .. side .. " K") end
+				if chebyshev(best, wing.junction) > 4 then
+					fail(wing.id .. " " .. side .. " K exceeds current bound")
+				end
+				selected[side] = best
+			end
+
+			local paths = {negative = {}, positive = {}}
+			local function collect_paths(side, path)
+				local current = path[#path]
+				if current.x == wing.junction.x and current.z == wing.junction.z then
+					local copy = copy_points(path)
+					paths[side][#paths[side] + 1] = copy
+					return
+				end
+				local distance = chebyshev(current, wing.junction)
+				local next_points = {}
+				for dx = -1, 1 do for dz = -1, 1 do
+					if dx ~= 0 or dz ~= 0 then
+						local following = {x = current.x + dx, z = current.z + dz}
+						if chebyshev(following, wing.junction) == distance - 1 then
+							local _, determinant = wing_terms(wing, following)
+							local at_junction = key(following) == key(wing.junction)
+							local strict_side = side == "negative" and determinant < 0 or
+								side == "positive" and determinant > 0
+							if bay_dry(context, following.x, following.z) and
+									(at_junction or strict_side) then
+								next_points[#next_points + 1] = following
+							end
+						end
+					end
+				end end
+				table.sort(next_points, point_less)
+				for index = 1, #next_points do
+					path[#path + 1] = next_points[index]
+					collect_paths(side, path)
+					path[#path] = nil
+				end
+			end
+			collect_paths("negative", {{x = selected.negative.x, z = selected.negative.z}})
+			collect_paths("positive", {{x = selected.positive.x, z = selected.positive.z}})
+			for _, side in ipairs({"negative", "positive"}) do
+				table.sort(paths[side], sequence_less)
+				if #paths[side] == 0 then fail(wing.id .. " lacks a complete " .. side .. " tail") end
+			end
+
+			local function tail_diagonals(path)
+				local diagonals = {}
+				for index = 1, #path - 1 do
+					if add_diagonal(diagonals, path[index], path[index + 1]) == false then
+						return nil
+					end
+				end
+				return diagonals
+			end
+			local function wedge_valid(negative, positive)
+				local polygon = copy_points(negative)
+				for index = #positive - 1, 1, -1 do
+					polygon[#polygon + 1] = {x = positive[index].x, z = positive[index].z}
+				end
+				polygon[#polygon + 1] = {x = polygon[1].x, z = polygon[1].z}
+				if exact.signed_area2(polygon) == 0 or not exact.polygon_simple(polygon) then
+					return false
+				end
+				local radius = 1 + math.max(chebyshev(negative[1], wing.junction),
+					chebyshev(positive[1], wing.junction))
+				if radius > 5 then return false end
+				local exempt = {}
+				for index = 1, #negative do exempt[key(negative[index])] = true end
+				for index = 1, #positive do exempt[key(positive[index])] = true end
+				for x = wing.junction.x - radius, wing.junction.x + radius do
+					for z = wing.junction.z - radius, wing.junction.z + radius do
+						if exact.polygon_class(x, z, polygon) >= 0 and
+								not exempt[x .. ":" .. z] and
+								not wing_water(context, wing, x, z) then return false end
+					end
+				end
+				return true
+			end
+			local chosen_negative, chosen_positive
+			for negative_index = 1, #paths.negative do
+				local negative = paths.negative[negative_index]
+				local negative_diagonals = tail_diagonals(negative)
+				if negative_diagonals then
+					local negative_points = {}
+					for index = 1, #negative - 1 do negative_points[key(negative[index])] = true end
+					for positive_index = 1, #paths.positive do
+						local positive = paths.positive[positive_index]
+						local valid = key(negative[#negative - 1]) ~=
+							key(positive[#positive - 1])
+						local diagonals = {}
+						for cell, slope in pairs(negative_diagonals) do diagonals[cell] = slope end
+						for index = 1, #positive - 1 do
+							if negative_points[key(positive[index])] then valid = false break end
+							if add_diagonal(diagonals, positive[index], positive[index + 1]) == false then
+								valid = false break
+							end
+						end
+						if valid and wedge_valid(negative, positive) then
+							chosen_negative, chosen_positive = negative, positive
+							break
+						end
+					end
+				end
+				if chosen_negative then break end
+			end
+			if not chosen_negative then fail(wing.id .. " has no wedge-valid joint tail pair") end
+			local length = select(3, wing_terms(wing, wing.junction))
+			local path_bound = exact.ceil_isqrt(length) + 1
+			if #chosen_negative > path_bound or #chosen_positive > path_bound then
+				fail(wing.id .. " joint tail exceeds finite path bound")
+			end
+			wing_tail_cache[wing_id] = {negative = chosen_negative,
+				positive = chosen_positive, negative_k = selected.negative,
+				positive_k = selected.positive}
+			return wing_tail_cache[wing_id]
+		end
+
+		local terminal_cache = {}
+		local function resolve_terminal(terminal, bay_id)
+			local cache_key = terminal_key(terminal)
+			local cached = terminal_cache[cache_key]
+			if cached then
+				if bay_id and cached.bay_id ~= bay_id then
+					fail(cache_key .. " reused by a foreign Bay")
+				end
+				return cached
+			end
+			local resolved = {id = cache_key, bay_id = bay_id}
+			if terminal.kind == "aperture_dry" then
+				local incidence = aperture_terminal_incidence[cache_key]
+				if not incidence then fail(cache_key .. " lacks a Bank incidence") end
+				local aperture = aperture_by_id[terminal.aperture_id]
+				if not aperture then fail(cache_key .. " references an absent aperture") end
+				resolved.bay_id = aperture.source.bay_id
+				if incidence.bay_id ~= resolved.bay_id then
+					fail(cache_key .. " incidence has the wrong Bay")
+				end
+				local context = bay_context_by_id[resolved.bay_id]
+				local perimeter = perimeter_by_id[aperture.source.perimeter_id]
+				local point_index, away_index, water_index =
+					aperture_neighborhood(aperture, terminal.side)
+				if away_index < 1 or away_index > #perimeter.stations or
+						water_index < 1 or water_index > #perimeter.stations then
+					fail(cache_key .. " authored aperture neighborhood is absent")
+				end
+				local d = copy_points({perimeter.stations[point_index]})[1]
+				local a = copy_points({perimeter.stations[away_index]})[1]
+				local evidence = {id = cache_key, d = d, a = a,
+					direct_candidate = bay_candidate(context, d.x, d.z)}
+				if not evidence.direct_candidate then
+					local w = perimeter.stations[water_index]
+					evidence.w = {x = w.x, z = w.z}
+					evidence.d_class = footprint_class(d.x, d.z)
+					evidence.d_cardinal_water = false
+					for direction_index = 1, #cardinal do
+						local direction = cardinal[direction_index]
+						local nx = checked_coordinate(d.x, direction.x,
+							cache_key .. " D cardinal x")
+						local nz = checked_coordinate(d.z, direction.z,
+							cache_key .. " D cardinal z")
+						if final_water(nx, nz) then
+							evidence.d_cardinal_water = true break
+						end
+					end
+					local raw_count, raw_owner = raw_owner_count(w.x, w.z)
+					evidence.w_raw_owned_by_bay = raw_count == 1 and raw_owner == context
+					local final_count, final_owner = 0, nil
+					for other_bay_index = 1, #bays do
+						local other = bay_context_by_id[bays[other_bay_index].source.id]
+						if bay_water(other, w.x, w.z) then
+							final_count, final_owner = final_count + 1, other
+						end
+					end
+					evidence.w_final_owned_by_bay = final_count == 1 and
+						final_owner == context and final_water(w.x, w.z)
+					evidence.w_foreign_water = final_count ~= 1 or final_owner ~= context
+					evidence.w_aperture_included =
+						aperture.included[key(w)] == true
+					local elbows = {{x = w.x, z = d.z}, {x = d.x, z = w.z}}
+					evidence.elbow_valid = {}
+					for elbow_index = 1, 2 do
+						local elbow = elbows[elbow_index]
+						exact.point(elbow, cache_key .. " shoulder elbow")
+						evidence.elbow_valid[elbow_index] =
+							footprint_class(elbow.x, elbow.z) == 1 and
+								bay_dry(context, elbow.x, elbow.z) and
+								bay_candidate(context, elbow.x, elbow.z)
+					end
+				end
+				local selection = select_aperture_transition(evidence)
+				resolved.point = {x = selection.d.x, z = selection.d.z}
+				resolved.previous = selection.mode == "direct" and
+					{x = selection.a.x, z = selection.a.z} or
+					{x = selection.d.x, z = selection.d.z}
+				resolved.aperture_transition = selection
+				resolved.aperture_id = terminal.aperture_id
+				resolved.aperture_side = terminal.side
+				resolved.authored_index = point_index - 1
+				resolved.authored_away_index = away_index - 1
+			elseif terminal.kind == "land_edge_transition" then
+				local materialized = hooks.land_transition(cache_key)
+				if not materialized then
+					fail(cache_key .. " lacks a once-resolved final edge transition")
+				end
+				resolved.bay_id = materialized.source.bay_id
+				resolved.point = {x = materialized.point.x, z = materialized.point.z}
+				resolved.previous = {x = materialized.previous.x,
+					z = materialized.previous.z}
+				resolved.transition_mode = materialized.mode
+				resolved.transition_e = {x = materialized.e.x, z = materialized.e.z}
+				if materialized.w then
+					resolved.transition_w = {x = materialized.w.x, z = materialized.w.z}
+				end
+				resolved.edge_id = terminal.edge_id
+				resolved.edge_endpoint = terminal.edge_endpoint
+				resolved.transition_id = materialized.source.id
+			elseif terminal.kind == "wing_junction_tail_side" then
+				local wing = wing_by_id[terminal.wing_id]
+				if not wing then fail(cache_key .. " references an absent Wing tail") end
+				local tails = wing_tails(terminal.wing_id)
+				resolved.bay_id = wing.bay_id
+				resolved.point = {x = wing.junction.x, z = wing.junction.z}
+				resolved.tail = tails[terminal.tail_side]
+				resolved.k = terminal.tail_side == "negative" and tails.negative_k or
+					tails.positive_k
+			else
+				fail(cache_key .. " has an unknown terminal kind")
+			end
+			if bay_id and resolved.bay_id ~= bay_id then fail(cache_key .. " has the wrong Bay") end
+			terminal_cache[cache_key] = resolved
+			return resolved
+		end
+
+		local function state_key(previous, current)
+			return key(previous) .. ">" .. key(current)
+		end
+
+		local function ordered_successors(context, previous, current, seen_states,
+				seen_columns, diagonals)
+			local back_x, back_z = previous.x - current.x, previous.z - current.z
+			local back_index
+			for index = 1, 8 do
+				if clockwise[index].x == back_x and clockwise[index].z == back_z then
+					back_index = index break
+				end
+			end
+			if not back_index then fail("Bay-bank start half-edge is not eight-connected") end
+			local result = {}
+			for offset = 1, 8 do
+				local direction_index = ((back_index - offset - 1) % 8) + 1
+				local direction = clockwise[direction_index]
+				local following = {x = current.x + direction.x, z = current.z + direction.z}
+				local following_key = key(following)
+				local directed_key = state_key(current, following)
+				local cell, slope = diagonal_signature(current, following)
+				if following_key ~= key(previous) and not seen_states[directed_key] and
+						not seen_columns[following_key] and
+						(not cell or not diagonals[cell] or diagonals[cell] == slope) and
+						bay_candidate(context, following.x, following.z) and
+						water_on_right(context, current, following) then
+					result[#result + 1] = following
+				end
+			end
+			return result
+		end
+
+		local function reachable(context, previous, current, target, base_states,
+				base_columns, base_diagonals)
+			local seen_states, seen_columns, diagonals = {}, {}, {}
+			for value in pairs(base_states) do seen_states[value] = true end
+			for value in pairs(base_columns) do seen_columns[value] = true end
+			for cell, slope in pairs(base_diagonals) do diagonals[cell] = slope end
+			local first_state, first_column = state_key(previous, current), key(current)
+			if seen_states[first_state] or seen_columns[first_column] then return false end
+			seen_states[first_state], seen_columns[first_column] = true, true
+			local first_cell = add_diagonal(diagonals, previous, current)
+			if first_cell == false then return false end
+			local stack = {{previous = previous, current = current,
+				state = first_state, column = first_column, diagonal = first_cell}}
+			local pushed_frames = 1
+			while #stack > 0 do
+				local frame = stack[#stack]
+				if key(frame.current) == key(target) then return true end
+				validate_trace_counters(context.trace_bounds, pushed_frames, #stack, nil)
+				if not frame.successors then
+					frame.successors = ordered_successors(context, frame.previous,
+						frame.current, seen_states, seen_columns, diagonals)
+					frame.next = 1
+				end
+				local following = frame.successors[frame.next]
+				if following then
+					frame.next = frame.next + 1
+					local directed_key = state_key(frame.current, following)
+					local column_key = key(following)
+					seen_states[directed_key], seen_columns[column_key] = true, true
+					local cell = add_diagonal(diagonals, frame.current, following)
+					stack[#stack + 1] = {previous = frame.current, current = following,
+						state = directed_key, column = column_key, diagonal = cell}
+					pushed_frames = exact.safe_sum(pushed_frames, 1,
+						context.bay.source.id .. " reachability frame count")
+					validate_trace_counters(context.trace_bounds, pushed_frames,
+						#stack, nil)
+				else
+					seen_states[frame.state], seen_columns[frame.column] = nil, nil
+					if frame.diagonal then diagonals[frame.diagonal] = nil end
+					stack[#stack] = nil
+				end
+			end
+			return false
+		end
+
+		local function trace_bank(bank, start, finish)
+			local context = bay_context_by_id[bank.bay_id]
+			ensure_trace_bounds(context)
+			local points, seen_states, seen_columns, diagonals = {}, {}, {}, {}
+			local previous, current, target, suffix
+			if bank.start_terminal.kind == "wing_junction_tail_side" then
+				if bank.start_terminal.tail_side ~= "negative" then
+					fail(bank.id .. " has a nonnegative Wing start")
+				end
+				local prefix = reverse_points(start.tail)
+				for index = 1, #prefix do
+					local point = prefix[index]
+					if seen_columns[key(point)] then fail(bank.id .. " repeats a joint-tail column") end
+					if index > 1 then
+						local cell = add_diagonal(diagonals, prefix[index - 1], point)
+						if cell == false then fail(bank.id .. " joint tail X-crosses") end
+						seen_states[state_key(prefix[index - 1], point)] = true
+					end
+					points[#points + 1] = {x = point.x, z = point.z}
+					seen_columns[key(point)] = true
+				end
+				previous, current = points[#points - 1], points[#points]
+			elseif start.aperture_transition and
+					start.aperture_transition.mode == "diagonal_shoulder" then
+				local shoulder = start.aperture_transition
+				if not aperture_tail_water_side(shoulder.d, shoulder.t,
+						shoulder.w, bank.water_side) then
+					fail(bank.id .. " start shoulder has water on the wrong side")
+				end
+				points[1] = {x = shoulder.d.x, z = shoulder.d.z}
+				points[2] = {x = shoulder.t.x, z = shoulder.t.z}
+				seen_columns[key(points[1])], seen_columns[key(points[2])] = true, true
+				seen_states[state_key(points[1], points[2])] = true
+				local cell = add_diagonal(diagonals, points[1], points[2])
+				if cell == false then fail(bank.id .. " start shoulder X-crosses") end
+				previous, current = points[1], points[2]
+			else
+				previous = start.previous
+				current = {x = start.point.x, z = start.point.z}
+				points[1] = {x = current.x, z = current.z}
+				seen_columns[key(current)] = true
+				seen_states[state_key(previous, current)] = true
+			end
+			if bank.end_terminal.kind == "wing_junction_tail_side" then
+				if bank.end_terminal.tail_side ~= "positive" then
+					fail(bank.id .. " has a nonpositive Wing end")
+				end
+				target, suffix = finish.k, finish.tail
+			elseif finish.aperture_transition and
+					finish.aperture_transition.mode == "diagonal_shoulder" then
+				local shoulder = finish.aperture_transition
+				if not aperture_tail_water_side(shoulder.t, shoulder.d,
+						shoulder.w, bank.water_side) then
+					fail(bank.id .. " end shoulder has water on the wrong side")
+				end
+				target = {x = shoulder.t.x, z = shoulder.t.z}
+				suffix = {{x = shoulder.t.x, z = shoulder.t.z},
+					{x = shoulder.d.x, z = shoulder.d.z}}
+			else
+				target = finish.point
+			end
+			local start_distance = chebyshev(previous, current)
+			local start_candidate = bay_candidate(context, current.x, current.z)
+			if start_distance ~= 1 or not start_candidate then
+				local own_bits, foreign_bits = {}, {}
+				for direction_index = 1, #cardinal do
+					local direction = cardinal[direction_index]
+					local nx, nz = current.x + direction.x, current.z + direction.z
+					local own = bay_water(context, nx, nz)
+					own_bits[direction_index] = own and "1" or "0"
+					foreign_bits[direction_index] = final_water(nx, nz) and not own and
+						"1" or "0"
+				end
+				local current_key = key(current)
+				local aperture = aperture_by_bay[bank.bay_id]
+				fail(bank.id .. " has an invalid start half-edge distance=" ..
+					start_distance .. " candidate=" .. tostring(start_candidate) .. " " ..
+					key(previous) .. "->" .. key(current) .. " target=" .. key(target) ..
+					" end=" .. tostring(finish.aperture_id or finish.edge_id or
+						finish.id) .. ":" .. tostring(finish.aperture_side or
+						finish.edge_endpoint or "") .. " authored=" ..
+					tostring(finish.authored_index) .. "/" ..
+					tostring(finish.authored_away_index) .. " own_ESWN=" ..
+					table.concat(own_bits) .. " foreign_ESWN=" ..
+					table.concat(foreign_bits) .. " envelope=" ..
+					tostring(in_bay_envelope(context, current.x, current.z)) ..
+					" dry=" .. tostring(bay_dry(context, current.x, current.z)) ..
+					" footprint=" .. tostring(footprint_class(current.x, current.z)) ..
+					" aperture=" .. tostring(aperture.included[current_key] == true))
+			end
+			if not bay_candidate(context, target.x, target.z) then
+				fail(bank.id .. " has a noncandidate target")
+			end
+			local steps = 0
+			while key(current) ~= key(target) do
+				local successors = ordered_successors(context, previous, current,
+					seen_states, seen_columns, diagonals)
+				local following, reachability = nil, {}
+				if #successors == 1 then
+					following = successors[1]
+				elseif #successors > 1 then
+					following = select_first_reachable(successors, function(successor)
+						local value = reachable(context, current, successor, target,
+							seen_states, seen_columns, diagonals)
+						reachability[#reachability + 1] = key(successor) .. "=" ..
+							tostring(value)
+						return value
+					end)
+				end
+				if not following then
+					local identities = {}
+					for successor_index = 1, #successors do
+						identities[successor_index] = key(successors[successor_index])
+					end
+					local neighbor_evidence = {}
+					for direction_index = 1, #clockwise do
+						local direction = clockwise[direction_index]
+						local candidate = {x = current.x + direction.x,
+							z = current.z + direction.z}
+						local directed_key = state_key(current, candidate)
+						local candidate_key = key(candidate)
+						local cell, slope = diagonal_signature(current, candidate)
+						local raw_owners, final_owners = {}, {}
+						for bay_index = 1, #bays do
+							local other = bay_context_by_id[bays[bay_index].source.id]
+							if raw_bay_water(other, candidate.x, candidate.z) then
+								raw_owners[#raw_owners + 1] = other.bay.source.id
+							end
+							if bay_water(other, candidate.x, candidate.z) then
+								final_owners[#final_owners + 1] = other.bay.source.id
+							end
+						end
+						neighbor_evidence[direction_index] = table.concat({candidate_key,
+							"candidate=" .. tostring(bay_candidate(context,
+								candidate.x, candidate.z)),
+							"right=" .. tostring(water_on_right(context, current, candidate)),
+							"footprint=" .. tostring(footprint_class(candidate.x,
+								candidate.z)),
+							"dry=" .. tostring(bay_dry(context, candidate.x, candidate.z)),
+							"envelope=" .. tostring(in_bay_envelope(context,
+								candidate.x, candidate.z)),
+							"state=" .. tostring(seen_states[directed_key] == true),
+							"column=" .. tostring(seen_columns[candidate_key] == true),
+							"diagonal=" .. tostring(not cell or not diagonals[cell] or
+								diagonals[cell] == slope),
+							"raw=" .. table.concat(raw_owners, "+"),
+							"final=" .. table.concat(final_owners, "+")}, ":")
+					end
+					local start_mode = start.transition_mode or
+						(start.aperture_transition and start.aperture_transition.mode) or "other"
+					local finish_mode = finish.transition_mode or
+						(finish.aperture_transition and finish.aperture_transition.mode) or "other"
+					local function terminal_detail(resolved)
+						if resolved.transition_e then
+							return "land:E=" .. key(resolved.transition_e) ..
+								",P=" .. key(resolved.point)
+						end
+						if resolved.aperture_transition then
+							return "aperture:D=" .. key(resolved.aperture_transition.d) ..
+								",A=" .. key(resolved.aperture_transition.a)
+						end
+						if resolved.tail then
+							return "wing:K=" .. key(resolved.k) ..
+								",junction=" .. key(resolved.point)
+						end
+						return "other:" .. tostring(resolved.id)
+					end
+					local start_detail, finish_detail = terminal_detail(start),
+						terminal_detail(finish)
+					fail(bank.id .. " cannot reach its target previous/current/target=" ..
+						key(previous) .. "/" .. key(current) .. "/" .. key(target) ..
+						" terminal_modes=" .. start_mode .. "/" .. finish_mode ..
+						" terminal_details=[" .. start_detail .. ";" .. finish_detail .. "]" ..
+						" successors=" .. table.concat(identities, ",") ..
+						" reachable=" .. table.concat(reachability, ",") ..
+						" neighbors=[" .. table.concat(neighbor_evidence, ";") .. "]" ..
+						" steps=" .. steps)
+				end
+				local directed_key = state_key(current, following)
+				local cell = add_diagonal(diagonals, current, following)
+				if cell == false then fail(bank.id .. " X-crosses") end
+				seen_states[directed_key], seen_columns[key(following)] = true, true
+				points[#points + 1] = {x = following.x, z = following.z}
+				previous, current = current, following
+				steps = steps + 1
+				validate_trace_counters(context.trace_bounds, nil, nil, steps)
+			end
+			if suffix then
+				for index = 2, #suffix do
+					local following = suffix[index]
+					if seen_columns[key(following)] then
+						fail(bank.id .. " repeats a positive joint-tail column")
+					end
+					local cell = add_diagonal(diagonals, points[#points], following)
+					if cell == false then fail(bank.id .. " positive joint tail X-crosses") end
+					seen_columns[key(following)] = true
+					points[#points + 1] = {x = following.x, z = following.z}
+				end
+			end
+			return points
+		end
+
+		return {resolve_terminal = resolve_terminal, trace_bank = trace_bank,
+			wing_tails = wing_tails, terminal_cache = terminal_cache}
 	end
 
 	local function compile_impl(seed)
@@ -2025,638 +2711,31 @@ local function new_partition(dependencies)
 			span_by_id[span.id] = {source = span, stations = points}
 		end
 
-		local clockwise = {{x = 1, z = 0}, {x = 1, z = -1},
-			{x = 0, z = -1}, {x = -1, z = -1}, {x = -1, z = 0},
-			{x = -1, z = 1}, {x = 0, z = 1}, {x = 1, z = 1}}
-
-		local function sequence_less(a, b)
-			local count = math.min(#a, #b)
-			for index = 1, count do
-				if point_less(a[index], b[index]) then return true end
-				if point_less(b[index], a[index]) then return false end
-			end
-			return #a < #b
-		end
-
-		local function diagonal_signature(a, b)
-			local dx, dz = b.x - a.x, b.z - a.z
-			if math.abs(dx) ~= 1 or math.abs(dz) ~= 1 then return nil end
-			return math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z),
-				dx == dz and 1 or -1
-		end
-
-		local function add_diagonal(diagonals, a, b)
-			local cell, slope = diagonal_signature(a, b)
-			if not cell then return nil end
-			if diagonals[cell] and diagonals[cell] ~= slope then return false end
-			if not diagonals[cell] then diagonals[cell] = slope return cell end
-			return nil
-		end
-
-		local function wing_terms(wing, point)
-			local vx = exact.safe_difference(wing.junction.x, wing.head.x,
-				wing.id .. " axis")
-			local vz = exact.safe_difference(wing.junction.z, wing.head.z,
-				wing.id .. " axis")
-			local px = exact.safe_difference(point.x, wing.head.x,
-				wing.id .. " query")
-			local pz = exact.safe_difference(point.z, wing.head.z,
-				wing.id .. " query")
-			local length = exact.safe_sum(exact.safe_square(vx, wing.id .. " length"),
-				exact.safe_square(vz, wing.id .. " length"), wing.id .. " length")
-			local projection = exact.dot(px, pz, vx, vz, wing.id .. " projection")
-			local determinant = exact.cross(vx, vz, px, pz, wing.id .. " cross")
-			return projection, determinant, length
-		end
-
-		-- The R12 caps count the finite search envelope itself, not its larger
-		-- outer rectangle: exact union of expanded Base/Wing boxes, clipped to
-		-- the referenced final mainland footprint.
+		-- Bank materialization consumes the shared tracer; the eager order --
+		-- R12 caps per Bay, every Wing tail, then the Bank traces -- is the
+		-- compiler's historical one and is preserved exactly.
 		for bay_index = 1, #bays do
-			local context = bay_context_by_id[bays[bay_index].source.id]
-			local column_count = count_trace_envelope(context.boxes,
-				context.perimeter.polygon_index, context.bay.source.id)
-			context.step_bound = column_count
-			context.trace_bounds = trace_bounds(column_count)
+			ensure_trace_bounds(bay_context_by_id[bays[bay_index].source.id])
 		end
-
+		local tracer = new_bank_tracer(stage, {
+			land_transition = function(cache_key)
+				return resolved_transition_by_key[cache_key]
+			end})
+		local resolve_terminal, trace_bank = tracer.resolve_terminal,
+			tracer.trace_bank
 		local wing_tail_by_id = {}
 		for wing_index = 1, #source.bay_closure_wings do
 			local wing = source.bay_closure_wings[wing_index]
-			local context = bay_context_by_id[wing.bay_id]
-			local radius = wing.head_half_width
-			local box = {min_x = math.min(wing.head.x, wing.junction.x) - radius,
-				max_x = math.max(wing.head.x, wing.junction.x) + radius,
-				min_z = math.min(wing.head.z, wing.junction.z) - radius,
-				max_z = math.max(wing.head.z, wing.junction.z) + radius}
-			local selected = {}
-			for _, side in ipairs({"negative", "positive"}) do
-				local best, best_projection
-				for x = box.min_x, box.max_x do
-					for z = box.min_z, box.max_z do
-						local own_neighbor = false
-						for direction_index = 1, 4 do
-							local direction = cardinal[direction_index]
-							if wing_water(context, wing, x + direction.x,
-									z + direction.z) then own_neighbor = true break end
-						end
-						if own_neighbor and bay_dry(context, x, z) then
-							local point = {x = x, z = z}
-							local projection, determinant, length = wing_terms(wing, point)
-							local signed = side == "negative" and determinant < 0 or
-								side == "positive" and determinant > 0
-							if projection >= 0 and projection < length and signed and
-									(not best or projection > best_projection or
-									projection == best_projection and point_less(point, best)) then
-								best, best_projection = point, projection
-							end
-						end
-					end
-				end
-				if not best then fail(wing.id .. " has no " .. side .. " K") end
-				if chebyshev(best, wing.junction) > 4 then
-					fail(wing.id .. " " .. side .. " K exceeds current bound")
-				end
-				selected[side] = best
-			end
-
-			local paths = {negative = {}, positive = {}}
-			local function collect_paths(side, path)
-				local current = path[#path]
-				if current.x == wing.junction.x and current.z == wing.junction.z then
-					local copy = copy_points(path)
-					paths[side][#paths[side] + 1] = copy
-					return
-				end
-				local distance = chebyshev(current, wing.junction)
-				local next_points = {}
-				for dx = -1, 1 do for dz = -1, 1 do
-					if dx ~= 0 or dz ~= 0 then
-						local following = {x = current.x + dx, z = current.z + dz}
-						if chebyshev(following, wing.junction) == distance - 1 then
-							local _, determinant = wing_terms(wing, following)
-							local at_junction = key(following) == key(wing.junction)
-							local strict_side = side == "negative" and determinant < 0 or
-								side == "positive" and determinant > 0
-							if bay_dry(context, following.x, following.z) and
-									(at_junction or strict_side) then
-								next_points[#next_points + 1] = following
-							end
-						end
-					end
-				end end
-				table.sort(next_points, point_less)
-				for index = 1, #next_points do
-					path[#path + 1] = next_points[index]
-					collect_paths(side, path)
-					path[#path] = nil
-				end
-			end
-			collect_paths("negative", {{x = selected.negative.x, z = selected.negative.z}})
-			collect_paths("positive", {{x = selected.positive.x, z = selected.positive.z}})
-			for _, side in ipairs({"negative", "positive"}) do
-				table.sort(paths[side], sequence_less)
-				if #paths[side] == 0 then fail(wing.id .. " lacks a complete " .. side .. " tail") end
-			end
-
-			local function tail_diagonals(path)
-				local diagonals = {}
-				for index = 1, #path - 1 do
-					if add_diagonal(diagonals, path[index], path[index + 1]) == false then
-						return nil
-					end
-				end
-				return diagonals
-			end
-			local function wedge_valid(negative, positive)
-				local polygon = copy_points(negative)
-				for index = #positive - 1, 1, -1 do
-					polygon[#polygon + 1] = {x = positive[index].x, z = positive[index].z}
-				end
-				polygon[#polygon + 1] = {x = polygon[1].x, z = polygon[1].z}
-				if exact.signed_area2(polygon) == 0 or not exact.polygon_simple(polygon) then
-					return false
-				end
-				local radius = 1 + math.max(chebyshev(negative[1], wing.junction),
-					chebyshev(positive[1], wing.junction))
-				if radius > 5 then return false end
-				local exempt = {}
-				for index = 1, #negative do exempt[key(negative[index])] = true end
-				for index = 1, #positive do exempt[key(positive[index])] = true end
-				for x = wing.junction.x - radius, wing.junction.x + radius do
-					for z = wing.junction.z - radius, wing.junction.z + radius do
-						if exact.polygon_class(x, z, polygon) >= 0 and
-								not exempt[x .. ":" .. z] and
-								not wing_water(context, wing, x, z) then return false end
-					end
-				end
-				return true
-			end
-			local chosen_negative, chosen_positive
-			for negative_index = 1, #paths.negative do
-				local negative = paths.negative[negative_index]
-				local negative_diagonals = tail_diagonals(negative)
-				if negative_diagonals then
-					local negative_points = {}
-					for index = 1, #negative - 1 do negative_points[key(negative[index])] = true end
-					for positive_index = 1, #paths.positive do
-						local positive = paths.positive[positive_index]
-						local valid = key(negative[#negative - 1]) ~=
-							key(positive[#positive - 1])
-						local diagonals = {}
-						for cell, slope in pairs(negative_diagonals) do diagonals[cell] = slope end
-						for index = 1, #positive - 1 do
-							if negative_points[key(positive[index])] then valid = false break end
-							if add_diagonal(diagonals, positive[index], positive[index + 1]) == false then
-								valid = false break
-							end
-						end
-						if valid and wedge_valid(negative, positive) then
-							chosen_negative, chosen_positive = negative, positive
-							break
-						end
-					end
-				end
-				if chosen_negative then break end
-			end
-			if not chosen_negative then fail(wing.id .. " has no wedge-valid joint tail pair") end
-			local length = select(3, wing_terms(wing, wing.junction))
-			local path_bound = exact.ceil_isqrt(length) + 1
-			if #chosen_negative > path_bound or #chosen_positive > path_bound then
-				fail(wing.id .. " joint tail exceeds finite path bound")
-			end
-			wing_tail_by_id[wing.id] = {negative = chosen_negative,
-				positive = chosen_positive, negative_k = selected.negative,
-				positive_k = selected.positive}
-		end
-
-		local function terminal_key(terminal)
-			if terminal.kind == "aperture_dry" then
-				return terminal.kind .. ":" .. terminal.aperture_id .. ":" .. terminal.side
-			elseif terminal.kind == "land_edge_transition" then
-				return terminal.kind .. ":" .. terminal.edge_id .. ":" ..
-					terminal.edge_endpoint
-			end
-			return terminal.kind .. ":" .. terminal.wing_id .. ":" .. terminal.tail_side
-		end
-
-		local aperture_terminal_incidence, aperture_terminal_count = {}, 0
-		for bank_index = 1, #source.bay_bank_components do
-			local bank = source.bay_bank_components[bank_index]
-			for terminal_index, terminal in ipairs({bank.start_terminal,
-					bank.end_terminal}) do
-				if terminal.kind == "aperture_dry" then
-					local incidence_key = terminal_key(terminal)
-					if aperture_terminal_incidence[incidence_key] then
-						fail(incidence_key .. " has two Bank incidences")
-					end
-					aperture_terminal_incidence[incidence_key] = {bank_id = bank.id,
-						terminal_index = terminal_index, bay_id = bank.bay_id}
-					aperture_terminal_count = aperture_terminal_count + 1
-				end
-			end
-		end
-		if aperture_terminal_count ~= 8 then
-			fail("aperture transition roster does not contain eight incidences")
-		end
-
-		local terminal_cache = {}
-		local function resolve_terminal(terminal, bay_id)
-			local cache_key = terminal_key(terminal)
-			local cached = terminal_cache[cache_key]
-			if cached then
-				if bay_id and cached.bay_id ~= bay_id then
-					fail(cache_key .. " reused by a foreign Bay")
-				end
-				return cached
-			end
-			local resolved = {id = cache_key, bay_id = bay_id}
-			if terminal.kind == "aperture_dry" then
-				local incidence = aperture_terminal_incidence[cache_key]
-				if not incidence then fail(cache_key .. " lacks a Bank incidence") end
-				local aperture = aperture_by_id[terminal.aperture_id]
-				if not aperture then fail(cache_key .. " references an absent aperture") end
-				resolved.bay_id = aperture.source.bay_id
-				if incidence.bay_id ~= resolved.bay_id then
-					fail(cache_key .. " incidence has the wrong Bay")
-				end
-				local context = bay_context_by_id[resolved.bay_id]
-				local perimeter = perimeter_by_id[aperture.source.perimeter_id]
-				local point_index, away_index, water_index =
-					aperture_neighborhood(aperture, terminal.side)
-				if away_index < 1 or away_index > #perimeter.stations or
-						water_index < 1 or water_index > #perimeter.stations then
-					fail(cache_key .. " authored aperture neighborhood is absent")
-				end
-				local d = copy_points({perimeter.stations[point_index]})[1]
-				local a = copy_points({perimeter.stations[away_index]})[1]
-				local evidence = {id = cache_key, d = d, a = a,
-					direct_candidate = bay_candidate(context, d.x, d.z)}
-				if not evidence.direct_candidate then
-					local w = perimeter.stations[water_index]
-					evidence.w = {x = w.x, z = w.z}
-					evidence.d_class = footprint_class(d.x, d.z)
-					evidence.d_cardinal_water = false
-					for direction_index = 1, #cardinal do
-						local direction = cardinal[direction_index]
-						local nx = checked_coordinate(d.x, direction.x,
-							cache_key .. " D cardinal x")
-						local nz = checked_coordinate(d.z, direction.z,
-							cache_key .. " D cardinal z")
-						if final_water(nx, nz) then
-							evidence.d_cardinal_water = true break
-						end
-					end
-					local raw_count, raw_owner = raw_owner_count(w.x, w.z)
-					evidence.w_raw_owned_by_bay = raw_count == 1 and raw_owner == context
-					local final_count, final_owner = 0, nil
-					for other_bay_index = 1, #bays do
-						local other = bay_context_by_id[bays[other_bay_index].source.id]
-						if bay_water(other, w.x, w.z) then
-							final_count, final_owner = final_count + 1, other
-						end
-					end
-					evidence.w_final_owned_by_bay = final_count == 1 and
-						final_owner == context and final_water(w.x, w.z)
-					evidence.w_foreign_water = final_count ~= 1 or final_owner ~= context
-					evidence.w_aperture_included =
-						aperture.included[key(w)] == true
-					local elbows = {{x = w.x, z = d.z}, {x = d.x, z = w.z}}
-					evidence.elbow_valid = {}
-					for elbow_index = 1, 2 do
-						local elbow = elbows[elbow_index]
-						exact.point(elbow, cache_key .. " shoulder elbow")
-						evidence.elbow_valid[elbow_index] =
-							footprint_class(elbow.x, elbow.z) == 1 and
-								bay_dry(context, elbow.x, elbow.z) and
-								bay_candidate(context, elbow.x, elbow.z)
-					end
-				end
-				local selection = select_aperture_transition(evidence)
-				resolved.point = {x = selection.d.x, z = selection.d.z}
-				resolved.previous = selection.mode == "direct" and
-					{x = selection.a.x, z = selection.a.z} or
-					{x = selection.d.x, z = selection.d.z}
-				resolved.aperture_transition = selection
-				resolved.aperture_id = terminal.aperture_id
-				resolved.aperture_side = terminal.side
-				resolved.authored_index = point_index - 1
-				resolved.authored_away_index = away_index - 1
-			elseif terminal.kind == "land_edge_transition" then
-				local materialized = resolved_transition_by_key[cache_key]
-				if not materialized then
-					fail(cache_key .. " lacks a once-resolved final edge transition")
-				end
-				resolved.bay_id = materialized.source.bay_id
-				resolved.point = {x = materialized.point.x, z = materialized.point.z}
-				resolved.previous = {x = materialized.previous.x,
-					z = materialized.previous.z}
-				resolved.transition_mode = materialized.mode
-				resolved.transition_e = {x = materialized.e.x, z = materialized.e.z}
-				if materialized.w then
-					resolved.transition_w = {x = materialized.w.x, z = materialized.w.z}
-				end
-				resolved.edge_id = terminal.edge_id
-				resolved.edge_endpoint = terminal.edge_endpoint
-				resolved.transition_id = materialized.source.id
-			elseif terminal.kind == "wing_junction_tail_side" then
-				local wing = wing_by_id[terminal.wing_id]
-				local tails = wing_tail_by_id[terminal.wing_id]
-				if not wing or not tails then fail(cache_key .. " references an absent Wing tail") end
-				resolved.bay_id = wing.bay_id
-				resolved.point = {x = wing.junction.x, z = wing.junction.z}
-				resolved.tail = tails[terminal.tail_side]
-				resolved.k = terminal.tail_side == "negative" and tails.negative_k or
-					tails.positive_k
-			else
-				fail(cache_key .. " has an unknown terminal kind")
-			end
-			if bay_id and resolved.bay_id ~= bay_id then fail(cache_key .. " has the wrong Bay") end
-			terminal_cache[cache_key] = resolved
-			return resolved
-		end
-
-		local function state_key(previous, current)
-			return key(previous) .. ">" .. key(current)
-		end
-
-		local function ordered_successors(context, previous, current, seen_states,
-				seen_columns, diagonals)
-			local back_x, back_z = previous.x - current.x, previous.z - current.z
-			local back_index
-			for index = 1, 8 do
-				if clockwise[index].x == back_x and clockwise[index].z == back_z then
-					back_index = index break
-				end
-			end
-			if not back_index then fail("Bay-bank start half-edge is not eight-connected") end
-			local result = {}
-			for offset = 1, 8 do
-				local direction_index = ((back_index - offset - 1) % 8) + 1
-				local direction = clockwise[direction_index]
-				local following = {x = current.x + direction.x, z = current.z + direction.z}
-				local following_key = key(following)
-				local directed_key = state_key(current, following)
-				local cell, slope = diagonal_signature(current, following)
-				if following_key ~= key(previous) and not seen_states[directed_key] and
-						not seen_columns[following_key] and
-						(not cell or not diagonals[cell] or diagonals[cell] == slope) and
-						bay_candidate(context, following.x, following.z) and
-						water_on_right(context, current, following) then
-					result[#result + 1] = following
-				end
-			end
-			return result
-		end
-
-		local function reachable(context, previous, current, target, base_states,
-				base_columns, base_diagonals)
-			local seen_states, seen_columns, diagonals = {}, {}, {}
-			for value in pairs(base_states) do seen_states[value] = true end
-			for value in pairs(base_columns) do seen_columns[value] = true end
-			for cell, slope in pairs(base_diagonals) do diagonals[cell] = slope end
-			local first_state, first_column = state_key(previous, current), key(current)
-			if seen_states[first_state] or seen_columns[first_column] then return false end
-			seen_states[first_state], seen_columns[first_column] = true, true
-			local first_cell = add_diagonal(diagonals, previous, current)
-			if first_cell == false then return false end
-			local stack = {{previous = previous, current = current,
-				state = first_state, column = first_column, diagonal = first_cell}}
-			local pushed_frames = 1
-			while #stack > 0 do
-				local frame = stack[#stack]
-				if key(frame.current) == key(target) then return true end
-				validate_trace_counters(context.trace_bounds, pushed_frames, #stack, nil)
-				if not frame.successors then
-					frame.successors = ordered_successors(context, frame.previous,
-						frame.current, seen_states, seen_columns, diagonals)
-					frame.next = 1
-				end
-				local following = frame.successors[frame.next]
-				if following then
-					frame.next = frame.next + 1
-					local directed_key = state_key(frame.current, following)
-					local column_key = key(following)
-					seen_states[directed_key], seen_columns[column_key] = true, true
-					local cell = add_diagonal(diagonals, frame.current, following)
-					stack[#stack + 1] = {previous = frame.current, current = following,
-						state = directed_key, column = column_key, diagonal = cell}
-					pushed_frames = exact.safe_sum(pushed_frames, 1,
-						context.bay.source.id .. " reachability frame count")
-					validate_trace_counters(context.trace_bounds, pushed_frames,
-						#stack, nil)
-				else
-					seen_states[frame.state], seen_columns[frame.column] = nil, nil
-					if frame.diagonal then diagonals[frame.diagonal] = nil end
-					stack[#stack] = nil
-				end
-			end
-			return false
+			wing_tail_by_id[wing.id] = tracer.wing_tails(wing.id)
 		end
 
 		local bank_by_id = {}
 		for bank_index = 1, #source.bay_bank_components do
 			local bank = source.bay_bank_components[bank_index]
-			local context = bay_context_by_id[bank.bay_id]
 			local start = resolve_terminal(bank.start_terminal, bank.bay_id)
 			local finish = resolve_terminal(bank.end_terminal, bank.bay_id)
-			local points, seen_states, seen_columns, diagonals = {}, {}, {}, {}
-			local previous, current, target, suffix
-			if bank.start_terminal.kind == "wing_junction_tail_side" then
-				if bank.start_terminal.tail_side ~= "negative" then
-					fail(bank.id .. " has a nonnegative Wing start")
-				end
-				local prefix = reverse_points(start.tail)
-				for index = 1, #prefix do
-					local point = prefix[index]
-					if seen_columns[key(point)] then fail(bank.id .. " repeats a joint-tail column") end
-					if index > 1 then
-						local cell = add_diagonal(diagonals, prefix[index - 1], point)
-						if cell == false then fail(bank.id .. " joint tail X-crosses") end
-						seen_states[state_key(prefix[index - 1], point)] = true
-					end
-					points[#points + 1] = {x = point.x, z = point.z}
-					seen_columns[key(point)] = true
-				end
-				previous, current = points[#points - 1], points[#points]
-			elseif start.aperture_transition and
-					start.aperture_transition.mode == "diagonal_shoulder" then
-				local shoulder = start.aperture_transition
-				if not aperture_tail_water_side(shoulder.d, shoulder.t,
-						shoulder.w, bank.water_side) then
-					fail(bank.id .. " start shoulder has water on the wrong side")
-				end
-				points[1] = {x = shoulder.d.x, z = shoulder.d.z}
-				points[2] = {x = shoulder.t.x, z = shoulder.t.z}
-				seen_columns[key(points[1])], seen_columns[key(points[2])] = true, true
-				seen_states[state_key(points[1], points[2])] = true
-				local cell = add_diagonal(diagonals, points[1], points[2])
-				if cell == false then fail(bank.id .. " start shoulder X-crosses") end
-				previous, current = points[1], points[2]
-			else
-				previous = start.previous
-				current = {x = start.point.x, z = start.point.z}
-				points[1] = {x = current.x, z = current.z}
-				seen_columns[key(current)] = true
-				seen_states[state_key(previous, current)] = true
-			end
-			if bank.end_terminal.kind == "wing_junction_tail_side" then
-				if bank.end_terminal.tail_side ~= "positive" then
-					fail(bank.id .. " has a nonpositive Wing end")
-				end
-				target, suffix = finish.k, finish.tail
-			elseif finish.aperture_transition and
-					finish.aperture_transition.mode == "diagonal_shoulder" then
-				local shoulder = finish.aperture_transition
-				if not aperture_tail_water_side(shoulder.t, shoulder.d,
-						shoulder.w, bank.water_side) then
-					fail(bank.id .. " end shoulder has water on the wrong side")
-				end
-				target = {x = shoulder.t.x, z = shoulder.t.z}
-				suffix = {{x = shoulder.t.x, z = shoulder.t.z},
-					{x = shoulder.d.x, z = shoulder.d.z}}
-			else
-				target = finish.point
-			end
-			local start_distance = chebyshev(previous, current)
-			local start_candidate = bay_candidate(context, current.x, current.z)
-			if start_distance ~= 1 or not start_candidate then
-				local own_bits, foreign_bits = {}, {}
-				for direction_index = 1, #cardinal do
-					local direction = cardinal[direction_index]
-					local nx, nz = current.x + direction.x, current.z + direction.z
-					local own = bay_water(context, nx, nz)
-					own_bits[direction_index] = own and "1" or "0"
-					foreign_bits[direction_index] = final_water(nx, nz) and not own and
-						"1" or "0"
-				end
-				local current_key = key(current)
-				local aperture = aperture_by_bay[bank.bay_id]
-				fail(bank.id .. " has an invalid start half-edge distance=" ..
-					start_distance .. " candidate=" .. tostring(start_candidate) .. " " ..
-					key(previous) .. "->" .. key(current) .. " target=" .. key(target) ..
-					" end=" .. tostring(finish.aperture_id or finish.edge_id or
-						finish.id) .. ":" .. tostring(finish.aperture_side or
-						finish.edge_endpoint or "") .. " authored=" ..
-					tostring(finish.authored_index) .. "/" ..
-					tostring(finish.authored_away_index) .. " own_ESWN=" ..
-					table.concat(own_bits) .. " foreign_ESWN=" ..
-					table.concat(foreign_bits) .. " envelope=" ..
-					tostring(in_bay_envelope(context, current.x, current.z)) ..
-					" dry=" .. tostring(bay_dry(context, current.x, current.z)) ..
-					" footprint=" .. tostring(footprint_class(current.x, current.z)) ..
-					" aperture=" .. tostring(aperture.included[current_key] == true))
-			end
-			if not bay_candidate(context, target.x, target.z) then
-				fail(bank.id .. " has a noncandidate target")
-			end
-			local steps = 0
-			while key(current) ~= key(target) do
-				local successors = ordered_successors(context, previous, current,
-					seen_states, seen_columns, diagonals)
-				local following, reachability = nil, {}
-				if #successors == 1 then
-					following = successors[1]
-				elseif #successors > 1 then
-					following = select_first_reachable(successors, function(successor)
-						local value = reachable(context, current, successor, target,
-							seen_states, seen_columns, diagonals)
-						reachability[#reachability + 1] = key(successor) .. "=" ..
-							tostring(value)
-						return value
-					end)
-				end
-				if not following then
-					local identities = {}
-					for successor_index = 1, #successors do
-						identities[successor_index] = key(successors[successor_index])
-					end
-					local neighbor_evidence = {}
-					for direction_index = 1, #clockwise do
-						local direction = clockwise[direction_index]
-						local candidate = {x = current.x + direction.x,
-							z = current.z + direction.z}
-						local directed_key = state_key(current, candidate)
-						local candidate_key = key(candidate)
-						local cell, slope = diagonal_signature(current, candidate)
-						local raw_owners, final_owners = {}, {}
-						for bay_index = 1, #bays do
-							local other = bay_context_by_id[bays[bay_index].source.id]
-							if raw_bay_water(other, candidate.x, candidate.z) then
-								raw_owners[#raw_owners + 1] = other.bay.source.id
-							end
-							if bay_water(other, candidate.x, candidate.z) then
-								final_owners[#final_owners + 1] = other.bay.source.id
-							end
-						end
-						neighbor_evidence[direction_index] = table.concat({candidate_key,
-							"candidate=" .. tostring(bay_candidate(context,
-								candidate.x, candidate.z)),
-							"right=" .. tostring(water_on_right(context, current, candidate)),
-							"footprint=" .. tostring(footprint_class(candidate.x,
-								candidate.z)),
-							"dry=" .. tostring(bay_dry(context, candidate.x, candidate.z)),
-							"envelope=" .. tostring(in_bay_envelope(context,
-								candidate.x, candidate.z)),
-							"state=" .. tostring(seen_states[directed_key] == true),
-							"column=" .. tostring(seen_columns[candidate_key] == true),
-							"diagonal=" .. tostring(not cell or not diagonals[cell] or
-								diagonals[cell] == slope),
-							"raw=" .. table.concat(raw_owners, "+"),
-							"final=" .. table.concat(final_owners, "+")}, ":")
-					end
-					local start_mode = start.transition_mode or
-						(start.aperture_transition and start.aperture_transition.mode) or "other"
-					local finish_mode = finish.transition_mode or
-						(finish.aperture_transition and finish.aperture_transition.mode) or "other"
-					local function terminal_detail(resolved)
-						if resolved.transition_e then
-							return "land:E=" .. key(resolved.transition_e) ..
-								",P=" .. key(resolved.point)
-						end
-						if resolved.aperture_transition then
-							return "aperture:D=" .. key(resolved.aperture_transition.d) ..
-								",A=" .. key(resolved.aperture_transition.a)
-						end
-						if resolved.tail then
-							return "wing:K=" .. key(resolved.k) ..
-								",junction=" .. key(resolved.point)
-						end
-						return "other:" .. tostring(resolved.id)
-					end
-					local start_detail, finish_detail = terminal_detail(start),
-						terminal_detail(finish)
-					fail(bank.id .. " cannot reach its target previous/current/target=" ..
-						key(previous) .. "/" .. key(current) .. "/" .. key(target) ..
-						" terminal_modes=" .. start_mode .. "/" .. finish_mode ..
-						" terminal_details=[" .. start_detail .. ";" .. finish_detail .. "]" ..
-						" successors=" .. table.concat(identities, ",") ..
-						" reachable=" .. table.concat(reachability, ",") ..
-						" neighbors=[" .. table.concat(neighbor_evidence, ";") .. "]" ..
-						" steps=" .. steps)
-				end
-				local directed_key = state_key(current, following)
-				local cell = add_diagonal(diagonals, current, following)
-				if cell == false then fail(bank.id .. " X-crosses") end
-				seen_states[directed_key], seen_columns[key(following)] = true, true
-				points[#points + 1] = {x = following.x, z = following.z}
-				previous, current = current, following
-				steps = steps + 1
-				validate_trace_counters(context.trace_bounds, nil, nil, steps)
-			end
-			if suffix then
-				for index = 2, #suffix do
-					local following = suffix[index]
-					if seen_columns[key(following)] then
-						fail(bank.id .. " repeats a positive joint-tail column")
-					end
-					local cell = add_diagonal(diagonals, points[#points], following)
-					if cell == false then fail(bank.id .. " positive joint tail X-crosses") end
-					seen_columns[key(following)] = true
-					points[#points + 1] = {x = following.x, z = following.z}
-				end
-			end
-			bank_by_id[bank.id] = {source = bank, stations = points}
+			bank_by_id[bank.id] = {source = bank,
+				stations = trace_bank(bank, start, finish)}
 		end
 
 		-- Every declared incident Bank consumes the one materialized terminal;
@@ -2804,7 +2883,7 @@ local function new_partition(dependencies)
 					bank_identity[point_key] = (bank_identity[point_key] or 0) + 1
 				end
 			end
-			for _, terminal in pairs(terminal_cache) do
+			for _, terminal in pairs(tracer.terminal_cache) do
 				if terminal.point then terminal_identity[key(terminal.point)] = true end
 			end
 			local evidence = {}
