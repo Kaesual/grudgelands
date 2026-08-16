@@ -35,6 +35,35 @@ deliberately a countable event rather than a judgement about length.
 Plus three selectors — logical biomes, nearest-feature, housing-centre — all
 unstarted.
 
+### 1.1 Two verification regimes, decided 2026-08-15
+
+The groups above are not just a dependency ordering; they carry different
+verification regimes, and that was a deliberate decision rather than an
+accident of how the work happened to go.
+
+**Boundary topology gets the heavy regime**: an independently implemented
+oracle, mutation KATs, byte-identical digests, and a recorded Reality
+correction whenever a configuration turns out to be undecided. Correctness
+there is a *global* property — closed, counterclockwise, simple polygons;
+8-connected traces; exactly one owner per column — so nothing local can
+establish it. This is the regime that produced thirteen corrections and
+roughly half its test volume in independent oracles, and it earned that cost.
+
+**Everything else gets the light regime**: an argument that the function is
+pure in `(x, z, seed)`, property tests, and a determinism digest. No second
+independent oracle, no case-by-case policy prose. Order-independence — the
+actual requirement, since chunks generate in arbitrary order — follows from
+purity directly and does not need a topology oracle to establish it. The
+template blend is `target_y = round(natural + weight(q) * (shaped - natural))`
+evaluated per column; there is no trace to get wrong.
+
+The reason to write this down is that the temptation runs one way. Whoever
+picks up the remaining fourteen buckets will have just read thirteen Reality
+corrections and will reach for the machinery that found them. Applying the
+heavy regime to local pure functions would cost weeks against risk that is not
+there. Escalating a bucket from light to heavy is a decision to argue for, not
+a default to fall back on.
+
 **The production path is not wired.** `compiler.lua:77` loads
 `geometry/compiler_impl.lua`; that file does not exist, so the production entry
 fails closed with `compiled_geometry_unavailable`. Everything achieved so far
