@@ -11,6 +11,8 @@
 --   t2_census_gate.lua REPO SCRATCH paths
 --   t2_census_gate.lua REPO SCRATCH plan W_PATH
 --   t2_census_gate.lua REPO SCRATCH cost CAP SIZE:COMPLETED:ELAPSED...
+--     one sample per shard; ELAPSED is that shard's own elapsed seconds at its
+--     own latest completion, never the launcher's wall clock (section 6.6.3)
 --   t2_census_gate.lua REPO SCRATCH module_digest
 --   t2_census_gate.lua REPO SCRATCH first_record W_PATH DIGEST MODULES FIRST LAST PATH
 --   t2_census_gate.lua REPO SCRATCH verify W_PATH DIGEST MODULES FIRST LAST PATH
@@ -27,10 +29,26 @@ local function read_file(path)
 	return bytes
 end
 
-local hasher = dofile(repo .. "/tools/wp40/t2_census_hasher.lua")({
-	repo = repo, scratch = scratch})
+-- The hasher is built on the first digest and not before.  Starting it costs a
+-- python3 probe, a compile check, two FIFOs, a responder process and three
+-- verified fixed vectors, and section 6.6.3's rolling projection now runs this
+-- script once per completed seed -- roughly 4,123 times over a full `W`, on the
+-- eight-core host whose contention the projection is trying to measure.  The
+-- `cost` and `paths` commands hash nothing, so they now pay nothing; every
+-- command that does hash still gets the same responder and the same proofs.
+local hasher_handle = nil
+local function hasher()
+	if not hasher_handle then
+		hasher_handle = dofile(repo .. "/tools/wp40/t2_census_hasher.lua")({
+			repo = repo, scratch = scratch})
+	end
+	return hasher_handle
+end
+local function close_hasher()
+	if hasher_handle then hasher_handle.close() end
+end
 local authority = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
-	raw_sha256 = hasher.raw_sha256})
+	raw_sha256 = function(data) return hasher().raw_sha256(data) end})
 
 -- A gate that refuses exits 3; anything else that goes wrong exits 1.  The
 -- launcher must be able to tell "the contract said no" from "the check itself
@@ -42,14 +60,14 @@ local function refuse(body, ...)
 	if ok then return message end
 	io.stderr:write(tostring(message), "\n")
 	io.stderr:flush()
-	hasher.close()
+	close_hasher()
 	os.exit(3)
 end
 
 local function derive()
 	local corpus = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
 	return authority.derive_w(corpus,
-		read_file(repo .. "/" .. authority.candidates_path), hasher.raw_sha256)
+		read_file(repo .. "/" .. authority.candidates_path), hasher().raw_sha256)
 end
 
 -- The cached seed list is re-digested on every read, so a scratch file that
@@ -115,12 +133,24 @@ elseif command == "cost" then
 			completed = tonumber(completed), elapsed = tonumber(elapsed)}
 	end
 	local projection = authority.project_wall_seconds(samples)
+	-- The verdict is decided before the line is printed so the line can carry
+	-- it: a projection over the cap that did not abort is only readable as a
+	-- deferral if the log says so, and a deferral the log hides is the shape of
+	-- gate this branch keeps having to prove is not vacuous.  One line, no tabs
+	-- -- the launcher persists it verbatim as the section-6.5 manifest value.
+	local decided, verdict = pcall(authority.check_cost_gate, projection, cap)
 	print(("WP40 T2 census cost projection wall_seconds=%d workers=%d cap_seconds=%d " ..
-		"per_seed_seconds=%.2f"):format(math.floor(projection.wall_seconds),
-		projection.worker_count, math.floor(cap),
-		projection.slowest.elapsed / projection.slowest.completed))
-	refuse(authority.check_cost_gate, projection, cap)
-	print("WP40 T2 census cost gate passed")
+		"per_seed_seconds=%.2f completions=%d shards=%d observed_wall_seconds=%d " ..
+		"verdict=%s"):format(math.floor(projection.wall_seconds),
+		projection.worker_count, math.floor(cap), projection.per_seed_seconds,
+		projection.driver.completed, #samples,
+		math.floor(projection.observed_wall_seconds),
+		decided and verdict or "aborted"))
+	-- Flushed before the refusal so the launcher, which captures both streams
+	-- into one buffer, records the projection above the abort that cites it.
+	io.stdout:flush()
+	if not decided then refuse(error, verdict, 0) end
+	print("WP40 T2 census cost gate " .. verdict)
 elseif command == "merge_kat" then
 	-- The M5 gate's pinned half.  The LuaJIT/PUC comparison proves the two
 	-- runtimes agree; this proves they agree on the value a reviewed run
@@ -159,7 +189,7 @@ elseif command == "first_record" or command == "verify" then
 		if command == "first_record" then
 			print(("WP40 T2 census first record range=%04d..%04d ready=0"):format(
 				first, last))
-			hasher.close()
+			close_hasher()
 			os.exit(0)
 		end
 		error("WP40 T2 census: shard file is absent at " .. shard_path, 0)
@@ -187,4 +217,4 @@ elseif command == "first_record" or command == "verify" then
 else
 	error("unknown census gate command " .. tostring(command), 0)
 end
-hasher.close()
+close_hasher()

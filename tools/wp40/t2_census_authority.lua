@@ -942,6 +942,25 @@ return function(dependencies)
 	-- worker count by taking the slowest shard, because the shards run
 	-- concurrently: summing them would inflate the projection by the worker
 	-- count, dividing a total by it would deflate an unbalanced run.
+	--
+	-- The estimate is rolling: a sample carries one shard's own elapsed seconds
+	-- at its own latest completion, so its rate is elapsed/completed and the
+	-- whole projection is re-taken every time any shard completes a seed.  One
+	-- completion is an observation, not a rate.  Recorded 2026-08-16: the first
+	-- full-`W` start aborted on a 71 s/seed projection taken from eight cold
+	-- first seeds -- three of them 51/53/70 s against a 34-39 s steady state --
+	-- and re-measuring those same three seeds solo gave 29-32 s.  What the gate
+	-- had measured was the host, not the seeds.  So the cap is applied to the
+	-- slowest shard that has answered at least `cost_verdict_min_completions`
+	-- times, while the slowest *observed* shard is reported alongside it: an
+	-- over-cap single sample is never suppressed, it is only never decisive.
+	--
+	-- The verdict deliberately reads the slowest eligible shard rather than
+	-- waiting for the slowest observed one to become eligible.  Waiting would
+	-- let one shard that stalls after its first completion mask seven that are
+	-- provably over the cap, which is the same vacuous gate in a new costume.
+	local cost_verdict_min_completions = 2
+
 	local function project_wall_seconds(samples)
 		if type(samples) ~= "table" or #samples == 0 then
 			fail("cost projection needs at least one completed sample")
@@ -949,7 +968,8 @@ return function(dependencies)
 		-- Seeded below zero rather than at it, so the first sample always claims
 		-- `slowest`: a fleet whose first completions all land inside one second
 		-- would otherwise project a nil slowest for its callers to dereference.
-		local projected, slowest = -1, nil
+		local observed_seconds, observed = -1, nil
+		local decisive_seconds, decisive = -1, nil
 		for index = 1, #samples do
 			local sample = samples[index]
 			if type(sample) ~= "table" then fail("cost sample is not a table") end
@@ -960,24 +980,36 @@ return function(dependencies)
 				fail("cost sample has no elapsed time")
 			end
 			local shard = sample.elapsed / sample.completed * sample.size
-			if shard > projected then projected, slowest = shard, sample end
+			if shard > observed_seconds then observed_seconds, observed = shard, sample end
+			if sample.completed >= cost_verdict_min_completions and
+					shard > decisive_seconds then
+				decisive_seconds, decisive = shard, sample
+			end
 		end
-		return {wall_seconds = projected, worker_count = worker_count,
-			cap_seconds = wall_cap_seconds, slowest = slowest}
+		local driver = decisive or observed
+		return {wall_seconds = decisive and decisive_seconds or observed_seconds,
+			observed_wall_seconds = observed_seconds, worker_count = worker_count,
+			cap_seconds = wall_cap_seconds, slowest = observed, driver = driver,
+			per_seed_seconds = driver.elapsed / driver.completed,
+			decisive = decisive ~= nil}
 	end
 
+	-- Returns the verdict instead of a bare `true`, because "deferred" is not a
+	-- pass: it is the gate reporting that no shard has answered twice yet, and a
+	-- launcher that prints it shows why an over-cap observation did not abort.
 	local function check_cost_gate(projection, cap)
 		if type(projection) ~= "table" or type(projection.wall_seconds) ~= "number" then
 			fail("cost projection is malformed")
 		end
 		local limit = cap or wall_cap_seconds
 		if type(limit) ~= "number" or limit <= 0 then fail("cost cap is invalid") end
+		if not projection.decisive then return "deferred" end
 		if projection.wall_seconds > limit then
 			fail(("projected %d s wall at %d workers exceeds the %d s cap " ..
 				"(plan section 6.5)"):format(math.floor(projection.wall_seconds),
 				worker_count, math.floor(limit)))
 		end
-		return true
+		return "passed"
 	end
 
 	local function split_line(line)
@@ -1304,6 +1336,7 @@ return function(dependencies)
 	authority.candidates_path = candidates_path
 	authority.worker_count = worker_count
 	authority.wall_cap_seconds = wall_cap_seconds
+	authority.cost_verdict_min_completions = cost_verdict_min_completions
 	authority.free_seed_budget = free_seed_budget
 	authority.pool_candidate_count = pool_candidate_count
 	authority.classes = classes

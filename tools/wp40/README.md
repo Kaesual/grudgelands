@@ -428,6 +428,8 @@ ratio have been wrong.
 | the per-tier split after M4, one seed | stage build ~20–27 s, Scan-1 ~2.0 s, Scan-3a ~8.3 s, Scan-2 ~0.6 s (M4, 2026-08-16) |
 | eight census workers, first completions, quiet host | 34–39 s per seed, projecting 5.7 h wall (M4, 2026-08-16) |
 | eight census workers, steady state, four seeds each | 36–69 s per seed; per-worker means 37.5–54.0 s, projecting 5.4–7.7 h wall (M4, 2026-08-16) |
+| the three slow first seeds of the aborted full-`W` start, re-measured solo | 29 / 31 / 32 s per seed, against 51 / 53 / 70 s in the contended start minute — the control seed took the same 29–32 s (full-`W` abort, 2026-08-16) |
+| eight census workers, first completions, idle host, re-run | seven seeds 35–37 s, one 53 s, on a shard that was none of the three above (full-`W` abort, 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -687,11 +689,13 @@ callback), and no per-seed intermediate is retained.
 
 Section 6.5 wants the run manifest to state the measured single-seed cost and
 the projected total in wall time at a stated worker count. The merge is a
-separate process hours after the scan, so the launcher persists its
-first-completions projection to the gitignored
-`results/t2_census/cost-projection.txt` beside the shards it describes, and
-`--merge` reads it from there; `WP40_CENSUS_COST_PROJECTION` overrides it for
-a merge of shards whose run predates that file.
+separate process hours after the scan, so the launcher persists its projection
+to the gitignored `results/t2_census/cost-projection.txt` beside the shards it
+describes, and `--merge` reads it from there; `WP40_CENSUS_COST_PROJECTION`
+overrides it for a merge of shards whose run predates that file. The note holds
+the newest of the rolling evaluations below, not the first: by the last
+completion of the run that line has stopped being a projection and is a
+measurement of the slowest shard.
 
 The M5 gate is `--merge-kat`: run the four-seed worker KAT, merge it under
 LuaJIT and under `tools/bin/lua51`, compare all five artifacts byte for byte,
@@ -806,11 +810,13 @@ never pass through a Lua number.
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,504 checks, 56 of
+does the same against the decision functions directly (4,611 checks, 57 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates
-while the run continues, and a free record set merges into all six outputs.
+while the run continues, a free record set merges into all six outputs, and
+the cost gate is replayed over two measured completion timelines — the start
+minute that must *not* abort and a fleet at 71 s per seed that must.
 
 1. **GO gate** (section 6.6.7). The full-`W` path starts only when
    `WP40_CENSUS_GO` equals this `W`'s digest. The token is a digest rather
@@ -833,19 +839,48 @@ while the run continues, and a free record set merges into all six outputs.
    `WP40_CENSUS_FIRST_RECORD_DEADLINE` (default 900 s) the run aborts too — a
    worker that hangs before writing anything is the same early failure.
 3. **Cost gate** (sections 6.5 and 6.6.3). Once every running worker has a
-   completion, the slowest shard is projected to full length and compared
-   against eight hours *wall at eight workers*. The projection takes the
+   completion the slowest shard is projected to full length and compared
+   against eight hours *wall at eight workers*, and from then on the whole
+   projection is re-taken at every completion. The projection takes the
    slowest shard rather than a sum or an average because the shards run
    concurrently: summing inflates by the worker count, averaging hides an
-   unbalanced run. `WP40_CENSUS_WALL_CAP_SECONDS` lowers the cap, which is
-   how the negative proof fires within a minute. **Launch the full-`W` run on
-   an otherwise quiet host.** Measured at M4: the same probe read 34–39 s per
-   seed and projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h
-   while a second eight-worker measurement was running — the gate aborted,
-   correctly, because that is what the host was delivering. The first seed of
-   a shard is also systematically the most expensive (cold JIT and eight
-   simultaneous R7 compiles), so the first-completion projection is
-   deliberately conservative against the ~35 s steady state.
+   unbalanced run. A shard's rate is its **own** elapsed seconds at its **own**
+   latest completion over its own completed count — the launcher reads that
+   pair out of the shard's progress line — and a rate may only cast a verdict
+   once that shard has completed two seeds. Until then it is reported and
+   deferred: the projection line carries `completions=`, an
+   `observed_wall_seconds=` that includes single-sample shards, and
+   `verdict=passed|deferred|aborted`, so an over-cap observation that did not
+   stop the run is in the log rather than behind it. Deferral belongs to the
+   verdict and not to the fleet — one shard stalled after its first seed must
+   not buy seven provably over-cap siblings an exemption — so the cap is
+   applied to the slowest shard that *has* answered twice.
+   `WP40_CENSUS_WALL_CAP_SECONDS` lowers the cap, which is how the negative
+   proof fires inside two minutes. An estimate re-taken all run long can also
+   find a breach late; the abort then keeps every finished shard through gate
+   4's reaper and the next `--full-w` resumes them, which is section 6.5's
+   "report and re-scope" rather than "abandon". **Launch the full-`W` run on an
+   otherwise quiet host.** Measured at M4: the same probe read 34–39 s per seed and
+   projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h while a
+   second eight-worker measurement was running — the gate aborted, correctly,
+   because that is what the host was delivering.
+
+   The two-completion rule is there because the first seed of a shard is
+   systematically the most expensive — cold JIT, and eight R7 compiles landing
+   at once — and because 2026-08-16 spent a full-`W` start proving it. That
+   run aborted on 71 s per seed projected from eight first completions, three
+   of which read 51/53/70 s against five at 36–37 s. Re-measured solo, those
+   three seeds took **29, 31 and 32 s**, exactly what the control seed takes:
+   the spread was eight workers and eight SHA responders contending for eight
+   physical cores in the one minute the gate sampled, not three expensive
+   seeds. The launcher also divided by its own wall clock rather than the
+   shard's, so a shard that had finished a seed in 36 s was credited with the
+   fleet's age — 71 s per seed — for as long as a slower sibling had not
+   finished. Both are fixed here; the cap, the full-width fan-out and the
+   worker count are unchanged. Re-run the same day on an idle host, seven of
+   eight first seeds took 35–37 s and one took 53 s, on a shard that was not
+   one of the three outliers — a cold-start cost that moves between runs is
+   exactly what a single sample cannot tell from an expensive seed.
 4. **Verified resume** (section 6.6.4). A shard already on disk is parsed,
    digest-checked against its own preceding bytes, and required to cover
    exactly its range of this `W` under the same module bytes before it is

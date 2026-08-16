@@ -127,9 +127,12 @@ check(authority.check_go_token(w.digest, w.digest, ranges[1].size),
 
 -- ----------------------------------------------------------------- cost gate
 local cap = authority.wall_cap_seconds
+-- Two completions per shard at the same 25 s and 24 s rates the single-sample
+-- fixture used to carry: since 2026-08-16 a verdict needs a shard that has
+-- answered twice, so a one-completion fixture proves deferral, not refusal.
 local inside = authority.project_wall_seconds({
-	{size = 516, completed = 1, elapsed = 25},
-	{size = 515, completed = 1, elapsed = 24}})
+	{size = 516, completed = 2, elapsed = 50},
+	{size = 515, completed = 2, elapsed = 48}})
 check(math.floor(inside.wall_seconds) == 12900,
 	"projection changed: " .. inside.wall_seconds)
 check(authority.check_cost_gate(inside), "an inside-cap projection was refused")
@@ -146,6 +149,121 @@ refuses("a projection from no completions", "at least one completed sample",
 	authority.project_wall_seconds, {})
 refuses("a projection from a shard that completed nothing", "completed no seed",
 	authority.project_wall_seconds, {{size = 516, completed = 0, elapsed = 30}})
+
+-- Section 6.6.3, the rolling estimate.  A cold first seed is an observation:
+-- it is reported, it is never decisive, and it does not mask a shard that has
+-- answered twice from over the cap.
+check(authority.cost_verdict_min_completions == 2,
+	"the cost verdict no longer needs two completions")
+local cold = authority.project_wall_seconds({
+	{size = 516, completed = 1, elapsed = 71},
+	{size = 515, completed = 1, elapsed = 36}})
+check(cold.decisive == false, "a one-completion fleet was treated as decisive")
+check(math.floor(cold.observed_wall_seconds) == 36636,
+	"the cold observation changed: " .. cold.observed_wall_seconds)
+check(cold.observed_wall_seconds > cap, "the cold observation is not over the cap")
+check(authority.check_cost_gate(cold) == "deferred",
+	"an over-cap single sample was not deferred")
+check(authority.check_cost_gate(cold, 600) == "deferred",
+	"an over-cap single sample was not deferred against a lowered cap")
+-- The other direction of the same rule: deferral belongs to the verdict, not
+-- to the fleet.  One shard stalled on its first seed must not buy seven others
+-- an exemption -- that would be a gate that cannot fire, which is the failure
+-- this file exists to catch.
+local stalled = authority.project_wall_seconds({
+	{size = 516, completed = 1, elapsed = 3600},
+	{size = 515, completed = 3, elapsed = 213}})
+check(math.floor(stalled.observed_wall_seconds) == 1857600,
+	"the stalled observation changed: " .. stalled.observed_wall_seconds)
+check(math.floor(stalled.wall_seconds) == 36565,
+	"the decisive projection followed the stalled shard: " .. stalled.wall_seconds)
+refuses("a stalled shard masking seven that are over the cap", "exceeds the",
+	authority.check_cost_gate, stalled)
+
+-- The launcher reads each shard's own progress line, so the gate can be
+-- replayed exactly: give every shard its per-seed wall times, walk the
+-- completion events in global time order and evaluate at each one, from the
+-- event where every shard has a completion -- which is when the launcher first
+-- projects.
+local census_sizes = {516, 516, 516, 515, 515, 515, 515, 515}
+local function replay_cost(fleet, limit)
+	local events = {}
+	for index = 1, #fleet do
+		local clock = 0
+		for step = 1, #fleet[index].seconds do
+			clock = clock + fleet[index].seconds[step]
+			events[#events + 1] = {time = clock, shard = index, completed = step}
+		end
+	end
+	table.sort(events, function(left, right)
+		if left.time ~= right.time then return left.time < right.time end
+		return left.shard < right.shard
+	end)
+	local latest, seen, verdicts = {}, 0, {}
+	for _, event in ipairs(events) do
+		if not latest[event.shard] then seen = seen + 1 end
+		latest[event.shard] = {size = fleet[event.shard].size,
+			completed = event.completed, elapsed = event.time}
+		if seen == #fleet then
+			local samples = {}
+			for index = 1, #fleet do samples[#samples + 1] = latest[index] end
+			local projection = authority.project_wall_seconds(samples)
+			local decided, verdict = pcall(authority.check_cost_gate, projection, limit)
+			verdicts[#verdicts + 1] = {time = event.time, projection = projection,
+				verdict = decided and verdict or "aborted"}
+			if not decided then return verdicts, event.time end
+		end
+	end
+	return verdicts, nil
+end
+local function fleet_of(first_seconds, steady, seeds)
+	local fleet = {}
+	for index = 1, #census_sizes do
+		local seconds = {first_seconds[index]}
+		for _ = 2, seeds do seconds[#seconds + 1] = steady end
+		fleet[index] = {size = census_sizes[index], seconds = seconds}
+	end
+	return fleet
+end
+
+-- The 2026-08-16 start minute, as measured: five shards at ~36 s and three
+-- cold outliers at 51/53/70 s on their first seed, then the M4 steady state.
+-- Solo re-measurement of those three seeds gave 29-32 s, identical to the
+-- control, so the outliers were the host and the old gate aborted on them.
+local first_minute = {36, 36, 51, 37, 36, 53, 37, 70}
+local real_verdicts, real_abort = replay_cost(fleet_of(first_minute, 36, 12), cap)
+check(real_abort == nil,
+	"the 2026-08-16 start-minute pattern still aborts, at " .. tostring(real_abort) .. "s")
+check(#real_verdicts > 1, "the estimate was not re-taken after the first projection")
+check(real_verdicts[1].time == 70, "the first projection no longer lands on the 70 s seed")
+check(real_verdicts[1].projection.observed_wall_seconds > cap,
+	"the replay no longer sees the cold 70 s outlier at all")
+local worst = 0
+for _, entry in ipairs(real_verdicts) do
+	check(entry.verdict == "passed" or entry.verdict == "deferred",
+		"the start-minute pattern produced verdict " .. entry.verdict)
+	if entry.projection.decisive and entry.projection.wall_seconds > worst then
+		worst = entry.projection.wall_seconds
+	end
+end
+-- The tightest decisive moment of that pattern, pinned: the 70 s shard's second
+-- completion at 106 s projects 27,295 s, 5.2% under the cap.  The margin is
+-- thin and belongs in the record rather than in a comment nobody rechecks.
+check(math.floor(worst) == 27295, "the tightest real-pattern projection changed: " .. worst)
+-- The same pattern at the slow edge of the M4 band still clears it.
+check(select(2, replay_cost(fleet_of(first_minute, 39, 12), cap)) == nil,
+	"the start-minute pattern aborts at a 39 s steady state")
+
+-- The direction the gate exists for: a fleet that really is delivering 71 s per
+-- seed must still abort in the run's first minutes, not run for eight hours.
+local slow_verdicts, slow_abort = replay_cost(
+	fleet_of({71, 71, 71, 71, 71, 71, 71, 71}, 71, 12), cap)
+check(slow_abort == 142, "an all-71 s fleet aborts at " .. tostring(slow_abort) ..
+	"s, not on its second completions")
+check(slow_verdicts[#slow_verdicts].verdict == "aborted",
+	"the all-71 s replay did not end in an abort")
+check(slow_verdicts[1].verdict == "deferred",
+	"the all-71 s fleet was judged on its first completions after all")
 
 -- --------------------------------------------------- first record and resume
 -- A synthetic shard in the exact worker format.  Building it here rather than

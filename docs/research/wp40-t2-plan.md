@@ -196,6 +196,8 @@ target host; where a ratio is inferred from two of them, it says so.
 | the per-tier split after M4, one seed | stage build ~20–27 s, Scan-1 ~2.0 s, **Scan-3a ~8.3 s**, **Scan-2 ~0.6 s** (measured 2026-08-16, M4) |
 | eight census workers, first completions, quiet host | **34–39 s** per seed (measured 2026-08-16, M4) |
 | eight census workers, steady state, four seeds each | **36–69 s** per seed; per-worker means 37.5–54.0 s (measured 2026-08-16, M4) |
+| the three slow first seeds of the aborted full-`W` start, re-measured solo | **29 / 31 / 32 s** per seed, against 51 / 53 / 70 s in the contended start minute; the control seed took the same 29–32 s (measured 2026-08-16, full-`W` abort) |
+| eight census workers, first completions, idle host, re-run the same day | seven seeds **35–37 s**, one **53 s** — on a shard that was none of the three above (measured 2026-08-16, full-`W` abort) |
 | the four-seed census KAT, worker pass | **30–50 s** per seed, ~2.5 min total (measured 2026-08-16, M5) |
 | the census merge over that four-seed record set, LuaJIT / PUC | **0.06 s / 0.06 s**, artifacts byte-identical (measured 2026-08-16, M5) |
 
@@ -234,6 +236,15 @@ correctly aborted. The gate is not wrong there — the host really was
 delivering that — but it means the full-`W` run must be launched on an
 otherwise quiet host, which is the operational form of the M2 rows' warning
 that this host's per-seed cost is a wide band rather than a number.
+
+The first full-`W` start hit the same band from the inside and aborted on it,
+2026-08-16, on a quiet host: eight cold first seeds, three of them 51/53/70 s,
+projected 71 s per seed and 10.2 h. Re-measured solo those three seeds took
+29/31/32 s — the control's own figure — so what the gate had measured was the
+start minute's own contention, eight workers plus eight SHA responders across
+eight physical cores. Two rows above are that measurement; section 6.6.3 is
+the estimator decision that followed. The steady-state anchor is unchanged and
+so is the cap.
 
 The M2 rows say why that re-projection is not a formality. The same seed-0
 pass measured anywhere from 22 s to 37 s on this host depending on concurrent
@@ -550,11 +561,12 @@ Anchoring low is exactly what section 4 exists to prevent.
 Launch at full width and measure as you go — no serial single-seed
 pre-measurement; that decision is recorded with the early-failure bullet in
 section 5. The run manifest states the single-seed cost measured from the
-first fanned completions and the projected total, **in wall time at a stated
-worker count** — section 4's anchors are worker-seconds and mixing the two
-silently changes any threshold by roughly 8x. A projection that already
-exceeds the stop threshold aborts the run within its first minutes instead of
-before them. The prefilter is expected to discharge most ordinary edges
+fanned completions and the projected total, **in wall time at a stated worker
+count** — section 4's anchors are worker-seconds and mixing the two silently
+changes any threshold by roughly 8x. A projection that already exceeds the
+stop threshold aborts the run within its first minutes instead of before them;
+measuring as you go means the projection is re-taken as the run proceeds
+rather than fixed at the first completions (section 6.6.3). The prefilter is expected to discharge most ordinary edges
 permanently, so the real figure should fall well below a naive
 multiplication.
 
@@ -595,9 +607,40 @@ once the runner is built. The pattern throughout is the proven
    every site present, classes drawn from the declared vocabulary — while
    the workers keep running; a structural failure aborts the run hard.
    Progress is flushed per-seed lines with range and ETA.
-3. **Cost gate.** The projection from the first completions is checked
-   against section 6.5's eight-hour cap; exceeding it aborts within the
-   run's first minutes.
+3. **Cost gate.** A per-shard projection is checked against section 6.5's
+   eight-hour cap; exceeding it aborts within the run's first minutes. The
+   estimate is rolling and is re-taken at every completion: a shard's rate is
+   its own elapsed seconds over its own completions, the projection is the
+   slowest shard extended to full length, and a shard has to have completed at
+   least two seeds before its rate may cast a verdict. The slowest *observed*
+   shard is reported alongside the decisive one, so a single over-cap
+   observation is visible in the log without being able to stop the run.
+
+   Corrected 2026-08-16 after the first full-`W` start aborted — correctly by
+   its own design, on a measurement basis that was wrong. The gate projected
+   71 s per seed by taking the slowest of eight *first* completions and
+   multiplying by 516: 36,636 s against the 28,800 s cap. Three of those eight
+   first seeds came in at 51, 53 and 70 s where five came in at 36–37 s, and
+   all eight were sampled in the most contended minute the run has — eight
+   workers plus eight SHA responders on eight physical cores, i.e. sixteen
+   runnable threads where the run steadily needs eight. Re-measured solo
+   afterwards, those same three seeds took **29, 31 and 32 s**, matching the
+   control seed exactly. The heterogeneity was the host, not the seeds, and the
+   steady state remains M4's 34–39 s per seed. A second flaw compounded it: the
+   launcher divided by its own wall clock rather than the shard's, so every
+   shard that had completed one seed was credited with the age of the fleet —
+   the shard that finished a seed in 36 s was projected at 71 s per seed
+   because a slower sibling had not finished yet.
+
+   The cold first seed is systematic, not an artefact of that one contended
+   start: re-run on an idle host the same day, seven of eight first seeds took
+   35–37 s and one took 53 s — on a *different* shard than any of the three
+   outliers above, which is what tells cold-start cost apart from an expensive
+   seed. So one completion is an observation and two are a rate. Nothing else
+   moves: the cap stays eight hours (section 6.5 is a dated decision, not a
+   tuning knob), fan-out stays at full width (section 5), and no worker is
+   pinned or staggered — a launcher that spreads its own start to flatter its
+   own estimator measures a run nobody will ever have.
 4. **Resume.** Verified per-shard resume; anything unparseable at a census
    shard path aborts the launcher loudly instead of being skipped.
 5. **The PUC merge carries the `pairs()`-order divergence test.** The merge
@@ -799,7 +842,9 @@ artifacts state it and a later reader should not have to re-derive it:
   the artifacts do not grow with |`W`| except in the flagged seed list and the
   per-endpoint joint distribution, and no per-seed record is retained. The
   run manifest states section 6.5's cost figures for the *scan*, persisted by
-  the launcher beside the shards when its gate measured them.
+  the launcher beside the shards as its gate measured them — the last of the
+  rolling evaluations, which by the end of the run is the slowest shard's
+  measured cost rather than a projection.
 - **First occupancy worth naming.** Over the four KAT seeds 19 of 83 declared
   branches are realized and 64 are vacuous, none of them a REJECTED class, so
   there is no finding yet — as expected from four seeds chosen for their

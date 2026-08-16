@@ -56,6 +56,15 @@ expect_in_last() {
 		fail "$label: the aborted run never printed \"$fragment\""
 }
 
+# The same proof where the claim is about a *field* of a line rather than a
+# line: which shard cast a verdict, and on how many completions.
+expect_matches_last() {
+	local pattern="$1" label="$2"
+	checks=$((checks + 1))
+	grep -qE -- "$pattern" "$scratch/last-failure.log" ||
+		fail "$label: the aborted run printed no line matching /$pattern/"
+}
+
 # An export of HEAD, committed so the launcher's clean-authority requirement is
 # satisfiable, with the built interpreters copied in because tools/bin is a
 # per-checkout build artefact and never tracked.
@@ -145,6 +154,14 @@ expect_in_last "ready=1" "the cost-gate run"
 # is exactly what it caught on its first run.
 expect_in_last "WP40 T2 census cost projection" "the cost-gate run"
 expect_in_last "(plan section 6.5)" "the cost-gate run"
+# Section 6.6.3 since 2026-08-16: the shard whose rate casts the verdict must
+# have completed at least two seeds.  The first full-W start aborted on eight
+# single cold completions, at a rate solo re-measurement of the same three slow
+# seeds put 40 s per seed lower -- so an abort line here that names one
+# completion is the regression, not the gate.
+expect_matches_last \
+	'WP40 T2 census cost projection .*completions=([2-9]|[1-9][0-9]+) .*verdict=aborted' \
+	"the cost-gate run"
 if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
 	sleep 2
 	if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
