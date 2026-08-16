@@ -34,12 +34,20 @@ return function(dependencies)
 		return hex(raw)
 	end
 
-	-- Section 6.6.1: eight range-sharded LuaJIT workers.  Section 6.5: eight
+	-- Section 6.6.1: eight range-sharded LuaJIT workers.  Section 6.5: nine
 	-- hours wall *at eight workers* -- the two numbers belong together, and
 	-- splitting them is exactly how a worker-seconds anchor turns into a
 	-- wall-time threshold that is wrong by the worker count.
+	--
+	-- Eight hours until the section-6.5 re-decision of 2026-08-16, which moved
+	-- the cap after a second full-`W` start aborted at 28,896 s -- 0.33% over --
+	-- while the corpus ETA read 22,728 s.  Eight hours sat inside this host's
+	-- own noise band and could not separate an honestly noisy run from a
+	-- degraded one; nine hours is the round hour at the geometric middle of the
+	-- two measured bands.  The launcher restates it as the default for
+	-- WP40_CENSUS_WALL_CAP_SECONDS and the gate test checks that copy.
 	local worker_count = 8
-	local wall_cap_seconds = 8 * 60 * 60
+	local wall_cap_seconds = 9 * 60 * 60
 	-- Section 6.6.7: KATs and small explicit ranges run freely.  Everything
 	-- above this budget needs the GO token, which replaces the M1 worker's
 	-- 64-seed list cap now that range mode exists.

@@ -430,6 +430,7 @@ ratio have been wrong.
 | eight census workers, steady state, four seeds each | 36–69 s per seed; per-worker means 37.5–54.0 s, projecting 5.4–7.7 h wall (M4, 2026-08-16) |
 | the three slow first seeds of the aborted full-`W` start, re-measured solo | 29 / 31 / 32 s per seed, against 51 / 53 / 70 s in the contended start minute — the control seed took the same 29–32 s (full-`W` abort, 2026-08-16) |
 | eight census workers, first completions, idle host, re-run | seven seeds 35–37 s, one 53 s, on a shard that was none of the three above (full-`W` abort, 2026-08-16) |
+| seed 0 across the two full-`W` starts, same host, same bytes | 36 s then 51 s; the second start's shard 1 read 51/52/65 s on seeds 0–2 against seven shards at 34–39 s, two of which then took 51 s on their fourth seed. `cpu ≈ wall` throughout — SMT pairing churn, and its victims move between runs (second full-`W` abort, 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -810,7 +811,7 @@ never pass through a Lua number.
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,614 checks, 57 of
+does the same against the decision functions directly (4,623 checks, 57 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates
@@ -840,8 +841,9 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    worker that hangs before writing anything is the same early failure.
 3. **Cost gate** (sections 6.5 and 6.6.3). Once every running worker has a
    completion the slowest shard is projected to full length and compared
-   against eight hours *wall at eight workers*, and from then on the whole
-   projection is re-taken at every completion. The projection takes the
+   against nine hours *wall at eight workers* (eight until the section-6.5
+   re-decision of 2026-08-16), and from then on the whole projection is
+   re-taken at every completion. The projection takes the
    slowest shard rather than a sum or an average because the shards run
    concurrently: summing inflates by the worker count, averaging hides an
    unbalanced run. A shard's rate is its **own** elapsed seconds at its **own**
@@ -865,14 +867,30 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    second eight-worker measurement was running — the gate aborted, correctly,
    because that is what the host was delivering.
 
+   The cap itself was re-decided over the *second* full-`W` start, 2026-08-16,
+   and the estimator was left alone. That run aborted at a projected 28,896 s
+   against 28,800 s — 0.33 % — from a shard whose seeds 0–2 took 51/52/65 s
+   while the other seven ran 34–39 s and the corpus ETA read 22,728 s. Seed 0
+   had cost 36 s in the previous start and `cpu ≈ wall` throughout, so this is
+   SMT pairing churn and its victims move between runs: two shards that held
+   34–37 s for three seeds took 51 s on their fourth. Eight hours sat 0.33 %
+   *below* the noisiest honest projection and therefore could not separate a
+   noisy run from the one measured degradation case (71 s per seed, 36,636 s);
+   nine hours is the round hour at the geometric middle of those two bands and
+   clears them by 12.1 % and 13.1 %. Plan section 6.5 carries the decision; both
+   runs are replayed from their own measured per-seed times in the gate test.
+
    Two boundaries of that rule, measured and pinned in the replay tests rather
-   than left to be rediscovered. First, two completions is a thin basis for an
-   eight-hour cap: 28,800 s over 516 seeds is 55.81 s per seed, so one shard
+   than left to be rediscovered. First, two completions is a thin basis for a
+   nine-hour cap: 32,400 s over 516 seeds is 62.79 s per seed, so one shard
    averaging above that across its first two seeds aborts a fleet whose other
-   seven are on a 5.2 h pace — a 53 s cold first seed followed by a 60 s second
-   is enough, and both figures are inside what this host has produced. That is
+   seven are on a 5.2 h pace — a 53 s cold first seed followed by a 73 s second
+   is enough, and neither figure is outside what this host has produced. That is
    the cap's arithmetic meeting the two-completion rule, not slack the estimator
-   picked; only a higher completion count would widen it. Second, a deferral
+   picked; only a higher completion count would widen it. (At the retired cap
+   the trigger sat at 55.81 s per seed, close enough that a 53/60 pair reached
+   it; that fleet passes now, pinned in both directions so the flip is a
+   recorded consequence rather than a discovery.) Second, a deferral
    has no ceiling of its own: eight shards each holding a single completion are
    deferred no matter how far over the cap that one observation lands, because
    what bounds the deferral is the next completion. In the ordinary case that
@@ -964,8 +982,8 @@ Per-seed cost is noisy on this host — 22 s to 37 s for the same seed-0 pass
 across runs, depending on concurrent load — so the plan's 22.7 s anchor is
 the fast end and no schedule should rest on it. Eight workers producing their
 first records took 28-36 s per seed, which projects to roughly 4.7 h for
-Scan-1 alone, inside the eight-hour cap. The gate re-projects from the live
-run for exactly this reason; it is not an extrapolation from section 4.
+Scan-1 alone, inside the cap. The gate re-projects from the live run for
+exactly this reason; it is not an extrapolation from section 4.
 
 Still open for M3 and later: the R19 tuple enumeration the compiler does not
 carry (plan section 5), Scan-2's counting and tuple tiers, Scan-3a, and the

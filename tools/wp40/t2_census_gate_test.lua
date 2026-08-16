@@ -136,12 +136,22 @@ local inside = authority.project_wall_seconds({
 check(math.floor(inside.wall_seconds) == 12900,
 	"projection changed: " .. inside.wall_seconds)
 check(authority.check_cost_gate(inside), "an inside-cap projection was refused")
--- The trap section 6.5 names: 4,123 worker-seconds per seed-second is an
--- eight-hour overrun in wall time only if the projection stays per shard.
+-- Section 6.5's cap, re-decided 2026-08-16 from eight hours to nine.  Checked
+-- here rather than assumed, because every pinned projection below is a
+-- statement about which side of this number it falls on.
+check(cap == 32400, "the section-6.5 wall cap changed: " .. cap)
+-- The launcher restates the cap as its WP40_CENSUS_WALL_CAP_SECONDS default.
+-- A second copy of a decided number is exactly what this branch has already
+-- paid for once, so the copy is read back rather than trusted.
+check(read_file(repo .. "/tools/wp40/run_t2_census.sh"):find(
+		"WP40_CENSUS_WALL_CAP_SECONDS:-" .. cap .. "}", 1, true) ~= nil,
+	"the launcher's cap default no longer restates the authority's " .. cap)
+-- The trap section 6.5 names: 4,123 worker-seconds per seed-second is a
+-- nine-hour overrun in wall time only if the projection stays per shard.
 local over = authority.project_wall_seconds({
-	{size = 516, completed = 2, elapsed = 120}})
-check(math.floor(over.wall_seconds) == 30960, "overrun projection changed")
-refuses("a projection past the eight-hour cap", "exceeds the",
+	{size = 516, completed = 2, elapsed = 130}})
+check(math.floor(over.wall_seconds) == 33540, "overrun projection changed")
+refuses("a projection past the nine-hour cap", "exceeds the",
 	authority.check_cost_gate, over)
 refuses("a projection past a lowered cap", "exceeds the",
 	authority.check_cost_gate, inside, 600)
@@ -173,7 +183,7 @@ check(authority.check_cost_gate(cold, 600) == "deferred",
 check(authority.check_cost_gate(authority.project_wall_seconds({
 		{size = 516, completed = 1, elapsed = 800},
 		{size = 515, completed = 1, elapsed = 800}})) == "deferred",
-	"a fleet 14x over the cap on single samples was not deferred")
+	"a fleet 12x over the cap on single samples was not deferred")
 -- The other direction of the same rule: deferral belongs to the verdict, not
 -- to the fleet.  One shard stalled on its first seed must not buy seven others
 -- an exemption -- that would be a gate that cannot fire, which is the failure
@@ -224,6 +234,18 @@ local function replay_cost(fleet, limit)
 	end
 	return verdicts, nil
 end
+-- The highest projection that was ever allowed to decide anything in a replay.
+-- A run's last verdict is not its worst: the estimate converges downwards, so
+-- the number a cap has to clear is this one.
+local function peak_decisive(verdicts)
+	local peak = 0
+	for _, entry in ipairs(verdicts) do
+		if entry.projection.decisive and entry.projection.wall_seconds > peak then
+			peak = entry.projection.wall_seconds
+		end
+	end
+	return peak
+end
 local function fleet_of(first_seconds, steady, seeds)
 	local fleet = {}
 	for index = 1, #census_sizes do
@@ -262,26 +284,64 @@ check(math.floor(worst) == 27295, "the tightest real-pattern projection changed:
 check(select(2, replay_cost(fleet_of(first_minute, 39, 12), cap)) == nil,
 	"the start-minute pattern aborts at a 39 s steady state")
 
--- Where two completions put the trigger, pinned because it is tighter than the
--- steady-state anchors suggest: 28,800 s over 516 seeds is 55.81 s per seed, so
--- one shard whose first two seeds average above that aborts a fleet the other
--- seven are running at a 5.2 h pace.  A 53 s cold first seed was measured on an
--- idle host, and a 60 s second seed is inside M4's 36-69 s steady-state band --
--- under load.  That is the cap's own arithmetic, not a slack the estimator
--- chose, and raising the two is the only thing that would widen it.
+-- The second measured borderline case, and the one the cap was re-decided
+-- over: the full-`W` start of 2026-08-16 whose shard 1 took 51, 52 and 65 s on
+-- seeds 0-2 while the other seven ran 34-39.  Every per-seed time here is that
+-- run's own, so the replay reproduces its log: 26,316 s deferred on the first
+-- completions, and a decisive peak of 28,896 s at 168 s -- 0.33% over the
+-- eight-hour cap that aborted it, while the corpus ETA read 22,728 s.
+local churn_seconds = {
+	{51, 52, 65}, {35, 37, 35}, {37, 34, 36, 51}, {36, 37, 36, 51},
+	{35, 38, 34, 37}, {37, 35, 38, 39}, {37, 35, 37, 36}, {38, 37, 35, 35}}
+local churn = {}
+for index = 1, #census_sizes do
+	churn[index] = {size = census_sizes[index], seconds = churn_seconds[index]}
+end
+local churn_verdicts, churn_abort = replay_cost(churn, cap)
+check(churn_abort == nil, "the 2026-08-16 SMT-churn pattern aborts at " ..
+	tostring(churn_abort) .. "s under the re-decided cap")
+check(math.floor(churn_verdicts[1].projection.observed_wall_seconds) == 26316,
+	"the churn replay no longer starts where the run did")
+local churn_peak = peak_decisive(churn_verdicts)
+check(math.floor(churn_peak) == 28896, "the churn peak changed: " .. churn_peak)
+-- And the same fleet against the cap it was measured under, which is the whole
+-- content of the re-decision: nothing about the run changed, the threshold did.
+check(select(2, replay_cost(churn, 28800)) == 168,
+	"the churn pattern no longer aborts under the retired eight-hour cap")
+
+-- Where two completions put the trigger.  Under the retired cap this fleet --
+-- a 53 s cold first seed and a 60 s second, 56.5 s per seed against a 55.81 s
+-- budget -- aborted seven shards that were on a 5.2 h pace, and that near-miss
+-- is half of why the cap moved.  At 32,400 s the budget is 62.79 s per seed
+-- and the same fleet passes; the flip is the intended effect, not a slackened
+-- estimator, and the trigger is re-pinned one row below.
 local tight = {}
 for index = 1, #census_sizes do
 	tight[index] = {size = census_sizes[index], seconds = {36, 36, 36, 36}}
 end
 tight[3] = {size = census_sizes[3], seconds = {53, 60, 36, 36}}
 local tight_verdicts, tight_abort = replay_cost(tight, cap)
-check(tight_abort == 113, "the two-completion trigger moved: aborted at " ..
-	tostring(tight_abort) .. "s, expected the slow shard's second completion")
-check(math.floor(tight_verdicts[#tight_verdicts].projection.wall_seconds) == 29154,
-	"the tight-trigger projection changed")
+check(tight_abort == nil, "the 56.5 s/seed borderline fleet still aborts at " ..
+	tostring(tight_abort) .. "s")
+check(math.floor(peak_decisive(tight_verdicts)) == 29154,
+	"the borderline projection changed")
+check(select(2, replay_cost(tight, 28800)) == 113,
+	"the borderline fleet no longer aborts under the retired eight-hour cap")
+-- The trigger at the new cap: 32,400 s over 516 seeds is 62.79 s per seed, so
+-- 53 s followed by 73 s is the first two-completion pair that still refuses.
+local trigger = {}
+for index = 1, #census_sizes do
+	trigger[index] = {size = census_sizes[index], seconds = {36, 36, 36, 36}}
+end
+trigger[3] = {size = census_sizes[3], seconds = {53, 73, 36, 36}}
+local trigger_verdicts, trigger_abort = replay_cost(trigger, cap)
+check(trigger_abort == 126, "the two-completion trigger moved: aborted at " ..
+	tostring(trigger_abort) .. "s, expected the slow shard's second completion")
+check(math.floor(peak_decisive(trigger_verdicts)) == 32508,
+	"the trigger projection changed")
 
 -- The direction the gate exists for: a fleet that really is delivering 71 s per
--- seed must still abort in the run's first minutes, not run for eight hours.
+-- seed must still abort in the run's first minutes, not run for nine hours.
 local slow_verdicts, slow_abort = replay_cost(
 	fleet_of({71, 71, 71, 71, 71, 71, 71, 71}, 71, 12), cap)
 check(slow_abort == 142, "an all-71 s fleet aborts at " .. tostring(slow_abort) ..

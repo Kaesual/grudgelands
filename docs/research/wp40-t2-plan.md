@@ -198,14 +198,16 @@ target host; where a ratio is inferred from two of them, it says so.
 | eight census workers, steady state, four seeds each | **36–69 s** per seed; per-worker means 37.5–54.0 s (measured 2026-08-16, M4) |
 | the three slow first seeds of the aborted full-`W` start, re-measured solo | **29 / 31 / 32 s** per seed, against 51 / 53 / 70 s in the contended start minute; the control seed took the same 29–32 s (measured 2026-08-16, full-`W` abort) |
 | eight census workers, first completions, idle host, re-run the same day | seven seeds **35–37 s**, one **53 s** — on a shard that was none of the three above (measured 2026-08-16, full-`W` abort) |
+| seed 0 across the two full-`W` starts, same host, same bytes | **36 s** then **51 s**; the second start's shard 1 read 51/52/65 s on seeds 0–2 while seven shards held 34–39 s, and two of those seven then took 51 s on their *fourth* seed (measured 2026-08-16, second full-`W` abort) |
+| the same runs' CPU time against their wall time | `cpu ≈ wall` throughout, 51.2 s CPU for 51 s wall on the slowest seed — the loss is per-cycle throughput on an SMT sibling, not the process waiting to be scheduled (measured 2026-08-16) |
 | the four-seed census KAT, worker pass | **30–50 s** per seed, ~2.5 min total (measured 2026-08-16, M5) |
 | the census merge over that four-seed record set, LuaJIT / PUC | **0.06 s / 0.06 s**, artifacts byte-identical (measured 2026-08-16, M5) |
 
 The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
 4,123 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
-Scan-2 and Scan-3a are added in M3/M4 — inside the eight-hour cap, but the
-gate must be re-projected from the first fanned completions once those tiers
-exist, not extrapolated from this row.
+Scan-2 and Scan-3a are added in M3/M4 — inside the cap, but the gate must be
+re-projected from the fanned completions once those tiers exist, not
+extrapolated from this row.
 
 With M3 measured, the projection from the same-day single-process band
 (30–43 s) scaled by the M2-observed eight-worker inflation lands at roughly
@@ -243,8 +245,18 @@ projected 71 s per seed and 10.2 h. Re-measured solo those three seeds took
 29/31/32 s — the control's own figure — so what the gate had measured was the
 start minute's own contention, eight workers plus eight SHA responders across
 eight physical cores. Two rows above are that measurement; section 6.6.3 is
-the estimator decision that followed. The steady-state anchor is unchanged and
-so is the cap.
+the estimator decision that followed. The steady-state anchor is unchanged.
+
+The second start, with that estimator, aborted honestly at 28,896 s against the
+28,800 s cap — 0.33 % — from a shard whose seeds 0–2 took 51/52/65 s while the
+other seven held 34–39 s and the corpus ETA read 22,728 s. Seed 0 had cost 36 s
+in the first start, and the victims moved: two shards that ran 34–37 s for
+three seeds took 51 s on their fourth. `cpu ≈ wall` throughout, so nothing is
+waiting — this is SMT pairing churn, whichever worker happens to share a
+physical core with another compile-heavy one. That is a property of the host,
+not of a seed, and no ordering of `W` makes it go away. It is why section 6.5
+re-decided the cap: eight hours could not tell this run apart from the 71 s
+degradation case, which is the one distinction the threshold exists to make.
 
 The M2 rows say why that re-projection is not a formality. The same seed-0
 pass measured anywhere from 22 s to 37 s on this host depending on concurrent
@@ -571,14 +583,38 @@ permanently, so the real figure should fall well below a naive
 multiplication.
 
 The stop threshold is a judgement call, recorded here as one rather than
-presented as derived: **eight hours wall at eight workers**, decided
-2026-08-16 — roughly five times the 91-minute pool, the largest routine
-measured run. The comparison that justifies it: the census replaces a loop
-that cost roughly a day per finding across a thirteen-correction series, so a
-single finding pays for the full cap; a cap tight enough to forbid several
-hours would be worse than the process it replaces, and a multi-day run would
-mean the re-scoping this section mandates should have fired earlier.
-Exceeding the cap is a reason to report and re-scope rather than to abandon.
+presented as derived: **nine hours wall at eight workers**, re-decided
+2026-08-16 (eight hours as first decided the same day) — roughly six times the
+91-minute pool, the largest routine measured run. The comparison that justifies
+the order of magnitude: the census replaces a loop that cost roughly a day per
+finding across a thirteen-correction series, so a single finding pays for the
+full cap; a cap tight enough to forbid several hours would be worse than the
+process it replaces, and a multi-day run would mean the re-scoping this section
+mandates should have fired earlier. Exceeding the cap is a reason to report and
+re-scope rather than to abandon.
+
+**Why it moved, dated 2026-08-16.** Eight hours was chosen before any full-`W`
+start had been observed, and two of them then bracketed it from both sides. The
+second start aborted at a projected **28,896 s** — 0.33 % over — from a driver
+shard whose seeds 0–2 took 51/52/65 s while the other seven ran 34–39 s and the
+corpus ETA read **22,728 s**; the estimator was honest there, the run was
+simply noisy. Before it, the borderline fleet pinned in the gate test (a 53 s
+cold first seed and a 60 s second, 56.5 s per seed, **29,154 s**) sat on the
+same side. Against those stands the one measured *degradation* case, the same
+probe reading 71 s per seed under a competing eight-worker measurement:
+**36,636 s**. Eight hours fell inside the honest band — it was 0.33 % *below*
+the noisiest honest projection — so it could not separate the two populations
+at all, which is the only thing a stop threshold has to do.
+
+Nine hours (32,400 s) is the round hour at the geometric middle of the two
+bands (√(28,896 × 36,636) = 32,537 s). It clears the noisiest honest projection
+by 12.1 % and stops the degradation case 13.1 % below it, so both bands keep
+better than a tenth of the cap as margin. The per-seed budget it implies is
+62.79 s at 516 seeds, against a 34–39 s steady state. What did **not** move: the
+estimator, the worker count, `W`, the fan-out at full width, and the rule that
+a verdict needs two completions. A cap re-decided upwards to fit an estimator
+would be the wrong repair; this one is re-decided to fit two measured
+populations, and the numbers above are what makes it re-decidable again.
 
 ### 6.6 The census runner
 
@@ -608,7 +644,7 @@ once the runner is built. The pattern throughout is the proven
    the workers keep running; a structural failure aborts the run hard.
    Progress is flushed per-seed lines with range and ETA.
 3. **Cost gate.** A per-shard projection is checked against section 6.5's
-   eight-hour cap; exceeding it aborts within the run's first minutes. The
+   nine-hour cap; exceeding it aborts within the run's first minutes. The
    estimate is rolling and is re-taken at every completion: a shard's rate is
    its own elapsed seconds over its own completions, the projection is the
    slowest shard extended to full length, and a shard has to have completed at
@@ -619,7 +655,9 @@ once the runner is built. The pattern throughout is the proven
    Corrected 2026-08-16 after the first full-`W` start aborted — correctly by
    its own design, on a measurement basis that was wrong. The gate projected
    71 s per seed by taking the slowest of eight *first* completions and
-   multiplying by 516: 36,636 s against the 28,800 s cap. Three of those eight
+   multiplying by 516: 36,636 s against the 28,800 s cap of the day (section
+   6.5 re-decided it to 32,400 s later the same day, over a *second* abort —
+   the fix below is the estimator's, not the threshold's). Three of those eight
    first seeds came in at 51, 53 and 70 s where five came in at 36–37 s, and
    all eight were sampled in the most contended minute the run has — eight
    workers plus eight SHA responders on eight physical cores, i.e. sixteen
@@ -637,18 +675,24 @@ once the runner is built. The pattern throughout is the proven
    35–37 s and one took 53 s — on a *different* shard than any of the three
    outliers above, which is what tells cold-start cost apart from an expensive
    seed. So one completion is an observation and two are a rate. Nothing else
-   moves: the cap stays eight hours (section 6.5 is a dated decision, not a
-   tuning knob), fan-out stays at full width (section 5), and no worker is
-   pinned or staggered — a launcher that spreads its own start to flatter its
-   own estimator measures a run nobody will ever have.
+   moved with this fix: the cap stayed at eight hours here — it was re-decided
+   separately, in section 6.5, over the *next* start's honest 0.33 % overrun,
+   because an estimator repair that also loosens its own threshold proves
+   nothing — fan-out stays at full width (section 5), and no worker is pinned
+   or staggered: a launcher that spreads its own start to flatter its own
+   estimator measures a run nobody will ever have.
 
-   Two is a floor and a thin one, recorded here as such: 28,800 s over 516
-   seeds is 55.81 s per seed, so a shard averaging above that across its first
-   two seeds aborts a fleet whose other seven are on a 5.2 h pace — a 53 s cold
-   first seed and a 60 s second one suffice, and both are inside this host's
-   measured range. Raising the count is the only thing that widens that margin,
-   at the price of a later abort on a genuinely slow fleet, and the replay tests
-   pin where the trigger sits today so the trade is re-decidable on numbers. The
+   Two is a floor and a thin one, recorded here as such: at the nine-hour cap
+   32,400 s over 516 seeds is 62.79 s per seed, so a shard averaging above that
+   across its first two seeds aborts a fleet whose other seven are on a 5.2 h
+   pace — a 53 s cold first seed and a 73 s second one suffice, and neither is
+   outside this host's measured range. At the retired eight-hour cap the same
+   trigger sat at 55.81 s per seed, where a 53/60 pair reached it; that fleet
+   passes now, which is the intended effect of the re-decision and is pinned in
+   both directions. Raising the completion count is the only thing that widens
+   the margin, at the price of a later abort on a genuinely slow fleet, and the
+   replay tests pin where the trigger sits today so the trade is re-decidable on
+   numbers. The
    deferral itself is deliberately unbounded: eight shards each holding one
    completion are deferred however far over the cap that observation lands,
    because the thing that ends a deferral is the next completion, not a clock.

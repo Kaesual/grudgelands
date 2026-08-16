@@ -15,7 +15,7 @@ set -euo pipefail
 # out at full width immediately -- there is no serial pre-validation pass
 # (section 5) -- and then holds four gates over the running fleet: the first
 # completed record of every worker is validated against the artifact contract,
-# a rolling per-shard projection is re-checked against the eight-hour wall cap
+# a rolling per-shard projection is re-checked against the nine-hour wall cap
 # at every completion, a shard already on disk is verified before it is resumed,
 # and anything unparseable at a census path aborts the launcher loudly rather
 # than counting as an empty shard.
@@ -288,7 +288,11 @@ run_full_w() {
 	}
 	echo "WP40 T2 census authority: commit=$commit tree=$tree modules=$module_digest"
 
-	local cap="${WP40_CENSUS_WALL_CAP_SECONDS:-28800}"
+	# The one restatement of the authority's `wall_cap_seconds` (section 6.5,
+	# nine hours since the 2026-08-16 re-decision).  A second copy of a decided
+	# number is what this branch has been bitten by before, so the gate test
+	# reads this line back and refuses a drift instead of trusting it.
+	local cap="${WP40_CENSUS_WALL_CAP_SECONDS:-32400}"
 	local deadline="${WP40_CENSUS_FIRST_RECORD_DEADLINE:-900}"
 	[[ "$cap" =~ ^[0-9]+$ && "$cap" -gt 0 ]] || {
 		echo "WP40_CENSUS_WALL_CAP_SECONDS must be a positive integer" >&2
