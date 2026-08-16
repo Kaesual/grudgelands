@@ -191,6 +191,11 @@ target host; where a ratio is inferred from two of them, it says so.
 | census Scan-1+2 pass, one seed, LuaJIT | **30–43 s** across seeds 0 / Slot 29 / max-u64 and repeat runs, host-load dependent (measured 2026-08-16, M3) |
 | the Scan-2 share, unflagged seed | **~8 s** of a 30-s pass: ~5.4 s the eight lazy Wing tails, ~2.4 s the four per-Bay trace-bound envelopes, ~0.15 s the sixteen completion traces, ~0.13 s counting + probes (measured 2026-08-16, M3) |
 | the flagged Slot-29 second tuple (probe + dead trace) | below run-to-run noise: 30.6 s total pass (measured 2026-08-16, M3) |
+| census Scan-1+3a+2 pass, one seed, LuaJIT | **29–33 s**, median 31 s over nine interleaved seed-0 samples; the same host spikes to ~45 s under concurrent load (measured 2026-08-16, M4) |
+| the Scan-3a surcharge per seed, interleaved M3-vs-M4 A/B | **~0.4 s**, about 1.4 % — inside run-to-run noise (measured 2026-08-16, M4) |
+| the per-tier split after M4, one seed | stage build ~20–27 s, Scan-1 ~2.0 s, **Scan-3a ~8.3 s**, **Scan-2 ~0.6 s** (measured 2026-08-16, M4) |
+| eight census workers, first completions, quiet host | **34–39 s** per seed (measured 2026-08-16, M4) |
+| eight census workers, steady state, four seeds each | **36–69 s** per seed; per-worker means 37.5–54.0 s (measured 2026-08-16, M4) |
 
 The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
 4,123 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
@@ -208,6 +213,25 @@ Scan-3a needs anyway and consumes from the same per-seed tracer, so M4's
 marginal cost should be far below M3's; and the flagged case costs no
 measurable extra — the expensive term is the per-seed S5 substrate, not the
 tuples.
+
+**M4 measured both notes and did not move the projection.** The interleaved
+single-seed A/B puts the whole Scan-3a surcharge at ~0.4 s, about 1.4 % and
+inside noise, because the work did not grow — it moved: the eight Wing tails
+and four trace-bound envelopes are now paid by Scan-3a, which runs first and
+shares one tracer, and Scan-2's own share fell from ~8 s to ~0.6 s reusing
+those caches. Genuinely new per-seed work is the four head-Bank traces, the
+eight aperture resolutions and the four bank-width sweeps, and it disappears
+into that 0.4 s. Eight-worker wall at M4: **5.7 h** projected from first
+completions on a quiet host, **5.4–7.7 h** from four-seed steady state, so
+the cap holds with the same margin M3 had.
+
+The one operational caveat, measured rather than inferred: the same
+first-completion probe read 71 s per seed and projected **10.2 h** while the
+host was also running the steady-state measurement, and the cost gate
+correctly aborted. The gate is not wrong there — the host really was
+delivering that — but it means the full-`W` run must be launched on an
+otherwise quiet host, which is the operational form of the M2 rows' warning
+that this host's per-seed cost is a wide band rather than a number.
 
 The M2 rows say why that re-projection is not a formality. The same seed-0
 pass measured anywhere from 22 s to 37 s on this host depending on concurrent
@@ -607,7 +631,37 @@ tiers, including the R19 tuple enumeration itself, which the compiler does
 not carry (decided 2026-08-16, section 5); **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
 and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
 max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
-fragment case).
+fragment case). M1–M4 are done as of 2026-08-16; the full-`W` run still
+waits on the explicit GO after M5.
+
+**Two M4 findings that belong on paper, not only in the census output.**
+
+First, the `w = 0` margin is far smaller than section 6.4 implies. The
+minimum jittered bank half-width is **80 nodes** in every Bay at every KAT
+seed, and section 7.2's "half-widths of 320–370 against jitter bounded by
+48 nodes" describes the *mouth* station only: the four authored centrelines
+run 360/330/320/370 at the mouth and taper to **80** at the Bay head. The
+collapse the universal forbids is therefore 80 nodes away, not 272. What
+saves it is not the margin but the taper — the narrowest station is the
+segment endpoint, where the 96-station smootherstep forces `delta_nodes = 0`
+by construction, so jitter cannot move the minimum at all. The census
+records both the overall minimum and the minimum over stations the jitter
+does move, because that second number is the one a correction would have to
+argue about.
+
+Second, the F3 step-predicate list in the completeness analysis is not the
+predicate space the tracer realizes, in three separable ways: "unseen" is
+two distinct bits (directed state and column); the diagonal X-cross
+compatibility the analysis lists only among the rejects is a *successor
+admission* predicate; and terminal reachability is not a successor predicate
+at all — `trace_bank` evaluates it only at branch width two or more, so a
+lone admitted successor is taken with no reachability test and a dead one
+surfaces later as `cannot reach its target` rather than as a reject at that
+step. The census declares six predicates and gives the untested-single case
+its own selection class. This is logged, not judged: it is exactly the
+"first-passing equals design-intended shore" remainder the analysis marks as
+mechanism (b), and the four head Banks realize **zero** branching steps at
+every KAT seed, so nothing turns on it yet.
 
 File cut: `tools/wp40/run_t2_census.sh` (launcher),
 `tools/wp40/t2_census_worker.lua`, `tools/wp40/t2_census_merge.lua`;

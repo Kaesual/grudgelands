@@ -423,6 +423,11 @@ ratio have been wrong.
 | census Scan-1+2 worker pass, one seed, LuaJIT | 30–43 s across seeds 0/Slot 29/max-u64 and repeat runs, host-load dependent (M3, 2026-08-16) |
 | the Scan-2 share of that pass, unflagged seed | ~8 s in a 30-s run: ~5.4 s the eight lazy Wing tails, ~2.4 s the four trace-bound envelopes, ~0.15 s the 16 completion traces, ~0.13 s counting+probes (M3, 2026-08-16) |
 | the flagged Slot-29 extra tuple (probe + dead trace) | below measurement noise: 30.6 s total, inside the unflagged band (M3, 2026-08-16) |
+| census Scan-1+3a+2 worker pass, one seed, LuaJIT | 29–33 s, median 31 s over nine interleaved seed-0 samples; spikes to ~45 s under concurrent load (M4, 2026-08-16) |
+| the Scan-3a surcharge, interleaved M3-vs-M4 A/B | ~0.4 s per seed, about 1.4 % — inside noise (M4, 2026-08-16) |
+| the per-tier split after M4, one seed | stage build ~20–27 s, Scan-1 ~2.0 s, Scan-3a ~8.3 s, Scan-2 ~0.6 s (M4, 2026-08-16) |
+| eight census workers, first completions, quiet host | 34–39 s per seed, projecting 5.7 h wall (M4, 2026-08-16) |
+| eight census workers, steady state, four seeds each | 36–69 s per seed; per-worker means 37.5–54.0 s, projecting 5.4–7.7 h wall (M4, 2026-08-16) |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -512,16 +517,17 @@ not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
   one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
   the exact production algorithm rather than a replacement stub.
 
-## T2 census scans (Scan-1/Scan-2 worker and launcher, milestones M1-M3)
+## T2 census scans (Scan-1/Scan-3a/Scan-2 worker and launcher, milestones M1-M4)
 
 The census contract lives in
 [wp40-t2-plan.md](../../docs/research/wp40-t2-plan.md) section 6; this
 section owns only the runner mechanics. M1 shipped the Scan-1 worker pass and
 the frozen row schema, M2 the eight-shard full-`W` launcher with its GO gate,
 verified resume, first-record validation and cost gate, M3 the Scan-2
-counting and R19 tuple tiers on the same per-seed pass (record schema
-`grug_wp40_census_scan_v2`, shard pattern `census-scan-v2-*`). Scan-3a and
-the merge are M4-M5 and do not exist yet.
+counting and R19 tuple tiers on the same per-seed pass, M4 the Scan-3a
+aperture, Wing, bank-width and head-Bank projections (record schema
+`grug_wp40_census_scan_v3`, shard pattern `census-scan-v3-*`). The merge is
+M5 and does not exist yet.
 
 ```sh
 tools/wp40/run_t2_census.sh --kat                  # seeds 0, Slot 29, max-u64; pinned digest
@@ -549,12 +555,34 @@ one tuple exists; the analysis section 5 flagging predicate survives as the
 per-row `flagged` marker (decided 2026-08-16, M3 — the section 6.2
 artifact-5 joint distribution, the U2 occupancy measurement and the
 0-complete class are required outputs and are not measurable on the
-predicate's skipped side). The worker emits one canonical TSV:
+predicate's skipped side).
+
+Since M4 the same pass also runs Scan-3a, *before* Scan-2 and on one shared
+Bank tracer: `scan3_aperture` rows (the eight F4 incidences, resolved
+through the compiler's own terminal authority and classified from its reject
+messages, with the emitted tail's water side decided here rather than at
+trace time), `scan3_wing` rows (the eight F5 analyses under the decided
+pair-exclusion reading — K candidates per side, complete tail paths,
+raw/structural/wedge-valid pair counts, both selected ranks and the seven
+per-cause exclusion counts), `scan3_bank` rows (the four head-Bank traces
+with their step, station, DFS-frame and stack counts), `scan3_width` rows
+(the section 6.4 `w = 0` event per Bay, in the exact body numerator
+`E = base_width_num + delta_nodes*L`), and the occupancy-driven `scan3_step`
+and `scan3_selection` rows that carry the realized F3 step-class coverage.
+The order matters: Scan-2's completion tier and Scan-3a share one tail and
+terminal cache, so a Wing resolved by Scan-2 first would return from cache
+unanalysed — and running Scan-3a first is also why the Scan-2 share dropped
+from ~8 s to ~0.6 s while the total pass did not move.
+
+The worker emits one canonical TSV:
 `schema`/`vocabulary` manifest lines, the seed-independent `prefilter`
 block, per-seed `edge`/`perimeter`/`aperture`/`attachment`/`junction`/
-`junction_pair`/`bay`/`scan2_endpoint`/`scan2_edge`/`scan2_tuple` rows
+`junction_pair`/`bay`/`scan2_endpoint`/`scan2_edge`/`scan2_tuple`/
+`scan3_aperture`/`scan3_wing`/`scan3_bank`/`scan3_width`/`scan3_step`/
+`scan3_selection` rows
 framed by `seed_begin`/`seed_end` — the M1 rows stay an exact prefix of
-each record — and a trailing `digest` line over the exact preceding bytes.
+each record, and the M1+M3 rows an exact prefix too — and a trailing
+`digest` line over the exact preceding bytes.
 Reject classes are recorded rows, not errors; the census continues
 scanning. Per-tuple precondition failures (the decided U1 empty-clip and
 U2 previous-binding readings among them) are DECIDED-with-continuation
@@ -572,7 +600,38 @@ carries no coast term, and widening the discharge set would need an explicit
 footprint argument first. Discharged edges are still evaluated on every seed;
 the block records verified predictions, not skipped work.
 
-`fixtures/t2_census/scan_kat_v2.lua` pins the M1+M3 KAT: the section 3-F6
+### The Scan-3a table-to-vocabulary map
+
+The full map lives beside the projection, in `census_scan3a`'s comment in
+`geometry/partition.lua`; the class lists themselves are declared once in
+`t2_census_authority.lua`, because M5's vacuous-branch report is exactly
+"declared minus realized" over them. Where the analysis section 3 tables and
+the compiled decision procedure differ in granularity the census follows the
+*procedure* and records the difference — a class no configuration can reach
+is a vacuous-branch row, not a measurement. The three differences worth
+knowing without opening the file:
+
+- **F4 row 4** ("`W` missing / non-unique / non-diagonal / not same-Bay-only
+  raw+final") is four classes in the procedure, one of which — W not
+  immediately aperture-included — that row does not name at all. **F4 row 7**
+  (wrong tail water side) is decided in `trace_bank`, and all eight
+  incidences sit on transition-incident Banks, so a trace-driven reading
+  would leave it unmeasurable until Scan-3b; the predicate is O(1) from the
+  resolved `D,T,W` and the declared water side and is evaluated in Scan-3a.
+  **F4 row 8** (terminal identity drift) reads only seed-independent catalog
+  state: declared, expected vacuous, underlying failure still a loud abort.
+- **F5** gains two classes with no table row at all — an empty distance-layer
+  DAG and the finite path bound — and its single "structural pair fails
+  side/disjoint/predecessor/X-cross" row splits into four counted causes,
+  whose side clause is vacuous by construction because `collect_paths` emits
+  strict-side stations only. `Chebyshev(K,J) > 4` is the section 6.4
+  refuted-frozen-universal event and is the Wing's own class.
+- **F3** declares six step predicates, not the table's five, and gives the
+  lone-admitted-successor case its own selection class. Foreign-water contact
+  gets no class: `bay_candidate` absorbs it, so it reaches the census as a
+  zero-reachable-successor reject.
+
+`fixtures/t2_census/scan_kat_v3.lua` pins the M1+M3+M4 KAT: the section 3-F6
 witness fills (seed 0 `0/0/0/0`, Slot 29 `0/0/0/0`, max-u64 `1/1/1/0`), the
 structural row counts, six transition edges with qualifying count one, 102
 passing junction pairs, attachment distances at most one, the
@@ -583,10 +642,28 @@ seeds. The load-bearing M3 pin is the Slot-29 R19 witness (analysis section
 tuple dies bank-incomplete — the dead-direct-terminal shape that generated
 R19 — and the retreat tuple completes, exactly one complete joint tuple; at
 max-u64 the same endpoint resolves via the diagonal elbow, agreeing with
-the pinned 7-direct/1-elbow R16/R17 prerequisite fixture. The digest moved
-legitimately at M3 (the record grew the Scan-2 rows) and is re-pinned at
-`347f30f6...`; it remains the determinism gate for everything after. The
-LuaJIT/PUC digest comparison is milestone M5's merge gate; M1-M3 run PUC
+the pinned 7-direct/1-elbow R16/R17 prerequisite fixture.
+
+M4 adds three load-bearing pins, all measured rather than adopted. The
+**retained R15 corpus comparison**: the Scan-3a Wing projection reproduces
+all five quantities of source-authority section 6.1 at all three seeds — raw
+pair counts `4,18,18,4,2,18,18,18`, wedge-valid exactly one each, selected
+ranks `1,10,2,1,2,17,9,17`, radii `4,5,5,4,3,5,5,5` and both tail lengths per
+Wing — which makes the corpus an acceptance oracle for the Wing analysis
+rather than a number copied forward. It also carries the section 3-F5
+Slot-29 witness (Kragmar-west-left: 2 structural pairs, 1 wedge-valid at rank
+2), which turns out to hold at all three seeds and not only at Slot 29. The
+**aperture tail-mode witness**: Slot 29's Elandor-east `before` incidence is
+the first measured tail-mode occupancy, and its emitted tail keeps `W` on the
+declared water side. And the **head-Bank shape**: all four complete at every
+seed with zero branching steps, so the reachability DFS never runs and both
+trace stress scalars are zero — the analysis's "path lengths 453–794, DFS
+frames ≤ 24" came from transition-incident Banks, which are Scan-3b.
+
+The digest moved legitimately at M3 (the record grew the Scan-2 rows) and
+again at M4 (the Scan-3a rows), and is re-pinned at `902eef21...`; it remains
+the determinism gate for everything after. The
+LuaJIT/PUC digest comparison is milestone M5's merge gate; M1-M4 run PUC
 only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
 which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 
@@ -648,7 +725,14 @@ validates while the run continues.
    slowest shard rather than a sum or an average because the shards run
    concurrently: summing inflates by the worker count, averaging hides an
    unbalanced run. `WP40_CENSUS_WALL_CAP_SECONDS` lowers the cap, which is
-   how the negative proof fires within a minute.
+   how the negative proof fires within a minute. **Launch the full-`W` run on
+   an otherwise quiet host.** Measured at M4: the same probe read 34–39 s per
+   seed and projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h
+   while a second eight-worker measurement was running — the gate aborted,
+   correctly, because that is what the host was delivering. The first seed of
+   a shard is also systematically the most expensive (cold JIT and eight
+   simultaneous R7 compiles), so the first-completion projection is
+   deliberately conservative against the ~35 s steady state.
 4. **Verified resume** (section 6.6.4). A shard already on disk is parsed,
    digest-checked against its own preceding bytes, and required to cover
    exactly its range of this `W` under the same module bytes before it is
@@ -676,7 +760,7 @@ reports must add up to |`W`|.
 
 Census shards are per-seed intermediates, which section 6.3 forbids
 committing, so they are written to the gitignored
-`tools/wp40/results/t2_census/census-scan-v2-%04d-%04d.tsv`; only the merged
+`tools/wp40/results/t2_census/census-scan-v3-%04d-%04d.tsv`; only the merged
 section-6.2 artifacts belong under `fixtures/t2_census/`. The name shares no
 stem with either pool pattern (`shard-luajit-*.tsv`) and the disjointness is
 computed, not asserted in prose.
