@@ -142,6 +142,16 @@ for seed_index = 1, #seeds do
 			tostring(row.topology_ceiling_nodes),
 			tostring(row.max_abs_scalar_q))
 	end
+	for index = 1, #scan.aperture_stress do
+		local row = scan.aperture_stress[index]
+		emit("aperture", seed, row.id, row.side,
+			tostring(row.d_x), tostring(row.d_z), tostring(row.d_scalar_q),
+			tostring(row.d_sample_distance),
+			tostring(row.w_x), tostring(row.w_z), tostring(row.w_scalar_q),
+			tostring(row.w_sample_distance),
+			tostring(row.a_x), tostring(row.a_z), tostring(row.a_scalar_q),
+			tostring(row.a_sample_distance))
+	end
 	for index = 1, #scan.attachments do
 		local row = scan.attachments[index]
 		emit("attachment", seed, row.id, row.edge_id, row.endpoint, row.class,
@@ -209,6 +219,8 @@ if kat_mode then
 					"census KAT: the fixed Holy band must stay zero-displacement")
 			end
 		end
+		assert(#scan.aperture_stress == 8,
+			"census KAT expects 8 aperture stress rows")
 		assert(#scan.attachments == 8, "census KAT expects 8 attachment rows")
 		assert(#scan.junctions == 38, "census KAT expects 38 junction rows")
 		assert(#scan.bay_fills == 4, "census KAT expects 4 bay rows")

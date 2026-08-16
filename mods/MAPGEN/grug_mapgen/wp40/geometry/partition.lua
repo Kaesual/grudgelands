@@ -3170,8 +3170,8 @@ local function new_partition(dependencies)
 		local stage = build_scan_stage(seed)
 		local result = {schema = "grug_wp40_census_scan1_v1", seed = seed,
 			prefilter = census_prefilter(stage), edges = {}, perimeters = {},
-			attachments = {}, junctions = {}, junction_pair_rejects = {},
-			bay_fills = {}}
+			aperture_stress = {}, attachments = {}, junctions = {},
+			junction_pair_rejects = {}, bay_fills = {}}
 		local intervals_by_edge, selected_by_edge = {}, {}
 		for index = 1, #stage.provisional_edges do
 			local edge = stage.provisional_edges[index]
@@ -3244,6 +3244,52 @@ local function new_partition(dependencies)
 			result.perimeters[index] = {id = row.id,
 				station_count = #row.stations,
 				topology_ceiling_nodes = ceiling, max_abs_scalar_q = max_abs}
+		end
+		-- Aperture stress scalars (plan section 6.2.3, redefined 2026-08-16):
+		-- per D/W/A station the scalar_q of the Chebyshev-nearest scalar
+		-- sample of the owning perimeter, ties to the lower sample index.  The
+		-- station indices are exactly the resolve_terminal aperture
+		-- neighborhood in the authored/declared perimeter order.
+		for index = 1, #stage.aperture_rows do
+			local aperture = stage.aperture_rows[index]
+			local perimeter = stage.perimeter_by_id[aperture.source.perimeter_id]
+			for _, side in ipairs({"before", "after"}) do
+				local point_index, away_index, water_index
+				if side == "before" then
+					point_index = aperture.bank_first - 1
+					away_index = point_index - 1
+					water_index = point_index + 1
+				else
+					point_index = aperture.bank_finish
+					away_index = point_index + 1
+					water_index = point_index - 1
+				end
+				local stations = {d = perimeter.stations[point_index],
+					w = perimeter.stations[water_index],
+					a = perimeter.stations[away_index]}
+				local row = {id = aperture.source.id, side = side}
+				for _, name in ipairs({"d", "w", "a"}) do
+					local station = stations[name]
+					if not station then
+						fail(aperture.source.id .. " " .. side ..
+							" authored aperture neighborhood is absent")
+					end
+					local best_distance, best_scalar
+					for sample_index = 1, #perimeter.scalar_samples do
+						local sample = perimeter.scalar_samples[sample_index]
+						local distance = math.max(math.abs(sample.x - station.x),
+							math.abs(sample.z - station.z))
+						if not best_distance or distance < best_distance then
+							best_distance, best_scalar = distance, sample.scalar_q
+						end
+					end
+					row[name .. "_x"] = station.x
+					row[name .. "_z"] = station.z
+					row[name .. "_scalar_q"] = best_scalar
+					row[name .. "_sample_distance"] = best_distance
+				end
+				result.aperture_stress[#result.aperture_stress + 1] = row
+			end
 		end
 		for index = 1, #source.perimeter_attachments do
 			local attachment = source.perimeter_attachments[index]

@@ -531,7 +531,7 @@ then the F1 interval classes for all 61 edges, F7 junction-pair classes plus
 the minimum pair clearance, F8 attachment Chebyshev distances and F6 fill
 counts — and emits one canonical TSV: `schema`/`vocabulary` manifest lines,
 the seed-independent `prefilter` block, per-seed `edge`/`perimeter`/
-`attachment`/`junction`/`junction_pair`/`bay` rows framed by
+`aperture`/`attachment`/`junction`/`junction_pair`/`bay` rows framed by
 `seed_begin`/`seed_end`, and a trailing `digest` line over the exact
 preceding bytes. Reject classes are recorded rows, not errors; the census
 continues scanning. Two exceptions abort hard by design: a discharged edge

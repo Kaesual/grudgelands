@@ -11,5 +11,5 @@ return {
 		["0"] = {0, 0, 0, 0},
 		["18446744073709551615"] = {1, 1, 1, 0},
 	},
-	digest = "e9ed2bd2b418d01c69dde138f83d13a65344fcb6be563fa1318b8553d60ce7a4",
+	digest = "08547fef390bf410f337eea0e4ffa3825e02fc7e9cb92d0e599c6ef00595d29f",
 }
