@@ -101,7 +101,10 @@ Resulting order:
    tuples, so it rides in the same per-seed worker pass at small marginal
    cost — Scan-1 already builds the final mask and the perimeters — and its
    results survive the collected correction. Scan-1 has a seed-independent
-   prefilter that permanently discharges most ordinary edges.
+   prefilter; its discharges are verified at every seed rather than skipped
+   (decided 2026-08-16) — the R7 compile dominates the per-seed cost, so
+   evaluating all 61 edges is nearly free and turns the discharge claim into
+   an exhaustively checked fact.
 2. **One collected correction** closing every occupied reject class plus the
    decided U1, U2 and O1 closures, followed by **one** compiler
    reproduction. If the correction unexpectedly touches masks or terminals —
@@ -363,6 +366,9 @@ structure and not a requirement imposed here:
    prefilter discharged, with the reason. Cheap to regenerate, but without it
    the occupied-class table cannot distinguish "this class was never occupied"
    from "this site was never scanned", which is the table's entire claim.
+   Decided 2026-08-16: discharged sites are still evaluated on every seed,
+   and a discharged edge realizing any interval count other than one aborts
+   the run — the list records verified predictions, not skipped work.
 5. **Distribution histograms** named in the completeness analysis section 5 —
    interval counts per edge, attachment Chebyshev distances, junction-pair pass
    rate, fill counts per bay, and the joint (eligible, R16-success, complete)
@@ -476,3 +482,34 @@ once the runner is built. The pattern throughout is the proven
    readings even though the catalog strings follow only with the collected
    correction — the census is R15-style structural search, not a policy
    edit; the manifest records this stance.
+7. **Explicit GO.** The full-`W` run starts only on the user's explicit GO,
+   matching the pool rule for expensive measurements. KATs and small
+   explicit ranges run freely.
+8. **The prefilter is verified, not trusted.** Every seed evaluates all 61
+   edges; a discharged edge realizing any interval count other than one
+   aborts hard. The R7 compile dominates the per-seed cost, so this
+   verification costs under a second per seed.
+
+### 6.7 Implementation work package (cut 2026-08-16)
+
+Grounding: `geometry/partition.lua` (3,380 lines, freely changeable) exposes
+only `compile`, the scalar session and validators — fail-closed,
+all-or-nothing. The census therefore needs new projection entry points that
+record decision classes and continue scanning, which is the critical core of
+the package. The launcher and merge adapt from existing references
+(`run_t2_extreme_shards.sh` / `run_t2_extreme_shard.sh` /
+`t2_extreme_merge.lua` — 152/121/273 lines).
+
+Milestones: **M1** worker pass for one seed — Scan-1 projections, artifact
+row schema, prefilter verification; **M2** launcher with GO gate, resume,
+first-record validation and cost gate; **M3** Scan-2 counting and tuple
+tiers; **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
+and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
+max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
+fragment case).
+
+Division of labour: the projection entry points, worker classification,
+merge semantics and KATs are done in-session; the mechanical launcher and
+merge plumbing may go to a capable subagent after M1 fixes the row schema,
+briefed by goals with a cost cap. M1 is the heavy lift and the cost anchor
+for everything after it: measure M1 before scheduling M3–M5.
