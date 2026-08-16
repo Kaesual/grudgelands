@@ -508,6 +508,11 @@ and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
 max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
 fragment case).
 
+File cut: `tools/wp40/run_t2_census.sh` (launcher),
+`tools/wp40/t2_census_worker.lua`, `tools/wp40/t2_census_merge.lua`;
+committed artifacts and KAT fixtures under `tools/wp40/fixtures/t2_census/`.
+Census shard names must never match a pool shard pattern (section 6.6.1).
+
 Division of labour: the projection entry points, worker classification,
 merge semantics and KATs are done in-session; the mechanical launcher and
 merge plumbing may go to a capable subagent after M1 fixes the row schema,
