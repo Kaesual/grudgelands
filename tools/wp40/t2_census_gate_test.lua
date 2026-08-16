@@ -350,6 +350,109 @@ refuses("a shard whose prefilter status is undeclared", "has status",
 	authority.verify_shard, sealed((body:gsub("\tdischarged\t", "\tdisarmed\t", 1))),
 	expected)
 
+-- ------------------------------------------------- M5 merge-side declarations
+-- The merge reads every field by name and keys every row on a declared site,
+-- so a column list that drifts from the frozen width or a site column that
+-- does not exist would corrupt an artifact silently.  The authority refuses
+-- both at load; what is checked here is that the declarations it loaded are
+-- the ones the merge actually needs.
+for _, layout in ipairs(authority.record_rows) do
+	check(#layout.columns == layout.fields,
+		layout.tag .. " names a different number of columns than fields")
+	check(#layout.site >= 1, layout.tag .. " declares no site columns")
+	local cells = {}
+	for field = 1, layout.fields do cells[field] = layout.tag .. "_" .. field end
+	cells[1], cells[2] = layout.tag, "0"
+	check(authority.field(layout.tag, cells, layout.columns[layout.fields]) ==
+		cells[layout.fields], layout.tag .. " reads its last column wrong")
+	check(type(authority.site_of(layout.tag, cells)) == "string",
+		layout.tag .. " has no site key")
+end
+refuses("a merge reading a column no row declares", "has no column named",
+	authority.field, "edge", {"edge", "0"}, "not_a_column")
+refuses("a merge reading a row tag no roster declares", "unknown row tag",
+	authority.site_of, "not_a_tag", {"not_a_tag", "0"})
+
+-- Section 6.2.2's universe.  Every declared decision branch must carry a
+-- verdict -- the authority fails at load otherwise -- and the kind
+-- vocabularies must stay out of it, or the vacuous report would call an
+-- unrealized row *shape* dead policy.
+local universe = authority.branch_universe()
+check(#universe > 0, "the declared branch universe is empty")
+local in_universe = {}
+for index = 1, #universe do
+	local declared = universe[index]
+	check(declared.verdict == "DECIDED" or declared.verdict == "REJECTED" or
+		declared.verdict == "EVENT", declared.branch .. " has no usable verdict")
+	in_universe[declared.vocabulary .. "\t" .. declared.branch] = true
+end
+for name, kind in pairs(authority.class_vocabulary_kind) do
+	if kind == "kind" then
+		for _, value in ipairs(authority.classes[name]) do
+			check(not in_universe[name .. "\t" .. value],
+				"the kind vocabulary " .. name .. " leaked into the branch universe")
+		end
+	else
+		for _, value in ipairs(authority.classes[name]) do
+			check(in_universe[name .. "\t" .. value],
+				name .. " declares " .. value .. " outside the branch universe")
+		end
+	end
+end
+for _, cause in ipairs(authority.wing_exclusion_causes) do
+	check(in_universe[authority.exclusion_vocabulary .. "\t" .. cause],
+		"the F5 exclusion cause " .. cause .. " is outside the branch universe")
+end
+-- Section 6.2.3's roster is load-bearing: 137 measurable sites and 16 open
+-- ones have to add up to the 153 the contract names.
+local roster_total, roster_scanned = 0, 0
+for _, family in ipairs(authority.extremal_families) do
+	roster_total = roster_total + family.sites
+	roster_scanned = roster_scanned + (family.scanned_sites or family.sites)
+	check(authority.record_row_by_tag[family.row] ~= nil,
+		family.family .. " names a row kind the record does not carry")
+	for _, scalar in ipairs(family.scalars) do
+		local derived = authority.derived_scalars[scalar]
+		check(derived ~= nil or
+			authority.record_row_by_tag[family.row].column_index[scalar] ~= nil,
+			family.family .. " names the unmeasurable scalar " .. scalar)
+	end
+end
+check(roster_total == authority.extremal_site_total,
+	"the extremal roster no longer covers 153 sites")
+check(roster_scanned == 137,
+	"the scans 1-3a extremal coverage moved from 137 sites to " .. roster_scanned)
+for _, rule in ipairs(authority.flag_rules) do
+	local layout = authority.record_row_by_tag[rule.row]
+	check(layout ~= nil and layout.column_index[rule.column] ~= nil and
+		layout.column_index[rule.detail] ~= nil,
+		"the " .. rule.flag .. " flag reads a column its row does not carry")
+end
+
+-- Free worker output is the only thing the M5 merge KAT can consume, and it
+-- must never be readable as a slice of `W` -- nor a shard as a free run.
+local free_body = "schema\t" .. authority.schema .. "\nvocabulary\t" ..
+	authority.vocabulary_path .. "\n" .. table.concat(prefilter, "\n") .. "\n" ..
+	seed_record(w.seeds[1])
+local free_rows = 0
+local free = authority.verify_free_output(sealed(free_body), nil,
+	function() free_rows = free_rows + 1 end)
+check(#free.seeds == 1 and #free.prefilter == authority.prefilter_edge_count and
+	free_rows > 0, "a well-formed free record set was not accepted")
+refuses("a shard read as a free record set", "must be verified as a shard",
+	authority.verify_free_output, shard, nil)
+refuses("a free record set read as a shard", "shard header line 3",
+	authority.verify_shard, sealed(free_body), nil)
+refuses("a free record set with a foreign schema", "record set schema is",
+	authority.verify_free_output,
+	sealed((free_body:gsub(authority.schema, "grug_wp40_census_scan_v2", 1))), nil)
+refuses("a free record set with an undeclared class", "undeclared class",
+	authority.verify_free_output,
+	sealed((free_body:gsub("attachment_equality_select",
+		"attachment_equality_maybe", 1))), nil)
+refuses("a free record set without its digest line", "no trailing digest line",
+	authority.verify_free_output, free_body, nil)
+
 write_file(scratch .. "/gate-shard.tsv", shard)
 check(read_file(scratch .. "/gate-shard.tsv") == shard, "shard round trip failed")
 hasher.close()

@@ -121,6 +121,26 @@ elseif command == "cost" then
 		projection.slowest.elapsed / projection.slowest.completed))
 	refuse(authority.check_cost_gate, projection, cap)
 	print("WP40 T2 census cost gate passed")
+elseif command == "merge_kat" then
+	-- The M5 gate's pinned half.  The LuaJIT/PUC comparison proves the two
+	-- runtimes agree; this proves they agree on the value a reviewed run
+	-- measured, which is what stops a silent semantic change in the merge from
+	-- passing because both interpreters changed with it.
+	local digest = assert(arg[4], "merge artifacts digest required")
+	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v3.lua"
+	local chunk, diagnostic = loadfile(fixture_path)
+	assert(chunk, "census KAT fixture missing or invalid: " .. tostring(diagnostic))
+	local fixture = chunk()
+	refuse(function()
+		if type(fixture.merge_artifacts_digest) ~= "string" then
+			error("WP40 T2 census: the KAT fixture pins no merge artifacts digest", 0)
+		end
+		if digest ~= fixture.merge_artifacts_digest then
+			error("WP40 T2 census merge artifacts digest is " .. digest ..
+				", the KAT fixture pins " .. fixture.merge_artifacts_digest, 0)
+		end
+	end)
+	print("WP40 T2 census merge KAT passed digest=" .. digest)
 elseif command == "first_record" or command == "verify" then
 	local w_path = assert(arg[4], "W path required")
 	local digest = assert(arg[5], "W digest required")

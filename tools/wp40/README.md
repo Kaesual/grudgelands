@@ -517,7 +517,7 @@ not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
   one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
   the exact production algorithm rather than a replacement stub.
 
-## T2 census scans (Scan-1/Scan-3a/Scan-2 worker and launcher, milestones M1-M4)
+## T2 census scans (Scan-1/Scan-3a/Scan-2 worker, launcher and merge, M1-M5)
 
 The census contract lives in
 [wp40-t2-plan.md](../../docs/research/wp40-t2-plan.md) section 6; this
@@ -526,18 +526,23 @@ the frozen row schema, M2 the eight-shard full-`W` launcher with its GO gate,
 verified resume, first-record validation and cost gate, M3 the Scan-2
 counting and R19 tuple tiers on the same per-seed pass, M4 the Scan-3a
 aperture, Wing, bank-width and head-Bank projections (record schema
-`grug_wp40_census_scan_v3`, shard pattern `census-scan-v3-*`). The merge is
-M5 and does not exist yet.
+`grug_wp40_census_scan_v3`, shard pattern `census-scan-v3-*`), M5 the
+deterministic merge into the five section-6.2 artifacts plus the section-6.3
+manifest, carrying the targeted `pairs()`-order divergence test and gated on a
+byte-identical artifact digest under LuaJIT and the vendored PUC 5.1. The
+full-`W` run itself still waits on the explicit GO.
 
 ```sh
-tools/wp40/run_t2_census.sh --kat                  # seeds 0, Slot 29, max-u64; pinned digest
+tools/wp40/run_t2_census.sh --kat                  # 4 seeds: 0, Slot 30, Slot 29, max-u64
 WP40_CENSUS_OUTPUT=/path/out.tsv \
   tools/wp40/run_t2_census.sh --seeds 0 7 4096     # small explicit lists run freely
 WP40_CENSUS_OUTPUT=/path/out.tsv \
   tools/wp40/run_t2_census.sh --range 0 15         # a small slice of W, also free
+tools/wp40/run_t2_census.sh --merge-kat            # the M5 gate: KAT, merge twice, compare
 tools/wp40/run_t2_census.sh --plan                 # derive W, print the GO token
 WP40_CENSUS_GO=<token> tools/wp40/run_t2_census.sh --full-w
-tools/wp40/run_t2_census_gates.sh                  # the four gates, proven negatively
+tools/wp40/run_t2_census.sh --merge                # publish the five artifacts
+tools/wp40/run_t2_census_gates.sh                  # the five gates, proven negatively
 ```
 
 LuaJIT by default, `WP40_LUA_BIN` overrides. One worker process evaluates
@@ -640,12 +645,73 @@ knowing without opening the file:
   gets no class: `bay_candidate` absorbs it, so it reaches the census as a
   zero-reachable-successor reject.
 
-`fixtures/t2_census/scan_kat_v3.lua` pins the M1+M3+M4 KAT: the section 3-F6
-witness fills (seed 0 `0/0/0/0`, Slot 29 `0/0/0/0`, max-u64 `1/1/1/0`), the
+### The merge, and what the five artifacts say (M5)
+
+`t2_census_merge.lua` consumes a complete verified record set and emits the
+five section-6.2 artifacts plus the manifest, into
+`fixtures/t2_census/` for a full-`W` run and into a scratch directory
+otherwise. Two input framings, one grammar: `--full-w` reads the eight
+canonical shards, verifies each against the authority and requires them to
+cover `W` in order and exactly once; `--records` reads free worker output,
+which carries the frozen M1 preamble instead of a shard header and therefore
+states no commit, tree or interpreter — the manifest says so, so a KAT
+artifact can never be read as a measurement of `W`. Verification and
+aggregation share one parse (the authority's verifier takes a per-row
+callback), and no per-seed intermediate is retained.
+
+- **census-occupied-classes-v1.tsv** — one `occupied` row per (site,
+  decision class) with its seed count, row count and least witness seed;
+  one `witness` line per row carrying that witness's **verbatim record row**,
+  which is section 6.3's "configuration bytes"; `derived` rows for the three
+  section-3 branches that have no class column; and the section-6.4
+  `no_branch_matched` sink, whose emptiness is stated in the summary rather
+  than left to be inferred. A REJECTED verdict is a finding, and the verdict
+  per branch is *declared* in the authority rather than inferred from a name
+  suffix — `scan2_tuple_probe_wet` and `x_cross` both read like failures and
+  are both ordinary DECIDED-with-continuation outcomes under U1/U2.
+- **census-vacuous-branches-v1.tsv** — every declared branch with
+  realized/vacuous and its status: `dominated`, `vacuous_by_construction`,
+  `expected_vacuous`, `out_of_scope_scan3b`, `consequent` or `in_scope`, plus
+  the `derived` and `unmeasured` line kinds. A permanent zero that is
+  dominated and one that is untested must not read alike.
+- **census-scan4-seed-set-v1.tsv** — the named union: flagged ∪ per-site
+  extremal ∪ winners ∪ corpus, with one `extremal` line per (site, scalar,
+  bound), one `open` line per Scan-3b Bank **named**, and the Holy band's
+  exclusion stated with its reason and verified against the rows.
+- **census-prefilter-discharge-v1.tsv** — all 61 edges with status and
+  reason, agreeing across every input, plus the re-derived verification that
+  no discharged edge ever realized an interval count other than one.
+- **census-histograms-v1.tsv** — the section-6.2.5 distributions and
+  Scan-3a's own, with an explicit `universal` line per section-6.4 universal
+  including its zero.
+
+The M5 gate is `--merge-kat`: run the four-seed worker KAT, merge it under
+LuaJIT and under `tools/bin/lua51`, compare all five artifacts byte for byte,
+and check the artifacts digest against the fixture's pin. Only the PUC run may
+write into the committed fixtures, so the half that publishes is never the
+half that is merely compared. The digest covers the five artifacts and not the
+manifest, which names the merge interpreter and differs between the two runs
+by construction.
+
+The `pairs()`-order divergence test (plan section 5) rides here because census
+aggregation is the iteration-order-dependent control flow it exists to catch.
+It has two halves: a probe that shows this runtime's `pairs()` really does
+hand out a non-sorted order — without it the second half could pass
+vacuously — and an invariance half that folds a synthetic record set covering
+every declared class, plus the measured records where they fit in memory
+twice, through the whole artifact construction in two different orders and
+requires byte-identical output. It found a real defect on its first run: a
+Wing counts seven pair-exclusion causes on one row, so a site can realize the
+same branch through several rows of one seed and "the first such row" was an
+arrival-order choice. The witness is now the least row of the least seed.
+
+`fixtures/t2_census/scan_kat_v3.lua` pins the M1+M3+M4+M5 KAT: the section
+3-F6 witness fills (seed 0 `0/0/0/0`, Slot 30 `0/0/0/0`, Slot 29 `0/0/0/0`,
+max-u64 `1/1/1/0`), the
 structural row counts, six transition edges with qualifying count one, 102
 passing junction pairs, attachment distances at most one, the
 zero-displacement Holy band, the measured Scan-2 counting and joint-decision
-values per endpoint and edge, and the determinism digest over all three
+values per endpoint and edge, and the determinism digest over all four
 seeds. The load-bearing M3 pin is the Slot-29 R19 witness (analysis section
 3-F2): `land_010:to` holds two direct R16 candidates, the endpoint's own
 tuple dies bank-incomplete — the dead-direct-terminal shape that generated
@@ -655,13 +721,13 @@ the pinned 7-direct/1-elbow R16/R17 prerequisite fixture.
 
 M4 adds three load-bearing pins, all measured rather than adopted. The
 **retained R15 corpus comparison**: the Scan-3a Wing projection reproduces
-all five quantities of source-authority section 6.1 at all three seeds — raw
+all five quantities of source-authority section 6.1 at every KAT seed — raw
 pair counts `4,18,18,4,2,18,18,18`, wedge-valid exactly one each, selected
 ranks `1,10,2,1,2,17,9,17`, radii `4,5,5,4,3,5,5,5` and both tail lengths per
 Wing — which makes the corpus an acceptance oracle for the Wing analysis
 rather than a number copied forward. It also carries the section 3-F5
 Slot-29 witness (Kragmar-west-left: 2 structural pairs, 1 wedge-valid at rank
-2), which turns out to hold at all three seeds and not only at Slot 29. The
+2), which turns out to hold at every seed and not only at Slot 29. The
 **aperture tail-mode witness**: Slot 29's Elandor-east `before` incidence is
 the first measured tail-mode occupancy, and its emitted tail keeps `W` on the
 declared water side. And the **head-Bank shape**: all four complete at every
@@ -669,10 +735,23 @@ seed with zero branching steps, so the reachability DFS never runs and both
 trace stress scalars are zero — the analysis's "path lengths 453–794, DFS
 frames ≤ 24" came from transition-incident Banks, which are Scan-3b.
 
-The digest moved legitimately at M3 (the record grew the Scan-2 rows) and
-again at M4 (the Scan-3a rows), and is re-pinned at `902eef21...`; it remains
-the determinism gate for everything after. The
-LuaJIT/PUC digest comparison is milestone M5's merge gate; M1-M4 run PUC
+M5 adds the fourth seed and re-shapes one M4 pin. **Slot 30** is the analysis
+section 3-F8 fragment case and no earlier KAT covered it: `land_007` carries
+two maximal dry intervals of which one is a singleton, exactly one qualifies,
+and the attachment on that edge sees the same count — the excluded dry
+fragment, reproducing 3-F8 and 3-F1 as written. And the **bank-width pin is
+now per seed and per Bay**, because Slot 30 refutes M4's reading that the
+station minimum sits where the taper forces `delta_nodes = 0`: it moves to a
+jittered station in two of the four Bays (75 nodes at delta −30, 74 at −26).
+The taper decides the *segment*, not the station. The exact per-column bound —
+which is what actually rules a collapse out — reads 46 there, the tightest of
+the four seeds and still 14 above the structural floor of `80 − 48`.
+
+The record digest moved legitimately at M3 (the record grew the Scan-2 rows),
+again at M4 (the Scan-3a rows) and again at M5 (the fourth seed), and is
+re-pinned at `01b5dd4b...`; it remains the determinism gate for everything
+after. `merge_artifacts_digest` (`f4ef6fdf...`) is its M5 counterpart over the
+five artifacts. The LuaJIT/PUC comparison is the merge gate; M1-M4 run PUC
 only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
 which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 
@@ -681,13 +760,24 @@ which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 `t2_census_authority.lua` owns every rule more than one consumer needs: the
 `W` derivation, the eight shard ranges, the shard path, the decision-class
 vocabulary with its per-seed site roster, the GO-token rule and the two
-numeric gates. The launcher, the worker and the M5 merge ask it rather than
+numeric gates. The launcher, the worker and the merge ask it rather than
 restating it — a second copy of the shard-name rule is what aborted a fresh
 pool launch before any seed was measured (see the comment in
 `run_t2_extreme_shards.sh`). Plan section 6.7's file cut names three census
 files; this is a deliberate fourth, with `t2_census_gate.lua` (launcher-side
 entry points), `t2_census_hasher.lua`, `t2_census_sha_server.py` and the two
 gate-proof harnesses alongside.
+
+M5 completed the declaration rather than starting a second one beside it. The
+merge reads every field by name, so the record grammar gained `columns` and a
+`site` key per row kind, cross-checked against the frozen widths at load. The
+section-6.2.2 report is "declared minus realized", so the branch universe
+gained the verdict per branch, which vocabularies are decision branches at all
+(a mode or a kind is a row shape, not dead policy), the M3/M4 review's notes
+on why a given zero is expected, and the section-3 rows that are `derived`
+from counting columns or `unmeasured` by this record. And section 6.2.3's
+153-site roster and flagged predicate are declared here too, because "the
+artifact covered 137 of 153 sites" is only checkable against a stated total.
 
 `W` is derived, never listed: the 27 corpus slots — seed 0 is slot 1 and
 max-u64 slot 19 — plus the 4,096 pool candidates recomputed from the
@@ -698,15 +788,15 @@ eight shards are three of 516 and five of 515 rather than the pool's clean
 512s. The order is ascending canonical unsigned-64 decimal and the seeds
 never pass through a Lua number.
 
-### The four gates, and why they are proven negatively
+### The five gates, and why they are proven negatively
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,185 checks, 33 of
+does the same against the decision functions directly (4,498 checks, 56 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
-shard is resumed and costs exactly one worker, and a real worker record
-validates while the run continues.
+shard is resumed and costs exactly one worker, a real worker record validates
+while the run continues, and a free record set merges into all six outputs.
 
 1. **GO gate** (section 6.6.7). The full-`W` path starts only when
    `WP40_CENSUS_GO` equals this `W`'s digest. The token is a digest rather
@@ -754,6 +844,18 @@ validates while the run continues.
    *it* started and removes only those that do not stand up, so a finished
    shard keeps its hours and the next `--full-w` is not blocked by the
    partial files of the last one.
+5. **Merge gate** (sections 6.3, 6.4 and 6.6.5). The same inputs merge under
+   LuaJIT and under the vendored PUC 5.1 and the five artifacts must come out
+   byte for byte identical; only the PUC run may write into the committed
+   fixtures, and only a full-`W` merge may publish at all, so a KAT artifact
+   can never claim a provenance it does not have. A shard read as a free
+   record set is refused and so is the reverse, a merge over a directory it
+   already wrote is refused, and the pinned artifacts digest is checked
+   against the KAT fixture — the LuaJIT/PUC comparison shows the runtimes
+   agree, the pin shows they agree with a reviewed measurement. The
+   section-6.4 sink is the one gate that does *not* abort: the merge writes
+   every artifact, reports the count and exits 3, because a configuration no
+   branch covers is worth stopping for but its evidence is worth keeping.
 
 A refusing gate exits 3 and a broken one exits 1, and the launcher says which
 happened. Without that split it would report a cap overrun when the
@@ -770,9 +872,12 @@ reports must add up to |`W`|.
 Census shards are per-seed intermediates, which section 6.3 forbids
 committing, so they are written to the gitignored
 `tools/wp40/results/t2_census/census-scan-v3-%04d-%04d.tsv`; only the merged
-section-6.2 artifacts belong under `fixtures/t2_census/`. The name shares no
-stem with either pool pattern (`shard-luajit-*.tsv`) and the disjointness is
-computed, not asserted in prose.
+section-6.2 artifacts belong under `fixtures/t2_census/`, as
+`census-{occupied-classes,vacuous-branches,scan4-seed-set,prefilter-discharge,histograms,manifest}-v1.tsv`.
+The shard name shares no stem with either pool pattern
+(`shard-luajit-*.tsv`) and the disjointness is computed, not asserted in
+prose. The artifacts are absent until the full-`W` run and its merge have
+happened; the KAT writes the same six files into a scratch directory.
 
 A full-`W` run requires every geometry module and launcher file to be tracked
 and unmodified against `HEAD`, and each worker pins those bytes before it

@@ -251,6 +251,9 @@ if [[ ! -e "$(shard_one "$export_dir")" ]]; then
 	fail "the abort discarded a shard it had just verified"
 fi
 checks=$((checks + 1))
+# Kept for the merge gate below, which has to prove that a provenance-bearing
+# shard is refused where a free record set is expected.
+cp "$(shard_one "$export_dir")" "$scratch/gate-shard-for-merge.tsv"
 rm -f "$export_dir"/tools/wp40/results/t2_census/*.tsv
 
 echo "== a free small range needs no token =="
@@ -296,5 +299,70 @@ if pgrep -f "$broken_export/tools/wp40/t2_census_worker.lua" >/dev/null; then
 	fi
 fi
 checks=$((checks + 1))
+
+echo "== merge gate (plan sections 6.3, 6.4 and 6.6.5) =="
+# The expensive positive -- a four-seed worker KAT merged twice and compared
+# byte for byte -- is `run_t2_census.sh --merge-kat` and costs about two and a
+# half minutes of scanning.  What belongs here is the refusals, which are all
+# sub-second and are the ones a wrong invocation would hit.
+merge_scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
+mkdir -p "$scratch/merge-out"
+expect_failure "a merge KAT digest that does not match the pinned one" \
+	"the KAT fixture pins" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_gate.lua" "$export_dir" "$merge_scratch" \
+	merge_kat "$(printf 'f%.0s' {1..64})"
+# Section 6.6.5: only the vendored PUC may write the committed artifacts, so
+# the LuaJIT half of the comparison can never be the half that publishes.
+expect_failure "a LuaJIT merge publishing into the committed fixtures" \
+	"requires the vendored PUC Lua 5.1" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$export_dir/tools/wp40/fixtures/t2_census" --full-w
+expect_failure "a KAT record set publishing into the committed fixtures" \
+	"only a full-W merge may publish" \
+	"$export_dir/tools/bin/lua51" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$export_dir/tools/wp40/fixtures/t2_census" --records "$scratch/free-range.tsv"
+# A shard is provenance-bearing and a free record set is not; reading either as
+# the other would let a KAT artifact claim a commit it never had.
+expect_failure "a shard merged as a free record set" \
+	"must be verified as a shard" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out" --records "$scratch/gate-shard-for-merge.tsv"
+expect_failure "a full-W merge with no shards on disk" "missing file" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out" --full-w
+# The positive that stops the refusals above from passing vacuously: the same
+# free record set the range gate just produced merges cleanly, and its five
+# artifacts and manifest appear.
+"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out" --records "$scratch/free-range.tsv" >/dev/null
+checks=$((checks + 1))
+for artifact in census-occupied-classes-v1.tsv census-vacuous-branches-v1.tsv \
+		census-scan4-seed-set-v1.tsv census-prefilter-discharge-v1.tsv \
+		census-histograms-v1.tsv census-manifest-v1.tsv; do
+	[[ -s "$scratch/merge-out/$artifact" ]] ||
+		fail "the merge wrote no $artifact"
+	checks=$((checks + 1))
+done
+grep -q '^summary	declared=' "$scratch/merge-out/census-vacuous-branches-v1.tsv" ||
+	fail "the vacuous-branch artifact carries no coverage summary"
+grep -q 'sites_covered=137 of 153' "$scratch/merge-out/census-manifest-v1.tsv" ||
+	fail "the manifest does not report the open Scan-3b sites"
+grep -q 'pairs_order_probe_unsorted=true' \
+	"$scratch/merge-out/census-manifest-v1.tsv" ||
+	fail "the pairs() divergence probe reported a sorted iteration order, which \
+would make the invariance half of the section 5 test vacuous"
+checks=$((checks + 3))
+expect_failure "a merge over an output directory it already wrote" \
+	"already exists" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out" --records "$scratch/free-range.tsv"
+rm -rf -- "$merge_scratch"
 
 echo "WP40 T2 census gate proofs passed: $checks launcher-level checks"

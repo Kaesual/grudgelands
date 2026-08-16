@@ -75,7 +75,12 @@ while arg[argument_index] do
 end
 if mode == "kat" then
 	assert(#seeds == 0, "--kat accepts no explicit seeds")
-	seeds = {"0", "16178445837170081103", "18446744073709551615"}
+	-- Ascending canonical decimal, the order `W` itself uses.  M5 inserted the
+	-- Slot-30 fragment witness in its sorted place rather than appending it, so
+	-- the roster stays a prefix-free statement about order; the digest moved
+	-- with the fourth seed, which the M5 commit records.
+	seeds = {"0", "15219119262482319357", "16178445837170081103",
+		"18446744073709551615"}
 elseif mode == "range" then
 	assert(#seeds == 0, "--range accepts no explicit seeds")
 end
@@ -462,6 +467,12 @@ if mode == "kat" then
 		"census KAT roster does not cover the fixture's R19 witness seed")
 	assert(scans_by_seed[fixture.tail_mode_witness.seed],
 		"census KAT roster does not cover the fixture's tail-mode witness seed")
+	assert(type(fixture.fragment_witness) == "table" and
+		fixture.fragment_witness.seed and fixture.fragment_witness.edge and
+		fixture.fragment_witness.attachment,
+		"census KAT fixture lacks its F8 fragment witness declaration")
+	assert(scans_by_seed[fixture.fragment_witness.seed],
+		"census KAT roster does not cover the fixture's fragment witness seed")
 	assert(#fixture.r15_corpus == 8,
 		"census KAT fixture expects eight retained R15 corpus rows")
 	for seed_index = 1, #seeds do
@@ -655,17 +666,31 @@ if mode == "kat" then
 		-- Section 6.4: the `w = 0` universal, and the margin behind it.
 		assert(#scan.scan3_bay_widths == 4,
 			"census KAT expects 4 scan3 width rows")
+		local expected_widths = assert(fixture.bank_width.per_seed[seed],
+			"census KAT fixture lacks bank widths for seed " .. seed)
 		for index = 1, #scan.scan3_bay_widths do
 			local row = scan.scan3_bay_widths[index]
+			local expected = assert(expected_widths[index],
+				"census KAT fixture lacks bank width row " .. index)
 			assert(row.class == "bay_bank_width_positive",
 				"census KAT scan3 width " .. row.id .. " class " .. row.class)
-			assert(row.min_width_nodes == fixture.bank_width.min_width_nodes and
-				row.min_segment == fixture.bank_width.min_segment,
-				"census KAT scan3 width " .. row.id .. " minimum moved to " ..
-				row.min_width_nodes .. " at segment " .. row.min_segment ..
-				" seed " .. seed)
-			assert(row.min_delta_nodes == 0,
-				"census KAT: the narrowest bank width station gained jitter")
+			-- The taper decides which segment holds the minimum on every seed
+			-- measured so far.  It does *not* pin the station: Slot 30 moves the
+			-- minimum to a jittered station in two of the four Bays, which is
+			-- why the station minimum and its own jitter are pinned per seed
+			-- here rather than asserted constant, as M4's three-seed reading had
+			-- them.
+			assert(row.min_segment == fixture.bank_width.min_segment,
+				"census KAT scan3 width " .. row.id .. " minimum left the taper " ..
+				"segment for " .. row.min_segment .. " seed " .. seed)
+			assert(row.min_width_nodes == expected[1] and
+				row.min_delta_nodes == expected[2],
+				"census KAT scan3 width " .. row.id .. " station minimum is " ..
+				row.min_width_nodes .. " at delta " .. row.min_delta_nodes ..
+				", pinned " .. expected[1] .. "/" .. expected[2] .. " seed " .. seed)
+			assert(row.min_width_nodes <= fixture.bank_width.taper_floor_nodes,
+				"census KAT scan3 width " .. row.id .. " exceeded the authored " ..
+				"taper floor of " .. fixture.bank_width.taper_floor_nodes)
 			assert(math.abs(row.min_delta) <= fixture.bank_width.delta_bound and
 				math.abs(row.max_delta) <= fixture.bank_width.delta_bound,
 				"census KAT scan3 width " .. row.id ..
@@ -673,15 +698,54 @@ if mode == "kat" then
 			-- The exact per-column lower bound, which is what actually rules a
 			-- collapse out: the station minimum alone cannot, because the
 			-- compiler evaluates the same numerator at columns between stations.
-			-- The exact value is pinned by the digest; what is asserted by name
-			-- is that it stays positive and above the structural floor.
+			-- Slot 30 is the tightest of the four seeds at 46 nodes.
+			assert(row.column_bound_nodes == expected[3],
+				"census KAT scan3 width " .. row.id .. " column bound is " ..
+				row.column_bound_nodes .. ", pinned " .. expected[3] ..
+				" seed " .. seed)
 			assert(row.column_bound_nodes > 0 and row.column_bound_nodes >=
 				fixture.bank_width.column_bound_floor,
 				"census KAT scan3 width " .. row.id .. " column bound is " ..
 				row.column_bound_nodes .. " seed " .. seed)
 		end
+		-- Analysis section 3-F8 and 3-F1: the fragment-bearing case, measured
+		-- rather than assumed.  Its edge must carry a second maximal dry
+		-- interval, one of the two must be a singleton that does not qualify,
+		-- and the attachment on that edge must see the same interval count --
+		-- which is what makes it fragment-bearing in the section 6.2.3 sense.
+		if seed == fixture.fragment_witness.seed then
+			local witness = fixture.fragment_witness
+			local edge_seen, attachment_seen = false, false
+			for index = 1, #scan.edges do
+				local row = scan.edges[index]
+				if row.id == witness.edge then
+					assert(row.class == witness.class and
+						row.interval_count == witness.intervals and
+						row.singleton_count == witness.singletons and
+						row.qualifying_count == witness.qualifying,
+						"census KAT: the F8 fragment witness " .. row.id ..
+						" is now " .. row.class .. " with " .. row.interval_count ..
+						" intervals / " .. row.singleton_count .. " singletons / " ..
+						tostring(row.qualifying_count) .. " qualifying")
+					edge_seen = true
+				end
+			end
+			for index = 1, #scan.attachments do
+				local row = scan.attachments[index]
+				if row.id == witness.attachment then
+					assert(row.edge_id == witness.edge and
+						row.interval_count == witness.intervals,
+						"census KAT: the F8 fragment witness attachment " .. row.id ..
+						" sees " .. row.interval_count .. " intervals")
+					attachment_seen = true
+				end
+			end
+			assert(edge_seen and attachment_seen,
+				"census KAT: the F8 fragment witness rows are absent")
+		end
 	end
 	assert(digest == fixture.digest,
 		"census KAT determinism digest differs: " .. digest)
-	print("census scan KAT passed (seeds 0, Slot 29 and max-u64, digest pinned)")
+	print("census scan KAT passed (seeds 0, Slot 30, Slot 29 and max-u64, " ..
+		"digest pinned)")
 end

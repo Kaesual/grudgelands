@@ -196,6 +196,8 @@ target host; where a ratio is inferred from two of them, it says so.
 | the per-tier split after M4, one seed | stage build ~20–27 s, Scan-1 ~2.0 s, **Scan-3a ~8.3 s**, **Scan-2 ~0.6 s** (measured 2026-08-16, M4) |
 | eight census workers, first completions, quiet host | **34–39 s** per seed (measured 2026-08-16, M4) |
 | eight census workers, steady state, four seeds each | **36–69 s** per seed; per-worker means 37.5–54.0 s (measured 2026-08-16, M4) |
+| the four-seed census KAT, worker pass | **30–50 s** per seed, ~2.5 min total (measured 2026-08-16, M5) |
+| the census merge over that four-seed record set, LuaJIT / PUC | **0.06 s / 0.06 s**, artifacts byte-identical (measured 2026-08-16, M5) |
 
 The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
 4,123 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
@@ -631,33 +633,43 @@ tiers, including the R19 tuple enumeration itself, which the compiler does
 not carry (decided 2026-08-16, section 5); **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
 and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
 max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
-fragment case). M1–M4 are done as of 2026-08-16; the full-`W` run still
-waits on the explicit GO after M5.
+fragment case). M1–M5 are done as of 2026-08-16; the full-`W` run still
+waits on the explicit GO.
 
 **Two M4 findings that belong on paper, not only in the census output.**
 
 First, the `w = 0` margin is far smaller than section 6.4 implies. The
-minimum jittered bank half-width over the sampled stations is **80 nodes** in
-every Bay at every KAT seed, and section 7.2's "half-widths of 320–370
+minimum jittered bank half-width over the sampled stations was **80 nodes** in
+every Bay at every M4 KAT seed, and section 7.2's "half-widths of 320–370
 against jitter bounded by 48 nodes" describes the *mouth* station only: the
 four authored centrelines run 360/330/320/370 at the mouth and taper to **80**
 at the Bay head. The collapse the universal forbids is therefore at most 80
-nodes away, not 272. The narrowest *station* is the segment endpoint, where
-the 96-station smootherstep forces `delta_nodes = 0` by construction, so
-jitter cannot move it — but the station set is not the set the compiler
-evaluates. `exact.bay_segment` computes the same numerator at every *column*,
-pairing it with the *nearest* station's delta, so the station minimum alone
-cannot decide the universal. The census therefore also carries an exact
-per-column lower bound, `min(h_a, h_b) + min(deltas)` per segment, which is a
-true bound because every column's effective half-width is either the clamped
-interpolation of the two endpoint half-widths or an endpoint cap radius, and
-its delta is always an element of that segment's own array. Measured across
-the three KAT seeds that bound runs **60–80 nodes**, as much as 20 below the
-station reading, against a structural floor of `80 − 48 = 32`. A run where
-every station is positive but the bound is not gets its own class,
-`bay_bank_width_unbounded_event`: "measured positive" and "could not be
-excluded" are different claims and collapsing them is how an unasserted
-universal survives.
+nodes away, not 272. M4 added that the narrowest *station* is the segment
+endpoint, where the 96-station smootherstep forces `delta_nodes = 0` by
+construction, so jitter could not move it. **M5 refutes that clause**
+(measured 2026-08-16): Slot 30, the fourth KAT seed, moves the station minimum
+off the zero-jitter endpoint in two of the four Bays — Elandor-west from
+station 301 to station 231 at `delta = −30` and 75 nodes, Kragmar-east from
+341 to 263 at `delta = −26` and 74 nodes. The taper decides which *segment*
+holds the minimum, not which station, and a three-seed sample was simply too
+small to see it. Nothing load-bearing moves with it, because the station
+minimum was never what ruled the collapse out: the station set is not the set
+the compiler evaluates. `exact.bay_segment` computes the same numerator at
+every *column*, pairing it with the *nearest* station's delta, so the station
+minimum alone cannot decide the universal. The census therefore also carries
+an exact per-column lower bound, `min(h_a, h_b) + min(deltas)` per segment,
+which is a true bound because every column's effective half-width is either
+the clamped interpolation of the two endpoint half-widths or an endpoint cap
+radius, and its delta is always an element of that segment's own array.
+Measured across the four KAT seeds that bound runs **46–80 nodes** — Slot 30's
+46 is the tightest and is 25 below its own station reading — against a
+structural floor of `80 − 48 = 32`. A run where every station is positive but
+the bound is not gets its own class, `bay_bank_width_unbounded_event`:
+"measured positive" and "could not be excluded" are different claims and
+collapsing them is how an unasserted universal survives. The KAT now pins the
+station minimum, its jitter and the column bound per seed and per Bay rather
+than asserting a constant, which is the shape that would have caught the M4
+over-generalisation on its first new seed.
 
 Second, **two declared reject classes are dominated rather than merely
 unoccupied**, found by the M4 cold classification review. `R > 5` cannot
@@ -692,6 +704,98 @@ its own selection class. This is logged, not judged: it is exactly the
 "first-passing equals design-intended shore" remainder the analysis marks as
 mechanism (b), and the four head Banks realize **zero** branching steps at
 every KAT seed, so nothing turns on it yet.
+
+**Four M5 findings, and what the artifact contract had to decide.**
+
+First, **the Slot-30 fragment case reproduces exactly as section 3-F8 and
+3-F1 describe it** (measured 2026-08-16, the first census measurement of that
+seed). `land_007` carries two maximal dry intervals of which one is a
+singleton; exactly one qualifies for both obligations, so F1 selects and the
+nonselected interval is the excluded dry fragment, and the attachment on that
+edge sees the same interval count. It is simultaneously 3-F1's "singleton
+interval — it is `E` for both obligations and does not qualify" witness. The
+seed is now the fourth KAT seed; the worker KAT digest moved with it,
+legitimately, and is re-pinned. Nothing downstream moved: every endpoint
+resolves once and directly and every edge completes exactly one joint tuple,
+so the fragment lives entirely at the F1 interval tier.
+
+Second, **one section-3 branch is not measurable from a v3 record at all**.
+3-F8's "distance tie → DECIDED (canonical perimeter station index)" needs a
+tie *indicator*; the attachment row retains the chosen canonical index but
+nothing that says a tie occurred. Reporting it vacuous would be a false claim
+about coverage, so the vacuous-branch artifact carries an `unmeasured` line
+kind and this branch is its first entry. Adding the indicator is a record
+schema change (v4) and a worker re-pin, and is deliberately not done here.
+Two further entries have the same shape for stated reasons: F5's side clause
+has no counted cause because `collect_paths` emits strict-side stations only,
+and 3-F7's Stage-1 roster and departure-record rows are seed-independent
+validations that abort loudly by design.
+
+Third, **three section-3 rows have no class column but are derivable**, and
+the merge reports them as `derived` rather than dropping them: the singleton
+interval above (`edge.singleton_count > 0`), F2's "eligible incidence without
+adjacent-away station" (the counting tier encodes eligibility in its loop
+bounds, so its occupancy is the selected interval length minus the eligible
+count) and F7's passing pair (only failing pairs emit a row, so the passing
+class is read off `junction.pass_count`). All three are occupied at every KAT
+seed.
+
+Fourth, **the targeted `pairs()`-order divergence test earned its keep on its
+first run**, which is worth recording because the alternative was to declare
+it satisfied by the canonical encoder's sorting. It found a real order
+dependence in the merge: a site can realize the same branch through more than
+one row of a single seed — a Wing counts seven pair-exclusion causes on one
+row — and "the first such row" is an arrival-order choice. The witness rule is
+now the least row of the least seed. The test runs in two halves, because
+either alone proves nothing: a probe half that shows this runtime's `pairs()`
+really does hand out a non-sorted order (otherwise the invariance half passes
+vacuously, which is the failure this branch has shipped twice) and an
+invariance half that folds a synthetic record set covering every declared
+class, and the measured records where they fit in memory twice, through the
+whole artifact construction in two orders and requires byte-identical output.
+
+**What section 6.2 left open and M5 decided**, recorded here because the
+artifacts state it and a later reader should not have to re-derive it:
+
+- **Keying.** Section 6.1's configuration key survives in the v3 record only
+  for F2's tuple tier, as `scan2_tuple.key` — the read-set envelope digest.
+  No other family emits a read-set digest, so the occupied-class table is
+  keyed by `(site, decision class)` exactly as section 6.2.1 words it, with
+  the seed realization count and the least witness seed. Nothing is lost:
+  the keying paragraph's dedup permission was a *cost* rule about skipping
+  seeds, and the worker skips none.
+- **The joint distribution of artifact 5.** Section 6.2.5 asks for
+  `(eligible, R16-success, complete)` per transition endpoint, but completion
+  is a property of the joint tuple and therefore of the *edge*: eight
+  endpoints sit on six edges. The histogram attributes its edge's complete
+  count to each of its endpoints and says so, and the exactly-measured
+  per-edge `(tuples, complete, duplicate)` distribution is emitted beside it.
+- **The 153-site extremal roster fills to 137 from Scans 1–3a.** 61 edges and
+  2 perimeters (the fixed Holy band is excluded, and the merge *verifies* its
+  zero displacement rather than assuming it — that is why section 6.2.3 says
+  63 and not 64), 8 transition endpoints, 8 aperture incidences, 8 Wings, 38
+  junctions, 8 attachments, and 4 of the 20 Banks. The sixteen
+  transition-incident Banks are Scan-3b; the artifact names all sixteen, so
+  the open remainder is a work list rather than a shortfall. Section 6.2.3
+  names one scalar the record does not carry directly — the Wing's
+  `Chebyshev(K,J)`, whose guard is per side — and the merge takes the larger
+  of the two sides, which is the value the `<= 4` universal is asserted
+  against.
+- **The no-branch-matched sink is the merge's own check**, not a re-read of
+  the verifier's. The worker refuses to emit an undeclared class and
+  re-raises an unmatched reject message as a loud abort, so an uncovered
+  configuration reaches the operator as a dead shard rather than as a row; a
+  sink reachable only when the verifier is bypassed would not be one. The
+  merge therefore re-checks every classed row against the declared vocabulary
+  itself, writes all six outputs, reports the count in the manifest and exits
+  non-zero — it completes and reports, it does not swallow.
+- **First occupancy worth naming.** Over the four KAT seeds 19 of 83 declared
+  branches are realized and 64 are vacuous, none of them a REJECTED class, so
+  there is no finding yet — as expected from four seeds chosen for their
+  witnesses rather than for breadth. The one unforced observation:
+  `wedge_nonwing_water` is occupied at all eight Wings on every seed, so the
+  F5 pair-exclusion population is dominated by the wedge water scan rather
+  than by the structural causes.
 
 File cut: `tools/wp40/run_t2_census.sh` (launcher),
 `tools/wp40/t2_census_worker.lua`, `tools/wp40/t2_census_merge.lua`;

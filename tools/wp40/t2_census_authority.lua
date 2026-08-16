@@ -183,55 +183,494 @@ return function(dependencies)
 		class_sets[name] = set
 	end
 
+	-- ------------------------------------------------------------------
+	-- The branch universe (plan section 6.2.2, milestone M5).  The
+	-- vacuous-branch report is "declared minus realized" over the lists above,
+	-- but three distinctions have to travel with the declaration or the report
+	-- says something false about a permanent zero.
+	-- ------------------------------------------------------------------
+
+	-- Not every declared list is a decision branch.  The `kind` lists below
+	-- are row shapes -- an edge is ordinary or transition, a resolution is
+	-- direct or elbow -- and an unrealized value there is a coverage note,
+	-- never dead policy.
+	local class_vocabulary_kind = {
+		edge_class = "decision", attachment_class = "decision",
+		junction_pair_class = "decision", scan2_endpoint_class = "decision",
+		scan2_edge_class = "decision", scan2_tuple_class = "decision",
+		scan3_aperture_class = "decision", scan3_wing_class = "decision",
+		scan3_bank_class = "decision", scan3_selection_class = "decision",
+		scan3_width_class = "decision", scan3_step_outcome = "decision",
+		prefilter_status = "kind", edge_kind = "kind", scan2_flag = "kind",
+		scan2_tuple_mode = "kind", scan3_aperture_mode = "kind",
+		scan3_step_direction = "kind",
+	}
+	-- The F5 per-pair exclusion causes are a decision vocabulary of their own:
+	-- they are counted per Wing rather than carried in a class column, and the
+	-- M4 review found two of them dominated, which is exactly the kind of fact
+	-- the vacuous report exists to state.
+	local exclusion_vocabulary = "wing_exclusion_cause"
+
+	-- Section 6.2.1 makes "a REJECTED row is a finding" the occupied-class
+	-- table's whole point, so the verdict is declared rather than inferred
+	-- from a name suffix.  Inference would be wrong three ways at once:
+	-- `scan2_tuple_probe_wet` and `x_cross` both read like failures and are
+	-- both ordinary DECIDED-with-continuation outcomes under the U1/U2
+	-- readings, `attachment_edge_without_interval` reads like neither and is a
+	-- reject, and the width events are a third verdict that no suffix rule
+	-- would separate from the second.
+	local class_verdict = {
+		ordinary_interval_select = "DECIDED",
+		ordinary_interval_zero_reject = "REJECTED",
+		ordinary_interval_multi_reject = "REJECTED",
+		transition_interval_select = "DECIDED",
+		transition_interval_zero_reject = "REJECTED",
+		transition_interval_multi_reject = "REJECTED",
+		attachment_equality_select = "DECIDED",
+		attachment_adjacent_select = "DECIDED",
+		attachment_distance_reject = "REJECTED",
+		attachment_edge_without_interval = "REJECTED",
+		junction_pair_short_raster = "REJECTED",
+		junction_pair_not_endpoint = "REJECTED",
+		junction_pair_left_not_eight_connected = "REJECTED",
+		junction_pair_right_not_eight_connected = "REJECTED",
+		junction_pair_shared_station = "REJECTED",
+		junction_pair_x_cross = "REJECTED",
+		scan2_counting_evaluated = "DECIDED",
+		scan2_no_selected_interval = "REJECTED",
+		scan2_exactly_one_complete_select = "DECIDED",
+		scan2_zero_complete_reject = "REJECTED",
+		scan2_multi_complete_reject = "REJECTED",
+		scan2_duplicate_authority_reject = "REJECTED",
+		scan2_selected_below_192_reject = "REJECTED",
+		-- Every per-tuple precondition failure is DECIDED-with-continuation:
+		-- the tuple dies, enumeration continues, and the seed is rejected only
+		-- by the complete-tuple count.  That is the whole content of the U1
+		-- and U2 decisions, so binning these as findings would report the two
+		-- decisions as thousands of open corrections.
+		scan2_tuple_complete = "DECIDED",
+		scan2_tuple_empty_combined_clip = "DECIDED",
+		scan2_tuple_clip_not_contiguous = "DECIDED",
+		scan2_tuple_probe_invalid = "DECIDED",
+		scan2_tuple_probe_wet = "DECIDED",
+		scan2_tuple_previous_binding_unsatisfiable = "DECIDED",
+		scan2_tuple_bank_incomplete = "DECIDED",
+		aperture_direct_select = "DECIDED",
+		aperture_tail_select = "DECIDED",
+		aperture_d_not_dry_equality_reject = "REJECTED",
+		aperture_d_cardinal_water_reject = "REJECTED",
+		aperture_w_not_diagonal_reject = "REJECTED",
+		aperture_w_not_bay_water_reject = "REJECTED",
+		aperture_w_foreign_water_reject = "REJECTED",
+		aperture_w_not_aperture_included_reject = "REJECTED",
+		aperture_shoulder_elbow_count_reject = "REJECTED",
+		aperture_tail_wrong_water_side_reject = "REJECTED",
+		aperture_terminal_identity_drift_reject = "REJECTED",
+		wing_wedge_valid_select = "DECIDED",
+		wing_missing_k_reject = "REJECTED",
+		wing_k_chebyshev_above_four_reject = "REJECTED",
+		wing_no_complete_tail_reject = "REJECTED",
+		wing_no_wedge_valid_joint_tail_pair_reject = "REJECTED",
+		wing_path_bound_exceeded_reject = "REJECTED",
+		bank_trace_complete_select = "DECIDED",
+		bank_terminal_unresolved_reject = "REJECTED",
+		bank_start_anchor_invalid_reject = "REJECTED",
+		bank_target_noncandidate_reject = "REJECTED",
+		bank_zero_reachable_successor_reject = "REJECTED",
+		bank_repeated_column_reject = "REJECTED",
+		bank_x_cross_reject = "REJECTED",
+		bank_reachability_frame_cap_reject = "REJECTED",
+		bank_reachability_stack_cap_reject = "REJECTED",
+		bank_main_trace_cap_reject = "REJECTED",
+		bank_trace_envelope_empty_reject = "REJECTED",
+		bank_shoulder_water_side_reject = "REJECTED",
+		-- Step outcomes and selection classes describe how one successor was
+		-- admitted or excluded inside a trace that has its own bank-level
+		-- class; none of them rejects a seed.
+		admitted = "DECIDED", previous = "DECIDED", seen_state = "DECIDED",
+		seen_column = "DECIDED", x_cross = "DECIDED", noncandidate = "DECIDED",
+		water_side = "DECIDED",
+		single_admitted_untested = "DECIDED",
+		branch_first_reachable = "DECIDED",
+		branch_later_reachable = "DECIDED",
+		branch_none_reachable = "DECIDED",
+		zero_admitted_successors = "DECIDED",
+		bay_bank_width_positive = "DECIDED",
+		bay_bank_width_zero_event = "EVENT",
+		bay_bank_width_negative_event = "EVENT",
+		bay_bank_width_unbounded_event = "EVENT",
+		-- The seven F5 pair-exclusion causes.  A pair exclusion is a decided
+		-- per-pair outcome; the Wing rejects only through its own class.
+		shared_predecessor = "DECIDED", interior_overlap = "DECIDED",
+		intra_tail_x_cross = "DECIDED", inter_tail_x_cross = "DECIDED",
+		wedge_nonsimple_or_zero_area = "DECIDED",
+		wedge_radius_above_five = "DECIDED", wedge_nonwing_water = "DECIDED",
+	}
+
+	-- Section 6.4's fourth finding kind: a source-asserted all-seed universal
+	-- that a single occupied row refutes.  Occupancy here is not "an unusual
+	-- DECIDED class", it is a falsified quantifier, and the two must not read
+	-- alike in the occupied-class table.
+	local refuted_universal = {
+		wing_k_chebyshev_above_four_reject = "Chebyshev(K,J) <= 4",
+		bay_bank_width_zero_event = "the jittered Bay bank half-width w > 0",
+		bay_bank_width_negative_event = "the jittered Bay bank half-width w > 0",
+	}
+
+	-- Why a permanent zero is expected, per branch.  "Dominated" and
+	-- "untested" are different claims about the same zero and the difference
+	-- is what a reader of the vacuous report needs (M4 cold review,
+	-- plan section 6.7).
+	local branch_notes = {
+		aperture_w_foreign_water_reject = {status = "dominated",
+			note = "dominated by aperture_w_not_bay_water_reject: " ..
+				"w_final_owned_by_bay is tested first and implies not w_foreign_water"},
+		wedge_radius_above_five = {status = "dominated",
+			note = "dominated by wing_k_chebyshev_above_four_reject: the radius " ..
+				"is derived from the same selected K stations the guard rejects, " ..
+				"so R = 1 + max Chebyshev(K,J) <= 5 identically"},
+		intra_tail_x_cross = {status = "vacuous_by_construction",
+			note = "a distance-layer tail visits exactly one column per Chebyshev " ..
+				"level, so two of its diagonal steps can never share a 2x2 cell"},
+		aperture_terminal_identity_drift_reject = {status = "expected_vacuous",
+			note = "reads only seed-independent catalog and aperture source state; " ..
+				"the underlying failure stays a loud abort rather than a row"},
+		bank_shoulder_water_side_reject = {status = "out_of_scope_scan3b",
+			note = "needs an aperture shoulder, and the four head Banks have none; " ..
+				"the sixteen transition-incident Banks are Scan-3b"},
+		aperture_tail_wrong_water_side_reject = {status = "in_scope",
+			note = "decided in trace_bank but evaluated in Scan-3a from the " ..
+				"resolved D,T,W, so it is measured here rather than deferred"},
+		scan2_no_selected_interval = {status = "consequent",
+			note = "occupied only where the same edge already rejected at F1; " ..
+				"the primary finding is that edge row"},
+		bay_bank_width_unbounded_event = {status = "in_scope",
+			note = "not a refuted universal but a failed proof: every sampled " ..
+				"station stayed positive and the exact per-column bound could not " ..
+				"rule out a collapse between them"},
+	}
+
+	-- Section-3 table rows that the procedure decides but no emitted class
+	-- names.  They are derivable from counting columns, so the census reports
+	-- their occupancy rather than pretending the tables have no such row.
+	local derived_branches = {
+		{branch = "edge_singleton_interval", vocabulary = "edge_class",
+			verdict = "DECIDED", row = "edge", predicate = "singleton_count > 0",
+			note = "analysis 3-F1 'singleton interval' -- it is E for both " ..
+				"obligations and does not qualify; the Slot-30 witness"},
+		{branch = "scan2_incidence_not_eligible",
+			vocabulary = "scan2_endpoint_class", verdict = "DECIDED",
+			row = "scan2_endpoint",
+			predicate = "finish - first + 1 - eligible_count > 0",
+			note = "analysis 3-F2 'eligible incidence without adjacent-away " ..
+				"station' -- the counting tier encodes it in its loop bounds, so " ..
+				"it has no row and is the difference between the selected " ..
+				"interval length and the eligible count"},
+		{branch = "junction_pair_pass", vocabulary = "junction_pair_class",
+			verdict = "DECIDED", row = "junction", predicate = "pass_count > 0",
+			note = "analysis 3-F7 'pair disjoint, or sharing only J' -- only " ..
+				"failing pairs emit a junction_pair row, so the passing class is " ..
+				"read off the junction row's pass count"},
+	}
+
+	-- Section 6.2.3, decided 2026-08-16 per site kind: the 153 structural sites
+	-- and the stress scalars whose per-site minimum and maximum name the
+	-- extremal seeds of Scan-4's input set.  Declared here because the count is
+	-- load-bearing -- an artifact silently covering 137 of 153 sites is exactly
+	-- the failure this roster exists to make impossible -- and because sixteen
+	-- of the twenty Banks are Scan-3b and have to be reported open rather than
+	-- quietly dropped from the total.
+	local extremal_families = {
+		{family = "edge", row = "edge", sites = 61,
+			scalars = {"topology_ceiling_nodes", "max_abs_scalar_q"}},
+		{family = "perimeter", row = "perimeter", sites = 2,
+			scalars = {"topology_ceiling_nodes", "max_abs_scalar_q"},
+			excluded_site = "perimeter_holy_grounds",
+			excluded_reason = "the fixed Holy band carries zero displacement on " ..
+				"every seed, so both its scalars are constant and an extremal " ..
+				"seed for it would be an artifact of the tie rule; section 6.2.3 " ..
+				"counts 63 edge and perimeter records, not 64"},
+		{family = "transition_endpoint", row = "scan2_endpoint", sites = 8,
+			scalars = {"eligible_count", "success_count"}},
+		{family = "aperture_incidence", row = "aperture", sites = 8,
+			scalars = {"d_scalar_q", "w_scalar_q", "a_scalar_q"}},
+		{family = "wing", row = "scan3_wing", sites = 8,
+			scalars = {"chebyshev_k_j", "selected_raw_rank"}},
+		{family = "bank", row = "scan3_bank", sites = 20, scanned_sites = 4,
+			open_scan = "Scan-3b", scalars = {"step_count", "max_frames"},
+			open_reason = "the sixteen transition-incident Bank traces are " ..
+				"Scan-3b; Scan-3a traces the four head Banks only"},
+		{family = "junction", row = "junction", sites = 38,
+			scalars = {"min_clearance"}},
+		{family = "attachment", row = "attachment", sites = 8,
+			scalars = {"distance"}},
+	}
+	local extremal_site_total = 153
+	do
+		local total = 0
+		for index = 1, #extremal_families do
+			total = total + extremal_families[index].sites
+		end
+		if total ~= extremal_site_total then
+			fail("the extremal roster covers " .. total .. " sites, section 6.2.3 " ..
+				"names " .. extremal_site_total)
+		end
+	end
+	-- The one scalar section 6.2.3 names that no column carries directly: the
+	-- Wing guard is per side, so the Wing's own `Chebyshev(K,J)` is the larger
+	-- of the two sides -- the value the `<= 4` universal is asserted against.
+	local derived_scalars = {
+		chebyshev_k_j = {row = "scan3_wing", rule = "max",
+			from = {"negative_chebyshev", "positive_chebyshev"}},
+	}
+
+	-- Section 6.2.3's flagged term, as predicates over emitted columns.  The
+	-- fragment case is analysis 3-F8's "nonselected intervals or controls exist
+	-- at all": the census witnesses it as an attachment whose edge realized a
+	-- second dry interval, which is the excluded dry fragment itself and the
+	-- shape Slot 30 was the first seed to realize.
+	local flag_rules = {
+		{flag = "fills", row = "bay", column = "fill_count", test = "at_least",
+			value = 1, detail = "id"},
+		{flag = "tail_mode", row = "scan3_aperture", column = "class",
+			test = "equals", value = "aperture_tail_select", detail = "id"},
+		{flag = "multi_interval", row = "edge", column = "interval_count",
+			test = "at_least", value = 2, detail = "id"},
+		{flag = "two_or_more_candidates", row = "scan2_endpoint",
+			column = "success_count", test = "at_least", value = 2, detail = "id"},
+		{flag = "branch", row = "scan3_bank", column = "branch_step_count",
+			test = "at_least", value = 1, detail = "id"},
+		{flag = "fragment", row = "attachment", column = "interval_count",
+			test = "at_least", value = 2, detail = "id"},
+	}
+
+	-- Section-3 table rows that this record cannot witness at all.  Reporting
+	-- them as vacuous would be a false claim about coverage, so they are
+	-- declared as what they are: not measured by the v3 record.
+	local unmeasured_branches = {
+		{branch = "attachment_distance_tie", vocabulary = "attachment_class",
+			reason = "the attachment row retains the chosen canonical station " ..
+				"index but no tie indicator, so whether the canonical-index " ..
+				"tie-break ever fired is not decidable from a v3 record"},
+		{branch = "wing_pair_wrong_side", vocabulary = exclusion_vocabulary,
+			reason = "collect_paths emits strict-side stations only, so the " ..
+				"table's side clause has no counted cause to be zero in"},
+		{branch = "junction_roster_and_departure_record_rejects",
+			vocabulary = "junction_pair_class",
+			reason = "analysis 3-F7's Stage-1 roster and departure-record rows " ..
+				"are seed-independent stage validations that abort loudly; no " ..
+				"census class covers them by design"},
+	}
+
 	-- Per-seed site roster and row width.  `count` nil means the row kind is
 	-- occupancy-driven (a junction-pair reject is only emitted when a pair
 	-- fails), everything else must appear exactly `count` times per seed:
 	-- "every site present" from section 6.6.2 is a count, not a hope.
+	--
+	-- `columns` names the same fields the worker emits positionally, and
+	-- `site` names the seed-independent site identity inside them.  The merge
+	-- cannot read a field without knowing its index, and a private copy of
+	-- these indices in the merge is exactly the second copy of a rule this
+	-- file exists to prevent; `fields` stays declared beside the names and is
+	-- cross-checked against them below, so a name list that drifts from the
+	-- frozen width fails at load rather than at the artifact.
 	local record_rows = {
 		{tag = "edge", count = 61, fields = 13, class_field = 5,
-			class_set = "edge_class", extra_field = 4, extra_set = "edge_kind"},
-		{tag = "perimeter", count = 3, fields = 6},
-		{tag = "aperture", count = 8, fields = 16},
+			class_set = "edge_class", extra_field = 4, extra_set = "edge_kind",
+			site = {"id"},
+			columns = {"tag", "seed", "id", "kind", "class", "interval_count",
+				"qualifying_count", "singleton_count", "selected_first",
+				"selected_finish", "station_count", "topology_ceiling_nodes",
+				"max_abs_scalar_q"}},
+		{tag = "perimeter", count = 3, fields = 6, site = {"id"},
+			columns = {"tag", "seed", "id", "station_count",
+				"topology_ceiling_nodes", "max_abs_scalar_q"}},
+		{tag = "aperture", count = 8, fields = 16, site = {"id", "side"},
+			columns = {"tag", "seed", "id", "side", "d_x", "d_z", "d_scalar_q",
+				"d_sample_distance", "w_x", "w_z", "w_scalar_q",
+				"w_sample_distance", "a_x", "a_z", "a_scalar_q",
+				"a_sample_distance"}},
 		{tag = "attachment", count = 8, fields = 13, class_field = 6,
-			class_set = "attachment_class"},
-		{tag = "junction", count = 38, fields = 7},
+			class_set = "attachment_class", site = {"id"},
+			columns = {"tag", "seed", "id", "edge_id", "endpoint", "class",
+				"distance", "interval_count", "e_x", "e_z", "a_x", "a_z",
+				"canonical_index"}},
+		{tag = "junction", count = 38, fields = 7, site = {"id"},
+			columns = {"tag", "seed", "id", "pair_count", "pass_count",
+				"fail_count", "min_clearance"}},
 		{tag = "junction_pair", fields = 6, class_field = 6,
-			class_set = "junction_pair_class"},
-		{tag = "bay", count = 4, fields = 5},
+			class_set = "junction_pair_class",
+			site = {"junction_id", "left_edge", "right_edge"},
+			columns = {"tag", "seed", "junction_id", "left_edge", "right_edge",
+				"class"}},
+		{tag = "bay", count = 4, fields = 5, site = {"id"},
+			columns = {"tag", "seed", "id", "fill_count", "fill_points"}},
 		{tag = "scan2_endpoint", count = 8, fields = 14, class_field = 6,
 			class_set = "scan2_endpoint_class", extra_field = 7,
-			extra_set = "scan2_flag"},
+			extra_set = "scan2_flag", site = {"id"},
+			columns = {"tag", "seed", "id", "edge_id", "endpoint", "class",
+				"flagged", "first", "finish", "eligible_count", "success_count",
+				"direct_count", "elbow_count", "successes"}},
 		{tag = "scan2_edge", count = 6, fields = 10, class_field = 4,
 			class_set = "scan2_edge_class", extra_field = 5,
-			extra_set = "scan2_flag"},
+			extra_set = "scan2_flag", site = {"edge_id"},
+			columns = {"tag", "seed", "edge_id", "class", "flagged",
+				"tuple_count", "complete_count", "duplicate_count",
+				"selected_tuple_index", "selected_station_count"}},
 		{tag = "scan2_tuple", fields = 16, class_field = 5,
 			class_set = "scan2_tuple_class", extra_field = 7,
 			extra_set = "scan2_tuple_mode", extra2_field = 11,
-			extra2_set = "scan2_tuple_mode"},
+			extra2_set = "scan2_tuple_mode", site = {"edge_id"},
+			-- The tuple index is a per-seed enumeration ordinal and never a
+			-- site: the same index names different incidence pairs on
+			-- different seeds.  `key` is the read-set envelope digest, the one
+			-- place in this record where section 6.1's configuration key
+			-- survives as bytes.
+			columns = {"tag", "seed", "edge_id", "tuple_index", "class",
+				"from_index", "from_mode", "from_point", "from_previous",
+				"to_index", "to_mode", "to_point", "to_previous",
+				"probe_station_count", "key", "detail"}},
 		-- Scan-3a (M4).  Eight aperture incidences, eight Wings, four head
 		-- Banks and four Bay bank-width rows are per-seed rosters; the step and
 		-- selection rows are occupancy-driven, since a direction/outcome pair
 		-- no step realized has no row and that absence is the measurement.
 		{tag = "scan3_aperture", count = 8, fields = 14, class_field = 5,
 			class_set = "scan3_aperture_class", extra_field = 6,
-			extra_set = "scan3_aperture_mode"},
+			extra_set = "scan3_aperture_mode", site = {"id", "side"},
+			columns = {"tag", "seed", "id", "side", "class", "mode", "d", "t",
+				"w", "selected_elbow", "water_side_ok", "bank_id",
+				"terminal_index", "detail"}},
 		{tag = "scan3_wing", count = 8, fields = 30, class_field = 5,
-			class_set = "scan3_wing_class"},
+			class_set = "scan3_wing_class", site = {"id"},
+			columns = {"tag", "seed", "id", "bay_id", "class",
+				"negative_k_count", "positive_k_count", "negative_k",
+				"positive_k", "negative_chebyshev", "positive_chebyshev",
+				"negative_path_count", "positive_path_count",
+				"negative_tail_length", "positive_tail_length", "radius",
+				"path_bound", "raw_pair_count", "structural_pair_count",
+				"wedge_valid_count", "selected_raw_rank",
+				"selected_structural_rank", "exclusion_shared_predecessor",
+				"exclusion_interior_overlap", "exclusion_intra_tail_x_cross",
+				"exclusion_inter_tail_x_cross",
+				"exclusion_wedge_nonsimple_or_zero_area",
+				"exclusion_wedge_radius_above_five",
+				"exclusion_wedge_nonwing_water", "detail"}},
 		{tag = "scan3_bank", count = 4, fields = 12, class_field = 5,
-			class_set = "scan3_bank_class"},
+			class_set = "scan3_bank_class", site = {"id"},
+			columns = {"tag", "seed", "id", "bay_id", "class", "step_count",
+				"station_count", "max_frames", "max_stack", "branch_step_count",
+				"multi_reachable_step_count", "detail"}},
 		{tag = "scan3_width", count = 4, fields = 20, class_field = 4,
-			class_set = "scan3_width_class"},
+			class_set = "scan3_width_class", site = {"id"},
+			columns = {"tag", "seed", "id", "class", "station_count",
+				"min_numerator", "min_length", "min_width_nodes", "min_segment",
+				"min_station", "min_x", "min_z", "min_delta_nodes",
+				"jittered_numerator", "jittered_length", "jittered_width_nodes",
+				"jittered_delta_nodes", "min_delta", "max_delta",
+				"column_bound_nodes"}},
 		{tag = "scan3_step", fields = 6, class_field = 5,
 			class_set = "scan3_step_outcome", extra_field = 4,
-			extra_set = "scan3_step_direction"},
+			extra_set = "scan3_step_direction", site = {"bank_id", "direction"},
+			columns = {"tag", "seed", "bank_id", "direction", "outcome",
+				"count"}},
 		{tag = "scan3_selection", fields = 8, class_field = 4,
-			class_set = "scan3_selection_class"},
+			class_set = "scan3_selection_class", site = {"bank_id"},
+			columns = {"tag", "seed", "bank_id", "class", "count", "max_width",
+				"multi_reachable", "unknown_reachable"}},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
-		record_row_by_tag[record_rows[index].tag] = record_rows[index]
+		local layout = record_rows[index]
+		record_row_by_tag[layout.tag] = layout
+		if #layout.columns ~= layout.fields then
+			fail("row " .. layout.tag .. " declares " .. #layout.columns ..
+				" column names for " .. layout.fields .. " fields")
+		end
+		local column_index = {}
+		for column = 1, #layout.columns do
+			local name = layout.columns[column]
+			if column_index[name] then
+				fail("row " .. layout.tag .. " names the column " .. name .. " twice")
+			end
+			column_index[name] = column
+		end
+		if column_index.tag ~= 1 or column_index.seed ~= 2 then
+			fail("row " .. layout.tag .. " must open with tag and seed")
+		end
+		if layout.class_field and column_index.class ~= layout.class_field and
+				column_index.outcome ~= layout.class_field then
+			fail("row " .. layout.tag .. " names no column at its class field")
+		end
+		for site_index = 1, #layout.site do
+			if not column_index[layout.site[site_index]] then
+				fail("row " .. layout.tag .. " has no column " ..
+					layout.site[site_index] .. " to key its site on")
+			end
+		end
+		layout.column_index = column_index
 	end
 	local prefilter_edge_count = 61
+
+	-- Reading a field by name, which is the only way the merge touches a row.
+	local function field(tag, fields, name)
+		local layout = record_row_by_tag[tag]
+		if not layout then fail("unknown row tag " .. tostring(tag)) end
+		local index = layout.column_index[name]
+		if not index then
+			fail("row " .. tag .. " has no column named " .. tostring(name))
+		end
+		local value = fields[index]
+		if value == nil then fail("row " .. tag .. " is truncated at " .. name) end
+		return value
+	end
+
+	-- The seed-independent site identity of one row, as the merge keys it.
+	local function site_of(tag, fields)
+		local layout = record_row_by_tag[tag]
+		if not layout then fail("unknown row tag " .. tostring(tag)) end
+		local parts = {}
+		for index = 1, #layout.site do
+			parts[index] = field(tag, fields, layout.site[index])
+		end
+		return table.concat(parts, ":")
+	end
+
+	-- The complete declared branch universe, in one deterministic order:
+	-- every value of every decision vocabulary, plus the seven F5 pair
+	-- exclusion causes, each with its verdict and whatever the M3/M4 reviews
+	-- recorded about why its zero would be expected.  The M5 vacuous-branch
+	-- report is this list minus what the shards realized.
+	local function branch_universe()
+		local names = {}
+		for name in pairs(classes) do names[#names + 1] = name end
+		table.sort(names)
+		local universe = {}
+		local function add(vocabulary, branch)
+			local verdict = class_verdict[branch]
+			if not verdict then
+				fail("declared branch " .. branch .. " has no verdict")
+			end
+			local note = branch_notes[branch]
+			universe[#universe + 1] = {vocabulary = vocabulary, branch = branch,
+				verdict = verdict, status = note and note.status or "in_scope",
+				note = note and note.note or "",
+				universal = refuted_universal[branch]}
+		end
+		for index = 1, #names do
+			local name = names[index]
+			if class_vocabulary_kind[name] == nil then
+				fail("class list " .. name .. " is neither a decision nor a kind")
+			end
+			if class_vocabulary_kind[name] == "decision" then
+				local values = classes[name]
+				for value_index = 1, #values do add(name, values[value_index]) end
+			end
+		end
+		for index = 1, #wing_exclusion_causes do
+			add(exclusion_vocabulary, wing_exclusion_causes[index])
+		end
+		return universe
+	end
 
 	-- Shards are per-seed intermediates, which section 6.3 forbids committing,
 	-- so they live under the gitignored results tree; only the five merged
@@ -645,7 +1084,12 @@ return function(dependencies)
 		return header
 	end
 
+	-- Returns the offset after the block and the block itself: artifact 4 is
+	-- the discharge list and the merge has to prove all eight shards carry the
+	-- same one, so the rows travel with the verification rather than being
+	-- split a second time.
 	local function validate_prefilter(lines, offset)
+		local rows = {}
 		for index = 1, prefilter_edge_count do
 			local line = lines[offset + index]
 			if type(line) ~= "string" then fail("prefilter block is truncated") end
@@ -659,15 +1103,21 @@ return function(dependencies)
 			if fields[2] == "" or fields[4] == "" then
 				fail("prefilter row " .. index .. " has an empty edge or reason")
 			end
+			rows[index] = {edge_id = fields[2], status = fields[3],
+				reason = fields[4], line = line}
 		end
-		return offset + prefilter_edge_count
+		return offset + prefilter_edge_count, rows
 	end
 
 	-- One seed record, checked against the contract: every declared site
 	-- present exactly once per its roster count, every row the declared width,
 	-- every class string drawn from the declared vocabulary, every row carrying
 	-- the block's own seed.  Returns the index after `seed_end`.
-	local function validate_record(lines, offset, expected_seed)
+	-- `on_row` lets a caller consume the rows this pass already split, which is
+	-- what keeps the M5 merge to one parse of a 13 MB shard instead of
+	-- verifying it and then re-splitting every line to aggregate it.  It is
+	-- strictly optional and is called only for rows the checks below accepted.
+	local function validate_record(lines, offset, expected_seed, on_row)
 		local open_line = lines[offset + 1]
 		if type(open_line) ~= "string" then fail("seed record is missing") end
 		local open_fields = split_line(open_line)
@@ -718,6 +1168,7 @@ return function(dependencies)
 					tostring(fields[layout.extra2_field]))
 			end
 			counts[tag] = (counts[tag] or 0) + 1
+			if on_row then on_row(tag, fields, seed) end
 			index = index + 1
 		end
 		for row_index = 1, #record_rows do
@@ -749,46 +1200,97 @@ return function(dependencies)
 		return {seed = seed, header = header, counts = counts}
 	end
 
-	-- Section 6.6.4.  Every failure below is a loud abort, including the empty
-	-- claim file a crashed worker leaves behind: a zero-length or digest-less
-	-- path is unparseable, never an empty shard.
-	local function verify_shard(text, expected)
-		if type(text) ~= "string" then fail("shard bytes are missing") end
+	-- The digest line and the record block, which the shard framing and the
+	-- free-run framing share exactly; only the header above them differs.
+	local function split_verified_body(text, label)
+		if type(text) ~= "string" then fail(label .. " bytes are missing") end
 		if text == "" then
-			fail("shard file is empty -- a claimed but unfinished worker output")
+			fail(label .. " file is empty -- a claimed but unfinished worker output")
 		end
 		local lines = split_lines(text)
 		local last_line = lines[#lines]
 		local digest = last_line and last_line:match("^digest\tsha256=([0-9a-f]+)$")
 		if not digest or #digest ~= 64 then
-			fail("shard file has no trailing digest line -- unfinished or corrupt")
+			fail(label .. " file has no trailing digest line -- unfinished or corrupt")
 		end
-		local body_length = #text - (#last_line + 1)
-		local body = text:sub(1, body_length)
-		local recomputed = digest_of(body)
+		local recomputed = digest_of(text:sub(1, #text - (#last_line + 1)))
 		if recomputed ~= digest then
-			fail("shard digest is " .. digest .. ", recomputed " .. recomputed)
+			fail(label .. " digest is " .. digest .. ", recomputed " .. recomputed)
 		end
-		local header = parse_header(lines, expected)
-		local offset = validate_prefilter(lines, #shard_header_tags)
+		return lines, digest
+	end
+
+	local function read_records(lines, offset, expected_seeds, on_row, label)
 		local seeds, totals = {}, {}
-		local expected_seeds = expected and expected.seeds
 		while offset < #lines - 1 do
 			local expected_seed = expected_seeds and expected_seeds[#seeds + 1]
-			local next_offset, seed, counts = validate_record(lines, offset, expected_seed)
+			local next_offset, seed, counts =
+				validate_record(lines, offset, expected_seed, on_row)
 			seeds[#seeds + 1] = seed
 			for tag, count in pairs(counts) do totals[tag] = (totals[tag] or 0) + count end
 			offset = next_offset
 		end
-		if offset ~= #lines - 1 then fail("shard holds trailing text after its last record") end
+		if offset ~= #lines - 1 then
+			fail(label .. " holds trailing text after its last record")
+		end
+		return seeds, totals
+	end
+
+	-- Kept separate from read_records and applied after the header count, so a
+	-- shard that lost a record still fails on its own header first: that is the
+	-- message the resume gate's negative proof names, and the more specific
+	-- one, since a header disagreeing with its body is a corrupt file rather
+	-- than a mismatched request.
+	local function check_expected_seeds(seeds, expected_seeds, label)
+		if expected_seeds and #expected_seeds ~= #seeds then
+			fail(label .. " covers " .. #seeds .. " of " .. #expected_seeds ..
+				" expected seeds")
+		end
+	end
+
+	-- Section 6.6.4.  Every failure below is a loud abort, including the empty
+	-- claim file a crashed worker leaves behind: a zero-length or digest-less
+	-- path is unparseable, never an empty shard.
+	local function verify_shard(text, expected, on_row)
+		local lines, digest = split_verified_body(text, "shard")
+		local header = parse_header(lines, expected)
+		local offset, prefilter = validate_prefilter(lines, #shard_header_tags)
+		local seeds, totals = read_records(lines, offset,
+			expected and expected.seeds, on_row, "shard")
 		if #seeds ~= header.shard_seeds then
 			fail("shard holds " .. #seeds .. " seed records, its header declares " ..
 				header.shard_seeds)
 		end
-		if expected_seeds and #expected_seeds ~= #seeds then
-			fail("shard covers " .. #seeds .. " of " .. #expected_seeds .. " expected seeds")
+		check_expected_seeds(seeds, expected and expected.seeds, "shard")
+		return {header = header, seeds = seeds, totals = totals, digest = digest,
+			prefilter = prefilter}
+	end
+
+	-- A free run (`--kat` or an explicit seed list) keeps the frozen M1
+	-- preamble and adds no shard header, so verify_shard cannot read one --
+	-- and the M5 merge KAT has nothing else to consume.  Everything below the
+	-- preamble is the same grammar and goes through the same checks; what is
+	-- deliberately absent is the provenance a shard header carries, so a free
+	-- record set can never be merged as if it were a slice of `W`.
+	local function verify_free_output(text, expected, on_row)
+		local lines, digest = split_verified_body(text, "census record set")
+		if lines[1] ~= "schema\t" .. schema then
+			fail("census record set schema is " .. tostring(lines[1]))
 		end
-		return {header = header, seeds = seeds, totals = totals, digest = digest}
+		if lines[2] ~= "vocabulary\t" .. vocabulary_path then
+			fail("census record set vocabulary authority is " .. tostring(lines[2]))
+		end
+		if lines[3] and lines[3]:sub(1, 13) == "shard_schema\t" then
+			fail("a shard-framed file must be verified as a shard, not as a free run")
+		end
+		local offset, prefilter = validate_prefilter(lines, 2)
+		local seeds, totals = read_records(lines, offset,
+			expected and expected.seeds, on_row, "census record set")
+		if #seeds == 0 then fail("census record set holds no seed record") end
+		check_expected_seeds(seeds, expected and expected.seeds,
+			"census record set")
+		return {seeds = seeds, totals = totals, digest = digest,
+			prefilter = prefilter}
 	end
 
 	authority.schema = schema
@@ -801,7 +1303,22 @@ return function(dependencies)
 	authority.pool_candidate_count = pool_candidate_count
 	authority.classes = classes
 	authority.wing_exclusion_causes = wing_exclusion_causes
+	authority.exclusion_vocabulary = exclusion_vocabulary
+	authority.class_vocabulary_kind = class_vocabulary_kind
+	authority.class_verdict = class_verdict
+	authority.refuted_universal = refuted_universal
+	authority.branch_notes = branch_notes
+	authority.derived_branches = derived_branches
+	authority.unmeasured_branches = unmeasured_branches
+	authority.extremal_families = extremal_families
+	authority.extremal_site_total = extremal_site_total
+	authority.derived_scalars = derived_scalars
+	authority.flag_rules = flag_rules
+	authority.branch_universe = branch_universe
 	authority.record_rows = record_rows
+	authority.record_row_by_tag = record_row_by_tag
+	authority.field = field
+	authority.site_of = site_of
 	authority.prefilter_edge_count = prefilter_edge_count
 	authority.module_paths = module_paths
 	authority.module_digest = module_digest
@@ -823,6 +1340,8 @@ return function(dependencies)
 	authority.check_cost_gate = check_cost_gate
 	authority.validate_first_record = validate_first_record
 	authority.verify_shard = verify_shard
+	authority.verify_free_output = verify_free_output
+	authority.split_line = split_line
 	authority.digest_of = digest_of
 	return authority
 end

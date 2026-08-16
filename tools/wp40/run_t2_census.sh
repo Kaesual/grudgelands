@@ -3,10 +3,12 @@ set -euo pipefail
 
 # WP40 T2 census runner (plan section 6.6).
 #
-#   tools/wp40/run_t2_census.sh --kat                  # seeds 0, Slot 29, max-u64
+#   tools/wp40/run_t2_census.sh --kat                  # the four KAT seeds
 #   WP40_CENSUS_OUTPUT=path run_t2_census.sh --seeds 0 7 4096
+#   tools/wp40/run_t2_census.sh --merge-kat            # the M5 LuaJIT/PUC gate
 #   tools/wp40/run_t2_census.sh --plan                 # derive W, print the token
 #   WP40_CENSUS_GO=<token> run_t2_census.sh --full-w   # the eight-shard run
+#   tools/wp40/run_t2_census.sh --merge                # publish the artifacts
 #
 # The free paths run anywhere; --full-w is the GO-gated one and starts nothing
 # until the token matches the `W` this tree derives (section 6.6.7).  It fans
@@ -33,6 +35,7 @@ owned_lua=(
 	"$repo/tools/wp40/t2_census_gate.lua"
 	"$repo/tools/wp40/t2_census_gate_test.lua"
 	"$repo/tools/wp40/t2_census_hasher.lua"
+	"$repo/tools/wp40/t2_census_merge.lua"
 	"$repo/tools/wp40/t2_census_worker.lua"
 	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v3.lua"
 )
@@ -135,6 +138,44 @@ reap_started_shards() {
 		fi
 	done
 	echo "WP40 T2 census reaped shards removed_partial=$removed kept_complete=$kept" >&2
+}
+
+# Section 6.6.5 and the M5 gate: the same merge runs twice on the same inputs,
+# under LuaJIT and under the vendored PUC 5.1, and the five artifacts must come
+# out byte for byte identical.  Only the PUC run is ever allowed to publish, so
+# the comparison is between the artifact that will be committed and one an
+# independent runtime produced -- not between two runs of the same interpreter.
+puc_bin="$repo/tools/bin/lua51"
+run_merge_pair() {
+	local out_luajit="$1" out_puc="$2"
+	shift 2
+	mkdir -p "$out_luajit" "$out_puc"
+	local luajit_scratch puc_scratch
+	luajit_scratch="$(new_scratch)"
+	puc_scratch="$(new_scratch)"
+	"$lua_path" "$script_dir/t2_census_merge.lua" "$repo" "$luajit_scratch" \
+		"$out_luajit" "$@"
+	"$puc_bin" "$script_dir/t2_census_merge.lua" "$repo" "$puc_scratch" \
+		"$out_puc" "$@"
+	local artifact
+	for artifact in census-occupied-classes-v1.tsv census-vacuous-branches-v1.tsv \
+			census-scan4-seed-set-v1.tsv census-prefilter-discharge-v1.tsv \
+			census-histograms-v1.tsv; do
+		if ! cmp -s "$out_luajit/$artifact" "$out_puc/$artifact"; then
+			echo "WP40 T2 census merge artifact $artifact differs between LuaJIT" \
+				"and PUC (plan section 6.6.5)" >&2
+			diff <(head -c 4096 "$out_luajit/$artifact") \
+				<(head -c 4096 "$out_puc/$artifact") >&2 || true
+			exit 1
+		fi
+	done
+	merge_digest="$(sed -n 's/^artifacts_digest\t\([0-9a-f]\{64\}\)$/\1/p' \
+		"$out_puc/census-manifest-v1.tsv")"
+	if [[ ! "$merge_digest" =~ ^[0-9a-f]{64}$ ]]; then
+		echo "WP40 T2 census merge wrote no artifacts digest" >&2
+		exit 1
+	fi
+	echo "WP40 T2 census merge LuaJIT/PUC artifacts identical digest=$merge_digest"
 }
 
 run_full_w() {
@@ -433,6 +474,39 @@ case "${1:-}" in
 		"$lua_path" "$script_dir/t2_census_worker.lua" "$repo" "$scratch" \
 			"$output" --range "$1" "$2" ${WP40_CENSUS_GO:+--go-token "$WP40_CENSUS_GO"}
 		;;
+	--merge-kat)
+		shift
+		if [[ $# -ne 0 ]]; then
+			echo "--merge-kat accepts no further arguments" >&2
+			exit 2
+		fi
+		# The worker KAT first, so the merge KAT always reads records this tree
+		# just produced and its pinned artifact digest can never outlive the
+		# record digest it was measured from.
+		"$lua_path" "$script_dir/t2_census_worker.lua" "$repo" "$scratch" \
+			"$scratch/census-kat.tsv" --kat
+		run_merge_pair "$scratch/merge-luajit" "$scratch/merge-puc" \
+			--records "$scratch/census-kat.tsv"
+		"$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" \
+			merge_kat "$merge_digest"
+		;;
+	--merge)
+		shift
+		if [[ $# -ne 0 ]]; then
+			echo "--merge accepts no further arguments" >&2
+			exit 2
+		fi
+		# Section 6.3 publishes into the committed fixtures; the merge itself
+		# refuses to write there under anything but the vendored PUC, so the
+		# LuaJIT half of the pair runs into scratch and is the comparison.
+		if [[ -n "${WP40_CENSUS_COST_PROJECTION:-}" ]]; then
+			run_merge_pair "$scratch/merge-luajit" "$repo/tools/wp40/fixtures/t2_census" \
+				--full-w --cost-projection "$WP40_CENSUS_COST_PROJECTION"
+		else
+			run_merge_pair "$scratch/merge-luajit" "$repo/tools/wp40/fixtures/t2_census" \
+				--full-w
+		fi
+		;;
 	--plan)
 		shift
 		if [[ $# -ne 0 ]]; then
@@ -453,8 +527,10 @@ case "${1:-}" in
 		echo "usage: tools/wp40/run_t2_census.sh --kat" >&2
 		echo "       WP40_CENSUS_OUTPUT=path tools/wp40/run_t2_census.sh --seeds SEED..." >&2
 		echo "       WP40_CENSUS_OUTPUT=path tools/wp40/run_t2_census.sh --range FIRST LAST" >&2
+		echo "       tools/wp40/run_t2_census.sh --merge-kat" >&2
 		echo "       tools/wp40/run_t2_census.sh --plan" >&2
 		echo "       WP40_CENSUS_GO=<token> tools/wp40/run_t2_census.sh --full-w" >&2
+		echo "       tools/wp40/run_t2_census.sh --merge" >&2
 		exit 2
 		;;
 esac

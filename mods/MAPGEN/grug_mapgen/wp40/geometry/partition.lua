@@ -4704,11 +4704,16 @@ local function new_partition(dependencies)
 						row.min_x, row.min_z = station.x, station.z
 						row.min_delta_nodes = delta
 					end
-					-- The overall minimum sits where the 96-station taper forces
-					-- `delta = 0`, so it says nothing about how close the jitter
-					-- gets to collapsing a width.  The minimum over the stations
-					-- the jitter actually moves is the margin a correction would
-					-- have to argue about, and it costs nothing to carry.
+					-- The overall minimum *usually* sits where the 96-station
+					-- taper forces `delta = 0`, but M4 read that off three seeds
+					-- and Slot 30 refutes it: there the minimum moves to a
+					-- jittered station in two of the four Bays (measured
+					-- 2026-08-16, M5).  The taper decides the segment, not the
+					-- station.  Carrying the minimum over the stations the jitter
+					-- actually moves therefore still earns its keep -- it is the
+					-- margin a correction would have to argue about -- and
+					-- neither reading replaces the exact per-column bound above,
+					-- which is what rules a collapse out.
 					if delta ~= 0 and (not row.jittered_numerator or
 							exact.safe_signed_product(numerator,
 								row.jittered_length, label) <
