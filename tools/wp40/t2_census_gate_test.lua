@@ -1,0 +1,276 @@
+-- Negative proofs for the four census launcher gates (plan section 6.6.2-4
+-- and 6.6.7).  Every gate is exercised on the decision function the launcher
+-- and the worker actually call, once positively and once per way the contract
+-- says it must abort.
+--
+-- Written because a happy-path run is not evidence: this branch already
+-- shipped a verification run that reported success with zero workers started
+-- and a ripgrep gate that passed vacuously, and both would have survived any
+-- test that only asserted the good case.
+local repo = assert(arg[1], "repository root required")
+local scratch = assert(arg[2], "scratch directory required")
+assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-census%.[A-Za-z0-9]+$"),
+	"unsafe scratch path")
+
+local function read_file(path)
+	local file = assert(io.open(path, "rb"), "missing file " .. path)
+	local bytes = assert(file:read("*a"))
+	assert(file:close())
+	return bytes
+end
+local function write_file(path, bytes)
+	local file = assert(io.open(path, "wb"))
+	assert(file:write(bytes)) assert(file:close())
+end
+local function to_hex(value)
+	return (value:gsub(".", function(byte)
+		return ("%02x"):format(string.byte(byte))
+	end))
+end
+
+local hasher = dofile(repo .. "/tools/wp40/t2_census_hasher.lua")({
+	repo = repo, scratch = scratch})
+local authority = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
+	raw_sha256 = hasher.raw_sha256})
+
+local checks, refusals = 0, 0
+local function check(condition, label)
+	checks = checks + 1
+	if not condition then error("census gate test failed: " .. label, 0) end
+end
+-- A negative proof only counts when the call fails *for the stated reason*:
+-- an abort on an unrelated typo in the fixture would otherwise read as the
+-- gate working.
+local function refuses(label, fragment, body, ...)
+	checks, refusals = checks + 1, refusals + 1
+	local ok, message = pcall(body, ...)
+	if ok then error("census gate test: " .. label .. " did not abort", 0) end
+	message = tostring(message)
+	if not message:find(fragment, 1, true) then
+		error("census gate test: " .. label .. " aborted on the wrong reason: " ..
+			message, 0)
+	end
+end
+
+-- ---------------------------------------------------------------- W and ranges
+local corpus = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
+local candidate_bytes = read_file(repo .. "/" .. authority.candidates_path)
+local w = authority.derive_w(corpus, candidate_bytes, hasher.raw_sha256)
+check(w.total == 4123, "W holds " .. w.total .. " seeds")
+check(w.seeds[1] == "0", "W does not start at seed 0")
+check(w.seeds[w.total] == "18446744073709551615", "W does not end at max-u64")
+check(w.derivation.duplicates == 0, "W deduplicated unexpectedly")
+check(#w.digest == 64, "W digest is not a hex digest")
+local again = authority.derive_w(corpus, candidate_bytes, hasher.raw_sha256)
+check(again.digest == w.digest, "W derivation is not reproducible")
+for index = 2, w.total do
+	check(authority.decimal_less(w.seeds[index - 1], w.seeds[index]),
+		"W is not in ascending canonical order at index " .. index)
+end
+refuses("a candidate artifact with a corrupted decimal", "corpus label rule",
+	function()
+		local broken = candidate_bytes:gsub("\t3318027308425330859\t",
+			"\t3318027308425330860\t", 1)
+		authority.derive_w(corpus, broken, hasher.raw_sha256)
+	end)
+refuses("a candidate artifact with a dropped row", "holds 4095 rows",
+	function()
+		local broken = candidate_bytes:gsub("\n0\tscored\t[^\n]*", "", 1)
+		authority.derive_w(corpus, broken, hasher.raw_sha256)
+	end)
+
+local ranges = authority.shard_ranges(w.total)
+check(#ranges == authority.worker_count, "shard count changed")
+local covered = 0
+for index = 1, #ranges do
+	check(ranges[index].first == covered, "shard " .. index .. " does not abut")
+	covered = ranges[index].last + 1
+end
+check(covered == w.total, "the shard ranges do not cover W")
+refuses("a range that is not one of the eight", "canonical shard ranges",
+	authority.validate_shard_range, 0, 63, w.total)
+check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) == 1,
+	"the first canonical range was rejected")
+
+-- ------------------------------------------------------------ shard path names
+local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
+check(shard_path == "tools/wp40/results/t2_census/census-scan1-v1-0000-0515.tsv",
+	"census shard path changed: " .. shard_path)
+check(not shard_path:find("shard-luajit", 1, true),
+	"census shard path collides with the pool pattern")
+check(authority.assert_disjoint_from_pool(0, 515), "pool disjointness check failed")
+refuses("a shard path that is not canonical", "not the canonical census path",
+	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
+	0, 515)
+refuses("a free run writing a shard file name", "must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
+refuses("a free run writing into the shard directory", "must not write into",
+	authority.validate_free_output_path,
+	"/home/x/tools/wp40/results/t2_census/free.tsv")
+
+-- ------------------------------------------------------------------- GO gate
+check(authority.check_go_token(nil, w.digest, authority.free_seed_budget),
+	"a free-budget run was refused")
+refuses("a full-W slice without the token", "needs the explicit GO token",
+	authority.check_go_token, nil, w.digest, ranges[1].size)
+refuses("an empty token on a gated slice", "needs the explicit GO token",
+	authority.check_go_token, "", w.digest, ranges[1].size)
+refuses("a token for a different W", "does not match this W",
+	authority.check_go_token, string.rep("a", 64), w.digest, ranges[1].size)
+refuses("a stale token on a free run", "does not match this W",
+	authority.check_go_token, string.rep("b", 64), w.digest, 2)
+check(authority.check_go_token(w.digest, w.digest, ranges[1].size),
+	"the matching token was refused")
+
+-- ----------------------------------------------------------------- cost gate
+local cap = authority.wall_cap_seconds
+local inside = authority.project_wall_seconds({
+	{size = 516, completed = 1, elapsed = 25},
+	{size = 515, completed = 1, elapsed = 24}})
+check(math.floor(inside.wall_seconds) == 12900,
+	"projection changed: " .. inside.wall_seconds)
+check(authority.check_cost_gate(inside), "an inside-cap projection was refused")
+-- The trap section 6.5 names: 4,123 worker-seconds per seed-second is an
+-- eight-hour overrun in wall time only if the projection stays per shard.
+local over = authority.project_wall_seconds({
+	{size = 516, completed = 2, elapsed = 120}})
+check(math.floor(over.wall_seconds) == 30960, "overrun projection changed")
+refuses("a projection past the eight-hour cap", "exceeds the",
+	authority.check_cost_gate, over)
+refuses("a projection past a lowered cap", "exceeds the",
+	authority.check_cost_gate, inside, 600)
+refuses("a projection from no completions", "at least one completed sample",
+	authority.project_wall_seconds, {})
+refuses("a projection from a shard that completed nothing", "completed no seed",
+	authority.project_wall_seconds, {{size = 516, completed = 0, elapsed = 30}})
+
+-- --------------------------------------------------- first record and resume
+-- A synthetic shard in the exact worker format.  Building it here rather than
+-- capturing one keeps the negatives cheap: every mutation below is a one-line
+-- edit of bytes whose good form has just been accepted.
+local function seed_record(seed)
+	local rows = {"seed_begin\t" .. seed}
+	local function row(count, tag, fields, class_at, class)
+		for index = 1, count do
+			local cells = {tag, seed}
+			for field = 3, fields do
+				cells[field] = (field == class_at) and class or (tag .. index .. "_" .. field)
+			end
+			rows[#rows + 1] = table.concat(cells, "\t")
+		end
+	end
+	row(61, "edge", 13, 5, "ordinary_interval_select")
+	for index = #rows - 60, #rows do
+		local cells = {}
+		for cell in (rows[index] .. "\t"):gmatch("(.-)\t") do cells[#cells + 1] = cell end
+		cells[4] = "ordinary"
+		rows[index] = table.concat(cells, "\t")
+	end
+	row(3, "perimeter", 6)
+	row(8, "aperture", 16)
+	row(8, "attachment", 13, 6, "attachment_equality_select")
+	row(38, "junction", 7)
+	row(4, "bay", 5)
+	rows[#rows + 1] = "seed_end\t" .. seed
+	return table.concat(rows, "\n") .. "\n"
+end
+
+local header = authority.shard_header_lines({
+	schema = authority.schema, vocabulary = authority.vocabulary_path,
+	shard_schema = authority.shard_schema, first = 0, last = 1, shard_seeds = 2,
+	w_digest = w.digest, w_total = w.total, census_commit = string.rep("c", 40),
+	census_tree = string.rep("t", 40), module_digest = string.rep("d", 64),
+	interpreter_id = "luajit", interpreter_path = "/usr/bin/luajit-test",
+	interpreter_version = "LuaJIT test"})
+local prefilter = {}
+for index = 1, authority.prefilter_edge_count do
+	prefilter[index] = "prefilter\tedge_" .. index ..
+		(index <= 14 and "\tdischarged\tout of reach" or "\tscanned\tin reach")
+end
+local body = table.concat(header, "\n") .. "\n" ..
+	table.concat(prefilter, "\n") .. "\n" ..
+	seed_record(w.seeds[1]) .. seed_record(w.seeds[2])
+local function sealed(text)
+	return text .. "digest\tsha256=" .. to_hex(hasher.raw_sha256(text)) .. "\n"
+end
+local shard = sealed(body)
+local expected = {first = 0, last = 1, w_digest = w.digest,
+	census_commit = string.rep("c", 40), seeds = {w.seeds[1], w.seeds[2]}}
+
+local verified = authority.verify_shard(shard, expected)
+check(#verified.seeds == 2 and verified.seeds[1] == w.seeds[1],
+	"a well-formed shard did not verify")
+check(verified.totals.edge == 122, "shard row totals changed")
+local first_record = authority.validate_first_record(body, expected)
+check(first_record and first_record.seed == w.seeds[1],
+	"a well-formed first record did not validate")
+check(authority.validate_first_record(
+	table.concat(header, "\n") .. "\n" .. table.concat(prefilter, "\n") .. "\n" ..
+	"seed_begin\t" .. w.seeds[1] .. "\n") == nil,
+	"an unfinished first record was treated as complete")
+
+refuses("a first record with an undeclared class", "undeclared class",
+	authority.validate_first_record,
+	(body:gsub("ordinary_interval_select", "ordinary_interval_maybe", 1)), expected)
+refuses("a first record with an undeclared edge kind", "undeclared kind",
+	authority.validate_first_record,
+	(body:gsub("\tordinary\t", "\tordinary_ish\t", 1)), expected)
+refuses("a first record missing a site", "expected 38",
+	authority.validate_first_record,
+	(body:gsub("\njunction\t" .. w.seeds[1] .. "\tjunction1_3[^\n]*", "", 1)), expected)
+refuses("a first record with a short row", "fields, expected 13",
+	authority.validate_first_record, (body:gsub("\tedge1_13\n", "\n", 1)), expected)
+refuses("a first record for the wrong seed", "expected " .. w.seeds[1],
+	authority.validate_first_record,
+	(body:gsub("seed_begin\t" .. w.seeds[1], "seed_begin\t7", 1)), expected)
+refuses("a first record under a foreign W", "different W",
+	authority.validate_first_record, body,
+	{first = 0, last = 1, w_digest = string.rep("f", 64)})
+refuses("a first record with an unknown row tag", "unknown row tag",
+	authority.validate_first_record,
+	(body:gsub("\nbay\t", "\nbays\t", 1)), expected)
+
+-- Section 6.6.4: the empty claim file of a crashed worker, a truncated shard
+-- and a silently edited one all abort; none of them is an empty shard.
+refuses("an empty claim file", "shard file is empty",
+	authority.verify_shard, "", expected)
+refuses("a claim file holding only its header", "no trailing digest line",
+	authority.verify_shard, table.concat(header, "\n") .. "\n", expected)
+refuses("a shard truncated mid record", "no trailing digest line",
+	authority.verify_shard, body, expected)
+refuses("a shard whose digest was not recomputed", "recomputed",
+	authority.verify_shard, (shard:gsub("ordinary_interval_select",
+		"transition_interval_select", 1)), expected)
+refuses("a shard resealed around an undeclared class", "undeclared class",
+	authority.verify_shard,
+	sealed((body:gsub("attachment_equality_select", "attachment_equality_maybe", 1))),
+	expected)
+refuses("a shard resealed with a missing seed record", "seed records",
+	authority.verify_shard, sealed((body:gsub(seed_record(w.seeds[2]), "", 1))),
+	expected)
+refuses("a shard resealed for another range", "not the range",
+	authority.verify_shard,
+	sealed((body:gsub("shard_range\t0\t1", "shard_range\t2\t3", 1))), expected)
+refuses("a shard resealed at another commit", "produced at commit",
+	authority.verify_shard,
+	sealed((body:gsub(string.rep("c", 40), string.rep("e", 40), 1))), expected)
+-- Trailing junk is refused where the parser expects the next record to open,
+-- which is the earliest and most specific place it can be named.
+refuses("a shard with trailing text after its last record",
+	"does not open with seed_begin",
+	authority.verify_shard, sealed(body .. "bay\t0\tx\t0\t-\n"), expected)
+refuses("a shard whose header lost a line", "shard header line",
+	authority.verify_shard,
+	sealed((body:gsub("w_total\t" .. w.total .. "\n", "", 1))), expected)
+refuses("a shard whose prefilter lost a row", "prefilter row 61",
+	authority.verify_shard, sealed((body:gsub("\n" .. prefilter[61], "", 1))),
+	expected)
+refuses("a shard whose prefilter status is undeclared", "has status",
+	authority.verify_shard, sealed((body:gsub("\tdischarged\t", "\tdisarmed\t", 1))),
+	expected)
+
+write_file(scratch .. "/gate-shard.tsv", shard)
+check(read_file(scratch .. "/gate-shard.tsv") == shard, "shard round trip failed")
+hasher.close()
+print(("census gate test passed: %d checks, %d of them negative"):format(
+	checks, refusals))
