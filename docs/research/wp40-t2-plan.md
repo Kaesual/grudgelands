@@ -185,12 +185,23 @@ target host; where a ratio is inferred from two of them, it says so.
 | `run_t1.sh` | 0.18 s |
 | `luac51 -p` plus the five grep sweeps, whole owned set | 0.007 s |
 | census Scan-1 worker pass, one seed, LuaJIT | **22.7 s** seed 0 / 24–25 s max-u64 (measured 2026-08-16, M1) |
+| the same pass, host variance across runs | **22–37 s** (measured 2026-08-16, M2) |
+| the same pass, fork hasher vs persistent responder | **33–35 s / 26 s** wall, four processes in parallel (measured 2026-08-16, M2) |
+| eight census workers, per-seed at first records | **28–36 s** (measured 2026-08-16, M2) |
 
 The M1 census figure is the Scan-1-only floor for the section 6.5 cost gate:
-4,130 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
+4,123 seeds at ~25 s across 8 workers projects to roughly 3.6 h wall before
 Scan-2 and Scan-3a are added in M3/M4 — inside the eight-hour cap, but the
 gate must be re-projected from the first fanned completions once those tiers
 exist, not extrapolated from this row.
+
+The M2 rows say why that re-projection is not a formality. The same seed-0
+pass measured anywhere from 22 s to 37 s on this host depending on concurrent
+load, so the 22.7 s anchor is the fast end of a wide band rather than a
+central estimate; at eight workers the observed 28–36 s projects Scan-1 alone
+to roughly 4.7 h. M2 also removed the per-call `sha256sum` fork, which was
+worth about a quarter of the pass — measured as an A/B under equal load, not
+inferred.
 
 PUC-to-LuaJIT ratio is **not** a single number: measured 2.8x on
 validation-heavy paths, 16.2x on an exhaustive numeric sweep, and 26.5x on a
@@ -502,7 +513,10 @@ Decisions recorded 2026-08-16; the mechanics belong in `tools/wp40/README.md`
 once the runner is built. The pattern throughout is the proven
 `run_t2_extreme_shards.sh` launcher.
 
-1. **Structure.** Eight range-sharded LuaJIT workers over `W` (~4,130 seeds),
+1. **Structure.** Eight range-sharded LuaJIT workers over `W` (measured
+   2026-08-16 at exactly **4,123** seeds — the 27 corpus slots and the 4,096
+   pool candidates turn out to be disjoint, so the shards are three of 516
+   and five of 515, not the pool's clean 512s),
    a launcher plus a per-shard worker script, canonical TSV shards under a
    census-specific naming scheme that can never collide with pool shards,
    and a deterministic merge into the five section-6.2 artifacts plus the
@@ -562,6 +576,16 @@ File cut: `tools/wp40/run_t2_census.sh` (launcher),
 `tools/wp40/t2_census_worker.lua`, `tools/wp40/t2_census_merge.lua`;
 committed artifacts and KAT fixtures under `tools/wp40/fixtures/t2_census/`.
 Census shard names must never match a pool shard pattern (section 6.6.1).
+M2 added `tools/wp40/t2_census_authority.lua` outside this cut, deliberately:
+the `W` derivation, the shard-range and shard-name rules, the decision-class
+vocabulary and the two numeric gates are each needed by the launcher, the
+worker and the M5 merge, and a second copy of such a rule is what aborted a
+fresh pool launch before any seed was measured. `t2_census_gate.lua`,
+`t2_census_hasher.lua`, `t2_census_sha_server.py` and the two gate-proof
+harnesses came with it; the mechanics are in `tools/wp40/README.md`. Shards
+are per-seed intermediates and therefore live under the gitignored
+`tools/wp40/results/t2_census/`, not in fixtures — section 6.3 governs there,
+and only the merged artifacts of section 6.2 are committed.
 
 Division of labour: the projection entry points, worker classification,
 merge semantics and KATs are done in-session; the mechanical launcher and

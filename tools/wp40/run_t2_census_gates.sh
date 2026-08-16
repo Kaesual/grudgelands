@@ -154,6 +154,86 @@ fi
 checks=$((checks + 1))
 rm -f "$export_dir"/tools/wp40/results/t2_census/*.tsv
 
+echo "== resume actually resumes =="
+# The negatives above prove a bad shard aborts.  A gate that refused everything
+# would pass all of them, so the positive belongs here: a well-formed shard for
+# the first range must be verified, skipped, and cost exactly one worker.  The
+# records are structurally faithful and semantically synthetic, which is all
+# the resume verifier reads.
+cat >"$scratch/synthesize.lua" <<'LUA'
+local repo, scratch, target, first, last, commit = arg[1], arg[2], arg[3],
+	tonumber(arg[4]), tonumber(arg[5]), arg[6]
+local hasher = dofile(repo .. "/tools/wp40/t2_census_hasher.lua")({
+	repo = repo, scratch = scratch})
+local authority = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
+	raw_sha256 = hasher.raw_sha256})
+local corpus = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
+local candidates = assert(io.open(repo .. "/" .. authority.candidates_path, "rb"))
+local w = authority.derive_w(corpus, assert(candidates:read("*a")), hasher.raw_sha256)
+assert(candidates:close())
+local parts = authority.shard_header_lines({schema = authority.schema,
+	vocabulary = authority.vocabulary_path, shard_schema = authority.shard_schema,
+	first = first, last = last, shard_seeds = last - first + 1,
+	w_digest = w.digest, w_total = w.total, census_commit = commit,
+	census_tree = string.rep("0", 40), module_digest = string.rep("0", 64),
+	interpreter_id = "luajit", interpreter_path = "/usr/bin/luajit",
+	interpreter_version = "synthetic"})
+for index = 1, authority.prefilter_edge_count do
+	parts[#parts + 1] = "prefilter\tedge_" .. index .. "\tscanned\tsynthetic"
+end
+local layout = {{"edge", 61, 13, 5, "ordinary_interval_select", 4, "ordinary"},
+	{"perimeter", 3, 6}, {"aperture", 8, 16},
+	{"attachment", 8, 13, 6, "attachment_equality_select"},
+	{"junction", 38, 7}, {"bay", 4, 5}}
+for index = first, last do
+	local seed = assert(w.seeds[index + 1])
+	parts[#parts + 1] = "seed_begin\t" .. seed
+	for row = 1, #layout do
+		local tag, count, width, class_at, class, kind_at, kind = unpack(layout[row])
+		for repeated = 1, count do
+			local cells = {tag, seed}
+			for field = 3, width do
+				cells[field] = field == class_at and class or
+					field == kind_at and kind or (tag .. repeated .. "_" .. field)
+			end
+			parts[#parts + 1] = table.concat(cells, "\t")
+		end
+	end
+	parts[#parts + 1] = "seed_end\t" .. seed
+end
+local body = table.concat(parts, "\n") .. "\n"
+local digest = (hasher.raw_sha256(body):gsub(".", function(byte)
+	return ("%02x"):format(string.byte(byte)) end))
+local file = assert(io.open(target, "wb"))
+assert(file:write(body, "digest\tsha256=", digest, "\n"))
+assert(file:close())
+hasher.close()
+print("synthetic shard written " .. target)
+LUA
+resume_scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
+"${WP40_LUA_BIN:-/usr/bin/luajit}" "$scratch/synthesize.lua" "$export_dir" \
+	"$resume_scratch" "$(shard_one "$export_dir")" 0 515 \
+	"$(git -C "$export_dir" rev-parse --verify HEAD)"
+rm -rf -- "$resume_scratch"
+expect_failure "a run resuming one verified shard" "exceeds the" \
+	env WP40_CENSUS_GO="$token" WP40_CENSUS_WALL_CAP_SECONDS=1 \
+	"$export_dir/tools/wp40/run_t2_census.sh" --full-w
+expect_in_last "shard verified range=0000..0515 seeds=516" "the resume run"
+expect_in_last "workers_started=7 resumed_shards=1" "the resume run"
+rm -f "$export_dir"/tools/wp40/results/t2_census/*.tsv
+
+echo "== a free small range needs no token =="
+WP40_CENSUS_OUTPUT="$scratch/free-range.tsv" \
+	"$export_dir/tools/wp40/run_t2_census.sh" --range 0 1
+checks=$((checks + 1))
+tail -n 1 "$scratch/free-range.tsv" |
+	grep -qE '^digest[[:space:]]sha256=[0-9a-f]{64}$' ||
+	fail "the free range wrote no digest line"
+if grep -q '^shard_schema' "$scratch/free-range.tsv"; then
+	fail "a free range emitted shard framing and would resume as a shard"
+fi
+checks=$((checks + 1))
+
 echo "== first-record gate (plan section 6.6.2), against a live worker record =="
 # The class vocabulary is declared in exactly one place, so narrowing it there
 # is all it takes to make a genuine worker record violate the contract.  The

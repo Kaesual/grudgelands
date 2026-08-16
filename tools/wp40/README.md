@@ -509,20 +509,24 @@ not claim Stage 2, T2-final, T9-final, runtime publication, or a 32-seed corpus.
   one manual big-endian encoder so the plain standalone Lua 5.1 harness runs
   the exact production algorithm rather than a replacement stub.
 
-## T2 census scans (Scan-1 worker, milestone M1)
+## T2 census scans (Scan-1 worker and launcher, milestones M1-M2)
 
 The census contract lives in
 [wp40-t2-plan.md](../../docs/research/wp40-t2-plan.md) section 6; this
-section owns only the runner mechanics. M1 ships the one-seed worker pass;
-the eight-shard full-`W` launcher with GO gate, resume, first-record
-validation and cost gate is milestone M2 and does not exist yet — the worker
-caps explicit seed lists at 64, so a full-`W` run cannot be started by
-accident.
+section owns only the runner mechanics. M1 shipped the Scan-1 worker pass and
+the frozen row schema, M2 the eight-shard full-`W` launcher with its GO gate,
+verified resume, first-record validation and cost gate. Scan-2, Scan-3a and
+the merge are M3-M5 and do not exist yet.
 
 ```sh
-tools/wp40/run_t2_census.sh --kat                 # seeds 0 + max-u64, pinned digest
+tools/wp40/run_t2_census.sh --kat                  # seeds 0 + max-u64, pinned digest
 WP40_CENSUS_OUTPUT=/path/out.tsv \
-  tools/wp40/run_t2_census.sh --seeds 0 7 4096    # small explicit lists run freely
+  tools/wp40/run_t2_census.sh --seeds 0 7 4096     # small explicit lists run freely
+WP40_CENSUS_OUTPUT=/path/out.tsv \
+  tools/wp40/run_t2_census.sh --range 0 15         # a small slice of W, also free
+tools/wp40/run_t2_census.sh --plan                 # derive W, print the GO token
+WP40_CENSUS_GO=<token> tools/wp40/run_t2_census.sh --full-w
+tools/wp40/run_t2_census_gates.sh                  # the four gates, proven negatively
 ```
 
 LuaJIT by default, `WP40_LUA_BIN` overrides. One worker process evaluates
@@ -552,27 +556,123 @@ the block records verified predictions, not skipped work.
 witness fills (seed 0 `0/0/0/0`, max-u64 `1/1/1/0`), the structural row
 counts, six transition edges with qualifying count one, 102 passing junction
 pairs, attachment distances at most one, the zero-displacement Holy band and
-the determinism digest over both seeds. The LuaJIT/PUC digest comparison is
-milestone M5's merge gate; M1 runs PUC only as the language contract
-(`luac51 -p`, `SETGLOBAL`, the five sweeps).
+the determinism digest over both seeds. That digest is also the standing
+proof that later changes stayed byte-neutral, so `--kat` and explicit seed
+lists emit exactly the M1 bytes and only range mode adds framing. The
+LuaJIT/PUC digest comparison is milestone M5's merge gate; M1 and M2 run PUC
+only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
+which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 
-Census artifacts never share a path or name pattern with pool shards
-(`shard-luajit-*.tsv`); the worker refuses to overwrite an existing output.
+### One declaration point
 
-Deferred to M2 by the M1 review, so the launcher work-item list is complete:
+`t2_census_authority.lua` owns every rule more than one consumer needs: the
+`W` derivation, the eight shard ranges, the shard path, the decision-class
+vocabulary with its per-seed site roster, the GO-token rule and the two
+numeric gates. The launcher, the worker and the M5 merge ask it rather than
+restating it — a second copy of the shard-name rule is what aborted a fresh
+pool launch before any seed was measured (see the comment in
+`run_t2_extreme_shards.sh`). Plan section 6.7's file cut names three census
+files; this is a deliberate fourth, with `t2_census_gate.lua` (launcher-side
+entry points), `t2_census_hasher.lua`, `t2_census_sha_server.py` and the two
+gate-proof harnesses alongside.
 
-- Replace the worker's 64-seed list cap with a per-invocation gate that
-  survives range mode — an explicit launcher token, so a direct worker call
-  stays unable to start a full-`W` slice after sharding exists.
-- Adopt the batched SHA path (`t2_sha256_batch.py`, the discover/strict
-  cache of `t2_extreme_shard_worker.lua`) or a persistent hasher: fork
-  overhead is ~0.7 s of each ~23 s seed pass, ~48 CPU-minutes over full `W`.
-- The worker claims its output path at startup by creating it empty; resume
-  verification must treat a zero-length or digest-less file as unparseable
-  and abort loudly (section 6.6.4 semantics), never as an empty shard.
-- One fact a fresh session should not re-derive: `max_u64_r16_r17.lua` pins
-  the `partition.lua` bytes (`partition_sha256`), so any partition edit must
-  re-pin it and rerun `run_t2_extreme.sh` — the pool itself is unaffected.
+`W` is derived, never listed: the 27 corpus slots — seed 0 is slot 1 and
+max-u64 slot 19 — plus the 4,096 pool candidates recomputed from the
+committed `grudgelands-wp40-extreme-NNNN` label rule and cross-checked row
+for row against `candidates-luajit-v3.tsv`. Measured **|W| = 4,123**: the
+two terms are disjoint, so the plan's approximate 4,130 is 7 high, and the
+eight shards are three of 516 and five of 515 rather than the pool's clean
+512s. The order is ascending canonical unsigned-64 decimal and the seeds
+never pass through a Lua number.
+
+### The four gates, and why they are proven negatively
+
+`run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
+export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
+does the same against the decision functions directly (4,185 checks, 33 of
+them demanding an abort for a named reason). A gate that refused everything
+would pass all the negatives, so the positives are proven too: a well-formed
+shard is resumed and costs exactly one worker, and a real worker record
+validates while the run continues.
+
+1. **GO gate** (section 6.6.7). The full-`W` path starts only when
+   `WP40_CENSUS_GO` equals this `W`'s digest. The token is a digest rather
+   than a word because it is checkable and names which seed set was
+   approved: every worker re-derives `W` and re-checks the token itself, so
+   a direct worker call cannot start a full-`W` slice either — which is what
+   replaces M1's 64-seed list cap now that range mode exists. Any run above
+   64 seeds needs the token; a gated range must additionally be one of the
+   eight canonical ranges and publish at the canonical shard path, and a
+   free run is refused a shard file name so a three-seed file can never be
+   resumed as a finished shard.
+2. **First record** (section 6.6.2). Fan-out is immediate and at full width
+   — there is no serial pre-validation pass (plan section 5). The launcher
+   validates each worker's first *completed* record against the contract
+   while all eight keep running: every declared site present at its roster
+   count, every row at its declared width, every class string drawn from the
+   declared vocabulary. That check is why the worker streams and flushes per
+   record instead of materialising its TSV at the end. A structural failure
+   aborts the fleet. If no worker produces a validated record within
+   `WP40_CENSUS_FIRST_RECORD_DEADLINE` (default 900 s) the run aborts too — a
+   worker that hangs before writing anything is the same early failure.
+3. **Cost gate** (sections 6.5 and 6.6.3). Once every running worker has a
+   completion, the slowest shard is projected to full length and compared
+   against eight hours *wall at eight workers*. The projection takes the
+   slowest shard rather than a sum or an average because the shards run
+   concurrently: summing inflates by the worker count, averaging hides an
+   unbalanced run. `WP40_CENSUS_WALL_CAP_SECONDS` lowers the cap, which is
+   how the negative proof fires within a minute.
+4. **Verified resume** (section 6.6.4). A shard already on disk is parsed,
+   digest-checked against its own preceding bytes, and required to cover
+   exactly its range of this `W` at this commit before it is skipped.
+   Anything unparseable aborts loudly — including the empty claim file a
+   crashed worker leaves behind, which is never read as an empty shard.
+
+A refusing gate exits 3 and a broken one exits 1, and the launcher says which
+happened. Without that split it would report a cap overrun when the
+projection had actually crashed — the shape of the vacuous ripgrep gate and
+the zero-worker verification run, and the first thing these proofs caught.
+
+### Paths, provenance and cost
+
+Census shards are per-seed intermediates, which section 6.3 forbids
+committing, so they are written to the gitignored
+`tools/wp40/results/t2_census/census-scan1-v1-%04d-%04d.tsv`; only the merged
+section-6.2 artifacts belong under `fixtures/t2_census/`. The name shares no
+stem with either pool pattern (`shard-luajit-*.tsv`) and the disjointness is
+computed, not asserted in prose.
+
+A full-`W` run requires every geometry module and launcher file to be tracked
+and unmodified against `HEAD`, and each worker pins those bytes before it
+loads them and re-reads them before it publishes. That replaces the extreme
+launcher's per-shard `git archive` of the whole tree: same guarantee that a
+shard belongs to one commit, without eight full exports.
+
+The SHA path is a persistent responder (`t2_census_sha_server.py`) over a
+FIFO pair rather than the extreme worker's batch script. Measured on one
+seed-0 pass: 639,512 `raw_sha256` calls, **1,004 of them distinct**,
+discovered inside the R7 compile — so the batch script's discover-then-strict
+shape would cost a second ~25 s compile to remove ~1.3 s of fork overhead,
+and `t2_sha256_batch.py` cannot be edited anyway because it is byte-pinned by
+the extreme authority DAG. Same framing, same `hashlib`, verified per session
+against three fixed vectors and the first eight real inputs. A/B on seed 0
+with four processes in parallel: **33-35 s wall with the fork hasher, 26 s
+with the responder**, KAT digest `08547fef` unchanged either way.
+
+Per-seed cost is noisy on this host — 22 s to 37 s for the same seed-0 pass
+across runs, depending on concurrent load — so the plan's 22.7 s anchor is
+the fast end and no schedule should rest on it. Eight workers producing their
+first records took 28-36 s per seed, which projects to roughly 4.7 h for
+Scan-1 alone, inside the eight-hour cap. The gate re-projects from the live
+run for exactly this reason; it is not an extrapolation from section 4.
+
+Still open for M3 and later: the R19 tuple enumeration the compiler does not
+carry (plan section 5), Scan-2's counting and tuple tiers, Scan-3a, and the
+merge with its LuaJIT/PUC digest comparison. One fact a fresh session should
+not re-derive: `fixtures/t2_extreme_e0/max_u64_r16_r17.lua` pins the
+`partition.lua` bytes (`partition_sha256`), so any partition edit must re-pin
+it and rerun `run_t2_extreme.sh` — the pool itself is unaffected. M2 touched
+no file under `mods/`, so that rule did not fire here.
 
 ## Isolated headless capture
 
