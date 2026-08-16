@@ -202,9 +202,12 @@ questions and PvP-death XP rule remain explicitly open in
 [the PvP-death TODO](TODO-design-pvp-death.md), respectively.
 
 **In progress:** WP40, the named-zone map foundation, has been under
-implementation since 2026-08-13 on its own branch; its engineering brief is
-written and reviewed, and the fixed seed, capacity and performance evidence
-remains a merge gate.
+implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
+Its [engineering brief](docs/research/wp40-engineering-brief.md) is written and
+reviewed and decomposes the work into T0–T9: T0 and T1 are complete, T2 is in
+flight, T3–T9 have not started. Current state and execution order are in
+[the T2 plan](docs/research/wp40-t2-plan.md). The fixed seed, capacity and
+performance evidence remains a merge gate.
 
 **Ready to start next:** WP26 and WP44 are the newly unblocked material and
 economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped

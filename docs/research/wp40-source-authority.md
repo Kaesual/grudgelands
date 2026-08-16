@@ -553,6 +553,12 @@ correction, with its evidence and digests, stays in
 
 ## 8. Exterior coast-source selection
 
+Exterior dressing inherits one `coast_source_zone_id` from the nearest allowed
+compiled outer-coast component. Which components are allowed, and the fact that
+the value is inheritance only, are design contracts in
+[world_zones.md](../design/world_zones.md); what follows is only how the
+nearest one is chosen.
+
 - Each final 8-connected compiled segment uses endpoint squared distance over
   one or interior `C^2/L`. All exact rational minima are collected before
   choosing lower zone numeric ID, then stable component ID, then zero-based

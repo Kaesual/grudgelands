@@ -9,7 +9,7 @@
 > were both split, and the payload cache was repaired. Its line-number
 > citations, its LOC figures, its list of freeze blockers and its
 > contamination map are all out of date, and section 3's citations point past
-> the end of a brief that has since shrunk from 4,988 lines to 4,108.
+> the end of a brief that has since shrunk by roughly 900 lines.
 >
 > For current state, execution order and open items, read
 > [wp40-t2-plan.md](wp40-t2-plan.md). It reverses this file's ordering: the
@@ -146,6 +146,12 @@ Measuring them requires a run longer than ten minutes and was not done here.
 
 ## 7. THE 4,096 POOL
 
+**Superseded.** The launch prerequisites below are the pre-migration pin set:
+the pool no longer binds the Source checksum, boundary-policy checksum or
+Partition file, only the stage-S1 authority digest and the S1 Source
+projection. The pool was measured on 2026-08-16 under the new pins
+(`527b3a5`) and reproduced the pre-R16 winners.
+
 The retained run executes eight immutable LuaJIT shards of 512 candidates and emits one scalar-measurement row per candidate; PUC 5.1 then exact-covers, parses, ranks, and writes the merged candidate artifact and manifest (`tools/wp40/run_t2_extreme_shards.sh:1-129`, `tools/wp40/t2_extreme_merge.lua:98-277`). It freezes only the R7 scalar-measurement pool and ranking input, explicitly not Partition, Whole, selected-four acceptance, or T2 (`tools/wp40/README.md:181-220`). The observed run took 100 min 51 s on eight LuaJIT workers; eight shards plus merged artifact and manifest occupy 3,786,042 bytes. Before launch, the immutable commit/tree, Source checksum, boundary-policy checksum, Partition file, authority DAG, reviewed launcher/worker bytes, full-scan gate, and exact LuaJIT binary must agree (`tools/wp40/t2_extreme_authority.lua:1-477`). The checked-in pre-R19 pool is historical and unpromotable.
 
 ## 8. DESIGN-DOC CONTAMINATION
@@ -153,14 +159,14 @@ The retained run executes eight immutable LuaJIT shards of 512 candidates and em
 **Retired.** The extraction this section proposed was carried out on
 2026-08-15: the compiler algorithm now lives in
 [wp40-source-authority.md](wp40-source-authority.md) and `world_zones.md`
-shrank from 2,002 to 1,604 lines. The line ranges below therefore no longer
+shrank by roughly 400 lines. The line ranges below therefore no longer
 land on what they name, and the last rows are past end of file. Kept as the
 record of what was moved and why it was classified that way.
 
 Classification: **(a)** game/later-WP contract, **(b)** compiler/raster
 algorithm or acceptance evidence, **(c)** mixed.
 
-| `world_zones.md` lines as of 2026-08-15 | R-series content | Class |
+| `world_zones.md` lines at the snapshot basis `9a6ad8f` | R-series content | Class |
 |---:|---|:---:|
 | 279–301 | R17 final Bay-mask correction and its payload/scan contract | (c) |
 | 302–311 | R11 Bank-component authority | (b) |

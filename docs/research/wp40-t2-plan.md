@@ -8,7 +8,8 @@ The other WP40 documents each own one thing and none owns this:
 [wp40-reality-corrections.md](wp40-reality-corrections.md) the evidence
 history, [wp40-t2-degeneracy-completeness.md](wp40-t2-degeneracy-completeness.md)
 the bound on what remains open, and
-[wp40-t2-handover.md](wp40-t2-handover.md) a factual snapshot. This file holds
+[wp40-t2-handover.md](wp40-t2-handover.md) a superseded snapshot, useful for
+its reasoning and not for its facts. This file holds
 what is being done next, in what order, and why — the part that was living only
 in a chat session until 2026-08-16.
 
@@ -66,7 +67,14 @@ Resulting order:
    flagged, extremal and winner seeds only.
 4. **C1 conformance migrated to v3** against the artifacts the pool run
    produced.
-5. **`geometry/compiler_impl.lua`** — wire the verified geometry into the
+5. **The downstream-of-perimeter group** — `coast_shelf`, `islands`,
+   `channels`, `anchors`, `hard_protection`, `claim_exclusions`,
+   `housing_masks`, and the logical-biome, nearest-feature and housing-centre
+   selectors. All are pure functions of geometry that is frozen by then, so
+   they carry no R-series risk, but nothing currently schedules them and the
+   brief makes several of them T2 completion gates — "all six capital anchors
+   are centered/contained" among them.
+6. **`geometry/compiler_impl.lua`** — wire the verified geometry into the
    production compiler.
 
 **Class B runs in parallel throughout.** The relief field `H`, the template

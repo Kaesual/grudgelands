@@ -565,8 +565,9 @@ at any stage reopens everything.
    corrections. This is a process/pinning change, not a Source semantic
    change; it needs the user's explicit decision, consistent with the
    existing "pool runs only on explicit GO" rule.
-   **Implemented 2026-08-16** as `tools/wp40/t2_s1_authority.lua`, commits
-   `85c4a71` and `291de57`, and the pool was re-measured under it. One detail
+   **Implemented 2026-08-15** as `tools/wp40/t2_s1_authority.lua`, commits
+   `85c4a71` and `291de57`; the pool was re-measured under it on 2026-08-16
+   (`527b3a5`). One detail
    of the proposal above was not adopted and must not be: the displacement
    *policy* prose is deliberately excluded from the pin, because every one of
    R16--R19 rewrote it while changing no geometric input. Adding it back would

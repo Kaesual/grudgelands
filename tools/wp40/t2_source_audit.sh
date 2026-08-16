@@ -179,10 +179,13 @@ grep -q 'R19 accepted non-8-connected candidate-specific final edge' "$test_file
 grep -q '25d19e716fc9ccee106f8bdd33938ac94a939d4f50609db3d0cead808261f255' "$test_file"
 grep -q 'f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70' "$test_file"
 grep -q 'R11 Bay-bank Reality correction' docs/research/wp40-reality-corrections.md
-# Distinctive on purpose: a generic pin such as 'exactly 20' stays green
-# through a rewrite that drops the claim but keeps the phrase elsewhere.
+# Two pins, because one cannot do both jobs. The distinctive phrase catches
+# deletion of the claim; the anchored count catches mutation of the number.
+# A generic 'exactly 20' alone stays green through a rewrite that drops the
+# claim but keeps the phrase; the phrase alone stays green if 20 becomes 21.
 grep -q 'coordinate-free ordered `bay_bank_component` records, five per Bay' \
   docs/research/wp40-source-authority.md
+grep -q 'The source contains exactly 20$' docs/research/wp40-source-authority.md
 [[ $(grep -c 'geometry_policy_id="strict_tapered_bay_closure_wing_v1"' "$catalog") -eq 1 ]]
 grep -q 'closure_wing_membership="zero_less_equal_N_and_N_strictly_less_than_L' "$catalog"
 if grep -qE 'head_continuation|dry_fan|fan_chord|head_closure_junction|side_edge_continuation' "$catalog"; then

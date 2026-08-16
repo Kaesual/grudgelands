@@ -4048,14 +4048,13 @@ symmetry and product KATs
 `tools/wp40/t2_source_audit.sh .` run must remain green after any later source
 edit; it proves Stage 1 only and leaves every mandated Stage-2 rerun above open.
 
-The per-correction record of R11--R19 and H55 -- what each exposed, which
+The per-correction record of R7--R9, R11--R19 and H55 -- what each exposed, which
 alternatives were rejected, and the retained evidence -- is in
 [wp40-reality-corrections.md](wp40-reality-corrections.md). Their
 classification by mechanism and the bound on what remains open is in
 [wp40-t2-degeneracy-completeness.md](wp40-t2-degeneracy-completeness.md).
-R7 through R10 were not moved: their narratives are embedded in the height and
-source contracts above, at the `R10` record-wide ceiling and the R7/R8/R9
-Stage-1 evidence blocks preceding this paragraph.
+R10 is the only correction that stayed: its record-wide ceiling narrative is
+embedded in the height contract above, at section 1.
 
 A numerical guardrail may change before final integration only when paired raw
 measurements show that the original value was technically miscalibrated or
