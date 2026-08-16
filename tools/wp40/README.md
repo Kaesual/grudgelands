@@ -624,14 +624,26 @@ validates while the run continues.
    how the negative proof fires within a minute.
 4. **Verified resume** (section 6.6.4). A shard already on disk is parsed,
    digest-checked against its own preceding bytes, and required to cover
-   exactly its range of this `W` at this commit before it is skipped.
-   Anything unparseable aborts loudly — including the empty claim file a
-   crashed worker leaves behind, which is never read as an empty shard.
+   exactly its range of this `W` under the same module bytes before it is
+   skipped. Anything unparseable aborts loudly — including the empty claim
+   file a crashed worker leaves behind, which is never read as an empty
+   shard. The key is the module digest, not the commit: a shard header
+   records its commit for provenance, but resuming on the commit SHA would
+   throw away hours of finished measurement the moment an unrelated docs
+   commit landed mid-run. When the launcher aborts, it re-verifies the shards
+   *it* started and removes only those that do not stand up, so a finished
+   shard keeps its hours and the next `--full-w` is not blocked by the
+   partial files of the last one.
 
 A refusing gate exits 3 and a broken one exits 1, and the launcher says which
 happened. Without that split it would report a cap overrun when the
 projection had actually crashed — the shape of the vacuous ripgrep gate and
 the zero-worker verification run, and the first thing these proofs caught.
+For the same reason the launcher carries no `started + resumed == 8` guard:
+over a loop of eight indices each incrementing one counter, that comparison
+cannot fail. What forbids a zero-worker success is at the end of the run,
+where every shard is re-read from disk and the seed counts the *verifier*
+reports must add up to |`W`|.
 
 ### Paths, provenance and cost
 

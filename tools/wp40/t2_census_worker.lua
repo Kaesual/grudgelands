@@ -97,14 +97,12 @@ local authority = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
 
 -- Pinned before the modules are loaded and re-read before the shard is
 -- published, so a mid-run edit to partition.lua cannot leave half a shard
--- measured against one tree and half against another.
+-- measured against one tree and half against another.  The same digest is
+-- what the launcher resumes against, so it is computed in one place.
 local function module_digest()
-	local lines = {}
-	for index = 1, #authority.module_paths do
-		local path = authority.module_paths[index]
-		lines[index] = path .. "\t" .. to_hex(raw_sha256(read_file(repo .. "/" .. path)))
-	end
-	return to_hex(raw_sha256(table.concat(lines, "\n") .. "\n"))
+	return authority.module_digest(function(path)
+		return read_file(repo .. "/" .. path)
+	end)
 end
 local pinned_module_digest = module_digest()
 hasher.forget()

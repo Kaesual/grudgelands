@@ -152,9 +152,16 @@ if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
 	fi
 fi
 checks=$((checks + 1))
-rm -f "$export_dir"/tools/wp40/results/t2_census/*.tsv
+# The aborted run must clean up after itself.  Its workers were killed mid
+# record, so their claim files are known incomplete, and leaving them at
+# canonical paths would make the resume gate refuse the next run outright.
+expect_in_last "reaped shards removed_partial=8" "the cost-gate run"
+if compgen -G "$export_dir/tools/wp40/results/t2_census/*.tsv" >/dev/null; then
+	fail "the aborted cost-gate run left partial shards behind"
+fi
+checks=$((checks + 1))
 
-echo "== resume actually resumes =="
+echo "== resume actually resumes, across an unrelated commit =="
 # The negatives above prove a bad shard aborts.  A gate that refused everything
 # would pass all of them, so the positive belongs here: a well-formed shard for
 # the first range must be verified, skipped, and cost exactly one worker.  The
@@ -175,7 +182,13 @@ local parts = authority.shard_header_lines({schema = authority.schema,
 	vocabulary = authority.vocabulary_path, shard_schema = authority.shard_schema,
 	first = first, last = last, shard_seeds = last - first + 1,
 	w_digest = w.digest, w_total = w.total, census_commit = commit,
-	census_tree = string.rep("0", 40), module_digest = string.rep("0", 64),
+	census_tree = string.rep("0", 40),
+	module_digest = authority.module_digest(function(path)
+		local file = assert(io.open(repo .. "/" .. path, "rb"))
+		local bytes = assert(file:read("*a"))
+		assert(file:close())
+		return bytes
+	end),
 	interpreter_id = "luajit", interpreter_path = "/usr/bin/luajit",
 	interpreter_version = "synthetic"})
 for index = 1, authority.prefilter_edge_count do
@@ -215,11 +228,22 @@ resume_scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
 	"$resume_scratch" "$(shard_one "$export_dir")" 0 515 \
 	"$(git -C "$export_dir" rev-parse --verify HEAD)"
 rm -rf -- "$resume_scratch"
+# Resume is keyed on the module bytes, not on HEAD.  A docs commit landing
+# while a multi-hour run is interrupted must not throw away finished shards,
+# which is what keying on the commit SHA would have done.
+echo "census gate proof marker" >"$export_dir/CENSUS_GATE_MARKER"
+commit_export "$export_dir"
 expect_failure "a run resuming one verified shard" "exceeds the" \
 	env WP40_CENSUS_GO="$token" WP40_CENSUS_WALL_CAP_SECONDS=1 \
 	"$export_dir/tools/wp40/run_t2_census.sh" --full-w
 expect_in_last "shard verified range=0000..0515 seeds=516" "the resume run"
 expect_in_last "workers_started=7 resumed_shards=1" "the resume run"
+# The resumed shard survives the abort; only the seven partial ones go.
+expect_in_last "reaped shards removed_partial=7" "the resume run"
+if [[ ! -e "$(shard_one "$export_dir")" ]]; then
+	fail "the abort discarded a shard it had just verified"
+fi
+checks=$((checks + 1))
 rm -f "$export_dir"/tools/wp40/results/t2_census/*.tsv
 
 echo "== a free small range needs no token =="

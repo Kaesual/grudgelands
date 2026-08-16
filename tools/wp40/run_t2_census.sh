@@ -105,6 +105,38 @@ require_committed_authority() {
 	fi
 }
 
+# Both helpers read run_full_w's locals through bash's dynamic scoping; they
+# live out here only because a nested definition would leak into the global
+# namespace anyway.
+assert_full_coverage() {
+	if (( $1 != w_total )); then
+		echo "WP40 T2 census verified $1 of $w_total seeds across its eight shards" >&2
+		exit 1
+	fi
+	echo "WP40 T2 census coverage verified seeds=$1/$w_total shards=8"
+}
+
+# An aborted or failed run leaves claim files at canonical shard paths, and the
+# resume gate would then refuse to start the next one.  Those files are this
+# launcher's own and known incomplete, so they are re-verified and dropped when
+# they do not stand up -- a worker that did finish before the abort keeps its
+# hours.
+reap_started_shards() {
+	local index kept=0 removed=0
+	for index in "${!firsts[@]}"; do
+		if (( pids[index] == 0 )) || [[ ! -e "${outputs[$index]}" ]]; then continue; fi
+		if "$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" verify \
+				"$w_path" "$w_digest" "$module_digest" "${firsts[$index]}" \
+				"${lasts[$index]}" "${outputs[$index]}" >/dev/null 2>&1; then
+			kept=$((kept + 1))
+		else
+			rm -f -- "${outputs[$index]}"
+			removed=$((removed + 1))
+		fi
+	done
+	echo "WP40 T2 census reaped shards removed_partial=$removed kept_complete=$kept" >&2
+}
+
 run_full_w() {
 	local plan_only="$1"
 	local commit tree
@@ -170,7 +202,14 @@ run_full_w() {
 		exit 2
 	fi
 	require_committed_authority "$commit"
-	echo "WP40 T2 census authority: commit=$commit tree=$tree"
+	local module_digest
+	module_digest="$("$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" \
+		module_digest)"
+	[[ "$module_digest" =~ ^[0-9a-f]{64}$ ]] || {
+		echo "WP40 T2 census could not pin the module bytes" >&2
+		exit 2
+	}
+	echo "WP40 T2 census authority: commit=$commit tree=$tree modules=$module_digest"
 
 	local cap="${WP40_CENSUS_WALL_CAP_SECONDS:-28800}"
 	local deadline="${WP40_CENSUS_FIRST_RECORD_DEADLINE:-900}"
@@ -194,8 +233,8 @@ run_full_w() {
 			# the empty claim file a crashed worker leaves, which the verifier
 			# refuses as unparseable instead of reading as an empty shard.
 			"$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" verify \
-				"$w_path" "$w_digest" "$commit" "${firsts[$index]}" "${lasts[$index]}" \
-				"${outputs[$index]}"
+				"$w_path" "$w_digest" "$module_digest" "${firsts[$index]}" \
+				"${lasts[$index]}" "${outputs[$index]}"
 			resumed_seeds=$((resumed_seeds + sizes[index]))
 			resumed_shards=$((resumed_shards + 1))
 			pids+=(0)
@@ -215,15 +254,15 @@ run_full_w() {
 	done
 	echo "WP40 T2 census fan-out workers_started=$started resumed_shards=$resumed_shards" \
 		"seeds=$w_total"
-	# The branch already shipped a verification run that reported success with
-	# zero workers started; a run that neither starts nor resumes every shard is
-	# a failure, not a fast success.
-	if (( started + resumed_shards != 8 )); then
-		echo "WP40 T2 census planned 8 shards but started $started and resumed" \
-			"$resumed_shards" >&2
-		exit 1
-	fi
+	# `started + resumed_shards == 8` would be tautological here -- the loop runs
+	# over eight indices and each one increments exactly one counter -- and this
+	# branch has shipped a verification run that reported success with zero
+	# workers started, so a guard that cannot fail is worse than none.  What
+	# actually forbids that outcome is at the end of the run: every shard is
+	# re-read from disk and the seed counts the verifier reports must add up to
+	# |W|, which no amount of shell bookkeeping can fake.
 	if (( started == 0 )); then
+		assert_full_coverage "$resumed_seeds"
 		echo "WP40 T2 census corpus progress global_completed=$w_total/$w_total" \
 			"shards_done=8 source=resume"
 		return 0
@@ -255,7 +294,7 @@ run_full_w() {
 					local record_output record_status=0
 					record_output="$("$lua_path" "$script_dir/t2_census_gate.lua" \
 						"$repo" "$scratch" first_record "$w_path" "$w_digest" \
-						"$commit" "${firsts[$index]}" "${lasts[$index]}" \
+						"$module_digest" "${firsts[$index]}" "${lasts[$index]}" \
 						"${outputs[$index]}" 2>&1)" || record_status=$?
 					if (( record_status != 0 )); then
 						echo "$record_output" >&2
@@ -316,6 +355,15 @@ run_full_w() {
 			if (( pid != 0 )); then kill "$pid" 2>/dev/null || true; fi
 		done
 		wait 2>/dev/null || true
+		# A multi-hour run that aborts must leave the operator more than one
+		# sentence: the scratch directory goes with the EXIT trap, so the logs
+		# have to be surfaced here or they are gone.
+		for index in "${!firsts[@]}"; do
+			if (( pids[index] == 0 )); then continue; fi
+			echo "--- WP40 T2 census shard $((index + 1)) log (tail) ---" >&2
+			tail -n 20 "${logs[$index]}" >&2 2>/dev/null || true
+		done
+		reap_started_shards
 		echo "WP40 T2 census aborted: $failure" >&2
 		exit 1
 	fi
@@ -335,13 +383,22 @@ run_full_w() {
 			failed=1
 		fi
 	done
-	if (( failed != 0 )); then exit 1; fi
+	if (( failed != 0 )); then
+		reap_started_shards
+		exit 1
+	fi
 
+	local verified_seeds=0 summary
 	for index in "${!firsts[@]}"; do
-		"$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" verify \
-			"$w_path" "$w_digest" "$commit" "${firsts[$index]}" "${lasts[$index]}" \
-			"${outputs[$index]}"
+		summary="$("$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" \
+			verify "$w_path" "$w_digest" "$module_digest" "${firsts[$index]}" \
+			"${lasts[$index]}" "${outputs[$index]}")"
+		echo "$summary"
+		[[ "$summary" =~ seeds=([0-9]+) ]] ||
+			{ echo "WP40 T2 census verifier printed no seed count" >&2; exit 1; }
+		verified_seeds=$((verified_seeds + BASH_REMATCH[1]))
 	done
+	assert_full_coverage "$verified_seeds"
 	echo "WP40 T2 census corpus progress global_completed=$w_total/$w_total" \
 		"shards_done=8 merge=pending_m5"
 }

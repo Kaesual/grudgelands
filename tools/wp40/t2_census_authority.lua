@@ -211,6 +211,22 @@ return function(dependencies)
 		return ranges
 	end
 
+	-- What a shard must agree on to be resumable: the bytes that can move a
+	-- row, not the commit that happened to be checked out.  Keying resume on
+	-- the commit would invalidate every finished shard the moment an unrelated
+	-- docs commit landed mid-run.
+	local function module_digest(read_file)
+		if type(read_file) ~= "function" then fail("module digest needs a reader") end
+		local lines = {}
+		for index = 1, #module_paths do
+			local path = module_paths[index]
+			local bytes = read_file(path)
+			if type(bytes) ~= "string" then fail("module bytes are missing for " .. path) end
+			lines[index] = path .. "\t" .. digest_of(bytes)
+		end
+		return digest_of(table.concat(lines, "\n") .. "\n")
+	end
+
 	-- A gated range is one of those eight and nothing else.  Without this a
 	-- single GO-token worker could take all of `W` in one process -- eight
 	-- times the wall time the cost gate is written against.
@@ -354,7 +370,10 @@ return function(dependencies)
 		if type(samples) ~= "table" or #samples == 0 then
 			fail("cost projection needs at least one completed sample")
 		end
-		local projected, slowest = 0, nil
+		-- Seeded below zero rather than at it, so the first sample always claims
+		-- `slowest`: a fleet whose first completions all land inside one second
+		-- would otherwise project a nil slowest for its callers to dereference.
+		local projected, slowest = -1, nil
 		for index = 1, #samples do
 			local sample = samples[index]
 			if type(sample) ~= "table" then fail("cost sample is not a table") end
@@ -480,6 +499,10 @@ return function(dependencies)
 			end
 			if expected.census_commit and header.census_commit ~= expected.census_commit then
 				fail("shard was produced at commit " .. tostring(header.census_commit))
+			end
+			if expected.module_digest and header.module_digest ~= expected.module_digest then
+				fail("shard was produced by different module bytes: " ..
+					tostring(header.module_digest))
 			end
 		end
 		local seeds = tonumber(header.shard_seeds)
@@ -643,6 +666,7 @@ return function(dependencies)
 	authority.record_rows = record_rows
 	authority.prefilter_edge_count = prefilter_edge_count
 	authority.module_paths = module_paths
+	authority.module_digest = module_digest
 	authority.launcher_paths = launcher_paths
 	authority.shard_directory = shard_directory
 	authority.shard_header_tags = shard_header_tags

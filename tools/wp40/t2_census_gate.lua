@@ -11,8 +11,9 @@
 --   t2_census_gate.lua REPO SCRATCH paths
 --   t2_census_gate.lua REPO SCRATCH plan W_PATH
 --   t2_census_gate.lua REPO SCRATCH cost CAP SIZE:COMPLETED:ELAPSED...
---   t2_census_gate.lua REPO SCRATCH first_record W_PATH DIGEST COMMIT FIRST LAST PATH
---   t2_census_gate.lua REPO SCRATCH verify W_PATH DIGEST COMMIT FIRST LAST PATH
+--   t2_census_gate.lua REPO SCRATCH module_digest
+--   t2_census_gate.lua REPO SCRATCH first_record W_PATH DIGEST MODULES FIRST LAST PATH
+--   t2_census_gate.lua REPO SCRATCH verify W_PATH DIGEST MODULES FIRST LAST PATH
 local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 local command = assert(arg[3], "gate command required")
@@ -76,7 +77,14 @@ local function slice(w, first, last)
 	return seeds
 end
 
-if command == "paths" then
+if command == "module_digest" then
+	-- What a resumed shard has to agree with.  The commit is recorded in a
+	-- shard header for provenance but is not the resume key: an unrelated docs
+	-- commit must not invalidate hours of finished measurement.
+	print(authority.module_digest(function(path)
+		return read_file(repo .. "/" .. path)
+	end))
+elseif command == "paths" then
 	for index = 1, #authority.module_paths do print(authority.module_paths[index]) end
 	for index = 1, #authority.launcher_paths do print(authority.launcher_paths[index]) end
 elseif command == "plan" then
@@ -116,7 +124,7 @@ elseif command == "cost" then
 elseif command == "first_record" or command == "verify" then
 	local w_path = assert(arg[4], "W path required")
 	local digest = assert(arg[5], "W digest required")
-	local commit = assert(arg[6], "commit required")
+	local modules = assert(arg[6], "module digest required")
 	local first = assert(tonumber(arg[7]), "range start required")
 	local last = assert(tonumber(arg[8]), "range end required")
 	local shard_path = assert(arg[9], "shard path required")
@@ -125,7 +133,7 @@ elseif command == "first_record" or command == "verify" then
 	authority.validate_census_shard_path(
 		authority.census_shard_path(first, last), first, last)
 	local expected = {first = first, last = last, w_digest = w.digest,
-		census_commit = commit, seeds = slice(w, first, last)}
+		module_digest = modules, seeds = slice(w, first, last)}
 	local file = io.open(shard_path, "rb")
 	if not file then
 		if command == "first_record" then
