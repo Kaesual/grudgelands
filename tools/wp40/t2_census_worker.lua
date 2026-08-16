@@ -10,7 +10,7 @@ local output_path = assert(arg[3], "output path required")
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-census%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
 
-local seeds, kat_mode = {}, false
+local seeds, seed_seen, kat_mode = {}, {}, false
 for index = 4, #arg do
 	if arg[index] == "--kat" then
 		kat_mode = true
@@ -18,6 +18,12 @@ for index = 4, #arg do
 		local seed = arg[index]
 		assert(type(seed) == "string" and seed:match("^%d+$"),
 			"seed must be a decimal string")
+		assert(seed == "0" or seed:match("^[1-9]"),
+			"seed must be canonical decimal text without leading zeros")
+		assert(#seed < 20 or #seed == 20 and seed <= "18446744073709551615",
+			"seed exceeds the unsigned 64-bit range")
+		assert(not seed_seen[seed], "duplicate seed in list")
+		seed_seen[seed] = true
 		seeds[#seeds + 1] = seed
 	end
 end
@@ -30,10 +36,16 @@ assert(#seeds <= 64,
 	"explicit census seed lists are capped at 64; the full-W run is the " ..
 	"GO-gated M2 launcher's job")
 
+-- Claim the output path up front instead of only checking it: the run takes
+-- minutes, and a late-write-only design would let a second worker started in
+-- that window clobber the first result.  A crash leaves an empty claim file,
+-- which downstream resume logic must treat as unparseable and abort loudly.
 local existing = io.open(output_path, "rb")
 if existing then existing:close() error("census output already exists", 0) end
+local claim = assert(io.open(output_path, "wb"))
+assert(claim:close())
 
-local sha_cache, sha_counter = {}, 0
+local sha_cache = {}
 local function from_hex(value)
 	return (value:gsub("..", function(pair)
 		return string.char(assert(tonumber(pair, 16)))
@@ -44,12 +56,13 @@ local function to_hex(value)
 		return ("%02x"):format(string.byte(byte))
 	end))
 end
+-- One fixed tempfile pair: calls are strictly sequential, and per-call names
+-- accumulated ~2,000 dead files per seed before the shell trap fired.
 local function raw_sha256(data)
 	local cached = sha_cache[data]
 	if cached then return cached end
-	sha_counter = sha_counter + 1
-	local input = scratch .. "/sha-" .. sha_counter .. ".bin"
-	local output = scratch .. "/sha-" .. sha_counter .. ".txt"
+	local input = scratch .. "/sha-input.bin"
+	local output = scratch .. "/sha-output.txt"
 	local file = assert(io.open(input, "wb"))
 	assert(file:write(data)) assert(file:close())
 	local status, reason, code = os.execute("sha256sum " .. input .. " > " .. output)
@@ -99,7 +112,7 @@ for seed_index = 1, #seeds do
 	local seed = seeds[seed_index]
 	local started = os.time()
 	local scan = partition.census_scan1(seed)
-	scans_by_seed[seed] = scan
+	if kat_mode then scans_by_seed[seed] = scan end
 	local serialized_rows = {}
 	for index = 1, #scan.prefilter do
 		local row = scan.prefilter[index]
@@ -116,19 +129,11 @@ for seed_index = 1, #seeds do
 		error("WP40 census: seed-independent prefilter drifted at seed " ..
 			seed, 0)
 	end
-	local discharged_by_edge = {}
-	for index = 1, #scan.prefilter do
-		discharged_by_edge[scan.prefilter[index].edge_id] =
-			scan.prefilter[index].discharged
-	end
 	emit("seed_begin", seed)
+	-- The discharged-edge hard abort (plan section 6.6.8) lives inside
+	-- census_scan1 itself, so every consumer of the projection gets it.
 	for index = 1, #scan.edges do
 		local row = scan.edges[index]
-		if discharged_by_edge[row.id] and row.interval_count ~= 1 then
-			error("WP40 census: discharged edge " .. row.id ..
-				" realized interval count " .. row.interval_count ..
-				" at seed " .. seed, 0)
-		end
 		emit("edge", seed, row.id, row.kind, row.class,
 			tostring(row.interval_count), opt(row.qualifying_count),
 			tostring(row.singleton_count), opt(row.selected_first),
@@ -156,8 +161,8 @@ for seed_index = 1, #seeds do
 		local row = scan.attachments[index]
 		emit("attachment", seed, row.id, row.edge_id, row.endpoint, row.class,
 			opt(row.distance), tostring(row.interval_count),
-			row.e and tostring(row.e.x) or "-", row.e and tostring(row.e.z) or "-",
-			row.a and tostring(row.a.x) or "-", row.a and tostring(row.a.z) or "-",
+			opt(row.e and row.e.x), opt(row.e and row.e.z),
+			opt(row.a and row.a.x), opt(row.a and row.a.z),
 			opt(row.canonical_index))
 	end
 	for index = 1, #scan.junctions do

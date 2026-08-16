@@ -170,6 +170,16 @@ local function new_partition(dependencies)
 		return point.x .. ":" .. point.z
 	end
 
+	-- The canonical x-then-z point order and the Chebyshev metric, hoisted so
+	-- exactly one copy exists for the compiler stages and the census layer.
+	local function point_less(a, b)
+		return a.x < b.x or a.x == b.x and a.z < b.z
+	end
+
+	local function chebyshev(a, b)
+		return math.max(math.abs(a.x - b.x), math.abs(a.z - b.z))
+	end
+
 	local function append_points(target, part)
 		for index = 1, #part do
 			local point = part[index]
@@ -747,9 +757,7 @@ local function new_partition(dependencies)
 					result[#result + 1] = stations[index]
 				end
 			end
-			table.sort(result, function(a, b)
-				return a.x < b.x or a.x == b.x and a.z < b.z
-			end)
+			table.sort(result, point_less)
 			return result
 		end
 		local left_sorted, right_sorted = collect(left), collect(right)
@@ -764,8 +772,7 @@ local function new_partition(dependencies)
 			for probe = low, #right_sorted do
 				local candidate = right_sorted[probe]
 				if best and candidate.x > point.x + best then break end
-				local distance = math.max(math.abs(candidate.x - point.x),
-					math.abs(candidate.z - point.z))
+				local distance = chebyshev(candidate, point)
 				if not best or distance < best then best = distance end
 				if best == 0 then return 0 end
 			end
@@ -1058,9 +1065,6 @@ local function new_partition(dependencies)
 			{x = -1, z = 0}, {x = 0, z = 1}}
 		local diagonal = {{x = 1, z = 1}, {x = 1, z = -1},
 			{x = -1, z = 1}, {x = -1, z = -1}}
-		local function point_less(a, b)
-			return a.x < b.x or a.x == b.x and a.z < b.z
-		end
 
 		-- Bay boundary classification is shared by transition resolution and the
 		-- later Bank tracer.  Building it once here prevents a transition elbow
@@ -1680,8 +1684,35 @@ local function new_partition(dependencies)
 			return transition_source
 		end
 
-		return {seed = seed, materialized = materialized,
-			zone_numeric = zone_numeric,
+		-- One obligation probe per interval, shared verbatim by the compiler's
+		-- interval selection and the census qualifying count so the completeness
+		-- expression exists exactly once.
+		local function probe_interval(transition_source, attachment, edge, candidate)
+			local from_probe = transition_source.from and
+				probe_edge_transition(transition_source.from, edge, candidate) or
+				(attachment and attachment.edge_endpoint == "from" and
+					attachment_probe(attachment, edge, candidate) or nil)
+			local to_probe = transition_source.to and
+				probe_edge_transition(transition_source.to, edge, candidate) or
+				(attachment and attachment.edge_endpoint == "to" and
+					attachment_probe(attachment, edge, candidate) or nil)
+			return from_probe, to_probe
+		end
+
+		-- The authored/declared-order aperture neighborhood for one Bank
+		-- incidence side: D, then its away station A and the included water
+		-- station W.  resolve_terminal and the census aperture stress rows
+		-- must read identical indices, so both call this.
+		local function aperture_neighborhood(aperture, side)
+			if side == "before" then
+				local point_index = aperture.bank_first - 1
+				return point_index, point_index - 1, point_index + 1
+			end
+			local point_index = aperture.bank_finish
+			return point_index, point_index + 1, point_index - 1
+		end
+
+		return {zone_numeric = zone_numeric,
 			departure_by_edge = departure_by_edge,
 			perimeter_rows = perimeter_rows, perimeter_by_id = perimeter_by_id,
 			island_rows = island_rows, island_by_id = island_by_id,
@@ -1689,7 +1720,7 @@ local function new_partition(dependencies)
 			bays = bays, bay_by_id = bay_by_id,
 			aperture_rows = aperture_rows, aperture_by_bay = aperture_by_bay,
 			aperture_by_id = aperture_by_id,
-			wing_by_bay = wing_by_bay, wing_by_id = wing_by_id,
+			wing_by_id = wing_by_id,
 			bay_context_by_id = bay_context_by_id,
 			cardinal = cardinal, diagonal = diagonal, point_less = point_less,
 			footprint_class = footprint_class, in_bay_envelope = in_bay_envelope,
@@ -1707,6 +1738,8 @@ local function new_partition(dependencies)
 			probe_edge_transition = probe_edge_transition,
 			attachment_distance = attachment_distance,
 			attachment_probe = attachment_probe,
+			probe_interval = probe_interval,
+			aperture_neighborhood = aperture_neighborhood,
 			selected_control_indices = selected_control_indices,
 			edge_obligations = edge_obligations}
 	end
@@ -1723,7 +1756,7 @@ local function new_partition(dependencies)
 		local bays, bay_by_id = stage.bays, stage.bay_by_id
 		local aperture_rows, aperture_by_bay, aperture_by_id = stage.aperture_rows,
 			stage.aperture_by_bay, stage.aperture_by_id
-		local wing_by_bay, wing_by_id = stage.wing_by_bay, stage.wing_by_id
+		local wing_by_id = stage.wing_by_id
 		local bay_context_by_id = stage.bay_context_by_id
 		local cardinal, diagonal, point_less = stage.cardinal, stage.diagonal,
 			stage.point_less
@@ -1741,8 +1774,9 @@ local function new_partition(dependencies)
 		local declared_transition_by_key = stage.declared_transition_by_key
 		local transitions_by_edge = stage.transitions_by_edge
 		local maximal_dry_intervals = stage.maximal_dry_intervals
-		local probe_edge_transition = stage.probe_edge_transition
-		local attachment_probe = stage.attachment_probe
+		local attachment_distance = stage.attachment_distance
+		local probe_interval = stage.probe_interval
+		local aperture_neighborhood = stage.aperture_neighborhood
 		local selected_control_indices = stage.selected_control_indices
 		local edge_obligations = stage.edge_obligations
 		-- Binding R13 proof for the seed-selected R7/effective-control rasters.
@@ -1766,14 +1800,8 @@ local function new_partition(dependencies)
 				local probes, decisions = {}, {}
 				for interval_index = 1, #intervals do
 					local candidate = intervals[interval_index]
-					local from_probe = transition_source.from and
-						probe_edge_transition(transition_source.from, edge, candidate) or
-						(attachment and attachment.edge_endpoint == "from" and
-							attachment_probe(attachment, edge, candidate) or nil)
-					local to_probe = transition_source.to and
-						probe_edge_transition(transition_source.to, edge, candidate) or
-						(attachment and attachment.edge_endpoint == "to" and
-							attachment_probe(attachment, edge, candidate) or nil)
+					local from_probe, to_probe = probe_interval(transition_source,
+						attachment, edge, candidate)
 					probes[interval_index] = {from = from_probe, to = to_probe}
 					decisions[interval_index] = {first = candidate.first,
 						finish = candidate.finish, from_complete = from_probe ~= nil,
@@ -1829,22 +1857,10 @@ local function new_partition(dependencies)
 			end
 			if attachment then
 				if not selected_attachment then
-					local e_index = attachment.edge_endpoint == "from" and interval.first or
-						interval.finish
-					local e = edge.stations[e_index]
-					local perimeter = perimeter_by_id[attachment.perimeter_id]
-					local candidates = perimeter.segment_parts[
-						attachment.perimeter_segment_index]
-					local canonical_indices = {}
-					for station_index = 1, #perimeter.canonical_stations do
-						local point = perimeter.canonical_stations[station_index]
-						canonical_indices[key(point)] = station_index
+					selected_attachment = attachment_distance(attachment, edge, interval)
+					if selected_attachment.distance > 1 then
+						fail("Attachment E/A distance exceeds one")
 					end
-					local best, best_distance, best_index = select_attachment_station(e,
-						candidates, canonical_indices)
-					selected_attachment = {source = attachment,
-						e = {x = e.x, z = e.z}, a = best, distance = best_distance,
-						canonical_index = best_index}
 				end
 				local e, best = selected_attachment.e, selected_attachment.a
 				local best_distance, best_index = selected_attachment.distance,
@@ -2020,10 +2036,6 @@ local function new_partition(dependencies)
 				if point_less(b[index], a[index]) then return false end
 			end
 			return #a < #b
-		end
-
-		local function chebyshev(a, b)
-			return math.max(math.abs(a.x - b.x), math.abs(a.z - b.z))
 		end
 
 		local function diagonal_signature(a, b)
@@ -2270,16 +2282,8 @@ local function new_partition(dependencies)
 				end
 				local context = bay_context_by_id[resolved.bay_id]
 				local perimeter = perimeter_by_id[aperture.source.perimeter_id]
-				local point_index, away_index, water_index
-				if terminal.side == "before" then
-					point_index = aperture.bank_first - 1
-					away_index = point_index - 1
-					water_index = point_index + 1
-				else
-					point_index = aperture.bank_finish
-					away_index = point_index + 1
-					water_index = point_index - 1
-				end
+				local point_index, away_index, water_index =
+					aperture_neighborhood(aperture, terminal.side)
 				if away_index < 1 or away_index > #perimeter.stations or
 						water_index < 1 or water_index > #perimeter.stations then
 					fail(cache_key .. " authored aperture neighborhood is absent")
@@ -3096,11 +3100,34 @@ local function new_partition(dependencies)
 					min_z = box.min_z - 1, max_z = box.max_z + 1}
 			end
 		end
-		local cell = 256
-		local coast_grid, coast_reach = {}, 0
+		-- Every footprint boundary that displaces per seed can flip dry_land:
+		-- the two mainland coasts, the fixed Holy band (reach zero) and the
+		-- island coasts all enter the grid, so an island-adjacent edge can
+		-- never be discharged on mainland-only evidence.  The cell size is
+		-- derived from the largest realizable margin, keeping the 3x3 bucket
+		-- search sound under any future displacement bound.
+		local coast_rows = {}
 		for perimeter_index = 1, #stage.perimeter_rows do
-			local row = stage.perimeter_rows[perimeter_index]
-			coast_reach = math.max(coast_reach, row.source.max_displacement)
+			coast_rows[#coast_rows + 1] = stage.perimeter_rows[perimeter_index]
+		end
+		for island_index = 1, #stage.island_rows do
+			coast_rows[#coast_rows + 1] = stage.island_rows[island_index]
+		end
+		local coast_reach = 0
+		for index = 1, #coast_rows do
+			coast_reach = math.max(coast_reach,
+				coast_rows[index].source.max_displacement)
+		end
+		local max_margin = 0
+		for index = 1, #stage.provisional_edges do
+			max_margin = math.max(max_margin,
+				stage.provisional_edges[index].source.max_displacement +
+					coast_reach + 1)
+		end
+		local cell = math.max(256, max_margin)
+		local coast_grid = {}
+		for index = 1, #coast_rows do
+			local row = coast_rows[index]
 			for station_index = 1, #row.base_stations do
 				local station = row.base_stations[station_index]
 				local grid_key = deterministic.floor_div(station.x, cell) .. ":" ..
@@ -3200,16 +3227,8 @@ local function new_partition(dependencies)
 				local qualifying, selected = 0, nil
 				for interval_index = 1, #intervals do
 					local candidate = intervals[interval_index]
-					local from_probe = transition_source.from and
-						stage.probe_edge_transition(transition_source.from, edge,
-							candidate) or
-						(attachment and attachment.edge_endpoint == "from" and
-							stage.attachment_probe(attachment, edge, candidate) or nil)
-					local to_probe = transition_source.to and
-						stage.probe_edge_transition(transition_source.to, edge,
-							candidate) or
-						(attachment and attachment.edge_endpoint == "to" and
-							stage.attachment_probe(attachment, edge, candidate) or nil)
+					local from_probe, to_probe = stage.probe_interval(
+						transition_source, attachment, edge, candidate)
 					if from_probe and to_probe then
 						qualifying = qualifying + 1
 						if qualifying == 1 then selected = candidate end
@@ -3238,6 +3257,21 @@ local function new_partition(dependencies)
 			end
 			result.edges[index] = row
 		end
+		-- Plan section 6.6.8: the prefilter is verified, not trusted, and the
+		-- verification is a property of the scan result itself, so every
+		-- consumer of census_scan1 gets it — not only the worker's TSV loop.
+		for index = 1, #result.prefilter do
+			local prefilter_row = result.prefilter[index]
+			local edge_row = result.edges[index]
+			if prefilter_row.edge_id ~= edge_row.id then
+				fail("census prefilter order diverged from the edge roster")
+			end
+			if prefilter_row.discharged and edge_row.interval_count ~= 1 then
+				fail("discharged edge " .. edge_row.id ..
+					" realized interval count " .. edge_row.interval_count ..
+					" at seed " .. seed)
+			end
+		end
 		for index = 1, #stage.perimeter_rows do
 			local row = stage.perimeter_rows[index]
 			local ceiling, max_abs = record_stress(row)
@@ -3254,16 +3288,8 @@ local function new_partition(dependencies)
 			local aperture = stage.aperture_rows[index]
 			local perimeter = stage.perimeter_by_id[aperture.source.perimeter_id]
 			for _, side in ipairs({"before", "after"}) do
-				local point_index, away_index, water_index
-				if side == "before" then
-					point_index = aperture.bank_first - 1
-					away_index = point_index - 1
-					water_index = point_index + 1
-				else
-					point_index = aperture.bank_finish
-					away_index = point_index + 1
-					water_index = point_index - 1
-				end
+				local point_index, away_index, water_index =
+					stage.aperture_neighborhood(aperture, side)
 				local stations = {d = perimeter.stations[point_index],
 					w = perimeter.stations[water_index],
 					a = perimeter.stations[away_index]}
@@ -3277,11 +3303,14 @@ local function new_partition(dependencies)
 					local best_distance, best_scalar
 					for sample_index = 1, #perimeter.scalar_samples do
 						local sample = perimeter.scalar_samples[sample_index]
-						local distance = math.max(math.abs(sample.x - station.x),
-							math.abs(sample.z - station.z))
+						local distance = chebyshev(sample, station)
 						if not best_distance or distance < best_distance then
 							best_distance, best_scalar = distance, sample.scalar_q
 						end
+					end
+					if not best_distance then
+						fail(aperture.source.id .. " " .. side ..
+							" has no scalar sample to anchor its stress")
 					end
 					row[name .. "_x"] = station.x
 					row[name .. "_z"] = station.z
@@ -3323,6 +3352,7 @@ local function new_partition(dependencies)
 			end
 			result.attachments[index] = row
 		end
+		local census_pair_total = 0
 		for junction_index = 1, #source.relief_junctions do
 			local junction = source.relief_junctions[junction_index]
 			local incident = junction.incident_edge_ids
@@ -3351,10 +3381,17 @@ local function new_partition(dependencies)
 					end
 				end
 			end
+			census_pair_total = census_pair_total + pair_count
 			result.junctions[junction_index] = {id = junction.id,
 				pair_count = pair_count, pass_count = pass_count,
 				fail_count = pair_count - pass_count,
 				min_clearance = min_clearance}
+		end
+		-- Same stage-global precondition the compile path proves via
+		-- validate_all_junction_pairs: an under-covered junction roster must
+		-- abort the census loudly, not silently emit fewer rows.
+		if #source.relief_junctions ~= 38 or census_pair_total ~= 102 then
+			fail("census junction coverage did not cover 38/102")
 		end
 		for bay_index = 1, #stage.bays do
 			local bay = stage.bays[bay_index]

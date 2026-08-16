@@ -10,6 +10,25 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
 
+# A missing rg would make the SETGLOBAL gate below pass vacuously: exit
+# status 127 in an `if` condition reads exactly like "no match found".
+command -v rg >/dev/null 2>&1 || {
+	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
+	exit 1
+}
+
+owned_lua=(
+	"$repo/tools/wp40/t2_census_worker.lua"
+	"$repo/tools/wp40/fixtures/t2_census/scan1_kat_v1.lua"
+)
+"$repo/tools/bin/luac51" -p "${owned_lua[@]}"
+for file in "${owned_lua[@]}"; do
+	if "$repo/tools/bin/luac51" -l -p "$file" | rg -q 'SETGLOBAL'; then
+		echo "WP40 T2 census global write in $file" >&2
+		exit 1
+	fi
+done
+
 lua_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
 lua_path="$(command -v "$lua_bin" 2>/dev/null || true)"
 if [[ -z "$lua_path" || ! -x "$lua_path" ]]; then
@@ -19,7 +38,12 @@ fi
 echo "WP40 T2 census interpreter: $lua_path"
 
 scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
-trap 'rm -rf "$scratch"' EXIT
+cleanup() {
+	if [[ "$scratch" == /tmp/grudgelands-wp40-t2-census.* ]]; then
+		rm -rf -- "$scratch"
+	fi
+}
+trap cleanup EXIT
 
 case "${1:-}" in
 	--kat)
