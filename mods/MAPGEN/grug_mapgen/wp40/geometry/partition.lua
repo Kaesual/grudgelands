@@ -664,15 +664,19 @@ local function new_partition(dependencies)
 		if exact.signed_area2(polygon) <= 0 then fail(id .. " is not CCW") end
 	end
 
-	local function validate_junction_pair(junction, left, right, label)
+	-- Census classification twin of the R13 pair gate: identical checks in
+	-- identical order, returning the first failing class instead of aborting.
+	-- validate_junction_pair below maps each class onto its original message,
+	-- so the compile path keeps its exact fail behavior.
+	local function classify_junction_pair(junction, left, right)
 		exact.point(junction, "junction pair point")
 		local left_count = dense(left, "left junction raster")
 		local right_count = dense(right, "right junction raster")
-		if left_count < 2 or right_count < 2 then fail("junction pair raster is short") end
+		if left_count < 2 or right_count < 2 then return "short_raster" end
 		local junction_key = key(junction)
 		if key(left[1]) ~= junction_key and key(left[left_count]) ~= junction_key or
 				key(right[1]) ~= junction_key and key(right[right_count]) ~= junction_key then
-			fail((label or junction_key) .. " is not an edge endpoint")
+			return "not_endpoint"
 		end
 		local left_stations, left_diagonals = {}, {}
 		for index = 1, left_count do
@@ -682,7 +686,7 @@ local function new_partition(dependencies)
 				local a, b = left[index], left[index + 1]
 				local dx, dz = b.x - a.x, b.z - a.z
 				if math.max(math.abs(dx), math.abs(dz)) ~= 1 then
-					fail((label or junction_key) .. " left raster is not eight-connected")
+					return "left_not_eight_connected"
 				end
 				if math.abs(dx) == 1 and math.abs(dz) == 1 then
 					local cell = math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z)
@@ -694,25 +698,79 @@ local function new_partition(dependencies)
 			exact.point(right[index], "right junction station")
 			local station_key = key(right[index])
 			if left_stations[station_key] and station_key ~= junction_key then
-				fail((label or junction_key) .. " incident edges share a nonjunction station")
+				return "shared_station"
 			end
 			if index < right_count then
 				local a, b = right[index], right[index + 1]
 				local dx, dz = b.x - a.x, b.z - a.z
 				if math.max(math.abs(dx), math.abs(dz)) ~= 1 then
-					fail((label or junction_key) .. " right raster is not eight-connected")
+					return "right_not_eight_connected"
 				end
 				if math.abs(dx) == 1 and math.abs(dz) == 1 then
 					local cell = math.min(a.x, b.x) .. ":" .. math.min(a.z, b.z)
 					local slope = dx == dz and 1 or -1
 					if left_diagonals[cell] and left_diagonals[cell] ~= slope then
-						fail((label or junction_key) ..
-							" incident edges have an opposing diagonal X-cross")
+						return "x_cross"
 					end
 				end
 			end
 		end
+		return nil
+	end
+
+	local junction_pair_messages = {
+		not_endpoint = " is not an edge endpoint",
+		left_not_eight_connected = " left raster is not eight-connected",
+		shared_station = " incident edges share a nonjunction station",
+		right_not_eight_connected = " right raster is not eight-connected",
+		x_cross = " incident edges have an opposing diagonal X-cross"}
+
+	local function validate_junction_pair(junction, left, right, label)
+		local class = classify_junction_pair(junction, left, right)
+		if class == "short_raster" then fail("junction pair raster is short") end
+		if class then
+			fail((label or key(junction)) .. junction_pair_messages[class])
+		end
 		return true
+	end
+
+	-- Scan-1 stress scalar: the minimum Chebyshev distance between two incident
+	-- rasters with the shared junction column excluded from both sides.  Sweep
+	-- over x-sorted stations; the moving lower bound stays valid because the
+	-- left x is nondecreasing while the best bound only shrinks.
+	local function pair_clearance(junction, left, right)
+		local junction_key = key(junction)
+		local function collect(stations)
+			local result = {}
+			for index = 1, #stations do
+				if key(stations[index]) ~= junction_key then
+					result[#result + 1] = stations[index]
+				end
+			end
+			table.sort(result, function(a, b)
+				return a.x < b.x or a.x == b.x and a.z < b.z
+			end)
+			return result
+		end
+		local left_sorted, right_sorted = collect(left), collect(right)
+		if #left_sorted == 0 or #right_sorted == 0 then return nil end
+		local best, low = nil, 1
+		for index = 1, #left_sorted do
+			local point = left_sorted[index]
+			while best and low <= #right_sorted and
+					right_sorted[low].x < point.x - best do
+				low = low + 1
+			end
+			for probe = low, #right_sorted do
+				local candidate = right_sorted[probe]
+				if best and candidate.x > point.x + best then break end
+				local distance = math.max(math.abs(candidate.x - point.x),
+					math.abs(candidate.z - point.z))
+				if not best or distance < best then best = distance end
+				if best == 0 then return 0 end
+			end
+		end
+		return best
 	end
 
 	local function trace_bounds(envelope_columns)
@@ -852,7 +910,13 @@ local function new_partition(dependencies)
 		return false
 	end
 
-	local function compile_impl(seed)
+	-- Stages S1..S3 plus the shared classification substrate: boundary
+	-- materialization, Bay contexts, raw mask, notch fill, water predicates and
+	-- the interval/transition/attachment probes.  compile_impl consumes this
+	-- stage and continues fail-closed; census_scan1 consumes the same stage and
+	-- records decision classes instead.  Both callers see the identical
+	-- functions, so the census can never drift from the compiler's predicates.
+	local function build_scan_stage(seed)
 		local materialized = materialize_boundary_seed(seed)
 		-- Zone numbering is face/bank payload identity, not S1 displacement
 		-- input, so it is derived here rather than inside the S1 stage.
@@ -1407,9 +1471,6 @@ local function new_partition(dependencies)
 			end
 			return junction_pair_count
 		end
-		-- Binding R13 proof for the seed-selected R7/effective-control rasters.
-		-- Partition clipping and attachment rerastering are later topology stages.
-		validate_all_junction_pairs("selected-r7")
 		local attachment_by_edge = {}
 		for index = 1, #source.perimeter_attachments do
 			attachment_by_edge[source.perimeter_attachments[index].edge_id] =
@@ -1469,8 +1530,6 @@ local function new_partition(dependencies)
 			end
 		end
 
-		local resolved_transition_by_key, transition_by_edge = {}, {}
-		local excluded_dry_fragments = {}
 		local function maximal_dry_intervals(edge)
 			local intervals, first = {}, nil
 			for station_index = 1, #edge.stations do
@@ -1550,7 +1609,24 @@ local function new_partition(dependencies)
 			return resolved
 		end
 
-		local function attachment_probe(attachment, edge, interval)
+		local canonical_index_cache = {}
+		local function canonical_indices_for(perimeter)
+			local cached = canonical_index_cache[perimeter]
+			if cached then return cached end
+			local canonical_indices = {}
+			for station_index = 1, #perimeter.canonical_stations do
+				local point = perimeter.canonical_stations[station_index]
+				canonical_indices[key(point)] = station_index
+			end
+			canonical_index_cache[perimeter] = canonical_indices
+			return canonical_indices
+		end
+
+		-- Census projection of the F8 attachment obligation: the same nearest-
+		-- station selection with the Chebyshev distance reported instead of the
+		-- at-most-one contract enforced.  attachment_probe keeps the exact
+		-- compile behavior by rejecting on the reported distance.
+		local function attachment_distance(attachment, edge, interval)
 			local e_index = attachment.edge_endpoint == "from" and interval.first or
 				interval.finish
 			local e = edge.stations[e_index]
@@ -1558,16 +1634,16 @@ local function new_partition(dependencies)
 			if not perimeter then fail(attachment.id .. " references an absent perimeter") end
 			local candidates = perimeter.segment_parts[
 				attachment.perimeter_segment_index]
-			local canonical_indices = {}
-			for station_index = 1, #perimeter.canonical_stations do
-				local point = perimeter.canonical_stations[station_index]
-				canonical_indices[key(point)] = station_index
-			end
 			local best, best_distance, best_index = attachment_station_candidate(e,
-				candidates, canonical_indices)
-			if best_distance > 1 then return nil end
+				candidates, canonical_indices_for(perimeter))
 			return {source = attachment, e = {x = e.x, z = e.z}, a = best,
 				distance = best_distance, canonical_index = best_index}
+		end
+
+		local function attachment_probe(attachment, edge, interval)
+			local probed = attachment_distance(attachment, edge, interval)
+			if probed.distance > 1 then return nil end
+			return probed
 		end
 
 		local function selected_control_indices(edge, interval)
@@ -1579,6 +1655,102 @@ local function new_partition(dependencies)
 			return select_control_subsequence(edge.shifted_controls, stations)
 		end
 
+		-- Shared obligation roster for one edge: which transition/attachment
+		-- rows govern its from/to endpoints.  Source-shape violations fail here
+		-- for compiler and census alike; they are catalog defects, not seed
+		-- outcomes.
+		local function edge_obligations(edge, edge_transitions, attachment)
+			local transition_source = {}
+			for transition_index = 1, #edge_transitions do
+				local row = edge_transitions[transition_index]
+				if transition_source[row.edge_endpoint] then
+					fail(edge.id .. " has two " .. row.edge_endpoint .. " transitions")
+				end
+				transition_source[row.edge_endpoint] = row
+			end
+			if attachment and transition_source[attachment.edge_endpoint] then
+				fail(edge.id .. " mixes Attachment and transition at one endpoint")
+			end
+			if not (transition_source.from or
+					attachment and attachment.edge_endpoint == "from") or
+					not (transition_source.to or
+					attachment and attachment.edge_endpoint == "to") then
+				fail(edge.id .. " lacks a complete from/to obligation tuple")
+			end
+			return transition_source
+		end
+
+		return {seed = seed, materialized = materialized,
+			zone_numeric = zone_numeric,
+			departure_by_edge = departure_by_edge,
+			perimeter_rows = perimeter_rows, perimeter_by_id = perimeter_by_id,
+			island_rows = island_rows, island_by_id = island_by_id,
+			provisional_edges = provisional_edges, edge_by_id = edge_by_id,
+			bays = bays, bay_by_id = bay_by_id,
+			aperture_rows = aperture_rows, aperture_by_bay = aperture_by_bay,
+			aperture_by_id = aperture_by_id,
+			wing_by_bay = wing_by_bay, wing_by_id = wing_by_id,
+			bay_context_by_id = bay_context_by_id,
+			cardinal = cardinal, diagonal = diagonal, point_less = point_less,
+			footprint_class = footprint_class, in_bay_envelope = in_bay_envelope,
+			raw_bay_water = raw_bay_water, raw_owner_count = raw_owner_count,
+			bay_water = bay_water, planned_water = planned_water,
+			dry_land = dry_land, wing_water = wing_water, bay_dry = bay_dry,
+			final_water = final_water, bay_candidate = bay_candidate,
+			water_on_right = water_on_right,
+			validate_all_junction_pairs = validate_all_junction_pairs,
+			attachment_by_edge = attachment_by_edge,
+			land_transition_key = land_transition_key,
+			declared_transition_by_key = declared_transition_by_key,
+			transitions_by_edge = transitions_by_edge,
+			maximal_dry_intervals = maximal_dry_intervals,
+			probe_edge_transition = probe_edge_transition,
+			attachment_distance = attachment_distance,
+			attachment_probe = attachment_probe,
+			selected_control_indices = selected_control_indices,
+			edge_obligations = edge_obligations}
+	end
+
+	local function compile_impl(seed)
+		local stage = build_scan_stage(seed)
+		local zone_numeric = stage.zone_numeric
+		local departure_by_edge = stage.departure_by_edge
+		local perimeter_rows, perimeter_by_id = stage.perimeter_rows,
+			stage.perimeter_by_id
+		local island_rows, island_by_id = stage.island_rows, stage.island_by_id
+		local provisional_edges, edge_by_id = stage.provisional_edges,
+			stage.edge_by_id
+		local bays, bay_by_id = stage.bays, stage.bay_by_id
+		local aperture_rows, aperture_by_bay, aperture_by_id = stage.aperture_rows,
+			stage.aperture_by_bay, stage.aperture_by_id
+		local wing_by_bay, wing_by_id = stage.wing_by_bay, stage.wing_by_id
+		local bay_context_by_id = stage.bay_context_by_id
+		local cardinal, diagonal, point_less = stage.cardinal, stage.diagonal,
+			stage.point_less
+		local footprint_class, in_bay_envelope = stage.footprint_class,
+			stage.in_bay_envelope
+		local raw_bay_water, raw_owner_count = stage.raw_bay_water,
+			stage.raw_owner_count
+		local bay_water, planned_water = stage.bay_water, stage.planned_water
+		local dry_land, wing_water = stage.dry_land, stage.wing_water
+		local bay_dry, final_water = stage.bay_dry, stage.final_water
+		local bay_candidate, water_on_right = stage.bay_candidate,
+			stage.water_on_right
+		local attachment_by_edge = stage.attachment_by_edge
+		local land_transition_key = stage.land_transition_key
+		local declared_transition_by_key = stage.declared_transition_by_key
+		local transitions_by_edge = stage.transitions_by_edge
+		local maximal_dry_intervals = stage.maximal_dry_intervals
+		local probe_edge_transition = stage.probe_edge_transition
+		local attachment_probe = stage.attachment_probe
+		local selected_control_indices = stage.selected_control_indices
+		local edge_obligations = stage.edge_obligations
+		-- Binding R13 proof for the seed-selected R7/effective-control rasters.
+		-- Partition clipping and attachment rerastering are later topology stages.
+		stage.validate_all_junction_pairs("selected-r7")
+		local resolved_transition_by_key, transition_by_edge = {}, {}
+		local excluded_dry_fragments = {}
+
 		local attachment_result = {}
 		for index = 1, #provisional_edges do
 			local edge = provisional_edges[index]
@@ -1589,23 +1761,8 @@ local function new_partition(dependencies)
 			local controls = {}
 			local interval, from_transition, to_transition, selected_attachment
 			if edge_transitions then
-				local transition_source = {}
-				for transition_index = 1, #edge_transitions do
-					local row = edge_transitions[transition_index]
-					if transition_source[row.edge_endpoint] then
-						fail(edge.id .. " has two " .. row.edge_endpoint .. " transitions")
-					end
-					transition_source[row.edge_endpoint] = row
-				end
-				if attachment and transition_source[attachment.edge_endpoint] then
-					fail(edge.id .. " mixes Attachment and transition at one endpoint")
-				end
-				if not (transition_source.from or
-						attachment and attachment.edge_endpoint == "from") or
-						not (transition_source.to or
-						attachment and attachment.edge_endpoint == "to") then
-					fail(edge.id .. " lacks a complete from/to obligation tuple")
-				end
+				local transition_source = edge_obligations(edge, edge_transitions,
+					attachment)
 				local probes, decisions = {}, {}
 				for interval_index = 1, #intervals do
 					local candidate = intervals[interval_index]
@@ -2902,6 +3059,267 @@ local function new_partition(dependencies)
 		return {families = families}
 	end
 
+	-- ------------------------------------------------------------------
+	-- Census Scan-1 projection (wp40-t2-plan.md section 6).  Classifies the
+	-- F1/F7/F8 decisions plus the F6 fill counts on the same stage data the
+	-- compiler consumes, but records each decision class and continues
+	-- scanning instead of failing closed.  Classes are the section-3
+	-- vocabulary of wp40-t2-degeneracy-completeness.md; a *_reject row is a
+	-- census finding, not an error.  Stage-level global preconditions (S1
+	-- validity, aperture formation, notch ownership) still fail closed: no
+	-- Scan-1 class covers them, so their occupancy must surface loudly.
+	-- ------------------------------------------------------------------
+
+	local function record_stress(row)
+		local max_abs = 0
+		for index = 1, #row.scalar_samples do
+			local magnitude = math.abs(row.scalar_samples[index].scalar_q)
+			if magnitude > max_abs then max_abs = magnitude end
+		end
+		return row.topology_ceiling_nodes, max_abs
+	end
+
+	-- Seed-independent F1 prefilter (analysis section 3-F1).  The Bay context
+	-- boxes are built from authored capsules, wings and width-jitter margins
+	-- only, so they are identical on every seed; one extra column absorbs the
+	-- notch-fill adjacency.  A discharged edge must additionally be unable to
+	-- reach the displaced perimeter, since a station outside the final
+	-- footprint is not final-dry either; the coast margin uses the authored
+	-- perimeter base stations plus both records' displacement bounds.
+	local function census_prefilter(stage)
+		local boxes = {}
+		for bay_index = 1, #stage.bays do
+			local context = stage.bay_context_by_id[stage.bays[bay_index].source.id]
+			for box_index = 1, #context.boxes do
+				local box = context.boxes[box_index]
+				boxes[#boxes + 1] = {min_x = box.min_x - 1, max_x = box.max_x + 1,
+					min_z = box.min_z - 1, max_z = box.max_z + 1}
+			end
+		end
+		local cell = 256
+		local coast_grid, coast_reach = {}, 0
+		for perimeter_index = 1, #stage.perimeter_rows do
+			local row = stage.perimeter_rows[perimeter_index]
+			coast_reach = math.max(coast_reach, row.source.max_displacement)
+			for station_index = 1, #row.base_stations do
+				local station = row.base_stations[station_index]
+				local grid_key = deterministic.floor_div(station.x, cell) .. ":" ..
+					deterministic.floor_div(station.z, cell)
+				local bucket = coast_grid[grid_key]
+				if not bucket then bucket = {} coast_grid[grid_key] = bucket end
+				bucket[#bucket + 1] = station
+			end
+		end
+		local function near_coast(station, margin)
+			local grid_x = deterministic.floor_div(station.x, cell)
+			local grid_z = deterministic.floor_div(station.z, cell)
+			for dx = -1, 1 do
+				for dz = -1, 1 do
+					local bucket = coast_grid[(grid_x + dx) .. ":" .. (grid_z + dz)]
+					if bucket then
+						for index = 1, #bucket do
+							if math.abs(bucket[index].x - station.x) <= margin and
+									math.abs(bucket[index].z - station.z) <= margin then
+								return true
+							end
+						end
+					end
+				end
+			end
+			return false
+		end
+		local rows = {}
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			local row = {edge_id = edge.id, discharged = false}
+			if stage.transitions_by_edge[edge.id] then
+				row.reason = "transition_obligation"
+			elseif stage.attachment_by_edge[edge.id] then
+				row.reason = "attachment_obligation"
+			else
+				local margin = edge.source.max_displacement + 1
+				local coast_margin = edge.source.max_displacement + coast_reach + 1
+				if coast_margin > cell then fail("census coast margin exceeds grid cell") end
+				local reason
+				for station_index = 1, #edge.base_stations do
+					local station = edge.base_stations[station_index]
+					for box_index = 1, #boxes do
+						local box = boxes[box_index]
+						if station.x >= box.min_x - margin and
+								station.x <= box.max_x + margin and
+								station.z >= box.min_z - margin and
+								station.z <= box.max_z + margin then
+							reason = "envelope_reaches_bay_surface"
+							break
+						end
+					end
+					if not reason and near_coast(station, coast_margin) then
+						reason = "envelope_reaches_coast_margin"
+					end
+					if reason then break end
+				end
+				row.discharged = reason == nil
+				row.reason = reason or "envelope_disjoint_from_water_surfaces"
+			end
+			rows[index] = row
+		end
+		return rows
+	end
+
+	local function census_scan1(seed)
+		local stage = build_scan_stage(seed)
+		local result = {schema = "grug_wp40_census_scan1_v1", seed = seed,
+			prefilter = census_prefilter(stage), edges = {}, perimeters = {},
+			attachments = {}, junctions = {}, junction_pair_rejects = {},
+			bay_fills = {}}
+		local intervals_by_edge, selected_by_edge = {}, {}
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			local edge_transitions = stage.transitions_by_edge[edge.id]
+			local attachment = stage.attachment_by_edge[edge.id]
+			local intervals = stage.maximal_dry_intervals(edge)
+			intervals_by_edge[edge.id] = intervals
+			local ceiling, max_abs = record_stress(edge)
+			local singleton_count = 0
+			for interval_index = 1, #intervals do
+				if intervals[interval_index].first ==
+						intervals[interval_index].finish then
+					singleton_count = singleton_count + 1
+				end
+			end
+			local row = {id = edge.id, numeric_id = edge.source.numeric_id,
+				kind = edge_transitions and
+					(attachment and "transition_attachment" or "transition") or
+					attachment and "ordinary_attachment" or "ordinary",
+				station_count = #edge.stations,
+				topology_ceiling_nodes = ceiling, max_abs_scalar_q = max_abs,
+				interval_count = #intervals, singleton_count = singleton_count}
+			if edge_transitions then
+				local transition_source = stage.edge_obligations(edge,
+					edge_transitions, attachment)
+				local qualifying, selected = 0, nil
+				for interval_index = 1, #intervals do
+					local candidate = intervals[interval_index]
+					local from_probe = transition_source.from and
+						stage.probe_edge_transition(transition_source.from, edge,
+							candidate) or
+						(attachment and attachment.edge_endpoint == "from" and
+							stage.attachment_probe(attachment, edge, candidate) or nil)
+					local to_probe = transition_source.to and
+						stage.probe_edge_transition(transition_source.to, edge,
+							candidate) or
+						(attachment and attachment.edge_endpoint == "to" and
+							stage.attachment_probe(attachment, edge, candidate) or nil)
+					if from_probe and to_probe then
+						qualifying = qualifying + 1
+						if qualifying == 1 then selected = candidate end
+					end
+				end
+				row.qualifying_count = qualifying
+				if qualifying == 1 then
+					row.class = "transition_interval_select"
+					row.selected_first = selected.first
+					row.selected_finish = selected.finish
+					selected_by_edge[edge.id] = selected
+				elseif qualifying == 0 then
+					row.class = "transition_interval_zero_reject"
+				else
+					row.class = "transition_interval_multi_reject"
+				end
+			elseif #intervals == 1 then
+				row.class = "ordinary_interval_select"
+				row.selected_first = intervals[1].first
+				row.selected_finish = intervals[1].finish
+				selected_by_edge[edge.id] = intervals[1]
+			elseif #intervals == 0 then
+				row.class = "ordinary_interval_zero_reject"
+			else
+				row.class = "ordinary_interval_multi_reject"
+			end
+			result.edges[index] = row
+		end
+		for index = 1, #stage.perimeter_rows do
+			local row = stage.perimeter_rows[index]
+			local ceiling, max_abs = record_stress(row)
+			result.perimeters[index] = {id = row.id,
+				station_count = #row.stations,
+				topology_ceiling_nodes = ceiling, max_abs_scalar_q = max_abs}
+		end
+		for index = 1, #source.perimeter_attachments do
+			local attachment = source.perimeter_attachments[index]
+			local edge = stage.edge_by_id[attachment.edge_id]
+			if not edge then fail(attachment.id .. " references an absent edge") end
+			local intervals = intervals_by_edge[attachment.edge_id]
+			local row = {id = attachment.id, edge_id = attachment.edge_id,
+				endpoint = attachment.edge_endpoint, interval_count = #intervals}
+			local probed
+			local selected = selected_by_edge[attachment.edge_id]
+			if selected then
+				probed = stage.attachment_distance(attachment, edge, selected)
+			else
+				for interval_index = 1, #intervals do
+					local candidate = stage.attachment_distance(attachment, edge,
+						intervals[interval_index])
+					if not probed or candidate.distance < probed.distance then
+						probed = candidate
+					end
+				end
+			end
+			if probed then
+				row.distance = probed.distance
+				row.e, row.a = probed.e, probed.a
+				row.canonical_index = probed.canonical_index
+				row.class = probed.distance == 0 and "attachment_equality_select" or
+					probed.distance == 1 and "attachment_adjacent_select" or
+					"attachment_distance_reject"
+			else
+				row.class = "attachment_edge_without_interval"
+			end
+			result.attachments[index] = row
+		end
+		for junction_index = 1, #source.relief_junctions do
+			local junction = source.relief_junctions[junction_index]
+			local incident = junction.incident_edge_ids
+			local pair_count, pass_count, min_clearance = 0, 0, nil
+			for left_index = 1, #incident - 1 do
+				local left = stage.edge_by_id[incident[left_index]]
+				if not left then fail(junction.id .. " lacks an incident edge") end
+				for right_index = left_index + 1, #incident do
+					local right = stage.edge_by_id[incident[right_index]]
+					if not right then fail(junction.id .. " lacks an incident edge") end
+					pair_count = pair_count + 1
+					local class = classify_junction_pair(junction.position,
+						left.stations, right.stations)
+					if class then
+						result.junction_pair_rejects[#result.junction_pair_rejects + 1] =
+							{junction_id = junction.id, left_edge = left.id,
+							right_edge = right.id, class = "junction_pair_" .. class}
+					else
+						pass_count = pass_count + 1
+					end
+					local clearance = pair_clearance(junction.position,
+						left.stations, right.stations)
+					if clearance and (not min_clearance or
+							clearance < min_clearance) then
+						min_clearance = clearance
+					end
+				end
+			end
+			result.junctions[junction_index] = {id = junction.id,
+				pair_count = pair_count, pass_count = pass_count,
+				fail_count = pair_count - pass_count,
+				min_clearance = min_clearance}
+		end
+		for bay_index = 1, #stage.bays do
+			local bay = stage.bays[bay_index]
+			local context = stage.bay_context_by_id[bay.source.id]
+			result.bay_fills[bay_index] = {id = bay.source.id,
+				fill_count = #context.fill_points,
+				fill_points = copy_points(context.fill_points)}
+		end
+		return result
+	end
+
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;
 	-- the compiled graph carries no closure or mutable Source reference.
 	local bay_source_by_id = {}
@@ -3343,6 +3761,10 @@ local function new_partition(dependencies)
 	end
 
 	partition.compile = compile_impl
+	partition.census_scan1 = census_scan1
+	partition.census_scan1_schema = "grug_wp40_census_scan1_v1"
+	partition.classify_junction_pair = classify_junction_pair
+	partition.pair_clearance = pair_clearance
 	partition.extreme_scalar_records = boundary.extreme_scalar_records
 	partition.new_extreme_scalar_session = boundary.new_extreme_scalar_session
 	partition.s1_source_projection = boundary.s1_source_projection
