@@ -190,6 +190,15 @@ local function new_partition(dependencies)
 		end
 	end
 
+	-- Consecutive-duplicate-free control append, shared by compile_impl's
+	-- final-edge assembly and the census tuple probes so the two can never
+	-- drift in dedup semantics.
+	local function append_dedup(controls, point)
+		if #controls == 0 or key(controls[#controls]) ~= key(point) then
+			controls[#controls + 1] = {x = point.x, z = point.z}
+		end
+	end
+
 	local function reverse_points(points)
 		local result = {}
 		for index = #points, 1, -1 do
@@ -881,8 +890,11 @@ local function new_partition(dependencies)
 		elseif terminal.kind == "land_edge_transition" then
 			return terminal.kind .. ":" .. terminal.edge_id .. ":" ..
 				terminal.edge_endpoint
+		elseif terminal.kind == "wing_junction_tail_side" then
+			return terminal.kind .. ":" .. terminal.wing_id .. ":" ..
+				terminal.tail_side
 		end
-		return terminal.kind .. ":" .. terminal.wing_id .. ":" .. terminal.tail_side
+		fail("unknown Bank terminal kind " .. tostring(terminal.kind))
 	end
 
 	local function bay_data(seed)
@@ -1807,14 +1819,14 @@ local function new_partition(dependencies)
 	-- bounded reachability and the main Bank trace.  compile_impl resolves
 	-- everything eagerly in its historical order; the census resolves lazily
 	-- so Wing tails and trace bounds cost only where a tuple actually traces.
-	-- hooks.land_transition injects the once-resolved final edge transitions:
-	-- the compiler's materialized table, or the census's per-tuple candidate
-	-- resolution.  Scan-3a (M4) consumes wing_tails and resolve_terminal from
-	-- this same seam.
+	-- hooks.land_transition injects the once-resolved final edge transitions
+	-- (the compiler's materialized table); consumers that resolve transitions
+	-- themselves -- the census builds them per tuple through
+	-- resolve_land_transition -- omit the hook, and a land terminal reaching
+	-- resolve_terminal without one fails as unresolved.  Scan-3a (M4)
+	-- consumes wing_tails and resolve_terminal from this same seam.
 	local function new_bank_tracer(stage, hooks)
-		if type(hooks) ~= "table" or type(hooks.land_transition) ~= "function" then
-			fail("Bank tracer needs a land-transition hook")
-		end
+		if type(hooks) ~= "table" then fail("Bank tracer needs a hooks table") end
 		local bays, bay_context_by_id = stage.bays, stage.bay_context_by_id
 		local perimeter_by_id = stage.perimeter_by_id
 		local aperture_by_id, aperture_by_bay = stage.aperture_by_id,
@@ -2030,6 +2042,28 @@ local function new_partition(dependencies)
 			return wing_tail_cache[wing_id]
 		end
 
+		-- The one resolved-terminal mapping for a materialized land
+		-- transition, consumed by resolve_terminal's land branch and directly
+		-- by the census tuple tier for its per-tuple candidate resolutions,
+		-- so the field shape trace_bank reads exists exactly once.
+		local function resolve_land_transition(cache_key, materialized)
+			local resolved = {id = cache_key,
+				bay_id = materialized.source.bay_id,
+				point = {x = materialized.point.x, z = materialized.point.z},
+				previous = {x = materialized.previous.x,
+					z = materialized.previous.z},
+				transition_mode = materialized.mode,
+				transition_e = {x = materialized.e.x, z = materialized.e.z},
+				edge_id = materialized.source.edge_id,
+				edge_endpoint = materialized.source.edge_endpoint,
+				transition_id = materialized.source.id}
+			if materialized.w then
+				resolved.transition_w = {x = materialized.w.x,
+					z = materialized.w.z}
+			end
+			return resolved
+		end
+
 		local terminal_cache = {}
 		local function resolve_terminal(terminal, bay_id)
 			local cache_key = terminal_key(terminal)
@@ -2113,22 +2147,12 @@ local function new_partition(dependencies)
 				resolved.authored_index = point_index - 1
 				resolved.authored_away_index = away_index - 1
 			elseif terminal.kind == "land_edge_transition" then
-				local materialized = hooks.land_transition(cache_key)
+				local materialized = hooks.land_transition and
+					hooks.land_transition(cache_key) or nil
 				if not materialized then
 					fail(cache_key .. " lacks a once-resolved final edge transition")
 				end
-				resolved.bay_id = materialized.source.bay_id
-				resolved.point = {x = materialized.point.x, z = materialized.point.z}
-				resolved.previous = {x = materialized.previous.x,
-					z = materialized.previous.z}
-				resolved.transition_mode = materialized.mode
-				resolved.transition_e = {x = materialized.e.x, z = materialized.e.z}
-				if materialized.w then
-					resolved.transition_w = {x = materialized.w.x, z = materialized.w.z}
-				end
-				resolved.edge_id = terminal.edge_id
-				resolved.edge_endpoint = terminal.edge_endpoint
-				resolved.transition_id = materialized.source.id
+				resolved = resolve_land_transition(cache_key, materialized)
 			elseif terminal.kind == "wing_junction_tail_side" then
 				local wing = wing_by_id[terminal.wing_id]
 				if not wing then fail(cache_key .. " references an absent Wing tail") end
@@ -2426,8 +2450,10 @@ local function new_partition(dependencies)
 			return points
 		end
 
-		return {resolve_terminal = resolve_terminal, trace_bank = trace_bank,
-			wing_tails = wing_tails, terminal_cache = terminal_cache}
+		return {resolve_terminal = resolve_terminal,
+			resolve_land_transition = resolve_land_transition,
+			trace_bank = trace_bank, wing_tails = wing_tails,
+			terminal_cache = terminal_cache}
 	end
 
 	local function compile_impl(seed)
@@ -2537,9 +2563,7 @@ local function new_partition(dependencies)
 					point = {x = transition.point.x, z = transition.point.z}, offset = 0}
 			end
 			local function append_control(point)
-				if #controls == 0 or key(controls[#controls]) ~= key(point) then
-					controls[#controls + 1] = {x = point.x, z = point.z}
-				end
+				append_dedup(controls, point)
 			end
 			if attachment then
 				if not selected_attachment then
@@ -3505,7 +3529,7 @@ local function new_partition(dependencies)
 	-- 192-station backstop on the selected result.
 	-- ------------------------------------------------------------------
 
-	local function census_scan2(stage, seed, result, selected_by_edge)
+	local function census_scan2(stage, result, selected_by_edge)
 		local endpoint_rows, edge_rows, tuple_rows = {}, {}, {}
 		result.scan2_endpoints = endpoint_rows
 		result.scan2_edges = edge_rows
@@ -3515,21 +3539,18 @@ local function new_partition(dependencies)
 			bank_source_by_id[source.bay_bank_components[index].id] =
 				source.bay_bank_components[index]
 		end
-		-- The census resolves transition terminals per tuple, never through
-		-- the tracer's land branch; a call reaching that branch is a defect.
-		local tracer = new_bank_tracer(stage, {
-			land_transition = function() return nil end})
+		-- The census resolves transition terminals per tuple through
+		-- resolve_land_transition, never through the tracer's land hook; a
+		-- land terminal reaching resolve_terminal fails as unresolved.
+		local tracer = new_bank_tracer(stage, {})
 
 		local function hex_digest(text)
-			local raw = dependencies.raw_sha256(text)
-			return (raw:gsub(".", function(byte)
-				return ("%02x"):format(string.byte(byte))
-			end))
+			return canonical.hex(dependencies.raw_sha256(text))
 		end
 		local function digest_points(points)
 			local texts = {}
 			for index = 1, #points do
-				texts[index] = points[index].x .. ":" .. points[index].z
+				texts[index] = key(points[index])
 			end
 			return hex_digest(table.concat(texts, ";"))
 		end
@@ -3577,7 +3598,7 @@ local function new_partition(dependencies)
 			table.sort(fills, point_less)
 			local fill_texts = {}
 			for index = 1, #fills do
-				fill_texts[index] = fills[index].x .. ":" .. fills[index].z
+				fill_texts[index] = key(fills[index])
 			end
 			cached = hex_digest(bay_id .. "\n" .. table.concat(parts, ";") ..
 				"\nfills:" .. table.concat(fill_texts, ","))
@@ -3613,6 +3634,14 @@ local function new_partition(dependencies)
 							out.class = "scan2_no_selected_interval"
 							out.flagged = false
 						else
+							-- The bounds encode both eligibility clauses at once:
+							-- the opposite endpoint is excluded, and the away
+							-- station of every remaining incidence is in-interval
+							-- by construction.  A singleton selected interval
+							-- therefore has zero eligible incidences -- its lone
+							-- station is the opposite endpoint and has no away
+							-- station -- so zero tuples enumerate and the edge
+							-- honestly classifies scan2_zero_complete_reject.
 							local from_side = endpoint == "from"
 							local endpoint_index = from_side and selected.first or
 								selected.finish
@@ -3658,8 +3687,8 @@ local function new_partition(dependencies)
 
 				local edge_row = {edge_id = edge.id}
 				edge_rows[#edge_rows + 1] = edge_row
-				edge_row.flagged = (counting.from and counting.from.flagged or false)
-					or (counting.to and counting.to.flagged or false)
+				edge_row.flagged = (counting.from and counting.from.flagged) or
+					(counting.to and counting.to.flagged) or false
 				if not selected then
 					edge_row.class = "scan2_no_selected_interval"
 					edge_row.tuple_count = 0
@@ -3703,14 +3732,18 @@ local function new_partition(dependencies)
 						end
 						local stations = {}
 						for station_index = from_i, to_i do
-							local point = edge.stations[station_index]
-							stations[#stations + 1] = {x = point.x, z = point.z}
+							stations[#stations + 1] = edge.stations[station_index]
 						end
 						local clip_ok, retained = pcall(select_control_subsequence,
 							edge.shifted_controls, stations)
 						if not clip_ok then
+							-- Both failure strings live in select_control_subsequence
+							-- above; the full literal is matched so a rewording
+							-- there cannot silently flip tuples between the two
+							-- DECIDED classes.
 							local message = tostring(retained)
-							if message:find("is empty", 1, true) then
+							if message:find("selected control subsequence is empty",
+									1, true) then
 								out.class = "scan2_tuple_empty_combined_clip"
 							else
 								out.class = "scan2_tuple_clip_not_contiguous"
@@ -3720,10 +3753,7 @@ local function new_partition(dependencies)
 						end
 						local controls = {}
 						local function append_control(point)
-							if #controls == 0 or
-									key(controls[#controls]) ~= key(point) then
-								controls[#controls + 1] = {x = point.x, z = point.z}
-							end
+							append_dedup(controls, point)
 						end
 						local from_station = edge.stations[from_i]
 						local to_station = edge.stations[to_i]
@@ -3768,6 +3798,18 @@ local function new_partition(dependencies)
 							out.detail = tostring(probe)
 							return out
 						end
+						-- The decided U2 reading: a one-station probe dies at the
+						-- previous binding, under its own class label.  This must
+						-- be decided before validate_final, whose too-few-stations
+						-- reject would otherwise absorb the shape into
+						-- probe_invalid and leave the U2 occupancy unmeasurable.
+						-- (The crossed-incidence sibling dies earlier, as the U1
+						-- empty combined clip.)
+						if #probe < 2 then
+							out.class = "scan2_tuple_previous_binding_unsatisfiable"
+							out.detail = "one-station probe has no adjacent station"
+							return out
+						end
 						local validate_ok, validate_error = pcall(
 							raster.validate_final,
 							{id = edge.id, kind = "land_edge", closed = false,
@@ -3786,6 +3828,27 @@ local function new_partition(dependencies)
 								return out
 							end
 						end
+						-- On the four attachment transition edges the compiler
+						-- additionally requires every final station except A to
+						-- be strict footprint interior; a dry class-0 boundary
+						-- station passes dry_land but aborts compile_impl, so
+						-- the census must reject the same probes or its
+						-- artifact-5 distribution reports selects the compiler
+						-- would never produce.
+						if attachment then
+							for station_index = 1, #probe do
+								local station = probe[station_index]
+								if key(station) ~= key(probed_attachment.a) and
+										(stage.footprint_class(station.x, station.z) ~= 1
+										or stage.planned_water(station.x, station.z,
+											false)) then
+									out.class = "scan2_tuple_probe_invalid"
+									out.detail = "non-strict-interior probe station " ..
+										key(station)
+									return out
+								end
+							end
+						end
 						local from_terminal = from_choice and
 							from_choice.resolved.point or probed_attachment.a
 						local to_terminal = to_choice and
@@ -3794,11 +3857,6 @@ local function new_partition(dependencies)
 								key(probe[#probe]) ~= key(to_terminal) then
 							out.class = "scan2_tuple_probe_invalid"
 							out.detail = "a resolved terminal is not its probe endpoint"
-							return out
-						end
-						if #probe < 2 then
-							out.class = "scan2_tuple_previous_binding_unsatisfiable"
-							out.detail = "one-station probe has no adjacent station"
 							return out
 						end
 						out.probe = probe
@@ -3819,65 +3877,94 @@ local function new_partition(dependencies)
 						return out
 					end
 
+					-- Per-endpoint completion roster, resolved once per edge:
+					-- the transition key, the two incident Banks in Source
+					-- order and which of their terminals is the transition.
+					-- Catalog-shape violations fail loudly here, outside any
+					-- per-tuple pcall -- they are structural defects, never
+					-- tuple outcomes.
+					local completion_roster = {}
+					for _, endpoint in ipairs({"from", "to"}) do
+						local row = transition_source[endpoint]
+						if row then
+							local transition_key = stage.land_transition_key(
+								row.edge_id, row.edge_endpoint)
+							local banks = {}
+							for bank_index = 1, 2 do
+								local bank = bank_source_by_id[
+									row.incident_bank_component_ids[bank_index]]
+								if not bank then
+									fail(row.id .. " references an absent Bank")
+								end
+								local side
+								if terminal_key(bank.start_terminal) ==
+										transition_key then
+									side = "start"
+								elseif terminal_key(bank.end_terminal) ==
+										transition_key then
+									side = "end"
+								else
+									fail(bank.id .. " is not incident to " ..
+										transition_key)
+								end
+								banks[bank_index] = {bank = bank, side = side}
+							end
+							completion_roster[endpoint] = {row = row,
+								transition_key = transition_key, banks = banks}
+						end
+					end
+
 					-- Completion phase: both declared incident Banks of every
 					-- transition in the tuple must complete to their
 					-- already-authorized Aperture or Wing terminals under the
 					-- unchanged R11 rules.  Far terminals resolve lazily
-					-- through the shared tracer; any failure inside --
-					-- including a Wing-tail or aperture resolution failure --
-					-- is this tuple's bank-incomplete witness.
-					local function tuple_complete(probed, from_choice, to_choice)
+					-- through the shared tracer; any geometric failure inside
+					-- -- including a Wing-tail or aperture resolution failure,
+					-- whose own F4/F5 class is Scan-3a's to record -- is this
+					-- tuple's bank-incomplete witness, with the original
+					-- message preserved as the detail.
+					local function tuple_complete(probed)
 						for _, endpoint in ipairs({"from", "to"}) do
 							local choice
-							if endpoint == "from" then choice = from_choice
-							else choice = to_choice end
+							if endpoint == "from" then choice = probed.from_choice
+							else choice = probed.to_choice end
 							if choice then
-								local row = transition_source[endpoint]
-								local previous = endpoint == "from" and
-									probed.from_previous or probed.to_previous
-								local transition_key = stage.land_transition_key(
-									row.edge_id, row.edge_endpoint)
-								local resolved = {id = transition_key,
-									bay_id = row.bay_id,
-									point = {x = choice.resolved.point.x,
-										z = choice.resolved.point.z},
-									previous = {x = previous.x, z = previous.z},
-									transition_mode = choice.resolved.mode,
-									transition_e = {x = choice.resolved.e.x,
-										z = choice.resolved.e.z},
-									transition_w = choice.resolved.w and
-										{x = choice.resolved.w.x,
-											z = choice.resolved.w.z} or nil,
-									edge_id = row.edge_id,
-									edge_endpoint = row.edge_endpoint,
-									transition_id = row.id}
+								local roster = completion_roster[endpoint]
+								local previous
+								if endpoint == "from" then
+									previous = probed.from_previous
+								else
+									previous = probed.to_previous
+								end
+								local resolved = tracer.resolve_land_transition(
+									roster.transition_key,
+									{source = roster.row,
+										point = choice.resolved.point,
+										previous = previous,
+										mode = choice.resolved.mode,
+										e = choice.resolved.e,
+										w = choice.resolved.w})
 								for bank_index = 1, 2 do
-									local bank = bank_source_by_id[
-										row.incident_bank_component_ids[bank_index]]
-									if not bank then
-										fail(row.id .. " references an absent Bank")
-									end
+									local entry = roster.banks[bank_index]
 									local trace_ok, trace_error = pcall(function()
 										local start_resolved, finish_resolved
-										if terminal_key(bank.start_terminal) ==
-												transition_key then
+										if entry.side == "start" then
 											start_resolved = resolved
 											finish_resolved = tracer.resolve_terminal(
-												bank.end_terminal, bank.bay_id)
-										elseif terminal_key(bank.end_terminal) ==
-												transition_key then
+												entry.bank.end_terminal,
+												entry.bank.bay_id)
+										else
 											finish_resolved = resolved
 											start_resolved = tracer.resolve_terminal(
-												bank.start_terminal, bank.bay_id)
-										else
-											fail(bank.id .. " is not incident to " ..
-												transition_key)
+												entry.bank.start_terminal,
+												entry.bank.bay_id)
 										end
-										tracer.trace_bank(bank, start_resolved,
-											finish_resolved)
+										tracer.trace_bank(entry.bank,
+											start_resolved, finish_resolved)
 									end)
 									if not trace_ok then
-										return false, bank.id, tostring(trace_error)
+										return false, entry.bank.id,
+											tostring(trace_error)
 									end
 								end
 							end
@@ -3885,25 +3972,36 @@ local function new_partition(dependencies)
 						return true
 					end
 
+					-- The edge-invariant digest prefix (footprint, referenced
+					-- Bay envelopes, edge and interval identity) is built once
+					-- per edge; only the incidence pair and probe digest vary
+					-- per tuple.  The concatenation reproduces the same byte
+					-- layout as one flat newline join.
+					local key_prefix
 					local function tuple_key(probed)
-						local parts = {ensure_footprint_digest()}
-						local bay_ids, seen_bays = {}, {}
-						for _, endpoint in ipairs({"from", "to"}) do
-							local row = transition_source[endpoint]
-							if row and not seen_bays[row.bay_id] then
-								seen_bays[row.bay_id] = true
-								bay_ids[#bay_ids + 1] = row.bay_id
+						if not key_prefix then
+							local parts = {ensure_footprint_digest()}
+							local bay_ids, seen_bays = {}, {}
+							for _, endpoint in ipairs({"from", "to"}) do
+								local row = transition_source[endpoint]
+								if row and not seen_bays[row.bay_id] then
+									seen_bays[row.bay_id] = true
+									bay_ids[#bay_ids + 1] = row.bay_id
+								end
 							end
+							table.sort(bay_ids)
+							for bay_index = 1, #bay_ids do
+								parts[#parts + 1] =
+									bay_envelope_digest(bay_ids[bay_index])
+							end
+							parts[#parts + 1] = edge.id
+							parts[#parts + 1] = selected.first .. "-" ..
+								selected.finish
+							key_prefix = table.concat(parts, "\n")
 						end
-						table.sort(bay_ids)
-						for bay_index = 1, #bay_ids do
-							parts[#parts + 1] = bay_envelope_digest(bay_ids[bay_index])
-						end
-						parts[#parts + 1] = edge.id
-						parts[#parts + 1] = selected.first .. "-" .. selected.finish
-						parts[#parts + 1] = probed.from_i .. "/" .. probed.to_i
-						parts[#parts + 1] = probed.probe_digest or probed.class
-						return hex_digest(table.concat(parts, "\n"))
+						return hex_digest(key_prefix .. "\n" ..
+							probed.from_i .. "/" .. probed.to_i .. "\n" ..
+							(probed.probe_digest or probed.class))
 					end
 
 					local evaluated = {}
@@ -3942,10 +4040,9 @@ local function new_partition(dependencies)
 								(identity_counts[identity] or 0) + 1
 						end
 					end
-					for tuple_index = 1, #evaluated do
-						local identity = evaluated[tuple_index].identity
-						if identity and identity_counts[identity] >= 2 then
-							duplicate_count = duplicate_count + 1
+					for _, count in pairs(identity_counts) do
+						if count >= 2 then
+							duplicate_count = duplicate_count + count
 						end
 					end
 					edge_row.duplicate_count = duplicate_count
@@ -3956,8 +4053,7 @@ local function new_partition(dependencies)
 						probed.probe_station_count = probed.probe and #probed.probe
 							or nil
 						if probed.probe then
-							local ok, failed_bank, detail = tuple_complete(probed,
-								probed.from_choice, probed.to_choice)
+							local ok, failed_bank, detail = tuple_complete(probed)
 							if ok then
 								probed.class = "scan2_tuple_complete"
 								complete_count = complete_count + 1
@@ -4013,6 +4109,19 @@ local function new_partition(dependencies)
 							selected_tuple.probe_station_count
 					end
 				end
+				-- The tuple tier was the only consumer of the resolved R16
+				-- objects; the long-lived record keeps only the emitted
+				-- fields, mirroring the probed.probe cleanup above.
+				for _, endpoint in ipairs({"from", "to"}) do
+					local out = counting[endpoint]
+					if out and out.successes then
+						for success_index = 1, #out.successes do
+							local success = out.successes[success_index]
+							out.successes[success_index] = {index = success.index,
+								mode = success.resolved.mode}
+						end
+					end
+				end
 			end
 		end
 		return result
@@ -4021,7 +4130,7 @@ local function new_partition(dependencies)
 	local function census_scan(seed)
 		local stage = build_scan_stage(seed)
 		local result, selected_by_edge = census_scan1(stage, seed)
-		return census_scan2(stage, seed, result, selected_by_edge)
+		return census_scan2(stage, result, selected_by_edge)
 	end
 
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;

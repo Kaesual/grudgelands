@@ -22,6 +22,11 @@ end
 local select_one = "scan2_exactly_one_complete_select"
 return {
 	schema = "grug_wp40_census_scan_v2",
+	-- The load-bearing M3 witness: this endpoint must hold at least two R16
+	-- candidates while its edge completes exactly one joint tuple.  The
+	-- worker's --kat roster must cover this seed.
+	r19_witness = {seed = "16178445837170081103",
+		endpoint = "bay_edge_transition:land_010:to", edge = "land_010"},
 	fills = {
 		["0"] = {0, 0, 0, 0},
 		["16178445837170081103"] = {0, 0, 0, 0},

@@ -194,23 +194,27 @@ local parts = authority.shard_header_lines({schema = authority.schema,
 for index = 1, authority.prefilter_edge_count do
 	parts[#parts + 1] = "prefilter\tedge_" .. index .. "\tscanned\tsynthetic"
 end
-local layout = {{"edge", 61, 13, 5, "ordinary_interval_select", 4, "ordinary"},
-	{"perimeter", 3, 6}, {"aperture", 8, 16},
-	{"attachment", 8, 13, 6, "attachment_equality_select"},
-	{"junction", 38, 7}, {"bay", 4, 5},
-	{"scan2_endpoint", 8, 14, 6, "scan2_counting_evaluated", 7, "false"},
-	{"scan2_edge", 6, 10, 4, "scan2_exactly_one_complete_select", 5, "true"},
-	{"scan2_tuple", 2, 16, 5, "scan2_tuple_complete", 7, "direct"}}
+-- The record shape is derived from the authority's declared roster rather
+-- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
+-- rows, and every class/kind cell takes the first declared vocabulary value.
 for index = first, last do
 	local seed = assert(w.seeds[index + 1])
 	parts[#parts + 1] = "seed_begin\t" .. seed
-	for row = 1, #layout do
-		local tag, count, width, class_at, class, kind_at, kind = unpack(layout[row])
-		for repeated = 1, count do
-			local cells = {tag, seed}
-			for field = 3, width do
-				cells[field] = field == class_at and class or
-					field == kind_at and kind or (tag .. repeated .. "_" .. field)
+	for row = 1, #authority.record_rows do
+		local layout = authority.record_rows[row]
+		for repeated = 1, layout.count or 2 do
+			local cells = {layout.tag, seed}
+			for field = 3, layout.fields do
+				cells[field] = layout.tag .. repeated .. "_" .. field
+			end
+			if layout.class_field then
+				cells[layout.class_field] = authority.classes[layout.class_set][1]
+			end
+			if layout.extra_field then
+				cells[layout.extra_field] = authority.classes[layout.extra_set][1]
+			end
+			if layout.extra2_field then
+				cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
 			end
 			parts[#parts + 1] = table.concat(cells, "\t")
 		end

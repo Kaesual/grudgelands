@@ -676,7 +676,7 @@ reports must add up to |`W`|.
 
 Census shards are per-seed intermediates, which section 6.3 forbids
 committing, so they are written to the gitignored
-`tools/wp40/results/t2_census/census-scan1-v1-%04d-%04d.tsv`; only the merged
+`tools/wp40/results/t2_census/census-scan-v2-%04d-%04d.tsv`; only the merged
 section-6.2 artifacts belong under `fixtures/t2_census/`. The name shares no
 stem with either pool pattern (`shard-luajit-*.tsv`) and the disjointness is
 computed, not asserted in prose.

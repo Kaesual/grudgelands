@@ -3,7 +3,7 @@ set -euo pipefail
 
 # WP40 T2 census runner (plan section 6.6).
 #
-#   tools/wp40/run_t2_census.sh --kat                  # seeds 0 + max-u64
+#   tools/wp40/run_t2_census.sh --kat                  # seeds 0, Slot 29, max-u64
 #   WP40_CENSUS_OUTPUT=path run_t2_census.sh --seeds 0 7 4096
 #   tools/wp40/run_t2_census.sh --plan                 # derive W, print the token
 #   WP40_CENSUS_GO=<token> run_t2_census.sh --full-w   # the eight-shard run

@@ -151,37 +151,29 @@ refuses("a projection from a shard that completed nothing", "completed no seed",
 -- A synthetic shard in the exact worker format.  Building it here rather than
 -- capturing one keeps the negatives cheap: every mutation below is a one-line
 -- edit of bytes whose good form has just been accepted.
+-- The record shape is derived from the authority's declared roster rather
+-- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
+-- rows, and every class/kind cell takes the first declared vocabulary value.
 local function seed_record(seed)
 	local rows = {"seed_begin\t" .. seed}
-	local function row(count, tag, fields, class_at, class, overrides)
-		for index = 1, count do
-			local cells = {tag, seed}
-			for field = 3, fields do
-				cells[field] = (field == class_at) and class or (tag .. index .. "_" .. field)
+	for _, layout in ipairs(authority.record_rows) do
+		for index = 1, layout.count or 2 do
+			local cells = {layout.tag, seed}
+			for field = 3, layout.fields do
+				cells[field] = layout.tag .. index .. "_" .. field
 			end
-			if overrides then
-				for position, value in pairs(overrides) do cells[position] = value end
+			if layout.class_field then
+				cells[layout.class_field] = authority.classes[layout.class_set][1]
+			end
+			if layout.extra_field then
+				cells[layout.extra_field] = authority.classes[layout.extra_set][1]
+			end
+			if layout.extra2_field then
+				cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
 			end
 			rows[#rows + 1] = table.concat(cells, "\t")
 		end
 	end
-	row(61, "edge", 13, 5, "ordinary_interval_select")
-	for index = #rows - 60, #rows do
-		local cells = {}
-		for cell in (rows[index] .. "\t"):gmatch("(.-)\t") do cells[#cells + 1] = cell end
-		cells[4] = "ordinary"
-		rows[index] = table.concat(cells, "\t")
-	end
-	row(3, "perimeter", 6)
-	row(8, "aperture", 16)
-	row(8, "attachment", 13, 6, "attachment_equality_select")
-	row(38, "junction", 7)
-	row(4, "bay", 5)
-	row(8, "scan2_endpoint", 14, 6, "scan2_counting_evaluated", {[7] = "false"})
-	row(6, "scan2_edge", 10, 4, "scan2_exactly_one_complete_select",
-		{[5] = "true"})
-	row(2, "scan2_tuple", 16, 5, "scan2_tuple_complete",
-		{[7] = "direct", [11] = "-"})
 	rows[#rows + 1] = "seed_end\t" .. seed
 	return table.concat(rows, "\n") .. "\n"
 end
@@ -249,6 +241,10 @@ refuses("a first record with an undeclared scan2 edge class", "undeclared class"
 refuses("a first record with an undeclared scan2 tuple mode", "undeclared kind",
 	authority.validate_first_record,
 	(body:gsub("\tdirect\t", "\tdirectish\t", 1)), expected)
+refuses("a first record with an undeclared scan2 to-mode", "undeclared kind",
+	authority.validate_first_record,
+	(body:gsub("scan2_tuple1_10\tdirect", "scan2_tuple1_10\tdirectish", 1)),
+	expected)
 refuses("a first record missing a scan2 edge row", "expected 6",
 	authority.validate_first_record,
 	(body:gsub("\nscan2_edge\t" .. w.seeds[1] .. "\tscan2_edge1_3[^\n]*", "", 1)),

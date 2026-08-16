@@ -306,10 +306,13 @@ for seed_index = 1, #seeds do
 	for index = 1, #scan.scan2_endpoints do
 		local row = scan.scan2_endpoints[index]
 		local success_texts = {}
-		for success_index = 1, #(row.successes or {}) do
-			local success = row.successes[success_index]
-			success_texts[success_index] = success.index .. ":" ..
-				success.resolved.mode
+		local successes = row.successes
+		if successes then
+			for success_index = 1, #successes do
+				local success = successes[success_index]
+				success_texts[success_index] = success.index .. ":" ..
+					success.mode
+			end
 		end
 		emit("scan2_endpoint", seed, row.id, row.edge_id, row.endpoint,
 			row.class, tostring(row.flagged), opt(row.first), opt(row.finish),
@@ -374,6 +377,13 @@ if mode == "kat" then
 	local fixture = fixture_chunk()
 	assert(fixture.schema == partition.census_scan_schema,
 		"census KAT fixture schema differs")
+	assert(type(fixture.r19_witness) == "table" and fixture.r19_witness.seed and
+		fixture.r19_witness.endpoint and fixture.r19_witness.edge,
+		"census KAT fixture lacks its R19 witness declaration")
+	-- A witness seed missing from the roster would silently skip the witness
+	-- assertion below; refuse that shape outright.
+	assert(scans_by_seed[fixture.r19_witness.seed],
+		"census KAT roster does not cover the fixture's R19 witness seed")
 	for seed_index = 1, #seeds do
 		local seed = seeds[seed_index]
 		local scan = scans_by_seed[seed]
@@ -453,17 +463,20 @@ if mode == "kat" then
 				"census KAT scan2 edge differs at " .. row.edge_id ..
 				" seed " .. seed)
 		end
-		if seed == "16178445837170081103" then
-			-- The Slot-29 R19 witness (analysis section 3-F2): one endpoint
-			-- carries two R16 candidates and its edge exactly one complete
-			-- tuple.
+		if seed == fixture.r19_witness.seed then
+			-- The R19 witness (analysis section 3-F2): the fixture-named
+			-- endpoint carries at least two R16 candidates and its edge
+			-- exactly one complete tuple.  Fixture-driven so the witness
+			-- seed, endpoint and edge live in exactly one place.
 			local witnessed = false
 			for index = 1, #scan.scan2_endpoints do
 				local row = scan.scan2_endpoints[index]
-				if row.success_count and row.success_count >= 2 then
+				if row.id == fixture.r19_witness.endpoint then
+					assert(row.success_count and row.success_count >= 2,
+						"census KAT: the R19 witness endpoint lost its candidates")
 					for edge_index = 1, #scan.scan2_edges do
 						local edge_row = scan.scan2_edges[edge_index]
-						if edge_row.edge_id == row.edge_id and
+						if edge_row.edge_id == fixture.r19_witness.edge and
 								edge_row.complete_count == 1 then
 							witnessed = true
 						end
@@ -471,7 +484,7 @@ if mode == "kat" then
 				end
 			end
 			assert(witnessed,
-				"census KAT: the Slot-29 two-candidate/one-complete witness is absent")
+				"census KAT: the R19 two-candidate/one-complete witness is absent")
 		end
 	end
 	assert(digest == fixture.digest,

@@ -122,7 +122,8 @@ return function(dependencies)
 			extra_set = "scan2_flag"},
 		{tag = "scan2_tuple", fields = 16, class_field = 5,
 			class_set = "scan2_tuple_class", extra_field = 7,
-			extra_set = "scan2_tuple_mode"},
+			extra_set = "scan2_tuple_mode", extra2_field = 11,
+			extra2_set = "scan2_tuple_mode"},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
@@ -608,6 +609,11 @@ return function(dependencies)
 					not class_sets[layout.extra_set][fields[layout.extra_field]] then
 				fail(tag .. " row in seed " .. seed .. " has undeclared kind " ..
 					tostring(fields[layout.extra_field]))
+			end
+			if layout.extra2_set and
+					not class_sets[layout.extra2_set][fields[layout.extra2_field]] then
+				fail(tag .. " row in seed " .. seed .. " has undeclared kind " ..
+					tostring(fields[layout.extra2_field]))
 			end
 			counts[tag] = (counts[tag] or 0) + 1
 			index = index + 1
