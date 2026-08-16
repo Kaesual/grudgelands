@@ -195,7 +195,9 @@ one probe reraster and ≤ 4 bounded R11 completion traces.
 | Per-tuple bank incomplete | DECIDED (tuple fails) |
 | Eligible incidence without adjacent-away station | DECIDED (not eligible) |
 
-**U1 (undecided).** `bay_edge_transition_terminal_complete` *requires* a
+**U1 (undecided at analysis time; decided 2026-08-16 — tuple-level reading,
+recorded in [wp40-t2-plan.md](wp40-t2-plan.md) section 5).**
+`bay_edge_transition_terminal_complete` *requires* a
 nonempty combined contiguous control subsequence per tuple, while the R18-level
 `shared_boundary_incidence_reject` lists an empty subsequence as
 reject-without-fallback. The two readings diverge observably: on a seed where
@@ -203,7 +205,10 @@ one tuple has an empty combined clip and another tuple completes, the first
 reading accepts (tuple merely fails), the second rejects the seed. Which is
 authoritative is not stated.
 
-**U2 (undecided).** A two-ended tuple whose two candidate incidences coincide
+**U2 (undecided at analysis time; decided 2026-08-16 — fails at the
+tuple-level previous binding, recorded in
+[wp40-t2-plan.md](wp40-t2-plan.md) section 5).**
+A two-ended tuple whose two candidate incidences coincide
 or cross yields a degenerate combined clip and, in the limit, a single-station
 probe; whether "unique, 8-connected" is satisfiable by a one-station raster is
 unspecified. Practically vacuous — Stage 2 hard-rejects final edges under 192
@@ -379,7 +384,9 @@ passing it) → REJECTED. Coast-source selection collects exact rational minima
 then applies zone ID → component ID → segment index — total. Wing-centre and
 bay-centre ties → lower numeric zone ID — total. No undecided tie exists.
 
-**O1 (proof obligation, not a policy gap).** A station that is simultaneously
+**O1 (proof obligation, not a policy gap; decided 2026-08-16 — closed via a
+Stage-1 margin assertion, recorded in [wp40-t2-plan.md](wp40-t2-plan.md)
+section 5).** A station that is simultaneously
 inside a mouth-aperture interval and a declared attachment is decided by
 evaluation order (aperture precedence first), but the interesting fact — that
 this collision is *unreachable* because every attachment sits hundreds of
@@ -490,7 +497,10 @@ Output: joint distribution of (eligible, R16-success, complete) per endpoint;
 direct-vs-elbow occupancy; duplicate-identity occurrences; any ≥ 2-complete
 event (= a found future correction); U1/U2 witness seeds if any.
 
-**Scan-3 — terminal/wing/trace census (F3, F4, F5).** Per seed: 8 aperture
+**Scan-3 — terminal/wing/trace census (F3, F4, F5).** (Split 2026-08-16 into
+an S1–S5 share — apertures, wings, head banks — that runs with Scans 1–2,
+and a post-correction remainder for the sixteen transition-incident bank
+traces; recorded in [wp40-t2-plan.md](wp40-t2-plan.md) section 2.) Per seed: 8 aperture
 resolutions (O(1) each; direct/tail/reject class), 8 wing analyses
 (K-candidate enumeration over the wing box ≈ 10⁴–10⁵ columns; structural
 pairs ≤ 18 per golden; wedge scan ≤ (2R+1)² = 121 columns per pair), then all
@@ -499,22 +509,29 @@ frame counts, and every reject with its class. Structural cost: ~10⁵–10⁶
 local operations per seed — a banks-only compile, explicitly without faces or
 Whole. Output: the two predicted R20/R21 occupancies (aperture-anchor-dead
 with candidate `D`; wing-pair-dead with a live wedge-valid alternative),
-tail-mode and wedge-multiplicity histograms, `R > 5` / `w = 0` /
+tail-mode and wedge-multiplicity histograms, `R > 5` / `w = 0` (the §7.2
+jittered bank half-width `r + delta_nodes` collapsing to zero) /
 `Chebyshev(K,J) > 4` events, realized step-class coverage versus the §3
 tables (never-realized decision branches become a documented vacuous-branch
 list — freeze review becomes a coverage report).
 
-Configuration dedup applies to all three censuses: sites realize identical
-local byte-neighbourhoods across many seeds, so keying results by (site,
-local-configuration bytes) instead of (site, seed) collapses the effective
-seed multiplier; the census unit is the distinct configuration, exactly
-matching the hypothesis under test.
+Configuration dedup applies to all three censuses at their bounded-local
+tiers: sites realize identical local byte-neighbourhoods across many seeds,
+so keying results by (site, local-configuration bytes) instead of (site,
+seed) collapses the effective seed multiplier; the census unit is the
+distinct configuration, exactly matching the hypothesis under test. The
+caveat from section 1 of this file carries over unreduced: R19 tuple
+selection and bank tracing are not bounded-local, so those decisions are
+never dedup-skipped on a local key. The per-family assignment is recorded in
+[wp40-t2-plan.md](wp40-t2-plan.md) section 6.
 
 **Scan-4 — full Face/Whole, structured subset only (F10, F11).** Seed set:
 (census-flagged seeds: any rare class occupied — fills > 0, tail mode,
 multi-interval, ≥ 2 candidates, any branch > 0) ∪ (per-site extremal seeds:
-for each of the ~140 structural sites, the census min/max of its local scalar
-— every R-series trigger was an extremal seed) ∪ winners ∪ corpus. Expected a
+for each of the 153 structural sites, the census min/max of its per-kind
+stress scalars — defined 2026-08-16 in [wp40-t2-plan.md](wp40-t2-plan.md)
+section 6.2; every R-series trigger was an extremal seed) ∪ winners ∪
+corpus. Expected a
 few hundred seeds × ~3 × 10⁷ columns each — an order of magnitude below the
 full-pool sweep, and only run after the censuses because any upstream-visible
 cause is cheaper to catch in Scans 1–3.
