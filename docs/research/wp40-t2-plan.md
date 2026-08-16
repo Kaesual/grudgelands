@@ -13,6 +13,13 @@ its reasoning and not for its facts. This file holds
 what is being done next, in what order, and why — the part that was living only
 in a chat session until 2026-08-16.
 
+One rule about this file itself, because the engineering brief grew from 134 KB
+to 314 KB by accretion and nobody ever decided that *now* was the moment to
+split it. Section 6 is a specification, not a plan. While there is exactly one
+such contract it stays here. **The moment a second package needs one, both move
+to `wp40-t2-contracts.md` and this file keeps only the pointer.** The trigger is
+deliberately a countable event rather than a judgement about length.
+
 ## 1. Where T2 actually stands
 
 `compiler.lua` builds 20 named geometry buckets. Their status:
@@ -143,22 +150,28 @@ been wrong before.
     contiguous control subsequence per tuple; the R18-level
     `shared_boundary_incidence_reject` lists an empty subsequence as
     reject-without-fallback. On a seed where one tuple has an empty combined
-    clip and another completes, the first reading accepts and the second
-    rejects the whole seed. Which is authoritative is not stated. This is a
+    clip and another completes, the first reading accepts — the empty-clip
+    tuple merely fails while the seed survives via the completing tuple —
+    and the second rejects the whole seed. Which is authoritative is not stated. This is a
     decision, not a documentation fix, and it should be made before the
     collected correction is written rather than inside it.
   - **U2** asks whether a one-station raster can satisfy "unique,
     8-connected", which arises when a two-ended tuple's candidate incidences
-    coincide or cross. Practically vacuous, since Stage 2 hard-rejects final
-    edges under 192 station steps — but *which stage* rejects is exactly the
-    ambiguity R16 was made of, so it wants an answer rather than a shrug.
+    coincide or cross, yielding in the limit a single-station probe. Practically
+    vacuous, since Stage 2 hard-rejects final edges under 192 station steps
+    (completeness analysis section 7.4) — but *which stage* rejects is the same
+    kind of ambiguity R16 was made of, so it wants an answer rather than a
+    shrug.
   - **O1** is a proof obligation rather than a gap. Aperture-versus-attachment
-    collision is decided by evaluation order, and the interesting claim — that
-    the collision is unreachable, because attachments sit hundreds of nodes
-    from apertures while displacement is bounded by 96/64 with tapers — is
+    collision is decided by evaluation order, aperture precedence first, and the
+    interesting claim — that the collision is unreachable, because *every*
+    attachment sits hundreds of nodes from *every* aperture while displacement
+    is bounded by 96/64 with tapers — is
     asserted nowhere. Either a Stage-2 margin assertion or one sentence
     declaring the order-based outcome intended closes it. Until then it is
-    formally decided and semantically unreviewed.
+    formally decided and semantically unreviewed. (Scheduling note, mine and
+    not the analysis's: U1 should be decided before the collected correction
+    is written, not inside it.)
 - **A targeted `pairs()`-order divergence test**, as the cheap substitute for a
   full PUC gate at every stage freeze. The canonical encoder sorts before
   emission, so serialisation is provably runtime-independent; control flow that
@@ -179,6 +192,24 @@ the next one could surface. The census exists to produce all of them at once.
 
 If its output does not support that, the run is wasted even when it completes.
 
+**Scope.** This contract governs Scans 1 and 2. Scans 3 and 4 produce further
+quantities named in the completeness analysis section 5 and need their own
+clauses before they run; the plan's ordering puts a collected correction
+between them, which partly invalidates anything produced earlier, so one
+contract cannot span both sides of it.
+
+**Unresolved, and it must be resolved before the scans are built.** Section 6.1
+keys rows by local configuration, on the strength of the analysis's dedup
+paragraph. But its section 1 states that R19 tuple selection (scope: selected
+interval plus bay envelope) and bank tracing (scope: trace history plus bay
+envelope) are *not* bounded-local. So for F2 and F3 — the two expensive
+families — the key is either the full envelope, in which case no seed
+multiplier collapses there, or a truncated neighbourhood, in which case two
+seeds sharing a key can reach different decisions and the occupied-class table
+is unsound. The dedup paragraph does not carry section 1's caveat and neither
+did the first draft of this contract. Decide it, per family, before writing a
+scanner.
+
 ### 6.1 The unit is a configuration, not a seed
 
 Key every row by **(site, local-configuration bytes)**, never by (site, seed).
@@ -192,7 +223,9 @@ A scan that emits one report per seed has produced 4,130 reports and no list.
 
 ### 6.2 Required outputs
 
-Four artifacts, all derived in one pass:
+Four artifacts. Scan-2's own design is a cheap counting pass followed by
+selective tracing of the interesting minority, so "one pass" is the analysis's
+structure and not a requirement imposed here:
 
 1. **Occupied-class table.** One row per (site class, decision class) actually
    realized, with its realization count and witness seed. A row whose decision
@@ -202,11 +235,23 @@ Four artifacts, all derived in one pass:
    configuration realized. Freeze review becomes a coverage report rather than
    an assertion — a branch nothing exercises is either dead policy or an
    untested path, and both need saying out loud.
-3. **Per-site extremal seeds.** For each of the roughly 140 structural sites,
-   the seeds realizing the minimum and maximum of its local scalar. This is not
-   a diagnostic: it is Scan-4's input set, and every R-series trigger so far was
-   an extremal seed.
-4. **Distribution histograms** named in the completeness analysis section 5 —
+3. **Scan-4's input seed set**, which the analysis defines as a union and not
+   as the extremal term alone: census-flagged seeds (fills > 0, tail mode,
+   multi-interval, two or more candidates, any branch > 0, and the
+   fragment-bearing case from section 3-F8) union per-site extremal seeds union
+   winners union corpus. The flagged term is a per-seed derived list, so
+   section 6.3's ban on per-seed intermediates must not delete it — it is an
+   artifact, not an intermediate. Per-site extremal means the seeds realizing
+   the minimum and maximum of that site's local scalar; note that `local_scalar_q`
+   is defined per edge station and has no meaning yet for junctions, wings,
+   apertures or banks, so the extremal criterion needs a per-site-kind
+   definition before it can be computed. Every R-series trigger so far was an
+   extremal seed.
+4. **The prefilter discharge list** — every site the seed-independent
+   prefilter discharged, with the reason. Cheap to regenerate, but without it
+   the occupied-class table cannot distinguish "this class was never occupied"
+   from "this site was never scanned", which is the table's entire claim.
+5. **Distribution histograms** named in the completeness analysis section 5 —
    interval counts per edge, attachment Chebyshev distances, junction-pair pass
    rate, fill counts per bay, and the joint (eligible, R16-success, complete)
    distribution per transition endpoint.
@@ -215,8 +260,10 @@ Four artifacts, all derived in one pass:
 
 Commit the four artifacts above and the manifest that pins what produced them:
 commit, tree, interpreter, scan version, and the seed set with its derivation.
-Do not commit per-seed intermediates; they are regenerable and would bury the
-list they exist to support.
+Do not commit per-seed intermediates. Not because they are cheap to regenerate
+— they are not, which is this whole section's premise — but because they bury
+the list they exist to support. The named artifacts above, including the
+flagged seed set, are outputs and are exempt from this.
 
 Every finding must carry enough to write and test its correction without
 re-running the census: the site, the configuration bytes, the witness seed, and
@@ -225,18 +272,41 @@ act on has not been recorded properly.
 
 ### 6.4 What counts as a finding
 
-An occupied REJECTED class, a vacuous branch, or a configuration the decision
-table does not cover at all. The third is the rarest and the most valuable:
-the completeness analysis argues the tables are total, so an uncovered
-configuration falsifies that argument and is worth stopping for.
+An occupied REJECTED class, a vacuous branch, a configuration the decision
+table does not cover at all, or **a refuted frozen universal**. The third is
+the rarest and most valuable: the completeness analysis argues the tables are
+total, so an uncovered configuration falsifies that argument and is worth
+stopping for. It also needs somewhere to land — an explicit no-branch-matched
+sink, since outputs 1 and 2 are both keyed on declared classes.
 
-Occupancy of a DECIDED class is not a finding, however unusual it looks.
+The fourth is the one an occupancy table hides. `Chebyshev(K,J) > 4`, `R > 5`
+and `w = 0` are current source bounds asserted over all seeds; a seed
+exceeding one is neither a rejected class nor a vacuous branch, so it must be
+recorded as its own class. This is mechanism (c), the failure mode R16 itself
+was, and the census is where it is cheapest to catch.
+
+Occupancy of an ordinary DECIDED class is not a finding, however unusual it
+looks.
 
 ### 6.5 Cost
 
-Scan-1 and Scan-2 are one package. Anchor the estimate on the measured 10.7 s
-per seed for S1 scalars and re-measure on one seed before launching the full
-set — the prefilter is expected to discharge most ordinary edges permanently,
-so the real figure should fall well below a naive 4,130 × 10.7 s. State the
-measured single-seed cost and the projected total in the run manifest, and stop
-rather than proceed if the projection exceeds four hours.
+Do not anchor on the 10.7 s in section 4: that figure is S1 *selector scalars*
+only, while Scan-1 additionally performs the per-record R7 compile — up to 97
+reraster probes across 63 records — plus roughly 10^5 station predicates. The
+nearer anchor is the 32.7 s LuaJIT seed-0 compile, and even that is a floor.
+Anchoring low is exactly what section 4 exists to prevent.
+
+Measure one seed before launching the set, and state in the run manifest both
+the measured single-seed cost and the projected total, **in wall time at a
+stated worker count** — section 4's anchors are worker-seconds and mixing the
+two silently changes any threshold by roughly 8x. The prefilter is expected to
+discharge most ordinary edges permanently, so the real figure should fall well
+below a naive multiplication.
+
+A stop threshold is a judgement call and should be recorded as one rather than
+presented as derived. Two things bound it from either side: the largest routine
+measured run here is the 91-minute pool, and what the census replaces is
+roughly a day per finding through the reproduce-diagnose loop. A cap tight
+enough to forbid several hours would be worse than the process it replaces.
+Propose the number with that comparison written down, and treat exceeding it as
+a reason to report and re-scope rather than to abandon.
