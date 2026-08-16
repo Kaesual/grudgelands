@@ -559,6 +559,21 @@ milestone M5's merge gate; M1 runs PUC only as the language contract
 Census artifacts never share a path or name pattern with pool shards
 (`shard-luajit-*.tsv`); the worker refuses to overwrite an existing output.
 
+Deferred to M2 by the M1 review, so the launcher work-item list is complete:
+
+- Replace the worker's 64-seed list cap with a per-invocation gate that
+  survives range mode — an explicit launcher token, so a direct worker call
+  stays unable to start a full-`W` slice after sharding exists.
+- Adopt the batched SHA path (`t2_sha256_batch.py`, the discover/strict
+  cache of `t2_extreme_shard_worker.lua`) or a persistent hasher: fork
+  overhead is ~0.7 s of each ~23 s seed pass, ~48 CPU-minutes over full `W`.
+- The worker claims its output path at startup by creating it empty; resume
+  verification must treat a zero-length or digest-less file as unparseable
+  and abort loudly (section 6.6.4 semantics), never as an empty shard.
+- One fact a fresh session should not re-derive: `max_u64_r16_r17.lua` pins
+  the `partition.lua` bytes (`partition_sha256`), so any partition edit must
+  re-pin it and rerun `run_t2_extreme.sh` — the pool itself is unaffected.
+
 ## Isolated headless capture
 
 The designated-host raw T0 capture is:
