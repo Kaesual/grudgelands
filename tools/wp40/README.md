@@ -810,7 +810,7 @@ never pass through a Lua number.
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,611 checks, 57 of
+does the same against the decision functions directly (4,614 checks, 57 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates
@@ -860,10 +860,25 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    find a breach late; the abort then keeps every finished shard through gate
    4's reaper and the next `--full-w` resumes them, which is section 6.5's
    "report and re-scope" rather than "abandon". **Launch the full-`W` run on an
-   otherwise quiet host.** Measured at M4: the same probe read 34–39 s per seed and
-   projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h while a
+   otherwise quiet host.** Measured at M4: the same probe read 34–39 s per seed
+   and projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h while a
    second eight-worker measurement was running — the gate aborted, correctly,
    because that is what the host was delivering.
+
+   Two boundaries of that rule, measured and pinned in the replay tests rather
+   than left to be rediscovered. First, two completions is a thin basis for an
+   eight-hour cap: 28,800 s over 516 seeds is 55.81 s per seed, so one shard
+   averaging above that across its first two seeds aborts a fleet whose other
+   seven are on a 5.2 h pace — a 53 s cold first seed followed by a 60 s second
+   is enough, and both figures are inside what this host has produced. That is
+   the cap's arithmetic meeting the two-completion rule, not slack the estimator
+   picked; only a higher completion count would widen it. Second, a deferral
+   has no ceiling of its own: eight shards each holding a single completion are
+   deferred no matter how far over the cap that one observation lands, because
+   what bounds the deferral is the next completion. In the ordinary case that
+   costs one seed. A fleet that stops completing seeds entirely is not this
+   gate's to catch and never was — gate 2's deadline covers a worker that
+   produces no record at all, and nothing polls for liveness after that.
 
    The two-completion rule is there because the first seed of a shard is
    systematically the most expensive — cold JIT, and eight R7 compiles landing

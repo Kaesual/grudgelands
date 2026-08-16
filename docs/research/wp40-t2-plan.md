@@ -641,6 +641,17 @@ once the runner is built. The pattern throughout is the proven
    tuning knob), fan-out stays at full width (section 5), and no worker is
    pinned or staggered — a launcher that spreads its own start to flatter its
    own estimator measures a run nobody will ever have.
+
+   Two is a floor and a thin one, recorded here as such: 28,800 s over 516
+   seeds is 55.81 s per seed, so a shard averaging above that across its first
+   two seeds aborts a fleet whose other seven are on a 5.2 h pace — a 53 s cold
+   first seed and a 60 s second one suffice, and both are inside this host's
+   measured range. Raising the count is the only thing that widens that margin,
+   at the price of a later abort on a genuinely slow fleet, and the replay tests
+   pin where the trigger sits today so the trade is re-decidable on numbers. The
+   deferral itself is deliberately unbounded: eight shards each holding one
+   completion are deferred however far over the cap that observation lands,
+   because the thing that ends a deferral is the next completion, not a clock.
 4. **Resume.** Verified per-shard resume; anything unparseable at a census
    shard path aborts the launcher loudly instead of being skipped.
 5. **The PUC merge carries the `pairs()`-order divergence test.** The merge

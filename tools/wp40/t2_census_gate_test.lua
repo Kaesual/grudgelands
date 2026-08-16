@@ -166,6 +166,14 @@ check(authority.check_cost_gate(cold) == "deferred",
 	"an over-cap single sample was not deferred")
 check(authority.check_cost_gate(cold, 600) == "deferred",
 	"an over-cap single sample was not deferred against a lowered cap")
+-- Deferral has no ceiling of its own, by decision: a fleet whose every shard
+-- has completed exactly one seed has told the gate nothing about its rate, and
+-- how far over the cap that one observation lands does not change that.  What
+-- bounds the deferral is the next completion, not a number here.
+check(authority.check_cost_gate(authority.project_wall_seconds({
+		{size = 516, completed = 1, elapsed = 800},
+		{size = 515, completed = 1, elapsed = 800}})) == "deferred",
+	"a fleet 14x over the cap on single samples was not deferred")
 -- The other direction of the same rule: deferral belongs to the verdict, not
 -- to the fleet.  One shard stalled on its first seed must not buy seven others
 -- an exemption -- that would be a gate that cannot fire, which is the failure
@@ -253,6 +261,24 @@ check(math.floor(worst) == 27295, "the tightest real-pattern projection changed:
 -- The same pattern at the slow edge of the M4 band still clears it.
 check(select(2, replay_cost(fleet_of(first_minute, 39, 12), cap)) == nil,
 	"the start-minute pattern aborts at a 39 s steady state")
+
+-- Where two completions put the trigger, pinned because it is tighter than the
+-- steady-state anchors suggest: 28,800 s over 516 seeds is 55.81 s per seed, so
+-- one shard whose first two seeds average above that aborts a fleet the other
+-- seven are running at a 5.2 h pace.  A 53 s cold first seed was measured on an
+-- idle host, and a 60 s second seed is inside M4's 36-69 s steady-state band --
+-- under load.  That is the cap's own arithmetic, not a slack the estimator
+-- chose, and raising the two is the only thing that would widen it.
+local tight = {}
+for index = 1, #census_sizes do
+	tight[index] = {size = census_sizes[index], seconds = {36, 36, 36, 36}}
+end
+tight[3] = {size = census_sizes[3], seconds = {53, 60, 36, 36}}
+local tight_verdicts, tight_abort = replay_cost(tight, cap)
+check(tight_abort == 113, "the two-completion trigger moved: aborted at " ..
+	tostring(tight_abort) .. "s, expected the slow shard's second completion")
+check(math.floor(tight_verdicts[#tight_verdicts].projection.wall_seconds) == 29154,
+	"the tight-trigger projection changed")
 
 -- The direction the gate exists for: a fleet that really is delivering 71 s per
 -- seed must still abort in the run's first minutes, not run for eight hours.
