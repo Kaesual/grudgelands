@@ -930,7 +930,9 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    what bounds the deferral is the next completion. In the ordinary case that
    costs one seed. A fleet that stops completing seeds entirely is not this
    gate's to catch and never was — gate 2's deadline covers a worker that
-   produces no record at all, and nothing polls for liveness after that.
+   produces no record at all, and gate 6's death watch reaps a worker that
+   exits early. Between the two, a worker still alive but stalled mid-range
+   remains unpolled and is the operator's to see.
 
    The two-completion rule is there because the first seed of a shard is
    systematically the most expensive — cold JIT, and eight R7 compiles landing
@@ -972,6 +974,17 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    section-6.4 sink is the one gate that does *not* abort: the merge writes
    every artifact, reports the count and exits 3, because a configuration no
    branch covers is worth stopping for but its evidence is worth keeping.
+6. **Worker-death watch** (section 6.6.9; added 2026-08-17, after run 3
+   carried three dead shards past an hourly log watch). The monitor loop
+   reaps every exited worker at its two-second poll, and an exit short of a
+   complete range — crash, kill, or a zero-status bug alike — kills the
+   remaining workers, tails every shard log into the main log and exits
+   nonzero, instead of the death surfacing when the last survivor finishes
+   hours later. Unlike a cost-gate abort, nothing is reaped: the workers are
+   deterministic, so a blind resume dies at the same seed, and the partial
+   shards stay on disk as triage evidence until the operator removes them —
+   the next start follows a fix that moves the module digest and would
+   refuse them anyway.
 
 A refusing gate exits 3 and a broken one exits 1, and the launcher says which
 happened. Without that split it would report a cap overrun when the

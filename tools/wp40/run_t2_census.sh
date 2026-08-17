@@ -13,12 +13,14 @@ set -euo pipefail
 # The free paths run anywhere; --full-w is the GO-gated one and starts nothing
 # until the token matches the `W` this tree derives (section 6.6.7).  It fans
 # out at full width immediately -- there is no serial pre-validation pass
-# (section 5) -- and then holds four gates over the running fleet: the first
+# (section 5) -- and then holds five gates over the running fleet: the first
 # completed record of every worker is validated against the artifact contract,
 # a rolling per-shard projection is re-checked against the nine-hour wall cap
 # at every completion, a shard already on disk is verified before it is resumed,
-# and anything unparseable at a census path aborts the launcher loudly rather
-# than counting as an empty shard.
+# anything unparseable at a census path aborts the launcher loudly rather
+# than counting as an empty shard, and a worker that exits before completing
+# its range aborts the whole fleet at the next poll (section 6.6.9 -- run 3
+# carried three dead shards past an hourly log watch).
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
@@ -304,11 +306,13 @@ run_full_w() {
 	}
 	mkdir -p "$repo/tools/wp40/results/t2_census"
 
-	local -a pids=() first_ready=()
+	local -a pids=() first_ready=() reaped=() statuses=()
 	local resumed_seeds=0 resumed_shards=0 started=0 index
 	for index in "${!firsts[@]}"; do
 		logs+=("$scratch/shard-$index.log")
 		first_ready+=(0)
+		reaped+=(0)
+		statuses+=(0)
 		if [[ -e "${outputs[$index]}" ]]; then
 			# Section 6.6.4: a shard on disk is verified, not assumed -- including
 			# the empty claim file a crashed worker leaves, which the verifier
@@ -350,7 +354,7 @@ run_full_w() {
 	fi
 
 	local start_seconds=$SECONDS last_global=-1 cost_samples=""
-	local failure=""
+	local failure="" worker_death=0
 	# Section 6.6.3: each shard's own clock at its own latest completion.  The
 	# launcher's wall clock was read here until 2026-08-16 and gave every shard
 	# with one completion the same rate -- the age of the fleet -- which turned
@@ -364,7 +368,8 @@ run_full_w() {
 			local pid="${pids[$index]}"
 			if (( pid == 0 )); then continue; fi
 			running=$((running + 1))
-			if kill -0 "$pid" 2>/dev/null; then active=$((active + 1)); fi
+			local alive=0
+			if kill -0 "$pid" 2>/dev/null; then active=$((active + 1)); alive=1; fi
 			local completed=0 shard_elapsed=0 progress
 			progress="$(grep '^WP40 T2 census shard progress ' "${logs[$index]}" \
 				2>/dev/null | tail -n 1 || true)"
@@ -397,6 +402,25 @@ run_full_w() {
 				fi
 			fi
 			if (( first_ready[index] == 1 )); then ready=$((ready + 1)); fi
+			# Section 6.6.9: an exited worker is reaped at this poll, and any exit
+			# short of a complete range -- crash, kill or a zero-status bug alike
+			# -- aborts the fleet now instead of surfacing when the last survivor
+			# finishes hours later.  Run 3 carried three dead shards past an
+			# hourly log watch because worker errors reach the main log only at
+			# run end.  The log is complete here: the process was already gone
+			# before this iteration read it, and exit flushes the worker's
+			# buffers.
+			if (( alive == 0 && reaped[index] == 0 )); then
+				local worker_status=0
+				wait "$pid" 2>/dev/null || worker_status=$?
+				reaped[index]=1
+				statuses[index]=$worker_status
+				if (( worker_status != 0 || completed != sizes[index] )); then
+					worker_death=1
+					failure="shard $((index + 1)) worker exited status=$worker_status at completed=$completed/${sizes[$index]} seeds"
+					break
+				fi
+			fi
 		done
 		if [[ -n "$failure" ]]; then break; fi
 
@@ -467,7 +491,17 @@ run_full_w() {
 			echo "--- WP40 T2 census shard $((index + 1)) log (tail) ---" >&2
 			tail -n 20 "${logs[$index]}" >&2 2>/dev/null || true
 		done
-		reap_started_shards
+		if (( worker_death == 1 )); then
+			# Section 6.6.9: deterministic workers die at the same seed on a
+			# blind resume, so a worker death is triaged, never relaunched.  The
+			# partial shards stay on disk as evidence -- the reaper serves the
+			# resumable aborts, and this is not one.
+			echo "WP40 T2 census partial shards left for triage under" \
+				"tools/wp40/results/t2_census/; remove them before the next" \
+				"full-W start" >&2
+		else
+			reap_started_shards
+		fi
 		echo "WP40 T2 census aborted: $failure" >&2
 		exit 1
 	fi
@@ -476,11 +510,16 @@ run_full_w() {
 	for index in "${!firsts[@]}"; do
 		local pid="${pids[$index]}"
 		if (( pid == 0 )); then continue; fi
-		if wait "$pid"; then
+		local status=0
+		if (( reaped[index] == 1 )); then
+			status="${statuses[$index]}"
+		else
+			wait "$pid" || status=$?
+		fi
+		if (( status == 0 )); then
 			echo "WP40 T2 census shard done range=$(printf '%04d..%04d' \
 				"${firsts[$index]}" "${lasts[$index]}")"
 		else
-			local status=$?
 			cat "${logs[$index]}" >&2
 			echo "WP40 T2 census shard failed range=$(printf '%04d..%04d' \
 				"${firsts[$index]}" "${lasts[$index]}") status=$status" >&2

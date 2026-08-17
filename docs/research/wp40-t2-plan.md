@@ -713,6 +713,21 @@ once the runner is built. The pattern throughout is the proven
    edges; a discharged edge realizing any interval count other than one
    aborts hard. The R7 compile dominates the per-seed cost, so this
    verification costs under a second per seed.
+9. **A dead worker aborts the fleet** (decided 2026-08-17, after the third
+   full-`W` start). Run 3 lost three of eight shards to the same
+   deterministic stage failure and the fleet ran on for over an hour,
+   because worker errors reach the main log only at run end and nothing
+   polled for liveness — the watch counted progress lines that kept
+   arriving from the five survivors. The monitor loop now reaps every
+   exited worker at its two-second poll, and an exit short of a complete
+   range — whatever the exit status — kills the remaining workers, tails
+   every shard log into the main log and exits nonzero. The partial shards
+   are deliberately left on disk rather than reaped: the workers are
+   deterministic, so a blind resume dies at the same seed, and the next
+   start is expected to follow a fix that moves the module digest and
+   invalidates them anyway — they are triage evidence, removed by the
+   operator once triage is done. This narrows section 6.6.4's reaper to
+   the aborts it was built for, the resumable ones.
 
 ### 6.7 Implementation work package (cut 2026-08-16)
 
@@ -1015,4 +1030,12 @@ window where two completions decide the verdict is exactly where an 8 s
 sample distorts most. Whether the estimator should discount stage-reject
 completions (it would need the progress line to carry a full-completion
 count) is the coordinator's call, beside the worker-death watch it
-already owns.
+already owns. Decided 2026-08-17, with that watch built (section 6.6.9):
+it does not discount them. The dilution errs only toward optimism — a
+cheap completion can lower a projection, never abort an honest fleet — so
+the one failure it can cause is a missed early abort, which section 6.5
+already tolerates by design ("report and re-scope", the operator's watch);
+at ~1/285 occupancy the expected drift stays well under the cap's 12 %
+margin, and a discount would add a second completion-counting rule to the
+progress line against a risk the cap's own margins absorb. Re-decidable
+on run 4's measured projections if the drift reads otherwise.
