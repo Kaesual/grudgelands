@@ -677,12 +677,15 @@ return function(dependencies)
 		-- The stage-reject record (v4).  A seed whose build_scan_stage dies in
 		-- the aperture block on a classified 3-F9 malformation emits exactly
 		-- one of these and nothing else; validate_record below makes the two
-		-- record shapes mutually exclusive.  `detail` is the verbatim fail
-		-- message -- section 6.3's configuration bytes for this family: class,
-		-- site, seed and the message suffice to write and test the correction,
-		-- because the seed reproduces solo and deterministically at ordinary
-		-- per-seed cost.
-		{tag = "stage_reject", fields = 5, class_field = 4,
+		-- record shapes mutually exclusive.  `stage_shape` marks the row as
+		-- v4's second record shape -- never part of the full per-seed roster
+		-- -- and the synthetic record builders in the gate test and the gates
+		-- script filter on it rather than on the tag name.  `detail` is the
+		-- verbatim fail message -- section 6.3's configuration bytes for this
+		-- family: class, site, seed and the message suffice to write and test
+		-- the correction, because the seed reproduces solo and
+		-- deterministically at ordinary per-seed cost.
+		{tag = "stage_reject", fields = 5, class_field = 4, stage_shape = true,
 			class_set = "stage_reject_class", site = {"site"},
 			columns = {"tag", "seed", "site", "class", "detail"}},
 	}
@@ -1320,8 +1323,8 @@ return function(dependencies)
 				fail("seed record " .. seed .. " holds " .. counts.stage_reject ..
 					" stage_reject rows; a stage-rejected seed emits exactly one")
 			end
-			for tag, count in pairs(counts) do
-				if tag ~= "stage_reject" and count > 0 then
+			for tag in pairs(counts) do
+				if tag ~= "stage_reject" then
 					fail("seed record " .. seed .. " mixes a stage_reject row with " ..
 						tag .. " rows")
 				end
@@ -1401,7 +1404,7 @@ return function(dependencies)
 	-- the refusal exists so the grammar is total rather than hopeful.)
 	local function read_body(lines, offset, expected_seeds, on_row, label)
 		local seeds, totals = {}, {}
-		local prefilter
+		local prefilter, full_seen
 		while offset < #lines - 1 do
 			local line = lines[offset + 1]
 			if type(line) ~= "string" then fail(label .. " is truncated") end
@@ -1412,8 +1415,11 @@ return function(dependencies)
 				local expected_seed = expected_seeds and expected_seeds[#seeds + 1]
 				local next_offset, seed, counts =
 					validate_record(lines, offset, expected_seed, on_row)
-				if not counts.stage_reject and not prefilter then
-					fail(label .. " holds a full seed record before its prefilter block")
+				if not counts.stage_reject then
+					if not prefilter then
+						fail(label .. " holds a full seed record before its prefilter block")
+					end
+					full_seen = true
 				end
 				seeds[#seeds + 1] = seed
 				for tag, count in pairs(counts) do totals[tag] = (totals[tag] or 0) + count end
@@ -1423,9 +1429,16 @@ return function(dependencies)
 		if offset ~= #lines - 1 then
 			fail(label .. " holds trailing text after its last record")
 		end
-		if not prefilter then
+		-- The full-record check comes first and is the one that carries the
+		-- refusal's meaning: a prefilter block that no full record of this
+		-- input attests -- for instance one copied from a sibling shard into
+		-- an all-reject body -- must not count as attestation.
+		if not full_seen then
 			fail(label .. " holds no full seed record, so nothing attests its " ..
 				"seed-independent prefilter block")
+		end
+		if not prefilter then
+			fail(label .. " holds no prefilter block")
 		end
 		return seeds, totals, prefilter
 	end

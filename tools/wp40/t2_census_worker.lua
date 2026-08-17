@@ -266,22 +266,6 @@ for seed_index = 1, #seeds do
 		emit("stage_reject", seed, scan.stage_reject.site,
 			scan.stage_reject.class, scan.stage_reject.detail)
 		emit("seed_end", seed)
-		flush_record()
-		hasher.forget()
-		io.stderr:write("census seed " .. seed .. " stage_reject " ..
-			scan.stage_reject.class .. " " .. seed_index .. "/" .. #seeds ..
-			" wall=" .. os.difftime(os.time(), started) .. "s\n")
-		io.stderr:flush()
-		if shard_mode then
-			local elapsed = math.max(0, os.difftime(os.time(), run_started))
-			local remaining = #seeds - seed_index
-			local eta = math.floor(elapsed * remaining / seed_index)
-			print(("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
-				"completed=%d/%d wall_seconds=%d eta_seconds=%d"):format(
-				range_first, range_last, range_first + seed_index - 1, seed_index,
-				#seeds, elapsed, eta))
-			io.stdout:flush()
-		end
 	else
 		local serialized_rows = {}
 		for index = 1, #scan.prefilter do
@@ -462,35 +446,45 @@ for seed_index = 1, #seeds do
 				tostring(row.multi_reachable), tostring(row.unknown_reachable))
 		end
 		emit("seed_end", seed)
-		flush_record()
-		-- The SHA memo has zero cross-seed reuse (every noise input embeds the
-		-- seed), so dropping it bounds worker memory over long seed lists without
-		-- changing a single emitted byte.
-		hasher.forget()
-		io.stderr:write("census seed " .. seed .. " done " .. seed_index .. "/" ..
-			#seeds .. " wall=" .. os.difftime(os.time(), started) .. "s cpu=" ..
-			string.format("%.1f", os.clock()) .. "s\n")
-		io.stderr:flush()
-		if shard_mode then
-			local elapsed = math.max(0, os.difftime(os.time(), run_started))
-			local remaining = #seeds - seed_index
-			local eta = math.floor(elapsed * remaining / seed_index)
-			print(("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
-				"completed=%d/%d wall_seconds=%d eta_seconds=%d"):format(
-				range_first, range_last, range_first + seed_index - 1, seed_index,
-				#seeds, elapsed, eta))
-			io.stdout:flush()
-		end
+	end
+	-- One epilogue for both record shapes: the flush, the SHA-memo drop (zero
+	-- cross-seed reuse -- every noise input embeds the seed -- so dropping it
+	-- bounds worker memory without changing an emitted byte) and the progress
+	-- line the launcher parses.  Duplicating this per branch is how the two
+	-- shapes would come to report differently.
+	flush_record()
+	hasher.forget()
+	io.stderr:write("census seed " .. seed .. " " ..
+		(scan.stage_reject and "stage_reject " .. scan.stage_reject.class
+			or "done") ..
+		" " .. seed_index .. "/" .. #seeds ..
+		" wall=" .. os.difftime(os.time(), started) .. "s cpu=" ..
+		string.format("%.1f", os.clock()) .. "s\n")
+	io.stderr:flush()
+	if shard_mode then
+		local elapsed = math.max(0, os.difftime(os.time(), run_started))
+		local remaining = #seeds - seed_index
+		local eta = math.floor(elapsed * remaining / seed_index)
+		print(("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
+			"completed=%d/%d wall_seconds=%d eta_seconds=%d"):format(
+			range_first, range_last, range_first + seed_index - 1, seed_index,
+			#seeds, elapsed, eta))
+		io.stdout:flush()
 	end
 end
 
--- The record grammar refuses an input with no full record: nothing in it
--- could attest the seed-independent prefilter block that artifact 4 commits.
--- Failing here leaves the output without its digest line, which resume
--- verification refuses as unparseable -- the loud surface, not a silent one.
-assert(prefilter_serialized,
-	"WP40 census: every seed of this run stage-rejected; no full record " ..
-	"attests the seed-independent prefilter -- re-scope by hand")
+-- An all-reject run -- the solo reproduction of a stage-reject witness is
+-- the real case -- still completes its file and digest: the record is the
+-- evidence the operator came for.  The authority's read_body refuses such
+-- an input at the merge and the resume verifier (no full record attests the
+-- prefilter block artifact 4 commits), so it can only be read, never
+-- resumed or merged.
+if not prefilter_serialized then
+	io.stderr:write("WP40 census: every seed of this run stage-rejected; " ..
+		"the output holds no prefilter block and the merge and resume " ..
+		"verifier will refuse it\n")
+	io.stderr:flush()
+end
 assert(#pending == 0, "census worker left rows unflushed")
 assert(output_file:close())
 assert(module_digest() == pinned_module_digest,

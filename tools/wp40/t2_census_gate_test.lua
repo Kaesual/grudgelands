@@ -358,12 +358,13 @@ check(slow_verdicts[1].verdict == "deferred",
 -- The record shape is derived from the authority's declared roster rather
 -- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
 -- rows, and every class/kind cell takes the first declared vocabulary value.
--- The stage_reject kind is skipped: it is v4's *other* record shape and may
--- never appear inside a full-roster record, which is proven below.
+-- Stage-shaped kinds are skipped by their declared attribute: they are v4's
+-- *other* record shape and may never appear inside a full-roster record,
+-- which is proven below.
 local function seed_record(seed)
 	local rows = {"seed_begin\t" .. seed}
 	for _, layout in ipairs(authority.record_rows) do
-		if layout.tag ~= "stage_reject" then
+		if not layout.stage_shape then
 			for index = 1, layout.count or 2 do
 				local cells = {layout.tag, seed}
 				for field = 3, layout.fields do
@@ -387,7 +388,9 @@ local function seed_record(seed)
 end
 
 -- v4's second record shape: exactly one stage_reject row between its frame
--- lines, nothing else -- built from the declared layout the same way.
+-- lines, nothing else.  Deliberately hardcoded rather than derived from the
+-- layout: a fixture that auto-adapted to the authority could not catch the
+-- authority drifting.
 local function stage_reject_record(seed, class)
 	return "seed_begin\t" .. seed .. "\n" .. table.concat({"stage_reject",
 		seed, "bay_mouth_aperture:elandor_east",
@@ -578,6 +581,17 @@ refuses("a full record ahead of the prefilter block", "before its prefilter bloc
 refuses("an input holding no full record at all", "holds no full seed record",
 	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
 		stage_reject_record(w.seeds[1]) .. stage_reject_record(w.seeds[2])),
+	expected)
+-- The stricter variant: a prefilter block copied into an all-reject body --
+-- the digest is self-computable framing, not authentication -- must not
+-- count as attestation, because no full record of this input stands behind
+-- it.  The refusal keys on the missing full record, not on the block.
+refuses("an all-reject input carrying a copied prefilter block",
+	"holds no full seed record",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		stage_reject_record(w.seeds[1]) ..
+		table.concat(prefilter, "\n") .. "\n" ..
+		stage_reject_record(w.seeds[2])),
 	expected)
 refuses("a second prefilter block", "second prefilter block",
 	authority.verify_shard, sealed(body .. table.concat(prefilter, "\n") .. "\n"),

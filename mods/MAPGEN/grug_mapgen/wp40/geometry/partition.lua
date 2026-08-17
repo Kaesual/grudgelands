@@ -1,8 +1,14 @@
 -- Private WP40 T2 partition compiler.  It consumes only checksum-validated
 -- source plus T1/exact/raster seams and returns normalized data-only records.
 
+-- One prefix constant: the census stage-reject classifier anchors its site
+-- extraction on these exact bytes, so rewording them in one place and not
+-- the other would silently turn every classified stage reject back into a
+-- fleet-killing abort.
+local fail_prefix = "WP40 geometry partition: "
+
 local function fail(message)
-	error("WP40 geometry partition: " .. message, 0)
+	error(fail_prefix .. message, 0)
 end
 
 local function exact_dependencies(value)
@@ -4950,8 +4956,10 @@ local function new_partition(dependencies)
 		local built, stage = pcall(build_scan_stage, seed)
 		if not built then
 			local message = tostring(stage)
+			-- fail_prefix carries no Lua pattern magic, checked where it is
+			-- declared by its use in this anchor.
 			local site = message:match(
-				"^WP40 geometry partition: (bay_mouth_aperture:[%w_]+) ")
+				"^" .. fail_prefix .. "(bay_mouth_aperture:[%w_]+) ")
 			local class = site and
 				classify_message(stage_reject_by_fragment, message)
 			if not class then error(stage, 0) end

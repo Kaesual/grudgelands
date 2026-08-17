@@ -799,7 +799,7 @@ The record digest moved legitimately at M3 (the record grew the Scan-2 rows),
 again at M4 (the Scan-3a rows), again at M5 (the fourth seed) and again with
 the stage-reject package (schema v4 plus the fifth seed), and is
 re-pinned at `a9c3ecfc...`; it remains the determinism gate for everything
-after. `merge_artifacts_digest` (`4a596811...`) is its counterpart over the
+after. `merge_artifacts_digest` (`2a22bfd9...`) is its counterpart over the
 five artifacts. The five-seed KAT merge itself now carries a finding by
 design — `rejected=1 stage_reject_seeds=1`, W-112's occupied
 `aperture_second_run_reject` row — which is the pinned proof that a
@@ -845,7 +845,7 @@ never pass through a Lua number.
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,652 checks, 64 of
+does the same against the decision functions directly (4,653 checks, 65 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates

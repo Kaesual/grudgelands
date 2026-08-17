@@ -175,6 +175,7 @@ local function new_census(options)
 	local seed_list, seed_seen = {}, {}
 	local class_set_of_tag = {}
 	local records = 0
+	local stage_rejected_seeds = 0
 
 	for index = 1, #authority.record_rows do
 		local layout = authority.record_rows[index]
@@ -312,6 +313,9 @@ local function new_census(options)
 						" mixes a stage_reject row with " .. tag .. " rows", 0)
 				end
 			end
+		end
+		if rows.stage_reject then
+			stage_rejected_seeds = stage_rejected_seeds + 1
 		end
 
 		for tag_index = 1, #authority.record_rows do
@@ -617,7 +621,7 @@ local function new_census(options)
 		return {occupied = occupied, derived = derived_occupied,
 			branch_realized = branch_realized, sink = sink, extremal = extremal,
 			flagged = flagged, histograms = histograms, seeds = seed_list,
-			records = records}
+			records = records, stage_rejected_seeds = stage_rejected_seeds}
 	end
 
 	return census
@@ -1277,7 +1281,10 @@ do
 			end
 		end
 	end
-	prefilter_verified_seeds = #state.seeds
+	-- Only full records feed the interval-count histogram this re-check
+	-- walks: a stage-rejected seed emits no edge rows and verifies nothing,
+	-- so counting it would overstate artifact 4's checked claim.
+	prefilter_verified_seeds = #state.seeds - state.stage_rejected_seeds
 end
 
 -- ------------------------------------------------------------------

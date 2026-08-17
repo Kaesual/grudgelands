@@ -214,14 +214,14 @@ end
 -- The record shape is derived from the authority's declared roster rather
 -- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
 -- rows, and every class/kind cell takes the first declared vocabulary value.
--- The stage_reject kind is skipped: it is v4's *other* record shape and may
--- never appear inside a full-roster record.
+-- Stage-shaped kinds are skipped by their declared attribute: they are v4's
+-- *other* record shape and may never appear inside a full-roster record.
 for index = first, last do
 	local seed = assert(w.seeds[index + 1])
 	parts[#parts + 1] = "seed_begin\t" .. seed
 	for row = 1, #authority.record_rows do
 		local layout = authority.record_rows[row]
-		if layout.tag ~= "stage_reject" then
+		if not layout.stage_shape then
 			for repeated = 1, layout.count or 2 do
 				local cells = {layout.tag, seed}
 				for field = 3, layout.fields do
