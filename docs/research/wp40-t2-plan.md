@@ -931,3 +931,72 @@ classification layer against the analysis's §3 tables is part of the package
 (confirmed 2026-08-16); it reviews, it does not rewrite. M1 is the heavy
 lift and the cost anchor for everything after it: measure M1 before
 scheduling M3–M5.
+
+**The stage-reject package (2026-08-17), cut after full-`W` start 3.** That
+start stopped at 885 of 4,123 seeds: three of eight shards died
+deterministically on `bay_mouth_aperture:elandor_east has a wrapping or
+second aperture run` (`build_scan_stage`), at roughly one seed in 285.
+Verified witnesses, index-checked against the run's own `W`: W-112 =
+343674299183575008 (solo-reproduced, deterministic), W-605 =
+2466379686918096853, W-1642 = 7403557699456021182. The framing decision:
+this is **not** a bug in aperture construction but an occupied 3-F9 REJECT
+class — the analysis has always declared aperture interval malformation
+("wrap, overlap, second run, dry station, boundary") REJECTED — that the
+census could not record, because the deciding predicates run during stage
+construction, which M1's design could only abort. The M5 "dead shard rather
+than a row" stance was decided for a *bypassed verifier*; here it cost 21 %
+of a full-`W` run per occurrence while producing the finding three times and
+recording it zero times. The aperture construction itself is untouched —
+same predicates, same order, no tolerance for second runs, no mouth-run
+selection; whether the policy changes is decided in the collected
+correction, after the census is complete (section 2).
+
+The census therefore records the failure instead of dying of it, under
+schema v4 (`grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`):
+
+- **Six classified stage-reject classes**, all REJECTED, drawn per fail
+  site in the aperture block: canonical wrap, dry station (realizable only
+  by the mouth itself), overlap, second run (the witnessed class), authored
+  wrap and authored second run — the two index orders fail independently,
+  and the census follows the procedure's granularity. Three aperture-block
+  sites stay loud aborts and are declared as such in the coverage report:
+  the two mouth-absent lookups (seed-independent — Bay centrelines are
+  no-jitter displacement sources — so a miss is a catalog defect; the
+  authored lookup is dominated by the canonical one) and the maximality
+  check (3-F9's "boundary stations passing it", unreachable by construction
+  because the expansion loops terminate exactly where the Bay predicate
+  fails). Everything outside the aperture block — S1 validity, notch
+  ownership, roster shapes — keeps aborting hard; the classifier requires
+  an aperture row id at the message head and re-raises anything unmatched,
+  so an unknown failure can never quietly become a row (the M3 lesson).
+- **A second record shape.** A stage-rejected seed emits exactly one
+  `stage_reject` row — site, class, and the verbatim fail message as its
+  section-6.3 configuration bytes — and nothing else; the record grammar
+  makes the two shapes mutually exclusive, and the merge re-checks that
+  independently of the verifier. Since such a seed builds no stage, it has
+  no prefilter: stage_reject records may precede the prefilter block, the
+  block sits before the first full record, and an input with no full record
+  at all is refused rather than guessed at. One row per seed: the block
+  aborts at its first failing aperture in source order, so per-(site,
+  class) counts are lower bounds conditioned on that order.
+- **Contributions, declared not implied.** The occupied-class table gains
+  the REJECTED row and witness (the finding); the vacuous-branch report
+  gains the six-class vocabulary plus the two abort-by-design declarations;
+  the Scan-4 seed set gains stage-rejected seeds through a new
+  `stage_reject` flag rule (decided 2026-08-17 — post-correction they are
+  exactly the stressed geometry Scan-4 exists to look at); extremal roster
+  and histograms gain nothing, which the merge asserts rather than assumes,
+  and the manifest findings line counts `stage_reject_seeds` explicitly.
+- **KAT.** W-112 is the fifth KAT seed, inserted in sorted place; the
+  fixture pins its site and class and the worker asserts the seed still
+  stage-rejects — a witness that quietly built a full stage would mean the
+  finding vanished, and the digest alone would report that as an opaque
+  drift. Record digest and `merge_artifacts_digest` moved legitimately (v4
+  plus the fifth seed) and are re-pinned; `--merge-kat` remains the merge
+  gate. The deferred F8 distance-tie indicator stays out — one finding, one
+  package (decided 2026-08-17).
+
+Not in this package, by explicit scope: the launcher's reaction to a worker
+death mid-fleet, deletion of the eight v3 shards under
+`results/t2_census/`, and full-`W` start 4 — the coordinator owns those
+after acceptance.

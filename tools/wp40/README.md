@@ -431,6 +431,7 @@ ratio have been wrong.
 | the three slow first seeds of the aborted full-`W` start, re-measured solo | 29 / 31 / 32 s per seed, against 51 / 53 / 70 s in the contended start minute — the control seed took the same 29–32 s (full-`W` abort, 2026-08-16) |
 | eight census workers, first completions, idle host, re-run | seven seeds 35–37 s, one 53 s, on a shard that was none of the three above (full-`W` abort, 2026-08-16) |
 | seed 0 across the two full-`W` starts, same host, same bytes | 36 s then 51 s; the second start's shard 1 read 51/52/65 s on seeds 0–2 against seven shards at 34–39 s, two of which then took 51 s on their fourth seed. `cpu ≈ wall` throughout — SMT pairing churn, and its victims move between runs (second full-`W` abort, 2026-08-16) |
+| a stage-rejected seed, LuaJIT | 8 s (W-112, first measurement 2026-08-17): the aperture block kills it before Scan-1/3a/2 ever run, so a stage-rejected seed costs a quarter of a full one |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
@@ -528,15 +529,18 @@ section owns only the runner mechanics. M1 shipped the Scan-1 worker pass and
 the frozen row schema, M2 the eight-shard full-`W` launcher with its GO gate,
 verified resume, first-record validation and cost gate, M3 the Scan-2
 counting and R19 tuple tiers on the same per-seed pass, M4 the Scan-3a
-aperture, Wing, bank-width and head-Bank projections (record schema
-`grug_wp40_census_scan_v3`, shard pattern `census-scan-v3-*`), M5 the
+aperture, Wing, bank-width and head-Bank projections, M5 the
 deterministic merge into the five section-6.2 artifacts plus the section-6.3
 manifest, carrying the targeted `pairs()`-order divergence test and gated on a
 byte-identical artifact digest under LuaJIT and the vendored PUC 5.1. The
+stage-reject package (2026-08-17, plan section 6.7) moved the classified
+aperture-formation failures from hard aborts to recorded `stage_reject` rows
+after full-`W` start 3 lost three shards to one occupied 3-F9 class (record
+schema `grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`). The
 full-`W` run itself still waits on the explicit GO.
 
 ```sh
-tools/wp40/run_t2_census.sh --kat                  # 4 seeds: 0, Slot 30, Slot 29, max-u64
+tools/wp40/run_t2_census.sh --kat                  # 5 seeds: 0, W-112, Slot 30, Slot 29, max-u64
 WP40_CENSUS_OUTPUT=/path/out.tsv \
   tools/wp40/run_t2_census.sh --seeds 0 7 4096     # small explicit lists run freely
 WP40_CENSUS_OUTPUT=/path/out.tsv \
@@ -594,11 +598,26 @@ each record, and the M1+M3 rows an exact prefix too — and a trailing
 Reject classes are recorded rows, not errors; the census continues
 scanning. Per-tuple precondition failures (the decided U1 empty-clip and
 U2 previous-binding readings among them) are DECIDED-with-continuation
-tuple rows, never seed aborts. Two exceptions abort hard by design: a
-discharged edge realizing any interval count other than one (plan section
-6.6.8), and any stage-level global precondition (S1 validity, aperture
-formation, notch ownership) — no census class covers those, so their
-occupancy must surface loudly instead of silently becoming a row.
+tuple rows, never seed aborts.
+
+Since v4 (the stage-reject package) a record has a second shape: a seed
+whose `build_scan_stage` dies in the aperture block on one of the six
+classified 3-F9 malformations emits exactly one `stage_reject` row — site,
+class and the verbatim fail message — and nothing else; the two shapes are
+mutually exclusive by grammar. Such a seed builds no stage and therefore
+attests no prefilter, so stage_reject records may precede the prefilter
+block, the block sits immediately before the first full record, and an
+input with no full record at all is refused. The message-to-class map lives
+beside `census_scan` in `partition.lua`; the class list is declared in
+`t2_census_authority.lua` and the worker refuses to run when the two
+disagree. Everything else still aborts hard by design: a discharged edge
+realizing any interval count other than one (plan section 6.6.8), and every
+stage-level global precondition outside the six classified sites — S1
+validity, notch ownership, the two seed-independent mouth-absent lookups,
+and the by-construction-unreachable maximality check, the latter two
+declared as abort-by-design lines in the coverage report. The classifier
+requires an aperture row id at the message head and re-raises anything
+unmatched, so an unknown failure can never quietly become a row.
 
 The prefilter discharges the 14 ordinary edges whose R7 envelope cannot
 reach any Bay capsule-plus-jitter box, wing box, notch adjacency or the
@@ -671,7 +690,12 @@ callback), and no per-seed intermediate is retained.
   than left to be inferred. A REJECTED verdict is a finding, and the verdict
   per branch is *declared* in the authority rather than inferred from a name
   suffix — `scan2_tuple_probe_wet` and `x_cross` both read like failures and
-  are both ordinary DECIDED-with-continuation outcomes under U1/U2.
+  are both ordinary DECIDED-with-continuation outcomes under U1/U2. A
+  stage-rejected seed contributes exactly its occupied row and witness here
+  and its `stage_reject` flag to artifact 3 — nothing to extremal, derived
+  or histogram stores, which the merge asserts per record rather than
+  leaving to which folds read which tags — and the summary and manifest
+  count `stage_reject_seeds` explicitly.
 - **census-vacuous-branches-v1.tsv** — every declared branch with
   realized/vacuous and its status: `dominated`, `vacuous_by_construction`,
   `expected_vacuous`, `out_of_scope_scan3b`, `consequent` or `in_scope`, plus
@@ -724,14 +748,19 @@ Wing counts seven pair-exclusion causes on one row, so a site can realize the
 same branch through several rows of one seed and "the first such row" was an
 arrival-order choice. The witness is now the least row of the least seed.
 
-`fixtures/t2_census/scan_kat_v3.lua` pins the M1+M3+M4+M5 KAT: the section
+`fixtures/t2_census/scan_kat_v4.lua` pins the M1+M3+M4+M5 KAT plus the
+stage-reject witness: the section
 3-F6 witness fills (seed 0 `0/0/0/0`, Slot 30 `0/0/0/0`, Slot 29 `0/0/0/0`,
 max-u64 `1/1/1/0`), the
 structural row counts, six transition edges with qualifying count one, 102
 passing junction pairs, attachment distances at most one, the
 zero-displacement Holy band, the measured Scan-2 counting and joint-decision
-values per endpoint and edge, and the determinism digest over all four
-seeds. The load-bearing M3 pin is the Slot-29 R19 witness (analysis section
+values per endpoint and edge, and the determinism digest over all five
+seeds. The fifth seed is W-112 = 343674299183575008, the seed full-`W`
+start 3 died on: it emits a `stage_reject` record instead of a roster, and
+the worker asserts it still stage-rejects at the pinned site and class —
+a witness that quietly built a full stage would mean the 3-F9 occupancy
+this package records has vanished. The load-bearing M3 pin is the Slot-29 R19 witness (analysis section
 3-F2): `land_010:to` holds two direct R16 candidates, the endpoint's own
 tuple dies bank-incomplete — the dead-direct-terminal shape that generated
 R19 — and the retreat tuple completes, exactly one complete joint tuple; at
@@ -767,10 +796,15 @@ which is what actually rules a collapse out — reads 46 there, the tightest of
 the four seeds and still 14 above the structural floor of `80 − 48`.
 
 The record digest moved legitimately at M3 (the record grew the Scan-2 rows),
-again at M4 (the Scan-3a rows) and again at M5 (the fourth seed), and is
-re-pinned at `01b5dd4b...`; it remains the determinism gate for everything
-after. `merge_artifacts_digest` (`efa560d4...`) is its M5 counterpart over the
-five artifacts. The LuaJIT/PUC comparison is the merge gate; M1-M4 run PUC
+again at M4 (the Scan-3a rows), again at M5 (the fourth seed) and again with
+the stage-reject package (schema v4 plus the fifth seed), and is
+re-pinned at `a9c3ecfc...`; it remains the determinism gate for everything
+after. `merge_artifacts_digest` (`4a596811...`) is its counterpart over the
+five artifacts. The five-seed KAT merge itself now carries a finding by
+design — `rejected=1 stage_reject_seeds=1`, W-112's occupied
+`aperture_second_run_reject` row — which is the pinned proof that a
+stage-rejected seed survives worker, validator and merge as a row rather
+than as a dead shard. The LuaJIT/PUC comparison is the merge gate; M1-M4 run PUC
 only as the language contract (`luac51 -p`, `SETGLOBAL`, the five sweeps —
 which are scoped to `mods/*/grug_*` and must be run explicitly for `tools/`).
 
@@ -811,7 +845,7 @@ never pass through a Lua number.
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,623 checks, 57 of
+does the same against the decision functions directly (4,652 checks, 64 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates
@@ -953,7 +987,7 @@ reports must add up to |`W`|.
 
 Census shards are per-seed intermediates, which section 6.3 forbids
 committing, so they are written to the gitignored
-`tools/wp40/results/t2_census/census-scan-v3-%04d-%04d.tsv`; only the merged
+`tools/wp40/results/t2_census/census-scan-v4-%04d-%04d.tsv`; only the merged
 section-6.2 artifacts belong under `fixtures/t2_census/`, as
 `census-{occupied-classes,vacuous-branches,scan4-seed-set,prefilter-discharge,histograms,manifest}-v1.tsv`.
 The shard name shares no stem with either pool pattern
