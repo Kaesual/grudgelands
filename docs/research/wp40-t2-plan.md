@@ -976,9 +976,14 @@ schema v4 (`grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`):
   independently of the verifier. Since such a seed builds no stage, it has
   no prefilter: stage_reject records may precede the prefilter block, the
   block sits before the first full record, and an input with no full record
-  at all is refused rather than guessed at. One row per seed: the block
-  aborts at its first failing aperture in source order, so per-(site,
-  class) counts are lower bounds conditioned on that order.
+  at all is refused rather than guessed at — the refusal keys on the
+  missing full record, not on the block, so a prefilter block copied into
+  an all-reject body attests nothing. The worker still *completes* an
+  all-reject run with its digest line, because the solo reproduction of a
+  stage-reject witness is exactly that run and the record is the evidence;
+  such a file can be read but never resumed or merged. One row per seed:
+  the block aborts at its first failing aperture in source order, so
+  per-(site, class) counts are lower bounds conditioned on that order.
 - **Contributions, declared not implied.** The occupied-class table gains
   the REJECTED row and witness (the finding); the vacuous-branch report
   gains the six-class vocabulary plus the two abort-by-design declarations;
@@ -999,4 +1004,15 @@ schema v4 (`grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`):
 Not in this package, by explicit scope: the launcher's reaction to a worker
 death mid-fleet, deletion of the eight v3 shards under
 `results/t2_census/`, and full-`W` start 4 — the coordinator owns those
-after acceptance.
+after acceptance. One measured interaction is recorded here for that
+package rather than half-decided in this one: a stage-rejected seed
+completes in ~8 s against a 34–39 s steady state, and the section-6.6.3
+rolling rate counts it as an ordinary completion, so a shard whose early
+completions include rejects projects optimistically until later full
+completions dilute the effect — at ~1/285 occupancy the expected error
+over a shard is well under the cap's 12 % margin, but the cold-start
+window where two completions decide the verdict is exactly where an 8 s
+sample distorts most. Whether the estimator should discount stage-reject
+completions (it would need the progress line to carry a full-completion
+count) is the coordinator's call, beside the worker-death watch it
+already owns.
