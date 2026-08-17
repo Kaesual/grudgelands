@@ -3552,8 +3552,10 @@ local function new_partition(dependencies)
 	-- One worker pass per seed (plan section 6.6.1) computes Scan-1, Scan-3a
 	-- and Scan-2 on one shared stage; the record schema is versioned as one
 	-- unit because the M5 merge and the launcher's first-record validator
-	-- consume the whole record, never one scan's rows alone.  v3 since M4.
-	local census_scan_schema = "grug_wp40_census_scan_v3"
+	-- consume the whole record, never one scan's rows alone.  v3 since M4;
+	-- v4 since the stage-reject package (2026-08-17): a record is either the
+	-- full per-seed roster or exactly one stage_reject row, never a mixture.
+	local census_scan_schema = "grug_wp40_census_scan_v4"
 
 	local function census_scan1(stage, seed)
 		local result = {schema = census_scan_schema, seed = seed,
@@ -4895,8 +4897,67 @@ local function new_partition(dependencies)
 		return result
 	end
 
+	-- The classified stage-reject vocabulary (analysis section 3-F9, plan
+	-- section 6.4; decided 2026-08-17).  Section 3-F9 has always declared
+	-- aperture interval malformation REJECTED -- "wrap, overlap, second run,
+	-- dry station, boundary" -- but the deciding predicates live in
+	-- build_scan_stage's aperture block, where M1 could only abort.  The
+	-- first full-W starts proved the class occupied: three shards died
+	-- deterministically on "has a wrapping or second aperture run" at
+	-- roughly one seed in 285, so the six seed-dependent aperture-block
+	-- failures below become recorded stage_reject rows and the scan
+	-- continues with the next seed.
+	--
+	-- The boundary is drawn per fail site, not per message shape:
+	--  * "mouth absent from the final/authored perimeter" stays a loud
+	--    abort: Bay centrelines are no-jitter displacement sources, so the
+	--    declared mouth sits on the final perimeter on every seed or the
+	--    catalog is wrong -- a structural defect -- and the authored lookup
+	--    is dominated by the canonical one, which runs first over the same
+	--    point set.
+	--  * "is not a maximal aperture run" stays a loud abort: 3-F9's
+	--    "boundary stations passing it" is unreachable by construction --
+	--    the expansion loops terminate exactly where the Bay predicate
+	--    fails -- so a hit would be an evaluation-determinism fault, not a
+	--    seed configuration.
+	--  * everything outside the aperture block (S1 validity, notch
+	--    ownership, roster shapes) is outside the vocabulary entirely: the
+	--    classifier requires an aperture row id at the message head, and an
+	--    unmatched failure is re-raised -- the M3 lesson, no blind pcall.
+	--
+	-- One row per seed: the block aborts at its first failing aperture in
+	-- source order, so per-(site, class) occupancy counts are lower bounds
+	-- conditioned on that order.  Ordered, first match wins, like the
+	-- aperture and bank tables above; the class list is exported below and
+	-- the worker refuses to run when it disagrees with the authority's copy.
+	local stage_reject_by_fragment = {
+		{" aperture is not nonwrapping", "aperture_canonical_wrap_reject"},
+		{" aperture contains a dry station", "aperture_dry_station_reject"},
+		{" overlaps bay_mouth_aperture:", "aperture_overlap_reject"},
+		{" has a wrapping or second aperture run", "aperture_second_run_reject"},
+		{" authored Bank aperture wraps", "aperture_authored_wrap_reject"},
+		{" authored Bank aperture has a second run",
+			"aperture_authored_second_run_reject"},
+	}
+	local stage_reject_classes = {}
+	for index = 1, #stage_reject_by_fragment do
+		stage_reject_classes[index] = stage_reject_by_fragment[index][2]
+	end
+
 	local function census_scan(seed)
-		local stage = build_scan_stage(seed)
+		-- The pcall wraps stage construction only: a failure inside the scans
+		-- happens on a stage that already exists and stays a loud abort.
+		local built, stage = pcall(build_scan_stage, seed)
+		if not built then
+			local message = tostring(stage)
+			local site = message:match(
+				"^WP40 geometry partition: (bay_mouth_aperture:[%w_]+) ")
+			local class = site and
+				classify_message(stage_reject_by_fragment, message)
+			if not class then error(stage, 0) end
+			return {schema = census_scan_schema, seed = seed,
+				stage_reject = {site = site, class = class, detail = message}}
+		end
 		local result, selected_by_edge = census_scan1(stage, seed)
 		-- One tracer for both remaining scans.  Scan-3a runs first so its Wing
 		-- analysis fills the shared tail cache that Scan-2's completion tier
@@ -5350,6 +5411,7 @@ local function new_partition(dependencies)
 	partition.compile = compile_impl
 	partition.census_scan = census_scan
 	partition.census_scan_schema = census_scan_schema
+	partition.census_stage_reject_classes = stage_reject_classes
 	partition.classify_junction_pair = classify_junction_pair
 	partition.pair_clearance = pair_clearance
 	partition.extreme_scalar_records = boundary.extreme_scalar_records

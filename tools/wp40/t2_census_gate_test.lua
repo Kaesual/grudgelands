@@ -94,7 +94,7 @@ check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) =
 
 -- ------------------------------------------------------------ shard path names
 local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
-check(shard_path == "tools/wp40/results/t2_census/census-scan-v3-0000-0515.tsv",
+check(shard_path == "tools/wp40/results/t2_census/census-scan-v4-0000-0515.tsv",
 	"census shard path changed: " .. shard_path)
 check(not shard_path:find("shard-luajit", 1, true),
 	"census shard path collides with the pool pattern")
@@ -103,7 +103,7 @@ refuses("a shard path that is not canonical", "not the canonical census path",
 	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
 	0, 515)
 refuses("a free run writing a shard file name", "must not write a shard file name",
-	authority.validate_free_output_path, "/tmp/census-scan-v3-0000-0515.tsv")
+	authority.validate_free_output_path, "/tmp/census-scan-v4-0000-0515.tsv")
 refuses("a free run writing a stale M1 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
@@ -358,28 +358,43 @@ check(slow_verdicts[1].verdict == "deferred",
 -- The record shape is derived from the authority's declared roster rather
 -- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
 -- rows, and every class/kind cell takes the first declared vocabulary value.
+-- The stage_reject kind is skipped: it is v4's *other* record shape and may
+-- never appear inside a full-roster record, which is proven below.
 local function seed_record(seed)
 	local rows = {"seed_begin\t" .. seed}
 	for _, layout in ipairs(authority.record_rows) do
-		for index = 1, layout.count or 2 do
-			local cells = {layout.tag, seed}
-			for field = 3, layout.fields do
-				cells[field] = layout.tag .. index .. "_" .. field
+		if layout.tag ~= "stage_reject" then
+			for index = 1, layout.count or 2 do
+				local cells = {layout.tag, seed}
+				for field = 3, layout.fields do
+					cells[field] = layout.tag .. index .. "_" .. field
+				end
+				if layout.class_field then
+					cells[layout.class_field] = authority.classes[layout.class_set][1]
+				end
+				if layout.extra_field then
+					cells[layout.extra_field] = authority.classes[layout.extra_set][1]
+				end
+				if layout.extra2_field then
+					cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
+				end
+				rows[#rows + 1] = table.concat(cells, "\t")
 			end
-			if layout.class_field then
-				cells[layout.class_field] = authority.classes[layout.class_set][1]
-			end
-			if layout.extra_field then
-				cells[layout.extra_field] = authority.classes[layout.extra_set][1]
-			end
-			if layout.extra2_field then
-				cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
-			end
-			rows[#rows + 1] = table.concat(cells, "\t")
 		end
 	end
 	rows[#rows + 1] = "seed_end\t" .. seed
 	return table.concat(rows, "\n") .. "\n"
+end
+
+-- v4's second record shape: exactly one stage_reject row between its frame
+-- lines, nothing else -- built from the declared layout the same way.
+local function stage_reject_record(seed, class)
+	return "seed_begin\t" .. seed .. "\n" .. table.concat({"stage_reject",
+		seed, "bay_mouth_aperture:elandor_east",
+		class or "aperture_second_run_reject",
+		"WP40 geometry partition: bay_mouth_aperture:elandor_east has a " ..
+			"wrapping or second aperture run"}, "\t") ..
+		"\nseed_end\t" .. seed .. "\n"
 end
 
 local header = authority.shard_header_lines({
@@ -500,15 +515,78 @@ refuses("a first record with a short scan3 width row", "fields, expected 20",
 -- not the other cannot silently drop a column out of every shard.
 check(#authority.wing_exclusion_causes == 7,
 	"the F5 exclusion cause list changed width without the wing row")
--- The M4 schema bump is only worth its cost if a finished v2 shard can never
--- be resumed into a v3 run.  Two independent refusals: the canonical path no
--- longer names it, and the free-output rule refuses to write it either.
-check(shard_path:find("census-scan-v3-", 1, true) and
+-- A schema bump is only worth its cost if a finished older shard can never
+-- be resumed into the new run.  Two independent refusals per retired
+-- version: the canonical path no longer names it, and the free-output rule
+-- refuses to write it either.
+check(shard_path:find("census-scan-v4-", 1, true) and
+	not shard_path:find("census-scan-v3-", 1, true) and
 	not shard_path:find("census-scan-v2-", 1, true),
-	"the M4 shard name still admits a v2 shard")
+	"the v4 shard name still admits an older shard")
 refuses("a free run writing a stale M3 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan-v2-0000-0515.tsv")
+refuses("a free run writing a stale M4/M5 shard file name",
+	"must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan-v3-0000-0515.tsv")
+
+-- ------------------------------------------------- v4 stage-reject grammar
+-- The two record shapes are mutually exclusive and the prefilter block may
+-- be preceded only by stage_reject records.  The positive first: a shard
+-- whose first seed stage-rejected verifies, and its reject record is a
+-- valid first record -- early visibility holds even when seed one dies in
+-- stage build.
+local reject_body = table.concat(header, "\n") .. "\n" ..
+	stage_reject_record(w.seeds[1]) ..
+	table.concat(prefilter, "\n") .. "\n" .. seed_record(w.seeds[2])
+local reject_verified = authority.verify_shard(sealed(reject_body), expected)
+check(#reject_verified.seeds == 2 and reject_verified.totals.stage_reject == 1,
+	"a shard with a leading stage_reject record did not verify")
+local reject_first = authority.validate_first_record(reject_body, expected)
+check(reject_first ~= nil and reject_first.stage_reject == true and
+	reject_first.seed == w.seeds[1],
+	"a leading stage_reject record did not validate as the first record")
+check(authority.validate_first_record(table.concat(header, "\n") .. "\n" ..
+	"seed_begin\t" .. w.seeds[1] .. "\n", expected) == nil,
+	"an unfinished leading stage_reject record was treated as complete")
+local free_reject_body = "schema\t" .. authority.schema .. "\nvocabulary\t" ..
+	authority.vocabulary_path .. "\n" .. stage_reject_record(w.seeds[1]) ..
+	table.concat(prefilter, "\n") .. "\n" .. seed_record(w.seeds[2])
+local free_reject = authority.verify_free_output(sealed(free_reject_body), nil)
+check(#free_reject.seeds == 2 and free_reject.totals.stage_reject == 1,
+	"a free record set with a leading stage_reject record did not verify")
+
+local mixed_record = (seed_record(w.seeds[1]):gsub(
+	"seed_end\t" .. w.seeds[1] .. "\n",
+	"stage_reject\t" .. w.seeds[1] .. "\tbay_mouth_aperture:elandor_east\t" ..
+		"aperture_second_run_reject\tdetail\nseed_end\t" .. w.seeds[1] .. "\n", 1))
+refuses("a full record mixed with a stage_reject row", "mixes a stage_reject row",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		table.concat(prefilter, "\n") .. "\n" .. mixed_record ..
+		seed_record(w.seeds[2])), expected)
+local doubled_record = (stage_reject_record(w.seeds[1]):gsub("\nseed_end",
+	"\nstage_reject\t" .. w.seeds[1] .. "\tbay_mouth_aperture:elandor_west\t" ..
+		"aperture_overlap_reject\tdetail\nseed_end", 1))
+refuses("a record holding two stage_reject rows", "emits exactly one",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		doubled_record .. table.concat(prefilter, "\n") .. "\n" ..
+		seed_record(w.seeds[2])), expected)
+refuses("a full record ahead of the prefilter block", "before its prefilter block",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		seed_record(w.seeds[1]) .. table.concat(prefilter, "\n") .. "\n" ..
+		seed_record(w.seeds[2])), expected)
+refuses("an input holding no full record at all", "holds no full seed record",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		stage_reject_record(w.seeds[1]) .. stage_reject_record(w.seeds[2])),
+	expected)
+refuses("a second prefilter block", "second prefilter block",
+	authority.verify_shard, sealed(body .. table.concat(prefilter, "\n") .. "\n"),
+	expected)
+refuses("an undeclared stage-reject class", "undeclared class",
+	authority.verify_shard, sealed(table.concat(header, "\n") .. "\n" ..
+		stage_reject_record(w.seeds[1], "aperture_second_run_maybe") ..
+		table.concat(prefilter, "\n") .. "\n" .. seed_record(w.seeds[2])),
+	expected)
 
 -- Section 6.6.4: the empty claim file of a crashed worker, a truncated shard
 -- and a silently edited one all abort; none of them is an empty shard.
@@ -630,7 +708,7 @@ for _, rule in ipairs(authority.flag_rules) do
 	local layout = authority.record_row_by_tag[rule.row]
 	check(layout ~= nil and layout.column_index[rule.column] ~= nil,
 		"the " .. rule.flag .. " flag reads a column its row does not carry")
-	check(rule.test == "equals" or rule.test == "at_least",
+	check(rule.test == "equals" or rule.test == "at_least" or rule.test == "any",
 		"the " .. rule.flag .. " flag uses a test the merge does not implement")
 end
 

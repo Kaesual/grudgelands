@@ -157,7 +157,7 @@ elseif command == "merge_kat" then
 	-- measured, which is what stops a silent semantic change in the merge from
 	-- passing because both interpreters changed with it.
 	local digest = assert(arg[4], "merge artifacts digest required")
-	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v3.lua"
+	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v4.lua"
 	local chunk, diagnostic = loadfile(fixture_path)
 	assert(chunk, "census KAT fixture missing or invalid: " .. tostring(diagnostic))
 	local fixture = chunk()
@@ -201,6 +201,13 @@ elseif command == "first_record" or command == "verify" then
 		if not record then
 			print(("WP40 T2 census first record range=%04d..%04d ready=0"):format(
 				first, last))
+		elseif record.stage_reject then
+			-- The v4 second record shape: a stage-rejected first seed is a
+			-- validated record -- the early-visibility gate holds -- and the
+			-- line says so instead of reporting zero sites as if they were
+			-- missing.
+			print(("WP40 T2 census first record range=%04d..%04d ready=1 seed=%s " ..
+				"kind=stage_reject"):format(first, last, record.seed))
 		else
 			print(("WP40 T2 census first record range=%04d..%04d ready=1 seed=%s " ..
 				"sites=%d"):format(first, last, record.seed,

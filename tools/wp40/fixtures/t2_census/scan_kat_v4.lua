@@ -1,4 +1,5 @@
--- WP40 T2 census scan KAT fixture (plan section 6.7, milestones M1+M3+M4+M5).
+-- WP40 T2 census scan KAT fixture (plan section 6.7, milestones M1+M3+M4+M5
+-- plus the 2026-08-17 stage-reject package).
 -- Fill counts are the known F6 witness occupancies from
 -- wp40-t2-degeneracy-completeness.md section 3-F6, in source.bays order
 -- (bay_elandor_west, bay_elandor_east, bay_kragmar_west, bay_kragmar_east).
@@ -11,13 +12,15 @@
 -- R16/R17 prerequisite fixture's 7-direct/1-elbow split.
 -- The scan3 blocks pin the M4 Scan-3a projections, measured 2026-08-16.
 -- M5 added the fourth seed, Slot 30, for the analysis section 3-F8
--- fragment-bearing case, which no earlier KAT covered; the digest moved with
--- it, legitimately.  The digest pins the complete canonical worker TSV over
--- seeds 0, Slot 30, Slot 29 and max-u64 in ascending canonical decimal order
--- and is the determinism gate: any interpreter- or order-dependent drift in
--- the census projection changes it.  `merge_artifacts_digest` is the M5 gate's
--- pinned half over the five section-6.2 artifacts the merge builds from
--- exactly these records.
+-- fragment-bearing case, which no earlier KAT covered; the stage-reject
+-- package added the fifth, W-112, the first measured 3-F9 aperture
+-- occupancy -- a seed that emits a stage_reject record instead of a roster.
+-- The digest moved with each addition, legitimately.  The digest pins the
+-- complete canonical worker TSV over seeds 0, W-112, Slot 30, Slot 29 and
+-- max-u64 in ascending canonical decimal order and is the determinism gate:
+-- any interpreter- or order-dependent drift in the census projection changes
+-- it.  `merge_artifacts_digest` is the M5 gate's pinned half over the five
+-- section-6.2 artifacts the merge builds from exactly these records.
 local function endpoint(eligible, success, direct, elbow)
 	return {eligible = eligible, success = success, direct = direct,
 		elbow = elbow}
@@ -43,7 +46,7 @@ local function wing(id, raw, structural, wedge_valid, rank, radius,
 		negative_length = negative_length, positive_length = positive_length}
 end
 return {
-	schema = "grug_wp40_census_scan_v3",
+	schema = "grug_wp40_census_scan_v4",
 	-- The load-bearing M3 witness: this endpoint must hold at least two R16
 	-- candidates while its edge completes exactly one joint tuple.  The
 	-- worker's --kat roster must cover this seed.
@@ -68,6 +71,16 @@ return {
 	fragment_witness = {seed = "15219119262482319357", edge = "land_007",
 		attachment = "perimeter_attachment:elandor:land_007", intervals = 2,
 		singletons = 1, qualifying = 1, class = "transition_interval_select"},
+	-- The load-bearing stage-reject witness (2026-08-17): W-112, the seed the
+	-- first full-W starts died on -- solo-reproduced, deterministic, the first
+	-- measured occupancy of an analysis section 3-F9 aperture malformation
+	-- class.  The worker asserts that this seed still stage-rejects with
+	-- exactly this site and class: a KAT run in which it quietly builds a
+	-- full stage means the finding this package records has vanished, and the
+	-- digest alone would report that only as an opaque drift.
+	stage_reject_witness = {seed = "343674299183575008",
+		site = "bay_mouth_aperture:elandor_east",
+		class = "aperture_second_run_reject"},
 	r15_corpus = {
 		wing("bay_wing:elandor_west:left", 4, 4, 1, 1, 4, 4, 3),
 		wing("bay_wing:elandor_west:right", 18, 18, 1, 10, 5, 4, 5),
@@ -223,7 +236,7 @@ return {
 			},
 		},
 	},
-	digest = "01b5dd4b0cb8ca5c5aefddfc3b91ff0796d5e3bf5035730662073e374b934103",
+	digest = "a9c3ecfceb47f591e1d28a943ca45503458250f8a12bdabd8463a353ea2e499d",
 	-- The M5 gate's pinned half (plan section 6.6.5), over the five section-6.2
 	-- artifacts the merge builds from exactly the records above -- not over the
 	-- manifest, which names the merge interpreter and therefore differs between
@@ -232,5 +245,5 @@ return {
 	-- measured, so a semantic change in the merge cannot pass merely because
 	-- both interpreters changed with it.
 	merge_artifacts_digest =
-		"efa560d4a6d98655a1db8bf874314ae8aaf5c151b214e869119a3171d700f4fe",
+		"4a5968117430be016a53caf5755af5c41cfabaabbb5c2bee79645be8e7adfa85",
 }

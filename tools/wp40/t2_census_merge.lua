@@ -293,6 +293,27 @@ local function new_census(options)
 		seed_seen[seed] = true
 		seed_list[#seed_list + 1] = seed
 
+		-- The v4 two-shape record grammar, re-checked here independently of
+		-- the verifier like the class vocabulary below: a stage-rejected seed
+		-- contributes its occupied row and its flag and nothing else -- no
+		-- extremal scalar, no histogram, no derived branch -- and that is a
+		-- checked property of the record rather than an accident of which
+		-- folds happen to read which tags.  Only the synthetic divergence
+		-- fold, which deliberately mixes every declared class into one seed,
+		-- runs without this check.
+		if strict and rows.stage_reject then
+			if #rows.stage_reject ~= 1 then
+				error("WP40 T2 census merge: seed " .. seed .. " holds " ..
+					#rows.stage_reject .. " stage_reject rows", 0)
+			end
+			for tag in pairs(rows) do
+				if tag ~= "stage_reject" then
+					error("WP40 T2 census merge: seed " .. seed ..
+						" mixes a stage_reject row with " .. tag .. " rows", 0)
+				end
+			end
+		end
+
 		for tag_index = 1, #authority.record_rows do
 			local layout = authority.record_rows[tag_index]
 			local bucket_rows = rows[layout.tag]
@@ -314,6 +335,10 @@ local function new_census(options)
 					local value = field(rule.row, fields, rule.column)
 					local hit
 					if rule.test == "equals" then hit = value == rule.value
+					elseif rule.test == "any" then
+						-- Row presence is the event; the column read above still
+						-- proves the row carries its declared width.
+						hit = true
 					else
 						local number = integer(value)
 						hit = number ~= nil and number >= rule.value
@@ -616,6 +641,7 @@ local function render_occupied(state, header)
 		"column\tno_branch_matched\tfamily\tsite\tbranch\tseed\treason\t" ..
 			"row (verbatim, from field 7)"}
 	local findings, events, universals = 0, 0, 0
+	local stage_reject_seeds = 0
 	local witnesses = {}
 	local occupied_rows = 0
 	local families = sorted_keys(state.occupied)
@@ -632,6 +658,12 @@ local function render_occupied(state, header)
 				if entry.verdict == "REJECTED" then findings = findings + 1 end
 				if entry.verdict == "EVENT" then events = events + 1 end
 				if universal then universals = universals + 1 end
+				-- Each stage-rejected seed realizes exactly one stage_reject
+				-- row (the two-shape grammar), so the (site, branch) buckets
+				-- partition the seeds and this sum is the seed count.
+				if family == "stage_reject" then
+					stage_reject_seeds = stage_reject_seeds + entry.seeds
+				end
 				occupied_rows = occupied_rows + 1
 				lines[#lines + 1] = table.concat({"occupied", family, site, branch,
 					entry.verdict, universal or "-", count_text(entry.seeds),
@@ -674,10 +706,12 @@ local function render_occupied(state, header)
 		"findings=" .. count_text(findings),
 		"events=" .. count_text(events),
 		"refuted_universals=" .. count_text(universals),
+		"stage_reject_seeds=" .. count_text(stage_reject_seeds),
 		"no_branch_matched=" .. count_text(#state.sink)}, "\t")
 	return table.concat(lines, "\n") .. "\n",
 		{occupied = occupied_rows, findings = findings, events = events,
-			universals = universals, sink = #state.sink}
+			universals = universals, stage_rejects = stage_reject_seeds,
+			sink = #state.sink}
 end
 
 local function render_vacuous(state)
@@ -848,7 +882,8 @@ local function render_seed_set(state, header)
 		count_text(#flagged_seeds),
 		"any rare class occupied: fills > 0, tail mode, multi-interval, " ..
 		"two or more R16 candidates, any branching step, fragment-bearing " ..
-		"attachment (analysis 3-F8)"}, "\t")
+		"attachment (analysis 3-F8), classified stage reject (analysis 3-F9; " ..
+		"scannable by Scan-4 once the collected correction closes its class)"}, "\t")
 	lines[#lines + 1] = table.concat({"term", "extremal",
 		count_text(extremal_seeds),
 		"per-site minimum and maximum of the section 6.2.3 stress scalars over " ..
@@ -1378,6 +1413,7 @@ manifest_line("findings",
 	"occupied_rejected=" .. count_text(occupied_summary.findings) ..
 	" events=" .. count_text(occupied_summary.events) ..
 	" refuted_universals=" .. count_text(occupied_summary.universals) ..
+	" stage_reject_seeds=" .. count_text(occupied_summary.stage_rejects) ..
 	" vacuous_branches=" .. count_text(vacuous_summary.vacuous) ..
 	" no_branch_matched=" .. count_text(occupied_summary.sink))
 manifest_line("scan4_seed_set",
@@ -1436,9 +1472,10 @@ for index = 1, #artifacts do
 		artifacts[index].digest))
 end
 print(("WP40 T2 census findings rejected=%d events=%d refuted_universals=%d " ..
-	"vacuous=%d/%d no_branch_matched=%d"):format(occupied_summary.findings,
-	occupied_summary.events, occupied_summary.universals, vacuous_summary.vacuous,
-	vacuous_summary.declared, occupied_summary.sink))
+	"stage_reject_seeds=%d vacuous=%d/%d no_branch_matched=%d"):format(
+	occupied_summary.findings, occupied_summary.events,
+	occupied_summary.universals, occupied_summary.stage_rejects,
+	vacuous_summary.vacuous, vacuous_summary.declared, occupied_summary.sink))
 print(("WP40 T2 census scan4 seed set union=%d sites=%d/%d open=%d prefilter " ..
 	"discharged=%d/%d"):format(seed_set_summary.union, seed_set_summary.covered,
 	authority.extremal_site_total, seed_set_summary.open,

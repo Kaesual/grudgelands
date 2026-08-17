@@ -53,13 +53,16 @@ return function(dependencies)
 	-- 64-seed list cap now that range mode exists.
 	local free_seed_budget = 64
 
-	-- v3 since M4: the record carries the Scan-1, Scan-3a and Scan-2 rows.  The
-	-- version is one unit for the whole record -- the merge and the
-	-- first-record validator consume complete seed records, never one scan's
-	-- rows alone -- and the shard name carries it too, so a v2 shard left on
-	-- disk can never be resumed into a v3 run.
-	local schema = "grug_wp40_census_scan_v3"
-	local shard_schema = "grug_wp40_census_scan_shard_v3"
+	-- v3 since M4: the record carries the Scan-1, Scan-3a and Scan-2 rows.  v4
+	-- since the stage-reject package (2026-08-17): a record is either the full
+	-- per-seed roster or exactly one stage_reject row -- the classified F9
+	-- aperture-formation rejects that killed three shards of full-`W` start 3
+	-- as hard aborts.  The version is one unit for the whole record -- the
+	-- merge and the first-record validator consume complete seed records,
+	-- never one scan's rows alone -- and the shard name carries it too, so a
+	-- v2 or v3 shard left on disk can never be resumed into a v4 run.
+	local schema = "grug_wp40_census_scan_v4"
+	local shard_schema = "grug_wp40_census_scan_shard_v4"
 	local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
 	local candidates_path =
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"
@@ -173,6 +176,21 @@ return function(dependencies)
 		scan3_width_class = {"bay_bank_width_positive",
 			"bay_bank_width_zero_event", "bay_bank_width_negative_event",
 			"bay_bank_width_unbounded_event"},
+		-- Stage rejects (analysis section 3-F9, decided 2026-08-17).  3-F9 has
+		-- always declared aperture interval malformation REJECTED -- "wrap,
+		-- overlap, second run, dry station, boundary" -- but the deciding
+		-- predicates run in build_scan_stage's aperture block, which M1 could
+		-- only abort; full-`W` start 3 proved the class occupied at roughly
+		-- one seed in 285.  The six classes are the seed-dependent
+		-- aperture-block failures; the message-to-class map lives beside
+		-- census_scan in partition.lua, and the worker refuses to run when
+		-- the two lists disagree.  The mouth-absent and nonmaximal-run sites
+		-- stay loud aborts (seed-independent catalog defect; unreachable by
+		-- construction) and are declared under unmeasured_branches below.
+		stage_reject_class = {"aperture_canonical_wrap_reject",
+			"aperture_dry_station_reject", "aperture_overlap_reject",
+			"aperture_second_run_reject", "aperture_authored_wrap_reject",
+			"aperture_authored_second_run_reject"},
 	}
 
 	-- The F5 per-pair exclusion causes, in the order the Wing row's seven count
@@ -209,6 +227,7 @@ return function(dependencies)
 		scan3_aperture_class = "decision", scan3_wing_class = "decision",
 		scan3_bank_class = "decision", scan3_selection_class = "decision",
 		scan3_width_class = "decision", scan3_step_outcome = "decision",
+		stage_reject_class = "decision",
 		prefilter_status = "kind", edge_kind = "kind", scan2_flag = "kind",
 		scan2_tuple_mode = "kind", scan3_aperture_mode = "kind",
 		scan3_step_direction = "kind",
@@ -307,6 +326,16 @@ return function(dependencies)
 		bay_bank_width_zero_event = "EVENT",
 		bay_bank_width_negative_event = "EVENT",
 		bay_bank_width_unbounded_event = "EVENT",
+		-- The stage-reject classes.  All REJECTED by 3-F9's own verdict
+		-- column: an occupied row here is a finding, located on paper, which
+		-- is exactly what full-`W` start 3 could not produce when it died on
+		-- the second-run class three shards deep.
+		aperture_canonical_wrap_reject = "REJECTED",
+		aperture_dry_station_reject = "REJECTED",
+		aperture_overlap_reject = "REJECTED",
+		aperture_second_run_reject = "REJECTED",
+		aperture_authored_wrap_reject = "REJECTED",
+		aperture_authored_second_run_reject = "REJECTED",
 		-- The seven F5 pair-exclusion causes.  A pair exclusion is a decided
 		-- per-pair outcome; the Wing rejects only through its own class.
 		shared_predecessor = "DECIDED", interior_overlap = "DECIDED",
@@ -356,6 +385,35 @@ return function(dependencies)
 			note = "not a refuted universal but a failed proof: every sampled " ..
 				"station stayed positive and the exact per-column bound could not " ..
 				"rule out a collapse between them"},
+		-- The stage-reject classes (2026-08-17).  One is known occupied
+		-- before the first v4 run; the note travels with it so the occupancy
+		-- reads as the expected finding rather than a surprise.
+		aperture_second_run_reject = {status = "in_scope",
+			note = "the first occupied stage class: full-W start 3 died here " ..
+				"deterministically at ~1/285 seeds (least witness " ..
+				"343674299183575008, the fifth KAT seed); the 'wrapping' arm of " ..
+				"its message is dominated by aperture_canonical_wrap_reject, " ..
+				"which fires first when the run touches the canonical seam"},
+		aperture_canonical_wrap_reject = {status = "in_scope",
+			note = "the run reaches the canonical array seam; the guard's " ..
+				"mouth-relative arms are unreachable -- first and last start at " ..
+				"the mouth index and move monotonically"},
+		aperture_dry_station_reject = {status = "in_scope",
+			note = "realizable only by the mouth station itself: the expansion " ..
+				"loops admit Bay members only, so no other included station can " ..
+				"fail the predicate"},
+		aperture_overlap_reject = {status = "in_scope",
+			note = "fires on the later aperture of the pair in source order; " ..
+				"the partner id is in the verbatim detail"},
+		aperture_authored_wrap_reject = {status = "in_scope",
+			note = "the same F9 wrap in the authored index space, independently " ..
+				"reachable -- the authored seam sits elsewhere than the " ..
+				"canonical one, and the guard keeps a two-station shoulder " ..
+				"margin for the bank_before/after_previous neighborhood"},
+		aperture_authored_second_run_reject = {status = "in_scope",
+			note = "the authored-order counterpart of aperture_second_run_reject; " ..
+				"the census follows the procedure's granularity, and the two " ..
+				"orders fail independently"},
 	}
 
 	-- Section-3 table rows that the procedure decides but no emitted class
@@ -455,6 +513,13 @@ return function(dependencies)
 			test = "at_least", value = 1},
 		{flag = "fragment", row = "attachment", column = "interval_count",
 			test = "at_least", value = 2},
+		-- The stage-reject flag (decided 2026-08-17).  A stage-rejected seed
+		-- is a rare-class realizer by definition, and once the collected
+		-- correction closes its class it is exactly the stressed geometry
+		-- Scan-4 exists to look at.  "any" tests row presence; the class is
+		-- named by the occupied-class table, the flag detail names the site.
+		{flag = "stage_reject", row = "stage_reject", column = "class",
+			test = "any"},
 	}
 
 	-- Section-3 table rows that this record cannot witness at all.  Reporting
@@ -473,6 +538,25 @@ return function(dependencies)
 			reason = "analysis 3-F7's Stage-1 roster and departure-record rows " ..
 				"are seed-independent stage validations that abort loudly; no " ..
 				"census class covers them by design"},
+		-- The two aperture-block fail sites the stage-reject vocabulary
+		-- deliberately leaves out (decided 2026-08-17), stated here so 3-F9's
+		-- row inventory stays complete in the coverage report without a class
+		-- that a code fault could quietly occupy.
+		{branch = "aperture_mouth_absent_abort", vocabulary = "stage_reject_class",
+			reason = "seed-independent by construction: Bay centrelines are " ..
+				"no-jitter displacement sources, so the declared mouth sits on " ..
+				"the final perimeter on every seed or the catalog is wrong -- a " ..
+				"structural defect that aborts loudly rather than becoming a " ..
+				"row; the authored-order lookup is dominated by the canonical " ..
+				"one over the same point set"},
+		{branch = "aperture_nonmaximal_run_abort",
+			vocabulary = "stage_reject_class",
+			reason = "analysis 3-F9's 'boundary stations passing it' is " ..
+				"unreachable by construction -- the expansion loops terminate " ..
+				"exactly where the Bay predicate fails -- so the check is " ..
+				"defensive and a hit would be an evaluation-determinism fault, " ..
+				"not a seed configuration; it aborts loudly rather than " ..
+				"becoming a row"},
 	}
 
 	-- Per-seed site roster and row width.  `count` nil means the row kind is
@@ -590,6 +674,17 @@ return function(dependencies)
 			class_set = "scan3_selection_class", site = {"bank_id"},
 			columns = {"tag", "seed", "bank_id", "class", "count", "max_width",
 				"multi_reachable", "unknown_reachable"}},
+		-- The stage-reject record (v4).  A seed whose build_scan_stage dies in
+		-- the aperture block on a classified 3-F9 malformation emits exactly
+		-- one of these and nothing else; validate_record below makes the two
+		-- record shapes mutually exclusive.  `detail` is the verbatim fail
+		-- message -- section 6.3's configuration bytes for this family: class,
+		-- site, seed and the message suffice to write and test the correction,
+		-- because the seed reproduces solo and deterministically at ordinary
+		-- per-seed cost.
+		{tag = "stage_reject", fields = 5, class_field = 4,
+			class_set = "stage_reject_class", site = {"site"},
+			columns = {"tag", "seed", "site", "class", "detail"}},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
@@ -691,7 +786,7 @@ return function(dependencies)
 	-- either pool shard pattern, and `assert_disjoint_from_pool` below proves
 	-- that instead of asserting it in prose (section 6.6.1).
 	local shard_directory = "tools/wp40/results/t2_census"
-	local shard_pattern = "census-scan-v3-%04d-%04d.tsv"
+	local shard_pattern = "census-scan-v4-%04d-%04d.tsv"
 	local pool_shard_patterns = {"shard-luajit-v3-%04d-%04d.tsv",
 		"shard-luajit-%04d-%04d.tsv"}
 
@@ -1216,11 +1311,28 @@ return function(dependencies)
 			if on_row then on_row(tag, fields, seed) end
 			index = index + 1
 		end
-		for row_index = 1, #record_rows do
-			local layout = record_rows[row_index]
-			if layout.count and (counts[layout.tag] or 0) ~= layout.count then
-				fail("seed record " .. seed .. " holds " .. (counts[layout.tag] or 0) ..
-					" " .. layout.tag .. " rows, expected " .. layout.count)
+		-- The two v4 record shapes, mutually exclusive: a stage-rejected seed
+		-- emits exactly one stage_reject row and nothing else -- it has no
+		-- stage to project any roster from -- and a full record must not
+		-- carry one, so a partial roster can never hide behind a reject row.
+		if counts.stage_reject then
+			if counts.stage_reject ~= 1 then
+				fail("seed record " .. seed .. " holds " .. counts.stage_reject ..
+					" stage_reject rows; a stage-rejected seed emits exactly one")
+			end
+			for tag, count in pairs(counts) do
+				if tag ~= "stage_reject" and count > 0 then
+					fail("seed record " .. seed .. " mixes a stage_reject row with " ..
+						tag .. " rows")
+				end
+			end
+		else
+			for row_index = 1, #record_rows do
+				local layout = record_rows[row_index]
+				if layout.count and (counts[layout.tag] or 0) ~= layout.count then
+					fail("seed record " .. seed .. " holds " .. (counts[layout.tag] or 0) ..
+						" " .. layout.tag .. " rows, expected " .. layout.count)
+				end
 			end
 		end
 		return index, seed, counts
@@ -1229,6 +1341,11 @@ return function(dependencies)
 	-- Section 6.6.2, run against a shard that is still being written: return
 	-- nil when no record has closed yet, and fail hard on anything the contract
 	-- forbids.  "Not ready yet" and "broken" must never look alike here.
+	--
+	-- v4: a stage-rejected seed has no stage to derive the seed-independent
+	-- prefilter from, so stage_reject records may precede the prefilter block
+	-- and the first closed record can be one of them.  A full record before
+	-- the block stays a refusal.
 	local function validate_first_record(text, expected)
 		local lines = split_lines(text)
 		if #lines < #shard_header_tags then return nil end
@@ -1239,10 +1356,19 @@ return function(dependencies)
 			if lines[index]:sub(1, 9) == "seed_end\t" then closed = true break end
 		end
 		if not closed then return nil end
-		offset = validate_prefilter(lines, offset)
+		local prefilter_seen = false
+		if type(lines[offset + 1]) == "string" and
+				lines[offset + 1]:sub(1, 10) == "prefilter\t" then
+			offset = validate_prefilter(lines, offset)
+			prefilter_seen = true
+		end
 		local expected_seed = expected and expected.seeds and expected.seeds[1]
 		local _, seed, counts = validate_record(lines, offset, expected_seed)
-		return {seed = seed, header = header, counts = counts}
+		if not counts.stage_reject and not prefilter_seen then
+			fail("shard holds a full seed record before its prefilter block")
+		end
+		return {seed = seed, header = header, counts = counts,
+			stage_reject = counts.stage_reject ~= nil}
 	end
 
 	-- The digest line and the record block, which the shard framing and the
@@ -1265,20 +1391,43 @@ return function(dependencies)
 		return lines, digest
 	end
 
-	local function read_records(lines, offset, expected_seeds, on_row, label)
+	-- The v4 record stream: zero or more stage_reject records may precede the
+	-- prefilter block -- a seed that dies in stage build has no prefilter to
+	-- attest -- but the block appears exactly once and before the first full
+	-- record.  An input with no full record at all is refused: nothing in it
+	-- can attest the seed-independent prefilter that artifact 4 commits, so
+	-- the operator re-scopes by hand instead of the merge inventing a block.
+	-- (At the witnessed ~1/285 occupancy an all-reject input cannot occur;
+	-- the refusal exists so the grammar is total rather than hopeful.)
+	local function read_body(lines, offset, expected_seeds, on_row, label)
 		local seeds, totals = {}, {}
+		local prefilter
 		while offset < #lines - 1 do
-			local expected_seed = expected_seeds and expected_seeds[#seeds + 1]
-			local next_offset, seed, counts =
-				validate_record(lines, offset, expected_seed, on_row)
-			seeds[#seeds + 1] = seed
-			for tag, count in pairs(counts) do totals[tag] = (totals[tag] or 0) + count end
-			offset = next_offset
+			local line = lines[offset + 1]
+			if type(line) ~= "string" then fail(label .. " is truncated") end
+			if line:sub(1, 10) == "prefilter\t" then
+				if prefilter then fail(label .. " holds a second prefilter block") end
+				offset, prefilter = validate_prefilter(lines, offset)
+			else
+				local expected_seed = expected_seeds and expected_seeds[#seeds + 1]
+				local next_offset, seed, counts =
+					validate_record(lines, offset, expected_seed, on_row)
+				if not counts.stage_reject and not prefilter then
+					fail(label .. " holds a full seed record before its prefilter block")
+				end
+				seeds[#seeds + 1] = seed
+				for tag, count in pairs(counts) do totals[tag] = (totals[tag] or 0) + count end
+				offset = next_offset
+			end
 		end
 		if offset ~= #lines - 1 then
 			fail(label .. " holds trailing text after its last record")
 		end
-		return seeds, totals
+		if not prefilter then
+			fail(label .. " holds no full seed record, so nothing attests its " ..
+				"seed-independent prefilter block")
+		end
+		return seeds, totals, prefilter
 	end
 
 	-- Kept separate from read_records and applied after the header count, so a
@@ -1299,8 +1448,7 @@ return function(dependencies)
 	local function verify_shard(text, expected, on_row)
 		local lines, digest = split_verified_body(text, "shard")
 		local header = parse_header(lines, expected)
-		local offset, prefilter = validate_prefilter(lines, #shard_header_tags)
-		local seeds, totals = read_records(lines, offset,
+		local seeds, totals, prefilter = read_body(lines, #shard_header_tags,
 			expected and expected.seeds, on_row, "shard")
 		if #seeds ~= header.shard_seeds then
 			fail("shard holds " .. #seeds .. " seed records, its header declares " ..
@@ -1328,8 +1476,7 @@ return function(dependencies)
 		if lines[3] and lines[3]:sub(1, 13) == "shard_schema\t" then
 			fail("a shard-framed file must be verified as a shard, not as a free run")
 		end
-		local offset, prefilter = validate_prefilter(lines, 2)
-		local seeds, totals = read_records(lines, offset,
+		local seeds, totals, prefilter = read_body(lines, 2,
 			expected and expected.seeds, on_row, "census record set")
 		if #seeds == 0 then fail("census record set holds no seed record") end
 		check_expected_seeds(seeds, expected and expected.seeds,

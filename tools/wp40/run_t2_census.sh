@@ -3,7 +3,7 @@ set -euo pipefail
 
 # WP40 T2 census runner (plan section 6.6).
 #
-#   tools/wp40/run_t2_census.sh --kat                  # the four KAT seeds
+#   tools/wp40/run_t2_census.sh --kat                  # the five KAT seeds
 #   WP40_CENSUS_OUTPUT=path run_t2_census.sh --seeds 0 7 4096
 #   tools/wp40/run_t2_census.sh --merge-kat            # the M5 LuaJIT/PUC gate
 #   tools/wp40/run_t2_census.sh --plan                 # derive W, print the token
@@ -37,7 +37,7 @@ owned_lua=(
 	"$repo/tools/wp40/t2_census_hasher.lua"
 	"$repo/tools/wp40/t2_census_merge.lua"
 	"$repo/tools/wp40/t2_census_worker.lua"
-	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v3.lua"
+	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v4.lua"
 )
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
 for file in "${owned_lua[@]}"; do

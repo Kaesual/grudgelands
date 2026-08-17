@@ -93,7 +93,7 @@ token_of() {
 }
 
 shard_one() {
-	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v3-0000-0515.tsv"
+	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v4-0000-0515.tsv"
 }
 
 echo "== module-level gate decisions =="
@@ -132,7 +132,7 @@ mkdir -p "$export_dir/tools/wp40/results/t2_census"
 : >"$(shard_one "$export_dir")"
 expect_failure "the empty claim file of a crashed worker" "shard file is empty" \
 	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
-printf 'schema\tgrug_wp40_census_scan_v3\nvocabulary\tx\n' \
+printf 'schema\tgrug_wp40_census_scan_v4\nvocabulary\tx\n' \
 	>"$(shard_one "$export_dir")"
 expect_failure "a shard that stops before its digest line" \
 	"no trailing digest line" \
@@ -214,26 +214,30 @@ end
 -- The record shape is derived from the authority's declared roster rather
 -- than a shadow copy: occupancy-driven kinds (count nil) emit two synthetic
 -- rows, and every class/kind cell takes the first declared vocabulary value.
+-- The stage_reject kind is skipped: it is v4's *other* record shape and may
+-- never appear inside a full-roster record.
 for index = first, last do
 	local seed = assert(w.seeds[index + 1])
 	parts[#parts + 1] = "seed_begin\t" .. seed
 	for row = 1, #authority.record_rows do
 		local layout = authority.record_rows[row]
-		for repeated = 1, layout.count or 2 do
-			local cells = {layout.tag, seed}
-			for field = 3, layout.fields do
-				cells[field] = layout.tag .. repeated .. "_" .. field
+		if layout.tag ~= "stage_reject" then
+			for repeated = 1, layout.count or 2 do
+				local cells = {layout.tag, seed}
+				for field = 3, layout.fields do
+					cells[field] = layout.tag .. repeated .. "_" .. field
+				end
+				if layout.class_field then
+					cells[layout.class_field] = authority.classes[layout.class_set][1]
+				end
+				if layout.extra_field then
+					cells[layout.extra_field] = authority.classes[layout.extra_set][1]
+				end
+				if layout.extra2_field then
+					cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
+				end
+				parts[#parts + 1] = table.concat(cells, "\t")
 			end
-			if layout.class_field then
-				cells[layout.class_field] = authority.classes[layout.class_set][1]
-			end
-			if layout.extra_field then
-				cells[layout.extra_field] = authority.classes[layout.extra_set][1]
-			end
-			if layout.extra2_field then
-				cells[layout.extra2_field] = authority.classes[layout.extra2_set][1]
-			end
-			parts[#parts + 1] = table.concat(cells, "\t")
 		end
 	end
 	parts[#parts + 1] = "seed_end\t" .. seed
