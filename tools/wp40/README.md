@@ -984,7 +984,11 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    deterministic, so a blind resume dies at the same seed, and the partial
    shards stay on disk as triage evidence until the operator removes them —
    the next start follows a fix that moves the module digest and would
-   refuse them anyway.
+   refuse them anyway. Proven live before start 4: the real fleet was
+   launched, one worker killed before its first completion, and the
+   launcher aborted at the next poll with
+   `worker exited status=143 at completed=0/516 seeds`, every shard log
+   tailed into the main log and every partial left in place.
 
 A refusing gate exits 3 and a broken one exits 1, and the launcher says which
 happened. Without that split it would report a cap overrun when the
