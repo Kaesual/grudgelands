@@ -536,8 +536,10 @@ byte-identical artifact digest under LuaJIT and the vendored PUC 5.1. The
 stage-reject package (2026-08-17, plan section 6.7) moved the classified
 aperture-formation failures from hard aborts to recorded `stage_reject` rows
 after full-`W` start 3 lost three shards to one occupied 3-F9 class (record
-schema `grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`). The
-full-`W` run itself still waits on the explicit GO.
+schema `grug_wp40_census_scan_v4`, shard pattern `census-scan-v4-*`).
+Full-`W` start 4 then measured all 4,123 seeds in 7 h 50 min and published
+the artifacts; what it found is plan section 6.8, and the committed
+artifacts under `fixtures/t2_census/` are that run's.
 
 ```sh
 tools/wp40/run_t2_census.sh --kat                  # 5 seeds: 0, W-112, Slot 30, Slot 29, max-u64

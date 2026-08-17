@@ -132,6 +132,12 @@ Resulting order:
 6. **`geometry/compiler_impl.lua`** — wire the verified geometry into the
    production compiler.
 
+**Status, 2026-08-17.** Step 1 is done: the census ran over the full `W`,
+its five artifacts are committed, and section 6.8 records what it found.
+Step 2, the collected correction, is next — and it now opens with seven
+occupied REJECTED classes to close rather than with an open-ended search,
+which is the whole return on this ordering.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.
@@ -746,8 +752,9 @@ tiers, including the R19 tuple enumeration itself, which the compiler does
 not carry (decided 2026-08-16, section 5); **M4** Scan-3a; **M5** merge with the LuaJIT/PUC digest comparison
 and KATs pinned on the known witness occupancies (seed 0 fills `0/0/0/0`,
 max-u64 `1/1/1/0`, Slot 29 tail mode with two R16 candidates, Slot 30
-fragment case). M1–M5 are done as of 2026-08-16; the full-`W` run still
-waits on the explicit GO.
+fragment case). M1–M5 are done as of 2026-08-16; the stage-reject package
+below followed on 2026-08-17, and the full-`W` run ran and merged the same
+day — its results are section 6.8.
 
 **Two M4 findings that belong on paper, not only in the census output.**
 
@@ -1039,3 +1046,87 @@ at ~1/285 occupancy the expected drift stays well under the cap's 12 %
 margin, and a discount would add a second completion-counting rule to the
 progress line against a risk the cap's own margins absorb. Re-decidable
 on run 4's measured projections if the drift reads otherwise.
+
+### 6.8 What the census measured (full-`W`, 2026-08-17)
+
+Start 4 completed all 4,123 seeds across eight shards in 7 h 50 min with no
+abort, and the merge published the five section-6.2 artifacts plus the
+manifest byte-identically under LuaJIT and the vendored PUC 5.1
+(`artifacts_digest c754ad2c…`, commit `4b83f8f`). Three numbers close open
+items of this section rather than opening new ones. The rolling estimator's
+last evaluation read **28,166 s against a measured 28,178 s** of wall clock,
+so the section-6.6.3 repair is accurate to twelve seconds at full length and
+the re-decided cap kept 13 % margin over what the host actually delivered —
+the estimator question is settled on measurement now, not on the two aborts
+that produced it. The merge's own cost, which section 6.7 deliberately
+refused to project from the KAT's 0.06 s, is **about seven minutes**, the
+LuaJIT half under one. And the section-6.6.9 worker-death watch was
+exercised against the real fleet before the start rather than trusted.
+
+**The finding list is seven occupied REJECTED classes, and the class that
+stopped run 3 is the smallest of them.**
+
+First, **all six transition edges realize `scan2_multi_complete_reject`** —
+land_007 at 321 seeds, land_004 at 248, land_013 at 119, land_010 at 52,
+land_016 at 13 and land_001 at 4, against 4,116 scanned seeds per edge.
+More than one joint tuple completes, and the R19 decision rejects. This is
+the census earning its ordering: R19 was found once, on one seed, by an
+expensive reproduction, and its residual failure mode turns out to occupy
+up to 7.8 % of the wanted universe on a single edge and to touch every edge
+there is. No amount of C1 conformance would have said that; it would have
+produced one witness and one more day.
+
+The measured `(tuples, complete, duplicate)` distribution bounds the
+correction that has to follow, which is why section 6.2.5 asked for it.
+**Completions never exceed four** — four occurs at two seeds on land_013,
+three at 23 seeds across land_007 and land_013, and every remaining
+rejection is exactly two. Tuple counts reach six (land_007, two seeds), so
+the enumeration is wider than its completions. **`duplicate` is zero in
+every one of the 34 measured buckets on every edge**, which is why
+`scan2_duplicate_authority_reject` is vacuous rather than merely unoccupied.
+And multiplicity of *tuples* is ordinary and benign: land_013 holds 1,175
+seeds with two tuples of which exactly one completes, land_010 holds 515.
+The policy gap is therefore narrow and stated exactly: a total order over at
+most four completing joint tuples, on six named edges, with the duplicate
+authority provably out of scope. The witness seeds are in the artifact —
+land_007's is 2147483648.
+
+Second, **`aperture_second_run_reject` at `bay_mouth_aperture:elandor_east`
+occupies 7 seeds**, or 1 in 589. The three witnesses that killed shards in
+run 3 are all among them, so nothing was lost in the v4 conversion, but the
+rate is half what run 3's evidence suggested: three events in an 885-seed
+prefix were extrapolated to ~1/285 and ~14 seeds over `W`. The
+extrapolation was a projection from three events and was not marked as one
+when it was passed on. It cost nothing here, and it is recorded because the
+same reflex applied to a cost or a cap would not be free.
+
+Third, **nothing else fired, and that is the more valuable half of the
+result.** The section-6.4 no-branch-matched sink is empty over the whole
+wanted universe, so no configuration escaped the section-3 tables — the
+completeness analysis has now survived the strongest test available to it
+short of Scans 3b and 4. All three frozen universals read zero:
+`Chebyshev(K,J) > 4` never occurred, the Bay bank half-width never
+collapsed, and `R > 5` remains dominated. Of 89 declared branches 22 are
+realized and 67 vacuous, with three derived and five unmeasured lines
+distinguishing "dominated" from "untested" as section 6.2.2 requires. The
+accounting check that no seed went missing: on every edge the DECIDED and
+REJECTED seed counts sum to 4,116, which is 4,123 minus the seven
+stage-rejected seeds that build no stage and therefore emit no rows.
+
+Fourth, **the `pairs()`-order divergence test ran its probe and its
+synthetic half only.** Its measured half is skipped at full-`W` scale under
+the contract's own "where they fit in memory twice" clause — 96 MB of
+records do not — and the manifest states it rather than leaving a reader to
+assume the stronger check ran. The probe came back unsorted, so the
+synthetic half is not passing vacuously, which is the failure this branch
+has shipped twice.
+
+**What this hands the collected correction.** Seven classes, each with its
+site, its realization count, its witness seed and that witness's verbatim
+record row, and therefore actionable without re-running the census as
+section 6.3 demands. Six of them are one policy question on six edges; the
+seventh is an aperture construction that admits a second run at seven seeds.
+Scan-4's input set is a union of 3,061 seeds covering 137 of the 153
+structural sites, with the sixteen Scan-3b banks named as the open
+remainder, and the prefilter's 14 of 61 discharges verified at every seed
+rather than assumed.
