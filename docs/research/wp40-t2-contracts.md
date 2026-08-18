@@ -221,6 +221,45 @@ a verdict needs two completions. A cap re-decided upwards to fit an estimator
 would be the wrong repair; this one is re-decided to fit two measured
 populations, and the numbers above are what makes it re-decidable again.
 
+**Why the wall cap retired, dated 2026-08-18** (user decision,
+coordinator-reviewed; phase brief, "Run-cost gate redesign"; binds 8.5 and
+every later long run). The cap above calibrated itself to kill the one
+measured *contention* case, which presumes a dedicated runner. The host is
+a workstation: concurrent user load is normal operation, not degradation,
+so wall time separates nothing and ceases to be a kill criterion entirely —
+no automatic wall-kill, no backstop hour count, no notifications. The
+rolling wall projection survives as an advisory figure in the progress
+output and the manifest, checked manually. The hard abort moves to the CPU
+domain, where intrinsic pathology and contention actually separate:
+
+- Workers report per-seed CPU seconds (`os.clock` delta) beside wall in
+  the progress lines — telemetry only, never in canonical artifacts or
+  their digests (the v4 manifest-cost pattern).
+- **Intrinsic gate:** the section-6.6.3 rolling per-shard projection,
+  re-based from per-seed CPU seconds, aborts on a CPU budget of the
+  measured anchor times a **measured** contention margin.
+- **Liveness gate:** zero completions fleet-wide while the fleet has
+  consumed at least `X` CPU-seconds since the last completion aborts —
+  the busy-loop hang, without false-firing when idle-priority workers are
+  merely starved (a starved fleet accumulates no CPU). `X` is generous,
+  from the measured worst per-seed CPU.
+- The margin and `X` are **measured, not estimated**: a short probe in
+  this section's degradation-measurement style — a few seeds under
+  synthetic full host load, measuring the SMT CPU-time inflation — sets
+  the multiplier before the fleet launches.
+- Workers launch under idle scheduling (`chrt --idle 0` plus `ionice -c3`,
+  `nice -n19` fallback): user work preempts the fleet and the run
+  stretches instead of the user yielding the machine — accepted
+  consequence, decided by the user.
+- Honest residual, stated: a worker blocked forever while consuming no
+  CPU triggers no automatic exit; only the manual checks catch it
+  (accepted — pure-computation workers make the state exotic, and the
+  6.6.9 worker-death watch still covers process death).
+
+The 6.7 cost-verdict boundaries stay coherent with this: every wall figure
+recorded there remains a measurement of its day; the gates that consumed
+wall figures are re-based, not re-litigated.
+
 ### 6.6 The census runner
 
 Decisions recorded 2026-08-16; the mechanics belong in `tools/wp40/README.md`
@@ -248,7 +287,13 @@ once the runner is built. The pattern throughout is the proven
    every site present, classes drawn from the declared vocabulary — while
    the workers keep running; a structural failure aborts the run hard.
    Progress is flushed per-seed lines with range and ETA.
-3. **Cost gate.** A per-shard projection is checked against section 6.5's
+3. **Cost gate.** *(Amended 2026-08-18, with the section-6.5 wall-cap
+   retirement: the rolling projection below is re-based from per-seed CPU
+   seconds against the measured CPU budget, wall becomes advisory-only,
+   and the liveness gate rides beside it. The estimator mechanics — a
+   shard's own elapsed over its own completions, two completions before a
+   verdict, slowest shard extended to full length — carry over unchanged
+   to the CPU domain.)* A per-shard projection is checked against section 6.5's
    nine-hour cap; exceeding it aborts within the run's first minutes. The
    estimate is rolling and is re-taken at every completion: a shard's rate is
    its own elapsed seconds over its own completions, the projection is the
@@ -884,9 +929,12 @@ direction stops the package for a recorded Reality correction. The
 One post-correction full-`W` fleet run — the plan-step-2 Scan-3a repeat,
 the full-`W` M3↔compiler cross-check and the seven-seed census completion
 in a single pass, under the section-6.6 launcher discipline (fan-out at
-full width, first-record validation, rolling cost gate against the
-section-6.5 nine-hour cap, verified resume, worker-death watch) and under
-**LuaJIT** per the interpreter split. It starts only after 8.2–8.4 are
+full width, first-record validation, verified resume, worker-death watch)
+and the 2026-08-18 run-cost gates of section 6.5: the CPU-domain intrinsic
+and liveness gates with their probe-measured margin and `X`, wall
+projection advisory-only, workers under idle scheduling. **The contention
+probe runs before this fleet launches** and its measured multiplier is
+recorded in the manifest. All under **LuaJIT** per the interpreter split. It starts only after 8.2–8.4 are
 green, is announced to the coordinator with its projection marked as such
 (the v4 band, 7 h 50 min measured, is the anchor; the R19 selection work
 is already in the projection tier, so the marginal cost is expected inside
