@@ -152,6 +152,22 @@ three binding conditions; the implementation contract is section 8 of
 6 there too), and implementation waits at gate 1.5 on the coordinator's
 review of the contract and the relocation.
 
+**Status, 2026-08-18, late — step 2 is implemented and verified.** The
+collected correction landed (commits 482a134, dd09917) and the section-8.5
+verification fleet ran the full `W` under the CPU-domain gates: 4,123 of
+4,123 seeds in 8 h 22 min wall, zero stage rejects, zero
+compile↔projection disagreements, no gate events. The v2 artifact set is
+published beside the untouched v4 census of record
+(`artifacts_digest 37fcdc5e…`): **zero occupied REJECTED classes over
+`W`** — the census's irreducible feedback edge (completeness 6.3) now
+measures dead — with the seven returning seeds listed by name in the
+manifest as detached-shoulder admissions, all at elandor_east:after,
+matching the gate-1 diagnostic exactly. Gate 2 (contracts 8.6) awaits the
+coordinator's acceptance; three pre-existing findings are on record for
+it (the R18-level C2 conformance oracle, the Slot-30 Starbough pin drift,
+and an F10 face-simplicity occupancy on wanted seeds — Scan-4
+territory).
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.
@@ -317,7 +333,8 @@ been wrong before.
     makes the two strings non-contradictory, leaving the empty-clip branch
     of the reject string unreachable at R19 level — the census will report
     it as a vacuous branch, which is intended. The collected correction
-    implements this scoping in the catalog; until then the strings stand.
+    implements this scoping in the catalog (implemented 2026-08-18,
+    contracts section 8).
   - **U2** asks whether a one-station raster can satisfy "unique,
     8-connected", which arises when a two-ended tuple's candidate incidences
     coincide or cross, yielding in the limit a single-station probe.
@@ -348,8 +365,8 @@ been wrong before.
     universal that R16 and H55 were made of into a checked fact. The
     declaring-sentence alternative was considered and rejected because it
     leaves the quantifier unchecked. Implementation rides in the collected
-    correction; until then O1 stays formally decided and semantically
-    unreviewed.
+    correction (implemented 2026-08-18 as the authored segment-box versus
+    bay-envelope margin assertion, contracts 8.1).
 - **The F5 wedge-check reading** — found 2026-08-16 by the M1 read of
   `partition.lua` against the completeness analysis's section 3-F5 table,
   **decided 2026-08-16: the pair-level reading is authoritative.** A
@@ -377,7 +394,8 @@ been wrong before.
   per-tuple probe reraster, Bank completion, exactly-one-complete — exists
   only as catalog policy strings that no code reads. **Decided 2026-08-16:
   the census projection layer implements the R19 enumeration itself in M3
-  and the compiler stays unchanged.** Grounds: the census classifies by
+  and the compiler stays unchanged.** (The compiler side landed with the
+  collected correction, 2026-08-18, contracts 8.1.) Grounds: the census classifies by
   decided policy, not by compiler behavior (section 6.6.6, the R15 stance);
   changing the transition resolver now would be a boundary-topology edit
   under the heavy regime ahead of its occupancy evidence; and the plan's

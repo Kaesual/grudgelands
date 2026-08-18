@@ -172,6 +172,11 @@ local function new_census(options)
 	local derived_occupied = {}
 	local extremal = {}
 	local flagged, histograms = {}, {}
+	-- The D2 detached-shoulder admissions (contracts 8.5): per admission the
+	-- seed, site and station, for the histogram row and the manifest's marked
+	-- addendum -- the returning seeds are listed by name, never merged
+	-- silently.
+	local detached_admissions = {}
 	local seed_list, seed_seen = {}, {}
 	local class_set_of_tag = {}
 	local records = 0
@@ -521,6 +526,14 @@ local function new_census(options)
 				local fields = apertures[index]
 				note_histogram("scan3_aperture_mode", site_of("scan3_aperture", fields),
 					field("scan3_aperture", fields, "mode"))
+				local station = field("scan3_aperture", fields, "detached")
+				if station and station ~= "-" then
+					note_histogram("scan3_aperture_detached",
+						site_of("scan3_aperture", fields), "station=" .. station)
+					detached_admissions[#detached_admissions + 1] = {seed = seed,
+						site = site_of("scan3_aperture", fields),
+						station = station}
+				end
 			end
 		end
 		local wings = rows.scan3_wing
@@ -621,7 +634,8 @@ local function new_census(options)
 		return {occupied = occupied, derived = derived_occupied,
 			branch_realized = branch_realized, sink = sink, extremal = extremal,
 			flagged = flagged, histograms = histograms, seeds = seed_list,
-			records = records, stage_rejected_seeds = stage_rejected_seeds}
+			records = records, stage_rejected_seeds = stage_rejected_seeds,
+			detached = detached_admissions}
 	end
 
 	return census
@@ -1423,6 +1437,24 @@ manifest_line("findings",
 	" stage_reject_seeds=" .. count_text(occupied_summary.stage_rejects) ..
 	" vacuous_branches=" .. count_text(vacuous_summary.vacuous) ..
 	" no_branch_matched=" .. count_text(occupied_summary.sink))
+-- The D2 addendum (contracts 8.5): every seed the detached-shoulder
+-- admission returned to the scanned universe, listed by name with its
+-- admission site and station -- a marked table, never a silent merge.
+do
+	local admissions = {}
+	for index = 1, #state.detached do
+		admissions[index] = state.detached[index]
+	end
+	table.sort(admissions, function(left, right)
+		if left.site ~= right.site then return left.site < right.site end
+		return decimal_less(left.seed, right.seed)
+	end)
+	for index = 1, #admissions do
+		manifest_line("detached_shoulder_admission", admissions[index].site ..
+			" seed=" .. admissions[index].seed ..
+			" station=" .. admissions[index].station)
+	end
+end
 manifest_line("scan4_seed_set",
 	"union_seeds=" .. count_text(seed_set_summary.union) ..
 	" sites_covered=" .. count_text(seed_set_summary.covered) ..
