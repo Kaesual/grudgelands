@@ -44,8 +44,15 @@ return function(dependencies)
 	-- while the corpus ETA read 22,728 s.  Eight hours sat inside this host's
 	-- own noise band and could not separate an honestly noisy run from a
 	-- degraded one; nine hours is the round hour at the geometric middle of the
-	-- two measured bands.  The launcher restates it as the default for
-	-- WP40_CENSUS_WALL_CAP_SECONDS and the gate test checks that copy.
+	-- two measured bands.
+	--
+	-- Retired as a kill criterion 2026-08-18 (section 6.5, "why the wall cap
+	-- retired"): the host is a workstation, so concurrent user load is normal
+	-- operation and wall time separates nothing.  The number stays because the
+	-- projection stays -- advisory in the progress output and the manifest --
+	-- and because the two measured populations it was placed between are what
+	-- the replay tests pin the estimator's behaviour against.  Nothing aborts
+	-- on it any more; the hard abort is the CPU gate below.
 	local worker_count = 8
 	local wall_cap_seconds = 9 * 60 * 60
 	-- Section 6.6.7: KATs and small explicit ranges run freely.  Everything
@@ -61,8 +68,8 @@ return function(dependencies)
 	-- merge and the first-record validator consume complete seed records,
 	-- never one scan's rows alone -- and the shard name carries it too, so a
 	-- v2 or v3 shard left on disk can never be resumed into a v4 run.
-	local schema = "grug_wp40_census_scan_v4"
-	local shard_schema = "grug_wp40_census_scan_shard_v4"
+	local schema = "grug_wp40_census_scan_v5"
+	local shard_schema = "grug_wp40_census_scan_shard_v5"
 	local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
 	local candidates_path =
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"
@@ -94,7 +101,7 @@ return function(dependencies)
 		scan2_endpoint_class = {"scan2_counting_evaluated",
 			"scan2_no_selected_interval"},
 		scan2_edge_class = {"scan2_exactly_one_complete_select",
-			"scan2_zero_complete_reject", "scan2_multi_complete_reject",
+			"scan2_zero_complete_reject", "scan2_multi_complete_select",
 			"scan2_duplicate_authority_reject", "scan2_selected_below_192_reject",
 			"scan2_no_selected_interval"},
 		scan2_tuple_class = {"scan2_tuple_complete",
@@ -267,7 +274,9 @@ return function(dependencies)
 		scan2_no_selected_interval = "REJECTED",
 		scan2_exactly_one_complete_select = "DECIDED",
 		scan2_zero_complete_reject = "REJECTED",
-		scan2_multi_complete_reject = "REJECTED",
+		-- Several complete tuples are a DECIDED selection under the D1
+		-- order since the collected correction (plan 7.1, contracts 8.1).
+		scan2_multi_complete_select = "DECIDED",
 		scan2_duplicate_authority_reject = "REJECTED",
 		scan2_selected_below_192_reject = "REJECTED",
 		-- Every per-tuple precondition failure is DECIDED-with-continuation:
@@ -608,12 +617,17 @@ return function(dependencies)
 			columns = {"tag", "seed", "id", "edge_id", "endpoint", "class",
 				"flagged", "first", "finish", "eligible_count", "success_count",
 				"direct_count", "elbow_count", "successes"}},
-		{tag = "scan2_edge", count = 6, fields = 10, class_field = 4,
+		{tag = "scan2_edge", count = 6, fields = 11, class_field = 4,
 			class_set = "scan2_edge_class", extra_field = 5,
 			extra_set = "scan2_flag", site = {"edge_id"},
+			-- compile_agreement is the v5 cross-check column (contracts 8.5):
+			-- "agrees" on a DECIDED selection -- the worker aborts on any
+			-- disagreement rather than recording one -- and the compile
+			-- outcome on a rejected class.
 			columns = {"tag", "seed", "edge_id", "class", "flagged",
 				"tuple_count", "complete_count", "duplicate_count",
-				"selected_tuple_index", "selected_station_count"}},
+				"selected_tuple_index", "selected_station_count",
+				"compile_agreement"}},
 		{tag = "scan2_tuple", fields = 16, class_field = 5,
 			class_set = "scan2_tuple_class", extra_field = 7,
 			extra_set = "scan2_tuple_mode", extra2_field = 11,
@@ -631,12 +645,15 @@ return function(dependencies)
 		-- Banks and four Bay bank-width rows are per-seed rosters; the step and
 		-- selection rows are occupancy-driven, since a direction/outcome pair
 		-- no step realized has no row and that absence is the measurement.
-		{tag = "scan3_aperture", count = 8, fields = 14, class_field = 5,
+		{tag = "scan3_aperture", count = 8, fields = 15, class_field = 5,
 			class_set = "scan3_aperture_class", extra_field = 6,
 			extra_set = "scan3_aperture_mode", site = {"id", "side"},
+			-- detached is the v5 D2 admission column (plan 7.2): the
+			-- authored-order detached shoulder station of this side, "-"
+			-- where the admission did not fire.
 			columns = {"tag", "seed", "id", "side", "class", "mode", "d", "t",
 				"w", "selected_elbow", "water_side_ok", "bank_id",
-				"terminal_index", "detail"}},
+				"terminal_index", "detail", "detached"}},
 		{tag = "scan3_wing", count = 8, fields = 30, class_field = 5,
 			class_set = "scan3_wing_class", site = {"id"},
 			columns = {"tag", "seed", "id", "bay_id", "class",
@@ -789,7 +806,7 @@ return function(dependencies)
 	-- either pool shard pattern, and `assert_disjoint_from_pool` below proves
 	-- that instead of asserting it in prose (section 6.6.1).
 	local shard_directory = "tools/wp40/results/t2_census"
-	local shard_pattern = "census-scan-v4-%04d-%04d.tsv"
+	local shard_pattern = "census-scan-v5-%04d-%04d.tsv"
 	local pool_shard_patterns = {"shard-luajit-v3-%04d-%04d.tsv",
 		"shard-luajit-%04d-%04d.tsv"}
 
@@ -817,11 +834,27 @@ return function(dependencies)
 	-- full-`W` run requires these and every module path above to be committed
 	-- and unmodified, which is what makes the commit and tree in a shard header
 	-- a statement about the code that produced it.
+	-- The probe is one of them since 2026-08-18: it does not run during a
+	-- census, but the CPU budget the launcher aborts on is its output, and a
+	-- measurement no commit can reproduce is not evidence.
 	local launcher_paths = {
 		"tools/wp40/run_t2_census.sh",
+		"tools/wp40/run_t2_census_probe.sh",
 		"tools/wp40/t2_census_gate.lua",
+		"tools/wp40/t2_census_probe_contention.lua",
 		"tools/wp40/t2_census_sha_server.py",
 	}
+
+	-- Section 6.5's measured CPU gate, written by run_t2_census_probe.sh and
+	-- read by the launcher.  Deliberately *not* a launcher path: it is a
+	-- measurement of this host on a day, not authority bytes a shard header can
+	-- claim, and results/ is gitignored for exactly that reason.  It is dated
+	-- instead, and a run refuses a conf older than the commit it is about to be
+	-- reproducible from -- a margin measured before the code that would spend it
+	-- is a number about a different program.
+	local cpu_gate_conf_path = "tools/wp40/results/census-cpu-gate.conf"
+	local cpu_gate_conf_keys = {"ANCHOR_CPU_SECONDS", "CONTENTION_MARGIN",
+		"LIVENESS_X_CPU_SECONDS", "PROBE_DATE"}
 
 	local function positive_integer(value, label)
 		if type(value) ~= "number" or value % 1 ~= 0 or value < 0 then
@@ -1067,7 +1100,12 @@ return function(dependencies)
 	-- provably over the cap, which is the same vacuous gate in a new costume.
 	local cost_verdict_min_completions = 2
 
-	local function project_wall_seconds(samples)
+	-- One estimator, two domains.  The 2026-08-18 CPU gate is the same rolling
+	-- projection re-based on the workers' per-seed CPU seconds, so it is the
+	-- same function reading a different field of the same sample rather than a
+	-- second implementation that would drift from this one's four measured
+	-- pins.
+	local function project_rate(samples, field, label)
 		if type(samples) ~= "table" or #samples == 0 then
 			fail("cost projection needs at least one completed sample")
 		end
@@ -1082,10 +1120,10 @@ return function(dependencies)
 			positive_integer(sample.size, "shard size")
 			positive_integer(sample.completed, "completed seeds")
 			if sample.completed < 1 then fail("cost sample completed no seed") end
-			if type(sample.elapsed) ~= "number" or sample.elapsed < 0 then
-				fail("cost sample has no elapsed time")
+			if type(sample[field]) ~= "number" or sample[field] < 0 then
+				fail("cost sample has no " .. label)
 			end
-			local shard = sample.elapsed / sample.completed * sample.size
+			local shard = sample[field] / sample.completed * sample.size
 			if shard > observed_seconds then observed_seconds, observed = shard, sample end
 			if sample.completed >= cost_verdict_min_completions and
 					shard > decisive_seconds then
@@ -1093,16 +1131,70 @@ return function(dependencies)
 			end
 		end
 		local driver = decisive or observed
-		return {wall_seconds = decisive and decisive_seconds or observed_seconds,
-			observed_wall_seconds = observed_seconds, worker_count = worker_count,
-			cap_seconds = wall_cap_seconds, slowest = observed, driver = driver,
-			per_seed_seconds = driver.elapsed / driver.completed,
+		return {seconds = decisive and decisive_seconds or observed_seconds,
+			observed_seconds = observed_seconds, worker_count = worker_count,
+			slowest = observed, driver = driver,
+			per_seed_seconds = driver[field] / driver.completed,
 			decisive = decisive ~= nil}
+	end
+
+	local function project_wall_seconds(samples)
+		local projection = project_rate(samples, "elapsed", "elapsed time")
+		projection.wall_seconds = projection.seconds
+		projection.observed_wall_seconds = projection.observed_seconds
+		projection.cap_seconds = wall_cap_seconds
+		return projection
+	end
+
+	-- The CPU half of the same sample: a shard's own accumulated CPU seconds at
+	-- its own latest completion (the worker's `os.clock`, reported on the same
+	-- progress line as its wall figure).
+	local function project_cpu_seconds(samples)
+		local projection = project_rate(samples, "cpu", "CPU time")
+		projection.cpu_seconds = projection.seconds
+		projection.observed_cpu_seconds = projection.observed_seconds
+		projection.per_seed_cpu_seconds = projection.per_seed_seconds
+		return projection
+	end
+
+	-- The one place the samples above are spelled.  The worker writes this line
+	-- per completed seed and the launcher reads `completed`, `wall_seconds` and
+	-- -- since 2026-08-18 -- `cpu_seconds` back out of it, so the two clocks
+	-- travel adjacent and a shard's rate can never be taken from the fleet's.
+	-- The CPU figure is the worker's own `os.clock`, which excludes its SHA
+	-- responder because that is another process; the probe that measures the
+	-- budget excludes its own for the same reason, so the two are one quantity.
+	local function shard_progress_line(progress)
+		if type(progress) ~= "table" then fail("shard progress is malformed") end
+		positive_integer(progress.first, "shard first index")
+		positive_integer(progress.last, "shard last index")
+		positive_integer(progress.completed, "completed seeds")
+		positive_integer(progress.total, "shard seed count")
+		positive_integer(progress.wall_seconds, "shard wall seconds")
+		positive_integer(progress.cpu_seconds, "shard CPU seconds")
+		positive_integer(progress.eta_seconds, "shard ETA seconds")
+		if progress.completed < 1 or progress.completed > progress.total then
+			fail("a shard progress line reports " .. progress.completed .. " of " ..
+				progress.total .. " seeds")
+		end
+		return ("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
+			"completed=%d/%d wall_seconds=%d cpu_seconds=%d eta_seconds=%d"):format(
+			progress.first, progress.last,
+			progress.first + progress.completed - 1, progress.completed,
+			progress.total, progress.wall_seconds, progress.cpu_seconds,
+			progress.eta_seconds)
 	end
 
 	-- Returns the verdict instead of a bare `true`, because "deferred" is not a
 	-- pass: it is the gate reporting that no shard has answered twice yet, and a
 	-- launcher that prints it shows why an over-cap observation did not abort.
+	--
+	-- No launcher calls this any more (section 6.5, 2026-08-18: wall time is not
+	-- a kill criterion).  It stays as the estimator's pinned verdict: the replay
+	-- tests drive the two measured completion timelines through it, in the wall
+	-- domain they were measured in, and the CPU gate below is the same rule on
+	-- the same estimator -- so a change to the deferral or slowest-shard
+	-- behaviour still has to answer to those measurements.
 	local function check_cost_gate(projection, cap)
 		if type(projection) ~= "table" or type(projection.wall_seconds) ~= "number" then
 			fail("cost projection is malformed")
@@ -1116,6 +1208,137 @@ return function(dependencies)
 				worker_count, math.floor(limit)))
 		end
 		return "passed"
+	end
+
+	-- Section 6.5's intrinsic gate (2026-08-18).  The budget is a *per-seed* CPU
+	-- figure because the anchor it is built from is one -- the probe's worst
+	-- solo per-seed CPU times the measured contention margin -- and because a
+	-- rate is the one form of this comparison no shard size enters.  The
+	-- shard-length extension is reported beside it and is the same number seen
+	-- from the other end: `cpu_seconds` is exactly `per_seed_cpu_seconds` times
+	-- the driving shard's size.  Deferral is the wall gate's rule unchanged: two
+	-- completions before a shard's rate may cast a verdict, and a single
+	-- over-budget observation is reported without being able to stop the run.
+	local function check_cpu_gate(projection, budget)
+		if type(projection) ~= "table" or
+				type(projection.per_seed_cpu_seconds) ~= "number" then
+			fail("CPU projection is malformed")
+		end
+		if type(budget) ~= "number" or budget <= 0 then
+			fail("CPU budget is invalid")
+		end
+		if not projection.decisive then return "deferred" end
+		if projection.per_seed_cpu_seconds > budget then
+			fail(("projected %.2f s CPU per seed (%d s per shard over %d seeds) " ..
+				"exceeds the %.2f s CPU budget (plan section 6.5)"):format(
+				projection.per_seed_cpu_seconds, math.floor(projection.cpu_seconds),
+				projection.driver.size, budget))
+		end
+		return "passed"
+	end
+
+	-- The budget itself: measured, never restated.  `anchor` is the worst solo
+	-- per-seed CPU of a census worker seed and `margin` the worst CPU inflation
+	-- the same seeds showed under full synthetic host load, both from
+	-- t2_census_probe_contention.lua.  A margin below one would be a probe that
+	-- measured the loaded pass as *cheaper* than the solo one, which is a broken
+	-- measurement rather than a tight budget.
+	local function cpu_budget_seconds(anchor, margin)
+		if type(anchor) ~= "number" or anchor <= 0 then
+			fail("the CPU anchor must be a positive number of seconds")
+		end
+		if type(margin) ~= "number" or margin < 1 then
+			fail("the contention margin must be at least 1")
+		end
+		return anchor * margin
+	end
+
+	-- Section 6.5's liveness gate (2026-08-18), the busy-loop hang the retired
+	-- wall cap used to catch by accident.  The fleet consuming CPU while no seed
+	-- closes is the pathology; a fleet merely starved by user work -- which is
+	-- what idle scheduling makes normal, not exceptional -- consumes nothing and
+	-- is never accused of it.  The honest residual is recorded in the plan: a
+	-- worker blocked forever while consuming no CPU trips nothing here.
+	local function check_liveness_gate(state)
+		if type(state) ~= "table" then fail("liveness state is malformed") end
+		if type(state.consumed) ~= "number" or state.consumed < 0 then
+			fail("liveness state has no consumed CPU seconds")
+		end
+		positive_integer(state.completed_since, "completions since the last seed")
+		if type(state.allowance) ~= "number" or state.allowance <= 0 then
+			fail("the liveness CPU allowance is invalid")
+		end
+		if state.completed_since > 0 then return "progressing" end
+		if state.consumed > state.allowance then
+			fail(("the fleet consumed %d s CPU since its last completed seed, over " ..
+				"the %d s allowance (plan section 6.5)"):format(
+				math.floor(state.consumed), math.floor(state.allowance)))
+		end
+		return "quiet"
+	end
+
+	local function iso_date(value, label)
+		if type(value) ~= "string" or not value:match("^%d%d%d%d%-%d%d%-%d%d$") then
+			fail(label .. " is not an ISO date: " .. tostring(value))
+		end
+		return value
+	end
+
+	-- Parsed, never sourced.  The file is shell-sourceable by contract -- the
+	-- operator reads it and a shell could take it verbatim -- but a launcher
+	-- that sourced it would execute whatever a stale editor buffer left in it,
+	-- and every key here has a declared shape a strict reader can refuse.  An
+	-- undeclared key is refused too: a misspelled one would otherwise read as a
+	-- missing measurement rather than as the typo it is.
+	local function read_cpu_gate_conf(text, head_date)
+		if type(text) ~= "string" then fail("the CPU gate conf is not readable") end
+		local declared = {}
+		for index = 1, #cpu_gate_conf_keys do declared[cpu_gate_conf_keys[index]] = true end
+		local values, line_number = {}, 0
+		for line in (text .. "\n"):gmatch("([^\n]*)\n") do
+			line_number = line_number + 1
+			if not line:match("^%s*$") and not line:match("^%s*#") then
+				local key, value = line:match("^([A-Z_]+)=(%S+)%s*$")
+				if not key then
+					fail("CPU gate conf line " .. line_number ..
+						" is not a KEY=VALUE assignment: " .. line)
+				end
+				if not declared[key] then
+					fail("CPU gate conf line " .. line_number .. " declares the " ..
+						"undeclared key " .. key)
+				end
+				if values[key] then
+					fail("CPU gate conf declares " .. key .. " twice")
+				end
+				values[key] = value
+			end
+		end
+		for index = 1, #cpu_gate_conf_keys do
+			if not values[cpu_gate_conf_keys[index]] then
+				fail("the CPU gate conf declares no " .. cpu_gate_conf_keys[index] ..
+					"; re-run tools/wp40/run_t2_census_probe.sh (plan section 6.5)")
+			end
+		end
+		local anchor = tonumber(values.ANCHOR_CPU_SECONDS)
+		local margin = tonumber(values.CONTENTION_MARGIN)
+		local allowance = tonumber(values.LIVENESS_X_CPU_SECONDS)
+		if not anchor or not margin or not allowance then
+			fail("the CPU gate conf holds a value that is not a number")
+		end
+		if allowance <= 0 then
+			fail("LIVENESS_X_CPU_SECONDS must be a positive number of seconds")
+		end
+		local probe_date = iso_date(values.PROBE_DATE, "PROBE_DATE")
+		if head_date ~= nil then
+			iso_date(head_date, "the HEAD commit date")
+			if probe_date < head_date then
+				fail("the CPU gate conf was measured on " .. probe_date ..
+					", older than the HEAD commit of " .. head_date ..
+					"; re-run tools/wp40/run_t2_census_probe.sh (plan section 6.5)")
+			end
+		end
+		return {anchor = anchor, margin = margin, allowance = allowance,
+			probe_date = probe_date, budget = cpu_budget_seconds(anchor, margin)}
 	end
 
 	local function split_line(line)
@@ -1544,6 +1767,14 @@ return function(dependencies)
 	authority.check_go_token = check_go_token
 	authority.project_wall_seconds = project_wall_seconds
 	authority.check_cost_gate = check_cost_gate
+	authority.project_cpu_seconds = project_cpu_seconds
+	authority.check_cpu_gate = check_cpu_gate
+	authority.cpu_budget_seconds = cpu_budget_seconds
+	authority.check_liveness_gate = check_liveness_gate
+	authority.read_cpu_gate_conf = read_cpu_gate_conf
+	authority.cpu_gate_conf_path = cpu_gate_conf_path
+	authority.cpu_gate_conf_keys = cpu_gate_conf_keys
+	authority.shard_progress_line = shard_progress_line
 	authority.validate_first_record = validate_first_record
 	authority.verify_shard = verify_shard
 	authority.verify_free_output = verify_free_output

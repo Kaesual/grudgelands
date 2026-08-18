@@ -903,6 +903,427 @@ local function new_partition(dependencies)
 		fail("unknown Bank terminal kind " .. tostring(terminal.kind))
 	end
 
+	-- ------------------------------------------------------------------
+	-- The D1 completion-multiplicity order (plan 7.1, contracts 8.1): among
+	-- complete joint tuples the compiler selects the least under a declared
+	-- total order.  Keys, in order: total retreat from the declared endpoints,
+	-- maximum per-endpoint retreat, elbow-terminal count, the sorted resolved
+	-- terminal set, the sorted previous set, and the probe bytes under
+	-- canonical orientation (the lexicographically lesser of the byte text and
+	-- its exact reverse).  Totality is guaranteed by the duplicate-authority
+	-- reject: tuples equal under the last three keys share terminal, previous
+	-- and probe byte identity and were rejected before the order applies.
+	-- Every key is invariant under authored edge reversal, so the
+	-- bay_edge_transition_terminal_reversal clause holds unchanged.
+	--
+	-- Two implementations exist by contract (8.1): joint_tuple_less_compile
+	-- is the compile path's, joint_tuple_less_census the projection's.  The
+	-- full-`W` cross-check and the synthetic key KATs (contracts 8.3) compare
+	-- them; neither may call the other.  Both consume the same descriptor
+	-- shape: from_retreat/to_retreat (nil at an endpoint the edge does not
+	-- declare), elbow_count, terminal_keys, previous_keys, probe_forward and
+	-- probe_reverse canonical point texts.
+	local function validate_joint_descriptor(descriptor)
+		if type(descriptor) ~= "table" or getmetatable(descriptor) ~= nil then
+			fail("joint tuple descriptor is malformed")
+		end
+		if descriptor.from_retreat == nil and descriptor.to_retreat == nil then
+			fail("joint tuple descriptor lacks a declared endpoint")
+		end
+		for _, field in ipairs({"from_retreat", "to_retreat"}) do
+			if descriptor[field] ~= nil then
+				exact.integer(descriptor[field], 0, exact.MAX_SAFE,
+					"joint tuple descriptor " .. field)
+			end
+		end
+		exact.integer(descriptor.elbow_count, 0, 2,
+			"joint tuple descriptor elbow count")
+		if type(descriptor.terminal_keys) ~= "table" or
+				type(descriptor.previous_keys) ~= "table" or
+				type(descriptor.probe_forward) ~= "string" or
+				type(descriptor.probe_reverse) ~= "string" then
+			fail("joint tuple descriptor is malformed")
+		end
+	end
+
+	local function joint_tuple_less_compile(left, right)
+		validate_joint_descriptor(left)
+		validate_joint_descriptor(right)
+		local left_total = (left.from_retreat or 0) + (left.to_retreat or 0)
+		local right_total = (right.from_retreat or 0) + (right.to_retreat or 0)
+		if left_total ~= right_total then return left_total < right_total end
+		local left_peak = math.max(left.from_retreat or 0, left.to_retreat or 0)
+		local right_peak = math.max(right.from_retreat or 0,
+			right.to_retreat or 0)
+		if left_peak ~= right_peak then return left_peak < right_peak end
+		if left.elbow_count ~= right.elbow_count then
+			return left.elbow_count < right.elbow_count
+		end
+		local function sorted_text(keys)
+			local copy = {}
+			for index = 1, #keys do copy[index] = keys[index] end
+			table.sort(copy)
+			return table.concat(copy, ",")
+		end
+		local left_terminals, right_terminals = sorted_text(left.terminal_keys),
+			sorted_text(right.terminal_keys)
+		if left_terminals ~= right_terminals then
+			return left_terminals < right_terminals
+		end
+		local left_previous, right_previous = sorted_text(left.previous_keys),
+			sorted_text(right.previous_keys)
+		if left_previous ~= right_previous then
+			return left_previous < right_previous
+		end
+		local left_probe = left.probe_reverse < left.probe_forward and
+			left.probe_reverse or left.probe_forward
+		local right_probe = right.probe_reverse < right.probe_forward and
+			right.probe_reverse or right.probe_forward
+		return left_probe < right_probe
+	end
+
+	-- The projection's independent implementation: a rank vector compared
+	-- positionally.  Deliberately a different construction from the compile
+	-- comparator above; see the contract note there.
+	local function joint_tuple_rank_census(descriptor)
+		validate_joint_descriptor(descriptor)
+		local retreats = {}
+		if descriptor.from_retreat then
+			retreats[#retreats + 1] = descriptor.from_retreat
+		end
+		if descriptor.to_retreat then
+			retreats[#retreats + 1] = descriptor.to_retreat
+		end
+		local total, peak = 0, 0
+		for index = 1, #retreats do
+			total = total + retreats[index]
+			if retreats[index] > peak then peak = retreats[index] end
+		end
+		local terminals = {}
+		for index = 1, #descriptor.terminal_keys do
+			terminals[index] = descriptor.terminal_keys[index]
+		end
+		table.sort(terminals)
+		local previous = {}
+		for index = 1, #descriptor.previous_keys do
+			previous[index] = descriptor.previous_keys[index]
+		end
+		table.sort(previous)
+		local oriented = descriptor.probe_forward
+		if descriptor.probe_reverse < oriented then
+			oriented = descriptor.probe_reverse
+		end
+		return {total, peak, descriptor.elbow_count,
+			table.concat(terminals, ","), table.concat(previous, ","), oriented}
+	end
+
+	local function joint_tuple_less_census(left, right)
+		local left_rank = joint_tuple_rank_census(left)
+		local right_rank = joint_tuple_rank_census(right)
+		for index = 1, 6 do
+			if left_rank[index] ~= right_rank[index] then
+				return left_rank[index] < right_rank[index]
+			end
+		end
+		return false
+	end
+
+	-- The Source Bank roster, shared by the compile path's R19 completion,
+	-- the Scan-2 completion tier and the Scan-3a passes; seed-independent, so
+	-- built once.
+	local bank_source_by_id = {}
+	for index = 1, #source.bay_bank_components do
+		bank_source_by_id[source.bay_bank_components[index].id] =
+			source.bay_bank_components[index]
+	end
+
+	-- The compile path's R19 joint transition resolution (source-authority
+	-- section 4, contracts 8.1): after the R18 interval is fixed, every
+	-- eligible incidence of each declared transition endpoint runs R16, the
+	-- checked Cartesian product of the successes is exhaustively probed and
+	-- completion-traced, duplicate authority and zero-complete reject the
+	-- seed, and among several complete tuples the D1 order selects the least.
+	-- Per-tuple failures (empty or noncontiguous clip, invalid or wet probe,
+	-- unsatisfiable previous binding, incomplete bank) are DECIDED
+	-- continuations under the U1/U2 readings; enumeration never prunes.
+	-- The census projection keeps its own independent enumeration in
+	-- census_scan2; the full-`W` cross-check compares the two selections.
+	local function resolve_edge_joint_terminals(stage, tracer, edge,
+			transition_source, attachment, interval, probed_attachment)
+		local choices = {}
+		for _, endpoint in ipairs({"from", "to"}) do
+			local row = transition_source[endpoint]
+			if row then
+				local from_side = endpoint == "from"
+				local low = from_side and interval.first or interval.first + 1
+				local high = from_side and interval.finish - 1 or interval.finish
+				local list = {}
+				for station_index = low, high do
+					local probed = stage.probe_edge_transition_at(row, edge,
+						station_index)
+					if probed then
+						list[#list + 1] = {index = station_index, resolved = probed}
+					end
+				end
+				choices[endpoint] = list
+			end
+		end
+		local from_choices, to_choices = choices.from, choices.to
+		if from_choices and to_choices then
+			exact.safe_product(#from_choices, #to_choices,
+				edge.id .. " R19 tuple count")
+		end
+
+		local function probe_tuple(from_choice, to_choice)
+			local from_i = from_choice and from_choice.index or interval.first
+			local to_i = to_choice and to_choice.index or interval.finish
+			if from_i > to_i then return nil end
+			local ok, probe = pcall(function()
+				local stations = {}
+				for station_index = from_i, to_i do
+					local point = edge.stations[station_index]
+					stations[#stations + 1] = {x = point.x, z = point.z}
+				end
+				local retained = select_control_subsequence(edge.shifted_controls,
+					stations)
+				local controls = {}
+				local function append_control(point)
+					append_dedup(controls, point)
+				end
+				local from_station = edge.stations[from_i]
+				local to_station = edge.stations[to_i]
+				if attachment and attachment.edge_endpoint == "from" then
+					append_control(probed_attachment.a)
+					for index = 1, #retained do
+						append_control(edge.shifted_controls[retained[index]])
+					end
+					append_control(to_station)
+					controls = add_edge_transition_control(controls,
+						to_choice.resolved.selection, "to", to_station)
+				elseif attachment and attachment.edge_endpoint == "to" then
+					append_control(from_station)
+					for index = 1, #retained do
+						append_control(edge.shifted_controls[retained[index]])
+					end
+					append_control(probed_attachment.a)
+					controls = add_edge_transition_control(controls,
+						from_choice.resolved.selection, "from", from_station)
+				else
+					append_control(from_station)
+					for index = 1, #retained do
+						append_control(edge.shifted_controls[retained[index]])
+					end
+					append_control(to_station)
+					controls = add_edge_transition_control(controls,
+						from_choice.resolved.selection, "from", from_station)
+					controls = add_edge_transition_control(controls,
+						to_choice.resolved.selection, "to", to_station)
+				end
+				local rastered = raster.final_raster(controls, false)
+				if #rastered < 2 then
+					fail(edge.id .. " joint tuple probe has one station")
+				end
+				raster.validate_final({id = edge.id, kind = "land_edge",
+					closed = false,
+					max_displacement = edge.source.max_displacement},
+					edge.base_stations, rastered)
+				if attachment then
+					for station_index = 1, #rastered do
+						local station = rastered[station_index]
+						if key(station) ~= key(probed_attachment.a) and
+								(stage.footprint_class(station.x, station.z) ~= 1 or
+								stage.planned_water(station.x, station.z, false)) then
+							fail(edge.id .. " joint tuple probe leaves strict interior")
+						end
+					end
+				else
+					local dry_flags = {}
+					for station_index = 1, #rastered do
+						local station = rastered[station_index]
+						dry_flags[station_index] = stage.dry_land(station.x,
+							station.z)
+					end
+					validate_transition_dry_flags(dry_flags)
+				end
+				local from_terminal = from_choice and from_choice.resolved.point or
+					probed_attachment.a
+				local to_terminal = to_choice and to_choice.resolved.point or
+					probed_attachment.a
+				if key(rastered[1]) ~= key(from_terminal) or
+						key(rastered[#rastered]) ~= key(to_terminal) then
+					fail(edge.id .. " joint tuple terminal is not its probe endpoint")
+				end
+				return rastered
+			end)
+			if not ok then return nil end
+			local out = {from_choice = from_choice, to_choice = to_choice,
+				from_i = from_i, to_i = to_i, probe = probe}
+			if from_choice then
+				out.from_previous = {x = probe[2].x, z = probe[2].z}
+			end
+			if to_choice then
+				out.to_previous = {x = probe[#probe - 1].x,
+					z = probe[#probe - 1].z}
+			end
+			local forward_texts = {}
+			for station_index = 1, #probe do
+				forward_texts[station_index] = key(probe[station_index])
+			end
+			out.probe_forward = table.concat(forward_texts, ";")
+			local reverse_texts = {}
+			for station_index = #probe, 1, -1 do
+				reverse_texts[#reverse_texts + 1] = key(probe[station_index])
+			end
+			out.probe_reverse = table.concat(reverse_texts, ";")
+			out.identity = table.concat({
+				from_choice and key(from_choice.resolved.point) or "-",
+				out.from_previous and key(out.from_previous) or "-",
+				to_choice and key(to_choice.resolved.point) or "-",
+				out.to_previous and key(out.to_previous) or "-",
+				out.probe_forward}, "|")
+			return out
+		end
+
+		local completion_roster = {}
+		for _, endpoint in ipairs({"from", "to"}) do
+			local row = transition_source[endpoint]
+			if row then
+				local transition_key = stage.land_transition_key(row.edge_id,
+					row.edge_endpoint)
+				local banks = {}
+				for bank_index = 1, 2 do
+					local bank = bank_source_by_id[
+						row.incident_bank_component_ids[bank_index]]
+					if not bank then
+						fail(row.id .. " references an absent Bank")
+					end
+					local side
+					if terminal_key(bank.start_terminal) == transition_key then
+						side = "start"
+					elseif terminal_key(bank.end_terminal) == transition_key then
+						side = "end"
+					else
+						fail(bank.id .. " is not incident to " .. transition_key)
+					end
+					banks[bank_index] = {bank = bank, side = side}
+				end
+				completion_roster[endpoint] = {row = row,
+					transition_key = transition_key, banks = banks}
+			end
+		end
+
+		local function tuple_completes(candidate)
+			for _, endpoint in ipairs({"from", "to"}) do
+				local choice
+				if endpoint == "from" then choice = candidate.from_choice
+				else choice = candidate.to_choice end
+				if choice then
+					local roster = completion_roster[endpoint]
+					local previous = endpoint == "from" and
+						candidate.from_previous or candidate.to_previous
+					local resolved = tracer.resolve_land_transition(
+						roster.transition_key,
+						{source = roster.row, point = choice.resolved.point,
+							previous = previous, mode = choice.resolved.mode,
+							e = choice.resolved.e, w = choice.resolved.w})
+					for bank_index = 1, 2 do
+						local entry = roster.banks[bank_index]
+						local trace_ok = pcall(function()
+							local start_resolved, finish_resolved
+							if entry.side == "start" then
+								start_resolved = resolved
+								finish_resolved = tracer.resolve_terminal(
+									entry.bank.end_terminal, entry.bank.bay_id)
+							else
+								finish_resolved = resolved
+								start_resolved = tracer.resolve_terminal(
+									entry.bank.start_terminal, entry.bank.bay_id)
+							end
+							tracer.trace_bank(entry.bank, start_resolved,
+								finish_resolved)
+						end)
+						if not trace_ok then return false end
+					end
+				end
+			end
+			return true
+		end
+
+		local evaluated = {}
+		local function evaluate(from_choice, to_choice)
+			local candidate = probe_tuple(from_choice, to_choice)
+			if candidate then evaluated[#evaluated + 1] = candidate end
+		end
+		if from_choices and to_choices then
+			for from_index = 1, #from_choices do
+				for to_index = 1, #to_choices do
+					evaluate(from_choices[from_index], to_choices[to_index])
+				end
+			end
+		elseif from_choices then
+			for from_index = 1, #from_choices do
+				evaluate(from_choices[from_index], nil)
+			end
+		else
+			for to_index = 1, #to_choices do
+				evaluate(nil, to_choices[to_index])
+			end
+		end
+
+		local identity_counts = {}
+		for index = 1, #evaluated do
+			identity_counts[evaluated[index].identity] =
+				(identity_counts[evaluated[index].identity] or 0) + 1
+		end
+		for _, count in pairs(identity_counts) do
+			if count >= 2 then
+				fail(edge.id .. " has duplicate joint tuple authority")
+			end
+		end
+
+		local function joint_descriptor(candidate)
+			local descriptor = {elbow_count = 0, terminal_keys = {},
+				previous_keys = {}, probe_forward = candidate.probe_forward,
+				probe_reverse = candidate.probe_reverse}
+			if candidate.from_choice then
+				descriptor.from_retreat = candidate.from_i - interval.first
+				descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
+					key(candidate.from_choice.resolved.point)
+				descriptor.previous_keys[#descriptor.previous_keys + 1] =
+					key(candidate.from_previous)
+				if candidate.from_choice.resolved.mode ~= "direct" then
+					descriptor.elbow_count = descriptor.elbow_count + 1
+				end
+			end
+			if candidate.to_choice then
+				descriptor.to_retreat = interval.finish - candidate.to_i
+				descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
+					key(candidate.to_choice.resolved.point)
+				descriptor.previous_keys[#descriptor.previous_keys + 1] =
+					key(candidate.to_previous)
+				if candidate.to_choice.resolved.mode ~= "direct" then
+					descriptor.elbow_count = descriptor.elbow_count + 1
+				end
+			end
+			return descriptor
+		end
+
+		local selected = nil
+		for index = 1, #evaluated do
+			local candidate = evaluated[index]
+			if tuple_completes(candidate) then
+				if not selected or joint_tuple_less_compile(
+						joint_descriptor(candidate), joint_descriptor(selected)) then
+					selected = candidate
+				end
+			end
+		end
+		if not selected then
+			fail(edge.id .. " has zero complete joint tuples")
+		end
+		return selected
+	end
+
 	local function bay_data(seed)
 		local rows, by_id = {}, {}
 		for bay_index = 1, #source.bays do
@@ -982,6 +1403,38 @@ local function new_partition(dependencies)
 		local bays, bay_by_id = bay_data(seed)
 		local aperture_rows, aperture_by_bay, aperture_by_id = {}, {}, {}
 		local aperture_station_owner = {}
+		-- The D2 detached-shoulder admission (plan 7.2, contracts 8.1): a sweep
+		-- admits, per aperture end, at most one Base-Bay-passing station
+		-- separated from the aperture run by exactly one non-passing station.
+		-- The admitted station stays outside aperture membership, payload and
+		-- ownership; every other passing station outside the run keeps the
+		-- reject, measured vacuous over the full `W` census.
+		local function detached_shoulder_runs(stations, run_first, run_last, member)
+			local runs, run_start = {}, nil
+			for station_index = 1, #stations do
+				local inside = station_index >= run_first and
+					station_index <= run_last
+				local passes = not inside and member(stations[station_index])
+				if passes and not run_start then run_start = station_index end
+				if not passes and run_start then
+					runs[#runs + 1] = {run_start, station_index - 1}
+					run_start = nil
+				end
+			end
+			if run_start then runs[#runs + 1] = {run_start, #stations} end
+			local admitted = {}
+			for run_index = 1, #runs do
+				local run = runs[run_index]
+				if run[1] == run[2] and run[1] == run_first - 2 then
+					admitted.before_station = run[1]
+				elseif run[1] == run[2] and run[1] == run_last + 2 then
+					admitted.after_station = run[1]
+				else
+					return nil
+				end
+			end
+			return admitted
+		end
 		for index = 1, #source.bay_mouth_apertures do
 			local row = source.bay_mouth_apertures[index]
 			local perimeter = perimeter_by_id[row.perimeter_id]
@@ -1025,19 +1478,20 @@ local function new_partition(dependencies)
 					base_bay_member(bay, excluded_end.x, excluded_end.z) then
 				fail(row.id .. " is not a maximal aperture run")
 			end
-			for station_index = 1, #perimeter.canonical_stations do
-				if (station_index < first or station_index > last) and
-						base_bay_member(bay,
-							perimeter.canonical_stations[station_index].x,
-							perimeter.canonical_stations[station_index].z) then
-					fail(row.id .. " has a wrapping or second aperture run")
-				end
+			local canonical_detached = detached_shoulder_runs(
+				perimeter.canonical_stations, first, last, function(point)
+					return base_bay_member(bay, point.x, point.z)
+				end)
+			if not canonical_detached then
+				fail(row.id .. " has a wrapping or second aperture run")
 			end
 			local compiled = {source = row, first = first, finish = last + 1,
 				count = last - first + 1, included = included,
 				first_point = perimeter.canonical_stations[first],
 				last_point = perimeter.canonical_stations[last], before = before,
-				excluded_end = excluded_end}
+				excluded_end = excluded_end,
+				detached_before = canonical_detached.before_station,
+				detached_after = canonical_detached.after_station}
 			-- Bank terminals deliberately use the final authored/declared perimeter
 			-- direction.  Canonical indices above remain the mouth payload and
 			-- equality authority; the two orders must never be conflated.
@@ -1061,19 +1515,32 @@ local function new_partition(dependencies)
 			if authored_first <= 2 or authored_last >= #perimeter.stations - 1 then
 				fail(row.id .. " authored Bank aperture wraps")
 			end
-			for station_index = 1, #perimeter.stations do
-				if (station_index < authored_first or station_index > authored_last) and
-						base_bay_member(bay, perimeter.stations[station_index].x,
-							perimeter.stations[station_index].z) then
-					fail(row.id .. " authored Bank aperture has a second run")
-				end
+			local authored_detached = detached_shoulder_runs(perimeter.stations,
+				authored_first, authored_last, function(point)
+					return base_bay_member(bay, point.x, point.z)
+				end)
+			if not authored_detached then
+				fail(row.id .. " authored Bank aperture has a second run")
 			end
 			compiled.bank_first = authored_first
 			compiled.bank_finish = authored_last + 1
 			compiled.bank_before = perimeter.stations[authored_first - 1]
 			compiled.bank_after = perimeter.stations[authored_last + 1]
-			compiled.bank_before_previous = perimeter.stations[authored_first - 2]
-			compiled.bank_after_previous = perimeter.stations[authored_last + 2]
+			compiled.authored_detached_before = authored_detached.before_station
+			compiled.authored_detached_after = authored_detached.after_station
+			-- Source-authority 3.1 read literally (the D2 decision): `A` is the
+			-- next dry station away from `D`, so an admitted detached shoulder
+			-- station is skipped rather than mistaken for the dry anchor.
+			local before_previous_index = authored_first - 2
+			if authored_detached.before_station == before_previous_index then
+				before_previous_index = before_previous_index - 1
+			end
+			local after_previous_index = authored_last + 2
+			if authored_detached.after_station == after_previous_index then
+				after_previous_index = after_previous_index + 1
+			end
+			compiled.bank_before_previous = perimeter.stations[before_previous_index]
+			compiled.bank_after_previous = perimeter.stations[after_previous_index]
 			aperture_rows[#aperture_rows + 1] = compiled
 			aperture_by_bay[row.bay_id] = compiled
 			aperture_by_id[row.id] = compiled
@@ -1170,6 +1637,50 @@ local function new_partition(dependencies)
 						z <= box.max_z then return true end
 			end
 			return false
+		end
+
+		-- O1 (decided 2026-08-16, plan section 5; implemented per contracts
+		-- 8.1): aperture-versus-attachment collision is unreachable, asserted
+		-- rather than restated.  Every mouth-aperture station lies inside its
+		-- Bay's authored base envelope, and every displaced attachment station
+		-- lies within the perimeter's authored max_displacement of its declared
+		-- authored segment, so a strictly positive margin between the authored
+		-- segment box and the envelope box makes the collision impossible at
+		-- every seed.  All inputs are authored and seed-independent; in the
+		-- F1-prefilter style the claim is verified at every stage build rather
+		-- than trusted.
+		for index = 1, #source.perimeter_attachments do
+			local attachment = source.perimeter_attachments[index]
+			local attachment_perimeter = perimeter_by_id[attachment.perimeter_id]
+			if not attachment_perimeter then
+				fail(attachment.id .. " references an absent perimeter")
+			end
+			local polygon = attachment_perimeter.source.polygon
+			local a = polygon[attachment.perimeter_segment_index]
+			local b = polygon[attachment.perimeter_segment_index + 1]
+			if not a or not b then
+				fail(attachment.id .. " declared authored segment is absent")
+			end
+			local seg_min_x, seg_max_x = math.min(a.x, b.x), math.max(a.x, b.x)
+			local seg_min_z, seg_max_z = math.min(a.z, b.z), math.max(a.z, b.z)
+			for bay_index = 1, #bays do
+				local context = bay_context_by_id[bays[bay_index].source.id]
+				local gap_x = math.max(
+					exact.safe_difference(context.min_x, seg_max_x,
+						attachment.id .. " O1 margin x"),
+					exact.safe_difference(seg_min_x, context.max_x,
+						attachment.id .. " O1 margin x"), 0)
+				local gap_z = math.max(
+					exact.safe_difference(context.min_z, seg_max_z,
+						attachment.id .. " O1 margin z"),
+					exact.safe_difference(seg_min_z, context.max_z,
+						attachment.id .. " O1 margin z"), 0)
+				if math.max(gap_x, gap_z) <=
+						attachment_perimeter.source.max_displacement then
+					fail(attachment.id .. " O1 aperture margin to " ..
+						bays[bay_index].source.id .. " is not strictly positive")
+				end
+			end
 		end
 
 		local function row_contains(rows, x, z)
@@ -1757,12 +2268,24 @@ local function new_partition(dependencies)
 		-- station W.  resolve_terminal and the census aperture stress rows
 		-- must read identical indices, so both call this.
 		local function aperture_neighborhood(aperture, side)
+			-- The D2 detached-shoulder admission: `A` is the next dry station
+			-- away from `D` (source-authority 3.1 read literally), so an
+			-- admitted detached station is skipped, exactly as the compiled
+			-- bank_before_previous/bank_after_previous fields skip it.
 			if side == "before" then
 				local point_index = aperture.bank_first - 1
-				return point_index, point_index - 1, point_index + 1
+				local away_index = point_index - 1
+				if aperture.authored_detached_before == away_index then
+					away_index = away_index - 1
+				end
+				return point_index, away_index, point_index + 1
 			end
 			local point_index = aperture.bank_finish
-			return point_index, point_index + 1, point_index - 1
+			local away_index = point_index + 1
+			if aperture.authored_detached_after == away_index then
+				away_index = away_index + 1
+			end
+			return point_index, away_index, point_index - 1
 		end
 
 		local aperture_terminal_incidence, aperture_terminal_count = {}, 0
@@ -2756,6 +3279,38 @@ local function new_partition(dependencies)
 		local resolved_transition_by_key, transition_by_edge = {}, {}
 		local excluded_dry_fragments = {}
 
+		-- The tracer now precedes the edge loop because R19 tuple completion
+		-- (contracts 8.1) traces both incident Banks of every candidate tuple
+		-- before any edge is final.  The eager order -- R12 caps per Bay,
+		-- every Wing tail, the eight aperture terminals -- is preserved and
+		-- runs here so a structural failure in any of them stays a loud abort
+		-- instead of being absorbed by a per-tuple completion pcall; R19
+		-- probes then hit warm caches.  Probe-time completion resolves land
+		-- transitions by passing its materialized candidate directly and never
+		-- consults the land hook, whose table fills as edges finalize below.
+		for bay_index = 1, #bays do
+			ensure_trace_bounds(bay_context_by_id[bays[bay_index].source.id])
+		end
+		local tracer = new_bank_tracer(stage, {
+			land_transition = function(cache_key)
+				return resolved_transition_by_key[cache_key]
+			end})
+		local resolve_terminal, trace_bank = tracer.resolve_terminal,
+			tracer.trace_bank
+		local wing_tail_by_id = {}
+		for wing_index = 1, #source.bay_closure_wings do
+			local wing = source.bay_closure_wings[wing_index]
+			wing_tail_by_id[wing.id] = tracer.wing_tails(wing.id)
+		end
+		for bank_index = 1, #source.bay_bank_components do
+			local bank = source.bay_bank_components[bank_index]
+			for _, terminal in ipairs({bank.start_terminal, bank.end_terminal}) do
+				if terminal.kind == "aperture_dry" then
+					resolve_terminal(terminal, bank.bay_id)
+				end
+			end
+		end
+
 		local attachment_result = {}
 		for index = 1, #provisional_edges do
 			local edge = provisional_edges[index]
@@ -2765,6 +3320,7 @@ local function new_partition(dependencies)
 			if #intervals == 0 then fail(edge.id .. " has no retained land run") end
 			local controls = {}
 			local interval, from_transition, to_transition, selected_attachment
+			local terminal_span
 			if edge_transitions then
 				local transition_source = edge_obligations(edge, edge_transitions,
 					attachment)
@@ -2781,10 +3337,20 @@ local function new_partition(dependencies)
 				local selected_index = select_incidence_interval(decisions)
 				interval = intervals[selected_index]
 				local selected = probes[selected_index]
-				from_transition = transition_source.from and selected.from or nil
-				to_transition = transition_source.to and selected.to or nil
 				selected_attachment = attachment and
 					(attachment.edge_endpoint == "from" and selected.from or selected.to) or nil
+				-- R19 joint transition resolution on the fixed R18 interval
+				-- (source-authority section 4, contracts 8.1): the endpoint
+				-- probes above only qualified the interval; the terminals are
+				-- now resolved jointly over every eligible incidence, with
+				-- completion checked at selection and the D1 order deciding
+				-- among several complete tuples.
+				local joint = resolve_edge_joint_terminals(stage, tracer, edge,
+					transition_source, attachment, interval, selected_attachment)
+				from_transition = joint.from_choice and joint.from_choice.resolved
+					or nil
+				to_transition = joint.to_choice and joint.to_choice.resolved or nil
+				terminal_span = {first = joint.from_i, finish = joint.to_i}
 				for interval_index = 1, #intervals do
 					if interval_index ~= selected_index then
 						local excluded = intervals[interval_index]
@@ -2795,6 +3361,22 @@ local function new_partition(dependencies)
 								point = {x = point.x, z = point.z}}
 						end
 					end
+				end
+				-- Provisional stations the selected joint terminals clip off
+				-- the interval are excluded dry fragments like any other
+				-- discarded dry run: owned exactly once by a final Bank or dry
+				-- Face, and by no final land edge (source-authority section 4).
+				for station_index = interval.first, terminal_span.first - 1 do
+					local point = edge.stations[station_index]
+					excluded_dry_fragments[#excluded_dry_fragments + 1] = {
+						edge_id = edge.id, station_index = station_index,
+						point = {x = point.x, z = point.z}}
+				end
+				for station_index = terminal_span.finish + 1, interval.finish do
+					local point = edge.stations[station_index]
+					excluded_dry_fragments[#excluded_dry_fragments + 1] = {
+						edge_id = edge.id, station_index = station_index,
+						point = {x = point.x, z = point.z}}
 				end
 			else
 				if #intervals ~= 1 then fail(edge.id .. " has a second retained land run") end
@@ -2836,7 +3418,7 @@ local function new_partition(dependencies)
 					selected_attachment.canonical_index
 				local retained_controls = {}
 				if edge_transitions then
-					retained_controls = selected_control_indices(edge, interval)
+					retained_controls = selected_control_indices(edge, terminal_span)
 				else
 					for control_index = 1, #edge.shifted_controls do
 						local point = edge.shifted_controls[control_index]
@@ -2864,7 +3446,7 @@ local function new_partition(dependencies)
 						local point = edge.shifted_controls[retained_controls[retained_index]]
 						append_control(point)
 					end
-					opposite = edge.stations[interval.finish]
+					opposite = edge.stations[(terminal_span or interval).finish]
 					append_control(opposite)
 					controls = add_edge_transition_control(controls,
 						to_transition and to_transition.selection, "to", opposite)
@@ -2873,7 +3455,7 @@ local function new_partition(dependencies)
 							attachment.retained_run ~= "prefix" then
 						fail(attachment.id .. " endpoint/run declaration disagrees")
 					end
-					opposite = edge.stations[interval.first]
+					opposite = edge.stations[(terminal_span or interval).first]
 					append_control(opposite)
 					for retained_index = 1, #retained_controls do
 						local point = edge.shifted_controls[retained_controls[retained_index]]
@@ -2926,9 +3508,10 @@ local function new_partition(dependencies)
 				retain_resolved_transition(to_transition)
 			else
 				if edge_transitions then
-					local retained_controls = selected_control_indices(edge, interval)
-					local first_e, last_e = edge.stations[interval.first],
-						edge.stations[interval.finish]
+					local retained_controls = selected_control_indices(edge,
+						terminal_span)
+					local first_e, last_e = edge.stations[terminal_span.first],
+						edge.stations[terminal_span.finish]
 					append_control(first_e)
 					for control_index = 1, #retained_controls do
 						append_control(edge.shifted_controls[retained_controls[control_index]])
@@ -2994,24 +3577,9 @@ local function new_partition(dependencies)
 			span_by_id[span.id] = {source = span, stations = points}
 		end
 
-		-- Bank materialization consumes the shared tracer; the eager order --
-		-- R12 caps per Bay, every Wing tail, then the Bank traces -- is the
-		-- compiler's historical one and is preserved exactly.
-		for bay_index = 1, #bays do
-			ensure_trace_bounds(bay_context_by_id[bays[bay_index].source.id])
-		end
-		local tracer = new_bank_tracer(stage, {
-			land_transition = function(cache_key)
-				return resolved_transition_by_key[cache_key]
-			end})
-		local resolve_terminal, trace_bank = tracer.resolve_terminal,
-			tracer.trace_bank
-		local wing_tail_by_id = {}
-		for wing_index = 1, #source.bay_closure_wings do
-			local wing = source.bay_closure_wings[wing_index]
-			wing_tail_by_id[wing.id] = tracer.wing_tails(wing.id)
-		end
-
+		-- Bank materialization consumes the shared tracer created before the
+		-- edge loop; R12 caps, Wing tails and aperture terminals resolved
+		-- eagerly there, so the historical order is preserved.
 		local bank_by_id = {}
 		for bank_index = 1, #source.bay_bank_components do
 			local bank = source.bay_bank_components[bank_index]
@@ -3561,7 +4129,7 @@ local function new_partition(dependencies)
 	-- consume the whole record, never one scan's rows alone.  v3 since M4;
 	-- v4 since the stage-reject package (2026-08-17): a record is either the
 	-- full per-seed roster or exactly one stage_reject row, never a mixture.
-	local census_scan_schema = "grug_wp40_census_scan_v4"
+	local census_scan_schema = "grug_wp40_census_scan_v5"
 
 	local function census_scan1(stage, seed)
 		local result = {schema = census_scan_schema, seed = seed,
@@ -3785,20 +4353,15 @@ local function new_partition(dependencies)
 	-- recover them, because it presupposes resolved, corrected tuples.  The
 	-- predicate survives as the per-row flagged marker: the cost and
 	-- reporting distinction, not a skip.  Per-tuple precondition failures
-	-- are DECIDED-with-continuation; seed-level rejects arise only from the
-	-- complete-tuple count, duplicate authority and the section 7.4
-	-- 192-station backstop on the selected result.
+	-- are DECIDED-with-continuation; seed-level rejects arise only from a
+	-- zero complete-tuple count, duplicate authority and the section 7.4
+	-- 192-station backstop on the selected result -- several complete tuples
+	-- are a DECIDED selection under the D1 order since the collected
+	-- correction (plan 7.1, contracts 8.1).
 	-- ------------------------------------------------------------------
 
-	-- The Source Bank roster, needed by the Scan-2 completion tier and by the
-	-- Scan-3a aperture and head-Bank passes; it is seed-independent, so it is
-	-- built once rather than per scan.
-	local bank_source_by_id = {}
-	for index = 1, #source.bay_bank_components do
-		bank_source_by_id[source.bay_bank_components[index].id] =
-			source.bay_bank_components[index]
-	end
-
+	-- The Source Bank roster is shared with the compile path and built once
+	-- beside the D1 comparators above.
 	-- The tracer is supplied by census_scan and shared with Scan-3a.  The
 	-- census resolves transition terminals per tuple through
 	-- resolve_land_transition, never through the tracer's land hook; a land
@@ -4126,6 +4689,17 @@ local function new_partition(dependencies)
 						end
 						out.probe = probe
 						out.probe_digest = digest_points(probe)
+						local forward_texts = {}
+						for station_index = 1, #probe do
+							forward_texts[station_index] = key(probe[station_index])
+						end
+						out.probe_forward = table.concat(forward_texts, ";")
+						local reverse_texts = {}
+						for station_index = #probe, 1, -1 do
+							reverse_texts[#reverse_texts + 1] =
+								key(probe[station_index])
+						end
+						out.probe_reverse = table.concat(reverse_texts, ";")
 						if from_choice then
 							out.from_previous = {x = probe[2].x, z = probe[2].z}
 						end
@@ -4312,6 +4886,35 @@ local function new_partition(dependencies)
 					end
 					edge_row.duplicate_count = duplicate_count
 
+					-- The projection's own descriptor for the D1 order; the
+					-- compile path builds its descriptors independently inside
+					-- resolve_edge_joint_terminals (contracts 8.1).
+					local function census_descriptor(probed)
+						local descriptor = {elbow_count = 0, terminal_keys = {},
+							previous_keys = {},
+							probe_forward = probed.probe_forward,
+							probe_reverse = probed.probe_reverse}
+						if probed.from_choice then
+							descriptor.from_retreat = probed.from_i - selected.first
+							descriptor.terminal_keys[1] =
+								key(probed.from_choice.resolved.point)
+							descriptor.previous_keys[1] = key(probed.from_previous)
+							if probed.from_choice.resolved.mode ~= "direct" then
+								descriptor.elbow_count = descriptor.elbow_count + 1
+							end
+						end
+						if probed.to_choice then
+							descriptor.to_retreat = selected.finish - probed.to_i
+							descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
+								key(probed.to_choice.resolved.point)
+							descriptor.previous_keys[#descriptor.previous_keys + 1] =
+								key(probed.to_previous)
+							if probed.to_choice.resolved.mode ~= "direct" then
+								descriptor.elbow_count = descriptor.elbow_count + 1
+							end
+						end
+						return descriptor
+					end
 					local complete_count, selected_tuple = 0, nil
 					for tuple_index = 1, #evaluated do
 						local probed = evaluated[tuple_index]
@@ -4321,10 +4924,16 @@ local function new_partition(dependencies)
 							local ok, failed_bank, detail = tuple_complete(probed)
 							if ok then
 								probed.class = "scan2_tuple_complete"
+								probed.tuple_index = tuple_index
 								complete_count = complete_count + 1
-								if not selected_tuple then
+								-- D1 (plan 7.1): the least complete tuple under
+								-- the declared order is selected; with exactly
+								-- one completion the order is vacuous and the
+								-- census-recorded outcome is unchanged.
+								if not selected_tuple or joint_tuple_less_census(
+										census_descriptor(probed),
+										census_descriptor(selected_tuple)) then
 									selected_tuple = probed
-									selected_tuple.tuple_index = tuple_index
 								end
 							else
 								probed.class = "scan2_tuple_bank_incomplete"
@@ -4356,22 +4965,56 @@ local function new_partition(dependencies)
 					end
 					edge_row.complete_count = complete_count
 
+					-- The D1 amendment (plan 7.1): several complete tuples are
+					-- a DECIDED selection under the declared order, no longer a
+					-- reject.  The section 7.4 192-station backstop applies to
+					-- the selected result whatever the completion count.
 					if duplicate_count > 0 then
 						edge_row.class = "scan2_duplicate_authority_reject"
 					elseif complete_count == 0 then
 						edge_row.class = "scan2_zero_complete_reject"
-					elseif complete_count >= 2 then
-						edge_row.class = "scan2_multi_complete_reject"
 					elseif selected_tuple.probe_station_count and
 							selected_tuple.probe_station_count - 1 < 192 then
 						edge_row.class = "scan2_selected_below_192_reject"
+					elseif complete_count >= 2 then
+						edge_row.class = "scan2_multi_complete_select"
 					else
 						edge_row.class = "scan2_exactly_one_complete_select"
 					end
-					if complete_count == 1 then
+					if complete_count >= 1 then
 						edge_row.selected_tuple_index = selected_tuple.tuple_index
 						edge_row.selected_station_count =
 							selected_tuple.probe_station_count
+					end
+
+					-- The v5 cross-check (contracts 8.5): the compile path's
+					-- own R19 resolution runs beside the projection's.  On a
+					-- DECIDED selection the two must agree and a mismatch
+					-- aborts the scan loudly -- a finding, never a column; on
+					-- a rejected class the compile outcome is recorded.
+					local compile_ok, compile_selected = pcall(
+						resolve_edge_joint_terminals, stage, tracer, edge,
+						transition_source, attachment, selected,
+						probed_attachment)
+					if edge_row.class == "scan2_exactly_one_complete_select" or
+							edge_row.class == "scan2_multi_complete_select" then
+						if not compile_ok then
+							fail(edge.id .. " compile joint resolution failed " ..
+								"where the projection selected: " ..
+								tostring(compile_selected))
+						end
+						if compile_selected.from_i ~= selected_tuple.from_i or
+								compile_selected.to_i ~= selected_tuple.to_i or
+								compile_selected.probe_forward ~=
+									selected_tuple.probe_forward then
+							fail(edge.id ..
+								" compile and projection joint selections disagree")
+						end
+						edge_row.compile_agreement = "agrees"
+					elseif compile_ok then
+						edge_row.compile_agreement = "compile_selected"
+					else
+						edge_row.compile_agreement = "compile_failed"
 					end
 				end
 				-- The tuple tier was the only consumer of the resolved R16
@@ -4610,6 +5253,20 @@ local function new_partition(dependencies)
 				local row = {id = aperture.source.id, side = side,
 					bank_id = incidence.bank_id,
 					terminal_index = incidence.terminal_index}
+				-- The D2 admission occupancy (plan 7.2, contracts 8.5): the
+				-- authored-order detached shoulder station of this side, so
+				-- the v5 record measures where the admission fires.
+				local perimeter = stage.perimeter_by_id[
+					aperture.source.perimeter_id]
+				local detached_index
+				if side == "before" then
+					detached_index = aperture.authored_detached_before
+				else
+					detached_index = aperture.authored_detached_after
+				end
+				if detached_index then
+					row.detached = key(perimeter.stations[detached_index])
+				end
 				local ok, resolved = pcall(tracer.resolve_terminal, terminal,
 					incidence.bay_id)
 				if ok then
@@ -5419,6 +6076,8 @@ local function new_partition(dependencies)
 	partition.compile = compile_impl
 	partition.census_scan = census_scan
 	partition.census_scan_schema = census_scan_schema
+	partition.joint_tuple_less_compile = joint_tuple_less_compile
+	partition.joint_tuple_less_census = joint_tuple_less_census
 	partition.census_stage_reject_classes = stage_reject_classes
 	partition.classify_junction_pair = classify_junction_pair
 	partition.pair_clearance = pair_clearance

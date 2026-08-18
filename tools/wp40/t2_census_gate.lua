@@ -10,9 +10,14 @@
 -- usage:
 --   t2_census_gate.lua REPO SCRATCH paths
 --   t2_census_gate.lua REPO SCRATCH plan W_PATH
---   t2_census_gate.lua REPO SCRATCH cost CAP SIZE:COMPLETED:ELAPSED...
---     one sample per shard; ELAPSED is that shard's own elapsed seconds at its
---     own latest completion, never the launcher's wall clock (section 6.6.3)
+--   t2_census_gate.lua REPO SCRATCH cost BUDGET SIZE:COMPLETED:WALL:CPU...
+--     one sample per shard; WALL and CPU are that shard's own elapsed and own
+--     CPU seconds at its own latest completion, never the launcher's wall clock
+--     (section 6.6.3).  BUDGET is the per-seed CPU budget: since 2026-08-18 the
+--     wall projection is advisory and only the CPU projection can abort.
+--   t2_census_gate.lua REPO SCRATCH cpu_gate HEAD_DATE
+--     read the measured CPU gate conf and refuse a missing or stale one
+--   t2_census_gate.lua REPO SCRATCH liveness CONSUMED COMPLETED_SINCE ALLOWANCE
 --   t2_census_gate.lua REPO SCRATCH module_digest
 --   t2_census_gate.lua REPO SCRATCH first_record W_PATH DIGEST MODULES FIRST LAST PATH
 --   t2_census_gate.lua REPO SCRATCH verify W_PATH DIGEST MODULES FIRST LAST PATH
@@ -123,41 +128,89 @@ elseif command == "plan" then
 			authority.census_shard_path(range.first, range.last)))
 	end
 elseif command == "cost" then
-	local cap = tonumber(arg[4] or "")
-	assert(cap and cap > 0, "cap must be a positive number of seconds")
+	local budget = tonumber(arg[4] or "")
+	assert(budget and budget > 0, "the CPU budget must be a positive number of seconds")
 	local samples = {}
 	for index = 5, #arg do
-		local size, completed, elapsed = arg[index]:match("^(%d+):(%d+):(%d+)$")
-		assert(size, "cost sample " .. arg[index] .. " is not SIZE:COMPLETED:ELAPSED")
+		local size, completed, elapsed, cpu =
+			arg[index]:match("^(%d+):(%d+):(%d+):(%d+)$")
+		assert(size, "cost sample " .. arg[index] ..
+			" is not SIZE:COMPLETED:WALL:CPU")
 		samples[#samples + 1] = {size = tonumber(size),
-			completed = tonumber(completed), elapsed = tonumber(elapsed)}
+			completed = tonumber(completed), elapsed = tonumber(elapsed),
+			cpu = tonumber(cpu)}
 	end
-	local projection = authority.project_wall_seconds(samples)
+	-- Section 6.5, 2026-08-18: wall is still projected and still printed -- the
+	-- run manifest states the single-seed cost and the projected total in wall
+	-- time at a stated worker count, and the operator reads it -- but it is
+	-- labelled advisory and no verdict is taken on it.  The host is a
+	-- workstation, so wall time separates a contended run from a pathological
+	-- one not at all.
+	local wall = authority.project_wall_seconds(samples)
+	print(("WP40 T2 census cost projection wall_seconds=%d workers=%d " ..
+		"per_seed_seconds=%.2f completions=%d shards=%d observed_wall_seconds=%d " ..
+		"verdict=advisory"):format(math.floor(wall.wall_seconds),
+		wall.worker_count, wall.per_seed_seconds, wall.driver.completed, #samples,
+		math.floor(wall.observed_wall_seconds)))
 	-- The verdict is decided before the line is printed so the line can carry
-	-- it: a projection over the cap that did not abort is only readable as a
+	-- it: a projection over the budget that did not abort is only readable as a
 	-- deferral if the log says so, and a deferral the log hides is the shape of
 	-- gate this branch keeps having to prove is not vacuous.  One line, no tabs
-	-- -- the launcher persists it verbatim as the section-6.5 manifest value.
-	local decided, verdict = pcall(authority.check_cost_gate, projection, cap)
-	print(("WP40 T2 census cost projection wall_seconds=%d workers=%d cap_seconds=%d " ..
-		"per_seed_seconds=%.2f completions=%d shards=%d observed_wall_seconds=%d " ..
-		"verdict=%s"):format(math.floor(projection.wall_seconds),
-		projection.worker_count, math.floor(cap), projection.per_seed_seconds,
-		projection.driver.completed, #samples,
-		math.floor(projection.observed_wall_seconds),
+	-- -- the launcher persists both verbatim beside the shards they describe.
+	local cpu = authority.project_cpu_seconds(samples)
+	local decided, verdict = pcall(authority.check_cpu_gate, cpu, budget)
+	print(("WP40 T2 census cpu projection cpu_seconds=%d workers=%d " ..
+		"budget_seconds=%.2f per_seed_cpu_seconds=%.2f completions=%d shards=%d " ..
+		"observed_cpu_seconds=%d verdict=%s"):format(math.floor(cpu.cpu_seconds),
+		cpu.worker_count, budget, cpu.per_seed_cpu_seconds, cpu.driver.completed,
+		#samples, math.floor(cpu.observed_cpu_seconds),
 		decided and verdict or "aborted"))
 	-- Flushed before the refusal so the launcher, which captures both streams
-	-- into one buffer, records the projection above the abort that cites it.
+	-- into one buffer, records the projections above the abort that cites them.
 	io.stdout:flush()
 	if not decided then refuse(error, verdict, 0) end
 	print("WP40 T2 census cost gate " .. verdict)
+elseif command == "cpu_gate" then
+	-- The measured budget, read once before the fan-out.  A full-`W` run that
+	-- cannot say what its CPU budget is measured from does not start: an
+	-- estimated margin is what section 6.5 replaced.
+	local head_date = arg[4]
+	local conf_path = repo .. "/" .. authority.cpu_gate_conf_path
+	local conf = refuse(function()
+		local file = io.open(conf_path, "rb")
+		if not file then
+			error("WP40 T2 census: no measured CPU gate at " ..
+				authority.cpu_gate_conf_path ..
+				"; run tools/wp40/run_t2_census_probe.sh (plan section 6.5)", 0)
+		end
+		local bytes = assert(file:read("*a"))
+		assert(file:close())
+		return authority.read_cpu_gate_conf(bytes, head_date)
+	end)
+	print(("WP40 T2 census CPU gate anchor_seconds=%.2f margin=%.2f " ..
+		"budget_seconds=%.2f liveness_x_seconds=%.2f probe_date=%s"):format(
+		conf.anchor, conf.margin, conf.budget, conf.allowance, conf.probe_date))
+elseif command == "liveness" then
+	local consumed = tonumber(arg[4] or "")
+	local completed_since = tonumber(arg[5] or "")
+	local allowance = tonumber(arg[6] or "")
+	assert(consumed and completed_since and allowance,
+		"liveness needs CONSUMED COMPLETED_SINCE ALLOWANCE")
+	local decided, verdict = pcall(authority.check_liveness_gate,
+		{consumed = consumed, completed_since = completed_since,
+		allowance = allowance})
+	print(("WP40 T2 census liveness consumed_cpu_seconds=%d completions_since=%d " ..
+		"allowance_seconds=%d verdict=%s"):format(math.floor(consumed),
+		completed_since, math.floor(allowance), decided and verdict or "aborted"))
+	io.stdout:flush()
+	if not decided then refuse(error, verdict, 0) end
 elseif command == "merge_kat" then
 	-- The M5 gate's pinned half.  The LuaJIT/PUC comparison proves the two
 	-- runtimes agree; this proves they agree on the value a reviewed run
 	-- measured, which is what stops a silent semantic change in the merge from
 	-- passing because both interpreters changed with it.
 	local digest = assert(arg[4], "merge artifacts digest required")
-	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v4.lua"
+	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
 	local chunk, diagnostic = loadfile(fixture_path)
 	assert(chunk, "census KAT fixture missing or invalid: " .. tostring(diagnostic))
 	local fixture = chunk()

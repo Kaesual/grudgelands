@@ -184,7 +184,15 @@ correction, with its evidence and digests, stays in
   `before` and one `after` incidence for each mouth aperture. In the
   deduplicated final **authored/declared** perimeter order, let `D` be the dry
   station adjacent to the aperture, `A` the next dry station away from it, and
-  `W` the immediately included aperture-water station toward it. If `D` is a
+  `W` the immediately included aperture-water station toward it. "The next
+  dry station away" is a search, not a fixed offset (the D2 decision,
+  [wp40-t2-plan.md](wp40-t2-plan.md) section 7.2, decided 2026-08-18): each
+  sweep of the aperture extraction admits, per aperture end and per station
+  order, at most one detached Base-Bay-passing station separated from the
+  aperture run by exactly one non-passing station — recorded on the compiled
+  aperture, outside membership, payload and ownership — and the `A` search
+  skips it. Every other Base-Bay-passing station outside the mouth run
+  remains an aperture reject, measured vacuous over the full `W` census. If `D` is a
   final same-Bay Bank candidate, the direct rotation anchor remains `A,D`.
   Otherwise `D` must be dry footprint equality with no cardinal same-Bay or
   foreign water, while `W` must be raw and final water owned only by the
@@ -220,7 +228,7 @@ correction, with its evidence and digests, stays in
   `(x,z)` is the terminal. Any failed precondition rejects without fallback.
   A resolved elbow is inserted after `E` as a terminal control in that
   candidate's sole final-edge probe reraster; it is never appended or snapped
-  post-raster and is not a scalar sample. R19 below promotes only the unique
+  post-raster and is not a scalar sample. R19 below promotes only the selected
   complete joint terminal tuple and its already-probed edge bytes. Extreme-
   scalar record identities and values remain upstream and unchanged. The raw
   mask is built next, the one simultaneous
@@ -371,10 +379,21 @@ correction, with its evidence and digests, stays in
   probe station away from it. Both declared incident Banks of every transition
   must then complete to their already-authorized Aperture or Wing terminals
   under the unchanged R11 tracing rules. Those other terminals are never edge
-  transitions, so the dependency is finite and acyclic. Exactly one complete
-  joint tuple is required. Two tuples with the same resolved terminal,
-  previous and probe-edge byte identity are duplicate authority and reject;
-  zero or multiple complete tuples reject.
+  transitions, so the dependency is finite and acyclic. Two tuples with the
+  same resolved terminal, previous and probe-edge byte identity are duplicate
+  authority and reject; zero complete tuples reject. Among several complete
+  tuples the compiler selects the least under the declared total order of
+  [wp40-t2-plan.md](wp40-t2-plan.md) section 7.1 (decided 2026-08-18): total
+  retreat from the declared endpoints — the station distance along the
+  selected interval from each declared endpoint to its incidence — then
+  maximum per-endpoint retreat, elbow-terminal count, the sorted resolved
+  terminal set, the sorted `previous` set, and the probe bytes under
+  canonical orientation. Tuples equal under the last three keys are
+  duplicate authority and were rejected before the order applies, which is
+  what makes the order total; every key is invariant under authored
+  reversal, so the reversal clause below holds unchanged. The order is
+  selection among enumerated complete tuples, never pruning: the
+  no-first/nearest/longest/scan/backstep ban on the enumeration stands.
   Only the selected tuple's probe bytes are materialized once. An unselected
   probe, R16 result or Bank path is not serialized. Edges with transitions at
   both endpoints are evaluated as one joint tuple against one combined probe,

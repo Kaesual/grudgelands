@@ -13,14 +13,22 @@ set -euo pipefail
 # The free paths run anywhere; --full-w is the GO-gated one and starts nothing
 # until the token matches the `W` this tree derives (section 6.6.7).  It fans
 # out at full width immediately -- there is no serial pre-validation pass
-# (section 5) -- and then holds five gates over the running fleet: the first
+# (section 5) -- and then holds six gates over the running fleet: the first
 # completed record of every worker is validated against the artifact contract,
-# a rolling per-shard projection is re-checked against the nine-hour wall cap
-# at every completion, a shard already on disk is verified before it is resumed,
-# anything unparseable at a census path aborts the launcher loudly rather
-# than counting as an empty shard, and a worker that exits before completing
-# its range aborts the whole fleet at the next poll (section 6.6.9 -- run 3
-# carried three dead shards past an hourly log watch).
+# a rolling per-shard projection of per-seed CPU is re-checked against the
+# measured CPU budget at every completion, the fleet is aborted if it burns CPU
+# without completing a seed, a shard already on disk is verified before it is
+# resumed, anything unparseable at a census path aborts the launcher loudly
+# rather than counting as an empty shard, and a worker that exits before
+# completing its range aborts the whole fleet at the next poll (section 6.6.9
+# -- run 3 carried three dead shards past an hourly log watch).
+#
+# Wall time is not one of them, since the section-6.5 re-decision of
+# 2026-08-18: the host is a workstation, concurrent user load is normal
+# operation, and the rolling wall projection survives as an advisory figure in
+# the log and the manifest that the operator reads.  The workers run at idle
+# priority for the same reason -- user work preempts the fleet and the run
+# stretches instead of the user yielding the machine.
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
@@ -39,7 +47,7 @@ owned_lua=(
 	"$repo/tools/wp40/t2_census_hasher.lua"
 	"$repo/tools/wp40/t2_census_merge.lua"
 	"$repo/tools/wp40/t2_census_worker.lua"
-	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v4.lua"
+	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
 )
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
 for file in "${owned_lua[@]}"; do
@@ -142,6 +150,31 @@ reap_started_shards() {
 	echo "WP40 T2 census reaped shards removed_partial=$removed kept_complete=$kept" >&2
 }
 
+# Section 6.5's liveness gate reads the fleet's CPU here (another reader of
+# run_full_w's locals).  `/proc/<pid>/stat` fields 14 and 15 are the process's
+# utime and stime in clock ticks; they are counted off the remainder after the
+# comm field, because comm is parenthesised and may itself hold spaces.  Only
+# live workers are summed, so a worker that exits takes its ticks out of the
+# total: the sum can fall at a completion but never rise without a worker having
+# burned CPU, which makes this gate under-report rather than false-fire.  The
+# python SHA responder is a child process and its CPU appears neither here nor
+# in the worker's own os.clock telemetry -- the same quantity on both sides.
+fleet_cpu_seconds() {
+	local total=0 pid stat rest
+	for pid in "${pids[@]}"; do
+		if (( pid == 0 )); then continue; fi
+		read -r stat <"/proc/$pid/stat" 2>/dev/null || continue
+		rest="${stat##*') '}"
+		local -a fields=($rest)
+		# A worker that exits between the poll and this read leaves nothing to
+		# count; a stat line too short to hold both counters is that race, not a
+		# fleet that burned no CPU, and either way it contributes zero.
+		if (( ${#fields[@]} < 13 )); then continue; fi
+		total=$((total + fields[11] + fields[12]))
+	done
+	printf '%s' "$((total / clock_ticks))"
+}
+
 # Section 6.6.5 and the M5 gate: the same merge runs twice on the same inputs,
 # under LuaJIT and under the vendored PUC 5.1, and the five artifacts must come
 # out byte for byte identical.  Only the PUC run is ever allowed to publish, so
@@ -159,14 +192,17 @@ cost_note_path="$repo/tools/wp40/results/t2_census/cost-projection.txt"
 # Section 6.6.3's projection is re-taken at every completion, which over a full
 # `W` is 4,123 near-identical lines of arithmetic.  The log keeps what a
 # babysitter has to see -- the first verdict, every change of verdict (a
-# deferral is the gate reporting that it saw an over-cap observation and held),
+# deferral is the gate reporting that it saw an over-budget observation and held),
 # and the drift as the estimate converges -- and the cost note keeps the rest.
 cost_reported_wall=-1
 cost_reported_verdict=""
 report_cost_projection() {
-	local line="$1" wall="" verdict=""
-	if [[ "$line" =~ wall_seconds=([0-9]+) ]]; then wall="${BASH_REMATCH[1]}"; fi
-	if [[ "$line" =~ verdict=([a-z]+) ]]; then verdict="${BASH_REMATCH[1]}"; fi
+	local wall_line="$1" cpu_line="$2" wall="" verdict=""
+	if [[ "$wall_line" =~ wall_seconds=([0-9]+) ]]; then wall="${BASH_REMATCH[1]}"; fi
+	# The verdict is the CPU gate's -- the wall line carries `verdict=advisory`
+	# and always will, so throttling on it would collapse every change of state
+	# the log is kept for.
+	if [[ "$cpu_line" =~ verdict=([a-z]+) ]]; then verdict="${BASH_REMATCH[1]}"; fi
 	if [[ -n "$wall" && "$verdict" == "$cost_reported_verdict" ]] &&
 			(( cost_reported_wall >= 0 &&
 				wall * 20 >= cost_reported_wall * 19 &&
@@ -175,7 +211,7 @@ report_cost_projection() {
 	fi
 	cost_reported_verdict="$verdict"
 	cost_reported_wall="${wall:--1}"
-	printf '%s\n' "$line"
+	printf '%s\n%s\n' "$wall_line" "$cpu_line"
 }
 run_merge_pair() {
 	local out_luajit="$1" out_puc="$2"
@@ -290,20 +326,75 @@ run_full_w() {
 	}
 	echo "WP40 T2 census authority: commit=$commit tree=$tree modules=$module_digest"
 
-	# The one restatement of the authority's `wall_cap_seconds` (section 6.5,
-	# nine hours since the 2026-08-16 re-decision).  A second copy of a decided
-	# number is what this branch has been bitten by before, so the gate test
-	# reads this line back and refuses a drift instead of trusting it.
-	local cap="${WP40_CENSUS_WALL_CAP_SECONDS:-32400}"
+	# Section 6.5 (2026-08-18): the run-cost budget is measured, never restated
+	# here.  The conf is the contention probe's output and the gate refuses a
+	# missing one and one older than the commit this run is reproducible from,
+	# so no number in this file can drift from the measurement it claims.
+	local head_date conf_line conf_status=0
+	head_date="$(git -C "$repo" show -s --format=%cs "$commit")"
+	conf_line="$("$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" \
+		cpu_gate "$head_date" 2>&1)" || conf_status=$?
+	if (( conf_status != 0 )); then
+		echo "$conf_line" >&2
+		exit 2
+	fi
+	echo "$conf_line"
+	local budget liveness_allowance
+	budget="$(sed -n 's/.* budget_seconds=\([0-9.]\+\) .*/\1/p' <<<"$conf_line")"
+	liveness_allowance="$(sed -n 's/.* liveness_x_seconds=\([0-9.]\+\) .*/\1/p' \
+		<<<"$conf_line")"
+	# The two overrides exist for the gate suite, which has to drive both gates
+	# to their refusal in under two minutes; a real run takes both from the conf.
+	budget="${WP40_CENSUS_CPU_BUDGET_SECONDS:-$budget}"
+	liveness_allowance="${WP40_CENSUS_LIVENESS_X_SECONDS:-$liveness_allowance}"
 	local deadline="${WP40_CENSUS_FIRST_RECORD_DEADLINE:-900}"
-	[[ "$cap" =~ ^[0-9]+$ && "$cap" -gt 0 ]] || {
-		echo "WP40_CENSUS_WALL_CAP_SECONDS must be a positive integer" >&2
+	[[ "$budget" =~ ^[0-9]+(\.[0-9]+)?$ ]] || {
+		echo "WP40 T2 census could not read a CPU budget: $budget" >&2
+		exit 2
+	}
+	[[ "$liveness_allowance" =~ ^[0-9]+(\.[0-9]+)?$ ]] || {
+		echo "WP40 T2 census could not read a liveness allowance:" \
+			"$liveness_allowance" >&2
 		exit 2
 	}
 	[[ "$deadline" =~ ^[0-9]+$ && "$deadline" -gt 0 ]] || {
 		echo "WP40_CENSUS_FIRST_RECORD_DEADLINE must be a positive integer" >&2
 		exit 2
 	}
+
+	# The kernel counts process CPU in clock ticks and the gate decides in
+	# seconds; fleet_cpu_seconds reads this local.
+	local clock_ticks
+	clock_ticks="$(getconf CLK_TCK)"
+	[[ "$clock_ticks" =~ ^[0-9]+$ && "$clock_ticks" -gt 0 ]] || {
+		echo "WP40 T2 census could not read CLK_TCK" >&2
+		exit 2
+	}
+
+	# Section 6.5 (2026-08-18): the fleet yields to the user rather than the
+	# other way round.  Detected here rather than assumed -- SCHED_IDLE and the
+	# idle I/O class need no privilege on Linux, but a foreign kernel or a
+	# container can still refuse either, and a launcher that silently dropped
+	# the prefix would run a nine-hour fleet at normal priority.
+	local -a idle_prefix=()
+	local idle_label="none"
+	if chrt --idle 0 true >/dev/null 2>&1; then
+		idle_prefix=(chrt --idle 0)
+		idle_label="chrt --idle 0"
+		if ionice -c3 true >/dev/null 2>&1; then
+			idle_prefix+=(ionice -c3)
+			idle_label="$idle_label + ionice -c3"
+		fi
+	elif nice -n19 true >/dev/null 2>&1; then
+		idle_prefix=(nice -n19)
+		idle_label="nice -n19"
+	fi
+	if [[ "$idle_label" == "none" ]]; then
+		echo "WP40 T2 census scheduling: none -- chrt, ionice and nice all" \
+			"refused, so the fleet runs at normal priority" >&2
+	else
+		echo "WP40 T2 census scheduling: $idle_label"
+	fi
 	mkdir -p "$repo/tools/wp40/results/t2_census"
 
 	local -a pids=() first_ready=() reaped=() statuses=()
@@ -326,7 +417,8 @@ run_full_w() {
 		else
 			local worker_scratch
 			worker_scratch="$(new_scratch)"
-			"$lua_path" "$script_dir/t2_census_worker.lua" "$repo" "$worker_scratch" \
+			"${idle_prefix[@]}" \
+				"$lua_path" "$script_dir/t2_census_worker.lua" "$repo" "$worker_scratch" \
 				"${outputs[$index]}" --range "${firsts[$index]}" "${lasts[$index]}" \
 				--go-token "$token" --commit "$commit" --tree "$tree" \
 				--interpreter-id luajit --interpreter-path "$lua_real" \
@@ -355,11 +447,15 @@ run_full_w() {
 
 	local start_seconds=$SECONDS last_global=-1 cost_samples=""
 	local failure="" worker_death=0
-	# Section 6.6.3: each shard's own clock at its own latest completion.  The
+	# Section 6.6.3: each shard's own clocks at its own latest completion.  The
 	# launcher's wall clock was read here until 2026-08-16 and gave every shard
 	# with one completion the same rate -- the age of the fleet -- which turned
-	# eight cold first seeds into a single 71 s/seed projection.
-	local progress_pattern='completed=([0-9]+)/[0-9]+ wall_seconds=([0-9]+)'
+	# eight cold first seeds into a single 71 s/seed projection.  Since
+	# 2026-08-18 the same line carries the shard's own CPU seconds beside its
+	# wall seconds, and the CPU pair is the one that can abort the run.
+	local progress_pattern='completed=([0-9]+)/[0-9]+ wall_seconds=([0-9]+) cpu_seconds=([0-9]+)'
+	local liveness_mark=0 liveness_global=$resumed_seeds liveness_armed=0
+	local liveness_checked=$SECONDS liveness_reported=0
 	while :; do
 		local active=0 running=0 ready=0 global=$resumed_seeds
 		local -a samples=()
@@ -370,16 +466,17 @@ run_full_w() {
 			running=$((running + 1))
 			local alive=0
 			if kill -0 "$pid" 2>/dev/null; then active=$((active + 1)); alive=1; fi
-			local completed=0 shard_elapsed=0 progress
+			local completed=0 shard_elapsed=0 shard_cpu=0 progress
 			progress="$(grep '^WP40 T2 census shard progress ' "${logs[$index]}" \
 				2>/dev/null | tail -n 1 || true)"
 			if [[ "$progress" =~ $progress_pattern ]]; then
 				completed="${BASH_REMATCH[1]}"
 				shard_elapsed="${BASH_REMATCH[2]}"
+				shard_cpu="${BASH_REMATCH[3]}"
 			fi
 			global=$((global + completed))
 			if (( completed > 0 )); then
-				samples+=("${sizes[$index]}:$completed:$shard_elapsed")
+				samples+=("${sizes[$index]}:$completed:$shard_elapsed:$shard_cpu")
 				# Section 6.6.2: validated once, on the first record that closed,
 				# while this worker and the other seven keep running.
 				if (( first_ready[index] == 0 )); then
@@ -438,18 +535,20 @@ run_full_w() {
 			cost_samples="${samples[*]}"
 			local cost_output cost_status=0
 			cost_output="$("$lua_path" "$script_dir/t2_census_gate.lua" "$repo" \
-				"$scratch" cost "$cap" "${samples[@]}" 2>&1)" || cost_status=$?
+				"$scratch" cost "$budget" "${samples[@]}" 2>&1)" || cost_status=$?
 			if (( cost_status != 0 )); then
 				echo "$cost_output" >&2
 				if (( cost_status == 3 )); then
-					failure="the projected wall time exceeds the ${cap}s cap"
+					failure="the projected CPU per seed exceeds the ${budget}s budget"
 				else
 					failure="the cost gate failed to run (status $cost_status)"
 				fi
 				break
 			fi
-			local projection_line
+			local projection_line cpu_projection_line
 			projection_line="$(grep '^WP40 T2 census cost projection ' \
+				<<<"$cost_output" || true)"
+			cpu_projection_line="$(grep '^WP40 T2 census cpu projection ' \
 				<<<"$cost_output" || true)"
 			if [[ -n "$projection_line" ]]; then
 				# Section 6.5 requires the run manifest to state the measured
@@ -458,9 +557,12 @@ run_full_w() {
 				# projection is persisted beside the shards it describes rather than
 				# left to die with this launcher's scratch directory.  The note
 				# carries the newest evaluation: by the last completion the rolling
-				# estimate has stopped being a projection and is a measurement.
-				printf '%s\n' "$projection_line" >"$cost_note_path"
-				report_cost_projection "$projection_line"
+				# estimate has stopped being a projection and is a measurement.  The
+				# wall line stays first: the merge reads one line and that value is
+				# the manifest's, now stated as the advisory figure it is.
+				printf '%s\n%s\n' "$projection_line" "$cpu_projection_line" \
+					>"$cost_note_path"
+				report_cost_projection "$projection_line" "$cpu_projection_line"
 			fi
 		fi
 
@@ -472,6 +574,48 @@ run_full_w() {
 			echo "WP40 T2 census corpus progress global_completed=$global/$w_total" \
 				"active=$active wall_seconds=$elapsed eta_seconds=$eta"
 			last_global=$global
+			# Section 6.5's liveness gate re-marks here and nowhere else: the span
+			# it measures is "since the last completed seed", so a completion is
+			# the only thing that may reset it.  It arms at the first completion
+			# because before that there is no such span -- and the run's first
+			# seeds are its most expensive, so a fleet-CPU allowance applied to
+			# them would fire on a cold start.  The window before the first
+			# completion belongs to gate 2's first-record deadline.
+			if (( global > resumed_seeds )); then
+				liveness_mark="$(fleet_cpu_seconds)"
+				liveness_global=$global
+				liveness_armed=1
+			fi
+		fi
+		# Asked on a ten-second throttle rather than at every two-second poll:
+		# the allowance is a fleet-CPU figure that a healthy fleet needs minutes
+		# to approach, so a verdict per poll would only spend CPU on the gate
+		# that measures CPU.
+		if (( liveness_armed == 1 && active > 0 && SECONDS - liveness_checked >= 10 )); then
+			liveness_checked=$SECONDS
+			local consumed=$(($(fleet_cpu_seconds) - liveness_mark))
+			if (( consumed < 0 )); then consumed=0; fi
+			local liveness_output liveness_status=0
+			liveness_output="$("$lua_path" "$script_dir/t2_census_gate.lua" "$repo" \
+				"$scratch" liveness "$consumed" "$((global - liveness_global))" \
+				"$liveness_allowance" 2>&1)" || liveness_status=$?
+			if (( liveness_status != 0 )); then
+				echo "$liveness_output" >&2
+				if (( liveness_status == 3 )); then
+					failure="the fleet consumed ${consumed}s CPU without completing a seed"
+				else
+					failure="the liveness gate failed to run (status $liveness_status)"
+				fi
+				break
+			fi
+			# The first verdict is printed and the rest are not.  A gate that
+			# never says anything is indistinguishable from a gate that never
+			# ran, which this branch has shipped twice; a gate that says
+			# something every ten seconds for nine hours is a log nobody reads.
+			if (( liveness_reported == 0 )); then
+				printf '%s\n' "$liveness_output"
+				liveness_reported=1
+			fi
 		fi
 		if (( active == 0 )); then break; fi
 		sleep 2

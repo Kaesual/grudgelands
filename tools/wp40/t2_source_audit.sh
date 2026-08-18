@@ -217,7 +217,7 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q '5e8866d1490b508e54a4d503c087fa5265722ecd443dcfe098bc0e672b2d0000' "$stage1"
+grep -q 'f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558' "$stage1"
 grep -q '3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe' "$stage1"
 grep -q '8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45' "$stage1"
 grep -q 'e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751' "$stage1"

@@ -94,7 +94,7 @@ check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) =
 
 -- ------------------------------------------------------------ shard path names
 local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
-check(shard_path == "tools/wp40/results/t2_census/census-scan-v4-0000-0515.tsv",
+check(shard_path == "tools/wp40/results/t2_census/census-scan-v5-0000-0515.tsv",
 	"census shard path changed: " .. shard_path)
 check(not shard_path:find("shard-luajit", 1, true),
 	"census shard path collides with the pool pattern")
@@ -103,7 +103,7 @@ refuses("a shard path that is not canonical", "not the canonical census path",
 	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
 	0, 515)
 refuses("a free run writing a shard file name", "must not write a shard file name",
-	authority.validate_free_output_path, "/tmp/census-scan-v4-0000-0515.tsv")
+	authority.validate_free_output_path, "/tmp/census-scan-v5-0000-0515.tsv")
 refuses("a free run writing a stale M1 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
@@ -140,12 +140,15 @@ check(authority.check_cost_gate(inside), "an inside-cap projection was refused")
 -- here rather than assumed, because every pinned projection below is a
 -- statement about which side of this number it falls on.
 check(cap == 32400, "the section-6.5 wall cap changed: " .. cap)
--- The launcher restates the cap as its WP40_CENSUS_WALL_CAP_SECONDS default.
--- A second copy of a decided number is exactly what this branch has already
--- paid for once, so the copy is read back rather than trusted.
-check(read_file(repo .. "/tools/wp40/run_t2_census.sh"):find(
-		"WP40_CENSUS_WALL_CAP_SECONDS:-" .. cap .. "}", 1, true) ~= nil,
-	"the launcher's cap default no longer restates the authority's " .. cap)
+-- Retired as a kill criterion 2026-08-18.  The launcher restated it as its
+-- WP40_CENSUS_WALL_CAP_SECONDS default until then; what is checked now is that
+-- the copy is *gone*, because a wall cap left in the launcher would be a second
+-- gate nobody decided to keep.  The replays below still drive the estimator
+-- through this number: they are its pinned behaviour in the domain they were
+-- measured in, and the CPU gate is the same estimator.
+local launcher_source = read_file(repo .. "/tools/wp40/run_t2_census.sh")
+check(launcher_source:find("WALL_CAP", 1, true) == nil,
+	"the launcher still carries a wall cap after the 2026-08-18 retirement")
 -- The trap section 6.5 names: 4,123 worker-seconds per seed-second is a
 -- nine-hour overrun in wall time only if the projection stays per shard.
 local over = authority.project_wall_seconds({
@@ -351,6 +354,178 @@ check(slow_verdicts[#slow_verdicts].verdict == "aborted",
 check(slow_verdicts[1].verdict == "deferred",
 	"the all-71 s fleet was judged on its first completions after all")
 
+-- ------------------------------------------------------------- CPU gate
+-- Section 6.5, 2026-08-18: the hard abort moved to the CPU domain, where
+-- intrinsic pathology and host contention separate.  The fixtures here are
+-- fabricated shard *logs* rather than samples, because the launcher's input is
+-- the workers' progress lines: a worker that renamed a field or a launcher that
+-- stopped reading one would pass a sample-level test and then fail a run.
+local launcher_progress_fields =
+	"completed=([0-9]+)/[0-9]+ wall_seconds=([0-9]+) cpu_seconds=([0-9]+)"
+check(launcher_source:find(launcher_progress_fields, 1, true) ~= nil,
+	"the launcher no longer reads completed, wall and CPU off one progress line")
+-- Every worker of a full-`W` fleet is launched under it (section 6.5: user work
+-- preempts the fleet, the run stretches instead of the user yielding the host).
+check(launcher_source:find("chrt --idle 0", 1, true) ~= nil and
+	launcher_source:find("nice -n19", 1, true) ~= nil,
+	"the launcher no longer starts its workers under idle scheduling")
+
+local function shard_log(first, last, per_seed_wall, per_seed_cpu, completed)
+	local total = last - first + 1
+	local lines = {}
+	for index = 1, completed do
+		lines[#lines + 1] = authority.shard_progress_line({first = first,
+			last = last, completed = index, total = total,
+			wall_seconds = per_seed_wall * index, cpu_seconds = per_seed_cpu * index,
+			eta_seconds = per_seed_wall * (total - index)})
+	end
+	return table.concat(lines, "\n") .. "\n"
+end
+-- The launcher's own reading of that log: the last progress line, and the three
+-- fields its pattern names.
+local function sample_of(size, log)
+	local line
+	for candidate in (log):gmatch("([^\n]*)\n") do
+		if candidate:find("WP40 T2 census shard progress ", 1, true) == 1 then
+			line = candidate
+		end
+	end
+	check(line ~= nil, "the fabricated shard log holds no progress line")
+	local completed, wall, cpu = line:match(
+		"completed=(%d+)/%d+ wall_seconds=(%d+) cpu_seconds=(%d+)")
+	check(completed ~= nil,
+		"the worker's progress line lost a field the launcher reads: " .. line)
+	return {size = size, completed = tonumber(completed),
+		elapsed = tonumber(wall), cpu = tonumber(cpu)}
+end
+refuses("a progress line claiming more completions than the shard has seeds",
+	"reports 3 of 2 seeds", authority.shard_progress_line,
+	{first = 0, last = 1, completed = 3, total = 2, wall_seconds = 1,
+	cpu_seconds = 1, eta_seconds = 0})
+
+-- A budget of the shape the probe writes: 35 s of anchor at a 1.8x measured
+-- margin is 63 s of CPU per seed, against this host's 32-39 s steady state.
+local cpu_budget = authority.cpu_budget_seconds(35, 1.8)
+check(math.abs(cpu_budget - 63) < 1e-9, "the CPU budget arithmetic changed: " ..
+	cpu_budget)
+refuses("a contention margin below one", "at least 1",
+	authority.cpu_budget_seconds, 35, 0.9)
+refuses("a CPU anchor of zero", "positive number",
+	authority.cpu_budget_seconds, 0, 1.8)
+
+-- Under budget: two shards two completions in at 36 s of CPU per seed, with
+-- wall running well ahead of CPU because the host is busy with something else.
+-- That is the case the wall cap used to kill and this gate must not.
+local under = {sample_of(516, shard_log(0, 515, 120, 36, 2)),
+	sample_of(515, shard_log(516, 1030, 118, 35, 2))}
+local under_cpu = authority.project_cpu_seconds(under)
+check(math.floor(under_cpu.cpu_seconds) == 18576,
+	"the under-budget CPU projection changed: " .. under_cpu.cpu_seconds)
+check(math.abs(under_cpu.per_seed_cpu_seconds - 36) < 1e-9,
+	"the under-budget rate is not the slowest shard's CPU per seed")
+check(authority.check_cpu_gate(under_cpu, cpu_budget) == "passed",
+	"an under-budget CPU projection was refused")
+-- Over budget: the same fleet at 70 s of CPU per seed, which no amount of host
+-- contention explains at a measured 1.8x margin over a 35 s anchor.
+local over = {sample_of(516, shard_log(0, 515, 75, 70, 2)),
+	sample_of(515, shard_log(516, 1030, 74, 69, 2))}
+local over_cpu = authority.project_cpu_seconds(over)
+check(math.abs(over_cpu.per_seed_cpu_seconds - 70) < 1e-9,
+	"the over-budget rate changed: " .. over_cpu.per_seed_cpu_seconds)
+refuses("a projection past the measured CPU budget", "exceeds the",
+	authority.check_cpu_gate, over_cpu, cpu_budget)
+-- The estimator's rules carry over whole: one completion is an observation, and
+-- however far over the budget it lands it can only defer.
+local cold_cpu = authority.project_cpu_seconds({
+	sample_of(516, shard_log(0, 515, 900, 800, 1)),
+	sample_of(515, shard_log(516, 1030, 40, 36, 1))})
+check(cold_cpu.decisive == false,
+	"a one-completion CPU fleet was treated as decisive")
+check(authority.check_cpu_gate(cold_cpu, cpu_budget) == "deferred",
+	"an over-budget single CPU sample was not deferred")
+-- And a shard stalled on its first seed still cannot buy a sibling that has
+-- answered twice an exemption.
+refuses("a stalled shard masking one that is over the CPU budget", "exceeds the",
+	authority.check_cpu_gate, authority.project_cpu_seconds({
+		sample_of(516, shard_log(0, 515, 3600, 3600, 1)),
+		sample_of(515, shard_log(516, 1030, 80, 71, 3))}), cpu_budget)
+
+-- The advisory wall path (section 6.5, 2026-08-18): nothing on the launcher's
+-- path can abort on wall time any more.  The functional half -- a fleet whose
+-- wall projection is more than twice the retired nine-hour cap passes, because
+-- its CPU is inside the budget -- and the structural half: the gate script the
+-- launcher calls does not so much as name the wall verdict function.
+local advisory = {sample_of(516, shard_log(0, 515, 130, 36, 2)),
+	sample_of(515, shard_log(516, 1030, 128, 35, 2))}
+local advisory_wall = authority.project_wall_seconds(advisory)
+check(math.floor(advisory_wall.wall_seconds) == 67080,
+	"the advisory wall projection changed: " .. advisory_wall.wall_seconds)
+check(advisory_wall.wall_seconds > 2 * cap,
+	"the advisory fixture no longer projects past twice the retired cap")
+check(authority.check_cpu_gate(authority.project_cpu_seconds(advisory),
+	cpu_budget) == "passed",
+	"a fleet twice over the retired wall cap was refused by the CPU gate")
+local gate_source = read_file(repo .. "/tools/wp40/t2_census_gate.lua")
+check(gate_source:find("check_cpu_gate", 1, true) ~= nil,
+	"the launcher-side gate no longer takes a CPU verdict")
+check(gate_source:find("check_cost_gate", 1, true) == nil,
+	"the launcher-side gate still takes a wall verdict after the retirement")
+check(gate_source:find("verdict=advisory", 1, true) ~= nil,
+	"the wall projection line no longer says it is advisory")
+
+-- The liveness gate (section 6.5, 2026-08-18): the busy-loop hang, without
+-- false-firing on the starved fleet that idle scheduling makes ordinary.
+local allowance = 540
+check(authority.check_liveness_gate({consumed = 0, completed_since = 0,
+	allowance = allowance}) == "quiet",
+	"a fleet consuming no CPU at all was accused of looping")
+check(authority.check_liveness_gate({consumed = allowance,
+	completed_since = 0, allowance = allowance}) == "quiet",
+	"the liveness gate fired exactly at its allowance")
+refuses("a fleet burning CPU while nothing completes",
+	"since its last completed seed", authority.check_liveness_gate,
+	{consumed = allowance + 1, completed_since = 0, allowance = allowance})
+-- Progress is never accused, however much CPU it cost: the span the gate reads
+-- is the one since the last completed seed, and a completion ends it.
+check(authority.check_liveness_gate({consumed = 100 * allowance,
+	completed_since = 1, allowance = allowance}) == "progressing",
+	"a fleet that completed a seed was judged on the CPU it took to do it")
+refuses("a liveness allowance of zero", "allowance is invalid",
+	authority.check_liveness_gate,
+	{consumed = 1, completed_since = 0, allowance = 0})
+
+-- The measured conf the budget and the allowance come from.  Nothing here is a
+-- restated number: what is checked is that the file has to carry them, that a
+-- conf older than the commit it would gate is refused, and that a typo reads as
+-- a typo rather than as a missing measurement.
+local conf_text = "# measured\nANCHOR_CPU_SECONDS=35.00\nCONTENTION_MARGIN=1.80\n" ..
+	"LIVENESS_X_CPU_SECONDS=600\nPROBE_DATE=2026-08-18\n"
+local conf = authority.read_cpu_gate_conf(conf_text, "2026-08-18")
+check(math.abs(conf.budget - 63) < 1e-9,
+	"the conf's budget is not anchor times margin: " .. conf.budget)
+check(conf.allowance == 600 and conf.anchor == 35 and conf.margin == 1.8,
+	"the conf reader lost a measured value")
+check(authority.read_cpu_gate_conf(conf_text, "2026-08-17").probe_date ==
+	"2026-08-18", "a conf newer than the commit was refused")
+refuses("a CPU gate conf measured before the commit it would gate",
+	"older than the HEAD commit", authority.read_cpu_gate_conf, conf_text,
+	"2026-08-19")
+refuses("a CPU gate conf missing its margin", "declares no CONTENTION_MARGIN",
+	authority.read_cpu_gate_conf,
+	(conf_text:gsub("CONTENTION_MARGIN=1.80\n", "", 1)), "2026-08-18")
+refuses("a CPU gate conf with a misspelled key", "undeclared key",
+	authority.read_cpu_gate_conf,
+	(conf_text:gsub("CONTENTION_MARGIN", "CONTENTION_MARGINS", 1)), "2026-08-18")
+refuses("a CPU gate conf line that is not an assignment", "KEY=VALUE",
+	authority.read_cpu_gate_conf, conf_text .. "margin 1.8\n", "2026-08-18")
+refuses("a CPU gate conf declaring a key twice", "twice",
+	authority.read_cpu_gate_conf, conf_text .. "CONTENTION_MARGIN=9.00\n",
+	"2026-08-18")
+refuses("a CPU gate conf with an undated probe", "not an ISO date",
+	authority.read_cpu_gate_conf,
+	(conf_text:gsub("PROBE_DATE=2026%-08%-18", "PROBE_DATE=yesterday", 1)),
+	"2026-08-18")
+
 -- --------------------------------------------------- first record and resume
 -- A synthetic shard in the exact worker format.  Building it here rather than
 -- capturing one keeps the negatives cheap: every mutation below is a one-line
@@ -522,7 +697,7 @@ check(#authority.wing_exclusion_causes == 7,
 -- be resumed into the new run.  Two independent refusals per retired
 -- version: the canonical path no longer names it, and the free-output rule
 -- refuses to write it either.
-check(shard_path:find("census-scan-v4-", 1, true) and
+check(shard_path:find("census-scan-v5-", 1, true) and
 	not shard_path:find("census-scan-v3-", 1, true) and
 	not shard_path:find("census-scan-v2-", 1, true),
 	"the v4 shard name still admits an older shard")

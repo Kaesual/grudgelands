@@ -74,6 +74,15 @@ make_export() {
 	mkdir -p "$target"
 	git -C "$repo" archive HEAD | tar -x -C "$target"
 	cp -r "$repo/tools/bin" "$target/tools/bin"
+	# The measured CPU gate travels with the export for the same reason the
+	# interpreters do: it lives under the gitignored results/ tree, because it
+	# is a measurement of this host on a day rather than authority bytes, and a
+	# full-`W` start refuses to run without it (plan section 6.5).
+	if [[ -e "$repo/tools/wp40/results/census-cpu-gate.conf" ]]; then
+		mkdir -p "$target/tools/wp40/results"
+		cp "$repo/tools/wp40/results/census-cpu-gate.conf" \
+			"$target/tools/wp40/results/census-cpu-gate.conf"
+	fi
 	git -C "$target" init -q
 	git -C "$target" add -A
 	git -C "$target" -c user.email=census@gate -c user.name=census \
@@ -93,8 +102,16 @@ token_of() {
 }
 
 shard_one() {
-	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v4-0000-0515.tsv"
+	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v5-0000-0515.tsv"
 }
+
+# Every --full-w proof below needs the probe's measured CPU gate, which is a
+# measurement of this host rather than tracked bytes: the suite cannot conjure
+# one and says so instead of skipping the gates that need it.
+if [[ ! -e "$repo/tools/wp40/results/census-cpu-gate.conf" ]]; then
+	fail "no measured CPU gate at tools/wp40/results/census-cpu-gate.conf; run \
+tools/wp40/run_t2_census_probe.sh first (plan section 6.5)"
+fi
 
 echo "== module-level gate decisions =="
 "${WP40_LUA_BIN:-/usr/bin/luajit}" "$script_dir/t2_census_gate_test.lua" "$repo" \
@@ -132,7 +149,7 @@ mkdir -p "$export_dir/tools/wp40/results/t2_census"
 : >"$(shard_one "$export_dir")"
 expect_failure "the empty claim file of a crashed worker" "shard file is empty" \
 	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
-printf 'schema\tgrug_wp40_census_scan_v4\nvocabulary\tx\n' \
+printf 'schema\tgrug_wp40_census_scan_v5\nvocabulary\tx\n' \
 	>"$(shard_one "$export_dir")"
 expect_failure "a shard that stops before its digest line" \
 	"no trailing digest line" \
@@ -142,26 +159,64 @@ expect_failure "a shard holding unrelated bytes" "no trailing digest line" \
 	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
 rm -f "$(shard_one "$export_dir")"
 
-echo "== cost gate (plan section 6.6.3), eight workers really start =="
-expect_failure "a projection past a one-second wall cap" "exceeds the" \
-	env WP40_CENSUS_GO="$token" WP40_CENSUS_WALL_CAP_SECONDS=1 \
+echo "== CPU gate (plan sections 6.5 and 6.6.3), eight workers really start =="
+# The export is of HEAD, so running this suite before the 2026-08-18 gates are
+# committed would drive a launcher that ignores the override below -- and a
+# full-`W` fleet that nothing stops then runs for hours instead of failing a
+# proof.  One grep buys the difference between that and an instant answer.
+if ! grep -q 'WP40_CENSUS_CPU_BUDGET_SECONDS' \
+		"$export_dir/tools/wp40/run_t2_census.sh"; then
+	fail "the exported launcher predates the CPU gate (plan section 6.5); commit \
+the census changes first -- this suite exports HEAD, not the working tree"
+fi
+checks=$((checks + 1))
+# The budget is measured, never assumed, so the two ways of not having a
+# measurement come first -- both refuse before a single worker starts.
+census_conf="$export_dir/tools/wp40/results/census-cpu-gate.conf"
+mv "$census_conf" "$scratch/cpu-gate.conf"
+expect_failure "a full-W start with no measured CPU gate" \
+	"run tools/wp40/run_t2_census_probe.sh" \
+	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
+sed 's/^PROBE_DATE=.*/PROBE_DATE=1970-01-01/' "$scratch/cpu-gate.conf" \
+	>"$census_conf"
+expect_failure "a full-W start on a CPU gate older than its own commit" \
+	"older than the HEAD commit" \
+	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
+cp "$scratch/cpu-gate.conf" "$census_conf"
+# Since 2026-08-18 the run-cost gate is the CPU one; the wall projection cannot
+# abort anything, so a one-second *wall* cap would now hang this suite for as
+# long as a full `W` takes rather than prove a gate.
+expect_failure "a projection past a one-second CPU budget" "exceeds the" \
+	env WP40_CENSUS_GO="$token" WP40_CENSUS_CPU_BUDGET_SECONDS=1 \
 	"$export_dir/tools/wp40/run_t2_census.sh" --full-w
-expect_in_last "workers_started=8" "the cost-gate run"
-expect_in_last "ready=1" "the cost-gate run"
+expect_in_last "workers_started=8" "the CPU-gate run"
+expect_in_last "ready=1" "the CPU-gate run"
+# Section 6.5: the fleet runs at idle priority, and the launcher says which
+# mechanism it got rather than assuming one was there.
+expect_matches_last 'WP40 T2 census scheduling: (chrt --idle 0|nice -n19)' \
+	"the CPU-gate run"
+# The budget is measured, and the run says what it read.
+expect_in_last "WP40 T2 census CPU gate anchor_seconds=" "the CPU-gate run"
 # The gate must have reached its verdict, not merely have failed on the way to
-# it: the launcher's own abort line names a cap overrun either way, so without
-# these two the proof would accept a crashed check as a working gate -- which
-# is exactly what it caught on its first run.
-expect_in_last "WP40 T2 census cost projection" "the cost-gate run"
-expect_in_last "(plan section 6.5)" "the cost-gate run"
+# it: the launcher's own abort line names a budget overrun either way, so
+# without these the proof would accept a crashed check as a working gate --
+# which is exactly what it caught on its first run.
+expect_in_last "WP40 T2 census cpu projection" "the CPU-gate run"
+expect_in_last "(plan section 6.5)" "the CPU-gate run"
+# The wall projection survives beside it, and says it decides nothing.
+expect_matches_last 'WP40 T2 census cost projection .*verdict=advisory' \
+	"the CPU-gate run"
+# The liveness gate reports its first verdict, so a gate that never ran is
+# distinguishable from one that ran and stayed quiet.
+expect_in_last "WP40 T2 census liveness consumed_cpu_seconds=" "the CPU-gate run"
 # Section 6.6.3 since 2026-08-16: the shard whose rate casts the verdict must
 # have completed at least two seeds.  The first full-W start aborted on eight
 # single cold completions, at a rate solo re-measurement of the same three slow
 # seeds put 40 s per seed lower -- so an abort line here that names one
 # completion is the regression, not the gate.
 expect_matches_last \
-	'WP40 T2 census cost projection .*completions=([2-9]|[1-9][0-9]+) .*verdict=aborted' \
-	"the cost-gate run"
+	'WP40 T2 census cpu projection .*completions=([2-9]|[1-9][0-9]+) .*verdict=aborted' \
+	"the CPU-gate run"
 if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
 	sleep 2
 	if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
@@ -174,7 +229,38 @@ checks=$((checks + 1))
 # canonical paths would make the resume gate refuse the next run outright.
 expect_in_last "reaped shards removed_partial=8" "the cost-gate run"
 if compgen -G "$export_dir/tools/wp40/results/t2_census/*.tsv" >/dev/null; then
-	fail "the aborted cost-gate run left partial shards behind"
+	fail "the aborted CPU-gate run left partial shards behind"
+fi
+checks=$((checks + 1))
+
+echo "== liveness gate (plan section 6.5), eight workers really start =="
+# The other half of the 2026-08-18 pair, driven the only way it can be driven
+# without hanging a worker on purpose: an allowance of one CPU-second, which a
+# healthy fleet passes the moment it is armed.  The gate arms at the first
+# completion, so this run also proves the arming -- it cannot abort before a
+# seed has closed, whatever the allowance says.
+expect_failure "a fleet over its liveness allowance" \
+	"without completing a seed" \
+	env WP40_CENSUS_GO="$token" WP40_CENSUS_LIVENESS_X_SECONDS=1 \
+	WP40_CENSUS_CPU_BUDGET_SECONDS=100000 \
+	"$export_dir/tools/wp40/run_t2_census.sh" --full-w
+expect_in_last "workers_started=8" "the liveness run"
+expect_matches_last \
+	'WP40 T2 census liveness consumed_cpu_seconds=[0-9]+ completions_since=0 .*verdict=aborted' \
+	"the liveness run"
+# It cannot have fired before the fleet completed anything: the first-completion
+# arming is what keeps a cold start off this gate.
+expect_in_last "global_completed=" "the liveness run"
+if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
+	sleep 2
+	if pgrep -f "$export_dir/tools/wp40/t2_census_worker.lua" >/dev/null; then
+		fail "the aborted liveness run left workers running"
+	fi
+fi
+checks=$((checks + 1))
+expect_in_last "reaped shards removed_partial=8" "the liveness run"
+if compgen -G "$export_dir/tools/wp40/results/t2_census/*.tsv" >/dev/null; then
+	fail "the aborted liveness run left partial shards behind"
 fi
 checks=$((checks + 1))
 
@@ -262,7 +348,7 @@ rm -rf -- "$resume_scratch"
 echo "census gate proof marker" >"$export_dir/CENSUS_GATE_MARKER"
 commit_export "$export_dir"
 expect_failure "a run resuming one verified shard" "exceeds the" \
-	env WP40_CENSUS_GO="$token" WP40_CENSUS_WALL_CAP_SECONDS=1 \
+	env WP40_CENSUS_GO="$token" WP40_CENSUS_CPU_BUDGET_SECONDS=1 \
 	"$export_dir/tools/wp40/run_t2_census.sh" --full-w
 expect_in_last "shard verified range=0000..0515 seeds=516" "the resume run"
 expect_in_last "workers_started=7 resumed_shards=1" "the resume run"

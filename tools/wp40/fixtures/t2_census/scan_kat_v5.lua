@@ -1,5 +1,9 @@
--- WP40 T2 census scan KAT fixture (plan section 6.7, milestones M1+M3+M4+M5
--- plus the 2026-08-17 stage-reject package).
+-- WP40 T2 census scan KAT fixture (contracts section 6.7, milestones
+-- M1+M3+M4+M5, the 2026-08-17 stage-reject package, and the 2026-08-18
+-- collected correction -- contracts section 8).  v5: W-112 compiles through
+-- the D2 detached-shoulder admission and returns to the roster as a full
+-- record; its land_004 is the first KAT-pinned D1 multi-complete selection
+-- (four tuples, two complete, the zero-retreat tuple selected).
 -- Fill counts are the known F6 witness occupancies from
 -- wp40-t2-degeneracy-completeness.md section 3-F6, in source.bays order
 -- (bay_elandor_west, bay_elandor_east, bay_kragmar_west, bay_kragmar_east).
@@ -46,7 +50,7 @@ local function wing(id, raw, structural, wedge_valid, rank, radius,
 		negative_length = negative_length, positive_length = positive_length}
 end
 return {
-	schema = "grug_wp40_census_scan_v4",
+	schema = "grug_wp40_census_scan_v5",
 	-- The load-bearing M3 witness: this endpoint must hold at least two R16
 	-- candidates while its edge completes exactly one joint tuple.  The
 	-- worker's --kat roster must cover this seed.
@@ -71,16 +75,24 @@ return {
 	fragment_witness = {seed = "15219119262482319357", edge = "land_007",
 		attachment = "perimeter_attachment:elandor:land_007", intervals = 2,
 		singletons = 1, qualifying = 1, class = "transition_interval_select"},
-	-- The load-bearing stage-reject witness (2026-08-17): W-112, the seed the
-	-- first full-W starts died on -- solo-reproduced, deterministic, the first
-	-- measured occupancy of an analysis section 3-F9 aperture malformation
-	-- class.  The worker asserts that this seed still stage-rejects with
-	-- exactly this site and class: a KAT run in which it quietly builds a
-	-- full stage means the finding this package records has vanished, and the
-	-- digest alone would report that only as an opaque drift.
-	stage_reject_witness = {seed = "343674299183575008",
-		site = "bay_mouth_aperture:elandor_east",
-		class = "aperture_second_run_reject"},
+	-- The D2 detached-shoulder witness (contracts 8.2): W-112, the seed the
+	-- run-3 shards died on, now compiles -- the admitted station is the
+	-- authored-order after-side detached shoulder of Elandor-east, world
+	-- point 1227:-2928, exactly the shape the gate-1 diagnostic measured at
+	-- all seven occupied seeds.  The worker asserts the admission fired
+	-- here and nowhere else, so a construction drift that silently widens
+	-- or loses the admission is legible by name, not only by digest.
+	detached_shoulder_witness = {seed = "343674299183575008",
+		aperture = "bay_mouth_aperture:elandor_east", side = "after",
+		station = "1227:-2928"},
+	-- The D1 multi-complete selection witness (contracts 8.2): W-112's
+	-- land_004 enumerates four tuples of which two complete, at retreat 0
+	-- and 4, and the declared order selects the zero-retreat tuple -- the
+	-- R18-continuous outcome the plan-7.1 measurements found at 730 of the
+	-- 757 multi-complete records over `W`.
+	multi_complete_witness = {seed = "343674299183575008",
+		edge = "land_004", tuples = 4, complete = 2, selected_tuple = 1,
+		selected_station_count = 1599},
 	r15_corpus = {
 		wing("bay_wing:elandor_west:left", 4, 4, 1, 1, 4, 4, 3),
 		wing("bay_wing:elandor_west:right", 18, 18, 1, 10, 5, 4, 5),
@@ -134,12 +146,15 @@ return {
 				{80, 0, 60}},
 			["18446744073709551615"] = {{80, 0, 80}, {80, 0, 80}, {80, 0, 67},
 				{80, 0, 60}},
+			["343674299183575008"] = {{80, 0, 72}, {80, 0, 75}, {80, 0, 80},
+				{80, 0, 80}},
 		}},
 	fills = {
 		["0"] = {0, 0, 0, 0},
 		["15219119262482319357"] = {0, 0, 0, 0},
 		["16178445837170081103"] = {0, 0, 0, 0},
 		["18446744073709551615"] = {1, 1, 1, 0},
+		["343674299183575008"] = {0, 0, 0, 0},
 	},
 	-- Aperture resolution modes per seed (analysis section 3-F4): eight direct
 	-- incidences everywhere except Slot 29, whose Elandor-east `before`
@@ -149,6 +164,7 @@ return {
 		["15219119262482319357"] = {direct = 8, diagonal_shoulder = 0},
 		["16178445837170081103"] = {direct = 7, diagonal_shoulder = 1},
 		["18446744073709551615"] = {direct = 8, diagonal_shoulder = 0},
+		["343674299183575008"] = {direct = 8, diagonal_shoulder = 0},
 	},
 	scan2 = {
 		["0"] = {
@@ -235,8 +251,29 @@ return {
 				land_016 = edge(select_one, 1, 1),
 			},
 		},
+		-- W-112 (v5): the first KAT seed carrying a multi-complete edge.
+		["343674299183575008"] = {
+			endpoints = {
+				["bay_edge_transition:land_001:to"] = endpoint(1502, 1, 1, 0),
+				["bay_edge_transition:land_004:from"] = endpoint(1598, 4, 4, 0),
+				["bay_edge_transition:land_004:to"] = endpoint(1598, 1, 1, 0),
+				["bay_edge_transition:land_007:from"] = endpoint(1598, 1, 1, 0),
+				["bay_edge_transition:land_010:to"] = endpoint(1577, 1, 1, 0),
+				["bay_edge_transition:land_013:from"] = endpoint(1586, 1, 1, 0),
+				["bay_edge_transition:land_013:to"] = endpoint(1586, 2, 2, 0),
+				["bay_edge_transition:land_016:from"] = endpoint(1548, 1, 1, 0),
+			},
+			edges = {
+				land_001 = edge(select_one, 1, 1),
+				land_004 = edge("scan2_multi_complete_select", 4, 2),
+				land_007 = edge(select_one, 1, 1),
+				land_010 = edge(select_one, 1, 1),
+				land_013 = edge(select_one, 2, 1),
+				land_016 = edge(select_one, 1, 1),
+			},
+		},
 	},
-	digest = "a9c3ecfceb47f591e1d28a943ca45503458250f8a12bdabd8463a353ea2e499d",
+	digest = "431965a8e72dc868f3734fcb83048e5a16eeaf59aca9a0384be49e87786cffae",
 	-- The M5 gate's pinned half (plan section 6.6.5), over the five section-6.2
 	-- artifacts the merge builds from exactly the records above -- not over the
 	-- manifest, which names the merge interpreter and therefore differs between
@@ -245,5 +282,5 @@ return {
 	-- measured, so a semantic change in the merge cannot pass merely because
 	-- both interpreters changed with it.
 	merge_artifacts_digest =
-		"2a22bfd9ee3b7bacfc7b3d323e23f636afcccb630752c01b4f8dd4afac8c0c2f",
+		"ecfc118aabeb0ba6ebc0693a00c265ba00803bb7c9b6257059a0d2d133354def",
 }

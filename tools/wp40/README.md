@@ -551,7 +551,8 @@ tools/wp40/run_t2_census.sh --merge-kat            # the M5 gate: KAT, merge twi
 tools/wp40/run_t2_census.sh --plan                 # derive W, print the GO token
 WP40_CENSUS_GO=<token> tools/wp40/run_t2_census.sh --full-w
 tools/wp40/run_t2_census.sh --merge                # publish the five artifacts
-tools/wp40/run_t2_census_gates.sh                  # the five gates, proven negatively
+tools/wp40/run_t2_census_probe.sh                  # measure the CPU gate (~5 min, saturates the host)
+tools/wp40/run_t2_census_gates.sh                  # the six gates, proven negatively
 ```
 
 LuaJIT by default, `WP40_LUA_BIN` overrides. One worker process evaluates
@@ -750,7 +751,7 @@ Wing counts seven pair-exclusion causes on one row, so a site can realize the
 same branch through several rows of one seed and "the first such row" was an
 arrival-order choice. The witness is now the least row of the least seed.
 
-`fixtures/t2_census/scan_kat_v4.lua` pins the M1+M3+M4+M5 KAT plus the
+`fixtures/t2_census/scan_kat_v5.lua` pins the M1+M3+M4+M5 KAT plus the
 stage-reject witness: the section
 3-F6 witness fills (seed 0 `0/0/0/0`, Slot 30 `0/0/0/0`, Slot 29 `0/0/0/0`,
 max-u64 `1/1/1/0`), the
@@ -843,11 +844,11 @@ eight shards are three of 516 and five of 515 rather than the pool's clean
 512s. The order is ascending canonical unsigned-64 decimal and the seeds
 never pass through a Lua number.
 
-### The five gates, and why they are proven negatively
+### The six gates, and why they are proven negatively
 
 `run_t2_census_gates.sh` drives each gate to its refusal, in a throwaway git
 export of HEAD so the real tree is never written; `t2_census_gate_test.lua`
-does the same against the decision functions directly (4,653 checks, 65 of
+does the same against the decision functions directly (4,707 checks, 78 of
 them demanding an abort for a named reason). A gate that refused everything
 would pass all the negatives, so the positives are proven too: a well-formed
 shard is resumed and costs exactly one worker, a real worker record validates
@@ -876,10 +877,9 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    `WP40_CENSUS_FIRST_RECORD_DEADLINE` (default 900 s) the run aborts too — a
    worker that hangs before writing anything is the same early failure.
 3. **Cost gate** (sections 6.5 and 6.6.3). Once every running worker has a
-   completion the slowest shard is projected to full length and compared
-   against nine hours *wall at eight workers* (eight until the section-6.5
-   re-decision of 2026-08-16), and from then on the whole projection is
-   re-taken at every completion. The projection takes the
+   completion the slowest shard is projected to full length, and from then on
+   the whole projection is re-taken at every completion. The projection takes
+   the
    slowest shard rather than a sum or an average because the shards run
    concurrently: summing inflates by the worker count, averaging hides an
    unbalanced run. A shard's rate is its **own** elapsed seconds at its **own**
@@ -887,21 +887,49 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    pair out of the shard's progress line — and a rate may only cast a verdict
    once that shard has completed two seeds. Until then it is reported and
    deferred: the projection line carries `completions=`, an
-   `observed_wall_seconds=` that includes single-sample shards, and
-   `verdict=passed|deferred|aborted`, so an over-cap observation that did not
+   `observed_…_seconds=` that includes single-sample shards, and
+   `verdict=passed|deferred|aborted`, so an over-budget observation that did not
    stop the run is in the log rather than behind it. Deferral belongs to the
    verdict and not to the fleet — one shard stalled after its first seed must
-   not buy seven provably over-cap siblings an exemption — so the cap is
+   not buy seven provably over-budget siblings an exemption — so the budget is
    applied to the slowest shard that *has* answered twice.
-   `WP40_CENSUS_WALL_CAP_SECONDS` lowers the cap, which is how the negative
-   proof fires inside two minutes. An estimate re-taken all run long can also
-   find a breach late; the abort then keeps every finished shard through gate
-   4's reaper and the next `--full-w` resumes them, which is section 6.5's
-   "report and re-scope" rather than "abandon". **Launch the full-`W` run on an
-   otherwise quiet host.** Measured at M4: the same probe read 34–39 s per seed
-   and projected 5.7 h on an idle machine, and 71 s per seed and 10.2 h while a
-   second eight-worker measurement was running — the gate aborted, correctly,
-   because that is what the host was delivering.
+
+   **What it is compared against moved on 2026-08-18** (plan section 6.5, "why
+   the wall cap retired"): this host is a workstation, so concurrent user load
+   is normal operation rather than degradation, and wall time cannot separate a
+   contended run from a pathological one. The wall projection survives — same
+   estimator, same line, now reading `verdict=advisory` — and is what the
+   manifest still states in wall seconds at eight workers, for the operator to
+   read. Nothing aborts on it. The hard abort is the same rolling estimator
+   re-based on the **CPU** seconds each worker reports beside its wall figure on
+   the same progress line, against a per-seed CPU budget of a measured anchor
+   times a measured contention margin (`WP40_CENSUS_CPU_BUDGET_SECONDS` lowers
+   it, which is how the negative proof fires inside two minutes). Beside it
+   rides a **liveness gate**: the fleet consuming more than `X` CPU-seconds
+   since its last completed seed aborts — the busy-loop hang — while a fleet
+   merely starved by user work accumulates no CPU and is never accused of it. It
+   arms at the first completion, because before that there is no such span and
+   the run's first seeds are its most expensive; that window is gate 2's.
+   Honest residual, recorded in the plan: a worker blocked forever while
+   consuming no CPU trips nothing automatic. An estimate re-taken all run long
+   can also find a breach late; the abort then keeps every finished shard
+   through gate 4's reaper and the next `--full-w` resumes them, which is
+   section 6.5's "report and re-scope" rather than "abandon".
+
+   The budget and `X` are measured, never estimated:
+   `tools/wp40/run_t2_census_probe.sh` scans three KAT seeds solo and then again
+   under one busy loop per logical CPU, and writes the worst solo per-seed CPU,
+   the worst inflation ratio (rounded up) and ten times the worst loaded seed to
+   the gitignored `tools/wp40/results/census-cpu-gate.conf`. A `--full-w` start
+   refuses to begin without that file, or with one dated before its own HEAD
+   commit — a margin measured before the code that would spend it is a number
+   about a different program. The workers themselves launch under `chrt --idle 0`
+   plus `ionice -c3` (`nice -n19` where those are refused), so user work
+   preempts the fleet and the run stretches instead of the user yielding the
+   machine: the accepted consequence of the same decision. Measured at M4 under
+   the retired wall gate, and still the reason the host matters: the same probe
+   read 34–39 s per seed on an idle machine and 71 s per seed while a second
+   eight-worker measurement ran.
 
    The cap itself was re-decided over the *second* full-`W` start, 2026-08-16,
    and the estimator was left alone. That run aborted at a projected 28,896 s
@@ -930,11 +958,13 @@ minute that must *not* abort and a fleet at 71 s per seed that must.
    has no ceiling of its own: eight shards each holding a single completion are
    deferred no matter how far over the cap that one observation lands, because
    what bounds the deferral is the next completion. In the ordinary case that
-   costs one seed. A fleet that stops completing seeds entirely is not this
-   gate's to catch and never was — gate 2's deadline covers a worker that
-   produces no record at all, and gate 6's death watch reaps a worker that
-   exits early. Between the two, a worker still alive but stalled mid-range
-   remains unpolled and is the operator's to see.
+   costs one seed. A fleet that stops completing seeds entirely is not the
+   projection's to catch and never was — gate 2's deadline covers a worker that
+   produces no record at all, gate 6's death watch reaps a worker that exits
+   early, and since 2026-08-18 the liveness gate covers the fleet that keeps
+   burning CPU while nothing closes. What remains uncovered, by decision, is the
+   worker still alive, stalled mid-range and consuming nothing: that one is the
+   operator's to see.
 
    The two-completion rule is there because the first seed of a shard is
    systematically the most expensive — cold JIT, and eight R7 compiles landing

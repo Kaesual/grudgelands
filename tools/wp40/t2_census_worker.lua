@@ -249,9 +249,16 @@ end
 local prefilter_serialized
 local scans_by_seed = {}
 local run_started = os.time()
+-- Section 6.5 (2026-08-18): CPU seconds beside wall on every progress line.
+-- `os.clock` is this process's own CPU and nothing else's -- the SHA responder
+-- is a separate process -- which is what makes the figure comparable with the
+-- contention probe's anchor.  Telemetry only: it reaches stderr and the shard
+-- progress line, never `emit`, so no record byte and no digest moves with it.
+local run_cpu_started = os.clock()
 for seed_index = 1, #seeds do
 	local seed = seeds[seed_index]
 	local started = os.time()
+	local cpu_started = os.clock()
 	local scan = partition.census_scan(seed)
 	if mode == "kat" then scans_by_seed[seed] = scan end
 	if scan.stage_reject then
@@ -364,7 +371,7 @@ for seed_index = 1, #seeds do
 			emit("scan2_edge", seed, row.edge_id, row.class, tostring(row.flagged),
 				tostring(row.tuple_count), tostring(row.complete_count),
 				tostring(row.duplicate_count), opt(row.selected_tuple_index),
-				opt(row.selected_station_count))
+				opt(row.selected_station_count), opt(row.compile_agreement))
 		end
 		for index = 1, #scan.scan2_tuples do
 			local row = scan.scan2_tuples[index]
@@ -381,7 +388,7 @@ for seed_index = 1, #seeds do
 			emit("scan3_aperture", seed, row.id, row.side, row.class,
 				row.mode or "-", opt(row.d), opt(row.t), opt(row.w),
 				opt(row.selected_elbow), opt(row.water_side_ok), row.bank_id,
-				tostring(row.terminal_index), opt(row.detail))
+				tostring(row.terminal_index), opt(row.detail), opt(row.detached))
 		end
 		for index = 1, #scan.scan3_wings do
 			local row = scan.scan3_wings[index]
@@ -454,21 +461,29 @@ for seed_index = 1, #seeds do
 	-- shapes would come to report differently.
 	flush_record()
 	hasher.forget()
+	-- Both figures are this seed's own: wall from its own start, CPU as the
+	-- `os.clock` delta across it.  The cumulative CPU this line carried until
+	-- 2026-08-18 read as a per-seed figure beside a per-seed wall and was not
+	-- one, which is the shape of telemetry that gets projected wrongly.
 	io.stderr:write("census seed " .. seed .. " " ..
 		(scan.stage_reject and "stage_reject " .. scan.stage_reject.class
 			or "done") ..
 		" " .. seed_index .. "/" .. #seeds ..
 		" wall=" .. os.difftime(os.time(), started) .. "s cpu=" ..
-		string.format("%.1f", os.clock()) .. "s\n")
+		string.format("%.1f", os.clock() - cpu_started) .. "s\n")
 	io.stderr:flush()
 	if shard_mode then
 		local elapsed = math.max(0, os.difftime(os.time(), run_started))
+		local cpu_elapsed = math.max(0, os.clock() - run_cpu_started)
 		local remaining = #seeds - seed_index
 		local eta = math.floor(elapsed * remaining / seed_index)
-		print(("WP40 T2 census shard progress range=%04d..%04d current=%04d " ..
-			"completed=%d/%d wall_seconds=%d eta_seconds=%d"):format(
-			range_first, range_last, range_first + seed_index - 1, seed_index,
-			#seeds, elapsed, eta))
+		-- The launcher's two rolling estimators read this line, so the authority
+		-- formats it: the shard's own wall clock and its own CPU clock, adjacent
+		-- and both accumulated over the same completions.
+		print(authority.shard_progress_line({first = range_first,
+			last = range_last, completed = seed_index, total = #seeds,
+			wall_seconds = elapsed, cpu_seconds = math.floor(cpu_elapsed),
+			eta_seconds = eta}))
 		io.stdout:flush()
 	end
 end
@@ -498,7 +513,7 @@ print("census scan rows " .. line_count .. " digest " .. digest)
 
 if mode == "kat" then
 	local fixture_path = repo ..
-		"/tools/wp40/fixtures/t2_census/scan_kat_v4.lua"
+		"/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
 	local fixture_chunk, fixture_diagnostic = loadfile(fixture_path)
 	assert(fixture_chunk, "census KAT fixture missing or invalid: " ..
 		tostring(fixture_diagnostic))
@@ -524,35 +539,40 @@ if mode == "kat" then
 		"census KAT fixture lacks its F8 fragment witness declaration")
 	assert(scans_by_seed[fixture.fragment_witness.seed],
 		"census KAT roster does not cover the fixture's fragment witness seed")
-	-- The stage-reject witness (2026-08-17): W-112, the first measured 3-F9
-	-- aperture occupancy.  The load-bearing pin is the middle assert -- a
-	-- witness seed that quietly built a full stage would mean the occupancy
-	-- this package exists to record has vanished, and the digest alone would
-	-- report that only as an opaque drift.
-	assert(type(fixture.stage_reject_witness) == "table" and
-		fixture.stage_reject_witness.seed and fixture.stage_reject_witness.site and
-		fixture.stage_reject_witness.class,
-		"census KAT fixture lacks its stage-reject witness declaration")
-	assert(scans_by_seed[fixture.stage_reject_witness.seed],
-		"census KAT roster does not cover the fixture's stage-reject witness seed")
-	assert(scans_by_seed[fixture.stage_reject_witness.seed].stage_reject,
-		"census KAT: the stage-reject witness seed built a full stage; the " ..
-		"pinned F9 occupancy is gone")
+	-- The D2 detached-shoulder witness (contracts 8.2): W-112, formerly the
+	-- pinned stage-reject seed, compiles through the admission since the
+	-- collected correction.  The load-bearing pins: no KAT seed
+	-- stage-rejects any more, the admission fires exactly at the pinned
+	-- aperture side and world station, and W-112's land_004 selects the
+	-- pinned D1 multi-complete tuple.
+	assert(type(fixture.detached_shoulder_witness) == "table" and
+		fixture.detached_shoulder_witness.seed and
+		fixture.detached_shoulder_witness.aperture and
+		fixture.detached_shoulder_witness.side and
+		fixture.detached_shoulder_witness.station,
+		"census KAT fixture lacks its detached-shoulder witness declaration")
+	assert(scans_by_seed[fixture.detached_shoulder_witness.seed],
+		"census KAT roster does not cover the fixture's detached-shoulder " ..
+		"witness seed")
+	assert(type(fixture.multi_complete_witness) == "table" and
+		fixture.multi_complete_witness.seed and
+		fixture.multi_complete_witness.edge and
+		fixture.multi_complete_witness.tuples and
+		fixture.multi_complete_witness.complete and
+		fixture.multi_complete_witness.selected_tuple and
+		fixture.multi_complete_witness.selected_station_count,
+		"census KAT fixture lacks its multi-complete witness declaration")
+	assert(scans_by_seed[fixture.multi_complete_witness.seed],
+		"census KAT roster does not cover the fixture's multi-complete " ..
+		"witness seed")
 	assert(#fixture.r15_corpus == 8,
 		"census KAT fixture expects eight retained R15 corpus rows")
 	for seed_index = 1, #seeds do
 		local seed = seeds[seed_index]
 		local scan = scans_by_seed[seed]
 		if scan.stage_reject then
-			local witness = fixture.stage_reject_witness
-			assert(seed == witness.seed,
-				"census KAT: seed " .. seed .. " unexpectedly stage-rejected: " ..
-				tostring(scan.stage_reject.detail))
-			assert(scan.stage_reject.site == witness.site and
-				scan.stage_reject.class == witness.class,
-				"census KAT: the stage-reject witness is " ..
-				scan.stage_reject.site .. "/" .. scan.stage_reject.class ..
-				", pinned " .. witness.site .. "/" .. witness.class)
+			error("census KAT: seed " .. seed .. " unexpectedly stage-rejected: " ..
+				tostring(scan.stage_reject.detail), 0)
 		else
 			assert(#scan.edges == 61, "census KAT expects 61 edge rows")
 			assert(#scan.perimeters == 3, "census KAT expects 3 perimeter rows")
@@ -630,6 +650,35 @@ if mode == "kat" then
 					"census KAT scan2 edge differs at " .. row.edge_id ..
 					" seed " .. seed)
 			end
+			if seed == fixture.multi_complete_witness.seed then
+				-- The D1 multi-complete selection witness (contracts 8.2): the
+				-- pinned edge enumerates several complete tuples and the
+				-- declared order selects the pinned one.
+				local witness = fixture.multi_complete_witness
+				local witnessed = false
+				for index = 1, #scan.scan2_edges do
+					local row = scan.scan2_edges[index]
+					if row.edge_id == witness.edge then
+						assert(row.class == "scan2_multi_complete_select" and
+							row.tuple_count == witness.tuples and
+							row.complete_count == witness.complete and
+							row.selected_tuple_index == witness.selected_tuple and
+							row.selected_station_count ==
+								witness.selected_station_count and
+							row.compile_agreement == "agrees",
+							"census KAT: the multi-complete selection witness " ..
+							"drifted at " .. row.edge_id .. ": " .. row.class ..
+							" " .. tostring(row.tuple_count) .. "/" ..
+							tostring(row.complete_count) .. " selected " ..
+							tostring(row.selected_tuple_index) .. "/" ..
+							tostring(row.selected_station_count) .. "/" ..
+							tostring(row.compile_agreement))
+						witnessed = true
+					end
+				end
+				assert(witnessed,
+					"census KAT: the multi-complete selection witness is absent")
+			end
 			if seed == fixture.r19_witness.seed then
 				-- The R19 witness (analysis section 3-F2): the fixture-named
 				-- endpoint carries at least two R16 candidates and its edge
@@ -665,6 +714,19 @@ if mode == "kat" then
 					row.class == "aperture_tail_select",
 					"census KAT scan3 aperture " .. row.id .. ":" .. row.side ..
 					" class " .. row.class .. " seed " .. seed)
+				-- The D2 admission fires exactly at the pinned witness (seed,
+				-- aperture, side, station) and nowhere else in the roster.
+				local witness = fixture.detached_shoulder_witness
+				if seed == witness.seed and row.id == witness.aperture and
+						row.side == witness.side then
+					assert(row.detached == witness.station,
+						"census KAT: the detached-shoulder witness station is " ..
+						tostring(row.detached) .. ", pinned " .. witness.station)
+				else
+					assert(row.detached == nil,
+						"census KAT: an unpinned detached shoulder appeared at " ..
+						row.id .. ":" .. row.side .. " seed " .. seed)
+				end
 				modes[row.mode] = assert(modes[row.mode],
 					"census KAT scan3 aperture mode " .. tostring(row.mode)) + 1
 				if row.mode == "diagonal_shoulder" then
@@ -823,6 +885,6 @@ if mode == "kat" then
 	end
 	assert(digest == fixture.digest,
 		"census KAT determinism digest differs: " .. digest)
-	print("census scan KAT passed (seeds 0, W-112 stage-reject, Slot 30, " ..
-		"Slot 29 and max-u64, digest pinned)")
+	print("census scan KAT passed (seeds 0, W-112 detached-shoulder, " ..
+		"Slot 30, Slot 29 and max-u64, digest pinned)")
 end
