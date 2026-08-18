@@ -173,6 +173,14 @@ rather than refreshed over its length; and the Scan-4 seed-set union
 moved 3,061 → 3,058 between v4 and v5 — its composition must be answered
 from the row grammar, not assumed, when the Scan-3b/4 package is cut.
 
+**Status, 2026-08-18, step 3 opened.** The Scan-3b/4 package is cut as
+section 9 of [wp40-t2-contracts.md](wp40-t2-contracts.md) (the relocation
+rule); implementation proceeds under it. Its one escalated semantic
+question — whether the detached-shoulder admission joins the Scan-4 flag
+vocabulary, which decides the input union 3,058 versus 3,061 — waits on
+the coordinator's ruling (contracts 9.2); the fleet does not launch
+before it.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.

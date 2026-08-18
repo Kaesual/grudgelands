@@ -4,8 +4,9 @@ Status: **contract file. Created 2026-08-18 by the plan's own relocation
 rule.**
 
 [wp40-t2-plan.md](wp40-t2-plan.md) holds ordering and decisions; this file
-holds package specifications — the census artifact contract (section 6) and
-the collected-correction implementation contract (section 8). The numbering
+holds package specifications — the census artifact contract (section 6),
+the collected-correction implementation contract (section 8) and the
+Scan-3b/4 census completion contract (section 9). The numbering
 is shared with the plan and preserved from where each contract was cut:
 every existing "section 6.x" reference resolves here unchanged, and new
 sections continue the plan's numbering space so a bare section number stays
@@ -1015,3 +1016,334 @@ babysitting, the v5 merge — may go to Opus subagents (user authorization
 2026-08-18), briefed by goals with a cost cap and a stated verification
 tier. Parallel Lua processes stay within the host's measured eight-worker
 band.
+
+## 9. The Scan-3b/4 census completion contract (cut 2026-08-18)
+
+This contract implements plan section 2 step 3: **Scan-3b**, the sixteen
+transition-incident Bank traces, and **Scan-4**, Face/Whole on the
+flagged, extremal and winner seeds — both on the corrected tuples the
+collected correction produced. Its baseline is the v5-schema/v2-name
+artifact set of section 8.5 (`artifacts_digest 37fcdc5e…`, gate 2
+accepted 2026-08-18), which supersedes v4 for every downstream consumer.
+This is a **measurement phase, not a correction phase**: the scanners
+classify by decided policy (section 6.6.6, the R15 stance), findings are
+measured occupancies, and nothing is promoted without occupancy evidence.
+Plan section 2 accepts **at most one small correction round after
+Scan-3b**, its candidate classes already named (R20/R21, section 9.1);
+if any is warranted it opens as a section-7-style decision memo after the
+run, never as an inline fix. Heavy regime wherever boundary topology is
+touched (section 1.1); the six locked files of section 3 are untouchable,
+and a needed arithmetic primitive is an escalation. A genuinely undecided
+semantic question found during implementation is a recorded escalation,
+not an inline decision — section 9.2 carries this contract's one open
+instance.
+
+### 9.1 Scope and measurands
+
+**Scan-3b** evaluates, per seed over the full `W`, the sixteen
+transition-incident Banks the v2 seed-set artifact names as its open
+roster rows — per Bay four of the five chain components: elandor_east
+{dawnmere, goldmead, silverleaf, starbough}, elandor_west {copperfell,
+dawnmere, goldmead, hearthpine}, kragmar_east {kapok, raincall, redtusk,
+sunscar}, kragmar_west {mournfen, redtusk, stillgrave, sunscar}. Each is
+traced once, materialization-style, from the terminals of the **selected**
+joint tuple (the v5 cross-check proved compile and projection agree on
+that selection over all of `W`) with the head-Bank observer
+instrumentation of census_scan3a: outcome class from the existing
+`scan3_bank_class` vocabulary, per-step and per-selection class coverage
+rows, step count, branch count, and the reachability frame and stack
+maxima. The two per-Bank scalars fill the sixteen open extremal-roster
+sites, closing the 153-site roster of section 6.2.3. Consistency
+discipline, the 8.5 pattern: Scan-2's completion tier already proved
+these Banks complete at the selected tuple, so an instrumented trace that
+dies is a **loud worker abort — a finding, never a column**.
+
+Beside the traces, Scan-3b adds the **bank-incomplete attribution
+histogram**: for every `scan2_tuple_bank_incomplete` tuple failure, which
+incident Bank died and the kind and mode of its far terminal (direct
+aperture, tail aperture, wing side). That attribution is the direct
+measurement substrate for the two predicted classes, declared here so
+occupancy has a place to land:
+
+- **R20 candidate — `aperture_anchor_dead_event`** (site: aperture
+  incidence). Fires when every tuple of an edge fails with the same
+  aperture-far Bank dead while that incidence resolved **direct** —
+  candidate `D`, the completeness analysis 3-F3 residual. The tail-mode
+  variant is R18's own recovered class and is not this event.
+- **R21 candidate — `wing_pair_dead_alternative_event`** (site: Wing).
+  Evaluated wherever a Bank with a Wing far terminal dies at the selected
+  wedge-valid pair — the sixteen via all-tuples-dead, the four head Banks
+  via their Scan-3a trace — and fires only if re-tracing under the next
+  wedge-valid pair completes. The alternative-pair probe runs **only** on
+  the dead condition, so its cost is occupancy-driven.
+
+Expected occupancy of both: **zero** — a projection, marked as one,
+grounded in the v5 measurement that `scan2_zero_complete_reject` and
+every head-Bank reject class read zero over `W`, which is the edge-level
+manifestation both events would force. Nonzero occupancy of either is
+exactly the named small-correction-round trigger of plan section 2.
+
+**Scan-4** evaluates, per seed of the input set (9.2), two tiers on the
+same stage build:
+
+- **The face tier** composes all 38 zone-face polygons from the
+  materialized Banks, arcs and final edges and classifies each face —
+  the stage-reject precedent: classification per fail site through a
+  message map beside the projection, anything unmatched re-raised —
+  under `scan4_face_class`: `face_simple_select`,
+  `face_not_closed_reject`, `face_wrong_orientation_reject`,
+  `face_non_simple_reject`, `face_composition_reject` (a component or
+  join failure at composition, before the polygon predicates run; a face
+  whose upstream arc failed is its own declared skip kind, not a silent
+  absence). The known F10 occupancy is this tier's first customer and its
+  sites are now measured, not seed-level: solo full-path compiles
+  (2026-08-18, this cut) place seed 2147483648 at
+  `zone_face:elandor_silverleaf_glades is not simple` and seed
+  1959553668008863006 at `zone_face:kragmar_stillgrave_hollow is not
+  simple`. Both must land as occupied `face_non_simple_reject` rows with
+  those witnesses — a crash on either is an implementation defect by
+  definition.
+- **The Whole tier** runs only when every face of the seed classifies
+  `face_simple_select`; otherwise it emits one `whole_not_evaluated` row
+  naming the blocking face — "measured" and "could not be evaluated" stay
+  different claims (the 6.7 lesson). When it runs: the exhaustive
+  row-run partition of the H38 method — normalize the closed final
+  polygons into integer row runs, partition every footprint row at all
+  run boundaries, classify each interval — under `scan4_whole_class`:
+  `whole_single_owner_select`, `whole_declared_seam_select`,
+  `whole_gap_reject`, `whole_undeclared_multiplicity_reject`, with the
+  per-seed g/o/r/m summary counts recorded beside the class rows. The
+  excluded-fragment obligations classify under `scan4_fragment_class`:
+  `fragment_owned_once_select`, `fragment_unowned_reject`,
+  `fragment_multi_owner_reject`, `fragment_identity_conflict_reject`.
+
+F10/F11 are verification families: they decide nothing, so every
+occupied REJECTED row here is a finding for the ledger — the two known
+F10 seeds are the expected occupancy, anything else is new — and what to
+do about any of them is a post-run decision memo, never an inline fix.
+Everything the v5 pass aborts on still aborts; the new tiers' internal
+invariants (an exact-validation failure inside a face polygon, a row-run
+normalization that loses columns) abort loudly rather than classify.
+
+### 9.2 The Scan-4 input set: the 3,061 → 3,058 answer, and one escalation
+
+Answered from the artifact rows, not assumed. Between
+`census-scan4-seed-set-v1.tsv` and `-v2.tsv`: **three seeds left, none
+entered.** The departed are 2466379686918096853, 6071911433535184866 and
+15976616440543533625 — three of the seven D2 seeds — whose v1 membership
+was solely `flagged: stage_reject:bay_mouth_aperture:elandor_east`; the
+v5 census measures that class empty (`stage_reject_seeds=0`), and their
+post-correction records realize no other flag, no extremal bound, no
+winner and no corpus slot. The flagged term moved 3,013 → 3,010; the
+extremal (127), winners (4) and corpus (27) terms are unchanged. The
+other four D2 seeds stay on their own post-correction evidence:
+343674299183575008 via two `two_or_more_candidates` flags **and** an
+extremal witness slot (`land_004:from success_count maximum 4`, taken
+from 785869122509563282 by the least-seed tie at an equal bound — the
+one extremal row that moved, 471 of 472 identical), 6692092492332211284
+and 7403557699456021182 via `multi_interval` plus candidate flags, and
+7851242355115945264 via `fills` plus three candidate flags. The `open`
+(sixteen Banks) and `excluded` (Holy band) rows are unchanged.
+
+**ESCALATED, pending the coordinator's ruling — the one undecided
+semantic question of this cut.** All three departed seeds carry the
+detached-shoulder admission (the v2 manifest lists all seven by name;
+histogram `scan3_aperture_detached`, 5 + 2 across two stations) — at
+7 of 4,123 the **rarest occupied configuration over `W`** — yet it
+confers no flag, because the flag vocabulary predates the class the
+correction created. Two decided authorities pull apart: section 8.5 makes
+the v2 artifacts authoritative for the Scan-4 input set (3,058), while
+the 2026-08-17 stage-reject decision's recorded rationale ("post-
+correction they are exactly the stressed geometry Scan-4 exists to look
+at") and the flag rule's own principle ("any rare class occupied") both
+argue the seven belong in it. Recommendation: admit
+`detached_shoulder_admission` into the flag vocabulary (branch A) — the
+union returns to 3,061, the v3 artifact records the amended term, and the
+vocabulary hole closes for good; the alternative (branch B) keeps the v2
+union at 3,058 and records the three seeds' absence as a named
+consequence. Implementation is not blocked — membership is an input list
+either way, read from the committed v2 artifact by digest (`a7f4ab91…`)
+plus, under branch A, the manifest's admission seeds — but **the fleet
+does not launch before the ruling**, which the announcement pre-flight
+consumes and this section records when it lands.
+
+**The roster top-up protocol.** Scan-3b's sixteen sites produce up to 64
+new extremal bounds whose witnesses may sit outside the consumed
+membership. The merge computes that pending list from its own
+aggregation and **refuses to publish while it is nonempty**: a marked
+top-up run (worker seeds-mode, Scan-4 tiers forced on, its own
+provenance) supplies the missing records, and the second merge invocation
+consumes shards plus top-up records and publishes once. One publication,
+complete coverage, no addendum artifacts.
+
+### 9.3 Schema and artifact naming
+
+Record schema **v6** (`grug_wp40_census_scan_v6`), the v5 rows an exact
+prefix as every version before it; new row kinds for the Scan-3b Bank,
+step-coverage and attribution rows and the Scan-4 face, whole, fragment
+and membership rows, each with declared columns and site rosters in the
+authority. The full pass recomputes the v5 tiers — the stage build they
+need is paid anyway — so the merge rebuilds **all** artifacts from its
+own shards under one provenance, and asserts that every inherited-tier
+occupied-class row equals its v2 counterpart outside the header block: a
+drift there is a finding, not a refresh. Shards are
+`census-scan-v6-%04d-%04d.tsv` under the gitignored results directory,
+collision-checked in code against every earlier census and pool pattern;
+the v4 and v5 shards stay untouched on disk as the prior records.
+Artifacts publish as `census-*-v3.tsv` plus
+`grug_wp40_census_manifest_v3` beside the untouched v1 and v2 sets —
+**new artifact files carry the next free version suffix and a committed
+artifact name is never reused** (the dd09917 lesson, one commit old, now
+a stated rule). v3 supersedes v2 for every downstream consumer and its
+manifest says so, names the consumed v2 baseline by digest, the ruling
+of 9.2, and the top-up seeds (if any) as a marked table.
+
+### 9.4 KATs — witnesses first
+
+The worker KAT grows from five seeds to seven: the census five (0,
+343674299183575008, Slot 30, Slot 29, max-u64) plus the two F10 seeds
+2147483648 and 1959553668008863006, inserted in sorted place; record and
+merge digests move legitimately and are re-pinned.
+
+- **Scan-3b witnesses.** Per KAT seed the sixteen Bank rows pin outcome
+  class, step count, frame/stack maxima and step-class coverage — the
+  analysis's 453–794-step / ≤ 24-frame band came from these Banks and
+  now gets per-seed pins instead of a prose range. Slot 29's
+  R19-genesis tuple (dead direct terminal, bank-incomplete) pins the
+  attribution histogram: which Bank, which far kind and mode.
+- **Scan-4 witnesses.** The two F10 seeds pin `face_non_simple_reject`
+  at their named faces and `whole_not_evaluated` naming those faces; a
+  quietly-simple result on either means the finding vanished and fails
+  the KAT (the W-112 precedent) until a recorded correction moves it.
+  Seed 0 and max-u64 pin all-38-`face_simple_select` and the Whole
+  summary `g=o=r=m=0`, the H38 feasibility result now pinned per seed;
+  W-112 pins its admission row, multi-complete selection and green
+  Scan-4 tiers in one record.
+- **Synthetic cases only where no measured configuration reaches the
+  branch.** R20/R21: descriptor-driven classifier cases — an
+  all-tuples-dead-direct-anchor descriptor must classify
+  `aperture_anchor_dead_event`, a dead selected pair with a completing
+  alternative must classify `wing_pair_dead_alternative_event`, a dead
+  pair with no alternative must stay a plain attribution row. Face tier:
+  synthetic not-closed and wrong-orientation polygons (non-simple has
+  real witnesses). Whole tier: synthetic gap, undeclared-multiplicity
+  and declared-seam interval sets through the row-run classifier.
+- **Interpreter split (the standing rule).** The fleet runs LuaJIT
+  (`WP40_LUA_BIN`, idle scheduling). PUC 5.1 is targeted KATs
+  byte-compared by digest, with **at least one full-path witness per new
+  tier**: one full v6 worker record for 2147483648 (Scan-3b plus the
+  face tier through a real non-simple classification) and one for winner
+  16178445837170081103 (Scan-3b plus green face and Whole tiers),
+  LuaJIT/PUC digest-identical; the synthetic classifier KATs run under
+  both interpreters; the merge keeps its LuaJIT/PUC artifact-identity
+  gate. No comprehensive PUC round — that is T2-final's.
+
+### 9.5 Cost plan — measured probes, then the conf, then the split decision
+
+Anchors on record: the v5 full pass measured **58.33 CPU-s/seed** at its
+last rolling evaluation (8 h 22 min wall observed at eight workers); the
+winner's v5 solo pass is the current conf's **45.10 CPU-s** anchor; the
+sixteen uninstrumented completion traces cost ~0.15 s inside M3's tuple
+tier; the observer's branch-probe budget is 64 per Bank. None of these
+covers the new tiers, so nothing launches on them alone.
+
+**Probe protocol, before any fleet.** Solo v6 passes on: seed 0
+(member, control), both F10 seeds (member, face tier fails, Whole
+skipped), winner 16178445837170081103 (member, R19-heavy, green Whole —
+the expensive shape), and one non-member seed (Scan-3b marginal without
+Scan-4). Reported per seed: total CPU against the v5 anchor, and the
+per-tier split (3b marginal; face marginal; Whole marginal). **Then**
+`run_t2_census_probe.sh`, extended to the v6 tiers with members among
+its probe seeds, regenerates `census-cpu-gate.conf` under one busy loop
+per logical CPU — anchor (worst solo v6), margin (worst ratio, rounded
+up), liveness `X` (ten times the worst loaded seed) — all re-measured,
+never carried over: the launcher refuses a conf older than its own
+commit, and the per-seed cost changes with the new tiers.
+
+**One fleet pass or two — the criterion, decided from the probes.**
+Default is **one pass** (v5 tiers + Scan-3b on every seed, Scan-4 on
+members): the stage build (~20–27 s) dominates the per-seed cost, and a
+separate Scan-4 fleet would pay it a second time on ~3,060 seeds —
+roughly three hours of wall at eight workers for nothing. The split is
+re-decided at the pre-flight only if the probes show the Scan-4 marginal
+exceeding the whole v5 per-seed band — the point where one mixed pass
+more than doubles the per-seed cost and the CPU budget's
+pathology-versus-expensive-tier separation thins. The announcement
+states the decision with the probe table, the regenerated conf values,
+and the wall projection **marked as a projection** (advisory; the v5
+band 8 h 22 min plus the probed marginals is the anchor). Merge memory
+clause: the divergence test's measured-invariance half runs where the
+records fit in memory twice; v6 records are larger than v5's 96 MB, the
+probe states the factor, and the manifest records what ran.
+
+### 9.6 Runner obligations
+
+The section-6.6 launcher discipline is inherited whole: full-width
+fan-out, first-record validation, verified resume, worker-death watch,
+GO token (section 6.6.7 — the fleet starts only on the user's explicit
+GO after the announcement pre-flight), and the 2026-08-18 CPU-domain
+gates with wall advisory-only and idle scheduling.
+
+**Two launcher-hygiene fixes land before the fleet** (run-5
+observations, gate-2 handover; both Opus-delegable, neither changes gate
+semantics):
+
+1. `fleet_cpu_seconds` stops reading `/proc/<pid>/stat` for reaped
+   workers — run 5 measured 956 harmless stderr lines from exited-worker
+   polls (the redirection order lets the shell's own error through). The
+   sum's under-report-only semantics are unchanged.
+2. The cost/CPU projection log throttle gains a periodic re-emission
+   (every 30 minutes of silence) — run 5 emitted its last projection
+   lines in the run's first minutes and the babysitter flew 8 hours on
+   the cost-note file alone. The note file's behavior is unchanged.
+
+The merge re-verifies Scan-4 coverage against the consumed membership —
+every member seed carries the Scan-4 block, no non-member does — and the
+manifest pins the membership source by digest beside the 9.2 ruling.
+
+### 9.7 Acceptance checklist (gate 3)
+
+Gate 3 is the coordinator's acceptance of, in one list:
+
+1. Static gates green on every Lua change (`luac51 -p`, SETGLOBAL, the
+   five sweeps — run explicitly for `tools/`).
+2. The 9.4 KAT suite green under LuaJIT; the targeted PUC set — both
+   full-path v6 witnesses digest-identical to LuaJIT, the synthetic
+   classifier KATs — green; no comprehensive PUC round ran.
+3. The 9.2 ruling recorded and implemented as ruled; the seed-set
+   answer's numbers re-checkable from the committed artifacts.
+4. The probe table and regenerated conf on the committed-measurement
+   standard, the one-/two-pass decision stated from them at the
+   announcement, and the launcher-hygiene pair verified on the fleet log
+   (zero dead-worker `/proc` lines; periodic advisory lines present).
+5. The fleet complete under the CPU-domain gates: Scan-3b coverage
+   4,123/4,123, Scan-4 coverage equal to the ruled membership, zero
+   Scan-2↔3b trace disagreements, the top-up (if any) consumed before
+   publication.
+6. The v3 artifacts and manifest published under their own digest,
+   LuaJIT/PUC byte-identical; the v1/v2 artifacts and v4/v5 shards
+   byte-untouched; the inherited-tier regression assertion green; the
+   153-site roster covered 153/153.
+7. Findings reported as findings, each with site, class, witness seed
+   and verbatim row: the R20/R21 occupancies (zero or named), the F10
+   measurements over the full input set including the two expected
+   witnesses, and anything new. Any warranted correction round is opened
+   as a section-7-style decision memo — its candidate classes were named
+   in advance — never applied inline.
+8. Docs: the vacuous-branch `out_of_scope_scan3b` status retired by
+   measurement, plan section 2 step-3 status advanced, the README census
+   section carrying the v6 mechanics.
+
+### 9.8 Division of labour
+
+The semantic core stays in-session (Fable): this contract, the Scan-3b
+attribution and R20/R21 classifiers, the face and Whole classification
+semantics, the class vocabularies and their verdicts, and the
+consistency rules. Mechanical parts go to Opus subagents under the
+standing split (user authorization 2026-08-18), briefed by goals with a
+cost cap and a stated verification tier: the launcher-hygiene pair, KAT
+and gate-suite plumbing, the probe-script extension, fleet babysitting,
+and the v3 merge run. Section-4 anchors plus the 9.5 probes govern every
+launch; any run projected over ~30 minutes wall, and any fleet run, is
+announced first; runs over ~8 minutes run detached; parallel Lua stays
+within the measured eight-worker band.
