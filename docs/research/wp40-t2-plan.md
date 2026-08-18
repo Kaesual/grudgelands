@@ -138,6 +138,12 @@ Step 2, the collected correction, is next — and it now opens with seven
 occupied REJECTED classes to close rather than with an open-ended search,
 which is the whole return on this ordering.
 
+**Status, 2026-08-18.** The correction round is open. Section 7 holds the
+gate-1 decision memo for its two open semantic questions — the R19
+completion-multiplicity order and the aperture second-run closure — with
+the measurements that ground them. Implementation starts only on the
+gate-1 sign-off recorded there.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.
@@ -1130,3 +1136,263 @@ Scan-4's input set is a union of 3,061 seeds covering 137 of the 153
 structural sites, with the sixteen Scan-3b banks named as the open
 remainder, and the prefilter's 14 of 61 discharges verified at every seed
 rather than assumed.
+
+## 7. The collected-correction round (opened 2026-08-18)
+
+This section is the decision memo for the two open semantic questions of
+the step-2 collected correction (section 2): D1, the R19
+completion-multiplicity order, and D2, the aperture second-run closure.
+Everything else the correction implements is already decided in section 5
+(U1, U2, O1, F5, the R19 substrate) and is not re-litigated here. This is a
+decision record in the section-5 style, not a package specification; the
+6.7-style implementation contract is written only after the gate-1
+sign-off, and writing it is the countable event of the preamble's
+contract-relocation rule — at that moment section 6 and the new contract
+both move to `wp40-t2-contracts.md` and this file keeps the pointers.
+
+Provenance of the gate-1 measurements. Every number below derives from the
+committed census artifacts and shard records (`artifacts_digest c754ad2c…`,
+commit `4b83f8f`) except the D2 shape diagnostic, which ran the census
+worker's free seeds-mode over the seven witness seeds in a scratch worktree
+at `2060d44` with the canonical second-run sweep patched to report the run
+structure inside its existing failure message. Measured cost: 7 s wall per
+seed, 48 s total — stage rejects abort before the expensive tiers, so the
+section-4 30-s anchor was the ceiling, not the estimate. Its record is
+committed as `tools/wp40/results/correction-round-d2-diagnostic.tsv`. The
+census was not re-run (section 6.3).
+
+### 7.1 D1 — the R19 completion-multiplicity order
+
+**Decision (2026-08-18, awaiting gate-1 sign-off).** Amend
+`bay_edge_transition_terminal_selection`: multiple complete joint tuples
+cease to reject the seed; the compiler selects the least complete tuple
+under the declared total order below. Zero complete tuples remain a seed
+reject. Duplicate authority remains a seed reject and stays outside the
+order's scope — measured `duplicate = 0` in all 34 buckets over `W`, so
+that clause is provably not what the order decides.
+
+**The order.** For each declared transition endpoint of the fixed R18
+interval, a tuple's *retreat* at that endpoint is the station distance
+along the selected interval from the declared endpoint to the tuple's
+incidence station (0 = the endpoint itself). Complete tuples compare
+lexicographically by:
+
+1. total retreat, summed over the edge's declared transition endpoints,
+   ascending;
+2. maximum per-endpoint retreat, ascending;
+3. elbow-terminal count, ascending;
+4. the sorted set of resolved terminal world coordinates, lexicographic
+   by `(x, z)`;
+5. the sorted set of `previous` world coordinates, likewise;
+6. the probe byte sequence under canonical orientation (the
+   lexicographically lesser of the bytes and their exact reverse).
+
+Totality is guaranteed, not asserted: two tuples equal under keys 4–6
+share resolved terminal, `previous` and probe-edge byte identity, which is
+duplicate authority and already rejected before the order applies.
+Reversal stability: every key is invariant under authored edge reversal —
+each endpoint's retreat is measured from its own declared end, the sets in
+keys 4–5 forget endpoint labels, and key 6 is orientation-canonical — so
+`bay_edge_transition_terminal_reversal` holds unchanged.
+
+**Grounds.**
+
+- *R18 continuity as the selection principle.* The zero-retreat tuple is
+  the R18-level resolution (one `E` probe at the interval endpoint, elbow
+  included where R16's own per-incidence resolution produced one). R19's
+  enumeration exists to salvage a completable terminal, not to reopen
+  terminal placement; among completable tuples the order deviates least
+  from the declared endpoints.
+- *Retained authored geometry.* Retreat counts exactly the authored R7
+  controls discarded from the combined clip; minimizing it retains the
+  most authored geometry. Measured confirmation: at all-direct witnesses
+  the probe station count equals interval length minus total retreat
+  exactly (seed 1013 land_004: 1601 at retreat 0 vs 1598 at 3; witness
+  2147483648 land_007: 1586 at 0 vs 1583 at 3), and elbows add exactly
+  their one inserted `T`.
+- *House precedent.* The attachment tie (`Chebyshev(E,A)`, then canonical
+  station index), F5's least wedge-valid pair, and the coast-source
+  zone → component → segment order are all declared lexicographic
+  minimization over canonical quantities with a total formal tail.
+- *Measured selectivity.* At all 757 multi-complete `(seed, edge)` records
+  over `W` (land_007: 321, land_004: 248, land_013: 119, land_010: 52,
+  land_016: 13, land_001: 4), key 1 alone selects uniquely — the winner's
+  retreat is 0 at 730 records, 1 at 25, 2 at 2. Keys 2–6 are exercised by
+  no measured configuration; they exist for totality on paper. At the 16
+  records carrying an elbow completer (all land_010:to), the elbow stands
+  at retreat 0 and wins over a direct completer at retreat 1–2 — the
+  R18-continuous outcome, since R16 owns mode resolution at the incidence.
+
+The order is total for **any** multiplicity. The measured completion bound
+(never above four) is designed against, not baked in — deliberately,
+because the seven D2 seeds return to the scanned universe with unmeasured
+tuple distributions (7.3.2).
+
+**The forbidden-list scoping.** The
+`iteration_order_first_longest_nearest_scan_backstep_side_flip_and_private_tie`
+ban stays fully in force for candidate enumeration — nothing is pruned,
+the complete Cartesian product is still evaluated — and for *undeclared*
+orders. The amendment adds one declared order over the already-enumerated
+complete set, the F5/attachment/coast shape. It is not the banned
+"nearest": no candidate is skipped and the metric is anchored to the
+declared endpoints, not to a scan. It is not byte-length selection: probe
+length is a derived affine consequence of retreat at direct tuples and
+diverges from it exactly at elbows, where the inserted `T` must not
+outvote an endpoint terminal — live at the 16 elbow records above.
+
+**Stability under the no-fallback-seed axiom** (completeness analysis 6.3,
+axiom B). The standing reject occupies up to 7.8 % of `W` on land_007 and
+touches every transition edge; witness seed 2147483648 realizes it with
+two complete tuples at retreat 0 and 3. Axiom B makes a wanted-seed reject
+with a decidable local alternative unstable — the first selected seed
+realizing it forces exactly this amendment. The decision extends the
+U1/U2/F5 uniformity from per-tuple and per-pair continuation to selection
+among completion survivors.
+
+**Unchanged outcomes.** Exactly-one-complete keeps its selection by
+construction — a one-element set has one minimum — including the 1,175
+land_013 and 515 land_010 two-tuple single-completion records; zero-
+complete and duplicate-authority rejects are unchanged; every census
+DECIDED row keeps a byte-identical outcome.
+
+**Rejected alternatives, and what each loses.**
+
+- *Keep the reject.* Loses 757 wanted `(seed, edge)` records, is unstable
+  under axiom B, and re-enters the R19-genesis reproduce-diagnose loop at
+  C1 — the cycle the census ordering exists to avoid.
+- *Enumeration order / first-complete.* A private order, explicitly
+  banned, and not reversal-stable.
+- *Shortest probe.* Anti-aligned with retained authored geometry (equal to
+  maximal retreat at direct tuples), and its elbow `+1` flips the 16
+  measured elbow-at-endpoint records to interior directs.
+- *Direct-before-elbow as the primary key.* Re-litigates R16's
+  per-incidence mode resolution inside R19 and moves the same 16 records
+  off the declared endpoint.
+- *Collapse duplicate authority, then select.* Out of scope by measurement
+  (zero in all 34 buckets) and would weaken the reject that guarantees the
+  order's totality backstop.
+
+**Implementation split (post-sign-off).** The catalog amendment scopes the
+selection string; the compiler-side joint-tuple machinery lands in
+`geometry/partition.lua` per the section-5 substrate decision; the M3
+census projection implements the same order independently; the two sides
+cross-check by digest — the plan's standing oracle stance.
+
+### 7.2 D2 — the aperture detached-shoulder admission
+
+**Decision (2026-08-18, awaiting gate-1 sign-off).** Scope
+`aperture_second_run_reject` and `aperture_authored_second_run_reject` so
+that each sweep admits, per aperture end and per station order (canonical
+and authored), at most one detached Base-Bay-passing station separated
+from the aperture run by exactly one non-passing station. The admitted
+station is a **detached shoulder station**: it stays outside aperture
+membership, payload and ownership — all keyed on the compiled included
+set, which is unchanged — it is recorded on the compiled aperture row, and
+the Bank shoulder resolution takes source-authority 3.1 at its word: `A`
+is *the next dry station away* from `D`, resolved by a search that skips
+the detached station, with every existing F4 validity check on `D`, `W`
+and `T` unchanged. Every other Base-Bay-passing station outside the mouth
+run keeps the reject.
+
+**The measured shape — the entire occupied class over `W`.** Seven seeds,
+all at `bay_mouth_aperture:elandor_east`, all three run-3 shard-killers
+among them. At every one: exactly one extra run, exactly one station long,
+exactly two stations before the canonical mouth run — a gap of one
+non-passing station — at world point `1227:-2928` (five seeds) or
+`1270:-2929` (two). The authored-order sweep realizes the same
+one-station, gap-one shape at all seven. Record:
+`tools/wp40/results/correction-round-d2-diagnostic.tsv`. Two artifact
+caveats follow from the diagnostic: `aperture_authored_second_run_reject`
+is **co-occupied at the same seven seeds**, not unoccupied — the census's
+one stage-reject row per seed is a first-fail lower bound (stated in the
+classifier comment in `partition.lua`), and the vacuous-branch table
+inherits that condition for every aperture-block class. And the
+before-side-only occupancy is a fact about `W`, while the admission is
+side-symmetric because 3.1 gives both shoulders one resolution authority;
+deciding per side would be a private distinction. That symmetry is a
+design-uniformity choice, not an occupancy extrapolation, and is marked as
+such.
+
+**What the sweep was actually protecting.** Not topology at large — the
+shoulder's neighborhood assumption. `partition.lua` compiles
+`bank_before_previous` positionally as `stations[first − 2]`, and 3.1's
+`A` ("the next dry station away") is that station only when no detached
+run exists. The witnesses realize exactly the configuration where
+`first − 2` passes the Bay predicate. The admission moves the assumption
+into the construction: the search reading of 3.1. Ownership, equality and
+membership authorities already key on the included set
+(`partition.lua` — the perimeter-equality and owner branches read
+`aperture.included`, never the raw predicate), so the detached station
+classifies under the existing F9 span rules; no new station class exists.
+
+**Stability under axiom B.** The seven are pool members at 1 in 589;
+rejecting them permanently is unstable the U1 way. Bounding the admission
+to the measured shape is stable the census way: `W` is finite and closed,
+the census measured every other second-run shape at zero occupancy, and
+completeness analysis section 4's rule — a REJECTED class with zero
+occupancy over `W` can never fire — is the license to keep the wider
+reject. Admitting more without occupancy evidence would be the pre-emptive
+promotion the R-series never did (the section-2 R20/R21 stance).
+
+**Rejected alternatives, and what each loses.**
+
+- *Keep the reject.* Seven wanted seeds permanently non-compilable,
+  including all three seeds that killed run-3 shards; unstable under
+  axiom B.
+- *Absorb the detached station and gap into the aperture.* Breaks the
+  all-water membership invariant (its own reject class), changes canonical
+  membership indices that 3.1 forbids the Bank resolution to change, and
+  moves the mouth payload and equality authority on seven seeds.
+- *Extend notch fill to heal the gap into water.* A mask edit: it
+  invalidates every mask-consuming authority and Scan-3a's survival claim
+  — the maximal blast radius available for the smallest finding.
+- *Unbounded admission of second runs.* Admits topology classes with
+  measured zero occupancy over a closed `W`; nothing can ever realize
+  them, and each admission would need its own shoulder re-derivation.
+
+**KAT obligation, named now.** Post-sign-off, mutation KATs pin the seven
+witnesses through the full aperture and shoulder resolution, including the
+`D`/`W`/`T` checks at the detached shoulder. Any F4 check that fails there
+surfaces as its own declared reject class — a new recorded finding, never
+a silent path.
+
+### 7.3 What these measurements change about step 2's stated expectations
+
+1. **The reproduction will touch masks and terminals, and the touched set
+   is named in advance** (a projection, marked as one). Measured over the
+   committed shard records: on every one of the 2,042 DECIDED
+   `(seed, edge)` records with two or more tuples and one completion, the
+   completer is interior — retreat 1 at 1,809 records, 2 at 226, 3 at 7
+   (land_013: 1,230, land_010: 609, land_004: 152, land_007: 51) — and at
+   all 27 multi-complete records whose order-winner is interior, R16
+   succeeded at the declared endpoint itself, so the R18-level stage build
+   used the endpoint terminal in every one of these cases. The correction
+   therefore moves the resolved terminal at about 2,069 `(seed, edge)`
+   sites by one to three stations; the exact byte diff is what the
+   reproduction measures. Step 2's "untouched (the R16–R19 expectation) →
+   proceed" branch will not be taken; the Scan-3a repeat is the planned
+   path, and stays cheap by section 2's own pricing. Section 2 step 1's
+   claim that Scan-3a results "survive the collected correction" holds
+   only where terminals do not move; the repeat supersedes it.
+   **Winner dependency, measured:** v3 winner seed 16178445837170081103
+   is one of the 2,042 (land_010, completer at retreat 1) — one of the
+   four winners compiles only through the R19 machinery, the Slot-29 shape
+   now with a winner witness over `W`. No winner realizes multi-complete
+   or the aperture class.
+2. **The seven D2 seeds return to the scanned universe.** Post-correction
+   they build stages for the first time; every per-edge family universe
+   grows from 4,116 to 4,123, and their Scan-1/2/3a rows do not exist in
+   the census artifacts. The correction round completes the census over
+   exactly these seven seeds as part of its verification — worker
+   seeds-mode, measured 7 s per stage-rejected seed and bounded by the
+   ~30-s full-pass anchor once they compile — an artifact addendum, not a
+   census re-run. Their transition-tuple distributions are unmeasured,
+   which is why D1's order is total for any multiplicity rather than for
+   the measured bound.
+3. **Artifact caveats surfaced at gate 1:** the authored-sweep
+   co-occupancy of 7.2, and the general condition that aperture-block
+   occupancy counts are per-seed first-fail lower bounds — stated where
+   the classifier lives, restated here where the correction consumes them.
+
+**GATE 1: implementation starts only on coordinator and user sign-off of
+7.1 and 7.2.**
