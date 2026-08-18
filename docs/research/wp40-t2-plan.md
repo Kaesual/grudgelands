@@ -146,8 +146,11 @@ which is the whole return on this ordering.
 **Status, 2026-08-18.** The correction round is open. Section 7 holds the
 gate-1 decision memo for its two open semantic questions — the R19
 completion-multiplicity order and the aperture second-run closure — with
-the measurements that ground them. Implementation starts only on the
-gate-1 sign-off recorded there.
+the measurements that ground them. Gate 1 was resolved the same day with
+three binding conditions; the implementation contract is section 8 of
+[wp40-t2-contracts.md](wp40-t2-contracts.md) (whose cutting moved section
+6 there too), and implementation waits at gate 1.5 on the coordinator's
+review of the contract and the relocation.
 
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
@@ -441,11 +444,12 @@ the step-2 collected correction (section 2): D1, the R19
 completion-multiplicity order, and D2, the aperture second-run closure.
 Everything else the correction implements is already decided in section 5
 (U1, U2, O1, F5, the R19 substrate) and is not re-litigated here. This is a
-decision record in the section-5 style, not a package specification; the
-6.7-style implementation contract is written only after the gate-1
-sign-off, and writing it is the countable event of the preamble's
-contract-relocation rule — at that moment section 6 and the new contract
-both move to `wp40-t2-contracts.md` and this file keeps the pointers.
+decision record in the section-5 style, not a package specification. The
+gate-1 sign-off was given 2026-08-18 with three binding conditions
+(recorded in the phase brief's "Gate 1: RESOLVED" section); the
+implementation contract folding them in is section 8 of
+[wp40-t2-contracts.md](wp40-t2-contracts.md), and its cutting fired the
+preamble's contract-relocation rule — section 6 moved there with it.
 
 Provenance of the gate-1 measurements. Every number below derives from the
 committed census artifacts and shard records (`artifacts_digest c754ad2c…`,
@@ -460,7 +464,7 @@ census was not re-run (section 6.3).
 
 ### 7.1 D1 — the R19 completion-multiplicity order
 
-**Decision (2026-08-18, awaiting gate-1 sign-off).** Amend
+**Decision (2026-08-18; gate-1 sign-off given the same day).** Amend
 `bay_edge_transition_terminal_selection`: multiple complete joint tuples
 cease to reject the seed; the compiler selects the least complete tuple
 under the declared total order below. Zero complete tuples remain a seed
@@ -577,7 +581,7 @@ cross-check by digest — the plan's standing oracle stance.
 
 ### 7.2 D2 — the aperture detached-shoulder admission
 
-**Decision (2026-08-18, awaiting gate-1 sign-off).** Scope
+**Decision (2026-08-18; gate-1 sign-off given the same day).** Scope
 `aperture_second_run_reject` and `aperture_authored_second_run_reject` so
 that each sweep admits, per aperture end and per station order (canonical
 and authored), at most one detached Base-Bay-passing station separated
@@ -691,5 +695,12 @@ a silent path.
    occupancy counts are per-seed first-fail lower bounds — stated where
    the classifier lives, restated here where the correction consumes them.
 
-**GATE 1: implementation starts only on coordinator and user sign-off of
-7.1 and 7.2.**
+**GATE 1: resolved 2026-08-18.** Coordinator and user sign-off of 7.1 and
+7.2 is given; the coordinator independently recounted the load-bearing
+numbers from the shard records and verified the D2 diagnostic against 7.2.
+The three binding conditions — synthetic KATs for D1 order keys 2–6, the
+gate-2 locked-surface control experiment, and marked provenance with its
+own digest for the seven-seed artifact addendum — are folded into the
+implementation contract ([wp40-t2-contracts.md](wp40-t2-contracts.md)
+section 8). **GATE 1.5 follows it: implementation starts only on the
+coordinator's review of that contract and of the section-6 relocation.**

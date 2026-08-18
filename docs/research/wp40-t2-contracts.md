@@ -730,3 +730,222 @@ structural sites, with the sixteen Scan-3b banks named as the open
 remainder, and the prefilter's 14 of 61 discharges verified at every seed
 rather than assumed.
 
+## 8. The collected-correction implementation contract (cut 2026-08-18)
+
+This contract implements plan section 7 — the D1 completion-multiplicity
+order (7.1) and the D2 detached-shoulder admission (7.2), signed off at
+gate 1 on 2026-08-18 — together with the already-decided section-5
+closures (U1, U2, O1, F5) and the R19 compiler substrate
+([wp40-source-authority.md](wp40-source-authority.md) section 4), followed
+by the one compiler reproduction the plan's step 2 requires. The three
+gate-1 sign-off conditions (phase brief, "Gate 1: RESOLVED") are folded in
+below as 8.3 (synthetic key KATs), 8.5 (the marked v5 artifact set) and
+8.6 (the locked-surface control experiment). Heavy regime throughout
+(section 1.1): this is boundary topology.
+
+**GATE 1.5 stands between this contract and its implementation.** The
+coordinator reviews the contract and the section-6 relocation; nothing
+below runs before that go.
+
+### 8.1 Scope and surfaces
+
+Changed files: `source/catalog.lua` and `geometry/partition.lua` (both
+free, S1 pinned by projection — section 3), plus KAT fixtures and gate
+plumbing under `tools/wp40/`. The six locked files are not touched, not
+even as a side effect; a needed arithmetic primitive is an escalation, and
+8.6 verifies the pin rather than trusting it. Scans 3b and 4 are out of
+scope (next phase, on the corrected tuples). Anything that turns out
+undecided during implementation gets a recorded Reality correction, not an
+inline fix.
+
+Catalog amendments, all semantic and in-session:
+
+1. `bay_edge_transition_terminal_selection` gains the D1 order exactly as
+   plan 7.1 states it — total retreat, max per-endpoint retreat, elbow
+   count, sorted terminal set, sorted previous set, canonical probe bytes
+   — selecting the least complete tuple; zero-complete and
+   duplicate-authority rejects unchanged; the enumeration ban list stays
+   in force and the string says the order is declared selection, not
+   pruning.
+2. U1: `shared_boundary_incidence_reject` scoped to the levels without
+   enumeration (ordinary-edge interval subsequence, selected result); an
+   empty combined clip at R19 level is a per-tuple failure and the string's
+   R19 branch is declared vacuous.
+3. F5: `bay_bank_reject` scoped so `wedge_radius_above_five` and the
+   non-simple clause name pair-level exclusions — textual truthfulness
+   only, since the M4 finding (section 6.7) proved `R > 5` dominated by
+   the Chebyshev guard.
+4. D2: the two second-run reject strings scoped to the plan-7.2 admission
+   — at most one detached Base-Bay-passing station per aperture end and
+   station order, separated by exactly one non-passing station; everything
+   else keeps the reject.
+
+Partition changes:
+
+1. The R19 joint-tuple machinery of source-authority section 4 in the
+   compile path: eligible-incidence enumeration, per-incidence R16, the
+   checked Cartesian product, per-tuple unretained probe reraster, Bank
+   completion under unchanged R11 rules, duplicate-authority reject, then
+   selection — one complete selects, several select the least under the
+   7.1 order, zero rejects. Only the selected tuple's probe bytes
+   materialize. The U2 `previous` binding failure and the U1 empty-clip
+   failure are per-tuple continuations, matching the census vocabulary
+   (`scan2_tuple_previous_binding_unsatisfiable`,
+   `scan2_tuple_empty_combined_clip`).
+2. The D1 comparator is implemented **twice** — once in the compile path,
+   once in the M3 projection — per the plan's oracle stance
+   ("implement the decided order on both sides and cross-check by
+   digest"). Both are pure functions over tuple descriptors so the 8.3
+   synthetic KATs can drive them directly.
+3. D2: the aperture block admits the plan-7.2 class; the compiled aperture
+   row records the detached station; `bank_before_previous` /
+   `bank_after_previous` become source-authority 3.1's literal
+   next-dry-station search; every existing F4 check on `D`, `W`, `T` is
+   unchanged and any failure there surfaces as its own declared class.
+4. O1: the seed-independent Stage-1 margin assertion — authored distance
+   from every attachment station to every mouth-aperture station, minus
+   both records' displacement bounds, strictly positive; F1-prefilter
+   style, evaluated once, loud abort (a structural defect, not a seed
+   class).
+
+Doc obligations in the same package: source-authority section 4 gains the
+D1 selection order and section 3.1 the search reading with the detached
+shoulder, both pointing at plan 7 for grounds; plan section 5's items are
+marked implemented at gate 2.
+
+### 8.2 KATs — witnesses first
+
+Mutation KATs pin every closure on real witnesses before any synthetic
+case:
+
+- D1 edge witnesses, one per occupied edge (5774294428586859171 land_001,
+  1013 land_004, 2147483648 land_007, 172991200114431608 land_010,
+  97665215198973151 land_013, 1914891444072834567 land_016): formerly
+  multi-complete-rejecting, now compile, and the selected tuple equals the
+  projection's winner with its retreat pinned. Plus one elbow-completer
+  witness (1959553668008863006, land_010 — the retreat-0 elbow must beat
+  the interior direct) and one interior-winner witness
+  (12149685678221140862, land_007 — retreat 1 beats retreat 5).
+- The benign class does not move: a pinned exactly-one-complete multi-tuple
+  witness (seed 1, land_013) keeps its census-recorded selection
+  byte-identically.
+- D2: all seven witnesses (343674299183575008, 2466379686918096853,
+  6071911433535184866, 6692092492332211284, 7403557699456021182,
+  7851242355115945264, 15976616440543533625) through the full aperture and
+  shoulder resolution: formerly stage-rejecting, now compile; detached
+  station recorded; both orders' sweeps green. Mutation side: a synthetic
+  two-station detached run and a gap-two configuration must still reject —
+  the admission's boundary pinned from both sides.
+- O1 computes a positive margin on the authored source; a test-local
+  source mutation that moves an attachment into range must fail it loudly.
+- W-112 leaves the stage-reject KAT: the census fixture asserting it
+  stage-rejects is retired to the v4 record's provenance and the seed
+  reappears as a D2 compile witness; the census KAT digest moves
+  legitimately and is re-pinned.
+
+### 8.3 Synthetic KATs for D1 order keys 2–6 (gate-1 condition 1)
+
+No measured configuration reaches keys 2–6 — key 1 selects uniquely at all
+757 records — and the full-`W` cross-check therefore never exercises them;
+only synthetic KATs can pin them. Both comparator implementations run each
+case and must agree with each other and with the specified winner:
+
+1. sum tie broken by max component: retreats (1,3) versus (2,2) — (2,2)
+   wins;
+2. sum and max tie broken by the sorted terminal set: (1,3) versus (3,1);
+3. elbow count: identical retreats, differing elbow insertions — fewer
+   wins;
+4. terminal-set tie broken by the sorted previous set;
+5. previous tie broken by canonical probe-byte orientation;
+6. equality under keys 4–6 asserts the duplicate-authority reject fires
+   first — the order is never consulted on duplicates.
+
+Every case also runs under reversed authored orientation and must select
+the same world tuple — the reversal invariance of plan 7.1 as an executed
+check, not a stated property.
+
+### 8.4 The compiler reproduction, and its predicted diff
+
+One reproduction, solo compiles through the full compile path (not the
+projection): the five census KAT seeds, the six D1 edge witnesses, winner
+16178445837170081103 and the seven D2 seeds. Masks and terminals diff
+against the committed v4 artifacts. The expectation is **not** untouched
+and is stated in advance (plan 7.3, a projection marked as one): terminals
+move by one to three stations exactly at the moved-terminal sites the
+measurements name — witness seeds among the 2,042 DECIDED interior
+completions and the 27 interior multi-complete winners, the winner seed
+included — and nowhere else; the seven D2 seeds compile for the first time
+and have no v4 rows to diff. A deviation from the predicted set in either
+direction stops the package for a recorded Reality correction. The
+"touched" outcome discharges into 8.5.
+
+### 8.5 The full-`W` verification fleet and the v5 artifact set (gate-1 condition 3)
+
+One post-correction full-`W` fleet run — the plan-step-2 Scan-3a repeat,
+the full-`W` M3↔compiler cross-check and the seven-seed census completion
+in a single pass, under the section-6.6 launcher discipline (fan-out at
+full width, first-record validation, rolling cost gate against the
+section-6.5 nine-hour cap, verified resume, worker-death watch) and under
+**LuaJIT** per the interpreter split. It starts only after 8.2–8.4 are
+green, is announced to the coordinator with its projection marked as such
+(the v4 band, 7 h 50 min measured, is the anchor; the R19 selection work
+is already in the projection tier, so the marginal cost is expected inside
+noise — a projection), and waits for the user's explicit GO (section
+6.6.7).
+
+- Schema v5 (`grug_wp40_census_scan_v5`, shards `census-scan-v5-*`): the
+  scan2 edge row carries the compile path's selected tuple identity beside
+  the projection's, and the worker aborts loudly on any disagreement — a
+  mismatch is a finding, never a column.
+- The merge publishes the v5 artifacts and manifest under their own
+  digest, with provenance naming the post-correction commit, tree and this
+  contract. **The committed v4 artifacts are not touched** — they remain
+  the census of record for the pre-correction policy; v5 supersedes them
+  for every downstream consumer (Scan-3b/4 input sets, the extremal
+  roster) and says so in its manifest. The seven returning seeds are
+  listed by name in the manifest as first-scanned-post-correction: the
+  addendum is a marked table, never a silent merge.
+- Their transition-tuple distributions are unmeasured until this run; the
+  D1 order is total for any multiplicity, so whatever they realize is
+  decided, and any occupancy beyond the measured bounds (completions
+  above four, a fresh REJECTED class) is reported as a finding at gate 2,
+  not absorbed.
+- The PUC merge divergence test rides as in v4; the census stage-reject
+  vocabulary stays declared, with the aperture second-run classes expected
+  vacuous post-admission and the authored co-occupancy caveat of plan 7.2
+  recorded in the manifest.
+
+### 8.6 Gate 2 acceptance (gate-1 condition 2)
+
+Gate 2 is the coordinator's acceptance of, in one list:
+
+1. Static gates green on every Lua change (`luac51 -p`, SETGLOBAL, the
+   five grep sweeps).
+2. The 8.2/8.3 KAT suite green under LuaJIT, and the targeted PUC set —
+   the D1 synthetic key KATs, the seven D2 witnesses and the five census
+   KAT seeds — byte-compared by digest between interpreters. No
+   comprehensive PUC round (reserved for T2-final, per the interpreter
+   split in the brief and [luanti-lua.md](luanti-lua.md)).
+3. The 8.4 reproduction diff matching its predicted set exactly.
+4. The 8.5 fleet complete: zero cross-check mismatches, v5 published and
+   digested, v4 byte-untouched in git.
+5. **The locked-surface control experiment, named:** the six section-3
+   files' git blob hashes unchanged, and `run_t2_s1_authority.sh` run
+   before and after the correction with the S1 source-projection checksum
+   byte-identical — the section-3 projection pin verified, not asserted,
+   despite the winner byte diff (winner 16178445837170081103 recompiles
+   through R19 with a moved terminal; its scalars must not move).
+6. Docs: the 8.1 doc obligations landed; plan section 2 status advanced;
+   the section-7 memo markers point at the implemented state.
+
+### 8.7 Cost and division of labour
+
+Section-4 anchors govern every launch; any run projected over ~30 minutes
+wall, and any fleet run, is announced first with the projection marked as
+a projection. The semantic core — catalog strings, both comparators, the
+shoulder construction, the source-authority edits — stays in-session
+(Fable). Mechanical parts — KAT plumbing, gate-suite reruns, fleet
+babysitting, the v5 merge — may go to Opus subagents (user authorization
+2026-08-18), briefed by goals with a cost cap and a stated verification
+tier. Parallel Lua processes stay within the host's measured eight-worker
+band.
