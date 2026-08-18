@@ -162,11 +162,16 @@ published beside the untouched v4 census of record
 `W`** — the census's irreducible feedback edge (completeness 6.3) now
 measures dead — with the seven returning seeds listed by name in the
 manifest as detached-shoulder admissions, all at elandor_east:after,
-matching the gate-1 diagnostic exactly. Gate 2 (contracts 8.6) awaits the
-coordinator's acceptance; three pre-existing findings are on record for
-it (the R18-level C2 conformance oracle, the Slot-30 Starbough pin drift,
-and an F10 face-simplicity occupancy on wanted seeds — Scan-4
-territory).
+matching the gate-1 diagnostic exactly. **Gate 2 was accepted the same
+day (contracts 8.6, acceptance recorded there): step 2 of this section's
+ordering is complete.** Named open items handed to the next phase's cut,
+beside the three pre-existing findings recorded at the acceptance: the
+launcher's CPU-accounting loop keeps polling `/proc` for already-exited
+workers (harmless stderr noise, run 5 measured 956 lines); the
+cpu/cost projection lines were emitted only in the run's first minutes
+rather than refreshed over its length; and the Scan-4 seed-set union
+moved 3,061 → 3,058 between v4 and v5 — its composition must be answered
+from the row grammar, not assumed, when the Scan-3b/4 package is cut.
 
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's

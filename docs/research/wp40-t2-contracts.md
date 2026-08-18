@@ -993,6 +993,17 @@ Gate 2 is the coordinator's acceptance of, in one list:
 6. Docs: the 8.1 doc obligations landed; plan section 2 status advanced;
    the section-7 memo markers point at the implemented state.
 
+**Accepted 2026-08-18 (gate 2, coordinator).** `artifacts_digest
+37fcdc5e…`. Evidence: `rejected = 0` independently recounted in the v2
+artifacts; per-edge accounting closes at 4,123; the seven addendum seeds
+verified by name in the manifest; the v4 artifact blobs untouched at
+HEAD; the locked-surface diff empty and the S1 control experiment re-run
+independently with a byte-identical projection; the static gates re-run
+clean. The three pre-existing findings on record — the R18-level C2
+conformance oracle at slot 29, the Slot-30 Starbough pin drift, and the
+F10 face-simplicity occupancy on wanted seeds 2147483648 and
+1959553668008863006 — pass to the next phase's ledger.
+
 ### 8.7 Cost and division of labour
 
 Section-4 anchors govern every launch; any run projected over ~30 minutes
