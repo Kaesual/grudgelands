@@ -4,6 +4,14 @@ Deeper reference for the AGENTS.md section "Lua & Luanti environment".
 All file references point into `reference_projects/luanti` (5.17.0-dev,
 commit `df04879`) unless a URL is given.
 
+**Planning note.** If you are briefing, scheduling or costing any task that
+*executes* Lua — harness runs, gates, KATs, scans, reproductions — read
+"Interpreter and test strategy" at the end of this file before writing the
+plan. It fixes which interpreter owns which layer (LuaJIT for the
+high-volume loop, PUC 5.1 for the static gates and targeted KATs) and
+reserves comprehensive PUC rounds for the defined final gates; a plan that
+gets this split wrong misprices the work by an order of magnitude.
+
 ## What the version pin means (read this first)
 
 Two different version numbers are in play. Do not conflate them:
