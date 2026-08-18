@@ -922,10 +922,17 @@ Gate 2 is the coordinator's acceptance of, in one list:
 1. Static gates green on every Lua change (`luac51 -p`, SETGLOBAL, the
    five grep sweeps).
 2. The 8.2/8.3 KAT suite green under LuaJIT, and the targeted PUC set —
-   the D1 synthetic key KATs, the seven D2 witnesses and the five census
-   KAT seeds — byte-compared by digest between interpreters. No
-   comprehensive PUC round (reserved for T2-final, per the interpreter
-   split in the brief and [luanti-lua.md](luanti-lua.md)).
+   the D1 synthetic key KATs, the seven D2 witnesses, the five census
+   KAT seeds, **and at least one full-compile-path D1 witness pair
+   (elbow witness 1959553668008863006 plus one multi-complete edge
+   witness) compiled solo under PUC and digest-compared against
+   LuaJIT** — byte-compared by digest between interpreters. The
+   addition is the gate-1.5 condition (2026-08-18): the synthetic KATs
+   drive only the comparator under PUC, and the new R19 enumeration
+   path needs at least one end-to-end PUC exercise against its
+   `pairs()`-order risk. No comprehensive PUC round (reserved for
+   T2-final, per the interpreter split in the brief and
+   [luanti-lua.md](luanti-lua.md)).
 3. The 8.4 reproduction diff matching its predicted set exactly.
 4. The 8.5 fleet complete: zero cross-check mismatches, v5 published and
    digested, v4 byte-untouched in git.
