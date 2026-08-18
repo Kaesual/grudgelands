@@ -282,5 +282,5 @@ return {
 	-- measured, so a semantic change in the merge cannot pass merely because
 	-- both interpreters changed with it.
 	merge_artifacts_digest =
-		"ecfc118aabeb0ba6ebc0693a00c265ba00803bb7c9b6257059a0d2d133354def",
+		"e83169915b15214053a7c31d411cc3d1591224da5a99caa6e84e211ec32586c8",
 }

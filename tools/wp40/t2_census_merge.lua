@@ -633,7 +633,7 @@ end
 -- artifact byte.
 -- ------------------------------------------------------------------
 local function render_occupied(state, header)
-	local lines = {"schema\tgrug_wp40_census_occupied_classes_v1",
+	local lines = {"schema\tgrug_wp40_census_occupied_classes_v2",
 		"scan_schema\t" .. authority.schema,
 		"seed_set\t" .. header.seed_set,
 		"seeds\t" .. count_text(#state.seeds),
@@ -719,7 +719,7 @@ local function render_occupied(state, header)
 end
 
 local function render_vacuous(state)
-	local lines = {"schema\tgrug_wp40_census_vacuous_branches_v1",
+	local lines = {"schema\tgrug_wp40_census_vacuous_branches_v2",
 		"scan_schema\t" .. authority.schema,
 		"column\tbranch\tvocabulary\tbranch\tverdict\tstatus\trealization\t" ..
 			"sites\tseeds\twitness_seed\tnote",
@@ -780,7 +780,7 @@ local function render_vacuous(state)
 end
 
 local function render_seed_set(state, header)
-	local lines = {"schema\tgrug_wp40_census_scan4_seed_set_v1",
+	local lines = {"schema\tgrug_wp40_census_scan4_seed_set_v2",
 		"scan_schema\t" .. authority.schema,
 		"seed_set\t" .. header.seed_set,
 		"column\textremal\tfamily\tsite\tscalar\tbound\tvalue\tseed",
@@ -911,7 +911,7 @@ local function render_seed_set(state, header)
 end
 
 local function render_prefilter(prefilter, agreeing, verified_seeds)
-	local lines = {"schema\tgrug_wp40_census_prefilter_discharge_v1",
+	local lines = {"schema\tgrug_wp40_census_prefilter_discharge_v2",
 		"scan_schema\t" .. authority.schema,
 		"column\tprefilter\tedge\tstatus\treason"}
 	local discharged, scanned = 0, 0
@@ -933,7 +933,7 @@ local function render_prefilter(prefilter, agreeing, verified_seeds)
 end
 
 local function render_histograms(state)
-	local lines = {"schema\tgrug_wp40_census_histograms_v1",
+	local lines = {"schema\tgrug_wp40_census_histograms_v2",
 		"scan_schema\t" .. authority.schema,
 		"column\thist\tname\tkey\tbucket\tcount"}
 	local names = sorted_keys(state.histograms)
@@ -1333,11 +1333,11 @@ local prefilter_text, prefilter_summary = render_prefilter(prefilter_lines,
 local histogram_text = render_histograms(state)
 
 local artifacts = {
-	{name = "census-occupied-classes-v1.tsv", text = occupied_text},
-	{name = "census-vacuous-branches-v1.tsv", text = vacuous_text},
-	{name = "census-scan4-seed-set-v1.tsv", text = seed_set_text},
-	{name = "census-prefilter-discharge-v1.tsv", text = prefilter_text},
-	{name = "census-histograms-v1.tsv", text = histogram_text},
+	{name = "census-occupied-classes-v2.tsv", text = occupied_text},
+	{name = "census-vacuous-branches-v2.tsv", text = vacuous_text},
+	{name = "census-scan4-seed-set-v2.tsv", text = seed_set_text},
+	{name = "census-prefilter-discharge-v2.tsv", text = prefilter_text},
+	{name = "census-histograms-v2.tsv", text = histogram_text},
 }
 local artifact_lines = {}
 for index = 1, #artifacts do
@@ -1354,7 +1354,7 @@ if expected_digest and artifacts_digest ~= expected_digest then
 		expected_digest .. " (plan section 6.6.5); nothing was written", 0)
 end
 
-local manifest = {"schema\tgrug_wp40_census_manifest_v1",
+local manifest = {"schema\tgrug_wp40_census_manifest_v2",
 	"scan_schema\t" .. authority.schema,
 	"vocabulary\t" .. authority.vocabulary_path,
 	"seed_set\t" .. header.seed_set,
@@ -1442,7 +1442,7 @@ for index = 1, #artifacts do
 	outputs[#outputs + 1] = {path = out_dir .. "/" .. artifacts[index].name,
 		text = artifacts[index].text}
 end
-outputs[#outputs + 1] = {path = out_dir .. "/census-manifest-v1.tsv",
+outputs[#outputs + 1] = {path = out_dir .. "/census-manifest-v2.tsv",
 	text = manifest_text}
 for index = 1, #outputs do
 	local existing = io.open(outputs[index].path, "rb")
@@ -1496,6 +1496,6 @@ if occupied_summary.sink > 0 then
 	-- stopping for, so the artifacts are written and the exit status says so.
 	io.stderr:write("WP40 T2 census merge: " .. occupied_summary.sink ..
 		" row(s) matched no declared branch; see the no_branch_matched block " ..
-		"of census-occupied-classes-v1.tsv (plan section 6.4)\n")
+		"of census-occupied-classes-v2.tsv (plan section 6.4)\n")
 	os.exit(3)
 end
