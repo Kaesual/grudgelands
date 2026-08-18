@@ -449,19 +449,19 @@ expect_failure "a full-W merge with no shards on disk" "missing file" \
 	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
 	"$scratch/merge-out" --records "$scratch/free-range.tsv" >/dev/null
 checks=$((checks + 1))
-for artifact in census-occupied-classes-v1.tsv census-vacuous-branches-v1.tsv \
-		census-scan4-seed-set-v1.tsv census-prefilter-discharge-v1.tsv \
-		census-histograms-v1.tsv census-manifest-v1.tsv; do
+for artifact in census-occupied-classes-v2.tsv census-vacuous-branches-v2.tsv \
+		census-scan4-seed-set-v2.tsv census-prefilter-discharge-v2.tsv \
+		census-histograms-v2.tsv census-manifest-v2.tsv; do
 	[[ -s "$scratch/merge-out/$artifact" ]] ||
 		fail "the merge wrote no $artifact"
 	checks=$((checks + 1))
 done
-grep -q '^summary	declared=' "$scratch/merge-out/census-vacuous-branches-v1.tsv" ||
+grep -q '^summary	declared=' "$scratch/merge-out/census-vacuous-branches-v2.tsv" ||
 	fail "the vacuous-branch artifact carries no coverage summary"
-grep -q 'sites_covered=137 of 153' "$scratch/merge-out/census-manifest-v1.tsv" ||
+grep -q 'sites_covered=137 of 153' "$scratch/merge-out/census-manifest-v2.tsv" ||
 	fail "the manifest does not report the open Scan-3b sites"
 grep -q 'pairs_order_probe_unsorted=true' \
-	"$scratch/merge-out/census-manifest-v1.tsv" ||
+	"$scratch/merge-out/census-manifest-v2.tsv" ||
 	fail "the pairs() divergence probe reported a sorted iteration order, which \
 would make the invariance half of the section 5 test vacuous"
 checks=$((checks + 3))
