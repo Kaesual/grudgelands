@@ -156,14 +156,23 @@ reap_started_shards() {
 # comm field, because comm is parenthesised and may itself hold spaces.  Only
 # live workers are summed, so a worker that exits takes its ticks out of the
 # total: the sum can fall at a completion but never rise without a worker having
-# burned CPU, which makes this gate under-report rather than false-fire.  The
+# burned CPU, which makes this gate under-report rather than false-fire.  A
+# worker the monitor loop has already reaped is skipped by index and never
+# polled: its `/proc` entry went with the `wait` that reaped it, and reading it
+# anyway cost run 5 some 956 stderr lines -- the shell reports a failed input
+# redirection before the command's own `2>/dev/null` is in force.  The skip
+# moves no figure, since those ticks left the total at that same poll.  The
 # python SHA responder is a child process and its CPU appears neither here nor
 # in the worker's own os.clock telemetry -- the same quantity on both sides.
 fleet_cpu_seconds() {
-	local total=0 pid stat rest
-	for pid in "${pids[@]}"; do
-		if (( pid == 0 )); then continue; fi
-		read -r stat <"/proc/$pid/stat" 2>/dev/null || continue
+	local total=0 index pid stat rest
+	for index in "${!pids[@]}"; do
+		pid="${pids[$index]}"
+		if (( pid == 0 || reaped[index] == 1 )); then continue; fi
+		# Redirecting the group, not the `read`, puts /dev/null in force before
+		# the input redirection is attempted: a worker that exits between the poll
+		# and this read is not reaped yet, so that race must stay silent too.
+		{ read -r stat <"/proc/$pid/stat"; } 2>/dev/null || continue
 		rest="${stat##*') '}"
 		local -a fields=($rest)
 		# A worker that exits between the poll and this read leaves nothing to
@@ -194,8 +203,18 @@ cost_note_path="$repo/tools/wp40/results/t2_census/cost-projection.txt"
 # babysitter has to see -- the first verdict, every change of verdict (a
 # deferral is the gate reporting that it saw an over-budget observation and held),
 # and the drift as the estimate converges -- and the cost note keeps the rest.
+#
+# Once the estimate converges those three reasons all stop firing, and run 5 duly
+# emitted its last projection pair in the run's first minutes and then said
+# nothing for eight hours, leaving the babysitter the note file alone.  So
+# silence itself expires: after `cost_reemit_seconds` the next evaluation prints
+# whatever it holds.  It re-emits an existing line rather than a new kind of
+# one, and it only ever adds output -- no verdict, drift band or note write
+# depends on it.
 cost_reported_wall=-1
 cost_reported_verdict=""
+cost_reported_at=-1
+cost_reemit_seconds=1800
 report_cost_projection() {
 	local wall_line="$1" cpu_line="$2" wall="" verdict=""
 	if [[ "$wall_line" =~ wall_seconds=([0-9]+) ]]; then wall="${BASH_REMATCH[1]}"; fi
@@ -206,11 +225,15 @@ report_cost_projection() {
 	if [[ -n "$wall" && "$verdict" == "$cost_reported_verdict" ]] &&
 			(( cost_reported_wall >= 0 &&
 				wall * 20 >= cost_reported_wall * 19 &&
-				wall * 20 <= cost_reported_wall * 21 )); then
+				wall * 20 <= cost_reported_wall * 21 &&
+				SECONDS - cost_reported_at < cost_reemit_seconds )); then
 		return 0
 	fi
 	cost_reported_verdict="$verdict"
 	cost_reported_wall="${wall:--1}"
+	# Stamped on every emission, so the drift band and the silence timer both
+	# measure from the same last-printed line.
+	cost_reported_at=$SECONDS
 	printf '%s\n%s\n' "$wall_line" "$cpu_line"
 }
 run_merge_pair() {
