@@ -6196,7 +6196,15 @@ local function new_partition(dependencies)
 		return result, polygon_index
 	end
 
-	local function census_scan4(stage, result, tracer)
+	-- The default per-tier stopwatch (contracts 9.5).  `census_scan` accepts an
+	-- optional `tier_mark`, called with a tier name once that tier has returned,
+	-- so the cost probe can measure the marginal each new tier adds instead of
+	-- inferring it from two whole passes.  Pure telemetry: every production
+	-- caller leaves it absent and pays these empty calls, and nothing the hook
+	-- is given can reach a row, an artifact or a digest.
+	local function tier_noop() end
+
+	local function census_scan4(stage, result, tracer, tier_mark)
 		local face_rows_out, whole_rows, interval_rows, fragment_rows =
 			{}, {}, {}, {}
 		result.scan4_faces = face_rows_out
@@ -6499,6 +6507,7 @@ local function new_partition(dependencies)
 			end
 			face_rows_out[#face_rows_out + 1] = row
 		end
+		tier_mark("scan4_face")
 
 		-- ----------------------------------------------------------
 		-- The Whole tier, gated on all-faces-simple (contracts 9.1).
@@ -6757,6 +6766,7 @@ local function new_partition(dependencies)
 					column_count = entry.columns, witness = entry.witness}
 			end
 		end
+		tier_mark("scan4_whole")
 
 		-- ----------------------------------------------------------
 		-- The excluded-fragment obligations (contracts 9.1): the
@@ -6866,6 +6876,7 @@ local function new_partition(dependencies)
 				fragment_rows[#fragment_rows + 1] = row
 			end
 		end
+		tier_mark("scan4_fragment")
 		return result
 	end
 
@@ -6918,6 +6929,7 @@ local function new_partition(dependencies)
 
 	local function census_scan(seed, options)
 		options = options or {}
+		local tier_mark = options.tier_mark or tier_noop
 		-- The pcall wraps stage construction only: a failure inside the scans
 		-- happens on a stage that already exists and stays a loud abort.
 		local built, stage = pcall(build_scan_stage, seed)
@@ -6933,7 +6945,9 @@ local function new_partition(dependencies)
 			return {schema = census_scan_schema, seed = seed,
 				stage_reject = {site = site, class = class, detail = message}}
 		end
+		tier_mark("stage")
 		local result, selected_by_edge = census_scan1(stage, seed)
+		tier_mark("scan1")
 		-- One tracer for every remaining scan.  Scan-3a runs first so its Wing
 		-- analysis fills the shared tail cache that Scan-2's completion tier
 		-- would otherwise fill unobserved; the terminal cache is shared for the
@@ -6948,10 +6962,13 @@ local function new_partition(dependencies)
 				return land_transitions[cache_key]
 			end})
 		census_scan3a(stage, result, tracer)
+		tier_mark("scan3a")
 		census_scan2(stage, result, selected_by_edge, tracer)
+		tier_mark("scan2")
 		census_scan3b(stage, result, tracer, land_transitions)
+		tier_mark("scan3b")
 		if options.scan4 then
-			census_scan4(stage, result, tracer)
+			census_scan4(stage, result, tracer, tier_mark)
 		end
 		return result
 	end
