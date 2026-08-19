@@ -1378,3 +1378,77 @@ and the v3 merge run. Section-4 anchors plus the 9.5 probes govern every
 launch; any run projected over ~30 minutes wall, and any fleet run, is
 announced first; runs over ~8 minutes run detached; parallel Lua stays
 within the measured eight-worker band.
+
+## 10. The Scan-3b/4 post-run decision memo (cut 2026-08-20)
+
+Section 9.1 reserves the disposition of the run's findings for a
+post-run decision memo in the section-7 style; this is it. Ruled
+2026-08-20 (coordinator, user-confirmed 2026-08-19/20). Baseline: the
+v3 artifact set of run 6 (`artifacts_digest 2433d6f6…`, 060614b).
+
+### 10.1 What run 6 measured
+
+- **R20/R21: zero over `W`.** The plan-section-2 small-correction
+  trigger did not fire; **no census-side correction round opens.** The
+  attribution histogram (2,338 rows) never realizes a `wing` far
+  terminal — 2,301 `aperture/direct` plus 37 `aperture/diagonal_shoulder`
+  — so R21's dead condition never arose and R20's all-tuples-dead edge
+  never occurred.
+- **`face_non_simple_reject`: 796 of 3,076 Scan-4 members (25.9%)**,
+  858 face rows at 10 of the 38 zone faces. **`whole_gap_reject`: 370**
+  of the 2,280 evaluated Whole tiers. **`fragment_unowned_reject`: one
+  seed** (7334446403956696166, land_013). Every other REJECTED class of
+  the new tiers is vacuous over `W`.
+- **All four winners are clean on every Scan-4 tier**
+  (5270046902118333881, 15219119262482319357, 16178445837170081103,
+  17842018860885445630): the world-foundation deliverable is not
+  blocked by any finding.
+
+### 10.2 Localization evidence (2026-08-20, from the published rows)
+
+- Every non-simple seed carries at least one transition flag; unflagged
+  members (extremal/winner/corpus-only) never fail — 0 of them.
+- The 10 occupied faces are all bay-chain zones (10 of the 12
+  bay-component zone names; the 26 non-bay faces are clean over all
+  3,076 members). The plain jittered land boundaries compose to simple
+  polygons everywhere measured; the defect lives in the bay-transition
+  machinery composed into the face rings.
+- Conditional failure rates against the 25.9% base:
+  `detached_shoulder_admission` **7/7 = 100%** — a deterministic
+  reproducer class: seeds 343674299183575008, 2466379686918096853,
+  6071911433535184866, 6692092492332211284, 7403557699456021182,
+  7851242355115945264, 15976616440543533625, all at
+  `bay_mouth_aperture:elandor_east:after` on only two distinct stations
+  (1227:-2928 and 1270:-2929). `two_or_more_candidates` carriers 34.6%;
+  tail_mode 17.5%, fills 19.8%, multi_interval 21.9%, fragment 12.4%.
+- The `whole_gap_reject` intervals cluster in two z-bands
+  (≈ −2030…−2090 and ≈ −2540; peaks of 40 seeds each at z=−2033 and
+  z=−2054) — a small number of concrete seam geometries, unattributed.
+
+### 10.3 Ruling
+
+1. **The census closes as a measurement.** Nothing in the census
+   machinery is corrected; the v3 artifacts stand; gate 3 proceeds
+   against 9.7.
+2. **Design intent recorded** (user, 2026-08-19): the boundary
+   machinery is meant to guarantee a valid world for every seed of `W`
+   — long-term, for arbitrary seeds. The measured occupancy is a
+   **broken guarantee**, not an accepted property.
+3. The findings open **one named follow-up correction package —
+   bay-transition simplicity** — outside the census's scope, with this
+   plan: (0) verify whether the production compile refuses ownership
+   gaps the way it demonstrably refuses non-simple faces — the safety
+   net until correct-by-construction; (1) an instrumented ring probe on
+   the detached-shoulder reproducers: dump the composed face stations,
+   report the self-intersecting segment pair and each segment's
+   contributor (authored edge, Bank trace, arc); (2) extend the probe
+   over a sample of the `two_or_more_candidates` failures and classify
+   the defect kinds; (3) attribute the `whole_gap` z-clusters to their
+   seam geometries, the fragment singleton alongside; (4) fix design
+   toward the recorded intent, with the census KATs and the published
+   witness lists as the regression harness. Every step is solo-scale:
+   a witness compiles in ~35–60 s and the 796/370/1 witness lists are
+   on disk — **no fleet run is needed for any debugging step.**
+4. The analysis-era step/frame prose band (453–794 steps, ≤ 24 frames)
+   is retired in favour of the published per-site pins (steps 443…931,
+   frames 0…927; no cap class fired).
