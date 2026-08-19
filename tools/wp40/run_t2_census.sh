@@ -47,7 +47,7 @@ owned_lua=(
 	"$repo/tools/wp40/t2_census_hasher.lua"
 	"$repo/tools/wp40/t2_census_merge.lua"
 	"$repo/tools/wp40/t2_census_worker.lua"
-	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
+	"$repo/tools/wp40/fixtures/t2_census/scan_kat_v6.lua"
 )
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
 for file in "${owned_lua[@]}"; do
@@ -247,7 +247,7 @@ run_merge_pair() {
 		"$out_luajit" "$@"
 	local luajit_digest
 	luajit_digest="$(sed -n 's/^artifacts_digest\t\([0-9a-f]\{64\}\)$/\1/p' \
-		"$out_luajit/census-manifest-v2.tsv")"
+		"$out_luajit/census-manifest-v3.tsv")"
 	if [[ ! "$luajit_digest" =~ ^[0-9a-f]{64}$ ]]; then
 		echo "WP40 T2 census LuaJIT merge wrote no artifacts digest" >&2
 		exit 1
@@ -255,9 +255,9 @@ run_merge_pair() {
 	"$puc_bin" "$script_dir/t2_census_merge.lua" "$repo" "$puc_scratch" \
 		"$out_puc" "$@" --expect-artifacts-digest "$luajit_digest"
 	local artifact
-	for artifact in census-occupied-classes-v2.tsv census-vacuous-branches-v2.tsv \
-			census-scan4-seed-set-v2.tsv census-prefilter-discharge-v2.tsv \
-			census-histograms-v2.tsv; do
+	for artifact in census-occupied-classes-v3.tsv census-vacuous-branches-v3.tsv \
+			census-scan4-seed-set-v3.tsv census-prefilter-discharge-v3.tsv \
+			census-histograms-v3.tsv; do
 		if ! cmp -s "$out_luajit/$artifact" "$out_puc/$artifact"; then
 			echo "WP40 T2 census merge artifact $artifact differs between LuaJIT" \
 				"and PUC (plan section 6.6.5)" >&2
@@ -267,7 +267,7 @@ run_merge_pair() {
 		fi
 	done
 	merge_digest="$(sed -n 's/^artifacts_digest\t\([0-9a-f]\{64\}\)$/\1/p' \
-		"$out_puc/census-manifest-v2.tsv")"
+		"$out_puc/census-manifest-v3.tsv")"
 	if [[ ! "$merge_digest" =~ ^[0-9a-f]{64}$ ]]; then
 		echo "WP40 T2 census merge wrote no artifacts digest" >&2
 		exit 1

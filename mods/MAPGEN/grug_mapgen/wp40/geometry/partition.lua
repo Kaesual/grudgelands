@@ -2465,9 +2465,14 @@ local function new_partition(dependencies)
 			"wedge_nonwing_water"}
 
 		local wing_tail_cache = {}
-		local function wing_tails(wing_id)
-			local cached = wing_tail_cache[wing_id]
-			if cached then return cached end
+		-- `wanted_rank` selects the wanted_rank-th wedge-valid pair of the
+		-- same enumeration in the same order.  Rank 1 is the compile path's
+		-- selection, byte-identical to the historical behavior and the only
+		-- rank that caches or reports to the observer; rank 2 exists for the
+		-- R21 alternative-pair probe (contracts 9.1), runs only on the dead
+		-- condition, and returns nil -- never a reject -- when no usable
+		-- second pair exists.
+		local function resolve_wing_tails(wing_id, wanted_rank)
 			local wing = wing_by_id[wing_id]
 			if not wing then fail(wing_id .. " references an absent Wing") end
 			-- With an observer the pair enumeration runs to exhaustion instead
@@ -2476,8 +2481,8 @@ local function new_partition(dependencies)
 			-- every failure still fails; the analysis is written to the observer
 			-- before the failure propagates, so a dead Wing is a recorded F5
 			-- class at the tracer edge rather than a lost measurement.
-			local analysis = observer and observer.wing and {id = wing_id,
-				bay_id = wing.bay_id, sides = {}, excluded = {},
+			local analysis = wanted_rank == 1 and observer and observer.wing and
+				{id = wing_id, bay_id = wing.bay_id, sides = {}, excluded = {},
 				raw_pair_count = 0, structural_pair_count = 0,
 				wedge_valid_count = 0} or nil
 			if analysis then
@@ -2643,7 +2648,7 @@ local function new_partition(dependencies)
 				end
 			end
 			local chosen_negative, chosen_positive
-			local pair_rank, structural_rank = 0, 0
+			local pair_rank, structural_rank, wedge_seen = 0, 0, 0
 			for negative_index = 1, #paths.negative do
 				local negative = paths.negative[negative_index]
 				local negative_diagonals = tail_diagonals(negative)
@@ -2681,18 +2686,20 @@ local function new_partition(dependencies)
 							end
 							local valid, wedge_cause = wedge_valid(negative, positive)
 							if valid then
+								wedge_seen = wedge_seen + 1
 								if analysis then
 									analysis.wedge_valid_count =
 										analysis.wedge_valid_count + 1
 								end
-								if not chosen_negative then
+								if not chosen_negative and
+										wedge_seen == wanted_rank then
 									chosen_negative, chosen_positive = negative, positive
 									if analysis then
 										analysis.selected_raw_rank = pair_rank
 										analysis.selected_structural_rank = structural_rank
 									end
 								end
-								if not analysis then break end
+								if chosen_negative and not analysis then break end
 							else
 								exclude(wedge_cause)
 							end
@@ -2702,6 +2709,11 @@ local function new_partition(dependencies)
 				if chosen_negative and not analysis then break end
 			end
 			if not chosen_negative then
+				-- No wedge-valid pair at the wanted rank.  For the compile
+				-- rank this is the F5 seed reject; for the R21 alternative
+				-- probe it is the measured answer "no alternative exists"
+				-- and must stay a nil, never a reject.
+				if wanted_rank > 1 then return nil end
 				fail(record("wing_no_wedge_valid_joint_tail_pair_reject",
 					wing.id .. " has no wedge-valid joint tail pair"))
 			end
@@ -2713,14 +2725,31 @@ local function new_partition(dependencies)
 				analysis.sides.positive.tail_length = #chosen_positive
 			end
 			if #chosen_negative > path_bound or #chosen_positive > path_bound then
+				-- The bound applies to the alternative too: a pair above it
+				-- is not a usable selection, so the probe reads it as no
+				-- alternative rather than as a reject.
+				if wanted_rank > 1 then return nil end
 				fail(record("wing_path_bound_exceeded_reject",
 					wing.id .. " joint tail exceeds finite path bound"))
 			end
 			record("wing_wedge_valid_select", nil)
-			wing_tail_cache[wing_id] = {negative = chosen_negative,
+			return {negative = chosen_negative,
 				positive = chosen_positive, negative_k = selected.negative,
 				positive_k = selected.positive}
-			return wing_tail_cache[wing_id]
+		end
+		local function wing_tails(wing_id)
+			local cached = wing_tail_cache[wing_id]
+			if cached then return cached end
+			local resolved = resolve_wing_tails(wing_id, 1)
+			wing_tail_cache[wing_id] = resolved
+			return resolved
+		end
+		-- The R21 probe's second wedge-valid pair: uncached, observer-free,
+		-- nil when the Wing has no usable alternative (contracts 9.1 -- the
+		-- probe runs only on the dead condition, so its cost is
+		-- occupancy-driven).
+		local function wing_alternative_tails(wing_id)
+			return resolve_wing_tails(wing_id, 2)
 		end
 
 		-- The one resolved-terminal mapping for a materialized land
@@ -3234,6 +3263,7 @@ local function new_partition(dependencies)
 		return {resolve_terminal = resolve_terminal,
 			resolve_land_transition = resolve_land_transition,
 			trace_bank = trace_bank, wing_tails = wing_tails,
+			wing_alternative_tails = wing_alternative_tails,
 			terminal_cache = terminal_cache, set_observer = set_observer,
 			wing_exclusion_causes = wing_exclusion_causes}
 	end
@@ -4129,7 +4159,7 @@ local function new_partition(dependencies)
 	-- consume the whole record, never one scan's rows alone.  v3 since M4;
 	-- v4 since the stage-reject package (2026-08-17): a record is either the
 	-- full per-seed roster or exactly one stage_reject row, never a mixture.
-	local census_scan_schema = "grug_wp40_census_scan_v5"
+	local census_scan_schema = "grug_wp40_census_scan_v6"
 
 	local function census_scan1(stage, seed)
 		local result = {schema = census_scan_schema, seed = seed,
@@ -4362,6 +4392,31 @@ local function new_partition(dependencies)
 
 	-- The Source Bank roster is shared with the compile path and built once
 	-- beside the D1 comparators above.
+	-- The far terminal of a transition-incident Bank -- the terminal that is
+	-- not the land transition -- as the Scan-3b attribution histogram names
+	-- it (contracts 9.1): kind, resolved mode and the site an R20/R21 event
+	-- would land on.  `side` is the Bank side holding the transition.  The
+	-- aperture mode needs the terminal resolved; resolve_terminal caches
+	-- Aperture and Wing resolutions, so this costs nothing beyond the first
+	-- call, and a far terminal whose own resolution fails reports mode "-"
+	-- rather than aborting the attribution.
+	local function census_far_terminal(tracer, bank, side)
+		local far = side == "start" and bank.end_terminal or bank.start_terminal
+		if far.kind == "aperture_dry" then
+			local info = {kind = "aperture",
+				site = far.aperture_id .. ":" .. far.side}
+			local ok, resolved = pcall(tracer.resolve_terminal, far, bank.bay_id)
+			info.mode = ok and resolved.aperture_transition.mode or "-"
+			return info
+		end
+		if far.kind == "wing_junction_tail_side" then
+			return {kind = "wing", mode = far.tail_side,
+				site = far.wing_id .. ":" .. far.tail_side,
+				wing_id = far.wing_id, tail_side = far.tail_side}
+		end
+		fail(bank.id .. " has an unexpected far terminal kind")
+	end
+
 	-- The tracer is supplied by census_scan and shared with Scan-3a.  The
 	-- census resolves transition terminals per tuple through
 	-- resolve_land_transition, never through the tracer's land hook; a land
@@ -4371,6 +4426,15 @@ local function new_partition(dependencies)
 		result.scan2_endpoints = endpoint_rows
 		result.scan2_edges = edge_rows
 		result.scan2_tuples = tuple_rows
+		-- Scan-3b substrate (contracts 9.1): the selected tuple's resolved
+		-- terminals and probe bytes per edge -- exactly what the sixteen
+		-- Bank traces and the Scan-4 final-edge composition consume -- the
+		-- bank-incomplete attribution counts, and the per-edge descriptors
+		-- the R20/R21 classifiers read.
+		local selected_tuples, attributions, descriptors = {}, {}, {}
+		result.scan2_selected = selected_tuples
+		result.scan3b_attributions = attributions
+		result.scan3b_edge_descriptors = descriptors
 
 		local function hex_digest(text)
 			return canonical.hex(dependencies.raw_sha256(text))
@@ -4753,6 +4817,11 @@ local function new_partition(dependencies)
 						end
 					end
 
+					-- The shared far-terminal identity (census_far_terminal
+					-- above): the attribution histogram and Scan-3b's Bank
+					-- rows must name the same kind, mode and site or the two
+					-- would drift.
+
 					-- Completion phase: both declared incident Banks of every
 					-- transition in the tuple must complete to their
 					-- already-authorized Aperture or Wing terminals under the
@@ -4802,7 +4871,14 @@ local function new_partition(dependencies)
 											start_resolved, finish_resolved)
 									end)
 									if not trace_ok then
-										return false, entry.bank.id,
+										local info = census_far_terminal(tracer,
+											entry.bank, entry.side)
+										return false, {bank_id = entry.bank.id,
+											endpoint = endpoint,
+											far_kind = info.kind,
+											far_mode = info.mode,
+											far_site = info.site,
+											wing_id = info.wing_id},
 											tostring(trace_error)
 									end
 								end
@@ -4921,7 +4997,7 @@ local function new_partition(dependencies)
 						probed.probe_station_count = probed.probe and #probed.probe
 							or nil
 						if probed.probe then
-							local ok, failed_bank, detail = tuple_complete(probed)
+							local ok, failure, detail = tuple_complete(probed)
 							if ok then
 								probed.class = "scan2_tuple_complete"
 								probed.tuple_index = tuple_index
@@ -4937,7 +5013,8 @@ local function new_partition(dependencies)
 								end
 							else
 								probed.class = "scan2_tuple_bank_incomplete"
-								probed.detail = failed_bank .. ": " .. detail
+								probed.detail = failure.bank_id .. ": " .. detail
+								probed.failure = failure
 							end
 						end
 						local tuple_row = {edge_id = edge.id,
@@ -4961,7 +5038,16 @@ local function new_partition(dependencies)
 							key = tuple_key(probed),
 							detail = probed.detail and sanitize(probed.detail) or nil}
 						tuple_rows[#tuple_rows + 1] = tuple_row
-						probed.probe = nil
+					end
+					-- The selected tuple's probe bytes are the edge's final
+					-- raster (only the selected tuple's probe materializes,
+					-- source authority section 4), so Scan-3b and Scan-4
+					-- keep exactly that one; every other probe is dropped
+					-- here as before.
+					for tuple_index = 1, #evaluated do
+						if evaluated[tuple_index] ~= selected_tuple then
+							evaluated[tuple_index].probe = nil
+						end
 					end
 					edge_row.complete_count = complete_count
 
@@ -5015,6 +5101,57 @@ local function new_partition(dependencies)
 						edge_row.compile_agreement = "compile_selected"
 					else
 						edge_row.compile_agreement = "compile_failed"
+					end
+
+					-- Scan-3b substrate: the selected tuple's resolutions and
+					-- probe bytes, the attribution counts and the R20/R21
+					-- descriptor for this edge (contracts 9.1).
+					if selected_tuple then
+						selected_tuples[edge.id] = {
+							interval = {first = selected.first,
+								finish = selected.finish},
+							from_i = selected_tuple.from_i,
+							to_i = selected_tuple.to_i,
+							from = selected_tuple.from_choice and {
+								resolved = selected_tuple.from_choice.resolved,
+								previous = selected_tuple.from_previous} or nil,
+							to = selected_tuple.to_choice and {
+								resolved = selected_tuple.to_choice.resolved,
+								previous = selected_tuple.to_previous} or nil,
+							sources = {from = transition_source.from,
+								to = transition_source.to},
+							probe = selected_tuple.probe}
+					end
+					local descriptor = {edge_id = edge.id,
+						class = edge_row.class, tuples = {}}
+					descriptors[edge.id] = descriptor
+					local counts_by_key = {}
+					for tuple_index = 1, #evaluated do
+						local probed = evaluated[tuple_index]
+						local entry = {class = probed.class}
+						if probed.failure then
+							entry.bank_id = probed.failure.bank_id
+							entry.far_kind = probed.failure.far_kind
+							entry.far_mode = probed.failure.far_mode
+							entry.far_site = probed.failure.far_site
+							entry.wing_id = probed.failure.wing_id
+							local attribution_key = table.concat({edge.id,
+								probed.failure.endpoint, probed.failure.bank_id,
+								probed.failure.far_kind, probed.failure.far_mode},
+								"\t")
+							local row = counts_by_key[attribution_key]
+							if not row then
+								row = {edge_id = edge.id,
+									endpoint = probed.failure.endpoint,
+									bank_id = probed.failure.bank_id,
+									far_kind = probed.failure.far_kind,
+									far_mode = probed.failure.far_mode, count = 0}
+								counts_by_key[attribution_key] = row
+								attributions[#attributions + 1] = row
+							end
+							row.count = row.count + 1
+						end
+						descriptor.tuples[#descriptor.tuples + 1] = entry
 					end
 				end
 				-- The tuple tier was the only consumer of the resolved R16
@@ -5172,6 +5309,96 @@ local function new_partition(dependencies)
 		return nil
 	end
 
+	-- One observer per instrumented Bank trace, and one fold of what it
+	-- counted into the row and the step/selection coverage rows.  Shared by
+	-- Scan-3a's four head Banks and Scan-3b's sixteen transition-incident
+	-- Banks (contracts 9.1) so the two tiers cannot drift in what they
+	-- count.
+	local function new_bank_trace_observation()
+		local steps, selections = {}, {}
+		local observer = {max_frames = 0, max_stack = 0,
+			probe = function(direction_index, outcome)
+				local slot = steps[direction_index]
+				if not slot then slot = {} steps[direction_index] = slot end
+				slot[outcome] = (slot[outcome] or 0) + 1
+			end,
+			selection = function(class, width, reachable_count)
+				local slot = selections[class]
+				if not slot then
+					slot = {count = 0, max_width = 0, multi_reachable = 0,
+						unknown_reachable = 0}
+					selections[class] = slot
+				end
+				slot.count = slot.count + 1
+				if width > slot.max_width then slot.max_width = width end
+				-- Only the two branch classes carry a reachability count at
+				-- all; a nil there means the observation probe was cut short
+				-- by a cap, never "no successor was reachable".
+				if class == "branch_first_reachable" or
+						class == "branch_later_reachable" then
+					if reachable_count == nil then
+						slot.unknown_reachable = slot.unknown_reachable + 1
+					elseif reachable_count >= 2 then
+						slot.multi_reachable = slot.multi_reachable + 1
+					end
+				end
+			end}
+		return observer, steps, selections
+	end
+
+	local function fold_bank_trace_observation(row, bank_id, observer, steps,
+			selections, step_rows, selection_rows)
+		row.max_frames = observer.max_frames
+		row.max_stack = observer.max_stack
+		local step_total, branch_total, multi_total = 0, 0, 0
+		for direction_index = 1, #step_direction_names do
+			local slot = steps[direction_index]
+			if slot then
+				for outcome, count in pairs(slot) do
+					step_rows[#step_rows + 1] = {bank_id = bank_id,
+						direction = step_direction_names[direction_index],
+						outcome = outcome, count = count}
+				end
+			end
+		end
+		for _, class in ipairs({"single_admitted_untested",
+				"branch_first_reachable", "branch_later_reachable",
+				"branch_none_reachable", "zero_admitted_successors"}) do
+			local slot = selections[class]
+			if slot then
+				selection_rows[#selection_rows + 1] = {bank_id = bank_id,
+					class = class, count = slot.count,
+					max_width = slot.max_width,
+					multi_reachable = slot.multi_reachable,
+					unknown_reachable = slot.unknown_reachable}
+				step_total = step_total + slot.count
+				if class ~= "single_admitted_untested" and
+						class ~= "zero_admitted_successors" then
+					branch_total = branch_total + slot.count
+					multi_total = multi_total + slot.multi_reachable
+				end
+			end
+		end
+		row.step_count = step_total
+		row.branch_step_count = branch_total
+		row.multi_reachable_step_count = multi_total
+	end
+
+	-- The deterministic emission order for occupancy-driven step rows: the
+	-- outcome keys inside one direction come out of `pairs`, which the
+	-- section 5 divergence test exists to catch.
+	local function sort_step_rows(step_rows)
+		table.sort(step_rows, function(left, right)
+			if left.bank_id ~= right.bank_id then
+				return left.bank_id < right.bank_id
+			end
+			if left.direction ~= right.direction then
+				return left.direction < right.direction
+			end
+			return left.outcome < right.outcome
+		end)
+	end
+
 	local function census_scan3a(stage, result, tracer)
 		local aperture_rows, wing_rows, bank_rows = {}, {}, {}
 		local width_rows, step_rows, selection_rows = {}, {}, {}
@@ -5181,6 +5408,7 @@ local function new_partition(dependencies)
 		result.scan3_bay_widths = width_rows
 		result.scan3_steps = step_rows
 		result.scan3_selections = selection_rows
+		result.scan3a_traces = {}
 
 		-- F5 first, and before Scan-2: the tail cache is shared with the
 		-- completion tier, so a Wing resolved without the analysis observer
@@ -5447,34 +5675,7 @@ local function new_partition(dependencies)
 		end
 		for head_index = 1, #head_banks do
 			local bank = head_banks[head_index]
-			local steps, selections = {}, {}
-			local observer = {max_frames = 0, max_stack = 0,
-				probe = function(direction_index, outcome)
-					local slot = steps[direction_index]
-					if not slot then slot = {} steps[direction_index] = slot end
-					slot[outcome] = (slot[outcome] or 0) + 1
-				end,
-				selection = function(class, width, reachable_count)
-					local slot = selections[class]
-					if not slot then
-						slot = {count = 0, max_width = 0, multi_reachable = 0,
-							unknown_reachable = 0}
-						selections[class] = slot
-					end
-					slot.count = slot.count + 1
-					if width > slot.max_width then slot.max_width = width end
-					-- Only the two branch classes carry a reachability count at
-					-- all; a nil there means the observation probe was cut short
-					-- by a cap, never "no successor was reachable".
-					if class == "branch_first_reachable" or
-							class == "branch_later_reachable" then
-						if reachable_count == nil then
-							slot.unknown_reachable = slot.unknown_reachable + 1
-						elseif reachable_count >= 2 then
-							slot.multi_reachable = slot.multi_reachable + 1
-						end
-					end
-				end}
+			local observer, steps, selections = new_bank_trace_observation()
 			local row = {id = bank.id, bay_id = bank.bay_id}
 			local terminals_ok, start_resolved, finish_resolved = pcall(function()
 				return tracer.resolve_terminal(bank.start_terminal, bank.bay_id),
@@ -5499,6 +5700,10 @@ local function new_partition(dependencies)
 				if ok then
 					row.class = "bank_trace_complete_select"
 					row.station_count = #points
+					-- Retained for Scan-4's face composition (contracts
+					-- 9.1): the materialized head-Bank stations, four rows
+					-- of ~10^3 points.
+					result.scan3a_traces[bank.id] = points
 				else
 					local message = tostring(points)
 					local class = classify_message(bank_reject_by_fragment, message)
@@ -5507,56 +5712,1160 @@ local function new_partition(dependencies)
 					row.detail = message
 				end
 			end
-			row.max_frames = observer.max_frames
-			row.max_stack = observer.max_stack
-			local step_total, branch_total, multi_total = 0, 0, 0
-			for direction_index = 1, #step_direction_names do
-				local slot = steps[direction_index]
-				if slot then
-					for outcome, count in pairs(slot) do
-						step_rows[#step_rows + 1] = {bank_id = bank.id,
-							direction = step_direction_names[direction_index],
-							outcome = outcome, count = count}
-					end
-				end
-			end
-			for _, class in ipairs({"single_admitted_untested",
-					"branch_first_reachable", "branch_later_reachable",
-					"branch_none_reachable", "zero_admitted_successors"}) do
-				local slot = selections[class]
-				if slot then
-					selection_rows[#selection_rows + 1] = {bank_id = bank.id,
-						class = class, count = slot.count,
-						max_width = slot.max_width,
-						multi_reachable = slot.multi_reachable,
-						unknown_reachable = slot.unknown_reachable}
-					step_total = step_total + slot.count
-					if class ~= "single_admitted_untested" and
-							class ~= "zero_admitted_successors" then
-						branch_total = branch_total + slot.count
-						multi_total = multi_total + slot.multi_reachable
-					end
-				end
-			end
-			row.step_count = step_total
-			row.branch_step_count = branch_total
-			row.multi_reachable_step_count = multi_total
+			fold_bank_trace_observation(row, bank.id, observer, steps,
+				selections, step_rows, selection_rows)
 			bank_rows[#bank_rows + 1] = row
 		end
-		-- Deterministic emission order for the occupancy-driven rows: the
-		-- per-direction tables are walked in index order above, but the
-		-- outcome keys inside one direction come out of `pairs`, which the
-		-- section 5 divergence test exists to catch.  Sorting here makes the
-		-- census TSV runtime-independent by construction rather than by luck.
-		table.sort(step_rows, function(left, right)
-			if left.bank_id ~= right.bank_id then
-				return left.bank_id < right.bank_id
+		-- Deterministic emission order (the section 5 divergence test).
+		sort_step_rows(step_rows)
+		return result
+	end
+
+	-- ------------------------------------------------------------------
+	-- Census Scan-3b (contracts 9.1): the sixteen transition-incident Bank
+	-- traces, materialization-style, from the terminals of the selected
+	-- joint tuple, with the head-Bank observer instrumentation; the R20/R21
+	-- classifiers ride beside them and their probes run only on the dead
+	-- condition.
+	-- ------------------------------------------------------------------
+
+	-- The R20/R21 classifier core, a pure function over one edge's
+	-- descriptor so the synthetic KATs can drive it directly (contracts
+	-- 9.4: no measured configuration reaches either branch).  A descriptor
+	-- carries the edge id and its evaluated tuples as
+	-- {class, bank_id, far_kind, far_mode, far_site, wing_id}; `probe`
+	-- answers the R21 alternative-pair question for a named Bank and Wing
+	-- with "complete", "dead" or "no_alternative" and is consulted only on
+	-- the dead condition.  A dead pair with no completing alternative stays
+	-- a plain attribution row -- no event.
+	local function census_scan3b_classify_events(descriptor, probe)
+		if type(descriptor) ~= "table" or type(descriptor.tuples) ~= "table" or
+				type(descriptor.edge_id) ~= "string" then
+			fail("Scan-3b event classifier needs an edge descriptor")
+		end
+		local events = {}
+		if #descriptor.tuples == 0 then return events end
+		local same = nil
+		for index = 1, #descriptor.tuples do
+			local entry = descriptor.tuples[index]
+			if entry.class ~= "scan2_tuple_bank_incomplete" then return events end
+			if same == nil then same = entry
+			elseif same.bank_id ~= entry.bank_id then return events end
+		end
+		if same.far_kind == "aperture" and same.far_mode == "direct" then
+			-- R20: candidate D, the completeness analysis 3-F3 residual.
+			-- The tail-mode variant is R18's own recovered class and is
+			-- deliberately not this event.
+			events[#events + 1] = {class = "aperture_anchor_dead_event",
+				site = same.far_site,
+				detail = "every tuple of " .. descriptor.edge_id ..
+					" dead with " .. same.bank_id ..
+					" while its aperture incidence resolved direct"}
+		elseif same.far_kind == "wing" then
+			local answer = probe and probe(same.bank_id, same.wing_id) or
+				"no_alternative"
+			if answer == "complete" then
+				events[#events + 1] = {
+					class = "wing_pair_dead_alternative_event",
+					site = same.far_site,
+					detail = same.bank_id ..
+						" dead at the selected wedge-valid pair of " ..
+						tostring(same.wing_id) ..
+						" while the next wedge-valid pair completes"}
+			elseif answer ~= "dead" and answer ~= "no_alternative" then
+				fail("Scan-3b alternative-pair probe answered " ..
+					tostring(answer))
 			end
-			if left.direction ~= right.direction then
-				return left.direction < right.direction
+		end
+		return events
+	end
+
+	local function census_scan3b(stage, result, tracer, land_transitions)
+		local bank_rows, step_rows, selection_rows, event_rows = {}, {}, {}, {}
+		result.scan3b_banks = bank_rows
+		result.scan3b_steps = step_rows
+		result.scan3b_selections = selection_rows
+		result.scan3b_events = event_rows
+		result.scan3b_traces = {}
+
+		-- The sixteen: every Bank with exactly one land_edge_transition
+		-- terminal -- per Bay four of the five chain components (contracts
+		-- 9.1 names all sixteen).
+		local roster = {}
+		for bank_index = 1, #source.bay_bank_components do
+			local bank = source.bay_bank_components[bank_index]
+			local transition, side
+			for terminal_index, terminal in ipairs({bank.start_terminal,
+					bank.end_terminal}) do
+				if terminal.kind == "land_edge_transition" then
+					if transition then
+						fail(bank.id .. " has two transition terminals")
+					end
+					transition = terminal
+					side = terminal_index == 1 and "start" or "end"
+				end
 			end
-			return left.outcome < right.outcome
-		end)
+			if transition then
+				roster[#roster + 1] = {bank = bank, transition = transition,
+					side = side}
+			end
+		end
+		if #roster ~= 16 then
+			fail("census Scan-3b expects sixteen transition-incident Banks, " ..
+				"found " .. #roster)
+		end
+
+		-- The R21 alternative-pair probe: re-trace the named Bank with the
+		-- probed Wing's second wedge-valid pair -- every other terminal
+		-- stays the selected resolution.  Runs only on the dead condition;
+		-- a trace death answers "dead", a structural failure re-raises (the
+		-- pcall is a completion question, never a sink), no alternative
+		-- pair answers "no_alternative".
+		local function alternative_probe(bank_id, wing_id)
+			local bank = bank_source_by_id[bank_id]
+			if not bank then fail(bank_id .. " names an absent Bank") end
+			local alternative = tracer.wing_alternative_tails(wing_id)
+			if not alternative then return "no_alternative" end
+			local function resolved_for(terminal)
+				local resolved = tracer.resolve_terminal(terminal, bank.bay_id)
+				if terminal.kind == "wing_junction_tail_side" and
+						terminal.wing_id == wing_id then
+					-- The synthetic alternative resolution: same shape as
+					-- resolve_terminal's Wing branch, never cached.
+					return {id = resolved.id, bay_id = resolved.bay_id,
+						point = {x = resolved.point.x, z = resolved.point.z},
+						tail = alternative[terminal.tail_side],
+						k = terminal.tail_side == "negative" and
+							alternative.negative_k or alternative.positive_k}
+				end
+				return resolved
+			end
+			local ok, failure = pcall(function()
+				return tracer.trace_bank(bank,
+					resolved_for(bank.start_terminal),
+					resolved_for(bank.end_terminal))
+			end)
+			if ok then return "complete" end
+			local message = tostring(failure)
+			if not classify_message(bank_reject_by_fragment, message) then
+				error(failure, 0)
+			end
+			return "dead"
+		end
+
+		for index = 1, #roster do
+			local entry = roster[index]
+			local bank = entry.bank
+			local edge_id = entry.transition.edge_id
+			local endpoint = entry.transition.edge_endpoint
+			local info = census_far_terminal(tracer, bank, entry.side)
+			local row = {id = bank.id, bay_id = bank.bay_id,
+				edge_id = edge_id, endpoint = endpoint,
+				far_kind = info.kind, far_mode = info.mode}
+			local selected = result.scan2_selected[edge_id]
+			local choice = selected and
+				(endpoint == "from" and selected.from or selected.to)
+			local source_row = selected and selected.sources[endpoint]
+			if not choice or not source_row then
+				-- No selected joint tuple: the Bank has no terminal to trace
+				-- from, and "measured" versus "could not be evaluated" stay
+				-- different claims.  The primary finding is the edge's own
+				-- scan2 row; v5 measured this branch empty over W.
+				local descriptor =
+					result.scan3b_edge_descriptors[edge_id]
+				row.class = "scan3b_bank_not_evaluated"
+				row.detail = "no selected joint tuple on " .. edge_id ..
+					(descriptor and (": " .. descriptor.class) or "")
+			else
+				local transition_key = stage.land_transition_key(edge_id,
+					endpoint)
+				local materialized = {source = source_row,
+					point = choice.resolved.point,
+					previous = choice.previous, mode = choice.resolved.mode,
+					e = choice.resolved.e, w = choice.resolved.w}
+				local resolved = tracer.resolve_land_transition(transition_key,
+					materialized)
+				-- The Scan-4 composition resolves land terminals through the
+				-- tracer's land hook; this table is what that hook reads --
+				-- the selected joint resolution, exactly once per
+				-- transition.
+				if land_transitions then
+					land_transitions[transition_key] = materialized
+				end
+				local start_resolved, finish_resolved
+				if entry.side == "start" then
+					start_resolved = resolved
+					finish_resolved = tracer.resolve_terminal(
+						bank.end_terminal, bank.bay_id)
+				else
+					finish_resolved = resolved
+					start_resolved = tracer.resolve_terminal(
+						bank.start_terminal, bank.bay_id)
+				end
+				local observer, steps, selections = new_bank_trace_observation()
+				tracer.set_observer(observer)
+				local ok, points = pcall(tracer.trace_bank, bank,
+					start_resolved, finish_resolved)
+				tracer.set_observer(nil)
+				if not ok then
+					-- Scan-2's completion tier proved this Bank complete at
+					-- the selected tuple: an instrumented trace that dies is
+					-- a loud worker abort -- a finding, never a column
+					-- (contracts 9.1).
+					error("WP40 geometry partition: census Scan-3b " ..
+						"instrumented trace of " .. bank.id .. " died where " ..
+						"Scan-2 proved the selected tuple complete: " ..
+						tostring(points), 0)
+				end
+				row.class = "bank_trace_complete_select"
+				row.station_count = #points
+				result.scan3b_traces[bank.id] = points
+				fold_bank_trace_observation(row, bank.id, observer, steps,
+					selections, step_rows, selection_rows)
+			end
+			bank_rows[#bank_rows + 1] = row
+		end
+		sort_step_rows(step_rows)
+
+		-- R20/R21 occupancy, evaluated on the dead condition only: the
+		-- sixteen via all-tuples-dead on their edges, the four head Banks
+		-- via their Scan-3a trace rows.  Emission order is edge order then
+		-- head-Bank order -- deterministic by construction.
+		for index = 1, #stage.provisional_edges do
+			local edge_id = stage.provisional_edges[index].id
+			local descriptor = result.scan3b_edge_descriptors[edge_id]
+			if descriptor then
+				local events = census_scan3b_classify_events(descriptor,
+					alternative_probe)
+				for event_index = 1, #events do
+					event_rows[#event_rows + 1] = events[event_index]
+				end
+			end
+		end
+		for index = 1, #result.scan3_banks do
+			local head_row = result.scan3_banks[index]
+			if head_row.class ~= "bank_trace_complete_select" and
+					head_row.class ~= "bank_terminal_unresolved_reject" then
+				local bank = bank_source_by_id[head_row.id]
+				for _, terminal in ipairs({bank.start_terminal,
+						bank.end_terminal}) do
+					if terminal.kind == "wing_junction_tail_side" and
+							alternative_probe(bank.id, terminal.wing_id) ==
+								"complete" then
+						event_rows[#event_rows + 1] = {
+							class = "wing_pair_dead_alternative_event",
+							site = terminal.wing_id .. ":" .. terminal.tail_side,
+							detail = bank.id .. " dead at the selected " ..
+								"wedge-valid pair of " .. terminal.wing_id ..
+								" while the next wedge-valid pair completes"}
+					end
+				end
+			end
+		end
+		return result
+	end
+
+	-- ------------------------------------------------------------------
+	-- Census Scan-4 (contracts 9.1): the face tier over all 38 zone-face
+	-- polygons, the Whole tier's exhaustive H38 row-run partition gated on
+	-- all-faces-simple, and the excluded-fragment obligations -- evaluated
+	-- on Scan-4 members only, on the same stage build the earlier scans
+	-- paid for.  The scanners classify by decided policy; the tiers'
+	-- internal invariants abort loudly rather than classify.
+	-- ------------------------------------------------------------------
+
+	-- The face classification map (the stage-reject precedent): the
+	-- compiler's own validate_face_polygon decides, its message maps onto a
+	-- class per fail site, and anything unmatched is re-raised.  Ordered:
+	-- first match wins.
+	local face_reject_by_fragment = {
+		{" is not closed", "face_not_closed_reject"},
+		{" is not eight-connected", "face_composition_reject"},
+		{" is not simple", "face_non_simple_reject"},
+		{" is not CCW", "face_wrong_orientation_reject"},
+	}
+	local function census_face_classify(id, polygon)
+		local ok, failure = pcall(validate_face_polygon, id, polygon)
+		if ok then return "face_simple_select", nil end
+		local message = tostring(failure)
+		local class = classify_message(face_reject_by_fragment, message)
+		if not class then error(failure, 0) end
+		return class, message
+	end
+
+	-- The known composition-failure sites of the face assembly, so a pcall
+	-- there is a classification map and never an unfiltered sink (the M3
+	-- lesson): anything else re-raises.
+	local face_composition_fragments = {
+		{" component graph does not join", "face_composition_reject"},
+		{" authority components do not join", "face_composition_reject"},
+		{" has no materialized final edge", "face_composition_reject"},
+		{" final endpoints are absent", "face_composition_reject"},
+		{" terminal-trimmed span is absent", "face_composition_reject"},
+	}
+
+	-- The Whole tier's interval classifier core, pure over prepared row-run
+	-- tables so the synthetic gate KATs can drive it directly (contracts
+	-- 9.4).  `prepared` carries:
+	--   footprint_rows: [z] -> sorted {first, finish} runs (the merged
+	--     footprint universe);
+	--   face_rows: [z] -> {first, finish, id, zone_id} runs of the composed
+	--     simple face polygons;
+	--   water_rows: [z] -> {first, finish, owner} runs of final planned
+	--     water (the caller has already applied the perimeter-equality
+	--     aperture rule, so these are literal planned-water columns);
+	--   declared: ["x:z"] -> {zone_id = true} the declared seam owners
+	--     (shared-edge stations and perimeter-span vertices);
+	--   check: optional function(z, x, water_owner_or_nil, face_runs) ->
+	--     boolean -- the per-interval representation cross-check behind the
+	--     m count; nil skips it and m stays 0.
+	-- Classification per interval (completeness analysis F10/F11): water
+	-- single owner or dry single face -> whole_single_owner_select; dry
+	-- multi-face exactly matching the declared seam at every column ->
+	-- whole_declared_seam_select; dry uncovered -> whole_gap_reject (g);
+	-- anything else -> whole_undeclared_multiplicity_reject (water overlap
+	-- counts o, undeclared dry multiplicity counts r per column).  m counts
+	-- the columns of every interval whose `check` disagreed -- the H38
+	-- normalization's own measured invariance.
+	local function census_whole_classify(prepared)
+		local classes = {}
+		local function note(class, z, first, finish)
+			local entry = classes[class]
+			if not entry then
+				entry = {intervals = 0, columns = 0}
+				classes[class] = entry
+			end
+			entry.intervals = entry.intervals + 1
+			entry.columns = entry.columns + (finish - first + 1)
+			if not entry.witness then
+				entry.witness = "z=" .. z .. ":x=" .. first .. ".." .. finish
+			end
+		end
+		local totals = {g = 0, o = 0, r = 0, m = 0, columns = 0,
+			planned_water = 0, dry = 0}
+		local zs = {}
+		for z in pairs(prepared.footprint_rows) do zs[#zs + 1] = z end
+		table.sort(zs)
+		for z_index = 1, #zs do
+			local z = zs[z_index]
+			local footprint_runs = prepared.footprint_rows[z]
+			local face_runs = prepared.face_rows[z] or {}
+			local water_runs = prepared.water_rows[z] or {}
+			for footprint_index = 1, #footprint_runs do
+				local footprint_run = footprint_runs[footprint_index]
+				local breaks = {footprint_run.first, footprint_run.finish + 1}
+				for _, collection in ipairs({face_runs, water_runs}) do
+					for index = 1, #collection do
+						local run = collection[index]
+						if run.finish >= footprint_run.first and
+								run.first <= footprint_run.finish then
+							breaks[#breaks + 1] =
+								math.max(run.first, footprint_run.first)
+							breaks[#breaks + 1] =
+								math.min(run.finish, footprint_run.finish) + 1
+						end
+					end
+				end
+				table.sort(breaks)
+				local unique = {}
+				for index = 1, #breaks do
+					if index == 1 or breaks[index] ~= breaks[index - 1] then
+						unique[#unique + 1] = breaks[index]
+					end
+				end
+				for index = 1, #unique - 1 do
+					local first, finish = unique[index], unique[index + 1] - 1
+					local length = finish - first + 1
+					local covering_faces, covering_water = {}, {}
+					for run_index = 1, #face_runs do
+						local run = face_runs[run_index]
+						if first >= run.first and first <= run.finish then
+							covering_faces[#covering_faces + 1] = run
+						end
+					end
+					for run_index = 1, #water_runs do
+						local run = water_runs[run_index]
+						if first >= run.first and first <= run.finish then
+							covering_water[#covering_water + 1] = run
+						end
+					end
+					totals.columns = totals.columns + length
+					local class
+					if #covering_water >= 1 then
+						totals.planned_water = totals.planned_water + length
+						if #covering_water > 1 then
+							totals.o = totals.o + length
+							class = "whole_undeclared_multiplicity_reject"
+						else
+							class = "whole_single_owner_select"
+						end
+					else
+						totals.dry = totals.dry + length
+						if #covering_faces == 0 then
+							totals.g = totals.g + length
+							class = "whole_gap_reject"
+						elseif #covering_faces == 1 then
+							class = "whole_single_owner_select"
+						else
+							-- The declared-seam check is per column: the
+							-- covering faces are interval-constant, the
+							-- declared owner sets are not.
+							local valid_all = true
+							for x = first, finish do
+								local owners = prepared.declared[x .. ":" .. z]
+								local valid = owners ~= nil
+								local seen = {}
+								for face_index = 1, #covering_faces do
+									local owner = covering_faces[face_index].zone_id
+									if seen[owner] or not owners or
+											not owners[owner] then
+										valid = false
+									end
+									seen[owner] = true
+								end
+								if valid then
+									for owner in pairs(owners) do
+										if not seen[owner] then
+											valid = false break
+										end
+									end
+								end
+								if not valid then
+									valid_all = false
+									totals.r = totals.r + 1
+								end
+							end
+							class = valid_all and "whole_declared_seam_select" or
+								"whole_undeclared_multiplicity_reject"
+						end
+					end
+					if prepared.check then
+						local water_owner = #covering_water == 1 and
+							covering_water[1].owner or nil
+						if not prepared.check(z, first, water_owner,
+								covering_faces) then
+							totals.m = totals.m + length
+						end
+					end
+					note(class, z, first, finish)
+				end
+			end
+		end
+		totals.classes = classes
+		return totals
+	end
+
+	-- The polygon row-run normalization of the H38 method: every station of
+	-- the closed simple polygon is a class-0 single-column run of its row,
+	-- and every gap between consecutive boundary columns whose first column
+	-- is interior is a class-1 run -- parity is constant between boundary
+	-- points of a simple polygon, which is what makes the interval an
+	-- exhaustive proof rather than a sample.
+	local function polygon_row_runs(points, label)
+		if #points < 4 or key(points[1]) ~= key(points[#points]) then
+			fail(label .. " row-run normalization needs a closed polygon")
+		end
+		local polygon_index = exact.polygon_index(points)
+		local boundary = {}
+		for index = 1, #points - 1 do
+			local point = points[index]
+			local row = boundary[point.z]
+			if not row then row = {} boundary[point.z] = row end
+			row[#row + 1] = point.x
+		end
+		local result = {}
+		for z, xs in pairs(boundary) do
+			table.sort(xs)
+			local runs = {}
+			for index = 1, #xs do
+				if index > 1 and xs[index] == xs[index - 1] then
+					fail(label .. " repeats a row boundary column")
+				end
+				if index > 1 and xs[index] > xs[index - 1] + 1 then
+					local first, finish = xs[index - 1] + 1, xs[index] - 1
+					if exact.indexed_polygon_class(polygon_index, first, z) > 0 then
+						runs[#runs + 1] = {first = first, finish = finish,
+							class = 1}
+					end
+				end
+				runs[#runs + 1] = {first = xs[index], finish = xs[index],
+					class = 0}
+			end
+			result[z] = runs
+		end
+		return result, polygon_index
+	end
+
+	local function census_scan4(stage, result, tracer)
+		local face_rows_out, whole_rows, interval_rows, fragment_rows =
+			{}, {}, {}, {}
+		result.scan4_faces = face_rows_out
+		result.scan4_wholes = whole_rows
+		result.scan4_whole_intervals = interval_rows
+		result.scan4_fragments = fragment_rows
+
+		-- ----------------------------------------------------------
+		-- Final edge materialization, projected from compile_impl's own
+		-- finalization: transition edges are the selected tuple's probe
+		-- bytes (only the selected probe materializes, source authority
+		-- section 4); ordinary edges retain their single interval;
+		-- attachment edges replace the terminal control with A and
+		-- re-raster.  A failure marks the edge unmaterialized and every
+		-- face referencing it classifies face_composition_reject.
+		-- ----------------------------------------------------------
+		local final_edges, edge_failures = {}, {}
+		local attachment_a = {}
+		for index = 1, #result.attachments do
+			local row = result.attachments[index]
+			if row.a then
+				attachment_a[row.id] = {x = row.a.x, z = row.a.z}
+			end
+		end
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			local edge_transitions = stage.transitions_by_edge[edge.id]
+			local attachment = stage.attachment_by_edge[edge.id]
+			local ok, failure = pcall(function()
+				if edge_transitions then
+					local selected = result.scan2_selected[edge.id]
+					if not selected or not selected.probe then
+						fail(edge.id .. " has no materialized final edge")
+					end
+					final_edges[edge.id] = selected.probe
+					return
+				end
+				local intervals = stage.maximal_dry_intervals(edge)
+				if attachment then
+					if #intervals ~= 1 then
+						fail(edge.id .. " has a second retained land run")
+					end
+					local interval = intervals[1]
+					local selected_attachment = stage.attachment_distance(
+						attachment, edge, interval)
+					if selected_attachment.distance > 1 then
+						fail("Attachment E/A distance exceeds one")
+					end
+					local best = selected_attachment.a
+					local retained_controls = {}
+					for control_index = 1, #edge.shifted_controls do
+						local point = edge.shifted_controls[control_index]
+						if stage.dry_land(point.x, point.z) then
+							retained_controls[#retained_controls + 1] =
+								control_index
+						end
+					end
+					if #retained_controls == 0 then
+						fail(attachment.id .. " has no retained controls")
+					end
+					for retained_index = 2, #retained_controls do
+						if retained_controls[retained_index] ~=
+								retained_controls[retained_index - 1] + 1 then
+							fail(attachment.id ..
+								" retained controls form a second run")
+						end
+					end
+					local controls = {}
+					local function append_control(point)
+						append_dedup(controls, point)
+					end
+					if attachment.edge_endpoint == "from" then
+						append_control(best)
+						for retained_index = 1, #retained_controls do
+							append_control(edge.shifted_controls[
+								retained_controls[retained_index]])
+						end
+						append_control(edge.stations[interval.finish])
+					else
+						append_control(edge.stations[interval.first])
+						for retained_index = 1, #retained_controls do
+							append_control(edge.shifted_controls[
+								retained_controls[retained_index]])
+						end
+						append_control(best)
+					end
+					local stations = raster.final_raster(controls, false)
+					raster.validate_final({id = edge.id, kind = "land_edge",
+						closed = false,
+						max_displacement = edge.source.max_displacement},
+						edge.base_stations, stations)
+					final_edges[edge.id] = stations
+					return
+				end
+				if #intervals ~= 1 then
+					fail(edge.id .. " has a second retained land run")
+				end
+				local stations = {}
+				for station_index = intervals[1].first, intervals[1].finish do
+					append_dedup(stations, edge.stations[station_index])
+				end
+				final_edges[edge.id] = stations
+			end)
+			if not ok then
+				edge_failures[edge.id] = tostring(failure)
+			end
+		end
+
+		-- ----------------------------------------------------------
+		-- Spans, arcs and faces, the compile_impl composition projected on
+		-- the shared tracer.  Land transition terminals resolve through the
+		-- Scan-3b materialized table the tracer's land hook reads.
+		-- ----------------------------------------------------------
+		local span_by_id = {}
+		for index = 1, #source.perimeter_spans do
+			local span = source.perimeter_spans[index]
+			local perimeter = stage.perimeter_by_id[span.perimeter_id]
+			local function boundary_point(boundary)
+				if boundary.kind == "perimeter_attachment" then
+					local a = attachment_a[boundary.attachment_id]
+					if not a then
+						fail(span.id .. " final endpoints are absent")
+					end
+					return a
+				end
+				return perimeter.source.polygon[boundary.index]
+			end
+			local ok, failure = pcall(function()
+				local first_point = boundary_point(span.start_boundary)
+				local last_point = boundary_point(span.end_boundary)
+				local points = {}
+				local collecting = false
+				for station_index = 1, #perimeter.stations do
+					local point = perimeter.stations[station_index]
+					if key(point) == key(first_point) then collecting = true end
+					if collecting then points[#points + 1] = point end
+					if collecting and key(point) == key(last_point) then break end
+				end
+				if #points == 0 or key(points[#points]) ~= key(last_point) then
+					fail(span.id .. " final endpoints are absent")
+				end
+				if span.face_direction == "reverse" then
+					points = reverse_points(points)
+				end
+				span_by_id[span.id] = {source = span, stations = points}
+			end)
+			if not ok then
+				span_by_id[span.id] = {failure = tostring(failure)}
+			end
+		end
+
+		local bank_points = {}
+		for id, points in pairs(result.scan3a_traces) do
+			bank_points[id] = points
+		end
+		for id, points in pairs(result.scan3b_traces) do
+			bank_points[id] = points
+		end
+
+		local function component_span(component)
+			local span = span_by_id[component.ref_id]
+			if not span then
+				fail(component.ref_id .. " terminal-trimmed span is absent")
+			end
+			if span.failure then error(span.failure, 0) end
+			local full = span.stations
+			local first_point = component.from_terminal ~= false and
+				tracer.resolve_terminal(component.from_terminal).point or full[1]
+			local last_point = component.to_terminal ~= false and
+				tracer.resolve_terminal(component.to_terminal).point or
+				full[#full]
+			local first_index, last_index
+			for station_index = 1, #full do
+				if not first_index and
+						key(full[station_index]) == key(first_point) then
+					first_index = station_index
+				end
+				if key(full[station_index]) == key(last_point) then
+					last_index = station_index
+				end
+			end
+			if not first_index or not last_index or first_index > last_index then
+				fail(component.ref_id .. " terminal-trimmed span is absent")
+			end
+			local points = {}
+			for station_index = first_index, last_index do
+				points[#points + 1] = {x = full[station_index].x,
+					z = full[station_index].z}
+			end
+			return points
+		end
+
+		local arc_by_id, arc_failures = {}, {}
+		for index = 1, #source.face_arcs do
+			local arc = source.face_arcs[index]
+			local ok, failure = pcall(function()
+				local points = {}
+				for component_index = 1, #arc.authority_components do
+					local component = arc.authority_components[component_index]
+					local part
+					if component.kind == "perimeter_span" then
+						part = component_span(component)
+					elseif component.kind == "bay_bank" then
+						local traced = bank_points[component.ref_id]
+						if not traced then
+							fail(component.ref_id ..
+								" has no materialized final edge")
+						end
+						part = copy_points(traced)
+					elseif component.boundary_role == "island_coast" then
+						part = copy_points(
+							stage.island_by_id[component.source_ref].stations)
+						part[#part + 1] = {x = part[1].x, z = part[1].z}
+					else
+						part = raster.final_raster(component.control, false)
+					end
+					if #points > 0 and key(points[#points]) ~= key(part[1]) then
+						fail(arc.id .. " authority components do not join")
+					end
+					append_points(points, part)
+				end
+				arc_by_id[arc.id] = {source = arc, stations = points}
+			end)
+			if not ok then
+				local message = tostring(failure)
+				if not classify_message(face_composition_fragments, message) then
+					error(failure, 0)
+				end
+				arc_failures[arc.id] = message
+			end
+		end
+
+		local composed_faces = {}
+		local all_simple, blocking_face = true, nil
+		for index = 1, #source.zone_faces do
+			local face = source.zone_faces[index]
+			local row = {id = face.id}
+			local upstream
+			for _, component in ipairs(face.cycle) do
+				if component.kind ~= "shared_edge" and
+						arc_failures[component.ref_id] then
+					upstream = component.ref_id .. ": " ..
+						arc_failures[component.ref_id]
+					break
+				end
+			end
+			if upstream then
+				row.class = "face_upstream_not_evaluated"
+				row.detail = upstream
+			else
+				local ok, failure = pcall(function()
+					local polygon = {}
+					for _, component in ipairs(face.cycle) do
+						local points
+						if component.kind == "shared_edge" then
+							points = final_edges[component.ref_id]
+							if not points then
+								fail(component.ref_id ..
+									" has no materialized final edge" ..
+									(edge_failures[component.ref_id] and
+										(": " .. edge_failures[component.ref_id])
+										or ""))
+							end
+						else
+							points = arc_by_id[component.ref_id].stations
+						end
+						if component.direction == "reverse" then
+							points = reverse_points(points)
+						else
+							points = copy_points(points)
+						end
+						if #polygon > 0 and
+								key(polygon[#polygon]) ~= key(points[1]) then
+							fail(face.id .. " component graph does not join")
+						end
+						append_points(polygon, points)
+					end
+					return polygon
+				end)
+				if ok then
+					local polygon = failure
+					row.station_count = #polygon
+					row.class, row.detail = census_face_classify(face.id, polygon)
+					composed_faces[#composed_faces + 1] = {id = face.id,
+						zone_id = face.zone_id, polygon = polygon,
+						simple = row.class == "face_simple_select"}
+				else
+					local message = tostring(failure)
+					if not classify_message(face_composition_fragments,
+							message) then
+						error(failure, 0)
+					end
+					row.class = "face_composition_reject"
+					row.detail = message
+				end
+			end
+			if row.class ~= "face_simple_select" then
+				all_simple = false
+				if not blocking_face then blocking_face = face.id end
+			end
+			face_rows_out[#face_rows_out + 1] = row
+		end
+
+		-- ----------------------------------------------------------
+		-- The Whole tier, gated on all-faces-simple (contracts 9.1).
+		-- ----------------------------------------------------------
+		if not all_simple then
+			whole_rows[1] = {class = "whole_not_evaluated",
+				blocking_face = blocking_face}
+		else
+			-- Footprint universe: the merged row runs of the perimeter and
+			-- island rings.
+			local footprint_rows = {}
+			local function add_footprint(points, label)
+				local ring = copy_points(points)
+				if key(ring[1]) ~= key(ring[#ring]) then
+					ring[#ring + 1] = {x = ring[1].x, z = ring[1].z}
+				end
+				local rows = polygon_row_runs(ring, label)
+				for z, runs in pairs(rows) do
+					local merged = footprint_rows[z]
+					if not merged then merged = {} footprint_rows[z] = merged end
+					for run_index = 1, #runs do
+						merged[#merged + 1] = runs[run_index]
+					end
+				end
+			end
+			for index = 1, #stage.perimeter_rows do
+				add_footprint(stage.perimeter_rows[index].stations,
+					stage.perimeter_rows[index].id)
+			end
+			for index = 1, #stage.island_rows do
+				add_footprint(stage.island_rows[index].stations,
+					stage.island_rows[index].id)
+			end
+			-- Merge overlapping footprint runs per row into a disjoint
+			-- ascending cover, keeping boundary columns distinguishable:
+			-- the class-0 single-column runs stay their own intervals
+			-- through the break machinery, so only the cover has to be
+			-- disjoint.
+			for z, runs in pairs(footprint_rows) do
+				table.sort(runs, function(a, b)
+					return a.first < b.first or
+						(a.first == b.first and a.finish < b.finish)
+				end)
+				local merged = {}
+				for index = 1, #runs do
+					local run = runs[index]
+					local last = merged[#merged]
+					if last and run.first <= last.finish + 1 then
+						if run.finish > last.finish then
+							last.finish = run.finish
+						end
+					else
+						merged[#merged + 1] = {first = run.first,
+							finish = run.finish}
+					end
+				end
+				footprint_rows[z] = merged
+			end
+
+			-- Water rows: per Bay the raw run mask plus its fill points,
+			-- restricted to planned water by the perimeter-equality rule --
+			-- a class-0 footprint boundary column is planned water only when
+			-- the Bay's aperture includes it (planned_water's own rule,
+			-- evaluated here from the same fields without the point cache).
+			local boundary_columns = {}
+			do
+				local function mark_ring(points)
+					for index = 1, #points do
+						boundary_columns[key(points[index])] = true
+					end
+				end
+				for index = 1, #stage.perimeter_rows do
+					mark_ring(stage.perimeter_rows[index].stations)
+				end
+				for index = 1, #stage.island_rows do
+					mark_ring(stage.island_rows[index].stations)
+				end
+			end
+			local water_rows = {}
+			local function add_water_run(z, first, finish, owner, context)
+				-- Split the run at footprint-boundary columns that the
+				-- Bay's aperture does not include: those columns are dry
+				-- perimeter equality, not planned water.
+				local runs = water_rows[z]
+				if not runs then runs = {} water_rows[z] = runs end
+				local run_first = nil
+				for x = first, finish do
+					local water = true
+					if boundary_columns[x .. ":" .. z] and
+							not context.aperture.included[x .. ":" .. z] then
+						water = false
+					end
+					if water and not run_first then run_first = x end
+					if not water and run_first then
+						runs[#runs + 1] = {first = run_first, finish = x - 1,
+							owner = context.bay.source.id}
+						run_first = nil
+					end
+				end
+				if run_first then
+					runs[#runs + 1] = {first = run_first, finish = finish,
+						owner = context.bay.source.id}
+				end
+			end
+			for bay_index = 1, #stage.bays do
+				local context = stage.bay_context_by_id[
+					stage.bays[bay_index].source.id]
+				local zs = {}
+				for z in pairs(context.raw_rows) do zs[#zs + 1] = z end
+				table.sort(zs)
+				for z_index = 1, #zs do
+					local z = zs[z_index]
+					local runs = context.raw_rows[z]
+					for run_index = 1, #runs do
+						add_water_run(z, runs[run_index].first,
+							runs[run_index].finish,
+							context.bay.source.id, context)
+					end
+				end
+				local fills = copy_points(context.fill_points)
+				table.sort(fills, point_less)
+				for fill_index = 1, #fills do
+					local point = fills[fill_index]
+					add_water_run(point.z, point.x, point.x,
+						context.bay.source.id, context)
+				end
+			end
+			for z, runs in pairs(water_rows) do
+				table.sort(runs, function(a, b)
+					return a.first < b.first or
+						(a.first == b.first and a.finish < b.finish)
+				end)
+			end
+
+			-- Face rows from the composed simple polygons.
+			local face_rows = {}
+			local face_indexes = {}
+			for index = 1, #composed_faces do
+				local face = composed_faces[index]
+				local rows, polygon_index = polygon_row_runs(face.polygon,
+					face.id)
+				face_indexes[face.id] = polygon_index
+				for z, runs in pairs(rows) do
+					local merged = face_rows[z]
+					if not merged then merged = {} face_rows[z] = merged end
+					for run_index = 1, #runs do
+						merged[#merged + 1] = {first = runs[run_index].first,
+							finish = runs[run_index].finish, id = face.id,
+							zone_id = face.zone_id}
+					end
+				end
+			end
+			for z, runs in pairs(face_rows) do
+				table.sort(runs, function(a, b)
+					if a.first ~= b.first then return a.first < b.first end
+					if a.finish ~= b.finish then return a.finish < b.finish end
+					return a.id < b.id
+				end)
+			end
+
+			-- The declared seam owners: every final shared-edge station
+			-- declares its two zones, every perimeter-span vertex the owners
+			-- of the spans sharing it.
+			local declared = {}
+			local function declare(x, z, owner)
+				local point_key = x .. ":" .. z
+				local owners = declared[point_key]
+				if not owners then owners = {} declared[point_key] = owners end
+				owners[owner] = true
+			end
+			for index = 1, #stage.provisional_edges do
+				local edge = stage.provisional_edges[index]
+				local stations = final_edges[edge.id]
+				if stations then
+					for station_index = 1, #stations do
+						declare(stations[station_index].x,
+							stations[station_index].z, edge.source.zone_a)
+						declare(stations[station_index].x,
+							stations[station_index].z, edge.source.zone_b)
+					end
+				end
+			end
+			for index = 1, #source.perimeter_spans do
+				local span = source.perimeter_spans[index]
+				local perimeter = stage.perimeter_by_id[span.perimeter_id]
+				for _, boundary in ipairs({span.start_boundary,
+						span.end_boundary}) do
+					if boundary.kind == "perimeter_vertex" then
+						local point = perimeter.source.polygon[boundary.index]
+						declare(point.x, point.z, span.zone_id)
+					end
+				end
+			end
+
+			-- The m cross-check: at every interval's first column the
+			-- run-derived decision is compared against the stage's own
+			-- predicates -- the water mask fields planned_water reads
+			-- (without its point cache) and the faces' point-in-polygon
+			-- classes -- so the row-run normalization itself is measured,
+			-- not trusted.
+			local function check(z, x, water_owner, covering_faces)
+				local point_key = x .. ":" .. z
+				local predicate_owner = nil
+				for bay_index = 1, #stage.bays do
+					local context = stage.bay_context_by_id[
+						stage.bays[bay_index].source.id]
+					local raw = false
+					local runs = context.raw_rows[z]
+					if runs then
+						for run_index = 1, #runs do
+							if x >= runs[run_index].first and
+									x <= runs[run_index].finish then
+								raw = true break
+							end
+						end
+					end
+					if raw or context.fill[point_key] == true then
+						if not boundary_columns[point_key] or
+								context.aperture.included[point_key] then
+							if predicate_owner then return false end
+							predicate_owner = context.bay.source.id
+						end
+					end
+				end
+				if predicate_owner ~= water_owner then return false end
+				if not water_owner then
+					for face_index = 1, #covering_faces do
+						local face_run = covering_faces[face_index]
+						if exact.indexed_polygon_class(
+								face_indexes[face_run.id], x, z) < 0 then
+							return false
+						end
+					end
+				end
+				return true
+			end
+
+			local totals = census_whole_classify({
+				footprint_rows = footprint_rows, face_rows = face_rows,
+				water_rows = water_rows, declared = declared, check = check})
+			whole_rows[1] = {class = "whole_evaluated",
+				columns = totals.columns,
+				planned_water_columns = totals.planned_water,
+				dry_columns = totals.dry, g = totals.g, o = totals.o,
+				r = totals.r, m = totals.m}
+			local class_names = {}
+			for class in pairs(totals.classes) do
+				class_names[#class_names + 1] = class
+			end
+			table.sort(class_names)
+			for index = 1, #class_names do
+				local entry = totals.classes[class_names[index]]
+				interval_rows[#interval_rows + 1] = {site = "footprint",
+					class = class_names[index],
+					interval_count = entry.intervals,
+					column_count = entry.columns, witness = entry.witness}
+			end
+		end
+
+		-- ----------------------------------------------------------
+		-- The excluded-fragment obligations (contracts 9.1): the
+		-- nonselected maximal dry intervals of the transition edges and the
+		-- selected-interval stations the joint terminals clipped off --
+		-- compile_impl's exact fragment set -- each classified per station.
+		-- Face ownership needs every face composed and simple; otherwise
+		-- the fragment could not be measured and says so.
+		-- ----------------------------------------------------------
+		local fragments = {}
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			if stage.transitions_by_edge[edge.id] then
+				local selected = result.scan2_selected[edge.id]
+				if selected then
+					local intervals = stage.maximal_dry_intervals(edge)
+					for interval_index = 1, #intervals do
+						local interval = intervals[interval_index]
+						if interval.first ~= selected.interval.first or
+								interval.finish ~= selected.interval.finish then
+							for station_index = interval.first,
+									interval.finish do
+								fragments[#fragments + 1] = {edge = edge,
+									station_index = station_index}
+							end
+						end
+					end
+					local span_first = selected.from_i or
+						selected.interval.first
+					local span_finish = selected.to_i or
+						selected.interval.finish
+					for station_index = selected.interval.first,
+							span_first - 1 do
+						fragments[#fragments + 1] = {edge = edge,
+							station_index = station_index}
+					end
+					for station_index = span_finish + 1,
+							selected.interval.finish do
+						fragments[#fragments + 1] = {edge = edge,
+							station_index = station_index}
+					end
+				end
+			end
+		end
+		if #fragments > 0 then
+			local faces_measurable = all_simple and
+				#composed_faces == #source.zone_faces
+			local land_identity, bank_identity, terminal_identity = {}, {}, {}
+			for edge_id, stations in pairs(final_edges) do
+				for station_index = 1, #stations do
+					local point_key = key(stations[station_index])
+					land_identity[point_key] =
+						(land_identity[point_key] or 0) + 1
+				end
+			end
+			for _, points in pairs(bank_points) do
+				for station_index = 1, #points do
+					local point_key = key(points[station_index])
+					bank_identity[point_key] =
+						(bank_identity[point_key] or 0) + 1
+				end
+			end
+			for _, terminal in pairs(tracer.terminal_cache) do
+				if terminal.point then
+					terminal_identity[key(terminal.point)] = true
+				end
+			end
+			for index = 1, #fragments do
+				local fragment = fragments[index]
+				local point = fragment.edge.stations[fragment.station_index]
+				local point_key = key(point)
+				local row = {edge_id = fragment.edge.id,
+					station = fragment.station_index,
+					x = point.x, z = point.z,
+					land_count = land_identity[point_key] or 0,
+					bank_count = bank_identity[point_key] or 0,
+					terminal_identity = terminal_identity[point_key] == true}
+				if not faces_measurable then
+					row.class = "fragment_not_evaluated"
+				else
+					local face_count = 0
+					for face_index = 1, #composed_faces do
+						if exact.polygon_class(point.x, point.z,
+								composed_faces[face_index].polygon) >= 0 then
+							face_count = face_count + 1
+						end
+					end
+					row.face_count = face_count
+					if row.land_count > 0 or row.terminal_identity then
+						row.class = "fragment_identity_conflict_reject"
+					else
+						-- The compile-path owner rule
+						-- (validate_excluded_fragment_evidence): a Bank
+						-- boundary owns first; otherwise exactly one dry
+						-- Face owns.
+						local owner_count = row.bank_count > 0 and
+							row.bank_count or face_count
+						if owner_count == 1 then
+							row.class = "fragment_owned_once_select"
+						elseif owner_count == 0 then
+							row.class = "fragment_unowned_reject"
+						else
+							row.class = "fragment_multi_owner_reject"
+						end
+					end
+				end
+				fragment_rows[#fragment_rows + 1] = row
+			end
+		end
 		return result
 	end
 
@@ -5607,7 +6916,8 @@ local function new_partition(dependencies)
 		stage_reject_classes[index] = stage_reject_by_fragment[index][2]
 	end
 
-	local function census_scan(seed)
+	local function census_scan(seed, options)
+		options = options or {}
 		-- The pcall wraps stage construction only: a failure inside the scans
 		-- happens on a stage that already exists and stays a loud abort.
 		local built, stage = pcall(build_scan_stage, seed)
@@ -5624,13 +6934,26 @@ local function new_partition(dependencies)
 				stage_reject = {site = site, class = class, detail = message}}
 		end
 		local result, selected_by_edge = census_scan1(stage, seed)
-		-- One tracer for both remaining scans.  Scan-3a runs first so its Wing
+		-- One tracer for every remaining scan.  Scan-3a runs first so its Wing
 		-- analysis fills the shared tail cache that Scan-2's completion tier
 		-- would otherwise fill unobserved; the terminal cache is shared for the
-		-- same reason, and neither scan changes what the other measures.
-		local tracer = new_bank_tracer(stage, {})
+		-- same reason, and neither scan changes what the other measures.  The
+		-- land hook reads the table Scan-3b fills with the selected joint
+		-- resolutions, so it answers nothing before Scan-3b ran and exactly
+		-- the selected resolution afterwards -- which is what lets Scan-4's
+		-- composition consume the compiler's own terminal seam.
+		local land_transitions = {}
+		local tracer = new_bank_tracer(stage, {
+			land_transition = function(cache_key)
+				return land_transitions[cache_key]
+			end})
 		census_scan3a(stage, result, tracer)
-		return census_scan2(stage, result, selected_by_edge, tracer)
+		census_scan2(stage, result, selected_by_edge, tracer)
+		census_scan3b(stage, result, tracer, land_transitions)
+		if options.scan4 then
+			census_scan4(stage, result, tracer)
+		end
+		return result
 	end
 
 	-- Payload-only Bay ownership evaluator.  It is private compiler/test code;
@@ -6076,6 +7399,13 @@ local function new_partition(dependencies)
 	partition.compile = compile_impl
 	partition.census_scan = census_scan
 	partition.census_scan_schema = census_scan_schema
+	-- The Scan-3b/4 classifier seams, exported for the synthetic gate KATs
+	-- (contracts 9.4: no measured configuration reaches those branches, so
+	-- only synthetic cases can pin them, and they must drive the same
+	-- functions the scan runs).
+	partition.census_scan3b_classify_events = census_scan3b_classify_events
+	partition.census_face_classify = census_face_classify
+	partition.census_whole_classify = census_whole_classify
 	partition.joint_tuple_less_compile = joint_tuple_less_compile
 	partition.joint_tuple_less_census = joint_tuple_less_census
 	partition.census_stage_reject_classes = stage_reject_classes

@@ -78,10 +78,23 @@ make_export() {
 	# interpreters do: it lives under the gitignored results/ tree, because it
 	# is a measurement of this host on a day rather than authority bytes, and a
 	# full-`W` start refuses to run without it (plan section 6.5).
+	#
+	# Its PROBE_DATE is restamped in the export copy, and only there.  A full-`W`
+	# start refuses a conf dated before the commit it would gate -- and the
+	# commit here is made below, at test time, so its date is *today*.  Copied
+	# verbatim, the suite would therefore rot the day after the probe ran:
+	# every --full-w proof past this point would abort on staleness before the
+	# gate under proof could fire, and the whole run would still report itself
+	# as a set of successful negatives.  The real conf under
+	# tools/wp40/results/ is never written, so real launches read the measured
+	# date unchanged, and the staleness refusal keeps its own proofs -- the
+	# module-level negative in t2_census_gate_test.lua and the explicit
+	# 1970-01-01 export below.
 	if [[ -e "$repo/tools/wp40/results/census-cpu-gate.conf" ]]; then
 		mkdir -p "$target/tools/wp40/results"
-		cp "$repo/tools/wp40/results/census-cpu-gate.conf" \
-			"$target/tools/wp40/results/census-cpu-gate.conf"
+		sed "s/^PROBE_DATE=.*/PROBE_DATE=$(date +%F)/" \
+			"$repo/tools/wp40/results/census-cpu-gate.conf" \
+			>"$target/tools/wp40/results/census-cpu-gate.conf"
 	fi
 	git -C "$target" init -q
 	git -C "$target" add -A
@@ -102,7 +115,7 @@ token_of() {
 }
 
 shard_one() {
-	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v5-0000-0515.tsv"
+	printf '%s' "$1/tools/wp40/results/t2_census/census-scan-v6-0000-0515.tsv"
 }
 
 # Every --full-w proof below needs the probe's measured CPU gate, which is a
@@ -149,7 +162,9 @@ mkdir -p "$export_dir/tools/wp40/results/t2_census"
 : >"$(shard_one "$export_dir")"
 expect_failure "the empty claim file of a crashed worker" "shard file is empty" \
 	env WP40_CENSUS_GO="$token" "$export_dir/tools/wp40/run_t2_census.sh" --full-w
-printf 'schema\tgrug_wp40_census_scan_v5\nvocabulary\tx\n' \
+# The schema line has to be the *current* one, or this negative would prove a
+# schema mismatch instead of the truncation it names.
+printf 'schema\tgrug_wp40_census_scan_v6\nvocabulary\tx\n' \
 	>"$(shard_one "$export_dir")"
 expect_failure "a shard that stops before its digest line" \
 	"no trailing digest line" \
@@ -302,13 +317,18 @@ end
 -- rows, and every class/kind cell takes the first declared vocabulary value.
 -- Stage-shaped kinds are skipped by their declared attribute: they are v4's
 -- *other* record shape and may never appear inside a full-roster record.
+-- The two v6 exceptions are the member-conditional Scan-4 rows (contracts
+-- 9.2/9.6): the first declared membership kind is `member`, and a member
+-- record carries all 38 faces and exactly one Whole row, so the generic
+-- occupancy default would build a record the grammar refuses.
+local member_rows = {scan4_face = 38, scan4_whole = 1}
 for index = first, last do
 	local seed = assert(w.seeds[index + 1])
 	parts[#parts + 1] = "seed_begin\t" .. seed
 	for row = 1, #authority.record_rows do
 		local layout = authority.record_rows[row]
 		if not layout.stage_shape then
-			for repeated = 1, layout.count or 2 do
+			for repeated = 1, layout.count or member_rows[layout.tag] or 2 do
 				local cells = {layout.tag, seed}
 				for field = 3, layout.fields do
 					cells[field] = layout.tag .. repeated .. "_" .. field
@@ -374,6 +394,43 @@ if grep -q '^shard_schema' "$scratch/free-range.tsv"; then
 	fail "a free range emitted shard framing and would resume as a shard"
 fi
 checks=$((checks + 1))
+
+echo "== Scan-3b/4 synthetic classifier KAT, both interpreters (contracts 9.4) =="
+# The synthetic classifier cases exist exactly where no measured configuration
+# reaches the branch, and contracts 9.4 requires them under both interpreters
+# with identical output.  The comparison is on bytes rather than on exit
+# status: two runs that disagree about a classification would both still print
+# "passed" and exit zero, which is the failure this suite exists to catch.
+#
+# The file is compile-checked here rather than added to the launcher's static
+# gate list: run_t2_census.sh's list is the set of modules a census run loads,
+# and the KAT is not one of them -- it is checked where it is used.
+"$export_dir/tools/bin/luac51" -p \
+	"$export_dir/tools/wp40/t2_census_scan4_kat.lua" ||
+	fail "the Scan-3b/4 classifier KAT does not compile under the vendored PUC 5.1"
+checks=$((checks + 1))
+kat_luajit_scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
+kat_puc_scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)"
+(cd "$export_dir" && "${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	tools/wp40/t2_census_scan4_kat.lua "$export_dir" "$kat_luajit_scratch") \
+	>"$scratch/kat-luajit.out"
+checks=$((checks + 1))
+(cd "$export_dir" && tools/bin/lua51 \
+	tools/wp40/t2_census_scan4_kat.lua "$export_dir" "$kat_puc_scratch") \
+	>"$scratch/kat-puc.out"
+checks=$((checks + 1))
+rm -rf -- "$kat_luajit_scratch" "$kat_puc_scratch"
+cmp -s "$scratch/kat-luajit.out" "$scratch/kat-puc.out" ||
+	fail "the Scan-3b/4 classifier KAT answers differently under LuaJIT and PUC 5.1"
+checks=$((checks + 1))
+kat_checks="$(sed -n \
+	's/^census scan3b\/4 classifier KAT passed: \([0-9]\{1,\}\) checks$/\1/p' \
+	"$scratch/kat-luajit.out")"
+[[ -n "$kat_checks" ]] && (( kat_checks > 0 )) ||
+	fail "the Scan-3b/4 classifier KAT printed no check count"
+checks=$((checks + kat_checks))
+echo "gate proof: the Scan-3b/4 classifier KAT agreed under both interpreters \
+($kat_checks checks)"
 
 echo "== first-record gate (plan section 6.6.2), against a live worker record =="
 # The class vocabulary is declared in exactly one place, so narrowing it there
@@ -442,6 +499,17 @@ expect_failure "a full-W merge with no shards on disk" "missing file" \
 	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
 	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
 	"$scratch/merge-out" --full-w
+# The roster top-up (contracts 9.2) supersedes shard records of exactly the
+# seeds it covers, which only means anything against the eight canonical
+# shards: a records merge has no shard record to supersede, so the overlay
+# would silently be the whole input.  Proven with the free record set the range
+# gate just produced, which is a legitimate top-up file in every other respect.
+expect_failure "a top-up record set merged outside --full-w" \
+	"rides on --full-w only" \
+	"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out" --records "$scratch/free-range.tsv" \
+	--top-up "$scratch/free-range.tsv"
 # The positive that stops the refusals above from passing vacuously: the same
 # free record set the range gate just produced merges cleanly, and its five
 # artifacts and manifest appear.
@@ -449,22 +517,44 @@ expect_failure "a full-W merge with no shards on disk" "missing file" \
 	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
 	"$scratch/merge-out" --records "$scratch/free-range.tsv" >/dev/null
 checks=$((checks + 1))
-for artifact in census-occupied-classes-v2.tsv census-vacuous-branches-v2.tsv \
-		census-scan4-seed-set-v2.tsv census-prefilter-discharge-v2.tsv \
-		census-histograms-v2.tsv census-manifest-v2.tsv; do
+for artifact in census-occupied-classes-v3.tsv census-vacuous-branches-v3.tsv \
+		census-scan4-seed-set-v3.tsv census-prefilter-discharge-v3.tsv \
+		census-histograms-v3.tsv census-manifest-v3.tsv; do
 	[[ -s "$scratch/merge-out/$artifact" ]] ||
 		fail "the merge wrote no $artifact"
 	checks=$((checks + 1))
 done
-grep -q '^summary	declared=' "$scratch/merge-out/census-vacuous-branches-v2.tsv" ||
+grep -q '^summary	declared=' "$scratch/merge-out/census-vacuous-branches-v3.tsv" ||
 	fail "the vacuous-branch artifact carries no coverage summary"
-grep -q 'sites_covered=137 of 153' "$scratch/merge-out/census-manifest-v2.tsv" ||
-	fail "the manifest does not report the open Scan-3b sites"
+# Since Scan-3b the sixteen transition-incident Bank sites are measured, so the
+# roster has no open remainder left to report: 137 of 153 here would mean the
+# scan3b_bank rows never reached the extremal term.
+grep -q 'sites_covered=153 of 153' "$scratch/merge-out/census-manifest-v3.tsv" ||
+	fail "the manifest does not report the Scan-3b sites as covered"
 grep -q 'pairs_order_probe_unsorted=true' \
-	"$scratch/merge-out/census-manifest-v2.tsv" ||
+	"$scratch/merge-out/census-manifest-v3.tsv" ||
 	fail "the pairs() divergence probe reported a sorted iteration order, which \
 would make the invariance half of the section 5 test vacuous"
 checks=$((checks + 3))
+# The inherited-tier regression assertion (contracts 9.3) compares the v3
+# occupied rows of the v5-era kinds against the committed v2 baseline, and it
+# runs in full-`W` mode only -- which this suite cannot afford, so the drift
+# refusal has no cheap negative here.  What is proven instead is the claim the
+# manifest makes in its place: a records merge states that it did not compare,
+# and handing it a baseline does not quietly turn it into one that did.
+mkdir -p "$scratch/merge-out-inherited"
+"${WP40_LUA_BIN:-/usr/bin/luajit}" \
+	"$export_dir/tools/wp40/t2_census_merge.lua" "$export_dir" "$merge_scratch" \
+	"$scratch/merge-out-inherited" --records "$scratch/free-range.tsv" \
+	--inherited-baseline \
+	"$export_dir/tools/wp40/fixtures/t2_census/census-occupied-classes-v2.tsv" \
+	>/dev/null
+checks=$((checks + 1))
+grep -qF -- $'inherited_tier\tnot_compared_explicit_records' \
+	"$scratch/merge-out-inherited/census-manifest-v3.tsv" ||
+	fail "a records merge does not report that it skipped the inherited-tier \
+comparison"
+checks=$((checks + 1))
 expect_failure "a merge over an output directory it already wrote" \
 	"already exists" \
 	"${WP40_LUA_BIN:-/usr/bin/luajit}" \

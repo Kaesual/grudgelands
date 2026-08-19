@@ -26,6 +26,7 @@ assert(type(output_path) == "string" and output_path:match("^/[A-Za-z0-9._/-]+$"
 local mode = "seeds"
 local seeds, seed_seen = {}, {}
 local range_first, range_last, go_token
+local scan4_forced = false
 local shard_meta = {}
 local shard_meta_flags = {["--commit"] = "census_commit", ["--tree"] = "census_tree",
 	["--interpreter-id"] = "interpreter_id",
@@ -60,6 +61,11 @@ while arg[argument_index] do
 			range_last % 1 == 0 and range_first >= 0 and range_last >= range_first,
 			"--range needs two ascending nonnegative integers")
 		argument_index = argument_index + 3
+	elseif flag == "--scan4-forced" then
+		-- The roster top-up mode (contracts 9.2): worker seeds-mode with the
+		-- Scan-4 tiers forced on, its records marked source=forced.
+		scan4_forced = true
+		argument_index = argument_index + 1
 	elseif flag == "--go-token" then
 		go_token = assert(arg[argument_index + 1], "--go-token needs a value")
 		argument_index = argument_index + 2
@@ -79,13 +85,17 @@ if mode == "kat" then
 	-- Slot-30 fragment witness in its sorted place rather than appending it, so
 	-- the roster stays a prefix-free statement about order; the stage-reject
 	-- package (2026-08-17) did the same with W-112, the aperture second-run
-	-- witness, as the fifth seed.  The digest moved with each addition, which
-	-- the respective commits record.
-	seeds = {"0", "343674299183575008", "15219119262482319357",
-		"16178445837170081103", "18446744073709551615"}
+	-- witness, as the fifth seed, and the Scan-3b/4 package (contracts 9.4)
+	-- with the two F10 face-simplicity witnesses 2147483648 and
+	-- 1959553668008863006 as the sixth and seventh.  The digest moved with
+	-- each addition, which the respective commits record.
+	seeds = {"0", "2147483648", "343674299183575008", "1959553668008863006",
+		"15219119262482319357", "16178445837170081103", "18446744073709551615"}
 elseif mode == "range" then
 	assert(#seeds == 0, "--range accepts no explicit seeds")
 end
+assert(not scan4_forced or mode == "seeds",
+	"--scan4-forced is the seeds-mode top-up flag (contracts 9.2)")
 
 local function read_file(path)
 	local file = assert(io.open(path, "rb"), "missing file " .. path)
@@ -137,6 +147,21 @@ if mode == "range" then
 	assert(range_last < w.total, "range end " .. range_last ..
 		" is outside W (" .. w.total .. " seeds)")
 	for index = range_first, range_last do add_seed(w.seeds[index + 1]) end
+end
+
+-- The consumed Scan-4 membership (contracts 9.2, branch-A ruling): the
+-- committed v2 seed-set artifact by pinned digest plus the v2 manifest's
+-- seven admission seeds.  Read once for every mode -- membership decides
+-- which seeds run the Scan-4 tiers, and the membership row every full
+-- record carries pins the consumed digest.
+local scan4_membership
+local function require_membership()
+	if scan4_membership then return scan4_membership end
+	scan4_membership = authority.read_scan4_membership(
+		read_file(repo .. "/" .. authority.scan4_membership_source.seed_set_path),
+		read_file(repo .. "/" .. authority.scan4_membership_source.manifest_path))
+	hasher.forget()
+	return scan4_membership
 end
 assert(#seeds >= 1, "at least one seed required")
 if #seeds > authority.free_seed_budget or go_token then
@@ -259,7 +284,11 @@ for seed_index = 1, #seeds do
 	local seed = seeds[seed_index]
 	local started = os.time()
 	local cpu_started = os.clock()
-	local scan = partition.census_scan(seed)
+	local membership = require_membership()
+	local seed_member = scan4_forced or membership.members[seed] == true
+	local seed_source = scan4_forced and "forced" or
+		membership.sources[seed] or "-"
+	local scan = partition.census_scan(seed, {scan4 = seed_member})
 	if mode == "kat" then scans_by_seed[seed] = scan end
 	if scan.stage_reject then
 		-- The v4 second record shape: a classified stage-build failure emits
@@ -452,6 +481,74 @@ for seed_index = 1, #seeds do
 				tostring(row.count), tostring(row.max_width),
 				tostring(row.multi_reachable), tostring(row.unknown_reachable))
 		end
+		-- Scan-3b rows (v6, contracts 9.1) follow the complete v5 block, so
+		-- each seed record keeps the v5 bytes as an exact prefix.  Detail
+		-- columns carry verbatim messages and are sanitized against the TSV
+		-- framing like the scan2 tuple details.
+		local function clean(value)
+			if value == nil then return "-" end
+			return (tostring(value):gsub("[\t\n]", " "))
+		end
+		for index = 1, #scan.scan3b_banks do
+			local row = scan.scan3b_banks[index]
+			emit("scan3b_bank", seed, row.id, row.bay_id, row.class,
+				row.edge_id, row.endpoint, row.far_kind, row.far_mode,
+				opt(row.step_count), opt(row.station_count),
+				opt(row.max_frames), opt(row.max_stack),
+				opt(row.branch_step_count),
+				opt(row.multi_reachable_step_count), clean(row.detail))
+		end
+		for index = 1, #scan.scan3b_steps do
+			local row = scan.scan3b_steps[index]
+			emit("scan3b_step", seed, row.bank_id, row.direction, row.outcome,
+				tostring(row.count))
+		end
+		for index = 1, #scan.scan3b_selections do
+			local row = scan.scan3b_selections[index]
+			emit("scan3b_selection", seed, row.bank_id, row.class,
+				tostring(row.count), tostring(row.max_width),
+				tostring(row.multi_reachable), tostring(row.unknown_reachable))
+		end
+		for index = 1, #scan.scan3b_attributions do
+			local row = scan.scan3b_attributions[index]
+			emit("scan3b_attribution", seed, row.edge_id, row.endpoint,
+				row.bank_id, row.far_kind, row.far_mode, tostring(row.count))
+		end
+		for index = 1, #scan.scan3b_events do
+			local row = scan.scan3b_events[index]
+			emit("scan3b_event", seed, row.site, row.class, clean(row.detail))
+		end
+		-- Scan-4 (contracts 9.1/9.2): the membership row travels on every
+		-- full record and pins the consumed seed-set digest; the face,
+		-- whole and fragment rows appear exactly on member records.
+		emit("scan4_membership", seed, seed_member and "member" or "nonmember",
+			seed_source, require_membership().seed_set_digest)
+		if seed_member then
+			for index = 1, #scan.scan4_faces do
+				local row = scan.scan4_faces[index]
+				emit("scan4_face", seed, row.id, row.class,
+					opt(row.station_count), clean(row.detail))
+			end
+			local whole = scan.scan4_wholes[1]
+			emit("scan4_whole", seed, whole.class, opt(whole.blocking_face),
+				opt(whole.columns), opt(whole.planned_water_columns),
+				opt(whole.dry_columns), opt(whole.g), opt(whole.o),
+				opt(whole.r), opt(whole.m))
+			for index = 1, #scan.scan4_whole_intervals do
+				local row = scan.scan4_whole_intervals[index]
+				emit("scan4_whole_interval", seed, row.site, row.class,
+					tostring(row.interval_count), tostring(row.column_count),
+					opt(row.witness))
+			end
+			for index = 1, #scan.scan4_fragments do
+				local row = scan.scan4_fragments[index]
+				emit("scan4_fragment", seed, row.edge_id,
+					tostring(row.station), row.class, tostring(row.x),
+					tostring(row.z), tostring(row.land_count),
+					tostring(row.bank_count), opt(row.face_count),
+					tostring(row.terminal_identity))
+			end
+		end
 		emit("seed_end", seed)
 	end
 	-- One epilogue for both record shapes: the flush, the SHA-memo drop (zero
@@ -513,7 +610,7 @@ print("census scan rows " .. line_count .. " digest " .. digest)
 
 if mode == "kat" then
 	local fixture_path = repo ..
-		"/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
+		"/tools/wp40/fixtures/t2_census/scan_kat_v6.lua"
 	local fixture_chunk, fixture_diagnostic = loadfile(fixture_path)
 	assert(fixture_chunk, "census KAT fixture missing or invalid: " ..
 		tostring(fixture_diagnostic))
@@ -567,6 +664,37 @@ if mode == "kat" then
 		"witness seed")
 	assert(#fixture.r15_corpus == 8,
 		"census KAT fixture expects eight retained R15 corpus rows")
+	-- The contracts 9.4 F10 witnesses, the two seeds the roster grew for.
+	-- Declaration and roster coverage are checked here, so a fixture that
+	-- quietly drops a witness cannot leave the per-seed loop below asserting
+	-- nothing about the only face-reject occupancy the KAT has.
+	assert(type(fixture.f10_witnesses) == "table" and
+		#fixture.f10_witnesses == 2,
+		"census KAT fixture lacks its two F10 face-simplicity witnesses")
+	for index = 1, #fixture.f10_witnesses do
+		local witness = fixture.f10_witnesses[index]
+		assert(type(witness) == "table" and witness.seed and witness.face and
+			witness.class,
+			"census KAT F10 witness " .. index .. " is incomplete")
+		assert(scans_by_seed[witness.seed],
+			"census KAT roster does not cover the F10 witness seed " ..
+			tostring(witness.seed))
+	end
+	-- The R19-genesis Scan-3b attribution witness (contracts 9.4): the Slot-29
+	-- row is the same dead direct terminal R19 was ruled from, seen from the
+	-- attribution side, and it is named rather than merely counted.
+	assert(type(fixture.attribution_witness) == "table" and
+		fixture.attribution_witness.seed and
+		fixture.attribution_witness.edge and
+		fixture.attribution_witness.endpoint and
+		fixture.attribution_witness.bank and
+		fixture.attribution_witness.far_kind and
+		fixture.attribution_witness.far_mode and
+		fixture.attribution_witness.count,
+		"census KAT fixture lacks its R19-genesis attribution witness " ..
+		"declaration")
+	assert(scans_by_seed[fixture.attribution_witness.seed],
+		"census KAT roster does not cover the attribution witness seed")
 	for seed_index = 1, #seeds do
 		local seed = seeds[seed_index]
 		local scan = scans_by_seed[seed]
@@ -881,10 +1009,268 @@ if mode == "kat" then
 				assert(edge_seen and attachment_seen,
 					"census KAT: the F8 fragment witness rows are absent")
 			end
+			-- Scan-4 membership (contracts 9.2, ruled branch A).  The worker
+			-- derives it from the authority, which enforces the pinned seed-set
+			-- and manifest digests; the fixture pins the emitted tokens, so what
+			-- is compared is what the record says and not what the worker
+			-- believed.
+			local kat_membership = require_membership()
+			local expected_membership = assert(fixture.membership[seed],
+				"census KAT fixture lacks membership for seed " .. seed)
+			local observed_member =
+				kat_membership.members[seed] == true and "member" or "nonmember"
+			local observed_source = kat_membership.sources[seed] or "-"
+			assert(observed_member == expected_membership.member and
+				observed_source == expected_membership.source,
+				"census KAT membership at seed " .. seed .. " is " ..
+				observed_member .. "/" .. observed_source .. ", pinned " ..
+				expected_membership.member .. "/" .. expected_membership.source)
+			-- Every roster seed is a member, which is what makes the Scan-4
+			-- assertions below unconditional; a fixture that pins a nonmember
+			-- would need the tiers gated and says so here rather than silently
+			-- skipping them.
+			assert(expected_membership.member == "member",
+				"census KAT: every roster seed is pinned a Scan-4 member, " ..
+				seed .. " is not")
+			-- Scan-3b (contracts 9.1/9.4): the 16 transition-incident Banks in
+			-- emission order, each with the five pinned trace scalars.  A death
+			-- here is a loud worker abort by design, so the only thing that can
+			-- drift quietly is a scalar.
+			local expected_banks = assert(fixture.scan3b[seed],
+				"census KAT fixture lacks scan3b banks for seed " .. seed)
+			assert(#scan.scan3b_banks == 16 and #expected_banks == 16,
+				"census KAT expects 16 scan3b bank rows, seed " .. seed ..
+				" carries " .. #scan.scan3b_banks .. " against " ..
+				#expected_banks .. " pinned")
+			for index = 1, #scan.scan3b_banks do
+				local row = scan.scan3b_banks[index]
+				local expected = expected_banks[index]
+				assert(expected.id == row.id,
+					"census KAT scan3b bank " .. index .. " is " .. row.id ..
+					", pinned " .. expected.id .. " seed " .. seed)
+				assert(row.class == "bank_trace_complete_select",
+					"census KAT scan3b bank " .. row.id .. " class " .. row.class ..
+					" seed " .. seed .. " " .. tostring(row.detail))
+				assert(row.step_count == expected.steps and
+					row.station_count == expected.stations and
+					row.max_frames == expected.frames and
+					row.max_stack == expected.stack and
+					row.branch_step_count == expected.branch,
+					"census KAT scan3b bank " .. row.id .. " trace shape is " ..
+					tostring(row.step_count) .. "/" ..
+					tostring(row.station_count) .. "/" ..
+					tostring(row.max_frames) .. "/" .. tostring(row.max_stack) ..
+					"/" .. tostring(row.branch_step_count) .. ", pinned " ..
+					expected.steps .. "/" .. expected.stations .. "/" ..
+					expected.frames .. "/" .. expected.stack .. "/" ..
+					expected.branch .. " seed " .. seed)
+			end
+			-- The Scan-3b occupancy tiers the merge histograms fold: a
+			-- projection that stops emitting a direction or a selection class
+			-- is caught by name here, not only by the record digest.
+			local expected_scan3b_rows = assert(fixture.scan3b_rows[seed],
+				"census KAT fixture lacks scan3b row counts for seed " .. seed)
+			assert(#scan.scan3b_steps == expected_scan3b_rows.steps and
+				#scan.scan3b_selections == expected_scan3b_rows.selections,
+				"census KAT scan3b occupancy at seed " .. seed .. " is " ..
+				#scan.scan3b_steps .. " step / " .. #scan.scan3b_selections ..
+				" selection rows, pinned " .. expected_scan3b_rows.steps ..
+				"/" .. expected_scan3b_rows.selections)
+			local expected_attributions = assert(fixture.attribution[seed],
+				"census KAT fixture lacks scan3b attributions for seed " .. seed)
+			assert(#scan.scan3b_attributions == #expected_attributions,
+				"census KAT scan3b attribution count at seed " .. seed .. " is " ..
+				#scan.scan3b_attributions .. ", pinned " .. #expected_attributions)
+			for index = 1, #scan.scan3b_attributions do
+				local row = scan.scan3b_attributions[index]
+				local expected = expected_attributions[index]
+				assert(row.edge_id == expected.edge and
+					row.endpoint == expected.endpoint and
+					row.bank_id == expected.bank and
+					row.far_kind == expected.far_kind and
+					row.far_mode == expected.far_mode and
+					row.count == expected.count,
+					"census KAT scan3b attribution " .. index .. " at seed " ..
+					seed .. " is " .. row.edge_id .. "/" .. row.endpoint .. "/" ..
+					row.bank_id .. "/" .. tostring(row.far_kind) .. "/" ..
+					tostring(row.far_mode) .. "/" .. tostring(row.count) ..
+					", pinned " .. expected.edge .. "/" .. expected.endpoint ..
+					"/" .. expected.bank .. "/" .. expected.far_kind .. "/" ..
+					expected.far_mode .. "/" .. expected.count)
+			end
+			-- R20/R21 are projected vacuous over `W` (contracts 9.1).  Any event
+			-- row is new occupancy and the named small-correction trigger, so it
+			-- fails the KAT rather than travelling quietly in a record.
+			assert(#scan.scan3b_events == 0,
+				"census KAT: seed " .. seed .. " realized " ..
+				#scan.scan3b_events .. " scan3b event rows; R20/R21 occupancy " ..
+				"is a finding and needs reading before this KAT moves")
+			if seed == fixture.attribution_witness.seed then
+				local witness = fixture.attribution_witness
+				local witnessed = false
+				for index = 1, #scan.scan3b_attributions do
+					local row = scan.scan3b_attributions[index]
+					if row.edge_id == witness.edge and
+							row.endpoint == witness.endpoint and
+							row.bank_id == witness.bank then
+						assert(row.far_kind == witness.far_kind and
+							row.far_mode == witness.far_mode and
+							row.count == witness.count,
+							"census KAT: the R19-genesis attribution witness is " ..
+							tostring(row.far_kind) .. "/" .. tostring(row.far_mode) ..
+							"/" .. tostring(row.count) .. ", pinned " ..
+							witness.far_kind .. "/" .. witness.far_mode .. "/" ..
+							witness.count)
+						witnessed = true
+					end
+				end
+				assert(witnessed,
+					"census KAT: the R19-genesis Slot-29 attribution row is absent")
+			end
+			-- Scan-4 faces (contracts 9.1/9.4).  All 38 rows travel on every
+			-- member record; the fixture names the rejects and everything it does
+			-- not name must classify face_simple_select, so both a new reject and
+			-- a lost one are legible by face id.
+			local expected_scan4 = assert(fixture.scan4[seed],
+				"census KAT fixture lacks scan4 for seed " .. seed)
+			assert(#scan.scan4_faces == 38,
+				"census KAT expects 38 scan4 face rows, seed " .. seed ..
+				" carries " .. #scan.scan4_faces)
+			local pinned_reject, observed_rejects = {}, {}
+			for index = 1, #expected_scan4.face_rejects do
+				local expected = expected_scan4.face_rejects[index]
+				pinned_reject[expected.face] = expected.class
+			end
+			for index = 1, #scan.scan4_faces do
+				local row = scan.scan4_faces[index]
+				local expected_class = pinned_reject[row.id] or "face_simple_select"
+				assert(row.class == expected_class,
+					"census KAT scan4 face " .. row.id .. " is " .. row.class ..
+					", pinned " .. expected_class .. " seed " .. seed .. " " ..
+					tostring(row.detail))
+				if row.class ~= "face_simple_select" then
+					observed_rejects[#observed_rejects + 1] = row.id
+				end
+			end
+			assert(#observed_rejects == #expected_scan4.face_rejects,
+				"census KAT scan4 face rejects at seed " .. seed .. ": " ..
+				#observed_rejects .. " rows against " ..
+				#expected_scan4.face_rejects .. " pinned")
+			for index = 1, #observed_rejects do
+				assert(observed_rejects[index] ==
+					expected_scan4.face_rejects[index].face,
+					"census KAT scan4 face reject " .. index .. " at seed " ..
+					seed .. " is " .. observed_rejects[index] .. ", pinned " ..
+					expected_scan4.face_rejects[index].face)
+			end
+			-- The whole tier: either the evaluated summary or the consequent row
+			-- naming the first blocking face in source order.
+			assert(#scan.scan4_wholes == 1,
+				"census KAT expects exactly one scan4 whole row, seed " .. seed ..
+				" carries " .. #scan.scan4_wholes)
+			local whole = scan.scan4_wholes[1]
+			local expected_whole = expected_scan4.whole
+			assert(whole.class == expected_whole.class,
+				"census KAT scan4 whole at seed " .. seed .. " is " ..
+				whole.class .. ", pinned " .. expected_whole.class)
+			if expected_whole.blocking_face then
+				assert(whole.blocking_face == expected_whole.blocking_face,
+					"census KAT scan4 whole at seed " .. seed .. " blocks on " ..
+					tostring(whole.blocking_face) .. ", pinned " ..
+					expected_whole.blocking_face)
+			else
+				assert(whole.blocking_face == nil,
+					"census KAT scan4 whole at seed " .. seed ..
+					" named an unpinned blocking face " ..
+					tostring(whole.blocking_face))
+				assert(whole.columns == expected_whole.columns and
+					whole.planned_water_columns == expected_whole.planned and
+					whole.dry_columns == expected_whole.dry,
+					"census KAT scan4 whole column split at seed " .. seed ..
+					" is " .. tostring(whole.columns) .. "/" ..
+					tostring(whole.planned_water_columns) .. "/" ..
+					tostring(whole.dry_columns) .. ", pinned " ..
+					expected_whole.columns .. "/" .. expected_whole.planned ..
+					"/" .. expected_whole.dry)
+				-- The H38 per-seed pin: no gap column, no undeclared water or dry
+				-- multiplicity, and the representation cross-check finds zero
+				-- disagreement.  Those four zeros are what lets the run-based
+				-- normalization stand in for a per-column sweep.
+				assert(whole.g == expected_whole.g and
+					whole.o == expected_whole.o and whole.r == expected_whole.r and
+					whole.m == expected_whole.m,
+					"census KAT scan4 whole g/o/r/m at seed " .. seed .. " is " ..
+					tostring(whole.g) .. "/" .. tostring(whole.o) .. "/" ..
+					tostring(whole.r) .. "/" .. tostring(whole.m) .. ", pinned " ..
+					expected_whole.g .. "/" .. expected_whole.o .. "/" ..
+					expected_whole.r .. "/" .. expected_whole.m)
+			end
+			assert(#scan.scan4_whole_intervals ==
+				#expected_scan4.whole_intervals,
+				"census KAT scan4 whole interval rows at seed " .. seed .. ": " ..
+				#scan.scan4_whole_intervals .. " against " ..
+				#expected_scan4.whole_intervals .. " pinned")
+			for index = 1, #scan.scan4_whole_intervals do
+				local row = scan.scan4_whole_intervals[index]
+				local expected = expected_scan4.whole_intervals[index]
+				assert(row.class == expected.class and
+					row.interval_count == expected.intervals and
+					row.column_count == expected.columns,
+					"census KAT scan4 whole interval " .. index .. " at seed " ..
+					seed .. " is " .. row.class .. " " ..
+					tostring(row.interval_count) .. "/" ..
+					tostring(row.column_count) .. ", pinned " .. expected.class ..
+					" " .. expected.intervals .. "/" .. expected.columns)
+			end
+			-- The section 6.2.3 excluded-fragment tier.
+			assert(#scan.scan4_fragments == #expected_scan4.fragments,
+				"census KAT scan4 fragment rows at seed " .. seed .. ": " ..
+				#scan.scan4_fragments .. " against " ..
+				#expected_scan4.fragments .. " pinned")
+			for index = 1, #scan.scan4_fragments do
+				local row = scan.scan4_fragments[index]
+				local expected = expected_scan4.fragments[index]
+				assert(row.edge_id == expected.edge and
+					row.station == expected.station and
+					row.class == expected.class,
+					"census KAT scan4 fragment " .. index .. " at seed " .. seed ..
+					" is " .. row.edge_id .. ":" .. tostring(row.station) .. " " ..
+					row.class .. ", pinned " .. expected.edge .. ":" ..
+					expected.station .. " " .. expected.class)
+			end
+			-- The F10 witnesses (contracts 9.4).  A quietly-simple face here is
+			-- exactly the drift these two seeds were added to catch, and the
+			-- consequent must travel with it: the whole tier blocks on the same
+			-- face by name.
+			for index = 1, #fixture.f10_witnesses do
+				local witness = fixture.f10_witnesses[index]
+				if seed == witness.seed then
+					local face_seen = false
+					for face_index = 1, #scan.scan4_faces do
+						local row = scan.scan4_faces[face_index]
+						if row.id == witness.face then
+							assert(row.class == witness.class,
+								"census KAT: the F10 witness face " .. row.id ..
+								" is " .. row.class .. " at seed " .. seed ..
+								", pinned " .. witness.class)
+							face_seen = true
+						end
+					end
+					assert(face_seen, "census KAT: the F10 witness face " ..
+						witness.face .. " is absent at seed " .. seed)
+					assert(whole.class == "whole_not_evaluated" and
+						whole.blocking_face == witness.face,
+						"census KAT: the F10 witness seed " .. seed ..
+						" did not block its whole tier on " .. witness.face ..
+						" but on " .. whole.class .. "/" ..
+						tostring(whole.blocking_face))
+				end
+			end
 		end
 	end
 	assert(digest == fixture.digest,
 		"census KAT determinism digest differs: " .. digest)
-	print("census scan KAT passed (seeds 0, W-112 detached-shoulder, " ..
-		"Slot 30, Slot 29 and max-u64, digest pinned)")
+	print("census scan KAT passed (seeds 0, the two F10 face-simplicity " ..
+		"witnesses, W-112 detached-shoulder, Slot 30, Slot 29 and max-u64; " ..
+		"Scan-3b/4 tiers and digest pinned)")
 end

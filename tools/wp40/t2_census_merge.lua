@@ -35,6 +35,8 @@ assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-census%.[A-Za-z0-9]+$"),
 	"unsafe scratch path")
 
 local mode, record_paths, cost_projection, expected_digest = nil, {}, nil, nil
+local top_up_paths = {}
+local inherited_baseline_override
 local argument_index = 4
 while arg[argument_index] do
 	local flag = arg[argument_index]
@@ -42,6 +44,26 @@ while arg[argument_index] do
 		assert(not mode, "one mode only")
 		mode = "full_w"
 		argument_index = argument_index + 1
+	elseif flag == "--top-up" then
+		-- The roster top-up records (contracts 9.2): free worker output
+		-- with the Scan-4 tiers forced on, superseding the shard record of
+		-- exactly the seeds they cover.  Full-W only; the second merge
+		-- invocation consumes shards plus top-up records and publishes once.
+		argument_index = argument_index + 1
+		while arg[argument_index] and not arg[argument_index]:match("^%-%-") do
+			top_up_paths[#top_up_paths + 1] =
+				safe_absolute_path(arg[argument_index], "top-up record path")
+			argument_index = argument_index + 1
+		end
+		assert(#top_up_paths >= 1, "--top-up needs at least one path")
+	elseif flag == "--inherited-baseline" then
+		-- The inherited-tier regression baseline (contracts 9.3), normally
+		-- the committed v2 occupied-classes artifact; overridable so the
+		-- gate suite can prove the drift refusal fires.
+		inherited_baseline_override = safe_absolute_path(
+			assert(arg[argument_index + 1],
+				"--inherited-baseline needs a path"), "inherited baseline")
+		argument_index = argument_index + 2
 	elseif flag == "--records" then
 		assert(not mode, "one mode only")
 		mode = "records"
@@ -74,6 +96,8 @@ while arg[argument_index] do
 	end
 end
 assert(mode, "one of --full-w or --records is required")
+assert(#top_up_paths == 0 or mode == "full_w",
+	"--top-up rides on --full-w only (contracts 9.2)")
 
 local function read_file(path)
 	local file = assert(io.open(path, "rb"), "missing file " .. path)
@@ -181,6 +205,7 @@ local function new_census(options)
 	local class_set_of_tag = {}
 	local records = 0
 	local stage_rejected_seeds = 0
+	local scan4_coverage = {}
 
 	for index = 1, #authority.record_rows do
 		local layout = authority.record_rows[index]
@@ -348,6 +373,10 @@ local function new_census(options)
 						-- Row presence is the event; the column read above still
 						-- proves the row carries its declared width.
 						hit = true
+					elseif rule.test == "present" then
+						-- The detached-shoulder admission flag (contracts 9.2,
+						-- branch A): the column against its "-" placeholder.
+						hit = value ~= nil and value ~= "-" and value ~= ""
 					else
 						local number = integer(value)
 						hit = number ~= nil and number >= rule.value
@@ -359,14 +388,20 @@ local function new_census(options)
 			end
 		end
 
-		-- Section 6.2.3's per-site extremal term.
+		-- Section 6.2.3's per-site extremal term.  A family may draw its
+		-- sites from more than one row kind since Scan-3b: the Bank family
+		-- reads the four head Banks off scan3_bank rows and the sixteen
+		-- transition-incident Banks off scan3b_bank rows (contracts 9.1).
 		for family_index = 1, #authority.extremal_families do
 			local family = authority.extremal_families[family_index]
-			local bucket_rows = rows[family.row]
-			if bucket_rows then
+			local family_rows = family.rows or {family.row}
+			for tag_index = 1, #family_rows do
+				local row_tag = family_rows[tag_index]
+				local bucket_rows = rows[row_tag]
+				if bucket_rows then
 				for row_index = 1, #bucket_rows do
 					local fields = bucket_rows[row_index]
-					local site = site_of(family.row, fields)
+					local site = site_of(row_tag, fields)
 					if site ~= family.excluded_site then
 						for scalar_index = 1, #family.scalars do
 							local scalar = family.scalars[scalar_index]
@@ -375,13 +410,13 @@ local function new_census(options)
 							if derived then
 								for from_index = 1, #derived.from do
 									local candidate =
-										integer(field(family.row, fields, derived.from[from_index]))
+										integer(field(row_tag, fields, derived.from[from_index]))
 									if candidate and (not value or candidate > value) then
 										value = candidate
 									end
 								end
 							else
-								value = integer(field(family.row, fields, scalar))
+								value = integer(field(row_tag, fields, scalar))
 							end
 							if value then
 								note_extremal(family.family, site, scalar, value, seed)
@@ -392,7 +427,7 @@ local function new_census(options)
 						-- rather than assumed: a Holy band that ever displaced would
 						-- silently drop a real extremal seed from Scan-4's input.
 						for scalar_index = 1, #family.scalars do
-							local value = integer(field(family.row, fields,
+							local value = integer(field(row_tag, fields,
 								family.scalars[scalar_index]))
 							if value ~= 0 then
 								error("WP40 T2 census merge: " .. family.excluded_site ..
@@ -403,7 +438,22 @@ local function new_census(options)
 						end
 					end
 				end
+				end
 			end
+		end
+
+		-- The Scan-4 coverage substrate (contracts 9.6): the merge
+		-- re-verifies member/face/whole coverage against the consumed
+		-- membership independently of the shard verifier.
+		local membership_rows = rows.scan4_membership
+		if membership_rows and #membership_rows >= 1 then
+			scan4_coverage[seed] = {
+				member = field("scan4_membership", membership_rows[1],
+					"member"),
+				source = field("scan4_membership", membership_rows[1],
+					"source"),
+				faces = #(rows.scan4_face or {}),
+				wholes = #(rows.scan4_whole or {})}
 		end
 
 		census.fold_derived(seed, rows)
@@ -628,6 +678,73 @@ local function new_census(options)
 					field("scan3_bank", fields, "branch_step_count"))
 			end
 		end
+		-- Scan-3b (contracts 9.1): the sixteen-Bank counterparts of the
+		-- Scan-3a step/selection/branch histograms, plus the
+		-- bank-incomplete attribution histogram -- which incident Bank died
+		-- and the kind and mode of its far terminal.
+		local scan3b_steps = rows.scan3b_step
+		if scan3b_steps then
+			for index = 1, #scan3b_steps do
+				local fields = scan3b_steps[index]
+				note_histogram("scan3b_step_class",
+					field("scan3b_step", fields, "bank_id") .. ":" ..
+					field("scan3b_step", fields, "direction"),
+					field("scan3b_step", fields, "outcome"))
+			end
+		end
+		local scan3b_selections = rows.scan3b_selection
+		if scan3b_selections then
+			for index = 1, #scan3b_selections do
+				local fields = scan3b_selections[index]
+				note_histogram("scan3b_selection_class",
+					field("scan3b_selection", fields, "bank_id"),
+					field("scan3b_selection", fields, "class"))
+			end
+		end
+		local scan3b_banks = rows.scan3b_bank
+		if scan3b_banks then
+			for index = 1, #scan3b_banks do
+				local fields = scan3b_banks[index]
+				note_histogram("scan3b_bank_branch_steps",
+					field("scan3b_bank", fields, "id"),
+					field("scan3b_bank", fields, "branch_step_count"))
+			end
+		end
+		local attributions = rows.scan3b_attribution
+		if attributions then
+			for index = 1, #attributions do
+				local fields = attributions[index]
+				note_histogram("scan3b_attribution",
+					site_of("scan3b_attribution", fields),
+					"far=" .. field("scan3b_attribution", fields, "far_kind") ..
+					":" .. field("scan3b_attribution", fields, "far_mode") ..
+					" count=" .. field("scan3b_attribution", fields, "count"))
+			end
+		end
+		-- Scan-4: membership occupancy and the per-seed Whole summary
+		-- distribution (the H38 g/o/r/m result, pinned per seed by the KAT
+		-- and distributed here).
+		local memberships = rows.scan4_membership
+		if memberships then
+			for index = 1, #memberships do
+				local fields = memberships[index]
+				note_histogram("scan4_membership",
+					field("scan4_membership", fields, "member"),
+					field("scan4_membership", fields, "source"))
+			end
+		end
+		local wholes = rows.scan4_whole
+		if wholes then
+			for index = 1, #wholes do
+				local fields = wholes[index]
+				note_histogram("scan4_whole_gorm",
+					field("scan4_whole", fields, "class"),
+					"g=" .. field("scan4_whole", fields, "g") ..
+					" o=" .. field("scan4_whole", fields, "o") ..
+					" r=" .. field("scan4_whole", fields, "r") ..
+					" m=" .. field("scan4_whole", fields, "m"))
+			end
+		end
 	end
 
 	function census.state()
@@ -635,7 +752,7 @@ local function new_census(options)
 			branch_realized = branch_realized, sink = sink, extremal = extremal,
 			flagged = flagged, histograms = histograms, seeds = seed_list,
 			records = records, stage_rejected_seeds = stage_rejected_seeds,
-			detached = detached_admissions}
+			detached = detached_admissions, scan4_coverage = scan4_coverage}
 	end
 
 	return census
@@ -647,7 +764,7 @@ end
 -- artifact byte.
 -- ------------------------------------------------------------------
 local function render_occupied(state, header)
-	local lines = {"schema\tgrug_wp40_census_occupied_classes_v2",
+	local lines = {"schema\tgrug_wp40_census_occupied_classes_v3",
 		"scan_schema\t" .. authority.schema,
 		"seed_set\t" .. header.seed_set,
 		"seeds\t" .. count_text(#state.seeds),
@@ -733,7 +850,7 @@ local function render_occupied(state, header)
 end
 
 local function render_vacuous(state)
-	local lines = {"schema\tgrug_wp40_census_vacuous_branches_v2",
+	local lines = {"schema\tgrug_wp40_census_vacuous_branches_v3",
 		"scan_schema\t" .. authority.schema,
 		"column\tbranch\tvocabulary\tbranch\tverdict\tstatus\trealization\t" ..
 			"sites\tseeds\twitness_seed\tnote",
@@ -794,7 +911,7 @@ local function render_vacuous(state)
 end
 
 local function render_seed_set(state, header)
-	local lines = {"schema\tgrug_wp40_census_scan4_seed_set_v2",
+	local lines = {"schema\tgrug_wp40_census_scan4_seed_set_v3",
 		"scan_schema\t" .. authority.schema,
 		"seed_set\t" .. header.seed_set,
 		"column\textremal\tfamily\tsite\tscalar\tbound\tvalue\tseed",
@@ -901,7 +1018,10 @@ local function render_seed_set(state, header)
 		"any rare class occupied: fills > 0, tail mode, multi-interval, " ..
 		"two or more R16 candidates, any branching step, fragment-bearing " ..
 		"attachment (analysis 3-F8), classified stage reject (analysis 3-F9; " ..
-		"scannable by Scan-4 once the collected correction closes its class)"}, "\t")
+		"scannable by Scan-4 once the collected correction closes its class), " ..
+		"detached-shoulder admission (contracts 9.2, RULED 2026-08-19 " ..
+		"branch A: the rarest occupied configuration over W joins the flag " ..
+		"vocabulary and the vocabulary hole closes for good)"}, "\t")
 	lines[#lines + 1] = table.concat({"term", "extremal",
 		count_text(extremal_seeds),
 		"per-site minimum and maximum of the section 6.2.3 stress scalars over " ..
@@ -921,11 +1041,12 @@ local function render_seed_set(state, header)
 		"sites_covered=" .. count_text(covered_sites),
 		"sites_open=" .. count_text(open_sites)}, "\t")
 	return table.concat(lines, "\n") .. "\n",
-		{union = #seeds, covered = covered_sites, open = open_sites}
+		{union = #seeds, covered = covered_sites, open = open_sites,
+			seeds = seeds}
 end
 
 local function render_prefilter(prefilter, agreeing, verified_seeds)
-	local lines = {"schema\tgrug_wp40_census_prefilter_discharge_v2",
+	local lines = {"schema\tgrug_wp40_census_prefilter_discharge_v3",
 		"scan_schema\t" .. authority.schema,
 		"column\tprefilter\tedge\tstatus\treason"}
 	local discharged, scanned = 0, 0
@@ -947,7 +1068,7 @@ local function render_prefilter(prefilter, agreeing, verified_seeds)
 end
 
 local function render_histograms(state)
-	local lines = {"schema\tgrug_wp40_census_histograms_v2",
+	local lines = {"schema\tgrug_wp40_census_histograms_v3",
 		"scan_schema\t" .. authority.schema,
 		"column\thist\tname\tkey\tbucket\tcount"}
 	local names = sorted_keys(state.histograms)
@@ -1168,11 +1289,62 @@ local function absorb_prefilter(prefilter)
 	inputs_agreeing = inputs_agreeing + 1
 end
 
+-- The top-up overlay (contracts 9.2): a top-up record supersedes the shard
+-- record of its seed, and everything outside the Scan-4 block must be
+-- byte-identical between the two -- the worker is deterministic, so a
+-- disagreement is a finding, not a merge choice.
+local scan4_tags = {scan4_membership = true, scan4_face = true,
+	scan4_whole = true, scan4_whole_interval = true, scan4_fragment = true}
+local top_up_records, top_up_consumed = {}, {}
+local function joined_rows(bucket_rows)
+	local texts = {}
+	for index = 1, #(bucket_rows or {}) do
+		texts[index] = table.concat(bucket_rows[index], "\t")
+	end
+	return table.concat(texts, "\n")
+end
+
 local collector = new_collector(function(seed, rows)
-	census.add_record(seed, rows)
+	local top_up = top_up_records[seed]
+	if top_up then
+		for index = 1, #authority.record_rows do
+			local tag = authority.record_rows[index].tag
+			if not scan4_tags[tag] and (rows[tag] or top_up[tag]) and
+					joined_rows(rows[tag]) ~= joined_rows(top_up[tag]) then
+				error("WP40 T2 census merge: the top-up record for seed " ..
+					seed .. " disagrees with its shard record at " .. tag ..
+					" rows -- the worker is deterministic, so this is a " ..
+					"finding (contracts 9.2)", 0)
+			end
+		end
+		top_up_consumed[seed] = true
+		census.add_record(seed, top_up)
+	else
+		census.add_record(seed, rows)
+	end
 end)
 
 local manifest_inputs, header = {}, {}
+if #top_up_paths > 0 then
+	local reload = new_collector(function(seed, rows)
+		if top_up_records[seed] then
+			error("WP40 T2 census merge: top-up seed " .. seed ..
+				" appears twice", 0)
+		end
+		top_up_records[seed] = rows
+	end)
+	for index = 1, #top_up_paths do
+		local bytes = read_file(top_up_paths[index])
+		local verified = authority.verify_free_output(bytes, nil, reload.row)
+		reload.flush()
+		absorb_prefilter(verified.prefilter)
+		local name = top_up_paths[index]:match("([^/]+)$")
+		manifest_inputs[#manifest_inputs + 1] = table.concat({"top_up",
+			count_text(index), name, verified.digest,
+			count_text(#verified.seeds)}, "\t")
+		hasher.forget()
+	end
+end
 if mode == "full_w" then
 	local w = authority.derive_w(corpus,
 		read_file(repo .. "/" .. authority.candidates_path), raw_sha256)
@@ -1233,23 +1405,11 @@ end
 header.winners = winner_slots()
 header.corpus = corpus.fixed
 
--- The Bank sites Scan-3a does not reach, named rather than counted.  They come
--- out of the same catalog the shards were measured against -- its bytes are in
--- the module digest a shard header pins -- minus the Banks the scan actually
--- traced, so the list cannot drift from either side.
-do
-	local catalog = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua")
-	local traced = {}
-	local measured = census.state().extremal.bank or {}
-	for site in pairs(measured) do traced[site] = true end
-	local open = {}
-	for index = 1, #catalog.bay_bank_components do
-		local id = catalog.bay_bank_components[index].id
-		if not traced[id] then open[#open + 1] = id end
-	end
-	table.sort(open)
-	header.open_sites = {bank = open}
-end
+-- The Bank family is complete since Scan-3b (contracts 9.1): the four head
+-- Banks arrive on scan3_bank rows and the sixteen transition-incident Banks
+-- on scan3b_bank rows, so no extremal family declares an open remainder any
+-- more and the strict site-coverage assertion in render_seed_set holds the
+-- full 153.
 
 local state = census.state()
 if mode == "full_w" then
@@ -1267,6 +1427,40 @@ if mode == "full_w" then
 end
 if #state.seeds == 0 then
 	error("WP40 T2 census merge: no seed record was consumed", 0)
+end
+do
+	local unconsumed = {}
+	for seed in pairs(top_up_records) do
+		if not top_up_consumed[seed] then unconsumed[#unconsumed + 1] = seed end
+	end
+	table.sort(unconsumed, decimal_less)
+	if #unconsumed > 0 then
+		error("WP40 T2 census merge: top-up record seed " .. unconsumed[1] ..
+			" (" .. #unconsumed .. " total) matches no shard seed of W", 0)
+	end
+end
+
+-- Contracts 9.6: the merge re-verifies Scan-4 coverage against the consumed
+-- membership independently of the shard verifier -- every member record
+-- carries all 38 face rows and exactly one whole row, and no non-member
+-- record carries any Scan-4 tier row.
+local scan4_member_count = 0
+for index = 1, #state.seeds do
+	local seed = state.seeds[index]
+	local coverage = state.scan4_coverage[seed]
+	if coverage then
+		if coverage.member == "member" then
+			scan4_member_count = scan4_member_count + 1
+			if coverage.faces ~= 38 or coverage.wholes ~= 1 then
+				error("WP40 T2 census merge: member seed " .. seed ..
+					" carries " .. coverage.faces .. " face rows and " ..
+					coverage.wholes .. " whole rows (contracts 9.6)", 0)
+			end
+		elseif coverage.faces ~= 0 or coverage.wholes ~= 0 then
+			error("WP40 T2 census merge: non-member seed " .. seed ..
+				" carries Scan-4 tier rows (contracts 9.6)", 0)
+		end
+	end
 end
 
 -- The prefilter's verified prediction (section 6.2.4 / 6.6.8): a discharged
@@ -1346,12 +1540,88 @@ local prefilter_text, prefilter_summary = render_prefilter(prefilter_lines,
 	inputs_agreeing, prefilter_verified_seeds)
 local histogram_text = render_histograms(state)
 
+-- The roster top-up protocol (contracts 9.2): the Scan-3b extremal sites can
+-- produce bounds whose witnesses sit outside the consumed membership.  The
+-- merge computes that pending list from its own aggregation and refuses to
+-- publish while it is nonempty: a marked top-up run supplies the missing
+-- records and the second invocation consumes shards plus top-up records and
+-- publishes once.  Full-W only -- an explicit record set cannot cover the
+-- union's winner and corpus terms by construction.
+if mode == "full_w" then
+	local pending = {}
+	for index = 1, #seed_set_summary.seeds do
+		local union_seed = seed_set_summary.seeds[index]
+		local coverage = state.scan4_coverage[union_seed]
+		if not coverage or coverage.member ~= "member" then
+			pending[#pending + 1] = union_seed
+		end
+	end
+	if #pending > 0 then
+		io.stderr:write("WP40 T2 census merge: " .. #pending .. " seed(s) of " ..
+			"the recomputed Scan-4 union lack the Scan-4 block; the roster " ..
+			"top-up list (contracts 9.2):\n")
+		for index = 1, #pending do
+			io.stderr:write("  top_up_pending\t" .. pending[index] .. "\n")
+		end
+		io.stderr:flush()
+		error("WP40 T2 census merge: refusing to publish while the top-up " ..
+			"list is nonempty (contracts 9.2): run the marked top-up " ..
+			"(worker seeds-mode with --scan4-forced) over the listed seeds " ..
+			"and merge again with --top-up", 0)
+	end
+end
+
+-- The inherited-tier regression assertion (contracts 9.3): the full pass
+-- recomputes the v5 tiers, so every inherited-tier occupied/derived/witness
+-- row must equal its v2 counterpart outside the header block -- a drift
+-- there is a finding, not a refresh.  Full-W only: the committed baseline is
+-- a measurement of W.
+local inherited_status = "not_compared_explicit_records"
+local inherited_drift, inherited_first
+if mode == "full_w" then
+	local baseline_path = inherited_baseline_override or
+		(repo .. "/tools/wp40/fixtures/t2_census/census-occupied-classes-v2.tsv")
+	local baseline_bytes = read_file(baseline_path)
+	local function inherited_lines(text)
+		local kept = {}
+		for line in (text):gmatch("([^\n]*)\n") do
+			local kind, family = line:match("^(occupied)\t([^\t]+)\t")
+			if not kind then
+				kind, family = line:match("^(derived)\t([^\t]+)\t")
+			end
+			if not kind then
+				kind, family = line:match("^(witness)\t([^\t]+)\t")
+			end
+			if kind and not family:match("^scan3b_") and
+					not family:match("^scan4_") then
+				kept[#kept + 1] = line
+			end
+		end
+		return kept
+	end
+	local ours = inherited_lines(occupied_text)
+	local base = inherited_lines(baseline_bytes)
+	inherited_drift = 0
+	for index = 1, math.max(#ours, #base) do
+		if ours[index] ~= base[index] then
+			inherited_drift = inherited_drift + 1
+			if not inherited_first then
+				inherited_first = "v3: " .. tostring(ours[index]) ..
+					" | v2: " .. tostring(base[index])
+			end
+		end
+	end
+	inherited_status = (inherited_drift == 0 and "identical_to_baseline"
+		or ("drift=" .. count_text(inherited_drift))) ..
+		" baseline_sha256=" .. digest_of(baseline_bytes)
+end
+
 local artifacts = {
-	{name = "census-occupied-classes-v2.tsv", text = occupied_text},
-	{name = "census-vacuous-branches-v2.tsv", text = vacuous_text},
-	{name = "census-scan4-seed-set-v2.tsv", text = seed_set_text},
-	{name = "census-prefilter-discharge-v2.tsv", text = prefilter_text},
-	{name = "census-histograms-v2.tsv", text = histogram_text},
+	{name = "census-occupied-classes-v3.tsv", text = occupied_text},
+	{name = "census-vacuous-branches-v3.tsv", text = vacuous_text},
+	{name = "census-scan4-seed-set-v3.tsv", text = seed_set_text},
+	{name = "census-prefilter-discharge-v3.tsv", text = prefilter_text},
+	{name = "census-histograms-v3.tsv", text = histogram_text},
 }
 local artifact_lines = {}
 for index = 1, #artifacts do
@@ -1368,7 +1638,7 @@ if expected_digest and artifacts_digest ~= expected_digest then
 		expected_digest .. " (plan section 6.6.5); nothing was written", 0)
 end
 
-local manifest = {"schema\tgrug_wp40_census_manifest_v2",
+local manifest = {"schema\tgrug_wp40_census_manifest_v3",
 	"scan_schema\t" .. authority.schema,
 	"vocabulary\t" .. authority.vocabulary_path,
 	"seed_set\t" .. header.seed_set,
@@ -1460,6 +1730,28 @@ manifest_line("scan4_seed_set",
 	" sites_covered=" .. count_text(seed_set_summary.covered) ..
 	" of " .. count_text(authority.extremal_site_total) ..
 	" sites_open=" .. count_text(seed_set_summary.open))
+-- The v3 provenance block (contracts 9.3): v3 supersedes v2 for every
+-- downstream consumer, names the consumed v2 baseline by digest, records
+-- the 9.2 ruling, the coverage against the consumed membership, the
+-- inherited-tier comparison and the top-up table.
+manifest_line("supersedes",
+	"the v2 artifact set (grug_wp40_census_manifest_v2) for every " ..
+	"downstream consumer; the v1/v2 artifacts and the v4/v5 shards stay " ..
+	"untouched as the prior records")
+manifest_line("consumed_scan4_membership",
+	"seed_set=" .. authority.scan4_membership_source.seed_set_path ..
+	" sha256=" .. authority.scan4_membership_source.seed_set_digest ..
+	" manifest=" .. authority.scan4_membership_source.manifest_path ..
+	" sha256=" .. authority.scan4_membership_source.manifest_digest ..
+	" union=" .. count_text(authority.scan4_membership_source.union))
+manifest_line("scan4_ruling", authority.scan4_membership_source.ruling)
+manifest_line("scan4_coverage", "members=" .. count_text(scan4_member_count) ..
+	" of consumed_union=" ..
+	count_text(authority.scan4_membership_source.union))
+manifest_line("inherited_tier", inherited_status)
+if #top_up_paths == 0 then
+	manifest_line("top_up", "none")
+end
 for index = 1, #manifest_inputs do manifest[#manifest + 1] = manifest_inputs[index] end
 for index = 1, #artifacts do
 	manifest_line("artifact", artifacts[index].name, artifacts[index].digest)
@@ -1474,7 +1766,7 @@ for index = 1, #artifacts do
 	outputs[#outputs + 1] = {path = out_dir .. "/" .. artifacts[index].name,
 		text = artifacts[index].text}
 end
-outputs[#outputs + 1] = {path = out_dir .. "/census-manifest-v2.tsv",
+outputs[#outputs + 1] = {path = out_dir .. "/census-manifest-v3.tsv",
 	text = manifest_text}
 for index = 1, #outputs do
 	local existing = io.open(outputs[index].path, "rb")
@@ -1528,6 +1820,15 @@ if occupied_summary.sink > 0 then
 	-- stopping for, so the artifacts are written and the exit status says so.
 	io.stderr:write("WP40 T2 census merge: " .. occupied_summary.sink ..
 		" row(s) matched no declared branch; see the no_branch_matched block " ..
-		"of census-occupied-classes-v2.tsv (plan section 6.4)\n")
+		"of census-occupied-classes-v3.tsv (plan section 6.4)\n")
 	os.exit(3)
+end
+if inherited_drift and inherited_drift > 0 then
+	-- Contracts 9.3: an inherited-tier drift is a finding, not a refresh --
+	-- the artifacts are written and reported, and the exit status stops the
+	-- publication from being accepted.
+	io.stderr:write("WP40 T2 census merge: " .. inherited_drift ..
+		" inherited-tier occupied row(s) drifted from the v2 baseline " ..
+		"(contracts 9.3); first: " .. tostring(inherited_first) .. "\n")
+	os.exit(4)
 end

@@ -751,7 +751,7 @@ Wing counts seven pair-exclusion causes on one row, so a site can realize the
 same branch through several rows of one seed and "the first such row" was an
 arrival-order choice. The witness is now the least row of the least seed.
 
-`fixtures/t2_census/scan_kat_v5.lua` pins the M1+M3+M4+M5 KAT plus the
+`fixtures/t2_census/scan_kat_v6.lua` pins the M1+M3+M4+M5 KAT plus the
 stage-reject witness: the section
 3-F6 witness fills (seed 0 `0/0/0/0`, Slot 30 `0/0/0/0`, Slot 29 `0/0/0/0`,
 max-u64 `1/1/1/0`), the

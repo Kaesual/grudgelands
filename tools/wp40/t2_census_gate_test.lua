@@ -94,16 +94,36 @@ check(authority.validate_shard_range(ranges[1].first, ranges[1].last, w.total) =
 
 -- ------------------------------------------------------------ shard path names
 local shard_path = authority.census_shard_path(ranges[1].first, ranges[1].last)
-check(shard_path == "tools/wp40/results/t2_census/census-scan-v5-0000-0515.tsv",
+check(shard_path == "tools/wp40/results/t2_census/census-scan-v6-0000-0515.tsv",
 	"census shard path changed: " .. shard_path)
 check(not shard_path:find("shard-luajit", 1, true),
 	"census shard path collides with the pool pattern")
 check(authority.assert_disjoint_from_pool(0, 515), "pool disjointness check failed")
+-- Since v6 the collision set is four patterns rather than two: both extreme
+-- pool shard names and the v4 and v5 census generations, which stay on disk as
+-- the prior records (contracts 9.3).  The disjointness is proven over every
+-- canonical range, not just the first, because the rule is about the formatted
+-- name and only a formatted name can break it -- and both directions are
+-- proven, so a stem rule that had quietly started refusing v6 outright would
+-- fail here rather than at a full-`W` start.
+local earlier_shard_stems = {"shard-luajit-v3", "shard-luajit",
+	"census-scan-v4", "census-scan-v5"}
+for index = 1, #ranges do
+	local range = ranges[index]
+	check(authority.assert_disjoint_from_pool(range.first, range.last),
+		"the v6 shard name for range " .. index .. " was refused as a collision")
+	local name = authority.census_shard_path(range.first, range.last)
+	for stem_index = 1, #earlier_shard_stems do
+		check(not name:find(earlier_shard_stems[stem_index], 1, true),
+			"the v6 shard name " .. name .. " carries the earlier shard stem " ..
+				earlier_shard_stems[stem_index])
+	end
+end
 refuses("a shard path that is not canonical", "not the canonical census path",
 	authority.validate_census_shard_path, "tools/wp40/results/t2_census/other.tsv",
 	0, 515)
 refuses("a free run writing a shard file name", "must not write a shard file name",
-	authority.validate_free_output_path, "/tmp/census-scan-v5-0000-0515.tsv")
+	authority.validate_free_output_path, "/tmp/census-scan-v6-0000-0515.tsv")
 refuses("a free run writing a stale M1 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan1-v1-0000-0515.tsv")
@@ -536,11 +556,20 @@ refuses("a CPU gate conf with an undated probe", "not an ISO date",
 -- Stage-shaped kinds are skipped by their declared attribute: they are v4's
 -- *other* record shape and may never appear inside a full-roster record,
 -- which is proven below.
+--
+-- Two v6 kinds are occupancy-driven in the roster and still fixed by the
+-- member-conditional grammar (contracts 9.2/9.6): a record whose membership
+-- row says `member` -- which the first declared vocabulary value makes this
+-- one -- carries all 38 faces and exactly one Whole row.  Two synthetic rows
+-- would be a malformed member record, so the two counts are named here rather
+-- than left to the generic occupancy default, and both halves of that grammar
+-- are proven refusable below.
+local synthetic_member_rows = {scan4_face = 38, scan4_whole = 1}
 local function seed_record(seed)
 	local rows = {"seed_begin\t" .. seed}
 	for _, layout in ipairs(authority.record_rows) do
 		if not layout.stage_shape then
-			for index = 1, layout.count or 2 do
+			for index = 1, layout.count or synthetic_member_rows[layout.tag] or 2 do
 				local cells = {layout.tag, seed}
 				for field = 3, layout.fields do
 					cells[field] = layout.tag .. index .. "_" .. field
@@ -607,6 +636,14 @@ check(verified.totals.scan3_aperture == 16 and verified.totals.scan3_wing == 16
 	and verified.totals.scan3_bank == 8 and verified.totals.scan3_width == 8
 	and verified.totals.scan3_step == 4 and verified.totals.scan3_selection == 4,
 	"shard scan3 totals changed")
+check(verified.totals.scan3b_bank == 32 and verified.totals.scan3b_step == 4
+	and verified.totals.scan3b_selection == 4
+	and verified.totals.scan3b_attribution == 4 and verified.totals.scan3b_event == 4,
+	"shard scan3b totals changed")
+check(verified.totals.scan4_membership == 2 and verified.totals.scan4_face == 76
+	and verified.totals.scan4_whole == 2
+	and verified.totals.scan4_whole_interval == 4
+	and verified.totals.scan4_fragment == 4, "shard scan4 totals changed")
 local first_record = authority.validate_first_record(body, expected)
 check(first_record and first_record.seed == w.seeds[1],
 	"a well-formed first record did not validate")
@@ -693,20 +730,58 @@ refuses("a first record with a short scan3 width row", "fields, expected 20",
 -- not the other cannot silently drop a column out of every shard.
 check(#authority.wing_exclusion_causes == 7,
 	"the F5 exclusion cause list changed width without the wing row")
+
+-- ------------------------------------------- v6 Scan-3b/4 record declarations
+-- The two v6 rosters the record grammar counts rather than merely admits: the
+-- sixteen transition-incident Bank traces that close the last open extremal
+-- sites, and the one membership row every full record carries (contracts
+-- 9.1/9.2).  Pinned here because both counts are load-bearing elsewhere --
+-- the roster total below and the member-conditional block above -- and a
+-- silent change to either would move a census without moving a schema.
+local scan3b_bank_row = authority.record_row_by_tag.scan3b_bank
+check(scan3b_bank_row ~= nil and scan3b_bank_row.count == 16 and
+	scan3b_bank_row.class_set == "scan3b_bank_class",
+	"the scan3b_bank roster is no longer 16 rows of scan3b_bank_class")
+local membership_row = authority.record_row_by_tag.scan4_membership
+check(membership_row ~= nil and membership_row.count == 1,
+	"a full record no longer carries exactly one scan4_membership row")
+check(#authority.record_rows == 27,
+	"the record row roster changed width: " .. #authority.record_rows)
+-- The member-conditional Scan-4 block, both directions.  This is the rule the
+-- merge's own coverage re-check leans on, so a grammar that admitted either
+-- shape would leave that re-check checking the worker against itself.
+refuses("a member record short one scan4_face row",
+	"scan4_face rows, expected 38", authority.validate_first_record,
+	(body:gsub("\nscan4_face\t" .. w.seeds[1] .. "\tscan4_face1_3[^\n]*", "", 1)),
+	expected)
+refuses("a non-member record carrying the Scan-4 block",
+	"holds 38 scan4_face rows", authority.validate_first_record,
+	(body:gsub("\tmember\t" .. authority.classes.scan4_member_source[1] .. "\t",
+		"\tnonmember\t" .. authority.classes.scan4_member_source[1] .. "\t", 1)),
+	expected)
+
 -- A schema bump is only worth its cost if a finished older shard can never
 -- be resumed into the new run.  Two independent refusals per retired
 -- version: the canonical path no longer names it, and the free-output rule
 -- refuses to write it either.
-check(shard_path:find("census-scan-v5-", 1, true) and
+check(shard_path:find("census-scan-v6-", 1, true) and
+	not shard_path:find("census-scan-v5-", 1, true) and
+	not shard_path:find("census-scan-v4-", 1, true) and
 	not shard_path:find("census-scan-v3-", 1, true) and
 	not shard_path:find("census-scan-v2-", 1, true),
-	"the v4 shard name still admits an older shard")
+	"the v6 shard name still admits an older shard")
 refuses("a free run writing a stale M3 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan-v2-0000-0515.tsv")
 refuses("a free run writing a stale M4/M5 shard file name",
 	"must not write a shard file name",
 	authority.validate_free_output_path, "/tmp/census-scan-v3-0000-0515.tsv")
+refuses("a free run writing a stale v4 census shard file name",
+	"must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan-v4-0000-0515.tsv")
+refuses("a free run writing a stale v5 census shard file name",
+	"must not write a shard file name",
+	authority.validate_free_output_path, "/tmp/census-scan-v5-0000-0515.tsv")
 
 -- ------------------------------------------------- v4 stage-reject grammar
 -- The two record shapes are mutually exclusive and the prefilter block may
@@ -850,6 +925,12 @@ refuses("a merge reading a row tag no roster declares", "unknown row tag",
 -- unrealized row *shape* dead policy.
 local universe = authority.branch_universe()
 check(#universe > 0, "the declared branch universe is empty")
+-- Pinned since v6 (contracts 9.1): the Scan-3b and Scan-4 decision
+-- vocabularies widened the universe to 121 branches, and the vacuous report
+-- is exactly this list minus what the shards realized -- so a branch that
+-- silently left the declaration would shrink the report rather than appear
+-- in it as the zero it is.
+check(#universe == 121, "the declared branch universe changed width: " .. #universe)
 local in_universe = {}
 for index = 1, #universe do
 	local declared = universe[index]
@@ -874,32 +955,111 @@ for _, cause in ipairs(authority.wing_exclusion_causes) do
 	check(in_universe[authority.exclusion_vocabulary .. "\t" .. cause],
 		"the F5 exclusion cause " .. cause .. " is outside the branch universe")
 end
--- Section 6.2.3's roster is load-bearing: 137 measurable sites and 16 open
--- ones have to add up to the 153 the contract names.
+-- Section 6.2.3's roster is load-bearing: the measurable sites and whatever a
+-- family still declares open have to add up to the 153 the contract names.
+-- Since v6 nothing is open -- the sixteen transition-incident Banks arrive on
+-- scan3b_bank rows -- so the scanned total is the full roster and the merge's
+-- manifest says "153 of 153".
 local roster_total, roster_scanned = 0, 0
 for _, family in ipairs(authority.extremal_families) do
 	roster_total = roster_total + family.sites
 	roster_scanned = roster_scanned + (family.scanned_sites or family.sites)
 	check(authority.record_row_by_tag[family.row] ~= nil,
 		family.family .. " names a row kind the record does not carry")
-	for _, scalar in ipairs(family.scalars) do
-		local derived = authority.derived_scalars[scalar]
-		check(derived ~= nil or
-			authority.record_row_by_tag[family.row].column_index[scalar] ~= nil,
-			family.family .. " names the unmeasurable scalar " .. scalar)
+	-- A family may draw one roster from more than one row kind since v6, and
+	-- the merge reads every one of them, so every named kind has to exist and
+	-- to carry the family's scalars -- not merely the first.
+	for _, row in ipairs(family.rows or {family.row}) do
+		local layout = authority.record_row_by_tag[row]
+		check(layout ~= nil,
+			family.family .. " draws sites from the unknown row kind " .. row)
+		for _, scalar in ipairs(family.scalars) do
+			check(authority.derived_scalars[scalar] ~= nil or
+				layout.column_index[scalar] ~= nil,
+				family.family .. " names the unmeasurable scalar " .. scalar ..
+					" on row " .. row)
+		end
 	end
 end
 check(roster_total == authority.extremal_site_total,
 	"the extremal roster no longer covers 153 sites")
-check(roster_scanned == 137,
-	"the scans 1-3a extremal coverage moved from 137 sites to " .. roster_scanned)
+check(roster_scanned == 153,
+	"the scans 1-4 extremal coverage moved from 153 sites to " .. roster_scanned)
 for _, rule in ipairs(authority.flag_rules) do
 	local layout = authority.record_row_by_tag[rule.row]
 	check(layout ~= nil and layout.column_index[rule.column] ~= nil,
 		"the " .. rule.flag .. " flag reads a column its row does not carry")
-	check(rule.test == "equals" or rule.test == "at_least" or rule.test == "any",
+	check(rule.test == "equals" or rule.test == "at_least" or
+		rule.test == "any" or rule.test == "present",
 		"the " .. rule.flag .. " flag uses a test the merge does not implement")
 end
+-- The v6 flag rule (contracts 9.2, branch A): the flag vocabulary predated the
+-- class the collected correction created, and the seed-set derivation text
+-- reads this rule, so it is pinned in full rather than only counted above.
+local admission_rule
+for _, rule in ipairs(authority.flag_rules) do
+	if rule.flag == "detached_shoulder_admission" then admission_rule = rule end
+end
+check(admission_rule ~= nil and admission_rule.row == "scan3_aperture" and
+	admission_rule.column == "detached" and admission_rule.test == "present",
+	"the detached_shoulder_admission flag is not the present test on " ..
+		"scan3_aperture.detached")
+
+-- ------------------------------------------------ the Scan-4 membership (9.2)
+-- Branch A, ruled 2026-08-19: the consumed membership is the committed v2
+-- seed-set artifact plus the v2 manifest's seven detached-shoulder admission
+-- seeds, union 3,061.  This is driven over the real committed fixtures rather
+-- than a synthetic pair, because the whole point of the ruling is *which*
+-- bytes Scan-4 ran on: a green run against fabricated inputs would prove the
+-- arithmetic and say nothing about the census.
+local membership_seed_set = read_file(repo ..
+	"/tools/wp40/fixtures/t2_census/census-scan4-seed-set-v2.tsv")
+local membership_manifest = read_file(repo ..
+	"/tools/wp40/fixtures/t2_census/census-manifest-v2.tsv")
+local membership = authority.read_scan4_membership(membership_seed_set,
+	membership_manifest)
+check(membership.union == 3061,
+	"the consumed Scan-4 union is " .. membership.union .. ", the ruling says 3061")
+check(membership.sources["2466379686918096853"] == "admission",
+	"a manifest admission seed is not sourced as an admission")
+check(membership.sources["0"] == "seed_set",
+	"a seed-set row is not sourced as seed_set")
+check(membership.members["0"] == true and
+	membership.members["2466379686918096853"] == true,
+	"the union lost a seed one of its two sources names")
+refuses("a Scan-4 seed-set artifact whose bytes were edited",
+	"does not match its pinned digest", authority.read_scan4_membership,
+	(membership_seed_set:gsub("\nseed\t0\t", "\nseed\t9\t", 1)),
+	membership_manifest)
+refuses("a v2 manifest whose bytes were edited", "does not match its pinned digest",
+	authority.read_scan4_membership, membership_seed_set,
+	(membership_manifest:gsub("\ndetached_shoulder_admission[^\n]*", "", 1)))
+-- The counted half of the ruling -- 3,058 rows, 7 admissions, 3 newcomers --
+-- sits behind those two digests, so editing bytes to reach it always stops at
+-- the digest instead.  An authority whose injected hasher answers with the
+-- pinned digests for exactly these two fixtures is the only way to prove the
+-- counts refuse anything at all; the digest gate itself keeps the two real
+-- negatives above.
+local function to_raw(hex_digest)
+	return (hex_digest:gsub("%x%x", function(pair)
+		return string.char(tonumber(pair, 16))
+	end))
+end
+local pinned = authority.scan4_membership_source
+local stubbed = dofile(repo .. "/tools/wp40/t2_census_authority.lua")({
+	raw_sha256 = function(text)
+		return to_raw(text:find("grug_wp40_census_manifest_v2", 1, true) and
+			pinned.manifest_digest or pinned.seed_set_digest)
+	end})
+check(stubbed.read_scan4_membership(membership_seed_set,
+	membership_manifest).union == 3061,
+	"the digest-stubbed authority does not reproduce the ruling's union")
+refuses("a v2 manifest that lost one of its admission lines", "admission seeds",
+	stubbed.read_scan4_membership, membership_seed_set,
+	(membership_manifest:gsub("\ndetached_shoulder_admission[^\n]*", "", 1)))
+refuses("a v2 seed-set artifact that lost a seed row",
+	"seed rows, the ruling consumed", stubbed.read_scan4_membership,
+	(membership_seed_set:gsub("\nseed\t0\t[^\n]*", "", 1)), membership_manifest)
 
 -- Free worker output is the only thing the M5 merge KAT can consume, and it
 -- must never be readable as a slice of `W` -- nor a shard as a free run.

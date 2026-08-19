@@ -68,8 +68,14 @@ return function(dependencies)
 	-- merge and the first-record validator consume complete seed records,
 	-- never one scan's rows alone -- and the shard name carries it too, so a
 	-- v2 or v3 shard left on disk can never be resumed into a v4 run.
-	local schema = "grug_wp40_census_scan_v5"
-	local shard_schema = "grug_wp40_census_scan_shard_v5"
+	-- v6 since the Scan-3b/4 census completion (contracts section 9): the v5
+	-- rows stay an exact prefix and the record gains the sixteen
+	-- transition-incident Bank traces, the bank-incomplete attribution
+	-- histogram, the R20/R21 event rows, and -- on Scan-4 members -- the
+	-- face, whole and fragment tiers plus the membership row every full
+	-- record carries.
+	local schema = "grug_wp40_census_scan_v6"
+	local shard_schema = "grug_wp40_census_scan_shard_v6"
 	local vocabulary_path = "tools/wp40/fixtures/t2_extreme_e0/vocabulary.lua"
 	local candidates_path =
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"
@@ -198,6 +204,65 @@ return function(dependencies)
 			"aperture_dry_station_reject", "aperture_overlap_reject",
 			"aperture_second_run_reject", "aperture_authored_wrap_reject",
 			"aperture_authored_second_run_reject"},
+		-- Scan-3b (contracts 9.1).  The outcome vocabulary is the existing
+		-- scan3_bank_class -- the contract's own words -- plus the one skip
+		-- kind a dead edge forces: a Bank whose transition edge selected no
+		-- joint tuple has no terminal to trace from, and "measured" versus
+		-- "could not be evaluated" stay different claims (the 6.7 lesson).
+		-- The reject values are declared and expected vacuous by discipline:
+		-- Scan-2's completion tier proved these Banks complete at the
+		-- selected tuple, so an instrumented 3b trace that dies is a loud
+		-- worker abort -- a finding, never a column.
+		scan3b_bank_class = {"bank_trace_complete_select",
+			"bank_terminal_unresolved_reject", "bank_start_anchor_invalid_reject",
+			"bank_target_noncandidate_reject",
+			"bank_zero_reachable_successor_reject", "bank_repeated_column_reject",
+			"bank_x_cross_reject", "bank_reachability_frame_cap_reject",
+			"bank_reachability_stack_cap_reject", "bank_main_trace_cap_reject",
+			"bank_trace_envelope_empty_reject", "bank_shoulder_water_side_reject",
+			"scan3b_bank_not_evaluated"},
+		-- The attribution histogram's far-terminal identity (contracts 9.1):
+		-- which kind of far terminal the dead Bank had, and its resolved
+		-- mode -- direct or shoulder-tail aperture, negative or positive
+		-- Wing side; "-" marks a far terminal whose own resolution failed.
+		scan3b_far_kind = {"aperture", "wing"},
+		scan3b_far_mode = {"direct", "diagonal_shoulder", "negative",
+			"positive", "-"},
+		-- The two predicted R20/R21 classes, declared so occupancy has a
+		-- place to land.  Expected occupancy of both: zero -- a projection,
+		-- marked as one, grounded in the v5 measurement that
+		-- scan2_zero_complete_reject and every head-Bank reject class read
+		-- zero over W.  Nonzero occupancy of either is exactly the named
+		-- small-correction-round trigger of plan section 2.
+		scan3b_event_class = {"aperture_anchor_dead_event",
+			"wing_pair_dead_alternative_event"},
+		-- Scan-4 (contracts 9.1/9.2).  Membership is an input list, read
+		-- from the committed v2 seed-set artifact by digest plus the v2
+		-- manifest's seven admission seeds (the branch-A ruling of 9.2);
+		-- "forced" marks a roster top-up run's records.
+		scan4_member_kind = {"member", "nonmember"},
+		scan4_member_source = {"seed_set", "admission", "forced", "-"},
+		-- The face tier: classification per fail site through a message map
+		-- beside the projection, anything unmatched re-raised (the
+		-- stage-reject precedent).  A face whose upstream arc failed is its
+		-- own declared skip kind, never a silent absence.
+		scan4_face_class = {"face_simple_select", "face_not_closed_reject",
+			"face_wrong_orientation_reject", "face_non_simple_reject",
+			"face_composition_reject", "face_upstream_not_evaluated"},
+		-- The Whole tier's gate: it runs only when every face of the seed
+		-- classifies face_simple_select; otherwise one whole_not_evaluated
+		-- row names the blocking face.
+		scan4_whole_state = {"whole_evaluated", "whole_not_evaluated"},
+		-- The H38 row-run interval classes (contracts 9.1).
+		scan4_whole_class = {"whole_single_owner_select",
+			"whole_declared_seam_select", "whole_gap_reject",
+			"whole_undeclared_multiplicity_reject"},
+		-- The excluded-fragment obligations; the not_evaluated kind fires
+		-- only when a face failed to compose, so the fragment's face
+		-- ownership could not be measured at all.
+		scan4_fragment_class = {"fragment_owned_once_select",
+			"fragment_unowned_reject", "fragment_multi_owner_reject",
+			"fragment_identity_conflict_reject", "fragment_not_evaluated"},
 	}
 
 	-- The F5 per-pair exclusion causes, in the order the Wing row's seven count
@@ -235,9 +300,14 @@ return function(dependencies)
 		scan3_bank_class = "decision", scan3_selection_class = "decision",
 		scan3_width_class = "decision", scan3_step_outcome = "decision",
 		stage_reject_class = "decision",
+		scan3b_bank_class = "decision", scan3b_event_class = "decision",
+		scan4_face_class = "decision", scan4_whole_state = "decision",
+		scan4_whole_class = "decision", scan4_fragment_class = "decision",
 		prefilter_status = "kind", edge_kind = "kind", scan2_flag = "kind",
 		scan2_tuple_mode = "kind", scan3_aperture_mode = "kind",
 		scan3_step_direction = "kind",
+		scan3b_far_kind = "kind", scan3b_far_mode = "kind",
+		scan4_member_kind = "kind", scan4_member_source = "kind",
 	}
 	-- The F5 per-pair exclusion causes are a decision vocabulary of their own:
 	-- they are counted per Wing rather than carried in a class column, and the
@@ -345,6 +415,31 @@ return function(dependencies)
 		aperture_second_run_reject = "REJECTED",
 		aperture_authored_wrap_reject = "REJECTED",
 		aperture_authored_second_run_reject = "REJECTED",
+		-- Scan-3b and Scan-4 (contracts section 9).  The twelve Bank outcome
+		-- values above already carry their verdicts; what follows is only
+		-- what v6 adds.  The two R20/R21 classes are EVENTs like the width
+		-- events: occupancy is the named small-correction trigger, not an
+		-- ordinary reject of the seed under measurement.
+		scan3b_bank_not_evaluated = "DECIDED",
+		aperture_anchor_dead_event = "EVENT",
+		wing_pair_dead_alternative_event = "EVENT",
+		face_simple_select = "DECIDED",
+		face_not_closed_reject = "REJECTED",
+		face_wrong_orientation_reject = "REJECTED",
+		face_non_simple_reject = "REJECTED",
+		face_composition_reject = "REJECTED",
+		face_upstream_not_evaluated = "DECIDED",
+		whole_evaluated = "DECIDED",
+		whole_not_evaluated = "DECIDED",
+		whole_single_owner_select = "DECIDED",
+		whole_declared_seam_select = "DECIDED",
+		whole_gap_reject = "REJECTED",
+		whole_undeclared_multiplicity_reject = "REJECTED",
+		fragment_owned_once_select = "DECIDED",
+		fragment_unowned_reject = "REJECTED",
+		fragment_multi_owner_reject = "REJECTED",
+		fragment_identity_conflict_reject = "REJECTED",
+		fragment_not_evaluated = "DECIDED",
 		-- The seven F5 pair-exclusion causes.  A pair exclusion is a decided
 		-- per-pair outcome; the Wing rejects only through its own class.
 		shared_predecessor = "DECIDED", interior_overlap = "DECIDED",
@@ -381,9 +476,44 @@ return function(dependencies)
 		aperture_terminal_identity_drift_reject = {status = "expected_vacuous",
 			note = "reads only seed-independent catalog and aperture source state; " ..
 				"the underlying failure stays a loud abort rather than a row"},
-		bank_shoulder_water_side_reject = {status = "out_of_scope_scan3b",
+		bank_shoulder_water_side_reject = {status = "expected_vacuous",
 			note = "needs an aperture shoulder, and the four head Banks have none; " ..
-				"the sixteen transition-incident Banks are Scan-3b"},
+				"at the sixteen Scan-3b Banks the shoulder side is evaluated by " ..
+				"Scan-3a's aperture_tail_wrong_water_side_reject from the resolved " ..
+				"D,T,W, and an instrumented 3b trace that dies is a loud worker " ..
+				"abort (contracts 9.1), so this class stays measured elsewhere"},
+		scan3b_bank_not_evaluated = {status = "consequent",
+			note = "occupied only where the Bank's transition edge selected no " ..
+				"complete joint tuple; the primary finding is that edge's own " ..
+				"scan2 row, and v5 measured zero such edges over W"},
+		aperture_anchor_dead_event = {status = "in_scope",
+			note = "R20 candidate (contracts 9.1): every tuple of an edge dead " ..
+				"with the same aperture-far Bank while that incidence resolved " ..
+				"direct; expected occupancy zero -- a projection, marked as one " ..
+				"-- and nonzero occupancy is the named small-correction trigger"},
+		wing_pair_dead_alternative_event = {status = "in_scope",
+			note = "R21 candidate (contracts 9.1): a Bank with a Wing far " ..
+				"terminal dead at the selected wedge-valid pair while the next " ..
+				"wedge-valid pair completes; probed only on the dead condition, " ..
+				"expected occupancy zero -- a projection, marked as one"},
+		face_non_simple_reject = {status = "in_scope",
+			note = "the known F10 occupancy: solo full-path compiles place seed " ..
+				"2147483648 at zone_face:elandor_silverleaf_glades and seed " ..
+				"1959553668008863006 at zone_face:kragmar_stillgrave_hollow; " ..
+				"both must land as occupied rows with those witnesses"},
+		face_upstream_not_evaluated = {status = "consequent",
+			note = "the face's upstream arc failed to assemble; the arc's " ..
+				"verbatim failure travels in the face row's detail and the " ..
+				"finding is that failure, not this skip kind"},
+		whole_not_evaluated = {status = "consequent",
+			note = "the Whole tier runs only when every face classifies " ..
+				"face_simple_select; this row names the blocking face, whose own " ..
+				"reject row is the primary finding -- measured and " ..
+				"could-not-be-evaluated stay different claims (the 6.7 lesson)"},
+		fragment_not_evaluated = {status = "consequent",
+			note = "a zone face failed to compose, so the fragment's face " ..
+				"ownership could not be measured; the primary finding is the " ..
+				"face row"},
 		aperture_tail_wrong_water_side_reject = {status = "in_scope",
 			note = "decided in trace_bank but evaluated in Scan-3a from the " ..
 				"resolved D,T,W, so it is measured here rather than deferred"},
@@ -471,10 +601,12 @@ return function(dependencies)
 			scalars = {"d_scalar_q", "w_scalar_q", "a_scalar_q"}},
 		{family = "wing", row = "scan3_wing", sites = 8,
 			scalars = {"chebyshev_k_j", "selected_raw_rank"}},
-		{family = "bank", row = "scan3_bank", sites = 20, scanned_sites = 4,
-			open_scan = "Scan-3b", scalars = {"step_count", "max_frames"},
-			open_reason = "the sixteen transition-incident Bank traces are " ..
-				"Scan-3b; Scan-3a traces the four head Banks only"},
+		-- Complete since Scan-3b (contracts 9.1): the four head Banks arrive
+		-- on scan3_bank rows, the sixteen transition-incident Banks on
+		-- scan3b_bank rows, and the two per-Bank scalars close the last
+		-- sixteen open sites of the 153-site roster.
+		{family = "bank", row = "scan3_bank", rows = {"scan3_bank", "scan3b_bank"},
+			sites = 20, scalars = {"step_count", "max_frames"}},
 		{family = "junction", row = "junction", sites = 38,
 			scalars = {"min_clearance"}},
 		{family = "attachment", row = "attachment", sites = 8,
@@ -529,6 +661,15 @@ return function(dependencies)
 		-- named by the occupied-class table, the flag detail names the site.
 		{flag = "stage_reject", row = "stage_reject", column = "class",
 			test = "any"},
+		-- The detached-shoulder admission flag (contracts 9.2, RULED
+		-- 2026-08-19: branch A).  At 7 of 4,123 the rarest occupied
+		-- configuration over W; the flag vocabulary predated the class the
+		-- collected correction created, and this rule closes that hole for
+		-- good: the flag fires wherever the v5/v6 aperture row records an
+		-- admitted detached station.  "present" tests the column against
+		-- the "-" placeholder.
+		{flag = "detached_shoulder_admission", row = "scan3_aperture",
+			column = "detached", test = "present"},
 	}
 
 	-- Section-3 table rows that this record cannot witness at all.  Reporting
@@ -705,6 +846,72 @@ return function(dependencies)
 		{tag = "stage_reject", fields = 5, class_field = 4, stage_shape = true,
 			class_set = "stage_reject_class", site = {"site"},
 			columns = {"tag", "seed", "site", "class", "detail"}},
+		-- ------------------------------------------------------------------
+		-- v6 rows (contracts section 9).  Everything above is the exact v5
+		-- prefix; the worker emits what follows after the scan3_selection
+		-- block, in this declaration order.
+		-- ------------------------------------------------------------------
+		-- Scan-3b: the sixteen transition-incident Bank traces, one row per
+		-- Bank per seed, from the terminals of the selected joint tuple.
+		{tag = "scan3b_bank", count = 16, fields = 16, class_field = 5,
+			class_set = "scan3b_bank_class", extra_field = 8,
+			extra_set = "scan3b_far_kind", extra2_field = 9,
+			extra2_set = "scan3b_far_mode", site = {"id"},
+			columns = {"tag", "seed", "id", "bay_id", "class", "edge_id",
+				"endpoint", "far_kind", "far_mode", "step_count", "station_count",
+				"max_frames", "max_stack", "branch_step_count",
+				"multi_reachable_step_count", "detail"}},
+		{tag = "scan3b_step", fields = 6, class_field = 5,
+			class_set = "scan3_step_outcome", extra_field = 4,
+			extra_set = "scan3_step_direction", site = {"bank_id", "direction"},
+			columns = {"tag", "seed", "bank_id", "direction", "outcome",
+				"count"}},
+		{tag = "scan3b_selection", fields = 8, class_field = 4,
+			class_set = "scan3_selection_class", site = {"bank_id"},
+			columns = {"tag", "seed", "bank_id", "class", "count", "max_width",
+				"multi_reachable", "unknown_reachable"}},
+		-- The bank-incomplete attribution histogram substrate: one row per
+		-- (edge endpoint, dead Bank, far kind/mode) with the per-seed count
+		-- of scan2_tuple_bank_incomplete tuples attributing that Bank.
+		-- First-fail semantics: only the first-dying Bank of a tuple is
+		-- attributed, so counts are lower bounds conditioned on the
+		-- evaluation order (the stage-reject precedent, stated not implied).
+		{tag = "scan3b_attribution", fields = 8, extra_field = 6,
+			extra_set = "scan3b_far_kind", extra2_field = 7,
+			extra2_set = "scan3b_far_mode",
+			site = {"edge_id", "endpoint", "bank_id"},
+			columns = {"tag", "seed", "edge_id", "endpoint", "bank_id",
+				"far_kind", "far_mode", "count"}},
+		-- R20/R21 occupancy rows (EVENTs), emitted only when a classifier
+		-- fires; the site is the aperture incidence (R20) or the Wing side
+		-- (R21).
+		{tag = "scan3b_event", fields = 5, class_field = 4,
+			class_set = "scan3b_event_class", site = {"site"},
+			columns = {"tag", "seed", "site", "class", "detail"}},
+		-- Scan-4 (contracts 9.1/9.2).  Every full record carries exactly one
+		-- membership row; the face, whole, whole-interval and fragment rows
+		-- appear exactly on member records, which validate_record enforces
+		-- below.
+		{tag = "scan4_membership", count = 1, fields = 5, extra_field = 3,
+			extra_set = "scan4_member_kind", extra2_field = 4,
+			extra2_set = "scan4_member_source", site = {"member"},
+			columns = {"tag", "seed", "member", "source", "detail"}},
+		{tag = "scan4_face", fields = 6, class_field = 4,
+			class_set = "scan4_face_class", site = {"id"},
+			columns = {"tag", "seed", "id", "class", "station_count",
+				"detail"}},
+		{tag = "scan4_whole", fields = 11, class_field = 3,
+			class_set = "scan4_whole_state", site = {"class"},
+			columns = {"tag", "seed", "class", "blocking_face", "columns",
+				"planned_water_columns", "dry_columns", "g", "o", "r", "m"}},
+		{tag = "scan4_whole_interval", fields = 7, class_field = 4,
+			class_set = "scan4_whole_class", site = {"site"},
+			columns = {"tag", "seed", "site", "class", "interval_count",
+				"column_count", "witness"}},
+		{tag = "scan4_fragment", fields = 11, class_field = 5,
+			class_set = "scan4_fragment_class", site = {"edge_id"},
+			columns = {"tag", "seed", "edge_id", "station", "class", "x", "z",
+				"land_count", "bank_count", "face_count", "terminal_identity"}},
 	}
 	local record_row_by_tag = {}
 	for index = 1, #record_rows do
@@ -806,9 +1013,13 @@ return function(dependencies)
 	-- either pool shard pattern, and `assert_disjoint_from_pool` below proves
 	-- that instead of asserting it in prose (section 6.6.1).
 	local shard_directory = "tools/wp40/results/t2_census"
-	local shard_pattern = "census-scan-v5-%04d-%04d.tsv"
+	local shard_pattern = "census-scan-v6-%04d-%04d.tsv"
+	-- Earlier shard names a v6 shard must never collide with: both pool
+	-- patterns and the two earlier census generations, which stay untouched
+	-- on disk as the prior records (contracts 9.3).
 	local pool_shard_patterns = {"shard-luajit-v3-%04d-%04d.tsv",
-		"shard-luajit-%04d-%04d.tsv"}
+		"shard-luajit-%04d-%04d.tsv", "census-scan-v4-%04d-%04d.tsv",
+		"census-scan-v5-%04d-%04d.tsv"}
 
 	-- Every file whose bytes can move a census row.  The worker pins these
 	-- before it loads them and re-reads them before it publishes: the extreme
@@ -1347,6 +1558,93 @@ return function(dependencies)
 		return fields
 	end
 
+	-- ------------------------------------------------------------------
+	-- The Scan-4 membership (contracts 9.2, RULED 2026-08-19: branch A).
+	-- The consumed membership is the committed v2 seed-set artifact by
+	-- digest plus the v2 manifest's seven detached-shoulder admission seeds
+	-- -- re-admitting exactly the three departed D2 seeds.  Every count
+	-- below is a measured fact of the ruling and is asserted, not assumed:
+	-- 3,058 seed rows, 7 admissions, 3 newcomers, union 3,061.  The two
+	-- fixture digests are pinned here, and this file is itself a module
+	-- path, so a membership edit moves the module digest and can never
+	-- silently change which seeds a shard ran Scan-4 on.
+	-- ------------------------------------------------------------------
+	local scan4_membership_source = {
+		seed_set_path = "tools/wp40/fixtures/t2_census/census-scan4-seed-set-v2.tsv",
+		seed_set_digest =
+			"a7f4ab910ddc6a1ace360a3a26e0adfaf14b9f5b74c50bb3b9b93ebf6231a79d",
+		manifest_path = "tools/wp40/fixtures/t2_census/census-manifest-v2.tsv",
+		manifest_digest =
+			"27aa7e7b8c09621e0acb8181bb7cb2ced73b4dcbd8e025e34673be035b73e7f2",
+		seed_rows = 3058, admissions = 7, newcomers = 3, union = 3061,
+		ruling = "contracts 9.2 ruled 2026-08-19: branch A -- " ..
+			"detached_shoulder_admission enters the flag vocabulary and the " ..
+			"union returns to 3,061",
+	}
+
+	local function read_scan4_membership(seed_set_bytes, manifest_bytes)
+		if type(seed_set_bytes) ~= "string" or type(manifest_bytes) ~= "string" then
+			fail("the Scan-4 membership inputs are missing")
+		end
+		if digest_of(seed_set_bytes) ~= scan4_membership_source.seed_set_digest then
+			fail("the Scan-4 seed-set artifact does not match its pinned digest " ..
+				scan4_membership_source.seed_set_digest .. " (contracts 9.2)")
+		end
+		if digest_of(manifest_bytes) ~= scan4_membership_source.manifest_digest then
+			fail("the v2 census manifest does not match its pinned digest " ..
+				scan4_membership_source.manifest_digest .. " (contracts 9.2)")
+		end
+		local members, sources = {}, {}
+		local seed_rows = 0
+		for line in (seed_set_bytes):gmatch("([^\n]*)\n") do
+			local fields = split_line(line)
+			if fields[1] == "seed" then
+				local seed = validate_seed_text(fields[2], "Scan-4 member seed")
+				if members[seed] then fail("Scan-4 member seed " .. seed .. " repeats") end
+				members[seed], sources[seed] = true, "seed_set"
+				seed_rows = seed_rows + 1
+			end
+		end
+		if seed_rows ~= scan4_membership_source.seed_rows then
+			fail("the v2 seed-set artifact holds " .. seed_rows ..
+				" seed rows, the ruling consumed " ..
+				scan4_membership_source.seed_rows)
+		end
+		local admissions, newcomers = 0, 0
+		for line in (manifest_bytes):gmatch("([^\n]*)\n") do
+			local fields = split_line(line)
+			if fields[1] == "detached_shoulder_admission" then
+				local seed = fields[2] and fields[2]:match("seed=(%d+)")
+				if not seed then
+					fail("a detached_shoulder_admission manifest line names no seed")
+				end
+				validate_seed_text(seed, "admission seed")
+				admissions = admissions + 1
+				if not members[seed] then
+					members[seed], sources[seed] = true, "admission"
+					newcomers = newcomers + 1
+				end
+			end
+		end
+		if admissions ~= scan4_membership_source.admissions then
+			fail("the v2 manifest lists " .. admissions ..
+				" admission seeds, the ruling consumed " ..
+				scan4_membership_source.admissions)
+		end
+		if newcomers ~= scan4_membership_source.newcomers then
+			fail("the admission re-admitted " .. newcomers ..
+				" seeds, the ruling names " .. scan4_membership_source.newcomers)
+		end
+		local union = seed_rows + newcomers
+		if union ~= scan4_membership_source.union then
+			fail("the consumed Scan-4 union is " .. union .. ", the ruling says " ..
+				scan4_membership_source.union)
+		end
+		return {members = members, sources = sources, union = union,
+			seed_set_digest = scan4_membership_source.seed_set_digest,
+			manifest_digest = scan4_membership_source.manifest_digest}
+	end
+
 	local function split_lines(text)
 		if type(text) ~= "string" then fail("shard text is not a string") end
 		local lines = {}
@@ -1495,6 +1793,7 @@ return function(dependencies)
 			fail("seed record holds seed " .. seed .. ", expected " .. expected_seed)
 		end
 		local counts = {}
+		local membership_kind
 		local index = offset + 2
 		while true do
 			local line = lines[index]
@@ -1534,6 +1833,7 @@ return function(dependencies)
 					tostring(fields[layout.extra2_field]))
 			end
 			counts[tag] = (counts[tag] or 0) + 1
+			if tag == "scan4_membership" then membership_kind = fields[3] end
 			if on_row then on_row(tag, fields, seed) end
 			index = index + 1
 		end
@@ -1558,6 +1858,30 @@ return function(dependencies)
 				if layout.count and (counts[layout.tag] or 0) ~= layout.count then
 					fail("seed record " .. seed .. " holds " .. (counts[layout.tag] or 0) ..
 						" " .. layout.tag .. " rows, expected " .. layout.count)
+				end
+			end
+			-- The member-conditional Scan-4 block (contracts 9.2/9.6): a
+			-- member record carries all 38 face rows and exactly one whole
+			-- row; a non-member record carries none of the four Scan-4 row
+			-- kinds beyond its membership row.  This is what the merge's
+			-- coverage re-verification leans on, so it is grammar here and
+			-- re-checked there.
+			if membership_kind == "member" then
+				if (counts.scan4_face or 0) ~= 38 then
+					fail("member seed record " .. seed .. " holds " ..
+						(counts.scan4_face or 0) .. " scan4_face rows, expected 38")
+				end
+				if (counts.scan4_whole or 0) ~= 1 then
+					fail("member seed record " .. seed .. " holds " ..
+						(counts.scan4_whole or 0) .. " scan4_whole rows, expected 1")
+				end
+			else
+				for _, tag in ipairs({"scan4_face", "scan4_whole",
+						"scan4_whole_interval", "scan4_fragment"}) do
+					if counts[tag] then
+						fail("non-member seed record " .. seed .. " holds " ..
+							counts[tag] .. " " .. tag .. " rows")
+					end
 				end
 			end
 		end
@@ -1743,6 +2067,8 @@ return function(dependencies)
 	authority.extremal_site_total = extremal_site_total
 	authority.derived_scalars = derived_scalars
 	authority.flag_rules = flag_rules
+	authority.scan4_membership_source = scan4_membership_source
+	authority.read_scan4_membership = read_scan4_membership
 	authority.branch_universe = branch_universe
 	authority.record_rows = record_rows
 	authority.record_row_by_tag = record_row_by_tag

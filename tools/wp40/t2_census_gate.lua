@@ -210,7 +210,7 @@ elseif command == "merge_kat" then
 	-- measured, which is what stops a silent semantic change in the merge from
 	-- passing because both interpreters changed with it.
 	local digest = assert(arg[4], "merge artifacts digest required")
-	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v5.lua"
+	local fixture_path = repo .. "/tools/wp40/fixtures/t2_census/scan_kat_v6.lua"
 	local chunk, diagnostic = loadfile(fixture_path)
 	assert(chunk, "census KAT fixture missing or invalid: " .. tostring(diagnostic))
 	local fixture = chunk()
