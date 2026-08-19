@@ -1322,6 +1322,15 @@ semantics):
 The merge re-verifies Scan-4 coverage against the consumed membership —
 every member seed carries the Scan-4 block, no non-member does — and the
 manifest pins the membership source by digest beside the 9.2 ruling.
+**Amended 2026-08-19 (ruled at the gate-3 review):** the 9.2 top-up
+seeds carry the Scan-4 block by construction while sitting outside the
+consumed membership, so the re-verification's universe is the recomputed
+v3 union — consumed membership plus top-up seeds — and the manifest
+records both terms (run 6: `scan4_coverage members=3076 of
+consumed_union=3061`, 15 top-up seeds, all pure extremal-term winners).
+Item 5 of 9.7 ("Scan-4 coverage equal to the ruled membership") reads
+accordingly; the merge behaved as 9.2 requires and no equality between
+the two terms is asserted.
 
 ### 9.7 Acceptance checklist (gate 3)
 
