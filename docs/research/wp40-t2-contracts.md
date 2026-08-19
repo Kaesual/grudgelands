@@ -1145,8 +1145,8 @@ and 7403557699456021182 via `multi_interval` plus candidate flags, and
 7851242355115945264 via `fills` plus three candidate flags. The `open`
 (sixteen Banks) and `excluded` (Holy band) rows are unchanged.
 
-**ESCALATED, pending the coordinator's ruling — the one undecided
-semantic question of this cut.** All three departed seeds carry the
+**The one undecided semantic question of this cut — escalated
+2026-08-18, ruled 2026-08-19 (below).** All three departed seeds carry the
 detached-shoulder admission (the v2 manifest lists all seven by name;
 histogram `scan3_aperture_detached`, 5 + 2 across two stations) — at
 7 of 4,123 the **rarest occupied configuration over `W`** — yet it
@@ -1166,6 +1166,17 @@ either way, read from the committed v2 artifact by digest (`a7f4ab91…`)
 plus, under branch A, the manifest's admission seeds — but **the fleet
 does not launch before the ruling**, which the announcement pre-flight
 consumes and this section records when it lands.
+
+**RULED 2026-08-19: branch A** (coordinator, user-confirmed).
+`detached_shoulder_admission` enters the flag vocabulary as an
+occupied-rare-class flag; the Scan-4 union returns to **3,061** and the
+flagged term to 3,013. The consumed membership is the committed v2
+seed-set artifact by digest (`a7f4ab91…`) plus the v2 manifest's seven
+admission seeds — re-admitting exactly the three departed D2 seeds; the
+other four are already members on their own flags, so no other term
+moves. The v3 artifacts record the amended flagged term and this ruling
+(section 9.3), and the vocabulary hole closes for good. The 6.6.7 fleet
+gate is no longer blocked on this section.
 
 **The roster top-up protocol.** Scan-3b's sixteen sites produce up to 64
 new extremal bounds whose witnesses may sit outside the consumed
