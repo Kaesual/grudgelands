@@ -1229,7 +1229,18 @@ merge digests move legitimately and are re-pinned.
   Seed 0 and max-u64 pin all-38-`face_simple_select` and the Whole
   summary `g=o=r=m=0`, the H38 feasibility result now pinned per seed;
   W-112 pins its admission row, multi-complete selection and green
-  Scan-4 tiers in one record.
+  Scan-4 tiers in one record. **Amended 2026-08-19, measured:** the
+  W-112 green-tier projection is refuted — seed 343674299183575008
+  realizes `face_non_simple_reject` at both
+  `zone_face:elandor_dawnmere_fields` and
+  `zone_face:elandor_silverleaf_glades`, with the consequent
+  `whole_not_evaluated`/`fragment_not_evaluated` rows,
+  compile-confirmed solo (ba37b96); the KAT pins that measured truth,
+  and the admission-row and multi-complete-selection pins stand. The
+  finding is new F10 occupancy for the ledger under 9.1; whether
+  anything follows from it is the post-run decision memo's question,
+  decided on the fleet's full-membership F10 measurement, never inline
+  (coordinator ruling 2026-08-19).
 - **Synthetic cases only where no measured configuration reaches the
   branch.** R20/R21: descriptor-driven classifier cases — an
   all-tuples-dead-direct-anchor descriptor must classify
