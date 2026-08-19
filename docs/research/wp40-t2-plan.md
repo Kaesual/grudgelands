@@ -181,6 +181,22 @@ vocabulary, which decides the input union 3,058 versus 3,061 — waits on
 the coordinator's ruling (contracts 9.2); the fleet does not launch
 before it.
 
+**Status, 2026-08-20, step 3 measured and closed.** The 9.2 ruling
+landed as branch A (590ce99); the v6 scanners, KATs and gates are
+ba37b96; run 6 measured all 4,123 seeds in 10 h 15 min under the
+CPU-domain gates (68.16 CPU-s/seed against the 115.24 budget, zero
+worker deaths, zero dead-worker `/proc` lines) and the merge ran the
+9.2 top-up protocol (15 seeds) and published the v3 artifacts under
+`artifacts_digest 2433d6f6…` (060614b), LuaJIT/PUC byte-identical, the
+153-site roster closed 153/153. **R20/R21 both measured zero over `W`**
+— the step-3 small-correction trigger did not fire. The measured
+findings — `face_non_simple_reject` on 796 of 3,076 members at ten
+bay-chain faces, `whole_gap_reject` on 370, one
+`fragment_unowned_reject` — are ruled in the contracts **section-10
+post-run decision memo**: the census closes as a measurement and the
+findings open the named bay-transition-simplicity correction package.
+All four winners are clean on every Scan-4 tier.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.

@@ -541,8 +541,23 @@ Full-`W` start 4 then measured all 4,123 seeds in 7 h 50 min and published
 the artifacts; what it found is plan section 6.8, and the committed
 artifacts under `fixtures/t2_census/` are that run's.
 
+The collected-correction round (contracts section 8, gate 2 accepted
+2026-08-18) republished the corrected artifacts as the v5-schema/v2-name
+set. The Scan-3b/4 completion (contracts section 9) then grew the record
+to schema `grug_wp40_census_scan_v6`: the sixteen transition-incident
+Bank traces with the attribution histogram and the R20/R21 event
+classifiers, and the Scan-4 face/Whole/fragment tiers on the ruled
+membership (branch A, 3,061 = the v2 seed set plus the seven admission
+seeds), with the worker KAT grown to seven seeds (the two F10 face
+witnesses joined). Full-`W` run 6 (2026-08-19, 10 h 15 min, zero worker
+deaths) measured all 4,123 seeds; the merge ran the section-9.2 top-up
+protocol (15 extremal-winner seeds) and published the `census-*-v3.tsv`
+artifacts and manifest, which supersede v2 for every downstream
+consumer. What the run found and what follows from it is the contracts
+section-10 decision memo.
+
 ```sh
-tools/wp40/run_t2_census.sh --kat                  # 5 seeds: 0, W-112, Slot 30, Slot 29, max-u64
+tools/wp40/run_t2_census.sh --kat                  # 7 seeds: 0, the two F10 witnesses, W-112, Slot 30, Slot 29, max-u64
 WP40_CENSUS_OUTPUT=/path/out.tsv \
   tools/wp40/run_t2_census.sh --seeds 0 7 4096     # small explicit lists run freely
 WP40_CENSUS_OUTPUT=/path/out.tsv \
@@ -703,7 +718,10 @@ callback), and no per-seed intermediate is retained.
   realized/vacuous and its status: `dominated`, `vacuous_by_construction`,
   `expected_vacuous`, `out_of_scope_scan3b`, `consequent` or `in_scope`, plus
   the `derived` and `unmeasured` line kinds. A permanent zero that is
-  dominated and one that is untested must not read alike.
+  dominated and one that is untested must not read alike. As of the v3
+  artifacts (run 6) `out_of_scope_scan3b` is retired by measurement:
+  Scan-3b ran, and every branch it covered is now declared in scope or
+  measured vacuous.
 - **census-scan4-seed-set-v1.tsv** — the named union: flagged ∪ per-site
   extremal ∪ winners ∪ corpus, with one `extremal` line per (site, scalar,
   bound), one `open` line per Scan-3b Bank **named**, and the Holy band's
