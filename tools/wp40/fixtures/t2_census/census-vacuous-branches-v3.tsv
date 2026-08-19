@@ -1,0 +1,135 @@
+schema	grug_wp40_census_vacuous_branches_v3
+scan_schema	grug_wp40_census_scan_v6
+column	branch	vocabulary	branch	verdict	status	realization	sites	seeds	witness_seed	note
+column	derived	vocabulary	branch	verdict	realization	note
+column	unmeasured	vocabulary	branch	reason
+branch	attachment_class	attachment_equality_select	DECIDED	in_scope	realized	7	4123	0	-
+branch	attachment_class	attachment_adjacent_select	DECIDED	in_scope	realized	1	4123	0	-
+branch	attachment_class	attachment_distance_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	attachment_class	attachment_edge_without_interval	REJECTED	in_scope	vacuous	0	0	-	-
+branch	edge_class	ordinary_interval_select	DECIDED	in_scope	realized	55	4123	0	-
+branch	edge_class	ordinary_interval_zero_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	edge_class	ordinary_interval_multi_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	edge_class	transition_interval_select	DECIDED	in_scope	realized	6	4123	0	-
+branch	edge_class	transition_interval_zero_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	edge_class	transition_interval_multi_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_short_raster	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_not_endpoint	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_left_not_eight_connected	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_right_not_eight_connected	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_shared_station	REJECTED	in_scope	vacuous	0	0	-	-
+branch	junction_pair_class	junction_pair_x_cross	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan2_edge_class	scan2_exactly_one_complete_select	DECIDED	in_scope	realized	6	4123	0	-
+branch	scan2_edge_class	scan2_zero_complete_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan2_edge_class	scan2_multi_complete_select	DECIDED	in_scope	realized	6	720	1013	-
+branch	scan2_edge_class	scan2_duplicate_authority_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan2_edge_class	scan2_selected_below_192_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan2_edge_class	scan2_no_selected_interval	REJECTED	consequent	vacuous	0	0	-	occupied only where the same edge already rejected at F1; the primary finding is that edge row
+branch	scan2_endpoint_class	scan2_counting_evaluated	DECIDED	in_scope	realized	8	4123	0	-
+branch	scan2_endpoint_class	scan2_no_selected_interval	REJECTED	consequent	vacuous	0	0	-	occupied only where the same edge already rejected at F1; the primary finding is that edge row
+branch	scan2_tuple_class	scan2_tuple_complete	DECIDED	in_scope	realized	6	4123	0	-
+branch	scan2_tuple_class	scan2_tuple_empty_combined_clip	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan2_tuple_class	scan2_tuple_clip_not_contiguous	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan2_tuple_class	scan2_tuple_probe_invalid	DECIDED	in_scope	realized	1	2	2033178143952062430	-
+branch	scan2_tuple_class	scan2_tuple_probe_wet	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan2_tuple_class	scan2_tuple_previous_binding_unsatisfiable	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan2_tuple_class	scan2_tuple_bank_incomplete	DECIDED	in_scope	realized	4	1953	1	-
+branch	scan3_aperture_class	aperture_direct_select	DECIDED	in_scope	realized	8	4123	0	-
+branch	scan3_aperture_class	aperture_tail_select	DECIDED	in_scope	realized	6	630	1	-
+branch	scan3_aperture_class	aperture_d_not_dry_equality_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_d_cardinal_water_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_w_not_diagonal_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_w_not_bay_water_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_w_foreign_water_reject	REJECTED	dominated	vacuous	0	0	-	dominated by aperture_w_not_bay_water_reject: w_final_owned_by_bay is tested first and implies not w_foreign_water
+branch	scan3_aperture_class	aperture_w_not_aperture_included_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_shoulder_elbow_count_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_aperture_class	aperture_tail_wrong_water_side_reject	REJECTED	in_scope	vacuous	0	0	-	decided in trace_bank but evaluated in Scan-3a from the resolved D,T,W, so it is measured here rather than deferred
+branch	scan3_aperture_class	aperture_terminal_identity_drift_reject	REJECTED	expected_vacuous	vacuous	0	0	-	reads only seed-independent catalog and aperture source state; the underlying failure stays a loud abort rather than a row
+branch	scan3_bank_class	bank_trace_complete_select	DECIDED	in_scope	realized	4	4123	0	-
+branch	scan3_bank_class	bank_terminal_unresolved_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_start_anchor_invalid_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_target_noncandidate_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_zero_reachable_successor_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_repeated_column_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_x_cross_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_reachability_frame_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_reachability_stack_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_main_trace_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_trace_envelope_empty_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_bank_class	bank_shoulder_water_side_reject	REJECTED	expected_vacuous	vacuous	0	0	-	needs an aperture shoulder, and the four head Banks have none; at the sixteen Scan-3b Banks the shoulder side is evaluated by Scan-3a's aperture_tail_wrong_water_side_reject from the resolved D,T,W, and an instrumented 3b trace that dies is a loud worker abort (contracts 9.1), so this class stays measured elsewhere
+branch	scan3_selection_class	single_admitted_untested	DECIDED	in_scope	realized	20	4123	0	-
+branch	scan3_selection_class	branch_first_reachable	DECIDED	in_scope	realized	16	4123	0	-
+branch	scan3_selection_class	branch_later_reachable	DECIDED	in_scope	realized	15	691	35408571026545897	-
+branch	scan3_selection_class	branch_none_reachable	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan3_selection_class	zero_admitted_successors	DECIDED	in_scope	vacuous	0	0	-	-
+branch	scan3_step_outcome	admitted	DECIDED	in_scope	realized	122	4123	0	-
+branch	scan3_step_outcome	previous	DECIDED	in_scope	realized	121	4123	0	-
+branch	scan3_step_outcome	seen_state	DECIDED	in_scope	realized	4	46	440054141075849587	-
+branch	scan3_step_outcome	seen_column	DECIDED	in_scope	realized	78	4123	0	-
+branch	scan3_step_outcome	x_cross	DECIDED	in_scope	realized	35	4123	0	-
+branch	scan3_step_outcome	noncandidate	DECIDED	in_scope	realized	158	4123	0	-
+branch	scan3_step_outcome	water_side	DECIDED	in_scope	realized	79	4123	0	-
+branch	scan3_width_class	bay_bank_width_positive	DECIDED	in_scope	realized	4	4123	0	-
+branch	scan3_width_class	bay_bank_width_zero_event	EVENT	in_scope	vacuous	0	0	-	-
+branch	scan3_width_class	bay_bank_width_negative_event	EVENT	in_scope	vacuous	0	0	-	-
+branch	scan3_width_class	bay_bank_width_unbounded_event	EVENT	in_scope	vacuous	0	0	-	not a refuted universal but a failed proof: every sampled station stayed positive and the exact per-column bound could not rule out a collapse between them
+branch	scan3_wing_class	wing_wedge_valid_select	DECIDED	in_scope	realized	8	4123	0	-
+branch	scan3_wing_class	wing_missing_k_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_wing_class	wing_k_chebyshev_above_four_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_wing_class	wing_no_complete_tail_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_wing_class	wing_no_wedge_valid_joint_tail_pair_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3_wing_class	wing_path_bound_exceeded_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_trace_complete_select	DECIDED	in_scope	realized	16	4123	0	-
+branch	scan3b_bank_class	bank_terminal_unresolved_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_start_anchor_invalid_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_target_noncandidate_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_zero_reachable_successor_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_repeated_column_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_x_cross_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_reachability_frame_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_reachability_stack_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_main_trace_cap_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_trace_envelope_empty_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan3b_bank_class	bank_shoulder_water_side_reject	REJECTED	expected_vacuous	vacuous	0	0	-	needs an aperture shoulder, and the four head Banks have none; at the sixteen Scan-3b Banks the shoulder side is evaluated by Scan-3a's aperture_tail_wrong_water_side_reject from the resolved D,T,W, and an instrumented 3b trace that dies is a loud worker abort (contracts 9.1), so this class stays measured elsewhere
+branch	scan3b_bank_class	scan3b_bank_not_evaluated	DECIDED	consequent	vacuous	0	0	-	occupied only where the Bank's transition edge selected no complete joint tuple; the primary finding is that edge's own scan2 row, and v5 measured zero such edges over W
+branch	scan3b_event_class	aperture_anchor_dead_event	EVENT	in_scope	vacuous	0	0	-	R20 candidate (contracts 9.1): every tuple of an edge dead with the same aperture-far Bank while that incidence resolved direct; expected occupancy zero -- a projection, marked as one -- and nonzero occupancy is the named small-correction trigger
+branch	scan3b_event_class	wing_pair_dead_alternative_event	EVENT	in_scope	vacuous	0	0	-	R21 candidate (contracts 9.1): a Bank with a Wing far terminal dead at the selected wedge-valid pair while the next wedge-valid pair completes; probed only on the dead condition, expected occupancy zero -- a projection, marked as one
+branch	scan4_face_class	face_simple_select	DECIDED	in_scope	realized	38	3076	0	-
+branch	scan4_face_class	face_not_closed_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_face_class	face_wrong_orientation_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_face_class	face_non_simple_reject	REJECTED	in_scope	realized	10	796	1013	the known F10 occupancy: solo full-path compiles place seed 2147483648 at zone_face:elandor_silverleaf_glades and seed 1959553668008863006 at zone_face:kragmar_stillgrave_hollow; both must land as occupied rows with those witnesses
+branch	scan4_face_class	face_composition_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_face_class	face_upstream_not_evaluated	DECIDED	consequent	vacuous	0	0	-	the face's upstream arc failed to assemble; the arc's verbatim failure travels in the face row's detail and the finding is that failure, not this skip kind
+branch	scan4_fragment_class	fragment_owned_once_select	DECIDED	in_scope	realized	4	1661	1	-
+branch	scan4_fragment_class	fragment_unowned_reject	REJECTED	in_scope	realized	1	1	7334446403956696166	-
+branch	scan4_fragment_class	fragment_multi_owner_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_fragment_class	fragment_identity_conflict_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_fragment_class	fragment_not_evaluated	DECIDED	consequent	realized	4	407	1013	a zone face failed to compose, so the fragment's face ownership could not be measured; the primary finding is the face row
+branch	scan4_whole_class	whole_single_owner_select	DECIDED	in_scope	realized	1	2280	0	-
+branch	scan4_whole_class	whole_declared_seam_select	DECIDED	in_scope	realized	1	2280	0	-
+branch	scan4_whole_class	whole_gap_reject	REJECTED	in_scope	realized	1	370	35408571026545897	-
+branch	scan4_whole_class	whole_undeclared_multiplicity_reject	REJECTED	in_scope	vacuous	0	0	-	-
+branch	scan4_whole_state	whole_evaluated	DECIDED	in_scope	realized	1	2280	0	-
+branch	scan4_whole_state	whole_not_evaluated	DECIDED	consequent	realized	1	796	1013	the Whole tier runs only when every face classifies face_simple_select; this row names the blocking face, whose own reject row is the primary finding -- measured and could-not-be-evaluated stay different claims (the 6.7 lesson)
+branch	stage_reject_class	aperture_canonical_wrap_reject	REJECTED	in_scope	vacuous	0	0	-	the run reaches the canonical array seam; the guard's mouth-relative arms are unreachable -- first and last start at the mouth index and move monotonically
+branch	stage_reject_class	aperture_dry_station_reject	REJECTED	in_scope	vacuous	0	0	-	realizable only by the mouth station itself: the expansion loops admit Bay members only, so no other included station can fail the predicate
+branch	stage_reject_class	aperture_overlap_reject	REJECTED	in_scope	vacuous	0	0	-	fires on the later aperture of the pair in source order; the partner id is in the verbatim detail
+branch	stage_reject_class	aperture_second_run_reject	REJECTED	in_scope	vacuous	0	0	-	the first occupied stage class: full-W start 3 died here deterministically at ~1/285 seeds (least witness 343674299183575008, the fifth KAT seed); the 'wrapping' arm of its message is dominated by aperture_canonical_wrap_reject, which fires first when the run touches the canonical seam
+branch	stage_reject_class	aperture_authored_wrap_reject	REJECTED	in_scope	vacuous	0	0	-	the same F9 wrap in the authored index space, independently reachable -- the authored seam sits elsewhere than the canonical one, and the guard keeps a two-station shoulder margin for the bank_before/after_previous neighborhood
+branch	stage_reject_class	aperture_authored_second_run_reject	REJECTED	in_scope	vacuous	0	0	-	the authored-order counterpart of aperture_second_run_reject; the census follows the procedure's granularity, and the two orders fail independently
+branch	wing_exclusion_cause	shared_predecessor	DECIDED	in_scope	vacuous	0	0	-	-
+branch	wing_exclusion_cause	interior_overlap	DECIDED	in_scope	vacuous	0	0	-	-
+branch	wing_exclusion_cause	intra_tail_x_cross	DECIDED	vacuous_by_construction	vacuous	0	0	-	a distance-layer tail visits exactly one column per Chebyshev level, so two of its diagonal steps can never share a 2x2 cell
+branch	wing_exclusion_cause	inter_tail_x_cross	DECIDED	in_scope	vacuous	0	0	-	-
+branch	wing_exclusion_cause	wedge_nonsimple_or_zero_area	DECIDED	in_scope	vacuous	0	0	-	-
+branch	wing_exclusion_cause	wedge_radius_above_five	DECIDED	dominated	vacuous	0	0	-	dominated by wing_k_chebyshev_above_four_reject: the radius is derived from the same selected K stations the guard rejects, so R = 1 + max Chebyshev(K,J) <= 5 identically
+branch	wing_exclusion_cause	wedge_nonwing_water	DECIDED	in_scope	realized	8	4123	0	-
+derived	edge_class	edge_singleton_interval	DECIDED	realized	analysis 3-F1 'singleton interval' -- it is E for both obligations and does not qualify; the Slot-30 witness [edge.singleton_count > 0]
+derived	scan2_endpoint_class	scan2_incidence_not_eligible	DECIDED	realized	analysis 3-F2 'eligible incidence without adjacent-away station' -- the counting tier encodes it in its loop bounds, so it has no row and is the difference between the selected interval length and the eligible count [scan2_endpoint.finish - first + 1 - eligible_count > 0]
+derived	junction_pair_class	junction_pair_pass	DECIDED	realized	analysis 3-F7 'pair disjoint, or sharing only J' -- only failing pairs emit a junction_pair row, so the passing class is read off the junction row's pass count [junction.pass_count > 0]
+unmeasured	attachment_class	attachment_distance_tie	the attachment row retains the chosen canonical station index but no tie indicator, so whether the canonical-index tie-break ever fired is not decidable from a v3 record
+unmeasured	wing_exclusion_cause	wing_pair_wrong_side	collect_paths emits strict-side stations only, so the table's side clause has no counted cause to be zero in
+unmeasured	junction_pair_class	junction_roster_and_departure_record_rejects	analysis 3-F7's Stage-1 roster and departure-record rows are seed-independent stage validations that abort loudly; no census class covers them by design
+unmeasured	stage_reject_class	aperture_mouth_absent_abort	seed-independent by construction: Bay centrelines are no-jitter displacement sources, so the declared mouth sits on the final perimeter on every seed or the catalog is wrong -- a structural defect that aborts loudly rather than becoming a row; the authored-order lookup is dominated by the canonical one over the same point set
+unmeasured	stage_reject_class	aperture_nonmaximal_run_abort	analysis 3-F9's 'boundary stations passing it' is unreachable by construction -- the expansion loops terminate exactly where the Bay predicate fails -- so the check is defensive and a hit would be an evaluation-determinism fault, not a seed configuration; it aborts loudly rather than becoming a row
+summary	declared=121	realized=37	vacuous=84	derived=3	unmeasured=5
