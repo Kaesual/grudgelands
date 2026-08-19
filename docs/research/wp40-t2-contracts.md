@@ -1365,6 +1365,15 @@ Gate 3 is the coordinator's acceptance of, in one list:
    measurement, plan section 2 step-3 status advanced, the README census
    section carrying the v6 mechanics.
 
+**Gate 3 accepted 2026-08-20** (coordinator review, user-signed): all
+eight items verified. Evidence trail: ba37b96 (implementation and
+suites), 4d21477 (probe and conf), `run6.log` (fleet and the hygiene
+pair at scale), 060614b (v3 publication, `artifacts_digest 2433d6f6…`),
+590ce99 and 7e0c05e (the 9.2 and 9.6 rulings), c9b6f79 (the section-10
+memo), 6670e66 (the item-8 docs). The Scan-3b/4 census completion is
+closed; what follows from its findings is section 10's
+bay-transition-simplicity package.
+
 ### 9.8 Division of labour
 
 The semantic core stays in-session (Fable): this contract, the Scan-3b
