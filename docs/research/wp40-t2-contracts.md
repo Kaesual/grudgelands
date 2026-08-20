@@ -1584,3 +1584,14 @@ clean in both families.
    re-run plus the winner invariance is this fix's acceptance evidence.
 6. Findings discipline unchanged: anything the fix surfaces beyond the
    two families is a finding for a new memo, never an inline decision.
+
+**RULED 2026-08-20** (coordinator, user-confirmed): **branch 1c**
+(join deduplication with the loud-guard clause) and **branch 2c**
+(connectivity closing at raw-mask build), plus the production Whole
+gate of 11.3, in one fix package under the 11.4 acceptance plan. The
+published v3 census artifacts stay untouched as run 6's historical
+record — the KAT fixture is the only pinned-truth file that moves, as
+a recorded correction; the new measured truth over `W` lands at
+T2-final's re-census. Implementation: heavy regime, semantic core in a
+Fable session; the witness re-run of 11.4 item 3 follows as its own
+task.
