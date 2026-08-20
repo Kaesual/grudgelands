@@ -4,8 +4,10 @@
 --
 -- Per seed it runs partition.census_scan with the Scan-4 tiers, then
 -- recomposes every face the scan classified face_non_simple_reject *outside*
--- the production path: shared edges from the selected joint tuple's retained
--- probe bytes, Banks from the retained Scan-3a/3b traces, perimeter spans
+-- the production path: transition shared edges from the selected joint
+-- tuple's retained probe bytes, ordinary shared edges re-cut from an
+-- independent boundary.materialize at the Scan-1 row's retained interval
+-- bounds, Banks from the retained Scan-3a/3b traces, perimeter spans
 -- from an independent boundary.materialize of the same seed, trimmed at the
 -- adjacent Bank trace endpoints exactly where census_scan4's component_span
 -- trims at the resolved terminals (the two agree whenever the scan's own
@@ -83,6 +85,15 @@ end
 
 local function key(point)
 	return point.x .. ":" .. point.z
+end
+
+-- append_dedup of partition.lua:202, the semantics compile_impl's and
+-- census_scan4's final-edge assembly share: a consecutive duplicate never
+-- enters a station run.
+local function append_dedup(points, point)
+	if #points == 0 or key(points[#points]) ~= key(point) then
+		points[#points + 1] = {x = point.x, z = point.z}
+	end
 end
 
 local function points_with_label(points, label)
@@ -266,19 +277,62 @@ local function compose_arc(arc, result, materialized)
 	return merged
 end
 
+-- A face cycle's shared edge, projected from census_scan4's own final-edge
+-- materialization (partition.lua:6231-6310).  A transition edge is the
+-- selected joint tuple's retained probe bytes -- the only bytes that
+-- materialize, source authority section 4.  An ordinary edge retains its
+-- single maximal dry interval, which the Scan-1 row pins by station index
+-- (class ordinary_interval_select, selected_first/selected_finish) and this
+-- probe re-cuts from an independent boundary.materialize of the same seed,
+-- the same independent-materialization route the perimeter spans take; the
+-- station count of that independent edge is cross-checked against the scan
+-- row before the cut, so a materialization that drifted aborts instead of
+-- recomposing a different edge.  An attachment edge without a transition
+-- would need production's A re-raster and is refused, not approximated.
+local function final_edge_part(edge_id, result, materialized)
+	local selected = result.scan2_selected[edge_id]
+	if selected and selected.probe then
+		return points_with_label(selected.probe, "edge:" .. edge_id)
+	end
+	local row
+	for index = 1, #result.edges do
+		if result.edges[index].id == edge_id then row = result.edges[index] end
+	end
+	if not row then
+		error(edge_id .. " has no Scan-1 edge row", 0)
+	end
+	if row.kind ~= "ordinary" then
+		error(edge_id .. " is kind " .. tostring(row.kind) ..
+			" with no retained probe bytes (outside this probe)", 0)
+	end
+	if row.class ~= "ordinary_interval_select" or not row.selected_first or
+			not row.selected_finish then
+		error(edge_id .. " retained no ordinary interval (class " ..
+			tostring(row.class) .. ")", 0)
+	end
+	local edge = materialized.edge_by_id[edge_id]
+	if not edge then
+		error(edge_id .. " is not a materialized provisional edge", 0)
+	end
+	if row.station_count ~= #edge.stations then
+		error(edge_id .. " independent materialization has " ..
+			#edge.stations .. " stations, the scan row has " ..
+			tostring(row.station_count), 0)
+	end
+	local stations = {}
+	for station_index = row.selected_first, row.selected_finish do
+		append_dedup(stations, edge.stations[station_index])
+	end
+	return points_with_label(stations, "ordinary_edge:" .. edge_id)
+end
+
 local function compose_face(face, result, materialized)
 	local ring = {points = {}, labels = {}}
 	for cycle_index = 1, #face.cycle do
 		local component = face.cycle[cycle_index]
 		local part
 		if component.kind == "shared_edge" then
-			local selected = result.scan2_selected[component.ref_id]
-			if not (selected and selected.probe) then
-				error(component.ref_id .. " has no retained probe bytes " ..
-					"(ordinary edges are outside this probe)", 0)
-			end
-			part = points_with_label(selected.probe,
-				"edge:" .. component.ref_id)
+			part = final_edge_part(component.ref_id, result, materialized)
 		else
 			local arc = arc_source_by_id[component.ref_id]
 			if not arc then
