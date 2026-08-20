@@ -1611,5 +1611,9 @@ the admitted station) **off** the ring in every collapse, contradicting
 candidate unowned columns the new Whole gate would abort on. The 1c
 half of the ruling is suspended; a re-design memo (11.5) decides the
 corridor question. **The 2c half and the production Whole gate are
-untouched by this refutation** — whether they proceed decoupled is
-part of the 11.5 cut.
+untouched by this refutation** — and **ruled 2026-08-20
+(user-confirmed): they proceed decoupled** as their own package (the
+gap family only: closing, gate, the gap-side KAT re-pins, the
+371-witness re-run and the winner-invariance check against the banked
+digests), accepting two re-pin rounds as the price of pace. The
+corridor family waits on 11.5.
