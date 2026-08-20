@@ -1824,3 +1824,54 @@ The prior 2c and corridor briefs are superseded by the unified package
 brief; the 11.5-C ruling stands unchanged inside the package; the
 banked closing patch and the banked winner digests carry forward. The
 implementation is the one remaining step before the §11 acceptance.
+
+### 11.8 The three residual families (recorded 2026-08-20; memo pending measurement)
+
+**The unified package stopped a third time, honoured** (the stop
+report and the full `package.patch` — applying cleanly on 2b165d4 —
+are under `tools/wp40/results/bay-transition-package-stop-artifacts/`).
+The union acceptance did its designed job: it measured the 796 face
+witnesses' raw masks and Whole tiers **for the first time** (pre-fix
+their Whole was `whole_not_evaluated`) and found three disjoint
+residual families, 108 seeds, every one reported by a named guard,
+none absorbed:
+
+- **Family A, 24 seeds:** the closing's own loud guard — "closing
+  pocket holds a footprint boundary column" — dry coast-ring fragments
+  pinched off by one Bay's raw water at transition neighbourhoods;
+  eight fixed single-column witnesses on four authored rows.
+- **Family B, 60 seeds:** the 11.5-C guard conditions, biting as
+  designed on a population its sample bounds under-measured: 41
+  non-join-local zero-width single-station touches at measured join
+  distance 11 > W=8 (all silverleaf), and 19 interior-hugging
+  one-station dips to the join terminal (a vertex self-touch with a
+  strictly interior cardinal neighbour — not a filament; these are
+  the 11.5 investigation's own anchored single-touch joins). Firing
+  sets fully measured in the sweep records.
+- **Family C, 24 seeds:** `whole_undeclared_multiplicity_reject` with
+  r=1 — exactly one dry column inside two accepted faces' winding
+  regions, kragmar seam regions z≈2232–2244. The neighbouring-face
+  coverage question 11.5 flagged statically unanswerable is now
+  measured occupied.
+
+**Measured green at the same patch:** the gap family is dead 370/370
+(259 closing / 111 adoption, per-seed parity with the 11.7 anatomy,
+all six split chains exact, `residual_multi_face_reject` vacuous);
+688/796 face seeds fully green with 719 carrying
+`face_appendix_select`; winner invariance 4/4 byte-identical; every
+pinned-truth tier green with the full moved-pin table banked. One
+operationalization awaits ratification: "zero-width appendix"
+implemented as *no cardinal 4-neighbour strictly interior by winding*
+(the investigation's lateral-pair phrasing wrongly rejected W-112's
+measured L-turn corridor mouth; the corrected predicate accepts the
+measured family and the 19 dips prove the interior guard still bites;
+provenance beside the W pin in the patch).
+
+Per the 11.6 discipline the re-design memo (11.9) is cut only on
+fully measured firing sets: family B's are complete; **families A and
+C get a micro-measurement first** (A: each pinched fragment's full
+8-neighbourhood — diagonal coast-ring continuity and the adjacent
+face; C: the two claiming faces per column and the distance to the
+nearest declared-seam declaration). The production Whole gate stays
+not-live; the banked winner digests remain the baseline; the full-`W`
+re-census stays at T2-final.
