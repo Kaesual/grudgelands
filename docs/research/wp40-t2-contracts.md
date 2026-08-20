@@ -1595,3 +1595,21 @@ a recorded correction; the new measured truth over `W` lands at
 T2-final's re-census. Implementation: heavy regime, semantic core in a
 Fable session; the witness re-run of 11.4 item 3 follows as its own
 task.
+
+**Branch 1c REFUTED BY MEASUREMENT 2026-08-20 — implementation STOP,
+honoured** (the stop report is
+`tools/wp40/results/bay-transition-fix-stop-report.md`; no commit was
+made, the pre-fix winner digests are banked there). Measured over the
+95 preserved violations: only 43 are anchored exact reverse-retraces
+at a join; **52 are offset, wiggle-interleaved or single-station
+touches** — including both F10 witnesses, whose pins the acceptance
+requires to turn green — so 1c as worded cannot meet 11.4.
+Independently, the collapse semantics is underdetermined: unique-
+station eight-connectivity forces the join terminal (and, at Shape A,
+the admitted station) **off** the ring in every collapse, contradicting
+11.2's "corridor stations stay on the face boundary" and creating
+candidate unowned columns the new Whole gate would abort on. The 1c
+half of the ruling is suspended; a re-design memo (11.5) decides the
+corridor question. **The 2c half and the production Whole gate are
+untouched by this refutation** — whether they proceed decoupled is
+part of the 11.5 cut.
