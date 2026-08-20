@@ -1746,3 +1746,74 @@ the committed step-3 probe measures this on the current tree, since
 the closing does not alter these pockets). The measured-first
 discipline is now explicit: after two refuted rulings, no rule in this
 package is ruled again ahead of a measurement of its own firing set.
+
+### 11.7 The residue-adoption memo (cut 2026-08-20, on the measured anatomy)
+
+Evidence base: the attachment-anatomy sweep of 2026-08-20
+(`tools/wp40/results/bay-transition-anatomy-report.md`, artifacts
+beside it; probe unmodified at 36c9536; parity 111/111, reconciliation
+against the stop report exact — 176 intervals / 242 columns seed by
+seed, and the attachment predicate validated out of sample on the 8
+step-3 non-survivors). **The firing set of the rule proposed here is
+fully measured before the ruling — the 11.6 discipline is satisfied.**
+
+**The measured anatomy, compressed.** 112 surviving pockets on 111
+seeds. **Every pocket touches exactly one face cardinally (112/112);
+zero multi-face, zero diagonal-only.** Every pocket hangs on exactly
+one attachment throat exactly one column wide; 109 of 112 throats are
+a single mid-trace Bank boundary station (the 3 vertical-throat seam
+cases at z=2219:x=868 are unmeasured for provenance — irrelevant to
+the rule below, which consumes only the touched-face count). 90 of 112
+sit on the two authored head-flank columns of bay_elandor_west; 47
+share one byte-identical anatomy (`goldmead#486`). Sizes: 101 of 112
+pockets are 1 or 3 columns; maximum 14. New finding: the closing
+splits six 8-connected diagonal chains — the attached 4-connected
+piece survives, the diagonal piece fills; all three seam-adjacent
+pockets are of this kind.
+
+**Branches.**
+
+- **11.7-A — extend the closing to wet shore-attached pockets.**
+  Rejected: a mainland-connected dry column is land by the recorded
+  design intent, and wetting a column that cardinally touches a Bank
+  station changes the water the Moore trace bounds — an unmeasured
+  cascade into every Bank KAT for a rule that fights the geometry
+  instead of naming it.
+- **11.7-B — residue adoption at the ownership layer (RECOMMENDED).**
+  After face composition, before the footprint proof (census and
+  production Whole gate identically): every unowned dry footprint
+  column joins its 4-connected unowned-dry chain; a chain that
+  cardinally touches **exactly one** composed face is **adopted** into
+  that face's region (region membership only — no ring, no mask, no
+  trace, no Bank is touched); a chain touching **two or more** faces
+  classifies as the new loud class **`residual_multi_face_reject`**
+  (measured zero over the family; expected vacuous, occupancy
+  measured, never absorbed); a chain touching zero faces cardinally is
+  exactly what the banked closing waters — the two rules partition the
+  measured family by construction (attached → adopted, unattached →
+  water), and the six split chains resolve deterministically (diagonal
+  piece watered, attached piece adopted; the measured list is the
+  regression set). Winners carry no pockets: both rules are no-ops
+  there and the banked digests remain the STOP baseline.
+- **11.7-C — authored-margin correction at the two head columns.**
+  Kills 90 of 112 but not the family; available later as an authored
+  cleanup, rejected as the rule.
+
+**Packaging.** One coordinated implementation package: the banked 2c
+closing patch (verified green on every pinned-truth tier) + the 11.7-B
+adoption + the production Whole gate + the ruled 11.5-C appendix
+acceptance — one atomic commit, one acceptance measurement. Grounds:
+adoption and 11.5-C are the same region-semantics change in the same
+code region (the Whole preparation and ownership layer); the corridor
+package's ruled base (a standalone 2c commit) no longer exists; and a
+third re-pin round is avoided. Acceptance: the union of the two ruled
+plans — static gates; census gate suite; KAT suite with every moved
+pin named (the F10 pins → `face_appendix_select`); the negative guard
+tests of 11.5-C **plus** a synthetic multi-face chain failing
+`residual_multi_face_reject` by name; PUC pair re-pinned
+digest-identical; winner invariance byte-level against the banked
+digests (STOP); the 370-witness re-run with zero gap/fragment rejects
+(259 by closing, 111 by adoption, the six split chains individually
+verified) and the 796-witness re-run with zero face rejects and green
+Whole tiers; oracle suite green. The full-`W` re-census stays at
+T2-final.
