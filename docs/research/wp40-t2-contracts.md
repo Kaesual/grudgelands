@@ -1714,3 +1714,35 @@ the decoupled 2c gap-family package, on its commit as base; its
 796-witness re-run is the acceptance measurement, and the
 winner-invariance STOP condition carries over unchanged (the banked
 digests remain the baseline — 2c is a measured no-op on the winners).
+
+### 11.6 The 2c refutation, and the residue question (recorded 2026-08-20)
+
+**Branch 2c as ruled is refuted by its own acceptance measurement —
+implementation STOP, honoured** (the second of the package; the stop
+report and the full banked patch are under
+`tools/wp40/results/bay-transition-2c-stop-artifacts/`; tree clean at
+002e605, no commit, no pin moved anywhere — the winner invariance held
+4/4 byte-identical, the KAT and merge digests are unchanged, and the
+production Whole gate's bite was demonstrated against the published
+census row before the refutation). Measured: the closing kills the 259
+enclosed pockets, the artifact witness and the fragment singleton
+(which then passes a production compile) — but **111 of 370 witness
+seeds keep `whole_gap_reject` (176 intervals / 242 columns), because
+their pockets are shore-attached**: cardinally dry-adjacent to a Bank
+station column, hence dry-4-connected to the mainland, so the ruled
+criterion correctly does not fire. Step-3's shape taxonomy
+under-described the family — its own nine measured abuts-a-Bank-station
+cases are cardinal attachments. 90 of the 111 sit on the two authored
+head-flank margins of bay_elandor_west. Consequences: the production
+Whole gate is **not yet live**; the 11.5-C corridor package's ruled
+base (the 2c commit) does not exist — its sequencing is suspended
+pending the re-ruling; the banked winner digests remain the baseline.
+The residue question — who owns a dry margin pocket that is
+mainland-connected through the Bank's own station column but excluded
+by the Bank-bounded face — goes to a re-design memo (11.7) that is cut
+**only after** the survivors' attachment anatomy is measured (which
+faces each surviving pocket touches, how many, cardinal or diagonal —
+the committed step-3 probe measures this on the current tree, since
+the closing does not alter these pockets). The measured-first
+discipline is now explicit: after two refuted rulings, no rule in this
+package is ruled again ahead of a measurement of its own firing set.
