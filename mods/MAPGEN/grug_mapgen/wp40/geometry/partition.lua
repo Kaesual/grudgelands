@@ -6204,7 +6204,7 @@ local function new_partition(dependencies)
 	-- is given can reach a row, an artifact or a digest.
 	local function tier_noop() end
 
-	local function census_scan4(stage, result, tracer, tier_mark)
+	local function census_scan4(stage, result, tracer, tier_mark, whole_observer)
 		local face_rows_out, whole_rows, interval_rows, fragment_rows =
 			{}, {}, {}, {}
 		result.scan4_faces = face_rows_out
@@ -6765,6 +6765,29 @@ local function new_partition(dependencies)
 					interval_count = entry.intervals,
 					column_count = entry.columns, witness = entry.witness}
 			end
+			-- The Whole-tier observation seam (the tier_mark precedent and
+			-- the same telemetry-only contract, contracts 10.3 step 3):
+			-- called once per evaluated Whole tier, after every row above is
+			-- written, with the tier's own prepared tables and the
+			-- composition context that produced them.  Every production
+			-- caller leaves it nil and this branch never runs -- the
+			-- unchanged worker-KAT digest is the proof -- and the return
+			-- value is ignored.  Observers are read-only consumers by
+			-- contract (diagnosis probes under tools/).
+			if whole_observer then
+				whole_observer({
+					footprint_rows = footprint_rows,
+					face_rows = face_rows,
+					water_rows = water_rows,
+					declared = declared,
+					boundary_columns = boundary_columns,
+					composed_faces = composed_faces,
+					face_indexes = face_indexes,
+					final_edges = final_edges,
+					span_by_id = span_by_id,
+					bank_points = bank_points,
+					totals = totals})
+			end
 		end
 		tier_mark("scan4_whole")
 
@@ -6968,7 +6991,8 @@ local function new_partition(dependencies)
 		census_scan3b(stage, result, tracer, land_transitions)
 		tier_mark("scan3b")
 		if options.scan4 then
-			census_scan4(stage, result, tracer, tier_mark)
+			census_scan4(stage, result, tracer, tier_mark,
+				options.scan4_whole_observer)
 		end
 		return result
 	end
