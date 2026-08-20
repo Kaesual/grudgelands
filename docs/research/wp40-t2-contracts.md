@@ -1617,3 +1617,88 @@ gap family only: closing, gate, the gap-side KAT re-pins, the
 371-witness re-run and the winner-invariance check against the banked
 digests), accepting two re-pin rounds as the price of pace. The
 corridor family waits on 11.5.
+
+### 11.5 The corridor re-design memo (cut 2026-08-20)
+
+Evidence base: the read-only investigation of 2026-08-20
+(`tools/wp40/results/bay-transition-11-5-investigation.md` — the
+consumer map, the validator semantics, and the candidate measurements
+over the 95 preserved violations; its dump union reproduces the
+published counts exactly). The ruling lands at the end of this section
+when it lands.
+
+**The decisive measurements.**
+
+1. Outside `validate_face_polygon` itself and the payload no live
+   consumer reads (the engine entry is unwired), **every downstream
+   consumer needs only the enclosed column region** — the Whole
+   classifier core, both fragment seams and the seam table already
+   consume regions or part lists, never the ring; the authored oracle
+   policy is itself column-phrased.
+2. **Every measured violation is join-local (≤ 6 stations, W=8
+   provable) and every probed corridor is a zero-width appendix** — a
+   1-column filament of the face region that a unique-station
+   eight-connected ring cannot carry, which is the whole defect.
+3. **Any collapse orphans columns as its steady state**: even the
+   strongest complete collapse rule (valid 74/74 with unique minimal
+   repair) drops all 74 join terminals plus 254 dry columns strictly
+   outside every collapsed face; 71 of 91 dropped clusters stay dry
+   under the 2c closing — Candidate A manufactures the gap-family
+   defect the same package's Whole gate enforces against, and its
+   complete form needs an ownership companion that is Candidate B in
+   disguise. Collapse-variant choice is additionally underdetermined
+   on 36 of 74 joins (different valid collapses drop different
+   columns). Trim-at-input (1b) inherits the same case analysis with
+   less information; per-station dedup keeping J is valid nowhere
+   (0/73).
+
+**Branches.**
+
+- **11.5-A — complete collapse hybrid (V1 + copy-retention).** Kills
+  all 95, join-local, unique repair — and orphans every join terminal
+  by construction. Requires an ownership companion for the dropped
+  columns; refuted as a standalone by measurement 3.
+- **11.5-B — region as the canonical form everywhere.** Row-runs
+  become the face's representation, the ring demoted everywhere.
+  Correct by measurement 1, but the widest blast radius (payload
+  schema bump, byte-pinned fixture, every path consumer) for no
+  additional correctness over 11.5-C on the measured family.
+- **11.5-C — window-guarded appendix acceptance (RECOMMENDED).** The
+  composition and the stitched ring stay byte-identical. The validator
+  becomes two-tier: the existing linear simplicity proof is the
+  **fast path** — clean geometry, including all four winners, is
+  untouched byte-for-byte; on repeated stations the ring is accepted
+  **only** if every repeat is a zero-width, join-local (W=8) appendix
+  — each condition checked and failed **by name** (the loud guard: a
+  non-join-local or non-zero-width repeat, or any opposing diagonal,
+  still aborts — nothing outside the measured family is absorbed).
+  The face's region truth is then derived by winding (the primitives
+  require closure, not simplicity; measured well-defined on all 73
+  raw rings, retaining all 343 corridor columns — **no orphan
+  columns, no ownership companion, the footprint proof stays
+  satisfiable**). The Whole-tier preparation gains the repeat-tolerant
+  winding row derivation (classifier core untouched); the fragment
+  seams are unchanged; the oracle gains the same two-tier acceptance
+  and winding normalization; `exact.lua` is not edited.
+  Vocabulary: an accepted-with-appendix face classifies as a **new
+  DECIDED select class `face_appendix_select`** carrying the appendix
+  station count — measured different things stay different claims —
+  and 11.4 item 2 is amended accordingly (the F10 pins move to
+  `face_appendix_select`, not `face_simple_select`). W=8 and the
+  zero-width condition are pinned in the authority with their
+  measurement provenance. Known honest costs: two validation regimes
+  to keep honest; the oracle rewrite; the docs statements "the face
+  polygon is simple" amended under the recorded-correction
+  discipline.
+
+**Acceptance plan for the corridor package (supersedes the face half
+of 11.4):** static gates; census gate suite; KAT suite with the
+re-pins named old → new (F10 pins → `face_appendix_select` with
+appendix counts); PUC full-path witnesses re-pinned digest-identical;
+**negative tests for the guard** (a synthetic non-join-local repeat, a
+non-zero-width repeat and an opposing diagonal each fail by their own
+name); winner invariance byte-level against the banked digests (STOP
+condition — winners ride the fast path); the 796-witness re-run with
+zero face rejects, zero `whole_gap_reject` from appendix columns and
+zero new classes; oracle suite green. The full-`W` re-census stays at
+T2-final.
