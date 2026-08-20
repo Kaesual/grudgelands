@@ -1461,3 +1461,126 @@ v3 artifact set of run 6 (`artifacts_digest 2433d6f6…`, 060614b).
 4. The analysis-era step/frame prose band (453–794 steps, ≤ 24 frames)
    is retired in favour of the published per-site pins (steps 443…931,
    frames 0…927; no cap class fired).
+
+## 11. The bay-transition fix design memo (step 4, cut 2026-08-20)
+
+The 10.3 diagnosis plan is complete — steps 0–3 plus the 2b coverage
+closure, five reports on disk
+(`tools/wp40/results/bay-transition-step{1,2,2b,3}-report.md`, probe
+commits 64eb3ec/36c9536/1ad5868). This memo is the step-4 design
+decision in the section-7 style: the measured ground, the branches,
+one recommendation per question, and the acceptance plan. The ruling
+lands at the end of this section when it lands. The recorded design
+intent it serves (10.3 item 2): the boundary machinery guarantees a
+valid world for every seed of `W` — long-term, for arbitrary seeds.
+
+### 11.1 The measured ground, compressed
+
+Two defect families, both living **between** locally-correct
+authorities at jittered margins; no third mechanism appeared in 95
+recomposed violations (faces) and 34 attributed intervals (gaps):
+
+- **Corridor doubling** (face_non_simple_reject, 796 seeds, 10 faces):
+  a Bank trace and its ring neighbour retrace the same stations in
+  opposite directions at the **bay-transition terminal** — Bank ×
+  retained transition edge (84 measured) or Bank × perimeter span at a
+  direct aperture (11 measured), in either ring orientation, interior
+  and wrap-around joins alike. Never at an ordinary junction terminal
+  (49 of 49 Bank↔ordinary joins clean), never involving an ordinary
+  edge, arc or island, never an X-cross. Each colliding part obeys its
+  own authority; no rule assigns the shared corridor.
+- **Margin pockets** (whole_gap_reject 370 seeds, fragment_unowned 1):
+  1–15-column raw-dry pockets at the capsule/jitter knife-edge,
+  seaward of the Bank, owned by **nobody** (0 of 55 probed columns
+  carry any contributor station). Water says raw-dry correctly, the
+  §7.1 notch fill cannot reach them by construction, the Bank cannot
+  (simple dry path), the face is Bank-bounded. The authored geometry
+  fixes which columns are marginal; the seed only decides dryness. The
+  fragment singleton is the same mechanism on a fragment station and
+  is the one family member production refuses today.
+
+Production today: non-simple faces and the fragment singleton abort a
+compile; the 370 pure gap seeds **compile to completion** (no footprint
+coverage check in compile_impl — the step-0 hole). All four winners are
+clean in both families.
+
+### 11.2 Question 1 — who owns the doubled corridor (faces)
+
+- **Branch 1a — restrict the trace.** Forbid the Moore candidate rule
+  from span/edge-owned stations near terminals. Rejected on the
+  measured evidence: at a detached-shoulder admission the corridor is
+  the **only** dry approach (that is what 7/7 = 100% measured), so the
+  restriction converts composable geometry into trace failures — it
+  widens the invalid-seed set the intent says must shrink. Blast
+  radius: every Bank trace over `W`, all trace KATs, the census's
+  measured extremal roster.
+- **Branch 1b — trim the neighbour.** Trim the retained edge / span at
+  composition input to where the Bank leaves the corridor. Sound
+  outcome, but the trim rule needs per-orientation, per-join-kind
+  cases (2b measured both orientations and the wrap-around join), and
+  it edits the *inputs* of composition while leaving the actual
+  invariant ("the ring passes once") implicit.
+- **Branch 1c — deduplicate at the join (RECOMMENDED).** One narrow
+  composition rule at every part join, interior and wrap-around: when
+  the tail of one part and the head of the next retrace the **identical
+  station sequence in reverse**, collapse the retraced sub-path to a
+  single traversal. The ring then walks the corridor once; the corridor
+  stations stay on the face boundary; trace, edge and span authorities
+  keep their measured geometry untouched. **Guard, non-negotiable:** the
+  rule fires only on exact reverse-retrace at a join; any repeated
+  station that survives it still fails `validate_face_polygon` loudly —
+  the fix must not become a blanket simplifier that hides future
+  defects. Rationale: it is the smallest rule that states the broken
+  invariant where it lives (between parts, at the join), it covers both
+  measured pairings and both orientations by construction, and the
+  R19-selection alternative is rejected as a fix (per-case luck; does
+  not cover Shape A; changes selection semantics measured over `W`).
+
+### 11.3 Question 2 — who owns the margin pockets (gaps + fragment)
+
+- **Branch 2a — extend faces to the water contour.** Faces stop being
+  Bank-bounded; the largest authority change, touches every face and
+  the Bank's meaning. Rejected as disproportionate.
+- **Branch 2b — strengthen the notch fill.** Generalize §7.1 until it
+  reaches interior holes and multi-column pockets; grows a special-case
+  rule into a shape grammar, still per-shape, still falsifiable by the
+  next pocket shape. Not recommended.
+- **Branch 2c — connectivity closing in the mask (RECOMMENDED).** One
+  constructive rule at raw-mask build: a raw-dry column that is not
+  dry-4-connected to the Bank-side mainland becomes planned water.
+  Isolated holes and diagonal chains close identically; the fragment
+  singleton is fixed by the same stroke (its column becomes water, the
+  fragment ends on the shore as designed); the §7.1 notch rule is
+  subsumed or stays as a fast path. This states the actual intent —
+  bay water is the connected wet region, dry noise at its margin is
+  water — instead of enumerating pocket shapes.
+- **Plus, regardless of branch: the production Whole gate.** compile_impl
+  gains the footprint-coverage check the census already performs
+  (step-0 hole closed) — defense in depth so any *future* between-
+  authority residue aborts loudly instead of shipping unowned columns.
+
+### 11.4 Acceptance plan (the measurement the fix must survive)
+
+1. Heavy regime, Fable, in-session semantic core; the six locked files
+   stay untouchable (the mask build and composition live in
+   partition.lua, which is not locked; exact.lua's stadium test is not
+   edited).
+2. KAT re-pins are expected and legitimate **as a recorded
+   correction**: the F10 witnesses become `face_simple_select`, the
+   gap/fragment pins move — each move named in the commit, the
+   W-112-precedent discipline (a quietly-changed pin is a defect).
+3. Targeted witness re-run as the acceptance measurement: the 1,166
+   witness seeds (796 ∪ 370 ∪ 1, the published lists) solo-compiled at
+   the fix — projected ≈ 2.5–3 h wall at eight workers on the measured
+   60–70 CPU-s/seed band, marked as a projection. Expected: zero
+   `face_non_simple_reject`, zero `whole_gap_reject`, zero
+   `fragment_unowned_reject`, zero new reject classes.
+4. **Winner invariance, byte-level:** all four winners were clean in
+   both families, both rules are no-ops on clean geometry, so their v6
+   worker records must reproduce **digest-identical** at the fix. A
+   moved winner digest is a stop, not a re-pin.
+5. The full-`W` re-census (schema v7 / artifacts v4) is **deferred to
+   T2-final** and rides its comprehensive PUC round; the targeted
+   re-run plus the winner invariance is this fix's acceptance evidence.
+6. Findings discipline unchanged: anything the fix surfaces beyond the
+   two families is a finding for a new memo, never an inline decision.
