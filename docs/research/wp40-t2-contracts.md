@@ -1817,3 +1817,10 @@ digests (STOP); the 370-witness re-run with zero gap/fragment rejects
 verified) and the 796-witness re-run with zero face rejects and green
 Whole tiers; oracle suite green. The full-`W` re-census stays at
 T2-final.
+
+**RULED 2026-08-20** (coordinator, user-confirmed): **branch 11.7-B,
+residue adoption, and the one-package packaging** — exactly as cut.
+The prior 2c and corridor briefs are superseded by the unified package
+brief; the 11.5-C ruling stands unchanged inside the package; the
+banked closing patch and the banked winner digests carry forward. The
+implementation is the one remaining step before the §11 acceptance.
