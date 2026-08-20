@@ -1944,3 +1944,9 @@ failing by name, a synthetic ring-chain-unowned case failing as a gap,
 and a synthetic two-interior-claimants case staying the multiplicity
 reject). The 108 family seeds are individually verified in the
 acceptance sweep. The full-`W` re-census stays at T2-final.
+
+**RULED 2026-08-20** (coordinator, user-confirmed): **all four points
+as cut** — the ratified zero-width predicate, W := 11 with the
+non-crossing touch generalization, the ring-connectivity authority
+with ring adoption, and seam inheritance. The fourth implementation
+attempt proceeds from the banked patch under the amended brief.
