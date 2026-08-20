@@ -1875,3 +1875,72 @@ face; C: the two claiming faces per column and the distance to the
 nearest declared-seam declaration). The production Whole gate stays
 not-live; the banked winner digests remain the baseline; the full-`W`
 re-census stays at T2-final.
+
+### 11.9 The three-family completion memo (cut 2026-08-20, all firing sets measured)
+
+Evidence: the sweep records of the package stop (family B, complete
+over the 796) and the A/C micro-anatomy
+(`tools/wp40/results/bay-transition-ac-anatomy-report.md` — worktree
+measurement on the applied patch; parity proofs green). The ruling
+lands at the end of this section when it lands.
+
+**Ratification.** The package's operationalization of "zero-width
+appendix" — *no cardinal 4-neighbour strictly interior by winding* —
+is put up for ratification: the investigation's lateral-pair phrasing
+wrongly rejected W-112's measured L-turn corridor mouth; the corrected
+predicate accepts the measured family and the 19 interior dips prove
+the guard still bites. Provenance is pinned beside W in the patch.
+
+**Family B — measured completion of 11.5-C.** (i) **W := 11**, the
+measured population maximum over all 796 (was 8, from the 8.5% dump
+sample); no margin — anything farther stays a named loud failure.
+(ii) The 19 interior-hugging dips are the 11.5 investigation's own
+anchored single-touch joins — measured family members. The acceptance
+predicate generalizes from "zero-width filament" to **join-local,
+locally non-crossing self-touch**: at a repeated station the two
+passes must not interleave in the cyclic order of the four incident
+ring edges (integer-only, decidable); filament and pinch are both
+touch forms and classify under `face_appendix_select` with the
+appendix/pinch counts recorded; a crossing, an opposing diagonal or a
+non-join-local repeat still fails by name.
+
+**Family A — the ring is the connectivity authority.** Measured 8/8:
+every pinched fragment is a single coast-ring station, cardinally
+surrounded by bay water and off-footprint ocean, and **ring-continuous
+with the mainland through exactly one diagonal step** — the coast ring
+is built with eight-connected steps, while the closing flood walks
+4-connected row runs; the "pinch" is an artefact of the flood's
+criterion, not of the geometry. Rule: **a footprint-ring station is
+mainland by definition — never a closing candidate** (the loud guard's
+condition becomes this rule's trigger), and an unowned dry chain
+containing ring stations **adopts along the ring's own connectivity**:
+into the face that owns its ring-neighbour station (the measured
+mainland link; deterministic, one link per fragment measured 8/8).
+Global 8-connectivity for the flood is rejected — it would un-water
+the six measured split chains and re-open the gap family. The Whole
+gate remains the loud backstop if a ring chain ends up unowned.
+
+**Family C — seam inheritance.** Measured 7/7: the doubled column is
+the tip of the appendix face's accepted one-station dip, **boundary
+for both faces** (never interior, never a third claimant), and the
+declared seam carrying exactly this face pair sits at cardinal
+distance 1 (same x, one row up) on every witness — `whole_declared`
+simply never declared the dip tip, because it derives only from final
+shared-edge stations and span vertices. Rule: a column claimed by
+**exactly two faces, both as boundary**, cardinally adjacent to a
+declared-seam column of the **identical pair**, inherits the
+declaration and classifies `whole_declared_seam_select` (DECIDED).
+Anything else — an interior claimant, a third face, no adjacent
+same-pair declaration — stays `whole_undeclared_multiplicity_reject`,
+loud.
+
+**Packaging and acceptance.** The one-package ruling of 11.7 stands:
+the fourth attempt starts from the banked `package.patch` plus these
+three completions and the ratified predicate; acceptance is the 11.7
+union plan verbatim (1,166 witnesses, zero REJECTED rows of any
+class, winner invariance against the banked digests as the STOP, all
+negative guards by name — extended by: a synthetic crossing self-touch
+failing by name, a synthetic ring-chain-unowned case failing as a gap,
+and a synthetic two-interior-claimants case staying the multiplicity
+reject). The 108 family seeds are individually verified in the
+acceptance sweep. The full-`W` re-census stays at T2-final.
