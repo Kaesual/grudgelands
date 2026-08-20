@@ -1702,3 +1702,15 @@ condition — winners ride the fast path); the 796-witness re-run with
 zero face rejects, zero `whole_gap_reject` from appendix columns and
 zero new classes; oracle suite green. The full-`W` re-census stays at
 T2-final.
+
+**RULED 2026-08-20** (coordinator, user-confirmed): **branch 11.5-C**,
+window-guarded appendix acceptance, exactly as cut — the stitched ring
+stays byte-identical, the two-tier validator with by-name loud
+failures, region truth by winding, the new DECIDED class
+`face_appendix_select`, W=8 and the zero-width condition pinned with
+their measurement provenance, the oracle rewrite and the docs
+corrections in scope. Sequencing: the corridor package lands **after**
+the decoupled 2c gap-family package, on its commit as base; its
+796-witness re-run is the acceptance measurement, and the
+winner-invariance STOP condition carries over unchanged (the banked
+digests remain the baseline — 2c is a measured no-op on the winners).
