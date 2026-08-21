@@ -1950,3 +1950,148 @@ as cut** — the ratified zero-width predicate, W := 11 with the
 non-crossing touch generalization, the ring-connectivity authority
 with ring adoption, and seam inheritance. The fourth implementation
 attempt proceeds from the banked patch under the amended brief.
+
+### 11.10 The W re-ruling memo (cut 2026-08-21, on the complete distribution)
+
+**The unified package stopped a fifth time, honoured** (the stop
+report, the complete fourth-attempt `package.patch` — applying cleanly
+on af40704, verified in a throwaway worktree — and the full evidence
+set are under
+`tools/wp40/results/bay-transition-package-w11-stop-artifacts/`; tree
+clean, no commit, no pin moved in the tree). The acceptance measured
+everything green — winner invariance 4/4 byte-identical to the banked
+digests, the gap family dead 370/370 with the 11.7 anatomy reproduced
+byte-exactly per seed, families A and C complete, every pinned-truth
+tier — except **one ruled constant**: five of the 60 family-B seeds
+keep `face_non_simple_reject` at measured nearest join distance
+12 > W=11. 1,161 of 1,166 witnesses green. This memo cuts the W
+re-ruling, puts the loop-pairing operationalization up for
+ratification, and records the population findings. The ruling lands
+at the end of this section when it lands.
+
+**The measured refutation.** 11.9's "W := 11, the measured population
+maximum over all 796" was in fact a one-witness generalization: the
+11.8 probe measured seed 10050140447867716291 (join at 1127:-2233,
+distance exactly 11) and the memo took that number for the
+population. The complete measurement now exists
+(`b-join-distances.tsv`, all 60 B seeds, 93 repeated stations; the
+sweep covered all 796): the silverleaf touch family sits at authored
+stations 1138–1140:-2232 while its anchoring join jitters per seed
+over 1126/1127/1128:-2233 — measured ±1 around the probe witness.
+Distance distribution: d=1 ×14, 2 ×10, 8 ×7, 9 ×9, 10 ×25, 11 ×23,
+**12 ×5** — nothing beyond 12; the combinatorially conceivable
+extreme (touch 1140 against join 1126) measures absent. The five
+d=12 seeds: 18171940200422843206, 501535562992590246,
+4154650258832672681, 4733240883161403671, 7921513688806375529. What
+is refuted is the completeness of the 11.9 measurement, not the
+no-margin philosophy.
+
+**Branches.**
+
+- **11.10-A — W := 12, the complete-population maximum, no margin
+  (RECOMMENDED).** The first W pin whose provenance is a complete
+  population instead of a sample or a single witness — the 11.6
+  discipline is satisfied for the first time on this constant. It
+  accepts exactly the measured universe; anything farther keeps
+  failing by its own name; T2-final's full-`W` re-census re-verifies
+  the pin over the whole universe. Pin lineage recorded 8 → 11 → 12
+  (no committed tree ever carried 8 or 11 — both exist only in banked
+  patches; the commit introduces W = 12 with the
+  complete-distribution provenance).
+- **11.10-B — W := 12+k with an explicit jitter margin.** Rejected:
+  the marginal firing set (distances 13…12+k) is measured empty, so
+  ruling it in accepts configurations no measurement has seen —
+  precisely what 11.6 forbids and five honoured STOPs enforced; the
+  measured anchor jitter (±1) is already contained in 12; and an
+  authored-geometry change that could move the family re-measures at
+  census time anyway, with the loud guard as the designed response.
+
+**Ratification — the non-crossing predicate reads the loop pairing**
+(the 11.8 zero-width precedent: an operationalization corrected on
+measured evidence, put up for ratification). The 11.9 text "the two
+passes must not interleave in the cyclic order of the four incident
+ring edges" is implemented over the **loop pairing**: the repeated
+station splits the ring into two loops — α from the first
+occurrence's outgoing edge to the second's incoming, β from the
+second's outgoing back to the first's incoming — and the touch
+crosses exactly when (out₁,in₂) and (out₂,in₁) interleave, the
+configuration that cannot close in the plane without a further
+self-intersection. Measured necessity: the family-C dip
+(kragmar_stillgrave_hollow at -1204:2233, ring read in place: pass 1
+arrives W and leaves E, pass 2 arrives S and leaves NW) has
+interleaving **passes** but loops in disjoint sectors — the
+pass-pairing reading would reject the very dip faces the ruled
+family-C acceptance builds on. The loud guard is unchanged: the
+synthetic loop-interleaving crossing fails by name in the KAT, and a
+coincident loop-end direction is a shared edge — overlap, not a
+crossing, still loud. Recommendation: ratify as the binding reading
+of the 11.9 predicate; the provenance stays pinned beside W in the
+authority.
+
+**The four findings — population corrections inside ruled classes, no
+new family.** The 108 family seeds' Whole tiers were measurable for
+the first time at this patch; all four findings are the known
+mechanisms with measured anatomy inside the ruled classes. One count
+in the stop report's prose is corrected here against its own banked
+evidence (the evidence file is authoritative): the family-seed
+adoptions number **six**, not five — 3 C, 2 A, 1 B, four of them
+byte-identical to the known copperfell chain (the report's prose
+missed A seed 8232565312062675998, whose adoption the evidence file
+carries).
+
+1. **Seam-inheritance population 25** (was 24): B seed
+   8003871659703994060, accepted under the appendix tier, carries
+   the identical dip-tip doubling at the measured column 884:2238
+   and inherits over the identical face pair. Firing columns
+   unchanged — exactly the seven measured witnesses
+   (`inherit-firings.tsv`).
+2. **Six additional adopted chains on family seeds**
+   (`adoption-verification.txt`, beyond the 111): the copperfell
+   -1103 chain byte-identical on 10958005904297776829 (C),
+   7851242355115945264 (B), 6058341980007287606 (A) and
+   8232565312062675998 (A); redtusk 890:2235–2236 on
+   1026383728877078735 (C); sunscar -895:2627–2628 on
+   1290646225298478909 (C). All cardinal, all exactly-one-face, zero
+   ring stations, zero `residual_multi_face_reject`. The adoption
+   ledger totals **117 seeds / 118 chains** (the banked 111-seed /
+   112-pocket anatomy, two-pocket seed included, plus these six).
+3. **Pinch population 21** (was 19): B seed 6716966456885196819
+   reclassifies from "non-join-local" to pinch once join-local under
+   the widened window (11.8's 41/19 split over the 60 becomes
+   40/20), and family-A seed 3253762158045475787 carries a pinch
+   never measurable pre-fix.
+4. **Appendix carriers 792** (was 719): +49 B and +24 A seeds (the A
+   seeds aborted before Scan-4 pre-fix); no banked carrier lost a
+   row.
+
+Disposition: no rule changes; the four populations become pinned
+expectations of the fifth attempt's acceptance ledger, and any drift
+beyond them (beyond the five re-accepted d=12 seeds, whose counts the
+run measures) is a finding for a new memo.
+
+**Packaging and acceptance.** The 11.7 one-package ruling stands. The
+fifth attempt: apply the banked `package.patch` on af40704, move the
+single constant **W 11 → 12** in `partition.lua` and
+`t2_census_authority.lua` (the worker bridges them; the provenance
+text beside the pin updates to the complete-distribution
+measurement), then the five named seeds solo (projected
+`face_appendix_select` on the silverleaf face — the touches are the
+measured zero-width single-station kind, now join-local; the run
+measures the counts) and the 1,166-witness union sweep. Acceptance
+is the 11.9 plan verbatim with the ledger updated to this memo: zero
+REJECTED rows of any class; inherit firings 25 at the seven columns;
+adoption 117 seeds / 118 chains, the six family-seed chains and the
+six split chains individually verified; pinch 21 plus whatever the
+five re-accepted seeds measure; appendix carriers ≥ 792 with no
+banked carrier lost (exact count measured); winner invariance
+byte-level against the banked digests (STOP — the winners ride the
+fast path, W never evaluates on them); PUC pair re-pinned
+digest-identical across interpreters, any record-digest move named
+old → new against this stop's banked values. Cost anchors re-base on
+the fourth attempt's actuals — no-abort mean 67.9 CPU-s/seed, 22.0
+CPU-h records + 9.4 CPU-h probes, 4.8 h wall at width ≤ 8 (the 3.5 h
+pre-approval was overrun by ~1.3 h because the projection used the
+banked run's abort-lowered mean; reported, not absorbed) — and the
+v3 brief carries the new pre-approvals. The production Whole gate
+goes live with the package commit; the full-`W` re-census stays at
+T2-final.
