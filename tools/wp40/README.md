@@ -391,6 +391,80 @@ reachable from the chain at all. The only remaining C1 use of the pre-v3
 artifacts is negative — `t2_extreme_conformance_test.lua` presents each of them
 to a v3 reader and requires rejection. See "The v3 conformance generation".
 
+### The v3 conformance generation
+
+The C1 selected-four conformance chain reads the v3 scalar pool. It is a
+*generation*, not a replacement: the pre-v3 chain's authority module, gate and
+artifacts are frozen where they are, and the two can never be confused.
+
+**Why a second authority module.** `t2_extreme_conformance_authority.lua` must
+stay byte-identical. `t2_partition_test.lua`'s `selected_stage2_historical` mode
+(`WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical`) `dofile`s
+it from the live tree and re-materializes the pre-v3 conformance DAG
+`086855378e…` from commit `5a2fc0d` through its exact roster. Any roster edit
+makes that digest unreproducible and turns the historical gate permanently red.
+The v3 chain therefore owns `t2_extreme_conformance_v3_authority.lua`, with the
+domain-separated DAG prefix `grug_wp40_t2c_e0_c1_v3_dag_v1`, so a pre-v3 and a
+v3 file manifest can never collide even if the two rosters became equal.
+
+**What the v3 roster names** (65 paths): the v3 chain modules, runner, gate,
+merged artifact, manifest and eight shards; `t2_partition_test.lua`,
+`t2_partition_oracle.lua`, the WP40 schema modules and the WP43 material surface
+those two load, plus the shared phase selector and the partition payload cache;
+every file the measurement Authority-DAG covers (`t2_extreme_authority.lua`'s
+`paths` and `stage_paths`), because `execution_authority_dag_sha256` is
+recomputed from the live tree and the preflight must be able to prove the live
+tree equals the pinned commit for every byte that digest depends on; and the
+four pre-v3 fixtures the KAT reads as negative inputs.
+
+**Old → new.**
+
+| kind | pre-v3 | v3 |
+|---|---|---|
+| gate fixture | `conformance_gate.lua` | `conformance_gate_v3.lua` |
+| gate schema | `…_conformance_gate_v1` | `…_conformance_gate_v3` |
+| authority module | `t2_extreme_conformance_authority.lua` | `t2_extreme_conformance_v3_authority.lua` |
+| DAG prefix | `grug_wp40_t2c_e0_c1_dag_v1` | `grug_wp40_t2c_e0_c1_v3_dag_v1` |
+| merged artifact | `candidates-luajit.tsv` (20 headers) | `candidates-luajit-v3.tsv` (19 headers) |
+| manifest | `manifest-luajit.tsv` | `manifest-luajit-v3.tsv` |
+| shards | `shard-luajit-%04d-%04d.tsv` | `shard-luajit-v3-%04d-%04d.tsv` |
+| rescore result | `rescore-puc-%04d.tsv` / `…_puc_rescore_v1` | `rescore-puc-v3-%04d.tsv` / `…_puc_rescore_v3` |
+| selected result | `selected-puc-slot%02d.tsv` / `…_selected_partition_v1` | `selected-puc-v3-slot%02d.tsv` / `…_selected_partition_v3` |
+| final result | `conformance-puc.tsv` / `…_puc_conformance_v1` | `conformance-puc-v3.tsv` / `…_puc_conformance_v3` |
+| preflight token | `WP40_T2_C1_PREFLIGHT` | `WP40_T2_C1_V3_PREFLIGHT` |
+
+Every path guard rejects the other generation's name in both directions —
+`is_historical_result_path` recognises the pre-v3 names, `assert_v3_result_path`
+requires the exact retained directory under a named repository root, and the
+launcher's `v3_target` refuses any target that is not a v3 name in one of the
+two retained directories.
+
+**The three provenance claims.** The pre-v3 chain asserted that the live
+measurement Authority-DAG equalled the gate's. That is not true any more and is
+not faked: `geometry/partition.lua`, `source/catalog.lua` and
+`validation/t2_source.lua` all differ between the pool commit and HEAD, because
+the Section 11 correction landed after the pool was measured. Three separately
+named claims replace it, and no two share a field name:
+
+| claim | fields in every result row | how it is established |
+|---|---|---|
+| pool origin (historical) | `pool_measurement_commit`, `pool_measurement_tree`, `pool_authority_dag_sha256` | `t2_extreme_conformance_verify.lua` re-materializes `19fc28d1` / `bca04056` / `069cce2d` through `validate_pinned_authority`, with no `partition_sha256` |
+| stage-S1 currency | `s1_authority_sha256`, `s1_source_projection_sha256` | recomputed from the tree the conformance runs on, following `t2_extreme_gate_check.lua`'s sequence, and required to equal the gate |
+| executing code | `execution_authority_dag_sha256` | the measurement Authority-DAG of the conformance tree; recorded in a gate-independent position, recomputed live per row by the verifier, and required to agree across all twenty-four rows by the finalizer |
+
+A fourth, different thing sits beside them: `conformance_commit`,
+`conformance_tree` and `conformance_dag_sha256` are the C1 v3 launch pins of the
+run that produced the row.
+
+**One consequence of the retained interpreter pin.** The merged artifact records
+`merge_interpreter_path = /home/jan/projects/grudgelands/tools/bin/lua51`, and
+the workers, the verifier and the finalizer all compare it against their own
+`argv[0]`. The pin is deliberately retained, so an end-to-end run only succeeds
+when the repository root is exactly that path: **the conformance cannot be run
+from a git worktree.** Parse/validate/mutation KATs are unaffected and run
+anywhere.
+
+
 ### Locked surfaces
 
 These six files are covered by the stage-S1 authority digest that pins the

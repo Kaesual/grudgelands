@@ -2238,3 +2238,158 @@ is on the semantics, not on measurement: the full-`W` re-census stays
 at T2-final and **re-verifies these pins** over the whole universe,
 and a drift it finds is a finding for that new memo. T2 as a whole
 remains in progress.
+
+## 12. The C1 v3 conformance handoff (cut 2026-08-21)
+
+**Status: measurement code and inputs are immutable; the acceptance
+conformance has NOT been run.** Nothing in this section claims a
+conformance result, T2-final, T9-final, production publication, or any
+32-seed corpus promotion. It records a provenance migration and the
+measured facts that support it.
+
+### 12.1 What moved
+
+The T2c-E0-C1 selected-four conformance chain read the frozen pre-v3
+(v2) measurement from `53be77e`, so the final conformance could not be
+executed from a closed code/input DAG. The chain now reads the
+committed **v3 scalar pool**: commit `19fc28d1`, tree `bca04056`,
+Authority-DAG `069cce2d`, stage-S1 pins `10a790a6…` /
+`83b1b16a…`, merged artifact `5b5241b3…`, manifest `c8f61852…`.
+
+No measured scalar moved. The candidate row bytes are **identical**
+across the two generations — `candidate_rows_sha256` is `b08e142a…`
+in both — and only the provenance header differs. The four ranked
+winners are unchanged and were re-derived from the v3 artifact:
+slot 28 / candidate 2192 / `5270046902118333881`, slot 29 / 1713 /
+`16178445837170081103`, slot 30 / 1047 / `15219119262482319357`,
+slot 31 / 3438 / `17842018860885445630`. The staging seed
+(`grudgelands-wp40-seed-08`, `7821741934987559905`) is likewise
+reproduced rather than copied.
+
+Nothing about boundary semantics, partition semantics or production
+world behaviour changes with this migration.
+
+### 12.2 Why the provenance model had to change
+
+The pre-v3 chain asserted that the **live** measurement Authority-DAG
+equals the gate's. That assertion is now unsatisfiable and was not
+faked: `geometry/partition.lua`, `source/catalog.lua` and
+`validation/t2_source.lua` all differ between the pool commit and
+HEAD, because the §11 correction landed *after* the pool was measured.
+Measured: pool Authority-DAG `069cce2d…`, live HEAD measurement
+Authority-DAG `fbb81ec1…`.
+
+Three separately named claims replace it. No two share a field name,
+so a reader of a result row can always tell which digest describes the
+pool's origin and which describes the code that re-derived it:
+
+1. **Pool origin, historical** — `pool_measurement_commit`,
+   `pool_measurement_tree`, `pool_authority_dag_sha256`. The verifier
+   re-materializes the pinned pool commit through
+   `validate_pinned_authority`, **without** a `partition_sha256`;
+   demanding one would resurrect exactly the coupling the stage-S1
+   migration removed.
+2. **Stage-S1 currency** — `s1_authority_sha256`,
+   `s1_source_projection_sha256`, recomputed from the tree the
+   conformance actually runs on (following `t2_extreme_gate_check.lua`)
+   and required to equal the gate. This is what lets one measured pool
+   survive a later-stage geometry correction.
+3. **Executing code** — `execution_authority_dag_sha256`, the
+   measurement Authority-DAG of the conformance tree. Recorded in a
+   gate-independent position and established against the executing
+   tree, never against the pool; the verifier recomputes it live per
+   row and the finalizer requires all twenty-four rows to agree.
+
+The pre-v3 conformance authority module, gate and artifacts are frozen
+and byte-identical. `t2_partition_test.lua`'s
+`selected_stage2_historical` mode still re-materializes the pre-v3
+conformance DAG `086855378e…` from `5a2fc0d`; that was re-derived
+with the whole migration in place and is unchanged. Naming, roster and
+guard detail: `tools/wp40/README.md`, "The v3 conformance generation".
+
+### 12.3 What is measured, and what is not
+
+Established and reproducible:
+
+- All **20 roster candidates** (the sixteen deterministic shard
+  endpoints plus the four winners) reproduce **byte-for-byte at HEAD**
+  under LuaJIT; three of them were additionally reproduced under the
+  vendored PUC 5.1.
+- **Slots 28 and 31 pass the full selected partition gate** under
+  LuaJIT with `g`/`o`/`r`/`m` all zero.
+- Cost anchors, measured: one selected slot ≈ **335 s** LuaJIT wall;
+  one PUC rescore row ≈ **38–44 s**.
+- The migrated conformance KAT is green under LuaJIT and the vendored
+  PUC 5.1 with byte-identical output, and the v3 preflight re-derives
+  the C1 v3 DAG from the pinned commit.
+
+Not established, and not claimed anywhere: any selected-four
+conformance result; slots 29 and 30; a frozen downstream interface;
+T2-final or T9-final; publication authority.
+
+**The retained interpreter pin is deliberately kept.** The merged
+artifact records `merge_interpreter_path`
+`/home/jan/projects/grudgelands/tools/bin/lua51` and the workers, the
+verifier and the finalizer compare it against their own `argv[0]`.
+An end-to-end run therefore succeeds only when the repository root is
+exactly that path — **the acceptance conformance cannot be run from a
+git worktree.**
+
+### 12.4 The downstream interface — PROPOSED, pending the acceptance run
+
+This enumerates, from the code, exactly what a green selected-four
+conformance *would* freeze. It is **proposed**, not frozen, and it
+becomes a freeze only when the acceptance run is green:
+
+- **Compiled families covered.** The selected result's
+  `compiled_sha256` digests the entire compiled payload, i.e. all nine
+  families in `geometry/partition.lua`: `bays`, `channels`,
+  `closure_wings`, `coast_shelf`, `dry_faces`, `islands`,
+  `land_boundaries`, `mouth_apertures`, `perimeters`.
+- **Whole report fields**, recorded per slot in the result row:
+  `columns`, `base_total`, `planned_water`, `dry`, `g`, `o`, `r`, `m`,
+  `schedule_intervals`, `perimeter_aperture`, `perimeter_attachment`,
+  `perimeter_dry`.
+- **Per-slot counts**: `transition_count`, `bank_count`, `wing_count`
+  (`#families.closure_wings`), `coast_count` (`#families.coast_shelf`),
+  `face_count` (`#families.dry_faces`). The v3 result validator pins
+  `transition_count = 8`, `bank_count = 20`, `wing_count = 8`,
+  `coast_count = 22`, `face_count = 38`, `perimeter_attachment = 8`
+  and `g = o = r = m = 0`.
+- **`compiled_sha256`** — recorded in the result row.
+- **`edge_inventory_sha256`** — produced by `t2_partition_test.lua`
+  (`selected_request.result.edge_inventory_sha256`) but **not** carried
+  into the v3 selected result row. Whether it belongs in the frozen
+  interface is an open item to settle before any freeze.
+
+### 12.5 Why the acceptance run has not happened
+
+Two **pre-existing** defects in the selected-slot block of
+`tools/wp40/t2_partition_test.lua` block it. Neither is fixed or
+diagnosed here, and no fix is proposed:
+
+1. **A 63-character digest literal.** Line 5689, inside the assertion
+   beginning at line 5686 (`C2 Slot30 Starbough Bank witness
+   changed`), compares `point_digest(starbough, false)` against
+   `"694aa00661b735fc98ab756616c7da96f66d9a2fc2c53ca99ce0a8ca74e3dc1"`
+   — 63 hex characters. A SHA-256 hex digest is 64, and the sibling
+   `point_digest` literals in the same block are 64.
+2. **A compiler-versus-oracle disagreement on `land_010`.** At line
+   2764 the payload's final station count is compared against the
+   independently derived count; for slot 29 the payload carries
+   **1601** stations against **1602** independent.
+
+**Both trace to the WIP commit `44c2739`** (`wip(wp40): checkpoint R19
+compiler integration`). **Neither is a §11 regression**, verified:
+`t2_partition_test.lua` has not been touched since the pool commit
+`19fc28d1` (its last modifying commit, `78cdcc5`, is an ancestor of
+it, and no commit after `19fc28d1` touches the file); the §11 package
+diff `931e857` contains no `diagonal_elbow` change and does not touch
+`t2_partition_test.lua` at all; and `931e857` records winner
+invariance 4/4 byte-identical, with slot 29's seed explicitly
+unchanged.
+
+The `land_010` question **needs its own ruling** under the §11.6
+discipline, because it concerns the boundary topology frozen by
+§11.11. It is not an in-package amendment and must not be treated as
+one.
