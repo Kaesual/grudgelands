@@ -91,9 +91,10 @@ local historical_gate = assert(loadfile(retained .. "conformance_gate.lua"))()
 -- The pre-v3 fixtures this KAT reads are NEGATIVE inputs, so their bytes can
 -- change what it proves.  They must therefore sit inside the v3 DAG roster, and
 -- so must this file -- assert that instead of trusting a comment.
-local v3_roster = assert(loadfile(repo ..
+local v3_authority = assert(loadfile(repo ..
 	"/tools/wp40/t2_extreme_conformance_v3_authority.lua"))()({
-	raw_sha256 = raw_sha256}).paths
+	raw_sha256 = raw_sha256})
+local v3_roster = v3_authority.paths
 local rostered = {}
 for index = 1, #v3_roster do rostered[v3_roster[index]] = true end
 for _, entry in ipairs({
@@ -102,6 +103,7 @@ for _, entry in ipairs({
 	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv",
 	"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv",
 	"tools/wp40/t2_extreme_conformance_test.lua",
+	"tools/wp40/t2_extreme_conformance_recorded.lua",
 }) do
 	assert(rostered[entry], "input is outside the v3 DAG roster: " .. entry)
 end
@@ -614,11 +616,321 @@ for _, mutation in ipairs({
 	end)
 end
 
+-- ---------------------------------------------- recorded-evidence reuse ----
+-- A finished 24-row artifact is immutable evidence of the commit it RECORDS,
+-- not of whatever HEAD happens to be.  These cases drive the real closure
+-- functions -- exactly the ones the launcher's recorded-evidence branch calls
+-- -- against a throwaway git repository with a two-entry synthetic closure, so
+-- every git-shaped refusal is executed rather than argued.  The finalizer is
+-- the one collaborator that is stubbed: a real 24-row re-derivation is not a
+-- KAT, and what has to be proven here is that it is driven with the RECORDED
+-- pins and that its refusal is fatal.
+-- A closure member is validated as strictly as a repository root, one level
+-- down.  Two spellings of one path would otherwise enter a caller-supplied list
+-- as two distinct members carrying the same blob, and a "complete closure"
+-- would be complete only by arithmetic.
+for _, rejected in ipairs({"./tools/closure_a.lua", "tools/./closure_a.lua",
+		"tools/closure_a.lua/.", "tools/../tools/closure_a.lua",
+		"tools//closure_a.lua", "/tools/closure_a.lua", "tools/closure_a.lua/",
+		".hidden.lua", "", 7}) do
+	expect_error("unsafe closure member", function()
+		v3_authority.closure_equality("/tmp", "/tmp", string.rep("0", 40), {rejected})
+	end)
+end
+expect_error("closure path list repeats tools/closure_a.lua", function()
+	v3_authority.closure_equality("/tmp", "/tmp", string.rep("0", 40),
+		{"tools/closure_a.lua", "tools/closure_a.lua"})
+end)
+expect_error("closure path list is empty", function()
+	v3_authority.closure_equality("/tmp", "/tmp", string.rep("0", 40), {})
+end)
+local function shell(command)
+	local status, reason, code = os.execute(command)
+	return status == 0 or status == true and reason == "exit" and code == 0
+end
+-- Both streams are captured and both are reported: a failing git command whose
+-- diagnostic went to /dev/null and whose assertion said only "git-commit-1.txt"
+-- is unactionable, and a global core.hooksPath pre-commit hook is a realistic
+-- way to hit exactly that.
+local function shell_capture(command, name)
+	local output = scratch .. "/" .. name
+	local errors = scratch .. "/" .. name .. ".err"
+	local completed = shell(command .. " > " .. output .. " 2> " .. errors)
+	local text = read_file(output)
+	assert(completed, "command failed: " .. command .. "\n" .. text ..
+		read_file(errors))
+	return (text:gsub("%s+$", ""))
+end
+local sandbox = shell_capture(
+	"mktemp -d -p /tmp grudgelands-wp40-t2-recorded.XXXXXXXX", "sandbox.txt")
+assert(sandbox:match("^/tmp/grudgelands%-wp40%-t2%-recorded%.[A-Za-z0-9]+$"),
+	"unsafe recorded-evidence sandbox")
+-- Every case below runs inside one throwaway repository, so they run inside
+-- one pcall: an assertion firing in the middle must not leave an unnamed /tmp
+-- git repository behind.  On failure the sandbox is KEPT -- it is the exact
+-- git state the failure happened in -- and its path is part of the error, so
+-- it is announced evidence rather than a leak.  A clean run removes it.
+local function recorded_evidence_cases()
+	-- core.hooksPath and commit.gpgsign are neutralised: a developer's global
+	-- pre-commit hook or signing key must not decide whether this KAT passes.
+	local function git(arguments, name)
+		return shell_capture("git -C " .. sandbox .. " -c user.name=wp40" ..
+			" -c user.email=wp40@example.invalid -c commit.gpgsign=false" ..
+			" -c core.hooksPath=/dev/null " .. arguments, name)
+	end
+	local function write_sandbox(relative, bytes)
+		local file = assert(io.open(sandbox .. "/" .. relative, "wb"))
+		assert(file:write(bytes)) assert(file:close())
+	end
+	local closure_paths = {"tools/closure_a.lua", "tools/closure_b.tsv"}
+	assert(shell("mkdir -p " .. sandbox .. "/tools " .. sandbox .. "/docs"))
+	write_sandbox("tools/closure_a.lua", "-- closure member a\nreturn 1\n")
+	write_sandbox("tools/closure_b.tsv", "member\tb\n")
+	write_sandbox("docs/notes.md", "notes revision one\n")
+	assert(shell("git -C " .. sandbox .. " -c init.templateDir=" ..
+		" -c init.defaultBranch=main init -q"), "the sandbox repository was not created")
+	git("add -A", "git-add-1.txt")
+	git("commit -q -m recorded", "git-commit-1.txt")
+	local recorded_commit = git("rev-parse --verify HEAD", "git-head-1.txt")
+	local recorded_tree = git("rev-parse --verify 'HEAD^{tree}'", "git-tree-1.txt")
+	assert(#recorded_commit == 40 and recorded_commit:match("^[0-9a-f]+$") and
+		#recorded_tree == 40 and recorded_tree:match("^[0-9a-f]+$"),
+		"the synthetic recorded commit is not a git id")
+	local recorded_dag = v3_authority.capture_git(sandbox, scratch, recorded_commit,
+		closure_paths).dag_sha256
+	local recorded_pins = {commit = recorded_commit, tree = recorded_tree,
+		dag = recorded_dag}
+	-- The HEAD movement under test: a file that is NOT a closure member.
+	write_sandbox("docs/notes.md", "notes revision two\n")
+	git("add -A", "git-add-2.txt")
+	git("commit -q -m documentation-only", "git-commit-2.txt")
+	local head_commit = git("rev-parse --verify HEAD", "git-head-2.txt")
+	local head_tree = git("rev-parse --verify 'HEAD^{tree}'", "git-tree-2.txt")
+	assert(head_commit ~= recorded_commit and head_tree ~= recorded_tree,
+		"the documentation-only commit did not move HEAD")
+
+	local function final_artifact(pins, options)
+		options = options or {}
+		local lines = {
+			"schema\t" .. (options.schema or "grug_wp40_extreme_puc_conformance_v3"),
+			"status\t" .. (options.status or "passed"),
+			"scope\tT2C_E0_SELECTED_FOUR_CONFORMANCE_ONLY",
+			"stage2_status\tpending_seed_corpus_promotion",
+			"conformance_commit\t" .. pins.commit,
+			"conformance_tree\t" .. pins.tree,
+			"conformance_dag_sha256\t" .. pins.dag,
+			"interpreter_id\tpuc_lua51", "rescore_count\t20", "selected_count\t4",
+			"rescore\t0\ttools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-0000.tsv\t" ..
+				string.rep("a", 64),
+			"selected\t28\tgreatest_coast\t2192\t5270046902118333881\t" ..
+				string.rep("b", 64) ..
+				"\ttools/wp40/fixtures/t2_extreme_e0/selected-puc-v3-slot28.tsv\t" ..
+				string.rep("c", 64)}
+		if options.append then lines[#lines + 1] = options.append end
+		return table.concat(lines, "\n") .. "\n"
+	end
+	local artifact = final_artifact(recorded_pins)
+	local finalizer_calls = {}
+	local function stub_finalizer(outcome)
+		return function(pins)
+			finalizer_calls[#finalizer_calls + 1] = pins
+			return outcome
+		end
+	end
+	local function recorded_request(overrides)
+		local request = {repo = sandbox, scratch = scratch, paths = closure_paths,
+			artifact_bytes = artifact, run_finalizer = stub_finalizer(true)}
+		for key, value in pairs(overrides or {}) do request[key] = value end
+		return request
+	end
+	local function refuse(fragment, pins, options)
+		expect_error(fragment, function()
+			v3_authority.verify_recorded_evidence(recorded_request({
+				artifact_bytes = final_artifact(pins, options)}))
+		end)
+	end
+
+	-- (1) An unrelated documentation-only HEAD movement still permits verification,
+	-- and what reaches the finalizer are the RECORDED pins, never HEAD's.
+	local accepted = v3_authority.verify_recorded_evidence(recorded_request())
+	assert(accepted.commit == recorded_commit and accepted.tree == recorded_tree and
+		accepted.dag == recorded_dag, "recorded pins were not the ones proven")
+	assert(#finalizer_calls == 1 and finalizer_calls[1].commit == recorded_commit and
+		finalizer_calls[1].tree == recorded_tree and
+		finalizer_calls[1].dag == recorded_dag,
+		"the finalizer was not driven with the recorded pins")
+
+	-- (3) A modified retained row or a modified final artifact fails.  The
+	-- re-derivation from all 24 retained rows is the finalizer's verify mode, so
+	-- its refusal has to be fatal here ...
+	expect_error("recorded evidence failed re-verification against its own commit",
+		function()
+			v3_authority.verify_recorded_evidence(recorded_request({
+				run_finalizer = stub_finalizer(false)}))
+		end)
+	-- ... and reading the pins is never itself proof that the artifact is intact:
+	-- a mutated result row leaves all three pins untouched, which is exactly why
+	-- equality of the final TSV alone is not accepted as closure equality.
+	local mutated_artifact = (artifact:gsub(string.rep("a", 64), string.rep("d", 64), 1))
+	assert(mutated_artifact ~= artifact, "the final artifact mutation did not apply")
+	local mutated_pins = v3_authority.parse_recorded_pins(mutated_artifact)
+	assert(mutated_pins.commit == recorded_pins.commit and
+		mutated_pins.tree == recorded_pins.tree and
+		mutated_pins.dag == recorded_pins.dag,
+		"a mutated result row changed the recorded pins")
+	-- A retained ROW that no longer matches is refused by the very validator the
+	-- finalizer drives per row, addressed with the recorded pins.
+	local recorded_row = deep_copy(rescore)
+	recorded_row.conformance_commit = recorded_pins.commit
+	recorded_row.conformance_tree = recorded_pins.tree
+	recorded_row.conformance_dag_sha256 = recorded_pins.dag
+	assert(conformance.validate_rescore_result(recorded_row, gate, 0, row_sha,
+		recorded_pins, interpreter))
+	assert(conformance.assert_launch_pins(recorded_row, recorded_pins,
+		"PUC rescore result"))
+	for _, mutation in ipairs({
+		function(row) row.rescored_row_sha256 = string.rep("e", 64) end,
+		function(row) row.conformance_commit = string.rep("f", 40) end,
+		function(row) row.conformance_dag_sha256 = string.rep("0", 64) end,
+	}) do
+		local corrupt = deep_copy(recorded_row)
+		mutation(corrupt)
+		expect_error("PUC rescore", function()
+			conformance.validate_rescore_result(corrupt, gate, 0, row_sha, recorded_pins,
+				interpreter)
+		end)
+	end
+
+	-- (4) A missing or invalid recorded commit fails, and every refusal names its
+	-- own reason: malformed hex, wrong length, uppercase, a missing pin, a repeated
+	-- pin, an object that does not exist, an object that is not a commit, a commit
+	-- outside this repository's history, and a commit whose tree is not the
+	-- recorded tree.
+	refuse("conformance_commit is not a lowercase 40-hex id",
+		{commit = "zz" .. string.rep("0", 38), tree = recorded_tree, dag = recorded_dag})
+	refuse("conformance_commit is not a lowercase 40-hex id",
+		{commit = string.rep("a", 39), tree = recorded_tree, dag = recorded_dag})
+	refuse("conformance_commit is not a lowercase 40-hex id",
+		{commit = recorded_commit:upper(), tree = recorded_tree, dag = recorded_dag})
+	refuse("conformance_tree is not a lowercase 40-hex id",
+		{commit = recorded_commit, tree = recorded_tree .. "0", dag = recorded_dag})
+	refuse("conformance_dag_sha256 is not a lowercase 64-hex id",
+		{commit = recorded_commit, tree = recorded_tree, dag = string.rep("a", 63)})
+	expect_error("recorded conformance artifact is missing conformance_tree", function()
+		v3_authority.parse_recorded_pins(
+			(artifact:gsub("conformance_tree\t[0-9a-f]+\n", "", 1)))
+	end)
+	expect_error("recorded conformance artifact repeats conformance_commit", function()
+		v3_authority.parse_recorded_pins(final_artifact(recorded_pins,
+			{append = "conformance_commit\t" .. string.rep("a", 40)}))
+	end)
+	refuse("recorded commit is not available in this repository",
+		{commit = string.rep("d", 40), tree = recorded_tree, dag = recorded_dag})
+	refuse("recorded commit is not available in this repository",
+		{commit = recorded_tree, tree = recorded_tree, dag = recorded_dag})
+	-- git commit-tree writes a real commit object that no ref reaches: it exists,
+	-- and it is still not this repository's history.
+	local dangling = git("commit-tree " .. recorded_tree .. " -p " .. recorded_commit ..
+		" -m dangling", "git-dangling.txt")
+	assert(#dangling == 40 and dangling:match("^[0-9a-f]+$") and
+		dangling ~= recorded_commit, "the dangling commit was not created")
+	refuse("recorded commit is outside repository history",
+		{commit = dangling, tree = recorded_tree, dag = recorded_dag})
+	refuse("conformance commit/tree changed",
+		{commit = recorded_commit, tree = head_tree, dag = recorded_dag})
+	-- The recorded DAG must be the pinned closure's DAG at that commit.
+	refuse("recorded conformance DAG differs from the pinned closure",
+		{commit = recorded_commit, tree = recorded_tree, dag = string.rep("0", 64)})
+
+	-- (5) Pre-v3 evidence cannot satisfy the v3 verifier.  A pre-v3 final artifact
+	-- and every result row of either generation carry well-formed conformance_*
+	-- pins; only the v3 FINAL artifact schema is accepted, and it must be the
+	-- artifact's first line, so a v3 schema appended to foreign bytes is not one
+	-- either.  The name side of the same separation is asserted further up:
+	-- is_historical_result_path recognises conformance-puc.tsv, and the launcher's
+	-- recorded-evidence driver may name conformance-puc-v3.tsv only.
+	for _, foreign in ipairs({"grug_wp40_extreme_puc_conformance_v1",
+			"grug_wp40_extreme_puc_rescore_v1", "grug_wp40_extreme_puc_rescore_v3",
+			"grug_wp40_extreme_selected_partition_v3"}) do
+		refuse("recorded conformance artifact is not a v3 final artifact",
+			recorded_pins, {schema = foreign})
+	end
+	refuse("recorded conformance artifact did not pass", recorded_pins,
+		{status = "failed"})
+	expect_error("recorded conformance artifact is not a v3 final artifact", function()
+		v3_authority.parse_recorded_pins("status\tpassed\n" ..
+			(artifact:gsub("status\tpassed\n", "", 1)))
+	end)
+
+	-- (2) Movement of ONE closure member refuses reuse and demands a rerun, naming
+	-- the file.  An uncommitted working-tree edit already counts: what is compared
+	-- is the recorded commit against the tree a rerun would run in.
+	write_sandbox("tools/closure_a.lua", "-- closure member a, edited\nreturn 2\n")
+	expect_error("closure member differs from the recorded commit: tools/closure_a.lua",
+		function() v3_authority.verify_recorded_evidence(recorded_request()) end)
+	git("add -A", "git-add-3.txt")
+	git("commit -q -m closure-member", "git-commit-3.txt")
+	-- Committing the edit is the discriminating case: HEAD and the working tree now
+	-- agree again, so only a comparison against the RECORDED commit can still
+	-- refuse.  A check that read git rev-parse HEAD would accept here.
+	expect_error("closure member differs from the recorded commit: tools/closure_a.lua",
+		function() v3_authority.verify_recorded_evidence(recorded_request()) end)
+	-- The untouched member really is untouched, so the refusal is per file.
+	assert(v3_authority.capture_git(sandbox, scratch, recorded_commit,
+		{"tools/closure_b.tsv"}).files["tools/closure_b.tsv"] ==
+		read_file(sandbox .. "/tools/closure_b.tsv"),
+		"the unchanged closure member did not stay equal")
+	-- An incomplete closure at the recorded commit is a refusal, never a skip.
+	expect_error("pinned conformance file is missing: tools/closure_c.lua", function()
+		v3_authority.closure_equality(sandbox, scratch, recorded_commit,
+			{"tools/closure_a.lua", "tools/closure_c.lua"})
+	end)
+	-- Exactly two of these cases ever reached the finalizer: the accepted one and
+	-- the one that stubbed a refusal.  Everything else was refused before any
+	-- retained evidence was reused at all.
+	assert(#finalizer_calls == 2, "a refused case still called the finalizer")
+end
+local cases_ok, cases_message = pcall(recorded_evidence_cases)
+if not cases_ok then
+	error("recorded-evidence cases failed; the sandbox git repository was KEPT" ..
+		" at " .. sandbox .. " -- inspect it, then remove it: " ..
+		tostring(cases_message), 0)
+end
+assert(shell("rm -rf -- " .. sandbox),
+	"the recorded-evidence sandbox was not removed: " .. sandbox)
+
+-- The launcher drives all of the above through
+-- t2_extreme_conformance_recorded.lua.  Its own guards are refusals that hold
+-- whether or not an accepted artifact exists, so they are exercised here: it
+-- may name the v3 final artifact and nothing else -- a pre-v3 name is refused
+-- in the same direction as every other v3 guard -- and its scratch directories
+-- are pattern-pinned.  Both refusals happen before the script reads or writes
+-- anything, so the scratch names below are never created.
+local driver = repo .. "/tools/wp40/t2_extreme_conformance_recorded.lua"
+local driver_lua = repo .. "/tools/bin/lua51"
+local function driver_refuses(fragment, arguments)
+	local output = scratch .. "/recorded-driver.txt"
+	local refused = not shell(driver_lua .. " " .. driver .. " " .. arguments ..
+		" > " .. output .. " 2>&1")
+	local text = read_file(output)
+	assert(refused and text:find(fragment, 1, true),
+		"the recorded-evidence driver did not refuse: " .. text)
+end
+driver_refuses("recorded C1 evidence path changed",
+	repo .. " /tmp/grudgelands-wp40-t2-conformance.katguard" ..
+	" /tmp/grudgelands-wp40-t2-conformance-final.katguard " .. repo ..
+	"/tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv")
+driver_refuses("unsafe C1 recorded evidence scratch",
+	repo .. " /tmp/katguard" ..
+	" /tmp/grudgelands-wp40-t2-conformance-final.katguard " .. repo ..
+	"/tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv")
+
 print("WP40 T2 E0 v3 conformance foundation passed artifact=" ..
 	gate.artifact_sha256 .. " manifest=" .. gate.manifest_sha256 ..
 	" pool=" .. gate.pool_measurement_commit ..
 	" s1=" .. s1.s1_authority_sha256 ..
 	" execution_dag=" .. execution_dag ..
+	" recorded_closure=" .. #v3_roster ..
 	" rescore_count=" .. #required .. " winners=" .. slots[1].candidate_index ..
 	"," .. slots[2].candidate_index .. "," .. slots[3].candidate_index ..
 	"," .. slots[4].candidate_index)

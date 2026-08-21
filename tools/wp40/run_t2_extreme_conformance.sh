@@ -68,6 +68,7 @@ owned_lua=(
 	"t2_extreme_conformance_verify.lua"
 	"t2_extreme_conformance_preflight.lua"
 	"t2_extreme_conformance_finalize.lua"
+	"t2_extreme_conformance_recorded.lua"
 	"t2_partition_oracle.lua"
 	"t2_partition_test.lua"
 	"t2_s1_authority.lua"
@@ -122,6 +123,30 @@ if [[ -e "$final_output" ]]; then
 		exit 0
 	fi
 	rm -rf -- "$final_scratch"
+	# Second choice.  A finished artifact is immutable evidence of the commit it
+	# RECORDS, not of whatever HEAD happens to be, so a documentation-only commit
+	# must not be able to buy a 24-row rerun.  The driver reads the recorded
+	# commit/tree/DAG out of the artifact's own bytes, requires that commit to be
+	# an ancestor of HEAD with the recorded tree, requires every member of the
+	# pinned closure -- the whole v3 authority roster -- to be byte-identical
+	# between that commit and the working tree, and only then re-runs the
+	# finalizer's verify mode with the RECORDED pins, which re-derives the final
+	# blob from all 24 retained result files.  Any refusal falls through to the
+	# recompute path below; generation itself is not relaxed anywhere.
+	recorded_final_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance-final.XXXXXXXX)"
+	if recorded_line="$("$lua" "$export_script/t2_extreme_conformance_recorded.lua" \
+			"$repo" "$scratch" "$recorded_final_scratch" "$final_output")"; then
+		rm -rf -- "$recorded_final_scratch"
+		if [[ ! "$recorded_line" =~ ^WP40_T2_C1_V3_RECORDED_EVIDENCE_ACCEPTED$'\t'commit=([0-9a-f]{40})$'\t'tree=([0-9a-f]{40})$'\t'dag=([0-9a-f]{64})$'\t'closure=([0-9]+)$'\t'artifact_sha256=([0-9a-f]{64})$ ]]; then
+			echo "WP40 T2 C1 v3 recorded evidence line changed: $recorded_line" >&2
+			exit 2
+		fi
+		"$lua" "$preflight" "$repo" "$scratch" "$commit" "$tree" >/dev/null
+		echo "WP40 T2 C1 v3 conformance REUSED RECORDED EVIDENCE rescore=20/20 selected=4/4 recorded_commit=${BASH_REMATCH[1]} recorded_tree=${BASH_REMATCH[2]} recorded_dag=${BASH_REMATCH[3]} closure=${BASH_REMATCH[4]} artifact=${BASH_REMATCH[5]} head_commit=$commit"
+		exit 0
+	fi
+	rm -rf -- "$recorded_final_scratch"
+	echo "WP40 T2 C1 v3 recorded evidence refused; the pinned closure or the retained rows no longer match the recorded commit"
 	stale_final_backup="$scratch/stale-conformance-puc-v3.tsv"
 	cp -- "$final_output" "$stale_final_backup"
 	rm -- "$final_output"

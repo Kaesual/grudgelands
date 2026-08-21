@@ -426,7 +426,8 @@ The v3 chain therefore owns `t2_extreme_conformance_v3_authority.lua`, with the
 domain-separated DAG prefix `grug_wp40_t2c_e0_c1_v3_dag_v1`, so a pre-v3 and a
 v3 file manifest can never collide even if the two rosters became equal.
 
-**What the v3 roster names** (65 paths): the v3 chain modules, runner, gate,
+**What the v3 roster names** (66 paths): the v3 chain modules — including the
+recorded-evidence driver — plus the runner, gate,
 merged artifact, manifest and eight shards; `t2_partition_test.lua`,
 `t2_partition_oracle.lua`, the WP40 schema modules and the WP43 material surface
 those two load, plus the shared phase selector and the partition payload cache;
@@ -483,6 +484,94 @@ when the repository root is exactly that path: **the conformance cannot be run
 from a git worktree.** Parse/validate/mutation KATs are unaffected and run
 anywhere.
 
+**Recorded-commit reuse: what a finished artifact is evidence of.**
+**No accepted `conformance-puc-v3.tsv` exists — none has ever been produced, and
+nothing below claims a conformance result.** This is prospective machinery: the
+acceptance run has not happened (§12 of `docs/research/wp40-t2-contracts.md`),
+so the reuse branch has never yet had an artifact to reuse.
+
+A completed `conformance-puc-v3.tsv` would be evidence of the commit it
+*records*, not of whatever `HEAD` happens to be. Without this rule any later
+commit — including a documentation-only one that touches nothing the conformance
+reads — would make the recorded evidence "stale", delete it and buy a full
+24-row rerun, because the only available check takes its pins from
+`git rev-parse HEAD`.
+
+`tools/wp40/t2_extreme_conformance_recorded.lua` is the second branch of the
+launcher's "final output already exists" block. The first branch is unchanged:
+re-verify against the current launch pins, and if that works nothing else runs.
+Only when it fails does the recorded-evidence branch try, and only when *that*
+fails does the existing stale/recompute path take over. **Generation is not
+relaxed anywhere** — a first run still has to produce all 24 rows from one
+clean, immutable commit/tree/DAG.
+
+What the reuse branch proves, in this order, all fail-closed:
+
+1. **The pins come from the artifact's bytes.** `parse_recorded_pins` reads
+   `conformance_commit`, `conformance_tree` and `conformance_dag_sha256` out of
+   `conformance-puc-v3.tsv` itself and validates 40/40/64 lowercase hex before
+   any value reaches a git command line. The leading line must be
+   `schema<TAB>grug_wp40_extreme_puc_conformance_v3` and `status` must be
+   `passed`; a repeated pin line is a refusal, so appended bytes cannot redirect
+   the check. A pre-v3 final artifact and a result row of either generation all
+   carry `conformance_*` fields, and none of them can pass this reader.
+2. **The commit is ours.** `assert_recorded_history` requires a real commit
+   *object* (`rev-parse --verify --quiet <id>^{commit}`) that is an **ancestor of
+   HEAD** (`merge-base --is-ancestor`). An object that merely exists — a
+   dangling `commit-tree` commit, a tree id, an object fetched from elsewhere —
+   is refused.
+3. **The tree is the recorded tree**, via the existing `validate_provenance`.
+4. **The whole pinned closure is unchanged.** `closure_equality` compares the
+   bytes of **every path in the `paths` roster** of
+   `t2_extreme_conformance_v3_authority.lua` at the recorded commit against the
+   **current working tree**, and names the first path that differs. There is no
+   second, informally maintained file list: the roster *is* the closure
+   definition, and because the authority module is itself a roster member, a
+   proven closure is also proof that the roster applied is the recorded commit's
+   roster. A member that is missing at the recorded commit is a refusal, never a
+   skip. The roster's DAG at that commit must equal the recorded
+   `conformance_dag_sha256`.
+
+   **One input the roster cannot carry.** `tools/bin/lua51` changes a v3 result,
+   but it is built per checkout and gitignored (`.gitignore`: `tools/bin/`), so
+   it is not a tracked path and `capture_git` could never read it at a commit.
+   It is pinned per **result row** instead, by step 5: the verifier re-hashes the
+   live `argv[0]` and requires it to equal every row's `interpreter_sha256` and
+   the merged artifact's `merge_interpreter_sha256`. So the roster is the
+   complete closure *of tracked inputs*, not of everything that can change a
+   result — and the interpreter is covered by a different mechanism, not left
+   open. The byte comparison also ignores git file modes; the repository has no
+   tracked symlinks, and adding one to the roster would need that revisited.
+5. **The evidence re-derives.** Only then is
+   `t2_extreme_conformance_finalize.lua` run in `verify` mode with the
+   **recorded** pins. That is the existing path: it re-runs
+   `t2_extreme_conformance_verify.lua` against all 20 rescore rows and 4 selected
+   rows, rebuilds the entire final blob from those retained bytes and requires it
+   to equal the artifact byte-for-byte. So a modified retained row and a modified
+   final artifact both fail.
+
+**Equality of the final TSV alone is never accepted** as proof of closure
+equality — the pins parse identically out of an artifact whose result rows were
+tampered with, which is exactly why steps 4 and 5 are both required. Any refusal
+means a rerun: the launcher falls through to its existing stale/recompute path.
+
+Acceptance is announced with a token no other path prints —
+`WP40_T2_C1_V3_RECORDED_EVIDENCE_ACCEPTED` from the driver, and
+`WP40 T2 C1 v3 conformance REUSED RECORDED EVIDENCE …` from the launcher, both
+carrying the recorded commit/tree/DAG, the closure size and the recomputed
+artifact digest — so reused evidence can never be read as a fresh measurement.
+
+The five properties are executable in `t2_extreme_conformance_test.lua`, which
+builds a throwaway git repository under `/tmp` and drives the real closure
+functions against a two-entry synthetic roster: a documentation-only HEAD
+movement still verifies; moving one closure member refuses and names it (also
+after that edit is committed, when HEAD and the working tree agree again and
+only the recorded commit can still refuse); a refusing finalizer and a tampered
+row are fatal; malformed, wrong-length, uppercase, missing, repeated,
+non-existent, non-commit, out-of-history and wrong-tree pins each refuse with
+their own diagnostic; and pre-v3 evidence cannot satisfy the v3 reader in either
+direction.
+
 
 ### Locked surfaces
 
@@ -510,9 +599,17 @@ Two categories of whitespace here are correct and must not be "fixed":
 
 - Everything under `evidence/` is a verbatim capture — console logs with box
   drawing and ASCII art, raw JSONL. Editing it falsifies the record.
-- `t2_partition_oracle.lua` carries eleven trailing-whitespace lines and is
-  content-pinned by `t2_extreme_conformance_authority.lua:33`. Changing its
-  bytes invalidates the conformance authority.
+- `t2_partition_oracle.lua` carries eleven trailing-whitespace lines and is a
+  roster member of both conformance authorities
+  (`t2_extreme_conformance_authority.lua:33` and the v3 roster). "Fixing" the
+  whitespace would be a pointless byte change, so leave it. Editing the file
+  for a real reason is a different matter and is *not* barred: the frozen
+  pre-v3 DAG `086855378e…` is re-materialized from commit `5a2fc0d` through
+  `capture_git`, so a working-tree edit cannot move it — measured 2026-08-21,
+  the pinned DAG reproduced exactly while roster members were modified in the
+  tree. What such an edit does move is the **v3** DAG, which is recomputed live
+  at every launch; once an accepted v3 artifact exists, moving it costs a rerun
+  under the recorded-commit closure rule above.
 
 So a clean `git diff --check` is the wrong readiness signal for WP40. Check
 that every reported path is one of those two categories instead.
