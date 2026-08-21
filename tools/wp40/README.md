@@ -240,10 +240,11 @@ Note that `run_t2_extreme_shards.sh` refuses to start unless its launcher
 authority (`run_t2_extreme_shards.sh`, `run_t2_extreme_shard.sh`,
 `t2_extreme_authority.lua`, `t2_extreme_gate_check.lua`, `full_scan_gate.lua`)
 is committed and identical to `HEAD`. Run the following sequence from the
-repository root. The two `$EDITOR` commands are deliberate review steps: no
-program currently generates either closed gate, so their complete records must
-be reconstructed from the immediately preceding no-cache evidence rather than
-copied from an old artifact.
+repository root. The `$EDITOR` steps are deliberate review points: no program
+generates any of the three hand-authored gate fixtures — `full_scan_gate.lua`,
+`max_u64_r16_r17.lua` and `conformance_gate_v3.lua` — so each complete record
+must be reconstructed from the immediately preceding no-cache evidence rather
+than copied from an old artifact.
 
 ```sh
 tools/wp40/run_t2_source_fast.sh
@@ -264,7 +265,8 @@ WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 #
 # TWO GLOBS NOW MATCH BOTH GENERATIONS AND MUST NEVER BE USED:
 #   * shard-luajit-*.tsv   - eight pre-v3 AND eight v3 shards
-#   * rescore-puc-*.tsv    - twenty pre-v3 AND twenty v3 rescore rows
+#   * rescore-puc-*.tsv    - the twenty pre-v3 rows today; forty once a v3
+#                            run has produced its own twenty
 # Always spell the generation out: shard-luajit-v3-*.tsv, rescore-puc-v3-*.tsv.
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
@@ -289,6 +291,22 @@ git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme pool"
 
+# Re-author the C1 v3 conformance gate. Nothing generates it, and EVERY value
+# in it moves with a regenerated pool: pool_measurement_commit,
+# pool_measurement_tree, pool_authority_dag_sha256, s1_authority_sha256,
+# s1_source_projection_sha256, artifact_sha256, manifest_sha256,
+# candidate_rows_sha256, the eight shard digests, the four winners and the
+# staging row. Reconstruct all of them from the merge output just printed and
+# from the pool commit above - never by editing the previous gate.
+# It must be committed BEFORE the conformance launcher runs: the gate is inside
+# the C1 v3 DAG, and the launcher's preflight requires the working tree to be
+# byte-identical to HEAD for every rostered path. Skipping this step does not
+# destroy anything - the launcher fails closed on a gate mismatch - but the
+# conformance cannot start.
+$EDITOR tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua
+git add tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua
+git commit -m "test(wp40): re-pin the C1 v3 conformance gate"
+
 # The launcher writes v3 names only and refuses any other target, so it can no
 # longer overwrite pre-v3 evidence. It reads conformance_gate_v3.lua and never
 # writes any gate.
@@ -301,11 +319,12 @@ git commit -m "test(wp40): retain regenerated extreme conformance"
 
 The first fixture edit must bind the stage-S1 authority digest and S1 Source
 projection printed by `t2_extreme_gate_check.lua`, plus the freshly reproduced
-max-u64 prerequisite, from that one snapshot. The conformance-gate edit must
-bind the new immutable measurement commit/tree/DAG, all eight shard files, the
-merged artifact and manifest, candidate rows, winners, and staging row printed
-by the PUC merge. Each commit must contain only the files named for that stage;
-the shard launcher and conformance launcher then execute from those immutable
+max-u64 prerequisite, from that one snapshot. The `conformance_gate_v3.lua`
+edit must bind the new immutable pool commit/tree/Authority-DAG, the two
+stage-S1 digests, all eight shard files, the merged artifact and manifest,
+candidate rows, the four winners and the staging row printed by the PUC merge.
+Each commit must contain only the files named for that stage; the shard
+launcher and the conformance launcher then execute from those immutable
 commits.
 
 Re-pinning asserts only that the named stage-S1 authority is the reviewed input
