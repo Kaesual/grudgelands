@@ -2365,15 +2365,19 @@ becomes a freeze only when the acceptance run is green:
 
 ### 12.5 The two slot findings, and what they actually were
 
-**Both are the §8.6 ledger items, closed here — not new topology.**
-§8.6 handed exactly two of them to the next phase's ledger by name:
+**Both are §8.6 ledger items, closed here — not new topology.** §8.6
+handed **three** pre-existing findings to the next phase's ledger; these
+are two of them, named there verbatim:
 "the R18-level C2 conformance oracle at slot 29" and "the Slot-30
 Starbough pin drift". The first cut of this section read them as two
 fresh defects of the WIP commit `44c2739` and asked for a new §11.6
 ruling on `land_010`. That framing was wrong and is corrected here.
 **Neither finding is a new topology failure, and neither needs a new
 §11.6 ruling.** The §11.11 boundary-topology freeze is untouched: not
-one line of production geometry moved for either.
+one line of production geometry moved for either. The third §8.6 ledger
+item — the F10 face-simplicity occupancy on wanted seeds 2147483648 and
+1959553668008863006 — is **not** touched by this package and stays on
+the ledger.
 
 1. **Slot 29 — the oracle, not the compiler.** The independent C2
    edge/transition oracle in `tools/wp40/t2_partition_test.lua` was
@@ -2474,10 +2478,15 @@ does not take**: it would move frozen production geometry, which is a
 STOP under the §11.11 topology freeze.
 
 So that the divergence announces itself rather than being diagnosed
-after the fact, the C2 oracle **asserts on it directly**: the joint
-summary carries `decided_by`, the key that actually decided each edge,
-and a selection decided by key 4 or key 5 trips a named assert pointing
-back at this section. Without it the first live occurrence would surface
+after the fact, the C2 oracle **asserts on it directly**: a selection
+that was separated from **any** competing complete tuple only at key 4
+or key 5 trips a named assert pointing back at this section. The test is
+that per-competitor fact, not the summary's `decided_by` figure — that
+one reports how deep the order had to go, and neither its minimum nor
+its maximum over the competitors can answer whether a divergent key was
+load-bearing. A winner separated from one competitor at key 1 and from
+another at key 4 has minimum 1; one separated at key 4 and at key 6 has
+maximum 6. Both would stay silent on a real key-4 decision. Without it the first live occurrence would surface
 as `land_0NN independent final station bytes changed`, which reads as a
 geometry regression and sends the reader into R7 displacement instead of
 the comparator. Key 6 does not trip it — after the separator alignment

@@ -3016,11 +3016,25 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		for index = 2, #tuples do
 			if tuple_less(tuples[index], best) then best = tuples[index] end
 		end
-		local decided_by = 0
+		-- Two different questions, and one number cannot answer both.  `decided_by`
+		-- reports how deep the order had to go at all, so it is the DEEPEST first
+		-- difference over the competitors.  Whether a divergent key was
+		-- load-bearing is a separate predicate: keys 4 and 5 are the ones this
+		-- oracle and the compiler measure differently, and either one deciding
+		-- ANY single pairwise comparison is enough to make the two sides able to
+		-- disagree.  Neither the minimum nor the maximum captures that -- a
+		-- winner separated from one competitor at key 1 and from another at key 4
+		-- has minimum 1, and one separated at key 4 and at key 6 has maximum 6;
+		-- both would stay silent on a real key-4 decision.  So collect it
+		-- explicitly.
+		local decided_by, divergent_key = 0, nil
 		for index = 1, #tuples do
 			if tuples[index] ~= best then
 				local key = first_difference(best, tuples[index])
-				if decided_by == 0 or key < decided_by then decided_by = key end
+				if key > decided_by then decided_by = key end
+				if (key == 4 or key == 5) and not divergent_key then
+					divergent_key = key
+				end
 			end
 		end
 		local probes = {}
@@ -3031,6 +3045,7 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		end
 		return {probes = probes, control_indices = best.control_indices,
 			edge = best.edge, complete = #tuples, decided_by = decided_by,
+			divergent_key = divergent_key,
 			total_retreat = best.total_retreat, max_retreat = best.max_retreat,
 			elbow_count = best.elbow_count}
 	end
@@ -3100,7 +3115,8 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 				transition_at, attachment, selected_probes)
 			selected_probes = joint.probes
 			authority.joint[source_edge.id] = {complete = joint.complete,
-				decided_by = joint.decided_by, total_retreat = joint.total_retreat,
+				decided_by = joint.decided_by, divergent_key = joint.divergent_key,
+				total_retreat = joint.total_retreat,
 				max_retreat = joint.max_retreat, elbow_count = joint.elbow_count}
 		end
 		local controls = joint and joint.control_indices or
@@ -3215,12 +3231,17 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 			-- Keys 4 and 5 are the one place C2 and the compiler deliberately
 			-- disagree: this oracle compares the declared (x, z) tuples, the
 			-- compiler compares their text.  Nothing measured exercises them, but
-			-- if one ever decided a selection the two sides could pick different
-			-- tuples and the run would fail as "independent final station bytes
-			-- changed" -- a geometry message for a comparator cause.  Trip here
-			-- instead, and say so.  Key 6 is aligned end to end and is legitimate.
-			assert(row.decided_by ~= 4 and row.decided_by ~= 5, edge_id ..
-				" R19 selection was decided by key " .. row.decided_by ..
+			-- if one ever separated the winner from ANY competitor the two sides
+			-- could pick different tuples and the run would fail as "independent
+			-- final station bytes changed" -- a geometry message for a comparator
+			-- cause.  Trip here instead, and say so.  The test is the recorded
+			-- `divergent_key`, not `decided_by`: `decided_by` answers "how deep
+			-- did the order have to go", and neither its minimum nor its maximum
+			-- over the competitors can answer "was a divergent key load-bearing".
+			-- Key 6 is aligned end to end and is legitimate, so it never trips.
+			assert(not row.divergent_key, edge_id ..
+				" R19 selection was separated from a competitor only at key " ..
+				tostring(row.divergent_key) ..
 				"; C2 and the compiler use different metrics for keys 4 and 5 -- " ..
 				"see wp40-t2-contracts.md 12.5")
 			joint_parts[#joint_parts + 1] = edge_id .. "=" .. row.complete .. "/" ..
