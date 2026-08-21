@@ -199,6 +199,22 @@ post-run decision memo**: the census closes as a measurement and the
 findings open the named bay-transition-simplicity correction package.
 All four winners are clean on every Scan-4 tier.
 
+**Status, 2026-08-21, the §11 bay-transition package landed.** The
+package is `931e857` — one atomic commit on the fifth attempt (four
+honoured STOPs before it), carrying the closing, residue adoption, the
+appendix acceptance with `W := 12`, the ring and seam completions and
+the live production Whole gate. The acceptance sweep measured 1,166
+witnesses green — zero REJECTED rows of any class, winner invariance
+4/4 byte-identical — against one outdated ledger pin, and the
+contracts **section-11.11 closeout** records the two measurement
+corrections behind it (adoption 117/118 → 118/119, family-B evidence
+93 → 105 stations; `W`, semantics and code unchanged), pins them as
+committed fixtures plus a committed checker, and closes the §11
+acceptance green. **Boundary topology is semantically frozen**: a
+change to it needs a new memo. Next are the C1-v3 conformance /
+topology handoff and the parallelizable light-regime T2 fields —
+explicitly *not* another §11 round.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.

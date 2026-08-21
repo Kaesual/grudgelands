@@ -2107,3 +2107,134 @@ acceptance sweep is pre-approved to **6 h wall** (the user's buffer
 choice over the measured 4.8 h no-abort actuals); the PUC
 pre-approval is unchanged. The fifth implementation attempt proceeds
 from the banked patch under the v3 brief.
+
+### 11.11 The acceptance closeout (cut 2026-08-21, recorded measurement corrections)
+
+**The fifth attempt landed as `931e857`** — one atomic commit carrying
+the banked closing, the 11.7-B residue adoption, the ruled 11.5-C
+appendix acceptance, the three 11.9 completions, the ratified loop
+pairing and **W := 12**, with the production Whole gate live. The
+acceptance evidence is untracked beside it, under
+`tools/wp40/results/bay-transition-package-final-artifacts/`: the
+1,166-witness union sweep with **zero REJECTED rows of any class**,
+whole tier evaluated 1,166/1,166 with g/o/r/m zero, zero non-owned
+once-fragment rows, winner invariance 4/4 byte-identical to the banked
+digests, probe parity 478/478, families A/B/C green by records
+(24/60/24 seeds, zero rejects), the six split chains and the six
+family-seed chains individually verified. The scratch ledger verifier
+nevertheless ended `FAILURES PRESENT` on **exactly one line**:
+`FAIL adoption-117-118 seeds=118/117 chains=119/118 diff-bytes=126`.
+This memo audits that line, records the two measurement corrections it
+exposes, and closes the §11 acceptance.
+
+**The audit** (coordinator, independent of the implementing agent; the
+adoption anatomy re-derived under LuaJIT in 41 s). The banked
+117-seed / 118-chain anatomy is reproduced **byte-identically** inside
+`adoption-actual.txt` — the diff is additive, not a drift. Exactly one
+line is new:
+`ADOPTION seed=18171940200422843206 chains=1 columns=1 rejected=0 zone_face:kragmar_sunscar_flats/1[z=2252:x=877..877]`.
+Cardinal, single-face, zero ring stations — the ruled 11.7-B
+shore-attached mechanic exactly as cut, on a seed whose whole tier was
+measurable **for the first time** in this run, because it is one of the
+five d=12 seeds that W = 12 re-accepted. 11.10 named this case in
+advance: "any drift beyond them (**beyond the five re-accepted d=12
+seeds, whose counts the run measures**) is a finding for a new memo."
+The measurement fell inside the clause; the pin was written without it.
+
+**Correction 1 — the adoption ledger: 117 seeds / 118 chains → 118
+seeds / 119 chains.** Cause: 11.10 pinned the adoption count as a fixed
+number (111 gap-family chains + the six family-seed chains) while its
+own disposition left the five re-accepted seeds' tiers to be measured.
+The additional chain is the 118th seed's single adopted chain above;
+no banked chain moved, no chain was lost, `residual_multi_face_reject`
+stays vacuous (zero multi-face chains, zero ring-adoption chains).
+
+**Correction 2 — the family-B evidence: 93 → 105 stations.**
+`bjoin-actual.tsv` is the **complete deduplicated** family-B
+repeat-station capture: 105 rows, zero duplicate rows, all 60 family-B
+seeds represented, every row `class=face_appendix_select`. The banked
+93-row table (`b-join-distances.tsv` of the w11 stop artifacts) was an
+incomplete diagnostics capture, not the complete population 11.10 took
+it for. The delta is 12 additional stations — d=1 ×1, 2 ×5, 3 ×3,
+4 ×3, **all d ≤ 4**, behaviour identical under W = 11 and W = 12 —
+plus 12 class flips `reject` → `select` confined to the five d=12
+seeds (18171940200422843206 ×1, 501535562992590246 ×1,
+4154650258832672681 ×5, 4733240883161403671 ×3,
+7921513688806375529 ×2). Distance histogram old → new: d=1 ×14, 2 ×10,
+8 ×7, 9 ×9, 10 ×25, 11 ×23, 12 ×5 (93) → d=1 ×15, 2 ×15, 3 ×3, 4 ×3,
+8 ×7, 9 ×9, 10 ×25, 11 ×23, 12 ×5 (105). **The maximum is unchanged:
+12.** The W := 12 ruling's substance — the pin sits at the
+complete-population maximum, no margin, anything farther stays a named
+loud failure — is therefore unaffected; what moves is the histogram
+detail and the word "complete" attached to the 93-row capture. The
+11.6 discipline holds for the constant: the ruling was cut on the
+population maximum, and the larger population confirms that maximum.
+
+**Everything else in the ledger is byte-exact or better.**
+`inherit-actual.tsv` (25 rows at the seven declared columns) and
+`pinch-actual.tsv` (21 rows) are byte-identical to the banked pins;
+`ringcol-actual.tsv` (8 rows, the family-A ring evidence) is
+content-identical to the banked evidence in a different row order —
+probe emission order is not canonical, so only the content is pinned;
+`carriers.txt` holds 796 distinct appendix carriers (≥ 792) with no
+banked carrier lost.
+
+**The corrected pins are now the authoritative §11 acceptance
+ledger**, and they are no longer prose. Byte-exact copies of the six
+tables are committed as canonical fixtures under
+`tools/wp40/fixtures/t2_census/` —
+`s11-adoption-ledger-v1.txt` (118), `s11-bjoin-complete-v1.tsv` (105),
+`s11-inherit-v1.tsv` (25), `s11-pinch-v1.tsv` (21),
+`s11-ringcol-v1.tsv` (8), `s11-carriers-v1.txt` (796) — and the
+committed checker `tools/wp40/t2_s11_acceptance_check.lua` (runner
+`tools/wp40/run_t2_s11_acceptance.sh`) verifies an artifact set against
+them in two independent layers: byte equality against the fixtures
+(sorted-content equality for ringcol, for the reason above) **and**
+structural pins recomputed from the artifact bytes rather than from the
+fixtures, so a fixture and an artifact that drifted together still
+fail. It prints canonical PASS/FAIL lines and ends `ACCEPTANCE GREEN`
+(exit 0) or `FAILURES PRESENT` (exit 1); it is byte-identical under
+LuaJIT and the vendored PUC 5.1. **Against the landed artifacts it is
+green.**
+
+**What this closeout is, stated flatly.** A new measured finding:
+**yes** — the 118th adopted chain and the 12 previously uncaptured
+family-B stations. A new failure class or new semantics: **no** —
+every row falls inside a mechanic already ruled by 11.7-B, 11.5-C and
+11.9, and every named loud guard stayed loud and vacuous where it was
+predicted vacuous. An algorithm change: **no** — W = 12, the loop
+pairing, the closing, the adoption, the appendix acceptance, the seam
+inheritance and the Whole gate are exactly as committed in `931e857`;
+not one line of production code moves for this entry. A formal
+acceptance closure: **yes** — with the two pins corrected, the §11
+acceptance is green in full, and this section is the record of it.
+
+**The in-code `W` provenance is deliberately left untouched.** The
+provenance comments beside the pin in
+`mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua` and
+`tools/wp40/t2_census_authority.lua` still cite the superseded 93-row
+capture and its histogram. Both files are closed: the production
+geometry and the census authority carry the ruled constant, and the
+value they pin (12) is correct under both histograms. Editing a
+provenance comment in a closed production file to restate a
+measurement that changed nothing about the constant would move a
+committed surface for documentation's sake; this contracts entry is
+the authoritative corrected provenance, and a reader who follows the
+in-code comment to §11.10 arrives here. Should either file be opened
+for a substantive reason, the comment updates with it.
+
+**11.7-C — the authored-margin correction at the two head columns —
+remains optional later cleanup**, exactly as ruled: it kills 90 of the
+112 measured pockets but not the family, and adoption owns the family.
+
+**Boundary topology is semantically FROZEN.** With this closeout the
+§11 boundary machinery — corridor ownership, the closing, residue
+adoption, the appendix acceptance predicate with `W`, the loop
+pairing, ring connectivity, seam inheritance and the Whole gate — is
+closed for T2. A semantic change to any of it henceforth requires a
+new memo in this document under the 11.6 discipline (fully measured
+firing set before the ruling), not an in-package amendment. The freeze
+is on the semantics, not on measurement: the full-`W` re-census stays
+at T2-final and **re-verifies these pins** over the whole universe,
+and a drift it finds is a finding for that new memo. T2 as a whole
+remains in progress.
