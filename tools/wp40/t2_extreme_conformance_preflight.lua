@@ -36,19 +36,21 @@ local function raw_sha256(data)
 	return digest
 end
 local authority = assert(loadfile(repo ..
-	"/tools/wp40/t2_extreme_conformance_authority.lua"))()({
+	"/tools/wp40/t2_extreme_conformance_v3_authority.lua"))()({
 	raw_sha256 = raw_sha256})
 assert(authority.validate_provenance(repo, scratch, {commit = commit, tree = tree}))
 local snapshot = authority.capture(repo)
 local pinned = authority.capture_git(repo, scratch, commit)
 assert(snapshot.file_manifest == pinned.file_manifest and
 	snapshot.dag_sha256 == pinned.dag_sha256,
-	"working C1 authority differs from the pinned commit")
+	"working C1 v3 authority differs from the pinned commit")
 for index = 1, #authority.paths do
 	local path = authority.paths[index]
 	assert(snapshot.files[path] == pinned.files[path],
-		"working C1 authority byte differs from the pinned commit: " .. path)
+		"working C1 v3 authority byte differs from the pinned commit: " .. path)
 end
 assert(authority.verify(repo, snapshot))
-print("WP40_T2_C1_PREFLIGHT\t" .. commit .. "\t" .. tree .. "\t" ..
+-- A distinct token: a pre-v3 preflight line must not satisfy the v3 launcher,
+-- and vice versa.
+print("WP40_T2_C1_V3_PREFLIGHT\t" .. commit .. "\t" .. tree .. "\t" ..
 	snapshot.dag_sha256)

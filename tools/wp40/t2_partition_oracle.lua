@@ -1080,8 +1080,15 @@ return function(dependencies)
 			for index = 1, #notch_list do
 				any_notch[point_key(notch_list[index].x, notch_list[index].z)] = true
 			end
+			-- A simulated notch is R17 fill on the FINAL mask, so the raw Bay mask
+			-- passes through unpatched.  It is carried explicitly because the
+			-- shoulder-mode Aperture terminal reads it, and an absent field here is
+			-- a nil call rather than a wrong answer -- latent until a winner both
+			-- resolves a shoulder Aperture and reaches this simulation, which
+			-- Slot 29 is the first to do.
 			local patched_world = {bay_oracles = oracle_world.bay_oracles,
 				bay_oracle_by_id = oracle_world.bay_oracle_by_id,
+				raw_bay_water = oracle_world.raw_bay_water,
 				footprint_class = oracle_world.footprint_class}
 			patched_world.planned_water = function(x, z, equality)
 				if not equality and any_notch[point_key(x, z)] then return true end

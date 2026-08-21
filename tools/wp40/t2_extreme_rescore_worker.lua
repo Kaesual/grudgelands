@@ -24,9 +24,16 @@ for _, path in ipairs({repo, scratch, output_path, interpreter_path}) do
 end
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-conformance%-worker%.[A-Za-z0-9]+$"),
 	"unsafe rescore scratch path")
+-- v3 outputs have their own names.  The pre-v3 rescore-puc-%04d.tsv files are
+-- historical working papers pinned in their own headers to the pre-v3
+-- measurement commit; this worker must never be able to target one.
 local expected_output = repo .. ("/tools/wp40/fixtures/t2_extreme_e0/" ..
-	"rescore-puc-%04d.tsv"):format(candidate_index)
+	"rescore-puc-v3-%04d.tsv"):format(candidate_index)
 assert(output_path == expected_output, "rescore output path changed")
+assert(not output_path:match("/rescore%-puc%-%d%d%d%d%.tsv$") and
+	not output_path:match("/selected%-puc%-slot%d%d%.tsv$") and
+	not output_path:match("/conformance%-puc%.tsv$"),
+	"rescore output names pre-v3 evidence")
 assert(type(conformance_commit) == "string" and #conformance_commit == 40 and
 	conformance_commit:match("^[0-9a-f]+$") and type(conformance_tree) == "string" and
 	#conformance_tree == 40 and conformance_tree:match("^[0-9a-f]+$") and
@@ -67,7 +74,8 @@ local function hex(bytes)
 	end))
 end
 
-local conformance_authority_path = "tools/wp40/t2_extreme_conformance_authority.lua"
+local conformance_authority_path =
+	"tools/wp40/t2_extreme_conformance_v3_authority.lua"
 local conformance_authority_bytes = read_file(repo .. "/" ..
 	conformance_authority_path)
 local conformance_authority = assert(loadstring(conformance_authority_bytes,
@@ -122,14 +130,30 @@ local conformance = assert(loadstring(conformance_snapshot.files[
 	extreme = extreme, rational_compare = extreme.rational_compare,
 	decimal_less = extreme.decimal_less})
 local gate = assert(loadstring(conformance_snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua"],
-	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua"))()
-assert(measurement_snapshot.authority_dag_sha256 == gate.authority_dag_sha256,
-	"measurement DAG differs from conformance gate")
+	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"],
+	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"))()
+assert(conformance.assert_v3_result_path(output_path, repo,
+	conformance.rescore_result_path(candidate_index), "v3 rescore output"))
+-- (R3b) stage-S1 CURRENCY against the tree this worker is executing on.  The
+-- pre-v3 chain asserted here that the LIVE measurement Authority-DAG equals the
+-- gate; that is impossible now and must not be reintroduced, because the
+-- Section 11 correction landed after the pool was measured.
+local s1 = conformance.s1_currency(measurement_authority, files, gate)
+-- (R3c) the Authority-DAG of the code that actually performs this rescore.
+-- Recorded in a gate-independent position and established against THIS tree,
+-- never against the pool.  It is not re-compared here on purpose: it is derived
+-- from the same capture as measurement_snapshot, so a local equality test would
+-- only restate bind_vocabulary's own output.  The real checks are downstream --
+-- t2_extreme_conformance_verify.lua recomputes this field from the conformance
+-- tree for every published row and t2_extreme_conformance_finalize.lua requires
+-- all twenty-four rows to agree -- and measurement_authority.verify below is
+-- what proves the captured bytes did not move during the run.
+local execution_dag = conformance.execution_authority_dag(measurement_authority,
+	files)
 local artifact = conformance.parse_artifact(conformance_snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv"], gate)
+	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"], gate)
 conformance.parse_manifest(conformance_snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv"], gate)
+	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv"], gate)
 local slots, _, required = conformance.selected_and_required(artifact, gate,
 	extreme.staging_seed)
 local required_set = {}
@@ -147,15 +171,15 @@ assert(artifact.headers.merge_interpreter_path == interpreter_path and
 	"PUC rescore interpreter differs from retained merge authority")
 
 local start_wall = os.time()
-print(("WP40 T2 C1 PUC rescore start candidate=%04d role=%s"):format(
+print(("WP40 T2 C1 v3 PUC rescore start candidate=%04d role=%s"):format(
 	candidate_index, winner[candidate_index] and "winner" or "endpoint"))
 io.stdout:flush()
 local rescored = extreme.score_candidate(candidate_index)
-local pins = {source_checksum = gate.source_checksum,
-	boundary_policy_checksum = gate.boundary_policy_checksum,
-	partition_sha256 = gate.partition_sha256,
-	authority_dag_sha256 = gate.authority_dag_sha256,
-	authority_commit = gate.measurement_commit, authority_tree = gate.measurement_tree,
+local pins = {s1_authority_sha256 = s1.s1_authority_sha256,
+	s1_source_projection_sha256 = s1.s1_source_projection_sha256,
+	authority_dag_sha256 = gate.pool_authority_dag_sha256,
+	authority_commit = gate.pool_measurement_commit,
+	authority_tree = gate.pool_measurement_tree,
 	interpreter_id = "puc_lua51", interpreter_launcher = interpreter_path,
 	interpreter_path = interpreter_path,
 	interpreter_version = "Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio",
@@ -169,15 +193,17 @@ local rescored_line = assert(one:match("\n([^\n]*)\n$"))
 assert(rescored_line == expected_line, "PUC rescored row differs byte-for-byte")
 assert(rescored.decimal == expected_row.decimal)
 local row_sha = hex(raw_sha256(expected_line .. "\n"))
-local result = {schema = "grug_wp40_extreme_puc_rescore_v1", status = "passed",
+local result = {schema = "grug_wp40_extreme_puc_rescore_v3", status = "passed",
 	scope = "T2C_E0_PUC_ROW_CONFORMANCE_ONLY",
-	measurement_commit = gate.measurement_commit, measurement_tree = gate.measurement_tree,
-	authority_dag_sha256 = gate.authority_dag_sha256,
+	pool_measurement_commit = gate.pool_measurement_commit,
+	pool_measurement_tree = gate.pool_measurement_tree,
+	pool_authority_dag_sha256 = gate.pool_authority_dag_sha256,
+	s1_authority_sha256 = s1.s1_authority_sha256,
+	s1_source_projection_sha256 = s1.s1_source_projection_sha256,
 	conformance_commit = conformance_commit, conformance_tree = conformance_tree,
 	conformance_dag_sha256 = conformance_dag,
-	source_checksum = gate.source_checksum,
-	boundary_policy_checksum = gate.boundary_policy_checksum,
-	partition_sha256 = gate.partition_sha256, artifact_sha256 = gate.artifact_sha256,
+	execution_authority_dag_sha256 = execution_dag,
+	artifact_sha256 = gate.artifact_sha256,
 	manifest_sha256 = gate.manifest_sha256,
 	candidate_rows_sha256 = gate.candidate_rows_sha256,
 	interpreter_id = "puc_lua51", interpreter_path = interpreter_path,
@@ -200,6 +226,6 @@ end)
 if not published then os.remove(temporary); error(message, 0) end
 assert(measurement_authority.verify(repo, measurement_snapshot, vocabulary))
 assert(conformance_authority.verify(repo, conformance_snapshot))
-print(("WP40 T2 C1 PUC rescore passed candidate=%04d row_sha256=%s " ..
+print(("WP40 T2 C1 v3 PUC rescore passed candidate=%04d row_sha256=%s " ..
 	"wall_seconds=%d"):format(candidate_index, row_sha,
 	os.difftime(os.time(), start_wall)))

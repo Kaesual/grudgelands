@@ -240,34 +240,41 @@ Note that `run_t2_extreme_shards.sh` refuses to start unless its launcher
 authority (`run_t2_extreme_shards.sh`, `run_t2_extreme_shard.sh`,
 `t2_extreme_authority.lua`, `t2_extreme_gate_check.lua`, `full_scan_gate.lua`)
 is committed and identical to `HEAD`. Run the following sequence from the
-repository root. The two `$EDITOR` commands are deliberate review steps: no
-program currently generates either closed gate, so their complete records must
-be reconstructed from the immediately preceding no-cache evidence rather than
-copied from an old artifact.
+repository root. The `$EDITOR` steps are deliberate review points: no program
+generates any of the three hand-authored gate fixtures — `full_scan_gate.lua`,
+`max_u64_r16_r17.lua` and `conformance_gate_v3.lua` — so each complete record
+must be reconstructed from the immediately preceding no-cache evidence rather
+than copied from an old artifact.
 
 ```sh
 tools/wp40/run_t2_source_fast.sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 "$PWD/tools/bin/lua51" tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
 
-# NOT removed, because they are content-pinned by
-# t2_extreme_conformance_authority.lua and must stay:
+# NOT removed. The pre-v3 pool files are content-pinned by
+# t2_extreme_conformance_authority.lua (the frozen pre-v3 C1 graph), and four
+# of them are additionally rostered by t2_extreme_conformance_v3_authority.lua
+# because the v3 KAT reads them as negative inputs:
 #   * the frozen pre-v3 pool - shard-luajit-0000-0511.tsv and its seven
 #     peers, candidates-luajit.tsv, manifest-luajit.tsv
 #   * conformance_gate.lua, the recorded conclusion of the pre-v3 C1
 #     conformance run
-# Note that shard-luajit-*.tsv now matches sixteen files: the eight frozen
-# pre-v3 shards AND the eight live v3 shards. Never glob on that pattern.
-# The rescore-puc-*.tsv are resume state rather than evidence - each names
-# the measurement_commit it belongs to and nothing pins them - so they are
-# cleared and recomputed.
+#   * the twenty pre-v3 rescore-puc-%04d.tsv. Nothing pins them and no code
+#     reads them any more; whether they are deleted is an open question, not
+#     this recipe's decision. See "The two result generations" below.
+#
+# TWO GLOBS NOW MATCH BOTH GENERATIONS AND MUST NEVER BE USED:
+#   * shard-luajit-*.tsv   - eight pre-v3 AND eight v3 shards
+#   * rescore-puc-*.tsv    - the twenty pre-v3 rows today; forty once a v3
+#                            run has produced its own twenty
+# Always spell the generation out: shard-luajit-v3-*.tsv, rescore-puc-v3-*.tsv.
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
+  tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-v3-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv
 $EDITOR tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
   tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
 tools/wp40/run_t2_extreme.sh
@@ -284,27 +291,40 @@ git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme pool"
 
-# BLOCKED until the C1 chain is migrated to v3. run_t2_extreme_conformance.sh
-# writes conformance_gate.lua in place, and that file is the content-pinned
-# conclusion of the pre-v3 run, asserted by selected_stage2_blocked.lua as
-# measurement_commit 53be77e / artifact 1096139a. Running it now overwrites
-# pinned evidence and leaves WP40_FINAL=1 run_t2_partition.sh --historical
-# permanently red. The migration must give the v3 gate a distinct name, the
-# same separation the shards, artifact and manifest already have.
+# Re-author the C1 v3 conformance gate. Nothing generates it, and EVERY value
+# in it moves with a regenerated pool: pool_measurement_commit,
+# pool_measurement_tree, pool_authority_dag_sha256, s1_authority_sha256,
+# s1_source_projection_sha256, artifact_sha256, manifest_sha256,
+# candidate_rows_sha256, the eight shard digests, the four winners and the
+# staging row. Reconstruct all of them from the merge output just printed and
+# from the pool commit above - never by editing the previous gate.
+# It must be committed BEFORE the conformance launcher runs: the gate is inside
+# the C1 v3 DAG, and the launcher's preflight requires the working tree to be
+# byte-identical to HEAD for every rostered path. Skipping this step does not
+# destroy anything - the launcher fails closed on a gate mismatch - but the
+# conformance cannot start.
+$EDITOR tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua
+git add tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua
+git commit -m "test(wp40): re-pin the C1 v3 conformance gate"
+
+# The launcher writes v3 names only and refuses any other target, so it can no
+# longer overwrite pre-v3 evidence. It reads conformance_gate_v3.lua and never
+# writes any gate.
 tools/wp40/run_t2_extreme_conformance.sh
-git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
+git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-v3-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme conformance"
 ```
 
 The first fixture edit must bind the stage-S1 authority digest and S1 Source
 projection printed by `t2_extreme_gate_check.lua`, plus the freshly reproduced
-max-u64 prerequisite, from that one snapshot. The conformance-gate edit must
-bind the new immutable measurement commit/tree/DAG, all eight shard files, the
-merged artifact and manifest, candidate rows, winners, and staging row printed
-by the PUC merge. Each commit must contain only the files named for that stage;
-the shard launcher and conformance launcher then execute from those immutable
+max-u64 prerequisite, from that one snapshot. The `conformance_gate_v3.lua`
+edit must bind the new immutable pool commit/tree/Authority-DAG, the two
+stage-S1 digests, all eight shard files, the merged artifact and manifest,
+candidate rows, the four winners and the staging row printed by the PUC merge.
+Each commit must contain only the files named for that stage; the shard
+launcher and the conformance launcher then execute from those immutable
 commits.
 
 Re-pinning asserts only that the named stage-S1 authority is the reviewed input
@@ -323,12 +343,29 @@ for them, so they cannot be carried forward into v3 and must not be re-headed
 to look current. They stay exactly as they are, as historical evidence for the
 pins they were measured under. The v3 pool is a new measurement.
 
-The twenty `rescore-puc-*.tsv` are deliberately not in that list. They are
-resume state, not evidence: each names in its own header the
-`measurement_commit` it belongs to, nothing pins them, and the historical
-reader does not consult them. They exist so an interrupted conformance run
-does not repeat 249 s of PUC row rescoring. `conformance_gate.lua` is the
-recorded conclusion; the rescores are the working papers behind it.
+#### The two result generations
+
+The twenty `rescore-puc-%04d.tsv` are pre-v3 files, and since the C1 chain
+moved to v3 they are inert. The facts, all checkable in the tree:
+
+- **No code reads them.** The v3 chain writes and verifies
+  `rescore-puc-v3-%04d.tsv`; every path guard in it rejects the pre-v3 name.
+- **Nothing pins them.** No rescore file of either generation appears in
+  `t2_extreme_conformance_authority.lua`'s roster or in
+  `t2_extreme_conformance_v3_authority.lua`'s, and no fixture records their
+  digests.
+- **They can never be resume state again.** Each names in its own header the
+  pre-v3 `measurement_commit` `53be77e`, which the v3 verifier rejects, so a v3
+  run would recompute regardless of whether they are present.
+
+Whether they should be deleted, or kept as historical working papers behind
+`conformance_gate.lua`, is **an open question for the next package** — this
+file does not decide it. Until it is decided they stay, and the glob warning
+above applies. Note the tension a reader will hit: the paragraph history of
+this section called them disposable resume state, while the C1 v3 handoff
+ruling called them must-retain. Both were written when they were still the
+current chain's resume state; neither survives contact with the migration, and
+that is exactly why the question is open rather than answered here.
 
 `grug_wp40_extreme_candidate_shard_v3`, `…_measurement_artifact_v3` and
 `…_shard_manifest_v3` replace `source_checksum`, `boundary_policy_checksum` and
@@ -362,13 +399,179 @@ pre-v3 file, a truncated or corrupted shard — aborts the launcher loudly
 instead of being skipped.
 
 There is a v3 writer only. The retained v2 artifacts stay readable through
-`extreme.parse_historical_shard_blob`, an explicitly named read-only reader used
-by the C1 conformance chain so that the historical measurement stays checkable
-*as historical*. It never validates a v2 record against a current pin, and no
-code path can present a v2 record as current. When the pool is re-measured, the
-whole C1 chain (`t2_extreme_conformance.lua` and the rescore/selected workers)
-must be moved to v3 against the artifacts that run actually produces; that is
-deliberately not done in advance, because it cannot be tested until they exist.
+`extreme.parse_historical_shard_blob`, an explicitly named read-only reader. It
+never validates a v2 record against a current pin, and no code path can present
+a v2 record as current.
+
+The C1 conformance chain has since been migrated: `t2_extreme_conformance.lua`
+and the rescore/selected workers read the v3 pool through
+`extreme.parse_shard_blob`, and `parse_historical_shard_blob` is no longer
+reachable from the chain at all. The only remaining C1 use of the pre-v3
+artifacts is negative — `t2_extreme_conformance_test.lua` presents each of them
+to a v3 reader and requires rejection. See "The v3 conformance generation".
+
+### The v3 conformance generation
+
+The C1 selected-four conformance chain reads the v3 scalar pool. It is a
+*generation*, not a replacement: the pre-v3 chain's authority module, gate and
+artifacts are frozen where they are, and the two can never be confused.
+
+**Why a second authority module.** `t2_extreme_conformance_authority.lua` must
+stay byte-identical. `t2_partition_test.lua`'s `selected_stage2_historical` mode
+(`WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical`) `dofile`s
+it from the live tree and re-materializes the pre-v3 conformance DAG
+`086855378e…` from commit `5a2fc0d` through its exact roster. Any roster edit
+makes that digest unreproducible and turns the historical gate permanently red.
+The v3 chain therefore owns `t2_extreme_conformance_v3_authority.lua`, with the
+domain-separated DAG prefix `grug_wp40_t2c_e0_c1_v3_dag_v1`, so a pre-v3 and a
+v3 file manifest can never collide even if the two rosters became equal.
+
+**What the v3 roster names** (66 paths): the v3 chain modules — including the
+recorded-evidence driver — plus the runner, gate,
+merged artifact, manifest and eight shards; `t2_partition_test.lua`,
+`t2_partition_oracle.lua`, the WP40 schema modules and the WP43 material surface
+those two load, plus the shared phase selector and the partition payload cache;
+every file the measurement Authority-DAG covers (`t2_extreme_authority.lua`'s
+`paths` and `stage_paths`), because `execution_authority_dag_sha256` is
+recomputed from the live tree and the preflight must be able to prove the live
+tree equals the pinned commit for every byte that digest depends on; and the
+four pre-v3 fixtures the KAT reads as negative inputs.
+
+**Old → new.**
+
+| kind | pre-v3 | v3 |
+|---|---|---|
+| gate fixture | `conformance_gate.lua` | `conformance_gate_v3.lua` |
+| gate schema | `…_conformance_gate_v1` | `…_conformance_gate_v3` |
+| authority module | `t2_extreme_conformance_authority.lua` | `t2_extreme_conformance_v3_authority.lua` |
+| DAG prefix | `grug_wp40_t2c_e0_c1_dag_v1` | `grug_wp40_t2c_e0_c1_v3_dag_v1` |
+| merged artifact | `candidates-luajit.tsv` (20 headers) | `candidates-luajit-v3.tsv` (19 headers) |
+| manifest | `manifest-luajit.tsv` | `manifest-luajit-v3.tsv` |
+| shards | `shard-luajit-%04d-%04d.tsv` | `shard-luajit-v3-%04d-%04d.tsv` |
+| rescore result | `rescore-puc-%04d.tsv` / `…_puc_rescore_v1` | `rescore-puc-v3-%04d.tsv` / `…_puc_rescore_v3` |
+| selected result | `selected-puc-slot%02d.tsv` / `…_selected_partition_v1` | `selected-puc-v3-slot%02d.tsv` / `…_selected_partition_v3` |
+| final result | `conformance-puc.tsv` / `…_puc_conformance_v1` | `conformance-puc-v3.tsv` / `…_puc_conformance_v3` |
+| preflight token | `WP40_T2_C1_PREFLIGHT` | `WP40_T2_C1_V3_PREFLIGHT` |
+
+Every path guard rejects the other generation's name in both directions —
+`is_historical_result_path` recognises the pre-v3 names, `assert_v3_result_path`
+requires the exact retained directory under a named repository root, and the
+launcher's `v3_target` refuses any target that is not a v3 name in one of the
+two retained directories.
+
+**The three provenance claims.** The pre-v3 chain asserted that the live
+measurement Authority-DAG equalled the gate's. That is not true any more and is
+not faked: `geometry/partition.lua`, `source/catalog.lua` and
+`validation/t2_source.lua` all differ between the pool commit and HEAD, because
+the Section 11 correction landed after the pool was measured. Three separately
+named claims replace it, and no two share a field name:
+
+| claim | fields in every result row | how it is established |
+|---|---|---|
+| pool origin (historical) | `pool_measurement_commit`, `pool_measurement_tree`, `pool_authority_dag_sha256` | `t2_extreme_conformance_verify.lua` re-materializes `19fc28d1` / `bca04056` / `069cce2d` through `validate_pinned_authority`, with no `partition_sha256` |
+| stage-S1 currency | `s1_authority_sha256`, `s1_source_projection_sha256` | recomputed from the tree the conformance runs on, following `t2_extreme_gate_check.lua`'s sequence, and required to equal the gate |
+| executing code | `execution_authority_dag_sha256` | the measurement Authority-DAG of the conformance tree; recorded in a gate-independent position, recomputed live per row by the verifier, and required to agree across all twenty-four rows by the finalizer |
+
+A fourth, different thing sits beside them: `conformance_commit`,
+`conformance_tree` and `conformance_dag_sha256` are the C1 v3 launch pins of the
+run that produced the row.
+
+**One consequence of the retained interpreter pin.** The merged artifact records
+`merge_interpreter_path = /home/jan/projects/grudgelands/tools/bin/lua51`, and
+the workers, the verifier and the finalizer all compare it against their own
+`argv[0]`. The pin is deliberately retained, so an end-to-end run only succeeds
+when the repository root is exactly that path: **the conformance cannot be run
+from a git worktree.** Parse/validate/mutation KATs are unaffected and run
+anywhere.
+
+**Recorded-commit reuse: what a finished artifact is evidence of.**
+**No accepted `conformance-puc-v3.tsv` exists — none has ever been produced, and
+nothing below claims a conformance result.** This is prospective machinery: the
+acceptance run has not happened (§12 of `docs/research/wp40-t2-contracts.md`),
+so the reuse branch has never yet had an artifact to reuse.
+
+A completed `conformance-puc-v3.tsv` would be evidence of the commit it
+*records*, not of whatever `HEAD` happens to be. Without this rule any later
+commit — including a documentation-only one that touches nothing the conformance
+reads — would make the recorded evidence "stale", delete it and buy a full
+24-row rerun, because the only available check takes its pins from
+`git rev-parse HEAD`.
+
+`tools/wp40/t2_extreme_conformance_recorded.lua` is the second branch of the
+launcher's "final output already exists" block. The first branch is unchanged:
+re-verify against the current launch pins, and if that works nothing else runs.
+Only when it fails does the recorded-evidence branch try, and only when *that*
+fails does the existing stale/recompute path take over. **Generation is not
+relaxed anywhere** — a first run still has to produce all 24 rows from one
+clean, immutable commit/tree/DAG.
+
+What the reuse branch proves, in this order, all fail-closed:
+
+1. **The pins come from the artifact's bytes.** `parse_recorded_pins` reads
+   `conformance_commit`, `conformance_tree` and `conformance_dag_sha256` out of
+   `conformance-puc-v3.tsv` itself and validates 40/40/64 lowercase hex before
+   any value reaches a git command line. The leading line must be
+   `schema<TAB>grug_wp40_extreme_puc_conformance_v3` and `status` must be
+   `passed`; a repeated pin line is a refusal, so appended bytes cannot redirect
+   the check. A pre-v3 final artifact and a result row of either generation all
+   carry `conformance_*` fields, and none of them can pass this reader.
+2. **The commit is ours.** `assert_recorded_history` requires a real commit
+   *object* (`rev-parse --verify --quiet <id>^{commit}`) that is an **ancestor of
+   HEAD** (`merge-base --is-ancestor`). An object that merely exists — a
+   dangling `commit-tree` commit, a tree id, an object fetched from elsewhere —
+   is refused.
+3. **The tree is the recorded tree**, via the existing `validate_provenance`.
+4. **The whole pinned closure is unchanged.** `closure_equality` compares the
+   bytes of **every path in the `paths` roster** of
+   `t2_extreme_conformance_v3_authority.lua` at the recorded commit against the
+   **current working tree**, and names the first path that differs. There is no
+   second, informally maintained file list: the roster *is* the closure
+   definition, and because the authority module is itself a roster member, a
+   proven closure is also proof that the roster applied is the recorded commit's
+   roster. A member that is missing at the recorded commit is a refusal, never a
+   skip. The roster's DAG at that commit must equal the recorded
+   `conformance_dag_sha256`.
+
+   **One input the roster cannot carry.** `tools/bin/lua51` changes a v3 result,
+   but it is built per checkout and gitignored (`.gitignore`: `tools/bin/`), so
+   it is not a tracked path and `capture_git` could never read it at a commit.
+   It is pinned per **result row** instead, by step 5: the verifier re-hashes the
+   live `argv[0]` and requires it to equal every row's `interpreter_sha256` and
+   the merged artifact's `merge_interpreter_sha256`. So the roster is the
+   complete closure *of tracked inputs*, not of everything that can change a
+   result — and the interpreter is covered by a different mechanism, not left
+   open. The byte comparison also ignores git file modes; the repository has no
+   tracked symlinks, and adding one to the roster would need that revisited.
+5. **The evidence re-derives.** Only then is
+   `t2_extreme_conformance_finalize.lua` run in `verify` mode with the
+   **recorded** pins. That is the existing path: it re-runs
+   `t2_extreme_conformance_verify.lua` against all 20 rescore rows and 4 selected
+   rows, rebuilds the entire final blob from those retained bytes and requires it
+   to equal the artifact byte-for-byte. So a modified retained row and a modified
+   final artifact both fail.
+
+**Equality of the final TSV alone is never accepted** as proof of closure
+equality — the pins parse identically out of an artifact whose result rows were
+tampered with, which is exactly why steps 4 and 5 are both required. Any refusal
+means a rerun: the launcher falls through to its existing stale/recompute path.
+
+Acceptance is announced with a token no other path prints —
+`WP40_T2_C1_V3_RECORDED_EVIDENCE_ACCEPTED` from the driver, and
+`WP40 T2 C1 v3 conformance REUSED RECORDED EVIDENCE …` from the launcher, both
+carrying the recorded commit/tree/DAG, the closure size and the recomputed
+artifact digest — so reused evidence can never be read as a fresh measurement.
+
+The five properties are executable in `t2_extreme_conformance_test.lua`, which
+builds a throwaway git repository under `/tmp` and drives the real closure
+functions against a two-entry synthetic roster: a documentation-only HEAD
+movement still verifies; moving one closure member refuses and names it (also
+after that edit is committed, when HEAD and the working tree agree again and
+only the recorded commit can still refuse); a refusing finalizer and a tampered
+row are fatal; malformed, wrong-length, uppercase, missing, repeated,
+non-existent, non-commit, out-of-history and wrong-tree pins each refuse with
+their own diagnostic; and pre-v3 evidence cannot satisfy the v3 reader in either
+direction.
+
 
 ### Locked surfaces
 
@@ -396,9 +599,17 @@ Two categories of whitespace here are correct and must not be "fixed":
 
 - Everything under `evidence/` is a verbatim capture — console logs with box
   drawing and ASCII art, raw JSONL. Editing it falsifies the record.
-- `t2_partition_oracle.lua` carries eleven trailing-whitespace lines and is
-  content-pinned by `t2_extreme_conformance_authority.lua:33`. Changing its
-  bytes invalidates the conformance authority.
+- `t2_partition_oracle.lua` carries eleven trailing-whitespace lines and is a
+  roster member of both conformance authorities
+  (`t2_extreme_conformance_authority.lua:33` and the v3 roster). "Fixing" the
+  whitespace would be a pointless byte change, so leave it. Editing the file
+  for a real reason is a different matter and is *not* barred: the frozen
+  pre-v3 DAG `086855378e…` is re-materialized from commit `5a2fc0d` through
+  `capture_git`, so a working-tree edit cannot move it — measured 2026-08-21,
+  the pinned DAG reproduced exactly while roster members were modified in the
+  tree. What such an edit does move is the **v3** DAG, which is recomputed live
+  at every launch; once an accepted v3 artifact exists, moving it costs a rerun
+  under the recorded-commit closure rule above.
 
 So a clean `git diff --check` is the wrong readiness signal for WP40. Check
 that every reported path is one of those two categories instead.

@@ -2238,3 +2238,324 @@ is on the semantics, not on measurement: the full-`W` re-census stays
 at T2-final and **re-verifies these pins** over the whole universe,
 and a drift it finds is a finding for that new memo. T2 as a whole
 remains in progress.
+
+## 12. The C1 v3 conformance handoff (cut 2026-08-21)
+
+**Status: measurement code and inputs are immutable; the acceptance
+conformance has NOT been run.** Nothing in this section claims a
+conformance result, T2-final, T9-final, production publication, or any
+32-seed corpus promotion. It records a provenance migration and the
+measured facts that support it.
+
+### 12.1 What moved
+
+The T2c-E0-C1 selected-four conformance chain read the frozen pre-v3
+(v2) measurement from `53be77e`, so the final conformance could not be
+executed from a closed code/input DAG. The chain now reads the
+committed **v3 scalar pool**: commit `19fc28d1`, tree `bca04056`,
+Authority-DAG `069cce2d`, stage-S1 pins `10a790a6…` /
+`83b1b16a…`, merged artifact `5b5241b3…`, manifest `c8f61852…`.
+
+No measured scalar moved. The candidate row bytes are **identical**
+across the two generations — `candidate_rows_sha256` is `b08e142a…`
+in both — and only the provenance header differs. The four ranked
+winners are unchanged and were re-derived from the v3 artifact:
+slot 28 / candidate 2192 / `5270046902118333881`, slot 29 / 1713 /
+`16178445837170081103`, slot 30 / 1047 / `15219119262482319357`,
+slot 31 / 3438 / `17842018860885445630`. The staging seed
+(`grudgelands-wp40-seed-08`, `7821741934987559905`) is likewise
+reproduced rather than copied.
+
+Nothing about boundary semantics, partition semantics or production
+world behaviour changes with this migration.
+
+### 12.2 Why the provenance model had to change
+
+The pre-v3 chain asserted that the **live** measurement Authority-DAG
+equals the gate's. That assertion is now unsatisfiable and was not
+faked: `geometry/partition.lua`, `source/catalog.lua` and
+`validation/t2_source.lua` all differ between the pool commit and
+HEAD, because the §11 correction landed *after* the pool was measured.
+Measured: pool Authority-DAG `069cce2d…`, live HEAD measurement
+Authority-DAG `fbb81ec1…`.
+
+Three separately named claims replace it. No two share a field name,
+so a reader of a result row can always tell which digest describes the
+pool's origin and which describes the code that re-derived it:
+
+1. **Pool origin, historical** — `pool_measurement_commit`,
+   `pool_measurement_tree`, `pool_authority_dag_sha256`. The verifier
+   re-materializes the pinned pool commit through
+   `validate_pinned_authority`, **without** a `partition_sha256`;
+   demanding one would resurrect exactly the coupling the stage-S1
+   migration removed.
+2. **Stage-S1 currency** — `s1_authority_sha256`,
+   `s1_source_projection_sha256`, recomputed from the tree the
+   conformance actually runs on (following `t2_extreme_gate_check.lua`)
+   and required to equal the gate. This is what lets one measured pool
+   survive a later-stage geometry correction.
+3. **Executing code** — `execution_authority_dag_sha256`, the
+   measurement Authority-DAG of the conformance tree. Recorded in a
+   gate-independent position and established against the executing
+   tree, never against the pool; the verifier recomputes it live per
+   row and the finalizer requires all twenty-four rows to agree.
+
+The pre-v3 conformance authority module, gate and artifacts are frozen
+and byte-identical. `t2_partition_test.lua`'s
+`selected_stage2_historical` mode still re-materializes the pre-v3
+conformance DAG `086855378e…` from `5a2fc0d`; that was re-derived
+with the whole migration in place and is unchanged. Naming, roster and
+guard detail: `tools/wp40/README.md`, "The v3 conformance generation".
+
+### 12.3 What is measured, and what is not
+
+Established and reproducible:
+
+- All **20 roster candidates** (the sixteen deterministic shard
+  endpoints plus the four winners) reproduce **byte-for-byte at HEAD**
+  under LuaJIT; three of them were additionally reproduced under the
+  vendored PUC 5.1.
+- **Slots 28 and 31 pass the full selected partition gate** under
+  LuaJIT with `g`/`o`/`r`/`m` all zero.
+- Cost anchors, measured: one selected slot ≈ **335 s** LuaJIT wall;
+  one PUC rescore row ≈ **38–44 s**.
+- The migrated conformance KAT is green under LuaJIT and the vendored
+  PUC 5.1 with byte-identical output, and the v3 preflight re-derives
+  the C1 v3 DAG from the pinned commit.
+
+Not established, and not claimed anywhere: any selected-four
+conformance result; slots 29 and 30; a frozen downstream interface;
+T2-final or T9-final; publication authority.
+
+**The retained interpreter pin is deliberately kept.** The merged
+artifact records `merge_interpreter_path`
+`/home/jan/projects/grudgelands/tools/bin/lua51` and the workers, the
+verifier and the finalizer compare it against their own `argv[0]`.
+An end-to-end run therefore succeeds only when the repository root is
+exactly that path — **the acceptance conformance cannot be run from a
+git worktree.**
+
+### 12.4 The downstream interface — PROPOSED, pending the acceptance run
+
+This enumerates, from the code, exactly what a green selected-four
+conformance *would* freeze. It is **proposed**, not frozen, and it
+becomes a freeze only when the acceptance run is green:
+
+- **Compiled families covered.** The selected result's
+  `compiled_sha256` digests the entire compiled payload, i.e. all nine
+  families in `geometry/partition.lua`: `bays`, `channels`,
+  `closure_wings`, `coast_shelf`, `dry_faces`, `islands`,
+  `land_boundaries`, `mouth_apertures`, `perimeters`.
+- **Whole report fields**, recorded per slot in the result row:
+  `columns`, `base_total`, `planned_water`, `dry`, `g`, `o`, `r`, `m`,
+  `schedule_intervals`, `perimeter_aperture`, `perimeter_attachment`,
+  `perimeter_dry`.
+- **Per-slot counts**: `transition_count`, `bank_count`, `wing_count`
+  (`#families.closure_wings`), `coast_count` (`#families.coast_shelf`),
+  `face_count` (`#families.dry_faces`). The v3 result validator pins
+  `transition_count = 8`, `bank_count = 20`, `wing_count = 8`,
+  `coast_count = 22`, `face_count = 38`, `perimeter_attachment = 8`
+  and `g = o = r = m = 0`.
+- **`compiled_sha256`** — recorded in the result row.
+- **`edge_inventory_sha256`** — produced by `t2_partition_test.lua`
+  (`selected_request.result.edge_inventory_sha256`) but **not** carried
+  into the v3 selected result row. Whether it belongs in the frozen
+  interface was an open item here; **§12.5 settles it in the negative** —
+  it stays diagnostic-only and is not added to the frozen C1 interface.
+
+### 12.5 The two slot findings, and what they actually were
+
+**Both are §8.6 ledger items, closed here — not new topology.** §8.6
+handed **three** pre-existing findings to the next phase's ledger; these
+are two of them, named there verbatim:
+"the R18-level C2 conformance oracle at slot 29" and "the Slot-30
+Starbough pin drift". The first cut of this section read them as two
+fresh defects of the WIP commit `44c2739` and asked for a new §11.6
+ruling on `land_010`. That framing was wrong and is corrected here.
+**Neither finding is a new topology failure, and neither needs a new
+§11.6 ruling.** The §11.11 boundary-topology freeze is untouched: not
+one line of production geometry moved for either. The third §8.6 ledger
+item — the F10 face-simplicity occupancy on wanted seeds 2147483648 and
+1959553668008863006 — is **not** touched by this package and stays on
+the ledger.
+
+1. **Slot 29 — the oracle, not the compiler.** The independent C2
+   edge/transition oracle in `tools/wp40/t2_partition_test.lua` was
+   still resolving transition terminals at R18 level: its
+   `transition_probe` fixed the R16 `E` at the declared interval
+   endpoint and never enumerated interior incidences. Production
+   implements accepted R19 joint-terminal selection, so on slot 29 the
+   two disagreed and the oracle aborted — payload **1601** stations
+   against **1602** independent. **Production was right.** The oracle
+   is now an independent reproduction of accepted R19: it enumerates
+   every eligible incidence of the fixed R18 interval, evaluates R16 at
+   each, forms the complete Cartesian product across the edge's
+   transition endpoints, validates each tuple through the sole final
+   raster as an unretained probe, completes both incident Banks through
+   its own tracer, rejects duplicate authority and the zero-complete
+   case, and selects the least tuple under all six §7.1 keys.
+   Measured: `land_010:to` resolves `direct` at retreat 1 with terminal
+   `(-1135, 2242)`, `previous` `(-1136, 2242)`, a 1,601-station edge
+   hashing `f823d2ab…` (reverse `d914e97c…`), Stillgrave 794
+   `f50970d8…` and Mournfen 456 `457ec6b1…`, with the old R18 `E`
+   `(-1134, 2242)` off the land edge and owned exactly once, by
+   `bay_bank:kragmar_west:mournfen`. Those are byte-for-byte the R19
+   witness that
+   [wp40-reality-corrections.md](wp40-reality-corrections.md) derives
+   from the Source/T1-only oracle, so two independent derivations and
+   the compiler now agree, and all of it is pinned rather than printed.
+   Over seed 0, max-u64 and all four winners — 36 transition-edge
+   resolutions — every edge had **exactly one** complete tuple and
+   **no ordering key was ever exercised**; `land_010` at slot 29 is the
+   only nonzero retreat anywhere. Keys 1–6 remain totality machinery,
+   exactly as §7.1 measured.
+2. **Slot 30 — measured pin drift, and nothing else.** The 63-character
+   Starbough literal was a truncated transcription. Measured under
+   LuaJIT, the digest is
+   `694aa00661b735fc98ab756616c7da96f66d9a2fc2c53ca99ce0a8ca74e3dc1d`
+   — the superseded literal with its **final character deleted**. The
+   Bank itself never moved: 517 stations and both incidence witnesses
+   beside it are unchanged, and the sibling Silverleaf pin
+   `4786ad54…` never failed. The replacement was read off the run,
+   never appended or guessed; both Bank assertions now carry their
+   measured digest in the failure message so a future drift is read
+   rather than reconstructed.
+
+One further defect surfaced only because slot 29 now gets past the old
+abort, and it is recorded rather than folded into either finding: the
+H15 simulated-notch harness in `tools/wp40/t2_partition_oracle.lua`
+built its patched world without carrying `raw_bay_water`, so a
+shoulder-mode Aperture terminal called a nil field. It is pre-existing,
+independent of R19, and latent because no winner previously both
+resolved a shoulder Aperture and reached that simulation. A simulated
+notch is R17 fill on the *final* mask, so the raw Bay mask passes
+through unpatched; that one field is now carried explicitly.
+
+**`edge_inventory_sha256` stays diagnostic-only.** It is produced by
+`t2_partition_test.lua` and deliberately **not** carried into the v3
+selected result row, and this package does not add it to the frozen C1
+interface. The §12.4 open item is therefore settled in the negative for
+now: it is a printed diagnostic, not interface. Verified from the code
+rather than asserted — it is absent from `selected_fields` in
+`t2_extreme_conformance.lua`, which is enforced by `exact_fields`, so it
+could not be present without failing.
+
+**One divergence found while re-deriving the order, recorded and NOT
+fixed here.** Bringing the C2 oracle to R19 required implementing the
+§7.1 total order twice over, and the two implementations of keys 4–6 do
+not agree on their *metric*:
+
+- **plan §7.1 keys 4 and 5** say "the sorted set of resolved terminal
+  world coordinates, **lexicographic by `(x, z)`**" — by the coordinate
+  tuple. The C2 oracle implements exactly that. Production
+  (`geometry/partition.lua`, `joint_tuple_less_compile` and
+  `joint_tuple_rank_census`) sorts and compares those two keys as the
+  **rendered text** `x .. ":" .. z`. The two orders invert on negative
+  `x` of equal digit width — `"-1134:2242" < "-1135:2242"` as text,
+  `-1135 < -1134` as a coordinate — and those are precisely the two
+  `land_010` stations in the R19 witness.
+- **plan §7.1 key 6** says "the probe **byte sequence** … the
+  lexicographically lesser of the bytes and their exact reverse".
+  Production implements that; the C2 oracle's first cut compared station
+  tuples and has been corrected to bytes — including the separator, which
+  §7.1 does not specify and which is therefore taken from the compiler's
+  rendering (`;`, not `,`; the two sort differently whenever one station
+  token is a strict prefix of another). **Key 6 is aligned end to end**;
+  only keys 4 and 5 remain divergent.
+
+So production deviates from its own declared order on keys 4 and 5. The
+C2 oracle deliberately does **not** mirror that deviation: an
+independent oracle exists to notice one, and mirroring it would retire
+the cross-check. **Nothing is exercised by it.** Measured over seed 0,
+max-u64 and all four winners — 36 transition-edge resolutions — every
+edge had exactly one complete tuple and no ordering key fired at all,
+which is the same state §7.1 itself recorded ("keys 2–6 are exercised by
+no measured configuration; they exist for totality on paper"). Should a
+future seed ever produce a tie through key 3, the two sides would select
+different tuples and the run would fail loudly on the final-edge byte
+comparison — never silently. **Aligning them is a ruling this package
+does not take**: it would move frozen production geometry, which is a
+STOP under the §11.11 topology freeze.
+
+So that the divergence announces itself rather than being diagnosed
+after the fact, the C2 oracle **asserts on it directly**: a selection
+that was separated from **any** competing complete tuple only at key 4
+or key 5 trips a named assert pointing back at this section. The test is
+that per-competitor fact, not the summary's `decided_by` figure — that
+one reports how deep the order had to go, and neither its minimum nor
+its maximum over the competitors can answer whether a divergent key was
+load-bearing. A winner separated from one competitor at key 1 and from
+another at key 4 has minimum 1; one separated at key 4 and at key 6 has
+maximum 6. Both would stay silent on a real key-4 decision. Without it the first live occurrence would surface
+as `land_0NN independent final station bytes changed`, which reads as a
+geometry regression and sends the reader into R7 displacement instead of
+the comparator. Key 6 does not trip it — after the separator alignment
+above, a key-6 selection is legitimate on both sides.
+
+**Two obligations the C2 oracle deliberately does not independently
+check**, recorded so the "two independent derivations meet here" claim
+is not read wider than it is:
+
+1. `authority.excluded` still means only the stations of *non-selected*
+   intervals. Production's excluded-fragment set now also carries the
+   R19-clipped stations of the *selected* interval and enforces the
+   once-owned obligation on them. On the C2 side that obligation is
+   checked by the slot-29 witness alone.
+2. The `exact_six_reversal` KAT reconstructs the R18 clip over the whole
+   selected interval, so it coincides with the R19 probe only while
+   `land_001` sits at retreat 0. R19 reversal *re-enumeration* is
+   therefore not exercised anywhere in C2.
+
+### 12.6 Recorded-commit reuse of a finished conformance artifact
+
+A completed `conformance-puc-v3.tsv` is evidence of the commit it
+**records**, not of whatever `HEAD` happens to be. The launcher used to
+take its pins from `git rev-parse HEAD`, so any later commit — a
+documentation-only one included — declared 24 rows of immutable
+evidence stale and bought a full rerun.
+
+The rule now: immutable C1-v3 evidence may be reused while its
+explicitly pinned input/code closure is unchanged. **The closure is the
+`paths` roster of `t2_extreme_conformance_v3_authority.lua`** — the
+existing authority roster, not a second informal list; because that
+module is itself a roster member, a proven closure is also proof that
+the roster applied is the recorded commit's roster. Reuse is granted
+only after, in order and all fail-closed: the three pins are read from
+the artifact's own bytes and shape-checked; the recorded commit is a
+real commit object **and** an ancestor of `HEAD`; its tree is the
+recorded tree; every closure member is byte-identical between that
+commit and the current working tree; the roster's DAG at that commit
+equals the recorded DAG; and only then the finalizer re-derives the
+entire final blob from all 24 retained result files. **Byte equality of
+the final TSV alone is never accepted** as proof of closure equality —
+the pins parse identically out of an artifact whose rows were tampered
+with. Any refusal falls through to the existing recompute path.
+
+Two properties carry that argument, and the weaker one is the one a
+reader reaches for first. Self-membership — the authority module is
+itself a roster member — is true but insufficient on its own, because
+the driver loads the authority from the *live* tree. What actually
+closes it is the **DAG pin**: the recorded `conformance_dag_sha256` is
+taken over the ordered `path`/blob-digest manifest, so a roster with a
+member added, removed or reordered cannot reproduce it. That pins the
+roster *list*, not merely the bytes of its members.
+
+**One input is deliberately outside the roster**: the vendored
+interpreter `tools/bin/lua51` is gitignored and built per checkout, so
+it can never be a roster member — `capture_git` would refuse it. It is
+pinned by a different mechanism, per row rather than by the closure:
+`t2_extreme_conformance_verify.lua` re-hashes the live `argv[0]` against
+every result row's `interpreter_sha256`, and the finalizer drives that
+verifier for all twenty-four rows. A reader auditing "every closure
+member is byte-identical" must not conclude either that the interpreter
+is a hole or that the roster is exhaustive.
+
+**Generation is not relaxed anywhere.** A first run still has to produce
+all 24 rows from one clean, immutable commit/tree/DAG. Reuse is
+announced with a token no other path prints, so reused evidence can
+never be read as a fresh measurement.
+
+**No acceptance evidence exists.** Nothing in this section claims a
+conformance result. `conformance-puc-v3.tsv` has never been produced;
+the reuse path is prospective machinery, and the acceptance run remains
+an explicit, separately authorized step.

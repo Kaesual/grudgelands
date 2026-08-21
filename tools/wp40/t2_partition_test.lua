@@ -2340,11 +2340,12 @@ local function independent_bank_reachable(oracle_world, bay_oracle, previous_poi
 	end
 	return false
 end
-local function trace_independent_banks(oracle_world, wing_authority, edge_points,
-		authored_apertures, envelope_counts, payload, compare_payload)
-local bank_results = {}
-for bank_index = 1, #source.bay_bank_components do
-	local bank = source.bay_bank_components[bank_index]
+-- One Bank body, extracted unchanged out of the all-Bank driver below so that
+-- R19 can trace a single incident Bank against a PROVISIONAL edge-points map
+-- under pcall.  This is a pure extraction and must stay one: the seed-0 and
+-- max-u64 Bank pins are asserted against the driver's unchanged behaviour.
+local function trace_one_bank(oracle_world, wing_authority, edge_points,
+		authored_apertures, envelope_counts, bank)
 	local bay_oracle = assert(oracle_world.bay_oracle_by_id[bank.bay_id])
 	local start = resolve_bank_terminal(bank.start_terminal, wing_authority,
 		edge_points, authored_apertures, oracle_world, bay_oracle)
@@ -2432,19 +2433,28 @@ for bank_index = 1, #source.bay_bank_components do
 			points[#points + 1] = {x = following.x, z = following.z}
 		end
 	end
-	if compare_payload then
-		local payload_row = assert(payload[bank.id])
-		assert(#payload_row == #points * 2)
-		for index = 1, #points do
-			assert(payload_row[index * 2 - 1] == points[index].x and
-				payload_row[index * 2] == points[index].z,
-				bank.id .. " Bank bytes changed")
-		end
-	end
-	bank_results[bank.id] = points
+	return points
 end
-assert(#source.bay_bank_components == 20)
-return bank_results
+local function trace_independent_banks(oracle_world, wing_authority, edge_points,
+		authored_apertures, envelope_counts, payload, compare_payload)
+	local bank_results = {}
+	for bank_index = 1, #source.bay_bank_components do
+		local bank = source.bay_bank_components[bank_index]
+		local points = trace_one_bank(oracle_world, wing_authority, edge_points,
+			authored_apertures, envelope_counts, bank)
+		if compare_payload then
+			local payload_row = assert(payload[bank.id])
+			assert(#payload_row == #points * 2)
+			for index = 1, #points do
+				assert(payload_row[index * 2 - 1] == points[index].x and
+					payload_row[index * 2] == points[index].z,
+					bank.id .. " Bank bytes changed")
+			end
+		end
+		bank_results[bank.id] = points
+	end
+	assert(#source.bay_bank_components == 20)
+	return bank_results
 end
 trace_independent_banks_again = trace_independent_banks
 local historical_wing_by_id = {}
@@ -2496,7 +2506,7 @@ end
 -- particular, transition and Attachment probes see the same enumerated E;
 -- neither may infer a run from the compiled final edge under test.
 local function build_independent_edge_authority(compiled_value, oracle_world,
-		r7_edges, perimeters)
+		r7_edges, perimeters, wing_authority, authored_apertures, envelope_counts)
 	local transitions_by_edge, transition_by_id = {}, {}
 	for index = 1, #source.bay_edge_transitions do
 		local row = source.bay_edge_transitions[index]
@@ -2510,6 +2520,37 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		local row = source.perimeter_attachments[index]
 		assert(not attachment_by_edge[row.edge_id])
 		attachment_by_edge[row.edge_id] = row
+	end
+	-- The incident Banks of a transition are the Source Bank rows terminating on
+	-- that exact edge/endpoint.  Their other terminal is always an Aperture or a
+	-- Wing, so the per-tuple Bank completion below is finite and acyclic and can
+	-- never recurse back into another edge's terminal choice.
+	local banks_by_transition = {}
+	for index = 1, #source.bay_bank_components do
+		local bank = source.bay_bank_components[index]
+		local terminals = {bank.start_terminal, bank.end_terminal}
+		for terminal_index = 1, 2 do
+			local terminal = terminals[terminal_index]
+			if terminal.kind == "land_edge_transition" then
+				-- The per-tuple edge-points map below holds only the edge under
+				-- test, so a Bank whose OPPOSITE terminal were another edge's
+				-- transition would raise inside the completion pcall and be
+				-- misreported as merely incomplete.  Source has no such Bank;
+				-- assert the acyclicity premise instead of relying on it.
+				assert(terminals[3 - terminal_index].kind ~= "land_edge_transition",
+					bank.id .. " independent R19 incident Bank has two edge-transition " ..
+					"terminals")
+				local key = terminal.edge_id .. ">" .. terminal.edge_endpoint
+				local rows = banks_by_transition[key] or {}
+				banks_by_transition[key] = rows
+				rows[#rows + 1] = bank
+			end
+		end
+	end
+	for index = 1, #source.bay_edge_transitions do
+		local row = source.bay_edge_transitions[index]
+		assert(#assert(banks_by_transition[row.edge_id .. ">" ..
+			row.edge_endpoint]) == 2)
 	end
 
 	local function dry(point)
@@ -2530,11 +2571,17 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		if first then result[#result + 1] = {first = first, finish = #edge.stations} end
 		return result
 	end
-	local function transition_probe(row, edge, interval)
+	-- R16 evaluated at one station incidence.  R18 calls this at the declared
+	-- interval endpoint to qualify an interval; R19 calls it at every eligible
+	-- incidence of the already selected interval.  The elbow water probe `w`
+	-- keeps its direction relative to the DECLARED endpoint, so an interior
+	-- incidence can only ever resolve direct: its `w` is an in-interval station.
+	local function transition_probe(row, edge, e_index)
 		local bay = assert(oracle_world.bay_oracle_by_id[row.bay_id])
-		local e_index = row.edge_endpoint == "from" and interval.first or interval.finish
 		local e = edge.stations[e_index]
-		local expected = {source = row, e = {x = e.x, z = e.z}}
+		if not e then return nil end
+		local expected = {source = row, station_index = e_index,
+			e = {x = e.x, z = e.z}}
 		if oracle_world.candidate(bay, e.x, e.z) then
 			expected.mode, expected.point = "direct", {x = e.x, z = e.z}
 			return expected
@@ -2596,9 +2643,12 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 			a = {x = best.x, z = best.z}, distance = best_distance,
 			canonical_index = best_index}
 	end
-	local function control_indices(edge, interval)
+	-- Bounded by the selected incidence stations under R19 and by the interval
+	-- endpoints everywhere else.  The nonempty/unique/contiguous obligations are
+	-- the R18 ones and stay exactly as strict.
+	local function control_indices(edge, first_station, last_station)
 		local membership, result = {}, {}
-		for index = interval.first, interval.finish do
+		for index = first_station, last_station do
 			local point_key = oracle_key(edge.stations[index].x, edge.stations[index].z)
 			assert(not membership[point_key])
 			membership[point_key] = true
@@ -2612,8 +2662,396 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		return result
 	end
 
+
+	-- ------------------------------------------------------------------
+	-- R19 joint Bay-transition terminal selection (source-authority 4).
+	--
+	-- R18 above fixes exactly one interval out of the endpoint-fixed probes and
+	-- nothing below reopens that choice.  Inside the fixed interval this
+	-- enumerates every eligible incidence at every declared transition
+	-- endpoint, forms the COMPLETE Cartesian product across the edge's one or
+	-- two transition endpoints, validates each tuple against its own unretained
+	-- probe reraster and against both incident Banks of every transition, and
+	-- selects the least complete tuple under the declared total order of
+	-- wp40-t2-plan.md section 7.1.  Nothing is pruned: there is no first,
+	-- nearest, longest, scan or backstep rule anywhere here.  Every primitive is
+	-- this oracle's own; the sole Production surface is the final edge raster,
+	-- which is what "the same sole final raster" means.
+	-- ------------------------------------------------------------------
+	local function point_less(a, b)
+		return a.x < b.x or a.x == b.x and a.z < b.z
+	end
+	local function sequence_less(a, b)
+		for index = 1, math.min(#a, #b) do
+			if point_less(a[index], b[index]) then return true end
+			if point_less(b[index], a[index]) then return false end
+		end
+		return #a < #b
+	end
+	local function sequence_equal(a, b)
+		if #a ~= #b then return false end
+		for index = 1, #a do
+			if a[index].x ~= b[index].x or a[index].z ~= b[index].z then return false end
+		end
+		return true
+	end
+	-- Key 6 of the section 7.1 order is the probe's BYTE sequence under
+	-- canonical orientation, not its station tuples: render the stations and take
+	-- the lexicographically lesser of the bytes and their exact reverse.
+	-- Section 7.1 names no separator, so this renders with the compiler's ";"
+	-- rather than raster_signature's ",".  That is an encoding choice, not a
+	-- semantic one, and where the authority is silent the two sides have no
+	-- reason to encode differently -- while the choice genuinely matters, because
+	-- "," sorts below the digits, "-" and ":" of a station token and ";" sorts
+	-- above them, so the canonical orientation flips whenever one rendered token
+	-- is a strict prefix of another.  raster_signature keeps its "," on purpose:
+	-- that separator is load-bearing for the KATs and mutation guards elsewhere
+	-- in this file.
+	local function probe_bytes(points, reverse)
+		local parts = {}
+		for step = 1, #points do
+			local index = reverse and #points - step + 1 or step
+			parts[step] = points[index].x .. ":" .. points[index].z
+		end
+		return table.concat(parts, ";")
+	end
+	local function canonical_probe_bytes(points)
+		local forward_bytes = probe_bytes(points, false)
+		local reverse_bytes = probe_bytes(points, true)
+		if reverse_bytes < forward_bytes then return reverse_bytes end
+		return forward_bytes
+	end
+	-- The combined control clip: the terminal controls of the `from` end, the
+	-- retained authored subsequence, then the terminal controls of the `to` end.
+	-- Going outward from the interval interior a transition contributes the R16
+	-- `E` and then its optional elbow `T`; that was the R18 order and stays the
+	-- R19 order.
+	local function clip_controls(edge, indices, prefix, suffix)
+		local controls = {}
+		local function append(point)
+			if #controls == 0 or controls[#controls].x ~= point.x or
+					controls[#controls].z ~= point.z then
+				controls[#controls + 1] = {x = point.x, z = point.z}
+			end
+		end
+		for index = 1, #prefix do append(prefix[index]) end
+		for index = 1, #indices do append(edge.shifted_controls[indices[index]]) end
+		for index = 1, #suffix do append(suffix[index]) end
+		return controls
+	end
+	local function terminal_controls(probe, endpoint)
+		if probe.mode ~= "diagonal_elbow" then return {probe.e} end
+		if endpoint == "from" then return {probe.point, probe.e} end
+		return {probe.e, probe.point}
+	end
+	-- Record-envelope containment, bucketed so a 1,600-station probe does not
+	-- cost a full base-station scan per station.  A base station within
+	-- Chebyshev max_displacement of a probe station always lands in one of the
+	-- nine buckets around it, because the bucket side is that same distance.
+	local function base_envelope(edge, max_displacement)
+		local size = math.max(max_displacement, 1)
+		local buckets = {}
+		for index = 1, #edge.base_stations do
+			local station = edge.base_stations[index]
+			local key = deterministic.floor_div(station.x, size) .. ":" ..
+				deterministic.floor_div(station.z, size)
+			local bucket = buckets[key]
+			if not bucket then bucket = {} buckets[key] = bucket end
+			bucket[#bucket + 1] = station
+		end
+		return {size = size, buckets = buckets, reach = max_displacement}
+	end
+	local function inside_envelope(envelope, point)
+		local bx = deterministic.floor_div(point.x, envelope.size)
+		local bz = deterministic.floor_div(point.z, envelope.size)
+		for offset_x = -1, 1 do
+			for offset_z = -1, 1 do
+				local bucket = envelope.buckets[(bx + offset_x) .. ":" .. (bz + offset_z)]
+				if bucket then
+					for index = 1, #bucket do
+						if math.abs(point.x - bucket[index].x) <= envelope.reach and
+								math.abs(point.z - bucket[index].z) <= envelope.reach then
+							return true
+						end
+					end
+				end
+			end
+		end
+		return false
+	end
+	-- Unique, 8-connected, X-cross free, dry and inside the record envelope: the
+	-- five obligations R19 puts on an unretained candidate probe.  "Dry" is not
+	-- one predicate for every edge.  Source-authority section 4 says of an
+	-- attachment edge that "the final endpoint equals `A` exactly, every other
+	-- final station is strict footprint interior", so on such an edge a non-`A`
+	-- station must be class 1 with no planned water and `A` itself -- a perimeter
+	-- station, hence class 0 -- is exempt.  An edge with transitions at both ends
+	-- has no `A` and uses plain final dryness throughout.
+	local function valid_probe(points, envelope, attachment_point)
+		if #points < 2 then return false end
+		local attachment_key = attachment_point and
+			oracle_key(attachment_point.x, attachment_point.z) or nil
+		local seen, diagonals = {}, {}
+		for index = 1, #points do
+			local point = points[index]
+			local point_key = oracle_key(point.x, point.z)
+			local admissible
+			if attachment_key then
+				admissible = point_key == attachment_key or
+					(oracle_world.footprint_class(point.x, point.z) == 1 and
+						not oracle_world.planned_water(point.x, point.z, false))
+			else
+				admissible = dry(point)
+			end
+			if seen[point_key] or not admissible or
+					not inside_envelope(envelope, point) then return false end
+			seen[point_key] = true
+			if index > 1 then
+				local previous = points[index - 1]
+				local dx, dz = point.x - previous.x, point.z - previous.z
+				if math.max(math.abs(dx), math.abs(dz)) ~= 1 then return false end
+				if math.abs(dx) == 1 and math.abs(dz) == 1 then
+					local cell = oracle_key(math.min(point.x, previous.x),
+						math.min(point.z, previous.z))
+					local slope = dx == dz and 1 or -1
+					if diagonals[cell] and diagonals[cell] ~= slope then return false end
+					diagonals[cell] = slope
+				end
+			end
+		end
+		return true
+	end
+	-- A Bank trace reads its edge terminal only through the resolved terminal
+	-- and that terminal's `previous`, so two tuples agreeing there share one
+	-- trace.  That is an exact memo of this oracle's own tracer, not a pruning
+	-- rule: every enumerated tuple is still evaluated.
+	--
+	-- Diagnostics only: with both the combined clip and the Bank completion
+	-- behind pcalls, a systematic breakage -- a corrupted control set, a broken
+	-- Aperture terminal, a missing Wing id -- fails every tuple and would
+	-- otherwise surface as the legitimate R19 "no complete tuple" reject, which
+	-- is a real and different semantic.  Keep the first raised message per edge
+	-- so that assert can name what actually went wrong.  Nothing here changes a
+	-- verdict.
+	local joint_first_error
+	local function record_joint_error(context, message)
+		if joint_first_error == nil then
+			joint_first_error = context .. ": " .. tostring(message)
+		end
+	end
+	local bank_trace_cache = {}
+	local function banks_complete(edge_id, endpoint, probe_points)
+		local rows = assert(banks_by_transition[edge_id .. ">" .. endpoint])
+		local terminal = endpoint == "from" and probe_points[1] or
+			probe_points[#probe_points]
+		local previous = endpoint == "from" and probe_points[2] or
+			probe_points[#probe_points - 1]
+		local edge_points = {}
+		edge_points[edge_id] = probe_points
+		for index = 1, #rows do
+			local bank = rows[index]
+			local cache_key = bank.id .. ">" .. oracle_key(terminal.x, terminal.z) ..
+				">" .. oracle_key(previous.x, previous.z)
+			local cached = bank_trace_cache[cache_key]
+			if cached == nil then
+				local traced, points = pcall(trace_one_bank, oracle_world, wing_authority,
+					edge_points, authored_apertures, envelope_counts, bank)
+				if not traced then record_joint_error("Bank " .. bank.id, points) end
+				cached = traced and points or false
+				bank_trace_cache[cache_key] = cached
+			end
+			if cached == false then return false end
+		end
+		return true
+	end
+	-- An empty or noncontiguous combined clip is a DECIDED per-tuple
+	-- continuation, not a fatal: that tuple is skipped and enumeration goes on.
+	-- The assertions inside control_indices stay exactly as strict; only their
+	-- blast radius changes.
+	local function tuple_control_indices(edge, first_station, last_station)
+		if first_station > last_station then return nil end
+		local resolved, indices = pcall(control_indices, edge, first_station,
+			last_station)
+		if not resolved then
+			record_joint_error("control clip " .. first_station .. ".." ..
+				last_station, indices)
+			return nil
+		end
+		return indices
+	end
+	local function joint_terminal_selection(source_edge, edge, interval,
+			transition_at, attachment, interval_probes)
+		joint_first_error = nil
+		local envelope = base_envelope(edge, source_edge.max_displacement)
+		local attachment_point = attachment and
+			assert(interval_probes[attachment.edge_endpoint]).a or nil
+		-- Eligibility: every incidence of the selected interval except the
+		-- opposite endpoint, and only when the immediately adjacent station away
+		-- from this endpoint is itself in the interval.
+		local endpoint_order, by_endpoint, product = {}, {}, 1
+		local declared = {"from", "to"}
+		for order_index = 1, #declared do
+			local endpoint = declared[order_index]
+			local row = transition_at[endpoint]
+			if row then
+				endpoint_order[#endpoint_order + 1] = endpoint
+				local first_index = endpoint == "from" and interval.first or
+					interval.first + 1
+				local last_index = endpoint == "from" and interval.finish - 1 or
+					interval.finish
+				local rows = {}
+				for station_index = first_index, last_index do
+					local probe = transition_probe(row, edge, station_index)
+					if probe then rows[#rows + 1] = probe end
+				end
+				by_endpoint[endpoint] = rows
+				product = exact.safe_product(product, #rows,
+					source_edge.id .. " independent R19 joint candidate product")
+			end
+		end
+		assert(#endpoint_order >= 1 and #endpoint_order <= 2 and product >= 0)
+		local from_rows = by_endpoint.from or {false}
+		local to_rows = by_endpoint.to or {false}
+		local tuples = {}
+		for from_index = 1, #from_rows do
+			for to_index = 1, #to_rows do
+				local from_probe = from_rows[from_index] or nil
+				local to_probe = to_rows[to_index] or nil
+				local lower = from_probe and from_probe.station_index or interval.first
+				local upper = to_probe and to_probe.station_index or interval.finish
+				local indices = tuple_control_indices(edge, lower, upper)
+				if indices then
+					local prefix = from_probe and terminal_controls(from_probe, "from") or
+						{assert(attachment_point)}
+					local suffix = to_probe and terminal_controls(to_probe, "to") or
+						{assert(attachment_point)}
+					local probe_edge = raster.final_raster(
+						clip_controls(edge, indices, prefix, suffix), false)
+					local from_terminal = from_probe and from_probe.point or attachment_point
+					local to_terminal = to_probe and to_probe.point or attachment_point
+					local head = probe_edge[1]
+					local tail = probe_edge[#probe_edge]
+					if #probe_edge >= 2 and
+							head.x == from_terminal.x and head.z == from_terminal.z and
+							tail.x == to_terminal.x and tail.z == to_terminal.z and
+							valid_probe(probe_edge, envelope, attachment_point) then
+						-- Terminal and previous come from this probe raster, never from
+						-- provisional R7 adjacency.
+						local probes, terminals, previouses = {}, {}, {}
+						local total_retreat, max_retreat, elbow_count = 0, 0, 0
+						for index = 1, #endpoint_order do
+							local endpoint = endpoint_order[index]
+							local probe = endpoint == "from" and from_probe or to_probe
+							local retreat = endpoint == "from" and
+								probe.station_index - interval.first or
+								interval.finish - probe.station_index
+							total_retreat = total_retreat + retreat
+							if retreat > max_retreat then max_retreat = retreat end
+							if probe.mode == "diagonal_elbow" then
+								elbow_count = elbow_count + 1
+							end
+							probes[endpoint] = probe
+							terminals[#terminals + 1] = endpoint == "from" and head or tail
+							previouses[#previouses + 1] = endpoint == "from" and
+								probe_edge[2] or probe_edge[#probe_edge - 1]
+						end
+						local complete = true
+						for index = 1, #endpoint_order do
+							if complete and not banks_complete(source_edge.id,
+									endpoint_order[index], probe_edge) then complete = false end
+						end
+						if complete then
+							table.sort(terminals, point_less)
+							table.sort(previouses, point_less)
+							tuples[#tuples + 1] = {probes = probes, control_indices = indices,
+								edge = probe_edge, total_retreat = total_retreat,
+								max_retreat = max_retreat, elbow_count = elbow_count,
+								terminals = terminals, previouses = previouses,
+								canonical = canonical_probe_bytes(probe_edge)}
+						end
+					end
+				end
+			end
+		end
+		assert(#tuples > 0, source_edge.id ..
+			" independent R19 joint enumeration has no complete tuple" ..
+			(joint_first_error and
+				" (first raised failure while enumerating -- " .. joint_first_error ..
+				")" or ""))
+		-- Duplicate authority rejects and stays outside the order's scope, which
+		-- is exactly what makes keys 4-6 a total tail.
+		for index = 1, #tuples do
+			for other = index + 1, #tuples do
+				assert(not (sequence_equal(tuples[index].terminals, tuples[other].terminals) and
+					sequence_equal(tuples[index].previouses, tuples[other].previouses) and
+					tuples[index].canonical == tuples[other].canonical),
+					source_edge.id .. " independent R19 duplicate joint terminal authority")
+			end
+		end
+		-- wp40-t2-plan.md 7.1, in order.  Keys 4 and 5 are the declared
+		-- "lexicographic by (x, z)" over the coordinate tuples; key 6 is the
+		-- declared probe byte sequence.  The two are deliberately different
+		-- comparisons, and this oracle implements the authority, not whatever a
+		-- compiler happens to do.
+		local function first_difference(a, b)
+			if a.total_retreat ~= b.total_retreat then return 1 end
+			if a.max_retreat ~= b.max_retreat then return 2 end
+			if a.elbow_count ~= b.elbow_count then return 3 end
+			if not sequence_equal(a.terminals, b.terminals) then return 4 end
+			if not sequence_equal(a.previouses, b.previouses) then return 5 end
+			if a.canonical ~= b.canonical then return 6 end
+			return 0
+		end
+		local function tuple_less(a, b)
+			local key = first_difference(a, b)
+			if key == 1 then return a.total_retreat < b.total_retreat end
+			if key == 2 then return a.max_retreat < b.max_retreat end
+			if key == 3 then return a.elbow_count < b.elbow_count end
+			if key == 4 then return sequence_less(a.terminals, b.terminals) end
+			if key == 5 then return sequence_less(a.previouses, b.previouses) end
+			if key == 6 then return a.canonical < b.canonical end
+			return false
+		end
+		local best = tuples[1]
+		for index = 2, #tuples do
+			if tuple_less(tuples[index], best) then best = tuples[index] end
+		end
+		-- Two different questions, and one number cannot answer both.  `decided_by`
+		-- reports how deep the order had to go at all, so it is the DEEPEST first
+		-- difference over the competitors.  Whether a divergent key was
+		-- load-bearing is a separate predicate: keys 4 and 5 are the ones this
+		-- oracle and the compiler measure differently, and either one deciding
+		-- ANY single pairwise comparison is enough to make the two sides able to
+		-- disagree.  Neither the minimum nor the maximum captures that -- a
+		-- winner separated from one competitor at key 1 and from another at key 4
+		-- has minimum 1, and one separated at key 4 and at key 6 has maximum 6;
+		-- both would stay silent on a real key-4 decision.  So collect it
+		-- explicitly.
+		local decided_by, divergent_key = 0, nil
+		for index = 1, #tuples do
+			if tuples[index] ~= best then
+				local key = first_difference(best, tuples[index])
+				if key > decided_by then decided_by = key end
+				if (key == 4 or key == 5) and not divergent_key then
+					divergent_key = key
+				end
+			end
+		end
+		local probes = {}
+		for endpoint, probe in pairs(best.probes) do probes[endpoint] = probe end
+		if attachment then
+			probes[attachment.edge_endpoint] =
+				assert(interval_probes[attachment.edge_endpoint])
+		end
+		return {probes = probes, control_indices = best.control_indices,
+			edge = best.edge, complete = #tuples, decided_by = decided_by,
+			divergent_key = divergent_key,
+			total_retreat = best.total_retreat, max_retreat = best.max_retreat,
+			elbow_count = best.elbow_count}
+	end
+
 	local authority = {edges = {}, transitions = {}, attachments = {},
-		final_edges = {},
+		final_edges = {}, joint = {},
 		excluded = {}, direct = 0, elbows = 0, transition_edges = 0,
 		ordinary_edges = 0}
 	for edge_index = 1, #source.land_edges do
@@ -2624,9 +3062,9 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		local transition_rows = transitions_by_edge[source_edge.id]
 		local attachment = attachment_by_edge[source_edge.id]
 		local selected_index, selected_probes
+		local transition_at = {}
 		if transition_rows then
 			authority.transition_edges = authority.transition_edges + 1
-			local transition_at = {}
 			for index = 1, #transition_rows do
 				local row = transition_rows[index]
 				assert(not transition_at[row.edge_endpoint])
@@ -2635,14 +3073,16 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 			assert(not (attachment and transition_at[attachment.edge_endpoint]))
 			assert((transition_at.from or attachment and attachment.edge_endpoint == "from") and
 				(transition_at.to or attachment and attachment.edge_endpoint == "to"))
+			-- R18 interval selection stays endpoint-fixed: an interval qualifies on
+			-- the probes at its own declared endpoints, and exactly one may qualify.
 			for interval_index = 1, #edge_intervals do
 				local interval = edge_intervals[interval_index]
 				local from_probe = transition_at.from and
-					transition_probe(transition_at.from, edge, interval) or
+					transition_probe(transition_at.from, edge, interval.first) or
 					(attachment and attachment.edge_endpoint == "from" and
 						attachment_probe(attachment, edge, interval) or nil)
 				local to_probe = transition_at.to and
-					transition_probe(transition_at.to, edge, interval) or
+					transition_probe(transition_at.to, edge, interval.finish) or
 					(attachment and attachment.edge_endpoint == "to" and
 						attachment_probe(attachment, edge, interval) or nil)
 				if from_probe and to_probe then
@@ -2665,11 +3105,35 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 			end
 		end
 		local selected = edge_intervals[selected_index]
-		local controls = control_indices(edge, selected)
+		-- R18 has fixed the interval; R19 now resolves this edge's declared
+		-- transition terminals jointly over that fixed interval.  The retained
+		-- control subsequence and the emitted clip are both bounded by the
+		-- SELECTED incidences, not by the interval endpoints.
+		local joint
+		if transition_rows then
+			joint = joint_terminal_selection(source_edge, edge, selected,
+				transition_at, attachment, selected_probes)
+			selected_probes = joint.probes
+			authority.joint[source_edge.id] = {complete = joint.complete,
+				decided_by = joint.decided_by, divergent_key = joint.divergent_key,
+				total_retreat = joint.total_retreat,
+				max_retreat = joint.max_retreat, elbow_count = joint.elbow_count}
+		end
+		local controls = joint and joint.control_indices or
+			control_indices(edge, selected.first, selected.finish)
 		local edge_result = {source = source_edge, intervals = edge_intervals,
 			selected_index = selected_index, selected = selected,
 			control_indices = controls, probes = selected_probes}
 		authority.edges[source_edge.id] = edge_result
+		-- `authority.excluded` deliberately means one thing only: the stations of
+		-- the NON-selected intervals.  Production's excluded-fragment set is now
+		-- wider -- it also carries the stations of the SELECTED interval that R19
+		-- clipped away, and enforces the once-owned Bank-or-dry-Face obligation on
+		-- them.  C2 does not reproduce that obligation independently: the R19
+		-- retreat stations are checked only by the slot-29 land_010 witness below,
+		-- which measures that the discarded old `E` is owned by exactly one Bank
+		-- and by no land edge.  Widening this set is a separate package, and the
+		-- slot-30 `#excluded == 1` witness depends on the current meaning.
 		for interval_index = 1, #edge_intervals do
 			if interval_index ~= selected_index then
 				local interval = edge_intervals[interval_index]
@@ -2695,60 +3159,26 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 				assert(selected_probes[attachment.edge_endpoint])
 		end
 
-		-- Rebuild the complete final edge from this one selected interval.  The
-		-- result, rather than a Production endpoint projection, feeds every
-		-- independent Bank terminal below.
-		local controls = {}
-		local function append(point)
-			if #controls == 0 or controls[#controls].x ~= point.x or
-					controls[#controls].z ~= point.z then
-				controls[#controls + 1] = {x = point.x, z = point.z}
-			end
-		end
-		local function transition_at(endpoint)
-			local probe = selected_probes and selected_probes[endpoint]
-			return probe and transition_by_id[probe.source.id] and probe or nil
-		end
-		local function append_selected_controls()
-			for index = 1, #controls do assert(controls[index]) end
-			for index = 1, #edge_result.control_indices do
-				append(edge.shifted_controls[edge_result.control_indices[index]])
-			end
-		end
-		local from_transition, to_transition = transition_at("from"),
-			transition_at("to")
-		if transition_rows or attachment then
-			local first_e, last_e = edge.stations[selected.first],
-				edge.stations[selected.finish]
-			if attachment and attachment.edge_endpoint == "from" then
+		-- The final edge of this record.  A transition edge takes the already
+		-- validated probe of its selected R19 tuple -- rebuilding it here would
+		-- be a second, unvalidated resolution.  An Attachment-only edge keeps its
+		-- R18 clip, and an ordinary edge is the selected interval verbatim.
+		if joint then
+			authority.final_edges[source_edge.id] = joint.edge
+		elseif attachment then
+			local prefix, suffix
+			if attachment.edge_endpoint == "from" then
 				assert(attachment.retained_run == "suffix")
-				append(authority.attachments[attachment.id].a)
-				append_selected_controls()
-				append(last_e)
-				if to_transition and to_transition.mode == "diagonal_elbow" then
-					append(to_transition.point)
-				end
-			elseif attachment then
+				prefix = {authority.attachments[attachment.id].a}
+				suffix = {edge.stations[selected.finish]}
+			else
 				assert(attachment.edge_endpoint == "to" and
 					attachment.retained_run == "prefix")
-				if from_transition and from_transition.mode == "diagonal_elbow" then
-					append(from_transition.point)
-				end
-				append(first_e)
-				append_selected_controls()
-				append(authority.attachments[attachment.id].a)
-			else
-				if from_transition and from_transition.mode == "diagonal_elbow" then
-					append(from_transition.point)
-				end
-				append(first_e)
-				append_selected_controls()
-				append(last_e)
-				if to_transition and to_transition.mode == "diagonal_elbow" then
-					append(to_transition.point)
-				end
+				prefix = {edge.stations[selected.first]}
+				suffix = {authority.attachments[attachment.id].a}
 			end
-			authority.final_edges[source_edge.id] = raster.final_raster(controls, false)
+			authority.final_edges[source_edge.id] = raster.final_raster(
+				clip_controls(edge, controls, prefix, suffix), false)
 		else
 			local final = {}
 			for index = selected.first, selected.finish do
@@ -2791,6 +3221,40 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 	end
 	assert(authority.transition_edges == 6 and authority.ordinary_edges == 55 and
 		authority.direct + authority.elbows == 8)
+	-- Report the R19 joint outcome whenever it was not the plain R18-continuous
+	-- one, so a moved edge inventory always carries its own explanation.
+	local joint_parts, joint_interesting = {}, false
+	for edge_index = 1, #source.land_edges do
+		local edge_id = source.land_edges[edge_index].id
+		local row = authority.joint[edge_id]
+		if row then
+			-- Keys 4 and 5 are the one place C2 and the compiler deliberately
+			-- disagree: this oracle compares the declared (x, z) tuples, the
+			-- compiler compares their text.  Nothing measured exercises them, but
+			-- if one ever separated the winner from ANY competitor the two sides
+			-- could pick different tuples and the run would fail as "independent
+			-- final station bytes changed" -- a geometry message for a comparator
+			-- cause.  Trip here instead, and say so.  The test is the recorded
+			-- `divergent_key`, not `decided_by`: `decided_by` answers "how deep
+			-- did the order have to go", and neither its minimum nor its maximum
+			-- over the competitors can answer "was a divergent key load-bearing".
+			-- Key 6 is aligned end to end and is legitimate, so it never trips.
+			assert(not row.divergent_key, edge_id ..
+				" R19 selection was separated from a competitor only at key " ..
+				tostring(row.divergent_key) ..
+				"; C2 and the compiler use different metrics for keys 4 and 5 -- " ..
+				"see wp40-t2-contracts.md 12.5")
+			joint_parts[#joint_parts + 1] = edge_id .. "=" .. row.complete .. "/" ..
+				row.decided_by .. "/" .. row.total_retreat .. "/" .. row.max_retreat ..
+				"/" .. row.elbow_count
+			if row.complete > 1 or row.total_retreat > 0 then joint_interesting = true end
+		end
+	end
+	authority.joint_summary = table.concat(joint_parts, " ")
+	if joint_interesting then
+		print("WP40 T2 C2 R19 joint complete/key/total_retreat/max_retreat/elbows " ..
+			authority.joint_summary)
+	end
 	local inventory = {"grug_wp40_c2_edge_inventory_v1"}
 	for edge_index = 1, #source.land_edges do
 		local edge_id = source.land_edges[edge_index].id
@@ -2822,9 +3286,9 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 end
 
 local function independent_transition_expectations(compiled_value, oracle_world,
-		r7_edges, perimeters)
+		r7_edges, perimeters, wing_authority, authored_apertures, envelope_counts)
 	local authority = build_independent_edge_authority(compiled_value, oracle_world,
-		r7_edges, perimeters)
+		r7_edges, perimeters, wing_authority, authored_apertures, envelope_counts)
 	return authority.transitions, authority.direct, authority.elbows, authority
 end
 
@@ -2881,12 +3345,15 @@ end
 -- test global or a second resolver.
 r16_max.bank_transition_oracle = function(compiled_value, oracle_world,
 		r7_edges, perimeters, authored_apertures, payload)
-	local transitions, direct, elbows, edge_authority =
-		independent_transition_expectations(compiled_value, oracle_world,
-			r7_edges, perimeters)
-	local edges = edge_authority.final_edges
+	-- Wing authority, authored Apertures and envelope counts must exist BEFORE
+	-- the edge authority is built: R19 completes both incident Banks of every
+	-- candidate transition tuple inside the edge-authority builder.
 	local envelopes = count_bank_envelopes(oracle_world)
 	local wings = compiled_wing_authority(compiled_value)
+	local transitions, direct, elbows, edge_authority =
+		independent_transition_expectations(compiled_value, oracle_world,
+			r7_edges, perimeters, wings, authored_apertures, envelopes)
+	local edges = edge_authority.final_edges
 	local banks = trace_independent_banks(oracle_world, wings, edges,
 		authored_apertures, envelopes, payload, true)
 	assert_transition_payload(compiled_value, transitions)
@@ -2898,7 +3365,8 @@ end
 local seed0_edge_perimeters = independent_perimeter_oracle.materialize("0", compiled)
 local seed0_transition_expectations, seed0_direct, seed0_elbows,
 	seed0_edge_authority = independent_transition_expectations(compiled,
-		seed0_oracle_world, selected_r7_edge_by_id, seed0_edge_perimeters)
+		seed0_oracle_world, selected_r7_edge_by_id, seed0_edge_perimeters,
+		wing_oracle_by_id, authored_aperture_by_id, bank_envelope_count)
 assert(seed0_direct == 8 and seed0_elbows == 0)
 assert_transition_payload(compiled, seed0_transition_expectations)
 bank_results = trace_independent_banks(seed0_oracle_world, wing_oracle_by_id,
@@ -2929,6 +3397,12 @@ if arg._wp40_phase.enabled("exact_six_reversal") then
 	-- Transition-at-to. Reverse the provisional R7 order, swap those two
 	-- obligations, and drive the production selector/clip/transition assembly;
 	-- the sole final raster must be the byte-exact reverse world edge.
+	-- What this KAT does NOT cover: it reconstructs the R18 clip over the whole
+	-- selected interval, so it coincides with the R19 probe only while land_001
+	-- sits at retreat 0 -- true at seed 0, not guaranteed in general.  And R19's
+	-- own reversal obligation, re-enumerating every eligible incidence against
+	-- the reversed controls and reproducing the same world terminals, is
+	-- exercised nowhere in this file.
 	local edge = assert(selected_r7_edge_by_id.land_001)
 	local decision = assert(seed0_edge_authority.edges.land_001)
 	local attachment = assert(seed0_edge_authority.attachments[
@@ -3874,25 +4348,27 @@ local function derive_attachment_oracles(oracle_world, r7_edges, perimeters,
 				local point = edge.shifted_controls[retained_controls[control_index]]
 				controls[#controls + 1] = {x = point.x, z = point.z}
 			end
-			opposite = edge.stations[interval.finish]
-			controls[#controls + 1] = {x = opposite.x, z = opposite.z}
 			local transition
 			for _, value in pairs(edge_authority.transitions) do
 				if value.source.edge_id == attachment.edge_id and
 						value.source.edge_endpoint == "to" then transition = value end
 			end
+			-- Under R19 the opposite terminal control is the SELECTED incidence's
+			-- R16 `E`; that is the declared interval endpoint only at retreat 0.
+			opposite = transition and transition.e or edge.stations[interval.finish]
+			controls[#controls + 1] = {x = opposite.x, z = opposite.z}
 			if transition and transition.mode == "diagonal_elbow" then
 				controls[#controls + 1] = {x = transition.point.x, z = transition.point.z}
 			end
 		else
 			assert(attachment.edge_endpoint == "to" and
 				attachment.retained_run == "prefix")
-			opposite = edge.stations[interval.first]
 			local transition
 			for _, value in pairs(edge_authority.transitions) do
 				if value.source.edge_id == attachment.edge_id and
 						value.source.edge_endpoint == "from" then transition = value end
 			end
+			opposite = transition and transition.e or edge.stations[interval.first]
 			if transition and transition.mode == "diagonal_elbow" then
 				controls[1] = {x = transition.point.x, z = transition.point.z}
 				controls[2] = {x = opposite.x, z = opposite.z}
@@ -5589,6 +6065,84 @@ if arg._wp40_phase.enabled("selected_diagnostic") then
 		selected_apertures,
 		selected_payload)
 	assert(selected_authority.direct + selected_authority.elbows == 8)
+	local function point_digest(points, reverse)
+		local bytes = {}
+		for step = 1, #points do
+			local index = reverse and #points - step + 1 or step
+			bytes[step] = points[index].x .. ":" .. points[index].z
+		end
+		return to_hex(raw_sha256(table.concat(bytes, ",")))
+	end
+	if slot == 29 then
+		-- The R19 land_010:to measurement, printed rather than pinned: the
+		-- coordinator adjudicates the pins, this oracle only reports what it
+		-- independently derived.
+		local land010 = assert(selected_authority.edge_authority.final_edges.land_010)
+		local decision = assert(selected_authority.edge_authority.edges.land_010)
+		local transition = assert(selected_authority.transition_expectations[
+			"bay_edge_transition:land_010:to"])
+		local joint = assert(selected_authority.edge_authority.joint.land_010)
+		local stillgrave = assert(selected_authority.banks[
+			"bay_bank:kragmar_west:stillgrave"])
+		local mournfen = assert(selected_authority.banks[
+			"bay_bank:kragmar_west:mournfen"])
+		local old_e = assert(selected_r7.land_010).stations[decision.selected.finish]
+		local edge_owner, bank_owner, bank_owner_id = 0, 0, "none"
+		for index = 1, #land010 do
+			if land010[index].x == old_e.x and land010[index].z == old_e.z then
+				edge_owner = edge_owner + 1
+			end
+		end
+		for bank_id, points in pairs(selected_authority.banks) do
+			for index = 1, #points do
+				if points[index].x == old_e.x and points[index].z == old_e.z then
+					bank_owner, bank_owner_id = bank_owner + 1, bank_id
+					break
+				end
+			end
+		end
+		-- The accepted R19 joint-terminal witness, bound rather than printed.
+		-- wp40-reality-corrections.md derives exactly these bytes from the
+		-- Source/T1-only Slot-29 oracle; this C2 oracle reaches them from the
+		-- Partition side through its own primitives, and Production's payload
+		-- agrees with it station-for-station above.  Two independent derivations
+		-- and the compiler now meet here, so a drift in any one of them is loud.
+		assert(transition.mode == "direct" and joint.total_retreat == 1 and
+			joint.complete == 1 and #land010 == 1601 and
+			land010[#land010].x == -1135 and land010[#land010].z == 2242 and
+			land010[#land010 - 1].x == -1136 and land010[#land010 - 1].z == 2242 and
+			point_digest(land010, false) ==
+				"f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70" and
+			point_digest(land010, true) ==
+				"d914e97cde5ee07c8a45c6fa7bafa5422aa7877429b4c04656433da60e030dc1",
+			"C2 Slot29 R19 land_010 terminal/previous/edge witness changed")
+		assert(#stillgrave == 794 and point_digest(stillgrave, false) ==
+				"f50970d89d04bf992bfb15f898621157e602abf624b09c6dff49fb09bf8d2317" and
+			point_digest(stillgrave, true) ==
+				"b98009b596c8ed73450523c8a52df9aecfc97a11f32b4babf8377fbd7555617a" and
+			#mournfen == 456 and point_digest(mournfen, false) ==
+				"457ec6b155f092589972e01d21e6d2c13181a39e26a3eb700fa1e0f4c2071384" and
+			point_digest(mournfen, true) ==
+				"7229bcfa7ae0a3aa6f1c6027678abd71168eaba596a0e2971ffc411b85dffff4",
+			"C2 Slot29 R19 incident Bank witness changed")
+		-- The R18 terminal is retreated off the land edge entirely and is owned
+		-- exactly once, by a Bank -- never by the edge and never twice.
+		assert(old_e.x == -1134 and old_e.z == 2242 and edge_owner == 0 and
+			bank_owner == 1 and bank_owner_id == "bay_bank:kragmar_west:mournfen",
+			"C2 Slot29 R19 excluded E owner witness changed")
+		print("WP40 T2 C2 Slot29 R19 land_010:to mode=" .. transition.mode ..
+			" retreat=" .. joint.total_retreat .. " complete=" .. joint.complete ..
+			" key=" .. joint.decided_by .. " terminal=" ..
+			land010[#land010].x .. ":" .. land010[#land010].z .. " previous=" ..
+			land010[#land010 - 1].x .. ":" .. land010[#land010 - 1].z ..
+			" stations=" .. #land010 .. " edge=" .. point_digest(land010, false) ..
+			"/" .. point_digest(land010, true) .. " Stillgrave=" .. #stillgrave ..
+			":" .. point_digest(stillgrave, false) .. "/" ..
+			point_digest(stillgrave, true) .. " Mournfen=" .. #mournfen .. ":" ..
+			point_digest(mournfen, false) .. "/" .. point_digest(mournfen, true) ..
+			" old_E=" .. old_e.x .. ":" .. old_e.z .. " edge_owner=" .. edge_owner ..
+			" bank_owner=" .. bank_owner .. ":" .. bank_owner_id)
+	end
 	local selected_attachments = derive_attachment_oracles(selected_world, selected_r7,
 		selected_perimeters, selected_authority.edge_authority)
 	local selected_coast = r16_max.coast_oracle.build(selected_request.seed,
@@ -5608,14 +6162,6 @@ if arg._wp40_phase.enabled("selected_diagnostic") then
 	local selected_report = run_exhaustive_partition_oracle(selected_compiled,
 		selected_request.seed, selected_world, selected_perimeters,
 		{mode = "selected", bundle = selected_bundle})
-	local function point_digest(points, reverse)
-		local bytes = {}
-		for step = 1, #points do
-			local index = reverse and #points - step + 1 or step
-			bytes[step] = points[index].x .. ":" .. points[index].z
-		end
-		return to_hex(raw_sha256(table.concat(bytes, ",")))
-	end
 	if slot == 29 then
 		local aperture = assert(selected_apertures[
 			"bay_mouth_aperture:elandor_east"]).before
@@ -5683,16 +6229,27 @@ if arg._wp40_phase.enabled("selected_diagnostic") then
 			end
 			return false
 		end
+		-- Both Bank digests are measured into their own failure message, in the
+		-- style of the control/scalar pins above: a drifted pin is then read off
+		-- the run rather than guessed back from a truncated literal.
+		local starbough_sha = point_digest(starbough, false)
+		local silverleaf_sha = point_digest(silverleaf, false)
 		assert(#starbough == 517 and contains(starbough, 1126, -2239) and
 			contains(starbough, 1127, -2238) and contains(starbough, 1128, -2239) and
-			point_digest(starbough, false) ==
-				"694aa00661b735fc98ab756616c7da96f66d9a2fc2c53ca99ce0a8ca74e3dc1",
-			"C2 Slot30 Starbough Bank witness changed")
+			-- Measured 2026-08-21 under LuaJIT.  The superseded literal was this
+			-- same digest with its final character dropped -- 63 hex, not 64 --
+			-- so the defect was a truncated transcription, not a moved Bank: the
+			-- 517 stations and both incidence witnesses beside it never changed.
+			starbough_sha ==
+				"694aa00661b735fc98ab756616c7da96f66d9a2fc2c53ca99ce0a8ca74e3dc1d",
+			"C2 Slot30 Starbough Bank witness changed: " .. #starbough .. "/" ..
+				starbough_sha)
 		assert(#silverleaf == 731 and contains(silverleaf, 1128, -2239) and
 			not contains(silverleaf, 1126, -2239) and
-			point_digest(silverleaf, false) ==
+			silverleaf_sha ==
 				"4786ad54eb2d955adb6f1560346484599f2561a708d34cdfe40f254cbcc91e24",
-			"C2 Slot30 Silverleaf Bank witness changed")
+			"C2 Slot30 Silverleaf Bank witness changed: " .. #silverleaf .. "/" ..
+				silverleaf_sha)
 		for index = 1, #selected_compiled.families.dry_faces do
 			local face = selected_compiled.families.dry_faces[index]
 			if exact.polygon_class(1126, -2239,
