@@ -1,1 +1,2 @@
 tools/wp40/dungeon_probe/evidence/*/raw.log -whitespace
+tools/wp40/evidence/t5-probe-*/run-*/raw.log -whitespace
