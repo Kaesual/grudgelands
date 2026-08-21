@@ -1,0 +1,11 @@
+Luanti 5.16.1 (Linux)
+Using LuaJIT 2.1.1784272936 (OpenResty)
+Built by GCC 15.2
+Running on Linux/7.1.8 x86_64
+BUILD_TYPE=Release
+RUN_IN_PLACE=0
+USE_CURL=1
+USE_GETTEXT=1
+USE_SOUND=1
+STATIC_SHAREDIR="/app/share/luanti"
+STATIC_LOCALEDIR="/app/share/locale"

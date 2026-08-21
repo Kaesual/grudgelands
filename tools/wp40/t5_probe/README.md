@@ -147,20 +147,35 @@ error, it has no variance, no median, no minimum and no maximum, and nothing in
 this package computes any of those. A digest has no median and a single sample
 has no spread.
 
-> ### TO BE FILLED FROM THE FINAL CAPTURE
->
-> The definitive four-capture run has not been folded in yet. Every cell below
-> is a placeholder; **no number in this block is measured until it is replaced**,
-> and none may be quoted while it still reads `TO BE FILLED`.
->
-> | Quantity | Source | Value |
-> | --- | --- | --- |
-> | arm `B` order `O1` emerge-phase wall time | `emerge_done` records of `run-B-O1` | `TO BE FILLED FROM THE FINAL CAPTURE` |
-> | margin against the **45 s** emerge deadline | that value vs contract 14.1/14.2 | `TO BE FILLED FROM THE FINAL CAPTURE` |
-> | arm `B` order `O1` whole-run wall time | the `complete` record of `run-B-O1` | `TO BE FILLED FROM THE FINAL CAPTURE` |
-> | margin against the **60 s** run deadline | that value vs contract 14.1/14.2 | `TO BE FILLED FROM THE FINAL CAPTURE` |
-> | `projected_total_wall_s = 4 x observed_run_wall_s` | one unreplicated sample multiplied by four | `TO BE FILLED FROM THE FINAL CAPTURE` |
-> | observed wall time of all four captures | the four `complete` records | `TO BE FILLED FROM THE FINAL CAPTURE` |
+### The measured projection
+
+Folded in from the definitive four-capture run, manifest digest
+`9ac056ffa4433c80364cc6535dfe6b4ff6ce8b30693248fcad4f834b430699c2`, on the
+designated host under Luanti 5.16.1 / LuaJIT 2.1.1784272936. Every figure is
+**one sample**. `timing_replicates: 1`, `timings_are_golden: false`.
+
+| Quantity | Source | Value |
+| --- | --- | --- |
+| arm `B` order `O1` emerge-phase wall time | last `emerge_done` of `run-B-O1` | **0.365 s** (365,347 us) |
+| margin against the **45 s** emerge deadline | contract 14.1 / 14.2 | 44.63 s unused; 0.8 % of the budget consumed |
+| arm `B` order `O1` whole-run wall time | the `complete` record of `run-B-O1` | **3.018 s** (3,018,258 us) |
+| margin against the **60 s** run deadline | contract 14.1 / 14.2 | 56.98 s unused; 5.0 % of the budget consumed |
+| `projected_total_wall_s = 4 x observed_run_wall_s` | one unreplicated sample multiplied by four | **12.07 s** |
+| observed in-server wall time of all four captures | the four `complete` records | **11.82 s** (3.018 + 2.931 + 2.932 + 2.935) |
+
+The projection over-predicted the observed total by 0.26 s, because arm `B`
+order `O1` is the more expensive arm and the projection deliberately multiplies
+*it* rather than an average — contract 14.3 calls that "the honest basis". That
+agreement is **not** a validation of the method: with one sample per cell there
+is no spread to compare it against, and a single close call is not evidence of
+predictive accuracy. It is recorded because it happened, not because it proves
+anything.
+
+All four runs met both in-run deadlines (`emerge_deadline_met: true`,
+`run_deadline_met: true` on every `complete` record), so no run was invalidated
+by abort `A-09`. The margins are large because the deadlines are set by the
+external capital-sweep hazard of contract 14.2 — the first sweep fires at
+t ~ 60 s — and not by the probe's own work.
 
 The outer `timeout` is 180 s per invocation. It is a **ceiling, not an
 expectation**: `4 x 180 s` must never be quoted as the expected cost. The
