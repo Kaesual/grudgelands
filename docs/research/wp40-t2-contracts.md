@@ -2095,3 +2095,15 @@ banked run's abort-lowered mean; reported, not absorbed) — and the
 v3 brief carries the new pre-approvals. The production Whole gate
 goes live with the package commit; the full-`W` re-census stays at
 T2-final.
+
+**RULED 2026-08-21** (coordinator, user-confirmed): **all three
+points as cut** — **W := 12** (pin lineage 8 → 11 → 12,
+complete-distribution provenance), the **loop pairing ratified** as
+the binding reading of the 11.9 non-crossing predicate, and the
+**four findings pinned as population corrections** (inherit 25 at the
+seven columns; adoption 117 seeds / 118 chains; pinch 21; appendix
+carriers ≥ 792) into the fifth attempt's acceptance ledger. The
+acceptance sweep is pre-approved to **6 h wall** (the user's buffer
+choice over the measured 4.8 h no-abort actuals); the PUC
+pre-approval is unchanged. The fifth implementation attempt proceeds
+from the banked patch under the v3 brief.
