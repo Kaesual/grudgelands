@@ -162,8 +162,12 @@ correction, with its evidence and digests, stays in
   identity gates. A junction with a mixture of transition and ordinary
   incidences, an attachment endpoint that also claims relief-junction
   authority, or any roster/count drift rejects as a new Reality case. After
-  these three categories resolve, all 38 dry faces must still be closed,
-  counterclockwise and simple.
+  these three categories resolve, all 38 dry faces must still be closed and
+  counterclockwise, and either simple or accepted with window-guarded
+  join-local, locally non-crossing self-touches — zero-width filament
+  appendixes and interior-beside pinches (the 2026-08-20
+  contracts-§11.5-C correction as completed by §11.9; region truth by
+  winding).
 
 ## 3. Bay Bank components
 
@@ -466,8 +470,12 @@ correction, with its evidence and digests, stays in
   one suffix, and selects the unique incidence-complete interval plus
   contiguous authored control subsequence on the exact six transition-bearing
   edges. Each excluded dry fragment must have exactly one Bank/Face owner and
-  no land-edge or terminal identity. It then proves every concrete face closed,
-  counterclockwise and simple. It reruns the
+  no land-edge or terminal identity. It then proves every concrete face closed
+  and counterclockwise, and either simple or accepted with window-guarded
+  join-local, locally non-crossing self-touches — zero-width filament
+  appendixes and interior-beside pinches (the 2026-08-20
+  contracts-§11.5-C correction as completed by §11.9; region truth by
+  winding). It reruns the
   complete footprint `g=0/o=0/r=0` proof for every corpus seed. This staging
   distinction changes neither the final topology nor any acceptance case.
 

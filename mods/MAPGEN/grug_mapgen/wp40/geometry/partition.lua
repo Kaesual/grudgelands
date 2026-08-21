@@ -653,22 +653,87 @@ local function new_partition(dependencies)
 		return exact.rational_compare(numerator, denominator, 6400, 1) <= 0
 	end
 
+	-- The window-guarded appendix acceptance (contracts 11.5-C, ruled
+	-- 2026-08-20; completed by the 11.9 ruling and re-ruled by 11.10 on
+	-- the complete distribution): every measured self-touch is join-local
+	-- within this many ring stations of a part join.  Provenance (pin
+	-- lineage W 8 -> 11 -> 12): the 11.5 investigation measured bound 6
+	-- over the 95 preserved violations (an 8.5% dump sample, ruled one
+	-- wider at W = 8); the section-11.8 union sweep measured all 796 face
+	-- witnesses and 11.9 pinned the observed maximum 11 -- in fact a
+	-- one-witness generalization; the section-11.10 acceptance sweep then
+	-- measured the COMPLETE distribution (b-join-distances.tsv of the w11
+	-- stop artifacts: all 60 family-B seeds, 93 repeated stations, d=1
+	-- x14, 2 x10, 8 x7, 9 x9, 10 x25, 11 x23, 12 x5, nothing beyond 12 --
+	-- the silverleaf touch family 1138-1140:-2232 against its join anchor
+	-- jittering +-1 over 1126/1127/1128:-2233), and 11.10 pins W at the
+	-- complete-population maximum 12 exactly -- the first W pin whose
+	-- provenance is a complete population; no margin, anything farther
+	-- stays a named loud failure.  The census authority pins the same
+	-- value; the worker refuses to run when the two copies disagree.
+	local FACE_APPENDIX_WINDOW = 12
+
+	-- The eight lattice directions in counterclockwise cyclic order: the
+	-- integer ground of the 11.9 locally-non-crossing touch predicate.
+	local touch_direction_index = {
+		["1:0"] = 0, ["1:1"] = 1, ["0:1"] = 2, ["-1:1"] = 3,
+		["-1:0"] = 4, ["-1:-1"] = 5, ["0:-1"] = 6, ["1:-1"] = 7}
+
 	-- Every composed face is an eight-connected integer lattice walk. For this
 	-- representation, unique nonterminal stations plus the one possible
 	-- station-free intersection (opposing cell diagonals) are the complete
 	-- simplicity proof. This keeps 15k-station coast faces linear.
-	local function validate_face_polygon(id, polygon)
+	--
+	-- Two-tier validation (contracts 11.5-C, completed by 11.9): the linear
+	-- simplicity proof is the fast path and clean geometry never leaves it.
+	-- A ring with repeated stations is accepted only when every repeat is a
+	-- join-local, locally non-crossing self-touch -- the fully measured
+	-- bay-transition family and nothing else:
+	--   * join-local: each occurrence within FACE_APPENDIX_WINDOW ring
+	--     stations of one shared part join (`join_keys`, the station keys
+	--     where composition joined two parts);
+	--   * locally non-crossing: the two passes through the repeated station
+	--     must not interleave in the cyclic order of the four incident ring
+	--     edges (integer-only over the eight lattice directions; a shared
+	--     edge direction is overlap, not a crossing -- the retraced
+	--     corridor is exactly that).
+	-- The touch FORM is then recorded, not gated on: a zero-width touch --
+	-- NO cardinal 4-neighbour strictly interior by winding (the ratified
+	-- 11.8/11.9 operationalization; the winding membership of
+	-- exact.polygon_class requires closure, not simplicity) -- is a
+	-- filament appendix (straight corridor stations have both laterals
+	-- strictly outside, and W-112's dawnmere L-turn corridor mouth,
+	-- measured 2026-08-20 at station -634:-2918 with classes
+	-- E=0/W=-1/N=0/S=0, has boundary neighbours on both axes and still no
+	-- interior beside it); a touch beside strict interior is a pinch (the
+	-- 19 measured interior-hugging one-station dips of the 11.8 family B).
+	-- Every failing condition aborts by its own name -- a crossing, a
+	-- non-join-local repeat, a station repeated more than twice -- and an
+	-- opposing cell diagonal stays an abort in either tier.
+	-- Returns the filament (appendix) and pinch station counts -- distinct
+	-- repeated stations by form -- both zero exactly on the fast path.
+	local function validate_face_polygon(id, polygon, join_keys)
 		if #polygon < 4 or key(polygon[1]) ~= key(polygon[#polygon]) then
 			fail(id .. " is not closed " .. key(polygon[1]) .. " -> " ..
 				key(polygon[#polygon]))
 		end
 		local seen, diagonal_cells = {}, {}
+		local repeated_keys, repeats = {}, {}
 		for index = 1, #polygon - 1 do
 			local point = polygon[index]
 			exact.point(point, id .. " station")
 			local station_key = key(point)
-			if seen[station_key] then fail(id .. " is not simple") end
-			seen[station_key] = true
+			if seen[station_key] then
+				local entry = repeats[station_key]
+				if not entry then
+					entry = {seen[station_key]}
+					repeats[station_key] = entry
+					repeated_keys[#repeated_keys + 1] = station_key
+				end
+				entry[#entry + 1] = index
+			else
+				seen[station_key] = index
+			end
 			local following = polygon[index + 1]
 			exact.point(following, id .. " following station")
 			local dx = exact.safe_difference(following.x, point.x, id .. " step")
@@ -681,12 +746,128 @@ local function new_partition(dependencies)
 					math.min(point.z, following.z)
 				local slope = dx == dz and 1 or -1
 				if diagonal_cells[cell_key] and diagonal_cells[cell_key] ~= slope then
-					fail(id .. " is not simple")
+					fail(id .. " has an opposing cell diagonal at cell " .. cell_key)
 				end
 				diagonal_cells[cell_key] = slope
 			end
 		end
+		local appendix_count, pinch_count = 0, 0
+		if #repeated_keys > 0 then
+			-- The appendix tier.  Conditions are checked per repeated station
+			-- in first-occurrence ring order: occurrence count, join
+			-- locality, local non-crossing -- deterministic, so the first
+			-- failure is the same failure under every interpreter.  The
+			-- zero-width measurement afterwards only records the touch form.
+			local ring_count = #polygon - 1
+			local join_indices = {}
+			if join_keys then
+				for index = 1, ring_count do
+					if join_keys[key(polygon[index])] then
+						join_indices[#join_indices + 1] = index
+					end
+				end
+			end
+			local polygon_index = exact.polygon_index(polygon)
+			for order = 1, #repeated_keys do
+				local station_key = repeated_keys[order]
+				local entry = repeats[station_key]
+				if #entry > 2 then
+					fail(id .. " appendix station repeated more than twice at " ..
+						station_key)
+				end
+				-- Join-local: both occurrences inside the window of the SAME
+				-- join (the measured shape -- no violation straddles two
+				-- joins), distances cyclic over the ring.
+				local anchored = false
+				for join_position = 1, #join_indices do
+					local join_index = join_indices[join_position]
+					local near = true
+					for occurrence = 1, #entry do
+						local distance = math.abs(entry[occurrence] - join_index)
+						distance = math.min(distance, ring_count - distance)
+						if distance > FACE_APPENDIX_WINDOW then
+							near = false
+							break
+						end
+					end
+					if near then
+						anchored = true
+						break
+					end
+				end
+				if not anchored then
+					fail(id .. " has a non-join-local repeat at " .. station_key)
+				end
+				local station = polygon[entry[1]]
+				-- Locally non-crossing (contracts 11.9, family B).  The
+				-- repeated station splits the ring into two LOOPS: loop
+				-- alpha runs from the first occurrence's outgoing edge to
+				-- the second occurrence's incoming edge, loop beta from the
+				-- second's outgoing edge back to the first's incoming edge.
+				-- The self-touch crosses exactly when the two loops'
+				-- edge-end pairs interleave in the cyclic order of the four
+				-- incident ring edges -- the configuration that cannot
+				-- close in the plane without a further self-intersection.
+				-- The loop pairing, not the pass pairing, is the ruled
+				-- predicate's operationalization: measured 2026-08-20 on
+				-- the 11.9 family-C anatomy shape (the accepted one-station
+				-- dip, e.g. kragmar_stillgrave_hollow at -1204:2233, passes
+				-- W->E and S->NW), whose PASSES interleave while its loops
+				-- occupy disjoint sectors -- the pass form would reject the
+				-- measured family the 11.9 ruling accepts.  A coincident
+				-- loop-end direction is a shared edge -- overlap, not a
+				-- crossing (the retraced corridor and the measured dips are
+				-- exactly that) -- and a loop with both ends on one
+				-- direction is a degenerate spike that cannot separate the
+				-- other loop.
+				local function incident_direction(station_index, step)
+					local neighbour_index
+					if step < 0 then
+						neighbour_index = station_index == 1 and ring_count or
+							station_index - 1
+					else
+						neighbour_index = station_index + 1
+					end
+					local neighbour = polygon[neighbour_index]
+					return touch_direction_index[
+						(neighbour.x - station.x) .. ":" ..
+						(neighbour.z - station.z)]
+				end
+				local function strictly_between(from, value, to)
+					local offset = (value - from) % 8
+					return offset > 0 and offset < (to - from) % 8
+				end
+				local a1 = incident_direction(entry[1], 1)
+				local a2 = incident_direction(entry[2], -1)
+				local b1 = incident_direction(entry[2], 1)
+				local b2 = incident_direction(entry[1], -1)
+				if a1 ~= a2 and b1 ~= b2 and
+						(strictly_between(a1, b1, a2) and
+							strictly_between(a2, b2, a1) or
+						strictly_between(a1, b2, a2) and
+							strictly_between(a2, b1, a1)) then
+					fail(id .. " has a crossing repeat at " .. station_key)
+				end
+				-- The touch form, recorded under face_appendix_select
+				-- (contracts 11.9): zero width -- the ratified no-cardinal-
+				-- interior predicate -- is a filament appendix, strict
+				-- interior beside the touch is a pinch.
+				if exact.indexed_polygon_class(polygon_index,
+							station.x - 1, station.z) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x + 1, station.z) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x, station.z - 1) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x, station.z + 1) > 0 then
+					pinch_count = pinch_count + 1
+				else
+					appendix_count = appendix_count + 1
+				end
+			end
+		end
 		if exact.signed_area2(polygon) <= 0 then fail(id .. " is not CCW") end
+		return appendix_count, pinch_count
 	end
 
 	-- Census classification twin of the R13 pair gate: identical checks in
@@ -1584,7 +1765,12 @@ local function new_partition(dependencies)
 				perimeter = perimeter_by_id[bay.source.perimeter_projection.perimeter_id],
 				aperture = aperture_by_bay[bay.source.id],
 				wings = wing_by_bay[bay.source.id], raw_rows = {}, fill = {},
-				fill_points = {},
+				-- `fill` is the union of every planned-water addition to the
+				-- raw mask; `fill_points` stays the section-7.1 notch fills
+				-- alone and `closing_points` the section-11 connectivity
+				-- closing's, so the notch projections and payload never
+				-- absorb the other rule's columns.
+				fill_points = {}, closing_points = {},
 				water_cache = {}, dry_cache = {}, candidate_cache = {}, boxes = {}}
 			local min_x, max_x, min_z, max_z
 			for segment_index = 1, #bay.source.centreline - 1 do
@@ -1754,8 +1940,18 @@ local function new_partition(dependencies)
 		-- Materialize the immutable raw per-Bay mask exactly once.  Its row runs
 		-- are then the only input to the simultaneous R17 fill; a filled point is
 		-- never visible while another fill decision is made.
+		--
+		-- The same pass records the raw-dry footprint complement as maximal
+		-- row runs -- the flood domain of the section-11 connectivity closing
+		-- below.  `class` here is the Bay's own perimeter; inside a Bay
+		-- envelope that IS the footprint, which the closing's ground
+		-- assertions verify against the other perimeter, the islands and the
+		-- Holy band before the domain is read.
+		local closing_domain_by_bay = {}
 		for bay_index = 1, #bays do
 			local context = bay_context_by_id[bays[bay_index].source.id]
+			local dry_rows = {}
+			closing_domain_by_bay[context.bay.source.id] = dry_rows
 			for z = context.min_z, context.max_z do
 				local schedules, cursors = {}, {}
 				for segment_index = 1, #context.bay.segments do
@@ -1765,6 +1961,7 @@ local function new_partition(dependencies)
 					cursors[segment_index] = 1
 				end
 				local runs, first = {}, nil
+				local dry_runs, dry_first, dry_boundary = {}, nil, false
 				for x = context.min_x, context.max_x do
 					local point_key = x .. ":" .. z
 					local class = exact.indexed_polygon_class(
@@ -1800,9 +1997,22 @@ local function new_partition(dependencies)
 								context.bay.source.id .. " raw run")}
 						first = nil
 					end
+					if class >= 0 and not raw then
+						if not dry_first then dry_first, dry_boundary = x, false end
+						if class == 0 then dry_boundary = true end
+					elseif dry_first then
+						dry_runs[#dry_runs + 1] = {z = z, first = dry_first,
+							finish = x - 1, boundary = dry_boundary}
+						dry_first = nil
+					end
 				end
 				if first then runs[#runs + 1] = {first = first, finish = context.max_x} end
 				if #runs > 0 then context.raw_rows[z] = runs end
+				if dry_first then
+					dry_runs[#dry_runs + 1] = {z = z, first = dry_first,
+						finish = context.max_x, boundary = dry_boundary}
+				end
+				if #dry_runs > 0 then dry_rows[z] = dry_runs end
 			end
 		end
 
@@ -1917,6 +2127,169 @@ local function new_partition(dependencies)
 					end
 				end
 			end
+		end
+
+		-- The connectivity closing (contracts section 11 branch 2c, ruled
+		-- 2026-08-20; decoupled from the corridor question by the 1c
+		-- refutation ruling at that section's end): a raw-dry column with no
+		-- dry 4-connected path to the Bank-side mainland becomes planned
+		-- water.  Bay water is the connected wet region, and dry noise at
+		-- its jittered margin -- the measured 1..15-column pockets nobody
+		-- owns, and the fragment singleton's isolated hole -- is water,
+		-- stated as connectivity instead of as an enumeration of pocket
+		-- shapes.  The section-7.1 notch rule above stays: on an enclosed
+		-- pocket it is a fast path to the same fill, and on a
+		-- mainland-connected degree-one spur tip it keeps a fill this rule
+		-- deliberately does not make (such a tip has a dry path out).
+		--
+		-- "Bank-side mainland" is decidable inside one Bay envelope alone
+		-- only while no other dry-land authority reaches into it, so in the
+		-- F1-prefilter style that ground is verified at every stage build
+		-- rather than trusted: the four envelopes pairwise disjoint, every
+		-- island and the Holy band outside all of them.  Within a clean
+		-- envelope the strict capsule and wing memberships plus each box's
+		-- +1 margin keep raw water off the envelope border, so a dry border
+		-- column is the mainland by construction: the flood seeds on the
+		-- border ring and walks the maximal dry row runs recorded by the
+		-- mask pass; a run no walk reaches is a margin pocket and fills.
+		do
+			local island_boxes = {}
+			for island_index = 1, #island_rows do
+				local stations = island_rows[island_index].stations
+				local box = {min_x = stations[1].x, max_x = stations[1].x,
+					min_z = stations[1].z, max_z = stations[1].z}
+				for station_index = 2, #stations do
+					local point = stations[station_index]
+					box.min_x = math.min(box.min_x, point.x)
+					box.max_x = math.max(box.max_x, point.x)
+					box.min_z = math.min(box.min_z, point.z)
+					box.max_z = math.max(box.max_z, point.z)
+				end
+				island_boxes[island_index] = box
+			end
+			local holy = source.constants.holy_grounds
+			for bay_index = 1, #bays do
+				local context = bay_context_by_id[bays[bay_index].source.id]
+				for other_index = bay_index + 1, #bays do
+					local other = bay_context_by_id[bays[other_index].source.id]
+					if context.min_x <= other.max_x and
+							other.min_x <= context.max_x and
+							context.min_z <= other.max_z and
+							other.min_z <= context.max_z then
+						fail(context.bay.source.id .. " and " ..
+							other.bay.source.id .. " Bay envelopes intersect")
+					end
+				end
+				if context.min_x <= holy.max_x and holy.min_x <= context.max_x and
+						context.min_z <= holy.max_z and
+						holy.min_z <= context.max_z then
+					fail(context.bay.source.id ..
+						" Bay envelope reaches the Holy band")
+				end
+				for island_index = 1, #island_boxes do
+					local box = island_boxes[island_index]
+					if context.min_x <= box.max_x and
+							box.min_x <= context.max_x and
+							context.min_z <= box.max_z and
+							box.min_z <= context.max_z then
+						fail(context.bay.source.id ..
+							" Bay envelope reaches " ..
+							island_rows[island_index].id)
+					end
+				end
+			end
+		end
+		for bay_index = 1, #bays do
+			local context = bay_context_by_id[bays[bay_index].source.id]
+			local dry_rows = closing_domain_by_bay[context.bay.source.id]
+			local stack = {}
+			local function reach(run)
+				if not run.reached then
+					run.reached = true
+					stack[#stack + 1] = run
+				end
+			end
+			for z = context.min_z, context.max_z do
+				local runs = dry_rows[z]
+				if runs then
+					for run_index = 1, #runs do
+						local run = runs[run_index]
+						if z == context.min_z or z == context.max_z or
+								run.first == context.min_x or
+								run.finish == context.max_x then
+							reach(run)
+						end
+					end
+				end
+			end
+			while #stack > 0 do
+				local run = stack[#stack]
+				stack[#stack] = nil
+				for step = -1, 1, 2 do
+					local neighbors = dry_rows[run.z + step]
+					if neighbors then
+						for neighbor_index = 1, #neighbors do
+							local neighbor = neighbors[neighbor_index]
+							if neighbor.first <= run.finish and
+									run.first <= neighbor.finish then
+								reach(neighbor)
+							end
+						end
+					end
+				end
+			end
+			for z = context.min_z, context.max_z do
+				local runs = dry_rows[z]
+				if runs then
+					for run_index = 1, #runs do
+						local run = runs[run_index]
+						if not run.reached then
+							-- A footprint-ring station is mainland by
+							-- definition -- never a closing candidate
+							-- (contracts 11.9, family A).  The retired 11.8
+							-- loud guard ("closing pocket holds a footprint
+							-- boundary column") fired on exactly this
+							-- condition: the measured 8/8 pinched fragments
+							-- are single coast-ring stations whose mainland
+							-- continuity is one diagonal ring step -- the
+							-- coast ring walks eight-connected while this
+							-- flood walks 4-connected row runs, so the
+							-- "pinch" was the flood criterion's artefact,
+							-- not the geometry's.  The ring column stays dry
+							-- land here and the ownership layer adopts it
+							-- along the ring's own connectivity
+							-- (whole_adopt_residue); non-ring columns of the
+							-- same pocket still fill, and the Whole gate
+							-- stays the loud backstop if a ring chain ends
+							-- up unowned.
+							for x = run.first, run.finish do
+								local point_key = x .. ":" .. z
+								-- A notch-filled column is already planned
+								-- water of this Bay; any other standing owner
+								-- is a foreign Bay, unreachable under the
+								-- envelope disjointness above.
+								if run.boundary and exact.indexed_polygon_class(
+										context.perimeter.polygon_index,
+										x, z) == 0 then
+									-- the ring station: never watered
+								elseif not context.fill[point_key] then
+									if fill_owner[point_key] then
+										fail(context.bay.source.id ..
+											" closing pocket is owned by " ..
+											"another Bay")
+									end
+									fill_owner[point_key] = context
+									context.fill[point_key] = true
+									context.closing_points[
+										#context.closing_points + 1] =
+										{x = x, z = z}
+								end
+							end
+						end
+					end
+				end
+			end
+			closing_domain_by_bay[context.bay.source.id] = nil
 		end
 
 		local function bay_water(context, x, z)
@@ -3268,6 +3641,762 @@ local function new_partition(dependencies)
 			wing_exclusion_causes = wing_exclusion_causes}
 	end
 
+	-- The Whole tier's interval classifier core, pure over prepared row-run
+	-- tables so the synthetic gate KATs can drive it directly (contracts
+	-- 9.4).  `prepared` carries:
+	--   footprint_rows: [z] -> sorted {first, finish} runs (the merged
+	--     footprint universe);
+	--   face_rows: [z] -> {first, finish, id, zone_id} runs of the composed
+	--     simple face polygons;
+	--   water_rows: [z] -> {first, finish, owner} runs of final planned
+	--     water (the caller has already applied the perimeter-equality
+	--     aperture rule, so these are literal planned-water columns);
+	--   declared: ["x:z"] -> {zone_id = true} the declared seam owners
+	--     (shared-edge stations and perimeter-span vertices);
+	--   check: optional function(z, x, water_owner_or_nil, face_runs) ->
+	--     boolean -- the per-interval representation cross-check behind the
+	--     m count; nil skips it and m stays 0.
+	-- Classification per interval (completeness analysis F10/F11): water
+	-- single owner or dry single face -> whole_single_owner_select; dry
+	-- multi-face exactly matching the declared seam at every column ->
+	-- whole_declared_seam_select; dry uncovered -> whole_gap_reject (g);
+	-- anything else -> whole_undeclared_multiplicity_reject (water overlap
+	-- counts o, undeclared dry multiplicity counts r per column).  m counts
+	-- the columns of every interval whose `check` disagreed -- the H38
+	-- normalization's own measured invariance.
+	--
+	-- It sits here, above compile_impl, together with polygon_row_runs and
+	-- the prepared-table constructors below, because the section-11
+	-- production Whole gate made compile_impl its second caller: the census
+	-- Scan-4 Whole tier and the compiler ask the identical functions, so the
+	-- two readings of the footprint can never drift apart.
+	-- Seam inheritance (contracts 11.9, family C): a column claimed by
+	-- exactly two faces, BOTH as boundary stations of their rings (the
+	-- covering runs carry their winding class), cardinally adjacent to a
+	-- declared-seam column of the identical zone pair, inherits that
+	-- declaration.  whole_declared derives only from final shared-edge
+	-- stations and perimeter-span vertices and never declared the measured
+	-- dip tips (the 11.9 anatomy: 7/7 witnesses boundary-boundary with the
+	-- same-pair declaration at cardinal distance 1, never interior, never a
+	-- third claimant).  An interior claimant, a third face, an identical
+	-- zone pair or no adjacent same-pair declaration inherits nothing and
+	-- stays the loud multiplicity reject.
+	local function inherits_declared_seam(prepared, z, x, covering_faces)
+		if #covering_faces ~= 2 then return false end
+		if covering_faces[1].class ~= 0 or covering_faces[2].class ~= 0 then
+			return false
+		end
+		local zone_a = covering_faces[1].zone_id
+		local zone_b = covering_faces[2].zone_id
+		if zone_a == zone_b then return false end
+		local neighbours = {{x - 1, z}, {x + 1, z}, {x, z - 1}, {x, z + 1}}
+		for index = 1, 4 do
+			local owners = prepared.declared[neighbours[index][1] .. ":" ..
+				neighbours[index][2]]
+			if owners and owners[zone_a] and owners[zone_b] then
+				local exact_pair = true
+				for owner in pairs(owners) do
+					if owner ~= zone_a and owner ~= zone_b then
+						exact_pair = false
+						break
+					end
+				end
+				if exact_pair then return true end
+			end
+		end
+		return false
+	end
+
+	local function census_whole_classify(prepared)
+		local classes = {}
+		local function note(class, z, first, finish)
+			local entry = classes[class]
+			if not entry then
+				entry = {intervals = 0, columns = 0}
+				classes[class] = entry
+			end
+			entry.intervals = entry.intervals + 1
+			entry.columns = entry.columns + (finish - first + 1)
+			if not entry.witness then
+				entry.witness = "z=" .. z .. ":x=" .. first .. ".." .. finish
+			end
+		end
+		local totals = {g = 0, o = 0, r = 0, m = 0, columns = 0,
+			planned_water = 0, dry = 0}
+		local zs = {}
+		for z in pairs(prepared.footprint_rows) do zs[#zs + 1] = z end
+		table.sort(zs)
+		for z_index = 1, #zs do
+			local z = zs[z_index]
+			local footprint_runs = prepared.footprint_rows[z]
+			local face_runs = prepared.face_rows[z] or {}
+			local water_runs = prepared.water_rows[z] or {}
+			for footprint_index = 1, #footprint_runs do
+				local footprint_run = footprint_runs[footprint_index]
+				local breaks = {footprint_run.first, footprint_run.finish + 1}
+				for _, collection in ipairs({face_runs, water_runs}) do
+					for index = 1, #collection do
+						local run = collection[index]
+						if run.finish >= footprint_run.first and
+								run.first <= footprint_run.finish then
+							breaks[#breaks + 1] =
+								math.max(run.first, footprint_run.first)
+							breaks[#breaks + 1] =
+								math.min(run.finish, footprint_run.finish) + 1
+						end
+					end
+				end
+				table.sort(breaks)
+				local unique = {}
+				for index = 1, #breaks do
+					if index == 1 or breaks[index] ~= breaks[index - 1] then
+						unique[#unique + 1] = breaks[index]
+					end
+				end
+				for index = 1, #unique - 1 do
+					local first, finish = unique[index], unique[index + 1] - 1
+					local length = finish - first + 1
+					local covering_faces, covering_water = {}, {}
+					for run_index = 1, #face_runs do
+						local run = face_runs[run_index]
+						if first >= run.first and first <= run.finish then
+							covering_faces[#covering_faces + 1] = run
+						end
+					end
+					for run_index = 1, #water_runs do
+						local run = water_runs[run_index]
+						if first >= run.first and first <= run.finish then
+							covering_water[#covering_water + 1] = run
+						end
+					end
+					totals.columns = totals.columns + length
+					local class
+					if #covering_water >= 1 then
+						totals.planned_water = totals.planned_water + length
+						if #covering_water > 1 then
+							totals.o = totals.o + length
+							class = "whole_undeclared_multiplicity_reject"
+						else
+							class = "whole_single_owner_select"
+						end
+					else
+						totals.dry = totals.dry + length
+						if #covering_faces == 0 then
+							totals.g = totals.g + length
+							class = "whole_gap_reject"
+						elseif #covering_faces == 1 then
+							class = "whole_single_owner_select"
+						else
+							-- The declared-seam check is per column: the
+							-- covering faces are interval-constant, the
+							-- declared owner sets are not.  A column the
+							-- direct check refuses may still inherit an
+							-- adjacent same-pair declaration (contracts
+							-- 11.9, family C -- inherits_declared_seam
+							-- above); everything else counts r and stays
+							-- the loud multiplicity reject.
+							local valid_all = true
+							for x = first, finish do
+								local owners = prepared.declared[x .. ":" .. z]
+								local valid = owners ~= nil
+								local seen = {}
+								for face_index = 1, #covering_faces do
+									local owner = covering_faces[face_index].zone_id
+									if seen[owner] or not owners or
+											not owners[owner] then
+										valid = false
+									end
+									seen[owner] = true
+								end
+								if valid then
+									for owner in pairs(owners) do
+										if not seen[owner] then
+											valid = false break
+										end
+									end
+								end
+								if not valid and inherits_declared_seam(
+										prepared, z, x, covering_faces) then
+									valid = true
+								end
+								if not valid then
+									valid_all = false
+									totals.r = totals.r + 1
+								end
+							end
+							class = valid_all and "whole_declared_seam_select" or
+								"whole_undeclared_multiplicity_reject"
+						end
+					end
+					if prepared.check then
+						local water_owner = #covering_water == 1 and
+							covering_water[1].owner or nil
+						if not prepared.check(z, first, water_owner,
+								covering_faces) then
+							totals.m = totals.m + length
+						end
+					end
+					note(class, z, first, finish)
+				end
+			end
+		end
+		totals.classes = classes
+		return totals
+	end
+
+	-- The polygon row-run normalization of the H38 method: every station of
+	-- the closed polygon is a class-0 single-column run of its row, and
+	-- every gap between consecutive boundary columns whose first column is
+	-- interior is a class-1 run.  The class is constant between consecutive
+	-- boundary columns of a row for EVERY closed eight-connected lattice
+	-- ring, simple or not: an edge is a unit step, so any edge meeting the
+	-- horizontal line of an integer row does so at a station on that row --
+	-- which is a boundary column -- and the winding class
+	-- (exact.indexed_polygon_class, closure required, simplicity not) can
+	-- only change across the curve.  That is what makes the interval an
+	-- exhaustive proof rather than a sample, and what lets the section-11.5-C
+	-- winding row derivation reuse this function unchanged for an
+	-- appendix-accepted face: `repeat_tolerant` (set exactly for faces the
+	-- two-tier validator accepted with appendixes) deduplicates the row
+	-- boundary column a zero-width appendix station contributes twice; on
+	-- every other ring a repeated column stays the loud failure it was.
+	local function polygon_row_runs(points, label, repeat_tolerant)
+		if #points < 4 or key(points[1]) ~= key(points[#points]) then
+			fail(label .. " row-run normalization needs a closed polygon")
+		end
+		local polygon_index = exact.polygon_index(points)
+		local boundary = {}
+		for index = 1, #points - 1 do
+			local point = points[index]
+			local row = boundary[point.z]
+			if not row then row = {} boundary[point.z] = row end
+			row[#row + 1] = point.x
+		end
+		local result = {}
+		for z, xs in pairs(boundary) do
+			table.sort(xs)
+			local runs = {}
+			local previous
+			for index = 1, #xs do
+				local x = xs[index]
+				if x == previous then
+					if not repeat_tolerant then
+						fail(label .. " repeats a row boundary column")
+					end
+				else
+					if previous and x > previous + 1 then
+						local first, finish = previous + 1, x - 1
+						if exact.indexed_polygon_class(polygon_index, first, z) > 0 then
+							runs[#runs + 1] = {first = first, finish = finish,
+								class = 1}
+						end
+					end
+					runs[#runs + 1] = {first = x, finish = x, class = 0}
+					previous = x
+				end
+			end
+			result[z] = runs
+		end
+		return result, polygon_index
+	end
+
+	-- The Whole tier's prepared tables (contracts 9.1 and section 11), one
+	-- constructor per table, shared verbatim by census_scan4's Whole tier
+	-- and compile_impl's production Whole gate.
+
+	-- Footprint universe: the merged row runs of the perimeter and island
+	-- rings.
+	local function whole_footprint_rows(stage)
+		local footprint_rows = {}
+		local function add_footprint(points, label)
+			local ring = copy_points(points)
+			if key(ring[1]) ~= key(ring[#ring]) then
+				ring[#ring + 1] = {x = ring[1].x, z = ring[1].z}
+			end
+			local rows = polygon_row_runs(ring, label)
+			for z, runs in pairs(rows) do
+				local merged = footprint_rows[z]
+				if not merged then merged = {} footprint_rows[z] = merged end
+				for run_index = 1, #runs do
+					merged[#merged + 1] = runs[run_index]
+				end
+			end
+		end
+		for index = 1, #stage.perimeter_rows do
+			add_footprint(stage.perimeter_rows[index].stations,
+				stage.perimeter_rows[index].id)
+		end
+		for index = 1, #stage.island_rows do
+			add_footprint(stage.island_rows[index].stations,
+				stage.island_rows[index].id)
+		end
+		-- Merge overlapping footprint runs per row into a disjoint
+		-- ascending cover, keeping boundary columns distinguishable:
+		-- the class-0 single-column runs stay their own intervals
+		-- through the break machinery, so only the cover has to be
+		-- disjoint.
+		for z, runs in pairs(footprint_rows) do
+			table.sort(runs, function(a, b)
+				return a.first < b.first or
+					(a.first == b.first and a.finish < b.finish)
+			end)
+			local merged = {}
+			for index = 1, #runs do
+				local run = runs[index]
+				local last = merged[#merged]
+				if last and run.first <= last.finish + 1 then
+					if run.finish > last.finish then
+						last.finish = run.finish
+					end
+				else
+					merged[#merged + 1] = {first = run.first,
+						finish = run.finish}
+				end
+			end
+			footprint_rows[z] = merged
+		end
+		return footprint_rows
+	end
+
+	-- Water rows: per Bay the raw run mask plus its fill points,
+	-- restricted to planned water by the perimeter-equality rule --
+	-- a class-0 footprint boundary column is planned water only when
+	-- the Bay's aperture includes it (planned_water's own rule,
+	-- evaluated here from the same fields without the point cache).
+	local function whole_water_rows(stage)
+		local boundary_columns = {}
+		do
+			local function mark_ring(points)
+				for index = 1, #points do
+					boundary_columns[key(points[index])] = true
+				end
+			end
+			for index = 1, #stage.perimeter_rows do
+				mark_ring(stage.perimeter_rows[index].stations)
+			end
+			for index = 1, #stage.island_rows do
+				mark_ring(stage.island_rows[index].stations)
+			end
+		end
+		local water_rows = {}
+		local function add_water_run(z, first, finish, owner, context)
+			-- Split the run at footprint-boundary columns that the
+			-- Bay's aperture does not include: those columns are dry
+			-- perimeter equality, not planned water.
+			local runs = water_rows[z]
+			if not runs then runs = {} water_rows[z] = runs end
+			local run_first = nil
+			for x = first, finish do
+				local water = true
+				if boundary_columns[x .. ":" .. z] and
+						not context.aperture.included[x .. ":" .. z] then
+					water = false
+				end
+				if water and not run_first then run_first = x end
+				if not water and run_first then
+					runs[#runs + 1] = {first = run_first, finish = x - 1,
+						owner = context.bay.source.id}
+					run_first = nil
+				end
+			end
+			if run_first then
+				runs[#runs + 1] = {first = run_first, finish = finish,
+					owner = context.bay.source.id}
+			end
+		end
+		for bay_index = 1, #stage.bays do
+			local context = stage.bay_context_by_id[
+				stage.bays[bay_index].source.id]
+			local zs = {}
+			for z in pairs(context.raw_rows) do zs[#zs + 1] = z end
+			table.sort(zs)
+			for z_index = 1, #zs do
+				local z = zs[z_index]
+				local runs = context.raw_rows[z]
+				for run_index = 1, #runs do
+					add_water_run(z, runs[run_index].first,
+						runs[run_index].finish,
+						context.bay.source.id, context)
+				end
+			end
+			local fills = copy_points(context.fill_points)
+			table.sort(fills, point_less)
+			for fill_index = 1, #fills do
+				local point = fills[fill_index]
+				add_water_run(point.z, point.x, point.x,
+					context.bay.source.id, context)
+			end
+			-- The section-11 closing fills are planned water exactly like
+			-- the notch fills; they are carried apart so the notch
+			-- projections and payload stay the notch rule's own.
+			local closings = copy_points(context.closing_points)
+			table.sort(closings, point_less)
+			for closing_index = 1, #closings do
+				local point = closings[closing_index]
+				add_water_run(point.z, point.x, point.x,
+					context.bay.source.id, context)
+			end
+		end
+		for z, runs in pairs(water_rows) do
+			table.sort(runs, function(a, b)
+				return a.first < b.first or
+					(a.first == b.first and a.finish < b.finish)
+			end)
+		end
+		return boundary_columns, water_rows
+	end
+
+	-- Face rows from composed polygons: `faces` is a list of
+	-- {id, zone_id, polygon, appendix_stations, pinch_stations} rows.  A
+	-- face the two-tier validator accepted with touches (filament
+	-- appendixes or pinches, contracts 11.5-C/11.9) derives its region
+	-- truth by winding through the repeat-tolerant row derivation: the
+	-- touch columns stay in the region as boundary runs -- no orphan
+	-- columns -- and every other face keeps the loud repeated-column
+	-- failure.  Each run carries its winding class (0 boundary station,
+	-- 1 interior) -- the 11.9 seam-inheritance rule of the classifier
+	-- reads it to tell a boundary-boundary claim from an interior one.
+	local function whole_face_row_runs(faces)
+		local face_rows = {}
+		local face_indexes = {}
+		for index = 1, #faces do
+			local face = faces[index]
+			local rows, polygon_index = polygon_row_runs(face.polygon,
+				face.id, (face.appendix_stations or 0) > 0 or
+					(face.pinch_stations or 0) > 0)
+			face_indexes[face.id] = polygon_index
+			for z, runs in pairs(rows) do
+				local merged = face_rows[z]
+				if not merged then merged = {} face_rows[z] = merged end
+				for run_index = 1, #runs do
+					merged[#merged + 1] = {first = runs[run_index].first,
+						finish = runs[run_index].finish, id = face.id,
+						zone_id = face.zone_id,
+						class = runs[run_index].class}
+				end
+			end
+		end
+		for z, runs in pairs(face_rows) do
+			table.sort(runs, function(a, b)
+				if a.first ~= b.first then return a.first < b.first end
+				if a.finish ~= b.finish then return a.finish < b.finish end
+				return a.id < b.id
+			end)
+		end
+		return face_rows, face_indexes
+	end
+
+	-- The declared seam owners: every final shared-edge station
+	-- declares its two zones, every perimeter-span vertex the owners
+	-- of the spans sharing it.  `edge_stations` maps a provisional
+	-- edge id to its final stations (absent edges are skipped).
+	local function whole_declared(stage, edge_stations)
+		local declared = {}
+		local function declare(x, z, owner)
+			local point_key = x .. ":" .. z
+			local owners = declared[point_key]
+			if not owners then owners = {} declared[point_key] = owners end
+			owners[owner] = true
+		end
+		for index = 1, #stage.provisional_edges do
+			local edge = stage.provisional_edges[index]
+			local stations = edge_stations[edge.id]
+			if stations then
+				for station_index = 1, #stations do
+					declare(stations[station_index].x,
+						stations[station_index].z, edge.source.zone_a)
+					declare(stations[station_index].x,
+						stations[station_index].z, edge.source.zone_b)
+				end
+			end
+		end
+		for index = 1, #source.perimeter_spans do
+			local span = source.perimeter_spans[index]
+			local perimeter = stage.perimeter_by_id[span.perimeter_id]
+			for _, boundary in ipairs({span.start_boundary,
+					span.end_boundary}) do
+				if boundary.kind == "perimeter_vertex" then
+					local point = perimeter.source.polygon[boundary.index]
+					declare(point.x, point.z, span.zone_id)
+				end
+			end
+		end
+		return declared
+	end
+
+	-- The footprint rings' own station adjacency (contracts 11.9, family
+	-- A): ["x:z"] -> the ring predecessor and successor points of that
+	-- station, over the perimeter and island rings -- the eight-connected
+	-- connectivity the rings themselves are built with.  The residue
+	-- adoption below consults it for chains containing ring stations: the
+	-- measured pinched fragments are mainland-continuous through exactly
+	-- one diagonal ring step the 4-connected flood and the cardinal contact
+	-- rule cannot see.
+	local function whole_ring_links(stage)
+		local links = {}
+		local function add_ring(points)
+			local count = #points
+			if count > 1 and key(points[1]) == key(points[count]) then
+				count = count - 1
+			end
+			if count < 2 then return end
+			for index = 1, count do
+				local previous = points[index == 1 and count or index - 1]
+				local following = points[index == count and 1 or index + 1]
+				local point_key = key(points[index])
+				local entry = links[point_key]
+				if not entry then entry = {} links[point_key] = entry end
+				entry[#entry + 1] = {x = previous.x, z = previous.z}
+				entry[#entry + 1] = {x = following.x, z = following.z}
+			end
+		end
+		for index = 1, #stage.perimeter_rows do
+			add_ring(stage.perimeter_rows[index].stations)
+		end
+		for index = 1, #stage.island_rows do
+			add_ring(stage.island_rows[index].stations)
+		end
+		return links
+	end
+
+	-- Residue adoption at the ownership layer (contracts 11.7-B, ruled
+	-- 2026-08-20; ring connectivity added by the 11.9 family-A ruling),
+	-- shared verbatim by the census Whole tier and the production Whole
+	-- gate, running after face composition and before the footprint proof.
+	-- Every unowned dry footprint column joins its 4-connected unowned-dry
+	-- chain; the chain's candidate owners are the faces it touches
+	-- cardinally PLUS -- for chain columns that are footprint ring stations
+	-- (prepared.ring_links) -- the faces owning its ring-neighbour
+	-- stations, because a ring station is mainland by definition and the
+	-- ring's own eight-connected step is its mainland continuity.  A chain
+	-- with exactly one candidate face is adopted into that face's REGION --
+	-- prepared.face_rows membership only, no ring, no mask, no trace and no
+	-- Bank moves; a chain with two or more candidates is returned rejected
+	-- and classifies residual_multi_face_reject (measured zero over the
+	-- 112-pocket family, expected vacuous, never absorbed); a chain with
+	-- zero candidates is exactly what the section-11 connectivity closing
+	-- waters, so it stays uncovered here and the footprint proof rejects it
+	-- loudly.  The rules partition the measured families by construction:
+	-- attached pockets adopt cardinally, pinched ring fragments adopt along
+	-- the ring, unattached pockets are already water when this runs.
+	-- Winners carry no pockets, so this is a measured no-op on clean
+	-- geometry and no record byte of a clean seed moves.
+	local function whole_adopt_residue(prepared)
+		-- The unowned dry intervals per row, by run arithmetic (the same
+		-- interval altitude as the classifier -- never a per-column sweep):
+		-- the face and water runs merge into one disjoint owned cover, and
+		-- what remains of each footprint run is unowned.  Ascending row and
+		-- column order everywhere keeps chain identity deterministic under
+		-- both interpreters.
+		local zs = {}
+		for z in pairs(prepared.footprint_rows) do zs[#zs + 1] = z end
+		table.sort(zs)
+		local unowned_rows, unowned_zs = {}, {}
+		for z_index = 1, #zs do
+			local z = zs[z_index]
+			local footprint_runs = prepared.footprint_rows[z]
+			local cover = {}
+			for _, collection in ipairs({prepared.face_rows[z] or {},
+					prepared.water_rows[z] or {}}) do
+				for index = 1, #collection do
+					cover[#cover + 1] = {first = collection[index].first,
+						finish = collection[index].finish}
+				end
+			end
+			table.sort(cover, function(a, b)
+				return a.first < b.first or
+					a.first == b.first and a.finish < b.finish
+			end)
+			local merged = {}
+			for index = 1, #cover do
+				local run = cover[index]
+				local last = merged[#merged]
+				if last and run.first <= last.finish + 1 then
+					if run.finish > last.finish then last.finish = run.finish end
+				else
+					merged[#merged + 1] = run
+				end
+			end
+			local intervals
+			local cursor = 1
+			for run_index = 1, #footprint_runs do
+				local run = footprint_runs[run_index]
+				local first = run.first
+				while first <= run.finish do
+					while cursor <= #merged and merged[cursor].finish < first do
+						cursor = cursor + 1
+					end
+					local finish
+					if cursor <= #merged and merged[cursor].first <= first then
+						first = merged[cursor].finish + 1
+					else
+						finish = run.finish
+						if cursor <= #merged and
+								merged[cursor].first <= run.finish then
+							finish = merged[cursor].first - 1
+						end
+						if not intervals then
+							intervals = {}
+							unowned_rows[z] = intervals
+							unowned_zs[#unowned_zs + 1] = z
+						end
+						intervals[#intervals + 1] = {z = z, first = first,
+							finish = finish}
+						first = finish + 1
+					end
+				end
+			end
+		end
+		-- 4-connected chains over the intervals: adjacent rows, overlapping
+		-- columns.  A depth-first merge in ascending (z, first) order keeps
+		-- chain identity and member order deterministic.
+		local chains = {}
+		for z_position = 1, #unowned_zs do
+			local z = unowned_zs[z_position]
+			local intervals = unowned_rows[z]
+			for interval_index = 1, #intervals do
+				local interval = intervals[interval_index]
+				if not interval.chain then
+					local chain = {members = {}, columns = 0}
+					chains[#chains + 1] = chain
+					local stack = {interval}
+					interval.chain = chain
+					while #stack > 0 do
+						local member = stack[#stack]
+						stack[#stack] = nil
+						chain.members[#chain.members + 1] = member
+						chain.columns = chain.columns +
+							(member.finish - member.first + 1)
+						for step = -1, 1, 2 do
+							local neighbors = unowned_rows[member.z + step]
+							if neighbors then
+								for neighbor_index = 1, #neighbors do
+									local neighbor = neighbors[neighbor_index]
+									if not neighbor.chain and
+											neighbor.first <= member.finish and
+											member.first <= neighbor.finish then
+										neighbor.chain = chain
+										stack[#stack + 1] = neighbor
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		-- Face contact per chain, distinct by face id: the cardinal contact
+		-- of every member interval's four cardinal neighbourhoods
+		-- (contracts 11.7-B), plus -- for chain columns that are footprint
+		-- ring stations -- the faces owning the ring-neighbour stations
+		-- along the ring's own connectivity (contracts 11.9, family A: the
+		-- measured pinched fragments touch no face cardinally and are
+		-- mainland-continuous through exactly one diagonal ring step,
+		-- 8/8).  The whole contact pass runs BEFORE any adoption, so every
+		-- candidate lookup -- cardinal and ring alike -- reads the
+		-- composed, pre-adoption face cover and no chain's decision can
+		-- depend on another chain's adoption order.
+		local function touch(chain, runs, first, finish)
+			if not runs then return end
+			for index = 1, #runs do
+				local run = runs[index]
+				if run.finish >= first and run.first <= finish then
+					if not chain.touched[run.id] then
+						chain.touched[run.id] = run
+						chain.touched_ids[#chain.touched_ids + 1] = run.id
+					end
+					chain.cardinal_touched[run.id] = true
+				end
+			end
+		end
+		local function ring_touch(chain, x, z)
+			local links = prepared.ring_links[x .. ":" .. z]
+			if not links then return end
+			chain.ring_stations = chain.ring_stations + 1
+			for link_index = 1, #links do
+				local link = links[link_index]
+				local runs = prepared.face_rows[link.z]
+				if runs then
+					for run_index = 1, #runs do
+						local run = runs[run_index]
+						if link.x >= run.first and link.x <= run.finish then
+							if not chain.touched[run.id] then
+								chain.touched[run.id] = run
+								chain.touched_ids[#chain.touched_ids + 1] =
+									run.id
+							end
+						end
+					end
+				end
+			end
+		end
+		for chain_index = 1, #chains do
+			local chain = chains[chain_index]
+			chain.touched, chain.touched_ids = {}, {}
+			chain.cardinal_touched, chain.ring_stations = {}, 0
+			for member_index = 1, #chain.members do
+				local member = chain.members[member_index]
+				touch(chain, prepared.face_rows[member.z], member.first - 1,
+					member.first - 1)
+				touch(chain, prepared.face_rows[member.z], member.finish + 1,
+					member.finish + 1)
+				touch(chain, prepared.face_rows[member.z - 1], member.first,
+					member.finish)
+				touch(chain, prepared.face_rows[member.z + 1], member.first,
+					member.finish)
+			end
+			if prepared.ring_links then
+				for member_index = 1, #chain.members do
+					local member = chain.members[member_index]
+					for x = member.first, member.finish do
+						ring_touch(chain, x, member.z)
+					end
+				end
+			end
+			table.sort(chain.touched_ids)
+		end
+		local adopted, rejected = {}, {}
+		for chain_index = 1, #chains do
+			local chain = chains[chain_index]
+			if #chain.touched_ids == 1 then
+				local face_run = chain.touched[chain.touched_ids[1]]
+				for member_index = 1, #chain.members do
+					local member = chain.members[member_index]
+					local runs = prepared.face_rows[member.z]
+					if not runs then
+						runs = {}
+						prepared.face_rows[member.z] = runs
+					end
+					runs[#runs + 1] = {first = member.first,
+						finish = member.finish, id = face_run.id,
+						zone_id = face_run.zone_id, adopted = true}
+					table.sort(runs, function(a, b)
+						if a.first ~= b.first then return a.first < b.first end
+						if a.finish ~= b.finish then return a.finish < b.finish end
+						return a.id < b.id
+					end)
+				end
+				-- `via` and `ring_stations` are observer telemetry (the
+				-- adoption-verification probes): which contact rule found
+				-- the adopting face, and how many chain columns are ring
+				-- stations.  They reach no record row and no digest.
+				adopted[#adopted + 1] = {face_id = face_run.id,
+					zone_id = face_run.zone_id, members = chain.members,
+					columns = chain.columns,
+					ring_stations = chain.ring_stations,
+					via = chain.cardinal_touched[face_run.id] and
+						"cardinal" or "ring"}
+			elseif #chain.touched_ids >= 2 then
+				rejected[#rejected + 1] = {face_ids = chain.touched_ids,
+					members = chain.members, columns = chain.columns,
+					ring_stations = chain.ring_stations,
+					witness = "z=" .. chain.members[1].z .. ":x=" ..
+						chain.members[1].first .. ".." .. chain.members[1].finish}
+			end
+		end
+		return {adopted = adopted, rejected = rejected}
+	end
+
 	local function compile_impl(seed)
 		local stage = build_scan_stage(seed)
 		local zone_numeric = stage.zone_numeric
@@ -3677,7 +4806,7 @@ local function new_partition(dependencies)
 		local arc_by_id = {}
 		for index = 1, #source.face_arcs do
 			local arc = source.face_arcs[index]
-			local points, bank_ids = {}, {}
+			local points, bank_ids, join_keys = {}, {}, {}
 			for component_index = 1, #arc.authority_components do
 				local component = arc.authority_components[component_index]
 				local part
@@ -3695,10 +4824,14 @@ local function new_partition(dependencies)
 				if #points > 0 and key(points[#points]) ~= key(part[1]) then
 					fail(arc.id .. " authority components do not join")
 				end
+				-- The shared station where two authority components join --
+				-- the bay-transition terminals live here -- feeds the
+				-- window-guarded appendix acceptance (contracts 11.5-C).
+				if #points > 0 then join_keys[key(part[1])] = true end
 				append_points(points, part)
 			end
 			arc_by_id[arc.id] = {source = arc, stations = points,
-				bank_component_ids = bank_ids}
+				bank_component_ids = bank_ids, join_keys = join_keys}
 		end
 		-- Coast payloads retain a deduplicated ring.  Faces and serialized coast
 		-- records each add their one terminal copy at their own closed boundary.
@@ -3724,7 +4857,7 @@ local function new_partition(dependencies)
 		local face_rows = {}
 		for index = 1, #source.zone_faces do
 			local face = source.zone_faces[index]
-			local polygon, face_bank_ids = {}, {}
+			local polygon, face_bank_ids, join_keys = {}, {}, {}
 			for cycle_index = 1, #face.cycle do
 				local component = face.cycle[cycle_index]
 				local points = component.kind == "shared_edge" and
@@ -3734,16 +4867,27 @@ local function new_partition(dependencies)
 					for bank_index = 1, #arc.bank_component_ids do
 						face_bank_ids[#face_bank_ids + 1] = arc.bank_component_ids[bank_index]
 					end
+					-- The arc's internal component joins travel with it; a
+					-- station key survives the reverse direction unchanged.
+					for join_key in pairs(arc.join_keys) do
+						join_keys[join_key] = true
+					end
 				end
 				if component.direction == "reverse" then points = reverse_points(points) end
 				if #polygon > 0 and key(polygon[#polygon]) ~= key(points[1]) then
 					fail(face.id .. " component graph does not join")
 				end
+				if #polygon > 0 then join_keys[key(points[1])] = true end
 				append_points(polygon, points)
 			end
-			validate_face_polygon(face.id, polygon)
+			-- The cycle's wrap-around join is the ring terminal.
+			join_keys[key(polygon[1])] = true
+			local appendix_stations, pinch_stations = validate_face_polygon(
+				face.id, polygon, join_keys)
 			face_rows[#face_rows + 1] = {source = face, polygon = polygon,
-				bank_component_ids = face_bank_ids}
+				bank_component_ids = face_bank_ids,
+				appendix_stations = appendix_stations,
+				pinch_stations = pinch_stations}
 		end
 
 		-- C2 excluded fragments are resolved only after final Banks and Faces
@@ -3785,6 +4929,76 @@ local function new_partition(dependencies)
 					bank_count = bank_identity[point_key] or 0, face_count = face_count}
 			end
 			validate_excluded_fragment_evidence(evidence)
+		end
+
+		-- The production Whole gate (contracts section 11, ruled 2026-08-20
+		-- beside the branch-2c closing): the footprint ownership-coverage
+		-- proof the census Whole tier measures, enforced on every production
+		-- compile.  This closes the step-0 hole -- nothing after face
+		-- validation and the fragment seam exhausted the footprint, so a
+		-- whole_gap seed compiled to completion.  The prepared tables and
+		-- the classifier are the census's own functions (parity by
+		-- construction); the census's optional representation cross-check
+		-- stays census-side, so m plays no part here.  Any uncovered or
+		-- multiply-owned footprint column aborts loudly.
+		do
+			local gate_faces = {}
+			for index = 1, #face_rows do
+				gate_faces[index] = {id = face_rows[index].source.id,
+					zone_id = face_rows[index].source.zone_id,
+					polygon = face_rows[index].polygon,
+					appendix_stations = face_rows[index].appendix_stations,
+					pinch_stations = face_rows[index].pinch_stations}
+			end
+			local gate_face_rows = whole_face_row_runs(gate_faces)
+			local edge_stations = {}
+			for index = 1, #provisional_edges do
+				edge_stations[provisional_edges[index].id] =
+					provisional_edges[index].stations
+			end
+			local boundary_columns, water_rows = whole_water_rows(stage)
+			local prepared = {
+				footprint_rows = whole_footprint_rows(stage),
+				face_rows = gate_face_rows, water_rows = water_rows,
+				declared = whole_declared(stage, edge_stations),
+				ring_links = whole_ring_links(stage)}
+			-- Residue adoption (contracts 11.7-B, ring connectivity added by
+			-- 11.9 family A) between face composition and the footprint
+			-- proof, identical to the census Whole tier: a multi-face chain
+			-- aborts by its class name before the proof runs; adopted chains
+			-- are face region membership below.
+			local adoption = whole_adopt_residue(prepared)
+			if #adoption.rejected > 0 then
+				local parts = {}
+				for index = 1, #adoption.rejected do
+					local chain = adoption.rejected[index]
+					parts[#parts + 1] = chain.witness .. " touches " ..
+						table.concat(chain.face_ids, ",")
+				end
+				fail("footprint residue touches multiple faces: " ..
+					"residual_multi_face_reject x" .. #adoption.rejected ..
+					" (" .. table.concat(parts, "; ") .. ")")
+			end
+			local totals = census_whole_classify(prepared)
+			if totals.g > 0 or totals.o > 0 or totals.r > 0 then
+				local class_names, parts = {}, {}
+				for class in pairs(totals.classes) do
+					class_names[#class_names + 1] = class
+				end
+				table.sort(class_names)
+				for index = 1, #class_names do
+					local class = class_names[index]
+					if class ~= "whole_single_owner_select" and
+							class ~= "whole_declared_seam_select" then
+						local entry = totals.classes[class]
+						parts[#parts + 1] = class .. " x" .. entry.columns ..
+							" (" .. entry.witness .. ")"
+					end
+				end
+				fail("footprint ownership is incomplete: g=" .. totals.g ..
+					" o=" .. totals.o .. " r=" .. totals.r .. "; " ..
+					table.concat(parts, "; "))
+			end
 		end
 		local families = {land_boundaries = {}, perimeters = {}, bays = {},
 			mouth_apertures = {}, closure_wings = {}, dry_faces = {},
@@ -5981,16 +7195,39 @@ local function new_partition(dependencies)
 	local face_reject_by_fragment = {
 		{" is not closed", "face_not_closed_reject"},
 		{" is not eight-connected", "face_composition_reject"},
-		{" is not simple", "face_non_simple_reject"},
+		-- The two-tier validator's by-name failures (contracts 11.5-C,
+		-- completed by 11.9): the opposing diagonal and the three touch
+		-- guard conditions all classify face_non_simple_reject -- the loud
+		-- class for anything the window-guarded acceptance does not absorb.
+		-- The former blanket " is not simple" message no longer exists, and
+		-- the 11.5-C " has a non-zero-width repeat" failure retired with the
+		-- 11.9 ruling: a non-zero-width touch is the accepted pinch form,
+		-- and what stays loud at that check is the crossing.
+		{" has an opposing cell diagonal", "face_non_simple_reject"},
+		{" appendix station repeated more than twice", "face_non_simple_reject"},
+		{" has a non-join-local repeat", "face_non_simple_reject"},
+		{" has a crossing repeat", "face_non_simple_reject"},
 		{" is not CCW", "face_wrong_orientation_reject"},
 	}
-	local function census_face_classify(id, polygon)
-		local ok, failure = pcall(validate_face_polygon, id, polygon)
-		if ok then return "face_simple_select", nil end
-		local message = tostring(failure)
+	local function census_face_classify(id, polygon, join_keys)
+		local ok, outcome, pinches = pcall(validate_face_polygon, id, polygon,
+			join_keys)
+		if ok then
+			if outcome > 0 or pinches > 0 then
+				-- The DECIDED touch acceptance carries its filament and
+				-- pinch station counts (contracts 11.5-C/11.9: measured
+				-- different things stay different claims -- both forms
+				-- classify face_appendix_select, the counts name the form).
+				return "face_appendix_select",
+					"appendix_stations=" .. outcome ..
+					" pinch_stations=" .. pinches, outcome, pinches
+			end
+			return "face_simple_select", nil, 0, 0
+		end
+		local message = tostring(outcome)
 		local class = classify_message(face_reject_by_fragment, message)
-		if not class then error(failure, 0) end
-		return class, message
+		if not class then error(outcome, 0) end
+		return class, message, 0, 0
 	end
 
 	-- The known composition-failure sites of the face assembly, so a pcall
@@ -6004,198 +7241,6 @@ local function new_partition(dependencies)
 		{" terminal-trimmed span is absent", "face_composition_reject"},
 	}
 
-	-- The Whole tier's interval classifier core, pure over prepared row-run
-	-- tables so the synthetic gate KATs can drive it directly (contracts
-	-- 9.4).  `prepared` carries:
-	--   footprint_rows: [z] -> sorted {first, finish} runs (the merged
-	--     footprint universe);
-	--   face_rows: [z] -> {first, finish, id, zone_id} runs of the composed
-	--     simple face polygons;
-	--   water_rows: [z] -> {first, finish, owner} runs of final planned
-	--     water (the caller has already applied the perimeter-equality
-	--     aperture rule, so these are literal planned-water columns);
-	--   declared: ["x:z"] -> {zone_id = true} the declared seam owners
-	--     (shared-edge stations and perimeter-span vertices);
-	--   check: optional function(z, x, water_owner_or_nil, face_runs) ->
-	--     boolean -- the per-interval representation cross-check behind the
-	--     m count; nil skips it and m stays 0.
-	-- Classification per interval (completeness analysis F10/F11): water
-	-- single owner or dry single face -> whole_single_owner_select; dry
-	-- multi-face exactly matching the declared seam at every column ->
-	-- whole_declared_seam_select; dry uncovered -> whole_gap_reject (g);
-	-- anything else -> whole_undeclared_multiplicity_reject (water overlap
-	-- counts o, undeclared dry multiplicity counts r per column).  m counts
-	-- the columns of every interval whose `check` disagreed -- the H38
-	-- normalization's own measured invariance.
-	local function census_whole_classify(prepared)
-		local classes = {}
-		local function note(class, z, first, finish)
-			local entry = classes[class]
-			if not entry then
-				entry = {intervals = 0, columns = 0}
-				classes[class] = entry
-			end
-			entry.intervals = entry.intervals + 1
-			entry.columns = entry.columns + (finish - first + 1)
-			if not entry.witness then
-				entry.witness = "z=" .. z .. ":x=" .. first .. ".." .. finish
-			end
-		end
-		local totals = {g = 0, o = 0, r = 0, m = 0, columns = 0,
-			planned_water = 0, dry = 0}
-		local zs = {}
-		for z in pairs(prepared.footprint_rows) do zs[#zs + 1] = z end
-		table.sort(zs)
-		for z_index = 1, #zs do
-			local z = zs[z_index]
-			local footprint_runs = prepared.footprint_rows[z]
-			local face_runs = prepared.face_rows[z] or {}
-			local water_runs = prepared.water_rows[z] or {}
-			for footprint_index = 1, #footprint_runs do
-				local footprint_run = footprint_runs[footprint_index]
-				local breaks = {footprint_run.first, footprint_run.finish + 1}
-				for _, collection in ipairs({face_runs, water_runs}) do
-					for index = 1, #collection do
-						local run = collection[index]
-						if run.finish >= footprint_run.first and
-								run.first <= footprint_run.finish then
-							breaks[#breaks + 1] =
-								math.max(run.first, footprint_run.first)
-							breaks[#breaks + 1] =
-								math.min(run.finish, footprint_run.finish) + 1
-						end
-					end
-				end
-				table.sort(breaks)
-				local unique = {}
-				for index = 1, #breaks do
-					if index == 1 or breaks[index] ~= breaks[index - 1] then
-						unique[#unique + 1] = breaks[index]
-					end
-				end
-				for index = 1, #unique - 1 do
-					local first, finish = unique[index], unique[index + 1] - 1
-					local length = finish - first + 1
-					local covering_faces, covering_water = {}, {}
-					for run_index = 1, #face_runs do
-						local run = face_runs[run_index]
-						if first >= run.first and first <= run.finish then
-							covering_faces[#covering_faces + 1] = run
-						end
-					end
-					for run_index = 1, #water_runs do
-						local run = water_runs[run_index]
-						if first >= run.first and first <= run.finish then
-							covering_water[#covering_water + 1] = run
-						end
-					end
-					totals.columns = totals.columns + length
-					local class
-					if #covering_water >= 1 then
-						totals.planned_water = totals.planned_water + length
-						if #covering_water > 1 then
-							totals.o = totals.o + length
-							class = "whole_undeclared_multiplicity_reject"
-						else
-							class = "whole_single_owner_select"
-						end
-					else
-						totals.dry = totals.dry + length
-						if #covering_faces == 0 then
-							totals.g = totals.g + length
-							class = "whole_gap_reject"
-						elseif #covering_faces == 1 then
-							class = "whole_single_owner_select"
-						else
-							-- The declared-seam check is per column: the
-							-- covering faces are interval-constant, the
-							-- declared owner sets are not.
-							local valid_all = true
-							for x = first, finish do
-								local owners = prepared.declared[x .. ":" .. z]
-								local valid = owners ~= nil
-								local seen = {}
-								for face_index = 1, #covering_faces do
-									local owner = covering_faces[face_index].zone_id
-									if seen[owner] or not owners or
-											not owners[owner] then
-										valid = false
-									end
-									seen[owner] = true
-								end
-								if valid then
-									for owner in pairs(owners) do
-										if not seen[owner] then
-											valid = false break
-										end
-									end
-								end
-								if not valid then
-									valid_all = false
-									totals.r = totals.r + 1
-								end
-							end
-							class = valid_all and "whole_declared_seam_select" or
-								"whole_undeclared_multiplicity_reject"
-						end
-					end
-					if prepared.check then
-						local water_owner = #covering_water == 1 and
-							covering_water[1].owner or nil
-						if not prepared.check(z, first, water_owner,
-								covering_faces) then
-							totals.m = totals.m + length
-						end
-					end
-					note(class, z, first, finish)
-				end
-			end
-		end
-		totals.classes = classes
-		return totals
-	end
-
-	-- The polygon row-run normalization of the H38 method: every station of
-	-- the closed simple polygon is a class-0 single-column run of its row,
-	-- and every gap between consecutive boundary columns whose first column
-	-- is interior is a class-1 run -- parity is constant between boundary
-	-- points of a simple polygon, which is what makes the interval an
-	-- exhaustive proof rather than a sample.
-	local function polygon_row_runs(points, label)
-		if #points < 4 or key(points[1]) ~= key(points[#points]) then
-			fail(label .. " row-run normalization needs a closed polygon")
-		end
-		local polygon_index = exact.polygon_index(points)
-		local boundary = {}
-		for index = 1, #points - 1 do
-			local point = points[index]
-			local row = boundary[point.z]
-			if not row then row = {} boundary[point.z] = row end
-			row[#row + 1] = point.x
-		end
-		local result = {}
-		for z, xs in pairs(boundary) do
-			table.sort(xs)
-			local runs = {}
-			for index = 1, #xs do
-				if index > 1 and xs[index] == xs[index - 1] then
-					fail(label .. " repeats a row boundary column")
-				end
-				if index > 1 and xs[index] > xs[index - 1] + 1 then
-					local first, finish = xs[index - 1] + 1, xs[index] - 1
-					if exact.indexed_polygon_class(polygon_index, first, z) > 0 then
-						runs[#runs + 1] = {first = first, finish = finish,
-							class = 1}
-					end
-				end
-				runs[#runs + 1] = {first = xs[index], finish = xs[index],
-					class = 0}
-			end
-			result[z] = runs
-		end
-		return result, polygon_index
-	end
-
 	-- The default per-tier stopwatch (contracts 9.5).  `census_scan` accepts an
 	-- optional `tier_mark`, called with a tier name once that tier has returned,
 	-- so the cost probe can measure the marginal each new tier adds instead of
@@ -6204,7 +7249,8 @@ local function new_partition(dependencies)
 	-- is given can reach a row, an artifact or a digest.
 	local function tier_noop() end
 
-	local function census_scan4(stage, result, tracer, tier_mark, whole_observer)
+	local function census_scan4(stage, result, tracer, tier_mark, whole_observer,
+			face_observer)
 		local face_rows_out, whole_rows, interval_rows, fragment_rows =
 			{}, {}, {}, {}
 		result.scan4_faces = face_rows_out
@@ -6401,7 +7447,7 @@ local function new_partition(dependencies)
 		for index = 1, #source.face_arcs do
 			local arc = source.face_arcs[index]
 			local ok, failure = pcall(function()
-				local points = {}
+				local points, join_keys = {}, {}
 				for component_index = 1, #arc.authority_components do
 					local component = arc.authority_components[component_index]
 					local part
@@ -6424,9 +7470,13 @@ local function new_partition(dependencies)
 					if #points > 0 and key(points[#points]) ~= key(part[1]) then
 						fail(arc.id .. " authority components do not join")
 					end
+					-- Component joins feed the appendix window, exactly as
+					-- in compile_impl's composition (contracts 11.5-C).
+					if #points > 0 then join_keys[key(part[1])] = true end
 					append_points(points, part)
 				end
-				arc_by_id[arc.id] = {source = arc, stations = points}
+				arc_by_id[arc.id] = {source = arc, stations = points,
+					join_keys = join_keys}
 			end)
 			if not ok then
 				local message = tostring(failure)
@@ -6438,7 +7488,7 @@ local function new_partition(dependencies)
 		end
 
 		local composed_faces = {}
-		local all_simple, blocking_face = true, nil
+		local all_accepted, blocking_face = true, nil
 		for index = 1, #source.zone_faces do
 			local face = source.zone_faces[index]
 			local row = {id = face.id}
@@ -6456,7 +7506,7 @@ local function new_partition(dependencies)
 				row.detail = upstream
 			else
 				local ok, failure = pcall(function()
-					local polygon = {}
+					local polygon, join_keys = {}, {}
 					for _, component in ipairs(face.cycle) do
 						local points
 						if component.kind == "shared_edge" then
@@ -6470,6 +7520,10 @@ local function new_partition(dependencies)
 							end
 						else
 							points = arc_by_id[component.ref_id].stations
+							for join_key in pairs(
+									arc_by_id[component.ref_id].join_keys) do
+								join_keys[join_key] = true
+							end
 						end
 						if component.direction == "reverse" then
 							points = reverse_points(points)
@@ -6480,17 +7534,33 @@ local function new_partition(dependencies)
 								key(polygon[#polygon]) ~= key(points[1]) then
 							fail(face.id .. " component graph does not join")
 						end
+						if #polygon > 0 then join_keys[key(points[1])] = true end
 						append_points(polygon, points)
 					end
-					return polygon
+					join_keys[key(polygon[1])] = true
+					return {polygon = polygon, join_keys = join_keys}
 				end)
 				if ok then
-					local polygon = failure
+					local polygon = failure.polygon
 					row.station_count = #polygon
-					row.class, row.detail = census_face_classify(face.id, polygon)
+					local appendix_stations, pinch_stations
+					row.class, row.detail, appendix_stations, pinch_stations =
+						census_face_classify(face.id, polygon,
+							failure.join_keys)
+					-- The face-tier observation seam (the whole_observer
+					-- precedent, contracts 10.3 step 3: telemetry only,
+					-- production callers leave it nil, nothing it is given
+					-- reaches a row or a digest).
+					if face_observer then
+						face_observer({id = face.id, polygon = polygon,
+							join_keys = failure.join_keys, class = row.class,
+							detail = row.detail})
+					end
 					composed_faces[#composed_faces + 1] = {id = face.id,
 						zone_id = face.zone_id, polygon = polygon,
-						simple = row.class == "face_simple_select"}
+						simple = row.class == "face_simple_select",
+						appendix_stations = appendix_stations,
+						pinch_stations = pinch_stations}
 				else
 					local message = tostring(failure)
 					if not classify_message(face_composition_fragments,
@@ -6501,8 +7571,9 @@ local function new_partition(dependencies)
 					row.detail = message
 				end
 			end
-			if row.class ~= "face_simple_select" then
-				all_simple = false
+			if row.class ~= "face_simple_select" and
+					row.class ~= "face_appendix_select" then
+				all_accepted = false
 				if not blocking_face then blocking_face = face.id end
 			end
 			face_rows_out[#face_rows_out + 1] = row
@@ -6510,204 +7581,45 @@ local function new_partition(dependencies)
 		tier_mark("scan4_face")
 
 		-- ----------------------------------------------------------
-		-- The Whole tier, gated on all-faces-simple (contracts 9.1).
+		-- The Whole tier, gated on every face accepted -- face_simple_select
+		-- on the fast path or face_appendix_select through the window-guarded
+		-- acceptance, whose winding region truth the row derivation carries
+		-- (contracts 9.1, amended by 11.5-C).
 		-- ----------------------------------------------------------
-		if not all_simple then
+		if not all_accepted then
 			whole_rows[1] = {class = "whole_not_evaluated",
 				blocking_face = blocking_face}
 		else
-			-- Footprint universe: the merged row runs of the perimeter and
-			-- island rings.
-			local footprint_rows = {}
-			local function add_footprint(points, label)
-				local ring = copy_points(points)
-				if key(ring[1]) ~= key(ring[#ring]) then
-					ring[#ring + 1] = {x = ring[1].x, z = ring[1].z}
-				end
-				local rows = polygon_row_runs(ring, label)
-				for z, runs in pairs(rows) do
-					local merged = footprint_rows[z]
-					if not merged then merged = {} footprint_rows[z] = merged end
-					for run_index = 1, #runs do
-						merged[#merged + 1] = runs[run_index]
-					end
-				end
-			end
-			for index = 1, #stage.perimeter_rows do
-				add_footprint(stage.perimeter_rows[index].stations,
-					stage.perimeter_rows[index].id)
-			end
-			for index = 1, #stage.island_rows do
-				add_footprint(stage.island_rows[index].stations,
-					stage.island_rows[index].id)
-			end
-			-- Merge overlapping footprint runs per row into a disjoint
-			-- ascending cover, keeping boundary columns distinguishable:
-			-- the class-0 single-column runs stay their own intervals
-			-- through the break machinery, so only the cover has to be
-			-- disjoint.
-			for z, runs in pairs(footprint_rows) do
-				table.sort(runs, function(a, b)
-					return a.first < b.first or
-						(a.first == b.first and a.finish < b.finish)
-				end)
-				local merged = {}
-				for index = 1, #runs do
-					local run = runs[index]
-					local last = merged[#merged]
-					if last and run.first <= last.finish + 1 then
-						if run.finish > last.finish then
-							last.finish = run.finish
-						end
-					else
-						merged[#merged + 1] = {first = run.first,
-							finish = run.finish}
-					end
-				end
-				footprint_rows[z] = merged
-			end
+			-- The prepared tables come from the same constructors
+			-- compile_impl's production Whole gate consumes (section 11);
+			-- only the m cross-check below stays census-side.
+			local footprint_rows = whole_footprint_rows(stage)
+			local boundary_columns, water_rows = whole_water_rows(stage)
+			local face_rows, face_indexes = whole_face_row_runs(composed_faces)
+			local declared = whole_declared(stage, final_edges)
 
-			-- Water rows: per Bay the raw run mask plus its fill points,
-			-- restricted to planned water by the perimeter-equality rule --
-			-- a class-0 footprint boundary column is planned water only when
-			-- the Bay's aperture includes it (planned_water's own rule,
-			-- evaluated here from the same fields without the point cache).
-			local boundary_columns = {}
-			do
-				local function mark_ring(points)
-					for index = 1, #points do
-						boundary_columns[key(points[index])] = true
-					end
-				end
-				for index = 1, #stage.perimeter_rows do
-					mark_ring(stage.perimeter_rows[index].stations)
-				end
-				for index = 1, #stage.island_rows do
-					mark_ring(stage.island_rows[index].stations)
-				end
-			end
-			local water_rows = {}
-			local function add_water_run(z, first, finish, owner, context)
-				-- Split the run at footprint-boundary columns that the
-				-- Bay's aperture does not include: those columns are dry
-				-- perimeter equality, not planned water.
-				local runs = water_rows[z]
-				if not runs then runs = {} water_rows[z] = runs end
-				local run_first = nil
-				for x = first, finish do
-					local water = true
-					if boundary_columns[x .. ":" .. z] and
-							not context.aperture.included[x .. ":" .. z] then
-						water = false
-					end
-					if water and not run_first then run_first = x end
-					if not water and run_first then
-						runs[#runs + 1] = {first = run_first, finish = x - 1,
-							owner = context.bay.source.id}
-						run_first = nil
-					end
-				end
-				if run_first then
-					runs[#runs + 1] = {first = run_first, finish = finish,
-						owner = context.bay.source.id}
-				end
-			end
-			for bay_index = 1, #stage.bays do
-				local context = stage.bay_context_by_id[
-					stage.bays[bay_index].source.id]
-				local zs = {}
-				for z in pairs(context.raw_rows) do zs[#zs + 1] = z end
-				table.sort(zs)
-				for z_index = 1, #zs do
-					local z = zs[z_index]
-					local runs = context.raw_rows[z]
-					for run_index = 1, #runs do
-						add_water_run(z, runs[run_index].first,
-							runs[run_index].finish,
-							context.bay.source.id, context)
-					end
-				end
-				local fills = copy_points(context.fill_points)
-				table.sort(fills, point_less)
-				for fill_index = 1, #fills do
-					local point = fills[fill_index]
-					add_water_run(point.z, point.x, point.x,
-						context.bay.source.id, context)
-				end
-			end
-			for z, runs in pairs(water_rows) do
-				table.sort(runs, function(a, b)
-					return a.first < b.first or
-						(a.first == b.first and a.finish < b.finish)
-				end)
-			end
-
-			-- Face rows from the composed simple polygons.
-			local face_rows = {}
-			local face_indexes = {}
-			for index = 1, #composed_faces do
-				local face = composed_faces[index]
-				local rows, polygon_index = polygon_row_runs(face.polygon,
-					face.id)
-				face_indexes[face.id] = polygon_index
-				for z, runs in pairs(rows) do
-					local merged = face_rows[z]
-					if not merged then merged = {} face_rows[z] = merged end
-					for run_index = 1, #runs do
-						merged[#merged + 1] = {first = runs[run_index].first,
-							finish = runs[run_index].finish, id = face.id,
-							zone_id = face.zone_id}
-					end
-				end
-			end
-			for z, runs in pairs(face_rows) do
-				table.sort(runs, function(a, b)
-					if a.first ~= b.first then return a.first < b.first end
-					if a.finish ~= b.finish then return a.finish < b.finish end
-					return a.id < b.id
-				end)
-			end
-
-			-- The declared seam owners: every final shared-edge station
-			-- declares its two zones, every perimeter-span vertex the owners
-			-- of the spans sharing it.
-			local declared = {}
-			local function declare(x, z, owner)
-				local point_key = x .. ":" .. z
-				local owners = declared[point_key]
-				if not owners then owners = {} declared[point_key] = owners end
-				owners[owner] = true
-			end
-			for index = 1, #stage.provisional_edges do
-				local edge = stage.provisional_edges[index]
-				local stations = final_edges[edge.id]
-				if stations then
-					for station_index = 1, #stations do
-						declare(stations[station_index].x,
-							stations[station_index].z, edge.source.zone_a)
-						declare(stations[station_index].x,
-							stations[station_index].z, edge.source.zone_b)
-					end
-				end
-			end
-			for index = 1, #source.perimeter_spans do
-				local span = source.perimeter_spans[index]
-				local perimeter = stage.perimeter_by_id[span.perimeter_id]
-				for _, boundary in ipairs({span.start_boundary,
-						span.end_boundary}) do
-					if boundary.kind == "perimeter_vertex" then
-						local point = perimeter.source.polygon[boundary.index]
-						declare(point.x, point.z, span.zone_id)
-					end
-				end
-			end
+			-- Residue adoption (contracts 11.7-B, ring connectivity added by
+			-- 11.9 family A) between face composition and the footprint
+			-- proof, the same shared function the production Whole gate
+			-- runs.  A rejected multi-face chain classifies
+			-- residual_multi_face_reject below (its columns also stay
+			-- uncovered, so the proof's own g keeps rejecting the seed);
+			-- adopted chains are face region membership from here on.
+			local ring_links = whole_ring_links(stage)
+			local adoption = whole_adopt_residue({
+				footprint_rows = footprint_rows, face_rows = face_rows,
+				water_rows = water_rows, declared = declared,
+				ring_links = ring_links})
 
 			-- The m cross-check: at every interval's first column the
 			-- run-derived decision is compared against the stage's own
 			-- predicates -- the water mask fields planned_water reads
 			-- (without its point cache) and the faces' point-in-polygon
 			-- classes -- so the row-run normalization itself is measured,
-			-- not trusted.
+			-- not trusted.  An adopted run inverts the face check: adoption
+			-- is region membership for a column the polygon does NOT
+			-- enclose, so the stage predicate must say strictly outside --
+			-- anything else means the chain was not residue at all.
 			local function check(z, x, water_owner, covering_faces)
 				local point_key = x .. ":" .. z
 				local predicate_owner = nil
@@ -6736,8 +7648,11 @@ local function new_partition(dependencies)
 				if not water_owner then
 					for face_index = 1, #covering_faces do
 						local face_run = covering_faces[face_index]
-						if exact.indexed_polygon_class(
-								face_indexes[face_run.id], x, z) < 0 then
+						local class = exact.indexed_polygon_class(
+							face_indexes[face_run.id], x, z)
+						if face_run.adopted then
+							if class >= 0 then return false end
+						elseif class < 0 then
 							return false
 						end
 					end
@@ -6748,6 +7663,20 @@ local function new_partition(dependencies)
 			local totals = census_whole_classify({
 				footprint_rows = footprint_rows, face_rows = face_rows,
 				water_rows = water_rows, declared = declared, check = check})
+			-- The rejected chains of the adoption rule, loud by name in the
+			-- interval rows (contracts 11.7-B: expected vacuous, occupancy
+			-- measured, never absorbed).  Nothing is added when the family
+			-- is empty, so a clean record keeps its exact bytes.
+			if #adoption.rejected > 0 then
+				local entry = {intervals = 0, columns = 0}
+				for index = 1, #adoption.rejected do
+					local chain = adoption.rejected[index]
+					entry.intervals = entry.intervals + #chain.members
+					entry.columns = entry.columns + chain.columns
+					if not entry.witness then entry.witness = chain.witness end
+				end
+				totals.classes.residual_multi_face_reject = entry
+			end
 			whole_rows[1] = {class = "whole_evaluated",
 				columns = totals.columns,
 				planned_water_columns = totals.planned_water,
@@ -6780,12 +7709,14 @@ local function new_partition(dependencies)
 					face_rows = face_rows,
 					water_rows = water_rows,
 					declared = declared,
+					ring_links = ring_links,
 					boundary_columns = boundary_columns,
 					composed_faces = composed_faces,
 					face_indexes = face_indexes,
 					final_edges = final_edges,
 					span_by_id = span_by_id,
 					bank_points = bank_points,
+					adoption = adoption,
 					totals = totals})
 			end
 		end
@@ -6835,7 +7766,7 @@ local function new_partition(dependencies)
 			end
 		end
 		if #fragments > 0 then
-			local faces_measurable = all_simple and
+			local faces_measurable = all_accepted and
 				#composed_faces == #source.zone_faces
 			local land_identity, bank_identity, terminal_identity = {}, {}, {}
 			for edge_id, stations in pairs(final_edges) do
@@ -6992,7 +7923,7 @@ local function new_partition(dependencies)
 		tier_mark("scan3b")
 		if options.scan4 then
 			census_scan4(stage, result, tracer, tier_mark,
-				options.scan4_whole_observer)
+				options.scan4_whole_observer, options.scan4_face_observer)
 		end
 		return result
 	end
@@ -7447,6 +8378,15 @@ local function new_partition(dependencies)
 	partition.census_scan3b_classify_events = census_scan3b_classify_events
 	partition.census_face_classify = census_face_classify
 	partition.census_whole_classify = census_whole_classify
+	-- The section-11 seams: the ruled appendix window (pinned in the census
+	-- authority; the worker refuses to run when the copies disagree), the
+	-- shared residue-adoption rule and the face row derivation, exported so
+	-- the synthetic gate KATs drive the same functions the scan and the
+	-- production Whole gate run.
+	partition.face_appendix_window = FACE_APPENDIX_WINDOW
+	partition.census_whole_adopt_residue = whole_adopt_residue
+	partition.census_whole_face_row_runs = whole_face_row_runs
+	partition.census_whole_ring_links = whole_ring_links
 	partition.joint_tuple_less_compile = joint_tuple_less_compile
 	partition.joint_tuple_less_census = joint_tuple_less_census
 	partition.census_stage_reject_classes = stage_reject_classes

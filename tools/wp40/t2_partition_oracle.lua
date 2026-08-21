@@ -102,7 +102,16 @@ return function(dependencies)
 			if not row then row = {} rows[z] = row end
 			row[#row + 1] = run
 		end
-		local function polygon_row_runs(points)
+		-- The winding row normalization (contracts 11.5-C): the class between
+		-- consecutive boundary columns of a row is constant for EVERY closed
+		-- eight-connected ring, simple or not -- an edge is a unit step, so
+		-- any edge meeting an integer row does so at a station of that row --
+		-- and the winding membership of exact.indexed_polygon_class requires
+		-- closure only.  `repeat_tolerant` is set exactly for a dry face the
+		-- two-tier acceptance below admitted with appendixes: the zero-width
+		-- appendix column appears twice on the ring and once in its row.  On
+		-- every other polygon a repeated column stays the loud failure.
+		local function polygon_row_runs(points, repeat_tolerant)
 			local polygon_index = exact.polygon_index(points)
 			local boundary = {}
 			for index = 1, #points - 1 do
@@ -115,21 +124,159 @@ return function(dependencies)
 			for z, xs in pairs(boundary) do
 				table.sort(xs)
 				local runs = {}
+				local previous
 				for index = 1, #xs do
-					if index > 1 then assert(xs[index] > xs[index - 1],
-						"simple dense polygon repeats a row boundary point") end
-					if index > 1 and xs[index] > xs[index - 1] + 1 then
-						local first, finish = xs[index - 1] + 1, xs[index] - 1
-						if exact.indexed_polygon_class(polygon_index, first, z) > 0 then
-							runs[#runs + 1] = {first = first, finish = finish, class = 1}
+					local x = xs[index]
+					if x == previous then
+						assert(repeat_tolerant,
+							"simple dense polygon repeats a row boundary point")
+					else
+						if previous and x > previous + 1 then
+							local first, finish = previous + 1, x - 1
+							if exact.indexed_polygon_class(polygon_index, first, z) > 0 then
+								runs[#runs + 1] = {first = first, finish = finish, class = 1}
+							end
 						end
+						runs[#runs + 1] = {first = x, finish = x, class = 0}
+						previous = x
 					end
-					runs[#runs + 1] = {first = xs[index], finish = xs[index], class = 0}
 				end
 				table.sort(runs, function(a, b) return a.first < b.first end)
 				result[z] = runs
 			end
 			return result
+		end
+		-- The oracle's independent copy of the section-11.5-C two-tier
+		-- acceptance as completed by the 11.9 ruling: a dry-face ring with
+		-- repeated stations is admitted only when every repeat is a
+		-- join-local, LOCALLY NON-CROSSING self-touch -- each condition
+		-- failing by its own name; the ratified zero-width predicate (no
+		-- cardinal 4-neighbour strictly interior by winding) records the
+		-- touch form, filament appendix against pinch, instead of gating
+		-- it.  W = 12 is the ruled window (the section-11.10
+		-- complete-distribution maximum, pin lineage 8 -> 11 -> 12),
+		-- pinned with its measurement provenance in
+		-- t2_census_authority.lua; partition.lua owns the production copy
+		-- and the census worker bridges the two.  `join_keys` comes from
+		-- what the oracle independently knows of the composition: the
+		-- payload's shared-edge and Bank station endpoints (every part
+		-- boundary is a join; a subset of joins only makes the guard
+		-- stricter).  Returns the filament (appendix) and pinch station
+		-- counts, both zero on a simple ring.
+		local FACE_APPENDIX_WINDOW = 12
+		local touch_direction_index = {
+			["1:0"] = 0, ["1:1"] = 1, ["0:1"] = 2, ["-1:1"] = 3,
+			["-1:0"] = 4, ["-1:-1"] = 5, ["0:-1"] = 6, ["1:-1"] = 7}
+		local function face_appendix_acceptance(id, polygon, join_keys)
+			local seen, repeated_keys, repeats = {}, {}, {}
+			for index = 1, #polygon - 1 do
+				local station_key = point_key(polygon[index].x, polygon[index].z)
+				if seen[station_key] then
+					local entry = repeats[station_key]
+					if not entry then
+						entry = {seen[station_key]}
+						repeats[station_key] = entry
+						repeated_keys[#repeated_keys + 1] = station_key
+					end
+					entry[#entry + 1] = index
+				else
+					seen[station_key] = index
+				end
+			end
+			if #repeated_keys == 0 then return 0, 0 end
+			local appendix_count, pinch_count = 0, 0
+			local ring_count = #polygon - 1
+			local join_indices = {}
+			for index = 1, ring_count do
+				if join_keys[point_key(polygon[index].x, polygon[index].z)] then
+					join_indices[#join_indices + 1] = index
+				end
+			end
+			local polygon_index = exact.polygon_index(polygon)
+			for order = 1, #repeated_keys do
+				local station_key = repeated_keys[order]
+				local entry = repeats[station_key]
+				assert(#entry <= 2, id ..
+					" appendix station repeated more than twice at " .. station_key)
+				local anchored = false
+				for join_position = 1, #join_indices do
+					local join_index = join_indices[join_position]
+					local near = true
+					for occurrence = 1, #entry do
+						local distance = math.abs(entry[occurrence] - join_index)
+						distance = math.min(distance, ring_count - distance)
+						if distance > FACE_APPENDIX_WINDOW then
+							near = false
+							break
+						end
+					end
+					if near then
+						anchored = true
+						break
+					end
+				end
+				assert(anchored, id .. " has a non-join-local repeat at " ..
+					station_key)
+				-- Locally non-crossing (contracts 11.9): the repeated
+				-- station splits the ring into two loops, and the touch
+				-- crosses exactly when the loops' edge-end pairs --
+				-- (out1, in2) against (out2, in1) -- interleave in the
+				-- cyclic order of the four incident ring edges.  The loop
+				-- pairing, not the pass pairing, is the operationalization
+				-- (measured on the 11.9 family-C dip shape, whose passes
+				-- interleave while its loops occupy disjoint sectors); a
+				-- coincident loop-end direction is a shared edge --
+				-- overlap, not a crossing -- and a degenerate
+				-- both-ends-one-direction loop cannot separate the other.
+				local station = polygon[entry[1]]
+				local function incident_direction(station_index, step)
+					local neighbour_index
+					if step < 0 then
+						neighbour_index = station_index == 1 and ring_count or
+							station_index - 1
+					else
+						neighbour_index = station_index + 1
+					end
+					local neighbour = polygon[neighbour_index]
+					return touch_direction_index[
+						(neighbour.x - station.x) .. ":" ..
+						(neighbour.z - station.z)]
+				end
+				local function strictly_between(from, value, to)
+					local offset = (value - from) % 8
+					return offset > 0 and offset < (to - from) % 8
+				end
+				local a1 = incident_direction(entry[1], 1)
+				local a2 = incident_direction(entry[2], -1)
+				local b1 = incident_direction(entry[2], 1)
+				local b2 = incident_direction(entry[1], -1)
+				assert(not (a1 ~= a2 and b1 ~= b2 and
+						(strictly_between(a1, b1, a2) and
+							strictly_between(a2, b2, a1) or
+						strictly_between(a1, b2, a2) and
+							strictly_between(a2, b1, a1))),
+					id .. " has a crossing repeat at " .. station_key)
+				-- The touch form, recorded: zero width -- no cardinal
+				-- 4-neighbour strictly interior by winding (straight
+				-- corridor stations have both laterals strictly outside;
+				-- the measured W-112 dawnmere L-turn mouth has boundary
+				-- neighbours on both axes and still no interior beside it)
+				-- -- is a filament appendix; strict interior beside the
+				-- touch is a pinch.
+				if exact.indexed_polygon_class(polygon_index,
+							station.x - 1, station.z) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x + 1, station.z) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x, station.z - 1) > 0 or
+						exact.indexed_polygon_class(polygon_index,
+							station.x, station.z + 1) > 0 then
+					pinch_count = pinch_count + 1
+				else
+					appendix_count = appendix_count + 1
+				end
+			end
+			return appendix_count, pinch_count
 		end
 		local function merge_membership_runs(runs)
 			if not runs or #runs == 0 then return {} end
@@ -274,10 +421,59 @@ return function(dependencies)
 			end
 		end
 	
+		-- Dry-face regions through the two-tier acceptance: a ring with
+		-- repeated stations must qualify as window-guarded appendixes
+		-- (contracts 11.5-C) before the winding row derivation admits it.
+		-- The join anchors the oracle can independently name: the ring
+		-- terminal, the payload's shared-edge station endpoints (the cycle
+		-- joins) and the payload's per-face Bank station endpoints (the
+		-- arc-internal joins the measured family lives at).
+		local face_edge_points = {}
+		for index = 1, #compiled.families.land_boundaries do
+			local row = compiled.families.land_boundaries[index]
+			face_edge_points[row.id] = payload_points(row, "stations_xz")
+		end
+		local function face_join_keys(face, polygon)
+			local join_keys = {[point_key(polygon[1].x, polygon[1].z)] = true}
+			local authored = by_id(source.zone_faces, face.id)
+			for _, component in ipairs(authored.cycle) do
+				if component.kind == "shared_edge" then
+					local points = assert(face_edge_points[component.ref_id])
+					join_keys[point_key(points[1].x, points[1].z)] = true
+					join_keys[point_key(points[#points].x, points[#points].z)] = true
+				end
+			end
+			local offsets = named_array_value(face, "unsigned_arrays",
+				"bank_station_offsets")
+			local counts = named_array_value(face, "unsigned_arrays",
+				"bank_station_counts")
+			local stations = signed_array(face, "bank_stations_xz")
+			for bank_index = 1, #offsets do
+				local first = offsets[bank_index] * 2
+				local last = first + (counts[bank_index] - 1) * 2
+				join_keys[point_key(stations[first + 1], stations[first + 2])] = true
+				join_keys[point_key(stations[last + 1], stations[last + 2])] = true
+			end
+			return join_keys
+		end
 		local face_rows = {}
 		for index = 1, #compiled.families.dry_faces do
 			local face = compiled.families.dry_faces[index]
-			local rows = polygon_row_runs(payload_points(face, "polygon_xz"))
+			local polygon = payload_points(face, "polygon_xz")
+			local distinct = {}
+			local repeated = false
+			for point_index = 1, #polygon - 1 do
+				local station_key = point_key(polygon[point_index].x,
+					polygon[point_index].z)
+				if distinct[station_key] then repeated = true break end
+				distinct[station_key] = true
+			end
+			local appendix, pinch = 0, 0
+			if repeated then
+				appendix, pinch = face_appendix_acceptance(face.id, polygon,
+					face_join_keys(face, polygon))
+			end
+			local rows = polygon_row_runs(polygon, appendix + pinch > 0)
 			for z, runs in pairs(rows) do
 				for run_index = 1, #runs do
 					local run = runs[run_index]
@@ -614,6 +810,45 @@ return function(dependencies)
 										x = first, z = z, length = length}
 								end
 							elseif #active_faces > 1 then
+								-- The direct declared-seam check, then the
+								-- 11.9 family-C seam inheritance (the
+								-- oracle's independent copy of the
+								-- classifier's rule): a column claimed by
+								-- exactly two faces, both as boundary
+								-- (class 0), cardinally adjacent to a
+								-- declared-seam column of the identical
+								-- zone pair, inherits that declaration;
+								-- everything else counts r.
+								local function inherits_seam(x)
+									if #active_faces ~= 2 then return false end
+									if active_faces[1].class ~= 0 or
+											active_faces[2].class ~= 0 then
+										return false
+									end
+									local zone_a = active_faces[1].zone_id
+									local zone_b = active_faces[2].zone_id
+									if zone_a == zone_b then return false end
+									local neighbours = {{x - 1, z}, {x + 1, z},
+										{x, z - 1}, {x, z + 1}}
+									for index = 1, 4 do
+										local owners = declared[point_key(
+											neighbours[index][1],
+											neighbours[index][2])]
+										if owners and owners[zone_a] and
+												owners[zone_b] then
+											local exact_pair = true
+											for owner in pairs(owners) do
+												if owner ~= zone_a and
+														owner ~= zone_b then
+													exact_pair = false
+													break
+												end
+											end
+											if exact_pair then return true end
+										end
+									end
+									return false
+								end
 								for x = first, finish do
 									local owners = declared[point_key(x, z)]
 									local valid = owners ~= nil
@@ -629,6 +864,9 @@ return function(dependencies)
 										for owner in pairs(owners) do
 											if not seen[owner] then valid = false break end
 										end
+									end
+									if not valid and inherits_seam(x) then
+										valid = true
 									end
 									if not valid then result.r = result.r + 1 end
 								end
@@ -1301,7 +1539,7 @@ return function(dependencies)
 				end
 				if affected then
 					affected_faces = affected_faces + 1
-					local polygon = {}
+					local polygon, cycle_join_keys = {}, {}
 					for _, component in ipairs(face.cycle) do
 						local part = component.kind == "shared_edge" and
 							assert(edge_points[component.ref_id]) or
@@ -1310,11 +1548,28 @@ return function(dependencies)
 						if #polygon > 0 then assert(polygon[#polygon].x == part[1].x and
 							polygon[#polygon].z == part[1].z,
 							face.id .. " historical cycle join changed") end
+						if #polygon > 0 then
+							cycle_join_keys[point_key(part[1].x, part[1].z)] = true
+						end
 						append_points(polygon, part)
+					end
+					cycle_join_keys[point_key(polygon[1].x, polygon[1].z)] = true
+					-- The historical ring rides the same two-tier acceptance
+					-- as the payload ring (contracts 11.5-C, completed by
+					-- 11.9): simple stays the fast path, a window-guarded
+					-- touch family is admitted, anything else keeps failing
+					-- here by name.
+					local historical_appendix, historical_pinch = 0, 0
+					if not exact.polygon_simple(polygon) then
+						historical_appendix, historical_pinch =
+							face_appendix_acceptance(face.id, polygon,
+								cycle_join_keys)
+						assert(historical_appendix + historical_pinch > 0,
+							face.id .. " historical cycle topology changed")
 					end
 					assert(polygon[1].x == polygon[#polygon].x and
 						polygon[1].z == polygon[#polygon].z and
-						exact.signed_area2(polygon) > 0 and exact.polygon_simple(polygon),
+						exact.signed_area2(polygon) > 0,
 						face.id .. " historical cycle topology changed")
 					for z, runs in pairs(historical_face_rows) do
 						local kept = {}
@@ -1323,7 +1578,8 @@ return function(dependencies)
 						end
 						historical_face_rows[z] = kept
 					end
-					local rows = polygon_row_runs(polygon)
+					local rows = polygon_row_runs(polygon,
+						historical_appendix + historical_pinch > 0)
 					for z, runs in pairs(rows) do
 						for index = 1, #runs do
 							local run = runs[index]

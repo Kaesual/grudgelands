@@ -24,21 +24,39 @@
 -- branch-A consumption path without pinning the admission arm -- that arm is
 -- the gate suite's negative, not this fixture's.
 --
--- **The W-112 F10 deviation, measured against a stale projection.**
--- Contracts 9.4 projected seed 343674299183575008 (W-112) as a green Scan-4
--- seed: detached admission, multi-complete selection, all 38 faces simple.
--- It is not.  Measured 2026-08-19, W-112 realizes `face_non_simple_reject` at
--- BOTH `zone_face:elandor_dawnmere_fields` and
--- `zone_face:elandor_silverleaf_glades`, its whole tier is
--- `whole_not_evaluated` blocking on `zone_face:elandor_dawnmere_fields` (the
--- first blocking face in source order), and its single fragment row therefore
--- classifies `fragment_not_evaluated`.  This is pinned AS MEASURED and
--- deliberately differs from the contracts' expectation.  The projection is not
--- the suspect party: the real compile path was re-run solo on this seed on
--- 2026-08-19 and dies at "zone_face:elandor_dawnmere_fields is not simple",
--- so the census projection and the compiler agree and the stale line is the
--- contracts' green expectation.  A future correction that makes W-112 compile
--- must move this fixture and say so; it must not be allowed to move quietly.
+-- **The W-112 F10 deviation — MOVED by the section-11 bay-transition
+-- package, 2026-08-20 (the recorded correction the previous header
+-- promised).**  Until that package, W-112 realized `face_non_simple_reject`
+-- at BOTH `zone_face:elandor_dawnmere_fields` and
+-- `zone_face:elandor_silverleaf_glades`, its whole tier blocked and its
+-- fragment row classified `fragment_not_evaluated` (measured 2026-08-19,
+-- census and compiler agreeing).  The contracts-11.5-C window-guarded
+-- appendix acceptance, ruled 2026-08-20, accepts exactly the measured
+-- corridor family: W-112 now classifies `face_appendix_select` at both
+-- faces (dawnmere 4 appendix stations -- including the L-turn corridor
+-- mouth at -634:-2918 that fixed the zero-width predicate's
+-- operationalization as "no cardinal neighbour strictly interior" --
+-- silverleaf 2), its whole tier EVALUATES g=o=r=m=0 through the winding
+-- row derivation, and its fragment row classifies
+-- `fragment_owned_once_select`.  Every moved pin below was re-measured
+-- from the 2026-08-20 seven-seed record, not projected; the four seeds
+-- without appendix faces reproduced their previous pins byte-identically
+-- in the same run (the fast path untouched, closing and adoption measured
+-- no-ops on clean geometry).
+--
+-- **Re-pinned by the section-11.9 completion, 2026-08-20 (a recorded
+-- correction, named in its commit).**  The acceptance predicate is now
+-- the join-local, LOCALLY NON-CROSSING self-touch with the ruled window
+-- W (11 at this re-pin; W := 12 since the section-11.10
+-- complete-distribution re-ruling of 2026-08-21, which moved no pin in
+-- this roster -- provenance in t2_census_authority.lua), and
+-- every `face_appendix_select` detail carries both touch-form counts --
+-- `appendix_stations=A pinch_stations=P`.  All roster repeats are
+-- zero-width filaments, so every appendix count below kept its value and
+-- gained `pinch_stations = 0`; the record digest moved with the detail
+-- bytes, and the four seeds without appendix faces again reproduced
+-- their pins byte-identically (the ring-adoption and seam-inheritance
+-- completions are measured no-ops on the roster).
 --
 -- Fill counts are the known F6 witness occupancies from
 -- wp40-t2-degeneracy-completeness.md section 3-F6, in source.bays order
@@ -154,19 +172,26 @@ return {
 		edge = "land_004", tuples = 4, complete = 2, selected_tuple = 1,
 		selected_station_count = 1599},
 	-- The contracts 9.4 F10 witnesses, and the reason the roster grew to
-	-- seven.  These two seeds are the measured occupancy of
-	-- `face_non_simple_reject`: the whole point of adding them is that a
-	-- quietly-simple result here is a silent loss of the only KAT coverage
-	-- the Scan-4 face reject arm has.  Each seed must reject the named face
-	-- AND block its whole tier on that same face, so a classifier that keeps
-	-- rejecting but stops propagating the consequent also fails.
+	-- seven.  Re-pinned 2026-08-20 by the section-11 package (a recorded
+	-- correction, named in its commit): these two seeds are now the measured
+	-- occupancy of the contracts-11.5-C `face_appendix_select` acceptance --
+	-- the only real-witness coverage the window-guarded appendix arm has.
+	-- A quietly-simple result here is a silent loss of that coverage, and
+	-- the consequent must travel with it: each seed must accept the named
+	-- face with exactly the pinned appendix station count AND evaluate its
+	-- whole tier through the winding region truth.  Re-pinned again by the
+	-- 11.9 completion (a recorded correction, named in its commit): the
+	-- detail now carries both touch-form counts, and both witnesses'
+	-- repeats are zero-width filaments -- pinch count 0.
 	f10_witnesses = {
 		{seed = "2147483648",
 			face = "zone_face:elandor_silverleaf_glades",
-			class = "face_non_simple_reject"},
+			class = "face_appendix_select", appendix_stations = 1,
+			pinch_stations = 0},
 		{seed = "1959553668008863006",
 			face = "zone_face:kragmar_stillgrave_hollow",
-			class = "face_non_simple_reject"},
+			class = "face_appendix_select", appendix_stations = 1,
+			pinch_stations = 0},
 	},
 	-- The R19-genesis attribution pin (contracts 9.4).  Slot 29's land_010:to
 	-- is where the R19 rule came from -- the direct terminal dies
@@ -597,33 +622,37 @@ return {
 		["18446744073709551615"] = {},
 	},
 	-- Scan-4 (contracts 9.1/9.4), per seed and all verbatim from the measured
-	-- record.
+	-- record (re-measured 2026-08-20 at the section-11 package -- the
+	-- recorded correction of its commit).
 	--
 	-- `face_rejects` is the ordered list of the faces that do NOT classify
 	-- `face_simple_select`; every one of the other 38 - #face_rejects faces
-	-- does.  `whole` is either the evaluated summary (columns / planned water
+	-- does.  Since the 11.5-C acceptance the list carries the
+	-- `face_appendix_select` acceptances with their pinned appendix station
+	-- counts (the worker asserts the count through the row's detail); a
+	-- `face_non_simple_reject` here would be occupancy of the loud guard.
+	-- `whole` is either the evaluated summary (columns / planned water
 	-- columns / dry columns and the four H38 counters) or the consequent row
 	-- naming the first blocking face in source order.  g = o = r = m = 0 on
-	-- all four evaluated seeds is the H38 per-seed pin: no gap column, no
+	-- all seven evaluated seeds is the H38 per-seed pin: no gap column, no
 	-- undeclared water multiplicity, no undeclared dry multiplicity, and the
 	-- representation cross-check `m` finds zero disagreement between the
-	-- run-derived water decision and the stage's own predicates.  Those four
-	-- zeros are the whole reason the H38 normalization is allowed to stand in
-	-- for a per-column sweep.
+	-- run-derived water decision and the stage's own predicates.  Those
+	-- zeros are the whole reason the H38 normalization is allowed to stand
+	-- in for a per-column sweep -- and on the three appendix seeds they now
+	-- also pin the winding row derivation against the point predicates.
 	--
-	-- `whole_intervals` is empty exactly on the three seeds whose whole tier
-	-- did not run.  On the four that did, the footprint partitions into two
-	-- realized classes and only two: a declared seam (about 51.6k intervals,
+	-- `whole_intervals`: the footprint partitions into two realized classes
+	-- and only two on every seed: a declared seam (about 51.6k intervals,
 	-- one column each -- these are the zone boundaries) and single ownership
 	-- (about 70k intervals covering the remaining ~30.3M columns).
 	--
 	-- `fragments` is the section 6.2.3 excluded-fragment tier.  Only three
 	-- roster seeds carry a fragment at all, one row each.  Slot 30's is the
-	-- M5 fragment witness, Slot 29's is its land_010 counterpart, and both
-	-- classify `fragment_owned_once_select` -- a Bank owns them, which is the
-	-- validate_excluded_fragment_evidence rule.  W-112's is the consequent
-	-- described in the header: its faces did not compose, so the station
-	-- cannot be attributed and the row classifies `fragment_not_evaluated`.
+	-- M5 fragment witness, Slot 29's is its land_010 counterpart, and all
+	-- three -- W-112's included, since its faces now compose and accept --
+	-- classify `fragment_owned_once_select`: a Bank owns them, which is the
+	-- validate_excluded_fragment_evidence rule.
 	scan4 = {
 		["0"] = {
 			face_rejects = {},
@@ -640,36 +669,55 @@ return {
 		["2147483648"] = {
 			face_rejects = {
 				{face = "zone_face:elandor_silverleaf_glades",
-					class = "face_non_simple_reject"},
+					class = "face_appendix_select", appendix_stations = 1,
+					pinch_stations = 0},
 			},
-			whole = {class = "whole_not_evaluated",
-				blocking_face = "zone_face:elandor_silverleaf_glades"},
-			whole_intervals = {},
+			whole = {class = "whole_evaluated", columns = 30314339,
+				planned = 2146228, dry = 28168111, g = 0, o = 0, r = 0, m = 0},
+			whole_intervals = {
+				{class = "whole_declared_seam_select",
+					intervals = 51546, columns = 51546},
+				{class = "whole_single_owner_select",
+					intervals = 70753, columns = 30262793},
+			},
 			fragments = {},
 		},
 		["343674299183575008"] = {
 			face_rejects = {
 				{face = "zone_face:elandor_dawnmere_fields",
-					class = "face_non_simple_reject"},
+					class = "face_appendix_select", appendix_stations = 4,
+					pinch_stations = 0},
 				{face = "zone_face:elandor_silverleaf_glades",
-					class = "face_non_simple_reject"},
+					class = "face_appendix_select", appendix_stations = 2,
+					pinch_stations = 0},
 			},
-			whole = {class = "whole_not_evaluated",
-				blocking_face = "zone_face:elandor_dawnmere_fields"},
-			whole_intervals = {},
+			whole = {class = "whole_evaluated", columns = 30310911,
+				planned = 2169899, dry = 28141012, g = 0, o = 0, r = 0, m = 0},
+			whole_intervals = {
+				{class = "whole_declared_seam_select",
+					intervals = 51515, columns = 51515},
+				{class = "whole_single_owner_select",
+					intervals = 70826, columns = 30259396},
+			},
 			fragments = {
 				{edge = "land_013", station = 1801,
-					class = "fragment_not_evaluated"},
+					class = "fragment_owned_once_select"},
 			},
 		},
 		["1959553668008863006"] = {
 			face_rejects = {
 				{face = "zone_face:kragmar_stillgrave_hollow",
-					class = "face_non_simple_reject"},
+					class = "face_appendix_select", appendix_stations = 1,
+					pinch_stations = 0},
 			},
-			whole = {class = "whole_not_evaluated",
-				blocking_face = "zone_face:kragmar_stillgrave_hollow"},
-			whole_intervals = {},
+			whole = {class = "whole_evaluated", columns = 30318048,
+				planned = 2143371, dry = 28174677, g = 0, o = 0, r = 0, m = 0},
+			whole_intervals = {
+				{class = "whole_declared_seam_select",
+					intervals = 51538, columns = 51538},
+				{class = "whole_single_owner_select",
+					intervals = 70971, columns = 30266510},
+			},
 			fragments = {},
 		},
 		["15219119262482319357"] = {
@@ -715,15 +763,22 @@ return {
 			fragments = {},
 		},
 	},
-	digest = "2e5bb862d717543a1d41c7c26cabfac0c4d8ab358301fe782859f0ff5f35b970",
+	-- Re-measured 2026-08-20 at the section-11.9 completion: the appendix
+	-- seeds' face detail bytes gained their pinch counts (values unchanged,
+	-- all filaments), everything else byte-identical.
+	digest = "e6170d6117b4d1632535c4e1a1a3d6ec83598c68ca0888ccb04e9bc570d9cdda",
 	-- The gate's pinned half (plan section 6.6.5), over the section-6.2
 	-- artifacts the merge builds from exactly the records above -- not over the
 	-- manifest, which names the merge interpreter and therefore differs between
 	-- the LuaJIT and PUC runs by construction.  The LuaJIT/PUC comparison shows
 	-- the two runtimes agree; this shows they agree on the value a reviewed run
 	-- measured, so a semantic change in the merge cannot pass merely because
-	-- both interpreters changed with it.  Re-measured 2026-08-19 over the
-	-- seven-seed v6 record; LuaJIT and PUC returned the same bytes.
+	-- both interpreters changed with it.  Re-measured 2026-08-20 over the
+	-- seven-seed record at the section-11 package (the three appendix seeds'
+	-- rows and the two new declared classes move the artifacts legitimately),
+	-- and again at the section-11.9 completion (the pinch counts in the
+	-- appendix details move the artifacts legitimately); LuaJIT and PUC
+	-- returned the same bytes.
 	merge_artifacts_digest =
-		"8bd3a984ed1c27c8c1ccb47c0880be469280ecf42ce55260f6562212c42f3997",
+		"fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795",
 }

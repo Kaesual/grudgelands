@@ -49,9 +49,11 @@ accident of how the work happened to go.
 **Boundary topology gets the heavy regime**: an independently implemented
 oracle, mutation KATs, byte-identical digests, and a recorded Reality
 correction whenever a configuration turns out to be undecided. Correctness
-there is a *global* property — closed, counterclockwise, simple polygons;
-8-connected traces; exactly one owner per column — so nothing local can
-establish it. This is the regime that produced thirteen corrections and
+there is a *global* property — closed, counterclockwise polygons, simple or
+window-guarded touch-accepted (the 2026-08-20 contracts-§11.5-C
+correction as completed by §11.9); 8-connected traces; exactly one owner
+per column — so nothing
+local can establish it. This is the regime that produced thirteen corrections and
 roughly half its test volume in independent oracles, and it earned that cost.
 
 **Everything else gets the light regime**: an argument that the function is

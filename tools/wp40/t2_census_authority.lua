@@ -246,17 +246,39 @@ return function(dependencies)
 		-- beside the projection, anything unmatched re-raised (the
 		-- stage-reject precedent).  A face whose upstream arc failed is its
 		-- own declared skip kind, never a silent absence.
-		scan4_face_class = {"face_simple_select", "face_not_closed_reject",
+		-- face_appendix_select (contracts 11.5-C, ruled 2026-08-20;
+		-- completed by 11.9) is the DECIDED acceptance of the measured
+		-- bay-transition touch family: every repeated station a join-local,
+		-- locally non-crossing self-touch inside the pinned window below --
+		-- the zero-width filament appendix and the interior-beside pinch
+		-- are both accepted forms; the row's detail carries the appendix
+		-- and pinch station counts.
+		scan4_face_class = {"face_simple_select", "face_appendix_select",
+			"face_not_closed_reject",
 			"face_wrong_orientation_reject", "face_non_simple_reject",
 			"face_composition_reject", "face_upstream_not_evaluated"},
 		-- The Whole tier's gate: it runs only when every face of the seed
-		-- classifies face_simple_select; otherwise one whole_not_evaluated
-		-- row names the blocking face.
+		-- classifies face_simple_select or face_appendix_select; otherwise
+		-- one whole_not_evaluated row names the blocking face.
 		scan4_whole_state = {"whole_evaluated", "whole_not_evaluated"},
 		-- The H38 row-run interval classes (contracts 9.1).
+		-- residual_multi_face_reject (contracts 11.7-B, ruled 2026-08-20;
+		-- ring connectivity added by 11.9 family A) is the loud class of
+		-- the residue-adoption rule: an unowned dry 4-connected chain whose
+		-- candidate owners -- cardinal contact plus, for footprint-ring
+		-- stations in the chain, the faces owning the ring-neighbour
+		-- stations -- number two or more.  Measured zero over the
+		-- 112-pocket anatomy population; expected vacuous, occupancy
+		-- measured, never absorbed.
+		-- whole_declared_seam_select additionally admits the 11.9 family-C
+		-- seam inheritance: a column claimed by exactly two faces, both as
+		-- boundary, cardinally adjacent to a declared-seam column of the
+		-- identical pair, inherits that declaration; every other
+		-- multiplicity stays whole_undeclared_multiplicity_reject.
 		scan4_whole_class = {"whole_single_owner_select",
 			"whole_declared_seam_select", "whole_gap_reject",
-			"whole_undeclared_multiplicity_reject"},
+			"whole_undeclared_multiplicity_reject",
+			"residual_multi_face_reject"},
 		-- The excluded-fragment obligations; the not_evaluated kind fires
 		-- only when a face failed to compose, so the fragment's face
 		-- ownership could not be measured at all.
@@ -424,6 +446,7 @@ return function(dependencies)
 		aperture_anchor_dead_event = "EVENT",
 		wing_pair_dead_alternative_event = "EVENT",
 		face_simple_select = "DECIDED",
+		face_appendix_select = "DECIDED",
 		face_not_closed_reject = "REJECTED",
 		face_wrong_orientation_reject = "REJECTED",
 		face_non_simple_reject = "REJECTED",
@@ -435,6 +458,7 @@ return function(dependencies)
 		whole_declared_seam_select = "DECIDED",
 		whole_gap_reject = "REJECTED",
 		whole_undeclared_multiplicity_reject = "REJECTED",
+		residual_multi_face_reject = "REJECTED",
 		fragment_owned_once_select = "DECIDED",
 		fragment_unowned_reject = "REJECTED",
 		fragment_multi_owner_reject = "REJECTED",
@@ -497,17 +521,49 @@ return function(dependencies)
 				"wedge-valid pair completes; probed only on the dead condition, " ..
 				"expected occupancy zero -- a projection, marked as one"},
 		face_non_simple_reject = {status = "in_scope",
-			note = "the known F10 occupancy: solo full-path compiles place seed " ..
-				"2147483648 at zone_face:elandor_silverleaf_glades and seed " ..
-				"1959553668008863006 at zone_face:kragmar_stillgrave_hollow; " ..
-				"both must land as occupied rows with those witnesses"},
+			note = "the loud guard of the section-11.5-C two-tier validator " ..
+				"as completed by 11.9: an opposing cell diagonal, a repeat " ..
+				"outside the pinned join window, a crossing repeat or a " ..
+				"station repeated more than twice.  The former F10 occupancy " ..
+				"(seeds 2147483648 and 1959553668008863006) moved to " ..
+				"face_appendix_select with the 2026-08-20 11.5-C ruling, and " ..
+				"the 11.8 family-B occupancy (60 seeds: 41 silverleaf " ..
+				"join-distance-11 touches, 19 interior-hugging dips) moved " ..
+				"there with the 11.9 ruling -- recorded corrections, named " ..
+				"in the commits; occupancy here is expected zero again and " ..
+				"nonzero occupancy is a finding outside the measured family"},
+		face_appendix_select = {status = "in_scope",
+			note = "the section-11.5-C window-guarded acceptance as " ..
+				"completed by 11.9 on the fully measured population: every " ..
+				"repeated station a join-local, locally non-crossing " ..
+				"self-touch (window, non-crossing predicate and the ratified " ..
+				"zero-width form condition pinned beside this table with " ..
+				"their measurement provenance) -- the zero-width filament " ..
+				"appendix and the interior-beside pinch are both accepted " ..
+				"forms.  Known occupancy: the two F10 witnesses, the 719 " ..
+				"appendix carriers of the section-11.8 union sweep and the " ..
+				"60 11.8 family-B seeds; the row's detail carries the " ..
+				"appendix and pinch station counts"},
+		residual_multi_face_reject = {status = "expected_vacuous",
+			note = "the loud class of the section-11.7-B residue-adoption " ..
+				"rule (ring connectivity added by 11.9 family A): an unowned " ..
+				"dry 4-connected chain whose candidate owners -- cardinal " ..
+				"contact plus ring-neighbour ownership at footprint-ring " ..
+				"stations -- number two or more.  The 2026-08-20 attachment-" ..
+				"anatomy sweep measured every surviving pocket touching " ..
+				"exactly one face (112/112, zero multi-face, zero diagonal-" ..
+				"only) and the A/C micro-anatomy measured exactly one ring " ..
+				"link per pinched fragment (8/8), so occupancy is expected " ..
+				"zero -- a projection, marked as one -- and nonzero " ..
+				"occupancy is a finding, never absorbed"},
 		face_upstream_not_evaluated = {status = "consequent",
 			note = "the face's upstream arc failed to assemble; the arc's " ..
 				"verbatim failure travels in the face row's detail and the " ..
 				"finding is that failure, not this skip kind"},
 		whole_not_evaluated = {status = "consequent",
 			note = "the Whole tier runs only when every face classifies " ..
-				"face_simple_select; this row names the blocking face, whose own " ..
+				"face_simple_select or face_appendix_select (the 11.5-C " ..
+				"amendment); this row names the blocking face, whose own " ..
 				"reject row is the primary finding -- measured and " ..
 				"could-not-be-evaluated stay different claims (the 6.7 lesson)"},
 		fragment_not_evaluated = {status = "consequent",
@@ -2044,6 +2100,45 @@ return function(dependencies)
 		return {seeds = seeds, totals = totals, digest = digest,
 			prefilter = prefilter}
 	end
+
+	-- The section-11.5-C appendix acceptance pins (ruled 2026-08-20,
+	-- completed by the 11.9 ruling, re-ruled by 11.10 on the complete
+	-- distribution), with their measurement provenance.  The window (pin
+	-- lineage W 8 -> 11 -> 12): over all 95 preserved corridor violations
+	-- of the step-2/2b sweeps, every repeat sits within 6 ring stations
+	-- of one part join, both occurrences, no pair straddling two joins
+	-- (the 11.5 investigation, measurement 2 -- an 8.5% dump sample);
+	-- ruled one wider at W = 8, then refuted by the section-11.8 union
+	-- sweep (observed maximum 11 -- in fact a one-witness
+	-- generalization, refuted in turn by the fourth-attempt acceptance
+	-- sweep).  The complete distribution now exists
+	-- (b-join-distances.tsv of the w11 stop artifacts: all 60 family-B
+	-- seeds, 93 repeated stations, d=1 x14, 2 x10, 8 x7, 9 x9, 10 x25,
+	-- 11 x23, 12 x5, nothing beyond 12 -- the silverleaf touch family
+	-- 1138-1140:-2232 against its join anchor jittering +-1 over
+	-- 1126/1127/1128:-2233), and the 11.10 ruling pins W := 12 at the
+	-- complete-population maximum exactly -- the first W pin whose
+	-- provenance is a complete population; no margin, anything farther
+	-- stays a named loud failure.  The acceptance predicate is 11.9's join-local,
+	-- LOCALLY NON-CROSSING self-touch: at a repeated station the two
+	-- passes must not interleave in the cyclic order of the four incident
+	-- ring edges (integer-only; a crossing fails by name).  The zero-width
+	-- condition -- ratified by 11.9 as *no cardinal 4-neighbour strictly
+	-- interior by winding* -- now records the touch FORM instead of gating
+	-- it: zero width is the filament appendix, strict interior beside the
+	-- touch is the pinch (the 19 measured interior-hugging one-station
+	-- dips of 11.8 family B), and the row detail carries both counts.
+	-- Zero-width provenance: the 92 probed corridor stations of the 11.5
+	-- investigation are straight filaments (both laterals strictly
+	-- outside); the corridor mouth at an L-turn -- measured 2026-08-20 on
+	-- W-112's dawnmere corridor during the section-11 package's KAT
+	-- measurement, station -634:-2918, classes E=0/W=-1/N=0/S=0 -- has
+	-- boundary neighbours on both axes and still no interior beside it, so
+	-- the lateral-pair phrasing of the investigation was the probe's
+	-- sufficient check on its straight sample, not the ruled predicate.
+	-- partition.lua owns the running copy; the worker refuses to run when
+	-- the two disagree, the stage-reject-class precedent.
+	authority.face_appendix_window = 12
 
 	authority.schema = schema
 	authority.shard_schema = shard_schema

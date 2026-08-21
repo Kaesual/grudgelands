@@ -397,7 +397,9 @@ then the order-based outcome is formally DECIDED and semantically unreviewed.
 
 ### F10/F11. Face topology and Whole ownership — outcome-finite, cause-open
 
-Outcome classes are complete and all decided: per face {pass, not-closed,
+Outcome classes are complete and all decided: per face {pass,
+touch-accepted (the 2026-08-20 contracts-§11.5-C correction as completed
+by §11.9: filament appendixes and pinches), not-closed,
 wrong-orientation, non-simple} with the last three rejecting; per column
 {single owner, gap, declared-seam multiplicity (half-open resolves),
 undeclared multiplicity} with gap and undeclared multiplicity rejecting.
@@ -414,7 +416,8 @@ either (i) a reject-occupancy event upstream — which the §5 censuses see
 first and cheaper — or (ii) a mechanism-(b) gap: an invariant-preserving
 wrongness no current gate expresses. Class (ii) is not findable by any scan
 by definition; it is bounded only by reviewing the invariant list itself
-(closed faces, CCW, simple, gap/overlap-free, byte-reversal symmetry,
+(closed faces, CCW, simple-or-touch-accepted per contracts §11.5-C/§11.9,
+gap/overlap-free, byte-reversal symmetry,
 8-connectivity, X-cross freedom, envelope containment, excluded-fragment
 ownership, identity-consumption rules) against design intent. That review is
 finite, one-time work; it is the residue that neither enumeration nor

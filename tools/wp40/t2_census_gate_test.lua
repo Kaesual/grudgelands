@@ -929,8 +929,10 @@ check(#universe > 0, "the declared branch universe is empty")
 -- vocabularies widened the universe to 121 branches, and the vacuous report
 -- is exactly this list minus what the shards realized -- so a branch that
 -- silently left the declaration would shrink the report rather than appear
--- in it as the zero it is.
-check(#universe == 121, "the declared branch universe changed width: " .. #universe)
+-- in it as the zero it is.  Re-pinned 2026-08-20 by the section-11 package
+-- (a recorded correction, named in its commit): face_appendix_select and
+-- residual_multi_face_reject widen the universe to 123.
+check(#universe == 123, "the declared branch universe changed width: " .. #universe)
 local in_universe = {}
 for index = 1, #universe do
 	local declared = universe[index]

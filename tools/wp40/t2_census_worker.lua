@@ -230,6 +230,15 @@ for index = 1, #partition.census_stage_reject_classes do
 		tostring(authority.classes.stage_reject_class[index]))
 end
 
+-- The section-11.5-C appendix window is pinned in the authority with its
+-- measurement provenance; partition.lua owns the running copy.  The same
+-- bridge shape as the stage-reject classes: a drift on either side refuses
+-- to run rather than silently changing which repeats the validator accepts.
+assert(partition.face_appendix_window == authority.face_appendix_window,
+	"census face appendix window is " ..
+	tostring(partition.face_appendix_window) .. ", the authority pins " ..
+	tostring(authority.face_appendix_window))
+
 -- Buffered per line, flushed per seed record.  Section 6.6.2 has the launcher
 -- validate each worker's first completed record while the workers keep
 -- running, which a run that only materializes its output at the end cannot
@@ -674,7 +683,8 @@ if mode == "kat" then
 	for index = 1, #fixture.f10_witnesses do
 		local witness = fixture.f10_witnesses[index]
 		assert(type(witness) == "table" and witness.seed and witness.face and
-			witness.class,
+			witness.class and witness.appendix_stations and
+			witness.pinch_stations,
 			"census KAT F10 witness " .. index .. " is incomplete")
 		assert(scans_by_seed[witness.seed],
 			"census KAT roster does not cover the F10 witness seed " ..
@@ -1128,18 +1138,30 @@ if mode == "kat" then
 					"census KAT: the R19-genesis Slot-29 attribution row is absent")
 			end
 			-- Scan-4 faces (contracts 9.1/9.4).  All 38 rows travel on every
-			-- member record; the fixture names the rejects and everything it does
-			-- not name must classify face_simple_select, so both a new reject and
-			-- a lost one are legible by face id.
+			-- member record; the fixture names every face that does not
+			-- classify face_simple_select -- the section-11.5-C
+			-- face_appendix_select acceptances with their pinned appendix
+			-- station counts included -- so a new deviation, a lost one and
+			-- a drifted appendix count are all legible by face id.
 			local expected_scan4 = assert(fixture.scan4[seed],
 				"census KAT fixture lacks scan4 for seed " .. seed)
 			assert(#scan.scan4_faces == 38,
 				"census KAT expects 38 scan4 face rows, seed " .. seed ..
 				" carries " .. #scan.scan4_faces)
-			local pinned_reject, observed_rejects = {}, {}
+			local pinned_reject, pinned_detail, observed_rejects = {}, {}, {}
 			for index = 1, #expected_scan4.face_rejects do
 				local expected = expected_scan4.face_rejects[index]
 				pinned_reject[expected.face] = expected.class
+				if expected.appendix_stations then
+					-- The 11.9 detail carries both touch-form counts; a
+					-- fixture pin without the pinch count is incomplete.
+					assert(expected.pinch_stations,
+						"census KAT fixture: appendix pin for " ..
+						expected.face .. " lacks its pinch count")
+					pinned_detail[expected.face] =
+						"appendix_stations=" .. expected.appendix_stations ..
+						" pinch_stations=" .. expected.pinch_stations
+				end
 			end
 			for index = 1, #scan.scan4_faces do
 				local row = scan.scan4_faces[index]
@@ -1148,6 +1170,12 @@ if mode == "kat" then
 					"census KAT scan4 face " .. row.id .. " is " .. row.class ..
 					", pinned " .. expected_class .. " seed " .. seed .. " " ..
 					tostring(row.detail))
+				if pinned_detail[row.id] then
+					assert(row.detail == pinned_detail[row.id],
+						"census KAT scan4 face " .. row.id .. " detail is " ..
+						tostring(row.detail) .. ", pinned " ..
+						pinned_detail[row.id] .. " seed " .. seed)
+				end
 				if row.class ~= "face_simple_select" then
 					observed_rejects[#observed_rejects + 1] = row.id
 				end
@@ -1238,10 +1266,15 @@ if mode == "kat" then
 					row.class .. ", pinned " .. expected.edge .. ":" ..
 					expected.station .. " " .. expected.class)
 			end
-			-- The F10 witnesses (contracts 9.4).  A quietly-simple face here is
-			-- exactly the drift these two seeds were added to catch, and the
-			-- consequent must travel with it: the whole tier blocks on the same
-			-- face by name.
+			-- The F10 witnesses (contracts 9.4, amended by the 11.5-C ruling
+			-- of 2026-08-20).  These two seeds are the measured occupancy of
+			-- the window-guarded appendix acceptance: a quietly-simple face
+			-- here is a silent loss of the only real-witness coverage the
+			-- acceptance has, and the consequent must travel with it -- the
+			-- whole tier now EVALUATES through the winding region truth
+			-- instead of blocking (the recorded correction the fixture
+			-- header promised: the seeds compile, and the fixture moved and
+			-- says so).
 			for index = 1, #fixture.f10_witnesses do
 				local witness = fixture.f10_witnesses[index]
 				if seed == witness.seed then
@@ -1253,16 +1286,26 @@ if mode == "kat" then
 								"census KAT: the F10 witness face " .. row.id ..
 								" is " .. row.class .. " at seed " .. seed ..
 								", pinned " .. witness.class)
+							assert(row.class == "face_appendix_select" and
+								row.detail == "appendix_stations=" ..
+									witness.appendix_stations ..
+									" pinch_stations=" ..
+									witness.pinch_stations,
+								"census KAT: the F10 witness face " .. row.id ..
+								" detail is " .. tostring(row.detail) ..
+								" at seed " .. seed .. ", pinned appendix/" ..
+								"pinch counts " ..
+								tostring(witness.appendix_stations) .. "/" ..
+								tostring(witness.pinch_stations))
 							face_seen = true
 						end
 					end
 					assert(face_seen, "census KAT: the F10 witness face " ..
 						witness.face .. " is absent at seed " .. seed)
-					assert(whole.class == "whole_not_evaluated" and
-						whole.blocking_face == witness.face,
+					assert(whole.class == "whole_evaluated",
 						"census KAT: the F10 witness seed " .. seed ..
-						" did not block its whole tier on " .. witness.face ..
-						" but on " .. whole.class .. "/" ..
+						" did not evaluate its whole tier through the " ..
+						"appendix acceptance but is " .. whole.class .. "/" ..
 						tostring(whole.blocking_face))
 				end
 			end

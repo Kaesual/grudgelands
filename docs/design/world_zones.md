@@ -668,7 +668,12 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   edge-to-bank transitions; the remaining 34 relief junctions keep their
   incident edge pairs, and all eight perimeter attachments stay separate
   terminal authorities. After every category resolves, all 38 dry faces must
-  still be closed, counterclockwise and simple.
+  still be closed and counterclockwise, and either simple or — since the
+  2026-08-20 §11.5-C correction as completed by §11.9
+  (`wp40-t2-contracts.md`) — accepted with window-guarded join-local,
+  locally non-crossing self-touches at bay-transition terminals (zero-width
+  filament appendixes and interior-beside pinches), their region truth
+  derived by winding.
 - The measured extreme-corpus seeds are scored on pre-displacement source
   stations only, so seed selection never depends on the compiled result it
   selects.

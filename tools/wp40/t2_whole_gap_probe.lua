@@ -132,6 +132,11 @@ local function enumerate_intervals(view)
 				elseif #covering_faces == 1 then
 					class = "whole_single_owner_select"
 				else
+					-- The direct declared-seam check, then the 11.9
+					-- family-C seam inheritance -- the classifier's rule
+					-- mirrored (a boundary-boundary two-face column beside
+					-- a same-pair declared column inherits), so the parity
+					-- proof stays a proof after the 11.9 completion.
 					local valid_all = true
 					for x = first, finish do
 						local owners = view.declared[key_xz(x, z)]
@@ -149,6 +154,35 @@ local function enumerate_intervals(view)
 							for owner in pairs(owners) do
 								if not seen[owner] then
 									valid = false break
+								end
+							end
+						end
+						if not valid and #covering_faces == 2 and
+								covering_faces[1].class == 0 and
+								covering_faces[2].class == 0 and
+								covering_faces[1].zone_id ~=
+									covering_faces[2].zone_id then
+							local zone_a = covering_faces[1].zone_id
+							local zone_b = covering_faces[2].zone_id
+							local neighbours = {{x - 1, z}, {x + 1, z},
+								{x, z - 1}, {x, z + 1}}
+							for index = 1, 4 do
+								local adjacent = view.declared[key_xz(
+									neighbours[index][1], neighbours[index][2])]
+								if adjacent and adjacent[zone_a] and
+										adjacent[zone_b] then
+									local exact_pair = true
+									for owner in pairs(adjacent) do
+										if owner ~= zone_a and
+												owner ~= zone_b then
+											exact_pair = false
+											break
+										end
+									end
+									if exact_pair then
+										valid = true
+										break
+									end
 								end
 							end
 						end
