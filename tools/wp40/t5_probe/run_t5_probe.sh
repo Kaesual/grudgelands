@@ -850,7 +850,17 @@ fi
 # tools/wp40/capture_t0_baseline.sh:239-241.  Per-run labelling
 # (`version_match`, the cache block, the golden labels) is verify_log.sh's, in
 # its own summary.json; this file is the capture-level copy and does not touch
-# it.
+# it.  The cache disclaimer and the 3.2 non-claim-11 sentence are deliberately
+# in BOTH: 13.1 wants the disclaimer where a reader of one run's summary will
+# see it, and a reader of the capture manifest alone must not have to infer it.
+# `first_diff_localization` is the capture-level statement of the evidence
+# limit compare_runs.sh marks per record with `flat_index: -1`.
+# Contract 3.2 non-claim 11 ends "and the summary says it in those words", so
+# the words are a literal, defined once and passed to jq as data. It carries
+# apostrophes and must never be pasted inside a single-quoted jq program.
+# verify_log.sh:1 carries the identical literal for the per-run summaries.
+containment_statement="A containment pass means 'no difference in the compared regions', not 'no difference in the chunk'."
+
 run_manifest_json="$(
 	for run_id in "${matrix_run_ids[@]}"; do
 		jq -nc \
@@ -871,6 +881,7 @@ jq -n \
 	--arg payload_digest "$working_tree_payload_digest" \
 	--arg archive_commit "$archive_commit" \
 	--arg engine_version_regex "$expected_version_pattern" \
+	--arg containment_statement "$containment_statement" \
 	--arg log_shape_regex "$log_shape_regex" \
 	--arg log_shape_regex_sha256 "$(wp40_t5_sha256_text "$log_shape_regex")" \
 	--arg coordinate_set_sha256 "$(wp40_t5_sha256_text "$coordinate_set_literal")" \
@@ -911,6 +922,13 @@ jq -n \
 	  cache: {process: "new_process_new_disposable_world",
 	    filesystem_page_cache: "unknown_uncontrolled",
 	    cold_cache_claim: false},
+	  containment_scope_statement: $containment_statement,
+	  first_diff_localization: {resolvable_from: "sha256 digests only",
+	    voxel_level: false,
+	    localized: "flat_index >= 1 -- pos is the minimum corner of the named write box whose digest_incl differs; a box, never a voxel",
+	    not_localized: "flat_index == -1 -- digest_incl implicates no named box, so pos is only the compared box minimum corner and was NEVER measured; always the case on the light lanes, which have no per-box digest_incl",
+	    value_a_value_b: "always -1 -- a node value is not resolvable from digest evidence",
+	    consequence: "contract 10.13 asks a follow-on run to narrow the SEAM sub-box using the first_diff of the failing run; a record marked flat_index -1 supplies no such coordinate"},
 	  timings_are_golden: false,
 	  timing_replicates: 1,
 	  settling_is_probe_local: true,

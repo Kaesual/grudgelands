@@ -93,8 +93,8 @@ rather than replaces the pinned-source audit of contract section 7.
 
 ### The honest cache disclaimer
 
-Copied from `tools/wp40/capture_t0_baseline.sh:239-241` and carried in-band in
-every run summary and in `capture.json`:
+Copied from `tools/wp40/capture_t0_baseline.sh:239-241` and carried in-band as
+the `cache` field of **every** run `summary.json` and of `capture.json`:
 
 ```json
 "cache": {
@@ -104,10 +104,54 @@ every run summary and in `capture.json`:
 }
 ```
 
+`verify_log.sh` stage 3 emits it into the run summary and its re-parse gate
+checks all three values, so a summary that dropped or emptied the disclaimer
+fails its own gate instead of passing quietly.
+
 Each capture is a new process against a fresh disposable world, and that is all.
 Freshness is by construction only: nothing asserts `map.sqlite` was absent, the
 filesystem page cache is uncontrolled and unmeasured, and **no timing here is a
 cold-cache measurement**.
+
+### The containment-scope sentence, carried rather than quoted
+
+Non-claim 11 above ends "and the summary says it in those words". Quoting the
+sentence inside the non-claim does not discharge it, so every run
+`summary.json` and `capture.json` carry it as a field of its own,
+`containment_scope_statement`:
+
+```json
+"containment_scope_statement": "A containment pass means 'no difference in the compared regions', not 'no difference in the chunk'."
+```
+
+The `verify_log.sh` stage-3 re-parse compares it against the same literal the
+generator was handed, so the emitted sentence and the demanded sentence cannot
+drift apart.
+
+### What `first_diff` can and cannot say — the `flat_index: -1` marker
+
+A SHA-256 says only **whether** two byte strings differ, never **how**, and
+`compare_runs.sh` sees nothing but digests. **Digests cannot yield voxel-level
+facts, and this package invents none.** `first_diff` records therefore come in
+exactly two kinds, told apart in band by `flat_index`:
+
+| `flat_index` | What it means |
+| --- | --- |
+| `>= 1` | **Localized to a named write box.** Some box of the compared region has differing `digest_incl` values; `pos` and `flat_index` are that box's minimum corner. A box, never a voxel. |
+| `-1` | **Not localized.** `digest_incl` implicates no named box — either nothing named inside the compared region differs, or the lane is a light lane, which has no per-box `digest_incl` at all, so the box search never runs. `pos` falls back to the compared box minimum corner: well defined, but **never measured**. |
+
+`value_a` and `value_b` are `-1` on **every** record, localized or not: a node
+value is not resolvable from digest evidence.
+
+The `-1` marker exists because a plausible integer coordinate does not announce
+itself as a placeholder the way `value_a: -1` does. Contract 10.13 tells the
+reader of a `no_stable_baseline` outcome to narrow the SEAM sub-box "from the
+failing run's `first_diff`" — and **this run set produced exactly that
+outcome**. Six of its eight `first_diff` records carry `flat_index: -1`,
+including every light-lane record and both SEAM order pairs. Read plainly: this
+run set supplies **no** narrowed sub-box for a follow-on run. A follow-on
+planned from `{824, -16, 696}` would be planned from the corner of the compared
+box, not from anything the probe measured.
 
 ### Engine identity — `version_match: false`
 
@@ -271,6 +315,17 @@ change-sensitive against a throwaway fixture, in the shape of
 
 ## Result and evidence layout
 
+### Provenance of the committed evidence
+
+The committed run set was captured from the **game archive base commit
+`7f5fe9a`** (`7f5fe9a2107c865c0517757e725fd903b09e2d0e`), which is what
+`capture.json.digests.game_archive_commit_sha1` records. That commit is one of
+the inputs the manifest digest is computed over, so a later re-run at a
+different `HEAD` legitimately produces a **different** manifest digest and
+therefore a different result and evidence directory name. A digest that does
+not match `9ac056ff…` is not by itself evidence that anything went wrong; it
+first says the experiment was defined over different bytes.
+
 Captures land in the gitignored scratch tree (`.gitignore:11`), named by the
 manifest digest, and the runner **refuses to overwrite an existing result
 directory** (exit 2):
@@ -384,6 +439,107 @@ them wrongly:
 Two orders are two orders. They are **not** the nine-schedule gate of the
 engineering brief's section 6.2; contract 10.14 records that scope reduction
 plainly.
+
+---
+
+## One open observation, recorded and unexplained
+
+This gates nothing, changes no verdict and is not a finding. It is recorded
+because it was seen and is not understood, and burying it would be the
+dishonest option.
+
+**What was seen.** On the `bounded` micro-case chunk `kx = 8`, the pre-commit
+light snapshot rollup `light_outside_box_snapshot_sha256` differs between the
+two arm-`B` orders:
+
+| Run | `kx` | `case` | `light_outside_box_snapshot_sha256` |
+| --- | --- | --- | --- |
+| `B-O1` | 8 | `bounded` | `42289cc6…` |
+| `B-O2` | 8 | `bounded` | `a6465270…` |
+
+Contract 6.3 says chunk 8 has **no generated neighbour in either order** —
+`kx = 9` is the deliberate gap chunk — so there is no obvious reason for an
+order to matter here.
+
+**What was checked, and holds.**
+
+- Within each run `light_outside_box_snapshot_sha256 ==
+  light_outside_box_restored_sha256` and
+  `restored_outside_dirty_mismatch_count == 0`, so the outside-the-box restore
+  is sound in both runs and nothing unverified reached the map.
+- The `CORE(8)` light lanes are **equal across all four runs** (one digest,
+  `7c98d2da…`, in `A1-O1`, `A1-O2`, `B-O1` and `B-O2` alike), which is what
+  `V-04` and `V-06` report. The rollup is taken over the whole emerged volume
+  minus the light write box, and the part of that volume lying inside `CORE(8)`
+  is therefore equal between the orders. The difference is confined to the
+  emerged volume **outside `CORE(8)`** — the chunk's own rind, between `CORE`
+  and the edge of its central slice, **plus** the emerged halo. It is outside
+  every compared region and outside everything any verdict is computed from.
+  The narrower phrasing "confined to the halo" would be an overreach: equality
+  of `CORE(8)` licenses only "outside `CORE(8)`", and nothing here establishes
+  that the difference lies outside chunk 8's own owner slice.
+
+**The two readings, neither of which this package can decide between.**
+
+1. Genuine order-dependent **native** lighting outside `CORE(8)`. If so it is,
+   in the words of verdict `V-04`, a finding about mapgen-state carry-over
+   rather than about anything the payload did.
+2. The rollup hashes covering something other than what `payload/mapgen.lua`
+   claims for them.
+
+**It is unexplained.** Nothing here decides between those two, and nothing here
+should be read as leaning toward either. For contrast and not as an
+explanation: the same field also differs between the orders on `kx = 11`, and
+`kx = 11` *does* have a generated neighbour in one order and not the other. The
+probe tests neither case.
+
+---
+
+## The five-minute runtime pass — contract section 19.3
+
+Carried here in full, so the package and the evidence tree hold the plan rather
+than only a run of the harness under one optional environment variable. The
+runner keeps its own condensed print of the same six steps — together with the
+kept world's path and that run's recorded `case_baseline` block — when a capture
+is taken with `WP40_T5_PROBE_KEEP_WORLD=1`. **This copy is the complete one**,
+reproduced from contract 19.3; where the two differ, the table below is the plan.
+
+Copy the kept `world-B-O1/` directory into
+`~/.var/app/org.luanti.luanti/.minetest/worlds/` and open it with the installed
+Grudgelands game. **Visual inspection only:** the world came from a git archive
+of the base commit while the installed game is whatever was last synced, and the
+healing LBM, mob ABMs and node timers run as soon as a player is present. **No
+digest is ever recomputed from a world opened in the GUI.**
+
+Expected, and **not** defects:
+
+- unsettled liquid — the capture pinned `liquid_update = 86400`, so the world
+  was saved before the periodic drain ever ran;
+- an ungenerated column at `x` in `[688, 767]` — `k_x = 9` is the gap chunk and
+  was never requested.
+
+Setup:
+
+```
+/grantme fly, fast, noclip, teleport, settime
+/time 12000
+```
+
+The five minutes — the complete contract 19.3 table, reproduced:
+
+| Step | Where | What to look at | Red flag |
+| --- | --- | --- | --- |
+| 1 | `/teleport 848 4 715`, then `noclip` along `x` from 835 to 860 | the micro-case-4 **gold** bar crossing `x = 847 \| 848`: one continuous 16-node run of `default:goldblock`, 8 nodes each side, 8 x 8 in cross-section. `noclip` is required — `native_surface_y` will normally put the bar inside solid rock | the bar is 8 nodes long instead of 16, one half is missing, or the halves are offset. A reportable observation, not a display artefact — 10.13 says what may and may not be concluded from it |
+| 2 | `/teleport 848 <native_surface_y + 3> 715` | lighting continuity across `x = 848` **at the surface**; underground light is uniformly 0, so a seam is not observable at the bar's own depth | a visible vertical light seam whose edge sits exactly at `x = 848`. If `native_surface_y` is `null` for both case-4 columns, skip this step and say so |
+| 3 | `/teleport 648 4 715` (`noclip`), then east to 663 | the micro-case-3 cells: 8 x 8 x 8 of water at `x` in `[644, 651]`, `y` in `[0, 7]`, `z` in `[712, 719]`, and 8 nodes east 8 x 8 x 8 of cobblestone stairs at `x` in `[660, 667]`, all facing the same way | stairs with random rotations — the probe writes `param2 = 1` uniformly over that box and no `param2` at all elsewhere |
+| 4 | `/teleport 631 4 715` (`noclip`) | the micro-case-2 cut/fill cell: an 8 x 8 x 8 air pocket at `y` in `[0, 7]` directly on an 8 x 8 x 8 stone block at `y` in `[-8, -1]`, at `x` in `[628, 635]`, `z` in `[712, 719]` | the pocket is filled, or the stone slab is missing — the transaction did not survive the blit |
+| 5 | anywhere else in `x` in `[608, 687]` or `x` in `[768, 927]` at `z` in `[688, 767]` | ordinary untouched v7 Grudgelands terrain | **any** artificial-looking block, flat plane or hole outside the six declared write boxes. `V-01` should have caught it |
+| 6 | anywhere in the three chunks | dig down a few nodes; look for unknown-node placeholders | a purple / `unknown node` block means a content-ID mismatch between the archive game and the installed game — record it and stop; the world is then not comparable |
+
+Total flying distance is under 500 nodes. **This pass confirms no digest, no
+timing, no operation count and no order comparison** — those come only from the
+headless captures and their gates, and a GUI session corroborates but does not
+replace them, in the sense of `tools/wp40/dungeon_probe/README.md:60-61`.
 
 ---
 

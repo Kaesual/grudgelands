@@ -34,10 +34,22 @@ USAGE
 # --- committed literals whose bytes are bound into the manifest digest --------
 #
 # Stage 1's non-marker garbage gate: the residual (raw log minus the extracted
-# marker lines) must match this ERE line for line, or the run fails. It is
-# deliberately an explicit enumeration of the engine's own known log-line
-# shapes and NOT a catch-all: a Lua traceback, a stray write to stdout or any
-# other unrecognised content is ungated content and fails the run.
+# marker lines) must match this ERE line for line, or the run fails. Contract
+# 12.5 permits an explicit enumeration, and this is one: it enumerates the
+# engine's own known log-line shapes, and residual content that matches none of
+# them -- a bare Lua traceback continuation line, a stray write to stdout, an
+# unrecognised banner -- is ungated content and fails the run.
+#
+# What it does NOT do, stated plainly so nobody reads more into it: the second
+# alternative admits EVERY line the engine level-prefixes, `ERROR[...]:`
+# included. That is exactly the shape in which the engine reports a Lua error
+# raised on an emerge thread, so a failing chunk callback does NOT fail this
+# regex. The detector for an errored chunk is stage 2's `emerge_done`
+# assertion: a chunk whose `emerge_done` is missing, or whose
+# `emerge_done.action` is anything other than GENERATED, aborts the run (A-05).
+# That assertion is therefore NOT redundant with this gate and must not be
+# dropped as if it were -- it is the only thing standing between a silently
+# errored chunk and a PASS.
 #
 #   ^[^A-Za-z]*$                     blank lines, dashed rules, ASCII banner art
 #   ^(ACTION|INFO|VERBOSE|WARNING|ERROR|DEPRECATED)\[[^]]*\]:   level-prefixed
@@ -730,8 +742,16 @@ incl_json="$(jq -sc '[.[] | select(.tag == "digest_incl")
 	| {pass, lane, box_name, region, kx, node_count, sha256}]
 	| sort_by([.pass, .lane, .box_name])' "$canonical")"
 
+# Contract 3.2 non-claim 11 ends "and the summary says it in those words", so
+# the words are a literal, defined once and passed to jq as data. It carries
+# apostrophes and must never be pasted inside a single-quoted jq program; both
+# the generator and the re-parse below receive the same shell variable, so the
+# emitted sentence and the sentence the gate demands cannot drift apart.
+containment_statement="A containment pass means 'no difference in the compared regions', not 'no difference in the chunk'."
+
 jq -nc \
 	--arg run_id "$run_id" --arg arm "$arm" --arg order "$order" \
+	--arg containment_statement "$containment_statement" \
 	--arg engine_regex "$expected_engine_regex" \
 	--arg pinned_engine_version "$pinned_engine_version" \
 	--arg log_shape_regex "$log_shape_regex" \
@@ -784,7 +804,19 @@ jq -nc \
 	complete_ok: true,
 	timings_are_golden: false,
 	timing_replicates: 1,
-	settling_is_probe_local: true
+	settling_is_probe_local: true,
+	# The honest cache disclaimer, copied verbatim from
+	# tools/wp40/capture_t0_baseline.sh:239-241. Contract 13.1 requires it in
+	# the run summary, so it is emitted here and not only in capture.json:
+	# README.md says every run summary carries it, and this is what makes that
+	# sentence true of the artefact rather than only of the prose.
+	cache: {process: "new_process_new_disposable_world",
+	  filesystem_page_cache: "unknown_uncontrolled",
+	  cold_cache_claim: false},
+	# Contract 3.2 non-claim 11 ends "and the summary says it in those words".
+	# Quoting the sentence inside the non-claim does not discharge it; the
+	# summary has to carry it. These are those words, verbatim.
+	containment_scope_statement: $containment_statement
 }' > "$summary_json"
 
 # Re-parse the emitted summary and require its complete schema/type shape,
@@ -793,6 +825,7 @@ jq -nc \
 # instead of hiding it.
 jq -e \
 	--arg engine_regex "$expected_engine_regex" \
+	--arg containment_statement "$containment_statement" \
 	--arg pinned_engine_version "$pinned_engine_version" \
 	--arg game_archive_base "$game_archive_base" \
 	--arg payload_digest "$payload_digest" \
@@ -811,7 +844,8 @@ jq -e \
 		"digests", "digests_excl", "digests_incl", "ops_matrix_ok",
 		"two_pass_identical", "quiescent", "emerge_actions_generated",
 		"abort_code", "chunks_generated", "complete_ok", "timings_are_golden",
-		"timing_replicates", "settling_is_probe_local"] | sort) and
+		"timing_replicates", "settling_is_probe_local", "cache",
+		"containment_scope_statement"] | sort) and
 	.schema == "wp40-t5-probe-summary-v1" and .status == "PASS" and
 	.json_validation == "complete-jq" and
 	(.run_id | test("^(A1|B)-(O1|O2)$")) and
@@ -849,7 +883,16 @@ jq -e \
 	.quiescent == true and .emerge_actions_generated == true and
 	.abort_code == null and .chunks_generated == 3 and .complete_ok == true and
 	.timings_are_golden == false and .timing_replicates == 1 and
-	.settling_is_probe_local == true
+	.settling_is_probe_local == true and
+	# Re-checked value for value: a disclaimer that can be silently emptied is
+	# not a disclaimer, and a summary that "carries" it as an empty object
+	# would still satisfy a mere type check.
+	(.cache | type == "object") and
+	(.cache | keys) == ["cold_cache_claim", "filesystem_page_cache", "process"] and
+	.cache.process == "new_process_new_disposable_world" and
+	.cache.filesystem_page_cache == "unknown_uncontrolled" and
+	.cache.cold_cache_claim == false and
+	.containment_scope_statement == $containment_statement
 ' "$summary_json" >/dev/null
 
 echo "WP40 t5-probe log gate: $run_id PASS ($record_count records, stages 1-3)"

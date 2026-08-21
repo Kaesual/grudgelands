@@ -67,6 +67,15 @@
     "filesystem_page_cache": "unknown_uncontrolled",
     "cold_cache_claim": false
   },
+  "containment_scope_statement": "A containment pass means 'no difference in the compared regions', not 'no difference in the chunk'.",
+  "first_diff_localization": {
+    "resolvable_from": "sha256 digests only",
+    "voxel_level": false,
+    "localized": "flat_index >= 1 -- pos is the minimum corner of the named write box whose digest_incl differs; a box, never a voxel",
+    "not_localized": "flat_index == -1 -- digest_incl implicates no named box, so pos is only the compared box minimum corner and was NEVER measured; always the case on the light lanes, which have no per-box digest_incl",
+    "value_a_value_b": "always -1 -- a node value is not resolvable from digest evidence",
+    "consequence": "contract 10.13 asks a follow-on run to narrow the SEAM sub-box using the first_diff of the failing run; a record marked flat_index -1 supplies no such coordinate"
+  },
   "timings_are_golden": false,
   "timing_replicates": 1,
   "settling_is_probe_local": true,

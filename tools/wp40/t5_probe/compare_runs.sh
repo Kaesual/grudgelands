@@ -21,10 +21,32 @@
 # KNOWN EVIDENCE LIMIT, recorded rather than papered over: `first_diff` is
 # specified with `flat_index`, `pos`, `value_a` and `value_b`, but a SHA-256
 # says only WHETHER two byte strings differ, never HOW, and this script sees
-# only digests. Localization is therefore as fine as `digest_incl` allows --
-# the named write box implicated, else the compared box origin -- and
-# `value_a` / `value_b` carry the sentinel -1, "not resolvable from digest
-# evidence". No node value is invented.
+# only digests. Digests cannot yield voxel-level facts and this script invents
+# none. Localization is therefore only as fine as `digest_incl` allows, and
+# there are exactly two cases, told apart IN BAND by `flat_index`:
+#
+#   flat_index >= 1   LOCALIZED to a named write box. Some box of
+#                     `boxes_in(region; kx)` has differing `digest_incl`
+#                     values, and `pos` / `flat_index` are that box's minimum
+#                     corner inside the compared box. Still a box, not a voxel.
+#   flat_index == -1  NOT LOCALIZED. The `digest_incl` evidence implicates no
+#                     named box: either no named box inside the compared region
+#                     differs, so the difference is somewhere in the residual,
+#                     or the lane is a light lane, for which no per-box
+#                     `digest_incl` exists at all and the box search is
+#                     therefore never run. `pos` is then the compared box
+#                     minimum corner -- well defined, but NOT a measured
+#                     coordinate, and `flat_index: -1` says exactly that.
+#
+# The marker matters because a plausible integer coordinate does not announce
+# itself as a placeholder the way `value_a` / `value_b == -1` does. Contract
+# 10.13 tells the reader to pick a narrowed SEAM sub-box "from the failing
+# run's first_diff"; a record carrying `flat_index: -1` is telling that reader
+# this run set supplies no such coordinate, and a follow-on run planned from
+# the box origin would be planned from a number nothing measured.
+#
+# `value_a` / `value_b` carry the sentinel -1 on EVERY record, localized or
+# not: "not resolvable from digest evidence". No node value is invented.
 set -euo pipefail
 
 usage() {
@@ -408,10 +430,17 @@ jq -nc \
 			then ([boxes_in($p.region; $p.kx)[]
 				| select(dincl($p.a; $p.lane; .; 1) != dincl($p.b; $p.lane; .; 1))] | first)
 			else null end) as $hit
-		| (if $hit == null then $box.min else named_box($hit).min end) as $pos
+		# `$hit == null` is the degraded case of the header comment: no named
+		# box is implicated, so `pos` falls back to the compared box origin,
+		# which is well defined but was never measured. It is marked in band
+		# with `flat_index: -1` rather than published as the plausible-looking
+		# `flat_index: 1` a box-origin coordinate would otherwise produce.
+		| ($hit == null) as $degraded
+		| (if $degraded then $box.min else named_box($hit).min end) as $pos
 		| {tag: "first_diff", a: $p.a, b: $p.b, comparison: $p.label,
 		   lane: $p.lane, region: $p.region,
-		   flat_index: flat_index($box; $pos), pos: $pos,
+		   flat_index: (if $degraded then -1 else flat_index($box; $pos) end),
+		   pos: $pos,
 		   value_a: -1, value_b: -1}] as $diffs
 
 	| ([$verdicts[] | . + {tag: "verdict"}] + $diffs)
@@ -508,7 +537,11 @@ jq -se \
 		then . else error("not every verdict V-01 to V-09 was reported") end)
 	| (if all(.[] | select(.tag == "first_diff");
 			(.comparison | type == "string") and (.lane | in_set(lanes)) and
-			(.region | in_set(["core", "seam"])) and (.flat_index | is_integer and . >= 1) and
+			(.region | in_set(["core", "seam"])) and
+			# -1 is the not-localized marker of the header comment, and is the
+			# ONLY value below 1 this gate admits: any other non-positive
+			# index is a malformed record, not a disclosure.
+			(.flat_index | is_integer and (. >= 1 or . == -1)) and
 			(.pos | vector) and (.value_a | is_integer) and (.value_b | is_integer))
 		then . else error("first_diff record shape is invalid") end)
 	# ---- first_diff cardinality, recomputed from the same summaries -------
