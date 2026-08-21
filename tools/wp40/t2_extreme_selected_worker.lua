@@ -24,9 +24,14 @@ for _, path in ipairs({repo, scratch, partition_scratch, output_path,
 assert(scratch:match("^/tmp/grudgelands%-wp40%-t2%-conformance%-worker%.[A-Za-z0-9]+$") and
 	partition_scratch:match("^/tmp/grudgelands%-wp40%-t2%-partition%.[A-Za-z0-9]+$"),
 	"unsafe selected partition scratch path")
+-- v3 outputs have their own names; a pre-v3 target is refused outright.
 local expected_output = repo .. ("/tools/wp40/fixtures/t2_extreme_e0/" ..
-	"selected-puc-slot%02d.tsv"):format(slot)
+	"selected-puc-v3-slot%02d.tsv"):format(slot)
 assert(output_path == expected_output, "selected partition output path changed")
+assert(not output_path:match("/selected%-puc%-slot%d%d%.tsv$") and
+	not output_path:match("/rescore%-puc%-%d%d%d%d%.tsv$") and
+	not output_path:match("/conformance%-puc%.tsv$"),
+	"selected output names pre-v3 evidence")
 assert(type(conformance_commit) == "string" and #conformance_commit == 40 and
 	conformance_commit:match("^[0-9a-f]+$") and type(conformance_tree) == "string" and
 	#conformance_tree == 40 and conformance_tree:match("^[0-9a-f]+$") and
@@ -99,7 +104,8 @@ local function plain_bytes(value, seen)
 	return table.concat(parts)
 end
 
-local conformance_authority_path = "tools/wp40/t2_extreme_conformance_authority.lua"
+local conformance_authority_path =
+	"tools/wp40/t2_extreme_conformance_v3_authority.lua"
 local authority_bytes = read_file(repo .. "/" .. conformance_authority_path)
 local authority = assert(loadstring(authority_bytes,
 	"@" .. conformance_authority_path))()({raw_sha256 = raw_sha256})
@@ -135,13 +141,21 @@ local conformance = assert(loadstring(snapshot.files[
 	extreme = extreme, rational_compare = extreme.rational_compare,
 	decimal_less = extreme.decimal_less})
 local gate = assert(loadstring(snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua"],
-	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua"))()
-assert(measured.authority_dag_sha256 == gate.authority_dag_sha256)
+	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"],
+	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"))()
+assert(output_path == repo .. "/" .. conformance.selected_result_path(slot),
+	"selected output path is not the canonical v3 target")
+-- (R3b) stage-S1 CURRENCY against the tree this worker is executing on, and
+-- (R3c) the Authority-DAG of the code that performs the partition gate.  The
+-- pre-v3 equality assertion against the pool's own DAG is deliberately gone.
+local s1 = conformance.s1_currency(measurement, files, gate)
+local execution_dag = conformance.execution_authority_dag(measurement, files)
+assert(execution_dag == measured.authority_dag_sha256,
+	"executing measurement Authority-DAG is inconsistent")
 local artifact = conformance.parse_artifact(snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv"], gate)
+	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"], gate)
 conformance.parse_manifest(snapshot.files[
-	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv"], gate)
+	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv"], gate)
 local slots = conformance.selected_and_required(artifact, gate, extreme.staging_seed)
 local winner = assert(slots[slot - 27])
 assert(winner.slot == slot and winner.candidate_index == gate.winners[slot - 27].candidate_index)
@@ -162,21 +176,24 @@ local environment = setmetatable({arg = test_arg, WP40_T2_SELECTED_REQUEST = req
 environment._G = environment
 setfenv(test_chunk, environment)
 local start_wall = os.time()
-print(("WP40 T2 C1 selected start slot=%d candidate=%04d decimal=%s"):format(
+print(("WP40 T2 C1 v3 selected start slot=%d candidate=%04d decimal=%s"):format(
 	slot, winner.candidate_index, winner.decimal))
 io.stdout:flush()
 test_chunk()
 local result = assert(request.result, "selected partition test returned no result")
 local report, compiled = assert(result.report), assert(result.compiled)
 local compiled_sha = hex(raw_sha256(plain_bytes(compiled)))
-local output = {schema = "grug_wp40_extreme_selected_partition_v1",
+local output = {schema = "grug_wp40_extreme_selected_partition_v3",
 	status = "passed", scope = "T2C_E0_SELECTED_FOUR_PARTITION_CONFORMANCE_ONLY",
-	measurement_commit = gate.measurement_commit, measurement_tree = gate.measurement_tree,
-	authority_dag_sha256 = gate.authority_dag_sha256,
+	pool_measurement_commit = gate.pool_measurement_commit,
+	pool_measurement_tree = gate.pool_measurement_tree,
+	pool_authority_dag_sha256 = gate.pool_authority_dag_sha256,
+	s1_authority_sha256 = s1.s1_authority_sha256,
+	s1_source_projection_sha256 = s1.s1_source_projection_sha256,
 	conformance_commit = conformance_commit, conformance_tree = conformance_tree,
-	conformance_dag_sha256 = conformance_dag, source_checksum = gate.source_checksum,
-	boundary_policy_checksum = gate.boundary_policy_checksum,
-	partition_sha256 = gate.partition_sha256, artifact_sha256 = gate.artifact_sha256,
+	conformance_dag_sha256 = conformance_dag,
+	execution_authority_dag_sha256 = execution_dag,
+	artifact_sha256 = gate.artifact_sha256,
 	manifest_sha256 = gate.manifest_sha256,
 	candidate_rows_sha256 = gate.candidate_rows_sha256,
 	interpreter_id = "puc_lua51", interpreter_path = interpreter_path,
@@ -209,7 +226,7 @@ end)
 if not published then os.remove(temporary); error(message, 0) end
 assert(measurement.verify(repo, measured, vocabulary))
 assert(authority.verify(repo, snapshot))
-print(("WP40 T2 C1 selected passed slot=%d candidate=%04d compiled_sha256=%s " ..
+print(("WP40 T2 C1 v3 selected passed slot=%d candidate=%04d compiled_sha256=%s " ..
 	"columns=%d g/o/r/m=%d/%d/%d/%d wall_seconds=%d"):format(slot,
 	winner.candidate_index, compiled_sha, report.columns, report.g, report.o,
 	report.r, report.m, os.difftime(os.time(), start_wall)))
