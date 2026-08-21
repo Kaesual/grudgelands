@@ -459,9 +459,19 @@ jq -se \
 
 	{ "A1-O1": $s_a1o1[0], "A1-O2": $s_a1o2[0],
 	  "B-O1": $s_bo1[0], "B-O2": $s_bo2[0] } as $R
+	# Guarded exactly like the generator copy above, and for a reason. Without
+	# the length check a summary that is MISSING a digest yields null on both
+	# sides; null != null is false, so the pair would read "equal", no
+	# first_diff would be required, and this gate would pass on evidence it
+	# never actually compared. An independent re-check that is weaker than the
+	# generator it re-checks is not a re-check. In --gate-only mode the four
+	# summaries are otherwise only checked for schema and status, so this is
+	# the only place that catches it.
 	| def dig($id; $region; $kx; $lane):
 		[$R[$id].digests[] | select(.region == $region and .kx == $kx
-			and .lane == $lane and .pass == 1)] | .[0].sha256;
+			and .lane == $lane and .pass == 1)]
+		| if length == 1 then .[0].sha256
+			else error("comparison gate: run summary is missing a compared digest") end;
 
 	(if length > 0 then . else error("no comparison records found") end)
 	| (if all(.[]; type == "object") then . else error("comparison record is not an object") end)
