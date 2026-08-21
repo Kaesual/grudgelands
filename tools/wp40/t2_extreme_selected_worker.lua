@@ -143,15 +143,21 @@ local conformance = assert(loadstring(snapshot.files[
 local gate = assert(loadstring(snapshot.files[
 	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"],
 	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"))()
-assert(output_path == repo .. "/" .. conformance.selected_result_path(slot),
-	"selected output path is not the canonical v3 target")
+assert(conformance.assert_v3_result_path(output_path, repo,
+	conformance.selected_result_path(slot), "v3 selected output"))
 -- (R3b) stage-S1 CURRENCY against the tree this worker is executing on, and
 -- (R3c) the Authority-DAG of the code that performs the partition gate.  The
 -- pre-v3 equality assertion against the pool's own DAG is deliberately gone.
+--
+-- (R3c) is recorded in a gate-independent position and established against THIS
+-- tree, never against the pool.  It is not re-compared here: it comes from the
+-- same capture as `measured`, so a local test would only restate
+-- bind_vocabulary.  t2_extreme_conformance_verify.lua recomputes it from the
+-- conformance tree per row, t2_extreme_conformance_finalize.lua requires all
+-- twenty-four rows to agree, and measurement.verify below proves the captured
+-- bytes did not move during the run.
 local s1 = conformance.s1_currency(measurement, files, gate)
 local execution_dag = conformance.execution_authority_dag(measurement, files)
-assert(execution_dag == measured.authority_dag_sha256,
-	"executing measurement Authority-DAG is inconsistent")
 local artifact = conformance.parse_artifact(snapshot.files[
 	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"], gate)
 conformance.parse_manifest(snapshot.files[

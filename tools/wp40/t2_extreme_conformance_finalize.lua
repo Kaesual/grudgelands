@@ -106,9 +106,10 @@ local gate = assert(loadstring(v3_snapshot.files[
 	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"))()
 
 -- Every result row carries the three provenance claims separately.  (a) and
--- (b) must equal the gate; (c) is not in the gate at all and must merely be
--- identical across all twenty-four rows -- it describes the conformance tree,
--- not the pool.
+-- (b) must equal the gate.  (c) is deliberately absent from the gate -- it
+-- describes the conformance tree, not the pool -- so it is checked here for
+-- agreement across all twenty-four rows, after t2_extreme_conformance_verify.lua
+-- has already recomputed it live against the executing tree for each row.
 local function accept_provenance(row, label)
 	assert(row.pool_measurement_commit == gate.pool_measurement_commit and
 		row.pool_measurement_tree == gate.pool_measurement_tree and

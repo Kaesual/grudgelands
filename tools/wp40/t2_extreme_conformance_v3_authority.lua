@@ -15,6 +15,10 @@
 --     workers, verify/preflight/finalize, the KAT and the runner);
 --   * the v3 gate, the v3 merged artifact, the v3 manifest and the eight v3
 --     shards -- the retained measurement inputs the chain reads;
+--   * the four pre-v3 fixtures the KAT reads as NEGATIVE inputs
+--     (conformance_gate.lua, candidates-luajit.tsv, manifest-luajit.tsv and
+--     shard-luajit-0000-0511.tsv).  It presents each of them to a v3 reader and
+--     requires rejection, so their bytes can change what the KAT proves;
 --   * t2_partition_test.lua and t2_partition_oracle.lua, which the selected
 --     worker executes, plus the WP40 schema modules and the WP43 material
 --     surface those two load (materials_test.lua -> stairs/grug_materials/
@@ -31,9 +35,11 @@
 --     tools, which never execute during a conformance run but are inputs to
 --     that digest.
 --
--- Not in the roster, on purpose: the frozen pre-v3 gate, artifact, manifest and
--- shards, and t2_extreme_conformance_authority.lua.  No v3 code path reads any
--- of them, so their bytes cannot change a v3 result.
+-- Not in the roster, on purpose: t2_extreme_conformance_authority.lua and the
+-- seven pre-v3 shards that the KAT does not read.  No v3 code path reads any of
+-- them, so their bytes cannot change a v3 result.  The pre-v3 files that ARE
+-- listed are listed as negative KAT inputs only; nothing here reads one as
+-- evidence, and there is no v3 writer for any of them.
 return function(dependencies)
 	assert(type(dependencies) == "table")
 	local raw_sha256 = assert(dependencies.raw_sha256)
@@ -65,9 +71,13 @@ return function(dependencies)
 		"mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua",
 		"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
 		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv",
+		"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv",
+		"tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua",
 		"tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua",
 		"tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua",
 		"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv",
+		"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv",
+		"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv",
 		"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-0000-0511.tsv",
 		"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-0512-1023.tsv",
 		"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-1024-1535.tsv",

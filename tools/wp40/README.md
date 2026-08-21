@@ -250,24 +250,29 @@ tools/wp40/run_t2_source_fast.sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 "$PWD/tools/bin/lua51" tools/wp40/t2_extreme_gate_check.lua "$PWD" "$(mktemp -d -p /tmp grudgelands-wp40-t2-extreme.XXXXXXXX)"
 
-# NOT removed, because they are content-pinned by
-# t2_extreme_conformance_authority.lua and must stay:
+# NOT removed. The pre-v3 pool files are content-pinned by
+# t2_extreme_conformance_authority.lua (the frozen pre-v3 C1 graph), and four
+# of them are additionally rostered by t2_extreme_conformance_v3_authority.lua
+# because the v3 KAT reads them as negative inputs:
 #   * the frozen pre-v3 pool - shard-luajit-0000-0511.tsv and its seven
 #     peers, candidates-luajit.tsv, manifest-luajit.tsv
 #   * conformance_gate.lua, the recorded conclusion of the pre-v3 C1
 #     conformance run
-# Note that shard-luajit-*.tsv now matches sixteen files: the eight frozen
-# pre-v3 shards AND the eight live v3 shards. Never glob on that pattern.
-# The rescore-puc-*.tsv are resume state rather than evidence - each names
-# the measurement_commit it belongs to and nothing pins them - so they are
-# cleared and recomputed.
+#   * the twenty pre-v3 rescore-puc-%04d.tsv. Nothing pins them and no code
+#     reads them any more; whether they are deleted is an open question, not
+#     this recipe's decision. See "The two result generations" below.
+#
+# TWO GLOBS NOW MATCH BOTH GENERATIONS AND MUST NEVER BE USED:
+#   * shard-luajit-*.tsv   - eight pre-v3 AND eight v3 shards
+#   * rescore-puc-*.tsv    - twenty pre-v3 AND twenty v3 rescore rows
+# Always spell the generation out: shard-luajit-v3-*.tsv, rescore-puc-v3-*.tsv.
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
+  tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-v3-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv
 $EDITOR tools/wp40/fixtures/t2_extreme_e0/full_scan_gate.lua \
   tools/wp40/fixtures/t2_extreme_e0/max_u64_r16_r17.lua
 tools/wp40/run_t2_extreme.sh
@@ -284,17 +289,13 @@ git add tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
   tools/wp40/fixtures/t2_extreme_e0/manifest-luajit-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme pool"
 
-# BLOCKED until the C1 chain is migrated to v3. run_t2_extreme_conformance.sh
-# writes conformance_gate.lua in place, and that file is the content-pinned
-# conclusion of the pre-v3 run, asserted by selected_stage2_blocked.lua as
-# measurement_commit 53be77e / artifact 1096139a. Running it now overwrites
-# pinned evidence and leaves WP40_FINAL=1 run_t2_partition.sh --historical
-# permanently red. The migration must give the v3 gate a distinct name, the
-# same separation the shards, artifact and manifest already have.
+# The launcher writes v3 names only and refuses any other target, so it can no
+# longer overwrite pre-v3 evidence. It reads conformance_gate_v3.lua and never
+# writes any gate.
 tools/wp40/run_t2_extreme_conformance.sh
-git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/selected-puc-slot*.tsv \
-  tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv
+git add tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/selected-puc-v3-slot*.tsv \
+  tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv
 git commit -m "test(wp40): retain regenerated extreme conformance"
 ```
 
@@ -323,12 +324,29 @@ for them, so they cannot be carried forward into v3 and must not be re-headed
 to look current. They stay exactly as they are, as historical evidence for the
 pins they were measured under. The v3 pool is a new measurement.
 
-The twenty `rescore-puc-*.tsv` are deliberately not in that list. They are
-resume state, not evidence: each names in its own header the
-`measurement_commit` it belongs to, nothing pins them, and the historical
-reader does not consult them. They exist so an interrupted conformance run
-does not repeat 249 s of PUC row rescoring. `conformance_gate.lua` is the
-recorded conclusion; the rescores are the working papers behind it.
+#### The two result generations
+
+The twenty `rescore-puc-%04d.tsv` are pre-v3 files, and since the C1 chain
+moved to v3 they are inert. The facts, all checkable in the tree:
+
+- **No code reads them.** The v3 chain writes and verifies
+  `rescore-puc-v3-%04d.tsv`; every path guard in it rejects the pre-v3 name.
+- **Nothing pins them.** No rescore file of either generation appears in
+  `t2_extreme_conformance_authority.lua`'s roster or in
+  `t2_extreme_conformance_v3_authority.lua`'s, and no fixture records their
+  digests.
+- **They can never be resume state again.** Each names in its own header the
+  pre-v3 `measurement_commit` `53be77e`, which the v3 verifier rejects, so a v3
+  run would recompute regardless of whether they are present.
+
+Whether they should be deleted, or kept as historical working papers behind
+`conformance_gate.lua`, is **an open question for the next package** — this
+file does not decide it. Until it is decided they stay, and the glob warning
+above applies. Note the tension a reader will hit: the paragraph history of
+this section called them disposable resume state, while the C1 v3 handoff
+ruling called them must-retain. Both were written when they were still the
+current chain's resume state; neither survives contact with the migration, and
+that is exactly why the question is open rather than answered here.
 
 `grug_wp40_extreme_candidate_shard_v3`, `…_measurement_artifact_v3` and
 `…_shard_manifest_v3` replace `source_checksum`, `boundary_policy_checksum` and
@@ -362,13 +380,16 @@ pre-v3 file, a truncated or corrupted shard — aborts the launcher loudly
 instead of being skipped.
 
 There is a v3 writer only. The retained v2 artifacts stay readable through
-`extreme.parse_historical_shard_blob`, an explicitly named read-only reader used
-by the C1 conformance chain so that the historical measurement stays checkable
-*as historical*. It never validates a v2 record against a current pin, and no
-code path can present a v2 record as current. When the pool is re-measured, the
-whole C1 chain (`t2_extreme_conformance.lua` and the rescore/selected workers)
-must be moved to v3 against the artifacts that run actually produces; that is
-deliberately not done in advance, because it cannot be tested until they exist.
+`extreme.parse_historical_shard_blob`, an explicitly named read-only reader. It
+never validates a v2 record against a current pin, and no code path can present
+a v2 record as current.
+
+The C1 conformance chain has since been migrated: `t2_extreme_conformance.lua`
+and the rescore/selected workers read the v3 pool through
+`extreme.parse_shard_blob`, and `parse_historical_shard_blob` is no longer
+reachable from the chain at all. The only remaining C1 use of the pre-v3
+artifacts is negative — `t2_extreme_conformance_test.lua` presents each of them
+to a v3 reader and requires rejection. See "The v3 conformance generation".
 
 ### Locked surfaces
 

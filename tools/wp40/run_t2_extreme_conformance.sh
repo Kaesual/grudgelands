@@ -22,12 +22,16 @@ lua="$repo/tools/bin/lua51"
 luac="$repo/tools/bin/luac51"
 retained="$script_dir/fixtures/t2_extreme_e0"
 scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance.XXXXXXXX)"
+kat_scratch=""
 cleanup() {
 	if [[ -n "${stale_final_backup:-}" && ! -e "${final_output:-}" ]]; then
 		cp -- "$stale_final_backup" "$final_output"
 	fi
 	if [[ "$scratch" == /tmp/grudgelands-wp40-t2-conformance.* ]]; then
 		rm -rf -- "$scratch"
+	fi
+	if [[ -n "$kat_scratch" && "$kat_scratch" == /tmp/grudgelands-wp40-t2-conformance.* ]]; then
+		rm -rf -- "$kat_scratch"
 	fi
 }
 trap cleanup EXIT
@@ -80,13 +84,20 @@ bash -n "$export_script/run_t2_extreme_conformance.sh"
 # git for the historical pool-provenance check) and costs a few seconds.
 kat_scratch="$(mktemp -d -p /tmp grudgelands-wp40-t2-conformance.XXXXXXXX)"
 "$lua" "$export_script/t2_extreme_conformance_test.lua" "$repo" "$kat_scratch"
-rm -rf -- "$kat_scratch"
 
-# Single choke point for every path this launcher may write.  A pre-v3 name is
-# refused here, not deep inside a worker.
+# Single choke point for every path this launcher may write.  It checks the
+# whole path, not just the basename: the directory must be one of the two
+# retained directories (the working tree's and the immutable export's), and the
+# file name must be a v3 name.  A basename-only guard would accept
+# /etc/rescore-puc-v3-0000.tsv; this one does not.
 v3_target() {
-	local path="$1" name
+	local path="$1" directory name
+	directory="${path%/*}"
 	name="${path##*/}"
+	if [[ "$directory" != "$retained" && "$directory" != "$export_retained" ]]; then
+		echo "WP40 T2 C1 v3 refuses a target outside the retained directories: $path" >&2
+		return 1
+	fi
 	case "$name" in
 		rescore-puc-v3-[0-9][0-9][0-9][0-9].tsv) ;;
 		selected-puc-v3-slot[0-9][0-9].tsv) ;;

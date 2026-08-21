@@ -17,11 +17,15 @@
 --       correction instead of being invalidated by it.
 --   (c) EXECUTING CODE -- execution_authority_dag_sha256.  The measurement
 --       Authority-DAG of the conformance tree, i.e. of the modules that
---       actually re-derived the scalars.  It is RECORDED, never compared to the
---       gate: geometry/partition.lua, source/catalog.lua and
+--       actually re-derived the scalars.  It is recorded in a GATE-INDEPENDENT
+--       position, and it is established against the EXECUTING TREE, never
+--       against the pool: geometry/partition.lua, source/catalog.lua and
 --       validation/t2_source.lua all differ between the pool commit and HEAD,
 --       so asserting equality with (a) -- which the pre-v3 chain did -- would
---       now be a false claim rather than a check.
+--       now be a false claim rather than a check.  The field is nonetheless
+--       checked: t2_extreme_conformance_verify.lua recomputes it from the
+--       conformance tree per row, and t2_extreme_conformance_finalize.lua
+--       requires all twenty-four rows to agree.
 return function(dependencies)
 	assert(type(dependencies) == "table")
 	local raw_sha256 = assert(dependencies.raw_sha256)
@@ -181,10 +185,24 @@ return function(dependencies)
 	local function final_result_path()
 		return v3_result_path("conformance-puc-v3.tsv", "v3 final output")
 	end
-	local function assert_v3_result_path(path, expected_relative, context)
-		if type(path) ~= "string" or is_historical_result_path(path) or
-				path:sub(-#expected_relative) ~= expected_relative or
-				path:sub(1, 1) ~= "/" then
+	-- Exact absolute identity, not a suffix test.  A loose suffix match accepts
+	-- /etc/rescore-puc-v3-0000.tsv and /xrescore-puc-v3-0000.tsv; requiring the
+	-- retained directory under a named repository root accepts neither.
+	local function assert_v3_result_path(path, repo, relative, context)
+		if type(repo) ~= "string" or repo:sub(1, 1) ~= "/" or
+				repo:sub(-1) == "/" or repo:find("/../", 1, true) or
+				repo:find("/./", 1, true) then
+			fail(context .. " repository root is not a plain absolute path")
+		end
+		if type(relative) ~= "string" or
+				relative:sub(1, #retained_dir) ~= retained_dir or
+				relative:find("/", #retained_dir + 1, true) then
+			fail(context .. " is outside the retained directory")
+		end
+		if is_historical_result_path(relative) then
+			fail(context .. " names pre-v3 evidence")
+		end
+		if type(path) ~= "string" or path ~= repo .. "/" .. relative then
 			fail(context .. " path changed")
 		end
 		return path
@@ -742,9 +760,11 @@ return function(dependencies)
 
 	-- (R3c) The measurement Authority-DAG of the tree that is executing this
 	-- conformance -- the modules that actually re-derive the scalars.  It is
-	-- RECORDED in every result row and never compared to the gate: it
-	-- legitimately differs from the pool's own Authority-DAG, because the
-	-- Section 11 correction landed after the pool was measured.
+	-- recorded in every result row in a GATE-INDEPENDENT position, because it
+	-- legitimately differs from the pool's own Authority-DAG: the Section 11
+	-- correction landed after the pool was measured.  It is established against
+	-- the executing tree, never against the pool -- the verifier recomputes it
+	-- live per row and the finalizer requires cross-row agreement.
 	local function execution_authority_dag(measurement_authority, files)
 		if type(measurement_authority) ~= "table" or
 				type(measurement_authority.bind_vocabulary) ~= "function" or

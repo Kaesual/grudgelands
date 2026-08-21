@@ -88,6 +88,24 @@ local gate = assert(loadfile(retained .. "conformance_gate_v3.lua"))()
 -- two generations cannot be substituted for one another.
 local historical_gate = assert(loadfile(retained .. "conformance_gate.lua"))()
 
+-- The pre-v3 fixtures this KAT reads are NEGATIVE inputs, so their bytes can
+-- change what it proves.  They must therefore sit inside the v3 DAG roster, and
+-- so must this file -- assert that instead of trusting a comment.
+local v3_roster = assert(loadfile(repo ..
+	"/tools/wp40/t2_extreme_conformance_v3_authority.lua"))()({
+	raw_sha256 = raw_sha256}).paths
+local rostered = {}
+for index = 1, #v3_roster do rostered[v3_roster[index]] = true end
+for _, entry in ipairs({
+	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate.lua",
+	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit.tsv",
+	"tools/wp40/fixtures/t2_extreme_e0/manifest-luajit.tsv",
+	"tools/wp40/fixtures/t2_extreme_e0/shard-luajit-0000-0511.tsv",
+	"tools/wp40/t2_extreme_conformance_test.lua",
+}) do
+	assert(rostered[entry], "input is outside the v3 DAG roster: " .. entry)
+end
+
 -- ---------------------------------------------------------------- paths ----
 -- Two generations, one directory: every v3 name is produced by the module and
 -- every pre-v3 name is recognised as pre-v3 evidence, in both directions.
@@ -117,18 +135,47 @@ for _, current in ipairs({"rescore-puc-v3-0000.tsv",
 	assert(not conformance.is_historical_result_path(current),
 		"v3 name was misread as pre-v3 evidence: " .. current)
 end
+local fake_root = "/any/root"
 assert(conformance.assert_v3_result_path(
-	"/any/root/tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-0000.tsv",
-	"rescore-puc-v3-0000.tsv", "v3 rescore output"))
+	fake_root .. "/tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-0000.tsv",
+	fake_root, conformance.rescore_result_path(0), "v3 rescore output"))
+assert(conformance.assert_v3_result_path(
+	fake_root .. "/tools/wp40/fixtures/t2_extreme_e0/conformance-puc-v3.tsv",
+	fake_root, conformance.final_result_path(), "v3 final output"))
+-- The guard checks the whole absolute path, so a right-hand suffix match is not
+-- enough: a foreign directory, a name glued onto a directory component, a
+-- lookalike directory, a bare relative path and a different root are all out.
 for _, rejected in ipairs({
-	"/any/root/tools/wp40/fixtures/t2_extreme_e0/rescore-puc-0000.tsv",
-	"/any/root/tools/wp40/fixtures/t2_extreme_e0/conformance-puc.tsv",
+	"/etc/rescore-puc-v3-0000.tsv",
+	fake_root .. "/xrescore-puc-v3-0000.tsv",
+	fake_root .. "/tools/wp40/fixtures/t2_extreme_e0x/rescore-puc-v3-0000.tsv",
 	"tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-0000.tsv",
+	"/other/root/tools/wp40/fixtures/t2_extreme_e0/rescore-puc-v3-0000.tsv",
 }) do
 	expect_error("v3 rescore output path changed", function()
-		conformance.assert_v3_result_path(rejected, "rescore-puc-v3-0000.tsv",
-			"v3 rescore output")
+		conformance.assert_v3_result_path(rejected, fake_root,
+			conformance.rescore_result_path(0), "v3 rescore output")
 	end)
+end
+expect_error("v3 rescore output names pre-v3 evidence", function()
+	conformance.assert_v3_result_path(
+		fake_root .. "/tools/wp40/fixtures/t2_extreme_e0/rescore-puc-0000.tsv",
+		fake_root, "tools/wp40/fixtures/t2_extreme_e0/rescore-puc-0000.tsv",
+		"v3 rescore output")
+end)
+for _, outside in ipairs({"tmp/rescore-puc-v3-0000.tsv",
+		"tools/wp40/fixtures/t2_extreme_e0/nested/rescore-puc-v3-0000.tsv"}) do
+	expect_error("v3 rescore output is outside the retained directory", function()
+		conformance.assert_v3_result_path(fake_root .. "/" .. outside, fake_root,
+			outside, "v3 rescore output")
+	end)
+end
+for _, bad_root in ipairs({"relative/root", "/any/root/", "/any/../root"}) do
+	expect_error("v3 rescore output repository root is not a plain absolute path",
+		function()
+			conformance.assert_v3_result_path(bad_root .. "/x", bad_root,
+				conformance.rescore_result_path(0), "v3 rescore output")
+		end)
 end
 for _, range in ipairs({{1, 512}, {0, 512}, {512, 1022}, {3584, 4096}}) do
 	expect_error("v3 shard range is not canonical", function()

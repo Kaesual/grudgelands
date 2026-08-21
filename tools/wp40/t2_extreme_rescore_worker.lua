@@ -132,19 +132,24 @@ local conformance = assert(loadstring(conformance_snapshot.files[
 local gate = assert(loadstring(conformance_snapshot.files[
 	"tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"],
 	"@tools/wp40/fixtures/t2_extreme_e0/conformance_gate_v3.lua"))()
-assert(output_path == repo .. "/" .. conformance.rescore_result_path(candidate_index),
-	"rescore output path is not the canonical v3 target")
+assert(conformance.assert_v3_result_path(output_path, repo,
+	conformance.rescore_result_path(candidate_index), "v3 rescore output"))
 -- (R3b) stage-S1 CURRENCY against the tree this worker is executing on.  The
 -- pre-v3 chain asserted here that the LIVE measurement Authority-DAG equals the
 -- gate; that is impossible now and must not be reintroduced, because the
 -- Section 11 correction landed after the pool was measured.
 local s1 = conformance.s1_currency(measurement_authority, files, gate)
 -- (R3c) the Authority-DAG of the code that actually performs this rescore.
--- Recorded, never compared to the pool's own DAG.
+-- Recorded in a gate-independent position and established against THIS tree,
+-- never against the pool.  It is not re-compared here on purpose: it is derived
+-- from the same capture as measurement_snapshot, so a local equality test would
+-- only restate bind_vocabulary's own output.  The real checks are downstream --
+-- t2_extreme_conformance_verify.lua recomputes this field from the conformance
+-- tree for every published row and t2_extreme_conformance_finalize.lua requires
+-- all twenty-four rows to agree -- and measurement_authority.verify below is
+-- what proves the captured bytes did not move during the run.
 local execution_dag = conformance.execution_authority_dag(measurement_authority,
 	files)
-assert(execution_dag == measurement_snapshot.authority_dag_sha256,
-	"executing measurement Authority-DAG is inconsistent")
 local artifact = conformance.parse_artifact(conformance_snapshot.files[
 	"tools/wp40/fixtures/t2_extreme_e0/candidates-luajit-v3.tsv"], gate)
 conformance.parse_manifest(conformance_snapshot.files[
