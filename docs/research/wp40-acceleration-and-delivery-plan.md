@@ -392,6 +392,8 @@ used only focused verification. This gate has no remaining work.
 Lane B is the first code-bearing C/D task. The doc-only PUC inventory and the
 tools-only T5-0 specification have disjoint scopes and may proceed beside it;
 no C/D implementation lane may make the C1 authority digest a moving target.
+The T5-0 half has since done so and is finished as a tools-only observation
+(Section 8); it no longer occupies this lane.
 
 ### Lane B — finish the T2 topology handoff
 
@@ -533,6 +535,54 @@ than learning it after T4. Its observations may inform later T5 tests, but its
 code is discarded; it never becomes a parallel production path or production
 adapter foundation.
 
+**Outcome, recorded 2026-08-22:** the probe has run. T5-0 is complete **as a
+tools-only observation only**. It is not production T5, and the rule at the top
+of this section is unchanged: full T5 still sits behind T3 and T4, and nothing
+below moves it forward.
+
+**Accepted engine cost:** about **12 seconds** for the four engine invocations
+that generate twelve mapchunks. The four `complete` records of the accepted
+capture sum to **11.82 s** of in-server wall time (3.018 + 2.931 + 2.932 +
+2.935), against the package's own projection of **12.07 s**; both figures are
+read from `tools/wp40/t5_probe/README.md` and from the evidence under
+`tools/wp40/evidence/t5-probe-9ac056ffa4433c80364cc6535dfe6b4ff6ce8b30693248fcad4f834b430699c2/`.
+Every one of those numbers is a single sample: the package writes
+`timing_replicates: 1` and `timings_are_golden: false`, and it computes no
+variance, median or spread. The 180 s outer timeout is a ceiling and must never
+be quoted as the cost.
+
+**What the experiment found, both halves:** the paired control is itself
+order-dependent over SEAM — verdict `V-06` records native engine order
+dependence — so there is **no stable `V-05` baseline**. The content outcome is
+`no_stable_baseline`, and no SEAM difference is attributable to the payload.
+In the same capture, CORE containment and the transaction bounds stayed green:
+`V-01`, `V-02`, `V-03`, `V-04` and `V-07` all pass. A summary that reported
+only the green half would be the dishonest one.
+
+**Delivered size, against the band above:** that band underestimated the
+package. At the implementation commit `a82ab17` the eleven shipped files under
+`tools/wp40/t5_probe/` total **6,736 lines**, or **6,144** excluding the
+592-line README, plus the committed evidence tree. That commit is what this
+paragraph certifies, because the band was drawn against the *implementation*
+package. Re-running `find tools/wp40/t5_probe -type f | xargs wc -l` on the
+current tree yields **6,886** instead: the 2026-08-22 closeout hardened the
+gates after `a82ab17`, adding lines to `compare_runs.sh`, `selftest.sh`,
+`verify_log.sh` and the README, and that hardening is not part of the package
+being measured. A reader who re-runs the command and finds 6,886 reconciles it
+here rather than finding the certified number wrong. The overrun sits in
+harness, schema prose and implementation surface, not in machine time — the
+runtime was excellent, as the twelve-second figure above shows. **This size is
+explicitly not a template.** A future early probe should preserve the small
+runtime and cut harness, schema prose and implementation surface far more
+aggressively.
+
+**Next:** no additional T5-0 run is scheduled. The recorded risks — the package
+contract's `R1`, `R2` and `R3`, plus the order dependence recorded above — are
+consumed by full T5, after T3 and T4. The probe's full non-claim register is
+not restated here; it lives in section 3.2 of
+[wp40-t5-0-engine-probe-contract.md](wp40-t5-0-engine-probe-contract.md), which
+owns it.
+
 ## 9. Remaining T0--T9 map
 
 The size labels are relative planning bands, not calendar promises. They assume
@@ -558,7 +608,7 @@ multi-hour evidence run.
 | T2 — compiled geometry | Turns the authored 38-zone world into one immutable deterministic payload: boundaries, terrain fields, routes, water, anchors, masks, selectors, fixtures, and traces. | boundary topology frozen; C1-v3 handoff, most non-topology buckets, and production compiler unstarted | **extra-large**; still the largest single task; derived geometry volume and final integration are the remaining risk |
 | T3 — public geography API | Gives gameplay code stable fast answers such as zone, level, territory, PvP state, water/mount class, nearest feature, housing eligibility, and protection. | not started; scaffolding/oracles may start while T2 finishes, but authoritative answers wait for T2 | **medium**; API semantics and hot-path performance |
 | T4 — pure content planner | Decides, without touching the map, the exact final operation for each relevant voxel and resolves conflicts between terrain, water, routes, resources, and preservation rules. | not started | **large**; resolver completeness and typed ownership, but readily property-tested |
-| T5 — engine adapter | Applies the T4 plan to real v7 output in one bounded VoxelManip transaction with correct light and liquids. | not started; the tools-only T5-0 probe direction is accepted, specification pending | **large**; real-engine behavior, memory, chunk order, and no-op cost |
+| T5 — engine adapter | Applies the T4 plan to real v7 output in one bounded VoxelManip transaction with correct light and liquids. | not started; the tools-only T5-0 probe specification is no longer pending and the probe has run as a tools-only observation (Section 8), but T5 itself is untouched | **large**; real-engine behavior, memory, chunk order, and no-op cost |
 | T6 — surface catalog | Maps logical biomes to actual top/filler nodes, decorations, trees, and surface-water settlement without adding a second selector. | not started | **medium to large**; catalog breadth and visual/runtime iteration |
 | T7 — resources | Places universal and cultural resources only in valid final hosts and proves supply/access expectations. | not started | **medium to large**; density tuning and deep typed replacement |
 | T8 — migration | Moves every existing consumer to the new APIs and removes old map/height/ocean/dungeon authority only after replacements are green. | not started | **large to extra-large**; broad repository coupling and regressions |
@@ -685,6 +735,9 @@ The Fable architecture review prepared two additional directional decisions:
 2. **Early engine work — RUN T5-0 WITH CONDITIONS.** Proceed with the
    production-like, tools-only, disposable probe specified in Section 8. It
    does not move full T5 ahead of T3/T4 and cannot be reused as production code.
+   **Disposition: executed** — the probe ran under its package contract and its
+   four-capture evidence is accepted and closed, with CORE containment and the
+   transaction bounds green but no stable `V-05` baseline (Section 8).
 
 ## 14. Adopted speed-up measures
 
@@ -741,7 +794,8 @@ This draft is ready to become an implementation plan when:
 - the PUC inventory/branch matrix is reviewed and the final PUC ruling is
   recorded;
 - the T5-0 substrate, tools-only payload, four cases, measurements, non-claims,
-  and disposal rule are frozen in its package contract;
+  and disposal rule are frozen in its package contract — **satisfied**; the
+  probe then ran under it and its outcome is recorded in Section 8;
 - each immediate lane has non-overlapping file ownership and frozen interfaces;
 - sample and wall-time budgets are attached to every non-trivial planned test
   command; trivially short static gates need no individual budget;
@@ -758,5 +812,7 @@ This draft is ready to become an implementation plan when:
 Only then should implementation that depends on this acceleration draft begin.
 The already-authorized C1-v3 conformance/topology handoff may proceed under the
 existing T2 plan without waiting for this draft to become authoritative. The
-doc-only PUC inventory and T5-0 specification may likewise proceed as planning
-packages; the T5-0 probe itself waits for its accepted package contract.
+doc-only PUC inventory may likewise proceed as a planning package. The T5-0
+specification no longer waits: it is frozen in its package contract and the
+probe has already run under it as a tools-only observation (Section 8). Full
+T5 still waits for T3 and T4.

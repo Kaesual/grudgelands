@@ -1,0 +1,88 @@
+{
+  "schema": "wp40_t5_probe_capture_manifest_v1",
+  "status": "raw_capture_complete",
+  "digests": {
+    "manifest": "9ac056ffa4433c80364cc6535dfe6b4ff6ce8b30693248fcad4f834b430699c2",
+    "probe_payload": "5cbbbfb3a4249c6b49671289a1d6e18f872fb32c8a86fe5a6cce3fc64ecae1f3",
+    "game_archive_commit_sha1": "7f5fe9a2107c865c0517757e725fd903b09e2d0e",
+    "engine_version_regex": "^5[.]16[.][0-9]+$",
+    "log_shape_regex": "^[^A-Za-z]*$|^(ACTION|INFO|VERBOSE|WARNING|ERROR|DEPRECATED)\\[[^]]*\\]:|^\\[MOD\\]|^[[:space:]]*Separator[[:space:]]*$|^\\|_\\|",
+    "log_shape_regex_sha256": "46af2112a0f4682b0404598c26e5d31ce2ea695ff4d4b596e727df081d6238ee",
+    "coordinate_set": "40829b175ffdceeed39628e57c7c89b89f83c8b885dfbdff0c97dec82579ffda",
+    "case_write_extent": "a8fac5595c482dc4c0beee6032c7d197b682651e81a92a24a4f1ad1c12dfabc0"
+  },
+  "matrix": {
+    "engine_invocations": 4,
+    "mapchunks_per_run": 3,
+    "mapchunks_total": 12,
+    "runs": [
+      {
+        "run_id": "A1-O1",
+        "arm": "A1",
+        "order": "O1",
+        "port": 32001,
+        "config_content_sha256": "3af9f65c0ecbf16c04317b98efb58a41023c9a76debd711cbbb8d71300bed130",
+        "directory": "run-A1-O1"
+      },
+      {
+        "run_id": "A1-O2",
+        "arm": "A1",
+        "order": "O2",
+        "port": 32002,
+        "config_content_sha256": "ff15de803c181693c2961753a4811a7b0131ec80dc78436b5690147eb16f9fb1",
+        "directory": "run-A1-O2"
+      },
+      {
+        "run_id": "B-O1",
+        "arm": "B",
+        "order": "O1",
+        "port": 32003,
+        "config_content_sha256": "39bf9dd3b32f0536405b700b2c485ba873ad6dc0e0c08880d6c17fbcf0a83c43",
+        "directory": "run-B-O1"
+      },
+      {
+        "run_id": "B-O2",
+        "arm": "B",
+        "order": "O2",
+        "port": 32004,
+        "config_content_sha256": "88e8ae40649b7127ff2d92f1f10a5f4f6bab5ea9f2b5d83fc9457f73180c8813",
+        "directory": "run-B-O2"
+      }
+    ],
+    "manifest_digest_order": "A1-O1 A1-O2 B-O1 B-O2",
+    "execution_order": "B-O1 A1-O1 A1-O2 B-O2",
+    "execution_order_reason": "arm B order O1 runs first; section 14.3 folds the cost projection into that capture instead of a fifth invocation"
+  },
+  "runtime": {
+    "kind": "luajit",
+    "version_raw": "engine-version.txt",
+    "version_raw_line": "Luanti 5.16.1 (Linux)",
+    "version_digest": "6cfaf59bc2b53418176cf517956fdf3cad34a980c7b48a7124a5da42eb7efb60",
+    "installed_flatpak": "5.16.1",
+    "pinned_source_reference": "Luanti 5.17.0-dev df04879066de6eb94ca43996822a6dfacc74feca",
+    "version_match": false
+  },
+  "cache": {
+    "process": "new_process_new_disposable_world",
+    "filesystem_page_cache": "unknown_uncontrolled",
+    "cold_cache_claim": false
+  },
+  "containment_scope_statement": "A containment pass means 'no difference in the compared regions', not 'no difference in the chunk'.",
+  "first_diff_localization": {
+    "resolvable_from": "sha256 digests only",
+    "voxel_level": false,
+    "localized": "flat_index >= 1 -- pos is the minimum corner of the named write box whose digest_incl differs; a box, never a voxel",
+    "not_localized": "flat_index == -1 -- digest_incl implicates no named box, so pos is only the compared box minimum corner and was NEVER measured; always the case on the light lanes, which have no per-box digest_incl",
+    "value_a_value_b": "always -1 -- a node value is not resolvable from digest evidence",
+    "consequence": "contract 10.13 asks a follow-on run to narrow the SEAM sub-box using the first_diff of the failing run; a record marked flat_index -1 supplies no such coordinate"
+  },
+  "timings_are_golden": false,
+  "timing_replicates": 1,
+  "settling_is_probe_local": true,
+  "harness": {
+    "command": "tools/wp40/t5_probe/run_t5_probe.sh",
+    "outer_timeout_s": 180,
+    "outer_timeout_is_a_ceiling_not_an_expectation": true,
+    "exit_2": "preflight failure or refusal to overwrite an immutable result"
+  }
+}
