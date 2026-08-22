@@ -662,15 +662,23 @@ local function new_partition(dependencies)
 	-- wider at W = 8); the section-11.8 union sweep measured all 796 face
 	-- witnesses and 11.9 pinned the observed maximum 11 -- in fact a
 	-- one-witness generalization; the section-11.10 acceptance sweep then
-	-- measured the COMPLETE distribution (b-join-distances.tsv of the w11
-	-- stop artifacts: all 60 family-B seeds, 93 repeated stations, d=1
-	-- x14, 2 x10, 8 x7, 9 x9, 10 x25, 11 x23, 12 x5, nothing beyond 12 --
-	-- the silverleaf touch family 1138-1140:-2232 against its join anchor
-	-- jittering +-1 over 1126/1127/1128:-2233), and 11.10 pins W at the
-	-- complete-population maximum 12 exactly -- the first W pin whose
-	-- provenance is a complete population; no margin, anything farther
-	-- stays a named loud failure.  The census authority pins the same
-	-- value; the worker refuses to run when the two copies disagree.
+	-- measured the COMPLETE distribution and 11.10 pins W at its maximum
+	-- 12 exactly -- the first W pin whose provenance is a complete
+	-- population; no margin, anything farther stays a named loud failure.
+	--
+	-- Corrected provenance (contracts 11.11, restated here 2026-08-22 with
+	-- this file open for the section-13 comparator alignment): the earlier
+	-- text of this comment cited the superseded 93-row w11-stop capture and
+	-- its d=1 x14 / 2 x10 histogram.  The complete deduplicated family-B
+	-- population is 105 stations, canonical fixture
+	-- tools/wp40/fixtures/t2_census/s11-bjoin-complete-v1.tsv, all 60
+	-- family-B seeds represented, d=1 x15, 2 x15, 3 x3, 4 x3, 8 x7, 9 x9,
+	-- 10 x25, 11 x23, 12 x5, nothing beyond 12 -- still the silverleaf
+	-- touch family 1138-1140:-2232 against its join anchor jittering +-1
+	-- over 1126/1127/1128:-2233 at the maximum.  THE MAXIMUM IS UNCHANGED
+	-- AT 12 and W does not move: only the population behind it is restated.
+	-- The census authority pins the same value; the worker refuses to run
+	-- when the two copies disagree.
 	local FACE_APPENDIX_WINDOW = 12
 
 	-- The eight lattice directions in counterclockwise cyclic order: the
@@ -1085,11 +1093,11 @@ local function new_partition(dependencies)
 	end
 
 	-- ------------------------------------------------------------------
-	-- The D1 completion-multiplicity order (plan 7.1, contracts 8.1): among
-	-- complete joint tuples the compiler selects the least under a declared
-	-- total order.  Keys, in order: total retreat from the declared endpoints,
-	-- maximum per-endpoint retreat, elbow-terminal count, the sorted resolved
-	-- terminal set, the sorted previous set, and the probe bytes under
+	-- The D1 completion-multiplicity order (plan 7.1, contracts 8.1 and 13):
+	-- among complete joint tuples the compiler selects the least under a
+	-- declared total order.  Keys, in order: total retreat from the declared
+	-- endpoints, maximum per-endpoint retreat, elbow-terminal count, the sorted
+	-- resolved terminal set, the sorted previous set, and the probe bytes under
 	-- canonical orientation (the lexicographically lesser of the byte text and
 	-- its exact reverse).  Totality is guaranteed by the duplicate-authority
 	-- reject: tuples equal under the last three keys share terminal, previous
@@ -1097,13 +1105,46 @@ local function new_partition(dependencies)
 	-- Every key is invariant under authored edge reversal, so the
 	-- bay_edge_transition_terminal_reversal clause holds unchanged.
 	--
+	-- Keys 4 and 5 are the DECLARED COORDINATE ORDER -- lexicographic by
+	-- (x, z) over signed integers -- and never the rendered "x:z" text.  The
+	-- two metrics genuinely differ: as text "-1134:2242" precedes
+	-- "-1135:2242", "10:z" precedes "9:z" and "12:3" precedes "1:5", while as
+	-- coordinates -1135 < -1134, 9 < 10 and 1 < 12; they agree at the sign
+	-- boundary, where "-" already sorts below "0".  Contracts section 13 rules
+	-- the coordinate tuple the authority, records that production had
+	-- implemented the rendering instead, and records the measured firing set:
+	-- empty over all 759 retained multi-complete records, key 1 selecting
+	-- uniquely at every one of them under both metrics, so no measured
+	-- selection moved.  Key 6 is untouched by that ruling -- it is a byte
+	-- sequence by declaration, including its ";" separator.
+	--
 	-- Two implementations exist by contract (8.1): joint_tuple_less_compile
 	-- is the compile path's, joint_tuple_less_census the projection's.  The
-	-- full-`W` cross-check and the synthetic key KATs (contracts 8.3) compare
-	-- them; neither may call the other.  Both consume the same descriptor
-	-- shape: from_retreat/to_retreat (nil at an endpoint the edge does not
-	-- declare), elbow_count, terminal_keys, previous_keys, probe_forward and
-	-- probe_reverse canonical point texts.
+	-- full-`W` cross-check, the synthetic key KATs (contracts 8.3) and the
+	-- independent C2 oracle compare all three; neither production comparator
+	-- may call the other, copy its result or share a comparison helper with it
+	-- (contracts 13.5), which is why each carries its own point order below
+	-- rather than reusing the file-level point_less.  Both consume the same
+	-- descriptor shape: from_retreat/to_retreat (nil at an endpoint the edge
+	-- does not declare), elbow_count, terminal_points and previous_points as
+	-- arrays of {x = <int>, z = <int>} coordinate pairs, and the
+	-- probe_forward/probe_reverse canonical point texts.
+	local function validate_joint_points(points, label)
+		if type(points) ~= "table" or getmetatable(points) ~= nil then
+			fail("joint tuple descriptor " .. label .. " set is malformed")
+		end
+		for index = 1, #points do
+			local point = points[index]
+			if type(point) ~= "table" or getmetatable(point) ~= nil then
+				fail("joint tuple descriptor " .. label .. " is malformed")
+			end
+			exact.integer(point.x, -2147483648, 2147483647,
+				"joint tuple descriptor " .. label .. " x")
+			exact.integer(point.z, -2147483648, 2147483647,
+				"joint tuple descriptor " .. label .. " z")
+		end
+	end
+
 	local function validate_joint_descriptor(descriptor)
 		if type(descriptor) ~= "table" or getmetatable(descriptor) ~= nil then
 			fail("joint tuple descriptor is malformed")
@@ -1119,17 +1160,29 @@ local function new_partition(dependencies)
 		end
 		exact.integer(descriptor.elbow_count, 0, 2,
 			"joint tuple descriptor elbow count")
-		if type(descriptor.terminal_keys) ~= "table" or
-				type(descriptor.previous_keys) ~= "table" or
-				type(descriptor.probe_forward) ~= "string" or
+		validate_joint_points(descriptor.terminal_points, "terminal point")
+		validate_joint_points(descriptor.previous_points, "previous point")
+		if type(descriptor.probe_forward) ~= "string" or
 				type(descriptor.probe_reverse) ~= "string" then
 			fail("joint tuple descriptor is malformed")
 		end
 	end
 
+	-- Two tuples of one edge always declare the same endpoints, so the two
+	-- coordinate sequences always have the same length.  Comparing sequences
+	-- of different length would let arity decide a key silently, so each of
+	-- the two comparators below carries its own guard -- inline rather than
+	-- shared, because contracts 13.5 keeps the two implementations apart --
+	-- and fails loudly instead.
 	local function joint_tuple_less_compile(left, right)
 		validate_joint_descriptor(left)
 		validate_joint_descriptor(right)
+		if (left.from_retreat == nil) ~= (right.from_retreat == nil) or
+				(left.to_retreat == nil) ~= (right.to_retreat == nil) or
+				#left.terminal_points ~= #right.terminal_points or
+				#left.previous_points ~= #right.previous_points then
+			fail("joint tuple descriptors declare different endpoint arity")
+		end
 		local left_total = (left.from_retreat or 0) + (left.to_retreat or 0)
 		local right_total = (right.from_retreat or 0) + (right.to_retreat or 0)
 		if left_total ~= right_total then return left_total < right_total end
@@ -1140,22 +1193,36 @@ local function new_partition(dependencies)
 		if left.elbow_count ~= right.elbow_count then
 			return left.elbow_count < right.elbow_count
 		end
-		local function sorted_text(keys)
+		-- Keys 4 and 5, this comparator's own construction: sort each set by
+		-- (x, z) and walk the two sorted sequences pairwise, deciding at the
+		-- first differing coordinate.  Nothing is rendered.
+		local function sorted_points(points)
 			local copy = {}
-			for index = 1, #keys do copy[index] = keys[index] end
-			table.sort(copy)
-			return table.concat(copy, ",")
+			for index = 1, #points do
+				copy[index] = {x = points[index].x, z = points[index].z}
+			end
+			table.sort(copy, function(a, b)
+				if a.x ~= b.x then return a.x < b.x end
+				return a.z < b.z
+			end)
+			return copy
 		end
-		local left_terminals, right_terminals = sorted_text(left.terminal_keys),
-			sorted_text(right.terminal_keys)
-		if left_terminals ~= right_terminals then
-			return left_terminals < right_terminals
+		local function decide_points(left_points, right_points)
+			local sorted_left = sorted_points(left_points)
+			local sorted_right = sorted_points(right_points)
+			for index = 1, #sorted_left do
+				local a, b = sorted_left[index], sorted_right[index]
+				if a.x ~= b.x then return a.x < b.x end
+				if a.z ~= b.z then return a.z < b.z end
+			end
+			return nil
 		end
-		local left_previous, right_previous = sorted_text(left.previous_keys),
-			sorted_text(right.previous_keys)
-		if left_previous ~= right_previous then
-			return left_previous < right_previous
-		end
+		local terminal_decision = decide_points(left.terminal_points,
+			right.terminal_points)
+		if terminal_decision ~= nil then return terminal_decision end
+		local previous_decision = decide_points(left.previous_points,
+			right.previous_points)
+		if previous_decision ~= nil then return previous_decision end
 		local left_probe = left.probe_reverse < left.probe_forward and
 			left.probe_reverse or left.probe_forward
 		local right_probe = right.probe_reverse < right.probe_forward and
@@ -1163,9 +1230,23 @@ local function new_partition(dependencies)
 		return left_probe < right_probe
 	end
 
+	-- The projection's own (x, z) order, expressed as a three-way comparison
+	-- so the rank vector below can be walked positionally.  Deliberately not
+	-- the compile comparator's construction and not the file-level point_less
+	-- either: contracts 13.5 makes a shared comparison helper between the two
+	-- production implementations a STOP.
+	local function census_point_order(a, b)
+		if a.x < b.x then return -1 end
+		if a.x > b.x then return 1 end
+		if a.z < b.z then return -1 end
+		if a.z > b.z then return 1 end
+		return 0
+	end
+
 	-- The projection's independent implementation: a rank vector compared
 	-- positionally.  Deliberately a different construction from the compile
-	-- comparator above; see the contract note there.
+	-- comparator above; see the contract note there.  Entries 4 and 5 are the
+	-- sorted coordinate sequences themselves, never a rendering of them.
 	local function joint_tuple_rank_census(descriptor)
 		validate_joint_descriptor(descriptor)
 		local retreats = {}
@@ -1180,29 +1261,48 @@ local function new_partition(dependencies)
 			total = total + retreats[index]
 			if retreats[index] > peak then peak = retreats[index] end
 		end
-		local terminals = {}
-		for index = 1, #descriptor.terminal_keys do
-			terminals[index] = descriptor.terminal_keys[index]
+		local function sorted_copy(points)
+			local copy = {}
+			for index = 1, #points do
+				copy[index] = {x = points[index].x, z = points[index].z}
+			end
+			table.sort(copy, function(a, b)
+				return census_point_order(a, b) < 0
+			end)
+			return copy
 		end
-		table.sort(terminals)
-		local previous = {}
-		for index = 1, #descriptor.previous_keys do
-			previous[index] = descriptor.previous_keys[index]
-		end
-		table.sort(previous)
 		local oriented = descriptor.probe_forward
 		if descriptor.probe_reverse < oriented then
 			oriented = descriptor.probe_reverse
 		end
 		return {total, peak, descriptor.elbow_count,
-			table.concat(terminals, ","), table.concat(previous, ","), oriented}
+			sorted_copy(descriptor.terminal_points),
+			sorted_copy(descriptor.previous_points), oriented}
 	end
 
 	local function joint_tuple_less_census(left, right)
 		local left_rank = joint_tuple_rank_census(left)
 		local right_rank = joint_tuple_rank_census(right)
+		-- This side's own arity guard, same predicate as the compile
+		-- comparator's and deliberately not the same code.
+		local function endpoint_tag(descriptor)
+			return (descriptor.from_retreat ~= nil and "from" or "") .. ":" ..
+				(descriptor.to_retreat ~= nil and "to" or "")
+		end
+		if endpoint_tag(left) ~= endpoint_tag(right) or
+				#left_rank[4] ~= #right_rank[4] or
+				#left_rank[5] ~= #right_rank[5] then
+			fail("joint tuple descriptors rank across different endpoint arity")
+		end
 		for index = 1, 6 do
-			if left_rank[index] ~= right_rank[index] then
+			if index == 4 or index == 5 then
+				local left_points, right_points = left_rank[index], right_rank[index]
+				for point_index = 1, #left_points do
+					local order = census_point_order(left_points[point_index],
+						right_points[point_index])
+					if order ~= 0 then return order < 0 end
+				end
+			elseif left_rank[index] ~= right_rank[index] then
 				return left_rank[index] < right_rank[index]
 			end
 		end
@@ -1462,26 +1562,32 @@ local function new_partition(dependencies)
 			end
 		end
 
+		-- Keys 4 and 5 compare coordinates, so the descriptor carries the
+		-- coordinate pairs themselves and never their rendering (contracts 13).
 		local function joint_descriptor(candidate)
-			local descriptor = {elbow_count = 0, terminal_keys = {},
-				previous_keys = {}, probe_forward = candidate.probe_forward,
+			local descriptor = {elbow_count = 0, terminal_points = {},
+				previous_points = {}, probe_forward = candidate.probe_forward,
 				probe_reverse = candidate.probe_reverse}
 			if candidate.from_choice then
+				local terminal = candidate.from_choice.resolved.point
+				local previous = candidate.from_previous
 				descriptor.from_retreat = candidate.from_i - interval.first
-				descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
-					key(candidate.from_choice.resolved.point)
-				descriptor.previous_keys[#descriptor.previous_keys + 1] =
-					key(candidate.from_previous)
+				descriptor.terminal_points[#descriptor.terminal_points + 1] =
+					{x = terminal.x, z = terminal.z}
+				descriptor.previous_points[#descriptor.previous_points + 1] =
+					{x = previous.x, z = previous.z}
 				if candidate.from_choice.resolved.mode ~= "direct" then
 					descriptor.elbow_count = descriptor.elbow_count + 1
 				end
 			end
 			if candidate.to_choice then
+				local terminal = candidate.to_choice.resolved.point
+				local previous = candidate.to_previous
 				descriptor.to_retreat = interval.finish - candidate.to_i
-				descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
-					key(candidate.to_choice.resolved.point)
-				descriptor.previous_keys[#descriptor.previous_keys + 1] =
-					key(candidate.to_previous)
+				descriptor.terminal_points[#descriptor.terminal_points + 1] =
+					{x = terminal.x, z = terminal.z}
+				descriptor.previous_points[#descriptor.previous_points + 1] =
+					{x = previous.x, z = previous.z}
 				if candidate.to_choice.resolved.mode ~= "direct" then
 					descriptor.elbow_count = descriptor.elbow_count + 1
 				end
@@ -6180,25 +6286,30 @@ local function new_partition(dependencies)
 					-- compile path builds its descriptors independently inside
 					-- resolve_edge_joint_terminals (contracts 8.1).
 					local function census_descriptor(probed)
-						local descriptor = {elbow_count = 0, terminal_keys = {},
-							previous_keys = {},
+						local descriptor = {elbow_count = 0, terminal_points = {},
+							previous_points = {},
 							probe_forward = probed.probe_forward,
 							probe_reverse = probed.probe_reverse}
 						if probed.from_choice then
+							local terminal = probed.from_choice.resolved.point
+							local previous = probed.from_previous
 							descriptor.from_retreat = probed.from_i - selected.first
-							descriptor.terminal_keys[1] =
-								key(probed.from_choice.resolved.point)
-							descriptor.previous_keys[1] = key(probed.from_previous)
+							descriptor.terminal_points[1] =
+								{x = terminal.x, z = terminal.z}
+							descriptor.previous_points[1] =
+								{x = previous.x, z = previous.z}
 							if probed.from_choice.resolved.mode ~= "direct" then
 								descriptor.elbow_count = descriptor.elbow_count + 1
 							end
 						end
 						if probed.to_choice then
+							local terminal = probed.to_choice.resolved.point
+							local previous = probed.to_previous
 							descriptor.to_retreat = selected.finish - probed.to_i
-							descriptor.terminal_keys[#descriptor.terminal_keys + 1] =
-								key(probed.to_choice.resolved.point)
-							descriptor.previous_keys[#descriptor.previous_keys + 1] =
-								key(probed.to_previous)
+							descriptor.terminal_points[#descriptor.terminal_points + 1] =
+								{x = terminal.x, z = terminal.z}
+							descriptor.previous_points[#descriptor.previous_points + 1] =
+								{x = previous.x, z = previous.z}
 							if probed.to_choice.resolved.mode ~= "direct" then
 								descriptor.elbow_count = descriptor.elbow_count + 1
 							end

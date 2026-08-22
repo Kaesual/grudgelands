@@ -2487,6 +2487,18 @@ comparison — never silently. **Aligning them is a ruling this package
 does not take**: it would move frozen production geometry, which is a
 STOP under the §11.11 topology freeze.
 
+**Closed 2026-08-22 by §13.** The ruling was taken: plan §7.1's
+coordinate-tuple order is the authority, the rendered-text comparison was an
+implementation defect, and production is aligned. Under the §11.6
+discipline the keys-4/5 firing set was measured **before** the alignment
+landed and is empty over the whole retained population — 759 multi-complete
+records, key 1 selecting uniquely at every one of them under both metrics —
+so no measured geometry moved and the §11.11 freeze was never in tension.
+The paragraphs above are the historical record of the divergence, unchanged;
+the tripwire described below is retired in that same package and replaced by
+a live three-way cross-check, keeping its `decided_by` and divergent-key
+diagnostics.
+
 So that the divergence announces itself rather than being diagnosed
 after the fact, the C2 oracle **asserts on it directly**: a selection
 that was separated from **any** competing complete tuple only at key 4
@@ -2569,3 +2581,245 @@ never be read as a fresh measurement.
 conformance result. `conformance-puc-v3.tsv` has never been produced;
 the reuse path is prospective machinery, and the acceptance run remains
 an explicit, separately authorized step.
+
+## 13. The R19 ordering-key metric alignment (cut 2026-08-22)
+
+**The ruling.** [wp40-t2-plan.md](wp40-t2-plan.md) section 7.1's keys 4 and
+5 — "the sorted set of resolved terminal world coordinates, lexicographic
+by `(x, z)`", and the same for `previous` — are the authority. Production's
+comparison of those two keys as the *rendered text* `x .. ":" .. z`
+(`geometry/partition.lua`, `joint_tuple_less_compile` and
+`joint_tuple_rank_census`) is an implementation defect, not a second
+authority and not an alternate reading: 7.1 names the coordinate tuple, and
+a renderer is not a metric. Production is aligned to the declared order.
+Section 12.5 recorded the divergence and deliberately declined to close it;
+this memo closes it.
+
+**This is not a topology change, and the section 11.11 freeze is
+untouched.** 11.11 froze the boundary machinery — corridor ownership, the
+closing, residue adoption, the appendix predicate with `W`, the loop
+pairing, ring connectivity, seam inheritance and the Whole gate — and
+requires a new memo under the 11.6 discipline for a semantic change to any
+of it. The comparator metric is none of those. What makes the distinction
+real rather than asserted is the measurement below: no configuration in the
+retained population is decided by keys 4 or 5, so not one measured station
+moves. A memo is cut anyway, under the same discipline, because the surface
+is frozen production geometry and the 11.6 rule is that the firing set is
+measured *before* the ruling is implemented, never after.
+
+### 13.1 Before and after, stated exactly
+
+**Before.** The joint tuple descriptor carried `terminal_keys` and
+`previous_keys` as canonical point *text*. Both comparators sorted those
+strings, joined them, and compared the results as strings.
+
+**After.** The descriptor carries signed integer coordinate pairs. Both
+implementations sort by `(x, z)` and compare the sorted sequences
+element-wise by `(x, z)`, and neither ever renders a coordinate to decide a
+key. Key 6 is unchanged in every respect, including its `;` separator and
+its canonical-orientation rule — 12.5 already aligned it end to end, and
+this memo does not reopen it.
+
+**Where the two orders actually differ**, so that the correction is read as
+a real change and not a cosmetic one. Text and coordinate order invert
+whenever the rendered tokens sort differently from the numbers:
+
+- negative `x` of equal digit width — `"-1134:2242" < "-1135:2242"` as
+  text, `-1135 < -1134` as a coordinate. These are precisely the two
+  `land_010` stations of the R19 witness, which is how 12.5 found it — as
+  coordinates, not as a measured competition: slot 29 resolves with exactly
+  one complete tuple, so those two stations have never met under key 4;
+- mixed digit width — `"10:z" < "9:z"` as text, `9 < 10` as a coordinate;
+- a strict token prefix — `"12:3" < "1:5"` as text, because `"2"` sorts
+  below `":"`, while `1 < 12` as a coordinate.
+
+The sign boundary `(-1, z)` against `(0, z)` does *not* invert: `"-"` sorts
+below `"0"`. A correction whose cases all inverted would be easier to
+believe and would be wrong; the order agrees with the defect exactly as
+often as it disagrees, which is why only a measurement settles the firing
+set.
+
+### 13.2 The fully measured firing set (the 11.6 obligation)
+
+Measured before the alignment was implemented, on the committed census
+shards, by `tools/wp40/t2_r19_order_projection.lua` (runner
+`run_t2_r19_order_projection.sh`). The tool reconstructs every complete
+joint tuple's D1 descriptor from the recorded `scan2_endpoint`,
+`scan2_edge` and `scan2_tuple` rows — interval bounds, retreats, elbow
+count, terminal set, `previous` set — then computes, for the recorded
+winner against every competitor, the first differing key under **both**
+metrics. It is fail-closed on every parse and consistency obligation
+(field counts, coordinate and seed grammar, duplicate rows, tuple-index
+range, `#tuples` against `tuple_count`, `#complete` against
+`complete_count`, `duplicate_count = 0`, non-negative retreats, endpoint
+agreement between the endpoint and tuple rows, each tuple's `index:mode`
+present in its endpoint row's own success list, and
+`compile_agreement = agrees` at every record).
+
+It is also fail-closed on the *population*, which is a separate obligation
+from per-record integrity and was added after review found it missing: the
+first cut verified only that the shard filename ranges were contiguous, so
+removing the leading or trailing shard, or truncating one mid-line, produced
+a narrower measurement that still printed every PASS line and exited 0. It now
+reads each shard's header, requires every shard of a version to agree on
+`w_total` and `w_digest`, requires the sorted ranges to tile `0..w_total-1`
+with neither gap nor overlap, counts the `seed_begin`/`seed_end` blocks in the
+body against the declared `shard_seeds` and against `w_total`, requires the
+`digest` trailer to be the last row, and is told which versions it must
+measure so that a version with no shard is an abort rather than a silently
+smaller population. Each version's report carries its own completeness line —
+`v6 population w_total 4123 w_digest fc6c2c19… declared shard seeds 4123 seed
+blocks 4123 coverage 0..4122 COMPLETE` — because a completeness proof that is
+not printed is not evidence. The runner exits non-zero on a refusal and on any
+`FAIL` verdict line.
+
+A second review round then broke it again one level deeper, and that fault is
+closed too. Every structural check counts *blocks*, so deleting whole records
+from inside an otherwise intact seed block passed all of them: the tool
+reported `coverage 0..4122 COMPLETE`, all four `PASS` lines and the verdict
+sentence over 758 of 759 records, at exit 0. The material to catch it was
+already in the artifact and unread — each shard's last row is
+`digest<TAB>sha256=<hex>` over its own body
+(`tools/wp40/t2_census_worker.lua`), so `head -n -1` of a shard reproduces its
+trailer exactly. The runner now verifies all 24 before either interpreter
+starts and refuses on a mismatch with its own exit status; measured cost
+0.7–1.3 s. It also now requires every analysed version to describe the same
+`W` — the per-version check could not see that, so the 757 → 759
+reconciliation could have subtracted record sets cut from two different
+universes — and requires the shards of one version to agree on
+`census_commit`, `census_tree` and `module_digest`. Those three deliberately
+must *not* agree across versions: three different commits produced v4, v5 and
+v6, which is what makes them different censuses.
+
+**The bound on that gate, stated rather than left implied.** The trailer is an
+unkeyed self-hash, not a signature. It proves a shard is internally consistent,
+never that it is the shard the worker wrote, so it catches truncation,
+accidental corruption and naive editing but not someone who edits a body and
+re-hashes the trailer. Measured: a re-hash forgery passes the digest gate,
+though it still cannot hide structural damage, a header lie, or the arithmetic
+— the record counts and the reconciliation deltas printed in 13.2 move visibly.
+Closing it properly needs an authority outside the artifact, and there is none
+today: the census shards are untracked, so nothing in the repository records
+what their digests should be. That is an open item for whoever pins the
+post-R19 evidence set, not something this package can settle.
+
+It is byte-identical under LuaJIT and the vendored PUC 5.1; measured wall
+3.6 s.
+
+| measurand | v4 | v5 | v6 |
+| --- | --- | --- | --- |
+| seeds in shards | 4,116 | 4,123 | 4,123 |
+| multi-complete records | 757 (reject) | 759 (select) | 759 (select) |
+| per-edge 001/004/007/010/013/016 | 4/248/321/52/119/13 | 4/249/322/52/119/13 | 4/249/322/52/119/13 |
+| `decided_by`, metric TEXT | — | key 1 at 759 | key 1 at 759 |
+| `decided_by`, metric TUPLE | — | key 1 at 759 | key 1 at 759 |
+| keys 4/5 load-bearing against any competitor | — | **0** | **0** |
+| keys 1–5 tie against any competitor | — | **0** | **0** |
+| TEXT and TUPLE winners disagree | — | **0** | **0** |
+| reconstructed winner ≠ recorded `selected_tuple_index` | — | **0** | **0** |
+| winner total retreat 0 / 1 / 2 | 730/25/2 † | 732/25/2 | 732/25/2 |
+| completions per record 2 / 3 / 4 | — | 734/23/2 | 734/23/2 |
+
+† The v4 column is head-count only — the tool deep-analyses v5 and v6. That
+one cell is quoted from plan 7.1, not measured here, and is marked so that the
+rest of the column's em-dashes are not read as an exception.
+
+**The 757 → 759 reconciliation, measured rather than assumed.** v4's 757
+and its per-edge breakdown reproduce plan 7.1 digit for digit, which is the
+control. The record sets nest exactly: `v4 \ v5`, `v4 \ v6`, `v5 \ v6` and
+`v6 \ v5` are all empty, and `v5 \ v4 = v6 \ v4` is exactly two records —
+`343674299183575008 land_004` and `7851242355115945264 land_007`. Both are
+section 8.5 D2 re-admitted seeds, first scanned post-correction; v4 carries
+4,116 seeds against 4,123, the difference being exactly those seven
+re-admitted seeds, of which these two carry a multi-complete record. Both
+winners sit at retreat 0, which is why 7.1's 730/25/2 becomes 732/25/2. The
+retained population is therefore **759**, and 7.1's 757 is a correct
+pre-correction count, not an error.
+
+**The 36 transition-edge resolutions.** Over seed 0, max-u64 and the four
+winners, every one of the six transition edges resolves with exactly one
+complete tuple and `decided_by = 0`. The oracle's summary print is gated on
+`complete > 1 or total_retreat > 0` and therefore fires only at slot 29
+(`land_010 = 1/0/1/1/0`); the suppressed content was measured rather than
+inferred, by making that one print unconditional in a scratch copy whose
+`edge_inventory_sha256` values reproduce the committed run's byte for byte.
+12.5's "no ordering key was ever exercised" is confirmed by measurement.
+
+**Two observations recorded, neither a finding.** The largest Cartesian
+candidate product over the population is **6** tuples (seeds
+`8191846033050687995` and `10940304306549215570`, both `land_007`), above
+anything 7.1 quotes — but 7.1's bound is on *completions*, not candidates,
+and the completion maximum is **4** (`3088496925377320678` and
+`12067265980740904565`, both `land_013`), exactly as 7.1 measured. The
+order is total for any multiplicity either way.
+
+### 13.3 The expected real firing set is empty, and that is the point
+
+Key 1 alone selects uniquely at all 759 records under both metrics. Keys
+2–6 are exercised by no measured configuration — the same state 7.1
+recorded for itself, now re-measured over the larger post-correction
+population and over both metrics rather than one. Consequently the aligned
+order **cannot** move a measured selection: the two orders can only differ
+where key 1 ties, and key 1 never ties. The correction is a totality-tail
+repair, and its real firing set is expected to stay empty until a seed
+outside the retained population produces a key-3 tie.
+
+### 13.4 The byte-preservation obligation
+
+The alignment is accepted only against all of:
+
+1. all 759 retained multi-complete records re-projected over `W`: every
+   winner identical and the `decided_by` histogram key 1 only. Identity here
+   is the recorded `selected_tuple_index` and `selected_station_count`, not a
+   byte comparison — the census rows carry no probe raster, so the tool cannot
+   compare bytes and does not claim to. Same tuple implies same bytes, and the
+   bytes themselves are compared by obligation 2;
+2. the 36 transition-edge resolutions over seed 0, max-u64 and slots
+   28–31: every accepted output and all four winner digests byte-identical;
+3. `tools/wp40/run_t2_s11_acceptance.sh` green with the accepted section
+   11.11 pins byte-identical;
+4. the synthetic comparator KATs isolating keys 4 and 5 after keys 1–3 are
+   equal, driving **all three** implementations — both production
+   comparators and the independent C2 oracle — in both authored
+   orientations.
+
+**What obligations 1–3 do and do not prove, stated so the digests are not
+over-read.** They prove that nothing moved. They do **not** exercise the
+aligned comparator, and that is not an inference: instrumenting both
+production comparators to `error()` on entry and re-running obligation 2
+produces a stdout digest byte-identical to the untouched run. With exactly one
+complete tuple per edge, `if not selected or joint_tuple_less_compile(...)`
+short-circuits and neither comparator — nor the descriptor construction, the
+validators, the arity guards or the point orders — is ever entered. A
+deliberately broken keys-4/5 comparison would pass obligations 1–3 unnoticed.
+Obligation 4 is what exercises the change, and it is the reason the tripwire
+may retire. Anyone reading the two preservation digests as verification of the
+new comparator has read them backwards.
+
+**The C2 tripwire retires only against a live cross-check.** 12.5 added a
+named assert that fires when a selection was separated from any competitor
+only at key 4 or key 5, because the two sides then used different metrics
+and would otherwise have surfaced the disagreement as "independent final
+station bytes changed" — a geometry message for a comparator cause. That
+assert is removed only once all three implementations agree on
+metric-separating KATs, and the `decided_by` and divergent-key diagnostics
+survive the removal: what retires is the abort, not the observability.
+
+### 13.5 STOP rules
+
+Stop and report; do not re-pin, broaden the population, or edit a topology
+rule to absorb the result:
+
+- any retained record fires key 4 or key 5;
+- any of the 759 winners, the 36 transition resolutions, the four winner
+  digests or the section 11 acceptance fixtures moves a byte;
+- the alignment appears to require a topology rule beyond the comparator
+  metric;
+- the two production comparators can only be made to agree by one calling
+  or copying the other, or either by mirroring the oracle.
+
+**What this memo does not do.** It does not re-rule 7.1's six keys, does
+not touch the enumeration ban, does not change `W` or any topology rule,
+and does not promote any pool. It must land before a full-`W` re-census or
+any one-time post-R19 pool generation, because both would otherwise bake
+the defective metric into evidence that is expensive to re-derive.
