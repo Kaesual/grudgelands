@@ -59,6 +59,7 @@ owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/partition.lua"
 	"$repo/tools/wp40/t2_partition_test.lua"
 	"$repo/tools/wp40/t2_partition_oracle.lua"
+	"$repo/tools/wp40/t2_r19_order_oracle.lua"
 	"$repo/tools/wp40/t2_partition_c2_selected.lua"
 	"$repo/tools/wp40/t2_payload_cache.lua"
 	"$repo/tools/wp40/t2_phase_selector.lua"
@@ -75,6 +76,11 @@ done
 if "$repo/tools/bin/luac51" -l -p \
 	"$repo/tools/wp40/t2_partition_c2_selected.lua" | rg -q 'SETGLOBAL'; then
 	echo "WP40 T2 partition selected diagnostic wrapper writes a global" >&2
+	exit 1
+fi
+if "$repo/tools/bin/luac51" -l -p \
+	"$repo/tools/wp40/t2_r19_order_oracle.lua" | rg -q 'SETGLOBAL'; then
+	echo "WP40 T2 partition R19 order oracle writes a global" >&2
 	exit 1
 fi
 test_bytecode="$("$repo/tools/bin/luac51" -l -p \

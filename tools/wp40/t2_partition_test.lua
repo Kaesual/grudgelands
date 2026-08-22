@@ -42,6 +42,10 @@ local raster = dofile(wp40 .. "/geometry/raster.lua")({canonical = canonical,
 	deterministic = deterministic, exact = exact, raw_sha256 = raw_sha256})
 local source = dofile(wp40 .. "/source/catalog.lua")
 local source_validator = dofile(wp40 .. "/validation/t2_source.lua")
+-- This oracle's own reading of the section 7.1 order, in its own module so
+-- that the synthetic KATs can drive it beside both production comparators
+-- (contracts 13.4).  Semantics unchanged by the extraction.
+local order_oracle = dofile(repo .. "/tools/wp40/t2_r19_order_oracle.lua")
 
 local old_arg = arg
 arg = {repo}
@@ -2678,23 +2682,12 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 	-- this oracle's own; the sole Production surface is the final edge raster,
 	-- which is what "the same sole final raster" means.
 	-- ------------------------------------------------------------------
-	local function point_less(a, b)
-		return a.x < b.x or a.x == b.x and a.z < b.z
-	end
-	local function sequence_less(a, b)
-		for index = 1, math.min(#a, #b) do
-			if point_less(a[index], b[index]) then return true end
-			if point_less(b[index], a[index]) then return false end
-		end
-		return #a < #b
-	end
-	local function sequence_equal(a, b)
-		if #a ~= #b then return false end
-		for index = 1, #a do
-			if a[index].x ~= b[index].x or a[index].z ~= b[index].z then return false end
-		end
-		return true
-	end
+	-- The (x, z) point order, its sequence lift and sequence equality live in
+	-- t2_r19_order_oracle.lua together with keys 1-6 themselves, so the
+	-- three-way KAT cross-check drives exactly the comparator this oracle
+	-- runs.  Nothing about them changed in the move.
+	local point_less = order_oracle.point_less
+	local sequence_equal = order_oracle.sequence_equal
 	-- Key 6 of the section 7.1 order is the probe's BYTE sequence under
 	-- canonical orientation, not its station tuples: render the stations and take
 	-- the lexicographically lesser of the bytes and their exact reverse.
@@ -2992,26 +2985,10 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		-- "lexicographic by (x, z)" over the coordinate tuples; key 6 is the
 		-- declared probe byte sequence.  The two are deliberately different
 		-- comparisons, and this oracle implements the authority, not whatever a
-		-- compiler happens to do.
-		local function first_difference(a, b)
-			if a.total_retreat ~= b.total_retreat then return 1 end
-			if a.max_retreat ~= b.max_retreat then return 2 end
-			if a.elbow_count ~= b.elbow_count then return 3 end
-			if not sequence_equal(a.terminals, b.terminals) then return 4 end
-			if not sequence_equal(a.previouses, b.previouses) then return 5 end
-			if a.canonical ~= b.canonical then return 6 end
-			return 0
-		end
-		local function tuple_less(a, b)
-			local key = first_difference(a, b)
-			if key == 1 then return a.total_retreat < b.total_retreat end
-			if key == 2 then return a.max_retreat < b.max_retreat end
-			if key == 3 then return a.elbow_count < b.elbow_count end
-			if key == 4 then return sequence_less(a.terminals, b.terminals) end
-			if key == 5 then return sequence_less(a.previouses, b.previouses) end
-			if key == 6 then return a.canonical < b.canonical end
-			return false
-		end
+		-- compiler happens to do.  Both live in t2_r19_order_oracle.lua, which
+		-- the synthetic KATs drive against both production comparators.
+		local first_difference = order_oracle.first_difference
+		local tuple_less = order_oracle.less
 		local best = tuples[1]
 		for index = 2, #tuples do
 			if tuple_less(tuples[index], best) then best = tuples[index] end
@@ -3228,26 +3205,32 @@ local function build_independent_edge_authority(compiled_value, oracle_world,
 		local edge_id = source.land_edges[edge_index].id
 		local row = authority.joint[edge_id]
 		if row then
-			-- Keys 4 and 5 are the one place C2 and the compiler deliberately
-			-- disagree: this oracle compares the declared (x, z) tuples, the
-			-- compiler compares their text.  Nothing measured exercises them, but
-			-- if one ever separated the winner from ANY competitor the two sides
-			-- could pick different tuples and the run would fail as "independent
-			-- final station bytes changed" -- a geometry message for a comparator
-			-- cause.  Trip here instead, and say so.  The test is the recorded
-			-- `divergent_key`, not `decided_by`: `decided_by` answers "how deep
-			-- did the order have to go", and neither its minimum nor its maximum
-			-- over the competitors can answer "was a divergent key load-bearing".
-			-- Key 6 is aligned end to end and is legitimate, so it never trips.
-			assert(not row.divergent_key, edge_id ..
-				" R19 selection was separated from a competitor only at key " ..
-				tostring(row.divergent_key) ..
-				"; C2 and the compiler use different metrics for keys 4 and 5 -- " ..
-				"see wp40-t2-contracts.md 12.5")
+			-- `divergent_key` records that the winner was separated from some
+			-- competitor at key 4 or key 5.  It used to be a named abort: while
+			-- production compared those two keys as rendered text and this oracle
+			-- compared the declared (x, z) tuples, either key deciding meant the
+			-- two sides could pick different tuples, and the failure would have
+			-- surfaced as "independent final station bytes changed" -- a geometry
+			-- message for a comparator cause.  Contracts section 13 aligned
+			-- production to the declared coordinate order and retired that abort
+			-- against a live three-way cross-check (13.4): a key-4 or key-5
+			-- decision is now legitimate on all three sides -- this oracle, the
+			-- compile comparator and the projection comparator -- exactly as a
+			-- key-6 decision already was.  What retires is the abort, not the
+			-- observability: the key stays recorded per edge and joins the
+			-- summary line whenever it actually fires.  It is nil over everything
+			-- measured (contracts 13.2), so the printed summary is unchanged
+			-- there.  The test is `divergent_key`, never `decided_by`:
+			-- `decided_by` answers "how deep did the order have to go", and
+			-- neither its minimum nor its maximum over the competitors can answer
+			-- "was a divergent key load-bearing".
 			joint_parts[#joint_parts + 1] = edge_id .. "=" .. row.complete .. "/" ..
 				row.decided_by .. "/" .. row.total_retreat .. "/" .. row.max_retreat ..
-				"/" .. row.elbow_count
-			if row.complete > 1 or row.total_retreat > 0 then joint_interesting = true end
+				"/" .. row.elbow_count ..
+				(row.divergent_key and "/key" .. row.divergent_key or "")
+			if row.complete > 1 or row.total_retreat > 0 or row.divergent_key then
+				joint_interesting = true
+			end
 		end
 	end
 	authority.joint_summary = table.concat(joint_parts, " ")

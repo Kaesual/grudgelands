@@ -14,11 +14,31 @@ command -v rg >/dev/null 2>&1 || {
 	exit 1
 }
 
-owned_lua=("$repo/tools/wp40/t2_correction_kat_test.lua")
+# The KAT script and the independent C2 order comparator it drives beside the
+# two production comparators (contracts 13.4).
+owned_lua=(
+	"$repo/tools/wp40/t2_correction_kat_test.lua"
+	"$repo/tools/wp40/t2_r19_order_oracle.lua"
+)
 "$repo/tools/bin/luac51" -p "${owned_lua[@]}"
 for file in "${owned_lua[@]}"; do
 	if "$repo/tools/bin/luac51" -l -p "$file" | rg -q 'SETGLOBAL'; then
 		echo "WP40 T2 correction KAT global write in $file" >&2
+		exit 1
+	fi
+done
+
+# The five plain-5.1 conformance sweeps of docs/research/luanti-lua.md.
+patterns=(
+	'(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::'
+	'\\u\{|\\x[0-9A-Fa-f]|\\z'
+	'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.'
+	'[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]'
+	'\brequire[[:space:]]*\(|io\.popen|os\.(execute|exit)|\bminetest\.'
+)
+for pattern in "${patterns[@]}"; do
+	if grep -nE "$pattern" "${owned_lua[@]}"; then
+		echo "WP40 T2 correction KAT uses a forbidden Lua construct" >&2
 		exit 1
 	fi
 done
