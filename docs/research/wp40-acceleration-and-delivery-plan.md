@@ -559,6 +559,14 @@ In the same capture, CORE containment and the transaction bounds stayed green:
 `V-01`, `V-02`, `V-03`, `V-04` and `V-07` all pass. A summary that reported
 only the green half would be the dishonest one.
 
+**User GUI corroboration, recorded 2026-08-22:** the complete six-step visual
+pass is **6/6 green**. The cross-boundary gold bar was complete and aligned,
+there was no visible surface light seam, the water/stair and cut/fill cases were
+correct, terrain outside the declared write boxes looked ordinary, and no
+unknown node appeared. This opened-world observation is corroboration only: it
+adds no digest, timing, operation-count or generation-order evidence and moves
+none of the headless verdicts or non-claims.
+
 **Delivered size, against the band above:** that band underestimated the
 package. At the implementation commit `a82ab17` the eleven shipped files under
 `tools/wp40/t5_probe/` total **6,736 lines**, or **6,144** excluding the

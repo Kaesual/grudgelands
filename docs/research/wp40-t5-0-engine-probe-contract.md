@@ -2313,3 +2313,24 @@ is not a general licence to edit that document. And the evidence entry covers
 regenerated from raw logs whose bytes did not change. **No raw log was
 modified, no engine invocation was performed, and no capture was re-taken by
 this closeout.**
+
+### 24.9 User GUI corroboration — PASS, 2026-08-22
+
+This GUI session was the user's separate runtime pass under section 19, not an
+engine invocation performed by the section-24.8 closeout package. The write
+list in 24.8 governs that already merged T5-0 package; it does not enumerate
+files in this later cross-package integration closeout.
+
+The user copied the kept `world-B-O1` into the installed Luanti world directory
+and completed all six visual checks from section 19.3. The gold bar was complete
+and aligned across `x = 847 | 848`; no surface light seam was visible; the water
+and stair boxes were present and every stair had the same orientation; the air
+pocket and stone slab were present; terrain outside the declared write boxes
+looked ordinary; and no unknown-node placeholder was observed. The result is
+therefore **6/6 GUI checks PASS**.
+
+This is exactly the corroboration scoped by 24.7. The opened world is mutable
+and is not added to the canonical evidence set. The observation confirms no
+digest, timing, operation count, generation-order comparison, final payload
+schema, production adapter or representative production performance, and it
+does not change any headless verdict or non-claim.

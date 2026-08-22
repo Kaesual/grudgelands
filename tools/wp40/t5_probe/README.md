@@ -543,6 +543,19 @@ timing, no operation count and no order comparison** — those come only from th
 headless captures and their gates, and a GUI session corroborates but does not
 replace them, in the sense of `tools/wp40/dungeon_probe/README.md:60-61`.
 
+### Recorded GUI result — PASS, 2026-08-22
+
+The user ran the complete six-step pass against the copied kept `world-B-O1`.
+All six checks passed: the cross-boundary gold bar was complete and aligned; no
+surface light seam was visible; the water and uniformly oriented stair boxes
+were correct; the air pocket and stone slab were correct; terrain outside the
+declared write boxes looked ordinary; and no unknown-node placeholder appeared.
+
+This is a visual corroboration only. Opening the world makes it mutable, so the
+world is not canonical evidence and no digest, timing, operation count or order
+comparison is derived from this pass. It does not replace or widen the four
+headless captures or their verdicts.
+
 ---
 
 ## Disposal and non-reuse — contract section 20

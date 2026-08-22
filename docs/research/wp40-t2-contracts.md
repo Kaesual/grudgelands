@@ -2823,3 +2823,51 @@ not touch the enumeration ban, does not change `W` or any topology rule,
 and does not promote any pool. It must land before a full-`W` re-census or
 any one-time post-R19 pool generation, because both would otherwise bake
 the defective metric into evidence that is expensive to re-derive.
+
+### 13.6 Integration audit-pin correction
+
+The collected correction in commit `482a134` moved the authoritative
+`bay_edge_transition_terminal_selection` wording from rejection on multiple
+complete tuples to selection of the least complete tuple under the declared
+total order. It also re-pinned the boundary-displacement and world-partition
+policy checksums in the validator and independent Source KAT. The same commit
+updated only the Source checksum presence pin in
+`tools/wp40/t2_source_audit.sh`; the selection-literal presence pin and both
+policy-checksum presence pins, all introduced together by `9a6ad8f`, remained
+on their superseded values.
+
+The static Source audit had therefore already been red since 2026-08-18, before
+either package merged by this integration, and the schema-core runner that
+invokes it could not be green. The integration verification surfaced this
+pre-existing gate failure; neither the R19 ordering-alignment package nor the
+T5-0 closeout caused it. After the first fail-fast literal check was repaired,
+the same audit exposed the other two stale pins.
+
+The audit now searches for the accepted prefix
+`the_least_complete_joint_edge_tuple_across_the_full_finite_cartesian_set...`.
+Its two policy-checksum presence checks now match the accepted validator/KAT
+pins `ed1cd544...` and `528c03e3...` respectively.
+This is a gate-pin repair only: it changes no catalog byte, validator rule,
+compiler behavior, topology, evidence artifact or acceptance pin. The source
+audit remains a presence check in the established style; exact full-literal
+equality and exact policy checksums continue to be enforced by the production
+validator and independent Source KAT.
+
+The integration schema-core gate then exposed one independent, pre-existing
+lexical false positive. The T0/T1 audits forbid a `tonumber(...)` argument that
+contains `seed`, because a canonical unsigned-64 seed must never pass through a
+Lua double. The rule matched the argument text `header.shard_seeds`, although
+that field is the bounded shard row **count**, not seed identity; the result
+local to the left of `tonumber` was irrelevant to the match. The conversion
+remains valid and unchanged, but its argument now flows through `count_text`
+and the result is named `shard_count`, with an explicit comment that it is not
+seed identity. This preserves the broad uint64 safety audit without adding an
+exception or weakening its pattern.
+
+**Integration-closeout calibration record (2026-08-22):** implementing and
+integrating model GPT-5.6 Sol; independent reviewing model Claude Opus; initial
+review findings 0 Critical / 0 High / 2 Medium / 4 Low; one fix round; observed
+elapsed wall time `unknown`. The fix round corrected the three historical
+statements above and clarified the T5-0 package boundary. The two remaining Low
+observations — stricter count-text grammar and a dedicated negative count test
+— are pre-existing, behaviorally unchanged and outside this gate-pin closeout.

@@ -69,7 +69,7 @@ grep -q 'bay_edge_transition_scalar_scope="E_W_any_derived_elbow_and_the_R19_ter
 grep -q 'bay_edge_transition_terminal_policy_id="joint_bank_incidence_transition_terminal_v1"' "$catalog"
 grep -q 'bay_edge_transition_terminal_candidates="for_each_declared_transition_endpoint_of_the_fixed_R18_selected_maximal_dry_interval_every_station_incidence_except_the_opposite_interval_endpoint' "$catalog"
 grep -q 'bay_edge_transition_terminal_complete="for_each_candidate_tuple_require_a_nonempty_combined_contiguous_R7_control_subsequence' "$catalog"
-grep -q 'bay_edge_transition_terminal_selection="exactly_one_complete_joint_edge_tuple_across_the_full_finite_cartesian_set' "$catalog"
+grep -q 'bay_edge_transition_terminal_selection="the_least_complete_joint_edge_tuple_across_the_full_finite_cartesian_set' "$catalog"
 grep -q 'bay_edge_transition_terminal_bounds="per_endpoint_at_most_selected_interval_station_count_minus_one_eligible_incidences' "$catalog"
 grep -q 'bay_edge_transition_terminal_reversal="authored_edge_reversal_swaps_endpoint_direction_and_the_one_or_two_endpoint_candidate_tuple_orientation' "$catalog"
 grep -q 'shared_boundary_incidence_run_policy_id="joint_terminal_incidence_complete_dry_run_v1"' "$catalog"
@@ -218,8 +218,8 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	exit 1
 fi
 grep -q 'f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558' "$stage1"
-grep -q '3e6209c76325fa7fa7395c7f75f15181f21ca2e81e8e8c26848019221d96e8fe' "$stage1"
-grep -q '8f3459c2a9eae21dd182129d8447063e7ae102e74373bb55fa779d18ab91cd45' "$stage1"
+grep -q 'ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d' "$stage1"
+grep -q '528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70' "$stage1"
 grep -q 'e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751' "$stage1"
 grep -q 'id="shared_polyline_normal_displacement_t1_hash_v3",schema_version=3' "$catalog"
 grep -q 'step_left_normal_rule="normal_x_q_equals_t1_qdiv_minus_dz_times_Q_by_step_length_q_normal_z_q_equals_t1_qdiv_dx_times_Q_by_step_length_q"' "$catalog"

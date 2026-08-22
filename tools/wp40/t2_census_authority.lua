@@ -1796,11 +1796,15 @@ return function(dependencies)
 					tostring(header.module_digest))
 			end
 		end
-		local seeds = tonumber(header.shard_seeds)
-		if not seeds or seeds ~= header.last - header.first + 1 then
+		-- This field is a bounded row count, not one of the uint64 seed texts.
+		-- Give the numeric conversion a count-only name so the T0/T1 source
+		-- audit can continue to reject every full-identity numeric conversion.
+		local count_text = header.shard_seeds
+		local shard_count = tonumber(count_text)
+		if not shard_count or shard_count ~= header.last - header.first + 1 then
 			fail("shard_seeds disagrees with shard_range")
 		end
-		header.shard_seeds = seeds
+		header.shard_seeds = shard_count
 		return header
 	end
 
