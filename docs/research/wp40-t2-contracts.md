@@ -2661,8 +2661,40 @@ smaller population. Each version's report carries its own completeness line —
 `v6 population w_total 4123 w_digest fc6c2c19… declared shard seeds 4123 seed
 blocks 4123 coverage 0..4122 COMPLETE` — because a completeness proof that is
 not printed is not evidence. The runner exits non-zero on a refusal and on any
-`FAIL` verdict line. It is byte-identical under LuaJIT and the vendored PUC
-5.1; measured wall 2.9 s.
+`FAIL` verdict line.
+
+A second review round then broke it again one level deeper, and that fault is
+closed too. Every structural check counts *blocks*, so deleting whole records
+from inside an otherwise intact seed block passed all of them: the tool
+reported `coverage 0..4122 COMPLETE`, all four `PASS` lines and the verdict
+sentence over 758 of 759 records, at exit 0. The material to catch it was
+already in the artifact and unread — each shard's last row is
+`digest<TAB>sha256=<hex>` over its own body
+(`tools/wp40/t2_census_worker.lua`), so `head -n -1` of a shard reproduces its
+trailer exactly. The runner now verifies all 24 before either interpreter
+starts and refuses on a mismatch with its own exit status; measured cost
+0.7–1.3 s. It also now requires every analysed version to describe the same
+`W` — the per-version check could not see that, so the 757 → 759
+reconciliation could have subtracted record sets cut from two different
+universes — and requires the shards of one version to agree on
+`census_commit`, `census_tree` and `module_digest`. Those three deliberately
+must *not* agree across versions: three different commits produced v4, v5 and
+v6, which is what makes them different censuses.
+
+**The bound on that gate, stated rather than left implied.** The trailer is an
+unkeyed self-hash, not a signature. It proves a shard is internally consistent,
+never that it is the shard the worker wrote, so it catches truncation,
+accidental corruption and naive editing but not someone who edits a body and
+re-hashes the trailer. Measured: a re-hash forgery passes the digest gate,
+though it still cannot hide structural damage, a header lie, or the arithmetic
+— the record counts and the reconciliation deltas printed in 13.2 move visibly.
+Closing it properly needs an authority outside the artifact, and there is none
+today: the census shards are untracked, so nothing in the repository records
+what their digests should be. That is an open item for whoever pins the
+post-R19 evidence set, not something this package can settle.
+
+It is byte-identical under LuaJIT and the vendored PUC 5.1; measured wall
+3.6 s.
 
 | measurand | v4 | v5 | v6 |
 | --- | --- | --- | --- |

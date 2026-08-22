@@ -18,7 +18,8 @@ set -euo pipefail
 #     path .. ": Failed reading file." (5.17.0 s_security.cpp:731-732).
 #   * Mod security truncates io.open to two results (sl_io_open ends in
 #     lua_call(L, with_mode ? 2 : 1, 2) and "return 2"; 5.16.1
-#     s_security.cpp:1039, 5.17.0 :1089, submodule HEAD :1031), so the errno is
+#     s_security.cpp:1062-1063, 5.17.0 :1112-1113, submodule HEAD
+#     :1054-1055), so the errno is
 #     ALWAYS nil in production and cannot decide anything there.
 #
 # The suite runs under LuaJIT and vendored PUC 5.1, each once under LC_ALL=C and

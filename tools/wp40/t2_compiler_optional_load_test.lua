@@ -13,7 +13,8 @@
 --
 -- Presence is decided by an open probe, and -- because the sandbox truncates
 -- io.open to two results (sl_io_open: lua_call(L, with_mode ? 2 : 1, 2) then
--- "return 2"; 5.16.1 s_security.cpp:1039, 5.17.0 :1089, submodule HEAD :1031)
+-- "return 2"; 5.16.1 s_security.cpp:1062-1063, 5.17.0 :1112-1113, submodule
+-- HEAD :1054-1055)
 -- so the errno is ALWAYS nil in production -- by a core.get_dir_list listing
 -- whenever no errno is available. These cases hold that mechanism in place,
 -- including the production shape itself, driven through a fake engine core

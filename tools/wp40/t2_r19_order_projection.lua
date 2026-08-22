@@ -39,6 +39,40 @@
 -- missing end shard or a shard truncated part-way through would still print
 -- PASS -- over a population silently smaller than the one the verdict names.
 --
+-- Three further agreement checks make the "one population, one build" claim
+-- the verdict rests on explicit instead of assumed:
+--
+--   * every shard of a version must agree with its siblings on
+--     `census_commit`, `census_tree` and `module_digest`, so a version
+--     assembled out of shards produced by different code is a refusal and
+--     not a silent mixture;
+--   * every analysed VERSION must agree with every other on `w_total` and
+--     `w_digest`, so the reconciliation paragraph -- which subtracts one
+--     version's record set from another's -- is known to be subtracting two
+--     views of the SAME W.  The shared digest is printed once, as evidence;
+--   * the `digest` trailer's VALUE is verified, but not here.
+--     run_t2_r19_order_projection.sh recomputes the sha256 of every shard
+--     body and refuses before either interpreter starts.  This tool checks
+--     only the trailer's SHAPE, because verifying it means hashing the file
+--     and this tool may not spawn a subprocess -- sweep 5 of
+--     docs/research/luanti-lua.md bans the process-spawning library calls
+--     from this file, and greps for their names, so they cannot even be
+--     written down here.  Every completeness check below is structural --
+--     range tiling, shard_seeds, seed-block counts -- and none of them sees
+--     row CONTENT, so whole records deleted from inside an intact seed
+--     block are invisible to this file.  The runner is the gate that closes
+--     that; a shard reached through any other caller is structurally
+--     checked but not authenticated.
+--
+-- The two agreement scopes are deliberately different.  W is the scanned
+-- universe: one object, cut once, and all three censuses ran over it, so a
+-- disagreement there means the run compared two different populations.  The
+-- build provenance is NOT one object -- v4, v5 and v6 were produced by three
+-- different commits, which is exactly what makes them v4, v5 and v6 -- so
+-- requiring census_commit/census_tree/module_digest to agree ACROSS versions
+-- would refuse the canonical artifact.  Within a version the same three must
+-- agree, because there a differing commit has no legitimate reading.
+--
 -- Deep analysis (the D1 descriptors, both metrics, decided_by) runs on the
 -- v5 and v6 schemas, whose scan2 edge row records the selection.  A v4 shard
 -- predates the D1 amendment: multiple complete tuples were a reject there,
@@ -164,6 +198,11 @@ local HEADER_TAGS = {"schema", "vocabulary", "shard_schema", "shard_range",
 
 local DIGEST_PREFIX = "sha256="
 local DIGEST_LENGTH = #DIGEST_PREFIX + 64
+
+-- The three header tags that name the BUILD a shard came out of.  Every
+-- shard of one version must agree on all three; see the scope note at the
+-- top of this file for why they must NOT agree across versions.
+local PROVENANCE_TAGS = {"census_commit", "census_tree", "module_digest"}
 
 local function read_header(file, path)
 	local header = {}
@@ -317,6 +356,7 @@ end
 local function new_version_state(version, deep, analysis_class)
 	return {version = version, deep = deep, analysis_class = analysis_class,
 		shards = {}, seeds_seen = {}, seed_count = 0, lines = 0,
+		provenance = {}, provenance_source = {},
 		ranges = {}, declared_seeds = 0, block_seeds = {}, block_seed_count = 0,
 		edge_class_counts = {}, records = 0, per_edge = {}, record_keys = {},
 		record_by_key = {}, decided_by_text = {}, decided_by_tuple = {},
@@ -605,6 +645,27 @@ local function admit_shard(state, header, shard, path)
 			fail(path .. " declares w_digest " .. header.w_digest .. " but " ..
 				state.w_source .. " declares " .. state.w_digest ..
 				"; the census " .. tag .. " shards are not one population")
+		end
+	end
+	-- Build provenance, within this version only.  read_header has already
+	-- proved these three tags exist and carry exactly one value each; what
+	-- was missing was any comparison BETWEEN shards, so a version stitched
+	-- together from two builds passed every structural check and the verdict
+	-- spoke about rows two different programs had written.
+	for index = 1, #PROVENANCE_TAGS do
+		local name = PROVENANCE_TAGS[index]
+		local value = header[name]
+		if type(value) ~= "string" or value == "" then
+			fail(path .. " carries an empty " .. name)
+		end
+		if state.provenance[name] == nil then
+			state.provenance[name] = value
+			state.provenance_source[name] = path
+		elseif state.provenance[name] ~= value then
+			fail(path .. " declares " .. name .. " " .. value .. " but " ..
+				state.provenance_source[name] .. " declares " ..
+				state.provenance[name] .. "; the census " .. tag ..
+				" shards were not produced by one build")
 		end
 	end
 	state.declared_seeds = state.declared_seeds + header.shard_seeds
@@ -966,6 +1027,33 @@ for index = 1, #state_order do
 	check_population(states[version])
 	if states[version].deep then deep_versions = deep_versions + 1 end
 end
+
+-- One W across every analysed version.  admit_shard proves only that the
+-- shards of ONE version agree, and `state` is per version, so nothing so far
+-- required v4, v5 and v6 to describe the same seed universe.  Without this,
+-- the reconciliation below could subtract the record set of one population
+-- from the record set of another and still print MATCH.  Unlike the build
+-- provenance in admit_shard, W legitimately must be identical everywhere: it
+-- is the single scanned universe all three censuses ran over.
+local shared_w_digest, shared_w_total, shared_w_source = nil, nil, nil
+for index = 1, #state_order do
+	local state = states[state_order[index]]
+	local tag = "v" .. string.format("%d", state.version)
+	if shared_w_digest == nil then
+		shared_w_digest = state.w_digest
+		shared_w_total = state.w_total
+		shared_w_source = tag
+	elseif state.w_digest ~= shared_w_digest or
+			state.w_total ~= shared_w_total then
+		fail("census " .. tag .. " was scanned over W " .. state.w_digest ..
+			" of " .. string.format("%d", state.w_total) ..
+			" seeds but census " .. shared_w_source .. " was scanned over W " ..
+			shared_w_digest .. " of " ..
+			string.format("%d", shared_w_total) ..
+			" seeds; the versions do not describe one population, so the " ..
+			"reconciliation would compare two different universes")
+	end
+end
 if deep_versions == 0 then
 	fail("no deep-analysed census version (v5 or later) is present, so there " ..
 		"is no keys-4/5 measurement to report")
@@ -980,6 +1068,13 @@ local function number(value) return string.format("%d", value) end
 
 say("WP40 T2 R19 order projection (plan 7.1 keys 4/5, contracts 11.6/12.5)")
 say("artifacts " .. artifacts_dir)
+local analysed_tags = {}
+for index = 1, #state_order do
+	analysed_tags[index] = "v" .. number(state_order[index])
+end
+say("population W " .. shared_w_digest .. " w_total " ..
+	number(shared_w_total) .. " shared by census " ..
+	table.concat(analysed_tags, ",") .. " (one scanned universe, checked)")
 say("key6 canonical probe bytes are NOT reconstructible from the census TSV; " ..
 	"a keys-1-5 tie is reported as UNDECIDABLE, never resolved")
 
@@ -999,6 +1094,10 @@ for order_index = 1, #state_order do
 		number(state.declared_seeds) .. " seed blocks " ..
 		number(state.block_seed_count) .. " coverage 0.." ..
 		number(state.w_total - 1) .. " COMPLETE")
+	say(tag .. " build census_commit " .. state.provenance.census_commit ..
+		" census_tree " .. state.provenance.census_tree ..
+		" module_digest " .. state.provenance.module_digest ..
+		" agreed by all " .. number(#state.shards) .. " shards")
 	local class_keys = sorted_keys(state.edge_class_counts)
 	for index = 1, #class_keys do
 		say(tag .. " scan2_edge class " .. class_keys[index] .. " " ..
