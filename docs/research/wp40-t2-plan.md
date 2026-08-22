@@ -561,6 +561,15 @@ each endpoint's retreat is measured from its own declared end, the sets in
 keys 4–5 forget endpoint labels, and key 6 is orientation-canonical — so
 `bay_edge_transition_terminal_reversal` holds unchanged.
 
+**Keys 4 and 5, metric corrected 2026-08-22.** Production first implemented
+these two keys as a comparison of the *rendered text* `x .. ":" .. z`, which
+inverts against the coordinate tuple declared above on negative `x` of equal
+digit width, on mixed digit widths and on strict token prefixes. The declared
+`(x, z)` order stated here is the authority and production has been aligned to
+it. The ruling, the measured-empty firing set and the byte-preservation
+evidence are [wp40-t2-contracts.md](wp40-t2-contracts.md) section 13; the
+divergence's discovery is recorded in that file's section 12.5.
+
 **Grounds.**
 
 - *R18 continuity as the selection principle.* The zero-retreat tuple is
