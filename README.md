@@ -255,7 +255,7 @@ licensing and stable `file:line` citations. See
 | [docs/design/](docs/design/) | Decided game design — the living specification. |
 | `TODO-*.md` | Open design questions awaiting a decision. |
 | [docs/research/](docs/research/) | Engine/API briefings, reference studies and asset research. |
-| [docs/process/](docs/process/) | Autonomous work-package workflow. |
+| [docs/process/](docs/process/) | Autonomous work-package workflow and the project-wide agent model policy. |
 | [ROADMAP.md](ROADMAP.md) · [BACKLOG.md](BACKLOG.md) | Goal-level plan and implementation packages/status. |
 | [AGENTS.md](AGENTS.md) | Project conventions and Luanti/Lua contracts. |
 | [VENDOR.md](VENDOR.md) | Vendored third-party code, commits, licenses and patch inventory. |

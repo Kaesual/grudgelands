@@ -3,6 +3,14 @@
 Status: **contract file. Created 2026-08-18 by the plan's own relocation
 rule.**
 
+**Model-routing note (2026-08-22):** model names and division-of-labour
+statements in this file record how the named historical T2 packages were run.
+They are not instructions for future agent selection. All contexts started
+after this policy was adopted on 2026-08-22 follow the sole project-wide
+[agent model policy](../process/agent-model-policy.md); no T2 section overrides
+it. Contexts already running when that policy was adopted finish under their
+accepted briefs.
+
 [wp40-t2-plan.md](wp40-t2-plan.md) holds ordering and decisions; this file
 holds package specifications — the census artifact contract (section 6),
 the collected-correction implementation contract (section 8) and the
@@ -590,14 +598,14 @@ are per-seed intermediates and therefore live under the gitignored
 `tools/wp40/results/t2_census/`, not in fixtures — section 6.3 governs there,
 and only the merged artifacts of section 6.2 are committed.
 
-Division of labour: the projection entry points, worker classification,
-merge semantics and KATs are done in-session; the mechanical launcher and
-merge plumbing may go to a capable subagent after M1 fixes the row schema,
-briefed by goals with a cost cap. An Opus-class cold review of the finished
-classification layer against the analysis's §3 tables is part of the package
-(confirmed 2026-08-16); it reviews, it does not rewrite. M1 is the heavy
-lift and the cost anchor for everything after it: measure M1 before
-scheduling M3–M5.
+Historical division of labour: the projection entry points, worker
+classification, merge semantics and KATs were done in-session; the mechanical
+launcher and merge plumbing were eligible for a capable subagent after M1
+fixed the row schema, briefed by goals with a cost cap. An Opus-class cold
+review of the finished classification layer against the analysis's §3 tables
+was part of the package (confirmed 2026-08-16); it reviewed, it did not
+rewrite. M1 was the heavy lift and the cost anchor for everything after it, and
+M3–M5 were scheduled only after M1 was measured.
 
 **The stage-reject package (2026-08-17), cut after full-`W` start 3.** That
 start stopped at 885 of 4,123 seeds: three of eight shards died
@@ -1005,17 +1013,17 @@ conformance oracle at slot 29, the Slot-30 Starbough pin drift, and the
 F10 face-simplicity occupancy on wanted seeds 2147483648 and
 1959553668008863006 — pass to the next phase's ledger.
 
-### 8.7 Cost and division of labour
+### 8.7 Cost, launch discipline, and historical division of labour
 
 Section-4 anchors govern every launch; any run projected over ~30 minutes
 wall, and any fleet run, is announced first with the projection marked as
 a projection. The semantic core — catalog strings, both comparators, the
-shoulder construction, the source-authority edits — stays in-session
+shoulder construction, and the source-authority edits — stayed in-session
 (Fable). Mechanical parts — KAT plumbing, gate-suite reruns, fleet
-babysitting, the v5 merge — may go to Opus subagents (user authorization
-2026-08-18), briefed by goals with a cost cap and a stated verification
-tier. Parallel Lua processes stay within the host's measured eight-worker
-band.
+babysitting, and the v5 merge — were eligible for Opus subagents (user
+authorization 2026-08-18), briefed by goals with a cost cap and a stated
+verification tier. Parallel Lua processes stay within the host's measured
+eight-worker band.
 
 ## 9. The Scan-3b/4 census completion contract (cut 2026-08-18)
 
@@ -1306,9 +1314,8 @@ GO token (section 6.6.7 — the fleet starts only on the user's explicit
 GO after the announcement pre-flight), and the 2026-08-18 CPU-domain
 gates with wall advisory-only and idle scheduling.
 
-**Two launcher-hygiene fixes land before the fleet** (run-5
-observations, gate-2 handover; both Opus-delegable, neither changes gate
-semantics):
+**Two launcher-hygiene fixes landed before the fleet** (run-5 observations,
+gate-2 handover; both were Opus-delegable and neither changed gate semantics):
 
 1. `fleet_cpu_seconds` stops reading `/proc/<pid>/stat` for reaped
    workers — run 5 measured 956 harmless stderr lines from exited-worker
@@ -1374,12 +1381,12 @@ memo), 6670e66 (the item-8 docs). The Scan-3b/4 census completion is
 closed; what follows from its findings is section 10's
 bay-transition-simplicity package.
 
-### 9.8 Division of labour
+### 9.8 Cost, launch discipline, and historical division of labour
 
-The semantic core stays in-session (Fable): this contract, the Scan-3b
+The semantic core stayed in-session (Fable): this contract, the Scan-3b
 attribution and R20/R21 classifiers, the face and Whole classification
 semantics, the class vocabularies and their verdicts, and the
-consistency rules. Mechanical parts go to Opus subagents under the
+consistency rules. Mechanical parts went to Opus subagents under the
 standing split (user authorization 2026-08-18), briefed by goals with a
 cost cap and a stated verification tier: the launcher-hygiene pair, KAT
 and gate-suite plumbing, the probe-script extension, fleet babysitting,
@@ -1559,10 +1566,13 @@ clean in both families.
   (step-0 hole closed) — defense in depth so any *future* between-
   authority residue aborts loudly instead of shipping unowned columns.
 
-### 11.4 Acceptance plan (the measurement the fix must survive)
+### 11.4 Acceptance plan for the bay-transition fix
+
+Section 11.5 supersedes this plan in part; item 5's T2-final deferral remains
+live.
 
 1. Heavy regime, Fable, in-session semantic core; the six locked files
-   stay untouchable (the mask build and composition live in
+   stayed untouchable (the mask build and composition live in
    partition.lua, which is not locked; exact.lua's stadium test is not
    edited).
 2. KAT re-pins are expected and legitimate **as a recorded
@@ -1592,9 +1602,9 @@ gate of 11.3, in one fix package under the 11.4 acceptance plan. The
 published v3 census artifacts stay untouched as run 6's historical
 record — the KAT fixture is the only pinned-truth file that moves, as
 a recorded correction; the new measured truth over `W` lands at
-T2-final's re-census. Implementation: heavy regime, semantic core in a
-Fable session; the witness re-run of 11.4 item 3 follows as its own
-task.
+T2-final's re-census. The implementation was assigned as a heavy-regime
+semantic core in a Fable session; the witness re-run of 11.4 item 3 was its
+own task.
 
 **Branch 1c REFUTED BY MEASUREMENT 2026-08-20 — implementation STOP,
 honoured** (the stop report is

@@ -51,22 +51,23 @@ current state). It is **derived, never authoritative**:
    Offload large explorations to subagents, keep the main context lean.
 3. **WPs run autonomously on their own branch** (`wp<NN>-<slug>`) per
    the workflow contract in
-   **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**:
-   the orchestrator (Fable or Opus) ONLY orchestrates (plan, per-task
-   briefs, diff reads, final integration gate — no implementing); Opus
-   subagents build everything, and **at least one full Opus code review
-   per WP is mandatory** (different agent than the implementer;
-   checklist in the workflow doc, incl. the
-   `docs/research/luanti-lua.md` rules). Merge to main only after a
-   clean review; every completion message ends with a runtime test plan
-   for the user.
+   **[docs/process/wp-workflow.md](docs/process/wp-workflow.md)**. Model
+   routing for every project area is governed solely by
+   **[docs/process/agent-model-policy.md](docs/process/agent-model-policy.md)**.
+   Its **Independent review** trigger and independence rules are binding;
+   every required review uses the checklist and the
+   `docs/research/luanti-lua.md` rules in the workflow document. Merge to main
+   only after a clean review; every completion message ends with a runtime test
+   plan for the user.
 4. **WP completion**: Lua syntax check with `tools/bin/luac51 -p` (plain
    5.1 — build once via `tools/build_lua51.sh`; **not** `luajit`, which
    accepts syntax the engine's fallback build rejects),
    `tools/sync_to_luanti.sh` (from main, after merge), commit, update
    BACKLOG status + ROADMAP checkboxes + the README "Current State"
-   section (see "Documentation layers"). Anything future sessions need
-   to know goes into AGENTS.md/docs — not just the chat.
+   section (see "Documentation layers"). The durable completion record for an
+   independently reviewed package also carries the calibration fields required
+   by `agent-model-policy.md`. Anything future sessions need to know goes into
+   AGENTS.md/docs — not just the chat.
 5. **Runtime tests are done by the user** (Flatpak Luanti, GUI); diagnose
    errors via `~/.var/app/org.luanti.luanti/.minetest/debug.txt`.
 

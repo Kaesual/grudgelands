@@ -21,7 +21,10 @@ unchanged:
 - [wp40-t2-contracts.md](wp40-t2-contracts.md) owns the detailed T2 package
   contracts; and
 - [luanti-lua.md](luanti-lua.md) owns the Lua 5.1/LuaJIT compatibility and
-  test rules.
+  test rules; while
+- [agent-model-policy.md](../process/agent-model-policy.md) independently owns
+  project-wide model routing and supersedes historical WP40 model assignments
+  for every newly started context.
 
 Approval of this draft would therefore be followed by the coordinated authority
 fold-in described in Section 15. It must not silently override those
@@ -303,14 +306,13 @@ hide the integration dependency. Each child package should still look like a
 normal WP:
 
 - a short brief with owned files and interfaces;
-- one branch/worktree and one Opus implementer;
+- one branch/worktree and an implementer selected under the project-wide
+  [agent model policy](../process/agent-model-policy.md);
 - a bounded test budget and explicit artifact directory;
 - a definition of done;
-- a non-implementing Opus orchestrator by default;
-- a narrowly scoped and recorded Fable pass only when cross-package
-  architecture, exceptional risk, or a genuinely contested ruling warrants
-  it;
-- a full independent review by a different Opus agent; and
+- coordination, escalation, and role separation under that same policy, with
+  no WP40-local model priority;
+- a full independent strong-agent review under that policy; and
 - merge into the WP40 integration branch only after the gate is green.
 
 ### 6.1 Worktree rules
@@ -718,8 +720,9 @@ package. Its checked scope includes:
 
 - `AGENTS.md`, `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md`,
   `tools/wp40/README.md`, the engineering brief, T2 plan, and affected T2
-  contracts for interpreter, package, and execution rules, including the
-  Opus-default/Fable-exception model-priority rule;
+  contracts for interpreter, package, and execution rules; model routing is
+  not folded into those WP40-local owners and instead follows the sole
+  project-wide `docs/process/agent-model-policy.md` authority;
 - T2 contracts Section 11.4 acceptance point 5 for the full-`W`/PUC
   separation;
 - `docs/design/world_zones.md` Section 13 for the accepted visible dungeon
@@ -744,7 +747,8 @@ This draft is ready to become an implementation plan when:
   command; trivially short static gates need no individual budget;
 - the PUC outcome is folded in as specified in Section 5.2, or the retained
   comprehensive gates receive explicit time and CPU budgets;
-- every child package has a definition of done and independent Opus reviewer;
+- every child package has a definition of done and an independent reviewer
+  selected under the project-wide agent model policy;
 - no unresolved player-visible design choice is left for an implementation
   agent to invent;
 - every durable player-impact summary lives in its committed package contract
