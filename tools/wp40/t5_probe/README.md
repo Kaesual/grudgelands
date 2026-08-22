@@ -73,7 +73,7 @@ T5-0 does **not** prove, establish, validate, freeze or make any claim about:
     order effects without attributing their cause.
 
 It also does **not** move full T5 ahead of T3 and T4
-(`wp40-acceleration-and-delivery-plan.md:477-479`).
+(`wp40-acceleration-and-delivery-plan.md:479-481`).
 
 ---
 
@@ -144,14 +144,16 @@ exactly two kinds, told apart in band by `flat_index`:
 value is not resolvable from digest evidence.
 
 The `-1` marker exists because a plausible integer coordinate does not announce
-itself as a placeholder the way `value_a: -1` does. Contract 10.13 tells the
-reader of a `no_stable_baseline` outcome to narrow the SEAM sub-box "from the
-failing run's `first_diff`" — and **this run set produced exactly that
-outcome**. Six of its eight `first_diff` records carry `flat_index: -1`,
-including every light-lane record and both SEAM order pairs. Read plainly: this
-run set supplies **no** narrowed sub-box for a follow-on run. A follow-on
-planned from `{824, -16, 696}` would be planned from the corner of the compared
-box, not from anything the probe measured.
+itself as a placeholder the way `value_a: -1` does. Contract 10.13 makes the
+narrowed-box route **conditional, and the condition normative**: a narrowed
+follow-up SEAM box may be chosen from a `first_diff` record "**only** when that
+record is localized — `flat_index >= 1`", and even then the record names a box
+minimum, not a voxel. **This run set produced exactly the `no_stable_baseline`
+outcome that route exists for.** Six of its eight `first_diff` records carry
+`flat_index: -1`, including every light-lane record and both SEAM order pairs.
+Read plainly: this run set supplies **no** narrowed sub-box for a follow-on run.
+A follow-on planned from `{824, -16, 696}` would be planned from the corner of
+the compared box, not from anything the probe measured.
 
 ### Engine identity — `version_match: false`
 
@@ -239,7 +241,7 @@ or `l` predicate is false.
 | hashed nodes per run, per lane, per pass (`digest`) | **408,576** = 3 x 110,592 + 76,800 |
 | distinct compared nodes per run | **388,096** (SEAM overlaps CORE(10) and CORE(11) by 10,240 voxels each, so 20,480 are hashed twice) |
 | total hashing work per run | approximately 5,628,816 node-lane readings |
-| offline negative-test rows exercised by `selftest.sh` | **43**, plus the two non-stream fixtures of contract section 16 |
+| offline negative-test rows exercised by `selftest.sh` | **45**, plus the two non-stream fixtures of contract section 16 |
 
 ---
 
@@ -256,7 +258,7 @@ Preflight (`rg` and `jq` first and unconditionally, then the interpreters and
 (`luac51 -p`, the `SETGLOBAL` budget, the five Lua 5.1 sweeps of
 `docs/research/luanti-lua.md:310-321` run explicitly against this tree, and the
 10.12 proxy-discipline sweep), the dual-interpreter coordinate audit, and
-`selftest.sh` — all **43** negative rows of contract section 16 with their exact
+`selftest.sh` — all **45** negative rows of contract section 16 with their exact
 abort fragments, the two non-stream fixtures, and the manifest-digest fixture.
 None of it needs an engine capture. A missing or failing `selftest.sh` fails the
 run; there is no tolerated absence.
@@ -547,7 +549,7 @@ replace them, in the sense of `tools/wp40/dungeon_probe/README.md:60-61`.
 
 **Rule.** Probe code is discarded when the real T5 package is cut. It "never
 becomes a parallel production path or production adapter foundation"
-(`wp40-acceleration-and-delivery-plan.md:530-532`). The durable result is the
+(`wp40-acceleration-and-delivery-plan.md:532-534`). The durable result is the
 contract, this README and the committed evidence tree.
 
 **Mechanics.** The first commit of the real T5 package deletes this tree entirely

@@ -404,7 +404,7 @@ fi
 # 4. selftest.sh
 # --------------------------------------------------------------------------
 
-# All 43 negative rows of section 16 plus the two non-stream fixtures, and the
+# All 45 negative rows of section 16 plus the two non-stream fixtures, and the
 # manifest-digest fixture of 13.2.  Its presence is already required by the
 # preflight above; a failure here fails the run.
 bash "$probe_dir/selftest.sh" || fail_gate "selftest.sh failed"

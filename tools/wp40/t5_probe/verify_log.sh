@@ -580,13 +580,15 @@ jq -se '
 	# reference_projects/luanti/doc/lua_api.md:8112-8113, and
 	# reference_projects/luanti/src/script/common/c_content.cpp:2260-2295 leaves
 	# Json::Value default-constructed as nullValue when the table has no
-	# entries. 12.3 says dirty_param2_by_box "is {} for the case-4 chunks", so
-	# on the wire that key necessarily arrives as null: the empty JSON OBJECT is
-	# not expressible from Lua at all. Normalise null to {} before the key-set
-	# comparison. This does NOT weaken the gate, because the comparison is made
-	# against the expected key set for that very case -- a null on a "bounded"
-	# record, which declares a param2 write, still fails, and a non-empty
-	# object on a case-4 record still fails.
+	# entries. 12.3 says that for the case-4 chunks the dirty_param2_by_box set
+	# is "empty by construction and is therefore emitted on the wire as JSON
+	# null", the empty JSON OBJECT being not expressible from Lua at all. 12.3
+	# also names null "the value the gate must accept and normalize to the
+	# empty set". So: normalise null to {} before the key-set comparison. This
+	# does NOT weaken the gate, because the comparison is made against the
+	# expected key set for that very case -- a null on a "bounded" record,
+	# which declares a param2 write, still fails, and a non-empty object on a
+	# case-4 record still fails.
 	# (No apostrophe may appear anywhere in this jq program: it is single-quoted
 	# in bash, so one would close the quote and break the script.)
 	| (if all(cbs[]; (.dirty_content_by_box | type == "object") and

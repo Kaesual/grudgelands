@@ -40,10 +40,12 @@
 #
 # The marker matters because a plausible integer coordinate does not announce
 # itself as a placeholder the way `value_a` / `value_b == -1` does. Contract
-# 10.13 tells the reader to pick a narrowed SEAM sub-box "from the failing
-# run's first_diff"; a record carrying `flat_index: -1` is telling that reader
-# this run set supplies no such coordinate, and a follow-on run planned from
-# the box origin would be planned from a number nothing measured.
+# 10.13 permits a narrowed SEAM sub-box to be picked from a `first_diff` record
+# "only when that record is localized -- `flat_index >= 1`", and even then the
+# record names a box minimum and not a voxel; a record carrying
+# `flat_index: -1` is therefore telling the reader this run set supplies no
+# such coordinate, and a follow-on run planned from the box origin would be
+# planned from a number nothing measured.
 #
 # `value_a` / `value_b` carry the sentinel -1 on EVERY record, localized or
 # not: "not resolvable from digest evidence". No node value is invented.
@@ -486,6 +488,45 @@ jq -se \
 			["comparison", "lane", "region", "flat_index", "pos", "value_a", "value_b"]
 		else [] end);
 
+	# ---- the 10.3 / 10.10 box literals, an INDEPENDENT copy ---------------
+	# The same literals the generator carries, restated here on purpose. This
+	# gate re-derives every first_diff localization in its own scope; one that
+	# borrowed those definitions from the generator would only re-run it.
+	def node_lanes: ["content", "param2"];
+	def seam_halves: ["4lo", "4hi"];
+	def core_boxes8: ["cut", "fill", "water", "facedir"];
+	def core_box($kx):
+		{min: {x: (80 * $kx - 16), y: -16, z: 704},
+		 max: {x: (80 * $kx + 31), y: 31, z: 751}};
+	def seam_box:
+		{min: {x: 824, y: -16, z: 696}, max: {x: 871, y: 23, z: 735}};
+	def region_box($region; $kx):
+		if $region == "core" then core_box($kx) else seam_box end;
+	def named_box($n):
+		if $n == "cut" then {min: {x: 628, y: 0, z: 712}, max: {x: 635, y: 7, z: 719}}
+		elif $n == "fill" then {min: {x: 628, y: -8, z: 712}, max: {x: 635, y: -1, z: 719}}
+		elif $n == "water" then {min: {x: 644, y: 0, z: 712}, max: {x: 651, y: 7, z: 719}}
+		elif $n == "facedir" then {min: {x: 660, y: 0, z: 712}, max: {x: 667, y: 7, z: 719}}
+		elif $n == "4lo" then {min: {x: 840, y: 0, z: 712}, max: {x: 847, y: 7, z: 719}}
+		else {min: {x: 848, y: 0, z: 712}, max: {x: 855, y: 7, z: 719}} end;
+	# A light lane carries no digest_incl record AT ALL, so its named-box set
+	# is empty by construction rather than by omission: the box search the
+	# generator runs for the node lanes is never run for a light lane, and a
+	# light-lane `flat_index: -1` is therefore correct, not evasive.
+	def boxes_for($lane; $region; $kx):
+		if ($lane | in_set(node_lanes)) then
+			(if $region == "seam" then seam_halves
+			elif $kx == 8 then core_boxes8
+			else [] end)
+		else [] end;
+	# 1-based, x fastest, then y, then z -- the ascending VoxelArea order of
+	# the COMPARED REGION box, never of the named box inside it.
+	def flat_index($box; $p):
+		($box.max.x - $box.min.x + 1) as $ex
+		| ($box.max.y - $box.min.y + 1) as $ey
+		| (($p.z - $box.min.z) * $ey * $ex + ($p.y - $box.min.y) * $ex
+			+ ($p.x - $box.min.x) + 1);
+
 	{ "A1-O1": $s_a1o1[0], "A1-O2": $s_a1o2[0],
 	  "B-O1": $s_bo1[0], "B-O2": $s_bo2[0] } as $R
 	# Guarded exactly like the generator copy above, and for a reason. Without
@@ -501,6 +542,16 @@ jq -se \
 			and .lane == $lane and .pass == 1)]
 		| if length == 1 then .[0].sha256
 			else error("comparison gate: run summary is missing a compared digest") end;
+	# The same guard, for the same reason, over the per-box digests the
+	# localization re-derivation below reads: a MISSING digest_incl must abort
+	# loudly. Left unguarded it yields null on both sides, null != null is
+	# false, the box reads "equal", no box is ever implicated, and every
+	# localization re-check below silently degrades into a no-op.
+	def dincl($id; $lane; $box):
+		[$R[$id].digests_incl[] | select(.lane == $lane and .box_name == $box
+			and .pass == 1)]
+		| if length == 1 then .[0].sha256
+			else error("comparison gate: run summary is missing an included-extent digest") end;
 
 	(if length > 0 then . else error("no comparison records found") end)
 	| (if all(.[]; type == "object") then . else error("comparison record is not an object") end)
@@ -542,7 +593,11 @@ jq -se \
 			# ONLY value below 1 this gate admits: any other non-positive
 			# index is a malformed record, not a disclosure.
 			(.flat_index | is_integer and (. >= 1 or . == -1)) and
-			(.pos | vector) and (.value_a | is_integer) and (.value_b | is_integer))
+			(.pos | vector) and
+			# -1 is the CLAIM these two fields make -- "no node value is
+			# resolvable from digest evidence". `is_integer` alone is what
+			# lets an invented, measured-looking node value through.
+			.value_a == -1 and .value_b == -1)
 		then . else error("first_diff record shape is invalid") end)
 	# ---- first_diff cardinality, recomputed from the same summaries -------
 	| . as $c
@@ -569,6 +624,58 @@ jq -se \
 		then $c else error("equal digest pair has a first_diff record") end)
 	| (if ($emitted | length) == ($emitted | unique | length)
 		then $c else error("duplicate first_diff record for one digest pair") end)
+	# ---- first_diff LOCALIZATION, recomputed from the same summaries ------
+	# Cardinality alone is not enough, and neither is shape. A record carrying
+	# a plausible-looking but wrong positive index, or a -1 record carrying a
+	# coordinate that is not the sentinel, satisfies both and still publishes a
+	# number nothing measured -- exactly the number 10.13 tells a reader to
+	# plan a narrowed follow-on run from. So each record is re-derived here,
+	# from the same four summaries and the same box literals, in the scope of
+	# this gate. A record naming a comparison the pair list below does not
+	# know is underivable, and an underivable localization is a failed one.
+	# The lookup also requires that run_id_a and run_id_b on the record BE
+	# the canonical pair named by its comparison label, and the re-derivation
+	# below then reads $p.a and $p.b -- that canonical pair -- and never the
+	# ids the record carries. A mislabelled or mis-attributed record therefore
+	# cannot pass by naming one comparison while being checked against the
+	# digests of another.
+	| (if all($c[] | select(.tag == "first_diff" and .flat_index >= 1);
+			. as $r
+			| ($pairs | map(select(.label == $r.comparison and .lane == $r.lane
+					and .a == $r.run_id_a and .b == $r.run_id_b)))
+			| if length != 1 then false
+				else .[0] as $p
+					| region_box($p.region; $p.kx) as $box
+					| ([boxes_for($p.lane; $p.region; $p.kx)[]
+						| select(dincl($p.a; $p.lane; .)
+							!= dincl($p.b; $p.lane; .))] | first) as $hit
+					| if $hit == null then false
+						else named_box($hit).min as $min
+							| $r.pos == $min
+								and $r.flat_index == flat_index($box; $min)
+						end
+				end)
+		then $c
+		else error("first_diff localization is not the recomputed named-box minimum") end)
+	| (if all($c[] | select(.tag == "first_diff" and (.flat_index >= 1 | not));
+			. as $r
+			| ($pairs | map(select(.label == $r.comparison and .lane == $r.lane
+					and .a == $r.run_id_a and .b == $r.run_id_b)))
+			| if length != 1 then false
+				else .[0] as $p
+					| region_box($p.region; $p.kx) as $box
+					| $r.flat_index == -1
+						and $r.pos == $box.min
+						# Non-vacuity: -1 must mean "the digest_incl evidence
+						# implicates no named box", never "localization was
+						# skipped". For a light lane the box set is empty by
+						# construction, so this holds trivially and correctly.
+						and ([boxes_for($p.lane; $p.region; $p.kx)[]
+							| select(dincl($p.a; $p.lane; .)
+								!= dincl($p.b; $p.lane; .))] | length) == 0
+				end)
+		then $c
+		else error("unlocalized first_diff is not at the compared box minimum") end)
 	| true
 ' "$staged" >/dev/null
 

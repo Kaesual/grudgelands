@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # WP40 T5-0 engine-seam probe -- offline negative-test suite (contract 16).
 #
-# It proves that every one of the 43 negative rows of contract section 16
+# It proves that every one of the 45 negative rows of contract section 16
 # aborts with its exact stated fragment, plus the two checks section 16 names
 # as NOT being corruptions of an emitted stream:
 #
@@ -670,7 +670,7 @@ row_log() { # ROW LABEL FRAGMENT JQ_PROGRAM [ARM-ORDER, default B-O1]
 }
 
 # ===========================================================================
-# The 43 rows of contract section 16
+# The 45 rows of contract section 16
 # ===========================================================================
 
 # ---- 1: empty file --------------------------------------------------------
@@ -1000,6 +1000,45 @@ expect_failure 43 "comparison" "first_diff deleted for a differing pair" \
 	"differing digest pair has no first_diff record" \
 	gate_only "$scratch/work/row43.jsonl"
 
+# ---- 44: comparison -- a localized first_diff moved off its named box ----
+# The moved record is INTERNALLY CONSISTENT: pos goes one voxel in +x and the
+# flat index goes with it, so x-fastest self-consistency still holds and a
+# self-consistency check alone would accept it. Only the recomputation from the
+# digest_incl evidence catches it -- 4lo is the first seam half whose content
+# digest differs between A1-O1 and B-O1, and its minimum corner is 840,0,712.
+# shellcheck disable=SC2016  # $hit is a jq binding; shell expansion here would destroy the program
+corrupt_comparison "$scratch/work/row44.jsonl" \
+	'([.[] | select(.tag == "first_diff" and .comparison == "SEAM:O1:A1-vs-B"
+	    and .lane == "content")]) as $hit
+	 | (if ($hit | length) == 1 and $hit[0].flat_index == 31505
+	      and $hit[0].pos == {x: 840, y: 0, z: 712} then .
+	    else error("row 44 fixture premise: the baseline SEAM:O1:A1-vs-B content record is not the localized 31505 record at 840,0,712") end)
+	 | map(if .tag == "first_diff" and .comparison == "SEAM:O1:A1-vs-B"
+	       and .lane == "content"
+	    then .pos = {x: 841, y: 0, z: 712} | .flat_index = 31506
+	    else . end)'
+expect_failure 44 "comparison" "localized first_diff moved one voxel, its index moved to match" \
+	"first_diff localization is not the recomputed named-box minimum" \
+	gate_only "$scratch/work/row44.jsonl"
+
+# ---- 45: comparison -- an unlocalized first_diff off the sentinel --------
+# flat_index -1 says "no named box is implicated and this coordinate was never
+# measured"; the only coordinate admissible under that claim is the compared
+# box minimum. A -1 record parked on any other well-formed vector publishes a
+# number nothing measured, wearing the sentinel as cover.
+# shellcheck disable=SC2016  # $hit and $target are jq bindings; shell expansion here would destroy the program
+corrupt_comparison "$scratch/work/row45.jsonl" \
+	'([.[] | select(.tag == "first_diff" and .flat_index == -1)]) as $hit
+	 | (if ($hit | length) >= 1
+	      and ($hit | map(.pos == {x: 824, y: -16, z: 696}) | all) then .
+	    else error("row 45 fixture premise: the baseline carries no unlocalized first_diff at the SEAM minimum 824,-16,696") end)
+	 | ($hit[0].seq) as $target
+	 | map(if .tag == "first_diff" and .seq == $target
+	    then .pos = {x: 830, y: -8, z: 700} else . end)'
+expect_failure 45 "comparison" "unlocalized first_diff parked away from the SEAM minimum" \
+	"unlocalized first_diff is not at the compared box minimum" \
+	gate_only "$scratch/work/row45.jsonl"
+
 # ===========================================================================
 # The two checks section 16 names as NOT corruptions of an emitted stream
 # ===========================================================================
@@ -1114,8 +1153,8 @@ for _row in $rows_covered; do
 		*) section16_rows=$((section16_rows + 1)) ;;
 	esac
 done
-if (( section16_rows != 43 )); then
-	fail "expected 43 section-16 rows to be exercised, counted $section16_rows"
+if (( section16_rows != 45 )); then
+	fail "expected 45 section-16 rows to be exercised, counted $section16_rows"
 fi
 
 printf '%-5s %-11s %-56s %s\n' "row" "stream" "fragment" "result"
@@ -1123,5 +1162,5 @@ printf '%s\n' "$(printf '%.0s-' {1..118})"
 printf '%s\n' "${table[@]}"
 printf '%s\n' "$(printf '%.0s-' {1..118})"
 
-printf 'WP40 t5-probe selftest: PASS (45 checks -- 43 section-16 rows proven by %d fixtures, plus the A-02 refusal and the manifest-digest fixture; %d negative fixtures in all, no engine capture)\n' \
+printf 'WP40 t5-probe selftest: PASS (47 checks -- 45 section-16 rows proven by %d fixtures, plus the A-02 refusal and the manifest-digest fixture; %d negative fixtures in all, no engine capture)\n' \
 	"$section16_fixtures" "$fixtures"

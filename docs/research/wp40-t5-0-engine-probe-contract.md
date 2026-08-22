@@ -1,26 +1,39 @@
 # WP40 T5-0 engine-seam probe — package contract
 
-Status: **proposed package contract, awaiting user acceptance. Not an
-implementation, not a shipped-WP claim, and not authoritative game design.
-Until it is accepted it authorizes no code, no world, no engine run and no
-evidence commit.**
+Status: **implemented and closed as a T5-0 MEASUREMENT package, 2026-08-22.**
+The specification below was implemented, four headless engine captures were
+taken, gated and reviewed, and the evidence is committed under
+`tools/wp40/evidence/t5-probe-9ac056ff…/`. **T5-0 remains a tools-only
+observation package: it is not production T5, it authorizes no production work,
+and full T5 still sits behind T3 and T4**
+(`wp40-acceleration-and-delivery-plan.md:479-481`). What was measured, and what
+those measurements do and do not license, is **section 24**.
 
-This file specifies a small, tools-only, disposable T5-0 engine-seam probe. It
-does not build the probe. Every number, coordinate, operation count and gate
-below is a specification to be implemented and then measured; no sentence here
-records a measurement that has been taken. Where a fact is settled by pinned
-engine source it is cited as such; where it can only be settled by running the
-engine it is placed in the runtime-measurement column and stays there.
+This file specifies a small, tools-only, disposable T5-0 engine-seam probe. The
+body is the **specification the implementation was measured against** — every
+number, coordinate, operation count and gate below is a demand on the
+implementation, not a report of an outcome. **Section 24 is where measurements
+are recorded**; the few clauses below that now also state a measured
+consequence say so in those words and name section 24. Where a fact is settled
+by pinned engine source it is cited as such; where it can only be settled by
+running the engine it is placed in the runtime-measurement column and stays
+there.
 
 The pinned engine reference is `reference_projects/luanti` at
 `df04879066de6eb94ca43996822a6dfacc74feca` (5.17.0-dev). The repository
-reference is `1b38943`. Every engine claim carries a
-`reference_projects/luanti/…:line` citation; every repository claim carries a
-`<path>:line` citation.
+reference is `1b38943` — **the commit this contract was written against, not the
+archive base the accepted captures ran on.** The captures archived `7f5fe9a`;
+section 24 records that, records that the manifest digest binds the actual
+archive SHA, and records why the substrate is materially unchanged. Every engine
+claim carries a `reference_projects/luanti/…:line` citation; every repository
+claim carries a `<path>:line` citation.
 
 **Size of the package, stated once and enforced everywhere below:**
 2 arms × 2 orders × 3 mapchunks = **12 mapchunk generations** in **4** engine
-invocations. No other total appears in this document.
+invocations. That is the accepted total, and no other accepted total appears in
+this document. There is exactly one stated exception, and it is not evidence:
+24.1 records **eleven** engine invocations over development, of which these
+**4** are the accepted set.
 
 ---
 
@@ -43,7 +56,7 @@ invocations. No other total appears in this document.
 `T5` at `wp40-engineering-brief.md:1975` and `:3209-3210` is a **resource depth
 tier**, not a task. Only section 7 of the brief (`:4091`, `:4106` "Only T5 owns
 the VoxelManip adapter and transaction.", `:4117`) and
-`wp40-acceleration-and-delivery-plan.md:475-533` mean the terrain adapter.
+`wp40-acceleration-and-delivery-plan.md:477-575` mean the terrain adapter.
 Everywhere below, `T5` and `T5-0` mean the adapter task and this probe; no
 sentence here refers to the depth tier.
 
@@ -60,7 +73,7 @@ production registration, a second reusable VoxelManip adapter, a schema or
 operation-type freeze, a run of `tools/sync_to_luanti.sh`
 (`docs/process/wp-workflow.md:42-45`), an edit to any of the six locked T2
 surfaces (`wp40-t2-plan.md:227-234`), or any movement of full T5 ahead of T3 and
-T4 (`wp40-acceleration-and-delivery-plan.md:477-479`).
+T4 (`wp40-acceleration-and-delivery-plan.md:479-481`).
 
 ## 2. Probe definition
 
@@ -86,7 +99,7 @@ without claiming representative production performance.
 
 - The engine seams enumerated in section 7, measured against the pinned-source
   expectations recorded there.
-- The four micro-cases of `wp40-acceleration-and-delivery-plan.md:497-502`,
+- The four micro-cases of `wp40-acceleration-and-delivery-plan.md:499-504`,
   instantiated over three mapchunks exactly as section 10 defines them.
 - Two chunk request orders with a paired control per order (section 10.7).
 - Callback wall time via `core.get_us_time()` and Lua heap via
@@ -145,7 +158,7 @@ T5-0 does **not** prove, establish, validate, freeze or make any claim about:
     order effects without attributing their cause.
 
 It also does **not** move full T5 ahead of T3 and T4
-(`wp40-acceleration-and-delivery-plan.md:477-479`).
+(`wp40-acceleration-and-delivery-plan.md:479-481`).
 
 ### 3.3 The register these non-claims are written in
 
@@ -165,15 +178,15 @@ invariant, and only within a single run set.
 
 ## 4. Acceleration plan §8 versus the binding brief
 
-`wp40-acceleration-and-delivery-plan.md:475-533` is the origin of this package
+`wp40-acceleration-and-delivery-plan.md:477-575` is the origin of this package
 and is a discussion draft (`:3-6`). Five points differ from
 `wp40-engineering-brief.md`; in every case the brief wins.
 
 | # | Acceleration plan §8 | Binding brief | Resolution |
 | --- | --- | --- | --- |
-| a | one baseline capture — "the same chunks once without and once with the injected probe" (`:490-491`) | every schedule needs its own paired control with the same order (`:3029-3038`) | **Two arms, both orders. Four runs, not two.** `B − A1` isolates the payload and each order carries its own paired `A1` control (10.1, 10.6, 10.7, 10.9). A third, script-free arm would also have isolated "a mapgen script exists"; it is out of scope, and non-claim 12 records the consequence |
-| b | new evidence "is limited to the missing directions and operations, including mapgen-to-main IPC" (`:513-516`) | "There is no IPC access in `H`, `id_at`, a spatial query, column loop, candidate loop, or generated-chunk callback." (`:2278-2279`); "IPC is never a cache-miss or runtime recovery channel." (`:2318`) | **Capability telemetry only, explicitly not adopted.** The per-callback `ipc_set` is labelled `production_adopted: false` in-band (12.3), is performed identically in both arms so it cancels in `B − A1`, and the contract records that production may not do this |
-| c | "The primary substrate is the current production-like Grudgelands baseline" (`:487-491`), which runs `mgv7_dungeon_ymax = 31000` | the vertical contract binds `mgv7_dungeon_ymax = -193` (`:335-337`, `:2970-2971`) | **Do not pin it (section 5).** The probe runs the engine default 31000, which is what the repository at `1b38943` actually produces (`tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.map_meta.txt:175`), records it, and claims nothing about `-193`. `mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua:86` is source-catalog **intent**: the file *is* `dofile`d in the main state on every load (`mods/MAPGEN/grug_mapgen/init.lua:94` → `wp40/init.lua:18` → `wp40/compiler.lua:61`), but its value never reaches a mapgen setting — there is no `core.set_mapgen_setting` anywhere under `mods/` |
+| a | one baseline capture — "the same chunks once without and once with the injected probe" (`:492-493`) | every schedule needs its own paired control with the same order (`:3029-3038`) | **Two arms, both orders. Four runs, not two.** `B − A1` isolates the payload and each order carries its own paired `A1` control (10.1, 10.6, 10.7, 10.9). A third, script-free arm would also have isolated "a mapgen script exists"; it is out of scope, and non-claim 12 records the consequence |
+| b | new evidence "is limited to the missing directions and operations, including mapgen-to-main IPC" (`:515-518`) | "There is no IPC access in `H`, `id_at`, a spatial query, column loop, candidate loop, or generated-chunk callback." (`:2278-2279`); "IPC is never a cache-miss or runtime recovery channel." (`:2318`) | **Capability telemetry only, explicitly not adopted.** The per-callback `ipc_set` is labelled `production_adopted: false` in-band (12.3), is performed identically in both arms so it cancels in `B − A1`, and the contract records that production may not do this |
+| c | "The primary substrate is the current production-like Grudgelands baseline" (`:489-493`), which runs `mgv7_dungeon_ymax = 31000` | the vertical contract binds `mgv7_dungeon_ymax = -193` (`:335-337`, `:2970-2971`) | **Do not pin it (section 5).** The probe runs the engine default 31000, which is what the repository at `1b38943` actually produces (`tools/wp40/evidence/t0-post-wp43-wp18-wp36/70adabd28401e820ec86e8786bf0da368225c8624e42ed02dd3bce175fd3cafc/raw/run-001.map_meta.txt:175`), records it, and claims nothing about `-193`. `mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua:86` is source-catalog **intent**: the file *is* `dofile`d in the main state on every load (`mods/MAPGEN/grug_mapgen/init.lua:94` → `wp40/init.lua:18` → `wp40/compiler.lua:61`), but its value never reaches a mapgen setting — there is no `core.set_mapgen_setting` anywhere under `mods/` |
 | d | the probe performs VoxelManip writes in a mapgen callback | "No task may introduce a second geometry evaluator, placement path, or VoxelManip transaction for convenience." (`:4080-4081`) | **The probe IS a second VoxelManip write path, and this is the mitigation, stated explicitly:** it is not a task in the T0–T9 decomposition, creates no file under `mods/`, is registered by no production code path, uses deliberately foreign vocabulary (section 9), and is deleted before T5 begins with the review proving its absence (section 20). The brief's sentence forbids a second transaction *inside the WP40 task graph for convenience*; this probe is outside that graph and exists to test the seam the single transaction will later use |
 | e | silent about the locked T2 surfaces | "No work package may touch them as a side effect." (`wp40-t2-plan.md:237`) | **Section 8.3 carries the explicit clause** naming all six files and the reviewer check |
 ## 5. Substrate manifest
@@ -185,7 +198,7 @@ configuration).
 
 | Item | Value | Source | Class | Recorded at runtime? |
 | --- | --- | --- | --- | --- |
-| game tree | `git archive` of `1b38943` | pattern: `tools/wp40/run_dungeon_probe.sh:62` | probe | yes — archive commit SHA in the manifest digest |
+| game tree | `git archive` of the capture's base commit. **The accepted run set archived `7f5fe9a`, not the `1b38943` this contract was written against** — section 24 records the difference and why the substrate is materially unchanged | pattern: `tools/wp40/run_dungeon_probe.sh:62` | probe | yes — the archive commit SHA is bound into the manifest digest, so the two cannot silently drift |
 | mapgen | `v7` | `game.conf:7-8` (`allowed_mapgens = v7`, `default_mapgen = v7`) | repo | yes — `map_meta.txt` |
 | `fixed_map_seed` | `40200517` | precedent `tools/wp40/run_dungeon_probe.sh:82` | probe | yes |
 | `num_emerge_threads` | `1` | default `0` at `reference_projects/luanti/src/defaultsettings.cpp:511`; auto-multithreading only for singlenode at `reference_projects/luanti/src/emerge.cpp:187-188`; clamp at `:202-224` | probe | yes |
@@ -518,6 +531,12 @@ tools/wp40/evidence/t5-probe-*/**            # reviewed evidence (13.3)
 docs/research/wp40-t5-0-engine-probe-contract.md   # this contract only
 ```
 
+**What this boundary governs.** It is the **implementation** package's boundary
+and it still binds that package exactly as written. The separately authorized
+2026-08-22 **closeout** package runs under the narrower, separately stated
+licence of **24.8**; that licence does not widen this one, and neither this
+clause, §17 item 13 nor §18 item 1 is relaxed by it.
+
 The `docs/` entry is exhaustive and deliberately names one file. It excludes in
 particular `wp40-engineering-brief.md`, `wp40-t2-contracts.md` and
 `wp40-t2-plan.md` — the authorities 1.1 declares binding — and equally
@@ -603,11 +622,12 @@ anything.
 1. **six literal box tuples** — the write extents of 10.10, as
    `{minx, miny, minz, maxx, maxy, maxz}` integer sextuples with no name, type,
    priority or owner field;
-2. **five literal registered node names** — `"air"`; `"default:stone"`
+2. **five literal node names the payload resolves through `core.get_content_id`**
+   — four of them live registrations, one a force alias — `"air"`; `"default:stone"`
    (`mods/BASE/default/nodes.lua:259`); `"default:water_source"` (`:2204`,
    `paramtype = "light"` `:2231`, `liquidtype = "source"` `:2239`);
-   `"default:goldblock"` (`:1298-1304`; opaque, no light source, no
-   `paramtype2`, `is_ground_content = false` at `:1301`); and
+   `"default:goldblock"` — **a force alias; see the note directly below for the
+   live definition every property claim is made against**; and
    `"stairs:stair_cobble"` (`mods/BASE/stairs/init.lua:525-534`;
    `paramtype = "light"` `:98`, `paramtype2 = "facedir"` `:99`) — each resolved
    once per mapgen state through `core.get_content_id`, which the emerge state
@@ -616,6 +636,30 @@ anything.
    `API_FCT` at `:719`);
 3. **one integer `param2` constant** (`1`), written into the facedir box;
 4. **a case dispatcher** keyed on `minp.x` alone, with three branches.
+
+**`"default:goldblock"` is a force alias, and the property argument is made
+against the live node.** The string is the **runtime item name the payload
+uses** — it is what the payload resolves through `core.get_content_id`, and it
+is what the section 19.3 GUI step tells the user to look for — but it is not a
+live item registration in this game. `mods/ITEMS/grug_materials/registry.lua:372`
+maps `["default:goldblock"] = "grug_materials:gold_block"` inside
+`LEGACY_ALIASES` (`:340`), and `mods/ITEMS/grug_materials/migration.lua:62-63`
+installs every entry of that table with `core.register_alias_force`, which
+**removes the item registration**
+(`reference_projects/luanti/builtin/game/register.lua:355` defines it, and
+`:359-360` calls `core.unregister_item(name)` whenever
+`core.registered_items[name] ~= nil`). `mods/BASE/default/nodes.lua:1298-1304`
+is therefore a **RETIRED** definition and is the live authority for nothing this
+probe measured. The live registered node is **`grug_materials:gold_block`**,
+registered by the `PROCESSED_MATERIALS` loop at
+`mods/ITEMS/grug_materials/ores.lua:121` (its `block_node` for `gold` is
+`mods/ITEMS/grug_materials/registry.lua:245`). That registration —
+`ores.lua:121-128` in full — sets **`is_ground_content = false`**
+(`ores.lua:124`) and sets **no `paramtype`, no `sunlight_propagates` and no
+`light_source`**. Every property claim this contract makes about the marker,
+including 10.13's DungeonGen preservation argument, is a claim about **that**
+definition. The retired default definition looked citable because
+`pairs(core.registered_nodes)` does not enumerate alias names.
 
 **What it deliberately avoids.** The payload borrows no record name, field name,
 operation-type name, conflict rule, priority ordering, resolver identifier, zone
@@ -645,7 +689,7 @@ table of 10.4 sound.
 | `B` | **registered** (identical file) | the three-chunk synthetic payload | treatment |
 
 `B − A1` is the payload delta and the only delta this probe computes. The four
-micro-cases of `wp40-acceleration-and-delivery-plan.md:497-502` map onto it as:
+micro-cases of `wp40-acceleration-and-delivery-plan.md:499-504` map onto it as:
 
 | Micro-case | Where it lives | What it establishes |
 | --- | --- | --- |
@@ -783,7 +827,7 @@ the named region.
 | `V-03` | **the delta is present where declared:** on `content`, `digest_incl(B, O) != digest_incl(A1, O)` over every named box whose `dirty_content_by_box` entry is non-zero, and equal over every box whose entry is zero; on `param2`, `digest_incl` differs over the **facedir** box iff `dirty_param2_by_box.facedir > 0`, and is **equal** over `cut`, `fill`, `water`, `4lo` and `4hi` always — the last two because micro-case 4 declares no `param2` write at all (10.10) | as stated | equality inside a box with a non-zero by-box dirty count means the write did not survive the blit — a first-class engine result, not a gate failure. A `param2` difference over any of the five boxes the payload never writes `param2` into **is** a gate failure: the write mask was not the declared box. This verdict is evaluable only because `chunk_callback` carries the by-box counts; the scalars cannot answer it |
 | `V-04` | `CORE(B, O1) == CORE(B, O2)` per chunk, per lane | equal | order dependence inside CORE, read against `V-06`'s CORE half. For `k_x = 8` both are expected equal trivially, since no neighbour of that chunk is ever generated (6.3), so a difference there is a finding about mapgen-state carry-over rather than about neighbours |
 | `V-05` | **content and `param2` over SEAM:** the paired-order cascade of 10.13 | a licensed outcome, not necessarily "equal" | outcomes are `no_delta`, `persisted`, `order_effect`, `no_stable_baseline`, `inconclusive`, `no_signal_by_construction`. Only `persisted` with its corroboration is a pass. **No outcome attributes a cause to the engine** |
-| `V-06` | **the paired control's own order dependence, in both compared regions:** `CORE(A1, O1) == CORE(A1, O2)` per chunk and `SEAM(A1, O1) == SEAM(A1, O2)`, per lane | unknown, measured | any difference is reported **separately** as native engine order dependence, localized by `first_diff`. Both halves are load-bearing: the SEAM half is what `V-05` is read against, and the CORE half is what `V-04` is read against — without it a native order effect confined to CORE(10) or CORE(11) would be misread as a payload effect. The digests already exist in both arms and both orders, so this costs no extra readback |
+| `V-06` | **the paired control's own order dependence, in both compared regions:** `CORE(A1, O1) == CORE(A1, O2)` per chunk and `SEAM(A1, O1) == SEAM(A1, O2)`, per lane | unknown, measured | any difference is reported **separately** as native engine order dependence, localized by `first_diff` **only as far as digests permit** — to a named box's minimum corner when one is implicated, and explicitly **not localized** (`flat_index: -1`) otherwise (12.7). Both halves are load-bearing: the SEAM half is what `V-05` is read against, and the CORE half is what `V-04` is read against — without it a native order effect confined to CORE(10) or CORE(11) would be misread as a payload effect. The digests already exist in both arms and both orders, so this costs no extra readback |
 | `V-07` | operation counts equal the matrix of 10.11, conditioned on the arm and on the `c`/`p`/`q`/`l` predicates the same record carries | equal | gate fails |
 | `V-08` | **light lanes over SEAM:** `SEAM(B, O1) == SEAM(B, O2)` and `SEAM(B, Oi) == SEAM(A1, Oi)` | unknown, measured | an observation only. Arm `A1` performs zero lighting calls, so a light-lane `B − A1` is a different computation per arm over overlapping inputs, not a payload delta. **This probe does not test the brief's halo-light idempotence exception** (`wp40-engineering-brief.md:1471-1474`): with the restore of 10.10 it writes no halo light at all |
 | `V-09` | **quiescence:** the two readback digest sets of 10.15, ≥ 2 s apart, identical in every run | equal | **no verdict of any kind is reported** — abort `A-13` |
@@ -831,10 +875,13 @@ never a failure. Four consequences follow, all deliberate:
   `l` false: `paramtype2 = "facedir"` (`mods/BASE/stairs/init.lua:99`) is a
   rotation.
 - `l` is genuinely conditional, not a disguised constant. Micro-case 4 writes
-  `default:goldblock`, which sets no `paramtype`, no `sunlight_propagates` and no
-  `light_source` (`mods/BASE/default/nodes.lua:1298-1304`), exactly like
-  `default:stone` (`:259`): into stone it does **no lighting work at all**, into
-  air it runs the full sequence. Which happens is measured, never assumed.
+  the item name `default:goldblock`, whose **live** registration is
+  `grug_materials:gold_block` (section 9's alias note) and which sets no
+  `paramtype`, no `sunlight_propagates` and no `light_source`
+  (`mods/ITEMS/grug_materials/ores.lua:121-128`), exactly like `default:stone`
+  (`mods/BASE/default/nodes.lua:259`): into stone it does **no lighting work at
+  all**, into air it runs the full sequence. Which happens is measured, never
+  assumed.
 - Every writing case captures the same evidence, listed once: per-call wall time,
   the four predicates and all realized dirty counts, both
   `collectgarbage("count")` samples, that chunk's four lane digests, its
@@ -955,9 +1002,11 @@ One solid `default:goldblock` bar, cross-section 8 × 8 in y and z, spanning
 - **Why `default:goldblock`:** chosen for the five-minute user test of section 19
   — at these coordinates the native column is overwhelmingly likely to be solid
   stone, and a `default:stone` bar inside stone is invisible, as is a *missing*
-  half of one. Its `is_ground_content = false`
-  (`mods/BASE/default/nodes.lua:1301`) also has the mechanical consequence 10.13
-  works out, and which is why micro-case 4 is **not** a generic overwrite test.
+  half of one. The name is a force alias for the live node
+  `grug_materials:gold_block` (section 9), and that node's
+  `is_ground_content = false` (`mods/ITEMS/grug_materials/ores.lua:124`) also
+  has the mechanical consequence 10.13 works out, and which is why micro-case 4
+  is **not** a generic overwrite test.
 - **Negative mutations:** (i) let `k_x = 10` write the whole bar — fail with
   `payload wrote outside its central owner slice`, detected by the payload's own
   extent check **and** by the SEAM digest diverging from the two-half
@@ -1005,10 +1054,17 @@ access appears in exactly one file. The scoping matters as much as the pattern �
 paths, and this package copies the scoping and not only the shape:
 
 ```
-rg -n --glob 'tools/wp40/t5_probe/payload/**.lua' \
+repo="$(git rev-parse --show-toplevel)" || { echo "no repository root" >&2; exit 1; }
+cd "$repo" || { echo "cannot enter repository root: $repo" >&2; exit 1; }
+rg -n \
+   --glob 'tools/wp40/t5_probe/payload/**.lua' \
    --glob '!tools/wp40/t5_probe/payload/vm_proxy.lua' \
-   -e 'core\.vmanip' -e 'get_mapgen_object' -e '(^|[^%w_])vm:[a-z_]+' \
-   ; test $? -eq 1
+   -e 'core\.vmanip' \
+   -e 'get_mapgen_object' \
+   -e '(^|[^%w_])vm:[a-z_]+' \
+   -e '(^|\W)vm:[a-z_]+' \
+   -- . </dev/null
+test $? -eq 1
 ```
 
 Three exclusions are stated rather than discovered. **The runner is out of
@@ -1021,6 +1077,40 @@ pass that argument straight into `vm_proxy.wrap(...)` on the first statement of
 the callback and never bind it to a matched name — the reviewer reads that one
 line rather than trusting the sweep for it. The `vm:` pattern is anchored on a
 non-word character so an identifier merely *ending* in `vm` does not match.
+
+**Four properties of that command are load-bearing, and an earlier draft's
+snippet had none of them and was not executable as written.**
+
+- **The repository root is bound in the snippet, and both steps fail closed.**
+  The globs are repo-relative, so the sweep is only the stated sweep when it
+  runs from the repository root — but a snippet that merely *assumes* a bound
+  `$repo` is worse than one that never leaves the current directory. With
+  `repo` unset, `cd "$repo" && rg …` runs `cd ""`, which fails; `&&`
+  short-circuits so `rg` never runs at all; and `test $? -eq 1` then reads that
+  very failure as the passing state. **That is the `AGENTS.md:133-136` hazard
+  wearing the gate's own uniform**, and it certifies proxy discipline without
+  reading a file. The snippet therefore binds the root itself with
+  `git rev-parse --show-toplevel` and aborts on a failure of either the binding
+  or the `cd`, so only `rg`'s own status ever reaches the assertion. (The
+  runner does not use this snippet: `run_t5_probe.sh:80-81` binds `repo` by
+  walking up from `BASH_SOURCE[0]`, which is equally explicit and equally
+  independent of the caller's working directory.)
+- **An explicit search root, and stdin closed.** `rg` with **no path operand
+  reads STDIN** whenever stdin is not a terminal, so a snippet without one, run
+  verbatim from a non-interactive shell, searches nothing — or blocks — and the
+  globs never apply. `-- .` and `</dev/null` close that. The globs are
+  **repo-relative**, which is why the root is the repository and not `payload/`.
+- **Both `vm:` anchors, deliberately.** `[^%w_]` is **Lua**-pattern syntax in a
+  slot that takes an `rg` regex, where `%w` is a literal percent-w and the class
+  therefore does not mean what it reads as. `(^|\W)` is the same anchor
+  expressed in the dialect `rg` actually speaks. The command supplies **both**,
+  on the stated ground that their union is strictly stricter than either alone:
+  it can only ever produce a **loud false positive**, never a silent miss.
+- **`test $? -eq 1` is the assertion, and no match is the passing state.** `rg`
+  exits `1` for "no matches", `0` for a match and anything else for a real
+  failure, so a status other than `1` fails the gate instead of being read as
+  success — the `AGENTS.md:133-136` hazard, stated once more because this sweep
+  is one of the gates it names.
 
 **Stated exemption: the main-state readback.** `driver/init.lua` legitimately
 uses a raw main-state VoxelManip — `core.get_voxel_manip()` plus `read_from_map`,
@@ -1044,7 +1134,7 @@ claim is withdrawn.** Against the pinned source:
 | mgv7 regenerates terrain, ores and decorations over the **central** chunk only | `generateTerrain()` at `reference_projects/luanti/src/mapgen/mapgen_v7.cpp:467`, x/z loops `node_min..node_max` at `:529-530`; `placeAllOres(this, blockseed, node_min, node_max)` `:355`; `placeAllDecos(this, blockseed, node_min, node_max)` `:363` | a later neighbour does not normally rewrite the previous central chunk's terrain, ores or decorations at all |
 | `DungeonGen` **does** run over `full_node_min..full_node_max` | `reference_projects/luanti/src/mapgen/mapgen.cpp:952` | it reaches the previous chunk's central slice … |
 | … but explicitly preserves nodes with `is_ground_content = false` | `reference_projects/luanti/src/mapgen/dungeongen.cpp:85-96`, whose own comment says the rule exists "to avoid dungeons that generate out beyond the edge of a mapchunk destroying nodes added by mods in 'register_on_generated()'" | … and must not touch a marker with that property |
-| `default:goldblock` has exactly that property | `mods/BASE/default/nodes.lua:1301`, definition `:1298-1304` | the chosen marker is **survivable by design** |
+| the marker the payload writes has exactly that property | the item name `default:goldblock` is a **force alias** for the live node `grug_materials:gold_block` (`mods/ITEMS/grug_materials/registry.lua:372`, installed by `mods/ITEMS/grug_materials/migration.lua:62-63`; section 9), and that live registration sets `is_ground_content = false` at `mods/ITEMS/grug_materials/ores.lua:124`, definition `:121-128`. The retired `mods/BASE/default/nodes.lua:1298-1304` is **not** the authority here | the chosen marker is **survivable by design** |
 | liquids cannot replace a solid non-liquid node, and lighting only writes `param1` | `updateLiquid` over the emerged area (`mapgen_v7.cpp:370`); `calcLighting` (`mapgen.cpp:466-472`) | neither can remove the bar from the content lane |
 
 So `blitBackAll` (`reference_projects/luanti/src/servermap.cpp:291`) reads and
@@ -1097,8 +1187,23 @@ combination matches exactly one:
 Row 4 is the only pass. **What would settle a `no_stable_baseline` run:** a run
 set in which the paired control *is* order-stable over the compared box — re-run
 at a different `fixed_map_seed`, or re-run with SEAM narrowed to a sub-box over
-which `A1(O1) == A1(O2)` holds, chosen from the failing run's `first_diff`. Both
-are follow-on runs; the probe reports the outcome and names the route.
+which `A1(O1) == A1(O2)` holds. Both are follow-on runs; the probe reports the
+outcome and names the route.
+
+**The narrowed-box route is conditional, and the condition is normative.** A
+narrowed follow-up box may be chosen from a `first_diff` record **only** when
+that record is localized — `flat_index >= 1` — and even then the record names a
+**box minimum**, not a voxel (12.7). A record carrying `flat_index == -1`
+supplies no coordinate at all: its `pos` is the compared-region
+minimum-corner sentinel and was never measured, so a sub-box planned from it
+would be planned from the corner of the very box that failed.
+
+**Measured consequence for the accepted evidence set (section 24).** The
+accepted run set landed on row 3, `no_stable_baseline`, and **both** of its
+SEAM `A1:O1-vs-O2` `first_diff` records — the `content` lane and the
+`light_day` lane — carry `flat_index: -1`. **This evidence set therefore
+supplies no narrowed SEAM box.** A follow-on would have to obtain one another
+way; the different-seed route is unaffected and stays open.
 
 **Per-lane aggregation.** The cascade runs per lane over `content` and `param2`.
 A lane whose realized dirty count is **zero by construction** — declared so in
@@ -1262,7 +1367,7 @@ comparison stream of 12.7 and must never appear in a run log.
 | --- | --- | --- |
 | `manifest` | 1, `state = "main"`, `seq = 1` | `engine_string`, `engine_hash`:string\|`"unavailable"`, `engine_is_dev`:bool, `lua_runtime`, `game_id`, `seed`, `mapgen_settings`:object string→string, `mapgen_noiseparams_sha256`, `content_id_table_sha256`, `content_id_count`:int, `mod_list_sha256`, `payload_digest`, `arm_switch_value`, `emerge_order`:array of **3** ints (the `k_x` in request order), `t0_us`:int |
 | `mapgen_state_init` | **1** in both arms, `state = "mapgen"` — `num_emerge_threads = 1` means one emerge thread and therefore one mapgen Lua state (`reference_projects/luanti/src/emerge.cpp:641-668`, called once per thread at `:684`) | `load_us`, `ipc_get_us`, `ipc_set_us`:int, `ipc_get_ok`:bool, `ipc_set_key`:string (always `"grug_wp40_t5_probe:mapgen_state"`, 12.4), `seed`, `chunksize`:int, `mapgen_edges_min`/`_max`:vec3, `callback_index`:int (`#core.registered_on_generateds` after the payload registers), `vmanip_ctor_type`:string, `vmanip_ctor_return_count`:int (S4c: expected `0`), `has_request_insecure_environment`, `has_get_gametime`, `has_get_timeofday`, `has_get_server_uptime`, `registered_nodes_available` (S4f):bool, `lua_bytes`:int |
-| `chunk_callback` | **3** per run in both arms, `state = "mapgen"` | `case`:`"bounded"`\|`"4lo"`\|`"4hi"`, `kx`:int, `minp`/`maxp`:vec3, `emin`/`emax`:vec3\|`null`, `blockseed`:int, `ops`:object of all 18 method names→int (zeros included), `op_us`:object string→int, `callback_us`:int, `write_extent_content`, `write_extent_param2`:int, `param2_extent_min`/`_max`:vec3\|`null`, `dirty_content`, `dirty_param2`:int, **`dirty_content_by_box`**, **`dirty_param2_by_box`**:object `box_name`→int, `dirty_liquid` (`q`), `dirty_light` (`l`):bool, `light_write_box_min`/`_max`:vec3\|`null`, `light_write_voxels`:int (`0` when `l` false), `restored_outside_dirty_mismatch_count`:int, `light_outside_box_snapshot_sha256`, `light_outside_box_restored_sha256`:string\|`""`, `lua_bytes_before`/`_after`:int, `ipc_set_us`:int, `ipc_set_key`:string (`"grug_wp40_t5_probe:chunk:<kx>"`, 12.4), `production_adopted`:bool (always `false`; section 4b). **The by-box counts are what `V-03` and 10.13 actually consume**; the scalars are their sums and stage 2 checks that. Their key sets are fixed by the case: `dirty_content_by_box` has `cut`/`fill`/`water`/`facedir` for `"bounded"` and the single key `"4lo"`/`"4hi"` otherwise; `dirty_param2_by_box` has only `facedir` for `"bounded"` and is `{}` for the case-4 chunks, whose `param2` set is empty by construction. **`emin`/`emax` are `null` in every arm-`A1` callback**, because the only Lua routes to them are `vm:get_emerged_area()` (`l_vmanip.cpp:377-387`) and `core.get_mapgen_object("voxelmanip")` (`l_mapgen.cpp:609-619`), both of which arm `A1` must not call. The three light fields are `null`/`""` whenever `l` is false. Keys are always present; only values are `null` |
+| `chunk_callback` | **3** per run in both arms, `state = "mapgen"` | `case`:`"bounded"`\|`"4lo"`\|`"4hi"`, `kx`:int, `minp`/`maxp`:vec3, `emin`/`emax`:vec3\|`null`, `blockseed`:int, `ops`:object of all 18 method names→int (zeros included), `op_us`:object string→int, `callback_us`:int, `write_extent_content`, `write_extent_param2`:int, `param2_extent_min`/`_max`:vec3\|`null`, `dirty_content`, `dirty_param2`:int, **`dirty_content_by_box`**, **`dirty_param2_by_box`**:object `box_name`→int, `dirty_liquid` (`q`), `dirty_light` (`l`):bool, `light_write_box_min`/`_max`:vec3\|`null`, `light_write_voxels`:int (`0` when `l` false), `restored_outside_dirty_mismatch_count`:int, `light_outside_box_snapshot_sha256`, `light_outside_box_restored_sha256`:string\|`""`, `lua_bytes_before`/`_after`:int, `ipc_set_us`:int, `ipc_set_key`:string (`"grug_wp40_t5_probe:chunk:<kx>"`, 12.4), `production_adopted`:bool (always `false`; section 4b). **The by-box counts are what `V-03` and 10.13 actually consume**; the scalars are their sums and stage 2 checks that. Their key sets are fixed by the case: `dirty_content_by_box` has `cut`/`fill`/`water`/`facedir` for `"bounded"` and the single key `"4lo"`/`"4hi"` otherwise; `dirty_param2_by_box` has only `facedir` for `"bounded"`; for the case-4 chunks that set is **empty by construction** and is therefore emitted on the wire as JSON **`null`**, because `core.write_json` renders an empty Lua table as `null` and an empty JSON *object* is not expressible from Lua at all. **`null` is the value the gate must accept and normalize to the empty set** before comparing key sets — normalization only, since a `null` on a `"bounded"` record still fails and a non-empty object on a case-4 record still fails. The key itself is always present carrying that `null`, so `exact_keys` is unaffected. **`emin`/`emax` are `null` in every arm-`A1` callback**, because the only Lua routes to them are `vm:get_emerged_area()` (`l_vmanip.cpp:377-387`) and `core.get_mapgen_object("voxelmanip")` (`l_mapgen.cpp:609-619`), both of which arm `A1` must not call. The three light fields are `null`/`""` whenever `l` is false. Keys are always present; only values are `null` |
 | `main_on_generated` | 3 per run | `minp`/`maxp`:vec3, `blockseed`:int, `callback_us`:int |
 | `emerge_done` | 3 per run | `kx`:int, `action`:string (`core.EMERGE_*` names, `tools/wp40/runtime_probe/init.lua:83-89`), `calls_remaining`, `elapsed_us`, `deadline_us`:int, `generated_us`:int (evidence only, gates nothing — 10.15) |
 | `ipc_readback` | 1, `state = "main"`; `keys_expected` is **4** in both arms — one load-time key plus one per chunk callback (12.4) | `keys_expected`, `keys_found`:int, `keys`:array of 4 strings (the exact key names, sorted), `poll_used`:bool, `total_us`:int, `values_sha256`:string |
@@ -1357,7 +1462,7 @@ fragments are the literal `error()` arguments.
 | 7 | **every compared region pinned to its literal contract coordinates.** `region = "core"` ⇒ `box_min`/`box_max` equal `(-16 + 80·kx, -16, 704) … (31 + 80·kx, 31, 751)`; `region = "seam"` ⇒ exactly `(824, -16, 696) … (871, 23, 735)` with `kx = -1`; `digest_incl.included_extent` equals the literal box its `box_name` names in 10.10; and `digest_excl.excluded_boxes` equals, element for element and in order, the literal **list** its `kx` and `excluded_kind` name in 12.3 — four boxes for `kx = 8` / `write_extent`, one otherwise. Without this pin a **displaced but successfully loaded** readback box passes everything: uniform air at high y yields `content_ignore_count == 0`, uniform lanes, `P1`…`P4` all true, and `V-05` reports a clean row over a region the contract never named |
 | 8 | `node_count + excluded_voxels == 110592` on every `digest_excl` record, and `excluded_voxels` equals the tabulated value for its `kx` and `excluded_kind` (12.3). This is what makes the union semantics checkable rather than merely declared |
 | 9 | the operation-count matrix of 10.11, per `case`, with the `c`/`p`/`q`/`l` conditionals read from the same record and **conditioned on the arm**: in arm `A1` every counter in `ops` is zero for every case, so the arm-`B` matrix is applied only in arm `B`. In particular every lighting counter is **zero** when `dirty_light` is false, and `update_liquids` zero when `dirty_liquid` is false |
-| 10 | the by-box dirty counts sum to their scalars — `dirty_content == (dirty_content_by_box \| add)` and likewise for `param2` — and their key sets are exactly those 12.3 fixes for the record's `case` |
+| 10 | the by-box dirty counts sum to their scalars — `dirty_content == (dirty_content_by_box \| add)` and likewise for `param2` — and their key sets are exactly those 12.3 fixes for the record's `case`, **after normalizing a `null` `dirty_param2_by_box` to the empty set** (12.3: the empty case-4 set is emitted as JSON `null`, not as `{}`). The normalization weakens nothing: the key set is still compared against the one that record's own `case` demands, so a `null` on a `"bounded"` record and a non-empty object on a case-4 record both still fail |
 | 11 | the light-restore proof on every `chunk_callback` with `dirty_light == true`: `restored_outside_dirty_mismatch_count == 0` and `light_outside_box_snapshot_sha256 == light_outside_box_restored_sha256`, both non-empty; and both hash fields `""` with the counter `0` when `dirty_light` is false |
 | 12 | the `param2` mask identity on the `bounded` record: `param2_extent_min`/`_max` equal the `facedir` box literal, and `write_extent_param2 == 512` |
 | 13 | every measured chunk's `emerge_done.action` equals the generated action (`core.EMERGE_GENERATED`, `tools/wp40/runtime_probe/init.lua:83-89`); a chunk served `FROM_MEMORY`, `FROM_DISK`, `CANCELLED` or `ERRORED` was not generated by this run and its digests are meaningless |
@@ -1452,8 +1557,25 @@ cannot participate in a run's `seq` partition or precede that run's terminal
 
 | `tag` | Cardinality | Fields (all mandatory; `exact_keys` enforced) |
 | --- | --- | --- |
-| `first_diff` | **exactly one per differing compared digest pair, zero for an equal pair.** The cardinality is gated on that condition: a differing pair with no `first_diff` fails, because 10.13's cascade and `V-06` tell the reader to localize with it | `comparison`:string (e.g. `"SEAM:A1:O1-vs-O2"`), `lane`, `region`:string, `flat_index`:int (1-based ascending `VoxelArea` index within the compared box), `pos`:vec3, `value_a`, `value_b`:int |
+| `first_diff` | **exactly one per differing compared digest pair, zero for an equal pair.** The cardinality is gated on that condition: a differing pair with no `first_diff` fails, because 10.13's cascade and `V-06` tell the reader to localize with it | `comparison`:string (e.g. `"SEAM:A1:O1-vs-O2"`), `lane`, `region`:string, `flat_index`:int (either `>= 1` **or** the in-band marker `-1`; **never a voxel index** — see "`first_diff` is box-level" below), `pos`:vec3, `value_a`, `value_b`:int (**always `-1`**, the in-band "unavailable" marker) |
 | `verdict` | one per (verdict ID, lane) actually evaluated | `id`:`"V-01"`…`"V-09"`, `lane`:string\|`"all"`, `result`: closed set `"pass"`\|`"fail"`\|`"result"`\|`"inconclusive"`\|`"no_signal"`, `predicates`:object string→bool (`V-05`'s four; empty otherwise), `outcome`:string (`V-05`'s cascade outcome; `""` otherwise), `detail`:string |
+
+**`first_diff` is box-level, never voxel-level.** `compare_runs.sh` consumes
+SHA-256 digests only — the per-run `digests` / `digests_excl` / `digests_incl`
+sets of the four summaries — and never decodes a voxel array. It therefore
+**cannot** produce a measured voxel-level first difference, and this contract
+demands none. Every `first_diff` record is in exactly one of two states, told
+apart in band by `flat_index`:
+
+| `flat_index` | State | What `pos` and `flat_index` mean |
+| --- | --- | --- |
+| `>= 1` | **LOCALIZED** | some named `digest_incl` box inside the compared region has digests that differ between the two compared runs. `pos` is **that box's minimum corner**, and `flat_index` is that corner's 1-based ascending `VoxelArea` index inside the **compared region box** (12.6's formula). **It is a box, never a voxel** |
+| `-1` | **NOT LOCALIZED** | **no named box is implicated** — either no named box inside the compared region differs, or the lane is a light lane, which carries no per-box `digest_incl` at all (12.3), so the box search never runs. `pos` is then only the **compared-region minimum-corner sentinel, and was NEVER measured** |
+
+`-1` is an **in-band marker and not a coordinate**. `value_a` and `value_b` are
+`-1` on **every** record, localized or not, and mean **"unavailable"**: a node
+value is not resolvable from digest evidence. No consumer may read a `-1` as a
+flat index, as a node value, or as a position.
 
 **Its gate.** `compare_runs.sh` applies the same fail-closed discipline as 12.5
 to this file, built from per-assertion `error("…")` calls: every record is a JSON
@@ -1463,6 +1585,37 @@ four runs of 10.7; every `id` is in `V-01` … `V-09` and every `result` and
 `outcome` is in its closed set; a `V-05` record reporting `pass` on any outcome
 other than `persisted` fails; and the `first_diff` cardinality condition above
 holds against the digest pairs the same script compared.
+
+**And a `first_diff` must be exactly right, not merely well-shaped.** A record
+whose fields are each individually plausible can still name the wrong place, so
+the gate **recomputes** rather than accepts:
+
+- **Localized (`flat_index >= 1`).** From the pinned summaries and the box
+  literals of 10.10 the gate recomputes which named box inside the compared
+  region the `digest_incl` values implicate. The expected `pos` is that box's
+  minimum corner and the expected `flat_index` is that corner's index under
+  12.6's formula over the compared region box. Both must match **exactly**: a
+  `pos` moved to a plausible neighbouring voxel with `flat_index` recomputed to
+  agree with it is internally consistent and still fails (section 16, row 44).
+- **Unlocalized (`flat_index == -1`).** `flat_index` must be exactly `-1`, `pos`
+  must be the compared-region minimum-corner sentinel, and **no named box inside
+  the compared region may in fact differ** — an unlocalized record standing over
+  a region that does have a differing named box is a failed search reported as
+  an absence (section 16, row 45).
+- **The canonical pair, in both cases.** The record's own `run_id_a` and
+  `run_id_b` must **be** the canonical run pair that its `comparison` label
+  names — the pair the gate's own comparison table binds to that label — and
+  the recomputation above is performed **from that canonical pair**, never from
+  the ids the record carries. Both halves are needed. Recomputing from the
+  carried ids lets a record name one comparison while being checked against
+  another comparison's digests, so a mislabelled or mis-attributed record
+  passes whenever the substitution happens to be digest-equivalent on the
+  implicated box; requiring the equality without recomputing from the canonical
+  pair would leave the check reading whatever the record supplied. A record
+  whose ids are not that pair is underivable, and an underivable localization
+  is a failed one — it fails with the same fragment as the assertion it sits
+  in, and adds no new abort row.
+- **Both cases.** `value_a == -1` and `value_b == -1` are required.
 
 **And the run gate rejects them.** Stage 2 of `verify_log.sh` asserts that no
 record in a raw log carries `tag` `"verdict"` or `"first_diff"`, or a `stream`
@@ -1698,7 +1851,7 @@ or zero.
 
 ## 16. Negative tests
 
-Each of the **43** rows is a deliberate corruption a gate **must** abort on, with
+Each of the **45** rows is a deliberate corruption a gate **must** abort on, with
 the exact fragment it must abort with. The harness shape is
 `tools/wp40/run_t2_census_gates.sh:35-51` — `expect_failure` at `:37-50`, the
 fragment matched at `:44` by `grep -qF`. Fixtures are generated inline the way
@@ -1734,7 +1887,7 @@ no fixture file is committed. "Applied to" names the stream: `raw log` and
 | 23 | change one entry of `dirty_content_by_box` so the entries no longer sum to `dirty_content` | raw log | `dirty counts by box do not sum to the scalar` |
 | 24 | give a `"4lo"` record a `dirty_content_by_box` keyed `cut`/`fill`/`water`/`facedir` | raw log | `dirty by-box key set is wrong for this case` |
 | 25 | `chunk_callback.maxp.x = minp.x + 80` | raw log | `central chunk extent is not 80 nodes` |
-| 26 | widen a case-4 write extent past `maxp.x` | raw log | `payload wrote outside its central owner slice` |
+| 26 | widen the case-4 **light write box** past `maxp.x`: set `light_write_box_max.x = 928` on `kx = 11`, where `maxp.x = 927` and the emerged max is `943`. That is the record-carried extent that *can* be widened — a case-4 `chunk_callback` carries **no content write-extent box**, only the scalar `write_extent_content` (`512`) and the gate literal it is compared against — and `927 < 928 <= 943` isolates the central-owner-slice half of the assertion from the emerged-containment half, which still passes. **`kx = 11` and not `kx = 10`:** measured, `4lo` has `dirty_light: false`, so its light-write-box fields are `null` and there is nothing there to widen | raw log | `payload wrote outside its central owner slice` |
 | 27 | widen the `cut` box by one node in `+x`, to `x = 636` — **inside** the four boxes' bounding box but outside their union, so only union semantics catches it | comparison | `payload wrote outside its declared extent` |
 | 28 | replace a `k_x = 8` `digest_excl.excluded_boxes` with the single 5,120-voxel bounding box | raw log | `excluded region is not the declared box list` |
 | 29 | set `digest_excl.excluded_voxels` so it no longer complements `node_count` | raw log | `CORE residual and excluded voxels do not sum to 110592` |
@@ -1752,6 +1905,8 @@ no fixture file is committed. "Applied to" names the stream: `raw log` and
 | 41 | three of `P1`…`P4` true and one false in a synthetic verdict input | comparison | `impossible predicate combination` |
 | 42 | a `V-05` record reporting `pass` on any outcome other than `persisted` | comparison | `inconclusive row reported as a pass` |
 | 43 | a differing compared digest pair with no `first_diff` record emitted | comparison | `differing digest pair has no first_diff record` |
+| 44 | a localized `first_diff` (`flat_index >= 1`) whose `pos` is moved to a plausible neighbouring voxel with `flat_index` recomputed to match it, so the record is internally consistent but is not the named box the digests implicate | comparison | `first_diff localization is not the recomputed named-box minimum` |
+| 45 | an unlocalized `first_diff` (`flat_index == -1`) carrying a `pos` other than the compared region's minimum corner | comparison | `unlocalized first_diff is not at the compared box minimum` |
 
 **How this table changed and why the count rose.** Two duplicate pairs were
 merged — the two `parse error` fixtures into row 2 and the two
@@ -1760,12 +1915,24 @@ gates that did not exist before: 10, 23, 24, 28, 29 and 35. Coverage grew; only
 duplication shrank. No other pair of rows exercises the same gate with the same
 fragment, so no further consolidation is available.
 
+**2026-08-22 closeout addition: 43 rows became 45.** Rows **44** and **45** are
+new, and they exist because the earlier table only ever demanded that a
+`first_diff` record be *well-shaped*. A record can satisfy every shape check and
+still name the wrong place: a localized record whose `pos` was moved to a
+neighbouring voxel with `flat_index` recomputed to agree with it is internally
+consistent, and an unlocalized record can sit over a region that does in fact
+have a differing named box. 12.7's hardened gate recomputes the expected
+localization instead of accepting it, and rows 44 and 45 are that gate's two
+negatives. Row 26 was also rewritten in place — same reason fragment, corrected
+mutation — because a case-4 `chunk_callback` carries no content write-extent
+box to widen. The count rose by two; nothing was removed.
+
 Two checks are not in the table because they are not corruptions of an emitted
 stream: the injected-payload digest refusal (`A-02`, fragment
 `injected probe payload digest differs`), exercised by `run_t5_probe.sh` against
 a mutated injected tree, and the manifest-digest fixture (`digest is path
 sensitive` / `digest did not change`) in `selftest.sh`. Neither needs an engine
-capture, and neither does any of the 43 rows — all of them run **before** the
+capture, and neither does any of the 45 rows — all of them run **before** the
 expensive half (`tools/wp40/run_dungeon_probe.sh:20-27`). Every fragment is a
 literal `error("…")` argument in a stage-2 assertion or a literal `printf` in
 `compare_runs.sh`; see 12.5 on why stage 2 cannot be one composed boolean. Row 2
@@ -1782,7 +1949,7 @@ this section does not restate the check.
 | --- | --- | --- |
 | 1 | all **eleven** files of 8.1 exist and every created or modified path matches its four-pattern boundary | 1, 3 |
 | 2 | every probe Lua file passes the static gates and sweeps of 8.2, and `coordinate_audit.lua` recomputes the 122-column envelope and the Ocean Mask derivation under both interpreters with byte-identical stdout and identical exit status (`tools/wp40/run_t2_s11_acceptance.sh:22-44`) | 13 |
-| 3 | `selftest.sh` passes: all **43** rows of section 16 abort with their exact fragments, plus the two non-stream fixtures named there, and none needs an engine capture | 15 |
+| 3 | `selftest.sh` passes: all **45** rows of section 16 abort with their exact fragments, plus the two non-stream fixtures named there, and none needs an engine capture | 15 |
 | 4 | the cost projection of 14.3 is committed, labelled as one unreplicated sample, and its run is reused as the B/O1 capture, so the package costs **four** engine invocations and not five | 24 |
 | 5 | all **four** runs complete inside both deadlines with no abort code, each generating exactly **three** mapchunks — **12** in total — or the package reports the abort and stops | 17, 24 |
 | 6 | all six cross-run assertions `X-01` … `X-06` hold and `V-09` holds in every run; no verdict is reported without them | 16, 17 |
@@ -1790,9 +1957,9 @@ this section does not restate the check.
 | 8 | the run stream and the comparison stream are emitted and gated separately, and neither contains the other's records | 12, 15 |
 | 9 | every observation of section 11's short list has a recorded value or a recorded `"unavailable"` with a reason | — |
 | 10 | the evidence tree is committed under `tools/wp40/evidence/t5-probe-<manifest-digest>/` with raw logs, `comparison.jsonl`, per-run summaries, `map_meta.txt` copies, host manifest and self-excluding checksums | 14 |
-| 11 | `tools/wp40/t5_probe/README.md` carries the non-claims of 3.2 verbatim — the `n = 1`, 25.3 %, no-script-free-control and no-generic-overwrite-test items included — plus the `version_match: false` note of 13.3, the `timings_are_golden` / `timing_replicates` labels, and section 20's rule and checks | 19, 22 |
-| 12 | section 19's runtime test plan is in the completion summary (`docs/process/wp-workflow.md:74-79`) | 23 |
-| 13 | no production file, no `mods/` file and none of the six locked T2 surfaces appears in the package diff, and no `docs/` path other than this contract | 1, 2, 3, 21 |
+| 11 | `tools/wp40/t5_probe/README.md` carries the non-claims of 3.2 verbatim — the `n = 1`, 25.3 %, no-script-free-control and no-generic-overwrite-test items included — plus the `version_match: false` note of 13.3, the `timings_are_golden` / `timing_replicates` labels, the complete section 19.3 plan that §18 item 23 is checked against, and section 20's rule and checks | 19, 22, 23 |
+| 12 | section 19's runtime test plan is retained in two places, and the split is deliberate so neither obligation is lost. **Diff-checkable:** `tools/wp40/t5_probe/README.md` carries the complete 19.3 table verbatim with its concrete coordinates — that is §18 item 23, and it is what a reviewer of the package diff checks. **Handoff:** the plan is *also* carried into the completion summary (`docs/process/wp-workflow.md:74-79`), which no package diff can show, so it is a HANDOFF requirement checked at handoff and never by the diff reviewer | 23 |
+| 13 | no production file, no `mods/` file and none of the six locked T2 surfaces appears in the package diff, and no `docs/` path other than this contract. **This governs the implementation package**; the 2026-08-22 closeout runs under 24.8's separate, narrower licence and does not relax this item | 1, 2, 3, 21 |
 
 ## 18. Independent-review checklist
 
@@ -1801,7 +1968,7 @@ fail it. Items reference the owning section rather than re-deriving it.
 
 | # | Item | How it is checked |
 | --- | --- | --- |
-| 1 | **Boundary** | `git diff --name-only` matches the four patterns of 8.1 and nothing else. A checklist phrased as "…and `docs/`" is itself a failure |
+| 1 | **Boundary** | `git diff --name-only` matches the four patterns of 8.1 and nothing else. A checklist phrased as "…and `docs/`" is itself a failure. **Scope:** this item reviews the **implementation** package's diff; the 2026-08-22 closeout diff is reviewed against 24.8's separate licence instead, and 8.1 is not weakened by that |
 | 2 | **No production registration** | `rg -n 'grug_wp40_t5_probe' mods/ game.conf minetest.conf` returns nothing |
 | 3 | **Locked surfaces** | `git diff --name-only` intersected with the six paths of 8.3 is empty, and `rg -n 'wp40/canonical\|wp40/deterministic\|geometry/(exact\|raster\|boundary)\|t2_s1_authority' tools/wp40/t5_probe/` returns nothing |
 | 4 | **Proxy discipline** | the sweep of 10.12 is run **with its stated path scoping** and returns nothing; a repository-wide sweep is itself a failure. The reviewer also reads the first statement of `payload/mapgen.lua`'s callback by eye, and checks `driver/init.lua`'s raw VoxelManip against the stated exemption |
@@ -1818,12 +1985,12 @@ fail it. Items reference the owning section rather than re-deriving it.
 | 15 | **JSON discipline** | every run-stream record carries the seven common fields of 12.2 and every comparison record the five of 12.7; `exact_keys` is enforced per tag; no field is ever absent. Both gates are built from per-assertion `error("…")` calls, so section 16's fragments actually exist |
 | 16 | **Vacuous readback** | stage 2 asserts the generated `emerge_done.action` for all three chunks and `content_ignore_count == 0` on every CORE and SEAM digest |
 | 17 | **Settling** | the generated `minetest.conf` pins `liquid_update = 86400`; the manifest records its **exact** consequence — periodic global drain suppressed, generation-local transform not (10.15); `V-09`'s two-pass proof is implemented with both passes in evidence. There must be **no** generation-to-readback window assertion, and a fixed `core.after` wait offered *in place of* the pin fails |
-| 18 | **Localization records** | `digest_incl` and `first_diff` are emitted, and 10.13's cascade is implemented over the four named predicates with `inconclusive` as a first-class value |
+| 18 | **Localization records** | `digest_incl` and `first_diff` are emitted, and 10.13's cascade is implemented over the four named predicates with `inconclusive` as a first-class value. `first_diff` implements 12.7's **two-state** model — box-level or not localized, never voxel-level — and `compare_runs.sh` **recomputes** the expected named-box minimum, `pos` and `flat_index` rather than accepting what the record carries; a gate that only shape-checks a `first_diff` fails this item, and section 16 rows 44 and 45 are its two negatives |
 | 19 | **No claim inflation** | no sentence asserts a threshold from `wp40-engineering-brief.md:3339-3358` was met (non-claim 6), presents a timing as portable (non-claim 9), claims byte-neutrality for loading a mapgen script (non-claim 12), **presents micro-case 4 as a test of the engine's unfinished-slice bug** (non-claim 13), or presents the two orders as the §6.2 nine-schedule gate (10.14) |
 | 20 | **Failure is reported, not swallowed** | verdicts `V-03` … `V-08` are present with their measured outcomes, `inconclusive` rows included |
 | 21 | **No sync** | `rg -n 'sync_to_luanti' tools/wp40/t5_probe/` returns nothing |
 | 22 | **Disposal** | section 20's two checks are written into the package README |
-| 23 | **Runtime plan** | the completion summary contains section 19's plan with concrete coordinates |
+| 23 | **Runtime plan, retained in the package** | `tools/wp40/t5_probe/README.md`, section "The five-minute runtime pass — contract section 19.3", carries the **complete** 19.3 table with its concrete coordinates, the setup block and the two expected-not-defect notes. **Checkable from the package diff by reading that section**, which is why the item is sited there: a reviewer reading a diff cannot check a completion summary. The README is subordinate — it "does not extend" this contract and "where the two disagree the contract wins" — and its copy takes precedence only over the runner's condensed print. **The completion-summary obligation is not this item**; it is a handoff obligation and lives at §17 item 12 |
 | 24 | **Counts** | every generation-count, run-count, cardinality and hashed-volume literal in the README and summaries agrees with 4 runs × 3 chunks = 12, 408,576 `digest` nodes per run per lane per pass, and 388,096 distinct compared nodes |
 
 ## 19. Five-minute user runtime test plan
@@ -1844,7 +2011,8 @@ The user copies that directory into
 `~/.var/app/org.luanti.luanti/.minetest/worlds/` — the sibling of the `games/`
 directory `tools/sync_to_luanti.sh:10` targets and of the `debug.txt` at
 `AGENTS.md:71` — and opens it with the installed Grudgelands game. **This is
-visual inspection only.** The world came from a `git archive` of `1b38943` while
+visual inspection only.** The world came from a `git archive` of the capture's
+base commit — `7f5fe9a` for the accepted run set (section 24) — while
 the installed game is whatever was last synced, and the Ocean Mask healing LBM,
 mob ABMs and node timers run as soon as a player is present
 (`reference_projects/luanti/src/serverenvironment.cpp:576`, `:581`, `:957`,
@@ -1893,7 +2061,7 @@ replace them, in the sense of `tools/wp40/dungeon_probe/README.md:60-61`.
 
 **Rule.** Probe code is discarded when the real T5 package is cut. It "never
 becomes a parallel production path or production adapter foundation"
-(`wp40-acceleration-and-delivery-plan.md:530-532`). The durable result is this
+(`wp40-acceleration-and-delivery-plan.md:532-534`). The durable result is this
 contract, the package README and the committed evidence.
 
 **Mechanics.** The first commit of the real T5 package deletes the tree entirely
@@ -1952,8 +2120,8 @@ non-interference.** Cost is **not exceeded**: 4 runs, 12 generated mapchunks, 11
 files, one strictly serial engine sequence, the ceilings of 14.1 and a cost
 projection folded into the first capture (14.3), against "small, roughly one
 compact tools-only package plus review"
-(`wp40-acceleration-and-delivery-plan.md:528`). Non-interference is clean: no
-existing writer is disabled (`:491-493`; 6.1 names every overlap),
+(`wp40-acceleration-and-delivery-plan.md:530`). Non-interference is clean: no
+existing writer is disabled (`:493-495`; 6.1 names every overlap),
 `tools/sync_to_luanti.sh` is never called, reference pins are never modified, and
 every world is disposable and guarded.
 
@@ -1978,7 +2146,7 @@ misattribution*, not the order dependence itself.
 ## 22. Player-visible impact
 
 **Player-visible impact: none.** In the form required by
-`wp40-acceleration-and-delivery-plan.md:635-655`: a player would notice
+`wp40-acceleration-and-delivery-plan.md:678-698`: a player would notice
 **nothing** — the package changes no file under `mods/`, adds no registration to
 the shipped game, and produces only disposable worlds that are never
 distributed; the optional kept world of 19.1 is a developer artefact under an
@@ -1991,7 +2159,7 @@ fresh-world regeneration is required** and no existing or future player world is
 affected. **No `docs/design/` rule is needed or changed**: the authoritative
 passages remain [`docs/design/world_zones.md`](../design/world_zones.md) and
 [`docs/design/world.md`](../design/world.md), which this contract restates
-neither of and links both. Per `:647-649` that is sufficient; the only user
+neither of and links both. Per `:690-692` that is sufficient; the only user
 decision required is acceptance of this contract (1.3).
 
 ## 23. Open decisions
@@ -2000,3 +2168,148 @@ decision required is acceptance of this contract (1.3).
 it, and each of those sections is reachable from the heading list above; §17 and
 §18 turn the closed decisions into checkable items. No decision is deferred to
 the implementation package, and none is left to the implementer's judgement.
+
+## 24. Closeout — what was measured, 2026-08-22
+
+**What this section is.** Sections 1–23 are the specification the implementation
+was measured against. **This section is where the measurements are recorded**,
+and it records exactly one accepted evidence set: manifest digest
+**`9ac056ff…`**
+(`9ac056ffa4433c80364cc6535dfe6b4ff6ce8b30693248fcad4f834b430699c2`), committed
+at `tools/wp40/evidence/t5-probe-9ac056ff…/`. **Closing T5-0 closes a tools-only
+observation package.** It is not production T5, it authorizes no production
+work, and full T5 still sits behind T3 and T4
+(`wp40-acceleration-and-delivery-plan.md:479-481`).
+
+### 24.1 Scale — four accepted captures, and eleven development invocations
+
+**Accepted: four engine invocations, twelve mapchunk generations.** That is the
+header total, unchanged. `capture.json` records `engine_invocations: 4`,
+`mapchunks_per_run: 3` and `mapchunks_total: 12`, and each of the four
+`complete` records carries `ok: true` with `chunks_generated: 3`,
+`emerge_deadline_met: true` and `run_deadline_met: true`.
+
+**Development: eleven engine invocations in total, of which those four are the
+accepted set.** The remaining seven were aborted or superseded attempts. They
+are stated here rather than hidden, and they are **not** evidence: no verdict,
+digest, timing, count or coordinate anywhere in this contract or in the
+committed tree derives from them. **No per-attempt ledger is retained and the
+eleven is not recomputable from the evidence tree** — it is a development count,
+carried as one, and it must never be restated as accepted evidence.
+
+### 24.2 Substrate — the accepted captures archived `7f5fe9a`, not `1b38943`
+
+The body of this contract was written against repository commit `1b38943`. The
+accepted captures were taken from a `git archive` of **`7f5fe9a`**
+(`7f5fe9a2107c865c0517757e725fd903b09e2d0e`), which is what
+`capture.json.digests.game_archive_commit_sha1` records. Three facts make that a
+recorded difference rather than a silent substrate change:
+
+- **The manifest digest binds the actual archive SHA** (13.2), so a run set
+  taken from a different base necessarily produces a different digest and a
+  different evidence directory name. The two cannot drift apart unnoticed.
+- **`1b38943` is an ancestor of `7f5fe9a`**, with exactly four commits between
+  them: `160d3ee`, `05127c7`, `87f628a`, `7f5fe9a`.
+- **The substrate is materially unchanged.** Outside `tools/wp40/t5_probe/` and
+  `docs/`, those four commits touch exactly one path: `.gitattributes`. No
+  `mods/` file, no `game.conf`, no mapgen setting and no registration differs
+  between the two commits — which is precisely what section 6's writer
+  inventory, section 5's `repo`-class rows and 10.4's identical-content-id
+  argument depend on.
+
+Section 4c's citation of `1b38943` for the realized `mgv7_dungeon_ymax = 31000`
+is unaffected and stands: it is a claim about what the repository's `mods/` tree
+produces, and no `mods/` file changed between the two commits.
+
+### 24.3 Engine identity — corroboration, not replacement
+
+The pinned source reference is **5.17.0-dev `df04879`**; the installed Flatpak
+that produced every accepted capture is **5.16.1**. `capture.json` and every run
+summary carry `version_match: false`. The standing rule of 3.3 and 13.3 governs
+the consequence and is not relaxed by closure: **every runtime observation below
+is an observation of 5.16.1 that corroborates rather than replaces the
+pinned-source audit of section 7.** Nothing in section 7 was re-decided by a
+runtime result.
+
+### 24.4 What the four captures recorded — the successes, by verdict ID
+
+| What held | Verdict | The measured record it is read from |
+| --- | --- | --- |
+| **CORE containment** | `V-01` `pass` on `content` and `param2` in both orders; `V-02` `pass` on `light_day` and `light_night` in both orders | `comparison.jsonl` seq 1–8: CORE minus the declared write boxes is equal between arms on all three chunks and both digest passes. Arm `A1`'s three `chunk_callback` records carry **every one of the eighteen `ops` counters at zero**, so the paired control really did perform zero VoxelManip calls |
+| **The write/upload separation** | `V-07` `pass` on all four runs | seq 24–27: stage-2 assertion 9 accepted the 10.11 matrix, conditioned on the arm and on the `c`/`p`/`q`/`l` the same record carries. Measured on `B-O1`: `bounded` — `set_data` 1, `set_param2_data` 1; `4lo` and `4hi` — `set_data` 1, `set_param2_data` 0 |
+| **`param2` separation by coordinate** | `V-03` `pass` on the `param2` lane in both orders | seq 10 and 12: every named box differs iff its by-box dirty count is non-zero. On `B-O1`'s `bounded` record `dirty_param2 = 512` over the `facedir` box alone against `dirty_content = 1645` — separated by *coordinate*, which is the claim, and not by cardinality, which would prove nothing (10.10) |
+| **Dirty-gated lighting and liquid** | the realized predicates and the counts they gate, accepted under `V-07` | `B-O1`, and this is the cleanest single result in the set: `4lo` came out `dirty_light: false` **and** `dirty_liquid: false` and performed **zero** `get_light_data`, `set_lighting`, `calc_lighting`, `set_light_data` and `update_liquids`; `4hi` came out `dirty_light: true` with `dirty_liquid: false` and performed the full lighting sequence (2 / 1 / 1 / 1) with **zero** `update_liquids`; `bounded` came out true on both and performed the full lighting sequence plus exactly one `update_liquids`. `q` and `l` are independently gated **in fact**, not only by contract |
+| **The mapgen→main IPC direction** (S3b; section 11's genuinely-new item 1) | no verdict ID — it is an observation | all four runs' `ipc_readback`: `keys_expected: 4`, `keys_found: 4`, **`poll_used: false`**. Every key was already present when the main state read, so the blocking `ipc_poll` (`l_ipc.cpp:104-121`) was never needed. Total read time 46 / 122 / 55 / 89 µs — `n = 1` each, non-portable, and gating nothing |
+| **The bounded light restore** | abort `A-16` did not fire in any run | every `chunk_callback` with `dirty_light: true`, in every run, carries `restored_outside_dirty_mismatch_count: 0` with `light_outside_box_snapshot_sha256 == light_outside_box_restored_sha256`, under 12.6's **independent** verification traversal |
+
+### 24.5 What the captures did not settle — and therefore no attribution
+
+- **`V-05`, `content` lane: outcome `no_stable_baseline`, `result: inconclusive`**
+  (`comparison.jsonl` seq 17), with all four predicates `P1`…`P4` false. The
+  `param2` lane is `no_signal_by_construction` and excluded from the aggregate
+  (seq 18); the aggregate is `inconclusive` (seq 19).
+- **`V-06`: the paired control is itself order-dependent over SEAM.** `content`
+  and `light_day` both report `CORE8 = equal, CORE10 = equal, CORE11 = equal,
+  SEAM = differs` (seq 20, 22); `param2` and `light_night` report SEAM equal
+  (seq 21, 23). That is **native** engine order dependence, reported separately
+  and exactly as `V-06` requires.
+- **Therefore no payload attribution.** Row 3 of 10.13's cascade licenses none,
+  and none is made anywhere. The bar's persistence across the seam is **not**
+  established by this evidence set.
+- **And no narrowed SEAM box.** Both SEAM `A1:O1-vs-O2` `first_diff` records —
+  `content` and `light_day` — carry `flat_index: -1` (seq 38, 39), which under
+  12.7 means not localized and never measured. The different-seed route named in
+  10.13 stays open; the narrowed-box route is not available from this evidence.
+
+### 24.6 One open observation, recorded and unexplained
+
+On chunk `kx = 8`, `case = "bounded"`, the pre-commit light snapshot rollup
+`light_outside_box_snapshot_sha256` differs between the two arm-`B` orders
+(`42289cc6…` in `B-O1` against `a6465270…` in `B-O2`), although 6.3 says that
+chunk has no generated neighbour in either order. **It gates nothing, changes no
+verdict and is not a finding.** The `CORE(8)` light lanes are equal across all
+four runs, so the difference lies outside `CORE(8)` and outside every compared
+region. It is **unexplained and is left unexplained**;
+`tools/wp40/t5_probe/README.md`, section "One open observation, recorded and
+unexplained", is the long form, including what was checked and the two readings
+this package cannot decide between.
+
+### 24.7 What closure does not claim
+
+- **No halo-light-idempotence claim.** With the step-6 restore the probe writes
+  **no halo light at all** (10.10), so the brief's sole derived-state exception
+  (`wp40-engineering-brief.md:1471-1474`) is untested here. `V-08` is an
+  observation of the engine's own re-lighting and nothing more.
+- **No follow-up is scheduled.** No further seed, no further order, no sweep and
+  no additional capture is planned or implied by this closeout. A follow-on
+  would be a new package with its own contract.
+- **The five-minute GUI pass of section 19 remains corroboration only.** It is
+  not part of this evidence set, and when it is run it **confirms no digest, no
+  timing, no operation count and no order comparison** — those come only from
+  the four headless captures and their gates.
+- **Every non-claim of 3.2 stands unchanged**, the `n = 1` labels and the 25.3 %
+  containment scope included. Closure records outcomes; it widens no scope.
+
+### 24.8 The boundary this closeout package ran under
+
+8.1's four-pattern boundary, and the checks that enforce it — §17 item 13 and
+§18 item 1 — were written for the **implementation** package, and they
+**continue to govern that package unchanged**. Nothing here weakens them.
+
+The 2026-08-22 closeout is a separately authorized package with its own,
+narrower licence. It may touch only:
+
+```
+docs/research/wp40-t5-0-engine-probe-contract.md    # this contract
+docs/research/wp40-acceleration-and-delivery-plan.md  # section 8 / status wording ONLY
+tools/wp40/t5_probe/**                             # the focused comparison-gate hardening (16.44, 16.45, 12.7)
+tools/wp40/evidence/t5-probe-9ac056ff…/**          # derived JSON and manifests only, regenerated from byte-identical raw logs
+```
+
+Two limits on that licence are load-bearing. The acceleration-plan entry is
+**status and section-8 wording only** and carries no design or scope change; it
+is not a general licence to edit that document. And the evidence entry covers
+**derived** artefacts only — JSON summaries and `MANIFEST.sha256` files
+regenerated from raw logs whose bytes did not change. **No raw log was
+modified, no engine invocation was performed, and no capture was re-taken by
+this closeout.**
