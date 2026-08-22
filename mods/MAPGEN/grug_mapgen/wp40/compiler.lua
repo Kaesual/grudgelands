@@ -5,6 +5,11 @@
 local engine_core = rawget(_G, "core")
 local captured_dofile = dofile
 local captured_select = select
+local captured_io = rawget(_G, "io")
+local captured_io_open
+if type(captured_io) == "table" then
+	captured_io_open = captured_io.open
+end
 local production = engine_core ~= nil
 local captured_get_modpath = production and engine_core.get_modpath or nil
 local captured_sha256 = production and engine_core.sha256 or nil
@@ -12,6 +17,16 @@ local captured_sha256 = production and engine_core.sha256 or nil
 local function fail(message)
 	error("WP40 compiler: " .. message, 0)
 end
+
+-- io.open is captured exactly like the authorities above, at load time, so a
+-- later replacement cannot change how the optional geometry probe decides.
+if type(captured_io_open) ~= "function" then
+	fail("captured io.open is unavailable")
+end
+
+-- POSIX ENOENT. It is the single errno that means "the optional file is simply
+-- not there"; every other errno is a real I/O failure on a file that IS there.
+local enoent_errno = 2
 
 local function exact_dependency_fields(value)
 	local allowed = {
@@ -73,17 +88,45 @@ return function(offline_directory)
 		fail("compiled canonicalizer is unavailable")
 	end
 
+	-- Whether the optional fixed geometry implementation is present is decided
+	-- by an OPEN PROBE, never by inspecting the prose of a failed load. Two
+	-- independent engine measurements forbid a message match:
+	--   * Luanti localizes strerror. src/main.cpp:792 calls init_gettext, which
+	--     runs setlocale(LC_ALL, "") (src/gettext.cpp:192 and :223) and forces
+	--     only LC_NUMERIC back to "C" (src/gettext.cpp:229). On engine 5.16.1
+	--     the secured loader pushes path .. ": " .. strerror(errno)
+	--     (5.16.1 src/script/cpp_api/s_security.cpp:677), so under an inherited
+	--     de_DE.UTF-8 locale it reads "Datei oder Verzeichnis nicht gefunden"
+	--     and an English match aborts the whole game load.
+	--   * Luanti 5.17.0 removed strerror from that path entirely and pushes the
+	--     fixed text path .. ": Failed reading file."
+	--     (5.17.0 src/script/cpp_api/s_security.cpp:731-732), so the English
+	--     strerror phrase appears there under NO locale at all.
+	-- The sandbox additionally DROPS io.open's third (errno) return: sl_io_open
+	-- ends in lua_call(L, 2) and "return 2" (5.17.0 s_security.cpp:1089ff,
+	-- identical at 5.16.1 s_security.cpp:1039), while plain PUC 5.1 and LuaJIT
+	-- return three values. The errno branch below therefore strengthens the
+	-- offline and no-security cases and is simply inert under mod security; a
+	-- path the sandbox refuses outright raises a Lua error rather than
+	-- reporting absence (s_security.h:10-14), so that stays loud.
 	local geometry_impl
-	local impl_ok, impl_result = pcall(captured_dofile,
-		directory .. "/geometry/compiler_impl.lua")
-	if impl_ok then
+	local impl_path = directory .. "/geometry/compiler_impl.lua"
+	local impl_handle, impl_message, impl_errno =
+		captured_io_open(impl_path, "r")
+	if impl_handle then
+		impl_handle:close()
+		-- The file is there, so it is no longer optional: load it UNPROTECTED,
+		-- so a syntax error or a runtime error raised while it executes
+		-- propagates with its own message instead of reading as absence.
+		local impl_result = captured_dofile(impl_path)
 		if type(impl_result) ~= "table" or
 				type(impl_result.compile) ~= "function" then
 			fail("fixed geometry compiler has an invalid module contract")
 		end
 		geometry_impl = impl_result.compile
-	elseif not tostring(impl_result):find("No such file or directory", 1, true) then
-		fail("fixed geometry compiler failed to load: " .. tostring(impl_result))
+	elseif type(impl_errno) == "number" and impl_errno ~= enoent_errno then
+		fail("fixed geometry compiler could not be opened: " ..
+			tostring(impl_message))
 	end
 
 	local function compile_impl(active_bindings, full_seed_string,
