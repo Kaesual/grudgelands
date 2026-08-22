@@ -71,6 +71,11 @@ for version in "${versions[@]}"; do
 	fi
 done
 
+# The projection is told which versions it must measure, so that a version
+# with no shard is its abort rather than a silently narrower population.
+version_list="$(printf '%s,' "${versions[@]}")"
+version_list="${version_list%,}"
+
 luajit_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
 puc_bin="$repo/tools/bin/lua51"
 
@@ -79,24 +84,45 @@ trap 'rm -rf "$scratch"' EXIT
 
 luajit_status=0
 puc_status=0
-"$luajit_bin" "$projection" "$artifacts_dir" "${shards[@]}" \
+"$luajit_bin" "$projection" "$artifacts_dir" "$version_list" "${shards[@]}" \
 	>"$scratch/luajit.txt" 2>&1 || luajit_status=$?
-"$puc_bin" "$projection" "$artifacts_dir" "${shards[@]}" \
+"$puc_bin" "$projection" "$artifacts_dir" "$version_list" "${shards[@]}" \
 	>"$scratch/puc.txt" 2>&1 || puc_status=$?
+
+if (( luajit_status != puc_status )); then
+	echo "WP40 T2 R19 order projection: exit codes differ" \
+		"(luajit $luajit_status, puc $puc_status)" >&2
+	diff "$scratch/luajit.txt" "$scratch/puc.txt" >&2 || true
+	exit 1
+fi
+
+# An abort carries the interpreter's own name and traceback into stderr, so
+# the two texts differ by construction and the byte-compare below would report
+# the interpreter split instead of the refusal that actually happened.  The
+# refusal is surfaced first, on its own exit status.
+if (( luajit_status != 0 )); then
+	echo "WP40 T2 R19 order projection: the projection refused this population" \
+		"(exit $luajit_status)" >&2
+	cat "$scratch/luajit.txt" >&2
+	exit "$luajit_status"
+fi
 
 if ! cmp -s "$scratch/luajit.txt" "$scratch/puc.txt"; then
 	echo "WP40 T2 R19 order projection: LuaJIT and PUC outputs differ" >&2
 	diff "$scratch/luajit.txt" "$scratch/puc.txt" >&2 || true
 	exit 1
 fi
-if (( luajit_status != puc_status )); then
-	echo "WP40 T2 R19 order projection: exit codes differ" \
-		"(luajit $luajit_status, puc $puc_status)" >&2
+
+cat "$scratch/luajit.txt"
+
+# The verdict is the evidence, so a FAIL line in it is this runner's failure
+# too (contracts 13.5 STOP).  Without this gate the script exits 0 on a STOP
+# and reads as green in any && chain.
+if grep -nE '(^|[[:space:]])FAIL([[:space:]]|$)' "$scratch/luajit.txt" >&2; then
+	echo "WP40 T2 R19 order projection: the verdict carries a FAIL line;" \
+		"contracts 13.5 says STOP and report" >&2
 	exit 1
 fi
 
-cat "$scratch/luajit.txt"
-if (( luajit_status == 0 )); then
-	echo "WP40 T2 R19 order projection: LuaJIT/PUC byte-identical"
-fi
-exit "$luajit_status"
+echo "WP40 T2 R19 order projection: LuaJIT/PUC byte-identical"
+exit 0

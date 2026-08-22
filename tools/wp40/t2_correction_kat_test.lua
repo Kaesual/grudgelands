@@ -75,11 +75,28 @@ end
 -- Authored reversal swaps the from/to endpoints and exactly reverses the
 -- probe bytes; world coordinates -- the terminal and previous sets -- do
 -- not move.  A single-transition edge's one endpoint changes sides.
+--
+-- The coordinate ARRAYS do move, though, which is why they are reversed here
+-- rather than passed through.  `joint_descriptor` appends the from terminal
+-- before the to terminal, so swapping the two slots reverses both arrays.
+-- Keys 4 and 5 are declared over the SORTED sets, so a comparator that
+-- really sorts is unaffected and one that leans on the authored array order
+-- is not.  New arrays are built: the originals are the cases' own pinned
+-- data and must not move under the caller.
+local function reverse_points(points)
+	local copy = {}
+	for index = 1, #points do
+		copy[index] = points[#points - index + 1]
+	end
+	return copy
+end
+
 local function reversed(d)
 	return {from_retreat = d.to_retreat, to_retreat = d.from_retreat,
-		elbow_count = d.elbow_count, terminal_points = d.terminal_points,
-		previous_points = d.previous_points, probe_forward = d.probe_reverse,
-		probe_reverse = d.probe_forward}
+		elbow_count = d.elbow_count,
+		terminal_points = reverse_points(d.terminal_points),
+		previous_points = reverse_points(d.previous_points),
+		probe_forward = d.probe_reverse, probe_reverse = d.probe_forward}
 end
 
 -- The C2 oracle compares already-derived tuples, so this adapter derives keys
@@ -331,6 +348,44 @@ run_case("key5_mixed_digit_width",
 run_case("key5_prefix_separator",
 	keyed({point(0, 7)}, {point(1, 5)}),
 	keyed({point(0, 7)}, {point(12, 3)}),
+	true, false)
+
+-- ----------------------------------------------------------------------
+-- The "sorted set" half of keys 4 and 5 (plan 7.1: "the SORTED set of
+-- resolved terminal world coordinates").  Every case above hands the
+-- comparators arrays that are already in (x, z) order, so deleting the
+-- `table.sort` from both production comparators leaves all of them green --
+-- measured, which is why these two exist.  Each of the two cases below gives
+-- one array deliberately out of (x, z) order, arranged so that a comparator
+-- which walked the authored order instead of the sorted one would pick the
+-- OTHER tuple.  Two declared endpoints per side, so the arrays have two
+-- elements and the permutation is real.
+-- ----------------------------------------------------------------------
+
+-- Key 4, terminal array out of order.  Sorted, the sequences are
+-- (5,20),(30,40) against (10,20),(30,40) and 5 < 10, so the left tuple wins;
+-- walked as authored, the first pair is (30,40) against (10,20) and the right
+-- tuple would win instead.  The text metric sorts the rendered tokens and
+-- lands on "10:20,30:40" before "30:40,5:20", so this case also inverts
+-- against the superseded order and is rejected there.
+run_case("key4_terminal_array_unsorted",
+	descriptor({from = 2, to = 2,
+		terminals = {point(30, 40), point(5, 20)}}),
+	descriptor({from = 2, to = 2,
+		terminals = {point(10, 20), point(30, 40)}}),
+	true, false)
+
+-- Key 5, previous array out of order.  The terminal sets are the shared
+-- default and tie under either reading, so the previous sets decide: sorted,
+-- (98,200),(299,400) against (101,200),(299,400) and 98 < 101, so the left
+-- tuple wins; walked as authored, the first pair is (299,400) against
+-- (101,200) and the right tuple would win.  Text sorts to "101:200,299:400"
+-- before "299:400,98:200", so this one inverts as well.
+run_case("key5_previous_array_unsorted",
+	descriptor({from = 2, to = 2,
+		previous = {point(299, 400), point(98, 200)}}),
+	descriptor({from = 2, to = 2,
+		previous = {point(101, 200), point(299, 400)}}),
 	true, false)
 
 local digest = canonical.hex(raw_sha256(table.concat(lines, "\n")))

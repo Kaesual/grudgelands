@@ -2616,7 +2616,9 @@ whenever the rendered tokens sort differently from the numbers:
 
 - negative `x` of equal digit width — `"-1134:2242" < "-1135:2242"` as
   text, `-1135 < -1134` as a coordinate. These are precisely the two
-  `land_010` stations of the R19 witness, which is how 12.5 found it;
+  `land_010` stations of the R19 witness, which is how 12.5 found it — as
+  coordinates, not as a measured competition: slot 29 resolves with exactly
+  one complete tuple, so those two stations have never met under key 4;
 - mixed digit width — `"10:z" < "9:z"` as text, `9 < 10` as a coordinate;
 - a strict token prefix — `"12:3" < "1:5"` as text, because `"2"` sorts
   below `":"`, while `1 < 12` as a coordinate.
@@ -2642,8 +2644,25 @@ range, `#tuples` against `tuple_count`, `#complete` against
 `complete_count`, `duplicate_count = 0`, non-negative retreats, endpoint
 agreement between the endpoint and tuple rows, each tuple's `index:mode`
 present in its endpoint row's own success list, and
-`compile_agreement = agrees` at every record). It is byte-identical under
-LuaJIT and the vendored PUC 5.1; measured wall 2.5 s.
+`compile_agreement = agrees` at every record).
+
+It is also fail-closed on the *population*, which is a separate obligation
+from per-record integrity and was added after review found it missing: the
+first cut verified only that the shard filename ranges were contiguous, so
+removing the leading or trailing shard, or truncating one mid-line, produced
+a narrower measurement that still printed every PASS line and exited 0. It now
+reads each shard's header, requires every shard of a version to agree on
+`w_total` and `w_digest`, requires the sorted ranges to tile `0..w_total-1`
+with neither gap nor overlap, counts the `seed_begin`/`seed_end` blocks in the
+body against the declared `shard_seeds` and against `w_total`, requires the
+`digest` trailer to be the last row, and is told which versions it must
+measure so that a version with no shard is an abort rather than a silently
+smaller population. Each version's report carries its own completeness line —
+`v6 population w_total 4123 w_digest fc6c2c19… declared shard seeds 4123 seed
+blocks 4123 coverage 0..4122 COMPLETE` — because a completeness proof that is
+not printed is not evidence. The runner exits non-zero on a refusal and on any
+`FAIL` verdict line. It is byte-identical under LuaJIT and the vendored PUC
+5.1; measured wall 2.9 s.
 
 | measurand | v4 | v5 | v6 |
 | --- | --- | --- | --- |
@@ -2656,8 +2675,12 @@ LuaJIT and the vendored PUC 5.1; measured wall 2.5 s.
 | keys 1–5 tie against any competitor | — | **0** | **0** |
 | TEXT and TUPLE winners disagree | — | **0** | **0** |
 | reconstructed winner ≠ recorded `selected_tuple_index` | — | **0** | **0** |
-| winner total retreat 0 / 1 / 2 | 730/25/2 | 732/25/2 | 732/25/2 |
+| winner total retreat 0 / 1 / 2 | 730/25/2 † | 732/25/2 | 732/25/2 |
 | completions per record 2 / 3 / 4 | — | 734/23/2 | 734/23/2 |
+
+† The v4 column is head-count only — the tool deep-analyses v5 and v6. That
+one cell is quoted from plan 7.1, not measured here, and is marked so that the
+rest of the column's em-dashes are not read as an exception.
 
 **The 757 → 759 reconciliation, measured rather than assumed.** v4's 757
 and its per-edge breakdown reproduce plan 7.1 digit for digit, which is the
@@ -2704,7 +2727,11 @@ outside the retained population produces a key-3 tie.
 The alignment is accepted only against all of:
 
 1. all 759 retained multi-complete records re-projected over `W`: every
-   winner byte-identical and the `decided_by` histogram key 1 only;
+   winner identical and the `decided_by` histogram key 1 only. Identity here
+   is the recorded `selected_tuple_index` and `selected_station_count`, not a
+   byte comparison — the census rows carry no probe raster, so the tool cannot
+   compare bytes and does not claim to. Same tuple implies same bytes, and the
+   bytes themselves are compared by obligation 2;
 2. the 36 transition-edge resolutions over seed 0, max-u64 and slots
    28–31: every accepted output and all four winner digests byte-identical;
 3. `tools/wp40/run_t2_s11_acceptance.sh` green with the accepted section
@@ -2713,6 +2740,19 @@ The alignment is accepted only against all of:
    equal, driving **all three** implementations — both production
    comparators and the independent C2 oracle — in both authored
    orientations.
+
+**What obligations 1–3 do and do not prove, stated so the digests are not
+over-read.** They prove that nothing moved. They do **not** exercise the
+aligned comparator, and that is not an inference: instrumenting both
+production comparators to `error()` on entry and re-running obligation 2
+produces a stdout digest byte-identical to the untouched run. With exactly one
+complete tuple per edge, `if not selected or joint_tuple_less_compile(...)`
+short-circuits and neither comparator — nor the descriptor construction, the
+validators, the arity guards or the point orders — is ever entered. A
+deliberately broken keys-4/5 comparison would pass obligations 1–3 unnoticed.
+Obligation 4 is what exercises the change, and it is the reason the tripwire
+may retire. Anyone reading the two preservation digests as verification of the
+new comparator has read them backwards.
 
 **The C2 tripwire retires only against a live cross-check.** 12.5 added a
 named assert that fires when a selection was separated from any competitor

@@ -13,13 +13,31 @@
 -- production.  Its only inputs are committed census shards.
 --
 -- Usage:
---   lua tools/wp40/t2_r19_order_projection.lua ARTIFACTS_DIR SHARD_NAME...
+--   lua tools/wp40/t2_r19_order_projection.lua ARTIFACTS_DIR VERSIONS SHARD_NAME...
 --
 -- ARTIFACTS_DIR is the directory holding the census shards; each SHARD_NAME
 -- is a shard file basename inside it.  Lua 5.1 cannot list a directory
 -- without a C extension or a subprocess, and both are out of bounds here, so
 -- the caller supplies the shard names -- see
 -- tools/wp40/run_t2_r19_order_projection.sh, which globs them.
+--
+-- VERSIONS is the comma-separated list of census versions the caller declares
+-- this run must measure, for example "4,5,6".  A version on that list with no
+-- shard, and a shard whose version is not on the list, are both aborts: the
+-- verdict below speaks about "the retained population", so the population it
+-- ran on is declared by the caller and checked here rather than inferred from
+-- whatever files happened to be present.
+--
+-- Every named version is additionally checked for COMPLETENESS before a
+-- single verdict is printed.  The authority is the shard header written by
+-- tools/wp40/t2_census_authority.lua (`shard_header_lines`, driven from
+-- t2_census_worker.lua): the shard ranges of a version must tile
+-- 0..w_total-1 exactly, every shard of a version must agree on w_total and
+-- w_digest, every shard's `seed_begin` block count must equal its declared
+-- `shard_seeds`, the distinct seed count of a version must equal w_total, and
+-- every shard must end with its own `digest` trailer.  Without those checks a
+-- missing end shard or a shard truncated part-way through would still print
+-- PASS -- over a population silently smaller than the one the verdict names.
 --
 -- Deep analysis (the D1 descriptors, both metrics, decided_by) runs on the
 -- v5 and v6 schemas, whose scan2 edge row records the selection.  A v4 shard
@@ -127,6 +145,61 @@ local function split_fields(line)
 		position = tab + 1
 	end
 	return fields, count
+end
+
+-- ------------------------------------------------------------------
+-- The shard header: the population authority.
+--
+-- These thirteen tags, in this order, are the first thirteen lines of every
+-- census shard -- `shard_header_lines` in tools/wp40/t2_census_authority.lua,
+-- emitted by tools/wp40/t2_census_worker.lua.  Reproduced here rather than
+-- loaded, for the same reason the two metrics above are reproduced: this tool
+-- reads committed artifacts and loads no census module, so a change in the
+-- writer shows up here as a loud header mismatch instead of being absorbed.
+-- ------------------------------------------------------------------
+local HEADER_TAGS = {"schema", "vocabulary", "shard_schema", "shard_range",
+	"shard_seeds", "w_digest", "w_total", "census_commit", "census_tree",
+	"module_digest", "interpreter_id", "interpreter_path",
+	"interpreter_version"}
+
+local DIGEST_PREFIX = "sha256="
+local DIGEST_LENGTH = #DIGEST_PREFIX + 64
+
+local function read_header(file, path)
+	local header = {}
+	for index = 1, #HEADER_TAGS do
+		local line = file:read("*l")
+		if line == nil then
+			fail(path .. " ends inside its shard header, at header line " ..
+				string.format("%d", index) .. "; the shard is truncated")
+		end
+		local fields, count = split_fields(line)
+		local tag = HEADER_TAGS[index]
+		if fields[1] ~= tag then
+			fail(path .. " header line " .. string.format("%d", index) ..
+				" is " .. tostring(fields[1]) .. ", expected " .. tag)
+		end
+		if tag == "shard_range" then
+			if count ~= 3 then
+				fail(path .. " shard_range does not carry exactly two indices")
+			end
+			header.first = integer_field(fields[2], path .. " shard_range first")
+			header.last = integer_field(fields[3], path .. " shard_range last")
+		else
+			if count ~= 2 then
+				fail(path .. " header line " .. tag .. " is not a single value")
+			end
+			header[tag] = fields[2]
+		end
+	end
+	header.shard_seeds = integer_field(header.shard_seeds,
+		path .. " shard_seeds")
+	header.w_total = integer_field(header.w_total, path .. " w_total")
+	if #header.w_digest ~= 64 or not header.w_digest:match("^%x+$") then
+		fail(path .. " w_digest is not a sha256 hex digest: " ..
+			tostring(header.w_digest))
+	end
+	return header
 end
 
 -- ------------------------------------------------------------------
@@ -244,6 +317,7 @@ end
 local function new_version_state(version, deep, analysis_class)
 	return {version = version, deep = deep, analysis_class = analysis_class,
 		shards = {}, seeds_seen = {}, seed_count = 0, lines = 0,
+		ranges = {}, declared_seeds = 0, block_seeds = {}, block_seed_count = 0,
 		edge_class_counts = {}, records = 0, per_edge = {}, record_keys = {},
 		record_by_key = {}, decided_by_text = {}, decided_by_tuple = {},
 		divergent_records = {}, undecidable_records = {},
@@ -477,17 +551,132 @@ local function flush_record(state, seed, endpoints, edges, tuples, wanted)
 	end
 end
 
-local function scan_shard(state, path, name)
+-- Reads the shard header, checks the shard is the file its own name claims,
+-- checks the whole version agrees on the W it was cut from, and records the
+-- shard's range and declared seed count for the coverage check below.
+local function admit_shard(state, header, shard, path)
+	local tag = "v" .. string.format("%d", state.version)
+	if header.first ~= shard.first or header.last ~= shard.last then
+		fail(path .. " declares shard_range " ..
+			string.format("%d", header.first) .. " " ..
+			string.format("%d", header.last) ..
+			" but its file name claims " .. string.format("%d", shard.first) ..
+			" " .. string.format("%d", shard.last))
+	end
+	if header.last < header.first then
+		fail(path .. " declares an empty shard_range")
+	end
+	if header.schema ~= "grug_wp40_census_scan_" .. tag then
+		fail(path .. " declares schema " .. tostring(header.schema) ..
+			", not grug_wp40_census_scan_" .. tag)
+	end
+	if header.shard_schema ~= "grug_wp40_census_scan_shard_" .. tag then
+		fail(path .. " declares shard_schema " ..
+			tostring(header.shard_schema) ..
+			", not grug_wp40_census_scan_shard_" .. tag)
+	end
+	if header.w_total < 1 then
+		fail(path .. " declares w_total " ..
+			string.format("%d", header.w_total))
+	end
+	-- A shard covers a contiguous block of W indices and carries one seed per
+	-- index, so its declared seed count is its range width.  Checked, not
+	-- assumed: this is what ties the file name, the header range and the
+	-- header seed count into one statement.
+	if header.shard_seeds ~= header.last - header.first + 1 then
+		fail(path .. " declares shard_seeds " ..
+			string.format("%d", header.shard_seeds) ..
+			" over a shard_range of width " ..
+			string.format("%d", header.last - header.first + 1))
+	end
+	if state.w_total == nil then
+		state.w_total = header.w_total
+		state.w_digest = header.w_digest
+		state.w_source = path
+	else
+		if header.w_total ~= state.w_total then
+			fail(path .. " declares w_total " ..
+				string.format("%d", header.w_total) .. " but " ..
+				state.w_source .. " declares " ..
+				string.format("%d", state.w_total) ..
+				"; the census " .. tag .. " shards are not one population")
+		end
+		if header.w_digest ~= state.w_digest then
+			fail(path .. " declares w_digest " .. header.w_digest .. " but " ..
+				state.w_source .. " declares " .. state.w_digest ..
+				"; the census " .. tag .. " shards are not one population")
+		end
+	end
+	state.declared_seeds = state.declared_seeds + header.shard_seeds
+	state.ranges[#state.ranges + 1] = {first = header.first,
+		last = header.last, name = shard.name}
+end
+
+local function scan_shard(state, path, shard)
+	local name = shard.name
 	local file = io.open(path, "r")
 	if not file then fail("cannot open census shard " .. path) end
+	local header = read_header(file, path)
+	admit_shard(state, header, shard, path)
 	local seed, endpoints, edges, tuples, wanted = nil, {}, {}, {}, {}
-	local lines = 0
+	local lines = #HEADER_TAGS
+	-- `seed_begin` / `seed_end` bracket every seed the shard actually carries,
+	-- and the `digest` trailer is its last line.  Together they are what makes
+	-- a truncated shard loud instead of merely smaller.
+	local open_seed, blocks, trailer = nil, 0, nil
 	for line in file:lines() do
 		lines = lines + 1
-		if line:sub(1, 6) == "scan2_" then
+		if trailer ~= nil then
+			fail(path .. " carries a row after its digest trailer")
+		end
+		local tab = line:find("\t", 1, true)
+		local tag = tab and line:sub(1, tab - 1) or line
+		if tag == "seed_begin" then
+			local fields, count = split_fields(line)
+			if count ~= 2 then
+				fail(path .. " seed_begin row does not carry exactly one seed")
+			end
+			local id = seed_field(fields[2], path .. " seed_begin")
+			if open_seed ~= nil then
+				fail(path .. " opens seed " .. id .. " while seed " ..
+					open_seed .. " is still open")
+			end
+			if state.block_seeds[id] then
+				fail("seed " .. id .. " has a second seed_begin block in census v" ..
+					string.format("%d", state.version) .. " at " .. path)
+			end
+			state.block_seeds[id] = true
+			state.block_seed_count = state.block_seed_count + 1
+			open_seed = id
+			blocks = blocks + 1
+		elseif tag == "seed_end" then
+			local fields, count = split_fields(line)
+			if count ~= 2 then
+				fail(path .. " seed_end row does not carry exactly one seed")
+			end
+			local id = seed_field(fields[2], path .. " seed_end")
+			if open_seed ~= id then
+				fail(path .. " closes seed " .. id ..
+					" but the open seed block is " .. tostring(open_seed))
+			end
+			open_seed = nil
+		elseif tag == "digest" then
+			local fields, count = split_fields(line)
+			if count ~= 2 or #fields[2] ~= DIGEST_LENGTH or
+					fields[2]:sub(1, #DIGEST_PREFIX) ~= DIGEST_PREFIX or
+					not fields[2]:sub(#DIGEST_PREFIX + 1):match("^%x+$") then
+				fail(path .. " has a malformed digest trailer: " .. line)
+			end
+			trailer = fields[2]
+		elseif line:sub(1, 6) == "scan2_" then
 			local fields, count = split_fields(line)
 			local kind = fields[1]
 			local row_seed = seed_field(fields[2], path .. " row seed")
+			if row_seed ~= open_seed then
+				fail(path .. " carries a " .. kind .. " row for seed " ..
+					row_seed .. " inside the seed block of " ..
+					tostring(open_seed))
+			end
 			if row_seed ~= seed then
 				flush_record(state, seed, endpoints, edges, tuples, wanted)
 				if state.seeds_seen[row_seed] then
@@ -615,10 +804,77 @@ local function scan_shard(state, path, name)
 			end
 		end
 	end
+	if open_seed ~= nil then
+		fail(path .. " ends with the seed block of " .. open_seed ..
+			" still open; the shard is truncated")
+	end
+	if trailer == nil then
+		fail(path .. " has no digest trailer as its last row; the shard is " ..
+			"truncated")
+	end
+	if blocks ~= header.shard_seeds then
+		fail(path .. " carries " .. string.format("%d", blocks) ..
+			" seed blocks against its declared shard_seeds " ..
+			string.format("%d", header.shard_seeds))
+	end
 	flush_record(state, seed, endpoints, edges, tuples, wanted)
 	file:close()
 	state.lines = state.lines + lines
 	state.shards[#state.shards + 1] = name
+end
+
+-- ------------------------------------------------------------------
+-- Population completeness, per census version.  Filename contiguity alone
+-- cannot see a missing shard at either END of the range: seven of eight v6
+-- shards are perfectly contiguous.  The header's w_total is what makes the
+-- ends checkable, so it decides here.
+-- ------------------------------------------------------------------
+local function check_population(state)
+	local tag = "v" .. string.format("%d", state.version)
+	if #state.shards == 0 or state.w_total == nil then
+		fail("census " .. tag .. " has no shard")
+	end
+	local ranges = state.ranges
+	table.sort(ranges, function(a, b)
+		if a.first ~= b.first then return a.first < b.first end
+		return a.last < b.last
+	end)
+	local cursor = 0
+	for index = 1, #ranges do
+		local range = ranges[index]
+		if range.first < cursor then
+			fail("census " .. tag .. " shard " .. range.name ..
+				" overlaps W index " .. string.format("%d", range.first) ..
+				", already covered")
+		end
+		if range.first > cursor then
+			fail("census " .. tag .. " has no shard covering W index " ..
+				string.format("%d", cursor) .. "; the next shard is " ..
+				range.name .. " at " .. string.format("%d", range.first) ..
+				"; the population is incomplete")
+		end
+		cursor = range.last + 1
+	end
+	if cursor ~= state.w_total then
+		fail("census " .. tag .. " shards cover W indices 0.." ..
+			string.format("%d", cursor - 1) .. " against the declared w_total " ..
+			string.format("%d", state.w_total) ..
+			"; the population is incomplete")
+	end
+	if state.declared_seeds ~= state.w_total then
+		fail("census " .. tag .. " shards declare " ..
+			string.format("%d", state.declared_seeds) ..
+			" seeds in total against w_total " ..
+			string.format("%d", state.w_total))
+	end
+	if state.block_seed_count ~= state.w_total then
+		fail("census " .. tag .. " shards carry " ..
+			string.format("%d", state.block_seed_count) ..
+			" distinct seed blocks against w_total " ..
+			string.format("%d", state.w_total))
+	end
+	state.range_first = 0
+	state.range_last = state.w_total - 1
 end
 
 -- ------------------------------------------------------------------
@@ -627,15 +883,38 @@ end
 local args = {...}
 local artifacts_dir = args[1]
 if type(artifacts_dir) ~= "string" or artifacts_dir == "" then
-	fail("usage: t2_r19_order_projection.lua ARTIFACTS_DIR SHARD_NAME...")
+	fail("usage: t2_r19_order_projection.lua ARTIFACTS_DIR VERSIONS " ..
+		"SHARD_NAME...")
 end
-if #args < 2 then
+local version_list = args[2]
+if type(version_list) ~= "string" or version_list == "" then
+	fail("no census version list was given; pass the comma-separated versions " ..
+		"this run must measure, for example 4,5,6")
+end
+if #args < 3 then
 	fail("no census shard names were given; pass the shard basenames after " ..
-		"the artifacts directory (run_t2_r19_order_projection.sh globs them)")
+		"the version list (run_t2_r19_order_projection.sh globs them)")
 end
 
+local required, required_order = {}, {}
+for token in version_list:gmatch("[^,]+") do
+	if not token:match("^%d+$") then
+		fail("census version list entry is not a number: " .. token)
+	end
+	local value = tonumber(token)
+	if required[value] then
+		fail("census version list names v" .. token .. " twice")
+	end
+	required[value] = true
+	required_order[#required_order + 1] = value
+end
+if #required_order == 0 then
+	fail("the census version list is empty")
+end
+table.sort(required_order)
+
 local shards = {}
-for index = 2, #args do
+for index = 3, #args do
 	local name = args[index]
 	local version, first, last =
 		name:match("^census%-scan%-v(%d+)%-(%d+)%-(%d+)%.tsv$")
@@ -663,17 +942,34 @@ for index = 1, #shards do
 		states[shard.version] = state
 		state_order[#state_order + 1] = shard.version
 	end
-	if #state.shards == 0 then
-		state.range_first = shard.first
-	elseif shard.first ~= state.next_first then
-		fail("census shard ranges of v" .. string.format("%d", shard.version) ..
-			" are not contiguous at " .. shard.name)
-	end
-	state.next_first = shard.last + 1
-	state.range_last = shard.last
-	scan_shard(state, artifacts_dir .. "/" .. shard.name, shard.name)
+	scan_shard(state, artifacts_dir .. "/" .. shard.name, shard)
 end
 table.sort(state_order)
+
+-- The declared population, checked before a single verdict is computed.
+for index = 1, #required_order do
+	local version = required_order[index]
+	if not states[version] then
+		fail("no census v" .. string.format("%d", version) ..
+			" shard was given, but v" .. string.format("%d", version) ..
+			" is on the declared version list " .. version_list)
+	end
+end
+local deep_versions = 0
+for index = 1, #state_order do
+	local version = state_order[index]
+	if not required[version] then
+		fail("census v" .. string.format("%d", version) ..
+			" shards were given, but v" .. string.format("%d", version) ..
+			" is not on the declared version list " .. version_list)
+	end
+	check_population(states[version])
+	if states[version].deep then deep_versions = deep_versions + 1 end
+end
+if deep_versions == 0 then
+	fail("no deep-analysed census version (v5 or later) is present, so there " ..
+		"is no keys-4/5 measurement to report")
+end
 
 -- ------------------------------------------------------------------
 -- Report.
@@ -698,6 +994,11 @@ for order_index = 1, #state_order do
 		" lines " .. number(state.lines) .. " seeds " ..
 		number(state.seed_count))
 	say(tag .. " shard files " .. table.concat(state.shards, " "))
+	say(tag .. " population w_total " .. number(state.w_total) .. " w_digest " ..
+		state.w_digest .. " declared shard seeds " ..
+		number(state.declared_seeds) .. " seed blocks " ..
+		number(state.block_seed_count) .. " coverage 0.." ..
+		number(state.w_total - 1) .. " COMPLETE")
 	local class_keys = sorted_keys(state.edge_class_counts)
 	for index = 1, #class_keys do
 		say(tag .. " scan2_edge class " .. class_keys[index] .. " " ..

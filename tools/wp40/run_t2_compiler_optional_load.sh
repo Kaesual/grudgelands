@@ -4,15 +4,22 @@ set -euo pipefail
 # WP40 T2 optional fixed-geometry load runner.
 #
 # It gates mods/MAPGEN/grug_mapgen/wp40/compiler.lua, whose optional
-# geometry/compiler_impl.lua load must decide PRESENCE by an open probe and
-# never by matching the error prose of a failed load. Two engine measurements
-# make prose matching unusable:
-#   * Luanti localizes strerror (src/main.cpp:792 -> src/gettext.cpp:192/:223,
+# geometry/compiler_impl.lua load must decide PRESENCE by evidence that exists
+# in production -- an open probe, and a core.get_dir_list listing where the
+# sandbox withholds the probe's errno -- and never by matching the error prose
+# of a failed load. Three engine measurements make prose matching unusable and
+# an errno test insufficient:
+#   * Luanti localizes strerror (src/main.cpp -> init_gettext, 5.16.1 and
+#     submodule HEAD :792, 5.17.0 :794 -> src/gettext.cpp:192/:223,
 #     setlocale(LC_ALL, "")); on engine 5.16.1 the secured loader pushes
 #     path .. ": " .. strerror(errno) (5.16.1 s_security.cpp:677), which under
 #     de_DE.UTF-8 reads "Datei oder Verzeichnis nicht gefunden".
 #   * Luanti 5.17.0 dropped strerror from that path and pushes the fixed text
 #     path .. ": Failed reading file." (5.17.0 s_security.cpp:731-732).
+#   * Mod security truncates io.open to two results (sl_io_open ends in
+#     lua_call(L, with_mode ? 2 : 1, 2) and "return 2"; 5.16.1
+#     s_security.cpp:1039, 5.17.0 :1089, submodule HEAD :1031), so the errno is
+#     ALWAYS nil in production and cannot decide anything there.
 #
 # The suite runs under LuaJIT and vendored PUC 5.1, each once under LC_ALL=C and
 # once under a non-C locale, and every output must be byte-identical. NOTE what
@@ -20,8 +27,10 @@ set -euo pipefail
 # setlocale, so their strerror text stays English whatever LC_ALL says. The arms
 # prove the harness and the loader are locale-invariant on this host; the
 # executable proof that a LOCALIZED message cannot steer the decision is the
-# injected-message case inside the test (case5a/5b/5c), plus the static case5d
-# assertion that the executable text of compiler.lua searches no string at all.
+# injected-message cases inside the test (case5a/5b/5c offline, case7a/7b/7c in
+# the production shape, where 7b and 7c differ ONLY in the directory listing),
+# plus the static case5d assertion that the executable text of compiler.lua
+# searches no string at all.
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
