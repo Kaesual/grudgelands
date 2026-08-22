@@ -265,8 +265,7 @@ WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 #
 # TWO GLOBS NOW MATCH BOTH GENERATIONS AND MUST NEVER BE USED:
 #   * shard-luajit-*.tsv   - eight pre-v3 AND eight v3 shards
-#   * rescore-puc-*.tsv    - the twenty pre-v3 rows today; forty once a v3
-#                            run has produced its own twenty
+#   * rescore-puc-*.tsv    - forty rows: twenty pre-v3 and twenty v3
 # Always spell the generation out: shard-luajit-v3-*.tsv, rescore-puc-v3-*.tsv.
 git rm --ignore-unmatch -- \
   tools/wp40/fixtures/t2_extreme_e0/shard-luajit-v3-*.tsv \
@@ -485,10 +484,12 @@ from a git worktree.** Parse/validate/mutation KATs are unaffected and run
 anywhere.
 
 **Recorded-commit reuse: what a finished artifact is evidence of.**
-**No accepted `conformance-puc-v3.tsv` exists — none has ever been produced, and
-nothing below claims a conformance result.** This is prospective machinery: the
-acceptance run has not happened (§12 of `docs/research/wp40-t2-contracts.md`),
-so the reuse branch has never yet had an artifact to reuse.
+**An accepted `conformance-puc-v3.tsv` exists.** The 2026-08-22 acceptance run
+produced it from commit `5d770365`, tree `52ec4f38`, and C1-v3 DAG
+`52e2d459…`; final SHA-256 `7ac6b7f9…`. A second invocation at unchanged HEAD
+re-verified all 24 retained rows through the first, same-HEAD branch. The
+recorded-commit branch described below remains for a later closure-identical
+HEAD and was not needed by that resume.
 
 A completed `conformance-puc-v3.tsv` would be evidence of the commit it
 *records*, not of whatever `HEAD` happens to be. Without this rule any later
@@ -680,15 +681,16 @@ The complete 4096-row artifact is explicitly a LuaJIT-origin
 `R7_SCALAR_MEASUREMENT_ONLY` pool with `stage2=pending_selected_four`. Once
 the retained pool exists, PUC must parse and rank it without relabelling its
 origin, then rematerialize deterministic shard endpoints and the four winners
-and run their full partition gates. That evidence does not exist yet and will
-not be a second 4096-origin claim. This slice does not publish geometry,
+and run their full partition gates. That evidence now exists as the retained
+2026-08-22 C1-v3 acceptance set and is not a second 4096-origin claim. This
+slice does not publish geometry,
 integrate `compiler.lua`, promote measured slots into the fixed corpus, or
 claim Stage 2/T2/32-seed readiness. The former fixed-slot-19 blocker is now a
 positive pinned R16/R17 prerequisite; every selected-extreme full-partition
-failure remains fatal with no fallback. Slots 28--31 stay pending until the
-selected four pass the unchanged complete partition gate.
+failure remains fatal with no fallback. Slots 28--31 passed the unchanged
+complete partition gate; corpus promotion remains pending.
 
-The pending C1 conformance launcher is:
+The accepted C1 conformance launcher is:
 
 ```sh
 tools/wp40/run_t2_extreme_conformance.sh

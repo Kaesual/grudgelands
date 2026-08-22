@@ -2251,11 +2251,13 @@ remains in progress.
 
 ## 12. The C1 v3 conformance handoff (cut 2026-08-21)
 
-**Status: measurement code and inputs are immutable; the acceptance
-conformance has NOT been run.** Nothing in this section claims a
-conformance result, T2-final, T9-final, production publication, or any
-32-seed corpus promotion. It records a provenance migration and the
-measured facts that support it.
+**Status: the immutable acceptance conformance completed green on
+2026-08-22.** It ran from commit `5d770365`, tree `52ec4f38`, and C1-v3
+DAG `52e2d459…`; the final artifact hashes `7ac6b7f9…`. This freezes the
+downstream boundary-topology interface in section 12.4. It does **not**
+claim T2-final, T9-final, production publication, or any 32-seed corpus
+promotion; the final artifact records
+`stage2_status = pending_seed_corpus_promotion`.
 
 ### 12.1 What moved
 
@@ -2323,19 +2325,23 @@ Established and reproducible:
 
 - All **20 roster candidates** (the sixteen deterministic shard
   endpoints plus the four winners) reproduce **byte-for-byte at HEAD**
-  under LuaJIT; three of them were additionally reproduced under the
-  vendored PUC 5.1.
-- **Slots 28 and 31 pass the full selected partition gate** under
-  LuaJIT with `g`/`o`/`r`/`m` all zero.
+  under LuaJIT and were independently rescored under the vendored PUC
+  5.1.
+- **All four slots 28--31 pass the full selected partition gate** under
+  LuaJIT and the vendored PUC 5.1 with `g`/`o`/`r`/`m` all zero.
 - Cost anchors, measured: one selected slot ≈ **335 s** LuaJIT wall;
-  one PUC rescore row ≈ **38–44 s**.
+  one PUC rescore row ≈ **38–44 s**; the retained PUC run completed its
+  rescore phase in **215 s** and its four-worker selected phase in
+  **5,507 s**.
 - The migrated conformance KAT is green under LuaJIT and the vendored
   PUC 5.1 with byte-identical output, and the v3 preflight re-derives
   the C1 v3 DAG from the pinned commit.
+- The final artifact was re-derived from all 24 retained rows. A second
+  invocation at unchanged HEAD independently verified them and exited
+  through the same-HEAD resume path without recomputation.
 
-Not established, and not claimed anywhere: any selected-four
-conformance result; slots 29 and 30; a frozen downstream interface;
-T2-final or T9-final; publication authority.
+Not established, and not claimed anywhere: seed-corpus promotion;
+T2-final or T9-final; production or publication authority.
 
 **The retained interpreter pin is deliberately kept.** The merged
 artifact records `merge_interpreter_path`
@@ -2345,11 +2351,11 @@ An end-to-end run therefore succeeds only when the repository root is
 exactly that path — **the acceptance conformance cannot be run from a
 git worktree.**
 
-### 12.4 The downstream interface — PROPOSED, pending the acceptance run
+### 12.4 The downstream interface — FROZEN by the acceptance run
 
-This enumerates, from the code, exactly what a green selected-four
-conformance *would* freeze. It is **proposed**, not frozen, and it
-becomes a freeze only when the acceptance run is green:
+The green selected-four conformance freezes exactly this interface. It
+does not freeze a future bucket, selector, seed corpus, or production
+adapter:
 
 - **Compiled families covered.** The selected result's
   `compiled_sha256` digests the entire compiled payload, i.e. all nine
@@ -2372,6 +2378,15 @@ becomes a freeze only when the acceptance run is green:
   into the v3 selected result row. Whether it belongs in the frozen
   interface was an open item here; **§12.5 settles it in the negative** —
   it stays diagnostic-only and is not added to the frozen C1 interface.
+
+The four frozen payload digests are:
+
+| slot | selector class | candidate | `compiled_sha256` |
+|---:|---|---:|---|
+| 28 | greatest coast | 2192 | `06cfb4a027ff21fdca53165b15307e55769316210222cdb9579efc209165bd6a` |
+| 29 | least coast | 1713 | `3358adf655f454e6d8641f146af6fa0c509a4e2f61d1d41195622048c0909f52` |
+| 30 | greatest non-coast | 1047 | `e1f813c7b3e991aaea196ad314dd71723b7215e0efb32d546e5df70afef01f7b` |
+| 31 | least non-coast | 3438 | `83e260255daa26d1c7928e891a406015c4438f3e292d37e22f4452421f4e5261` |
 
 ### 12.5 The two slot findings, and what they actually were
 
@@ -2577,10 +2592,52 @@ all 24 rows from one clean, immutable commit/tree/DAG. Reuse is
 announced with a token no other path prints, so reused evidence can
 never be read as a fresh measurement.
 
-**No acceptance evidence exists.** Nothing in this section claims a
-conformance result. `conformance-puc-v3.tsv` has never been produced;
-the reuse path is prospective machinery, and the acceptance run remains
-an explicit, separately authorized step.
+The acceptance artifact now exists and records commit `5d770365`, tree
+`52ec4f38`, C1-v3 DAG `52e2d459…`, and final SHA-256 `7ac6b7f9…`.
+The acceptance closeout exercised the first, same-HEAD resume branch and
+re-verified all 24 retained rows. The recorded-commit branch remains the
+path for a later HEAD whose pinned closure is byte-identical; it was not
+needed or falsely claimed by the same-HEAD resume.
+
+### 12.7 Acceptance closeout (measured 2026-08-22)
+
+The separately authorized run used the vendored PUC Lua 5.1.5 at
+`/home/jan/projects/grudgelands/tools/bin/lua51`, SHA-256
+`a1a427f38260513b64158630bc2b7d2fccfa31b48129efbfbcc60e02e4960a4f`.
+Every row records conformance commit
+`5d770365ed884b02c822b7183b4a7ad64ba611ff`, tree
+`52ec4f388d39775d5dc68c1e5a244cdf310d4524`, C1-v3 DAG
+`52e2d45938ef42ced13849f3c30662ef02491c96be8170f1258ecdc20aefcc3e`,
+and execution Authority-DAG `f8f995d6…`.
+
+The retained set is exactly 20 rescore rows, four selected-slot rows, and
+`conformance-puc-v3.tsv`. The final artifact SHA-256 is
+`7ac6b7f9678b53ffa64b6614b7a2926625e1cce53775101a2fd1ae37704fac20`.
+Exact filenames, byte sizes, and hashes are committed in
+`tools/wp40/evidence/t2-c1-v3-5d770365/artifact-manifest.tsv`; `run.log`
+is the write-once fresh-run capture and `resume.log` is the separate
+same-HEAD verification capture. `run-metadata.tsv` durably records the
+commands, observed exit statuses, interpreter/compiler hashes, log hashes,
+phase timings, and terminal tokens. The latter log ends exactly with
+`WP40 T2 C1 v3 conformance resumed complete rescore=20/20 selected=4/4`
+and contains no recorded-evidence-reuse token.
+
+The selected phase completed in 5,507 seconds after the 215-second rescore
+phase; including the mandatory preflight, repeated row verifications, and
+finalization, the observed end-to-end wall time was approximately 99 minutes.
+This replaces the former 95-minute projection for this host and chain. No
+production code, topology rule, pool scalar, winner, or submodule pin moved.
+The final status remains `stage2=pending_seed_corpus_promotion`; seed-corpus
+promotion, T2-final, and T3+ are separate open work.
+
+**Model-calibration record.** Coordinating/implementing model: GPT-5.6 Sol.
+Independent pre-run reviewer: Claude Opus. Across the initial orchestration
+review and its focused re-reviews: 0 Critical / 7 High findings, two fix
+rounds, then `GO SAFE` / `APPROVE`. Observed acceptance wall time:
+approximately 99 minutes (exact instrumented phases: 215 s rescore and
+5,507 s selected). The independent post-run evidence review is recorded in
+the closeout commit history and any resulting follow-up memo rather than
+being anticipated here.
 
 ## 13. The R19 ordering-key metric alignment (cut 2026-08-22)
 

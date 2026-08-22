@@ -180,7 +180,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-16. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-22. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -205,7 +205,9 @@ questions and PvP-death XP rule remain explicitly open in
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
 Its [engineering brief](docs/research/wp40-engineering-brief.md) is written and
 reviewed and decomposes the work into T0–T9: T0 and T1 are complete, T2 is in
-flight, T3–T9 have not started. Current state and execution order are in
+flight with its boundary topology and C1-v3 downstream interface now frozen;
+the non-topology geometry, production compiler and T2-final remain open.
+T3–T9 have not started. Current state and execution order are in
 [the T2 plan](docs/research/wp40-t2-plan.md). The fixed seed, capacity and
 performance evidence remains a merge gate.
 

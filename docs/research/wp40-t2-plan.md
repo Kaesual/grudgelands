@@ -215,6 +215,17 @@ change to it needs a new memo. Next are the C1-v3 conformance /
 topology handoff and the parallelizable light-regime T2 fields —
 explicitly *not* another §11 round.
 
+**Status, 2026-08-22, the C1-v3 acceptance handoff is green.** The
+separately authorized vendored-PUC run retained all 20 rescore rows, all four
+selected-slot rows, and final artifact `conformance-puc-v3.tsv` at commit
+`5d770365`; final SHA-256 `7ac6b7f9…`. Slots 28--31 all pass the complete
+partition gate with `g = o = r = m = 0`. Contracts section 12.4 is now the
+frozen downstream boundary-topology interface, with the four exact compiled
+payload digests. The same-HEAD resume path re-verified all 24 rows without
+recomputation. This closes C1 acceptance, not T2: seed-corpus promotion,
+T2-final, all light-regime fields, remaining compiled buckets, selectors, and
+the production compiler remain open.
+
 **Class B runs in parallel throughout.** The relief field `H`, the template
 catalog and the one blend operator depend on nothing above; they sit on T1's
 green arithmetic primitives.
@@ -241,9 +252,9 @@ directly on `deterministic.lua` and will be tempted.
 
 The v3 winners are candidates 2192, 1713, 1047 and 3438 — the same four the
 pre-R16 pool ranked, which is the measured evidence that R16 through R19 really
-did change no scalar. They are printed by the merge and recorded in commit
-`527b3a5`, but they are not yet a committed artifact row: that row is written
-by the C1 conformance step, which is still on v2.
+did change no scalar. They are printed by the merge, recorded in commit
+`527b3a5`, and now retained in the four accepted C1-v3 selected rows plus the
+final conformance artifact at commit `5d770365`.
 
 The pool's Source side is pinned by projection, not by file bytes, so
 `source/catalog.lua` and `geometry/partition.lua` may change freely; that is
@@ -260,6 +271,9 @@ target host; where a ratio is inferred from two of them, it says so.
 | seed-0 compile, LuaJIT, uncached | **32.7 s** |
 | seed-0 compile, PUC 5.1, uncached | **868 s** |
 | seed-0 + max-u64 + traversal, PUC, uncached | **3,091 s** |
+| C1-v3 PUC rescore phase, 20 rows | **215 s** wall |
+| C1-v3 PUC selected phase, 4 parallel slots | **5,507 s** wall |
+| C1-v3 PUC acceptance, end to end | **~99 min** wall (phase counters exact; total includes preflight/reverification/finalization) |
 | payload cache hit | **0.37 s** LuaJIT / **1.03 s** PUC |
 | full partition gate, PUC, 8-way sharded | **~62 min** wall |
 | 4,096-candidate pool, 8 LuaJIT workers | **91 min** wall |
