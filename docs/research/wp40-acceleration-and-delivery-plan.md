@@ -1,9 +1,10 @@
 # WP40 acceleration and delivery plan
 
 Status: **discussion draft, revised after the 2026-08-21 Section 11 acceptance
-closeout and independently reviewed by Fable and Sol. Fable's findings are
-incorporated; the subsequent Sol closure review found no technical blocker.
-Not an implementation contract and not authoritative game design.**
+closeout and the green 2026-08-22 C1-v3 handoff. Independently reviewed by
+Fable and Sol; Fable's findings are incorporated and the subsequent Sol closure
+review found no technical blocker. Not an implementation contract and not
+authoritative game design.**
 
 This document consolidates the current review and planning discussion into one
 place. Its purpose is to make WP40 faster to finish without weakening the
@@ -115,6 +116,23 @@ The provenance comments beside `W` in `geometry/partition.lua` and
 alone. Section 11.11 of the T2 contracts is the corrected authority. Update
 those comments when either file next opens for a substantive reason; the stale
 histogram text is known documentation debt, not an open semantic question.
+
+### 2.2 C1-v3 acceptance handoff closed
+
+The separately authorized vendored-PUC run completed green from commit
+`5d770365`: 20/20 rescore rows, four of four selected slots, and final artifact
+SHA-256 `7ac6b7f9…`. All four selected slots report `g = o = r = m = 0` and
+the structural pins in T2 contracts section 12.4. The four compiled payload
+digests are frozen there as the downstream boundary-topology interface. A
+separate same-HEAD invocation re-verified all 24 retained rows and exited by
+the resume path without recomputation.
+
+Measured wall time was 215 seconds for the rescore phase and 5,507 seconds for
+the four parallel selected workers, approximately 99 minutes end to end after
+preflight, repeated verification, and finalization. This is final evidence for
+C1, not a new development-loop norm. Recorded-evidence reuse prevents
+closure-neutral future commits from buying the same run again. Seed-corpus
+promotion, T2-final, and all remaining light-regime geometry stay open.
 
 ## 3. Correctness floor and simplification policy
 
@@ -395,15 +413,15 @@ no C/D implementation lane may make the C1 authority digest a moving target.
 The T5-0 half has since done so and is finished as a tools-only observation
 (Section 8); it no longer occupies this lane.
 
-### Lane B — finish the T2 topology handoff
+### Lane B — finish the T2 topology handoff (**completed**)
 
-Migrate C1 selected-four conformance to the v3 artifacts, confirm the four
-winners, freeze the perimeter/face outputs, and publish the exact interface
-that downstream geometry consumes. It owns the v3 gate fixture and lands before
-C/D packages may extend any C1-pinned test surface. Escalate only on a real
-semantic mismatch.
+The C1 selected-four conformance is migrated to the v3 artifacts, all four
+winners are confirmed under vendored PUC 5.1, and T2 contracts section 12.4
+publishes the frozen perimeter/face interface. Its retained evidence and
+same-HEAD resume proof are closed in section 2.2 above. Later work consumes this
+interface and may not change a C1-pinned surface as a side effect.
 
-Expected size: **small to medium** if no new finding appears.
+Result: **completed without a new semantic finding**.
 
 ### Lane C-a — implement the independent T2 local fields
 
@@ -613,7 +631,7 @@ multi-hour evidence run.
 | --- | --- | --- | --- |
 | T0 — baseline | Pins the existing world, materials handoff, host, and measurements so later comparisons mean something. | complete | done |
 | T1 — deterministic foundation | Provides full-seed arithmetic, canonical serialization, validation, IPC, schemas, and the spatial index used by every later task. | complete | done |
-| T2 — compiled geometry | Turns the authored 38-zone world into one immutable deterministic payload: boundaries, terrain fields, routes, water, anchors, masks, selectors, fixtures, and traces. | boundary topology frozen; C1-v3 handoff, most non-topology buckets, and production compiler unstarted | **extra-large**; still the largest single task; derived geometry volume and final integration are the remaining risk |
+| T2 — compiled geometry | Turns the authored 38-zone world into one immutable deterministic payload: boundaries, terrain fields, routes, water, anchors, masks, selectors, fixtures, and traces. | boundary topology and C1-v3 downstream interface frozen; most non-topology buckets and production compiler unstarted | **extra-large**; still the largest single task; derived geometry volume and final integration are the remaining risk |
 | T3 — public geography API | Gives gameplay code stable fast answers such as zone, level, territory, PvP state, water/mount class, nearest feature, housing eligibility, and protection. | not started; scaffolding/oracles may start while T2 finishes, but authoritative answers wait for T2 | **medium**; API semantics and hot-path performance |
 | T4 — pure content planner | Decides, without touching the map, the exact final operation for each relevant voxel and resolves conflicts between terrain, water, routes, resources, and preservation rules. | not started | **large**; resolver completeness and typed ownership, but readily property-tested |
 | T5 — engine adapter | Applies the T4 plan to real v7 output in one bounded VoxelManip transaction with correct light and liquids. | not started; the tools-only T5-0 probe specification is no longer pending and the probe has run as a tools-only observation (Section 8), but T5 itself is untouched | **large**; real-engine behavior, memory, chunk order, and no-op cost |
@@ -634,7 +652,7 @@ Gate A is complete. Use the following order from commit `e6eff4b`:
 ```text
 e6eff4b: topology semantics frozen
                |
-               +-> C1-v3 conformance / topology interface handoff
+               +-> C1-v3 conformance / topology interface handoff [complete]
                |          |
                |          +-> Lane-C-a H/templates/blend
                |          +-> Lane-D-1 source-record compilation
@@ -818,9 +836,9 @@ This draft is ready to become an implementation plan when:
 - the Section 15 authority fold-in is complete.
 
 Only then should implementation that depends on this acceleration draft begin.
-The already-authorized C1-v3 conformance/topology handoff may proceed under the
-existing T2 plan without waiting for this draft to become authoritative. The
-doc-only PUC inventory may likewise proceed as a planning package. The T5-0
+The already-authorized C1-v3 conformance/topology handoff has completed under
+the existing T2 plan without promoting this draft to authority. The doc-only
+PUC inventory may likewise proceed as a planning package. The T5-0
 specification no longer waits: it is frozen in its package contract and the
 probe has already run under it as a tools-only observation (Section 8). Full
 T5 still waits for T3 and T4.

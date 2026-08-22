@@ -23,8 +23,8 @@ eight `shard-luajit-v3-*.tsv`, `candidates-luajit-v3.tsv`,
 `manifest-luajit-v3.tsv` and `conformance_gate_v3.lua`.
 
 Two globs match BOTH generations and must never be used: `shard-luajit-*.tsv`
-(sixteen files) and `rescore-puc-*.tsv` (forty, once a v3 run has produced its
-twenty). Always spell the generation out.
+(sixteen files) and `rescore-puc-*.tsv` (forty files: twenty per generation).
+Always spell the generation out.
 
 `conformance_gate_v3.lua` is the closed input gate of the v3 C1 conformance.
 Like the pre-v3 gate it records the immutable LuaJIT measurement and its PUC
@@ -52,11 +52,15 @@ full-partition gates. Implementation bytes alone are not evidence: the C1
 launcher may run only from an independently reviewed immutable conformance
 commit, and no `rescore-puc-v3-*`, `selected-puc-v3-*` or
 `conformance-puc-v3.tsv` file is evidence until every closed gate records that
-commit. **No such file exists: the acceptance conformance has not been run.**
-This directory does not claim a second 4096-row origin.
+commit. **That acceptance completed green on 2026-08-22 from commit
+`5d770365`, tree `52ec4f38`, and C1-v3 DAG `52e2d459…`.** The retained set is
+20 rescore rows, four selected rows, and final artifact
+`conformance-puc-v3.tsv`, SHA-256 `7ac6b7f9…`. This directory does not claim a
+second 4096-row origin.
 
 The former fixed-slot-19 fatal has a positive, pinned max-u64 R16/R17
-prerequisite fixture. Slots 28--31 nevertheless remain unpromoted until the
-pool has been measured and all four selected full-partition gates pass with no
-fallback. Nothing here claims Stage 2, T2, a 32-seed corpus, runtime geometry,
-or publication authority by itself.
+prerequisite fixture. Slots 28--31 passed the selected full-partition gates
+with no fallback, but the final artifact explicitly records
+`stage2_status = pending_seed_corpus_promotion`. Nothing here claims completed
+Stage 2, T2, a promoted 32-seed corpus, runtime geometry, or publication
+authority by itself.
