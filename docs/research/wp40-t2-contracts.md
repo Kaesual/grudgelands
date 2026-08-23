@@ -3186,9 +3186,12 @@ package geometry-compile attempts and the retained 128.58-second capture ran
 on implementation commit `66f2a11` (tree `e75046c4`); the later fail-closed
 dry-face roster, empty-ID refusal and shared-comparator validation were tested
 only by focused dual-interpreter KATs and by no geometry compile in this
-package. Before Phase-0B fixture regeneration, the coordinator therefore runs
-one bounded LuaJIT smoke compile on the integrated provider. It is an
-integration preflight, not a fourth ownership-package evidence run.
+package. The coordinator therefore ran one bounded LuaJIT smoke compile on the
+integrated provider at `04139a2`: seed 0 completed green in 78.96 seconds with
+4 Bays, 38 dry faces, zero connectivity-fill columns, zero adopted-residue
+intervals, 639,512 SHA calls and 1,004 misses. This was an integration
+preflight, not a fourth ownership-package evidence run. Phase-0B may now
+regenerate its fixtures on this provider.
 
 Two final-review Lows are accepted without another package fix round. The
 authority-side exact-duplicate class has no dedicated committed KAT, but the
