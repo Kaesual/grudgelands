@@ -438,9 +438,14 @@ untouched.
 C-a2 is a separate serial package. It assembles zone-owned `H` only after
 D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
 and dry-face/zone-owned adopted residue, and the integrated C1-v3
-reacceptance is green. It consumes those ownership bytes rather than
-reconstructing the Whole gate or treating dry-face polygons as sufficient
-ownership.
+reacceptance is green. Its first fail-closed gate retains the seed-independent
+proof that every exact landmark mask plus the maximum legal incident-edge
+displacement envelope lies inside its final owner. The package-local
+`surface_owner_at(x, z)` projection over the accepted compiled-world-v2 records
+combines dry-face polygon and adopted-residue ownership, every compiled Planned-
+Water class and the canonical half-open seam tie. “Not polygons alone” forbids
+dropping those other inputs; polygon membership remains the ordinary-dry input.
+Missing input or reconstructed ownership is a STOP before `H` assembly.
 
 Both packages use the light verification regime: purity argument, properties,
 focused KATs and a determinism digest. They do not copy the topology census

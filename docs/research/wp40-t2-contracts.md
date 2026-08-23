@@ -2949,6 +2949,7 @@ packages they governed; their bodies are not rewritten.
    which exact membership and signed-distance equality differ are evidence,
    not authority. C-a1 Stage 1 must prove that every exact mask, including its
    per-edge displacement margin, is contained in its owning final zone. The
+   **[Superseded by Section 14.5: this proof is C-a2's first gate.]** The
    current source validator checks only `zone_id` referential integrity at
    `validation/t2_source.lua:3964`; no current check enforces geometric
    containment. Composition never deletes mask identity. Required-route non-
@@ -3120,7 +3121,27 @@ collars and ordered landmark composition, but makes no final-zone containment
 claim. After D-1, the ownership handoff and the single C1 reacceptance are
 green, C-a2's first fail-closed integration gate proves that every exact mask,
 including its per-edge displacement margin, lies in its owning final zone. It
-must consume the sole integrated ownership authority and may neither infer
-ownership from dry-face polygons alone nor rebuild partition connectivity. A
-missing or insufficient ownership payload is a STOP before `H` assembly, not
-permission to widen C-a1 or invent a classifier.
+must consume the package-local `surface_owner_at(x, z)` projection over the
+accepted integrated `grug_wp40_compiled_world_v2` records. That projection is
+not a new serialized family: it applies the canonical per-column precedence to
+compiled Bay-v3 Base/notch/connectivity data and owner spans, closure-wing and
+mouth-aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
+ownership, and the half-open seam tie. “Not polygons alone” forbids omitting
+those water, residue and seam inputs; it does not forbid polygon membership as
+the ordinary-dry input. A missing or insufficient compiled input is a STOP
+before `H` assembly, not permission to widen C-a1, rebuild partition
+connectivity or invent a second classifier.
+
+The containment proof is a retained, seed-independent C-a2 acceptance KAT over
+every authored exact mask plus the maximum legal displacement envelope of each
+incident edge. It proves the authoring invariant for every legal seed; it is
+not an exhaustive per-seed runtime scan. The seed-specific
+`surface_owner_at(x, z)` projection still fails closed on zero or multiple
+owners inside the defined `H` domain.
+
+C-a1's executable dependency envelope is limited to its new payload-free
+modules, `canonical.lua`, `deterministic.lua`, `exact.lua`, the validated
+Source relief/template/landmark records and the injected raw-SHA seam. It may
+inspect the S1/C1 files for parity but may neither load `partition.lua` or a
+compiled ownership payload nor consume D-1 records. Those paths and all source
+authority remain consume-only.

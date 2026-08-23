@@ -71,10 +71,13 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    C1-v3 PUC reacceptance for the integrated Wave-1 state.
 6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
    Section-11 ownership export and the green reacceptance. Its first fail-closed
-   gate proves exact-mask-plus-displacement-margin containment against the sole
-   integrated final ownership provider; missing payload or reconstructed
-   ownership is a STOP. It then assembles zone-owned `H`. Stop after C-a2 and
-   before Lane C-b.
+   gate proves exact-mask-plus-displacement-margin containment with the package-
+   local `surface_owner_at(x, z)` projection over the accepted integrated
+   compiled-world-v2 records. The projection combines dry-face polygon and
+   adopted-residue ownership with every compiled Planned-Water class and the
+   canonical half-open seam tie; “not polygons alone” never means omitting
+   polygon membership. Missing input or reconstructed ownership is a STOP. It
+   then assembles zone-owned `H`. Stop after C-a2 and before Lane C-b.
 
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either

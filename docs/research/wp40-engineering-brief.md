@@ -170,11 +170,13 @@ continues to use its source integer predicate; it is separate from the Q16
 signed distance used by the collar and may not be replaced by signed-distance
 equality. The measured 264 ellipse incidences where those classifications
 differ are evidence for this separation, not a new mask authority. C-a1 proves
-that arithmetic without claiming final zone containment. Once the final
-ownership provider exists, C-a2's first integration gate must prove every exact
-authored mask plus its per-edge displacement margin lies inside its owning
-final zone. Missing ownership payload stops the package; it never licenses a
-second classifier. Priority composition never deletes mask identity.
+that arithmetic without claiming final zone containment. After D-1, the
+ownership export and the integrated C1 reacceptance are green, C-a2's first
+fail-closed integration gate must prove every exact authored mask plus its per-
+edge displacement margin lies inside its owning final zone. It uses the
+package-local `surface_owner_at(x, z)` projection over the accepted integrated
+compiled-world-v2 records. Missing ownership input stops the package; it never
+licenses a second classifier. Priority composition never deletes mask identity.
 Required-route non-blocking is tested against the final composed `H` and the
 later route products, never inferred from a one-winner landmark mask.
 
