@@ -551,6 +551,11 @@ assert(fixture_file:close())
 check(fixture == expected_fixture, "canonical authored fixture changed")
 
 if mode == "full" then
+	local non_plain_dependencies = dependencies(source)
+	setmetatable(non_plain_dependencies, {})
+	expect_error("dependencies are not a plain table", function()
+		new_authored(non_plain_dependencies)
+	end)
 	expect_error("unknown dependency", function()
 		local invalid = dependencies(source)
 		invalid.compiler = {}
@@ -568,6 +573,11 @@ if mode == "full" then
 		compile(invalid, accepting_validator)
 	end)
 	invalid = deep_copy(source)
+	invalid.zones[1].faction = ""
+	expect_error("non-empty text", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
 	setmetatable(invalid.zones[1], {})
 	expect_error("metatable", function() compile(invalid, accepting_validator) end)
 	invalid = deep_copy(source)
@@ -582,7 +592,54 @@ if mode == "full" then
 		compile(invalid, accepting_validator)
 	end)
 	invalid = deep_copy(source)
+	invalid.zones[38] = nil
+	expect_error("Source zone count is not 38", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.boat_edges[4] = nil
+	expect_error("Source boat-route count is not 4", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.zones[1].numeric_id = 2
+	expect_error("numeric identity changed", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.boat_edges[1].numeric_id = 2
+	expect_error("numeric identity changed", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.zones[1].biomes = {}
+	expect_error("biomes are empty", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.zones[1].biomes[2].id = invalid.zones[1].biomes[1].id
+	expect_error("biome IDs are not unique", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
+	invalid.routes[1].crossing_station = #invalid.routes[1].centreline + 1
+	expect_error("outside its centreline", function()
+		compile(invalid, accepting_validator)
+	end)
+	invalid = deep_copy(source)
 	invalid.zones[1].level_min = "1"
+	expect_error("integer range", function() compile(invalid, accepting_validator) end)
+	invalid = deep_copy(source)
+	invalid.zones[1].level_min = 0 / 0
+	expect_error("integer range", function() compile(invalid, accepting_validator) end)
+	invalid = deep_copy(source)
+	invalid.routes[1].centreline[1].x = math.huge
+	expect_error("integer range", function() compile(invalid, accepting_validator) end)
+	invalid = deep_copy(source)
+	invalid.boat_edges[1].approach_z = -math.huge
+	expect_error("integer range", function() compile(invalid, accepting_validator) end)
+	invalid = deep_copy(source)
+	invalid.boat_edges[1].width = 1.5
 	expect_error("integer range", function() compile(invalid, accepting_validator) end)
 	invalid = deep_copy(source)
 	invalid.boat_edges[1].width = 4294967296

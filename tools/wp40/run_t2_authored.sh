@@ -18,6 +18,13 @@ trap cleanup EXIT HUP INT TERM
 
 lua_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
 "$lua_bin" -e 'assert(type(jit) == "table", "D-1 full run requires LuaJIT")'
+if "$lua_bin" -e 'assert(rawget(_G, "jit") == nil and _VERSION == "Lua 5.1", "D-1 PUC KAT requires plain PUC Lua 5.1")' \
+		>/dev/null 2>&1; then
+	echo "${BASH_SOURCE[0]##*/}: LuaJIT passed the plain-PUC identity guard" >&2
+	exit 1
+fi
+"$repo/tools/bin/lua51" -e \
+	'assert(rawget(_G, "jit") == nil and _VERSION == "Lua 5.1", "D-1 PUC KAT requires plain PUC Lua 5.1")'
 
 owned_lua=(
 	"$repo/mods/MAPGEN/grug_mapgen/wp40/geometry/authored.lua"
