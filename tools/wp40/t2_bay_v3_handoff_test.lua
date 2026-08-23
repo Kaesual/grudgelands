@@ -116,10 +116,17 @@ local function digest(value)
 	return hex(raw_sha256(stable(value)))
 end
 
+local validator_cases = 0
 local function expect_error(fragment, callback)
 	local ok, message = pcall(callback)
 	assert(not ok, "expected error containing " .. fragment)
 	assert(tostring(message):find(fragment, 1, true), tostring(message))
+	validator_cases = validator_cases + 1
+end
+
+local function expect_pass(callback)
+	assert(callback())
+	validator_cases = validator_cases + 1
 end
 
 local function named_row(record, field, name)
@@ -177,20 +184,46 @@ end
 
 local function minimal_face(id, values, count)
 	return {record_schema = "grug_wp40_dry_face_v2", id = id,
-		unsigned_values = {{name = "adopted_residue_interval_count", value = count}},
-		signed_arrays = {{name = "adopted_residue_z_first_finish", values = values}}}
+		numeric_id = 1,
+		text_values = {{name = "zone_id", value = "zone_kat"}},
+		signed_values = {},
+		unsigned_values = {
+			{name = "adopted_residue_interval_count", value = count},
+			{name = "station_count", value = 3}},
+		boolean_values = {},
+		text_arrays = {{name = "bank_component_ids", values = {}}},
+		signed_arrays = {
+			{name = "adopted_residue_z_first_finish", values = values},
+			{name = "bank_stations_xz", values = {}},
+			{name = "polygon_xz", values = {0, 0, 1, 0, 0, 0}}},
+		unsigned_arrays = {
+			{name = "bank_station_counts", values = {}},
+			{name = "bank_station_offsets", values = {}}},
+		candidates = {}, attributes = {}}
 end
 
 local function adoption_authority(face_id, members)
 	return {adopted = {{face_id = face_id, members = members}}, rejected = {}}
 end
 
+local function emit_fixture(lines)
+	table.sort(lines, function(a, b)
+		if a:match("^schema\t") then return not b:match("^schema\t") end
+		if b:match("^schema\t") then return false end
+		return a < b
+	end)
+	return table.concat(lines, "\n") .. "\n"
+end
+
 local function run_validator_kats()
 	local bay_authority = {{x = 7, z = -2}, {x = -3, z = 9}}
 	local bay = minimal_bay({-3, 9, 7, -2}, 2)
-	assert(compiler.validate_bay_connectivity_handoff(bay, bay_authority))
-	assert(bay_authority[1].x == 7 and bay.signed_arrays[1].values[1] == -3,
-		"Bay handoff aliases or mutates its authority")
+	local bay_before, bay_authority_before = digest(bay), digest(bay_authority)
+	expect_pass(function()
+		return compiler.validate_bay_connectivity_handoff(bay, bay_authority)
+	end)
+	assert(digest(bay) == bay_before and digest(bay_authority) == bay_authority_before,
+		"Bay validation mutates payload or authority")
 	expect_error("count changed", function()
 		compiler.validate_bay_connectivity_handoff(
 			minimal_bay({-3, 9, 7, -2}, 1), bay_authority)
@@ -204,16 +237,36 @@ local function run_validator_kats()
 			minimal_bay({-3, 9, -3, 9}, 2), bay_authority)
 	end)
 	expect_error("does not match authority", function()
+		compiler.validate_bay_connectivity_handoff(
+			minimal_bay({-3, 8, 7, -2}, 2), bay_authority)
+	end)
+	expect_error("does not match authority", function()
 		compiler.validate_bay_connectivity_handoff(bay, {{x = -3, z = 9}})
 	end)
+	expect_error("integer range", function()
+		compiler.validate_bay_connectivity_handoff(bay,
+			{{x = -3.5, z = 9}, {x = 7, z = -2}})
+	end)
+	expect_error("authority contains a duplicate", function()
+		compiler.validate_bay_connectivity_handoff(bay,
+			{{x = -3, z = 9}, {x = -3, z = 9}})
+	end)
+	expect_error("not dense", function()
+		compiler.validate_bay_connectivity_handoff(bay,
+			{[1] = {x = -3, z = 9}, [3] = {x = 7, z = -2}})
+	end)
+	validator_cases = validator_cases + 1
 
 	local members = {{z = 4, first = 8, finish = 9},
 		{z = 3, first = 10, finish = 10}}
 	local adoption = adoption_authority("face_a", members)
 	local face = minimal_face("face_a", {3, 10, 10, 4, 8, 9}, 2)
-	assert(compiler.validate_dry_face_adoption_handoff(face, adoption))
-	assert(members[1].z == 4 and face.signed_arrays[1].values[1] == 3,
-		"dry-face handoff aliases or mutates its authority")
+	local face_before, adoption_before = digest(face), digest(adoption)
+	expect_pass(function()
+		return compiler.validate_dry_face_adoption_handoff(face, adoption)
+	end)
+	assert(digest(face) == face_before and digest(adoption) == adoption_before,
+		"dry-face validation mutates payload or authority")
 	expect_error("count changed", function()
 		compiler.validate_dry_face_adoption_handoff(
 			minimal_face("face_a", {3, 10, 10, 4, 8, 9}, 1), adoption)
@@ -230,21 +283,76 @@ local function run_validator_kats()
 		compiler.validate_dry_face_adoption_handoff(face,
 			adoption_authority("face_b", members))
 	end)
-	expect_error("overlaps within a row", function()
+	expect_error("face_a adopted residue intervals overlap within a row", function()
 		compiler.validate_dry_face_adoption_handoff(
 			minimal_face("face_a", {3, 10, 12, 3, 12, 13}, 2),
 			adoption_authority("face_a", {{z = 3, first = 10, finish = 12},
-				{z = 3, first = 12, finish = 13}}))
+				{z = 3, first = 14, finish = 15}}))
 	end)
-	expect_error("reversed", function()
+	expect_error("payload interval is reversed", function()
 		compiler.validate_dry_face_adoption_handoff(
 			minimal_face("face_a", {3, 12, 10}, 1),
-			adoption_authority("face_a", {{z = 3, first = 12, finish = 10}}))
+			adoption_authority("face_a", {{z = 3, first = 10, finish = 12}}))
 	end)
 	expect_error("rejected residue", function()
 		compiler.validate_dry_face_adoption_handoff(
 			minimal_face("face_a", {}, 0), {adopted = {}, rejected = {{}}})
 	end)
+	expect_error("do not match authority", function()
+		compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {3, 10, 11, 4, 8, 9}, 2), adoption)
+	end)
+	expect_pass(function()
+		return compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_b", {}, 0), adoption)
+	end)
+	local two_chains = {adopted = {
+		{face_id = "face_a", members = {{z = 3, first = 10, finish = 10}}},
+		{face_id = "face_a", members = {{z = 4, first = 8, finish = 9}}}},
+		rejected = {}}
+	expect_error("do not match authority", function()
+		compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {3, 10, 10}, 1), two_chains)
+	end)
+	expect_error("do not match authority", function()
+		compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {3, 10, 10, 4, 8, 9, 5, 1, 1}, 3),
+			two_chains)
+	end)
+	local chain = {columns = 1, ring_stations = 1, via = "ring"}
+	local cyclic_member = {z = 6, first = 4, finish = 4, chain = chain}
+	chain.members = {cyclic_member}
+	local cyclic_authority = {adopted = {{face_id = "face_a",
+		zone_id = "zone_kat", members = chain.members, columns = 1,
+		ring_stations = 1, via = "ring"}}, rejected = {}}
+	expect_pass(function()
+		return compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {6, 4, 4}, 1), cyclic_authority)
+	end)
+	local old_bay = minimal_bay({}, 0)
+	old_bay.record_schema = "grug_wp40_bay_v2"
+	expect_error("schema is invalid", function()
+		compiler.validate_bay_connectivity_handoff(old_bay, {})
+	end)
+	local old_face = minimal_face("face_a", {}, 0)
+	old_face.record_schema = "grug_wp40_dry_face_v1"
+	expect_error("schema is invalid", function()
+		compiler.validate_dry_face_adoption_handoff(old_face,
+			{adopted = {}, rejected = {}})
+	end)
+	local extra_field = minimal_face("face_a", {}, 0)
+	extra_field.unexpected = true
+	expect_error("record shape changed", function()
+		compiler.validate_dry_face_adoption_handoff(extra_field,
+			{adopted = {}, rejected = {}})
+	end)
+	local missing_row = minimal_face("face_a", {}, 0)
+	table.remove(missing_row.signed_arrays, 2)
+	expect_error("signed_arrays count changed", function()
+		compiler.validate_dry_face_adoption_handoff(missing_row,
+			{adopted = {}, rejected = {}})
+	end)
+	validator_cases = validator_cases + 1
 end
 
 local ledger = read_file(adoption_ledger_path)
@@ -262,16 +370,48 @@ if mode == "fixture" then
 	assert(fixture:find("witness\tadoption\t" .. adoption_seed ..
 		"\tzone_face:kragmar_sunscar_flats\t2252\t877\t877\n", 1, true),
 		"adoption witness fixture changed")
-	local lines, seen = 0, {}
+	local fixture_lines, seen = {}, {}
 	for line in fixture:gmatch("([^\n]+)\n") do
-		lines = lines + 1
 		assert(not seen[line], "handoff fixture contains a duplicate line")
 		seen[line] = true
+		table.insert(fixture_lines, 1, line)
 	end
-	assert(lines > 30 and lines < 300, "handoff fixture case budget changed")
+	assert(#fixture_lines == 71, "handoff fixture row count changed")
+	local emitted = emit_fixture(fixture_lines)
+	assert(emitted == fixture,
+		"committed fixture emitter does not reproduce fixture bytes")
+
+	-- The initial full-run capture wrote a final empty TSV field on the 40
+	-- zero-count payload rows. Reconstruct those bytes deterministically and
+	-- prove that the one normalization applied before commit is exact.
+	local capture_lines = {}
+	for line in fixture:gmatch("([^\n]+)\n") do
+		if line:match("^adoption\t[^\t]+\t0$") or
+				line:match("^connectivity\t[^\t]+\t0$") then
+			line = line .. "\t"
+		end
+		capture_lines[#capture_lines + 1] = line
+	end
+	local reconstructed_capture = table.concat(capture_lines, "\n") .. "\n"
+	assert(#reconstructed_capture == 4876,
+		"reconstructed capture byte count changed")
+	assert(hex(raw_sha256(reconstructed_capture)) ==
+		"858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881",
+		"reconstructed capture digest changed")
+	local normalized, substitutions = reconstructed_capture:gsub("\t\n", "\n")
+	assert(substitutions == 40, "capture normalization count changed")
+	assert(normalized == fixture, "capture normalization changed fixture bytes")
+
+	local focused_cases = #fixture_lines + validator_cases
+	assert(focused_cases < 300, "handoff focused-case budget changed")
 	local interpreter = rawget(_G, "jit") and "LuaJIT" or "PUC-5.1"
 	print("WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=" .. interpreter ..
-		" fixture_sha256=" .. hex(raw_sha256(fixture)) .. " cases=" .. lines)
+		" fixture_sha256=" .. hex(raw_sha256(emitted)) ..
+		" fixture_rows=" .. #fixture_lines ..
+		" validator_cases=" .. validator_cases ..
+		" focused_cases=" .. focused_cases ..
+		" reconstructed_capture_sha256=" .. hex(raw_sha256(reconstructed_capture)) ..
+		" normalized_trailing_fields=" .. substitutions)
 	hasher.close()
 	return
 end
@@ -282,14 +422,13 @@ local lines = {"schema\tgrug_wp40_bay_v3_handoff_fixture_v1",
 	"witness\tconnectivity\t" .. connectivity_seed .. "\twhole_gap_reject",
 	"witness\tadoption\t" .. adoption_seed ..
 		"\tzone_face:kragmar_sunscar_flats\t2252\t877\t877"}
-local unchanged_families = {"land_boundaries", "perimeters",
+local forward_pinned_families = {"land_boundaries", "perimeters",
 	"mouth_apertures", "closure_wings", "coast_shelf", "islands", "channels"}
 
 local function append_payload_evidence(seed, compiled)
 	local legacy = legacy_projection(compiled.families)
-	for index = 1, #unchanged_families do
-		local name = unchanged_families[index]
-		assert(digest(compiled.families[name]) == digest(legacy[name]))
+	for index = 1, #forward_pinned_families do
+		local name = forward_pinned_families[index]
 		lines[#lines + 1] = table.concat({"legacy_digest", seed, name,
 			digest(legacy[name])}, "\t")
 	end
@@ -363,12 +502,7 @@ append_payload_evidence(adoption_seed, adoption)
 print(("WP40 T2 dry-face-v2 adoption witness seed=%s intervals=%d wall=%ds"):format(
 	adoption_seed, adoption_total, adoption_seconds))
 
-table.sort(lines, function(a, b)
-	if a:match("^schema\t") then return not b:match("^schema\t") end
-	if b:match("^schema\t") then return false end
-	return a < b
-end)
-local blob = table.concat(lines, "\n") .. "\n"
+local blob = emit_fixture(lines)
 if capture_path then
 	write_file(capture_path, blob)
 else

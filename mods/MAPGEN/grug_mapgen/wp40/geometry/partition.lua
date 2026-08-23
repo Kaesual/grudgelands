@@ -158,6 +158,8 @@ local function new_partition(dependencies)
 		end
 		fail(record_value.id .. " lacks " .. name)
 	end
+	local point_less
+	local exact_named_rows
 
 	local function canonical_connectivity_fill(points)
 		local result = {}
@@ -172,9 +174,7 @@ local function new_partition(dependencies)
 				"Bay connectivity authority z")
 			result[index] = {x = point.x, z = point.z}
 		end
-		table.sort(result, function(a, b)
-			return a.x < b.x or a.x == b.x and a.z < b.z
-		end)
+		table.sort(result, point_less)
 		for index = 2, #result do
 			if result[index - 1].x == result[index].x and
 					result[index - 1].z == result[index].z then
@@ -286,8 +286,39 @@ local function new_partition(dependencies)
 	local function validate_dry_face_adoption_handoff(face, adoption)
 		if type(face) ~= "table" or getmetatable(face) ~= nil or
 				face.record_schema ~= "grug_wp40_dry_face_v2" or
-				type(face.id) ~= "string" then
+				type(face.id) ~= "string" or face.id == "" then
 			fail("dry-face adoption handoff schema is invalid")
+		end
+		local record_fields = {record_schema = true, id = true, numeric_id = true,
+			text_values = true, signed_values = true, unsigned_values = true,
+			boolean_values = true, text_arrays = true, signed_arrays = true,
+			unsigned_arrays = true, candidates = true, attributes = true}
+		for key in pairs(face) do
+			if not record_fields[key] then
+				fail(face.id .. " dry-face record shape changed")
+			end
+		end
+		for field in pairs(record_fields) do
+			if face[field] == nil then
+				fail(face.id .. " dry-face record shape changed")
+			end
+		end
+		exact.integer(face.numeric_id, 0, 4294967295,
+			"dry-face numeric ID")
+		exact_named_rows(face, "text_values", {"zone_id"})
+		exact_named_rows(face, "signed_values", {})
+		exact_named_rows(face, "unsigned_values",
+			{"adopted_residue_interval_count", "station_count"})
+		exact_named_rows(face, "boolean_values", {})
+		exact_named_rows(face, "text_arrays", {"bank_component_ids"})
+		exact_named_rows(face, "signed_arrays",
+			{"adopted_residue_z_first_finish", "bank_stations_xz", "polygon_xz"})
+		exact_named_rows(face, "unsigned_arrays",
+			{"bank_station_counts", "bank_station_offsets"})
+		if dense(face.candidates, face.id .. " dry-face candidates") ~= 0 or
+				type(face.attributes) ~= "table" or
+				getmetatable(face.attributes) ~= nil or next(face.attributes) ~= nil then
+			fail(face.id .. " dry-face record tail changed")
 		end
 		local expected = canonical_adopted_intervals(adoption, face.id)
 		local count = named_scalar(face, "unsigned_values",
@@ -311,7 +342,9 @@ local function new_partition(dependencies)
 				"adopted residue first")
 			exact.integer(finish, -2147483648, 2147483647,
 				"adopted residue finish")
-			if first > finish then fail("adopted residue interval is reversed") end
+			if first > finish then
+				fail(face.id .. " adopted residue payload interval is reversed")
+			end
 			if previous_z and z == previous_z and first == previous_first and
 					finish == previous_finish then
 				fail(face.id .. " adopted residue intervals contain a duplicate")
@@ -359,7 +392,7 @@ local function new_partition(dependencies)
 
 	-- The canonical x-then-z point order and the Chebyshev metric, hoisted so
 	-- exactly one copy exists for the compiler stages and the census layer.
-	local function point_less(a, b)
+	point_less = function(a, b)
 		return a.x < b.x or a.x == b.x and a.z < b.z
 	end
 
@@ -8256,7 +8289,7 @@ local function new_partition(dependencies)
 		bay_zone_numeric[source.zones[index].id] = source.zones[index].numeric_id
 	end
 
-	local function exact_named_rows(record_value, field, names)
+	exact_named_rows = function(record_value, field, names)
 		local rows = record_value[field]
 		if dense(rows, record_value.id .. " " .. field) ~= #names then
 			fail(record_value.id .. " " .. field .. " count changed")
