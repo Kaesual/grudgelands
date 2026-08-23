@@ -3267,7 +3267,11 @@ parity, the K7/K8/K9 unit/comparator layer, and these production full paths:
 fixture digests. Any corpus, witness, fixture-byte or digest change requires a
 later memo in this file; “representative” never permits an ad-hoc re-pin.
 `tools/wp40/evidence/t2-puc-core-v1/` retains the run calibration and raw
-runtime telemetry. Canonical stdout is never normalized. For the worker pair,
+runtime telemetry. Worker and other semantic stdout is never normalized. The
+merge report alone replaces its exactly one leading, host-specific interpreter
+identity with `WP40 T2 census interpreter: <LuaJIT>` after an early preflight
+has proved that the configured LuaJIT is genuine and distinct from PUC; every
+remaining byte is exact. For the worker pair,
 both exits must be equal and zero; stdout and the complete two-seed TSV must be
 byte-identical; the external SHA and internal trailing digest must agree. Raw
 stderr is retained separately and must contain exactly these two anchored
@@ -3288,8 +3292,11 @@ complete-record SHA-256 is
 `2eac453bb1f7f0f4fd23693a3bd717b5d4f8ba6f5c0a84342d0b1b01fc86be90`
 and internal digest is
 `047d6fefbe937512efda38fd5b8d245e7ac2399e546e215387d3eac54d4666c8`.
-The seven-seed merge took 335 s and recorded all three invariance halves green,
-with artifact digest
+The seven retained per-seed worker wall counters for the merge carrier sum to
+346 s. The exact whole-leg wall was not retained and is strictly larger because
+the dual-runtime merge and final gate follow the worker phase; the complete run
+passed its 420 s cap and recorded all three invariance halves green, with
+artifact digest
 `fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795`.
 The full Source harness ran under LuaJIT and its targeted PUC projection KAT
 was byte-identical. Optional-load behavior was byte-identical across both
@@ -3304,7 +3311,9 @@ Phase-0B rerun.
 
 **Completion calibration record:** non-trivial policy/executable-evidence
 package; implementing model GPT-5.6 Sol; independent reviewer Claude
-Opus/xhigh pending; observed capture interval approximately 6 h 43 min,
-including two user-authority pauses and the heavy runs; initial/final finding
-counts pending review. The coordinator appends review outcome and any fix-round
-count without rewriting the measured evidence above.
+Opus/xhigh; initial review 0 Critical / 0 High / 2 Medium / 6 Low; one
+mechanical fix round on implementation commit `ee4478bc4210b0be75661152a9c1f240f53a36ce`
+(tree `b91ba958bf7643c6a9c39eea3581a1b56aa7690d`); focused re-review pending;
+observed capture interval approximately 6 h 43 min, including two
+user-authority pauses and the heavy runs. The coordinator appends the focused
+re-review outcome without rewriting the measured evidence above.

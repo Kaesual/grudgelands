@@ -234,7 +234,7 @@ parallelism field says otherwise.
 | PUC-K7 | `tools/wp40/run_t2_correction_kat.sh` | INTERMEDIATE | PUC leg HARDWIRED `:28`, LuaJIT leg SELECTABLE `:27` | 20-111 s | PROJECTED |
 | PUC-K8 | `tools/wp40/run_t2_s11_acceptance.sh` | INTERMEDIATE | PUC leg HARDWIRED `:23`, LuaJIT leg SELECTABLE `:22` | 1-10 s | PROJECTED |
 | PUC-K9 | `run_t2_census_gates.sh` Scan-3b/4 KAT PUC leg | INTERMEDIATE | HARDWIRED PUC `run_t2_census_gates.sh:418` | 20-111 s | PROJECTED |
-| PUC-K10 | `run_t2_census.sh --merge-kat` | INTERMEDIATE | LuaJIT worker + PUC merge half HARDWIRED | 335 s whole command | MEASURED, Phase 0B |
+| PUC-K10 | `run_t2_census.sh --merge-kat` | INTERMEDIATE | LuaJIT worker + PUC merge half HARDWIRED | retained per-seed worker wall counters sum to 346 s; exact whole-leg wall unretained | MEASURED GREEN within 420 s cap, Phase 0B |
 | PUC-K11 | `tools/wp40/run_t2_extreme_puc_kat.sh` | INTERMEDIATE | HARDWIRED PUC `:11` | 170-3,091 s | PROJECTED |
 | PUC-K12 | PCC worker full-path pair | INTERMEDIATE / FINAL PCC | `run_t2_puc_core.sh --worker` | 2,325 s PUC; 2,457 s pair total | MEASURED, Phase 0B |
 | PUC-K13 | PCC compiler full-path pair | INTERMEDIATE / FINAL PCC | `run_t2_puc_core.sh --compiler` | 1,734 s PUC; 1,803 s pair total | MEASURED, Phase 0B |
@@ -1128,7 +1128,7 @@ every leg rather than to one.
 |---|---|---|---|---|---|
 | **COMPILER** | `partition.compile` | `run_t2_puc_core.sh --compiler` / `t2_correction_repro.lua` | `1959553668008863006`, `2147483648` | complete stdout and compiled-graph SHA-256 per seed, byte-compared LuaJIT/PUC | 1,803 s total MEASURED |
 | **WORKER** | `partition.census_scan` | `run_t2_puc_core.sh --worker` / `t2_census_worker.lua` | `2147483648`, `16178445837170081103` | complete v6 TSV, internal/external digest, canonical stdout and separated telemetry | 2,457 s total MEASURED |
-| **MERGE** | `t2_census_merge.lua` via `run_merge_pair` | `run_t2_puc_core.sh --merge` | fixed 7 KAT seeds | five-artifact `cmp` + `artifacts_digest`, probe, synthetic and measured invariance | 335 s total MEASURED |
+| **MERGE** | `t2_census_merge.lua` via `run_merge_pair` | `run_t2_puc_core.sh --merge` | fixed 7 KAT seeds | five-artifact `cmp` + `artifacts_digest`, probe, synthetic and measured invariance | retained seven-seed worker walls sum to 346 s; exact total unretained; complete leg MEASURED GREEN within 420 s cap |
 | **SELECTOR** | `extreme.score_candidate`, `extreme.candidate_shard`, selected compile | retained C1-v3 F2 | rescore roster includes 0/4095; slots 28-31 | retained rescore and selected artifacts | F2 ~99 min end to end MEASURED; no separate leg |
 
 The COMPILER row closes the former PUC-K13 runner gap. F2 closes the proposed
@@ -1176,21 +1176,25 @@ evidence, but neither is counted toward the four.
 
 ### 7.5 Measured component cost of the accepted PCC
 
-| part | low (s) | high (s) | label |
-|---|---:|---:|---|
-| micro, Source, unit/comparator and optional-load legs | <10 | <10 | MEASURED component sum |
-| COMPILER witness pair, serialized runtimes | 1,803 | 1,803 | MEASURED |
-| WORKER witness pair, serialized runtimes | 2,457 | 2,457 | MEASURED |
-| MERGE witness incl. measured divergence half | 335 | 335 | MEASURED |
-| SELECTOR carrier | 0 | 0 | supplied by retained F2; no duplicate PCC leg |
-| **PCC component subtotal** | **~4,601 s = 1.28 h** | **~4,601 s = 1.28 h** | measured components; no synthetic end-to-end rerun |
+| part | retained component accounting | label |
+|---|---:|---|
+| micro, Source, unit/comparator and optional-load legs | <10 s | MEASURED component sum |
+| COMPILER witness pair, serialized runtimes | 1,803 s | MEASURED |
+| WORKER witness pair, serialized runtimes | 2,457 s | MEASURED |
+| MERGE witness incl. measured divergence half | 346 s worker-phase sum + unretained merge/gate overhead | seven retained seed counters; exact whole-leg total unretained; complete leg MEASURED GREEN within 420 s cap |
+| SELECTOR carrier | 0 s | supplied by retained F2; no duplicate PCC leg |
+| **PCC component subtotal** | **at least 4,612 s + unretained merge/gate overhead** | retained component accounting; no synthetic end-to-end rerun |
 
-The merge row prices the whole command, not only its short PUC merge half. The
-former selector projection is removed because completed F2 already supplies
-the exact endpoint/winner carrier. With retained F2 (~99 min) and F1's
-historical 53--62 min band, the bounded final standalone gate is approximately
-3.81--3.96 h by component sum; full-`W` LuaJIT work and engine gates are
-separate.
+The merge row does not claim a whole-command measurement: Phase 0B retained
+the seven per-seed worker wall counters, whose sum is 346 s, but did not retain
+the later dual-runtime merge and final-gate duration. The complete leg passed
+its 420 s cap, so its exact headroom is not auditable from retained evidence.
+Future captures emit a separate merge runtime TSV. The former selector
+projection is removed because completed F2 already supplies the exact
+endpoint/winner carrier. With retained F2 (~99 min) and F1's historical
+53--62 min band, the two historical F1 endpoints yield 3.81 h and 3.96 h
+respectively before adding the unretained positive merge/gate overhead;
+full-`W` LuaJIT work and engine gates are separate.
 
 Sections 5 and 9 retain the pre-ruling cost comparison and are superseded by
 this measured component table where they differ. Static/intermediate gates are
@@ -1527,10 +1531,11 @@ Disposition: (1) scheduling reading (a); (2) PCC adopted; (3) F1/F2 retained;
 (4) T9-final uses the same bounded PCC/F1/F2 definition; (5) compiler runner
 implemented; (6) Source audit moved to LuaJIT-full plus targeted PUC parity;
 (7) no widened selector run because completed F2 already supplies it; (8) the
-bounded seven-seed merge measured 335 s while the historical population-merge
-timing conflict remains a record only; (9) F1 retained with its 90-minute
-budget; (10) the unretained 16.2x ratio withdrawn. The original questions
-remain below as the pre-ruling review record.
+bounded seven-seed merge retained seven worker wall counters summing to 346 s
+and passed its 420 s cap, while its exact whole-leg wall is unretained and the
+historical population-merge timing conflict remains a record only; (9) F1
+retained with its 90-minute budget; (10) the unretained 16.2x ratio withdrawn.
+The original questions remain below as the pre-ruling review record.
 
 1. **Which reading of contracts:1582-1584 is correct — (a) scheduling or (b)
    coupling?** If (a): the §8.1 wording lands and nothing else changes. If (b):
@@ -1724,7 +1729,9 @@ and design files contain no standalone-interpreter policy.
 The executable closeout is `tools/wp40/run_t2_puc_core.sh` with immutable
 fixtures in `tools/wp40/fixtures/t2_puc_core/` and calibration/raw telemetry in
 `tools/wp40/evidence/t2-puc-core-v1/`. Measured Phase-0B results are compiler
-1,803 s, worker 2,457 s and merge 335 s; all canonical bytes/digests agree.
+1,803 s and worker 2,457 s. The merge's seven retained seed-wall counters sum
+to 346 s; its exact whole-leg wall was not retained, and the complete leg
+passed its 420 s cap. All canonical bytes/digests agree.
 The completed C1-v3 F2 supplies selector evidence and measured 215 s rescore,
 5,507 s selected and approximately 99 minutes end to end. F1/F2 were retained
 but not rerun; full-`W`, C1 reacceptance and every PUC population were deferred.

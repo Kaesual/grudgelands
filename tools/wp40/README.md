@@ -129,7 +129,12 @@ pair and seven-seed merge witness. The merge retains the fail-closed
 `pairs()` probe plus synthetic and measured invariance. The worker gate keeps
 canonical stdout and the complete TSV byte-exact while retaining raw runtime
 telemetry separately; only the anchored wall/CPU suffix is removed for the
-telemetry comparison. Use a single mode (`--micro`, `--source`, `--unit`,
+telemetry comparison. Before any leg, the runner proves that its LuaJIT side
+really exposes `jit.version` and resolves to a different executable from PUC.
+The merge report replaces only its leading host-specific interpreter identity
+with `WP40 T2 census interpreter: <LuaJIT>`; every semantic line remains exact.
+Optional-load output is fixture-pinned like the other cheap legs. Use a single
+mode (`--micro`, `--source`, `--unit`,
 `--optional`, `--compiler`, `--worker`, `--merge`) during focused diagnosis;
 `--worker-selftest` is the cheap positive/negative channel-gate proof.
 `--unit` (and therefore `--all`) needs the retained Section-11 artifacts;
@@ -665,7 +670,7 @@ ratio have been wrong.
 | seed-0 + max-u64 + traversal, PUC, uncached | 3,091 s |
 | PCC compiler witness pair | 69 s LuaJIT / 1,734 s PUC / 1,803 s total (Phase 0B, 2026-08-23) |
 | PCC worker witness pair | 132 s LuaJIT / 2,325 s PUC / 2,457 s total (Phase 0B, 2026-08-23) |
-| PCC seven-seed merge witness | 335 s total, all three divergence halves green (Phase 0B, 2026-08-23) |
+| PCC seven-seed merge witness | seven retained per-seed worker walls sum to 346 s; exact whole-leg total and following merge/gate overhead were not retained; all three divergence halves passed within the 420 s cap (Phase 0B, 2026-08-23) |
 | C1-v3 F2 PUC rescore / selected phase | 215 s / 5,507 s; ~99 min end to end (2026-08-22) |
 | payload cache hit | 0.37 s LuaJIT / 1.03 s PUC |
 | full partition gate, PUC, 8-way sharded | ~62 min wall |

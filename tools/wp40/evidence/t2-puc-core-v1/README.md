@@ -7,9 +7,12 @@ the non-canonical runtimes and raw telemetry needed to audit how those bytes
 were obtained.
 
 The provider was commit `62afc64e598129e6e069d26a7746073a96673ccd`
-(tree `6366c5e1457886d7c32f53e08f6c10e9669d9b86`). The implementation was
-performed by GPT-5.6 Sol. Independent review is pending Claude Opus/xhigh and
-must be appended to the contracts closeout; no pending-review field is a claim
+(tree `6366c5e1457886d7c32f53e08f6c10e9669d9b86`). The mechanical review-fix
+implementation is commit `ee4478bc4210b0be75661152a9c1f240f53a36ce`
+(tree `b91ba958bf7643c6a9c39eea3581a1b56aa7690d`). The implementation was
+performed by GPT-5.6 Sol. Independent Claude Opus/xhigh review reported
+0 Critical / 0 High / 2 Medium / 6 Low; one bounded mechanical fix round is
+complete and focused re-review is pending. No pending-review field is a claim
 of approval.
 
 Measured Phase-0B legs:
@@ -17,8 +20,11 @@ Measured Phase-0B legs:
 - compiler pair: 69 s LuaJIT + 1,734 s PUC = 1,803 s, exact stdout;
 - worker pair: 132 s LuaJIT + 2,325 s PUC = 2,457 s, exact canonical stdout
   and complete record bytes, with raw runtime telemetry separated below;
-- seven-seed merge carrier: 335 s LuaJIT worker/dual-merge wall, with
-  `pairs()` probe, synthetic invariance and measured invariance all passed;
+- seven-seed merge carrier: retained per-seed worker wall counters sum to
+  346 s; the exact whole-leg wall was not retained and is strictly larger due
+  to the following dual-runtime merge and final gate. The complete leg passed
+  its 420 s cap, with the `pairs()` probe, synthetic invariance and measured
+  invariance all green;
 - optional-load/locales: approximately 5.8 s, byte-identical across both
   interpreters and both available locales; and
 - complete Source harness under LuaJIT plus the targeted Source PUC parity
@@ -27,9 +33,18 @@ Measured Phase-0B legs:
 `worker-pair-*-stderr-v1.log` are intentionally different raw telemetry.
 The gate validates exactly two anchored seed/index lines and no others, removes
 only the terminal ` wall=<integer>s cpu=<decimal>s` suffix, and requires the
-normalized bytes to agree. Canonical stdout is never normalized. The complete
-worker record is independently protected by exact byte identity, external
-SHA-256 and its own trailing internal digest.
+normalized bytes to agree. Canonical worker stdout is never normalized. The
+complete worker record is independently protected by exact byte identity,
+external SHA-256 and its own trailing internal digest.
+
+The merge fixture normalizes only its exactly one leading host-specific
+interpreter identity to `WP40 T2 census interpreter: <LuaJIT>`, after the
+runner has proved that the configured LuaJIT is genuine and resolves to a
+different executable from PUC. Every remaining merge byte and both fixture
+trees are unchanged. Future successful captures also retain
+`merge-runtime-v1.tsv`; the original capture predates that field, so no exact
+whole-leg runtime is fabricated here. Optional-load output is now fixture-
+pinned in both capture and verification modes.
 
 F1, F2, full-`W`, C1 reacceptance and any population under PUC were not run by
 Phase 0B. F1 and the already-completed C1-v3 F2 remain the two separately named
