@@ -3326,7 +3326,7 @@ the first mechanical fix round is implementation commit
 found 0 Critical / 0 High / 1 new Medium / 2 Low-or-Informational; the second
 narrow fix round is implementation commit
 `c0dcbae512d4dd579281d1321922b5fdade8a74a` (tree
-`9ddcf633529ebbe670311ca541f0ba96ead6eccd`); second focused re-review pending.
+`9ddcf633529ebbe670311ca541f0ba96ead6eccd`). The second focused re-review
+found 0 Critical / 0 High / 0 Medium / 0 Low and returned `APPROVE`.
 The observed capture interval was approximately 6 h 43 min, including two
-user-authority pauses and the heavy runs. The coordinator appends the second
-focused re-review outcome without rewriting the measured evidence above.
+user-authority pauses and the heavy runs.
