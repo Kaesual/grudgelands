@@ -3166,3 +3166,10 @@ authority remain consume-only.
 The user recorded `ALLOW CA1-DAG FIX-2` together with `ACCEPT OWN-SCHEMA-1` so
 the final focused review round could close the previously missing schema
 authorization without weakening the containment gate.
+
+**Review-closeout calibration record (2026-08-23):** non-trivial
+documentation/process-authority correction; implementing model GPT-5.6 Sol;
+independent reviewer Claude Opus/xhigh; initial findings 0 Critical / 1 High /
+1 Medium / 4 Low; first focused re-review 0 Critical / 0 High / 1 Medium /
+3 Low; two fix rounds; final focused re-review 0 Critical / 0 High / 0 Medium /
+0 Low (`APPROVE`); observed elapsed wall time `unknown`.
