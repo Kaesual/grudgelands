@@ -283,6 +283,17 @@ local function run_validator_kats()
 		compiler.validate_dry_face_adoption_handoff(face,
 			adoption_authority("face_b", members))
 	end)
+	expect_error("adopted residue authority overlaps within a row", function()
+		compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {3, 10, 12, 3, 12, 13}, 2),
+			adoption_authority("face_a", {{z = 3, first = 10, finish = 12},
+				{z = 3, first = 12, finish = 13}}))
+	end)
+	expect_error("adopted residue interval is reversed", function()
+		compiler.validate_dry_face_adoption_handoff(
+			minimal_face("face_a", {3, 12, 10}, 1),
+			adoption_authority("face_a", {{z = 3, first = 12, finish = 10}}))
+	end)
 	expect_error("face_a adopted residue intervals overlap within a row", function()
 		compiler.validate_dry_face_adoption_handoff(
 			minimal_face("face_a", {3, 10, 12, 3, 12, 13}, 2),
@@ -338,6 +349,11 @@ local function run_validator_kats()
 	old_face.record_schema = "grug_wp40_dry_face_v1"
 	expect_error("schema is invalid", function()
 		compiler.validate_dry_face_adoption_handoff(old_face,
+			{adopted = {}, rejected = {}})
+	end)
+	local empty_id = minimal_face("", {}, 0)
+	expect_error("dry-face adoption handoff schema is invalid", function()
+		compiler.validate_dry_face_adoption_handoff(empty_id,
 			{adopted = {}, rejected = {}})
 	end)
 	local extra_field = minimal_face("face_a", {}, 0)
