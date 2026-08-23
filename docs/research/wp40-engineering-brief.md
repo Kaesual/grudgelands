@@ -175,10 +175,13 @@ ownership export and the integrated C1 reacceptance are green, C-a2's first
 fail-closed integration gate must prove every exact authored mask plus its per-
 edge displacement margin lies inside its owning final zone. It uses the
 package-local `surface_owner_at(x, z)` projection over the accepted integrated
-compiled-world-v2 records. Missing ownership input stops the package; it never
-licenses a second classifier. Priority composition never deletes mask identity.
-Required-route non-blocking is tested against the final composed `H` and the
-later route products, never inferred from a one-winner landmark mask.
+compiled-world-v2 records: dry-face polygon and adopted-residue ownership,
+Bay Base/notch/connectivity and closure-wing ownership, mouth-aperture/perimeter
+ownership, and the canonical half-open seam tie. Missing ownership input stops
+the package; it never licenses a second classifier. Priority composition never
+deletes mask identity. Required-route non-blocking is tested against the final
+composed `H` and the later route products, never inferred from a one-winner
+landmark mask.
 
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let

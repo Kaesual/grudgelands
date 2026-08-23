@@ -443,9 +443,10 @@ proof that every exact landmark mask plus the maximum legal incident-edge
 displacement envelope lies inside its final owner. The package-local
 `surface_owner_at(x, z)` projection over the accepted compiled-world-v2 records
 combines dry-face polygon and adopted-residue ownership, every compiled Planned-
-Water class and the canonical half-open seam tie. “Not polygons alone” forbids
-dropping those other inputs; polygon membership remains the ordinary-dry input.
-Missing input or reconstructed ownership is a STOP before `H` assembly.
+Water class, closure-wing ownership, mouth-aperture/perimeter ownership and the
+canonical half-open seam tie. “Not polygons alone” forbids dropping those other
+inputs; polygon membership remains the ordinary-dry input. Missing input or
+reconstructed ownership is a STOP before `H` assembly.
 
 Both packages use the light verification regime: purity argument, properties,
 focused KATs and a determinism digest. They do not copy the topology census

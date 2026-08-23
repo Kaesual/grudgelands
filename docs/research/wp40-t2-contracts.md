@@ -2948,7 +2948,7 @@ packages they governed; their bodies are not rewritten.
    separate from Q16 signed distance. The measured 264 ellipse incidences on
    which exact membership and signed-distance equality differ are evidence,
    not authority. C-a1 Stage 1 must prove that every exact mask, including its
-   per-edge displacement margin, is contained in its owning final zone. The
+   per-edge displacement margin, is contained in its owning final zone.
    **[Superseded by Section 14.5: this proof is C-a2's first gate.]** The
    current source validator checks only `zone_id` referential integrity at
    `validation/t2_source.lua:3964`; no current check enforces geometric
@@ -3049,10 +3049,27 @@ authorizes only:
   `t2_schema_core_test.lua`, including the latter's schema-mismatch negative
   literal.
 
+The user subsequently recorded `ACCEPT OWN-SCHEMA-1`. The same Wave-1C schema
+event changes exactly these identities:
+
+- `grug_wp40_compiled_world_v1` becomes
+  `grug_wp40_compiled_world_v2` at `schemas.lua`'s `compiled` binding and
+  `compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`; the mismatch negative
+  becomes `grug_wp40_compiled_world_v3`;
+- `grug_wp40_bay_v2` becomes `grug_wp40_bay_v3` at its emitter, closed payload
+  validator and exact partition-oracle expectation because the record gains
+  `connectivity_fill_count` and `connectivity_fill_xz`; and
+- `grug_wp40_dry_face_v1` becomes `grug_wp40_dry_face_v2` at its emitter and
+  exact partition-test expectation because the record gains
+  `adopted_residue_interval_count` and `adopted_residue_z_first_finish`.
+
+`grug_wp40_compiled_geometry_v1` and its existing v2 mismatch negative remain
+unchanged. No other schema identity may move in Wave 1C.
+
 It authorizes no compiler-implementation wiring, no population of
-`island_routes`, and no change to any other schema identity. The reservation
-does not place an island road and does not enlarge the frozen 57-record
-`land_routes` family.
+`island_routes`, and no schema-identity change beyond the exact list above. The
+reservation does not place an island road and does not enlarge the frozen
+57-record `land_routes` family.
 
 D-1 keeps its analytic-record helpers local and validates the complete result
 through the public `compiled_schema.canonicalize_compiled` path. It does not
@@ -3145,3 +3162,7 @@ Source relief/template/landmark records and the injected raw-SHA seam. It may
 inspect the S1/C1 files for parity but may neither load `partition.lua` or a
 compiled ownership payload nor consume D-1 records. Those paths and all source
 authority remain consume-only.
+
+The user recorded `ALLOW CA1-DAG FIX-2` together with `ACCEPT OWN-SCHEMA-1` so
+the final focused review round could close the previously missing schema
+authorization without weakening the containment gate.
