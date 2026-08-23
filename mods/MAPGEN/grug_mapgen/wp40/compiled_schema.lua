@@ -4,12 +4,12 @@
 
 local compiled_schema = {}
 
-local EXPECTED_COMPILED_SCHEMA = "grug_wp40_compiled_world_v1"
+local EXPECTED_COMPILED_SCHEMA = "grug_wp40_compiled_world_v2"
 local EXPECTED_ALGORITHM_SCHEMA = "grug_wp40_compiled_geometry_v1"
 local EXPECTED_COVERAGE_SCHEMA = "grug_wp40_deferred_coverage_v1"
 
 local GEOMETRY_FAMILIES = {
-	"zones", "land_boundaries", "land_routes", "boat_routes",
+	"zones", "land_boundaries", "land_routes", "boat_routes", "island_routes",
 	"perimeters", "bays", "mouth_apertures", "closure_wings",
 	"dry_faces", "relief_fields", "templates", "anchors",
 	"route_profiles", "hydrology", "coast_shelf", "islands", "channels",

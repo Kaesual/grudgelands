@@ -159,6 +159,187 @@ local function new_partition(dependencies)
 		fail(record_value.id .. " lacks " .. name)
 	end
 
+	local function canonical_connectivity_fill(points)
+		local result = {}
+		for index = 1, dense(points, "Bay connectivity authority") do
+			local point = points[index]
+			if type(point) ~= "table" or getmetatable(point) ~= nil then
+				fail("Bay connectivity authority point is invalid")
+			end
+			exact.integer(point.x, -2147483648, 2147483647,
+				"Bay connectivity authority x")
+			exact.integer(point.z, -2147483648, 2147483647,
+				"Bay connectivity authority z")
+			result[index] = {x = point.x, z = point.z}
+		end
+		table.sort(result, function(a, b)
+			return a.x < b.x or a.x == b.x and a.z < b.z
+		end)
+		for index = 2, #result do
+			if result[index - 1].x == result[index].x and
+					result[index - 1].z == result[index].z then
+				fail("Bay connectivity authority contains a duplicate")
+			end
+		end
+		return result
+	end
+
+	local function validate_bay_connectivity_handoff(bay, authority)
+		if type(bay) ~= "table" or getmetatable(bay) ~= nil or
+				bay.record_schema ~= "grug_wp40_bay_v3" then
+			fail("Bay connectivity handoff schema is invalid")
+		end
+		local expected = canonical_connectivity_fill(authority)
+		local count = named_scalar(bay, "unsigned_values",
+			"connectivity_fill_count")
+		exact.integer(count, 0, exact.MAX_SAFE, "Bay connectivity fill count")
+		local values = named_values(bay, "signed_arrays", "connectivity_fill_xz")
+		if dense(values, bay.id .. " Bay connectivity fill") ~=
+				exact.safe_product(count, 2,
+					"Bay connectivity fill coordinate count") then
+			fail(bay.id .. " Bay connectivity fill count changed")
+		end
+		local previous_x, previous_z
+		for index = 1, count do
+			local x, z = values[index * 2 - 1], values[index * 2]
+			exact.integer(x, -2147483648, 2147483647,
+				"Bay connectivity fill x")
+			exact.integer(z, -2147483648, 2147483647,
+				"Bay connectivity fill z")
+			if previous_x and x == previous_x and z == previous_z then
+				fail(bay.id .. " Bay connectivity fill contains a duplicate")
+			end
+			if previous_x and (x < previous_x or
+					x == previous_x and z < previous_z) then
+				fail(bay.id .. " Bay connectivity fill is not sorted")
+			end
+			previous_x, previous_z = x, z
+		end
+		if count ~= #expected then
+			fail(bay.id .. " Bay connectivity fill does not match authority")
+		end
+		for index = 1, #expected do
+			if values[index * 2 - 1] ~= expected[index].x or
+					values[index * 2] ~= expected[index].z then
+				fail(bay.id .. " Bay connectivity fill does not match authority")
+			end
+		end
+		return true
+	end
+
+	local function canonical_adopted_intervals(adoption, face_id)
+		if type(adoption) ~= "table" or getmetatable(adoption) ~= nil or
+				type(adoption.adopted) ~= "table" or
+				type(adoption.rejected) ~= "table" then
+			fail("dry-face adoption authority is invalid")
+		end
+		if dense(adoption.rejected, "rejected adoption authority") ~= 0 then
+			fail("dry-face adoption authority contains rejected residue")
+		end
+		local result = {}
+		for adoption_index = 1, dense(adoption.adopted,
+				"adopted residue authority") do
+			local row = adoption.adopted[adoption_index]
+			if type(row) ~= "table" or getmetatable(row) ~= nil or
+					type(row.face_id) ~= "string" or type(row.members) ~= "table" then
+				fail("adopted residue authority row is invalid")
+			end
+			if row.face_id == face_id then
+				for member_index = 1, dense(row.members,
+						"adopted residue authority members") do
+					local member = row.members[member_index]
+					if type(member) ~= "table" or getmetatable(member) ~= nil then
+						fail("adopted residue authority member is invalid")
+					end
+					exact.integer(member.z, -2147483648, 2147483647,
+						"adopted residue z")
+					exact.integer(member.first, -2147483648, 2147483647,
+						"adopted residue first")
+					exact.integer(member.finish, -2147483648, 2147483647,
+						"adopted residue finish")
+					if member.first > member.finish then
+						fail("adopted residue interval is reversed")
+					end
+					result[#result + 1] = {z = member.z, first = member.first,
+						finish = member.finish}
+				end
+			end
+		end
+		table.sort(result, function(a, b)
+			if a.z ~= b.z then return a.z < b.z end
+			if a.first ~= b.first then return a.first < b.first end
+			return a.finish < b.finish
+		end)
+		for index = 2, #result do
+			local previous, current = result[index - 1], result[index]
+			if previous.z == current.z and previous.first == current.first and
+					previous.finish == current.finish then
+				fail("adopted residue authority contains a duplicate")
+			end
+			if previous.z == current.z and current.first <= previous.finish then
+				fail("adopted residue authority overlaps within a row")
+			end
+		end
+		return result
+	end
+
+	local function validate_dry_face_adoption_handoff(face, adoption)
+		if type(face) ~= "table" or getmetatable(face) ~= nil or
+				face.record_schema ~= "grug_wp40_dry_face_v2" or
+				type(face.id) ~= "string" then
+			fail("dry-face adoption handoff schema is invalid")
+		end
+		local expected = canonical_adopted_intervals(adoption, face.id)
+		local count = named_scalar(face, "unsigned_values",
+			"adopted_residue_interval_count")
+		exact.integer(count, 0, exact.MAX_SAFE,
+			"adopted residue interval count")
+		local values = named_values(face, "signed_arrays",
+			"adopted_residue_z_first_finish")
+		if dense(values, face.id .. " adopted residue intervals") ~=
+				exact.safe_product(count, 3,
+					"adopted residue interval value count") then
+			fail(face.id .. " adopted residue interval count changed")
+		end
+		local previous_z, previous_first, previous_finish
+		for index = 1, count do
+			local offset = (index - 1) * 3
+			local z, first, finish = values[offset + 1], values[offset + 2],
+				values[offset + 3]
+			exact.integer(z, -2147483648, 2147483647, "adopted residue z")
+			exact.integer(first, -2147483648, 2147483647,
+				"adopted residue first")
+			exact.integer(finish, -2147483648, 2147483647,
+				"adopted residue finish")
+			if first > finish then fail("adopted residue interval is reversed") end
+			if previous_z and z == previous_z and first == previous_first and
+					finish == previous_finish then
+				fail(face.id .. " adopted residue intervals contain a duplicate")
+			end
+			if previous_z and (z < previous_z or z == previous_z and
+					(first < previous_first or first == previous_first and
+						finish < previous_finish)) then
+				fail(face.id .. " adopted residue intervals are not sorted")
+			end
+			if previous_z and z == previous_z and first <= previous_finish then
+				fail(face.id .. " adopted residue intervals overlap within a row")
+			end
+			previous_z, previous_first, previous_finish = z, first, finish
+		end
+		if count ~= #expected then
+			fail(face.id .. " adopted residue intervals do not match authority")
+		end
+		for index = 1, #expected do
+			local offset = (index - 1) * 3
+			if values[offset + 1] ~= expected[index].z or
+					values[offset + 2] ~= expected[index].first or
+					values[offset + 3] ~= expected[index].finish then
+				fail(face.id .. " adopted residue intervals do not match authority")
+			end
+		end
+		return true
+	end
+
 	local function record(schema, id, numeric_id, fields)
 		fields = fields or {}
 		return {record_schema = schema, id = id, numeric_id = numeric_id or 0,
@@ -5037,6 +5218,7 @@ local function new_partition(dependencies)
 			validate_excluded_fragment_evidence(evidence)
 		end
 
+		local whole_adoption
 		-- The production Whole gate (contracts section 11, ruled 2026-08-20
 		-- beside the branch-2c closing): the footprint ownership-coverage
 		-- proof the census Whole tier measures, enforced on every production
@@ -5073,16 +5255,16 @@ local function new_partition(dependencies)
 			-- proof, identical to the census Whole tier: a multi-face chain
 			-- aborts by its class name before the proof runs; adopted chains
 			-- are face region membership below.
-			local adoption = whole_adopt_residue(prepared)
-			if #adoption.rejected > 0 then
+			whole_adoption = whole_adopt_residue(prepared)
+			if #whole_adoption.rejected > 0 then
 				local parts = {}
-				for index = 1, #adoption.rejected do
-					local chain = adoption.rejected[index]
+				for index = 1, #whole_adoption.rejected do
+					local chain = whole_adoption.rejected[index]
 					parts[#parts + 1] = chain.witness .. " touches " ..
 						table.concat(chain.face_ids, ",")
 				end
 				fail("footprint residue touches multiple faces: " ..
-					"residual_multi_face_reject x" .. #adoption.rejected ..
+					"residual_multi_face_reject x" .. #whole_adoption.rejected ..
 					" (" .. table.concat(parts, "; ") .. ")")
 			end
 			local totals = census_whole_classify(prepared)
@@ -5191,7 +5373,10 @@ local function new_partition(dependencies)
 		end
 		for index = 1, #bays do local row = bays[index]
 			local centreline, deltas = {}, {}
-			local fill_points = bay_context_by_id[row.source.id].fill_points
+			local context = bay_context_by_id[row.source.id]
+			local fill_points = context.fill_points
+			local connectivity_fill = canonical_connectivity_fill(
+				context.closing_points)
 			local owner_first, owner_last, owner_left, owner_right = {}, {}, {}, {}
 			local owner_left_numeric, owner_right_numeric = {}, {}
 			local bank_ids, bank_offsets, bank_counts, bank_stations = {}, {}, {}, {}
@@ -5228,7 +5413,7 @@ local function new_partition(dependencies)
 				end
 			end
 			if #bank_ids ~= 5 then fail(row.source.id .. " does not materialize five Banks") end
-			families.bays[index] = record("grug_wp40_bay_v2", row.source.id, index,
+			families.bays[index] = record("grug_wp40_bay_v3", row.source.id, index,
 				{text = {continent = row.source.continent,
 					notch_fill_policy_id = source.geometry_policies.world_partition.
 						bay_notch_fill_policy_id,
@@ -5243,12 +5428,14 @@ local function new_partition(dependencies)
 						bay_owner_side_zero_rule,
 					owner_span_transition_rule = row.source.owner_span_transition_rule,
 					owner_span_transition_tie = row.source.owner_span_transition_tie},
-					unsigned = {notch_fill_count = #fill_points},
+					unsigned = {connectivity_fill_count = #connectivity_fill,
+						notch_fill_count = #fill_points},
 					text_arrays = {shore_zone_ids = array_copy(row.source.shore_zone_ids),
 						owner_left_zone_ids = owner_left,
 						owner_right_zone_ids = owner_right,
 						bank_component_ids = bank_ids},
 						signed_arrays = {centreline_xz_width = centreline,
+						connectivity_fill_xz = coordinates(connectivity_fill, false),
 						notch_fill_xz = coordinates(fill_points, false),
 						station_radius_delta = deltas,
 						bank_stations_xz = bank_stations},
@@ -5259,6 +5446,8 @@ local function new_partition(dependencies)
 						owner_right_zone_numeric_ids = owner_right_numeric,
 						bank_station_offsets = bank_offsets,
 						bank_station_counts = bank_counts}})
+			validate_bay_connectivity_handoff(families.bays[index],
+				context.closing_points)
 		end
 		for index = 1, #aperture_rows do local row = aperture_rows[index]
 			families.mouth_apertures[index] = record("grug_wp40_mouth_aperture_v1",
@@ -5287,6 +5476,15 @@ local function new_partition(dependencies)
 		end
 		for index = 1, #face_rows do local row = face_rows[index]
 			local bank_offsets, bank_counts, bank_stations = {}, {}, {}
+			local adopted_intervals = canonical_adopted_intervals(whole_adoption,
+				row.source.id)
+			local adopted_values = {}
+			for interval_index = 1, #adopted_intervals do
+				local interval = adopted_intervals[interval_index]
+				adopted_values[#adopted_values + 1] = interval.z
+				adopted_values[#adopted_values + 1] = interval.first
+				adopted_values[#adopted_values + 1] = interval.finish
+			end
 			for bank_index = 1, #row.bank_component_ids do
 				local stations = bank_by_id[row.bank_component_ids[bank_index]].stations
 				bank_offsets[bank_index] = #bank_stations / 2
@@ -5294,14 +5492,20 @@ local function new_partition(dependencies)
 				local values = coordinates(stations, false)
 				for value_index = 1, #values do bank_stations[#bank_stations + 1] = values[value_index] end
 			end
-			families.dry_faces[index] = record("grug_wp40_dry_face_v1", row.source.id,
+			families.dry_faces[index] = record("grug_wp40_dry_face_v2", row.source.id,
 				zone_numeric[row.source.zone_id], {text = {zone_id = row.source.zone_id},
-					unsigned = {station_count = #row.polygon - 1},
+					unsigned = {
+						adopted_residue_interval_count = #adopted_intervals,
+						station_count = #row.polygon - 1},
 					text_arrays = {bank_component_ids = array_copy(row.bank_component_ids)},
-					signed_arrays = {polygon_xz = coordinates(row.polygon, false),
+					signed_arrays = {
+						adopted_residue_z_first_finish = adopted_values,
+						polygon_xz = coordinates(row.polygon, false),
 						bank_stations_xz = bank_stations},
 					unsigned_arrays = {bank_station_offsets = bank_offsets,
 						bank_station_counts = bank_counts}})
+			validate_dry_face_adoption_handoff(families.dry_faces[index],
+				whole_adoption)
 		end
 		local coast_ids = source.geometry_policies.world_partition.
 			coast_source_allowed_component_ids
@@ -8095,7 +8299,7 @@ local function new_partition(dependencies)
 
 	local function validate_bay_payload(bay)
 		if type(bay) ~= "table" or getmetatable(bay) ~= nil or
-				bay.record_schema ~= "grug_wp40_bay_v2" then
+				bay.record_schema ~= "grug_wp40_bay_v3" then
 			fail("Bay owner payload is invalid")
 		end
 		validate_plain_tree(bay, bay.id or "Bay payload")
@@ -8116,12 +8320,14 @@ local function new_partition(dependencies)
 			"owner_segment_tie", "owner_side_rule", "owner_side_zero_rule",
 			"owner_span_transition_rule", "owner_span_transition_tie", "perimeter_id"})
 		exact_named_rows(bay, "signed_values", {})
-		exact_named_rows(bay, "unsigned_values", {"notch_fill_count"})
+		exact_named_rows(bay, "unsigned_values", {"connectivity_fill_count",
+			"notch_fill_count"})
 		exact_named_rows(bay, "boolean_values", {})
 		exact_named_rows(bay, "text_arrays", {"bank_component_ids", "owner_left_zone_ids",
 			"owner_right_zone_ids", "shore_zone_ids"})
 		exact_named_rows(bay, "signed_arrays", {"bank_stations_xz",
-			"centreline_xz_width", "notch_fill_xz", "station_radius_delta"})
+			"centreline_xz_width", "connectivity_fill_xz", "notch_fill_xz",
+			"station_radius_delta"})
 		exact_named_rows(bay, "unsigned_arrays", {"bank_station_counts",
 			"bank_station_offsets", "owner_left_zone_numeric_ids",
 			"owner_right_zone_numeric_ids", "owner_span_first_segments",
@@ -8203,6 +8409,35 @@ local function new_partition(dependencies)
 		end
 		if #bank_stations ~= station_offset * 2 then
 			fail(bay.id .. " Bank station count changed")
+		end
+		local connectivity_count = named_scalar(bay, "unsigned_values",
+			"connectivity_fill_count")
+		exact.integer(connectivity_count, 0, exact.MAX_SAFE,
+			"Bay connectivity fill count")
+		local connectivity_values = named_values(bay, "signed_arrays",
+			"connectivity_fill_xz")
+		if dense(connectivity_values, bay.id .. " Bay connectivity fill") ~=
+				exact.safe_product(connectivity_count, 2,
+					"Bay connectivity fill coordinate count") then
+			fail(bay.id .. " Bay connectivity fill count changed")
+		end
+		local previous_connectivity_x, previous_connectivity_z
+		for index = 1, connectivity_count do
+			local x = connectivity_values[index * 2 - 1]
+			local z = connectivity_values[index * 2]
+			exact.integer(x, -2147483648, 2147483647,
+				"Bay connectivity fill x")
+			exact.integer(z, -2147483648, 2147483647,
+				"Bay connectivity fill z")
+			if previous_connectivity_x and
+					x == previous_connectivity_x and z == previous_connectivity_z then
+				fail(bay.id .. " Bay connectivity fill contains a duplicate")
+			end
+			if previous_connectivity_x and (x < previous_connectivity_x or
+					x == previous_connectivity_x and z < previous_connectivity_z) then
+				fail(bay.id .. " Bay connectivity fill is not sorted")
+			end
+			previous_connectivity_x, previous_connectivity_z = x, z
 		end
 		local notch_count = named_scalar(bay, "unsigned_values", "notch_fill_count")
 		exact.integer(notch_count, 0, exact.MAX_SAFE, "Bay notch fill count")
@@ -8512,6 +8747,10 @@ local function new_partition(dependencies)
 	partition.s1_source_projection_schema = boundary.PROJECTION_SCHEMA
 	partition.bay_owner = bay_owner
 	partition.validate_bay_payload = validate_bay_payload
+	partition.validate_bay_connectivity_handoff =
+		validate_bay_connectivity_handoff
+	partition.validate_dry_face_adoption_handoff =
+		validate_dry_face_adoption_handoff
 	partition.coast_source = coast_source
 	partition.coast_consider = coast_consider
 	partition.validate_coast_payload = validate_coast_payload

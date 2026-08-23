@@ -982,7 +982,7 @@ return function(dependencies)
 			local bay_payload = by_id(compiled.families.bays, bay_id)
 			local function validate_fill_projection(payload)
 				compiler.validate_bay_payload(payload)
-				assert(payload.record_schema == "grug_wp40_bay_v2",
+				assert(payload.record_schema == "grug_wp40_bay_v3",
 					"R17 Bay notch projection schema changed")
 				assert(named_scalar(payload, "text_values", "notch_fill_policy_id") ==
 					source.geometry_policies.world_partition.bay_notch_fill_policy_id)

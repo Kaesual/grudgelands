@@ -208,7 +208,7 @@ return function(offline_directory)
 		end
 		local geometry = {}
 		local geometry_names = {"zones", "land_boundaries", "land_routes",
-			"boat_routes", "perimeters", "bays", "mouth_apertures",
+			"boat_routes", "island_routes", "perimeters", "bays", "mouth_apertures",
 			"closure_wings", "dry_faces", "relief_fields", "templates",
 			"anchors", "route_profiles", "hydrology", "coast_shelf",
 			"islands", "channels", "hard_protection", "claim_exclusions",

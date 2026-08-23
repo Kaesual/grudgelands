@@ -5070,7 +5070,7 @@ end)()
 
 local function run_partition_payload_projection_kats()
 	local function validate_face(row, authored)
-		if row.record_schema ~= "grug_wp40_dry_face_v1" or row.id ~= authored.id or
+		if row.record_schema ~= "grug_wp40_dry_face_v2" or row.id ~= authored.id or
 				row.numeric_id ~= zone_numeric[authored.zone_id] or
 				named_scalar(row, "text_values", "zone_id") ~= authored.zone_id then
 			error("dry Face owner projection changed")
@@ -6383,7 +6383,7 @@ local schemas = dofile(wp40 .. "/schemas.lua")
 local compiled_schema = dofile(wp40 .. "/compiled_schema.lua")
 local geometry = {}
 for _, name in ipairs({"zones", "land_boundaries", "land_routes", "boat_routes",
-	"perimeters", "bays", "mouth_apertures", "closure_wings", "dry_faces",
+	"island_routes", "perimeters", "bays", "mouth_apertures", "closure_wings", "dry_faces",
 	"relief_fields", "templates", "anchors", "route_profiles", "hydrology",
 	"coast_shelf", "islands", "channels", "hard_protection", "claim_exclusions",
 	"housing_masks"}) do

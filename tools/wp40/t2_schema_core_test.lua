@@ -44,7 +44,7 @@ local schema = dofile(wp40_dir .. "/compiled_schema.lua")
 local source = dofile(wp40_dir .. "/source/catalog.lua")
 
 local geometry_families = {
-	"zones", "land_boundaries", "land_routes", "boat_routes",
+	"zones", "land_boundaries", "land_routes", "boat_routes", "island_routes",
 	"perimeters", "bays", "mouth_apertures", "closure_wings",
 	"dry_faces", "relief_fields", "templates", "anchors",
 	"route_profiles", "hydrology", "coast_shelf", "islands", "channels",
@@ -197,7 +197,7 @@ for i = 1, #top_fields do
 end
 reject("unknown field", function(value) value.unknown = true end)
 reject("compiled schema identity mismatch", function(value)
-	value.schema = "grug_wp40_compiled_world_v2"
+	value.schema = "grug_wp40_compiled_world_v3"
 end)
 reject("compiled algorithm identity mismatch", function(value)
 	value.algorithm_schema = "grug_wp40_compiled_geometry_v2"
