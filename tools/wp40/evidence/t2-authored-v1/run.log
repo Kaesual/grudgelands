@@ -1,0 +1,66 @@
+WP40 T2 D-1 authored retained acceptance run
+
+EXECUTION IDENTITY
+Baseline/provider: c8ee29edd02347fe3ecb7b119b657cc353dc1860
+Implementation commit: 413fdf95d14494b622ede330346f8b4a396c6880
+Implementation tree: ab55ed29529bf94016f66998daacc61348a907a8
+Branch: wp40-t2-d1-authored
+
+NORMAL ACCEPTANCE
+Command: tools/wp40/run_t2_authored.sh
+canonical	3f41fb8f109f3edd4d0991632658b018c25686e664cc039406112ceb5740a5ed	70c5d4885ec2eed77267e82d9adcbf618a4eb095b5286cc46726687e9436b94f	b8d5b653946a27e254d602b533c511c129472b300992a33f48dcaa36bd65f038	012817385d86ece1141969f829d6a9a1b4252e89b07c18489fb6218740ee5213
+WP40 T2 authored full passed records=99 cases=60 total=159
+canonical	3f41fb8f109f3edd4d0991632658b018c25686e664cc039406112ceb5740a5ed	70c5d4885ec2eed77267e82d9adcbf618a4eb095b5286cc46726687e9436b94f	b8d5b653946a27e254d602b533c511c129472b300992a33f48dcaa36bd65f038	012817385d86ece1141969f829d6a9a1b4252e89b07c18489fb6218740ee5213
+WP40 T2 authored kat passed records=99 cases=21 total=120
+D1_LUAJIT_WALL=0.29 D1_LUAJIT_MAXRSS_KIB=47472
+D1_PUC_KAT_WALL=0.39 D1_PUC_KAT_MAXRSS_KIB=41428
+WP40 T2 authored runner passed; LuaJIT/PUC canonical digests byte-identical
+
+POSITIVE COVERAGE
+The full run projected and inspected all 38 zones, all 57 public land routes,
+and all 4 public boat routes. Land classes are exactly 30 primary, 24
+secondary and 3 trail. It pins numeric/id order, complete literal first,
+middle and last zone and land-route records, every boat record, every zone's
+primary_relief_id, the three record schemas and exact bucket rosters. It
+reconstructs every relevant Source record losslessly, including false versus
+real non-empty text for faction and both optional gate references. It also
+proves Source immutability and absence of mutable aliases in or from output.
+
+The complete compiled-data shell contains all 21 existing geometry families,
+with the three D-1 families inserted and every other geometry family empty.
+The reserved island_routes family is explicitly empty. The shell includes the
+real typed selectors, spatial, coverage and release sections, and passes only
+through compiled_schema.canonicalize_compiled. Its canonical bytes and the
+three family arrays are hashed by the real canonical encoder/hasher.
+
+NEGATIVE COVERAGE
+The full run rejects an unknown dependency; missing and additional Source
+fields; metatables; sparse arrays; mutable aliases; cycles; wrong types and
+integer ranges; reordered, duplicate and changed identities; numeric and
+empty-string optional gate references; land_058 boundary-only contamination;
+island-route contamination; and an injected Source-validator failure before
+package-local validation. A same-shape mutation is rejected by the real Source
+checksum; with the explicit accepting test seam the same mutation moves the
+complete-shell digest. The real canonicalizer rejects a compiled schema
+identity mismatch, a negative unsigned value, unsorted named rows and a
+mutable alias. Focused records plus cases remain 159, below the 300 cap.
+
+STATIC GATES
+tools/wp40/t2_source_audit.sh "$PWD" --static-only: passed.
+tools/bin/luac51 -p on both changed Lua files: passed.
+Plain-5.1 SETGLOBAL inspection on both changed Lua files: zero writes.
+All five binding grep sweeps over mods/*/grug_*: passed after inspecting the
+pre-existing comment/string hits. All five sweeps explicitly over tools/wp40:
+passed after inspecting offline harness calls, comments and path literals; the
+new os.execute call invokes only sha256sum in the offline test harness.
+ripgrep availability: /usr/bin/rg.
+bash -n tools/wp40/run_t2_authored.sh: passed.
+git diff --check over baseline..implementation: passed.
+All nine submodules are initialized at their Gitlink pins with no +, - or U.
+
+DELIBERATELY NOT RUN
+No full W population, C1 reacceptance, F1 partition or F2 C1-v3 conformance,
+T2-final PCC, broad PUC population, compiler round or partition round. D-1
+does not touch or wire the compiler, partition, C-a1, seed, raster, H, relief,
+route-profile or runtime paths. Independent review remains coordinator-owned
+and pending. Nothing was pushed or merged.
