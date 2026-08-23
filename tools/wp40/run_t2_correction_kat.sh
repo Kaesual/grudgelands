@@ -8,6 +8,15 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
+mode=kat
+if (( $# > 0 )); then
+	if [[ $# -eq 1 && "$1" == --pair-self-test ]]; then
+		mode=pair-self-test
+	else
+		echo "usage: tools/wp40/run_t2_correction_kat.sh [--pair-self-test]" >&2
+		exit 2
+	fi
+fi
 
 command -v rg >/dev/null 2>&1 || {
 	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
@@ -75,11 +84,11 @@ compare_pair() {
 	return 0
 }
 
-# Executable negative proof for the PCC's stronger pair discipline. It is
-# deliberately opt-in so the accepted green command keeps byte-identical
-# stdout. Equal nonzero exits and unequal exits must both be rejected; a byte
-# difference remains rejected as before.
-if [[ "${WP40_PCC_PAIR_NEGATIVE_TEST:-0}" == 1 ]]; then
+# Executable negative proof for the PCC's stronger pair discipline. It is a
+# named mode rather than an environment-variable bypass, and the PCC runs it
+# in its cheap preflight before any expensive leg. Equal nonzero exits and
+# unequal exits must both be rejected; a byte difference remains rejected.
+if [[ "$mode" == pair-self-test ]]; then
 	printf 'same\n' >"$luajit_out"
 	printf 'same\n' >"$puc_out"
 	if compare_pair "$luajit_out" 7 "$puc_out" 7 2>/dev/null; then

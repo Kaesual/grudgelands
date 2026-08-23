@@ -8,17 +8,31 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
 fixtures="$script_dir/fixtures/t2_puc_core"
-luajit_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
+luajit_requested="${WP40_LUA_BIN:-/usr/bin/luajit}"
 puc_bin="$repo/tools/bin/lua51"
 
 command -v rg >/dev/null 2>&1 || {
 	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
 	exit 1
 }
-[[ -x "$luajit_bin" && -x "$puc_bin" && -x "$repo/tools/bin/luac51" ]] || {
+luajit_bin="$(command -v "$luajit_requested" 2>/dev/null || true)"
+[[ -n "$luajit_bin" && -x "$luajit_bin" && -x "$puc_bin" &&
+	-x "$repo/tools/bin/luac51" ]] || {
 	echo "WP40 PCC: LuaJIT and vendored PUC tools must be executable" >&2
 	exit 2
 }
+luajit_real="$(readlink -f -- "$luajit_bin")"
+puc_real="$(readlink -f -- "$puc_bin")"
+if [[ "$luajit_real" == "$puc_real" ]]; then
+	echo "WP40 PCC: LuaJIT and PUC resolve to the same executable" >&2
+	exit 2
+fi
+if ! "$luajit_bin" -e \
+	'assert(type(rawget(_G, "jit")) == "table" and type(jit.version) == "string")' \
+		>/dev/null 2>&1; then
+	echo "WP40 PCC: configured LuaJIT side is not genuinely LuaJIT: $luajit_requested" >&2
+	exit 2
+fi
 
 leg="all"
 capture=""
@@ -49,7 +63,18 @@ if [[ -n "$capture" ]]; then
 fi
 
 scratch="$(mktemp -d /tmp/grudgelands-wp40-t2-puc-core.XXXXXXXX)"
+declare -a leg_scratch_dirs=()
+merge_progress_pid=0
 cleanup() {
+	local directory
+	if (( merge_progress_pid != 0 )); then
+		kill "$merge_progress_pid" 2>/dev/null || true
+	fi
+	for directory in "${leg_scratch_dirs[@]:-}"; do
+		if [[ "$directory" == /tmp/grudgelands-wp40-t2-census.* ]]; then
+			rm -rf -- "$directory"
+		fi
+	done
 	if [[ "$scratch" == /tmp/grudgelands-wp40-t2-puc-core.* ]]; then
 		rm -rf -- "$scratch"
 	fi
@@ -69,6 +94,7 @@ verify_fixture_manifest() {
 		exit 1
 	}
 	local kind relative expected actual extra fixture_count=0 tree_count=0
+	local compiler_count=0 worker_count=0 merge_count=0
 	while IFS=$'\t' read -r kind relative expected extra; do
 		case "$kind" in
 		fixture)
@@ -99,9 +125,59 @@ verify_fixture_manifest() {
 			}
 			tree_count=$((tree_count + 1))
 			;;
+		compiler_digest)
+			[[ -z "$extra" && "$relative" =~ ^[0-9]+$ &&
+				"$expected" =~ ^[0-9a-f]{64}$ ]] || {
+				echo "WP40 PCC: malformed compiler digest row" >&2
+				exit 1
+			}
+			rg -Fqx "repro seed $relative compiled $expected" \
+				"$fixtures/compiler-pair-v1.txt" || {
+				echo "WP40 PCC: compiler digest pin is not carried by its fixture" >&2
+				exit 1
+			}
+			compiler_count=$((compiler_count + 1))
+			;;
+		worker_internal_digest)
+			[[ -z "$expected" && -z "$extra" &&
+				"$relative" =~ ^[0-9a-f]{64}$ ]] || {
+				echo "WP40 PCC: malformed worker digest row" >&2
+				exit 1
+			}
+			if [[ "$(tail -n 1 "$fixtures/worker-pair-v1.tsv")" != \
+					$'digest\tsha256='"$relative" ]] ||
+					! rg -Fqx $'worker_internal_digest\t'"$relative" \
+						"$fixtures/worker-pair-gate-v1.tsv"; then
+				echo "WP40 PCC: worker digest pin is not carried by its fixtures" >&2
+				exit 1
+			fi
+			worker_count=$((worker_count + 1))
+			;;
+		merge_artifacts_digest)
+			[[ -z "$expected" && -z "$extra" &&
+				"$relative" =~ ^[0-9a-f]{64}$ ]] || {
+				echo "WP40 PCC: malformed merge digest row" >&2
+				exit 1
+			}
+			[[ $(rg -Fc "artifacts_digest=$relative" \
+				"$fixtures/merge-v1.txt") -eq 2 ]] || {
+				echo "WP40 PCC: merge digest pin is not carried by stdout" >&2
+				exit 1
+			}
+			for actual in "$fixtures/merge-v1/merge-luajit/census-manifest-v3.tsv" \
+					"$fixtures/merge-v1/merge-puc/census-manifest-v3.tsv"; do
+				rg -Fqx $'artifacts_digest\t'"$relative" "$actual" || {
+					echo "WP40 PCC: merge digest pin is not carried by both manifests" >&2
+					exit 1
+				}
+			done
+			merge_count=$((merge_count + 1))
+			;;
 		esac
 	done <"$manifest"
-	[[ "$fixture_count" -eq 10 && "$tree_count" -eq 2 ]] || {
+	[[ "$fixture_count" -eq 11 && "$tree_count" -eq 2 &&
+		"$compiler_count" -eq 2 && "$worker_count" -eq 1 &&
+		"$merge_count" -eq 1 ]] || {
 		echo "WP40 PCC: fixture manifest roster differs" >&2
 		exit 1
 	}
@@ -125,6 +201,8 @@ bash -n "$script_dir/run_t2_puc_core.sh" "$script_dir/run_t2_census.sh" \
 	"$script_dir/run_t2_compiler_optional_load.sh" \
 	"$script_dir/run_t2_correction_kat.sh" \
 	"$script_dir/t2_puc_worker_pair_gate.sh"
+"$script_dir/run_t2_correction_kat.sh" --pair-self-test >/dev/null
+"$script_dir/t2_puc_worker_pair_gate.sh" --self-test >/dev/null
 
 new_lua_scratch() {
 	mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX
@@ -170,11 +248,48 @@ publish_tree_or_verify() {
 	fi
 }
 
+normalize_merge_output() {
+	local source="$1" target="$2" interpreter_lines
+	interpreter_lines="$(rg -c '^WP40 T2 census interpreter: .+ -> .+$' \
+		"$source" || true)"
+	if [[ "$interpreter_lines" != 1 ]] ||
+			! head -n 1 "$source" |
+				rg -q '^WP40 T2 census interpreter: .+ -> .+$'; then
+		echo "WP40 PCC merge: expected exactly one leading interpreter identity" >&2
+		return 1
+	fi
+	sed -E 's|^WP40 T2 census interpreter: .+ -> .+$|WP40 T2 census interpreter: <LuaJIT>|' \
+		"$source" >"$target"
+}
+
+normalization_raw="$scratch/merge-normalization.raw.txt"
+normalization_actual="$scratch/merge-normalization.actual.txt"
+normalization_expected="$scratch/merge-normalization.expected.txt"
+printf '%s\n%s\n' \
+	'WP40 T2 census interpreter: /host/luajit -> /host/luajit-build-id' \
+	'semantic-line' >"$normalization_raw"
+printf '%s\n%s\n' 'WP40 T2 census interpreter: <LuaJIT>' 'semantic-line' \
+	>"$normalization_expected"
+normalize_merge_output "$normalization_raw" "$normalization_actual"
+cmp -s -- "$normalization_expected" "$normalization_actual" || {
+	echo "WP40 PCC merge: interpreter normalization self-test failed" >&2
+	exit 1
+}
+printf '%s\n' \
+	'WP40 T2 census interpreter: /extra/luajit -> /extra/luajit-build-id' \
+	>>"$normalization_raw"
+if normalize_merge_output "$normalization_raw" "$normalization_actual" \
+		>/dev/null 2>&1; then
+	echo "WP40 PCC merge: extra-identity normalization self-test passed" >&2
+	exit 1
+fi
+
 run_dual_kat() {
 	local mode="$1" fixture="$2"
 	local jit_scratch puc_scratch jit_out puc_out jit_status=0 puc_status=0
 	jit_scratch="$(new_lua_scratch)"
 	puc_scratch="$(new_lua_scratch)"
+	leg_scratch_dirs+=("$jit_scratch" "$puc_scratch")
 	jit_out="$scratch/$mode-luajit.txt"
 	puc_out="$scratch/$mode-puc.txt"
 	"$luajit_bin" "$script_dir/t2_puc_core_kat.lua" "$repo" "$jit_scratch" \
@@ -216,6 +331,7 @@ run_unit() {
 	local jit_scratch puc_scratch jit_out puc_out jit_status=0 puc_status=0
 	jit_scratch="$(new_lua_scratch)"
 	puc_scratch="$(new_lua_scratch)"
+	leg_scratch_dirs+=("$jit_scratch" "$puc_scratch")
 	jit_out="$scratch/scan4-luajit.txt"
 	puc_out="$scratch/scan4-puc.txt"
 	"$luajit_bin" "$script_dir/t2_census_scan4_kat.lua" "$repo" "$jit_scratch" \
@@ -246,6 +362,7 @@ run_bounded_pair() {
 	local jit_status=0 puc_status=0
 	jit_scratch="$(new_lua_scratch)"
 	puc_scratch="$(new_lua_scratch)"
+	leg_scratch_dirs+=("$jit_scratch" "$puc_scratch")
 	jit_out="$scratch/$name-luajit.txt"
 	puc_out="$scratch/$name-puc.txt"
 	start=$SECONDS
@@ -256,6 +373,7 @@ run_bounded_pair() {
 	local jit_seconds=$((SECONDS - start))
 	remaining=$((limit - (SECONDS - start)))
 	if (( remaining <= 0 )); then
+		rm -rf -- "$jit_scratch" "$puc_scratch"
 		echo "WP40 PCC $name: pair exhausted ${limit}s wall budget after LuaJIT" >&2
 		exit 124
 	fi
@@ -265,6 +383,7 @@ run_bounded_pair() {
 		>"$puc_out" 2>&1 || puc_status=$?
 	local total_seconds=$((SECONDS - start))
 	local puc_seconds=$((total_seconds - jit_seconds))
+	rm -rf -- "$jit_scratch" "$puc_scratch"
 	if (( jit_status != puc_status )) || ! cmp -s -- "$jit_out" "$puc_out"; then
 		echo "WP40 PCC $name: LuaJIT/PUC output or exit differs" >&2
 		diff "$jit_out" "$puc_out" >&2 || true
@@ -275,7 +394,6 @@ run_bounded_pair() {
 		echo "WP40 PCC $name: both interpreters failed ($jit_status)" >&2
 		exit "$jit_status"
 	fi
-	rm -rf -- "$jit_scratch" "$puc_scratch"
 	publish_or_verify "$jit_out" "$name-v1.txt"
 	if [[ -n "$capture" ]]; then
 		printf 'leg\tluajit_seconds\tpuc_seconds\ttotal_seconds\n%s\t%d\t%d\t%d\n' \
@@ -305,6 +423,7 @@ run_worker() {
 	run_worker_selftest
 	jit_scratch="$(new_lua_scratch)"
 	puc_scratch="$(new_lua_scratch)"
+	leg_scratch_dirs+=("$jit_scratch" "$puc_scratch")
 	jit_out="$scratch/worker-luajit.txt"
 	puc_out="$scratch/worker-puc.txt"
 	jit_err="$scratch/worker-luajit.stderr"
@@ -319,6 +438,7 @@ run_worker() {
 	local jit_seconds=$((SECONDS - start))
 	remaining=$((limit - (SECONDS - start)))
 	if (( remaining <= 0 )); then
+		rm -rf -- "$jit_scratch" "$puc_scratch"
 		echo "WP40 PCC worker-pair: exhausted 3600s wall budget after LuaJIT" >&2
 		exit 124
 	fi
@@ -328,6 +448,7 @@ run_worker() {
 		2147483648 16178445837170081103 >"$puc_out" 2>"$puc_err" || puc_status=$?
 	local total_seconds=$((SECONDS - start))
 	local puc_seconds=$((total_seconds - jit_seconds))
+	rm -rf -- "$jit_scratch" "$puc_scratch"
 	if ! "$script_dir/t2_puc_worker_pair_gate.sh" \
 			"$jit_out" "$jit_err" "$jit_status" "$jit_tsv" \
 			"$puc_out" "$puc_err" "$puc_status" "$puc_tsv" "$gate_dir"; then
@@ -338,7 +459,6 @@ run_worker() {
 		cat "$puc_err" >&2 || true
 		exit 1
 	fi
-	rm -rf -- "$jit_scratch" "$puc_scratch"
 	publish_or_verify "$jit_out" worker-pair-v1.txt
 	publish_or_verify "$jit_tsv" worker-pair-v1.tsv
 	publish_or_verify "$gate_dir/worker-pair-telemetry-v1.txt" \
@@ -358,18 +478,35 @@ run_worker() {
 
 run_merge() {
 	local retained="$scratch/merge"
-	local output="$scratch/merge-v1.txt" progress="$scratch/merge-progress.log"
-	local status=0
+	local raw_output="$scratch/merge-v1.raw.txt" output="$scratch/merge-v1.txt"
+	local progress="$scratch/merge-progress.log" progress_fifo="$scratch/merge-progress.fifo"
+	local status=0 tee_status=0 tee_pid start total_seconds
+	mkfifo "$progress_fifo"
+	tee "$progress" <"$progress_fifo" >&2 &
+	tee_pid=$!
+	merge_progress_pid=$tee_pid
+	start=$SECONDS
 	timeout --signal=TERM --kill-after=5s 420 env WP40_LUA_BIN="$luajit_bin" \
 		"$script_dir/run_t2_census.sh" --merge-kat \
-		--retain-evidence "$retained" >"$output" \
-		2> >(tee "$progress" >&2) || status=$?
+		--retain-evidence "$retained" >"$raw_output" \
+		2>"$progress_fifo" || status=$?
+	wait "$tee_pid" || tee_status=$?
+	merge_progress_pid=0
+	rm -f -- "$progress_fifo"
+	total_seconds=$((SECONDS - start))
+	if (( tee_status != 0 )); then
+		echo "WP40 PCC merge: progress capture failed ($tee_status)" >&2
+		exit 1
+	fi
 	if (( status != 0 )); then
-		cat "$output" >&2
+		cat "$raw_output" >&2
 		if (( status == 124 )); then
 			echo "WP40 PCC merge: reached the authorized 420-second wall limit" >&2
 		fi
 		exit "$status"
+	fi
+	if ! normalize_merge_output "$raw_output" "$output"; then
+		exit 1
 	fi
 	for manifest in "$retained/merge-luajit/census-manifest-v3.tsv" \
 			"$retained/merge-puc/census-manifest-v3.tsv"; do
@@ -383,6 +520,8 @@ run_merge() {
 	publish_tree_or_verify "$retained" merge-v1
 	if [[ -n "$capture" ]]; then
 		publish_or_verify "$progress" merge-progress-v1.log
+		printf 'leg\ttotal_seconds\nmerge-seven-seed\t%d\n' "$total_seconds" \
+			>"$capture/merge-runtime-v1.tsv"
 	fi
 	cat "$output"
 	echo "WP40 PCC merge: probe, synthetic and measured invariance retained"
@@ -393,9 +532,7 @@ run_optional() {
 	WP40_LUA_BIN="$luajit_bin" "$script_dir/run_t2_compiler_optional_load.sh" \
 		>"$output" 2>&1 || status=$?
 	if (( status != 0 )); then cat "$output" >&2; exit "$status"; fi
-	if [[ -n "$capture" ]]; then
-		publish_or_verify "$output" optional-load-v1.txt
-	fi
+	publish_or_verify "$output" optional-load-v1.txt
 	cat "$output"
 }
 

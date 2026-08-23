@@ -1,4 +1,4 @@
-WP40 T2 census interpreter: /usr/bin/luajit -> /usr/bin/luajit-2.1.1767980792
+WP40 T2 census interpreter: <LuaJIT>
 census scan rows 4928 digest e6170d6117b4d1632535c4e1a1a3d6ec83598c68ca0888ccb04e9bc570d9cdda
 census scan KAT passed (seeds 0, the two F10 face-simplicity witnesses, W-112 detached-shoulder, Slot 30, Slot 29 and max-u64; Scan-3b/4 tiers and digest pinned)
 WP40 T2 census merge seed_set=explicit seeds=7 inputs=1 artifacts_digest=fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795
