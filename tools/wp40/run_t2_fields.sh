@@ -158,6 +158,12 @@ if [[ -n "$evidence_dir" ]]; then
 		"$scratch/luajit/metrics.tsv")"
 	triple_sha="$(awk -F '\t' '$1=="triple_sha_calls" {print $2}' \
 		"$scratch/luajit/metrics.tsv")"
+	fixture_scan_wall="$(awk -F '\t' '$1=="authoring_scan_wall_seconds" {print $2}' \
+		"$repo/tools/wp40/fixtures/t2_fields/fixture-manifest-v1.tsv")"
+	[[ -n "$fixture_scan_wall" ]] || {
+		echo "WP40 C-a1 fields: fixture scan measurement is missing" >&2
+		exit 1
+	}
 	luajit_wall="$(awk -F '\t' '$1=="wall_seconds" {print $2}' \
 		"$scratch/luajit/wall-time.tsv")"
 	puc_wall="$(awk -F '\t' '$1=="wall_seconds" {print $2}' \
@@ -195,7 +201,7 @@ ordinary_warm_added_sha_calls_measured	$warm_sha
 triple_overlap_sha_calls_measured	$triple_sha
 ordinary_sha_threshold_assessment	measured below 30
 performance_clock	per-case cold/amortized values are measured process CPU seconds via os.clock; whole-run values are measured wall seconds
-fixture_authoring_scan	separate 4.15-second exact Source-bounding-box scan; not repeated by acceptance
+fixture_authoring_scan	separate $fixture_scan_wall-second exact Source-bounding-box scan; not repeated by acceptance
 reproduction	WP40_LUA_BIN=$luajit_abs WP40_PUC_BIN=$puc_abs WP40_LUAC_BIN=$luac_abs WP40_EVIDENCE_DIR=$evidence_dir WP40_EVIDENCE_REFRESH=1 tools/wp40/run_t2_fields.sh
 EOF
 	for input in \

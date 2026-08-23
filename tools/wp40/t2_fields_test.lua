@@ -377,9 +377,34 @@ add_case("mask_capsule", true, function()
 		zero.weight_q == 0 and zero.signed_distance_saturated)
 	assert(not extreme.inside and extreme.signed_distance_q == 64 * Q and
 		extreme.weight_q == 0 and extreme.signed_distance_saturated)
+	-- Equal radii collapse half_segment to zero, so either axis produces the
+	-- same disc. A tie-axis assertion would be geometrically invariant and
+	-- vacuous; use an authored x-major capsule to guard the observable rule.
+	local x_major = find_row(source.landmarks, "whitebridge_crossing")
+	local x_tip = session.mask(x_major.id, x_major.center.x + 250,
+		x_major.center.z)
+	local x_side = session.mask(x_major.id, x_major.center.x,
+		x_major.center.z + 70)
+	local x_arc_outside = session.mask(x_major.id, x_major.center.x + 181,
+		x_major.center.z + 70)
+	local x_tip_outside = session.mask(x_major.id, x_major.center.x + 251,
+		x_major.center.z)
+	assert(x_tip.inside and x_tip.signed_distance_q == 0 and
+		not x_tip.signed_distance_saturated)
+	assert(x_side.inside and x_side.signed_distance_q == 0 and
+		not x_side.signed_distance_saturated)
+	assert(not x_arc_outside.inside and x_arc_outside.signed_distance_q == 468 and
+		not x_arc_outside.signed_distance_saturated)
+	assert(not x_tip_outside.inside and
+		x_tip_outside.signed_distance_q == Q and
+		not x_tip_outside.signed_distance_saturated)
 	return table.concat({long_boundary.weight_q, long_outside.weight_q,
 		side.signed_distance_q, cap_corner.signed_distance_q,
-		near_zero.weight_q, bool_text(zero.signed_distance_saturated)}, ":")
+		near_zero.weight_q, bool_text(zero.signed_distance_saturated),
+		bool_text(x_tip.inside), x_tip.signed_distance_q,
+		bool_text(x_side.inside), x_side.signed_distance_q,
+		bool_text(x_arc_outside.inside), x_arc_outside.signed_distance_q,
+		bool_text(x_tip_outside.inside), x_tip_outside.signed_distance_q}, ":")
 end)
 
 add_case("landmark_default_real_columns", true, function()
