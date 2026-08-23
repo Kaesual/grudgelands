@@ -219,8 +219,9 @@ contribute 98 ordinary incidences; the four dissolved degree-two junctions
 contribute eight Bay-transition incidences; and the eight perimeter
 attachments plus eight perimeter-vertex endpoints remain outside the
 106-incidence relief-junction roster and never acquire relief-`J` authority.
-Stage 1 freezes a raw-
-control minimum endpoint Chebyshev separation of 400 and an undisplaced
+Here, 98 counts incidences; its equality with Source Authority Section
+2.2's 98 unordered incident-edge pairs is coincidental. Stage 1 freezes a
+raw-control minimum endpoint Chebyshev separation of 400 and an undisplaced
 attachment-joint raster baseline minimum of 297 station steps (`land_034`;
 `land_031` is 298).
 Neither lower-bounds all final seeded attachment geometry. Stage 2 must measure
@@ -4161,9 +4162,10 @@ source-only until the Lane-C-b input-matrix ruling assigns them. The same Wave-
 compiled geometry family so that assignment does not require a second central-
 schema event.
 
-That reservation authorizes only the compiled-world identifier, the
-`compiled_schema.lua` family list, the production compiler trust skeleton's
-`geometry_names` list, and the exact family lists in
+That reservation authorizes only `schemas.lua`'s `compiled` binding,
+`compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's family
+list, the production compiler trust skeleton's `geometry_names` list, and the
+exact family lists in
 `t2_partition_test.lua` and `t2_schema_core_test.lua`, including the latter's
 schema-mismatch negative literal. It does not authorize compiler-
 implementation wiring, family population, or a change to any other schema

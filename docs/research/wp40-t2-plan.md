@@ -37,10 +37,10 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
 1. **Phase 0A first.** Land the documentation-only durable freeze and its
    independent review before starting implementation packages.
 2. **Provider work after integrated Phase 0A.** Payload-free C-a1 and the
-   Section-11 ownership-handoff schema package run in parallel. Phase 0B may
-   prepare code and policy alongside them, but PUC-1's final fixtures,
-   evidence, green status and integration wait for the integrated ownership
-   provider. Phase 0A does not partially fold PUC-1's wording.
+   Section-11 ownership-handoff schema package (Wave 1C) run in parallel.
+   Phase 0B may prepare code and policy alongside them, but PUC-1's final
+   fixtures, evidence, green status and integration wait for the integrated
+   ownership provider. Phase 0A does not partially fold PUC-1's wording.
 3. **Ownership provider, then Phase 0B.** Integrate the ownership handoff
    first. Its intentional partition/schema change moves compiler/worker PCC
    digests. Finalize and integrate the reviewed atomic Phase-0B fold on that
@@ -53,17 +53,20 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    eight island routes, 16 interfaces and four landings remain source-only
    until the Lane-C-b input-matrix ruling. Wave 1C reserves a dedicated empty
    `island_routes` compiled geometry family under the exact limited schema
-   scope in contracts Section 14.2. D-1 validates the complete constructed
-   result through public `compiled_schema.canonicalize_compiled`; analytic-
-   record helpers stay local and no validator export is added.
+   scope in contracts Section 14.2, including both compiled-world identifier
+   sites: `schemas.lua`'s `compiled` binding and `compiled_schema.lua`'s
+   `EXPECTED_COMPILED_SCHEMA`. D-1 validates the complete constructed result
+   through public `compiled_schema.canonicalize_compiled`; analytic-record
+   helpers stay local and no validator export is added.
 5. **One integrated Wave-1 gate.** After D-1 is green, integrate C-a1 and D-1
    in dependency order. The later landmark source-policy cleanup should join
-   this gate only if its audit proves no S1/pool movement; any required source
-   edit or S1/pool movement is STOP, and the cleanup must in all cases close
-   before the production compiler or T2-final. Run the selected four under
-   LuaJIT plus the nonzero connectivity-fill and adopted-residue witnesses as
-   the preflight, then run exactly one fresh C1-v3 PUC reacceptance for the
-   integrated Wave-1 state.
+   this gate only if it requires no source edit and its audit proves no S1/pool
+   movement; any violation is STOP, and the cleanup must in all cases close
+   before the production compiler or T2-final. The source-edit condition is
+   independent because `geometry_policies` is absent from the S1 projection.
+   Run the selected four under LuaJIT plus the nonzero connectivity-fill and
+   adopted-residue witnesses as the preflight, then run exactly one fresh
+   C1-v3 PUC reacceptance for the integrated Wave-1 state.
 6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
    Section-11 ownership export and the green reacceptance. It then assembles
    zone-owned `H`. Stop after C-a2 and before Lane C-b.
@@ -313,9 +316,11 @@ did change no scalar. They are printed by the merge, recorded in commit
 `527b3a5`, and now retained in the four accepted C1-v3 selected rows plus the
 final conformance artifact at commit `5d770365`.
 
-The pool's Source side is pinned by projection, not by file bytes, so
-`source/catalog.lua` and `geometry/partition.lua` may change freely; that is
-the whole point of the S1 scoping and it is verified by control experiment.
+The pool's Source side is pinned by projection, not by file bytes, so a change
+to `source/catalog.lua` or `geometry/partition.lua` does not necessarily move
+S1; that scoping fact is verified by control experiment. It is not edit
+authorization. In particular, Section 0's landmark-policy source-edit STOP is
+operative precisely because `geometry_policies` is absent from the projection.
 
 ## 4. Measured cost anchors
 

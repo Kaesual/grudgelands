@@ -3,7 +3,10 @@
 Status: **planning record, revised after the accepted 2026-08-23 PUC-1 and
 D1-1 rulings and final GO. The execution graph mirrors the authoritative
 [T2 plan](wp40-t2-plan.md) Section 0 and the durable
-[handoff memo](wp40-t2-contracts.md) Section 14. Not an implementation
+[handoff memo](wp40-t2-contracts.md) Section 14. Fable and Sol independently
+reviewed the preceding planning revision on 2026-08-22; Fable's findings were
+incorporated and Sol's closure review found no technical blocker. That is
+historical provenance, not a model-routing rule. Not an implementation
 contract and not authoritative game design.**
 
 This document consolidates the current review and planning discussion into one
@@ -217,8 +220,8 @@ present boundary.
 The technical decision is accepted in the engineering brief, but
 `docs/design/world_zones.md` does not yet state the visible `31000 -> -193`
 reduction. The authority fold-in must add that fact to its Section 13; until
-then this draft records the missing documentation but does not replace the
-design authority.
+then this planning record notes the missing documentation but does not replace
+the design authority.
 
 ## 5. Fast validation strategy
 
@@ -426,8 +429,11 @@ source-policy literals that still describe a highest-priority one-winner
 interpretation. C-a1 neither edits the catalog/validator nor treats those
 literals as semantic authority. A dedicated later landmark source-policy
 cleanup must close before the production compiler or T2-final. Aim to batch it
-before the single scheduled C1 only if its audit proves no S1/pool movement;
-any required source edit or S1/pool movement is STOP for a new reviewed ruling.
+before the single scheduled C1 only if it requires no source edit and its audit
+proves no S1/pool movement; any violation is STOP for a new reviewed ruling.
+The source-edit condition is independent because `geometry_policies` is absent
+from the S1 projection, so an unchanged S1/pool does not prove source stayed
+untouched.
 
 C-a2 is a separate serial package. It assembles zone-owned `H` only after
 D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
@@ -483,9 +489,10 @@ when that table proves their write sets and interfaces independent.
 
 Wave 1C is the serialized ownership-handoff/schema package. Beside exporting
 the two Section-11 ownership results consumed by C-a2, it reserves the accepted
-dedicated empty `island_routes` family. That reservation is limited to the
-compiled-world identifier, the compiled-schema family list, the compiler trust
-skeleton's `geometry_names` list, and the exact family lists plus schema-
+dedicated empty `island_routes` family. That reservation is limited to
+`schemas.lua`'s `compiled` binding, `compiled_schema.lua`'s
+`EXPECTED_COMPILED_SCHEMA`, the `compiled_schema.lua` family list, the compiler
+trust skeleton's `geometry_names` list, and the exact family lists plus schema-
 mismatch negative literal in the two C1-pinned tests. It authorizes no
 implementation wiring, population or other schema-identity change.
 
@@ -678,7 +685,7 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
                      Phase 0A freeze
                            |
-       parallel: C-a1 | ownership handoff | Phase 0B preparation
+       parallel: C-a1 | Wave 1C ownership handoff | Phase 0B preparation
                            |
                integrate ownership provider
                            |
@@ -688,8 +695,8 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
                  integrate green C-a1 + D-1
                            |
- landmark source-policy cleanup audit (batch only if no S1/pool movement;
-             source edit or S1/pool movement = STOP)
+ landmark source-policy cleanup audit (batch only if no source edit and
+       no S1/pool movement; either violation = STOP)
                            |
  selected-four LuaJIT + connectivity/adoption witness preflight
                            |
@@ -856,10 +863,10 @@ This file remains a planning record; it does not become a competing authority.
 
 ## 16. Definition of planning-ready
 
-This draft is ready to become an implementation plan when:
+This planning record is ready to become an implementation plan when:
 
-- the disposition of an optional post-fix re-review is recorded and any new
-  findings are resolved;
+- the 2026-08-22 Fable/Sol reviews and completed fix disposition are recorded
+  — **satisfied; no optional post-fix re-review remains pending**;
 - the PUC inventory/branch matrix is reviewed and the final PUC ruling is
   recorded — **satisfied by PUC-1 on 2026-08-23**;
 - the T5-0 substrate, tools-only payload, four cases, measurements, non-claims,

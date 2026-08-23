@@ -580,7 +580,9 @@ correction, with its evidence and digests, stays in
   surviving relief junctions contribute 98 ordinary incidences, four dissolved
   degree-two junctions contribute eight Bay-transition incidences, and the
   eight perimeter attachments plus eight perimeter-vertex endpoints remain
-  outside the 106-incidence relief-junction roster.
+  outside the 106-incidence relief-junction roster. Here, 98 counts
+  incidences; its equality with Section 2.2's 98 unordered incident-edge pairs
+  is coincidental.
   Raw authored controls have minimum endpoint Chebyshev separation 400, while
   the undisplaced attachment-joint raster baseline has minimum 297 station
   steps (`land_034`; `land_031` is 298). Neither Stage-1 fact proves the length after final seeded
@@ -610,11 +612,21 @@ correction, with its evidence and digests, stays in
   independent of the Q16 signed distance used to derive collar weight. The 264
   measured ellipse incidences on which exact membership and signed-distance
   equality differ are retained evidence, not authority and not a license to
-  substitute one classifier for the other. Source validation proves that each
-  exact mask lies in its owning zone before composition. Priority affects
-  height composition only: it never deletes exact mask identity. Required-
-  route non-blocking is evaluated against the final composed `H` and later
-  route products rather than inferred from a winning mask.
+  substitute one classifier for the other. C-a1 Stage 1 must prove each exact
+  mask, including its per-edge displacement margin, is contained in its owning
+  final zone. The current source validator checks only `zone_id` referential
+  integrity at `validation/t2_source.lua:3964`; no current check enforces
+  geometric containment. Priority affects height composition only: it never
+  deletes exact mask identity. Required-route non-blocking is evaluated against
+  the final composed `H` and later route products rather than inferred from a
+  winning mask.
+
+  The retained
+  `geometry_policies.relief_composition.landmark_priority_order` literal, whose
+  value is `greater_integer_priority_wins`, means only that greater priority
+  composes later and applies last. It never selects one landmark or suppresses
+  another positive collar, and the validator's literal check does not change
+  that later-memo interpretation.
 
   Capsule mask geometry follows the exact source validator. With
   `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`, its
