@@ -7,7 +7,7 @@ seed_max_u64	254:-4196:12
 hash_domain_candidate_zero	8:4:8:landmark_hearthpine_bowl
 mask_rectangle	65536:65536:65536:0
 mask_ellipse	1:0:0:49720:0:0
-mask_capsule	65536:65536:0:0:20:1
+mask_capsule	65536:65536:0:0:20:1:1:0:1:0:0:468:0:65536
 landmark_default_real_columns	0:0:20::0,-1800:-2520:31:hearthpine_bowl:8,-3260:-40:215:wyrmglass_ring+wyrmglass_faultfields+wyrmglass_dragonspire:32,2050:0:55:skyglass_escarpment+skyglass_hangingways:20,3149:300:255:stormscale_caldera:12,1736:-1500:35:lethariel_crownlake:8
 landmark_triple_order	54:55:56:215:32
 landmark_two_collar_chain	hearthpine_bowl:21986:35:20:25:copperfell_drainage:10058:141:25:43:43
