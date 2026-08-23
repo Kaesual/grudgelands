@@ -2,19 +2,26 @@ WP40 T2 D-1 authored retained acceptance run
 
 EXECUTION IDENTITY
 Baseline/provider: c8ee29edd02347fe3ecb7b119b657cc353dc1860
-Implementation commit: 413fdf95d14494b622ede330346f8b4a396c6880
-Implementation tree: ab55ed29529bf94016f66998daacc61348a907a8
+Implementation commit: 7382717a84a4035b70539983ceae8bbefac5235d
+Implementation tree: 7a35ed6cf543adbceffe9ef17bf3081130fe1239
 Branch: wp40-t2-d1-authored
 
 NORMAL ACCEPTANCE
 Command: tools/wp40/run_t2_authored.sh
 canonical	3f41fb8f109f3edd4d0991632658b018c25686e664cc039406112ceb5740a5ed	70c5d4885ec2eed77267e82d9adcbf618a4eb095b5286cc46726687e9436b94f	b8d5b653946a27e254d602b533c511c129472b300992a33f48dcaa36bd65f038	012817385d86ece1141969f829d6a9a1b4252e89b07c18489fb6218740ee5213
-WP40 T2 authored full passed records=99 cases=60 total=159
+WP40 T2 authored full passed records=99 cases=85 total=184
 canonical	3f41fb8f109f3edd4d0991632658b018c25686e664cc039406112ceb5740a5ed	70c5d4885ec2eed77267e82d9adcbf618a4eb095b5286cc46726687e9436b94f	b8d5b653946a27e254d602b533c511c129472b300992a33f48dcaa36bd65f038	012817385d86ece1141969f829d6a9a1b4252e89b07c18489fb6218740ee5213
 WP40 T2 authored kat passed records=99 cases=21 total=120
-D1_LUAJIT_WALL=0.29 D1_LUAJIT_MAXRSS_KIB=47472
-D1_PUC_KAT_WALL=0.39 D1_PUC_KAT_MAXRSS_KIB=41428
+D1_LUAJIT_WALL=0.32 D1_LUAJIT_MAXRSS_KIB=40620
+D1_PUC_KAT_WALL=0.40 D1_PUC_KAT_MAXRSS_KIB=42368
 WP40 T2 authored runner passed; LuaJIT/PUC canonical digests byte-identical
+
+INTERPRETER IDENTITY
+Before the PUC KAT, the fixed tools/bin/lua51 path must satisfy both
+rawget(_G, "jit") == nil and _VERSION == "Lua 5.1". The already positively
+identified LuaJIT full-run interpreter is run against the same predicate and
+must fail it, providing a cheap negative selftest without copying an
+interpreter or overwriting any file.
 
 POSITIVE COVERAGE
 The full run projected and inspected all 38 zones, all 57 public land routes,
@@ -26,24 +33,34 @@ reconstructs every relevant Source record losslessly, including false versus
 real non-empty text for faction and both optional gate references. It also
 proves Source immutability and absence of mutable aliases in or from output.
 
-The complete compiled-data shell contains all 21 existing geometry families,
+The harness-only complete compiled-data shell contains all 21 existing geometry families,
 with the three D-1 families inserted and every other geometry family empty.
 The reserved island_routes family is explicitly empty. The shell includes the
 real typed selectors, spatial, coverage and release sections, and passes only
 through compiled_schema.canonicalize_compiled. Its canonical bytes and the
-three family arrays are hashed by the real canonical encoder/hasher.
+three family arrays are hashed by the real canonical encoder/hasher. The shell
+digest is an acceptance-harness digest, not a production compiler-output digest.
 
 NEGATIVE COVERAGE
-The full run rejects an unknown dependency; missing and additional Source
-fields; metatables; sparse arrays; mutable aliases; cycles; wrong types and
-integer ranges; reordered, duplicate and changed identities; numeric and
-empty-string optional gate references; land_058 boundary-only contamination;
+The full run rejects a non-plain dependency table and unknown dependency;
+missing and additional Source fields; empty faction text; metatables; sparse
+arrays; mutable aliases; cycles; wrong types; NaN, positive infinity, negative
+infinity, fractional and out-of-range integers; direct zone and boat count
+drift; direct zone and boat numeric/order drift; empty biome arrays; duplicate
+biome IDs; a crossing station outside its centreline; reordered, duplicate and
+changed route identities; numeric and empty-string optional gate references;
+land_058 boundary-only contamination;
 island-route contamination; and an injected Source-validator failure before
 package-local validation. A same-shape mutation is rejected by the real Source
 checksum; with the explicit accepting test seam the same mutation moves the
 complete-shell digest. The real canonicalizer rejects a compiled schema
 identity mismatch, a negative unsigned value, unsorted named rows and a
-mutable alias. Focused records plus cases remain 159, below the 300 cap.
+mutable alias. Focused records plus cases are 184, below the 300 cap.
+
+The duplicate route-identity mutant runs behind the explicit accepting
+validator seam: Stage 1 remains the owner of Source identity uniqueness, while
+D-1 rejects the current route_001-to-route_002 mutant through its exact
+position-to-route_NNN check. No second generic uniqueness rule was added.
 
 STATIC GATES
 tools/wp40/t2_source_audit.sh "$PWD" --static-only: passed.
@@ -63,4 +80,7 @@ No full W population, C1 reacceptance, F1 partition or F2 C1-v3 conformance,
 T2-final PCC, broad PUC population, compiler round or partition round. D-1
 does not touch or wire the compiler, partition, C-a1, seed, raster, H, relief,
 route-profile or runtime paths. Independent review remains coordinator-owned
-and pending. Nothing was pushed or merged.
+The initial independent Opus/xhigh review verdict was APPROVE with 0 critical,
+0 high, 0 medium and 3 nonblocking low findings. This focused round closes all
+three; a fresh coordinator-owned re-review remains pending. Nothing was pushed
+or merged.
