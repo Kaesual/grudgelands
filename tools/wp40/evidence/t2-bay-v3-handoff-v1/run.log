@@ -1,0 +1,43 @@
+WP40 T2 Bay-v3 ownership-handoff retained run
+
+BASELINE ATTEMPT (compile 1/3, provider bytes)
+Purpose: retain pre-change connectivity-seed payload for legacy-family comparison.
+Result: geometry compilation completed, then t2_payload_cache.lua failed to open
+the cache temporary because tools/wp40/results/payload-cache did not exist in the
+isolated worktree. No payload survived process exit. This full computation is
+counted conservatively as compile 1/3 and was not repeated.
+WALL=33.82 MAXRSS=595004
+Disposition approved by coordinator: reserve compiles 2/3 and 3/3 for the two
+post-change witnesses, and prove legacy invariance through the scoped production
+diff plus canonical legacy projections retained in handoff-v1.tsv.
+
+POST-CHANGE FULL CAPTURE (compiles 2/3 and 3/3)
+WP40 T2 Bay-v3 connectivity witness seed=35408571026545897 columns=3 wall=64s
+WP40 T2 dry-face-v2 adoption witness seed=18171940200422843206 intervals=1 wall=60s
+WP40 T2 Bay-v3 ownership handoff passed cases=71 fixture_sha256=858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881 total_wall=124s
+FULL_WALL=128.58 FULL_MAXRSS=766232
+
+The capture digest above includes trailing empty TSV fields. Before the tested
+implementation commit, those empty terminal fields were normalized away to
+satisfy git diff --check. Payload values and all 71 cases are unchanged; the
+committed canonical fixture digest is:
+abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148
+
+REPRESENTATIVE INTERPRETER KATS
+WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=LuaJIT fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 cases=71
+LUAJIT_KAT_WALL=0.03 MAXRSS=9700
+WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=PUC-5.1 fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 cases=71
+PUC_KAT_WALL=0.03 MAXRSS=9908
+
+STATIC AND FOCUSED GATES
+WP40 T2 schema/core tests passed
+All changed Lua parsed with tools/bin/luac51 -p.
+No new SETGLOBAL opcode; t2_partition_test.lua retained its four provider writes.
+All five Lua 5.1 grep sweeps passed over mods/*/grug_* and explicitly over tools/wp40.
+run_t2_bay_v3_handoff.sh passed bash -n.
+git diff --check passed after TSV normalization.
+All nine submodules were initialized at their pinned commits with no +, -, or U marker.
+
+EXPENSIVE SUITES DELIBERATELY NOT RUN
+No comprehensive PUC partition round, full W, full C1, or C1 reacceptance.
+No fourth uncached compile. C1 reacceptance remains coordinator-owned after all Wave-1 packages.
