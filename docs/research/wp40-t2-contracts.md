@@ -3173,3 +3173,35 @@ independent reviewer Claude Opus/xhigh; initial findings 0 Critical / 1 High /
 1 Medium / 4 Low; first focused re-review 0 Critical / 0 High / 1 Medium /
 3 Low; two fix rounds; final focused re-review 0 Critical / 0 High / 0 Medium /
 0 Low (`APPROVE`); observed elapsed wall time `unknown`.
+
+### 14.6 Wave-1C ownership-handoff closeout (2026-08-23)
+
+The accepted ownership provider is the reviewed
+`grug_wp40_compiled_world_v2` / Bay-v3 / dry-face-v2 package merged after
+commit `972b339`. It exports connectivity-closing water and adopted dry
+residue without reconstructing either authority, reserves the empty
+`island_routes` family, and leaves compiled-geometry v1, Source, S1, the
+candidate pool, winners and the prior C1 evidence byte-unchanged. The three
+package geometry-compile attempts and the retained 128.58-second capture ran
+on implementation commit `66f2a11` (tree `e75046c4`); the later fail-closed
+dry-face roster, empty-ID refusal and shared-comparator validation were tested
+only by focused dual-interpreter KATs and by no geometry compile in this
+package. Before Phase-0B fixture regeneration, the coordinator therefore runs
+one bounded LuaJIT smoke compile on the integrated provider. It is an
+integration preflight, not a fourth ownership-package evidence run.
+
+Two final-review Lows are accepted without another package fix round. The
+authority-side exact-duplicate class has no dedicated committed KAT, but the
+same bytes necessarily reach and fail the retained overlap guard; this cannot
+admit invalid bytes. Compile attempt 1 lost its payload and its historical
+“provider bytes / pre-change” label cannot be reconciled from retained
+artifacts with the later commit attribution. It supplies no accepted value,
+digest or backward-invariance claim, so no downstream decision may cite it as
+measurement.
+
+**Review-closeout calibration record:** implementing model GPT-5.6 Sol;
+independent reviewer Claude Opus/xhigh; initial findings 0 Critical / 0 High /
+1 Medium / 7 Low; first focused re-review 0 Critical / 0 High / 1 Medium /
+1 Low; two user-authorized fix rounds; final focused re-review 0 Critical /
+0 High / 0 Medium / 2 non-blocking Low (`APPROVE`); observed elapsed wall time
+`unknown`.
