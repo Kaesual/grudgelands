@@ -91,7 +91,8 @@ return function(dependencies)
 
 	local function width_bounds(width, label)
 		integer(width, 1, 2147483647, label)
-		return -math.floor(width / 2), math.ceil(width / 2)
+		local left = math.floor(width / 2)
+		return left == 0 and 0 or -left, math.ceil(width / 2)
 	end
 
 	local function centered_contains(width, local_x, local_z)

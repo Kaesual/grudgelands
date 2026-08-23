@@ -15,8 +15,26 @@ local function dependency_contract(value)
 		if not allowed[key] then fail("unknown dependency " .. tostring(key)) end
 	end
 	if type(value.canonical) ~= "table" or
+			type(value.canonical.encode) ~= "function" or
 			type(value.deterministic) ~= "table" or
+			type(value.deterministic.Q) ~= "number" or
+			type(value.deterministic.MAX_SAFE) ~= "number" or
+			type(value.deterministic.clamp) ~= "function" or
+			type(value.deterministic.isqrt) ~= "function" or
+			type(value.deterministic.qdiv) ~= "function" or
+			type(value.deterministic.qlerp) ~= "function" or
+			type(value.deterministic.qmul) ~= "function" or
+			type(value.deterministic.smootherstep) ~= "function" or
+			type(value.deterministic.validate_seed) ~= "function" or
+			type(value.deterministic.value_noise_2d) ~= "function" or
 			type(value.exact) ~= "table" or
+			type(value.exact.ellipse_member) ~= "function" or
+			type(value.exact.integer) ~= "function" or
+			type(value.exact.safe_difference) ~= "function" or
+			type(value.exact.safe_product) ~= "function" or
+			type(value.exact.safe_signed_product) ~= "function" or
+			type(value.exact.safe_square) ~= "function" or
+			type(value.exact.safe_sum) ~= "function" or
 			type(value.raw_sha256) ~= "function" then
 		fail("canonical, deterministic, exact, or raw SHA dependency is missing")
 	end
@@ -136,6 +154,20 @@ return function(dependencies)
 				qnodes(math.min(row.radius_x, row.radius_z),
 					"ellipse minimum radius Q16"))
 		else
+			-- A capsule lies wholly in its authored total-half-extent box. The
+			-- positive Chebyshev excess from that box is therefore a lower bound
+			-- on true distance to the capsule. At or beyond the collar width the
+			-- exact weight is zero, so avoid unsafe far-coordinate Q16 squares.
+			-- The returned distance is deliberately saturated at the collar edge
+			-- and marked; exact membership and every live collar distance still use
+			-- the frozen long-short capsule calculation below.
+			local box_excess = math.max(ax - row.radius_x, az - row.radius_z)
+			if box_excess >= row.blend_width then
+				return {inside = false,
+					signed_distance_q = qnodes(row.blend_width,
+						"capsule saturated signed distance"),
+					weight_q = 0, signed_distance_saturated = true}
+			end
 			local x_axis = row.radius_x >= row.radius_z
 			local short = math.min(row.radius_x, row.radius_z)
 			local long = math.max(row.radius_x, row.radius_z)
@@ -161,7 +193,7 @@ return function(dependencies)
 		else weight_q = Q - deterministic.smootherstep(
 			deterministic.qdiv(outside_q, blend_q)) end
 		return {inside = inside, signed_distance_q = signed_distance_q,
-			weight_q = weight_q}
+			weight_q = weight_q, signed_distance_saturated = false}
 	end
 
 	function relief.new(source, seed, water_level, options)

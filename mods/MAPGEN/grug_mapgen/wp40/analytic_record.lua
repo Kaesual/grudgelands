@@ -1,5 +1,6 @@
--- Defensive shaper for the normalized records used by compiled WP40 families.
--- It copies every input and retains no registry, cache, alias, or metatable.
+-- Defensive structural shaper for normalized WP40 records. Text fields are
+-- byte strings here; the canonical publication seam remains the single owner
+-- of valid-UTF8 enforcement. Inputs are copied and no registry/cache is kept.
 
 local analytic_record = {}
 
@@ -100,14 +101,20 @@ local function copy_bucket(definition, rows, seen)
 	rows = rows or {}
 	local count = dense_count(rows, definition.name)
 	local result = {}
+	local bucket_seen = {}
 	for index = 1, count do
 		local row = rows[index]
 		exact_fields(row, definition.array and ARRAY_ROW_FIELDS or
 			SCALAR_ROW_FIELDS, definition.name .. "[" .. index .. "]")
 		local name = text(row.name, definition.name .. " field name", true)
-		if seen[name] then
-			fail("field " .. name .. " occurs in multiple named buckets")
+		if bucket_seen[name] then
+			fail(definition.name .. " has duplicate field " .. name)
 		end
+		if seen[name] then
+			fail("field " .. name .. " occurs in " .. seen[name] .. " and " ..
+				definition.name)
+		end
+		bucket_seen[name] = true
 		seen[name] = definition.name
 		if definition.array then
 			result[index] = {name = name, values = copy_array(definition.kind,
@@ -118,11 +125,6 @@ local function copy_bucket(definition, rows, seen)
 		end
 	end
 	table.sort(result, function(a, b) return a.name < b.name end)
-	for index = 2, #result do
-		if result[index - 1].name == result[index].name then
-			fail(definition.name .. " has duplicate field " .. result[index].name)
-		end
-	end
 	return result
 end
 

@@ -159,16 +159,16 @@ add_case("analytic_shape", true, function()
 		record.candidates[1]}, ":")
 end)
 
-add_case("analytic_rejects", false, function()
+add_case("analytic_rejects", true, function()
 	expect_error("unknown field", function()
 		analytic_record.new("s", "i", 0, {extra = {}})
 	end)
-	expect_error("multiple named buckets", function()
+	expect_error("occurs in text_values and signed_values", function()
 		analytic_record.new("s", "i", 0, {text_values = {
 			{name = "same", value = "a"}}, signed_values = {
 			{name = "same", value = 1}}})
 	end)
-	expect_error("multiple named buckets", function()
+	expect_error("text_values has duplicate field same", function()
 		analytic_record.new("s", "i", 0, {text_values = {
 			{name = "same", value = "a"}, {name = "same", value = "b"}}})
 	end)
@@ -185,7 +185,12 @@ add_case("analytic_rejects", false, function()
 	expect_error("attributes must", function()
 		analytic_record.new("s", "i", 0, {attributes = {x = 1}})
 	end)
-	return "extra,cross,sparse,metatable,function,attributes"
+	local structurally_valid = analytic_record.new("s", "i", 0, {
+		text_values = {{name = "bytes", value = string.char(255)}}})
+	expect_error("valid UTF-8", function()
+		canonical.text(structurally_valid.text_values[1].value)
+	end)
+	return "extra,cross,same,sparse,metatable,function,attributes,utf8_seam"
 end)
 
 add_case("raw_mapping", true, function()
@@ -357,17 +362,55 @@ add_case("mask_capsule", true, function()
 	local side = session.mask(row.id, row.center.x + row.radius_x, row.center.z)
 	local cap_corner = session.mask(row.id, row.center.x + row.radius_x,
 		row.center.z + row.radius_z - row.radius_x)
-	assert(long_boundary.inside and long_boundary.signed_distance_q == 0)
+	assert(long_boundary.inside and long_boundary.signed_distance_q == 0 and
+		not long_boundary.signed_distance_saturated)
 	assert(not long_outside.inside and long_outside.signed_distance_q == Q)
 	assert(side.inside and cap_corner.inside)
-	local tie = relief.mask_copy({id = "tie", primitive = "capsule",
-		center = {x = 0, z = 0}, radius_x = 10, radius_z = 10,
-		secondary_relief_id = "lowland", noise_domain = "tie",
-		base_h_priority = 1, base_h_blend_width = 64})
-	assert(relief.mask_evaluate(tie, 10, 0).inside)
-	assert(not relief.mask_evaluate(tie, 10, 1).inside)
+	local near_zero = session.mask(row.id,
+		row.center.x + row.radius_x + row.base_h_blend_width - 2, row.center.z)
+	local zero = session.mask(row.id,
+		row.center.x + row.radius_x + row.base_h_blend_width, row.center.z)
+	local extreme = session.mask(row.id, 2147483647, -2147483648)
+	assert(not near_zero.inside and near_zero.signed_distance_q == 62 * Q and
+		near_zero.weight_q > 0 and not near_zero.signed_distance_saturated)
+	assert(not zero.inside and zero.signed_distance_q == 64 * Q and
+		zero.weight_q == 0 and zero.signed_distance_saturated)
+	assert(not extreme.inside and extreme.signed_distance_q == 64 * Q and
+		extreme.weight_q == 0 and extreme.signed_distance_saturated)
 	return table.concat({long_boundary.weight_q, long_outside.weight_q,
-		side.signed_distance_q, cap_corner.signed_distance_q}, ":")
+		side.signed_distance_q, cap_corner.signed_distance_q,
+		near_zero.weight_q, bool_text(zero.signed_distance_saturated)}, ":")
+end)
+
+add_case("landmark_default_real_columns", true, function()
+	local probes = {{0, 0}, {-1800, -2520}, {-3260, -40}, {2050, 0},
+		{3149, 300}, {1736, -1500}}
+	local rows = {}
+	for index = 1, #probes do
+		local probe = probes[index]
+		local session = relief.new(source, "0", 1)
+		local height, contributions = session.compose_landmarks(20,
+			probe[1], probe[2])
+		local ids = {}
+		for contribution_index = 1, #contributions do
+			local contribution = contributions[contribution_index]
+			assert(contribution.weight_q > 0)
+			if contribution_index > 1 then
+				assert(contributions[contribution_index - 1].priority <
+					contribution.priority)
+			end
+			ids[contribution_index] = contribution.id
+		end
+		rows[index] = table.concat({probe[1], probe[2], height,
+			table.concat(ids, "+"), session.stats().sha_calls}, ":")
+	end
+	local result = table.concat(rows, ",")
+	assert(result == "0:0:20::0,-1800:-2520:31:hearthpine_bowl:8," ..
+		"-3260:-40:215:wyrmglass_ring+wyrmglass_faultfields+" ..
+		"wyrmglass_dragonspire:32,2050:0:55:skyglass_escarpment+" ..
+		"skyglass_hangingways:20,3149:300:255:stormscale_caldera:12," ..
+		"1736:-1500:35:lethariel_crownlake:8")
+	return result
 end)
 
 local triple_ids = {"wyrmglass_ring", "wyrmglass_faultfields",
@@ -399,6 +442,45 @@ add_case("landmark_triple_order", true, function()
 		stats.replacement_evaluations
 	return table.concat({contributions[1].priority, contributions[2].priority,
 		contributions[3].priority, final_h, stats.sha_calls}, ":")
+end)
+
+add_case("landmark_two_collar_chain", true, function()
+	local ids = {"hearthpine_bowl", "copperfell_drainage"}
+	local session = relief.new(source, "0", 1)
+	local final_h, contributions = session.compose_landmarks(20, -2061, -2355,
+		{ids[2], ids[1]})
+	assert(#contributions == 2 and contributions[1].id == ids[1] and
+		contributions[2].id == ids[2])
+	assert(contributions[1].weight_q > 0 and contributions[1].weight_q < Q and
+		contributions[2].weight_q > 0 and contributions[2].weight_q < Q)
+	assert(contributions[2].previous_h == contributions[1].result_h and
+		final_h == contributions[2].result_h)
+	local non_chained_h = deterministic.qlerp(20,
+		contributions[2].replacement_h, contributions[2].weight_q)
+	assert(contributions[1].weight_q == 21986 and
+		contributions[1].replacement_h == 35 and
+		contributions[1].previous_h == 20 and
+		contributions[1].result_h == 25 and
+		contributions[2].weight_q == 10058 and
+		contributions[2].replacement_h == 141 and
+		contributions[2].previous_h == 25 and
+		contributions[2].result_h == 43 and final_h == 43 and
+		non_chained_h == 39)
+	local permuted = relief.new(source, "0", 1)
+	local permuted_h, permuted_contributions = permuted.compose_landmarks(20,
+		-2061, -2355, {ids[1], ids[2]})
+	assert(permuted_h == final_h and #permuted_contributions == 2)
+	for index = 1, 2 do
+		assert(permuted_contributions[index].id == contributions[index].id and
+			permuted_contributions[index].weight_q == contributions[index].weight_q and
+			permuted_contributions[index].previous_h == contributions[index].previous_h and
+			permuted_contributions[index].result_h == contributions[index].result_h)
+	end
+	return table.concat({contributions[1].id, contributions[1].weight_q,
+		contributions[1].replacement_h, contributions[1].previous_h,
+		contributions[1].result_h, contributions[2].id,
+		contributions[2].weight_q, contributions[2].replacement_h,
+		contributions[2].previous_h, contributions[2].result_h, final_h}, ":")
 end)
 
 add_case("landmark_zero_weight", false, function()
@@ -461,13 +543,23 @@ add_case("relief_cache_performance", false, function()
 		warm.cache_misses - cold.cache_misses
 	performance_metrics.ordinary_cold_cpu_seconds = cold_cpu
 	performance_metrics.ordinary_warm_cpu_seconds = warm_cpu
+	session.clear_cache()
+	local cleared = session.stats()
+	assert(cleared.cache_entries == 0 and cleared.sha_calls == warm.sha_calls)
+	local cleared_h, cleared_noise = session.raw_height("rolling_hills", 123, -456)
+	local refilled = session.stats()
+	assert(cleared_h == first_h and cleared_noise == first_noise and
+		refilled.sha_calls == warm.sha_calls + cold.sha_calls and
+		refilled.cache_entries == cold.cache_entries and
+		refilled.cache_misses == warm.cache_misses + cold.cache_misses)
 	local bounded = relief.new(source, "0", 1, {sha_cache_capacity = 4})
 	for index = 1, 4 do bounded.raw_height("lowland", index * 1000, index * -777) end
 	local bounded_stats = bounded.stats()
 	assert(bounded_stats.cache_entries == 4 and bounded_stats.cache_capacity == 4)
 	assert(warm.cache_hits - cold.cache_hits == 128)
 	return table.concat({cold.sha_calls, warm.sha_calls - cold.sha_calls,
-		warm.cache_hits - cold.cache_hits, bounded_stats.cache_entries}, ":")
+		warm.cache_hits - cold.cache_hits, cleared.cache_entries,
+		refilled.sha_calls, bounded_stats.cache_entries}, ":")
 end)
 
 local template_session = template.new(source)
@@ -497,9 +589,16 @@ add_case("primitive_flat_tilt", true, function()
 		tilt_outside.signed_distance_q == 0)
 	assert(template.footprint_signed_distance_q(8, 0, 0) < 0 and
 		template.footprint_signed_distance_q(8, 5, 0) > 0)
+	local singleton = template_session.evaluate_primitive("flat",
+		{height_offset = 0}, 0, 0, 1)
+	assert(template.centered_contains(1, 0, 0) and
+		not template.centered_contains(1, -1, 0) and
+		not template.centered_contains(1, 1, 0) and
+		singleton.signed_distance_q == 0 and
+		tostring(singleton.signed_distance_q) == "0")
 	return table.concat({flat_negative.offset_q, bool_text(flat_negative.inside),
 		bool_text(flat_positive.inside), tilt_positive.offset_q,
-		tilt_negative.offset_q}, ":")
+		tilt_negative.offset_q, tostring(singleton.signed_distance_q)}, ":")
 end)
 
 add_case("primitive_terrace", true, function()
@@ -629,25 +728,59 @@ add_case("operator_blend", true, function()
 end)
 
 add_case("composition_payload_free_14", false, function()
-	local deferred = {compose_mirefolk = true, compose_clash = true,
-		compose_rare_route = true, compose_coastal_housing_core = true}
+	local samples = {
+		compose_start = {-63, 1, 128, 256},
+		compose_capital_dwarf = {96, 0, 512, 704},
+		compose_capital_human = {0, 176, 512, 704},
+		compose_capital_elf = {112, 0, 512, 704},
+		compose_capital_undead = {96, 0, 512, 704},
+		compose_capital_orc = {232, 0, 512, 704},
+		compose_capital_troll = {84, 0, 512, 704},
+		compose_village = {-48, 0, 96, 160},
+		compose_outpost = {-31, 1, 64, 112},
+		compose_bandit_home = {17, -19, 64, 112},
+		compose_bandit_frontier = {0, -32, 64, 112},
+		compose_mine = {39, 0, 80, 128},
+		compose_dragon = {42, 0, 96, 160},
+		compose_apex_mine = {32, 0, 96, 160},
+	}
 	local values = {}
 	for index = 1, #source.template_compositions do
 		local row = source.template_compositions[index]
-		if not deferred[row.id] then
-			values[#values + 1] = row.id .. ":" ..
-				template_session.evaluate(row.id, 0, 0)
+		local sample = samples[row.id]
+		if sample then
+			local widths = assert(template_session.widths(row.id))
+			assert(widths.fitting_width == sample[3] and
+				widths.blend_width == sample[4])
+			widths.fitting_width = 1
+			assert(template_session.widths(row.id).fitting_width == sample[3])
+			local blend_probe = math.ceil(sample[3] / 2) +
+				(sample[4] - sample[3]) / 4
+			local blend_weight = template.feature_blend_weight(sample[3], sample[4],
+				blend_probe, 0)
+			assert(blend_weight == Q / 2)
+			values[#values + 1] = table.concat({row.id, sample[1], sample[2],
+				template_session.evaluate(row.id, sample[1], sample[2]),
+				sample[3], sample[4], blend_weight}, ":")
 		end
 	end
 	assert(#values == 14)
 	local result = table.concat(values, ",")
-	assert(result == "compose_start:0,compose_capital_dwarf:0," ..
-		"compose_capital_human:0,compose_capital_elf:0," ..
-		"compose_capital_undead:0,compose_capital_orc:0," ..
-		"compose_capital_troll:-786432,compose_village:0," ..
-		"compose_outpost:0,compose_bandit_home:0," ..
-		"compose_bandit_frontier:0,compose_mine:0,compose_dragon:0," ..
-		"compose_apex_mine:0")
+	assert(result ==
+		"compose_start:-63:1:0:128:256:32768," ..
+		"compose_capital_dwarf:96:0:524288:512:704:32768," ..
+		"compose_capital_human:0:176:65536:512:704:32768," ..
+		"compose_capital_elf:112:0:393216:512:704:32768," ..
+		"compose_capital_undead:96:0:393216:512:704:32768," ..
+		"compose_capital_orc:232:0:524288:512:704:32768," ..
+		"compose_capital_troll:84:0:-393216:512:704:32768," ..
+		"compose_village:-48:0:-32768:96:160:32768," ..
+		"compose_outpost:-31:1:0:64:112:32768," ..
+		"compose_bandit_home:17:-19:0:64:112:32768," ..
+		"compose_bandit_frontier:0:-32:-32768:64:112:32768," ..
+		"compose_mine:39:0:0:80:128:32768," ..
+		"compose_dragon:42:0:262144:96:160:32768," ..
+		"compose_apex_mine:32:0:262144:96:160:32768")
 	return result
 end)
 
@@ -695,6 +828,16 @@ add_case("api_defensive_source", false, function()
 	expect_error("dependencies are not a plain table", function()
 		dofile(wp40 .. "/geometry/relief.lua")(setmetatable({}, {}))
 	end)
+	local incomplete_deterministic = {}
+	for key, value in pairs(deterministic) do
+		incomplete_deterministic[key] = value
+	end
+	incomplete_deterministic.value_noise_2d = nil
+	expect_error("dependency is missing", function()
+		dofile(wp40 .. "/geometry/relief.lua")({canonical = canonical,
+			deterministic = incomplete_deterministic, exact = exact,
+			raw_sha256 = raw_sha256})
+	end)
 	expect_error("unknown relief option", function()
 		relief.new(source, "0", 1, {unknown = 1})
 	end)
@@ -704,7 +847,7 @@ add_case("api_defensive_source", false, function()
 	return "dependency_metatable,extra_dependency,option,seed"
 end)
 
-assert(#cases == 26, "aggregate case roster changed: " .. #cases)
+assert(#cases == 28, "aggregate case roster changed: " .. #cases)
 
 local result_rows = {"case_id\tresult"}
 local shared_rows = {"case_id\tresult"}
@@ -732,13 +875,42 @@ if mode == "full" then
 	local file = assert(io.open(repo ..
 		"/tools/wp40/fixtures/t2_fields/ellipse-disagreements-v1.tsv", "rb"))
 	local fixture_session = relief.new(source, "0", 1)
+	local fixture_seen, ellipse_order = {}, {}
+	for landmark_index = 1, #source.landmarks do
+		if source.landmarks[landmark_index].primitive == "ellipse" then
+			ellipse_order[source.landmarks[landmark_index].id] = landmark_index
+		end
+	end
+	local previous_order, previous_z, previous_x = 0
+	local disagreement_ids, disagreement_id_count = {}, 0
+	local zero_distance_count, negative_distance_count = 0, 0
 	local header = assert(file:read("*l"))
 	assert(header == "landmark_id\tx\tz\texact_inside\tsigned_inside\tsigned_distance_q")
 	for line in file:lines() do
 		local fields = split_tsv(line)
 		assert(#fields == 6)
+		local fixture_key = fields[1] .. "\0" .. fields[2] .. "\0" .. fields[3]
+		assert(not fixture_seen[fixture_key], "duplicate ellipse fixture query")
+		fixture_seen[fixture_key] = true
+		local order = assert(ellipse_order[fields[1]])
+		local fixture_x, fixture_z = assert(tonumber(fields[2])),
+			assert(tonumber(fields[3]))
+		assert(order > previous_order or order == previous_order and
+			(fixture_z > previous_z or fixture_z == previous_z and
+			fixture_x > previous_x), "ellipse fixture ordering drift")
+		if not disagreement_ids[fields[1]] then
+			disagreement_ids[fields[1]] = true
+			disagreement_id_count = disagreement_id_count + 1
+		end
+		previous_order, previous_z, previous_x = order, fixture_z, fixture_x
+		assert(fields[4] == "0" and fields[5] == "1",
+			"ellipse disagreement direction drift")
+		if fields[6] == "0" then zero_distance_count = zero_distance_count + 1
+		elseif fields[6] == "-120" then
+			negative_distance_count = negative_distance_count + 1
+		else error("ellipse disagreement distance roster drift", 0) end
 		local result = fixture_session.mask(fields[1],
-			assert(tonumber(fields[2])), assert(tonumber(fields[3])))
+			fixture_x, fixture_z)
 		local exact_inside = fields[4] == "1"
 		local signed_inside = fields[5] == "1"
 		assert(result.inside == exact_inside)
@@ -750,13 +922,14 @@ if mode == "full" then
 			("%03d"):format(ellipse_count) .. "\t" .. line:gsub("\t", ":")
 	end
 	assert(file:close())
-	assert(ellipse_count == 264)
+	assert(ellipse_count == 264 and disagreement_id_count == 20 and
+		zero_distance_count == 260 and negative_distance_count == 4)
 end
 
-assert(shared_count == 14, "targeted KAT roster changed: " .. shared_count)
+assert(shared_count == 17, "targeted KAT roster changed: " .. shared_count)
 local sample_count = aggregate_count + ellipse_count
-if mode == "full" then assert(sample_count == 290)
-else assert(sample_count == 14) end
+if mode == "full" then assert(sample_count == 292)
+else assert(sample_count == 17) end
 
 local function canonical_rows(rows)
 	local values = {}

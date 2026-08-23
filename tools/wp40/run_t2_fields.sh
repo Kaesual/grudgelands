@@ -101,7 +101,7 @@ full_samples="$(awk -F '\t' '$1=="sample_count" {print $2}' \
 	"$scratch/luajit/metrics.tsv")"
 puc_samples="$(awk -F '\t' '$1=="sample_count" {print $2}' \
 	"$scratch/puc51/metrics.tsv")"
-[[ "$full_samples" == 290 && "$puc_samples" == 14 ]] || {
+[[ "$full_samples" == 292 && "$puc_samples" == 17 ]] || {
 	echo "WP40 C-a1 fields: case accounting drift" >&2
 	exit 1
 }
@@ -154,6 +154,8 @@ if [[ -n "$evidence_dir" ]]; then
 	luac_abs="$(readlink -f "$luac_bin")"
 	ordinary_sha="$(awk -F '\t' '$1=="ordinary_cold_sha_calls" {print $2}' \
 		"$scratch/luajit/metrics.tsv")"
+	warm_sha="$(awk -F '\t' '$1=="ordinary_warm_added_sha_calls" {print $2}' \
+		"$scratch/luajit/metrics.tsv")"
 	triple_sha="$(awk -F '\t' '$1=="triple_sha_calls" {print $2}' \
 		"$scratch/luajit/metrics.tsv")"
 	luajit_wall="$(awk -F '\t' '$1=="wall_seconds" {print $2}' \
@@ -189,7 +191,7 @@ puc51_case_ids_sha256	$targeted_case_ids_digest
 luajit_wall_seconds_measured	$luajit_wall
 puc51_wall_seconds_measured	$puc_wall
 ordinary_cold_sha_calls_measured	$ordinary_sha
-ordinary_warm_added_sha_calls_measured	0
+ordinary_warm_added_sha_calls_measured	$warm_sha
 triple_overlap_sha_calls_measured	$triple_sha
 ordinary_sha_threshold_assessment	measured below 30
 performance_clock	per-case cold/amortized values are measured process CPU seconds via os.clock; whole-run values are measured wall seconds
@@ -201,7 +203,6 @@ EOF
 		mods/MAPGEN/grug_mapgen/wp40/deterministic.lua \
 		mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua \
 		mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua \
-		mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua \
 		mods/MAPGEN/grug_mapgen/wp40/analytic_record.lua \
 		mods/MAPGEN/grug_mapgen/wp40/geometry/relief.lua \
 		mods/MAPGEN/grug_mapgen/wp40/geometry/template.lua \
@@ -213,6 +214,12 @@ EOF
 		printf 'input_sha256:%s\t%s\n' "$input" \
 			"$(sha256sum "$repo/$input" | awk '{print $1}')" >> "$evidence_dir/manifest.tsv"
 	done
+	printf 'mirrored_predicate_authority_sha256:%s\t%s\n' \
+		'mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua' \
+		"$(sha256sum "$repo/mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua" | awk '{print $1}')" \
+		>> "$evidence_dir/manifest.tsv"
+	printf 'mirrored_predicate_authority_execution\tnot loaded; exact mask predicates mirror this pinned Source validator authority\n' \
+		>> "$evidence_dir/manifest.tsv"
 	(
 		cd "$evidence_dir"
 		find . -type f ! -name checksums.sha256 -print0 | sort -z | \
