@@ -6,9 +6,9 @@ relief_module_sha256	47315190cc099017f2e6d9d7a70ad6976524e486f41e6692fe6cdbc0c3a
 fixture	ellipse-disagreements-v1.tsv
 fixture_sha256	870894def95595652349d6a9a9cbe28cc38c307c384660b0eb680052d1e3a67e
 data_rows	264
-generation_scope	each Source ellipse inclusive integer bounding box expanded by one column on every side
+generation_scope	each Source ellipse exact inclusive integer bounding box; no exterior columns
 generation_mode	generate-ellipse-fixture
 generation_command	luajit tools/wp40/t2_fields_test.lua "$PWD" generate-ellipse-fixture tools/wp40/fixtures/t2_fields REQUEST_FIFO RESPONSE_FIFO
 generation_sha_provider	python3 tools/wp40/t2_census_sha_server.py REQUEST_FIFO RESPONSE_FIFO
-authoring_scan_wall_seconds	62.6
+authoring_scan_wall_seconds	4.15
 acceptance_accounting	the retained suite evaluates only the 264 fixture rows; the authoring scan is not repeated

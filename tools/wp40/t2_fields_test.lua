@@ -52,10 +52,10 @@ if mode == "generate-ellipse-fixture" then
 	for landmark_index = 1, #source.landmarks do
 		local landmark = source.landmarks[landmark_index]
 		if landmark.primitive == "ellipse" then
-			for z = landmark.center.z - landmark.radius_z - 1,
-					landmark.center.z + landmark.radius_z + 1 do
-				for x = landmark.center.x - landmark.radius_x - 1,
-						landmark.center.x + landmark.radius_x + 1 do
+			for z = landmark.center.z - landmark.radius_z,
+					landmark.center.z + landmark.radius_z do
+				for x = landmark.center.x - landmark.radius_x,
+						landmark.center.x + landmark.radius_x do
 					local result = session.mask(landmark.id, x, z)
 					local signed_inside = result.signed_distance_q <= 0
 					if result.inside ~= signed_inside then

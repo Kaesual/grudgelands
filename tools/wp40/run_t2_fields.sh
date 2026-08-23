@@ -120,8 +120,14 @@ if [[ -n "$evidence_dir" ]]; then
 		exit 1
 	fi
 	if [[ -e "$evidence_dir" ]] && [[ -n "$(find "$evidence_dir" -mindepth 1 -print -quit)" ]]; then
-		echo "WP40 C-a1 fields: evidence directory is not empty" >&2
-		exit 1
+		if [[ "${WP40_EVIDENCE_REFRESH:-}" != 1 ]]; then
+			echo "WP40 C-a1 fields: evidence directory is not empty" >&2
+			exit 1
+		fi
+		(
+			cd "$evidence_dir"
+			sha256sum -c checksums.sha256
+		)
 	fi
 	mkdir -p "$evidence_dir/luajit" "$evidence_dir/puc51"
 	cp "$scratch/luajit/full-results.bin" "$evidence_dir/luajit/"
@@ -187,8 +193,8 @@ ordinary_warm_added_sha_calls_measured	0
 triple_overlap_sha_calls_measured	$triple_sha
 ordinary_sha_threshold_assessment	measured below 30
 performance_clock	per-case cold/amortized values are measured process CPU seconds via os.clock; whole-run values are measured wall seconds
-fixture_authoring_scan	separate 62.6-second Source-bounding-box scan; not repeated by acceptance
-reproduction	WP40_LUA_BIN=$luajit_abs WP40_PUC_BIN=$puc_abs WP40_LUAC_BIN=$luac_abs WP40_EVIDENCE_DIR=$evidence_dir tools/wp40/run_t2_fields.sh
+fixture_authoring_scan	separate 4.15-second exact Source-bounding-box scan; not repeated by acceptance
+reproduction	WP40_LUA_BIN=$luajit_abs WP40_PUC_BIN=$puc_abs WP40_LUAC_BIN=$luac_abs WP40_EVIDENCE_DIR=$evidence_dir WP40_EVIDENCE_REFRESH=1 tools/wp40/run_t2_fields.sh
 EOF
 	for input in \
 		mods/MAPGEN/grug_mapgen/wp40/canonical.lua \
