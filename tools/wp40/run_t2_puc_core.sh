@@ -262,6 +262,19 @@ normalize_merge_output() {
 		"$source" >"$target"
 }
 
+normalize_optional_output() {
+	local source="$1" target="$2" success_lines
+	local success_pattern='^WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=(de_DE\.UTF-8|de_DE\.utf8|fr_FR\.UTF-8|fr_FR\.utf8)$'
+	success_lines="$(rg -c -- "$success_pattern" "$source" || true)"
+	if [[ "$success_lines" != 1 ]] ||
+			! tail -n 1 "$source" | rg -q -- "$success_pattern"; then
+		echo "WP40 PCC optional: expected exactly one trailing C plus real non-C locale success line" >&2
+		return 1
+	fi
+	sed -E '$s#^(WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=)(de_DE\.UTF-8|de_DE\.utf8|fr_FR\.UTF-8|fr_FR\.utf8)$#\1<non-C>#' \
+		"$source" >"$target"
+}
+
 normalization_raw="$scratch/merge-normalization.raw.txt"
 normalization_actual="$scratch/merge-normalization.actual.txt"
 normalization_expected="$scratch/merge-normalization.expected.txt"
@@ -283,6 +296,50 @@ if normalize_merge_output "$normalization_raw" "$normalization_actual" \
 	echo "WP40 PCC merge: extra-identity normalization self-test passed" >&2
 	exit 1
 fi
+
+optional_raw="$scratch/optional-normalization.raw.txt"
+optional_actual="$scratch/optional-normalization.actual.txt"
+optional_expected="$scratch/optional-normalization.expected.txt"
+printf '%s\n%s\n' 'semantic-line' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=<non-C>' \
+	>"$optional_expected"
+for locale_name in de_DE.UTF-8 de_DE.utf8 fr_FR.UTF-8 fr_FR.utf8; do
+	printf '%s\n%s%s\n' 'semantic-line' \
+		'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=' \
+		"$locale_name" >"$optional_raw"
+	normalize_optional_output "$optional_raw" "$optional_actual"
+	cmp -s -- "$optional_expected" "$optional_actual" || {
+		echo "WP40 PCC optional: locale normalization self-test failed for $locale_name" >&2
+		exit 1
+	}
+done
+expect_optional_normalization_reject() {
+	local label="$1"
+	if normalize_optional_output "$optional_raw" "$optional_actual" \
+			>/dev/null 2>&1; then
+		echo "WP40 PCC optional: $label normalization negative passed" >&2
+		exit 1
+	fi
+}
+printf '%s\n' 'semantic-line' >"$optional_raw"
+expect_optional_normalization_reject zero-success
+printf '%s\n%s\n' 'semantic-line' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C' \
+	>"$optional_raw"
+expect_optional_normalization_reject no-non-c
+printf '%s\n%s\n' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=de_DE.utf8' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=fr_FR.utf8' \
+	>"$optional_raw"
+expect_optional_normalization_reject multiple-success
+printf '%s\n' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=de_DE utf8' \
+	>"$optional_raw"
+expect_optional_normalization_reject malformed-success
+printf '%s\n%s\n' \
+	'WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=de_DE.utf8' \
+	'semantic-line' >"$optional_raw"
+expect_optional_normalization_reject non-trailing-success
 
 run_dual_kat() {
 	local mode="$1" fixture="$2"
@@ -528,10 +585,15 @@ run_merge() {
 }
 
 run_optional() {
+	local raw_output="$scratch/optional-load-v1.raw.txt"
 	local output="$scratch/optional-load-v1.txt" status=0
 	WP40_LUA_BIN="$luajit_bin" "$script_dir/run_t2_compiler_optional_load.sh" \
-		>"$output" 2>&1 || status=$?
-	if (( status != 0 )); then cat "$output" >&2; exit "$status"; fi
+		>"$raw_output" 2>&1 || status=$?
+	if (( status != 0 )); then cat "$raw_output" >&2; exit "$status"; fi
+	if ! normalize_optional_output "$raw_output" "$output"; then
+		cat "$raw_output" >&2
+		exit 1
+	fi
 	publish_or_verify "$output" optional-load-v1.txt
 	cat "$output"
 }

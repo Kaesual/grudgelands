@@ -13,4 +13,4 @@ case7b-production-enoent-NO-errno-unlisted instantiate=ok listing-calls=1 geomet
 case7c-same-message-listed raised=true carries-message=true absent-claimed=false decided-by=listing
 case7d-production-present-openable adopted=true seed=42 bindings=true listing-calls=0
 WP40 T2 compiler optional-load tests passed
-WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=de_DE.utf8
+WP40 T2 compiler optional-load: LuaJIT/PUC byte-identical under LC_ALL=C and LC_ALL=<non-C>
