@@ -46,17 +46,20 @@ no code reads them, and their header names the pre-v3 measurement commit, so
 they can never be resume state again. Whether they are deleted is an open
 question recorded in `tools/wp40/README.md`, not settled here.
 
-PUC Lua 5.1 must separately parse and rank every row, rematerialize the
-deterministic shard endpoints plus the four winners, and run the four selected
-full-partition gates. Implementation bytes alone are not evidence: the C1
-launcher may run only from an independently reviewed immutable conformance
-commit, and no `rescore-puc-v3-*`, `selected-puc-v3-*` or
+PUC Lua 5.1 parses and ranks the complete retained LuaJIT pool, independently
+rescores the fixed 20-row roster (which includes candidates 0 and 4095), and
+runs the four selected full-partition gates for slots 28--31. Those endpoint
+and winner carriers are F2's selector full-path evidence; the PCC does not add
+a separate six-candidate selector run. Implementation bytes alone are not
+evidence: the C1 launcher may run only from an independently reviewed immutable
+conformance commit, and no `rescore-puc-v3-*`, `selected-puc-v3-*` or
 `conformance-puc-v3.tsv` file is evidence until every closed gate records that
 commit. **That acceptance completed green on 2026-08-22 from commit
 `5d770365`, tree `52ec4f38`, and C1-v3 DAG `52e2d459…`.** The retained set is
 20 rescore rows, four selected rows, and final artifact
-`conformance-puc-v3.tsv`, SHA-256 `7ac6b7f9…`. This directory does not claim a
-second 4096-row origin.
+`conformance-puc-v3.tsv`, SHA-256 `7ac6b7f9…`. The 20 PUC rescores took 215 s,
+the four parallel selected slots took 5,507 s, and the full chain took about
+99 minutes end to end. This directory does not claim a second 4096-row origin.
 
 The former fixed-slot-19 fatal has a positive, pinned max-u64 R16/R17
 prerequisite fixture. Slots 28--31 passed the selected full-partition gates

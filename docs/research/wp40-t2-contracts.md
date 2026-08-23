@@ -3208,3 +3208,125 @@ independent reviewer Claude Opus/xhigh; initial findings 0 Critical / 0 High /
 1 Low; two user-authorized fix rounds; final focused re-review 0 Critical /
 0 High / 0 Medium / 2 non-blocking Low (`APPROVE`); observed elapsed wall time
 `unknown`.
+
+### 14.7 PUC-1 atomic policy/PCC closeout (2026-08-23)
+
+The user accepted `PUC-1`; this later memo is the final interpreter authority
+where older wording conflicts. In particular it supersedes Section 11.4 item
+5's phrase “rides its comprehensive PUC round” and every historical reading
+that would execute a complete seed population under standalone PUC.
+
+The project-wide split is exact:
+
+1. **LuaJIT owns exhaustive populations and development loops.** The final
+   full-`W` re-census (schema v7 / artifacts v4) runs its complete 4,123-seed
+   population under LuaJIT at T2-final. The same rule applies to any T9-final
+   exhaustive population. Its publication merge still runs both interpreters
+   through `run_merge_pair`; the five canonical artifacts must be
+   byte-identical, and the PUC half retains the fail-closed `pairs()` probe.
+2. **Intermediate PUC coverage is targeted.** Representative PUC KATs compare
+   canonical stdout, complete artifact bytes or explicit digests with their
+   LuaJIT equivalents. Static plain-5.1 syntax and do-not-write gates remain
+   mandatory on every Lua change. Complete LuaJIT artifacts remain the
+   population authority.
+3. **The final standalone-PUC gate at both T2-final and T9-final is bounded.**
+   It is exactly `tools/wp40/run_t2_puc_core.sh --all` plus the two retained
+   rounds F1 and F2:
+
+   ```sh
+   WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
+   tools/wp40/run_t2_extreme_conformance.sh
+   ```
+
+   No full-`W` population, separate six-candidate selector leg, or ad-hoc
+   witness may be added under standalone PUC without a later user ruling and
+   owning contracts memo.
+4. **Engine evidence stays separate.** Neither the PCC nor F1/F2 satisfies the
+   real bundled-Lua fallback-engine runtime test or the engineering brief's
+   dual-runtime engine benchmarks.
+
+The checksum-pinned PCC comprises five semantic micro-groups (seed-width and
+arithmetic boundaries; canonical serialization; `pairs()` control flow;
+boundary/negative guards; silent-escape plus exit discipline), targeted Source
+parity, the K7/K8/K9 unit/comparator layer, and these production full paths:
+
+- compiler witnesses `1959553668008863006` and `2147483648` through
+  `partition.compile`;
+- worker witnesses `2147483648` and `16178445837170081103` through
+  `partition.census_scan`;
+- the fixed seven-seed merge carrier `0`, `2147483648`,
+  `343674299183575008`, `1959553668008863006`, `15219119262482319357`,
+  `16178445837170081103`, `18446744073709551615`, including fail-closed
+  unsorted-order probing plus synthetic and measured invariance; and
+- the already-completed C1-v3 F2 carrier for selector breadth. F2 parses and
+  ranks the complete retained pool, independently rescores its fixed 20 rows
+  including candidates 0 and 4095, and compiles selected slots 28--31. It
+  replaces the inventory proposal's separate widened six-candidate leg.
+
+`tools/wp40/fixtures/t2_puc_core/manifest-v1.tsv` owns the selection and
+fixture digests. Any corpus, witness, fixture-byte or digest change requires a
+later memo in this file; “representative” never permits an ad-hoc re-pin.
+`tools/wp40/evidence/t2-puc-core-v1/` retains the run calibration and raw
+runtime telemetry. Worker and other semantic stdout is never normalized. The
+merge report alone replaces its exactly one leading, host-specific interpreter
+identity with `WP40 T2 census interpreter: <LuaJIT>` after an early preflight
+has proved that the configured LuaJIT is genuine and distinct from PUC; every
+remaining byte is exact. The standalone optional-load runner keeps its honest,
+adaptive locale report. At the PCC boundary, exactly one trailing success line
+must prove that both `LC_ALL=C` and one real non-C locale arm ran; zero,
+multiple, malformed or non-trailing success lines fail. Only the discovered
+locale token is replaced with `<non-C>` before fixture comparison. For the
+worker pair,
+both exits must be equal and zero; stdout and the complete two-seed TSV must be
+byte-identical; the external SHA and internal trailing digest must agree. Raw
+stderr is retained separately and must contain exactly these two anchored
+seed/index lines, in order and with no extras. Only the terminal
+` wall=[0-9]+s cpu=[0-9]+\.[0-9]s` values are removed for the cross-runtime
+telemetry comparison. Focused self-tests prove that malformed, extra or
+reordered telemetry, stdout drift, record drift and equal/non-equal nonzero
+exits all fail.
+
+**Phase-0B measurement on the integrated ownership provider.** The input was
+commit `62afc64e598129e6e069d26a7746073a96673ccd`, tree
+`6366c5e1457886d7c32f53e08f6c10e9669d9b86`. The compiler pair completed in
+69 s LuaJIT + 1,734 s PUC = 1,803 s; its compiled digests are
+`6dcd5da40ac730f6ae5973cfc8b8845c03eaac8481dfe15b597aafd30d86c402`
+and `36c5ce5a6a67f8f2559eea47751579fe3791e5f9c075cfe1d18076bae4032b77`.
+The worker pair completed in 132 s LuaJIT + 2,325 s PUC = 2,457 s; its
+complete-record SHA-256 is
+`2eac453bb1f7f0f4fd23693a3bd717b5d4f8ba6f5c0a84342d0b1b01fc86be90`
+and internal digest is
+`047d6fefbe937512efda38fd5b8d245e7ac2399e546e215387d3eac54d4666c8`.
+The seven retained per-seed worker wall counters for the merge carrier sum to
+346 s. The exact whole-leg wall was not retained and is strictly larger because
+the dual-runtime merge and final gate follow the worker phase; the complete run
+passed its 420 s cap and recorded all three invariance halves green, with
+artifact digest
+`fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795`.
+The full Source harness ran under LuaJIT and its targeted PUC projection KAT
+was byte-identical. Optional-load behavior was byte-identical across both
+interpreters and both available locales. Its normalized canonical fixture has
+SHA-256
+`c87444bfa7810a1d2fa42f99b724c378395201c20586197efbda9352f48e2959`;
+the retained raw evidence continues to name the host's actual non-C locale.
+
+F1, F2, full-`W`, C1 reacceptance and any population under PUC did **not** run
+in Phase 0B. F1 remains deferred to the final gate. The existing F2 evidence is
+already green: 20 PUC rescores took 215 s, four parallel selected slots took
+5,507 s, and the chain took approximately 99 minutes end to end. The next C1
+reacceptance remains the single integrated Wave-1 gate from Section 14.3, not a
+Phase-0B rerun.
+
+**Completion calibration record:** non-trivial policy/executable-evidence
+package; implementing model GPT-5.6 Sol; independent reviewer Claude
+Opus/xhigh. The initial review found 0 Critical / 0 High / 2 Medium / 6 Low;
+the first mechanical fix round is implementation commit
+`ee4478bc4210b0be75661152a9c1f240f53a36ce` (tree
+`b91ba958bf7643c6a9c39eea3581a1b56aa7690d`). The first focused re-review
+found 0 Critical / 0 High / 1 new Medium / 2 Low-or-Informational; the second
+narrow fix round is implementation commit
+`c0dcbae512d4dd579281d1321922b5fdade8a74a` (tree
+`9ddcf633529ebbe670311ca541f0ba96ead6eccd`). The second focused re-review
+found 0 Critical / 0 High / 0 Medium / 0 Low and returned `APPROVE`.
+The observed capture interval was approximately 6 h 43 min, including two
+user-authority pauses and the heavy runs.

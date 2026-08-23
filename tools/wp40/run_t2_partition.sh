@@ -8,8 +8,9 @@ command -v rg >/dev/null 2>&1 || {
 	exit 1
 }
 
-# T2-final must use the fallback interpreter, bypass the payload cache, and
-# include the retained historical-provenance check:
+# F1 is the retained partition component of the bounded T2/T9-final
+# standalone-PUC gate. It uses the fallback interpreter, bypasses the payload
+# cache, and includes the retained historical-provenance check:
 #   WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 
 no_cache="${WP40_NO_CACHE:-0}"

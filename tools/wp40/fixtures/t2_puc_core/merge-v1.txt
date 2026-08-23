@@ -1,0 +1,23 @@
+WP40 T2 census interpreter: <LuaJIT>
+census scan rows 4928 digest e6170d6117b4d1632535c4e1a1a3d6ec83598c68ca0888ccb04e9bc570d9cdda
+census scan KAT passed (seeds 0, the two F10 face-simplicity witnesses, W-112 detached-shoulder, Slot 30, Slot 29 and max-u64; Scan-3b/4 tiers and digest pinned)
+WP40 T2 census merge seed_set=explicit seeds=7 inputs=1 artifacts_digest=fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795
+WP40 T2 census artifact census-occupied-classes-v3.tsv sha256=9c94d327241e53d74ca3bb3f1e314ad6ffbada91ace6e71207d9d232340ea05d
+WP40 T2 census artifact census-vacuous-branches-v3.tsv sha256=cacf9514b80deaada710a06e11190c4f887879d641f28223728d8561a45607b0
+WP40 T2 census artifact census-scan4-seed-set-v3.tsv sha256=c4bc6af76cd379694c7e16d4d331d1bc3b9834574d9d0d51b825751924a36626
+WP40 T2 census artifact census-prefilter-discharge-v3.tsv sha256=8a8929e7ed50dd0e90ad6c0e53eddaf534ac8a262fbd30c01f265fd50aa3b6e2
+WP40 T2 census artifact census-histograms-v3.tsv sha256=246f184bfb25882128eadde84f77c0f61076e6da47c86837213e7aec5b4ff96a
+WP40 T2 census findings rejected=0 events=0 refuted_universals=0 stage_reject_seeds=0 vacuous=92/123 no_branch_matched=0
+WP40 T2 census scan4 seed set union=33 sites=153/153 open=0 prefilter discharged=14/61
+WP40 T2 census divergence test probe_unsorted=true synthetic=passed measured=passed
+WP40 T2 census merge seed_set=explicit seeds=7 inputs=1 artifacts_digest=fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795
+WP40 T2 census artifact census-occupied-classes-v3.tsv sha256=9c94d327241e53d74ca3bb3f1e314ad6ffbada91ace6e71207d9d232340ea05d
+WP40 T2 census artifact census-vacuous-branches-v3.tsv sha256=cacf9514b80deaada710a06e11190c4f887879d641f28223728d8561a45607b0
+WP40 T2 census artifact census-scan4-seed-set-v3.tsv sha256=c4bc6af76cd379694c7e16d4d331d1bc3b9834574d9d0d51b825751924a36626
+WP40 T2 census artifact census-prefilter-discharge-v3.tsv sha256=8a8929e7ed50dd0e90ad6c0e53eddaf534ac8a262fbd30c01f265fd50aa3b6e2
+WP40 T2 census artifact census-histograms-v3.tsv sha256=246f184bfb25882128eadde84f77c0f61076e6da47c86837213e7aec5b4ff96a
+WP40 T2 census findings rejected=0 events=0 refuted_universals=0 stage_reject_seeds=0 vacuous=92/123 no_branch_matched=0
+WP40 T2 census scan4 seed set union=33 sites=153/153 open=0 prefilter discharged=14/61
+WP40 T2 census divergence test probe_unsorted=true synthetic=passed measured=passed
+WP40 T2 census merge LuaJIT/PUC artifacts identical digest=fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795
+WP40 T2 census merge KAT passed digest=fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795

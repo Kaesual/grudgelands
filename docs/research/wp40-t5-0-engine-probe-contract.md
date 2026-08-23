@@ -1718,10 +1718,11 @@ tree's `raw.log` files only, exactly as `.gitattributes:1` does today.
 These wall-time figures are a **LuaJIT** budget. The installed Flatpak runtime
 is LuaJIT-only (`tools/wp40/capture_t0_baseline.sh:59-60`, `:257`), so this is a
 documentation bound rather than a live risk — but a PUC-5.1 engine would not fit
-it. The repository's measured PUC-to-LuaJIT ratios are "2.8x on validation-heavy
-paths, 16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile"
-(`tools/wp40/README.md:436-437`), and this probe's hot path is a full-volume
-numeric sweep, so a PUC engine run needs its own re-derived budget.
+it. PUC-to-LuaJIT cost is workload-specific: retained anchors include 2.8x on a
+validation-heavy path, 17.6x on the PCC worker pair, 25.1x on the PCC compiler
+pair and 26.5x on a full seed-0 compile. The former 16.2x numeric-sweep figure
+had no retained measurement and is withdrawn. No standalone ratio prices an
+engine run; a PUC engine probe needs its own re-derived budget.
 
 **Reconciliation with the "4–12 chunks, a few minutes" sizing.** The measured
 set is **three distinct mapchunks** and the total is **12 mapchunk

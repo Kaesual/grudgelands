@@ -277,19 +277,17 @@ project-wide wording are not folded piecemeal by Phase 0A or by an
 implementation lane: Phase 0B first merges the reviewed inventory commit,
 closes every ruling-owned mechanical obligation, re-derives the complete
 authority-hit list, and applies the policy/evidence change atomically.
-Because the ownership handoff intentionally changes partition/schema and the
-compiler/worker PCC digests, Phase 0B may prepare code and policy in parallel
-but must produce its final compiler/worker fixtures, retained evidence, green
-status and integration on the already integrated ownership provider, or
-identically regenerate and rebind them after that provider.
+The ownership handoff intentionally changed partition/schema and therefore the
+compiler/worker PCC digests. Phase 0B produced its final fixtures and retained
+evidence on integrated provider commit `62afc64`: compiler, worker and
+seven-seed merge carriers are green; the complete project-wide wording is in
+the same review package. F1, F2, full-`W` and C1 reacceptance were not run.
 
-Until that reviewed Phase-0B package is integrated, the existing interpreter
-wording in its individual owners remains unchanged. This section records the
-ruling and dependency only; it does not implement part of the replacement
-policy. D-1 waits for the integrated Phase-0B result so its executable brief
-can cite the final interpreter and evidence authority. No C1 run is bought for
-Phase 0B alone; the one later integrated Wave-1 C1-v3 reacceptance covers the
-planned ownership/schema event.
+The package is complete for independent review and not yet integrated. D-1
+waits for that reviewed integration so its executable brief can cite the final
+interpreter and evidence authority. No C1 run is bought for Phase 0B alone;
+the one later integrated Wave-1 C1-v3 reacceptance covers the planned
+ownership/schema event.
 
 ## 6. Delivery structure and parallel work
 
@@ -808,9 +806,9 @@ directions:
 The architecture review prepared two additional directional decisions:
 
 1. **PUC final gates — PUC-1 ACCEPTED 2026-08-23.** The reviewed inventory and
-   branch matrix received the final user ruling. Phase 0B now owns the complete
-   mechanical closeout and atomic authority fold; no lane may apply a partial
-   wording update.
+   branch matrix received the final user ruling. Phase 0B's complete
+   mechanical closeout and atomic authority fold are implemented for review;
+   no lane may apply a partial wording update.
 2. **Early engine work — RUN T5-0 WITH CONDITIONS.** Proceed with the
    production-like, tools-only, disposable probe specified in Section 8. It
    does not move full T5 ahead of T3/T4 and cannot be reused as production code.
@@ -829,10 +827,9 @@ largest known shared write from the parallel lanes.
 
 ### 14.2 Reviewed PUC inventory; Phase-0B handoff
 
-The Section 5.2 inventory is reviewed on branch
-`wp40-puc-final-gate-inventory`, commit
-`2d443ffe8e9f0b3425fa446fd5f1608defc8bb20`, and is not yet an ancestor of the
-integration branch. It records:
+The Section 5.2 inventory was reviewed at commit
+`2d443ffe8e9f0b3425fa446fd5f1608defc8bb20` and cherry-picked onto the
+ownership provider as `62afc64`. It records:
 
 - every current final PUC suite/command and the risk it covers;
 - measured or conservatively projected PUC wall and CPU cost;
@@ -842,30 +839,32 @@ integration branch. It records:
 - the complete authority-hit list; and
 - the decision memo that supported the accepted PUC-1 wording.
 
-The inventory itself changes no authority. Phase 0B explicitly merges that
-one-file commit, corrects any stale pre-closeout row as part of its measured
-work, completes the ruling-owned witnesses, re-derives the authority-hit list,
-and performs the one atomic fold. Its final compiler/worker evidence is bound
-only after the ownership provider is integrated, as Sections 5.2 and 10
-require. Phase 0A records only this accepted status and dependency.
+The historical inventory proposal changed no authority by itself. Phase 0B
+corrects its stale pre-closeout rows, completes the ruling-owned witnesses,
+re-derives the authority-hit list and performs the one atomic fold. Its final
+compiler/worker evidence is bound to the integrated ownership provider as
+Sections 5.2 and 10 require.
 
 ## 15. Authority fold-in
 
-Phase 0B performs the accepted PUC-1 policy/evidence fold into every owner as
-one reviewed package after Phase 0A and the ownership-handoff provider are
-integrated. Its mechanically re-derived checked scope includes:
+Phase 0B performs the accepted PUC-1 policy/evidence fold into every actual
+interpreter-policy owner as one reviewed package after Phase 0A and the
+ownership-handoff provider are integrated. Its mechanically re-derived checked
+scope includes:
 
 - `AGENTS.md`, `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md`,
-  `tools/wp40/README.md`, the engineering brief, T2 plan, and affected T2
-  contracts for interpreter, package, and execution rules; model routing is
-  not folded into those WP40-local owners and instead follows the sole
+  `tools/wp40/README.md`, T2 plan, T5-0 contract, historical handover, PUC
+  inventory and affected T2 contracts for interpreter, package, and execution
+  rules; the engineering brief's engine-runtime gates remain unchanged; model
+  routing is not folded into those WP40-local owners and instead follows the sole
   project-wide `docs/process/agent-model-policy.md` authority;
-- T2 contracts Section 11.4 acceptance point 5 for the full-`W`/PUC
-  separation;
-- `docs/design/world_zones.md` Section 13 for the accepted visible dungeon
-  reduction from `mgv7_dungeon_ymax = 31000` to `-193`; and
-- the `BACKLOG.md` WP40 detail so it reflects the Section 11 landing, topology
-  freeze, and actual next step while keeping WP40 `in progress`.
+- the later T2 contracts Section 14.7 memo, which supersedes Section 11.4
+  acceptance point 5 for the full-`W`/PUC separation; and
+- the PCC scripts, immutable fixtures and retained calibration evidence.
+
+The Phase-0A dungeon-policy/design update and BACKLOG status are already
+integrated and contain no interpreter authority, so Phase 0B confirms them
+unchanged rather than editing them again.
 
 This file remains a planning record; it does not become a competing authority.
 
@@ -885,7 +884,7 @@ This planning record is ready to become an implementation plan when:
   command; trivially short static gates need no individual budget;
 - Phase 0A's durable freeze is integrated after its independent review;
 - the accepted PUC outcome is folded atomically by Phase 0B as specified in
-  Section 5.2;
+  Section 5.2 — **implemented for independent review**;
 - every child package has a definition of done and an independent reviewer
   selected under the project-wide agent model policy;
 - no unresolved player-visible design choice is left for an implementation

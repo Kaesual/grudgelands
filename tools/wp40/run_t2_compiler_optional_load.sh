@@ -113,24 +113,35 @@ else
 fi
 
 reference=""
+reference_status=""
 for arm in "${arms[@]}"; do
 	locale_name="${arm%%:*}"
 	rest="${arm#*:}"
 	binary="${rest%%:*}"
 	label="${rest#*:}"
 	out="$scratch/out-$label.txt"
+	arm_status=0
 	LC_ALL="$locale_name" LANG="$locale_name" "$binary" \
 		"$repo/tools/wp40/t2_compiler_optional_load_test.lua" \
-		"$repo" "$scratch" > "$out"
+		"$repo" "$scratch" >"$out" 2>&1 || arm_status=$?
 	if [[ -z "$reference" ]]; then
 		reference="$out"
-	elif ! cmp -s "$reference" "$out"; then
+		reference_status="$arm_status"
+	elif [[ "$arm_status" != "$reference_status" ]] ||
+			! cmp -s "$reference" "$out"; then
 		echo "WP40 T2 compiler optional-load: $label differs from" \
-			"the reference" >&2
+			"the reference (exit $arm_status vs $reference_status)" >&2
 		diff "$reference" "$out" >&2 || true
 		exit 1
 	fi
 done
+
+if [[ "$reference_status" != 0 ]]; then
+	cat "$reference" >&2
+	echo "WP40 T2 compiler optional-load: all arms failed with status" \
+		"$reference_status" >&2
+	exit "$reference_status"
+fi
 
 cat "$reference"
 if [[ -n "$non_c_locale" ]]; then

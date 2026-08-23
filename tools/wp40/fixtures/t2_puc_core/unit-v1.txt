@@ -1,0 +1,98 @@
+key1_single_endpoint left text left
+key2_sum_tie_max right text right
+key3_elbow_count right text right
+key4_terminal_set right text left
+key5_previous_set left text left
+key6_canonical_probe left text left
+key456_equality_is_duplicate_authority equal text equal
+key4_witness_negative_x left text right
+key4_mixed_digit_width left text right
+key4_sign_boundary_agrees left text left
+key4_equal_x_z_decides left text left
+key4_prefix_separator left text right
+key5_witness_negative_x left text right
+key5_mixed_digit_width left text right
+key5_prefix_separator left text right
+key4_terminal_array_unsorted left text right
+key5_previous_array_unsorted left text right
+correction synthetic KAT digest a9b2adca7a22bb29de15e18c94cfc84fc31874b575131aa104d6868ccf66459a
+correction synthetic KATs passed (D1 keys 1-6, both production comparators, the independent C2 oracle, reversal invariance, and the superseded text metric named and rejected)
+WP40 T2 correction KAT: LuaJIT/PUC byte-identical
+== WP40 T2 section-11 acceptance ledger (contracts 11.11) ==
+artifacts <retained>
+fixtures <canonical>
+== byte equality artifact vs canonical fixture ==
+PASS adoption-bytes artifact-bytes=16184 fixture-bytes=16184
+PASS bjoin-bytes artifact-bytes=17391 fixture-bytes=17391
+PASS inherit-bytes artifact-bytes=2078 fixture-bytes=2078
+PASS pinch-bytes artifact-bytes=1884 fixture-bytes=1884
+PASS carriers-bytes artifact-bytes=16216 fixture-bytes=16216
+PASS ringcol-sorted-content artifact-rows=8 fixture-rows=8
+== structural pins recomputed from the artifact bytes ==
+PASS adoption-lines lines=118/118
+PASS adoption-grammar malformed-lines=0
+PASS adoption-distinct-seeds seeds=118/118
+PASS adoption-chain-sum chains=119/119
+PASS adoption-rejected-zero rows-with-nonzero-rejected=0
+PASS adoption-new-chain exact-line=1 seed-rows=1 (seed=18171940200422843206 sunscar z=2252:x=877)
+PASS bjoin-rows rows=105/105
+PASS bjoin-no-duplicates duplicate-rows=0
+PASS bjoin-grammar malformed-rows=0
+PASS bjoin-distinct-seeds seeds=60/60
+PASS bjoin-class-select rows-not-face_appendix_select=0
+PASS bjoin-histogram 1=15/15 2=15/15 3=3/3 4=3/3 8=7/7 9=9/9 10=25/25 11=23/23 12=5/5 unpinned-rows=0 total=105/105
+PASS bjoin-max-distance max=12/12
+PASS bjoin-d12-seeds seeds=5/5 missing=none
+PASS inherit-rows rows=25/25
+PASS inherit-grammar malformed-rows=0
+PASS inherit-columns distinct-columns=7/7
+PASS pinch-rows rows=21/21
+PASS carriers-grammar malformed-lines=0
+PASS carriers-count distinct=796/796 lines=796
+PASS carriers-floor distinct=796 (>=792)
+PASS ringcol-rows rows=8/8
+PASS ringcol-no-duplicates duplicate-rows=0
+ACCEPTANCE GREEN
+classifier KAT 1: R20: all tuples dead with the same direct-anchor aperture Bank fires aperture_anchor_dead_event at the incidence
+classifier KAT 2: R20 negative: a dead shoulder-tail aperture Bank is R18's recovered class, never aperture_anchor_dead_event
+classifier KAT 3: R21: the probe is consulted with the dead Bank and its Wing
+classifier KAT 4: R21: a dead pair with a completing alternative fires wing_pair_dead_alternative_event at the Wing
+classifier KAT 5: R21 negative: a dead pair with no alternative stays a plain attribution row
+classifier KAT 6: R21 negative: a dead pair whose alternative also dies stays a plain attribution row
+classifier KAT 7: R20/R21 negative: a completing tuple disarms the edge
+classifier KAT 8: R20/R21 negative: tuples dead with different Banks never classify
+classifier KAT 9: R21: an unknown probe answer re-raises (WP40 geometry partition: Scan-3b alternative-pair probe answered maybe)
+classifier KAT 10: face: a simple CCW unit ring classifies face_simple_select
+classifier KAT 11: face: an open walk classifies face_not_closed_reject
+classifier KAT 12: face: a clockwise ring classifies face_wrong_orientation_reject
+classifier KAT 13: face: a broken lattice walk classifies face_composition_reject
+classifier KAT 14: appendix: the ruled W = 12 window (the 11.10 complete-distribution pin, lineage 8 -> 11 -> 12) is pinned in partition.lua
+classifier KAT 15: appendix: a zero-width join-local retraced corridor -- straight filament and L-turn mouth -- classifies face_appendix_select carrying both touch-form counts
+classifier KAT 16: appendix guard: the same repeat outside the W = 12 window of every join fails by name as a non-join-local repeat
+classifier KAT 17: appendix: a join-local non-crossing self-touch beside strict interior classifies face_appendix_select as a pinch (contracts 11.9)
+classifier KAT 18: appendix guard: a loop-interleaving crossing self-touch fails by name (contracts 11.9)
+classifier KAT 19: appendix guard: an opposing cell diagonal fails by name
+classifier KAT 20: appendix guard: a station repeated more than twice fails by name
+classifier KAT 21: appendix: the winding row derivation retains the zero-width filament columns as face region rows
+classifier KAT 22: appendix: the same ring without the acceptance flag keeps the loud repeated-column failure (WP40 geometry partition: zone_face:kat repeats a row boundary column)
+classifier KAT 23: adoption: a single-face-attached chain is adopted into that face
+classifier KAT 24: adoption: the adopted chain satisfies the footprint proof as face region membership
+classifier KAT 25: adoption: a chain touching two faces is rejected (residual_multi_face_reject), never absorbed
+classifier KAT 26: adoption: the rejected chain stays uncovered and the proof keeps rejecting it
+classifier KAT 27: adoption: a multi-row 4-connected chain adopts as one chain
+classifier KAT 28: adoption: the multi-row adoption satisfies the footprint proof
+classifier KAT 29: adoption: an unattached chain is left to the closing and the proof keeps rejecting it
+classifier KAT 30: ring adoption: a pinched ring-station chain adopts along the ring's own connectivity into the ring-neighbour's face
+classifier KAT 31: ring adoption: the ring-adopted chain satisfies the footprint proof
+classifier KAT 32: ring adoption guard: an unowned ring chain surfaces as whole_gap_reject, not silence
+classifier KAT 33: whole: a fully covered footprint row is whole_single_owner_select with g=o=r=m=0
+classifier KAT 34: whole: an uncovered dry interval is whole_gap_reject and counts g
+classifier KAT 35: whole: a declared two-zone seam column is whole_declared_seam_select
+classifier KAT 36: whole: an undeclared two-face column is whole_undeclared_multiplicity_reject and counts r
+classifier KAT 37: whole: a boundary-boundary two-face column beside a same-pair declared seam inherits the declaration (contracts 11.9)
+classifier KAT 38: whole guard: a two-interior-claimants column stays whole_undeclared_multiplicity_reject (contracts 11.9)
+classifier KAT 39: whole: a seam column missing a declared owner stays undeclared multiplicity
+classifier KAT 40: whole: overlapping Bay water is whole_undeclared_multiplicity_reject and counts o
+classifier KAT 41: whole: a failing representation cross-check counts the interval into m
+census scan3b/4 classifier KAT passed: 41 checks
+WP40 PCC unit: Scan-3b/4 LuaJIT/PUC stdout and exit byte-identical

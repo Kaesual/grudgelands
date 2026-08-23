@@ -136,10 +136,14 @@ current state). It is **derived, never authoritative**:
   running, because exit status 127 inside an `if` condition reads exactly
   like "no match found". Use LuaJIT for exhaustive development runs
   where supported. At intermediate milestones, run representative PUC-5.1
-  KATs and require byte-identical canonical artifacts/digests. For WP40, full
-  expensive PUC rounds happen only at T2-final and T9-final and independent
-  seed/test groups are parallelized. Reviewers verify immutable artifacts,
-  logs and hashes plus targeted independent PUC KATs instead of automatically
+  KATs and require byte-identical canonical artifacts/digests. For WP40,
+  exhaustive populations always run under LuaJIT. At T2-final and T9-final,
+  the standalone-PUC execution gate is exactly the checksum-pinned PCC in
+  `tools/wp40/run_t2_puc_core.sh` plus the retained F1 partition and F2 C1-v3
+  conformance rounds named by `docs/research/wp40-t2-contracts.md` Section
+  14.7. The full-`W` population is LuaJIT-only; its merge still compares the
+  canonical LuaJIT/PUC artifacts. Reviewers verify immutable artifacts, logs
+  and hashes plus targeted independent PUC KATs instead of automatically
   duplicating a long identical suite. The real fallback-engine runtime test is
   still a separate user-run gate.
   **Planning agents:** if you write a brief, work package, contract or cost
@@ -147,8 +151,9 @@ current state). It is **derived, never authoritative**:
   strategy" section of docs/research/luanti-lua.md **before** writing it.
   Interpreter selection is a planning-time decision, not an implementation
   detail: LuaJIT owns long and exhaustive runs, PUC 5.1 is targeted
-  representative KATs compared by digest, and a plan that implies a
-  comprehensive PUC round outside T2-final/T9-final is a planning defect.
+  representative KATs compared by digest, and a plan that expands the bounded
+  final PCC or schedules an exhaustive population under PUC is a planning
+  defect.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
   checkout after 5.16). That pin is the *engine* version of a read-only
   source reference — **the language version is decoupled and stays Lua

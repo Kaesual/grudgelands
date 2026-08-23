@@ -8,6 +8,15 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"
+mode=kat
+if (( $# > 0 )); then
+	if [[ $# -eq 1 && "$1" == --pair-self-test ]]; then
+		mode=pair-self-test
+	else
+		echo "usage: tools/wp40/run_t2_correction_kat.sh [--pair-self-test]" >&2
+		exit 2
+	fi
+fi
 
 command -v rg >/dev/null 2>&1 || {
 	echo "${BASH_SOURCE[0]##*/}: ripgrep (rg) is required and was not found" >&2
@@ -52,15 +61,60 @@ trap 'rm -rf "$scratch"' EXIT
 
 luajit_out="$scratch/correction-kat-luajit.txt"
 puc_out="$scratch/correction-kat-puc.txt"
+luajit_status=0
+puc_status=0
+
+compare_pair() {
+	local left="$1" left_status="$2" right="$3" right_status="$4"
+	if ! cmp -s "$left" "$right"; then
+		echo "WP40 T2 correction KAT: LuaJIT and PUC outputs differ" >&2
+		diff "$left" "$right" >&2 || true
+		return 1
+	fi
+	if (( left_status != right_status )); then
+		echo "WP40 T2 correction KAT: LuaJIT and PUC exit codes differ" \
+			"(luajit $left_status, puc $right_status)" >&2
+		return 1
+	fi
+	if (( left_status != 0 )); then
+		echo "WP40 T2 correction KAT: both interpreters failed" \
+			"with status $left_status" >&2
+		return 1
+	fi
+	return 0
+}
+
+# Executable negative proof for the PCC's stronger pair discipline. It is a
+# named mode rather than an environment-variable bypass, and the PCC runs it
+# in its cheap preflight before any expensive leg. Equal nonzero exits and
+# unequal exits must both be rejected; a byte difference remains rejected.
+if [[ "$mode" == pair-self-test ]]; then
+	printf 'same\n' >"$luajit_out"
+	printf 'same\n' >"$puc_out"
+	if compare_pair "$luajit_out" 7 "$puc_out" 7 2>/dev/null; then
+		echo "WP40 correction pair negative: equal nonzero exits passed" >&2
+		exit 1
+	fi
+	if compare_pair "$luajit_out" 0 "$puc_out" 9 2>/dev/null; then
+		echo "WP40 correction pair negative: unequal exits passed" >&2
+		exit 1
+	fi
+	printf 'different\n' >"$puc_out"
+	if compare_pair "$luajit_out" 0 "$puc_out" 0 2>/dev/null; then
+		echo "WP40 correction pair negative: unequal output passed" >&2
+		exit 1
+	fi
+	echo "WP40 T2 correction KAT pair negative passed"
+	exit 0
+fi
 
 "$luajit_bin" "$repo/tools/wp40/t2_correction_kat_test.lua" "$repo" \
-	"$scratch" > "$luajit_out"
+	"$scratch" > "$luajit_out" 2>&1 || luajit_status=$?
 "$puc_bin" "$repo/tools/wp40/t2_correction_kat_test.lua" "$repo" \
-	"$scratch" > "$puc_out"
+	"$scratch" > "$puc_out" 2>&1 || puc_status=$?
 
-if ! cmp -s "$luajit_out" "$puc_out"; then
-	echo "WP40 T2 correction KAT: LuaJIT and PUC outputs differ" >&2
-	diff "$luajit_out" "$puc_out" >&2 || true
+if ! compare_pair "$luajit_out" "$luajit_status" "$puc_out" "$puc_status"; then
+	cat "$luajit_out" >&2
 	exit 1
 fi
 

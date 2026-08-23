@@ -15,6 +15,9 @@
 > [wp40-t2-plan.md](wp40-t2-plan.md). It reverses this file's ordering: the
 > census scans run **before** the C1 selected-four conformance, not after,
 > because that conformance is historically what generated R18 and R19.
+> Its PUC/runtime rows are likewise historical: the current exhaustive-
+> LuaJIT/targeted-PUC split and bounded final PCC/F1/F2 gate are owned by
+> [wp40-t2-contracts.md](wp40-t2-contracts.md) Section 14.7.
 >
 > What remains useful here is the reasoning: section 3's classification of the
 > R-series and section 4's circularity analysis are why the later work took
