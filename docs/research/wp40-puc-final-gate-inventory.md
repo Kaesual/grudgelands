@@ -1,5 +1,10 @@
 # WP40 PUC final-gate inventory
 
+Status: **PUC-1 accepted and implemented for review on 2026-08-23.** Sections
+2--15 preserve the pre-ruling inventory/recommendation basis. Section 16 is
+the later measured closeout and takes precedence wherever those historical
+sections say projected, incomplete, unresolved or not in force.
+
 Baseline: commit `1b38943` on branch `wp40-puc-final-gate-inventory`, a
 worktree of `wp40-named-zone-world-foundation`. Every `path:line` below was
 opened at that commit. Numbers carry an explicit **MEASURED** or
@@ -9,8 +14,8 @@ opened at that commit. Numbers carry an explicit **MEASURED** or
 
 ### 1.1 What this document is
 
-An outcome-neutral inventory of every WP40 obligation that executes, or is
-read as executing, plain PUC Lua 5.1 at T2-final or T9-final: what each one
+Originally an outcome-neutral inventory of every WP40 obligation that executes,
+or is read as executing, plain PUC Lua 5.1 at T2-final or T9-final: what each one
 costs, what semantic risk each one covers, and what a bounded replacement
 would have to contain to cover the same ground. It exists to put a user
 ruling on a measured basis. It is the deliverable that
@@ -19,14 +24,14 @@ asks for.
 
 ### 1.2 What this document is not
 
-It is **not an authority**. It changes no rule, retires no gate, and
-authorizes no run. It is a research/planning record in the same class as
+Sections 2--15 are **not an authority**. They changed no rule, retired no gate,
+and authorized no run. They are a research/planning record in the same class as
 [wp40-t2-plan.md](wp40-t2-plan.md) and the acceleration plan, whose own
 closing sentence says the same of itself
 (acceleration-plan:730, "This draft remains a planning record; it does not
 become a competing authority").
 
-### 1.3 THE STANDSTILL RULE — READ THIS FIRST
+### 1.3 Historical standstill rule — satisfied 2026-08-23
 
 > Until the inventory is reviewed, the final user ruling is recorded, and the
 > authorities change atomically, the existing comprehensive T2-final/T9-final
@@ -34,18 +39,19 @@ become a competing authority").
 > rule and attach explicit wall-time and CPU budgets instead.
 > — acceleration-plan:293-296
 
-Concretely, until a later explicit user ruling **and** one coordinated atomic
-authority fold-in land together:
+The user later accepted PUC-1 and Phase 0B implemented the coordinated atomic
+fold on the ownership provider. The following list is retained only to show
+which pre-ruling owners were protected by the standstill:
 
-- `AGENTS.md`:136-140 and :144-150 remain binding exactly as written;
-- `docs/process/wp-workflow.md`:46-55 and :62-70 remain binding;
-- [luanti-lua.md](luanti-lua.md):336-342 and :359-362 remain binding;
-- `tools/wp40/README.md`:111-115 and :126-135 remain binding;
-- [wp40-t2-contracts.md](wp40-t2-contracts.md):1582-1584 remains binding
-  **in its current ambiguous wording**.
+- `AGENTS.md`:136-140 and :144-150 stayed binding exactly as written;
+- `docs/process/wp-workflow.md`:46-55 and :62-70 stayed binding;
+- [luanti-lua.md](luanti-lua.md):336-342 and :359-362 stayed binding;
+- `tools/wp40/README.md`:111-115 and :126-135 stayed binding; and
+- [wp40-t2-contracts.md](wp40-t2-contracts.md):1582-1584 stayed binding in its
+  then-ambiguous wording.
 
-Nothing in sections 7, 8, 10 or 11 of this memo is in force. They are
-proposals.
+At that time nothing in sections 7, 8, 10 or 11 was in force; those sections
+were proposals. Section 16 records their later disposition.
 
 ### 1.4 The one sentence that forces the decision
 
@@ -223,22 +229,22 @@ parallelism field says otherwise.
 | PUC-K2 | `tools/wp40/run_t1.sh` | INTERMEDIATE | HARDWIRED PUC `run_t1.sh:23` | 0.17 s | MEASURED (handover:36) |
 | PUC-K3 | `tools/wp43/run.sh` | INTERMEDIATE | HARDWIRED PUC `tools/wp43/run.sh:7` | 1-10 s | PROJECTED |
 | PUC-K4 | `tools/wp40/run_t2_schema_core.sh` | INTERMEDIATE | HARDWIRED PUC `run_t2_schema_core.sh:37` | 196-591 s | PROJECTED |
-| PUC-K5 | `tools/wp40/t2_source_audit.sh .` (full) | INTERMEDIATE | HARDWIRED PUC `t2_source_audit.sh:396` | 196-591 s | PROJECTED |
+| PUC-K5 | `tools/wp40/t2_source_audit.sh .` (full) | INTERMEDIATE | full harness SELECTABLE, LuaJIT default; targeted PUC parity | targeted seconds; full path ~88 s LuaJIT | MEASURED, Phase 0B |
 | PUC-K6 | `tools/wp40/run_dungeon_probe.sh` | INTERMEDIATE | HARDWIRED PUC `run_dungeon_probe.sh:5-6` | 5-60 s | PROJECTED |
 | PUC-K7 | `tools/wp40/run_t2_correction_kat.sh` | INTERMEDIATE | PUC leg HARDWIRED `:28`, LuaJIT leg SELECTABLE `:27` | 20-111 s | PROJECTED |
 | PUC-K8 | `tools/wp40/run_t2_s11_acceptance.sh` | INTERMEDIATE | PUC leg HARDWIRED `:23`, LuaJIT leg SELECTABLE `:22` | 1-10 s | PROJECTED |
 | PUC-K9 | `run_t2_census_gates.sh` Scan-3b/4 KAT PUC leg | INTERMEDIATE | HARDWIRED PUC `run_t2_census_gates.sh:418` | 20-111 s | PROJECTED |
-| PUC-K10 | `run_t2_census.sh --merge-kat` | INTERMEDIATE | PUC merge half HARDWIRED `:197` | 0.1-2 s (PUC half); ~150 s whole command | PROJECTED / MEASURED-qualitative |
+| PUC-K10 | `run_t2_census.sh --merge-kat` | INTERMEDIATE | LuaJIT worker + PUC merge half HARDWIRED | 335 s whole command | MEASURED, Phase 0B |
 | PUC-K11 | `tools/wp40/run_t2_extreme_puc_kat.sh` | INTERMEDIATE | HARDWIRED PUC `:11` | 170-3,091 s | PROJECTED |
-| PUC-K12 | contracts §9.4 full-path witness per new tier | INTERMEDIATE | no runner; run ad hoc | 22-25 min/seed; 44-50 min serial pair | MEASURED |
-| PUC-K13 | contracts §8.6.2 full-compile-path witness pair | INTERMEDIATE | **no runner exists** | 1,700-3,000 s serial pair | GAP / PROJECTED |
+| PUC-K12 | PCC worker full-path pair | INTERMEDIATE / FINAL PCC | `run_t2_puc_core.sh --worker` | 2,325 s PUC; 2,457 s pair total | MEASURED, Phase 0B |
+| PUC-K13 | PCC compiler full-path pair | INTERMEDIATE / FINAL PCC | `run_t2_puc_core.sh --compiler` | 1,734 s PUC; 1,803 s pair total | MEASURED, Phase 0B |
 | PUC-K14 | `run_t2_census_probe.sh` PUC leg | INTERMEDIATE | SELECTABLE, LuaJIT default `:44` — no PUC leg today | n/a | NOT A PUC GATE |
 | PUC-F1 | `WP40_FINAL=1 run_t2_partition.sh --no-cache --historical` | T2-FINAL | CONDITIONALLY PUC-FORCED `:91-95` | 53-62 min | MEASURED, conflicting |
-| PUC-F2 | `tools/wp40/run_t2_extreme_conformance.sh` | T2-FINAL | HARDWIRED PUC `:12-13` | >=74 min | MEASURED, incomplete |
+| PUC-F2 | `tools/wp40/run_t2_extreme_conformance.sh` | T2/T9-FINAL | HARDWIRED PUC `:12-13` | ~99 min end to end | MEASURED, complete |
 | PUC-F3 | `run_t2_census.sh --merge` PUC publication half | T2-FINAL | HARDWIRED PUC `:197` | 19 s-6 min | MEASURED, conflicting |
 | PUC-F4 | `fixtures/t2_extreme_e0/README.md:22-29` pool obligation | T2-FINAL | prose obligation; realized by PUC-F2 | see PUC-F2 | — |
-| PUC-F5 | full-`W` population under standalone PUC (**disputed**) | T2-FINAL (reading b only) | would be `run_t2_census.sh` with `WP40_LUA_BIN` overridden | 7.9-11.5 days | PROJECTED |
-| PUC-F6 | the T9-final comprehensive PUC round | T9-FINAL | **no command defined anywhere** | undefined | GAP |
+| PUC-F5 | full-`W` population under standalone PUC | none; reading (b) ruled out by PUC-1 | forbidden | n/a | CLOSED |
+| PUC-F6 | T9-final standalone-PUC gate | same bounded PCC + retained F1/F2 as T2-final | defined by contracts §14.7 | same component budgets | CLOSED |
 | ENG-1 | the real fallback-engine runtime gate | RUNTIME-ENGINE-GATE | Luanti built against bundled Lua 5.1 | unmeasured | GAP |
 | ENG-2 | dual-runtime engine benchmarks | T9-FINAL / RUNTIME-ENGINE-GATE | both engine builds | unmeasured | GAP |
 
@@ -601,6 +607,16 @@ scoping) **RETAINED inside the bounded gate** — §11.
 
 ### 4.16 PUC-F2 `run_t2_extreme_conformance.sh` (the C1 conformance gate)
 
+**Post-closeout correction.** The trace below described the pre-v3 chain at
+the inventory baseline. Current F2 is the accepted C1-v3 chain: it reads
+`candidates-luajit-v3.tsv` / `manifest-luajit-v3.tsv`, writes 20
+`rescore-puc-v3-*` rows, four `selected-puc-v3-slot*` rows and final
+`conformance-puc-v3.tsv`, and may reuse them only through its recorded-commit
+closure proof. The population remains the same fixed 20 candidates and slots
+28--31. It completed green at commit `5d770365`, final artifact SHA-256
+`7ac6b7f9…`; timings are recorded below. Any unqualified pre-v3 filename in
+the historical trace that follows is not a current path instruction.
+
 **Interpreter:** HARDWIRED PUC at `:12-13`, with a hard guard at `:26-29`
 ("WP40 T2 C1 requires the vendored PUC Lua 5.1 tools"). **Prerequisite:** a
 committed, independently reviewed immutable conformance commit — preflight at
@@ -632,11 +648,9 @@ fixtures**, not a live LuaJIT run: `t2_extreme_rescore_worker.lua`:129-132 and
 provenance discipline than a live pair and is why the round is reproducible
 from an archive.
 
-**Cost:** MEASURED but incomplete — 249 s for the 20 rescores, then "about
-74 min before the selected barrier failed" (handover:54; README:330 confirms
-the 249 s). **A complete pass has never been measured.** PROJECTED completion
-95 min: the 74 min to the failure point plus roughly 21 min for the four
-selected gates to finish at 4-way concurrency. **Risk covered:** conformance
+**Cost:** the historical failed attempt was incomplete. The completed C1-v3
+acceptance measured 20 PUC rescores in 215 s, four parallel selected slots in
+5,507 s, and approximately 99 minutes end to end. **Risk covered:** conformance
 breadth over the ranked pool — exact retained-row rescoring under the language
 contract plus four full-partition gates on the selected winners with no
 fallback (README:486-498). No seed witness reproduces this.
@@ -1108,17 +1122,17 @@ luanti-lua.md:295-299 as executable fixtures with their byte lengths
 exit-code comparison discipline of `run_t2_s11_acceptance.sh`:40-43 applied to
 every leg rather than to one.
 
-### 7.2 Part 2 — exactly four FULL-PATH PUC witnesses, one per pipeline stage
+### 7.2 Part 2 — four FULL-PATH carriers, three new and selector retained in F2
 
 | stage | production entry point | driver | witness seeds | expected artifact | cost |
 |---|---|---|---|---|---|
-| **COMPILER** | `partition.compile` | `tools/wp40/t2_correction_repro.lua` (needs a runner) | `1959553668008863006` (elbow) + one multi-complete edge witness, per contracts:975-977 | compiled-graph SHA-256 per seed, byte-compared LuaJIT/PUC | 1,700-3,000 s serial, 870-1,500 s concurrent, PROJECTED from README:415 |
-| **WORKER** | `partition.census_scan` (`t2_census_worker.lua`:300) | `t2_census_worker.lua` with an explicit seed list | `2147483648` and `16178445837170081103`, per contracts:1253-1261 | v6 worker record, `rows_sha256` digest-identical | 22-25 min/seed MEASURED (§4.12); ~22 min for the pair concurrently |
-| **MERGE** | `t2_census_merge.lua` via `run_merge_pair` | `run_t2_census.sh --merge-kat` | the 7 KAT seeds (`t2_census_worker.lua`:92-93) | five-artifact `cmp` + `artifacts_digest`, plus the measured divergence half | ~150 s MEASURED-qualitative for the whole command; its PUC merge half is 0.1-2 s (§4.10) |
-| **SELECTOR** | `extreme.score_candidate`, `extreme.candidate_shard` | `run_t2_extreme_puc_kat.sh`, widened | candidate 0, candidate 4095, slots 28-31 | `rows_sha256` per candidate | 170-3,091 s for candidate 0 today; x ~6 for the widened set, PROJECTED |
+| **COMPILER** | `partition.compile` | `run_t2_puc_core.sh --compiler` / `t2_correction_repro.lua` | `1959553668008863006`, `2147483648` | complete stdout and compiled-graph SHA-256 per seed, byte-compared LuaJIT/PUC | 1,803 s total MEASURED |
+| **WORKER** | `partition.census_scan` | `run_t2_puc_core.sh --worker` / `t2_census_worker.lua` | `2147483648`, `16178445837170081103` | complete v6 TSV, internal/external digest, canonical stdout and separated telemetry | 2,457 s total MEASURED |
+| **MERGE** | `t2_census_merge.lua` via `run_merge_pair` | `run_t2_puc_core.sh --merge` | fixed 7 KAT seeds | five-artifact `cmp` + `artifacts_digest`, probe, synthetic and measured invariance | 335 s total MEASURED |
+| **SELECTOR** | `extreme.score_candidate`, `extreme.candidate_shard`, selected compile | retained C1-v3 F2 | rescore roster includes 0/4095; slots 28-31 | retained rescore and selected artifacts | F2 ~99 min end to end MEASURED; no separate leg |
 
-The COMPILER row **closes PUC-K13**, which is unclosed today because no runner
-performs the §8.6.2 byte-compare (§4.13). That is a net gain, not a trade.
+The COMPILER row closes the former PUC-K13 runner gap. F2 closes the proposed
+selector carrier without the unmeasured widened six-candidate run.
 
 Restated because it decides what the PCC may claim: a full-path witness is not
 a unit test, and a comparator-only check is neither (§3). `PUC-K7` and `PUC-K9`
@@ -1160,43 +1174,36 @@ evidence, but neither is counted toward the four.
   quotes: “Representative” can never be selected ad hoc; fixture checksums, the
   deterministic selection rule, and a contracts memo own any later change.
 
-### 7.5 Projected cost of the PCC
+### 7.5 Measured component cost of the accepted PCC
 
 | part | low (s) | high (s) | label |
 |---|---:|---:|---|
-| micro-corpus groups (a)-(e) | 60 | 300 | PROJECTED |
-| COMPILER witness pair, concurrent | 870 | 1,500 | PROJECTED |
-| WORKER witness pair, concurrent | 1,320 | 1,500 | MEASURED per-seed |
-| MERGE witness incl. measured divergence half — the whole `--merge-kat` command | 150 | 200 | MEASURED-qualitative |
-| SELECTOR witness, widened x6 | 1,020 | 18,546 | PROJECTED |
-| unit/comparator layer (PUC-K7/K8/K9) | 41 | 232 | PROJECTED |
-| **PCC subtotal** | **3,461 s = 0.96 h** | **22,278 s = 6.19 h** | |
+| micro, Source, unit/comparator and optional-load legs | <10 | <10 | MEASURED component sum |
+| COMPILER witness pair, serialized runtimes | 1,803 | 1,803 | MEASURED |
+| WORKER witness pair, serialized runtimes | 2,457 | 2,457 | MEASURED |
+| MERGE witness incl. measured divergence half | 335 | 335 | MEASURED |
+| SELECTOR carrier | 0 | 0 | supplied by retained F2; no duplicate PCC leg |
+| **PCC component subtotal** | **~4,601 s = 1.28 h** | **~4,601 s = 1.28 h** | measured components; no synthetic end-to-end rerun |
 
-The MERGE row prices the **whole** `--merge-kat` command, not just its PUC
-half: the PCC has to run the command, and ~150 s of that is the LuaJIT worker
-scan (§4.10). The SELECTOR row spans 18x and dominates the high reading,
-resting entirely on the unmeasured PUC-K11 anchor (§4.11). **Measuring
-`run_t2_extreme_puc_kat.sh` once would collapse most of that band**, and it is
-the single cheapest measurement that would improve this memo.
+The merge row prices the whole command, not only its short PUC merge half. The
+former selector projection is removed because completed F2 already supplies
+the exact endpoint/winner carrier. With retained F2 (~99 min) and F1's
+historical 53--62 min band, the bounded final standalone gate is approximately
+3.81--3.96 h by component sum; full-`W` LuaJIT work and engine gates are
+separate.
 
-Under the coordinator's scoping (§11), PUC-F1 (3,180-3,720 s) and PUC-F2
-(4,440-5,700 s) are retained inside the gate, giving a scoped-gate total of
-**11,081 s = 3.08 h (low) to 31,698 s = 8.81 h (high)**. Adding the legs
-common to both outcomes that sit outside the PCC subtotal — PUC-S1..S3,
-PUC-K1-K6 and PUC-F3, **427 s low / 1,642 s high** — gives the **B-scoped
-programme total of 11,508 s = 3.20 h (low) to 33,340 s = 9.26 h (high)**, which
-is what §9.3 compares against outcome A.
+Sections 5 and 9 retain the pre-ruling cost comparison and are superseded by
+this measured component table where they differ. Static/intermediate gates are
+not added again to the final-gate total merely because they also ran during
+development.
 
-PUC-K7, PUC-K8 and PUC-K9 are deliberately **not** in that common-legs list:
-all three are already inside the PCC subtotal's `unit/comparator layer` row
-(20 + 1 + 20 = 41 low, 111 + 10 + 111 = 232 high). An earlier draft counted
-them twice and overstated this total by 41 s / 232 s.
+## 8. Full-`W` and engine gates: accepted wording
 
-## 8. Full-`W` and engine gates: the proposed wording
+### 8.1 Accepted replacement for contracts §11.4 acceptance point 5
 
-### 8.1 Proposed replacement for contracts §11.4 acceptance point 5
-
-Not in force. Offered for the ruling.
+Accepted by PUC-1 and made authoritative by contracts Section 14.7. The quote
+below is retained as the ruling basis; the implemented selector carrier is F2,
+not a separate widened run.
 
 > 5. The full-`W` re-census (schema v7 / artifacts v4) is **deferred to
 >    T2-final**. Its complete population of 4,123 seeds runs **under LuaJIT**,
@@ -1509,11 +1516,21 @@ be added:
 | `tools/wp40/README.md`:1147-1152 | the file *is* in the plan's scope (:285, :718); this specific passage was never called out. It is the only concrete T9 obligation touching the fallback interpreter, and it is an **engine** measurement, not a PUC round |
 | `docs/research/mapgen-control.md`:1586-1590 | the origin of the dual-runtime requirement that ENG-2 inherits |
 
-**Explicitly noted:** `docs/research/wp40-acceleration-and-delivery-plan.md`
-§5.2 (:250-296) and §15 (:713-728) will need the ruling recorded, but they are
-**not edited by this package**. This memo does not touch them.
+**Historical package boundary:** the inventory commit did not edit
+`docs/research/wp40-acceleration-and-delivery-plan.md` §5.2 or §15. Phase 0B
+later folded the accepted ruling there atomically; Section 16 records that
+closeout.
 
-## 13. Unresolved questions requiring a user decision
+## 13. Historical questions resolved by PUC-1
+
+Disposition: (1) scheduling reading (a); (2) PCC adopted; (3) F1/F2 retained;
+(4) T9-final uses the same bounded PCC/F1/F2 definition; (5) compiler runner
+implemented; (6) Source audit moved to LuaJIT-full plus targeted PUC parity;
+(7) no widened selector run because completed F2 already supplies it; (8) the
+bounded seven-seed merge measured 335 s while the historical population-merge
+timing conflict remains a record only; (9) F1 retained with its 90-minute
+budget; (10) the unretained 16.2x ratio withdrawn. The original questions
+remain below as the pre-ruling review record.
 
 1. **Which reading of contracts:1582-1584 is correct — (a) scheduling or (b)
    coupling?** If (a): the §8.1 wording lands and nothing else changes. If (b):
@@ -1685,8 +1702,35 @@ Zero-hit checks, run to confirm absences claimed above:
 
 ---
 
-**Standing, restated.** Nothing above is in force. The existing comprehensive
-T2-final/T9-final PUC contract **remains binding** until a later explicit user
-ruling and one coordinated atomic authority fold-in, per
-`docs/research/wp40-acceleration-and-delivery-plan.md`:293-296. Sections 7, 8,
-10 and 11 are proposals; section 9 is what applies if the answer is "retain".
+## 16. Accepted Phase-0B closeout
+
+The former standstill is satisfied. The user accepted PUC-1 and Phase 0B
+implemented its coordinated atomic authority fold on ownership-provider commit
+`62afc64`. Contracts Section 14.7 is the normative memo; this document remains
+the detailed research and cost record.
+
+The fresh closeout sweep included `PUC`, `lua51`, `luac51`, `LuaJIT`,
+`WP40_LUA_BIN`, `T2-final`, `T9-final`, full-`W`, re-census, divergence,
+byte/digest identity, fallback, dual-runtime, benchmark, `pairs()` and
+interpreter terms across Markdown, shell and Lua outside
+`reference_projects/`. Actual policy/executable hits were folded in
+`AGENTS.md`, `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md`, the
+T2 contracts/plan/acceleration plan, this inventory, the historical T2
+handover, the T5-0 budget contract, `tools/wp40/README.md`, the F1 runner
+comment and the C1-v3 fixture README. The engineering brief and mapgen-control
+engine requirements were checked and intentionally left unchanged; BACKLOG
+and design files contain no standalone-interpreter policy.
+
+The executable closeout is `tools/wp40/run_t2_puc_core.sh` with immutable
+fixtures in `tools/wp40/fixtures/t2_puc_core/` and calibration/raw telemetry in
+`tools/wp40/evidence/t2-puc-core-v1/`. Measured Phase-0B results are compiler
+1,803 s, worker 2,457 s and merge 335 s; all canonical bytes/digests agree.
+The completed C1-v3 F2 supplies selector evidence and measured 215 s rescore,
+5,507 s selected and approximately 99 minutes end to end. F1/F2 were retained
+but not rerun; full-`W`, C1 reacceptance and every PUC population were deferred.
+
+**Standing, restated.** Exhaustive populations run under LuaJIT. T2-final and
+T9-final use exactly the checksum-pinned PCC plus retained F1/F2; full-`W`
+keeps its LuaJIT/PUC merge parity; the fallback-engine runtime and dual-engine
+benchmarks remain separate. Any change requires a later user ruling and owning
+contracts memo.

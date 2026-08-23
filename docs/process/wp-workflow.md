@@ -62,10 +62,11 @@ budget, and stop conditions.
    do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
    inspect `SETGLOBAL` for every changed mod file, and run representative
    PUC-5.1 KATs with byte-identical canonical digest/artifact comparison at
-   intermediate milestones. For WP40, reserve comprehensive PUC rounds for
-   T2-final and T9-final and parallelize independent seed ranges or test
-   groups with exact-cover evidence. Exhaustive iteration before those final
-   gates belongs under LuaJIT. Also check the AGENTS performance rules
+   intermediate milestones. For WP40, exhaustive populations always run under
+   LuaJIT. At T2-final and T9-final, run exactly the checksum-pinned PCC plus
+   retained F1/F2 defined by `docs/research/wp40-t2-contracts.md` Section
+   14.7; do not widen it ad hoc. The full-`W` merge retains exact LuaJIT/PUC
+   artifact parity. Also check the AGENTS performance rules
    (globalstep throttling, inventory churn, 100-player target).
 5. **Mandatory code review**: under **Independent review** in
    [agent-model-policy.md](agent-model-policy.md), run at least one full
@@ -83,8 +84,8 @@ budget, and stop conditions.
    artifacts, logs, interpreter evidence and hashes, then run targeted
    independent PUC KATs. For WP40 outside T2-final and T9-final, missing
    evidence or a finding blocks the milestone and must be closed with targeted
-   PUC KATs and newly bound immutable evidence; it never authorizes another
-   comprehensive PUC round.
+   PUC KATs and newly bound immutable evidence; it never authorizes widening
+   the final PCC or running an exhaustive population under PUC.
 6. **Docs**: BACKLOG row → ✅ with summary; ROADMAP checkboxes; new
    insights → AGENTS.md or docs/; design-doc deltas folded in. The durable
    completion record also carries the model and review calibration fields

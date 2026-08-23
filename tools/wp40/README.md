@@ -110,9 +110,45 @@ under PUC Lua 5.1 when that was written; the harness has grown since, and the
 current figure is the 90.81 s in the acceleration table below. Plan with the
 later number. Every change still gets
 the plain-5.1 `luac51`/`SETGLOBAL`/five-sweep gates. Intermediate milestones
-use targeted representative PUC KATs with byte-identical canonical evidence;
-comprehensive parallelized WP40 PUC rounds are reserved for T2-final and
-T9-final. A real fallback-engine runtime test remains a separate gate.
+use targeted representative PUC KATs with byte-identical canonical evidence.
+Exhaustive populations always run under LuaJIT. At T2-final and T9-final the
+standalone-PUC gate is exactly the pinned PCC below plus retained F1/F2; a real
+fallback-engine runtime test remains a separate gate.
+
+## T2 pinned PUC conformance core (PCC)
+
+The bounded final standalone-PUC carrier is:
+
+```sh
+tools/wp40/run_t2_puc_core.sh --all
+```
+
+Its fixture manifest freezes the five-group semantic micro-corpus, targeted
+Source parity, unit/comparator layer, compiler witness pair, worker witness
+pair and seven-seed merge witness. The merge retains the fail-closed
+`pairs()` probe plus synthetic and measured invariance. The worker gate keeps
+canonical stdout and the complete TSV byte-exact while retaining raw runtime
+telemetry separately; only the anchored wall/CPU suffix is removed for the
+telemetry comparison. Use a single mode (`--micro`, `--source`, `--unit`,
+`--optional`, `--compiler`, `--worker`, `--merge`) during focused diagnosis;
+`--worker-selftest` is the cheap positive/negative channel-gate proof.
+`--unit` (and therefore `--all`) needs the retained Section-11 artifacts;
+set `WP40_S11_ARTIFACTS_DIR` when running from a worktree that does not carry
+the canonical checkout's ignored results directory.
+
+The PCC does not launch final rounds or populations. T2-final and T9-final
+also retain:
+
+```sh
+WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical  # F1
+tools/wp40/run_t2_extreme_conformance.sh                             # F2
+```
+
+F2 already carries candidate endpoints 0/4095 and selected slots 28--31, so
+there is no separate six-candidate selector PCC leg. The full-`W` population
+runs only under LuaJIT; `run_t2_census.sh --merge` still performs its
+LuaJIT/PUC canonical-artifact comparison. Fixture/evidence changes require a
+later owning memo in `wp40-t2-contracts.md`, never an ad-hoc re-pin.
 
 ## T2 exact/raster/partition slice
 
@@ -131,8 +167,9 @@ satisfy that requirement. Set `WP40_LUA_BIN` to pin a different interpreter,
 and `--no-cache` / `--historical` to select those individually; the runner
 prints the resolved interpreter path. Do not automatically duplicate the complete
 expensive run under PUC at each milestone: retain immutable LuaJIT
-artifacts/logs/hashes, compare targeted representative PUC KATs byte-for-byte,
-and reserve the parallelized comprehensive PUC round for T2-final. This focused runner owns
+artifacts/logs/hashes and compare targeted representative PUC KATs
+byte-for-byte. F1 is retained as one named component of the bounded final
+gate. This focused runner owns
 exact/rational and raster regression fixtures plus the private partition-family
 construction exercised by this slice. It fails closed on any incomplete or
 invalid seeded geometry and makes no full-T2 claim. The measured extreme seeds,
@@ -626,6 +663,10 @@ ratio have been wrong.
 | seed-0 compile, LuaJIT, uncached | 32.7 s |
 | seed-0 compile, PUC 5.1, uncached | 868 s |
 | seed-0 + max-u64 + traversal, PUC, uncached | 3,091 s |
+| PCC compiler witness pair | 69 s LuaJIT / 1,734 s PUC / 1,803 s total (Phase 0B, 2026-08-23) |
+| PCC worker witness pair | 132 s LuaJIT / 2,325 s PUC / 2,457 s total (Phase 0B, 2026-08-23) |
+| PCC seven-seed merge witness | 335 s total, all three divergence halves green (Phase 0B, 2026-08-23) |
+| C1-v3 F2 PUC rescore / selected phase | 215 s / 5,507 s; ~99 min end to end (2026-08-22) |
 | payload cache hit | 0.37 s LuaJIT / 1.03 s PUC |
 | full partition gate, PUC, 8-way sharded | ~62 min wall |
 | 4,096-candidate pool, 8 LuaJIT workers | 91 min wall |
@@ -646,7 +687,10 @@ ratio have been wrong.
 | a stage-rejected seed, LuaJIT | 8 s (W-112, first measurement 2026-08-17): the aperture block kills it before Scan-1/3a/2 ever run, so a stage-rejected seed costs a quarter of a full one |
 
 The PUC-to-LuaJIT ratio is not one number: 2.8x on validation-heavy paths,
-16.2x on an exhaustive numeric sweep, 26.5x on a full seed-0 compile.
+17.6x on the measured PCC worker pair, 25.1x on the measured PCC compiler
+pair, and 26.5x on a full seed-0 compile. The former 16.2x "exhaustive numeric
+sweep" figure had no retained measurement and is withdrawn; never apply one
+ratio across workloads.
 
 Up to 8 concurrent Lua processes are appropriate on this host. Detach anything
 expected to exceed ~8 minutes and poll it; use `/usr/bin/stdbuf -oL -eL` — the

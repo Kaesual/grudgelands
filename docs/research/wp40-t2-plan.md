@@ -301,6 +301,13 @@ Phase 0B finalizes only after that provider is integrated. C-a2 requires
 D-1's zone records, the Section-11 ownership export and the one green
 integrated C1-v3 reacceptance, as Section 0 and contracts Section 14 require.
 
+**Status, 2026-08-23, Phase 0B implementation/evidence complete for review.**
+The bounded PCC was generated on ownership-provider commit `62afc64`; its
+compiler, worker and merge carriers are green and checksum-pinned, and the
+project-wide PUC-1 wording is folded atomically in this package. F1, F2,
+full-`W` and C1 reacceptance did not run in Phase 0B. Integration still waits
+for independent review; after that, D-1 is the next ordered package.
+
 ## 3. Locked surfaces
 
 These six files are covered by the stage-S1 authority digest that pins the
@@ -437,9 +444,10 @@ worth about a quarter of the pass — measured as an A/B under equal load, not
 inferred.
 
 PUC-to-LuaJIT ratio is **not** a single number: measured 2.8x on
-validation-heavy paths, 16.2x on an exhaustive numeric sweep, and 26.5x on a
-full seed-0 compile (868/32.7). Any plan resting on one extrapolated ratio has
-been wrong before.
+validation-heavy paths, 17.6x on the PCC worker pair, 25.1x on the PCC compiler
+pair, and 26.5x on a full seed-0 compile (868/32.7). The former 16.2x
+"exhaustive numeric sweep" figure had no retained source and is withdrawn.
+Any plan resting on one extrapolated ratio has been wrong before.
 
 ## 5. Open items not owned by a package
 
@@ -558,10 +566,10 @@ been wrong before.
   favour. Measured consequence (section 4): the always-on tier costs ~8 s
   per seed, dominated by the S5 substrate (Wing tails, trace bounds) that
   Scan-3a consumes anyway; the extra tuples themselves are noise-level.
-- **A targeted `pairs()`-order divergence test**, as the cheap substitute for a
-  full PUC gate at every stage freeze. The canonical encoder sorts before
-  emission, so serialisation is provably runtime-independent; control flow that
-  depends on iteration order is the residual risk and can be tested directly.
+- **A targeted `pairs()`-order divergence test**, as a mandatory component of
+  the bounded PCC rather than a substitute for it. Its fail-closed probe plus
+  synthetic and measured seven-seed invariance cover the residual control-flow
+  risk after the canonical encoder sorts output before emission.
 - **The invariant review** named in the completeness analysis section 7 — the
   only bound against silent wrongness, the mechanism behind seven of the
   thirteen corrections so far, and behind three defects found on 2026-08-15

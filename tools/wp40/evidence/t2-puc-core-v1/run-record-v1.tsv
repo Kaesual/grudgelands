@@ -1,0 +1,19 @@
+schema	grug_wp40_puc_core_run_record_v1
+date	2026-08-23
+provider_commit	62afc64e598129e6e069d26a7746073a96673ccd
+provider_tree	6366c5e1457886d7c32f53e08f6c10e9669d9b86
+implementer	GPT-5.6 Sol
+reviewer	pending Claude Opus/xhigh
+elapsed_capture_interval_seconds	24205
+micro	measured_green	luajit_puc_stdout_exit_fixture_exact
+source	measured_green	full_luajit_plus_targeted_puc_exact	88s_approximately
+unit	measured_green	K7_K8_K9
+optional_load	measured_green	dual_runtime_two_locales	5.8s_approximately
+compiler_pair	measured_green	luajit=69s	puc=1734s	total=1803s
+worker_pair	measured_green	luajit=132s	puc=2325s	total=2457s
+merge_seven_seed	measured_green	total=335s	probe=passed	synthetic=passed	measured=passed
+F1	retained_deferred	not_run_phase0b
+F2	retained_prior_green	rescore=215s	selected=5507s	end_to_end=99min_approximately
+full_W	luajit_only_deferred	not_run_phase0b
+C1_reacceptance	deferred_to_integrated_wave1	not_run_phase0b
+fallback_engine	separate_user_gate	not_run_phase0b
