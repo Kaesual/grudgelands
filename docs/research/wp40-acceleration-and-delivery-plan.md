@@ -685,7 +685,7 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
                      Phase 0A freeze
                            |
-       parallel: C-a1 | Wave 1C ownership handoff | Phase 0B preparation
+ parallel: payload-free C-a1 | Wave 1C ownership | Phase 0B preparation
                            |
                integrate ownership provider
                            |
@@ -702,7 +702,9 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
           exactly one C1-v3 PUC reacceptance
                            |
-                         C-a2
+        C-a2 containment gate against final ownership
+                           |
+                         C-a2 H
                            |
                 STOP before Lane C-b
 

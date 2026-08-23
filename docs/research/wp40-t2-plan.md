@@ -40,7 +40,9 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    Section-11 ownership-handoff schema package (Wave 1C) run in parallel.
    Phase 0B may prepare code and policy alongside them, but PUC-1's final
    fixtures, evidence, green status and integration wait for the integrated
-   ownership provider. Phase 0A does not partially fold PUC-1's wording.
+   ownership provider. Phase 0A does not partially fold PUC-1's wording. Under
+   accepted `CA1-DAG-1`, C-a1 proves mask/collar arithmetic but makes no final-
+   zone containment claim.
 3. **Ownership provider, then Phase 0B.** Integrate the ownership handoff
    first. Its intentional partition/schema change moves compiler/worker PCC
    digests. Finalize and integrate the reviewed atomic Phase-0B fold on that
@@ -68,8 +70,11 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    adopted-residue witnesses as the preflight, then run exactly one fresh
    C1-v3 PUC reacceptance for the integrated Wave-1 state.
 6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
-   Section-11 ownership export and the green reacceptance. It then assembles
-   zone-owned `H`. Stop after C-a2 and before Lane C-b.
+   Section-11 ownership export and the green reacceptance. Its first fail-closed
+   gate proves exact-mask-plus-displacement-margin containment against the sole
+   integrated final ownership provider; missing payload or reconstructed
+   ownership is a STOP. It then assembles zone-owned `H`. Stop after C-a2 and
+   before Lane C-b.
 
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either

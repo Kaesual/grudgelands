@@ -3105,3 +3105,22 @@ order interpretation, source-edit/S1/pool STOP, Wave-1C label, both compiled-
 world identifier sites, historical review provenance, planning-record wording,
 the engineering-brief wrap, and the two distinct 98-count measures. Any
 subsequent re-review outcome is appended only by the coordinator if needed.
+
+### 14.5 CA1-DAG-1 containment-gate correction (decided 2026-08-23)
+
+The user recorded `ACCEPT CA1-DAG-1` after the first C-a1 implementer correctly
+stopped without edits: no final-zone ownership provider exists in C-a1's
+allowed payload-free dependency set. Loading `geometry/partition.lua` was
+forbidden, while recreating its Bay, Wing, aperture, half-open and residue
+classification would have introduced a second final-zone authority.
+
+This later memo supersedes Section 14.1's former assignment of geometric
+containment to “C-a1 Stage 1.” C-a1 still proves exact mask predicates, Q16
+collars and ordered landmark composition, but makes no final-zone containment
+claim. After D-1, the ownership handoff and the single C1 reacceptance are
+green, C-a2's first fail-closed integration gate proves that every exact mask,
+including its per-edge displacement margin, lies in its owning final zone. It
+must consume the sole integrated ownership authority and may neither infer
+ownership from dry-face polygons alone nor rebuild partition connectivity. A
+missing or insufficient ownership payload is a STOP before `H` assembly, not
+permission to widen C-a1 or invent a classifier.
