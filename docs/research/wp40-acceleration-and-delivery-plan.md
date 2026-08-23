@@ -283,11 +283,10 @@ evidence on integrated provider commit `62afc64`: compiler, worker and
 seven-seed merge carriers are green; the complete project-wide wording is in
 the same review package. F1, F2, full-`W` and C1 reacceptance were not run.
 
-The package is complete for independent review and not yet integrated. D-1
-waits for that reviewed integration so its executable brief can cite the final
-interpreter and evidence authority. No C1 run is bought for Phase 0B alone;
-the one later integrated Wave-1 C1-v3 reacceptance covers the planned
-ownership/schema event.
+The package passed independent Opus/xhigh review and was integrated by merge
+`95e3261`. D-1 can now cite the final interpreter and evidence authority. No
+C1 run was bought for Phase 0B alone; the one later integrated Wave-1 C1-v3
+reacceptance covers the planned ownership/schema event.
 
 ## 6. Delivery structure and parallel work
 
@@ -884,7 +883,7 @@ This planning record is ready to become an implementation plan when:
   command; trivially short static gates need no individual budget;
 - Phase 0A's durable freeze is integrated after its independent review;
 - the accepted PUC outcome is folded atomically by Phase 0B as specified in
-  Section 5.2 — **implemented for independent review**;
+  Section 5.2 — **reviewed and integrated by merge `95e3261`**;
 - every child package has a definition of done and an independent reviewer
   selected under the project-wide agent model policy;
 - no unresolved player-visible design choice is left for an implementation

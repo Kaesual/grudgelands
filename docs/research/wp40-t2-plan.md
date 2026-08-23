@@ -301,12 +301,12 @@ Phase 0B finalizes only after that provider is integrated. C-a2 requires
 D-1's zone records, the Section-11 ownership export and the one green
 integrated C1-v3 reacceptance, as Section 0 and contracts Section 14 require.
 
-**Status, 2026-08-23, Phase 0B implementation/evidence complete for review.**
+**Status, 2026-08-23, Phase 0B reviewed and integrated.**
 The bounded PCC was generated on ownership-provider commit `62afc64`; its
 compiler, worker and merge carriers are green and checksum-pinned, and the
-project-wide PUC-1 wording is folded atomically in this package. F1, F2,
-full-`W` and C1 reacceptance did not run in Phase 0B. Integration still waits
-for independent review; after that, D-1 is the next ordered package.
+project-wide PUC-1 wording was folded atomically by merge `95e3261` after an
+independent Opus/xhigh `APPROVE`. F1, F2, full-`W` and C1 reacceptance did not
+run in Phase 0B. D-1 is the next ordered package.
 
 ## 3. Locked surfaces
 
