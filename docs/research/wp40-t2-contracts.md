@@ -13,8 +13,9 @@ accepted briefs.
 
 [wp40-t2-plan.md](wp40-t2-plan.md) holds ordering and decisions; this file
 holds package specifications — the census artifact contract (section 6),
-the collected-correction implementation contract (section 8) and the
-Scan-3b/4 census completion contract (section 9). The numbering
+the collected-correction implementation contract (section 8), the
+Scan-3b/4 census completion contract (section 9), and the later handoff
+freezes through section 14. The numbering
 is shared with the plan and preserved from where each contract was cut:
 every existing "section 6.x" reference resolves here unchanged, and new
 sections continue the plan's numbering space so a bare section number stays
@@ -2928,3 +2929,179 @@ elapsed wall time `unknown`. The fix round corrected the three historical
 statements above and clarified the T5-0 package boundary. The two remaining Low
 observations — stricter count-text grammar and a dedicated negative count test
 — are pre-existing, behaviorally unchanged and outside this gate-pin closeout.
+
+## 14. The T2 field handoff and Wave-1 execution freeze (cut 2026-08-23)
+
+**Decision status.** The user recorded `ACCEPT PUC-1`, `ACCEPT D1-1`, and the
+final `GO` on 2026-08-23. This later memo is the forward authority wherever an
+older T2 contract memo describes a different C-a dependency, island-route
+placement, or execution order. Older memos remain the historical record of the
+packages they governed; their bodies are not rewritten.
+
+### 14.1 C-a relief-field semantics
+
+1. **Landmark composition.** Evaluate every landmark with positive Q16 collar
+   weight in ascending `base_h_priority`, with the higher priority applied
+   last. Each contribution qlerps from the previously composed `H` to that
+   landmark's replacement height. Zero-weight collars are excluded. Exact
+   authored mask membership remains the source integer predicate and stays
+   separate from Q16 signed distance. The measured 264 ellipse incidences on
+   which exact membership and signed-distance equality differ are evidence,
+   not authority. C-a1 Stage 1 must prove that every exact mask, including its
+   per-edge displacement margin, is contained in its owning final zone. The
+   current source validator checks only `zone_id` referential integrity at
+   `validation/t2_source.lua:3964`; no current check enforces geometric
+   containment. Composition never deletes mask identity. Required-route non-
+   blocking is checked against final composed `H` and later route products,
+   not a one-winner mask.
+2. **Clipped junction support.** An authored relief junction `J` applies to an
+   edge only when the chosen final raster terminal equals the authored
+   junction coordinate exactly and the edge is an authored incidence there.
+   Otherwise that endpoint supplies `native_G` and creates no substitute
+   relief-`J` candidate. R14's categories remain intact: 34 surviving relief
+   junctions contribute 98 ordinary incidences, the four dissolved degree-two
+   junctions contribute eight Bay-transition incidences, and the eight
+   perimeter attachments plus eight perimeter-vertex endpoints remain outside
+   the 106-incidence relief-junction roster. Here, 98 counts ordinary
+   incidences; its equality with Source Authority Section 2.2's 98 unordered
+   incident-edge pairs is coincidental.
+3. **Domain of `H`.** `H` is defined exactly on zone-owned authored surface
+   columns: ordinary dry land, zone-owned Planned Water, and Section-11.7-B
+   dry residue adopted into a zone face. It is undefined on exterior coastal
+   shelf, deep ocean and immutable dragon channels, which use their separate
+   `W`/d exterior profile. Internal relief evaluation fails closed there.
+   Declared raw-dry overlaps on a shared edge or junction are resolved to one
+   owner by the canonical half-open dry-face classifier before `H` is
+   evaluated.
+4. **Package boundary.** Within C-a, payload-free C-a1 lands before C-a2.
+   C-a2 waits for D-1's zone records, the Section-11 ownership export, and a
+   green C1 reacceptance. C-a2 consumes compiled Bay authority for Planned
+   Water and adopted-residue authority for dry ownership; a
+   `dry_faces`-polygon-only owner is forbidden.
+5. **Residue ownership.** Section-11.7-B single-face residue adoption is
+   zone-owned dry `H`, exactly like polygon-interior dry land. The ownership-
+   handoff package exports sorted adopted intervals under their owning dry
+   face. C-a2 consumes those bytes and never reconstructs the Whole gate or
+   silently treats an adopted column as exterior.
+
+The following existing arithmetic and boundary conventions are now explicit
+C-a1 inputs. An authored capsule uses the longer-radius axis (x on a tie), an
+axis-segment half-length of `long_radius - short_radius`, and a cap radius of
+`short_radius`; the authored x/z radii are therefore its total half-extents.
+Its exact boundary is inside. A centred total-width footprint uses
+`[-floor(W/2), ceil(W/2))` on both axes, including the negative boundary and
+excluding the positive boundary. Template radial distance is the lower-root
+Q16 Euclidean distance from the anchor centre. Terrace rings use that outward-
+from-centre radius:
+`min(rings - 1, floor(radius_q16 / (step_run*Q))) * step_height*Q`.
+
+Section 14.1's ordered positive-collar composition explicitly supersedes, for
+C-a1 semantic interpretation, the consume-only legacy literals
+`geometry_policies.relief_composition.landmark_overlap_rule`, its second
+`evaluation_order` entry, and
+`geometry_policies.landmark_masks.replacement_rule` in `source/catalog.lua`.
+The current source validator's checks of those literals do not restore one-
+winner semantic authority. C-a1 must neither edit the catalog or validator nor
+treat those three values as implementation authority.
+
+The adjacent retained
+`geometry_policies.relief_composition.landmark_priority_order` literal, whose
+value is `greater_integer_priority_wins`, means only that greater priority
+occupies the later composition position and therefore applies last. Its word
+`wins` never selects one landmark or suppresses another positive collar. The
+validator's literal check does not change that later-memo interpretation.
+
+A dedicated later **landmark source-policy cleanup** package must audit and
+reconcile those policy literals before the production compiler or T2-final.
+It should be batched before the already scheduled single C1 reacceptance only
+if it requires no source edit and its audit proves that neither S1 nor the pool
+moves. The no-source-edit STOP is independently operative because
+`geometry_policies` is absent from the S1 projection: unchanged S1/pool results
+cannot prove that the catalog or validator stayed untouched. Any required
+source change or S1/pool movement therefore stops for a new reviewed ruling
+rather than becoming an implicit C-a1 side effect.
+
+The exhaustive landmark census, the focused junction measurement and their
+representative derivations are evidence for this contract. Scratch paths are
+not authority; retained package evidence must carry the reproducible cases it
+claims.
+
+### 14.2 D1-1 compiled slice and island-family reservation
+
+D-1 compiles exactly 38 zone records, 57 land-route records — 30 primary, 24
+secondary and three trails — and four public boat-route records.
+`land_058` through `land_061` remain boundary-only and never become route
+products. The 10 island route stations, eight island routes, 16 route
+interfaces and four landings remain source-only until the Lane-C-b input-
+matrix ruling assigns them. Their placement is an explicit open T2 obligation
+that must close before Lane C-b starts.
+
+Wave 1C reserves a dedicated, empty `island_routes` compiled geometry family.
+This is a bounded world-format reservation, not a payload-only addition. It
+authorizes only:
+
+- `schemas.lua`'s `compiled` binding;
+- `compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`;
+- the `compiled_schema.lua` family list;
+- the production compiler trust skeleton's `geometry_names` list; and
+- the exact family lists in `t2_partition_test.lua` and
+  `t2_schema_core_test.lua`, including the latter's schema-mismatch negative
+  literal.
+
+It authorizes no compiler-implementation wiring, no population of
+`island_routes`, and no change to any other schema identity. The reservation
+does not place an island road and does not enlarge the frozen 57-record
+`land_routes` family.
+
+D-1 keeps its analytic-record helpers local and validates the complete result
+through the public `compiled_schema.canonicalize_compiled` path. It does not
+add or depend on an exported `compiled_schema.validate_analytic_records`;
+helper validation remains internal to `compiled_schema.lua`.
+
+### 14.3 Authoritative execution order through C-a2
+
+1. Phase 0A is first: durably freeze Sections 14.1 and 14.2 plus this ordered
+   dependency plan, then obtain its independent review before implementation
+   begins.
+2. After Phase 0A is integrated, payload-free C-a1 and the **Section-11
+   ownership-handoff schema package (Wave 1C)** may run in parallel. Phase 0B
+   owns the complete PUC-1 mechanical closeout and one atomic policy/evidence
+   fold; it may prepare code and policy in parallel with those packages, but
+   Phase 0A does not partially rewrite the project-wide wording.
+3. Integrate the ownership handoff first. It intentionally changes partition
+   and schema and therefore the compiler/worker PCC digests. Phase 0B's final
+   compiler/worker fixtures, retained evidence, green status and integration
+   must be produced on that integrated provider, or be identically regenerated
+   and rebound after it. Only then integrate the reviewed Phase-0B fold.
+4. D-1 starts only after that Phase-0B fold is green and integrated. C-a1 may
+   already be implemented and reviewed, but it and D-1 integrate only after
+   D-1 is green.
+5. Integrate C-a1 and D-1 in dependency order. Before long PUC work, run the
+   landmark source-policy cleanup audit; batch that cleanup into this gate only
+   if it requires no source edit and neither S1 nor the pool moves, otherwise
+   obey Section 14.1's STOP. This separate source-edit condition is necessary
+   because `geometry_policies` is absent from the S1 projection. Then run the
+   selected four under LuaJIT plus the nonzero connectivity-fill and adopted-
+   residue witnesses. If that preflight is green, run exactly one fresh C1-v3
+   PUC reacceptance for the integrated Wave-1 state.
+6. C-a2 runs serially only after D-1, the ownership export and the C1
+   reacceptance are green. The authorized mandate ends after C-a2 integration
+   and stops before Lane C-b.
+
+The ownership handoff exports both hidden Section-11 results: connectivity-
+closing water under its Bay owner and adopted dry-residue intervals under
+their dry-face/zone owner. No extra C1 run is bought solely for the Phase-0B
+PUC policy package; the one integration reacceptance above covers the planned
+ownership/schema event.
+
+### 14.4 Phase-0A review closeout and calibration
+
+**Review-closeout calibration record (2026-08-23):** non-trivial
+documentation/process-authority package; implementing model GPT-5.6 Sol;
+independent reviewer Claude Opus/xhigh; initial findings 0 Critical / 1 High /
+0 Medium / 9 Low; one fix round; observed elapsed wall time `unknown`. The fix
+round closes the false present containment claim (H1) and L1--L8: priority-
+order interpretation, source-edit/S1/pool STOP, Wave-1C label, both compiled-
+world identifier sites, historical review provenance, planning-record wording,
+the engineering-brief wrap, and the two distinct 98-count measures. Any
+subsequent re-review outcome is appended only by the coordinator if needed.

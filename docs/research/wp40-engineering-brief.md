@@ -123,12 +123,23 @@ authoritative terrain-derived height;
 "terrain-derived" refers to this authored macro-relief field, not to generated
 nodes or to whichever mapchunk first reaches an anchor.
 
-`H` has one value per world column. A caller may not supply its own anchor or
-feature ID and obtain a different natural surface. Internally, stable zone,
-landmark, coast, and relief-layer IDs select domain-separated components only
-through the exact authored classification at `(x, z)`. Anchor/route/template
-IDs affect their later candidate, solver, or shaping records, never the common
-ungraded relief queried by another feature at the same column.
+`H` has exactly one value on each zone-owned authored surface column: dry land,
+zone-owned Planned Water, and every dry column adopted into a zone face by the
+Section-11.7-B residue authority. It is undefined on exterior coastal shelf,
+deep ocean and immutable dragon channels; those columns use the separate `W`/d
+exterior profile and an internal relief query there fails closed. Downstream
+public classification therefore never calls `H` on those exterior classes.
+Raw dry membership may name both incident faces at a declared shared edge or
+junction, but the canonical half-open dry-face classifier in
+[world_zones.md](../design/world_zones.md) Section 7 resolves that seam to one
+owning zone before `H` is evaluated.
+
+A caller may not supply its own anchor or feature ID and obtain a different
+natural surface. Internally, stable zone, landmark, coast, and relief-layer IDs
+select domain-separated components only through the exact authored
+classification at `(x, z)`. Anchor/route/template IDs affect their later
+candidate, solver, or shaping records, never the common ungraded relief queried
+by another feature at the same column.
 
 For a primary or secondary relief profile, let `Q = 65536`, first clamp every
 input `noise_q` to `[-Q,+Q]`, and define
@@ -150,6 +161,30 @@ the unclamped value. Landmark replacement uses the landmark record's
 and inclusive band, empty feature ID and candidate zero. It is not hashed with
 the primary zone domain or landmark ID as feature text.
 
+Landmarks compose rather than select one winner. Evaluate every landmark whose
+Q16 collar weight is positive in ascending `base_h_priority`, so higher
+priority applies later. For each record, qlerp from the previously composed
+`H` to that landmark's replacement height by its own collar weight. A
+zero-weight record is excluded from composition. Exact authored mask membership
+continues to use its source integer predicate; it is separate from the Q16
+signed distance used by the collar and may not be replaced by signed-distance
+equality. The measured 264 ellipse incidences where those classifications
+differ are evidence for this separation, not a new mask authority. Stage 1
+must prove every exact authored mask lies inside its owning zone, and priority
+composition never deletes that identity. Required-route non-blocking is tested
+against the final composed `H` and the later route products, never inferred
+from a one-winner landmark mask.
+
+For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
+is the longer-radius axis, with x selected on an equal-radius tie. Let
+`short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`. The
+closed axis segment runs from `-(long - short)` through `+(long - short)` on
+that axis, centred at the landmark, and has cap radius `short`. Exact mask
+membership is distance to that segment less than or equal to `short`; Q16
+signed distance is the lower-root Q16 distance to the same segment minus
+`short*Q`. The subtraction in the segment half-length preserves the authored
+`radius_x`/`radius_z` as the capsule's total half-extents.
+
 Shared relief has one checksum-covered record for every multi-edge endpoint,
 38 in the current source. Each record stores stable coordinate-derived ID,
 coordinate, sorted incident edge IDs and the common gate band. A nonempty
@@ -170,12 +205,23 @@ At an evaluated column, the ordinary exact nearest-segment/projection tie
 produces at most one record per unique land edge, its perpendicular boundary
 distance `d`, and the exact-rational nearest canonical raster station to the
 projection, with lower global station index on a tie. Let that station's
-zero-based global index be `s` and the edge's last index be `S`. The start
-endpoint is locally supported only when `s < 96`, and the end only when
-`S-s < 96`. A supported endpoint uses `effective_G = qlerp(J, native_G,
-smootherstep(endpoint_distance/96))`; without one, `effective_G = native_G`.
-No far endpoint produces a second junction/edge pair. Stage 1 freezes a raw-
-control minimum endpoint Chebyshev separation of 400 and an undisplaced
+zero-based global index be `s` and the edge's last index be `S`. An authored
+junction `J` is eligible for that edge only when the chosen final raster
+terminal equals the authored junction coordinate exactly and the edge is an
+authored incidence there. Any clipped terminal elsewhere contributes
+`native_G` and creates no substitute relief-`J` candidate. For an eligible
+junction, the start endpoint is locally supported only when `s < 96`, and the
+end only when `S-s < 96`. A supported endpoint uses `effective_G = qlerp(J,
+native_G, smootherstep(endpoint_distance/96))`; without one,
+`effective_G = native_G`. No far endpoint produces a second junction/edge
+pair. This rule preserves R14's categories: the 34 surviving relief junctions
+contribute 98 ordinary incidences; the four dissolved degree-two junctions
+contribute eight Bay-transition incidences; and the eight perimeter
+attachments plus eight perimeter-vertex endpoints remain outside the
+106-incidence relief-junction roster and never acquire relief-`J` authority.
+Here, 98 counts incidences; its equality with Source Authority Section
+2.2's 98 unordered incident-edge pairs is coincidental. Stage 1 freezes a
+raw-control minimum endpoint Chebyshev separation of 400 and an undisplaced
 attachment-joint raster baseline minimum of 297 station steps (`land_034`;
 `land_031` is 298).
 Neither lower-bounds all final seeded attachment geometry. Stage 2 must measure
@@ -903,6 +949,18 @@ crease where authored grading begins or returns to `H`. Distance evaluation,
 local coordinates, primitive composition, half-away-from-zero rounding, and
 all boundary tie rules are implemented once in the shared pure geometry module.
 They may not be redefined by feature code or an offline exporter.
+
+For a centred fitting width `W`, each anchor-relative integer axis uses the
+half-open interval `[-floor(W/2), ceil(W/2))`: the negative boundary is
+included and the positive boundary is excluded. Thus an even width contains
+exactly `W` columns from `-W/2` through `W/2 - 1`; x and z apply the same rule.
+Radial primitives use the lower-root Q16 Euclidean radius from the anchor
+centre, `radius_q16 = isqrt(local_x_q16^2 + local_z_q16^2)`. In particular,
+the `primitive_terrace_q16_v2` offset is
+`min(rings - 1, floor(radius_q16 / (step_run*Q))) * step_height*Q`, so terrace
+rings advance outward from the anchor centre rather than inward from the
+fitting boundary. These are the existing catalog conventions, made explicit
+for C-a1 rather than a new primitive design.
 
 The complete fitting and blend envelopes are evaluated in world coordinates
 before generation and are rendered only as central-owner-chunk slices. The
@@ -4093,6 +4151,25 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | T7 — resource placement | universal-native adapter, exact-final-stratum-host-only authored G1/G2 veins, cultural opportunity masks, semantic ordinary/apex supply records, T7 catalog coverage appended to the deferred manifest, deterministic micro-corpus class 11 | T0, T4, T5 | all T7 coordinates close the T7 coverage namespace; host/clipping/final-node counts, deep order fixtures, all Section 6.4 access routes across 32 seeds, and class-11 fixture appended through the frozen T2 selector without moving an earlier coordinate |
 | T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |
 | T9 — release evidence and rollout | final slot-32 replacement and 32-seed corpus, canonical hash/order suite, final T2--T7 operation-coordinate coverage manifest, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, combined 11-class micro-corpus, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | staging entry alone replaced; unchanged complete geometry/topology/route/anchor oracle passes all 32 final entries; every final non-resource operation is enumerated at/above `broad_content_y_min`, every deeper operation is exact-host-only typed resource, no deferred namespace remains, reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
+
+The first remaining T2 delivery wave freezes D-1 to exactly 38 compiled zone
+records, 57 compiled land-route records (30 primary, 24 secondary and three
+trails), and four compiled public boat-route records. `land_058` through
+`land_061` remain boundary-only and never become route products. The 10 island
+route stations, eight island routes, 16 route interfaces and four landings stay
+source-only until the Lane-C-b input-matrix ruling assigns them. The same Wave-
+1 ownership-handoff schema event reserves a dedicated, empty `island_routes`
+compiled geometry family so that assignment does not require a second central-
+schema event.
+
+That reservation authorizes only `schemas.lua`'s `compiled` binding,
+`compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's family
+list, the production compiler trust skeleton's `geometry_names` list, and the
+exact family lists in
+`t2_partition_test.lua` and `t2_schema_core_test.lua`, including the latter's
+schema-mismatch negative literal. It does not authorize compiler-
+implementation wiring, family population, or a change to any other schema
+identity.
 
 T3's API signatures, adapters, and slow-oracle test scaffolding may proceed in
 parallel with T2 after T1; no T3 authoritative answer or completion gate may

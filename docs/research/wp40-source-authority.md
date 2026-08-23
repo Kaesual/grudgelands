@@ -538,6 +538,17 @@ correction, with its evidence and digests, stays in
   corresponding exact endpoint; the height product never sees an unclamped
   input.
 
+  Relief `H` is evaluated exactly on zone-owned authored surface columns:
+  canonical dry-face ownership, the sorted Section-11.7-B residue intervals
+  exported under their owning dry face, and zone-owned Planned Water. The
+  residue intervals are dry `H` authority; no consumer reconstructs the Whole
+  gate to rediscover them. Exterior coastal shelf, deep ocean and immutable
+  dragon channels have no `H` and use their separate `W`/d profile. An
+  internal relief query on one of those exterior classes rejects. Where raw
+  dry memberships overlap on a declared edge or junction, the canonical
+  half-open classifier resolves exactly one owning face before relief
+  evaluation.
+
 ### 7.4 Relief junctions and shared-boundary blending
 
   Each of the 38 multi-edge endpoint junctions owns one checksum-covered
@@ -557,10 +568,21 @@ correction, with its evidence and digests, stays in
   most one record for each unique land edge, its perpendicular distance `d`,
   and the exact-rational nearest canonical raster station to that projection
   (lower global station index on a tie). Let its zero-based global station be
-  `s` and its last station index be `S`. The start junction is supported only
-  for `s < 96`, the end only for `S-s < 96`; a supported endpoint supplies
+  `s` and its last station index be `S`. The authored junction `J` applies to
+  that edge only if the chosen final raster terminal equals the authored
+  junction coordinate exactly and the edge is an authored incidence there.
+  Otherwise the endpoint supplies `native_G` and no substitute relief-`J`
+  candidate exists. For an eligible junction, the start is supported only for
+  `s < 96`, the end only for `S-s < 96`; a supported endpoint supplies
   `qlerp(J, native_G, smootherstep(endpoint_distance/96))`, otherwise the edge
   supplies `native_G`. It never contributes a separate far-end junction pair.
+  This preserves the post-partition R14 categories in Section 2.2: 34
+  surviving relief junctions contribute 98 ordinary incidences, four dissolved
+  degree-two junctions contribute eight Bay-transition incidences, and the
+  eight perimeter attachments plus eight perimeter-vertex endpoints remain
+  outside the 106-incidence relief-junction roster. Here, 98 counts
+  incidences; its equality with Section 2.2's 98 unordered incident-edge pairs
+  is coincidental.
   Raw authored controls have minimum endpoint Chebyshev separation 400, while
   the undisplaced attachment-joint raster baseline has minimum 297 station
   steps (`land_034`; `land_031` is 298). Neither Stage-1 fact proves the length after final seeded
@@ -577,6 +599,61 @@ correction, with its evidence and digests, stays in
   Landmark replacement hashes the landmark record's `noise_domain`, its
   `secondary_relief_id` profile's ordered octaves and band, an empty feature
   ID, and candidate 0.
+
+### 7.5 Landmark collar composition
+
+  Enumerate every landmark with positive Q16 collar weight in ascending
+  `base_h_priority`; the higher priority therefore applies last. Each record
+  qlerps from the `H` composed by all preceding records to that landmark's
+  replacement height using its own weight. Zero-weight records are excluded
+  rather than entering an order, a denominator or a one-winner selection.
+
+  Exact authored mask membership remains the source integer predicate and is
+  independent of the Q16 signed distance used to derive collar weight. The 264
+  measured ellipse incidences on which exact membership and signed-distance
+  equality differ are retained evidence, not authority and not a license to
+  substitute one classifier for the other. C-a1 Stage 1 must prove each exact
+  mask, including its per-edge displacement margin, is contained in its owning
+  final zone. The current source validator checks only `zone_id` referential
+  integrity at `validation/t2_source.lua:3964`; no current check enforces
+  geometric containment. Priority affects height composition only: it never
+  deletes exact mask identity. Required-route non-blocking is evaluated against
+  the final composed `H` and later route products rather than inferred from a
+  winning mask.
+
+  The retained
+  `geometry_policies.relief_composition.landmark_priority_order` literal, whose
+  value is `greater_integer_priority_wins`, means only that greater priority
+  composes later and applies last. It never selects one landmark or suppresses
+  another positive collar, and the validator's literal check does not change
+  that later-memo interpretation.
+
+  Capsule mask geometry follows the exact source validator. With
+  `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`, its
+  closed axis segment has half-length `long - short` on the longer-radius axis;
+  x wins an equal-radius tie. Exact membership is distance to that segment
+  less than or equal to `short`, and Q16 signed distance is the lower-root Q16
+  distance to the same segment minus `short*Q`. Consequently the authored x/z
+  radii remain the capsule's total half-extents rather than becoming the bare
+  axis-segment extents.
+
+### 7.6 C-a1 primitive boundary conventions
+
+  The shared centred total-width policy includes the negative boundary and
+  excludes the positive boundary on both axes:
+  `-floor(W/2) <= local_axis < ceil(W/2)`. An even width therefore enumerates
+  exactly `-W/2` through `W/2 - 1`. Local coordinates are signed Q16 world-
+  column offsets from the anchor centre. The common radial primitive value is
+  the lower-root Euclidean
+  `radius_q16 = isqrt(local_x_q16^2 + local_z_q16^2)`.
+
+  `primitive_terrace_q16_v2` measures its rings outward from that anchor-
+  centre radius. Its offset is
+  `min(rings - 1, floor(radius_q16 / (step_run*Q))) * step_height*Q`; the
+  fitting-footprint Chebyshev signed distance determines support and the later
+  generic feature blend, not the terrace ring number. These statements make
+  the existing source policy and retained radius KAT explicit; they do not add
+  a new template primitive.
 
 ## 8. Exterior coast-source selection
 
