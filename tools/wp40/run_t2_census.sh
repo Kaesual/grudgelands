@@ -745,19 +745,39 @@ case "${1:-}" in
 		;;
 	--merge-kat)
 		shift
-		if [[ $# -ne 0 ]]; then
-			echo "--merge-kat accepts no further arguments" >&2
+		merge_kat_evidence=""
+		if [[ $# -eq 2 && "$1" == --retain-evidence ]]; then
+			merge_kat_evidence="$2"
+			if [[ ! "$merge_kat_evidence" =~ ^/tmp/grudgelands-wp40-t2-puc-core\.[A-Za-z0-9]+/merge$ ]] ||
+					[[ -e "$merge_kat_evidence" ]]; then
+				echo "--merge-kat evidence path must be a new safe PCC merge path" >&2
+				exit 2
+			fi
+		elif [[ $# -ne 0 ]]; then
+			echo "usage: tools/wp40/run_t2_census.sh --merge-kat [--retain-evidence SAFE_TMP_MERGE_DIR]" >&2
 			exit 2
 		fi
 		# The worker KAT first, so the merge KAT always reads records this tree
 		# just produced and its pinned artifact digest can never outlive the
 		# record digest it was measured from.
+		echo "WP40 T2 merge KAT phase=worker seeds=7" >&2
 		"$lua_path" "$script_dir/t2_census_worker.lua" "$repo" "$scratch" \
 			"$scratch/census-kat.tsv" --kat
+		echo "WP40 T2 merge KAT phase=dual-runtime-merge" >&2
 		run_merge_pair "$scratch/merge-luajit" "$scratch/merge-puc" \
 			--records "$scratch/census-kat.tsv"
 		"$lua_path" "$script_dir/t2_census_gate.lua" "$repo" "$scratch" \
 			merge_kat "$merge_digest"
+		if [[ -n "$merge_kat_evidence" ]]; then
+			mkdir -p "$merge_kat_evidence/merge-luajit" \
+				"$merge_kat_evidence/merge-puc"
+			cp -- "$scratch/census-kat.tsv" \
+				"$merge_kat_evidence/census-kat-v6.tsv"
+			cp -- "$scratch/merge-luajit"/* \
+				"$merge_kat_evidence/merge-luajit/"
+			cp -- "$scratch/merge-puc"/* "$merge_kat_evidence/merge-puc/"
+		fi
+		echo "WP40 T2 merge KAT phase=complete" >&2
 		;;
 	--merge)
 		shift

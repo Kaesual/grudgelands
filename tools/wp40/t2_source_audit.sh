@@ -8,13 +8,15 @@ if [[ "$mode" != full && "$mode" != --static-only ]]; then
 	exit 2
 fi
 cd "$repo"
+repo="$(pwd -P)"
 
 scratch=$(mktemp -d /tmp/grudgelands-wp40-t2.XXXXXX)
 trap 'rm -rf "$scratch"' EXIT
 
 mapfile -t lua_files < <(find mods/MAPGEN/grug_mapgen/wp40/source \
 	mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua \
-	tools/wp40/t2_source_test.lua -type f -name '*.lua' -print | sort)
+	tools/wp40/t2_source_test.lua tools/wp40/t2_puc_core_kat.lua \
+	-type f -name '*.lua' -print | sort)
 lua_files+=(tools/wp40/t2_phase_selector.lua)
 
 tools/bin/luac51 -p "${lua_files[@]}"
@@ -381,7 +383,7 @@ done
 # sha256sum for an independent digest, as in T1. All five sweeps still run.
 for pattern_index in 0 1 2 3 4; do
 	hits=$(grep -nE "${patterns[$pattern_index]}" tools/wp40/t2_source_test.lua \
-		tools/wp40/t2_phase_selector.lua || true)
+		tools/wp40/t2_phase_selector.lua tools/wp40/t2_puc_core_kat.lua || true)
 	if [[ $pattern_index -eq 4 ]]; then
 		hits=$(printf '%s\n' "$hits" | grep -vF 'os.execute("sha256sum " .. input .. " > " .. output)' || true)
 	fi
@@ -393,7 +395,50 @@ for pattern_index in 0 1 2 3 4; do
 done
 
 if [[ "$mode" == full ]]; then
-	env -u WP40_T2_ONLY tools/bin/lua51 tools/wp40/t2_source_test.lua "$repo" "$scratch"
+	lua_bin="${WP40_LUA_BIN:-/usr/bin/luajit}"
+	lua_path="$(command -v "$lua_bin" 2>/dev/null || true)"
+	luajit_path="$(command -v /usr/bin/luajit 2>/dev/null || true)"
+	if [[ -z "$lua_path" || ! -x "$lua_path" ]]; then
+		echo "T2 source audit: interpreter is not executable: $lua_bin" >&2
+		exit 2
+	fi
+	if [[ -z "$luajit_path" || ! -x "$luajit_path" ]]; then
+		echo "T2 source audit: LuaJIT parity interpreter is not executable" >&2
+		exit 2
+	fi
+	echo "WP40 T2 source audit interpreter: $lua_path"
+	env -u WP40_T2_ONLY "$lua_path" tools/wp40/t2_source_test.lua "$repo" "$scratch"
+
+	# The exhaustive harness stays LuaJIT-owned.  PUC receives this targeted,
+	# checksum-pinned Source projection KAT, with stdout and exit compared in
+	# both directions rather than another full Source run.
+	jit_kat_scratch=$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)
+	puc_kat_scratch=$(mktemp -d /tmp/grudgelands-wp40-t2-census.XXXXXXXX)
+	jit_status=0
+	puc_status=0
+	"$luajit_path" tools/wp40/t2_puc_core_kat.lua "$repo" "$jit_kat_scratch" source \
+		>"$scratch/source-kat-luajit.txt" 2>&1 || jit_status=$?
+	tools/bin/lua51 tools/wp40/t2_puc_core_kat.lua "$repo" "$puc_kat_scratch" source \
+		>"$scratch/source-kat-puc.txt" 2>&1 || puc_status=$?
+	rm -rf -- "$jit_kat_scratch" "$puc_kat_scratch"
+	if (( jit_status != puc_status )) ||
+			! cmp -s "$scratch/source-kat-luajit.txt" "$scratch/source-kat-puc.txt"; then
+		echo "T2 source audit: targeted LuaJIT/PUC Source KAT differs" >&2
+		diff "$scratch/source-kat-luajit.txt" "$scratch/source-kat-puc.txt" >&2 || true
+		exit 1
+	fi
+	if (( jit_status != 0 )); then
+		cat "$scratch/source-kat-luajit.txt" >&2
+		echo "T2 source audit: both targeted Source KATs failed ($jit_status)" >&2
+		exit "$jit_status"
+	fi
+	cmp -s "$scratch/source-kat-luajit.txt" \
+		tools/wp40/fixtures/t2_puc_core/source-v1.txt || {
+		echo "T2 source audit: targeted Source KAT fixture differs" >&2
+		exit 1
+	}
+	cat "$scratch/source-kat-luajit.txt"
+	echo 'WP40 T2 targeted Source KAT LuaJIT/PUC stdout and exit byte-identical'
 fi
 
 bash -n tools/wp40/t2_source_audit.sh

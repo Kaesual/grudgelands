@@ -1,0 +1,19 @@
+repro seed 1959553668008863006 compiled 6dcd5da40ac730f6ae5973cfc8b8845c03eaac8481dfe15b597aafd30d86c402
+  terminal land_edge_transition:land_001:to point -1217:-2230
+  terminal land_edge_transition:land_004:from point -844:-2237
+  terminal land_edge_transition:land_004:to point 743:-2243
+  terminal land_edge_transition:land_007:from point 1114:-2234
+  terminal land_edge_transition:land_010:to point -1156:2240
+  terminal land_edge_transition:land_013:from point -757:2246
+  terminal land_edge_transition:land_013:to point 858:2244
+  terminal land_edge_transition:land_016:from point 1192:2226
+repro seed 2147483648 compiled 36c5ce5a6a67f8f2559eea47751579fe3791e5f9c075cfe1d18076bae4032b77
+  terminal land_edge_transition:land_001:to point -1217:-2230
+  terminal land_edge_transition:land_004:from point -848:-2237
+  terminal land_edge_transition:land_004:to point 743:-2243
+  terminal land_edge_transition:land_007:from point 1123:-2239
+  terminal land_edge_transition:land_010:to point -1125:2243
+  terminal land_edge_transition:land_013:from point -757:2246
+  terminal land_edge_transition:land_013:to point 840:2242
+  terminal land_edge_transition:land_016:from point 1192:2226
+correction reproduction complete
