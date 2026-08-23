@@ -719,6 +719,25 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   station steps is rejected outright rather than blended. Junction selection,
   the weighting and the landmark replacement hash are compiler concerns: see
   [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
+- The common macro-relief height `H` exists on every zone-owned authored
+  surface column: ordinary dry land, dry residue adopted into a zone face by
+  the partition authority, and all zone-owned Planned Water. It does not exist
+  on the exterior coastal shelf, deep ocean or immutable dragon channels,
+  whose separate exterior profiles apply. If raw dry faces meet on a declared
+  shared edge or junction, the canonical half-open face rule selects one zone
+  before `H` is evaluated.
+- Every named-landmark collar with positive influence contributes to the
+  natural surface in its declared `base_h_priority` order; a higher-priority
+  landmark is applied later to the already-composed height. Zero-influence
+  collars do not participate. The exact authored landmark mask remains its
+  own identity and is never replaced or erased by the collar-distance
+  calculation or by overlap priority. Required-route clearance is checked
+  against the final composed surface and the later route product.
+- A shared-boundary relief junction influences an incident edge only while
+  that edge's chosen final raster still ends at the exact authored junction.
+  A clipped terminal elsewhere keeps the edge's native relief gate and does
+  not create a replacement junction. Bay transitions, perimeter attachments
+  and perimeter vertices retain their separate topology identities.
 - Authored land roads use exactly three classes. A **primary road** has a
   7-node visible surface inside a 16-node-wide claim-exclusion corridor; it
   carries the race spines, capital axis and other principal capital routes. A

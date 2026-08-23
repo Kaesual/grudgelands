@@ -23,7 +23,57 @@ deliberately a countable event rather than a judgement about length.
 contract is the second package specification, so it and section 6 both live
 in [wp40-t2-contracts.md](wp40-t2-contracts.md) — section 6 below is the
 pointer, and the section numbering is shared across the two files (the
-contracts file holds 6 and 8, this file the rest).
+contracts file holds 6 and 8--14, this file 0--5 and 7).
+
+## 0. Current ordered handoff (decided 2026-08-23)
+
+The user accepted `PUC-1`, accepted `D1-1`, and gave the final `GO` on
+2026-08-23. The durable semantics and package boundary are
+[wp40-t2-contracts.md](wp40-t2-contracts.md) Section 14. This section is the
+authoritative T2 execution order through C-a2 and supersedes the historical
+ordering below wherever it differs, including the former lines 229--231 claim
+that all of Class B / Lane C-a can run independently of partition and D-1.
+
+1. **Phase 0A first.** Land the documentation-only durable freeze and its
+   independent review before starting implementation packages.
+2. **Provider work after integrated Phase 0A.** Payload-free C-a1 and the
+   Section-11 ownership-handoff schema package run in parallel. Phase 0B may
+   prepare code and policy alongside them, but PUC-1's final fixtures,
+   evidence, green status and integration wait for the integrated ownership
+   provider. Phase 0A does not partially fold PUC-1's wording.
+3. **Ownership provider, then Phase 0B.** Integrate the ownership handoff
+   first. Its intentional partition/schema change moves compiler/worker PCC
+   digests. Finalize and integrate the reviewed atomic Phase-0B fold on that
+   provider, or identically regenerate and rebind its final evidence after the
+   provider.
+4. **D-1 after Phase 0B.** D-1 starts only after the reviewed Phase-0B fold is
+   integrated. Its decided compiled slice is 38 zones, 57 land routes (30
+   primary, 24 secondary and three trails), and four public boat routes.
+   `land_058`--`land_061` stay boundary-only. The 10 island route stations,
+   eight island routes, 16 interfaces and four landings remain source-only
+   until the Lane-C-b input-matrix ruling. Wave 1C reserves a dedicated empty
+   `island_routes` compiled geometry family under the exact limited schema
+   scope in contracts Section 14.2. D-1 validates the complete constructed
+   result through public `compiled_schema.canonicalize_compiled`; analytic-
+   record helpers stay local and no validator export is added.
+5. **One integrated Wave-1 gate.** After D-1 is green, integrate C-a1 and D-1
+   in dependency order. The later landmark source-policy cleanup should join
+   this gate only if its audit proves no S1/pool movement; any required source
+   edit or S1/pool movement is STOP, and the cleanup must in all cases close
+   before the production compiler or T2-final. Run the selected four under
+   LuaJIT plus the nonzero connectivity-fill and adopted-residue witnesses as
+   the preflight, then run exactly one fresh C1-v3 PUC reacceptance for the
+   integrated Wave-1 state.
+6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
+   Section-11 ownership export and the green reacceptance. It then assembles
+   zone-owned `H`. Stop after C-a2 and before Lane C-b.
+
+The ownership handoff exports the Bay-owned connectivity-closing water and the
+dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either
+result from polygons. No separate C1 run is scheduled solely for Phase 0B; the
+single Wave-1 integration reacceptance above covers the planned schema event.
+C-a1 follows contracts Section 14.1's later ordered-collar interpretation and
+does not edit or obey the three superseded one-winner source-policy literals.
 
 ## 1. Where T2 actually stands
 
@@ -39,6 +89,10 @@ contracts file holds 6 and 8, this file the rest).
 
 Plus three selectors — logical biomes, nearest-feature, housing-centre — all
 unstarted.
+
+The table describes the current 20-family baseline. The accepted D1-1
+reservation adds the dedicated empty `island_routes` family only in Wave 1C;
+it is a planned schema event, not a family already present or populated here.
 
 ### 1.1 Two verification regimes, decided 2026-08-15
 
@@ -226,9 +280,12 @@ recomputation. This closes C1 acceptance, not T2: seed-corpus promotion,
 T2-final, all light-regime fields, remaining compiled buckets, selectors, and
 the production compiler remain open.
 
-**Class B runs in parallel throughout.** The relief field `H`, the template
-catalog and the one blend operator depend on nothing above; they sit on T1's
-green arithmetic primitives.
+**Superseded 2026-08-23.** The former statement that all of Class B runs in
+parallel throughout is no longer the execution authority. Payload-free C-a1
+may overlap the ownership-handoff implementation and Phase-0B preparation, but
+Phase 0B finalizes only after that provider is integrated. C-a2 requires
+D-1's zone records, the Section-11 ownership export and the one green
+integrated C1-v3 reacceptance, as Section 0 and contracts Section 14 require.
 
 ## 3. Locked surfaces
 

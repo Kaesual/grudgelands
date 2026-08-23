@@ -1,18 +1,17 @@
 # WP40 acceleration and delivery plan
 
-Status: **discussion draft, revised after the 2026-08-21 Section 11 acceptance
-closeout and the green 2026-08-22 C1-v3 handoff. Independently reviewed by
-Fable and Sol; Fable's findings are incorporated and the subsequent Sol closure
-review found no technical blocker. Not an implementation contract and not
-authoritative game design.**
+Status: **planning record, revised after the accepted 2026-08-23 PUC-1 and
+D1-1 rulings and final GO. The execution graph mirrors the authoritative
+[T2 plan](wp40-t2-plan.md) Section 0 and the durable
+[handoff memo](wp40-t2-contracts.md) Section 14. Not an implementation
+contract and not authoritative game design.**
 
 This document consolidates the current review and planning discussion into one
 place. Its purpose is to make WP40 faster to finish without weakening the
 correctness properties that protect a fresh world from seams, overlaps,
 order-dependent generation, or silent fallback behavior.
 
-Until this draft is reviewed and accepted, the existing authorities remain
-unchanged:
+The existing authorities remain layered as follows:
 
 - [world_zones.md](../design/world_zones.md) owns decided player-visible world
   design;
@@ -27,9 +26,9 @@ unchanged:
   project-wide model routing and supersedes historical WP40 model assignments
   for every newly started context.
 
-Approval of this draft would therefore be followed by the coordinated authority
-fold-in described in Section 15. It must not silently override those
-authorities.
+The accepted PUC-1 wording is still folded only by the atomic Phase-0B package
+described in Section 15. This planning record does not silently or partially
+override those authorities.
 
 ## 1. Agreed operating direction
 
@@ -267,54 +266,27 @@ The previous 4,123-seed topology censuses and the 1,166-witness Section 11
 sweep were justified exceptions for global topology. They are not the model
 for local fields, catalogs, selectors, or ordinary integration work.
 
-### 5.2 PUC direction accepted conditionally; current contract unchanged
+### 5.2 PUC-1 accepted; Phase 0B owns the atomic closeout
 
-Plain Lua 5.1 syntax compatibility remains a hard product requirement.
-Therefore the static gates run on every Lua change and representative PUC
-execution remains mandatory at milestones. High-volume iteration belongs to
-LuaJIT.
+The user accepted PUC-1 on 2026-08-23 after review of the pinned final-gate
+inventory. That ruling is final. Its mechanical witnesses, evidence and
+project-wide wording are not folded piecemeal by Phase 0A or by an
+implementation lane: Phase 0B first merges the reviewed inventory commit,
+closes every ruling-owned mechanical obligation, re-derives the complete
+authority-hit list, and applies the policy/evidence change atomically.
+Because the ownership handoff intentionally changes partition/schema and the
+compiler/worker PCC digests, Phase 0B may prepare code and policy in parallel
+but must produce its final compiler/worker fixtures, retained evidence, green
+status and integration on the already integrated ownership provider, or
+identically regenerate and rebind them after that provider.
 
-The current binding rule reserves comprehensive PUC suites for T2-final and
-T9-final. One T2 contract sentence can also be read as attaching the full-`W`
-re-census to that PUC round. A 4,123-seed census that already costs about ten
-hours under LuaJIT would be impractical under the measured PUC/LuaJIT ratios;
-the ambiguity must be removed before T2-final.
-
-**Directional decision, after Fable review:** accept a bounded semantic
-micro-corpus as the final standalone-PUC execution gate, while complete seed
-populations run under LuaJIT. This is not yet the final contract ruling. The
-inventory and replacement matrix below must first prove that the bounded gate
-retains the current risk coverage.
-
-The replacement gate must be specified before that proposal can be accepted.
-It needs:
-
-- an inventory of every current T2-final and T9-final PUC suite and the risk
-  each one covers;
-- a canonical checksum-covered micro-corpus/branch matrix covering arithmetic,
-  formatting, control flow, boundary conditions, and seed-width extremes;
-- at least one full-path PUC witness for each main pipeline: compiler, worker,
-  merge, and selector;
-- an explicit `pairs()`-order divergence gate for the remaining
-  interpreter-dependent control-flow risk;
-- byte-identical canonical artifacts or digests against the corresponding
-  complete LuaJIT evidence;
-- the unchanged separate real fallback-engine runtime gate;
-- unchanged dual-runtime engine benchmarks; and
-- one atomic authority update covering every inventory hit, at minimum
-  `AGENTS.md`, `docs/process/wp-workflow.md`, `luanti-lua.md`,
-  `tools/wp40/README.md`, the engineering brief, the affected WP40 contracts,
-  and the full-`W`/PUC wording in T2 contracts Section 11.4 acceptance point 5.
-
-The intended wording separates the gates: the re-census is a LuaJIT population
-run with PUC parity at merge plus the pinned PUC micro-corpus/full-path
-witnesses. “Representative” can never be selected ad hoc; fixture checksums,
-the deterministic selection rule, and a contracts memo own any later change.
-
-Until the inventory is reviewed, the final user ruling is recorded, and the
-authorities change atomically, the existing comprehensive T2-final/T9-final PUC
-rule continues to apply. If the replacement fails review, retain that rule and
-attach explicit wall-time and CPU budgets instead.
+Until that reviewed Phase-0B package is integrated, the existing interpreter
+wording in its individual owners remains unchanged. This section records the
+ruling and dependency only; it does not implement part of the replacement
+policy. D-1 waits for the integrated Phase-0B result so its executable brief
+can cite the final interpreter and evidence authority. No C1 run is bought for
+Phase 0B alone; the one later integrated Wave-1 C1-v3 reacceptance covers the
+planned ownership/schema event.
 
 ## 6. Delivery structure and parallel work
 
@@ -423,26 +395,63 @@ interface and may not change a C1-pinned surface as a side effect.
 
 Result: **completed without a new semantic finding**.
 
-### Lane C-a — implement the independent T2 local fields
+### Phase 0A — durable handoff freeze (**first current gate**)
 
-Build `H`, the template catalog, and the blend operator. The current T2 plan
-explicitly establishes these as depending on T1 arithmetic rather than the
-boundary correction. They use the light verification regime: purity argument,
-properties, focused KATs, and a determinism digest. Do not copy the topology
-census machinery, extend the C1-pinned partition harness, or modify the locked
-T1 arithmetic files. Use the per-lane test-harness rule in Section 6.2.
+Record the accepted C-a semantics, D1-1 scope and ordered dependency graph in
+their durable owners, then obtain the required independent review. Phase 0A is
+documentation-only and precedes every new implementation package.
 
-Expected size: **medium to large**, divisible by module after shared return
-types are frozen.
+### Phase 0B — PUC policy closeout
+
+After integrated Phase 0A, merge the pinned inventory and close PUC-1's
+mechanical/evidence obligations as one reviewed atomic authority fold. Code and
+policy preparation may overlap payload-free C-a1 and Wave 1C's ownership
+handoff, but the handoff integrates first and Phase 0B's final fixtures,
+evidence, green status and integration bind to that provider. D-1 waits until
+Phase 0B is integrated.
+
+### Lane C-a — split C-a1 from ownership-dependent C-a2
+
+The former claim around this section's pre-freeze lines 426--433 that all of
+Lane C-a is independent of partition and D-1 is explicitly superseded.
+Payload-free C-a1 implements the relief/profile primitives, ordered landmark
+composition, the six payload-free template primitives and the shared blend
+operator. It may overlap Phase 0B and the ownership handoff after Phase 0A is
+integrated, with Phase 0B limited to preparation until the ownership provider
+lands. It does not evaluate route-dependent `causeway` or
+`cross_section`, or ownership-dependent `housing_smoothing`.
+
+For C-a1, contracts Section 14.1 explicitly supersedes the three consume-only
+source-policy literals that still describe a highest-priority one-winner
+interpretation. C-a1 neither edits the catalog/validator nor treats those
+literals as semantic authority. A dedicated later landmark source-policy
+cleanup must close before the production compiler or T2-final. Aim to batch it
+before the single scheduled C1 only if its audit proves no S1/pool movement;
+any required source edit or S1/pool movement is STOP for a new reviewed ruling.
+
+C-a2 is a separate serial package. It assembles zone-owned `H` only after
+D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
+and dry-face/zone-owned adopted residue, and the integrated C1-v3
+reacceptance is green. It consumes those ownership bytes rather than
+reconstructing the Whole gate or treating dry-face polygons as sufficient
+ownership.
+
+Both packages use the light verification regime: purity argument, properties,
+focused KATs and a determinism digest. They do not copy the topology census
+machinery, extend the C1-pinned partition harness or modify the locked T1
+arithmetic files. Use the per-lane test-harness rule in Section 6.2.
+
+Expected combined size: **medium to large**, delivered in the two dependency-
+separated packages above.
 
 ### Lane C-b — route profiles and hydrology after their input freeze
 
-Route profiles require `H` from Lane C-a plus complete X/Z centrelines, route
-classes, cross sections, and the compiled land/boat route records from Lane-D
-package 1. Hydrology additionally requires its reach masks, profiles, and
-transitions. Before either package starts, publish a short input matrix naming
-every provider, return type, and freeze commit. Only then implement them under
-the same light purity/property/digest regime.
+Route profiles require the assembled `H` from C-a2 plus complete X/Z
+centrelines, route classes, cross sections, and the compiled land/boat route
+records from Lane-D package 1. Hydrology additionally requires its reach masks,
+profiles, and transitions. Before either package starts, publish a short input
+matrix naming every provider, return type, and freeze commit. Only then
+implement them under the same light purity/property/digest regime.
 
 Expected size: **medium to large**, but not safely parallel until that matrix
 shows non-overlapping ownership.
@@ -455,8 +464,14 @@ masks, logical-biome IDs, nearest-feature layers, and the housing-centre
 selector. This is a cluster, not one executable worktree. Cut at least these
 packages before implementation:
 
-1. source-record compilation for zones and the land/boat route records
-   (**D-1**, a required provider of Lane C-b);
+1. source-record compilation for exactly 38 zones, 57 land routes (30 primary,
+   24 secondary and three trails), and four public boat routes (**D-1**, a
+   required provider of C-a2 and Lane C-b); D-1 starts only after integrated
+   Phase 0B, keeps `land_058`--`land_061` boundary-only, and leaves the 10
+   island route stations, eight island routes, 16 interfaces and four landings
+   source-only until the Lane-C-b input-matrix ruling; D-1 validates its
+   complete result through public `compiled_schema.canonicalize_compiled`,
+   keeps analytic-record helpers local, and adds no validator export;
 2. perimeter-derived physical geometry for coast/shelf, islands, and channels;
 3. anchors, hard-protection, claim-exclusion, and housing masks; and
 4. logical-biome, nearest-feature, and housing-centre selectors with their slow
@@ -465,6 +480,14 @@ packages before implementation:
 Every package brief names providers, owned files, return types, shared-schema
 owner, fixture owner, and definition of done. Packages may overlap in time only
 when that table proves their write sets and interfaces independent.
+
+Wave 1C is the serialized ownership-handoff/schema package. Beside exporting
+the two Section-11 ownership results consumed by C-a2, it reserves the accepted
+dedicated empty `island_routes` family. That reservation is limited to the
+compiled-world identifier, the compiled-schema family list, the compiler trust
+skeleton's `geometry_names` list, and the exact family lists plus schema-
+mismatch negative literal in the two C1-pinned tests. It authorizes no
+implementation wiring, population or other schema-identity change.
 
 Expected size: **large to extra-large**. This is the main remaining T2 volume,
 but it should not carry the R-series topology verification regime.
@@ -647,25 +670,40 @@ substantial T2 phase if legacy consumers are more coupled than expected.
 
 ## 10. Dependency and parallelization sequence
 
-Gate A is complete. Use the following order from commit `e6eff4b`:
+Gate A and the first C1-v3 handoff are complete. The current authoritative
+order is:
 
 ```text
-e6eff4b: topology semantics frozen
-               |
-               +-> C1-v3 conformance / topology interface handoff [complete]
-               |          |
-               |          +-> Lane-C-a H/templates/blend
-               |          +-> Lane-D-1 source-record compilation
-               |          +-> Lane-D-2/D-3/D-4 as provider tables permit
-               |
-               +-----------> PUC final-gate inventory (doc-only)
-               |
-               +-----------> T3 API scaffolding + slow oracles
-               |
-               +-----------> T5-0 specification -> tools-only probe
+accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
+                           |
+                     Phase 0A freeze
+                           |
+       parallel: C-a1 | ownership handoff | Phase 0B preparation
+                           |
+               integrate ownership provider
+                           |
+               finalize/integrate Phase 0B
+                           |
+                          D-1
+                           |
+                 integrate green C-a1 + D-1
+                           |
+ landmark source-policy cleanup audit (batch only if no S1/pool movement;
+             source edit or S1/pool movement = STOP)
+                           |
+ selected-four LuaJIT + connectivity/adoption witness preflight
+                           |
+          exactly one C1-v3 PUC reacceptance
+                           |
+                         C-a2
+                           |
+                STOP before Lane C-b
 
-Lane-C-a H freeze + Lane-D-1 route records + all other providers named by matrix
-        +-> route profiles and hydrology as separately cut Lane-C-b packages
+C-a2 H freeze + D-1 route records + all other providers named by matrix
+        +-> later route profiles and hydrology as separately cut Lane-C-b packages
+
+Lane C-b + remaining Lane-D-2/D-3/D-4 provider packages
+        +-> Lane E production compiler -> T2 final payload
 
 T2 final payload -------> T3 authoritative API completion
           |              |
@@ -752,12 +790,12 @@ directions:
 - summarize player-visible impact in each child brief and use the existing
   TODO-to-`docs/design/` flow only for new or deviating decisions.
 
-The Fable architecture review prepared two additional directional decisions:
+The architecture review prepared two additional directional decisions:
 
-1. **PUC final gates — ACCEPT WITH CONDITIONS.** Proceed toward the bounded
-   micro-corpus/full-path model in Section 5.2. The next task is the inventory
-   and branch matrix; the current PUC contract stays binding until that evidence
-   receives a final user ruling and all authorities change atomically.
+1. **PUC final gates — PUC-1 ACCEPTED 2026-08-23.** The reviewed inventory and
+   branch matrix received the final user ruling. Phase 0B now owns the complete
+   mechanical closeout and atomic authority fold; no lane may apply a partial
+   wording update.
 2. **Early engine work — RUN T5-0 WITH CONDITIONS.** Proceed with the
    production-like, tools-only, disposable probe specified in Section 8. It
    does not move full T5 ahead of T3/T4 and cannot be reused as production code.
@@ -774,10 +812,12 @@ the C1-pinned `t2_partition_test.lua`. A thin umbrella runner composes them at
 T2-final. This is the default ownership rule in Section 6.2 and removes the
 largest known shared write from the parallel lanes.
 
-### 14.2 Immediate PUC final-gate inventory
+### 14.2 Reviewed PUC inventory; Phase-0B handoff
 
-Cut the Section 5.2 inventory as a small doc/evidence package now, in parallel
-with Lane B. Its output is:
+The Section 5.2 inventory is reviewed on branch
+`wp40-puc-final-gate-inventory`, commit
+`2d443ffe8e9f0b3425fa446fd5f1608defc8bb20`, and is not yet an ancestor of the
+integration branch. It records:
 
 - every current final PUC suite/command and the risk it covers;
 - measured or conservatively projected PUC wall and CPU cost;
@@ -785,17 +825,20 @@ with Lane B. Its output is:
 - explicit treatment of the full-`W` re-census, `pairs()`-order divergence,
   fallback-engine runtime gate, and dual-runtime engine benchmarks;
 - the complete authority-hit list; and
-- a decision memo recommending the final accept/reject wording.
+- the decision memo that supported the accepted PUC-1 wording.
 
-The inventory changes no authority. It is useful in both outcomes: acceptance
-uses it to define the replacement; rejection uses its costs to budget the
-existing comprehensive gates.
+The inventory itself changes no authority. Phase 0B explicitly merges that
+one-file commit, corrects any stale pre-closeout row as part of its measured
+work, completes the ruling-owned witnesses, re-derives the authority-hit list,
+and performs the one atomic fold. Its final compiler/worker evidence is bound
+only after the ownership provider is integrated, as Sections 5.2 and 10
+require. Phase 0A records only this accepted status and dependency.
 
 ## 15. Authority fold-in
 
-After the PUC inventory's final ruling and the accepted T5-0 specification,
-fold the acceleration rules into their owners in one coordinated documentation
-package. Its checked scope includes:
+Phase 0B performs the accepted PUC-1 policy/evidence fold into every owner as
+one reviewed package after Phase 0A and the ownership-handoff provider are
+integrated. Its mechanically re-derived checked scope includes:
 
 - `AGENTS.md`, `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md`,
   `tools/wp40/README.md`, the engineering brief, T2 plan, and affected T2
@@ -809,7 +852,7 @@ package. Its checked scope includes:
 - the `BACKLOG.md` WP40 detail so it reflects the Section 11 landing, topology
   freeze, and actual next step while keeping WP40 `in progress`.
 
-This draft remains a planning record; it does not become a competing authority.
+This file remains a planning record; it does not become a competing authority.
 
 ## 16. Definition of planning-ready
 
@@ -818,15 +861,16 @@ This draft is ready to become an implementation plan when:
 - the disposition of an optional post-fix re-review is recorded and any new
   findings are resolved;
 - the PUC inventory/branch matrix is reviewed and the final PUC ruling is
-  recorded;
+  recorded — **satisfied by PUC-1 on 2026-08-23**;
 - the T5-0 substrate, tools-only payload, four cases, measurements, non-claims,
   and disposal rule are frozen in its package contract — **satisfied**; the
   probe then ran under it and its outcome is recorded in Section 8;
 - each immediate lane has non-overlapping file ownership and frozen interfaces;
 - sample and wall-time budgets are attached to every non-trivial planned test
   command; trivially short static gates need no individual budget;
-- the PUC outcome is folded in as specified in Section 5.2, or the retained
-  comprehensive gates receive explicit time and CPU budgets;
+- Phase 0A's durable freeze is integrated after its independent review;
+- the accepted PUC outcome is folded atomically by Phase 0B as specified in
+  Section 5.2;
 - every child package has a definition of done and an independent reviewer
   selected under the project-wide agent model policy;
 - no unresolved player-visible design choice is left for an implementation
@@ -835,10 +879,11 @@ This draft is ready to become an implementation plan when:
   or authoritative design link; and
 - the Section 15 authority fold-in is complete.
 
-Only then should implementation that depends on this acceleration draft begin.
-The already-authorized C1-v3 conformance/topology handoff has completed under
-the existing T2 plan without promoting this draft to authority. The doc-only
-PUC inventory may likewise proceed as a planning package. The T5-0
-specification no longer waits: it is frozen in its package contract and the
-probe has already run under it as a tools-only observation (Section 8). Full
-T5 still waits for T3 and T4.
+The current execution order is narrower than this whole-document readiness
+list: Phase 0A first; after it, C-a1, the ownership handoff and Phase-0B
+preparation may overlap; the ownership provider integrates before Phase 0B is
+finalized and integrated; D-1 then waits for that green fold; the single
+integrated C1 reacceptance gates C-a2; and the current mandate stops before
+C-b. The T5-0 specification is already frozen and its tools-only probe has run
+(Section 8).
+Full T5 still waits for T3 and T4.
