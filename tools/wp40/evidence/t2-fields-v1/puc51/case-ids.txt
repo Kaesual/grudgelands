@@ -1,0 +1,14 @@
+analytic_shape
+raw_mapping
+seed_zero
+seed_max_u64
+hash_domain_candidate_zero
+mask_rectangle
+mask_ellipse
+mask_capsule
+landmark_triple_order
+primitive_flat_tilt
+primitive_terrace
+primitive_radial
+operator_blend
+composition_deferred_4

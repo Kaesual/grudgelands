@@ -1,0 +1,45 @@
+key	value
+schema	grug_wp40_t2_fields_evidence_v1
+package	WP40 T2 C-a1 payload-free fields
+tested_head	60807530f6d05bbf28a078c856bd29ce2d17f411
+tested_tree	f0a3e39a7807e8a45e5178f8ac4fbf2394fca309
+containment_claim	none; CA1-DAG-1 assigns containment to C-a2
+luajit_path	/usr/bin/luajit-2.1.1767980792
+luajit_version	LuaJIT 2.1.1767980792 -- Copyright (C) 2005-2026 Mike Pall. https://luajit.org/
+puc51_path	/home/jan/projects/grudgelands/tools/bin/lua51
+puc51_version	Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio
+luac51_path	/home/jan/projects/grudgelands/tools/bin/luac51
+luac51_version	Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio
+luajit_full_samples	290
+puc51_targeted_samples	14
+ellipse_retained_rows	264
+full_canonical_sha256	7837f5c33ad976abf222c3fa28f65c53898b8c003115f8eb72889c387c387c8c
+targeted_canonical_sha256	89e23ed490862552c220f13892644d8e6bb722d4fc607701282c593a69eead7f
+dual_runtime_shared_sha256	89e23ed490862552c220f13892644d8e6bb722d4fc607701282c593a69eead7f
+dual_runtime_comparison	byte-identical
+luajit_case_ids_artifact	luajit/case-ids.txt
+luajit_case_ids_sha256	8512b55b896611f62b615923a3975ffa6c003f2982dc1e0adad831f792ba2a8e
+puc51_case_ids_artifact	puc51/case-ids.txt
+puc51_case_ids_sha256	fa951c0a67e99b4e17723ca3d430ba5e5ead8ab89a98db34b515db35256203fd
+luajit_wall_seconds_measured	0.03
+puc51_wall_seconds_measured	0.01
+ordinary_cold_sha_calls_measured	6
+ordinary_warm_added_sha_calls_measured	0
+triple_overlap_sha_calls_measured	32
+ordinary_sha_threshold_assessment	measured below 30
+performance_clock	per-case cold/amortized values are measured process CPU seconds via os.clock; whole-run values are measured wall seconds
+fixture_authoring_scan	separate 62.6-second Source-bounding-box scan; not repeated by acceptance
+reproduction	WP40_LUA_BIN=/usr/bin/luajit-2.1.1767980792 WP40_PUC_BIN=/home/jan/projects/grudgelands/tools/bin/lua51 WP40_LUAC_BIN=/home/jan/projects/grudgelands/tools/bin/luac51 WP40_EVIDENCE_DIR=/tmp/grudgelands-wp40-ca1/tools/wp40/evidence/t2-fields-v1 tools/wp40/run_t2_fields.sh
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/canonical.lua	28022454cadac7aba838873c955ce4ab5c96ff995efef2bc729490b309935716
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/deterministic.lua	ddf478e4fc0714a0551325e88550ef900e86e318091e11938b82ab51542275e9
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua	191985c6003c5d1a149c959ea63ebfae60d8b536f29357a72ccbc6dd5c23e051
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua	83dbbfe6ba4afe2fa8f77c20b28a6c4610e791ac2e283fffd2c31207a4ef5ef8
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua	7d853a01f24f01a6f3568dfe837d933289a7373f6e44b25a546c2cb8d2c96fc8
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/analytic_record.lua	48acaedd96c8303282d1baa35c985fbc957775fbba368ecd21a9f4c753a0d254
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/geometry/relief.lua	47315190cc099017f2e6d9d7a70ad6976524e486f41e6692fe6cdbc0c3ab16fd
+input_sha256:mods/MAPGEN/grug_mapgen/wp40/geometry/template.lua	2f0e421cef9f2fd8f3b9ea76485401cba0656c82cdb2223023b2b9e277d3e617
+input_sha256:tools/wp40/t2_fields_test.lua	5e7eb88ca54bab3307bc69d3408ffcdc6529208747a71d3e16be8f44dda3fe96
+input_sha256:tools/wp40/run_t2_fields.sh	36a58621f6aa4c412977fe87073a20ecd0519449f270af8198e081864b01ccaf
+input_sha256:tools/wp40/t2_census_sha_server.py	8193542454ee66632ef687ed36316ee705f9030aad19a08ec2af5e6bc13b7809
+input_sha256:tools/wp40/fixtures/t2_fields/ellipse-disagreements-v1.tsv	870894def95595652349d6a9a9cbe28cc38c307c384660b0eb680052d1e3a67e
+input_sha256:tools/wp40/fixtures/t2_fields/fixture-manifest-v1.tsv	7bd71370c6071dae113b5dafb77dc4d94c325b31eff99c27424bec9594212781
