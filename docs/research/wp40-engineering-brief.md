@@ -169,11 +169,19 @@ zero-weight record is excluded from composition. Exact authored mask membership
 continues to use its source integer predicate; it is separate from the Q16
 signed distance used by the collar and may not be replaced by signed-distance
 equality. The measured 264 ellipse incidences where those classifications
-differ are evidence for this separation, not a new mask authority. Stage 1
-must prove every exact authored mask lies inside its owning zone, and priority
-composition never deletes that identity. Required-route non-blocking is tested
-against the final composed `H` and the later route products, never inferred
-from a one-winner landmark mask.
+differ are evidence for this separation, not a new mask authority. C-a1 proves
+that arithmetic without claiming final zone containment. After D-1, the
+ownership export and the integrated C1 reacceptance are green, C-a2's first
+fail-closed integration gate must prove every exact authored mask plus its per-
+edge displacement margin lies inside its owning final zone. It uses the
+package-local `surface_owner_at(x, z)` projection over the accepted integrated
+compiled-world-v2 records: dry-face polygon and adopted-residue ownership,
+Bay Base/notch/connectivity and closure-wing ownership, mouth-aperture/perimeter
+ownership, and the canonical half-open seam tie. Missing ownership input stops
+the package; it never licenses a second classifier. Priority composition never
+deletes mask identity. Required-route non-blocking is tested against the final
+composed `H` and the later route products, never inferred from a one-winner
+landmark mask.
 
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let

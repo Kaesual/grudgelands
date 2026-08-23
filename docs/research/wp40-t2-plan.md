@@ -40,7 +40,9 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    Section-11 ownership-handoff schema package (Wave 1C) run in parallel.
    Phase 0B may prepare code and policy alongside them, but PUC-1's final
    fixtures, evidence, green status and integration wait for the integrated
-   ownership provider. Phase 0A does not partially fold PUC-1's wording.
+   ownership provider. Phase 0A does not partially fold PUC-1's wording. Under
+   accepted `CA1-DAG-1`, C-a1 proves mask/collar arithmetic but makes no final-
+   zone containment claim.
 3. **Ownership provider, then Phase 0B.** Integrate the ownership handoff
    first. Its intentional partition/schema change moves compiler/worker PCC
    digests. Finalize and integrate the reviewed atomic Phase-0B fold on that
@@ -55,9 +57,11 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    `island_routes` compiled geometry family under the exact limited schema
    scope in contracts Section 14.2, including both compiled-world identifier
    sites: `schemas.lua`'s `compiled` binding and `compiled_schema.lua`'s
-   `EXPECTED_COMPILED_SCHEMA`. D-1 validates the complete constructed result
-   through public `compiled_schema.canonicalize_compiled`; analytic-record
-   helpers stay local and no validator export is added.
+   `EXPECTED_COMPILED_SCHEMA`. Accepted `OWN-SCHEMA-1` fixes the targets as
+   compiled-world-v2, Bay-v3 and dry-face-v2 while compiled-geometry-v1 stays
+   unchanged. D-1 validates the complete constructed result through public
+   `compiled_schema.canonicalize_compiled`; analytic-record helpers stay local
+   and no validator export is added.
 5. **One integrated Wave-1 gate.** After D-1 is green, integrate C-a1 and D-1
    in dependency order. The later landmark source-policy cleanup should join
    this gate only if it requires no source edit and its audit proves no S1/pool
@@ -68,8 +72,15 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    adopted-residue witnesses as the preflight, then run exactly one fresh
    C1-v3 PUC reacceptance for the integrated Wave-1 state.
 6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
-   Section-11 ownership export and the green reacceptance. It then assembles
-   zone-owned `H`. Stop after C-a2 and before Lane C-b.
+   Section-11 ownership export and the green reacceptance. Its first fail-closed
+   gate proves exact-mask-plus-displacement-margin containment with the package-
+   local `surface_owner_at(x, z)` projection over the accepted integrated
+   compiled-world-v2 records. The projection combines dry-face polygon and
+   adopted-residue ownership with every compiled Planned-Water class, closure-
+   wing ownership, mouth-aperture/perimeter ownership and the canonical half-
+   open seam tie; “not polygons alone” never means omitting polygon membership.
+   Missing input or reconstructed ownership is a STOP. It then assembles zone-
+   owned `H`. Stop after C-a2 and before Lane C-b.
 
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either

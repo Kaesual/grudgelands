@@ -438,9 +438,15 @@ untouched.
 C-a2 is a separate serial package. It assembles zone-owned `H` only after
 D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
 and dry-face/zone-owned adopted residue, and the integrated C1-v3
-reacceptance is green. It consumes those ownership bytes rather than
-reconstructing the Whole gate or treating dry-face polygons as sufficient
-ownership.
+reacceptance is green. Its first fail-closed gate retains the seed-independent
+proof that every exact landmark mask plus the maximum legal incident-edge
+displacement envelope lies inside its final owner. The package-local
+`surface_owner_at(x, z)` projection over the accepted compiled-world-v2 records
+combines dry-face polygon and adopted-residue ownership, every compiled Planned-
+Water class, closure-wing ownership, mouth-aperture/perimeter ownership and the
+canonical half-open seam tie. “Not polygons alone” forbids dropping those other
+inputs; polygon membership remains the ordinary-dry input. Missing input or
+reconstructed ownership is a STOP before `H` assembly.
 
 Both packages use the light verification regime: purity argument, properties,
 focused KATs and a determinism digest. They do not copy the topology census
@@ -685,7 +691,7 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
                      Phase 0A freeze
                            |
-       parallel: C-a1 | Wave 1C ownership handoff | Phase 0B preparation
+ parallel: payload-free C-a1 | Wave 1C ownership | Phase 0B preparation
                            |
                integrate ownership provider
                            |
@@ -702,7 +708,9 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
           exactly one C1-v3 PUC reacceptance
                            |
-                         C-a2
+        C-a2 containment gate against final ownership
+                           |
+                         C-a2 H
                            |
                 STOP before Lane C-b
 

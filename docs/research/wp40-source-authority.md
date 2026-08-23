@@ -612,14 +612,23 @@ correction, with its evidence and digests, stays in
   independent of the Q16 signed distance used to derive collar weight. The 264
   measured ellipse incidences on which exact membership and signed-distance
   equality differ are retained evidence, not authority and not a license to
-  substitute one classifier for the other. C-a1 Stage 1 must prove each exact
-  mask, including its per-edge displacement margin, is contained in its owning
-  final zone. The current source validator checks only `zone_id` referential
-  integrity at `validation/t2_source.lua:3964`; no current check enforces
-  geometric containment. Priority affects height composition only: it never
-  deletes exact mask identity. Required-route non-blocking is evaluated against
-  the final composed `H` and later route products rather than inferred from a
-  winning mask.
+  substitute one classifier for the other. C-a1 proves the mask and collar
+  arithmetic without claiming final zone containment. The first C-a2
+  integration gate must prove each exact mask, including its per-edge
+  displacement margin, is contained in its owning final zone. Its sole
+  authority is the package-local `surface_owner_at(x, z)` projection over the
+  accepted integrated `grug_wp40_compiled_world_v2` records: compiled Bay-v3
+  Base/notch/connectivity data and owner spans, closure-wing and mouth-
+  aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
+  ownership, and the canonical half-open seam tie. Polygon membership remains
+  the ordinary-dry input; “not polygons alone” means none of the other owner
+  classes or ties may be omitted. The current source validator checks only
+  `zone_id` referential integrity at `validation/t2_source.lua:3964`; no current
+  check enforces geometric containment. Missing ownership payload is a STOP;
+  neither C-a package may rebuild the partition classifier. Priority affects
+  height composition only: it never deletes exact mask identity. Required-route
+  non-blocking is evaluated against the final composed `H` and later route
+  products rather than inferred from a winning mask.
 
   The retained
   `geometry_policies.relief_composition.landmark_priority_order` literal, whose
