@@ -7,13 +7,17 @@ the non-canonical runtimes and raw telemetry needed to audit how those bytes
 were obtained.
 
 The provider was commit `62afc64e598129e6e069d26a7746073a96673ccd`
-(tree `6366c5e1457886d7c32f53e08f6c10e9669d9b86`). The mechanical review-fix
-implementation is commit `ee4478bc4210b0be75661152a9c1f240f53a36ce`
-(tree `b91ba958bf7643c6a9c39eea3581a1b56aa7690d`). The implementation was
-performed by GPT-5.6 Sol. Independent Claude Opus/xhigh review reported
-0 Critical / 0 High / 2 Medium / 6 Low; one bounded mechanical fix round is
-complete and focused re-review is pending. No pending-review field is a claim
-of approval.
+(tree `6366c5e1457886d7c32f53e08f6c10e9669d9b86`). The first mechanical
+review-fix implementation is commit
+`ee4478bc4210b0be75661152a9c1f240f53a36ce` (tree
+`b91ba958bf7643c6a9c39eea3581a1b56aa7690d`); the second is
+`c0dcbae512d4dd579281d1321922b5fdade8a74a` (tree
+`9ddcf633529ebbe670311ca541f0ba96ead6eccd`). The implementation was performed
+by GPT-5.6 Sol. Independent Claude Opus/xhigh review reported 0 Critical /
+0 High / 2 Medium / 6 Low initially, then 0 Critical / 0 High / 1 new Medium /
+2 Low-or-Informational in the first focused re-review. Two bounded fix rounds
+are complete and the second focused re-review is pending. No pending-review
+field is a claim of approval.
 
 Measured Phase-0B legs:
 
@@ -26,7 +30,9 @@ Measured Phase-0B legs:
   its 420 s cap, with the `pairs()` probe, synthetic invariance and measured
   invariance all green;
 - optional-load/locales: approximately 5.8 s, byte-identical across both
-  interpreters and both available locales; and
+  interpreters and both available locales; the retained raw output names the
+  actual host locale, while the PCC fixture replaces only that token with
+  `<non-C>`; and
 - complete Source harness under LuaJIT plus the targeted Source PUC parity
   KAT: approximately 88 s in the final successful invocation.
 
@@ -44,7 +50,13 @@ different executable from PUC. Every remaining merge byte and both fixture
 trees are unchanged. Future successful captures also retain
 `merge-runtime-v1.tsv`; the original capture predates that field, so no exact
 whole-leg runtime is fabricated here. Optional-load output is now fixture-
-pinned in both capture and verification modes.
+pinned in both capture and verification modes. The PCC requires exactly one
+trailing success line proving C plus one of the standalone runner's real de/fr
+non-C arms; zero, multiple, malformed or non-trailing lines fail before the
+host locale token is normalized. The normalized fixture SHA-256 is
+`c87444bfa7810a1d2fa42f99b724c378395201c20586197efbda9352f48e2959`;
+`optional-load-v1.txt` in this evidence directory remains the original raw
+host report.
 
 F1, F2, full-`W`, C1 reacceptance and any population under PUC were not run by
 Phase 0B. F1 and the already-completed C1-v3 F2 remain the two separately named

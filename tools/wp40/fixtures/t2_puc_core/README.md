@@ -20,6 +20,15 @@ mechanical normalization and the associated fail-closed checks landed in
 implementation commit `ee4478bc4210b0be75661152a9c1f240f53a36ce`
 (tree `b91ba958bf7643c6a9c39eea3581a1b56aa7690d`).
 
+The standalone optional-load runner keeps its adaptive report of the locale it
+actually discovered. At the PCC boundary, `optional-load-v1.txt` requires
+exactly one trailing success line proving `LC_ALL=C` plus a supported real
+non-C locale arm. Only that locale token is normalized to `<non-C>`; missing,
+multiple, malformed or non-trailing evidence fails closed. This second
+mechanical normalization landed in implementation commit
+`c0dcbae512d4dd579281d1321922b5fdade8a74a` (tree
+`9ddcf633529ebbe670311ca541f0ba96ead6eccd`).
+
 The selection is never ad hoc: 27 `seed_corpus.lua` seeds; compiler witnesses
 `1959553668008863006` and `2147483648`; worker witnesses `2147483648` and
 `16178445837170081103`; the seven `t2_census_worker.lua --kat` seeds; and the

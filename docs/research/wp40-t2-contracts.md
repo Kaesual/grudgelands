@@ -3271,7 +3271,12 @@ runtime telemetry. Worker and other semantic stdout is never normalized. The
 merge report alone replaces its exactly one leading, host-specific interpreter
 identity with `WP40 T2 census interpreter: <LuaJIT>` after an early preflight
 has proved that the configured LuaJIT is genuine and distinct from PUC; every
-remaining byte is exact. For the worker pair,
+remaining byte is exact. The standalone optional-load runner keeps its honest,
+adaptive locale report. At the PCC boundary, exactly one trailing success line
+must prove that both `LC_ALL=C` and one real non-C locale arm ran; zero,
+multiple, malformed or non-trailing success lines fail. Only the discovered
+locale token is replaced with `<non-C>` before fixture comparison. For the
+worker pair,
 both exits must be equal and zero; stdout and the complete two-seed TSV must be
 byte-identical; the external SHA and internal trailing digest must agree. Raw
 stderr is retained separately and must contain exactly these two anchored
@@ -3300,7 +3305,10 @@ artifact digest
 `fcc5ad01d4366af1269bbbe98415aad2bd596fb82f33625a15b5b4957236b795`.
 The full Source harness ran under LuaJIT and its targeted PUC projection KAT
 was byte-identical. Optional-load behavior was byte-identical across both
-interpreters and both available locales.
+interpreters and both available locales. Its normalized canonical fixture has
+SHA-256
+`c87444bfa7810a1d2fa42f99b724c378395201c20586197efbda9352f48e2959`;
+the retained raw evidence continues to name the host's actual non-C locale.
 
 F1, F2, full-`W`, C1 reacceptance and any population under PUC did **not** run
 in Phase 0B. F1 remains deferred to the final gate. The existing F2 evidence is
@@ -3311,9 +3319,14 @@ Phase-0B rerun.
 
 **Completion calibration record:** non-trivial policy/executable-evidence
 package; implementing model GPT-5.6 Sol; independent reviewer Claude
-Opus/xhigh; initial review 0 Critical / 0 High / 2 Medium / 6 Low; one
-mechanical fix round on implementation commit `ee4478bc4210b0be75661152a9c1f240f53a36ce`
-(tree `b91ba958bf7643c6a9c39eea3581a1b56aa7690d`); focused re-review pending;
-observed capture interval approximately 6 h 43 min, including two
-user-authority pauses and the heavy runs. The coordinator appends the focused
-re-review outcome without rewriting the measured evidence above.
+Opus/xhigh. The initial review found 0 Critical / 0 High / 2 Medium / 6 Low;
+the first mechanical fix round is implementation commit
+`ee4478bc4210b0be75661152a9c1f240f53a36ce` (tree
+`b91ba958bf7643c6a9c39eea3581a1b56aa7690d`). The first focused re-review
+found 0 Critical / 0 High / 1 new Medium / 2 Low-or-Informational; the second
+narrow fix round is implementation commit
+`c0dcbae512d4dd579281d1321922b5fdade8a74a` (tree
+`9ddcf633529ebbe670311ca541f0ba96ead6eccd`); second focused re-review pending.
+The observed capture interval was approximately 6 h 43 min, including two
+user-authority pauses and the heavy runs. The coordinator appends the second
+focused re-review outcome without rewriting the measured evidence above.

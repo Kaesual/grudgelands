@@ -133,8 +133,11 @@ telemetry comparison. Before any leg, the runner proves that its LuaJIT side
 really exposes `jit.version` and resolves to a different executable from PUC.
 The merge report replaces only its leading host-specific interpreter identity
 with `WP40 T2 census interpreter: <LuaJIT>`; every semantic line remains exact.
-Optional-load output is fixture-pinned like the other cheap legs. Use a single
-mode (`--micro`, `--source`, `--unit`,
+The standalone optional-load runner still reports the real locale it found.
+The PCC requires one final success line proving C plus a supported real non-C
+arm, then normalizes only that locale token to `<non-C>` before fixture
+comparison; missing, ambiguous or malformed evidence fails. Use a single mode
+(`--micro`, `--source`, `--unit`,
 `--optional`, `--compiler`, `--worker`, `--merge`) during focused diagnosis;
 `--worker-selftest` is the cheap positive/negative channel-gate proof.
 `--unit` (and therefore `--all`) needs the retained Section-11 artifacts;
