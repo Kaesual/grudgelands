@@ -8,7 +8,9 @@ hash_domain_candidate_zero
 mask_rectangle
 mask_ellipse
 mask_capsule
+landmark_default_real_columns
 landmark_triple_order
+landmark_two_collar_chain
 landmark_zero_weight
 landmark_priority_rejects
 relief_cache_performance
