@@ -8,8 +8,10 @@ isolated worktree. No payload survived process exit. This full computation is
 counted conservatively as compile 1/3 and was not repeated.
 WALL=33.82 MAXRSS=595004
 Disposition approved by coordinator: reserve compiles 2/3 and 3/3 for the two
-post-change witnesses, and prove legacy invariance through the scoped production
-diff plus canonical legacy projections retained in handoff-v1.tsv.
+post-change witnesses. The scoped production diff supports an old-field
+invariance argument, while the canonical legacy projections retained in
+handoff-v1.tsv pin seven family digests forward from the tested commit. They are
+not a backward provider-byte measurement because the provider payload was lost.
 
 POST-CHANGE FULL CAPTURE (compiles 2/3 and 3/3)
 WP40 T2 Bay-v3 connectivity witness seed=35408571026545897 columns=3 wall=64s
@@ -17,20 +19,31 @@ WP40 T2 dry-face-v2 adoption witness seed=18171940200422843206 intervals=1 wall=
 WP40 T2 Bay-v3 ownership handoff passed cases=71 fixture_sha256=858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881 total_wall=124s
 FULL_WALL=128.58 FULL_MAXRSS=766232
 
-The capture digest above includes trailing empty TSV fields. Before the tested
-implementation commit, those empty terminal fields were normalized away to
-satisfy git diff --check. Payload values and all 71 cases are unchanged; the
-committed canonical fixture digest is:
+The timing envelopes are not comparable: 33.82 s is whole-process wall time for
+the provider cache harness that later failed to publish, while 64 s and 60 s are
+in-process os.time() deltas around compiler.compile in one post-change process.
+These measurements do not establish a 2x compile-cost regression (or its absence).
+
+The capture digest above includes 40 trailing empty TSV fields on the zero-count
+adoption/connectivity rows. The permanent fixture KAT deterministically
+reconstructs the 71-line, 4876-byte capture from the committed fixture, verifies
+its digest 858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881,
+removes exactly those 40 empty fields, and requires full byte equality with the
+71-line, 4836-byte committed fixture digest:
 abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148
+The reconstruction metadata is retained in capture-normalization.tsv.
 
 REPRESENTATIVE INTERPRETER KATS
-WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=LuaJIT fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 cases=71
-LUAJIT_KAT_WALL=0.03 MAXRSS=9700
-WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=PUC-5.1 fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 cases=71
-PUC_KAT_WALL=0.03 MAXRSS=9908
+WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=LuaJIT fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 fixture_rows=71 validator_cases=28 focused_cases=99 reconstructed_capture_sha256=858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881 normalized_trailing_fields=40
+LUAJIT_KAT_WALL=0.04
+WP40 T2 Bay-v3 handoff fixture KAT passed interpreter=PUC-5.1 fixture_sha256=abcf83cdb005b936c0878278432377aadd70f6ac0b911cd7d3886a9905eeb148 fixture_rows=71 validator_cases=28 focused_cases=99 reconstructed_capture_sha256=858da6a3e825bde1f3c5ad3ffc352aba4445d776cb011798af43f1702bf01881 normalized_trailing_fields=40
+PUC_KAT_WALL=0.04
 
 STATIC AND FOCUSED GATES
 WP40 T2 schema/core tests passed
+SCHEMA_CORE_WALL=1.46
+WP40 T2 compiler optional-load tests passed; LuaJIT/PUC output byte-identical.
+OPTIONAL_LOAD_WALL=5.89
 All changed Lua parsed with tools/bin/luac51 -p.
 No new SETGLOBAL opcode; t2_partition_test.lua retained its four provider writes.
 All five Lua 5.1 grep sweeps passed over mods/*/grug_* and explicitly over tools/wp40.
@@ -40,4 +53,12 @@ All nine submodules were initialized at their pinned commits with no +, -, or U 
 
 EXPENSIVE SUITES DELIBERATELY NOT RUN
 No comprehensive PUC partition round, full W, full C1, or C1 reacceptance.
-No fourth uncached compile. C1 reacceptance remains coordinator-owned after all Wave-1 packages.
+No fourth uncached compile. The changed full partition/oracle gate paths were not
+run in this package; they are deferred to the scheduled Wave-1 integration
+preflight. C1 reacceptance remains coordinator-owned after all Wave-1 packages.
+
+STATIC FILE-LEVEL INFERENCES
+The two S1 authority files, source/validator inputs, 4096-row candidate pool,
+pool manifest and four winners are byte-identical to the provider. S1 was not
+re-derived in this fix round. The candidate subdigest covers its column header
+plus all 4096 rows, not rows alone.
