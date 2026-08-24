@@ -2380,7 +2380,13 @@ adapter:
   interface was an open item here; **§12.5 settles it in the negative** —
   it stays diagnostic-only and is not added to the frozen C1 interface.
 
-The four frozen payload digests are:
+**Historical payload-digest identity.** The four values below are the payload
+digests of the 2026-08-22 run. Section 14.10 supersedes only those four digest
+values after the explicitly authorized ownership/schema handoff. The nine-
+family roster, Whole report fields, per-slot topology counts and zero
+`g/o/r/m` result above remain frozen and byte-identical in the integrated run.
+
+The four historical payload digests are:
 
 | slot | selector class | candidate | `compiled_sha256` |
 |---:|---|---:|---|
@@ -3453,13 +3459,15 @@ green may the single fresh C1-v3 PUC reacceptance start.
 
 ### 14.10 Integrated Wave-1 C1-v3 reacceptance (2026-08-24)
 
-The Section-14.3 integration gate is green. Before the PUC run, the four
-selected winners passed the complete partition gate under LuaJIT with
-`g = o = r = m = 0`, and the ownership handoff reproduced both non-vacuous
-witness classes: three connectivity-closing columns for seed
-`35408571026545897` and one adopted-residue interval for seed
-`18171940200422843206`. The six S1 locks, the 4,096-row candidate artifact and
-the winner indices `2192,1713,1047,3438` remained unchanged.
+The Section-14.3 integration gate is green. Before the PUC run, the coordinator
+observed the four selected winners pass the complete partition gate under
+LuaJIT with `g = o = r = m = 0`; its raw stdout was not retained and this
+development preflight is not acceptance evidence. The retained ownership-
+handoff evidence independently covers both non-vacuous witness classes: three
+connectivity-closing columns for seed `35408571026545897` and one adopted-
+residue interval for seed `18171940200422843206`. The six S1 locks, the
+4,096-row candidate artifact and winner indices `2192,1713,1047,3438`
+remained unchanged.
 
 Exactly one fresh vendored-PUC C1-v3 run then launched from commit
 `db9c344499e7f76418e4f11e822e7492e777161b`, tree
@@ -3468,10 +3476,11 @@ Exactly one fresh vendored-PUC C1-v3 run then launched from commit
 and execution-authority DAG
 `8b1f5faee70d7f5f0b256dfdc6aaa76db0e4f651b3b24fd2cb1680a6651fd6ff`.
 Recorded-evidence reuse correctly refused the older closure, so the run
-recomputed all 20 PUC rescore rows and all four selected slots. The rescore
-barrier passed 20/20 in 236 seconds. The four parallel selected workers passed
-in 5,405 / 5,425 / 5,397 / 5,440 seconds, and the selected barrier completed
-4/4 in 5,478 seconds. Their compiled-payload SHA-256 values are, by slot:
+recomputed all 20 PUC rescore rows and all four selected slots. The retained
+files prove 20/20 and 4/4; their raw runner stdout and elapsed counters were not
+retained and therefore are not a calibrated timing record. Their compiled-
+payload SHA-256 values, which supersede the historical Section-12.4 digest
+identity but not its topology freeze, are, by slot:
 
 - slot 28: `29682e481c49e80092a1cdd97823563031dd525db8aa26c45b2e543f06f88b21`;
 - slot 29: `5135153619f5d7648ce75d341c771af02aceb80c9bd53f9b33e95fb8f9a4c5b0`;
@@ -3488,7 +3497,7 @@ path. Commit `89e4ba17a1c5d0334cc85543e3f0a03b1541dc49` then bound exactly those
 check and finalizer accepted the immutable launch evidence through the
 `REUSED RECORDED EVIDENCE` path with exit 0 and without recomputation.
 
-This closes the single integrated Wave-1 C1 gate and permits C-a2 to start. It
-does **not** promote the seed corpus, run F1, run the full-`W` population, close
-T2, or authorize C-b. Independent acceptance review and its calibration record
-are pending before C-a2 implementation begins.
+The executable C1 gate is green. C-a2 may start only after independent
+acceptance review and its calibration record are green. This does **not**
+promote the seed corpus, run F1, run the full-`W` population, close T2, or
+authorize C-b.

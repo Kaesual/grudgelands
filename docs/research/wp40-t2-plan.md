@@ -313,10 +313,12 @@ The selected-four LuaJIT plus connectivity-fill/adopted-residue witness
 preflight is next.
 
 **Status, 2026-08-24, the integrated Wave-1 C1-v3 gate is green.** The
-LuaJIT selected-four and both non-vacuous ownership witnesses passed first.
-The one fresh vendored-PUC run then passed 20/20 rescores in 236 seconds and
-four of four selected slots in a 5,478-second parallel phase, with all four
-Whole counters remaining zero. Its final artifact SHA-256 is
+The coordinator observed the LuaJIT selected-four preflight, and the retained
+ownership-handoff evidence covers both non-vacuous witnesses. The one fresh
+vendored-PUC run then retained 20/20 rescores and four of four selected slots,
+with all four Whole counters remaining zero. Raw runner stdout and elapsed
+counters were not retained and are not a calibrated timing record. Its final
+artifact SHA-256 is
 `fe52c0bcb1540423a1089cd144be042eadbaf2cb1f4f24d015757c7685639d32`;
 commit `89e4ba1` binds exactly the 25 retained result files. Same-HEAD resume and
 descendant-HEAD recorded-evidence reuse both exited 0 without recomputation.

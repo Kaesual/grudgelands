@@ -529,12 +529,15 @@ from a git worktree.** Parse/validate/mutation KATs are unaffected and run
 anywhere.
 
 **Recorded-commit reuse: what a finished artifact is evidence of.**
-**An accepted `conformance-puc-v3.tsv` exists.** The 2026-08-22 acceptance run
-produced it from commit `5d770365`, tree `52ec4f38`, and C1-v3 DAG
-`52e2d459…`; final SHA-256 `7ac6b7f9…`. A second invocation at unchanged HEAD
-re-verified all 24 retained rows through the first, same-HEAD branch. The
-recorded-commit branch described below remains for a later closure-identical
-HEAD and was not needed by that resume.
+**The current accepted `conformance-puc-v3.tsv` exists.** The integrated
+2026-08-24 reacceptance produced it from commit `db9c344`, tree `35d1c482`, and
+C1-v3 DAG `0f84ae5b…`; final SHA-256 `fe52c0bc…`. A second invocation at that
+unchanged HEAD re-verified all 24 retained rows through the first, same-HEAD
+branch. Commit `89e4ba1` then bound the 25 result files. From the descendant
+HEAD, the recorded-commit branch re-verified the 66-path closure and all 24
+rows, returning `REUSED RECORDED EVIDENCE` with exit 0. The earlier
+`5d770365` acceptance remains historical evidence under
+`tools/wp40/evidence/t2-c1-v3-5d770365/`; it is not the live fixture identity.
 
 A completed `conformance-puc-v3.tsv` would be evidence of the commit it
 *records*, not of whatever `HEAD` happens to be. Without this rule any later

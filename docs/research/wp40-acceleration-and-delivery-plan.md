@@ -124,10 +124,11 @@ histogram text is known documentation debt, not an open semantic question.
 The separately authorized vendored-PUC run completed green from commit
 `5d770365`: 20/20 rescore rows, four of four selected slots, and final artifact
 SHA-256 `7ac6b7f9…`. All four selected slots report `g = o = r = m = 0` and
-the structural pins in T2 contracts section 12.4. The four compiled payload
-digests are frozen there as the downstream boundary-topology interface. A
-separate same-HEAD invocation re-verified all 24 retained rows and exited by
-the resume path without recomputation.
+the structural pins in T2 contracts section 12.4. The four payload digests in
+that section are the historical 2026-08-22 identity; Section 14.10 supersedes
+only those values after the authorized ownership/schema handoff while retaining
+the topology interface. A separate same-HEAD invocation re-verified all 24
+retained rows and exited by the resume path without recomputation.
 
 Measured wall time was 215 seconds for the rescore phase and 5,507 seconds for
 the four parallel selected workers, approximately 99 minutes end to end after
@@ -139,12 +140,14 @@ promotion, T2-final, and all remaining light-regime geometry stay open.
 ### 2.3 Integrated Wave-1 C1-v3 reacceptance closed
 
 After C-a1, D-1, the ownership provider and the landmark Source cleanup were
-integrated, the bounded LuaJIT selected-four preflight and both non-vacuous
-ownership witnesses passed. The single scheduled PUC reacceptance then passed
-20/20 rescores in 236 seconds and all four selected slots in a 5,478-second
-parallel phase. All selected slots retained zero Whole gap, overlap, ring and
-multiplicity counters. The final artifact SHA-256 is `fe52c0bc...639d32` and
-the 25 result files are bound by commit `89e4ba1`.
+integrated, the coordinator observed the bounded LuaJIT selected-four
+preflight and the retained ownership-handoff evidence covered both non-vacuous
+witnesses. The single scheduled PUC reacceptance then retained 20/20 rescores
+and all four selected slots. All selected slots retained zero Whole gap,
+overlap, ring and multiplicity counters. Raw runner stdout and elapsed counters
+were not retained and are not used as a calibrated cost anchor. The final
+artifact SHA-256 is `fe52c0bc...639d32` and the 25 result files are bound by
+commit `89e4ba1`.
 
 Both the same-HEAD resume and the descendant-HEAD 66-path recorded-evidence
 reuse paths are green, so subsequent closure-neutral commits do not buy this
@@ -405,8 +408,11 @@ The T5-0 half has since done so and is finished as a tools-only observation
 The C1 selected-four conformance is migrated to the v3 artifacts, all four
 winners are confirmed under vendored PUC 5.1, and T2 contracts section 12.4
 publishes the frozen perimeter/face interface. Its retained evidence and
-same-HEAD resume proof are closed in section 2.2 above. Later work consumes this
-interface and may not change a C1-pinned surface as a side effect.
+same-HEAD resume proof are closed in section 2.2 above. Later work consumes the
+topology interface and may not change its family roster or structural pins as
+a side effect. Section 14.10 is the explicit later-memo rebind of the four
+payload digests after the authorized ownership/schema handoff; it is not a
+topology change.
 
 Result: **completed without a new semantic finding**.
 
