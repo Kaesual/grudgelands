@@ -3616,12 +3616,16 @@ with no implementation or ruling role. The initial review found 0 Critical / 2
 High / 3 Medium / 4 Low plus three inherited observations. Fix round 1 applied
 all nine package findings and the active inherited future-tense correction.
 The first focused re-review found 0 Critical / 0 High / 1 new Medium / 3 new
-Low. User-authorized fix round 2 closes those N1--N4 findings; a second focused
-independent re-review is required and remains pending. No acceptance, merge or
-C1 launch follows until that re-review is green. End-to-end implementation
-wall time was not instrumented; the initial review record's longest focused
-verification legs were 111 seconds for Source audit and 95 seconds for the
-complete LuaJIT Source test.
+Low. User-authorized fix round 2 closed those N1--N4 findings. A second fresh
+focused independent re-review at package tip
+`b0bbebe45611265a26a51beadb4984176e8c2270` returned `APPROVE` with 0
+Critical / 0 High / 0 Medium / 0 Low and no new findings. The coordinator then
+integrated the package in merge commit
+`7982ed7fe43389972683a26574a02622ed99f762`; the separately authorized C1
+launch gate below remains pending. End-to-end implementation wall time was not
+instrumented; the initial review record's longest focused verification legs
+were 111 seconds for Source audit and 95 seconds for the complete LuaJIT Source
+test.
 
 The immutable package record is retained at
 `tools/wp40/evidence/t2-warcoast-source-v1/`. Its manifest binds Fix-2
