@@ -3908,8 +3908,12 @@ and Planned-Water/exterior products above. Focused re-review 1 returned 0
 Critical / 0 High / 1 Medium / 5 Low. Fix round 2 applied those six
 dispositions. Focused re-review 2 returned 0 Critical / 0 High / 2 Medium /
 3 Low. Fix round 3 applied those five dispositions. Focused re-review 3
-returned 0 Critical / 0 High / 1 Medium / 2 Low. Fix round 4 addresses those
-three findings; focused re-review 4 is pending.
+returned 0 Critical / 0 High / 1 Medium / 2 Low. Fix round 4 applied those
+three dispositions. Focused re-review 4 returned `APPROVE` with 0 Critical /
+0 High / 0 Medium / 1 Low in 483,208 ms. Review completed after four fix
+rounds. Its sole remaining pointer-signposting Low is accepted and deferred as
+non-blocking: the correct Section-7.4 rule is reachable and no binding
+obligation is missing, so this closeout takes no semantic fix.
 
 ### 14.14 CB0-1/2/3 Lane-C-b input freeze (decided 2026-08-24)
 
@@ -3980,7 +3984,7 @@ on that accepted Source, then compile the 65 profiles; C-b hydrology follows
 those profiles. D-3 consumes accepted anchors later and cannot be pulled into
 either package merely to obtain the POI spurs.
 
-**Package classification and review-pending calibration record:** this
+**Package classification and review-complete calibration record:** this
 documentation freeze is non-trivial because it changes player-visible terrain
 semantics, acceptance authority and the next package boundary. Implementing
 model: GPT-5.6 Sol. The initial fresh independent Claude Opus/xhigh review
@@ -3989,6 +3993,10 @@ returned `REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in
 Critical / 0 High / 1 Medium / 5 Low. Fix round 2 applied those six
 dispositions. Focused re-review 2 returned 0 Critical / 0 High / 2 Medium /
 3 Low. Fix round 3 applied those five dispositions. Focused re-review 3
-returned 0 Critical / 0 High / 1 Medium / 2 Low. Fix round 4 addresses those
-three findings; focused re-review 4 is pending. The coordinator appends its
-outcome; this memo does not self-approve.
+returned 0 Critical / 0 High / 1 Medium / 2 Low. Fix round 4 applied those
+three dispositions. Focused re-review 4 returned `APPROVE` with 0 Critical /
+0 High / 0 Medium / 1 Low in 483,208 ms. Review completed after four fix
+rounds. Its sole remaining pointer-signposting Low is accepted and deferred as
+non-blocking: the correct Section-7.4 rule is reachable and no binding
+obligation is missing, so this closeout takes no semantic fix. The independent
+review, not this memo, supplies approval.
