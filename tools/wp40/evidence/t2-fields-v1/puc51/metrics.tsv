@@ -1,0 +1,13 @@
+metric	value
+mode	targeted
+sample_count	17
+aggregate_count	17
+ellipse_count	0
+targeted_count	17
+transport_sha_calls	204
+suite_cpu_seconds	0.009401
+triple_cache_hits	0
+triple_cache_misses	32
+triple_contributions	3
+triple_replacement_evaluations	3
+triple_sha_calls	32
