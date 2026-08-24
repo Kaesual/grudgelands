@@ -2956,11 +2956,13 @@ packages they governed; their bodies are not rewritten.
    not authority. C-a1 Stage 1 must prove that every exact mask, including its
    per-edge displacement margin, is contained in its owning final zone.
    **[Superseded by Section 14.5: this proof is C-a2's first gate.]** The
-   current source validator checks only `zone_id` referential integrity at
-   `validation/t2_source.lua:3964`; no current check enforces geometric
-   containment. Composition never deletes mask identity. Required-route non-
-   blocking is checked against final composed `H` and later route products,
-   not a one-winner mask.
+   production Source validator checks landmark `zone_id` referential integrity
+   at `validation/t2_source.lua:4024`, plus the exact WARCOAST-SOURCE-1 row
+   and route-contact contract at `validation/t2_source.lua:446` and its call at
+   `validation/t2_source.lua:4041`; no general geometric-containment check
+   exists. Composition never deletes mask identity. Required-route nonblocking
+   is checked against final composed `H` and later route products, not a one-
+   winner mask.
 2. **Clipped junction support.** An authored relief junction `J` applies to an
    edge only when the chosen final raster terminal equals the authored
    junction coordinate exactly and the edge is an authored incidence there.
@@ -3500,10 +3502,13 @@ and finalizer accepted the immutable launch evidence through the
 current artifact manifest and the explicit raw-log/timing limitation are under
 `tools/wp40/evidence/t2-c1-v3-db9c344/`.
 
-The executable C1 gate is green. C-a2 may start only after independent
-acceptance review and its calibration record are green. This does **not**
-promote the seed corpus, run F1, run the full-`W` population, close T2, or
-authorize C-b.
+At this Section-14.10 closeout, the executable C1 gate was green for accepted
+evidence commit `89e4ba17a1c5d0334cc85543e3f0a03b1541dc49` and descendants
+whose complete 66-path closure remained byte-identical. That is a historical
+acceptance result, not authority to reuse the evidence after a later closure
+member changes. C-a2 was authorized to start only after independent acceptance
+review and its calibration record were green. This did **not** promote the seed
+corpus, run F1, run the full-`W` population, close T2, or authorize C-b.
 
 **Acceptance-review calibration record:** coordinating model GPT-5.6 Sol;
 independent reviewer Claude Opus/xhigh in a fresh detached read-only context.
@@ -3535,8 +3540,11 @@ centres 30 nodes inward, from `x = -2450` to `x = -2420` and from `x = 2450`
 to `x = 2420`. The corrected exact masks touch the closed Holy boundary at
 `x = -2500` and `x = 2500` without entering strict exterior channel columns.
 The correction must be symmetric and must retain the existing north/south
-corridor coverage. Runtime clipping, a landmark-specific exception to exact
-mask identity, and widening Holy Grounds into either channel are forbidden.
+corridor coverage in the route-contact sense defined below. It deliberately
+changes exact incidence at the Holy boundary from 96/96 columns for each
+approach to 73/96 south and 74/96 north. Runtime clipping, a landmark-specific
+exception to exact mask identity, and widening Holy Grounds into either channel
+are forbidden.
 
 The mask's corridor role is a route contact, not width authority. Both
 `z = -125` and `z = 125` centre-line boundary columns remain in each corrected
@@ -3547,14 +3555,65 @@ full 96-node approach. C-a2 and the later route products prove nonblocking
 access against final `H`; they may not infer that result from landmark-mask
 width alone.
 
-Before C-a2 resumes, a focused Source package must add a fail-closed
-regression for both old failing columns and both corrected boundary contacts,
-then prove the complete exact masks plus their applicable incident-edge
-displacement envelopes remain in their owning final zones. The landmarks are
-outside the S1 Source projection, so the existing S1 authority, candidate
-pool and selected winners are expected to remain byte-identical; any movement
-is a STOP. The package must separately audit the C1 closure consequence. No
-long C1 rerun or new acceptance shortcut is implied by this memo: the
-coordinator reports the smallest evidence-correct reacceptance and its measured
-or retained cost before launching it. C-a2 remains paused until the corrected
-Source and that required acceptance boundary are green.
+This memo authorizes the complete mechanical Source dependency repin required
+by those two accepted centre literals. The canonical Source checksum moves
+from `87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e`
+to `e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963`
+in the Source validator and test. The targeted PCC Source fixture records that
+same checksum in both Source fields; its file SHA-256 moves from
+`526b46c1190cf889ea00b646737a3ac4f4591a17f0b2bde26f88755a8c950253`
+to `664c92edb2357ab998831086cdf98b8251fbcbc8166cf18d957edd3911928ac8`,
+and exactly that one manifest row moves with it. The D-1 authored fixture's
+`source_sha256` and the max-u64 R16/R17 prerequisite's `source_checksum` move
+to the new canonical Source checksum. Under Section 14.7 this is the accepted
+Source-byte consequence, not an ad-hoc PCC re-pin: no PCC selection, witness,
+other fixture, execution leg, semantic D-1 digest, partition digest or compiled
+digest moves.
+
+The permanent Source KAT proves the source-level owning-zone envelope as well
+as the mask translation. Each owning face retains exactly its two horizontal
+incident edges, its inner incident edge and its fixed Holy arc. The fixed outer
+arc and both `z = +/-250` edges have `max_displacement = 0`; the inner
+`x = -/+1500` edge has `max_displacement = 64`. The corrected mask has 20
+nodes of clearance to each horizontal edge and 840 nodes to the authored inner
+edge, leaving 776 after its complete displacement allowance. This is a Source
+envelope proof only. C-a2 still owes the separate final-zone containment gate
+against the accepted compiled `surface_owner_at(x, z)` projection from Section
+14.5; the Source KAT does not substitute for or predict that compiled result.
+
+The required C1 closure audit found exactly two changed members of the 66-path
+closure relative to accepted launch commit
+`db9c344499e7f76418e4f11e822e7492e777161b`:
+`mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua` and
+`mods/MAPGEN/grug_mapgen/wp40/validation/t2_source.lua`. All 25 files covered
+by `tools/wp40/evidence/t2-c1-v3-db9c344/artifact-manifest.tsv` remain
+byte-identical, but closure equality compares those two live inputs with the
+recorded commit and therefore refuses recorded-evidence reuse fail-closed. The
+Section-14.10 green statement remains true only for its historical closure.
+The smallest evidence-correct current reacceptance is one fresh complete
+vendored-PUC C1-v3 run: all 20 rescore rows and all four selected slots. Its
+retained planning anchor is approximately 99 minutes wall time, not a new
+measurement. WARCOAST-SOURCE-1 does not run or shortcut that debt; the
+coordinator must report and authorize the long launch separately.
+
+The focused Source package carries fail-closed regressions for both former
+channel points, both corrected boundary contacts, the exact two-by-96 approach
+roster, the independent row-span geometry and the incident-edge envelope. The
+landmarks remain outside the S1 Source projection; the S1 projection and
+authority, candidate pool and selected winners stay byte-identical. Any later
+movement is a STOP. C-a2 remains paused until the corrected Source package's
+focused re-review and the separately authorized full C1-v3 reacceptance are
+green.
+
+**Package classification and review-pending calibration record:** this is a
+non-trivial package because it changes checksum-authoritative Source geometry,
+fail-closed validation and active fixtures. Implementing model: GPT-5.6 Sol.
+Independent reviewer: Claude Opus/xhigh in a fresh detached read-only context,
+with no implementation or ruling role. The initial review found 0 Critical / 2
+High / 3 Medium / 4 Low plus three inherited observations. Fix round 1 applies
+all nine package findings and the active inherited future-tense correction; a
+focused independent re-review is required and remains pending. No acceptance,
+merge or C1 launch follows until that re-review is green. End-to-end
+implementation wall time was not instrumented; the initial review record's
+longest focused verification legs were 111 seconds for Source audit and 95
+seconds for the complete LuaJIT Source test.
