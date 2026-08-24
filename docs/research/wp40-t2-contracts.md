@@ -3330,3 +3330,50 @@ narrow fix round is implementation commit
 found 0 Critical / 0 High / 0 Medium / 0 Low and returned `APPROVE`.
 The observed capture interval was approximately 6 h 43 min, including two
 user-authority pauses and the heavy runs.
+
+### 14.8 LM-SOURCE-1 landmark source-policy cleanup (2026-08-24)
+
+The user recorded `ACCEPT LM-SOURCE-1; GO` after Section 14.3's required
+landmark audit found that the four old one-winner literals needed a real Source
+edit. The bounded package changes exactly these checksum-covered values:
+
+- `landmark_overlap_rule` is
+  `compose_all_strictly_positive_Q16_collars`;
+- `landmark_priority_order` is
+  `ascending_base_h_priority_higher_applied_last`;
+- relief composition's second `evaluation_order` entry is
+  `all_positive_landmark_collars_qlerp_previous_H_to_replacement_H`; and
+- `landmark_masks.replacement_rule` is
+  `qlerp_previous_H_to_replacement_profile_height_by_own_positive_collar_weight`.
+
+These are vocabulary corrections to the already accepted Section 14.1
+semantics. They do not change landmark rows, geometry, arithmetic, the C-a1
+evaluator, partition, schemas, compiler rosters, C1 inputs or winners. Stage 1
+continues to reject any different literal, duplicate priority or malformed
+order. The existing C-a1 executable KATs remain the arithmetic proof: all
+positive collars compose in ascending priority from the preceding `H`, higher
+priority applies last, zero weight performs no replacement evaluation, and
+duplicate source or selected priorities reject.
+
+The exact Source checksum moves from
+`f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558`
+to
+`87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e`;
+the landmark-mask policy checksum moves from
+`99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e`
+to
+`1a34cefb67cefdb25886eb3ebfa6977b63c3e543cddfa793c4a4e27c890334b9`.
+The corresponding targeted PCC Source fixture and its one manifest digest move
+with those accepted bytes; no PCC selection, other fixture or execution leg
+changes.
+The S1 projection remains `83b1b16a...ddd652`, the S1 authority remains
+`10a790a6...db37c`, all six lock blobs are byte-identical, and the complete
+retained pool fixture subtree remains object `4c83f416...b87d4`. Candidate
+artifact, candidate-row digest, four winners and selected evidence remain
+byte-identical. The retained reproduction record is
+`tools/wp40/evidence/t2-landmark-source-v1/`.
+
+Independent review and its calibration record remain coordinator-owned and
+must be appended before integration. This package does not itself authorize
+the deferred C1 reacceptance; Section 14.3's ordered integration gate still
+does.

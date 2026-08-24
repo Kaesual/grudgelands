@@ -1,0 +1,63 @@
+WP40 T2 LM-SOURCE-1 evidence run
+baseline f72dc69a61ae356af412a27dfa8e0a8b8e220109
+tested_head 9c61588f4fb1da759a0792082a98944d2b10aa81
+tested_tree bc5dc5ff4bffdabc6d7375b400ca2deee3af08d8
+
+COMMAND tools/wp40/t2_source_audit.sh .
+WP40 T2 source audit interpreter: /usr/bin/luajit
+WP43 material progression integration tests passed
+WP40 T2 R15 Wing-wedge oracle passed: 100 raw pairs, 8 wedge pairs, 15->0 dry columns, R<=5
+WP40 T2 Base-Bay owner oracle passed: 2668046 columns, 191990 segment ties, 0 lower-candidate changes (first nil), by Bay ties/changes bay_elandor_west:37642/0,bay_elandor_east:43846/0,bay_kragmar_west:54940/0,bay_kragmar_east:55562/0, max checked product 816036075626
+WP40 T2 H55 fixed-closure oracle passed: 2 x 6 refs, 5001 stations each
+WP40 T2 R17 exhaustive raw-notch Seed0 EW/EE/KW/KE=0/0/0/0 total=0
+WP40 T2 R17 exhaustive raw-notch max-u64 EW/EE/KW/KE=1/1/1/0 total=3
+WP40 T2 R17 exhaustive raw-notch oracle passed: Seed0=0 max-u64=1/1/1/0 single-pass/nonrecursive/foreign/strict-interior guards
+WP40 T2 R17 exhaustive raw-notch R19-slot29 EW/EE/KW/KE=0/0/0/0 total=0
+WP40 T2 R19 Slot29 Source oracle passed: R16=2 complete=1 K=-1135:2242 B=-1136:2242 edge=1601/f823d2abac877c13aa03484cb2941c784b16cbc2c15798bc087596caba7a8e70 Stillgrave=794/f50970d89d04bf992bfb15f898621157e602abf624b09c6dff49fb09bf8d2317 Mournfen=456/457ec6b155f092589972e01d21e6d2c13181a39e26a3eb700fa1e0f4c2071384
+WP40 T2 R16 Slot-19 oracle passed: C=3 perimeter-C=3/2 N=1132870 E=-1140:2241 W=-1139:2242 T=-1140:2242 Mournfen=453 steps=451 branches=0 frames=0/0 stack=0 Stillgrave-nexts=1 sha=1f528c5671fe69254049b03c3ef5047093bb743f9ddcfdb3967b73a000740cca
+WP40 T2 source passed: 38 zones, 61 land edges / 57 routes (30/24/3), 4 boat edges, 70 landmarks, 100 anchors, checksum 87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
+pcc_source_v1
+source_checksum	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
+source_bytes_sha256	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
+boundary_policy_checksum	ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d
+world_partition_checksum	528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70
+WP40 T2 targeted Source KAT LuaJIT/PUC stdout and exit byte-identical
+WP40 T2 source audit passed
+wall=95.49 user=93.86 sys=1.28
+
+COMMAND tools/wp40/run_t2_puc_core.sh --source
+pcc_source_v1
+source_checksum	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
+source_bytes_sha256	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
+boundary_policy_checksum	ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d
+world_partition_checksum	528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70
+WP40 PCC source: LuaJIT/PUC stdout and exit byte-identical
+WP40 PCC source passed
+
+COMMAND tools/wp40/run_t2_fields.sh
+WP40 C-a1 fields passed: LuaJIT samples=292 PUC samples=17
+WP40 C-a1 fields shared digest: 129d04476118a140eaebeff4aa0ce6b6c07af78e5539ff85fb43061e9ed0c932
+WP40 C-a1 fields full digest: 94e4ac100fdb047b4a4a3cebcf88a355fe9f62586697b910dcc20f765badb00a
+wall_seconds	0.04
+user_seconds	0.03
+system_seconds	0.00
+wall_seconds	0.02
+user_seconds	0.01
+system_seconds	0.00
+
+COMMAND WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_s1_authority.sh
+WP40 T2 S1 authority interpreter: /usr/bin/luajit
+WP40 T2 S1 authority passed: projection 83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652 authority 10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c over 6 pinned files, 921 digests
+WP40 T2 S1 authority gates passed
+
+COMMAND tools/bin/lua51 tools/wp40/t2_extreme_gate_check.lua REPO SAFE_SCRATCH
+WP40 T2 E0 full-scan gate accepted s1_authority=10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c s1_source_projection=83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652
+wall=0.04 user=0.03 sys=0.00
+
+STATIC Lua 5.1 parse green for all changed Lua.
+STATIC production SETGLOBAL count 0; source-test SETGLOBAL count 2, byte-identical to baseline.
+STATIC all five production and explicit tools sweeps green.
+STATIC git diff --check and bash -n green.
+STATIC six S1 lock blobs byte-identical to baseline.
+STATIC complete t2_extreme_e0 fixture subtree object 4c83f4160df8ab2873678f4b598d7724301b87d4 byte-identical to baseline.
+STATIC all nine submodule pins initialized and clean.
