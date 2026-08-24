@@ -33,8 +33,9 @@ reconstructs every relevant Source record losslessly, including false versus
 real non-empty text for faction and both optional gate references. It also
 proves Source immutability and absence of mutable aliases in or from output.
 
-The harness-only complete compiled-data shell contains all 21 existing geometry families,
-with the three D-1 families inserted and every other geometry family empty.
+The harness-only complete compiled-data shell contains all 21 existing
+geometry families, with the three D-1 families inserted and every other
+geometry family empty.
 The reserved island_routes family is explicitly empty. The shell includes the
 real typed selectors, spatial, coverage and release sections, and passes only
 through compiled_schema.canonicalize_compiled. Its canonical bytes and the
@@ -79,7 +80,7 @@ DELIBERATELY NOT RUN
 No full W population, C1 reacceptance, F1 partition or F2 C1-v3 conformance,
 T2-final PCC, broad PUC population, compiler round or partition round. D-1
 does not touch or wire the compiler, partition, C-a1, seed, raster, H, relief,
-route-profile or runtime paths. Independent review remains coordinator-owned
+route-profile or runtime paths. Independent review remains coordinator-owned.
 The initial independent Opus/xhigh review verdict was APPROVE with 0 critical,
 0 high, 0 medium and 3 nonblocking low findings. This focused round closes all
 three; a fresh coordinator-owned re-review remains pending. Nothing was pushed
