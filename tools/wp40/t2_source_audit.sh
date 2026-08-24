@@ -215,11 +215,20 @@ grep -q 'id="requester_trace_manifest_v1"' "$catalog"
 grep -q 'id="geometry_extreme_seed_selector_v1"' "$catalog"
 grep -q 'active_tick_last=3333,active_tick_count=3334' "$catalog"
 grep -q 'record_max_displacement_times_Q_not_local_damped_amplitude' "$catalog"
+grep -q 'landmark_overlap_rule = "compose_all_strictly_positive_Q16_collars"' "$catalog"
+grep -q '"ascending_base_h_priority_higher_applied_last"' "$catalog"
+grep -q '"all_positive_landmark_collars_qlerp_previous_H_to_replacement_H"' "$catalog"
+grep -q '"qlerp_previous_H_to_replacement_profile_height_by_own_positive_collar_weight"' "$catalog"
+if grep -qE 'highest_priority_(landmark_replacement|replace_profile)|greater_integer_priority_wins' \
+		"$catalog"; then
+	echo 'T2 source audit: superseded one-winner landmark policy returned' >&2
+	exit 1
+fi
 if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patrols.*road_profile' "$catalog"; then
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q 'f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558' "$stage1"
+grep -q '87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e' "$stage1"
 grep -q 'ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d' "$stage1"
 grep -q '528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70' "$stage1"
 grep -q 'e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751' "$stage1"

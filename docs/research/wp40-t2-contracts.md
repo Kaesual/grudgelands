@@ -3005,12 +3005,18 @@ The current source validator's checks of those literals do not restore one-
 winner semantic authority. C-a1 must neither edit the catalog or validator nor
 treat those three values as implementation authority.
 
+**Forward disposition:** Section 14.8 closes that cleanup and supersedes this
+historical literal mismatch. The Source and fail-closed validator now carry
+the ordered positive-collar vocabulary stated above.
+
 The adjacent retained
-`geometry_policies.relief_composition.landmark_priority_order` literal, whose
-value is `greater_integer_priority_wins`, means only that greater priority
-occupies the later composition position and therefore applies last. Its word
-`wins` never selects one landmark or suppresses another positive collar. The
-validator's literal check does not change that later-memo interpretation.
+`geometry_policies.relief_composition.landmark_priority_order` literal
+historically had the value `greater_integer_priority_wins`.
+**[Superseded by Section 14.8: its current Source value is
+`ascending_base_h_priority_higher_applied_last`.]** Under the former spelling,
+`wins` meant only that greater priority occupied the later composition
+position and therefore applied last; it never selected one landmark or
+suppressed another positive collar.
 
 A dedicated later **landmark source-policy cleanup** package must audit and
 reconcile those policy literals before the production compiler or T2-final.
@@ -3021,6 +3027,10 @@ moves. The no-source-edit STOP is independently operative because
 cannot prove that the catalog or validator stayed untouched. Any required
 source change or S1/pool movement therefore stops for a new reviewed ruling
 rather than becoming an implicit C-a1 side effect.
+
+**Cleanup closed:** the user-authorized result and its retained evidence are
+recorded in Section 14.8. This paragraph remains the historical STOP rule that
+caused the cleanup to be split out; it is no longer pending work.
 
 The exhaustive landmark census, the focused junction measurement and their
 representative derivations are evidence for this contract. Scratch paths are
@@ -3330,3 +3340,74 @@ narrow fix round is implementation commit
 found 0 Critical / 0 High / 0 Medium / 0 Low and returned `APPROVE`.
 The observed capture interval was approximately 6 h 43 min, including two
 user-authority pauses and the heavy runs.
+
+### 14.8 LM-SOURCE-1 landmark source-policy cleanup (2026-08-24)
+
+The user recorded `ACCEPT LM-SOURCE-1; GO` after Section 14.3's required
+landmark audit found that the four old one-winner literals needed a real Source
+edit. The bounded package changes exactly these checksum-covered values:
+
+- `landmark_overlap_rule` is
+  `compose_all_strictly_positive_Q16_collars`;
+- `landmark_priority_order` is
+  `ascending_base_h_priority_higher_applied_last`;
+- relief composition's second `evaluation_order` entry is
+  `all_positive_landmark_collars_qlerp_previous_H_to_replacement_H`; and
+- `landmark_masks.replacement_rule` is
+  `qlerp_previous_H_to_replacement_profile_height_by_own_positive_collar_weight`.
+
+These are vocabulary corrections to the already accepted Section 14.1
+semantics. They do not change landmark rows, geometry, arithmetic, the C-a1
+evaluator, partition, schemas, compiler rosters, C1 inputs or winners. Stage 1
+continues to reject any different literal, duplicate priority or malformed
+order. The existing C-a1 executable KATs remain the arithmetic proof: all
+positive collars compose in ascending priority from the preceding `H`, higher
+priority applies last, zero weight performs no replacement evaluation, and
+duplicate source or selected priorities reject.
+
+The exact Source checksum moves from
+`f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558`
+to
+`87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e`;
+the landmark-mask policy checksum moves from
+`99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e`
+to
+`1a34cefb67cefdb25886eb3ebfa6977b63c3e543cddfa793c4a4e27c890334b9`.
+The corresponding targeted PCC Source fixture and its one manifest digest move
+with those accepted bytes; no PCC selection, other fixture or execution leg
+changes.
+The S1 projection remains `83b1b16a...ddd652`, the S1 authority remains
+`10a790a6...db37c`, and all six lock blobs are byte-identical. The authored
+D-1 fixture rebinds only its Source checksum. The max-u64 R16/R17 prerequisite
+fixture rebinds its Source checksum and, at integration closeout, its stale
+partition/full-compiled pins. The accepted ownership/schema handoff is the
+only compiled-family movement: removing its Bay-v3 connectivity fields and
+dry-Face-v2 adoption fields plus the two record-schema bumps reproduces the
+old Seed-0 and max-u64 R17 digests exactly. All 71 other extreme-fixture files,
+including every pool, candidate, rescore and selected-winner artifact, remain
+byte-identical to the pre-cleanup tree. Candidate artifact, candidate-row
+digest, four winners and selected evidence therefore remain byte-identical.
+The retained reproduction record is
+`tools/wp40/evidence/t2-landmark-source-v1/`.
+
+This package is **non-trivial** under the project model policy: it changes
+checksum-covered Source contract vocabulary and its fail-closed validator,
+despite leaving arithmetic and topology untouched. Independent Opus review
+found one package Critical, two package Highs, two Mediums and three package
+Lows, plus one inherited High and one inherited cosmetic Low. The first
+authorized fix round closed those ten dispositions. Focused re-review verified
+all ten closed and found one new Medium plus two new Lows in retained evidence
+and supersession placement; the second mechanical fix round corrected those
+three findings. The coordinator owns the final re-review and calibration
+result.
+
+The C-a1 `t2-fields-v1` evidence manifest remains an immutable historical
+record of its tested tree; its old Source/validator hashes are inputs of that
+past run, not current authority. Current C-a1 reproduction is recorded by the
+LM-SOURCE evidence and `tools/wp40/run_t2_fields.sh`, so rewriting the old
+manifest would falsely move its provenance. Likewise the engineering brief's
+explicitly historical pre-R7 paragraph retains its stale use of “live pin” as
+an inherited cosmetic wording defect; Section 14.8 is the current authority.
+
+This package does not itself authorize the deferred C1 reacceptance; Section
+14.3's ordered integration gate still does.

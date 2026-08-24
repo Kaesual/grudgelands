@@ -75,7 +75,7 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558"
+local EXPECTED_SOURCE_CHECKSUM="87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e"
 local EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM=
 	"ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d"
 local EXPECTED_WORLD_PARTITION_CHECKSUM=
@@ -5656,7 +5656,19 @@ expect_failure("geometry_policy_contract",function(s)
 end)
 expect_failure("geometry_policy_contract",function(s)
 	s.geometry_policies.relief_composition.landmark_priority_order=
-		"smaller_integer_priority_wins"
+		"descending_base_h_priority_lower_applied_last"
+end)
+expect_failure("geometry_policy_contract",function(s)
+	s.geometry_policies.relief_composition.landmark_overlap_rule=
+		"select_one_positive_collar"
+end)
+expect_failure("geometry_policy_contract",function(s)
+	s.geometry_policies.relief_composition.evaluation_order[2]=
+		"highest_priority_landmark_replacement_and_64_node_blend"
+end)
+expect_failure("landmark_mask_policy",function(s)
+	s.geometry_policies.landmark_masks.replacement_rule=
+		"highest_priority_replace_profile_height"
 end)
 expect_failure("logical_biome_selector_contract",function(s)
 	s.geometry_policies.logical_biome_selector.cell_size=1

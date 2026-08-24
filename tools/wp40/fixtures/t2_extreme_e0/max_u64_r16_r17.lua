@@ -63,9 +63,9 @@ return {
 		{bay_id = "bay_elandor_east", x = 887, z = -2036},
 		{bay_id = "bay_kragmar_west", x = -1121, z = 2220},
 	},
-	source_checksum = "f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558",
+	source_checksum = "87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e",
 	boundary_policy_checksum = "ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d",
-	partition_sha256 = "40a1745379ff096eaa1d9d4634716aee6601f62fe8505a160dd551a77b63aa10",
-	compiled_sha256 = "852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95",
+	partition_sha256 = "e12f4f1b48a0cda79c9ac61b2de6299d9491fd185491f95b4d9c644ed2a599a3",
+	compiled_sha256 = "df08c6983a30dc344b1707c35e64c9728d4a2c5bfaca4bf37bdb04c8c6f3b3ac",
 	reproduce = "WP40_LUA_BIN=/usr/bin/luajit tools/wp40/run_t2_extreme.sh",
 }
