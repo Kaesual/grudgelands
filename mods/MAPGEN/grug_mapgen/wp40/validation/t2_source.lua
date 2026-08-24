@@ -448,6 +448,11 @@ local function validate_warcoast_contract(source)
 	-- landmark masks own the two route contacts, not the 96-node water lanes.
 	-- At the Holy boundary they retain both approach centre lines; four nodes
 	-- inland the complete two half-open approach intervals are inside.
+	if source.constants.dragon_approach_width~=96 or
+			#source.constants.dragon_approach_z~=2 then
+		return select(2,diag("warcoast_landmark_contract","dragon_approaches",
+			"exactly two 96-node approach intervals","changed"))
+	end
 	local expected_rows={
 		{index=59,id="gravesalt_warcoast",zone_id="front_gravesalt_escarpment",
 			center_x=-2420,boundary_x=-2500,inland_x=-2496,old_outer_x=-2530},
