@@ -653,6 +653,13 @@ correction, with its evidence and digests, stays in
   exterior channel columns. The source validator and C-a2 containment KAT pin
   both boundary contacts and reject the former `x = +/-2530` membership.
 
+  This mask contact does not own the boat-corridor width. At the Holy boundary
+  both `z = +/-125` centre lines remain inside; the exact integer mask covers
+  73/96 southern and 74/96 northern approach columns there, and both complete
+  half-open 96-column intervals four nodes inland. The boat/travel records
+  independently retain the complete 96-node approaches. Later route-product
+  validation, not landmark-mask width, proves nonblocking access.
+
 ### 7.6 C-a1 primitive boundary conventions
 
   The shared centred total-width policy includes the negative boundary and

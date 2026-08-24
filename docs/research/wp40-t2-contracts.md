@@ -3538,6 +3538,15 @@ The correction must be symmetric and must retain the existing north/south
 corridor coverage. Runtime clipping, a landmark-specific exception to exact
 mask identity, and widening Holy Grounds into either channel are forbidden.
 
+The mask's corridor role is a route contact, not width authority. Both
+`z = -125` and `z = 125` centre-line boundary columns remain in each corrected
+mask. Exact integer incidence at the Holy boundary is 73/96 columns for the
+southern half-open approach and 74/96 for the northern approach; four nodes
+inland both intervals are 96/96. The separate boat/travel source retains each
+full 96-node approach. C-a2 and the later route products prove nonblocking
+access against final `H`; they may not infer that result from landmark-mask
+width alone.
+
 Before C-a2 resumes, a focused Source package must add a fail-closed
 regression for both old failing columns and both corrected boundary contacts,
 then prove the complete exact masks plus their applicable incident-edge
