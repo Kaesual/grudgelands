@@ -715,12 +715,14 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   their own grading after general relief and take precedence where they
   overlap. The per-zone profile and landmark assignment is binding registry
   data rather than an emergent result of v7 noise.
-  Each of the 38 multi-edge endpoint junctions carries one authored relief
-  record, and relief blends across a shared boundary over a 96-station support
-  on each side. Two supports can never overlap: an edge shorter than 192
-  station steps is rejected outright rather than blended. Junction selection,
-  the weighting and the landmark replacement hash are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
+  Across each shared land edge, post-landmark relief blends perpendicular to
+  the boundary over 96 nodes. Each of the 38 multi-edge endpoint junctions
+  carries one authored relief record and additionally reshapes only
+  `effective_G` over a 96-station endpoint support. Junction support never
+  substitutes for the perpendicular land-edge blend. Two endpoint supports can
+  never overlap: an edge shorter than 192 station steps is rejected outright.
+  Junction selection, weighting and both support rules are compiler concerns:
+  see [wp40-source-authority.md](../research/wp40-source-authority.md) §7.4.
 - The common macro-relief height `H` exists on every zone-owned authored
   surface column: ordinary dry land, dry residue adopted into a zone face by
   the partition authority, and all zone-owned Planned Water. It does not exist
@@ -745,14 +747,15 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   the later route product.
 - Owner clipping alone never authorizes an abrupt final terrain feature. Every
   cardinally adjacent Dry-to-Dry final-owner change maps to a compiled final
-  land-edge or junction support. Its post-landmark heights enter either the
-  land edge's perpendicular 96-node boundary blend or the junction's
-  96-station endpoint support. An undeclared dry owner seam is invalid world
-  data. Adopted residue belongs to its final dry face and creates no separate
-  dry cross-face authority. The final Planned-Water terrain product preserves
-  bed and bank continuity, including internal Bay or Wing owner seams; the
-  exterior terrain product resolves every `H`-to-coast, shelf or channel
-  transition.
+  land-edge incidence, and both post-landmark heights enter its perpendicular
+  96-node boundary blend. Where the seam falls within a surviving relief
+  junction's 96-station endpoint support, both endpoints also lie in that
+  support.
+  An undeclared dry owner seam is invalid world data. Adopted residue belongs
+  to its final dry face and creates no separate dry cross-face authority. The
+  final Planned-Water terrain product preserves bed and bank continuity,
+  including internal Bay or Wing owner seams; the exterior terrain product
+  resolves every `H`-to-coast, shelf or channel transition.
 - A shared-boundary relief junction influences an incident edge only while
   that edge's chosen final raster still ends at the exact authored junction.
   A clipped terminal elsewhere keeps the edge's native relief gate and does

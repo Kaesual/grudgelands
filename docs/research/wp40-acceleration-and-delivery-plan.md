@@ -483,9 +483,10 @@ full-mask-plus-incident-margin proof. Exact masks and Q16 collars remain
 authored identity and diagnostic evidence, but their effective mask/weight is
 zero unless the one final owner equals the landmark's `zone_id`. Eligible
 positive collars still compose in ascending priority, higher last;
-edge/junction blending stays after landmarks. Retained diagnostic evidence is
-the complete LuaJIT exact-mask census of all 70 authored masks and 11,441,328
-columns. Exact-mask and margin geometry are seed-independent. Against the
+land-edge blending stays after landmarks, with surviving junction support used
+only to adjust `effective_G`. Retained diagnostic evidence is the complete
+LuaJIT exact-mask census of all 70 authored masks and 11,441,328 columns.
+Exact-mask and margin geometry are seed-independent. Against the
 accepted seed-0 payload, 15 masks have 274,597 non-owner columns: zero Planned
 Water, 264,197 other-Dry and 10,400 nil/exterior. Ten more are owner-clean but
 fail only the former margin test. No complete positive-collar Planned-Water
@@ -494,20 +495,24 @@ unfiltered Bay lookup and retained no output.
 
 The clip never authorizes an abrupt final feature. C-a2 structurally proves
 every cardinally adjacent Dry-to-Dry owner change maps to a compiled final
-land-edge or junction and enters the applicable support: the land edge's
-perpendicular 96-node boundary blend or the junction's 96-station endpoint
-support. An undeclared dry owner seam is a STOP. Adopted residue creates no
-separate cross-face authority. C-b owns Planned-Water bed/bank continuity
-across internal Bay/Wing owner seams, and D-2 owns `H`-to-exterior transitions.
+land-edge incidence, and both post-landmark heights enter its perpendicular
+96-node boundary blend. Where the seam row falls within a surviving relief
+junction's 96-station endpoint support, both endpoints also enter that support;
+it only reshapes `effective_G` and never replaces edge-blend membership. An
+undeclared dry owner seam is a STOP. Adopted residue creates no separate
+cross-face authority. C-b owns Planned-Water bed/bank continuity across
+internal Bay/Wing owner seams, and D-2 owns `H`-to-exterior transitions.
 Route/hydrology, exterior, housing and capital gates remain separately binding.
 
 C-a2 retains canonical sorted rows for each cardinally adjacent Dry-to-Dry
 owner pair touched by positive owner-eligible landmark support. Normalize
-endpoints lexicographically by `(x,z)`. Rows map both endpoint coordinates and
-owners to the sole compiled final edge or junction and prove both endpoints
-enter the applicable perpendicular 96-node land-edge boundary blend or
-96-station junction endpoint support. Their digest plus missing, duplicate and
-unsupported negative KATs is the gate. The exhaustive bounded evidence is
+endpoints lexicographically by `(x,z)`. Every row maps both endpoint
+coordinates and owners to the sole compiled final land-edge incidence and
+proves positive perpendicular 96-node boundary-blend membership for both.
+Rows within a surviving relief junction's 96-station endpoint support
+additionally record junction ID, endpoint side and positive membership for both
+endpoints. Their digest plus missing, duplicate and unsupported edge or
+required-junction negative KATs is the gate. The exhaustive bounded evidence is
 LuaJIT-only, with targeted PUC structural KATs and no numeric threshold or
 runtime census.
 
@@ -795,7 +800,7 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
       LANDMARK-OWNER-CLIP documentation freeze + independent review
                            |
-   C-a2: owner -> H -> clipped landmarks -> edge / junction supports
+ C-a2: owner -> H -> clipped landmarks -> edge blend (+ junction-adjusted G)
                            |
                  review and integrate C-a2 H
                     /                 \

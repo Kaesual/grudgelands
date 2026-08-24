@@ -620,35 +620,42 @@ correction, with its evidence and digests, stays in
   qlerps from the `H` composed by all preceding records to that landmark's
   replacement height using its own weight. Zero-weight and foreign-owner
   records are excluded rather than entering an order, a denominator or a one-
-  winner selection. Existing shared-edge and junction relief blending follows
-  this post-landmark `H`; the complete order is final owner, primary `H`,
-  owner-clipped landmark composition, then the existing edge/junction blend.
+  winner selection. The existing land-edge blend follows this post-landmark
+  `H`, using any surviving junction endpoint support only to select or reshape
+  `effective_G`. The complete order is final owner, primary `H`, owner-clipped
+  landmark composition, then that land-edge blend.
 
   The owner clip is a domain guard, not authority for a cliff or other abrupt
   final feature. C-a2 must structurally prove that every cardinally adjacent
-  Dry-to-Dry final-owner change maps to a compiled final land-edge or junction
-  support and that its two post-landmark heights enter the applicable support:
-  the land edge's perpendicular 96-node boundary blend or the junction's
-  96-station endpoint support. An undeclared dry owner seam is a STOP; no
-  numeric clip-step allowance can substitute for the structural proof. Adopted
-  residue remains an input to its owning dry face and creates no separate dry
-  cross-face authority. C-b owns final Planned-Water bed and bank continuity
-  across internal Bay and Wing owner seams. D-2 owns every `H`-to-exterior
-  coast, shelf and immutable-channel transition. Neither later package may
-  treat clipping as proof of its product.
+  Dry-to-Dry final-owner change maps to its sole compiled final land-edge
+  incidence and that both post-landmark heights enter the incidence's
+  perpendicular 96-node boundary blend. Where the seam row falls within a
+  surviving relief junction's 96-station endpoint support, C-a2 additionally
+  proves both endpoints enter that support. Junction support selects or
+  reshapes only `effective_G`; it never substitutes for perpendicular land-edge
+  blend membership. An undeclared dry owner seam is a STOP; no numeric
+  clip-step allowance can substitute for the structural proof. Adopted
+  residue remains an input to its owning dry face and creates no separate
+  dry cross-face authority. C-b owns final Planned-Water bed and bank
+  continuity across internal Bay and Wing owner seams. D-2 owns every
+  `H`-to-exterior coast, shelf and immutable-channel transition. Neither later
+  package may treat clipping as proof of its product.
 
   C-a2 retains the structural proof as deterministic rows for every
   cardinally adjacent Dry-to-Dry final-owner pair touched by positive
   owner-eligible landmark support. Normalize endpoints lexicographically by
-  `(x,z)`. Each row maps both endpoint coordinates and owners to the sole
-  compiled final land-edge or junction support and records positive membership
-  of both endpoints in the applicable support: the land edge's perpendicular
-  96-node boundary blend or the junction's 96-station endpoint support. Rows
-  sort by their normalized coordinates, owners, support kind and support ID
-  and bind one canonical digest. Missing, duplicate or unsupported mappings
-  reject. The exhaustive bounded artifact is LuaJIT evidence; PUC runs only
-  targeted structural KATs. It is not a numeric height-step allowance or a
-  runtime census.
+  `(x,z)`. Every row maps both endpoint coordinates and owners to the sole
+  compiled final land-edge incidence and records positive perpendicular
+  96-node boundary-blend membership for both endpoints. A row that falls within
+  a surviving relief junction's 96-station endpoint support additionally
+  records the junction ID, endpoint side and positive membership for both
+  endpoints. Rows sort by their normalized coordinates, owners, land-edge
+  incidence and optional junction fields and bind one canonical digest.
+  Missing, duplicate or unsupported edge mappings reject; missing, duplicate
+  or unsupported junction fields reject where the additional support applies.
+  The exhaustive bounded artifact is LuaJIT evidence; PUC runs only targeted
+  structural KATs. It is not a numeric height-step allowance or a runtime
+  census.
 
   Exact authored mask membership remains the source integer predicate and is
   independent of the Q16 signed distance used to derive collar weight. The 264

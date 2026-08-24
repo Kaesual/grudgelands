@@ -83,26 +83,31 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    ownership is a STOP. Exact masks and collars remain identity/evidence, but
    their effective mask/weight is zero unless owner equals landmark `zone_id`.
    C-a2 then assembles owner-clipped zone-owned `H`, followed by the existing
-   edge/junction blend. The complete exact-mask census of all 70 authored masks
-   is retained as diagnostic evidence, not a strict full-mask-plus-margin gate.
+   land-edge blend; surviving junction support only adjusts `effective_G`.
+   The complete exact-mask census of all 70 authored masks is retained as
+   diagnostic evidence, not a strict full-mask-plus-margin gate.
 
    The clip is not authority for an abrupt final feature. C-a2 structurally
    proves every cardinally adjacent Dry-to-Dry final-owner change has a
-   compiled final land-edge or junction support and enters the applicable
-   support: the land edge's perpendicular 96-node boundary blend or the
-   junction's 96-station endpoint support. An undeclared dry owner seam is a
-   STOP. Adopted residue creates no separate dry cross-face authority. C-b owns
-   final Planned-Water bed/bank continuity across internal Bay and Wing owner
-   seams, while D-2 owns `H`-to-exterior coast, shelf and channel transitions.
+   sole compiled final land-edge incidence, and both post-landmark heights
+   enter its perpendicular 96-node boundary blend. Where the seam row falls
+   within a surviving relief junction's 96-station endpoint support, both
+   endpoints also enter that support; it only reshapes `effective_G` and never
+   replaces edge-blend membership. An undeclared dry owner seam is a STOP.
+   Adopted residue creates no separate dry cross-face authority. C-b owns final
+   Planned-Water bed/bank continuity across internal Bay and Wing owner seams,
+   while D-2 owns `H`-to-exterior coast, shelf and channel transitions.
    Retain deterministic sorted rows for every cardinally adjacent Dry-to-Dry
    owner pair touched by positive owner-eligible landmark support. Normalize
-   endpoints lexicographically by `(x,z)`. Each row names both endpoint
-   coordinates/owners and the sole compiled final edge or junction, and proves
-   both endpoints enter the applicable perpendicular 96-node land-edge blend
-   or 96-station junction endpoint support. Bind one canonical digest and
-   reject missing, duplicate or unsupported mappings. The exhaustive bounded
-   row population is LuaJIT-only; PUC runs targeted structural KATs, never a
-   numeric step test or runtime census.
+   endpoints lexicographically by `(x,z)`. Every row names both endpoint
+   coordinates/owners and the sole compiled final land-edge incidence and
+   proves positive perpendicular 96-node blend membership for both endpoints.
+   Rows within a surviving relief junction's 96-station endpoint support
+   additionally record junction ID, endpoint side and positive membership for
+   both endpoints. Bind one canonical digest and reject missing, duplicate or
+   unsupported edge mappings or required junction fields. The exhaustive
+   bounded row population is LuaJIT-only; PUC runs targeted structural KATs,
+   never a numeric step test or runtime census.
 
    The first C-a2 attempt exposed the symmetric post-C1
    `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks

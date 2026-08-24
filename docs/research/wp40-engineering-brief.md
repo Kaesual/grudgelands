@@ -177,8 +177,9 @@ unless that equality holds. Starting from the owner's primary `H`, evaluate
 every owner-eligible landmark whose effective weight is positive in ascending
 `base_h_priority`, so higher priority applies later. For each record, qlerp
 from the previously composed `H` to that landmark's replacement height by its
-own weight. Zero-weight and foreign-owner records are excluded. Existing
-shared-edge and junction blending then consumes the post-landmark `H`.
+own weight. Zero-weight and foreign-owner records are excluded. The existing
+land-edge blend then consumes the post-landmark `H`, using any surviving
+junction endpoint support only to select or reshape `effective_G`.
 Exact authored mask membership remains separate from the Q16 signed distance
 used by the collar and is retained as identity and diagnostic evidence even
 where the effective mask is clipped. The measured 264 ellipse incidences where
@@ -189,9 +190,12 @@ products; owner clipping never discharges one silently.
 
 Owner clipping also never authorizes an abrupt final terrain feature. C-a2
 must structurally prove that every cardinally adjacent Dry-to-Dry final-owner
-change maps to a compiled final land-edge or junction support and enters the
-applicable support: the land edge's perpendicular 96-node boundary blend or
-the junction's 96-station endpoint support. An undeclared dry owner seam is a
+change maps to its sole compiled final land-edge incidence and that both
+post-landmark heights enter its perpendicular 96-node boundary blend. Where
+the seam row falls within a surviving relief junction's 96-station endpoint
+support, C-a2 additionally proves both endpoints enter that support. Junction
+support only selects or reshapes `effective_G`; it never substitutes for
+perpendicular land-edge blend membership. An undeclared dry owner seam is a
 STOP; no numeric clip-step allowance substitutes for this proof. Adopted
 residue stays part of its final dry face and is not a separate dry cross-face
 authority. C-b owns final Planned-Water bed and bank continuity across internal
@@ -202,14 +206,16 @@ C-a2's retained structural artifact is a deterministic sorted row set covering
 every cardinally adjacent Dry-to-Dry final-owner pair touched by positive
 owner-eligible landmark support. Normalize the lexicographically smaller
 `(x,z)` endpoint first, then sort by both endpoint coordinates and owners,
-support kind and support ID. Each row names the sole compiled final land-edge
-or junction support and proves positive membership of both endpoints in the
-applicable support: the land edge's perpendicular 96-node boundary blend or
-the junction's 96-station endpoint support. Bind one canonical digest and
-reject missing, duplicate or unsupported mappings with negative KAT coverage.
-The exhaustive bounded row set runs under LuaJIT; PUC executes targeted
-structural KATs only. No numeric height-step threshold or runtime census is
-authorized.
+land-edge incidence and optional junction fields. Every row names the sole
+compiled final land-edge incidence and proves positive perpendicular 96-node
+boundary-blend membership for both endpoints. A row that falls within a
+surviving relief junction's 96-station endpoint support additionally names its
+junction ID and endpoint side and proves positive membership for both
+endpoints. Bind one canonical digest and reject missing, duplicate or
+unsupported edge mappings; the same negative coverage applies to required
+additional junction fields. The exhaustive bounded row set runs under LuaJIT;
+PUC executes targeted structural KATs only. No numeric height-step threshold or
+runtime census is authorized.
 
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let
@@ -1121,9 +1127,17 @@ reversal `k -> S+1-k`, the corrected to-end range is the exact image of
 `2..min(S,8)` for every `S`. Each endpoint therefore has at most seven deltas,
 or eight flat stations, and the two ranges overlap exactly when `S < 15`; an
 overlap simply requires their union to stay flat. The current eight island
-routes have zero transition-capacity differences between the former and
-corrected ranges. The correction moves no Source, central schema, fixture or
-compiled-artifact bytes.
+routes each have `S >= 111`, so the correction frees exactly `delta_(S-7)`
+from the endpoint-flat set and makes it transition-eligible on every route.
+CB-1's named greedy maximum transition-capacity metric scans permitted delta
+indices in ascending order under
+`initial_transition_assumption = first_permitted_transition_free`: it accepts
+the first without a predecessor and accepts a later `j` only when
+`j - previous >= minimum_transition_run = 8`. All eight retain the same maximum
+transition count and the same bridgeable delta, defined as transition count
+plus `max_cut + max_fill`: zero of eight routes differ on either result. This
+metric result does not claim that the eligible-delta set is unchanged. The
+correction moves no Source, central schema, fixture or compiled-artifact bytes.
 
 The island-profile branch consumes all 16 typed compiled endpoint/interface
 records. It does not read nonexistent Source grade fields or the ordinary
