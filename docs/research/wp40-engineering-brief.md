@@ -189,24 +189,27 @@ products; owner clipping never discharges one silently.
 
 Owner clipping also never authorizes an abrupt final terrain feature. C-a2
 must structurally prove that every cardinally adjacent Dry-to-Dry final-owner
-change maps to a compiled final land-edge or junction support and is consumed
-by that support's existing post-landmark 96-station blend. An undeclared dry
-owner seam is a STOP; no numeric clip-step allowance substitutes for this
-proof. Adopted residue stays part of its final dry face and is not a separate
-dry cross-face authority. C-b owns final Planned-Water bed and bank continuity
-across internal Bay and Wing owner seams; D-2 owns every `H`-to-exterior coast,
-shelf and immutable-channel transition.
+change maps to a compiled final land-edge or junction support and enters the
+applicable support: the land edge's perpendicular 96-node boundary blend or
+the junction's 96-station endpoint support. An undeclared dry owner seam is a
+STOP; no numeric clip-step allowance substitutes for this proof. Adopted
+residue stays part of its final dry face and is not a separate dry cross-face
+authority. C-b owns final Planned-Water bed and bank continuity across internal
+Bay and Wing owner seams; D-2 owns every `H`-to-exterior coast, shelf and
+immutable-channel transition.
 
 C-a2's retained structural artifact is a deterministic sorted row set covering
 every cardinally adjacent Dry-to-Dry final-owner pair touched by positive
 owner-eligible landmark support. Normalize the lexicographically smaller
-`(z,x)` endpoint first, then sort by both endpoint coordinates and owners,
+`(x,z)` endpoint first, then sort by both endpoint coordinates and owners,
 support kind and support ID. Each row names the sole compiled final land-edge
-or junction support and proves positive membership of both endpoints in its
-post-landmark 96-node blend. Bind one canonical digest and reject missing,
-duplicate or unsupported mappings with negative KAT coverage. The exhaustive
-bounded row set runs under LuaJIT; PUC executes targeted structural KATs only.
-No numeric height-step threshold or runtime census is authorized.
+or junction support and proves positive membership of both endpoints in the
+applicable support: the land edge's perpendicular 96-node boundary blend or
+the junction's 96-station endpoint support. Bind one canonical digest and
+reject missing, duplicate or unsupported mappings with negative KAT coverage.
+The exhaustive bounded row set runs under LuaJIT; PUC executes targeted
+structural KATs only. No numeric height-step threshold or runtime census is
+authorized.
 
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let
@@ -1112,12 +1115,22 @@ authorizes no Source edit or central schema bump.
 Under the existing solver convention `delta_j = y_j - y_(j-1)`, let `S` be the
 final raster station count. The typed compiled endpoint/interface record at
 `i = 1` requires `delta_j = 0` for `j = 2..min(S,8)`; the record at `i = S`
-requires `delta_j = 0` for `j = max(2,S-7)..S`. Each endpoint therefore has up
-to eight flat stations, or seven deltas. On a route shorter than 15 stations,
-overlap simply requires the union of both ranges to stay flat. The island-
-profile branch consumes all 16 typed compiled endpoint/interface records. It
-does not read nonexistent Source grade fields or the ordinary
-`route_profile_solver.interface_phase_ref` path. No implicit `1:12`
+requires `delta_j = 0` for `j = max(2,S-6)..S`. The accepted
+`CB0-2-ERRATUM-1` ruling supersedes the former `S-7` literal. Under station
+reversal `k -> S+1-k`, the corrected to-end range is the exact image of
+`2..min(S,8)` for every `S`. Each endpoint therefore has at most seven deltas,
+or eight flat stations, and the two ranges overlap exactly when `S < 15`; an
+overlap simply requires their union to stay flat. The current eight island
+routes have zero transition-capacity differences between the former and
+corrected ranges. The correction moves no Source, central schema, fixture or
+compiled-artifact bytes.
+
+The island-profile branch consumes all 16 typed compiled endpoint/interface
+records. It does not read nonexistent Source grade fields or the ordinary
+`route_profile_solver.interface_phase_ref` path. It is expressly exempt from
+the ordinary land-route `flat_run_12` literal in
+`route_profile_solver.interface_phase_rule`; CB0-2's ranges are its sole
+endpoint-phase authority. No implicit `1:12`
 start/capital/crossing exception applies. The first C-b profile roster is
 exactly the 57 land routes plus these eight island routes. The four public
 `boat_routes` describe travel/corridor connectivity and receive no road height

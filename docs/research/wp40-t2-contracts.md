@@ -3768,8 +3768,9 @@ final owner -> primary H -> owner-clipped landmarks -> edge/junction blend
 Owner clipping alone never authorizes a cliff, step or other abrupt final
 terrain feature. C-a2 must structurally prove that every cardinally adjacent
 Dry-to-Dry final-owner change maps to a compiled final land-edge or junction
-support and that the two post-landmark heights are consumed by that support's
-existing 96-station blend. An undeclared dry owner seam is a STOP; no numeric
+support and that the two post-landmark heights enter the applicable support:
+the land edge's perpendicular 96-node boundary blend or the junction's
+96-station endpoint support. An undeclared dry owner seam is a STOP; no numeric
 clip-step allowance can substitute for the structural proof. Adopted residue
 belongs to its final dry face and creates no separate dry cross-face authority.
 C-b owns final Planned-Water bed and bank continuity, including internal Bay
@@ -3779,15 +3780,16 @@ immutable-channel transition.
 The retained structural evidence is a deterministic row set for every
 cardinally adjacent Dry-to-Dry final-owner pair touched by positive
 owner-eligible landmark support. Normalize the lexicographically smaller
-`(z,x)` endpoint first and sort rows by both endpoint coordinates and owners,
+`(x,z)` endpoint first and sort rows by both endpoint coordinates and owners,
 support kind and support ID. Each row maps that pair to the sole compiled final
 land-edge or junction support and records positive membership of both endpoints
-in its post-landmark 96-node blend. C-a2 binds the canonical row digest and
-carries negative KAT coverage for a missing, duplicate and unsupported mapping.
-The row population is bounded but exhaustive and runs under LuaJIT. PUC 5.1
-runs only targeted structural KATs against the same row semantics. A numeric
-height-step threshold cannot replace the proof, and map generation performs no
-runtime census.
+in the applicable support: the land edge's perpendicular 96-node boundary
+blend or the junction's 96-station endpoint support. C-a2 binds the canonical
+row digest and carries negative KAT coverage for a missing, duplicate and
+unsupported mapping. The row population is bounded but exhaustive and runs
+under LuaJIT. PUC 5.1 runs only targeted structural KATs against the same row
+semantics. A numeric height-step threshold cannot replace the proof, and map
+generation performs no runtime census.
 
 Clipping prevents one landmark from changing another zone; it does not prove
 the landmark's product obligations. C-b independently owns route and hydrology
@@ -3814,10 +3816,10 @@ nil/exterior columns:
 `ossuary_gravewoods`, `redtusk_gullies`, `raincall_falls`,
 `raincall_coastal_steps`, and `totemwater_delta`.
 
-Ten additional seed-0 owner-clean masks failed only the seed-independent former
-incident-edge-margin test:
-`copperfell_coastal_terraces`, `dur_brannoc_granite_terrace`,
-`highcourt_riverfork`, `starbough_coastal_gardens`,
+Ten additional seed-0 owner-clean masks failed only the seed-independent
+former incident-edge-margin test: `copperfell_coastal_terraces`,
+`dur_brannoc_granite_terrace`, `highcourt_riverfork`,
+`starbough_coastal_gardens`,
 `nhal_veyr_necropolis`, `redtusk_wellchain`, `gor_drazhak_crossmesa`,
 `totemwater_colossi`, `gravesalt_tombways`, and
 `skyglass_hangingways`. Both corrected warcoast masks were seed-0 owner-clean
@@ -3876,7 +3878,9 @@ Stop the affected path before implementation, compilation or fixture repin if:
 7. a Source correction moves S1, the candidate pool, selected winners or
    frozen topology; or
 8. a cardinally adjacent Dry-to-Dry final-owner change lacks its compiled final
-   land-edge or junction support and existing 96-station blend.
+   support mapping, or either endpoint lacks positive membership in the mapped
+   kind: the land edge's perpendicular 96-node boundary blend or the junction's
+   96-station endpoint support.
 
 The existing charter also stops on any new player-visible/design decision,
 authority contradiction, or unplanned compiler, schema, Source or topology
@@ -3891,14 +3895,18 @@ Fix round 1 applied all findings. H1 was closed as clarified/overstated: its
 evidence basis was overstated, while the binding prohibition on clip-induced
 abrupt terrain remained intact; the fix assigned the structural dry-seam proof
 and Planned-Water/exterior products above. Focused re-review 1 returned 0
-Critical / 0 High / 1 Medium / 5 Low. Fix round 2 addresses those six findings;
-focused re-review 2 is pending.
+Critical / 0 High / 1 Medium / 5 Low. Fix round 2 applied those six
+dispositions. Focused re-review 2 returned 0 Critical / 0 High / 2 Medium /
+3 Low. Fix round 3 addresses those five findings; focused re-review 3 is
+pending.
 
 ### 14.14 CB0-1/2/3 Lane-C-b input freeze (decided 2026-08-24)
 
 The user recorded `ACCEPT CB0-1`, `ACCEPT CB0-2` and `ACCEPT CB0-3` after a
 read-only post-C-a2 dependency audit. This closes the open island-route
-placement from Section 14.2 without changing the central schema.
+placement from Section 14.2 without changing the central schema. The user later
+recorded `ACCEPT CB0-2-ERRATUM-1`; item 2 incorporates that correction without
+moving any non-document payload.
 
 1. **Existing family and roster.** Populate the already reserved
    `geometry.island_routes` family with exactly 38 typed relational records in
@@ -3921,14 +3929,23 @@ placement from Section 14.2 without changing the central schema.
    the route's final raster station count. Its typed compiled island-route
    endpoint/interface record at `i = 1` requires `delta_j = 0` for
    `j = 2..min(S,8)`. The record at `i = S` requires `delta_j = 0` for
-   `j = max(2,S-7)..S`. Each end therefore has up to eight flat stations, or
-   seven deltas. Routes shorter than 15 stations may overlap; the union of both
-   ranges is simply flat. The C-b island-profile branch consumes the 16 typed
-   compiled island-route endpoint/interface records. It does not consume
-   nonexistent Source grade fields or the ordinary
-   `route_profile_solver.interface_phase_ref`. The eight routes do not acquire
-   the `1:12` start/capital/bridge/ford/tunnel exception merely because an
-   endpoint is a landing, junction, dragon or apex station.
+   `j = max(2,S-6)..S`. The accepted `CB0-2-ERRATUM-1` ruling supersedes the
+   former `S-7` literal. Under station reversal `k -> S+1-k`, the corrected
+   to-end range is the exact image of `2..min(S,8)` for every `S`. Each end
+   therefore has at most seven deltas, or eight flat stations, and the two
+   ranges overlap exactly when `S < 15`; their union is simply flat. The
+   current eight island routes have zero transition-capacity differences
+   between the former and corrected ranges. The correction moves no Source,
+   central schema, fixture or compiled-artifact bytes.
+
+   The C-b island-profile branch consumes the 16 typed compiled island-route
+   endpoint/interface records. It does not consume nonexistent Source grade
+   fields or the ordinary `route_profile_solver.interface_phase_ref`. It is
+   expressly exempt from the ordinary land-route `flat_run_12` literal in
+   `route_profile_solver.interface_phase_rule`; CB0-2's ranges are its sole
+   endpoint-phase authority. The eight routes do not acquire the `1:12`
+   start/capital/bridge/ford/tunnel exception merely because an endpoint is a
+   landing, junction, dragon or apex station.
 3. **First profile roster.** Initial C-b profile compilation solves exactly 65
    road profiles: 57 land routes plus eight island routes. The four public
    `boat_routes` remain travel/corridor records across the channel, not road
@@ -3949,6 +3966,7 @@ semantics, acceptance authority and the next package boundary. Implementing
 model: GPT-5.6 Sol. The initial fresh independent Claude Opus/xhigh review
 returned `REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in
 912,977 ms. Fix round 1 applied all findings. Focused re-review 1 returned 0
-Critical / 0 High / 1 Medium / 5 Low. Fix round 2 addresses those six findings;
-focused re-review 2 is pending. The coordinator appends its outcome; this memo
-does not self-approve.
+Critical / 0 High / 1 Medium / 5 Low. Fix round 2 applied those six
+dispositions. Focused re-review 2 returned 0 Critical / 0 High / 2 Medium /
+3 Low. Fix round 3 addresses those five findings; focused re-review 3 is
+pending. The coordinator appends its outcome; this memo does not self-approve.

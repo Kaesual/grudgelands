@@ -627,10 +627,11 @@ correction, with its evidence and digests, stays in
   The owner clip is a domain guard, not authority for a cliff or other abrupt
   final feature. C-a2 must structurally prove that every cardinally adjacent
   Dry-to-Dry final-owner change maps to a compiled final land-edge or junction
-  support and that its two post-landmark heights are consumed by that support's
-  existing 96-station blend. An undeclared dry owner seam is a STOP; no numeric
-  clip-step allowance can substitute for the structural proof. Adopted residue
-  remains an input to its owning dry face and creates no separate dry
+  support and that its two post-landmark heights enter the applicable support:
+  the land edge's perpendicular 96-node boundary blend or the junction's
+  96-station endpoint support. An undeclared dry owner seam is a STOP; no
+  numeric clip-step allowance can substitute for the structural proof. Adopted
+  residue remains an input to its owning dry face and creates no separate dry
   cross-face authority. C-b owns final Planned-Water bed and bank continuity
   across internal Bay and Wing owner seams. D-2 owns every `H`-to-exterior
   coast, shelf and immutable-channel transition. Neither later package may
@@ -638,14 +639,16 @@ correction, with its evidence and digests, stays in
 
   C-a2 retains the structural proof as deterministic rows for every
   cardinally adjacent Dry-to-Dry final-owner pair touched by positive
-  owner-eligible landmark support. Each row maps the normalized endpoint
-  coordinates and owners to the sole compiled final land-edge or junction
-  support and to positive membership of both endpoints in its post-landmark
-  96-node blend. Rows sort by their normalized coordinates, owners, support
-  kind and support ID and bind one canonical digest. Missing, duplicate or
-  unsupported mappings reject. The exhaustive bounded artifact is LuaJIT
-  evidence; PUC runs only targeted structural KATs. It is not a numeric
-  height-step allowance or a runtime census.
+  owner-eligible landmark support. Normalize endpoints lexicographically by
+  `(x,z)`. Each row maps both endpoint coordinates and owners to the sole
+  compiled final land-edge or junction support and records positive membership
+  of both endpoints in the applicable support: the land edge's perpendicular
+  96-node boundary blend or the junction's 96-station endpoint support. Rows
+  sort by their normalized coordinates, owners, support kind and support ID
+  and bind one canonical digest. Missing, duplicate or unsupported mappings
+  reject. The exhaustive bounded artifact is LuaJIT evidence; PUC runs only
+  targeted structural KATs. It is not a numeric height-step allowance or a
+  runtime census.
 
   Exact authored mask membership remains the source integer predicate and is
   independent of the Q16 signed distance used to derive collar weight. The 264
@@ -716,11 +719,11 @@ correction, with its evidence and digests, stays in
   another Dry face, and 10,400 nil/exterior columns. Another 10 masks were
   owner-clean at seed 0. Their failures were limited to the former
   incident-edge-margin test, whose geometry is seed-independent. Both
-  corrected warcoast masks were owner-clean at seed 0. Their margin geometry
-  was clean and seed-independent.
-  Movement is a STOP only under the same seed-0 payload comparison; a
-  separately authorized payload change requires fresh evidence rather than an
-  automatic repin, while an unexpected payload change independently stops.
+  corrected warcoast masks were owner-clean at seed 0; their margin geometry
+  was clean and seed-independent. Movement is a STOP only under the same
+  seed-0 payload comparison. A separately authorized payload change requires
+  fresh evidence rather than an automatic repin, while an unexpected payload
+  change independently stops.
   No complete positive-collar Planned-Water census exists: an attempted scan
   was aborted after approximately 180 seconds because of an unfiltered Bay
   lookup and retained no output. No canonical digest for the exact-mask census

@@ -493,20 +493,23 @@ result exists: an attempted scan aborted after approximately 180 seconds on an
 unfiltered Bay lookup and retained no output.
 
 The clip never authorizes an abrupt final feature. C-a2 structurally proves
-every adjacent Dry-to-Dry owner change maps to a compiled final land-edge or
-junction and enters its post-landmark 96-station blend; an undeclared dry owner
-seam is a STOP. Adopted residue creates no separate cross-face authority. C-b
-owns Planned-Water bed/bank continuity across internal Bay/Wing owner seams,
-and D-2 owns `H`-to-exterior transitions. Route/hydrology, exterior, housing
-and capital gates remain separately binding.
+every cardinally adjacent Dry-to-Dry owner change maps to a compiled final
+land-edge or junction and enters the applicable support: the land edge's
+perpendicular 96-node boundary blend or the junction's 96-station endpoint
+support. An undeclared dry owner seam is a STOP. Adopted residue creates no
+separate cross-face authority. C-b owns Planned-Water bed/bank continuity
+across internal Bay/Wing owner seams, and D-2 owns `H`-to-exterior transitions.
+Route/hydrology, exterior, housing and capital gates remain separately binding.
 
 C-a2 retains canonical sorted rows for each cardinally adjacent Dry-to-Dry
-owner pair touched by positive owner-eligible landmark support. Rows map both
-coordinates/owners to the sole compiled final edge or junction and positive
-96-node blend membership for both endpoints. Their digest plus missing,
-duplicate and unsupported negative KATs is the gate. The exhaustive bounded
-evidence is LuaJIT-only, with targeted PUC structural KATs and no numeric
-threshold or runtime census.
+owner pair touched by positive owner-eligible landmark support. Normalize
+endpoints lexicographically by `(x,z)`. Rows map both endpoint coordinates and
+owners to the sole compiled final edge or junction and prove both endpoints
+enter the applicable perpendicular 96-node land-edge boundary blend or
+96-station junction endpoint support. Their digest plus missing, duplicate and
+unsupported negative KATs is the gate. The exhaustive bounded evidence is
+LuaJIT-only, with targeted PUC structural KATs and no numeric threshold or
+runtime census.
 
 `COPPERFELL-DEFER-1` leaves the current Source envelope in place for owner-
 clipped C-a2. It rejects an unreviewed `96 x 32` shrink and batches the
@@ -792,7 +795,7 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
       LANDMARK-OWNER-CLIP documentation freeze + independent review
                            |
-  C-a2: owner -> H -> clipped landmarks -> 96-station boundary blend
+   C-a2: owner -> H -> clipped landmarks -> edge / junction supports
                            |
                  review and integrate C-a2 H
                     /                 \
