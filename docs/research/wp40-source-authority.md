@@ -659,12 +659,15 @@ correction, with its evidence and digests, stays in
   final compiled-zone containment contract through `surface_owner_at` before
   assembling zone-owned `H`.
 
-  This mask contact does not own the boat-corridor width. At the Holy boundary
-  both `z = +/-125` centre lines remain inside; the exact integer mask covers
-  73/96 southern and 74/96 northern approach columns there, and both complete
-  half-open 96-column intervals four nodes inland. The boat/travel records
-  independently retain the complete 96-node approaches. Later route-product
-  validation, not landmark-mask width, proves nonblocking access.
+  This mask contact does not own the boat-corridor width. Each approach is the
+  exact half-open interval `[approach_z - 48, approach_z + 48)`. At the Holy
+  boundary both `z = +/-125` centre lines remain inside; under that chosen
+  convention the exact integer mask covers 73/96 southern and 74/96 northern
+  columns. The 73/74 split is convention-dependent, while both centre-line
+  contacts and complete 96/96 coverage four nodes inland are convention-
+  robust. The boat/travel records independently retain the complete 96-node
+  approaches. Later route-product validation, not landmark-mask width, proves
+  nonblocking access.
 
 ### 7.6 C-a1 primitive boundary conventions
 

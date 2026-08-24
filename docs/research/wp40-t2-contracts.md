@@ -3527,10 +3527,11 @@ recorded-evidence reproduction took 1 minute 44 seconds.
 The user recorded `ACCEPT WARCOAST-SOURCE-1; GO` after C-a2's mandatory first
 gate correctly stopped before edits or compilation. The exact capsule masks
 for `gravesalt_warcoast` and `skyglass_warcoast`, centred at `x = -2450` and
-`x = 2450` with `radius_x = 80`, included the boundary columns `x = -2530`
-and `x = 2530`. Those columns are strict exterior columns in
-`channel_wyrmglass` and `channel_stormscale`, while Section 14.1 keeps `H`
-undefined on immutable dragon channels. The failure is symmetric,
+`x = 2450` with `radius_x = 80`, each contained exactly 11,542 strict-exterior
+immutable-channel world columns. The extreme points `(-2530, 0)` in
+`channel_wyrmglass` and `(2530, 0)` in `channel_stormscale` are representatives
+of that complete defect, not its only two columns. Section 14.1 keeps `H`
+undefined on every such channel column. The failure is symmetric,
 seed-independent and present before any displacement margin is added; it is
 not a compiled-payload or C1 artifact defect.
 
@@ -3546,14 +3547,16 @@ approach to 73/96 south and 74/96 north. Runtime clipping, a landmark-specific
 exception to exact mask identity, and widening Holy Grounds into either channel
 are forbidden.
 
-The mask's corridor role is a route contact, not width authority. Both
-`z = -125` and `z = 125` centre-line boundary columns remain in each corrected
-mask. Exact integer incidence at the Holy boundary is 73/96 columns for the
-southern half-open approach and 74/96 for the northern approach; four nodes
-inland both intervals are 96/96. The separate boat/travel source retains each
-full 96-node approach. C-a2 and the later route products prove nonblocking
-access against final `H`; they may not infer that result from landmark-mask
-width alone.
+The mask's corridor role is a route contact, not width authority. Each exact
+width-96 approach is the half-open interval
+`[approach_z - 48, approach_z + 48)`. Both `z = -125` and `z = 125`
+centre-line boundary columns remain in each corrected mask. Under that chosen
+convention exact Holy-boundary incidence is 73/96 columns south and 74/96
+north. The 73/74 split is convention-dependent, while both centre-line
+contacts and complete 96/96 coverage four nodes inland are convention-robust.
+The separate boat/travel source retains each full 96-node approach. C-a2 and
+the later route products prove nonblocking access against final `H`; they may
+not infer that result from landmark-mask width alone.
 
 This memo authorizes the complete mechanical Source dependency repin required
 by those two accepted centre literals. The canonical Source checksum moves
@@ -3610,10 +3613,12 @@ non-trivial package because it changes checksum-authoritative Source geometry,
 fail-closed validation and active fixtures. Implementing model: GPT-5.6 Sol.
 Independent reviewer: Claude Opus/xhigh in a fresh detached read-only context,
 with no implementation or ruling role. The initial review found 0 Critical / 2
-High / 3 Medium / 4 Low plus three inherited observations. Fix round 1 applies
-all nine package findings and the active inherited future-tense correction; a
-focused independent re-review is required and remains pending. No acceptance,
-merge or C1 launch follows until that re-review is green. End-to-end
-implementation wall time was not instrumented; the initial review record's
-longest focused verification legs were 111 seconds for Source audit and 95
-seconds for the complete LuaJIT Source test.
+High / 3 Medium / 4 Low plus three inherited observations. Fix round 1 applied
+all nine package findings and the active inherited future-tense correction.
+The first focused re-review found 0 Critical / 0 High / 1 new Medium / 3 new
+Low. User-authorized fix round 2 closes those N1--N4 findings; a second focused
+independent re-review is required and remains pending. No acceptance, merge or
+C1 launch follows until that re-review is green. End-to-end implementation
+wall time was not instrumented; the initial review record's longest focused
+verification legs were 111 seconds for Source audit and 95 seconds for the
+complete LuaJIT Source test.
