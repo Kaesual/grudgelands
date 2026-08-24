@@ -23,8 +23,10 @@ WP40 replaces it with the complete catalog and contracts below.
 - The macro-map is reproducible: every named zone has a stable approximate
   position, shape, level range, biome palette and fixed neighbors. Zone and
   coastline boundaries may vary only inside a bounded corridor; world seed
-  noise must never change the adjacency graph or move a landmark into another
-  zone.
+  noise must never change the adjacency graph. A landmark's authored mask and
+  collar remain stable identities, but their effective terrain influence is
+  clipped per column to the landmark's final owning zone and may never modify
+  another zone.
 - The two faction sides are **progression and content-budget mirrors, not
   geometric mirrors**. They receive equivalent access to level bands,
   materials, PvP fronts, travel services and POI budgets, while their shapes,
@@ -713,12 +715,14 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   their own grading after general relief and take precedence where they
   overlap. The per-zone profile and landmark assignment is binding registry
   data rather than an emergent result of v7 noise.
-  Each of the 38 multi-edge endpoint junctions carries one authored relief
-  record, and relief blends across a shared boundary over a 96-station support
-  on each side. Two supports can never overlap: an edge shorter than 192
-  station steps is rejected outright rather than blended. Junction selection,
-  the weighting and the landmark replacement hash are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
+  Across each shared land edge, post-landmark relief blends perpendicular to
+  the boundary over 96 nodes. Each of the 38 multi-edge endpoint junctions
+  carries one authored relief record and additionally reshapes only
+  `effective_G` over a 96-station endpoint support. Junction support never
+  substitutes for the perpendicular land-edge blend. Two endpoint supports can
+  never overlap: an edge shorter than 192 station steps is rejected outright.
+  Junction selection, weighting and both support rules are compiler concerns:
+  see [wp40-source-authority.md](../research/wp40-source-authority.md) §7.4.
 - The common macro-relief height `H` exists on every zone-owned authored
   surface column: ordinary dry land, dry residue adopted into a zone face by
   the partition authority, and all zone-owned Planned Water. It does not exist
@@ -726,13 +730,32 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   whose separate exterior profiles apply. If raw dry faces meet on a declared
   shared edge or junction, the canonical half-open face rule selects one zone
   before `H` is evaluated.
+- Final surface ownership is resolved exactly once for each `H`-domain column
+  before landmark composition. An authored exact mask or positive collar has
+  effective influence only where that owner equals the landmark's declared
+  `zone_id`; elsewhere its effective mask and weight are zero. Missing or
+  ambiguous ownership inside the `H` domain is invalid world data. This owner
+  clip preserves the authored mask and collar as registry and diagnostic
+  identities rather than rewriting either one to follow a seed-varied border.
 - Every named-landmark collar with positive influence contributes to the
-  natural surface in its declared `base_h_priority` order; a higher-priority
-  landmark is applied later to the already-composed height. Zero-influence
-  collars do not participate. The exact authored landmark mask remains its
-  own identity and is never replaced or erased by the collar-distance
-  calculation or by overlap priority. Required-route clearance is checked
-  against the final composed surface and the later route product.
+  natural surface in its declared `base_h_priority` order after the owner clip;
+  a higher-priority landmark is applied later to the already-composed height.
+  Zero-influence and foreign-owner collars do not participate. The exact
+  authored landmark mask remains its own identity and is never replaced or
+  erased by the owner clip, collar-distance calculation or overlap priority.
+  Required-route clearance is checked against the final composed surface and
+  the later route product.
+- Owner clipping alone never authorizes an abrupt final terrain feature. Every
+  cardinally adjacent Dry-to-Dry final-owner change maps to a compiled final
+  land-edge incidence, and both post-landmark heights enter its perpendicular
+  96-node boundary blend. Where the seam falls within a surviving relief
+  junction's 96-station endpoint support, both endpoints also lie in that
+  support.
+  An undeclared dry owner seam is invalid world data. Adopted residue belongs
+  to its final dry face and creates no separate dry cross-face authority. The
+  final Planned-Water terrain product preserves bed and bank continuity,
+  including internal Bay or Wing owner seams; the exterior terrain product
+  resolves every `H`-to-coast, shelf or channel transition.
 - A shared-boundary relief junction influences an incident edge only while
   that edge's chosen final raster still ends at the exact authored junction.
   A clipped terminal elsewhere keeps the edge's native relief gate and does
@@ -853,9 +876,12 @@ and terrain rules without deriving political ownership from cultural origin.
 
 The tables below assign the §7 relief fields independently of biome palettes.
 Every listed landmark id is stable registry data and must resolve to one
-deterministic bounded mask inside its owning zone. Exact masks may follow the
-zone's seed-varied boundary but may not disappear, enter another zone or block
-a required route.
+deterministic bounded authored mask and one owning `zone_id`. Authored masks do
+not disappear or change identity when a seed-varied boundary crosses them;
+their effective terrain influence is the mask/collar intersected with that
+final owner. The clipped result may not block a required route, and clipping
+does not waive a landmark's local route, housing, capital or grading
+obligations.
 
 #### Dwarf progression region
 
@@ -1312,9 +1338,14 @@ asks for it.
   policy produces one coherent compiled logical biome ID inside the owning
   palette at every authored result. Every secondary relief or sharp terrain
   feature has an explicit bounded mask, stable landmark id and owning zone.
-  Every §8.4 landmark exists exactly once and satisfies its local route,
-  anchor and grading constraints. Each of the six existing capital anchors is
-  centered in and contained by its exact build-plus-10 hard-protection mask.
+  Every §8.4 landmark exists exactly once, modifies no column outside its
+  final owner, and satisfies its local route, anchor and grading constraints.
+  Authored overhang remains diagnostic evidence rather than a second owner or
+  automatic acceptance failure. Route/hydrology, exterior geometry, and
+  housing/capital products independently prove their respective final-area
+  obligations; owner clipping cannot satisfy those gates silently. Each of
+  the six existing capital anchors is centered in and contained by its exact
+  build-plus-10 hard-protection mask.
   T2 creates no WP13 capital guard, defense, king or structure anchor; WP13
   later validates those authored anchors against the same mask.
 - Geography: the complete four-zone Holy Grounds land chain and all six paired

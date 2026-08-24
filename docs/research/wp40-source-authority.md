@@ -602,42 +602,90 @@ correction, with its evidence and digests, stays in
 
 ### 7.5 Landmark collar composition
 
-  Enumerate every landmark with positive Q16 collar weight in ascending
+  Resolve the final `surface_owner_at(x, z)` exactly once for each column in
+  the Section-7.3 `H` domain, before primary relief and landmark composition.
+  The result must be exactly one zone. Zero ownership, multiple ownership or
+  an unresolved ownership input inside that domain rejects; exterior shelf,
+  deep ocean and immutable dragon channels remain outside the `H` domain and
+  never enter landmark evaluation. A landmark's effective exact membership is
+  its authored integer mask predicate **and**
+  `surface_owner_at(x, z) == landmark.zone_id`. Its effective Q16 collar
+  weight is its authored collar weight under that same owner equality and zero
+  otherwise. The implementation reuses the one column owner; a second owner
+  classifier or a per-landmark owner lookup is forbidden.
+
+  Starting from the owning zone's primary `H`, enumerate every owner-eligible
+  landmark with positive effective Q16 collar weight in ascending
   `base_h_priority`; the higher priority therefore applies last. Each record
   qlerps from the `H` composed by all preceding records to that landmark's
-  replacement height using its own weight. Zero-weight records are excluded
-  rather than entering an order, a denominator or a one-winner selection.
+  replacement height using its own weight. Zero-weight and foreign-owner
+  records are excluded rather than entering an order, a denominator or a one-
+  winner selection. The existing land-edge blend follows this post-landmark
+  `H`, using any surviving junction endpoint support only to select or reshape
+  `effective_G`. The complete order is final owner, primary `H`, owner-clipped
+  landmark composition, then that land-edge blend.
+
+  The owner clip is a domain guard, not authority for a cliff or other abrupt
+  final feature. C-a2 must structurally prove that every cardinally adjacent
+  Dry-to-Dry final-owner change maps to its sole compiled final land-edge
+  incidence and that both post-landmark heights enter the incidence's
+  perpendicular 96-node boundary blend. Where the seam row falls within a
+  surviving relief junction's 96-station endpoint support, C-a2 additionally
+  proves both endpoints enter that support. Junction support selects or
+  reshapes only `effective_G`; it never substitutes for perpendicular land-edge
+  blend membership. An undeclared dry owner seam is a STOP; no numeric
+  clip-step allowance can substitute for the structural proof. Adopted
+  residue remains an input to its owning dry face and creates no separate
+  dry cross-face authority. C-b owns final Planned-Water bed and bank
+  continuity across internal Bay and Wing owner seams. D-2 owns every
+  `H`-to-exterior coast, shelf and immutable-channel transition. Neither later
+  package may treat clipping as proof of its product.
+
+  C-a2 retains the structural proof as deterministic rows for every
+  cardinally adjacent Dry-to-Dry final-owner pair touched by positive
+  owner-eligible landmark support. Normalize endpoints lexicographically by
+  `(x,z)`. Every row maps both endpoint coordinates and owners to the sole
+  compiled final land-edge incidence and records positive perpendicular
+  96-node boundary-blend membership for both endpoints. A row that falls within
+  a surviving relief junction's 96-station endpoint support additionally
+  records the junction ID, endpoint side and positive membership for both
+  endpoints. Rows sort by their normalized coordinates, owners, land-edge
+  incidence and optional junction fields and bind one canonical digest.
+  Missing, duplicate or unsupported edge mappings reject; missing, duplicate
+  or unsupported junction fields reject where the additional support applies.
+  The exhaustive bounded artifact is LuaJIT evidence; PUC runs only targeted
+  structural KATs. It is not a numeric height-step allowance or a runtime
+  census.
 
   Exact authored mask membership remains the source integer predicate and is
   independent of the Q16 signed distance used to derive collar weight. The 264
   measured ellipse incidences on which exact membership and signed-distance
   equality differ are retained evidence, not authority and not a license to
   substitute one classifier for the other. C-a1 proves the mask and collar
-  arithmetic without claiming final zone containment. The first C-a2
-  integration gate must prove each exact mask, including its per-edge
-  displacement margin, is contained in its owning final zone. Its sole
-  authority is the package-local `surface_owner_at(x, z)` projection over the
+  arithmetic without claiming final zone containment. C-a2 applies the owner
+  clip through the package-local `surface_owner_at(x, z)` projection over the
   accepted integrated `grug_wp40_compiled_world_v2` records: compiled Bay-v3
   Base/notch/connectivity data and owner spans, closure-wing and mouth-
   aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
   ownership, and the canonical half-open seam tie. Polygon membership remains
   the ordinary-dry input; “not polygons alone” means none of the other owner
-  classes or ties may be omitted. The current Source validator checks landmark
-  `zone_id` referential integrity at
+  classes or ties may be omitted. The authored mask and collar remain stable
+  diagnostic identities even where the effective mask/weight is zero. The
+  current Source validator checks landmark `zone_id` referential integrity at
   `validation/t2_source.lua:4024`, plus the exact WARCOAST-SOURCE-1 row and
   route-contact contract at `validation/t2_source.lua:446` and its call at
   `validation/t2_source.lua:4041`; no general geometric-containment check
   exists. Missing ownership payload is a STOP; neither C-a package may rebuild
   the partition classifier. Priority affects height composition only: it never
   deletes exact mask identity. Required-route non-blocking is evaluated against
-  the final composed `H` and later route products rather than inferred from a
-  winning mask.
+  the final composed `H` and later route products rather than inferred from
+  either a winning mask or the owner clip.
 
   The checksum-covered
   `geometry_policies.relief_composition.landmark_priority_order` literal, whose
   value is `ascending_base_h_priority_higher_applied_last`, requires greater
   priority to compose later and apply last. It never selects one landmark or
-  suppresses another positive collar.
+  suppresses another owner-eligible positive collar.
 
   Capsule mask geometry follows the exact source validator. With
   `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`, its
@@ -655,9 +703,9 @@ correction, with its evidence and digests, stays in
   closed Holy columns at `x = -2500` and `x = 2500` and never enter strict
   exterior channel columns. The Source validator pins both boundary contacts
   and rejects the former `x = +/-2530` membership; the Source KAT separately
-  pins the incident-edge displacement envelope. C-a2 will prove the distinct
-  final compiled-zone containment contract through `surface_owner_at` before
-  assembling zone-owned `H`.
+  pins the incident-edge displacement envelope. C-a2 applies the same general
+  owner clip to these records, but that safety rule does not revoke or weaken
+  the accepted Source correction and its pinned clean boundary contact.
 
   This mask contact does not own the boat-corridor width. Each approach is the
   exact half-open interval `[approach_z - 48, approach_z + 48)`. At the Holy
@@ -668,6 +716,27 @@ correction, with its evidence and digests, stays in
   robust. The boat/travel records independently retain the complete 96-node
   approaches. Later route-product validation, not landmark-mask width, proves
   nonblocking access.
+
+  The complete LuaJIT exact-mask census of all 70 authored masks is retained as
+  diagnostic acceptance evidence rather than a full-mask-containment gate.
+  The exact-mask enumeration and incident-edge-margin geometry do not vary by
+  seed. Against the accepted seed-0 compiled ownership payload, it enumerated
+  11,441,328 exact-mask columns. Fifteen masks had 274,597 columns outside
+  their authored owner: zero Planned-Water columns, 264,197 columns owned by
+  another Dry face, and 10,400 nil/exterior columns. Another 10 masks were
+  owner-clean at seed 0. Their failures were limited to the former
+  incident-edge-margin test, whose geometry is seed-independent. Both
+  corrected warcoast masks were owner-clean at seed 0; their margin geometry
+  was clean and seed-independent. Movement is a STOP only under the same
+  seed-0 payload comparison. A separately authorized payload change requires
+  fresh evidence rather than an automatic repin, while an unexpected payload
+  change independently stops.
+  No complete positive-collar Planned-Water census exists: an attempted scan
+  was aborted after approximately 180 seconds because of an unfiltered Bay
+  lookup and retained no output. No canonical digest for the exact-mask census
+  was retained, so this document does not manufacture one; the implementation
+  package must retain its reproducible rows and bind the digest it actually
+  produces when it closes C-a2.
 
 ### 7.6 C-a1 primitive boundary conventions
 

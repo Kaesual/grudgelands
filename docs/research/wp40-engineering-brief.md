@@ -161,27 +161,61 @@ the unclamped value. Landmark replacement uses the landmark record's
 and inclusive band, empty feature ID and candidate zero. It is not hashed with
 the primary zone domain or landmark ID as feature text.
 
-Landmarks compose rather than select one winner. Evaluate every landmark whose
-Q16 collar weight is positive in ascending `base_h_priority`, so higher
-priority applies later. For each record, qlerp from the previously composed
-`H` to that landmark's replacement height by its own collar weight. A
-zero-weight record is excluded from composition. Exact authored mask membership
-continues to use its source integer predicate; it is separate from the Q16
-signed distance used by the collar and may not be replaced by signed-distance
-equality. The measured 264 ellipse incidences where those classifications
-differ are evidence for this separation, not a new mask authority. C-a1 proves
-that arithmetic without claiming final zone containment. After D-1, the
-ownership export and the integrated C1 reacceptance are green, C-a2's first
-fail-closed integration gate must prove every exact authored mask plus its per-
-edge displacement margin lies inside its owning final zone. It uses the
-package-local `surface_owner_at(x, z)` projection over the accepted integrated
-compiled-world-v2 records: dry-face polygon and adopted-residue ownership,
-Bay Base/notch/connectivity and closure-wing ownership, mouth-aperture/perimeter
-ownership, and the canonical half-open seam tie. Missing ownership input stops
-the package; it never licenses a second classifier. Priority composition never
-deletes mask identity. Required-route non-blocking is tested against the final
-composed `H` and the later route products, never inferred from a one-winner
-landmark mask.
+Resolve the final `surface_owner_at(x, z)` exactly once per `H`-domain column
+before primary relief and landmark composition. It must produce exactly one
+zone from the accepted compiled-world-v2 dry-face polygon/adopted-residue, Bay
+Base/notch/connectivity/closure-wing, mouth-aperture/perimeter and half-open
+seam authorities. Missing, zero or multiple ownership inside the `H` domain
+stops the package; exterior shelf, deep ocean and immutable dragon channels
+have no `H`. Reuse that one result for every landmark at the column. A second
+classifier or per-landmark owner lookup is forbidden.
+
+Landmarks compose rather than select one winner. A landmark's effective exact
+mask is its authored source integer predicate intersected with
+`owner == landmark.zone_id`; its effective Q16 collar weight is likewise zero
+unless that equality holds. Starting from the owner's primary `H`, evaluate
+every owner-eligible landmark whose effective weight is positive in ascending
+`base_h_priority`, so higher priority applies later. For each record, qlerp
+from the previously composed `H` to that landmark's replacement height by its
+own weight. Zero-weight and foreign-owner records are excluded. The existing
+land-edge blend then consumes the post-landmark `H`, using any surviving
+junction endpoint support only to select or reshape `effective_G`.
+Exact authored mask membership remains separate from the Q16 signed distance
+used by the collar and is retained as identity and diagnostic evidence even
+where the effective mask is clipped. The measured 264 ellipse incidences where
+those classifications differ are evidence for this separation, not a new mask
+authority. C-a1 proves that arithmetic without ownership. Required-route,
+hydrology, exterior, housing and capital obligations are tested by their later
+products; owner clipping never discharges one silently.
+
+Owner clipping also never authorizes an abrupt final terrain feature. C-a2
+must structurally prove that every cardinally adjacent Dry-to-Dry final-owner
+change maps to its sole compiled final land-edge incidence and that both
+post-landmark heights enter its perpendicular 96-node boundary blend. Where
+the seam row falls within a surviving relief junction's 96-station endpoint
+support, C-a2 additionally proves both endpoints enter that support. Junction
+support only selects or reshapes `effective_G`; it never substitutes for
+perpendicular land-edge blend membership. An undeclared dry owner seam is a
+STOP; no numeric clip-step allowance substitutes for this proof. Adopted
+residue stays part of its final dry face and is not a separate dry cross-face
+authority. C-b owns final Planned-Water bed and bank continuity across internal
+Bay and Wing owner seams; D-2 owns every `H`-to-exterior coast, shelf and
+immutable-channel transition.
+
+C-a2's retained structural artifact is a deterministic sorted row set covering
+every cardinally adjacent Dry-to-Dry final-owner pair touched by positive
+owner-eligible landmark support. Normalize the lexicographically smaller
+`(x,z)` endpoint first, then sort by both endpoint coordinates and owners,
+land-edge incidence and optional junction fields. Every row names the sole
+compiled final land-edge incidence and proves positive perpendicular 96-node
+boundary-blend membership for both endpoints. A row that falls within a
+surviving relief junction's 96-station endpoint support additionally names its
+junction ID and endpoint side and proves positive membership for both
+endpoints. Bind one canonical digest and reject missing, duplicate or
+unsupported edge mappings; the same negative coverage applies to required
+additional junction fields. The exhaustive bounded row set runs under LuaJIT;
+PUC executes targeted structural KATs only. No numeric height-step threshold or
+runtime census is authorized.
 
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let
@@ -197,8 +231,9 @@ The two mirrored warcoast capsules retain total half-extents `80 x 230` and
 the two `z = +/-125` embarkation corridors, but their centres are 30 nodes
 inside the fixed Holy boundary: `(-2420, 0)` and `(2420, 0)`. Their exact masks
 touch `x = -2500` and `x = 2500` and do not enter the immutable dragon
-channels. Landmark clipping at the channel, widening Holy Grounds, or treating
-channel columns as an `H` domain is not an equivalent implementation.
+channels. The general owner clip is an additional invariant, not a reason to
+revert this accepted Source correction. Widening Holy Grounds or treating
+channel columns as an `H` domain remains forbidden.
 
 The landmark mask is not the boat-corridor width authority. Each width-96
 approach uses the exact half-open interval
@@ -1008,7 +1043,8 @@ Feature classes use the catalog without losing their distinct contracts:
   natural relief and satisfies the complete 101-by-101 relief audit; they are
   not feature pads; and
 - named landmarks may use catalog primitives only inside their stable authored
-  masks and may not override a fixed anchor or corridor implicitly.
+  masks and final owner, and may not override a fixed anchor or corridor
+  implicitly.
 
 Terrain templates, visible structures, claim-exclusion envelopes, and hard
 protection are separate products. Choosing or composing a terrain primitive
@@ -1074,15 +1110,58 @@ The maximum longitudinal grades are class-specific:
 | bridge approach or deck interface | `1:12`, regardless of route class |
 | ford approach or tunnel portal interface | `1:12`, regardless of route class |
 
+The eight authored island land routes are ordinary `secondary` route-profile
+inputs, not boat travel across the channel. Their secondary maximum grade
+`1:8` and `minimum_transition_run = 8` remain separate route-class constraints.
+CB0-2 itself is the later compiled-only authority for their endpoint phase; the
+phase is not derived from those class constraints or frozen Source. The current
+`island_route_interfaces` Source rows stay free of grade fields, and CB0-2
+authorizes no Source edit or central schema bump.
+
+Under the existing solver convention `delta_j = y_j - y_(j-1)`, let `S` be the
+final raster station count. The typed compiled endpoint/interface record at
+`i = 1` requires `delta_j = 0` for `j = 2..min(S,8)`; the record at `i = S`
+requires `delta_j = 0` for `j = max(2,S-6)..S`. The accepted
+`CB0-2-ERRATUM-1` ruling supersedes the former `S-7` literal. Under station
+reversal `k -> S+1-k`, the corrected to-end range is the exact image of
+`2..min(S,8)` for every `S`. Each endpoint therefore has at most seven deltas,
+or eight flat stations, and the two ranges overlap exactly when `S < 15`; an
+overlap simply requires their union to stay flat. The current eight island
+routes each have `S >= 111`, so the correction frees exactly `delta_(S-7)`
+from the endpoint-flat set and makes it transition-eligible on every route.
+CB-1's named greedy maximum transition-capacity metric scans permitted delta
+indices in ascending order under
+`initial_transition_assumption = first_permitted_transition_free`: it accepts
+the first without a predecessor and accepts a later `j` only when
+`j - previous >= minimum_transition_run = 8`. All eight retain the same maximum
+transition count and the same bridgeable delta, defined as transition count
+plus `max_cut + max_fill`: zero of eight routes differ on either result. This
+metric result does not claim that the eligible-delta set is unchanged. The
+correction moves no Source, central schema, fixture or compiled-artifact bytes.
+
+The island-profile branch consumes all 16 typed compiled endpoint/interface
+records. It does not read nonexistent Source grade fields or the ordinary
+`route_profile_solver.interface_phase_ref` path. It is expressly exempt from
+the ordinary land-route `flat_run_12` literal in
+`route_profile_solver.interface_phase_rule`; CB0-2's ranges are its sole
+endpoint-phase authority. No implicit `1:12`
+start/capital/crossing exception applies. The first C-b profile roster is
+exactly the 57 land routes plus these eight island routes. The four public
+`boat_routes` describe travel/corridor connectivity and receive no road height
+profile. The 74 anchor-dependent POI spurs use this same solver only in the
+later D-3 package, after their anchors exist; they are not part of the first
+65-profile roster.
+
 These ratios constrain the discrete staircase profile, not the vertical face
 of an individual full node. Every elevation transition changes by exactly one
 node. Consecutive transition stations, whether they continue or reverse the
 grade, must be separated by at least the class ratio's horizontal run along the
-centreline. A fixed endpoint/interface also stores its grade phase; a flat
-interface reserves the same run before the first transition and after the last
-one. A stricter interface limit wins over the surrounding route-class limit.
-The profile validator rejects a multi-node jump, an under-spaced transition,
-or a short alternating sawtooth rather than smoothing it during generation.
+centreline. Outside CB0-2's island branch, a fixed land-route endpoint or
+interface also stores its ordinary grade phase; a flat interface reserves its
+declared run before the first transition and after the last one. A stricter
+interface limit wins over the surrounding route-class limit. The profile
+validator rejects a multi-node jump, an under-spaced transition, or a short
+alternating sawtooth rather than smoothing it during generation.
 
 Luanti's ordinary player step height is below one full node. The visible road
 renderer must therefore realize every accepted one-node elevation transition
@@ -4178,24 +4257,26 @@ geometry evaluator, placement path, or VoxelManip transaction for convenience.
 | T8 — consumer migration and legacy retirement | start/respawn, POI slots, protection, level/mob/spawn/gathering/rare-route/map/mount consumers moved to stable queries; old ring/height/storage/ocean passes and any live dungeon-force authority removed | T3, T5, T6, T7 | compatibility suite and complete repository search show no live legacy authority, no content-name dungeon classifier, no accepted true dungeon-force flag, and no callback/settings path bypassing the vertical/typed contract |
 | T9 — release evidence and rollout | final slot-32 replacement and 32-seed corpus, canonical hash/order suite, final T2--T7 operation-coordinate coverage manifest, finite native-only dungeon event/emerged-area/owner-guard artifacts, vertical-lattice/source proof, housing/supply exports, combined 11-class micro-corpus, microbenchmarks, 100-requester trace, disposable visual world, frozen production manifest | T1--T8 | staging entry alone replaced; unchanged complete geometry/topology/route/anchor oracle passes all 32 final entries; every final non-resource operation is enumerated at/above `broad_content_y_min`, every deeper operation is exact-host-only typed resource, no deferred namespace remains, reproducible pinned-source/probe evidence, zero finite plan/guard intersections, global vertical/typed invariant, every Chapter 6 gate, full diff review, runtime test plan, and fresh-world rollout checklist pass |
 
-The first remaining T2 delivery wave freezes D-1 to exactly 38 compiled zone
+The completed D-1 delivery wave froze exactly 38 compiled zone
 records, 57 compiled land-route records (30 primary, 24 secondary and three
 trails), and four compiled public boat-route records. `land_058` through
-`land_061` remain boundary-only and never become route products. The 10 island
-route stations, eight island routes, 16 route interfaces and four landings stay
-source-only until the Lane-C-b input-matrix ruling assigns them. The same Wave-
-1 ownership-handoff schema event reserves a dedicated, empty `island_routes`
-compiled geometry family so that assignment does not require a second central-
-schema event.
+`land_061` remain boundary-only and never become route products. The accepted
+Lane-C-b input ruling populates the already reserved `island_routes` family
+with exactly 38 typed relational records in stable grouped Source order: 10
+island route stations, eight island routes, 16 route interfaces and four
+landings. It creates no family or schema identity. The earlier Wave-1
+ownership-handoff schema event deliberately reserved that empty family so this
+assignment needs no second central-schema event.
 
-That reservation authorizes only `schemas.lua`'s `compiled` binding,
-`compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's family
-list, the production compiler trust skeleton's `geometry_names` list, and the
-exact family lists in
+That earlier reservation alone authorized only `schemas.lua`'s `compiled`
+binding, `compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's
+family list, the production compiler trust skeleton's `geometry_names` list,
+and the exact family lists in
 `t2_partition_test.lua` and `t2_schema_core_test.lua`, including the latter's
 schema-mismatch negative literal. It does not authorize compiler-
 implementation wiring, family population, or a change to any other schema
-identity.
+identity. The later CB0 ruling above is the separate population authority; it
+does not retroactively widen the reservation's schema scope.
 
 T3's API signatures, adapters, and slow-oracle test scaffolding may proceed in
 parallel with T2 after T1; no T3 authoritative answer or completion gate may

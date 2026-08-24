@@ -25,12 +25,13 @@ in [wp40-t2-contracts.md](wp40-t2-contracts.md) — section 6 below is the
 pointer, and the section numbering is shared across the two files (the
 contracts file holds 6 and 8--14, this file 0--5 and 7).
 
-## 0. Current ordered handoff (decided 2026-08-23)
+## 0. Current ordered handoff (decided 2026-08-23; extended 2026-08-24)
 
 The user accepted `PUC-1`, accepted `D1-1`, and gave the final `GO` on
 2026-08-23. The durable semantics and package boundary are
 [wp40-t2-contracts.md](wp40-t2-contracts.md) Section 14. This section is the
-authoritative T2 execution order through C-a2 and supersedes the historical
+authoritative T2 execution order through C-a2 and, through contracts Sections
+14.13--14.14, the first post-C-a2 split. It supersedes the historical
 ordering below wherever it differs, including the former lines 229--231 claim
 that all of Class B / Lane C-a can run independently of partition and D-1.
 
@@ -72,15 +73,41 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    adopted-residue witnesses as the preflight, then run exactly one fresh
    C1-v3 PUC reacceptance for the integrated Wave-1 state.
 6. **C-a2 serial after green C1.** C-a2 waits for D-1's zone records, the
-   Section-11 ownership export and the green reacceptance. Its first fail-closed
-   gate proves exact-mask-plus-displacement-margin containment with the package-
-   local `surface_owner_at(x, z)` projection over the accepted integrated
-   compiled-world-v2 records. The projection combines dry-face polygon and
-   adopted-residue ownership with every compiled Planned-Water class, closure-
-   wing ownership, mouth-aperture/perimeter ownership and the canonical half-
-   open seam tie; “not polygons alone” never means omitting polygon membership.
-   Missing input or reconstructed ownership is a STOP. It then assembles zone-
-   owned `H`. Stop after C-a2 and before Lane C-b.
+   Section-11 ownership export and the green reacceptance. For every `H`-
+   domain column it resolves the package-local `surface_owner_at(x, z)` exactly
+   once over the accepted integrated compiled-world-v2 records. The projection
+   combines dry-face polygon and adopted-residue ownership with every compiled
+   Planned-Water class, closure-wing ownership, mouth-aperture/perimeter
+   ownership and the canonical half-open seam tie; “not polygons alone” never
+   means omitting polygon membership. Missing, nil, multiple or reconstructed
+   ownership is a STOP. Exact masks and collars remain identity/evidence, but
+   their effective mask/weight is zero unless owner equals landmark `zone_id`.
+   C-a2 then assembles owner-clipped zone-owned `H`, followed by the existing
+   land-edge blend; surviving junction support only adjusts `effective_G`.
+   The complete exact-mask census of all 70 authored masks is retained as
+   diagnostic evidence, not a strict full-mask-plus-margin gate.
+
+   The clip is not authority for an abrupt final feature. C-a2 structurally
+   proves every cardinally adjacent Dry-to-Dry final-owner change has a
+   sole compiled final land-edge incidence, and both post-landmark heights
+   enter its perpendicular 96-node boundary blend. Where the seam row falls
+   within a surviving relief junction's 96-station endpoint support, both
+   endpoints also enter that support; it only reshapes `effective_G` and never
+   replaces edge-blend membership. An undeclared dry owner seam is a STOP.
+   Adopted residue creates no separate dry cross-face authority. C-b owns final
+   Planned-Water bed/bank continuity across internal Bay and Wing owner seams,
+   while D-2 owns `H`-to-exterior coast, shelf and channel transitions.
+   Retain deterministic sorted rows for every cardinally adjacent Dry-to-Dry
+   owner pair touched by positive owner-eligible landmark support. Normalize
+   endpoints lexicographically by `(x,z)`. Every row names both endpoint
+   coordinates/owners and the sole compiled final land-edge incidence and
+   proves positive perpendicular 96-node blend membership for both endpoints.
+   Rows within a surviving relief junction's 96-station endpoint support
+   additionally record junction ID, endpoint side and positive membership for
+   both endpoints. Bind one canonical digest and reject missing, duplicate or
+   unsupported edge mappings or required junction fields. The exhaustive
+   bounded row population is LuaJIT-only; PUC runs targeted structural KATs,
+   never a numeric step test or runtime census.
 
    The first C-a2 attempt exposed the symmetric post-C1
    `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks
@@ -97,6 +124,34 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    C1 closure response are green; no long rerun begins without a reported cost
    and authority basis.
 
+   The resumed C-a2 gate then measured the general condition. The
+   seed-independent exact-mask enumeration covered 11,441,328 columns. Against
+   the accepted seed-0 payload, 15 of 70 masks have 274,597 non-owner columns:
+   zero Planned Water, 264,197 other-Dry and 10,400 nil/exterior. Another 10
+   masks are seed-0 owner-clean but fail only the seed-independent former
+   margin requirement. The corrected warcoast masks are owner-clean under that
+   same seed-0 payload comparison. No complete positive-collar Planned-Water
+   result exists; its attempted scan aborted after approximately 180 seconds
+   on an unfiltered Bay lookup and retained no output. The accepted
+   `LANDMARK-OWNER-CLIP-1` rule above replaces 25 speculative source redesigns.
+   Under `COPPERFELL-DEFER-1`, no `96 x 32` shrink is authorized; Copperfell's
+   geometry and reversed flow direction move into one later C-b Source package
+   and one consequent Source/C1/PCC/D-1/C-a1 reacceptance event.
+7. **First post-C-a2 parallel split.** Integrate and independently review C-a2
+   before the split. Then the C-b lane performs the one Copperfell Source
+   correction/reacceptance while D-2 productizes the already authored exterior
+   coast/shelf/island/channel records in a disjoint worktree. Rebind C-a2 once
+   on that Source, then compile the first 65 route profiles (57 land plus eight
+   island). The existing `island_routes` family receives 38 grouped typed
+   records (10 stations, eight routes, 16 interfaces, four landings). All eight
+   island routes stay secondary with the ordinary `1:8` grade and minimum
+   transition run 8. Separately, CB0-2 supplies the compiled-only endpoint
+   phase over the 16 typed interfaces with the exact `delta_j` ranges in
+   contracts Section 14.14; it is not derived from Source or the route-class
+   phase rule and does not use the ordinary interface-phase reference. The four
+   boat routes are not road profiles. C-b hydrology follows those profiles;
+   D-3 later owns all 74 anchor-dependent POI spurs and uses the same solver.
+
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either
 result from polygons. No separate C1 run is scheduled solely for Phase 0B; the
@@ -106,22 +161,23 @@ does not edit or obey the three superseded one-winner source-policy literals.
 
 ## 1. Where T2 actually stands
 
-`compiler.lua` builds 20 named geometry buckets. Their status:
+`compiler.lua` builds 21 named geometry buckets. Their status:
 
 | group | buckets | state |
 |---|---|---|
 | boundary topology | `land_boundaries`, `perimeters`, `bays`, `mouth_apertures`, `closure_wings`, `dry_faces` | computed and verified **offline only** |
-| local pure fields | `relief_fields`, `templates`, `route_profiles`, `hydrology` | not started |
+| local pure fields | `relief_fields`, `templates`, `route_profiles`, `hydrology` | C-a1 primitives integrated; C-a2 owner-clipped assembly awaits this freeze/review; profiles and hydrology not started |
 | downstream of a frozen perimeter | `coast_shelf`, `islands`, `channels`, `hard_protection`, `claim_exclusions`, `housing_masks` | not started |
 | downstream of zone faces | `anchors` | not started |
-| other | `zones`, `land_routes`, `boat_routes` | source records exist; not compiled |
+| other | `zones`, `land_routes`, `boat_routes`, `island_routes` | D-1 compiled 38/57/4; the island family is reserved empty pending the accepted 38-record C-b population |
 
 Plus three selectors — logical biomes, nearest-feature, housing-centre — all
 unstarted.
 
-The table describes the current 20-family baseline. The accepted D1-1
-reservation adds the dedicated empty `island_routes` family only in Wave 1C;
-it is a planned schema event, not a family already present or populated here.
+The table describes the current 21-family roster. Wave 1C already added the
+dedicated `island_routes` family; it is present and reserved empty until the
+accepted 38-record C-b population. That population is not another schema
+event.
 
 ### 1.1 Two verification regimes, decided 2026-08-15
 
@@ -350,6 +406,19 @@ digests and all zero Whole counters. Final artifact SHA-256 is
 commit `17efc8d` binds exactly the 25 result files. Same-HEAD resume and
 descendant-HEAD recorded reuse are green. Independent Opus/xhigh acceptance
 review and focused re-review are green; C-a2 is next.
+
+**Current status, 2026-08-24, owner clip and first C-b inputs accepted.** The
+resumed C-a2 containment gate stopped on the first foreign-owner landmark, and
+the complete read-only LuaJIT exact-mask census then established the 70-mask
+diagnostic baseline in contracts Section 14.13. The user accepted owner-clipped
+effective landmark influence and deferred Copperfell's geometry/flow correction
+to one later C-b Source package. This documentation freeze and its independent
+review gate C-a2 resumption; no implementation or Source edit is authorized by
+this status. CB0-1/2/3 also freeze the 38-record island family, 65 initial
+route profiles and D-3 spur deferral. After reviewed C-a2 integration,
+route-profile C-b begins with the Copperfell Source event while exterior D-2
+runs in parallel. The 65 route profiles then consume rebound C-a2 `H`, and
+hydrology follows them.
 
 ## 3. Locked surfaces
 

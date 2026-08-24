@@ -1,7 +1,8 @@
 # WP40 acceleration and delivery plan
 
-Status: **planning record, revised after the accepted 2026-08-23 PUC-1 and
-D1-1 rulings and final GO. The execution graph mirrors the authoritative
+Status: **planning record, revised after the accepted 2026-08-24 landmark-
+owner-clip, Copperfell-deferral and CB0-1/2/3 rulings. The execution graph
+mirrors the authoritative
 [T2 plan](wp40-t2-plan.md) Section 0 and the durable
 [handoff memo](wp40-t2-contracts.md) Section 14. Fable and Sol independently
 reviewed the preceding planning revision on 2026-08-22; Fable's findings were
@@ -467,15 +468,58 @@ untouched.
 C-a2 is a separate serial package. It assembles zone-owned `H` only after
 D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
 and dry-face/zone-owned adopted residue, and the integrated C1-v3
-reacceptance is green. Its first fail-closed gate retains the seed-independent
-proof that every exact landmark mask plus the maximum legal incident-edge
-displacement envelope lies inside its final owner. The package-local
-`surface_owner_at(x, z)` projection over the accepted compiled-world-v2 records
-combines dry-face polygon and adopted-residue ownership, every compiled Planned-
-Water class, closure-wing ownership, mouth-aperture/perimeter ownership and the
-canonical half-open seam tie. “Not polygons alone” forbids dropping those other
-inputs; polygon membership remains the ordinary-dry input. Missing input or
-reconstructed ownership is a STOP before `H` assembly.
+reacceptance is green. Its first fail-closed gate retains the ownership
+invariant through the package-local `surface_owner_at(x, z)` projection over
+the accepted compiled-world-v2 records. It combines dry-face polygon and
+adopted-residue ownership; every compiled Planned-Water, closure-wing,
+mouth-aperture and perimeter ownership class; and the canonical half-open seam
+tie. “Not polygons alone” forbids dropping those other inputs; polygon
+membership remains the ordinary-dry input. Resolve that owner exactly once per
+`H`-domain column and reuse it throughout the column. Missing, nil, multiple
+or reconstructed ownership is a STOP before `H` assembly.
+
+The accepted `LANDMARK-OWNER-CLIP-1` ruling supersedes the former strict
+full-mask-plus-incident-margin proof. Exact masks and Q16 collars remain
+authored identity and diagnostic evidence, but their effective mask/weight is
+zero unless the one final owner equals the landmark's `zone_id`. Eligible
+positive collars still compose in ascending priority, higher last;
+land-edge blending stays after landmarks, with surviving junction support used
+only to adjust `effective_G`. Retained diagnostic evidence is the complete
+LuaJIT exact-mask census of all 70 authored masks and 11,441,328 columns.
+Exact-mask and margin geometry are seed-independent. Against the
+accepted seed-0 payload, 15 masks have 274,597 non-owner columns: zero Planned
+Water, 264,197 other-Dry and 10,400 nil/exterior. Ten more are owner-clean but
+fail only the former margin test. No complete positive-collar Planned-Water
+result exists: an attempted scan aborted after approximately 180 seconds on an
+unfiltered Bay lookup and retained no output.
+
+The clip never authorizes an abrupt final feature. C-a2 structurally proves
+every cardinally adjacent Dry-to-Dry owner change maps to a compiled final
+land-edge incidence, and both post-landmark heights enter its perpendicular
+96-node boundary blend. Where the seam row falls within a surviving relief
+junction's 96-station endpoint support, both endpoints also enter that support;
+it only reshapes `effective_G` and never replaces edge-blend membership. An
+undeclared dry owner seam is a STOP. Adopted residue creates no separate
+cross-face authority. C-b owns Planned-Water bed/bank continuity across
+internal Bay/Wing owner seams, and D-2 owns `H`-to-exterior transitions.
+Route/hydrology, exterior, housing and capital gates remain separately binding.
+
+C-a2 retains canonical sorted rows for each cardinally adjacent Dry-to-Dry
+owner pair touched by positive owner-eligible landmark support. Normalize
+endpoints lexicographically by `(x,z)`. Every row maps both endpoint
+coordinates and owners to the sole compiled final land-edge incidence and
+proves positive perpendicular 96-node boundary-blend membership for both.
+Rows within a surviving relief junction's 96-station endpoint support
+additionally record junction ID, endpoint side and positive membership for both
+endpoints. Their digest plus missing, duplicate and unsupported edge or
+required-junction negative KATs is the gate. The exhaustive bounded evidence is
+LuaJIT-only, with targeted PUC structural KATs and no numeric threshold or
+runtime census.
+
+`COPPERFELL-DEFER-1` leaves the current Source envelope in place for owner-
+clipped C-a2. It rejects an unreviewed `96 x 32` shrink and batches the
+geometry/orientation plus reversed-flow correction into one later C-b Source
+package and one consequent Source/C1/PCC/D-1/C-a1 reacceptance event.
 
 Both packages use the light verification regime: purity argument, properties,
 focused KATs and a determinism digest. They do not copy the topology census
@@ -493,6 +537,20 @@ records from Lane-D package 1. Hydrology additionally requires its reach masks,
 profiles, and transitions. Before either package starts, publish a short input
 matrix naming every provider, return type, and freeze commit. Only then
 implement them under the same light purity/property/digest regime.
+
+CB0-1/2/3 closes the route half of that input matrix. The existing reserved
+`island_routes` family receives 38 grouped typed records (10 stations, eight
+routes, 16 interfaces, four landings) without a family or schema bump. The
+eight island routes are `secondary`: grade `1:8` and minimum transition run 8.
+CB0-2 separately supplies their compiled-only endpoint phase through the 16
+typed interfaces under contracts Section 14.14's exact `delta_j` ranges; no
+Source grade field or ordinary interface-phase reference is used. The initial
+solver roster is 57 land plus eight island profiles. Four public boat routes
+are travel/corridor records, not road profiles; 74 anchor-dependent POI spurs
+wait for D-3 and then use the same solver. After reviewed C-a2 integration, the
+C-b lane begins with the one Copperfell Source correction/reacceptance while
+D-2 runs independently. Rebind C-a2 once on that Source, then compile the 65
+route profiles; hydrology follows those profiles.
 
 Expected size: **medium to large**, but not safely parallel until that matrix
 shows non-overlapping ownership.
@@ -513,7 +571,10 @@ packages before implementation:
    source-only until the Lane-C-b input-matrix ruling; D-1 validates its
    complete result through public `compiled_schema.canonicalize_compiled`,
    keeps analytic-record helpers local, and adds no validator export;
-2. perimeter-derived physical geometry for coast/shelf, islands, and channels;
+2. perimeter-derived physical geometry for coast/shelf, islands, and channels
+   (**D-2**); the accepted partition already emits the 22 coast, two island
+   and two channel authorities, so this package productizes and accepts those
+   records rather than designing new topology;
 3. anchors, hard-protection, claim-exclusion, and housing masks; and
 4. logical-biome, nearest-feature, and housing-centre selectors with their slow
    oracles.
@@ -696,7 +757,7 @@ multi-hour evidence run.
 | --- | --- | --- | --- |
 | T0 — baseline | Pins the existing world, materials handoff, host, and measurements so later comparisons mean something. | complete | done |
 | T1 — deterministic foundation | Provides full-seed arithmetic, canonical serialization, validation, IPC, schemas, and the spatial index used by every later task. | complete | done |
-| T2 — compiled geometry | Turns the authored 38-zone world into one immutable deterministic payload: boundaries, terrain fields, routes, water, anchors, masks, selectors, fixtures, and traces. | boundary topology and C1-v3 downstream interface frozen; most non-topology buckets and production compiler unstarted | **extra-large**; still the largest single task; derived geometry volume and final integration are the remaining risk |
+| T2 — compiled geometry | Turns the authored 38-zone world into one immutable deterministic payload: boundaries, terrain fields, routes, water, anchors, masks, selectors, fixtures, and traces. | boundary topology/C1-v3 frozen; C-a1, ownership and D-1 integrated; owner-clipped C-a2 contract accepted, implementation awaiting this freeze/review; later buckets and production compiler remain open | **extra-large**; still the largest single task; derived geometry volume and final integration are the remaining risk |
 | T3 — public geography API | Gives gameplay code stable fast answers such as zone, level, territory, PvP state, water/mount class, nearest feature, housing eligibility, and protection. | not started; scaffolding/oracles may start while T2 finishes, but authoritative answers wait for T2 | **medium**; API semantics and hot-path performance |
 | T4 — pure content planner | Decides, without touching the map, the exact final operation for each relevant voxel and resolves conflicts between terrain, water, routes, resources, and preservation rules. | not started | **large**; resolver completeness and typed ownership, but readily property-tested |
 | T5 — engine adapter | Applies the T4 plan to real v7 output in one bounded VoxelManip transaction with correct light and liquids. | not started; the tools-only T5-0 probe specification is no longer pending and the probe has run as a tools-only observation (Section 8), but T5 itself is untouched | **large**; real-engine behavior, memory, chunk order, and no-op cost |
@@ -737,16 +798,24 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
           exactly one C1-v3 PUC reacceptance
                            |
-        C-a2 containment gate against final ownership
+      LANDMARK-OWNER-CLIP documentation freeze + independent review
                            |
-                         C-a2 H
+ C-a2: owner -> H -> clipped landmarks -> edge blend (+ junction-adjusted G)
                            |
-                STOP before Lane C-b
+                 review and integrate C-a2 H
+                    /                 \
+ C-b Copperfell Source fix       D-2 exterior productization
+ + one reacceptance event        (22 coast + 2 island + 2 channel)
+              |                         |
+ rebind C-a2 on accepted Source         |
+              |                         |
+ C-b profiles: 57+8 and 38 rows         |
+              |                         |
+        C-b hydrology                   |
+                    \                 /
+ D-3 anchors/masks + 74 POI spur profiles; D-4 selectors
 
-C-a2 H freeze + D-1 route records + all other providers named by matrix
-        +-> later route profiles and hydrology as separately cut Lane-C-b packages
-
-Lane C-b + remaining Lane-D-2/D-3/D-4 provider packages
+Lane C-b + Lane-D-2/D-3/D-4 provider packages
         +-> Lane E production compiler -> T2 final payload
 
 T2 final payload -------> T3 authoritative API completion
@@ -924,13 +993,14 @@ This planning record is ready to become an implementation plan when:
   or authoritative design link; and
 - the Section 15 authority fold-in is complete.
 
-The current execution order is narrower than this whole-document readiness
-list: Phase 0A first; after it, C-a1, the ownership handoff and Phase-0B
-preparation may overlap; the ownership provider integrates before Phase 0B is
-finalized and integrated; D-1 then waits for that green fold; the single
-integrated C1 reacceptance gates C-a2; and the current mandate stops before
-C-b. The T5-0 specification is already frozen and its tools-only probe has run
-(Section 8).
+The historical pre-CB0 execution order was narrower than this whole-document
+readiness list: Phase 0A first; after it, C-a1, the ownership handoff and
+Phase-0B preparation may overlap; the ownership provider integrates before
+Phase 0B is finalized and integrated; D-1 then waits for that green fold; the
+single integrated C1 reacceptance gates C-a2; and that mandate stopped before
+C-b.
+The current post-C-a2 authority is Sections 10, 14.13 and 14.14. The T5-0
+specification is already frozen and its tools-only probe has run (Section 8).
 Full T5 still waits for T3 and T4.
 
 **Execution status, 2026-08-24:** C-a1, D-1 and the reviewed landmark Source-
@@ -939,9 +1009,20 @@ Their post-merge package gates, the bounded LuaJIT selected-four/ownership
 preflight and the single integrated PUC C1-v3 reacceptance are green. Commit
 `89e4ba1` binds the 25 retained C1 files; same-HEAD resume and descendant-HEAD
 recorded reuse are also green. Independent Opus/xhigh C1 acceptance review is
-green; C-a2 is next, and the mandate still stops before C-b.
+green; C-a2 is next. This dated stop-before-C-b status is superseded by the
+current CB0 status below.
 
 **Later status, 2026-08-24:** WARCOAST-SOURCE-1 is reviewed and integrated.
 Its required fresh C1-v3 run, same-HEAD resume and descendant recorded-reuse
 checks are green, with commit `17efc8d` binding the 25 current rows. The fresh
 Opus/xhigh acceptance review and focused re-review are green; C-a2 resumes.
+
+**Current status, 2026-08-24:** the resumed strict-containment gate exposed a
+systemic 25-mask authoring/margin mismatch. The user accepted the simpler
+owner-clipped landmark rule, deferred Copperfell's Source geometry/flow fix,
+and froze CB0-1/2/3. Contracts Sections 14.13--14.14 now own those decisions.
+This non-trivial documentation package still requires independent review
+before C-a2 resumes. After reviewed C-a2 integration, the C-b
+Source-correction/reacceptance lane and D-2 exterior package may run in
+parallel. The 65-profile C-b route package then consumes the rebound C-a2 `H`;
+hydrology follows those profiles.
