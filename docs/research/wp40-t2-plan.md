@@ -93,6 +93,13 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    Adopted residue creates no separate dry cross-face authority. C-b owns final
    Planned-Water bed/bank continuity across internal Bay and Wing owner seams,
    while D-2 owns `H`-to-exterior coast, shelf and channel transitions.
+   Retain deterministic sorted rows for every cardinally adjacent Dry-to-Dry
+   owner pair touched by positive owner-eligible landmark support. Each row
+   names both coordinates/owners, the sole compiled final edge or junction and
+   positive 96-node blend membership for both endpoints; bind one canonical
+   digest and reject missing, duplicate or unsupported mappings. The exhaustive
+   bounded row population is LuaJIT-only; PUC runs targeted structural KATs,
+   never a numeric step test or runtime census.
 
    The first C-a2 attempt exposed the symmetric post-C1
    `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks
@@ -128,8 +135,12 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    coast/shelf/island/channel records in a disjoint worktree. Rebind C-a2 once
    on that Source, then compile the first 65 route profiles (57 land plus eight
    island). The existing `island_routes` family receives 38 grouped typed
-   records (10 stations, eight routes, 16 interfaces, four landings), with
-   secondary `1:8` grade and an eight-station fixed interface phase. The four
+   records (10 stations, eight routes, 16 interfaces, four landings). All eight
+   island routes stay secondary with the ordinary `1:8` grade and minimum
+   transition run 8. Separately, CB0-2 supplies the compiled-only endpoint
+   phase over the 16 typed interfaces with the exact `delta_j` ranges in
+   contracts Section 14.14; it is not derived from Source or the route-class
+   phase rule and does not use the ordinary interface-phase reference. The four
    boat routes are not road profiles. C-b hydrology follows those profiles;
    D-3 later owns all 74 anchor-dependent POI spurs and uses the same solver.
 

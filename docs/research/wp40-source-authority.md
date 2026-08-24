@@ -636,6 +636,17 @@ correction, with its evidence and digests, stays in
   coast, shelf and immutable-channel transition. Neither later package may
   treat clipping as proof of its product.
 
+  C-a2 retains the structural proof as deterministic rows for every
+  cardinally adjacent Dry-to-Dry final-owner pair touched by positive
+  owner-eligible landmark support. Each row maps the normalized endpoint
+  coordinates and owners to the sole compiled final land-edge or junction
+  support and to positive membership of both endpoints in its post-landmark
+  96-node blend. Rows sort by their normalized coordinates, owners, support
+  kind and support ID and bind one canonical digest. Missing, duplicate or
+  unsupported mappings reject. The exhaustive bounded artifact is LuaJIT
+  evidence; PUC runs only targeted structural KATs. It is not a numeric
+  height-step allowance or a runtime census.
+
   Exact authored mask membership remains the source integer predicate and is
   independent of the Q16 signed distance used to derive collar weight. The 264
   measured ellipse incidences on which exact membership and signed-distance
@@ -704,9 +715,9 @@ correction, with its evidence and digests, stays in
   their authored owner: zero Planned-Water columns, 264,197 columns owned by
   another Dry face, and 10,400 nil/exterior columns. Another 10 masks were
   owner-clean at seed 0. Their failures were limited to the former
-  incident-edge-margin test, whose geometry is seed-independent. Both corrected
-  warcoast masks were owner-clean at seed 0. Their margin geometry was clean
-  and seed-independent.
+  incident-edge-margin test, whose geometry is seed-independent. Both
+  corrected warcoast masks were owner-clean at seed 0. Their margin geometry
+  was clean and seed-independent.
   Movement is a STOP only under the same seed-0 payload comparison; a
   separately authorized payload change requires fresh evidence rather than an
   automatic repin, while an unexpected payload change independently stops.

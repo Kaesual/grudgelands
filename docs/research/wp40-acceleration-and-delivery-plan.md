@@ -471,25 +471,23 @@ and dry-face/zone-owned adopted residue, and the integrated C1-v3
 reacceptance is green. Its first fail-closed gate retains the ownership
 invariant through the package-local `surface_owner_at(x, z)` projection over
 the accepted compiled-world-v2 records. It combines dry-face polygon and
-adopted-residue ownership,
-every compiled Planned-Water class, closure-wing ownership, mouth-aperture/
-perimeter ownership and the canonical half-open seam tie. “Not polygons alone”
-forbids dropping those other inputs; polygon membership remains the ordinary-
-dry input. Resolve that owner exactly once per `H`-domain column and reuse it
-throughout the column. Missing, nil, multiple or reconstructed ownership is a
-STOP before `H` assembly.
+adopted-residue ownership; every compiled Planned-Water, closure-wing,
+mouth-aperture and perimeter ownership class; and the canonical half-open seam
+tie. “Not polygons alone” forbids dropping those other inputs; polygon
+membership remains the ordinary-dry input. Resolve that owner exactly once per
+`H`-domain column and reuse it throughout the column. Missing, nil, multiple
+or reconstructed ownership is a STOP before `H` assembly.
 
 The accepted `LANDMARK-OWNER-CLIP-1` ruling supersedes the former strict
 full-mask-plus-incident-margin proof. Exact masks and Q16 collars remain
 authored identity and diagnostic evidence, but their effective mask/weight is
 zero unless the one final owner equals the landmark's `zone_id`. Eligible
 positive collars still compose in ascending priority, higher last;
-edge/junction blending stays after landmarks. The complete LuaJIT exact-mask
-census of all 70 authored masks and 11,441,328 columns is retained as a
-diagnostic.
-Exact-mask and margin geometry are seed-independent; against the seed-0
-payload, 15 masks have 274,597 non-owner columns (zero Planned Water, 264,197
-other-Dry and 10,400 nil/exterior), while 10 more are seed-0 owner-clean but
+edge/junction blending stays after landmarks. Retained diagnostic evidence is
+the complete LuaJIT exact-mask census of all 70 authored masks and 11,441,328
+columns. Exact-mask and margin geometry are seed-independent. Against the
+accepted seed-0 payload, 15 masks have 274,597 non-owner columns: zero Planned
+Water, 264,197 other-Dry and 10,400 nil/exterior. Ten more are owner-clean but
 fail only the former margin test. No complete positive-collar Planned-Water
 result exists: an attempted scan aborted after approximately 180 seconds on an
 unfiltered Bay lookup and retained no output.
@@ -501,6 +499,14 @@ seam is a STOP. Adopted residue creates no separate cross-face authority. C-b
 owns Planned-Water bed/bank continuity across internal Bay/Wing owner seams,
 and D-2 owns `H`-to-exterior transitions. Route/hydrology, exterior, housing
 and capital gates remain separately binding.
+
+C-a2 retains canonical sorted rows for each cardinally adjacent Dry-to-Dry
+owner pair touched by positive owner-eligible landmark support. Rows map both
+coordinates/owners to the sole compiled final edge or junction and positive
+96-node blend membership for both endpoints. Their digest plus missing,
+duplicate and unsupported negative KATs is the gate. The exhaustive bounded
+evidence is LuaJIT-only, with targeted PUC structural KATs and no numeric
+threshold or runtime census.
 
 `COPPERFELL-DEFER-1` leaves the current Source envelope in place for owner-
 clipped C-a2. It rejects an unreviewed `96 x 32` shrink and batches the
@@ -527,13 +533,16 @@ implement them under the same light purity/property/digest regime.
 CB0-1/2/3 closes the route half of that input matrix. The existing reserved
 `island_routes` family receives 38 grouped typed records (10 stations, eight
 routes, 16 interfaces, four landings) without a family or schema bump. The
-eight island routes are `secondary`: grade `1:8`, fixed interface phase eight
-stations. The initial solver roster is 57 land plus eight island profiles.
-Four public boat routes are travel/corridor records, not road profiles; 74
-anchor-dependent POI spurs wait for D-3 and then use the same solver. After
-reviewed C-a2 integration, the C-b lane begins with the one Copperfell Source
-correction/reacceptance while D-2 runs independently. Rebind C-a2 once on that
-Source, then compile the 65 route profiles; hydrology follows those profiles.
+eight island routes are `secondary`: grade `1:8` and minimum transition run 8.
+CB0-2 separately supplies their compiled-only endpoint phase through the 16
+typed interfaces under contracts Section 14.14's exact `delta_j` ranges; no
+Source grade field or ordinary interface-phase reference is used. The initial
+solver roster is 57 land plus eight island profiles. Four public boat routes
+are travel/corridor records, not road profiles; 74 anchor-dependent POI spurs
+wait for D-3 and then use the same solver. After reviewed C-a2 integration, the
+C-b lane begins with the one Copperfell Source correction/reacceptance while
+D-2 runs independently. Rebind C-a2 once on that Source, then compile the 65
+route profiles; hydrology follows those profiles.
 
 Expected size: **medium to large**, but not safely parallel until that matrix
 shows non-overlapping ownership.

@@ -197,6 +197,17 @@ dry cross-face authority. C-b owns final Planned-Water bed and bank continuity
 across internal Bay and Wing owner seams; D-2 owns every `H`-to-exterior coast,
 shelf and immutable-channel transition.
 
+C-a2's retained structural artifact is a deterministic sorted row set covering
+every cardinally adjacent Dry-to-Dry final-owner pair touched by positive
+owner-eligible landmark support. Normalize the lexicographically smaller
+`(z,x)` endpoint first, then sort by both endpoint coordinates and owners,
+support kind and support ID. Each row names the sole compiled final land-edge
+or junction support and proves positive membership of both endpoints in its
+post-landmark 96-node blend. Bind one canonical digest and reject missing,
+duplicate or unsupported mappings with negative KAT coverage. The exhaustive
+bounded row set runs under LuaJIT; PUC executes targeted structural KATs only.
+No numeric height-step threshold or runtime census is authorized.
+
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let
 `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`. The
@@ -1091,13 +1102,22 @@ The maximum longitudinal grades are class-specific:
 | ford approach or tunnel portal interface | `1:12`, regardless of route class |
 
 The eight authored island land routes are ordinary `secondary` route-profile
-inputs, not boat travel across the channel. They therefore use the secondary
-`1:8` maximum grade, `minimum_transition_run = 8`, and the existing
-`grade_phase_rule = "flat_run_at_fixed_interface"`. Their current
-`island_route_interfaces` Source rows remain free of grade fields; CB0-2
-authorizes no Source edit. The C-b profile compiler must derive the
-eight-station fixed endpoint phase from the secondary route-class policy; that
-constraint is compiled output, not a Source literal. No implicit `1:12`
+inputs, not boat travel across the channel. Their secondary maximum grade
+`1:8` and `minimum_transition_run = 8` remain separate route-class constraints.
+CB0-2 itself is the later compiled-only authority for their endpoint phase; the
+phase is not derived from those class constraints or frozen Source. The current
+`island_route_interfaces` Source rows stay free of grade fields, and CB0-2
+authorizes no Source edit or central schema bump.
+
+Under the existing solver convention `delta_j = y_j - y_(j-1)`, let `S` be the
+final raster station count. The typed compiled endpoint/interface record at
+`i = 1` requires `delta_j = 0` for `j = 2..min(S,8)`; the record at `i = S`
+requires `delta_j = 0` for `j = max(2,S-7)..S`. Each endpoint therefore has up
+to eight flat stations, or seven deltas. On a route shorter than 15 stations,
+overlap simply requires the union of both ranges to stay flat. The island-
+profile branch consumes all 16 typed compiled endpoint/interface records. It
+does not read nonexistent Source grade fields or the ordinary
+`route_profile_solver.interface_phase_ref` path. No implicit `1:12`
 start/capital/crossing exception applies. The first C-b profile roster is
 exactly the 57 land routes plus these eight island routes. The four public
 `boat_routes` describe travel/corridor connectivity and receive no road height
@@ -1109,11 +1129,12 @@ These ratios constrain the discrete staircase profile, not the vertical face
 of an individual full node. Every elevation transition changes by exactly one
 node. Consecutive transition stations, whether they continue or reverse the
 grade, must be separated by at least the class ratio's horizontal run along the
-centreline. A fixed endpoint/interface also stores its grade phase; a flat
-interface reserves the same run before the first transition and after the last
-one. A stricter interface limit wins over the surrounding route-class limit.
-The profile validator rejects a multi-node jump, an under-spaced transition,
-or a short alternating sawtooth rather than smoothing it during generation.
+centreline. Outside CB0-2's island branch, a fixed land-route endpoint or
+interface also stores its ordinary grade phase; a flat interface reserves its
+declared run before the first transition and after the last one. A stricter
+interface limit wins over the surrounding route-class limit. The profile
+validator rejects a multi-node jump, an under-spaced transition, or a short
+alternating sawtooth rather than smoothing it during generation.
 
 Luanti's ordinary player step height is below one full node. The visible road
 renderer must therefore realize every accepted one-node elevation transition

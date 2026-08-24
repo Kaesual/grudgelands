@@ -3776,6 +3776,19 @@ C-b owns final Planned-Water bed and bank continuity, including internal Bay
 and Wing owner seams. D-2 owns every `H`-to-exterior coast, shelf and
 immutable-channel transition.
 
+The retained structural evidence is a deterministic row set for every
+cardinally adjacent Dry-to-Dry final-owner pair touched by positive
+owner-eligible landmark support. Normalize the lexicographically smaller
+`(z,x)` endpoint first and sort rows by both endpoint coordinates and owners,
+support kind and support ID. Each row maps that pair to the sole compiled final
+land-edge or junction support and records positive membership of both endpoints
+in its post-landmark 96-node blend. C-a2 binds the canonical row digest and
+carries negative KAT coverage for a missing, duplicate and unsupported mapping.
+The row population is bounded but exhaustive and runs under LuaJIT. PUC 5.1
+runs only targeted structural KATs against the same row semantics. A numeric
+height-step threshold cannot replace the proof, and map generation performs no
+runtime census.
+
 Clipping prevents one landmark from changing another zone; it does not prove
 the landmark's product obligations. C-b independently owns route and hydrology
 clearance, D-2 owns exterior coast/shelf/island/channel geometry, and D-3 owns
@@ -3802,8 +3815,8 @@ nil/exterior columns:
 `raincall_coastal_steps`, and `totemwater_delta`.
 
 Ten additional seed-0 owner-clean masks failed only the seed-independent former
-incident-edge-margin test: `copperfell_coastal_terraces`,
-`dur_brannoc_granite_terrace`,
+incident-edge-margin test:
+`copperfell_coastal_terraces`, `dur_brannoc_granite_terrace`,
 `highcourt_riverfork`, `starbough_coastal_gardens`,
 `nhal_veyr_necropolis`, `redtusk_wellchain`, `gor_drazhak_crossmesa`,
 `totemwater_colossi`, `gravesalt_tombways`, and
@@ -3862,8 +3875,8 @@ Stop the affected path before implementation, compilation or fixture repin if:
    silent clipping;
 7. a Source correction moves S1, the candidate pool, selected winners or
    frozen topology; or
-8. an adjacent Dry-to-Dry final-owner change lacks its compiled final land-edge
-   or junction support and existing 96-station blend.
+8. a cardinally adjacent Dry-to-Dry final-owner change lacks its compiled final
+   land-edge or junction support and existing 96-station blend.
 
 The existing charter also stops on any new player-visible/design decision,
 authority contradiction, or unplanned compiler, schema, Source or topology
@@ -3874,10 +3887,12 @@ continue.
 and process-authority package is non-trivial. Implementing model: GPT-5.6 Sol.
 The initial fresh independent Claude Opus/xhigh review returned
 `REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in 912,977 ms.
-Fix round 1 applies all findings. H1's implication that clipping itself was
-sufficient safety was overstated; the fix closes it by explicitly rejecting
-clip-induced abrupt terrain and assigning the structural dry-seam proof and
-the Planned-Water/exterior products above. Focused re-review: pending.
+Fix round 1 applied all findings. H1 was closed as clarified/overstated: its
+evidence basis was overstated, while the binding prohibition on clip-induced
+abrupt terrain remained intact; the fix assigned the structural dry-seam proof
+and Planned-Water/exterior products above. Focused re-review 1 returned 0
+Critical / 0 High / 1 Medium / 5 Low. Fix round 2 addresses those six findings;
+focused re-review 2 is pending.
 
 ### 14.14 CB0-1/2/3 Lane-C-b input freeze (decided 2026-08-24)
 
@@ -3895,15 +3910,25 @@ placement from Section 14.2 without changing the central schema.
    identity, append these records to `land_routes`, or synthesize a second
    landing/route authority.
 2. **Island profile grade.** All eight island routes retain their authored
-   `secondary` class. They use the ordinary secondary maximum grade `1:8` and
-   `minimum_transition_run = 8` under the existing
-   `grade_phase_rule = "flat_run_at_fixed_interface"`. Their current
-   `island_route_interfaces` Source rows remain free of grade fields; CB0-2
-   authorizes no Source edit. The C-b profile compiler must derive the
-   eight-station fixed endpoint phase from the secondary route-class policy;
-   that constraint is compiled output, not a Source literal. They do not
-   acquire the `1:12` start/capital/bridge/ford/tunnel exception merely because
-   an endpoint is a landing, junction, dragon or apex station.
+   `secondary` class. The ordinary secondary maximum grade `1:8` and
+   `minimum_transition_run = 8` remain separate class constraints; neither
+   derives the island endpoint phase. CB0-2 itself is the later compiled-only
+   phase authority; the phase is not derived from frozen Source. CB0-2
+   authorizes neither a Source edit nor a central schema bump. The current
+   `island_route_interfaces` Source rows remain free of grade fields.
+
+   Under the existing solver convention `delta_j = y_j - y_(j-1)`, let `S` be
+   the route's final raster station count. Its typed compiled island-route
+   endpoint/interface record at `i = 1` requires `delta_j = 0` for
+   `j = 2..min(S,8)`. The record at `i = S` requires `delta_j = 0` for
+   `j = max(2,S-7)..S`. Each end therefore has up to eight flat stations, or
+   seven deltas. Routes shorter than 15 stations may overlap; the union of both
+   ranges is simply flat. The C-b island-profile branch consumes the 16 typed
+   compiled island-route endpoint/interface records. It does not consume
+   nonexistent Source grade fields or the ordinary
+   `route_profile_solver.interface_phase_ref`. The eight routes do not acquire
+   the `1:12` start/capital/bridge/ford/tunnel exception merely because an
+   endpoint is a landing, junction, dragon or apex station.
 3. **First profile roster.** Initial C-b profile compilation solves exactly 65
    road profiles: 57 land routes plus eight island routes. The four public
    `boat_routes` remain travel/corridor records across the channel, not road
@@ -3923,5 +3948,7 @@ documentation freeze is non-trivial because it changes player-visible terrain
 semantics, acceptance authority and the next package boundary. Implementing
 model: GPT-5.6 Sol. The initial fresh independent Claude Opus/xhigh review
 returned `REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in
-912,977 ms. Fix round 1 applies all findings; focused re-review is pending. The
-coordinator appends its outcome; this memo does not self-approve.
+912,977 ms. Fix round 1 applied all findings. Focused re-review 1 returned 0
+Critical / 0 High / 1 Medium / 5 Low. Fix round 2 addresses those six findings;
+focused re-review 2 is pending. The coordinator appends its outcome; this memo
+does not self-approve.

@@ -743,14 +743,15 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   erased by the owner clip, collar-distance calculation or overlap priority.
   Required-route clearance is checked against the final composed surface and
   the later route product.
-- Owner clipping alone never authorizes an abrupt final terrain feature. C-a2
-  structurally proves that every cardinally adjacent Dry-to-Dry final-owner
-  change maps to a compiled final land-edge or junction support and that the
-  post-landmark heights enter its existing 96-station blend. An undeclared dry
-  owner seam is invalid world data. Adopted residue belongs to its final dry
-  face and creates no separate dry cross-face authority. C-b proves final
-  Planned-Water bed and bank continuity, including internal Bay or Wing owner
-  seams; D-2 proves every `H`-to-exterior coast, shelf or channel transition.
+- Owner clipping alone never authorizes an abrupt final terrain feature. Every
+  cardinally adjacent Dry-to-Dry final-owner change maps to a compiled final
+  land-edge or junction support, and the post-landmark heights enter its
+  existing 96-station blend. An undeclared dry owner seam is invalid world
+  data. Adopted residue belongs to its final dry face and creates no separate
+  dry cross-face authority. The final Planned-Water terrain product preserves
+  bed and bank continuity, including internal Bay or Wing owner seams; the
+  exterior terrain product resolves every `H`-to-coast, shelf or channel
+  transition.
 - A shared-boundary relief junction influences an incident edge only while
   that edge's chosen final raster still ends at the exact authored junction.
   A clipped terminal elsewhere keeps the edge's native relief gate and does
