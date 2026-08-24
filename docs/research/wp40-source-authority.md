@@ -624,6 +624,18 @@ correction, with its evidence and digests, stays in
   this post-landmark `H`; the complete order is final owner, primary `H`,
   owner-clipped landmark composition, then the existing edge/junction blend.
 
+  The owner clip is a domain guard, not authority for a cliff or other abrupt
+  final feature. C-a2 must structurally prove that every cardinally adjacent
+  Dry-to-Dry final-owner change maps to a compiled final land-edge or junction
+  support and that its two post-landmark heights are consumed by that support's
+  existing 96-station blend. An undeclared dry owner seam is a STOP; no numeric
+  clip-step allowance can substitute for the structural proof. Adopted residue
+  remains an input to its owning dry face and creates no separate dry
+  cross-face authority. C-b owns final Planned-Water bed and bank continuity
+  across internal Bay and Wing owner seams. D-2 owns every `H`-to-exterior
+  coast, shelf and immutable-channel transition. Neither later package may
+  treat clipping as proof of its product.
+
   Exact authored mask membership remains the source integer predicate and is
   independent of the Q16 signed distance used to derive collar weight. The 264
   measured ellipse incidences on which exact membership and signed-distance
@@ -652,7 +664,7 @@ correction, with its evidence and digests, stays in
   `geometry_policies.relief_composition.landmark_priority_order` literal, whose
   value is `ascending_base_h_priority_higher_applied_last`, requires greater
   priority to compose later and apply last. It never selects one landmark or
-  suppresses another positive collar.
+  suppresses another owner-eligible positive collar.
 
   Capsule mask geometry follows the exact source validator. With
   `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`, its
@@ -684,15 +696,26 @@ correction, with its evidence and digests, stays in
   approaches. Later route-product validation, not landmark-mask width, proves
   nonblocking access.
 
-  The complete 70-mask LuaJIT census is retained as diagnostic acceptance
-  evidence rather than a full-mask-containment gate. Its accepted baseline
-  enumerates 11,441,328 exact-mask columns: 15 masks have 274,597 columns whose
-  final owner differs from the authored `zone_id`, and 10 additional masks are
-  owner-clean but fail the former incident-edge-margin test. Both corrected
-  warcoast masks are owner- and margin-clean. No canonical digest for that
-  complete census was retained, so this document does not manufacture one;
-  the implementation package must retain its reproducible rows and bind their
-  actual digest when it closes C-a2.
+  The complete LuaJIT exact-mask census of all 70 authored masks is retained as
+  diagnostic acceptance evidence rather than a full-mask-containment gate.
+  The exact-mask enumeration and incident-edge-margin geometry do not vary by
+  seed. Against the accepted seed-0 compiled ownership payload, it enumerated
+  11,441,328 exact-mask columns. Fifteen masks had 274,597 columns outside
+  their authored owner: zero Planned-Water columns, 264,197 columns owned by
+  another Dry face, and 10,400 nil/exterior columns. Another 10 masks were
+  owner-clean at seed 0. Their failures were limited to the former
+  incident-edge-margin test, whose geometry is seed-independent. Both corrected
+  warcoast masks were owner-clean at seed 0. Their margin geometry was clean
+  and seed-independent.
+  Movement is a STOP only under the same seed-0 payload comparison; a
+  separately authorized payload change requires fresh evidence rather than an
+  automatic repin, while an unexpected payload change independently stops.
+  No complete positive-collar Planned-Water census exists: an attempted scan
+  was aborted after approximately 180 seconds because of an unfiltered Bay
+  lookup and retained no output. No canonical digest for the exact-mask census
+  was retained, so this document does not manufacture one; the implementation
+  package must retain its reproducible rows and bind the digest it actually
+  produces when it closes C-a2.
 
 ### 7.6 C-a1 primitive boundary conventions
 

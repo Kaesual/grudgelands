@@ -470,8 +470,8 @@ D-1 supplies the 38 zone records, Wave 1C exports Bay-owned connectivity fill
 and dry-face/zone-owned adopted residue, and the integrated C1-v3
 reacceptance is green. Its first fail-closed gate retains the ownership
 invariant through the package-local `surface_owner_at(x, z)` projection over
-the accepted compiled-
-world-v2 records. It combines dry-face polygon and adopted-residue ownership,
+the accepted compiled-world-v2 records. It combines dry-face polygon and
+adopted-residue ownership,
 every compiled Planned-Water class, closure-wing ownership, mouth-aperture/
 perimeter ownership and the canonical half-open seam tie. “Not polygons alone”
 forbids dropping those other inputs; polygon membership remains the ordinary-
@@ -484,12 +484,23 @@ full-mask-plus-incident-margin proof. Exact masks and Q16 collars remain
 authored identity and diagnostic evidence, but their effective mask/weight is
 zero unless the one final owner equals the landmark's `zone_id`. Eligible
 positive collars still compose in ascending priority, higher last;
-edge/junction blending stays after landmarks. The complete
-70-mask/11,441,328-column LuaJIT census is retained as a diagnostic with 15
-ownership-failing masks/274,597 foreign-owner columns and 10 additional
-margin-only masks, not as a runtime scan or a demand for 25 Source redesigns.
-Route/hydrology, exterior, housing and capital gates remain separately
-binding.
+edge/junction blending stays after landmarks. The complete LuaJIT exact-mask
+census of all 70 authored masks and 11,441,328 columns is retained as a
+diagnostic.
+Exact-mask and margin geometry are seed-independent; against the seed-0
+payload, 15 masks have 274,597 non-owner columns (zero Planned Water, 264,197
+other-Dry and 10,400 nil/exterior), while 10 more are seed-0 owner-clean but
+fail only the former margin test. No complete positive-collar Planned-Water
+result exists: an attempted scan aborted after approximately 180 seconds on an
+unfiltered Bay lookup and retained no output.
+
+The clip never authorizes an abrupt final feature. C-a2 structurally proves
+every adjacent Dry-to-Dry owner change maps to a compiled final land-edge or
+junction and enters its post-landmark 96-station blend; an undeclared dry owner
+seam is a STOP. Adopted residue creates no separate cross-face authority. C-b
+owns Planned-Water bed/bank continuity across internal Bay/Wing owner seams,
+and D-2 owns `H`-to-exterior transitions. Route/hydrology, exterior, housing
+and capital gates remain separately binding.
 
 `COPPERFELL-DEFER-1` leaves the current Source envelope in place for owner-
 clipped C-a2. It rejects an unreviewed `96 x 32` shrink and batches the
@@ -772,19 +783,19 @@ accepted C1-v3 handoff + accepted PUC-1/D1-1 + GO
                            |
       LANDMARK-OWNER-CLIP documentation freeze + independent review
                            |
-  C-a2: one owner lookup -> primary H -> owner-clipped landmarks -> boundary blend
+  C-a2: owner -> H -> clipped landmarks -> 96-station boundary blend
                            |
                  review and integrate C-a2 H
                     /                 \
  C-b Copperfell Source fix       D-2 exterior productization
  + one reacceptance event        (22 coast + 2 island + 2 channel)
+              |                         |
+ rebind C-a2 on accepted Source         |
+              |                         |
+ C-b profiles: 57+8 and 38 rows         |
+              |                         |
+        C-b hydrology                   |
                     \                 /
-             rebind C-a2 once on accepted Source
-                           |
- C-b route profiles: 57+8 + 38 island relational rows
-                           |
-                    C-b hydrology
-                           |
  D-3 anchors/masks + 74 POI spur profiles; D-4 selectors
 
 Lane C-b + Lane-D-2/D-3/D-4 provider packages
@@ -965,14 +976,14 @@ This planning record is ready to become an implementation plan when:
   or authoritative design link; and
 - the Section 15 authority fold-in is complete.
 
-The historical pre-CB0 execution order was narrower than this whole-document readiness
-list: Phase 0A first; after it, C-a1, the ownership handoff and Phase-0B
-preparation may overlap; the ownership provider integrates before Phase 0B is
-finalized and integrated; D-1 then waits for that green fold; the single
-integrated C1 reacceptance gates C-a2; and that mandate stopped before C-b.
-The current post-C-a2 authority is Sections 10 and 14.14. The T5-0
-specification is already frozen and its tools-only probe has run
-(Section 8).
+The historical pre-CB0 execution order was narrower than this whole-document
+readiness list: Phase 0A first; after it, C-a1, the ownership handoff and
+Phase-0B preparation may overlap; the ownership provider integrates before
+Phase 0B is finalized and integrated; D-1 then waits for that green fold; the
+single integrated C1 reacceptance gates C-a2; and that mandate stopped before
+C-b.
+The current post-C-a2 authority is Sections 10, 14.13 and 14.14. The T5-0
+specification is already frozen and its tools-only probe has run (Section 8).
 Full T5 still waits for T3 and T4.
 
 **Execution status, 2026-08-24:** C-a1, D-1 and the reviewed landmark Source-
@@ -993,8 +1004,8 @@ Opus/xhigh acceptance review and focused re-review are green; C-a2 resumes.
 systemic 25-mask authoring/margin mismatch. The user accepted the simpler
 owner-clipped landmark rule, deferred Copperfell's Source geometry/flow fix,
 and froze CB0-1/2/3. Contracts Sections 14.13--14.14 now own those decisions.
-This non-trivial documentation package still requires independent review before
-C-a2 resumes. After reviewed C-a2 integration, the C-b Source-correction/
-reacceptance lane and D-2 exterior package may run in parallel. The 65-profile
-C-b route package then consumes the rebound C-a2 `H`; hydrology follows those
-profiles.
+This non-trivial documentation package still requires independent review
+before C-a2 resumes. After reviewed C-a2 integration, the C-b
+Source-correction/reacceptance lane and D-2 exterior package may run in
+parallel. The 65-profile C-b route package then consumes the rebound C-a2 `H`;
+hydrology follows those profiles.

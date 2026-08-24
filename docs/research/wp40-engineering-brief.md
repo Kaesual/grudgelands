@@ -187,6 +187,16 @@ authority. C-a1 proves that arithmetic without ownership. Required-route,
 hydrology, exterior, housing and capital obligations are tested by their later
 products; owner clipping never discharges one silently.
 
+Owner clipping also never authorizes an abrupt final terrain feature. C-a2
+must structurally prove that every cardinally adjacent Dry-to-Dry final-owner
+change maps to a compiled final land-edge or junction support and is consumed
+by that support's existing post-landmark 96-station blend. An undeclared dry
+owner seam is a STOP; no numeric clip-step allowance substitutes for this
+proof. Adopted residue stays part of its final dry face and is not a separate
+dry cross-face authority. C-b owns final Planned-Water bed and bank continuity
+across internal Bay and Wing owner seams; D-2 owns every `H`-to-exterior coast,
+shelf and immutable-channel transition.
+
 For an authored capsule with half-extents `radius_x` and `radius_z`, the axis
 is the longer-radius axis, with x selected on an equal-radius tie. Let
 `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`. The
@@ -1082,14 +1092,18 @@ The maximum longitudinal grades are class-specific:
 
 The eight authored island land routes are ordinary `secondary` route-profile
 inputs, not boat travel across the channel. They therefore use the secondary
-`1:8` maximum grade and an eight-station fixed endpoint-interface phase
-(`grade_phase = "flat_run_8"`). No
-implicit `1:12` start/capital/crossing exception applies. The first C-b profile
-roster is exactly the 57 land routes plus these eight island routes. The four
-public `boat_routes` describe travel/corridor connectivity and receive no road
-height profile. The 74 anchor-dependent POI spurs use this same solver only in
-the later D-3 package, after their anchors exist; they are not part of the
-first 65-profile roster.
+`1:8` maximum grade, `minimum_transition_run = 8`, and the existing
+`grade_phase_rule = "flat_run_at_fixed_interface"`. Their current
+`island_route_interfaces` Source rows remain free of grade fields; CB0-2
+authorizes no Source edit. The C-b profile compiler must derive the
+eight-station fixed endpoint phase from the secondary route-class policy; that
+constraint is compiled output, not a Source literal. No implicit `1:12`
+start/capital/crossing exception applies. The first C-b profile roster is
+exactly the 57 land routes plus these eight island routes. The four public
+`boat_routes` describe travel/corridor connectivity and receive no road height
+profile. The 74 anchor-dependent POI spurs use this same solver only in the
+later D-3 package, after their anchors exist; they are not part of the first
+65-profile roster.
 
 These ratios constrain the discrete staircase profile, not the vertical face
 of an individual full node. Every elevation transition changes by exactly one
@@ -4206,10 +4220,10 @@ landings. It creates no family or schema identity. The earlier Wave-1
 ownership-handoff schema event deliberately reserved that empty family so this
 assignment needs no second central-schema event.
 
-That earlier reservation alone authorized only `schemas.lua`'s `compiled` binding,
-`compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's family
-list, the production compiler trust skeleton's `geometry_names` list, and the
-exact family lists in
+That earlier reservation alone authorized only `schemas.lua`'s `compiled`
+binding, `compiled_schema.lua`'s `EXPECTED_COMPILED_SCHEMA`, the same file's
+family list, the production compiler trust skeleton's `geometry_names` list,
+and the exact family lists in
 `t2_partition_test.lua` and `t2_schema_core_test.lua`, including the latter's
 schema-mismatch negative literal. It does not authorize compiler-
 implementation wiring, family population, or a change to any other schema

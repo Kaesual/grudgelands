@@ -83,8 +83,16 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    ownership is a STOP. Exact masks and collars remain identity/evidence, but
    their effective mask/weight is zero unless owner equals landmark `zone_id`.
    C-a2 then assembles owner-clipped zone-owned `H`, followed by the existing
-   edge/junction blend. The complete 70-mask census is retained as diagnostic
-   evidence, not a strict full-mask-plus-margin gate.
+   edge/junction blend. The complete exact-mask census of all 70 authored masks
+   is retained as diagnostic evidence, not a strict full-mask-plus-margin gate.
+
+   The clip is not authority for an abrupt final feature. C-a2 structurally
+   proves every cardinally adjacent Dry-to-Dry final-owner change has a
+   compiled final land-edge or junction support and enters its existing
+   post-landmark 96-station blend; an undeclared dry owner seam is a STOP.
+   Adopted residue creates no separate dry cross-face authority. C-b owns final
+   Planned-Water bed/bank continuity across internal Bay and Wing owner seams,
+   while D-2 owns `H`-to-exterior coast, shelf and channel transitions.
 
    The first C-a2 attempt exposed the symmetric post-C1
    `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks
@@ -101,9 +109,15 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    C1 closure response are green; no long rerun begins without a reported cost
    and authority basis.
 
-   The resumed C-a2 gate then measured the general condition: 15 of 70 masks
-   have 274,597 foreign-owner columns and another 10 are owner-clean but fail
-   only the former margin requirement. The accepted
+   The resumed C-a2 gate then measured the general condition. The
+   seed-independent exact-mask enumeration covered 11,441,328 columns. Against
+   the accepted seed-0 payload, 15 of 70 masks have 274,597 non-owner columns:
+   zero Planned Water, 264,197 other-Dry and 10,400 nil/exterior. Another 10
+   masks are seed-0 owner-clean but fail only the seed-independent former
+   margin requirement. The corrected warcoast masks are owner-clean under that
+   same seed-0 payload comparison. No complete positive-collar Planned-Water
+   result exists; its attempted scan aborted after approximately 180 seconds
+   on an unfiltered Bay lookup and retained no output. The accepted
    `LANDMARK-OWNER-CLIP-1` rule above replaces 25 speculative source redesigns.
    Under `COPPERFELL-DEFER-1`, no `96 x 32` shrink is authorized; Copperfell's
    geometry and reversed flow direction move into one later C-b Source package
@@ -128,7 +142,7 @@ does not edit or obey the three superseded one-winner source-policy literals.
 
 ## 1. Where T2 actually stands
 
-`compiler.lua` builds 20 named geometry buckets. Their status:
+`compiler.lua` builds 21 named geometry buckets. Their status:
 
 | group | buckets | state |
 |---|---|---|
@@ -141,9 +155,10 @@ does not edit or obey the three superseded one-winner source-policy literals.
 Plus three selectors — logical biomes, nearest-feature, housing-centre — all
 unstarted.
 
-The table describes the current 20-family baseline. The accepted D1-1
-reservation adds the dedicated empty `island_routes` family only in Wave 1C;
-it is a planned schema event, not a family already present or populated here.
+The table describes the current 21-family roster. Wave 1C already added the
+dedicated `island_routes` family; it is present and reserved empty until the
+accepted 38-record C-b population. That population is not another schema
+event.
 
 ### 1.1 Two verification regimes, decided 2026-08-15
 
@@ -375,16 +390,16 @@ review and focused re-review are green; C-a2 is next.
 
 **Current status, 2026-08-24, owner clip and first C-b inputs accepted.** The
 resumed C-a2 containment gate stopped on the first foreign-owner landmark, and
-the complete read-only LuaJIT census then established the 70-mask diagnostic
-baseline in contracts Section 14.13. The user accepted owner-clipped effective
-landmark influence and deferred Copperfell's geometry/flow correction to one
-later C-b Source package. This documentation freeze and its independent review
-gate C-a2 resumption; no implementation or Source edit is authorized by this
-status. CB0-1/2/3 also freeze the 38-record island family, 65 initial route
-profiles and D-3 spur deferral. After reviewed C-a2 integration, route-profile
-C-b begins with the Copperfell Source event while exterior D-2 runs in
-parallel; the 65 route profiles then consume rebound C-a2 `H`, and hydrology
-follows them.
+the complete read-only LuaJIT exact-mask census then established the 70-mask
+diagnostic baseline in contracts Section 14.13. The user accepted owner-clipped
+effective landmark influence and deferred Copperfell's geometry/flow correction
+to one later C-b Source package. This documentation freeze and its independent
+review gate C-a2 resumption; no implementation or Source edit is authorized by
+this status. CB0-1/2/3 also freeze the 38-record island family, 65 initial
+route profiles and D-3 spur deferral. After reviewed C-a2 integration,
+route-profile C-b begins with the Copperfell Source event while exterior D-2
+runs in parallel. The 65 route profiles then consume rebound C-a2 `H`, and
+hydrology follows them.
 
 ## 3. Locked surfaces
 

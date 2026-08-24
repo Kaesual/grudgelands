@@ -2949,10 +2949,12 @@ packages they governed; their bodies are not rewritten.
 1. **Landmark composition.** Evaluate every landmark with positive Q16 collar
    weight in ascending `base_h_priority`, with the higher priority applied
    last. Each contribution qlerps from the previously composed `H` to that
-   landmark's replacement height. Zero-weight collars are excluded. Exact
-   authored mask membership remains the source integer predicate and stays
-   separate from Q16 signed distance. The measured 264 ellipse incidences on
-   which exact membership and signed-distance equality differ are evidence,
+   landmark's replacement height. Zero-weight collars are excluded.
+   **[Section 14.13 supersedes the unqualified “every” above: only
+   owner-eligible positive effective collar weights enter composition.]**
+   Exact authored mask membership remains the source integer predicate and
+   stays separate from Q16 signed distance. The measured 264 ellipse incidences
+   on which exact membership and signed-distance equality differ are evidence,
    not authority. C-a1 Stage 1 must prove that every exact mask, including its
    per-edge displacement margin, is contained in its owning final zone.
    **[Superseded first by Section 14.5's C-a2 assignment and then by Section
@@ -3163,23 +3165,24 @@ collars and ordered landmark composition, but makes no final-zone containment
 claim. Under this historical gate, after D-1, the ownership handoff and the
 single C1 reacceptance were green, C-a2 was to prove that every exact mask,
 including its per-edge displacement margin, lay in its owning final zone. It
-must consume the package-local `surface_owner_at(x, z)` projection over the
-accepted integrated `grug_wp40_compiled_world_v2` records. That projection is
-not a new serialized family: it applies the canonical per-column precedence to
-compiled Bay-v3 Base/notch/connectivity data and owner spans, closure-wing and
-mouth-aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
+would have consumed the package-local `surface_owner_at(x, z)` projection over
+the accepted integrated `grug_wp40_compiled_world_v2` records. That projection
+is not a new serialized family: it applies the canonical per-column precedence
+to compiled Bay-v3 Base/notch/connectivity data and owner spans, closure-wing
+and mouth-aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
 ownership, and the half-open seam tie. “Not polygons alone” forbids omitting
 those water, residue and seam inputs; it does not forbid polygon membership as
 the ordinary-dry input. A missing or insufficient compiled input is a STOP
 before `H` assembly, not permission to widen C-a1, rebuild partition
 connectivity or invent a second classifier.
 
-The containment proof is a retained, seed-independent C-a2 acceptance KAT over
-every authored exact mask plus the maximum legal displacement envelope of each
-incident edge. It proves the authoring invariant for every legal seed; it is
-not an exhaustive per-seed runtime scan. The seed-specific
-`surface_owner_at(x, z)` projection still fails closed on zero or multiple
-owners inside the defined `H` domain.
+The historical containment proof was specified as a seed-independent C-a2
+acceptance KAT over every authored exact mask plus the maximum legal
+displacement envelope of each incident edge. It would have proved the former
+authoring invariant for every legal seed rather than running an exhaustive
+per-seed runtime scan. Section 14.13 replaces that acceptance requirement; its
+seed-specific `surface_owner_at(x, z)` projection still fails closed on zero or
+multiple owners inside the defined `H` domain.
 
 C-a1's executable dependency envelope is limited to its new payload-free
 modules, `canonical.lua`, `deterministic.lua`, `exact.lua`, the validated
@@ -3720,11 +3723,13 @@ The user recorded `ACCEPT LANDMARK-OWNER-CLIP-1` and
 `ACCEPT COPPERFELL-DEFER-1` after C-a2's historical Section-14.5 gate exposed
 a systemic mismatch between authored landmark envelopes and final ownership.
 This later memo supersedes Section 14.1, Section 14.5 and the clipping
-prohibition in Section 14.11 only where they require every complete exact mask
-plus every incident-edge displacement margin to lie inside one final zone.
-Their other authority remains: exact mask/collar identity, the single complete
-compiled ownership projection, fail-closed ownership, the accepted warcoast
-Source correction and the prohibition on a second classifier.
+prohibition in Section 14.11 where they require every complete exact mask plus
+every incident-edge displacement margin to lie inside one final zone. It also
+supersedes Section 14.1's unqualified instruction to compose every positive
+authored collar: composition is limited to owner-eligible positive effective
+weights. Their other authority remains: exact mask/collar identity, the single
+complete compiled ownership projection, fail-closed ownership, the accepted
+warcoast Source correction and the prohibition on a second classifier.
 
 #### Effective landmark authority
 
@@ -3760,6 +3765,17 @@ then consumes the post-landmark result. Thus the complete order is:
 final owner -> primary H -> owner-clipped landmarks -> edge/junction blend
 ```
 
+Owner clipping alone never authorizes a cliff, step or other abrupt final
+terrain feature. C-a2 must structurally prove that every cardinally adjacent
+Dry-to-Dry final-owner change maps to a compiled final land-edge or junction
+support and that the two post-landmark heights are consumed by that support's
+existing 96-station blend. An undeclared dry owner seam is a STOP; no numeric
+clip-step allowance can substitute for the structural proof. Adopted residue
+belongs to its final dry face and creates no separate dry cross-face authority.
+C-b owns final Planned-Water bed and bank continuity, including internal Bay
+and Wing owner seams. D-2 owns every `H`-to-exterior coast, shelf and
+immutable-channel transition.
+
 Clipping prevents one landmark from changing another zone; it does not prove
 the landmark's product obligations. C-b independently owns route and hydrology
 clearance, D-2 owns exterior coast/shelf/island/channel geometry, and D-3 owns
@@ -3769,10 +3785,14 @@ clipped away.
 
 #### Diagnostic census baseline
 
-The complete 70-mask census remains a required retained LuaJIT diagnostic,
-not a C-a2 full-mask-containment failure. The accepted two-pass measurement
-enumerated 11,441,328 exact-mask columns. Fifteen masks had 274,597 columns
-whose final owner differed from the authored `zone_id`:
+The complete LuaJIT exact-mask census of all 70 authored masks remains required
+retained diagnostic evidence, not a C-a2 full-mask-containment failure.
+Exact-mask enumeration is seed-independent. The incident-edge-margin geometry
+is also seed-independent. Against the accepted seed-0 compiled ownership
+payload, the two-pass measurement enumerated 11,441,328 exact-mask columns.
+Fifteen masks had 274,597 columns outside their authored owner: zero
+Planned-Water columns, 264,197 columns owned by another Dry face, and 10,400
+nil/exterior columns:
 
 `copperfell_drainage`, `frostbarrow_escarpment`, `frostbarrow_tarns`,
 `goldmead_millriver`, `goldmead_orchard_slopes`,
@@ -3781,22 +3801,26 @@ whose final owner differed from the authored `zone_id`:
 `ossuary_gravewoods`, `redtusk_gullies`, `raincall_falls`,
 `raincall_coastal_steps`, and `totemwater_delta`.
 
-Ten additional owner-clean masks failed only the former incident-edge-margin
-test: `copperfell_coastal_terraces`, `dur_brannoc_granite_terrace`,
+Ten additional seed-0 owner-clean masks failed only the seed-independent former
+incident-edge-margin test: `copperfell_coastal_terraces`,
+`dur_brannoc_granite_terrace`,
 `highcourt_riverfork`, `starbough_coastal_gardens`,
 `nhal_veyr_necropolis`, `redtusk_wellchain`, `gor_drazhak_crossmesa`,
 `totemwater_colossi`, `gravesalt_tombways`, and
-`skyglass_hangingways`. Both corrected warcoast masks were fully owner- and
-margin-clean. The measurement consumed accepted compiled-payload bytes with
-SHA-256
+`skyglass_hangingways`. Both corrected warcoast masks were seed-0 owner-clean
+and seed-independently margin-clean. The ownership comparison consumed the
+exact accepted seed-0 compiled-payload bytes with SHA-256
 `841f8a115ff1eb777eb711498b7628e91ef238c5c75308fd8f1adb07e52d2f5d`.
-That hash identifies the census input bytes; it does not promote the ignored
-cache path into authority or add a new final-payload pin. No canonical digest
-of the complete census output was retained, so none is asserted here; C-a2
+That hash identifies the measurement input bytes and does not add a new
+final-payload pin. No complete positive-collar Planned-Water census exists: an
+attempted scan was aborted after approximately 180 seconds because of an
+unfiltered Bay lookup and retained no output. No canonical digest of the
+complete exact-mask census output was retained, so none is asserted here; C-a2
 must commit the reproducible rows and bind the digest it actually produces.
-Movement in these counts, the warcoast status or the accepted ownership
-payload outside a separately authorized Source event is a STOP rather than an
-automatic repin.
+Movement in the owner counts or compiled-owner warcoast status is a STOP under
+the same seed-0 payload comparison. A separately authorized payload change
+requires fresh evidence rather than an automatic repin; an unexpected payload
+change independently stops.
 
 #### Copperfell deferral and one later Source event
 
@@ -3831,17 +3855,29 @@ Stop the affected path before implementation, compilation or fixture repin if:
 2. a KAT shows any landmark affecting a column outside its final owner;
 3. runtime generation would require a complete mask/edge census;
 4. ownership is nil, unresolved or multiple inside the defined `H` domain;
-5. the census pins, corrected warcoast status or accepted ownership payload
-   move unexpectedly;
+5. the census owner-count pins or compiled-owner warcoast status move under the
+   same seed-0 accepted payload comparison, or that payload itself moves
+   unexpectedly;
 6. C-b or D-3 shows that a mandatory final area could be satisfied only by
-   silent clipping; or
+   silent clipping;
 7. a Source correction moves S1, the candidate pool, selected winners or
-   frozen topology.
+   frozen topology; or
+8. an adjacent Dry-to-Dry final-owner change lacks its compiled final land-edge
+   or junction support and existing 96-station blend.
 
 The existing charter also stops on any new player-visible/design decision,
 authority contradiction, or unplanned compiler, schema, Source or topology
 scope. Independent downstream work that cannot prejudice the ruling may
 continue.
+
+**Package classification and review calibration record:** this documentation
+and process-authority package is non-trivial. Implementing model: GPT-5.6 Sol.
+The initial fresh independent Claude Opus/xhigh review returned
+`REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in 912,977 ms.
+Fix round 1 applies all findings. H1's implication that clipping itself was
+sufficient safety was overstated; the fix closes it by explicitly rejecting
+clip-induced abrupt terrain and assigning the structural dry-seam proof and
+the Planned-Water/exterior products above. Focused re-review: pending.
 
 ### 14.14 CB0-1/2/3 Lane-C-b input freeze (decided 2026-08-24)
 
@@ -3860,10 +3896,14 @@ placement from Section 14.2 without changing the central schema.
    landing/route authority.
 2. **Island profile grade.** All eight island routes retain their authored
    `secondary` class. They use the ordinary secondary maximum grade `1:8` and
-   an eight-station fixed endpoint-interface phase
-   (`grade_phase = "flat_run_8"`). They do not acquire the
-   `1:12` start/capital/bridge/ford/tunnel exception merely because an endpoint
-   is a landing, junction, dragon or apex station.
+   `minimum_transition_run = 8` under the existing
+   `grade_phase_rule = "flat_run_at_fixed_interface"`. Their current
+   `island_route_interfaces` Source rows remain free of grade fields; CB0-2
+   authorizes no Source edit. The C-b profile compiler must derive the
+   eight-station fixed endpoint phase from the secondary route-class policy;
+   that constraint is compiled output, not a Source literal. They do not
+   acquire the `1:12` start/capital/bridge/ford/tunnel exception merely because
+   an endpoint is a landing, junction, dragon or apex station.
 3. **First profile roster.** Initial C-b profile compilation solves exactly 65
    road profiles: 57 land routes plus eight island routes. The four public
    `boat_routes` remain travel/corridor records across the channel, not road
@@ -3881,6 +3921,7 @@ either package merely to obtain the POI spurs.
 **Package classification and review-pending calibration record:** this
 documentation freeze is non-trivial because it changes player-visible terrain
 semantics, acceptance authority and the next package boundary. Implementing
-model: GPT-5.6 Sol. Independent reviewing model and findings: pending. Fix
-round count: pending. Observed elapsed wall time: `unknown`. The coordinator
-appends the completed review record; this memo does not self-approve.
+model: GPT-5.6 Sol. The initial fresh independent Claude Opus/xhigh review
+returned `REQUEST CHANGES` with 0 Critical / 2 High / 4 Medium / 5 Low in
+912,977 ms. Fix round 1 applies all findings; focused re-review is pending. The
+coordinator appends its outcome; this memo does not self-approve.
