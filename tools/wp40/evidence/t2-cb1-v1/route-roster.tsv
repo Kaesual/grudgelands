@@ -1,0 +1,66 @@
+family	route_id	class	boundary_id	from_station_id	to_station_id	station_count	interface_count	interface_station_indices	min_transition_run	max_cut	max_fill	literal_h1_transition_capacity	literal_h1_bridgeable_delta	symmetric_h1_transition_capacity	symmetric_h1_bridgeable_delta	initial_transition_assumption
+mainland	route_001	primary	land_001	station:elandor_hearthpine_vale:start_north	station:elandor_copperfell_foothills:hub	679	3	1,312,679	12	8	6	53	67	53	67	first_permitted_transition_free
+mainland	route_002	primary	land_002	station:elandor_copperfell_foothills:hub	station:elandor_dur_brannoc:capital_south	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_003	primary	land_003	station:elandor_dur_brannoc:capital_north	station:elandor_stormvault_heights:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_004	primary	land_004	station:elandor_dawnmere_fields:start_north	station:elandor_goldmead_vale:hub	709	3	1,342,709	12	8	6	56	70	56	70	first_permitted_transition_free
+mainland	route_005	primary	land_005	station:elandor_goldmead_vale:hub	station:elandor_highcourt:capital_south	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_006	primary	land_006	station:elandor_highcourt:capital_north	station:elandor_ashenward_march:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_007	primary	land_007	station:elandor_silverleaf_glades:start_north	station:elandor_starbough_vale:hub	664	3	1,297,664	12	8	6	52	66	52	66	first_permitted_transition_free
+mainland	route_008	primary	land_008	station:elandor_starbough_vale:hub	station:elandor_lethariel:capital_south	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_009	primary	land_009	station:elandor_lethariel:capital_north	station:elandor_glassroot_wilds:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_010	primary	land_010	station:kragmar_stillgrave_hollow:start_south	station:kragmar_mournfen:hub	684	3	1,312,684	12	8	6	54	68	54	68	first_permitted_transition_free
+mainland	route_011	primary	land_011	station:kragmar_mournfen:hub	station:kragmar_nhal_veyr:capital_north	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_012	primary	land_012	station:kragmar_nhal_veyr:capital_south	station:kragmar_blackwind_rise:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_013	primary	land_013	station:kragmar_sunscar_flats:start_south	station:kragmar_redtusk_savanna:hub	704	3	1,332,704	12	8	6	56	70	56	70	first_permitted_transition_free
+mainland	route_014	primary	land_014	station:kragmar_redtusk_savanna:hub	station:kragmar_gor_drazhak:capital_north	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_015	primary	land_015	station:kragmar_gor_drazhak:capital_south	station:kragmar_bannerbreak_mesa:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_016	primary	land_016	station:kragmar_kapok_cradle:start_south	station:kragmar_raincall_basin:hub	684	3	1,312,684	12	8	6	54	68	54	68	first_permitted_transition_free
+mainland	route_017	primary	land_017	station:kragmar_raincall_basin:hub	station:kragmar_kezamba:capital_north	295	3	1,151,295	12	8	6	22	36	22	36	first_permitted_transition_free
+mainland	route_018	primary	land_018	station:kragmar_kezamba:capital_south	station:kragmar_thunderroot_wilds:hub	545	3	1,145,545	12	8	6	43	57	43	57	first_permitted_transition_free
+mainland	route_019	primary	land_019	station:elandor_frostbarrow_shelf:hub	station:elandor_dur_brannoc:capital_west	345	3	1,201,345	12	8	6	26	40	26	40	first_permitted_transition_free
+mainland	route_020	primary	land_020	station:elandor_dur_brannoc:capital_east	station:elandor_whitebridge_shire:hub	645	3	1,145,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_021	primary	land_021	station:elandor_whitebridge_shire:hub	station:elandor_highcourt:capital_west	645	3	1,501,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_022	primary	land_022	station:elandor_highcourt:capital_east	station:elandor_lorindor:hub	645	3	1,145,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_023	primary	land_023	station:elandor_lorindor:hub	station:elandor_lethariel:capital_west	645	3	1,501,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_024	primary	land_024	station:elandor_lethariel:capital_east	station:elandor_moonfall_wood:hub	345	3	1,145,345	12	8	6	26	40	26	40	first_permitted_transition_free
+mainland	route_025	primary	land_025	station:kragmar_ossuary_reach:hub	station:kragmar_nhal_veyr:capital_west	345	3	1,201,345	12	8	6	26	40	26	40	first_permitted_transition_free
+mainland	route_026	primary	land_026	station:kragmar_nhal_veyr:capital_east	station:kragmar_speargrass_reach:hub	645	3	1,145,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_027	primary	land_027	station:kragmar_speargrass_reach:hub	station:kragmar_gor_drazhak:capital_west	645	3	1,501,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_028	primary	land_028	station:kragmar_gor_drazhak:capital_east	station:kragmar_whispering_reedlands:hub	645	3	1,145,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_029	primary	land_029	station:kragmar_whispering_reedlands:hub	station:kragmar_kezamba:capital_west	645	3	1,501,645	12	8	6	51	65	51	65	first_permitted_transition_free
+mainland	route_030	primary	land_030	station:kragmar_kezamba:capital_east	station:kragmar_totemwater_reach:hub	345	3	1,145,345	12	8	6	26	40	26	40	first_permitted_transition_free
+mainland	route_031	secondary	land_031	station:elandor_frostbarrow_shelf:hub	station:elandor_stormvault_heights:hub	1097	3	1,401,1097	8	6	4	133	143	133	143	first_permitted_transition_free
+mainland	route_032	secondary	land_032	station:elandor_whitebridge_shire:hub	station:elandor_ashenward_march:hub	1397	3	1,401,1397	8	6	4	170	180	170	180	first_permitted_transition_free
+mainland	route_033	secondary	land_033	station:elandor_lorindor:hub	station:elandor_glassroot_wilds:hub	1397	3	1,401,1397	8	6	4	170	180	170	180	first_permitted_transition_free
+mainland	route_034	secondary	land_034	station:elandor_moonfall_wood:hub	station:elandor_glassroot_wilds:hub	1097	3	1,401,1097	8	6	4	133	143	133	143	first_permitted_transition_free
+mainland	route_035	secondary	land_035	station:elandor_stormvault_heights:hub	station:elandor_ashenward_march:hub	1801	3	1,651,1801	8	6	4	220	230	220	230	first_permitted_transition_free
+mainland	route_036	secondary	land_036	station:elandor_ashenward_march:hub	station:elandor_glassroot_wilds:hub	1801	3	1,651,1801	8	6	4	220	230	220	230	first_permitted_transition_free
+mainland	route_037	secondary	land_037	station:kragmar_ossuary_reach:hub	station:kragmar_blackwind_rise:hub	1097	3	1,401,1097	8	6	4	133	143	133	143	first_permitted_transition_free
+mainland	route_038	secondary	land_038	station:kragmar_speargrass_reach:hub	station:kragmar_bannerbreak_mesa:hub	1397	3	1,401,1397	8	6	4	170	180	170	180	first_permitted_transition_free
+mainland	route_039	secondary	land_039	station:kragmar_whispering_reedlands:hub	station:kragmar_thunderroot_wilds:hub	1397	3	1,401,1397	8	6	4	170	180	170	180	first_permitted_transition_free
+mainland	route_040	secondary	land_040	station:kragmar_totemwater_reach:hub	station:kragmar_thunderroot_wilds:hub	1097	3	1,401,1097	8	6	4	133	143	133	143	first_permitted_transition_free
+mainland	route_041	secondary	land_041	station:kragmar_blackwind_rise:hub	station:kragmar_bannerbreak_mesa:hub	1801	3	1,651,1801	8	6	4	220	230	220	230	first_permitted_transition_free
+mainland	route_042	secondary	land_042	station:kragmar_bannerbreak_mesa:hub	station:kragmar_thunderroot_wilds:hub	1801	3	1,651,1801	8	6	4	220	230	220	230	first_permitted_transition_free
+mainland	route_043	secondary	land_043	station:elandor_stormvault_heights:hub	station:front_gravesalt_escarpment:hub	701	3	1,451,701	8	6	4	83	93	83	93	first_permitted_transition_free
+mainland	route_044	secondary	land_044	station:elandor_stormvault_heights:hub	station:front_broken_causeway:hub	1243	3	1,772,1243	8	6	4	150	160	150	160	first_permitted_transition_free
+mainland	route_045	secondary	land_045	station:elandor_ashenward_march:hub	station:front_broken_causeway:hub	943	3	1,472,943	8	6	4	112	122	112	122	first_permitted_transition_free
+mainland	route_046	secondary	land_046	station:elandor_ashenward_march:hub	station:front_shattered_line:hub	943	3	1,472,943	8	6	4	112	122	112	122	first_permitted_transition_free
+mainland	route_047	secondary	land_047	station:elandor_glassroot_wilds:hub	station:front_shattered_line:hub	1243	3	1,772,1243	8	6	4	150	160	150	160	first_permitted_transition_free
+mainland	route_048	secondary	land_048	station:elandor_glassroot_wilds:hub	station:front_skyglass_canopy:hub	701	3	1,451,701	8	6	4	83	93	83	93	first_permitted_transition_free
+mainland	route_049	secondary	land_049	station:kragmar_blackwind_rise:hub	station:front_gravesalt_escarpment:hub	701	3	1,451,701	8	6	4	83	93	83	93	first_permitted_transition_free
+mainland	route_050	secondary	land_050	station:kragmar_blackwind_rise:hub	station:front_broken_causeway:hub	1243	3	1,772,1243	8	6	4	150	160	150	160	first_permitted_transition_free
+mainland	route_051	secondary	land_051	station:kragmar_bannerbreak_mesa:hub	station:front_broken_causeway:hub	943	3	1,472,943	8	6	4	112	122	112	122	first_permitted_transition_free
+mainland	route_052	secondary	land_052	station:kragmar_bannerbreak_mesa:hub	station:front_shattered_line:hub	943	3	1,472,943	8	6	4	112	122	112	122	first_permitted_transition_free
+mainland	route_053	secondary	land_053	station:kragmar_thunderroot_wilds:hub	station:front_shattered_line:hub	1243	3	1,772,1243	8	6	4	150	160	150	160	first_permitted_transition_free
+mainland	route_054	secondary	land_054	station:kragmar_thunderroot_wilds:hub	station:front_skyglass_canopy:hub	701	3	1,451,701	8	6	4	83	93	83	93	first_permitted_transition_free
+mainland	route_055	trail	land_055	station:front_gravesalt_escarpment:hub	station:front_broken_causeway:hub	1251	3	1,501,1251	4	3	2	302	307	302	307	first_permitted_transition_free
+mainland	route_056	trail	land_056	station:front_broken_causeway:hub	station:front_shattered_line:hub	1501	3	1,751,1501	4	3	2	364	369	364	369	first_permitted_transition_free
+mainland	route_057	trail	land_057	station:front_shattered_line:hub	station:front_skyglass_canopy:hub	1251	3	1,751,1251	4	3	2	302	307	302	307	first_permitted_transition_free
+island	island_route_wyrmglass_south_junction	secondary		island_station_wyrmglass_south	island_station_wyrmglass_junction	211	2	1,211	8	6	4	25	35	25	35	first_permitted_transition_free
+island	island_route_wyrmglass_north_junction	secondary		island_station_wyrmglass_north	island_station_wyrmglass_junction	211	2	1,211	8	6	4	25	35	25	35	first_permitted_transition_free
+island	island_route_wyrmglass_junction_dragon	secondary		island_station_wyrmglass_junction	island_station_wyrmglass_dragon	161	2	1,161	8	6	4	19	29	19	29	first_permitted_transition_free
+island	island_route_wyrmglass_junction_apex	secondary		island_station_wyrmglass_junction	island_station_wyrmglass_apex	111	2	1,111	8	6	4	12	22	12	22	first_permitted_transition_free
+island	island_route_stormscale_south_junction	secondary		island_station_stormscale_south	island_station_stormscale_junction	211	2	1,211	8	6	4	25	35	25	35	first_permitted_transition_free
+island	island_route_stormscale_north_junction	secondary		island_station_stormscale_north	island_station_stormscale_junction	201	2	1,201	8	6	4	24	34	24	34	first_permitted_transition_free
+island	island_route_stormscale_junction_dragon	secondary		island_station_stormscale_junction	island_station_stormscale_dragon	161	2	1,161	8	6	4	19	29	19	29	first_permitted_transition_free
+island	island_route_stormscale_junction_apex	secondary		island_station_stormscale_junction	island_station_stormscale_apex	111	2	1,111	8	6	4	12	22	12	22	first_permitted_transition_free
