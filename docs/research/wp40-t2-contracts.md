@@ -3490,14 +3490,29 @@ identity but not its topology freeze, are, by slot:
 
 The final retained artifact has SHA-256
 `fe52c0bcb1540423a1089cd144be042eadbaf2cb1f4f24d015757c7685639d32`
-and still states `stage2_status=pending_seed_corpus_promotion`. A separate
-same-HEAD invocation re-verified all 24 retained rows and exited by the resume
-path. Commit `89e4ba17a1c5d0334cc85543e3f0a03b1541dc49` then bound exactly those
-25 retained evidence files. From that descendant HEAD, the 66-path closure
-check and finalizer accepted the immutable launch evidence through the
-`REUSED RECORDED EVIDENCE` path with exit 0 and without recomputation.
+and still states `stage2_status=pending_seed_corpus_promotion`. The coordinator
+observed a separate same-HEAD invocation exit by the 24-row resume path; its
+raw stdout was not retained. Commit
+`89e4ba17a1c5d0334cc85543e3f0a03b1541dc49` then bound exactly those 25
+retained evidence files. From that descendant HEAD, the 66-path closure check
+and finalizer accepted the immutable launch evidence through the
+`REUSED RECORDED EVIDENCE` path with exit 0 and without recomputation. The
+current artifact manifest and the explicit raw-log/timing limitation are under
+`tools/wp40/evidence/t2-c1-v3-db9c344/`.
 
 The executable C1 gate is green. C-a2 may start only after independent
 acceptance review and its calibration record are green. This does **not**
 promote the seed corpus, run F1, run the full-`W` population, close T2, or
 authorize C-b.
+
+**Acceptance-review calibration record:** coordinating model GPT-5.6 Sol;
+independent reviewer Claude Opus/xhigh in a fresh detached read-only context.
+The initial review found 0 Critical / 1 High / 2 Medium / 2 Low. One focused
+documentation/evidence fix round, commit `f058fda`, closed all five findings.
+The fresh focused re-review returned `APPROVE` with 0 Critical / 0 High /
+0 Medium / 3 non-blocking documentation Lows. Per the reviewer's explicit
+disposition, the coordinator mechanically closed those three polish items in
+this calibration closeout: a duplicated word, the inbound current-evidence
+reference and the direct same-HEAD provenance qualifier. No second re-review
+was needed. Observed review wall time is `unknown`; the initial review's direct
+recorded-evidence reproduction took 1 minute 44 seconds.

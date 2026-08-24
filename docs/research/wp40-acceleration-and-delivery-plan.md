@@ -927,5 +927,5 @@ policy cleanup are integrated by merges `a494319`, `f72dc69` and `ee52c9d`.
 Their post-merge package gates, the bounded LuaJIT selected-four/ownership
 preflight and the single integrated PUC C1-v3 reacceptance are green. Commit
 `89e4ba1` binds the 25 retained C1 files; same-HEAD resume and descendant-HEAD
-recorded reuse are also green. Independent C1 acceptance review is next, then
-C-a2; the mandate still stops before C-b.
+recorded reuse are also green. Independent Opus/xhigh C1 acceptance review is
+green; C-a2 is next, and the mandate still stops before C-b.

@@ -313,7 +313,7 @@ The selected-four LuaJIT plus connectivity-fill/adopted-residue witness
 preflight is next.
 
 **Status, 2026-08-24, the integrated Wave-1 C1-v3 gate is green.** The
-The coordinator observed the LuaJIT selected-four preflight, and the retained
+coordinator observed the LuaJIT selected-four preflight, and the retained
 ownership-handoff evidence covers both non-vacuous witnesses. The one fresh
 vendored-PUC run then retained 20/20 rescores and four of four selected slots,
 with all four Whole counters remaining zero. Raw runner stdout and elapsed
@@ -323,8 +323,8 @@ artifact SHA-256 is
 commit `89e4ba1` binds exactly the 25 retained result files. Same-HEAD resume and
 descendant-HEAD recorded-evidence reuse both exited 0 without recomputation.
 The artifact still says `pending_seed_corpus_promotion`: F1, full-`W`, corpus
-promotion, T2-final and C-b remain open. C-a2 is next after independent
-acceptance review.
+promotion, T2-final and C-b remain open. Independent Opus/xhigh acceptance
+review is green; C-a2 is next.
 
 ## 3. Locked surfaces
 
