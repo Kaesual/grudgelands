@@ -63,7 +63,7 @@ return {
 		{bay_id = "bay_elandor_east", x = 887, z = -2036},
 		{bay_id = "bay_kragmar_west", x = -1121, z = 2220},
 	},
-	source_checksum = "87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e",
+	source_checksum = "e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963",
 	boundary_policy_checksum = "ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d",
 	partition_sha256 = "e12f4f1b48a0cda79c9ac61b2de6299d9491fd185491f95b4d9c644ed2a599a3",
 	compiled_sha256 = "df08c6983a30dc344b1707c35e64c9728d4a2c5bfaca4bf37bdb04c8c6f3b3ac",

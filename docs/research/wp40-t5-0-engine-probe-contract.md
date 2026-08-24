@@ -577,7 +577,7 @@ dropped with the content-hash disposal apparatus it served (section 20).
 | Exit codes `0` pass, `2` preflight failure or refusal to overwrite an immutable result, `124` outer timeout (always fails the capture) | `tools/wp40/README.md:1113-1117`. This package additionally uses `1` for a failed gate and `127` for a missing tool, matching the sibling runners; both are stated here because `tools/wp40/README.md` does not fix them |
 | `rg` preflight mandatory and non-negotiable; `jq` hard-required up front | `tools/wp40/run_t1.sh:4-9`; `AGENTS.md:133-136` (until 2026-08-15 a missing `rg` made nine gates report success without running); `tools/wp40/run_dungeon_probe.sh:15-18` |
 | Self-tests and static gates run **before** the expensive half; the expensive half is opt-in and skip-not-fail | `tools/wp40/run_dungeon_probe.sh:20-27`, `:29-32` |
-| `tools/bin/luac51 -p` on every probe Lua file; `luac51 -l -p \| grep SETGLOBAL` → zero lines for a tools-only file, at most one (the mod table) for a mod `init.lua`; the five sweeps of `docs/research/luanti-lua.md:310-321` run **explicitly** against `tools/`, because `AGENTS.md:130-133` scopes them to `mods/*/grug_*` | in-tree implementations `tools/wp40/t2_source_audit.sh:363-393`, `tools/wp40/run_t2_partition_c2_selected.sh:43-55`; `docs/research/luanti-lua.md:260-261` (a single mod-table global is permitted, not required; `tools/wp40/dungeon_probe/init.lua` has zero) |
+| `tools/bin/luac51 -p` on every probe Lua file; `luac51 -l -p \| grep SETGLOBAL` → zero lines for a tools-only file, at most one (the mod table) for a mod `init.lua`; the five sweeps of `docs/research/luanti-lua.md:310-321` run **explicitly** against `tools/`, because `AGENTS.md:130-133` scopes them to `mods/*/grug_*` | in-tree implementations `tools/wp40/t2_source_audit.sh:372-402`, `tools/wp40/run_t2_partition_c2_selected.sh:43-55`; `docs/research/luanti-lua.md:260-261` (a single mod-table global is permitted, not required; `tools/wp40/dungeon_probe/init.lua` has zero) |
 | The twelve do-not-write rules: `core.*` never `minetest.*`; `unpack` not `table.unpack`; `math.floor(a/b)` not `//`; no `\x`, `\u{}` or `\z` escapes; `string.char(124)` instead of a literal pipe so sweep 4 stays clean | `docs/research/luanti-lua.md:240-266`, `:266` |
 | `WP40_LUA_BIN` defaulting to LuaJIT; offline self-tests under a dual-interpreter byte gate comparing stdout **and** exit status | `tools/wp40/run_t2_s1_authority.sh:38-45`; `tools/wp40/run_t2_s11_acceptance.sh:22-44` |
 | A T5-0 engine-seam probe is a **layer-6** activity, and a real fallback-engine run is a separate gate never inferred from offline equality | `docs/research/luanti-lua.md:346-371`; `docs/process/wp-workflow.md:78-79` |
@@ -1048,7 +1048,7 @@ a loud failure rather than an uncounted one.
 
 Self-reported counters alone are not acceptable evidence, because a bug that
 skips a call also skips its counter. A static grep sweep in the shape of
-`tools/wp40/t2_source_audit.sh:363-393` therefore asserts that raw-VoxelManip
+`tools/wp40/t2_source_audit.sh:372-402` therefore asserts that raw-VoxelManip
 access appears in exactly one file. The scoping matters as much as the pattern —
 `t2_source_audit.sh` avoids self-matching by restricting its sweep to production
 paths, and this package copies the scoping and not only the shape:

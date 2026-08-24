@@ -85,10 +85,17 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    The first C-a2 attempt exposed the symmetric post-C1
    `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks
    entered an immutable channel by 30 nodes. The accepted correction moves
-   only their centres 30 nodes inward while retaining radii and corridor
-   coverage. C-a2 resumes only after the focused Source correction, unchanged
-   S1/pool/winner proof and the smallest evidence-correct C1 closure response
-   are green; no long rerun begins without a reported cost and authority basis.
+   only their centres 30 nodes inward while retaining radii and both corridor
+   centre-line contacts. `corridor coverage` here never means unchanged exact
+   boundary width. Each exact width-96 interval is
+   `[approach_z - 48, approach_z + 48)`; under that convention incidence moves
+   from 96/96 for each approach to 73/96 south and 74/96 north. That split is
+   convention-dependent, while both centre-line contacts and complete 96/96
+   coverage four nodes inland are convention-robust; the separate boat/travel
+   records remain 96 wide. C-a2 resumes only after the focused Source
+   correction, unchanged S1/pool/winner proof and the smallest evidence-correct
+   C1 closure response are green; no long rerun begins without a reported cost
+   and authority basis.
 
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either

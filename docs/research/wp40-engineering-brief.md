@@ -200,6 +200,17 @@ touch `x = -2500` and `x = 2500` and do not enter the immutable dragon
 channels. Landmark clipping at the channel, widening Holy Grounds, or treating
 channel columns as an `H` domain is not an equivalent implementation.
 
+The landmark mask is not the boat-corridor width authority. Each width-96
+approach uses the exact half-open interval
+`[approach_z - 48, approach_z + 48)`. At the closed Holy boundary the mask
+contains both route centre lines at `z = -125` and `z = 125`; under that chosen
+half-open convention it covers 73 southern and 74 northern columns. That 73/74
+split is convention-dependent, while both centre-line contacts and complete
+96/96 coverage four nodes inland are convention-robust. The separate
+boat/travel records retain the full 96-node approaches throughout. Route
+nonblocking is tested later against final `H` and the route products rather
+than inferred from landmark-mask width.
+
 Shared relief has one checksum-covered record for every multi-edge endpoint,
 38 in the current source. Each record stores stable coordinate-derived ID,
 coordinate, sorted incident edge IDs and the common gate band. A nonempty

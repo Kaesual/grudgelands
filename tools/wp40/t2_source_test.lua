@@ -75,7 +75,7 @@ _G.core=previous_core
 assert(production_stage1.new_offline_test_adapter==nil,
 	"production Stage1 exposed the offline adapter")
 
-local EXPECTED_SOURCE_CHECKSUM="87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e"
+local EXPECTED_SOURCE_CHECKSUM="e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963"
 local EXPECTED_BOUNDARY_DISPLACEMENT_CHECKSUM=
 	"ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d"
 local EXPECTED_WORLD_PARTITION_CHECKSUM=
@@ -2344,6 +2344,152 @@ assert(r8_class(0,0)=="land" and r8_class(-2500,0)=="land" and
 for i=1,#source.channels do local channel=source.channels[i]
 	assert(closed_polygon_member(channel.polygon[1].x,channel.polygon[1].z,
 		channel.polygon),"channel own polygon boundary became open")
+end
+
+if arg._wp40_phase.enabled("warcoast_source_contract") then
+	-- Independent exact-integer row/span oracle. Instead of reusing or
+	-- transcribing Stage 1's point-to-axis predicate, it materializes the one
+	-- closed integer x interval owned by each capsule row.
+	local function lower_root(value)
+		local root=0
+		while (root+1)*(root+1)<=value do root=root+1 end
+		return root
+	end
+	local function capsule_row_span(row,z,center_x)
+		local dz=math.abs(z-row.center.z)
+		if row.radius_z>=row.radius_x then
+			if dz>row.radius_z then return nil,nil end
+			local cap_z=math.max(0,dz-(row.radius_z-row.radius_x))
+			local half=lower_root(row.radius_x*row.radius_x-cap_z*cap_z)
+			return (center_x or row.center.x)-half,(center_x or row.center.x)+half
+		end
+		if dz>row.radius_z then return nil,nil end
+		local cap_x=lower_root(row.radius_z*row.radius_z-dz*dz)
+		local half=row.radius_x-row.radius_z+cap_x
+		return (center_x or row.center.x)-half,(center_x or row.center.x)+half
+	end
+	local function capsule_row_member(row,x,z,center_x)
+		local first_x,last_x=capsule_row_span(row,z,center_x)
+		return first_x~=nil and x>=first_x and x<=last_x
+	end
+	local function by_id(rows,id)
+		for row_index=1,#rows do
+			if rows[row_index].id==id then return rows[row_index] end
+		end
+	end
+	local expected={
+		{row=source.landmarks[59],companion=source.landmarks[57],center=-2420,
+			old_center=-2450,boundary=-2500,inland=-2496,old_outer=-2530,
+			channel_id="channel_wyrmglass",zone_id="front_gravesalt_escarpment",
+			south_edge="land_043",north_edge="land_049",inner_edge="land_055",
+			inner_x=-1500,holy_arc="face_arc:gravesalt:holy_west"},
+		{row=source.landmarks[67],companion=source.landmarks[65],center=2420,
+			old_center=2450,boundary=2500,inland=2496,old_outer=2530,
+			channel_id="channel_stormscale",zone_id="front_skyglass_canopy",
+			south_edge="land_048",north_edge="land_054",inner_edge="land_057",
+			inner_x=1500,holy_arc="face_arc:skyglass:holy_east"},
+	}
+	for expected_index=1,#expected do local item=expected[expected_index]
+		local row=item.row
+		local new_area,retained,lost=0,0,0
+		local old_channel_columns,new_overlap,old_overlap=0,0,0
+		local min_x=math.min(item.center,item.old_center)-row.radius_x
+		local max_x=math.max(item.center,item.old_center)+row.radius_x
+		for x=min_x,max_x do for z=-row.radius_z,row.radius_z do
+			local new_inside=capsule_row_member(row,x,z,item.center)
+			local old_inside=capsule_row_member(row,x,z,item.old_center)
+			if new_inside then
+				new_area=new_area+1
+				assert(x>=source.constants.holy_grounds.min_x and
+					x<=source.constants.holy_grounds.max_x and
+					z>=source.constants.holy_grounds.min_z and
+					z<=source.constants.holy_grounds.max_z,
+					row.id.." left the fixed Holy rectangle")
+				if capsule_row_member(item.companion,x,z) then
+					new_overlap=new_overlap+1
+				end
+			end
+			if old_inside then
+				if r8_class(x,z)=="immutable_dragon_channel" then
+					old_channel_columns=old_channel_columns+1
+				end
+				if capsule_row_member(item.companion,x,z) then
+					old_overlap=old_overlap+1
+				end
+			end
+			if new_inside and old_inside then retained=retained+1
+			elseif old_inside then lost=lost+1 end
+		end end
+		assert(new_area==68381 and retained==54619 and lost==13762 and
+			old_channel_columns==11542,
+			row.id.." row-span/translation/old-channel audit drift")
+		assert(old_overlap==3341 and new_overlap==8945,
+			row.id.." exact companion overlap drift")
+		local channel=assert(by_id(source.channels,item.channel_id))
+		assert(r8_class(item.old_outer,0)=="immutable_dragon_channel" and
+			closed_polygon_member(item.old_outer,0,channel.polygon),
+			row.id.." former outer point is not in its named channel")
+		assert(capsule_row_member(row,item.boundary,-125) and
+			capsule_row_member(row,item.boundary,125) and
+			not capsule_row_member(row,item.old_outer,0),
+			row.id.." boundary/exterior incidence drift")
+
+		-- Source-level owning-face envelope. This proves the authored mask against
+		-- every incident displacement ceiling; C-a2 separately owns the later
+		-- compiled surface_owner_at containment gate.
+		local south=assert(by_id(source.land_edges,item.south_edge))
+		local north=assert(by_id(source.land_edges,item.north_edge))
+		local inner=assert(by_id(source.land_edges,item.inner_edge))
+		local holy=assert(by_id(source.perimeters,"perimeter_holy_grounds"))
+		local face=assert(by_id(source.zone_faces,"zone_face:"..item.zone_id))
+		local arc=assert(by_id(source.face_arcs,item.holy_arc))
+		local face_refs,face_ref_count={},0
+		for cycle_index=1,#face.cycle do local ref=face.cycle[cycle_index]
+			face_refs[ref.ref_id]=true face_ref_count=face_ref_count+1
+		end
+		assert(face_ref_count==4 and face_refs[item.south_edge] and
+			face_refs[item.north_edge] and face_refs[item.inner_edge] and
+			face_refs[item.holy_arc],row.id.." owning face incidence drift")
+		assert(row.zone_id==item.zone_id and south.max_displacement==0 and
+			north.max_displacement==0 and inner.max_displacement==64 and
+			holy.max_displacement==0 and arc.source_refs[1]==holy.id,
+			row.id.." incident displacement authority drift")
+		local mask_outer_x=item.center<0 and row.center.x-row.radius_x or
+			row.center.x+row.radius_x
+		local mask_inner_x=item.center<0 and row.center.x+row.radius_x or
+			row.center.x-row.radius_x
+		local arc_control=arc.authority_components[1].control
+		assert(mask_outer_x==item.boundary and arc_control[1].x==item.boundary and
+			arc_control[#arc_control].x==item.boundary and
+			inner.control[1].x==item.inner_x and
+			inner.control[#inner.control].x==item.inner_x and
+			math.abs(mask_inner_x-item.inner_x)==840 and
+			math.abs(mask_inner_x-item.inner_x)-inner.max_displacement==776 and
+			south.control[1].z==-250 and south.control[#south.control].z==-250 and
+			north.control[1].z==250 and north.control[#north.control].z==250 and
+			(row.center.z-row.radius_z)-south.control[1].z==20 and
+			north.control[1].z-(row.center.z+row.radius_z)==20,
+			row.id.." owning-zone clearance envelope drift")
+
+		local boundary_counts,inland_counts={0,0},{0,0}
+		for approach_index=1,#source.constants.dragon_approach_z do
+			local first_z=source.constants.dragon_approach_z[approach_index]-48
+			for z=first_z,first_z+95 do
+				if capsule_row_member(row,item.boundary,z) then
+					boundary_counts[approach_index]=boundary_counts[approach_index]+1
+				end
+				if capsule_row_member(row,item.inland,z) then
+					inland_counts[approach_index]=inland_counts[approach_index]+1
+				end
+			end
+		end
+		assert(boundary_counts[1]==73 and boundary_counts[2]==74 and
+			inland_counts[1]==96 and inland_counts[2]==96,
+			row.id.." route-contact coverage drift")
+	end
+	print("WP40 T2 WARCOAST-SOURCE-1 oracle passed: 2 x 68381 columns, "..
+		"2 x 11542 old channel columns excluded, boundary 73/96+74/96, "..
+		"inland 96/96+96/96, inner clearance 840-64=776")
 end
 
 -- R16 independent Slot-19 Reality oracle. It reconstructs land_010's R7
@@ -5261,6 +5407,30 @@ expect_failure("route_station_ref", function(s) s.routes[1].station_a_id="statio
 expect_failure("route_crossing_sides", function(s) local r=s.routes[1] r.centreline[2].x=r.centreline[4].x r.centreline[2].z=r.centreline[4].z end)
 expect_failure("exact_boat_contract", function(s) s.boat_edges[1].approach_z=-124 end)
 expect_failure("landmark_role", function(s) s.landmarks[1].roles[1]="unknown" end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.landmarks[59].center.x=-2450
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.landmarks[67].center.x=2450
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.landmarks[59].radius_x=79
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.landmarks[67].radius_z=229
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.landmarks[59].primitive="ellipse"
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.constants.dragon_approach_width=95
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.constants.dragon_approach_z[3]=0
+end)
+expect_failure("warcoast_landmark_contract",function(s)
+	s.constants.dragon_approach_z[2]=nil
+end)
 expect_failure("template_composition_ref", function(s) s.templates[1].composition_id="missing" end)
 expect_failure("template_operation", function(s) s.template_compositions[1].operations[1].op="invent" end)
 expect_failure("rare_patrol_offsets", function(s)

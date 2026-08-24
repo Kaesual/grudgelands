@@ -622,13 +622,16 @@ correction, with its evidence and digests, stays in
   aperture/perimeter ownership, dry-face-v2 polygon and adopted-residue
   ownership, and the canonical half-open seam tie. Polygon membership remains
   the ordinary-dry input; “not polygons alone” means none of the other owner
-  classes or ties may be omitted. The current source validator checks only
-  `zone_id` referential integrity at `validation/t2_source.lua:3964`; no current
-  check enforces geometric containment. Missing ownership payload is a STOP;
-  neither C-a package may rebuild the partition classifier. Priority affects
-  height composition only: it never deletes exact mask identity. Required-route
-  non-blocking is evaluated against the final composed `H` and later route
-  products rather than inferred from a winning mask.
+  classes or ties may be omitted. The current Source validator checks landmark
+  `zone_id` referential integrity at
+  `validation/t2_source.lua:4024`, plus the exact WARCOAST-SOURCE-1 row and
+  route-contact contract at `validation/t2_source.lua:446` and its call at
+  `validation/t2_source.lua:4041`; no general geometric-containment check
+  exists. Missing ownership payload is a STOP; neither C-a package may rebuild
+  the partition classifier. Priority affects height composition only: it never
+  deletes exact mask identity. Required-route non-blocking is evaluated against
+  the final composed `H` and later route products rather than inferred from a
+  winning mask.
 
   The checksum-covered
   `geometry_policies.relief_composition.landmark_priority_order` literal, whose
@@ -650,8 +653,21 @@ correction, with its evidence and digests, stays in
   `skyglass_warcoast` at `(2420, 0)`, retaining their `80 x 230` total
   half-extents. Their channel-facing exact boundaries therefore touch the
   closed Holy columns at `x = -2500` and `x = 2500` and never enter strict
-  exterior channel columns. The source validator and C-a2 containment KAT pin
-  both boundary contacts and reject the former `x = +/-2530` membership.
+  exterior channel columns. The Source validator pins both boundary contacts
+  and rejects the former `x = +/-2530` membership; the Source KAT separately
+  pins the incident-edge displacement envelope. C-a2 will prove the distinct
+  final compiled-zone containment contract through `surface_owner_at` before
+  assembling zone-owned `H`.
+
+  This mask contact does not own the boat-corridor width. Each approach is the
+  exact half-open interval `[approach_z - 48, approach_z + 48)`. At the Holy
+  boundary both `z = +/-125` centre lines remain inside; under that chosen
+  convention the exact integer mask covers 73/96 southern and 74/96 northern
+  columns. The 73/74 split is convention-dependent, while both centre-line
+  contacts and complete 96/96 coverage four nodes inland are convention-
+  robust. The boat/travel records independently retain the complete 96-node
+  approaches. Later route-product validation, not landmark-mask width, proves
+  nonblocking access.
 
 ### 7.6 C-a1 primitive boundary conventions
 
