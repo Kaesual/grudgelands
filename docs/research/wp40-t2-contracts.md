@@ -3411,3 +3411,42 @@ an inherited cosmetic wording defect; Section 14.8 is the current authority.
 
 This package does not itself authorize the deferred C1 reacceptance; Section
 14.3's ordered integration gate still does.
+
+**Review-closeout calibration record:** non-trivial Source-policy and retained-
+evidence package; implementing model GPT-5.6 Sol; initial and first focused
+reviewer Claude Opus/xhigh; final focused reviewer GPT-5.6 Sol/xhigh in a fresh
+independent context. The initial review found 1 package Critical / 2 package
+High / 2 Medium / 3 Low plus 1 inherited High / 1 inherited Low. The first
+authorized fix round closed all ten dispositions; its focused re-review found
+0 Critical / 0 High / 1 new Medium / 2 new Low. The second authorized
+mechanical fix round closed those three findings, and the final focused
+re-review returned `APPROVE` with 0 Critical / 0 High / 0 Medium / 0 Low.
+Package tip is `fda4ac7ea534e83a8a757ef5f5fc7cd582efbb26`; integration merge is
+`ee52c9d`. Observed elapsed wall time is `unknown`.
+
+### 14.9 Integrated Wave-1 package closeout (2026-08-24)
+
+The reviewed C-a1 package tip `946a465` was integrated by merge `a494319`.
+Its canonical artifacts remain `129d0447...ed0c932` shared and
+`94e4ac10...badb00a` full across 292 LuaJIT cases and 17 representative PUC
+cases. Its final Opus/xhigh review returned `APPROVE` with no blocking finding;
+the two explicitly accepted Low dispositions remain non-semantic.
+
+The reviewed D-1 package tip `df47b05` was integrated by merge `f72dc69`.
+It compiles exactly 38 zones, 57 land routes and four public boat routes into
+99 records; its 184-case LuaJIT run and 120-case PUC KAT reproduce all four
+canonical digests byte-identically. Initial Opus/xhigh review found three
+non-blocking Lows; the first fix closed them. Focused Opus/xhigh re-review found
+two evidence-prose Lows; the second cosmetic fix closed them. A final fresh
+Sol/xhigh re-review returned `APPROVE` with 0 Critical / 0 High / 0 Medium /
+0 Low. Implementing model was GPT-5.6 Sol; observed elapsed wall time is
+`unknown`.
+
+The reviewed Section-14.8 landmark cleanup was then integrated by merge
+`ee52c9d`. Post-merge package gates reproduced the C-a1 and D-1 artifacts,
+targeted PCC Source parity and the unchanged S1 projection
+`83b1b16a...ddd652` / authority `10a790a6...db37c` over six locks and 921
+digests. This closes the package-integration part of Section 14.3 item 5. The
+next executable gate is the selected-four LuaJIT run plus the nonzero
+connectivity-fill and adopted-residue witnesses; only after that preflight is
+green may the single fresh C1-v3 PUC reacceptance start.

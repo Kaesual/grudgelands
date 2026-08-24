@@ -900,3 +900,10 @@ integrated C1 reacceptance gates C-a2; and the current mandate stops before
 C-b. The T5-0 specification is already frozen and its tools-only probe has run
 (Section 8).
 Full T5 still waits for T3 and T4.
+
+**Execution status, 2026-08-24:** C-a1, D-1 and the reviewed landmark Source-
+policy cleanup are integrated by merges `a494319`, `f72dc69` and `ee52c9d`.
+Their post-merge C-a1, D-1, targeted PCC Source and S1 gates are green; the six
+S1 locks, candidate pool, 4,096 rows and four winners remain unchanged. The
+next step is the bounded selected-four LuaJIT plus nonzero ownership-witness
+preflight, followed by exactly one fresh C1-v3 PUC reacceptance if green.
