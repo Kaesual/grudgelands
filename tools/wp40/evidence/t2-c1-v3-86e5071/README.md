@@ -27,5 +27,5 @@ HEAD launch-pin identity as expected, validated the complete 66-path closure,
 re-ran the finalizer against all 24 recorded rows and exited 0 without
 generation. A separate coordinator-managed read-only audit independently
 recomputed both DAGs and every row/final-artifact hash and returned `APPROVE`
-with no finding. The workflow-required fresh Opus/xhigh acceptance review is
-pending; it will be recorded in T2 contracts Section 14.12.
+with no finding. The workflow-required fresh Opus/xhigh acceptance review and
+focused re-review are green and recorded in T2 contracts Section 14.12.

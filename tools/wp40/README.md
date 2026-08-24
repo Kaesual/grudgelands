@@ -538,8 +538,8 @@ the 25 result files. From that descendant HEAD, the recorded-commit branch was
 coordinator-observed to reverify the 66-path closure and all 24 rows, returning
 `REUSED RECORDED EVIDENCE` with exit 0; that stdout was also not retained. The
 current manifest and provenance limitations are recorded under
-`tools/wp40/evidence/t2-c1-v3-86e5071/`; independent acceptance review is
-pending at this closeout boundary. The earlier `db9c344` and `5d770365`
+`tools/wp40/evidence/t2-c1-v3-86e5071/`; independent Opus/xhigh acceptance
+review and focused re-review are green. The earlier `db9c344` and `5d770365`
 acceptances remain historical evidence in their named directories, not the
 live fixture identity.
 

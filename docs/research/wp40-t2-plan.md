@@ -349,7 +349,7 @@ digests and all zero Whole counters. Final artifact SHA-256 is
 `1edbb12a26a51f33b3a4267dff87bb1bb6d233f1aca8430e2e12be43f93aedc8`;
 commit `17efc8d` binds exactly the 25 result files. Same-HEAD resume and
 descendant-HEAD recorded reuse are green. Independent Opus/xhigh acceptance
-review is pending; C-a2 remains paused until its closeout.
+review and focused re-review are green; C-a2 is next.
 
 ## 3. Locked surfaces
 

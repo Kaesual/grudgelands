@@ -3684,10 +3684,9 @@ manifest and explicit raw-log limitation are retained under
 A separate coordinator-managed read-only audit independently recomputed the
 two DAGs, all row hashes, the selected mapping and the final artifact and
 returned `APPROVE` with no finding. The workflow-required fresh Opus/xhigh
-acceptance review is pending at this authored closeout boundary; C-a2 remains
-paused until that review and any authorized fix round are green. This gate did
-not promote the seed corpus, run F1, run the full-`W` population, close T2 or
-authorize Lane C-b or a production compiler.
+acceptance review and its focused re-review are green. C-a2 may resume. This
+gate did not promote the seed corpus, run F1, run the full-`W` population,
+close T2 or authorize Lane C-b or a production compiler.
 
 **Acceptance-review calibration record:** package classification: non-trivial
 (changes pinned evidence and acceptance-gate identity). Coordinating model:
@@ -3695,7 +3694,9 @@ GPT-5.6 Sol. Independent reviewer: Claude Opus/xhigh in a fresh detached
 read-only context. The first complete review returned `APPROVE` with 0 Critical
 / 0 High / 1 Medium / 5 Low; one earlier fresh CLI attempt ended without a
 review result after a transport interruption and is not counted. Fix round 1
-closes the mandate-scope wording and all five provenance, pending-state and
-calibration findings. Focused re-review is pending. The complete review took
-811,984 ms wall time; its targeted vendored-PUC validation was read-only and
-did not repeat C1 generation.
+closed the mandate-scope wording and all five provenance, pending-state and
+calibration findings. The fresh focused re-review returned `APPROVE` with 0
+Critical / 0 High / 0 Medium / 0 Low and no new package finding. The complete
+review took 811,984 ms wall time and the re-review took 295,228 ms; both used
+only read-only artifact checks and targeted vendored-PUC validation and did not
+repeat C1 generation.

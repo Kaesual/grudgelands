@@ -162,8 +162,8 @@ authorized fresh PUC run retained 20/20 rescores and 4/4 selected slots from
 commit `86e5071`; all four compiled-payload digests and zero Whole counters
 remain unchanged. Final artifact SHA-256 is `1edbb12a...93aedc8`, bound with
 the other 24 rows by commit `17efc8d`. Same-HEAD resume and descendant recorded
-reuse are green. Independent Opus/xhigh acceptance review is pending; C-a2
-remains the next executable package.
+reuse are green. Independent Opus/xhigh acceptance review and focused
+re-review are green; C-a2 is the next executable package.
 
 ## 3. Correctness floor and simplification policy
 
@@ -944,4 +944,4 @@ green; C-a2 is next, and the mandate still stops before C-b.
 **Later status, 2026-08-24:** WARCOAST-SOURCE-1 is reviewed and integrated.
 Its required fresh C1-v3 run, same-HEAD resume and descendant recorded-reuse
 checks are green, with commit `17efc8d` binding the 25 current rows. The fresh
-Opus/xhigh acceptance review is pending. After that review C-a2 resumes.
+Opus/xhigh acceptance review and focused re-review are green; C-a2 resumes.
