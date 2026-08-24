@@ -28,4 +28,4 @@ re-ran the finalizer against all 24 recorded rows and exited 0 without
 generation. A separate coordinator-managed read-only audit independently
 recomputed both DAGs and every row/final-artifact hash and returned `APPROVE`
 with no finding. The workflow-required fresh Opus/xhigh acceptance review is
-recorded separately in the T2 contract closeout.
+pending; it will be recorded in T2 contracts Section 14.12.

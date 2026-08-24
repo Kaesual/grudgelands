@@ -944,6 +944,4 @@ green; C-a2 is next, and the mandate still stops before C-b.
 **Later status, 2026-08-24:** WARCOAST-SOURCE-1 is reviewed and integrated.
 Its required fresh C1-v3 run, same-HEAD resume and descendant recorded-reuse
 checks are green, with commit `17efc8d` binding the 25 current rows. The fresh
-Opus/xhigh acceptance review is pending. After that review C-a2 resumes; the
-user-authorized C-b0 rulings and parallel C-b/D-2 execution supersede the
-earlier stop-before-C-b mandate once C-a2 itself is accepted.
+Opus/xhigh acceptance review is pending. After that review C-a2 resumes.

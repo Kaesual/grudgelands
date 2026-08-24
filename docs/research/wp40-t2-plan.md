@@ -341,7 +341,7 @@ The artifact still says `pending_seed_corpus_promotion`: F1, full-`W`, corpus
 promotion, T2-final and C-b remain open. Independent Opus/xhigh acceptance
 review is green; C-a2 is next.
 
-**Status, 2026-08-24, WARCOAST C1-v3 result set retained.** The reviewed
+**Later status, 2026-08-24, WARCOAST C1-v3 result set retained.** The reviewed
 WARCOAST-SOURCE-1 correction forced the expected fail-closed Source-closure
 miss. One authorized fresh vendored-PUC run retained 20/20 rescores and 4/4
 selected rows from commit `86e5071`, preserving all four compiled-payload

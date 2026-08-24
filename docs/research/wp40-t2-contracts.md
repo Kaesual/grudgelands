@@ -3643,9 +3643,11 @@ log and six-file S1 lock roster.
 The user recorded `ALLOW WARCOAST-C1-RERUN-1; GO` after the reviewed Source
 package was integrated. The bounded LuaJIT selected-four preflight reproduced
 the four Section-14.10 compiled-payload SHA-256 values and zero Whole gap,
-overlap, ring and multiplicity counters. The retained ownership handoff again
-covered the three connectivity-closing columns and the one adopted-residue
-interval. No S1 lock, candidate row, pool artifact or winner moved.
+overlap, ring and multiplicity counters; its raw stdout was not retained and
+this development preflight is not acceptance evidence. The retained ownership
+handoff again covered the three connectivity-closing columns and the one
+adopted-residue interval. No S1 lock, candidate row, pool artifact or winner
+moved.
 
 The fresh vendored-PUC run launched from commit
 `86e5071de0fd449c2a1c88587f4d7614b2a2ccc8`, tree
@@ -3685,9 +3687,15 @@ returned `APPROVE` with no finding. The workflow-required fresh Opus/xhigh
 acceptance review is pending at this authored closeout boundary; C-a2 remains
 paused until that review and any authorized fix round are green. This gate did
 not promote the seed corpus, run F1, run the full-`W` population, close T2 or
-authorize a production compiler.
+authorize Lane C-b or a production compiler.
 
-**Acceptance-review calibration record (pending):** coordinating model GPT-5.6
-Sol; independent reviewer Claude Opus/xhigh in a fresh detached read-only
-context. Initial finding counts, fix rounds, focused re-review status and
-observed review wall time will be filled by the post-commit review closeout.
+**Acceptance-review calibration record:** package classification: non-trivial
+(changes pinned evidence and acceptance-gate identity). Coordinating model:
+GPT-5.6 Sol. Independent reviewer: Claude Opus/xhigh in a fresh detached
+read-only context. The first complete review returned `APPROVE` with 0 Critical
+/ 0 High / 1 Medium / 5 Low; one earlier fresh CLI attempt ended without a
+review result after a transport interruption and is not counted. Fix round 1
+closes the mandate-scope wording and all five provenance, pending-state and
+calibration findings. Focused re-review is pending. The complete review took
+811,984 ms wall time; its targeted vendored-PUC validation was read-only and
+did not repeat C1 generation.

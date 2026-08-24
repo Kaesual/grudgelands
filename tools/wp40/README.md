@@ -532,11 +532,12 @@ anywhere.
 **The current retained `conformance-puc-v3.tsv` exists.** The WARCOAST
 reacceptance produced it from commit `86e5071`, tree `07e5d99c`, and C1-v3 DAG
 `42b8a38c…`; final SHA-256 `1edbb12a…`. A second invocation at that unchanged
-HEAD reverified all 24 retained rows through the same-HEAD branch. Commit
-`17efc8d` then bound the 25 result files. From that descendant HEAD, the
-recorded-commit branch reverified the 66-path closure and all 24 rows,
-returning `REUSED RECORDED EVIDENCE` with exit 0. The current manifest and
-provenance limitations are recorded under
+HEAD was coordinator-observed to reverify all 24 retained rows through the
+same-HEAD branch; its raw stdout was not retained. Commit `17efc8d` then bound
+the 25 result files. From that descendant HEAD, the recorded-commit branch was
+coordinator-observed to reverify the 66-path closure and all 24 rows, returning
+`REUSED RECORDED EVIDENCE` with exit 0; that stdout was also not retained. The
+current manifest and provenance limitations are recorded under
 `tools/wp40/evidence/t2-c1-v3-86e5071/`; independent acceptance review is
 pending at this closeout boundary. The earlier `db9c344` and `5d770365`
 acceptances remain historical evidence in their named directories, not the
