@@ -3516,3 +3516,36 @@ this calibration closeout: a duplicated word, the inbound current-evidence
 reference and the direct same-HEAD provenance qualifier. No second re-review
 was needed. Observed review wall time is `unknown`; the initial review's direct
 recorded-evidence reproduction took 1 minute 44 seconds.
+
+### 14.11 WARCOAST-SOURCE-1 containment correction (decided 2026-08-24)
+
+The user recorded `ACCEPT WARCOAST-SOURCE-1; GO` after C-a2's mandatory first
+gate correctly stopped before edits or compilation. The exact capsule masks
+for `gravesalt_warcoast` and `skyglass_warcoast`, centred at `x = -2450` and
+`x = 2450` with `radius_x = 80`, included the boundary columns `x = -2530`
+and `x = 2530`. Those columns are strict exterior columns in
+`channel_wyrmglass` and `channel_stormscale`, while Section 14.1 keeps `H`
+undefined on immutable dragon channels. The failure is symmetric,
+seed-independent and present before any displacement margin is added; it is
+not a compiled-payload or C1 artifact defect.
+
+Keep the Holy Grounds, both channel polygons, the two capsule radii and their
+`z = +/-125` embarkation-corridor role unchanged. Move only the two capsule
+centres 30 nodes inward, from `x = -2450` to `x = -2420` and from `x = 2450`
+to `x = 2420`. The corrected exact masks touch the closed Holy boundary at
+`x = -2500` and `x = 2500` without entering strict exterior channel columns.
+The correction must be symmetric and must retain the existing north/south
+corridor coverage. Runtime clipping, a landmark-specific exception to exact
+mask identity, and widening Holy Grounds into either channel are forbidden.
+
+Before C-a2 resumes, a focused Source package must add a fail-closed
+regression for both old failing columns and both corrected boundary contacts,
+then prove the complete exact masks plus their applicable incident-edge
+displacement envelopes remain in their owning final zones. The landmarks are
+outside the S1 Source projection, so the existing S1 authority, candidate
+pool and selected winners are expected to remain byte-identical; any movement
+is a STOP. The package must separately audit the C1 closure consequence. No
+long C1 rerun or new acceptance shortcut is implied by this memo: the
+coordinator reports the smallest evidence-correct reacceptance and its measured
+or retained cost before launching it. C-a2 remains paused until the corrected
+Source and that required acceptance boundary are green.

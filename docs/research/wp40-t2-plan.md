@@ -82,6 +82,14 @@ that all of Class B / Lane C-a can run independently of partition and D-1.
    Missing input or reconstructed ownership is a STOP. It then assembles zone-
    owned `H`. Stop after C-a2 and before Lane C-b.
 
+   The first C-a2 attempt exposed the symmetric post-C1
+   `WARCOAST-SOURCE-1` authoring defect before edits: both warcoast masks
+   entered an immutable channel by 30 nodes. The accepted correction moves
+   only their centres 30 nodes inward while retaining radii and corridor
+   coverage. C-a2 resumes only after the focused Source correction, unchanged
+   S1/pool/winner proof and the smallest evidence-correct C1 closure response
+   are green; no long rerun begins without a reported cost and authority basis.
+
 The ownership handoff exports the Bay-owned connectivity-closing water and the
 dry-face/zone-owned adopted-residue intervals. C-a2 may not reconstruct either
 result from polygons. No separate C1 run is scheduled solely for Phase 0B; the

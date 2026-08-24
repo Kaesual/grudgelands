@@ -645,6 +645,14 @@ correction, with its evidence and digests, stays in
   radii remain the capsule's total half-extents rather than becoming the bare
   axis-segment extents.
 
+  `WARCOAST-SOURCE-1` applies this invariant symmetrically at the two fixed
+  Holy/channel contacts. `gravesalt_warcoast` is centred at `(-2420, 0)` and
+  `skyglass_warcoast` at `(2420, 0)`, retaining their `80 x 230` total
+  half-extents. Their channel-facing exact boundaries therefore touch the
+  closed Holy columns at `x = -2500` and `x = 2500` and never enter strict
+  exterior channel columns. The source validator and C-a2 containment KAT pin
+  both boundary contacts and reject the former `x = +/-2530` membership.
+
 ### 7.6 C-a1 primitive boundary conventions
 
   The shared centred total-width policy includes the negative boundary and

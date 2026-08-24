@@ -193,6 +193,13 @@ signed distance is the lower-root Q16 distance to the same segment minus
 `short*Q`. The subtraction in the segment half-length preserves the authored
 `radius_x`/`radius_z` as the capsule's total half-extents.
 
+The two mirrored warcoast capsules retain total half-extents `80 x 230` and
+the two `z = +/-125` embarkation corridors, but their centres are 30 nodes
+inside the fixed Holy boundary: `(-2420, 0)` and `(2420, 0)`. Their exact masks
+touch `x = -2500` and `x = 2500` and do not enter the immutable dragon
+channels. Landmark clipping at the channel, widening Holy Grounds, or treating
+channel columns as an `H` domain is not an equivalent implementation.
+
 Shared relief has one checksum-covered record for every multi-edge endpoint,
 38 in the current source. Each record stores stable coordinate-derived ID,
 coordinate, sorted incident edge IDs and the common gate band. A nonempty
