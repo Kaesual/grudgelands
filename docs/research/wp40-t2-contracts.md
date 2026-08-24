@@ -3010,15 +3010,13 @@ historical literal mismatch. The Source and fail-closed validator now carry
 the ordered positive-collar vocabulary stated above.
 
 The adjacent retained
-`geometry_policies.relief_composition.landmark_priority_order` literal, whose
-value is `greater_integer_priority_wins`, means only that greater priority
-occupies the later composition position and therefore applies last. Its word
-`wins` never selects one landmark or suppresses another positive collar. The
-validator's literal check does not change that later-memo interpretation.
-
-This `greater_integer_priority_wins` spelling is likewise superseded by the
-Section 14.8 Source literal
-`ascending_base_h_priority_higher_applied_last`.
+`geometry_policies.relief_composition.landmark_priority_order` literal
+historically had the value `greater_integer_priority_wins`.
+**[Superseded by Section 14.8: its current Source value is
+`ascending_base_h_priority_higher_applied_last`.]** Under the former spelling,
+`wins` meant only that greater priority occupied the later composition
+position and therefore applied last; it never selected one landmark or
+suppressed another positive collar.
 
 A dedicated later **landmark source-policy cleanup** package must audit and
 reconcile those policy literals before the production compiler or T2-final.
@@ -3396,9 +3394,12 @@ This package is **non-trivial** under the project model policy: it changes
 checksum-covered Source contract vocabulary and its fail-closed validator,
 despite leaving arithmetic and topology untouched. Independent Opus review
 found one package Critical, two package Highs, two Mediums and three package
-Lows, plus one inherited High and one inherited cosmetic Low; the single
-authorized fix round closes the fixture/provenance gaps here, while the
-coordinator owns the independent re-review and final calibration result.
+Lows, plus one inherited High and one inherited cosmetic Low. The first
+authorized fix round closed those ten dispositions. Focused re-review verified
+all ten closed and found one new Medium plus two new Lows in retained evidence
+and supersession placement; the second mechanical fix round corrected those
+three findings. The coordinator owns the final re-review and calibration
+result.
 
 The C-a1 `t2-fields-v1` evidence manifest remains an immutable historical
 record of its tested tree; its old Source/validator hashes are inputs of that
