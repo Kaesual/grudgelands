@@ -341,6 +341,16 @@ The artifact still says `pending_seed_corpus_promotion`: F1, full-`W`, corpus
 promotion, T2-final and C-b remain open. Independent Opus/xhigh acceptance
 review is green; C-a2 is next.
 
+**Status, 2026-08-24, WARCOAST C1-v3 result set retained.** The reviewed
+WARCOAST-SOURCE-1 correction forced the expected fail-closed Source-closure
+miss. One authorized fresh vendored-PUC run retained 20/20 rescores and 4/4
+selected rows from commit `86e5071`, preserving all four compiled-payload
+digests and all zero Whole counters. Final artifact SHA-256 is
+`1edbb12a26a51f33b3a4267dff87bb1bb6d233f1aca8430e2e12be43f93aedc8`;
+commit `17efc8d` binds exactly the 25 result files. Same-HEAD resume and
+descendant-HEAD recorded reuse are green. Independent Opus/xhigh acceptance
+review is pending; C-a2 remains paused until its closeout.
+
 ## 3. Locked surfaces
 
 These six files are covered by the stage-S1 authority digest that pins the

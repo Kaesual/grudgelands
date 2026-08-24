@@ -154,6 +154,17 @@ reuse paths are green, so subsequent closure-neutral commits do not buy this
 run again. This closes the integration gate for C-a2 only. Seed-corpus
 promotion, F1, full-`W`, T2-final and C-b remain open.
 
+### 2.4 WARCOAST C1-v3 reacceptance retained
+
+The reviewed WARCOAST Source correction changed two members of the 66-path
+closure, so recorded reuse refused the older evidence as designed. The single
+authorized fresh PUC run retained 20/20 rescores and 4/4 selected slots from
+commit `86e5071`; all four compiled-payload digests and zero Whole counters
+remain unchanged. Final artifact SHA-256 is `1edbb12a...93aedc8`, bound with
+the other 24 rows by commit `17efc8d`. Same-HEAD resume and descendant recorded
+reuse are green. Independent Opus/xhigh acceptance review is pending; C-a2
+remains the next executable package.
+
 ## 3. Correctness floor and simplification policy
 
 Fast progress does not mean accepting corrupt or unstable worlds. These
@@ -929,3 +940,10 @@ preflight and the single integrated PUC C1-v3 reacceptance are green. Commit
 `89e4ba1` binds the 25 retained C1 files; same-HEAD resume and descendant-HEAD
 recorded reuse are also green. Independent Opus/xhigh C1 acceptance review is
 green; C-a2 is next, and the mandate still stops before C-b.
+
+**Later status, 2026-08-24:** WARCOAST-SOURCE-1 is reviewed and integrated.
+Its required fresh C1-v3 run, same-HEAD resume and descendant recorded-reuse
+checks are green, with commit `17efc8d` binding the 25 current rows. The fresh
+Opus/xhigh acceptance review is pending. After that review C-a2 resumes; the
+user-authorized C-b0 rulings and parallel C-b/D-2 execution supersede the
+earlier stop-before-C-b mandate once C-a2 itself is accepted.

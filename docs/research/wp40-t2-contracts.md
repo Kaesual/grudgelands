@@ -3637,3 +3637,57 @@ measurement commit `9b444061fbb77aaf6d8a5bffdb4fc8e61d0146ec`; Fix-2 changes
 exactly five Markdown paths from that measured tip and no executable, Source or
 fixture bytes. Its checksum manifest covers the manifest, invariants, curated
 log and six-file S1 lock roster.
+
+### 14.12 WARCOAST C1-v3 reacceptance (2026-08-24)
+
+The user recorded `ALLOW WARCOAST-C1-RERUN-1; GO` after the reviewed Source
+package was integrated. The bounded LuaJIT selected-four preflight reproduced
+the four Section-14.10 compiled-payload SHA-256 values and zero Whole gap,
+overlap, ring and multiplicity counters. The retained ownership handoff again
+covered the three connectivity-closing columns and the one adopted-residue
+interval. No S1 lock, candidate row, pool artifact or winner moved.
+
+The fresh vendored-PUC run launched from commit
+`86e5071de0fd449c2a1c88587f4d7614b2a2ccc8`, tree
+`07e5d99c96edd3f66c454feefa606b072c78d33e`, C1-v3 DAG
+`42b8a38cfc8a1247f974f31a88fec13a1795461888d1cd36dec8e8389357459f`
+and execution-authority DAG
+`e29fa7eb3f497db0b1ad7b7452c454fa41abd5a11880e882e07c7c842166f4bf`.
+Recorded reuse correctly refused the changed Source closure. The run then
+recomputed and retained all 20 PUC rescore rows and all four selected slots.
+The selected compiled-payload identities remain exactly:
+
+- slot 28: `29682e481c49e80092a1cdd97823563031dd525db8aa26c45b2e543f06f88b21`;
+- slot 29: `5135153619f5d7648ce75d341c771af02aceb80c9bd53f9b33e95fb8f9a4c5b0`;
+- slot 30: `169cc866224403e8786b71166b1b3de240fa3b18dcf33b2729706cc29216e17c`;
+  and
+- slot 31: `1fc38b4f7c4ab2845179b54f282bdb582a77c991f84524b0b0cd4789d01dc35f`.
+
+Every selected row retains `g = o = r = m = 0`. The final artifact SHA-256 is
+`1edbb12a26a51f33b3a4267dff87bb1bb6d233f1aca8430e2e12be43f93aedc8`
+and still states `stage2_status=pending_seed_corpus_promotion`. The coordinator
+observed 235 seconds for the rescore phase and 5,447 seconds for the four
+parallel selected workers. Raw runner stdout and complete end-to-end timing
+were not retained, so those counters are planning observations rather than an
+immutable timing calibration.
+
+A second invocation at the unchanged launch HEAD reverified 20/20 and 4/4
+without recomputation. Result-fixture commit
+`17efc8d822b401d6a32505c75c3c83bfc2ee7fd8` binds exactly the 25 result
+files. From that descendant, the recorded-evidence path validated all 66
+closure members and the 24 recorded rows and exited 0 without generation. The
+manifest and explicit raw-log limitation are retained under
+`tools/wp40/evidence/t2-c1-v3-86e5071/`.
+
+A separate coordinator-managed read-only audit independently recomputed the
+two DAGs, all row hashes, the selected mapping and the final artifact and
+returned `APPROVE` with no finding. The workflow-required fresh Opus/xhigh
+acceptance review is pending at this authored closeout boundary; C-a2 remains
+paused until that review and any authorized fix round are green. This gate did
+not promote the seed corpus, run F1, run the full-`W` population, close T2 or
+authorize a production compiler.
+
+**Acceptance-review calibration record (pending):** coordinating model GPT-5.6
+Sol; independent reviewer Claude Opus/xhigh in a fresh detached read-only
+context. Initial finding counts, fix rounds, focused re-review status and
+observed review wall time will be filled by the post-commit review closeout.
