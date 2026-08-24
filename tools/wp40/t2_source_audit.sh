@@ -228,7 +228,12 @@ if grep -qE 'fallback_to_next_candidate|local_damped_amplitude_times_Q|rare_patr
 	echo 'T2 source audit: fixture/trace/extreme selector authority drift' >&2
 	exit 1
 fi
-grep -q '87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e' "$stage1"
+grep -q 'e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963' "$stage1"
+grep -q 'landmark(59,"gravesalt_warcoast","front_gravesalt_escarpment","capsule",-2420,0,80,230,"highland")' "$catalog"
+grep -q 'landmark(67,"skyglass_warcoast","front_skyglass_canopy","capsule",2420,0,80,230,"highland")' "$catalog"
+grep -q '"warcoast_landmark_contract"' "$stage1"
+grep -q 'expect_failure("warcoast_landmark_contract"' "$test_file"
+grep -q 'WP40 T2 WARCOAST-SOURCE-1 oracle passed' "$test_file"
 grep -q 'ed1cd5440d713e69d7dc913626490ae8c0af43e30a825ad9a81fcb6e13a60d2d' "$stage1"
 grep -q '528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70' "$stage1"
 grep -q 'e40b7862436c27ffe97f4e81510a7e86b31a6d4c6772b2d68bf16bdfec070751' "$stage1"

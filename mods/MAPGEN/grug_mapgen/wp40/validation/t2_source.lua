@@ -2,7 +2,7 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e"
+	"e244c25fdfec1736a905c9fd55115fbad1fb1bc070e3978336d7cf089b465963"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
@@ -441,6 +441,61 @@ local function point_in_landmark(point,row)
 		return dx*dx+cap*cap<=row.radius_x*row.radius_x
 	end
 	return false
+end
+
+local function validate_warcoast_contract(source)
+	-- WARCOAST-SOURCE-1 keeps the boat approaches independent: these exact
+	-- landmark masks own the two route contacts, not the 96-node water lanes.
+	-- At the Holy boundary they retain both approach centre lines; four nodes
+	-- inland the complete two half-open approach intervals are inside.
+	local expected_rows={
+		{index=59,id="gravesalt_warcoast",zone_id="front_gravesalt_escarpment",
+			center_x=-2420,boundary_x=-2500,inland_x=-2496,old_outer_x=-2530},
+		{index=67,id="skyglass_warcoast",zone_id="front_skyglass_canopy",
+			center_x=2420,boundary_x=2500,inland_x=2496,old_outer_x=2530},
+	}
+	for expected_index=1,#expected_rows do
+		local expected=expected_rows[expected_index]
+		local row=source.landmarks[expected.index]
+		if row.id~=expected.id or row.zone_id~=expected.zone_id or
+				row.primitive~="capsule" or row.center.x~=expected.center_x or
+				row.center.z~=0 or row.radius_x~=80 or row.radius_z~=230 then
+			return select(2,diag("warcoast_landmark_contract",expected.id,
+				"symmetric inward centre and unchanged 80x230 capsule","changed"))
+		end
+		if not point_in_landmark({x=expected.boundary_x,z=-125},row) or
+				not point_in_landmark({x=expected.boundary_x,z=125},row) or
+				point_in_landmark({x=expected.old_outer_x,z=0},row) then
+			return select(2,diag("warcoast_landmark_contract",expected.id,
+				"both boundary centre lines inside and former exterior outside",
+				"mask incidence changed"))
+		end
+		local boundary_counts={}
+		for approach_index=1,#source.constants.dragon_approach_z do
+			local approach_z=source.constants.dragon_approach_z[approach_index]
+			local first_z=approach_z-math.floor(source.constants.dragon_approach_width/2)
+			local last_z=first_z+source.constants.dragon_approach_width-1
+			local boundary_count,inland_count=0,0
+			for z=first_z,last_z do
+				if point_in_landmark({x=expected.boundary_x,z=z},row) then
+					boundary_count=boundary_count+1
+				end
+				if point_in_landmark({x=expected.inland_x,z=z},row) then
+					inland_count=inland_count+1
+				end
+			end
+			boundary_counts[approach_index]=boundary_count
+			if inland_count~=96 then
+				return select(2,diag("warcoast_landmark_contract",expected.id,
+					"full 96-node approach four nodes inland",inland_count))
+			end
+		end
+		if boundary_counts[1]~=73 or boundary_counts[2]~=74 then
+			return select(2,diag("warcoast_landmark_contract",expected.id,
+				"73/96 south and 74/96 north at the Holy boundary",
+				boundary_counts[1].."/"..boundary_counts[2]))
+		end
+	end
 end
 
 local function point_in_polygon(point,points)
@@ -3978,6 +4033,8 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 		base_h_priorities[row.base_h_priority]=true
 		landmark_ids[row.id]=true landmark_by_id[row.id]=row
 	end
+	failure=validate_warcoast_contract(source)
+	if failure then return nil,failure end
 	local primitive_ids={}
 	local formula_rows=policies.primitive_formulas.formulas
 	if not dense(formula_rows) or #formula_rows~=#source.template_primitives then
