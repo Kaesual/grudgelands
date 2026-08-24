@@ -312,6 +312,18 @@ full-`W` and the fresh C1 reacceptance have not run in this integration round.
 The selected-four LuaJIT plus connectivity-fill/adopted-residue witness
 preflight is next.
 
+**Status, 2026-08-24, the integrated Wave-1 C1-v3 gate is green.** The
+LuaJIT selected-four and both non-vacuous ownership witnesses passed first.
+The one fresh vendored-PUC run then passed 20/20 rescores in 236 seconds and
+four of four selected slots in a 5,478-second parallel phase, with all four
+Whole counters remaining zero. Its final artifact SHA-256 is
+`fe52c0bcb1540423a1089cd144be042eadbaf2cb1f4f24d015757c7685639d32`;
+commit `89e4ba1` binds exactly the 25 retained result files. Same-HEAD resume and
+descendant-HEAD recorded-evidence reuse both exited 0 without recomputation.
+The artifact still says `pending_seed_corpus_promotion`: F1, full-`W`, corpus
+promotion, T2-final and C-b remain open. C-a2 is next after independent
+acceptance review.
+
 ## 3. Locked surfaces
 
 These six files are covered by the stage-S1 authority digest that pins the

@@ -136,6 +136,21 @@ C1, not a new development-loop norm. Recorded-evidence reuse prevents
 closure-neutral future commits from buying the same run again. Seed-corpus
 promotion, T2-final, and all remaining light-regime geometry stay open.
 
+### 2.3 Integrated Wave-1 C1-v3 reacceptance closed
+
+After C-a1, D-1, the ownership provider and the landmark Source cleanup were
+integrated, the bounded LuaJIT selected-four preflight and both non-vacuous
+ownership witnesses passed. The single scheduled PUC reacceptance then passed
+20/20 rescores in 236 seconds and all four selected slots in a 5,478-second
+parallel phase. All selected slots retained zero Whole gap, overlap, ring and
+multiplicity counters. The final artifact SHA-256 is `fe52c0bc...639d32` and
+the 25 result files are bound by commit `89e4ba1`.
+
+Both the same-HEAD resume and the descendant-HEAD 66-path recorded-evidence
+reuse paths are green, so subsequent closure-neutral commits do not buy this
+run again. This closes the integration gate for C-a2 only. Seed-corpus
+promotion, F1, full-`W`, T2-final and C-b remain open.
+
 ## 3. Correctness floor and simplification policy
 
 Fast progress does not mean accepting corrupt or unstable worlds. These
@@ -903,7 +918,8 @@ Full T5 still waits for T3 and T4.
 
 **Execution status, 2026-08-24:** C-a1, D-1 and the reviewed landmark Source-
 policy cleanup are integrated by merges `a494319`, `f72dc69` and `ee52c9d`.
-Their post-merge C-a1, D-1, targeted PCC Source and S1 gates are green; the six
-S1 locks, candidate pool, 4,096 rows and four winners remain unchanged. The
-next step is the bounded selected-four LuaJIT plus nonzero ownership-witness
-preflight, followed by exactly one fresh C1-v3 PUC reacceptance if green.
+Their post-merge package gates, the bounded LuaJIT selected-four/ownership
+preflight and the single integrated PUC C1-v3 reacceptance are green. Commit
+`89e4ba1` binds the 25 retained C1 files; same-HEAD resume and descendant-HEAD
+recorded reuse are also green. Independent C1 acceptance review is next, then
+C-a2; the mandate still stops before C-b.

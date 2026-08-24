@@ -3450,3 +3450,45 @@ digests. This closes the package-integration part of Section 14.3 item 5. The
 next executable gate is the selected-four LuaJIT run plus the nonzero
 connectivity-fill and adopted-residue witnesses; only after that preflight is
 green may the single fresh C1-v3 PUC reacceptance start.
+
+### 14.10 Integrated Wave-1 C1-v3 reacceptance (2026-08-24)
+
+The Section-14.3 integration gate is green. Before the PUC run, the four
+selected winners passed the complete partition gate under LuaJIT with
+`g = o = r = m = 0`, and the ownership handoff reproduced both non-vacuous
+witness classes: three connectivity-closing columns for seed
+`35408571026545897` and one adopted-residue interval for seed
+`18171940200422843206`. The six S1 locks, the 4,096-row candidate artifact and
+the winner indices `2192,1713,1047,3438` remained unchanged.
+
+Exactly one fresh vendored-PUC C1-v3 run then launched from commit
+`db9c344499e7f76418e4f11e822e7492e777161b`, tree
+`35d1c482d64c51f6c3b19788cd4a2917ced65a74`, with C1-v3 DAG
+`0f84ae5b1bdcf85725a6572636d4f24be5bb18882e16df3466ccafd9fe209398`
+and execution-authority DAG
+`8b1f5faee70d7f5f0b256dfdc6aaa76db0e4f651b3b24fd2cb1680a6651fd6ff`.
+Recorded-evidence reuse correctly refused the older closure, so the run
+recomputed all 20 PUC rescore rows and all four selected slots. The rescore
+barrier passed 20/20 in 236 seconds. The four parallel selected workers passed
+in 5,405 / 5,425 / 5,397 / 5,440 seconds, and the selected barrier completed
+4/4 in 5,478 seconds. Their compiled-payload SHA-256 values are, by slot:
+
+- slot 28: `29682e481c49e80092a1cdd97823563031dd525db8aa26c45b2e543f06f88b21`;
+- slot 29: `5135153619f5d7648ce75d341c771af02aceb80c9bd53f9b33e95fb8f9a4c5b0`;
+- slot 30: `169cc866224403e8786b71166b1b3de240fa3b18dcf33b2729706cc29216e17c`;
+  and
+- slot 31: `1fc38b4f7c4ab2845179b54f282bdb582a77c991f84524b0b0cd4789d01dc35f`.
+
+The final retained artifact has SHA-256
+`fe52c0bcb1540423a1089cd144be042eadbaf2cb1f4f24d015757c7685639d32`
+and still states `stage2_status=pending_seed_corpus_promotion`. A separate
+same-HEAD invocation re-verified all 24 retained rows and exited by the resume
+path. Commit `89e4ba17a1c5d0334cc85543e3f0a03b1541dc49` then bound exactly those
+25 retained evidence files. From that descendant HEAD, the 66-path closure
+check and finalizer accepted the immutable launch evidence through the
+`REUSED RECORDED EVIDENCE` path with exit 0 and without recomputation.
+
+This closes the single integrated Wave-1 C1 gate and permits C-a2 to start. It
+does **not** promote the seed corpus, run F1, run the full-`W` population, close
+T2, or authorize C-b. Independent acceptance review and its calibration record
+are pending before C-a2 implementation begins.
