@@ -541,6 +541,34 @@ local function plain_bytes(value, seen)
 	return table.concat(parts)
 end
 
+local function legacy_ownership_projection(compiled)
+	local legacy = deep_copy(compiled)
+	local function remove_named_field(rows, name)
+		for index = 1, #rows do
+			if rows[index].name == name then
+				table.remove(rows, index)
+				return
+			end
+		end
+		error("compiled ownership field is absent: " .. name)
+	end
+	for index = 1, #legacy.families.bays do
+		local bay = legacy.families.bays[index]
+		bay.record_schema = "grug_wp40_bay_v2"
+		remove_named_field(bay.unsigned_values, "connectivity_fill_count")
+		remove_named_field(bay.signed_arrays, "connectivity_fill_xz")
+	end
+	for index = 1, #legacy.families.dry_faces do
+		local face = legacy.families.dry_faces[index]
+		face.record_schema = "grug_wp40_dry_face_v1"
+		remove_named_field(face.unsigned_values,
+			"adopted_residue_interval_count")
+		remove_named_field(face.signed_arrays,
+			"adopted_residue_z_first_finish")
+	end
+	return canonical.hex(raw_sha256(plain_bytes(legacy)))
+end
+
 local seed_zero_scalar_sha256 = canonical.hex(raw_sha256(plain_bytes(
 	seed_zero_records)))
 local high_scalar_sha256 = canonical.hex(raw_sha256(plain_bytes(
@@ -584,12 +612,20 @@ assert(validator_calls == compile_before + 1,
 	"full partition compile changed defensive validation cadence")
 assert(deep_equal(compiled_scalar_records(compiled_zero), isolated_again),
 	"Seed0 scalar projection differs from the compile consumer")
-local compiled_zero_sha256 = canonical.hex(raw_sha256(plain_bytes(compiled_zero)))
-assert(compiled_zero_sha256 ==
-	"5fb0c7345b05775060bf7f647b2ae19dda65f2403c45c29ed3562a297f866ab8",
+assert(canonical.hex(raw_sha256(plain_bytes(compiled_zero))) ==
+	"841f8a115ff1eb777eb711498b7628e91ef238c5c75308fd8f1adb07e52d2f5d",
 	"Seed0 compiled family bytes changed after the R17 freeze: " ..
-		compiled_zero_sha256)
-print("WP40 T2 E0 Seed0 full partition SHA-256 " .. compiled_zero_sha256)
+		canonical.hex(raw_sha256(plain_bytes(compiled_zero))))
+print("WP40 T2 E0 Seed0 full partition SHA-256 " ..
+	canonical.hex(raw_sha256(plain_bytes(compiled_zero))))
+
+-- Wave 1C deliberately added the accepted ownership handoff fields to every
+-- Bay/dry-Face record.  Projecting only those fields and their record-schema
+-- bumps away must reproduce the pre-handoff R17 pin exactly; this makes the
+-- otherwise broad compiled-family repin fail closed on any unrelated move.
+assert(legacy_ownership_projection(compiled_zero) ==
+	"5fb0c7345b05775060bf7f647b2ae19dda65f2403c45c29ed3562a297f866ab8",
+	"Seed0 R17 legacy projection moved beyond the accepted ownership handoff")
 local partition_module_file = assert(io.open(wp40 .. "/geometry/partition.lua", "rb"))
 local partition_module_bytes = assert(partition_module_file:read("*a"))
 assert(partition_module_file:close())
@@ -802,6 +838,9 @@ local high_compile_ok, compiled_high = pcall(partition.compile,
 assert(high_compile_ok, tostring(compiled_high))
 local compiled_high_sha256 = canonical.hex(raw_sha256(plain_bytes(compiled_high)))
 print("WP40 T2 E0 max-u64 full partition SHA-256 " .. compiled_high_sha256)
+assert(legacy_ownership_projection(compiled_high) ==
+	"852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95",
+	"max-u64 R17 legacy projection moved beyond the accepted ownership handoff")
 local fixture_ok, fixture_direct, fixture_elbows = validate_prerequisite_fixture(
 	prerequisite_fixture, compiled_high, compiled_high_sha256)
 assert(fixture_ok and fixture_direct == 7 and fixture_elbows == 1)

@@ -1,5 +1,5 @@
 schema	grug_wp40_t2_authored_fixture_v1
-source_sha256	f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558
+source_sha256	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
 count	zones	38
 count	land_routes	57
 count	boat_routes	4
