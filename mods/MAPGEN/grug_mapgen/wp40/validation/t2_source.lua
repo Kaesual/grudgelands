@@ -2,7 +2,7 @@
 
 local validator = {}
 local EXPECTED_SOURCE_CHECKSUM =
-	"f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558"
+	"87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e"
 local EXPECTED_POLICY_CHECKSUMS={
 	logical_biome_selector="8e8146cd514ff6a8e7f086670844bb54ce4a378b3a6aced3b2f024cafc7090bd",
 	primitive_evaluator="c9af10634c293342e3729b2a9c618ba9d3cc2dd85d152937045b8ed1c54cfa24",
@@ -11,7 +11,7 @@ local EXPECTED_POLICY_CHECKSUMS={
 	route_raster="2f8690642442c96345994bee6960408e4fe2f02cfd35eafdfc1b4ec7d4a6695c",
 	route_profile_solver="3a0ef9ac6c0f3416e57089317cc80db4695265c54df046d6ffec605b06ce18ac",
 	relief_field="21eef51446dd63a734f9ee9c0fbbd409ff7a64d827080ea896f379b42f00b200",
-	landmark_masks="99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e",
+	landmark_masks="1a34cefb67cefdb25886eb3ebfa6977b63c3e543cddfa793c4a4e27c890334b9",
 	coastal_housing_core="58b92908c65ec089213298e2d5cf280879cfa69c6292efe9b8b8cb7b88db9fe4",
 	world_partition="528c03e32662924887ea89a8ef39ef9e95c039af2e6bdcd333aabef11d54fc70",
 	geometry_fixture_selector="cf71fc428ff68160c364e9ce02fdf54d3abd8c88e6f08319b7cfe270928346c6",
@@ -1002,16 +1002,16 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			policies.template_footprint.interval_rule~="centered_half_open_total_width" or
 			type(policies.relief_composition)~="table" or
 			policies.relief_composition.landmark_overlap_rule~=
-				"highest_priority_replace_profile" or
+				"compose_all_strictly_positive_Q16_collars" or
 			policies.relief_composition.landmark_priority_order~=
-				"greater_integer_priority_wins" or
+				"ascending_base_h_priority_higher_applied_last" or
 			policies.relief_composition.landmark_priority_tie~="reject" or
 			not dense(policies.relief_composition.evaluation_order) or
 			#policies.relief_composition.evaluation_order~=3 or
 			policies.relief_composition.evaluation_order[1]~=
 				"raw_owning_zone_profile" or
 			policies.relief_composition.evaluation_order[2]~=
-				"highest_priority_landmark_replacement_and_64_node_blend" or
+				"all_positive_landmark_collars_qlerp_previous_H_to_replacement_H" or
 			policies.relief_composition.evaluation_order[3]~=
 				"shared_edge_G_and_96_node_blend" or
 			type(policies.surface_level_interpolation)~="table" or
@@ -1212,7 +1212,7 @@ local function validate_impl(source, vocabulary, canonical, raw_sha256)
 			policies.relief_composition.secondary_blend_width or
 			policies.landmark_masks.priority_tie_rule~="reject" or
 			policies.landmark_masks.replacement_rule~=
-				"highest_priority_replace_profile_height" or
+				"qlerp_previous_H_to_replacement_profile_height_by_own_positive_collar_weight" or
 			policies.landmark_masks.replacement_noise_domain~=
 				"landmark_record_noise_domain" or
 			policies.landmark_masks.replacement_profile~=

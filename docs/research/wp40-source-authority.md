@@ -630,12 +630,11 @@ correction, with its evidence and digests, stays in
   non-blocking is evaluated against the final composed `H` and later route
   products rather than inferred from a winning mask.
 
-  The retained
+  The checksum-covered
   `geometry_policies.relief_composition.landmark_priority_order` literal, whose
-  value is `greater_integer_priority_wins`, means only that greater priority
-  composes later and applies last. It never selects one landmark or suppresses
-  another positive collar, and the validator's literal check does not change
-  that later-memo interpretation.
+  value is `ascending_base_h_priority_higher_applied_last`, requires greater
+  priority to compose later and apply last. It never selects one landmark or
+  suppresses another positive collar.
 
   Capsule mask geometry follows the exact source validator. With
   `short = min(radius_x, radius_z)` and `long = max(radius_x, radius_z)`, its
