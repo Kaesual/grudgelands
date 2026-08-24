@@ -5,10 +5,13 @@ baseline	f72dc69a61ae356af412a27dfa8e0a8b8e220109
 tested_head	13fe2f27bdaedf90941c28f323f050668728b932
 tested_tree	bf0765538bec14d857cb5991ea6b3a68306b8390
 implementing_model	GPT-5.6 Sol
-review_status	independent Opus review CHANGES_REQUESTED; one user-authorized fix round applied; coordinator-owned re-review pending
-review_findings	package=1_Critical,2_High,2_Medium,3_Low inherited=1_High,1_cosmetic_Low
-fix_round_count	1
-fix_commit	13fe2f27bdaedf90941c28f323f050668728b932
+review_status	independent Opus review and focused re-review CHANGES_REQUESTED; two user-authorized fix rounds applied; coordinator-owned final re-review pending
+review_findings_round1	package=1_Critical,2_High,2_Medium,3_Low inherited=1_High,1_cosmetic_Low
+review_findings_focused_rereview	0_Critical,0_High,1_new_Medium,2_new_Low
+focused_rereview_head	13928e83dfc4dccbc4b53226d50c5ac53008be05
+fix_round_count	2
+fix_commit_round1	13fe2f27bdaedf90941c28f323f050668728b932
+fix_commit_round2_contract	8f36578cd937b811b679a3c72ac4bb3bfa42d950
 source_checksum_before	f4a7e41605b3defe068095424a4b99e78e657ae508d1ef07e5b3c6bb36884558
 source_checksum_after	87540c49d629eb81164c18e906c23cabbe03eddb429f7ba647c60b650951cd6e
 landmark_masks_checksum_before	99535a1033607d7f0b327bbce859d2e578d8b42ddc76cc2cb8a80dbdaa385f1e
@@ -46,6 +49,7 @@ fields_full_sha256	94e4ac100fdb047b4a4a3cebcf88a355fe9f62586697b910dcc20f765badb
 s1_digest_operations	921
 extreme_luajit_wall_seconds	161.57
 extreme_puc_kat_wall_seconds	120.33
+fix_round2_extreme_puc_kat_wall_seconds	115.91
 reproduction_source	tools/wp40/t2_source_audit.sh .
 reproduction_pcc_source	tools/wp40/run_t2_puc_core.sh --source
 reproduction_fields	tools/wp40/run_t2_fields.sh

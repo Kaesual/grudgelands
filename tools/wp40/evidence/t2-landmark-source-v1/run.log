@@ -1,13 +1,27 @@
 WP40 T2 LM-SOURCE-1 focused review-fix evidence run
 baseline f72dc69a61ae356af412a27dfa8e0a8b8e220109
 reviewed_head 8e85d2e14cc3c8463cf42cd4e09d7581039b103a
+focused_rereview_head 13928e83dfc4dccbc4b53226d50c5ac53008be05
 tested_head 13fe2f27bdaedf90941c28f323f050668728b932
 tested_tree bf0765538bec14d857cb5991ea6b3a68306b8390
 
 REVIEW independent Opus: CHANGES_REQUESTED
 package findings 1 Critical / 2 High / 2 Medium / 3 Low
 inherited findings 1 High / 1 cosmetic Low
-fix rounds 1 user-authorized
+FOCUSED RE-REVIEW independent Opus: CHANGES_REQUESTED
+focused re-review findings 0 Critical / 0 High / 1 new Medium / 2 new Low
+fix rounds 2 user-authorized
+
+FIX-2 TARGETED VERIFICATION (curated record, not verbatim stdout)
+COMMAND tools/wp40/run_t2_extreme_puc_kat.sh
+OBSERVED candidate0 rows SHA-256 a1cf557c4d18e6f6c0559a85a9cd59ab7dbbbf5bd3281bce615f0e91fd7c8890
+MEASURED wall=115.91 user=114.58 sys=1.00 maxrss_kib=671328
+
+CURATED RUN RECORD (selected and sometimes normalized observations; not a
+verbatim stdout transcript). COMMAND lines identify real runner invocations;
+`ABS_REPO` and `SAFE_SCRATCH` explicitly normalize ephemeral absolute paths.
+Lines labelled AUTHORED summarize assertions enforced by a green command and
+are not attributed to that command's stdout.
 
 COMMAND tools/wp40/t2_source_audit.sh .
 WP40 T2 source audit interpreter: /usr/bin/luajit
@@ -54,17 +68,18 @@ WP40 T2 E0 max-u64 full partition SHA-256 df08c6983a30dc344b1707c35e64c9728d4a2c
 WP40 T2 E0 R16/R17 prerequisite seed=18446744073709551615 transition=7/1 notch_fill=3 partition=e12f4f1b48a0cda79c9ac61b2de6299d9491fd185491f95b4d9c644ed2a599a3 compiled_sha256=df08c6983a30dc344b1707c35e64c9728d4a2c5bfaca4bf37bdb04c8c6f3b3ac stage2=pending_selected_four
 WP40 T2 E0 candidate0 decimal=3318027308425330859 coast=1972811/24696061952 noncoast=618062429/178530549760 samples=23552/42565 identity=0be6420d4f27c8e885f1c4af23ab98f0551c658e07715a1384e47629ba69a662/8070e4c25a86397aaa04e474b9d4917e4d79ac8def9998c111ae76747b32ca38
 WP40 T2 extreme selector foundation tests passed
-legacy ownership projection Seed0=5fb0c7345b05775060bf7f647b2ae19dda65f2403c45c29ed3562a297f866ab8 max-u64=852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95
+AUTHORED ASSERTION SUMMARY (not stdout): legacy ownership projection Seed0=5fb0c7345b05775060bf7f647b2ae19dda65f2403c45c29ed3562a297f866ab8 max-u64=852d0a32ee7730c32d17c23f231598a4f7a30e5035cd8a343e3a6bde0c447d95
 wall=161.57 user=159.82 sys=1.34 maxrss_kib=1309624
 
 COMMAND tools/wp40/run_t2_extreme_puc_kat.sh
-WP40 T2 E0 targeted PUC candidate0 rows SHA-256 a1cf557c4d18e6f6c0559a85a9cd59ab7dbbf5bd3281bce615f0e91fd7c8890
+WP40 T2 E0 targeted PUC candidate0 rows SHA-256 a1cf557c4d18e6f6c0559a85a9cd59ab7dbbbf5bd3281bce615f0e91fd7c8890
 WP40 T2 E0 targeted PUC passed scalar seed0=f3faae90bc897caca481cd774a5c20b00bdc88385d3e12b037f89ebd1e0701c0 max_u64=f29a6231471bc6a712c2aba582fc2e5e5c60ec148acbc095ca29266f9aaff0af candidate0=3318027308425330859 s1_authority=10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c partition=e12f4f1b48a0cda79c9ac61b2de6299d9491fd185491f95b4d9c644ed2a599a3
 wall=120.33 user=118.84 sys=1.11 maxrss_kib=670320
 
 COMMAND ABS_REPO/tools/bin/lua51 ABS_REPO/tools/wp40/t2_extreme_gate_check.lua ABS_REPO SAFE_SCRATCH
 WP40 T2 E0 full-scan gate accepted s1_authority=10a790a6436a740efc83e98afe3c374ac4b3520bb425de3d2bd0ac76622db37c s1_source_projection=83b1b16a8afd11af654b5dd3e1d9921006848a0903e7b0c01ab39b27edddd652
 
+AUTHORED STATIC VERIFICATION SUMMARY (not command stdout)
 STATIC Lua 5.1 parse green for all production Lua and changed tools Lua.
 STATIC t2_extreme_test.lua SETGLOBAL 2 -> 2; max_u64 fixture 0 -> 0.
 STATIC all five production and explicit-tools sweeps green; production hits are reviewed comment/string false positives, tools hits are byte-identical offline os.execute and literal // checks; no added line matches.
