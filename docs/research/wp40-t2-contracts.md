@@ -3622,3 +3622,14 @@ C1 launch follows until that re-review is green. End-to-end implementation
 wall time was not instrumented; the initial review record's longest focused
 verification legs were 111 seconds for Source audit and 95 seconds for the
 complete LuaJIT Source test.
+
+The immutable package record is retained at
+`tools/wp40/evidence/t2-warcoast-source-v1/`. Its manifest binds Fix-2
+implementation commit `7589efabf49401e960cbc5bd37df20bd5fe77f6b`, tree
+`be2073fd8212d6879d3da343563f14b0ce06c467`, and baseline
+`506876f9ec8ab51140aeac3822f5bfc2674578e5`. The run log labels itself as a
+curated record rather than verbatim stdout and separately names runtime
+measurement commit `9b444061fbb77aaf6d8a5bffdb4fc8e61d0146ec`; Fix-2 changes
+exactly five Markdown paths from that measured tip and no executable, Source or
+fixture bytes. Its checksum manifest covers the manifest, invariants, curated
+log and six-file S1 lock roster.
