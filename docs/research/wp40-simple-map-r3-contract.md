@@ -371,30 +371,38 @@ grade.
 ### 5.2 Starts, capitals, coastal cores and selected anchors
 
 All 17 current anchor-profile rows, containing 13 distinct shape tags, use one
-R3 fitting primitive: a flat centred half-open square of `fitting_width`, with
-smootherstep return to the incoming height before the edge of `blend_width`.
-The shape tag remains a later structure/dressing tag. This deliberately
-rejects the old generic template DSL.
+R3 fitting primitive: a centre-referenced clamped plateau over the centred
+half-open square of `fitting_width`, with smootherstep return to the incoming
+height before the edge of `blend_width`. The shape tag remains a later
+structure/dressing tag. This deliberately rejects the old generic template
+DSL and does not require a whole 512 by 512 capital to be one flat plane.
 
-The fitting target is constructed once, not guessed from the centre. For every
-land column with natural height `h` in the selected fitting square, accumulate
-`lower = max(h - max_cut)` and `upper = min(h + max_fill)`. Planned-water
-columns of a non-capital selected anchor additionally raise `lower` to their
-maximum `water_surface + 1`; the same columns become `anchor_platform` across
-the full-weight fitting square, not its outside collar. Capital civic-water
-columns are excluded from both the target bounds and the grade.
-When `lower <= upper`, clamp the natural centre height into that closed
-interval; when it is empty, R3 reports a source violation. It never rejects or
-reselects the anchor. This target makes every fitting-square land column obey
-the authored cut/fill limits. Every collar result is additionally clamped to
-`[incoming - max_cut, incoming + max_fill]`, so a very different height just
-outside the fitting square cannot violate the same limits. A qualifying
-planned-water part is reported as an anchor platform.
+Each selected anchor first freezes one `reference_y`. If its centre is
+ordinary land, this is the incoming natural/landmark height at the centre. If
+the centre is planned water for a non-capital anchor, it is that local
+`water_surface + 1`. A capital centre in water is a source violation; current
+R2 centres are dry.
+
+For every ordinary-land column in the full-weight fitting square with incoming
+height `h`, the fitted height is exactly
+`clamp(reference_y, h - max_cut, h + max_fill)`. Thus terrain already within
+the authored earthwork window becomes level with the anchor, while larger
+natural variation moves only by the permitted amount and remains as broad
+terracing. In the outside collar, compute the same per-column fitted value,
+blend from it back to `h` with smootherstep, and clamp the result again to
+`[h - max_cut, h + max_fill]`. The construction is total, cannot have an empty
+global interval, and never rejects or reselects an R2 anchor.
+
+For a planned-water column inside a non-capital selected anchor's full-weight
+fitting square, the `anchor_platform` surface is
+`max(reference_y, local water_surface + 1)`. The platform does not extend into
+the outside collar. Capital civic-water columns are excluded from both the
+grade and platform and remain water.
 
 The six starts and six capitals use their existing fixed anchor/profile rows.
-Their routes share the same target at the common hub. Capital grading applies
-only to its land columns, so the currently authored civic river/lake/cenote
-water remains water.
+Their routes share the same `reference_y` at the common hub. Capital grading
+applies only to its land columns, so the currently authored civic river/lake/
+cenote water remains water.
 
 Each guaranteed coastal core has one seed-specific target equal to its natural
 height at the capsule centre and one dedicated 64-node-cell gentle lattice.
@@ -418,8 +426,9 @@ so joins are the only possible duplicates; any other duplicate is a
 violation. Array order is the canonical cumulative L-infinity node run.
 
 Each route station has one integer target: the matching start/capital target
-where applicable, otherwise the natural height at the frozen zone hub, raised
-to `water_surface + 1` if needed. The raster receives ordered grade pins at
+where applicable, otherwise the incoming natural height at an ordinary-land
+frozen zone hub or exactly `water_surface + 1` at a planned-water hub. The
+raster receives ordered grade pins at
 both endpoints and at every named operation footprint. Scanning the raster's
 horizontal classification also creates a derived-causeway span for every
 maximal run of locally owned planned water not covered by a named interface;
@@ -599,6 +608,16 @@ The first focused amendment review returned **REJECTED** with 0 Critical,
 possible off-axis surface overlap. The correction subtracts every named
 non-tunnel operation footprint from the tunnel's complete visible surface.
 Its focused rereview returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium /
-0 Low. Total contract fix-round count is four. This acceptance covers the
-contract only; the implementation, artifact and production integration still
-require their own gates and independent review.
+0 Low. Total contract fix-round count was four at that acceptance.
+
+The first real seed-zero construction then proved that a single flat 512 by
+512 capital plane was impossible without violating the frozen cut/fill limits:
+Dur Brannoc ranged from y 100 to 177, making the old global interval 153 to
+116. The same construction exposed a natural-height/causeway conflict at the
+planned-water Gravesalt hub. The fifth correction round replaced the global
+plane with the per-column centre-referenced clamp and made planned-water hub
+stations exactly `water_surface + 1`. Its focused review returned
+**ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Total contract fix-round
+count is five. This acceptance covers the contract only; the implementation,
+artifact and production integration still require their own gates and
+independent review.
