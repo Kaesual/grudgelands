@@ -1,5 +1,12 @@
 # WP40 verification harness
 
+Status: **historical exact-T2 harness unless a section explicitly names a
+current simple-map R-stage.** The simple-map rebase on 2026-08-25 retired the
+partition/topology schema, S1 lock, winner seeds, PCC/F1/F2 final gate and
+full-W census. Commands and measurements below remain readable provenance;
+they are not scheduled by R1-R8. T0/T1 artifacts and small deterministic/hash
+utilities may be salvaged only through the reviewed simple-map source.
+
 This directory contains the reusable WP40 acceptance harness. T0 freezes the
 post-WP43 WP18/WP36 comparison checkout at
 `7b6c8763224006630f967659047ffae88de6685d`; no later run may silently move
@@ -97,7 +104,7 @@ canonicalizer. The later geometry compiler is intentionally absent at this
 checkpoint, so no path publishes data, registers a callback or makes a T2-
 readiness claim.
 
-For exhaustive development iteration on the expensive T2 source oracle, use:
+The former exact-T2 development loop used:
 
 ```sh
 tools/wp40/run_t2_source_fast.sh
@@ -111,13 +118,12 @@ current figure is the 90.81 s in the acceleration table below. Plan with the
 later number. Every change still gets
 the plain-5.1 `luac51`/`SETGLOBAL`/five-sweep gates. Intermediate milestones
 use targeted representative PUC KATs with byte-identical canonical evidence.
-Exhaustive populations always run under LuaJIT. At T2-final and T9-final the
-standalone-PUC gate is exactly the pinned PCC below plus retained F1/F2; a real
-fallback-engine runtime test remains a separate gate.
+Exhaustive populations ran under LuaJIT. The PCC/F1/F2 wording below records
+the retired exact-T2 final gate and does not apply to simple-map R1-R8.
 
-## T2 pinned PUC conformance core (PCC)
+## Historical T2 pinned PUC conformance core (PCC)
 
-The bounded final standalone-PUC carrier is:
+The retired exact-T2 standalone-PUC carrier was:
 
 ```sh
 tools/wp40/run_t2_puc_core.sh --all
@@ -144,8 +150,8 @@ comparison; missing, ambiguous or malformed evidence fails. Use a single mode
 set `WP40_S11_ARTIFACTS_DIR` when running from a worktree that does not carry
 the canonical checkout's ignored results directory.
 
-The PCC does not launch final rounds or populations. T2-final and T9-final
-also retain:
+The PCC did not launch final rounds or populations. The retired T2/T9 final
+definition also named:
 
 ```sh
 WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical  # F1
@@ -158,35 +164,23 @@ runs only under LuaJIT; `run_t2_census.sh --merge` still performs its
 LuaJIT/PUC canonical-artifact comparison. Fixture/evidence changes require a
 later owning memo in `wp40-t2-contracts.md`, never an ad-hoc re-pin.
 
-## T2 exact/raster/partition slice
+## Historical T2 exact/raster/partition slice
 
 The engine-free analytic-slice runner defaults to **LuaJIT**, for iteration:
 
 ```sh
 tools/wp40/run_t2_partition.sh                    # LuaJIT, cache on
-WP40_FINAL=1 tools/wp40/run_t2_partition.sh       # PUC 5.1 acceptance gate
+WP40_FINAL=1 tools/wp40/run_t2_partition.sh       # historical PUC reproduction
 ```
 
-`WP40_FINAL=1` is the plain-5.1 compatibility gate that `AGENTS.md` makes a
-hard requirement. It forces the vendored PUC interpreter, bypasses the payload
-cache, runs every phase and includes the historical block, and it rejects
-`WP40_T2_ONLY` so it cannot be run partially. A bare invocation does **not**
-satisfy that requirement. Set `WP40_LUA_BIN` to pin a different interpreter,
-and `--no-cache` / `--historical` to select those individually; the runner
-prints the resolved interpreter path. Do not automatically duplicate the complete
-expensive run under PUC at each milestone: retain immutable LuaJIT
-artifacts/logs/hashes and compare targeted representative PUC KATs
-byte-for-byte. F1 is retained as one named component of the bounded final
-gate. This focused runner owns
-exact/rational and raster regression fixtures plus the private partition-family
-construction exercised by this slice. It fails closed on any incomplete or
-invalid seeded geometry and makes no full-T2 claim. The measured extreme seeds,
-complete 32-seed report, publication, readiness, and Flatpak runtime gates
-remain later work. The private analytic compiler exists only in this focused
-runner and is not yet integrated into the fixed compiler entrypoint, which
-intentionally continues to fail closed with `compiled_geometry_unavailable`.
+`WP40_FINAL=1` was the retired exact-schema plain-5.1 compatibility mode. It
+forced the vendored PUC interpreter, bypassed the payload cache, ran every
+phase and included the historical block. F1 was one named component of that
+former bounded gate. The focused runner and its exact/raster fixtures remain
+available solely to reproduce historical evidence; neither a bare nor final
+invocation satisfies a simple-map milestone or readiness gate.
 
-## T2 extreme-selector measurement slice
+## Historical T2 extreme-selector measurement slice
 
 The private E0 selector-foundation runner defaults to LuaJIT
 (`WP40_LUA_BIN` overrides; merge mode below always uses vendored PUC —
@@ -626,7 +620,7 @@ their own diagnostic; and pre-v3 evidence cannot satisfy the v3 reader in either
 direction.
 
 
-### Locked surfaces
+### Historical S1 locked surfaces — lock dissolved 2026-08-25
 
 These six files are covered by the stage-S1 authority digest that pins the
 measured 4,096-candidate pool:
@@ -638,9 +632,10 @@ measured 4,096-candidate pool:
     mods/MAPGEN/grug_mapgen/wp40/geometry/exact.lua
     mods/MAPGEN/grug_mapgen/wp40/geometry/raster.lua
 
-Editing any of them invalidates the pool and its four winner seeds, costing a
-fresh ~91-minute measurement. No work package may touch them as a side effect;
-needing a new arithmetic primitive is an escalation, not a local decision.
+Editing any of them invalidated the historical pool and its four winner seeds.
+The simple-map rebase dissolved this lock: current work may replace these
+files deliberately under R1-R7 review, but old pool/winner evidence must not be
+relabeled as evidence for the new schema.
 
 `source/catalog.lua` and `geometry/partition.lua` may change freely — the pool
 binds the Source by canonical projection rather than by file bytes, verified by

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# HISTORICAL EXACT-T2 RUNNER. The 2026-08-25 simple-map rebase retired F1,
+# WP40_FINAL and this partition schema as live gates. Keep for evidence
+# reproduction only; R1-R8 do not schedule it.
+
 # A missing rg would make every check below pass vacuously: exit status 127 in
 # an `if` condition reads exactly like "no match found". Fail loudly instead.
 command -v rg >/dev/null 2>&1 || {
@@ -8,9 +12,9 @@ command -v rg >/dev/null 2>&1 || {
 	exit 1
 }
 
-# F1 is the retained partition component of the bounded T2/T9-final
-# standalone-PUC gate. It uses the fallback interpreter, bypasses the payload
-# cache, and includes the retained historical-provenance check:
+# F1 was the retained partition component of the former bounded T2/T9-final
+# standalone-PUC gate. It used the fallback interpreter, bypassed the payload
+# cache, and included the retained historical-provenance check:
 #   WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical
 
 no_cache="${WP40_NO_CACHE:-0}"
@@ -36,7 +40,7 @@ if [[ "$final" != 0 && "$final" != 1 ]]; then
 fi
 if [[ "$final" == 1 ]]; then
 	if [[ -n "${WP40_T2_ONLY:-}" ]]; then
-		echo "WP40_FINAL rejects WP40_T2_ONLY; the final gate runs every phase" >&2
+		echo "WP40_FINAL rejects WP40_T2_ONLY; historical full-gate mode runs every phase" >&2
 		exit 2
 	fi
 	no_cache=1

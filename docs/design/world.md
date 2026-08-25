@@ -55,18 +55,18 @@ different shapes and zone identities. Full contract: `world_zones.md` §1.
 
 Each mainland has a memorable three-lobed progression silhouette. Three outer
 cultural peninsulas hold the start/home spines and are separated by two long
-bays; they join at a continuous west/east capital-and-heartland belt, then
-broaden into a closed three-sector frontier at the Holy Grounds. Elandor and
-Kragmar share that topology but use independent base polylines and noise, never
-mirrored coast geometry. The bays stop before the capital belt and may not
-create or remove zone neighbors.
+bays; they join at a continuous capital-and-heartland belt, then broaden into
+a three-sector frontier at the Holy Grounds. Elandor and Kragmar share that
+high-level composition but use separately authored simple land primitives
+under the single shared layout-bound warp, never mirrored coast geometry. The
+bays stop before the capital belt and may not create or remove zone neighbors.
 
-The capital/heartland belt uses base z = -1900..-1100 in Elandor and
-+1100..+1900 in Kragmar; the frontier then occupies the land through z = -250
-or +250 respectively. Exact seven-cell x intervals and the separator control
-vertices are binding in `world_zones.md` §7. They leave every fixed capital's
-704×704 terrain blend inside its own zone and quickly rebalance the three
-frontier sectors before their paired Holy-Grounds contacts.
+The fixed hubs, simple macro-land primitives and integer power ownership in
+`world_zones.md` §7 are the sole horizontal authority. Each 512×512 capital
+envelope is guaranteed to its capital zone; its wider 704×704 terrain blend
+may cross a zone boundary and is not an ownership constraint. The authored
+route graph, not separator vertices or a geometric dual, defines gameplay
+neighbors toward the Holy Grounds.
 
 ### Difficulty layout: outer starts to high-level front
 
@@ -161,13 +161,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
   change when players fill or drain nodes. Every authored bay, lake, river,
-  marsh channel, cenote or other water mask inside a
-  `planned_mainland_footprint` remains part of its named zone and can never be
-  deep ocean. The editable 80-node `coastal_shelf` starts only outside the
-  final analytic footprint perimeter and inherits the adjacent perimeter
-  zone's faction/PvP terrain rights; `deep_ocean` beyond that band is immutable
-  at every y. Dragon-channel masks override the shelf and make their complete
-  columns immutable from world bottom to top. Every exterior-ocean class
+  marsh channel, cenote or other planned-water mask remains part of its named
+  zone and can never be deep ocean. The editable nominal `coastal_shelf` is
+  exactly `expanded_land_at(80) and not land_at` and inherits the nearest
+  eligible mainland hub's faction/PvP terrain rights; `deep_ocean` beyond that
+  band is immutable at every y. Dragon-channel masks override the shelf and
+  make their complete columns immutable from world bottom to top. Every exterior-ocean class
   remains non-flyable, while planned zone water inherits its zone's flight
   rule. Housing uses dry mainland claims and has no island exception.
 - **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
@@ -262,16 +261,17 @@ Water type is an authored x/z classification, not a test of the node currently
 occupying a position (`world_zones.md` §7):
 
 - **Planned zone water:** bays, lakes, rivers, marsh channels, cenotes and
-  other authored water inside a continent's `planned_mainland_footprint` remain
+  other authored water inside a named zone remain
   part of their named zone. All use the same `default:water_source` as every
   other generated surface water body; the owning logical biome or an explicit
   landmark changes only bed, shore, depth and decorations. They inherit the
   zone's terrain, PvP and flight rules and can never become deep ocean. Their
   authored masks remain claim-ineligible even if players later fill or drain
   them.
-- **Coastal shelf:** the first 80 nodes outside the final analytic perimeter of
-  a planned mainland or island footprint. This is editable under the adjacent
-  perimeter zone's terrain policy and reserved for later coral, kelp, fish,
+- **Coastal shelf:** the nominal exterior band where
+  `expanded_land_at(80) and not land_at` holds around authored positive
+  mainland or island shapes. This is editable under the nearest eligible
+  mainland hub's zone terrain policy and reserved for later coral, kelp, fish,
   coastal materials and shore wildlife. It is never housing-claim ground.
   As exterior water it has no authored surface or guard level. Ordinary
   `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
@@ -712,9 +712,10 @@ administration system do not exist in the target design.
   numbers and one canonical live location invalidate stale ItemStacks without
   cloning or reviving protection; spatial indexes are rebuilt from mod storage.
 - Each faction has an administrator-configurable live-Stone limit. Its safe
-  default is selected below the measured capacity of the real exclusion masks
-  over 32 representative seeds, never inferred from gross zone area or an
-  arbitrary population quota.
+  default is selected below the once-per-layout canonical packing capacity of
+  the real fixed exclusion masks, never inferred from gross zone area or an
+  arbitrary population quota. Varying-seed height/content conformance remains
+  a separate audit.
 - Issuance is first come, first served, with no wait list or reservation. The
   integer `grug_housing_inactivity_days` setting ranges 0..3650 and defaults to
   0 (disabled). With decay enabled and a full legal pool, an issuance request

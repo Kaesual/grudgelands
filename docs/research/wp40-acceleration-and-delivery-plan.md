@@ -1,6 +1,10 @@
 # WP40 acceleration and delivery plan
 
-Status: **planning record, revised after the accepted 2026-08-24 landmark-
+Status: **SUPERSEDED 2026-08-25 by the simple-map R0-R8 delivery sequence.
+Everything below is historical planning for the retired exact T2 path and
+supplies no live phase, ordering, authority layer or PUC obligation.**
+
+Historical status before supersession: **planning record, revised after the accepted 2026-08-24 landmark-
 owner-clip, Copperfell-deferral and CB0-1/2/3 rulings. The execution graph
 mirrors the authoritative
 [T2 plan](wp40-t2-plan.md) Section 0 and the durable
@@ -10,19 +14,20 @@ incorporated and Sol's closure review found no technical blocker. That is
 historical provenance, not a model-routing rule. Not an implementation
 contract and not authoritative game design.**
 
-This document consolidates the current review and planning discussion into one
-place. Its purpose is to make WP40 faster to finish without weakening the
+This document consolidated the then-current review and planning discussion into
+one place. Its purpose was to make the former exact-T2 path faster to finish
+without weakening the
 correctness properties that protect a fresh world from seams, overlaps,
 order-dependent generation, or silent fallback behavior.
 
-The existing authorities remain layered as follows:
+At the time, the authorities were layered as follows:
 
 - [world_zones.md](../design/world_zones.md) owns decided player-visible world
   design;
 - [wp40-engineering-brief.md](wp40-engineering-brief.md) owns the technical
   contract and T0--T9 decomposition;
-- [wp40-t2-plan.md](wp40-t2-plan.md) owns current T2 state and ordering;
-- [wp40-t2-contracts.md](wp40-t2-contracts.md) owns the detailed T2 package
+- [wp40-t2-plan.md](wp40-t2-plan.md) owned T2 state and ordering;
+- [wp40-t2-contracts.md](wp40-t2-contracts.md) owned the detailed T2 package
   contracts; and
 - [luanti-lua.md](luanti-lua.md) owns the Lua 5.1/LuaJIT compatibility and
   test rules; while
@@ -30,8 +35,8 @@ The existing authorities remain layered as follows:
   project-wide model routing and supersedes historical WP40 model assignments
   for every newly started context.
 
-The accepted PUC-1 wording is still folded only by the atomic Phase-0B package
-described in Section 15. This planning record does not silently or partially
+The accepted PUC-1 wording was folded by the atomic Phase-0B package described
+in Section 15. This historical planning record does not silently or partially
 override those authorities.
 
 ## 1. Agreed operating direction

@@ -1,6 +1,10 @@
 # WP40 PUC final-gate inventory
 
-Status: **PUC-1 accepted and implemented for review on 2026-08-23.** Sections
+Status: **SUPERSEDED 2026-08-25 for live WP40 scheduling. Immutable historical
+measurement/evidence for the retired exact T2 schema; its PCC/F1/F2 definition
+is not a simple-map R0-R8 gate.**
+
+Historical status before supersession: **PUC-1 accepted and implemented for review on 2026-08-23.** Sections
 2--15 preserve the pre-ruling inventory/recommendation basis. Section 16 is
 the later measured closeout and takes precedence wherever those historical
 sections say projected, incomplete, unresolved or not in force.
@@ -14,11 +18,11 @@ opened at that commit. Numbers carry an explicit **MEASURED** or
 
 ### 1.1 What this document is
 
-Originally an outcome-neutral inventory of every WP40 obligation that executes,
-or is read as executing, plain PUC Lua 5.1 at T2-final or T9-final: what each one
+Originally an outcome-neutral inventory of every WP40 obligation that executed,
+or was read as executing, plain PUC Lua 5.1 at T2-final or T9-final: what each one
 costs, what semantic risk each one covers, and what a bounded replacement
-would have to contain to cover the same ground. It exists to put a user
-ruling on a measured basis. It is the deliverable that
+would have to contain to cover the same ground. It existed to put a user
+ruling on a measured basis. It was the deliverable that
 [wp40-acceleration-and-delivery-plan.md](wp40-acceleration-and-delivery-plan.md):700-711
 asks for.
 

@@ -118,16 +118,17 @@ the goal-level view.
   and the six-tier alloy chain against WP43's shipped canonical registry.
 - [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
   the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
-  contract. **In progress since 2026-08-13.** The six-part engineering brief
-  required by
-  [docs/research/mapgen-control.md](docs/research/mapgen-control.md) is
-  written and reviewed; it decomposes the work into T0–T9, of which T0 and T1
-  are complete and T2 is in flight. Current state and execution order:
-  [docs/research/wp40-t2-plan.md](docs/research/wp40-t2-plan.md). Still to
-  record: the fixed 32-seed geometry/topology/route/housing/supply audit,
-  capacity simulation and reproducible WP18/WP36-relative performance
-  measurements. These are implementation gates, not open game-design
-  questions.
+  contract. **In progress since 2026-08-13; simple-map rebase accepted
+  2026-08-25; R0 authority fold independently accepted 2026-08-25.** R0
+  replaced the unfinished exact-T2 partition/topology path; R1 next delivers
+  one fixed pure 2D model and canonical SVG for visual
+  approval before height/mapgen integration. Current technical contract:
+  [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
+  R0-R8 sequence:
+  [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
+  Fixed-layout route/housing validation and once-per-layout capacity
+  simulation, 32-seed content/supply audits and reproducible WP18-relative
+  performance remain implementation gates.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.

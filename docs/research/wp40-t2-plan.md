@@ -1,16 +1,22 @@
 # WP40 T2 execution plan and state
 
-Status: **living plan. Supersedes any ordering stated elsewhere.**
+Status: **SUPERSEDED 2026-08-25. Historical execution record for the retired
+exact T2 path; it supplies no current ordering, lock or next task.**
 
-The other WP40 documents each own one thing and none owns this:
-[wp40-engineering-brief.md](wp40-engineering-brief.md) is the contract,
-[wp40-source-authority.md](wp40-source-authority.md) the compiler algorithm,
+The current WP40 sequence is R0-R8 in
+[wp40-simple-map-rebase-plan.md](wp40-simple-map-rebase-plan.md). The old T2
+agent will not resume. No branch, worktree, winner seed, S1 lock or package
+below merges automatically into the simple-map implementation.
+
+At the time, the other WP40 documents each owned one thing:
+the former [wp40-engineering-brief.md](wp40-engineering-brief.md) was the
+contract, [wp40-source-authority.md](wp40-source-authority.md) the compiler algorithm,
 [wp40-reality-corrections.md](wp40-reality-corrections.md) the evidence
 history, [wp40-t2-degeneracy-completeness.md](wp40-t2-degeneracy-completeness.md)
 the bound on what remains open, and
 [wp40-t2-handover.md](wp40-t2-handover.md) a superseded snapshot, useful for
-its reasoning and not for its facts. This file holds
-what is being done next, in what order, and why — the part that was living only
+its reasoning and not for its facts. This file held what was then being done
+next, in what order, and why — the part that was living only
 in a chat session until 2026-08-16.
 
 One rule about this file itself, because the engineering brief grew from 134 KB

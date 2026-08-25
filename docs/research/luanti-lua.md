@@ -9,9 +9,10 @@ commit `df04879`) unless a URL is given.
 "Interpreter and test strategy" at the end of this file before writing the
 plan. It fixes which interpreter owns which layer (LuaJIT for the
 high-volume loop and exhaustive populations, PUC 5.1 for the static gates and
-targeted KATs). WP40's final standalone-PUC gate is the bounded PCC plus
-retained F1/F2 defined in `wp40-t2-contracts.md` Section 14.7; a plan that
-widens it ad hoc gets both the evidence contract and the cost wrong.
+targeted KATs). WP40's current simple-map R1-R8 sequence uses targeted PUC
+KATs with canonical LuaJIT parity; its fixed-layout and 32-seed populations
+run under LuaJIT. The former PCC/F1/F2 rule belongs only to the retired exact
+T2 evidence schema.
 
 ## What the version pin means (read this first)
 
@@ -334,11 +335,11 @@ while code and fixtures are still changing. That speed does **not** make
 LuaJIT a compatibility gate: it remains a superset of the language accepted by
 the fallback build.
 
-The operating principle, decided 2026-08-16 and narrowed by PUC-1 on
-2026-08-23: **plain PUC 5.1 runs only where it is the language contract — the
-static `luac51`/grep gates, defined conformance and KAT gates, and WP40's
-bounded final PCC/F1/F2 — or where the runtime is trivially short. LuaJIT owns
-everything else, including exhaustive populations.** Consequently every
+The operating principle, decided 2026-08-16 and updated for WP40's simple-map
+rebase on 2026-08-25: **plain PUC 5.1 runs where it is the language contract —
+the static `luac51`/grep gates, targeted conformance/KAT gates, or trivially
+short runtime. LuaJIT owns everything else, including exhaustive
+populations.** Consequently every
 new harness with non-trivial runtime must support interpreter selection (the
 `WP40_LUA_BIN` pattern) and must default to LuaJIT; an expensive runner
 hardwired to PUC is a defect, not a conservative choice.
@@ -358,26 +359,23 @@ Use these layers together, in this order:
    byte-for-byte with the LuaJIT results. Choose cases that exercise the
    changed arithmetic, control flow and boundary conditions; do not replace
    this with a second exhaustive serial run.
-4. **WP40 final standalone-PUC gate:** at T2-final and T9-final run exactly
-   the checksum-pinned PCC (`tools/wp40/run_t2_puc_core.sh`) plus retained F1
-   (`WP40_FINAL=1 tools/wp40/run_t2_partition.sh --no-cache --historical`) and
-   F2 (`tools/wp40/run_t2_extreme_conformance.sh`). Do not add a population or
-   ad-hoc witness. The full-`W` population is exhaustive LuaJIT work; its merge
-   remains a fail-closed LuaJIT/PUC canonical-artifact comparison.
+4. **WP40 simple-map milestones:** R1-R8 use targeted PUC KATs selected for the
+   changed arithmetic/control flow and compare their canonical artifacts with
+   LuaJIT. Fixed-layout and 32-seed populations are LuaJIT work. The old
+   exact-T2 PCC/F1/F2/full-`W` rounds remain historical evidence and do not run
+   on the simple schema.
 5. **Review:** a reviewer does not automatically duplicate an identical long
    PUC run. The reviewer checks the immutable input/output artifacts, logs,
    interpreter evidence and hashes, and runs focused independent PUC KATs.
-   For WP40 outside T2-final and T9-final, missing evidence or a finding blocks
-   the milestone and must be closed with targeted PUC KATs and newly bound
-   immutable evidence; it never authorizes widening the final PCC or running
-   an exhaustive population under PUC.
+   For WP40, missing evidence or a finding blocks the milestone and must be
+   closed with targeted PUC KATs and newly bound immutable evidence; it never
+   authorizes an exhaustive population under PUC.
 6. **Engine fallback:** a real fallback-engine runtime test remains a separate
    release/runtime gate. Neither standalone interpreter has Luanti's
    `builtin/`, sandbox or `core.*`, so offline equality cannot replace it.
 
 The vendored `tools/bin/lua51` and `tools/bin/luac51` therefore remain the
 plain-5.1 authority, but they are used deliberately: the parser and static
-checks on every change, representative executable conformance at milestones,
-and the bounded PCC/F1/F2 execution at WP40's defined final gates. LuaJIT owns
-the high-volume feedback loop and exhaustive populations, not the language
-contract.
+checks on every change and representative executable conformance at
+milestones. LuaJIT owns the high-volume feedback loop and exhaustive
+populations, not the language contract.

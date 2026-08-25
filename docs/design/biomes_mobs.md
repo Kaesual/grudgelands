@@ -411,8 +411,9 @@ Notes:
 - The single shared `grug_ocean` above replaces the per-biome
   sand-bottom `_ocean` siblings of the WP2 mapgen (decided with WP18 —
   one ocean is simpler and the only way to cover the open sea).
-- **Target coastal habitat**: the exact 80-node exterior shelf around each
-  planned mainland or dragon-island footprint carries coral, kelp, fish and
+- **Target coastal habitat**: the nominal band where
+  `expanded_land_at(80) and not land_at` holds around authored positive
+  mainland or dragon-island shapes carries coral, kelp, fish and
   harmless-to-low-level shore wildlife, distinct from immutable deep ocean.
   Planned bays/lakes/rivers remain zone water and receive their logical-biome
   dressing instead. Shore Crab and Reef Lurker remain deferred for want of a

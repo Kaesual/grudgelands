@@ -1,7 +1,12 @@
 # WP40 T2 package contracts
 
-Status: **contract file. Created 2026-08-18 by the plan's own relocation
-rule.**
+Status: **SUPERSEDED 2026-08-25. Immutable historical package/evidence record
+for the retired exact T2 compiler; no section is a live WP40 contract or gate.**
+
+Current authority is [wp40-engineering-brief.md](wp40-engineering-brief.md)
+and [wp40-simple-map-rebase-plan.md](wp40-simple-map-rebase-plan.md). In
+particular, the old S1 locked surface, winner selection, PCC/F1/F2 rounds and
+T2-final/T9-final definitions do not apply to the simple schema.
 
 **Model-routing note (2026-08-22):** model names and division-of-labour
 statements in this file record how the named historical T2 packages were run.
@@ -11,8 +16,8 @@ after this policy was adopted on 2026-08-22 follow the sole project-wide
 it. Contexts already running when that policy was adopted finish under their
 accepted briefs.
 
-[wp40-t2-plan.md](wp40-t2-plan.md) holds ordering and decisions; this file
-holds package specifications — the census artifact contract (section 6),
+Historically, [wp40-t2-plan.md](wp40-t2-plan.md) held ordering and decisions;
+this file held package specifications — the census artifact contract (section 6),
 the collected-correction implementation contract (section 8), the
 Scan-3b/4 census completion contract (section 9), and the later handoff
 freezes through section 14. The numbering

@@ -1,11 +1,15 @@
 # WP40 T5-0 engine-seam probe — package contract
 
 Status: **implemented and closed as a T5-0 MEASUREMENT package, 2026-08-22.**
+After the 2026-08-25 simple-map rebase, only the captured engine observations
+and immutable evidence remain reusable. Every old authority ranking, T2 lock,
+T3/T4/T5 ordering and follow-on authorization below is historical and imposes
+no current R0-R8 restriction. This file authorizes no new package.
 The specification below was implemented, four headless engine captures were
 taken, gated and reviewed, and the evidence is committed under
-`tools/wp40/evidence/t5-probe-9ac056ff…/`. **T5-0 remains a tools-only
-observation package: it is not production T5, it authorizes no production work,
-and full T5 still sits behind T3 and T4**
+`tools/wp40/evidence/t5-probe-9ac056ff…/`. At closeout time, **T5-0 was a
+tools-only observation package: it was not production T5, authorized no
+production work, and full T5 then sat behind T3 and T4**
 (`wp40-acceleration-and-delivery-plan.md:479-481`). What was measured, and what
 those measurements do and do not license, is **section 24**.
 

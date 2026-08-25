@@ -1,6 +1,7 @@
 # Named World Zones & PvP Geography
 
-Decided 2026-08-10; complete named-zone pass 2026-08-11. This document supersedes the old radial
+Decided 2026-08-10; complete named-zone pass 2026-08-11; fixed simple-map
+rebase 2026-08-25. This document supersedes the old radial
 "safe core + war coast" surface layout in `world.md` and
 `biomes_mobs.md`. The shipped WP18/WP36 map still uses that old layout;
 WP40 replaces it with the complete catalog and contracts below.
@@ -20,21 +21,21 @@ WP40 replaces it with the complete catalog and contracts below.
   island zones beyond the western and eastern ends of that band. Neither has a
   land-neighbor edge. Their connections belong to a distinct boat/travel graph
   across immutable ocean channels, not to the land-adjacency graph.
-- The macro-map is reproducible: every named zone has a stable approximate
-  position, shape, level range, biome palette and fixed neighbors. Zone and
-  coastline boundaries may vary only inside a bounded corridor; world seed
-  noise must never change the adjacency graph. A landmark's authored mask and
-  collar remain stable identities, but their effective terrain influence is
-  clipped per column to the landmark's final owning zone and may never modify
-  another zone.
+- The macro-map is fixed by one versioned layout rather than regenerated from
+  each world seed. Every named zone has a stable hub, approximate extent,
+  level range and biome palette. World-seed variation begins with secondary
+  anchor selection, terrain, biome detail and content; it never moves land,
+  zone ownership, main routes or the water classes shown by the canonical 2D
+  map.
 - The two faction sides are **progression and content-budget mirrors, not
   geometric mirrors**. They receive equivalent access to level bands,
   materials, PvP fronts, travel services and POI budgets, while their shapes,
   zone names, biome combinations and landmarks may differ.
-- Each zone definition owns: display name and id, `territory_rule`, exactly one
-  `race_region`, level range, PvP rule, fixed neighbors, authored boundary,
-  allowed biome list, signature terrain/property, mob and gathering palette,
-  and reserved POI slots. `race_region` means cultural/geological provenance;
+- Each zone definition owns: display name and id, stable hub, macro region,
+  optional ownership bias, `territory_rule`, exactly one `race_region`, level
+  range, surface difficulty target, PvP rule, route neighbors, allowed biome
+  list, signature terrain/property, mob and gathering palette, and reserved
+  POI slots. `race_region` means cultural/geological provenance;
   it selects architecture, regional loot, one G1 gem, one G2 gem, one cultural
   material and one signature wood, but does not
   make a contested zone safe or politically controlled. `territory_rule`
@@ -67,9 +68,12 @@ WP40 replaces it with the complete catalog and contracts below.
   level-31–40 faction-front approaches and The Broken Causeway are the first
   contested destinations; their authored contacts introduce PvP without
   making the whole shared front a mid-level band.
-- Surface mob level comes from the named zone and its authored within-zone
-  progression, with continuous blends at legal neighboring boundaries. The
-  old radial distance from a faction seat is not part of the target model.
+- Surface mob level comes from one authored target per named zone. One fixed,
+  component-aware continuous difficulty field blends those targets across the
+  world; the published level range remains content metadata rather than a
+  second within-zone control field. The old radial distance from a faction
+  seat and exact gate/core progression fields are not part of the target
+  model.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
@@ -102,11 +106,9 @@ WP40 replaces it with the complete catalog and contracts below.
   - toward the contested front: high-level territory.
 - Capitals remain protected POIs and major waypoint/service hubs. They are
   destinations reached from the starting zones, not spawn bubbles.
-- Capital zones are the one non-leveling exception to a single bracket. Their
-  technical surface profile rises smoothly from level 20 at the outer/home
-  road gate through level 25 at the civic centre and lateral gates to level 30
-  at the front-facing gate. This keeps all four approaches continuous; no
-  ambient enemy uses the profile inside the protected city itself.
+- Capital zones use the same one-target difficulty rule as every other zone.
+  Their exact level-60 guard rule and absence of ambient hostiles remain
+  separate civic policy; no 20/25/30 gate/core progression profile exists.
 
 ## 4. PvP zones and voluntary flagging
 
@@ -183,512 +185,236 @@ WP40 replaces it with the complete catalog and contracts below.
   catalog supplies the item/node ids; zone code stores the six semantic gem
   species and never owns their registered itemstrings.
 
-## 7. World frame, scale and authored variation
+## 7. Fixed horizontal world model
+
+### 7.1 Frame, landmarks and stable hubs
 
 - World axes stay conventional: west/east is x, Kragmar lies north at positive
   z, Elandor lies south at negative z, and the shared front is centred on z = 0.
-- The Holy Grounds is the exact no-jitter outer rectangle
-  **x = −2500..+2500, z = −250..+250**. It is authored land rather than ocean,
-  although it may contain fixed inland lakes. Inside that x/z rectangle,
-  terrain is immutable from the surface through y = −700 inclusive; the
-  universal contested T5/T6 rule resumes at y = −701.
-- Its nominal internal west/east chain is split at x = −1500, 0 and +1500:
-  Gravesalt Escarpment is 1000 nodes wide, The Broken Causeway 1500, The
-  Shattered Line 1500 and The Skyglass Canopy 1000. Each shared internal edge
-  may displace by at most 64 nodes in the band interior, but tapers back to its
-  nominal fixed vertex where it meets z = −250 or +250. Both incident zones
-  use that one displaced edge.
-- The binding authored mainland frame is x = −2,600..+2,600 and
-  z = −3,000..+3,000. Mainland coastlines taper and vary inside that frame; the
-  frame is not a rectangular landmass or a hard world border. Open sea
-  continues beyond it. The two separately authored dragon-island envelopes
-  may sit beyond the mainland coast without extending the mainland frame.
-- Each continent owns an analytic `planned_mainland_footprint` inside that
-  frame. The footprint contains both generated dry land and all deliberately
-  authored bay, lake, river, marsh and civic-water masks. Its final outer
-  perimeter—not every internal water shoreline—is the boundary from which the
-  exterior 80-node coastal shelf is measured.
-- Each continent has a binding three-lobed outer silhouette. Three broad
-  cultural peninsulas carry the west, centre and east start/home spines; two
-  long authored bay-water masks enter from the outer coast between them and
-  prevent the three outer progressions from gaining undeclared **land** edges.
-  The bays end before the capital line. Capital zones and their level-21–30
-  heartlands form one continuous west/east land belt, and the land broadens
-  again into one continuous three-sector frontier before meeting the Holy
-  Grounds. Thus each mainland reads as **three outer prongs → capital belt →
-  closed war front** and remains one connected landmass.
-- The bays are planned parts of the mainland rather than exterior ocean. They
-  have no 80-node shelf transition and may never classify as `deep_ocean`,
-  regardless of authored width or depth. Their x/z masks continue the adjacent
-  named-zone ownership. One universal water node fills every side; the owning
-  logical biome controls only bed, shore and decoration dressing. An explicit
-  analytic seam resolves any two-shore split; a water-only seam does not add a
-  land edge to §9's adjacency graph. Bay
-  variation may not close a bay, split a peninsula, reach the capital belt, or
-  create a forbidden land neighbor. The masks create no additional guaranteed
-  coastal-housing cores. Elandor and Kragmar use independently authored base
-  coast/bay polylines and independent deterministic noise salts; one may not
-  be produced by reflecting the other's coordinates or noise.
-- The four bay base masks are defined by directed outer-mouth-to-inner-head
-  centreline samples. `half-width` is the perpendicular water radius:
+- The layout id is `wp40-simple-map-v1`. Land, zone hubs, macro ownership,
+  main routes, housing masks and water classes are identical for every world
+  seed using that layout.
+- The Holy Grounds is the exact, unwarped closed rectangle
+  **x = -2500..+2500, z = -250..+250**. It is land and may contain explicit
+  planned water. Its internal west/east ownership uses the four Holy hubs
+  below. Terrain is immutable from the surface through y = -700 inclusive;
+  the universal contested T5/T6 rule resumes at y = -701.
+- The authored mainland extent is x = -2600..+2600 and z = -3000..+3000.
+  This is a source/validation bound, not a rectangular coastline or a world
+  border. Open sea continues outside the generated area.
+- The Wyrmglass Crown and Stormscale Summit hubs are fixed at **(-3150, 0)**
+  and **(+3150, 0)**. Each coastline remains inside its independently authored
+  closed 600 by 700 envelope centred on that hub.
+- The 38 stable zone hubs are:
 
-  | Bay | Centreline samples `(x, z; half-width)` |
+  | Zone id | Hub (x, z) |
+  |---|---:|
+  | `elandor_hearthpine_vale` | (-1800, -2550) |
+  | `elandor_copperfell_foothills` | (-1800, -2050) |
+  | `elandor_dur_brannoc` | (-1800, -1500) |
+  | `elandor_frostbarrow_shelf` | (-2400, -1500) |
+  | `elandor_stormvault_heights` | (-1800, -700) |
+  | `elandor_dawnmere_fields` | (0, -2550) |
+  | `elandor_goldmead_vale` | (0, -2050) |
+  | `elandor_highcourt` | (0, -1500) |
+  | `elandor_whitebridge_shire` | (-900, -1500) |
+  | `elandor_ashenward_march` | (0, -700) |
+  | `elandor_silverleaf_glades` | (+1800, -2550) |
+  | `elandor_starbough_vale` | (+1800, -2050) |
+  | `elandor_lethariel` | (+1800, -1500) |
+  | `elandor_lorindor` | (+900, -1500) |
+  | `elandor_moonfall_wood` | (+2400, -1500) |
+  | `elandor_glassroot_wilds` | (+1800, -700) |
+  | `kragmar_stillgrave_hollow` | (-1800, +2550) |
+  | `kragmar_mournfen` | (-1800, +2050) |
+  | `kragmar_nhal_veyr` | (-1800, +1500) |
+  | `kragmar_ossuary_reach` | (-2400, +1500) |
+  | `kragmar_blackwind_rise` | (-1800, +700) |
+  | `kragmar_sunscar_flats` | (0, +2550) |
+  | `kragmar_redtusk_savanna` | (0, +2050) |
+  | `kragmar_gor_drazhak` | (0, +1500) |
+  | `kragmar_speargrass_reach` | (-900, +1500) |
+  | `kragmar_bannerbreak_mesa` | (0, +700) |
+  | `kragmar_kapok_cradle` | (+1800, +2550) |
+  | `kragmar_raincall_basin` | (+1800, +2050) |
+  | `kragmar_kezamba` | (+1800, +1500) |
+  | `kragmar_whispering_reedlands` | (+900, +1500) |
+  | `kragmar_totemwater_reach` | (+2400, +1500) |
+  | `kragmar_thunderroot_wilds` | (+1800, +700) |
+  | `front_wyrmglass_crown` | (-3150, 0) |
+  | `front_gravesalt_escarpment` | (-2000, 0) |
+  | `front_broken_causeway` | (-750, 0) |
+  | `front_shattered_line` | (+750, 0) |
+  | `front_skyglass_canopy` | (+2000, 0) |
+  | `front_stormscale_summit` | (+3150, 0) |
+
+- The six starting-settlement centres are (-1800, -2550), (0, -2550),
+  (+1800, -2550), (-1800, +2550), (0, +2550) and (+1800, +2550).
+  Each owns a centred **600 by 500 dry start core** wholly inside its starting
+  zone, with its 256 by 256 settlement blend and primary route exit intact.
+- The six capital centres are (-1800, -1500), (0, -1500), (+1800, -1500),
+  (-1800, +1500), (0, +1500) and (+1800, +1500). Each exact **512 by 512
+  build envelope** belongs wholly to its capital zone. The surrounding
+  704 by 704 visual terrain blend may cross a zone boundary and does not
+  enlarge political ownership.
+- Each starting zone has only its corresponding home zone as a mandatory route
+  neighbor. Each cultural spine then reaches its capital and faction front.
+  The macro silhouette remains legible as three outer prongs, one connected
+  capital/heartland belt and one connected frontier per faction.
+
+### 7.2 Macro land and authored variation
+
+- Land is a small authored union/difference of axis-aligned capsules, rounded
+  rectangles and ellipses. It contains three broad cultural lobes, a capital
+  connection and a frontier connection on each independently authored
+  mainland, the exact Holy Grounds rectangle, and one island shape per dragon
+  endpoint.
+- Elandor and Kragmar are not coordinate reflections and may not share a
+  reflected source record. Their silhouettes, bay placement and visible
+  landmark composition remain culturally distinct while satisfying equivalent
+  progression, resource and access budgets.
+- Mainland and island shape queries use one layout-bound low-frequency
+  coordinate warp with 1024-node cells and at most 32 nodes of displacement
+  per axis. The same warp applies to zone hubs before ownership scoring. Source
+  validation proves safe integer bounds and a displacement Lipschitz constant
+  below one, so the transform cannot fold space. The Holy Grounds rectangle
+  and fixed ownership cores are unwarped.
+- Local coastline, biome and terrain beauty comes primarily from the later
+  height/detail fields. There is no seed-selected polygon partition, boundary
+  raster, topology census, repair pass or alternate winner layout.
+- The final horizontal products are exactly one connected mainland and two
+  connected islands. Every ordinary zone is nonempty and connected. No route
+  corridor, start core, capital envelope, housing core or required anchor is
+  rescued by growing land or moving its endpoint.
+
+### 7.3 Zone ownership and difficulty
+
+- Zone ownership is an integer power diagram restricted to five macro regions:
+  the 16 Elandor-mainland zones, 16 Kragmar-mainland zones, four Holy Grounds
+  zones, and one single-zone region for each island.
+- For point `p` and eligible zone `z`, ownership minimizes
+  `squared_distance(w(p), w(z.hub)) - z.bias`. Warped coordinates are rounded
+  to integer nodes before scoring. Stable numeric zone id breaks an exact tie.
+  Coordinate deltas remain at most 8192 and `abs(bias) <= 2^24`, keeping
+  every score and comparison exactly representable in Lua's safe integer
+  range.
+- The complete 600 by 500 start cores and 512 by 512 capital envelopes are
+  explicit fixed-owner overrides. The underlying power owner must already
+  agree throughout each core; the override may not create a detached zone
+  island.
+- The 57-route graph in section 9 is the gameplay-neighbor graph. Geometric
+  contact is permitted only for the complete 61-pair allowlist consisting of
+  those 57 route pairs plus the four historical outer-flank pairs. An allowed
+  pair need not touch, and no geometric dual or stable boundary identity is
+  materialized.
+- Every zone has one authored surface difficulty target. Targets are sampled
+  on a fixed 32-node Q16 lattice and smoothed separately on the mainland and
+  on each island with a separable triangular 192-node radius. Queries use two
+  sequential one-axis integer interpolations. Every orthogonally adjacent
+  walkable surface pair and every ordinary route step differs by at most two
+  levels. Water travel, rather than an exempt land discontinuity, separates
+  the level-60 islands.
+- Published zone level ranges continue to govern content identity. Capital
+  guard floors, depth progression and fixed level entities remain independent
+  policy and are not encoded as extra difficulty-control points.
+
+### 7.4 Planned water, coast and islands
+
+- Four simple zone-owned bays keep the three outer prongs visibly separated:
+
+  | Bay | Authored centreline samples (x, z; half-width) |
   |---|---|
-  | Elandor west | (-980,-2940;360) → (-900,-2600;280) → (-1040,-2300;190) → (-980,-2000;80) |
-  | Elandor east | (+900,-2920;330) → (+1080,-2580;250) → (+920,-2280;180) → (+1020,-1990;80) |
-  | Kragmar west | (-1080,+2930;320) → (-1200,+2620;260) → (-940,+2300;190) → (-1060,+2010;80) |
-  | Kragmar east | (+820,+2960;370) → (+700,+2630;250) → (+1050,+2320;170) → (+900,+1980;80) |
+  | Elandor west | (-980,-2940;360) -> (-900,-2600;280) -> (-1040,-2300;190) -> (-980,-2000;80) |
+  | Elandor east | (+900,-2920;330) -> (+1080,-2580;250) -> (+920,-2280;180) -> (+1020,-1990;80) |
+  | Kragmar west | (-1080,+2930;320) -> (-1200,+2620;260) -> (-940,+2300;190) -> (-1060,+2010;80) |
+  | Kragmar east | (+820,+2960;370) -> (+700,+2630;250) -> (+1050,+2320;170) -> (+900,+1980;80) |
 
-  The analytic base mask is the union of round-joined, variable-width segment
-  capsules. For a directed sample segment `A -> B`, integer column `P`,
-  `v = B - A`, `L = v dot v`, `N = (P - A) dot v` and
-  `C = cross(v, P - A)`. At `N <= 0` or `N >= L`, strict squared distance to
-  the corresponding endpoint is compared with that endpoint's squared
-  half-width. At `0 < N < L`, let
-  `width_num = rA * (L - N) + rB * N`; the column is base water exactly when
-  `C^2 * L < width_num^2`. Equality is dry. This exact integer-rational
-  predicate, `strict_rational_variable_width_capsule_union_v1`, is the one
-  membership authority shared by mapgen, zone-water lookup and geometry
-  audits; a Q16-rounded projection, host-float closest point or approximate
-  distance may not decide membership. The implementation performs only
-  semantics-preserving conservative early rejects and checked products whose
-  exact values fit within `2^53 - 1`.
-- The base-water owner is selected from the same exact segment projections,
-  not from a second mask. Exact endpoint squared distances and interior
-  rational squared distances choose the nearest centreline segment; its cross
-  sign selects the declared side owner, and an exact distance or centreline
-  tie belongs to the lower numeric zone ID. The inner head has a round cap and
-  the outer mouth reaches the final planned-footprint perimeter, where the
-  one declared mouth aperture retains exact Base-Bay water on perimeter
-  equality and the strict exterior is discarded.
-  The last listed sample is the fixed positive-width **head shoulder** `C`,
-  with radius 80 and the original 160-node cross-section.
-- Raw planned Bay water adds exactly two zero-jitter analytic **closure
-  wings** per bay, eight in total. Each wing runs from `C` to one of the two
-  existing dry triple junctions that flank that bay head and tapers linearly
-  from radius 80 at `C` to radius zero at the junction `J`. Wing interiors are
-  water; exact wing-side equality and `J` itself are dry. Both wings are
-  required: together they close exactly the two otherwise-unowned head wedges.
-  They approach the capital-belt boundary but put no water at a junction or in
-  the belt interior.
-- Closure wings change none of the pre-existing 57 dry land-edge controls, IDs
-  or incident-zone pairs and create no dry edge or junction themselves. They
-  are not a chord, dry fan or land-face continuation. Each wing's two sides
-  continue the adjacent outer-bank and central-head zone ownership without
-  adding those sides to the land graph. The original centreline samples, round
-  head shoulder and outer mouth remain unchanged even though the raw planned-
-  water mask is explicitly larger than the Base mask at the two closures.
-- Final planned bay water fills isolated single-column dry notches in the raw
-  mask, once and simultaneously across all bays, so planned water carries no
-  one-column dry intrusions. Each compiled bay stores its sorted fill columns
-  as the only downstream fill authority, and ownership follows that bay's
-  existing exact rational owner policy without introducing a new tie. The
-  qualifying predicate and its rejection cases are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
-- Bay banks are integer-column boundaries derived from the final planned-water
-  classifier, not literal shore polylines. The source declares 20
-  coordinate-free bank components, five per bay, each naming its bay, two
-  terminals, its one incident face arc, canonical direction and water side —
-  and no coordinates, controls or copied shape. The compiler resolves every
-  terminal and materializes every chain exactly once; all consumers use that
-  one component ID and its byte-identical stations.
-- The three terminal kinds — mouth aperture, land-edge transition and wing
-  junction — share one resolution authority. It rejects rather than falling
-  back, and it changes neither aperture membership nor the compiled aperture
-  payload. Wing endpoints are trace-independent. Terminal resolution, the
-  trace algorithm and wing-tail selection are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §3.
-- The horizontal classifier first evaluates the independent final literal
-  planned-footprint perimeter. A point strictly outside is exterior. Exactly
-  four checksum-covered mouth-aperture records—one for each Base Bay—bind the
-  existing Bay ID and first centreline sample to the incident perimeter and
-  its two spans, without copying a second mouth shape. On perimeter equality
-  inside one such aperture, exact
-  `strict_rational_variable_width_capsule_union_v1` membership and its existing
-  owner rule take precedence and return planned water. The four perpendicular
-  analytic cross-sections remain exactly 720, 660, 640 and 740 nodes for
-  Elandor west/east and Kragmar west/east respectively. Immediately strictly
-  outside an aperture begins that coast's `coastal_shelf`.
-- Every other exact perimeter-equality point remains inside the finite mainland
-  footprint and is dry land owned by the incident `perimeter_span.zone_id`. At
-  an exact declared clipped shared-edge-to-perimeter
-  attachment, the canonical shared-edge half-open rule takes precedence and a
-  geometric equality belongs to the lower numeric incident zone ID. At a
-  perimeter vertex between two incident spans with no attachment, the lower
-  numeric span-zone ID wins. Outside the four apertures, `coastal_shelf` begins
-  strictly outside the dry equality boundary.
-- Each compiled aperture is one nonempty contiguous half-open interval
-  `[first_station, end_station)` in the canonical deduplicated perimeter-
-  station order. `first_station` and the station immediately preceding
-  `end_station` are included planned water with the exact Base-Bay owner;
-  `end_station` is excluded, and both it and the station immediately before
-  `first_station` must fail the strict Base-Bay predicate and fall through to
-  dry perimeter ownership. Every included station must pass that predicate for
-  the one referenced Bay. The interval may not wrap, overlap another aperture
-  or acquire a second run. An
-  exact Base-Bay segment/centreline tie inside it retains the existing lower-
-  numeric shore-owner rule; exact analytic bank equality is not strict water
-  and therefore falls through to the dry span/attachment/vertex precedence.
-- In the strict footprint interior the classifier tests base bay water and its
-  exact centreline owner, then closure-wing-exclusive water and its explicit
-  side owner, then the canonical half-open dry-face result. Closure wings are
-  always clipped to strict footprint interior and may never use a mouth-
-  aperture exception. Base-Bay water may reach perimeter equality only through
-  its one declared aperture; no other perimeter water is permitted.
-- The two wings of one bay have a stable order, permitted only after validation
-  proves that their integer interiors do not overlap outside the base mask. A
-  wing-centre tie belongs to the lower numeric zone ID. Raw dry membership may
-  overlap on a declared shared edge or junction, but its half-open tie still
-  returns one zone. Any undeclared dry cross-face seam or intersection outside
-  final planned water is invalid.
-- The 61-edge land-boundary dual is reconstructed only from its declared edge
-  IDs: the pre-existing 57 records remain byte-identical and §7 adds four
-  boundary-only flank records. Water wings confer no land adjacency. The
-  literal analytic outer footprint and its perimeter remain independent
-  authority: dry faces and water masks are clipped and validated against that
-  perimeter, never unioned to infer it, and the exterior shelf is measured only
-  from that perimeter.
-- Each bay shoreline may displace normally from that base by at most **48
-  nodes**, with wavelength at least 256, and tapers to zero at every listed
-  sample. The mouths are 640–740 nodes wide and the base head shoulders are 160
-  before variation; no accepted seed may leave less than 64 nodes of open base
-  water at a shoulder. The base head shoulders remain 80–110 nodes outside the
-  capital-belt base edge.
-  The directed centreline is also the deterministic base-water ownership seam
-  between the two adjacent shore-side zones; an exact tie resolves by
-  stable zone id, and the seam never enters the land-adjacency graph.
-  This variation leaves the authored centreline and four base samples
-  unchanged and varies one symmetric effective half-width, never independent
-  left/right banks. Bank-station selection, the noise field, its 96-station
-  taper and the exact width predicate are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
-- The Wyrmglass Crown and Stormscale Summit island centres are fixed at
-  **(−3150, 0)** and **(+3150, 0)**. Each has a binding 600×700 authoring
-  envelope: the centered closed axis-aligned rectangle with x radius 300 and
-  z radius 350. Its authored, culturally distinct coastline stays inside that
-  rectangle. After all mainland and island coast
-  variation, every island shore remains separated from every mainland land
-  point by at least **200 ocean nodes**.
-- From either final shore, the first **48 ocean nodes** form the flight warning
-  band. Removing both warning bands from the certified minimum channel leaves
-  at least **104 nodes** of hard no-flight ocean. The complete water channel,
-  including both warning bands, is immutable at every y. Terrain, protection,
-  flight and boat-route validation derive these masks from the same geometry.
-- Ordinary exterior coasts use an analytic horizontal water classification
-  derived from the final outer perimeter of the planned mainland or island
-  footprint, never from the nodes currently present. Equality on the final
-  mainland perimeter is dry land except for the four exact planned-water mouth
-  apertures above. The first **80 nodes strictly outside that perimeter** form
-  `coastal_shelf`, and beyond them begins `deep_ocean`. Shelf columns inherit
-  the adjacent perimeter zone's
-  `race_region`, PvP state and terrain policy: the home faction may edit a
-  peaceful shelf, both factions may edit a contested shelf, and the universal
-  contested deep rule applies at y = -701 and below. `deep_ocean` is immutable
-  at every y and cannot occur anywhere inside a planned mainland footprint.
-- An `immutable_dragon_channel` 2D mask overrides ordinary shelf distance.
-  Every x/z point inside it denotes an immutable full-height column regardless
-  of whether its current node is water, air, seabed or deep rock. Players
-  therefore cannot fill, drain, bridge or tunnel through a channel. Both the
-  warning and hard-flight sub-bands remain terrain-immutable.
-- Horizontal classification has one exact precedence. Planned Base-Bay water
-  is considered first in strict mainland interior or on its own mouth-
-  aperture equality; closure-wing water is strict-mainland-interior-only.
-  Mainland, island and the
-  fixed Holy Grounds footprint—including every perimeter equality—then return
-  land. Only a point outside all three closed land authorities is strict
-  exterior, where membership in either closed integer dragon-channel polygon,
-  including its own segment equality, returns `immutable_dragon_channel`;
-  remaining strict exterior becomes shelf or deep ocean. A channel therefore
-  never steals land, a land-perimeter equality, an aperture, Base-Bay water or
-  closure-wing water.
-- Exterior dressing inherits one `coast_source_zone_id` from the nearest
-  allowed compiled outer-coast component. The closed roster is the 18
-  mainland `perimeter_span` components, the Gravesalt west and Skyglass east
-  fixed Holy outer-coast arcs, and the Wyrmglass and Stormscale island arcs;
-  closing edges are excluded. This value is
-  inheritance only and never changes zone membership, race region, territory
-  or adjacency. It is `nil` outside the compiled interesting extent. The exact
-  distance measure and its tie-break order are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §8.
-- Each dragon channel contains two guaranteed **96-node-wide boat approach
-  corridors**, centred at **z = -125** and **z = +125**. On each island, the
-  southern route is the shorter approach from Elandor and the northern route
-  the shorter approach from Kragmar; this is geographic orientation only, and
-  both routes are open to every player. The mainland ends are authored in
-  Gravesalt Escarpment for The Wyrmglass Crown and The Skyglass Canopy for
-  Stormscale Summit. Each route crosses directly to a distinct landing beach
-  on the island's inward-facing shore. Coast variation may shape the route but
-  may not narrow, merge or remove either corridor, and the two faction-oriented
-  route lengths to either island may differ by no more than 10%.
-- Authored bays, lakes, rivers, marsh channels, cenotes and other planned water
-  remain part of their named zone rather than becoming ocean classes. They
-  inherit that zone's PvP, terrain and flight policy and may be bridged, filled
-  or drained wherever that policy permits. Their authored water masks remain
-  claim-ineligible even after player modification. A water-only boundary
-  between two owning zones is resolved deterministically but is excluded from
-  the land-adjacency graph.
-- All generated surface water has one player-facing identity and uses
-  `default:water_source`: planned inland water, connected bays, exterior shelf,
-  deep ocean and dragon channels do not introduce distinct salt, fresh,
-  brackish, brine, faction or regional liquid nodes. WP40 normalises any v7
-  surface river-water output inside its authoritative overlay accordingly.
-  Subterranean lava and other non-water liquids are outside this rule.
-- Water variation is environmental rather than a liquid taxonomy. Ordinary
-  water bed, shore and decorations derive from the active logical biome's
-  existing surface/riverbed palette. A named landmark may explicitly override
-  bed material, shoreline material, depth and decoration set inside its fixed
-  mask—for example a cenote, salt pan, crater lake or grave marsh—but it still
-  contains the universal water node. There is no zone-wide `water_profile`,
-  `water_kind`, salt/fresh metadata or gameplay distinction to expose through
-  `grug_zones`.
-- The six capital centres are fixed x/z map anchors:
+  Each bay is one round-joined variable-width capsule mask. It remains open
+  and connected from outer water to its head, never narrows below 64 nodes,
+  reaches neither capital belt nor housing core, disconnects no prong and
+  creates no new land contact. Its deterministic nearest centreline/zone-id
+  tie assigns mainland ownership without adding a gameplay edge.
+- Horizontal water classification has one total precedence:
+  1. exact fixed features: Holy Grounds and ownership cores are land except
+     for a planned-water submask declared by that same fixed feature;
+  2. closed explicit planned/bay-water masks;
+  3. ordinary macro land;
+  4. closed immutable dragon-channel masks;
+  5. the nominal coastal shelf; and
+  6. deep ocean.
+- A declared interior planned-water submask retains its fixed feature's zone
+  ownership and returns planned water; unrelated general planned-water masks
+  cannot cut fixed land. Fixed land and every warped additive land primitive
+  use closed membership.
+  Planned-water subtractive masks stay unchanged when the shelf is computed
+  and win over ordinary land. `expanded_land_at(r)` expands each positive
+  land primitive and fixed-land extent by `r` after the query point is
+  warped. It is consulted only after fixed land, planned water, ordinary land
+  and channel masks fail; equality belongs to the shelf. Thus
+  `expanded_land_at(80) and not land_at` is one deterministic **nominal
+  80-node shelf**, not an exact Euclidean distance to every corner of the final
+  CSG silhouette.
+- Shelf policy and exterior dressing inherit from the same nearest eligible
+  mainland hub. Planned water remains part of its named zone. Shelf, every
+  planned-water mask and every route/POI exclusion is claim-ineligible.
+  Deep ocean and dragon channels are immutable at every y.
+- The two island channels keep at least 200 water nodes between final mainland
+  and island land. Each shore contributes an exact 48-node flight-warning band,
+  leaving at least 104 nodes of hard no-flight water. Filling, draining,
+  bridging or tunnelling through the complete channel is forbidden.
+- Each island retains two distinct 96-node-wide boat approaches and landing
+  beaches, centred at z = -125 and z = +125. The southern and northern
+  faction-oriented route lengths to either island differ by at most 10%.
+  Both approaches are open to both factions and are stored only in the
+  separate boat/travel graph.
+- Every generated surface-water class uses `default:water_source`. Logical
+  biome and named-landmark records change bed, shore, depth and decorations,
+  never liquid identity. Subterranean lava is outside this rule.
 
-  | Faction | West | Centre | East |
-  |---|---:|---:|---:|
-  | Kragmar | (−1800, +1500) | (0, +1500) | (+1800, +1500) |
-  | Elandor | (−1800, −1500) | (0, −1500) | (+1800, −1500) |
+### 7.5 Paths, anchors and housing
 
-  Their surface y is resolved from terrain and the capital-platform contract;
-  seed variation may not move their x/z centres.
-- The binding base extent of Elandor's continuous capital/heartland belt is
-  **z = -1900..-1100**; Kragmar's is **z = +1100..+1900**. At the capital
-  latitude its seven west/east base cells are:
+- Roads, trails, future rail, rivers and boat routes are independent typed
+  centrelines between fixed stations. A dry path never creates land. It must
+  fit the land mask with its complete corridor, or use an explicit bridge,
+  ford, tunnel, causeway, ferry or boat interface.
+- Primary roads use a 7-node visible surface and 16-node exclusion corridor;
+  secondary roads use 5/12; trails use 3/8. The complete corridor remains
+  claim-ineligible even after players alter the visible path.
+- Required POIs receive explicit secondary-road or trail spurs. Fixed gates,
+  crossings and POI endpoints never move. Ordinary roads and adequate
+  alternate bridges remain mutable; only irreplaceable functional pieces may
+  receive bounded hard protection.
+- The 100 stable anchor slots retain their ids. Fixed anchors keep fixed x/z;
+  secondary anchors use small ordered candidate sets validated against the
+  frozen 2D model. A full-seed hash selects once from that valid set. Height
+  grading must fit the selected candidate and may not reject it, move it or
+  select again.
+- Housing is available only in the ten zones listed by `world.md` section 5.
+  A true housing-centre mask means the complete 101 by 101 future reservation
+  passes every static exclusion. Candidate envelopes for all secondary anchor
+  alternatives are excluded before world-seed selection, so eligibility is
+  fixed by layout.
+- Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each keep
+  one continuous coastal housing core with at least 600 nodes of shoreline
+  frontage and 300 nodes of buildable inland depth. Every wholly contained
+  eligible 101 by 101 reservation has at most 12 nodes of natural-ground
+  relief and contains no mandatory cliff, ravine, river or lake.
+- Housing capacity uses the fixed-layout 111 by 111 origin lattice and the
+  canonical deterministic packing portfolio. It is measured once per layout,
+  not repeated across identical geometry seeds; varying-seed resource and
+  content audits remain separate.
 
-  | x interval | Elandor | Kragmar |
-  |---:|---|---|
-  | -2600..-2200 | Frostbarrow Shelf | Ossuary Reach |
-  | -2200..-1400 | Dur Brannoc | Nhal Veyr |
-  | -1400..-400 | Whitebridge Shire | Speargrass Reach |
-  | -400..+400 | Highcourt | Gor Drazhak |
-  | +400..+1400 | Lorindor | Whispering Reedlands |
-  | +1400..+2200 | Lethariel | Kezamba |
-  | +2200..+2600 | Moonfall Wood | Totemwater Reach |
+### 7.6 Height, relief and visual structure
 
-  Each 800-node capital cell contains its complete 704×704 terrain-blend
-  envelope with 48 nodes to either base x edge and either belt edge. That
-  48-node margin is reserved layout space, not boundary-noise allowance:
-  visible zone boundaries may curve outside an envelope but may never enter or
-  reassign any part of it.
-- Elandor's frontier occupies the base band **z = -1100..-250** and Kragmar's
-  **z = +250..+1100**. The two frontier separator base polylines use these
-  fixed control vertices:
-
-  | Separator | Elandor south→north/front | Kragmar north→south/front |
-  |---|---|---|
-  | west/centre | (-1400,-1100) → (-900,-900) → (-750,-250) | (-1400,+1100) → (-900,+900) → (-750,+250) |
-  | centre/east | (+400,-1100) → (+900,-900) → (+750,-250) | (+400,+1100) → (+900,+900) → (+750,+250) |
-
-  The belt-side vertices preserve the exact §9 heartland/front contacts. The
-  rapid shift to approximately equal-width frontier sectors prevents the extra
-  Elf/Troll heartland cells from also granting a much larger frontier. The
-  Holy-side vertices create the paired two-zone contacts against the four
-  fixed Holy Grounds intervals. Shared boundary variation may move at most 64
-  nodes between control vertices and tapers to zero at all three vertices.
-- The six starting/respawn-settlement centres are fixed on the same race axes:
-
-  | Faction | West | Centre | East |
-  |---|---:|---:|---:|
-  | Kragmar | (−1800, +2550) | (0, +2550) | (+1800, +2550) |
-  | Elandor | (−1800, −2550) | (0, −2550) | (+1800, −2550) |
-
-  Their surface y is terrain-derived and seed variation may not move their x/z
-  centres. Each stands inside its race's claim-free level-1–10 starting zone.
-- Every centre lies in a guaranteed **600×500 dry start core**, centred on the
-  anchor: total x width 600 (`centre x ±300`) and total z depth 500 (`centre z
-  ±250`). A core belongs wholly to its level-1–10 starting zone and
-  contains no planned water, forced cliff, ravine or other zone. Its complete
-  256×256 starting-settlement terrain-blend envelope and unobstructed primary
-  road exit therefore fit inside it on every accepted seed.
-- Each starting zone is the seaward cap of exactly one cultural peninsula and
-  has only its corresponding level-11–20 home zone as a **land** neighbor. The
-  home zone wraps both flanks and the landward side of the start cap, then
-  continues as a broad neck to the capital belt. The two authored bays keep
-  different start/home spines from acquiring extra land edges. The western and
-  eastern home zones use their outer side-coast frontage for the guaranteed
-  housing strips below; a centre home zone need not reach the exterior coast.
-- At the outer edge of the capital belt (`z = -1900` for Elandor and `z =
-  +1900` for Kragmar), each home neck terminates in exactly its capital-cell
-  base interval: west `x = -2200..-1400`, centre `x = -400..+400`, east `x =
-  +1400..+2200`. Thus Copperfell Foothills/Mournfen feed Dur Brannoc/Nhal Veyr,
-  Goldmead Vale/Redtusk Savanna feed Highcourt/Gor Drazhak, and Starbough
-  Vale/Raincall Basin feed Lethariel/Kezamba. The primary race spine passes
-  through the start core, home neck and capital gate without a detour.
-- The shared start/home base boundaries are the following directed polylines.
-  Their endpoints deliberately lie in authored bay water or beyond the
-  mainland frame:
-
-  | Start / home boundary | Control vertices `(x, z)` |
-  |---|---|
-  | Hearthpine Vale / Copperfell Foothills | (-2700,-2760) → (-2310,-2570) → (-2150,-2210) → (-1800,-2140) → (-1450,-2210) → (-1050,-2250) |
-  | Dawnmere Fields / Goldmead Vale | (-1050,-2250) → (-650,-2230) → (-350,-2170) → (0,-2120) → (+350,-2180) → (+650,-2240) → (+950,-2250) |
-  | Silverleaf Glades / Starbough Vale | (+950,-2250) → (+1450,-2210) → (+1800,-2150) → (+2150,-2230) → (+2310,-2580) → (+2700,-2740) |
-  | Stillgrave Hollow / Mournfen | (-2700,+2740) → (-2320,+2580) → (-2160,+2210) → (-1800,+2140) → (-1440,+2200) → (-970,+2260) |
-  | Sunscar Flats / Redtusk Savanna | (-970,+2260) → (-660,+2240) → (-360,+2180) → (0,+2130) → (+360,+2190) → (+680,+2230) → (+1020,+2250) |
-  | Kapok Cradle / Raincall Basin | (+1020,+2250) → (+1440,+2200) → (+1800,+2140) → (+2160,+2210) → (+2320,+2590) → (+2700,+2760) |
-
-  Mapgen clips each varied polyline against the final analytic land mask. The
-  clipped result must be exactly one connected transverse land boundary with
-  one shoreline endpoint on each side of its cultural peninsula; water and
-  out-of-frame remnants are discarded. The start zone is always the seaward
-  side and the home zone the landward side.
-  A declared edge/perimeter attachment has one joint endpoint, not a connector
-  or a post-raster snap. Each displaced edge raster is split into maximal
-  final-dry intervals, and exactly one interval must satisfy both ordered
-  source obligations; zero or multiple qualifying intervals reject, and
-  longest-, first- or index-based selection is forbidden. The six edges
-  carrying the eight bay transitions resolve their terminals jointly against
-  one combined probe, so an edge never picks two terminals independently. The
-  interval, probe and terminal algorithms are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §4.
-- Shared start/home boundaries use the ordinary maximum 64-node displacement,
-  wavelength and shared-edge rules, tapering to zero at every listed control
-  vertex. Their base geometry stays at least 96 nodes from the corresponding
-  600×500 dry start core, and the varied line must retain at least **32 nodes**
-  of clearance from it. Variation may not enter a dry core or primary-road
-  corridor, produce a second clipped component, sever a home neck, undercut a
-  coastal-housing guarantee, move a capital-belt contact or change the
-  land-neighbor graph. Elandor and Kragmar use separate coordinate sets and
-  separate noise salts; neither runtime mask may be obtained by reflection.
-- The base outer perimeter of each `planned_mainland_footprint` is the directed
-  chain below, listed from the western Holy-Grounds endpoint around the outer
-  side to the eastern endpoint. The straight shared land edge back along `z =
-  -250` or `z = +250` closes the analytic polygon; that closing edge is not a
-  coast. These chains describe the **outer planned-footprint perimeter**, not
-  the dry shores within the two authored bays:
-
-  - Elandor: `(-2500,-250) → (-2470,-650) → (-2490,-1050) →
-    (-2560,-1500) → (-2600,-1900) → (-2580,-2200) → (-2600,-2500) →
-    (-2470,-2760) → (-2250,-2920) → (-1800,-2960) → (-1350,-2920) →
-    (-980,-2940) → (-520,-2910) → (0,-2960) → (+460,-2930) →
-    (+900,-2920) → (+1320,-2930) → (+1800,-2950) → (+2240,-2925) →
-    (+2470,-2740) → (+2600,-2500) → (+2580,-2200) → (+2600,-1900) →
-    (+2550,-1500) → (+2490,-1050) → (+2530,-650) → (+2500,-250)`.
-  - Kragmar: `(-2500,+250) → (-2540,+620) → (-2480,+1050) →
-    (-2560,+1480) → (-2600,+1900) → (-2580,+2200) → (-2600,+2500) →
-    (-2480,+2750) → (-2260,+2920) → (-1800,+2960) → (-1440,+2940) →
-    (-1080,+2930) → (-560,+2940) → (0,+2970) → (+440,+2920) →
-    (+820,+2960) → (+1280,+2920) → (+1800,+2960) → (+2250,+2920) →
-    (+2480,+2760) → (+2600,+2500) → (+2580,+2200) → (+2600,+1900) →
-    (+2540,+1500) → (+2500,+1000) → (+2550,+600) → (+2500,+250)`.
-- Four zero-jitter land-boundary records close the outer home/heartland flanks
-  without changing any of the pre-existing 57 edge records:
-
-  | Edge | Directed endpoints | Incident zones |
-  |---|---|---|
-  | `land_058` | `(-2600,-1900) -> (-2200,-1900)` | Copperfell Foothills / Frostbarrow Shelf |
-  | `land_059` | `(2200,-1900) -> (2600,-1900)` | Starbough Vale / Moonfall Wood |
-  | `land_060` | `(-2600,1900) -> (-2200,1900)` | Mournfen / Ossuary Reach |
-  | `land_061` | `(2200,1900) -> (2600,1900)` | Raincall Basin / Totemwater Reach |
-
-  Each segment joins an existing literal outer-perimeter vertex to an existing
-  capital-belt junction. These four adjacencies are **boundary-only**: they
-  carry no route class/station/interface, road surface/corridor, route or
-  capital-road gate product, travel/traversability promise, or content
-  operation. They do carry the ordinary checksum-covered shared-boundary
-  relief gate `G` controls required by §7, with no route semantics. Touching a
-  perimeter vertex does not grant coast authority; the existing literal
-  perimeter spans remain the sole outer-coast and shelf source. The four
-  records change no perimeter, shelf, base bay, closure wing, start core or
-  600×300 coastal-housing geometry.
-- The four first bay samples `(-980,-2940)`, `(+900,-2920)`,
-  `(-1080,+2930)` and `(+820,+2960)` are exact outer-perimeter vertices. Bay
-  geometry meets the perimeter there, and each sample owns exactly one of the
-  four mouth-aperture records above. Base-Bay water crosses equality only in
-  that record's exact half-open interval; all remaining equality is dry.
-  Subtracting the resulting mask from dry land creates the bay shores without
-  making those shores exterior shelf.
-- Ordinary outer-coast displacement is at most 96 nodes, uses wavelength at
-  least 256 and tapers to zero at every listed perimeter vertex. It stays
-  inside the binding mainland frame, retains at least 32 nodes from every dry
-  start core and clips the six start/home lines without moving their interior
-  vertices. A seed that breaks those constraints is invalid rather than
-  silently clamped into a different topology.
-- On each western/eastern side, the two perimeter segments between the fixed
-  `|z| = 1900`, `|z| = 2200` and `|z| = 2500` vertices are the guaranteed
-  coastal-housing frontage. Their final shoreline stays inside `|x| =
-  2580..2600`. Coast and start/home variation are jointly damped there so a
-  connected 300-node-deep home-zone core remains inland along the complete
-  at-least-600-node shoreline arc. This local envelope overrides the ordinary
-  96-node coast budget and is audited after every static exclusion.
-- Four existing level-11–20 housing zones receive guaranteed coastal housing
-  land: Copperfell Foothills and Mournfen on the western mainland coasts,
-  Starbough Vale and Raincall Basin on the eastern mainland coasts. Each must
-  contain a continuous, gently buildable housing-eligible strip along its
-  shoreline. After coastline variation and every static exclusion are applied,
-  that strip must retain at least **600 nodes of continuous shoreline frontage**
-  and **300 nodes of buildable inland depth**. This is a minimum usable geometry,
-  not a rectangular visible boundary or a guaranteed Claim-Stone quota: the
-  authored strip may curve and taper with the natural coast, but no accepted
-  seed may undercut either dimension. Inside this guaranteed strip, every
-  possible 101×101 reservation that remains wholly in its core has at most
-  **12 nodes of natural ground-height variation**. Its generated ground may
-  retain small waves and ordinary surface detail, but the core contains no
-  mandatory cliff, ravine, river or lake. Ground height ignores trees,
-  structures and later player edits. A Claim Stone's complete reserved 101×101
-  projection remains on land and may touch, but never cross, the final
-  shoreline; planned zone water and coastal shelf are public terrain and never
-  part of a housing reservation. This gentle-core guarantee is a mapgen audit,
-  not a general runtime slope restriction on Claim-Stone placement elsewhere.
-
-Orientation schematic; §9, not this table, defines exact adjacency:
-
-| North → south | West | Centre | East |
-|---|---|---|---|
-| Kragmar outer/home | Stillgrave Hollow → Mournfen | Sunscar Flats → Redtusk Savanna | Kapok Cradle → Raincall Basin |
-| Kragmar capitals/heartland | Nhal Veyr / Ossuary Reach | Gor Drazhak / Speargrass Reach | Kezamba / Whispering Reedlands / Totemwater Reach |
-| Kragmar frontier | Blackwind Rise | Bannerbreak Mesa | Thunderroot Wilds |
-| Holy Grounds mainland | Gravesalt Escarpment | Broken Causeway / Shattered Line | Skyglass Canopy |
-| offshore dragon islands | Wyrmglass Crown | — | Stormscale Summit |
-| Elandor frontier | Stormvault Heights | Ashenward March | Glassroot Wilds |
-| Elandor capitals/heartland | Dur Brannoc / Frostbarrow Shelf | Highcourt / Whitebridge Shire | Lethariel / Lorindor / Moonfall Wood |
-| Elandor home/outer | Copperfell Foothills → Hearthpine Vale | Goldmead Vale → Dawnmere Fields | Starbough Vale → Silverleaf Glades |
-- The map promises no target journey duration. Fixed anchors, authored road
-  routes, terrain and the player's available mount determine actual travel
-  time; roads must be geographically legible and must not add artificial
-  detours merely to reach a duration target.
-- Ordinary zone boundaries may move at most **64 nodes** from their authored
-  base edge, coastlines at most **96** within their binding envelopes, and a
-  peaceful/contested boundary at most **32**. Boundary noise has a wavelength
-  of at least 256 nodes. A
-  96-node buffer around fixed anchors and road gates has no boundary jitter.
-  For every no-jitter source, damping is exactly zero at world Chebyshev
-  distance `d∞ <= 96`, fades by smootherstep to `d∞ = 192`, and is full beyond
-  it. Multiple sources use their minimum factor, and reversing an authored
-  segment reverses the same factors rather than changing them. The exact
-  damping formula and its fixed-point evaluation are in
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §1.1; this paragraph states the guarantee, not the computation.
-  Displacement is applied exactly once per record: authored controls shift
-  along canonical normals, one record-wide topology ceiling is selected, and a
-  single final raster emits the result. There is no second displacement, snap
-  or interpolation, and a remaining failure rejects the seed rather than
-  selecting another ceiling.
-- Each planned mainland closes through a fixed zero-displacement six-edge
-  closure, so neither mainland silhouette varies at its closing arcs.
-- The four-way Ashenward and Bannerbreak junctions carry fixed zero-jitter
-  departure stations so no digital one-edge trunk can form. The four degree-two
-  junctions whose columns are bay water dissolve entirely into declared
-  edge-to-bank transitions; the remaining 34 relief junctions keep their
-  incident edge pairs, and all eight perimeter attachments stay separate
-  terminal authorities. After every category resolves, all 38 dry faces must
-  still be closed and counterclockwise, and either simple or — since the
-  2026-08-20 §11.5-C correction as completed by §11.9
-  (`wp40-t2-contracts.md`) — accepted with window-guarded join-local,
-  locally non-crossing self-touches at bay-transition terminals (zero-width
-  filament appendixes and interior-beside pinches), their region truth
-  derived by winding.
-- The measured extreme-corpus seeds are scored on pre-displacement source
-  stations only, so seed selection never depends on the compiled result it
-  selects.
-  The fixed-point arithmetic, ceiling scan, closure resolver, junction gates
-  and exact scoring identity are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §§1, 2 and 5.
-- No zone core may narrow below 256 nodes and no authored travel corridor below
-  96 nodes. This is the macro-terrain neck that keeps a route traversable, not
-  the narrower road/claim-exclusion width below. Seed variation may not remove
-  a route, create a new neighbor or cut a POI off from its road.
-- Macro relief is a zone property independent of logical biome, level,
-  `race_region` and territory. Its six standard profiles use inclusive surface
-  elevation bands relative to the configured mapgen water level:
+- The project owns one globally queryable integer surface-height field
+  `H(full_seed_string, x, z)`, exposed as `terrain_height_at`. It combines
+  bounded broad/detail lattices, the zone relief profiles, authored landmarks
+  and deterministic grading. It never reads a generated chunk, engine spawn
+  level or chunk-local v7 heightmap as global authority.
+- Native v7 remains the substrate for caves, ores, dungeons and strata. The
+  final surface pass preserves those products outside the shallow authored
+  shell and never runs a second competing terrain writer.
+- Every land zone declares exactly one primary relief profile:
 
   | Relief id | Elevation above water level |
   |---|---:|
@@ -699,89 +425,19 @@ Orientation schematic; §9, not this table, defines exact adjacency:
   | `highland` | +96..+224 |
   | `mountain` | +160..+360 |
 
-  Every land zone declares exactly one primary relief profile. It may contain
-  deterministic, explicitly bounded secondary-profile masks; biome patches do
-  not implicitly change relief. V7 supplies natural fine structure inside the
-  authored envelope, while the authoritative surface overlay keeps ordinary
-  terrain inside the selected band.
-  The mapping is inclusive of both band endpoints, so each profile's stated
-  elevation range is exactly reachable. Its exact formula and input clamping
-  are compiler concerns: see
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §7.
-- Ordinary profile and zone transitions blend smoothly. A forced cliff,
-  ravine, escarpment or abrupt elevation step exists only through a named,
-  authored landmark mask. Roads, capital and starting-settlement terrain,
-  structure envelopes and the four guaranteed coastal-housing cores apply
-  their own grading after general relief and take precedence where they
-  overlap. The per-zone profile and landmark assignment is binding registry
-  data rather than an emergent result of v7 noise.
-  Across each shared land edge, post-landmark relief blends perpendicular to
-  the boundary over 96 nodes. Each of the 38 multi-edge endpoint junctions
-  carries one authored relief record and additionally reshapes only
-  `effective_G` over a 96-station endpoint support. Junction support never
-  substitutes for the perpendicular land-edge blend. Two endpoint supports can
-  never overlap: an edge shorter than 192 station steps is rejected outright.
-  Junction selection, weighting and both support rules are compiler concerns:
-  see [wp40-source-authority.md](../research/wp40-source-authority.md) §7.4.
-- The common macro-relief height `H` exists on every zone-owned authored
-  surface column: ordinary dry land, dry residue adopted into a zone face by
-  the partition authority, and all zone-owned Planned Water. It does not exist
-  on the exterior coastal shelf, deep ocean or immutable dragon channels,
-  whose separate exterior profiles apply. If raw dry faces meet on a declared
-  shared edge or junction, the canonical half-open face rule selects one zone
-  before `H` is evaluated.
-- Final surface ownership is resolved exactly once for each `H`-domain column
-  before landmark composition. An authored exact mask or positive collar has
-  effective influence only where that owner equals the landmark's declared
-  `zone_id`; elsewhere its effective mask and weight are zero. Missing or
-  ambiguous ownership inside the `H` domain is invalid world data. This owner
-  clip preserves the authored mask and collar as registry and diagnostic
-  identities rather than rewriting either one to follow a seed-varied border.
-- Every named-landmark collar with positive influence contributes to the
-  natural surface in its declared `base_h_priority` order after the owner clip;
-  a higher-priority landmark is applied later to the already-composed height.
-  Zero-influence and foreign-owner collars do not participate. The exact
-  authored landmark mask remains its own identity and is never replaced or
-  erased by the owner clip, collar-distance calculation or overlap priority.
-  Required-route clearance is checked against the final composed surface and
-  the later route product.
-- Owner clipping alone never authorizes an abrupt final terrain feature. Every
-  cardinally adjacent Dry-to-Dry final-owner change maps to a compiled final
-  land-edge incidence, and both post-landmark heights enter its perpendicular
-  96-node boundary blend. Where the seam falls within a surviving relief
-  junction's 96-station endpoint support, both endpoints also lie in that
-  support.
-  An undeclared dry owner seam is invalid world data. Adopted residue belongs
-  to its final dry face and creates no separate dry cross-face authority. The
-  final Planned-Water terrain product preserves bed and bank continuity,
-  including internal Bay or Wing owner seams; the exterior terrain product
-  resolves every `H`-to-coast, shelf or channel transition.
-- A shared-boundary relief junction influences an incident edge only while
-  that edge's chosen final raster still ends at the exact authored junction.
-  A clipped terminal elsewhere keeps the edge's native relief gate and does
-  not create a replacement junction. Bay transitions, perimeter attachments
-  and perimeter vertices retain their separate topology identities.
-- Authored land roads use exactly three classes. A **primary road** has a
-  7-node visible surface inside a 16-node-wide claim-exclusion corridor; it
-  carries the race spines, capital axis and other principal capital routes. A
-  **secondary road** has a 5-node surface inside a 12-node corridor and serves
-  villages and major POIs. A **trail** has a 3-node surface inside an 8-node
-  corridor and serves small POIs. The complete corridor, not only the visible
-  surface, is permanently ineligible for housing claims.
-- Road centrelines may meander naturally and deterministically between their
-  authored anchors. Their gate, bridge and POI-connection endpoints are fixed,
-  and variation may not change the road class, disconnect the route or leave
-  its exclusion corridor. Ordinary road nodes are generated once and then
-  follow their zone's terrain mutability; their analytic exclusion corridors
-  remain even when players alter or remove the visible road.
-- A bridge or gate is hard-protected only when no adequate alternate route
-  exists. Ordinary bridges, gates and road dressing remain mutable and
-  claim-excluded like the road they serve.
-- Strategic separators are visible terrain, never invisible walls: western
-  and eastern ocean, the two immutable dragon channels, rivers, cliffs,
-  ravines, fortress walls and mountain passes. The Holy Grounds must provide
-  several distributed north/south lanes across its four-zone west/east chain;
-  the islands are reached only through their authored boat approaches.
+  Explicit bounded secondary profiles and named landmarks may modify that
+  base. Biome patches do not implicitly change relief.
+- Ordinary profile transitions are smooth. A cliff, ravine, escarpment,
+  waterfall basin or other abrupt macro feature exists only through a named
+  authored landmark. Start, capital, housing, route and selected-anchor grading
+  overrides general relief in that order of functional necessity.
+- Landmarks have stable ids, one declared owner and bounded masks. Owner
+  clipping prevents a landmark from modifying another zone but never silently
+  satisfies its route, housing, anchor or grading obligations.
+- The map promises no target journey duration. Reliable route placement,
+  visible terrain structure and available travel methods determine travel
+  time. Strategic separators are physical terrain or explicit water, never
+  invisible walls.
 
 ## 8. Zone catalog
 
@@ -877,7 +533,7 @@ and terrain rules without deriving political ownership from cultural origin.
 The tables below assign the §7 relief fields independently of biome palettes.
 Every listed landmark id is stable registry data and must resolve to one
 deterministic bounded authored mask and one owning `zone_id`. Authored masks do
-not disappear or change identity when a seed-varied boundary crosses them;
+not disappear or change identity where their fixed edge meets another zone;
 their effective terrain influence is the mask/collar intersected with that
 final owner. The clipped result may not block a required route, and clipping
 does not waive a landmark's local route, housing, capital or grading
@@ -959,15 +615,14 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | The Skyglass Canopy | `highland` | bounded `mountain` pale cliffs and `rolling_hills` forest terraces | `skyglass_escarpment`: several fixed ascents cross the pale cliff line; `skyglass_hangingways`: root and canopy paths remain optional alternatives over the terraces; `skyglass_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Stormscale embarkation corridors |
 | Stormscale Summit | `mountain` | bounded `highland` volcanic terraces and two inner-shore `lowland` landing coves | `stormscale_caldera`: a volcanic mountain ring retains several independent ascents; `stormscale_gemterraces`: thunder terraces contain the protected functional anchor and reachable deposits of the second all-six-gem apex mining camp; `stormscale_dragonroost`: the summit-edge dragon arena is independently reachable from both z = -125 and z = +125 west-shore landings and does not gate access to the mine |
 
-## 9. Fixed adjacency graph
+## 9. Authored travel and allowed-contact graph
 
-The graph is undirected. Commas mean direct zone neighbors; no omitted pair may
-become adjacent through seed variation. Its land-boundary dual has exactly 61
-edges: the original 57 routed edges plus the four boundary-only outer-flank
-edges `land_058` through `land_061`. The latter establish polygon adjacency but
-do not imply a road, route profile/station/interface, corridor, route or
-capital-road gate product, traversability guarantee or content operation. Their
-ordinary shared-boundary relief gate `G` controls have no route semantics.
+The graph is undirected. The 57 routed pairs are the authoritative gameplay
+neighbors used by travel, quests and `neighbors(id)`. The four outer-flank
+pairs listed below are additionally allowed to touch geometrically but carry
+no route, corridor, traversability guarantee or content operation. An allowed
+pair need not touch in the final layout; every omitted pair is forbidden from
+touching. No geometric boundary dual is created.
 
 ### 9.1 Accord internal graph
 
@@ -1008,29 +663,28 @@ ordinary shared-boundary relief gate `G` controls have no route semantics.
 
 - The Holy Grounds land chain is Gravesalt Escarpment — The Broken Causeway —
   The Shattered Line — The Skyglass Canopy. No nonconsecutive pair in this
-  chain shares a land edge.
-- Both Stormvault Heights and Blackwind Rise neighbor Gravesalt Escarpment and
+  chain is a route neighbor or allowed geometric contact.
+- Both Stormvault Heights and Blackwind Rise have routes to Gravesalt Escarpment and
   The Broken Causeway.
-- Both Ashenward March and Bannerbreak Mesa neighbor The Broken Causeway and
+- Both Ashenward March and Bannerbreak Mesa have routes to The Broken Causeway and
   The Shattered Line.
-- Both Glassroot Wilds and Thunderroot Wilds neighbor The Shattered Line and
+- Both Glassroot Wilds and Thunderroot Wilds have routes to The Shattered Line and
   The Skyglass Canopy.
-- The Wyrmglass Crown and Stormscale Summit have **no land neighbors**. Their
+- The Wyrmglass Crown and Stormscale Summit have **no land routes**. Their
   four boat routes are stored in a separate travel graph: a z = -125 southern
   and z = +125 northern approach to each island. Wyrmglass routes connect
   Gravesalt Escarpment to two distinct inward-shore landing beaches; Stormscale
   routes do the same from The Skyglass Canopy. These authored travel edges are
-  open to both factions and never make two zones polygon neighbors.
+  open to both factions and never add a land-route neighbor.
 
 The overlapping frontier-to-Holy edges distribute crossings across the whole
 band and prevent one bridge or zone from becoming the sole faction route.
 
 ### 9.4 Authored land-route classes
 
-The authored land-route graph remains exactly the original 57 edges: 30
-primary, 24 secondary and 3 trail. It is intentionally not identical to the
-61-edge land-boundary dual. `land_058` through `land_061` are excluded from the
-route graph and have no route class or station sequence.
+The authored land-route graph remains exactly 57 edges: 30 primary, 24
+secondary and 3 trail. The four allowed outer-flank contacts are excluded from
+the route graph and have no route class or station sequence.
 
 - Every edge in the six race spines and both west/east capital axes is a
   **primary road**. The primary classification ends at the race frontier; it
@@ -1151,13 +805,12 @@ asks for it.
 
 - Every capital zone has a 512×512 fixed build envelope and a terrain blend
   ring extending to 704×704. The protected POI is the final build envelope
-  plus the existing 10-node surround. Capital zone lookup reports the smooth
-  directional civic profile from §3: level 20 at the home gate, 25 at the
-  centre and lateral gates, and 30 at the front gate. Elandor rises northward;
-  Kragmar rises southward. Hostile ambient spawning is disabled and level-60
-  guards remain explicit.
+  plus the existing 10-node surround. Only the 512×512 build envelope is
+  guaranteed capital-zone ownership; the larger visual blend may cross a zone
+  edge. Capital lookup uses the zone's single surface difficulty target.
+  Hostile ambient spawning is disabled and level-60 guards remain explicit.
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
-  service court. Four 32-node-wide no-jitter road gates leave north/east/south/
+  service court. Four fixed 32-node-wide road gates leave north/east/south/
   west. The road itself is authored by WP13 inside that reserved corridor.
 
 | Capital | Outer/home gate | Front gate | West gate | East gate |
@@ -1222,308 +875,182 @@ asks for it.
 
 ## 13. Mapgen and public zone contract
 
-- WP40 keeps v7 for base relief, caves, ores and dungeons, then applies one
-  authoritative authored land/zone/surface pass. A fully custom terrain
-  generator is rejected.
+### 13.1 Horizontal and vertical authority
+
+- WP40 uses native v7 only as the cave, ore, dungeon and stratum substrate.
+  One project-owned horizontal evaluator and one globally queryable
+  `H(full_seed_string, x, z)` own the final surface, water, logical biome,
+  route and policy products.
+- The pure horizontal module exposes at least
+  `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
+  `water_class_at(x,z)`, `nearest_path_at(x,z,optional_kind)` and
+  `selected_anchor_2d(zone_id,slot_id)`. The canonical SVG and the mapgen
+  adapter consume this same evaluator; no renderer-owned geometry exists.
 - Engine climate competition is not authoritative inside the authored world.
-  T2 geometry applies one full-seed, source-policy-bound coherent selector to
-  the owning zone's weighted palette and compiles the resulting logical biome
-  IDs. The selector policy and results are checksum-covered geometry. T6 maps
-  those IDs to top, filler and decoration content but never selects or remaps
-  an ID. Gameplay consumers use the logical zone-biome API, not
-  `core.get_biome_data`.
-- The land pass may carve ocean or fill an authored land connection, but must
-  preserve caves, registered depth strata, ore veins and dungeons below the
-  rewritten surface shell. Capital/start envelopes own their terrain after
-  the general pass.
-- Each zone definition stores its primary relief id plus any deterministic
-  secondary-profile and named-landmark masks. The surface-height field retains
-  v7-scale natural detail inside the applicable §7 elevation band; ordinary
-  transition blends and explicit grading overrides are resolved before
-  surface material, decorations, structures and road dressing are placed.
-- Every ordinary zone stores authored surface-level control points at its core
-  and road gates. Home-facing gates use the low end of the zone bracket,
-  front-facing gates the high end and lateral gates the neighboring
-  progression value; the interior field interpolates smoothly and clamps to
-  the zone's published range. Neighboring ordinary gates share a value within
-  two levels. The only exceptions are the visibly gated western/eastern
-  endgame jumps in §14. A level-60 endpoint is flat 60 before the independent
-  depth floor.
-- `grug_zones` owns the registry and exposes at least:
-  `get(id)`, `at(pos)`, `id_at(x, z)`, `biome_at(pos)`,
-  `race_region_at(pos)`, `faction_at(pos)`, `territory_rule_at(pos)`,
-  `pvp_rule_at(pos)`, `surface_level_at(pos)`, `neighbors(id)` and
-  `anchor(zone_id, slot_id)`. Returned definitions are caller-owned copies
-  or read-only by convention; consumers may not mutate the registry.
-- The allocation-free feature surface is
-  `nearest_boundary_at(x, z)`, `nearest_route_at(x, z)` and
-  `nearest_hydrology_at(x, z)`. Each returns
-  `(stable_id, nonnegative_integer_distance)` or `(nil, nil)` outside the
-  compiled interesting extent or when that validated family contains zero
-  records. It selects by exact Euclidean distance to, respectively, the closed
-  compiled boundary geometry, closed route-corridor envelope or closed x/z
-  hydrology-exclusion envelope. Zero means exactly on a boundary or on/inside
-  an envelope; every positive distance rounds up so a distinct feature less
-  than one node away cannot alias zero. Exact-distance ties use canonical
-  numeric ID, then stable string ID. `housing_eligible_at(x, z)` is the
-  separate boolean for the complete static radius-50 center mask and never
-  checks dynamic claims.
-- `coast_source_zone_id_at(x, z)` applies the closed 22-component roster and
-  exact rational distance/tie rule in §7. It returns that dressing/inheritance
-  zone ID inside the compiled interesting extent or `nil` outside it; the
-  result never participates in `id_at`, footprint membership or adjacency.
-- Every node-addressed public query accepts only finite Lua-number coordinates
-  in `-(2^53 - 1)..(2^53 - 1)` before and after normalization. Each coordinate
-  rounds to its nearest integer with exact half ties away from zero. Invalid,
-  unsafe, absent or malformed coordinates are programmer errors; there is no
-  string coercion, clamp or fallback. This matches Luanti's
-  [`math.round` and `math.isfinite`](../../reference_projects/luanti/builtin/common/math.lua):35-48,
-  documented
-  [`vector.round`](../../reference_projects/luanti/doc/lua_api.md):4319-4325,
-  and engine node conversion through
-  [`read_v3s16`](../../reference_projects/luanti/src/script/common/c_converter.cpp):260-271
-  and
-  [`doubleToInt`](../../reference_projects/luanti/src/util/numeric.h):341-363.
-- `faction_at(pos)` returns `"accord"`, `"throng"` or `nil` for contested/open
-  ground; it never derives ownership from `race_region`. `territory_rule_at`
-  returns the complete 3D construction/mining policy, including
-  `contested_land`, `holy_grounds`, protected envelopes and immutable ocean
-  channels. `pvp_rule_at(pos)` likewise applies the y = −701 contested-deep
-  override rather than returning only the surface zone's rule.
-- `grug_core.difficulty_at`, `mob_level_at`, `guard_level_at`,
-  territory protection and open-sea checks become compatibility consumers of
-  that API. `surface_level_at(pos)` returns `nil` for every exterior class:
-  shelf, deep ocean and immutable dragon channel. On land and zone-owned
-  planned water, the independent depth floor remains
-  `max(surface_level_at(pos), depth_level_at(y))`.
-- On exterior shelf, `mob_level_at(pos)` returns `nil` at normalized `y >= 0`
-  and the standard capped/rounded depth level alone at normalized `y < 0`.
-  Harmless or fixed shore wildlife does not use an ordinary surface level.
-  Deep ocean and immutable dragon channels have no ordinary mob-level result;
-  the hand-set deep-ocean Kraken Guard remains fixed level 100 outside this
-  resolver, and channels do not inherit it.
-- T3's positional `grug_core.guard_level_at(pos)` base returns `nil` in every
-  exterior class, including editable shelf. It returns exactly 60 inside the
-  exact capital 512×512 build envelope plus its 10-node hard-protection apron
-  only at normalized `y >= -700`; at `y <= -701` and everywhere else on
-  non-exterior columns it returns
-  `min(70, max(20, surface_level_at(pos)))`. WP13 may later raise that generic
-  non-nil base outside the shallow capital hard volume, capped at 70, but may
-  never lower it. Exterior nil remains nil and permits no guard post. Ordinary
-  and royal guards inside the shallow capital volume remain exactly 60. The
-  king is a separate fixed level-65 entity and uses neither resolver. T3 does
-  not invent post roles.
-- Zone lookup uses a prebuilt spatial grid plus exact boundary resolution;
-  hot paths may not scan all 38 definitions or a complete feature family. The
-  same compiled index/evaluator proves nearest-feature results and the final
-  housing-center predicate. Boundary variation is derived from the full world
-  seed without converting an unsafe 64-bit seed through a Lua number.
-- All fixed placements resolve through zone anchor ids. No dependent WP may
-  retain a raw WP18 ring name or coordinate.
-- Anchor slot ids are stable data: `start`, `capital`, `village_<n>`,
-  `outpost_<n>`, `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
-  `apex_mine` and `rare_<stable_rare_id>`. The §8 abbreviations determine
-  which slots exist; absent slots return `nil` rather than being synthesized
-  by a consumer.
+  A full-seed selector chooses only from the owning zone's logical-biome
+  palette. Surface content maps that frozen logical id to nodes and
+  decorations without selecting a different biome.
+- Surface writing uses one short typed priority:
+  native protected content, fixed hard foundations, explicit crossing
+  interfaces, paths, terrain repair, explicit water, biome surface, resources
+  and decorations. Caves, ores, dungeons and strata outside the shallow
+  authored shell survive the transaction.
+- The new evaluator, compatibility adapters and consolidated VoxelManip
+  callback remain disabled until one atomic production cutover removes both
+  legacy WP18 geography writers. Two Grudgelands surface-writing pipelines are
+  never enabled in one build.
+
+### 13.2 Public `grug_zones` surface
+
+The final registry exposes:
+
+- defensive-copy `get(id)`, `at(pos)`, `neighbors(id)`,
+  `travel_links(id)` and `anchor(zone_id,slot_id)`;
+- allocation-free `id_at`, `biome_at`, `race_region_at`, `faction_at`,
+  `territory_rule_at`, `pvp_rule_at`, `surface_mob_level_at`,
+  `mob_level_at`, `guard_level_at`, `terrain_height_at` and
+  `water_class_at`; and
+- indexed `nearest_route_at`, `nearest_hydrology_at` and the unconditional
+  `housing_eligible_at` centre predicate.
+
+`housing_eligible_at(x,z) == true` means the complete 101 by 101 future
+reservation passed every static exclusion. It never checks dynamic claims.
+No stable `nearest_boundary_at`, boundary id or coast-component id is public.
+A later consumer may add an approximate scalar margin query, but may not
+restore boundary materialization without a separately reviewed requirement.
+
+Every node-addressed public query accepts only finite Lua-number coordinates
+inside the exact safe-integer range before and after nearest-integer,
+half-away-from-zero normalization. Invalid, unsafe or malformed coordinates
+are programmer errors rather than clamped or coerced input. One evaluator
+instance binds one canonical full seed string; public queries never accept a
+numeric-truncated seed.
+
+### 13.3 Policy and compatibility
+
+- `surface_mob_level_at` means the continuous gameplay-difficulty field.
+  `terrain_height_at` means elevation. Existing
+  `grug_core.surface_level_at(x,z)` already means terrain height and retains
+  that semantic; it redirects to `terrain_height_at` only at the atomic
+  cutover.
+- `mob_level_at(pos)` combines the surface difficulty with the independent
+  depth floor on land and zone-owned planned water. Exterior shelf returns nil
+  at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
+  channels have no ordinary mob-level result; the Kraken Guard remains a
+  separate fixed level-100 entity.
+- `guard_level_at(pos)` is nil for every exterior class. Inside the capital
+  512 by 512 build envelope plus its ten-node hard-protection apron it is
+  exactly 60 at y >= -700. At y <= -701 and everywhere else on non-exterior
+  land it returns the existing generic base
+  `min(70, max(20, surface_mob_level_at(pos)))`. The fixed level-65 king
+  remains outside this resolver.
+- `faction_at` returns `accord`, `throng` or nil and never derives
+  construction rights from `race_region`. `territory_rule_at` and
+  `pvp_rule_at` apply full 3D precedence: bounded hard protection, immutable
+  deep ocean/channels, shallow Holy Grounds, planned-water/shelf inheritance,
+  ordinary land and the y = -701 contested-depth override.
+- Existing `grug_core.territory_at`, `zone_at`, `mob_level_at`,
+  `guard_level_at`, `difficulty_at`, `open_sea_at` and protection
+  callers migrate through explicit adapters. `open_sea_at` maps to deep
+  ocean, not planned water or a dragon channel. Old
+  `core/inner/outer/coast/war_coast/ocean/strait/underground` spawn buckets
+  may exist only as a temporary derived adapter.
+- All fixed placements resolve through stable zone anchor ids. Slot vocabulary
+  remains `start`, `capital`, `village_<n>`, `outpost_<n>`,
+  `bandit_<n>`, `mine`, `mirefolk`, `clash_<n>`, `dragon`,
+  `apex_mine` and `rare_<stable_rare_id>`. An absent slot returns nil;
+  consumers never synthesize a replacement coordinate.
+- Zone lookup scans only the small eligible macro-region set. A 128-node x/z
+  index serves route, hydrology and other sparse-feature queries. Hot paths do
+  not scan every feature record and reuse one x/z classification for the
+  complete vertical column.
 
 ## 14. WP40 acceptance gate
 
-- Registry: exactly 38 unique zones, every land zone has one valid race
-  region and one valid primary relief id, the undirected graph equals §9, and
-  all six start→capital paths are peaceful. The graph has exactly 61 land-
-  boundary edges: the original 57 records are byte-identical and `land_058`
-  through `land_061` have their exact §7 endpoints, pairs and zero-jitter
-  boundary-only contract. The separate route graph remains exactly 57 edges,
-  split 30 primary, 24 secondary and 3 trail. The checksum-covered selector
-  policy produces one coherent compiled logical biome ID inside the owning
-  palette at every authored result. Every secondary relief or sharp terrain
-  feature has an explicit bounded mask, stable landmark id and owning zone.
-  Every §8.4 landmark exists exactly once, modifies no column outside its
-  final owner, and satisfies its local route, anchor and grading constraints.
-  Authored overhang remains diagnostic evidence rather than a second owner or
-  automatic acceptance failure. Route/hydrology, exterior geometry, and
-  housing/capital products independently prove their respective final-area
-  obligations; owner clipping cannot satisfy those gates silently. Each of
-  the six existing capital anchors is centered in and contained by its exact
-  build-plus-10 hard-protection mask.
-  T2 creates no WP13 capital guard, defense, king or structure anchor; WP13
-  later validates those authored anchors against the same mask.
-- Geography: the complete four-zone Holy Grounds land chain and all six paired
-  frontier contacts exist on every tested seed. Each continent retains exactly
-  three connected outer peninsulas separated by two open bays, one continuous
-  capital/heartland belt and one continuous frontier; no bay reaches the belt,
-  no peninsula is cut off and no forbidden outer-zone adjacency appears.
-  Elandor's and Kragmar's coast/bay masks are not reflected copies. Neither
-  dragon island gains a land edge, no zone vanishes, no fixed anchor changes
-  zone, no route neck violates §7, and every island retains distinct
-  96-node-wide approaches at z = -125 and z = +125. For either island, its
-  Elandor- and Kragmar-oriented route lengths differ by at most 10%. From each
-  of the four landing beaches, an island land route reaches both the dragon
-  arena and apex mine; neither destination lies on the only route to the other.
-- Outer perimeter: both base footprint chains pass through every §7 vertex in
-  order, close only along their shared Holy-Grounds land edge and remain inside
-  the mainland frame after variation. All four bay mouths retain their exact
-  outer vertex, no dry start core approaches the final coast within 32 nodes,
-  and the Elandor and Kragmar chains/noise are independently authored rather
-  than reflected. The four `|z| = 1900..2500` side arcs stay inside `|x| =
-  2580..2600` and retain their complete housing depth.
-  Exhaustive equality fixtures prove exactly four nonempty, contiguous,
-  non-overlapping half-open Base-Bay mouth apertures with their exact source
-  references and 720/660/640/740-node analytic cross-sections. Every included
-  equality station is planned water under the exact Base-Bay predicate and
-  opens to shelf immediately outside; the first and last included stations,
-  the excluded end, both outside-adjacent probes and their ties are
-  deterministic. Every other final perimeter station is dry mainland: an
-  ordinary span station returns its `perimeter_span.zone_id`; a declared
-  clipped shared-edge attachment uses the shared-edge half-open/lower-numeric
-  tie first; and an unattached vertex between two spans returns the lower
-  numeric span-zone ID.
-- Starts/homes: every fixed start anchor retains its complete centred 600×500
-  dry core, and its 256×256 settlement blend plus primary-road exit lies wholly
-  inside that core. Each start cap has exactly one land neighbor—its own home
-  zone—and every home zone remains connected from both start flanks to its
-  exact west, centre or east capital-belt base interval. No coast or shared-edge
-  variation changes those contacts or the §9 land graph. Every start/home
-  boundary passes through all of its §7 control vertices before variation,
-  clips to exactly one connected land component with two shoreline endpoints
-  and keeps at least 32 nodes from its dry start core after variation.
-- Bays: all four base masks pass through their complete §7 sample tables,
-  retain exactly one half-open planned-water mouth aperture through the outer
-  perimeter, retain the unchanged round radius-80 head shoulder outside the
-  capital belt and never narrow below 64 nodes after variation. Each bay has
-  exactly two zero-jitter closure wings from that
-  shoulder to its two existing head-flanking dry triple junctions. Both wings
-  are present, their side equality and terminal junctions are dry, and no wing
-  water enters the capital-belt interior. The base centre seam and explicit
-  wing-side owners assign every planned-water point deterministically without
-  adding a land neighbor. Base masks are clipped to strict footprint interior
-  plus their own mouth aperture; Wings remain strict-interior-only. No Bay
-  point classifies as shelf or deep ocean. The coordinate-free raw-mask notch
-  pass then exhausts every integer `P` in each deduplicated finite Bay envelope
-  exactly once. Seed 0 has counts `0/0/0/0`; the max-u64 R16 seed has
-  Elandor-west/Elandor-east/Kragmar-west/Kragmar-east counts `1/1/1/0`.
-  Those three fill columns are globally unique, have one dry cardinal
-  connector and seven raw-water neighbours owned only by their Bay, and use
-  the existing exact Base-Bay owner projection. The sorted per-Bay payload is
-  the only downstream fill authority.
-- The exhaustive finite mainland-footprint oracle assigns every integer x/z
-  column to exactly one final planned-bay-water owner or one dry zone face, with
-  zero final gap and zero final overlap. It proves exact
-  `strict_rational_variable_width_capsule_union_v1` base-mask membership and
-  same-projection owner selection; strict wing membership and equality-dry
-  sides; exactly two otherwise-unowned head wedges closed per bay; no integer
-  overlap between a bay's two wings outside its base mask; and the correct
-  owner on both sides and centre tie.
-  It exercises all eight exact `J` points and adjacent columns, proving each
-  junction dry and the capital-belt interior water-free. A separate dry-face
-  oracle requires at least one raw dry face outside final planned water. Raw
-  multiplicity there is permitted only on declared shared edges and junctions,
-  where the canonical half-open rule selects the owner; every undeclared
-  cross-face seam or intersection rejects. Inside final planned water there is
-  no raw-dry-face requirement because water precedence owns the column. The
-  oracles also
-  prove unchanged base capsules, samples and 160-node head shoulders, an
-  unchanged independent outer perimeter and shelf, the byte-identical original
-  57 edge records and the exact four added boundary-only records. Each added
-  edge occurs in its two incident face cycles with opposing directions; its
-  half-open boundary tie is unique, and only the existing perimeter-span
-  records own coast and shelf. The oracle separately exhausts the four mouth
-  apertures, ordinary dry-span equality, declared clipped attachments and
-  unattached perimeter vertices under the exact precedence above. The whole-
-  footprint oracle reports zero
-  gaps, zero overlaps and zero invalid cross-face intersections, and
-  reconstructs the exact 61-edge land dual. All 32 seeds rerun the same
-  partition and topology oracle; no visual inspection substitutes for it.
-- Authored-source validation proves one checksum-covered, symbolically closed
-  authority graph before displacement; only the compiled per-seed stage
-  materializes concrete face polygons. This staging distinction changes neither
-  the final topology nor any acceptance case. Per-correction acceptance
-  evidence lives in
-  [wp40-source-authority.md](../research/wp40-source-authority.md) §6.
-- Roads: every required route connects its authored endpoints, keeps its
-  primary 7/16, secondary 5/12 or trail 3/8 surface/corridor class, and exposes
-  the identical deterministic corridor to Claim-Stone validation. Seed
-  variation never moves a fixed gate, bridge or POI connection. Ordinary road
-  nodes remain mutable; only bridges and gates without an adequate alternate
-  route receive hard protection. The exact §9.4 edge classification holds:
-  every spine and capital-axis edge is primary, every listed cross-link and
-  frontier/Holy edge is secondary, all six north/south Holy crossings remain
-  complete, and every internal Holy edge retains a trail. The result is exactly
-  30 primary, 24 secondary and 3 trail edges. The four boundary-only flank
-  edges have no route class/station/interface, surface/corridor, route or
-  capital-road gate product, travel promise or content operation and do not
-  alter those counts. Their ordinary checksum-covered shared-boundary relief
-  gate `G` controls remain mandatory and carry no route semantics.
-- Relief: outside explicit coasts, named landmarks and grading overrides,
-  generated natural ground remains inside its active relief profile's
-  water-level-relative band. Ordinary transitions contain no accidental cliff
-  or ravine; every abrupt feature resolves to a catalogued landmark mask. Road,
-  civic, structure and coastal-housing grading wins deterministically over the
-  general profile on all 32 seeds.
-- Coordinates: Holy Grounds remains exactly x = −2500..+2500 and
-  z = −250..+250; its internal junction vertices remain at x = −1500, 0 and
-  +1500 on both outer edges. The capital belts retain base edges at |z| = 1100
-  and 1900, all six 704×704 blend envelopes remain inside their assigned
-  800-node cells, and both frontier separators pass through all six fixed
-  §7 control vertices before bounded variation. Island centres and complete
-  600×700 envelopes are exact, final land masks stay inside them, channel width
-  never falls below 200 nodes, each warning band is exactly 48 nodes and the
-  hard strip is never narrower than 104.
-- Level/PvP: every ordinary progression and capital road-gate transition is
-  continuous within 2 mob levels. The optional western/eastern high-front
-  gates are deliberate endgame jumps from 31–40 into 51–60; each requires a
-  visible fortified threshold, destination-level map label, contested-zone
-  warning and unobstructed turnaround before hostile population. Every
-  level-31–60 ordinary zone is contested; no level-1–30 zone is.
-- Level-query edges: after coordinate normalization, capital center and exact
-  hard-mask-edge samples return guard level 60 at y = -700, while the sample
-  one node outside returns the generic base. At y = -701 all three return the
-  generic base. Surface and guard level are nil on every exterior class; shelf
-  mob level is nil at normalized y = 0 and depth-only at y = -1. Deep ocean and
-  channel ordinary mob level remain nil, without changing the fixed level-100
-  deep-ocean Kraken.
-- Biomes/content: T2's compiled selector agrees with the full-seed slow oracle
-  and no logical biome, mob family or gathering node appears outside its zone
-  palette. T6 only maps the compiled IDs to content. Every
-  `logical biome × zone` cell has at least one valid ambient spawn or is
-  explicitly marked civic/no-hostiles.
-- Economy: the §11 G1/G2, cultural-material, signature-wood, POI, rare and
-  loot-source audits pass over at least 32 representative seeds. They prove
-  native, enemy-contested, deep-cross-border, apex-camp and trade routes,
-  including practical T4 access to the opposing faction-exclusive G2.
-- Territory: `race_region` never grants construction rights; ordinary
-  level-31–60 frontier/island terrain is editable by both factions, Holy
-  Grounds is immutable through y = -700 and contested/editable at y = -701,
-  dragon channels are immutable at every y, and all 24 apex gem sockets are
-  reachable and diggable with their required tool. Every camp's small
-  functional anchor remains protected, while ordinary walls, tents and
-  battlefield dressing follow the zone's mutable terrain policy.
-- Water: ordinary shelf is exactly 80 nodes outward from the final analytic
-  planned-footprint perimeter and inherits the adjacent perimeter zone's
-  policy. Deep ocean and dragon-channel 2D columns are
-  immutable at every y. No deep-ocean column occurs inside either mainland;
-  all authored bays, lakes, rivers and other planned water remain
-  land-zone-classified, use `default:water_source`, derive ordinary dressing
-  from the owning logical biome and stay claim-ineligible. No generated surface
-  water uses a regional/faction liquid or `default:river_water_source`; named
-  landmark dressing changes only bed, shore, depth and decorations. The four
-  coastal housing zones each retain at least 600 continuous shoreline nodes and
-  300 nodes of buildable inland depth after final coastline variation and all
-  static exclusions. Every possible 101×101 reservation wholly inside each
-  guaranteed core has no more than 12 nodes of generated natural-ground relief
-  and intersects no forced cliff, ravine, river or lake, while every accepted
-  reservation stays completely outside shelf water. The 32-seed packing audit
-  reports actual capacity rather than treating this geometry minimum as a
-  Claim-Stone quota.
-- Migration: starts/respawns, 24 outposts, 12 bandit camps, rare routes,
-  patrols, camps, surface mobs, gathering slots, waypoint/map/boss anchors,
-  territory checks and mount boundaries all use zone ids. Only then may the
-  retired `core/inner/outer/coast/war_coast` fields and full-water strait be
-  deleted.
-- Mapgen: fresh-world-only; Lua 5.1 syntax, deterministic registry tests,
-  headless generation samples, sunlight/content-ignore checks and a
-  representative chunk-time comparison against WP18 are mandatory before the
-  user's fresh-world GUI test.
+### 14.1 Fixed 2D product
+
+- Exactly 38 unique zones exist. Every zone hub lies in its zone; every zone is
+  nonempty and connected on the complete integer-node grid of the finite
+  authored extent.
+- The result contains exactly one connected mainland and two connected
+  islands. The Holy Grounds rectangle, six dry start cores, six capital
+  ownership envelopes, island centres/envelopes and all fixed anchors retain
+  their authored positions and owners.
+- The 57 land routes connect their authored endpoints, stay inside land except
+  at explicit crossing interfaces and remain split into exactly 30 primary,
+  24 secondary and three trail classes with 7/16, 5/12 and 3/8 widths. An
+  ordinary two-zone route enters no undeclared third zone. Required POI spurs
+  and the separate boat graph are complete.
+- Every emergent geometric contact belongs to section 9's complete 61-pair
+  allowlist; allowed pairs need not all occur. No forbidden contact, detached
+  sliver or path-created land is accepted.
+- All four bays remain open and connected from outer water to their heads,
+  stay at least 64 nodes wide, reach neither capital belt nor housing core,
+  disconnect no prong and create no new land contact.
+- Water precedence is total. Holy Grounds remains exact; deep ocean and both
+  dragon channels are immutable; the nominal shelf uses the shared
+  `expanded_land_at(80) and not land_at` classifier. Each island keeps two
+  distinct 96-node approaches at z = -125 and z = +125, at most 10% route
+  parity, a 48-node warning band on each shore and at least 104 hard no-flight
+  nodes.
+- Exactly ten whole-footprint housing-centre masks pass all static exclusions.
+  The four coastal cores retain 600-node frontage and 300-node depth.
+- One source snapshot produces byte-identical canonical 2D data and SVG.
+  The SVG independently displays land/water, zones/labels, difficulty/PvP,
+  routes, fixed and candidate anchors, ownership cores and housing masks. It
+  reports validation failures but never mutates source data to repair them.
+
+### 14.2 Height, policy and content
+
+- One globally queryable project-owned height field is independent of emerge
+  order and agrees between offline and engine loaders. It never uses engine
+  spawn level or a generated chunk as global height authority.
+- Every required relief profile, logical-biome palette, named landmark and
+  anchor slot exists exactly once with a valid owner. Kragmar and Elandor
+  source records are independently authored rather than reflected.
+- The final difficulty lattice changes by at most two levels between every
+  orthogonally adjacent walkable surface pair and along every ordinary route.
+  Capital guard/depth/fixed-entity rules remain separate and exact.
+- Selected anchors come from their 2D-frozen valid candidate set through one
+  bounded hash choice. Terrain fitting succeeds without rejection, reselection
+  or endpoint movement.
+- Every wholly contained eligible 101 by 101 reservation in a coastal housing
+  core has at most 12 nodes of natural relief. Housing capacity is reported
+  from the fixed-layout canonical packing portfolio with an auditable upper
+  bound.
+- The G1/G2, cultural-resource, regional-parity, practical
+  opposing/deep/island-access and 24-apex-slot ledgers pass over 32
+  representative content seeds. Native, enemy-contested, deep-cross-border,
+  apex-camp and trade access remain practical; all protected apex sockets are
+  reachable and diggable with their required tool.
+- Every `logical biome x zone` cell has a valid content result or an explicit
+  civic/no-hostiles declaration. Surface water remains
+  `default:water_source`; surface content never remaps logical ownership.
+
+### 14.3 Mapgen, performance and rollout
+
+- The pure typed planner has one deterministic operation order and preserves
+  native caves, ores, dungeons and strata outside its owned shallow slices.
+  Mapchunk order, owner-slice, content-ignore, lighting and liquid fixtures are
+  deterministic.
+- The new public adapters and writer become live only in the atomic cutover
+  that removes `ocean_mask.lua` and `structures.lua` from the production
+  pipeline. Repository checks prove that no second Grudgelands geography
+  writer remains enabled.
+- An 80 by 80 horizontal LuaJIT classification benchmark is no slower than
+  5 ms median. Its absolute and relative difference from WP18 is published;
+  more than 2 ms of added horizontal cost requires review. One horizontal
+  result is reused for a vertical column.
+- Lua source and tools pass plain Lua 5.1 syntax/static gates. Long full-layout
+  and 32-seed populations run under LuaJIT. Targeted representative PUC 5.1
+  KATs produce byte-identical canonical artifacts/digests. The retired exact
+  T2 PCC/F1/F2 and topology populations remain historical evidence, not gates
+  for the simple schema.
+- WP40 is fresh-world-only. Headless generation, deterministic replay and the
+  user's fresh-world GUI test complete release evidence. Migration of starts,
+  respawns, outposts, camps, rares, patrols, mobs, gathering, waypoints, map,
+  bosses, territory and mounts to zone ids is verified before old coarse
+  geography fields are removed.
 
 ## 15. Exact PvP eligibility contract (WP41)
 

@@ -1,10 +1,20 @@
 # WP40 Compiled-Geometry Source Authority
 
-Status: **derived implementation authority. Not game design.**
+Status: **SUPERSEDED 2026-08-25 by the simple-map engineering contract. This
+file is immutable historical evidence for the retired exact T2 compiler, not
+live implementation authority.**
 
-[world_zones.md](../design/world_zones.md) owns *what the world is* — the
-zones, the named places, the distances a designer chose, and the contracts
-later work packages consume. This file owns *how the WP40 T2 compiler derives
+Do not implement, resume or validate WP40 from this file. Current product rules
+live in [world_zones.md](../design/world_zones.md); the current technical
+contract is [wp40-engineering-brief.md](wp40-engineering-brief.md), with
+delivery sequencing in
+[wp40-simple-map-rebase-plan.md](wp40-simple-map-rebase-plan.md). Every exact
+boundary/partition rule below is retained solely to interpret accepted old
+artifacts.
+
+[world_zones.md](../design/world_zones.md) then owned *what the world was* —
+the zones, named places, distances and downstream contracts. This file owned
+*how the WP40 T2 compiler derived
 that world from the coordinate-free authored source*: canonical direction
 rules, fixed-point arithmetic, raster topology, trace algorithms and terminal
 resolution.
@@ -16,10 +26,11 @@ compiler-pipeline order rather than in the order they were discovered. No rule
 was changed, weakened or removed in the move; the extraction is a relocation,
 not a revision.
 
-Consumers: WP40 T2 only. WP13, WP17, WP24, WP41, WP42, WP9 and WP12 read
-`world_zones.md` and never need this file. The narrative history of each
-correction, with its evidence and digests, stays in
-[wp40-engineering-brief.md](wp40-engineering-brief.md).
+Historical consumers: WP40 T2 only. WP13, WP17, WP24, WP41, WP42, WP9 and
+WP12 read `world_zones.md` and never need this file. The narrative history of
+each correction, with its evidence and digests, stays in
+[wp40-reality-corrections.md](wp40-reality-corrections.md) and the retained
+exact-T2 artifacts.
 
 ## 1. Boundary displacement
 

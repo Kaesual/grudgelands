@@ -46,10 +46,12 @@ focused `TODO-*.md` files until resolved.
 [38-zone catalog](docs/design/world_zones.md) define two independently shaped
 faction continents joined by the continuous four-zone Holy Grounds. Each zone
 has a stable id, level range, race region, political terrain rule, PvP state,
-biome palette and fixed neighbors. Six outer level-1–10 starts lead through
-home and heartland zones to six central capitals; every level-1–30 zone is
-peaceful and every ordinary level-31–60 frontier, Holy-Grounds and dragon
-zone is contested.
+biome palette, fixed hub and authored route neighbors. One fixed 2D layout
+uses small land/water shapes, nearest-hub ownership and reliable independent
+routes; seed variation begins with terrain, biome detail and content. Six
+outer level-1–10 starts lead through home and heartland zones to six central
+capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
+frontier, Holy-Grounds and dragon zone is contested.
 
 PvP state is one central transaction, not a combat-path exception. A valid
 hostile action tags its initiator before resolution; safe→safe and
@@ -180,7 +182,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-22. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-25. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -203,13 +205,14 @@ questions and PvP-death XP rule remain explicitly open in
 
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
-Its [engineering brief](docs/research/wp40-engineering-brief.md) is written and
-reviewed and decomposes the work into T0–T9: T0 and T1 are complete, T2 is in
-flight with its boundary topology and C1-v3 downstream interface now frozen;
-the non-topology geometry, production compiler and T2-final remain open.
-T3–T9 have not started. Current state and execution order are in
-[the T2 plan](docs/research/wp40-t2-plan.md). The fixed seed, capacity and
-performance evidence remains a merge gate.
+The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
+partition/topology path. The R0 authority fold is independently accepted; R1
+next produces a fixed pure 2D layout and canonical SVG for visual approval
+before height and mapgen integration. The current [engineering contract](docs/research/wp40-engineering-brief.md)
+and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
+zones, routes, housing, policy and supply goals with a much smaller algorithm.
+Fixed-layout and once-per-layout capacity, 32-seed content/supply and
+performance evidence remain merge gates.
 
 **Ready to start next:** WP26 and WP44 are the newly unblocked material and
 economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped

@@ -693,23 +693,22 @@ per-stone radii up to 50 or the project's 100-player target.
 
 - The authored mainland frame is x = −2,600..+2,600 and
   z = −3,000..+3,000. It bounds mainland authoring, not the generated world.
-- The Holy Grounds is x = −2,500..+2,500 and z = −250..+250. Its authored
-  internal x edges are −1,500, 0 and +1,500 with bounded shared-edge
-  variation. It is hard-protected through y = −700; universal contested depth
-  resumes at y = −701.
+- The Holy Grounds is x = −2,500..+2,500 and z = −250..+250. Its four-zone
+  internal ownership follows the fixed Holy hubs and integer power rule in
+  `world_zones.md` §§7.1/7.3. It is hard-protected through y = −700; universal
+  contested depth resumes at y = −701.
 - Dragon-island centres are (−3,150, 0) and (+3,150, 0), each inside a fixed
   600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
   flight-warning bands on both shores and at least 104 hard no-flight nodes.
   The channel columns are immutable at every depth.
-- A continent's analytic planned footprint contains dry land and every
-  authored bay, lake, river and zone-water mask. Those water masks remain
-  zone-classified and claim-ineligible even if filled.
-- The 80-node editable shelf begins only outside the planned footprint's final
-  perimeter; deep ocean after it is immutable at every depth. Dragon-channel
-  masks override the shelf.
-- The four lateral perimeter arcs between `|z| = 1900` and `|z| = 2500` remain
-  inside `|x| = 2580..2600`. Coast and zone-boundary variation are jointly
-  damped there to preserve each 600-by-300 coastal housing core.
+- Authored bay, lake, river and zone-water masks remain zone-classified and
+  claim-ineligible even if filled or drained.
+- The editable nominal shelf is exactly
+  `expanded_land_at(80) and not land_at`; deep ocean beyond it is immutable at
+  every depth. Dragon-channel masks override the shelf.
+- The Copperfell, Starbough, Mournfen and Raincall coastal-core records each
+  reference their corresponding fixed 600-by-300 landmark geometry. They do
+  not depend on a materialized perimeter or zone boundary.
 - Kragmar capital centres are (−1,800, +1,500), (0, +1,500) and
   (+1,800, +1,500). Elandor capital centres are (−1,800, −1,500),
   (0, −1,500) and (+1,800, −1,500). Surface y is terrain-derived.
@@ -733,16 +732,20 @@ per-stone radii up to 50 or the project's 100-player target.
 - The per-faction live-Stone defaults are selected below measured physical
   capacity. They bound permanent occupancy and create a soft availability
   incentive without directly balancing active PvP population.
-- The capacity audit covers at least 32 representative seeds and uses final
-  housing polygons, real exclusion masks and simulated free-placement
-  sequences. Gross area alone is not a capacity result.
-- The audit may not enlarge the fixed mainland frame to satisfy a quota.
-- For each guaranteed coastal core, every audited seed proves at least 600
-  continuous shoreline nodes and 300 usable inland nodes after coastline
-  variation and static exclusions.
-- The audit slides the complete 101×101 reservation over every guaranteed core
-  and proves no more than 12 nodes of natural-ground relief and no forced
-  cliff, ravine, river, lake or coastal-shelf intersection.
+- The two-dimensional capacity audit runs once per accepted fixed layout and
+  uses final housing-centre masks, real exclusion masks and the canonical
+  portfolio of lattice, greedy, row-major/reverse, edge-biased and 16
+  hash-order placement sequences. Gross area alone is not a capacity result.
+  Varying-seed height/content conformance is a separate audit and never
+  recomputes the horizontal mask or packing portfolio.
+- The fixed-layout capacity audit may not enlarge the fixed mainland frame to
+  satisfy a quota.
+- For each guaranteed coastal core, the fixed layout proves at least 600
+  continuous shoreline nodes and 300 usable inland nodes after static
+  exclusions.
+- The varying-seed height/content audit slides the complete 101×101 reservation
+  over every guaranteed core and proves no more than 12 nodes of natural-ground
+  relief and no forced cliff, ravine, river, lake or coastal-shelf intersection.
 - Coastal geometry minima do not replace the packing simulation.
 - Revised T4, T5 and T6 reliable net-income measurements convert the fixed
   30-minute, 90-minute, 3-hour, 5-hour and 10-hour targets into ledger copper

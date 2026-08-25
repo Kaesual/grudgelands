@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# HISTORICAL EXACT-T2 RUNNER. PCC/F1/F2 are not gates for the 2026-08-25
+# simple-map schema. Keep this executable only to reproduce immutable evidence.
+
 # Bounded Pinned PUC Conformance Core (PCC), contracts section 14.7.
 # This runner never launches F1, F2, full-W, C1 reacceptance or a population
-# under PUC.  Those final gates remain separately named by the contract.
+# under PUC. Those former final gates are retained only in historical records.
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$script_dir/../.." && pwd)"

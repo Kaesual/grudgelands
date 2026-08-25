@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# HISTORICAL EXACT-T2 F2 RUNNER. It is not a simple-map R1-R8 gate; retain it
+# only for reproduction of the immutable v3 conformance evidence below.
+
 # T2c-E0-C1 PUC conformance over the v3 scalar pool.
 #
 # Every file this launcher writes is a v3 name.  The pre-v3 rescore-puc-%04d,
