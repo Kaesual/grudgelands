@@ -468,6 +468,10 @@ WP40 replaces it with the complete catalog and contracts below.
   waterfall basin or other abrupt macro feature exists only through a named
   authored landmark. Start, capital, housing, route and selected-anchor grading
   overrides general relief in that order of functional necessity.
+- On an authored route's complete full-weight visible surface, route grading
+  wins over start, capital and guaranteed coastal-core fitting; those grades
+  retain their stated priority everywhere outside that surface, and exact
+  start/capital hub pins equal the fitting reference height.
 - Landmarks have stable ids, one declared owner and bounded masks. Owner
   clipping prevents a landmark from modifying another zone but never silently
   satisfies its route, housing, anchor or grading obligations.

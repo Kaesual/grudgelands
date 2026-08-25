@@ -1,8 +1,8 @@
 # WP40 simple-map R3 vertical contract
 
-**Status (2026-08-25): independently accepted implementation contract,
-including the constructive route skeleton and grade-composition clarification.
-R2 is accepted; no R3 implementation or artifact is accepted yet.**
+**Status (2026-08-26): independently accepted implementation contract,
+including the full-route-surface clarification. R2 is accepted; no R3
+implementation or artifact is accepted yet.**
 
 This contract turns the accepted `wp40-simple-map-v1d` horizontal layout into
 one small, deterministic vertical model. It deliberately does not resurrect
@@ -382,15 +382,29 @@ Start and coastal-core footprints are already proven dry; civic water inside a
 capital is therefore preserved rather than silently filled by the capital
 grade.
 
-This precedence is compositional, not a winner-takes-all jump between masks.
-Scalar land grades are evaluated from the lowest row upward. At any collar,
-`incoming` means the complete result of every lower-priority stage at that
-column, including a lower route or landing grade; full weight still replaces
-it with the higher stage's target. A start, capital or coastal collar therefore
-blends smoothly back to an intersecting graded route rather than hiding the
-route until a discontinuous mask edge. Planned-water bed/deck exceptions keep
-the explicit Section 4.3 semantics and are not turned into scalar land by this
-composition rule.
+Outside the bounded path-surface exception below, this precedence is
+compositional, not a winner-takes-all jump between masks. Scalar land grades
+are evaluated from the lowest row upward. At a collar column outside the
+selected path's complete full-weight visible surface, `incoming` means the
+complete result of every lower-priority stage at that column, including a
+lower route or landing grade; full weight likewise replaces it with the higher
+stage's target. Outside and alongside that visible surface, a start, capital
+or coastal collar therefore blends smoothly back to an intersecting graded
+route rather than hiding the route until a discontinuous mask edge.
+Planned-water bed/deck exceptions keep the explicit Section 4.3 semantics and
+are not turned into scalar land by this composition rule.
+
+One bounded exception protects the actual traversable path from both a collar
+edge and a flat-plateau exit. On a path's complete full-weight visible surface,
+every start-, capital- or coastal-core grade weight (`1..65536`) is treated as
+zero and the path surface wins. At the exact hub its endpoint pin already
+equals the start/capital reference; after that it may grade through the flat
+area as one narrow road strip. Outside the visible path surface the ordinary
+order is unchanged, so the rest of each fitting/core remains flat or gently
+blended. Selected-anchor grades already sit below routes. This exception uses
+only the existing masks and route projection; it adds no plateau-edge pins,
+owner-boundary distance or repair pass. The final adjacent-step gate remains
+unchanged.
 
 ### 5.2 Starts, capitals, coastal cores and selected anchors
 
@@ -785,3 +799,26 @@ result at that column. Its focused independent review returned **ACCEPTED**,
 0 Critical / 0 High / 0 Medium / 0 Low. Total contract fix-round count is
 seven. This acceptance still covers the contract only; implementation,
 artifact and production integration remain separately gated and reviewed.
+
+The next seed-zero integration pass found the owner-clipped form of the same
+problem on `route_002` run 247: the capital collar was absent on the foreign
+owner column and appeared at significant weight on the next capital-owned
+column, changing the route from y 39 to y 48. The eighth correction makes only
+partial start/capital/coastal collar weights yield on a path's full-weight
+visible surface; full plateau/core weight keeps its higher precedence and the
+final route-step gate remains unchanged. Its focused independent review
+returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Total contract
+fix-round count is eight. Implementation, artifact and production integration
+remain separately gated and reviewed.
+
+The next seed-zero pass then found the adjacent full-plateau form on
+`route_001` runs 66 to 67: the last start-fitting column remained at y 9 and
+the route resumed at y 11. Correction round nine makes the route win over
+every start-, capital- and coastal-core fitting weight on its complete
+full-weight visible surface, while the exact hub pin retains the fitting
+reference and every column outside that narrow path keeps the ordinary
+priority. The binding design rule in `docs/design/world_zones.md` now states
+the same bounded exception. Its focused independent review returned
+**ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Total contract fix-round
+count is nine. Implementation, artifact and production integration remain
+separately gated and reviewed.
