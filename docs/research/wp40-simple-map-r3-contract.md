@@ -1,8 +1,8 @@
 # WP40 simple-map R3 vertical contract
 
-**Status (2026-08-25): independently accepted implementation contract with
-the constructive route-skeleton amendment. R2 is accepted; no R3
-implementation or artifact is accepted yet.**
+**Status (2026-08-25): independently accepted implementation contract,
+including the constructive route skeleton and grade-composition clarification.
+R2 is accepted; no R3 implementation or artifact is accepted yet.**
 
 This contract turns the accepted `wp40-simple-map-v1d` horizontal layout into
 one small, deterministic vertical model. It deliberately does not resurrect
@@ -382,6 +382,16 @@ Start and coastal-core footprints are already proven dry; civic water inside a
 capital is therefore preserved rather than silently filled by the capital
 grade.
 
+This precedence is compositional, not a winner-takes-all jump between masks.
+Scalar land grades are evaluated from the lowest row upward. At any collar,
+`incoming` means the complete result of every lower-priority stage at that
+column, including a lower route or landing grade; full weight still replaces
+it with the higher stage's target. A start, capital or coastal collar therefore
+blends smoothly back to an intersecting graded route rather than hiding the
+route until a discontinuous mask edge. Planned-water bed/deck exceptions keep
+the explicit Section 4.3 semantics and are not turned into scalar land by this
+composition rule.
+
 ### 5.2 Starts, capitals, coastal cores and selected anchors
 
 Every zone has one seed-independent skeleton height:
@@ -458,9 +468,9 @@ Its root uses section 3.1 with domain
 octave ordinal one and maps by `floor(s * 13 / P) - 6`. Smootherstep bilinear
 interpolation is rounded once and remains in `[-6,+6]`. Thus every exact
 capsule column is in one closed 12-node natural-height band. A 64-node
-owner-clipped outside collar returns to ordinary relief. This grade is not a
-promise for the complete ten housing masks and does not pre-grade future
-player claims.
+owner-clipped outside collar returns to the complete lower-priority incoming
+height. This grade is not a promise for the complete ten housing masks and
+does not pre-grade future player claims.
 
 ### 5.3 Routes and POI spurs
 
@@ -765,3 +775,13 @@ closed without adding a solver or changing R2. The final rereview returned
 fix-round count is six. This acceptance covers the contract only; the
 implementation, artifact and production integration still require their own
 gates and independent review.
+
+The first integrated seed-zero query then exposed a composition seam on
+`route_001` run 131: a start-fitting collar calculated independently against
+natural relief yielded y 33 and hid the y 12 route until the next raster node.
+The seventh correction made the existing precedence explicitly bottom-up and
+compositional, so every higher collar blends to the complete lower-priority
+result at that column. Its focused independent review returned **ACCEPTED**,
+0 Critical / 0 High / 0 Medium / 0 Low. Total contract fix-round count is
+seven. This acceptance still covers the contract only; implementation,
+artifact and production integration remain separately gated and reviewed.
