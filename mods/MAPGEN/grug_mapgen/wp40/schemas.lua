@@ -11,6 +11,8 @@ return {
 	geometry_source = "grug_wp40_geometry_source_v1",
 	compiled = "grug_wp40_compiled_world_v2",
 	compiled_algorithm = "grug_wp40_compiled_geometry_v1",
+	simple_map_source = "grug_wp40_simple_map_source_v1",
+	simple_map = "grug_wp40_simple_map_v1",
 	coverage = "grug_wp40_deferred_coverage_v1",
 	ipc_key = "grug_mapgen:wp40_world_v1",
 }

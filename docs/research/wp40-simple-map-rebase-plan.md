@@ -1,7 +1,7 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0 authority fold independently accepted 2026-08-25;
-R1 is next
+**Status:** D1-D7, R0 and R1 independently accepted 2026-08-25; mandatory
+V1 user visual review is next
 
 **Ruling date:** 2026-08-25
 
@@ -419,6 +419,31 @@ repair them or tune hidden algorithm constants to turn them green. The user
 first reviews the picture; route centrelines are expected to be re-authored
 from the retained endpoints/classes because the old five-point records were
 boundary-derived skeletons, not finished scenic roads.
+
+**R1 completion record (2026-08-25):** the engine-free source, pure evaluator,
+offline loader, canonical KAT, SVG renderer and one current preview artifact
+are implemented. The runner passed Lua 5.1 syntax/`SETGLOBAL`/portability
+checks, byte-identical LuaJIT/PUC 5.1 KATs for seeds `0`, `1`, `2^63` and
+`2^64-1`, byte-identical repeated rendering and XML parsing. Seed 0 produced
+KAT digest `4cba92a92e2b9ee39f51e79438eed77b9cd60b29c2df1e9fb42014cc70bc3112`;
+the generated preview SHA-256 is
+`db75907095b9bf917efc9a6869d711811d29faa4011d644108c237653fc1b4b4`.
+The final sampled report remained deliberately advisory: three land
+components (mainland plus two islands), three disconnected sampled zones,
+zero missing zones, twelve undeclared sampled contacts, 175 of 7,080 dry-route
+samples on non-land, 99 declared water-crossing samples, 252 of 252 candidate
+anchors in their intended zones, and zero bay/channel/sample failures. The
+5.687 ms local 80 by 80 classifier median is also advisory until R2's binding
+measurement. None of these values triggered repair or visual tuning before
+V1.
+
+Calibration record: implementing/integrating model GPT-5.6 Sol; independent
+review models GPT-5.6 Sol (pre-review audit) and explicitly authorized Claude
+Fable (formal acceptance). The pre-review audit found 0 Critical / 6 High / 3
+Medium; the first full Fable review found 0 Critical / 0 High / 3 Medium. Two
+correction rounds closed every accepted finding; the focused Fable rereview
+returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium. Observed elapsed wall
+time is `unknown` because the implementation crossed a context compaction.
 
 ### V1 — mandatory user visual gate
 

@@ -119,10 +119,11 @@ the goal-level view.
 - [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
   the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
   contract. **In progress since 2026-08-13; simple-map rebase accepted
-  2026-08-25; R0 authority fold independently accepted 2026-08-25.** R0
-  replaced the unfinished exact-T2 partition/topology path; R1 next delivers
-  one fixed pure 2D model and canonical SVG for visual
-  approval before height/mapgen integration. Current technical contract:
+  2026-08-25; R0 and R1 independently accepted 2026-08-25.** R0
+  replaced the unfinished exact-T2 partition/topology path; R1 now provides
+  one fixed pure 2D model and canonical SVG. Mandatory V1 user visual approval
+  is next and precedes layout freeze, height and mapgen integration. Current
+  technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:
   [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
