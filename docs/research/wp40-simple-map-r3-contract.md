@@ -249,7 +249,10 @@ at index `upstream_steps + 1` and exactly `run` nodes or validation fails. This
 places the extra node downstream when `run` is even. The occupied x/z mask is
 the exact polyline corridor of total `width`. Water surface and bed interpolate
 linearly, half away from zero, from the concrete upper values at the first
-axis node to the concrete lower values at the last.
+axis node to the concrete lower values at the last. This transition operation
+has precedence over ordinary reach selection throughout its occupied mask;
+the current overlapping source order may otherwise classify a downstream
+rapid node as its upper reach.
 
 A waterfall requires the upper reach's last point and lower reach's first
 point to be distinct on one cardinal axis, with their midpoint equal to the
@@ -298,10 +301,11 @@ session construction. An anchor platform returns its anchor id as
 - A tunnel floor leaves the overlying terrain height untouched. Its exact y is
   constructed by the two-pass route rule below so R5 can later cut a
   four-node-high lumen with proved overburden.
-- A required selected anchor whose centre lies in planned water receives a
-  dry `anchor_platform` at least one node above its water surface. Analytic
-  water policy remains planned water, just as it remains planned water after
-  a player fills it.
+- Every selected non-capital anchor receives a dry `anchor_platform` at least
+  one node above the water surface on each planned-water column inside its
+  complete fitting square. Capital civic water is the explicit exception and
+  remains water. Analytic water policy remains planned water under an anchor
+  platform, just as it remains planned water after a player fills it.
 
 For each named water interface, the operation footprint is the matching
 route's visible `surface_width` intersected with its authorization polygon and
@@ -309,20 +313,33 @@ the named hydrology mask. Its first and last canonical route-axis nodes become
 equal-height grade pins with the exact ford/bridge/causeway y above. Each
 tunnel footprint is derived without changing R2: take the 65 canonical route
 axis nodes centred on its exact interface position (32 before, the centre and
-32 after), and use their complete visible route surface.
+32 after). Remove axis nodes occupied by a named non-tunnel operation, then
+take the one remaining contiguous run containing the tunnel centre and use
+its visible route surface minus the union of every named non-tunnel operation
+footprint; the named non-tunnel operation wins on each subtracted column. The
+central 33 axis nodes, centre plus 16 on each side, may not be removed; a
+removed central node, a split central run or an overlap between two tunnel
+interfaces is a validation failure. This exact two-dimensional clipping lets a
+portal meet an already-authored bridge, ford or causeway without pretending
+that one column has two exceptional traversable surfaces.
 
 Tunnel pins are constructed after every endpoint and non-tunnel operation pin.
 First evaluate the route's piecewise-linear y at the tunnel centre without a
 tunnel pin (`baseline_y`). Then scan the central 33 axis nodes, centre plus 16
 on each side, using terrain height before any path grade. With
-`interior_min` equal to their minimum, the flat tunnel floor is
-`min(baseline_y, interior_min - 5)`. Both ends of the 65-node tunnel span
-become equal-height pins at that floor. Thus nodes `floor+1..floor+4` are the
-future lumen and every central interior column retains at least one solid
-overburden node at `floor+5`. The ordinary adjacent-pin step-at-most-one gate
-also proves both portal approaches; an infeasible approach fails the source.
-Missing axis nodes, a missing exact centre or overlap with a different
-interface fails validation.
+`interior_min` equal to their minimum, form one feasible floor interval. Its
+upper bound begins at `interior_min - 5`. For the closest already-frozen pin
+strictly before the clipped tunnel run, let `d_before` be the first tunnel-run
+index minus that pin's index and intersect with
+`[pin_y - d_before, pin_y + d_before]`; do the same for the closest pin after
+the run with `d_after` equal to that pin's index minus the last tunnel-run
+index. A missing pin on either route side, or an empty
+intersection, is a validation failure. Clamp `baseline_y` into the resulting
+closed interval and make both ends of the clipped tunnel run equal-height pins
+at that floor. Thus nodes `floor+1..floor+4` are the future lumen, every
+central interior column retains at least one solid overburden node at
+`floor+5`, and both portal approaches are constructively able to satisfy the
+ordinary adjacent-step gate.
 
 R3 freezes only these heights, ids, masks and kinds. Culvert blocks, bridge
 supports, tunnel walls, liquid faces and seals are R5 typed planner operations.
@@ -341,32 +358,38 @@ On an ordinary land column the high-to-low functional precedence is:
 6. natural relief and landmark result.
 
 This makes the existing design phrase “start, capital, housing, route and
-selected-anchor” explicit rather than dependent on loop order. Every grade is
-owner-clipped. Planned-water columns preserve their hydrology bed except for a
-named/derived route operation or a required selected-anchor platform. Start
-and coastal-core footprints are already proven dry; civic water inside a
+selected-anchor” explicit rather than dependent on loop order. Start, capital,
+coastal-core and anchor grades are owner-clipped. A frozen route/spur/island
+grade follows its accepted complete route footprint across whatever land
+owners R2 classifies there; it is not clipped to `zone_a`, `zone_b` or a
+two-zone assumption. Planned-water columns preserve their hydrology bed except
+for a named/derived route operation or a required selected-anchor platform.
+Start and coastal-core footprints are already proven dry; civic water inside a
 capital is therefore preserved rather than silently filled by the capital
 grade.
 
 ### 5.2 Starts, capitals, coastal cores and selected anchors
 
-All 17 current anchor-profile shape names use one R3 fitting primitive: a flat
-centred half-open square of `fitting_width`, with smootherstep return to the
-incoming height before the edge of `blend_width`. The shape name remains a
-later structure/dressing tag. This deliberately rejects the old generic
-template DSL.
+All 17 current anchor-profile rows, containing 13 distinct shape tags, use one
+R3 fitting primitive: a flat centred half-open square of `fitting_width`, with
+smootherstep return to the incoming height before the edge of `blend_width`.
+The shape tag remains a later structure/dressing tag. This deliberately
+rejects the old generic template DSL.
 
 The fitting target is constructed once, not guessed from the centre. For every
 land column with natural height `h` in the selected fitting square, accumulate
 `lower = max(h - max_cut)` and `upper = min(h + max_fill)`. Planned-water
-columns additionally raise `lower` to their maximum `water_surface + 1`.
+columns of a non-capital selected anchor additionally raise `lower` to their
+maximum `water_surface + 1`; the same columns become `anchor_platform` across
+the full-weight fitting square, not its outside collar. Capital civic-water
+columns are excluded from both the target bounds and the grade.
 When `lower <= upper`, clamp the natural centre height into that closed
 interval; when it is empty, R3 reports a source violation. It never rejects or
 reselects the anchor. This target makes every fitting-square land column obey
 the authored cut/fill limits. Every collar result is additionally clamped to
 `[incoming - max_cut, incoming + max_fill]`, so a very different height just
-outside the fitting square cannot violate the same limits. A planned-water
-part is reported as an anchor platform.
+outside the fitting square cannot violate the same limits. A qualifying
+planned-water part is reported as an anchor platform.
 
 The six starts and six capitals use their existing fixed anchor/profile rows.
 Their routes share the same target at the common hub. Capital grading applies
@@ -504,7 +527,10 @@ least:
   of its wholly contained eligible 101 by 101 reservations. The global
   capsule range at most 12 proves every such reservation without rescanning
   every 101 by 101 window; and
-- construction/query timing and query-time SHA count as evidence only.
+- deterministic construction/query operation counts and the query-time SHA
+  count. Host/interpreter wall-clock timings are emitted in the run log as
+  unbound evidence only; they never enter the canonical artifact because that
+  would make byte-identical reproduction impossible.
 
 The exhaustive fixed-layout/seed-zero scan runs under LuaJIT. It checks the
 complete accepted R2 x/z extent, all route axes/corridors, every selected
@@ -563,6 +589,16 @@ The second correction round bound off-axis columns to frozen axis-node
 heights, constructed tunnel floors from the ungraded interior minimum, and
 defined rapid endpoints and raster length exactly. The focused rereview
 returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Fix-round count
-is two. This acceptance covers the contract only; the implementation,
-artifact and production integration still require their own gates and
-independent review.
+was two at that acceptance.
+
+A subsequent full frozen-source audit exposed one real tunnel/causeway overlap
+and clarified timing evidence, cross-owner routes, rapid precedence,
+planned-water anchor platforms and the source's 17 profile rows/13 shape tags.
+The first focused amendment review returned **REJECTED** with 0 Critical,
+1 High, 0 Medium and 0 Low because clipping only the tunnel axis left a
+possible off-axis surface overlap. The correction subtracts every named
+non-tunnel operation footprint from the tunnel's complete visible surface.
+Its focused rereview returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium /
+0 Low. Total contract fix-round count is four. This acceptance covers the
+contract only; the implementation, artifact and production integration still
+require their own gates and independent review.
