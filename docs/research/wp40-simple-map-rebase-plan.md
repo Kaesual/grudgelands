@@ -1,8 +1,8 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7, R0, R1, V1b, V1c and the V1d technical package independently
-accepted 2026-08-25; the generated V1d preview awaits explicit user visual
-approval before R2
+**Status:** D1-D7, R0, R1, V1b, V1c and V1d independently accepted
+2026-08-25; the user accepted the final V1d preview as sufficient for the
+first version after the deep-ocean mouth correction; R2 is next and not started
 
 **Ruling date:** 2026-08-25
 
@@ -155,7 +155,8 @@ The source contains only the families needed by the simple model:
 - typed paths with ordered centrelines and explicit crossing interfaces;
 - fixed and candidate anchor records;
 - simple explicit hydrology/water masks;
-- four explicit between-prong bay masks with mainland ownership/policy;
+- four explicit between-prong bay masks whose landward parts carry mainland
+  ownership/policy and whose declared outer caps become ownerless deep ocean;
 - ten housing masks and four coastal housing cores;
 - compact relief profiles, simple required-landmark masks and logical-biome
   palettes/selector parameters;
@@ -231,9 +232,10 @@ Exterior water classes use one ordered total classifier:
 
 - exact fixed features first: fixed land except any planned-water submask
   declared by that same feature;
-- explicit planned/bay water membership with its zone owner second;
-- final composed land membership third;
-- immutable dragon channels fourth (source validation rejects land overlap);
+- the deep-ocean cap of a matched outer bay mouth second;
+- explicit planned/bay water membership with its zone owner third;
+- final composed land membership fourth;
+- immutable dragon channels fifth (source validation rejects land overlap);
 - `expanded_land_at(80) and not land_at` gives the nominal coastal shelf; and
 - remaining exterior is deep ocean.
 
@@ -590,6 +592,10 @@ hydrology ids, anchors, housing masks and fixed cores.
   map, then taper close to the start lobes. Ten short
   variable-width samples per bay produce the winding coast without adding a
   water or erosion algorithm.
+- The final visual correction clips the outer part of each matched bay mask to
+  ownerless deep ocean at warped z = -3000 on Elandor and z = +3000 on
+  Kragmar. The same shared warp gives each transverse mouth boundary its
+  gentle meander; no new field or water algorithm is introduced.
 - The access audit found that capital envelopes and gates were hard-protected,
   but every road beyond them was only claim-excluded and mutable. Six explicit
   capital-ingress records therefore concatenate existing route pairs into one
@@ -609,16 +615,18 @@ V1d does not repair them to improve a report.
 syntax/`SETGLOBAL`/portability checks, byte-identical LuaJIT/PUC 5.1 KATs for
 seeds `0`, `1`, `2^63` and `2^64-1`, repeated-render byte identity and XML
 parsing. Seed 0 produced KAT digest
-`9911d6a9dce8021385c39fbde934e34eb804410f74baa8c59bcc7be7d9ea9a4d`;
+`263adbd158c90cadfd70f25e1f631ad7c55eff9fd1aaa9dbd26034a3fd0a1f11`;
 the generated SVG SHA-256 is
-`654c86e6190bed1252545788030be7b59178c24f9933c34a4a6f03e164a4f0f2`.
+`92569330f9be0c7a5bd64510fb1cf04307d35acd99e7e5af2db20dc7b8829910`.
 The final advisory 16-node sampled report has three land components, eleven
 disconnected zones, zero missing zones, thirteen undeclared contacts, 316 of
 7,770 undeclared off-land route samples, 256 declared-water crossing samples,
 252 of 252 candidate anchors in their intended zones, zero bay/sample or
-hydrology-sample failures and 30 channel-interior failures. On the local x86-64
-AMD Ryzen 7 9800X3D host, LuaJIT measured a 6.171 ms median for the 80 by 80
-classifier probe. That value is evidence, not a pass/fail limit.
+hydrology-sample failures and 30 channel-interior failures. Its water-class
+counts are 100,168 land, 17,396 planned water, 5,997 shelf, 1,867 channel and
+55,423 deep ocean. On the local x86-64 AMD Ryzen 7 9800X3D host, LuaJIT
+measured a 5.838 ms median for the 80 by 80 classifier probe. That value is
+evidence, not a pass/fail limit.
 
 The capital-access audit found that the prior gate-road claim exclusions did
 not prevent player-built walls. V1d now binds six 128-node-wide ingress
@@ -639,9 +647,23 @@ R2 owns that route-fit/crossing check rather than V1d inventing a repair. The
 possible Battlegrounds policy remains deliberately deferred. Observed elapsed
 wall time is `unknown` because the work crossed a context compaction.
 
+Final mouth-correction calibration: implementing/integrating model GPT-5.6
+Sol; independently reviewing model Claude Opus at medium effort. The first
+delta review found 0 Critical / 0 High / 2 Medium and returned **REJECTED**;
+both findings were documentation-authority gaps, while the geometry,
+precedence, ownership, Lua 5.1 behavior and preserved warp all checked out.
+After those fixes, a focused review found two further stale paragraphs and
+again returned **REJECTED**, 0 Critical / 0 High / 2 Medium. The final focused
+rereview returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium. Its six Low
+observations remain non-blocking: redundant direction data, an unasserted
+land/shelf-clearance rationale, one mirrored diagnostic loop, the preview-only
+full control centreline, the already accepted landward bay tongue and the
+later 48-node flight-warning integration. The runner evidence above was
+produced locally by Sol; the read-only reviewer did not rerun it.
+
 ### R2 — freeze and validate the accepted 2D layout
 
-After V1d visual approval, add and freeze the small spatial invariant set:
+With V1d visually approved, add and freeze the small spatial invariant set:
 
 - one connected mainland and two connected islands on the complete integer
   node grid of the finite authored extent;

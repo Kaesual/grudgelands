@@ -29,11 +29,11 @@ requires byte identity, parses the SVG and writes only the canonical preview:
 docs/research/wp40-simple-map-preview.svg
 ```
 
-Its full-grid connectedness, route-fit, contact, water-class and timing lines
-are advisory until the user accepts V1d and R2 freezes the layout. The runner
-does not repair routes, zones or water and must not be used to tune hidden
-constants before visual review. The exact-T2 commands below are historical
-reproducers only.
+The user accepted the generated V1d visual gate on 2026-08-25. Its full-grid
+connectedness, route-fit, contact, water-class and timing lines remain advisory
+until R2 freezes the layout. The runner does not repair routes, zones or water
+and must not be used to tune hidden constants before that freeze. The exact-T2
+commands below are historical reproducers only.
 
 ## T0 material handoff
 

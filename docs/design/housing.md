@@ -701,8 +701,10 @@ per-stone radii up to 50 or the project's 100-player target.
   600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
   flight-warning bands on both shores and at least 104 hard no-flight nodes.
   The channel columns are immutable at every depth.
-- Authored bay, lake, river and zone-water masks remain zone-classified and
-  claim-ineligible even if filled or drained.
+- Authored lakes, rivers, zone-water masks and the landward parts of bays
+  remain zone-classified and claim-ineligible even if filled or drained. The
+  four declared outer bay-mouth caps are ownerless deep ocean and likewise
+  claim-ineligible.
 - The editable nominal shelf is exactly
   `expanded_land_at(80) and not land_at`; deep ocean beyond it is immutable at
   every depth. Dragon-channel masks override the shelf.

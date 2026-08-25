@@ -161,15 +161,18 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   every y. A cultural `race_region` never grants terrain rights
   (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
-  change when players fill or drain nodes. Every authored bay, lake, river,
-  marsh channel, cenote or other planned-water mask remains part of its named
-  zone and can never be deep ocean. The editable nominal `coastal_shelf` is
-  exactly `expanded_land_at(80) and not land_at` and inherits the nearest
-  eligible mainland hub's faction/PvP terrain rights; `deep_ocean` beyond that
-  band is immutable at every y. Dragon-channel masks override the shelf and
-  make their complete columns immutable from world bottom to top. Every exterior-ocean class
-  remains non-flyable, while planned zone water inherits its zone's flight
-  rule. Housing uses dry mainland claims and has no island exception.
+  change when players fill or drain nodes. Every authored lake, river, marsh
+  channel, cenote and the landward part of each bay mask remains planned water
+  in its named zone. The four declared outer bay-mouth caps instead become
+  ownerless `deep_ocean` at warped z = -3000 on Elandor and z = +3000 on
+  Kragmar. The editable nominal `coastal_shelf` is exactly
+  `expanded_land_at(80) and not land_at` and inherits the nearest eligible
+  mainland hub's faction/PvP terrain rights; `deep_ocean` beyond that band and
+  in those four mouth caps is immutable at every y. Dragon-channel masks
+  override the shelf and make their complete columns immutable from world
+  bottom to top. Every exterior-ocean class remains non-flyable, while planned
+  zone water inherits its zone's flight rule. Housing uses dry mainland claims
+  and has no island exception.
 - **R4 — Nothing regrows** (decided 2026-08-08): ores and resources do
   **not** respawn. A mined-out vein is gone, everywhere, for good. The
   world does not run dry because **depth supplies without bound** (R6,
@@ -261,14 +264,15 @@ Implementation: one central `core.is_protected` override in `grug_core`
 Water type is an authored x/z classification, not a test of the node currently
 occupying a position (`world_zones.md` §7):
 
-- **Planned zone water:** bays, lakes, rivers, marsh channels, cenotes and
-  other authored water inside a named zone remain
-  part of their named zone. All use the same `default:water_source` as every
-  other generated surface water body; the owning logical biome or an explicit
+- **Planned zone water:** the landward parts of bays, lakes, rivers, marsh
+  channels, cenotes and other authored water inside a named zone remain part
+  of their named zone. All use the same `default:water_source` as every other
+  generated surface water body; the owning logical biome or an explicit
   landmark changes only bed, shore, depth and decorations. They inherit the
   zone's terrain, PvP and flight rules and can never become deep ocean. Their
   authored masks remain claim-ineligible even if players later fill or drain
-  them.
+  them. The four explicitly declared outer bay-mouth caps are excluded from
+  this class and use the deep-ocean rule below.
 - **Coastal shelf:** the nominal exterior band where
   `expanded_land_at(80) and not land_at` holds around authored positive
   mainland or island shapes. This is editable under the nearest eligible
@@ -278,11 +282,11 @@ occupying a position (`world_zones.md` §7):
   `mob_level_at` is nil at normalized y >= 0; harmless/fixed shore wildlife is
   independently levelled. Below normalized y = 0, shelf caves use the standard
   capped/rounded depth level alone.
-- **Deep ocean:** every ordinary ocean column beyond the shelf, immutable at
-  every y. This remains the deliberately deadly open sea patrolled by the
-  level-100 Kraken Guard (no drops or XP). It has no ordinary surface, guard or
-  mob-level result: the Kraken is a hand-set fixed entity outside those
-  resolvers. Playable-boat ownership,
+- **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
+  declared outer bay-mouth caps, immutable at every y. This remains the
+  deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
+  drops or XP). It has no ordinary surface, guard or mob-level result: the
+  Kraken is a hand-set fixed entity outside those resolvers. Playable-boat ownership,
   acquisition, speed, damage, destruction and return/respawn behavior are not
   defined by this world-geometry rule (`TODO-design-boats.md`).
 - **Dragon channels:** separate full-column immutable masks between the

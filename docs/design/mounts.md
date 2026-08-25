@@ -198,10 +198,12 @@ owned by WP40.
 
 - Flying is forbidden over every authored ocean column: the coastal-water
   shelf, deep ocean and the channels around both dragon islands. The rule is
-  independent of altitude. Planned bays, lakes, rivers, marsh channels and
-  other water inside a mainland footprint remain part of their named zone,
-  inherit its flight rule and do not become ocean merely because they contain
-  water nodes or connect to the outer sea.
+  independent of altitude. The landward planned parts of bays, lakes, rivers,
+  marsh channels and other water inside a mainland footprint remain part of
+  their named zone, inherit its flight rule and do not become ocean merely
+  because they contain water nodes or connect to the outer sea. The four
+  declared outer bay-mouth caps are deep ocean and use this section's warning
+  and forced-dismount rule.
 - A flying mount cannot be summoned in an ocean column. A flyer leaving legal
   land first enters a visible warning band exactly **48 horizontal nodes**
   wide. The HUD warns that continuing will force a dismount; returning to legal

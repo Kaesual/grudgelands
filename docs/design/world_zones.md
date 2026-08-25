@@ -325,12 +325,12 @@ WP40 replaces it with the complete catalog and contracts below.
 
 - Four simple zone-owned bays keep the three outer prongs visibly separated:
 
-  | Bay | Authored centreline samples (x, z; half-width) |
-  |---|---|
-  | Elandor west | (-940,-3660;800) -> (-950,-3460;700) -> (-970,-3260;620) -> (-900,-2960;540) -> (-920,-2750;500) -> (-980,-2550;400) -> (-900,-2350;270) -> (-1020,-2200;220) -> (-970,-2070;130) -> (-1000,-1980;72) |
-  | Elandor east | (+940,-3660;800) -> (+930,-3460;700) -> (+920,-3260;620) -> (+900,-2960;540) -> (+920,-2750;500) -> (+850,-2550;400) -> (+1010,-2350;270) -> (+950,-2200;220) -> (+1030,-2070;130) -> (+990,-1970;72) |
-  | Kragmar west | (-940,+3660;800) -> (-935,+3460;700) -> (-930,+3260;620) -> (-900,+2960;540) -> (-920,+2750;500) -> (-980,+2550;400) -> (-900,+2350;270) -> (-1060,+2200;230) -> (-980,+2080;190) -> (-1020,+1990;100) |
-  | Kragmar east | (+940,+3660;800) -> (+930,+3460;700) -> (+920,+3260;620) -> (+900,+2960;540) -> (+920,+2750;500) -> (+850,+2550;400) -> (+1010,+2350;270) -> (+950,+2200;220) -> (+1030,+2070;130) -> (+920,+1960;72) |
+  | Bay | Deep-ocean mouth cut | Authored centreline samples (x, z; half-width) |
+  |---|---|---|
+  | Elandor west | warped z <= -3000 | (-940,-3660;800) -> (-950,-3460;700) -> (-970,-3260;620) -> (-900,-2960;540) -> (-920,-2750;500) -> (-980,-2550;400) -> (-900,-2350;270) -> (-1020,-2200;220) -> (-970,-2070;130) -> (-1000,-1980;72) |
+  | Elandor east | warped z <= -3000 | (+940,-3660;800) -> (+930,-3460;700) -> (+920,-3260;620) -> (+900,-2960;540) -> (+920,-2750;500) -> (+850,-2550;400) -> (+1010,-2350;270) -> (+950,-2200;220) -> (+1030,-2070;130) -> (+990,-1970;72) |
+  | Kragmar west | warped z >= +3000 | (-940,+3660;800) -> (-935,+3460;700) -> (-930,+3260;620) -> (-900,+2960;540) -> (-920,+2750;500) -> (-980,+2550;400) -> (-900,+2350;270) -> (-1060,+2200;230) -> (-980,+2080;190) -> (-1020,+1990;100) |
+  | Kragmar east | warped z >= +3000 | (+940,+3660;800) -> (+930,+3460;700) -> (+920,+3260;620) -> (+900,+2960;540) -> (+920,+2750;500) -> (+850,+2550;400) -> (+1010,+2350;270) -> (+950,+2200;220) -> (+1030,+2070;130) -> (+920,+1960;72) |
 
   Each bay is one round-joined variable-width capsule mask. It remains open
   and connected from outer water to its head, never narrows below 64 nodes,
@@ -338,14 +338,19 @@ WP40 replaces it with the complete catalog and contracts below.
   prong and creates no new land contact. Water ownership chooses the nearest
   warped shore-zone hub from the source record's bounded `shore_zone_ids` set;
   stable numeric zone id breaks an exact tie without adding a gameplay edge.
+  At each outer mouth, the same shared warped z coordinate turns the bay into
+  ownerless deep ocean at z = -3000 for Elandor and z = +3000 for Kragmar.
+  This gives the mouth a gently meandering boundary aligned with the nearby
+  exterior coast without another noise field or water algorithm.
 - Horizontal water classification has one total precedence:
   1. exact fixed features: Holy Grounds and ownership cores are land except
      for a planned-water submask declared by that same fixed feature;
-  2. closed explicit planned/bay-water masks;
-  3. ordinary macro land;
-  4. closed immutable dragon-channel masks;
-  5. the nominal coastal shelf; and
-  6. deep ocean.
+  2. the deep-ocean cap of a matched outer bay mouth;
+  3. closed explicit planned/bay-water masks;
+  4. ordinary macro land;
+  5. closed immutable dragon-channel masks;
+  6. the nominal coastal shelf; and
+  7. deep ocean.
 - A declared interior planned-water submask retains its fixed feature's zone
   ownership and returns planned water; unrelated general planned-water masks
   cannot cut fixed land. Fixed land and every warped additive land primitive

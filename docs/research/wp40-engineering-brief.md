@@ -101,11 +101,12 @@ The total classifier is:
 
 1. exact fixed features: fixed land except any planned-water submask declared
    by that same fixed feature;
-2. explicit closed planned/bay water;
-3. ordinary macro land;
-4. closed immutable dragon channels;
-5. nominal shelf; and
-6. deep ocean.
+2. the deep-ocean cap of a matched outer bay mouth;
+3. explicit closed planned/bay water;
+4. ordinary macro land;
+5. closed immutable dragon channels;
+6. nominal shelf; and
+7. deep ocean.
 
 `expanded_land_at(r)` expands fixed-land extents and each positive primitive
 by `r` after the query coordinate is warped. It does not shrink or expand
@@ -115,7 +116,10 @@ shelf is therefore `expanded_land_at(80) and not land_at`: deterministic and
 shared by policy/SVG, but not exact Euclidean distance to every final CSG
 corner.
 
-Declared interior water retains the fixed feature's zone ownership and is
+The four outer bay mouths become ownerless deep ocean at warped z = -3000 on
+Elandor and warped z = +3000 on Kragmar. Because this uses the existing shared
+warp, the transverse boundary meanders gently without another field or water
+algorithm. Declared interior water retains the fixed feature's zone ownership and is
 classified as planned water; unrelated general water masks cannot cut fixed
 land. The four bays stay open/connected, at least 64 nodes wide, outside
 capital and housing cores, and create no forbidden contact. Deep ocean and channels are

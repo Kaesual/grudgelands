@@ -219,6 +219,13 @@ return function(dependencies)
 		return false
 	end
 
+	local function bay_mouth_is_deep_ocean(bay, warped_z)
+		if bay.deep_ocean_side == "min_z" then
+			return warped_z <= bay.deep_ocean_cut_z
+		end
+		return warped_z >= bay.deep_ocean_cut_z
+	end
+
 	local function closed_pair(a, b)
 		if a > b then a, b = b, a end
 		return tostring(a) .. ":" .. tostring(b)
@@ -337,7 +344,13 @@ return function(dependencies)
 		end
 		for index=1,#source.bays do
 			local row=source.bays[index]
-			if not ordinary_regions[row.region] or #row.shore_zone_ids < 2 then
+			local expected_deep_side=row.region == "elandor_mainland" and
+				"min_z" or "max_z"
+			integer(row.deep_ocean_cut_z,"bay deep-ocean cut z")
+			if not ordinary_regions[row.region] or #row.shore_zone_ids < 2 or
+					row.deep_ocean_side ~= expected_deep_side or
+					row.deep_ocean_cut_z < source.extent.min_z or
+					row.deep_ocean_cut_z > source.extent.max_z then
 				fail("bay region/shape differs at " .. index)
 			end
 			validate_tapered_centreline(row,"bay")
@@ -1033,6 +1046,9 @@ return function(dependencies)
 			if not exact_holy then
 				local bay = bay_at(warped_x,warped_z)
 				if bay then
+					if bay_mouth_is_deep_ocean(bay,warped_z) then
+						return {water_class="deep_ocean"}
+					end
 					local owner = owner_for_region(bay.region,warped_x,warped_z,
 						bay.shore_zone_ids)
 					return {water_class="planned_water",macro_region=bay.region,
@@ -1251,6 +1267,12 @@ return function(dependencies)
 				local warped_x,warped_z=warp(coordinates[1],coordinates[2])
 				rows[#rows+1]=canonical.array({text("warp"),signed(coordinates[1]),
 					signed(coordinates[2]),signed(warped_x or 0),signed(warped_z or 0)})
+			end
+			for index=1,#source.bays do
+				local bay=source.bays[index]
+				rows[#rows+1]=canonical.array({text("bay"),signed(index),
+					text(bay.id),text(bay.deep_ocean_side),
+					signed(bay.deep_ocean_cut_z)})
 			end
 			for index = 1, #source.routes do
 				local route = source.routes[index]

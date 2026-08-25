@@ -68,8 +68,14 @@ local expected_samples = {
 	{2700,0,"immutable_dragon_channel",false},
 	{0,-3200,"deep_ocean",false},
 	{0,3200,"deep_ocean",false},
+	{-950,-3200,"deep_ocean",false},
+	{920,-3200,"deep_ocean",false},
+	{-930,3200,"deep_ocean",false},
+	{920,3200,"deep_ocean",false},
 	{-980,-2500,"planned_water",true},
 	{900,-2500,"planned_water",true},
+	{-980,2500,"planned_water",true},
+	{850,2500,"planned_water",true},
 }
 local sample_mismatches={}
 for index = 1, #expected_samples do
@@ -284,7 +290,13 @@ if mode == "--full" then
 				math.min(source.extent.max_x,sample.x))
 			local visible_z=math.max(source.extent.min_z,
 				math.min(source.extent.max_z,sample.z))
-			if session.water_class_at(visible_x,visible_z) ~= "planned_water" then
+			local warped=session.warp_at(visible_x,visible_z)
+			local mouth_is_deep=source.bays[index].deep_ocean_side == "min_z" and
+				warped.z <= source.bays[index].deep_ocean_cut_z or
+				source.bays[index].deep_ocean_side == "max_z" and
+				warped.z >= source.bays[index].deep_ocean_cut_z
+			local expected=mouth_is_deep and "deep_ocean" or "planned_water"
+			if session.water_class_at(visible_x,visible_z) ~= expected then
 				bay_sample_failures=bay_sample_failures+1
 			end
 		end

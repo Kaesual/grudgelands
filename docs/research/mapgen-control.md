@@ -766,8 +766,10 @@ takes precedence.
 **Resolution (2026-08-12; simplified 2026-08-25).** `world_zones.md` §7.4 fixes the required
 classes and precedence: planned land-zone water, the nominal exterior 80-node
 `coastal_shelf`, `deep_ocean`, and overriding
-`immutable_dragon_channel` masks. Planned water is never deep ocean; only deep
-ocean and dragon channels are full-column immutable.
+`immutable_dragon_channel` masks. Planned zone water is never deep ocean; the
+four explicit outer bay-mouth caps are removed from that planned-water class
+and become ownerless deep ocean. Only deep ocean and dragon channels are
+full-column immutable.
 
 ### Housing masks and dynamic claims
 
