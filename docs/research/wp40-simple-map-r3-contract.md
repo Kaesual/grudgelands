@@ -1,7 +1,8 @@
 # WP40 simple-map R3 vertical contract
 
-**Status (2026-08-25): independently accepted implementation contract. R2 is
-accepted; no R3 implementation or artifact is accepted yet.**
+**Status (2026-08-25): independently accepted implementation contract with
+the constructive route-skeleton amendment. R2 is accepted; no R3
+implementation or artifact is accepted yet.**
 
 This contract turns the accepted `wp40-simple-map-v1d` horizontal layout into
 one small, deterministic vertical model. It deliberately does not resurrect
@@ -284,22 +285,31 @@ kind, surface_y, feature_id, interface_id
 
 It returns four nil values where no functional surface overrides ordinary
 terrain. `feature_id` and `interface_id` are existing interned stable strings;
-`interface_id` is nil for land grades and anchor platforms. A derived causeway
-precomputes the interned id `derived:<path-id>:<one-based-span-ordinal>` during
-session construction. An anchor platform returns its anchor id as
-`feature_id`.
+`feature_id` is the path id for every path grade, the landing id for a landing
+grade, or the anchor id for an anchor platform. `interface_id` is the crossing
+id inside a named interface and nil for land grades, platforms and unnamed
+derived water operations. No per-column or per-span string is constructed.
 
 `kind` is one of `land_grade`, `anchor_platform`, `causeway`, `ford`,
 `bridge_deck` or `tunnel_floor`.
 
-- A land grade and a causeway are solid terrain and therefore also change
-  `terrain_height_at`.
-- A ford changes the bed/road surface to exactly `water_surface - 1`.
-- A bridge deck leaves the water bed untouched and has surface y exactly
-  `water_surface + 4`, leaving the required three clear nodes.
-- A causeway changes solid terrain to exactly `water_surface + 1`.
+- A land grade, a causeway and an anchor platform are solid terrain and
+  therefore change `terrain_height_at` to their final surface.
+- A named ford changes the bed/road surface to the final route grade. Its
+  centre pin is exactly `water_surface - 1`; the remainder of the footprint is
+  the one-node-per-step ramp constructed in Section 5.3. The same ford id owns
+  the minimal adjacent approach runs required to meet ordinary water without
+  breaking that exact centre pin.
+- A named bridge is always a `bridge_deck`, leaves the water bed untouched and
+  stays at least four nodes above its local clearance datum.
+- A named causeway is always solid `causeway` terrain and stays at least one
+  node above its local clearance datum. It may rise as a graded causeway ramp;
+  its authored kind does not silently change to a bridge.
+- On unnamed locally owned planned water, a final path surface exactly one
+  node above its clearance datum is a solid derived `causeway`; a higher
+  surface is a derived `bridge_deck` and leaves the water bed untouched.
 - A tunnel floor leaves the overlying terrain height untouched. Its exact y is
-  constructed by the two-pass route rule below so R5 can later cut a
+  constructed by the route-skeleton rule below so R5 can later cut a
   four-node-high lumen with proved overburden.
 - Every selected non-capital anchor receives a dry `anchor_platform` at least
   one node above the water surface on each planned-water column inside its
@@ -307,39 +317,42 @@ session construction. An anchor platform returns its anchor id as
   remains water. Analytic water policy remains planned water under an anchor
   platform, just as it remains planned water after a player fills it.
 
-For each named water interface, the operation footprint is the matching
-route's visible `surface_width` intersected with its authorization polygon and
-the named hydrology mask. Its first and last canonical route-axis nodes become
-equal-height grade pins with the exact ford/bridge/causeway y above. Each
-tunnel footprint is derived without changing R2: take the 65 canonical route
-axis nodes centred on its exact interface position (32 before, the centre and
-32 after). Remove axis nodes occupied by a named non-tunnel operation, then
-take the one remaining contiguous run containing the tunnel centre and use
-its visible route surface minus the union of every named non-tunnel operation
-footprint; the named non-tunnel operation wins on each subtracted column. The
-central 33 axis nodes, centre plus 16 on each side, may not be removed; a
-removed central node, a split central run or an overlap between two tunnel
-interfaces is a validation failure. This exact two-dimensional clipping lets a
-portal meet an already-authored bridge, ford or causeway without pretending
-that one column has two exceptional traversable surfaces.
+The current transition-profile numbers are constraints on this simple grade,
+not a second slab generator: `minimum_clearance_nodes = 3` sets the named
+bridge minimum, `deck_y_offset_from_W = 1` sets the named causeway minimum,
+and `road_y_offset_from_bed = 0` fixes the named ford centre to its one-deep
+bed. The surrounding ford authorization footprint is deliberately the graded
+approach rather than an incompatible flat plate. Its automatically derived
+outside approach is bounded by the exact slope cone in Section 5.3. This
+contract defines the vertical interpretation of those R2-retained inputs.
 
-Tunnel pins are constructed after every endpoint and non-tunnel operation pin.
-First evaluate the route's piecewise-linear y at the tunnel centre without a
-tunnel pin (`baseline_y`). Then scan the central 33 axis nodes, centre plus 16
-on each side, using terrain height before any path grade. With
-`interior_min` equal to their minimum, form one feasible floor interval. Its
-upper bound begins at `interior_min - 5`. For the closest already-frozen pin
-strictly before the clipped tunnel run, let `d_before` be the first tunnel-run
-index minus that pin's index and intersect with
-`[pin_y - d_before, pin_y + d_before]`; do the same for the closest pin after
-the run with `d_after` equal to that pin's index minus the last tunnel-run
-index. A missing pin on either route side, or an empty
-intersection, is a validation failure. Clamp `baseline_y` into the resulting
-closed interval and make both ends of the clipped tunnel run equal-height pins
-at that floor. Thus nodes `floor+1..floor+4` are the future lumen, every
-central interior column retains at least one solid overburden node at
-`floor+5`, and both portal approaches are constructively able to satisfy the
-ordinary adjacent-step gate.
+For each named non-tunnel water interface, the operation footprint is the
+matching route's visible `surface_width` intersected with its authorization
+polygon and the named hydrology mask. Its columns contribute the exact
+clearance constraints defined in Section 5.3; bridge and causeway footprints
+are not flat slabs and do not create conflicting endpoint pins.
+
+Each named tunnel occupies exactly 33 canonical route-axis nodes centred on
+its exact interface position: 16 before, the centre and 16 after. Its complete
+footprint is those nodes' visible route surface. A missing centre, too-short
+route, overlap with any named non-tunnel operation or overlap between tunnels
+is a validation failure; there is no larger nominal span, clipping or hidden
+portal extension.
+
+Tunnel pins are constructed after the endpoint and ford-centre pins but before
+water-clearance grading. First evaluate the piecewise-linear skeleton at the
+tunnel centre without a tunnel pin (`baseline_y`). Scan every column of the
+complete 33-run visible-surface footprint using terrain height before any path
+grade and let `interior_min` be their minimum. The feasible floor interval
+starts with an upper bound of `interior_min - 5`. Intersect it with
+`[pin_y - d_before, pin_y + d_before]` for the closest fixed pin strictly
+before the tunnel, where `d_before` is the distance from that pin to the first
+tunnel node, and with the analogous interval for the closest fixed pin after
+the tunnel. A missing pin on either side or an empty interval is a violation.
+Clamp `baseline_y` into the interval and add equal-height pins at the first and
+last tunnel nodes. Thus nodes `floor+1..floor+4` are the future lumen, every
+interior column retains at least one solid overburden node at `floor+5`, and
+both approaches can satisfy the adjacent-step gate without a route optimizer.
 
 R3 freezes only these heights, ids, masks and kinds. Culvert blocks, bridge
 supports, tunnel walls, liquid faces and seals are R5 typed planner operations.
@@ -354,15 +367,16 @@ On an ordinary land column the high-to-low functional precedence is:
 2. capital fitting grade;
 3. guaranteed coastal-housing-core grade;
 4. land route or selected POI-spur grade;
-5. selected-anchor fitting grade; and
-6. natural relief and landmark result.
+5. island landing grade;
+6. selected-anchor fitting grade; and
+7. natural relief and landmark result.
 
 This makes the existing design phrase “start, capital, housing, route and
 selected-anchor” explicit rather than dependent on loop order. Start, capital,
-coastal-core and anchor grades are owner-clipped. A frozen route/spur/island
-grade follows its accepted complete route footprint across whatever land
-owners R2 classifies there; it is not clipped to `zone_a`, `zone_b` or a
-two-zone assumption. Planned-water columns preserve their hydrology bed except
+coastal-core, landing and anchor grades are owner-clipped. A frozen
+route/spur/island grade follows its accepted complete route footprint across
+whatever land owners R2 classifies there; it is not clipped to `zone_a`,
+`zone_b` or a two-zone assumption. Planned-water columns preserve their hydrology bed except
 for a named/derived route operation or a required selected-anchor platform.
 Start and coastal-core footprints are already proven dry; civic water inside a
 capital is therefore preserved rather than silently filled by the capital
@@ -370,39 +384,72 @@ grade.
 
 ### 5.2 Starts, capitals, coastal cores and selected anchors
 
+Every zone has one seed-independent skeleton height:
+
+```
+zone_station_y = water_level + primary_relief.min_above_water
+```
+
+This uses the already-authored relief band rather than a new height table. A
+start uses its owning zone's `zone_station_y` as `reference_y`. Every selected
+non-start/non-capital anchor, including the fixed dragon and apex anchors,
+uses the fixed band midpoint
+`water_level + floor((primary_min + primary_max) / 2)`. On planned water it
+raises that reference to at least its local clearance datum plus one. The
+midpoint keeps small highland/mountain fitting squares from becoming needless
+deep cuts without making route endpoints depend on the seed.
+
+A capital scans all civic-water columns in its full fitting square and uses
+`zone_station_y` when that set is empty; otherwise it uses the larger of
+`zone_station_y` and one plus the set's maximum clearance datum. This keeps its
+land terrace flood-safe while preserving the authored civic water. A capital
+centre in water is a source violation; current R2 centres are dry.
+
+A capital-zone hub uses that capital's `reference_y`. Any other zone hub on
+planned water uses `max(zone_station_y, local clearance datum + 1)`; every
+other hub uses `zone_station_y`. A missing clearance datum at any scanned
+planned-water column is a violation. Section 5.3 defines the one clearance
+datum used by hubs, anchors and paths.
+
 All 17 current anchor-profile rows, containing 13 distinct shape tags, use one
-R3 fitting primitive: a centre-referenced clamped plateau over the centred
+R3 fitting primitive: a flat plateau at `reference_y` over the centred
 half-open square of `fitting_width`, with smootherstep return to the incoming
 height before the edge of `blend_width`. The shape tag remains a later
 structure/dressing tag. This deliberately rejects the old generic template
-DSL and does not require a whole 512 by 512 capital to be one flat plane.
+DSL: later walls, roots, buildings and stairs may dress this resolved ground,
+but may not introduce a second terrain-height authority. The source `max_cut`
+and `max_fill` fields are retained only because R2 is
+immutable; the first construction proved them incompatible with the selected
+anchors and route endpoints, so R3 binds them as `consumed=false` and does not
+use them as vertical limits. Observed cut/fill extrema remain evidence, not a
+rejection or reselection rule. The complete fitting square and collar are one
+explicit authored functional-grade volume for R4 preservation purposes; they
+do not authorize terrain changes outside that bounded volume.
 
-Each selected anchor first freezes one `reference_y`. If its centre is
-ordinary land, this is the incoming natural/landmark height at the centre. If
-the centre is planned water for a non-capital anchor, it is that local
-`water_surface + 1`. A capital centre in water is a source violation; current
-R2 centres are dry.
-
-For every ordinary-land column in the full-weight fitting square with incoming
-height `h`, the fitted height is exactly
-`clamp(reference_y, h - max_cut, h + max_fill)`. Thus terrain already within
-the authored earthwork window becomes level with the anchor, while larger
-natural variation moves only by the permitted amount and remains as broad
-terracing. In the outside collar, compute the same per-column fitted value,
-blend from it back to `h` with smootherstep, and clamp the result again to
-`[h - max_cut, h + max_fill]`. The construction is total, cannot have an empty
-global interval, and never rejects or reselects an R2 anchor.
+Both widths must be positive even integers with `blend_width > fitting_width`.
+For either axis, a total width `t` around centre `c` has integer full bounds
+`[c-t/2, c+t/2)`. With `half = fitting_width/2`, define the integer axis
+excess as `c-half-p` below the lower bound, `p-(c+half)+1` at or above the
+upper bound, and zero inside. `outside` is the maximum x/z axis excess and
+`collar = (blend_width-fitting_width)/2`. The full square has weight 65536;
+outside the full square but before `outside >= collar`, weight is
+`65536 - smootherstep(qfrom_ratio(outside, collar))`; at or beyond that point
+it is zero. The final land height is the Q16 mix
+`incoming*(65536-weight) + reference_y*weight`, divided by 65536 and rounded
+once half away from zero. The same primitive and endpoint conventions apply to
+all 17 rows.
 
 For a planned-water column inside a non-capital selected anchor's full-weight
 fitting square, the `anchor_platform` surface is
-`max(reference_y, local water_surface + 1)`. The platform does not extend into
-the outside collar. Capital civic-water columns are excluded from both the
-grade and platform and remain water.
+`max(reference_y, local clearance datum + 1)`. The platform does not extend
+into the outside collar. Capital civic-water columns are excluded from both
+the grade and platform and remain water.
 
 The six starts and six capitals use their existing fixed anchor/profile rows.
-Their routes share the same `reference_y` at the common hub. Capital grading
-applies only to its land columns, so the currently authored civic river/lake/
-cenote water remains water.
+Capital grading applies only to its land columns, so the currently authored
+civic river/lake/cenote water remains water. Routes meet every hub and selected
+anchor at the same skeleton/reference target; natural relief never becomes a
+second endpoint-height authority.
 
 Each guaranteed coastal core has one seed-specific target equal to its natural
 height at the capsule centre and one dedicated 64-node-cell gentle lattice.
@@ -425,28 +472,70 @@ node of every later segment is omitted. The major axis changes on every step,
 so joins are the only possible duplicates; any other duplicate is a
 violation. Array order is the canonical cumulative L-infinity node run.
 
-Each route station has one integer target: the matching start/capital target
-where applicable, otherwise the incoming natural height at an ordinary-land
-frozen zone hub or exactly `water_surface + 1` at a planned-water hub. The
-raster receives ordered grade pins at
-both endpoints and at every named operation footprint. Scanning the raster's
-horizontal classification also creates a derived-causeway span for every
-maximal run of locally owned planned water not covered by a named interface;
-a change of hydrology id or water-surface y starts a new span. Its first and
-last nodes are equal-height pins at `water_surface + 1`.
+The endpoint target for a land route is the Section 5.2 target of its frozen
+zone-hub station. The selected candidate's POI spur runs from its selected
+anchor `reference_y` to that same zone-hub target. Unselected candidate spurs
+do not enter height evaluation. Its R2 claim-exclusion width is the corridor
+width; width 12 uses the secondary-road surface width 5 and width 8 uses the
+trail surface width 3.
 
-Between adjacent pins, route y is linear in raster index and rounded half away
-from zero. Conflicting pins at one node are a violation rather than a priority
-guess. The route is valid only if every adjacent raster node changes by at
-most one vertical node.
+Island routes use their R2 width 12 and surface width 5. Each landing endpoint
+is fixed at `water_level + 1`, each shared island junction is fixed at the
+owning mountain zone's `zone_station_y`, and each dragon/apex endpoint uses
+its selected anchor `reference_y`. Every island-owned land column inside the
+matching boat path's exact width-96 corridor is a flat landing grade at
+`water_level + 1`; water and mainland columns are unchanged. The five-node
+island route wins where it leaves that landing grade and climbs toward the
+junction, so no ungraded water-to-mountain wall remains. Boat paths do not
+grade the ocean.
 
-The selected candidate's POI spur uses the same raster/pin rule from the
-selected anchor target to its zone-hub station target. Unselected candidate
-spurs do not enter height evaluation. Its R2 claim-exclusion width is the
-corridor width; width 12 uses the secondary-road surface width 5 and width 8
-uses the trail surface width 3. Island routes use their R2 width 12 and surface
-width 5, pin their authored vertices to the natural or landing surface and use
-the same raster/piecewise-linear rule. Boat paths do not grade the ocean.
+The first skeleton pins are all path endpoints and the centre node of every
+named ford. A ford-centre pin is exactly its local `water_surface - 1`.
+Between adjacent pins, skeleton y is linear in raster index and rounded half
+away from zero. Conflicting pins at one node are a violation. Section 4.3 then
+adds the two equal tunnel-end pins and rebuilds this piecewise-linear baseline.
+Every pin interval must already be able to change by at most one vertical node
+per raster step; the later clearance pass may raise the baseline but may not
+move an exact endpoint, ford-centre or tunnel pin.
+
+R3 next scans every column in the complete visible surface of the path and
+projects it to its nearest canonical raster run by the exact rule below. A
+locally owned planned-water column contributes one lower bound to that run:
+
+- ordinary unnamed water and a named causeway require
+  `clearance datum + 1`;
+- a named bridge requires `clearance datum + 4`;
+- a named ford requires at least `water_surface - 1` and is exempt from the
+  ordinary-water lower bound; and
+- a named tunnel is land-only and contributes no water lower bound.
+
+An exact ford centre also caps an ordinary unnamed-water lower bound on the
+same path and with the same classified hydrology id to
+`ford_pin_y + abs(run - ford_run)`. With multiple matching fords, use the
+minimum cap and break an exact tie by stable crossing id. The cap is active
+only where it is lower than the ordinary bound; another hydrology id and named
+bridge/causeway bounds are never capped. Thus a one-deep ford can rise through
+the mathematically minimal submerged approach and rejoin the ordinary
+`clearance + 1` rule as soon as the one-Lipschitz cone reaches it. Every column
+projected to an active cap is part of that named ford's derived approach and
+returns `kind = ford` with its crossing id.
+
+The clearance datum is `water_surface_at` when non-nil. On a waterfall
+transition-only column, where the scalar water surface deliberately remains
+nil, it is `max(upper_y, lower_y)` from
+`hydrology_transition_values_at`. Any other planned-water column without
+either datum is invalid and requires a named operation or horizontal source
+correction. This fallback affects only traversable clearance; it never changes
+analytic hydrology or invents a water surface.
+
+For each run, start with the larger of its piecewise-linear baseline and all
+projected lower bounds. For `i = 2..n`, the left-to-right pass sets
+`value[i] = max(value[i], value[i-1] - 1)`. For `i = n-1..1`, the
+right-to-left pass sets
+`value[i] = max(value[i], value[i+1] - 1)`. These two passes construct the
+unique minimal integer one-Lipschitz majorant of the baseline and lower bounds.
+Validation fails if the result changes an exact pin. It also checks every final
+adjacent pair, rather than treating the construction as its own proof.
 
 For an off-axis column, consider every indexed source segment whose exact
 continuous corridor contains it. Clamp the exact dot-product projection to
@@ -472,15 +561,22 @@ undeclared crossing cannot silently break it.
 
 The one deliberately uniform R3 slope rule is therefore “no more than one
 vertical node per one horizontal centreline node.” It is a safety limit, not
-a target slope: the broad relief and long routes normally produce much gentler
-grades. The superseded 1:12/1:8/1:4 route DP is not restored.
+a target slope. The route's fixed skeleton, one water-footprint scan and two
+linear closure passes replace the superseded 1:12/1:8/1:4 route DP; there is
+no search, optimization state or seed-dependent endpoint height.
 
-Where a route crosses locally owned planned water without a named interface,
-the derived operation is the pinned causeway span defined above. Its complete
-footprint is that path's visible surface intersected with columns carrying the
-same classified hydrology id and water-surface y as the axis span. Named
-bridge/ford/causeway/tunnel spans win only inside their exact footprints.
-Shelf, deep ocean and dragon channels remain unconditionally forbidden.
+Inside a named ford, bridge or causeway footprint, the authored operation kind
+wins and uses the final projected path y. A column under an active ford cap is
+the same named ford's derived approach. Inside the exact tunnel footprint, the
+frozen tunnel floor wins and scalar terrain remains ungraded. On remaining
+unnamed locally owned planned water, a final path column exactly one above its
+local clearance datum is a derived causeway; a higher column is a derived
+bridge deck. On ordinary land, the same final y is a scalar `land_grade`.
+
+Named footprints never grant a route-wide water exception. Shelf, deep ocean
+and dragon channels remain unconditionally forbidden. Every complete visible
+path surface is rescanned after composition for its clearance, functional kind
+and final step; an undeclared or off-axis crossing cannot silently pass.
 
 ## 6. R3 module and frozen payload
 
@@ -526,9 +622,25 @@ least:
 - min/max counts and witnesses for all six primary profiles and all 70
   owner-clipped landmark masks;
 - all 100 selected x/y/z anchors and 42 hard-protection volumes;
-- anchor cut/fill extrema and zero rejected/reselected anchors;
-- all frozen route/spur/island centreline grades, maximum step, overlap
-  witnesses and every derived or named water operation;
+- the complete station/reference table, capital civic-water maxima, anchor
+  footprint/collar counts, observed cut/fill extrema, explicit
+  `source_cut_fill_limits_consumed=false` and zero rejected/reselected anchors;
+- all frozen route/spur/island centreline baselines and final grades, every
+  exact pin, projected two-dimensional water lower-bound counts and witnesses,
+  maximum step and overlap witnesses;
+- every named water operation keyed by crossing id, plus for unnamed derived
+  water the per-path/per-run kind counts, lexicographically first witnesses and
+  one canonical digest of the complete visible-surface classification. Derived
+  output has no invented component or span identity;
+- every active ford-approach cap with its ford pin, uncapped/capped lower
+  bound, distance and first run where the ordinary lower bound resumes;
+- a supporting lower-bound witness for every run raised above its baseline,
+  plus independent equality checks for every unchanged exact pin;
+- the four width-96 island landing grades and their water-to-junction route
+  approaches;
+- for both tunnels, the exact 33-node run and complete two-dimensional
+  footprint, pre-path interior minimum, feasible interval, baseline, floor,
+  overburden and both approach-pin witnesses;
 - all 25 hydrology reaches and 12 concrete interfaces, including exact
   surface/bed values and rapid/waterfall offsets;
 - shelf, bay, deep-ocean and dragon-channel bed witnesses;
@@ -545,10 +657,11 @@ The exhaustive fixed-layout/seed-zero scan runs under LuaJIT. It checks the
 complete accepted R2 x/z extent, all route axes/corridors, every selected
 anchor envelope, all hydrology masks/interfaces and the complete four-core
 reservation population. It fails on an unsafe integer, missing height,
-profile/mask owner escape, cut/fill overflow, route step above one, forbidden
-exterior path, broken named interface, disconnected unequal-level water
-contact without an interface, coastal relief above 12, or nondeterministic
-artifact.
+profile/mask owner escape, anchor reference or owner-clip mismatch, route step
+above one, non-minimal route envelope, changed exact pin, missing clearance,
+forbidden exterior path, broken named interface, insufficient tunnel
+overburden, disconnected unequal-level water contact without an interface,
+coastal relief above 12, or nondeterministic artifact.
 
 Targeted PUC 5.1 KATs cover seeds `0`, `1`, `2^63` and `2^64-1`, negative
 coordinates, all relief-profile families, lattice corners/interiors, every
@@ -621,3 +734,34 @@ stations exactly `water_surface + 1`. Its focused review returned
 count is five. This acceptance covers the contract only; the implementation,
 artifact and production integration still require their own gates and
 independent review.
+
+The first full route construction then proved that seed-dependent natural
+endpoint pins were incompatible with the uniform adjacent-step gate: seed zero
+had 9 infeasible intervals and 137 bad steps, while the four contract seeds
+together implicated 16 paths. A focused in-memory redesign replaced those
+pins and the flat derived-water slabs with a seed-independent station/anchor
+skeleton, complete two-dimensional water lower bounds and the minimal
+two-pass one-Lipschitz envelope. Restricting each authored tunnel to its actual
+central 33-node lumen removed the nominal-span overlap machinery. The final
+V2c axis prototype had zero pin conflicts, zero bad steps and both tunnels
+feasible for all four contract seeds; the island follow-up also fixed each
+landing at `water_level + 1` and retained the same axis result. A later
+complete projected-surface scan found one off-axis conflict on every seed:
+ordinary water at
+`route_050` run 707 required y 10 and would raise the adjacent exact
+`broken_ford` pin at run 708 from y 8 to 9. The final amendment adds the
+generic minimal ford-approach cap; at distance one the effective lower bound is
+9 and at distance two the ordinary y 10 rule resumes. The same complete scan
+proved both 33-run tunnels feasible over their full visible footprints. This
+constructive amendment was then submitted to a fresh independent full review;
+the prototype results alone did not accept it.
+
+The fresh independent full review of that amendment initially found 1 High,
+5 Medium and 0 Low issues: the empty capital-water set, derived-operation
+evidence identity, exact envelope assignments, tunnel evidence terminology,
+anchor-platform scalar semantics and fitting-collar arithmetic. All were
+closed without adding a solver or changing R2. The final rereview returned
+**ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0 Low. Total contract
+fix-round count is six. This acceptance covers the contract only; the
+implementation, artifact and production integration still require their own
+gates and independent review.
