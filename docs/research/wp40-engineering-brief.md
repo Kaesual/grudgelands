@@ -1,12 +1,16 @@
 # WP40 Simple Named-Zone World — Engineering Contract
 
 Status: **current WP40 engineering authority; simple-map rebase through R2
-independently accepted 2026-08-25; R3 is next.**
+independently accepted 2026-08-25; the R3 vertical implementation contract is
+independently accepted and R3 implementation is next.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed
 [simple-map rebase plan](wp40-simple-map-rebase-plan.md) owns the R0–R8
-delivery sequence. This file owns the technical target. The former exact T2
+delivery sequence. The independently reviewed
+[R3 vertical contract](wp40-simple-map-r3-contract.md) owns R3's exact
+implementation and evidence boundary. This file owns the technical target.
+The former exact T2
 partition/topology compiler, its source authority, package plans, PCC/F1/F2
 gate and evidence runners are readable history only.
 

@@ -821,7 +821,9 @@ review record is [wp40-simple-map-r2-review.md](wp40-simple-map-r2-review.md).
 
 ### R3 — pure global height and final immutable payload
 
-Write one small reviewed vertical contract and engine-free implementation for
+The independently accepted implementation contract is
+[wp40-simple-map-r3-contract.md](wp40-simple-map-r3-contract.md). Write its
+engine-free implementation for
 the project-owned `H(full_seed, x, z)`. It uses precomputed broad/detail integer
 noise lattices, compact per-zone relief profiles, simple §8.4 landmark masks
 and a fixed grading priority for starts, capitals, paths and the already

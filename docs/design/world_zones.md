@@ -403,9 +403,11 @@ WP40 replaces it with the complete catalog and contracts below.
 ### 7.5 Paths, anchors and housing
 
 - Roads, trails, future rail, rivers and boat routes are independent typed
-  centrelines between fixed stations. A dry path never creates land. It must
-  fit the land mask with its complete corridor, or use an explicit bridge,
-  ford, tunnel, causeway, ferry or boat interface.
+  centrelines between fixed stations. A land path never creates horizontal
+  land. Its complete corridor stays on ordinary land or locally owned planned
+  water; planned-water intersections become deterministic graded bridge, ford
+  or causeway spans. Named interfaces remain where a landmark needs an exact
+  transition. Shelf, deep ocean and dragon channels remain forbidden.
 - Primary roads use a 7-node visible surface and 16-node exclusion corridor;
   secondary roads use 5/12; trails use 3/8. The complete corridor remains
   claim-ineligible even after players alter the visible path.
@@ -650,14 +652,13 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | The Skyglass Canopy | `highland` | bounded `mountain` pale cliffs and `rolling_hills` forest terraces | `skyglass_escarpment`: several fixed ascents cross the pale cliff line; `skyglass_hangingways`: root and canopy paths remain optional alternatives over the terraces; `skyglass_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Stormscale embarkation corridors |
 | Stormscale Summit | `mountain` | bounded `highland` volcanic terraces and two inner-shore `lowland` landing coves | `stormscale_caldera`: a volcanic mountain ring retains several independent ascents; `stormscale_gemterraces`: thunder terraces contain the protected functional anchor and reachable deposits of the second all-six-gem apex mining camp; `stormscale_dragonroost`: the summit-edge dragon arena is independently reachable from both z = -125 and z = +125 west-shore landings and does not gate access to the mine |
 
-## 9. Authored travel and allowed-contact graph
+## 9. Authored travel graph
 
 The graph is undirected. The 57 routed pairs are the authoritative gameplay
-neighbors used by travel, quests and `neighbors(id)`. The four outer-flank
-pairs listed below are additionally allowed to touch geometrically but carry
-no route, corridor, traversability guarantee or content operation. An allowed
-pair need not touch in the final layout; every omitted pair is forbidden from
-touching. No geometric boundary dual is created.
+neighbors used by travel, quests and `neighbors(id)`. Emergent geometric
+contact is diagnostic layout evidence only: it creates no route, corridor,
+traversability guarantee or content operation, and it requires no allowlist or
+stable boundary identity. No geometric boundary dual is created.
 
 ### 9.1 Accord internal graph
 
@@ -673,8 +674,6 @@ touching. No geometric boundary dual is created.
   Whitebridge Shire — Ashenward March; Lorindor — Glassroot Wilds;
   Moonfall Wood — Glassroot Wilds; Stormvault Heights — Ashenward March —
   Glassroot Wilds.
-- Boundary-only outer-flank contacts: Copperfell Foothills — Frostbarrow
-  Shelf; Starbough Vale — Moonfall Wood.
 
 ### 9.2 Throng internal graph
 
@@ -691,8 +690,6 @@ touching. No geometric boundary dual is created.
   Speargrass Reach — Bannerbreak Mesa; Whispering Reedlands —
   Thunderroot Wilds; Totemwater Reach — Thunderroot Wilds;
   Blackwind Rise — Bannerbreak Mesa — Thunderroot Wilds.
-- Boundary-only outer-flank contacts: Mournfen — Ossuary Reach; Raincall Basin
-  — Totemwater Reach.
 
 ### 9.3 Holy Grounds land graph and offshore travel
 
@@ -719,8 +716,8 @@ band and prevent one bridge or zone from becoming the sole faction route.
 ### 9.4 Authored land-route classes
 
 The authored land-route graph remains exactly 57 edges: 30 primary, 24
-secondary and 3 trail. The four allowed outer-flank contacts are excluded from
-the route graph and have no route class or station sequence.
+secondary and 3 trail. Geometric contacts outside those edges are excluded
+from the route graph and have no route class or station sequence.
 
 - Every edge in the six race spines and both west/east capital axes is a
   **primary road**. The primary classification ends at the race frontier; it
