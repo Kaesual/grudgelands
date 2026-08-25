@@ -227,10 +227,10 @@ return function(dependencies)
 	local function validate_source()
 		if source.schema ~= schemas.simple_map_source or
 				schemas.simple_map ~= "grug_wp40_simple_map_v1" or
-				source.layout_id ~= "wp40-simple-map-v1c" then
+				source.layout_id ~= "wp40-simple-map-v1d" then
 			fail("source schema/layout identity differs")
 		end
-		if source.warp.cell ~= 512 or source.warp.maximum ~= 64 or
+		if source.warp.cell ~= 256 or source.warp.maximum ~= 60 or
 				type(source.warp.hash_domain) ~= "string" or
 				4*source.warp.maximum >= source.warp.cell then
 			fail("warp identity/no-fold bound differs")
@@ -240,12 +240,13 @@ return function(dependencies)
 			allowed_contacts=61,crossing_interfaces=7,boat_paths=4,
 			route_stations=38,island_routes=8,housing_masks=10,
 			coastal_housing_cores=4,
+			capital_ingresses=6,
 			anchors=100,poi_spurs=74,apex_sockets=24,region_resources=6,
 			relief_profiles=6,anchor_profiles=17,landmarks=70,
 			hydrology_profiles=11,hydrology_transition_profiles=6,
 			hydrology=25,hydrology_interfaces=10,
-			hard_protection_recipes=3,hard_protection=36,
-			claim_exclusion_recipes=5,claim_exclusions=476,
+			hard_protection_recipes=4,hard_protection=42,
+			claim_exclusion_recipes=5,claim_exclusions=482,
 		}
 		for key, expected in pairs(expected_counts) do
 			if dense_count(source[key], key) ~= expected then
@@ -632,13 +633,36 @@ return function(dependencies)
 				fail("coastal housing core reference differs at " .. index)
 			end
 		end
+		local ingress_ids={}
+		for index=1,#source.capital_ingresses do
+			local row=source.capital_ingresses[index]
+			local anchor=source.anchors[index+6]
+			local route_a=route_by_id[row.route_ids and row.route_ids[1]]
+			local route_b=route_by_id[row.route_ids and row.route_ids[2]]
+			if ingress_ids[row.id] or row.capital_anchor_id ~= anchor.id or
+					row.total_width ~= 128 or not route_a or not route_b or
+					route_a.class ~= "primary" or route_b.class ~= "secondary" or
+					route_a.zone_a ~= anchor.zone_numeric_id or
+					route_a.zone_b ~= route_b.zone_a or
+					source.zones[route_b.zone_b].macro_region ~= "holy_grounds" then
+				fail("capital ingress identity/continuity differs at " .. index)
+			end
+			local end_a=route_a.centreline[#route_a.centreline]
+			local start_b=route_b.centreline[1]
+			if end_a.x ~= start_b.x or end_a.z ~= start_b.z then
+				fail("capital ingress route join differs at " .. index)
+			end
+			ingress_ids[row.id]=row
+		end
 		local hard_recipe_ids=collect_ids(source.hard_protection_recipes,
 			"hard protection recipe")
 		local hard_ids={}
 		for index=1,#source.hard_protection do
 			local row=source.hard_protection[index]
 			if hard_ids[row.id] or not hard_recipe_ids[row.recipe_id] or
-					not anchor_ids[row.source_anchor_id] then
+					not anchor_ids[row.source_anchor_id] or
+					(row.ingress_id and (not ingress_ids[row.ingress_id] or
+						row.route_ids ~= ingress_ids[row.ingress_id].route_ids)) then
 				fail("hard protection identity/reference differs at " .. index)
 			end
 			hard_ids[row.id]=true
@@ -1238,6 +1262,13 @@ return function(dependencies)
 						signed(classification.zone_numeric_id or 0),
 						text(classification.water_class)})
 				end
+			end
+			for index=1,#source.capital_ingresses do
+				local ingress=source.capital_ingresses[index]
+				rows[#rows+1]=canonical.array({text("capital_ingress"),
+					signed(index),text(ingress.id),text(ingress.capital_anchor_id),
+					signed(ingress.total_width),text(ingress.route_ids[1]),
+					text(ingress.route_ids[2])})
 			end
 			for index=1,#source.hydrology do
 				local reach=source.hydrology[index]

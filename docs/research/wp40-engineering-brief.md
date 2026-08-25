@@ -65,7 +65,7 @@ materialization or fallback geometry.
 
 ### 2.2 Fixed layout and seed ownership
 
-The horizontal layout id is `wp40-simple-map-v1c`. Land, zone ownership,
+The horizontal layout id is `wp40-simple-map-v1d`. Land, zone ownership,
 routes, water classes, housing masks and candidate sets are identical across
 world seeds. The full canonical seed string controls one bounded selection
 from each R2-frozen secondary-anchor candidate set, broad/detail height
@@ -80,7 +80,7 @@ candidate plus alternatives.
 Mainland, island and non-fixed zone-ownership queries use one layout-bound
 integer warp:
 
-- 512-node cells and at most 64 nodes displacement per axis;
+- 256-node cells and at most 60 nodes displacement per axis;
 - one halo cell beyond every queried primitive/shelf extent;
 - identical warp applied to query point and eligible hubs;
 - rounded integer coordinates before ownership scoring; and
@@ -151,6 +151,13 @@ Every path has stable id, kind, class, ordered centreline, corridor, endpoints
 and explicit crossing interfaces. Dry routes must fit land; they never add or
 repair land. Required POIs receive explicit spurs. Boat links remain outside
 the land-neighbor graph.
+
+Six capital ingress records each concatenate the existing capital/front
+primary route with one existing frontier/Holy secondary route. Their
+128-node-wide shallow hard-protection corridor runs continuously from the
+capital build envelope into the exact Holy Grounds rectangle. It adds no graph
+edge, route search or land geometry; the canonical KAT binds its capital,
+ordered route ids and width.
 
 R2 freezes each secondary anchor's valid x/z candidate subset. One bounded
 full-seed hash selects from it. R3 terrain grading must fit that final
@@ -262,7 +269,8 @@ half-away-from-zero normalization. Invalid input is a programmer error.
 | central protection | `grug_core/protection.lua`; all engine/default/mobs/material callers flow through `core.is_protected` | one policy override using `territory_rule_at`, player faction and bounded hard volumes while preserving bypass and previous-handler delegation |
 
 R7 KATs cover Holy y = -700/-701, peaceful enemy, contested land,
-planned water, shelf, deep ocean, channel, capital hard volume,
+planned water, shelf, deep ocean, channel, capital hard volume, capital
+ingress corridor interior/edge/exterior,
 `protection_bypass`, empty names and delegation to the prior protection
 handler.
 

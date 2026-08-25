@@ -200,6 +200,21 @@ for index=1,#source.hydrology_interfaces do
 end
 write('</g>\n')
 
+write('<g id="protected-capital-ingresses" fill="none" stroke="#fff0a8" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round">\n')
+local route_by_id={}
+for index=1,#source.routes do route_by_id[source.routes[index].id]=source.routes[index] end
+for index=1,#source.capital_ingresses do
+	local ingress=source.capital_ingresses[index]
+	for route_index=1,#ingress.route_ids do
+		local route=assert(route_by_id[ingress.route_ids[route_index]])
+		write('<polyline data-ingress="',ingress.id,'" points="',
+			points(route.centreline),'" stroke-width="',
+			number(ingress.total_width*scale_x),'"><title>',
+			escape(ingress.id.." protected capital ingress"),'</title></polyline>\n')
+	end
+end
+write('</g>\n')
+
 write('<g id="land-routes" fill="none" stroke-linecap="round" stroke-linejoin="round">\n')
 local route_style={primary={color="#f7e0a0",width=4},secondary={color="#e8c47b",width=3},trail={color="#d9a869",width=2}}
 for index=1,#source.routes do
@@ -288,7 +303,7 @@ end
 write('</g>\n')
 
 local digest=session.canonical_kat_digest()
-write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1c</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
+write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1d</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
 write('</svg>\n')
 assert(file:close())
 print("svg\t"..output.."\t"..digest)

@@ -191,7 +191,7 @@ WP40 replaces it with the complete catalog and contracts below.
 
 - World axes stay conventional: west/east is x, Kragmar lies north at positive
   z, Elandor lies south at negative z, and the shared front is centred on z = 0.
-- The layout id is `wp40-simple-map-v1c`. Land, zone hubs, macro ownership,
+- The layout id is `wp40-simple-map-v1d`. Land, zone hubs, macro ownership,
   main routes, housing masks and water classes are identical for every world
   seed using that layout.
 - The Holy Grounds is the exact, unwarped closed rectangle
@@ -199,9 +199,11 @@ WP40 replaces it with the complete catalog and contracts below.
   planned water. Its internal west/east ownership uses the four Holy hubs
   below. Terrain is immutable from the surface through y = -700 inclusive;
   the universal contested T5/T6 rule resumes at y = -701.
-- The authored mainland extent is x = -2600..+2600 and z = -3000..+3000.
-  This is a source/validation bound, not a rectangular coastline or a world
-  border. Open sea continues outside the generated area.
+- The unwarped authored mainland primitives stay within x = -2600..+2600 and
+  z = -3000..+3000. The common warp may move their classified coastline by at
+  most its declared 60 nodes per axis. These are source/validation bounds, not
+  a rectangular coastline or world border. Open sea continues outside the
+  generated area.
 - The Wyrmglass Crown and Stormscale Summit hubs are fixed at **(-3150, 0)**
   and **(+3150, 0)**. Each coastline remains inside its independently authored
   closed 600 by 700 envelope centred on that hub.
@@ -274,7 +276,7 @@ WP40 replaces it with the complete catalog and contracts below.
   landmark composition remain culturally distinct while satisfying equivalent
   progression, resource and access budgets.
 - Mainland and island shape queries use one layout-bound low-frequency
-  coordinate warp with 512-node cells and at most 64 nodes of displacement per
+  coordinate warp with 256-node cells and at most 60 nodes of displacement per
   axis. The same warp applies to query points and zone hubs before non-fixed
   ownership scoring. Source validation proves safe integer bounds and a
   displacement Lipschitz constant below one, so the transform cannot fold
@@ -325,16 +327,17 @@ WP40 replaces it with the complete catalog and contracts below.
 
   | Bay | Authored centreline samples (x, z; half-width) |
   |---|---|
-  | Elandor west | (-970,-3100;760) -> (-990,-2860;620) -> (-900,-2600;470) -> (-1040,-2300;300) -> (-1010,-2100;150) -> (-980,-1980;80) |
-  | Elandor east | (+930,-3090;740) -> (+960,-2840;600) -> (+1080,-2580;450) -> (+920,-2280;290) -> (+980,-2090;145) -> (+1020,-1970;80) |
-  | Kragmar west | (-980,+3100;750) -> (-1060,+2860;610) -> (-1200,+2620;460) -> (-940,+2300;300) -> (-1010,+2110;150) -> (-1060,+1990;80) |
-  | Kragmar east | (+900,+3110;760) -> (+820,+2860;610) -> (+700,+2630;450) -> (+850,+2470;380) -> (+1050,+2320;285) -> (+960,+2100;145) -> (+900,+1960;80) |
+  | Elandor west | (-940,-3660;800) -> (-950,-3460;700) -> (-970,-3260;620) -> (-900,-2960;540) -> (-920,-2750;500) -> (-980,-2550;400) -> (-900,-2350;270) -> (-1020,-2200;220) -> (-970,-2070;130) -> (-1000,-1980;72) |
+  | Elandor east | (+940,-3660;800) -> (+930,-3460;700) -> (+920,-3260;620) -> (+900,-2960;540) -> (+920,-2750;500) -> (+850,-2550;400) -> (+1010,-2350;270) -> (+950,-2200;220) -> (+1030,-2070;130) -> (+990,-1970;72) |
+  | Kragmar west | (-940,+3660;800) -> (-935,+3460;700) -> (-930,+3260;620) -> (-900,+2960;540) -> (-920,+2750;500) -> (-980,+2550;400) -> (-900,+2350;270) -> (-1060,+2200;230) -> (-980,+2080;190) -> (-1020,+1990;100) |
+  | Kragmar east | (+940,+3660;800) -> (+930,+3460;700) -> (+920,+3260;620) -> (+900,+2960;540) -> (+920,+2750;500) -> (+850,+2550;400) -> (+1010,+2350;270) -> (+950,+2200;220) -> (+1030,+2070;130) -> (+920,+1960;72) |
 
   Each bay is one round-joined variable-width capsule mask. It remains open
   and connected from outer water to its head, never narrows below 64 nodes,
-  reaches neither capital belt nor housing core, disconnects no prong and
-  creates no new land contact. Its deterministic nearest centreline/zone-id
-  tie assigns mainland ownership without adding a gameplay edge.
+  reaches neither capital envelope nor coastal housing core, disconnects no
+  prong and creates no new land contact. Water ownership chooses the nearest
+  warped shore-zone hub from the source record's bounded `shore_zone_ids` set;
+  stable numeric zone id breaks an exact tie without adding a gameplay edge.
 - Horizontal water classification has one total precedence:
   1. exact fixed features: Holy Grounds and ownership cores are land except
      for a planned-water submask declared by that same fixed feature;
@@ -705,8 +708,10 @@ the route graph and have no route class or station sequence.
 
   These are geographically neutral and open to both factions. Their secondary
   classification guarantees a traversable five-node route and twelve-node
-  exclusion corridor, not intact paving: within the Holy Grounds they appear
-  as damaged military roads, passes, fords and ruin paths.
+  exclusion corridor, not intact paving. Section 12's six selected
+  capital-ingress chains add a 128-node hard-protected terrain corridor to one
+  route per frontier zone; the other parallel crossings remain mutable damaged
+  military roads, passes, fords and ruin paths.
 - Each of the three consecutive internal Holy-Grounds edges has at least one
   **trail** crossing it. Together these trails preserve west/east alternative
   movement without turning the complete front into an intact primary road.
@@ -813,6 +818,13 @@ asks for it.
 - A fixed 96×96 civic core contains the king's hall, waypoint and principal
   service court. Four fixed 32-node-wide road gates leave north/east/south/
   west. The road itself is authored by WP13 inside that reserved corridor.
+- Each capital's front gate continues through one **128-node-wide, shallow
+  hard-protected public ingress** along two existing route records: its primary
+  capital/front route and one secondary frontier/Holy-Grounds route. The
+  corridor is protected from y = -700 upward, reaches the exact Holy Grounds
+  rectangle continuously and cannot be claimed, dug through or walled across.
+  It guarantees geographic access, not safety from players, guards or combat.
+  Player-built fortification budgets may not overlap it.
 
 | Capital | Outer/home gate | Front gate | West gate | East gate |
 |---|---|---|---|---|
@@ -822,6 +834,12 @@ asks for it.
 | Nhal Veyr | north → Mournfen | south → Blackwind Rise | Ossuary Reach | Speargrass Reach |
 | Gor Drazhak | north → Redtusk Savanna | south → Bannerbreak Mesa | Speargrass Reach | Whispering Reedlands |
 | Kezamba | north → Raincall Basin | south → Thunderroot Wilds | Whispering Reedlands | Totemwater Reach |
+
+  The six protected ingress chains are Dur Brannoc—Stormvault
+  Heights—Gravesalt Escarpment, Highcourt—Ashenward March—The Shattered
+  Line, Lethariel—Glassroot Wilds—The Skyglass Canopy, Nhal
+  Veyr—Blackwind Rise—Gravesalt Escarpment, Gor Drazhak—Bannerbreak Mesa—The
+  Shattered Line and Kezamba—Thunderroot Wilds—The Skyglass Canopy.
 - Four quadrant slots hold Market/Professions, Martial/Garrison,
   Lore/Spiritual and Residential/Cultural districts. The four roles are fixed;
   the world seed may permute their quadrants and choose a building variant.
@@ -986,7 +1004,8 @@ numeric-truncated seed.
   allowlist; allowed pairs need not all occur. No forbidden contact, detached
   sliver or path-created land is accepted.
 - All four bays remain open and connected from outer water to their heads,
-  stay at least 64 nodes wide, reach neither capital belt nor housing core,
+  stay at least 64 nodes wide, reach neither capital envelope nor coastal
+  housing core,
   disconnect no prong and create no new land contact.
 - Water precedence is total. Holy Grounds remains exact; deep ocean and both
   dragon channels are immutable; the nominal shelf uses the shared

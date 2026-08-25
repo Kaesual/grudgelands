@@ -15,9 +15,9 @@ end
 
 local source = {
 	schema = "grug_wp40_simple_map_source_v1",
-	layout_id = "wp40-simple-map-v1c",
+	layout_id = "wp40-simple-map-v1d",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	warp = {cell = 512, maximum = 64,
+	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},
 	shelf_width = 80,
 	holy_grounds = {min_x = -2500, max_x = 2500, min_z = -250, max_z = 250},
@@ -141,10 +141,10 @@ for primitive_index=1,#source.land_primitives do
 end
 
 source.bays = {
-	{id="bay_elandor_west",region="elandor_mainland",shore_zone_ids={1,2,6,7},centreline={{x=-970,z=-3100,half_width=760},{x=-990,z=-2860,half_width=620},{x=-900,z=-2600,half_width=470},{x=-1040,z=-2300,half_width=300},{x=-1010,z=-2100,half_width=150},{x=-980,z=-1980,half_width=80}}},
-	{id="bay_elandor_east",region="elandor_mainland",shore_zone_ids={6,7,11,12},centreline={{x=930,z=-3090,half_width=740},{x=960,z=-2840,half_width=600},{x=1080,z=-2580,half_width=450},{x=920,z=-2280,half_width=290},{x=980,z=-2090,half_width=145},{x=1020,z=-1970,half_width=80}}},
-	{id="bay_kragmar_west",region="kragmar_mainland",shore_zone_ids={17,18,22,23},centreline={{x=-980,z=3100,half_width=750},{x=-1060,z=2860,half_width=610},{x=-1200,z=2620,half_width=460},{x=-940,z=2300,half_width=300},{x=-1010,z=2110,half_width=150},{x=-1060,z=1990,half_width=80}}},
-	{id="bay_kragmar_east",region="kragmar_mainland",shore_zone_ids={22,23,27,28},centreline={{x=900,z=3110,half_width=760},{x=820,z=2860,half_width=610},{x=700,z=2630,half_width=450},{x=850,z=2470,half_width=380},{x=1050,z=2320,half_width=285},{x=960,z=2100,half_width=145},{x=900,z=1960,half_width=80}}},
+	{id="bay_elandor_west",region="elandor_mainland",shore_zone_ids={1,2,6,7},centreline={{x=-940,z=-3660,half_width=800},{x=-950,z=-3460,half_width=700},{x=-970,z=-3260,half_width=620},{x=-900,z=-2960,half_width=540},{x=-920,z=-2750,half_width=500},{x=-980,z=-2550,half_width=400},{x=-900,z=-2350,half_width=270},{x=-1020,z=-2200,half_width=220},{x=-970,z=-2070,half_width=130},{x=-1000,z=-1980,half_width=72}}},
+	{id="bay_elandor_east",region="elandor_mainland",shore_zone_ids={6,7,11,12},centreline={{x=940,z=-3660,half_width=800},{x=930,z=-3460,half_width=700},{x=920,z=-3260,half_width=620},{x=900,z=-2960,half_width=540},{x=920,z=-2750,half_width=500},{x=850,z=-2550,half_width=400},{x=1010,z=-2350,half_width=270},{x=950,z=-2200,half_width=220},{x=1030,z=-2070,half_width=130},{x=990,z=-1970,half_width=72}}},
+	{id="bay_kragmar_west",region="kragmar_mainland",shore_zone_ids={17,18,22,23},centreline={{x=-940,z=3660,half_width=800},{x=-935,z=3460,half_width=700},{x=-930,z=3260,half_width=620},{x=-900,z=2960,half_width=540},{x=-920,z=2750,half_width=500},{x=-980,z=2550,half_width=400},{x=-900,z=2350,half_width=270},{x=-1060,z=2200,half_width=230},{x=-980,z=2080,half_width=190},{x=-1020,z=1990,half_width=100}}},
+	{id="bay_kragmar_east",region="kragmar_mainland",shore_zone_ids={22,23,27,28},centreline={{x=940,z=3660,half_width=800},{x=930,z=3460,half_width=700},{x=920,z=3260,half_width=620},{x=900,z=2960,half_width=540},{x=920,z=2750,half_width=500},{x=850,z=2550,half_width=400},{x=1010,z=2350,half_width=270},{x=950,z=2200,half_width=220},{x=1030,z=2070,half_width=130},{x=920,z=1960,half_width=72}}},
 }
 
 source.islands = {
@@ -625,8 +625,18 @@ source.hydrology_interfaces = {
 
 source.hard_protection_recipes = {
 	{id="hard_capital_build_plus_apron_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+	{id="hard_capital_ingress_corridor_v1",shape="polyline_corridor",footprint_policy_id="polyline_corridor_v1",total_width=128,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_start_core_v1",shape="centered_half_open_square",footprint_policy_id="centered_half_open_square_v1",total_width=128,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
 	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+}
+
+source.capital_ingresses = {
+	{id="ingress_dur_brannoc",capital_anchor_id="anchor_007",route_ids={"route_003","route_043"},total_width=128},
+	{id="ingress_highcourt",capital_anchor_id="anchor_008",route_ids={"route_006","route_046"},total_width=128},
+	{id="ingress_lethariel",capital_anchor_id="anchor_009",route_ids={"route_009","route_048"},total_width=128},
+	{id="ingress_nhal_veyr",capital_anchor_id="anchor_010",route_ids={"route_012","route_049"},total_width=128},
+	{id="ingress_gor_drazhak",capital_anchor_id="anchor_011",route_ids={"route_015","route_052"},total_width=128},
+	{id="ingress_kezamba",capital_anchor_id="anchor_012",route_ids={"route_018","route_054"},total_width=128},
 }
 
 source.hard_protection = {}
@@ -638,6 +648,15 @@ for anchor_index = 1, 12 do
 			"hard_capital_build_plus_apron_v1" or "hard_start_core_v1",
 		center=point(anchor.position.x,anchor.position.z),active=true,
 		activation_owner="WP40",status="active",
+	}
+end
+for ingress_index = 1, #source.capital_ingresses do
+	local ingress=source.capital_ingresses[ingress_index]
+	source.hard_protection[#source.hard_protection+1] = {
+		id="hard:"..ingress.id,source_anchor_id=ingress.capital_anchor_id,
+		ingress_id=ingress.id,route_ids=ingress.route_ids,
+		recipe_id="hard_capital_ingress_corridor_v1",
+		active=true,activation_owner="WP40",status="active",
 	}
 end
 local anchor_by_id = {}

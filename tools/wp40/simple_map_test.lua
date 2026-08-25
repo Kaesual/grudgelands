@@ -12,8 +12,9 @@ assert(loaded.module.validate_source())
 assert(#source.zones == 38 and #source.routes == 57 and
 	#source.allowed_contacts == 61 and #source.anchors == 100 and
 	#source.relief_profiles == 6 and #source.landmarks == 70 and
-	#source.hydrology == 25 and #source.hard_protection == 36 and
-	#source.claim_exclusions == 476)
+	#source.hydrology == 25 and #source.capital_ingresses == 6 and
+	#source.hard_protection == 42 and
+	#source.claim_exclusions == 482)
 
 local route_classes = {primary=0,secondary=0,trail=0}
 for index = 1, #source.routes do
@@ -26,11 +27,37 @@ assert(route_classes.primary == 30 and route_classes.secondary == 24 and
 assert(session.nearest_path_at(0,-2500,"road").kind == "road")
 assert(session.nearest_path_at(0,-125,"trail").kind == "trail")
 assert(session.nearest_path_at(-2700,-125,"boat").kind == "boat")
+for index=1,#source.capital_ingresses do
+	local ingress=source.capital_ingresses[index]
+	assert(ingress.total_width == 128 and #ingress.route_ids == 2)
+end
 
 for index = 1, #source.zones do
 	local zone = source.zones[index]
 	assert(session.id_at(zone.hub.x,zone.hub.z) == zone.id,
 		"zone hub does not own itself: " .. zone.id)
+end
+
+-- The bay masks must not expose the fixed-core precedence as a rectangular
+-- shoreline. Keep one visible 16-node bay-free ring around every start core;
+-- separately declared civic hydrology may still enter that ring.
+for index=1,6 do
+	local position=source.anchors[index].position
+	local half_x=source.start_core.width_x/2+16
+	local half_z=source.start_core.width_z/2+16
+	local function assert_no_bay(x,z)
+		assert(session.classification_at(x,z).bay_id == nil)
+	end
+	for offset=-source.start_core.width_x/2,
+			source.start_core.width_x/2,16 do
+		assert_no_bay(position.x+offset,position.z-half_z)
+		assert_no_bay(position.x+offset,position.z+half_z)
+	end
+	for offset=-source.start_core.width_z/2,
+			source.start_core.width_z/2,16 do
+		assert_no_bay(position.x-half_x,position.z+offset)
+		assert_no_bay(position.x+half_x,position.z+offset)
+	end
 end
 
 local expected_samples = {
@@ -59,7 +86,7 @@ for index = 1, #expected_samples do
 	end
 end
 
--- V1c keeps the exact Holy Grounds macro rectangle, but the warped mainland
+-- V1d keeps the exact Holy Grounds macro rectangle, but the warped mainland
 -- fronts overlap behind its long north/south edges between the channel-corner
 -- transitions. Any water there must be an explicitly authored hydrology mask,
 -- never an accidental shelf/ocean seam.
@@ -253,7 +280,11 @@ if mode == "--full" then
 	for index=1,#source.bays do
 		for sample_index=1,#source.bays[index].centreline do
 			local sample=source.bays[index].centreline[sample_index]
-			if session.water_class_at(sample.x,sample.z) ~= "planned_water" then
+			local visible_x=math.max(source.extent.min_x,
+				math.min(source.extent.max_x,sample.x))
+			local visible_z=math.max(source.extent.min_z,
+				math.min(source.extent.max_z,sample.z))
+			if session.water_class_at(visible_x,visible_z) ~= "planned_water" then
 				bay_sample_failures=bay_sample_failures+1
 			end
 		end

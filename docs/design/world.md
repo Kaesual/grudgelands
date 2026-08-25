@@ -59,7 +59,8 @@ bays; they join at a continuous capital-and-heartland belt, then broaden into
 a three-sector frontier at the Holy Grounds. Elandor and Kragmar share that
 high-level composition but use separately authored simple land primitives
 under the single shared layout-bound warp, never mirrored coast geometry. The
-bays stop before the capital belt and may not create or remove zone neighbors.
+bays stay outside the capital envelopes and coastal housing cores and may not
+create or remove zone neighbors.
 
 The fixed hubs, simple macro-land primitives and integer power ownership in
 `world_zones.md` §7 are the sole horizontal authority. Each 512×512 capital

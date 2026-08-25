@@ -1,8 +1,8 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7, R0, R1, V1b and the V1c technical package independently
-accepted 2026-08-25; the initial V1 macro layout was accepted and the generated
-V1c preview is awaiting explicit user visual approval before R2
+**Status:** D1-D7, R0, R1, V1b, V1c and the V1d technical package independently
+accepted 2026-08-25; the generated V1d preview awaits explicit user visual
+approval before R2
 
 **Ruling date:** 2026-08-25
 
@@ -196,10 +196,10 @@ markers.
 Reuse T1's canonical full-seed-safe hashing to construct the lattice, but do
 not call its checked arithmetic or SHA-hash lattice corners on every map
 column. V1b used 1,024-node cells and at most 96 nodes of displacement per
-axis. The current V1c candidate uses the same single warp with 512-node cells
-and at most 64 nodes of displacement: more bends at whole-map scale without
-another query or per-zone noise field. This remains well below the no-fold
-limit. At load/compile time:
+axis; V1c used 512-node cells and at most 64 nodes. The current V1d candidate
+uses the same single warp with 256-node cells and at most 60 nodes of
+displacement: shorter visible bends without another query or per-zone noise
+field. This remains below the no-fold limit. At load/compile time:
 
 1. build a small fixed-layout warp lattice over the finite interesting extent;
 2. derive each lattice vector once from the versioned fixed layout ID;
@@ -572,9 +572,76 @@ validation-strength observations before freezing the complete integer layout.
 Observed elapsed wall time is `unknown` because the work crossed a context
 compaction.
 
+### V1d — bounded boundary, coast and capital-access closure
+
+The fixed layout id is `wp40-simple-map-v1d`. The V1c review was nearly
+accepted visually. Before R2, the user requested one
+last bounded pass: visibly shorter organic zone-boundary meanders, less land
+removed by the four bays and a verified anti-wall capital approach. V1d keeps
+all 38 zone ids, hubs, macro primitives, route graph edges, route ids,
+hydrology ids, anchors, housing masks and fixed cores.
+
+- The same single common warp changes from 512/64 to 256/60
+  cell/displacement parameters. A query still interpolates exactly four cached
+  lattice vectors. There is no second octave, boundary noise, per-zone random
+  function or authored boundary polyline.
+- The four existing bay masks retain their ids but move the widest samples
+  outside the visible extent so only their curved inland shoulders enter the
+  map, then taper close to the start lobes. Ten short
+  variable-width samples per bay produce the winding coast without adding a
+  water or erosion algorithm.
+- The access audit found that capital envelopes and gates were hard-protected,
+  but every road beyond them was only claim-excluded and mutable. Six explicit
+  capital-ingress records therefore concatenate existing route pairs into one
+  128-node-wide shallow hard-protected public corridor per capital, continuous
+  from the capital into the exact Holy Grounds rectangle. They add no route or
+  zone edge and the SVG shows their width as a faint route underlay.
+- Holy Grounds zone ids, display names, exact rectangle and current protection
+  rule remain unchanged. The possible Battlegrounds rename and shared mutable
+  build policy are deliberately deferred until before protection/consumer
+  integration; R2 freezes geometry, not that unresolved policy.
+
+The generated V1d SVG returns to the user before R2. Full-grid topology,
+route-fit, contact, channel and timing diagnostics remain advisory until R2;
+V1d does not repair them to improve a report.
+
+**V1d technical completion record (2026-08-25):** the runner passed Lua 5.1
+syntax/`SETGLOBAL`/portability checks, byte-identical LuaJIT/PUC 5.1 KATs for
+seeds `0`, `1`, `2^63` and `2^64-1`, repeated-render byte identity and XML
+parsing. Seed 0 produced KAT digest
+`9911d6a9dce8021385c39fbde934e34eb804410f74baa8c59bcc7be7d9ea9a4d`;
+the generated SVG SHA-256 is
+`654c86e6190bed1252545788030be7b59178c24f9933c34a4a6f03e164a4f0f2`.
+The final advisory 16-node sampled report has three land components, eleven
+disconnected zones, zero missing zones, thirteen undeclared contacts, 316 of
+7,770 undeclared off-land route samples, 256 declared-water crossing samples,
+252 of 252 candidate anchors in their intended zones, zero bay/sample or
+hydrology-sample failures and 30 channel-interior failures. On the local x86-64
+AMD Ryzen 7 9800X3D host, LuaJIT measured a 6.171 ms median for the 80 by 80
+classifier probe. That value is evidence, not a pass/fail limit.
+
+The capital-access audit found that the prior gate-road claim exclusions did
+not prevent player-built walls. V1d now binds six 128-node-wide ingress
+corridors, each assembled from two existing route records and hard-protected
+continuously from one capital to the Holy Grounds. This is a geographic access
+guarantee, not a combat-safety guarantee. It adds neither route edges nor a
+pathfinder.
+
+Calibration record: implementing/integrating model GPT-5.6 Sol; independently
+reviewing model explicitly authorized Claude Fable at xhigh effort. The first
+full review found 0 Critical / 0 High / 2 Medium / 5 Low and returned
+**REJECTED**. The layout contract, bay/core exclusion, bay-ownership wording,
+ingress class binding, Highcourt route choice and authored-extent wording were
+corrected. A focused rereview returned **ACCEPTED**, 0 Critical / 0 High /
+0 Medium. Its remaining non-blocking observation is that the two Gravesalt
+ingress routes end in authored shallow marsh without a complete crossing pair;
+R2 owns that route-fit/crossing check rather than V1d inventing a repair. The
+possible Battlegrounds policy remains deliberately deferred. Observed elapsed
+wall time is `unknown` because the work crossed a context compaction.
+
 ### R2 — freeze and validate the accepted 2D layout
 
-After V1c visual approval, add and freeze the small spatial invariant set:
+After V1d visual approval, add and freeze the small spatial invariant set:
 
 - one connected mainland and two connected islands on the complete integer
   node grid of the finite authored extent;
@@ -591,6 +658,10 @@ After V1c visual approval, add and freeze the small spatial invariant set:
 - crossings, endpoints, 57-route 30/24/3 classes, 7/16--5/12--3/8 profiles,
   POI spurs and land-graph references are complete; an ordinary two-zone route
   enters no undeclared third zone;
+- the six 128-node capital ingress corridors continuously concatenate their
+  declared primary/secondary route pair from the protected capital envelope
+  into the exact Holy rectangle, remain on traversable land or declared
+  crossings and are bound into hard protection and claim exclusion;
 - the separate boat graph retains two distinct 96-node approaches/landings per
   island and the at-most-10-percent parity gate;
 - every emergent geometric contact belongs to the checksum-covered complete
@@ -598,8 +669,8 @@ After V1c visual approval, add and freeze the small spatial invariant set:
   boundary-only flank pairs); allowed pairs need not all occur and no dual is
   materialized;
 - each of the four bays is open and connected from outer water to its head,
-  stays at least 64 nodes wide, reaches neither capital belt nor a housing core,
-  disconnects no prong and creates no new land contact;
+  stays at least 64 nodes wide, reaches neither a capital envelope nor a
+  coastal housing core, disconnects no prong and creates no new land contact;
 - exact Holy bounds, water precedence, minimum channel/warning/hard-strip
   widths and shelf-policy inheritance pass;
 - exactly ten whole-footprint housing-center masks pass every 2D exclusion and
