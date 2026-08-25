@@ -124,15 +124,16 @@ the goal-level view.
   one fixed pure 2D model and canonical SVG; V1d adds stronger single-warp
   border meanders, pinned curved routes, tapered bays with ownerless
   deep-ocean mouth caps, coherent visible water and six hard-protected capital
-  ingress corridors. The V1d visual gate is accepted; R2 layout
-  freeze/validation is next and has not started.
+  ingress corridors. The V1d visual gate and exhaustive R2 layout freeze,
+  route/water/core validation and housing-capacity evidence are independently
+  accepted; R3 global height and final 3D anchors are next.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:
   [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
-  Fixed-layout route/housing validation and once-per-layout capacity
-  simulation, 32-seed content/supply audits and reproducible WP18-relative
-  performance remain implementation gates.
+  The accepted R2 artifact now owns fixed-layout route/housing validation and
+  once-per-layout capacity. The 32-seed content/supply audits and later
+  production mapchunk performance evidence remain implementation gates.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.

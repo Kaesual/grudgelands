@@ -1,8 +1,8 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7, R0, R1, V1b, V1c and V1d independently accepted
-2026-08-25; the user accepted the final V1d preview as sufficient for the
-first version after the deep-ocean mouth correction; R2 is next and not started
+**Status:** D1-D7 and R0-R2 independently accepted 2026-08-25; the user
+accepted the final V1d preview as sufficient for the first version after the
+deep-ocean mouth correction; R3 is next
 
 **Ruling date:** 2026-08-25
 
@@ -136,9 +136,13 @@ and one pure evaluator. Proposed ownership:
 | `mods/MAPGEN/grug_mapgen/wp40/height.lua` | pure globally queryable project-owned `H(full_seed, x, z)` and grading |
 | `mods/MAPGEN/grug_mapgen/wp40/planner.lua` | pure typed voxel-operation plan; no engine writes |
 | `tools/wp40/render_simple_map_svg.lua` | read-only SVG rendering through the production evaluator |
-| `tools/wp40/simple_map_test.lua` | structural and, after visual freeze, spatial invariants |
-| `tools/wp40/run_simple_map.sh` | interpreter-selectable test/render entrypoint |
+| `tools/wp40/simple_map_test.lua` | fast structural, parity, sampled-layout and benchmark smoke tests |
+| `tools/wp40/simple_map_r2_{metadata,cores,water,routes,grid,housing}.lua` | read-only exact R2 validators; all geometry queries stay in the production evaluator |
+| `tools/wp40/simple_map_r2_test.lua` | LuaJIT-only authoritative R2 composition and canonical artifact writer |
+| `tools/wp40/run_simple_map.sh` | PUC/LuaJIT parity and SVG-render entrypoint |
+| `tools/wp40/run_simple_map_r2.sh` | exhaustive LuaJIT R2 entrypoint with Lua 5.1 syntax/static gates |
 | `docs/research/wp40-simple-map-preview.svg` | current human-review artifact, regenerated rather than hand-edited |
+| `docs/research/wp40-simple-map-r2-artifact.tsv` | canonical machine-readable R2 evidence, regenerated rather than hand-edited |
 
 R1 may adjust names if they conflict with established module layout, but
 responsibilities may not be split into a second geometry authority.
@@ -149,10 +153,10 @@ The source contains only the families needed by the simple model:
 
 - constants and fixed interesting extent;
 - zones and one hub per zone;
-- the complete 61-pair allowed geometric-contact set;
 - a small ordered list of additive/subtractive macro land primitives;
 - fixed start/capital ownership cores;
-- typed paths with ordered centrelines and explicit crossing interfaces;
+- typed paths with ordered centrelines, derived planned-water grading and named
+  crossing interfaces where a landmark needs an explicit transition;
 - fixed and candidate anchor records;
 - simple explicit hydrology/water masks;
 - four explicit between-prong bay masks whose landward parts carry mainland
@@ -259,16 +263,32 @@ their full-depth immutability and minimum width/warning/hard-strip gates.
 ### 5.5 Zone ownership
 
 After fixed core overrides, restrict candidates to one macro-region and choose
-the least integer power score:
+the least fixed-point power score:
 
 ```text
 score = squared_distance(w(point), w(hub)) - bias
 ```
 
-Use numeric zone ID for exact ties. Warped integer deltas are bounded by 8,192
-nodes and `abs(bias) <= 2^24`, so scores and differences are exactly
+Use numeric zone ID for exact ties. The owner-only warp keeps eight fractional
+bits while land and water masks retain the ordinary integer warp. Scaled
+coordinate deltas stay below 8,192 times 256 and the score subtracts
+`bias * 256^2`; with `abs(bias) <= 2^24`, scores and differences remain exactly
 representable by Lua doubles without rational cross multiplication. Candidate
 counts are structurally bounded at 16/16/4/1/1.
+
+Speargrass Reach is the sole nonzero ordinary site bias, exactly `256`
+node-squared units; all other zone biases are zero. With the eight-bit owner
+warp scale this is a sub-node raster tie nudge, not a second boundary model.
+The exact whole-grid connectivity gate, not the nudge itself, proves the final
+result.
+
+The four coastal housing cores are a second small override family, but remain
+mutable ordinary land. Each is one fixed vertical capsule compiled from its
+landmark envelope: rounded/tapering ends, at least 600 nodes of frontage and
+at least 300 nodes of inland depth. Core membership precedes macro coast,
+ordinary power ownership and hydrology, so its exact R2 scan can require every
+member node to be dry, owned by the declared housing zone, mask-eligible and
+static-exclusion-free without a repair pass.
 
 Gameplay difficulty is a separate fixed continuous lattice, not a boundary
 query. At each 32-node lattice point, take the hard zone target selected by the
@@ -291,8 +311,13 @@ Each path record has:
 - stable endpoint IDs; and
 - explicit bridge/ford/tunnel/causeway/ferry/landing interfaces.
 
-Dry paths never add land. Source validation reports any ordinary corridor that
-leaves land outside a declared crossing. Sparse path/hydrology queries reuse a
+Paths never change horizontal land ownership. Where a land path intersects
+planned water, the intersection deterministically becomes a later graded
+bridge, ford or causeway span; named crossing records remain only where a
+landmark or vertical transition needs explicit identity. Coastal shelf, deep
+ocean and dragon-channel intersections still fail. A route may geometrically
+pass through another zone without adding that zone to the route-neighbor
+graph. Sparse path/hydrology queries reuse a
 small 128-node candidate index at the public-query stage; R1 rendering may
 brute-force the small catalog. Exactly 57 land routes define `neighbors(id)`
 and retain 30 primary, 24 secondary and three trail records with 7/16, 5/12
@@ -661,42 +686,55 @@ full control centreline, the already accepted landward bay tongue and the
 later 48-node flight-warning integration. The runner evidence above was
 produced locally by Sol; the read-only reviewer did not rerun it.
 
+The V1d KAT/SVG digests above are immutable historical visual-acceptance
+evidence, not reproduction targets for the later R2 freeze. R2 deliberately
+freezes routes, adds exact fixed-point ownership evidence and binds the four
+coastal housing cores; its current KAT, SVG and canonical artifact digests are
+recorded below and supersede V1d for current-tree reproduction.
+
 ### R2 — freeze and validate the accepted 2D layout
 
 With V1d visually approved, add and freeze the small spatial invariant set:
 
 - one connected mainland and two connected islands on the complete integer
   node grid of the finite authored extent;
-- all 38 zones nonempty and connected on that grid;
+- all 38 zones nonempty and connected on that grid, treating local hydrology
+  as part of its zone but excluding owner-inheriting shelf and bay water from
+  political-territory components;
 - hubs and fixed cores own themselves;
 - complete 600 by 500 start cores and 512 by 512 capital envelopes are dry
   except for explicitly declared civic-water features, correctly owned and
-  retain their required route exits; the underlying power
-  owner already agrees throughout each core so the override creates no hidden
-  island or unblended boundary;
+  retain their required route exits; underlying unconstrained power-owner
+  disagreement is recorded as diagnostic evidence, while complete final-zone
+  connectivity is the binding proof that the deliberately simple fixed-core
+  override creates no detached territory;
 - fixed anchors are valid and every candidate set has a horizontally valid
   member; the frozen set is final for later grading;
-- dry routes fit land except at declared crossings;
+- route and POI-spur corridors stay on land or locally owned planned water;
+  planned-water intersections are deterministic derived grading spans, while
+  shelf, deep ocean and dragon channels remain forbidden;
 - crossings, endpoints, 57-route 30/24/3 classes, 7/16--5/12--3/8 profiles,
-  POI spurs and land-graph references are complete; an ordinary two-zone route
-  enters no undeclared third zone;
+  POI spurs and land-graph references are complete; geometric passage through
+  another zone never creates an implicit route edge;
 - the six 128-node capital ingress corridors continuously concatenate their
   declared primary/secondary route pair from the protected capital envelope
-  into the exact Holy rectangle, remain on traversable land or declared
-  crossings and are bound into hard protection and claim exclusion;
+  into the exact Holy rectangle; the 128-node footprint is the protected and
+  claim-excluded public envelope around the route, while its route surface is
+  graded across any planned water it meets;
 - the separate boat graph retains two distinct 96-node approaches/landings per
   island and the at-most-10-percent parity gate;
-- every emergent geometric contact belongs to the checksum-covered complete
-  61-pair source allowlist (57 land-route pairs plus four historical
-  boundary-only flank pairs); allowed pairs need not all occur and no dual is
-  materialized;
+- all emergent geometric contacts are recorded deterministically as diagnostic
+  layout evidence, but do not define route neighbors and require no allowlist
+  or stable boundary identity;
 - each of the four bays is open and connected from outer water to its head,
   stays at least 64 nodes wide, reaches neither a capital envelope nor a
   coastal housing core, disconnects no prong and creates no new land contact;
 - exact Holy bounds, water precedence, minimum channel/warning/hard-strip
   widths and shelf-policy inheritance pass;
-- exactly ten whole-footprint housing-center masks pass every 2D exclusion and
-  the four coastal cores retain 600-node frontage and 300-node depth;
+- exactly ten whole-footprint housing-center masks pass every 2D exclusion;
+  each of the four mutable vertical-capsule coastal cores retains at least
+  600-node frontage and 300-node depth, and every member node is dry,
+  zone-owned, mask-eligible and static-exclusion-free;
 - the existing deterministic packing portfolio runs once: all 111 by 111
   lattice origins, best/worst conflict-graph greedy orders, 16 canonical hash
   orders, edge/route/POI-biased and row-major/reverse orders, with its
@@ -724,6 +762,62 @@ With V1d visually approved, add and freeze the small spatial invariant set:
 Expensive full-layout scans run under LuaJIT. PUC 5.1 runs syntax/static gates
 and targeted representative KATs whose canonical digest is compared with
 LuaJIT. No exhaustive PUC population is added.
+
+**R2 implementation and evidence record (2026-08-25; independently
+accepted):** the LuaJIT-only authoritative runner validates a 7,201 by
+6,401 grid, or 46,093,601 horizontal nodes. It reports exactly three land
+components, all 38 political territories connected, 74 diagnostic contacts,
+17 diagnostic unrouted contacts, no unknown water and maximum adjacent
+difficulty delta 1 against limit 2. The route validator freezes all 57 routes,
+proves zero route/POI/ingress columns on forbidden water and checks 1,499,010
+orthogonal route-corridor difficulty edges with maximum delta 1. All 12 fixed
+cores and 84 candidate sets pass. All four bays and two channels pass; each
+bay has a warp-derived realized-width lower bound of at least 74 nodes.
+
+The four exact coastal capsules contain 160,679 / 160,679 / 161,607 / 160,679
+member nodes respectively, all dry, correctly owned, mask-eligible and
+static-exclusion-free, and provide 81,254 / 81,254 / 81,982 / 81,254 centres
+whose complete 101 by 101 square remains inside the capsule. The exhaustive
+housing run measures 1,092,289 eligible centres, 123,210 lattice origins and
+230 deterministic orders. Summed per-mask portfolio minima/maxima are 42/72
+for Elandor and 43/82 for Kragmar; exact Claim-Stone faction limits remain a
+later policy choice below this measured capacity rather than an R2 invention.
+
+The canonical artifact body digest is
+`73165e1ad9e9dd03bc608b544e5906a10df2bf7b2c23779b311ad3cbdadf4f7b`;
+its complete-file SHA-256 is
+`02585d6644265e8889edb3311045d76c2dd7152700dff33563bd8daabc13c339`.
+It embeds SHA-256 rows for all 14 executable R2 inputs. The ordinary runner
+passes LuaJIT/PUC 5.1 byte parity for seeds `0`, `1`, `2^63` and `2^64-1`;
+seed 0 is
+`0a945840673d3170ce545c3c12af1422dcd12da5398a88faaf39c42d5346056d`.
+Repeated SVG rendering is byte-identical and XML-valid; the current preview
+SHA-256 is
+`0739e7568a254b5883f8ed2d3fe4ac182056e017dc6d8274b441c5a27136dadc`.
+
+On the local x86-64 AMD Ryzen 7 9800X3D host under LuaJIT
+2.1.1767980792, the allocation-free 80 by 80 classifier median is 7.537 ms,
+or about 1.18 microseconds per horizontal column. The exact extracted WP18
+surface `zone_at` branch structure measures 0.140 ms on the same coordinates;
+R2 is 5,293.0 percent slower because it answers land/water, warped named-zone,
+fixed-core and hydrology ownership rather than the old rectangle/radial label.
+This is comparative evidence only: one result is reused for the vertical
+column, and no absolute threshold exists without a whole-mapchunk budget.
+
+Calibration record: implementing/integrating model GPT-5.6 Sol; initial
+independent review model explicitly authorized Claude Opus at xhigh effort;
+focused correction reviewer GPT-5.6 Sol at xhigh effort in a fresh read-only
+context. The first full review found 0 Critical / 0 High / 3 Medium / 7 Low
+and returned **REJECTED**. The first correction round replaced asserted
+coastal-core metadata with exact realized capsules, added the durable digest
+and benchmark record and closed the seven Low evidence gaps. Its focused
+review found 0 Critical / 0 High / 2 Medium / 0 Low: the SVG still depicted
+the capsule envelopes as rectangles and the live engineering brief retained
+three superseded pre-R2 rules. The second correction round fixed both; its
+focused rereview returned **ACCEPTED**, 0 Critical / 0 High / 0 Medium / 0
+Low. Critical/High count is 0; fix-round count is two; observed elapsed wall
+time is `unknown` because work crossed a context compaction. The durable
+review record is [wp40-simple-map-r2-review.md](wp40-simple-map-r2-review.md).
 
 ### R3 — pure global height and final immutable payload
 
@@ -836,7 +930,7 @@ Required lenses:
    planned world without a repair subsystem.
 4. **Downstream completeness:** verify T3-T9, WP9/WP12/WP13/WP17/WP23/WP24/
    WP31/WP33/WP34 and legacy runtime consumers retain a viable input.
-5. **Determinism/Lua/performance:** verify the fixed warp, integer power score,
+5. **Determinism/Lua/performance:** verify the fixed warp, fixed-point power score,
    index, candidate choice and interpreter/test budget are feasible under
    plain Lua 5.1 and mapgen hot-path constraints.
 6. **Execution safety:** verify the coexistence/cutover sequence cannot create

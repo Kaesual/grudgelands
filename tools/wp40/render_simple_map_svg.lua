@@ -62,6 +62,7 @@ local function write_mask(write, row, attributes)
 			number(sy(row.center.z+row.radius_z)),'" width="',
 			number(2*row.radius_x*scale_x),'" height="',
 			number(2*row.radius_z*scale_z),'" rx="',number(radius*scale_x),
+			'" ry="',number(radius*scale_z),
 			'" ',attributes,'><title>',escape(row.id),'</title></rect>\n')
 	end
 end
@@ -263,10 +264,10 @@ write('<g id="coastal-housing-cores" fill="#f8e3a2" fill-opacity="0.18" stroke="
 for index=1,#source.coastal_housing_cores do
 	local row=source.coastal_housing_cores[index]
 	local landmark=assert(landmark_by_id[row.landmark_id])
-	write('<rect x="',number(sx(landmark.center.x-landmark.radius_x)),'" y="',
-		number(sy(landmark.center.z+landmark.radius_z)),'" width="',
-		number(2*landmark.radius_x*scale_x),'" height="',
-		number(2*landmark.radius_z*scale_z),'"><title>',escape(row.id),'</title></rect>\n')
+	assert(row.shape=="vertical_capsule_v1",
+		"unsupported coastal housing core shape: "..tostring(row.shape))
+	write_mask(write,{id=row.id,primitive="capsule",center=landmark.center,
+		radius_x=landmark.radius_x,radius_z=landmark.radius_z},"")
 end
 write('</g>\n')
 

@@ -1,7 +1,7 @@
 # WP40 Simple Named-Zone World — Engineering Contract
 
-Status: **current WP40 engineering authority; simple-map rebase and R0
-authority fold independently accepted 2026-08-25; R1 is next.**
+Status: **current WP40 engineering authority; simple-map rebase through R2
+independently accepted 2026-08-25; R3 is next.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed
@@ -58,10 +58,11 @@ One compact versioned source defines:
 - 100 fixed/candidate anchor slots;
 - ten housing masks and four coastal cores;
 - named hydrology/landmark masks; and
-- the complete 61-pair allowed geometric-contact set.
+- six protected capital-ingress chains.
 
 The source is data. It contains no winner search, boundary repair, face
-materialization or fallback geometry.
+materialization or fallback geometry. Exhaustive validation derives the
+diagnostic geometric-contact evidence from that source.
 
 ### 2.2 Fixed layout and seed ownership
 
@@ -99,14 +100,16 @@ records and digests; reflection is a validation failure.
 
 The total classifier is:
 
-1. exact fixed features: fixed land except any planned-water submask declared
-   by that same fixed feature;
-2. the deep-ocean cap of a matched outer bay mouth;
-3. explicit closed planned/bay water;
-4. ordinary macro land;
-5. closed immutable dragon channels;
-6. nominal shelf; and
-7. deep ocean.
+1. exact start/capital cores: fixed land except civic water declared for that
+   same core;
+2. the four mutable dry coastal-core capsules, which override the warped
+   macro coast, ordinary ownership and hydrology;
+3. the deep-ocean cap of a matched outer bay mouth;
+4. explicit closed bay water;
+5. ordinary macro hydrology or land, including the exact Holy rectangle;
+6. closed immutable dragon channels;
+7. nominal shelf; and
+8. deep ocean.
 
 `expanded_land_at(r)` expands fixed-land extents and each positive primitive
 by `r` after the query coordinate is warped. It does not shrink or expand
@@ -122,9 +125,9 @@ warp, the transverse boundary meanders gently without another field or water
 algorithm. Declared interior water retains the fixed feature's zone ownership and is
 classified as planned water; unrelated general water masks cannot cut fixed
 land. The four bays stay open/connected, at least 64 nodes wide, outside
-capital and housing cores, and create no forbidden contact. Deep ocean and channels are
-immutable full columns. Planned water keeps zone ownership and is
-claim-ineligible. Shelf policy/dressing uses the nearest eligible mainland
+capital and housing cores, and create no new land contact. Deep ocean and
+channels are immutable full columns. Planned water keeps zone ownership and
+is claim-ineligible. Shelf policy/dressing uses the nearest eligible mainland
 hub. All surface water uses `default:water_source`.
 
 ### 2.5 Zone ownership and difficulty
@@ -139,8 +142,9 @@ squared_distance(w(point), w(zone.hub)) - zone.bias
 Stable numeric id breaks a tie. Deltas are at most 8192 and
 `abs(bias) <= 2^24`.
 
-The route graph defines `neighbors(id)`. All emergent contacts must belong
-to the complete 61-pair safe allowlist, but an allowed pair need not occur. No
+The 57-route graph alone defines `neighbors(id)`. Exhaustive validation records
+all emergent geometric contacts as diagnostic layout evidence; contact neither
+creates a route edge nor requires an allowlist or stable boundary identity. No
 boundary dual is produced.
 
 Difficulty is independent of boundary geometry. Each zone contributes one
@@ -152,9 +156,12 @@ most two levels.
 ### 2.6 Paths, anchors and housing
 
 Every path has stable id, kind, class, ordered centreline, corridor, endpoints
-and explicit crossing interfaces. Dry routes must fit land; they never add or
-repair land. Required POIs receive explicit spurs. Boat links remain outside
-the land-neighbor graph.
+and explicit crossing interfaces. Land-route, POI-spur and protected-ingress
+corridors must fit ordinary land or locally owned planned water. Planned-water
+intersections are deterministic terrain-grading spans; coastal shelf, deep
+ocean and immutable dragon channels remain forbidden. Paths never add or
+repair horizontal land. Required POIs receive explicit spurs. Boat links
+remain outside the land-neighbor graph.
 
 Six capital ingress records each concatenate the existing capital/front
 primary route with one existing frontier/Holy secondary route. Their

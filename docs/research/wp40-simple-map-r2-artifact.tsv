@@ -1,0 +1,559 @@
+schema	grug_wp40_simple_map_r2_artifact_v1
+layout_id	wp40-simple-map-v1d
+seed	0
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/schemas.lua	552b3dd1a1156c4ee44d46da4d3af345355dec47bd0c38ce620793db1f0caea9
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/canonical.lua	28022454cadac7aba838873c955ce4ab5c96ff995efef2bc729490b309935716
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/deterministic.lua	ddf478e4fc0714a0551325e88550ef900e86e318091e11938b82ab51542275e9
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua	3c22e64e8dca499ac14a5b34ebde7b774ffc450e9ca2fd283fa0379023377c24
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua	f0fa10033abdc6280c154401f7b111e6b89602ad670e3fc85dfc4a380b9a7928
+input_sha256	tools/wp40/simple_map_offline.lua	4f3c30b4583e8fb32511059b0d8c6c80a1dd505d17995594c2be1492d6479d96
+input_sha256	tools/wp40/simple_map_r2_test.lua	961a7efaec64a10c9fde9dd0644ee975bde8b0eb69ecd396171868013b04008c
+input_sha256	tools/wp40/simple_map_r2_metadata.lua	f49a90123ff78028767cb5d3519a01fdbb0d17131b0042d16dd88aac0d07df47
+input_sha256	tools/wp40/simple_map_r2_cores.lua	49885c251241300baa4e06920d94425c1bdd21e0230d326c3e53b245074881e8
+input_sha256	tools/wp40/simple_map_r2_water.lua	6bf67e7bc964a2eab31188898850be9c8a5dc5a761d2009c8c59ef9834589d1f
+input_sha256	tools/wp40/simple_map_r2_routes.lua	705c3f316bd274d22e8c38f2d527a948a14db65d969bcafe0cab7526acaa924c
+input_sha256	tools/wp40/simple_map_r2_grid.lua	fae57e03f84b759b1b48a81111e32ac9bcc6bd525073319c722220291f58b365
+input_sha256	tools/wp40/simple_map_r2_housing.lua	b304f8ac064ee453091521637a912f936392797ddedbd3f9ad61b0da3984581f
+input_sha256	tools/wp40/run_simple_map_r2.sh	8ffd428198c26a0b1c4ac440d62bb9f490a2e73f805faa4ca0be73af9ca317f6
+canonical_kat_sha256	0a945840673d3170ce545c3c12af1422dcd12da5398a88faaf39c42d5346056d
+difficulty_lattice_sha256	0ec24ea13e87afd8a769d326abbc4016a458a564d28c7315d9506158386af15d
+warp	cell	256
+warp	maximum	60
+warp	max_horizontal_x	119
+warp	max_horizontal_z	119
+warp	max_vertical_x	117
+warp	max_vertical_z	118
+warp	min_x	-3740
+warp	max_x	3740
+warp	min_z	-3340
+warp	max_z	3340
+warp	min_ix	-16
+warp	max_ix	15
+warp	min_iz	-15
+warp	max_iz	14
+validator	metadata	grug_wp40_simple_map_r2_metadata_v1	true	0
+metadata_count	anchor_profiles	17
+metadata_count	anchors	100
+metadata_count	candidate_alternatives	252
+metadata_count	candidate_anchors	84
+metadata_count	claim_exclusion_recipes	5
+metadata_count	claim_exclusions	482
+metadata_count	coastal_housing_cores	4
+metadata_count	fixed_anchors	16
+metadata_count	hard_protection	42
+metadata_count	hard_protection_recipes	4
+metadata_count	housing_masks	10
+metadata_count	hydrology	25
+metadata_count	hydrology_interfaces	12
+metadata_count	hydrology_profiles	11
+metadata_count	hydrology_transition_profiles	6
+metadata_count	landmarks	70
+metadata_count	logical_biomes	16
+metadata_count	relief_profiles	6
+metadata_count	zones	38
+coastal_core	coastal_core_copperfell	2	-2500	-2201	-2500	-1901	300	600	180000	160679	160679	160679	160679	160679	81254
+coastal_core	coastal_core_starbough	12	2200	2499	-2500	-1901	300	600	180000	160679	160679	160679	160679	160679	81254
+coastal_core	coastal_core_mournfen	18	-2521	-2220	1900	2499	302	600	181200	161607	161607	161607	161607	161607	81982
+coastal_core	coastal_core_raincall	28	2200	2499	1900	2499	300	600	180000	160679	160679	160679	160679	160679	81254
+reflection	ordinary_land_primitives_and_bays	9	9	false	1
+validator	cores	grug_wp40_simple_map_r2_cores_v1	true	0
+core_metric	anchors	100
+core_metric	candidate_sets	84
+core_metric	fixed_cores	12
+core_metric	horizontally_valid_candidate_sets	84
+core_metric	scanned_core_nodes	3372864
+core_metric	underlying_power_disagreements	92422
+core	anchor_001	1	start	-2100	-1501	-2800	-2301	300000	300000	0	11163	1	route_001
+core	anchor_002	6	start	-300	299	-2800	-2301	300000	279154	20846	7923	1	route_004
+core	anchor_003	11	start	1500	2099	-2800	-2301	300000	300000	0	12117	1	route_007
+core	anchor_004	17	start	-2100	-1501	2300	2799	300000	300000	0	1343	1	route_010
+core	anchor_005	22	start	-300	299	2300	2799	300000	281645	18355	11537	1	route_013
+core	anchor_006	27	start	1500	2099	2300	2799	300000	300000	0	23905	1	route_016
+core	anchor_007	3	capital	-2056	-1545	-1756	-1245	262144	262144	0	395	4	route_002,route_003,route_019,route_020
+core	anchor_008	8	capital	-256	255	-1756	-1245	262144	215730	46414	5395	4	route_005,route_006,route_021,route_022
+core	anchor_009	13	capital	1544	2055	-1756	-1245	262144	223617	38527	6554	4	route_008,route_009,route_023,route_024
+core	anchor_010	19	capital	-2056	-1545	1244	1755	262144	262144	0	8176	4	route_011,route_012,route_025,route_026
+core	anchor_011	24	capital	-256	255	1244	1755	262144	262144	0	56	4	route_014,route_015,route_027,route_028
+core	anchor_012	29	capital	1544	2055	1244	1755	262144	231790	30354	3858	4	route_017,route_018,route_029,route_030
+validator	water	grug_wp40_simple_map_r2_water_v1	true	0
+water_metric	authoritative_horizontal	true
+water_metric	step	1
+water_metric	bay_count	4
+water_metric	bay_planned_nodes	3379481
+water_metric	bay_deep_transition_edges	5162
+water_metric	channel_count	2
+water_metric	channel_active_nodes	491889
+water_metric	channel_other_water_mismatches	0
+water_metric	wet_hydrology_reaches	24
+water_metric	dry_hydrology_reaches	1
+water_metric	hydrology_sample_failures	0
+water_metric	hydrology_interface_failures	0
+water_metric	crossing_failures	0
+water_metric	violation_count	0
+water_metric	ok	true
+bay	bay_elandor_west	845408	320825	1	true	true	1375	144	74	true	true
+bay	bay_elandor_east	863817	332442	1	true	true	1218	144	74	true	true
+bay	bay_kragmar_west	830354	373812	1	true	true	1308	200	103	true	true
+bay	bay_kragmar_east	839902	357935	1	true	true	1261	144	74	true	true
+channel	channel_wyrmglass	246051	241618	4433	1	319	200	0	0
+channel	channel_stormscale	253061	250271	2790	1	340	200	0	0
+hydrology	hydro_copperfell_streams	true	9	8	1	0
+hydrology	hydro_frostbarrow_tarns	true	5	5	0	0
+hydrology	hydro_dawnmere_headwaters	true	4	4	0	0
+hydrology	hydro_goldmead_millriver	true	5	5	0	0
+hydrology	hydro_highcourt_fork_west	true	5	4	1	0
+hydrology	hydro_highcourt_fork_east	true	5	1	4	0
+hydrology	hydro_highcourt_outflow	true	2	0	2	0
+hydrology	hydro_whitebridge_main	true	7	5	2	0
+hydrology	hydro_whitebridge_ford	true	7	6	1	0
+hydrology	hydro_lethariel_lake	true	5	5	0	0
+hydrology	hydro_lorindor_marsh	true	9	4	5	0
+hydrology	hydro_moonfall_lake	true	5	5	0	0
+hydrology	hydro_mournfen_marsh	true	9	8	1	0
+hydrology	hydro_sunscar_waterholes	true	4	3	1	0
+hydrology	hydro_speargrass_dryriver	false	4	0	0	0
+hydrology	hydro_raincall_headwater	true	4	4	0	0
+hydrology	hydro_raincall_upper_lip	true	2	1	1	0
+hydrology	hydro_raincall_middle_upper	true	2	2	0	0
+hydrology	hydro_raincall_middle_lip	true	2	1	1	0
+hydrology	hydro_raincall_plunge	true	2	2	0	0
+hydrology	hydro_kezamba_cenote	true	4	4	0	0
+hydrology	hydro_whispering_reedmaze	true	7	6	1	0
+hydrology	hydro_totemwater_delta	true	5	2	3	0
+hydrology	hydro_gravesalt_pans	true	5	5	0	0
+hydrology	hydro_broken_marsh	true	9	8	1	0
+crossing	whitebridge_bridge	bridge	true	true	true	true
+crossing	whitebridge_ford	ford	true	true	true	true
+crossing	broken_causeway	causeway	true	true	true	true
+crossing	broken_ford	ford	true	true	true	true
+crossing	broken_aqueduct	bridge	true	true	true	true
+crossing	gravesalt_tomb_tunnel	tunnel	true	true	false	false
+crossing	skyglass_cliff_tunnel	tunnel	true	true	false	false
+crossing	gravesalt_causeway_south	causeway	true	true	true	true
+crossing	gravesalt_causeway_north	causeway	true	true	true	true
+validator	routes	grug_wp40_simple_map_r2_routes_result_v1	true	0
+route_metric	boat_channel_columns	135879
+route_metric	boat_corridor_columns	183082
+route_metric	boat_count	4
+route_metric	boat_land_columns	39611
+route_metric	boat_water_columns	143471
+route_metric	boat_wrong_land_columns	0
+route_metric	crossing_count	9
+route_metric	ingress_automatic_grading_columns	22449
+route_metric	ingress_corridor_columns	1415506
+route_metric	ingress_count	6
+route_metric	ingress_declared_crossing_columns	34978
+route_metric	ingress_derived_water_columns	57427
+route_metric	ingress_neighbor_contact_columns	0
+route_metric	ingress_off_land_columns	0
+route_metric	poi_corridor_columns	614852
+route_metric	poi_derived_water_columns	46439
+route_metric	poi_off_land_columns	0
+route_metric	poi_spur_count	74
+route_metric	poi_wrong_zone_columns	0
+route_metric	route_automatic_grading_columns	44425
+route_metric	route_class_counts.primary	30
+route_metric	route_class_counts.secondary	24
+route_metric	route_class_counts.trail	3
+route_metric	route_corridor_columns	786594
+route_metric	route_count	57
+route_metric	route_declared_crossing_columns	9066
+route_metric	route_derived_water_columns	53491
+route_metric	route_difficulty_edges	1499010
+route_metric	route_difficulty_violations	0
+route_metric	route_land_columns	733103
+route_metric	route_max_adjacent_difficulty_delta	1
+route_metric	route_off_land_columns	0
+route_metric	route_pair_count	57
+route_metric	route_third_zone_columns	29809
+route_metric	violation_count	0
+route_metric	witness_count	616
+validator	grid	grug_wp40_simple_map_r2_grid_v1	true	0
+grid_metric	authoritative	true
+grid_metric	step	1
+grid_metric	min_x	-3600
+grid_metric	max_x	3600
+grid_metric	min_z	-3200
+grid_metric	max_z	3200
+grid_metric	scanned_nodes	46093601
+grid_metric	land_nodes	25701492
+grid_metric	planned_water_nodes	4401570
+grid_metric	coastal_shelf_nodes	1515520
+grid_metric	dragon_channel_nodes	491889
+grid_metric	deep_ocean_nodes	13983130
+grid_metric	unknown_water_nodes	0
+grid_metric	row_run_labels	41869
+grid_metric	land_components	3
+grid_metric	zones_with_one_component	38
+grid_metric	emergent_contacts	74
+grid_metric	unrouted_emergent_contacts	17
+grid_metric	maximum_difficulty_delta	1
+grid_metric	maximum_difficulty_delta_limit	2
+land_component	1	25117960	-2593	2599	-2963	2976
+land_component	2	281956	2841	3414	-338	306
+land_component	3	301576	-3455	-2820	-312	295
+zone_component	1	elandor_hearthpine_vale	1	607672
+zone_component	2	elandor_copperfell_foothills	1	565364
+zone_component	3	elandor_dur_brannoc	1	508041
+zone_component	4	elandor_frostbarrow_shelf	1	401677
+zone_component	5	elandor_stormvault_heights	1	1164771
+zone_component	6	elandor_dawnmere_fields	1	561301
+zone_component	7	elandor_goldmead_vale	1	560332
+zone_component	8	elandor_highcourt	1	552876
+zone_component	9	elandor_whitebridge_shire	1	949204
+zone_component	10	elandor_ashenward_march	1	1372155
+zone_component	11	elandor_silverleaf_glades	1	599035
+zone_component	12	elandor_starbough_vale	1	675088
+zone_component	13	elandor_lethariel	1	445051
+zone_component	14	elandor_lorindor	1	962451
+zone_component	15	elandor_moonfall_wood	1	398772
+zone_component	16	elandor_glassroot_wilds	1	1116314
+zone_component	17	kragmar_stillgrave_hollow	1	600992
+zone_component	18	kragmar_mournfen	1	529222
+zone_component	19	kragmar_nhal_veyr	1	453139
+zone_component	20	kragmar_ossuary_reach	1	396072
+zone_component	21	kragmar_blackwind_rise	1	1190030
+zone_component	22	kragmar_sunscar_flats	1	570726
+zone_component	23	kragmar_redtusk_savanna	1	601829
+zone_component	24	kragmar_gor_drazhak	1	612170
+zone_component	25	kragmar_speargrass_reach	1	1107679
+zone_component	26	kragmar_bannerbreak_mesa	1	1283560
+zone_component	27	kragmar_kapok_cradle	1	563427
+zone_component	28	kragmar_raincall_basin	1	574191
+zone_component	29	kragmar_kezamba	1	493989
+zone_component	30	kragmar_whispering_reedlands	1	946961
+zone_component	31	kragmar_totemwater_reach	1	392061
+zone_component	32	kragmar_thunderroot_wilds	1	1143032
+zone_component	33	front_wyrmglass_crown	1	301576
+zone_component	34	front_gravesalt_escarpment	1	436441
+zone_component	35	front_broken_causeway	1	517139
+zone_component	36	front_shattered_line	1	687952
+zone_component	37	front_skyglass_canopy	1	577244
+zone_component	38	front_stormscale_summit	1	281956
+contact	1	2	true	-2351	-2500	-2350	-2500
+contact	2	3	true	-2050	-1813	-2049	-1813
+contact	2	4	false	-2490	-1997	-2490	-1996
+contact	2	9	false	-1174	-2014	-1173	-2014
+contact	3	4	true	-2117	-1795	-2118	-1795
+contact	3	5	true	-1409	-1127	-1408	-1127
+contact	3	9	true	-1346	-1766	-1345	-1766
+contact	4	5	true	-2105	-1088	-2104	-1088
+contact	5	9	false	-1364	-1127	-1364	-1128
+contact	5	10	true	-931	-582	-930	-582
+contact	5	34	true	-2499	-251	-2499	-250
+contact	5	35	true	-1425	-251	-1425	-250
+contact	6	7	true	486	-2336	487	-2336
+contact	7	8	true	-502	-1887	-502	-1886
+contact	7	9	false	-686	-2176	-686	-2175
+contact	7	14	false	673	-2128	674	-2128
+contact	8	9	true	-502	-1886	-503	-1886
+contact	8	10	true	439	-1128	440	-1128
+contact	8	14	true	455	-1730	456	-1730
+contact	9	10	true	-455	-1110	-454	-1110
+contact	10	14	false	443	-1128	443	-1129
+contact	10	16	true	941	-657	942	-657
+contact	10	35	true	-924	-251	-924	-250
+contact	10	36	true	-73	-251	-73	-250
+contact	11	12	true	2349	-2500	2350	-2500
+contact	12	13	true	1790	-1763	1791	-1763
+contact	12	14	false	1181	-2118	1180	-2118
+contact	12	15	false	2530	-2152	2531	-2152
+contact	13	14	true	1424	-1736	1423	-1736
+contact	13	15	true	2089	-1737	2090	-1737
+contact	13	16	true	1762	-1109	1763	-1109
+contact	14	16	true	1351	-1085	1352	-1085
+contact	15	16	true	2090	-1009	2090	-1008
+contact	16	36	true	945	-251	945	-250
+contact	16	37	true	1333	-251	1333	-250
+contact	17	18	true	-1797	2248	-1798	2248
+contact	18	19	true	-2057	1732	-2056	1732
+contact	18	20	false	-2057	1732	-2058	1732
+contact	18	25	false	-1431	1738	-1431	1737
+contact	19	20	true	-2175	1097	-2176	1097
+contact	19	21	true	-2048	1072	-2049	1072
+contact	19	25	true	-1380	1090	-1379	1090
+contact	20	21	true	-2490	814	-2490	813
+contact	21	25	false	-904	590	-903	590
+contact	21	26	true	-875	251	-874	251
+contact	21	34	true	-2490	251	-2490	250
+contact	21	35	true	-1372	251	-1372	250
+contact	22	23	true	-619	2291	-619	2290
+contact	23	24	true	501	1742	500	1742
+contact	23	25	false	-412	1791	-413	1791
+contact	23	30	false	507	1742	507	1741
+contact	24	25	true	-413	1118	-414	1118
+contact	24	26	true	423	1063	422	1063
+contact	24	30	true	426	1063	427	1063
+contact	25	26	true	-902	590	-902	589
+contact	26	30	false	934	573	935	573
+contact	26	32	true	877	251	878	251
+contact	26	35	true	-874	251	-874	250
+contact	26	36	true	-53	251	-53	250
+contact	27	28	true	2500	2197	2499	2197
+contact	27	31	false	2500	2197	2500	2196
+contact	28	29	true	1521	1708	1520	1708
+contact	28	30	false	1400	1713	1399	1713
+contact	28	31	false	2106	1825	2106	1824
+contact	29	30	true	1343	1103	1342	1103
+contact	29	31	true	2185	1052	2186	1052
+contact	29	32	true	2046	1037	2045	1037
+contact	30	32	true	936	573	936	572
+contact	31	32	true	2502	845	2501	845
+contact	32	36	true	878	251	878	250
+contact	32	37	true	1354	251	1354	250
+contact	34	35	true	-1426	-250	-1425	-250
+contact	35	36	true	-74	-250	-73	-250
+contact	36	37	true	1332	-250	1333	-250
+validator	housing	grug_wp40_simple_map_r2_housing_result_v1	true	0
+housing_metric	conflict_radius	110
+housing_metric	conflict_rule	candidate_expanded_aabb_v1
+housing_metric	hash_order_count	16
+housing_metric	lattice_origins_per_mask	12321
+housing_metric	mask_count	10
+housing_metric	order_count_per_mask	23
+housing_metric	tie_break	z_then_x
+housing_metric	total_eligible_centers	1092289
+housing_metric	total_lattice_origins	123210
+housing_metric	total_order_runs	230
+housing_metric	violation_count	0
+housing_mask	housing_elandor_copperfell	2	90517	4	9	6	10	4	10	14
+housing_order	housing_elandor_copperfell	minimum_conflict_degree	graph_degree	9
+housing_order	housing_elandor_copperfell	maximum_conflict_degree	graph_degree	6
+housing_order	housing_elandor_copperfell	edge_biased	nearest_bias	8
+housing_order	housing_elandor_copperfell	route_biased	nearest_bias	10
+housing_order	housing_elandor_copperfell	poi_biased	nearest_bias	9
+housing_order	housing_elandor_copperfell	row_major	coordinate	10
+housing_order	housing_elandor_copperfell	reverse_row_major	coordinate	10
+housing_order	housing_elandor_copperfell	housing-pack-00	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-01	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-02	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-03	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-04	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-05	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-06	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-07	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-08	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-09	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-10	canonical_hash_word_0	7
+housing_order	housing_elandor_copperfell	housing-pack-11	canonical_hash_word_0	8
+housing_order	housing_elandor_copperfell	housing-pack-12	canonical_hash_word_0	6
+housing_order	housing_elandor_copperfell	housing-pack-13	canonical_hash_word_0	8
+housing_order	housing_elandor_copperfell	housing-pack-14	canonical_hash_word_0	8
+housing_order	housing_elandor_copperfell	housing-pack-15	canonical_hash_word_0	8
+housing_mask	housing_elandor_goldmead	7	92390	4	13	8	15	4	15	18
+housing_order	housing_elandor_goldmead	minimum_conflict_degree	graph_degree	13
+housing_order	housing_elandor_goldmead	maximum_conflict_degree	graph_degree	10
+housing_order	housing_elandor_goldmead	edge_biased	nearest_bias	14
+housing_order	housing_elandor_goldmead	route_biased	nearest_bias	13
+housing_order	housing_elandor_goldmead	poi_biased	nearest_bias	9
+housing_order	housing_elandor_goldmead	row_major	coordinate	14
+housing_order	housing_elandor_goldmead	reverse_row_major	coordinate	15
+housing_order	housing_elandor_goldmead	housing-pack-00	canonical_hash_word_0	9
+housing_order	housing_elandor_goldmead	housing-pack-01	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-02	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-03	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-04	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-05	canonical_hash_word_0	11
+housing_order	housing_elandor_goldmead	housing-pack-06	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-07	canonical_hash_word_0	9
+housing_order	housing_elandor_goldmead	housing-pack-08	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-09	canonical_hash_word_0	8
+housing_order	housing_elandor_goldmead	housing-pack-10	canonical_hash_word_0	10
+housing_order	housing_elandor_goldmead	housing-pack-11	canonical_hash_word_0	11
+housing_order	housing_elandor_goldmead	housing-pack-12	canonical_hash_word_0	9
+housing_order	housing_elandor_goldmead	housing-pack-13	canonical_hash_word_0	9
+housing_order	housing_elandor_goldmead	housing-pack-14	canonical_hash_word_0	9
+housing_order	housing_elandor_goldmead	housing-pack-15	canonical_hash_word_0	9
+housing_mask	housing_elandor_starbough	12	89799	4	9	5	10	4	10	14
+housing_order	housing_elandor_starbough	minimum_conflict_degree	graph_degree	9
+housing_order	housing_elandor_starbough	maximum_conflict_degree	graph_degree	6
+housing_order	housing_elandor_starbough	edge_biased	nearest_bias	8
+housing_order	housing_elandor_starbough	route_biased	nearest_bias	9
+housing_order	housing_elandor_starbough	poi_biased	nearest_bias	9
+housing_order	housing_elandor_starbough	row_major	coordinate	10
+housing_order	housing_elandor_starbough	reverse_row_major	coordinate	9
+housing_order	housing_elandor_starbough	housing-pack-00	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-01	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-02	canonical_hash_word_0	8
+housing_order	housing_elandor_starbough	housing-pack-03	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-04	canonical_hash_word_0	9
+housing_order	housing_elandor_starbough	housing-pack-05	canonical_hash_word_0	8
+housing_order	housing_elandor_starbough	housing-pack-06	canonical_hash_word_0	8
+housing_order	housing_elandor_starbough	housing-pack-07	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-08	canonical_hash_word_0	8
+housing_order	housing_elandor_starbough	housing-pack-09	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-10	canonical_hash_word_0	8
+housing_order	housing_elandor_starbough	housing-pack-11	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-12	canonical_hash_word_0	6
+housing_order	housing_elandor_starbough	housing-pack-13	canonical_hash_word_0	6
+housing_order	housing_elandor_starbough	housing-pack-14	canonical_hash_word_0	7
+housing_order	housing_elandor_starbough	housing-pack-15	canonical_hash_word_0	5
+housing_mask	housing_elandor_whitebridge	9	104802	4	13	11	18	4	18	31
+housing_order	housing_elandor_whitebridge	minimum_conflict_degree	graph_degree	18
+housing_order	housing_elandor_whitebridge	maximum_conflict_degree	graph_degree	11
+housing_order	housing_elandor_whitebridge	edge_biased	nearest_bias	17
+housing_order	housing_elandor_whitebridge	route_biased	nearest_bias	16
+housing_order	housing_elandor_whitebridge	poi_biased	nearest_bias	16
+housing_order	housing_elandor_whitebridge	row_major	coordinate	17
+housing_order	housing_elandor_whitebridge	reverse_row_major	coordinate	18
+housing_order	housing_elandor_whitebridge	housing-pack-00	canonical_hash_word_0	13
+housing_order	housing_elandor_whitebridge	housing-pack-01	canonical_hash_word_0	13
+housing_order	housing_elandor_whitebridge	housing-pack-02	canonical_hash_word_0	13
+housing_order	housing_elandor_whitebridge	housing-pack-03	canonical_hash_word_0	13
+housing_order	housing_elandor_whitebridge	housing-pack-04	canonical_hash_word_0	12
+housing_order	housing_elandor_whitebridge	housing-pack-05	canonical_hash_word_0	14
+housing_order	housing_elandor_whitebridge	housing-pack-06	canonical_hash_word_0	14
+housing_order	housing_elandor_whitebridge	housing-pack-07	canonical_hash_word_0	14
+housing_order	housing_elandor_whitebridge	housing-pack-08	canonical_hash_word_0	13
+housing_order	housing_elandor_whitebridge	housing-pack-09	canonical_hash_word_0	11
+housing_order	housing_elandor_whitebridge	housing-pack-10	canonical_hash_word_0	12
+housing_order	housing_elandor_whitebridge	housing-pack-11	canonical_hash_word_0	11
+housing_order	housing_elandor_whitebridge	housing-pack-12	canonical_hash_word_0	11
+housing_order	housing_elandor_whitebridge	housing-pack-13	canonical_hash_word_0	11
+housing_order	housing_elandor_whitebridge	housing-pack-14	canonical_hash_word_0	12
+housing_order	housing_elandor_whitebridge	housing-pack-15	canonical_hash_word_0	12
+housing_mask	housing_elandor_lorindor	14	130903	5	14	12	19	5	19	34
+housing_order	housing_elandor_lorindor	minimum_conflict_degree	graph_degree	19
+housing_order	housing_elandor_lorindor	maximum_conflict_degree	graph_degree	14
+housing_order	housing_elandor_lorindor	edge_biased	nearest_bias	19
+housing_order	housing_elandor_lorindor	route_biased	nearest_bias	18
+housing_order	housing_elandor_lorindor	poi_biased	nearest_bias	18
+housing_order	housing_elandor_lorindor	row_major	coordinate	19
+housing_order	housing_elandor_lorindor	reverse_row_major	coordinate	18
+housing_order	housing_elandor_lorindor	housing-pack-00	canonical_hash_word_0	12
+housing_order	housing_elandor_lorindor	housing-pack-01	canonical_hash_word_0	15
+housing_order	housing_elandor_lorindor	housing-pack-02	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-03	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-04	canonical_hash_word_0	13
+housing_order	housing_elandor_lorindor	housing-pack-05	canonical_hash_word_0	15
+housing_order	housing_elandor_lorindor	housing-pack-06	canonical_hash_word_0	13
+housing_order	housing_elandor_lorindor	housing-pack-07	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-08	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-09	canonical_hash_word_0	13
+housing_order	housing_elandor_lorindor	housing-pack-10	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-11	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-12	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-13	canonical_hash_word_0	13
+housing_order	housing_elandor_lorindor	housing-pack-14	canonical_hash_word_0	14
+housing_order	housing_elandor_lorindor	housing-pack-15	canonical_hash_word_0	14
+housing_mask	housing_kragmar_mournfen	18	93185	5	10	6	11	5	11	14
+housing_order	housing_kragmar_mournfen	minimum_conflict_degree	graph_degree	11
+housing_order	housing_kragmar_mournfen	maximum_conflict_degree	graph_degree	6
+housing_order	housing_kragmar_mournfen	edge_biased	nearest_bias	10
+housing_order	housing_kragmar_mournfen	route_biased	nearest_bias	9
+housing_order	housing_kragmar_mournfen	poi_biased	nearest_bias	10
+housing_order	housing_kragmar_mournfen	row_major	coordinate	10
+housing_order	housing_kragmar_mournfen	reverse_row_major	coordinate	11
+housing_order	housing_kragmar_mournfen	housing-pack-00	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-01	canonical_hash_word_0	7
+housing_order	housing_kragmar_mournfen	housing-pack-02	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-03	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-04	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-05	canonical_hash_word_0	7
+housing_order	housing_kragmar_mournfen	housing-pack-06	canonical_hash_word_0	7
+housing_order	housing_kragmar_mournfen	housing-pack-07	canonical_hash_word_0	8
+housing_order	housing_kragmar_mournfen	housing-pack-08	canonical_hash_word_0	8
+housing_order	housing_kragmar_mournfen	housing-pack-09	canonical_hash_word_0	8
+housing_order	housing_kragmar_mournfen	housing-pack-10	canonical_hash_word_0	9
+housing_order	housing_kragmar_mournfen	housing-pack-11	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-12	canonical_hash_word_0	7
+housing_order	housing_kragmar_mournfen	housing-pack-13	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-14	canonical_hash_word_0	6
+housing_order	housing_kragmar_mournfen	housing-pack-15	canonical_hash_word_0	6
+housing_mask	housing_kragmar_redtusk	23	97463	4	15	9	16	4	16	18
+housing_order	housing_kragmar_redtusk	minimum_conflict_degree	graph_degree	15
+housing_order	housing_kragmar_redtusk	maximum_conflict_degree	graph_degree	10
+housing_order	housing_kragmar_redtusk	edge_biased	nearest_bias	16
+housing_order	housing_kragmar_redtusk	route_biased	nearest_bias	12
+housing_order	housing_kragmar_redtusk	poi_biased	nearest_bias	13
+housing_order	housing_kragmar_redtusk	row_major	coordinate	14
+housing_order	housing_kragmar_redtusk	reverse_row_major	coordinate	16
+housing_order	housing_kragmar_redtusk	housing-pack-00	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-01	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-02	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-03	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-04	canonical_hash_word_0	11
+housing_order	housing_kragmar_redtusk	housing-pack-05	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-06	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-07	canonical_hash_word_0	13
+housing_order	housing_kragmar_redtusk	housing-pack-08	canonical_hash_word_0	9
+housing_order	housing_kragmar_redtusk	housing-pack-09	canonical_hash_word_0	9
+housing_order	housing_kragmar_redtusk	housing-pack-10	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-11	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-12	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-13	canonical_hash_word_0	9
+housing_order	housing_kragmar_redtusk	housing-pack-14	canonical_hash_word_0	10
+housing_order	housing_kragmar_redtusk	housing-pack-15	canonical_hash_word_0	11
+housing_mask	housing_kragmar_raincall	28	84404	4	8	4	9	4	9	14
+housing_order	housing_kragmar_raincall	minimum_conflict_degree	graph_degree	8
+housing_order	housing_kragmar_raincall	maximum_conflict_degree	graph_degree	4
+housing_order	housing_kragmar_raincall	edge_biased	nearest_bias	8
+housing_order	housing_kragmar_raincall	route_biased	nearest_bias	8
+housing_order	housing_kragmar_raincall	poi_biased	nearest_bias	8
+housing_order	housing_kragmar_raincall	row_major	coordinate	9
+housing_order	housing_kragmar_raincall	reverse_row_major	coordinate	9
+housing_order	housing_kragmar_raincall	housing-pack-00	canonical_hash_word_0	8
+housing_order	housing_kragmar_raincall	housing-pack-01	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-02	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-03	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-04	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-05	canonical_hash_word_0	7
+housing_order	housing_kragmar_raincall	housing-pack-06	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-07	canonical_hash_word_0	5
+housing_order	housing_kragmar_raincall	housing-pack-08	canonical_hash_word_0	8
+housing_order	housing_kragmar_raincall	housing-pack-09	canonical_hash_word_0	7
+housing_order	housing_kragmar_raincall	housing-pack-10	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-11	canonical_hash_word_0	7
+housing_order	housing_kragmar_raincall	housing-pack-12	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-13	canonical_hash_word_0	6
+housing_order	housing_kragmar_raincall	housing-pack-14	canonical_hash_word_0	8
+housing_order	housing_kragmar_raincall	housing-pack-15	canonical_hash_word_0	6
+housing_mask	housing_kragmar_speargrass	25	186760	8	22	14	27	8	27	42
+housing_order	housing_kragmar_speargrass	minimum_conflict_degree	graph_degree	27
+housing_order	housing_kragmar_speargrass	maximum_conflict_degree	graph_degree	14
+housing_order	housing_kragmar_speargrass	edge_biased	nearest_bias	26
+housing_order	housing_kragmar_speargrass	route_biased	nearest_bias	25
+housing_order	housing_kragmar_speargrass	poi_biased	nearest_bias	26
+housing_order	housing_kragmar_speargrass	row_major	coordinate	26
+housing_order	housing_kragmar_speargrass	reverse_row_major	coordinate	25
+housing_order	housing_kragmar_speargrass	housing-pack-00	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-01	canonical_hash_word_0	20
+housing_order	housing_kragmar_speargrass	housing-pack-02	canonical_hash_word_0	18
+housing_order	housing_kragmar_speargrass	housing-pack-03	canonical_hash_word_0	17
+housing_order	housing_kragmar_speargrass	housing-pack-04	canonical_hash_word_0	17
+housing_order	housing_kragmar_speargrass	housing-pack-05	canonical_hash_word_0	18
+housing_order	housing_kragmar_speargrass	housing-pack-06	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-07	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-08	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-09	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-10	canonical_hash_word_0	20
+housing_order	housing_kragmar_speargrass	housing-pack-11	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-12	canonical_hash_word_0	20
+housing_order	housing_kragmar_speargrass	housing-pack-13	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-14	canonical_hash_word_0	19
+housing_order	housing_kragmar_speargrass	housing-pack-15	canonical_hash_word_0	20
+housing_mask	housing_kragmar_whispering	30	122066	4	16	10	19	4	19	34
+housing_order	housing_kragmar_whispering	minimum_conflict_degree	graph_degree	19
+housing_order	housing_kragmar_whispering	maximum_conflict_degree	graph_degree	10
+housing_order	housing_kragmar_whispering	edge_biased	nearest_bias	19
+housing_order	housing_kragmar_whispering	route_biased	nearest_bias	18
+housing_order	housing_kragmar_whispering	poi_biased	nearest_bias	18
+housing_order	housing_kragmar_whispering	row_major	coordinate	18
+housing_order	housing_kragmar_whispering	reverse_row_major	coordinate	19
+housing_order	housing_kragmar_whispering	housing-pack-00	canonical_hash_word_0	13
+housing_order	housing_kragmar_whispering	housing-pack-01	canonical_hash_word_0	18
+housing_order	housing_kragmar_whispering	housing-pack-02	canonical_hash_word_0	14
+housing_order	housing_kragmar_whispering	housing-pack-03	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-04	canonical_hash_word_0	12
+housing_order	housing_kragmar_whispering	housing-pack-05	canonical_hash_word_0	16
+housing_order	housing_kragmar_whispering	housing-pack-06	canonical_hash_word_0	14
+housing_order	housing_kragmar_whispering	housing-pack-07	canonical_hash_word_0	12
+housing_order	housing_kragmar_whispering	housing-pack-08	canonical_hash_word_0	14
+housing_order	housing_kragmar_whispering	housing-pack-09	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-10	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-11	canonical_hash_word_0	16
+housing_order	housing_kragmar_whispering	housing-pack-12	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-13	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-14	canonical_hash_word_0	15
+housing_order	housing_kragmar_whispering	housing-pack-15	canonical_hash_word_0	14
+artifact_sha256	73165e1ad9e9dd03bc608b544e5906a10df2bf7b2c23779b311ad3cbdadf4f7b

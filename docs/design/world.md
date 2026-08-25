@@ -638,10 +638,12 @@ administration system do not exist in the target design.
   Claims are dry-land housing only: no protected underwater claims or private
   harbors.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain
-  a continuous gentle coastal housing core with at least 600 shoreline nodes,
-  300 nodes of buildable inland depth and at most 12 nodes of natural-ground
-  relief in every wholly contained 101×101 reservation. Elsewhere there is no
-  general runtime slope test.
+  a continuous gentle vertical-capsule coastal housing core with at least 600
+  shoreline nodes, at least 300 nodes of buildable inland depth and at most 12
+  nodes of natural-ground relief in every wholly contained 101×101
+  reservation. The complete mutable capsule is dry, zone-owned and
+  static-exclusion-free; it is not a visible rectangular coast. Elsewhere
+  there is no general runtime slope test.
 
 ### 5.2 Ownership, ACL and active-world behavior
 

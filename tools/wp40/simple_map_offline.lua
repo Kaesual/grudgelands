@@ -1,12 +1,16 @@
 -- Offline loader shared by the WP40 simple-map test and SVG renderer.
 
-return function(repo, scratch, seed)
+return function(repo, scratch, seed, injected_raw_sha256)
 	assert(type(repo) == "string" and repo:sub(1,1) == "/",
 		"absolute repository root required")
 	assert(type(scratch) == "string" and
 		scratch:match("^/tmp/grudgelands%-wp40%-simple%-map%.[A-Za-z0-9]+$"),
 		"unsafe simple-map scratch directory")
 	seed = seed or "0"
+	if injected_raw_sha256 ~= nil then
+		assert(type(injected_raw_sha256) == "function",
+			"injected raw SHA-256 must be a function")
+	end
 	local counter, cache = 0, {}
 	local function from_hex(value)
 		return (value:gsub("..", function(pair)
@@ -14,6 +18,7 @@ return function(repo, scratch, seed)
 		end))
 	end
 	local function raw_sha256(data)
+		if injected_raw_sha256 then return injected_raw_sha256(data) end
 		local cached = cache[data]
 		if cached then return cached end
 		counter = counter + 1

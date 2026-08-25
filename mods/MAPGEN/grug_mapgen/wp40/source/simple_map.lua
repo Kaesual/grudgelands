@@ -19,10 +19,34 @@ local source = {
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},
+	mainland_partition = {axis = "warped_z", split = 0,
+		negative_region = "elandor_mainland",
+		nonnegative_region = "kragmar_mainland"},
 	shelf_width = 80,
 	holy_grounds = {min_x = -2500, max_x = 2500, min_z = -250, max_z = 250},
 	start_core = {width_x = 600, width_z = 500},
 	capital_core = {width_x = 512, width_z = 512},
+	housing_policy = {
+		reservation_width = 101,
+		reservation_radius = 50,
+		minimum_gap = 10,
+		lattice_spacing = 111,
+		lattice_origin_period = 111,
+		hash_order_count = 16,
+		hash_domain_prefix = "housing-pack-",
+		hash_order_numbering = "zero_based_two_digit",
+		conflict_rule = "candidate_expanded_aabb_v1",
+		tie_break = "z_then_x",
+		bias_direction = "nearest_first",
+		edge_bias_scope = "mask_polygon_boundary",
+		route_bias_scope = "all_land_route_centrelines",
+		poi_bias_scope = "all_authored_anchor_positions_and_candidates",
+		greedy_orders = {
+			"minimum_conflict_degree", "maximum_conflict_degree",
+			"edge_biased", "route_biased", "poi_biased",
+			"row_major", "reverse_row_major",
+		},
+	},
 }
 
 local function zone(numeric_id, id, display_name, race_region, faction,
@@ -94,6 +118,10 @@ source.zones = {
 	zone(37,"front_skyglass_canopy","The Skyglass Canopy","elf",false,"holy_grounds","contested",51,59,"highland",55,2000,0,{"grug_jungle_fringe","grug_deep_forest","grug_elf_forest"}),
 	zone(38,"front_stormscale_summit","Stormscale Summit","troll",false,"contested_land","contested",60,60,"mountain",60,3150,0,{"grug_deep_jungle","grug_badlands_east","grug_swamp","grug_beach"}),
 }
+
+-- A sub-node power-weight nudge keeps the Redtusk/Speargrass boundary from
+-- leaving one isolated Redtusk coast node where it meets the western bay.
+source.zones[25].bias = 256
 
 -- Stable logical-biome target shares remain authored zone data. Keeping the
 -- compact shares beside the zone order avoids repeating the rest of each
@@ -231,23 +259,12 @@ for index = 1, #route_rows do
 		numeric_id=index,id=("route_%03d"):format(index),zone_a=row[1],zone_b=row[2],
 		class=row[3],kind=row[3] == "trail" and "trail" or "road",
 		surface_width=profile.surface_width,
-		corridor_width=profile.corridor_width,provisional=true,
+		corridor_width=profile.corridor_width,provisional=false,
 		curve_policy_id=source.route_curve.id,pinned_point_index=4,
 		station_a_id=source.route_stations[row[1]].id,
 		station_b_id=source.route_stations[row[2]].id,
 		centreline=curved_route(a.hub,via,b.hub,row[3],index),
 	}
-end
-
-source.allowed_contacts = {}
-for index = 1, #source.routes do
-	local route = source.routes[index]
-	source.allowed_contacts[index] = {zone_a=route.zone_a,zone_b=route.zone_b,
-		route_id=route.id}
-end
-for _, row in ipairs({{2,4},{12,15},{18,20},{28,31}}) do
-	source.allowed_contacts[#source.allowed_contacts+1] =
-		{zone_a=row[1],zone_b=row[2],route_id=false}
 end
 
 source.crossing_interfaces = {
@@ -258,13 +275,41 @@ source.crossing_interfaces = {
 	{id="broken_aqueduct",route_id="route_055",kind="bridge",position=point(-1500,-125)},
 	{id="gravesalt_tomb_tunnel",route_id="route_043",kind="tunnel",position=point(-2000,-100)},
 	{id="skyglass_cliff_tunnel",route_id="route_048",kind="tunnel",position=point(2000,-100)},
+	{id="gravesalt_causeway_south",route_id="route_043",kind="causeway",position=point(-2000,0)},
+	{id="gravesalt_causeway_north",route_id="route_049",kind="causeway",position=point(-2000,0)},
 }
+local crossing_authorization_half_extent = {
+	whitebridge_bridge=96,whitebridge_ford=96,broken_causeway=96,
+	broken_ford=96,broken_aqueduct=96,gravesalt_causeway_south=96,
+	gravesalt_causeway_north=96,
+}
+for crossing_index=1,#source.crossing_interfaces do
+	local crossing=source.crossing_interfaces[crossing_index]
+	local half=crossing_authorization_half_extent[crossing.id]
+	if half then
+		local x,z=crossing.position.x,crossing.position.z
+		crossing.authorization_polygon=polygon(point(x-half,z-half),
+			point(x+half,z-half),point(x+half,z+half),point(x-half,z+half))
+	end
+end
 
 source.boat_paths = {
-	{id="boat_wyrmglass_south",kind="boat",from_zone=34,to_zone=33,width=96,centreline={point(-2500,-125),point(-2700,-125),point(-2890,-125)}},
-	{id="boat_wyrmglass_north",kind="boat",from_zone=34,to_zone=33,width=96,centreline={point(-2500,125),point(-2700,125),point(-2890,125)}},
-	{id="boat_stormscale_south",kind="boat",from_zone=37,to_zone=38,width=96,centreline={point(2500,-125),point(2700,-125),point(2890,-125)}},
-	{id="boat_stormscale_north",kind="boat",from_zone=37,to_zone=38,width=96,centreline={point(2500,125),point(2700,125),point(2900,125)}},
+	{id="boat_wyrmglass_south",kind="boat",from_zone=34,to_zone=33,width=96,landing_id="landing_wyrmglass_south",centreline={point(-2500,-125),point(-2700,-125),point(-2890,-125)}},
+	{id="boat_wyrmglass_north",kind="boat",from_zone=34,to_zone=33,width=96,landing_id="landing_wyrmglass_north",centreline={point(-2500,125),point(-2700,125),point(-2890,125)}},
+	{id="boat_stormscale_south",kind="boat",from_zone=37,to_zone=38,width=96,landing_id="landing_stormscale_south",centreline={point(2500,-125),point(2700,-125),point(2890,-125)}},
+	{id="boat_stormscale_north",kind="boat",from_zone=37,to_zone=38,width=96,landing_id="landing_stormscale_north",centreline={point(2500,125),point(2700,125),point(2920,125)}},
+}
+source.island_landings = {
+	{id="landing_wyrmglass_south",boat_path_id="boat_wyrmglass_south",zone_numeric_id=33,position=point(-2890,-125),width=96},
+	{id="landing_wyrmglass_north",boat_path_id="boat_wyrmglass_north",zone_numeric_id=33,position=point(-2890,125),width=96},
+	{id="landing_stormscale_south",boat_path_id="boat_stormscale_south",zone_numeric_id=38,position=point(2890,-125),width=96},
+	{id="landing_stormscale_north",boat_path_id="boat_stormscale_north",zone_numeric_id=38,position=point(2920,125),width=96},
+}
+source.boat_parity_policy = {
+	id="paired_axis_aligned_node_run_v1",metric="axis_aligned_polyline_node_run",
+	maximum_difference_numerator=1,maximum_difference_denominator=10,
+	pairs={{"boat_wyrmglass_south","boat_stormscale_south"},
+		{"boat_wyrmglass_north","boat_stormscale_north"}},
 }
 
 source.island_routes = {
@@ -273,29 +318,29 @@ source.island_routes = {
 	{id="island_route_wyrmglass_junction_dragon",kind="road",centreline={point(-3100,0),point(-3180,-10),point(-3260,-40)}},
 	{id="island_route_wyrmglass_junction_apex",kind="road",centreline={point(-3100,0),point(-3140,50),point(-3200,80)}},
 	{id="island_route_stormscale_south_junction",kind="road",centreline={point(2890,-125),point(2990,-90),point(3100,0)}},
-	{id="island_route_stormscale_north_junction",kind="road",centreline={point(2900,125),point(2990,90),point(3100,0)}},
+	{id="island_route_stormscale_north_junction",kind="road",centreline={point(2920,125),point(2990,90),point(3100,0)}},
 	{id="island_route_stormscale_junction_dragon",kind="road",centreline={point(3100,0),point(3180,-10),point(3260,-40)}},
 	{id="island_route_stormscale_junction_apex",kind="road",centreline={point(3100,0),point(3140,50),point(3200,80)}},
 }
 
 source.housing_masks = {
-	{id="housing_elandor_copperfell",zone_numeric_id=2,polygon=polygon(point(-2520,-2470),point(-2220,-2470),point(-2180,-1930),point(-2520,-1930))},
+	{id="housing_elandor_copperfell",zone_numeric_id=2,polygon=polygon(point(-2520,-2500),point(-2180,-2500),point(-2180,-1900),point(-2520,-1900))},
 	{id="housing_elandor_goldmead",zone_numeric_id=7,polygon=polygon(point(-600,-2260),point(600,-2260),point(560,-1910),point(-560,-1910))},
-	{id="housing_elandor_starbough",zone_numeric_id=12,polygon=polygon(point(2220,-2470),point(2520,-2470),point(2520,-1930),point(2180,-1930))},
+	{id="housing_elandor_starbough",zone_numeric_id=12,polygon=polygon(point(2180,-2500),point(2520,-2500),point(2520,-1900),point(2180,-1900))},
 	{id="housing_elandor_whitebridge",zone_numeric_id=9,polygon=polygon(point(-1360,-1860),point(-440,-1860),point(-440,-1140),point(-1360,-1140))},
 	{id="housing_elandor_lorindor",zone_numeric_id=14,polygon=polygon(point(440,-1860),point(1360,-1860),point(1360,-1140),point(440,-1140))},
-	{id="housing_kragmar_mournfen",zone_numeric_id=18,polygon=polygon(point(-2520,1930),point(-2180,1930),point(-2220,2470),point(-2520,2470))},
+	{id="housing_kragmar_mournfen",zone_numeric_id=18,polygon=polygon(point(-2525,1900),point(-2180,1900),point(-2180,2500),point(-2525,2500))},
 	{id="housing_kragmar_redtusk",zone_numeric_id=23,polygon=polygon(point(-560,1910),point(560,1910),point(600,2260),point(-600,2260))},
-	{id="housing_kragmar_raincall",zone_numeric_id=28,polygon=polygon(point(2180,1930),point(2520,1930),point(2520,2470),point(2220,2470))},
+	{id="housing_kragmar_raincall",zone_numeric_id=28,polygon=polygon(point(2180,1900),point(2520,1900),point(2520,2500),point(2180,2500))},
 	{id="housing_kragmar_speargrass",zone_numeric_id=25,polygon=polygon(point(-1360,1140),point(-440,1140),point(-440,1860),point(-1360,1860))},
 	{id="housing_kragmar_whispering",zone_numeric_id=30,polygon=polygon(point(440,1140),point(1360,1140),point(1360,1860),point(440,1860))},
 }
 
 source.coastal_housing_cores = {
-	{id="coastal_core_copperfell",zone_numeric_id=2,housing_mask_id="housing_elandor_copperfell",landmark_id="copperfell_coastal_terraces",frontage_min=600,inland_depth_min=300,relief_max=12},
-	{id="coastal_core_starbough",zone_numeric_id=12,housing_mask_id="housing_elandor_starbough",landmark_id="starbough_coastal_gardens",frontage_min=600,inland_depth_min=300,relief_max=12},
-	{id="coastal_core_mournfen",zone_numeric_id=18,housing_mask_id="housing_kragmar_mournfen",landmark_id="mournfen_dryward",frontage_min=600,inland_depth_min=300,relief_max=12},
-	{id="coastal_core_raincall",zone_numeric_id=28,housing_mask_id="housing_kragmar_raincall",landmark_id="raincall_coastal_steps",frontage_min=600,inland_depth_min=300,relief_max=12},
+	{id="coastal_core_copperfell",shape="vertical_capsule_v1",zone_numeric_id=2,housing_mask_id="housing_elandor_copperfell",landmark_id="copperfell_coastal_terraces",frontage_min=600,inland_depth_min=300,relief_max=12},
+	{id="coastal_core_starbough",shape="vertical_capsule_v1",zone_numeric_id=12,housing_mask_id="housing_elandor_starbough",landmark_id="starbough_coastal_gardens",frontage_min=600,inland_depth_min=300,relief_max=12},
+	{id="coastal_core_mournfen",shape="vertical_capsule_v1",zone_numeric_id=18,housing_mask_id="housing_kragmar_mournfen",landmark_id="mournfen_dryward",frontage_min=600,inland_depth_min=300,relief_max=12},
+	{id="coastal_core_raincall",shape="vertical_capsule_v1",zone_numeric_id=28,housing_mask_id="housing_kragmar_raincall",landmark_id="raincall_coastal_steps",frontage_min=600,inland_depth_min=300,relief_max=12},
 }
 
 local anchor_rows = {
@@ -480,7 +525,7 @@ end
 source.landmarks = {
 	landmark(1,"hearthpine_bowl",1,"ellipse",-1800,-2520,290,220,"lowland"),
 	landmark(2,"copperfell_drainage",2,"capsule",-2050,-2050,180,260,"highland"),
-	landmark(3,"copperfell_coastal_terraces",2,"rectangle",-2430,-2200,150,300,"lowland"),
+	landmark(3,"copperfell_coastal_terraces",2,"rectangle",-2350,-2200,150,300,"lowland"),
 	landmark(4,"dur_brannoc_granite_terrace",3,"rectangle",-1800,-1500,352,352,"plateau"),
 	landmark(5,"dur_brannoc_forge_chasm",3,"capsule",-1800,-1500,55,120,"highland"),
 	landmark(6,"frostbarrow_escarpment",4,"capsule",-2420,-1450,120,300,"highland"),
@@ -496,7 +541,7 @@ source.landmarks = {
 	landmark(16,"ashenward_trenchbelt",10,"rectangle",0,-470,330,120,"wetland_delta"),
 	landmark(17,"silverleaf_gladechain",11,"capsule",1800,-2520,250,180,"lowland"),
 	landmark(18,"starbough_canopy_steps",12,"ellipse",1950,-2050,230,180,"highland"),
-	landmark(19,"starbough_coastal_gardens",12,"rectangle",2430,-2200,150,300,"lowland"),
+	landmark(19,"starbough_coastal_gardens",12,"rectangle",2350,-2200,150,300,"lowland"),
 	landmark(20,"lethariel_crownlake",13,"ellipse",1800,-1500,260,220,"lowland"),
 	landmark(21,"lorindor_silverorchards",14,"ellipse",900,-1500,280,190,"rolling_hills"),
 	landmark(22,"lorindor_berrymarsh",14,"ellipse",1080,-1740,150,110,"wetland_delta"),
@@ -506,7 +551,7 @@ source.landmarks = {
 	landmark(26,"stillgrave_basin",17,"ellipse",-1800,2520,290,220,"lowland"),
 	landmark(27,"stillgrave_ringbarrows",17,"ellipse",-1800,2520,330,250,"rolling_hills"),
 	landmark(28,"mournfen_drowned_roads",18,"capsule",-2050,2100,180,260,"wetland_delta"),
-	landmark(29,"mournfen_dryward",18,"rectangle",-2430,2200,150,300,"lowland"),
+	landmark(29,"mournfen_dryward",18,"rectangle",-2370,2200,151,300,"lowland"),
 	landmark(30,"nhal_veyr_necropolis",19,"rectangle",-1800,1500,352,352,"plateau"),
 	landmark(31,"ossuary_spine",20,"capsule",-2400,1450,130,300,"highland"),
 	landmark(32,"ossuary_gravewoods",20,"ellipse",-2320,1730,170,120,"rolling_hills"),
@@ -523,7 +568,7 @@ source.landmarks = {
 	landmark(43,"bannerbreak_siegeramps",26,"capsule",0,430,330,100,"plateau"),
 	landmark(44,"kapok_worldtree_basin",27,"ellipse",1800,2520,290,220,"wetland_delta"),
 	landmark(45,"raincall_falls",28,"capsule",2020,2080,210,260,"highland"),
-	landmark(46,"raincall_coastal_steps",28,"rectangle",2430,2200,150,300,"lowland"),
+	landmark(46,"raincall_coastal_steps",28,"rectangle",2350,2200,150,300,"lowland"),
 	landmark(47,"kezamba_cenote",29,"ellipse",1800,1500,250,220,"wetland_delta"),
 	landmark(48,"whispering_reedmaze",30,"rectangle",900,1500,300,230,"wetland_delta"),
 	landmark(49,"whispering_totemways",30,"capsule",900,1500,300,80,"lowland"),
@@ -621,6 +666,8 @@ source.hydrology_interfaces = {
 	{id="broken_causeway_water",kind="causeway",hydrology_id="hydro_broken_marsh",route_interface_id="broken_causeway",position=point(-375,-250),transition_profile_id="causeway_deck",sealed=true},
 	{id="broken_ford_water",kind="ford",hydrology_id="hydro_broken_marsh",route_interface_id="broken_ford",position=point(-1125,250),transition_profile_id="ford_bed",sealed=true},
 	{id="broken_aqueduct_water",kind="bridge",hydrology_id="hydro_broken_marsh",route_interface_id="broken_aqueduct",position=point(-1500,-125),transition_profile_id="bridge_clearance",sealed=true},
+	{id="gravesalt_causeway_south_water",kind="causeway",hydrology_id="hydro_gravesalt_pans",route_interface_id="gravesalt_causeway_south",position=point(-2000,0),transition_profile_id="causeway_deck",sealed=true},
+	{id="gravesalt_causeway_north_water",kind="causeway",hydrology_id="hydro_gravesalt_pans",route_interface_id="gravesalt_causeway_north",position=point(-2000,0),transition_profile_id="causeway_deck",sealed=true},
 }
 
 source.hard_protection_recipes = {
@@ -748,6 +795,7 @@ for _, collection in ipairs({source.islands,source.channels}) do
 		local record = collection[record_index]
 		add_exclusion({id="exclude:coast:"..record.id,
 			recipe_id="exclude_coast_v1",source_id=record.id,
+			projection_width=source.shelf_width,
 			coverage="coast_water_and_projection"})
 	end
 end

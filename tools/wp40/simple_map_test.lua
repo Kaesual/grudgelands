@@ -10,7 +10,7 @@ local source, session = loaded.source, loaded.session
 
 assert(loaded.module.validate_source())
 assert(#source.zones == 38 and #source.routes == 57 and
-	#source.allowed_contacts == 61 and #source.anchors == 100 and
+	#source.anchors == 100 and
 	#source.relief_profiles == 6 and #source.landmarks == 70 and
 	#source.hydrology == 25 and #source.capital_ingresses == 6 and
 	#source.hard_protection == 42 and
@@ -37,6 +37,32 @@ for index = 1, #source.zones do
 	assert(session.id_at(zone.hub.x,zone.hub.z) == zone.id,
 		"zone hub does not own itself: " .. zone.id)
 end
+
+local warp_proof=session.warp_proof()
+assert(warp_proof.max_horizontal_x+warp_proof.max_vertical_x <
+	warp_proof.cell and
+	warp_proof.max_horizontal_z+warp_proof.max_vertical_z < warp_proof.cell)
+assert(session.difficulty_lattice_digest():match("^[0-9a-f]+$") and
+	#session.difficulty_lattice_digest() == 64)
+for index=1,12 do
+	local anchor=source.anchors[index]
+	local dimensions=index <= 6 and source.start_core or source.capital_core
+	local inside=session.classification_at(anchor.position.x+dimensions.width_x/2-1,
+		anchor.position.z+dimensions.width_z/2-1)
+	local outside_x=session.classification_at(
+		anchor.position.x+dimensions.width_x/2,anchor.position.z)
+	local outside_z=session.classification_at(anchor.position.x,
+		anchor.position.z+dimensions.width_z/2)
+	assert(inside.fixed == true and outside_x.fixed ~= true and
+		outside_z.fixed ~= true,"fixed core is not centered half-open")
+end
+for _, coordinates in ipairs({{0,-1500},{0,0},{0,1500},
+		{-3150,0},{3150,0}}) do
+	local level=session.difficulty_at(coordinates[1],coordinates[2])
+	assert(type(level) == "number" and level >= 1 and level <= 60)
+end
+assert(session.path_corridor_member("route_006",0,-1500))
+assert(not session.path_corridor_member("route_006",500,-1500))
 
 -- The bay masks must not expose the fixed-core precedence as a rectangular
 -- shoreline. Keep one visible 16-node bay-free ring around every start core;
@@ -217,17 +243,17 @@ if mode == "--full" then
 			missing_zones[#missing_zones+1]=source.zones[index].id
 		end
 	end
-	local allowed = {}
-	for index = 1, #source.allowed_contacts do
-		local row = source.allowed_contacts[index]
+	local routed = {}
+	for index = 1, #source.routes do
+		local row = source.routes[index]
 		local a,b=row.zone_a,row.zone_b if a>b then a,b=b,a end
-		allowed[a..":"..b]=true
+		routed[a..":"..b]=true
 	end
-	local forbidden = {}
+	local unrouted = {}
 	for key in pairs(contacts) do
-		if not allowed[key] then forbidden[#forbidden+1]=key end
+		if not routed[key] then unrouted[#unrouted+1]=key end
 	end
-	table.sort(forbidden)
+	table.sort(unrouted)
 	local land_roots,zone_roots={},{}
 	for index in pairs(land_parent) do
 		land_roots[find_root(land_parent,index)]=true
@@ -259,7 +285,8 @@ if mode == "--full" then
 			declared_crossing[interface.route_id..":"..row.hydrology_id]=true
 		end
 	end
-	local route_samples, route_off_land, route_declared_water = 0, 0, 0
+	local route_samples, route_off_land = 0, 0
+	local route_declared_water, route_automatic_water = 0, 0
 	for index = 1, #source.routes do
 		local route = source.routes[index]
 		for segment = 1, #route.centreline-1 do
@@ -272,12 +299,14 @@ if mode == "--full" then
 				local z=math.floor(a.z+dz*sample/count+0.5)
 				route_samples=route_samples+1
 				local classification=session.classification_at(x,z)
-				if classification.water_class ~= "land" then
+				if classification.water_class == "planned_water" then
 					local key=classification.hydrology_id and
 						route.id..":"..classification.hydrology_id or ""
 					if declared_crossing[key] then
 						route_declared_water=route_declared_water+1
-					else route_off_land=route_off_land+1 end
+					else route_automatic_water=route_automatic_water+1 end
+				elseif classification.water_class ~= "land" then
+					route_off_land=route_off_land+1
 				end
 			end
 		end
@@ -314,8 +343,11 @@ if mode == "--full" then
 		end
 		for z=min_z+1,max_z-1,16 do
 			for x=min_x+1,max_x-1,16 do
-				if session.water_class_at(x,z) ~= "immutable_dragon_channel" then
-					channel_interior_failures=channel_interior_failures+1
+				if session.polygon_member(x,z,polygon) then
+					local water=session.water_class_at(x,z)
+					if water ~= "immutable_dragon_channel" and water ~= "land" then
+						channel_interior_failures=channel_interior_failures+1
+					end
 				end
 			end
 		end
@@ -335,41 +367,76 @@ if mode == "--full" then
 		end
 	end
 
-	local benchmark_times = {}
-	for repetition = 1, 9 do
-		local started = os.clock()
-		local checksum = 0
-		for row = 0, 79 do
-			local z = source.extent.min_z + math.floor(
-				(source.extent.max_z-source.extent.min_z)*row/79)
-			for column = 0, 79 do
-				local x = source.extent.min_x + math.floor(
-					(source.extent.max_x-source.extent.min_x)*column/79)
-				local classification = session.classification_at(x,z)
-				checksum = checksum + (classification.zone_numeric_id or 0)
-			end
+	local benchmark_x,benchmark_z={},{}
+	for row=0,79 do
+		local z=source.extent.min_z+math.floor(
+			(source.extent.max_z-source.extent.min_z)*row/79)
+		for column=0,79 do
+			local x=source.extent.min_x+math.floor(
+				(source.extent.max_x-source.extent.min_x)*column/79)
+			benchmark_x[#benchmark_x+1]=x
+			benchmark_z[#benchmark_z+1]=z
 		end
-		assert(checksum > 0)
-		benchmark_times[repetition] = (os.clock()-started)*1000
 	end
-	table.sort(benchmark_times)
-	local benchmark_median = benchmark_times[5]
+	-- Exact surface branch structure of the still-shipped WP18 zone_at
+	-- classifier in grug_core/init.lua.  Keeping this tiny read-only baseline in
+	-- the benchmark makes the R2 comparison reproducible without loading a mod
+	-- or mocking the Luanti engine.
+	local function wp18_zone_code_at(x,z)
+		local az=math.abs(z)
+		local territory=math.abs(x) <= 1500 and az >= 100 and az <= 1700
+		if not territory then return az > 100 and 2 or 3 end
+		if az <= 100 then return 3 end
+		if az <= 300 then return 4 end
+		if 1500-math.abs(x) <= 150 or 1700-az <= 150 then return 5 end
+		local dx=math.max(math.abs(x)-300,0)
+		local dz=math.abs(az-900)
+		local field_z=az < 900 and 1000 or 775
+		local radial=math.sqrt((dx/1150)^2+(dz/field_z)^2)
+		if radial <= 0.30 then return 6 end
+		if radial <= 0.55 then return 7 end
+		return 8
+	end
+	local function median_ms(value_at)
+		local times={}
+		local rounds=16
+		for repetition=1,9 do
+			local started=os.clock()
+			local checksum=0
+			for round=1,rounds do
+				for index=1,#benchmark_x do
+					checksum=checksum+value_at(benchmark_x[index],benchmark_z[index])
+				end
+			end
+			assert(checksum > 0)
+			times[repetition]=(os.clock()-started)*1000/rounds
+		end
+		table.sort(times)
+		return times[5]
+	end
+	local benchmark_values_median=median_ms(function(x,z)
+		local _,_,zone_numeric_id=session.classification_values_at(x,z)
+		return zone_numeric_id or 0
+	end)
+	local benchmark_wp18_median=median_ms(wp18_zone_code_at)
+	local benchmark_relative=(benchmark_values_median/benchmark_wp18_median-1)*100
 
 	print(("full\tgrid_step=%d land=%d planned=%d shelf=%d channel=%d deep=%d"):format(
 		step,water_counts.land,water_counts.planned_water,
 		water_counts.coastal_shelf,water_counts.immutable_dragon_channel,
 		water_counts.deep_ocean))
-	print(("advisory\tland_components=%d disconnected_zones=%d missing_zones=%d forbidden_contacts=%d route_off_land=%d/%d declared_water=%d anchor_same_zone=%d/%d bay_samples_failed=%d channel_interior_failed=%d sample_mismatches=%d hydrology_sample_failed=%d"):format(
-		land_components,disconnected_zones,#missing_zones,#forbidden,
+	print(("advisory\tsampled_land_components=%d sampled_disconnected_land_zones=%d sampled_missing_zones=%d sampled_unrouted_contacts=%d sampled_route_forbidden_water=%d/%d sampled_declared_water=%d sampled_automatic_water=%d anchor_same_zone=%d/%d bay_samples_failed=%d channel_interior_failed=%d sample_mismatches=%d hydrology_sample_failed=%d"):format(
+		land_components,disconnected_zones,#missing_zones,#unrouted,
 		route_off_land,route_samples,
-		route_declared_water,candidate_same_zone,candidate_total,
+		route_declared_water,route_automatic_water,candidate_same_zone,candidate_total,
 		bay_sample_failures,channel_interior_failures,#sample_mismatches,
 		hydrology_sample_ok and 0 or 1))
 	local benchmark_interpreter=rawget(_G,"jit") and "luajit" or "puc51"
-	print(("benchmark\tclassifier_80x80_median_ms=%.3f interpreter=%s status=advisory"):format(
-		benchmark_median,benchmark_interpreter))
-	if #forbidden > 0 then
-		print("advisory_forbidden\t" .. table.concat(forbidden,","))
+	print(("benchmark\tclassifier_80x80_values_median_ms=%.3f wp18_zone_80x80_median_ms=%.3f wp18_relative_difference_percent=%+.1f interpreter=%s status=comparative"):format(
+		benchmark_values_median,benchmark_wp18_median,
+		benchmark_relative,benchmark_interpreter))
+	if #unrouted > 0 then
+		print("advisory_unrouted\t" .. table.concat(unrouted,","))
 	end
 	if #missing_zones > 0 then
 		print("advisory_missing_zones\t" .. table.concat(missing_zones,","))

@@ -252,8 +252,9 @@ WP40 replaces it with the complete catalog and contracts below.
 
 - The six starting-settlement centres are (-1800, -2550), (0, -2550),
   (+1800, -2550), (-1800, +2550), (0, +2550) and (+1800, +2550).
-  Each owns a centred **600 by 500 dry start core** wholly inside its starting
-  zone, with its 256 by 256 settlement blend and primary route exit intact.
+  Each owns a centred **600 by 500 start core** wholly inside its starting
+  zone, dry except for explicitly authored civic water, with its 256 by 256
+  settlement blend and primary route exit intact.
 - The six capital centres are (-1800, -1500), (0, -1500), (+1800, -1500),
   (-1800, +1500), (0, +1500) and (+1800, +1500). Each exact **512 by 512
   build envelope** belongs wholly to its capital zone. The surrounding
@@ -296,20 +297,39 @@ WP40 replaces it with the complete catalog and contracts below.
   the 16 Elandor-mainland zones, 16 Kragmar-mainland zones, four Holy Grounds
   zones, and one single-zone region for each island.
 - For point `p` and eligible zone `z`, ownership minimizes
-  `squared_distance(w(p), w(z.hub)) - z.bias`. Warped coordinates are rounded
-  to integer nodes before scoring. Stable numeric zone id breaks an exact tie.
-  Coordinate deltas remain at most 8192 and `abs(bias) <= 2^24`, keeping
-  every score and comparison exactly representable in Lua's safe integer
-  range.
+  `squared_distance(w(p), w(z.hub)) - z.bias`. The owner-only warp keeps eight
+  fractional bits, so smoothly warped boundaries do not acquire one-node
+  fragments from whole-node rounding; land and water masks still use their
+  ordinary integer warp. Stable numeric zone id breaks an exact tie. Scaled
+  coordinate deltas remain below 8192 times 256 and the scaled bias is
+  `bias * 256^2`, keeping every score and comparison exactly representable in
+  Lua's safe integer range.
 - The complete 600 by 500 start cores and 512 by 512 capital envelopes are
-  explicit fixed-owner overrides. The underlying power owner must already
-  agree throughout each core; the override may not create a detached zone
-  island.
+  explicit fixed-owner overrides. Their underlying unconstrained power-owner
+  disagreement is diagnostic evidence, not a second geometry gate: the exact
+  final classifier must instead prove every complete core correctly owned and
+  every final zone connected. This keeps the simple fixed-core rule from
+  growing a second boundary-fitting algorithm.
+- The four coastal housing cores are separate mutable land/owner overrides,
+  each represented by one fixed vertical capsule with rounded ends. The exact
+  grid proof requires every capsule node to be dry, owned by its declared
+  housing zone, inside that housing mask and outside every static exclusion;
+  it also counts wholly contained 101 by 101 reservations. These capsules add
+  no terrain protection and no repair pass.
+- Exactly one ordinary power-site nudge is nonzero: Speargrass Reach has
+  `bias = 256` node-squared units. At eight owner-warp fractional bits this is
+  a sub-node boundary tie nudge that removes a single raster fragment; every
+  other zone bias is zero, and the exact 38-zone connectivity proof remains
+  binding.
+- Zone-connectivity proofs include locally owned rivers, lakes and civic water
+  so hydrology does not split a territory. Owner-inheriting bay water and the
+  coastal shelf remain shoreline/policy context rather than political
+  territory components.
 - The 57-route graph in section 9 is the gameplay-neighbor graph. Geometric
-  contact is permitted only for the complete 61-pair allowlist consisting of
-  those 57 route pairs plus the four historical outer-flank pairs. An allowed
-  pair need not touch, and no geometric dual or stable boundary identity is
-  materialized.
+  zone contact is independent: the accepted fixed layout records its complete
+  contact roster as diagnostic evidence, but contact neither creates a route
+  edge nor needs an allowlist. No geometric dual or stable boundary identity
+  is materialized.
 - Every zone has one authored surface difficulty target. Targets are sampled
   on a fixed 32-node Q16 lattice and smoothed separately on the mainland and
   on each island with a separable triangular 192-node radius. Queries use two
@@ -404,14 +424,20 @@ WP40 replaces it with the complete catalog and contracts below.
   alternatives are excluded before world-seed selection, so eligibility is
   fixed by layout.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each keep
-  one continuous coastal housing core with at least 600 nodes of shoreline
-  frontage and 300 nodes of buildable inland depth. Every wholly contained
+  one continuous vertical-capsule coastal housing core with at least 600 nodes
+  of shoreline frontage and at least 300 nodes of buildable inland depth. The
+  capsule has a straight middle and rounded, tapering ends; every capsule node
+  is dry, zone-owned and static-exclusion-free. Every wholly contained
   eligible 101 by 101 reservation has at most 12 nodes of natural-ground
   relief and contains no mandatory cliff, ravine, river or lake.
 - Housing capacity uses the fixed-layout 111 by 111 origin lattice and the
   canonical deterministic packing portfolio. It is measured once per layout,
   not repeated across identical geometry seeds; varying-seed resource and
   content audits remain separate.
+- Every one of the ten named masks must admit at least one constructive
+  complete reservation. There is no larger invented per-mask quota: live
+  faction limits are selected below the measured faction-wide portfolio and
+  its auditable upper bound.
 
 ### 7.6 Height, relief and visual structure
 
@@ -672,7 +698,8 @@ touching. No geometric boundary dual is created.
 
 - The Holy Grounds land chain is Gravesalt Escarpment — The Broken Causeway —
   The Shattered Line — The Skyglass Canopy. No nonconsecutive pair in this
-  chain is a route neighbor or allowed geometric contact.
+  chain is a route neighbor; incidental geometric contact does not change the
+  chain.
 - Both Stormvault Heights and Blackwind Rise have routes to Gravesalt Escarpment and
   The Broken Causeway.
 - Both Ashenward March and Bannerbreak Mesa have routes to The Broken Causeway and
@@ -721,7 +748,8 @@ the route graph and have no route class or station sequence.
   **trail** crossing it. Together these trails preserve west/east alternative
   movement without turning the complete front into an intact primary road.
 - Minor POIs connect by trails. A trail or secondary spur may end at its POI;
-  it does not add an undeclared zone-neighbor edge.
+  crossing another geometric zone does not add an implicit route-neighbor
+  edge.
 
 ## 10. Race-region character
 
@@ -828,6 +856,9 @@ asks for it.
   capital/front route and one secondary frontier/Holy-Grounds route. The
   corridor is protected from y = -700 upward, reaches the exact Holy Grounds
   rectangle continuously and cannot be claimed, dug through or walled across.
+  The 128 nodes are the protected public envelope, not 128 nodes of pavement;
+  its route surface is deterministically bridged or graded where it meets
+  planned water.
   It guarantees geographic access, not safety from players, guards or combat.
   Player-built fortification budgets may not overlap it.
 
@@ -915,9 +946,9 @@ asks for it.
   palette. Surface content maps that frozen logical id to nodes and
   decorations without selecting a different biome.
 - Surface writing uses one short typed priority:
-  native protected content, fixed hard foundations, explicit crossing
-  interfaces, paths, terrain repair, explicit water, biome surface, resources
-  and decorations. Caves, ores, dungeons and strata outside the shallow
+  native protected content, fixed hard foundations, named or derived crossing
+  spans, paths, terrain repair, explicit water, biome surface, resources and
+  decorations. Caves, ores, dungeons and strata outside the shallow
   authored shell survive the transaction.
 - The new evaluator, compatibility adapters and consolidated VoxelManip
   callback remain disabled until one atomic production cutover removes both
@@ -1000,14 +1031,15 @@ numeric-truncated seed.
   islands. The Holy Grounds rectangle, six dry start cores, six capital
   ownership envelopes, island centres/envelopes and all fixed anchors retain
   their authored positions and owners.
-- The 57 land routes connect their authored endpoints, stay inside land except
-  at explicit crossing interfaces and remain split into exactly 30 primary,
-  24 secondary and three trail classes with 7/16, 5/12 and 3/8 widths. An
-  ordinary two-zone route enters no undeclared third zone. Required POI spurs
-  and the separate boat graph are complete.
-- Every emergent geometric contact belongs to section 9's complete 61-pair
-  allowlist; allowed pairs need not all occur. No forbidden contact, detached
-  sliver or path-created land is accepted.
+- The 57 land routes connect their authored endpoints and remain split into
+  exactly 30 primary, 24 secondary and three trail classes with 7/16, 5/12 and
+  3/8 widths. Land and POI routes may cross locally owned planned water through
+  deterministic derived grading spans, but never coastal shelf, deep ocean or
+  a dragon channel. Passing through another zone creates no implicit route
+  edge. Required POI spurs and the separate boat graph are complete.
+- The complete emergent geometric-contact roster is recorded in the canonical
+  artifact as diagnostic evidence. Contacts do not gate the layout or define
+  route neighbors. No detached land sliver or path-created land is accepted.
 - All four bays remain open and connected from outer water to their heads,
   stay at least 64 nodes wide, reach neither capital envelope nor coastal
   housing core,

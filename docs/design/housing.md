@@ -34,13 +34,13 @@ drop-in implementation.
 - Four level-11–20 zones provide guaranteed coastal alternatives:
   Copperfell Foothills and Mournfen on the west coasts, and Starbough Vale and
   Raincall Basin on the east coasts.
-- Each guaranteed coastal housing strip is continuous, dry and gently
-  buildable. After final coastline variation and all static exclusions, it
-  retains at least 600 continuous nodes of shoreline frontage and 300 nodes of
-  buildable inland depth.
-- A guaranteed strip may curve and taper with the natural coast. The frontage
-  and depth are audit minima, not visible rectangles and not Claim-Stone
-  quotas.
+- Each guaranteed coastal housing strip is one fixed vertical capsule: a
+  straight middle section with rounded ends, at least 600 continuous nodes of
+  shoreline frontage and at least 300 nodes of buildable inland depth. The
+  entire mutable capsule is dry, owned by its named housing zone and free of
+  every static exclusion after final coastline variation.
+- The capsule may taper at its rounded ends. Frontage and depth are audit
+  minima, not a visible rectangle and not a Claim-Stone quota.
 - Every possible 101×101 reservation wholly inside a guaranteed core has at
   most 12 nodes of generated natural-ground height variation and contains no
   forced cliff, ravine, river or lake. Trees, structures and later player
@@ -48,6 +48,10 @@ drop-in implementation.
 - A complete 101×101 reservation may meet the final shoreline but may not
   contain any coastal-shelf column. Protected underwater claims and private
   harbors do not exist.
+- Each of the ten housing masks must admit at least one constructive complete
+  reservation in the fixed-layout packing audit. No higher per-mask quota is
+  promised; the administrator-facing faction limit is chosen below measured
+  faction-wide capacity.
 - Permanent player-owned protection exists only inside an active Claim Stone
   volume. Building elsewhere follows the ordinary faction, zone and contested
   terrain rules and is not private property.

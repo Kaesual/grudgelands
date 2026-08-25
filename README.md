@@ -209,13 +209,15 @@ The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
 partition/topology path. R0, R1, V1b, V1c and final V1d are independently and
 visually accepted. The current SVG has stronger single-warp border meanders,
 pinned curved routes, tapered bays with deep-ocean mouth caps, coherent visible
-water and six protected capital ingress corridors; R2 layout freeze/validation
-is next and has not started. The
-current [engineering contract](docs/research/wp40-engineering-brief.md)
+water and six protected capital ingress corridors. Exhaustive R2 validation
+now freezes the 2D layout, routes, water, cores, anchor candidates and measured
+housing capacity; it is independently accepted, and R3 global height is next.
+The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
-Fixed-layout and once-per-layout capacity, 32-seed content/supply and
-performance evidence remain merge gates.
+The accepted R2 artifact owns fixed-layout and once-per-layout capacity
+evidence; 32-seed content/supply and later production mapchunk performance
+evidence remain merge gates.
 
 **Ready to start next:** WP26 and WP44 are the newly unblocked material and
 economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped
