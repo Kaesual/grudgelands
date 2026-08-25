@@ -1,8 +1,8 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7, R0, R1 and the V1b technical package independently accepted
-2026-08-25; the initial V1 macro layout was accepted and the generated V1b
-preview is awaiting user visual approval
+**Status:** D1-D7, R0, R1, V1b and the V1c technical package independently
+accepted 2026-08-25; the initial V1 macro layout was accepted and the generated
+V1c preview is awaiting explicit user visual approval before R2
 
 **Ruling date:** 2026-08-25
 
@@ -195,10 +195,11 @@ markers.
 
 Reuse T1's canonical full-seed-safe hashing to construct the lattice, but do
 not call its checked arithmetic or SHA-hash lattice corners on every map
-column. The V1b source fixes 1,024-node cells and at most 96 nodes of
-displacement per axis. This remains well below the no-fold limit and makes the
-single shared deformation visible at whole-map scale without adding per-zone
-noise. At load/compile time:
+column. V1b used 1,024-node cells and at most 96 nodes of displacement per
+axis. The current V1c candidate uses the same single warp with 512-node cells
+and at most 64 nodes of displacement: more bends at whole-map scale without
+another query or per-zone noise field. This remains well below the no-fold
+limit. At load/compile time:
 
 1. build a small fixed-layout warp lattice over the finite interesting extent;
 2. derive each lattice vector once from the versioned fixed layout ID;
@@ -468,8 +469,9 @@ V1b keeps all stable zone, route, anchor, landmark and hydrology IDs plus the
 57-route graph, endpoints, classes, explicit interfaces and macro primitives.
 It changes only three readable source policies:
 
-- the one common fixed warp grows from 32 to 96 nodes per axis while retaining
-  the 1,024-node lattice, safe-integer interpolation and no-fold proof;
+- the one common fixed warp's maximum displacement grows from 32 to 96 nodes
+  per axis while retaining the 1,024-node lattice, safe-integer interpolation
+  and no-fold proof;
 - each route's authored midpoint, endpoints and every explicit crossing remain
   exact pins, while a bounded source-time integer curve adds two offset points
   per leg from a fixed class amplitude; there is no A*, pathfinding, land
@@ -497,7 +499,9 @@ zones, zero missing zones, fifteen undeclared sampled contacts, 329 of 7,770
 undeclared off-land route samples, 246 declared-water crossing samples, 252 of
 252 candidate anchors in their intended zones, zero bay/sample failures and
 34 channel-interior failures. The last local 80 by 80 median was 5.261 ms;
-R2 owns the binding 5 ms measurement and the disclosed geometry repairs.
+V1c later retires the then-proposed binding 5 ms threshold because it had no
+whole-mapchunk budget or measured derivation. The measurement remains useful
+comparative evidence.
 
 Calibration record: implementing/integrating model GPT-5.6 Sol; independently
 reviewing model explicitly authorized Claude Fable. The initial review found
@@ -506,9 +510,71 @@ cleanup round closed all three Low observations without changing KAT or SVG
 bytes; policy requires no focused rereview for Low corrections. Observed
 elapsed wall time is `unknown`.
 
+### V1c — visual closure candidate
+
+Before freezing R2, the user authorized one final bounded visual pass. V1c
+uses the fixed layout id `wp40-simple-map-v1c`, keeps every stable zone, route,
+anchor, landmark, interface and hydrology ID, and makes only source-readable
+adjustments:
+
+- the four existing bay masks now cover the complete open gaps between the
+  start lobes, while slightly deeper mainland belts keep both continents
+  connected behind their authored heads;
+- the mainland fronts overlap behind the exact Holy Grounds rectangle, so the
+  exact macro/protection precedence remains authoritative without accidental
+  shelf seams along the long north and south edges from x = -2400 through
+  +2400; the extreme corner transitions into the immutable channels remain an
+  explicit R2 full-grid validation subject;
+- the exact Holy Grounds rectangle remains unchanged and solid except for its
+  explicit hydrology, while its internal nearest-hub ownership reuses the same
+  already-computed common warp as every other non-fixed zone;
+- the single common warp changes from 1,024/96 to 512/64 cell/displacement
+  parameters. Each query still reads and interpolates exactly four lattice
+  vectors; only the tiny load-time lattice gains entries;
+- selected long river reaches gain a few authored support points, and pond,
+  lake, tarn and cenote masks use short curved variable-width point chains
+  instead of equal-width two-point capsules; and
+- preview-only colors distinguish ordinary mainland frontier land from Holy
+  Grounds without changing classification.
+
+No second noise field, per-zone random function, pathfinder, erosion pass,
+Bezier evaluator or repair loop is added. The 80 by 80 LuaJIT classifier
+measurement remains published as advisory comparative evidence. The previous
+5 ms absolute and 2 ms regression thresholds are retired: neither had a
+measured whole-mapchunk budget or documented derivation. A fixed performance
+limit may become binding only after that evidence exists.
+
+**V1c technical completion record (2026-08-25):** the runner passed Lua 5.1
+syntax/`SETGLOBAL`/portability checks, byte-identical LuaJIT/PUC 5.1 KATs for
+seeds `0`, `1`, `2^63` and `2^64-1`, repeated-render byte identity and XML
+parsing. Seed 0 produced KAT digest
+`d32688cae3d748947f15e76e52717212e078bfe5ee254f0c1f5f9a2ca1bf4640`;
+the generated SVG SHA-256 is
+`922178bdd566dc39a56492c505e163dab7d24d27102ee9c691c6b410fa958463`.
+The final advisory 16-node sampled report has three land components, twelve
+disconnected zones, zero missing zones, fifteen undeclared contacts, 316 of
+7,770 undeclared off-land route samples, 256 declared-water crossing samples,
+252 of 252 candidate anchors in their intended zones, zero bay/sample failures
+and 61 channel-interior failures. On the local x86-64 AMD Ryzen 7 9800X3D host,
+LuaJIT measured a 5.919 ms median for the 80 by 80 classifier probe. That value
+is evidence, not a pass/fail limit.
+
+Calibration record: implementing/integrating model GPT-5.6 Sol; independently
+reviewing model explicitly authorized Claude Fable at xhigh effort. The first
+full review found 0 Critical / 0 High / 2 Medium / 5 Low and returned
+**REJECTED**. The layout-id/bay-table, path-kind, fixed-core water and scoped
+seam corrections closed both Medium findings and the three directly relevant
+Low findings. A focused rereview returned **ACCEPTED**, 0 Critical / 0 High /
+0 Medium. Non-blocking follow-ups remain explicit rather than silently repaired:
+the Holy-water/macro edge awaits the upcoming territory-policy discussion, and
+R2 must check the one-node Highcourt river/core tangency plus the remaining
+validation-strength observations before freezing the complete integer layout.
+Observed elapsed wall time is `unknown` because the work crossed a context
+compaction.
+
 ### R2 — freeze and validate the accepted 2D layout
 
-After V1b visual approval, add and freeze the small spatial invariant set:
+After V1c visual approval, add and freeze the small spatial invariant set:
 
 - one connected mainland and two connected islands on the complete integer
   node grid of the finite authored extent;
@@ -557,10 +623,10 @@ After V1b visual approval, add and freeze the small spatial invariant set:
 - deterministic canonical 2D artifact and SVG;
 - bounded regional candidate counts;
 - warp safe-integer, no-fold and extreme-coordinate KATs; and
-- an 80 by 80 LuaJIT horizontal classification benchmark no slower than 5 ms
-  median, with its absolute/relative WP18 difference published and more than
-  2 ms added horizontal cost requiring review; one x/z result is reused across
-  the vertical column.
+- a published 80 by 80 LuaJIT horizontal classification benchmark with host,
+  interpreter, absolute result and WP18-relative comparison. It is comparative
+  evidence until a whole-mapchunk budget justifies a fixed threshold; one x/z
+  result is reused across the vertical column.
 
 Expensive full-layout scans run under LuaJIT. PUC 5.1 runs syntax/static gates
 and targeted representative KATs whose canonical digest is compared with

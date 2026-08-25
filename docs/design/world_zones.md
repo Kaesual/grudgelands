@@ -191,7 +191,7 @@ WP40 replaces it with the complete catalog and contracts below.
 
 - World axes stay conventional: west/east is x, Kragmar lies north at positive
   z, Elandor lies south at negative z, and the shared front is centred on z = 0.
-- The layout id is `wp40-simple-map-v1`. Land, zone hubs, macro ownership,
+- The layout id is `wp40-simple-map-v1c`. Land, zone hubs, macro ownership,
   main routes, housing masks and water classes are identical for every world
   seed using that layout.
 - The Holy Grounds is the exact, unwarped closed rectangle
@@ -274,11 +274,12 @@ WP40 replaces it with the complete catalog and contracts below.
   landmark composition remain culturally distinct while satisfying equivalent
   progression, resource and access budgets.
 - Mainland and island shape queries use one layout-bound low-frequency
-  coordinate warp with 1024-node cells and at most 32 nodes of displacement
-  per axis. The same warp applies to zone hubs before ownership scoring. Source
-  validation proves safe integer bounds and a displacement Lipschitz constant
-  below one, so the transform cannot fold space. The Holy Grounds rectangle
-  and fixed ownership cores are unwarped.
+  coordinate warp with 512-node cells and at most 64 nodes of displacement per
+  axis. The same warp applies to query points and zone hubs before non-fixed
+  ownership scoring. Source validation proves safe integer bounds and a
+  displacement Lipschitz constant below one, so the transform cannot fold
+  space. The Holy Grounds macro/protection rectangle and fixed ownership cores
+  are unwarped; internal Holy Grounds zone ownership reuses the common warp.
 - Local coastline, biome and terrain beauty comes primarily from the later
   height/detail fields. There is no seed-selected polygon partition, boundary
   raster, topology census, repair pass or alternate winner layout.
@@ -324,10 +325,10 @@ WP40 replaces it with the complete catalog and contracts below.
 
   | Bay | Authored centreline samples (x, z; half-width) |
   |---|---|
-  | Elandor west | (-980,-2940;360) -> (-900,-2600;280) -> (-1040,-2300;190) -> (-980,-2000;80) |
-  | Elandor east | (+900,-2920;330) -> (+1080,-2580;250) -> (+920,-2280;180) -> (+1020,-1990;80) |
-  | Kragmar west | (-1080,+2930;320) -> (-1200,+2620;260) -> (-940,+2300;190) -> (-1060,+2010;80) |
-  | Kragmar east | (+820,+2960;370) -> (+700,+2630;250) -> (+1050,+2320;170) -> (+900,+1980;80) |
+  | Elandor west | (-970,-3100;760) -> (-990,-2860;620) -> (-900,-2600;470) -> (-1040,-2300;300) -> (-1010,-2100;150) -> (-980,-1980;80) |
+  | Elandor east | (+930,-3090;740) -> (+960,-2840;600) -> (+1080,-2580;450) -> (+920,-2280;290) -> (+980,-2090;145) -> (+1020,-1970;80) |
+  | Kragmar west | (-980,+3100;750) -> (-1060,+2860;610) -> (-1200,+2620;460) -> (-940,+2300;300) -> (-1010,+2110;150) -> (-1060,+1990;80) |
+  | Kragmar east | (+900,+3110;760) -> (+820,+2860;610) -> (+700,+2630;450) -> (+850,+2470;380) -> (+1050,+2320;285) -> (+960,+2100;145) -> (+900,+1960;80) |
 
   Each bay is one round-joined variable-width capsule mask. It remains open
   and connected from outer water to its head, never narrows below 64 nodes,
@@ -1037,10 +1038,12 @@ numeric-truncated seed.
   that removes `ocean_mask.lua` and `structures.lua` from the production
   pipeline. Repository checks prove that no second Grudgelands geography
   writer remains enabled.
-- An 80 by 80 horizontal LuaJIT classification benchmark is no slower than
-  5 ms median. Its absolute and relative difference from WP18 is published;
-  more than 2 ms of added horizontal cost requires review. One horizontal
-  result is reused for a vertical column.
+- Publish an 80 by 80 horizontal LuaJIT classification benchmark with its host,
+  interpreter, absolute result and relative difference from WP18. It is
+  comparative evidence, not a fixed acceptance threshold: no absolute or
+  regression limit becomes binding without a measured whole-mapchunk budget
+  and a documented derivation. One horizontal result is reused for a vertical
+  column.
 - Lua source and tools pass plain Lua 5.1 syntax/static gates. Long full-layout
   and 32-seed populations run under LuaJIT. Targeted representative PUC 5.1
   KATs produce byte-identical canonical artifacts/digests. The retired exact

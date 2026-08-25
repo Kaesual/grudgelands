@@ -206,10 +206,10 @@ questions and PvP-death XP rule remain explicitly open in
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
 The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
-partition/topology path. R0, R1 and the bounded V1b technical package are
+partition/topology path. R0, R1, V1b and the bounded V1c technical package are
 independently accepted. The current SVG has less uniform shared-warp borders,
-pinned curved routes and coherent visible water; user visual approval is next
-before layout freeze, height and mapgen integration. The
+pinned curved routes, complete bays and coherent visible water; user visual
+approval of V1c is next before layout freeze, height and mapgen integration. The
 current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.

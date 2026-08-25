@@ -15,9 +15,9 @@ end
 
 local source = {
 	schema = "grug_wp40_simple_map_source_v1",
-	layout_id = "wp40-simple-map-v1b",
+	layout_id = "wp40-simple-map-v1c",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	warp = {cell = 1024, maximum = 96,
+	warp = {cell = 512, maximum = 64,
 		hash_domain = "fixed_visual_warp_v1"},
 	shelf_width = 80,
 	holy_grounds = {min_x = -2500, max_x = 2500, min_z = -250, max_z = 250},
@@ -124,15 +124,15 @@ source.land_primitives = {
 	{id="elandor_west_prong",region="elandor_mainland",kind="capsule",a=point(-1850,-2310),b=point(-1820,-1700),radius=650},
 	{id="elandor_centre_prong",region="elandor_mainland",kind="capsule",a=point(-40,-2310),b=point(-40,-1720),radius=650},
 	{id="elandor_east_prong",region="elandor_mainland",kind="capsule",a=point(1850,-2290),b=point(1780,-1700),radius=670},
-	{id="elandor_belt",region="elandor_mainland",kind="rounded_rect",min_x=-2550,max_x=2550,min_z=-1980,max_z=-900,radius=300},
-	{id="elandor_front",region="elandor_mainland",kind="rounded_rect",min_x=-2500,max_x=2500,min_z=-1160,max_z=-250,radius=240},
+	{id="elandor_belt",region="elandor_mainland",kind="rounded_rect",min_x=-2550,max_x=2550,min_z=-2150,max_z=-900,radius=300},
+	{id="elandor_front",region="elandor_mainland",kind="rounded_rect",min_x=-2500,max_x=2500,min_z=-1160,max_z=0,radius=240},
 	{id="elandor_west_shoulder",region="elandor_mainland",kind="ellipse",center=point(-2250,-1450),radius_x=300,radius_z=650},
 	{id="elandor_east_shoulder",region="elandor_mainland",kind="ellipse",center=point(2260,-1440),radius_x=290,radius_z=640},
 	{id="kragmar_west_prong",region="kragmar_mainland",kind="capsule",a=point(-1880,2310),b=point(-1760,1710),radius=660},
 	{id="kragmar_centre_prong",region="kragmar_mainland",kind="capsule",a=point(30,2300),b=point(80,1740),radius=660},
 	{id="kragmar_east_prong",region="kragmar_mainland",kind="capsule",a=point(1850,2300),b=point(1800,1700),radius=660},
-	{id="kragmar_belt",region="kragmar_mainland",kind="rounded_rect",min_x=-2550,max_x=2550,min_z=880,max_z=1990,radius=330},
-	{id="kragmar_front",region="kragmar_mainland",kind="rounded_rect",min_x=-2500,max_x=2500,min_z=250,max_z=1160,radius=250},
+	{id="kragmar_belt",region="kragmar_mainland",kind="rounded_rect",min_x=-2550,max_x=2550,min_z=880,max_z=2150,radius=330},
+	{id="kragmar_front",region="kragmar_mainland",kind="rounded_rect",min_x=-2500,max_x=2500,min_z=0,max_z=1160,radius=250},
 	{id="kragmar_west_shoulder",region="kragmar_mainland",kind="ellipse",center=point(-2250,1460),radius_x=300,radius_z=640},
 	{id="kragmar_east_shoulder",region="kragmar_mainland",kind="ellipse",center=point(2260,1480),radius_x=290,radius_z=650},
 }
@@ -141,10 +141,10 @@ for primitive_index=1,#source.land_primitives do
 end
 
 source.bays = {
-	{id="bay_elandor_west",region="elandor_mainland",shore_zone_ids={1,2,6,7},centreline={{x=-980,z=-2940,half_width=360},{x=-900,z=-2600,half_width=280},{x=-1040,z=-2300,half_width=190},{x=-980,z=-2000,half_width=80}}},
-	{id="bay_elandor_east",region="elandor_mainland",shore_zone_ids={6,7,11,12},centreline={{x=900,z=-2920,half_width=330},{x=1080,z=-2580,half_width=250},{x=920,z=-2280,half_width=180},{x=1020,z=-1990,half_width=80}}},
-	{id="bay_kragmar_west",region="kragmar_mainland",shore_zone_ids={17,18,22,23},centreline={{x=-1080,z=2930,half_width=320},{x=-1200,z=2620,half_width=260},{x=-940,z=2300,half_width=190},{x=-1060,z=2010,half_width=80}}},
-	{id="bay_kragmar_east",region="kragmar_mainland",shore_zone_ids={22,23,27,28},centreline={{x=820,z=2960,half_width=370},{x=700,z=2630,half_width=250},{x=1050,z=2320,half_width=170},{x=900,z=1980,half_width=80}}},
+	{id="bay_elandor_west",region="elandor_mainland",shore_zone_ids={1,2,6,7},centreline={{x=-970,z=-3100,half_width=760},{x=-990,z=-2860,half_width=620},{x=-900,z=-2600,half_width=470},{x=-1040,z=-2300,half_width=300},{x=-1010,z=-2100,half_width=150},{x=-980,z=-1980,half_width=80}}},
+	{id="bay_elandor_east",region="elandor_mainland",shore_zone_ids={6,7,11,12},centreline={{x=930,z=-3090,half_width=740},{x=960,z=-2840,half_width=600},{x=1080,z=-2580,half_width=450},{x=920,z=-2280,half_width=290},{x=980,z=-2090,half_width=145},{x=1020,z=-1970,half_width=80}}},
+	{id="bay_kragmar_west",region="kragmar_mainland",shore_zone_ids={17,18,22,23},centreline={{x=-980,z=3100,half_width=750},{x=-1060,z=2860,half_width=610},{x=-1200,z=2620,half_width=460},{x=-940,z=2300,half_width=300},{x=-1010,z=2110,half_width=150},{x=-1060,z=1990,half_width=80}}},
+	{id="bay_kragmar_east",region="kragmar_mainland",shore_zone_ids={22,23,27,28},centreline={{x=900,z=3110,half_width=760},{x=820,z=2860,half_width=610},{x=700,z=2630,half_width=450},{x=850,z=2470,half_width=380},{x=1050,z=2320,half_width=285},{x=960,z=2100,half_width=145},{x=900,z=1960,half_width=80}}},
 }
 
 source.islands = {
@@ -229,7 +229,8 @@ for index = 1, #route_rows do
 	local via=point(row[4],row[5])
 	source.routes[index] = {
 		numeric_id=index,id=("route_%03d"):format(index),zone_a=row[1],zone_b=row[2],
-		class=row[3],surface_width=profile.surface_width,
+		class=row[3],kind=row[3] == "trail" and "trail" or "road",
+		surface_width=profile.surface_width,
 		corridor_width=profile.corridor_width,provisional=true,
 		curve_policy_id=source.route_curve.id,pinned_point_index=4,
 		station_a_id=source.route_stations[row[1]].id,
@@ -260,21 +261,21 @@ source.crossing_interfaces = {
 }
 
 source.boat_paths = {
-	{id="boat_wyrmglass_south",from_zone=34,to_zone=33,width=96,centreline={point(-2500,-125),point(-2700,-125),point(-2890,-125)}},
-	{id="boat_wyrmglass_north",from_zone=34,to_zone=33,width=96,centreline={point(-2500,125),point(-2700,125),point(-2890,125)}},
-	{id="boat_stormscale_south",from_zone=37,to_zone=38,width=96,centreline={point(2500,-125),point(2700,-125),point(2890,-125)}},
-	{id="boat_stormscale_north",from_zone=37,to_zone=38,width=96,centreline={point(2500,125),point(2700,125),point(2900,125)}},
+	{id="boat_wyrmglass_south",kind="boat",from_zone=34,to_zone=33,width=96,centreline={point(-2500,-125),point(-2700,-125),point(-2890,-125)}},
+	{id="boat_wyrmglass_north",kind="boat",from_zone=34,to_zone=33,width=96,centreline={point(-2500,125),point(-2700,125),point(-2890,125)}},
+	{id="boat_stormscale_south",kind="boat",from_zone=37,to_zone=38,width=96,centreline={point(2500,-125),point(2700,-125),point(2890,-125)}},
+	{id="boat_stormscale_north",kind="boat",from_zone=37,to_zone=38,width=96,centreline={point(2500,125),point(2700,125),point(2900,125)}},
 }
 
 source.island_routes = {
-	{id="island_route_wyrmglass_south_junction",centreline={point(-2890,-125),point(-2990,-90),point(-3100,0)}},
-	{id="island_route_wyrmglass_north_junction",centreline={point(-2890,125),point(-2990,90),point(-3100,0)}},
-	{id="island_route_wyrmglass_junction_dragon",centreline={point(-3100,0),point(-3180,-10),point(-3260,-40)}},
-	{id="island_route_wyrmglass_junction_apex",centreline={point(-3100,0),point(-3140,50),point(-3200,80)}},
-	{id="island_route_stormscale_south_junction",centreline={point(2890,-125),point(2990,-90),point(3100,0)}},
-	{id="island_route_stormscale_north_junction",centreline={point(2900,125),point(2990,90),point(3100,0)}},
-	{id="island_route_stormscale_junction_dragon",centreline={point(3100,0),point(3180,-10),point(3260,-40)}},
-	{id="island_route_stormscale_junction_apex",centreline={point(3100,0),point(3140,50),point(3200,80)}},
+	{id="island_route_wyrmglass_south_junction",kind="road",centreline={point(-2890,-125),point(-2990,-90),point(-3100,0)}},
+	{id="island_route_wyrmglass_north_junction",kind="road",centreline={point(-2890,125),point(-2990,90),point(-3100,0)}},
+	{id="island_route_wyrmglass_junction_dragon",kind="road",centreline={point(-3100,0),point(-3180,-10),point(-3260,-40)}},
+	{id="island_route_wyrmglass_junction_apex",kind="road",centreline={point(-3100,0),point(-3140,50),point(-3200,80)}},
+	{id="island_route_stormscale_south_junction",kind="road",centreline={point(2890,-125),point(2990,-90),point(3100,0)}},
+	{id="island_route_stormscale_north_junction",kind="road",centreline={point(2900,125),point(2990,90),point(3100,0)}},
+	{id="island_route_stormscale_junction_dragon",kind="road",centreline={point(3100,0),point(3180,-10),point(3260,-40)}},
+	{id="island_route_stormscale_junction_apex",kind="road",centreline={point(3100,0),point(3140,50),point(3200,80)}},
 }
 
 source.housing_masks = {
@@ -582,31 +583,31 @@ local function hydro(id,landmark_id,zone_numeric_id,profile_id,offset,
 end
 
 source.hydrology = {
-	hydro("hydro_copperfell_streams","copperfell_drainage",2,"stream",18,{{x=-2320,z=-1780,half_width=18},{x=-2150,z=-1950,half_width=22},{x=-1850,z=-2100,half_width=26},{x=-1450,z=-2140,half_width=30},{x=-1060,z=-2020,half_width=34}},"copperfell_spring","copperfell_sink"),
-	hydro("hydro_frostbarrow_tarns","frostbarrow_tarns",4,"shallow_pond",62,{{x=-2470,z=-1700,half_width=70},{x=-2290,z=-1740,half_width=75}},"frostbarrow_inflow","frostbarrow_basin"),
-	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=90,z=-2420,half_width=45},{x=210,z=-2420,half_width=45}},"dawnmere_spring","dawnmere_outflow",6),
-	hydro("hydro_goldmead_millriver","goldmead_millriver",7,"river",16,{{x=0,z=-2480,half_width=18},{x=-80,z=-2250,half_width=22},{x=60,z=-2020,half_width=24},{x=-100,z=-1780,half_width=24}},"goldmead_upstream","goldmead_downstream"),
-	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-100,z=-1780,half_width=24},{x=-180,z=-1580,half_width=26},{x=0,z=-1320,half_width=24}},"highcourt_west_source","highcourt_fork_join",8),
-	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=500,z=-1850,half_width=18},{x=300,z=-1670,half_width=22},{x=0,z=-1320,half_width=24}},"highcourt_east_source","highcourt_fork_join",8),
+	hydro("hydro_copperfell_streams","copperfell_drainage",2,"stream",18,{{x=-2320,z=-1780,half_width=18},{x=-2260,z=-1880,half_width=20},{x=-2150,z=-1950,half_width=22},{x=-2010,z=-2040,half_width=24},{x=-1850,z=-2100,half_width=26},{x=-1650,z=-2160,half_width=28},{x=-1450,z=-2140,half_width=30},{x=-1260,z=-2070,half_width=32},{x=-1060,z=-2020,half_width=34}},"copperfell_spring","copperfell_sink"),
+	hydro("hydro_frostbarrow_tarns","frostbarrow_tarns",4,"shallow_pond",62,{{x=-2440,z=-1710,half_width=35},{x=-2380,z=-1670,half_width=60},{x=-2300,z=-1680,half_width=72},{x=-2220,z=-1740,half_width=54},{x=-2180,z=-1800,half_width=34}},"frostbarrow_inflow","frostbarrow_basin"),
+	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=70,z=-2440,half_width=30},{x=115,z=-2400,half_width=48},{x=180,z=-2410,half_width=55},{x=225,z=-2460,half_width=34}},"dawnmere_spring","dawnmere_outflow",6),
+	hydro("hydro_goldmead_millriver","goldmead_millriver",7,"river",16,{{x=-80,z=-2250,half_width=22},{x=-20,z=-2140,half_width=23},{x=60,z=-2020,half_width=24},{x=20,z=-1900,half_width=24},{x=-100,z=-1780,half_width=24}},"goldmead_upstream","goldmead_downstream"),
+	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-100,z=-1780,half_width=24},{x=-170,z=-1680,half_width=25},{x=-180,z=-1580,half_width=26},{x=-100,z=-1460,half_width=25},{x=0,z=-1320,half_width=24}},"highcourt_west_source","highcourt_fork_join",8),
+	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=500,z=-1850,half_width=18},{x=410,z=-1750,half_width=20},{x=300,z=-1670,half_width=22},{x=180,z=-1510,half_width=23},{x=0,z=-1320,half_width=24}},"highcourt_east_source","highcourt_fork_join",8),
 	hydro("hydro_highcourt_outflow","highcourt_riverfork",8,"river",34,{{x=0,z=-1320,half_width=24},{x=120,z=-1100,half_width=22}},"highcourt_fork_join","highcourt_outflow",8),
-	hydro("hydro_whitebridge_main","whitebridge_crossing",9,"river",16,{{x=-1060,z=-2020,half_width=26},{x=-980,z=-1800,half_width=24},{x=-700,z=-1600,half_width=22},{x=-400,z=-1500,half_width=20}},"whitebridge_upstream","whitebridge_downstream"),
-	hydro("hydro_whitebridge_ford","whitebridge_ford",9,"ford",16,{{x=-900,z=-1100,half_width=18},{x=-820,z=-1180,half_width=18},{x=-720,z=-1260,half_width=18},{x=-400,z=-1500,half_width=20}},"whitebridge_ford_upstream","whitebridge_ford_downstream"),
-	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1830,z=-1420,half_width=65},{x=1930,z=-1420,half_width=65}},"lethariel_inflow","lethariel_outflow",13),
-	hydro("hydro_lorindor_marsh","lorindor_berrymarsh",14,"shallow_marsh",28,{{x=1930,z=-1420,half_width=24},{x=1700,z=-1550,half_width=28},{x=1450,z=-1650,half_width=30},{x=1200,z=-1770,half_width=40},{x=1020,z=-1990,half_width=32}},"lorindor_inflow","lorindor_sink"),
-	hydro("hydro_moonfall_lake","moonfall_crescent",15,"ordinary_lake",18,{{x=2300,z=-1500,half_width=80},{x=2500,z=-1500,half_width=80}},"moonfall_inflow","moonfall_outflow"),
-	hydro("hydro_mournfen_marsh","mournfen_drowned_roads",18,"shallow_marsh",8,{{x=-2380,z=1750,half_width=30},{x=-2200,z=1900,half_width=45},{x=-2050,z=2100,half_width=60},{x=-1600,z=2150,half_width=45},{x=-1060,z=2010,half_width=34}},"mournfen_inflow","mournfen_sink"),
-	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=190,z=2450,half_width=55},{x=330,z=2450,half_width=55}},"sunscar_seep","sunscar_basin",22),
+	hydro("hydro_whitebridge_main","whitebridge_crossing",9,"river",16,{{x=-1060,z=-2020,half_width=26},{x=-1040,z=-1900,half_width=25},{x=-980,z=-1800,half_width=24},{x=-850,z=-1680,half_width=23},{x=-700,z=-1600,half_width=22},{x=-540,z=-1530,half_width=21},{x=-400,z=-1500,half_width=20}},"whitebridge_upstream","whitebridge_downstream"),
+	hydro("hydro_whitebridge_ford","whitebridge_ford",9,"ford",16,{{x=-900,z=-1100,half_width=18},{x=-850,z=-1140,half_width=18},{x=-820,z=-1180,half_width=18},{x=-760,z=-1230,half_width=18},{x=-720,z=-1260,half_width=18},{x=-560,z=-1400,half_width=19},{x=-400,z=-1500,half_width=20}},"whitebridge_ford_upstream","whitebridge_ford_downstream"),
+	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1800,z=-1440,half_width=38},{x=1840,z=-1390,half_width=62},{x=1900,z=-1380,half_width=78},{x=1960,z=-1420,half_width=68},{x=1990,z=-1480,half_width=42}},"lethariel_inflow","lethariel_outflow",13),
+	hydro("hydro_lorindor_marsh","lorindor_berrymarsh",14,"shallow_marsh",28,{{x=1930,z=-1420,half_width=24},{x=1810,z=-1490,half_width=26},{x=1700,z=-1550,half_width=28},{x=1570,z=-1600,half_width=29},{x=1450,z=-1650,half_width=30},{x=1320,z=-1710,half_width=35},{x=1200,z=-1770,half_width=40},{x=1100,z=-1880,half_width=36},{x=1020,z=-1990,half_width=32}},"lorindor_inflow","lorindor_sink"),
+	hydro("hydro_moonfall_lake","moonfall_crescent",15,"ordinary_lake",18,{{x=2260,z=-1540,half_width=42},{x=2310,z=-1470,half_width=68},{x=2400,z=-1440,half_width=84},{x=2490,z=-1480,half_width=72},{x=2540,z=-1560,half_width=44}},"moonfall_inflow","moonfall_outflow"),
+	hydro("hydro_mournfen_marsh","mournfen_drowned_roads",18,"shallow_marsh",8,{{x=-2380,z=1750,half_width=30},{x=-2280,z=1810,half_width=36},{x=-2200,z=1900,half_width=45},{x=-2140,z=2010,half_width=54},{x=-2050,z=2100,half_width=60},{x=-1850,z=2160,half_width=54},{x=-1600,z=2150,half_width=45},{x=-1330,z=2080,half_width=39},{x=-1060,z=2010,half_width=34}},"mournfen_inflow","mournfen_sink"),
+	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=170,z=2470,half_width=34},{x=220,z=2425,half_width=58},{x=290,z=2420,half_width=68},{x=350,z=2470,half_width=42}},"sunscar_seep","sunscar_basin",22),
 	hydro("hydro_speargrass_dryriver","speargrass_dryriver",25,"dry_channel",28,{{x=-1100,z=1900,half_width=18},{x=-1000,z=1700,half_width=18},{x=-900,z=1500,half_width=18},{x=-780,z=1300,half_width=18}},"speargrass_dry_head","speargrass_dry_mouth"),
-	hydro("hydro_raincall_headwater","raincall_falls",28,"shallow_pond",72,{{x=1880,z=2250,half_width=70},{x=1930,z=2200,half_width=65},{x=1960,z=2140,half_width=40}},"raincall_headwater","raincall_upper_rapid"),
+	hydro("hydro_raincall_headwater","raincall_falls",28,"shallow_pond",72,{{x=1850,z=2280,half_width=42},{x=1880,z=2250,half_width=70},{x=1930,z=2200,half_width=65},{x=1960,z=2140,half_width=40}},"raincall_headwater","raincall_upper_rapid"),
 	hydro("hydro_raincall_upper_lip","raincall_falls",28,"shallow_pond",68,{{x=1960,z=2140,half_width=40},{x=1990,z=2110,half_width=38}},"raincall_upper_rapid","raincall_upper_lip"),
 	hydro("hydro_raincall_middle_upper","raincall_falls",28,"shallow_pond",56,{{x=1990,z=2070,half_width=34},{x=2020,z=2040,half_width=32}},"raincall_upper_drop","raincall_middle_rapid"),
 	hydro("hydro_raincall_middle_lip","raincall_falls",28,"shallow_pond",52,{{x=2020,z=2040,half_width=32},{x=2050,z=2010,half_width=38}},"raincall_middle_rapid","raincall_lower_lip"),
 	hydro("hydro_raincall_plunge","raincall_falls",28,"plunge_pool",44,{{x=2050,z=1970,half_width=45},{x=2130,z=1900,half_width=70}},"raincall_lower_drop","raincall_outflow"),
-	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1830,z=1580,half_width=65},{x=1930,z=1580,half_width=65}},"kezamba_inflow","kezamba_cenote_sink",29),
-	hydro("hydro_whispering_reedmaze","whispering_reedmaze",30,"shallow_marsh",8,{{x=2130,z=1900,half_width=34},{x=1750,z=1850,half_width=32},{x=1350,z=1770,half_width=40},{x=1000,z=1650,half_width=45}},"reedmaze_inflow","reedmaze_outflow"),
-	hydro("hydro_totemwater_delta","totemwater_delta",31,"delta_arm",8,{{x=1000,z=1650,half_width=45},{x=950,z=1850,half_width=55},{x=900,z=1980,half_width=70}},"totemwater_upstream","totemwater_mouth"),
-	hydro("hydro_gravesalt_pans","gravesalt_whitewall",34,"shallow_marsh",100,{{x=-2200,z=0,half_width=55},{x=-1950,z=0,half_width=75},{x=-1700,z=80,half_width=50}},"gravesalt_seep","gravesalt_pan"),
-	hydro("hydro_broken_marsh","broken_marsh",35,"ordinary_lake",8,{{x=-1700,z=80,half_width=50},{x=-1500,z=-125,half_width=55},{x=-1125,z=250,half_width=65},{x=-750,z=-100,half_width=85},{x=-375,z=-250,half_width=55}},"broken_marsh_inflow","broken_marsh_outflow"),
+	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1810,z=1600,half_width=42},{x=1850,z=1560,half_width=68},{x=1910,z=1565,half_width=75},{x=1960,z=1610,half_width=48}},"kezamba_inflow","kezamba_cenote_sink",29),
+	hydro("hydro_whispering_reedmaze","whispering_reedmaze",30,"shallow_marsh",8,{{x=2130,z=1900,half_width=34},{x=1940,z=1890,half_width=33},{x=1750,z=1850,half_width=32},{x=1560,z=1825,half_width=35},{x=1350,z=1770,half_width=40},{x=1170,z=1710,half_width=43},{x=1000,z=1650,half_width=45}},"reedmaze_inflow","reedmaze_outflow"),
+	hydro("hydro_totemwater_delta","totemwater_delta",31,"delta_arm",8,{{x=1000,z=1650,half_width=45},{x=990,z=1750,half_width=50},{x=950,z=1850,half_width=55},{x=920,z=1920,half_width=62},{x=900,z=1980,half_width=70}},"totemwater_upstream","totemwater_mouth"),
+	hydro("hydro_gravesalt_pans","gravesalt_whitewall",34,"shallow_marsh",100,{{x=-2200,z=0,half_width=55},{x=-2080,z=-20,half_width=66},{x=-1950,z=0,half_width=75},{x=-1820,z=45,half_width=64},{x=-1700,z=80,half_width=50}},"gravesalt_seep","gravesalt_pan"),
+	hydro("hydro_broken_marsh","broken_marsh",35,"ordinary_lake",8,{{x=-1700,z=80,half_width=50},{x=-1600,z=-20,half_width=54},{x=-1500,z=-125,half_width=55},{x=-1300,z=30,half_width=60},{x=-1125,z=250,half_width=65},{x=-930,z=100,half_width=74},{x=-750,z=-100,half_width=85},{x=-560,z=-180,half_width=68},{x=-375,z=-250,half_width=55}},"broken_marsh_inflow","broken_marsh_outflow"),
 }
 
 source.hydrology_interfaces = {

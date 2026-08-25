@@ -227,10 +227,10 @@ return function(dependencies)
 	local function validate_source()
 		if source.schema ~= schemas.simple_map_source or
 				schemas.simple_map ~= "grug_wp40_simple_map_v1" or
-				source.layout_id ~= "wp40-simple-map-v1b" then
+				source.layout_id ~= "wp40-simple-map-v1c" then
 			fail("source schema/layout identity differs")
 		end
-		if source.warp.cell ~= 1024 or source.warp.maximum ~= 96 or
+		if source.warp.cell ~= 512 or source.warp.maximum ~= 64 or
 				type(source.warp.hash_domain) ~= "string" or
 				4*source.warp.maximum >= source.warp.cell then
 			fail("warp identity/no-fold bound differs")
@@ -393,7 +393,9 @@ return function(dependencies)
 			local pair_key=closed_pair(row.zone_a,row.zone_b)
 			local station_a=station_ids[row.station_a_id]
 			local station_b=station_ids[row.station_b_id]
-			if row.numeric_id ~= index or route_ids[row.id] or route_pairs[pair_key] or
+			local expected_kind=row.class == "trail" and "trail" or "road"
+			if row.numeric_id ~= index or row.kind ~= expected_kind or
+					route_ids[row.id] or route_pairs[pair_key] or
 					not source.zones[row.zone_a] or not source.zones[row.zone_b] or
 					not station_a or not station_b or
 					row.curve_policy_id ~= source.route_curve.id or
@@ -448,7 +450,7 @@ return function(dependencies)
 		local boat_ids, boat_pair_counts={},{}
 		for index=1,#source.boat_paths do
 			local row=source.boat_paths[index]
-			if boat_ids[row.id] or row.width ~= 96 or
+			if boat_ids[row.id] or row.kind ~= "boat" or row.width ~= 96 or
 					not source.zones[row.from_zone] or not source.zones[row.to_zone] or
 					dense_count(row.centreline,"boat centreline") < 2 then
 				fail("boat path identity/reference differs at " .. index)
@@ -465,6 +467,11 @@ return function(dependencies)
 			fail("boat travel graph differs")
 		end
 		collect_ids(source.island_routes,"island route")
+		for index=1,#source.island_routes do
+			if source.island_routes[index].kind ~= "road" then
+				fail("island route kind differs at " .. index)
+			end
+		end
 		local fixed_count, candidate_count = 0, 0
 		local fixed_core_by_zone={}
 		local anchor_slot_keys={}
@@ -862,12 +869,8 @@ return function(dependencies)
 		local warped_hubs = {}
 		for index = 1, #source.zones do
 			local row = source.zones[index]
-			if row.macro_region == "holy_grounds" then
-				warped_hubs[index] = {x=row.hub.x,z=row.hub.z}
-			else
-				local x,z = warp(row.hub.x,row.hub.z)
-				warped_hubs[index] = {x=x,z=z}
-			end
+			local x,z = warp(row.hub.x,row.hub.z)
+			warped_hubs[index] = {x=x,z=z}
 		end
 
 		local function fixed_owner_at(x, z, expansion)
@@ -1021,8 +1024,7 @@ return function(dependencies)
 					return {water_class="planned_water",macro_region=zone.macro_region,
 						zone_numeric_id=zone.numeric_id,hydrology_id=hydrology.id}
 				end
-				local owner = owner_for_region(region,
-					exact_holy and x or warped_x,exact_holy and z or warped_z)
+				local owner = owner_for_region(region,warped_x,warped_z)
 				return {water_class="land",macro_region=region,
 					zone_numeric_id=owner,fixed=exact_holy or nil}
 			end

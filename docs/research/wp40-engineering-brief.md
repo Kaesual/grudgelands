@@ -65,7 +65,7 @@ materialization or fallback geometry.
 
 ### 2.2 Fixed layout and seed ownership
 
-The horizontal layout id is `wp40-simple-map-v1`. Land, zone ownership,
+The horizontal layout id is `wp40-simple-map-v1c`. Land, zone ownership,
 routes, water classes, housing masks and candidate sets are identical across
 world seeds. The full canonical seed string controls one bounded selection
 from each R2-frozen secondary-anchor candidate set, broad/detail height
@@ -77,17 +77,19 @@ candidate plus alternatives.
 
 ### 2.3 Warp and safe arithmetic
 
-Mainland and island land/ownership queries use one layout-bound integer warp:
+Mainland, island and non-fixed zone-ownership queries use one layout-bound
+integer warp:
 
-- 1024-node cells and at most 32 nodes displacement per axis;
+- 512-node cells and at most 64 nodes displacement per axis;
 - one halo cell beyond every queried primitive/shelf extent;
 - identical warp applied to query point and eligible hubs;
 - rounded integer coordinates before ownership scoring; and
 - validation below `2^53 - 1`, with displacement Lipschitz constant below
   one and no fold.
 
-Holy Grounds and fixed ownership cores are unwarped. Outside the padded
-interesting extent, queries fail closed to deep ocean/no zone.
+The Holy Grounds macro/protection rectangle and fixed ownership cores are
+unwarped; internal Holy Grounds zone ownership reuses the common warp. Outside
+the padded interesting extent, queries fail closed to deep ocean/no zone.
 
 ### 2.4 Land and water
 
@@ -359,9 +361,11 @@ decoration registrations expect zero.
   schema. Their immutable outputs remain historical evidence.
 - Lua under `tools/wp40/` receives explicit `tools/bin/luac51 -p`,
   SETGLOBAL and Lua-5.1 do-not-write checks because mod sweeps do not cover it.
-- An 80 by 80 horizontal LuaJIT classification benchmark is at most 5 ms
-  median. Publish its absolute and WP18-relative result; more than 2 ms added
-  cost requires review. Reuse one x/z result for a vertical column.
+- Publish an 80 by 80 horizontal LuaJIT classification benchmark with its host,
+  interpreter, absolute result and WP18-relative result. The measurement is
+  comparative evidence, not a fixed acceptance threshold: no absolute or
+  regression limit becomes binding without a measured whole-mapchunk budget
+  and a documented derivation. Reuse one x/z result for a vertical column.
 - R7/R8 add engine/offline parity, native preservation, owner-slice,
   mapchunk-order, content-ignore, lighting/liquid and rollout evidence.
 

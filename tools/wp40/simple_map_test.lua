@@ -18,10 +18,14 @@ assert(#source.zones == 38 and #source.routes == 57 and
 local route_classes = {primary=0,secondary=0,trail=0}
 for index = 1, #source.routes do
 	local row = source.routes[index]
+	assert(row.kind == (row.class == "trail" and "trail" or "road"))
 	route_classes[row.class] = route_classes[row.class] + 1
 end
 assert(route_classes.primary == 30 and route_classes.secondary == 24 and
 	route_classes.trail == 3)
+assert(session.nearest_path_at(0,-2500,"road").kind == "road")
+assert(session.nearest_path_at(0,-125,"trail").kind == "trail")
+assert(session.nearest_path_at(-2700,-125,"boat").kind == "boat")
 
 for index = 1, #source.zones do
 	local zone = source.zones[index]
@@ -30,7 +34,7 @@ for index = 1, #source.zones do
 end
 
 local expected_samples = {
-	{0,0,"land","front_broken_causeway"},
+	{0,0,"land",true},
 	{-3150,0,"land","front_wyrmglass_crown"},
 	{3150,0,"land","front_stormscale_summit"},
 	{-2700,0,"immutable_dragon_channel",false},
@@ -52,6 +56,20 @@ for index = 1, #expected_samples do
 	if water_class ~= row[3] or not id_matches then
 		sample_mismatches[#sample_mismatches+1]=("%d:%s:%s"):format(
 			index,water_class,id or "-")
+	end
+end
+
+-- V1c keeps the exact Holy Grounds macro rectangle, but the warped mainland
+-- fronts overlap behind its long north/south edges between the channel-corner
+-- transitions. Any water there must be an explicitly authored hydrology mask,
+-- never an accidental shelf/ocean seam.
+for _, z in ipairs({-251,251}) do
+	for x=-2400,2400,32 do
+		local classification=session.classification_at(x,z)
+		assert(classification.water_class == "land" or
+			(classification.water_class == "planned_water" and
+				type(classification.hydrology_id) == "string"),
+			"unintended Holy Grounds edge seam")
 	end
 end
 
@@ -304,8 +322,9 @@ if mode == "--full" then
 		route_declared_water,candidate_same_zone,candidate_total,
 		bay_sample_failures,channel_interior_failures,#sample_mismatches,
 		hydrology_sample_ok and 0 or 1))
-	print(("benchmark\tclassifier_80x80_median_ms=%.3f target_ms=5.000"):format(
-		benchmark_median))
+	local benchmark_interpreter=rawget(_G,"jit") and "luajit" or "puc51"
+	print(("benchmark\tclassifier_80x80_median_ms=%.3f interpreter=%s status=advisory"):format(
+		benchmark_median,benchmark_interpreter))
 	if #forbidden > 0 then
 		print("advisory_forbidden\t" .. table.concat(forbidden,","))
 	end

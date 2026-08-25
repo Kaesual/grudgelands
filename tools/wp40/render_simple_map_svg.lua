@@ -75,6 +75,10 @@ local function zone_color(zone)
 		return ("hsl(%d,46%%,%d%%)"):format(145+(zone.numeric_id%6)*8,78-math.floor(target/4))
 	elseif zone.faction=="throng" then
 		return ("hsl(%d,52%%,%d%%)"):format(18+(zone.numeric_id%6)*8,78-math.floor(target/4))
+	elseif zone.macro_region=="elandor_mainland" then
+		return "hsl(205,18%,57%)"
+	elseif zone.macro_region=="kragmar_mainland" then
+		return "hsl(32,38%,60%)"
 	end
 	return "hsl(300,35%,55%)"
 end
@@ -284,7 +288,7 @@ end
 write('</g>\n')
 
 local digest=session.canonical_kat_digest()
-write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1b</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
+write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1c</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
 write('</svg>\n')
 assert(file:close())
 print("svg\t"..output.."\t"..digest)
