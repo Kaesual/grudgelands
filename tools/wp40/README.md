@@ -12,7 +12,7 @@ post-WP43 WP18/WP36 comparison checkout at
 `7b6c8763224006630f967659047ffae88de6685d`; no later run may silently move
 that baseline.
 
-## Current simple-map R1 preview gate
+## Current simple-map R1/V1b preview gate
 
 Run:
 
@@ -20,7 +20,7 @@ Run:
 tools/wp40/run_simple_map.sh
 ```
 
-This current R1 runner loads the engine-free source and production evaluator,
+This current preview runner loads the engine-free source and production evaluator,
 runs the Lua 5.1 static gates, compares canonical LuaJIT/PUC 5.1 KATs for four
 representative seed strings, renders the same production classifier twice,
 requires byte identity, parses the SVG and writes only the canonical preview:

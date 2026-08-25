@@ -13,6 +13,11 @@ local landmark_by_id={}
 for index=1,#source.landmarks do
 	landmark_by_id[source.landmarks[index].id]=source.landmarks[index]
 end
+local hydrology_profile_by_id={}
+for index=1,#source.hydrology_profiles do
+	local row=source.hydrology_profiles[index]
+	hydrology_profile_by_id[row.id]=row
+end
 local width, height = 1440, 1280
 local world_width = source.extent.max_x-source.extent.min_x
 local world_height = source.extent.max_z-source.extent.min_z
@@ -162,11 +167,32 @@ for index=1,#source.boat_paths do
 		'" fill="none" stroke="#f4dd8e" stroke-width="4" stroke-dasharray="8 6"/>\n')
 end
 write('</g>\n')
-write('<g id="hydrology" fill="none" stroke="#87d7ea" stroke-width="2" stroke-linecap="round" opacity="0.85">\n')
+write('<g id="hydrology" fill="none" stroke-linecap="round" stroke-linejoin="round">\n')
 for index=1,#(source.hydrology or {}) do
 	local row=source.hydrology[index]
-	write('<polyline data-hydrology="',escape(row.id),'" points="',
-		points(row.centreline),'"><title>',escape(row.id),'</title></polyline>\n')
+	local profile=assert(hydrology_profile_by_id[row.profile_id])
+	local color=profile.depth > 0 and "#8eddf0" or "#8b9da3"
+	local dash=profile.depth > 0 and "" or ' stroke-dasharray="7 5"'
+	for segment=1,#row.centreline-1 do
+		local a,b=row.centreline[segment],row.centreline[segment+1]
+		write('<line data-hydrology="',escape(row.id),'" x1="',number(sx(a.x)),
+			'" y1="',number(sy(a.z)),'" x2="',number(sx(b.x)),'" y2="',
+			number(sy(b.z)),'" stroke="',color,'" stroke-width="',
+			number(math.max(2,(a.half_width+b.half_width)*scale_x)),
+			'" stroke-opacity="0.38"',dash,'><title>',
+			escape(row.id.." ("..row.profile_id..")"),'</title></line>\n')
+	end
+end
+write('</g>\n')
+write('<g id="hydrology-transitions" fill="#d9f7ff" stroke="#173a4b" stroke-width="1.5">\n')
+for index=1,#source.hydrology_interfaces do
+	local row=source.hydrology_interfaces[index]
+	if row.kind=="waterfall" or row.kind=="rapid" then
+		local radius=row.kind=="waterfall" and 7 or 4
+		write('<circle cx="',number(sx(row.position.x)),'" cy="',
+			number(sy(row.position.z)),'" r="',number(radius),'"><title>',
+			escape(row.id.." ("..row.kind..")"),'</title></circle>\n')
+	end
 end
 write('</g>\n')
 
@@ -258,7 +284,7 @@ end
 write('</g>\n')
 
 local digest=session.canonical_kat_digest()
-write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
+write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1b</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
 write('</svg>\n')
 assert(file:close())
 print("svg\t"..output.."\t"..digest)

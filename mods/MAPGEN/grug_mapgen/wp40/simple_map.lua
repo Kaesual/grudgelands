@@ -227,10 +227,10 @@ return function(dependencies)
 	local function validate_source()
 		if source.schema ~= schemas.simple_map_source or
 				schemas.simple_map ~= "grug_wp40_simple_map_v1" or
-				source.layout_id ~= "wp40-simple-map-v1" then
+				source.layout_id ~= "wp40-simple-map-v1b" then
 			fail("source schema/layout identity differs")
 		end
-		if source.warp.cell ~= 1024 or source.warp.maximum ~= 32 or
+		if source.warp.cell ~= 1024 or source.warp.maximum ~= 96 or
 				type(source.warp.hash_domain) ~= "string" or
 				4*source.warp.maximum >= source.warp.cell then
 			fail("warp identity/no-fold bound differs")
@@ -376,21 +376,39 @@ return function(dependencies)
 			if station_ids[row.id] or not source.zones[row.zone_numeric_id] then
 				fail("route station identity/reference differs at " .. index)
 			end
-			station_ids[row.id]=true
+			station_ids[row.id]=row
+		end
+		if source.route_curve.id ~= "bounded_pinned_curve_v1" or
+				source.route_curve.points_per_leg ~= 3 or
+				source.route_curve.minimum_points_per_route ~= 7 or
+				source.route_curve.amplitude_by_class.primary ~= 48 or
+				source.route_curve.amplitude_by_class.secondary ~= 64 or
+				source.route_curve.amplitude_by_class.trail ~= 80 then
+			fail("route curve policy differs")
 		end
 		local class_counts = {primary=0,secondary=0,trail=0}
-		local route_pairs = {}
+		local route_pairs,route_by_id = {},{}
 		for index = 1, #source.routes do
 			local row = source.routes[index]
 			local pair_key=closed_pair(row.zone_a,row.zone_b)
+			local station_a=station_ids[row.station_a_id]
+			local station_b=station_ids[row.station_b_id]
 			if row.numeric_id ~= index or route_ids[row.id] or route_pairs[pair_key] or
 					not source.zones[row.zone_a] or not source.zones[row.zone_b] or
-					not station_ids[row.station_a_id] or
-					not station_ids[row.station_b_id] or
-					dense_count(row.centreline,"route centreline") < 2 then
+					not station_a or not station_b or
+					row.curve_policy_id ~= source.route_curve.id or
+					row.pinned_point_index ~= 4 or
+					dense_count(row.centreline,"route centreline") <
+						source.route_curve.minimum_points_per_route then
 				fail("route identity/reference differs at " .. index)
 			end
+			local first,last=row.centreline[1],row.centreline[#row.centreline]
+			if first.x ~= station_a.position.x or first.z ~= station_a.position.z or
+					last.x ~= station_b.position.x or last.z ~= station_b.position.z then
+				fail("route endpoint pin differs at " .. index)
+			end
 			route_ids[row.id] = true
+			route_by_id[row.id]=row
 			class_counts[row.class] = (class_counts[row.class] or 0)+1
 			route_pairs[pair_key] = row.id
 		end
@@ -411,7 +429,18 @@ return function(dependencies)
 		local crossing_ids={}
 		for index = 1, #source.crossing_interfaces do
 			local row=source.crossing_interfaces[index]
-			if crossing_ids[row.id] or not route_ids[row.route_id] then
+			local route=route_by_id[row.route_id]
+			local pinned=false
+			if route then
+				for point_index=1,#route.centreline do
+					local point=row.position
+					local candidate=route.centreline[point_index]
+					if candidate.x == point.x and candidate.z == point.z then
+						pinned=true break
+					end
+				end
+			end
+			if crossing_ids[row.id] or not route or not pinned then
 				fail("crossing route reference differs")
 			end
 			crossing_ids[row.id]=true
@@ -550,6 +579,8 @@ return function(dependencies)
 		end
 		for index=1,#source.hydrology_interfaces do
 			local row=source.hydrology_interfaces[index]
+			local upper=row.upper_id and hydrology_ids[row.upper_id] or nil
+			local lower=row.lower_id and hydrology_ids[row.lower_id] or nil
 			if not transition_profile_ids[row.transition_profile_id] or
 					(row.hydrology_id and not hydrology_ids[row.hydrology_id]) or
 					(row.upper_id and not hydrology_ids[row.upper_id]) or
@@ -561,6 +592,11 @@ return function(dependencies)
 					(row.plunge_profile_id and
 						not hydrology_profile_ids[row.plunge_profile_id]) then
 				fail("hydrology interface reference differs at " .. index)
+			end
+			if upper and (not lower or
+					row.upper_level_offset ~= upper.water_surface_offset or
+					row.lower_level_offset ~= lower.water_surface_offset) then
+				fail("hydrology interface water level differs at " .. index)
 			end
 			if row.from_ids then
 				for from_index=1,#row.from_ids do
@@ -1192,12 +1228,26 @@ return function(dependencies)
 			end
 			for index = 1, #source.routes do
 				local route = source.routes[index]
-				local crossing = route.centreline[2]
-				local classification = classification_at(crossing.x,crossing.z)
-				rows[#rows+1] = canonical.array({text("route"),signed(index),
-					signed(crossing.x),signed(crossing.z),
-					signed(classification.zone_numeric_id or 0),
-					text(classification.water_class)})
+				for point_index=1,#route.centreline do
+					local route_point=route.centreline[point_index]
+					local classification=classification_at(route_point.x,route_point.z)
+					rows[#rows+1]=canonical.array({text("route"),signed(index),
+						signed(point_index),signed(route_point.x),signed(route_point.z),
+						signed(classification.zone_numeric_id or 0),
+						text(classification.water_class)})
+				end
+			end
+			for index=1,#source.hydrology do
+				local reach=source.hydrology[index]
+				for point_index=1,#reach.centreline do
+					local water_point=reach.centreline[point_index]
+					local classification=classification_at(water_point.x,water_point.z)
+					rows[#rows+1]=canonical.array({text("hydrology"),signed(index),
+						signed(point_index),signed(water_point.x),signed(water_point.z),
+						signed(water_point.half_width),
+						signed(classification.zone_numeric_id or 0),
+						text(classification.water_class)})
+				end
 			end
 			for z = source.extent.min_z, source.extent.max_z, 512 do
 				for x = source.extent.min_x, source.extent.max_x, 512 do

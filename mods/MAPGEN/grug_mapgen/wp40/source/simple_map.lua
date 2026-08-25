@@ -15,9 +15,9 @@ end
 
 local source = {
 	schema = "grug_wp40_simple_map_source_v1",
-	layout_id = "wp40-simple-map-v1",
+	layout_id = "wp40-simple-map-v1b",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
-	warp = {cell = 1024, maximum = 32,
+	warp = {cell = 1024, maximum = 96,
 		hash_domain = "fixed_visual_warp_v1"},
 	shelf_width = 80,
 	holy_grounds = {min_x = -2500, max_x = 2500, min_z = -250, max_z = 250},
@@ -162,6 +162,10 @@ source.route_profiles = {
 	secondary = {surface_width=5,corridor_width=12},
 	trail = {surface_width=3,corridor_width=8},
 }
+source.route_curve = {
+	id="bounded_pinned_curve_v1",points_per_leg=3,minimum_points_per_route=7,
+	amplitude_by_class={primary=48,secondary=64,trail=80},
+}
 
 local route_rows = {
 	{1,2,"primary",-1975,-2175},{2,3,"primary",-1800,-1900},{3,5,"primary",-1800,-1100},{6,7,"primary",-175,-2145},{7,8,"primary",0,-1900},{8,10,"primary",0,-1100},{11,12,"primary",1975,-2190},{12,13,"primary",1800,-1900},{13,16,"primary",1800,-1100},
@@ -180,17 +184,57 @@ for index = 1, #source.zones do
 end
 
 source.routes = {}
+local function round_div(numerator,denominator)
+	if numerator < 0 then
+		return -math.floor((-numerator+math.floor(denominator/2))/denominator)
+	end
+	return math.floor((numerator+math.floor(denominator/2))/denominator)
+end
+local function append_bowed_leg(result,a,b,amplitude,sign,include_start)
+	local dx,dz=b.x-a.x,b.z-a.z
+	local scale=math.max(math.abs(dx),math.abs(dz))
+	assert(scale > 0,"WP40 route curve has coincident pins")
+	local bounded_amplitude=math.min(amplitude,math.floor(scale/4))
+	if include_start then result[#result+1]=point(a.x,a.z) end
+	for step=1,2 do
+		local x=round_div(a.x*(3-step)+b.x*step,3)
+		local z=round_div(a.z*(3-step)+b.z*step,3)
+		local offset_x=round_div(-dz*bounded_amplitude*sign,scale)
+		local offset_z=round_div(dx*bounded_amplitude*sign,scale)
+		result[#result+1]=point(x+offset_x,z+offset_z)
+	end
+	result[#result+1]=point(b.x,b.z)
+end
+local route_extra_pins_by_index={
+	[43]={point(-2000,-100)},
+	[48]={point(2000,-100)},
+}
+local function curved_route(a,via,b,class,index)
+	local result={}
+	local amplitude=source.route_curve.amplitude_by_class[class]
+	local pins={a,via}
+	local extras=route_extra_pins_by_index[index] or {}
+	for extra_index=1,#extras do pins[#pins+1]=extras[extra_index] end
+	pins[#pins+1]=b
+	for leg=1,#pins-1 do
+		local sign=((index*37+leg*17)%11)<5 and -1 or 1
+		append_bowed_leg(result,pins[leg],pins[leg+1],amplitude,sign,leg==1)
+	end
+	return result
+end
 for index = 1, #route_rows do
 	local row = route_rows[index]
 	local a, b = source.zones[row[1]], source.zones[row[2]]
 	local profile = source.route_profiles[row[3]]
+	local via=point(row[4],row[5])
 	source.routes[index] = {
 		numeric_id=index,id=("route_%03d"):format(index),zone_a=row[1],zone_b=row[2],
 		class=row[3],surface_width=profile.surface_width,
 		corridor_width=profile.corridor_width,provisional=true,
+		curve_policy_id=source.route_curve.id,pinned_point_index=4,
 		station_a_id=source.route_stations[row[1]].id,
 		station_b_id=source.route_stations[row[2]].id,
-		centreline={point(a.hub.x,a.hub.z),point(row[4],row[5]),point(b.hub.x,b.hub.z)},
+		centreline=curved_route(a.hub,via,b.hub,row[3],index),
 	}
 end
 
@@ -538,31 +582,31 @@ local function hydro(id,landmark_id,zone_numeric_id,profile_id,offset,
 end
 
 source.hydrology = {
-	hydro("hydro_copperfell_streams","copperfell_drainage",2,"stream",18,{{x=-2114,z=-2050,half_width=12},{x=-1986,z=-2050,half_width=12}},"copperfell_spring","copperfell_sink"),
-	hydro("hydro_frostbarrow_tarns","frostbarrow_tarns",4,"shallow_pond",62,{{x=-2414,z=-1740,half_width=12},{x=-2286,z=-1740,half_width=12}},"frostbarrow_inflow","frostbarrow_basin"),
-	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=-64,z=-2500,half_width=12},{x=64,z=-2500,half_width=12}},"dawnmere_spring","dawnmere_outflow",6),
-	hydro("hydro_goldmead_millriver","goldmead_millriver",7,"river",16,{{x=-64,z=-2020,half_width=12},{x=64,z=-2020,half_width=12}},"goldmead_upstream","goldmead_downstream"),
-	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-300,z=-1750,half_width=18},{x=-120,z=-1550,half_width=22},{x=0,z=-1320,half_width=18}},"highcourt_west_source","highcourt_fork_join",8),
-	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=300,z=-1750,half_width=16},{x=140,z=-1510,half_width=20},{x=0,z=-1320,half_width=18}},"highcourt_east_source","highcourt_fork_join",8),
-	hydro("hydro_highcourt_outflow","highcourt_riverfork",8,"river",34,{{x=0,z=-1320,half_width=18},{x=0,z=-1180,half_width=18}},"highcourt_fork_join","highcourt_outflow",8),
-	hydro("hydro_whitebridge_main","whitebridge_crossing",9,"river",16,{{x=-964,z=-1500,half_width=12},{x=-700,z=-1500,half_width=12},{x=-400,z=-1500,half_width=12}},"whitebridge_upstream","whitebridge_downstream"),
-	hydro("hydro_whitebridge_ford","whitebridge_ford",9,"ford",16,{{x=-900,z=-1100,half_width=12},{x=-820,z=-1180,half_width=12},{x=-720,z=-1260,half_width=12}},"whitebridge_ford_upstream","whitebridge_ford_downstream"),
-	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1736,z=-1500,half_width=12},{x=1864,z=-1500,half_width=12}},"lethariel_inflow","lethariel_outflow",13),
-	hydro("hydro_lorindor_marsh","lorindor_berrymarsh",14,"shallow_marsh",28,{{x=1016,z=-1740,half_width=12},{x=1144,z=-1740,half_width=12}},"lorindor_inflow","lorindor_sink"),
-	hydro("hydro_moonfall_lake","moonfall_crescent",15,"ordinary_lake",18,{{x=2336,z=-1500,half_width=12},{x=2464,z=-1500,half_width=12}},"moonfall_inflow","moonfall_outflow"),
-	hydro("hydro_mournfen_marsh","mournfen_drowned_roads",18,"shallow_marsh",8,{{x=-2114,z=2100,half_width=12},{x=-1986,z=2100,half_width=12}},"mournfen_inflow","mournfen_sink"),
-	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=196,z=2450,half_width=12},{x=324,z=2450,half_width=12}},"sunscar_seep","sunscar_basin",22),
-	hydro("hydro_speargrass_dryriver","speargrass_dryriver",25,"dry_channel",28,{{x=-964,z=1500,half_width=12},{x=-836,z=1500,half_width=12}},"speargrass_dry_head","speargrass_dry_mouth"),
-	hydro("hydro_raincall_headwater","raincall_falls",28,"shallow_pond",72,{{x=1900,z=2200,half_width=24},{x=1960,z=2140,half_width=26}},"raincall_headwater","raincall_upper_rapid"),
-	hydro("hydro_raincall_upper_lip","raincall_falls",28,"shallow_pond",68,{{x=1960,z=2140,half_width=26},{x=1990,z=2110,half_width=28}},"raincall_upper_rapid","raincall_upper_lip"),
-	hydro("hydro_raincall_middle_upper","raincall_falls",28,"shallow_pond",56,{{x=1990,z=2070,half_width=24},{x=2020,z=2040,half_width=26}},"raincall_upper_drop","raincall_middle_rapid"),
-	hydro("hydro_raincall_middle_lip","raincall_falls",28,"shallow_pond",52,{{x=2020,z=2040,half_width=26},{x=2050,z=2010,half_width=28}},"raincall_middle_rapid","raincall_lower_lip"),
-	hydro("hydro_raincall_plunge","raincall_falls",28,"plunge_pool",44,{{x=2050,z=1970,half_width=30},{x=2130,z=1900,half_width=34}},"raincall_lower_drop","raincall_outflow"),
-	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1736,z=1500,half_width=12},{x=1864,z=1500,half_width=12}},"kezamba_inflow","kezamba_cenote_sink",29),
-	hydro("hydro_whispering_reedmaze","whispering_reedmaze",30,"shallow_marsh",8,{{x=836,z=1500,half_width=12},{x=964,z=1500,half_width=12}},"reedmaze_inflow","reedmaze_outflow"),
-	hydro("hydro_totemwater_delta","totemwater_delta",31,"delta_arm",8,{{x=2336,z=1500,half_width=12},{x=2464,z=1500,half_width=12}},"totemwater_upstream","totemwater_mouth"),
-	hydro("hydro_gravesalt_pans","gravesalt_whitewall",34,"shallow_marsh",100,{{x=-2114,z=0,half_width=12},{x=-1986,z=0,half_width=12}},"gravesalt_seep","gravesalt_pan"),
-	hydro("hydro_broken_marsh","broken_marsh",35,"ordinary_lake",8,{{x=-1125,z=250,half_width=12},{x=-1500,z=-125,half_width=12},{x=-750,z=-100,half_width=12},{x=-375,z=-250,half_width=12}},"broken_marsh_inflow","broken_marsh_outflow"),
+	hydro("hydro_copperfell_streams","copperfell_drainage",2,"stream",18,{{x=-2320,z=-1780,half_width=18},{x=-2150,z=-1950,half_width=22},{x=-1850,z=-2100,half_width=26},{x=-1450,z=-2140,half_width=30},{x=-1060,z=-2020,half_width=34}},"copperfell_spring","copperfell_sink"),
+	hydro("hydro_frostbarrow_tarns","frostbarrow_tarns",4,"shallow_pond",62,{{x=-2470,z=-1700,half_width=70},{x=-2290,z=-1740,half_width=75}},"frostbarrow_inflow","frostbarrow_basin"),
+	hydro("hydro_dawnmere_headwaters","dawnmere_headwaters",6,"spring",12,{{x=90,z=-2420,half_width=45},{x=210,z=-2420,half_width=45}},"dawnmere_spring","dawnmere_outflow",6),
+	hydro("hydro_goldmead_millriver","goldmead_millriver",7,"river",16,{{x=0,z=-2480,half_width=18},{x=-80,z=-2250,half_width=22},{x=60,z=-2020,half_width=24},{x=-100,z=-1780,half_width=24}},"goldmead_upstream","goldmead_downstream"),
+	hydro("hydro_highcourt_fork_west","highcourt_riverfork",8,"river",34,{{x=-100,z=-1780,half_width=24},{x=-180,z=-1580,half_width=26},{x=0,z=-1320,half_width=24}},"highcourt_west_source","highcourt_fork_join",8),
+	hydro("hydro_highcourt_fork_east","highcourt_riverfork",8,"river",34,{{x=500,z=-1850,half_width=18},{x=300,z=-1670,half_width=22},{x=0,z=-1320,half_width=24}},"highcourt_east_source","highcourt_fork_join",8),
+	hydro("hydro_highcourt_outflow","highcourt_riverfork",8,"river",34,{{x=0,z=-1320,half_width=24},{x=120,z=-1100,half_width=22}},"highcourt_fork_join","highcourt_outflow",8),
+	hydro("hydro_whitebridge_main","whitebridge_crossing",9,"river",16,{{x=-1060,z=-2020,half_width=26},{x=-980,z=-1800,half_width=24},{x=-700,z=-1600,half_width=22},{x=-400,z=-1500,half_width=20}},"whitebridge_upstream","whitebridge_downstream"),
+	hydro("hydro_whitebridge_ford","whitebridge_ford",9,"ford",16,{{x=-900,z=-1100,half_width=18},{x=-820,z=-1180,half_width=18},{x=-720,z=-1260,half_width=18},{x=-400,z=-1500,half_width=20}},"whitebridge_ford_upstream","whitebridge_ford_downstream"),
+	hydro("hydro_lethariel_lake","lethariel_crownlake",13,"ordinary_lake",34,{{x=1830,z=-1420,half_width=65},{x=1930,z=-1420,half_width=65}},"lethariel_inflow","lethariel_outflow",13),
+	hydro("hydro_lorindor_marsh","lorindor_berrymarsh",14,"shallow_marsh",28,{{x=1930,z=-1420,half_width=24},{x=1700,z=-1550,half_width=28},{x=1450,z=-1650,half_width=30},{x=1200,z=-1770,half_width=40},{x=1020,z=-1990,half_width=32}},"lorindor_inflow","lorindor_sink"),
+	hydro("hydro_moonfall_lake","moonfall_crescent",15,"ordinary_lake",18,{{x=2300,z=-1500,half_width=80},{x=2500,z=-1500,half_width=80}},"moonfall_inflow","moonfall_outflow"),
+	hydro("hydro_mournfen_marsh","mournfen_drowned_roads",18,"shallow_marsh",8,{{x=-2380,z=1750,half_width=30},{x=-2200,z=1900,half_width=45},{x=-2050,z=2100,half_width=60},{x=-1600,z=2150,half_width=45},{x=-1060,z=2010,half_width=34}},"mournfen_inflow","mournfen_sink"),
+	hydro("hydro_sunscar_waterholes","sunscar_waterholes",22,"shallow_pond",12,{{x=190,z=2450,half_width=55},{x=330,z=2450,half_width=55}},"sunscar_seep","sunscar_basin",22),
+	hydro("hydro_speargrass_dryriver","speargrass_dryriver",25,"dry_channel",28,{{x=-1100,z=1900,half_width=18},{x=-1000,z=1700,half_width=18},{x=-900,z=1500,half_width=18},{x=-780,z=1300,half_width=18}},"speargrass_dry_head","speargrass_dry_mouth"),
+	hydro("hydro_raincall_headwater","raincall_falls",28,"shallow_pond",72,{{x=1880,z=2250,half_width=70},{x=1930,z=2200,half_width=65},{x=1960,z=2140,half_width=40}},"raincall_headwater","raincall_upper_rapid"),
+	hydro("hydro_raincall_upper_lip","raincall_falls",28,"shallow_pond",68,{{x=1960,z=2140,half_width=40},{x=1990,z=2110,half_width=38}},"raincall_upper_rapid","raincall_upper_lip"),
+	hydro("hydro_raincall_middle_upper","raincall_falls",28,"shallow_pond",56,{{x=1990,z=2070,half_width=34},{x=2020,z=2040,half_width=32}},"raincall_upper_drop","raincall_middle_rapid"),
+	hydro("hydro_raincall_middle_lip","raincall_falls",28,"shallow_pond",52,{{x=2020,z=2040,half_width=32},{x=2050,z=2010,half_width=38}},"raincall_middle_rapid","raincall_lower_lip"),
+	hydro("hydro_raincall_plunge","raincall_falls",28,"plunge_pool",44,{{x=2050,z=1970,half_width=45},{x=2130,z=1900,half_width=70}},"raincall_lower_drop","raincall_outflow"),
+	hydro("hydro_kezamba_cenote","kezamba_cenote",29,"deep_cenote",64,{{x=1830,z=1580,half_width=65},{x=1930,z=1580,half_width=65}},"kezamba_inflow","kezamba_cenote_sink",29),
+	hydro("hydro_whispering_reedmaze","whispering_reedmaze",30,"shallow_marsh",8,{{x=2130,z=1900,half_width=34},{x=1750,z=1850,half_width=32},{x=1350,z=1770,half_width=40},{x=1000,z=1650,half_width=45}},"reedmaze_inflow","reedmaze_outflow"),
+	hydro("hydro_totemwater_delta","totemwater_delta",31,"delta_arm",8,{{x=1000,z=1650,half_width=45},{x=950,z=1850,half_width=55},{x=900,z=1980,half_width=70}},"totemwater_upstream","totemwater_mouth"),
+	hydro("hydro_gravesalt_pans","gravesalt_whitewall",34,"shallow_marsh",100,{{x=-2200,z=0,half_width=55},{x=-1950,z=0,half_width=75},{x=-1700,z=80,half_width=50}},"gravesalt_seep","gravesalt_pan"),
+	hydro("hydro_broken_marsh","broken_marsh",35,"ordinary_lake",8,{{x=-1700,z=80,half_width=50},{x=-1500,z=-125,half_width=55},{x=-1125,z=250,half_width=65},{x=-750,z=-100,half_width=85},{x=-375,z=-250,half_width=55}},"broken_marsh_inflow","broken_marsh_outflow"),
 }
 
 source.hydrology_interfaces = {

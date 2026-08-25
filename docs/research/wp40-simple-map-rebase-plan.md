@@ -1,7 +1,8 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7, R0 and R1 independently accepted 2026-08-25; mandatory
-V1 user visual review is next
+**Status:** D1-D7, R0, R1 and the V1b technical package independently accepted
+2026-08-25; the initial V1 macro layout was accepted and the generated V1b
+preview is awaiting user visual approval
 
 **Ruling date:** 2026-08-25
 
@@ -194,8 +195,10 @@ markers.
 
 Reuse T1's canonical full-seed-safe hashing to construct the lattice, but do
 not call its checked arithmetic or SHA-hash lattice corners on every map
-column. The source fixes 1,024-node cells and at most 32 nodes of displacement
-per axis. At load/compile time:
+column. The V1b source fixes 1,024-node cells and at most 96 nodes of
+displacement per axis. This remains well below the no-fold limit and makes the
+single shared deformation visible at whole-map scale without adding per-zone
+noise. At load/compile time:
 
 1. build a small fixed-layout warp lattice over the finite interesting extent;
 2. derive each lattice vector once from the versioned fixed layout ID;
@@ -454,9 +457,58 @@ logic is accepted.
 
 The layout does not become frozen until the user explicitly accepts it.
 
+### V1b — bounded microgeometry refinement
+
+The first V1 review accepted symmetry, macro silhouette, zone sizes and
+distribution, Holy Grounds, islands and the overall map layout. Before R2, the
+user requested one deliberately small refinement pass for less uniform zone
+edges, fewer straight roads and a more legible, coherent river/lake system.
+
+V1b keeps all stable zone, route, anchor, landmark and hydrology IDs plus the
+57-route graph, endpoints, classes, explicit interfaces and macro primitives.
+It changes only three readable source policies:
+
+- the one common fixed warp grows from 32 to 96 nodes per axis while retaining
+  the 1,024-node lattice, safe-integer interpolation and no-fold proof;
+- each route's authored midpoint, endpoints and every explicit crossing remain
+  exact pins, while a bounded source-time integer curve adds two offset points
+  per leg from a fixed class amplitude; there is no A*, pathfinding, land
+  repair or runtime randomness; and
+- the existing 25 hydrology records are re-authored into longer connected
+  reaches with visibly wider tarn/lake/cenote masks. Water-surface offsets and
+  explicit rapid/waterfall interfaces remain the future R3 height authority;
+  terrain does not discover or move waterfalls automatically.
+
+The revised fixed layout is `wp40-simple-map-v1b`. A regenerated SVG returns
+to the user before R2. Its connectedness, route-fit, contact, channel and
+performance diagnostics remain advisory exactly as in R1; V1b does not repair
+them merely to improve a report.
+
+**V1b technical completion record (2026-08-25):** the runner passed Lua 5.1
+syntax/`SETGLOBAL`/portability checks, byte-identical LuaJIT/PUC 5.1 KATs for
+seeds `0`, `1`, `2^63` and `2^64-1`, repeated-render byte identity and XML
+parsing. The expanded KAT binds every derived route point and hydrology support
+point. Seed 0 produced
+`66d980db38fef30fd5081a897eba5b394366ecd139853ab00fb83ada8aebcc6b`;
+the generated SVG SHA-256 is
+`c2d54900d02117073a34b78d2a538742a64b84cf599d1fc5ff847562179d8cf5`.
+The final advisory report has three land components, nine disconnected sampled
+zones, zero missing zones, fifteen undeclared sampled contacts, 329 of 7,770
+undeclared off-land route samples, 246 declared-water crossing samples, 252 of
+252 candidate anchors in their intended zones, zero bay/sample failures and
+34 channel-interior failures. The last local 80 by 80 median was 5.261 ms;
+R2 owns the binding 5 ms measurement and the disclosed geometry repairs.
+
+Calibration record: implementing/integrating model GPT-5.6 Sol; independently
+reviewing model explicitly authorized Claude Fable. The initial review found
+0 Critical / 0 High / 0 Medium / 3 Low and returned **ACCEPTED**. One small
+cleanup round closed all three Low observations without changing KAT or SVG
+bytes; policy requires no focused rereview for Low corrections. Observed
+elapsed wall time is `unknown`.
+
 ### R2 — freeze and validate the accepted 2D layout
 
-After V1, add and freeze the small spatial invariant set:
+After V1b visual approval, add and freeze the small spatial invariant set:
 
 - one connected mainland and two connected islands on the complete integer
   node grid of the finite authored extent;
@@ -522,6 +574,12 @@ noise lattices, compact per-zone relief profiles, simple §8.4 landmark masks
 and a fixed grading priority for starts, capitals, paths and the already
 selected anchors. It is globally queryable, independent of emerge order and
 never reads an engine spawn level or generated chunk.
+
+For hydrology, each concrete interface owns its exact water-surface offsets,
+node run and node drop. A transition profile's `run`/`drop` pair is only a
+normalized shape descriptor and never overrides those interface values. R3
+validates the interface offsets against its referenced reaches before grading
+terrain or writing a rapid/waterfall transition.
 
 R3 also freezes final 3D anchors, hard-protection volumes and housing results.
 The selected 2D anchor may not be rejected; grading must accommodate it. The
