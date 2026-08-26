@@ -1,0 +1,1481 @@
+schema	grug_wp40_simple_map_v1e_anchor_migration_v1
+seed	0
+old_artifact_schema	grug_wp40_simple_map_r2_artifact_v1
+old_source_schema	grug_wp40_simple_map_source_v1
+layout_id	wp40-simple-map-v1d
+old_r2_body_sha256	73165e1ad9e9dd03bc608b544e5906a10df2bf7b2c23779b311ad3cbdadf4f7b
+old_r2_file_sha256	02585d6644265e8889edb3311045d76c2dd7152700dff33563bd8daabc13c339
+canonical_kat_sha256	0a945840673d3170ce545c3c12af1422dcd12da5398a88faaf39c42d5346056d
+input_roster_sha256	76527c6885a7aa9252bcaf384954ceb48e22eb90aa0eb31b69f3a53ddb9a449c
+extractor_sha256	88eb31fb6a7e32d054314aed1dcd9d12a3197422daa9c2971d8f5abf78d548e1
+digest_encoding	sha256_of_exact_sorted_tsv_rows_v1
+contact_surface_predicate	v1d_session_polyline_corridor_member
+contact_touch_predicate	canonical_orthogonal_a_only_b_only_edges_v1
+contact_edge_orientation	endpoint_x_z_ascending_v1
+contact_witness_order	kind_ascii_then_x1_z1_x2_z2_v1
+anchor_geometry_sha256	5b758ddb0c0257ee408432921626452dcb63cbb3d70d3f1050e9a42e28d6b37d
+anchor_migration_sha256	45bbcf0c3b40ee5849cf575ab282eca373e6b5594a9c211a12b83fa02506af5c
+path_source_view_sha256	410744f6ebe462c5f24df72ca3df0aca246e49049e01d096e099196e7810ec5d
+baseline_source_view_sha256	6057843ace1de096e07396b0fc60759dca6d8679c4e2607a07739a9b84bcc23c
+contact_roster_sha256	f1d060d85f726b3fdcaf9b48ff9e00d036b6b377a1d21d8bdc8b19d3f4d68d2c
+migration_kat_sha256	f09e4ad13820959859716ca8ad0dc233e0310b744b2b130601bad56ca1fe8611
+count	input_sha256	14
+count	anchors	100
+count	authored_fixed	16
+count	candidate_selected	84
+count	spur_bearing_migrated	74
+count	rare_no_spur_migrated	10
+count	land_routes	57
+count	poi_spurs	74
+count	island_routes	8
+count	selected_paths	139
+count	contact_pairs	533
+count	surface_columns_with_path_multiplicity	417492
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/canonical.lua	28022454cadac7aba838873c955ce4ab5c96ff995efef2bc729490b309935716
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/deterministic.lua	ddf478e4fc0714a0551325e88550ef900e86e318091e11938b82ab51542275e9
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/schemas.lua	552b3dd1a1156c4ee44d46da4d3af345355dec47bd0c38ce620793db1f0caea9
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua	f0fa10033abdc6280c154401f7b111e6b89602ad670e3fc85dfc4a380b9a7928
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua	3c22e64e8dca499ac14a5b34ebde7b774ffc450e9ca2fd283fa0379023377c24
+input_sha256	tools/wp40/run_simple_map_r2.sh	8ffd428198c26a0b1c4ac440d62bb9f490a2e73f805faa4ca0be73af9ca317f6
+input_sha256	tools/wp40/simple_map_offline.lua	4f3c30b4583e8fb32511059b0d8c6c80a1dd505d17995594c2be1492d6479d96
+input_sha256	tools/wp40/simple_map_r2_cores.lua	49885c251241300baa4e06920d94425c1bdd21e0230d326c3e53b245074881e8
+input_sha256	tools/wp40/simple_map_r2_grid.lua	fae57e03f84b759b1b48a81111e32ac9bcc6bd525073319c722220291f58b365
+input_sha256	tools/wp40/simple_map_r2_housing.lua	b304f8ac064ee453091521637a912f936392797ddedbd3f9ad61b0da3984581f
+input_sha256	tools/wp40/simple_map_r2_metadata.lua	f49a90123ff78028767cb5d3519a01fdbb0d17131b0042d16dd88aac0d07df47
+input_sha256	tools/wp40/simple_map_r2_routes.lua	705c3f316bd274d22e8c38f2d527a948a14db65d969bcafe0cab7526acaa924c
+input_sha256	tools/wp40/simple_map_r2_test.lua	961a7efaec64a10c9fde9dd0644ee975bde8b0eb69ecd396171868013b04008c
+input_sha256	tools/wp40/simple_map_r2_water.lua	6bf67e7bc964a2eab31188898850be9c8a5dc5a761d2009c8c59ef9834589d1f
+anchor	1	anchor_001	elandor_hearthpine_vale	1	start	start	authored_fixed	0	-1800	-2550
+anchor	2	anchor_002	elandor_dawnmere_fields	6	start	start	authored_fixed	0	0	-2550
+anchor	3	anchor_003	elandor_silverleaf_glades	11	start	start	authored_fixed	0	1800	-2550
+anchor	4	anchor_004	kragmar_stillgrave_hollow	17	start	start	authored_fixed	0	-1800	2550
+anchor	5	anchor_005	kragmar_sunscar_flats	22	start	start	authored_fixed	0	0	2550
+anchor	6	anchor_006	kragmar_kapok_cradle	27	start	start	authored_fixed	0	1800	2550
+anchor	7	anchor_007	elandor_dur_brannoc	3	capital	capital_dwarf	authored_fixed	0	-1800	-1500
+anchor	8	anchor_008	elandor_highcourt	8	capital	capital_human	authored_fixed	0	0	-1500
+anchor	9	anchor_009	elandor_lethariel	13	capital	capital_elf	authored_fixed	0	1800	-1500
+anchor	10	anchor_010	kragmar_nhal_veyr	19	capital	capital_undead	authored_fixed	0	-1800	1500
+anchor	11	anchor_011	kragmar_gor_drazhak	24	capital	capital_orc	authored_fixed	0	0	1500
+anchor	12	anchor_012	kragmar_kezamba	29	capital	capital_troll	authored_fixed	0	1800	1500
+anchor	13	anchor_013	elandor_copperfell_foothills	2	village_1	village	candidate_selected	2	-1868	-2036
+anchor	14	anchor_014	elandor_frostbarrow_shelf	4	village_1	village	candidate_selected	3	-2404	-1576
+anchor	15	anchor_015	elandor_goldmead_vale	7	village_1	village	candidate_selected	1	-120	-2020
+anchor	16	anchor_016	elandor_whitebridge_shire	9	village_1	village	candidate_selected	3	-924	-1556
+anchor	17	anchor_017	elandor_starbough_vale	12	village_1	village	candidate_selected	1	1900	-2020
+anchor	18	anchor_018	elandor_lorindor	14	village_1	village	candidate_selected	3	876	-1556
+anchor	19	anchor_019	kragmar_mournfen	18	village_1	village	candidate_selected	1	-1900	2020
+anchor	20	anchor_020	kragmar_ossuary_reach	20	village_1	village	candidate_selected	1	-2380	1600
+anchor	21	anchor_021	kragmar_redtusk_savanna	23	village_1	village	candidate_selected	2	-88	2004
+anchor	22	anchor_022	kragmar_speargrass_reach	25	village_1	village	candidate_selected	2	-868	1564
+anchor	23	anchor_023	kragmar_raincall_basin	28	village_1	village	candidate_selected	3	1876	2044
+anchor	24	anchor_024	kragmar_whispering_reedlands	30	village_1	village	candidate_selected	3	876	1604
+anchor	25	anchor_025	elandor_copperfell_foothills	2	outpost_1	outpost	candidate_selected	1	-2100	-2100
+anchor	26	anchor_026	elandor_frostbarrow_shelf	4	outpost_1	outpost	candidate_selected	1	-2300	-1250
+anchor	27	anchor_027	elandor_stormvault_heights	5	outpost_1	outpost	candidate_selected	3	-2074	-826
+anchor	28	anchor_028	elandor_stormvault_heights	5	outpost_2	outpost	candidate_selected	1	-1500	-450
+anchor	29	anchor_029	elandor_goldmead_vale	7	outpost_1	outpost	candidate_selected	3	176	-2026
+anchor	30	anchor_030	elandor_whitebridge_shire	9	outpost_1	outpost	candidate_selected	2	-618	-1266
+anchor	31	anchor_031	elandor_ashenward_march	10	outpost_1	outpost	candidate_selected	1	-350	-850
+anchor	32	anchor_032	elandor_ashenward_march	10	outpost_2	outpost	candidate_selected	1	300	-450
+anchor	33	anchor_033	elandor_starbough_vale	12	outpost_1	outpost	candidate_selected	1	2100	-2100
+anchor	34	anchor_034	elandor_lorindor	14	outpost_1	outpost	candidate_selected	3	626	-1226
+anchor	35	anchor_035	elandor_moonfall_wood	15	outpost_1	outpost	candidate_selected	3	2376	-1326
+anchor	36	anchor_036	elandor_glassroot_wilds	16	outpost_1	outpost	candidate_selected	2	1932	-566
+anchor	37	anchor_037	kragmar_mournfen	18	outpost_1	outpost	candidate_selected	1	-2100	2100
+anchor	38	anchor_038	kragmar_ossuary_reach	20	outpost_1	outpost	candidate_selected	2	-2268	1234
+anchor	39	anchor_039	kragmar_blackwind_rise	21	outpost_1	outpost	candidate_selected	2	-2018	834
+anchor	40	anchor_040	kragmar_blackwind_rise	21	outpost_2	outpost	candidate_selected	2	-1468	434
+anchor	41	anchor_041	kragmar_redtusk_savanna	23	outpost_1	outpost	candidate_selected	3	176	2074
+anchor	42	anchor_042	kragmar_speargrass_reach	25	outpost_1	outpost	candidate_selected	1	-650	1250
+anchor	43	anchor_043	kragmar_bannerbreak_mesa	26	outpost_1	outpost	candidate_selected	3	-374	874
+anchor	44	anchor_044	kragmar_bannerbreak_mesa	26	outpost_2	outpost	candidate_selected	3	276	474
+anchor	45	anchor_045	kragmar_raincall_basin	28	outpost_1	outpost	candidate_selected	2	2132	2084
+anchor	46	anchor_046	kragmar_whispering_reedlands	30	outpost_1	outpost	candidate_selected	2	682	1234
+anchor	47	anchor_047	kragmar_totemwater_reach	31	outpost_1	outpost	candidate_selected	1	2400	1350
+anchor	48	anchor_048	kragmar_thunderroot_wilds	32	outpost_1	outpost	candidate_selected	1	1900	550
+anchor	49	anchor_049	elandor_copperfell_foothills	2	bandit_1	bandit_home	candidate_selected	2	-1568	-2066
+anchor	50	anchor_050	elandor_stormvault_heights	5	bandit_1	bandit_frontier	candidate_selected	3	-1824	-406
+anchor	51	anchor_051	elandor_goldmead_vale	7	bandit_1	bandit_home	candidate_selected	1	320	-1980
+anchor	52	anchor_052	elandor_ashenward_march	10	bandit_1	bandit_frontier	candidate_selected	3	-24	-406
+anchor	53	anchor_053	elandor_starbough_vale	12	bandit_1	bandit_home	candidate_selected	2	1632	-2066
+anchor	54	anchor_054	elandor_glassroot_wilds	16	bandit_1	bandit_frontier	candidate_selected	3	1776	-406
+anchor	55	anchor_055	kragmar_mournfen	18	bandit_1	bandit_home	candidate_selected	1	-1600	2050
+anchor	56	anchor_056	kragmar_blackwind_rise	21	bandit_1	bandit_frontier	candidate_selected	1	-1800	430
+anchor	57	anchor_057	kragmar_redtusk_savanna	23	bandit_1	bandit_home	candidate_selected	1	320	1980
+anchor	58	anchor_058	kragmar_bannerbreak_mesa	26	bandit_1	bandit_frontier	candidate_selected	2	32	414
+anchor	59	anchor_059	kragmar_raincall_basin	28	bandit_1	bandit_home	candidate_selected	2	1632	2034
+anchor	60	anchor_060	kragmar_thunderroot_wilds	32	bandit_1	bandit_frontier	candidate_selected	3	1776	454
+anchor	61	anchor_061	elandor_frostbarrow_shelf	4	mine	mine	candidate_selected	2	-2418	-1296
+anchor	62	anchor_062	elandor_whitebridge_shire	9	mine	mine	candidate_selected	3	-1074	-1256
+anchor	63	anchor_063	elandor_lorindor	14	mine	mine	candidate_selected	3	1026	-1256
+anchor	64	anchor_064	kragmar_ossuary_reach	20	mine	mine	candidate_selected	2	-2418	1264
+anchor	65	anchor_065	kragmar_speargrass_reach	25	mine	mine	candidate_selected	1	-1050	1280
+anchor	66	anchor_066	kragmar_whispering_reedlands	30	mine	mine	candidate_selected	3	1026	1304
+anchor	67	anchor_067	elandor_whitebridge_shire	9	mirefolk	mirefolk	candidate_selected	1	-620	-1760
+anchor	68	anchor_068	elandor_lorindor	14	mirefolk	mirefolk	candidate_selected	3	1096	-1716
+anchor	69	anchor_069	kragmar_mournfen	18	mirefolk	mirefolk	candidate_selected	3	-2074	2274
+anchor	70	anchor_070	kragmar_whispering_reedlands	30	mirefolk	mirefolk	candidate_selected	3	1096	1764
+anchor	71	anchor_071	elandor_ashenward_march	10	clash_1	clash	candidate_selected	3	-274	-296
+anchor	72	anchor_072	elandor_ashenward_march	10	clash_2	clash	candidate_selected	1	250	-320
+anchor	73	anchor_073	kragmar_bannerbreak_mesa	26	clash_1	clash	candidate_selected	2	-218	304
+anchor	74	anchor_074	kragmar_bannerbreak_mesa	26	clash_2	clash	candidate_selected	2	282	304
+anchor	75	anchor_075	front_wyrmglass_crown	33	clash_1	clash	candidate_selected	3	-3024	194
+anchor	76	anchor_076	front_gravesalt_escarpment	34	clash_1	clash	candidate_selected	1	-2200	-80
+anchor	77	anchor_077	front_gravesalt_escarpment	34	clash_2	clash	candidate_selected	2	-1768	64
+anchor	78	anchor_078	front_broken_causeway	35	clash_1	clash	candidate_selected	3	-1274	-76
+anchor	79	anchor_079	front_broken_causeway	35	clash_2	clash	candidate_selected	3	-774	124
+anchor	80	anchor_080	front_broken_causeway	35	clash_3	clash	candidate_selected	3	-274	-76
+anchor	81	anchor_081	front_shattered_line	36	clash_1	clash	candidate_selected	1	250	100
+anchor	82	anchor_082	front_shattered_line	36	clash_2	clash	candidate_selected	2	782	-116
+anchor	83	anchor_083	front_shattered_line	36	clash_3	clash	candidate_selected	2	1282	84
+anchor	84	anchor_084	front_skyglass_canopy	37	clash_1	clash	candidate_selected	2	1832	-96
+anchor	85	anchor_085	front_skyglass_canopy	37	clash_2	clash	candidate_selected	3	2176	104
+anchor	86	anchor_086	front_stormscale_summit	38	clash_1	clash	candidate_selected	1	3000	170
+anchor	87	anchor_087	front_wyrmglass_crown	33	dragon	dragon	authored_fixed	0	-3260	-40
+anchor	88	anchor_088	front_stormscale_summit	38	dragon	dragon	authored_fixed	0	3260	-40
+anchor	89	anchor_089	front_wyrmglass_crown	33	apex_mine	apex_mine	authored_fixed	0	-3200	80
+anchor	90	anchor_090	front_stormscale_summit	38	apex_mine	apex_mine	authored_fixed	0	3200	80
+anchor	91	anchor_091	elandor_goldmead_vale	7	rare_grimtusk	rare_route	candidate_selected	2	152	-2116
+anchor	92	anchor_092	elandor_ashenward_march	10	rare_old_whitefang	rare_route	candidate_selected	1	-180	-650
+anchor	93	anchor_093	elandor_stormvault_heights	5	rare_korgans_bane	rare_route	candidate_selected	3	-1874	-596
+anchor	94	anchor_094	front_skyglass_canopy	37	rare_silkfang	rare_route	candidate_selected	3	2026	94
+anchor	95	anchor_095	kragmar_blackwind_rise	21	rare_marrowclaw	rare_route	candidate_selected	2	-1818	604
+anchor	96	anchor_096	kragmar_bannerbreak_mesa	26	rare_dustwing	rare_route	candidate_selected	3	156	674
+anchor	97	anchor_097	front_stormscale_summit	38	rare_emerald_coil	rare_route	candidate_selected	1	3000	-120
+anchor	98	anchor_098	kragmar_redtusk_savanna	23	rare_ashmaw	rare_route	candidate_selected	2	152	2084
+anchor	99	anchor_099	front_broken_causeway	35	rare_captain_bonerattle	rare_route	candidate_selected	2	-568	64
+anchor	100	anchor_100	front_shattered_line	36	rare_captain_bonerattle	rare_route	candidate_selected	1	600	-80
+anchor_spur	anchor_013	poi_spur_013	2	03bb27e3a2e5315ce87fd1cefe00e6f6c24a57d28c8a0c3b9e6ba5b5d54bb8df
+anchor_spur	anchor_014	poi_spur_014	2	b7f3c537966823662b5c9c91317da84881efa533cf51fd8d41c57c763273ae14
+anchor_spur	anchor_015	poi_spur_015	2	9a3fb44990b8618e229d9294712fdf601c88d095fa2d9dba5ae13e7d2aae507a
+anchor_spur	anchor_016	poi_spur_016	2	df0cab16295970711185ed7ccece15e17afefb59a80ec96ca182abd4a8527844
+anchor_spur	anchor_017	poi_spur_017	2	aa6342780b53850a0dfdd430a7cdf9a5b5799c2fcc694a28ccb2f3c787801d21
+anchor_spur	anchor_018	poi_spur_018	2	85a7f47c6d77163237f8a12236437554786112da531fb63c97ad898eda4ba1dc
+anchor_spur	anchor_019	poi_spur_019	2	a536e723885d4bd42a4cad2a363c5e34978fcd84e4c5e9a679ada5cfc8b560a4
+anchor_spur	anchor_020	poi_spur_020	2	36215b07c579d90bebf607bd64705d8840826d1940b478c1551111b528bf3dda
+anchor_spur	anchor_021	poi_spur_021	2	b5fcba803efab34d16a7129e911efa589af0c807b10fe28780c46a2477bd4394
+anchor_spur	anchor_022	poi_spur_022	2	2fe3b8d4089c72eb9f2bac3be3f38aacc616375ba244fcecb157e4e0ff1c279b
+anchor_spur	anchor_023	poi_spur_023	2	d8dbfbfd3b33b0bc9888b09750795344bc2157c9e3876bfe0ba0c09dcb976d85
+anchor_spur	anchor_024	poi_spur_024	2	6c912b529e9727119042f1acfe280252a441c2cc9b39c7ddd98b42235ab65a91
+anchor_spur	anchor_025	poi_spur_025	2	ecd8aec9dafd6d634495daf49d7fdfc94780cfda5bd77cd1e6e0ada50a56da89
+anchor_spur	anchor_026	poi_spur_026	2	ac471cc9860cfa118088d7ff927d308d04776da9a1df7ed8b6fd12334577344d
+anchor_spur	anchor_027	poi_spur_027	2	3258ae9917bffa3d6019572dc9337ef2665be96bc97cac3fcec6bbc4ec5ff02b
+anchor_spur	anchor_028	poi_spur_028	2	1925e77778b8c129d5b6f09bc1b0f0ff4fe7fec8ee00e4425113ae3cc538f7b4
+anchor_spur	anchor_029	poi_spur_029	2	46e93f848f51b045ff31908f4f37e5286b706f2aa1997e4e84e693611a5511e6
+anchor_spur	anchor_030	poi_spur_030	2	8fbce0201c937696b4a4cf506738b87ac32fb57bdd9f78e75187e96fa82dce6a
+anchor_spur	anchor_031	poi_spur_031	2	8b2771d1afc77d64fbfaffbfc2f79238778a192e12ff6d30a4586beddc620c3b
+anchor_spur	anchor_032	poi_spur_032	2	55cc8723bd6492c4f628861726cba5d241a7fbfc5300d5cb24661275b66473bc
+anchor_spur	anchor_033	poi_spur_033	2	049b3d5b526ef681ac659d3f6876db92730723b458f3ab693bfbed1ecdfcb1a4
+anchor_spur	anchor_034	poi_spur_034	2	87d9f3683950cd60792c5666137b9d20999a03572d9a5a2071f888bba1bbd19c
+anchor_spur	anchor_035	poi_spur_035	2	8b7a74474939f36bd9c74863acc52036be4fc95a23159d4b2d95cc07506fac64
+anchor_spur	anchor_036	poi_spur_036	2	6e3614838749fcee7835f7e2b4bee52e157a492b2e99ec8f2bdd96065f9e9314
+anchor_spur	anchor_037	poi_spur_037	2	f4a83a4fb541903dba6e021ee1d9696f4b7262949b7bba099cc036fb8812d7a5
+anchor_spur	anchor_038	poi_spur_038	2	b61941ca491dca702fc8650c65d5724e2cb1a942267b2428713cbcb8adcbfea1
+anchor_spur	anchor_039	poi_spur_039	2	b0863e1b583f461f4cb8b0fc3561581e5f634210811fabbbb7a02c64cc188e6e
+anchor_spur	anchor_040	poi_spur_040	2	6f2373e20405f28aeafe2e99cac7327731d62dea2673006d8743b96533a33b22
+anchor_spur	anchor_041	poi_spur_041	2	ffb4da8d25ad2f500a317876a9b548c4c8590561f961b5459fba2bed9acaa6e7
+anchor_spur	anchor_042	poi_spur_042	2	3e5a09118be42651452a52f878723e88d1eceec70c389990dd7561db2e9d62a0
+anchor_spur	anchor_043	poi_spur_043	2	497cc26abf3c3f499f07361166b987a4d6beb0b7f9b286b633eb9dd494114036
+anchor_spur	anchor_044	poi_spur_044	2	81c3455b52d8c303469cf910f82d157c9f29e5be7e16a0704768ac8b1f581104
+anchor_spur	anchor_045	poi_spur_045	2	ef7936a8d63e9c7b95b0610bdea1772578a95e3e8b5bd45a7e31aa1f846b06b8
+anchor_spur	anchor_046	poi_spur_046	2	e1ae429a5e74c9adb9fdb35677e3f858c569f006728fc483674536fb27ca5be8
+anchor_spur	anchor_047	poi_spur_047	2	41dc7b29629ba70395d63cabc3c14a296b3f1d845d293427d2a661171c0db321
+anchor_spur	anchor_048	poi_spur_048	2	cbcbd79f32f09f99a0c70a3b562fd6fea57eb63243ece203461d1bb57b3ded1b
+anchor_spur	anchor_049	poi_spur_049	2	8a4625555b2d93fd4e0a1c38593bd0fd43e7f185dba0ed93e0e2fda2bcfc39c2
+anchor_spur	anchor_050	poi_spur_050	2	86b9c5d1c17641560469e177e6eeb7fc595725b4c1212a6dd7f8391b57652264
+anchor_spur	anchor_051	poi_spur_051	2	64e6a5c100906f3a7482ddf743752d4e30b356a9de0766f527c182ca7f88040b
+anchor_spur	anchor_052	poi_spur_052	2	f95cbe36dabe9aa136328c411a658a668a69309ae705b32fd17416ab7c05522e
+anchor_spur	anchor_053	poi_spur_053	2	051344b0cffaf9456e6a6c2d292c27779d20807767482356e4b42c02f0a4feeb
+anchor_spur	anchor_054	poi_spur_054	2	f673f0c493ea715c0058d1dc7ed41ceb0d1c159d94e5a54a6bfcbc8bcd574943
+anchor_spur	anchor_055	poi_spur_055	2	16cca4316ee5b4a87e8b3a33a19e90b8f16b5827b66c5587f9b8b1dce5241cd1
+anchor_spur	anchor_056	poi_spur_056	2	430899f0c45bd145f103480e7814f4ddec7cabd9a49da9b836d257c6bde4c942
+anchor_spur	anchor_057	poi_spur_057	2	525f4cc3fc7c96e712ec5edd74f637e08c750fbae623710b050ac8671b768f27
+anchor_spur	anchor_058	poi_spur_058	2	36be2a3608e6504f70132c6e66ff50e56ec7da390a049db8f76f888c94cfe0f2
+anchor_spur	anchor_059	poi_spur_059	2	e7dc17889ca55d9ae9fd8335768555e4f41c819dc37eeda9a72257eadc9e51e4
+anchor_spur	anchor_060	poi_spur_060	2	a9f34f040b7d21d0f1bd9137fa926515da2909542bbdbdaa76cc1dd255551764
+anchor_spur	anchor_061	poi_spur_061	2	90eeb36209bcd5fb092e41a6804beb8e2ee6022ff68bdf877abb7b7d0d925e55
+anchor_spur	anchor_062	poi_spur_062	2	0b214140a6bea581cbc8b7b516dd2bb7bcacd4cc058316c2f575bbf0a719abac
+anchor_spur	anchor_063	poi_spur_063	2	32b5b551722768028e8af0e081c84eb975785328a340c7cd4c95bcfcd391829d
+anchor_spur	anchor_064	poi_spur_064	2	766261b9f0d7a6747f0a0b4307f970de0bc995308cc1471d5d5f1caafd39b196
+anchor_spur	anchor_065	poi_spur_065	2	614c9c82f807a97262fbaa9227068ef66cb1a3fbec735f89bde061f97b008a89
+anchor_spur	anchor_066	poi_spur_066	2	6f1d5a0f35bd035377cdc6178561f86ce4534c34518dcd301a2cd22db2e0fb77
+anchor_spur	anchor_067	poi_spur_067	2	dde630a23630272be09a264f398c3592c878f240af28d9aa92d5f1238a7b97ba
+anchor_spur	anchor_068	poi_spur_068	2	6331f0e2b2e4f70a08bc2d7025a3c3bccd8a77efc18f9adea7eb73f0bc00664a
+anchor_spur	anchor_069	poi_spur_069	2	1277e8b7d6fcffecb162523231f9b7341ce95129ce5e39f41114be8f72cd97ff
+anchor_spur	anchor_070	poi_spur_070	2	520f4702e9510cec9c2ec6955a33e849fec0ac5e27abe2af699261c58639ea44
+anchor_spur	anchor_071	poi_spur_071	2	8fb67a6888f00c112e9e95ee615ed4851d4e8d4db2e012ebc127883ec43080e6
+anchor_spur	anchor_072	poi_spur_072	2	22b87104a99c877b785fe668d7f6a1554dab7f8bc0cd26cf7a9045c47990c602
+anchor_spur	anchor_073	poi_spur_073	2	06ed21cd51cb06018796cae65bca48b6a49c4a6f0cfb81245c40eef87e28e0d6
+anchor_spur	anchor_074	poi_spur_074	2	4b749cfbf753bc5b88a64dcb89fb3829c39be88748dfcc49d7a1a6b34d0446c7
+anchor_spur	anchor_075	poi_spur_075	2	7f866a37496c6cf74b796cfaca076d004a5b414131967bf22b665c7bbe976c92
+anchor_spur	anchor_076	poi_spur_076	2	76be094d5717380d69804eb790453145a3122c797c624cd21d82f783443ed132
+anchor_spur	anchor_077	poi_spur_077	2	8b8c1cf6e25bfb49fa9f7b36ef334fb1ab0e7cd212872e1718fa756b357fd3c4
+anchor_spur	anchor_078	poi_spur_078	2	8035562606c0f8b642176e0c1373089dd4e0d5ac2094f0135307fd379468e735
+anchor_spur	anchor_079	poi_spur_079	2	6ba729044c2010608e33ebdc989013a1ad5eb8efcf3297f68099e3f6e238ddf0
+anchor_spur	anchor_080	poi_spur_080	2	e48643f9f068ef212538dc186ec091ece2163eaecb23db7161284f690cb0c4b4
+anchor_spur	anchor_081	poi_spur_081	2	179ef1cb4550f794802464b951ba2d9520d659216a9023bd35e09fd5a007f06e
+anchor_spur	anchor_082	poi_spur_082	2	8a204a542792856a87c45620cfbf370feb057afa88cf15e0b58a2e9f0dfa1d3d
+anchor_spur	anchor_083	poi_spur_083	2	ce6e96a82a954579d824f79f16883d61141f98a53c020daa40fae61793dbe8b3
+anchor_spur	anchor_084	poi_spur_084	2	5c569abe57deed501fbbaa89ad63f79073aa7638e255b253301214510194632a
+anchor_spur	anchor_085	poi_spur_085	2	acb6f9e1f20873661a6bb0d68e73b35ac94cd0d2c49774308fb7d6f329a2b377
+anchor_spur	anchor_086	poi_spur_086	2	20a27245578dd774db9426046259ebe572a4eee1ceebf0630fd6194446e48e0c
+anchor_spur	anchor_091	-	0	-
+anchor_spur	anchor_092	-	0	-
+anchor_spur	anchor_093	-	0	-
+anchor_spur	anchor_094	-	0	-
+anchor_spur	anchor_095	-	0	-
+anchor_spur	anchor_096	-	0	-
+anchor_spur	anchor_097	-	0	-
+anchor_spur	anchor_098	-	0	-
+anchor_spur	anchor_099	-	0	-
+anchor_spur	anchor_100	-	0	-
+path	island_route_stormscale_junction_apex	island_route	secondary	road	5	3	fefc3cb16ee697fdae8a662851147c97575d67523b3c93f4dabdfdc52e518f4c
+path_point	island_route_stormscale_junction_apex	1	3100	0
+path_point	island_route_stormscale_junction_apex	2	3140	50
+path_point	island_route_stormscale_junction_apex	3	3200	80
+path	island_route_stormscale_junction_dragon	island_route	secondary	road	5	3	569f7e5a563ab05821e3215e62a93de49793d82c9d251669676a20e672749747
+path_point	island_route_stormscale_junction_dragon	1	3100	0
+path_point	island_route_stormscale_junction_dragon	2	3180	-10
+path_point	island_route_stormscale_junction_dragon	3	3260	-40
+path	island_route_stormscale_north_junction	island_route	secondary	road	5	3	96535871776f95fb325f0c068818f7ef8ed1c77e9a7f7e046070bb41e7d0174f
+path_point	island_route_stormscale_north_junction	1	2920	125
+path_point	island_route_stormscale_north_junction	2	2990	90
+path_point	island_route_stormscale_north_junction	3	3100	0
+path	island_route_stormscale_south_junction	island_route	secondary	road	5	3	0e3d940b379d5671854bfc310e04a057724deeac925e194ecab187b571863453
+path_point	island_route_stormscale_south_junction	1	2890	-125
+path_point	island_route_stormscale_south_junction	2	2990	-90
+path_point	island_route_stormscale_south_junction	3	3100	0
+path	island_route_wyrmglass_junction_apex	island_route	secondary	road	5	3	9681cc0c11ac608ed5dca685a708b0f6a6be0699f4d45a1de0bec23da6a10ece
+path_point	island_route_wyrmglass_junction_apex	1	-3100	0
+path_point	island_route_wyrmglass_junction_apex	2	-3140	50
+path_point	island_route_wyrmglass_junction_apex	3	-3200	80
+path	island_route_wyrmglass_junction_dragon	island_route	secondary	road	5	3	f82ea1196a3c285492ae3956fb7a7f13d94569524295495e78ee8230feee2ccf
+path_point	island_route_wyrmglass_junction_dragon	1	-3100	0
+path_point	island_route_wyrmglass_junction_dragon	2	-3180	-10
+path_point	island_route_wyrmglass_junction_dragon	3	-3260	-40
+path	island_route_wyrmglass_north_junction	island_route	secondary	road	5	3	9218da6441ae3d9e64253cc3b50eb8b2580718d5646e6075c7e50241f15f9277
+path_point	island_route_wyrmglass_north_junction	1	-2890	125
+path_point	island_route_wyrmglass_north_junction	2	-2990	90
+path_point	island_route_wyrmglass_north_junction	3	-3100	0
+path	island_route_wyrmglass_south_junction	island_route	secondary	road	5	3	f35e19cb4b5cbf0ae713ae25389c82370ae9d926ca1331801141aa16ce57e5c6
+path_point	island_route_wyrmglass_south_junction	1	-2890	-125
+path_point	island_route_wyrmglass_south_junction	2	-2990	-90
+path_point	island_route_wyrmglass_south_junction	3	-3100	0
+path	poi_spur_013	poi_spur	secondary	road	5	2	03bb27e3a2e5315ce87fd1cefe00e6f6c24a57d28c8a0c3b9e6ba5b5d54bb8df
+path_point	poi_spur_013	1	-1868	-2036
+path_point	poi_spur_013	2	-1800	-2050
+path	poi_spur_014	poi_spur	secondary	road	5	2	b7f3c537966823662b5c9c91317da84881efa533cf51fd8d41c57c763273ae14
+path_point	poi_spur_014	1	-2404	-1576
+path_point	poi_spur_014	2	-2400	-1500
+path	poi_spur_015	poi_spur	secondary	road	5	2	9a3fb44990b8618e229d9294712fdf601c88d095fa2d9dba5ae13e7d2aae507a
+path_point	poi_spur_015	1	-120	-2020
+path_point	poi_spur_015	2	0	-2050
+path	poi_spur_016	poi_spur	secondary	road	5	2	df0cab16295970711185ed7ccece15e17afefb59a80ec96ca182abd4a8527844
+path_point	poi_spur_016	1	-924	-1556
+path_point	poi_spur_016	2	-900	-1500
+path	poi_spur_017	poi_spur	secondary	road	5	2	aa6342780b53850a0dfdd430a7cdf9a5b5799c2fcc694a28ccb2f3c787801d21
+path_point	poi_spur_017	1	1900	-2020
+path_point	poi_spur_017	2	1800	-2050
+path	poi_spur_018	poi_spur	secondary	road	5	2	85a7f47c6d77163237f8a12236437554786112da531fb63c97ad898eda4ba1dc
+path_point	poi_spur_018	1	876	-1556
+path_point	poi_spur_018	2	900	-1500
+path	poi_spur_019	poi_spur	secondary	road	5	2	a536e723885d4bd42a4cad2a363c5e34978fcd84e4c5e9a679ada5cfc8b560a4
+path_point	poi_spur_019	1	-1900	2020
+path_point	poi_spur_019	2	-1800	2050
+path	poi_spur_020	poi_spur	secondary	road	5	2	36215b07c579d90bebf607bd64705d8840826d1940b478c1551111b528bf3dda
+path_point	poi_spur_020	1	-2380	1600
+path_point	poi_spur_020	2	-2400	1500
+path	poi_spur_021	poi_spur	secondary	road	5	2	b5fcba803efab34d16a7129e911efa589af0c807b10fe28780c46a2477bd4394
+path_point	poi_spur_021	1	-88	2004
+path_point	poi_spur_021	2	0	2050
+path	poi_spur_022	poi_spur	secondary	road	5	2	2fe3b8d4089c72eb9f2bac3be3f38aacc616375ba244fcecb157e4e0ff1c279b
+path_point	poi_spur_022	1	-868	1564
+path_point	poi_spur_022	2	-900	1500
+path	poi_spur_023	poi_spur	secondary	road	5	2	d8dbfbfd3b33b0bc9888b09750795344bc2157c9e3876bfe0ba0c09dcb976d85
+path_point	poi_spur_023	1	1876	2044
+path_point	poi_spur_023	2	1800	2050
+path	poi_spur_024	poi_spur	secondary	road	5	2	6c912b529e9727119042f1acfe280252a441c2cc9b39c7ddd98b42235ab65a91
+path_point	poi_spur_024	1	876	1604
+path_point	poi_spur_024	2	900	1500
+path	poi_spur_025	poi_spur	secondary	road	5	2	ecd8aec9dafd6d634495daf49d7fdfc94780cfda5bd77cd1e6e0ada50a56da89
+path_point	poi_spur_025	1	-2100	-2100
+path_point	poi_spur_025	2	-1800	-2050
+path	poi_spur_026	poi_spur	secondary	road	5	2	ac471cc9860cfa118088d7ff927d308d04776da9a1df7ed8b6fd12334577344d
+path_point	poi_spur_026	1	-2300	-1250
+path_point	poi_spur_026	2	-2400	-1500
+path	poi_spur_027	poi_spur	secondary	road	5	2	3258ae9917bffa3d6019572dc9337ef2665be96bc97cac3fcec6bbc4ec5ff02b
+path_point	poi_spur_027	1	-2074	-826
+path_point	poi_spur_027	2	-1800	-700
+path	poi_spur_028	poi_spur	secondary	road	5	2	1925e77778b8c129d5b6f09bc1b0f0ff4fe7fec8ee00e4425113ae3cc538f7b4
+path_point	poi_spur_028	1	-1500	-450
+path_point	poi_spur_028	2	-1800	-700
+path	poi_spur_029	poi_spur	secondary	road	5	2	46e93f848f51b045ff31908f4f37e5286b706f2aa1997e4e84e693611a5511e6
+path_point	poi_spur_029	1	176	-2026
+path_point	poi_spur_029	2	0	-2050
+path	poi_spur_030	poi_spur	secondary	road	5	2	8fbce0201c937696b4a4cf506738b87ac32fb57bdd9f78e75187e96fa82dce6a
+path_point	poi_spur_030	1	-618	-1266
+path_point	poi_spur_030	2	-900	-1500
+path	poi_spur_031	poi_spur	secondary	road	5	2	8b2771d1afc77d64fbfaffbfc2f79238778a192e12ff6d30a4586beddc620c3b
+path_point	poi_spur_031	1	-350	-850
+path_point	poi_spur_031	2	0	-700
+path	poi_spur_032	poi_spur	secondary	road	5	2	55cc8723bd6492c4f628861726cba5d241a7fbfc5300d5cb24661275b66473bc
+path_point	poi_spur_032	1	300	-450
+path_point	poi_spur_032	2	0	-700
+path	poi_spur_033	poi_spur	secondary	road	5	2	049b3d5b526ef681ac659d3f6876db92730723b458f3ab693bfbed1ecdfcb1a4
+path_point	poi_spur_033	1	2100	-2100
+path_point	poi_spur_033	2	1800	-2050
+path	poi_spur_034	poi_spur	secondary	road	5	2	87d9f3683950cd60792c5666137b9d20999a03572d9a5a2071f888bba1bbd19c
+path_point	poi_spur_034	1	626	-1226
+path_point	poi_spur_034	2	900	-1500
+path	poi_spur_035	poi_spur	secondary	road	5	2	8b7a74474939f36bd9c74863acc52036be4fc95a23159d4b2d95cc07506fac64
+path_point	poi_spur_035	1	2376	-1326
+path_point	poi_spur_035	2	2400	-1500
+path	poi_spur_036	poi_spur	secondary	road	5	2	6e3614838749fcee7835f7e2b4bee52e157a492b2e99ec8f2bdd96065f9e9314
+path_point	poi_spur_036	1	1932	-566
+path_point	poi_spur_036	2	1800	-700
+path	poi_spur_037	poi_spur	secondary	road	5	2	f4a83a4fb541903dba6e021ee1d9696f4b7262949b7bba099cc036fb8812d7a5
+path_point	poi_spur_037	1	-2100	2100
+path_point	poi_spur_037	2	-1800	2050
+path	poi_spur_038	poi_spur	secondary	road	5	2	b61941ca491dca702fc8650c65d5724e2cb1a942267b2428713cbcb8adcbfea1
+path_point	poi_spur_038	1	-2268	1234
+path_point	poi_spur_038	2	-2400	1500
+path	poi_spur_039	poi_spur	secondary	road	5	2	b0863e1b583f461f4cb8b0fc3561581e5f634210811fabbbb7a02c64cc188e6e
+path_point	poi_spur_039	1	-2018	834
+path_point	poi_spur_039	2	-1800	700
+path	poi_spur_040	poi_spur	secondary	road	5	2	6f2373e20405f28aeafe2e99cac7327731d62dea2673006d8743b96533a33b22
+path_point	poi_spur_040	1	-1468	434
+path_point	poi_spur_040	2	-1800	700
+path	poi_spur_041	poi_spur	secondary	road	5	2	ffb4da8d25ad2f500a317876a9b548c4c8590561f961b5459fba2bed9acaa6e7
+path_point	poi_spur_041	1	176	2074
+path_point	poi_spur_041	2	0	2050
+path	poi_spur_042	poi_spur	secondary	road	5	2	3e5a09118be42651452a52f878723e88d1eceec70c389990dd7561db2e9d62a0
+path_point	poi_spur_042	1	-650	1250
+path_point	poi_spur_042	2	-900	1500
+path	poi_spur_043	poi_spur	secondary	road	5	2	497cc26abf3c3f499f07361166b987a4d6beb0b7f9b286b633eb9dd494114036
+path_point	poi_spur_043	1	-374	874
+path_point	poi_spur_043	2	0	700
+path	poi_spur_044	poi_spur	secondary	road	5	2	81c3455b52d8c303469cf910f82d157c9f29e5be7e16a0704768ac8b1f581104
+path_point	poi_spur_044	1	276	474
+path_point	poi_spur_044	2	0	700
+path	poi_spur_045	poi_spur	secondary	road	5	2	ef7936a8d63e9c7b95b0610bdea1772578a95e3e8b5bd45a7e31aa1f846b06b8
+path_point	poi_spur_045	1	2132	2084
+path_point	poi_spur_045	2	1800	2050
+path	poi_spur_046	poi_spur	secondary	road	5	2	e1ae429a5e74c9adb9fdb35677e3f858c569f006728fc483674536fb27ca5be8
+path_point	poi_spur_046	1	682	1234
+path_point	poi_spur_046	2	900	1500
+path	poi_spur_047	poi_spur	secondary	road	5	2	41dc7b29629ba70395d63cabc3c14a296b3f1d845d293427d2a661171c0db321
+path_point	poi_spur_047	1	2400	1350
+path_point	poi_spur_047	2	2400	1500
+path	poi_spur_048	poi_spur	secondary	road	5	2	cbcbd79f32f09f99a0c70a3b562fd6fea57eb63243ece203461d1bb57b3ded1b
+path_point	poi_spur_048	1	1900	550
+path_point	poi_spur_048	2	1800	700
+path	poi_spur_049	poi_spur	trail	trail	3	2	8a4625555b2d93fd4e0a1c38593bd0fd43e7f185dba0ed93e0e2fda2bcfc39c2
+path_point	poi_spur_049	1	-1568	-2066
+path_point	poi_spur_049	2	-1800	-2050
+path	poi_spur_050	poi_spur	trail	trail	3	2	86b9c5d1c17641560469e177e6eeb7fc595725b4c1212a6dd7f8391b57652264
+path_point	poi_spur_050	1	-1824	-406
+path_point	poi_spur_050	2	-1800	-700
+path	poi_spur_051	poi_spur	trail	trail	3	2	64e6a5c100906f3a7482ddf743752d4e30b356a9de0766f527c182ca7f88040b
+path_point	poi_spur_051	1	320	-1980
+path_point	poi_spur_051	2	0	-2050
+path	poi_spur_052	poi_spur	trail	trail	3	2	f95cbe36dabe9aa136328c411a658a668a69309ae705b32fd17416ab7c05522e
+path_point	poi_spur_052	1	-24	-406
+path_point	poi_spur_052	2	0	-700
+path	poi_spur_053	poi_spur	trail	trail	3	2	051344b0cffaf9456e6a6c2d292c27779d20807767482356e4b42c02f0a4feeb
+path_point	poi_spur_053	1	1632	-2066
+path_point	poi_spur_053	2	1800	-2050
+path	poi_spur_054	poi_spur	trail	trail	3	2	f673f0c493ea715c0058d1dc7ed41ceb0d1c159d94e5a54a6bfcbc8bcd574943
+path_point	poi_spur_054	1	1776	-406
+path_point	poi_spur_054	2	1800	-700
+path	poi_spur_055	poi_spur	trail	trail	3	2	16cca4316ee5b4a87e8b3a33a19e90b8f16b5827b66c5587f9b8b1dce5241cd1
+path_point	poi_spur_055	1	-1600	2050
+path_point	poi_spur_055	2	-1800	2050
+path	poi_spur_056	poi_spur	trail	trail	3	2	430899f0c45bd145f103480e7814f4ddec7cabd9a49da9b836d257c6bde4c942
+path_point	poi_spur_056	1	-1800	430
+path_point	poi_spur_056	2	-1800	700
+path	poi_spur_057	poi_spur	trail	trail	3	2	525f4cc3fc7c96e712ec5edd74f637e08c750fbae623710b050ac8671b768f27
+path_point	poi_spur_057	1	320	1980
+path_point	poi_spur_057	2	0	2050
+path	poi_spur_058	poi_spur	trail	trail	3	2	36be2a3608e6504f70132c6e66ff50e56ec7da390a049db8f76f888c94cfe0f2
+path_point	poi_spur_058	1	32	414
+path_point	poi_spur_058	2	0	700
+path	poi_spur_059	poi_spur	trail	trail	3	2	e7dc17889ca55d9ae9fd8335768555e4f41c819dc37eeda9a72257eadc9e51e4
+path_point	poi_spur_059	1	1632	2034
+path_point	poi_spur_059	2	1800	2050
+path	poi_spur_060	poi_spur	trail	trail	3	2	a9f34f040b7d21d0f1bd9137fa926515da2909542bbdbdaa76cc1dd255551764
+path_point	poi_spur_060	1	1776	454
+path_point	poi_spur_060	2	1800	700
+path	poi_spur_061	poi_spur	secondary	road	5	2	90eeb36209bcd5fb092e41a6804beb8e2ee6022ff68bdf877abb7b7d0d925e55
+path_point	poi_spur_061	1	-2418	-1296
+path_point	poi_spur_061	2	-2400	-1500
+path	poi_spur_062	poi_spur	secondary	road	5	2	0b214140a6bea581cbc8b7b516dd2bb7bcacd4cc058316c2f575bbf0a719abac
+path_point	poi_spur_062	1	-1074	-1256
+path_point	poi_spur_062	2	-900	-1500
+path	poi_spur_063	poi_spur	secondary	road	5	2	32b5b551722768028e8af0e081c84eb975785328a340c7cd4c95bcfcd391829d
+path_point	poi_spur_063	1	1026	-1256
+path_point	poi_spur_063	2	900	-1500
+path	poi_spur_064	poi_spur	secondary	road	5	2	766261b9f0d7a6747f0a0b4307f970de0bc995308cc1471d5d5f1caafd39b196
+path_point	poi_spur_064	1	-2418	1264
+path_point	poi_spur_064	2	-2400	1500
+path	poi_spur_065	poi_spur	secondary	road	5	2	614c9c82f807a97262fbaa9227068ef66cb1a3fbec735f89bde061f97b008a89
+path_point	poi_spur_065	1	-1050	1280
+path_point	poi_spur_065	2	-900	1500
+path	poi_spur_066	poi_spur	secondary	road	5	2	6f1d5a0f35bd035377cdc6178561f86ce4534c34518dcd301a2cd22db2e0fb77
+path_point	poi_spur_066	1	1026	1304
+path_point	poi_spur_066	2	900	1500
+path	poi_spur_067	poi_spur	trail	trail	3	2	dde630a23630272be09a264f398c3592c878f240af28d9aa92d5f1238a7b97ba
+path_point	poi_spur_067	1	-620	-1760
+path_point	poi_spur_067	2	-900	-1500
+path	poi_spur_068	poi_spur	trail	trail	3	2	6331f0e2b2e4f70a08bc2d7025a3c3bccd8a77efc18f9adea7eb73f0bc00664a
+path_point	poi_spur_068	1	1096	-1716
+path_point	poi_spur_068	2	900	-1500
+path	poi_spur_069	poi_spur	trail	trail	3	2	1277e8b7d6fcffecb162523231f9b7341ce95129ce5e39f41114be8f72cd97ff
+path_point	poi_spur_069	1	-2074	2274
+path_point	poi_spur_069	2	-1800	2050
+path	poi_spur_070	poi_spur	trail	trail	3	2	520f4702e9510cec9c2ec6955a33e849fec0ac5e27abe2af699261c58639ea44
+path_point	poi_spur_070	1	1096	1764
+path_point	poi_spur_070	2	900	1500
+path	poi_spur_071	poi_spur	trail	trail	3	2	8fb67a6888f00c112e9e95ee615ed4851d4e8d4db2e012ebc127883ec43080e6
+path_point	poi_spur_071	1	-274	-296
+path_point	poi_spur_071	2	0	-700
+path	poi_spur_072	poi_spur	trail	trail	3	2	22b87104a99c877b785fe668d7f6a1554dab7f8bc0cd26cf7a9045c47990c602
+path_point	poi_spur_072	1	250	-320
+path_point	poi_spur_072	2	0	-700
+path	poi_spur_073	poi_spur	trail	trail	3	2	06ed21cd51cb06018796cae65bca48b6a49c4a6f0cfb81245c40eef87e28e0d6
+path_point	poi_spur_073	1	-218	304
+path_point	poi_spur_073	2	0	700
+path	poi_spur_074	poi_spur	trail	trail	3	2	4b749cfbf753bc5b88a64dcb89fb3829c39be88748dfcc49d7a1a6b34d0446c7
+path_point	poi_spur_074	1	282	304
+path_point	poi_spur_074	2	0	700
+path	poi_spur_075	poi_spur	trail	trail	3	2	7f866a37496c6cf74b796cfaca076d004a5b414131967bf22b665c7bbe976c92
+path_point	poi_spur_075	1	-3024	194
+path_point	poi_spur_075	2	-3150	0
+path	poi_spur_076	poi_spur	trail	trail	3	2	76be094d5717380d69804eb790453145a3122c797c624cd21d82f783443ed132
+path_point	poi_spur_076	1	-2200	-80
+path_point	poi_spur_076	2	-2000	0
+path	poi_spur_077	poi_spur	trail	trail	3	2	8b8c1cf6e25bfb49fa9f7b36ef334fb1ab0e7cd212872e1718fa756b357fd3c4
+path_point	poi_spur_077	1	-1768	64
+path_point	poi_spur_077	2	-2000	0
+path	poi_spur_078	poi_spur	trail	trail	3	2	8035562606c0f8b642176e0c1373089dd4e0d5ac2094f0135307fd379468e735
+path_point	poi_spur_078	1	-1274	-76
+path_point	poi_spur_078	2	-750	0
+path	poi_spur_079	poi_spur	trail	trail	3	2	6ba729044c2010608e33ebdc989013a1ad5eb8efcf3297f68099e3f6e238ddf0
+path_point	poi_spur_079	1	-774	124
+path_point	poi_spur_079	2	-750	0
+path	poi_spur_080	poi_spur	trail	trail	3	2	e48643f9f068ef212538dc186ec091ece2163eaecb23db7161284f690cb0c4b4
+path_point	poi_spur_080	1	-274	-76
+path_point	poi_spur_080	2	-750	0
+path	poi_spur_081	poi_spur	trail	trail	3	2	179ef1cb4550f794802464b951ba2d9520d659216a9023bd35e09fd5a007f06e
+path_point	poi_spur_081	1	250	100
+path_point	poi_spur_081	2	750	0
+path	poi_spur_082	poi_spur	trail	trail	3	2	8a204a542792856a87c45620cfbf370feb057afa88cf15e0b58a2e9f0dfa1d3d
+path_point	poi_spur_082	1	782	-116
+path_point	poi_spur_082	2	750	0
+path	poi_spur_083	poi_spur	trail	trail	3	2	ce6e96a82a954579d824f79f16883d61141f98a53c020daa40fae61793dbe8b3
+path_point	poi_spur_083	1	1282	84
+path_point	poi_spur_083	2	750	0
+path	poi_spur_084	poi_spur	trail	trail	3	2	5c569abe57deed501fbbaa89ad63f79073aa7638e255b253301214510194632a
+path_point	poi_spur_084	1	1832	-96
+path_point	poi_spur_084	2	2000	0
+path	poi_spur_085	poi_spur	trail	trail	3	2	acb6f9e1f20873661a6bb0d68e73b35ac94cd0d2c49774308fb7d6f329a2b377
+path_point	poi_spur_085	1	2176	104
+path_point	poi_spur_085	2	2000	0
+path	poi_spur_086	poi_spur	trail	trail	3	2	20a27245578dd774db9426046259ebe572a4eee1ceebf0630fd6194446e48e0c
+path_point	poi_spur_086	1	3000	170
+path_point	poi_spur_086	2	3150	0
+path	route_001	land_route	primary	road	7	7	0ea7d20d5c6f2d8eee537ad9d6a1e7605322defb41eb78841b224f77421a9c53
+path_point	route_001	1	-1800	-2550
+path_point	route_001	2	-1906	-2447
+path_point	route_001	3	-1965	-2322
+path_point	route_001	4	-1975	-2175
+path_point	route_001	5	-1948	-2090
+path_point	route_001	6	-1889	-2049
+path_point	route_001	7	-1800	-2050
+path	route_002	land_route	primary	road	7	7	393541c81c46e8108775db089cb9a938305db82db5a37c5a9b63c17aa562d216
+path_point	route_002	1	-1800	-2050
+path_point	route_002	2	-1763	-2000
+path_point	route_002	3	-1763	-1950
+path_point	route_002	4	-1800	-1900
+path_point	route_002	5	-1848	-1767
+path_point	route_002	6	-1848	-1633
+path_point	route_002	7	-1800	-1500
+path	route_003	land_route	primary	road	7	7	9668fd06aecd54e24b82237afd62db0ff236c889414e76f0c24670dd0abdd735
+path_point	route_003	1	-1800	-1500
+path_point	route_003	2	-1848	-1367
+path_point	route_003	3	-1848	-1233
+path_point	route_003	4	-1800	-1100
+path_point	route_003	5	-1752	-967
+path_point	route_003	6	-1752	-833
+path_point	route_003	7	-1800	-700
+path	route_004	land_route	primary	road	7	7	40dae1beb5851bb6de91d2a92f87f59cc5bea4d2f2cda9c8f8f5dbe606e20599
+path_point	route_004	1	0	-2550
+path_point	route_004	2	-10	-2394
+path_point	route_004	3	-69	-2259
+path_point	route_004	4	-175	-2145
+path_point	route_004	5	-140	-2070
+path_point	route_004	6	-81	-2039
+path_point	route_004	7	0	-2050
+path	route_005	land_route	primary	road	7	7	7f847340dc71a2ce024b7ead9e4e620e4dabf4e5c3272c0f647e0bb0091d3881
+path_point	route_005	1	0	-2050
+path_point	route_005	2	37	-2000
+path_point	route_005	3	37	-1950
+path_point	route_005	4	0	-1900
+path_point	route_005	5	-48	-1767
+path_point	route_005	6	-48	-1633
+path_point	route_005	7	0	-1500
+path	route_006	land_route	primary	road	7	7	c970c842f8579bf54b58a0acb63dc3181d083f22b2e5a83ad69efcaf09fd3497
+path_point	route_006	1	0	-1500
+path_point	route_006	2	-48	-1367
+path_point	route_006	3	-48	-1233
+path_point	route_006	4	0	-1100
+path_point	route_006	5	48	-967
+path_point	route_006	6	48	-833
+path_point	route_006	7	0	-700
+path	route_007	land_route	primary	road	7	7	fcdfd23b68233eacadff0bca4253f7c5b637440e5fea6c9cf7176115a1654284
+path_point	route_007	1	1800	-2550
+path_point	route_007	2	1906	-2453
+path_point	route_007	3	1965	-2333
+path_point	route_007	4	1975	-2190
+path_point	route_007	5	1883	-2186
+path_point	route_007	6	1824	-2140
+path_point	route_007	7	1800	-2050
+path	route_008	land_route	primary	road	7	7	2c4841371b8781796180a8967953a2219eef74e7f04fad0591ce04bf8144bd98
+path_point	route_008	1	1800	-2050
+path_point	route_008	2	1763	-2000
+path_point	route_008	3	1763	-1950
+path_point	route_008	4	1800	-1900
+path_point	route_008	5	1848	-1767
+path_point	route_008	6	1848	-1633
+path_point	route_008	7	1800	-1500
+path	route_009	land_route	primary	road	7	7	c34fecdb7e860404ed9be471787dfda3b736f4ce7d6cc85f1c95f2489d829f91
+path_point	route_009	1	1800	-1500
+path_point	route_009	2	1752	-1367
+path_point	route_009	3	1752	-1233
+path_point	route_009	4	1800	-1100
+path_point	route_009	5	1848	-967
+path_point	route_009	6	1848	-833
+path_point	route_009	7	1800	-700
+path	route_010	land_route	primary	road	7	7	d556cc27fafbd96da6184fe874cf35532cc148597cd3c39c6e2675dc3120a8f6
+path_point	route_010	1	-1800	2550
+path_point	route_010	2	-1908	2448
+path_point	route_010	3	-1968	2323
+path_point	route_010	4	-1980	2175
+path_point	route_010	5	-1889	2178
+path_point	route_010	6	-1829	2137
+path_point	route_010	7	-1800	2050
+path	route_011	land_route	primary	road	7	7	aee54df36918ad6ab9c057f7204959ff523697f262430368382c4581d1febddc
+path_point	route_011	1	-1800	2050
+path_point	route_011	2	-1763	2000
+path_point	route_011	3	-1763	1950
+path_point	route_011	4	-1800	1900
+path_point	route_011	5	-1848	1767
+path_point	route_011	6	-1848	1633
+path_point	route_011	7	-1800	1500
+path	route_012	land_route	primary	road	7	7	c45a91f417e8507d053160a09377e5d082a83f09ba2db860964c9250efa321b9
+path_point	route_012	1	-1800	1500
+path_point	route_012	2	-1752	1367
+path_point	route_012	3	-1752	1233
+path_point	route_012	4	-1800	1100
+path_point	route_012	5	-1752	967
+path_point	route_012	6	-1752	833
+path_point	route_012	7	-1800	700
+path	route_013	land_route	primary	road	7	7	bdd6e47105e7b298ce3661e74fb8e2ee1a663703d2d66320086a9f478e170cf3
+path_point	route_013	1	0	2550
+path_point	route_013	2	-108	2440
+path_point	route_013	3	-168	2309
+path_point	route_013	4	-180	2155
+path_point	route_013	5	-94	2165
+path_point	route_013	6	-34	2130
+path_point	route_013	7	0	2050
+path	route_014	land_route	primary	road	7	7	7eabc8217dfe4414e8b4f99eb999804c169dc1335a50f003c1c8ac962de14fbd
+path_point	route_014	1	0	2050
+path_point	route_014	2	37	2000
+path_point	route_014	3	37	1950
+path_point	route_014	4	0	1900
+path_point	route_014	5	-48	1767
+path_point	route_014	6	-48	1633
+path_point	route_014	7	0	1500
+path	route_015	land_route	primary	road	7	7	a80ea50b8bb4b6e1f82bdc4204de7211d5d5953f9719297fff615957f8b93065
+path_point	route_015	1	0	1500
+path_point	route_015	2	-48	1367
+path_point	route_015	3	-48	1233
+path_point	route_015	4	0	1100
+path_point	route_015	5	48	967
+path_point	route_015	6	48	833
+path_point	route_015	7	0	700
+path	route_016	land_route	primary	road	7	7	a93a28f99637479701fc7c0e67bf43aa5a1ee77323daa84653d10b6dc9a52258
+path_point	route_016	1	1800	2550
+path_point	route_016	2	1812	2402
+path_point	route_016	3	1872	2277
+path_point	route_016	4	1980	2175
+path_point	route_016	5	1951	2088
+path_point	route_016	6	1891	2047
+path_point	route_016	7	1800	2050
+path	route_017	land_route	primary	road	7	7	33f38874ab91853b2f520f769fd95e54f5a5ada8b962a97e0d1645278bcb3463
+path_point	route_017	1	1800	2050
+path_point	route_017	2	1837	2000
+path_point	route_017	3	1837	1950
+path_point	route_017	4	1800	1900
+path_point	route_017	5	1752	1767
+path_point	route_017	6	1752	1633
+path_point	route_017	7	1800	1500
+path	route_018	land_route	primary	road	7	7	ff72a973f74e8dcb31101129ce1acb05caa4a97c938cc36b21cf134dd39e22ef
+path_point	route_018	1	1800	1500
+path_point	route_018	2	1752	1367
+path_point	route_018	3	1752	1233
+path_point	route_018	4	1800	1100
+path_point	route_018	5	1848	967
+path_point	route_018	6	1848	833
+path_point	route_018	7	1800	700
+path	route_019	land_route	primary	road	7	7	d9f84855dd0eee401b7fc8f87be7524a7aa56fa3b458d3b4b9eaa3fce10f9f50
+path_point	route_019	1	-2400	-1500
+path_point	route_019	2	-2333	-1452
+path_point	route_019	3	-2267	-1452
+path_point	route_019	4	-2200	-1500
+path_point	route_019	5	-2067	-1548
+path_point	route_019	6	-1933	-1548
+path_point	route_019	7	-1800	-1500
+path	route_020	land_route	primary	road	7	7	74dc8186ce6728bfe007aeb0371c682e7ba940f66972df5423f16e24691bb8c8
+path_point	route_020	1	-1800	-1500
+path_point	route_020	2	-1667	-1452
+path_point	route_020	3	-1533	-1452
+path_point	route_020	4	-1400	-1500
+path_point	route_020	5	-1233	-1548
+path_point	route_020	6	-1067	-1548
+path_point	route_020	7	-900	-1500
+path	route_021	land_route	primary	road	7	7	7d0f66a4257aec0c8aeed7dd08bdb983996dd0d82b90305dfa3e063153882d7e
+path_point	route_021	1	-900	-1500
+path_point	route_021	2	-733	-1548
+path_point	route_021	3	-567	-1548
+path_point	route_021	4	-400	-1500
+path_point	route_021	5	-267	-1452
+path_point	route_021	6	-133	-1452
+path_point	route_021	7	0	-1500
+path	route_022	land_route	primary	road	7	7	127d129293a8c775e6d2429794613a354143debcae05d554fef10577734939c3
+path_point	route_022	1	0	-1500
+path_point	route_022	2	133	-1452
+path_point	route_022	3	267	-1452
+path_point	route_022	4	400	-1500
+path_point	route_022	5	567	-1548
+path_point	route_022	6	733	-1548
+path_point	route_022	7	900	-1500
+path	route_023	land_route	primary	road	7	7	a02f33cb891182e2bce015259282f5aa2ffe95a44e0d6d16b788db45e3aa8241
+path_point	route_023	1	900	-1500
+path_point	route_023	2	1067	-1452
+path_point	route_023	3	1233	-1452
+path_point	route_023	4	1400	-1500
+path_point	route_023	5	1533	-1452
+path_point	route_023	6	1667	-1452
+path_point	route_023	7	1800	-1500
+path	route_024	land_route	primary	road	7	7	e93bc66429c6b1fdf9c2d5b656f8f0c34108398f414954d20ca973736081dc25
+path_point	route_024	1	1800	-1500
+path_point	route_024	2	1933	-1548
+path_point	route_024	3	2067	-1548
+path_point	route_024	4	2200	-1500
+path_point	route_024	5	2267	-1452
+path_point	route_024	6	2333	-1452
+path_point	route_024	7	2400	-1500
+path	route_025	land_route	primary	road	7	7	9d4fa9566838ecb469dfc1fdd852c6ffc8a91b048accddef03148fc2f11a1bf9
+path_point	route_025	1	-2400	1500
+path_point	route_025	2	-2333	1548
+path_point	route_025	3	-2267	1548
+path_point	route_025	4	-2200	1500
+path_point	route_025	5	-2067	1452
+path_point	route_025	6	-1933	1452
+path_point	route_025	7	-1800	1500
+path	route_026	land_route	primary	road	7	7	bd6f7c046142f1d3858982d33ed03d7ffd29cdee0a1553bf66bfabdde6eed54d
+path_point	route_026	1	-1800	1500
+path_point	route_026	2	-1667	1452
+path_point	route_026	3	-1533	1452
+path_point	route_026	4	-1400	1500
+path_point	route_026	5	-1233	1548
+path_point	route_026	6	-1067	1548
+path_point	route_026	7	-900	1500
+path	route_027	land_route	primary	road	7	7	0a4bc3e9600718f51c5ed67500a59989623a95d0d2d702545a2512698b76686f
+path_point	route_027	1	-900	1500
+path_point	route_027	2	-733	1452
+path_point	route_027	3	-567	1452
+path_point	route_027	4	-400	1500
+path_point	route_027	5	-267	1548
+path_point	route_027	6	-133	1548
+path_point	route_027	7	0	1500
+path	route_028	land_route	primary	road	7	7	7c82e91b077a9b68f33f3f82879f12a30a6de7ef5d48fe6e8a7891a23286a9e6
+path_point	route_028	1	0	1500
+path_point	route_028	2	133	1548
+path_point	route_028	3	267	1548
+path_point	route_028	4	400	1500
+path_point	route_028	5	567	1452
+path_point	route_028	6	733	1452
+path_point	route_028	7	900	1500
+path	route_029	land_route	primary	road	7	7	edd8115099bfc17c418445cba143f03f87b2c9cd042db332e092646da790bb20
+path_point	route_029	1	900	1500
+path_point	route_029	2	1067	1452
+path_point	route_029	3	1233	1452
+path_point	route_029	4	1400	1500
+path_point	route_029	5	1533	1548
+path_point	route_029	6	1667	1548
+path_point	route_029	7	1800	1500
+path	route_030	land_route	primary	road	7	7	e04954e280840f4ae5010de2076496336285a5fc64b3c03b28a953630e57ac5b
+path_point	route_030	1	1800	1500
+path_point	route_030	2	1933	1548
+path_point	route_030	3	2067	1548
+path_point	route_030	4	2200	1500
+path_point	route_030	5	2267	1452
+path_point	route_030	6	2333	1452
+path_point	route_030	7	2400	1500
+path	route_031	land_route	secondary	road	5	7	23ffe1294b7daa94fb7066a6a43a2b7e8dd0dbabf6acb58a9909bc3060558097
+path_point	route_031	1	-2400	-1500
+path_point	route_031	2	-2464	-1367
+path_point	route_031	3	-2464	-1233
+path_point	route_031	4	-2400	-1100
+path_point	route_031	5	-2157	-1031
+path_point	route_031	6	-1957	-897
+path_point	route_031	7	-1800	-700
+path	route_032	land_route	secondary	road	5	7	7e192fb0cfbae229cd566b140ac5f53e67ab131d514ebaa8b564e8b0103985b5
+path_point	route_032	1	-900	-1500
+path_point	route_032	2	-836	-1367
+path_point	route_032	3	-836	-1233
+path_point	route_032	4	-900	-1100
+path_point	route_032	5	-628	-903
+path_point	route_032	6	-328	-769
+path_point	route_032	7	0	-700
+path	route_033	land_route	secondary	road	5	7	42329fe4264b76b2c8d0031dc03362a503eb6fdc737e41ca3596f2a5124befd5
+path_point	route_033	1	900	-1500
+path_point	route_033	2	836	-1367
+path_point	route_033	3	836	-1233
+path_point	route_033	4	900	-1100
+path_point	route_033	5	1228	-1031
+path_point	route_033	6	1528	-897
+path_point	route_033	7	1800	-700
+path	route_034	land_route	secondary	road	5	7	f18a887b6b46c1c25299e99ff5d609380c113736ebf205cf648461eac59b312f
+path_point	route_034	1	2400	-1500
+path_point	route_034	2	2336	-1367
+path_point	route_034	3	2336	-1233
+path_point	route_034	4	2400	-1100
+path_point	route_034	5	2157	-1031
+path_point	route_034	6	1957	-897
+path_point	route_034	7	1800	-700
+path	route_035	land_route	secondary	road	5	7	045c9edf19e4902d8ecfdc28649aee5432d40286dc98d10e64b36ef99bb9045e
+path_point	route_035	1	-1800	-700
+path_point	route_035	2	-1613	-864
+path_point	route_035	3	-1397	-964
+path_point	route_035	4	-1150	-1000
+path_point	route_035	5	-784	-836
+path_point	route_035	6	-400	-736
+path_point	route_035	7	0	-700
+path	route_036	land_route	secondary	road	5	7	bb76140e4860deb4778f4d9bbea5767b6f70f40bf868dec803bc9952c7508f72
+path_point	route_036	1	0	-700
+path_point	route_036	2	247	-736
+path_point	route_036	3	463	-836
+path_point	route_036	4	650	-1000
+path_point	route_036	5	1050	-964
+path_point	route_036	6	1434	-864
+path_point	route_036	7	1800	-700
+path	route_037	land_route	secondary	road	5	7	fe3d15b708cbfd6a7b2a7e07f753ff104d28b06ff300afcb8957e068b8a58c36
+path_point	route_037	1	-2400	1500
+path_point	route_037	2	-2464	1367
+path_point	route_037	3	-2464	1233
+path_point	route_037	4	-2400	1100
+path_point	route_037	5	-2157	1031
+path_point	route_037	6	-1957	897
+path_point	route_037	7	-1800	700
+path	route_038	land_route	secondary	road	5	7	8a7bc3630bf485f9eeb82f88238d718e4ae7ccc337b5014066f76024fb47a66b
+path_point	route_038	1	-900	1500
+path_point	route_038	2	-964	1367
+path_point	route_038	3	-964	1233
+path_point	route_038	4	-900	1100
+path_point	route_038	5	-572	1031
+path_point	route_038	6	-272	897
+path_point	route_038	7	0	700
+path	route_039	land_route	secondary	road	5	7	8af92bdc86c77839552b2ff59ab0181c0b167a90573e790314c80f75db773c42
+path_point	route_039	1	900	1500
+path_point	route_039	2	964	1367
+path_point	route_039	3	964	1233
+path_point	route_039	4	900	1100
+path_point	route_039	5	1172	903
+path_point	route_039	6	1472	769
+path_point	route_039	7	1800	700
+path	route_040	land_route	secondary	road	5	7	505ba9f193a4daeee147db5c93ab1e7e899e7a53b79010b408b987e6636e6207
+path_point	route_040	1	2400	1500
+path_point	route_040	2	2336	1367
+path_point	route_040	3	2336	1233
+path_point	route_040	4	2400	1100
+path_point	route_040	5	2243	903
+path_point	route_040	6	2043	769
+path_point	route_040	7	1800	700
+path	route_041	land_route	secondary	road	5	7	56e0d06cc2da806cad8ac353fd405849774b567296c7ab790a8ee4f5ea03e683
+path_point	route_041	1	-1800	700
+path_point	route_041	2	-1613	864
+path_point	route_041	3	-1397	964
+path_point	route_041	4	-1150	1000
+path_point	route_041	5	-784	836
+path_point	route_041	6	-400	736
+path_point	route_041	7	0	700
+path	route_042	land_route	secondary	road	5	7	dfad867234c1e52b0a9cf9243b0d13cf1b714109ce7f279ff3f5dd75ecf06bd8
+path_point	route_042	1	0	700
+path_point	route_042	2	187	864
+path_point	route_042	3	403	964
+path_point	route_042	4	650	1000
+path_point	route_042	5	1016	836
+path_point	route_042	6	1400	736
+path_point	route_042	7	1800	700
+path	route_043	land_route	secondary	road	5	10	05d82c3b7ce973e3fd11dba1a2015e7183696a317c4701775df09cf5d8bbc136
+path_point	route_043	1	-1800	-700
+path_point	route_043	2	-1803	-522
+path_point	route_043	3	-1869	-372
+path_point	route_043	4	-2000	-250
+path_point	route_043	5	-2037	-200
+path_point	route_043	6	-2037	-150
+path_point	route_043	7	-2000	-100
+path_point	route_043	8	-1975	-67
+path_point	route_043	9	-1975	-33
+path_point	route_043	10	-2000	0
+path	route_044	land_route	secondary	road	5	7	adeebd61ec19d520d6331ee8f69e4a732cd1a8b55dc1081b73ebbff7dfde5e37
+path_point	route_044	1	-1800	-700
+path_point	route_044	2	-1618	-486
+path_point	route_044	3	-1393	-336
+path_point	route_044	4	-1125	-250
+path_point	route_044	5	-957	-231
+path_point	route_044	6	-832	-147
+path_point	route_044	7	-750	0
+path	route_045	land_route	secondary	road	5	7	c026a962dd6e8195741cc3977a79bb43323b32864a7bc6249ee7de4bb54c3866
+path_point	route_045	1	0	-700
+path_point	route_045	2	-189	-603
+path_point	route_045	3	-314	-453
+path_point	route_045	4	-375	-250
+path_point	route_045	5	-543	-231
+path_point	route_045	6	-668	-147
+path_point	route_045	7	-750	0
+path	route_046	land_route	secondary	road	5	7	8e1aa0d48a49f82fad7fe3e1a734b50181f5a3b1f138dfd456d094c75991c800
+path_point	route_046	1	0	-700
+path_point	route_046	2	189	-603
+path_point	route_046	3	314	-453
+path_point	route_046	4	375	-250
+path_point	route_046	5	457	-103
+path_point	route_046	6	582	-19
+path_point	route_046	7	750	0
+path	route_047	land_route	secondary	road	5	7	6ccabbea89bac4e1a0247b9ce6487d9c08386cf5cde9f11a1e588e5808f9801c
+path_point	route_047	1	1800	-700
+path_point	route_047	2	1532	-614
+path_point	route_047	3	1307	-464
+path_point	route_047	4	1125	-250
+path_point	route_047	5	1043	-103
+path_point	route_047	6	918	-19
+path_point	route_047	7	750	0
+path	route_048	land_route	secondary	road	5	10	29e7e3241ff452034b5211da17c1b2800a19fa80b79d969f03672e704d974b6a
+path_point	route_048	1	1800	-700
+path_point	route_048	2	1931	-578
+path_point	route_048	3	1997	-428
+path_point	route_048	4	2000	-250
+path_point	route_048	5	1963	-200
+path_point	route_048	6	1963	-150
+path_point	route_048	7	2000	-100
+path_point	route_048	8	2025	-67
+path_point	route_048	9	2025	-33
+path_point	route_048	10	2000	0
+path	route_049	land_route	secondary	road	5	7	a7cd3ac25d2b95ee327bf206741db65a316dd0055022809164553954af15132d
+path_point	route_049	1	-1800	700
+path_point	route_049	2	-1931	578
+path_point	route_049	3	-1997	428
+path_point	route_049	4	-2000	250
+path_point	route_049	5	-1938	167
+path_point	route_049	6	-1938	83
+path_point	route_049	7	-2000	0
+path	route_050	land_route	secondary	road	5	7	7c8291a22e4bec14ae9a4177ab4df25ca82101c8fe8238ccb4e72bd2abe9ec27
+path_point	route_050	1	-1800	700
+path_point	route_050	2	-1532	614
+path_point	route_050	3	-1307	464
+path_point	route_050	4	-1125	250
+path_point	route_050	5	-1043	103
+path_point	route_050	6	-918	19
+path_point	route_050	7	-750	0
+path	route_051	land_route	secondary	road	5	7	b2f0a48cb827ccfac5943bb36482b6855ba97903e543da4327f91d5fb949deba
+path_point	route_051	1	0	700
+path_point	route_051	2	-189	603
+path_point	route_051	3	-314	453
+path_point	route_051	4	-375	250
+path_point	route_051	5	-457	103
+path_point	route_051	6	-582	19
+path_point	route_051	7	-750	0
+path	route_052	land_route	secondary	road	5	7	068dbc4d5a86b43e5b7cdc614a21db9245e9af8899d7ddeba78b2fad789b531f
+path_point	route_052	1	0	700
+path_point	route_052	2	189	603
+path_point	route_052	3	314	453
+path_point	route_052	4	375	250
+path_point	route_052	5	457	103
+path_point	route_052	6	582	19
+path_point	route_052	7	750	0
+path	route_053	land_route	secondary	road	5	7	1a305d0e52548e514f2e9e9ec5f2abb48a088a44b10a1fcbaa306f8b0cd8ee6b
+path_point	route_053	1	1800	700
+path_point	route_053	2	1618	486
+path_point	route_053	3	1393	336
+path_point	route_053	4	1125	250
+path_point	route_053	5	957	231
+path_point	route_053	6	832	147
+path_point	route_053	7	750	0
+path	route_054	land_route	secondary	road	5	7	03d565da04d22d1044666cd4eebce49551a79067fc66facb1dfdbc1679231099
+path_point	route_054	1	1800	700
+path_point	route_054	2	1803	522
+path_point	route_054	3	1869	372
+path_point	route_054	4	2000	250
+path_point	route_054	5	2062	167
+path_point	route_054	6	2062	83
+path_point	route_054	7	2000	0
+path	route_055	land_route	trail	trail	3	7	2ff7361d3b13d4f5a0cc2e0407304a88e669f4fa882e4794665e224fa1fea1a7
+path_point	route_055	1	-2000	0
+path_point	route_055	2	-1813	38
+path_point	route_055	3	-1647	-3
+path_point	route_055	4	-1500	-125
+path_point	route_055	5	-1237	-163
+path_point	route_055	6	-987	-122
+path_point	route_055	7	-750	0
+path	route_056	land_route	trail	trail	3	7	87dcc73cd1223ebd2aff86ea3846ff7f470686547534f9fb107e862b356ab625
+path_point	route_056	1	-750	0
+path_point	route_056	2	-487	38
+path_point	route_056	3	-237	-3
+path_point	route_056	4	0	-125
+path_point	route_056	5	237	-3
+path_point	route_056	6	487	38
+path_point	route_056	7	750	0
+path	route_057	land_route	trail	trail	3	7	99ea25063f920984afbf60947fc562b08e5abbfe3aa61a56126640c387a8a224
+path_point	route_057	1	750	0
+path_point	route_057	2	987	-122
+path_point	route_057	3	1237	-163
+path_point	route_057	4	1500	-125
+path_point	route_057	5	1647	-3
+path_point	route_057	6	1813	38
+path_point	route_057	7	2000	0
+contact	island_route_stormscale_junction_apex	island_route_stormscale_junction_dragon	27	0	3098	3104	-2	2	overlap	3098	-1	3098	-1
+contact	island_route_stormscale_junction_apex	island_route_stormscale_north_junction	22	1	3098	3102	-2	4	overlap	3098	-1	3098	-1
+contact	island_route_stormscale_junction_apex	island_route_stormscale_south_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+contact	island_route_stormscale_junction_apex	poi_spur_086	14	2	3121	3126	27	32	overlap	3122	30	3122	30
+contact	island_route_stormscale_junction_dragon	island_route_stormscale_north_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+contact	island_route_stormscale_junction_dragon	island_route_stormscale_south_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+contact	island_route_stormscale_north_junction	island_route_stormscale_south_junction	22	0	3097	3102	-2	2	overlap	3097	0	3097	0
+contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_junction_dragon	27	0	-3104	-3098	-2	2	overlap	-3104	1	-3104	1
+contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_north_junction	22	1	-3102	-3098	-2	4	overlap	-3102	-1	-3102	-1
+contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_south_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+contact	island_route_wyrmglass_junction_apex	poi_spur_075	15	4	-3130	-3125	31	38	overlap	-3129	33	-3129	33
+contact	island_route_wyrmglass_junction_dragon	island_route_wyrmglass_north_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+contact	island_route_wyrmglass_junction_dragon	island_route_wyrmglass_south_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+contact	island_route_wyrmglass_north_junction	island_route_wyrmglass_south_junction	22	0	-3102	-3097	-2	2	overlap	-3102	-1	-3102	-1
+contact	poi_spur_013	poi_spur_025	46	3	-1815	-1798	-2052	-2048	overlap	-1812	-2050	-1812	-2050
+contact	poi_spur_013	poi_spur_049	12	0	-1801	-1798	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+contact	poi_spur_013	route_001	97	5	-1831	-1798	-2052	-2046	overlap	-1826	-2047	-1826	-2047
+contact	poi_spur_013	route_002	26	1	-1803	-1798	-2052	-2047	overlap	-1803	-2051	-1803	-2051
+contact	poi_spur_014	poi_spur_026	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_014	poi_spur_061	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_014	route_019	26	0	-2402	-2398	-1503	-1498	overlap	-2402	-1502	-2402	-1502
+contact	poi_spur_014	route_031	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_015	poi_spur_029	21	0	-2	2	-2052	-2048	overlap	-2	-2051	-2	-2051
+contact	poi_spur_015	poi_spur_051	12	0	-1	2	-2051	-2049	overlap	-1	-2051	-1	-2051
+contact	poi_spur_015	route_004	173	10	-58	2	-2052	-2038	overlap	-50	-2040	-50	-2040
+contact	poi_spur_015	route_005	27	0	-3	2	-2052	-2047	overlap	-3	-2051	-3	-2051
+contact	poi_spur_016	poi_spur_030	21	0	-902	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+contact	poi_spur_016	poi_spur_062	21	1	-903	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+contact	poi_spur_016	poi_spur_067	13	1	-901	-898	-1503	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_016	route_020	33	2	-905	-898	-1506	-1498	overlap	-904	-1504	-904	-1504
+contact	poi_spur_016	route_021	26	1	-903	-898	-1504	-1498	overlap	-903	-1501	-903	-1501
+contact	poi_spur_016	route_032	21	0	-902	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+contact	poi_spur_017	poi_spur_033	40	3	1798	1812	-2052	-2048	overlap	1798	-2051	1798	-2051
+contact	poi_spur_017	poi_spur_053	12	0	1798	1801	-2051	-2049	overlap	1798	-2051	1798	-2051
+contact	poi_spur_017	route_007	26	2	1798	1804	-2052	-2047	overlap	1798	-2051	1798	-2051
+contact	poi_spur_017	route_008	27	0	1798	1803	-2052	-2047	overlap	1798	-2051	1798	-2051
+contact	poi_spur_018	poi_spur_034	21	1	897	902	-1502	-1498	overlap	898	-1501	898	-1501
+contact	poi_spur_018	poi_spur_063	21	0	898	902	-1502	-1498	overlap	898	-1501	898	-1501
+contact	poi_spur_018	poi_spur_068	14	1	899	902	-1504	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_018	route_022	33	2	895	902	-1506	-1498	overlap	896	-1504	896	-1504
+contact	poi_spur_018	route_023	26	0	897	902	-1503	-1498	overlap	897	-1501	897	-1501
+contact	poi_spur_018	route_033	21	0	898	902	-1502	-1498	overlap	898	-1501	898	-1501
+contact	poi_spur_019	poi_spur_037	40	3	-1812	-1798	2048	2052	overlap	-1809	2049	-1809	2049
+contact	poi_spur_019	poi_spur_055	12	0	-1801	-1798	2049	2051	overlap	-1801	2049	-1801	2049
+contact	poi_spur_019	poi_spur_069	14	1	-1804	-1799	2049	2052	overlap	-1803	2051	-1803	2051
+contact	poi_spur_019	route_010	27	1	-1804	-1798	2047	2052	overlap	-1804	2051	-1804	2051
+contact	poi_spur_019	route_011	27	0	-1803	-1798	2047	2052	overlap	-1803	2049	-1803	2049
+contact	poi_spur_020	poi_spur_038	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_020	poi_spur_064	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_020	route_025	36	2	-2402	-2396	1498	1508	overlap	-2402	1499	-2402	1499
+contact	poi_spur_020	route_037	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_021	poi_spur_041	21	0	-2	2	2048	2052	overlap	-2	2049	-2	2049
+contact	poi_spur_021	poi_spur_057	12	0	-1	2	2049	2051	overlap	-1	2049	-1	2049
+contact	poi_spur_021	route_013	26	1	-4	2	2047	2052	overlap	-3	2049	-3	2049
+contact	poi_spur_021	route_014	27	0	-3	2	2047	2052	overlap	-3	2049	-3	2049
+contact	poi_spur_022	poi_spur_042	21	1	-902	-897	1498	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_022	poi_spur_065	21	0	-902	-898	1498	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_022	route_026	26	0	-902	-897	1498	1503	overlap	-902	1499	-902	1499
+contact	poi_spur_022	route_027	28	1	-902	-896	1498	1503	overlap	-902	1499	-902	1499
+contact	poi_spur_022	route_038	21	0	-902	-898	1498	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_023	poi_spur_045	81	7	1798	1831	2048	2052	overlap	1798	2049	1798	2049
+contact	poi_spur_023	poi_spur_059	12	0	1798	1801	2049	2051	overlap	1798	2049	1798	2049
+contact	poi_spur_023	route_016	328	0	1798	1878	2044	2052	overlap	1798	2049	1798	2049
+contact	poi_spur_023	route_017	32	3	1798	1807	2046	2052	overlap	1798	2049	1798	2049
+contact	poi_spur_024	poi_spur_046	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+contact	poi_spur_024	poi_spur_066	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+contact	poi_spur_024	poi_spur_070	14	2	899	902	1499	1505	overlap	899	1499	899	1499
+contact	poi_spur_024	route_028	28	0	897	902	1498	1503	overlap	897	1502	897	1502
+contact	poi_spur_024	route_029	26	1	897	902	1498	1503	overlap	898	1499	898	1499
+contact	poi_spur_024	route_039	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+contact	poi_spur_025	poi_spur_049	12	0	-1801	-1798	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+contact	poi_spur_025	route_001	202	11	-1932	-1798	-2075	-2048	overlap	-1931	-2074	-1931	-2074
+contact	poi_spur_025	route_002	26	0	-1803	-1798	-2052	-2048	overlap	-1803	-2051	-1803	-2051
+contact	poi_spur_026	poi_spur_061	38	2	-2402	-2398	-1502	-1489	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_026	route_019	43	3	-2402	-2393	-1502	-1491	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_026	route_031	27	1	-2402	-2398	-1502	-1494	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_027	poi_spur_028	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_027	poi_spur_050	12	0	-1801	-1799	-701	-698	overlap	-1801	-701	-1801	-701
+contact	poi_spur_027	route_003	27	1	-1803	-1798	-704	-698	overlap	-1803	-701	-1803	-701
+contact	poi_spur_027	route_031	38	2	-1808	-1798	-707	-698	overlap	-1807	-705	-1807	-705
+contact	poi_spur_027	route_035	21	1	-1802	-1798	-703	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_027	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_027	route_044	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_028	poi_spur_050	15	0	-1801	-1799	-701	-696	overlap	-1801	-701	-1801	-701
+contact	poi_spur_028	route_003	26	0	-1802	-1797	-702	-697	overlap	-1802	-701	-1802	-701
+contact	poi_spur_028	route_031	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_028	route_035	22	0	-1802	-1797	-702	-698	overlap	-1802	-701	-1802	-701
+contact	poi_spur_028	route_043	27	1	-1802	-1797	-702	-695	overlap	-1802	-701	-1802	-701
+contact	poi_spur_028	route_044	84	4	-1802	-1778	-702	-679	overlap	-1802	-701	-1802	-701
+contact	poi_spur_029	poi_spur_051	99	12	-1	57	-2051	-2039	overlap	-1	-2051	-1	-2051
+contact	poi_spur_029	route_004	26	0	-2	3	-2052	-2048	overlap	-2	-2051	-2	-2051
+contact	poi_spur_029	route_005	35	1	-2	7	-2052	-2046	overlap	-2	-2051	-2	-2051
+contact	poi_spur_030	poi_spur_062	22	1	-902	-898	-1502	-1496	overlap	-902	-1501	-902	-1501
+contact	poi_spur_030	poi_spur_067	13	1	-901	-897	-1502	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_030	route_020	26	0	-902	-897	-1502	-1497	overlap	-902	-1501	-902	-1501
+contact	poi_spur_030	route_021	32	1	-902	-894	-1502	-1497	overlap	-902	-1501	-902	-1501
+contact	poi_spur_030	route_032	42	0	-902	-893	-1502	-1491	overlap	-902	-1501	-902	-1501
+contact	poi_spur_031	poi_spur_032	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_031	poi_spur_052	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_031	poi_spur_071	12	1	-3	1	-701	-698	overlap	-2	-699	-2	-699
+contact	poi_spur_031	poi_spur_072	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_031	route_006	27	1	-3	2	-704	-698	overlap	-3	-701	-3	-701
+contact	poi_spur_031	route_032	75	7	-27	2	-709	-698	overlap	-22	-707	-22	-707
+contact	poi_spur_031	route_035	51	4	-18	2	-705	-698	overlap	-13	-703	-13	-703
+contact	poi_spur_031	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_031	route_045	27	1	-6	2	-702	-698	overlap	-5	-700	-5	-700
+contact	poi_spur_031	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_032	poi_spur_052	15	0	-1	1	-701	-696	overlap	-1	-701	-1	-701
+contact	poi_spur_032	poi_spur_071	12	1	-2	1	-701	-697	overlap	-2	-699	-2	-699
+contact	poi_spur_032	poi_spur_072	31	4	-1	10	-701	-689	overlap	-1	-701	-1	-701
+contact	poi_spur_032	route_006	26	0	-2	3	-702	-697	overlap	-2	-701	-2	-701
+contact	poi_spur_032	route_032	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_032	route_035	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_032	route_036	27	1	-2	6	-702	-698	overlap	-2	-701	-2	-701
+contact	poi_spur_032	route_045	21	1	-2	2	-702	-697	overlap	-2	-701	-2	-701
+contact	poi_spur_032	route_046	66	3	-2	20	-702	-686	overlap	-2	-701	-2	-701
+contact	poi_spur_033	poi_spur_053	12	0	1798	1801	-2051	-2049	overlap	1798	-2051	1798	-2051
+contact	poi_spur_033	route_007	30	0	1798	1804	-2053	-2048	overlap	1798	-2051	1798	-2051
+contact	poi_spur_033	route_008	26	0	1798	1803	-2052	-2048	overlap	1798	-2051	1798	-2051
+contact	poi_spur_034	poi_spur_063	23	1	898	902	-1502	-1496	overlap	898	-1501	898	-1501
+contact	poi_spur_034	poi_spur_068	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_034	route_022	31	0	895	902	-1502	-1497	overlap	895	-1498	895	-1498
+contact	poi_spur_034	route_023	26	0	897	902	-1502	-1497	overlap	897	-1500	897	-1500
+contact	poi_spur_034	route_033	49	3	890	902	-1502	-1487	overlap	892	-1489	892	-1489
+contact	poi_spur_035	route_024	35	1	2396	2402	-1502	-1493	overlap	2397	-1496	2397	-1496
+contact	poi_spur_035	route_034	50	3	2394	2402	-1502	-1482	overlap	2396	-1489	2396	-1489
+contact	poi_spur_036	poi_spur_054	15	1	1799	1802	-701	-695	overlap	1799	-701	1799	-701
+contact	poi_spur_036	route_009	26	0	1798	1803	-702	-697	overlap	1798	-701	1798	-701
+contact	poi_spur_036	route_033	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	poi_spur_036	route_034	22	0	1798	1803	-702	-698	overlap	1798	-701	1798	-701
+contact	poi_spur_036	route_036	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	poi_spur_036	route_047	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	poi_spur_036	route_048	307	32	1798	1934	-702	-565	overlap	1798	-701	1798	-701
+contact	poi_spur_037	poi_spur_055	12	0	-1801	-1798	2049	2051	overlap	-1801	2049	-1801	2049
+contact	poi_spur_037	poi_spur_069	20	1	-1807	-1799	2049	2054	overlap	-1806	2053	-1806	2053
+contact	poi_spur_037	route_010	31	1	-1805	-1798	2048	2054	overlap	-1804	2051	-1804	2051
+contact	poi_spur_037	route_011	26	0	-1803	-1798	2048	2052	overlap	-1803	2049	-1803	2049
+contact	poi_spur_038	poi_spur_064	35	2	-2402	-2398	1491	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_038	route_025	27	0	-2402	-2397	1497	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_038	route_037	26	0	-2402	-2398	1495	1502	overlap	-2402	1499	-2402	1499
+contact	poi_spur_039	poi_spur_040	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	poi_spur_039	poi_spur_056	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+contact	poi_spur_039	route_012	28	0	-1803	-1798	698	704	overlap	-1803	699	-1803	699
+contact	poi_spur_039	route_037	47	2	-1812	-1798	698	710	overlap	-1810	709	-1810	709
+contact	poi_spur_039	route_041	21	1	-1802	-1798	698	703	overlap	-1802	699	-1802	699
+contact	poi_spur_039	route_049	23	1	-1804	-1798	698	702	overlap	-1803	699	-1803	699
+contact	poi_spur_039	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	poi_spur_040	poi_spur_056	15	0	-1801	-1799	696	701	overlap	-1801	698	-1801	698
+contact	poi_spur_040	route_012	26	0	-1802	-1797	697	702	overlap	-1802	699	-1802	699
+contact	poi_spur_040	route_037	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	poi_spur_040	route_041	22	0	-1802	-1797	698	702	overlap	-1802	699	-1802	699
+contact	poi_spur_040	route_049	22	0	-1802	-1798	697	702	overlap	-1802	699	-1802	699
+contact	poi_spur_040	route_050	44	1	-1802	-1788	693	702	overlap	-1802	699	-1802	699
+contact	poi_spur_041	poi_spur_057	27	0	-1	11	2048	2051	overlap	-1	2049	-1	2049
+contact	poi_spur_041	route_013	26	0	-2	3	2048	2052	overlap	-2	2049	-2	2049
+contact	poi_spur_041	route_014	30	0	-2	5	2048	2052	overlap	-2	2049	-2	2049
+contact	poi_spur_042	poi_spur_065	22	1	-902	-898	1496	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_042	route_026	26	0	-902	-897	1497	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_042	route_027	46	1	-902	-890	1493	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_042	route_038	23	1	-902	-898	1496	1502	overlap	-902	1499	-902	1499
+contact	poi_spur_043	poi_spur_044	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	poi_spur_043	poi_spur_058	12	0	-1	1	698	701	overlap	-1	698	-1	698
+contact	poi_spur_043	poi_spur_073	12	0	-2	1	698	701	overlap	-2	699	-2	699
+contact	poi_spur_043	poi_spur_074	12	0	-1	2	698	701	overlap	-1	699	-1	699
+contact	poi_spur_043	route_015	27	1	-3	2	698	704	overlap	-3	699	-3	699
+contact	poi_spur_043	route_038	77	4	-23	2	698	714	overlap	-20	712	-20	712
+contact	poi_spur_043	route_041	47	2	-14	2	698	704	overlap	-12	703	-12	703
+contact	poi_spur_043	route_042	21	1	-2	2	698	703	overlap	-2	699	-2	699
+contact	poi_spur_043	route_051	26	0	-5	2	698	702	overlap	-5	700	-5	700
+contact	poi_spur_043	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	poi_spur_044	poi_spur_058	15	2	-1	3	695	701	overlap	-1	698	-1	698
+contact	poi_spur_044	poi_spur_073	13	0	-2	1	697	701	overlap	-2	699	-2	699
+contact	poi_spur_044	poi_spur_074	31	7	-1	12	687	701	overlap	-1	699	-1	699
+contact	poi_spur_044	route_015	26	0	-2	3	697	702	overlap	-2	699	-2	699
+contact	poi_spur_044	route_038	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	poi_spur_044	route_041	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	poi_spur_044	route_042	22	0	-2	3	698	702	overlap	-2	699	-2	699
+contact	poi_spur_044	route_051	21	1	-2	2	697	702	overlap	-2	699	-2	699
+contact	poi_spur_044	route_052	68	6	-2	22	685	702	overlap	-2	699	-2	699
+contact	poi_spur_045	poi_spur_059	12	0	1798	1801	2049	2051	overlap	1798	2049	1798	2049
+contact	poi_spur_045	route_016	219	4	1798	1925	2048	2066	overlap	1798	2049	1798	2049
+contact	poi_spur_045	route_017	32	0	1798	1805	2048	2052	overlap	1798	2049	1798	2049
+contact	poi_spur_046	poi_spur_066	23	1	898	902	1496	1502	overlap	898	1499	898	1499
+contact	poi_spur_046	poi_spur_070	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+contact	poi_spur_046	route_028	41	2	891	902	1494	1502	overlap	893	1495	893	1495
+contact	poi_spur_046	route_029	26	0	897	902	1497	1502	overlap	897	1499	897	1499
+contact	poi_spur_046	route_039	23	2	898	902	1495	1502	overlap	898	1499	898	1499
+contact	poi_spur_047	route_030	32	1	2397	2402	1494	1502	overlap	2398	1495	2398	1495
+contact	poi_spur_047	route_040	38	2	2397	2402	1489	1502	overlap	2398	1491	2398	1491
+contact	poi_spur_048	poi_spur_060	18	1	1799	1801	694	701	overlap	1799	697	1799	697
+contact	poi_spur_048	route_018	27	0	1798	1803	697	702	overlap	1798	699	1798	699
+contact	poi_spur_048	route_039	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	poi_spur_048	route_040	24	1	1798	1804	698	702	overlap	1798	699	1798	699
+contact	poi_spur_048	route_042	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	poi_spur_048	route_053	23	1	1798	1802	696	702	overlap	1798	699	1798	699
+contact	poi_spur_048	route_054	34	2	1798	1803	691	702	overlap	1798	699	1798	699
+contact	poi_spur_049	route_001	15	0	-1801	-1797	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+contact	poi_spur_049	route_002	18	0	-1801	-1795	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+contact	poi_spur_050	route_003	15	0	-1801	-1799	-701	-697	overlap	-1801	-701	-1801	-701
+contact	poi_spur_050	route_031	12	0	-1801	-1799	-701	-698	overlap	-1801	-701	-1801	-701
+contact	poi_spur_050	route_035	12	0	-1801	-1799	-701	-698	overlap	-1801	-701	-1801	-701
+contact	poi_spur_050	route_043	169	17	-1820	-1799	-701	-478	overlap	-1819	-485	-1819	-485
+contact	poi_spur_050	route_044	16	1	-1801	-1798	-701	-694	overlap	-1801	-701	-1801	-701
+contact	poi_spur_051	route_004	14	1	-1	3	-2051	-2048	overlap	-1	-2051	-1	-2051
+contact	poi_spur_051	route_005	20	3	-1	7	-2051	-2046	overlap	-1	-2051	-1	-2051
+contact	poi_spur_052	poi_spur_071	13	2	-3	1	-701	-693	overlap	-1	-701	-1	-701
+contact	poi_spur_052	poi_spur_072	13	1	-1	2	-701	-695	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_006	15	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_032	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_035	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_036	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_045	13	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+contact	poi_spur_052	route_046	13	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+contact	poi_spur_053	route_007	15	0	1797	1801	-2051	-2049	overlap	1797	-2051	1797	-2051
+contact	poi_spur_053	route_008	18	0	1795	1801	-2051	-2049	overlap	1795	-2049	1795	-2049
+contact	poi_spur_054	route_009	15	0	1799	1801	-701	-697	overlap	1799	-701	1799	-701
+contact	poi_spur_054	route_033	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+contact	poi_spur_054	route_034	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+contact	poi_spur_054	route_036	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+contact	poi_spur_054	route_047	12	1	1798	1801	-701	-697	overlap	1799	-701	1799	-701
+contact	poi_spur_054	route_048	15	1	1799	1802	-701	-695	overlap	1799	-701	1799	-701
+contact	poi_spur_055	poi_spur_069	9	0	-1801	-1799	2049	2051	overlap	-1801	2049	-1801	2049
+contact	poi_spur_055	route_010	15	0	-1801	-1797	2049	2051	overlap	-1801	2049	-1801	2049
+contact	poi_spur_055	route_011	18	0	-1801	-1795	2049	2051	overlap	-1801	2049	-1801	2049
+contact	poi_spur_056	route_012	15	0	-1801	-1799	697	701	overlap	-1801	697	-1801	697
+contact	poi_spur_056	route_037	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+contact	poi_spur_056	route_041	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+contact	poi_spur_056	route_049	15	1	-1802	-1799	695	701	overlap	-1801	696	-1801	696
+contact	poi_spur_056	route_050	12	1	-1801	-1798	697	701	overlap	-1801	698	-1801	698
+contact	poi_spur_057	route_013	14	1	-1	3	2048	2051	overlap	-1	2049	-1	2049
+contact	poi_spur_057	route_014	20	3	-1	7	2046	2051	overlap	-1	2049	-1	2049
+contact	poi_spur_058	poi_spur_073	14	0	-1	1	696	701	overlap	-1	696	-1	696
+contact	poi_spur_058	poi_spur_074	13	2	-1	3	694	701	overlap	-1	699	-1	699
+contact	poi_spur_058	route_015	15	0	-1	1	697	701	overlap	-1	697	-1	697
+contact	poi_spur_058	route_038	12	0	-1	1	698	701	overlap	-1	698	-1	698
+contact	poi_spur_058	route_041	12	0	-1	1	698	701	overlap	-1	698	-1	698
+contact	poi_spur_058	route_042	12	0	-1	1	698	701	overlap	-1	698	-1	698
+contact	poi_spur_058	route_051	13	0	-1	1	697	701	overlap	-1	697	-1	697
+contact	poi_spur_058	route_052	13	0	-1	1	697	701	overlap	-1	698	-1	698
+contact	poi_spur_059	route_016	15	0	1797	1801	2049	2051	overlap	1797	2049	1797	2049
+contact	poi_spur_059	route_017	15	0	1797	1801	2049	2051	overlap	1797	2049	1797	2049
+contact	poi_spur_060	route_018	15	0	1799	1801	697	701	overlap	1799	697	1799	697
+contact	poi_spur_060	route_039	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+contact	poi_spur_060	route_040	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+contact	poi_spur_060	route_042	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+contact	poi_spur_060	route_053	17	1	1797	1801	693	701	overlap	1798	694	1798	694
+contact	poi_spur_060	route_054	75	6	1798	1801	665	701	overlap	1798	671	1798	671
+contact	poi_spur_061	route_019	32	0	-2402	-2398	-1502	-1495	overlap	-2402	-1501	-2402	-1501
+contact	poi_spur_061	route_031	44	3	-2404	-2398	-1502	-1486	overlap	-2403	-1494	-2403	-1494
+contact	poi_spur_062	poi_spur_067	13	0	-901	-898	-1502	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_062	route_020	29	1	-905	-898	-1502	-1497	overlap	-904	-1498	-904	-1498
+contact	poi_spur_062	route_021	26	0	-903	-898	-1502	-1497	overlap	-903	-1500	-903	-1500
+contact	poi_spur_062	route_032	24	1	-902	-898	-1502	-1495	overlap	-902	-1501	-902	-1501
+contact	poi_spur_063	poi_spur_068	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_063	route_022	26	0	898	903	-1502	-1497	overlap	898	-1501	898	-1501
+contact	poi_spur_063	route_023	34	0	898	905	-1502	-1495	overlap	898	-1501	898	-1501
+contact	poi_spur_063	route_033	26	0	898	902	-1502	-1495	overlap	898	-1501	898	-1501
+contact	poi_spur_064	route_025	26	0	-2402	-2398	1497	1502	overlap	-2402	1498	-2402	1498
+contact	poi_spur_064	route_037	43	3	-2404	-2398	1486	1502	overlap	-2403	1489	-2403	1489
+contact	poi_spur_065	route_026	29	1	-905	-898	1497	1502	overlap	-904	1498	-904	1498
+contact	poi_spur_065	route_027	26	0	-903	-898	1497	1502	overlap	-903	1499	-903	1499
+contact	poi_spur_065	route_038	93	8	-919	-898	1468	1502	overlap	-915	1474	-915	1474
+contact	poi_spur_066	poi_spur_070	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+contact	poi_spur_066	route_028	26	0	898	903	1497	1502	overlap	898	1499	898	1499
+contact	poi_spur_066	route_029	37	0	898	906	1495	1502	overlap	898	1499	898	1499
+contact	poi_spur_066	route_039	113	8	898	923	1460	1502	overlap	898	1499	898	1499
+contact	poi_spur_067	route_020	15	1	-901	-897	-1503	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_067	route_021	28	3	-901	-891	-1507	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_067	route_032	13	0	-901	-898	-1502	-1499	overlap	-901	-1501	-901	-1501
+contact	poi_spur_068	route_022	15	1	899	903	-1503	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_068	route_023	17	1	899	904	-1503	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_068	route_033	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+contact	poi_spur_069	route_010	83	6	-1982	-1799	2049	2200	overlap	-1981	2197	-1981	2197
+contact	poi_spur_069	route_011	14	1	-1803	-1799	2049	2053	overlap	-1803	2051	-1803	2051
+contact	poi_spur_070	route_028	14	1	899	903	1499	1503	overlap	899	1499	899	1499
+contact	poi_spur_070	route_029	16	1	899	904	1499	1503	overlap	899	1499	899	1499
+contact	poi_spur_070	route_039	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+contact	poi_spur_071	poi_spur_072	10	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_071	route_006	14	1	-3	1	-701	-697	overlap	-2	-699	-2	-699
+contact	poi_spur_071	route_032	13	1	-3	1	-701	-698	overlap	-2	-699	-2	-699
+contact	poi_spur_071	route_035	14	0	-3	1	-701	-698	overlap	-3	-698	-3	-698
+contact	poi_spur_071	route_036	12	0	-2	1	-701	-698	overlap	-2	-699	-2	-699
+contact	poi_spur_071	route_045	20	0	-5	1	-701	-695	overlap	-5	-695	-5	-695
+contact	poi_spur_071	route_046	12	0	-2	1	-701	-698	overlap	-2	-699	-2	-699
+contact	poi_spur_072	route_006	14	1	-1	3	-701	-697	overlap	-1	-701	-1	-701
+contact	poi_spur_072	route_032	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_072	route_035	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_072	route_036	14	0	-1	3	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_072	route_045	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+contact	poi_spur_072	route_046	20	0	-1	5	-701	-695	overlap	-1	-701	-1	-701
+contact	poi_spur_073	poi_spur_074	10	1	-1	1	697	701	overlap	-1	699	-1	699
+contact	poi_spur_073	route_015	15	0	-2	1	697	701	overlap	-2	698	-2	698
+contact	poi_spur_073	route_038	12	0	-2	1	698	701	overlap	-2	699	-2	699
+contact	poi_spur_073	route_041	13	1	-3	1	697	701	overlap	-2	698	-2	698
+contact	poi_spur_073	route_042	12	0	-2	1	698	701	overlap	-2	699	-2	699
+contact	poi_spur_073	route_051	17	3	-5	1	694	701	overlap	-3	696	-3	696
+contact	poi_spur_073	route_052	12	1	-2	1	697	701	overlap	-2	699	-2	699
+contact	poi_spur_074	route_015	14	1	-1	3	697	701	overlap	-1	699	-1	699
+contact	poi_spur_074	route_038	12	0	-1	2	698	701	overlap	-1	699	-1	699
+contact	poi_spur_074	route_041	12	0	-1	2	698	701	overlap	-1	699	-1	699
+contact	poi_spur_074	route_042	12	0	-1	2	698	701	overlap	-1	699	-1	699
+contact	poi_spur_074	route_051	12	0	-1	2	698	701	overlap	-1	699	-1	699
+contact	poi_spur_074	route_052	20	2	-1	7	694	701	overlap	-1	699	-1	699
+contact	poi_spur_076	poi_spur_077	9	0	-2001	-1999	-1	1	overlap	-2001	-1	-2001	-1
+contact	poi_spur_076	route_043	12	0	-2002	-1999	-2	1	overlap	-2002	-1	-2002	-1
+contact	poi_spur_076	route_049	12	0	-2002	-1999	-2	1	overlap	-2002	-1	-2002	-1
+contact	poi_spur_076	route_055	9	0	-2001	-1999	-1	1	overlap	-2001	-1	-2001	-1
+contact	poi_spur_077	route_043	13	1	-2001	-1997	-1	2	overlap	-2001	-1	-2001	-1
+contact	poi_spur_077	route_049	17	3	-2001	-1994	-1	4	overlap	-2001	-1	-2001	-1
+contact	poi_spur_077	route_055	71	14	-2001	-1948	-1	13	overlap	-2001	-1	-2001	-1
+contact	poi_spur_078	poi_spur_079	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_078	poi_spur_080	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_078	route_044	13	2	-754	-749	-3	1	overlap	-753	-1	-753	-1
+contact	poi_spur_078	route_045	12	0	-752	-749	-1	1	overlap	-752	-1	-752	-1
+contact	poi_spur_078	route_050	33	4	-767	-749	-2	1	overlap	-763	-1	-763	-1
+contact	poi_spur_078	route_051	12	0	-752	-749	-1	1	overlap	-752	-1	-752	-1
+contact	poi_spur_078	route_055	19	3	-761	-749	-4	1	overlap	-757	-2	-757	-2
+contact	poi_spur_078	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_079	poi_spur_080	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_044	12	0	-751	-749	-1	2	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_045	12	0	-751	-749	-1	2	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_050	12	1	-752	-749	-1	3	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_051	12	0	-751	-749	-1	2	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_055	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_079	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_044	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_045	13	2	-751	-746	-3	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_050	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_051	32	2	-751	-735	-2	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_055	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_080	route_056	21	1	-751	-740	-1	1	overlap	-751	-1	-751	-1
+contact	poi_spur_081	poi_spur_082	9	0	749	751	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_081	poi_spur_083	9	0	749	751	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_081	route_046	29	1	737	751	-1	2	overlap	738	1	738	1
+contact	poi_spur_081	route_047	12	0	748	751	-1	1	overlap	748	-1	748	-1
+contact	poi_spur_081	route_052	131	15	541	751	-1	44	overlap	542	43	542	43
+contact	poi_spur_081	route_053	12	0	748	751	-1	1	overlap	748	-1	748	-1
+contact	poi_spur_081	route_056	86	17	683	751	-1	12	overlap	698	9	698	9
+contact	poi_spur_081	route_057	9	0	749	751	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_082	poi_spur_083	9	1	749	752	-2	1	overlap	749	-1	749	-1
+contact	poi_spur_082	route_046	12	1	749	752	-2	1	overlap	749	-2	749	-2
+contact	poi_spur_082	route_047	13	0	749	752	-2	1	overlap	749	-2	749	-2
+contact	poi_spur_082	route_052	12	1	749	752	-2	1	overlap	749	-2	749	-2
+contact	poi_spur_082	route_053	12	1	749	752	-2	1	overlap	749	-2	749	-2
+contact	poi_spur_082	route_056	9	0	749	751	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_082	route_057	11	1	749	753	-3	1	overlap	749	-1	749	-1
+contact	poi_spur_083	route_046	12	0	749	752	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_083	route_047	32	2	749	765	-1	2	overlap	749	-1	749	-1
+contact	poi_spur_083	route_052	12	0	749	752	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_083	route_053	13	2	749	754	-1	3	overlap	749	-1	749	-1
+contact	poi_spur_083	route_056	9	0	749	751	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_083	route_057	13	2	749	755	-1	1	overlap	749	-1	749	-1
+contact	poi_spur_084	poi_spur_085	9	0	1999	2001	-1	1	overlap	1999	-1	1999	-1
+contact	poi_spur_084	route_048	12	0	1998	2001	-2	1	overlap	1998	-1	1998	-1
+contact	poi_spur_084	route_054	12	0	1998	2001	-2	1	overlap	1998	-1	1998	-1
+contact	poi_spur_084	route_057	12	1	1996	2001	-1	1	overlap	1997	0	1997	0
+contact	poi_spur_085	route_048	12	1	1999	2003	-1	2	overlap	1999	-1	1999	-1
+contact	poi_spur_085	route_054	23	5	1999	2009	-1	8	overlap	1999	-1	1999	-1
+contact	poi_spur_085	route_057	9	0	1999	2001	-1	1	overlap	1999	-1	1999	-1
+contact	route_001	route_002	38	0	-1803	-1797	-2053	-2047	overlap	-1803	-2051	-1803	-2051
+contact	route_002	route_003	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+contact	route_002	route_019	50	0	-1805	-1797	-1505	-1497	overlap	-1805	-1505	-1805	-1505
+contact	route_002	route_020	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+contact	route_003	route_019	40	0	-1804	-1797	-1503	-1497	overlap	-1804	-1499	-1804	-1499
+contact	route_003	route_020	40	0	-1803	-1797	-1503	-1496	overlap	-1803	-1501	-1803	-1501
+contact	route_003	route_031	31	1	-1803	-1798	-706	-698	overlap	-1803	-701	-1803	-701
+contact	route_003	route_035	46	3	-1802	-1792	-710	-698	overlap	-1802	-701	-1802	-701
+contact	route_003	route_043	26	0	-1802	-1798	-702	-697	overlap	-1802	-701	-1802	-701
+contact	route_003	route_044	26	0	-1802	-1797	-702	-697	overlap	-1802	-701	-1802	-701
+contact	route_004	route_005	38	0	-3	3	-2053	-2047	overlap	-3	-2051	-3	-2051
+contact	route_005	route_006	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+contact	route_005	route_021	40	0	-4	3	-1503	-1497	overlap	-4	-1502	-4	-1502
+contact	route_005	route_022	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+contact	route_006	route_021	50	0	-5	3	-1503	-1495	overlap	-5	-1496	-5	-1496
+contact	route_006	route_022	40	0	-3	3	-1503	-1496	overlap	-3	-1501	-3	-1501
+contact	route_006	route_032	26	1	-3	2	-703	-698	overlap	-3	-701	-3	-701
+contact	route_006	route_035	26	0	-3	2	-702	-698	overlap	-3	-701	-3	-701
+contact	route_006	route_036	30	1	-2	5	-704	-698	overlap	-2	-701	-2	-701
+contact	route_006	route_045	26	0	-3	2	-702	-697	overlap	-3	-701	-3	-701
+contact	route_006	route_046	26	1	-2	4	-702	-697	overlap	-2	-701	-2	-701
+contact	route_007	route_008	37	0	1797	1803	-2053	-2047	overlap	1797	-2051	1797	-2051
+contact	route_008	route_009	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+contact	route_008	route_023	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+contact	route_008	route_024	50	0	1797	1805	-1505	-1497	overlap	1797	-1501	1797	-1501
+contact	route_009	route_023	50	0	1795	1803	-1503	-1495	overlap	1795	-1496	1795	-1496
+contact	route_009	route_024	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+contact	route_009	route_033	28	0	1797	1802	-704	-698	overlap	1797	-701	1797	-701
+contact	route_009	route_034	66	1	1798	1810	-716	-698	overlap	1798	-701	1798	-701
+contact	route_009	route_036	27	1	1797	1802	-704	-698	overlap	1797	-701	1797	-701
+contact	route_009	route_047	25	1	1797	1802	-702	-697	overlap	1797	-701	1797	-701
+contact	route_009	route_048	26	0	1798	1803	-702	-697	overlap	1798	-701	1798	-701
+contact	route_010	route_011	37	0	-1803	-1797	2047	2053	overlap	-1803	2049	-1803	2049
+contact	route_011	route_012	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+contact	route_011	route_025	40	0	-1804	-1797	1497	1503	overlap	-1804	1501	-1804	1501
+contact	route_011	route_026	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+contact	route_012	route_025	40	0	-1803	-1797	1496	1503	overlap	-1803	1499	-1803	1499
+contact	route_012	route_026	50	0	-1803	-1795	1495	1503	overlap	-1803	1499	-1803	1499
+contact	route_012	route_037	31	1	-1803	-1798	698	706	overlap	-1803	700	-1803	700
+contact	route_012	route_041	46	3	-1802	-1792	698	710	overlap	-1802	699	-1802	699
+contact	route_012	route_049	26	0	-1803	-1798	697	702	overlap	-1803	699	-1803	699
+contact	route_012	route_050	26	1	-1802	-1796	697	702	overlap	-1802	699	-1802	699
+contact	route_013	route_014	37	0	-3	3	2047	2053	overlap	-3	2049	-3	2049
+contact	route_014	route_015	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+contact	route_014	route_027	50	0	-5	3	1497	1505	overlap	-5	1504	-5	1504
+contact	route_014	route_028	40	0	-3	3	1497	1504	overlap	-3	1499	-3	1499
+contact	route_015	route_027	40	0	-4	3	1497	1503	overlap	-4	1498	-4	1498
+contact	route_015	route_028	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+contact	route_015	route_038	28	0	-3	2	698	704	overlap	-3	700	-3	700
+contact	route_015	route_041	26	0	-3	2	698	702	overlap	-3	699	-3	699
+contact	route_015	route_042	46	3	-2	8	698	710	overlap	-2	699	-2	699
+contact	route_015	route_051	26	0	-3	2	697	702	overlap	-3	699	-3	699
+contact	route_015	route_052	26	1	-2	4	697	702	overlap	-2	699	-2	699
+contact	route_016	route_017	48	1	1797	1807	2046	2053	overlap	1797	2049	1797	2049
+contact	route_017	route_018	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+contact	route_017	route_029	50	0	1795	1803	1497	1505	overlap	1795	1504	1795	1504
+contact	route_017	route_030	40	0	1797	1803	1497	1504	overlap	1797	1499	1797	1499
+contact	route_018	route_029	40	0	1796	1803	1497	1503	overlap	1796	1498	1796	1498
+contact	route_018	route_030	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+contact	route_018	route_039	26	1	1797	1802	698	703	overlap	1797	699	1797	699
+contact	route_018	route_040	33	0	1798	1805	698	704	overlap	1798	699	1798	699
+contact	route_018	route_042	26	0	1797	1802	698	702	overlap	1797	699	1797	699
+contact	route_018	route_053	26	0	1797	1802	697	702	overlap	1797	699	1797	699
+contact	route_018	route_054	26	0	1798	1802	697	702	overlap	1798	698	1798	698
+contact	route_019	route_020	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+contact	route_019	route_031	27	1	-2403	-2398	-1502	-1495	overlap	-2403	-1499	-2403	-1499
+contact	route_020	route_021	37	0	-903	-897	-1503	-1497	overlap	-903	-1501	-903	-1501
+contact	route_020	route_032	26	0	-902	-897	-1502	-1497	overlap	-902	-1501	-902	-1501
+contact	route_021	route_022	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+contact	route_021	route_032	28	1	-902	-896	-1502	-1497	overlap	-902	-1501	-902	-1501
+contact	route_022	route_023	37	0	897	903	-1503	-1497	overlap	897	-1501	897	-1501
+contact	route_022	route_033	28	1	896	902	-1502	-1497	overlap	897	-1499	897	-1499
+contact	route_023	route_024	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+contact	route_023	route_033	26	0	897	902	-1502	-1497	overlap	897	-1499	897	-1499
+contact	route_024	route_034	48	2	2392	2402	-1502	-1489	overlap	2393	-1491	2393	-1491
+contact	route_025	route_026	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+contact	route_025	route_037	26	0	-2403	-2398	1497	1502	overlap	-2403	1499	-2403	1499
+contact	route_026	route_027	37	0	-903	-897	1497	1503	overlap	-903	1499	-903	1499
+contact	route_026	route_038	28	1	-904	-898	1497	1502	overlap	-903	1498	-903	1498
+contact	route_027	route_028	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+contact	route_027	route_038	26	0	-903	-898	1497	1502	overlap	-903	1499	-903	1499
+contact	route_028	route_029	37	0	897	903	1497	1503	overlap	897	1499	897	1499
+contact	route_028	route_039	26	0	898	903	1497	1502	overlap	898	1499	898	1499
+contact	route_029	route_030	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+contact	route_029	route_039	34	0	898	905	1495	1502	overlap	898	1499	898	1499
+contact	route_030	route_040	48	2	2392	2402	1489	1502	overlap	2393	1491	2393	1491
+contact	route_031	route_035	22	1	-1802	-1798	-704	-698	overlap	-1802	-701	-1802	-701
+contact	route_031	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	route_031	route_044	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	route_032	route_035	117	9	-50	2	-708	-698	overlap	-40	-706	-40	-706
+contact	route_032	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_032	route_045	31	0	-7	2	-702	-698	overlap	-7	-699	-7	-699
+contact	route_032	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_033	route_034	22	0	1798	1802	-703	-698	overlap	1798	-701	1798	-701
+contact	route_033	route_036	72	6	1777	1802	-714	-698	overlap	1781	-711	1781	-711
+contact	route_033	route_047	26	0	1795	1802	-702	-698	overlap	1795	-701	1795	-701
+contact	route_033	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	route_034	route_036	21	1	1798	1802	-703	-698	overlap	1798	-701	1798	-701
+contact	route_034	route_047	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	route_034	route_048	22	0	1798	1803	-702	-698	overlap	1798	-701	1798	-701
+contact	route_035	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_035	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+contact	route_035	route_044	22	0	-1802	-1797	-702	-698	overlap	-1802	-701	-1802	-701
+contact	route_035	route_045	34	2	-9	2	-702	-698	overlap	-7	-699	-7	-699
+contact	route_035	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_036	route_045	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_036	route_046	32	2	-2	9	-702	-698	overlap	-2	-701	-2	-701
+contact	route_036	route_047	29	2	1792	1802	-702	-698	overlap	1794	-700	1794	-700
+contact	route_036	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	route_037	route_041	22	1	-1802	-1798	698	704	overlap	-1802	699	-1802	699
+contact	route_037	route_049	22	0	-1803	-1798	698	702	overlap	-1803	700	-1803	700
+contact	route_037	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	route_038	route_041	35	1	-9	2	698	704	overlap	-8	703	-8	703
+contact	route_038	route_042	22	0	-2	2	698	703	overlap	-2	699	-2	699
+contact	route_038	route_051	24	1	-5	2	698	702	overlap	-4	700	-4	700
+contact	route_038	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	route_039	route_040	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	route_039	route_042	117	9	1750	1802	698	708	overlap	1760	706	1760	706
+contact	route_039	route_053	25	0	1796	1802	698	702	overlap	1796	699	1796	699
+contact	route_039	route_054	22	0	1798	1802	698	702	overlap	1798	698	1798	698
+contact	route_040	route_042	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	route_040	route_053	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	route_040	route_054	22	0	1798	1802	698	702	overlap	1798	699	1798	699
+contact	route_041	route_042	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	route_041	route_049	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	route_041	route_050	24	1	-1802	-1795	698	702	overlap	-1802	699	-1802	699
+contact	route_041	route_051	34	2	-9	2	698	702	overlap	-7	699	-7	699
+contact	route_041	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	route_042	route_051	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	route_042	route_052	23	1	-2	4	698	702	overlap	-2	699	-2	699
+contact	route_042	route_053	27	1	1795	1802	697	702	overlap	1796	698	1796	698
+contact	route_042	route_054	22	0	1798	1802	698	702	overlap	1798	698	1798	698
+contact	route_043	route_044	30	1	-1802	-1797	-702	-693	overlap	-1802	-701	-1802	-701
+contact	route_043	route_049	22	0	-2002	-1997	-2	2	overlap	-2002	-1	-2002	-1
+contact	route_043	route_055	13	0	-2001	-1997	-1	1	overlap	-2001	-1	-2001	-1
+contact	route_044	route_045	26	0	-752	-748	-5	2	overlap	-752	-1	-752	-1
+contact	route_044	route_050	24	1	-754	-748	-3	2	overlap	-753	-2	-753	-2
+contact	route_044	route_051	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+contact	route_044	route_055	18	0	-755	-749	-4	1	overlap	-755	-4	-755	-4
+contact	route_044	route_056	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+contact	route_045	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+contact	route_045	route_050	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+contact	route_045	route_051	24	1	-752	-746	-3	2	overlap	-752	-1	-752	-1
+contact	route_045	route_055	12	0	-752	-749	-2	1	overlap	-752	-1	-752	-1
+contact	route_045	route_056	13	0	-751	-747	-1	1	overlap	-751	-1	-751	-1
+contact	route_046	route_047	21	0	748	752	-2	2	overlap	748	-1	748	-1
+contact	route_046	route_052	69	0	728	752	-2	2	overlap	728	0	728	0
+contact	route_046	route_053	21	0	748	752	-2	2	overlap	748	-1	748	-1
+contact	route_046	route_056	33	4	733	751	-1	2	overlap	737	1	737	1
+contact	route_046	route_057	12	0	749	752	-2	1	overlap	749	-1	749	-1
+contact	route_047	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+contact	route_047	route_052	21	0	748	752	-2	2	overlap	748	-1	748	-1
+contact	route_047	route_053	24	1	748	754	-2	3	overlap	748	-1	748	-1
+contact	route_047	route_056	12	0	748	751	-1	1	overlap	748	-1	748	-1
+contact	route_047	route_057	47	3	749	1064	-136	1	overlap	749	-1	749	-1
+contact	route_048	route_054	22	0	1998	2003	-2	2	overlap	1998	-1	1998	-1
+contact	route_048	route_057	12	0	1998	2001	-1	1	overlap	1998	-1	1998	-1
+contact	route_049	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+contact	route_049	route_055	16	1	-2001	-1995	-1	3	overlap	-2001	-1	-2001	-1
+contact	route_050	route_051	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+contact	route_050	route_055	19	2	-757	-749	-2	1	overlap	-755	-1	-755	-1
+contact	route_050	route_056	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+contact	route_051	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+contact	route_051	route_055	12	0	-752	-749	-2	1	overlap	-752	-1	-752	-1
+contact	route_051	route_056	280	39	-751	-563	-1	29	overlap	-751	-1	-751	-1
+contact	route_052	route_053	21	0	748	752	-2	2	overlap	748	-1	748	-1
+contact	route_052	route_056	280	39	563	751	-1	29	overlap	565	28	565	28
+contact	route_052	route_057	12	0	749	752	-2	1	overlap	749	-1	749	-1
+contact	route_053	route_054	30	1	1797	1802	693	702	overlap	1798	694	1798	694
+contact	route_053	route_056	12	0	748	751	-1	1	overlap	748	-1	748	-1
+contact	route_053	route_057	12	1	749	753	-2	1	overlap	749	-1	749	-1
+contact	route_054	route_057	12	0	1998	2001	-1	1	overlap	1998	-1	1998	-1
+contact	route_055	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+contact	route_056	route_057	9	0	749	751	-1	1	overlap	749	-1	749	-1
+migration_body_sha256	2001bd4b7af28570f9689e278d321a13adf92c68167c79dddace948fbdfa6859
