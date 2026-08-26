@@ -593,57 +593,45 @@ return function(source, session)
 		if type(spur) ~= "table" or type(spur.id) ~= "string" or not anchor or
 				not zone then
 			add_violation("poi_spur_reference", subject,
-				"known candidate anchor and zone", "invalid")
+				"known fixed anchor and zone", "invalid")
 		elseif not exclusions or #exclusions ~= 1 or not exclusion or
 				exclusion.recipe_id ~= "exclude_route_corridor_v1" or
 				not integer(exclusion.corridor_width) then
 			add_violation("poi_spur_corridor_policy_missing", subject,
 				"one route-corridor claim exclusion with integer width", "missing")
 		else
-			local path_count, paths_dense = dense_count(spur.candidate_paths)
-			local candidates = anchor.candidates
-			if not paths_dense or type(candidates) ~= "table" or
-					path_count ~= #candidates then
-				add_violation("poi_spur_candidate_roster", subject,
-					value_text(type(candidates) == "table" and #candidates or nil),
-					path_count)
+			local path = spur.centreline
+			if not sequence_valid(path) or
+					not same_point(path[1], anchor.position) or
+					not same_point(path[#path], zone.hub) then
+				add_violation("poi_spur_endpoint", subject,
+					"fixed anchor to intended zone hub", "mismatch")
 			else
-				for candidate_index = 1, path_count do
-					local path = spur.candidate_paths[candidate_index]
-					local path_subject = subject .. ":" .. candidate_index
-					if not sequence_valid(path) or
-							not same_point(path[1], candidates[candidate_index]) or
-							not same_point(path[#path], zone.hub) then
-						add_violation("poi_spur_endpoint", path_subject,
-							"candidate to intended zone hub", "mismatch")
-					else
-						scan_corridor(path_subject, path, exclusion.corridor_width, nil,
-							function(x, z, classification)
-								result.metrics.poi_corridor_columns =
-									result.metrics.poi_corridor_columns + 1
-								if classification.water_class == "planned_water" then
-									result.metrics.poi_derived_water_columns =
-										result.metrics.poi_derived_water_columns + 1
-									derived_water_witness("poi_spur_derived_water",
-										path_subject, x, z, classification, nil)
-								elseif classification.water_class ~= "land" then
-									result.metrics.poi_off_land_columns =
-										result.metrics.poi_off_land_columns + 1
-									aggregate("poi_spur_off_land", path_subject,
-										"land or planned_water", classification.water_class,
-										x, z, classification)
-								end
-								if classification.zone_numeric_id ~= anchor.zone_numeric_id then
-									result.metrics.poi_wrong_zone_columns =
-										result.metrics.poi_wrong_zone_columns + 1
-									aggregate("poi_spur_wrong_zone", path_subject,
-										anchor.zone_numeric_id,
-										classification.zone_numeric_id,
-										x, z, classification)
-								end
-							end)
-					end
-				end
+				scan_corridor(subject, path, exclusion.corridor_width, nil,
+					function(x, z, classification)
+						result.metrics.poi_corridor_columns =
+							result.metrics.poi_corridor_columns + 1
+						if classification.water_class == "planned_water" then
+							result.metrics.poi_derived_water_columns =
+								result.metrics.poi_derived_water_columns + 1
+							derived_water_witness("poi_spur_derived_water",
+								subject, x, z, classification, nil)
+						elseif classification.water_class ~= "land" then
+							result.metrics.poi_off_land_columns =
+								result.metrics.poi_off_land_columns + 1
+							aggregate("poi_spur_off_land", subject,
+								"land or planned_water", classification.water_class,
+								x, z, classification)
+						end
+						if classification.zone_numeric_id ~= anchor.zone_numeric_id then
+							result.metrics.poi_wrong_zone_columns =
+								result.metrics.poi_wrong_zone_columns + 1
+							aggregate("poi_spur_wrong_zone", subject,
+								anchor.zone_numeric_id,
+								classification.zone_numeric_id,
+								x, z, classification)
+						end
+					end)
 			end
 		end
 	end

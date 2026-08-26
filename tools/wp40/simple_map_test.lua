@@ -14,7 +14,7 @@ assert(#source.zones == 38 and #source.routes == 57 and
 	#source.relief_profiles == 6 and #source.landmarks == 70 and
 	#source.hydrology == 25 and #source.capital_ingresses == 6 and
 	#source.hard_protection == 42 and
-	#source.claim_exclusions == 482)
+	#source.claim_exclusions == 314)
 
 local route_classes = {primary=0,secondary=0,trail=0}
 for index = 1, #source.routes do
@@ -152,13 +152,24 @@ for index = 1, #source.anchors do
 	local row = source.anchors[index]
 	local selected = session.selected_anchor_by_id(row.id)
 	assert(selected and selected.anchor_id == row.id)
-	if row.position then
-		assert(selected.candidate_index == 0 and selected.x == row.position.x and
-			selected.z == row.position.z)
+	local fields = {x=true,z=true,anchor_id=true,selection_mode=true,
+		approved_candidate_index=true}
+	local field_count = 0
+	for key in pairs(selected) do
+		assert(fields[key], "unexpected selected-anchor result field: " .. key)
+		field_count = field_count + 1
+	end
+	assert(field_count == 5 and selected.x == row.position.x and
+		selected.z == row.position.z and
+		selected.approved_candidate_index == row.approved_candidate_index)
+	if row.placement_mode == "authored_fixed" then
+		assert(selected.selection_mode == "authored_fixed" and
+			selected.approved_candidate_index == 0)
 	else
-		assert(selected.candidate_index >= 1 and selected.candidate_index <= 3)
-		local candidate = row.candidates[selected.candidate_index]
-		assert(selected.x == candidate.x and selected.z == candidate.z)
+		assert(row.placement_mode == "layout_fixed" and
+			selected.selection_mode == "frozen_layout" and
+			selected.approved_candidate_index >= 1 and
+			selected.approved_candidate_index <= 3)
 	end
 end
 
@@ -353,17 +364,13 @@ if mode == "--full" then
 		end
 	end
 
-	local candidate_total, candidate_same_zone = 0, 0
+	local anchor_total, anchor_same_zone = 0, 0
 	for index = 1, #source.anchors do
 		local row=source.anchors[index]
-		if row.candidates then
-			for candidate_index=1,#row.candidates do
-				local point=row.candidates[candidate_index]
-				candidate_total=candidate_total+1
-				if session.id_at(point.x,point.z)==source.zones[row.zone_numeric_id].id then
-					candidate_same_zone=candidate_same_zone+1
-				end
-			end
+		local point=row.position
+		anchor_total=anchor_total+1
+		if session.id_at(point.x,point.z)==source.zones[row.zone_numeric_id].id then
+			anchor_same_zone=anchor_same_zone+1
 		end
 	end
 
@@ -425,10 +432,10 @@ if mode == "--full" then
 		step,water_counts.land,water_counts.planned_water,
 		water_counts.coastal_shelf,water_counts.immutable_dragon_channel,
 		water_counts.deep_ocean))
-	print(("advisory\tsampled_land_components=%d sampled_disconnected_land_zones=%d sampled_missing_zones=%d sampled_unrouted_contacts=%d sampled_route_forbidden_water=%d/%d sampled_declared_water=%d sampled_automatic_water=%d anchor_same_zone=%d/%d bay_samples_failed=%d channel_interior_failed=%d sample_mismatches=%d hydrology_sample_failed=%d"):format(
+	print(("advisory\tsampled_land_components=%d sampled_disconnected_land_zones=%d sampled_missing_zones=%d sampled_unrouted_contacts=%d sampled_route_forbidden_water=%d/%d sampled_declared_water=%d sampled_automatic_water=%d actual_anchor_same_zone=%d/%d bay_samples_failed=%d channel_interior_failed=%d sample_mismatches=%d hydrology_sample_failed=%d"):format(
 		land_components,disconnected_zones,#missing_zones,#unrouted,
 		route_off_land,route_samples,
-		route_declared_water,route_automatic_water,candidate_same_zone,candidate_total,
+		route_declared_water,route_automatic_water,anchor_same_zone,anchor_total,
 		bay_sample_failures,channel_interior_failures,#sample_mismatches,
 		hydrology_sample_ok and 0 or 1))
 	local benchmark_interpreter=rawget(_G,"jit") and "luajit" or "puc51"

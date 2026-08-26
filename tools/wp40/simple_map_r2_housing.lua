@@ -132,7 +132,7 @@ return function(source, session)
 		{"tie_break","z_then_x"}, {"bias_direction","nearest_first"},
 		{"edge_bias_scope","mask_polygon_boundary"},
 		{"route_bias_scope","all_land_route_centrelines"},
-		{"poi_bias_scope","all_authored_anchor_positions_and_candidates"},
+		{"poi_bias_scope","all_actual_anchor_positions_v1"},
 	}
 	for index = 1, #policy_checks do
 		local check = policy_checks[index]

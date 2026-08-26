@@ -16,7 +16,7 @@ local EXPECTED_HOUSING_POLICY = {
 	bias_direction = "nearest_first",
 	edge_bias_scope = "mask_polygon_boundary",
 	route_bias_scope = "all_land_route_centrelines",
-	poi_bias_scope = "all_authored_anchor_positions_and_candidates",
+	poi_bias_scope = "all_actual_anchor_positions_v1",
 }
 
 local EXPECTED_HOUSING_ORDERS = {
@@ -187,7 +187,8 @@ return function(source, session)
 		metrics = {
 			scope = "R2_horizontal_metadata",
 			counts = {},
-			ownership = {fixed_centers_checked=0, candidate_centers_checked=0},
+			ownership = {authored_fixed_centers_checked=0,
+				layout_fixed_centers_checked=0},
 			deferred_r3 = {},
 		},
 		coastal_cores = {},
@@ -607,11 +608,11 @@ return function(source, session)
 		end
 	end
 
-	-- Anchor metadata and candidate ownership use the production session API.
+	-- Anchor metadata and ownership use the production session API.
 	local anchors = records(source.anchors)
 	local anchor_by_id = id_index(anchors, "anchors")
 	result.metrics.counts.anchors = #anchors
-	local fixed_count, candidate_count, alternative_count = 0, 0, 0
+	local authored_fixed_count, layout_fixed_count = 0, 0
 	local fixed_template_by_index = {
 		[1]="start", [2]="start", [3]="start", [4]="start", [5]="start",
 		[6]="start", [7]="capital_dwarf", [8]="capital_human",
@@ -620,14 +621,15 @@ return function(source, session)
 		[89]="apex_mine", [90]="apex_mine",
 	}
 	local can_query_ownership = type(session) == "table" and
-		type(session.id_at) == "function"
+		type(session.id_at) == "function" and
+		type(session.selected_anchor_by_id) == "function"
 	if not can_query_ownership then
-		violation("missing_session_api", "anchor_ownership", "", "id_at", nil)
+		violation("missing_session_api", "anchor_ownership", "",
+			"id_at and selected_anchor_by_id", nil)
 	end
-	local function check_owner(anchor, point, candidate_index)
+	local function check_owner(anchor, point)
 		if not point_record(point) then
-			violation("invalid_point", "anchors", anchor.id, "integer x/z",
-				candidate_index)
+			violation("invalid_point", "anchors", anchor.id, "integer x/z", nil)
 			return
 		end
 		local zone = zones[anchor.zone_numeric_id]
@@ -644,9 +646,32 @@ return function(source, session)
 				violation("center_owner_mismatch", "anchor_ownership", anchor.id,
 					expected, actual)
 				witness("center_owner_mismatch", "anchor_ownership", anchor.id, {
-					{"candidate_index",candidate_index}, {"x",point.x}, {"z",point.z},
+					{"approved_candidate_index",anchor.approved_candidate_index},
+					{"x",point.x}, {"z",point.z},
 					{"expected_zone",expected}, {"actual_zone",actual},
 				})
+			end
+			local selected = session.selected_anchor_by_id(anchor.id)
+			local expected_selection_mode =
+				anchor.placement_mode == "authored_fixed" and
+				"authored_fixed" or "frozen_layout"
+			local field_count, field_roster_ok = 0, true
+			local expected_fields = {x=true,z=true,anchor_id=true,
+				selection_mode=true,approved_candidate_index=true}
+			if type(selected) == "table" then
+				for key in pairs(selected) do
+					field_count = field_count + 1
+					if not expected_fields[key] then field_roster_ok = false end
+				end
+			end
+			if type(selected) ~= "table" or field_count ~= 5 or
+					not field_roster_ok or selected.x ~= point.x or
+					selected.z ~= point.z or selected.anchor_id ~= anchor.id or
+					selected.selection_mode ~= expected_selection_mode or
+					selected.approved_candidate_index ~=
+						anchor.approved_candidate_index then
+				violation("selected_anchor_mismatch", "anchor_ownership", anchor.id,
+					"exact defensive fixed-layout result", "mismatch")
 			end
 		end
 	end
@@ -662,7 +687,8 @@ return function(source, session)
 					"anchor profile", row.template_id)
 			end
 			local expected_template = fixed_template_by_index[index]
-			local expected_mode = expected_template and "fixed" or "candidate_set"
+			local expected_mode = expected_template and "authored_fixed" or
+				"layout_fixed"
 			if row.placement_mode ~= expected_mode then
 				violation("authored_mode_mismatch", "anchors", row.id,
 					expected_mode, row.placement_mode)
@@ -678,51 +704,46 @@ return function(source, session)
 				violation("authored_slot_mismatch", "anchors", row.id, "capital",
 					row.slot_id)
 			end
-			if row.placement_mode == "fixed" then
-				fixed_count = fixed_count + 1
-				result.metrics.ownership.fixed_centers_checked =
-					result.metrics.ownership.fixed_centers_checked + 1
-				check_owner(row, row.position, 0)
-				if row.candidates ~= nil then
-					violation("placement_shape_mismatch", "anchors", row.id,
-						"position only", "candidates present")
+			if row.placement_mode == "authored_fixed" then
+				authored_fixed_count = authored_fixed_count + 1
+				result.metrics.ownership.authored_fixed_centers_checked =
+					result.metrics.ownership.authored_fixed_centers_checked + 1
+				if row.approved_candidate_index ~= 0 then
+					violation("anchor_provenance_mismatch", "anchors", row.id, 0,
+						row.approved_candidate_index)
 				end
-			elseif row.placement_mode == "candidate_set" then
-				candidate_count = candidate_count + 1
-				local candidates = records(row.candidates)
-				if #candidates ~= 3 then
-					violation("candidate_count_mismatch", "anchors", row.id, 3,
-						#candidates)
-				end
-				for candidate_index = 1, #candidates do
-					alternative_count = alternative_count + 1
-					result.metrics.ownership.candidate_centers_checked =
-						result.metrics.ownership.candidate_centers_checked + 1
-					check_owner(row, candidates[candidate_index], candidate_index)
-				end
-				if row.position ~= nil then
-					violation("placement_shape_mismatch", "anchors", row.id,
-						"candidates only", "position present")
+			elseif row.placement_mode == "layout_fixed" then
+				layout_fixed_count = layout_fixed_count + 1
+				result.metrics.ownership.layout_fixed_centers_checked =
+					result.metrics.ownership.layout_fixed_centers_checked + 1
+				if not integer(row.approved_candidate_index) or
+						row.approved_candidate_index < 1 or
+						row.approved_candidate_index > 3 then
+					violation("anchor_provenance_mismatch", "anchors", row.id,
+						"integer 1..3", row.approved_candidate_index)
 				end
 			else
 				violation("placement_mode_invalid", "anchors", row.id,
-					"fixed/candidate_set", row.placement_mode)
+					"authored_fixed/layout_fixed", row.placement_mode)
+			end
+			if not point_record(row.position) or row.candidates ~= nil then
+				violation("placement_shape_mismatch", "anchors", row.id,
+					"one position and no candidate array", "mismatch")
+			else
+				check_owner(row, row.position)
 			end
 		end
 	end
-	result.metrics.counts.fixed_anchors = fixed_count
-	result.metrics.counts.candidate_anchors = candidate_count
-	result.metrics.counts.candidate_alternatives = alternative_count
+	result.metrics.counts.authored_fixed_anchors = authored_fixed_count
+	result.metrics.counts.layout_fixed_anchors = layout_fixed_count
 	if #anchors ~= 100 then violation("count_mismatch", "anchors", "", 100, #anchors) end
-	if fixed_count ~= 16 then
-		violation("count_mismatch", "fixed_anchors", "", 16, fixed_count)
+	if authored_fixed_count ~= 16 then
+		violation("count_mismatch", "authored_fixed_anchors", "", 16,
+			authored_fixed_count)
 	end
-	if candidate_count ~= 84 then
-		violation("count_mismatch", "candidate_anchors", "", 84, candidate_count)
-	end
-	if alternative_count ~= 252 then
-		violation("count_mismatch", "candidate_alternatives", "", 252,
-			alternative_count)
+	if layout_fixed_count ~= 84 then
+		violation("count_mismatch", "layout_fixed_anchors", "", 84,
+			layout_fixed_count)
 	end
 
 	-- Landmark and hydrology rosters carry stable IDs and cross references.
@@ -1002,8 +1023,8 @@ return function(source, session)
 		"claim_exclusion_recipes")
 	local claim_by_id = id_index(claims, "claim_exclusions")
 	result.metrics.counts.claim_exclusions = #claims
-	if #claims ~= 482 then
-		violation("count_mismatch", "claim_exclusions", "", 482, #claims)
+	if #claims ~= 314 then
+		violation("count_mismatch", "claim_exclusions", "", 314, #claims)
 	end
 	local claim_recipe_counts = {}
 	for index = 1, #claims do
@@ -1018,7 +1039,7 @@ return function(source, session)
 		end
 	end
 	local expected_claim_counts = {
-		{"exclude_anchor_blend_v1",268}, {"exclude_route_corridor_v1",139},
+		{"exclude_anchor_blend_v1",100}, {"exclude_route_corridor_v1",139},
 		{"exclude_planned_water_v1",29}, {"exclude_coast_v1",4},
 		{"exclude_active_core_v1",42},
 	}
@@ -1032,29 +1053,24 @@ return function(source, session)
 	for anchor_index = 1, #anchors do
 		local anchor = anchors[anchor_index]
 		if type(anchor) == "table" then
-			local candidates = anchor.position and {anchor.position} or
-				records(anchor.candidates)
 			local profile = anchor_profile_by_id[anchor.template_id]
-			for candidate_index = 1, #candidates do
-				local id = ("exclude:anchor:%s:%02d"):format(anchor.id,
-					candidate_index)
-				local claim = claim_by_id[id]
-				if not claim then
-					violation("coverage_missing", "claim_exclusions", id,
-						"anchor alternative", "missing")
-				else
-					local candidate = candidates[candidate_index]
-					if claim.recipe_id ~= "exclude_anchor_blend_v1" or
-							claim.source_id ~= anchor.id or
-							claim.candidate_index ~= candidate_index or
-							not point_record(claim.center) or
-							claim.center.x ~= candidate.x or claim.center.z ~= candidate.z or
-							(type(profile) == "table" and
-								claim.total_width ~= profile.blend_width) then
-						violation("coverage_mismatch", "claim_exclusions", id,
-							"exact anchor blend envelope", "invalid")
-					end
-				end
+			local identity_index = anchor.placement_mode == "authored_fixed" and 1 or
+				anchor.approved_candidate_index
+			local id = ("exclude:anchor:%s:%02d"):format(anchor.id,
+				identity_index)
+			local claim = claim_by_id[id]
+			if not claim then
+				violation("coverage_missing", "claim_exclusions", id,
+					"actual anchor position", "missing")
+			elseif claim.recipe_id ~= "exclude_anchor_blend_v1" or
+					claim.source_id ~= anchor.id or
+					not point_record(claim.center) or
+					claim.center.x ~= anchor.position.x or
+					claim.center.z ~= anchor.position.z or
+					(type(profile) == "table" and
+						claim.total_width ~= profile.blend_width) then
+				violation("coverage_mismatch", "claim_exclusions", id,
+					"exact actual-anchor blend envelope", "invalid")
 			end
 		end
 	end
@@ -1079,7 +1095,7 @@ return function(source, session)
 	require_claims(records(source.island_routes), "exclude:route:",
 		"exclude_route_corridor_v1", "island-route corridor")
 	require_claims(records(source.poi_spurs), "exclude:route:",
-		"exclude_route_corridor_v1", "candidate spur corridors")
+		"exclude_route_corridor_v1", "single-centreline spur corridor")
 	require_claims(hydrology, "exclude:water:", "exclude_planned_water_v1",
 		"hydrology mask")
 	require_claims(records(source.bays), "exclude:water:",

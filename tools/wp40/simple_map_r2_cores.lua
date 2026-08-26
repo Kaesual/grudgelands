@@ -113,38 +113,50 @@ return function(source, session)
 	end
 
 	local anchors = {}
-	local horizontally_valid_candidate_sets = 0
+	local horizontally_valid_layout_fixed = 0
+	local authored_fixed_anchors, layout_fixed_anchors = 0, 0
 	for index = 1, #source.anchors do
 		local anchor = source.anchors[index]
 		local zone = source.zones[anchor.zone_numeric_id]
-		local positions = anchor.position and {anchor.position} or anchor.candidates
-		local valid = 0
-		for candidate_index = 1, #positions do
-			local point = positions[candidate_index]
-			local water_class, macro_region, owner =
-				session.classification_values_at(point.x,point.z)
-			if owner == anchor.zone_numeric_id and macro_region == zone.macro_region and
-					(water_class == "land" or water_class == "planned_water") then
-				valid = valid + 1
-			end
+		local point = anchor.position
+		local water_class, macro_region, owner =
+			session.classification_values_at(point.x,point.z)
+		local valid = owner == anchor.zone_numeric_id and
+			macro_region == zone.macro_region and
+			(water_class == "land" or water_class == "planned_water") and 1 or 0
+		if anchor.placement_mode == "authored_fixed" and
+				anchor.approved_candidate_index == 0 then
+			authored_fixed_anchors = authored_fixed_anchors + 1
+		elseif anchor.placement_mode == "layout_fixed" and
+				type(anchor.approved_candidate_index) == "number" and
+				anchor.approved_candidate_index >= 1 and
+				anchor.approved_candidate_index <= 3 then
+			layout_fixed_anchors = layout_fixed_anchors + 1
+		else
+			occurrence("anchor_layout_roster_invalid", {code=
+				"anchor_layout_roster_invalid",anchor_id=anchor.id,
+				placement_mode=anchor.placement_mode,
+				approved_candidate_index=anchor.approved_candidate_index})
 		end
-		if anchor.placement_mode == "candidate_set" then
-			if valid > 0 then
-				horizontally_valid_candidate_sets =
-					horizontally_valid_candidate_sets + 1
-			else
-				occurrence("anchor_candidate_set_invalid", {code=
-					"anchor_candidate_set_invalid",anchor_id=anchor.id,
-					zone_numeric_id=anchor.zone_numeric_id})
-			end
-		elseif valid ~= 1 then
+		if anchor.placement_mode == "layout_fixed" and valid == 1 then
+			horizontally_valid_layout_fixed =
+				horizontally_valid_layout_fixed + 1
+		end
+		if valid ~= 1 then
 			occurrence("fixed_anchor_invalid", {code="fixed_anchor_invalid",
 				anchor_id=anchor.id,zone_numeric_id=anchor.zone_numeric_id,
 				valid_positions=valid})
 		end
 		anchors[#anchors+1] = {anchor_id=anchor.id,
 			placement_mode=anchor.placement_mode,valid_positions=valid,
-			total_positions=#positions}
+			total_positions=1,
+			approved_candidate_index=anchor.approved_candidate_index}
+	end
+	if authored_fixed_anchors ~= 16 or layout_fixed_anchors ~= 84 then
+		occurrence("anchor_layout_roster_invalid", {code=
+			"anchor_layout_roster_invalid",anchor_id="-",
+			authored_fixed_anchors=authored_fixed_anchors,
+			layout_fixed_anchors=layout_fixed_anchors})
 	end
 
 	local violation_order = {
@@ -152,7 +164,7 @@ return function(source, session)
 		"fixed_core_water_mismatch",
 		"fixed_core_route_exit_count",
 		"fixed_anchor_invalid",
-		"anchor_candidate_set_invalid",
+		"anchor_layout_roster_invalid",
 	}
 	for index = 1, #violation_order do
 		local code = violation_order[index]
@@ -167,8 +179,9 @@ return function(source, session)
 		ok=#violations == 0,
 		violations=violations,
 		metrics={scanned_core_nodes=scanned_nodes,fixed_cores=#cores,
-			anchors=#anchors,candidate_sets=#source.anchors-16,
-			horizontally_valid_candidate_sets=horizontally_valid_candidate_sets,
+			anchors=#anchors,authored_fixed_anchors=authored_fixed_anchors,
+			layout_fixed_anchors=layout_fixed_anchors,
+			horizontally_valid_layout_fixed=horizontally_valid_layout_fixed,
 			underlying_power_disagreements=underlying_power_disagreements},
 		witnesses=witnesses,cores=cores,anchors=anchors,
 	}

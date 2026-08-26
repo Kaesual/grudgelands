@@ -288,7 +288,8 @@ return function(dependencies)
 	local function validate_source()
 		if source.schema ~= schemas.simple_map_source or
 				schemas.simple_map ~= "grug_wp40_simple_map_v1" or
-				source.layout_id ~= "wp40-simple-map-v1d" then
+				source.layout_id ~= "wp40-simple-map-v1d" or
+				source.layout_revision_id ~= "wp40-simple-map-v1e" then
 			fail("source schema/layout identity differs")
 		end
 		if source.warp.cell ~= 256 or source.warp.maximum ~= 60 or
@@ -335,7 +336,7 @@ return function(dependencies)
 				housing.edge_bias_scope ~= "mask_polygon_boundary" or
 				housing.route_bias_scope ~= "all_land_route_centrelines" or
 				housing.poi_bias_scope ~=
-					"all_authored_anchor_positions_and_candidates" or
+					"all_actual_anchor_positions_v1" or
 				dense_count(housing.greedy_orders,"housing greedy orders") ~= 7 then
 			fail("housing packing policy differs")
 		end
@@ -351,7 +352,7 @@ return function(dependencies)
 			hydrology_profiles=11,hydrology_transition_profiles=6,
 			hydrology=25,hydrology_interfaces=12,
 			hard_protection_recipes=4,hard_protection=42,
-			claim_exclusion_recipes=5,claim_exclusions=482,
+			claim_exclusion_recipes=5,claim_exclusions=314,
 		}
 		for key, expected in pairs(expected_counts) do
 			if dense_count(source[key], key) ~= expected then
@@ -662,7 +663,7 @@ return function(dependencies)
 					"island route centreline")
 			end
 		end
-		local fixed_count, candidate_count = 0, 0
+		local authored_fixed_count, layout_fixed_count = 0, 0
 		local fixed_core_by_zone={}
 		local anchor_slot_keys={}
 		for index = 1, #source.anchors do
@@ -678,22 +679,27 @@ return function(dependencies)
 			if not anchor_profile_ids[row.template_id] then
 				fail("anchor profile reference differs at " .. index)
 			end
-			if row.placement_mode == "fixed" then
-				fixed_count = fixed_count + 1
-				if not row.position then fail("fixed anchor has no position") end
-				validate_point(row.position,"fixed anchor")
-			elseif row.placement_mode == "candidate_set" then
-				candidate_count = candidate_count + 1
-				if dense_count(row.candidates,"anchor candidates") ~= 3 then
-					fail("anchor candidate count differs")
+			if row.placement_mode == "authored_fixed" then
+				authored_fixed_count = authored_fixed_count + 1
+				if row.approved_candidate_index ~= 0 then
+					fail("authored anchor provenance differs")
 				end
-				for candidate_index=1,#row.candidates do
-					validate_point(row.candidates[candidate_index],"anchor candidate")
+			elseif row.placement_mode == "layout_fixed" then
+				layout_fixed_count = layout_fixed_count + 1
+				if not integer(row.approved_candidate_index,
+						"approved candidate index") or
+						row.approved_candidate_index < 1 or
+						row.approved_candidate_index > 3 then
+					fail("layout-fixed anchor provenance differs")
 				end
 			else fail("unknown anchor placement mode") end
+			if not row.position then fail("fixed anchor has no position") end
+			validate_point(row.position,"fixed anchor")
+			if row.candidates ~= nil then fail("anchor candidate array survives") end
 			if index <= 12 then
 				local expected_slot=index <= 6 and "start" or "capital"
-				if row.placement_mode ~= "fixed" or row.slot_id ~= expected_slot or
+				if row.placement_mode ~= "authored_fixed" or
+						row.slot_id ~= expected_slot or
 						fixed_core_by_zone[row.zone_numeric_id] then
 					fail("fixed core anchor order differs at " .. index)
 				end
@@ -705,15 +711,27 @@ return function(dependencies)
 				}
 			end
 		end
-		if fixed_count ~= 16 or candidate_count ~= 84 then
-			fail("fixed/candidate anchor counts differ")
+		if authored_fixed_count ~= 16 or layout_fixed_count ~= 84 then
+			fail("authored/layout-fixed anchor counts differ")
 		end
 		local spur_ids={}
 		for index = 1, #source.poi_spurs do
 			local row = source.poi_spurs[index]
+			local anchor=source.anchors[index+12]
+			local zone=anchor and source.zones[anchor.zone_numeric_id]
 			if spur_ids[row.id] or not anchor_ids[row.anchor_id] or
-					#row.candidate_paths ~= 3 then
+					row.id ~= ("poi_spur_%03d"):format(index+12) or
+					row.anchor_id ~= ("anchor_%03d"):format(index+12) or
+					dense_count(row.centreline,"POI spur centreline") < 2 or
+					row.candidate_paths ~= nil or not zone or
+					row.centreline[1].x ~= anchor.position.x or
+					row.centreline[1].z ~= anchor.position.z or
+					row.centreline[#row.centreline].x ~= zone.hub.x or
+					row.centreline[#row.centreline].z ~= zone.hub.z then
 				fail("POI spur binding differs")
+			end
+			for point_index=1,#row.centreline do
+				validate_point(row.centreline[point_index],"POI spur centreline")
 			end
 			spur_ids[row.id]=true
 		end
@@ -874,6 +892,7 @@ return function(dependencies)
 		local forbidden_keys = {
 			boundary_id=true,boundary_interface_id=true,perimeter_id=true,
 			face_id=true,winner_seed=true,repair_rule=true,
+			candidate_index=true,
 		}
 		local function reject_retired_fields(value, seen)
 			if type(value) ~= "table" or seen[value] then return end
@@ -1004,8 +1023,7 @@ return function(dependencies)
 				min_z=shape.center.z-half,max_z=shape.center.z+half}
 		elseif exclusion.recipe_id == "exclude_route_corridor_v1" then
 			shape.kind="polyline" shape.total_width=exclusion.corridor_width
-			shape.paths=record.centreline and {record.centreline} or
-				record.candidate_paths
+			shape.paths={record.centreline}
 			shape.bounds=polyline_bounds(shape.paths,shape.total_width)
 		elseif exclusion.recipe_id == "exclude_planned_water_v1" then
 			shape.kind="tapered" shape.paths={record.centreline}
@@ -1844,14 +1862,10 @@ return function(dependencies)
 			if #matches == 0 then return nil end
 			if #matches > 1 then fail("anchor slot query is ambiguous") end
 			local row = matches[1]
-			if row.position then return {x=row.position.x,z=row.position.z,
-				anchor_id=row.id,candidate_index=0} end
-			local base = row.candidates[1]
-			local selected = hash.range("anchor-select",source.layout_id..":"..row.id,
-				{base.x,base.z},0,0,#row.candidates)+1
-			local position = row.candidates[selected]
-			return {x=position.x,z=position.z,anchor_id=row.id,
-				candidate_index=selected}
+			return {x=row.position.x,z=row.position.z,anchor_id=row.id,
+				selection_mode=row.placement_mode == "authored_fixed" and
+					"authored_fixed" or "frozen_layout",
+				approved_candidate_index=row.approved_candidate_index}
 		end
 
 		function session.selected_anchor_by_id(anchor_id)
@@ -1914,8 +1928,8 @@ return function(dependencies)
 		end
 
 		-- Exact squared-distance ratios for the three reviewed bias orders.
-		-- Candidate anchors are deliberately all included: horizontal housing
-		-- capacity is fixed by layout and cannot depend on the world seed.
+		-- All 100 actual anchor positions are included. Housing capacity is fixed
+		-- by the approved layout and cannot depend on the world seed.
 		function session.housing_bias_values_at(mask_id,x,z)
 			integer(x,"housing bias x") integer(z,"housing bias z")
 			local mask=housing_mask_by_id[mask_id]
@@ -1937,20 +1951,10 @@ return function(dependencies)
 			local poi_numerator
 			for index=1,#source.anchors do
 				local anchor=source.anchors[index]
-				if anchor.position then
-					local distance=squared_distance(x,z,
-						anchor.position.x,anchor.position.z)
-					if not poi_numerator or distance < poi_numerator then
-						poi_numerator=distance
-					end
-				else
-					for candidate_index=1,#anchor.candidates do
-						local candidate=anchor.candidates[candidate_index]
-						local distance=squared_distance(x,z,candidate.x,candidate.z)
-						if not poi_numerator or distance < poi_numerator then
-							poi_numerator=distance
-						end
-					end
+				local distance=squared_distance(x,z,
+					anchor.position.x,anchor.position.z)
+				if not poi_numerator or distance < poi_numerator then
+					poi_numerator=distance
 				end
 			end
 			return {
@@ -2005,6 +2009,7 @@ return function(dependencies)
 			local rows = {}
 			local proof=session.warp_proof()
 			rows[#rows+1]=canonical.array({text("layout"),text(source.layout_id),
+				text(source.layout_revision_id),
 				text(difficulty.digest),signed(proof.cell),signed(proof.maximum),
 				signed(proof.max_horizontal_x),signed(proof.max_horizontal_z),
 				signed(proof.max_vertical_x),signed(proof.max_vertical_z),
@@ -2034,7 +2039,9 @@ return function(dependencies)
 			for index=1,#source.anchors do
 				local selected=session.selected_anchor_by_id(source.anchors[index].id)
 				rows[#rows+1]=canonical.array({text("anchor"),signed(index),
-					signed(selected.candidate_index),signed(selected.x),signed(selected.z)})
+					text(selected.selection_mode),
+					signed(selected.approved_candidate_index),signed(selected.x),
+					signed(selected.z)})
 			end
 			for _, coordinates in ipairs({{-3600,-3200},{0,0},{3600,3200}}) do
 				local warped_x,warped_z=warp(coordinates[1],coordinates[2])

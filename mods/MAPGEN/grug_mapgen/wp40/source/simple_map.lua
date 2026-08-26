@@ -14,8 +14,9 @@ local function polygon(...)
 end
 
 local source = {
-	schema = "grug_wp40_simple_map_source_v1",
+	schema = "grug_wp40_simple_map_source_v2",
 	layout_id = "wp40-simple-map-v1d",
+	layout_revision_id = "wp40-simple-map-v1e",
 	extent = {min_x = -3600, max_x = 3600, min_z = -3200, max_z = 3200},
 	warp = {cell = 256, maximum = 60,
 		hash_domain = "fixed_visual_warp_v1"},
@@ -40,7 +41,7 @@ local source = {
 		bias_direction = "nearest_first",
 		edge_bias_scope = "mask_polygon_boundary",
 		route_bias_scope = "all_land_route_centrelines",
-		poi_bias_scope = "all_authored_anchor_positions_and_candidates",
+		poi_bias_scope = "all_actual_anchor_positions_v1",
 		greedy_orders = {
 			"minimum_conflict_degree", "maximum_conflict_degree",
 			"edge_biased", "route_biased", "poi_biased",
@@ -344,17 +345,106 @@ source.coastal_housing_cores = {
 }
 
 local anchor_rows = {
-	{1,"start","start","fixed",-1800,-2550},{6,"start","start","fixed",0,-2550},{11,"start","start","fixed",1800,-2550},{17,"start","start","fixed",-1800,2550},{22,"start","start","fixed",0,2550},{27,"start","start","fixed",1800,2550},
-	{3,"capital","capital_dwarf","fixed",-1800,-1500},{8,"capital","capital_human","fixed",0,-1500},{13,"capital","capital_elf","fixed",1800,-1500},{19,"capital","capital_undead","fixed",-1800,1500},{24,"capital","capital_orc","fixed",0,1500},{29,"capital","capital_troll","fixed",1800,1500},
-	{2,"village_1","village","candidate_set",-1900,-2020},{4,"village_1","village","candidate_set",-2380,-1600},{7,"village_1","village","candidate_set",-120,-2020},{9,"village_1","village","candidate_set",-900,-1580},{12,"village_1","village","candidate_set",1900,-2020},{14,"village_1","village","candidate_set",900,-1580},{18,"village_1","village","candidate_set",-1900,2020},{20,"village_1","village","candidate_set",-2380,1600},{23,"village_1","village","candidate_set",-120,2020},{25,"village_1","village","candidate_set",-900,1580},{28,"village_1","village","candidate_set",1900,2020},{30,"village_1","village","candidate_set",900,1580},
-	{2,"outpost_1","outpost","candidate_set",-2100,-2100},{4,"outpost_1","outpost","candidate_set",-2300,-1250},{5,"outpost_1","outpost","candidate_set",-2050,-850},{5,"outpost_2","outpost","candidate_set",-1500,-450},{7,"outpost_1","outpost","candidate_set",200,-2050},{9,"outpost_1","outpost","candidate_set",-650,-1250},{10,"outpost_1","outpost","candidate_set",-350,-850},{10,"outpost_2","outpost","candidate_set",300,-450},{12,"outpost_1","outpost","candidate_set",2100,-2100},{14,"outpost_1","outpost","candidate_set",650,-1250},{15,"outpost_1","outpost","candidate_set",2400,-1350},{16,"outpost_1","outpost","candidate_set",1900,-550},
-	{18,"outpost_1","outpost","candidate_set",-2100,2100},{20,"outpost_1","outpost","candidate_set",-2300,1250},{21,"outpost_1","outpost","candidate_set",-2050,850},{21,"outpost_2","outpost","candidate_set",-1500,450},{23,"outpost_1","outpost","candidate_set",200,2050},{25,"outpost_1","outpost","candidate_set",-650,1250},{26,"outpost_1","outpost","candidate_set",-350,850},{26,"outpost_2","outpost","candidate_set",300,450},{28,"outpost_1","outpost","candidate_set",2100,2100},{30,"outpost_1","outpost","candidate_set",650,1250},{31,"outpost_1","outpost","candidate_set",2400,1350},{32,"outpost_1","outpost","candidate_set",1900,550},
-	{2,"bandit_1","bandit_home","candidate_set",-1600,-2050},{5,"bandit_1","bandit_frontier","candidate_set",-1800,-430},{7,"bandit_1","bandit_home","candidate_set",320,-1980},{10,"bandit_1","bandit_frontier","candidate_set",0,-430},{12,"bandit_1","bandit_home","candidate_set",1600,-2050},{16,"bandit_1","bandit_frontier","candidate_set",1800,-430},{18,"bandit_1","bandit_home","candidate_set",-1600,2050},{21,"bandit_1","bandit_frontier","candidate_set",-1800,430},{23,"bandit_1","bandit_home","candidate_set",320,1980},{26,"bandit_1","bandit_frontier","candidate_set",0,430},{28,"bandit_1","bandit_home","candidate_set",1600,2050},{32,"bandit_1","bandit_frontier","candidate_set",1800,430},
-	{4,"mine","mine","candidate_set",-2450,-1280},{9,"mine","mine","candidate_set",-1050,-1280},{14,"mine","mine","candidate_set",1050,-1280},{20,"mine","mine","candidate_set",-2450,1280},{25,"mine","mine","candidate_set",-1050,1280},{30,"mine","mine","candidate_set",1050,1280},
-	{9,"mirefolk","mirefolk","candidate_set",-620,-1760},{14,"mirefolk","mirefolk","candidate_set",1120,-1740},{18,"mirefolk","mirefolk","candidate_set",-2050,2250},{30,"mirefolk","mirefolk","candidate_set",1120,1740},
-	{10,"clash_1","clash","candidate_set",-250,-320},{10,"clash_2","clash","candidate_set",250,-320},{26,"clash_1","clash","candidate_set",-250,320},{26,"clash_2","clash","candidate_set",250,320},{33,"clash_1","clash","candidate_set",-3000,170},{34,"clash_1","clash","candidate_set",-2200,-80},{34,"clash_2","clash","candidate_set",-1800,80},{35,"clash_1","clash","candidate_set",-1250,-100},{35,"clash_2","clash","candidate_set",-750,100},{35,"clash_3","clash","candidate_set",-250,-100},{36,"clash_1","clash","candidate_set",250,100},{36,"clash_2","clash","candidate_set",750,-100},{36,"clash_3","clash","candidate_set",1250,100},{37,"clash_1","clash","candidate_set",1800,-80},{37,"clash_2","clash","candidate_set",2200,80},{38,"clash_1","clash","candidate_set",3000,170},
-	{33,"dragon","dragon","fixed",-3260,-40},{38,"dragon","dragon","fixed",3260,-40},{33,"apex_mine","apex_mine","fixed",-3200,80},{38,"apex_mine","apex_mine","fixed",3200,80},
-	{7,"rare_grimtusk","rare_route","candidate_set",120,-2100},{10,"rare_old_whitefang","rare_route","candidate_set",-180,-650},{5,"rare_korgans_bane","rare_route","candidate_set",-1850,-620},{37,"rare_silkfang","rare_route","candidate_set",2050,70},{21,"rare_marrowclaw","rare_route","candidate_set",-1850,620},{26,"rare_dustwing","rare_route","candidate_set",180,650},{38,"rare_emerald_coil","rare_route","candidate_set",3000,-120},{23,"rare_ashmaw","rare_route","candidate_set",120,2100},{35,"rare_captain_bonerattle","rare_route","candidate_set",-600,80},{36,"rare_captain_bonerattle","rare_route","candidate_set",600,-80},
+	{1,"start","start","authored_fixed",0,-1800,-2550},
+	{6,"start","start","authored_fixed",0,0,-2550},
+	{11,"start","start","authored_fixed",0,1800,-2550},
+	{17,"start","start","authored_fixed",0,-1800,2550},
+	{22,"start","start","authored_fixed",0,0,2550},
+	{27,"start","start","authored_fixed",0,1800,2550},
+	{3,"capital","capital_dwarf","authored_fixed",0,-1800,-1500},
+	{8,"capital","capital_human","authored_fixed",0,0,-1500},
+	{13,"capital","capital_elf","authored_fixed",0,1800,-1500},
+	{19,"capital","capital_undead","authored_fixed",0,-1800,1500},
+	{24,"capital","capital_orc","authored_fixed",0,0,1500},
+	{29,"capital","capital_troll","authored_fixed",0,1800,1500},
+	{2,"village_1","village","layout_fixed",2,-1868,-2036},
+	{4,"village_1","village","layout_fixed",3,-2404,-1576},
+	{7,"village_1","village","layout_fixed",1,-120,-2020},
+	{9,"village_1","village","layout_fixed",3,-924,-1556},
+	{12,"village_1","village","layout_fixed",1,1900,-2020},
+	{14,"village_1","village","layout_fixed",3,876,-1556},
+	{18,"village_1","village","layout_fixed",1,-1900,2020},
+	{20,"village_1","village","layout_fixed",1,-2380,1600},
+	{23,"village_1","village","layout_fixed",2,-88,2004},
+	{25,"village_1","village","layout_fixed",2,-868,1564},
+	{28,"village_1","village","layout_fixed",3,1876,2044},
+	{30,"village_1","village","layout_fixed",3,876,1604},
+	{2,"outpost_1","outpost","layout_fixed",1,-2100,-2100},
+	{4,"outpost_1","outpost","layout_fixed",1,-2300,-1250},
+	{5,"outpost_1","outpost","layout_fixed",3,-2074,-826},
+	{5,"outpost_2","outpost","layout_fixed",1,-1500,-450},
+	{7,"outpost_1","outpost","layout_fixed",3,176,-2026},
+	{9,"outpost_1","outpost","layout_fixed",2,-618,-1266},
+	{10,"outpost_1","outpost","layout_fixed",1,-350,-850},
+	{10,"outpost_2","outpost","layout_fixed",1,300,-450},
+	{12,"outpost_1","outpost","layout_fixed",1,2100,-2100},
+	{14,"outpost_1","outpost","layout_fixed",3,626,-1226},
+	{15,"outpost_1","outpost","layout_fixed",3,2376,-1326},
+	{16,"outpost_1","outpost","layout_fixed",2,1932,-566},
+	{18,"outpost_1","outpost","layout_fixed",1,-2100,2100},
+	{20,"outpost_1","outpost","layout_fixed",2,-2268,1234},
+	{21,"outpost_1","outpost","layout_fixed",2,-2018,834},
+	{21,"outpost_2","outpost","layout_fixed",2,-1468,434},
+	{23,"outpost_1","outpost","layout_fixed",3,176,2074},
+	{25,"outpost_1","outpost","layout_fixed",1,-650,1250},
+	{26,"outpost_1","outpost","layout_fixed",3,-374,874},
+	{26,"outpost_2","outpost","layout_fixed",3,276,474},
+	{28,"outpost_1","outpost","layout_fixed",2,2132,2084},
+	{30,"outpost_1","outpost","layout_fixed",2,682,1234},
+	{31,"outpost_1","outpost","layout_fixed",1,2400,1350},
+	{32,"outpost_1","outpost","layout_fixed",1,1900,550},
+	{2,"bandit_1","bandit_home","layout_fixed",2,-1568,-2066},
+	{5,"bandit_1","bandit_frontier","layout_fixed",3,-1824,-406},
+	{7,"bandit_1","bandit_home","layout_fixed",1,320,-1980},
+	{10,"bandit_1","bandit_frontier","layout_fixed",3,-24,-406},
+	{12,"bandit_1","bandit_home","layout_fixed",2,1632,-2066},
+	{16,"bandit_1","bandit_frontier","layout_fixed",3,1776,-406},
+	{18,"bandit_1","bandit_home","layout_fixed",1,-1600,2050},
+	{21,"bandit_1","bandit_frontier","layout_fixed",1,-1800,430},
+	{23,"bandit_1","bandit_home","layout_fixed",1,320,1980},
+	{26,"bandit_1","bandit_frontier","layout_fixed",2,32,414},
+	{28,"bandit_1","bandit_home","layout_fixed",2,1632,2034},
+	{32,"bandit_1","bandit_frontier","layout_fixed",3,1776,454},
+	{4,"mine","mine","layout_fixed",2,-2418,-1296},
+	{9,"mine","mine","layout_fixed",3,-1074,-1256},
+	{14,"mine","mine","layout_fixed",3,1026,-1256},
+	{20,"mine","mine","layout_fixed",2,-2418,1264},
+	{25,"mine","mine","layout_fixed",1,-1050,1280},
+	{30,"mine","mine","layout_fixed",3,1026,1304},
+	{9,"mirefolk","mirefolk","layout_fixed",1,-620,-1760},
+	{14,"mirefolk","mirefolk","layout_fixed",3,1096,-1716},
+	{18,"mirefolk","mirefolk","layout_fixed",3,-2074,2274},
+	{30,"mirefolk","mirefolk","layout_fixed",3,1096,1764},
+	{10,"clash_1","clash","layout_fixed",3,-274,-296},
+	{10,"clash_2","clash","layout_fixed",1,250,-320},
+	{26,"clash_1","clash","layout_fixed",2,-218,304},
+	{26,"clash_2","clash","layout_fixed",2,282,304},
+	{33,"clash_1","clash","layout_fixed",3,-3024,194},
+	{34,"clash_1","clash","layout_fixed",1,-2200,-80},
+	{34,"clash_2","clash","layout_fixed",2,-1768,64},
+	{35,"clash_1","clash","layout_fixed",3,-1274,-76},
+	{35,"clash_2","clash","layout_fixed",3,-774,124},
+	{35,"clash_3","clash","layout_fixed",3,-274,-76},
+	{36,"clash_1","clash","layout_fixed",1,250,100},
+	{36,"clash_2","clash","layout_fixed",2,782,-116},
+	{36,"clash_3","clash","layout_fixed",2,1282,84},
+	{37,"clash_1","clash","layout_fixed",2,1832,-96},
+	{37,"clash_2","clash","layout_fixed",3,2176,104},
+	{38,"clash_1","clash","layout_fixed",1,3000,170},
+	{33,"dragon","dragon","authored_fixed",0,-3260,-40},
+	{38,"dragon","dragon","authored_fixed",0,3260,-40},
+	{33,"apex_mine","apex_mine","authored_fixed",0,-3200,80},
+	{38,"apex_mine","apex_mine","authored_fixed",0,3200,80},
+	{7,"rare_grimtusk","rare_route","layout_fixed",2,152,-2116},
+	{10,"rare_old_whitefang","rare_route","layout_fixed",1,-180,-650},
+	{5,"rare_korgans_bane","rare_route","layout_fixed",3,-1874,-596},
+	{37,"rare_silkfang","rare_route","layout_fixed",3,2026,94},
+	{21,"rare_marrowclaw","rare_route","layout_fixed",2,-1818,604},
+	{26,"rare_dustwing","rare_route","layout_fixed",3,156,674},
+	{38,"rare_emerald_coil","rare_route","layout_fixed",1,3000,-120},
+	{23,"rare_ashmaw","rare_route","layout_fixed",2,152,2084},
+	{35,"rare_captain_bonerattle","rare_route","layout_fixed",2,-568,64},
+	{36,"rare_captain_bonerattle","rare_route","layout_fixed",1,600,-80},
 }
 
 source.anchors = {}
@@ -362,13 +452,8 @@ for index = 1, #anchor_rows do
 	local row = anchor_rows[index]
 	local anchor = {numeric_id=index,id=("anchor_%03d"):format(index),
 		zone_numeric_id=row[1],slot_id=row[2],template_id=row[3],
-		placement_mode=row[4]}
-	if row[4] == "fixed" then
-		anchor.position = point(row[5], row[6])
-	else
-		anchor.candidates = {point(row[5],row[6]),point(row[5]+32,row[6]-16),
-			point(row[5]-24,row[6]+24)}
-	end
+		placement_mode=row[4],approved_candidate_index=row[5],
+		position=point(row[6],row[7])}
 	source.anchors[index] = anchor
 end
 
@@ -376,15 +461,10 @@ source.poi_spurs = {}
 for index = 13, 86 do
 	local anchor = source.anchors[index]
 	local hub = source.zones[anchor.zone_numeric_id].hub
-	local paths = {}
-	for candidate_index = 1, #anchor.candidates do
-		local candidate = anchor.candidates[candidate_index]
-		paths[candidate_index] = {point(candidate.x,candidate.z),
-			point(hub.x,hub.z)}
-	end
 	source.poi_spurs[#source.poi_spurs+1] = {
 		id=("poi_spur_%03d"):format(index),anchor_id=anchor.id,
-		candidate_paths=paths,
+		centreline={point(anchor.position.x,anchor.position.z),
+			point(hub.x,hub.z)},
 	}
 end
 
@@ -743,17 +823,15 @@ end
 for anchor_index = 1, #source.anchors do
 	local anchor = source.anchors[anchor_index]
 	local profile = profile_by_id[anchor.template_id]
-	local candidates = anchor.position and {anchor.position} or anchor.candidates
-	for candidate_index = 1, #candidates do
-		local candidate = candidates[candidate_index]
-		add_exclusion({
-			id=("exclude:anchor:%s:%02d"):format(anchor.id,candidate_index),
-			recipe_id="exclude_anchor_blend_v1",source_id=anchor.id,
-			candidate_index=candidate_index,center=point(candidate.x,candidate.z),
-			total_width=profile.blend_width,
-			coverage="complete_fitting_plus_blend_envelope",
-		})
-	end
+	local identity_index = anchor.placement_mode == "authored_fixed" and 1 or
+		anchor.approved_candidate_index
+	add_exclusion({
+		id=("exclude:anchor:%s:%02d"):format(anchor.id,identity_index),
+		recipe_id="exclude_anchor_blend_v1",source_id=anchor.id,
+		center=point(anchor.position.x,anchor.position.z),
+		total_width=profile.blend_width,
+		coverage="complete_fitting_plus_blend_envelope",
+	})
 end
 for route_index = 1, #source.routes do
 	local route = source.routes[route_index]
@@ -776,7 +854,7 @@ for spur_index = 1, #source.poi_spurs do
 	add_exclusion({id="exclude:route:"..spur.id,
 		recipe_id="exclude_route_corridor_v1",source_id=spur.id,
 		corridor_width=trail_template[anchor.template_id] and 8 or 12,
-		coverage="all_candidate_paths_and_fixed_terminal"})
+		coverage="complete_centreline"})
 end
 for hydro_index = 1, #source.hydrology do
 	local reach = source.hydrology[hydro_index]
