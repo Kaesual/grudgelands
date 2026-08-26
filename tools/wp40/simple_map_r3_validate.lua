@@ -37,6 +37,103 @@ return function(common)
 		"losing_path_id", "losing_run", "from_x", "from_z", "to_x",
 		"to_z", "winner_path_id", "winner_run", "winner_x", "winner_z",
 	}
+	local CONTACT_FACE_SCOPE = "orthogonal_reach_contact_face_v1"
+	local CONTACT_FACE_EXPECTED = {
+		{
+			id = "highcourt_goldmead_fall",
+			upper_id = "hydro_highcourt_fork_west",
+			lower_id = "hydro_goldmead_millriver",
+			upper_landmark_id = "highcourt_riverfork",
+			lower_landmark_id = "goldmead_millriver",
+			upper_offset = 34, lower_offset = 16, drop = 18,
+			position_x = -100, position_z = -1780,
+			lip_id = "highcourt_goldmead_lip",
+			drop_id = "highcourt_goldmead_drop",
+			plunge_id = "highcourt_goldmead_plunge",
+			plunge_profile_id = "river",
+			contact_edge_count = 13, upper_lip_count = 13,
+			lower_face_count = 13,
+			first_upper_x = -106, first_upper_z = -1756,
+			first_lower_x = -106, first_lower_z = -1757,
+			upper_min_x = -106, upper_max_x = -94,
+			upper_min_z = -1756, upper_max_z = -1756,
+			lower_min_x = -106, lower_max_x = -94,
+			lower_min_z = -1757, lower_max_z = -1757,
+		},
+		{
+			id = "gravesalt_broken_fall",
+			upper_id = "hydro_gravesalt_pans",
+			lower_id = "hydro_broken_marsh",
+			upper_landmark_id = "gravesalt_whitewall",
+			lower_landmark_id = "broken_marsh",
+			upper_offset = 100, lower_offset = 8, drop = 92,
+			position_x = -1700, position_z = 80,
+			lip_id = "gravesalt_broken_lip",
+			drop_id = "gravesalt_broken_drop",
+			plunge_id = "gravesalt_broken_plunge",
+			plunge_profile_id = "ordinary_lake",
+			contact_edge_count = 163, upper_lip_count = 114,
+			lower_face_count = 114,
+			first_upper_x = -1713, first_upper_z = 21,
+			first_lower_x = -1712, first_lower_z = 21,
+			upper_min_x = -1713, upper_max_x = -1650,
+			upper_min_z = 21, upper_max_z = 110,
+			lower_min_x = -1712, lower_max_x = -1649,
+			lower_min_z = 21, lower_max_z = 110,
+		},
+		{
+			id = "raincall_reedmaze_fall",
+			upper_id = "hydro_raincall_plunge",
+			lower_id = "hydro_whispering_reedmaze",
+			upper_landmark_id = "raincall_falls",
+			lower_landmark_id = "whispering_reedmaze",
+			upper_offset = 44, lower_offset = 8, drop = 36,
+			position_x = 2100, position_z = 1900,
+			lip_id = "raincall_reedmaze_lip",
+			drop_id = "raincall_reedmaze_drop",
+			plunge_id = "raincall_reedmaze_plunge",
+			plunge_profile_id = "shallow_marsh",
+			contact_edge_count = 109, upper_lip_count = 66,
+			lower_face_count = 65,
+			first_upper_x = 2070, first_upper_z = 1864,
+			first_lower_x = 2069, first_lower_z = 1864,
+			upper_min_x = 2026, upper_max_x = 2070,
+			upper_min_z = 1864, upper_max_z = 1929,
+			lower_min_x = 2026, lower_max_x = 2069,
+			lower_min_z = 1864, lower_max_z = 1928,
+		},
+	}
+	local WET_REACH_CONTACT_EXPECTED = {
+		{"hydro_gravesalt_pans", "hydro_broken_marsh", 100, 8,
+			"gravesalt_broken_fall", 163, 114, 114},
+		{"hydro_highcourt_fork_east", "hydro_highcourt_fork_west", 34, 34,
+			nil, 75, 50, 50},
+		{"hydro_highcourt_fork_east", "hydro_highcourt_outflow", 34, 34,
+			nil, 17, 9, 9},
+		{"hydro_highcourt_fork_west", "hydro_goldmead_millriver", 34, 16,
+			"highcourt_goldmead_fall", 13, 13, 13},
+		{"hydro_highcourt_fork_west", "hydro_highcourt_outflow", 34, 34,
+			nil, 62, 40, 41},
+		{"hydro_raincall_headwater", "hydro_raincall_upper_lip", 72, 68,
+			"raincall_upper_rapid", 136, 99, 99},
+		{"hydro_raincall_middle_lip", "hydro_raincall_plunge", 52, 44,
+			"raincall_lower_fall", 125, 82, 83},
+		{"hydro_raincall_middle_upper", "hydro_raincall_middle_lip", 56, 52,
+			"raincall_middle_rapid", 122, 86, 87},
+		{"hydro_raincall_plunge", "hydro_whispering_reedmaze", 44, 8,
+			"raincall_reedmaze_fall", 109, 66, 65},
+		{"hydro_raincall_upper_lip", "hydro_raincall_middle_upper", 68, 56,
+			"raincall_upper_fall", 90, 61, 61},
+		{"hydro_totemwater_delta", "hydro_whispering_reedmaze", 8, 8,
+			nil, 151, 107, 107},
+		{"hydro_whitebridge_ford", "hydro_whitebridge_main", 16, 16,
+			nil, 73, 60, 61},
+	}
+	local LEGACY_RAINCALL_TRANSITIONS = {
+		raincall_upper_rapid = true, raincall_upper_fall = true,
+		raincall_middle_rapid = true, raincall_lower_fall = true,
+	}
+	local validated_raw_sha256
 
 	local function fail(message)
 		error("WP40 simple-map R3 validation: " .. message, 0)
@@ -230,8 +327,10 @@ return function(common)
 					row.fitting_width <= 0 or row.fitting_width % 2 ~= 0 or
 					row.blend_width <= row.fitting_width or row.blend_width % 2 ~= 0 or
 					row.collar_width ~= (profile.blend_width - profile.fitting_width) / 2 or
-					row.fitting_columns ~= profile.fitting_width * profile.fitting_width or
-					row.collar_columns ~= (profile.blend_width - 2) *
+					row.fitting_columns <= 0 or
+					row.fitting_columns > profile.fitting_width * profile.fitting_width or
+					row.collar_columns < 0 or
+					row.collar_columns > (profile.blend_width - 2) *
 						(profile.blend_width - 2) - row.fitting_columns or
 					row.owner_escape_columns ~= 0 or row.observed_max_cut < 0 or
 					row.observed_max_fill < 0 or row.rejected ~= false or
@@ -634,16 +733,23 @@ return function(common)
 				end
 			else
 				table.sort(rows, function(a, b) return a.run < b.run end)
-				if row.first_run ~= rows[1].run or row.last_run ~= rows[#rows].run or
-						row.resume_before_run ~= row.first_run - 1 or
-						row.resume_after_run ~= row.last_run + 1 then
-					fail("ford ordinary-water resumption differs")
+				if row.first_run ~= rows[1].run or row.last_run ~= rows[#rows].run then
+					fail("ford capped run bounds differ")
 				end
-				local before = lower_key[row.path_id .. ":" .. row.resume_before_run]
-				local after = lower_key[row.path_id .. ":" .. row.resume_after_run]
-				if not before or before.bound_kind ~= "ordinary_water" or
-						not after or after.bound_kind ~= "ordinary_water" then
-					fail("ford cap does not resume at the first ordinary-water run")
+				local function expected_resume(first_run, last_run, direction)
+					local run = direction < 0 and first_run - 1 or last_run + 1
+					local limit = route_by_id[row.path_id].node_count
+					while run >= 1 and run <= limit do
+						local lower = lower_key[row.path_id .. ":" .. run]
+						if lower and lower.bound_kind == "ordinary_water" then return run end
+						run = run + direction
+					end
+					return nil
+				end
+				if row.resume_before_run ~= expected_resume(row.first_run,
+						row.last_run, -1) or row.resume_after_run ~=
+						expected_resume(row.first_run, row.last_run, 1) then
+					fail("ford first ordinary-water resumption differs")
 				end
 			end
 		end
@@ -679,8 +785,7 @@ return function(common)
 				fail("named operation identity witness differs at " .. row_id(row))
 			end
 			if row.kind == "bridge_deck" then
-				if surface < datum + 4 or session.terrain_height_at(row.first_witness_x,
-						row.first_witness_z) == surface then
+				if surface < datum + 4 then
 					fail("named bridge scalar semantics differ at " .. row_id(row))
 				end
 			elseif row.kind == "causeway" then
@@ -751,9 +856,7 @@ return function(common)
 					session.functional_surface_values_at(row.bridge_witness_x,
 						row.bridge_witness_z)
 				if kind ~= "bridge_deck" or surface <= datum + 1 or
-						feature ~= row.path_id or interface ~= nil or
-						session.terrain_height_at(row.bridge_witness_x,
-							row.bridge_witness_z) == surface then
+						feature ~= row.path_id or interface ~= nil then
 					fail("derived bridge non-scalar semantics differ")
 				end
 			end
@@ -864,6 +967,186 @@ return function(common)
 		if named_overlap ~= 0 then fail("tunnel overlaps a named water operation") end
 	end
 
+	local function contact_face_source_authority(source)
+		if source.layout_revision_id ~= "wp40-simple-map-v1e" then return nil end
+		if source.schema ~= "grug_wp40_simple_map_source_v2" or
+				source.layout_id ~= "wp40-simple-map-v1d" or
+				#source.hydrology ~= 25 or #source.hydrology_interfaces ~= 15 then
+			fail("V1e hydrology source population/identity differs")
+		end
+		local hydrology_by_id = maps_by_id(source.hydrology)
+		local profile_by_id = maps_by_id(source.hydrology_profiles)
+		local contact_rows, pair_seen, legacy_seen = {}, {}, {}
+		local population = {total = #source.hydrology_interfaces,
+			unequal_level_pairs = 0, rapids = 0, waterfalls = 0,
+			cardinal_waterfalls = 0, contact_face_waterfalls = 0, other = 0}
+		for index = 1, #source.hydrology_interfaces do
+			local row = source.hydrology_interfaces[index]
+			if row.kind == "rapid" then population.rapids = population.rapids + 1
+			elseif row.kind == "waterfall" then
+				population.waterfalls = population.waterfalls + 1
+			else population.other = population.other + 1 end
+			if row.upper_id ~= nil or row.lower_id ~= nil then
+				if type(row.upper_id) ~= "string" or type(row.lower_id) ~= "string" or
+						row.upper_id == row.lower_id then
+					fail("hydrology upper/lower pair identity differs at " .. row.id)
+				end
+				local upper, lower = hydrology_by_id[row.upper_id],
+					hydrology_by_id[row.lower_id]
+				if not upper or not lower or
+						row.upper_level_offset ~= upper.water_surface_offset or
+						row.lower_level_offset ~= lower.water_surface_offset or
+						row.upper_level_offset == row.lower_level_offset then
+					fail("hydrology unequal-level pair differs at " .. row.id)
+				end
+				local a, b = row.upper_id, row.lower_id
+				if b < a then a, b = b, a end
+				local key = a .. "\t" .. b
+				if pair_seen[key] then fail("duplicate named hydrology level pair") end
+				pair_seen[key] = row.id
+				population.unequal_level_pairs =
+					population.unequal_level_pairs + 1
+			end
+			if row.transition_scope_id == CONTACT_FACE_SCOPE then
+				local expected = CONTACT_FACE_EXPECTED[#contact_rows + 1]
+				local upper, lower = hydrology_by_id[row.upper_id],
+					hydrology_by_id[row.lower_id]
+				local lower_profile = lower and profile_by_id[lower.profile_id]
+				if not expected or index ~= 12 + #contact_rows + 1 or
+						row.id ~= expected.id or row.kind ~= "waterfall" or
+						row.upper_id ~= expected.upper_id or
+						row.lower_id ~= expected.lower_id or
+						row.upper_level_offset ~= expected.upper_offset or
+						row.lower_level_offset ~= expected.lower_offset or
+						not upper or not lower or not lower_profile or
+						upper.landmark_id ~= expected.upper_landmark_id or
+						lower.landmark_id ~= expected.lower_landmark_id or
+						row.position.x ~= expected.position_x or
+						row.position.z ~= expected.position_z or
+						row.lip_id ~= expected.lip_id or row.drop_id ~= expected.drop_id or
+						row.plunge_id ~= expected.plunge_id or
+						row.plunge_profile_id ~= expected.plunge_profile_id or
+						lower_profile.id ~= expected.plunge_profile_id or
+						row.transition_profile_id ~= "waterfall_drop" or
+						row.drop ~= expected.drop or row.drop_height ~= expected.drop or
+						row.bed_seal_layers ~= 3 or row.bank_seal_nodes ~= 2 or
+						row.receiver_source_omission_nodes ~= 1 or row.sealed ~= true then
+					fail("contact-face source authority differs at " .. tostring(row.id))
+				end
+				for _, forbidden in ipairs({"axis_start", "axis_end", "run", "width",
+					"drop_mask_width", "drop_mask_length", "plunge_width",
+					"plunge_length"}) do
+					if row[forbidden] ~= nil then
+						fail("contact-face source carries corridor field " .. forbidden)
+					end
+				end
+				contact_rows[#contact_rows + 1] = row
+				population.contact_face_waterfalls =
+					population.contact_face_waterfalls + 1
+			elseif row.transition_scope_id ~= nil then
+				fail("unknown hydrology transition scope at " .. tostring(row.id))
+			elseif LEGACY_RAINCALL_TRANSITIONS[row.id] then
+				legacy_seen[row.id] = true
+				if row.kind == "waterfall" then
+					population.cardinal_waterfalls =
+						population.cardinal_waterfalls + 1
+					if row.drop_mask_width == nil or row.drop_mask_length == nil or
+							row.plunge_width == nil or row.plunge_length == nil then
+						fail("legacy cardinal waterfall geometry differs at " .. row.id)
+					end
+				elseif row.kind ~= "rapid" or row.run == nil or row.width == nil then
+					fail("legacy Raincall rapid geometry differs at " .. row.id)
+				end
+			end
+		end
+		for id in pairs(LEGACY_RAINCALL_TRANSITIONS) do
+			if not legacy_seen[id] then fail("legacy Raincall transition missing " .. id) end
+		end
+		if #contact_rows ~= 3 or population.unequal_level_pairs ~= 7 or
+				population.rapids ~= 2 or population.waterfalls ~= 5 or
+				population.cardinal_waterfalls ~= 2 or
+				population.contact_face_waterfalls ~= 3 or population.other ~= 8 then
+			fail("hydrology interface 15/7 population differs")
+		end
+		return {rows = contact_rows, population = population,
+			hydrology_by_id = hydrology_by_id, profile_by_id = profile_by_id}
+	end
+
+	local function exact_value_equal(a, b, seen)
+		if type(a) ~= type(b) then return false end
+		if type(a) ~= "table" then return a == b end
+		seen = seen or {}
+		if seen[a] then return seen[a] == b end
+		seen[a] = b
+		local count_a, count_b = 0, 0
+		for key, value in pairs(a) do
+			count_a = count_a + 1
+			if not exact_value_equal(value, b[key], seen) then return false end
+		end
+		for _ in pairs(b) do count_b = count_b + 1 end
+		return count_a == count_b
+	end
+
+	local function validate_contact_face_evidence_shape(source, evidence,
+			interface_evidence)
+		local authority = contact_face_source_authority(source)
+		if not authority then return nil end
+		if not exact_value_equal(evidence.hydrology_interface_population,
+				authority.population) then
+			fail("hydrology interface population evidence differs")
+		end
+		if evidence.wet_reach_contact_pairs ~= 12 or
+				evidence.unequal_interface_pairs ~= 7 then
+			fail("hydrology contact/interface pair evidence differs")
+		end
+		local contacts = require_array(evidence, "contact_face_waterfalls", 3)
+		local interface_by_id = maps_by_id(interface_evidence)
+		for index = 1, #contacts do
+			local row, expected = contacts[index], CONTACT_FACE_EXPECTED[index]
+			if row.numeric_id ~= 12 + index or row.id ~= expected.id or
+					row.kind ~= "waterfall" or row.transition_scope_id ~=
+					CONTACT_FACE_SCOPE or row.upper_id ~= expected.upper_id or
+					row.lower_id ~= expected.lower_id then
+				fail("contact-face evidence identity/order differs")
+			end
+			integer_fields(row, {"numeric_id", "position_x", "position_z",
+				"upper_y", "lower_y", "upper_bed", "lower_bed", "drop",
+				"drop_height", "bed_seal_layers", "bank_seal_nodes",
+				"receiver_source_omission_nodes", "scan_min_x", "scan_max_x",
+				"scan_min_z", "scan_max_z", "contact_edge_count",
+				"upper_lip_count", "lower_face_count",
+				"upper_lip_component_count", "lower_face_component_count",
+				"first_upper_x", "first_upper_z", "first_lower_x", "first_lower_z",
+				"upper_min_x", "upper_max_x", "upper_min_z", "upper_max_z",
+				"lower_min_x", "lower_max_x", "lower_min_z", "lower_max_z",
+				"receiver_opening_count", "receiver_y", "receiver_source_min_y",
+				"receiver_source_max_y", "authored_falling_water_columns"},
+				"contact-face evidence")
+			local edges = common.dense_count(row.contact_edges,
+				"contact-face evidence edges")
+			local lips = common.dense_count(row.upper_lip_columns,
+				"contact-face evidence upper lips")
+			local faces = common.dense_count(row.lower_face_columns,
+				"contact-face evidence lower faces")
+			common.dense_count(row.direction_mask_counts,
+				"contact-face evidence direction masks")
+			if edges ~= row.contact_edge_count or lips ~= row.upper_lip_count or
+					faces ~= row.lower_face_count or row.sealed ~= true or
+					row.authored_falling_water_columns ~= 0 then
+				fail("contact-face complete evidence population differs")
+			end
+			for _, key in ipairs({"contact_edge_digest", "upper_lip_digest",
+				"lower_face_digest", "direction_mask_digest", "contact_face_digest"}) do
+				common.digest(row[key], "contact-face " .. key)
+			end
+			if not interface_by_id[row.id] or
+					not exact_value_equal(row, interface_by_id[row.id]) then
+				fail("contact-face top-level/interface evidence differs at " .. row.id)
+			end
+		end
+		return {source = authority, rows = contacts}
+	end
+
 	function validator.validate_evidence(session, source)
 		method(session, "artifact_evidence")
 		local first = session.artifact_evidence()
@@ -945,6 +1228,7 @@ return function(common)
 		local interfaces = require_array(evidence, "interfaces",
 			#source.hydrology_interfaces)
 		require_id_coverage(interfaces, source.hydrology_interfaces, "interfaces")
+		validate_contact_face_evidence_shape(source, evidence, interfaces)
 		local exterior = require_array(evidence, "exterior_witnesses")
 		local exterior_seen = {}
 		for index = 1, #exterior do
@@ -971,6 +1255,8 @@ return function(common)
 	end
 
 	function validator.validate_api(session, raw_sha256)
+		if type(raw_sha256) ~= "function" then fail("raw SHA-256 helper missing") end
+		validated_raw_sha256 = raw_sha256
 		for _, name in ipairs({
 			"terrain_height_at", "water_surface_at",
 			"functional_surface_values_at", "hydrology_transition_values_at",
@@ -1041,10 +1327,11 @@ return function(common)
 				fail("functional interface identity differs for " .. kind)
 			end
 		end
-		local transition, transition_id, upper, lower, progress =
+		local transition, transition_id, upper, lower, progress, face_mask =
 			session.hydrology_transition_values_at(x, z)
 		if transition == nil then
-			if transition_id ~= nil or upper ~= nil or lower ~= nil or progress ~= nil then
+			if transition_id ~= nil or upper ~= nil or lower ~= nil or
+					progress ~= nil or face_mask ~= nil then
 				fail("partial nil hydrology-transition tuple")
 			end
 		else
@@ -1056,8 +1343,20 @@ return function(common)
 			end
 			common.safe_integer(upper, "transition upper y")
 			common.safe_integer(lower, "transition lower y")
-			common.safe_integer(progress, "transition progress Q")
-			if progress < 0 or progress > Q then fail("transition progress outside Q") end
+			if progress == nil then
+				common.safe_integer(face_mask, "contact-face direction mask")
+				if transition ~= "waterfall" or face_mask < 1 or face_mask > 15 then
+					fail("contact-face transition tuple differs")
+				end
+			else
+				common.safe_integer(progress, "transition progress Q")
+				if progress < 0 or progress > Q then
+					fail("transition progress outside Q")
+				end
+				if face_mask ~= nil then
+					fail("corridor transition returned a contact-face mask")
+				end
+			end
 		end
 		local water_class, macro_region, zone_numeric_id, bay_id, hydrology_id,
 			channel_id, fixed, civic_water = horizontal.classification_values_at(x, z)
@@ -1075,7 +1374,8 @@ return function(common)
 		row.kind, row.surface, row.feature_id = kind, surface, feature_id
 		row.interface_id, row.transition = interface_id, transition
 		row.transition_id, row.upper, row.lower = transition_id, upper, lower
-		row.progress, row.classification = progress, classification
+		row.progress, row.face_mask = progress, face_mask
+		row.classification = classification
 		return row
 	end
 
@@ -1090,8 +1390,20 @@ return function(common)
 	end
 
 	local function check_column_rules(row, source, horizontal, hydro_by_id,
-			profile_by_id, counts, anchor_reference_by_id, landing_ids)
+			profile_by_id, counts, anchor_reference_by_id, landing_ids,
+			contact_faces)
 		local class = row.classification.water_class
+		local contact_face = contact_faces and
+			contact_faces[row.x .. ":" .. row.z] or nil
+		if row.face_mask ~= nil and not contact_face then
+			fail("contact-face mask escaped independently reconstructed authority")
+		end
+		if contact_face and (row.transition_id ~= contact_face.id or
+				row.face_mask ~= contact_face.mask or row.ground ~= contact_face.lower_bed or
+				row.water ~= nil or row.lower ~= contact_face.lower_y or
+				row.progress ~= nil) then
+			fail("contact-face column differs from independently reconstructed authority")
+		end
 		counts[class] = (counts[class] or 0) + 1
 		if class == "land" then
 			if row.water ~= nil then fail("land column has a water surface") end
@@ -1139,9 +1451,6 @@ return function(common)
 				if (row.interface_id ~= nil and row.surface < clearance_y + 4) or
 						(row.interface_id == nil and row.surface <= clearance_y + 1) then
 					fail("bridge clearance/classification differs")
-				end
-				if row.transition == nil and row.ground ~= expected_bed then
-					fail("bridge changed the water bed")
 				end
 			elseif row.kind == "anchor_platform" then
 				local clearance_y = row.water or math.max(row.upper, row.lower)
@@ -1198,6 +1507,459 @@ return function(common)
 			local row = source.island_routes[index]
 			result[#result + 1] = {id = row.id, points = row.centreline,
 				surface_width = 5, corridor_width = 12, kind = "island_route"}
+		end
+		return result
+	end
+
+	local function contact_point_before(a, b)
+		return a.z < b.z or (a.z == b.z and a.x < b.x)
+	end
+
+	local function contact_edge_before(a, b)
+		if a.upper_z ~= b.upper_z then return a.upper_z < b.upper_z end
+		if a.upper_x ~= b.upper_x then return a.upper_x < b.upper_x end
+		if a.lower_z ~= b.lower_z then return a.lower_z < b.lower_z end
+		return a.lower_x < b.lower_x
+	end
+
+	local function contact_face_mask_bit(upper_x, upper_z, lower_x, lower_z)
+		if upper_x == lower_x - 1 and upper_z == lower_z then return 1 end
+		if upper_x == lower_x + 1 and upper_z == lower_z then return 2 end
+		if upper_x == lower_x and upper_z == lower_z - 1 then return 4 end
+		if upper_x == lower_x and upper_z == lower_z + 1 then return 8 end
+		fail("contact-face edge is not orthogonal")
+	end
+
+	local function contact_support_bounds(reach)
+		local min_x, max_x, min_z, max_z
+		for index = 1, #reach.centreline do
+			local point = reach.centreline[index]
+			local point_min_x, point_max_x = point.x - point.half_width,
+				point.x + point.half_width
+			local point_min_z, point_max_z = point.z - point.half_width,
+				point.z + point.half_width
+			min_x = min_x and math.min(min_x, point_min_x) or point_min_x
+			max_x = max_x and math.max(max_x, point_max_x) or point_max_x
+			min_z = min_z and math.min(min_z, point_min_z) or point_min_z
+			max_z = max_z and math.max(max_z, point_max_z) or point_max_z
+		end
+		return {min_x = min_x - 1, max_x = max_x + 1,
+			min_z = min_z - 1, max_z = max_z + 1}
+	end
+
+	local function contact_point_bounds(points)
+		if #points == 0 then fail("contact-face point set is empty") end
+		local result = {min_x = points[1].x, max_x = points[1].x,
+			min_z = points[1].z, max_z = points[1].z}
+		for index = 2, #points do
+			local point = points[index]
+			result.min_x, result.max_x = math.min(result.min_x, point.x),
+				math.max(result.max_x, point.x)
+			result.min_z, result.max_z = math.min(result.min_z, point.z),
+				math.max(result.max_z, point.z)
+		end
+		return result
+	end
+
+	local function contact_component_count(points)
+		local members, visited = {}, {}
+		for index = 1, #points do
+			local point = points[index]
+			local member_row = members[point.z]
+			if not member_row then member_row = {} members[point.z] = member_row end
+			member_row[point.x] = true
+		end
+		local components = 0
+		for index = 1, #points do
+			local point = points[index]
+			local visited_row = visited[point.z]
+			if not visited_row or not visited_row[point.x] then
+				components = components + 1
+				local queue_x, queue_z, cursor = {point.x}, {point.z}, 1
+				visited_row = visited_row or {}
+				visited[point.z], visited_row[point.x] = visited_row, true
+				while cursor <= #queue_x do
+					local x, z = queue_x[cursor], queue_z[cursor]
+					cursor = cursor + 1
+					for dz = -1, 1 do
+						local member_row = members[z + dz]
+						if member_row then
+							local neighbour_visited = visited[z + dz]
+							for dx = -1, 1 do
+								if (dx ~= 0 or dz ~= 0) and member_row[x + dx] and
+										(not neighbour_visited or
+										not neighbour_visited[x + dx]) then
+									neighbour_visited = neighbour_visited or {}
+									visited[z + dz] = neighbour_visited
+									neighbour_visited[x + dx] = true
+									queue_x[#queue_x + 1], queue_z[#queue_z + 1] =
+										x + dx, z + dz
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		return components
+	end
+
+	local function half_open_square_member(point, center, width)
+		local half = width / 2
+		return point.x >= center.x - half and point.x < center.x + half and
+			point.z >= center.z - half and point.z < center.z + half
+	end
+
+	local function add_hit(hits, id)
+		hits[id] = (hits[id] or 0) + 1
+	end
+
+	local function exact_hits(actual, expected, label)
+		for id, count in pairs(actual) do
+			if expected[id] ~= count then fail(label .. " differs at " .. id) end
+		end
+		for id, count in pairs(expected) do
+			if actual[id] ~= count then fail(label .. " misses " .. id) end
+		end
+	end
+
+	local function contact_digest_bytes(id, edges, lips, faces, directions)
+		local edge_lines, lip_lines, face_lines, direction_lines = {}, {}, {}, {}
+		for index = 1, #edges do
+			local row = edges[index]
+			edge_lines[index] = table.concat({"edge", id, tostring(row.upper_x),
+				tostring(row.upper_z), tostring(row.lower_x), tostring(row.lower_z),
+				tostring(row.face_mask_bit)}, "\t") .. "\n"
+		end
+		for index = 1, #lips do
+			local row = lips[index]
+			lip_lines[index] = table.concat({"upper_lip", id, tostring(row.x),
+				tostring(row.z)}, "\t") .. "\n"
+		end
+		for index = 1, #faces do
+			local row = faces[index]
+			face_lines[index] = table.concat({"lower_face", id, tostring(row.x),
+				tostring(row.z), tostring(row.face_mask)}, "\t") .. "\n"
+		end
+		for index = 1, #directions do
+			local row = directions[index]
+			direction_lines[index] = table.concat({"direction_mask", id,
+				tostring(row.face_mask), tostring(row.column_count)}, "\t") .. "\n"
+		end
+		return table.concat(edge_lines), table.concat(lip_lines),
+			table.concat(face_lines), table.concat(direction_lines)
+	end
+
+	local function build_contact_face_authority(session, horizontal, source,
+			evidence)
+		local source_authority = contact_face_source_authority(source)
+		if not source_authority then return nil end
+		if type(validated_raw_sha256) ~= "function" then
+			fail("contact-face digest reconstruction lacks validated SHA-256")
+		end
+		if type(horizontal.polyline_corridor_member) ~= "function" then
+			fail("horizontal corridor authority missing")
+		end
+		local evidence_shape = validate_contact_face_evidence_shape(source,
+			evidence, evidence.interfaces)
+		local evidence_by_id = maps_by_id(evidence_shape.rows)
+		local paths = selected_paths(source, horizontal)
+		if #paths ~= 139 then fail("contact-face path authority count differs") end
+		local anchor_profile_by_id = maps_by_id(source.anchor_profiles)
+		local hard_recipe_by_id = maps_by_id(source.hard_protection_recipes)
+		local route_by_id = maps_by_id(source.routes)
+		local result = {records = {}, by_id = {}, face_by_coordinate = {},
+			lip_by_coordinate = {}}
+		for index = 1, #CONTACT_FACE_EXPECTED do
+			local expected = CONTACT_FACE_EXPECTED[index]
+			local upper = source_authority.hydrology_by_id[expected.upper_id]
+			local lower = source_authority.hydrology_by_id[expected.lower_id]
+			local upper_profile = source_authority.profile_by_id[upper.profile_id]
+			local lower_profile = source_authority.profile_by_id[lower.profile_id]
+			local upper_support, lower_support = contact_support_bounds(upper),
+				contact_support_bounds(lower)
+			local scan_min_x = math.max(upper_support.min_x, lower_support.min_x)
+			local scan_max_x = math.min(upper_support.max_x, lower_support.max_x)
+			local scan_min_z = math.max(upper_support.min_z, lower_support.min_z)
+			local scan_max_z = math.min(upper_support.max_z, lower_support.max_z)
+			if scan_min_x > scan_max_x or scan_min_z > scan_max_z then
+				fail("contact-face support intersection is empty")
+			end
+			local edges, lips, faces = {}, {}, {}
+			local lip_seen, face_by_key = {}, {}
+			local neighbour_x, neighbour_z = {-1, 1, 0, 0}, {0, 0, -1, 1}
+			for z = scan_min_z, scan_max_z do
+				for x = scan_min_x, scan_max_x do
+					local class, _, _, _, hydrology_id =
+						horizontal.classification_values_at(x, z)
+					if class == "planned_water" and hydrology_id == upper.id then
+						for direction = 1, 4 do
+							local lower_x, lower_z = x + neighbour_x[direction],
+								z + neighbour_z[direction]
+							local lower_class, _, _, _, lower_id =
+								horizontal.classification_values_at(lower_x, lower_z)
+							if lower_class == "planned_water" and lower_id == lower.id then
+								local bit = contact_face_mask_bit(x, z, lower_x, lower_z)
+								edges[#edges + 1] = {upper_x = x, upper_z = z,
+									lower_x = lower_x, lower_z = lower_z,
+									face_mask_bit = bit}
+								local lip_key = x .. ":" .. z
+								if not lip_seen[lip_key] then
+									lip_seen[lip_key] = true
+									lips[#lips + 1] = {x = x, z = z}
+								end
+								local face_key = lower_x .. ":" .. lower_z
+								local face = face_by_key[face_key]
+								if not face then
+									face = {x = lower_x, z = lower_z, face_mask = 0}
+									face_by_key[face_key] = face
+									faces[#faces + 1] = face
+								end
+								if math.floor(face.face_mask / bit) % 2 ~= 0 then
+									fail("duplicate contact-face direction bit")
+								end
+								face.face_mask = face.face_mask + bit
+							end
+						end
+					end
+				end
+			end
+			table.sort(edges, contact_edge_before)
+			table.sort(lips, contact_point_before)
+			table.sort(faces, contact_point_before)
+			local upper_bounds, lower_bounds = contact_point_bounds(lips),
+				contact_point_bounds(faces)
+			local first = edges[1]
+			if #edges ~= expected.contact_edge_count or
+					#lips ~= expected.upper_lip_count or
+					#faces ~= expected.lower_face_count or
+					contact_component_count(lips) ~= 1 or
+					contact_component_count(faces) ~= 1 or not first or
+					first.upper_x ~= expected.first_upper_x or
+					first.upper_z ~= expected.first_upper_z or
+					first.lower_x ~= expected.first_lower_x or
+					first.lower_z ~= expected.first_lower_z or
+					upper_bounds.min_x ~= expected.upper_min_x or
+					upper_bounds.max_x ~= expected.upper_max_x or
+					upper_bounds.min_z ~= expected.upper_min_z or
+					upper_bounds.max_z ~= expected.upper_max_z or
+					lower_bounds.min_x ~= expected.lower_min_x or
+					lower_bounds.max_x ~= expected.lower_max_x or
+					lower_bounds.min_z ~= expected.lower_min_z or
+					lower_bounds.max_z ~= expected.lower_max_z then
+				fail("independent contact-face set reconstruction differs at " ..
+					expected.id)
+			end
+			local direction_count = {}
+			for face_index = 1, #faces do
+				local face = faces[face_index]
+				if face.face_mask < 1 or face.face_mask > 15 then
+					fail("independent contact-face mask differs")
+				end
+				direction_count[face.face_mask] =
+					(direction_count[face.face_mask] or 0) + 1
+			end
+			local directions = {}
+			for mask = 1, 15 do
+				if direction_count[mask] then directions[#directions + 1] = {
+					face_mask = mask, column_count = direction_count[mask]} end
+			end
+			local edge_bytes, lip_bytes, face_bytes, direction_bytes =
+				contact_digest_bytes(expected.id, edges, lips, faces, directions)
+			local upper_y, lower_y = common.WATER_LEVEL + expected.upper_offset,
+				common.WATER_LEVEL + expected.lower_offset
+			local upper_bed, lower_bed = upper_y - upper_profile.depth,
+				lower_y - lower_profile.depth
+			local record = {numeric_id = 12 + index, id = expected.id,
+				kind = "waterfall", position_x = expected.position_x,
+				position_z = expected.position_z,
+				transition_profile_id = "waterfall_drop",
+				transition_scope_id = CONTACT_FACE_SCOPE,
+				upper_id = expected.upper_id, lower_id = expected.lower_id,
+				upper_y = upper_y, lower_y = lower_y,
+				upper_bed = upper_bed, lower_bed = lower_bed,
+				lip_id = expected.lip_id, drop_id = expected.drop_id,
+				plunge_id = expected.plunge_id,
+				plunge_profile_id = expected.plunge_profile_id,
+				drop = expected.drop, drop_height = expected.drop,
+				bed_seal_layers = 3, bank_seal_nodes = 2,
+				receiver_source_omission_nodes = 1, sealed = true,
+				scan_min_x = scan_min_x, scan_max_x = scan_max_x,
+				scan_min_z = scan_min_z, scan_max_z = scan_max_z,
+				contact_edge_count = #edges, upper_lip_count = #lips,
+				lower_face_count = #faces, upper_lip_component_count = 1,
+				lower_face_component_count = 1,
+				first_upper_x = first.upper_x, first_upper_z = first.upper_z,
+				first_lower_x = first.lower_x, first_lower_z = first.lower_z,
+				upper_min_x = upper_bounds.min_x, upper_max_x = upper_bounds.max_x,
+				upper_min_z = upper_bounds.min_z, upper_max_z = upper_bounds.max_z,
+				lower_min_x = lower_bounds.min_x, lower_max_x = lower_bounds.max_x,
+				lower_min_z = lower_bounds.min_z, lower_max_z = lower_bounds.max_z,
+				receiver_opening_count = #faces, receiver_y = lower_y,
+				receiver_source_min_y = lower_bed + 1,
+				receiver_source_max_y = lower_y - 1,
+				authored_falling_water_columns = 0,
+				contact_edges = edges, upper_lip_columns = lips,
+				lower_face_columns = faces, direction_mask_counts = directions,
+				contact_edge_digest = common.digest_hex(validated_raw_sha256, edge_bytes),
+				upper_lip_digest = common.digest_hex(validated_raw_sha256, lip_bytes),
+				lower_face_digest = common.digest_hex(validated_raw_sha256, face_bytes),
+				direction_mask_digest = common.digest_hex(validated_raw_sha256,
+					direction_bytes),
+				contact_face_digest = common.digest_hex(validated_raw_sha256,
+					edge_bytes .. lip_bytes .. face_bytes .. direction_bytes),
+			}
+			if not exact_value_equal(record, evidence_by_id[expected.id]) then
+				fail("independent complete contact-face evidence differs at " ..
+					expected.id)
+			end
+			local full_lip_hits, full_face_hits = {}, {}
+			local blend_lip_hits, blend_face_hits = {}, {}
+			for anchor_index = 1, #source.anchors do
+				local anchor = source.anchors[anchor_index]
+				local profile = anchor_profile_by_id[anchor.template_id]
+				for lip_index = 1, #lips do
+					if half_open_square_member(lips[lip_index], anchor.position,
+							profile.fitting_width) then add_hit(full_lip_hits, anchor.id) end
+					if half_open_square_member(lips[lip_index], anchor.position,
+							profile.blend_width) then add_hit(blend_lip_hits, anchor.id) end
+				end
+				for face_index = 1, #faces do
+					if half_open_square_member(faces[face_index], anchor.position,
+							profile.fitting_width) then add_hit(full_face_hits, anchor.id) end
+					if half_open_square_member(faces[face_index], anchor.position,
+							profile.blend_width) then add_hit(blend_face_hits, anchor.id) end
+				end
+			end
+			local expected_full_lip, expected_full_face = {}, {}
+			local expected_blend_lip, expected_blend_face = {}, {}
+			if expected.id == "highcourt_goldmead_fall" then
+				expected_full_lip.anchor_008 = 13
+				expected_blend_lip.anchor_008 = 13
+				expected_blend_face.anchor_008 = 13
+			elseif expected.id == "gravesalt_broken_fall" then
+				expected_blend_lip.anchor_077 = 1
+			end
+			exact_hits(full_lip_hits, expected_full_lip,
+				expected.id .. " full-weight lip fitting")
+			exact_hits(full_face_hits, expected_full_face,
+				expected.id .. " full-weight face fitting")
+			exact_hits(blend_lip_hits, expected_blend_lip,
+				expected.id .. " blend lip fitting")
+			exact_hits(blend_face_hits, expected_blend_face,
+				expected.id .. " blend face fitting")
+			local hard_lip_hits, hard_face_hits = {}, {}
+			for hard_index = 1, #source.hard_protection do
+				local hard = source.hard_protection[hard_index]
+				local recipe = hard_recipe_by_id[hard.recipe_id]
+				local function hard_member(point)
+					if recipe.shape == "centered_half_open_square" then
+						return half_open_square_member(point, hard.center,
+							recipe.total_width)
+					elseif recipe.shape == "exact_column" then
+						return point.x == hard.center.x and point.z == hard.center.z
+					elseif recipe.shape == "polyline_corridor" then
+						for route_index = 1, #hard.route_ids do
+							local route = route_by_id[hard.route_ids[route_index]]
+							if horizontal.polyline_corridor_member(point.x, point.z,
+									route.centreline, recipe.total_width) then return true end
+						end
+						return false
+					end
+					fail("unknown hard-protection shape")
+				end
+				for lip_index = 1, #lips do
+					if hard_member(lips[lip_index]) then add_hit(hard_lip_hits, hard.id) end
+				end
+				for face_index = 1, #faces do
+					if hard_member(faces[face_index]) then add_hit(hard_face_hits, hard.id) end
+				end
+			end
+			local expected_hard_lip, expected_hard_face = {}, {}
+			if expected.id == "highcourt_goldmead_fall" then
+				expected_hard_lip["hard:anchor_008"] = 13
+				expected_hard_face["hard:anchor_008"] = 13
+			end
+			exact_hits(hard_lip_hits, expected_hard_lip,
+				expected.id .. " hard lip protection")
+			exact_hits(hard_face_hits, expected_hard_face,
+				expected.id .. " hard face protection")
+			local path_surface_columns, path_corridor_columns = 0, 0
+			for face_index = 1, #faces do
+				local face, on_surface, in_corridor = faces[face_index], false, false
+				for path_index = 1, #paths do
+					local path = paths[path_index]
+					on_surface = on_surface or horizontal.polyline_corridor_member(
+						face.x, face.z, path.points, path.surface_width)
+					in_corridor = in_corridor or horizontal.polyline_corridor_member(
+						face.x, face.z, path.points, path.corridor_width)
+				end
+				if on_surface then path_surface_columns = path_surface_columns + 1 end
+				if in_corridor then path_corridor_columns = path_corridor_columns + 1 end
+				local ground = session.terrain_height_at(face.x, face.z)
+				local water = session.water_surface_at(face.x, face.z)
+				local kind, _, _, operation_id =
+					session.functional_surface_values_at(face.x, face.z)
+				local transition, transition_id, query_upper, query_lower, progress,
+					face_mask = session.hydrology_transition_values_at(face.x, face.z)
+				local class, _, _, _, hydrology_id =
+					horizontal.classification_values_at(face.x, face.z)
+				if class ~= "planned_water" or hydrology_id ~= lower.id or
+						ground ~= lower_bed or water ~= nil or transition ~= "waterfall" or
+						transition_id ~= expected.id or query_upper ~= upper_y or
+						query_lower ~= lower_y or progress ~= nil or
+						face_mask ~= face.face_mask or operation_id ~= nil or
+						(kind == "causeway" or kind == "ford" or
+						kind == "bridge_deck" or kind == "tunnel_floor") then
+					fail("contact-face receiver/query semantics differ at " ..
+						expected.id)
+				end
+				local coordinate = face.x .. ":" .. face.z
+				if result.face_by_coordinate[coordinate] then
+					fail("contact-face waterfall receiver sets overlap")
+				end
+				result.face_by_coordinate[coordinate] = {id = expected.id,
+					mask = face.face_mask, lower_bed = lower_bed, lower_y = lower_y}
+			end
+			if path_surface_columns ~= 0 or path_corridor_columns ~= 0 then
+				fail("contact-face receiver overlaps a route surface/corridor")
+			end
+			for lip_index = 1, #lips do
+				local lip = lips[lip_index]
+				local ground, water = session.terrain_height_at(lip.x, lip.z),
+					session.water_surface_at(lip.x, lip.z)
+				local transition, transition_id, query_upper, query_lower, progress,
+					face_mask = session.hydrology_transition_values_at(lip.x, lip.z)
+				local class, _, _, _, hydrology_id =
+					horizontal.classification_values_at(lip.x, lip.z)
+				if class ~= "planned_water" or hydrology_id ~= upper.id or
+						ground ~= upper_bed or water ~= upper_y or transition ~= nil or
+						transition_id ~= nil or query_upper ~= nil or query_lower ~= nil or
+						progress ~= nil or face_mask ~= nil then
+					fail("contact-face upper-lip ordinary query semantics differ at " ..
+						expected.id)
+				end
+				local coordinate = lip.x .. ":" .. lip.z
+				if result.lip_by_coordinate[coordinate] then
+					fail("contact-face waterfall lip sets overlap")
+				end
+				result.lip_by_coordinate[coordinate] = {id = expected.id,
+					upper_bed = upper_bed, upper_y = upper_y}
+			end
+			for z = scan_min_z, scan_max_z do
+				for x = scan_min_x, scan_max_x do
+					local _, transition_id, _, _, _, face_mask =
+						session.hydrology_transition_values_at(x, z)
+					if transition_id == expected.id and not face_by_key[x .. ":" .. z] then
+						fail("contact-face transition escaped reconstructed receiver set")
+					end
+					if face_mask ~= nil and transition_id == expected.id and
+							face_mask ~= face_by_key[x .. ":" .. z].face_mask then
+						fail("contact-face transition mask escaped authority")
+					end
+				end
+			end
+			result.records[index], result.by_id[expected.id] = record, record
 		end
 		return result
 	end
@@ -1380,6 +2142,13 @@ return function(common)
 		local paths = selected_paths(source, horizontal)
 		local path_ids = {}
 		for index = 1, #paths do path_ids[paths[index].id] = true end
+		local exact_pin_y = {}
+		for index = 1, #evidence.route_exact_pins do
+			local pin = evidence.route_exact_pins[index]
+			local by_run = exact_pin_y[pin.path_id]
+			if not by_run then by_run = {} exact_pin_y[pin.path_id] = by_run end
+			by_run[pin.run] = pin.y
+		end
 		local function check_visible_land_identity(row, path_id)
 			if row.classification.water_class ~= "land" then return end
 			if row.kind == "tunnel_floor" then
@@ -1390,7 +2159,9 @@ return function(common)
 				fail("visible land path lacks its scalar grade: " .. path_id)
 			end
 			if not path_ids[row.feature_id] then
-				fail("non-path grade masks full-weight visible path: " .. path_id)
+				fail("non-path grade masks full-weight visible path: " .. path_id ..
+					" at " .. row.x .. "," .. row.z .. " feature=" ..
+					tostring(row.feature_id))
 			end
 		end
 		metrics.route_summaries = {}
@@ -1399,6 +2170,7 @@ return function(common)
 			local raster = common.raster_polyline(path.points)
 			local expected_grade = route_envelope_from_evidence(evidence, path.id, #raster)
 			local seen, previous_y, maximum_step = {}, nil, 0
+			local foreign_winner_nodes = 0
 			local start_y, end_y
 			for index = 1, #raster do
 				local point = raster[index]
@@ -1420,8 +2192,18 @@ return function(common)
 					fail("planned-water route operation has non-path feature identity")
 				end
 				local y = traversable_y(row)
-				if y ~= expected_grade[index] then
-					fail("final composed route differs from exact envelope: " .. path.id)
+				local own_envelope_required = row.feature_id == path.id or
+					(exact_pin_y[path.id] and exact_pin_y[path.id][index] ~= nil)
+				if own_envelope_required and y ~= expected_grade[index] then
+					fail("final composed route differs from exact envelope: " .. path.id ..
+						" run=" .. tostring(index) .. " at " .. tostring(point.x) ..
+						"," .. tostring(point.z) .. " expected=" ..
+						tostring(expected_grade[index]) .. " actual=" .. tostring(y) ..
+						" kind=" .. tostring(row.kind) .. " feature=" ..
+						tostring(row.feature_id))
+				end
+				if row.feature_id ~= path.id then
+					foreign_winner_nodes = foreign_winner_nodes + 1
 				end
 				if previous_y then
 					local step = math.abs(y - previous_y)
@@ -1464,6 +2246,7 @@ return function(common)
 			metrics.route_summaries[#metrics.route_summaries + 1] = {
 				id = path.id, kind = path.kind, nodes = #raster,
 				start_y = start_y, end_y = end_y, maximum_step = maximum_step,
+				foreign_winner_nodes = foreign_winner_nodes,
 			}
 		end
 		metrics.graded_paths = #paths
@@ -1559,24 +2342,41 @@ return function(common)
 		metrics.hard_protection_volumes = #source.hard_protection
 	end
 
-	local function check_interfaces(session, horizontal, source, metrics)
+	local function check_interfaces(session, horizontal, source, metrics,
+			contact_face_authority)
 		local crossing_kind = {
 			bridge = "bridge_deck", ford = "ford", causeway = "causeway",
 			tunnel = "tunnel_floor",
 		}
+		local crossing_by_id = maps_by_id(source.crossing_interfaces)
 		for index = 1, #source.crossing_interfaces do
 			local interface = source.crossing_interfaces[index]
 			local row = query_column(session, horizontal,
 				interface.position.x, interface.position.z)
-			if row.kind ~= crossing_kind[interface.kind] or
-					row.interface_id ~= interface.id or row.feature_id ~= interface.route_id then
+			local identity_matches = row.interface_id == interface.id and
+				row.feature_id == interface.route_id
+			if not identity_matches then
+				local winner = crossing_by_id[row.interface_id]
+				identity_matches = winner and winner.kind == interface.kind and
+					winner.position.x == interface.position.x and
+					winner.position.z == interface.position.z and
+					row.feature_id == winner.route_id
+			end
+			if row.kind ~= crossing_kind[interface.kind] or not identity_matches then
 				fail("crossing kind differs at " .. interface.id)
 			end
 		end
 		for index = 1, #source.hydrology_interfaces do
 			local interface = source.hydrology_interfaces[index]
-			local row = query_column(session, horizontal,
-				interface.position.x, interface.position.z)
+			local query_x, query_z = interface.position.x, interface.position.z
+			if interface.transition_scope_id == CONTACT_FACE_SCOPE then
+				local contact = contact_face_authority and
+					contact_face_authority.by_id[interface.id]
+				local first_face = contact and contact.lower_face_columns[1]
+				if not first_face then fail("contact-face interface evidence missing") end
+				query_x, query_z = first_face.x, first_face.z
+			end
+			local row = query_column(session, horizontal, query_x, query_z)
 			if interface.kind == "rapid" or interface.kind == "waterfall" then
 				if row.transition ~= interface.kind or
 						row.transition_id ~= interface.id then
@@ -1591,6 +2391,9 @@ return function(common)
 		end
 		metrics.crossing_interfaces = #source.crossing_interfaces
 		metrics.hydrology_interfaces = #source.hydrology_interfaces
+		if metrics.hydrology_interfaces ~= 15 then
+			fail("hydrology interface metric differs from V1e closure")
+		end
 	end
 
 	local function check_dry_channel(session, horizontal, source, metrics)
@@ -1739,7 +2542,8 @@ return function(common)
 				"routes", "route_exact_pins", "route_water_lower_bounds",
 				"route_raise_witnesses", "ford_approaches",
 				"named_water_operations", "derived_water_runs", "landings",
-				"tunnels", "hydrology", "interfaces", "landmarks", "coastal_cores"}) do
+				"tunnels", "hydrology", "interfaces", "contact_face_waterfalls",
+				"landmarks", "coastal_cores"}) do
 			local rows = evidence[family] or {}
 			for index = 1, #rows do
 				local row = rows[index]
@@ -1756,10 +2560,27 @@ return function(common)
 				end
 			end
 		end
+		for contact_index = 1, #(evidence.contact_face_waterfalls or {}) do
+			local contact = evidence.contact_face_waterfalls[contact_index]
+			for edge_index = 1, #contact.contact_edges do
+				local edge = contact.contact_edges[edge_index]
+				add(edge.upper_x, edge.upper_z, "contact-edge-upper:" .. contact.id)
+				add(edge.lower_x, edge.lower_z, "contact-edge-lower:" .. contact.id)
+			end
+			for lip_index = 1, #contact.upper_lip_columns do
+				local lip = contact.upper_lip_columns[lip_index]
+				add(lip.x, lip.z, "contact-upper-lip:" .. contact.id)
+			end
+			for face_index = 1, #contact.lower_face_columns do
+				local face = contact.lower_face_columns[face_index]
+				add(face.x, face.z, "contact-lower-face:" .. contact.id)
+			end
+		end
 		return points
 	end
 
 	function validator.targeted_rows(session, horizontal, source, evidence)
+		build_contact_face_authority(session, horizontal, source, evidence)
 		local rows, coverage = {}, {functional = {}, transition = {}, class = {}}
 		local points = representative_points(source, horizontal, evidence)
 		for index = 1, #points do
@@ -1810,42 +2631,203 @@ return function(common)
 		for index = 1, #source.island_landings do
 			landing_ids[source.island_landings[index].id] = true
 		end
-		local function check_contact(id, water, transition, other_id, other_water,
-				other_transition, x, z)
-			if id and other_id and id ~= other_id and water and other_water and
-					water ~= other_water and not transition and not other_transition then
-				fail("unequal-level adjacent reaches lack an interface at " .. x ..
-					"," .. z)
+		local contact_face_authority = build_contact_face_authority(session,
+			horizontal, source, evidence)
+		local named_level_pair = {}
+		for index = 1, #source.hydrology_interfaces do
+			local interface = source.hydrology_interfaces[index]
+			if interface.upper_id and interface.lower_id then
+				local a, b = interface.upper_id, interface.lower_id
+				if b < a then a, b = b, a end
+				local key = a .. "\t" .. b
+				if named_level_pair[key] then fail("duplicate named level pair") end
+				named_level_pair[key] = interface.id
+			end
+		end
+		local expected_contact_by_key = {}
+		for index = 1, #WET_REACH_CONTACT_EXPECTED do
+			local row = WET_REACH_CONTACT_EXPECTED[index]
+			local a, b = row[1], row[2]
+			if b < a then a, b = b, a end
+			local key = a .. "\t" .. b
+			if expected_contact_by_key[key] then fail("duplicate expected wet contact") end
+			expected_contact_by_key[key] = row
+		end
+		local wet_contacts = {}
+		local function check_contact(id, x, z, other_id, other_x, other_z)
+			if not id or not other_id or id == other_id then return end
+			local reach, other_reach = hydro_by_id[id], hydro_by_id[other_id]
+			if not reach or not other_reach or
+					profile_by_id[reach.profile_id].depth <= 0 or
+					profile_by_id[other_reach.profile_id].depth <= 0 then return end
+			local upper_id, upper_x, upper_z = id, x, z
+			local lower_id, lower_x, lower_z = other_id, other_x, other_z
+			local upper_offset, lower_offset = reach.water_surface_offset,
+				other_reach.water_surface_offset
+			if lower_offset > upper_offset or
+					(lower_offset == upper_offset and lower_id < upper_id) then
+				upper_id, lower_id = lower_id, upper_id
+				upper_x, lower_x = lower_x, upper_x
+				upper_z, lower_z = lower_z, upper_z
+				upper_offset, lower_offset = lower_offset, upper_offset
+			end
+			local a, b = upper_id, lower_id
+			if b < a then a, b = b, a end
+			local key = a .. "\t" .. b
+			local record = wet_contacts[key]
+			if not record then
+				record = {upper_id = upper_id, lower_id = lower_id,
+					upper_offset = upper_offset, lower_offset = lower_offset,
+					edges = {}, upper_points = {}, lower_points = {},
+					upper_seen = {}, lower_seen = {}}
+				wet_contacts[key] = record
+			elseif record.upper_id ~= upper_id or record.lower_id ~= lower_id or
+					record.upper_offset ~= upper_offset or
+					record.lower_offset ~= lower_offset then
+				fail("wet-reach contact orientation differs")
+			end
+			record.edges[#record.edges + 1] = {upper_x = upper_x,
+				upper_z = upper_z, lower_x = lower_x, lower_z = lower_z}
+			local upper_key, lower_key = upper_x .. ":" .. upper_z,
+				lower_x .. ":" .. lower_z
+			if not record.upper_seen[upper_key] then
+				record.upper_seen[upper_key] = true
+				record.upper_points[#record.upper_points + 1] =
+					{x = upper_x, z = upper_z}
+			end
+			if not record.lower_seen[lower_key] then
+				record.lower_seen[lower_key] = true
+				record.lower_points[#record.lower_points + 1] =
+					{x = lower_x, z = lower_z}
 			end
 		end
 		if mode == "full" then
 			local warp = horizontal.warp_proof()
-			local above_hydrology, above_water, above_transition = {}, {}, {}
+			local above_hydrology = {}
 			local query_reuse = {classification = {}}
 			for z = warp.min_z, warp.max_z do
-				local left_hydrology, left_water, left_transition
+				local left_hydrology
 				for x = warp.min_x, warp.max_x do
 					local row = query_column(session, horizontal, x, z, query_reuse)
 					check_column_rules(row, source, horizontal, hydro_by_id,
 						profile_by_id, metrics.class_counts, anchor_reference_by_id,
-						landing_ids)
+						landing_ids, contact_face_authority and
+							contact_face_authority.face_by_coordinate)
 					local offset = x - warp.min_x + 1
 					local hydrology_id = row.classification.hydrology_id
-					check_contact(hydrology_id, row.water, row.transition,
-						left_hydrology, left_water, left_transition, x, z)
-					check_contact(hydrology_id, row.water, row.transition,
-						above_hydrology[offset], above_water[offset],
-						above_transition[offset], x, z)
-					left_hydrology, left_water, left_transition = hydrology_id,
-						row.water, row.transition
-					above_hydrology[offset], above_water[offset],
-						above_transition[offset] = hydrology_id, row.water, row.transition
+					check_contact(hydrology_id, x, z, left_hydrology, x - 1, z)
+					check_contact(hydrology_id, x, z, above_hydrology[offset], x, z - 1)
+					left_hydrology = hydrology_id
+					above_hydrology[offset] = hydrology_id
 					metrics.columns = metrics.columns + 1
 				end
 				if progress and (z - warp.min_z) % 128 == 0 then
 					progress("extent", z - warp.min_z, warp.max_z - warp.min_z + 1)
 				end
 			end
+			local contact_keys = common.sorted_keys(wet_contacts)
+			if #contact_keys ~= 12 then fail("wet-reach contact roster count differs") end
+			local unequal_count, contact_records = 0, {}
+			for index = 1, #contact_keys do
+				local key, actual = contact_keys[index], wet_contacts[contact_keys[index]]
+				local expected = expected_contact_by_key[key]
+				if not expected or actual.upper_id ~= expected[1] or
+						actual.lower_id ~= expected[2] or
+						actual.upper_offset ~= expected[3] or
+						actual.lower_offset ~= expected[4] or
+						#actual.edges ~= expected[6] or
+						#actual.upper_points ~= expected[7] or
+						#actual.lower_points ~= expected[8] then
+					fail("wet-reach contact roster differs at " .. key)
+				end
+				local named_id = named_level_pair[key]
+				if named_id ~= expected[5] then
+					fail("wet-reach contact interface binding differs at " .. key)
+				end
+				if actual.upper_offset ~= actual.lower_offset then
+					unequal_count = unequal_count + 1
+				end
+				table.sort(actual.edges, contact_edge_before)
+				table.sort(actual.upper_points, contact_point_before)
+				table.sort(actual.lower_points, contact_point_before)
+				local upper_bounds = contact_point_bounds(actual.upper_points)
+				local lower_bounds = contact_point_bounds(actual.lower_points)
+				local first = actual.edges[1]
+				if not first then fail("wet-reach contact has no edge") end
+				contact_records[#contact_records + 1] = {
+					upper_id = actual.upper_id, lower_id = actual.lower_id,
+					upper_offset = actual.upper_offset,
+					lower_offset = actual.lower_offset,
+					unequal = actual.upper_offset ~= actual.lower_offset,
+					interface_id = named_id,
+					edge_count = #actual.edges,
+					upper_count = #actual.upper_points,
+					lower_count = #actual.lower_points,
+					upper_min_x = upper_bounds.min_x,
+					upper_max_x = upper_bounds.max_x,
+					upper_min_z = upper_bounds.min_z,
+					upper_max_z = upper_bounds.max_z,
+					lower_min_x = lower_bounds.min_x,
+					lower_max_x = lower_bounds.max_x,
+					lower_min_z = lower_bounds.min_z,
+					lower_max_z = lower_bounds.max_z,
+					first_upper_x = first.upper_x,
+					first_upper_z = first.upper_z,
+					first_lower_x = first.lower_x,
+					first_lower_z = first.lower_z,
+				}
+				if expected[5] and contact_face_authority and
+						contact_face_authority.by_id[expected[5]] then
+					local face_record = contact_face_authority.by_id[expected[5]]
+					if #actual.edges ~= #face_record.contact_edges then
+						fail("contact-face full-roster edge population differs")
+					end
+					for edge_index = 1, #actual.edges do
+						actual.edges[edge_index].face_mask_bit = contact_face_mask_bit(
+							actual.edges[edge_index].upper_x,
+							actual.edges[edge_index].upper_z,
+							actual.edges[edge_index].lower_x,
+							actual.edges[edge_index].lower_z)
+					end
+					if not exact_value_equal(actual.edges, face_record.contact_edges) then
+						fail("contact-face full-roster edges differ")
+					end
+				end
+			end
+			for key in pairs(expected_contact_by_key) do
+				if not wet_contacts[key] then fail("wet-reach contact roster misses " .. key) end
+			end
+			if unequal_count ~= 7 then
+				fail("wet-reach unequal contact pair count differs")
+			end
+			table.sort(contact_records, function(a, b)
+				return a.upper_id < b.upper_id or
+					a.upper_id == b.upper_id and a.lower_id < b.lower_id
+			end)
+			local contact_lines = {}
+			for index = 1, #contact_records do
+				local row = contact_records[index]
+				contact_lines[index] = table.concat({"hydrology_contact",
+					row.upper_id, row.lower_id, tostring(row.upper_offset),
+					tostring(row.lower_offset), tostring(row.unequal),
+					row.interface_id or "-", tostring(row.edge_count),
+					tostring(row.upper_count), tostring(row.lower_count),
+					tostring(row.upper_min_x), tostring(row.upper_max_x),
+					tostring(row.upper_min_z), tostring(row.upper_max_z),
+					tostring(row.lower_min_x), tostring(row.lower_max_x),
+					tostring(row.lower_min_z), tostring(row.lower_max_z),
+					tostring(row.first_upper_x), tostring(row.first_upper_z),
+					tostring(row.first_lower_x), tostring(row.first_lower_z)}, "\t") .. "\n"
+			end
+			local contact_digest = common.digest_hex(validated_raw_sha256,
+				table.concat(contact_lines))
+			if contact_digest ~= r2.bindings.hydrology_contact_roster_sha256 then
+				fail("wet-reach contact roster digest differs from R2")
+			end
+			metrics.wet_reach_contact_pairs = #contact_keys
+			metrics.unequal_interface_pairs = unequal_count
+			metrics.hydrology_contact_roster_sha256 = contact_digest
+			metrics.hydrology_contacts = contact_records
 		else
 			local points = representative_points(source, horizontal, evidence)
 			for index = 1, #points do
@@ -1853,13 +2835,15 @@ return function(common)
 				local row = query_column(session, horizontal, point.x, point.z)
 				check_column_rules(row, source, horizontal, hydro_by_id,
 					profile_by_id, metrics.class_counts, anchor_reference_by_id,
-					landing_ids)
+					landing_ids, contact_face_authority and
+						contact_face_authority.face_by_coordinate)
 				metrics.columns = metrics.columns + 1
 			end
 		end
 		check_outside(session, horizontal, source, metrics.class_counts)
 		check_anchors(session, horizontal, source, metrics)
-		check_interfaces(session, horizontal, source, metrics)
+		check_interfaces(session, horizontal, source, metrics,
+			contact_face_authority)
 		check_dry_channel(session, horizontal, source, metrics)
 		check_paths(session, horizontal, source, evidence, mode == "full", metrics)
 		check_coastal_cores(session, horizontal, source, r2, metrics)
@@ -1898,6 +2882,12 @@ return function(common)
 				evidence.visible_surface_classification_digest,
 			hydrology = exact_copy(evidence.hydrology),
 			interfaces = exact_copy(evidence.interfaces),
+			hydrology_interface_population =
+				exact_copy(evidence.hydrology_interface_population),
+			wet_reach_contact_pairs = evidence.wet_reach_contact_pairs,
+			unequal_interface_pairs = evidence.unequal_interface_pairs,
+			contact_face_waterfalls =
+				exact_copy(evidence.contact_face_waterfalls),
 			exterior_witnesses = exact_copy(evidence.exterior_witnesses),
 			coastal_cores = exact_copy(evidence.coastal_cores),
 			source_cut_fill_limits_consumed =

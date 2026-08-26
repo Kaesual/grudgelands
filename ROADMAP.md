@@ -119,14 +119,17 @@ the goal-level view.
 - [ ] **WP40 — Named-zone world foundation:** replace the WP18 surface with
   the 38-zone hybrid-v7 target using WP43's shipped resource/race-region
   contract. **In progress since 2026-08-13; simple-map rebase accepted
-  2026-08-25; R0, R1, V1b, V1c and final V1d accepted 2026-08-25.** R0
+  2026-08-25; R0, R1, V1b, V1c and V1d accepted 2026-08-25; fixed-layout
+  V1e R2 independently and visually accepted 2026-08-27 as the sole live R2
+  authority, with V1d retained as history at `d337160`.** R0
   replaced the unfinished exact-T2 partition/topology path; R1 now provides
   one fixed pure 2D model and canonical SVG; V1d adds stronger single-warp
   border meanders, pinned curved routes, tapered bays with ownerless
   deep-ocean mouth caps, coherent visible water and six hard-protected capital
-  ingress corridors. The V1d visual gate and exhaustive R2 layout freeze,
-  route/water/core validation and housing-capacity evidence are independently
-  accepted; R3 global height and final 3D anchors are next.
+  ingress corridors; V1e freezes all 100 anchors and 74 actual POI spurs and
+  closes three contact-face waterfalls. The V1e visual gate, exhaustive R2
+  layout freeze, route/water/core validation and housing-capacity evidence are
+  independently accepted; R3 implementation acceptance is next.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:

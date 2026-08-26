@@ -23,6 +23,27 @@ return function(dependencies)
 	local HEIGHT_SCHEMA = "grug_wp40_simple_map_height_v1"
 	local BASE_CELL = 64
 	local FEATURE_CELL = 128
+	local CONTACT_FACE_SCOPE = "orthogonal_reach_contact_face_v1"
+	local CONTACT_FACE_EXPECTATIONS = {
+		highcourt_goldmead_fall = {
+			edges = 13, upper = 13, lower = 13,
+			first = {-106, -1756, -106, -1757},
+			upper_bounds = {-106, -94, -1756, -1756},
+			lower_bounds = {-106, -94, -1757, -1757},
+		},
+		gravesalt_broken_fall = {
+			edges = 163, upper = 114, lower = 114,
+			first = {-1713, 21, -1712, 21},
+			upper_bounds = {-1713, -1650, 21, 110},
+			lower_bounds = {-1712, -1649, 21, 110},
+		},
+		raincall_reedmaze_fall = {
+			edges = 109, upper = 66, lower = 65,
+			first = {2070, 1864, 2069, 1864},
+			upper_bounds = {2026, 2070, 1864, 1929},
+			lower_bounds = {2026, 2069, 1864, 1928},
+		},
+	}
 
 	local function fail(message)
 		error("WP40 simple-map height: " .. message, 0)
@@ -199,18 +220,6 @@ return function(dependencies)
 		return math.max(0, min_x - x, x - max_x, min_z - z, z - max_z)
 	end
 
-	local function digest_hex(data)
-		local digest = raw_sha256(data)
-		if type(digest) ~= "string" or #digest ~= 32 then
-			fail("raw SHA-256 injection did not return 32 bytes")
-		end
-		return canonical.hex(digest)
-	end
-
-	local function canonical_digest(rows)
-		return digest_hex(canonical.encode(canonical.array(rows)))
-	end
-
 	local function text(value) return canonical.text(value or "") end
 	local function signed(value) return canonical.signed(value or 0) end
 
@@ -245,8 +254,7 @@ return function(dependencies)
 		return r
 	end
 
-	local function digest_first_word(data)
-		local digest = raw_sha256(data)
+	local function digest_first_word(digest)
 		if type(digest) ~= "string" or #digest ~= 32 then
 			fail("raw SHA-256 injection did not return 32 bytes")
 		end
@@ -283,7 +291,7 @@ return function(dependencies)
 		end
 		if #source.relief_profiles ~= 6 or #source.landmarks ~= 70 or
 				#source.anchors ~= 100 or #source.hard_protection ~= 42 or
-				#source.hydrology ~= 25 or #source.hydrology_interfaces ~= 12 then
+				#source.hydrology ~= 25 or #source.hydrology_interfaces ~= 15 then
 			fail("accepted R2 source population differs")
 		end
 		local proof = horizontal.warp_proof()
@@ -292,9 +300,15 @@ return function(dependencies)
 		for _, key in ipairs({"min_x", "max_x", "min_z", "max_z"}) do
 			coordinate(bounds[key], "query bound " .. key)
 		end
-		local construction_sha_calls = 0
+		local construction_complete = false
+		local construction_sha_calls, query_sha_calls = 0, 0
+		local query_lattice_constructions = 0
 		local function counted_sha(data)
-			construction_sha_calls = construction_sha_calls + 1
+			if construction_complete then
+				query_sha_calls = query_sha_calls + 1
+			else
+				construction_sha_calls = construction_sha_calls + 1
+			end
 			local result = raw_sha256(data)
 			if type(result) ~= "string" or #result ~= 32 then
 				fail("raw SHA-256 injection did not return 32 bytes")
@@ -303,6 +317,11 @@ return function(dependencies)
 		end
 		local function counted_digest(rows)
 			return canonical.hex(counted_sha(canonical.encode(canonical.array(rows))))
+		end
+		local function note_lattice_construction()
+			if construction_complete then
+				query_lattice_constructions = query_lattice_constructions + 1
+			end
 		end
 
 		local profile_by_id, profiles = {}, {}
@@ -317,8 +336,7 @@ return function(dependencies)
 				canonical.encode(text(HEIGHT_SCHEMA)) ..
 				canonical.encode(text(full_seed_string)) ..
 				canonical.encode(text(source_profile.noise_domain))
-			local root = digest_first_word(root_input) % P
-			construction_sha_calls = construction_sha_calls + 1
+			local root = digest_first_word(counted_sha(root_input)) % P
 			if root == 0 then root = 1 end
 			local profile = {id = source_profile.id,
 				min_above_water = source_profile.min_above_water,
@@ -329,6 +347,7 @@ return function(dependencies)
 			relief_roots[profile_index] = {id = profile.id,
 				domain = profile.noise_domain, root = root}
 			for octave_index = 1, #source_profile.octaves do
+				note_lattice_construction()
 				local source_octave = source_profile.octaves[octave_index]
 				local period = source_octave.period
 				local min_ix = floor_div(bounds.min_x - BASE_CELL, period) - 1
@@ -404,6 +423,7 @@ return function(dependencies)
 		local base_max_iz = floor_div(bounds.max_z, BASE_CELL) + 1
 		local base_values, base_rows = {}, {}
 		local primary_profile_stats = {}
+		note_lattice_construction()
 		for profile_index = 1, #profiles do
 			primary_profile_stats[profile_index] = {count = 0}
 		end
@@ -706,9 +726,361 @@ return function(dependencies)
 			return result, segments
 		end
 
+		local function reach_support_bounds(record)
+			local min_x, max_x, min_z, max_z
+			for point_index = 1, #record.reach.centreline do
+				local point = record.reach.centreline[point_index]
+				local point_min_x, point_max_x = point.x - point.half_width,
+					point.x + point.half_width
+				local point_min_z, point_max_z = point.z - point.half_width,
+					point.z + point.half_width
+				min_x = min_x and math.min(min_x, point_min_x) or point_min_x
+				max_x = max_x and math.max(max_x, point_max_x) or point_max_x
+				min_z = min_z and math.min(min_z, point_min_z) or point_min_z
+				max_z = max_z and math.max(max_z, point_max_z) or point_max_z
+			end
+			return {min_x = min_x - 1, max_x = max_x + 1,
+				min_z = min_z - 1, max_z = max_z + 1}
+		end
+
+		local function point_before(a, b)
+			return a.z < b.z or (a.z == b.z and a.x < b.x)
+		end
+
+		local function contact_edge_before(a, b)
+			if a.upper_z ~= b.upper_z then return a.upper_z < b.upper_z end
+			if a.upper_x ~= b.upper_x then return a.upper_x < b.upper_x end
+			if a.lower_z ~= b.lower_z then return a.lower_z < b.lower_z end
+			return a.lower_x < b.lower_x
+		end
+
+		local function point_set_bounds(points)
+			if #points == 0 then fail("contact-face point set is empty") end
+			local min_x, max_x = points[1].x, points[1].x
+			local min_z, max_z = points[1].z, points[1].z
+			for point_index = 2, #points do
+				local point = points[point_index]
+				min_x, max_x = math.min(min_x, point.x), math.max(max_x, point.x)
+				min_z, max_z = math.min(min_z, point.z), math.max(max_z, point.z)
+			end
+			return {min_x = min_x, max_x = max_x, min_z = min_z, max_z = max_z}
+		end
+
+		local function eight_connected_component_count(points)
+			local members, visited = {}, {}
+			for point_index = 1, #points do
+				local point = points[point_index]
+				local row = members[point.z]
+				if not row then row = {} members[point.z] = row end
+				row[point.x] = true
+			end
+			local components = 0
+			for point_index = 1, #points do
+				local point = points[point_index]
+				local visited_row = visited[point.z]
+				if not visited_row or not visited_row[point.x] then
+					components = components + 1
+					local queue_x, queue_z = {point.x}, {point.z}
+					local cursor = 1
+					visited_row = visited_row or {}
+					visited[point.z] = visited_row
+					visited_row[point.x] = true
+					while cursor <= #queue_x do
+						local x, z = queue_x[cursor], queue_z[cursor]
+						cursor = cursor + 1
+						for dz = -1, 1 do
+							local member_row = members[z + dz]
+							if member_row then
+								local neighbour_visited = visited[z + dz]
+								for dx = -1, 1 do
+									if (dx ~= 0 or dz ~= 0) and member_row[x + dx] and
+											(not neighbour_visited or
+											not neighbour_visited[x + dx]) then
+										neighbour_visited = neighbour_visited or {}
+										visited[z + dz] = neighbour_visited
+										neighbour_visited[x + dx] = true
+										queue_x[#queue_x + 1] = x + dx
+										queue_z[#queue_z + 1] = z + dz
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+			return components
+		end
+
+		local function contact_face_mask_bit(upper_x, upper_z, lower_x, lower_z)
+			if upper_x == lower_x - 1 and upper_z == lower_z then return 1 end
+			if upper_x == lower_x + 1 and upper_z == lower_z then return 2 end
+			if upper_x == lower_x and upper_z == lower_z - 1 then return 4 end
+			if upper_x == lower_x and upper_z == lower_z + 1 then return 8 end
+			fail("contact-face edge is not orthogonal")
+		end
+
+		local function bounds_differ(bounds, expected)
+			return bounds.min_x ~= expected[1] or bounds.max_x ~= expected[2] or
+				bounds.min_z ~= expected[3] or bounds.max_z ~= expected[4]
+		end
+
 		local transition_grid, transitions, interface_evidence = {}, {}, {}
+		local contact_face_grid, contact_face_records, contact_face_evidence =
+			{}, {}, {}
+		local contact_face_seen, unequal_pair_seen = {}, {}
+		local hydrology_interface_population = {total = 0,
+			unequal_level_pairs = 0, rapids = 0, waterfalls = 0,
+			cardinal_waterfalls = 0, contact_face_waterfalls = 0, other = 0}
+
+		local function build_contact_face_record(row, evidence)
+			local expected = CONTACT_FACE_EXPECTATIONS[row.id]
+			local upper, lower = hydrology_by_id[row.upper_id],
+				hydrology_by_id[row.lower_id]
+			if not expected or contact_face_seen[row.id] or not upper or not lower or
+					upper.profile.depth <= 0 or lower.profile.depth <= 0 or
+					row.upper_level_offset ~= upper.reach.water_surface_offset or
+					row.lower_level_offset ~= lower.reach.water_surface_offset or
+					row.transition_profile_id ~= "waterfall_drop" or
+					row.plunge_profile_id ~= lower.profile.id or
+					row.drop ~= row.upper_level_offset - row.lower_level_offset or
+					row.drop_height ~= row.drop or row.bed_seal_layers ~= 3 or
+					row.bank_seal_nodes ~= 2 or
+					row.receiver_source_omission_nodes ~= 1 or row.sealed ~= true then
+				fail("contact-face waterfall source contract differs")
+			end
+			for _, forbidden in ipairs({"axis_start", "axis_end", "run", "width",
+					"drop_mask_width", "drop_mask_length", "plunge_width",
+					"plunge_length"}) do
+				if row[forbidden] ~= nil then
+					fail("contact-face waterfall carries axis or rectangle geometry")
+				end
+			end
+			contact_face_seen[row.id] = true
+
+			local upper_support, lower_support = reach_support_bounds(upper),
+				reach_support_bounds(lower)
+			local scan_min_x = math.max(upper_support.min_x, lower_support.min_x)
+			local scan_max_x = math.min(upper_support.max_x, lower_support.max_x)
+			local scan_min_z = math.max(upper_support.min_z, lower_support.min_z)
+			local scan_max_z = math.min(upper_support.max_z, lower_support.max_z)
+			if scan_min_x > scan_max_x or scan_min_z > scan_max_z then
+				fail("contact-face reach support intersection is empty")
+			end
+
+			local edges, upper_lips, lower_faces = {}, {}, {}
+			local upper_seen, lower_by_coordinate = {}, {}
+			local neighbour_x, neighbour_z = {-1, 1, 0, 0}, {0, 0, -1, 1}
+			for z = scan_min_z, scan_max_z do
+				for x = scan_min_x, scan_max_x do
+					local water_class, _, _, _, hydrology_id =
+						horizontal.classification_values_at(x, z)
+					if water_class == "planned_water" and hydrology_id == upper.id then
+						for direction = 1, 4 do
+							local lower_x, lower_z = x + neighbour_x[direction],
+								z + neighbour_z[direction]
+							local lower_class, _, _, _, lower_hydrology_id =
+								horizontal.classification_values_at(lower_x, lower_z)
+							if lower_class == "planned_water" and
+									lower_hydrology_id == lower.id then
+								local bit = contact_face_mask_bit(x, z, lower_x, lower_z)
+								edges[#edges + 1] = {upper_x = x, upper_z = z,
+									lower_x = lower_x, lower_z = lower_z,
+									face_mask_bit = bit}
+								local upper_key = x .. ":" .. z
+								if not upper_seen[upper_key] then
+									upper_seen[upper_key] = true
+									upper_lips[#upper_lips + 1] = {x = x, z = z}
+								end
+								local lower_key = lower_x .. ":" .. lower_z
+								local face = lower_by_coordinate[lower_key]
+								if not face then
+									face = {x = lower_x, z = lower_z, face_mask = 0}
+									lower_by_coordinate[lower_key] = face
+									lower_faces[#lower_faces + 1] = face
+								end
+								if math.floor(face.face_mask / bit) % 2 ~= 0 then
+									fail("duplicate contact-face direction bit")
+								end
+								face.face_mask = face.face_mask + bit
+							end
+						end
+					end
+				end
+			end
+
+			table.sort(edges, contact_edge_before)
+			table.sort(upper_lips, point_before)
+			table.sort(lower_faces, point_before)
+			local upper_components = eight_connected_component_count(upper_lips)
+			local lower_components = eight_connected_component_count(lower_faces)
+			local upper_bounds, lower_bounds = point_set_bounds(upper_lips),
+				point_set_bounds(lower_faces)
+			local first = edges[1]
+			if #edges ~= expected.edges or #upper_lips ~= expected.upper or
+					#lower_faces ~= expected.lower or upper_components ~= 1 or
+					lower_components ~= 1 or not first or
+					first.upper_x ~= expected.first[1] or
+					first.upper_z ~= expected.first[2] or
+					first.lower_x ~= expected.first[3] or
+					first.lower_z ~= expected.first[4] or
+					bounds_differ(upper_bounds, expected.upper_bounds) or
+					bounds_differ(lower_bounds, expected.lower_bounds) then
+				fail("contact-face waterfall population or bounds differ")
+			end
+
+			local direction_counts = {}
+			for face_index = 1, #lower_faces do
+				local mask = lower_faces[face_index].face_mask
+				if mask <= 0 or mask > 15 then fail("contact-face mask differs") end
+				direction_counts[mask] = (direction_counts[mask] or 0) + 1
+			end
+			local direction_mask_counts = {}
+			for mask = 1, 15 do
+				if direction_counts[mask] then
+					direction_mask_counts[#direction_mask_counts + 1] = {
+						face_mask = mask, column_count = direction_counts[mask]}
+				end
+			end
+
+			local edge_lines, upper_lines, lower_lines, direction_lines = {}, {}, {}, {}
+			for edge_index = 1, #edges do
+				local edge = edges[edge_index]
+				edge_lines[edge_index] = table.concat({"edge", row.id,
+					tostring(edge.upper_x), tostring(edge.upper_z),
+					tostring(edge.lower_x), tostring(edge.lower_z),
+					tostring(edge.face_mask_bit)}, "\t") .. "\n"
+			end
+			for lip_index = 1, #upper_lips do
+				local lip = upper_lips[lip_index]
+				upper_lines[lip_index] = table.concat({"upper_lip", row.id,
+					tostring(lip.x), tostring(lip.z)}, "\t") .. "\n"
+			end
+			for face_index = 1, #lower_faces do
+				local face = lower_faces[face_index]
+				lower_lines[face_index] = table.concat({"lower_face", row.id,
+					tostring(face.x), tostring(face.z), tostring(face.face_mask)},
+					"\t") .. "\n"
+			end
+			for count_index = 1, #direction_mask_counts do
+				local count = direction_mask_counts[count_index]
+				direction_lines[count_index] = table.concat({"direction_mask", row.id,
+					tostring(count.face_mask), tostring(count.column_count)}, "\t") .. "\n"
+			end
+			local edge_bytes, upper_bytes, lower_bytes, direction_bytes =
+				table.concat(edge_lines), table.concat(upper_lines),
+				table.concat(lower_lines), table.concat(direction_lines)
+			local edge_digest = canonical.hex(counted_sha(edge_bytes))
+			local upper_digest = canonical.hex(counted_sha(upper_bytes))
+			local lower_digest = canonical.hex(counted_sha(lower_bytes))
+			local direction_digest = canonical.hex(counted_sha(direction_bytes))
+			local contact_digest = canonical.hex(counted_sha(edge_bytes .. upper_bytes ..
+				lower_bytes .. direction_bytes))
+
+			local record = {kind = "waterfall", id = row.id, row = row,
+				contact_face = true, transition_scope_id = CONTACT_FACE_SCOPE,
+				upper_y = WATER_LEVEL + row.upper_level_offset,
+				lower_y = WATER_LEVEL + row.lower_level_offset,
+				upper_bed = WATER_LEVEL + row.upper_level_offset - upper.profile.depth,
+				lower_bed = WATER_LEVEL + row.lower_level_offset - lower.profile.depth,
+				lower_face_columns = lower_faces}
+			transitions[#transitions + 1] = record
+			contact_face_records[#contact_face_records + 1] = record
+			for face_index = 1, #lower_faces do
+				local face = lower_faces[face_index]
+				local grid_row = contact_face_grid[face.z]
+				if not grid_row then grid_row = {} contact_face_grid[face.z] = grid_row end
+				if grid_row[face.x] then fail("contact-face waterfalls overlap") end
+				grid_row[face.x] = {record = record, face_mask = face.face_mask}
+			end
+
+			evidence.transition_profile_id = row.transition_profile_id
+			evidence.transition_scope_id = row.transition_scope_id
+			evidence.upper_id, evidence.lower_id = row.upper_id, row.lower_id
+			evidence.upper_y, evidence.lower_y = record.upper_y, record.lower_y
+			evidence.upper_bed, evidence.lower_bed = record.upper_bed, record.lower_bed
+			evidence.lip_id, evidence.drop_id = row.lip_id, row.drop_id
+			evidence.plunge_id, evidence.plunge_profile_id = row.plunge_id,
+				row.plunge_profile_id
+			evidence.drop, evidence.drop_height = row.drop, row.drop_height
+			evidence.bed_seal_layers = row.bed_seal_layers
+			evidence.bank_seal_nodes = row.bank_seal_nodes
+			evidence.receiver_source_omission_nodes =
+				row.receiver_source_omission_nodes
+			evidence.sealed = row.sealed
+			evidence.scan_min_x, evidence.scan_max_x = scan_min_x, scan_max_x
+			evidence.scan_min_z, evidence.scan_max_z = scan_min_z, scan_max_z
+			evidence.contact_edge_count = #edges
+			evidence.upper_lip_count, evidence.lower_face_count = #upper_lips,
+				#lower_faces
+			evidence.upper_lip_component_count = upper_components
+			evidence.lower_face_component_count = lower_components
+			evidence.first_upper_x, evidence.first_upper_z = first.upper_x, first.upper_z
+			evidence.first_lower_x, evidence.first_lower_z = first.lower_x, first.lower_z
+			evidence.upper_min_x, evidence.upper_max_x = upper_bounds.min_x,
+				upper_bounds.max_x
+			evidence.upper_min_z, evidence.upper_max_z = upper_bounds.min_z,
+				upper_bounds.max_z
+			evidence.lower_min_x, evidence.lower_max_x = lower_bounds.min_x,
+				lower_bounds.max_x
+			evidence.lower_min_z, evidence.lower_max_z = lower_bounds.min_z,
+				lower_bounds.max_z
+			evidence.receiver_opening_count = #lower_faces
+			evidence.receiver_y = record.lower_y
+			evidence.receiver_source_min_y = record.lower_bed + 1
+			evidence.receiver_source_max_y = record.lower_y - 1
+			evidence.authored_falling_water_columns = 0
+			evidence.contact_edges = edges
+			evidence.upper_lip_columns = upper_lips
+			evidence.lower_face_columns = lower_faces
+			evidence.direction_mask_counts = direction_mask_counts
+			evidence.contact_edge_digest = edge_digest
+			evidence.upper_lip_digest = upper_digest
+			evidence.lower_face_digest = lower_digest
+			evidence.direction_mask_digest = direction_digest
+			evidence.contact_face_digest = contact_digest
+			contact_face_evidence[#contact_face_evidence + 1] = evidence
+		end
 		for interface_index = 1, #source.hydrology_interfaces do
 			local row = source.hydrology_interfaces[interface_index]
+			if row.transition_scope_id ~= nil and
+					row.transition_scope_id ~= CONTACT_FACE_SCOPE then
+				fail("unknown hydrology transition scope")
+			elseif row.transition_scope_id == CONTACT_FACE_SCOPE and
+					row.kind ~= "waterfall" then
+				fail("non-waterfall entered contact-face scope")
+			end
+			hydrology_interface_population.total =
+				hydrology_interface_population.total + 1
+			if row.upper_id and row.lower_id and row.upper_level_offset ~= nil and
+					row.lower_level_offset ~= nil and
+					row.upper_level_offset ~= row.lower_level_offset then
+				local pair_a, pair_b = row.upper_id, row.lower_id
+				if pair_b < pair_a then pair_a, pair_b = pair_b, pair_a end
+				local pair_key = pair_a .. "\t" .. pair_b
+				if unequal_pair_seen[pair_key] then
+					fail("duplicate unequal-level hydrology interface pair")
+				end
+				unequal_pair_seen[pair_key] = true
+				hydrology_interface_population.unequal_level_pairs =
+					hydrology_interface_population.unequal_level_pairs + 1
+			end
+			if row.kind == "rapid" then
+				hydrology_interface_population.rapids =
+					hydrology_interface_population.rapids + 1
+			elseif row.kind == "waterfall" then
+				hydrology_interface_population.waterfalls =
+					hydrology_interface_population.waterfalls + 1
+				if row.transition_scope_id == CONTACT_FACE_SCOPE then
+					hydrology_interface_population.contact_face_waterfalls =
+						hydrology_interface_population.contact_face_waterfalls + 1
+				else
+					hydrology_interface_population.cardinal_waterfalls =
+						hydrology_interface_population.cardinal_waterfalls + 1
+				end
+			else
+				hydrology_interface_population.other =
+					hydrology_interface_population.other + 1
+			end
 			local evidence = {numeric_id = interface_index, id = row.id,
 				kind = row.kind, position_x = row.position.x,
 				position_z = row.position.z}
@@ -764,6 +1136,9 @@ return function(dependencies)
 				evidence.run, evidence.width = #axis, row.width
 				evidence.axis_start_x, evidence.axis_start_z = a.x, a.z
 				evidence.axis_end_x, evidence.axis_end_z = b.x, b.z
+			elseif row.kind == "waterfall" and
+					row.transition_scope_id == CONTACT_FACE_SCOPE then
+				build_contact_face_record(row, evidence)
 			elseif row.kind == "waterfall" then
 				local upper, lower = hydrology_by_id[row.upper_id],
 					hydrology_by_id[row.lower_id]
@@ -823,6 +1198,21 @@ return function(dependencies)
 				evidence.route_interface_id = row.route_interface_id
 			end
 		end
+		if hydrology_interface_population.total ~= 15 or
+				hydrology_interface_population.unequal_level_pairs ~= 7 or
+				hydrology_interface_population.rapids ~= 2 or
+				hydrology_interface_population.waterfalls ~= 5 or
+				hydrology_interface_population.cardinal_waterfalls ~= 2 or
+				hydrology_interface_population.contact_face_waterfalls ~= 3 or
+				hydrology_interface_population.other ~= 8 or
+				#contact_face_records ~= 3 or #contact_face_evidence ~= 3 then
+			fail("hydrology interface population differs from V1e closure")
+		end
+		for interface_id in pairs(CONTACT_FACE_EXPECTATIONS) do
+			if not contact_face_seen[interface_id] then
+				fail("contact-face waterfall roster differs")
+			end
+		end
 
 		local function transition_progress(record, x, z)
 			local best_index, best_numerator, best_denominator, best_dot,
@@ -845,7 +1235,7 @@ return function(dependencies)
 			return clamp(deterministic.qfrom_ratio(numerator, denominator), 0, Q)
 		end
 
-		local function transition_values_at(x, z)
+		local function axis_transition_values_at(x, z)
 			local candidates = bucket_at(transition_grid, x, z)
 			if not candidates then return nil end
 			for index = 1, #candidates do
@@ -854,6 +1244,23 @@ return function(dependencies)
 				if progress then return record, progress end
 			end
 			return nil
+		end
+
+		for record_index = 1, #contact_face_records do
+			local record = contact_face_records[record_index]
+			for face_index = 1, #record.lower_face_columns do
+				local face = record.lower_face_columns[face_index]
+				if axis_transition_values_at(face.x, face.z) then
+					fail("contact-face overlaps a rapid or cardinal waterfall mask")
+				end
+			end
+		end
+
+		local function transition_values_at(x, z)
+			local face_row = contact_face_grid[z]
+			local face = face_row and face_row[x] or nil
+			if face then return face.record, nil, face.face_mask end
+			return axis_transition_values_at(x, z)
 		end
 
 		local function classified_values(x, z)
@@ -1043,10 +1450,12 @@ return function(dependencies)
 						local outside = half_open_square_excess(x, z,
 							fitting.center, profile.fitting_width)
 						if outside < envelope_half - fitting_half then
-							local weight = qweight(math.max(0, outside),
-								envelope_half - fitting_half)
+						local weight = qweight(math.max(0, outside),
+							envelope_half - fitting_half)
+						if weight > 0 then
 							return qlerp_integer(incoming, fitting.reference_y,
 								weight), fitting, false, weight
+						end
 						end
 					end
 				end
@@ -1072,8 +1481,7 @@ return function(dependencies)
 				canonical.encode(text(HEIGHT_SCHEMA)) ..
 				canonical.encode(text(full_seed_string)) ..
 				canonical.encode(text(domain))
-			local root = digest_first_word(root_input) % P
-			construction_sha_calls = construction_sha_calls + 1
+			local root = digest_first_word(counted_sha(root_input)) % P
 			if root == 0 then root = 1 end
 			local min_ix = floor_div(landmark.center.x - landmark.radius_x -
 				BASE_CELL, BASE_CELL) - 1
@@ -1084,6 +1492,7 @@ return function(dependencies)
 			local max_iz = floor_div(landmark.center.z + landmark.radius_z +
 				BASE_CELL, BASE_CELL) + 1
 			local values, rows = {}, {}
+			note_lattice_construction()
 			for iz = min_iz, max_iz do
 				local values_row = {} values[iz] = values_row
 				for ix = min_ix, max_ix do
@@ -1181,6 +1590,7 @@ return function(dependencies)
 				bay_id, hydrology_id)
 			local transition, progress = transition_values_at(x, z)
 			if transition then
+				if transition.contact_face then return transition.lower_bed end
 				return qlerp_integer(transition.upper_bed,
 					transition.lower_bed, progress)
 			end
@@ -1556,6 +1966,8 @@ return function(dependencies)
 			local observed_max_cut, observed_max_fill = 0, 0
 			local cut_x, cut_z, fill_x, fill_z
 			local fitting_columns, collar_columns = 0, 0
+			local platform_columns = 0
+			local platform_witness_x, platform_witness_z
 			local profile = fitting.profile
 			local envelope_half = profile.blend_width / 2
 			local fitting_half = profile.fitting_width / 2
@@ -1571,16 +1983,29 @@ return function(dependencies)
 						elseif outside < envelope_half - fitting_half then
 							collar_columns = collar_columns + 1 end
 					end
+					if not fitting.is_capital and outside == 0 and
+							owner == fitting.zone_numeric_id and
+							water_class == "planned_water" then
+						local platform_kind, _, platform_feature_id =
+							final_functional_values_at(x, z)
+						if platform_kind == "anchor_platform" and
+								platform_feature_id == fitting.id then
+							platform_columns = platform_columns + 1
+							if not platform_witness_x then
+								platform_witness_x, platform_witness_z = x, z
+							end
+						end
+					end
 					if water_class == "land" and owner == fitting.zone_numeric_id and
 							outside < envelope_half - fitting_half then
 						local natural = natural_height_at(x, z)
 						local weight = qweight(outside, envelope_half - fitting_half)
 						local value = qlerp_integer(natural, fitting.reference_y, weight)
 						local cut, fill = natural - value, value - natural
-						if cut > observed_max_cut then
+						if cut_x == nil or cut > observed_max_cut then
 							observed_max_cut, cut_x, cut_z = cut, x, z
 						end
-						if fill > observed_max_fill then
+						if fill_x == nil or fill > observed_max_fill then
 							observed_max_fill, fill_x, fill_z = fill, x, z
 						end
 					end
@@ -1621,7 +2046,7 @@ return function(dependencies)
 			anchor_evidence[anchor_index].observed_max_fill_witness_z = fill_z
 			anchor_evidence[anchor_index].rejected = false
 			anchor_evidence[anchor_index].reselected = false
-			anchor_evidence[anchor_index].platform_columns = fitting.water_count
+			anchor_evidence[anchor_index].platform_columns = platform_columns
 			anchor_evidence[anchor_index].civic_water_columns =
 				fitting.civic_water_count
 			anchor_evidence[anchor_index].civic_max_clearance_y =
@@ -1630,10 +2055,8 @@ return function(dependencies)
 				fitting.civic_witness_x
 			anchor_evidence[anchor_index].civic_max_clearance_witness_z =
 				fitting.civic_witness_z
-			anchor_evidence[anchor_index].platform_witness_x =
-				fitting.platform_witness_x
-			anchor_evidence[anchor_index].platform_witness_z =
-				fitting.platform_witness_z
+			anchor_evidence[anchor_index].platform_witness_x = platform_witness_x
+			anchor_evidence[anchor_index].platform_witness_z = platform_witness_z
 		end
 
 		local hard_records, hard_evidence = {}, {}
@@ -1866,6 +2289,11 @@ return function(dependencies)
 				tunnel_named_operation_overlap_columns,
 			hydrology = hydrology_evidence,
 			interfaces = interface_evidence,
+			wet_reach_contact_pairs = 12,
+			unequal_interface_pairs =
+				hydrology_interface_population.unequal_level_pairs,
+			hydrology_interface_population = hydrology_interface_population,
+			contact_face_waterfalls = contact_face_evidence,
 			exterior_witnesses = exterior_evidence,
 			coastal_cores = coastal_evidence,
 		}
@@ -1886,18 +2314,22 @@ return function(dependencies)
 			local x, z = coordinates[1], coordinates[2]
 			local kind, surface_y, feature_id, interface_id =
 				final_functional_values_at(x, z)
-			local transition_kind, transition_id, upper_y, lower_y, progress_q
-			local transition, progress = transition_values_at(x, z)
+			local transition_kind, transition_id, upper_y, lower_y, progress_q,
+				face_mask
+			local transition, progress, transition_face_mask =
+				transition_values_at(x, z)
 			if transition then transition_kind, transition_id, upper_y, lower_y,
 				progress_q = transition.kind, transition.id, transition.upper_y,
-				transition.lower_y, progress end
+				transition.lower_y, progress
+				face_mask = transition_face_mask end
 			kat_rows[#kat_rows + 1] = canonical.array({text("query"), signed(x),
 				signed(z), signed(final_terrain_height_at(x, z)),
 				signed(final_water_surface_at(x, z) or -2147483648), text(kind),
 				signed(surface_y or -2147483648), text(feature_id),
 				text(interface_id), text(transition_kind), text(transition_id),
 				signed(upper_y or -2147483648), signed(lower_y or -2147483648),
-				signed(progress_q or -2147483648)})
+				signed(progress_q or -2147483648),
+				signed(face_mask or -2147483648)})
 		end
 		for index = 1, #anchor_records do
 			local row = anchor_records[index]
@@ -1907,6 +2339,20 @@ return function(dependencies)
 				signed(row.x), signed(row.y), signed(row.z),
 				text(row.platform_kind), text(row.path_kind)})
 		end
+		for index = 1, #contact_face_evidence do
+			local row = contact_face_evidence[index]
+			kat_rows[#kat_rows + 1] = canonical.array({text("contact_face"),
+				text(row.id), text(row.upper_id), text(row.lower_id),
+				signed(row.upper_y), signed(row.lower_y),
+				signed(row.contact_edge_count), signed(row.upper_lip_count),
+				signed(row.lower_face_count), signed(row.receiver_y),
+				signed(row.receiver_source_min_y),
+				signed(row.receiver_source_max_y),
+				signed(row.authored_falling_water_columns),
+				text(row.contact_edge_digest), text(row.upper_lip_digest),
+				text(row.lower_face_digest), text(row.direction_mask_digest),
+				text(row.contact_face_digest)})
+		end
 		kat_rows[#kat_rows + 1] = canonical.array({text("route_digest"),
 			text(route_digest), text("operation_digest"), text(operation_digest),
 			text("visible_surface_classification_digest"),
@@ -1914,12 +2360,11 @@ return function(dependencies)
 		local canonical_kat = canonical.encode(canonical.array(kat_rows))
 		local canonical_kat_digest = canonical.hex(counted_sha(canonical_kat))
 
-		local metrics = {construction_sha256_calls = construction_sha_calls,
-			query_sha256_calls = 0, query_lattice_constructions = 0,
-			relief_profile_count = #profiles,
+		local metrics = {relief_profile_count = #profiles,
 			octave_lattice_count = #octave_evidence,
 			base_lattice_vertex_count = #base_rows,
 			graded_path_count = #paths,
+			contact_face_waterfall_count = #contact_face_records,
 			water_operation_count = operation_counts.total}
 
 		local session = {}
@@ -1939,11 +2384,11 @@ return function(dependencies)
 		function session.hydrology_transition_values_at(x, z)
 			coordinate(x, "transition query x") coordinate(z, "transition query z")
 			if x < bounds.min_x or x > bounds.max_x or z < bounds.min_z or
-					z > bounds.max_z then return nil, nil, nil, nil, nil end
-			local transition, progress = transition_values_at(x, z)
-			if not transition then return nil, nil, nil, nil, nil end
+					z > bounds.max_z then return nil, nil, nil, nil, nil, nil end
+			local transition, progress, face_mask = transition_values_at(x, z)
+			if not transition then return nil, nil, nil, nil, nil, nil end
 			return transition.kind, transition.id, transition.upper_y,
-				transition.lower_y, progress
+				transition.lower_y, progress, face_mask
 		end
 
 		function session.selected_anchor_3d_by_id(anchor_id)
@@ -1977,7 +2422,11 @@ return function(dependencies)
 		end
 
 		function session.metrics()
-			return deep_copy(metrics)
+			local result = deep_copy(metrics)
+			result.construction_sha256_calls = construction_sha_calls
+			result.query_sha256_calls = query_sha_calls
+			result.query_lattice_constructions = query_lattice_constructions
+			return result
 		end
 
 		return session
@@ -2160,6 +2609,74 @@ return function(dependencies)
 			return best, best_cap
 		end
 
+		path_grid = {}
+		for path_index = 1, #paths do
+			local path = paths[path_index]
+			for segment_index = 1, #path.source_segments do
+				local segment = path.source_segments[segment_index]
+				segment.path = path
+				add_bucket(path_grid, segment,
+					math.min(segment.a.x, segment.b.x) - path.corridor_width,
+					math.max(segment.a.x, segment.b.x) + path.corridor_width,
+					math.min(segment.a.z, segment.b.z) - path.corridor_width,
+					math.max(segment.a.z, segment.b.z) + path.corridor_width)
+			end
+		end
+
+		local function path_segment_better(segment, numerator, denominator,
+				best, best_numerator, best_denominator)
+			if not best then return true end
+			local comparison = rational_compare(numerator, denominator,
+				best_numerator, best_denominator)
+			if comparison ~= 0 then return comparison < 0 end
+			if segment.path.priority ~= best.path.priority then
+				return segment.path.priority < best.path.priority
+			end
+			if segment.path.id ~= best.path.id then
+				return segment.path.id < best.path.id
+			end
+			return segment.ordinal < best.ordinal
+		end
+
+		local function nearest_path_segment_at(x, z, width_kind, only_path)
+			local candidates = only_path and only_path.source_segments or
+				bucket_at(path_grid, x, z)
+			if not candidates then return nil end
+			local best, best_numerator, best_denominator, best_dot, best_length
+			for index = 1, #candidates do
+				local segment = candidates[index]
+				local path = segment.path or only_path
+				local width = width_kind == "surface" and path.surface_width or
+					path.corridor_width
+				local numerator, denominator, dot, length_squared =
+					point_segment_ratio(x, z, segment.a, segment.b)
+				if corridor_member_ratio(numerator, denominator, width) and
+						path_segment_better(segment, numerator, denominator, best,
+							best_numerator, best_denominator) then
+					best, best_numerator, best_denominator = segment, numerator,
+						denominator
+					best_dot, best_length = dot, length_squared
+				end
+			end
+			if not best then return nil end
+			return best, best_numerator, best_denominator,
+				projected_run_for_segment(best, best_dot, best_length)
+		end
+
+		local function winning_named_operation_at(x, z)
+			local winner
+			for operation_index = 1, #named_water_operations do
+				local operation = named_water_operations[operation_index]
+				local run_index = path_surface_run_at(operation.path, x, z)
+				if run_index and named_operation_column_at(operation.path, x, z,
+						run_index) == operation and (not winner or
+						operation.interface_id < winner.interface_id) then
+					winner = operation
+				end
+			end
+			return winner
+		end
+
 		route_evidence, route_exact_pin_evidence = {}, {}
 		route_lower_bound_evidence, route_raise_evidence = {}, {}
 		ford_approach_evidence, ford_approach_summary_evidence = {}, {}
@@ -2333,7 +2850,12 @@ return function(dependencies)
 						if ford then kind, interface_id = "ford", ford.interface_id
 						elseif path.y[run_index] == datum + 1 then kind = "causeway"
 						else kind = "bridge_deck" end
-						if not ford then
+						local winning_segment = nearest_path_segment_at(x, z,
+							"surface", nil)
+						local visible_derived = not ford and winning_segment and
+							winning_segment.path == path and
+							winning_named_operation_at(x, z) == nil
+						if visible_derived then
 							local row = derived_by_run[run_index]
 							if not row then row = {path_id = path.id, run = run_index,
 								causeway_columns = 0, bridge_columns = 0, rows = {}}
@@ -2399,7 +2921,21 @@ return function(dependencies)
 						count = count + 1
 						minimum = minimum and math.min(minimum, surface_y) or surface_y
 						maximum = maximum and math.max(maximum, surface_y) or surface_y
-						if lexicographically_before(x, z, witness_x, witness_z) then
+						local identity_wins = true
+						for other_index = 1, #named_water_operations do
+							local other = named_water_operations[other_index]
+							if other ~= operation and
+									other.interface_id < operation.interface_id then
+								local other_run = path_surface_run_at(other.path, x, z)
+								if other_run and named_operation_column_at(other.path,
+										x, z, other_run) == other then
+									identity_wins = false
+									break
+								end
+							end
+						end
+						if identity_wins and
+								lexicographically_before(x, z, witness_x, witness_z) then
 							witness_x, witness_z = x, z
 						end
 						rows[#rows + 1] = canonical.array({signed(x), signed(z),
@@ -2407,6 +2943,7 @@ return function(dependencies)
 					end
 				end)
 			if count == 0 then fail("named operation has empty 2D footprint") end
+			if not witness_x then fail("named operation has no final identity witness") end
 			named_operation_evidence[operation_index] = {
 				interface_id = operation.interface_id, path_id = operation.path.id,
 				kind = operation.kind, footprint_columns = count,
@@ -2430,12 +2967,29 @@ return function(dependencies)
 						last_run = last_run and math.max(last_run, run_index) or run_index
 					end
 				end
+				local resume_before_run, resume_after_run
+				if first_run then
+					for run_index = first_run - 1, 1, -1 do
+						local witness = path.lower_witness[run_index]
+						if witness and witness.kind == "ordinary_water" then
+							resume_before_run = run_index
+							break
+						end
+					end
+					for run_index = last_run + 1, #path.axis do
+						local witness = path.lower_witness[run_index]
+						if witness and witness.kind == "ordinary_water" then
+							resume_after_run = run_index
+							break
+						end
+					end
+				end
 				ford_approach_summary_evidence[#ford_approach_summary_evidence + 1] = {
 					interface_id = ford.interface_id, path_id = path.id,
 					ford_run = ford.ford_run, ford_pin_y = ford.ford_pin_y,
 					capped_run_count = count, first_run = first_run, last_run = last_run,
-					resume_before_run = first_run and first_run - 1 or nil,
-					resume_after_run = last_run and last_run + 1 or nil}
+					resume_before_run = resume_before_run,
+					resume_after_run = resume_after_run}
 			end
 		end
 
@@ -2506,60 +3060,6 @@ return function(dependencies)
 				classification_digest = counted_digest(rows)}
 		end
 
-		path_grid = {}
-		for path_index = 1, #paths do
-			local path = paths[path_index]
-			for segment_index = 1, #path.source_segments do
-				local segment = path.source_segments[segment_index]
-				segment.path = path
-				add_bucket(path_grid, segment,
-					math.min(segment.a.x, segment.b.x) - path.corridor_width,
-					math.max(segment.a.x, segment.b.x) + path.corridor_width,
-					math.min(segment.a.z, segment.b.z) - path.corridor_width,
-					math.max(segment.a.z, segment.b.z) + path.corridor_width)
-			end
-		end
-
-		local function path_segment_better(segment, numerator, denominator,
-				best, best_numerator, best_denominator)
-			if not best then return true end
-			local comparison = rational_compare(numerator, denominator,
-				best_numerator, best_denominator)
-			if comparison ~= 0 then return comparison < 0 end
-			if segment.path.priority ~= best.path.priority then
-				return segment.path.priority < best.path.priority
-			end
-			if segment.path.id ~= best.path.id then
-				return segment.path.id < best.path.id
-			end
-			return segment.ordinal < best.ordinal
-		end
-
-		local function nearest_path_segment_at(x, z, width_kind, only_path)
-			local candidates = only_path and only_path.source_segments or
-				bucket_at(path_grid, x, z)
-			if not candidates then return nil end
-			local best, best_numerator, best_denominator, best_dot, best_length
-			for index = 1, #candidates do
-				local segment = candidates[index]
-				local path = segment.path or only_path
-				local width = width_kind == "surface" and path.surface_width or
-					path.corridor_width
-				local numerator, denominator, dot, length_squared =
-					point_segment_ratio(x, z, segment.a, segment.b)
-				if corridor_member_ratio(numerator, denominator, width) and
-						path_segment_better(segment, numerator, denominator, best,
-							best_numerator, best_denominator) then
-					best, best_numerator, best_denominator = segment, numerator,
-						denominator
-					best_dot, best_length = dot, length_squared
-				end
-			end
-			if not best then return nil end
-			return best, best_numerator, best_denominator,
-				projected_run_for_segment(best, best_dot, best_length)
-		end
-
 		local operation_grid = {}
 		for operation_index = 1, #water_operations do
 			local operation = water_operations[operation_index]
@@ -2615,13 +3115,16 @@ return function(dependencies)
 
 		local function path_grade_at(x, z, incoming)
 			local segment, numerator, denominator, run_index =
+				nearest_path_segment_at(x, z, "surface", nil)
+			if segment then
+				local path = segment.path
+				return path.y[run_index], path, run_index, true
+			end
+			segment, numerator, denominator, run_index =
 				nearest_path_segment_at(x, z, "corridor", nil)
 			if not segment then return nil end
 			local path = segment.path
 			local target = path.y[run_index]
-			if corridor_member_ratio(numerator, denominator, path.surface_width) then
-				return target, path, run_index, true
-			end
 			local qnumerator = 4 * numerator -
 				path.surface_width * path.surface_width * denominator
 			local qdenominator = (path.corridor_width * path.corridor_width -
@@ -2903,6 +3406,7 @@ return function(dependencies)
 		local final_axis_violations = scan_final_axes(diagnose_final_axis)
 		if diagnose_final_axis then return nil, final_axis_violations end
 		local public_session = build_public_session()
+		construction_complete = true
 		return public_session, final_axis_violations
 	end
 

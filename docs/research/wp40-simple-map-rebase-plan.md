@@ -1,8 +1,9 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R2 independently accepted 2026-08-25; the user
-accepted the final V1d preview as sufficient for the first version after the
-deep-ocean mouth correction; R3 is next
+**Status:** D1-D7 and R0-R2 are accepted. Fixed-layout V1e R2 was
+independently and visually accepted 2026-08-27 and is the live horizontal
+authority. V1d remains historical evidence at `d337160`; R3 implementation
+acceptance is next.
 
 **Ruling date:** 2026-08-25
 
@@ -141,7 +142,7 @@ and one pure evaluator. Proposed ownership:
 | `tools/wp40/simple_map_r2_test.lua` | LuaJIT-only authoritative R2 composition and canonical artifact writer |
 | `tools/wp40/run_simple_map.sh` | PUC/LuaJIT parity and SVG-render entrypoint |
 | `tools/wp40/run_simple_map_r2.sh` | exhaustive LuaJIT R2 entrypoint with Lua 5.1 syntax/static gates |
-| `docs/research/wp40-simple-map-preview.svg` | current human-review artifact, regenerated rather than hand-edited |
+| `docs/research/wp40-simple-map-v1e-preview.svg` | accepted V1e human-review preview, regenerated rather than hand-edited; the accepted V1d SVG remains historical evidence |
 | `docs/research/wp40-simple-map-r2-artifact.tsv` | canonical machine-readable R2 evidence, regenerated rather than hand-edited |
 
 R1 may adjust names if they conflict with established module layout, but
@@ -157,7 +158,8 @@ The source contains only the families needed by the simple model:
 - fixed start/capital ownership cores;
 - typed paths with ordered centrelines, derived planned-water grading and named
   crossing interfaces where a landmark needs an explicit transition;
-- fixed and candidate anchor records;
+- 100 fixed anchor records, including approved V1d-candidate provenance for
+  the 84 layout-fixed secondary anchors;
 - simple explicit hydrology/water masks;
 - four explicit between-prong bay masks whose landward parts carry mainland
   ownership/policy and whose declared outer caps become ownerless deep ocean;
@@ -174,9 +176,10 @@ The current catalog is mined for stable records; it is not retained wholesale
 as a compatibility schema. Exact topology-only families disappear from the new
 source after their historical evidence is retained.
 
-Housing masks exclude the union of every candidate-anchor envelope, not only
-the seed-selected candidate. Their 2D center predicate and packing capacity are
-therefore fixed by layout version and need no repeated geometry census.
+Housing masks exclude the 100 actual anchor envelopes and the 74 actual
+POI-spur corridors. Retired anchor/spur alternatives reserve no land. Their 2D
+center predicate and packing capacity are therefore fixed by layout revision
+and need no repeated geometry census.
 
 ### 5.2 Fixed layout and controlled variation
 
@@ -184,17 +187,15 @@ Land, macro-region assignment, hubs, route centrelines and zone ownership are
 independent of the world seed. A versioned fixed layout ID owns the common
 coordinate warp.
 
-World seed may still choose among a prevalidated secondary-anchor candidate
-set and drive terrain detail, logical biome/content selection, resources and
-decorations. Candidate selection is one bounded canonical hash choice among
-the R2-frozen horizontally valid candidates. It is final: the later height and
-grading layer must fit the selected candidate and may not reject or reselect
-it. It is never a geometry search or rejection loop.
+World seed drives terrain detail, logical biome/content selection, resources
+and decorations, but never 2D anchor placement. All 100 anchors are frozen by
+the layout revision; the 84 migrated secondary records preserve only the
+approved V1d candidate index as provenance. The later height and grading layer
+must fit each fixed position and may not reject, move or reselect it.
 
 The evaluator/payload binds one canonical full seed string at construction;
 public calls never accept or truncate a seed. The SVG uses documented preview
-seed `0`, shows the selected candidate solid and all alternatives as faint
-markers.
+seed `0` for seeded fields and shows only the fixed anchor roster.
 
 ### 5.3 Deterministic coordinate warp
 
@@ -708,8 +709,10 @@ With V1d visually approved, add and freeze the small spatial invariant set:
   disagreement is recorded as diagnostic evidence, while complete final-zone
   connectivity is the binding proof that the deliberately simple fixed-core
   override creates no detached territory;
-- fixed anchors are valid and every candidate set has a horizontally valid
-  member; the frozen set is final for later grading;
+- all 16 authored-fixed and 84 layout-fixed anchors are valid at their one
+  frozen position; every layout-fixed record retains its approved V1d
+  candidate index as provenance, and the 100-position set is final for later
+  grading;
 - route and POI-spur corridors stay on land or locally owned planned water;
   planned-water intersections are deterministic derived grading spans, while
   shelf, deep ocean and dragon channels remain forbidden;
@@ -752,7 +755,8 @@ With V1d visually approved, add and freeze the small spatial invariant set:
   walkable land pair and along every ordinary land route; island endgame is
   separated by water/boat travel rather than exempted land discontinuity;
 - deterministic canonical 2D artifact and SVG;
-- bounded regional candidate counts;
+- exact bounded counts for the 16 authored-fixed and 84 layout-fixed anchors,
+  including complete approved-candidate provenance;
 - warp safe-integer, no-fold and extreme-coordinate KATs; and
 - a published 80 by 80 LuaJIT horizontal classification benchmark with host,
   interpreter, absolute result and WP18-relative comparison. It is comparative
@@ -795,6 +799,11 @@ Repeated SVG rendering is byte-identical and XML-valid; the current preview
 SHA-256 is
 `0739e7568a254b5883f8ed2d3fe4ac182056e017dc6d8274b441c5a27136dadc`.
 
+Every measurement in this 2026-08-25 record, including the route-difficulty-
+edge count, the housing eligible-centre count and the summed per-mask portfolio
+minima/maxima, is superseded pre-V1e V1d evidence. The accepted V1e artifact
+recorded below is the sole live source for R2 digests, counts and capacity.
+
 On the local x86-64 AMD Ryzen 7 9800X3D host under LuaJIT
 2.1.1767980792, the allocation-free 80 by 80 classifier median is 7.537 ms,
 or about 1.18 microseconds per horizontal column. The exact extracted WP18
@@ -819,6 +828,27 @@ Low. Critical/High count is 0; fix-round count is two; observed elapsed wall
 time is `unknown` because work crossed a context compaction. The durable
 review record is [wp40-simple-map-r2-review.md](wp40-simple-map-r2-review.md).
 
+**Accepted bounded V1e correction:** V1d remains the geometry/hash domain,
+while source revision `wp40-simple-map-v1e` migrates the
+84 secondary anchors to their accepted seed-zero positions and single POI
+spurs. Together with the 16 directly authored anchors this yields 100
+seed-independent anchor envelopes; unused candidate alternatives reserve no
+housing land. The focused correction also closes the three previously unnamed
+unequal-height reach contacts as exact contact-face waterfalls without moving
+any reach footprint. Wet named WP40 hydrology uses non-renewable range-two
+river water, the lower waterfall bed leaves one source-node-deep receiver
+open, and native liquid simulation owns the fall itself. All V1e R2 gates
+passed on 2026-08-27, including independent review and the user's explicit SVG
+approval. The sole live R2 artifact has body/file SHA-256
+`1a819192fa40254aa6da1ebf5f3fa5286790ef907abe09750455e5e24c881a8b` /
+`ba6e684b232e963251c3582e521c46a9364d602256eba9b6115bd0575e4c9c4b`;
+the accepted SVG SHA-256 is
+`5816941d7bb7524a653b7cbe6b471f842be8bdc89db5e18f9fbf2017555e8fdc`.
+The review is recorded in
+[wp40-simple-map-v1e-r2-review.md](wp40-simple-map-v1e-r2-review.md). V1d is
+historical evidence at `d337160`; the green R3 preflight is feasibility
+evidence, not R3 implementation acceptance.
+
 ### R3 — pure global height and final immutable payload
 
 The independently accepted implementation contract is
@@ -826,8 +856,8 @@ The independently accepted implementation contract is
 engine-free implementation for
 the project-owned `H(full_seed, x, z)`. It uses precomputed broad/detail integer
 noise lattices, compact per-zone relief profiles, simple §8.4 landmark masks
-and a fixed grading priority for starts, capitals, paths and the already
-selected anchors. It is globally queryable, independent of emerge order and
+and a fixed grading priority for starts, capitals, paths and the fixed
+anchors. It is globally queryable, independent of emerge order and
 never reads an engine spawn level or generated chunk.
 
 For hydrology, each concrete interface owns its exact water-surface offsets,
@@ -837,7 +867,7 @@ validates the interface offsets against its referenced reaches before grading
 terrain or writing a rapid/waterfall transition.
 
 R3 also freezes final 3D anchors, hard-protection volumes and housing results.
-The selected 2D anchor may not be rejected; grading must accommodate it. The
+A fixed 2D anchor may not be rejected or moved; grading must accommodate it. The
 four coastal cores prove the at-most-12-node natural-relief bound in every
 eligible 101 by 101 reservation. Landmark ownership and its route/housing/
 grading constraints receive focused gates.
@@ -933,7 +963,7 @@ Required lenses:
 4. **Downstream completeness:** verify T3-T9, WP9/WP12/WP13/WP17/WP23/WP24/
    WP31/WP33/WP34 and legacy runtime consumers retain a viable input.
 5. **Determinism/Lua/performance:** verify the fixed warp, fixed-point power score,
-   index, candidate choice and interpreter/test budget are feasible under
+   index, fixed-anchor provenance and interpreter/test budget are feasible under
    plain Lua 5.1 and mapgen hot-path constraints.
 6. **Execution safety:** verify the coexistence/cutover sequence cannot create
    two production geometry authorities or accidentally consume inactive T2

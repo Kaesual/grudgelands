@@ -485,9 +485,12 @@ for index = 1, #source.anchors do
 end
 
 local height_relative_path = "mods/MAPGEN/grug_mapgen/wp40/height.lua"
+local source_relative_path =
+	"mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua"
 local tool_relative_path =
 	"tools/wp40/simple_map_v1e_baseline_diagnosis.lua"
 local validator_relative_path = "tools/wp40/simple_map_r3_validate.lua"
+local source_file_sha256 = digest(read_file(repo .. "/" .. source_relative_path))
 local height_sha256 = digest(read_file(repo .. "/" .. height_relative_path))
 local tool_sha256 = digest(read_file(repo .. "/" .. tool_relative_path))
 local validator_sha256 = digest(read_file(repo .. "/" .. validator_relative_path))
@@ -570,6 +573,7 @@ local header_lines = {
 	row("source_schema", SOURCE_SCHEMA),
 	row("layout_id", LAYOUT_ID),
 	row("layout_revision_id", LAYOUT_REVISION_ID),
+	row("source_file_sha256", source_file_sha256),
 	row("height_sha256", height_sha256),
 	row("diagnosis_tool_sha256", tool_sha256),
 	row("validator_sha256", validator_sha256),
@@ -602,6 +606,7 @@ local file_sha256 = digest(read_file(output))
 io.write("diagnosis_body_sha256\t", body_sha256, "\n")
 io.write("diagnosis_file_sha256\t", file_sha256, "\n")
 io.write("baseline_source_view_sha256\t", BASELINE_SOURCE_VIEW_SHA256, "\n")
+io.write("source_file_sha256\t", source_file_sha256, "\n")
 io.write("unique_pairs\t", #pair_rows, "\n")
 io.write("witness_rows\t", #witnesses, "\n")
 io.write("elapsed_cpu_seconds\t", ("%.3f"):format(os.clock() - started), "\n")

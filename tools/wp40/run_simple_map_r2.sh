@@ -36,10 +36,11 @@ lua_files=(
 	"$repo/tools/wp40/simple_map_r2_routes.lua"
 	"$repo/tools/wp40/simple_map_r2_grid.lua"
 	"$repo/tools/wp40/simple_map_r2_housing.lua"
+	"$repo/tools/wp40/simple_map_r2_contacts.lua"
 )
 "$luac_bin" -p "${lua_files[@]}"
 for file in "${lua_files[@]}"; do
-	if "$luac_bin" -l -p "$file" | rg -n 'SETGLOBAL'; then
+	if "$luac_bin" -l -p -o /dev/null "$file" | rg -n 'SETGLOBAL'; then
 		echo "run_simple_map_r2.sh: unexpected global write in $file" >&2
 		exit 1
 	fi

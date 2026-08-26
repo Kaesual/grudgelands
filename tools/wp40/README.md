@@ -12,7 +12,7 @@ post-WP43 WP18/WP36 comparison checkout at
 `7b6c8763224006630f967659047ffae88de6685d`; no later run may silently move
 that baseline.
 
-## Current simple-map R1/V1d preview gate
+## Current simple-map V1e gate
 
 Run:
 
@@ -20,20 +20,30 @@ Run:
 tools/wp40/run_simple_map.sh
 ```
 
-This current preview runner loads the engine-free source and production evaluator,
-runs the Lua 5.1 static gates, compares canonical LuaJIT/PUC 5.1 KATs for four
-representative seed strings, renders the same production classifier twice,
-requires byte identity, parses the SVG and writes only the canonical preview:
+This current preview runner loads the engine-free source and production
+evaluator, runs the Lua 5.1 static gates, compares canonical LuaJIT/PUC 5.1
+KATs for four representative seed strings, renders the same production
+classifier twice, requires byte identity, parses the SVG and writes only the
+canonical accepted V1e preview:
 
 ```text
-docs/research/wp40-simple-map-preview.svg
+docs/research/wp40-simple-map-v1e-preview.svg
 ```
 
-The user accepted the generated V1d visual gate on 2026-08-25. Its full-grid
-connectedness, route-fit, contact, water-class and timing lines remain advisory
-until R2 freezes the layout. The runner does not repair routes, zones or water
-and must not be used to tune hidden constants before that freeze. The exact-T2
-commands below are historical reproducers only.
+Fixed-layout V1e R2 was independently accepted and its final SVG was approved
+by the user on 2026-08-27. It is the sole live R2 authority; V1d remains
+historical evidence at `d337160`. `run_simple_map_r2.sh` writes the canonical
+R2 artifact. The exact command
+
+```sh
+WP40_R3_MODE=preflight tools/wp40/run_simple_map_r3.sh \
+  docs/research/wp40-simple-map-v1e-r3-preflight.tsv
+```
+
+reproduces the four-seed vertical-feasibility preflight. The script's default
+`full` mode instead writes an exhaustive R3 artifact; that remains unaccepted
+R3 work. Neither runner repairs routes, zones or water. The exact-T2 commands
+below are historical reproducers only.
 
 ## T0 material handoff
 

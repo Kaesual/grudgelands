@@ -10,9 +10,10 @@ baseline_source_view_sha256	6057843ace1de096e07396b0fc60759dca6d8679c4e2607a0773
 source_schema	grug_wp40_simple_map_source_v2
 layout_id	wp40-simple-map-v1d
 layout_revision_id	wp40-simple-map-v1e
-height_sha256	23db79f09b2bdf0fdeb37813a042fc6c7faa53a875cf9b74161d5357eaf3b082
-diagnosis_tool_sha256	c250177b45ee9038418069f142745486df42697ee91f3b8d74342846d44befc9
-validator_sha256	a2d988554634bb66f6d1027d3b274f5d0b134d1c8f573300af1688b3bc6a410a
+source_file_sha256	5d4e2726dabbb900e47e7a8bef2a225011e6b003f48de485f752cde88fc7c17f
+height_sha256	dff46f1ebba9b412cdd3b3d03356aeafe29adcf72dd14cc511028e9f7b050f14
+diagnosis_tool_sha256	dae67d15e59549cac6491532d148f7da7237f9f0a47a110da16a7f805e109479
+validator_sha256	256161db4982f322abb2625e8ddab8dd235b014f471fee0294f30c772dde5fa2
 digest_encoding	sha256_of_exact_tsv_body_v1
 count	unique_pairs	14
 count	witness_rows	40
@@ -70,4 +71,4 @@ witness	route_056	1323	571	26	51	572	26	57	6	route_052	805	572	26	route_052	rout
 witness	route_056	1324	572	26	57	573	26	51	6	route_052	805	572	26	route_052	route_056
 witness	route_056	179	-573	26	16	-572	26	19	3	route_051	805	-572	26	route_051	route_056
 witness	route_056	180	-572	26	19	-571	26	16	3	route_051	805	-572	26	route_051	route_056
-diagnosis_body_sha256	33ad99007dce8c66cb204eeb11446ed613a96d10d82e9e72ef88ff675f017854
+diagnosis_body_sha256	7ab20fd38f05f6ab085a59e94c2e53cd0ff87b0a904eb328799bc22e78829d61

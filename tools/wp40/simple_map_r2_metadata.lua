@@ -117,6 +117,8 @@ local HYDROLOGY_INTERFACE_IDS = {
 	"raincall_upper_fall", "raincall_middle_rapid", "raincall_lower_fall",
 	"broken_causeway_water", "broken_ford_water", "broken_aqueduct_water",
 	"gravesalt_causeway_south_water", "gravesalt_causeway_north_water",
+	"highcourt_goldmead_fall", "gravesalt_broken_fall",
+	"raincall_reedmaze_fall",
 }
 
 local BIOME_IDS = {

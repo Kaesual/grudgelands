@@ -23,10 +23,12 @@ WP40 replaces it with the complete catalog and contracts below.
   across immutable ocean channels, not to the land-adjacency graph.
 - The macro-map is fixed by one versioned layout rather than regenerated from
   each world seed. Every named zone has a stable hub, approximate extent,
-  level range and biome palette. World-seed variation begins with secondary
-  anchor selection, terrain, biome detail and content; it never moves land,
-  zone ownership, main routes or the water classes shown by the canonical 2D
-  map.
+  level range and biome palette. All 100 anchor positions are part of that
+  fixed layout: 16 are directly authored and the other 84 preserve the
+  accepted V1d seed-zero positions as layout-fixed records. World-seed
+  variation begins with terrain, biome detail and content; it never moves
+  land, zone ownership, routes, anchors or the water classes shown by the
+  canonical 2D map.
 - The two faction sides are **progression and content-budget mirrors, not
   geometric mirrors**. They receive equivalent access to level bands,
   materials, PvP fronts, travel services and POI budgets, while their shapes,
@@ -396,9 +398,14 @@ WP40 replaces it with the complete catalog and contracts below.
   faction-oriented route lengths to either island differ by at most 10%.
   Both approaches are open to both factions and are stored only in the
   separate boat/travel graph.
-- Every generated surface-water class uses `default:water_source`. Logical
-  biome and named-landmark records change bed, shore, depth and decorations,
-  never liquid identity. Subterranean lava is outside this rule.
+- Every wet named WP40 hydrology reach uses
+  `default:river_water_source` / `default:river_water_flowing`. This
+  non-renewable, range-two liquid keeps river edges and the one-node-deep
+  receivers below named falls from regenerating hanging source sheets.
+  Oceans, bays and every other non-hydrology surface-water class use
+  `default:water_source`. Logical biome and landmark records may change bed,
+  shore, depth and decorations within that material rule; subterranean lava
+  is outside it.
 
 ### 7.5 Paths, anchors and housing
 
@@ -415,16 +422,17 @@ WP40 replaces it with the complete catalog and contracts below.
   crossings and POI endpoints never move. Ordinary roads and adequate
   alternate bridges remain mutable; only irreplaceable functional pieces may
   receive bounded hard protection.
-- The 100 stable anchor slots retain their ids. Fixed anchors keep fixed x/z;
-  secondary anchors use small ordered candidate sets validated against the
-  frozen 2D model. A full-seed hash selects once from that valid set. Height
-  grading must fit the selected candidate and may not reject it, move it or
-  select again.
+- The 100 stable anchor slots retain their ids and fixed x/z positions. The
+  16 directly authored anchors retain `authored_fixed` provenance; the other
+  84 retain the positions selected by accepted V1d seed zero as
+  `frozen_layout` records with their approved former candidate indices. No
+  world seed selects or moves a 2D anchor. Height grading must fit each frozen
+  position and may not reject, move or reselect it.
 - Housing is available only in the ten zones listed by `world.md` section 5.
   A true housing-centre mask means the complete 101 by 101 future reservation
-  passes every static exclusion. Candidate envelopes for all secondary anchor
-  alternatives are excluded before world-seed selection, so eligibility is
-  fixed by layout.
+  passes every static exclusion. The 100 actual anchor envelopes and 74
+  actual POI-spur corridors are excluded; retired alternatives reserve no
+  land. Eligibility is therefore fixed by layout.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each keep
   one continuous vertical-capsule coastal housing core with at least 600 nodes
   of shoreline frontage and at least 300 nodes of buildable inland depth. The
@@ -466,7 +474,7 @@ WP40 replaces it with the complete catalog and contracts below.
   base. Biome patches do not implicitly change relief.
 - Ordinary profile transitions are smooth. A cliff, ravine, escarpment,
   waterfall basin or other abrupt macro feature exists only through a named
-  authored landmark. Start, capital, housing, route and selected-anchor grading
+  authored landmark. Start, capital, housing, route and fixed-anchor grading
   overrides general relief in that order of functional necessity.
 - On an authored route's complete full-weight visible surface, route grading
   wins over start, capital and guaranteed coastal-core fitting; those grades
@@ -598,8 +606,8 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | Zone | Primary relief | Secondary relief | Required landmarks and constraints |
 |---|---|---|---|
 | Dawnmere Fields | `lowland` | small `wetland_delta` headwater masks | `dawnmere_headwaters`: connected shallow spring ponds and streams among the fields and hedgerows; their flood masks remain outside the start build envelope and its primary-road exit |
-| Goldmead Vale | `lowland` | bounded `rolling_hills` shoulders | `goldmead_millriver`: one reliable mill river follows the valley floor without dividing a required road corridor; `goldmead_orchard_slopes`: gently buildable orchard shoulders overlook the river and remain ordinary housing-eligible terrain outside static exclusions |
-| Highcourt | `rolling_hills` | none outside civic and river grading | `highcourt_riverfork`: two authored river arms frame a raised, flood-safe capital plateau; the complete civic envelope and all four fixed road approaches are graded and no river channel enters the protected city core |
+| Goldmead Vale | `lowland` | bounded `rolling_hills` shoulders | `goldmead_millriver`: one reliable mill river follows the valley floor without dividing a required road corridor; the named `highcourt_goldmead_fall` carries the Highcourt fork down into this lower reach through its exact contact face; `goldmead_orchard_slopes`: gently buildable orchard shoulders overlook the river and remain ordinary housing-eligible terrain outside static exclusions |
+| Highcourt | `rolling_hills` | none outside civic and river grading | `highcourt_riverfork`: two authored river arms frame a raised, flood-safe capital plateau; the complete civic envelope and all four fixed road approaches are graded and no river channel enters the protected city core; `highcourt_goldmead_fall` uses the existing Highcourt/Goldmead reach contact without moving either water mask. World generation creates this civic water and contact-face fall before protection applies; `hard:anchor_008` then protects the generated result from later player mutation, with no protection exception. |
 | Whitebridge Shire | `lowland` | bounded `wetland_delta` floodplains | `whitebridge_crossing`: the old mutable arched bridge carries the capital-axis road across the main river; `whitebridge_ford`: a spatially separate traversable ford supplies an adequate alternate crossing, so destruction of the bridge cannot sever the route and does not justify hard protection |
 | Ashenward March | `rolling_hills` | low `wetland_delta` depressions | `ashenward_burnscar`: a burned ridge makes the old war line visible without becoming a sole choke; `ashenward_trenchbelt`: a broad interrupted trench system preserves independent secondary approaches to The Broken Causeway and The Shattered Line |
 
@@ -639,7 +647,7 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | Zone | Primary relief | Secondary relief | Required landmarks and constraints |
 |---|---|---|---|
 | Kapok Cradle | `lowland` | small `wetland_delta` depressions | `kapok_worldtree_basin`: one monumental kapok dominates a geographically sheltered basin; its roots, crown and water masks remain outside the protected start build envelope and primary-road exit, and the basin adds no terrain-protection rule of its own |
-| Raincall Basin | `rolling_hills` | bounded `highland` steps and `wetland_delta` pools | `raincall_falls`: several inland waterfalls join monsoon pools without crossing a fixed road or POI envelope; `raincall_coastal_steps`: the eastern 600×300 gentle housing core remains dry, overrides ordinary relief and retains its §7/§14 limits |
+| Raincall Basin | `rolling_hills` | bounded `highland` steps and `wetland_delta` pools | `raincall_falls`: several inland waterfalls join monsoon pools without crossing a fixed road or POI envelope; the named `raincall_reedmaze_fall` drops through the existing Raincall/Whispering Reedlands contact face without changing either reach footprint; `raincall_coastal_steps`: the eastern 600×300 gentle housing core remains dry, overrides ordinary relief and retains its §7/§14 limits |
 | Kezamba | `plateau` | none outside civic and cenote grading | `kezamba_cenote`: a broad stepped central cenote is surrounded by flood-safe stilt-and-stone capital terraces; four independent graded ramps align with the fixed road gates and remain inside capital protection |
 | Whispering Reedlands | `wetland_delta` | broad dry `lowland` levees | `whispering_reedmaze`: a legible reed maze fills the wet mask without enclosing an anchor or road; `whispering_totemways`: several independent raised routes cross it, while housing eligibility is confined to broad dry levees rather than narrow paths |
 | Totemwater Reach | `wetland_delta` | bounded `lowland` delta islands | `totemwater_delta`: a broad branching river delta retains at least two independent dry routes around its principal arms; `totemwater_colossi`: several colossal carved totems provide long-range orientation outside road and anchor footprints |
@@ -650,7 +658,7 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | Zone | Primary relief | Secondary relief | Required landmarks and constraints |
 |---|---|---|---|
 | The Wyrmglass Crown | `mountain` | bounded `highland` fault terraces and two inner-shore `lowland` landing coves | `wyrmglass_ring`: an apparently closed mountain ring remains traversable by several land routes; `wyrmglass_faultfields`: crystalline terraces contain the protected functional anchor and reachable deposits of the all-six-gem apex mining camp; `wyrmglass_dragonspire`: the elevated dragon arena is independently reachable from both z = -125 and z = +125 east-shore landings and does not gate access to the mine |
-| Gravesalt Escarpment | `highland` | one `mountain` salt escarpment and small `wetland_delta` salt pans | `gravesalt_whitewall`: the visible white escarpment contains multiple fixed passes rather than one choke; `gravesalt_tombways`: shallow generated tomb galleries remain traversable but immutable with the surrounding Holy Grounds and do not replace either surface crossing; `gravesalt_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Wyrmglass embarkation corridors |
+| Gravesalt Escarpment | `highland` | one `mountain` salt escarpment and small `wetland_delta` salt pans | `gravesalt_whitewall`: the visible white escarpment contains multiple fixed passes rather than one choke, while the named `gravesalt_broken_fall` drops through its existing contact with the lower Broken Marsh reach; `gravesalt_tombways`: shallow generated tomb galleries remain traversable but immutable with the surrounding Holy Grounds and do not replace either surface crossing; `gravesalt_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Wyrmglass embarkation corridors |
 | The Broken Causeway | `wetland_delta` | broad raised `lowland` islands | `broken_threeways`: a damaged raised causeway, a broad ford and an aqueduct path form three distinct north/south routes; `broken_marsh`: fixed lakes, river arms and marsh fill the intervening ground without placing both assigned frontier crossings behind one route or structure |
 | The Shattered Line | `plateau` | bounded `rolling_hills` crater fields and low wet trench depressions | `shattered_breachwall`: a fortress line has several permanent traversable breaches; `shattered_noman`: broad burned no-man's-land carries trenches and craters without closing either north/south crossing; `shattered_siegeramp`: the eastern siege ramp remains separate from both crossings and the internal west/east trail |
 | The Skyglass Canopy | `highland` | bounded `mountain` pale cliffs and `rolling_hills` forest terraces | `skyglass_escarpment`: several fixed ascents cross the pale cliff line; `skyglass_hangingways`: root and canopy paths remain optional alternatives over the terraces; `skyglass_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Stormscale embarkation corridors |
@@ -1055,7 +1063,7 @@ numeric-truncated seed.
   The four coastal cores retain 600-node frontage and 300-node depth.
 - One source snapshot produces byte-identical canonical 2D data and SVG.
   The SVG independently displays land/water, zones/labels, difficulty/PvP,
-  routes, fixed and candidate anchors, ownership cores and housing masks. It
+  routes, all fixed anchors, ownership cores and housing masks. It
   reports validation failures but never mutates source data to repair them.
 
 ### 14.2 Height, policy and content
@@ -1069,9 +1077,8 @@ numeric-truncated seed.
 - The final difficulty lattice changes by at most two levels between every
   orthogonally adjacent walkable surface pair and along every ordinary route.
   Capital guard/depth/fixed-entity rules remain separate and exact.
-- Selected anchors come from their 2D-frozen valid candidate set through one
-  bounded hash choice. Terrain fitting succeeds without rejection, reselection
-  or endpoint movement.
+- All anchors use their seed-independent, R2-frozen 2D positions. Terrain
+  fitting succeeds without rejection, reselection or endpoint movement.
 - Every wholly contained eligible 101 by 101 reservation in a coastal housing
   core has at most 12 nodes of natural relief. Housing capacity is reported
   from the fixed-layout canonical packing portfolio with an auditable upper
@@ -1082,8 +1089,9 @@ numeric-truncated seed.
   apex-camp and trade access remain practical; all protected apex sockets are
   reachable and diggable with their required tool.
 - Every `logical biome x zone` cell has a valid content result or an explicit
-  civic/no-hostiles declaration. Surface water remains
-  `default:water_source`; surface content never remaps logical ownership.
+  civic/no-hostiles declaration. Wet named WP40 hydrology uses non-renewable
+  `default:river_water_source`; oceans, bays and non-hydrology surface water
+  use `default:water_source`. Surface content never remaps logical ownership.
 
 ### 14.3 Mapgen, performance and rollout
 

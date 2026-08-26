@@ -1,22 +1,29 @@
-schema	grug_wp40_simple_map_r2_artifact_v1
+schema	grug_wp40_simple_map_r2_artifact_v2
 layout_id	wp40-simple-map-v1d
+layout_revision_id	wp40-simple-map-v1e
+source_schema	grug_wp40_simple_map_source_v2
 seed	0
-input_sha256	mods/MAPGEN/grug_mapgen/wp40/schemas.lua	552b3dd1a1156c4ee44d46da4d3af345355dec47bd0c38ce620793db1f0caea9
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/schemas.lua	1f3825d1b77972637c850fad32a56a3a0fe08962b14b6c1b107846b7b0004166
 input_sha256	mods/MAPGEN/grug_mapgen/wp40/canonical.lua	28022454cadac7aba838873c955ce4ab5c96ff995efef2bc729490b309935716
 input_sha256	mods/MAPGEN/grug_mapgen/wp40/deterministic.lua	ddf478e4fc0714a0551325e88550ef900e86e318091e11938b82ab51542275e9
-input_sha256	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua	3c22e64e8dca499ac14a5b34ebde7b774ffc450e9ca2fd283fa0379023377c24
-input_sha256	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua	f0fa10033abdc6280c154401f7b111e6b89602ad670e3fc85dfc4a380b9a7928
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua	5d4e2726dabbb900e47e7a8bef2a225011e6b003f48de485f752cde88fc7c17f
+input_sha256	mods/MAPGEN/grug_mapgen/wp40/simple_map.lua	55e507a6e5b2d73bf23233d9ab5e515ad150dbce77c6dc6c158a6133f4e27dfc
 input_sha256	tools/wp40/simple_map_offline.lua	4f3c30b4583e8fb32511059b0d8c6c80a1dd505d17995594c2be1492d6479d96
-input_sha256	tools/wp40/simple_map_r2_test.lua	961a7efaec64a10c9fde9dd0644ee975bde8b0eb69ecd396171868013b04008c
-input_sha256	tools/wp40/simple_map_r2_metadata.lua	f49a90123ff78028767cb5d3519a01fdbb0d17131b0042d16dd88aac0d07df47
-input_sha256	tools/wp40/simple_map_r2_cores.lua	49885c251241300baa4e06920d94425c1bdd21e0230d326c3e53b245074881e8
-input_sha256	tools/wp40/simple_map_r2_water.lua	6bf67e7bc964a2eab31188898850be9c8a5dc5a761d2009c8c59ef9834589d1f
-input_sha256	tools/wp40/simple_map_r2_routes.lua	705c3f316bd274d22e8c38f2d527a948a14db65d969bcafe0cab7526acaa924c
+input_sha256	tools/wp40/simple_map_r2_test.lua	5639774cb6097749da34227c81d8a4b2a0277442ad11709bd49cc50af0abf1de
+input_sha256	tools/wp40/simple_map_r2_metadata.lua	8833cb01e74d1ccb78d8df078c3f5894dd21447684920d600844c375e5aa7be7
+input_sha256	tools/wp40/simple_map_r2_cores.lua	9cea824e88b77161dac47e2cd95ae2a2715011659f4869ceb2e339e8bb95a0c2
+input_sha256	tools/wp40/simple_map_r2_water.lua	12e9439815c8ed3de88a665085177135c720a2a08ffeece91fe9d5f7fda27657
+input_sha256	tools/wp40/simple_map_r2_routes.lua	5ace22393bdecb004ac1e9a6737785a3f45d65c07742ea29e8751ceed63f860e
 input_sha256	tools/wp40/simple_map_r2_grid.lua	fae57e03f84b759b1b48a81111e32ac9bcc6bd525073319c722220291f58b365
-input_sha256	tools/wp40/simple_map_r2_housing.lua	b304f8ac064ee453091521637a912f936392797ddedbd3f9ad61b0da3984581f
-input_sha256	tools/wp40/run_simple_map_r2.sh	8ffd428198c26a0b1c4ac440d62bb9f490a2e73f805faa4ca0be73af9ca317f6
-canonical_kat_sha256	0a945840673d3170ce545c3c12af1422dcd12da5398a88faaf39c42d5346056d
+input_sha256	tools/wp40/simple_map_r2_housing.lua	8f2ebbd9c09ddd519a29d6a1ca14c888a25dab1c9a14a9c5c482d2970618aedd
+input_sha256	tools/wp40/simple_map_r2_contacts.lua	b4421238bf4fb82ced4f4f2cd3b02c5bd9ae6532055ab327603121bdd6f668f6
+input_sha256	tools/wp40/run_simple_map_r2.sh	a1ad706d0e93183577fe7968201944364c06dee420129ece6a0f2f21158a5c7c
+canonical_kat_sha256	cd50b0b18e4535c600051b10991b2a867e654e717901a089e15655848eebb882
 difficulty_lattice_sha256	0ec24ea13e87afd8a769d326abbc4016a458a564d28c7315d9506158386af15d
+evidence_sha256	anchor_migration_tsv	1295af991c3896d44089511830f3727a284af98be0510d581ea89afe3f11c1fb
+evidence_sha256	anchor_migration_extractor	88eb31fb6a7e32d054314aed1dcd9d12a3197422daa9c2971d8f5abf78d548e1
+evidence_sha256	baseline_diagnosis_tsv	1c7444c57fd1a95c11f37b46789ae29c21ab6532e1b4ac596675fc3086ec4bed
+evidence_sha256	baseline_diagnosis_tool	dae67d15e59549cac6491532d148f7da7237f9f0a47a110da16a7f805e109479
 warp	cell	256
 warp	maximum	60
 warp	max_horizontal_x	119
@@ -31,23 +38,23 @@ warp	min_ix	-16
 warp	max_ix	15
 warp	min_iz	-15
 warp	max_iz	14
+warp_proof_sha256	c3f65198e1f46c1061f52d05743d5cb60a8b14609dcf8a1f78f1a634396e38ec
 validator	metadata	grug_wp40_simple_map_r2_metadata_v1	true	0
 metadata_count	anchor_profiles	17
 metadata_count	anchors	100
-metadata_count	candidate_alternatives	252
-metadata_count	candidate_anchors	84
+metadata_count	authored_fixed_anchors	16
 metadata_count	claim_exclusion_recipes	5
-metadata_count	claim_exclusions	482
+metadata_count	claim_exclusions	314
 metadata_count	coastal_housing_cores	4
-metadata_count	fixed_anchors	16
 metadata_count	hard_protection	42
 metadata_count	hard_protection_recipes	4
 metadata_count	housing_masks	10
 metadata_count	hydrology	25
-metadata_count	hydrology_interfaces	12
+metadata_count	hydrology_interfaces	15
 metadata_count	hydrology_profiles	11
 metadata_count	hydrology_transition_profiles	6
 metadata_count	landmarks	70
+metadata_count	layout_fixed_anchors	84
 metadata_count	logical_biomes	16
 metadata_count	relief_profiles	6
 metadata_count	zones	38
@@ -56,11 +63,507 @@ coastal_core	coastal_core_starbough	12	2200	2499	-2500	-1901	300	600	180000	1606
 coastal_core	coastal_core_mournfen	18	-2521	-2220	1900	2499	302	600	181200	161607	161607	161607	161607	161607	81982
 coastal_core	coastal_core_raincall	28	2200	2499	1900	2499	300	600	180000	160679	160679	160679	160679	160679	81254
 reflection	ordinary_land_primitives_and_bays	9	9	false	1
+anchor_2d	anchor_001	1	start	start	authored_fixed	0	-1800	-2550
+anchor_2d	anchor_002	6	start	start	authored_fixed	0	0	-2550
+anchor_2d	anchor_003	11	start	start	authored_fixed	0	1800	-2550
+anchor_2d	anchor_004	17	start	start	authored_fixed	0	-1800	2550
+anchor_2d	anchor_005	22	start	start	authored_fixed	0	0	2550
+anchor_2d	anchor_006	27	start	start	authored_fixed	0	1800	2550
+anchor_2d	anchor_007	3	capital	capital_dwarf	authored_fixed	0	-1800	-1500
+anchor_2d	anchor_008	8	capital	capital_human	authored_fixed	0	0	-1500
+anchor_2d	anchor_009	13	capital	capital_elf	authored_fixed	0	1800	-1500
+anchor_2d	anchor_010	19	capital	capital_undead	authored_fixed	0	-1800	1500
+anchor_2d	anchor_011	24	capital	capital_orc	authored_fixed	0	0	1500
+anchor_2d	anchor_012	29	capital	capital_troll	authored_fixed	0	1800	1500
+anchor_2d	anchor_013	2	village_1	village	frozen_layout	2	-1868	-2036
+anchor_2d	anchor_014	4	village_1	village	frozen_layout	3	-2404	-1576
+anchor_2d	anchor_015	7	village_1	village	frozen_layout	1	-120	-2020
+anchor_2d	anchor_016	9	village_1	village	frozen_layout	3	-924	-1556
+anchor_2d	anchor_017	12	village_1	village	frozen_layout	1	1900	-2020
+anchor_2d	anchor_018	14	village_1	village	frozen_layout	3	876	-1556
+anchor_2d	anchor_019	18	village_1	village	frozen_layout	1	-1900	2020
+anchor_2d	anchor_020	20	village_1	village	frozen_layout	1	-2380	1600
+anchor_2d	anchor_021	23	village_1	village	frozen_layout	2	-88	2004
+anchor_2d	anchor_022	25	village_1	village	frozen_layout	2	-868	1564
+anchor_2d	anchor_023	28	village_1	village	frozen_layout	3	1876	2044
+anchor_2d	anchor_024	30	village_1	village	frozen_layout	3	876	1604
+anchor_2d	anchor_025	2	outpost_1	outpost	frozen_layout	1	-2100	-2100
+anchor_2d	anchor_026	4	outpost_1	outpost	frozen_layout	1	-2300	-1250
+anchor_2d	anchor_027	5	outpost_1	outpost	frozen_layout	3	-2074	-826
+anchor_2d	anchor_028	5	outpost_2	outpost	frozen_layout	1	-1500	-450
+anchor_2d	anchor_029	7	outpost_1	outpost	frozen_layout	3	176	-2026
+anchor_2d	anchor_030	9	outpost_1	outpost	frozen_layout	2	-618	-1266
+anchor_2d	anchor_031	10	outpost_1	outpost	frozen_layout	1	-350	-850
+anchor_2d	anchor_032	10	outpost_2	outpost	frozen_layout	1	300	-450
+anchor_2d	anchor_033	12	outpost_1	outpost	frozen_layout	1	2100	-2100
+anchor_2d	anchor_034	14	outpost_1	outpost	frozen_layout	3	626	-1226
+anchor_2d	anchor_035	15	outpost_1	outpost	frozen_layout	3	2376	-1326
+anchor_2d	anchor_036	16	outpost_1	outpost	frozen_layout	2	1932	-566
+anchor_2d	anchor_037	18	outpost_1	outpost	frozen_layout	1	-2100	2100
+anchor_2d	anchor_038	20	outpost_1	outpost	frozen_layout	2	-2268	1234
+anchor_2d	anchor_039	21	outpost_1	outpost	frozen_layout	2	-2018	834
+anchor_2d	anchor_040	21	outpost_2	outpost	frozen_layout	2	-1468	434
+anchor_2d	anchor_041	23	outpost_1	outpost	frozen_layout	3	176	2074
+anchor_2d	anchor_042	25	outpost_1	outpost	frozen_layout	1	-650	1250
+anchor_2d	anchor_043	26	outpost_1	outpost	frozen_layout	3	-374	874
+anchor_2d	anchor_044	26	outpost_2	outpost	frozen_layout	3	276	474
+anchor_2d	anchor_045	28	outpost_1	outpost	frozen_layout	2	2132	2084
+anchor_2d	anchor_046	30	outpost_1	outpost	frozen_layout	2	682	1234
+anchor_2d	anchor_047	31	outpost_1	outpost	frozen_layout	1	2400	1350
+anchor_2d	anchor_048	32	outpost_1	outpost	frozen_layout	1	1900	550
+anchor_2d	anchor_049	2	bandit_1	bandit_home	frozen_layout	2	-1568	-2066
+anchor_2d	anchor_050	5	bandit_1	bandit_frontier	frozen_layout	3	-1824	-406
+anchor_2d	anchor_051	7	bandit_1	bandit_home	frozen_layout	1	320	-1980
+anchor_2d	anchor_052	10	bandit_1	bandit_frontier	frozen_layout	3	-24	-406
+anchor_2d	anchor_053	12	bandit_1	bandit_home	frozen_layout	2	1632	-2066
+anchor_2d	anchor_054	16	bandit_1	bandit_frontier	frozen_layout	3	1776	-406
+anchor_2d	anchor_055	18	bandit_1	bandit_home	frozen_layout	1	-1600	2050
+anchor_2d	anchor_056	21	bandit_1	bandit_frontier	frozen_layout	1	-1800	430
+anchor_2d	anchor_057	23	bandit_1	bandit_home	frozen_layout	1	320	1980
+anchor_2d	anchor_058	26	bandit_1	bandit_frontier	frozen_layout	2	32	414
+anchor_2d	anchor_059	28	bandit_1	bandit_home	frozen_layout	2	1632	2034
+anchor_2d	anchor_060	32	bandit_1	bandit_frontier	frozen_layout	3	1776	454
+anchor_2d	anchor_061	4	mine	mine	frozen_layout	2	-2418	-1296
+anchor_2d	anchor_062	9	mine	mine	frozen_layout	3	-1074	-1256
+anchor_2d	anchor_063	14	mine	mine	frozen_layout	3	1026	-1256
+anchor_2d	anchor_064	20	mine	mine	frozen_layout	2	-2418	1264
+anchor_2d	anchor_065	25	mine	mine	frozen_layout	1	-1050	1280
+anchor_2d	anchor_066	30	mine	mine	frozen_layout	3	1026	1304
+anchor_2d	anchor_067	9	mirefolk	mirefolk	frozen_layout	1	-620	-1760
+anchor_2d	anchor_068	14	mirefolk	mirefolk	frozen_layout	3	1096	-1716
+anchor_2d	anchor_069	18	mirefolk	mirefolk	frozen_layout	3	-2074	2274
+anchor_2d	anchor_070	30	mirefolk	mirefolk	frozen_layout	3	1096	1764
+anchor_2d	anchor_071	10	clash_1	clash	frozen_layout	3	-274	-296
+anchor_2d	anchor_072	10	clash_2	clash	frozen_layout	1	250	-320
+anchor_2d	anchor_073	26	clash_1	clash	frozen_layout	2	-218	304
+anchor_2d	anchor_074	26	clash_2	clash	frozen_layout	2	282	304
+anchor_2d	anchor_075	33	clash_1	clash	frozen_layout	3	-3024	194
+anchor_2d	anchor_076	34	clash_1	clash	frozen_layout	1	-2200	-80
+anchor_2d	anchor_077	34	clash_2	clash	frozen_layout	2	-1768	64
+anchor_2d	anchor_078	35	clash_1	clash	frozen_layout	3	-1274	-76
+anchor_2d	anchor_079	35	clash_2	clash	frozen_layout	3	-774	124
+anchor_2d	anchor_080	35	clash_3	clash	frozen_layout	3	-274	-76
+anchor_2d	anchor_081	36	clash_1	clash	frozen_layout	1	250	100
+anchor_2d	anchor_082	36	clash_2	clash	frozen_layout	2	782	-116
+anchor_2d	anchor_083	36	clash_3	clash	frozen_layout	2	1282	84
+anchor_2d	anchor_084	37	clash_1	clash	frozen_layout	2	1832	-96
+anchor_2d	anchor_085	37	clash_2	clash	frozen_layout	3	2176	104
+anchor_2d	anchor_086	38	clash_1	clash	frozen_layout	1	3000	170
+anchor_2d	anchor_087	33	dragon	dragon	authored_fixed	0	-3260	-40
+anchor_2d	anchor_088	38	dragon	dragon	authored_fixed	0	3260	-40
+anchor_2d	anchor_089	33	apex_mine	apex_mine	authored_fixed	0	-3200	80
+anchor_2d	anchor_090	38	apex_mine	apex_mine	authored_fixed	0	3200	80
+anchor_2d	anchor_091	7	rare_grimtusk	rare_route	frozen_layout	2	152	-2116
+anchor_2d	anchor_092	10	rare_old_whitefang	rare_route	frozen_layout	1	-180	-650
+anchor_2d	anchor_093	5	rare_korgans_bane	rare_route	frozen_layout	3	-1874	-596
+anchor_2d	anchor_094	37	rare_silkfang	rare_route	frozen_layout	3	2026	94
+anchor_2d	anchor_095	21	rare_marrowclaw	rare_route	frozen_layout	2	-1818	604
+anchor_2d	anchor_096	26	rare_dustwing	rare_route	frozen_layout	3	156	674
+anchor_2d	anchor_097	38	rare_emerald_coil	rare_route	frozen_layout	1	3000	-120
+anchor_2d	anchor_098	23	rare_ashmaw	rare_route	frozen_layout	2	152	2084
+anchor_2d	anchor_099	35	rare_captain_bonerattle	rare_route	frozen_layout	2	-568	64
+anchor_2d	anchor_100	36	rare_captain_bonerattle	rare_route	frozen_layout	1	600	-80
+poi_spur_2d	poi_spur_013	anchor_013	3	948bc9a0acf21bbf0fe9de0bf70569b91b0cf3121d28efb3a188b3c5e5b2a564
+poi_spur_2d	poi_spur_014	anchor_014	2	be88e745d2ac25a4eea7a6fe9503968ba59b5a8a86467daf4e5c0557e6a02d7e
+poi_spur_2d	poi_spur_015	anchor_015	2	08ce2955118974cfabd98f349bc208fce8287d5890dd23f690fe579577223fe2
+poi_spur_2d	poi_spur_016	anchor_016	2	df9924d55a0cf35410e2fa34bae2ab8b2417066a1efc9ddc7d8fe1f7f69026b9
+poi_spur_2d	poi_spur_017	anchor_017	2	9ab08b6248fbc7a325035e98f313ccbcf917fa0de5330d52cceade9ccd58e88c
+poi_spur_2d	poi_spur_018	anchor_018	2	05be7b655a415cb32a7116638230fd6a71420ff3c49ef0bcef60c2d60d8623ea
+poi_spur_2d	poi_spur_019	anchor_019	2	6068d9d31c498b652113d76269a5b325311868c4ccf7af8317388b96a5a8d784
+poi_spur_2d	poi_spur_020	anchor_020	2	92e6a51fd3add354fe51142ac6d4b971de0e154f8ee79ad949c07872f535b5d8
+poi_spur_2d	poi_spur_021	anchor_021	2	9c84094daacb0a5790984bc2549fc843d35d0e814bd3ae0fb8605447617ed3ff
+poi_spur_2d	poi_spur_022	anchor_022	2	03426ac63955be04d4f0ea51f4e0fe073d8983fde0beeb54f442dcb347b8f369
+poi_spur_2d	poi_spur_023	anchor_023	3	7c6250ff59302accbe6eb17ec6d36e47662ffe76ccbd78b6de1f29eb19a791cd
+poi_spur_2d	poi_spur_024	anchor_024	2	7ea410877fa3750db067ac8634f8d93c7a5fb64adfd92ef886bf4c8702a5b6f5
+poi_spur_2d	poi_spur_025	anchor_025	2	4c4afea47bc377da0da30a1df336e7ccb66bb168a79b986de169098dfe6cb565
+poi_spur_2d	poi_spur_026	anchor_026	2	384e72e7a8c08774da1242bfab702961245f0dacda77836f3563796e863b00fe
+poi_spur_2d	poi_spur_027	anchor_027	2	6788dd27ede0b3da4e208a9ad68e83ebba975f3459690b3228273e19c12a10bf
+poi_spur_2d	poi_spur_028	anchor_028	2	71b2d339fb985b09067eb45dd0eb6acf41bf4b790687838186bced4a26e403f5
+poi_spur_2d	poi_spur_029	anchor_029	2	ee5bb9179a30dac0cf942c56eb0d546c7e271a49296a045a46b266e693edb3fd
+poi_spur_2d	poi_spur_030	anchor_030	2	48c051801aaab8546000b4aa3f9355ae886d3422f54374ceea9676fc6c9713e3
+poi_spur_2d	poi_spur_031	anchor_031	2	173c738ba59866d5daeb65b7640acb810adee536acae31acd6a82ee0204ed992
+poi_spur_2d	poi_spur_032	anchor_032	2	b091699e93a0c27486870ced2fb4e93f77e03cd7518b3879387459e9b1e76dfe
+poi_spur_2d	poi_spur_033	anchor_033	2	d878985809f8677c3fc30854c1f79637a6d0fd8496bf1fd18b5894dca90017f9
+poi_spur_2d	poi_spur_034	anchor_034	2	02d9bf4237333c4512871be42fbb9680b5c8b2ae98fb075903cd9b7628b544df
+poi_spur_2d	poi_spur_035	anchor_035	2	eb221cd7ee6c9ed8580f6e1a971448adc7b781551b8cdd77aa9a9ce41a838bf3
+poi_spur_2d	poi_spur_036	anchor_036	4	df46225762213b68b257a90aaa1f0aa931c4de34ca5a50a8a8ad47a4b2c4c10d
+poi_spur_2d	poi_spur_037	anchor_037	2	26f99dccf50a732165abbac510bfc1a63f4c47a17cca366a7c16039dd067c74a
+poi_spur_2d	poi_spur_038	anchor_038	2	954d61abccd80239772ea9a2ec38a48222ab2aaad749e7d7a3b46273977d4f18
+poi_spur_2d	poi_spur_039	anchor_039	2	e7812e22734e1031dbdc3b1c1c27a5e405745f8d2936140a9164d4d825df702d
+poi_spur_2d	poi_spur_040	anchor_040	2	45431dc5a8ce6d8bcb67a7c58f226fbe50b38f4fc3356fdd68aa54c10177c060
+poi_spur_2d	poi_spur_041	anchor_041	2	fcdb697e9853ebd4f1682168555a30af0a1e151cefc4db4084dbb19d58eae851
+poi_spur_2d	poi_spur_042	anchor_042	2	cf01787453893e985e97b4479992f90a9176db84be11e60f7e9d4cd4d2e795cc
+poi_spur_2d	poi_spur_043	anchor_043	2	01baebc0322239e1f2e7f784570cadabd1ced3a4f6009bef90b871a6f4408020
+poi_spur_2d	poi_spur_044	anchor_044	2	69343e89dffefc55742d4cbd1ea6fbc99aa5aefea3505cd5c3694980b8d500a2
+poi_spur_2d	poi_spur_045	anchor_045	4	19f23536fe5b82b7dd3124b9e10cec34cf2fecbc98b4665858fff6ad78de8362
+poi_spur_2d	poi_spur_046	anchor_046	2	2b6295f425d79228ecc0c9a7ed26a8e23e34174c9a95b8b5e84378ee8746b3bd
+poi_spur_2d	poi_spur_047	anchor_047	2	1df9b734a0dc0ecc31c0059ab4a02767c0dc5e3003ff5bee088c65b1b9efe2fb
+poi_spur_2d	poi_spur_048	anchor_048	2	58b19c336b034f11f183e572ffced852ced7116e67643c64e134a8271d9a4c81
+poi_spur_2d	poi_spur_049	anchor_049	2	f9cf57be30a38de334904c13ed39991818420bbb61186173cbc194c5382ff1a6
+poi_spur_2d	poi_spur_050	anchor_050	4	2945fb3b22a10301558a07bbc907277db10aee9db7a0e48e38fa485e8bd7878d
+poi_spur_2d	poi_spur_051	anchor_051	4	c3bbfcf14a06a7e7ce7c1b4e05b01979202406d0b23d2b27e76f3536a48a577e
+poi_spur_2d	poi_spur_052	anchor_052	2	094bc455af9ad78a9f6d9cd4adb85ccf0e4e98051fd331ae664a3e6cdc1fad9c
+poi_spur_2d	poi_spur_053	anchor_053	2	ccfa6264f24fe62c7a1657e302e581fa6996f3905a50ad0658539770b2d1048c
+poi_spur_2d	poi_spur_054	anchor_054	2	2fbb20129cae7e6f3d888158faa3a6f4091161be98f30945dbe9ea04c9999a5a
+poi_spur_2d	poi_spur_055	anchor_055	2	e330ee250199bbae9e0af173ec9a1895983b7420619fad8875cb8a53c77fdfbc
+poi_spur_2d	poi_spur_056	anchor_056	2	f06121351df4a5d9f41dabe914b8a7ccf7198730457ac1f1480a1d89b2fab21a
+poi_spur_2d	poi_spur_057	anchor_057	2	b0e29eff8f16c5ec453cc2ea1c71d4a2f01068780d0b7acee1a5e12a8a2312a8
+poi_spur_2d	poi_spur_058	anchor_058	2	ee0cb195a92b00352992ee33baa49357a74a85403e63cf051aec77be8b30a1ca
+poi_spur_2d	poi_spur_059	anchor_059	2	4d2a4ce4b186c7b85e41914e122fa544376238065aa73e22390bf32445c547a2
+poi_spur_2d	poi_spur_060	anchor_060	2	34286a443a9cc757d417376490461df19ae4b78e0c4d249acafe521936f862d5
+poi_spur_2d	poi_spur_061	anchor_061	2	f2b4701a1893e02207ccf1dae88a00928d4e64518ef5a58408145df8ab0bc10f
+poi_spur_2d	poi_spur_062	anchor_062	2	e7ee19d489bbfbfab99958561ebb3c6fcfd26daee2c0a795a560adc98c24b089
+poi_spur_2d	poi_spur_063	anchor_063	2	3dd90756546ce5f9e4af1244ca8bccee120bd31a3440002110b6da546d8a19ad
+poi_spur_2d	poi_spur_064	anchor_064	2	0fe3758048589bdc3da964f2b9444442dcb66abd8616d63d0cbafd24773c9d31
+poi_spur_2d	poi_spur_065	anchor_065	2	82e1d1823c43d91161ee905fe16dad60d76eb495d6245d0346007f98868a83ae
+poi_spur_2d	poi_spur_066	anchor_066	2	ea356baf88ce1f4951e53f451692de33c4e7c3fa2a84cea31b628f19aca9f7eb
+poi_spur_2d	poi_spur_067	anchor_067	2	d43abea8cedb76071fbb4e326e72efe2b564ce94d92e1f815c5cb77561274117
+poi_spur_2d	poi_spur_068	anchor_068	2	6705b58bdf9eef012f596977e030cc9ea3667e0a1c002613c36c1a839bd0d6be
+poi_spur_2d	poi_spur_069	anchor_069	6	0dafcff97eb3436ae2d8a04c2737cd874a832c56d2e970e590fb60314675eb36
+poi_spur_2d	poi_spur_070	anchor_070	2	40ccbf01c5ae1f109f094fb18af49227b2e5a4ec390e89882acee1a71b9b0202
+poi_spur_2d	poi_spur_071	anchor_071	2	c3379e7b42c522529fff5361c576bb0d98d60b8e2392657fc54d11bf702f3672
+poi_spur_2d	poi_spur_072	anchor_072	2	d5a703556a5b9a7b6d72f4e775575446eb65d5842bdc713a1e8241ff8706f216
+poi_spur_2d	poi_spur_073	anchor_073	2	a985142abc3205cc854e8503ea79b188d9032c4e0e51ecc1c1e7bb7cc13da46f
+poi_spur_2d	poi_spur_074	anchor_074	2	c52712c20586097072222f144f406d846fc7b17bbde6b9db4c02de2a097d083f
+poi_spur_2d	poi_spur_075	anchor_075	2	a942ac0000b0cecc66754063e58bbd119065c2da45ac27b1cfa15cae85f64538
+poi_spur_2d	poi_spur_076	anchor_076	2	3c4c0d0544472cde10bf843e4ef42b06622207c98c26efa5bb64627f2c55c124
+poi_spur_2d	poi_spur_077	anchor_077	2	5ad7452e57c198e81f9083a628200dbd73222557ac2634f5e7ae16abb0101039
+poi_spur_2d	poi_spur_078	anchor_078	2	53714327a043a5f576afd75ad15badf09a7db75dc515c4b9302302617d47c2b3
+poi_spur_2d	poi_spur_079	anchor_079	2	a53594e779be6180b6d402f412697c8a124f457d617008655912595432a61209
+poi_spur_2d	poi_spur_080	anchor_080	2	e19c033408e7184e19751066da9c20ffc649d9f8244004f001410ee8a33f0e0e
+poi_spur_2d	poi_spur_081	anchor_081	2	f630f2313b968caf02ea1ea043d8c1efd3b3dda61a313c807cf0ad0f93bd8c70
+poi_spur_2d	poi_spur_082	anchor_082	2	9731173c7df10fa1fdec680bd5bd3a1ece0671d2705bac3bedb1ffe0a6aa8882
+poi_spur_2d	poi_spur_083	anchor_083	2	42c854c4f6283b8011047bc1db3dd1a5361f20e46d97b59ebefa5bc2e310c315
+poi_spur_2d	poi_spur_084	anchor_084	2	1f18a0037cb3c5a41ba1f1264775151d65beb1be41f7f446588efa244a940fe6
+poi_spur_2d	poi_spur_085	anchor_085	2	23b7505bcd8a891b150ce742f54fc606cee5bce494f1fb4c7fc8ea66f027ea16
+poi_spur_2d	poi_spur_086	anchor_086	5	60c32eabcbd04560db778eed3e3f588980c2aba757b97804ebd65f8c94b3e66f
+fixed_anchor_spur_roster_sha256	ee2e60e4904a60006f4d6faa708f89efbdad9e9c3bf58ac0bd686769800e79dd
+claim_exclusion_recipe_count	exclude_active_core_v1	42
+claim_exclusion_recipe_count	exclude_anchor_blend_v1	100
+claim_exclusion_recipe_count	exclude_coast_v1	4
+claim_exclusion_recipe_count	exclude_planned_water_v1	29
+claim_exclusion_recipe_count	exclude_route_corridor_v1	139
+claim_exclusion_id	exclude:active:hard:anchor_001
+claim_exclusion_id	exclude:active:hard:anchor_002
+claim_exclusion_id	exclude:active:hard:anchor_003
+claim_exclusion_id	exclude:active:hard:anchor_004
+claim_exclusion_id	exclude:active:hard:anchor_005
+claim_exclusion_id	exclude:active:hard:anchor_006
+claim_exclusion_id	exclude:active:hard:anchor_007
+claim_exclusion_id	exclude:active:hard:anchor_008
+claim_exclusion_id	exclude:active:hard:anchor_009
+claim_exclusion_id	exclude:active:hard:anchor_010
+claim_exclusion_id	exclude:active:hard:anchor_011
+claim_exclusion_id	exclude:active:hard:anchor_012
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_01
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_02
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_03
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_04
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_05
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_06
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_07
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_08
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_09
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_10
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_11
+claim_exclusion_id	exclude:active:hard:anchor_089:socket_12
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_01
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_02
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_03
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_04
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_05
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_06
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_07
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_08
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_09
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_10
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_11
+claim_exclusion_id	exclude:active:hard:anchor_090:socket_12
+claim_exclusion_id	exclude:active:hard:ingress_dur_brannoc
+claim_exclusion_id	exclude:active:hard:ingress_gor_drazhak
+claim_exclusion_id	exclude:active:hard:ingress_highcourt
+claim_exclusion_id	exclude:active:hard:ingress_kezamba
+claim_exclusion_id	exclude:active:hard:ingress_lethariel
+claim_exclusion_id	exclude:active:hard:ingress_nhal_veyr
+claim_exclusion_id	exclude:anchor:anchor_001:01
+claim_exclusion_id	exclude:anchor:anchor_002:01
+claim_exclusion_id	exclude:anchor:anchor_003:01
+claim_exclusion_id	exclude:anchor:anchor_004:01
+claim_exclusion_id	exclude:anchor:anchor_005:01
+claim_exclusion_id	exclude:anchor:anchor_006:01
+claim_exclusion_id	exclude:anchor:anchor_007:01
+claim_exclusion_id	exclude:anchor:anchor_008:01
+claim_exclusion_id	exclude:anchor:anchor_009:01
+claim_exclusion_id	exclude:anchor:anchor_010:01
+claim_exclusion_id	exclude:anchor:anchor_011:01
+claim_exclusion_id	exclude:anchor:anchor_012:01
+claim_exclusion_id	exclude:anchor:anchor_013:02
+claim_exclusion_id	exclude:anchor:anchor_014:03
+claim_exclusion_id	exclude:anchor:anchor_015:01
+claim_exclusion_id	exclude:anchor:anchor_016:03
+claim_exclusion_id	exclude:anchor:anchor_017:01
+claim_exclusion_id	exclude:anchor:anchor_018:03
+claim_exclusion_id	exclude:anchor:anchor_019:01
+claim_exclusion_id	exclude:anchor:anchor_020:01
+claim_exclusion_id	exclude:anchor:anchor_021:02
+claim_exclusion_id	exclude:anchor:anchor_022:02
+claim_exclusion_id	exclude:anchor:anchor_023:03
+claim_exclusion_id	exclude:anchor:anchor_024:03
+claim_exclusion_id	exclude:anchor:anchor_025:01
+claim_exclusion_id	exclude:anchor:anchor_026:01
+claim_exclusion_id	exclude:anchor:anchor_027:03
+claim_exclusion_id	exclude:anchor:anchor_028:01
+claim_exclusion_id	exclude:anchor:anchor_029:03
+claim_exclusion_id	exclude:anchor:anchor_030:02
+claim_exclusion_id	exclude:anchor:anchor_031:01
+claim_exclusion_id	exclude:anchor:anchor_032:01
+claim_exclusion_id	exclude:anchor:anchor_033:01
+claim_exclusion_id	exclude:anchor:anchor_034:03
+claim_exclusion_id	exclude:anchor:anchor_035:03
+claim_exclusion_id	exclude:anchor:anchor_036:02
+claim_exclusion_id	exclude:anchor:anchor_037:01
+claim_exclusion_id	exclude:anchor:anchor_038:02
+claim_exclusion_id	exclude:anchor:anchor_039:02
+claim_exclusion_id	exclude:anchor:anchor_040:02
+claim_exclusion_id	exclude:anchor:anchor_041:03
+claim_exclusion_id	exclude:anchor:anchor_042:01
+claim_exclusion_id	exclude:anchor:anchor_043:03
+claim_exclusion_id	exclude:anchor:anchor_044:03
+claim_exclusion_id	exclude:anchor:anchor_045:02
+claim_exclusion_id	exclude:anchor:anchor_046:02
+claim_exclusion_id	exclude:anchor:anchor_047:01
+claim_exclusion_id	exclude:anchor:anchor_048:01
+claim_exclusion_id	exclude:anchor:anchor_049:02
+claim_exclusion_id	exclude:anchor:anchor_050:03
+claim_exclusion_id	exclude:anchor:anchor_051:01
+claim_exclusion_id	exclude:anchor:anchor_052:03
+claim_exclusion_id	exclude:anchor:anchor_053:02
+claim_exclusion_id	exclude:anchor:anchor_054:03
+claim_exclusion_id	exclude:anchor:anchor_055:01
+claim_exclusion_id	exclude:anchor:anchor_056:01
+claim_exclusion_id	exclude:anchor:anchor_057:01
+claim_exclusion_id	exclude:anchor:anchor_058:02
+claim_exclusion_id	exclude:anchor:anchor_059:02
+claim_exclusion_id	exclude:anchor:anchor_060:03
+claim_exclusion_id	exclude:anchor:anchor_061:02
+claim_exclusion_id	exclude:anchor:anchor_062:03
+claim_exclusion_id	exclude:anchor:anchor_063:03
+claim_exclusion_id	exclude:anchor:anchor_064:02
+claim_exclusion_id	exclude:anchor:anchor_065:01
+claim_exclusion_id	exclude:anchor:anchor_066:03
+claim_exclusion_id	exclude:anchor:anchor_067:01
+claim_exclusion_id	exclude:anchor:anchor_068:03
+claim_exclusion_id	exclude:anchor:anchor_069:03
+claim_exclusion_id	exclude:anchor:anchor_070:03
+claim_exclusion_id	exclude:anchor:anchor_071:03
+claim_exclusion_id	exclude:anchor:anchor_072:01
+claim_exclusion_id	exclude:anchor:anchor_073:02
+claim_exclusion_id	exclude:anchor:anchor_074:02
+claim_exclusion_id	exclude:anchor:anchor_075:03
+claim_exclusion_id	exclude:anchor:anchor_076:01
+claim_exclusion_id	exclude:anchor:anchor_077:02
+claim_exclusion_id	exclude:anchor:anchor_078:03
+claim_exclusion_id	exclude:anchor:anchor_079:03
+claim_exclusion_id	exclude:anchor:anchor_080:03
+claim_exclusion_id	exclude:anchor:anchor_081:01
+claim_exclusion_id	exclude:anchor:anchor_082:02
+claim_exclusion_id	exclude:anchor:anchor_083:02
+claim_exclusion_id	exclude:anchor:anchor_084:02
+claim_exclusion_id	exclude:anchor:anchor_085:03
+claim_exclusion_id	exclude:anchor:anchor_086:01
+claim_exclusion_id	exclude:anchor:anchor_087:01
+claim_exclusion_id	exclude:anchor:anchor_088:01
+claim_exclusion_id	exclude:anchor:anchor_089:01
+claim_exclusion_id	exclude:anchor:anchor_090:01
+claim_exclusion_id	exclude:anchor:anchor_091:02
+claim_exclusion_id	exclude:anchor:anchor_092:01
+claim_exclusion_id	exclude:anchor:anchor_093:03
+claim_exclusion_id	exclude:anchor:anchor_094:03
+claim_exclusion_id	exclude:anchor:anchor_095:02
+claim_exclusion_id	exclude:anchor:anchor_096:03
+claim_exclusion_id	exclude:anchor:anchor_097:01
+claim_exclusion_id	exclude:anchor:anchor_098:02
+claim_exclusion_id	exclude:anchor:anchor_099:02
+claim_exclusion_id	exclude:anchor:anchor_100:01
+claim_exclusion_id	exclude:coast:channel_stormscale
+claim_exclusion_id	exclude:coast:channel_wyrmglass
+claim_exclusion_id	exclude:coast:island_stormscale
+claim_exclusion_id	exclude:coast:island_wyrmglass
+claim_exclusion_id	exclude:route:island_route_stormscale_junction_apex
+claim_exclusion_id	exclude:route:island_route_stormscale_junction_dragon
+claim_exclusion_id	exclude:route:island_route_stormscale_north_junction
+claim_exclusion_id	exclude:route:island_route_stormscale_south_junction
+claim_exclusion_id	exclude:route:island_route_wyrmglass_junction_apex
+claim_exclusion_id	exclude:route:island_route_wyrmglass_junction_dragon
+claim_exclusion_id	exclude:route:island_route_wyrmglass_north_junction
+claim_exclusion_id	exclude:route:island_route_wyrmglass_south_junction
+claim_exclusion_id	exclude:route:poi_spur_013
+claim_exclusion_id	exclude:route:poi_spur_014
+claim_exclusion_id	exclude:route:poi_spur_015
+claim_exclusion_id	exclude:route:poi_spur_016
+claim_exclusion_id	exclude:route:poi_spur_017
+claim_exclusion_id	exclude:route:poi_spur_018
+claim_exclusion_id	exclude:route:poi_spur_019
+claim_exclusion_id	exclude:route:poi_spur_020
+claim_exclusion_id	exclude:route:poi_spur_021
+claim_exclusion_id	exclude:route:poi_spur_022
+claim_exclusion_id	exclude:route:poi_spur_023
+claim_exclusion_id	exclude:route:poi_spur_024
+claim_exclusion_id	exclude:route:poi_spur_025
+claim_exclusion_id	exclude:route:poi_spur_026
+claim_exclusion_id	exclude:route:poi_spur_027
+claim_exclusion_id	exclude:route:poi_spur_028
+claim_exclusion_id	exclude:route:poi_spur_029
+claim_exclusion_id	exclude:route:poi_spur_030
+claim_exclusion_id	exclude:route:poi_spur_031
+claim_exclusion_id	exclude:route:poi_spur_032
+claim_exclusion_id	exclude:route:poi_spur_033
+claim_exclusion_id	exclude:route:poi_spur_034
+claim_exclusion_id	exclude:route:poi_spur_035
+claim_exclusion_id	exclude:route:poi_spur_036
+claim_exclusion_id	exclude:route:poi_spur_037
+claim_exclusion_id	exclude:route:poi_spur_038
+claim_exclusion_id	exclude:route:poi_spur_039
+claim_exclusion_id	exclude:route:poi_spur_040
+claim_exclusion_id	exclude:route:poi_spur_041
+claim_exclusion_id	exclude:route:poi_spur_042
+claim_exclusion_id	exclude:route:poi_spur_043
+claim_exclusion_id	exclude:route:poi_spur_044
+claim_exclusion_id	exclude:route:poi_spur_045
+claim_exclusion_id	exclude:route:poi_spur_046
+claim_exclusion_id	exclude:route:poi_spur_047
+claim_exclusion_id	exclude:route:poi_spur_048
+claim_exclusion_id	exclude:route:poi_spur_049
+claim_exclusion_id	exclude:route:poi_spur_050
+claim_exclusion_id	exclude:route:poi_spur_051
+claim_exclusion_id	exclude:route:poi_spur_052
+claim_exclusion_id	exclude:route:poi_spur_053
+claim_exclusion_id	exclude:route:poi_spur_054
+claim_exclusion_id	exclude:route:poi_spur_055
+claim_exclusion_id	exclude:route:poi_spur_056
+claim_exclusion_id	exclude:route:poi_spur_057
+claim_exclusion_id	exclude:route:poi_spur_058
+claim_exclusion_id	exclude:route:poi_spur_059
+claim_exclusion_id	exclude:route:poi_spur_060
+claim_exclusion_id	exclude:route:poi_spur_061
+claim_exclusion_id	exclude:route:poi_spur_062
+claim_exclusion_id	exclude:route:poi_spur_063
+claim_exclusion_id	exclude:route:poi_spur_064
+claim_exclusion_id	exclude:route:poi_spur_065
+claim_exclusion_id	exclude:route:poi_spur_066
+claim_exclusion_id	exclude:route:poi_spur_067
+claim_exclusion_id	exclude:route:poi_spur_068
+claim_exclusion_id	exclude:route:poi_spur_069
+claim_exclusion_id	exclude:route:poi_spur_070
+claim_exclusion_id	exclude:route:poi_spur_071
+claim_exclusion_id	exclude:route:poi_spur_072
+claim_exclusion_id	exclude:route:poi_spur_073
+claim_exclusion_id	exclude:route:poi_spur_074
+claim_exclusion_id	exclude:route:poi_spur_075
+claim_exclusion_id	exclude:route:poi_spur_076
+claim_exclusion_id	exclude:route:poi_spur_077
+claim_exclusion_id	exclude:route:poi_spur_078
+claim_exclusion_id	exclude:route:poi_spur_079
+claim_exclusion_id	exclude:route:poi_spur_080
+claim_exclusion_id	exclude:route:poi_spur_081
+claim_exclusion_id	exclude:route:poi_spur_082
+claim_exclusion_id	exclude:route:poi_spur_083
+claim_exclusion_id	exclude:route:poi_spur_084
+claim_exclusion_id	exclude:route:poi_spur_085
+claim_exclusion_id	exclude:route:poi_spur_086
+claim_exclusion_id	exclude:route:route_001
+claim_exclusion_id	exclude:route:route_002
+claim_exclusion_id	exclude:route:route_003
+claim_exclusion_id	exclude:route:route_004
+claim_exclusion_id	exclude:route:route_005
+claim_exclusion_id	exclude:route:route_006
+claim_exclusion_id	exclude:route:route_007
+claim_exclusion_id	exclude:route:route_008
+claim_exclusion_id	exclude:route:route_009
+claim_exclusion_id	exclude:route:route_010
+claim_exclusion_id	exclude:route:route_011
+claim_exclusion_id	exclude:route:route_012
+claim_exclusion_id	exclude:route:route_013
+claim_exclusion_id	exclude:route:route_014
+claim_exclusion_id	exclude:route:route_015
+claim_exclusion_id	exclude:route:route_016
+claim_exclusion_id	exclude:route:route_017
+claim_exclusion_id	exclude:route:route_018
+claim_exclusion_id	exclude:route:route_019
+claim_exclusion_id	exclude:route:route_020
+claim_exclusion_id	exclude:route:route_021
+claim_exclusion_id	exclude:route:route_022
+claim_exclusion_id	exclude:route:route_023
+claim_exclusion_id	exclude:route:route_024
+claim_exclusion_id	exclude:route:route_025
+claim_exclusion_id	exclude:route:route_026
+claim_exclusion_id	exclude:route:route_027
+claim_exclusion_id	exclude:route:route_028
+claim_exclusion_id	exclude:route:route_029
+claim_exclusion_id	exclude:route:route_030
+claim_exclusion_id	exclude:route:route_031
+claim_exclusion_id	exclude:route:route_032
+claim_exclusion_id	exclude:route:route_033
+claim_exclusion_id	exclude:route:route_034
+claim_exclusion_id	exclude:route:route_035
+claim_exclusion_id	exclude:route:route_036
+claim_exclusion_id	exclude:route:route_037
+claim_exclusion_id	exclude:route:route_038
+claim_exclusion_id	exclude:route:route_039
+claim_exclusion_id	exclude:route:route_040
+claim_exclusion_id	exclude:route:route_041
+claim_exclusion_id	exclude:route:route_042
+claim_exclusion_id	exclude:route:route_043
+claim_exclusion_id	exclude:route:route_044
+claim_exclusion_id	exclude:route:route_045
+claim_exclusion_id	exclude:route:route_046
+claim_exclusion_id	exclude:route:route_047
+claim_exclusion_id	exclude:route:route_048
+claim_exclusion_id	exclude:route:route_049
+claim_exclusion_id	exclude:route:route_050
+claim_exclusion_id	exclude:route:route_051
+claim_exclusion_id	exclude:route:route_052
+claim_exclusion_id	exclude:route:route_053
+claim_exclusion_id	exclude:route:route_054
+claim_exclusion_id	exclude:route:route_055
+claim_exclusion_id	exclude:route:route_056
+claim_exclusion_id	exclude:route:route_057
+claim_exclusion_id	exclude:water:bay_elandor_east
+claim_exclusion_id	exclude:water:bay_elandor_west
+claim_exclusion_id	exclude:water:bay_kragmar_east
+claim_exclusion_id	exclude:water:bay_kragmar_west
+claim_exclusion_id	exclude:water:hydro_broken_marsh
+claim_exclusion_id	exclude:water:hydro_copperfell_streams
+claim_exclusion_id	exclude:water:hydro_dawnmere_headwaters
+claim_exclusion_id	exclude:water:hydro_frostbarrow_tarns
+claim_exclusion_id	exclude:water:hydro_goldmead_millriver
+claim_exclusion_id	exclude:water:hydro_gravesalt_pans
+claim_exclusion_id	exclude:water:hydro_highcourt_fork_east
+claim_exclusion_id	exclude:water:hydro_highcourt_fork_west
+claim_exclusion_id	exclude:water:hydro_highcourt_outflow
+claim_exclusion_id	exclude:water:hydro_kezamba_cenote
+claim_exclusion_id	exclude:water:hydro_lethariel_lake
+claim_exclusion_id	exclude:water:hydro_lorindor_marsh
+claim_exclusion_id	exclude:water:hydro_moonfall_lake
+claim_exclusion_id	exclude:water:hydro_mournfen_marsh
+claim_exclusion_id	exclude:water:hydro_raincall_headwater
+claim_exclusion_id	exclude:water:hydro_raincall_middle_lip
+claim_exclusion_id	exclude:water:hydro_raincall_middle_upper
+claim_exclusion_id	exclude:water:hydro_raincall_plunge
+claim_exclusion_id	exclude:water:hydro_raincall_upper_lip
+claim_exclusion_id	exclude:water:hydro_speargrass_dryriver
+claim_exclusion_id	exclude:water:hydro_sunscar_waterholes
+claim_exclusion_id	exclude:water:hydro_totemwater_delta
+claim_exclusion_id	exclude:water:hydro_whispering_reedmaze
+claim_exclusion_id	exclude:water:hydro_whitebridge_ford
+claim_exclusion_id	exclude:water:hydro_whitebridge_main
+claim_exclusion_roster_sha256	dc7ec172e93d8df7b56a38549f40082d1a28f33adf512c4c48c6edec7f8643c7
 validator	cores	grug_wp40_simple_map_r2_cores_v1	true	0
 core_metric	anchors	100
-core_metric	candidate_sets	84
+core_metric	authored_fixed_anchors	16
 core_metric	fixed_cores	12
-core_metric	horizontally_valid_candidate_sets	84
+core_metric	horizontally_valid_layout_fixed	84
+core_metric	layout_fixed_anchors	84
 core_metric	scanned_core_nodes	3372864
 core_metric	underlying_power_disagreements	92422
 core	anchor_001	1	start	-2100	-1501	-2800	-2301	300000	300000	0	11163	1	route_001
@@ -87,6 +590,9 @@ water_metric	channel_other_water_mismatches	0
 water_metric	wet_hydrology_reaches	24
 water_metric	dry_hydrology_reaches	1
 water_metric	hydrology_sample_failures	0
+water_metric	hydrology_contact_pairs	12
+water_metric	unequal_hydrology_contact_pairs	7
+water_metric	contact_face_interfaces	3
 water_metric	hydrology_interface_failures	0
 water_metric	crossing_failures	0
 water_metric	violation_count	0
@@ -122,6 +628,25 @@ hydrology	hydro_whispering_reedmaze	true	7	6	1	0
 hydrology	hydro_totemwater_delta	true	5	2	3	0
 hydrology	hydro_gravesalt_pans	true	5	5	0	0
 hydrology	hydro_broken_marsh	true	9	8	1	0
+hydrology_contact	hydro_gravesalt_pans	hydro_broken_marsh	100	8	true	gravesalt_broken_fall	163	114	114	-1713	-1650	21	110	-1712	-1649	21	110	-1713	21	-1712	21
+contact_face	gravesalt_broken_fall	163	114	114	1	1	0	0	0	29b8c11cc8278309b82d1ec9591e9ffc829aeada617ffdc0353e92231bb04117	731ba1a2753022879aa3936ada5cda5ca37824d26cebf7f1ad146715ac309d8a	c7864cdc823fc24020e38ca1e4175e073a5a8b25f8e58815f40089df6b2b8f56
+contact_fitting	gravesalt_broken_fall	anchor_077	0	0	1	0
+hydrology_contact	hydro_highcourt_fork_east	hydro_highcourt_fork_west	34	34	false	-	75	50	50	4	25	-1357	-1308	3	24	-1357	-1308	4	-1357	3	-1357
+hydrology_contact	hydro_highcourt_fork_east	hydro_highcourt_outflow	34	34	false	-	17	9	9	21	29	-1316	-1308	21	29	-1315	-1307	29	-1316	29	-1315
+hydrology_contact	hydro_highcourt_fork_west	hydro_goldmead_millriver	34	16	true	highcourt_goldmead_fall	13	13	13	-106	-94	-1756	-1756	-106	-94	-1757	-1757	-106	-1756	-106	-1757
+contact_face	highcourt_goldmead_fall	13	13	13	1	1	0	0	0	58a5a630ef95f2c7ca024c5716c4e62ce42b22ce7787d580a9e918b254758b70	6b1a70cf009de6e725fc6a832175e1bf542820ac713d6762b27d702104baa0ba	4355d208e06c5f2301891db8ac739a4e5fb528e85e84e18126cade4dd23599a3
+contact_fitting	highcourt_goldmead_fall	anchor_008	13	0	13	13
+contact_hard	highcourt_goldmead_fall	hard:anchor_008	13	13
+hydrology_contact	hydro_highcourt_fork_west	hydro_highcourt_outflow	34	34	false	-	62	40	41	-19	20	-1307	-1296	-19	21	-1307	-1295	20	-1307	21	-1307
+hydrology_contact	hydro_raincall_headwater	hydro_raincall_upper_lip	72	68	true	raincall_upper_rapid	136	99	99	1937	2000	2100	2159	1937	2001	2099	2159	1960	2100	1960	2099
+hydrology_contact	hydro_raincall_middle_lip	hydro_raincall_plunge	52	44	true	raincall_lower_fall	125	82	83	2014	2086	1972	1999	2014	2087	1971	1999	2050	1972	2050	1971
+hydrology_contact	hydro_raincall_middle_upper	hydro_raincall_middle_lip	56	52	true	raincall_middle_rapid	122	86	87	2000	2052	2008	2060	2000	2053	2007	2060	2020	2008	2020	2007
+hydrology_contact	hydro_raincall_plunge	hydro_whispering_reedmaze	44	8	true	raincall_reedmaze_fall	109	66	65	2026	2070	1864	1929	2026	2069	1864	1928	2070	1864	2069	1864
+contact_face	raincall_reedmaze_fall	109	66	65	1	1	0	0	0	4c81da0b173751517a069edf8678bde80e70eddbddfb07f52f5268c8376d1ca9	75e531516fe19a9055d328c61a76585b510a760cc1936f400dcb339d3818bae4	a5a81a6a6f59e84807efedd26cabcc164f5d3f0f9134eae105b0322cd9865c0e
+hydrology_contact	hydro_raincall_upper_lip	hydro_raincall_middle_upper	68	56	true	raincall_upper_fall	90	61	61	1960	2020	2072	2087	1960	2020	2071	2086	1990	2072	1990	2071
+hydrology_contact	hydro_totemwater_delta	hydro_whispering_reedmaze	8	8	false	-	151	107	107	955	1041	1648	1712	955	1041	1648	1711	955	1648	956	1648
+hydrology_contact	hydro_whitebridge_ford	hydro_whitebridge_main	16	16	false	-	73	60	61	-453	-393	-1490	-1479	-453	-393	-1491	-1480	-453	-1490	-453	-1491
+hydrology_contact_roster_sha256	904c548d4679596467ca72e0a0cf86de9248189dee97fcc37321e20700d8e0f7
 crossing	whitebridge_bridge	bridge	true	true	true	true
 crossing	whitebridge_ford	ford	true	true	true	true
 crossing	broken_causeway	causeway	true	true	true	true
@@ -140,34 +665,92 @@ route_metric	boat_water_columns	143471
 route_metric	boat_wrong_land_columns	0
 route_metric	crossing_count	9
 route_metric	ingress_automatic_grading_columns	22449
-route_metric	ingress_corridor_columns	1415506
+route_metric	ingress_corridor_columns	1444186
 route_metric	ingress_count	6
 route_metric	ingress_declared_crossing_columns	34978
 route_metric	ingress_derived_water_columns	57427
 route_metric	ingress_neighbor_contact_columns	0
 route_metric	ingress_off_land_columns	0
-route_metric	poi_corridor_columns	614852
-route_metric	poi_derived_water_columns	46439
+route_metric	poi_corridor_columns	212663
+route_metric	poi_derived_water_columns	15736
 route_metric	poi_off_land_columns	0
 route_metric	poi_spur_count	74
 route_metric	poi_wrong_zone_columns	0
-route_metric	route_automatic_grading_columns	44425
+route_metric	route_automatic_grading_columns	42597
 route_metric	route_class_counts.primary	30
 route_metric	route_class_counts.secondary	24
 route_metric	route_class_counts.trail	3
-route_metric	route_corridor_columns	786594
+route_metric	route_corridor_columns	790804
 route_metric	route_count	57
-route_metric	route_declared_crossing_columns	9066
-route_metric	route_derived_water_columns	53491
-route_metric	route_difficulty_edges	1499010
+route_metric	route_declared_crossing_columns	8955
+route_metric	route_derived_water_columns	51552
+route_metric	route_difficulty_edges	1506962
 route_metric	route_difficulty_violations	0
-route_metric	route_land_columns	733103
+route_metric	route_land_columns	739252
 route_metric	route_max_adjacent_difficulty_delta	1
 route_metric	route_off_land_columns	0
 route_metric	route_pair_count	57
 route_metric	route_third_zone_columns	29809
 route_metric	violation_count	0
-route_metric	witness_count	616
+route_metric	witness_count	368
+route_graph	route_001	1	2	station:elandor_hearthpine_vale:hub	station:elandor_copperfell_foothills:hub
+route_graph	route_002	2	3	station:elandor_copperfell_foothills:hub	station:elandor_dur_brannoc:hub
+route_graph	route_003	3	5	station:elandor_dur_brannoc:hub	station:elandor_stormvault_heights:hub
+route_graph	route_004	6	7	station:elandor_dawnmere_fields:hub	station:elandor_goldmead_vale:hub
+route_graph	route_005	7	8	station:elandor_goldmead_vale:hub	station:elandor_highcourt:hub
+route_graph	route_006	8	10	station:elandor_highcourt:hub	station:elandor_ashenward_march:hub
+route_graph	route_007	11	12	station:elandor_silverleaf_glades:hub	station:elandor_starbough_vale:hub
+route_graph	route_008	12	13	station:elandor_starbough_vale:hub	station:elandor_lethariel:hub
+route_graph	route_009	13	16	station:elandor_lethariel:hub	station:elandor_glassroot_wilds:hub
+route_graph	route_010	17	18	station:kragmar_stillgrave_hollow:hub	station:kragmar_mournfen:hub
+route_graph	route_011	18	19	station:kragmar_mournfen:hub	station:kragmar_nhal_veyr:hub
+route_graph	route_012	19	21	station:kragmar_nhal_veyr:hub	station:kragmar_blackwind_rise:hub
+route_graph	route_013	22	23	station:kragmar_sunscar_flats:hub	station:kragmar_redtusk_savanna:hub
+route_graph	route_014	23	24	station:kragmar_redtusk_savanna:hub	station:kragmar_gor_drazhak:hub
+route_graph	route_015	24	26	station:kragmar_gor_drazhak:hub	station:kragmar_bannerbreak_mesa:hub
+route_graph	route_016	27	28	station:kragmar_kapok_cradle:hub	station:kragmar_raincall_basin:hub
+route_graph	route_017	28	29	station:kragmar_raincall_basin:hub	station:kragmar_kezamba:hub
+route_graph	route_018	29	32	station:kragmar_kezamba:hub	station:kragmar_thunderroot_wilds:hub
+route_graph	route_019	4	3	station:elandor_frostbarrow_shelf:hub	station:elandor_dur_brannoc:hub
+route_graph	route_020	3	9	station:elandor_dur_brannoc:hub	station:elandor_whitebridge_shire:hub
+route_graph	route_021	9	8	station:elandor_whitebridge_shire:hub	station:elandor_highcourt:hub
+route_graph	route_022	8	14	station:elandor_highcourt:hub	station:elandor_lorindor:hub
+route_graph	route_023	14	13	station:elandor_lorindor:hub	station:elandor_lethariel:hub
+route_graph	route_024	13	15	station:elandor_lethariel:hub	station:elandor_moonfall_wood:hub
+route_graph	route_025	20	19	station:kragmar_ossuary_reach:hub	station:kragmar_nhal_veyr:hub
+route_graph	route_026	19	25	station:kragmar_nhal_veyr:hub	station:kragmar_speargrass_reach:hub
+route_graph	route_027	25	24	station:kragmar_speargrass_reach:hub	station:kragmar_gor_drazhak:hub
+route_graph	route_028	24	30	station:kragmar_gor_drazhak:hub	station:kragmar_whispering_reedlands:hub
+route_graph	route_029	30	29	station:kragmar_whispering_reedlands:hub	station:kragmar_kezamba:hub
+route_graph	route_030	29	31	station:kragmar_kezamba:hub	station:kragmar_totemwater_reach:hub
+route_graph	route_031	4	5	station:elandor_frostbarrow_shelf:hub	station:elandor_stormvault_heights:hub
+route_graph	route_032	9	10	station:elandor_whitebridge_shire:hub	station:elandor_ashenward_march:hub
+route_graph	route_033	14	16	station:elandor_lorindor:hub	station:elandor_glassroot_wilds:hub
+route_graph	route_034	15	16	station:elandor_moonfall_wood:hub	station:elandor_glassroot_wilds:hub
+route_graph	route_035	5	10	station:elandor_stormvault_heights:hub	station:elandor_ashenward_march:hub
+route_graph	route_036	10	16	station:elandor_ashenward_march:hub	station:elandor_glassroot_wilds:hub
+route_graph	route_037	20	21	station:kragmar_ossuary_reach:hub	station:kragmar_blackwind_rise:hub
+route_graph	route_038	25	26	station:kragmar_speargrass_reach:hub	station:kragmar_bannerbreak_mesa:hub
+route_graph	route_039	30	32	station:kragmar_whispering_reedlands:hub	station:kragmar_thunderroot_wilds:hub
+route_graph	route_040	31	32	station:kragmar_totemwater_reach:hub	station:kragmar_thunderroot_wilds:hub
+route_graph	route_041	21	26	station:kragmar_blackwind_rise:hub	station:kragmar_bannerbreak_mesa:hub
+route_graph	route_042	26	32	station:kragmar_bannerbreak_mesa:hub	station:kragmar_thunderroot_wilds:hub
+route_graph	route_043	5	34	station:elandor_stormvault_heights:hub	station:front_gravesalt_escarpment:hub
+route_graph	route_044	5	35	station:elandor_stormvault_heights:hub	station:front_broken_causeway:hub
+route_graph	route_045	10	35	station:elandor_ashenward_march:hub	station:front_broken_causeway:hub
+route_graph	route_046	10	36	station:elandor_ashenward_march:hub	station:front_shattered_line:hub
+route_graph	route_047	16	36	station:elandor_glassroot_wilds:hub	station:front_shattered_line:hub
+route_graph	route_048	16	37	station:elandor_glassroot_wilds:hub	station:front_skyglass_canopy:hub
+route_graph	route_049	21	34	station:kragmar_blackwind_rise:hub	station:front_gravesalt_escarpment:hub
+route_graph	route_050	21	35	station:kragmar_blackwind_rise:hub	station:front_broken_causeway:hub
+route_graph	route_051	26	35	station:kragmar_bannerbreak_mesa:hub	station:front_broken_causeway:hub
+route_graph	route_052	26	36	station:kragmar_bannerbreak_mesa:hub	station:front_shattered_line:hub
+route_graph	route_053	32	36	station:kragmar_thunderroot_wilds:hub	station:front_shattered_line:hub
+route_graph	route_054	32	37	station:kragmar_thunderroot_wilds:hub	station:front_skyglass_canopy:hub
+route_graph	route_055	34	35	station:front_gravesalt_escarpment:hub	station:front_broken_causeway:hub
+route_graph	route_056	35	36	station:front_broken_causeway:hub	station:front_shattered_line:hub
+route_graph	route_057	36	37	station:front_shattered_line:hub	station:front_skyglass_canopy:hub
+route_graph_roster_sha256	352ad5484339eba55e8056c4a994424c72a3f26d391887e8facbcea7373f2492
 validator	grid	grug_wp40_simple_map_r2_grid_v1	true	0
 grid_metric	authoritative	true
 grid_metric	step	1
@@ -304,6 +887,552 @@ contact	32	37	true	1354	251	1354	250
 contact	34	35	true	-1426	-250	-1425	-250
 contact	35	36	true	-74	-250	-73	-250
 contact	36	37	true	1332	-250	1333	-250
+validator	contacts	grug_wp40_simple_map_r2_contacts_v1	true	0
+contact_metric	baseline_contact_pairs	533
+contact_metric	final_contact_pairs	532
+contact_metric	new_contact_pairs	0
+contact_metric	removed_contact_pairs	1
+contact_metric	selected_paths	139
+contact_metric	surface_columns_with_path_multiplicity	422216
+baseline_path_contact_roster_sha256	f1d060d85f726b3fdcaf9b48ff9e00d036b6b377a1d21d8bdc8b19d3f4d68d2c
+path_contact_digest_encoding	sha256_of_exact_sorted_contact_tsv_rows_v1
+path_contact_surface_predicate	session_polyline_corridor_member
+path_contact_touch_predicate	canonical_orthogonal_a_only_b_only_edges_v1
+path_contact_edge_orientation	endpoint_x_z_ascending_v1
+path_contact_witness_order	kind_ascii_then_x1_z1_x2_z2_v1
+path_contact	island_route_stormscale_junction_apex	island_route_stormscale_junction_dragon	27	0	3098	3104	-2	2	overlap	3098	-1	3098	-1
+path_contact	island_route_stormscale_junction_apex	island_route_stormscale_north_junction	22	1	3098	3102	-2	4	overlap	3098	-1	3098	-1
+path_contact	island_route_stormscale_junction_apex	island_route_stormscale_south_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+path_contact	island_route_stormscale_junction_dragon	island_route_stormscale_north_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+path_contact	island_route_stormscale_junction_dragon	island_route_stormscale_south_junction	21	0	3098	3102	-2	2	overlap	3098	-1	3098	-1
+path_contact	island_route_stormscale_north_junction	island_route_stormscale_south_junction	22	0	3097	3102	-2	2	overlap	3097	0	3097	0
+path_contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_junction_dragon	27	0	-3104	-3098	-2	2	overlap	-3104	1	-3104	1
+path_contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_north_junction	22	1	-3102	-3098	-2	4	overlap	-3102	-1	-3102	-1
+path_contact	island_route_wyrmglass_junction_apex	island_route_wyrmglass_south_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+path_contact	island_route_wyrmglass_junction_apex	poi_spur_075	15	4	-3130	-3125	31	38	overlap	-3129	33	-3129	33
+path_contact	island_route_wyrmglass_junction_dragon	island_route_wyrmglass_north_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+path_contact	island_route_wyrmglass_junction_dragon	island_route_wyrmglass_south_junction	21	0	-3102	-3098	-2	2	overlap	-3102	-1	-3102	-1
+path_contact	island_route_wyrmglass_north_junction	island_route_wyrmglass_south_junction	22	0	-3102	-3097	-2	2	overlap	-3102	-1	-3102	-1
+path_contact	poi_spur_013	poi_spur_025	24	1	-1804	-1798	-2052	-2048	overlap	-1803	-2049	-1803	-2049
+path_contact	poi_spur_013	poi_spur_049	12	0	-1801	-1798	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+path_contact	poi_spur_013	route_001	26	0	-1803	-1798	-2052	-2047	overlap	-1803	-2049	-1803	-2049
+path_contact	poi_spur_013	route_002	30	0	-1803	-1798	-2052	-2045	overlap	-1803	-2049	-1803	-2049
+path_contact	poi_spur_014	poi_spur_026	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_014	poi_spur_061	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_014	route_019	26	0	-2402	-2398	-1503	-1498	overlap	-2402	-1502	-2402	-1502
+path_contact	poi_spur_014	route_031	21	0	-2402	-2398	-1502	-1498	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_015	poi_spur_029	21	0	-2	2	-2052	-2048	overlap	-2	-2051	-2	-2051
+path_contact	poi_spur_015	poi_spur_051	12	0	-1	2	-2051	-2048	overlap	-1	-2051	-1	-2051
+path_contact	poi_spur_015	route_004	173	10	-58	2	-2052	-2038	overlap	-50	-2040	-50	-2040
+path_contact	poi_spur_015	route_005	27	0	-3	2	-2052	-2047	overlap	-3	-2051	-3	-2051
+path_contact	poi_spur_016	poi_spur_030	21	0	-902	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_016	poi_spur_062	21	1	-903	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_016	poi_spur_067	13	1	-901	-898	-1503	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_016	route_020	33	2	-905	-898	-1506	-1498	overlap	-904	-1504	-904	-1504
+path_contact	poi_spur_016	route_021	26	1	-903	-898	-1504	-1498	overlap	-903	-1501	-903	-1501
+path_contact	poi_spur_016	route_032	21	0	-902	-898	-1502	-1498	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_017	poi_spur_033	40	3	1798	1812	-2052	-2048	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_017	poi_spur_053	12	0	1798	1801	-2051	-2049	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_017	route_007	26	2	1798	1804	-2052	-2047	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_017	route_008	27	0	1798	1803	-2052	-2047	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_018	poi_spur_034	21	1	897	902	-1502	-1498	overlap	898	-1501	898	-1501
+path_contact	poi_spur_018	poi_spur_063	21	0	898	902	-1502	-1498	overlap	898	-1501	898	-1501
+path_contact	poi_spur_018	poi_spur_068	14	1	899	902	-1504	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_018	route_022	33	2	895	902	-1506	-1498	overlap	896	-1504	896	-1504
+path_contact	poi_spur_018	route_023	26	0	897	902	-1503	-1498	overlap	897	-1501	897	-1501
+path_contact	poi_spur_018	route_033	21	0	898	902	-1502	-1498	overlap	898	-1501	898	-1501
+path_contact	poi_spur_019	poi_spur_037	40	3	-1812	-1798	2048	2052	overlap	-1809	2049	-1809	2049
+path_contact	poi_spur_019	poi_spur_055	12	0	-1801	-1798	2049	2051	overlap	-1801	2049	-1801	2049
+path_contact	poi_spur_019	poi_spur_069	15	0	-1803	-1799	2047	2051	overlap	-1803	2047	-1803	2047
+path_contact	poi_spur_019	route_010	27	1	-1804	-1798	2047	2052	overlap	-1804	2051	-1804	2051
+path_contact	poi_spur_019	route_011	27	0	-1803	-1798	2047	2052	overlap	-1803	2049	-1803	2049
+path_contact	poi_spur_020	poi_spur_038	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_020	poi_spur_064	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_020	route_025	36	2	-2402	-2396	1498	1508	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_020	route_037	21	0	-2402	-2398	1498	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_021	poi_spur_041	21	0	-2	2	2048	2052	overlap	-2	2049	-2	2049
+path_contact	poi_spur_021	poi_spur_057	12	0	-1	2	2049	2051	overlap	-1	2049	-1	2049
+path_contact	poi_spur_021	route_013	26	1	-4	2	2047	2052	overlap	-3	2049	-3	2049
+path_contact	poi_spur_021	route_014	27	0	-3	2	2047	2052	overlap	-3	2049	-3	2049
+path_contact	poi_spur_022	poi_spur_042	21	1	-902	-897	1498	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_022	poi_spur_065	21	0	-902	-898	1498	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_022	route_026	26	0	-902	-897	1498	1503	overlap	-902	1499	-902	1499
+path_contact	poi_spur_022	route_027	28	1	-902	-896	1498	1503	overlap	-902	1499	-902	1499
+path_contact	poi_spur_022	route_038	21	0	-902	-898	1498	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_023	poi_spur_045	23	0	1798	1803	2048	2052	overlap	1798	2049	1798	2049
+path_contact	poi_spur_023	poi_spur_059	12	0	1798	1801	2049	2051	overlap	1798	2049	1798	2049
+path_contact	poi_spur_023	route_016	55	4	1798	1878	2044	2052	overlap	1798	2049	1798	2049
+path_contact	poi_spur_023	route_017	59	4	1798	1813	2038	2052	overlap	1798	2049	1798	2049
+path_contact	poi_spur_024	poi_spur_046	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_024	poi_spur_066	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_024	poi_spur_070	14	2	899	902	1499	1505	overlap	899	1499	899	1499
+path_contact	poi_spur_024	route_028	28	0	897	902	1498	1503	overlap	897	1502	897	1502
+path_contact	poi_spur_024	route_029	26	1	897	902	1498	1503	overlap	898	1499	898	1499
+path_contact	poi_spur_024	route_039	21	0	898	902	1498	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_025	poi_spur_049	12	0	-1801	-1798	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+path_contact	poi_spur_025	route_001	30	0	-1804	-1798	-2053	-2048	overlap	-1804	-2053	-1804	-2053
+path_contact	poi_spur_025	route_002	26	0	-1803	-1798	-2052	-2048	overlap	-1803	-2051	-1803	-2051
+path_contact	poi_spur_026	poi_spur_061	38	2	-2402	-2398	-1502	-1489	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_026	route_019	43	3	-2402	-2393	-1502	-1491	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_026	route_031	27	1	-2402	-2398	-1502	-1494	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_027	poi_spur_028	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_027	poi_spur_050	12	0	-1801	-1798	-701	-698	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_027	route_003	27	1	-1803	-1798	-704	-698	overlap	-1803	-701	-1803	-701
+path_contact	poi_spur_027	route_031	38	2	-1808	-1798	-707	-698	overlap	-1807	-705	-1807	-705
+path_contact	poi_spur_027	route_035	21	1	-1802	-1798	-703	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_027	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_027	route_044	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_028	poi_spur_050	24	3	-1801	-1793	-701	-691	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_028	route_003	26	0	-1802	-1797	-702	-697	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_028	route_031	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_028	route_035	22	0	-1802	-1797	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_028	route_043	27	1	-1802	-1797	-702	-695	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_028	route_044	84	4	-1802	-1778	-702	-679	overlap	-1802	-701	-1802	-701
+path_contact	poi_spur_029	poi_spur_051	15	1	-1	5	-2051	-2046	overlap	-1	-2051	-1	-2051
+path_contact	poi_spur_029	route_004	26	0	-2	3	-2052	-2048	overlap	-2	-2051	-2	-2051
+path_contact	poi_spur_029	route_005	35	1	-2	7	-2052	-2046	overlap	-2	-2051	-2	-2051
+path_contact	poi_spur_030	poi_spur_062	22	1	-902	-898	-1502	-1496	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_030	poi_spur_067	13	1	-901	-897	-1502	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_030	route_020	26	0	-902	-897	-1502	-1497	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_030	route_021	32	1	-902	-894	-1502	-1497	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_030	route_032	42	0	-902	-893	-1502	-1491	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_031	poi_spur_032	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_031	poi_spur_052	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_031	poi_spur_071	12	1	-3	1	-701	-698	overlap	-2	-699	-2	-699
+path_contact	poi_spur_031	poi_spur_072	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_031	route_006	27	1	-3	2	-704	-698	overlap	-3	-701	-3	-701
+path_contact	poi_spur_031	route_032	75	7	-27	2	-709	-698	overlap	-22	-707	-22	-707
+path_contact	poi_spur_031	route_035	51	4	-18	2	-705	-698	overlap	-13	-703	-13	-703
+path_contact	poi_spur_031	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_031	route_045	27	1	-6	2	-702	-698	overlap	-5	-700	-5	-700
+path_contact	poi_spur_031	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	poi_spur_052	15	0	-1	1	-701	-696	overlap	-1	-701	-1	-701
+path_contact	poi_spur_032	poi_spur_071	12	1	-2	1	-701	-697	overlap	-2	-699	-2	-699
+path_contact	poi_spur_032	poi_spur_072	31	4	-1	10	-701	-689	overlap	-1	-701	-1	-701
+path_contact	poi_spur_032	route_006	26	0	-2	3	-702	-697	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	route_032	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	route_035	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	route_036	27	1	-2	6	-702	-698	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	route_045	21	1	-2	2	-702	-697	overlap	-2	-701	-2	-701
+path_contact	poi_spur_032	route_046	66	3	-2	20	-702	-686	overlap	-2	-701	-2	-701
+path_contact	poi_spur_033	poi_spur_053	12	0	1798	1801	-2051	-2049	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_033	route_007	30	0	1798	1804	-2053	-2048	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_033	route_008	26	0	1798	1803	-2052	-2048	overlap	1798	-2051	1798	-2051
+path_contact	poi_spur_034	poi_spur_063	23	1	898	902	-1502	-1496	overlap	898	-1501	898	-1501
+path_contact	poi_spur_034	poi_spur_068	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_034	route_022	31	0	895	902	-1502	-1497	overlap	895	-1498	895	-1498
+path_contact	poi_spur_034	route_023	26	0	897	902	-1502	-1497	overlap	897	-1500	897	-1500
+path_contact	poi_spur_034	route_033	49	3	890	902	-1502	-1487	overlap	892	-1489	892	-1489
+path_contact	poi_spur_035	route_024	35	1	2396	2402	-1502	-1493	overlap	2397	-1496	2397	-1496
+path_contact	poi_spur_035	route_034	50	3	2394	2402	-1502	-1482	overlap	2396	-1489	2396	-1489
+path_contact	poi_spur_036	poi_spur_054	38	4	1789	1801	-701	-579	overlap	1789	-583	1789	-583
+path_contact	poi_spur_036	route_009	26	0	1797	1802	-702	-697	overlap	1797	-699	1797	-699
+path_contact	poi_spur_036	route_033	21	1	1797	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	poi_spur_036	route_034	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	poi_spur_036	route_036	22	0	1797	1802	-702	-698	overlap	1797	-699	1797	-699
+path_contact	poi_spur_036	route_047	29	1	1794	1802	-702	-695	overlap	1795	-696	1795	-696
+path_contact	poi_spur_036	route_048	27	1	1798	1934	-702	-565	overlap	1798	-701	1798	-701
+path_contact	poi_spur_037	poi_spur_055	12	0	-1801	-1798	2049	2051	overlap	-1801	2049	-1801	2049
+path_contact	poi_spur_037	poi_spur_069	13	1	-1803	-1799	2047	2051	overlap	-1802	2048	-1802	2048
+path_contact	poi_spur_037	route_010	31	1	-1805	-1798	2048	2054	overlap	-1804	2051	-1804	2051
+path_contact	poi_spur_037	route_011	26	0	-1803	-1798	2048	2052	overlap	-1803	2049	-1803	2049
+path_contact	poi_spur_038	poi_spur_064	35	2	-2402	-2398	1491	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_038	route_025	27	0	-2402	-2397	1497	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_038	route_037	26	0	-2402	-2398	1495	1502	overlap	-2402	1499	-2402	1499
+path_contact	poi_spur_039	poi_spur_040	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_039	poi_spur_056	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+path_contact	poi_spur_039	route_012	28	0	-1803	-1798	698	704	overlap	-1803	699	-1803	699
+path_contact	poi_spur_039	route_037	47	2	-1812	-1798	698	710	overlap	-1810	709	-1810	709
+path_contact	poi_spur_039	route_041	21	1	-1802	-1798	698	703	overlap	-1802	699	-1802	699
+path_contact	poi_spur_039	route_049	23	1	-1804	-1798	698	702	overlap	-1803	699	-1803	699
+path_contact	poi_spur_039	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_040	poi_spur_056	15	0	-1801	-1799	696	701	overlap	-1801	698	-1801	698
+path_contact	poi_spur_040	route_012	26	0	-1802	-1797	697	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_040	route_037	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_040	route_041	22	0	-1802	-1797	698	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_040	route_049	22	0	-1802	-1798	697	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_040	route_050	44	1	-1802	-1788	693	702	overlap	-1802	699	-1802	699
+path_contact	poi_spur_041	poi_spur_057	27	0	-1	11	2048	2051	overlap	-1	2049	-1	2049
+path_contact	poi_spur_041	route_013	26	0	-2	3	2048	2052	overlap	-2	2049	-2	2049
+path_contact	poi_spur_041	route_014	30	0	-2	5	2048	2052	overlap	-2	2049	-2	2049
+path_contact	poi_spur_042	poi_spur_065	22	1	-902	-898	1496	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_042	route_026	26	0	-902	-897	1497	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_042	route_027	46	1	-902	-890	1493	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_042	route_038	23	1	-902	-898	1496	1502	overlap	-902	1499	-902	1499
+path_contact	poi_spur_043	poi_spur_044	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	poi_spur_043	poi_spur_058	12	0	-1	1	698	701	overlap	-1	698	-1	698
+path_contact	poi_spur_043	poi_spur_073	12	0	-2	1	698	701	overlap	-2	699	-2	699
+path_contact	poi_spur_043	poi_spur_074	12	0	-1	2	698	701	overlap	-1	699	-1	699
+path_contact	poi_spur_043	route_015	27	1	-3	2	698	704	overlap	-3	699	-3	699
+path_contact	poi_spur_043	route_038	77	4	-23	2	698	714	overlap	-20	712	-20	712
+path_contact	poi_spur_043	route_041	47	2	-14	2	698	704	overlap	-12	703	-12	703
+path_contact	poi_spur_043	route_042	21	1	-2	2	698	703	overlap	-2	699	-2	699
+path_contact	poi_spur_043	route_051	26	0	-5	2	698	702	overlap	-5	700	-5	700
+path_contact	poi_spur_043	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	poi_spur_058	15	2	-1	3	695	701	overlap	-1	698	-1	698
+path_contact	poi_spur_044	poi_spur_073	13	0	-2	1	697	701	overlap	-2	699	-2	699
+path_contact	poi_spur_044	poi_spur_074	31	7	-1	12	687	701	overlap	-1	699	-1	699
+path_contact	poi_spur_044	route_015	26	0	-2	3	697	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	route_038	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	route_041	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	route_042	22	0	-2	3	698	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	route_051	21	1	-2	2	697	702	overlap	-2	699	-2	699
+path_contact	poi_spur_044	route_052	68	6	-2	22	685	702	overlap	-2	699	-2	699
+path_contact	poi_spur_045	poi_spur_059	12	0	1798	1801	2049	2051	overlap	1798	2049	1798	2049
+path_contact	poi_spur_045	route_016	70	1	1798	1971	2048	2141	overlap	1798	2049	1798	2049
+path_contact	poi_spur_045	route_017	27	0	1798	1803	2048	2053	overlap	1798	2049	1798	2049
+path_contact	poi_spur_046	poi_spur_066	23	1	898	902	1496	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_046	poi_spur_070	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+path_contact	poi_spur_046	route_028	41	2	891	902	1494	1502	overlap	893	1495	893	1495
+path_contact	poi_spur_046	route_029	26	0	897	902	1497	1502	overlap	897	1499	897	1499
+path_contact	poi_spur_046	route_039	23	2	898	902	1495	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_047	route_030	32	1	2397	2402	1494	1502	overlap	2398	1495	2398	1495
+path_contact	poi_spur_047	route_040	38	2	2397	2402	1489	1502	overlap	2398	1491	2398	1491
+path_contact	poi_spur_048	poi_spur_060	18	1	1799	1801	694	701	overlap	1799	697	1799	697
+path_contact	poi_spur_048	route_018	27	0	1798	1803	697	702	overlap	1798	699	1798	699
+path_contact	poi_spur_048	route_039	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	poi_spur_048	route_040	24	1	1798	1804	698	702	overlap	1798	699	1798	699
+path_contact	poi_spur_048	route_042	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	poi_spur_048	route_053	23	1	1798	1802	696	702	overlap	1798	699	1798	699
+path_contact	poi_spur_048	route_054	50	5	1798	1812	688	702	overlap	1798	699	1798	699
+path_contact	poi_spur_049	route_001	15	0	-1801	-1797	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+path_contact	poi_spur_049	route_002	18	0	-1801	-1795	-2051	-2049	overlap	-1801	-2051	-1801	-2051
+path_contact	poi_spur_050	route_003	15	0	-1801	-1798	-701	-697	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_050	route_031	12	0	-1801	-1798	-701	-698	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_050	route_035	12	0	-1801	-1798	-701	-698	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_050	route_043	22	2	-1801	-1797	-701	-691	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_050	route_044	38	3	-1801	-1790	-701	-685	overlap	-1801	-701	-1801	-701
+path_contact	poi_spur_051	route_004	14	1	-1	3	-2051	-2047	overlap	-1	-2051	-1	-2051
+path_contact	poi_spur_051	route_005	194	1	-1	41	-2051	-1998	overlap	-1	-2051	-1	-2051
+path_contact	poi_spur_052	poi_spur_071	13	2	-3	1	-701	-693	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	poi_spur_072	13	1	-1	2	-701	-695	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_006	15	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_032	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_035	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_036	12	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_045	13	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+path_contact	poi_spur_052	route_046	13	0	-1	1	-701	-697	overlap	-1	-701	-1	-701
+path_contact	poi_spur_053	route_007	15	0	1797	1801	-2051	-2049	overlap	1797	-2051	1797	-2051
+path_contact	poi_spur_053	route_008	18	0	1795	1801	-2051	-2049	overlap	1795	-2049	1795	-2049
+path_contact	poi_spur_054	route_009	15	0	1799	1801	-701	-697	overlap	1799	-701	1799	-701
+path_contact	poi_spur_054	route_033	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+path_contact	poi_spur_054	route_034	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+path_contact	poi_spur_054	route_036	12	0	1799	1801	-701	-698	overlap	1799	-701	1799	-701
+path_contact	poi_spur_054	route_047	12	1	1798	1801	-701	-697	overlap	1799	-701	1799	-701
+path_contact	poi_spur_054	route_048	15	1	1799	1802	-701	-695	overlap	1799	-701	1799	-701
+path_contact	poi_spur_055	poi_spur_069	9	0	-1801	-1799	2049	2051	overlap	-1801	2049	-1801	2049
+path_contact	poi_spur_055	route_010	15	0	-1801	-1797	2049	2051	overlap	-1801	2049	-1801	2049
+path_contact	poi_spur_055	route_011	18	0	-1801	-1795	2049	2051	overlap	-1801	2049	-1801	2049
+path_contact	poi_spur_056	route_012	15	0	-1801	-1799	697	701	overlap	-1801	697	-1801	697
+path_contact	poi_spur_056	route_037	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+path_contact	poi_spur_056	route_041	12	0	-1801	-1799	698	701	overlap	-1801	698	-1801	698
+path_contact	poi_spur_056	route_049	15	1	-1802	-1799	695	701	overlap	-1801	696	-1801	696
+path_contact	poi_spur_056	route_050	12	1	-1801	-1798	697	701	overlap	-1801	698	-1801	698
+path_contact	poi_spur_057	route_013	14	1	-1	3	2048	2051	overlap	-1	2049	-1	2049
+path_contact	poi_spur_057	route_014	20	3	-1	7	2046	2051	overlap	-1	2049	-1	2049
+path_contact	poi_spur_058	poi_spur_073	14	0	-1	1	696	701	overlap	-1	696	-1	696
+path_contact	poi_spur_058	poi_spur_074	13	2	-1	3	694	701	overlap	-1	699	-1	699
+path_contact	poi_spur_058	route_015	15	0	-1	1	697	701	overlap	-1	697	-1	697
+path_contact	poi_spur_058	route_038	12	0	-1	1	698	701	overlap	-1	698	-1	698
+path_contact	poi_spur_058	route_041	12	0	-1	1	698	701	overlap	-1	698	-1	698
+path_contact	poi_spur_058	route_042	12	0	-1	1	698	701	overlap	-1	698	-1	698
+path_contact	poi_spur_058	route_051	13	0	-1	1	697	701	overlap	-1	697	-1	697
+path_contact	poi_spur_058	route_052	13	0	-1	1	697	701	overlap	-1	698	-1	698
+path_contact	poi_spur_059	route_016	15	0	1797	1801	2049	2051	overlap	1797	2049	1797	2049
+path_contact	poi_spur_059	route_017	15	0	1797	1801	2049	2051	overlap	1797	2049	1797	2049
+path_contact	poi_spur_060	route_018	15	0	1799	1801	697	701	overlap	1799	697	1799	697
+path_contact	poi_spur_060	route_039	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+path_contact	poi_spur_060	route_040	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+path_contact	poi_spur_060	route_042	12	0	1799	1801	698	701	overlap	1799	698	1799	698
+path_contact	poi_spur_060	route_053	17	1	1797	1801	693	701	overlap	1798	694	1798	694
+path_contact	poi_spur_060	route_054	14	1	1799	1802	696	701	overlap	1799	698	1799	698
+path_contact	poi_spur_061	route_019	32	0	-2402	-2398	-1502	-1495	overlap	-2402	-1501	-2402	-1501
+path_contact	poi_spur_061	route_031	44	3	-2404	-2398	-1502	-1486	overlap	-2403	-1494	-2403	-1494
+path_contact	poi_spur_062	poi_spur_067	13	0	-901	-898	-1502	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_062	route_020	29	1	-905	-898	-1502	-1497	overlap	-904	-1498	-904	-1498
+path_contact	poi_spur_062	route_021	26	0	-903	-898	-1502	-1497	overlap	-903	-1500	-903	-1500
+path_contact	poi_spur_062	route_032	24	1	-902	-898	-1502	-1495	overlap	-902	-1501	-902	-1501
+path_contact	poi_spur_063	poi_spur_068	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_063	route_022	26	0	898	903	-1502	-1497	overlap	898	-1501	898	-1501
+path_contact	poi_spur_063	route_023	34	0	898	905	-1502	-1495	overlap	898	-1501	898	-1501
+path_contact	poi_spur_063	route_033	26	0	898	902	-1502	-1495	overlap	898	-1501	898	-1501
+path_contact	poi_spur_064	route_025	26	0	-2402	-2398	1497	1502	overlap	-2402	1498	-2402	1498
+path_contact	poi_spur_064	route_037	43	3	-2404	-2398	1486	1502	overlap	-2403	1489	-2403	1489
+path_contact	poi_spur_065	route_026	29	1	-905	-898	1497	1502	overlap	-904	1498	-904	1498
+path_contact	poi_spur_065	route_027	26	0	-903	-898	1497	1502	overlap	-903	1499	-903	1499
+path_contact	poi_spur_065	route_038	93	8	-919	-898	1468	1502	overlap	-915	1474	-915	1474
+path_contact	poi_spur_066	poi_spur_070	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+path_contact	poi_spur_066	route_028	26	0	898	903	1497	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_066	route_029	37	0	898	906	1495	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_066	route_039	113	8	898	923	1460	1502	overlap	898	1499	898	1499
+path_contact	poi_spur_067	route_020	15	1	-901	-897	-1503	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_067	route_021	28	3	-901	-891	-1507	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_067	route_032	13	0	-901	-898	-1502	-1499	overlap	-901	-1501	-901	-1501
+path_contact	poi_spur_068	route_022	15	1	899	903	-1503	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_068	route_023	17	1	899	904	-1503	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_068	route_033	13	0	899	902	-1502	-1499	overlap	899	-1501	899	-1501
+path_contact	poi_spur_069	route_010	15	0	-1802	-1799	2047	2051	overlap	-1802	2048	-1802	2048
+path_contact	poi_spur_069	route_011	17	1	-1802	-1799	2045	2051	overlap	-1802	2047	-1802	2047
+path_contact	poi_spur_070	route_028	14	1	899	903	1499	1503	overlap	899	1499	899	1499
+path_contact	poi_spur_070	route_029	16	1	899	904	1499	1503	overlap	899	1499	899	1499
+path_contact	poi_spur_070	route_039	12	0	899	902	1499	1502	overlap	899	1499	899	1499
+path_contact	poi_spur_071	poi_spur_072	10	0	-1	1	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_071	route_006	14	1	-3	1	-701	-697	overlap	-2	-699	-2	-699
+path_contact	poi_spur_071	route_032	13	1	-3	1	-701	-698	overlap	-2	-699	-2	-699
+path_contact	poi_spur_071	route_035	14	0	-3	1	-701	-698	overlap	-3	-698	-3	-698
+path_contact	poi_spur_071	route_036	12	0	-2	1	-701	-698	overlap	-2	-699	-2	-699
+path_contact	poi_spur_071	route_045	20	0	-5	1	-701	-695	overlap	-5	-695	-5	-695
+path_contact	poi_spur_071	route_046	12	0	-2	1	-701	-698	overlap	-2	-699	-2	-699
+path_contact	poi_spur_072	route_006	14	1	-1	3	-701	-697	overlap	-1	-701	-1	-701
+path_contact	poi_spur_072	route_032	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_072	route_035	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_072	route_036	14	0	-1	3	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_072	route_045	12	0	-1	2	-701	-698	overlap	-1	-701	-1	-701
+path_contact	poi_spur_072	route_046	20	0	-1	5	-701	-695	overlap	-1	-701	-1	-701
+path_contact	poi_spur_073	poi_spur_074	10	1	-1	1	697	701	overlap	-1	699	-1	699
+path_contact	poi_spur_073	route_015	15	0	-2	1	697	701	overlap	-2	698	-2	698
+path_contact	poi_spur_073	route_038	12	0	-2	1	698	701	overlap	-2	699	-2	699
+path_contact	poi_spur_073	route_041	13	1	-3	1	697	701	overlap	-2	698	-2	698
+path_contact	poi_spur_073	route_042	12	0	-2	1	698	701	overlap	-2	699	-2	699
+path_contact	poi_spur_073	route_051	17	3	-5	1	694	701	overlap	-3	696	-3	696
+path_contact	poi_spur_073	route_052	12	1	-2	1	697	701	overlap	-2	699	-2	699
+path_contact	poi_spur_074	route_015	14	1	-1	3	697	701	overlap	-1	699	-1	699
+path_contact	poi_spur_074	route_038	12	0	-1	2	698	701	overlap	-1	699	-1	699
+path_contact	poi_spur_074	route_041	12	0	-1	2	698	701	overlap	-1	699	-1	699
+path_contact	poi_spur_074	route_042	12	0	-1	2	698	701	overlap	-1	699	-1	699
+path_contact	poi_spur_074	route_051	12	0	-1	2	698	701	overlap	-1	699	-1	699
+path_contact	poi_spur_074	route_052	20	2	-1	7	694	701	overlap	-1	699	-1	699
+path_contact	poi_spur_076	poi_spur_077	9	0	-2001	-1999	-1	1	overlap	-2001	-1	-2001	-1
+path_contact	poi_spur_076	route_043	12	0	-2002	-1999	-2	1	overlap	-2002	-1	-2002	-1
+path_contact	poi_spur_076	route_049	12	0	-2002	-1999	-2	1	overlap	-2002	-1	-2002	-1
+path_contact	poi_spur_076	route_055	9	0	-2001	-1999	-1	1	overlap	-2001	-1	-2001	-1
+path_contact	poi_spur_077	route_043	13	1	-2001	-1997	-1	2	overlap	-2001	-1	-2001	-1
+path_contact	poi_spur_077	route_049	17	3	-2001	-1994	-1	4	overlap	-2001	-1	-2001	-1
+path_contact	poi_spur_077	route_055	16	4	-2001	-1991	-1	1	overlap	-2001	-1	-2001	-1
+path_contact	poi_spur_078	poi_spur_079	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_078	poi_spur_080	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_078	route_044	13	2	-754	-749	-3	1	overlap	-753	-1	-753	-1
+path_contact	poi_spur_078	route_045	12	0	-752	-749	-1	1	overlap	-752	-1	-752	-1
+path_contact	poi_spur_078	route_050	33	4	-767	-749	-2	1	overlap	-763	-1	-763	-1
+path_contact	poi_spur_078	route_051	12	0	-752	-749	-1	1	overlap	-752	-1	-752	-1
+path_contact	poi_spur_078	route_055	19	3	-761	-749	-4	1	overlap	-757	-2	-757	-2
+path_contact	poi_spur_078	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	poi_spur_080	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	route_044	12	0	-751	-749	-1	2	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	route_045	12	0	-751	-749	-1	2	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	route_050	12	1	-752	-749	-1	3	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	route_051	26	3	-752	-749	-1	13	overlap	-752	3	-752	3
+path_contact	poi_spur_079	route_055	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_079	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_044	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_045	13	2	-751	-746	-3	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_050	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_051	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_055	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_080	route_056	21	1	-751	-740	-1	1	overlap	-751	-1	-751	-1
+path_contact	poi_spur_081	poi_spur_082	9	0	749	751	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_081	poi_spur_083	9	0	749	751	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_081	route_046	29	1	737	751	-1	2	overlap	738	1	738	1
+path_contact	poi_spur_081	route_047	12	0	748	751	-1	1	overlap	748	-1	748	-1
+path_contact	poi_spur_081	route_052	12	1	747	751	-1	2	overlap	748	-1	748	-1
+path_contact	poi_spur_081	route_053	12	0	748	751	-1	1	overlap	748	-1	748	-1
+path_contact	poi_spur_081	route_056	86	17	683	751	-1	12	overlap	698	9	698	9
+path_contact	poi_spur_081	route_057	9	0	749	751	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_082	poi_spur_083	9	1	749	752	-2	1	overlap	749	-1	749	-1
+path_contact	poi_spur_082	route_046	12	1	749	752	-2	1	overlap	749	-2	749	-2
+path_contact	poi_spur_082	route_047	13	0	749	752	-2	1	overlap	749	-2	749	-2
+path_contact	poi_spur_082	route_052	12	1	749	752	-2	1	overlap	749	-2	749	-2
+path_contact	poi_spur_082	route_053	12	1	749	752	-2	1	overlap	749	-2	749	-2
+path_contact	poi_spur_082	route_056	9	0	749	751	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_082	route_057	11	1	749	753	-3	1	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_046	12	0	749	752	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_047	32	2	749	765	-1	2	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_052	12	0	749	752	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_053	13	2	749	754	-1	3	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_056	9	0	749	751	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_083	route_057	13	2	749	755	-1	1	overlap	749	-1	749	-1
+path_contact	poi_spur_084	poi_spur_085	9	0	1999	2001	-1	1	overlap	1999	-1	1999	-1
+path_contact	poi_spur_084	route_048	12	0	1998	2001	-2	1	overlap	1998	-1	1998	-1
+path_contact	poi_spur_084	route_054	12	0	1998	2001	-2	1	overlap	1998	-1	1998	-1
+path_contact	poi_spur_084	route_057	12	1	1996	2001	-1	1	overlap	1997	0	1997	0
+path_contact	poi_spur_085	route_048	12	1	1999	2003	-1	2	overlap	1999	-1	1999	-1
+path_contact	poi_spur_085	route_054	23	5	1999	2009	-1	8	overlap	1999	-1	1999	-1
+path_contact	poi_spur_085	route_057	9	0	1999	2001	-1	1	overlap	1999	-1	1999	-1
+path_contact	route_001	route_002	37	0	-1803	-1797	-2053	-2047	overlap	-1803	-2051	-1803	-2051
+path_contact	route_002	route_003	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+path_contact	route_002	route_019	50	0	-1805	-1797	-1505	-1497	overlap	-1805	-1505	-1805	-1505
+path_contact	route_002	route_020	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+path_contact	route_003	route_019	40	0	-1804	-1797	-1503	-1497	overlap	-1804	-1499	-1804	-1499
+path_contact	route_003	route_020	40	0	-1803	-1797	-1503	-1496	overlap	-1803	-1501	-1803	-1501
+path_contact	route_003	route_031	31	1	-1803	-1798	-706	-698	overlap	-1803	-701	-1803	-701
+path_contact	route_003	route_035	46	3	-1802	-1792	-710	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_003	route_043	26	0	-1802	-1798	-702	-697	overlap	-1802	-701	-1802	-701
+path_contact	route_003	route_044	26	0	-1802	-1797	-702	-697	overlap	-1802	-701	-1802	-701
+path_contact	route_004	route_005	38	0	-3	3	-2053	-2047	overlap	-3	-2051	-3	-2051
+path_contact	route_005	route_006	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+path_contact	route_005	route_021	40	0	-4	3	-1503	-1497	overlap	-4	-1502	-4	-1502
+path_contact	route_005	route_022	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+path_contact	route_006	route_021	50	0	-5	3	-1503	-1495	overlap	-5	-1496	-5	-1496
+path_contact	route_006	route_022	40	0	-3	3	-1503	-1496	overlap	-3	-1501	-3	-1501
+path_contact	route_006	route_032	26	1	-3	2	-703	-698	overlap	-3	-701	-3	-701
+path_contact	route_006	route_035	26	0	-3	2	-702	-698	overlap	-3	-701	-3	-701
+path_contact	route_006	route_036	30	1	-2	5	-704	-698	overlap	-2	-701	-2	-701
+path_contact	route_006	route_045	26	0	-3	2	-702	-697	overlap	-3	-701	-3	-701
+path_contact	route_006	route_046	26	1	-2	4	-702	-697	overlap	-2	-701	-2	-701
+path_contact	route_007	route_008	37	0	1797	1803	-2053	-2047	overlap	1797	-2051	1797	-2051
+path_contact	route_008	route_009	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+path_contact	route_008	route_023	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+path_contact	route_008	route_024	50	0	1797	1805	-1505	-1497	overlap	1797	-1501	1797	-1501
+path_contact	route_009	route_023	50	0	1795	1803	-1503	-1495	overlap	1795	-1496	1795	-1496
+path_contact	route_009	route_024	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+path_contact	route_009	route_033	28	0	1797	1802	-704	-698	overlap	1797	-701	1797	-701
+path_contact	route_009	route_034	66	1	1798	1810	-716	-698	overlap	1798	-701	1798	-701
+path_contact	route_009	route_036	27	1	1797	1802	-704	-698	overlap	1797	-701	1797	-701
+path_contact	route_009	route_047	25	1	1797	1802	-702	-697	overlap	1797	-701	1797	-701
+path_contact	route_009	route_048	26	0	1798	1803	-702	-697	overlap	1798	-701	1798	-701
+path_contact	route_010	route_011	37	0	-1803	-1797	2047	2053	overlap	-1803	2049	-1803	2049
+path_contact	route_011	route_012	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+path_contact	route_011	route_025	40	0	-1804	-1797	1497	1503	overlap	-1804	1501	-1804	1501
+path_contact	route_011	route_026	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+path_contact	route_012	route_025	40	0	-1803	-1797	1496	1503	overlap	-1803	1499	-1803	1499
+path_contact	route_012	route_026	50	0	-1803	-1795	1495	1503	overlap	-1803	1499	-1803	1499
+path_contact	route_012	route_037	31	1	-1803	-1798	698	706	overlap	-1803	700	-1803	700
+path_contact	route_012	route_041	46	3	-1802	-1792	698	710	overlap	-1802	699	-1802	699
+path_contact	route_012	route_049	26	0	-1803	-1798	697	702	overlap	-1803	699	-1803	699
+path_contact	route_012	route_050	26	1	-1802	-1796	697	702	overlap	-1802	699	-1802	699
+path_contact	route_013	route_014	37	0	-3	3	2047	2053	overlap	-3	2049	-3	2049
+path_contact	route_014	route_015	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+path_contact	route_014	route_027	50	0	-5	3	1497	1505	overlap	-5	1504	-5	1504
+path_contact	route_014	route_028	40	0	-3	3	1497	1504	overlap	-3	1499	-3	1499
+path_contact	route_015	route_027	40	0	-4	3	1497	1503	overlap	-4	1498	-4	1498
+path_contact	route_015	route_028	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+path_contact	route_015	route_038	28	0	-3	2	698	704	overlap	-3	700	-3	700
+path_contact	route_015	route_041	26	0	-3	2	698	702	overlap	-3	699	-3	699
+path_contact	route_015	route_042	46	3	-2	8	698	710	overlap	-2	699	-2	699
+path_contact	route_015	route_051	26	0	-3	2	697	702	overlap	-3	699	-3	699
+path_contact	route_015	route_052	26	1	-2	4	697	702	overlap	-2	699	-2	699
+path_contact	route_016	route_017	48	1	1797	1807	2046	2053	overlap	1797	2049	1797	2049
+path_contact	route_017	route_018	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+path_contact	route_017	route_029	50	0	1795	1803	1497	1505	overlap	1795	1504	1795	1504
+path_contact	route_017	route_030	40	0	1797	1803	1497	1504	overlap	1797	1499	1797	1499
+path_contact	route_018	route_029	40	0	1796	1803	1497	1503	overlap	1796	1498	1796	1498
+path_contact	route_018	route_030	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+path_contact	route_018	route_039	26	1	1797	1802	698	703	overlap	1797	699	1797	699
+path_contact	route_018	route_040	33	0	1798	1805	698	704	overlap	1798	699	1798	699
+path_contact	route_018	route_042	26	0	1797	1802	698	702	overlap	1797	699	1797	699
+path_contact	route_018	route_053	26	0	1797	1802	697	702	overlap	1797	699	1797	699
+path_contact	route_018	route_054	26	1	1798	1804	697	702	overlap	1798	699	1798	699
+path_contact	route_019	route_020	37	0	-1803	-1797	-1503	-1497	overlap	-1803	-1501	-1803	-1501
+path_contact	route_019	route_031	27	1	-2403	-2398	-1502	-1495	overlap	-2403	-1499	-2403	-1499
+path_contact	route_020	route_021	37	0	-903	-897	-1503	-1497	overlap	-903	-1501	-903	-1501
+path_contact	route_020	route_032	26	0	-902	-897	-1502	-1497	overlap	-902	-1501	-902	-1501
+path_contact	route_021	route_022	37	0	-3	3	-1503	-1497	overlap	-3	-1501	-3	-1501
+path_contact	route_021	route_032	28	1	-902	-896	-1502	-1497	overlap	-902	-1501	-902	-1501
+path_contact	route_022	route_023	37	0	897	903	-1503	-1497	overlap	897	-1501	897	-1501
+path_contact	route_022	route_033	28	1	896	902	-1502	-1497	overlap	897	-1499	897	-1499
+path_contact	route_023	route_024	37	0	1797	1803	-1503	-1497	overlap	1797	-1501	1797	-1501
+path_contact	route_023	route_033	26	0	897	902	-1502	-1497	overlap	897	-1499	897	-1499
+path_contact	route_024	route_034	48	2	2392	2402	-1502	-1489	overlap	2393	-1491	2393	-1491
+path_contact	route_025	route_026	37	0	-1803	-1797	1497	1503	overlap	-1803	1499	-1803	1499
+path_contact	route_025	route_037	26	0	-2403	-2398	1497	1502	overlap	-2403	1499	-2403	1499
+path_contact	route_026	route_027	37	0	-903	-897	1497	1503	overlap	-903	1499	-903	1499
+path_contact	route_026	route_038	28	1	-904	-898	1497	1502	overlap	-903	1498	-903	1498
+path_contact	route_027	route_028	37	0	-3	3	1497	1503	overlap	-3	1499	-3	1499
+path_contact	route_027	route_038	26	0	-903	-898	1497	1502	overlap	-903	1499	-903	1499
+path_contact	route_028	route_029	37	0	897	903	1497	1503	overlap	897	1499	897	1499
+path_contact	route_028	route_039	26	0	898	903	1497	1502	overlap	898	1499	898	1499
+path_contact	route_029	route_030	37	0	1797	1803	1497	1503	overlap	1797	1499	1797	1499
+path_contact	route_029	route_039	34	0	898	905	1495	1502	overlap	898	1499	898	1499
+path_contact	route_030	route_040	48	2	2392	2402	1489	1502	overlap	2393	1491	2393	1491
+path_contact	route_031	route_035	22	1	-1802	-1798	-704	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_031	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_031	route_044	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_032	route_035	117	9	-50	2	-708	-698	overlap	-40	-706	-40	-706
+path_contact	route_032	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_032	route_045	31	0	-7	2	-702	-698	overlap	-7	-699	-7	-699
+path_contact	route_032	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_033	route_034	22	0	1798	1802	-703	-698	overlap	1798	-701	1798	-701
+path_contact	route_033	route_036	72	6	1777	1802	-714	-698	overlap	1781	-711	1781	-711
+path_contact	route_033	route_047	26	0	1795	1802	-702	-698	overlap	1795	-701	1795	-701
+path_contact	route_033	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	route_034	route_036	21	1	1798	1802	-703	-698	overlap	1798	-701	1798	-701
+path_contact	route_034	route_047	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	route_034	route_048	22	0	1798	1803	-702	-698	overlap	1798	-701	1798	-701
+path_contact	route_035	route_036	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_035	route_043	21	0	-1802	-1798	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_035	route_044	22	0	-1802	-1797	-702	-698	overlap	-1802	-701	-1802	-701
+path_contact	route_035	route_045	34	2	-9	2	-702	-698	overlap	-7	-699	-7	-699
+path_contact	route_035	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_036	route_045	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_036	route_046	32	2	-2	9	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_036	route_047	29	2	1792	1802	-702	-698	overlap	1794	-700	1794	-700
+path_contact	route_036	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	route_037	route_041	22	1	-1802	-1798	698	704	overlap	-1802	699	-1802	699
+path_contact	route_037	route_049	22	0	-1803	-1798	698	702	overlap	-1803	700	-1803	700
+path_contact	route_037	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	route_038	route_041	35	1	-9	2	698	704	overlap	-8	703	-8	703
+path_contact	route_038	route_042	22	0	-2	2	698	703	overlap	-2	699	-2	699
+path_contact	route_038	route_051	24	1	-5	2	698	702	overlap	-4	700	-4	700
+path_contact	route_038	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	route_039	route_040	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	route_039	route_042	117	9	1750	1802	698	708	overlap	1760	706	1760	706
+path_contact	route_039	route_053	25	0	1796	1802	698	702	overlap	1796	699	1796	699
+path_contact	route_039	route_054	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	route_040	route_042	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	route_040	route_053	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	route_040	route_054	27	0	1798	1805	698	702	overlap	1798	699	1798	699
+path_contact	route_041	route_042	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	route_041	route_049	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	route_041	route_050	24	1	-1802	-1795	698	702	overlap	-1802	699	-1802	699
+path_contact	route_041	route_051	34	2	-9	2	698	702	overlap	-7	699	-7	699
+path_contact	route_041	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	route_042	route_051	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	route_042	route_052	23	1	-2	4	698	702	overlap	-2	699	-2	699
+path_contact	route_042	route_053	27	1	1795	1802	697	702	overlap	1796	698	1796	698
+path_contact	route_042	route_054	21	0	1798	1802	698	702	overlap	1798	699	1798	699
+path_contact	route_043	route_044	30	1	-1802	-1797	-702	-693	overlap	-1802	-701	-1802	-701
+path_contact	route_043	route_049	22	0	-2002	-1997	-2	2	overlap	-2002	-1	-2002	-1
+path_contact	route_043	route_055	15	1	-2001	-1995	-3	1	overlap	-2001	-1	-2001	-1
+path_contact	route_044	route_045	26	0	-752	-748	-5	2	overlap	-752	-1	-752	-1
+path_contact	route_044	route_050	24	1	-754	-748	-3	2	overlap	-753	-2	-753	-2
+path_contact	route_044	route_051	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+path_contact	route_044	route_055	18	0	-755	-749	-4	1	overlap	-755	-4	-755	-4
+path_contact	route_044	route_056	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	route_045	route_046	21	0	-2	2	-702	-698	overlap	-2	-701	-2	-701
+path_contact	route_045	route_050	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+path_contact	route_045	route_051	21	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+path_contact	route_045	route_055	12	0	-752	-749	-2	1	overlap	-752	-1	-752	-1
+path_contact	route_045	route_056	13	0	-751	-747	-1	1	overlap	-751	-1	-751	-1
+path_contact	route_046	route_047	21	0	748	752	-2	2	overlap	748	-1	748	-1
+path_contact	route_046	route_052	22	0	748	752	-2	2	overlap	748	-1	748	-1
+path_contact	route_046	route_053	21	0	748	752	-2	2	overlap	748	-1	748	-1
+path_contact	route_046	route_056	33	4	733	751	-1	2	overlap	737	1	737	1
+path_contact	route_046	route_057	12	0	749	752	-2	1	overlap	749	-1	749	-1
+path_contact	route_047	route_048	21	0	1798	1802	-702	-698	overlap	1798	-701	1798	-701
+path_contact	route_047	route_052	22	0	748	752	-2	2	overlap	748	-1	748	-1
+path_contact	route_047	route_053	24	1	748	754	-2	3	overlap	748	-1	748	-1
+path_contact	route_047	route_056	12	0	748	751	-1	1	overlap	748	-1	748	-1
+path_contact	route_047	route_057	47	3	749	1064	-136	1	overlap	749	-1	749	-1
+path_contact	route_048	route_054	22	0	1998	2003	-2	2	overlap	1998	-1	1998	-1
+path_contact	route_048	route_057	12	0	1998	2001	-1	1	overlap	1998	-1	1998	-1
+path_contact	route_049	route_050	21	0	-1802	-1798	698	702	overlap	-1802	699	-1802	699
+path_contact	route_049	route_055	14	0	-2001	-1997	-1	1	overlap	-2001	-1	-2001	-1
+path_contact	route_050	route_051	22	0	-752	-748	-2	2	overlap	-752	-1	-752	-1
+path_contact	route_050	route_055	19	2	-757	-749	-2	1	overlap	-755	-1	-755	-1
+path_contact	route_050	route_056	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	route_051	route_052	21	0	-2	2	698	702	overlap	-2	699	-2	699
+path_contact	route_051	route_055	12	0	-752	-749	-2	1	overlap	-752	-1	-752	-1
+path_contact	route_051	route_056	12	0	-751	-748	-1	1	overlap	-751	-1	-751	-1
+path_contact	route_052	route_053	31	2	748	752	-2	8	overlap	748	-1	748	-1
+path_contact	route_052	route_056	12	0	748	751	-1	1	overlap	748	-1	748	-1
+path_contact	route_052	route_057	12	0	749	752	-2	1	overlap	749	-1	749	-1
+path_contact	route_053	route_054	22	0	1798	1802	697	702	overlap	1798	699	1798	699
+path_contact	route_053	route_056	12	0	748	751	-1	1	overlap	748	-1	748	-1
+path_contact	route_053	route_057	12	1	749	753	-2	1	overlap	749	-1	749	-1
+path_contact	route_054	route_057	12	0	1998	2001	-1	1	overlap	1998	-1	1998	-1
+path_contact	route_055	route_056	9	0	-751	-749	-1	1	overlap	-751	-1	-751	-1
+path_contact	route_056	route_057	9	0	749	751	-1	1	overlap	749	-1	749	-1
+final_path_contact_roster_sha256	476cd344986e160f597408f1c426d79c733a2727cd939455f7160e05eb431a24
 validator	housing	grug_wp40_simple_map_r2_housing_result_v1	true	0
 housing_metric	conflict_radius	110
 housing_metric	conflict_rule	candidate_expanded_aabb_v1
@@ -312,248 +1441,319 @@ housing_metric	lattice_origins_per_mask	12321
 housing_metric	mask_count	10
 housing_metric	order_count_per_mask	23
 housing_metric	tie_break	z_then_x
-housing_metric	total_eligible_centers	1092289
+housing_metric	total_eligible_centers	1228086
 housing_metric	total_lattice_origins	123210
 housing_metric	total_order_runs	230
 housing_metric	violation_count	0
-housing_mask	housing_elandor_copperfell	2	90517	4	9	6	10	4	10	14
-housing_order	housing_elandor_copperfell	minimum_conflict_degree	graph_degree	9
-housing_order	housing_elandor_copperfell	maximum_conflict_degree	graph_degree	6
-housing_order	housing_elandor_copperfell	edge_biased	nearest_bias	8
-housing_order	housing_elandor_copperfell	route_biased	nearest_bias	10
-housing_order	housing_elandor_copperfell	poi_biased	nearest_bias	9
-housing_order	housing_elandor_copperfell	row_major	coordinate	10
-housing_order	housing_elandor_copperfell	reverse_row_major	coordinate	10
-housing_order	housing_elandor_copperfell	housing-pack-00	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-01	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-02	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-03	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-04	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-05	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-06	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-07	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-08	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-09	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-10	canonical_hash_word_0	7
-housing_order	housing_elandor_copperfell	housing-pack-11	canonical_hash_word_0	8
-housing_order	housing_elandor_copperfell	housing-pack-12	canonical_hash_word_0	6
-housing_order	housing_elandor_copperfell	housing-pack-13	canonical_hash_word_0	8
-housing_order	housing_elandor_copperfell	housing-pack-14	canonical_hash_word_0	8
-housing_order	housing_elandor_copperfell	housing-pack-15	canonical_hash_word_0	8
-housing_mask	housing_elandor_goldmead	7	92390	4	13	8	15	4	15	18
-housing_order	housing_elandor_goldmead	minimum_conflict_degree	graph_degree	13
-housing_order	housing_elandor_goldmead	maximum_conflict_degree	graph_degree	10
-housing_order	housing_elandor_goldmead	edge_biased	nearest_bias	14
-housing_order	housing_elandor_goldmead	route_biased	nearest_bias	13
-housing_order	housing_elandor_goldmead	poi_biased	nearest_bias	9
-housing_order	housing_elandor_goldmead	row_major	coordinate	14
-housing_order	housing_elandor_goldmead	reverse_row_major	coordinate	15
-housing_order	housing_elandor_goldmead	housing-pack-00	canonical_hash_word_0	9
-housing_order	housing_elandor_goldmead	housing-pack-01	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-02	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-03	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-04	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-05	canonical_hash_word_0	11
-housing_order	housing_elandor_goldmead	housing-pack-06	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-07	canonical_hash_word_0	9
-housing_order	housing_elandor_goldmead	housing-pack-08	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-09	canonical_hash_word_0	8
-housing_order	housing_elandor_goldmead	housing-pack-10	canonical_hash_word_0	10
-housing_order	housing_elandor_goldmead	housing-pack-11	canonical_hash_word_0	11
-housing_order	housing_elandor_goldmead	housing-pack-12	canonical_hash_word_0	9
-housing_order	housing_elandor_goldmead	housing-pack-13	canonical_hash_word_0	9
-housing_order	housing_elandor_goldmead	housing-pack-14	canonical_hash_word_0	9
-housing_order	housing_elandor_goldmead	housing-pack-15	canonical_hash_word_0	9
-housing_mask	housing_elandor_starbough	12	89799	4	9	5	10	4	10	14
-housing_order	housing_elandor_starbough	minimum_conflict_degree	graph_degree	9
-housing_order	housing_elandor_starbough	maximum_conflict_degree	graph_degree	6
-housing_order	housing_elandor_starbough	edge_biased	nearest_bias	8
-housing_order	housing_elandor_starbough	route_biased	nearest_bias	9
-housing_order	housing_elandor_starbough	poi_biased	nearest_bias	9
-housing_order	housing_elandor_starbough	row_major	coordinate	10
-housing_order	housing_elandor_starbough	reverse_row_major	coordinate	9
-housing_order	housing_elandor_starbough	housing-pack-00	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-01	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-02	canonical_hash_word_0	8
-housing_order	housing_elandor_starbough	housing-pack-03	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-04	canonical_hash_word_0	9
-housing_order	housing_elandor_starbough	housing-pack-05	canonical_hash_word_0	8
-housing_order	housing_elandor_starbough	housing-pack-06	canonical_hash_word_0	8
-housing_order	housing_elandor_starbough	housing-pack-07	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-08	canonical_hash_word_0	8
-housing_order	housing_elandor_starbough	housing-pack-09	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-10	canonical_hash_word_0	8
-housing_order	housing_elandor_starbough	housing-pack-11	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-12	canonical_hash_word_0	6
-housing_order	housing_elandor_starbough	housing-pack-13	canonical_hash_word_0	6
-housing_order	housing_elandor_starbough	housing-pack-14	canonical_hash_word_0	7
-housing_order	housing_elandor_starbough	housing-pack-15	canonical_hash_word_0	5
-housing_mask	housing_elandor_whitebridge	9	104802	4	13	11	18	4	18	31
-housing_order	housing_elandor_whitebridge	minimum_conflict_degree	graph_degree	18
-housing_order	housing_elandor_whitebridge	maximum_conflict_degree	graph_degree	11
-housing_order	housing_elandor_whitebridge	edge_biased	nearest_bias	17
-housing_order	housing_elandor_whitebridge	route_biased	nearest_bias	16
-housing_order	housing_elandor_whitebridge	poi_biased	nearest_bias	16
-housing_order	housing_elandor_whitebridge	row_major	coordinate	17
-housing_order	housing_elandor_whitebridge	reverse_row_major	coordinate	18
-housing_order	housing_elandor_whitebridge	housing-pack-00	canonical_hash_word_0	13
-housing_order	housing_elandor_whitebridge	housing-pack-01	canonical_hash_word_0	13
-housing_order	housing_elandor_whitebridge	housing-pack-02	canonical_hash_word_0	13
-housing_order	housing_elandor_whitebridge	housing-pack-03	canonical_hash_word_0	13
-housing_order	housing_elandor_whitebridge	housing-pack-04	canonical_hash_word_0	12
-housing_order	housing_elandor_whitebridge	housing-pack-05	canonical_hash_word_0	14
-housing_order	housing_elandor_whitebridge	housing-pack-06	canonical_hash_word_0	14
-housing_order	housing_elandor_whitebridge	housing-pack-07	canonical_hash_word_0	14
-housing_order	housing_elandor_whitebridge	housing-pack-08	canonical_hash_word_0	13
-housing_order	housing_elandor_whitebridge	housing-pack-09	canonical_hash_word_0	11
-housing_order	housing_elandor_whitebridge	housing-pack-10	canonical_hash_word_0	12
-housing_order	housing_elandor_whitebridge	housing-pack-11	canonical_hash_word_0	11
-housing_order	housing_elandor_whitebridge	housing-pack-12	canonical_hash_word_0	11
-housing_order	housing_elandor_whitebridge	housing-pack-13	canonical_hash_word_0	11
-housing_order	housing_elandor_whitebridge	housing-pack-14	canonical_hash_word_0	12
-housing_order	housing_elandor_whitebridge	housing-pack-15	canonical_hash_word_0	12
-housing_mask	housing_elandor_lorindor	14	130903	5	14	12	19	5	19	34
-housing_order	housing_elandor_lorindor	minimum_conflict_degree	graph_degree	19
-housing_order	housing_elandor_lorindor	maximum_conflict_degree	graph_degree	14
-housing_order	housing_elandor_lorindor	edge_biased	nearest_bias	19
-housing_order	housing_elandor_lorindor	route_biased	nearest_bias	18
-housing_order	housing_elandor_lorindor	poi_biased	nearest_bias	18
-housing_order	housing_elandor_lorindor	row_major	coordinate	19
-housing_order	housing_elandor_lorindor	reverse_row_major	coordinate	18
-housing_order	housing_elandor_lorindor	housing-pack-00	canonical_hash_word_0	12
-housing_order	housing_elandor_lorindor	housing-pack-01	canonical_hash_word_0	15
-housing_order	housing_elandor_lorindor	housing-pack-02	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-03	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-04	canonical_hash_word_0	13
-housing_order	housing_elandor_lorindor	housing-pack-05	canonical_hash_word_0	15
-housing_order	housing_elandor_lorindor	housing-pack-06	canonical_hash_word_0	13
-housing_order	housing_elandor_lorindor	housing-pack-07	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-08	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-09	canonical_hash_word_0	13
-housing_order	housing_elandor_lorindor	housing-pack-10	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-11	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-12	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-13	canonical_hash_word_0	13
-housing_order	housing_elandor_lorindor	housing-pack-14	canonical_hash_word_0	14
-housing_order	housing_elandor_lorindor	housing-pack-15	canonical_hash_word_0	14
-housing_mask	housing_kragmar_mournfen	18	93185	5	10	6	11	5	11	14
-housing_order	housing_kragmar_mournfen	minimum_conflict_degree	graph_degree	11
-housing_order	housing_kragmar_mournfen	maximum_conflict_degree	graph_degree	6
-housing_order	housing_kragmar_mournfen	edge_biased	nearest_bias	10
-housing_order	housing_kragmar_mournfen	route_biased	nearest_bias	9
-housing_order	housing_kragmar_mournfen	poi_biased	nearest_bias	10
-housing_order	housing_kragmar_mournfen	row_major	coordinate	10
-housing_order	housing_kragmar_mournfen	reverse_row_major	coordinate	11
-housing_order	housing_kragmar_mournfen	housing-pack-00	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-01	canonical_hash_word_0	7
-housing_order	housing_kragmar_mournfen	housing-pack-02	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-03	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-04	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-05	canonical_hash_word_0	7
-housing_order	housing_kragmar_mournfen	housing-pack-06	canonical_hash_word_0	7
-housing_order	housing_kragmar_mournfen	housing-pack-07	canonical_hash_word_0	8
-housing_order	housing_kragmar_mournfen	housing-pack-08	canonical_hash_word_0	8
-housing_order	housing_kragmar_mournfen	housing-pack-09	canonical_hash_word_0	8
-housing_order	housing_kragmar_mournfen	housing-pack-10	canonical_hash_word_0	9
-housing_order	housing_kragmar_mournfen	housing-pack-11	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-12	canonical_hash_word_0	7
-housing_order	housing_kragmar_mournfen	housing-pack-13	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-14	canonical_hash_word_0	6
-housing_order	housing_kragmar_mournfen	housing-pack-15	canonical_hash_word_0	6
-housing_mask	housing_kragmar_redtusk	23	97463	4	15	9	16	4	16	18
-housing_order	housing_kragmar_redtusk	minimum_conflict_degree	graph_degree	15
-housing_order	housing_kragmar_redtusk	maximum_conflict_degree	graph_degree	10
-housing_order	housing_kragmar_redtusk	edge_biased	nearest_bias	16
-housing_order	housing_kragmar_redtusk	route_biased	nearest_bias	12
-housing_order	housing_kragmar_redtusk	poi_biased	nearest_bias	13
-housing_order	housing_kragmar_redtusk	row_major	coordinate	14
-housing_order	housing_kragmar_redtusk	reverse_row_major	coordinate	16
-housing_order	housing_kragmar_redtusk	housing-pack-00	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-01	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-02	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-03	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-04	canonical_hash_word_0	11
-housing_order	housing_kragmar_redtusk	housing-pack-05	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-06	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-07	canonical_hash_word_0	13
-housing_order	housing_kragmar_redtusk	housing-pack-08	canonical_hash_word_0	9
-housing_order	housing_kragmar_redtusk	housing-pack-09	canonical_hash_word_0	9
-housing_order	housing_kragmar_redtusk	housing-pack-10	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-11	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-12	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-13	canonical_hash_word_0	9
-housing_order	housing_kragmar_redtusk	housing-pack-14	canonical_hash_word_0	10
-housing_order	housing_kragmar_redtusk	housing-pack-15	canonical_hash_word_0	11
-housing_mask	housing_kragmar_raincall	28	84404	4	8	4	9	4	9	14
-housing_order	housing_kragmar_raincall	minimum_conflict_degree	graph_degree	8
-housing_order	housing_kragmar_raincall	maximum_conflict_degree	graph_degree	4
-housing_order	housing_kragmar_raincall	edge_biased	nearest_bias	8
-housing_order	housing_kragmar_raincall	route_biased	nearest_bias	8
-housing_order	housing_kragmar_raincall	poi_biased	nearest_bias	8
-housing_order	housing_kragmar_raincall	row_major	coordinate	9
-housing_order	housing_kragmar_raincall	reverse_row_major	coordinate	9
-housing_order	housing_kragmar_raincall	housing-pack-00	canonical_hash_word_0	8
-housing_order	housing_kragmar_raincall	housing-pack-01	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-02	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-03	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-04	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-05	canonical_hash_word_0	7
-housing_order	housing_kragmar_raincall	housing-pack-06	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-07	canonical_hash_word_0	5
-housing_order	housing_kragmar_raincall	housing-pack-08	canonical_hash_word_0	8
-housing_order	housing_kragmar_raincall	housing-pack-09	canonical_hash_word_0	7
-housing_order	housing_kragmar_raincall	housing-pack-10	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-11	canonical_hash_word_0	7
-housing_order	housing_kragmar_raincall	housing-pack-12	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-13	canonical_hash_word_0	6
-housing_order	housing_kragmar_raincall	housing-pack-14	canonical_hash_word_0	8
-housing_order	housing_kragmar_raincall	housing-pack-15	canonical_hash_word_0	6
-housing_mask	housing_kragmar_speargrass	25	186760	8	22	14	27	8	27	42
-housing_order	housing_kragmar_speargrass	minimum_conflict_degree	graph_degree	27
-housing_order	housing_kragmar_speargrass	maximum_conflict_degree	graph_degree	14
-housing_order	housing_kragmar_speargrass	edge_biased	nearest_bias	26
-housing_order	housing_kragmar_speargrass	route_biased	nearest_bias	25
-housing_order	housing_kragmar_speargrass	poi_biased	nearest_bias	26
-housing_order	housing_kragmar_speargrass	row_major	coordinate	26
-housing_order	housing_kragmar_speargrass	reverse_row_major	coordinate	25
-housing_order	housing_kragmar_speargrass	housing-pack-00	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-01	canonical_hash_word_0	20
-housing_order	housing_kragmar_speargrass	housing-pack-02	canonical_hash_word_0	18
-housing_order	housing_kragmar_speargrass	housing-pack-03	canonical_hash_word_0	17
-housing_order	housing_kragmar_speargrass	housing-pack-04	canonical_hash_word_0	17
-housing_order	housing_kragmar_speargrass	housing-pack-05	canonical_hash_word_0	18
-housing_order	housing_kragmar_speargrass	housing-pack-06	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-07	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-08	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-09	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-10	canonical_hash_word_0	20
-housing_order	housing_kragmar_speargrass	housing-pack-11	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-12	canonical_hash_word_0	20
-housing_order	housing_kragmar_speargrass	housing-pack-13	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-14	canonical_hash_word_0	19
-housing_order	housing_kragmar_speargrass	housing-pack-15	canonical_hash_word_0	20
-housing_mask	housing_kragmar_whispering	30	122066	4	16	10	19	4	19	34
-housing_order	housing_kragmar_whispering	minimum_conflict_degree	graph_degree	19
-housing_order	housing_kragmar_whispering	maximum_conflict_degree	graph_degree	10
-housing_order	housing_kragmar_whispering	edge_biased	nearest_bias	19
-housing_order	housing_kragmar_whispering	route_biased	nearest_bias	18
-housing_order	housing_kragmar_whispering	poi_biased	nearest_bias	18
-housing_order	housing_kragmar_whispering	row_major	coordinate	18
-housing_order	housing_kragmar_whispering	reverse_row_major	coordinate	19
-housing_order	housing_kragmar_whispering	housing-pack-00	canonical_hash_word_0	13
-housing_order	housing_kragmar_whispering	housing-pack-01	canonical_hash_word_0	18
-housing_order	housing_kragmar_whispering	housing-pack-02	canonical_hash_word_0	14
-housing_order	housing_kragmar_whispering	housing-pack-03	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-04	canonical_hash_word_0	12
-housing_order	housing_kragmar_whispering	housing-pack-05	canonical_hash_word_0	16
-housing_order	housing_kragmar_whispering	housing-pack-06	canonical_hash_word_0	14
-housing_order	housing_kragmar_whispering	housing-pack-07	canonical_hash_word_0	12
-housing_order	housing_kragmar_whispering	housing-pack-08	canonical_hash_word_0	14
-housing_order	housing_kragmar_whispering	housing-pack-09	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-10	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-11	canonical_hash_word_0	16
-housing_order	housing_kragmar_whispering	housing-pack-12	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-13	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-14	canonical_hash_word_0	15
-housing_order	housing_kragmar_whispering	housing-pack-15	canonical_hash_word_0	14
-artifact_sha256	73165e1ad9e9dd03bc608b544e5906a10df2bf7b2c23779b311ad3cbdadf4f7b
+housing_mask	housing_elandor_copperfell	2	90693	4	9	6	10	4	10	14	12321	90693	102	50	77	7	maximum_conflict_degree	poi_biased
+housing_lattice_sha256	housing_elandor_copperfell	6ba69df127dde702e85b1ca9e59d3e884099ec9b2d228e47569d74e2cf0d7b17
+housing_upper_partition_sha256	housing_elandor_copperfell	9c165e5a0b423cc3dc4bf5201cf19d69bbb5202bdc2256da3aca8f28a60ed982
+housing_order	housing_elandor_copperfell	minimum_conflict_degree	graph_degree	9	ba17bfc068e8d6ee04f81fb27c6ea2fb6ed5eda80603b83497b41166bd1d1d74	-2349	-2441	-2351	-2330
+housing_order	housing_elandor_copperfell	maximum_conflict_degree	graph_degree	6	3c3ebc7be62cfd313208ac2ce242e6f6bc76d5f071e0c153acb956223a21a284	-2340	-2212	-2352	-2434
+housing_order	housing_elandor_copperfell	edge_biased	nearest_bias	8	d560181ea02fde3f6341643622535779e799bbcb3e2de91462fc1e537d049f2b	-2230	-2322	-2450	-2113
+housing_order	housing_elandor_copperfell	route_biased	nearest_bias	9	87772a9ab322bcdf57453b5b8c919f24366f1f39d88badf6bfac3f4aad96361c	-2230	-2175	-2452	-2284
+housing_order	housing_elandor_copperfell	poi_biased	nearest_bias	10	a0802cdaaa96067edff9d341fa107621613e3c5cc5b342408ed26bfbba0e9f34	-2230	-2100	-2331	-2433
+housing_order	housing_elandor_copperfell	row_major	coordinate	10	8bb3ce32e4d6d9fe3181b6cae16423ccab3e3e1812540131629896cf3b728c45	-2351	-2441	-2290	-1990
+housing_order	housing_elandor_copperfell	reverse_row_major	coordinate	10	3e0f9e6a82b65703d410d1ad72cad9ba9a598c6e6ccb414da9173121a1a1c2b2	-2349	-1959	-2402	-2403
+housing_order	housing_elandor_copperfell	housing-pack-00	canonical_hash_word_0	7	61ba54576ec18047c17ccf7be2df57cf2adb10c185cb61a9ed7f04662c808d99	-2293	-1991	-2245	-2250
+housing_order	housing_elandor_copperfell	housing-pack-01	canonical_hash_word_0	6	ab18aa559355c31c63ba562b2c67f4403177fa94fecf0af51e6c33c0e36ac080	-2274	-2019	-2413	-2013
+housing_order	housing_elandor_copperfell	housing-pack-02	canonical_hash_word_0	7	3b9b4c0442047660d3b18d6ea599a980c09e82519858b6ce21a37137ab32d7ff	-2412	-2299	-2242	-2133
+housing_order	housing_elandor_copperfell	housing-pack-03	canonical_hash_word_0	6	2e4b83e5f8706bb5e6e9b16f999b5c57f5cc4781dd39c99db3332ff8697741ec	-2374	-2233	-2312	-2073
+housing_order	housing_elandor_copperfell	housing-pack-04	canonical_hash_word_0	7	91ccafd41a1d1bb3ee6f0d8b6585a61f36e4391dd80c4148a81c29ba2e25c76e	-2421	-2101	-2385	-1982
+housing_order	housing_elandor_copperfell	housing-pack-05	canonical_hash_word_0	6	9673b65d5ca7704750142a1af6cb17d5ce1d35cd7844b39112a05dde9a975305	-2297	-2285	-2449	-2136
+housing_order	housing_elandor_copperfell	housing-pack-06	canonical_hash_word_0	7	7ddf63060cd9e2e8a9d0a9a0304544b2cdcdad954ca9c2e189ddbff5151b1c94	-2247	-2139	-2458	-2339
+housing_order	housing_elandor_copperfell	housing-pack-07	canonical_hash_word_0	6	36b3348fccf92475f1349b066b46a88b225d33b7323cff8ef1632610cd678c17	-2304	-2002	-2420	-2023
+housing_order	housing_elandor_copperfell	housing-pack-08	canonical_hash_word_0	7	6eceef68da234323c298e58e003daa2131bdcb40aa84680c2fb6ad447a79e881	-2344	-1970	-2350	-2439
+housing_order	housing_elandor_copperfell	housing-pack-09	canonical_hash_word_0	6	6d91aa996a257e1445bd08047c0c922b513e36dd7da09085f0c880dbc8e9f4d2	-2233	-2183	-2437	-2224
+housing_order	housing_elandor_copperfell	housing-pack-10	canonical_hash_word_0	7	5f1ed6b3578c144400e945914a5afda8463aad330dcc2da24d270d6a1b81f33d	-2367	-2009	-2372	-2431
+housing_order	housing_elandor_copperfell	housing-pack-11	canonical_hash_word_0	8	607a478cef11d1c4b875b5d52b8f939cfcbac9f83b3450e6a1635f599a05f77a	-2269	-2018	-2280	-2384
+housing_order	housing_elandor_copperfell	housing-pack-12	canonical_hash_word_0	6	208e1f2a252d23bac36341a2b123554f2e6893cf8967775741194402889db48c	-2293	-2375	-2438	-2159
+housing_order	housing_elandor_copperfell	housing-pack-13	canonical_hash_word_0	8	2f55306693db672ff2c91332752d1969c29ab67aed7eabfecaae6f4011934a10	-2233	-2031	-2286	-2397
+housing_order	housing_elandor_copperfell	housing-pack-14	canonical_hash_word_0	8	3b382f18362fbbe1a05857a6aaa79a0e72e2ffbf1928ec1634626a25a853993f	-2291	-2233	-2412	-2167
+housing_order	housing_elandor_copperfell	housing-pack-15	canonical_hash_word_0	8	84060b3d230c28c02cc751ded9bf813a7eada04729a0f66b18b551318476751c	-2349	-2246	-2437	-2361
+housing_mask	housing_elandor_goldmead	7	109151	6	14	9	17	6	17	20	12321	109151	84	0	81	10	housing-pack-00	reverse_row_major
+housing_lattice_sha256	housing_elandor_goldmead	0c0b7c2395df07c56c730c5e66b4d1789bb166fb9360059e23a5348818fdffda
+housing_upper_partition_sha256	housing_elandor_goldmead	8e317518fc1dbc3186c3837e8e7befd64899f895088ef1c355cb9af15a91017e
+housing_order	housing_elandor_goldmead	minimum_conflict_degree	graph_degree	15	63cad1679aefbe978036df60c75e585d612e69cd116879b27c1da3cd7cfaba07	46	-2210	-422	-2099
+housing_order	housing_elandor_goldmead	maximum_conflict_degree	graph_degree	10	6f532d78707e0af1b93b79f5f06954dd10bd121823c5e3bd551a50e4b44f40df	-361	-2070	78	-2210
+housing_order	housing_elandor_goldmead	edge_biased	nearest_bias	16	4c239b215ed72d20300bd867424999997e73d2e51144ba483ffc03fc0658be57	-333	-2210	393	-2098
+housing_order	housing_elandor_goldmead	route_biased	nearest_bias	15	d57ef63804d288f7732c601347f03548a05ee254af32d77f88ab0b0bf80f8d34	-234	-2151	490	-2198
+housing_order	housing_elandor_goldmead	poi_biased	nearest_bias	13	139418b0a0d6bc813a0c0cb0f3e0026e6bedb3a0a9d6118bee5e68de864bc323	152	-2199	-525	-2097
+housing_order	housing_elandor_goldmead	row_major	coordinate	16	75338cfe511ceb6531b58f89de4d980408940a60969932159136404aa2c2b9c2	-333	-2210	426	-1987
+housing_order	housing_elandor_goldmead	reverse_row_major	coordinate	17	3d9099486130cbdc59c333fbf635d9a6cef5f5ea42918ce0d1a65307250ed689	491	-1960	189	-2199
+housing_order	housing_elandor_goldmead	housing-pack-00	canonical_hash_word_0	9	e320c9eb30b41237ec997cf5a2d3a58e63149c7184ba058ad26ac0167e43e068	327	-2134	53	-2209
+housing_order	housing_elandor_goldmead	housing-pack-01	canonical_hash_word_0	10	ab7c05865e03f87cd7e6001a4f33bace182f2d42afb86bbdffc4031903bdb5ae	506	-2166	-526	-2155
+housing_order	housing_elandor_goldmead	housing-pack-02	canonical_hash_word_0	11	20f7fec648b68a9188714c6e922574892be635528b0377aa869d973a5becb5a4	513	-2090	481	-2210
+housing_order	housing_elandor_goldmead	housing-pack-03	canonical_hash_word_0	11	5bff49ac2a51534e593d0b715e131ad62802aa6fbed26bc0823a8f0601176e21	-359	-2163	323	-2089
+housing_order	housing_elandor_goldmead	housing-pack-04	canonical_hash_word_0	10	878f01e9b6d51e9820ef50cce5b3001331459d04b81e4ae93475cd6e307828e3	519	-2067	68	-2202
+housing_order	housing_elandor_goldmead	housing-pack-05	canonical_hash_word_0	11	271c3fec207eda9fcd99f9428236113a447b7d400534ee9678cd641b24cc14d8	-347	-2011	-222	-2210
+housing_order	housing_elandor_goldmead	housing-pack-06	canonical_hash_word_0	10	51c9c67209b9708fb5b0b4bfe7d3c172ac30775af27702c92df8ccf523eed3c1	-343	-2138	-229	-2207
+housing_order	housing_elandor_goldmead	housing-pack-07	canonical_hash_word_0	10	65da9885afcb7170a83f67c6d907decfd8ea102b927d0b785e811bb24319c74a	332	-2204	307	-2091
+housing_order	housing_elandor_goldmead	housing-pack-08	canonical_hash_word_0	10	003c8aadd904d06416fa210b41c27dee12ab4c21f351ca182c853af0185337b2	521	-2155	-530	-2164
+housing_order	housing_elandor_goldmead	housing-pack-09	canonical_hash_word_0	9	7596f8d23d3ba692336850ed3cb2720a56b617ea36a72dbd3fcfdd4c02684406	-381	-2010	58	-2196
+housing_order	housing_elandor_goldmead	housing-pack-10	canonical_hash_word_0	11	5c83871edde6ab2e5d2fa713d06d78d4ad8123a5e1a70ee7a2e49c0f01206212	289	-2121	177	-2202
+housing_order	housing_elandor_goldmead	housing-pack-11	canonical_hash_word_0	11	f191b9fffd5572b7a6c3d9b6efd2e2979c4d92adcae2c4ce45bd35e6476d6888	-381	-2082	-372	-2194
+housing_order	housing_elandor_goldmead	housing-pack-12	canonical_hash_word_0	10	c74fd6f4dd29925635f022adf66c1d55361e1978caf8cc867d750f72d7a118d5	-335	-2156	-224	-2210
+housing_order	housing_elandor_goldmead	housing-pack-13	canonical_hash_word_0	9	7c9bb9b9e98c000b79aef818a76d6caf72a57b5ffe4c8ad3e613cf1d38351936	441	-2162	-228	-2209
+housing_order	housing_elandor_goldmead	housing-pack-14	canonical_hash_word_0	9	f9ca0fa37c796db8c180c16eaf6ae96f2ecb3cd008ee727f395dbaac2c9e57b3	509	-2161	110	-2205
+housing_order	housing_elandor_goldmead	housing-pack-15	canonical_hash_word_0	10	438eda171b640068bcafaf0e830af56a6903d5dfad93e8af2cec2c110e07aa02	-483	-2173	47	-2209
+housing_mask	housing_elandor_starbough	12	91495	4	9	5	11	4	11	14	12321	91495	9	46	18	1	maximum_conflict_degree	reverse_row_major
+housing_lattice_sha256	housing_elandor_starbough	db2c0c28b39010dd7cb373fc8cdb4173e473422be524223649e12cf3c36c34be
+housing_upper_partition_sha256	housing_elandor_starbough	58c9af6d51ed439ff6d3c84f3a9345f99fce2a5b6b0361263ea0280ca41711a6
+housing_order	housing_elandor_starbough	minimum_conflict_degree	graph_degree	9	e4e82a7c185810ec13f86eb48b29f123ef401584ba8d954eb4a6528132332bef	2230	-1960	2359	-2219
+housing_order	housing_elandor_starbough	maximum_conflict_degree	graph_degree	5	93d4771134c1845d7f40d53be60a88e544a9dc5c18a0942ab94d5e959776062a	2340	-2150	2451	-2207
+housing_order	housing_elandor_starbough	edge_biased	nearest_bias	8	58b1361966dc05694c791257c235e2b8991ac13e07f7c26c763768a7038e09b2	2230	-2260	2341	-2330
+housing_order	housing_elandor_starbough	route_biased	nearest_bias	10	53da5ba52d366fdbb87c19621878f2d1146e4f8550e3b338f3ef9f049bc64546	2230	-2190	2452	-2190
+housing_order	housing_elandor_starbough	poi_biased	nearest_bias	10	e8fe04621ee0e528dad9f24e38efc3df78e7e47e2ccde243aa2c9c3f68e90829	2230	-2100	2331	-2433
+housing_order	housing_elandor_starbough	row_major	coordinate	10	d8fe8a09890678cad3602fdfea25050571249f488ddf828038308de5268b7ef0	2349	-2441	2341	-1997
+housing_order	housing_elandor_starbough	reverse_row_major	coordinate	11	850c9afb6c0bcbbeec87f2420e591c07869a3846de62af1a81937d657033e58e	2351	-1959	2297	-2404
+housing_order	housing_elandor_starbough	housing-pack-00	canonical_hash_word_0	7	a6bbacd7af44f1ec16c5aa606f22196d053529ea0e4dcc5c47d937bcfdb8c322	2402	-2288	2395	-2175
+housing_order	housing_elandor_starbough	housing-pack-01	canonical_hash_word_0	7	209596db2c4ec675956feea601099ff6d6cdccbad39a51d0f4cfbcacc534cd5c	2360	-1997	2354	-2439
+housing_order	housing_elandor_starbough	housing-pack-02	canonical_hash_word_0	8	ce579def23196717ef6cf24b3f013e37d0952f0807e64cec4eb84f1ad85d41b6	2342	-2329	2230	-1961
+housing_order	housing_elandor_starbough	housing-pack-03	canonical_hash_word_0	7	1eafc4559ad5c3cb52998046645b8baea6ec1aabc923b6a982751508007202e2	2407	-2185	2275	-1970
+housing_order	housing_elandor_starbough	housing-pack-04	canonical_hash_word_0	9	2a2b8d5ab08280d48f51c8e8e098561fba41ffe39a7fff79223146195a30e326	2345	-2224	2230	-2260
+housing_order	housing_elandor_starbough	housing-pack-05	canonical_hash_word_0	8	a5c21deb0ee6e319d80b9ed3a8e7f5bfd3a3ca8fbcf4bad5879940fd120b9162	2299	-2074	2230	-1963
+housing_order	housing_elandor_starbough	housing-pack-06	canonical_hash_word_0	8	f751f738b3a84ec404e5952d257a11ebfba49263ace96ff9bcdf0fc320559463	2425	-2077	2261	-2356
+housing_order	housing_elandor_starbough	housing-pack-07	canonical_hash_word_0	7	4a5e82264028178fb3bed1397e78434ab31669822e75ed1160ad467f8961afff	2279	-2200	2408	-2397
+housing_order	housing_elandor_starbough	housing-pack-08	canonical_hash_word_0	8	7cb1fb956f1ce6f8d13293482e55076d90b6e25677cb02393eea3d33ee66267b	2465	-2213	2236	-2229
+housing_order	housing_elandor_starbough	housing-pack-09	canonical_hash_word_0	7	593cdb8199614fd081e2302ad95a528092397097b8e426aecc02a033a2430dd7	2288	-2068	2443	-2268
+housing_order	housing_elandor_starbough	housing-pack-10	canonical_hash_word_0	8	f7b2895d812c4cb75b1eed043657982b08cc9e940011cf327f2b400ffdc1cdfd	2381	-2367	2389	-1980
+housing_order	housing_elandor_starbough	housing-pack-11	canonical_hash_word_0	7	e5dff32b8564bb8c3cda52feb34fe72a25a47f28d41526663cab4dff38880be8	2442	-2193	2427	-2071
+housing_order	housing_elandor_starbough	housing-pack-12	canonical_hash_word_0	6	991d68e5b79abf9284bbe078d34e8f75141f2b2d8ca66e17cc626e0280bf0ac6	2275	-2055	2426	-2197
+housing_order	housing_elandor_starbough	housing-pack-13	canonical_hash_word_0	6	d69768e9672ea83c2b6684efa2078ef5369ce0448b4cbae98c5422807eaac225	2272	-2134	2330	-2426
+housing_order	housing_elandor_starbough	housing-pack-14	canonical_hash_word_0	7	9197fe1388a9f2e93009c5825564a23b021c1c28bdaea758c7abe25ef9c44b40	2373	-2165	2231	-2186
+housing_order	housing_elandor_starbough	housing-pack-15	canonical_hash_word_0	5	dc8ced8541b4242f42b9efc75a140c482db599d166b39b8d400e4a4b1dc906d3	2261	-2244	2442	-2098
+housing_mask	housing_elandor_whitebridge	9	116868	5	14	12	21	5	21	35	12321	116868	0	59	43	12	maximum_conflict_degree	minimum_conflict_degree
+housing_lattice_sha256	housing_elandor_whitebridge	45d77c5276a55fd0afd507aff3af89ca10e8fa6949702a5c55cb8f8f2aeeada8
+housing_upper_partition_sha256	housing_elandor_whitebridge	3fc9bd78b0cd9d54196a311dd6855039eec8f8f6460757254cc4a9abc74bd19d
+housing_order	housing_elandor_whitebridge	minimum_conflict_degree	graph_degree	21	70e66debd951823810b27c33ffd390afbe8fe4ea43e633df7329f15abf0f20ab	-604	-1654	-1189	-1301
+housing_order	housing_elandor_whitebridge	maximum_conflict_degree	graph_degree	12	14439a33bb37ae54c4fd6b7281470ec1decc89a2964154110d1cefa36338ccec	-1165	-1717	-604	-1654
+housing_order	housing_elandor_whitebridge	edge_biased	nearest_bias	20	13af01b6f3f4f0aacc4cb553dc231ac42829bfd62a3daec4bd74ad28ec2eeb2c	-1222	-1810	-729	-1476
+housing_order	housing_elandor_whitebridge	route_biased	nearest_bias	19	569b542a99406765db1fe15e1f08e816b7ca4759f9a91820eee9be17670e01c4	-893	-1317	-496	-1221
+housing_order	housing_elandor_whitebridge	poi_biased	nearest_bias	19	50bfeb8f2a124647c2629f979e6bd9895755a6f580f68923998b134d64b6d743	-512	-1266	-1253	-1718
+housing_order	housing_elandor_whitebridge	row_major	coordinate	20	c8bd64b695036d19102a55030082a7bf7a4508b95609fa1584870703319683a0	-1222	-1810	-512	-1221
+housing_order	housing_elandor_whitebridge	reverse_row_major	coordinate	20	1270a3f7f2ddea8c04537c57995fd828e616593aa43078f1bd43bd744ca99afc	-501	-1190	-758	-1734
+housing_order	housing_elandor_whitebridge	housing-pack-00	canonical_hash_word_0	14	b47713effe0c42f7f9bc79c9865fc605e7a176b4205c24f2d3b89a495f1613c2	-1197	-1789	-590	-1652
+housing_order	housing_elandor_whitebridge	housing-pack-01	canonical_hash_word_0	15	e660122bb90923e6ed910a2ba389b4c972d4209611b255a4f6c5056351b44a56	-1201	-1390	-845	-1804
+housing_order	housing_elandor_whitebridge	housing-pack-02	canonical_hash_word_0	14	9a4c28cbc228636d8249cb7df612061e26c940fef784a7d2e07ec4a4573e08ad	-1144	-1645	-1049	-1423
+housing_order	housing_elandor_whitebridge	housing-pack-03	canonical_hash_word_0	15	35ffb5395b7e458bdeaaf6ec6c4228504245f6090013a2bd60a9d2e268670fab	-1306	-1274	-1195	-1344
+housing_order	housing_elandor_whitebridge	housing-pack-04	canonical_hash_word_0	13	ec4ba7e1d8bd13f13739ff51cd6ec1c3c6f6749772576e747c0b608af5879509	-1259	-1318	-1032	-1689
+housing_order	housing_elandor_whitebridge	housing-pack-05	canonical_hash_word_0	16	2b60f9ac8cbb311c3ab8d3e719e319222d063caa17538e9f7eb10aee35975d54	-1191	-1420	-998	-1688
+housing_order	housing_elandor_whitebridge	housing-pack-06	canonical_hash_word_0	15	de8619e35583e94a86112281de3fc007483fa6e46782df03a6e2e9104efe406c	-1227	-1643	-560	-1647
+housing_order	housing_elandor_whitebridge	housing-pack-07	canonical_hash_word_0	15	7f4796f2f3e8616b7f9c833332f959b88d48c84d0e6f3e45989f8f9503dc3730	-1222	-1232	-1046	-1426
+housing_order	housing_elandor_whitebridge	housing-pack-08	canonical_hash_word_0	14	d4c5254bff5f29ee234aeb98841239f649b7d529f8532e9e251cec6aa8933bb6	-1083	-1714	-1310	-1319
+housing_order	housing_elandor_whitebridge	housing-pack-09	canonical_hash_word_0	13	b55c504a8e0fb553c7e72b98e965cbe8f1d3b43870283e34c4ee7ff5065773de	-1223	-1707	-509	-1325
+housing_order	housing_elandor_whitebridge	housing-pack-10	canonical_hash_word_0	15	fde74b6a79b4d6228ea3cd0875ce0f7a848c29b9101dc2b9bfb40dc146ae6357	-1119	-1657	-739	-1467
+housing_order	housing_elandor_whitebridge	housing-pack-11	canonical_hash_word_0	13	f66b24c6626087d640bc1e0e44284a49e0fb5f66f34b9c96e49ee7bbabd1498b	-742	-1775	-1254	-1761
+housing_order	housing_elandor_whitebridge	housing-pack-12	canonical_hash_word_0	13	21e62c5992a4f680195f64ef9b1d8934f8c5a317edbeb336193c3c8187d431bf	-1278	-1291	-586	-1652
+housing_order	housing_elandor_whitebridge	housing-pack-13	canonical_hash_word_0	13	84ee70ac8b56ad6a3468255588ad79936961dcbb1d4aaf07f790bb2a8d61c090	-1284	-1262	-1080	-1785
+housing_order	housing_elandor_whitebridge	housing-pack-14	canonical_hash_word_0	13	47ab0f8e323974c1391d526202572076405c04f75ecc897b4abe068bb6f0cba4	-1215	-1265	-1309	-1387
+housing_order	housing_elandor_whitebridge	housing-pack-15	canonical_hash_word_0	14	58b2309a0db6a16549446950f7fd13a5217d308e9f531dd117bc037a496565e4	-1254	-1406	-566	-1645
+housing_mask	housing_elandor_lorindor	14	160264	8	18	14	25	8	25	39	12321	160264	52	44	75	85	housing-pack-04	minimum_conflict_degree
+housing_lattice_sha256	housing_elandor_lorindor	8fe697679d96dadf1afd68aac2bb3ded2c7d8bf0c62678ce256b1e43138cddc2
+housing_upper_partition_sha256	housing_elandor_lorindor	4287b5de202d5144b9af30faaecadd531193428a685ee31ae9c7b09c355a2fea
+housing_order	housing_elandor_lorindor	minimum_conflict_degree	graph_degree	25	6218daa48d1db86e5cee8177bc38552bb5f544a323697c2b5cbe39b696d22a48	902	-1336	856	-1687
+housing_order	housing_elandor_lorindor	maximum_conflict_degree	graph_degree	17	beeb38165cf4010aabec9d7661783962908e078bcdbabec061f10d0c1f538905	651	-1717	902	-1336
+housing_order	housing_elandor_lorindor	edge_biased	nearest_bias	24	afb8a37d67aa5225bf4f38bf5d9be82c48f4440ac7ce94581ce912e4c32624f9	573	-1810	725	-1477
+housing_order	housing_elandor_lorindor	route_biased	nearest_bias	23	dfb8e24fc02fd5681b4b146e8c213487e0441c6342c5b196dfb5e97e23aaa1c8	893	-1317	900	-1798
+housing_order	housing_elandor_lorindor	poi_biased	nearest_bias	25	95ecf477cb9be43802021a1027fe71eb24c31b10f8c117c69b04bbeaa70a37c3	732	-1223	523	-1607
+housing_order	housing_elandor_lorindor	row_major	coordinate	25	e5f5e99977684b3567c5208ff0e7f00d20e31323ea9ef38a16cd7c61f51bb600	573	-1810	498	-1235
+housing_order	housing_elandor_lorindor	reverse_row_major	coordinate	25	f646755f459780513202661a1edac710e00c41bc246c7d99b070ab01b8db2858	1278	-1190	878	-1798
+housing_order	housing_elandor_lorindor	housing-pack-00	canonical_hash_word_0	15	a8b6c8d5deee1db22a646338dd5bc4bdf198b6939d1217d3b4e0c58d91ad6c2e	1255	-1291	1143	-1242
+housing_order	housing_elandor_lorindor	housing-pack-01	canonical_hash_word_0	20	0020639d12f3c5c958118167b397702d26f1ecc3190babb0d703ec31097b0cf1	1241	-1333	631	-1613
+housing_order	housing_elandor_lorindor	housing-pack-02	canonical_hash_word_0	18	8737447197eaf1f10bcaede609e05220fe7cfa56abc23ff0fba9361e6702a4b6	957	-1762	1140	-1214
+housing_order	housing_elandor_lorindor	housing-pack-03	canonical_hash_word_0	18	b96db37c196aaba20424b57a61d00f9d552e06772d6de64e1c728e23be52e497	688	-1681	839	-1689
+housing_order	housing_elandor_lorindor	housing-pack-04	canonical_hash_word_0	14	2d939f3b59da29e1d5f32caf836a69fca1f5c9b5a3fe3d2dce4d12757ed40010	738	-1713	1065	-1383
+housing_order	housing_elandor_lorindor	housing-pack-05	canonical_hash_word_0	18	f2aebe8058ed23aea160594bbd83685e12955435f3c40fc1d84ff04162d0a06c	725	-1435	890	-1690
+housing_order	housing_elandor_lorindor	housing-pack-06	canonical_hash_word_0	18	c529b53f21fb264819fe104d009acec7a5c7be8f326affff9d8e0def8e7ebeef	609	-1758	1044	-1538
+housing_order	housing_elandor_lorindor	housing-pack-07	canonical_hash_word_0	19	6aca0fdc5666e1e1f1e16bfe3247567b22f3367229c2a74e5d0758775a349b33	1221	-1635	1229	-1524
+housing_order	housing_elandor_lorindor	housing-pack-08	canonical_hash_word_0	16	a7ac6223a7cc6cd307dd8c97228cef4ae4a708b722710f1c50b0d3b2acabac30	837	-1810	851	-1689
+housing_order	housing_elandor_lorindor	housing-pack-09	canonical_hash_word_0	16	56b13dc1bc65450b5cd55574ef6b30ceb8aaa63a57fbcb2c151601a492998da3	664	-1612	763	-1196
+housing_order	housing_elandor_lorindor	housing-pack-10	canonical_hash_word_0	17	843f8f9d534ab3b94a712fb88232ef244350bc43295b3797f5d43a09e93aee91	714	-1476	745	-1610
+housing_order	housing_elandor_lorindor	housing-pack-11	canonical_hash_word_0	18	d5b76244a6bd58ee0ebfdbc6bba982fa63af52cd668d489005452c0087231986	1153	-1528	1042	-1535
+housing_order	housing_elandor_lorindor	housing-pack-12	canonical_hash_word_0	18	e67d781a27a3df33d0d20295c394c00fac0df8e98d49c9f659c64eefd10ba123	956	-1715	1215	-1645
+housing_order	housing_elandor_lorindor	housing-pack-13	canonical_hash_word_0	18	0f54ccca42b93346c21b7ee081ddb0406c5de597329355212737770301643997	944	-1779	627	-1336
+housing_order	housing_elandor_lorindor	housing-pack-14	canonical_hash_word_0	18	6af0c885bf27e0d3357d53f518c8badd43b04292583f811fdc030cbac9a48f13	705	-1721	828	-1810
+housing_order	housing_elandor_lorindor	housing-pack-15	canonical_hash_word_0	18	12116c8abfb305f36badea4a22dedc4345c301bad9f575636519e868150da2e7	627	-1459	738	-1460
+housing_mask	housing_kragmar_mournfen	18	93318	5	10	6	11	5	11	14	12321	93318	80	58	101	30	maximum_conflict_degree	minimum_conflict_degree
+housing_lattice_sha256	housing_kragmar_mournfen	1dbdca5a2e29b8c1425915637a862eff4455ee4b8abddb8bb2221dcac16861e4
+housing_upper_partition_sha256	housing_kragmar_mournfen	723b9e9ec48bcd3216b947ddffdab7ff2dfbba64e66487bf48a7395b63697224
+housing_order	housing_kragmar_mournfen	minimum_conflict_degree	graph_degree	11	41b635d9921682f28cde40d9e2a281b5704a010a3fa6bcd9f68cb591bd8edcd3	-2371	2441	-2341	2219
+housing_order	housing_kragmar_mournfen	maximum_conflict_degree	graph_degree	6	6a760721e45b4632d2d89c27b6031ff833b5d16111c8c7a2511c6bfb99d808e4	-2357	2167	-2468	2167
+housing_order	housing_kragmar_mournfen	edge_biased	nearest_bias	10	a217701269fc75871dac74bbcc23601cde6b5330bf20a54079f2d735460a0d8a	-2230	2097	-2341	2181
+housing_order	housing_kragmar_mournfen	route_biased	nearest_bias	9	fa8847e5943babfc6bb3ca0f63c75f51f2dd586f24c8bb0caada35e6aa81486b	-2230	2175	-2452	2175
+housing_order	housing_kragmar_mournfen	poi_biased	nearest_bias	10	93fafaa2a807c0e0a926345c45e52002827006857c49cd6ef2f7e48e02d67797	-2230	2100	-2452	2211
+housing_order	housing_kragmar_mournfen	row_major	coordinate	10	f2944d46ab4175dcf295cf1fa4b8a44e7dfb79adc066f5f3479b0806cc2c2bba	-2371	1959	-2360	2370
+housing_order	housing_kragmar_mournfen	reverse_row_major	coordinate	11	64f82410e8c19caafa368863aca983d30bbb7e22097ac20d2645b31cc2af672e	-2369	2441	-2389	1997
+housing_order	housing_kragmar_mournfen	housing-pack-00	canonical_hash_word_0	6	b16c620aa12fba01476e73e9d3930bff7e3320ec4c9f5e4ec77aa6dd551f012c	-2442	2029	-2301	2316
+housing_order	housing_kragmar_mournfen	housing-pack-01	canonical_hash_word_0	7	c4b995fb1233e3928ebcdd5ab6a7b6c31aedcdf96465a5e497afd20037ef4ae7	-2384	2248	-2323	2396
+housing_order	housing_kragmar_mournfen	housing-pack-02	canonical_hash_word_0	6	3ca700af5f280f0dc0f0a449e9bb1633fa05c416fe2f3d8587ea67901adf741d	-2271	2185	-2275	2301
+housing_order	housing_kragmar_mournfen	housing-pack-03	canonical_hash_word_0	6	16bb7232ebf56585c00e76a522bd416d7c02427cb4082b76d20e5b2a1c6c9c03	-2372	2002	-2444	2333
+housing_order	housing_kragmar_mournfen	housing-pack-04	canonical_hash_word_0	6	9cf0681410890dacd8de4c62d64d655e63c0a62603b880daa7f483602d4c6b86	-2280	2213	-2272	2077
+housing_order	housing_kragmar_mournfen	housing-pack-05	canonical_hash_word_0	7	57624fbe3b2c7a2355800467f6312b0dfd6b6420302f9f23296683ac6ac1a0ec	-2389	2176	-2464	2288
+housing_order	housing_kragmar_mournfen	housing-pack-06	canonical_hash_word_0	7	e371eaaefdc0923b94a3ab067be80320fd21175a4f54eb834a3f3bf8b0c0b854	-2276	2175	-2252	2054
+housing_order	housing_kragmar_mournfen	housing-pack-07	canonical_hash_word_0	8	64b8064c90477295efd3f894ebd18749c54fa0ce748f3eacb64eb1b1b08bfd5d	-2438	2352	-2409	1981
+housing_order	housing_kragmar_mournfen	housing-pack-08	canonical_hash_word_0	8	c04f99dbde1cef784c609d8dc5d463fc7110b35ed0c6333e355074c86a7cd763	-2416	1986	-2436	2367
+housing_order	housing_kragmar_mournfen	housing-pack-09	canonical_hash_word_0	8	29d2966db8166274d25e6ef48d641c96a1c5e9554ed64bc37422c2fbbb6f12d8	-2468	2231	-2354	2288
+housing_order	housing_kragmar_mournfen	housing-pack-10	canonical_hash_word_0	9	fb022265905d63c812753f31240f578b7845d66bdb5c86a9882acee696ec84d5	-2399	2212	-2407	1978
+housing_order	housing_kragmar_mournfen	housing-pack-11	canonical_hash_word_0	6	841debe33de37b6ef956aa428c87dd61c72eeb64f6757f205cf05e0220198ef4	-2383	2123	-2433	2248
+housing_order	housing_kragmar_mournfen	housing-pack-12	canonical_hash_word_0	7	192e0ed5208c6396e5c46c7cdb98650f63409cc4208b21c933c770899737b8f3	-2373	2309	-2357	2435
+housing_order	housing_kragmar_mournfen	housing-pack-13	canonical_hash_word_0	6	db016a5af2caa3e0c0a6d78f3a7d00d5d38aa162db45d4702e3857d8edb39829	-2375	2188	-2238	2185
+housing_order	housing_kragmar_mournfen	housing-pack-14	canonical_hash_word_0	6	0f7dc5d572afae3f1cc725e2c6bf1e57498f3a2f725281709f3f222a13e6f4ee	-2431	2139	-2440	2016
+housing_order	housing_kragmar_mournfen	housing-pack-15	canonical_hash_word_0	6	e3bf37160aa1cf8f53d5fe043c5ff8af7b8483e8ee43bb6d0d370a605294482f	-2424	2126	-2429	2010
+housing_mask	housing_kragmar_redtusk	23	122551	7	17	10	19	7	19	24	12321	122551	4	0	95	99	housing-pack-08	reverse_row_major
+housing_lattice_sha256	housing_kragmar_redtusk	2c82df7f0fc3d6c9d743e6aa4df28b08d5037d9f246269d3661290cf9cc481dc
+housing_upper_partition_sha256	housing_kragmar_redtusk	6c80d9d41060f93b9bc91eb3813146f2b088df52c6425acb76232d04225ee5ff
+housing_order	housing_kragmar_redtusk	minimum_conflict_degree	graph_degree	17	d6317c4d8eae358122e651e87e14fb9b561546672db32a4abab24b91d17d6831	96	1960	-411	2071
+housing_order	housing_kragmar_redtusk	maximum_conflict_degree	graph_degree	15	42b2cf6daf10591b8767ed689cc66bdad18c9474cc17d354d7d2823bf2fd553e	-349	2091	96	1960
+housing_order	housing_kragmar_redtusk	edge_biased	nearest_bias	18	3e0d61b78fe409e92efc7aaadb920b6033b5d94840607069af0b1bbc5042f68b	-440	1960	393	2099
+housing_order	housing_kragmar_redtusk	route_biased	nearest_bias	16	a4766054ebb789b13b4bdd1f1c17e0ddcde9997ae3354a9e11e3ec3ab7e741f6	96	1960	484	2197
+housing_order	housing_kragmar_redtusk	poi_biased	nearest_bias	14	d9dfdac7ad355256b371bb0fe8e7ff763e4faf6c9bd6027762924781e6b69cab	69	2123	-461	2115
+housing_order	housing_kragmar_redtusk	row_major	coordinate	16	43462a7602b5a9e97b569072a1368431adf300e802da424badf54f33ab4bc2c9	-440	1960	273	2197
+housing_order	housing_kragmar_redtusk	reverse_row_major	coordinate	19	258e75dbdc190ad811e62897aeafe9f556f9376a7c6e94ce7f6d1026e4e00570	474	2210	100	1963
+housing_order	housing_kragmar_redtusk	housing-pack-00	canonical_hash_word_0	11	87a164d14c57ef90ef9ad5e750c0451e1b0384cc2a65d9f79ea46cd715bf8821	-422	2004	207	2192
+housing_order	housing_kragmar_redtusk	housing-pack-01	canonical_hash_word_0	13	c202635a60f828788cf2bfd40bf64d61dfb591691d07d52c516d845aa9e08dfd	314	2173	-389	2086
+housing_order	housing_kragmar_redtusk	housing-pack-02	canonical_hash_word_0	12	91e63516be4b0488a039f924fc70e76f55124570dbb3537daa264b67ed1caceb	522	2098	448	2210
+housing_order	housing_kragmar_redtusk	housing-pack-03	canonical_hash_word_0	12	0b0c14454fe644a8c8adf347e7e19b3f26fc41b5a575a080c3a6a16d5a0727f1	-409	2016	-13	2209
+housing_order	housing_kragmar_redtusk	housing-pack-04	canonical_hash_word_0	13	2c0badee3a868182cf7a7f8271e162d677d43f0fa5a8a80b8acf08e40d452684	-397	2081	530	2155
+housing_order	housing_kragmar_redtusk	housing-pack-05	canonical_hash_word_0	11	d1fdea6272de0b61c25ee7ed881ce29763cb5f093dab91c1f14abcb61721b2d5	-341	2003	96	1961
+housing_order	housing_kragmar_redtusk	housing-pack-06	canonical_hash_word_0	11	51d6198f6c0273986eeca05148a1a01fde4d5782bdf4a08ec406b429ae861388	-444	2056	110	1960
+housing_order	housing_kragmar_redtusk	housing-pack-07	canonical_hash_word_0	14	30007492836ba3f613ee0547c9808865ea9c051fb6c1fe6401bd06d0f4e922d0	97	1960	-521	2070
+housing_order	housing_kragmar_redtusk	housing-pack-08	canonical_hash_word_0	10	1022877ab25638a9121bcd4c29f9ccec84adcc7bed3c291bf7e4148e8d5ceb60	498	1996	98	1963
+housing_order	housing_kragmar_redtusk	housing-pack-09	canonical_hash_word_0	11	ebc41ffbb27523d0faebf43693a81e9970ddaec6c5f437709328de24b1549ad7	-327	2203	100	1960
+housing_order	housing_kragmar_redtusk	housing-pack-10	canonical_hash_word_0	13	786df8307e03e43c1762b8b043fd5bb569b32a7b3a9a327654bc2c7c1f64e0a7	432	2187	96	1960
+housing_order	housing_kragmar_redtusk	housing-pack-11	canonical_hash_word_0	10	b282d1d27db67b57a20177593188eec045b4e5cdb78f4a8f750648f050fd0ae6	157	2203	99	1962
+housing_order	housing_kragmar_redtusk	housing-pack-12	canonical_hash_word_0	13	89c28687b79c18dae956b012865ce364e4ca2ac0cc1290c6cedfb659368af078	450	2169	99	1960
+housing_order	housing_kragmar_redtusk	housing-pack-13	canonical_hash_word_0	11	ad901699a0c0a282f2f4cdba8993a1f25635e9cb74b55d63b9a51b13f1836219	349	2091	108	1960
+housing_order	housing_kragmar_redtusk	housing-pack-14	canonical_hash_word_0	12	5de321a8ef278e0a89842bc72f69cd7efba82b99e68b60f6446de2f71164c9fe	409	2169	101	1960
+housing_order	housing_kragmar_redtusk	housing-pack-15	canonical_hash_word_0	12	f5669a49c5acb3e222d711924d6e70892a19c179f8afa455c271f394c994f45d	-405	2155	104	1960
+housing_mask	housing_kragmar_raincall	28	84404	4	8	4	9	4	9	14	12321	84404	8	0	71	0	maximum_conflict_degree	row_major
+housing_lattice_sha256	housing_kragmar_raincall	8f12382585b6e91e589b60a875278b32aa11ba55e6fe8035c8f8a8a60e4e4a22
+housing_upper_partition_sha256	housing_kragmar_raincall	22dab12aee51b2427049e5611ebe40e8d3f35319c318f63c6bc6f13e48950ec4
+housing_order	housing_kragmar_raincall	minimum_conflict_degree	graph_degree	8	4eeb6f010b353d20f442b1ea1b61027a9188aa72fca4753ddc3ae794c5053504	2238	2005	2449	2182
+housing_order	housing_kragmar_raincall	maximum_conflict_degree	graph_degree	4	7d0c7803cca6eb0a40dc0d0ee36e9400ce20df53a616c5fd4dae0076c933be5b	2339	2149	2339	2371
+housing_order	housing_kragmar_raincall	edge_biased	nearest_bias	8	b91d7b7e28f2e200d7675da0f027a21a3e0a51dbedc8a3f29410beb77c782d58	2238	2005	2449	2305
+housing_order	housing_kragmar_raincall	route_biased	nearest_bias	8	4a04de8654e64abbd5d04d0d6a205439ac6f19a2ab94ebbc8685e2b11b07b221	2238	2175	2397	2397
+housing_order	housing_kragmar_raincall	poi_biased	nearest_bias	8	3f0ead0001df02ef6e4e33b8bc8f16a857c84a413a52011d677bde2de7f3dc49	2238	2084	2307	2417
+housing_order	housing_kragmar_raincall	row_major	coordinate	9	52d14e6216ae51451a4df9a7a44477e22fed8b6e9415d487309ac612b9a79fea	2349	1959	2402	2403
+housing_order	housing_kragmar_raincall	reverse_row_major	coordinate	9	d827a10f27aaa3d81bdd2ec89a5d627d42a90010cb8871f3ecfb604bfcfd5a8c	2351	2441	2298	1997
+housing_order	housing_kragmar_raincall	housing-pack-00	canonical_hash_word_0	8	51489c670a46c6ff1cec340c6e6e269166703ab8a527edaa59cbb65a86887328	2298	1999	2417	2015
+housing_order	housing_kragmar_raincall	housing-pack-01	canonical_hash_word_0	6	80572dd2904957c49a9e2229ac207bcc370ebbfa840666c5ca7440d68c859847	2392	2257	2439	2098
+housing_order	housing_kragmar_raincall	housing-pack-02	canonical_hash_word_0	6	3fc294eafd34ce939a182344d32271f163b8c29d3f98bdc5a61df4a10d3f8cd5	2334	2216	2356	1967
+housing_order	housing_kragmar_raincall	housing-pack-03	canonical_hash_word_0	6	c5f1632a9f85c2f605713a01180198459470bdc4920fa3a8fb12f63f4632bcdb	2322	2142	2442	2086
+housing_order	housing_kragmar_raincall	housing-pack-04	canonical_hash_word_0	6	f2e892d3d08850a9a3a059324eff10cf221e018d8e577bbf114bed3f9721d5a7	2243	2150	2396	2003
+housing_order	housing_kragmar_raincall	housing-pack-05	canonical_hash_word_0	7	959f9829c7e7edbf2ce0c8f2dc26d22d29bc128ff2a5259e5c365e81d85e0ced	2361	2122	2241	2120
+housing_order	housing_kragmar_raincall	housing-pack-06	canonical_hash_word_0	6	24ceb9775f3f615d8079d22702e2e5b8332f78581ed8793b900e8fe325724cf1	2340	2268	2433	2036
+housing_order	housing_kragmar_raincall	housing-pack-07	canonical_hash_word_0	5	54cccc57ce9b371fd04f1410fbf1a41f74aa74c4578cc091d40a6e6de6d906c3	2306	2073	2397	2248
+housing_order	housing_kragmar_raincall	housing-pack-08	canonical_hash_word_0	8	ab6d772b83c6f1c451fedf4fe352b9a4a4996b9b023e09d62e2174d2302401b7	2316	2309	2442	2348
+housing_order	housing_kragmar_raincall	housing-pack-09	canonical_hash_word_0	7	57db7f1c79151df5e7b02a0ba117563e22042bbe68fe51d11d86660119065628	2411	2140	2350	2441
+housing_order	housing_kragmar_raincall	housing-pack-10	canonical_hash_word_0	6	241624022b421fc96e4f1e44f38f8a167a6e4a8f3b5afe5234298e62d722e268	2427	2077	2359	1963
+housing_order	housing_kragmar_raincall	housing-pack-11	canonical_hash_word_0	7	d29cb4f77f66462958935dbbba816bf968eff24901fa35aed555b620f8870428	2409	2069	2445	2180
+housing_order	housing_kragmar_raincall	housing-pack-12	canonical_hash_word_0	6	a350ae146b606470930d70e39d2cd9c808a705b58617128d15a317e36726da1b	2341	2311	2380	2422
+housing_order	housing_kragmar_raincall	housing-pack-13	canonical_hash_word_0	6	69fc7249c19163b9793bb6dc1f28dce6664bad9f575c24f64607b78dbab9fb10	2357	2055	2446	2226
+housing_order	housing_kragmar_raincall	housing-pack-14	canonical_hash_word_0	8	4efdd5b86259e72cdb4cffb5210d2cdbf0dea61209ac1e2e3aa7cf99af7a3947	2376	2143	2408	2401
+housing_order	housing_kragmar_raincall	housing-pack-15	canonical_hash_word_0	6	f7240a69f09327b1665d6bdf6050337400eb6edfcf6b4726943190e992ed8063	2365	2406	2314	2294
+housing_mask	housing_kragmar_speargrass	25	209251	10	24	14	29	10	29	44	12321	209251	66	47	51	11	maximum_conflict_degree	minimum_conflict_degree
+housing_lattice_sha256	housing_kragmar_speargrass	058845732ae6030f53da5c425746a93b27b4dda339884c402eda86542bad867a
+housing_upper_partition_sha256	housing_kragmar_speargrass	8cb8c31fc25f5128c4a02d3298112992ca6bd9bd4fd1f5dbb96577c6e4bbbf45
+housing_order	housing_kragmar_speargrass	minimum_conflict_degree	graph_degree	29	fd3661cf024ad55a8e9818bd6386454ac02945d8b7da84c0a542084cd1aeb690	-684	1393	-609	1647
+housing_order	housing_kragmar_speargrass	maximum_conflict_degree	graph_degree	14	2f65ec60cb9993d95e51167584aa95a7690f5bbccc7f30d4b25eab03bb76bb0c	-628	1700	-655	1364
+housing_order	housing_kragmar_speargrass	edge_biased	nearest_bias	27	0fd7f176d1606b71575d4bfd870933de440ac59c2901beaa9552d9e788bb22a2	-1310	1190	-1088	1394
+housing_order	housing_kragmar_speargrass	route_biased	nearest_bias	26	12e4aa2e3a0a0dd436ed13d63e4551945efb6d2ba9d4962da575cbb3152c597f	-907	1283	-601	1749
+housing_order	housing_kragmar_speargrass	poi_biased	nearest_bias	25	065864d8587bf5dcb18dde54d9a91b928daed36907ded0dc65876980996c0264	-544	1250	-516	1743
+housing_order	housing_kragmar_speargrass	row_major	coordinate	27	d73ebe9b6abf43538ba8853b5fc442abc17985ecb55b665ed50e99c74e847da3	-1310	1190	-957	1805
+housing_order	housing_kragmar_speargrass	reverse_row_major	coordinate	27	1ea193956facf0e57bbb742da30b30386046343e27610b09643b33c158563a73	-503	1810	-868	1220
+housing_order	housing_kragmar_speargrass	housing-pack-00	canonical_hash_word_0	20	9c9a157174ae1f2ca95130ff3c1ec5ecef4c78b4994ba5e429d6818f89d407a7	-661	1563	-684	1393
+housing_order	housing_kragmar_speargrass	housing-pack-01	canonical_hash_word_0	20	e9a3dba50cebef9b4b4f600841651eea91e5b190f9e89e5fa45a162eeb55c320	-1209	1368	-1068	1624
+housing_order	housing_kragmar_speargrass	housing-pack-02	canonical_hash_word_0	18	7f3ea20bd74e61a3d3bec603c500c3c173aab7cbdbcf8e9fed42d9f35e40b255	-859	1227	-645	1386
+housing_order	housing_kragmar_speargrass	housing-pack-03	canonical_hash_word_0	18	5fc9774e5ada6d8a22a343cf8fe5be42645e365ecc6b3cab6c58cbc98e679689	-545	1615	-769	1210
+housing_order	housing_kragmar_speargrass	housing-pack-04	canonical_hash_word_0	17	06c02dbd750d71e50cfb342ae828e8de7f7ac6d38ce7c2e9e9fed927d08e4df7	-783	1751	-1309	1802
+housing_order	housing_kragmar_speargrass	housing-pack-05	canonical_hash_word_0	20	d9948a3dd98845239791696abb419f7c6bc8a0b80c23744bea96eed6cde892d0	-887	1796	-494	1380
+housing_order	housing_kragmar_speargrass	housing-pack-06	canonical_hash_word_0	19	208ac1f6aa68bfaccedfa0b520c1d35838603dfbffb3d98d7f3ff896e5f4c80b	-1199	1682	-1308	1409
+housing_order	housing_kragmar_speargrass	housing-pack-07	canonical_hash_word_0	19	b5d4dcfff59a1350145bf61376aa16888a7e10fd76af4fbd53df9fb336acf944	-784	1734	-1189	1322
+housing_order	housing_kragmar_speargrass	housing-pack-08	canonical_hash_word_0	19	b599172ee5ebd04d2c076f3ea7ff4d40d7c2d59bdea0cccb427a12480524fdf5	-1270	1275	-670	1389
+housing_order	housing_kragmar_speargrass	housing-pack-09	canonical_hash_word_0	21	b22d599ad711ac3e02b9c6cb0bf8acb9d5a84de1ac2321741d15b3966fc99e04	-1074	1633	-543	1533
+housing_order	housing_kragmar_speargrass	housing-pack-10	canonical_hash_word_0	20	e59e0e744d22aae460ab46f96228b4f81264412a0325dedf43d18e5d37f7a180	-552	1739	-1310	1617
+housing_order	housing_kragmar_speargrass	housing-pack-11	canonical_hash_word_0	20	cc1918acf8e6ab6ca19b476cd3edeaec59984e0a8d5f97fd26328c60cbd301ff	-1251	1747	-1025	1457
+housing_order	housing_kragmar_speargrass	housing-pack-12	canonical_hash_word_0	21	4ce24771d9f09d71e9a167da93f8470f436d182b6962a3ce202e02cc59a42d83	-898	1291	-1307	1725
+housing_order	housing_kragmar_speargrass	housing-pack-13	canonical_hash_word_0	19	f6ad9670053a2a4b0e4c986d54847c66e101fb713c3a445e57a94d9c16ea4462	-1131	1682	-736	1530
+housing_order	housing_kragmar_speargrass	housing-pack-14	canonical_hash_word_0	20	f82fcfa143c7c08f7eda1b385f615e73c2956e12f41b21e9d9064e879f088f98	-1252	1351	-1273	1463
+housing_order	housing_kragmar_speargrass	housing-pack-15	canonical_hash_word_0	20	e65460b0c03bafb788a84dbabd85c4ce644c706bba84f7bda577d45af802e876	-1244	1626	-516	1655
+housing_mask	housing_kragmar_whispering	30	150091	5	18	10	20	5	20	37	12321	150091	21	62	67	82	maximum_conflict_degree	minimum_conflict_degree
+housing_lattice_sha256	housing_kragmar_whispering	960bb0f7cc943db2f5560604f61fb2296c55ddfc111a02e15db67c3b86f4d736
+housing_upper_partition_sha256	housing_kragmar_whispering	a2a168e4117cbe4e84c5c733d82da0a0899cb0a044fb6caee8ea7129182ab1e4
+housing_order	housing_kragmar_whispering	minimum_conflict_degree	graph_degree	20	a99e9553aa052e1002f85d0ebb633de749ac014b656792f7342141dab397fcef	1021	1538	745	1640
+housing_order	housing_kragmar_whispering	maximum_conflict_degree	graph_degree	10	78bfe44f8c328188139feff8d40b75c9a73e7837b5580f1e1ab17dac9950502a	649	1635	686	1360
+housing_order	housing_kragmar_whispering	edge_biased	nearest_bias	19	d638cd8133099acd1f1101df2c4275d76e8338e6dd3b0c1fa7e2034e6d36e212	494	1190	1088	1519
+housing_order	housing_kragmar_whispering	route_biased	nearest_bias	19	a5c669085e10453f0aa7cbc597229433769cf3cbf282239bbf61491311623da4	907	1283	758	1749
+housing_order	housing_kragmar_whispering	poi_biased	nearest_bias	17	064b5f86de986b929c0e32451ddbeae3acafed028afd79314eb3b45326f2208d	788	1234	634	1715
+housing_order	housing_kragmar_whispering	row_major	coordinate	18	bfcfb4999d11b404289b7e5a0b4259c0617fc868d4e9480f0715c0c59f7120f3	494	1190	594	1745
+housing_order	housing_kragmar_whispering	reverse_row_major	coordinate	19	e9a798ab5d699c0bb93b924bb6a1c2274c0819a60c76fc3341f6e79bec9b128e	832	1810	891	1250
+housing_order	housing_kragmar_whispering	housing-pack-00	canonical_hash_word_0	15	cf42379594b5aa2d6311994312ea216c139cce5cd14eb15e7f9e9fc2e1196067	1056	1534	1297	1198
+housing_order	housing_kragmar_whispering	housing-pack-01	canonical_hash_word_0	19	0d8eaa572e590d001a390417a877ac4f54fe56e4db659a62b937d90a39b3dd9e	1181	1599	865	1735
+housing_order	housing_kragmar_whispering	housing-pack-02	canonical_hash_word_0	17	5a8f76fc64d450f3d5803101533a53e7badbf19ab4cdcd9014317b9855ff5c76	1247	1620	1021	1538
+housing_order	housing_kragmar_whispering	housing-pack-03	canonical_hash_word_0	18	b883a6e1403e47013a71ca2174ae1d139c3033a10fcb91ff0495ee5c84b6a790	599	1569	737	1810
+housing_order	housing_kragmar_whispering	housing-pack-04	canonical_hash_word_0	14	57360b9984ffee9db406a3a9069af69715c47421b811c01730c10c624ee8a7fd	713	1710	1307	1395
+housing_order	housing_kragmar_whispering	housing-pack-05	canonical_hash_word_0	16	b1617df765a620879d62ad8271fba7c4fa861719874780932d4540d19dae6130	899	1329	1158	1393
+housing_order	housing_kragmar_whispering	housing-pack-06	canonical_hash_word_0	16	eafac09ae9bc9fd77438e7970dc0ab689a4d95f54af5b44904bda32c85061643	854	1248	885	1360
+housing_order	housing_kragmar_whispering	housing-pack-07	canonical_hash_word_0	15	4da880f659814a7cf8673e218568da3c9a677317afcab4acf4642834712cce0d	739	1732	1310	1401
+housing_order	housing_kragmar_whispering	housing-pack-08	canonical_hash_word_0	14	9dc8b846bf550f0390bf3002e26206649b3971209b9501facda9a52b1387c319	801	1195	1147	1361
+housing_order	housing_kragmar_whispering	housing-pack-09	canonical_hash_word_0	18	fe2707585249ecd88314f2fd33d3d93148787553464d46163aa5cafa8a2b0b28	1301	1306	612	1514
+housing_order	housing_kragmar_whispering	housing-pack-10	canonical_hash_word_0	16	b70333c39b6743c47aade0169bd55310bd4797c6d33695aea065510e74c9695c	1093	1546	882	1349
+housing_order	housing_kragmar_whispering	housing-pack-11	canonical_hash_word_0	18	da55c8ddb362c6a2bb2dd58f635b4f9276c4bbe476d93ffd515a61a0ede03a60	569	1558	881	1356
+housing_order	housing_kragmar_whispering	housing-pack-12	canonical_hash_word_0	17	5f6cad44d23112be130a02c79dcb35d16e45cf5a4520c200bf0c9d6025b8b095	520	1383	1143	1377
+housing_order	housing_kragmar_whispering	housing-pack-13	canonical_hash_word_0	18	a1aef0863f9ad86ac77a4f8ffd4e8deca2b52bd49665d6de5770d08d7be01e5b	612	1640	1022	1538
+housing_order	housing_kragmar_whispering	housing-pack-14	canonical_hash_word_0	15	16dcd485b8b1a7277d87d6d9f11845cd2f6f59a098316402d4db590cf71c2032	549	1361	574	1664
+housing_order	housing_kragmar_whispering	housing-pack-15	canonical_hash_word_0	16	8c2a3c148caae4b22c5e5d9299b0222a62b13477f4f1a8481b0a715663350b1d	1262	1235	536	1190
+housing_witness	lattice_minimum	housing_elandor_copperfell	4	-	102	50
+housing_witness	lattice_maximum	housing_elandor_copperfell	9	-	77	7
+housing_witness	portfolio_minimum	housing_elandor_copperfell	6	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_elandor_copperfell	10	poi_biased
+housing_witness	auditable_upper_bound	housing_elandor_copperfell	14	-	0	0	111
+housing_witness	lattice_minimum	housing_elandor_goldmead	6	-	84	0
+housing_witness	lattice_maximum	housing_elandor_goldmead	14	-	81	10
+housing_witness	portfolio_minimum	housing_elandor_goldmead	9	housing-pack-00
+housing_witness	portfolio_maximum	housing_elandor_goldmead	17	reverse_row_major
+housing_witness	auditable_upper_bound	housing_elandor_goldmead	20	-	0	0	111
+housing_witness	lattice_minimum	housing_elandor_starbough	4	-	9	46
+housing_witness	lattice_maximum	housing_elandor_starbough	9	-	18	1
+housing_witness	portfolio_minimum	housing_elandor_starbough	5	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_elandor_starbough	11	reverse_row_major
+housing_witness	auditable_upper_bound	housing_elandor_starbough	14	-	0	0	111
+housing_witness	lattice_minimum	housing_elandor_whitebridge	5	-	0	59
+housing_witness	lattice_maximum	housing_elandor_whitebridge	14	-	43	12
+housing_witness	portfolio_minimum	housing_elandor_whitebridge	12	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_elandor_whitebridge	21	minimum_conflict_degree
+housing_witness	auditable_upper_bound	housing_elandor_whitebridge	35	-	0	0	111
+housing_witness	lattice_minimum	housing_elandor_lorindor	8	-	52	44
+housing_witness	lattice_maximum	housing_elandor_lorindor	18	-	75	85
+housing_witness	portfolio_minimum	housing_elandor_lorindor	14	housing-pack-04
+housing_witness	portfolio_maximum	housing_elandor_lorindor	25	minimum_conflict_degree
+housing_witness	auditable_upper_bound	housing_elandor_lorindor	39	-	0	0	111
+housing_witness	lattice_minimum	housing_kragmar_mournfen	5	-	80	58
+housing_witness	lattice_maximum	housing_kragmar_mournfen	10	-	101	30
+housing_witness	portfolio_minimum	housing_kragmar_mournfen	6	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_kragmar_mournfen	11	minimum_conflict_degree
+housing_witness	auditable_upper_bound	housing_kragmar_mournfen	14	-	0	0	111
+housing_witness	lattice_minimum	housing_kragmar_redtusk	7	-	4	0
+housing_witness	lattice_maximum	housing_kragmar_redtusk	17	-	95	99
+housing_witness	portfolio_minimum	housing_kragmar_redtusk	10	housing-pack-08
+housing_witness	portfolio_maximum	housing_kragmar_redtusk	19	reverse_row_major
+housing_witness	auditable_upper_bound	housing_kragmar_redtusk	24	-	0	0	111
+housing_witness	lattice_minimum	housing_kragmar_raincall	4	-	8	0
+housing_witness	lattice_maximum	housing_kragmar_raincall	8	-	71	0
+housing_witness	portfolio_minimum	housing_kragmar_raincall	4	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_kragmar_raincall	9	row_major
+housing_witness	auditable_upper_bound	housing_kragmar_raincall	14	-	0	0	111
+housing_witness	lattice_minimum	housing_kragmar_speargrass	10	-	66	47
+housing_witness	lattice_maximum	housing_kragmar_speargrass	24	-	51	11
+housing_witness	portfolio_minimum	housing_kragmar_speargrass	14	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_kragmar_speargrass	29	minimum_conflict_degree
+housing_witness	auditable_upper_bound	housing_kragmar_speargrass	44	-	0	0	111
+housing_witness	lattice_minimum	housing_kragmar_whispering	5	-	21	62
+housing_witness	lattice_maximum	housing_kragmar_whispering	18	-	67	82
+housing_witness	portfolio_minimum	housing_kragmar_whispering	10	maximum_conflict_degree
+housing_witness	portfolio_maximum	housing_kragmar_whispering	20	minimum_conflict_degree
+housing_witness	auditable_upper_bound	housing_kragmar_whispering	37	-	0	0	111
+housing_result_sha256	4e5676d86ba5226642476751509f78c5152ecbc429a8d1f4bb94e415289f26ec
+artifact_sha256	1a819192fa40254aa6da1ebf5f3fa5286790ef907abe09750455e5e24c881a8b

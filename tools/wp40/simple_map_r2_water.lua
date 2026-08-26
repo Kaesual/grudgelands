@@ -18,6 +18,7 @@ return function(source, session, options)
 			type(session.warp_at) ~= "function" or
 			type(session.warp_proof) ~= "function" or
 			type(session.polygon_member) ~= "function" or
+			type(session.polyline_corridor_member) ~= "function" or
 			type(session.polyline_point_member) ~= "function" or
 			type(session.path_corridor_member) ~= "function" then
 		error("WP40 R2 water evaluator seam missing", 0)
@@ -607,6 +608,412 @@ return function(source, session, options)
 			failures=failures,shadowed_samples=shadowed}
 	end
 
+	-- The fixed layout makes this complete wet-reach contact roster
+	-- seed-independent. Scan only pairwise conservative support intersections,
+	-- but take every membership decision from the production classifier.
+	local function contact_key(a,b)
+		if a < b then return a .. "\0" .. b end
+		return b .. "\0" .. a
+	end
+	local function point_key(x,z) return x .. ":" .. z end
+	local contact_directions={
+		{dx=-1,dz=0,mask=1},{dx=1,dz=0,mask=2},
+		{dx=0,dz=-1,mask=4},{dx=0,dz=1,mask=8},
+	}
+	local neighbor_directions={
+		{-1,-1},{0,-1},{1,-1},{-1,0},{1,0},{-1,1},{0,1},{1,1},
+	}
+	local function sort_points(points)
+		table.sort(points,function(a,b)
+			return a.z < b.z or a.z == b.z and a.x < b.x
+		end)
+	end
+	local function point_bounds(points)
+		if #points == 0 then return nil end
+		local result={min_x=points[1].x,max_x=points[1].x,
+			min_z=points[1].z,max_z=points[1].z}
+		for index=2,#points do
+			local point=points[index]
+			result.min_x=math.min(result.min_x,point.x)
+			result.max_x=math.max(result.max_x,point.x)
+			result.min_z=math.min(result.min_z,point.z)
+			result.max_z=math.max(result.max_z,point.z)
+		end
+		return result
+	end
+	local function point_components(points)
+		local members,seen={},{}
+		for index=1,#points do
+			members[point_key(points[index].x,points[index].z)]=true
+		end
+		local components=0
+		for index=1,#points do
+			local start=points[index]
+			local start_key=point_key(start.x,start.z)
+			if not seen[start_key] then
+				components=components+1 seen[start_key]=true
+				local queue={{x=start.x,z=start.z}}
+				local head=1
+				while head <= #queue do
+					local current=queue[head] head=head+1
+					for direction_index=1,#neighbor_directions do
+						local direction=neighbor_directions[direction_index]
+						local x,z=current.x+direction[1],current.z+direction[2]
+						local key=point_key(x,z)
+						if members[key] and not seen[key] then
+							seen[key]=true queue[#queue+1]={x=x,z=z}
+						end
+					end
+				end
+			end
+		end
+		return components
+	end
+	local function centered_half_open_member(x,z,center,total_width)
+		local min_x=center.x-math.floor(total_width/2)
+		local min_z=center.z-math.floor(total_width/2)
+		return x >= min_x and x < min_x+total_width and
+			z >= min_z and z < min_z+total_width
+	end
+
+	local anchor_by_id,anchor_profile_by_id={},{}
+	for index=1,#source.anchors do anchor_by_id[source.anchors[index].id]=source.anchors[index] end
+	for index=1,#source.anchor_profiles do
+		anchor_profile_by_id[source.anchor_profiles[index].id]=source.anchor_profiles[index]
+	end
+	local hard_recipe_by_id={}
+	for index=1,#source.hard_protection_recipes do
+		hard_recipe_by_id[source.hard_protection_recipes[index].id]=
+			source.hard_protection_recipes[index]
+	end
+	local ingress_by_id={}
+	for index=1,#source.capital_ingresses do
+		ingress_by_id[source.capital_ingresses[index].id]=source.capital_ingresses[index]
+	end
+	local path_rows={}
+	for index=1,#source.routes do
+		local row=source.routes[index]
+		path_rows[#path_rows+1]={id=row.id,centreline=row.centreline,
+			surface_width=row.surface_width,corridor_width=row.corridor_width}
+	end
+	for index=1,#source.island_routes do
+		local row=source.island_routes[index]
+		path_rows[#path_rows+1]={id=row.id,centreline=row.centreline,
+			surface_width=5,corridor_width=12}
+	end
+	local trail_template={bandit_home=true,bandit_frontier=true,
+		mirefolk=true,clash=true}
+	for index=1,#source.poi_spurs do
+		local row=source.poi_spurs[index]
+		local anchor=anchor_by_id[row.anchor_id]
+		local corridor_width=trail_template[anchor.template_id] and 8 or 12
+		path_rows[#path_rows+1]={id=row.id,centreline=row.centreline,
+			surface_width=corridor_width == 8 and 3 or 5,
+			corridor_width=corridor_width}
+	end
+	table.sort(path_rows,function(a,b) return a.id < b.id end)
+
+	local function path_intersections(points)
+		local surface_columns,corridor_columns=0,0
+		for point_index=1,#points do
+			local point=points[point_index]
+			local in_surface,in_corridor=false,false
+			for path_index=1,#path_rows do
+				local path=path_rows[path_index]
+				if not in_surface and session.polyline_corridor_member(point.x,point.z,
+						path.centreline,path.surface_width) then in_surface=true end
+				if not in_corridor and session.polyline_corridor_member(point.x,point.z,
+						path.centreline,path.corridor_width) then in_corridor=true end
+				if in_surface and in_corridor then break end
+			end
+			if in_surface then surface_columns=surface_columns+1 end
+			if in_corridor then corridor_columns=corridor_columns+1 end
+		end
+		return surface_columns,corridor_columns
+	end
+	local function named_operation_intersections(points)
+		local columns=0
+		for point_index=1,#points do
+			local point=points[point_index]
+			local member=false
+			for crossing_index=1,#source.crossing_interfaces do
+				local crossing=source.crossing_interfaces[crossing_index]
+				if point.x == crossing.position.x and point.z == crossing.position.z or
+						crossing.authorization_polygon and
+						session.polygon_member(point.x,point.z,
+							crossing.authorization_polygon) then
+					member=true break
+				end
+			end
+			if member then columns=columns+1 end
+		end
+		return columns
+	end
+	local function fitting_intersections(upper_points,lower_points)
+		local result={}
+		for anchor_index=1,#source.anchors do
+			local anchor=source.anchors[anchor_index]
+			local profile=anchor_profile_by_id[anchor.template_id]
+			local counts={upper_full=0,lower_full=0,upper_blend=0,lower_blend=0}
+			for _,item in ipairs({{upper_points,"upper"},{lower_points,"lower"}}) do
+				for point_index=1,#item[1] do
+					local point=item[1][point_index]
+					if centered_half_open_member(point.x,point.z,anchor.position,
+							profile.fitting_width) then
+						counts[item[2] .. "_full"]=counts[item[2] .. "_full"]+1
+					end
+					if centered_half_open_member(point.x,point.z,anchor.position,
+							profile.blend_width) then
+						counts[item[2] .. "_blend"]=counts[item[2] .. "_blend"]+1
+					end
+				end
+			end
+			if counts.upper_full+counts.lower_full+
+					counts.upper_blend+counts.lower_blend > 0 then
+				counts.anchor_id=anchor.id result[#result+1]=counts
+			end
+		end
+		return result
+	end
+	local function hard_member(hard,x,z)
+		local recipe=hard_recipe_by_id[hard.recipe_id]
+		if recipe.shape == "centered_half_open_square" then
+			return centered_half_open_member(x,z,hard.center,recipe.total_width)
+		elseif recipe.shape == "exact_column" then
+			return x == hard.center.x and z == hard.center.z
+		elseif recipe.shape == "polyline_corridor" then
+			local ingress=ingress_by_id[hard.ingress_id]
+			for route_index=1,#ingress.route_ids do
+				local route=route_by_id[ingress.route_ids[route_index]]
+				if session.polyline_corridor_member(x,z,route.centreline,
+						recipe.total_width) then return true end
+			end
+		end
+		return false
+	end
+	local function hard_intersections(upper_points,lower_points)
+		local result={}
+		for hard_index=1,#source.hard_protection do
+			local hard=source.hard_protection[hard_index]
+			local upper,lower=0,0
+			for point_index=1,#upper_points do
+				local point=upper_points[point_index]
+				if hard_member(hard,point.x,point.z) then upper=upper+1 end
+			end
+			for point_index=1,#lower_points do
+				local point=lower_points[point_index]
+				if hard_member(hard,point.x,point.z) then lower=lower+1 end
+			end
+			if upper+lower > 0 then
+				result[#result+1]={hard_id=hard.id,upper=upper,lower=lower}
+			end
+		end
+		return result
+	end
+
+	local vertical_interface_by_pair={}
+	for interface_index=1,#source.hydrology_interfaces do
+		local interface=source.hydrology_interfaces[interface_index]
+		if interface.upper_id and interface.lower_id then
+			local key=contact_key(interface.upper_id,interface.lower_id)
+			if vertical_interface_by_pair[key] then
+				violate("duplicate_vertical_interface_pair",interface.id,1,
+					{other_id=vertical_interface_by_pair[key].id})
+			else vertical_interface_by_pair[key]=interface end
+		end
+	end
+
+	local wet_rows={}
+	for index=1,#source.hydrology do
+		local row=source.hydrology[index]
+		if profile_by_id[row.profile_id].depth > 0 then wet_rows[#wet_rows+1]=row end
+	end
+	local contact_reports,contact_report_by_interface={},{}
+	local contact_pair_count,unequal_contact_pair_count=0,0
+	for first_index=1,#wet_rows-1 do
+		for second_index=first_index+1,#wet_rows do
+			local first,second=wet_rows[first_index],wet_rows[second_index]
+			local upper,lower=first,second
+			if first.water_surface_offset < second.water_surface_offset or
+					first.water_surface_offset == second.water_surface_offset and
+					first.id > second.id then upper,lower=second,first end
+			local upper_bounds=bounds_for_tapered(upper)
+			local lower_bounds=bounds_for_tapered(lower)
+			local scan_min_x=math.max(upper_bounds.min_x-1,lower_bounds.min_x-1)
+			local scan_max_x=math.min(upper_bounds.max_x+1,lower_bounds.max_x+1)
+			local scan_min_z=math.max(upper_bounds.min_z-1,lower_bounds.min_z-1)
+			local scan_max_z=math.min(upper_bounds.max_z+1,lower_bounds.max_z+1)
+			if scan_min_x <= scan_max_x and scan_min_z <= scan_max_z then
+				local edges,upper_by_key,lower_by_key={},{},{}
+				for z=scan_min_z,scan_max_z do
+					for x=scan_min_x,scan_max_x do
+						local water,_,_,_,hydrology_id=classify(x,z)
+						if water == "planned_water" and hydrology_id == upper.id then
+							for direction_index=1,#contact_directions do
+								local direction=contact_directions[direction_index]
+								local lower_x,lower_z=x+direction.dx,z+direction.dz
+								local lower_water,_,_,_,lower_hydrology_id=
+									classify(lower_x,lower_z)
+								if lower_water == "planned_water" and
+										lower_hydrology_id == lower.id then
+									edges[#edges+1]={upper_x=x,upper_z=z,
+										lower_x=lower_x,lower_z=lower_z}
+									local upper_key=point_key(x,z)
+									if not upper_by_key[upper_key] then
+										upper_by_key[upper_key]={x=x,z=z}
+									end
+									local lower_key=point_key(lower_x,lower_z)
+									local lower_point=lower_by_key[lower_key]
+									if not lower_point then
+										lower_point={x=lower_x,z=lower_z,bits={}}
+										lower_by_key[lower_key]=lower_point
+									end
+									local mask=direction.mask == 1 and 2 or
+										direction.mask == 2 and 1 or
+										direction.mask == 4 and 8 or 4
+									lower_point.bits[mask]=true
+								end
+							end
+						end
+					end
+				end
+				if #edges > 0 then
+					table.sort(edges,function(a,b)
+						if a.upper_z ~= b.upper_z then return a.upper_z < b.upper_z end
+						if a.upper_x ~= b.upper_x then return a.upper_x < b.upper_x end
+						if a.lower_z ~= b.lower_z then return a.lower_z < b.lower_z end
+						return a.lower_x < b.lower_x
+					end)
+					local upper_points,lower_points={},{}
+					for _,point in pairs(upper_by_key) do upper_points[#upper_points+1]=point end
+					for _,point in pairs(lower_by_key) do
+						point.face_mask=0
+						for _,mask in ipairs({1,2,4,8}) do
+							if point.bits[mask] then point.face_mask=point.face_mask+mask end
+						end
+						point.bits=nil lower_points[#lower_points+1]=point
+					end
+					sort_points(upper_points) sort_points(lower_points)
+					local key=contact_key(upper.id,lower.id)
+					local interface=vertical_interface_by_pair[key]
+					local surface_columns,corridor_columns=
+						path_intersections(lower_points)
+					local report={upper_id=upper.id,lower_id=lower.id,
+						upper_offset=upper.water_surface_offset,
+						lower_offset=lower.water_surface_offset,
+						unequal=upper.water_surface_offset ~= lower.water_surface_offset,
+						interface_id=interface and interface.id or nil,
+						edges=edges,upper_points=upper_points,lower_points=lower_points,
+						edge_count=#edges,upper_count=#upper_points,lower_count=#lower_points,
+						upper_bounds=point_bounds(upper_points),
+						lower_bounds=point_bounds(lower_points),
+						upper_components=point_components(upper_points),
+						lower_components=point_components(lower_points),
+						path_surface_columns=surface_columns,
+						path_corridor_columns=corridor_columns,
+						named_operation_columns=named_operation_intersections(lower_points),
+						fitting_intersections=fitting_intersections(upper_points,lower_points),
+						hard_intersections=hard_intersections(upper_points,lower_points)}
+					contact_reports[#contact_reports+1]=report
+					contact_pair_count=contact_pair_count+1
+					if report.unequal then
+						unequal_contact_pair_count=unequal_contact_pair_count+1
+						if not interface then
+							violate("unequal_hydrology_contact_unbound",key,#edges,
+								edges[1])
+						end
+					end
+					if interface then contact_report_by_interface[interface.id]=report end
+				end
+			end
+		end
+	end
+	table.sort(contact_reports,function(a,b)
+		return a.upper_id < b.upper_id or
+			a.upper_id == b.upper_id and a.lower_id < b.lower_id
+	end)
+	if contact_pair_count ~= 12 then
+		violate("hydrology_contact_pair_count_differs","hydrology",contact_pair_count,
+			{expected=12,actual=contact_pair_count})
+	end
+	if unequal_contact_pair_count ~= 7 then
+		violate("unequal_hydrology_contact_pair_count_differs","hydrology",
+			unequal_contact_pair_count,{expected=7,actual=unequal_contact_pair_count})
+	end
+	for key,interface in pairs(vertical_interface_by_pair) do
+		if not contact_report_by_interface[interface.id] then
+			violate("vertical_interface_has_no_contact",interface.id,1,{pair=key})
+		end
+	end
+
+	local expected_contact_faces={
+		highcourt_goldmead_fall={edges=13,upper=13,lower=13,
+			upper_bounds={-106,-94,-1756,-1756},lower_bounds={-106,-94,-1757,-1757},
+			fitting={anchor_id="anchor_008",upper_full=13,lower_full=0,
+				upper_blend=13,lower_blend=13},
+			hard={hard_id="hard:anchor_008",upper=13,lower=13}},
+		gravesalt_broken_fall={edges=163,upper=114,lower=114,
+			upper_bounds={-1713,-1650,21,110},lower_bounds={-1712,-1649,21,110},
+			fitting={anchor_id="anchor_077",upper_full=0,lower_full=0,
+				upper_blend=1,lower_blend=0}},
+		raincall_reedmaze_fall={edges=109,upper=66,lower=65,
+			upper_bounds={2026,2070,1864,1929},lower_bounds={2026,2069,1864,1928}},
+	}
+	local contact_face_count=0
+	for interface_index=1,#source.hydrology_interfaces do
+		local interface=source.hydrology_interfaces[interface_index]
+		if interface.transition_scope_id == "orthogonal_reach_contact_face_v1" then
+			contact_face_count=contact_face_count+1
+			local expected=expected_contact_faces[interface.id]
+			local report=contact_report_by_interface[interface.id]
+			local failed=not expected or not report or interface.kind ~= "waterfall" or
+					interface.transition_profile_id ~= "waterfall_drop" or
+					interface.drop ~= interface.upper_level_offset-interface.lower_level_offset or
+					interface.drop_height ~= interface.drop or
+					interface.receiver_source_omission_nodes ~= 1 or
+					not interface.sealed
+			if not failed then
+				local ub,lb=report.upper_bounds,report.lower_bounds
+				failed=report.edge_count ~= expected.edges or
+					report.upper_count ~= expected.upper or report.lower_count ~= expected.lower or
+					report.upper_components ~= 1 or report.lower_components ~= 1 or
+					ub.min_x ~= expected.upper_bounds[1] or ub.max_x ~= expected.upper_bounds[2] or
+					ub.min_z ~= expected.upper_bounds[3] or ub.max_z ~= expected.upper_bounds[4] or
+					lb.min_x ~= expected.lower_bounds[1] or lb.max_x ~= expected.lower_bounds[2] or
+					lb.min_z ~= expected.lower_bounds[3] or lb.max_z ~= expected.lower_bounds[4] or
+					report.path_surface_columns ~= 0 or report.path_corridor_columns ~= 0 or
+					report.named_operation_columns ~= 0
+			end
+			if not failed then
+				local expected_fitting=expected.fitting
+				if expected_fitting then
+					failed=#report.fitting_intersections ~= 1
+					local actual=report.fitting_intersections[1]
+					for _,field in ipairs({"anchor_id","upper_full","lower_full",
+							"upper_blend","lower_blend"}) do
+						if not actual or actual[field] ~= expected_fitting[field] then failed=true end
+					end
+				else failed=#report.fitting_intersections ~= 0 end
+				local expected_hard=expected.hard
+				if expected_hard then
+					failed=failed or #report.hard_intersections ~= 1
+					local actual=report.hard_intersections[1]
+					for _,field in ipairs({"hard_id","upper","lower"}) do
+						if not actual or actual[field] ~= expected_hard[field] then failed=true end
+					end
+				else failed=failed or #report.hard_intersections ~= 0 end
+			end
+			if failed then
+				violate("contact_face_proof_differs",interface.id,1,
+					{report_exists=report ~= nil})
+			end
+		end
+	end
+	if contact_face_count ~= 3 then
+		violate("contact_face_interface_count_differs","hydrology_interfaces",
+			contact_face_count,{expected=3,actual=contact_face_count})
+	end
+
 	local hydro_interface_by_crossing={}
 	local structural_interface_failures=0
 	for index=1,#source.hydrology_interfaces do
@@ -716,6 +1123,9 @@ return function(source, session, options)
 		{name="wet_hydrology_reaches",value=wet_reaches},
 		{name="dry_hydrology_reaches",value=dry_reaches},
 		{name="hydrology_sample_failures",value=wet_sample_failures},
+		{name="hydrology_contact_pairs",value=contact_pair_count},
+		{name="unequal_hydrology_contact_pairs",value=unequal_contact_pair_count},
+		{name="contact_face_interfaces",value=contact_face_count},
 		{name="hydrology_interface_failures",value=structural_interface_failures},
 		{name="crossing_failures",value=crossing_failures},
 		{name="violation_count",value=#violations},
@@ -731,6 +1141,7 @@ return function(source, session, options)
 		bays=bay_reports,
 		channels=channel_reports,
 		hydrology=hydrology_reports,
+		hydrology_contacts=contact_reports,
 		crossings=crossing_reports,
 	}
 end

@@ -235,13 +235,23 @@ local function append_bowed_leg(result,a,b,amplitude,sign,include_start)
 	result[#result+1]=point(b.x,b.z)
 end
 local route_extra_pins_by_index={
+	[1]={point(-1900,-2120)},
 	[43]={point(-2000,-100)},
 	[48]={point(2000,-100)},
+	[51]={point(-600,150)},
+	[52]={point(600,150)},
+}
+local route_leading_pins_by_index={
+	[54]={point(1900,700),point(2050,600)},
+	[55]={point(-1900,-100),point(-1750,-150)},
 }
 local function curved_route(a,via,b,class,index)
 	local result={}
 	local amplitude=source.route_curve.amplitude_by_class[class]
-	local pins={a,via}
+	local pins={a}
+	local leading=route_leading_pins_by_index[index] or {}
+	for leading_index=1,#leading do pins[#pins+1]=leading[leading_index] end
+	pins[#pins+1]=via
 	local extras=route_extra_pins_by_index[index] or {}
 	for extra_index=1,#extras do pins[#pins+1]=extras[extra_index] end
 	pins[#pins+1]=b
@@ -458,13 +468,29 @@ for index = 1, #anchor_rows do
 end
 
 source.poi_spurs = {}
+local spur_intermediate_points_by_index = {
+	[13]={point(-1820,-2015)},
+	[23]={point(1840,2025)},
+	[36]={point(1850,-530),point(1750,-620)},
+	[45]={point(1960,2140),point(1840,2110)},
+	[50]={point(-1775,-450),point(-1775,-650)},
+	[51]={point(80,-1980),point(40,-2000)},
+	[69]={point(-2150,2200),point(-2150,2050),point(-2000,1950),
+		point(-1850,1950)},
+	[86]={point(3150,180),point(3250,100),point(3250,0)},
+}
 for index = 13, 86 do
 	local anchor = source.anchors[index]
 	local hub = source.zones[anchor.zone_numeric_id].hub
+	local centreline = {point(anchor.position.x,anchor.position.z)}
+	local intermediate_points = spur_intermediate_points_by_index[index] or {}
+	for point_index = 1, #intermediate_points do
+		centreline[#centreline+1] = intermediate_points[point_index]
+	end
+	centreline[#centreline+1] = point(hub.x,hub.z)
 	source.poi_spurs[#source.poi_spurs+1] = {
 		id=("poi_spur_%03d"):format(index),anchor_id=anchor.id,
-		centreline={point(anchor.position.x,anchor.position.z),
-			point(hub.x,hub.z)},
+		centreline=centreline,
 	}
 end
 
@@ -748,6 +774,9 @@ source.hydrology_interfaces = {
 	{id="broken_aqueduct_water",kind="bridge",hydrology_id="hydro_broken_marsh",route_interface_id="broken_aqueduct",position=point(-1500,-125),transition_profile_id="bridge_clearance",sealed=true},
 	{id="gravesalt_causeway_south_water",kind="causeway",hydrology_id="hydro_gravesalt_pans",route_interface_id="gravesalt_causeway_south",position=point(-2000,0),transition_profile_id="causeway_deck",sealed=true},
 	{id="gravesalt_causeway_north_water",kind="causeway",hydrology_id="hydro_gravesalt_pans",route_interface_id="gravesalt_causeway_north",position=point(-2000,0),transition_profile_id="causeway_deck",sealed=true},
+	{id="highcourt_goldmead_fall",kind="waterfall",upper_id="hydro_highcourt_fork_west",lower_id="hydro_goldmead_millriver",upper_level_offset=34,lower_level_offset=16,position=point(-100,-1780),lip_id="highcourt_goldmead_lip",drop_id="highcourt_goldmead_drop",plunge_id="highcourt_goldmead_plunge",transition_profile_id="waterfall_drop",transition_scope_id="orthogonal_reach_contact_face_v1",drop=18,drop_height=18,plunge_profile_id="river",bed_seal_layers=3,bank_seal_nodes=2,receiver_source_omission_nodes=1,sealed=true},
+	{id="gravesalt_broken_fall",kind="waterfall",upper_id="hydro_gravesalt_pans",lower_id="hydro_broken_marsh",upper_level_offset=100,lower_level_offset=8,position=point(-1700,80),lip_id="gravesalt_broken_lip",drop_id="gravesalt_broken_drop",plunge_id="gravesalt_broken_plunge",transition_profile_id="waterfall_drop",transition_scope_id="orthogonal_reach_contact_face_v1",drop=92,drop_height=92,plunge_profile_id="ordinary_lake",bed_seal_layers=3,bank_seal_nodes=2,receiver_source_omission_nodes=1,sealed=true},
+	{id="raincall_reedmaze_fall",kind="waterfall",upper_id="hydro_raincall_plunge",lower_id="hydro_whispering_reedmaze",upper_level_offset=44,lower_level_offset=8,position=point(2100,1900),lip_id="raincall_reedmaze_lip",drop_id="raincall_reedmaze_drop",plunge_id="raincall_reedmaze_plunge",transition_profile_id="waterfall_drop",transition_scope_id="orthogonal_reach_contact_face_v1",drop=36,drop_height=36,plunge_profile_id="shallow_marsh",bed_seal_layers=3,bank_seal_nodes=2,receiver_source_omission_nodes=1,sealed=true},
 }
 
 source.hard_protection_recipes = {

@@ -1,11 +1,13 @@
 # WP40 simple-map R3 vertical contract
 
-**Status (2026-08-26): independently accepted implementation contract,
-including the full-route-surface clarification. R2 is accepted; no R3
-implementation or artifact is accepted yet.**
+**Status (2026-08-27): independently accepted implementation contract. V1e
+R2 is the live horizontal authority and its four-seed vertical-feasibility
+preflight is green. No R3 implementation, production artifact or Luanti
+runtime world is accepted yet.**
 
-This contract turns the accepted `wp40-simple-map-v1d` horizontal layout into
-one small, deterministic vertical model. It deliberately does not resurrect
+This contract turns geometry layout `wp40-simple-map-v1d`, with accepted
+source revision `wp40-simple-map-v1e`, into one small, deterministic vertical
+model. It deliberately does not resurrect
 the retired exact-topology compiler, boundary gates, route DP, generic CSG or
 template DSL. The binding game rules remain in `docs/design/world_zones.md`,
 `docs/design/world.md` and `docs/design/housing.md`; this document makes the R3
@@ -19,9 +21,9 @@ R3 owns four results for one canonical full seed:
    `H(full_seed_string, x, z)` exposed internally as `terrain_height_at`;
 2. water-surface and exceptional traversable-surface values required to turn
    that scalar into rivers, causeways, bridges, fords and tunnels;
-3. final x/y/z anchor records plus their already-authored hard-protection
+3. final x/y/z records for all 100 fixed anchors plus their already-authored hard-protection
    volumes; and
-4. immutable evidence that the accepted R2 paths, hydrology, anchor choices
+4. immutable evidence that the accepted V1e R2 paths, hydrology, fixed anchors
    and coastal housing cores can be realized vertically.
 
 R3 does not write map nodes, register engine callbacks, choose biomes or
@@ -38,19 +40,22 @@ only after measuring the complete mapchunk transaction; the former informal
 ## 2. Authority and fixed constants
 
 - The horizontal evaluator and R2-frozen source remain the sole authority for
-  water class, macro region, zone owner, selected x/z anchor, route geometry,
+  water class, macro region, zone owner, fixed x/z anchor, route geometry,
   hydrology identity, housing eligibility and hard x/z footprints. R3 never
   reimplements ownership or moves a horizontal feature.
-- R3 does not edit any of the 14 `input_sha256` files bound by
-  `wp40-simple-map-r2-artifact.tsv`. Its schema, implementation, offline
-  adapter, validator and runner are new files. The accepted R2 artifact remains
-  immutable with body digest
-  `73165e1ad9e9dd03bc608b544e5906a10df2bf7b2c23779b311ad3cbdadf4f7b`
-  and complete-file SHA-256
-  `02585d6644265e8889edb3311045d76c2dd7152700dff33563bd8daabc13c339`.
-  R3 verifies both before doing vertical work. A later need to edit a bound
-  input stops R3 and requires a refreshed R2 artifact plus focused independent
-  R2 rereview first.
+- The accepted V1e R2 artifact binds 15 `input_sha256` files. Its body
+  digest is
+  `1a819192fa40254aa6da1ebf5f3fa5286790ef907abe09750455e5e24c881a8b`
+  and its complete-file SHA-256 is
+  `ba6e684b232e963251c3582e521c46a9364d602256eba9b6115bd0575e4c9c4b`.
+  Its complete wet-reach-contact roster digest is
+  `904c548d4679596467ca72e0a0cf86de9248189dee97fcc37321e20700d8e0f7`
+  and its complete housing result digest is
+  `4e5676d86ba5226642476751509f78c5152ecbc429a8d1f4bb94e415289f26ec`.
+  R3 verifies the body, complete file and all 15 bound inputs before doing
+  vertical work. Any later need to edit a bound V1e input stops R3 and
+  requires another refreshed R2 artifact plus focused
+  independent R2 rereview first.
 - The project water level is the integer `1`. R4 must fail closed if the
   engine's `water_level` differs; height never reads the setting at query time.
 - R3 evaluates the finite bounds already returned by
@@ -263,12 +268,62 @@ is its exact corridor of total `drop_mask_width`. The plunge footprint begins
 at the lower point and is one downstream, cardinal, half-open rectangle of
 total cross-axis `plunge_width` and along-axis `plunge_length`. The scalar bed
 interpolates from upper bed to lower bed along the fall axis, while
-`water_surface_at` is nil on transition-only columns. Allocation-free
-`hydrology_transition_values_at` returns
-`kind, interface_id, upper_y, lower_y, progress_q` so R5 can write the vertical
-water face. The referenced lower reach remains the plunge-pool footprint;
+`water_surface_at` is nil on transition-only columns. The referenced lower
+reach remains the plunge-pool footprint;
 its profile must equal `plunge_profile_id`, and its mask at the lower point
 must lie inside the plunge rectangle or validation fails.
+
+V1e adds exactly three contact-face waterfalls without moving a reach:
+
+| Interface | Upper/lower reach offsets | Edges / lips / faces |
+|---|---|---:|
+| `highcourt_goldmead_fall` | `hydro_highcourt_fork_west` +34 / `hydro_goldmead_millriver` +16 | 13 / 13 / 13 |
+| `gravesalt_broken_fall` | `hydro_gravesalt_pans` +100 / `hydro_broken_marsh` +8 | 163 / 114 / 114 |
+| `raincall_reedmaze_fall` | `hydro_raincall_plunge` +44 / `hydro_whispering_reedmaze` +8 | 109 / 66 / 65 |
+
+Each has `transition_scope_id="orthogonal_reach_contact_face_v1"`. Its
+footprint is derived solely from horizontal classification. For each row,
+form the conservative support bound of each reach from every centreline point
+plus its half-width and expand it by one node. Scan their inclusive integer
+intersection. An ordered edge `(u,l)` exists exactly when `u` classifies as
+`planned_water` for the upper reach and its orthogonal neighbour `l`
+classifies as `planned_water` for the lower reach. Edges sort by
+`(upper_z,upper_x,lower_z,lower_x)`; unique upper and lower endpoints sort by
+`(z,x)` and form the lip and face sets. Each endpoint set is one 8-connected
+component and must have the exact population above.
+
+The upper lip retains its ordinary upper-reach bed and water surface. The
+lower face retains its ordinary lower-reach bed, but `water_surface_at` is nil.
+Its `face_mask` sums bit 1 for an upper neighbour at `(x-1,z)`, bit 2 for
+`(x+1,z)`, bit 4 for `(x,z-1)` and bit 8 for `(x,z+1)` and is never zero.
+Existing cardinal transitions retain their previous geometry and return a nil
+mask. The uniform allocation-free query is therefore exactly:
+
+```text
+hydrology_transition_values_at(x,z)
+  -> kind, interface_id, upper_y, lower_y, progress_q, face_mask
+```
+
+On a contact face `progress_q` is nil and `face_mask` is nonzero; on a
+cardinal rapid or waterfall the existing progress is returned and
+`face_mask` is nil. Outside every transition all six results are nil.
+
+R3 freezes only the analytic receiver rule. With
+`lower_bed_y = lower_y - lower_profile.depth`, ordinary lower-pool source
+liquid would occupy `lower_bed_y+1..lower_y`; a lower face instead owns the
+interval `lower_bed_y+1..lower_y-1`, possibly empty, leaves the bed unchanged
+and omits exactly the top source at `lower_y`. Evidence records
+`receiver_source_omission_nodes=1`, one receiver per lower-face column and
+`authored_falling_water_columns=0`. R3 materializes none of these nodes.
+
+R5 binds every wet named WP40 hydrology reach to non-renewable, range-two
+`default:river_water_source` / `default:river_water_flowing`, retains ordinary
+water for oceans, bays and other non-hydrology water, leaves the receiver open
+and calls `VoxelManip:update_liquids()` exactly once after its final liquid
+buffer update. Native liquid simulation creates the fall; no authored falling
+water column is permitted. The two existing rapids and two cardinal Raincall
+waterfalls keep their byte-identical geometry and use the same river-water
+material rule.
 
 R3 does not invent a fall from ordinary height differences. Physically
 adjacent reaches with different water levels must either have a named
@@ -311,7 +366,7 @@ derived water operations. No per-column or per-span string is constructed.
 - A tunnel floor leaves the overlying terrain height untouched. Its exact y is
   constructed by the route-skeleton rule below so R5 can later cut a
   four-node-high lumen with proved overburden.
-- Every selected non-capital anchor receives a dry `anchor_platform` at least
+- Every fixed non-capital anchor receives a dry `anchor_platform` at least
   one node above the water surface on each planned-water column inside its
   complete fitting square. Capital civic water is the explicit exception and
   remains water. Analytic water policy remains planned water under an anchor
@@ -366,18 +421,18 @@ On an ordinary land column the high-to-low functional precedence is:
 1. start fitting grade;
 2. capital fitting grade;
 3. guaranteed coastal-housing-core grade;
-4. land route or selected POI-spur grade;
+4. land route or fixed POI-spur grade;
 5. island landing grade;
-6. selected-anchor fitting grade; and
+6. fixed-anchor fitting grade; and
 7. natural relief and landmark result.
 
 This makes the existing design phrase “start, capital, housing, route and
-selected-anchor” explicit rather than dependent on loop order. Start, capital,
+fixed-anchor” explicit rather than dependent on loop order. Start, capital,
 coastal-core, landing and anchor grades are owner-clipped. A frozen
 route/spur/island grade follows its accepted complete route footprint across
 whatever land owners R2 classifies there; it is not clipped to `zone_a`,
 `zone_b` or a two-zone assumption. Planned-water columns preserve their hydrology bed except
-for a named/derived route operation or a required selected-anchor platform.
+for a named/derived route operation or a required fixed-anchor platform.
 Start and coastal-core footprints are already proven dry; civic water inside a
 capital is therefore preserved rather than silently filled by the capital
 grade.
@@ -401,12 +456,12 @@ zero and the path surface wins. At the exact hub its endpoint pin already
 equals the start/capital reference; after that it may grade through the flat
 area as one narrow road strip. Outside the visible path surface the ordinary
 order is unchanged, so the rest of each fitting/core remains flat or gently
-blended. Selected-anchor grades already sit below routes. This exception uses
+blended. Fixed-anchor grades already sit below routes. This exception uses
 only the existing masks and route projection; it adds no plateau-edge pins,
 owner-boundary distance or repair pass. The final adjacent-step gate remains
 unchanged.
 
-### 5.2 Starts, capitals, coastal cores and selected anchors
+### 5.2 Starts, capitals, coastal cores and fixed anchors
 
 Every zone has one seed-independent skeleton height:
 
@@ -415,7 +470,7 @@ zone_station_y = water_level + primary_relief.min_above_water
 ```
 
 This uses the already-authored relief band rather than a new height table. A
-start uses its owning zone's `zone_station_y` as `reference_y`. Every selected
+start uses its owning zone's `zone_station_y` as `reference_y`. Every fixed
 non-start/non-capital anchor, including the fixed dragon and apex anchors,
 uses the fixed band midpoint
 `water_level + floor((primary_min + primary_max) / 2)`. On planned water it
@@ -443,7 +498,7 @@ structure/dressing tag. This deliberately rejects the old generic template
 DSL: later walls, roots, buildings and stairs may dress this resolved ground,
 but may not introduce a second terrain-height authority. The source `max_cut`
 and `max_fill` fields are retained only because R2 is
-immutable; the first construction proved them incompatible with the selected
+immutable; the first construction proved them incompatible with the fixed
 anchors and route endpoints, so R3 binds them as `consumed=false` and does not
 use them as vertical limits. Observed cut/fill extrema remain evidence, not a
 rejection or reselection rule. The complete fitting square and collar are one
@@ -463,7 +518,7 @@ it is zero. The final land height is the Q16 mix
 once half away from zero. The same primitive and endpoint conventions apply to
 all 17 rows.
 
-For a planned-water column inside a non-capital selected anchor's full-weight
+For a planned-water column inside a non-capital fixed anchor's full-weight
 fitting square, the `anchor_platform` surface is
 `max(reference_y, local clearance datum + 1)`. The platform does not extend
 into the outside collar. Capital civic-water columns are excluded from both
@@ -471,7 +526,7 @@ the grade and platform and remain water.
 
 The six starts and six capitals use their existing fixed anchor/profile rows.
 Capital grading applies only to its land columns, so the currently authored
-civic river/lake/cenote water remains water. Routes meet every hub and selected
+civic river/lake/cenote water remains water. Routes meet every hub and fixed
 anchor at the same skeleton/reference target; natural relief never becomes a
 second endpoint-height authority.
 
@@ -497,16 +552,16 @@ so joins are the only possible duplicates; any other duplicate is a
 violation. Array order is the canonical cumulative L-infinity node run.
 
 The endpoint target for a land route is the Section 5.2 target of its frozen
-zone-hub station. The selected candidate's POI spur runs from its selected
-anchor `reference_y` to that same zone-hub target. Unselected candidate spurs
-do not enter height evaluation. Its R2 claim-exclusion width is the corridor
-width; width 12 uses the secondary-road surface width 5 and width 8 uses the
-trail surface width 3.
+zone-hub station. Each of the 74 fixed POI spurs runs from its fixed anchor
+`reference_y` to that same zone-hub target. No alternative spur geometry
+enters height evaluation. Its R2 claim-exclusion width is the corridor width;
+width 12 uses the secondary-road surface width 5 and width 8 uses the trail
+surface width 3.
 
 Island routes use their R2 width 12 and surface width 5. Each landing endpoint
 is fixed at `water_level + 1`, each shared island junction is fixed at the
 owning mountain zone's `zone_station_y`, and each dragon/apex endpoint uses
-its selected anchor `reference_y`. Every island-owned land column inside the
+its fixed anchor `reference_y`. Every island-owned land column inside the
 matching boat path's exact width-96 corridor is a flat landing grade at
 `water_level + 1`; water and mainland columns are unchanged. The five-node
 island route wins where it leaves that landing grade and climbs toward the
@@ -569,7 +624,7 @@ nearest integer run, with an exact half tie choosing the lower run, and use
 that already-frozen axis node's y. Consequently an internal interface or
 causeway pin affects the complete neighboring road surface rather than only
 the axis. Lowest exact squared-distance ratio wins between paths; ties use
-land route, selected POI spur, island route, then stable string id and lower
+land route, fixed POI spur, island route, then stable string id and lower
 segment order.
 
 Within `surface_width` the chosen scalar path target has full weight. Between
@@ -624,8 +679,10 @@ The height session exposes at least:
 - read-only metrics proving that query-time SHA calls and query-time lattice
   construction are zero.
 
-An anchor record stores the frozen selected x/z, ground y, placement mode,
-candidate index and platform/path kind where applicable. Hard-protection rows
+An anchor record stores the frozen x/z, ground y, `selection_mode`,
+`approved_candidate_index` provenance and platform/path kind where applicable.
+`authored_fixed` rows use approved index zero; `frozen_layout` rows retain the
+accepted V1d index in 1..3. No old `candidate_index` is exposed. Hard-protection rows
 retain the exact R2 x/z footprint and their existing y policy (`-700`
 inclusive upward without limit). Anchor squares and socket columns add their
 resolved centre surface y. An ingress corridor retains nil for that scalar and
@@ -645,7 +702,7 @@ least:
 - relief-root, octave-lattice and final base-lattice digests;
 - min/max counts and witnesses for all six primary profiles and all 70
   owner-clipped landmark masks;
-- all 100 selected x/y/z anchors and 42 hard-protection volumes;
+- all 100 fixed x/y/z anchors and 42 hard-protection volumes;
 - the complete station/reference table, capital civic-water maxima, anchor
   footprint/collar counts, observed cut/fill extrema, explicit
   `source_cut_fill_limits_consumed=false` and zero rejected/reselected anchors;
@@ -665,8 +722,12 @@ least:
 - for both tunnels, the exact 33-node run and complete two-dimensional
   footprint, pre-path interior minimum, feasible interval, baseline, floor,
   overburden and both approach-pin witnesses;
-- all 25 hydrology reaches and 12 concrete interfaces, including exact
+- all 25 hydrology reaches and 15 concrete interfaces, including exact
   surface/bed values and rapid/waterfall offsets;
+- the complete 12-pair wet-reach contact roster, exactly seven uniquely bound
+  unequal-level pairs, the unchanged two rapid and two cardinal-waterfall
+  geometries, and for all three contact-face waterfalls every ordered edge,
+  lip, face, direction mask, component, bound, receiver field and digest;
 - shelf, bay, deep-ocean and dragon-channel bed witnesses;
 - complete-capsule natural-height min/max for each coastal core and the count
   of its wholly contained eligible 101 by 101 reservations. The global
@@ -677,14 +738,35 @@ least:
   unbound evidence only; they never enter the canonical artifact because that
   would make byte-identical reproduction impossible.
 
-The exhaustive fixed-layout/seed-zero scan runs under LuaJIT. It checks the
-complete accepted R2 x/z extent, all route axes/corridors, every selected
+The accepted V1e R2 feasibility evidence is
+`docs/research/wp40-simple-map-v1e-r3-preflight.tsv`. Its canonical body
+digest is
+`de2e1d5a244785a3ca74e737e3848102f8b807d77043b058dc581a9f69d0898e`
+and its complete-file SHA-256 is
+`f3ccf699df1d67083730ccade57ea829fb8a618a1ee8e93890d41a1548d840e3`.
+The four per-seed evidence digests, in the seed order below, are
+`dffe10e8413e5408aff3221d6e21ec2667ac6ffc6bbb517861e62496a1fced86`,
+`f977bfcdf561adc0faa2207a2892e45a5321aabb91947a464d1f6a6e2ebe80c1`,
+`f38594b3a360c457ad2f0b550397a4a56edd47441c67ef296baa52474e16990e`
+and
+`7f313fb3f1d9f1c04f35cc51310a12e9a9e3bd90f20883d3d1935ccbb301b5e4`.
+Two complete four-seed LuaJIT runs produced byte-identical preflight files.
+The targeted LuaJIT and PUC 5.1 KATs both produced canonical digest
+`c2fe576c24aed28bb3c416a2405de071b46b24889c713053c3ec99f35d388bca`;
+the merged KAT file SHA-256 was
+`2f7810f41d83c482412a2496de35e8071da448b099c40c747551131e48de17ce`.
+This is the bounded vertical preflight for the V1e R2 refresh, not acceptance
+of the R3 implementation or its production integration.
+
+The exhaustive fixed-layout four-seed scan runs under LuaJIT. It checks the
+complete accepted V1e R2 x/z extent, all route axes/corridors, every fixed
 anchor envelope, all hydrology masks/interfaces and the complete four-core
 reservation population. It fails on an unsafe integer, missing height,
 profile/mask owner escape, anchor reference or owner-clip mismatch, route step
 above one, non-minimal route envelope, changed exact pin, missing clearance,
 forbidden exterior path, broken named interface, insufficient tunnel
-overburden, disconnected unequal-level water contact without an interface,
+overburden, a wet-contact-roster mismatch, disconnected unequal-level water
+contact without an interface,
 coastal relief above 12, or nondeterministic artifact.
 
 Targeted PUC 5.1 KATs cover seeds `0`, `1`, `2^63` and `2^64-1`, negative
@@ -698,23 +780,29 @@ as assigned by the accepted rebase plan.
 Every Lua change also runs `tools/bin/luac51 -p`, the `SETGLOBAL` inspection
 and all five Lua 5.1/sandbox sweeps explicitly over changed production and
 tool Lua. The R3 runner supports `WP40_LUA_BIN` and defaults expensive work to
-LuaJIT.
+LuaJIT. Independent seed constructions run as isolated, hash-bound shards under
+AGENTS.md's workstation-wide seven-process cap: the four exhaustive LuaJIT
+preflight seeds run together, while the targeted cross-interpreter gate starts
+all four PUC seeds and three LuaJIT seeds before using the released seventh
+slot for the final LuaJIT seed. Every worker owns a separate top-level scratch
+directory and the merge restores the explicit canonical seed order before
+comparing bytes.
 
 ## 8. Review stop conditions
 
 R3 does not proceed to production integration if any of these occurs:
 
-- a second owner, zone, water or anchor-selection evaluator appears;
+- a second owner, zone, water or anchor-placement evaluator appears;
 - SHA-256, feature-list construction or lattice construction occurs in a
   height query;
 - an old compiler, boundary graph, route DP, generic CSG/template DSL or
   engine height becomes a dependency;
-- a selected 2D anchor is moved, rejected or reselected for height;
+- a fixed 2D anchor is moved, rejected or reselected for height;
 - one scalar is used dishonestly for both a water bed and bridge deck or both
   a hilltop and tunnel floor;
 - a planned-water crossing is globally exempted instead of receiving a local
   deterministic operation;
-- any of the 14 accepted R2 artifact input hashes changes without a refreshed
+- any accepted V1e R2 artifact input hash changes without a refreshed
   R2 artifact and focused independent R2 rereview; or
 - a performance number becomes a pass/fail gate without a measured complete
   mapchunk budget and written justification.

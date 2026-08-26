@@ -1,9 +1,9 @@
 # WP40 simple-map V1e focused R2 refresh contract
 
-**Status (2026-08-26): accepted focused refresh contract, including the
-independently reviewed hydrology closure in Section 4.1. The accepted V1d R2
-artifact remains authoritative until every acceptance gate in this document
-is green.**
+**Status (2026-08-27): completed and accepted. Every gate in Section 5 is
+green, including independent implementation review and the user's explicit
+approval of the final V1e SVG. The V1e artifact at the sole live R2 path is
+authoritative; V1d remains reproducible history at commit `d337160`.**
 
 ## 1. Reason and boundary
 
@@ -475,7 +475,7 @@ V1e is accepted only when all of the following are true:
    water-node rule and the fixed-anchor revision;
    `wp40-simple-map-rebase-plan.md`, `README.md` and `BACKLOG.md` describe the
    same fixed-anchor revision. The active
-   sections of `wp40-simple-map-r3-contract.md` bind the candidate V1e R2
+   sections of `wp40-simple-map-r3-contract.md` bind the reviewed V1e R2
    body/file/input hashes, both layout identities, seed-independent anchor
    result fields, single-centreline spur semantics, the orthogonal
    contact-face waterfall rule, its exact edge/endpoint derivation, the
@@ -644,6 +644,27 @@ the text attributed source-renewal prevention partly to liquid range. The
 current draft names every conflicting live authority and assigns renewal
 prevention solely to `liquid_renewable=false`; range two separately bounds
 lateral flow. The final focused Opus xhigh rereview returned **ACCEPTED**,
-0 Critical / 0 High / 0 Medium / 0 Low. This acceptance covers the refresh
-contract only. V1d remains the sole live R2 authority until every gate above
-passes.
+0 Critical / 0 High / 0 Medium / 0 Low. This acceptance covered the refresh
+contract only; implementation acceptance is recorded below.
+
+## 8. Implementation completion record
+
+The bounded refresh completed on 2026-08-27. The user explicitly approved
+`docs/research/wp40-simple-map-v1e-preview.svg`, complete-file SHA-256
+`5816941d7bb7524a653b7cbe6b471f842be8bdc89db5e18f9fbf2017555e8fdc`.
+The artifact at the sole live R2 path is now V1e, with canonical body/file
+SHA-256 values
+`1a819192fa40254aa6da1ebf5f3fa5286790ef907abe09750455e5e24c881a8b` /
+`ba6e684b232e963251c3582e521c46a9364d602256eba9b6115bd0575e4c9c4b`.
+The four-seed vertical-feasibility preflight completed with body/file SHA-256
+values
+`de2e1d5a244785a3ca74e737e3848102f8b807d77043b058dc581a9f69d0898e` /
+`f3ccf699df1d67083730ccade57ea829fb8a618a1ee8e93890d41a1548d840e3`.
+
+The fresh implementation review and focused rereview are recorded in
+[wp40-simple-map-v1e-r2-review.md](wp40-simple-map-v1e-r2-review.md). The
+initial review found 0 Critical / 0 High / 1 Medium / 1 Low; one correction
+round closed both findings, and the final verdict was **ACCEPTED** with zero
+findings. V1d remains immutable historical evidence at `d337160`. This record
+accepts V1e R2 only: the R3 implementation, production planner/materializer
+and Luanti runtime world remain unaccepted later work.

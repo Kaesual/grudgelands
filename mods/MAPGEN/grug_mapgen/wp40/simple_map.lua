@@ -350,7 +350,7 @@ return function(dependencies)
 			anchors=100,poi_spurs=74,apex_sockets=24,region_resources=6,
 			relief_profiles=6,anchor_profiles=17,landmarks=70,
 			hydrology_profiles=11,hydrology_transition_profiles=6,
-			hydrology=25,hydrology_interfaces=12,
+			hydrology=25,hydrology_interfaces=15,
 			hard_protection_recipes=4,hard_protection=42,
 			claim_exclusion_recipes=5,claim_exclusions=314,
 		}
@@ -796,11 +796,43 @@ return function(dependencies)
 			end
 			hydrology_ids[row.id]=row
 		end
+		local contact_face_interfaces = {
+			{id="highcourt_goldmead_fall",
+				upper_id="hydro_highcourt_fork_west",
+				lower_id="hydro_goldmead_millriver",
+				upper_level_offset=34,lower_level_offset=16,x=-100,z=-1780,
+				lip_id="highcourt_goldmead_lip",
+				drop_id="highcourt_goldmead_drop",
+				plunge_id="highcourt_goldmead_plunge",drop=18,
+				plunge_profile_id="river"},
+			{id="gravesalt_broken_fall",upper_id="hydro_gravesalt_pans",
+				lower_id="hydro_broken_marsh",upper_level_offset=100,
+				lower_level_offset=8,x=-1700,z=80,
+				lip_id="gravesalt_broken_lip",drop_id="gravesalt_broken_drop",
+				plunge_id="gravesalt_broken_plunge",drop=92,
+				plunge_profile_id="ordinary_lake"},
+			{id="raincall_reedmaze_fall",upper_id="hydro_raincall_plunge",
+				lower_id="hydro_whispering_reedmaze",upper_level_offset=44,
+				lower_level_offset=8,x=2100,z=1900,
+				lip_id="raincall_reedmaze_lip",drop_id="raincall_reedmaze_drop",
+				plunge_id="raincall_reedmaze_plunge",drop=36,
+				plunge_profile_id="shallow_marsh"},
+		}
+		local contact_face_fields = {
+			id=true,kind=true,upper_id=true,lower_id=true,
+			upper_level_offset=true,lower_level_offset=true,position=true,
+			lip_id=true,drop_id=true,plunge_id=true,transition_profile_id=true,
+			transition_scope_id=true,drop=true,drop_height=true,
+			plunge_profile_id=true,bed_seal_layers=true,bank_seal_nodes=true,
+			receiver_source_omission_nodes=true,sealed=true,
+		}
+		local hydrology_interface_ids={}
 		for index=1,#source.hydrology_interfaces do
 			local row=source.hydrology_interfaces[index]
 			local upper=row.upper_id and hydrology_ids[row.upper_id] or nil
 			local lower=row.lower_id and hydrology_ids[row.lower_id] or nil
-			if not transition_profile_ids[row.transition_profile_id] or
+			if type(row.id) ~= "string" or hydrology_interface_ids[row.id] or
+					not transition_profile_ids[row.transition_profile_id] or
 					(row.hydrology_id and not hydrology_ids[row.hydrology_id]) or
 					(row.upper_id and not hydrology_ids[row.upper_id]) or
 					(row.lower_id and not hydrology_ids[row.lower_id]) or
@@ -812,6 +844,7 @@ return function(dependencies)
 						not hydrology_profile_ids[row.plunge_profile_id]) then
 				fail("hydrology interface reference differs at " .. index)
 			end
+			hydrology_interface_ids[row.id]=true
 			if upper and (not lower or
 					row.upper_level_offset ~= upper.water_surface_offset or
 					row.lower_level_offset ~= lower.water_surface_offset) then
@@ -822,6 +855,37 @@ return function(dependencies)
 					if not hydrology_ids[row.from_ids[from_index]] then
 						fail("hydrology confluence reference differs")
 					end
+				end
+			end
+			if index <= 12 and row.transition_scope_id ~= nil then
+				fail("existing hydrology interface scope differs at " .. index)
+			elseif index > 12 then
+				local expected=contact_face_interfaces[index-12]
+				for key in pairs(row) do
+					if not contact_face_fields[key] then
+						fail("contact-face waterfall field differs at " .. index)
+					end
+				end
+				if not expected or row.id ~= expected.id or
+						row.kind ~= "waterfall" or
+						row.upper_id ~= expected.upper_id or
+						row.lower_id ~= expected.lower_id or
+						row.upper_level_offset ~= expected.upper_level_offset or
+						row.lower_level_offset ~= expected.lower_level_offset or
+						row.position.x ~= expected.x or row.position.z ~= expected.z or
+						row.lip_id ~= expected.lip_id or
+						row.drop_id ~= expected.drop_id or
+						row.plunge_id ~= expected.plunge_id or
+						row.transition_profile_id ~= "waterfall_drop" or
+						row.transition_scope_id ~=
+							"orthogonal_reach_contact_face_v1" or
+						row.drop ~= expected.drop or
+						row.drop_height ~= expected.drop or
+						row.plunge_profile_id ~= expected.plunge_profile_id or
+						row.bed_seal_layers ~= 3 or row.bank_seal_nodes ~= 2 or
+						row.receiver_source_omission_nodes ~= 1 or
+						row.sealed ~= true then
+					fail("contact-face waterfall record differs at " .. index)
 				end
 			end
 		end

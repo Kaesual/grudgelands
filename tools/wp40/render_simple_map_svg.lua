@@ -2,13 +2,30 @@ local repo = assert(arg[1], "repository root required")
 local scratch = assert(arg[2], "scratch directory required")
 local output = assert(arg[3], "SVG output path required")
 local seed = arg[4] or "0"
-local canonical_output = repo .. "/docs/research/wp40-simple-map-preview.svg"
+local canonical_output = repo .. "/docs/research/wp40-simple-map-v1e-preview.svg"
 assert(output == canonical_output or output:sub(1,#scratch+1) == scratch.."/",
 	"SVG output must be the canonical preview or live below scratch")
 
+local ffi = rawget(_G,"wp40_ffi")
+local raw_sha256
+if ffi then
+	ffi.cdef[[
+		unsigned char *SHA256(const unsigned char *data, size_t length,
+			unsigned char *digest);
+	]]
+	local crypto = ffi.load("crypto")
+	local digest_buffer = ffi.new("unsigned char[32]")
+	raw_sha256 = function(data)
+		assert(crypto.SHA256(data,#data,digest_buffer) ~= nil, "SHA-256 failed")
+		return ffi.string(digest_buffer,32)
+	end
+end
 local loaded = dofile(repo .. "/tools/wp40/simple_map_offline.lua")(
-	repo,scratch,seed)
+	repo,scratch,seed,raw_sha256)
 local source, session = loaded.source, loaded.session
+assert(source.layout_id == "wp40-simple-map-v1d" and
+	source.layout_revision_id == "wp40-simple-map-v1e",
+	"SVG source layout identity differs")
 local landmark_by_id={}
 for index=1,#source.landmarks do
 	landmark_by_id[source.landmarks[index].id]=source.landmarks[index]
@@ -122,9 +139,10 @@ local function write(...)
 end
 write('<?xml version="1.0" encoding="UTF-8"?>\n')
 write('<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1280" viewBox="0 0 1440 1280">\n')
-write('<title>WP40 simple map preview — seed ',escape(seed),'</title>\n')
+write('<title>WP40 simple map V1e preview — seed ',escape(seed),'</title>\n')
 write('<desc>Generated from the production simple-map evaluator. Preview seed ',
-	escape(seed),'; layout ',escape(source.layout_id),'.</desc>\n')
+	escape(seed),'; geometry layout ',escape(source.layout_id),'; revision ',
+	escape(source.layout_revision_id),'.</desc>\n')
 write('<defs><filter id="label-halo"><feMorphology in="SourceAlpha" operator="dilate" radius="1.4" result="d"/><feFlood flood-color="#081421" result="c"/><feComposite in="c" in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>\n')
 write('<g id="ocean-and-shelf"><rect width="1440" height="1280" fill="#091728"/>\n',
 	table.concat(water_rects,"\n"),'\n</g>\n')
@@ -271,17 +289,6 @@ for index=1,#source.coastal_housing_cores do
 end
 write('</g>\n')
 
-write('<g id="anchor-alternatives" fill="#ffffff" fill-opacity="0.22">\n')
-for index=1,#source.anchors do
-	local row=source.anchors[index]
-	if row.candidates then
-		for candidate=1,#row.candidates do
-			write('<circle cx="',number(sx(row.candidates[candidate].x)),'" cy="',
-				number(sy(row.candidates[candidate].z)),'" r="2"/>\n')
-		end
-	end
-end
-write('</g>\n')
 write('<g id="selected-anchors" fill="#ffffff" stroke="#192536" stroke-width="1">\n')
 for index=1,#source.anchors do
 	local row=source.anchors[index]
@@ -304,7 +311,7 @@ end
 write('</g>\n')
 
 local digest=session.canonical_kat_digest()
-write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="390" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1d</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · preview seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
+write('<g id="diagnostics" font-family="sans-serif"><rect x="12" y="12" width="430" height="76" rx="8" fill="#07111d" fill-opacity="0.9" stroke="#7089a0"/><text x="26" y="36" fill="#f4e8c8" font-size="16" font-weight="bold">WP40 simple map V1e</text><text x="26" y="56" fill="#d2dfeb" font-size="11">layout ',escape(source.layout_id),' · revision ',escape(source.layout_revision_id),' · seed ',escape(seed),'</text><text x="26" y="74" fill="#91a9bd" font-size="9">KAT ',digest,'</text></g>\n')
 write('</svg>\n')
 assert(file:close())
 print("svg\t"..output.."\t"..digest)

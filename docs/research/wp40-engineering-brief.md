@@ -1,8 +1,9 @@
 # WP40 Simple Named-Zone World — Engineering Contract
 
-Status: **current WP40 engineering authority; simple-map rebase through R2
-independently accepted 2026-08-25; the R3 vertical implementation contract is
-independently accepted and R3 implementation is next.**
+Status: **current WP40 engineering authority; fixed-layout V1e R2 was
+independently and visually accepted 2026-08-27. The R3 vertical contract and
+four-seed feasibility preflight are green; R3 implementation acceptance is
+next.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed
@@ -59,7 +60,8 @@ One compact versioned source defines:
 - exact unwarped Holy Grounds;
 - four bay-water masks and two immutable channel masks;
 - 57 land routes, four boat routes and explicit crossing interfaces;
-- 100 fixed/candidate anchor slots;
+- 100 fixed anchor slots: 16 directly authored and 84 layout-fixed from the
+  accepted V1d seed-zero positions;
 - ten housing masks and four coastal cores;
 - named hydrology/landmark masks; and
 - six protected capital-ingress chains.
@@ -70,15 +72,18 @@ diagnostic geometric-contact evidence from that source.
 
 ### 2.2 Fixed layout and seed ownership
 
-The horizontal layout id is `wp40-simple-map-v1d`. Land, zone ownership,
-routes, water classes, housing masks and candidate sets are identical across
-world seeds. The full canonical seed string controls one bounded selection
-from each R2-frozen secondary-anchor candidate set, broad/detail height
-lattices, logical-biome detail, decorations, resources and content variation.
+The horizontal geometry layout id remains `wp40-simple-map-v1d`; its current
+source revision id is `wp40-simple-map-v1e`. Land, zone ownership, routes,
+water classes, housing masks and all 100 anchor positions are identical across
+world seeds. The 84 former candidate-based anchors retain the accepted V1d
+seed-zero coordinates plus their approved candidate index as provenance, but
+the alternatives are no longer live geometry. The full canonical seed string
+controls broad/detail height lattices, logical-biome detail, decorations,
+resources and content variation.
 
 Public constructors bind the complete seed string once and never pass it
-through a Lua number. The SVG uses preview seed `0` and displays the selected
-candidate plus alternatives.
+through a Lua number. The SVG uses preview seed `0` for seeded vertical and
+content context while displaying the single fixed 2D anchor roster.
 
 ### 2.3 Warp and safe arithmetic
 
@@ -132,7 +137,13 @@ land. The four bays stay open/connected, at least 64 nodes wide, outside
 capital and housing cores, and create no new land contact. Deep ocean and
 channels are immutable full columns. Planned water keeps zone ownership and
 is claim-ineligible. Shelf policy/dressing uses the nearest eligible mainland
-hub. All surface water uses `default:water_source`.
+hub. Every wet named WP40 hydrology reach materializes later as non-renewable,
+range-two `default:river_water_source` / `default:river_water_flowing`.
+Oceans, bays and other non-hydrology surface water use
+`default:water_source`. The three orthogonal contact-face waterfalls leave a
+one-source-node-deep receiver opening in the lower bed and rely on native
+liquid simulation for falling columns; the planner never authors a falling
+water column.
 
 ### 2.5 Zone ownership and difficulty
 
@@ -174,15 +185,17 @@ capital build envelope into the exact Holy Grounds rectangle. It adds no graph
 edge, route search or land geometry; the canonical KAT binds its capital,
 ordered route ids and width.
 
-R2 freezes each secondary anchor's valid x/z candidate subset. One bounded
-full-seed hash selects from it. R3 terrain grading must fit that final
-selection; rejection, reselection and endpoint movement are forbidden.
+R2 freezes all 100 anchor x/z positions. The 84 migrated records preserve
+their accepted V1d seed-zero candidate index only as provenance; no seed hash
+selects an anchor. R3 terrain grading must fit every frozen position;
+rejection, reselection and endpoint movement are forbidden.
 
 `housing_eligible_at(x,z)` means the complete 101 by 101 future reservation
-passed every static exclusion. Every anchor-candidate envelope is excluded
-before selection. Packing runs once per layout over all 111 by 111 origins
-with the retained graph greedies, 16 layout-bound hash orders, biased and
-row/reverse orders, constructive extrema and upper bound.
+passed every static exclusion. Exactly the 100 actual anchor envelopes and 74
+actual POI-spur corridors are excluded; retired alternatives reserve no land.
+Packing runs once per layout over all 111 by 111 origins with the retained
+graph greedies, 16 layout-bound hash orders, biased and row/reverse orders,
+constructive extrema and upper bound.
 
 ## 3. Global height and mapgen composition
 
@@ -191,7 +204,7 @@ row/reverse orders, constructive extrema and upper bound.
 `H(full_seed_string,x,z)` / `terrain_height_at` is a project-owned integer
 field composed from bounded broad/detail lattices, the zone relief profiles,
 bounded secondary profiles, simple landmark masks and deterministic grading
-for starts, capitals, housing cores, routes and selected anchors.
+for starts, capitals, housing cores, routes and fixed anchors.
 
 It is globally queryable without emerging a chunk, independent of request
 order and identical in engine/offline loaders. Engine spawn level, native
@@ -402,7 +415,7 @@ The reviewed rebase plan owns:
 - **R1:** pure fixed 2D evaluator, validation and canonical SVG.
 - **V1:** mandatory user visual approval; source tuning only.
 - **R2:** freeze accepted 2D source, anchors, housing and invariants.
-- **R3:** pure global height, final selected anchors and relief.
+- **R3:** pure global height, final fixed-anchor heights and relief.
 - **R4:** complete disabled geography/policy payload and adapters.
 - **R5:** disabled typed planner and consolidated map adapter.
 - **R6:** content/resources and 32-seed evidence.

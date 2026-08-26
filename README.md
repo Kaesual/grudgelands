@@ -182,7 +182,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-25. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-27. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -206,12 +206,14 @@ questions and PvP-death XP rule remain explicitly open in
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
 The 2026-08-25 simple-map rebase deliberately retired its unfinished exact
-partition/topology path. R0, R1, V1b, V1c and final V1d are independently and
-visually accepted. The current SVG has stronger single-warp border meanders,
-pinned curved routes, tapered bays with deep-ocean mouth caps, coherent visible
-water and six protected capital ingress corridors. Exhaustive R2 validation
-now freezes the 2D layout, routes, water, cores, anchor candidates and measured
-housing capacity; it is independently accepted, and R3 global height is next.
+partition/topology path. R0, R1, V1b, V1c and V1d are accepted history;
+fixed-layout V1e R2 was independently and visually accepted on 2026-08-27.
+Its current SVG has stronger single-warp border meanders, pinned curved routes,
+tapered bays with deep-ocean mouth caps, coherent visible water and six
+protected capital ingress corridors. Exhaustive V1e R2 validation freezes all
+100 anchors, the 74 actual POI spurs, housing capacity and three exact
+contact-face waterfalls without moving their reaches. The four-seed vertical-
+feasibility preflight is green; R3 implementation acceptance is next.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
