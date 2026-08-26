@@ -158,7 +158,17 @@ than retained as an invisible reserve. Together with the unchanged 29 water,
 four coast and 42 active-protection exclusions, the canonical claim-exclusion
 population is exactly 314. Its recipe counts, complete stable-id roster and
 digest are artifact-bound. Housing POI bias likewise uses all 100 actual
-anchors and no retired alternatives.
+anchors and no retired alternatives; the exact source token is
+`all_actual_anchor_positions_v1`.
+
+Anchor-exclusion identities preserve the corresponding real V1d footprint
+rather than being renumbered. An authored-fixed anchor keeps
+`exclude:anchor:<anchor-id>:01`. A migrated anchor keeps the one old
+`exclude:anchor:<anchor-id>:NN` whose two-digit suffix equals its
+`approved_candidate_index`. The exclusion record contains no live
+`candidate_index` field and the two retired alternative ids disappear. This
+preserves stable references to the approved physical footprint while making
+the selected-only population unambiguous.
 
 All ten housing masks therefore rerun the complete accepted R2 packing
 portfolio and its exact erosion/conflict rules. No old capacity count is
@@ -278,8 +288,10 @@ V1e is accepted only when all of the following are true:
    land-route identities and eight unchanged island-route identities. Claim
    exclusions contain exactly 100 anchor, 139 path, 29 water, four coast and
    42 active-protection records, 314 total, with housing bias over the same 100
-   actual anchors. No evaluator, R3 loader, validator or evidence record reads
-   or emits the old `candidate_index` field. Source and artifact schemas are
+   actual anchors under token `all_actual_anchor_positions_v1`. The 100 anchor
+   exclusions use the exact selected V1d identities defined in Section 3. No
+   evaluator, R3 loader, validator or evidence record reads or emits the old
+   `candidate_index` field. Source and artifact schemas are
    exactly `grug_wp40_simple_map_source_v2` and
    `grug_wp40_simple_map_r2_artifact_v2`; `schemas.simple_map` remains
    `grug_wp40_simple_map_v1`.
