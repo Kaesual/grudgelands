@@ -12,3 +12,6 @@ tools/wp40/results/
 # Workspace state of the Kilo VSCode extension (exists on one dev machine
 # only); anchored to the repo root, it is never project content.
 /.kilo/
+# Workspace state of Claude Code; local worktrees and cached instructions are
+# machine-local and must never become project authority.
+/.claude/

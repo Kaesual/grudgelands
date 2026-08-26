@@ -29,6 +29,11 @@ brief; the policy applies to every context started afterward.
   across long sessions matter more in that role than peak one-shot insight.
 - GPT-5.6 Sol and Opus are the normal strong implementation and review models.
   Choose between them using Section 3; neither is a fallback-class model.
+- The coordinator may start an Opus review or bounded Opus task without a
+  per-call confirmation. Fable always requires explicit user authorization
+  for the particular review or delegated task. If the coordinator judges
+  Fable to be the better route, it asks for that authorization instead of
+  silently substituting Opus.
 - Fable is an exceptional-reasoning resource. Reserve it for problems where a
   wrong direction would be costly or where strong general-purpose agents have
   a material risk of exhausting time on a false approach.
@@ -100,7 +105,10 @@ Fable is appropriate when one or more of these conditions hold:
 An obviously exceptional problem may go directly to Fable; failed attempts are
 an escalation trigger, not a prerequisite. Announce the reason, expected
 deliverable, and bounded scope before using Fable, and obtain explicit user
-approval unless the user already authorized Fable for that package.
+approval for that particular review or delegated task. Authorization for an
+earlier Fable task does not silently carry to a new one. Do not route the work
+to Opus merely to avoid asking when Fable is the coordinator's actual first
+choice.
 
 Fable should normally return the hard semantic result: a proof, ruling,
 algorithm, architecture memo, or implementation-ready contract. Sol or Opus
@@ -235,8 +243,10 @@ deviations, Critical/High findings, number of fix rounds, elapsed delivery
 time, and coordination overhead. Each such package records its implementing
 and reviewing model, Critical/High count, fix-round count, and observed elapsed
 wall time (or `unknown`) in its durable completion record — normally its
-BACKLOG completion summary, or its package contract when it has no BACKLOG
-row. Calibration reads those records rather than relying on recollection.
+BACKLOG completion summary, its package contract when it has no BACKLOG row,
+this section when the reviewed change amends this policy, or the commit message
+when none of those locations applies. Calibration reads those records rather
+than relying on recollection.
 Adjust this policy in one reviewed documentation commit when repeated evidence
 supports a change; do not create local WP exceptions.
 
@@ -249,5 +259,13 @@ is not used for consequential work until its project role is explicitly added
 here.
 
 **Adoption-package calibration record (2026-08-22):** implementing model
-GPT-5.6 Sol; reviewing model Claude Opus; initial review findings 0 Critical / 2
-High; two fix rounds; observed elapsed wall time `unknown`.
+GPT-5.6 Sol; reviewing model Claude Opus; classification: non-trivial (model
+routing authority); initial review findings 0 Critical / 2 High; two fix
+rounds; observed elapsed wall time `unknown`.
+
+**Claude-execution and parallelism amendment calibration record
+(2026-08-26):** implementing model GPT-5.6 Sol; reviewing model Claude Opus;
+classification: non-trivial (process authority); initial review findings 0
+Critical / 2 High; two fix rounds; observed elapsed wall time `unknown`. The
+focused re-review verdict and immutable review hashes belong in the amendment
+commit message.

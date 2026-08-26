@@ -725,7 +725,9 @@ pair, and 26.5x on a full seed-0 compile. The former 16.2x "exhaustive numeric
 sweep" figure had no retained measurement and is withdrawn; never apply one
 ratio across workloads.
 
-Up to 8 concurrent Lua processes are appropriate on this host. Detach anything
+The historical measurements above used up to eight concurrent Lua processes.
+Current runs obey AGENTS.md's workstation-wide maximum of seven; the old
+measurement width is evidence, not execution authorization. Detach anything
 expected to exceed ~8 minutes and poll it; use `/usr/bin/stdbuf -oL -eL` — the
 `stdbuf` first on `PATH` is a broken AppImage shim. Stop runs by explicit PID
 from `pgrep -f extreme_shard`; `pkill -f run_t2_extreme_shards.sh` matches the

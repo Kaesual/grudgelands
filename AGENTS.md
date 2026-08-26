@@ -59,6 +59,8 @@ current state). It is **derived, never authoritative**:
    `docs/research/luanti-lua.md` rules in the workflow document. Merge to main
    only after a clean review; every completion message ends with a runtime test
    plan for the user.
+   Claude CLI review execution details (sandbox, streaming and monitoring):
+   **[docs/process/claude-cli-review.md](docs/process/claude-cli-review.md)**.
 4. **WP completion**: Lua syntax check with `tools/bin/luac51 -p` (plain
    5.1 — build once via `tools/build_lua51.sh`; **not** `luajit`, which
    accepts syntax the engine's fallback build rejects),
@@ -139,14 +141,28 @@ current state). It is **derived, never authoritative**:
   KATs and require byte-identical canonical artifacts/digests. For WP40's
   current simple-map R1-R8 sequence, fixed-layout and 32-seed populations run
   under LuaJIT; PUC 5.1 runs targeted representative KATs compared by canonical
-  digest. The retired exact-T2 full-W/PCC/F1/F2 suites remain historical
-  evidence and are not executed against the simple schema. Reviewers verify
+  digest. **Parallel execution is preferred:** at most seven independent
+  LuaJIT or PUC 5.1 processes may run concurrently on the workstation, counted
+  across all agents, work packages and execution lanes. Their inputs remain
+  immutable for the duration, each process writes to its own scratch/output
+  path, and a deterministic final step canonically orders, combines and checks
+  every result. Concurrent worker fleets use idle scheduling priority
+  (`chrt --idle 0` and `ionice -c3`). Do not serialize independent seeds or
+  partitions merely for convenience; do not parallelize jobs that share
+  mutable output or whose correctness depends on execution order. Historical
+  records of eight-worker WP40 measurements describe how that evidence was
+  obtained; they do not authorize an eighth process now. A rerun obeys the
+  current seven-process cap and records the changed width before comparing
+  timing evidence. The retired exact-T2 full-W/PCC/F1/F2 suites remain
+  historical evidence and are not executed against the simple schema.
+  Reviewers verify
   immutable artifacts, logs and hashes plus targeted independent PUC KATs
   instead of automatically duplicating a long identical suite. The real
   fallback-engine runtime test is still a separate user-run gate.
   **Planning agents:** if you write a brief, work package, contract or cost
   projection that schedules Lua execution, read the "Interpreter and test
-  strategy" section of docs/research/luanti-lua.md **before** writing it.
+  strategy" section of docs/research/luanti-lua.md and the parallel-execution
+  rule above **before** writing it.
   Interpreter selection is a planning-time decision, not an implementation
   detail: LuaJIT owns long and exhaustive runs, PUC 5.1 is targeted
   representative KATs compared by digest, and a plan that schedules an

@@ -66,16 +66,20 @@ budget, and stop conditions.
    fixed-layout and 32-seed populations run under LuaJIT; PUC owns targeted
    representative KATs with canonical parity. The retired exact-T2
    full-`W`/PCC/F1/F2 suites are historical and do not run on the simple
-   schema. Also check the AGENTS performance rules
+   schema. Schedule independent interpreter runs under the workstation-wide
+   parallel-execution cap in AGENTS.md; historical wider runs are evidence, not
+   current execution authorization. Also check the AGENTS performance rules
    (globalstep throttling, inventory churn, 100-player target).
 5. **Mandatory code review**: under **Independent review** in
    [agent-model-policy.md](agent-model-policy.md), run at least one full
    independent strong-agent review of the WP diff using the checklist below.
-   **Run review/research subagents SYNCHRONOUSLY**
-   (`run_in_background: false`) — pilot
-   lesson from WP19: background-subagent results can route to the main
-   session instead of the coordinator, which then stalls waiting for
-   a notification that never arrives. Larger WPs: split lenses
+   **Run in-session review/research subagents synchronously**
+   (`run_in_background: false`) — the WP19 pilot showed that background
+   subagent results can route to the main session instead of the coordinator,
+   which then stalls waiting for a notification that never arrives. An
+   external Claude CLI review is different: run and monitor it non-blockingly
+   under [claude-cli-review.md](claude-cli-review.md), which owns its process,
+   JSONL stream and result parsing. Larger WPs: split lenses
    across 2–3 independent strong agents (correctness / Lua+perf /
    design-adherence) and adversarially verify High findings. Findings are
    fixed on the branch; High/Critical fixes get a focused re-review. A
