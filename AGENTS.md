@@ -136,13 +136,17 @@ current state). It is **derived, never authoritative**:
   harness scripts that run them require **ripgrep** (`dnf install ripgrep`):
   until 2026-08-15 a missing `rg` made nine of them report success without
   running, because exit status 127 inside an `if` condition reads exactly
-  like "no match found". Use LuaJIT for exhaustive development runs
-  where supported. At intermediate milestones, run representative PUC-5.1
-  KATs and require byte-identical canonical artifacts/digests. For WP40's
-  current simple-map R1-R8 sequence, fixed-layout and 32-seed populations run
-  under LuaJIT; PUC 5.1 runs targeted representative KATs compared by canonical
-  digest. **Parallel execution is preferred:** at most seven independent
-  LuaJIT or PUC 5.1 processes may run concurrently on the workstation, counted
+  like "no match found". Use LuaJIT for development and exhaustive runs
+  where supported. Do not run PUC runtime at intermediate milestones. On
+  frozen final bytes, run one compact PUC-5.1 micro-KAT process
+  and the same fixture once under LuaJIT, requiring a byte-identical canonical
+  digest. WP40 R1-R4 retain their historical targeted-PUC evidence; R5-R8 use
+  this single-final-micro-KAT rule. Fixed-layout, seed and full VM populations
+  run only under LuaJIT. A relevant final-byte change replaces the final
+  micro-KAT pair (one PUC and one LuaJIT run); any additional PUC runtime needs
+  a concrete interpreter-specific finding or identified uncovered plain-5.1
+  risk. **Parallel execution is preferred:** at most seven independent LuaJIT
+  or PUC 5.1 processes may run concurrently on the workstation, counted
   across all agents, work packages and execution lanes. Their inputs remain
   immutable for the duration, each process writes to its own scratch/output
   path, and a deterministic final step canonically orders, combines and checks
@@ -155,18 +159,19 @@ current state). It is **derived, never authoritative**:
   current seven-process cap and records the changed width before comparing
   timing evidence. The retired exact-T2 full-W/PCC/F1/F2 suites remain
   historical evidence and are not executed against the simple schema.
-  Reviewers verify
-  immutable artifacts, logs and hashes plus targeted independent PUC KATs
-  instead of automatically duplicating a long identical suite. The real
+  Reviewers verify immutable artifacts, logs and hashes plus the final PUC
+  micro-KAT evidence instead of duplicating it. The real
   fallback-engine runtime test is still a separate user-run gate.
   **Planning agents:** if you write a brief, work package, contract or cost
   projection that schedules Lua execution, read the "Interpreter and test
   strategy" section of docs/research/luanti-lua.md and the parallel-execution
   rule above **before** writing it.
   Interpreter selection is a planning-time decision, not an implementation
-  detail: LuaJIT owns long and exhaustive runs, PUC 5.1 is targeted
-  representative KATs compared by digest, and a plan that schedules an
-  exhaustive population under PUC is a planning defect.
+  detail: LuaJIT owns development and exhaustive runs; PUC 5.1 owns the parser,
+  static gates and one bounded final runtime micro-KAT compared by digest. A
+  plan that schedules an intermediate PUC suite, PUC seed fleet or exhaustive
+  PUC population without a concrete plain-5.1 interpreter finding is a planning
+  defect.
 - Engine version of the reference checkout: **Luanti 5.17.0-dev** (git
   checkout after 5.16). That pin is the *engine* version of a read-only
   source reference — **the language version is decoupled and stays Lua

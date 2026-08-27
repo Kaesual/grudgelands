@@ -1,12 +1,15 @@
 # WP40 simple-map R5 typed-planner and disabled-adapter contract
 
-**Draft status (2026-08-27): contract draft only. R4 is accepted historical
+**Draft status (2026-08-28): contract draft only. R4 is accepted historical
 authority at commit `948689138c15c291544fe10927683da4183bfd8e`; this draft
 creates no accepted R5 authority, supersedes no artifact or status, activates no
 map writer and records no R5 review verdict. The user selected B+:
 H-authoritative owner-slice normalization with local native-cave preservation.
-That decision is contract-frozen below; a fresh independent contract review is
-the sole remaining gate before implementation.**
+That decision is contract-frozen below and its corrected contract received a
+clean independent review. The user-authorized interpreter-policy amendment in
+Sections 15 through 17 and the interpreter stop condition in Section 19
+requires one fresh focused independent review before implementation; it opens
+no design decision.**
 
 This contract defines R5 of the simple-map rebase: one pure, bounded typed
 planner and one disabled consolidated VoxelManip adapter over native mapgen v7.
@@ -2820,14 +2823,26 @@ unchanged scalar pass-through.
 
 ### 15.3 PUC Lua 5.1 KATs
 
-PUC 5.1 runs only targeted representative KATs, in canonical seed order,
-covering exactly the following required case families (one KAT may carry
-multiple labeled assertions):
+For R5 interpreter scheduling, Sections 15 through 17 and the interpreter stop
+condition in Section 19 supersede the older intermediate/targeted-PUC wording
+in `docs/research/wp40-simple-map-rebase-plan.md` Section 8,
+`docs/research/wp40-engineering-brief.md` Sections 5 and 8 and
+`docs/design/world_zones.md`. Those statements remain historical R1-R4
+evidence only; no game-design, map or validation semantics are superseded.
+
+After every relevant final R5 Lua byte is frozen, exactly one executable PUC
+Lua 5.1 process runs one compact canonical micro-KAT at canonical seed `0`.
+The fixture loads every R5-changed Production module and covers exactly the
+following required case families; one process and one KAT may carry multiple
+labeled assertions:
 
 - all planner-source tuple nil/non-nil branches;
 - representative logical-biome columns whose private scalar is byte-identical
   to the same public R4 `biome_at(x,z)` result; this KAT makes no population,
   presence or realized-area assertion;
+- one route and one hydrology column comparing the private scalar nearest tuple
+  with the corresponding public `nearest_segment` result, including feature
+  id, raw segment ordinal and rational squared-distance numerator/denominator;
 - every P2-P6 opcode and every replace policy;
 - same-priority conflict and cross-priority winner;
 - `authored_floor = -37`, lower/upper mapgen owner edges and analytic
@@ -2871,28 +2886,52 @@ multiple labeled assertions):
 - a true same-VM adapter double apply;
 - stale plan generation, foreign construction identity and missing content
   role; and
-- exact public R4 KAT and disabled-loader parity.
+- exact seed-zero public R4 KAT and disabled-loader parity.
 
-LuaJIT and PUC KAT byte strings and canonical digests must be identical. PUC
-does not run the exhaustive layout, 32-seed population or full order fleet.
+The same micro-KAT fixture runs exactly once under LuaJIT. Its complete
+newline-terminated canonical byte string and canonical digest must be
+byte-identical to the PUC result. The fixture constructs no four-seed R4
+foundation fleet, full layout population, 32-seed population, full VM/order
+fleet or exhaustive scan; Section 15.2 owns those proofs under LuaJIT. The
+single real accepted-session exercise is the seed-zero public R4 KAT above.
+
+If any relevant final Lua byte changes after this pair, both old results are
+invalid acceptance evidence and the corrected frozen candidate receives one
+replacement PUC process and one replacement LuaJIT process. More than one PUC
+runtime on the same final bytes requires either a concrete interpreter-specific
+finding or an explicitly identified uncovered plain-5.1 risk. Seed count,
+intermediate milestones and reviewer duplication are not such reasons. Exactly
+one successful PUC result for the finally reviewed bytes remains current
+acceptance evidence.
 
 ### 15.4 Interpreter selection and parallel execution
 
-`WP40_LUA_BIN` may select the authoritative executable for selftest, quick and
-full LuaJIT lanes. If unset, the runner uses `/usr/bin/luajit` when executable,
-otherwise the first `luajit` on `PATH`, and fails if neither exists. Before any
-long/full work it executes a bounded identity probe and requires
+`WP40_LUA_BIN` may select the authoritative executable for development,
+selftest, quick and full-evidence LuaJIT lanes. Those lanes start no PUC runtime.
+If unset, the runner uses `/usr/bin/luajit` when executable, otherwise the first
+`luajit` on `PATH`, and fails if neither exists. Before any long/full work it
+executes a bounded identity probe and requires
 `type(rawget(_G,"jit")) == "table"`; an override that is PUC or another Lua
 interpreter fails rather than running the exhaustive population. The targeted
 PUC executable is exactly repository-owned `tools/bin/lua51` and is never
 selected through `WP40_LUA_BIN`. Both interpreters' version strings and
 executable digests are logged.
 
-At most seven Lua processes run concurrently across the workstation. Every
-worker receives immutable inputs, writes to a separate scratch/output path and
-runs at `chrt --idle 0` plus `ionice -c3`. A deterministic single merge orders
-all shards and refuses missing, duplicate or unexpected outputs.
+The distinct final-conformance lane starts exactly one PUC micro-KAT process
+and exactly one matching LuaJIT micro-KAT process against the same immutable
+input manifest. Each writes a separate LF-canonical output and status file;
+the runner requires exit zero, byte identity and digest identity before any R5
+artifact promotion. It records both executable/version digests, the complete
+fixture input manifest digest, both output file/body digests and both exit
+statuses. The final review record binds those values. The lane schedules no
+PUC seed, shard or population fleet. A relevant input-byte change invalidates
+the pair as specified in Section 15.3.
 
+At most seven Lua processes run concurrently across the workstation. The two
+final micro-KAT processes may run concurrently and consume two of those slots.
+Every worker receives immutable inputs, writes to a separate scratch/output
+path and runs at `chrt --idle 0` plus `ionice -c3`. A deterministic single
+merge orders all shards and refuses missing, duplicate or unexpected outputs.
 Jobs that share mutable outputs or depend on execution order are not
 parallelized. Historical eight-worker measurements grant no eighth slot.
 
@@ -2913,12 +2952,19 @@ none of those gates because it creates no implementation.
 
 ## 16. Deliverables and owned files
 
-The pre-implementation B+ decision commit is the one exact authority-bundle
+The pre-implementation B+ decision commit is the first exact authority-bundle
 exception: it changes only `docs/design/world_zones.md`, this contract,
 `docs/research/wp40-engineering-brief.md` and
 `docs/research/wp40-simple-map-rebase-plan.md`. It creates no implementation,
 artifact, review or status claim. After that decision receives a clean
-independent contract review, R5 implementation/review work may change only:
+independent contract review, the user-authorized pre-implementation
+interpreter-policy amendment is the second exact authority-bundle exception.
+It changes only `AGENTS.md`, `docs/research/luanti-lua.md`,
+`docs/process/wp-workflow.md` and this contract. It preserves all R1-R4
+historical PUC evidence, creates no implementation, artifact, acceptance or
+status claim and requires one clean focused independent review. After both
+exceptions receive their required clean reviews, R5 implementation/review work
+may change only:
 
 ```text
 docs/research/wp40-simple-map-r5-contract.md
@@ -2979,21 +3025,26 @@ The exact sequence is:
    `37bd94829d7a8c3d1a59688612a483f449fa63de` objects retain their identities
    and ancestry; no replay, rebase, amend or historical-byte rewrite is
    permitted;
-3. obtain the policy-required fresh independent contract review of the B+
-   decision, close its findings, and freeze the resulting R5 contract before
+3. retain the clean independent contract review of the B+ decision, obtain one
+   fresh focused independent review of the exact interpreter-policy amendment,
+   close its findings, and freeze the resulting R5 contract before
    implementation;
 4. implement the private seam, planner, manifest, adapter and tools in the R5
    worktree without changing public R4 bytes;
 5. pass the lineage preflight and exact historical/current public KAT parity;
-6. pass static gates, full LuaJIT evidence and targeted PUC digest parity;
+6. pass the static gates and full LuaJIT evidence, then on unchanged frozen
+   candidate bytes run exactly one final PUC micro-KAT process and one matching
+   LuaJIT process and pass byte/digest parity;
 7. generate the canonical R5 artifact twice to byte-identical bytes;
-8. freeze the candidate diff, status snapshot and immutable evidence;
+8. freeze the candidate diff, status snapshot, full LuaJIT evidence and the
+   final micro-KAT manifest/output/status evidence;
 9. obtain one fresh independent review selected under
    `docs/process/agent-model-policy.md`, applying the complete checklist in
    `docs/process/wp-workflow.md` and `docs/research/luanti-lua.md`;
 10. fix every Critical, High or Medium finding; Critical/High fixes receive a
     focused fresh rereview, and Low findings are fixed or explicitly
-    dispositioned under policy;
+    dispositioned under policy; a fix that changes a relevant Lua byte returns
+    to step 6;
 11. only a clean final verdict may create the R5 review record and acceptance
     closeout; and
 12. only then update the exact Section 16 closeout allowlist as one coherent
@@ -3103,8 +3154,9 @@ changes no world and does not mark that handoff complete.
 
 Implementation stops and returns to contract or design review if it would:
 
-- begin before every Section 3 accepted/derived lineage check and the fresh B+
-  independent contract review pass;
+- begin before every Section 3 accepted/derived lineage check, the clean B+
+  independent contract review pass and the focused interpreter-policy
+  amendment review pass;
 - edit an accepted R2/R3 artifact input or result;
 - change a public R4 API field, KAT byte, disabled reason or loader behavior;
 - treat the historical R4 artifact's `zones.lua` hash as a current hash after
@@ -3138,7 +3190,10 @@ Implementation stops and returns to contract or design review if it would:
 - register a callback/global, change settings/configuration or expose an R5
   activation flag;
 - disable a legacy writer or migrate a consumer before R7;
-- schedule an exhaustive PUC run or exceed seven concurrent Lua processes; or
+- schedule an intermediate PUC runtime, PUC seed/shard/population fleet,
+  exhaustive PUC run or more than one final PUC micro-KAT on unchanged bytes
+  without a concrete interpreter-specific finding or identified uncovered
+  plain-5.1 risk, or exceed seven concurrent Lua processes; or
 - invent an absolute performance threshold without a measured derivation.
 
 A source-data correction or player-visible geometry change is not an R5
