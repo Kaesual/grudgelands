@@ -71,7 +71,7 @@ validators are not imported.
 
 The rebase keeps these player-visible and engine-correctness outcomes:
 
-- 38 stable named zones, six race regions, two factions, Holy Grounds and two
+- 38 stable named zones, six race regions, two factions, Battlegrounds and two
   dragon islands;
 - the same starts, capitals, stable anchor-slot vocabulary and critical fixed
   content identities;
@@ -220,8 +220,9 @@ or extrapolating the warp.
 
 The warp is common to land and zone scoring; every hub is transformed through
 the same warp before scoring so a hub has zero distance from itself. The exact,
-unwarped Holy Grounds rectangle remains the legal protection/macro-region
-authority. There is no per-zone boundary noise.
+unwarped Battlegrounds rectangle remains the macro-region authority. Its stable
+source and macro/policy keys remain `holy_grounds`; final protection no longer
+uses a blanket rectangle rule. There is no per-zone boundary noise.
 
 ### 5.4 Land membership
 
@@ -230,7 +231,7 @@ rectangles and ellipses evaluated at the warped coordinate. Use integer and
 rational comparisons inside the exact safe-integer range.
 
 Elandor and Kragmar use separately authored primitive records and are not
-reflections of one another. The Holy Grounds rectangle is exact/unwarped; the
+reflections of one another. The Battlegrounds rectangle is exact/unwarped; the
 mainland lobes and two island silhouettes use the common warp.
 
 Exterior water classes use one ordered total classifier:
@@ -300,7 +301,8 @@ product) and rounds only the final level; the compile-time bound covers kernel
 normalization and both lerps below `2^53`. Mainland and each island use separate
 component lattices, so smoothing never crosses ocean. This remains continuous
 when the nearest rival changes, at three-zone junctions and across the exact
-Holy macro edge. No public or internal stable boundary identity is required.
+Battlegrounds macro edge. No public or internal stable boundary identity is
+required.
 
 ### 5.6 Path model
 
@@ -360,11 +362,11 @@ below ground.
 `terrain_height_at` is the globally queryable project-owned `H`.
 
 Policy precedence remains explicit: bounded hard-protection volumes first;
-deep ocean and dragon channels immutable at every y; the exact Holy rectangle
-immutable through y = -700 and contested/editable at y = -701 and below;
-zone-owned planned water and shelf inherit their declared/nearest-hub policy;
-ordinary land then uses its zone fields. Planned water, shelf, paths and static
-exclusions remain claim-ineligible.
+deep ocean and dragon channels immutable at every y; zone-owned planned water
+and shelf inherit their declared/nearest-hub policy; ordinary land then uses
+its zone fields. Battlegrounds ordinary terrain is contested/editable for both
+factions at every y but remains claim-ineligible. Planned water, shelf, paths
+and static exclusions remain claim-ineligible.
 
 Existing `grug_core.territory_at`, `zone_at`, `mob_level_at`,
 `guard_level_at`, `difficulty_at`, `open_sea_at` and protection callers migrate
@@ -480,7 +482,8 @@ time is `unknown` because the implementation crossed a context compaction.
 ### V1 — mandatory user visual gate
 
 The user reviews land silhouette, zone proportions, progression, route shape,
-POI distribution, islands, Holy Grounds and overall beauty. Each requested
+POI distribution, islands, the then-called Holy Grounds and overall beauty.
+Each requested
 change edits source data or the single common visual policy. No hidden repair
 logic is accepted.
 
@@ -489,7 +492,8 @@ The layout does not become frozen until the user explicitly accepts it.
 ### V1b — bounded microgeometry refinement
 
 The first V1 review accepted symmetry, macro silhouette, zone sizes and
-distribution, Holy Grounds, islands and the overall map layout. Before R2, the
+distribution, the then-called Holy Grounds, islands and the overall map layout.
+Before R2, the
 user requested one deliberately small refinement pass for less uniform zone
 edges, fewer straight roads and a more legible, coherent river/lake system.
 
@@ -548,12 +552,13 @@ adjustments:
 - the four existing bay masks now cover the complete open gaps between the
   start lobes, while slightly deeper mainland belts keep both continents
   connected behind their authored heads;
-- the mainland fronts overlap behind the exact Holy Grounds rectangle, so the
-  exact macro/protection precedence remains authoritative without accidental
+- the mainland fronts overlap behind the exact then-called Holy Grounds
+  rectangle, so the then-current macro/protection precedence remains
+  authoritative without accidental
   shelf seams along the long north and south edges from x = -2400 through
   +2400; the extreme corner transitions into the immutable channels remain an
   explicit R2 full-grid validation subject;
-- the exact Holy Grounds rectangle remains unchanged and solid except for its
+- the exact then-called Holy Grounds rectangle remains unchanged and solid except for its
   explicit hydrology, while its internal nearest-hub ownership reuses the same
   already-computed common warp as every other non-fixed zone;
 - the single common warp changes from 1,024/96 to 512/64 cell/displacement
@@ -562,8 +567,8 @@ adjustments:
 - selected long river reaches gain a few authored support points, and pond,
   lake, tarn and cenote masks use short curved variable-width point chains
   instead of equal-width two-point capsules; and
-- preview-only colors distinguish ordinary mainland frontier land from Holy
-  Grounds without changing classification.
+- preview-only colors distinguish ordinary mainland frontier land from the
+  then-called Holy Grounds without changing classification.
 
 No second noise field, per-zone random function, pathfinder, erosion pass,
 Bezier evaluator or repair loop is added. The 80 by 80 LuaJIT classifier
@@ -593,10 +598,11 @@ full review found 0 Critical / 0 High / 2 Medium / 5 Low and returned
 **REJECTED**. The layout-id/bay-table, path-kind, fixed-core water and scoped
 seam corrections closed both Medium findings and the three directly relevant
 Low findings. A focused rereview returned **ACCEPTED**, 0 Critical / 0 High /
-0 Medium. Non-blocking follow-ups remain explicit rather than silently repaired:
-the Holy-water/macro edge awaits the upcoming territory-policy discussion, and
-R2 must check the one-node Highcourt river/core tangency plus the remaining
-validation-strength observations before freezing the complete integer layout.
+0 Medium. Non-blocking follow-ups remain explicit rather than silently
+repaired: the then-open water/macro territory-policy discussion was resolved
+by the 2026-08-27 Battlegrounds ruling in V1d below, while R2 had to check the
+one-node Highcourt river/core tangency plus the remaining validation-strength
+observations before freezing the complete integer layout.
 Observed elapsed wall time is `unknown` because the work crossed a context
 compaction.
 
@@ -626,12 +632,15 @@ hydrology ids, anchors, housing masks and fixed cores.
   but every road beyond them was only claim-excluded and mutable. Six explicit
   capital-ingress records therefore concatenate existing route pairs into one
   128-node-wide shallow hard-protected public corridor per capital, continuous
-  from the capital into the exact Holy Grounds rectangle. They add no route or
+  from the capital into the exact Battlegrounds rectangle. They add no route or
   zone edge and the SVG shows their width as a faint route underlay.
-- Holy Grounds zone ids, display names, exact rectangle and current protection
-  rule remain unchanged. The possible Battlegrounds rename and shared mutable
-  build policy are deliberately deferred until before protection/consumer
-  integration; R2 freezes geometry, not that unresolved policy.
+- At V1d acceptance, Holy Grounds naming and blanket shallow protection were
+  deliberately left unresolved because R2 freezes geometry rather than final
+  policy. The 2026-08-27 Battlegrounds ruling now keeps all stable zone ids,
+  individual display names, exact rectangle and internal `holy_grounds` keys,
+  while renaming the player-facing macro region and making ordinary terrain
+  shared mutable and claim-excluded at every depth. Explicit bounded hard
+  protection and flight permission remain unchanged.
 
 The generated V1d SVG returns to the user before R2. Full-grid topology,
 route-fit, contact, channel and timing diagnostics remain advisory until R2;
@@ -657,7 +666,7 @@ evidence, not a pass/fail limit.
 The capital-access audit found that the prior gate-road claim exclusions did
 not prevent player-built walls. V1d now binds six 128-node-wide ingress
 corridors, each assembled from two existing route records and hard-protected
-continuously from one capital to the Holy Grounds. This is a geographic access
+continuously from one capital to the Battlegrounds. This is a geographic access
 guarantee, not a combat-safety guarantee. It adds neither route edges nor a
 pathfinder.
 
@@ -670,7 +679,8 @@ corrected. A focused rereview returned **ACCEPTED**, 0 Critical / 0 High /
 0 Medium. Its remaining non-blocking observation is that the two Gravesalt
 ingress routes end in authored shallow marsh without a complete crossing pair;
 R2 owns that route-fit/crossing check rather than V1d inventing a repair. The
-possible Battlegrounds policy remains deliberately deferred. Observed elapsed
+later Battlegrounds policy was still deliberately deferred at this historical
+gate and was resolved by the 2026-08-27 ruling above. Observed elapsed
 wall time is `unknown` because the work crossed a context compaction.
 
 Final mouth-correction calibration: implementing/integrating model GPT-5.6
@@ -721,7 +731,7 @@ With V1d visually approved, add and freeze the small spatial invariant set:
   another zone never creates an implicit route edge;
 - the six 128-node capital ingress corridors continuously concatenate their
   declared primary/secondary route pair from the protected capital envelope
-  into the exact Holy rectangle; the 128-node footprint is the protected and
+  into the exact Battlegrounds rectangle; the 128-node footprint is the protected and
   claim-excluded public envelope around the route, while its route surface is
   graded across any planned water it meets;
 - the separate boat graph retains two distinct 96-node approaches/landings per
@@ -732,7 +742,7 @@ With V1d visually approved, add and freeze the small spatial invariant set:
 - each of the four bays is open and connected from outer water to its head,
   stays at least 64 nodes wide, reaches neither a capital envelope nor a
   coastal housing core, disconnects no prong and creates no new land contact;
-- exact Holy bounds, water precedence, minimum channel/warning/hard-strip
+- exact Battlegrounds bounds, water precedence, minimum channel/warning/hard-strip
   widths and shelf-policy inheritance pass;
 - exactly ten whole-footprint housing-center masks pass every 2D exclusion;
   each of the four mutable vertical-capsule coastal cores retains at least

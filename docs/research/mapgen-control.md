@@ -45,7 +45,7 @@ authoritative, deterministic mapgen-environment terrain/surface overlay. It can
 retain existing native caves, ores, and depth strata wherever it does not
 rewrite their nodes. Native dungeons require the stricter unconditional
 preservation/preflight-veto contract documented below. The overlay can still
-enforce the authored continent, ocean, zone, anchor, Holy Grounds, road, and
+enforce the authored continent, ocean, zone, anchor, Battlegrounds, road, and
 island geometry before the first map write. A broad equivalent pass in the
 main environment would perform a second map write and consume main-thread time.
 Full `singlenode` Lua mapgen would give
@@ -61,7 +61,7 @@ but make a single authored layer authoritative for:
 1. the mainland and deep-ocean masks;
 2. the exact 38-zone topology and logical `id_at(x, z)` result;
 3. bounded, shared-edge boundary displacement and coast displacement;
-4. terrain profiles inside capital, start, Holy Grounds, road, channel, and
+4. terrain profiles inside capital, start, Battlegrounds, road, channel, and
    future dragon-island envelopes;
 5. surface materials, logical biomes, authored vegetation, roads, and large
    structures affected by those profiles.
@@ -102,13 +102,13 @@ acceptance requirement, the recommended v7 architecture and the pinned
 engine's own warning are in conflict.
 
 **Resolution (2026-08-12).** The geometry inputs are now binding:
-`docs/design/world_zones.md` fixes the Holy Grounds rectangle, both offshore
+`docs/design/world_zones.md` fixes the Battlegrounds rectangle, both offshore
 island centres and envelopes, channel and flight bands, shelf/deep-ocean
 classification, separate land and boat graphs, planned-water semantics, and
 the ten-zone housing geometry. The feasibility target is therefore exact: all
 level 31-60 land zones are contested and editable outside explicit protected
-exceptions; Holy Grounds is immutable through y = -700 and ordinary contested
-depth begins at y = -701; dragon endpoints are offshore islands behind
+exceptions; Battlegrounds ordinary terrain is shared mutable and
+claim-ineligible at every y; dragon endpoints are offshore islands behind
 immutable full-column channels; and housing claims occupy eligible dry areas
 in ten level 11-30 zones rather than housing islands.
 
@@ -146,7 +146,7 @@ mapgen:
   in the central `core.is_protected` override
   (`mods/CORE/grug_core/protection.lua:18-103`,
   `mods/CORE/grug_core/protection.lua:135-155`,
-  `mods/CORE/grug_core/protection.lua:198-216`). It has no 38-zone, Holy,
+  `mods/CORE/grug_core/protection.lua:198-216`). It has no 38-zone, Battlegrounds,
   y=-701, deep-ocean subtype, or housing-claim policy yet.
 - The ocean carve now runs in a mapgen-environment callback. The accompanying
   comments document that the earlier main-environment version ran after the
@@ -439,7 +439,7 @@ volumes by feature and priority. At minimum distinguish:
 - surface material replacement only;
 - shallow cut/fill shell;
 - road and river cross sections;
-- capital/start/Holy/structure exclusion envelopes;
+- capital/start/Battlegrounds/structure exclusion envelopes;
 - deliberately sealed or cleared safety volumes;
 - full authored ocean/island columns near the playable macro map;
 - untouched deep substrate.
@@ -482,13 +482,13 @@ from v7's native shape and unfinished multithread slice problem.
 |---|---|
 | Native v7 | Base relief outside explicit authored profiles; caves, caverns, dungeons, generic ores, and the existing deep substrate |
 | Existing Grudgelands ore registration | Global material strata and generic resources in native rock, retaining current registration order |
-| Authored geometry kernel | Mainland/ocean/island/channel classification, stable zone ID, adjacency, boundary distance, race region, Holy Grounds, anchor and route data |
+| Authored geometry kernel | Mainland/ocean/island/channel classification, stable zone ID, adjacency, boundary distance, race region, Battlegrounds, anchor and route data |
 | Authored terrain/surface pass | Exact masks, bounded cut/fill, surface/filler repair, authored rivers/lakes/roads, fixed envelopes, logical-biome dressing |
 | Main environment | Persistent POI/claim records, node metadata, entities, runtime protection, administration, and sparse post-generation initialization |
 
 This ownership must be one-way. Engine biome IDs may help select an initial
-surface, but no gameplay rule may infer zone, faction, level, housing, Holy
-Grounds, ocean protection, or deep rights from them.
+surface, but no gameplay rule may infer zone, faction, level, housing,
+Battlegrounds, ocean protection, or deep rights from them.
 
 ### Stage order inside the authored callback
 
@@ -526,14 +526,14 @@ anchors as inputs, not as suggestions:
 - mainland frame: x = -2600..+2600, z = -3000..+3000;
 - capitals: x = -1800, 0, +1800 and z = -1500/+1500;
 - starts: x = -1800, 0, +1800 and z = -2550/+2550;
-- Holy Grounds edges: z = -250/+250;
+- Battlegrounds edges: z = -250/+250;
 - bounded seed-dependent internal borders and coasts;
 - future offshore dragon islands separated from the mainland by immutable
   full-column ocean channels.
 
 **Inference.** All fixed coordinates are safely representable as exact Lua
-numbers. Exact frame and Holy z edges should be evaluated before noise. Coast
-noise may only move the coast *inward* from a guaranteed outer land frame (or
+numbers. Exact frame and Battlegrounds z edges should be evaluated before
+noise. Coast noise may only move the coast *inward* from a guaranteed outer land frame (or
 inside another explicitly defined safe corridor), so no seed can create land
 outside the contract or close a required ocean channel. Internal boundary
 noise should move one shared edge once; independently perturbing both adjacent
@@ -699,7 +699,7 @@ from one authored source:
 1. a stable registry indexed by numeric ID and canonical string ID, containing
    faction/race region, level band, logical biome palette, and policy flags;
 2. an explicit symmetric adjacency set, with edge IDs and edge type (land,
-   Holy boundary, coast, channel/boat connection if applicable);
+   Battlegrounds boundary, coast, channel/boat connection if applicable);
 3. canonical vertices and shared boundary polylines, each displaced once;
 4. a spatial acceleration grid.
 
@@ -750,12 +750,13 @@ the feasibility ordering is:
 
 1. deep ocean or an immutable dragon channel: immutable for every y;
 2. any non-deep-ocean column at y <= -701: universal contested/editable;
-3. Holy Grounds polygon at y >= -700: immutable;
-4. explicit POI, road, capital/start, and structure envelopes at their defined
+3. explicit POI, road, capital/start, and structure envelopes at their defined
    vertical ranges: immutable or rule-specific;
-5. an active housing claim: owner/trust/depth rule, subject to its y limits;
-6. level 31-60 land: contested/editable outside the protected exceptions;
-7. level 1-30 land: faction-territory protection outside owner permissions and
+4. an active housing claim: owner/trust/depth rule, subject to its y limits;
+5. level 31-60 land, including Battlegrounds ordinary terrain:
+   contested/editable outside protected exceptions; Battlegrounds remains
+   claim-ineligible;
+6. level 1-30 land: faction-territory protection outside owner permissions and
    explicit exceptions.
 
 `race_region_at(x, z)` should be an independent x/z projection used for
@@ -810,7 +811,7 @@ correct feasibility gate.
 | Seed-derived edges/coasts/logical biomes | Construct once per mapgen state from the exact seed string or load one checksummed immutable snapshot. | Construct/load once on main initialization; never infer from generated nodes. |
 | POI/road/structure anchors | Fixed geometry and exclusion envelopes known before player claims; render central slices. | Public queries keep hard-protection volumes separate from road/camp claim exclusions; persistent functional metadata lives here. |
 | Housing eligibility | Static authored mask only; mapgen may use it to reserve terrain quality and avoid conflicting decorations. | Static mask plus final-node validation, dynamic reservation and active-claim AreaStores, canonical mod-storage records. |
-| Territory/depth policy | Needed only where generation/resource placement depends on the policy; no player identity or mod storage. | Full precedence with player faction/ACL, y=-701, Holy, ocean, hard-protected anchors, mutable road exclusions, and claim rules. |
+| Territory/depth policy | Needed only where generation/resource placement depends on the policy; no player identity or mod storage. | Full precedence with player faction/ACL, y=-701, Battlegrounds, ocean, hard-protected anchors, mutable road exclusions, and claim rules. |
 | Debug/export data | Optional counters and compact gennotify; no file writes in hot callbacks. | Admin diagnostics; offline tooling produces heavy images/reports. |
 
 **Recommendation.** Share one pure geometry module and one generated immutable
@@ -879,7 +880,7 @@ existing rock a second time and does not recreate caves or dungeons.
    channel classifications valid at every y.
 
 The outer mainland guarantee should be constructive. Start with the fixed
-x/z frame, reserve the Holy Grounds connections and island channels, then
+x/z frame, reserve the Battlegrounds connections and island channels, then
 permit coast noise only inside a finite coast band. Clamp the displacement so
 that it cannot:
 
@@ -901,27 +902,31 @@ The generation pass may stop below its authored seabed, while protection still
 classifies the same column as immutable at y = -31000. This is essential for
 the no-tunnel/no-bridge/no-seabed-mine rule.
 
-### Holy Grounds
+### Battlegrounds
 
 **Verified design input.** The material-progression model fixes the
-north/south edges at z = -250 and z = +250, makes Holy Grounds authored land,
-protects it through y = -700 inclusive, and reopens ordinary contested depth at
-y = -701 ([world.md](../design/world.md) §2 R2/R2b). The completed map plan
-fixes the west/east extent at x = -2500..+2500
+north/south edges at z = -250 and z = +250 and makes Battlegrounds authored
+land, shared mutable and claim-ineligible at every y
+([world.md](../design/world.md) §2 R2/R2b). The completed map plan fixes the
+west/east extent at x = -2500..+2500
 ([world_zones.md](../design/world_zones.md) §7.1).
 
-**Recommendation.** Encode Holy Grounds as a stable polygon with the two fixed
+**Recommendation.** Encode Battlegrounds as a stable polygon with the two fixed
 z edges and separately authored west/east coast transitions. Do not derive it
 from the level of its neighboring zones or from a noisy shared-front label.
 The terrain pass should reserve its complete land connections before applying
-coast noise. Runtime policy should test the Holy polygon only after the
-full-column deep-ocean/channel exception and the y <= -701 deep override.
+coast noise. Runtime policy retains the stable `holy_grounds` identifier for
+macro/flight classification and artifact compatibility, but ordinary
+protection treats its terrain exactly like other contested land after
+full-column deep-ocean/channel and explicit hard-protection exceptions.
 
-**Resolution (2026-08-12).** `world_zones.md` §§7.1 and 9.3 fix the Holy
-Grounds rectangle at x = -2500..+2500 and z = -250..+250, its internal
+**Resolution (2026-08-12, policy amended 2026-08-27).** `world_zones.md`
+§§7.1 and 9.3 fix the now-player-facing Battlegrounds rectangle at
+x = -2500..+2500 and z = -250..+250, its internal
 junctions, coast closure, land graph, six north/south crossings and paired
 island boat routes. WP40 must consume that registry rather than infer another
-shape from level labels or generated coast nodes.
+shape from level labels or generated coast nodes. The amendment changes no
+geometry or stable internal key; it removes only blanket shallow protection.
 
 ### Caves, dungeons, ores, and depth layers
 
@@ -1387,7 +1392,7 @@ island terrain after WP40 would require an explicit new fresh-world boundary.
 - run deterministic order and performance tests using production settings;
 - export and review all logical map layers for that seed;
 - generate a disposable full macro-map world and inspect anchors, routes,
-  coasts, Holy Grounds, channels, housing capacity, caves, strata, liquids, and
+  coasts, Battlegrounds, channels, housing capacity, caves, strata, liquids, and
   lighting;
 - only then create the persistent world.
 
@@ -1433,7 +1438,7 @@ The seed corpus should be fixed in the repository and include:
 - every capital/start anchor and complete reserved envelope remains land,
   inside the intended stable zone, and inside its no-jitter clearance;
 - capital/start coordinates are exact, not nearest sampled approximations;
-- Holy north/south boundaries remain exactly z = -250/+250;
+- Battlegrounds north/south boundaries remain exactly z = -250/+250;
 - logical biome shares stay inside their per-zone tolerance;
 - upper seed bits change authored fields for same-low-32 seed pairs while the
   test records that native v7 may remain the same.
@@ -1456,7 +1461,7 @@ the raster as a second view. For every road, river, coast, and channel:
 - assert both faction boat-route lengths/access budgets are within the decided
   equivalence tolerance.
 
-### Holy Grounds, ocean, depth, and territory
+### Battlegrounds, ocean, depth, and territory
 
 Build a table-driven policy oracle. At boundary points, polygon interiors,
 anchors, claims, roads, POIs, coastal shelf, deep ocean, and channels, test y
@@ -1465,7 +1470,8 @@ values around every transition, including at least surface, -50, -699, -700,
 
 Against the newer model, required assertions include:
 
-- Holy Grounds immutable at y >= -700 and contested/editable at y <= -701;
+- Battlegrounds ordinary terrain contested/editable by both factions at every
+  y and claim-ineligible, with only explicit bounded hard protection;
 - ordinary land capital/POI/road/faction restrictions cannot survive the deep
   y <= -701 override;
 - deep ocean and immutable dragon channels deny editing at every tested y;
@@ -1578,7 +1584,7 @@ Benchmark a fixed corpus containing:
 - inland ordinary surface;
 - zone boundary;
 - coast/shelf/deep-ocean transition;
-- Holy boundary;
+- Battlegrounds boundary;
 - capital/start blend envelope;
 - road, river/lake, and crossing;
 - large structure slice;
@@ -1612,7 +1618,7 @@ correction was required.
 | Historical conflict | Resolution now binding |
 |---|---|
 | Four level-31-40 frontier approaches were peaceful. | Every level-31-60 ordinary zone is contested; `world_zones.md` §8 carries the corrected rows. |
-| Shared-front terrain had a blanket immutable/resource-only rule. | Ordinary contested terrain is mutable; only bounded functional anchors, irreplaceable route structures, claims and Holy Grounds receive their explicit protection. |
+| Shared-front terrain had a blanket immutable/resource-only rule. | Ordinary contested terrain, including the Battlegrounds, is mutable; only bounded functional anchors, irreplaceable route structures and claims receive their explicit protection. |
 | Dragon endpoints were mainland contact zones in one overloaded graph. | Both endpoints are offshore and retain stable IDs; §9 separates land adjacency from four exact boat-route edges. |
 | `world.md` still contained private housing-island target geometry. | WP40 generates no housing islands; the ten-zone dry-land eligibility masks and exclusions in `housing.md` are its only housing geometry inputs. Earlier island branches are repository history, never mapgen authority. |
 | Material notes mentioned only four level-21-30 homestead zones. | `housing.md` and `world_zones.md` now name all ten level-11-30 housing zones: six home zones and four inter-capital zones. |
@@ -1860,7 +1866,7 @@ separate.
 
 No owner-design question remains. [world_zones.md](../design/world_zones.md)
 §§7-14 and [housing.md](../design/housing.md) bind the inputs formerly listed
-here: Holy Grounds and island geometry, all water classes, stable IDs and
+here: Battlegrounds and island geometry, all water classes, stable IDs and
 separate land/boat graphs, the common y = -700 shallow floor, planned surface
 water, exact housing zones and static eligibility, and the 32-seed
 capacity/audit model.
@@ -1909,7 +1915,7 @@ outputs and must be recorded before its final integration gate.
 - `docs/design/housing.md` — ten-zone open-world claims, 101x101 maximum
   reservation, exclusions, spatial indices, persistence and capacity audit.
 - `docs/design/mounts.md` — altitude-independent ocean/territory lookup,
-  warning/hard-flight bands, Holy flight, and dragon-island access proof.
+  warning/hard-flight bands, Battlegrounds flight, and dragon-island access proof.
 - `docs/research/luanti-lua.md` — project briefing on Lua 5.1, mapgen Lua-state
   isolation, safe integer range, IPC, VoxelManip, and available APIs; all engine
   claims used in this study were then checked against the primary sources below.

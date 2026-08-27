@@ -1,7 +1,8 @@
 # Named World Zones & PvP Geography
 
 Decided 2026-08-10; complete named-zone pass 2026-08-11; fixed simple-map
-rebase 2026-08-25. This document supersedes the old radial
+rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27. This
+document supersedes the old radial
 "safe core + war coast" surface layout in `world.md` and
 `biomes_mobs.md`. The shipped WP18/WP36 map still uses that old layout;
 WP40 replaces it with the complete catalog and contracts below.
@@ -11,7 +12,7 @@ WP40 replaces it with the complete catalog and contracts below.
 - **Kragmar remains north and Elandor remains south.** They are distinct
   faction continents, but they are no longer separated along their whole
   front by mandatory open water.
-- The continent parts meet along one continuous, narrow **Holy Grounds** land
+- The continent parts meet along one continuous, narrow **Battlegrounds** land
   band. From west to east its four zones are Gravesalt Escarpment, The Broken
   Causeway, The Shattered Line and The Skyglass Canopy. This band contains the
   only normal overland crossings between the factions and provides several
@@ -64,7 +65,7 @@ WP40 replaces it with the complete catalog and contracts below.
   preparation and lead toward the front, but remains peaceful under the
   voluntary-tag rules of §4.
 - **Every level-31–60 ordinary zone is contested**, including all six faction
-  frontier approaches, all four Holy Grounds zones and both dragon islands.
+  frontier approaches, all four Battlegrounds zones and both dragon islands.
   Capitals remain the peaceful civic exception described in §3.
 - Most land where the faction continents meet is level 41–50 or 51–60. The six
   level-31–40 faction-front approaches and The Broken Causeway are the first
@@ -168,7 +169,7 @@ WP40 replaces it with the complete catalog and contracts below.
   both with an overworld dragon through one shared encounter chassis and two
   regional variants.
 - Each overworld dragon lair occupies its own **offshore island** beyond one
-  ocean endpoint of the Holy Grounds. An immutable full-column ocean channel
+  ocean endpoint of the Battlegrounds. An immutable full-column ocean channel
   separates it from every mainland coast, so it has no land, bridge or tunnel
   connection. Both factions receive equivalent authored boat access.
 - Every dragon island is a contested level-60 mountain region with strong
@@ -196,11 +197,17 @@ WP40 replaces it with the complete catalog and contracts below.
 - The layout id is `wp40-simple-map-v1d`. Land, zone hubs, macro ownership,
   main routes, housing masks and water classes are identical for every world
   seed using that layout.
-- The Holy Grounds is the exact, unwarped closed rectangle
+- The Battlegrounds is the exact, unwarped closed rectangle
   **x = -2500..+2500, z = -250..+250**. It is land and may contain explicit
-  planned water. Its internal west/east ownership uses the four Holy hubs
-  below. Terrain is immutable from the surface through y = -700 inclusive;
-  the universal contested T5/T6 rule resumes at y = -701.
+  planned water. Its internal west/east ownership uses the four Battlegrounds
+  hubs below. Both factions may dig and place ordinary terrain at every depth,
+  subject to tools, claim exclusion and explicit hard-protected functional,
+  capital-ingress or irreplaceable-route envelopes.
+- The accepted horizontal source keys `holy_grounds`,
+  `macro_region = "holy_grounds"` and `territory_rule = "holy_grounds"` are
+  stable internal identifiers retained for the exact rectangle, ownership,
+  flight and artifact compatibility. They do not define the player-facing
+  name and do not imply blanket terrain protection.
 - The unwarped authored mainland primitives stay within x = -2600..+2600 and
   z = -3000..+3000. The common warp may move their classified coastline by at
   most its declared 60 nodes per axis. These are source/validation bounds, not
@@ -272,7 +279,7 @@ WP40 replaces it with the complete catalog and contracts below.
 - Land is a small authored union/difference of axis-aligned capsules, rounded
   rectangles and ellipses. It contains three broad cultural lobes, a capital
   connection and a frontier connection on each independently authored
-  mainland, the exact Holy Grounds rectangle, and one island shape per dragon
+  mainland, the exact Battlegrounds rectangle, and one island shape per dragon
   endpoint.
 - Elandor and Kragmar are not coordinate reflections and may not share a
   reflected source record. Their silhouettes, bay placement and visible
@@ -283,8 +290,8 @@ WP40 replaces it with the complete catalog and contracts below.
   axis. The same warp applies to query points and zone hubs before non-fixed
   ownership scoring. Source validation proves safe integer bounds and a
   displacement Lipschitz constant below one, so the transform cannot fold
-  space. The Holy Grounds macro/protection rectangle and fixed ownership cores
-  are unwarped; internal Holy Grounds zone ownership reuses the common warp.
+  space. The Battlegrounds macro rectangle and fixed ownership cores are
+  unwarped; internal Battlegrounds zone ownership reuses the common warp.
 - Local coastline, biome and terrain beauty comes primarily from the later
   height/detail fields. There is no seed-selected polygon partition, boundary
   raster, topology census, repair pass or alternate winner layout.
@@ -296,7 +303,7 @@ WP40 replaces it with the complete catalog and contracts below.
 ### 7.3 Zone ownership and difficulty
 
 - Zone ownership is an integer power diagram restricted to five macro regions:
-  the 16 Elandor-mainland zones, 16 Kragmar-mainland zones, four Holy Grounds
+  the 16 Elandor-mainland zones, 16 Kragmar-mainland zones, four Battlegrounds
   zones, and one single-zone region for each island.
 - For point `p` and eligible zone `z`, ownership minimizes
   `squared_distance(w(p), w(z.hub)) - z.bias`. The owner-only warp keeps eight
@@ -365,7 +372,7 @@ WP40 replaces it with the complete catalog and contracts below.
   This gives the mouth a gently meandering boundary aligned with the nearby
   exterior coast without another noise field or water algorithm.
 - Horizontal water classification has one total precedence:
-  1. exact fixed features: Holy Grounds and ownership cores are land except
+  1. exact fixed features: Battlegrounds and ownership cores are land except
      for a planned-water submask declared by that same fixed feature;
   2. the deep-ocean cap of a matched outer bay mouth;
   3. closed explicit planned/bay-water masks;
@@ -514,9 +521,11 @@ Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
 zones use `territory_rule = "throng_home"`. Every level-31–60 ordinary
 frontier or island uses `territory_rule = "contested_land"`: both factions may
 edit ordinary terrain subject to tools and explicit protected envelopes. The
-four Holy Grounds zones instead use `territory_rule = "holy_grounds"`; they
-are immutable through y = -700 and become ordinary contested depth at
-y = -701. `race_region` never changes any of these rights.
+four Battlegrounds zones retain the stable
+`territory_rule = "holy_grounds"` identifier, but it grants the same ordinary
+terrain-editing rights as `contested_land` at every y. The separate token
+exists for the exact macro rectangle and flight policy, not protection.
+`race_region` never changes any of these rights.
 
 ### 8.1 Elandor — Accord
 
@@ -560,10 +569,10 @@ y = -701. `race_region` never changes any of these rights.
 | `kragmar_totemwater_reach` | Totemwater Reach | Troll | 21–30 peaceful | jungle edge 35 / deep jungle 45 / swamp 20 | Broad river delta marked by colossal carved totems; jungle-edge/swamp mobs; **O** |
 | `kragmar_thunderroot_wilds` | Thunderroot Wilds | Troll | 31–40 **contested** | deep jungle 55 / east badlands 30 / swamp 15 | Storm forest with exposed roots and ochre stone islands; jungle mobs; **O, B** |
 
-### 8.3 Holy Grounds and offshore dragon islands
+### 8.3 Battlegrounds and offshore dragon islands
 
 All six zones below have one cultural `race_region` and automatic-PvP status
-`contested`. The four mainland zones form the immutable shallow Holy Grounds;
+`contested`. The four mainland zones form the shared, mutable Battlegrounds;
 the two endpoint zones are editable contested islands separated from the
 mainland by full-column immutable ocean channels. §11 defines their resource
 and terrain rules without deriving political ownership from cultural origin.
@@ -590,8 +599,8 @@ obligations.
 
 #### Dwarf progression region
 
-The offshore Wyrmglass endpoint is assigned with the complete Holy
-Grounds/dragon group rather than inferred from its Dwarf `race_region`.
+The offshore Wyrmglass endpoint is assigned with the complete Battlegrounds
+and dragon-island group rather than inferred from its Dwarf `race_region`.
 
 | Zone | Primary relief | Secondary relief | Required landmarks and constraints |
 |---|---|---|---|
@@ -653,12 +662,12 @@ Grounds/dragon group rather than inferred from its Dwarf `race_region`.
 | Totemwater Reach | `wetland_delta` | bounded `lowland` delta islands | `totemwater_delta`: a broad branching river delta retains at least two independent dry routes around its principal arms; `totemwater_colossi`: several colossal carved totems provide long-range orientation outside road and anchor footprints |
 | Thunderroot Wilds | `highland` | bounded `plateau` islands and small wet depressions | `thunderroot_exposures`: enormous exposed roots provide optional paths rather than required bridges; `thunderroot_ochresteps`: ochre rock terraces shape the storm-forest skyline while independent secondary approaches to The Shattered Line and The Skyglass Canopy remain open |
 
-#### Holy Grounds and dragon-island group
+#### Battlegrounds and dragon-island group
 
 | Zone | Primary relief | Secondary relief | Required landmarks and constraints |
 |---|---|---|---|
 | The Wyrmglass Crown | `mountain` | bounded `highland` fault terraces and two inner-shore `lowland` landing coves | `wyrmglass_ring`: an apparently closed mountain ring remains traversable by several land routes; `wyrmglass_faultfields`: crystalline terraces contain the protected functional anchor and reachable deposits of the all-six-gem apex mining camp; `wyrmglass_dragonspire`: the elevated dragon arena is independently reachable from both z = -125 and z = +125 east-shore landings and does not gate access to the mine |
-| Gravesalt Escarpment | `highland` | one `mountain` salt escarpment and small `wetland_delta` salt pans | `gravesalt_whitewall`: the visible white escarpment contains multiple fixed passes rather than one choke, while the named `gravesalt_broken_fall` drops through its existing contact with the lower Broken Marsh reach; `gravesalt_tombways`: shallow generated tomb galleries remain traversable but immutable with the surrounding Holy Grounds and do not replace either surface crossing; `gravesalt_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Wyrmglass embarkation corridors |
+| Gravesalt Escarpment | `highland` | one `mountain` salt escarpment and small `wetland_delta` salt pans | `gravesalt_whitewall`: the visible white escarpment contains multiple fixed passes rather than one choke, while the named `gravesalt_broken_fall` drops through its existing contact with the lower Broken Marsh reach; `gravesalt_tombways`: shallow generated tomb galleries remain traversable, mutable and claim-excluded like surrounding Battlegrounds terrain and do not replace either surface crossing; `gravesalt_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Wyrmglass embarkation corridors |
 | The Broken Causeway | `wetland_delta` | broad raised `lowland` islands | `broken_threeways`: a damaged raised causeway, a broad ford and an aqueduct path form three distinct north/south routes; `broken_marsh`: fixed lakes, river arms and marsh fill the intervening ground without placing both assigned frontier crossings behind one route or structure |
 | The Shattered Line | `plateau` | bounded `rolling_hills` crater fields and low wet trench depressions | `shattered_breachwall`: a fortress line has several permanent traversable breaches; `shattered_noman`: broad burned no-man's-land carries trenches and craters without closing either north/south crossing; `shattered_siegeramp`: the eastern siege ramp remains separate from both crossings and the internal west/east trail |
 | The Skyglass Canopy | `highland` | bounded `mountain` pale cliffs and `rolling_hills` forest terraces | `skyglass_escarpment`: several fixed ascents cross the pale cliff line; `skyglass_hangingways`: root and canopy paths remain optional alternatives over the terraces; `skyglass_warcoast`: the two north/south military routes connect separately to the z = -125 and z = +125 Stormscale embarkation corridors |
@@ -703,9 +712,9 @@ stable boundary identity. No geometric boundary dual is created.
   Thunderroot Wilds; Totemwater Reach — Thunderroot Wilds;
   Blackwind Rise — Bannerbreak Mesa — Thunderroot Wilds.
 
-### 9.3 Holy Grounds land graph and offshore travel
+### 9.3 Battlegrounds land graph and offshore travel
 
-- The Holy Grounds land chain is Gravesalt Escarpment — The Broken Causeway —
+- The Battlegrounds land chain is Gravesalt Escarpment — The Broken Causeway —
   The Shattered Line — The Skyglass Canopy. No nonconsecutive pair in this
   chain is a route neighbor; incidental geometric contact does not change the
   chain.
@@ -722,8 +731,9 @@ stable boundary identity. No geometric boundary dual is created.
   routes do the same from The Skyglass Canopy. These authored travel edges are
   open to both factions and never add a land-route neighbor.
 
-The overlapping frontier-to-Holy edges distribute crossings across the whole
-band and prevent one bridge or zone from becoming the sole faction route.
+The overlapping frontier-to-Battlegrounds edges distribute crossings across
+the whole band and prevent one bridge or zone from becoming the sole faction
+route.
 
 ### 9.4 Authored land-route classes
 
@@ -733,11 +743,11 @@ from the route graph and have no route class or station sequence.
 
 - Every edge in the six race spines and both west/east capital axes is a
   **primary road**. The primary classification ends at the race frontier; it
-  does not create one intact arterial road across the Holy Grounds.
+  does not create one intact arterial road across the Battlegrounds.
 - Every edge listed as a heartland/front cross-link in §9.1 and §9.2 is a
   **secondary road**. Major villages, mining camps, outposts and other major
   POIs join their nearest primary or secondary route through a secondary spur.
-- All twelve frontier/Holy-Grounds edges are secondary roads paired into six
+- All twelve frontier/Battlegrounds edges are secondary roads paired into six
   complete north/south crossings:
 
   - Stormvault Heights — Gravesalt Escarpment — Blackwind Rise;
@@ -753,7 +763,7 @@ from the route graph and have no route class or station sequence.
   capital-ingress chains add a 128-node hard-protected terrain corridor to one
   route per frontier zone; the other parallel crossings remain mutable damaged
   military roads, passes, fords and ruin paths.
-- Each of the three consecutive internal Holy-Grounds edges has at least one
+- Each of the three consecutive internal Battlegrounds edges has at least one
   **trail** crossing it. Together these trails preserve west/east alternative
   movement without turning the complete front into an intact primary road.
 - Minor POIs connect by trails. A trail or secondary spur may end at its POI;
@@ -829,11 +839,13 @@ asks for it.
   envelopes exclude claims and grade mapgen but do not block terrain mutation.
   This applies equally to all six faction frontier approaches and to both
   dragon islands.
-- The four Holy Grounds zones are the shallow exception: neither faction may
-  dig or place from the surface through y = -700 inclusive. At y = -701 and
-  below, the universal contested deep rule resumes. The immutable ocean
-  channels around the dragon islands remain non-editable at every y; protected
-  lair/camp structures and their renewable sockets keep their own envelopes.
+- The four Battlegrounds zones follow the same shared construction rule at
+  every y: both factions may dig and place ordinary terrain, while no housing
+  claim may privatize it. Explicit hard-protected functional anchors,
+  irreplaceable route pieces and capital-ingress corridors retain their bounded
+  envelopes. The immutable ocean channels around the dragon islands remain
+  non-editable at every y; protected lair/camp structures and their renewable
+  sockets keep their own envelopes.
 - `race_region`, `territory_rule` and `pvp_rule` are independent registry
   fields. In particular, a Human/Orc/Dwarf/Undead/Elf/Troll cultural label
   grants no home-faction terrain privilege in any contested zone.
@@ -862,8 +874,8 @@ asks for it.
   west. The road itself is authored by WP13 inside that reserved corridor.
 - Each capital's front gate continues through one **128-node-wide, shallow
   hard-protected public ingress** along two existing route records: its primary
-  capital/front route and one secondary frontier/Holy-Grounds route. The
-  corridor is protected from y = -700 upward, reaches the exact Holy Grounds
+  capital/front route and one secondary frontier/Battlegrounds route. The
+  corridor is protected from y = -700 upward, reaches the exact Battlegrounds
   rectangle continuously and cannot be claimed, dug through or walled across.
   The 128 nodes are the protected public envelope, not 128 nodes of pavement;
   its route surface is deterministically bridged or graded where it meets
@@ -1011,7 +1023,7 @@ numeric-truncated seed.
 - `faction_at` returns `accord`, `throng` or nil and never derives
   construction rights from `race_region`. `territory_rule_at` and
   `pvp_rule_at` apply full 3D precedence: bounded hard protection, immutable
-  deep ocean/channels, shallow Holy Grounds, planned-water/shelf inheritance,
+  deep ocean/channels, planned-water/shelf inheritance,
   ordinary land and the y = -701 contested-depth override.
 - Existing `grug_core.territory_at`, `zone_at`, `mob_level_at`,
   `guard_level_at`, `difficulty_at`, `open_sea_at` and protection
@@ -1037,7 +1049,7 @@ numeric-truncated seed.
   nonempty and connected on the complete integer-node grid of the finite
   authored extent.
 - The result contains exactly one connected mainland and two connected
-  islands. The Holy Grounds rectangle, six dry start cores, six capital
+  islands. The Battlegrounds rectangle, six dry start cores, six capital
   ownership envelopes, island centres/envelopes and all fixed anchors retain
   their authored positions and owners.
 - The 57 land routes connect their authored endpoints and remain split into
@@ -1053,7 +1065,8 @@ numeric-truncated seed.
   stay at least 64 nodes wide, reach neither capital envelope nor coastal
   housing core,
   disconnect no prong and create no new land contact.
-- Water precedence is total. Holy Grounds remains exact; deep ocean and both
+- Water precedence is total. Battlegrounds geometry remains exact and its
+  planned water stays zone-owned and claim-ineligible; deep ocean and both
   dragon channels are immutable; the nominal shelf uses the shared
   `expanded_land_at(80) and not land_at` classifier. Each island keeps two
   distinct 96-node approaches at z = -125 and z = +125, at most 10% route

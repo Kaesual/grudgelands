@@ -405,7 +405,7 @@ foundation or its profession ownership.
 `docs/design/mounts.md` decides the four level-15/30/45/60 tiers and their
 6/8/7/10-node speeds (§1.1), income-time price targets (§2), the persistent
 inventory item plus ephemeral attached entity (§3), ocean warning/hard-flight
-boundaries, flyable Holy Grounds and the enemy-territory flight ban (§4), plus
+boundaries, flyable Battlegrounds and the enemy-territory flight ban (§4), plus
 the licence-checked references (§5). The unresolved parts below must close
 before the work package can ship.
 
@@ -463,7 +463,7 @@ dismount again; **(c)** add a separate cast-like remount delay.
 
 ### D16 — May flying tiers operate underground?
 
-Enemy territory, Holy Grounds, PvP-tag and ocean behavior are decided in
+Enemy territory, Battlegrounds, PvP-tag and ocean behavior are decided in
 `mounts.md` §4 and no longer belong to this TODO.
 
 **Still open:** whether either flying tier may operate underground. The earlier

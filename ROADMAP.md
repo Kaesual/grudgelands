@@ -13,7 +13,7 @@ the goal-level view.
 
 - **Two distinct faction continents.** The Accord holds southern Elandor and
   the Throng northern Kragmar. Their independently authored three-lobed
-  silhouettes meet along the continuous four-zone Holy Grounds; ocean
+  silhouettes meet along the continuous four-zone Battlegrounds; ocean
   separates the rest of the coast. The stable 38-zone graph fixes names,
   neighbors, level ranges, race regions, PvP rules, biome palettes and POI
   budgets while seeds vary bounded borders and local terrain.
@@ -23,7 +23,7 @@ the goal-level view.
   ambient hostile mobs. Kings and royal guards are killable high-end
   combatants; essential service NPCs are separate and invulnerable.
 - **Progression moves toward conflict.** All level-1–30 surface zones are
-  peaceful. Every ordinary level-31–60 frontier, Holy-Grounds or dragon-island
+  peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
   zone is contested. At y = −701 and below, every non-ocean land column is
   contested independently of its surface zone.
 - **PvP uses one exact transaction.** A safe player who initiates a valid
@@ -34,8 +34,9 @@ the goal-level view.
   casts, AoE, projectiles and support all use the same seam.
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
-  contested land is editable by both sides. The shallow Holy Grounds, deep
-  ocean and full dragon channels are immutable. Roads, village/outpost/camp
+  contested land, including the Battlegrounds at every depth, is editable by
+  both sides. Deep ocean and full dragon channels are immutable. Roads,
+  village/outpost/camp
   shells and battlefield dressing are mutable but claim-excluded; only
   bounded functional anchors, complete civic cores and irreplaceable route
   pieces are hard-protected.
@@ -78,7 +79,7 @@ the goal-level view.
 - **Travel is earned.** Visit-unlocked waypoints connect authored hubs. A Home
   Stone channels to the active bound claim only. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6/8 and flight speeds 7/10 nodes per
-  second; damage dismounts. Holy Grounds permit flight, enemy territory allows
+  second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight.
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
@@ -204,7 +205,8 @@ the goal-level view.
   sources.
 - A social-organization system, shared organization bank/chat or
   organization-owned land.
-- Battlegrounds/arenas and permanent war-front capture in the current scope.
+- Instanced PvP battlegrounds/arenas and permanent war-front capture in the
+  current scope.
 - A separate Enchanter profession; each profession enchants the families it
   owns.
 - Taming mounts; riding is a permanent purchase and summons an ephemeral

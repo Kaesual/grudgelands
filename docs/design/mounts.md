@@ -52,7 +52,7 @@ character state:
   slower than the level-30 fast land mount: its +75% buys direct aerial routes
   and terrain access, not the next linear speed step. Master buys both flight
   and the top +150% travel speed.
-- **Flight buys terrain at home and over the shared Holy Grounds, not in enemy
+- **Flight buys terrain at home and over the shared Battlegrounds, not in enemy
   territory or across ocean.** The two land tiers remain legal in enemy
   territory; §4 owns the complete geographic rule.
 - Each exact character-level anchor is both the visibility and purchase gate.
@@ -224,10 +224,10 @@ owned by WP40.
   Swimming, boats and any later deep-ocean damage effect remain ocean-system
   concerns rather than mount movement rules.
 
-### 4.2 Holy Grounds and housing claims
+### 4.2 Battlegrounds and housing claims
 
-- **Both factions may summon and use either flying tier throughout the Holy
-  Grounds.** The shared-front territory is an intentional aerial PvP space,
+- **Both factions may summon and use either flying tier throughout the
+  Battlegrounds.** The shared-front territory is an intentional aerial PvP space,
   not enemy territory. Its planned water inherits this permission because it
   is not an ocean column.
 - PvP and NPC combat remain active there. Any incoming damage still dismounts
@@ -258,7 +258,7 @@ owned by WP40.
     grace period into delivery past the intended defenders.
 - The two **land** tiers are untouched by this rule, and the two flying
   tiers (Expert, Master — §1.1) are untouched by it at home and throughout the
-  Holy Grounds (§4.2).
+  Battlegrounds (§4.2).
 
 **Why the ban exists.** `world_zones.md` makes the authored land connections
 the places where faction contact, defenders and PvP objectives meet. A flying
@@ -282,7 +282,7 @@ faction cannot have bought a mount, so the nil case needs no rule of its own.
 **Ocean is a separate and stricter classification.** The enemy-territory rule
 does not legalize flight over neutral water: §4.1 warns and then dismounts at
 every altitude. Read along a legal invasion path, the system is therefore own
-land → flyable Holy Grounds → warned enemy border → forced ground travel; the
+land → flyable Battlegrounds → warned enemy border → forced ground travel; the
 dragon islands instead require a boat because their ocean channel reaches the
 hard no-flight state first.
 

@@ -22,7 +22,7 @@ equivalent campaign in parallel and competition.
 A new character chooses faction, race and class, wakes in one of six outer
 starting settlements and travels through stable named regions toward a
 central capital and the contested faction front. Local beasts, bandits and
-corrupted sites give way to dangerous frontier warfare, the Holy Grounds and
+corrupted sites give way to dangerous frontier warfare, the Battlegrounds and
 two offshore level-60 dragon islands.
 
 At level 20, a passive Housing Steward introduces the open-world Claim Stone
@@ -44,14 +44,14 @@ focused `TODO-*.md` files until resolved.
 
 [World design](docs/design/world.md) and the
 [38-zone catalog](docs/design/world_zones.md) define two independently shaped
-faction continents joined by the continuous four-zone Holy Grounds. Each zone
+faction continents joined by the continuous four-zone Battlegrounds. Each zone
 has a stable id, level range, race region, political terrain rule, PvP state,
 biome palette, fixed hub and authored route neighbors. One fixed 2D layout
 uses small land/water shapes, nearest-hub ownership and reliable independent
 routes; seed variation begins with terrain, biome detail and content. Six
 outer level-1–10 starts lead through home and heartland zones to six central
 capitals; every level-1–30 zone is peaceful and every ordinary level-31–60
-frontier, Holy-Grounds and dragon zone is contested.
+frontier, Battlegrounds and dragon zone is contested.
 
 PvP state is one central transaction, not a combat-path exception. A valid
 hostile action tags its initiator before resolution; safe→safe and
@@ -171,7 +171,7 @@ asymmetric.
 unlocks at levels 15/30/45/60: land mounts move at 6/8 nodes per second and
 flyers at 7/10, with price targets of 15 minutes/45 minutes/2 hours/5 hours of
 reliable net income. A permanent owner-bound item summons one ephemeral
-entity; incoming damage dismounts. Holy Grounds allow flight, enemy territory
+entity; incoming damage dismounts. Battlegrounds allow flight, enemy territory
 allows land mounts only, and an exact 48-node warning precedes forced flight
 dismount over exterior ocean columns. Asset selection, mount attackability,
 mounting in combat, underground flight, ceiling/drift, swimmer exhaustion,

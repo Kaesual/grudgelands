@@ -8,9 +8,9 @@ binding macro-map and PvP rules are in `world_zones.md`.
 
 ## 0. Canonical names
 
-Decided 2026-08-06 (rename from the placeholder faction names). These
-names are canonical for docs, code and content — do not reintroduce the
-old ones.
+Decided 2026-08-06 (rename from the placeholder faction names;
+Battlegrounds macro-region name 2026-08-27). These names are canonical for
+docs, code and content — do not reintroduce the old ones.
 
 | Thing | Display name | Internal id |
 |-------|--------------|-------------|
@@ -18,10 +18,15 @@ old ones.
 | Northern faction | **The Throng** | `throng` |
 | Southern continent (Accord homeland) | **Elandor** | `elandor` * |
 | Northern continent (Throng homeland) | **Kragmar** | `kragmar` * |
+| Shared macro region | **Battlegrounds** | `holy_grounds` ** |
 
 \* The two continent ids are **reserved, not yet used in code**: today a
 continent is only the sign of z (`grug_core.territory_at`). Use them if
 and when a continent ever becomes a first-class id.
+
+\** `holy_grounds` is an accepted compatibility id for geometry, policy and
+artifacts. It is not a player-facing name and does not imply blanket terrain
+protection.
 
 - In running prose the factions take the article: *the Accord*, *the
   Throng*; the full form "The Accord" is for titles and UI labels.
@@ -41,7 +46,7 @@ and when a continent ever becomes a first-class id.
 ## 1. Geography: two continents and named zones
 
 **Kragmar remains north and Elandor remains south.** They are distinct faction
-continents joined along the continuous four-zone Holy Grounds land band. The
+continents joined along the continuous four-zone Battlegrounds land band. The
 Wyrmglass Crown and Stormscale Summit are separate offshore dragon islands
 beyond its western and eastern ends and have no land-neighbor edges. Ocean
 separates the remaining coast. The old mandatory open-water strait, three-loop
@@ -56,7 +61,7 @@ different shapes and zone identities. Full contract: `world_zones.md` §1.
 Each mainland has a memorable three-lobed progression silhouette. Three outer
 cultural peninsulas hold the start/home spines and are separated by two long
 bays; they join at a continuous capital-and-heartland belt, then broaden into
-a three-sector frontier at the Holy Grounds. Elandor and Kragmar share that
+a three-sector frontier at the Battlegrounds. Elandor and Kragmar share that
 high-level composition but use separately authored simple land primitives
 under the single shared layout-bound warp, never mirrored coast geometry. The
 bays stay outside the capital envelopes and coastal housing cores and may not
@@ -67,7 +72,7 @@ The fixed hubs, simple macro-land primitives and integer power ownership in
 envelope is guaranteed to its capital zone; its wider 704×704 terrain blend
 may cross a zone boundary and is not an ownership constraint. The authored
 route graph, not separator vertices or a geometric dual, defines gameplay
-neighbors toward the Holy Grounds.
+neighbors toward the Battlegrounds.
 
 ### Difficulty layout: outer starts to high-level front
 
@@ -79,13 +84,13 @@ faction front:
 | Outer race starting zones | 1–10 | safe spawn settlements, one per race |
 | Home zones | 11–20 | safe early questing; roads toward the capitals |
 | Central heartland | 21–30 | safe capital approaches and middle progression |
-| Frontier and Holy Grounds | 31–40 / 41–50 / 51–59 | contested war infrastructure and dangerous wildlife |
+| Frontier and Battlegrounds | 31–40 / 41–50 / 51–59 | contested war infrastructure and dangerous wildlife |
 | Offshore dragon islands | 60 | contested apex mining and world-boss destinations |
 | Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
 
 No level-1–30 zone is contested. Automatic PvP begins in every level-31–40
 frontier zone and remains forced through all higher ordinary zones. The four
-Holy Grounds zones provide the continuous mainland faction contact; both
+Battlegrounds zones provide the continuous mainland faction contact; both
 level-60 dragon zones are offshore islands without land-neighbor edges.
 Named zones and an authored within-zone gradient replace radial distance as
 the surface input to `mob_level_at`. The depth floor remains unchanged and
@@ -104,7 +109,7 @@ The road toward the outer side reaches a level-10–20 neighbor, lateral roads
 along the capital axis reach medium-level heartland, and the road toward the
 faction front reaches high-level territory. These safe progression spines and
 both west/east capital axes are primary roads. Cross-links and all twelve
-frontier/Holy-Grounds contacts are secondary roads; across the front they form
+frontier/Battlegrounds contacts are secondary roads; across the front they form
 six distributed north/south crossings rendered as damaged military routes,
 not one intact arterial road. Capital defense is the one fixed guard rule: its
 guards and important NPCs are level 60.
@@ -126,8 +131,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   active housing claim or a bounded hard-protected world-content volume.
   Hard-protected content is limited to complete capitals/gates/aprons,
   starting/respawn cores, essential service/quest/waypoint/graveyard platforms,
-  small functional NPC and renewable-resource anchors, and a bridge or gate
-  for which no adequate alternate route exists. Ordinary roads, villages,
+  small functional NPC and renewable-resource anchors, the six 128-node
+  capital-ingress corridors (`world_zones.md` §12), and a bridge or gate for
+  which no adequate alternate route exists. Ordinary roads, villages,
   outpost/camp shells, ruins, tents, fences and battlefield dressing are
   generated once, remain claim-excluded and may be changed under their zone's
   terrain rule.
@@ -153,13 +159,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -701 and below the universal contested deep rule overrides
   land-side faction ownership.
-- **R2b — Contested land and Holy Grounds**: every ordinary level-31–60
+- **R2b — Contested land and Battlegrounds**: every ordinary level-31–60
   frontier or dragon-island zone has no construction owner; both factions may
   dig and place subject to tools and explicit protected envelopes. The four
-  Holy Grounds zones are immutable from the surface through y = -700; ordinary
-  contested depth resumes at y = -701. Dragon channels remain immutable at
-  every y. A cultural `race_region` never grants terrain rights
-  (`world_zones.md` §§8.3/11).
+  Battlegrounds zones follow the same shared edit rule at every y, remain
+  claim-excluded and retain their separate flight classification. Dragon
+  channels remain immutable at every y. A cultural `race_region` never grants
+  terrain rights (`world_zones.md` §§8.3/11).
 - **R3 — Water columns**: classification is analytic in x/z and does not
   change when players fill or drain nodes. Every authored lake, river, marsh
   channel, cenote and the landward part of each bay mask remains planned water
@@ -299,7 +305,7 @@ occupying a position (`world_zones.md` §7):
   not inherit the deep-ocean Kraken/boat-destruction rule. Their warning and
   hard-flight bands come from the same 2D distance field. Each channel carries
   two distinct 96-node-wide approaches centred at z = -125 and z = +125,
-  joining its Holy Grounds endpoint to two inward-shore island beaches. Both
+  joining its Battlegrounds endpoint to two inward-shore island beaches. Both
   are usable by both factions; their north/south orientation only equalizes
   travel from Kragmar and Elandor. They have no ordinary surface, guard or mob-
   level result.
@@ -311,8 +317,8 @@ replaced by WP40.
 ## 2c. PvP geography and player tag
 
 Peaceful and contested status belongs to the named surface zone. No level
-1–30 surface zone is contested; every ordinary level-31–60 frontier, Holy
-Grounds and dragon-island zone is contested. Independently of the surface
+1–30 surface zone is contested; every ordinary level-31–60 frontier,
+Battlegrounds and dragon-island zone is contested. Independently of the surface
 zone, every non-ocean land position at **y = −701 and below** is contested.
 Entering a contested zone automatically applies the player's PvP tag; an
 untagged player in a peaceful zone cannot receive unprovoked enemy-player
@@ -525,10 +531,10 @@ kites into terrain, sidesteps pathfinding exploits), telegraphed attacks
 **distinct skill set** so it threatens in its own way.
 
 - The old stage-one rule **one dragon per continent is retired**. The world
-  gets two offshore overworld dragons, one beyond each Holy Grounds endpoint,
+  gets two offshore overworld dragons, one beyond each Battlegrounds endpoint,
   implemented through one encounter chassis with two regional variants.
 - Every overworld dragon occupies a separate **offshore island** beyond one
-  ocean endpoint of the Holy Grounds. An immutable full-column channel removes
+  ocean endpoint of the Battlegrounds. An immutable full-column channel removes
   land, bridge and tunnel access; both factions receive equivalent authored
   boat routes through separate 96-node northern and southern approaches. Each
   island is a contested level-60 mountain zone with strong level-60 creatures,

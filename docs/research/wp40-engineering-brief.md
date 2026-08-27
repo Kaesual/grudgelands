@@ -27,8 +27,9 @@ WP40 still delivers:
 - six starts, six capitals, 100 stable anchor slots and two dragon endpoints;
 - 57 reliable land routes split 30 primary, 24 secondary and three trails;
 - four boat links with two approaches per island;
-- two independently authored faction silhouettes, four open bays, exact Holy
-  Grounds, two offshore islands, a nominal shelf and immutable channels/ocean;
+- two independently authored faction silhouettes, four open bays, exact
+  shared mutable Battlegrounds, two offshore islands, a nominal shelf and
+  immutable channels/ocean;
 - ten housing masks and four 600 by 300 coastal housing cores;
 - logical biomes, relief, landmarks, difficulty, terrain height, policy and
   public query APIs;
@@ -56,7 +57,8 @@ One compact versioned source defines:
   difficulty, biome palette and relief;
 - starts, capitals and fixed ownership cores;
 - independently authored mainland/island additive and subtractive primitives;
-- exact unwarped Holy Grounds;
+- exact unwarped Battlegrounds geometry under stable internal key
+  `holy_grounds`;
 - four bay-water masks and two immutable channel masks;
 - 57 land routes, four boat routes and explicit crossing interfaces;
 - 100 fixed anchor slots: 16 directly authored and 84 layout-fixed from the
@@ -96,9 +98,11 @@ integer warp:
 - validation below `2^53 - 1`, with displacement Lipschitz constant below
   one and no fold.
 
-The Holy Grounds macro/protection rectangle and fixed ownership cores are
-unwarped; internal Holy Grounds zone ownership reuses the common warp. Outside
-the padded interesting extent, queries fail closed to deep ocean/no zone.
+The Battlegrounds macro rectangle and fixed ownership cores are unwarped;
+internal Battlegrounds zone ownership reuses the common warp. The accepted
+source key and macro/policy tokens remain `holy_grounds` for R2/R3 artifact
+compatibility; they no longer imply blanket protection. Outside the padded
+interesting extent, queries fail closed to deep ocean/no zone.
 
 ### 2.4 Land and water
 
@@ -114,7 +118,7 @@ The total classifier is:
    macro coast, ordinary ownership and hydrology;
 3. the deep-ocean cap of a matched outer bay mouth;
 4. explicit closed bay water;
-5. ordinary macro hydrology or land, including the exact Holy rectangle;
+5. ordinary macro hydrology or land, including the exact Battlegrounds rectangle;
 6. closed immutable dragon channels;
 7. nominal shelf; and
 8. deep ocean.
@@ -178,9 +182,9 @@ repair horizontal land. Required POIs receive explicit spurs. Boat links
 remain outside the land-neighbor graph.
 
 Six capital ingress records each concatenate the existing capital/front
-primary route with one existing frontier/Holy secondary route. Their
+primary route with one existing frontier/Battlegrounds secondary route. Their
 128-node-wide shallow hard-protection corridor runs continuously from the
-capital build envelope into the exact Holy Grounds rectangle. It adds no graph
+capital build envelope into the exact Battlegrounds rectangle. It adds no graph
 edge, route search or land geometry; the canonical KAT binds its capital,
 ordered route ids and width.
 
@@ -295,7 +299,8 @@ half-away-from-zero normalization. Invalid input is a programmer error.
 | `grug_core.open_sea_at` | Kraken leash call and captured function value `_grug_spawn_check` in `grug_mobs/kraken.lua`; runtime probe | `water_class_at == "deep_ocean"`; replace old seat-rectangle leash direction |
 | central protection | `grug_core/protection.lua`; all engine/default/mobs/material callers flow through `core.is_protected` | one policy override using `territory_rule_at`, player faction and bounded hard volumes while preserving bypass and previous-handler delegation |
 
-R7 KATs cover Holy y = -700/-701, peaceful enemy, contested land,
+R7 KATs cover Battlegrounds at y = -700/-701 with the same shared mutable
+result, peaceful enemy, contested land,
 planned water, shelf, deep ocean, channel, capital hard volume, capital
 ingress corridor interior/edge/exterior,
 `protection_bypass`, empty names and delegation to the prior protection

@@ -594,8 +594,8 @@ players in its shallow protection volume:
 - essential service and quest-giver platforms;
 - small functional NPC spawn/return anchors;
 - renewable mining sockets and other bounded renewable-resource mechanisms;
+- the six 128-node capital-ingress corridors (`world_zones.md` §12);
 - critical bridges or gates with no adequate alternate route;
-- the Holy Grounds from the surface through y = −700.
 
 - Every land-side hard-protected footprint extends upward without limit and
   downward through y = −700 inclusive.
@@ -616,6 +616,9 @@ but its authored envelope can never be privatized:
   functional anchors;
 - ruins, tents, fences, decorative fortifications and battlefield dressing;
 - terrain surrounding quest and NPC platforms.
+- ordinary Battlegrounds terrain, roads, galleries and battlefield
+  fortifications outside explicit hard-protected functional or ingress
+  envelopes.
 
 - Destruction of this layer persists; it is not structurally regenerated.
 - A reproducible gameplay loop attaches to a small protected functional
@@ -627,6 +630,8 @@ but its authored envelope can never be privatized:
 
 Ordinary terrain inside the positive housing mask is freely reshapeable and
 may receive a Claim Stone when its complete future reservation passes §6.
+Battlegrounds terrain is mutable but remains outside every positive housing
+mask and therefore cannot receive a Claim Stone.
 
 ## 8. Runtime and persistence contract
 
@@ -697,10 +702,11 @@ per-stone radii up to 50 or the project's 100-player target.
 
 - The authored mainland frame is x = −2,600..+2,600 and
   z = −3,000..+3,000. It bounds mainland authoring, not the generated world.
-- The Holy Grounds is x = −2,500..+2,500 and z = −250..+250. Its four-zone
-  internal ownership follows the fixed Holy hubs and integer power rule in
-  `world_zones.md` §§7.1/7.3. It is hard-protected through y = −700; universal
-  contested depth resumes at y = −701.
+- The Battlegrounds is x = −2,500..+2,500 and z = −250..+250. Its four-zone
+  internal ownership follows the fixed Battlegrounds hubs and integer power
+  rule in `world_zones.md` §§7.1/7.3. Both factions may edit ordinary terrain
+  at every y, but the whole macro region remains claim-ineligible. Only
+  explicit bounded hard-protection volumes apply there.
 - Dragon-island centres are (−3,150, 0) and (+3,150, 0), each inside a fixed
   600×700 envelope. Their channels retain at least 200 ocean nodes, 48-node
   flight-warning bands on both shores and at least 104 hard no-flight nodes.

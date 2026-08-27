@@ -57,8 +57,8 @@ here applies only to PvE deaths.
 ## 4. Quest structure & level gates
 
 - Main-questline beats use hard `min_level` gates (`story.md`).
-- First PvP quests begin in the level-31–40 contested approaches and Holy
-  Grounds entry, never below level 31 (`world_zones.md` §§2/8).
+- First PvP quests begin in the level-31–40 contested approaches and
+  Battlegrounds entry, never below level 31 (`world_zones.md` §§2/8).
 - Gather and kill objectives use stable named-zone ids and authored biome/
   resource palettes so progression teaches exploration rather than old radial
   ring coordinates.
