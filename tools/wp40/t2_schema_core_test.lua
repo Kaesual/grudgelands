@@ -423,66 +423,74 @@ expect_error("unknown field", function()
 		geometry_impl = function() end})
 end)
 
--- The production foundation exports only a wrapper around a privately captured
--- compile closure. Exercise the real SHA/Stage1/canonical trust path, overwrite
--- every public handle, then call the already-captured consumer wrapper again.
-local previous_core = rawget(_G, "core")
+-- The production foundation is now the disabled R4 activation boundary. The
+-- retired compiler remains test-only above and is not loaded or exported here.
 local captured_sha_calls = 0
 local forged_sha_calls = 0
 local production_core = {
-	get_modpath = function(name)
-		assert(name == "grug_mapgen")
-		return repo .. "/mods/MAPGEN/grug_mapgen"
-	end,
 	sha256 = function(data, raw)
 		assert(raw == true)
 		captured_sha_calls = captured_sha_calls + 1
 		return raw_sha256(data)
 	end,
 }
-rawset(_G, "core", production_core)
 local production_foundation = dofile(wp40_dir .. "/init.lua")(wp40_dir)
-rawset(_G, "core", previous_core)
 assert(production_foundation.enabled == false)
+assert(production_foundation.disabled_reason ==
+	"WP40 R4 payload is validated but not published until R7")
 assert(production_foundation.compiler == nil)
+assert(production_foundation.compile == nil)
 assert(production_foundation.compiled_schema == nil)
 assert(production_foundation.canonicalize_compiled == nil)
 assert(production_foundation.new_offline_test_adapter == nil)
 assert(production_foundation.trust_probe == nil)
-local captured_wrapper = production_foundation.compile
-expect_error("compiled_geometry_unavailable", function()
-	captured_wrapper("42", vocabulary)
+for _, field in ipairs({"schemas", "canonical", "deterministic", "validation",
+		"index128", "seed_corpus"}) do
+	assert(type(production_foundation[field]) == "table",
+		"missing retained foundation field " .. field)
+end
+assert(type(production_foundation.new_session) == "function")
+assert(type(production_foundation.new_engine_session) == "function")
+assert(type(production_foundation.raw_sha256_from_core) == "function")
+local captured_new_session = production_foundation.new_session
+local forged_session_calls = 0
+production_foundation.new_session = function()
+	forged_session_calls = forged_session_calls + 1
+	return {forged = true}
+end
+expect_error("raw SHA-256 function missing", function()
+	captured_new_session("0", nil, 1)
 end)
-assert(captured_sha_calls >= 2, "captured SHA/source/canonical path was not run")
-local first_sha_calls = captured_sha_calls
+assert(forged_session_calls == 0,
+	"captured constructor was replaced by a public table mutation")
 
-production_core.get_modpath = function() return "/forged" end
+-- The returned adapter captures the real engine SHA function. Later mutation
+-- of either the public foundation table or the core-like test table cannot
+-- replace that already-captured authority.
+local captured_raw = production_foundation.raw_sha256_from_core(production_core)
 production_core.sha256 = function()
 	forged_sha_calls = forged_sha_calls + 1
 	return string.rep("x", 32)
 end
-production_foundation.compile = function() return {forged = true} end
-production_foundation.compiler = {compile = production_foundation.compile}
-production_foundation.canonicalize_compiled = function() return nil end
-production_foundation.canonical.checksum = function()
-	forged_sha_calls = forged_sha_calls + 1
-	return string.rep("y", 32)
+production_foundation.raw_sha256_from_core = function()
+	return function() return string.rep("y", 32) end
 end
-production_foundation.deterministic.validate_seed = function() return true end
-production_foundation.validation.prepare = function() return {forged = true} end
-production_foundation.schemas.compiled = "forged_schema"
-rawset(_G, "core", production_core)
-expect_error("compiled_geometry_unavailable", function()
-	captured_wrapper("42", vocabulary)
-end)
-rawset(_G, "core", previous_core)
-assert(captured_sha_calls > first_sha_calls,
-	"captured production SHA did not run after public mutation")
+assert(captured_raw("captured adapter") == raw_sha256("captured adapter"))
+assert(captured_sha_calls == 1,
+	"captured production SHA did not run exactly once")
 assert(forged_sha_calls == 0, "mutated global SHA replaced captured authority")
-assert(production_foundation.compile().forged == true,
-	"public mutation fixture did not actually replace the table field")
-assert(production_foundation.enabled == false)
-assert(production_foundation.disabled_reason ==
-	"T2 compiled geometry is not installed")
+
+local water_reads = 0
+expect_error("engine water_level must be exact integer 1", function()
+	production_foundation.new_engine_session("0", {
+		sha256 = function(data) return raw_sha256(data) end,
+		get_mapgen_setting = function(name)
+			assert(name == "water_level")
+			water_reads = water_reads + 1
+			return "2"
+		end,
+	})
+end)
+assert(water_reads == 1, "engine water_level was not read exactly once")
 
 print("WP40 T2 schema/core tests passed")

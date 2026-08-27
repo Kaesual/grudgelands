@@ -1,10 +1,10 @@
 # WP40 simple-map R4 geography and policy contract
 
-**Status (2026-08-27): implementation-ready contract; its independent planning
-review is accepted. The R4 implementation and artifact do not yet exist and
-are not accepted. R2 and R3 remain the sole accepted horizontal and vertical
-authorities. R4 remains disabled and does not generate or publish a Luanti
-world.**
+**Status (2026-08-27): accepted. The R4 implementation, exhaustive canonical
+artifact and independent implementation review are accepted. R2 and R3 remain
+the sole accepted horizontal and vertical authorities consumed by R4. R4
+remains deliberately disabled and does not generate or publish a Luanti world;
+R5 is next.**
 
 R4 combines the accepted fixed horizontal layout and pure vertical evaluator
 into the first complete `grug_zones` geography/policy payload. It adds the
@@ -324,8 +324,21 @@ biomes = ordered array of {id, share}
 All 38 records preserve source order and values except for the source's Lua
 sentinel `faction = false`, which is normalized to nil in every public record
 and scalar result. Palette shares are positive integers and total exactly 100
-per zone. Internal source fields such as ownership bias and selector/hash
-implementation data are not public.
+per zone. A share is an exact palette-roll weight, not a realized surface-area
+quota: over the inclusive integer roll domain 0..99, each authored entry owns
+exactly `share` values in source order. Internal source fields such as ownership
+bias and selector/hash implementation data are not public.
+
+The accepted R2 source bytes retain the legacy metadata fields
+`logical_biome_selector.share_audit_domain` and
+`logical_biome_selector.share_audit_tolerance_percentage_points`. R4
+explicitly supersedes only those two audit semantics: they remain byte-bound
+historical R2/R3 input metadata, but they are non-operative in R4 and later
+work. Production `zones.lua` must not read either field. R4 validation binds
+their retained identities, proves that production has zero reads of them and
+applies the roll-partition and realized-evidence rules in Section 6 instead.
+This narrow supersession does not reopen any R2 geometry, palette entry,
+weight, selector hash input or accepted R2/R3 artifact byte.
 
 ### 5.3 Land neighbors, boat travel and anchors
 
@@ -401,10 +414,20 @@ biome, while deep ocean and dragon channels do not. Engine heat/humidity,
 another zone's palette, height, decorations and native biome ids never enter
 this query. R6 later maps the logical id to content.
 
-The full seed-zero ordinary-land population validates all 16 logical ids and
-each zone's observed shares within the authored ±5 percentage-point tolerance.
-The population is evidence, not a query-time correction; R4 never rerolls or
-repairs a result.
+Construction proves the ordered cumulative mapping for every roll 0..99 in
+every zone: each positive authored entry receives exactly its stated number of
+roll values, the intervals are disjoint and exhaustive, and no roll escapes the
+owning palette. One roll labels one jittered Voronoi patch whose realized and
+zone-clipped area varies, so no seed guarantees an authored entry's presence in
+each zone or any per-zone surface-area percentage.
+
+The full seed-zero ordinary-land population proves that every observed result
+belongs to its owning zone's palette, that no foreign id appears and that all 16
+accepted logical biome ids occur globally. It records deterministic per-zone
+ordinary-land counts and their exact realized count/zone-total shares as
+evidence. The population is not a query-time correction; R4 never rerolls or
+repairs a result. R6's faction resource audit remains the binding distribution
+gate for playable content and supply.
 
 ## 7. Scalar policy and level precedence
 
@@ -787,7 +810,9 @@ candidate. Its canonical body and complete-file hashes bind:
 - the 38 complete public zone records and logical palettes;
 - all 57 sorted land-neighbor edges and four boat travel links;
 - all 100 public anchor records and 42 hard-protection records;
-- logical-biome site-lattice and full population digests plus per-zone shares;
+- logical-biome site-lattice, exact 0..99 roll partitions, full ordinary-land
+  population digests, global observed-id coverage and deterministic per-zone
+  counts plus exact realized count/zone-total shares;
 - full x/z owner/class/scalar counts and policy counts at y = -700/-701;
 - hard-index versus exact membership evidence, the accepted R2 housing-result
   digest and bounded R4-wrapper parity corpus described below;
@@ -816,7 +841,11 @@ The authoritative seed-zero run uses LuaJIT and:
 4. scans the complete relevant hard-protection footprints and y boundary
    planes, including capitals, starts, ingresses, sockets and immutable-water
    disjointness;
-5. proves every logical-biome palette population and ±5-point share gate;
+5. proves every ordered logical-biome palette's exact 0..99 roll partition,
+   scans the realized ordinary-land population for owner-palette/no-foreign
+   validity and global coverage of all 16 ids, and records deterministic
+   per-zone counts and exact count/zone-total shares without imposing an area
+   quota;
    verifies the accepted R2 housing-result digest
    `4e5676d86ba5226642476751509f78c5152ecbc429a8d1f4bb94e415289f26ec`
    without rerunning the packing portfolio; and compares the direct R4
@@ -884,7 +913,8 @@ diffs and the canonical R4 artifact. Review checks at minimum:
 - exact public signatures, return ownership and nil/error behavior;
 - exact 3D policy precedence, particularly capital/ingress/Battlegrounds,
   shelf and y = -700/-701;
-- complete logical-biome hash/selection parity;
+- complete logical-biome hash/selection parity, exact 0..99 roll partitions,
+  global observed-id coverage and deterministic realized per-zone counts;
 - complete path/hydrology/hard index populations and a sound strict nearest
   stopping proof;
 - no hidden full-catalog hot-path fallback;
@@ -926,6 +956,8 @@ approximation.
 
 ## 15. Contract review record
 
+### Planning review
+
 The binding §§1-14 contract content was independently reviewed with Claude
 Code 2.1.228, Opus at xhigh effort, in a read-only `Read,Grep,Glob` profile.
 The final reviewed complete-file SHA before this administrative status/record
@@ -951,3 +983,91 @@ The Claude help SHA-256 was
 `71ad650f59e08ae40ede14c534db4f49d8590ee5a4f92f6da2882d3a5560fea6`;
 the process exited 0 with empty stderr. Calibration: Sol implementer, Opus
 reviewer, three fix rounds, elapsed time not recorded.
+
+### Implementation review and acceptance
+
+The complete R4 candidate was independently reviewed after the canonical full
+run. The reviewed base was
+`3a7afc978733be0d16f04ad02073992a5beaea55`. The sorted SHA-256 manifest of
+the 16 reviewed contract/design/research, production, tool and artifact files
+was
+`f090f2da954f50ae83b74b5cf2664156da99b0bddb21659fa36d4cbdafd7ace0`.
+The exact pre-closeout `git status --porcelain` snapshot SHA-256 was
+`3e49e539793a072965ac436cd235da165e42a945d15f5ff711003d05fc4b87f9`.
+The reviewed contract file SHA-256 was
+`6f9763b97a230dc875e8b038e21c797b9f0f68d3e5dd86caedb4b67833c2063b`;
+this status and review-record addition is administrative and therefore occurs
+after that reviewed snapshot.
+
+Before the full run, a fresh focused Opus `xhigh` review accepted the corrected
+logical-biome roll-weight semantics and the explicit non-operative treatment
+of the two retained R2 share-audit metadata fields. It returned **START** with
+0 Critical, 0 High, 0 Medium and one dispositioned Low requiring this later
+review-record update. Its immutable evidence was:
+
+- reviewed four-file correction diff SHA-256:
+  `96fdf4b7de206997e8fca7f062a98a55ef095c7b249648993bff4559df0f74c6`;
+- prompt SHA-256:
+  `454fe102ecaab9484b06a7d56ae24186bb2826aced05bf5c8f9a6f3f11aa5b23`;
+- JSONL SHA-256:
+  `5254bd55c9ee094724eb462a019b5831dd316ad4f5f43365713ea04d642068ea`;
+  and
+- extracted verdict SHA-256:
+  `b69ea262540c76e2e9bb4a0db63c7834791d1bc1dbf5f5628aa2beb1e0bb064a`.
+
+The final implementation review used a second fresh Claude Opus context at
+`xhigh` effort through the repository's read-only `Read,Grep,Glob` profile.
+It reviewed the complete candidate, the canonical artifact and the successful
+full-run log. It returned **ACCEPT** with 0 Critical, 0 High, 0 Medium and
+three dispositioned Low findings. Its immutable evidence was:
+
+- prompt SHA-256:
+  `78963ceae6f430545fcb072118a37139382397a6f478d4f0656c8367d8d5d0bb`;
+- JSONL SHA-256:
+  `6b5dc3de749206862e801ac99f9a164b5f337e9bb915bd7da92aa6eb00a695b1`;
+- extracted verdict SHA-256:
+  `bd67757f881b3a2e1952214870f60b71ab3907022153edd26f99f23a0528f130`;
+- CLI-version capture SHA-256:
+  `6e530049604112045b613648e16c32a1b32dc006ad76ccac829b476fd2038157`;
+- Claude Code version `2.1.228` and help SHA-256
+  `71ad650f59e08ae40ede14c534db4f49d8590ee5a4f92f6da2882d3a5560fea6`;
+  and
+- empty stderr SHA-256
+  `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
+
+The three Low findings are explicitly dispositioned. Two query-cost metrics
+are literals rather than independent instruments, but the accepted code has no
+corresponding query path and the exhaustive nearest metrics independently
+exclude a catalog fallback. Five foundation/T2 negative-test dependencies are
+outside the 35-file artifact manifest, but none participates in the private R4
+payload and the accepted golden tests bind their observable behavior. One
+unused local `sorted_keys` helper has no execution path. Editing any of these
+artifact-bound files would invalidate the accepted bytes and require another
+full run without changing one produced R4 value, so they are retained as
+reviewed. R5/R7 planning carries the separate observation that the complete
+42-footprint construction proof needs a measured engine world-load budget.
+
+The canonical full run completed two independent seven-shard LuaJIT scans of
+all 49,980,561 columns, produced byte-identical artifacts, compared four
+targeted seed shards byte-for-byte between LuaJIT and PUC 5.1, and promoted
+only after the immutable input check. Bound evidence:
+
+- artifact body/file SHA-256:
+  `bb19948d6bcb2c9976eddc6358955407f8b4a3c4cd54fb7dce1165e22ed8edca` /
+  `23a05d2115fb6d3a1b286e09a17847793e23fc0a23817ade8ce8b812875d1b3c`;
+- targeted KAT body/file SHA-256:
+  `72b9bd0e2d21cb82c4b1627031434eda1b83a2d8b8223fae22eb8f0e377ab5de` /
+  `14463a99810351439fdf5d65a02436e367db69df1c2efebaeb8bc1b495a90b39`;
+- immutable input-state SHA-256 before/after:
+  `7ab21a34a39c01b7b1fb244f46d4685c9fc5f4e3fdba45fdac50c70330109790`;
+  and
+- full-run log SHA-256:
+  `9feeb509897753f52fbf5df5c5752b395f5df32bc0c6db83095e0c9faf59bbd5`.
+
+Calibration: non-trivial deterministic map-generation implementation;
+implementing/coordinating model GPT-5.6 Sol with delegated implementation and
+audit lanes; reviewing model Claude Opus at `xhigh` effort in fresh read-only
+contexts; initial/final Critical and High counts 0/0; final complete-review
+counts 0 Critical / 0 High / 0 Medium / 3 dispositioned Low; final-review fix
+rounds 0; package elapsed wall time not recorded across sessions; canonical
+full runner wall time 3,766 seconds.

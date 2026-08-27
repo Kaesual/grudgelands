@@ -410,6 +410,104 @@ expect_error("oracle mismatch", function()
 		function(_layer, x, _z) return x < 10 and "west" or "east" end)
 end)
 
+-- R4 sparse segments retain raw ordinals, exact rational distances and the
+-- two contract tie orders without weakening the original scalar grid API.
+local sparse_schema = "grug_wp40_sparse_feature_index_v1"
+local route_segments = index128.compile_sparse_segments({
+	schema = sparse_schema,
+	min_x = -256, max_x = 255, min_z = -256, max_z = 255,
+	tie_break = "feature_id",
+	segments = {
+		{feature_id = "zeta", feature_order = 2, segment = 1,
+			ax = -200, az = 0, bx = 200, bz = 0},
+		{feature_id = "alpha", feature_order = 1, segment = 1,
+			ax = -200, az = 0, bx = 200, bz = 0},
+		{feature_id = "bent", feature_order = 3, segment = 1,
+			ax = -200, az = 200, bx = 0, bz = 200},
+		{feature_id = "bent", feature_order = 3, segment = 2,
+			ax = 0, az = 200, bx = 200, bz = 200},
+	},
+}, sparse_schema)
+local route_nearest = assert(index128.nearest_segment(route_segments, 0, 3))
+assert(route_nearest.feature_id == "alpha" and route_nearest.segment == 1)
+assert(route_nearest.distance_numerator == 1440000 and
+	route_nearest.distance_denominator == 160000 and
+	route_nearest.distance_squared == 9)
+assert(route_nearest.rings_scanned >= 1 and route_nearest.cells_scanned >= 1 and
+	route_nearest.candidates_scanned >= 2)
+local joint_nearest = assert(index128.nearest_segment(route_segments, 0, 200))
+assert(joint_nearest.feature_id == "bent" and joint_nearest.segment == 1,
+	"same-feature segment tie did not choose the raw lower ordinal")
+assert(index128.nearest_segment(route_segments, 256, 0) == nil)
+local route_metrics = index128.sparse_metrics(route_segments)
+assert(route_metrics.kind == "sparse_segments" and
+	route_metrics.segment_count == 4 and route_metrics.populated_cells > 0 and
+	route_metrics.candidate_references >= route_metrics.segment_count)
+route_metrics.segment_count = 0
+assert(index128.sparse_metrics(route_segments).segment_count == 4)
+
+local hydrology_segments = index128.compile_sparse_segments({
+	schema = sparse_schema,
+	min_x = -128, max_x = 127, min_z = -128, max_z = 127,
+	tie_break = "feature_order",
+	segments = {
+		{feature_id = "later_id", feature_order = 1, segment = 1,
+			ax = -100, az = -10, bx = 100, bz = -10},
+		{feature_id = "alpha_id", feature_order = 2, segment = 1,
+			ax = -100, az = 10, bx = 100, bz = 10},
+	},
+}, sparse_schema)
+local hydrology_nearest = assert(index128.nearest_segment(
+	hydrology_segments, 0, 0))
+assert(hydrology_nearest.feature_id == "later_id" and
+	hydrology_nearest.feature_order == 1 and hydrology_nearest.segment == 1)
+
+expect_error("sparse segment schema mismatch", function()
+	index128.compile_sparse_segments({schema = "wrong", min_x = 0, max_x = 1,
+		min_z = 0, max_z = 1, tie_break = "feature_id", segments = {}},
+		sparse_schema)
+end)
+expect_error("degenerate", function()
+	index128.compile_sparse_segments({schema = sparse_schema,
+		min_x = 0, max_x = 1, min_z = 0, max_z = 1,
+		tie_break = "feature_id", segments = {{feature_id = "bad",
+			feature_order = 1, segment = 1, ax = 0, az = 0, bx = 0, bz = 0}}},
+		sparse_schema)
+end)
+expect_error("raw segment ordinals", function()
+	index128.compile_sparse_segments({schema = sparse_schema,
+		min_x = 0, max_x = 2, min_z = 0, max_z = 2,
+		tie_break = "feature_id", segments = {{feature_id = "gap",
+			feature_order = 1, segment = 2, ax = 0, az = 0, bx = 1, bz = 1}}},
+		sparse_schema)
+end)
+
+local footprint_index = index128.compile_footprints({
+	schema = sparse_schema,
+	min_x = -256, max_x = 255, min_z = -256, max_z = 255,
+	records = {
+		{id = "zeta", bbox = {min_x = -20, max_x = 21,
+			min_z = -20, max_z = 21}},
+		{id = "alpha", bbox = {min_x = -10, max_x = 11,
+			min_z = -10, max_z = 11}},
+	},
+}, sparse_schema)
+local footprint_candidates = index128.footprint_candidates(footprint_index, 0, 0)
+assert(#footprint_candidates == 2 and footprint_candidates[1] == "alpha" and
+	footprint_candidates[2] == "zeta")
+assert(index128.footprint_candidates(footprint_index, 255, 255) ==
+	index128.footprint_candidates(footprint_index, 256, 256))
+local footprint_metrics = index128.sparse_metrics(footprint_index)
+assert(footprint_metrics.kind == "footprints" and
+	footprint_metrics.record_count == 2 and
+	footprint_metrics.maximum_candidates == 2)
+expect_error("footprint bbox is outside query bounds", function()
+	index128.compile_footprints({schema = sparse_schema,
+		min_x = 0, max_x = 1, min_z = 0, max_z = 1,
+		records = {{id = "bad", bbox = {min_x = 0, max_x = 3,
+			min_z = 0, max_z = 1}}}}, sparse_schema)
+end)
+
 -- Stage 1/2 fail fast and Stage 3 checks before readiness/callback enablement.
 local source = c.map({{c.text("schema"), c.text("fixture_source_v1")}})
 local function fixture_canonicalize(data, semantic_ids, canonical)
@@ -660,8 +758,30 @@ local core_raw = foundation.raw_sha256_from_core({
 })
 assert(core_raw("core adapter") == raw_sha256("core adapter") and
 	core_adapter_calls == 1)
+assert(type(foundation.new_session) == "function" and
+	type(foundation.new_engine_session) == "function")
+assert(foundation.compile == nil)
+expect_error("core.sha256 API unavailable", function()
+	foundation.raw_sha256_from_core({})
+end)
+expect_error("core.get_mapgen_setting API unavailable", function()
+	foundation.new_engine_session("0", {sha256 = function() end})
+end)
+local setting_reads = 0
+expect_error("engine water_level must be exact integer 1", function()
+	foundation.new_engine_session("0", {
+		sha256 = function(data) return raw_sha256(data) end,
+		get_mapgen_setting = function(name)
+			setting_reads = setting_reads + 1
+			assert(name == "water_level")
+			return "1.5"
+		end,
+	})
+end)
+assert(setting_reads == 1, "engine water_level was not read exactly once")
 assert(foundation.enabled == false and
-	foundation.disabled_reason == "T2 compiled geometry is not installed")
+	foundation.disabled_reason ==
+		"WP40 R4 payload is validated but not published until R7")
 
 print(("WP40 T1 foundation passed: %d SHA inputs, %d index samples, " ..
 	"one IPC set/get, main/mapgen/offline identity"):format(

@@ -497,13 +497,19 @@ WP40 replaces it with the complete catalog and contracts below.
 
 ## 8. Zone catalog
 
-Biome percentages are target shares of ordinary land surface after fixed
-roads and structures. A ±5 percentage-point per-zone tolerance is allowed;
-the faction resource audit in §11 is binding. “Settled”, “forest”,
-“mountain”, “savanna”, “jungle”, “swamp” and “war” refer to the existing mob
-families and paired drop tables in `biomes_mobs.md` §3. A palette does not
-automatically enable every gatherable or mob of that biome: the zone's level
-and explicit content palette still gate them.
+Biome numbers are positive integer weights over one unbiased palette roll in
+the inclusive range 0..99 and total exactly 100 per zone. In authored order,
+each entry owns exactly its stated number of roll values. The winning roll
+labels one variable-area logical-biome patch, so these weights are not surface-
+area quotas and a generated seed need not realize every palette entry in every
+zone. Canonical evidence records the realized ordinary-land counts and shares,
+proves that every result belongs to its owning zone's palette and covers all 16
+logical biome ids globally. It does not reroll or repair a zone to meet an area
+percentage. The faction resource audit in §11 remains binding. “Settled”,
+“forest”, “mountain”, “savanna”, “jungle”, “swamp” and “war” refer to the
+existing mob families and paired drop tables in `biomes_mobs.md` §3. A
+palette does not automatically enable every gatherable or mob of that biome:
+the zone's level and explicit content palette still gate them.
 
 POI abbreviations:
 
@@ -529,7 +535,7 @@ exists for the exact macro rectangle and flight policy, not protection.
 
 ### 8.1 Elandor — Accord
 
-| Stable id | Display name | Race | Level / PvP | Allowed biome share | Identity, content and reserved POIs |
+| Stable id | Display name | Race | Level / PvP | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
 | `elandor_hearthpine_vale` | Hearthpine Vale | Dwarf | 1–10 peaceful | pine hills 90 / crags 10 | Sheltered pine bowl, warm springs and a novice quarry; settled mobs; **S** |
 | `elandor_copperfell_foothills` | Copperfell Foothills | Dwarf | 11–20 peaceful | pine hills 75 / crags 25 | Copper-stained streams, switchback road and pine terraces; settled mobs; gravemoss; **V, O, B** |
@@ -550,7 +556,7 @@ exists for the exact macro rectangle and flight policy, not protection.
 
 ### 8.2 Kragmar — Throng
 
-| Stable id | Display name | Race | Level / PvP | Allowed biome share | Identity, content and reserved POIs |
+| Stable id | Display name | Race | Level / PvP | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
 | `kragmar_stillgrave_hollow` | Stillgrave Hollow | Undead | 1–10 peaceful | blight 90 / bone forest 5 / swamp 5 | Quiet cemetery basin and sheltered gravewood; settled mobs; **S** |
 | `kragmar_mournfen` | Mournfen | Undead | 11–20 peaceful | blight 60 / bone forest 10 / swamp 30 | Drowned grave roads, black reeds and low mist; settled/swamp mobs, gravemoss; **V, O, B, W** |
@@ -577,7 +583,7 @@ the two endpoint zones are editable contested islands separated from the
 mainland by full-column immutable ocean channels. §11 defines their resource
 and terrain rules without deriving political ownership from cultural origin.
 
-| Stable id | Display name | Race region | Level | Allowed biome share | Identity, content and reserved POIs |
+| Stable id | Display name | Race region | Level | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; **D/M6, K×1** |
 | `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs, stormkelp; **K×2** |

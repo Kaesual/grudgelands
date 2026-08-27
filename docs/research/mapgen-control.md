@@ -736,10 +736,14 @@ distance of a shared edge. Derive the decision from world coordinates and a
 domain seed so it is coherent across chunks. Do not make a per-node random
 choice that creates salt-and-pepper surfaces.
 
-The offline audit should measure each zone's area reassignment and enforce the
-design budget (currently approximately plus/minus five percent). Because the
-zone topology is evaluated first, logical-biome noise can never change zone
-identity or adjacency.
+The authored palette numbers partition one unbiased roll exactly; they are not
+surface-area quotas because one roll labels a variable-area patch. The offline
+audit should prove the complete roll partition and owner-palette confinement,
+then record realized ordinary-land counts and shares without rerolling or
+repairing a zone. Global logical-biome vocabulary coverage remains evidence;
+resource and access parity belong to R6's multi-seed audit. Because the zone
+topology is evaluated first, logical-biome noise can never change zone identity
+or adjacency.
 
 ### Runtime 3D territory rules
 
@@ -1439,7 +1443,11 @@ The seed corpus should be fixed in the repository and include:
   inside the intended stable zone, and inside its no-jitter clearance;
 - capital/start coordinates are exact, not nearest sampled approximations;
 - Battlegrounds north/south boundaries remain exactly z = -250/+250;
-- logical biome shares stay inside their per-zone tolerance;
+- logical-biome rolls map exactly through only the owning zone's palette, every
+  observed id belongs to that palette, and realized ordinary-land counts and
+  shares are recorded without a per-zone quota or presence gate;
+- the separate multi-seed resource and access audit passes without treating
+  palette weights as realized-area guarantees;
 - upper seed bits change authored fields for same-low-32 seed pairs while the
   test records that native v7 may remain the same.
 
