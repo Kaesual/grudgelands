@@ -6,6 +6,7 @@ local index128 = {}
 local CELL_SIZE = 128
 local MAX_SAFE = 9007199254740991
 local MAX_CELL = math.floor(MAX_SAFE / CELL_SIZE)
+local EMPTY_CANDIDATES = {}
 
 local function fail(message)
 	error("WP40 index128: " .. message, 0)
@@ -24,6 +25,94 @@ end
 
 local function floor_div(value)
 	return math.floor(value / CELL_SIZE)
+end
+
+local function exact_fields(value, fields, label)
+	if type(value) ~= "table" then fail(label .. " is not a table") end
+	local expected = {}
+	for i = 1, #fields do expected[fields[i]] = true end
+	for key in pairs(value) do
+		if not expected[key] then fail(label .. " has unknown field " .. tostring(key)) end
+	end
+	for i = 1, #fields do
+		if value[fields[i]] == nil then fail(label .. " is missing field " .. fields[i]) end
+	end
+	return value
+end
+
+local function text_id(value, label)
+	if type(value) ~= "string" or value == "" then
+		fail(label .. " is not non-empty text")
+	end
+	return value
+end
+
+local function safe_add(a, b, label)
+	integer(a, label .. " left")
+	integer(b, label .. " right")
+	if (b > 0 and a > MAX_SAFE - b) or (b < 0 and a < -MAX_SAFE - b) then
+		fail(label .. " is outside the exact Lua integer range")
+	end
+	return a + b
+end
+
+local function safe_multiply(a, b, label)
+	integer(a, label .. " left")
+	integer(b, label .. " right")
+	if a ~= 0 and math.abs(b) > math.floor(MAX_SAFE / math.abs(a)) then
+		fail(label .. " is outside the exact Lua integer range")
+	end
+	return a * b
+end
+
+local function safe_subtract(a, b, label)
+	return safe_add(a, -b, label)
+end
+
+local function safe_square(value, label)
+	return safe_multiply(value, value, label)
+end
+
+local function safe_squared_sum(a, b, label)
+	return safe_add(safe_square(a, label .. " x"),
+		safe_square(b, label .. " z"), label)
+end
+
+local function divmod_nonnegative(numerator, denominator)
+	local quotient = math.floor(numerator / denominator)
+	local product = quotient * denominator
+	while product > numerator do
+		quotient = quotient - 1
+		product = product - denominator
+	end
+	while numerator - product >= denominator do
+		quotient = quotient + 1
+		product = product + denominator
+	end
+	return quotient, numerator - product
+end
+
+-- Continued fractions compare exact non-negative ratios without multiplying
+-- arbitrary numerators and denominators.
+local function rational_compare(a, b, c, d)
+	integer(a, "left ratio numerator", 0)
+	integer(b, "left ratio denominator", 1)
+	integer(c, "right ratio numerator", 0)
+	integer(d, "right ratio denominator", 1)
+	local direction = 1
+	while true do
+		local left, left_remainder = divmod_nonnegative(a, b)
+		local right, right_remainder = divmod_nonnegative(c, d)
+		if left < right then return -direction end
+		if left > right then return direction end
+		if left_remainder == 0 or right_remainder == 0 then
+			if left_remainder == right_remainder then return 0 end
+			return (left_remainder == 0 and -1 or 1) * direction
+		end
+		a, b = b, left_remainder
+		c, d = d, right_remainder
+		direction = -direction
+	end
 end
 
 local function dense_count(values, label)
@@ -300,6 +389,384 @@ function index128.verify(attached, samples, oracle)
 		end
 	end
 	return true
+end
+
+local function sparse_bounds(definition, label)
+	local min_x = integer(definition.min_x, label .. " min_x")
+	local max_x = integer(definition.max_x, label .. " max_x")
+	local min_z = integer(definition.min_z, label .. " min_z")
+	local max_z = integer(definition.max_z, label .. " max_z")
+	if min_x > max_x or min_z > max_z then fail(label .. " bounds are empty") end
+	safe_add(max_x, 1, label .. " max_x half-open bound")
+	safe_add(max_z, 1, label .. " max_z half-open bound")
+	return min_x, max_x, min_z, max_z
+end
+
+local function new_sparse_cells(min_x, max_x, min_z, max_z)
+	return {}, floor_div(min_x), floor_div(max_x), floor_div(min_z),
+		floor_div(max_z)
+end
+
+local function add_sparse_candidate(compiled, cx, cz, candidate)
+	local column = compiled.cells[cx]
+	if not column then
+		column = {}
+		compiled.cells[cx] = column
+	end
+	local cell = column[cz]
+	if not cell then
+		cell = {}
+		column[cz] = cell
+		compiled.metrics.populated_cells = compiled.metrics.populated_cells + 1
+	end
+	cell[#cell + 1] = candidate
+	compiled.metrics.candidate_references =
+		compiled.metrics.candidate_references + 1
+end
+
+local function check_sparse_schema(definition, expected_schema, label)
+	if type(expected_schema) ~= "string" or expected_schema == "" then
+		fail("expected " .. label .. " schema missing")
+	end
+	if definition.schema ~= expected_schema then fail(label .. " schema mismatch") end
+end
+
+-- Compile flattened, non-degenerate polyline segments into sparse cells.
+-- `segment` is the raw one-based source point-pair ordinal; it is never
+-- renumbered here. The returned object is session-private index data.
+function index128.compile_sparse_segments(definition, expected_schema)
+	exact_fields(definition, {"schema", "min_x", "max_x", "min_z", "max_z",
+		"tie_break", "segments"}, "sparse segment definition")
+	check_sparse_schema(definition, expected_schema, "sparse segment")
+	if definition.tie_break ~= "feature_id" and
+			definition.tie_break ~= "feature_order" then
+		fail("sparse segment tie_break is invalid")
+	end
+	local min_x, max_x, min_z, max_z = sparse_bounds(definition,
+		"sparse segment")
+	local cells, min_cx, max_cx, min_cz, max_cz =
+		new_sparse_cells(min_x, max_x, min_z, max_z)
+	local compiled = {
+		_index128_kind = "sparse_segments",
+		schema = definition.schema,
+		cell_size = CELL_SIZE,
+		min_x = min_x, max_x = max_x, min_z = min_z, max_z = max_z,
+		min_cx = min_cx, max_cx = max_cx,
+		min_cz = min_cz, max_cz = max_cz,
+		tie_break = definition.tie_break,
+		segments = {}, cells = cells,
+		metrics = {segment_count = 0, populated_cells = 0,
+			candidate_references = 0, maximum_candidates = 0},
+	}
+	local segment_count = dense_count(definition.segments,
+		"sparse segment records")
+	if segment_count == 0 then fail("sparse segment records are empty") end
+	local feature_ordinals = {}
+	local feature_orders = {}
+	local order_features = {}
+	for record_index = 1, segment_count do
+		local input = exact_fields(definition.segments[record_index],
+			{"feature_id", "feature_order", "segment", "ax", "az", "bx", "bz"},
+			"sparse segment record")
+		local feature_id = text_id(input.feature_id, "segment feature_id")
+		local feature_order = integer(input.feature_order,
+			"segment feature_order", 1)
+		local segment = integer(input.segment, "segment ordinal", 1)
+		local ax = integer(input.ax, "segment ax", min_x, max_x)
+		local az = integer(input.az, "segment az", min_z, max_z)
+		local bx = integer(input.bx, "segment bx", min_x, max_x)
+		local bz = integer(input.bz, "segment bz", min_z, max_z)
+		if ax == bx and az == bz then fail("sparse segment is degenerate") end
+		if feature_orders[feature_id] and
+				feature_orders[feature_id] ~= feature_order then
+			fail("segment feature has inconsistent source order")
+		end
+		if order_features[feature_order] and
+				order_features[feature_order] ~= feature_id then
+			fail("segment source order is not unique")
+		end
+		feature_orders[feature_id] = feature_order
+		order_features[feature_order] = feature_id
+		local ordinals = feature_ordinals[feature_id]
+		if not ordinals then
+			ordinals = {count = 0, maximum = 0}
+			feature_ordinals[feature_id] = ordinals
+		end
+		if ordinals[segment] then fail("duplicate compiled segment identity") end
+		ordinals[segment] = true
+		ordinals.count = ordinals.count + 1
+		ordinals.maximum = math.max(ordinals.maximum, segment)
+		local record = {feature_id = feature_id, feature_order = feature_order,
+			segment = segment, ax = ax, az = az, bx = bx, bz = bz}
+		compiled.segments[record_index] = record
+		local bbox_min_x, bbox_max_x = math.min(ax, bx),
+			safe_add(math.max(ax, bx), 1, "segment bbox max_x")
+		local bbox_min_z, bbox_max_z = math.min(az, bz),
+			safe_add(math.max(az, bz), 1, "segment bbox max_z")
+		local first_cx, last_cx = floor_div(bbox_min_x),
+			floor_div(bbox_max_x - 1)
+		local first_cz, last_cz = floor_div(bbox_min_z),
+			floor_div(bbox_max_z - 1)
+		for cx = first_cx, last_cx do
+			for cz = first_cz, last_cz do
+				add_sparse_candidate(compiled, cx, cz, record_index)
+			end
+		end
+	end
+	for feature_id, ordinals in pairs(feature_ordinals) do
+		if ordinals.count ~= ordinals.maximum then
+			fail("raw segment ordinals are not dense for " .. feature_id)
+		end
+	end
+	local function segment_less(left_index, right_index)
+		local left, right = compiled.segments[left_index],
+			compiled.segments[right_index]
+		if compiled.tie_break == "feature_id" then
+			if left.feature_id ~= right.feature_id then
+				return left.feature_id < right.feature_id
+			end
+		else
+			if left.feature_order ~= right.feature_order then
+				return left.feature_order < right.feature_order
+			end
+		end
+		return left.segment < right.segment
+	end
+	for _, column in pairs(compiled.cells) do
+		for _, candidates in pairs(column) do
+			table.sort(candidates, segment_less)
+			compiled.metrics.maximum_candidates = math.max(
+				compiled.metrics.maximum_candidates, #candidates)
+		end
+	end
+	compiled.metrics.segment_count = segment_count
+	return compiled
+end
+
+-- Compile complete half-open footprint bboxes. Exact shape membership remains
+-- with the caller; this layer only returns borrowed, read-only candidate IDs.
+function index128.compile_footprints(definition, expected_schema)
+	exact_fields(definition, {"schema", "min_x", "max_x", "min_z", "max_z",
+		"records"}, "footprint definition")
+	check_sparse_schema(definition, expected_schema, "footprint")
+	local min_x, max_x, min_z, max_z = sparse_bounds(definition, "footprint")
+	local cells, min_cx, max_cx, min_cz, max_cz =
+		new_sparse_cells(min_x, max_x, min_z, max_z)
+	local compiled = {
+		_index128_kind = "footprints",
+		schema = definition.schema,
+		cell_size = CELL_SIZE,
+		min_x = min_x, max_x = max_x, min_z = min_z, max_z = max_z,
+		min_cx = min_cx, max_cx = max_cx,
+		min_cz = min_cz, max_cz = max_cz,
+		cells = cells,
+		metrics = {record_count = 0, populated_cells = 0,
+			candidate_references = 0, maximum_candidates = 0},
+	}
+	local record_count = dense_count(definition.records, "footprint records")
+	local ids = {}
+	for record_index = 1, record_count do
+		local input = exact_fields(definition.records[record_index], {"id", "bbox"},
+			"footprint record")
+		local id = text_id(input.id, "footprint id")
+		if ids[id] then fail("duplicate footprint id " .. id) end
+		ids[id] = true
+		exact_fields(input.bbox, {"min_x", "max_x", "min_z", "max_z"},
+			"footprint bbox")
+		validate_bbox(input.bbox)
+		if input.bbox.min_x < min_x or input.bbox.max_x > max_x + 1 or
+				input.bbox.min_z < min_z or input.bbox.max_z > max_z + 1 then
+			fail("footprint bbox is outside query bounds")
+		end
+		local first_cx, last_cx = floor_div(input.bbox.min_x),
+			floor_div(input.bbox.max_x - 1)
+		local first_cz, last_cz = floor_div(input.bbox.min_z),
+			floor_div(input.bbox.max_z - 1)
+		for cx = first_cx, last_cx do
+			for cz = first_cz, last_cz do
+				add_sparse_candidate(compiled, cx, cz, id)
+			end
+		end
+	end
+	for _, column in pairs(compiled.cells) do
+		for _, candidates in pairs(column) do
+			table.sort(candidates)
+			for index = 2, #candidates do
+				if candidates[index - 1] == candidates[index] then
+					fail("duplicate footprint cell candidate")
+				end
+			end
+			compiled.metrics.maximum_candidates = math.max(
+				compiled.metrics.maximum_candidates, #candidates)
+		end
+	end
+	compiled.metrics.record_count = record_count
+	return compiled
+end
+
+local function assert_sparse_kind(compiled, wanted)
+	if type(compiled) ~= "table" or compiled._index128_kind ~= wanted or
+			compiled.cell_size ~= CELL_SIZE or type(compiled.cells) ~= "table" then
+		fail("compiled " .. wanted .. " index is invalid")
+	end
+	return compiled
+end
+
+function index128.footprint_candidates(compiled, x, z)
+	assert_sparse_kind(compiled, "footprints")
+	integer(x, "footprint query x")
+	integer(z, "footprint query z")
+	if x < compiled.min_x or x > compiled.max_x or
+			z < compiled.min_z or z > compiled.max_z then
+		return EMPTY_CANDIDATES
+	end
+	local column = compiled.cells[floor_div(x)]
+	if not column then return EMPTY_CANDIDATES end
+	return column[floor_div(z)] or EMPTY_CANDIDATES
+end
+
+local function point_segment_distance(x, z, segment)
+	local vx = safe_subtract(segment.bx, segment.ax, "segment vector x")
+	local vz = safe_subtract(segment.bz, segment.az, "segment vector z")
+	local wx = safe_subtract(x, segment.ax, "query vector x")
+	local wz = safe_subtract(z, segment.az, "query vector z")
+	local length_squared = safe_squared_sum(vx, vz, "segment length squared")
+	local dot = safe_add(safe_multiply(wx, vx, "segment dot x"),
+		safe_multiply(wz, vz, "segment dot z"), "segment dot")
+	if dot <= 0 then return safe_squared_sum(wx, wz, "start distance"), 1 end
+	if dot >= length_squared then
+		return safe_squared_sum(safe_subtract(x, segment.bx, "end delta x"),
+			safe_subtract(z, segment.bz, "end delta z"), "end distance"), 1
+	end
+	local cross = safe_subtract(
+		safe_multiply(wx, vz, "segment cross left"),
+		safe_multiply(wz, vx, "segment cross right"), "segment cross")
+	return safe_square(cross, "segment cross squared"), length_squared
+end
+
+local function segment_tie_less(compiled, left, right)
+	if compiled.tie_break == "feature_id" then
+		if left.feature_id ~= right.feature_id then
+			return left.feature_id < right.feature_id
+		end
+	else
+		if left.feature_order ~= right.feature_order then
+			return left.feature_order < right.feature_order
+		end
+	end
+	return left.segment < right.segment
+end
+
+local function each_ring_cell(compiled, center_x, center_z, radius, callback)
+	local function visit(cx, cz)
+		if cx >= compiled.min_cx and cx <= compiled.max_cx and
+				cz >= compiled.min_cz and cz <= compiled.max_cz then
+			callback(cx, cz)
+		end
+	end
+	if radius == 0 then
+		visit(center_x, center_z)
+		return
+	end
+	local minimum_x, maximum_x = center_x - radius, center_x + radius
+	local minimum_z, maximum_z = center_z - radius, center_z + radius
+	for cx = minimum_x, maximum_x do
+		visit(cx, minimum_z)
+		visit(cx, maximum_z)
+	end
+	for cz = minimum_z + 1, maximum_z - 1 do
+		visit(minimum_x, cz)
+		visit(maximum_x, cz)
+	end
+end
+
+local function cell_distance_squared(x, z, cx, cz)
+	local min_x = safe_multiply(cx, CELL_SIZE, "cell minimum x")
+	local min_z = safe_multiply(cz, CELL_SIZE, "cell minimum z")
+	local max_x = safe_add(min_x, CELL_SIZE - 1, "cell maximum x")
+	local max_z = safe_add(min_z, CELL_SIZE - 1, "cell maximum z")
+	local dx, dz = 0, 0
+	if x < min_x then dx = min_x - x elseif x > max_x then dx = x - max_x end
+	if z < min_z then dz = min_z - z elseif z > max_z then dz = z - max_z end
+	return safe_squared_sum(dx, dz, "cell distance squared")
+end
+
+local function next_ring_lower_bound(compiled, x, z, center_x, center_z,
+		radius)
+	local minimum
+	each_ring_cell(compiled, center_x, center_z, radius + 1,
+		function(cx, cz)
+			local distance = cell_distance_squared(x, z, cx, cz)
+			if minimum == nil or distance < minimum then minimum = distance end
+		end)
+	return minimum
+end
+
+function index128.nearest_segment(compiled, x, z)
+	assert_sparse_kind(compiled, "sparse_segments")
+	integer(x, "nearest query x")
+	integer(z, "nearest query z")
+	if x < compiled.min_x or x > compiled.max_x or
+			z < compiled.min_z or z > compiled.max_z then return nil end
+	local center_x, center_z = floor_div(x), floor_div(z)
+	local maximum_radius = math.max(center_x - compiled.min_cx,
+		compiled.max_cx - center_x, center_z - compiled.min_cz,
+		compiled.max_cz - center_z)
+	local seen = {}
+	local best, best_numerator, best_denominator
+	local radius, cells_scanned, candidates_scanned = 0, 0, 0
+	while radius <= maximum_radius do
+		each_ring_cell(compiled, center_x, center_z, radius, function(cx, cz)
+			cells_scanned = cells_scanned + 1
+			local column = compiled.cells[cx]
+			local candidates = column and column[cz]
+			if candidates then
+				for index = 1, #candidates do
+					local segment_index = candidates[index]
+					if not seen[segment_index] then
+						seen[segment_index] = true
+						candidates_scanned = candidates_scanned + 1
+						local segment = compiled.segments[segment_index]
+						local numerator, denominator =
+							point_segment_distance(x, z, segment)
+						local comparison = best and rational_compare(numerator,
+							denominator, best_numerator, best_denominator) or -1
+						if not best or comparison < 0 or
+								(comparison == 0 and
+									segment_tie_less(compiled, segment, best)) then
+							best, best_numerator, best_denominator = segment,
+								numerator, denominator
+						end
+					end
+				end
+			end
+		end)
+		local lower_bound = next_ring_lower_bound(compiled, x, z,
+			center_x, center_z, radius)
+		if lower_bound == nil or (best and rational_compare(lower_bound, 1,
+				best_numerator, best_denominator) > 0) then break end
+		radius = radius + 1
+	end
+	if not best then return nil end
+	return {feature_id = best.feature_id, feature_order = best.feature_order,
+		segment = best.segment, distance_numerator = best_numerator,
+		distance_denominator = best_denominator,
+		distance_squared = best_numerator / best_denominator,
+		rings_scanned = radius + 1, cells_scanned = cells_scanned,
+		candidates_scanned = candidates_scanned}
+end
+
+function index128.sparse_metrics(compiled)
+	if type(compiled) ~= "table" or
+			(compiled._index128_kind ~= "sparse_segments" and
+			compiled._index128_kind ~= "footprints") then
+		fail("compiled sparse index is invalid")
+	end
+	local result = {kind = compiled._index128_kind, schema = compiled.schema,
+		cell_size = CELL_SIZE, min_x = compiled.min_x, max_x = compiled.max_x,
+		min_z = compiled.min_z, max_z = compiled.max_z}
+	for key, value in pairs(compiled.metrics) do result[key] = value end
+	return result
 end
 
 index128.CELL_SIZE = CELL_SIZE

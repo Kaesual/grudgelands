@@ -213,9 +213,9 @@ tapered bays with deep-ocean mouth caps, coherent visible water and six
 protected capital ingress corridors. Exhaustive V1e R2 validation freezes all
 100 anchors, the 74 actual POI spurs, housing capacity and three exact
 contact-face waterfalls without moving their reaches. The pure R3 vertical
-implementation and canonical artifact were independently accepted on
-2026-08-27; R4 is next. R3 remains engine-free and does not yet materialize a
-Luanti world.
+implementation and canonical artifact and the complete R4 geography/policy
+payload were independently accepted on 2026-08-27; R5 is next. R4 remains
+deliberately disabled and does not yet materialize a Luanti world.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.

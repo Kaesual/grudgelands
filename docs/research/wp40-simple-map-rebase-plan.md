@@ -1,9 +1,9 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R3 are accepted. Fixed-layout V1e R2 remains the live
-horizontal authority; the pure R3 vertical implementation and canonical
-artifact were independently accepted 2026-08-27. V1d remains historical
-evidence at `d337160`; R4 is next.
+**Status:** D1-D7 and R0-R4 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; the pure R3 vertical implementation and the first
+complete, still-disabled R4 geography/policy payload were independently
+accepted 2026-08-27. V1d remains historical evidence at `d337160`; R5 is next.
 
 **Ruling date:** 2026-08-25
 
@@ -885,16 +885,21 @@ grading constraints receive focused gates.
 
 ### R4 — first complete geography/policy payload, still disabled
 
-Wire the first complete simple payload and implement `grug_zones`, scalar
-policy precedence, final housing predicate, logical biome query, anchors, hard
-protection and compatibility adapters. Preserve safe coordinate normalization
-and defensive-copy versus allocation-free hot-path rules. Add the 128-node
-sparse-feature index here.
+The independently accepted implementation and canonical artifact follow
+[wp40-simple-map-r4-contract.md](wp40-simple-map-r4-contract.md). R4 wires the
+first complete simple payload and implements `grug_zones`, scalar policy
+precedence, the final housing predicate, logical biome queries, anchors, hard
+protection, compatibility adapters and the 128-node sparse-feature indexes.
+It preserves safe coordinate normalization and defensive-copy versus
+allocation-free hot-path rules.
 
-No adapter or production callback is enabled yet. Gate one fail-closed
-horizontal/vertical evaluator, matching engine/offline loaders, canonical
-PUC/LuaJIT representative parity and no live exact-topology dependency outside
-clearly historical evidence.
+The canonical artifact body/file SHA-256 is
+`bb19948d6bcb2c9976eddc6358955407f8b4a3c4cd54fb7dce1165e22ed8edca` /
+`23a05d2115fb6d3a1b286e09a17847793e23fc0a23817ade8ce8b812875d1b3c`.
+Its full run scanned all 49,980,561 columns twice in independent seven-shard
+fleets and passed representative PUC/LuaJIT parity. The durable review is
+[wp40-simple-map-r4-review.md](wp40-simple-map-r4-review.md). No adapter or
+production callback is enabled yet; R5 remains a disabled planner stage.
 
 ### R5 — pure typed planner and disabled consolidated map adapter
 

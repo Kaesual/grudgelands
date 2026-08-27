@@ -2,14 +2,17 @@
 
 Status: **current WP40 engineering authority; fixed-layout V1e R2 remains the
 live horizontal authority. The pure R3 vertical implementation and canonical
-artifact were independently accepted 2026-08-27; R4 is next.**
+artifact and the complete still-disabled R4 geography/policy payload were
+independently accepted 2026-08-27; R5 is next.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed
 [simple-map rebase plan](wp40-simple-map-rebase-plan.md) owns the R0–R8
 delivery sequence. The independently reviewed
 [R3 vertical contract](wp40-simple-map-r3-contract.md) owns R3's exact
-implementation and evidence boundary. This file owns the technical target.
+implementation and evidence boundary. The independently reviewed
+[R4 geography and policy contract](wp40-simple-map-r4-contract.md) owns R4's
+exact implementation and evidence boundary. This file owns the technical target.
 The former exact T2
 partition/topology compiler, its source authority, package plans, PCC/F1/F2
 gate and evidence runners are readable history only.
