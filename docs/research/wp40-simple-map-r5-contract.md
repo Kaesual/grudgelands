@@ -1536,11 +1536,11 @@ TUNNEL_LUMEN  F+1 .. F+4  AIR           OPEN_ENGINEERED
 TUNNEL_ROOF   F+5 .. F+5  TUNNEL_WALL   SEAL_VOID
 ```
 
-The roof operation succeeds without replacement when the existing node is an
-eligible known solid, ore or stratum. Air or compatible liquid is sealed.
-An already solid registered resource is retained as the same explicit
-supporting-solid no-op as other known solid content. Foreign, unknown or
-`ignore` rejects.
+Every `TUNNEL_ROOF` and `TUNNEL_WALL` `SEAL_VOID` uses the total Section 7.5
+matrix: eligible known solid, native ore, registered resource and stratum
+remain unchanged; air, compatible liquid and `NATURAL_VEGETATION` are replaced
+by the resolved tunnel-wall seal material. Foreign, unknown, `ignore` or an
+incompatible liquid rejects the transaction.
 
 The side-wall collar starts as the exact four-neighbor dilation of the tunnel
 footprint by one column. For one candidate collar column, collect its
@@ -1581,9 +1581,12 @@ requires positive profile depth and bed `B = S - profile_depth`; emit:
 HYDROLOGY_BED_SEAL  B-2 .. B  HYDROLOGY_SEAL  SEAL_VOID
 ```
 
-Existing eligible solid nodes remain unchanged; only air or compatible liquid
-holes are sealed. The run must remain at or above `authored_floor`; otherwise
-planning fails instead of silently clipping a named surface-water profile.
+Existing eligible known solid, native ore, registered resource and stratum
+remain unchanged; air, compatible liquid and `NATURAL_VEGETATION` are replaced
+by the resolved hydrology-seal material. Foreign, unknown, `ignore` or an
+incompatible liquid rejects. The run must remain at or above `authored_floor`;
+otherwise planning fails instead of silently clipping a named surface-water
+profile.
 
 Before candidates are appended, a bed/bank seal interval subtracts every
 already-defined P3 solid interface interval. The interface solid itself is an
@@ -1615,12 +1618,16 @@ HYDROLOGY_BANK_SEAL  seal_low .. seal_high
     HYDROLOGY_SEAL  SEAL_VOID
 ```
 
-The bank seal fills only void/liquid holes and never cuts or raises the scalar
-terrain surface. Compatible samples are aggregated before one candidate is
-appended; its diagnostic feature ref is the unsigned-ASCII-smallest
-contributing hydrology ID. The fixed subtraction above may split a seal into
-at most three intervals and is ordinary inclusive-interval clipping, not a CSG
-language. Incompatible role/identity overlap fails.
+The bank seal applies the same total `SEAL_VOID` rule: eligible known solid,
+native ore, registered resource and stratum remain unchanged, while air,
+compatible liquid and `NATURAL_VEGETATION` are replaced by the resolved
+hydrology-seal material. It never cuts or raises the scalar terrain surface.
+Compatible samples are aggregated before one candidate is appended; its
+diagnostic feature ref is the unsigned-ASCII-smallest contributing hydrology
+ID. The fixed subtraction above may split a seal into at most three intervals
+and is ordinary inclusive-interval clipping, not a CSG language. Incompatible
+role/identity overlap fails; foreign, unknown, `ignore` or incompatible liquid
+still rejects through the total matrix.
 
 ### 8.10 Ordinary and named water
 
@@ -1735,6 +1742,11 @@ list and complete final light remain byte-deterministic. Halo content/light may
 never select a different mask, guard, winner, transaction result, central
 content or central param2. A violation rejects R5; no preferred request order
 is documented as a workaround.
+
+In particular, Section 12.2 computes a boundary floodable-change liquid trigger
+from central bounds and the actual central change alone. It reads no halo
+content/param2, so its `q` result-code suffix is identical in the pristine and
+already-committed halo fixtures.
 
 For equal full seed, absolute x/z and vertical slice, a second fixture changes
 only the valid native heightmap array. Canonical plan bytes and plan digest must
@@ -2024,7 +2036,9 @@ For a nonempty plan:
 6. execute two bounded passes over the canonical disjoint resolved runs: first,
    read only the immutable content/param2 buffers, validate every planned target
    and required context cell, apply the exact ordinary-P5 local heightmap rule,
-   resolve targets and collect exact dirty sets;
+   resolve targets and collect exact dirty sets. Every non-lighting content or
+   param2 read in this pass is restricted to `minp..maxp`; the Section 12.2
+   liquid rule never indexes the emerged halo;
    then, after that pass can no longer fail, replay the same runs once and
    mutate only their central-owner entries in those retained buffers. The
    replay recomputes the already-validated scalar matrix cell from the still-
@@ -2138,12 +2152,40 @@ conditions holds:
 - old or new node belongs to a positive liquid family;
 - source/flowing kind, family or actual old/final-param2 liquid level differs;
   or
-- old and new `floodable` differ and the changed voxel is cardinally adjacent,
-  within the validated emerged buffer, to a retained compatible liquid.
+- old and new `floodable` differ and the owner-local/conservative boundary test
+  below succeeds.
+
+The floodable-change test iterates exactly these six face-neighbour offsets in
+the listed order and no others:
+
+```text
+(-1,0,0)
+(1,0,0)
+(0,-1,0)
+(0,1,0)
+(0,0,-1)
+(0,0,1)
+```
+
+For each offset, if the neighbour lies inside `minp..maxp`, the adapter may
+inspect only that central-owner neighbour's immutable old and resolved-final
+CID/param2. A retained compatible-liquid neighbour means those old/final bytes
+are equal and classify as one compatible liquid; finding one marks the changed
+voxel liquid dirty. If any tested face neighbour lies outside `minp..maxp`, the
+changed owner-boundary voxel is marked liquid dirty conservatively without
+reading that halo coordinate. No liquid-dirty branch reads or classifies a VM
+halo CID or param2 byte.
+
+The conservative boundary trigger depends only on the central bounds and the
+actual central floodable change. It is therefore identical for pristine and
+already-committed halo bytes: plan, outcome/result code, final central content
+and final central param2 remain cross-halo identical. Lighting retains its
+separate Section 9.3 per-state rule.
 
 An unchanged voxel is never liquid dirty merely because its old/final class is
 liquid. In particular, an equal-CID water operation whose final param2 byte is
-also equal produces no liquid-dirty entry and no `update_liquids` call.
+also equal produces no liquid-dirty entry of its own and, when no other actual
+relevant change exists, no `update_liquids` call.
 
 Dirty arrays are reset and reused without per-call table allocation. The
 artifact records dirty column/voxel counts and bounding boxes by category.
@@ -2218,7 +2260,9 @@ A non-light-dirty transaction performs zero `get_light_data`, `set_lighting`,
 `update_liquids()` is called exactly once if and only if `liquid_dirty` is
 nonempty. It occurs after `set_data`, optional param2, and the final
 `set_light_data`. There is no per-column call and no call for an equal-content
-water run.
+water run when no other actual relevant change exists. The conservative
+owner-boundary trigger from Section 12.2 requires the same single call without
+reading or depending on the neighbouring owner buffer.
 
 R5 authors source-role water only. Native liquid simulation owns flowing
 water, falling contact faces and later settling. The adapter neither polls nor
@@ -2532,12 +2576,14 @@ no_operation_below_authored_floor
 owner_content_param2_only
 halo_content_param2_unchanged
 vertical_continuation_analytic
-committed_neighbor_plan_content_param2_equal
+committed_neighbor_plan_outcome_content_param2_equal
 adapter_double_apply_equal
 light_halo_restored
 canopy_seed_rule
 ignore_overtop_sunlight_exact
 per_state_lighting_exact
+liquid_owner_boundary_exact
+nonlighting_halo_unread
 liquid_queue_exact
 one_vm_transaction
 callback_absent
@@ -2554,9 +2600,9 @@ emerge_threads_offline_validated
 | `historical_r4` | `r4_public_kat_bundle`; the four `public_r4_*` proofs |
 | `seed_0` | `planner_source_scalar`, `planner_source_relations`, `stable_refs`, `seed_0_plan`, `mask_population`; `logical_biome_passthrough`, `no_biome_share_input`, `one_horizontal_session`, `one_height_session`, `zero_p7_p8_p9`, `all_masks_closed`, `vertical_continuation_analytic` |
 | `worst_fixture` | `worst_fixture_plan`; `bounded_candidate_runs`, `bounded_resolved_runs`, `zero_hotpath_table_allocations` |
-| `matrix` | `candidate_shuffle`, `repeat_plan`, `replace_matrix`, `conflict_matrix`, `preservation`, `ignore_matrix`, `dirty_matrix`, `vm_call_matrix`, `light_matrix`, `liquid_matrix`, `adapter_double_apply`; `plan_identity_exact`, `same_priority_conflicts_reject`, `foreign_unknown_ignore_reject`, `project_native_policy_total`, `native_strata_typed`, `adapter_double_apply_equal`, `canopy_seed_rule`, `ignore_overtop_sunlight_exact`, `liquid_queue_exact`, `one_vm_transaction` |
+| `matrix` | `candidate_shuffle`, `repeat_plan`, `replace_matrix`, `conflict_matrix`, `preservation`, `ignore_matrix`, `dirty_matrix`, `vm_call_matrix`, `light_matrix`, `liquid_matrix`, `adapter_double_apply`; `plan_identity_exact`, `same_priority_conflicts_reject`, `foreign_unknown_ignore_reject`, `project_native_policy_total`, `native_strata_typed`, `adapter_double_apply_equal`, `canopy_seed_rule`, `ignore_overtop_sunlight_exact`, `liquid_owner_boundary_exact`, `liquid_queue_exact`, `one_vm_transaction` |
 | `native_heightmap` | `mapgen_edge_formula`, `native_heightmap_matrix`, `plan_heightmap_invariance`, `bplus_materialization`; `mapgen_edges_equal`, `native_heightmap_exact_once`, `native_heightmap_domain_closed`, `native_heightmap_plan_independent`, `native_caves_locally_preserved`, `ordinary_native_cave_air_preserved`, `ordinary_native_cave_liquid_preserved`, `ordinary_sky_void_filled`, `exact_masks_override_local_cave_preservation`, `topmost_authored_ground_solid_exact`, `authored_water_exact`, `no_unplanned_project_native_above_surface_cap`, `no_operation_below_authored_floor` |
-| `owner_order` | `owner_slice_matrix`, `committed_neighbor_matrix`, `order_ascending`, `order_descending`, `order_permuted`; `owner_content_param2_only`, `halo_content_param2_unchanged`, `committed_neighbor_plan_content_param2_equal`, `light_halo_restored`, `per_state_lighting_exact` |
+| `owner_order` | `owner_slice_matrix`, `committed_neighbor_matrix`, `order_ascending`, `order_descending`, `order_permuted`; `owner_content_param2_only`, `halo_content_param2_unchanged`, `committed_neighbor_plan_outcome_content_param2_equal`, `nonlighting_halo_unread`, `light_halo_restored`, `per_state_lighting_exact` |
 | `dungeon` | `dungeon_oracle`; `native_dungeons_disjoint` |
 | `disabled` | `disabled_source_audit`; `callback_absent`, `global_publication_absent`, `settings_mutation_absent`, `legacy_writer_unchanged`, `emerge_threads_offline_validated` |
 
@@ -2587,13 +2633,17 @@ what those closed rows summarize; it does not authorize more row tags or keys:
   equality;
 - ascending/descending/permuted horizontal and vertical order digests;
 - content class and replace-policy outcome matrix;
+- total seal outcomes for tunnel roof/wall and hydrology bed/bank operations,
+  including vegetation replacement;
 - exact dungeon vertical proof rows and finite-oracle nonintersection;
 - mapgen-edge derivation and the exact 6,400-entry heightmap order/domain/call
   count;
 - B+ cave/ore/stratum/resource/foreign/unknown preservation fixtures, including
   plan-byte independence from the heightmap and final top/water/sky assertions;
 - ignore target/context/unneeded-halo fixtures;
-- no-op/content/param2/light/liquid dirty matrices and exact VM call counts;
+- no-op/content/param2/light/liquid dirty matrices and exact VM call counts,
+  including all six owner-local liquid faces, every owner boundary face and
+  zero non-lighting halo classification;
 - sky-open, sealed-cave, water and chunk-top light fixtures, including the exact
   `CONTENT_IGNORE` overtop inequality and equality boundary;
 - source audits for no callback/global/registration/settings mutation; and
@@ -2741,7 +2791,9 @@ Long and exhaustive work runs only under LuaJIT. The authoritative R5 run:
    pristine and already-committed neighbor halos, requiring identical
    plan/outcome/central-content/central-param2 results across states while
    validating each state's seed list and lighting result independently;
-9. runs every dirty/light/liquid VM-call fixture;
+9. runs every dirty/light/liquid VM-call fixture, including all six in-owner
+   retained-liquid faces and all six conservative owner-boundary faces with
+   non-lighting halo classification forbidden;
 10. shuffles candidate production order without changing canonical plan bytes;
 11. applies representative nonempty plans twice to the same VM proxy and proves
     exact second-apply no-op behavior;
@@ -2782,7 +2834,9 @@ multiple labeled assertions):
   continuation without physical rewrite-band guards;
 - derived `C+2` and named `C+4` bridge support, culvert radius boundary,
   same-route tunnel portal exclusion, tunnel collar and roof;
-- bed/bank seal boundaries, rapid/cardinal-waterfall distinction, full contact-
+- tunnel roof/wall and hydrology bed/bank seal rows proving known solid/ore/
+  resource/stratum preservation, air/compatible-liquid/vegetation replacement
+  and matrix vetoes; plus rapid/cardinal-waterfall distinction, full contact-
   face fall clear and the exact one-source receiver omission;
 - native top at `T-17` and `T+17`, plus native top exactly on a vertical owner-
   slice boundary;
@@ -2807,6 +2861,10 @@ multiple labeled assertions):
 - no-op/content/param2/light/liquid call matrices, including opaque and
   sunlight-propagating canopy seeds plus a read-only halo ignore overtop on
   both sides of the exact `water_level < light_max.y` boundary;
+- each of the six exact liquid face offsets for an interior floodable change
+  with/without a retained compatible liquid, each of the six owner-boundary
+  faces with deliberately different pristine/committed halo CIDs that are never
+  classified, and equal-CID/equal-param2 water with no other actual change;
 - a horizontal and reversed vertical owner/order fixture in both pristine and
   committed-neighbor halo states, with cross-state equality limited to plan,
   outcome, central content and central param2 and exact per-state lighting;
@@ -2846,7 +2904,9 @@ When implementation exists, every changed Production and tool Lua file passes:
 - changed-mod `SETGLOBAL` inspection;
 - the five explicit Lua 5.1/sandbox/escape sweeps;
 - separate equivalent sweeps over every changed `tools/wp40/*.lua` file; and
-- source audits proving the disabled and no-second-evaluator rules.
+- source audits proving the disabled/no-second-evaluator rules and that every
+  content/param2 index used by liquid-dirty adjacency is within the central
+  owner bounds; an out-of-owner face is tested by coordinates only.
 
 The runner first proves `rg` exists and passes `bash -n`. This draft task runs
 none of those gates because it creates no implementation.
@@ -3060,6 +3120,8 @@ Implementation stops and returns to contract or design review if it would:
 - weaken a same-priority conflict into stable-id/last-writer selection;
 - emit P7, P8 or P9 in R5, skip an unmapped role, or hardcode R6 nodes/CIDs;
 - write content or param2 outside the central owner slice;
+- read a VM halo CID/param2 for liquid-dirty adjacency instead of using the
+  owner-boundary trigger;
 - persist temporary halo light or make geometry depend on chunk request order;
 - read native heightmap in the planner, use it as global height/geometry/
   operation authority, fetch it other than exactly once per nonempty adapter
