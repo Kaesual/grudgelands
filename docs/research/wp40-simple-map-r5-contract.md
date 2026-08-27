@@ -3,11 +3,10 @@
 **Draft status (2026-08-27): contract draft only. R4 is accepted historical
 authority at commit `948689138c15c291544fe10927683da4183bfd8e`; this draft
 creates no accepted R5 authority, supersedes no artifact or status, activates no
-map writer and records no R5 review verdict. The compatibility of the
-independent R3 heightfield with the candidate fixed 16-node native-v7 rewrite
-shell is the sole remaining contract-freeze decision. R5 is not implementation-
-ready until that decision is made and its selected rule replaces the explicitly
-candidate shell text in Sections 2.4, 8.1, 10.3, 15 and 19.**
+map writer and records no R5 review verdict. The user selected B+:
+H-authoritative owner-slice normalization with local native-cave preservation.
+That decision is contract-frozen below; a fresh independent contract review is
+the sole remaining gate before implementation.**
 
 This contract defines R5 of the simple-map rebase: one pure, bounded typed
 planner and one disabled consolidated VoxelManip adapter over native mapgen v7.
@@ -19,11 +18,9 @@ logical-biome selection.
 The binding game rules remain in `docs/design/world_zones.md`. The mapgen and
 engine evidence remains in `docs/research/mapgen-control.md`, the R5 scope in
 `docs/research/wp40-simple-map-rebase-plan.md`, and the architectural priority
-in `docs/research/wp40-engineering-brief.md`. Except for the explicitly
-candidate rewrite shell, this document defines the smaller implementation
-boundary needed to turn those decisions into a reviewable R5 candidate. The
-user-selected shell and its directly affected proofs must be incorporated and
-reviewed before this contract can freeze.
+in `docs/research/wp40-engineering-brief.md`. This document defines the smaller
+implementation boundary needed to turn those decisions and the B+ preservation
+decision into a reviewable R5 candidate.
 
 ## 1. Outcome and non-goals
 
@@ -134,6 +131,16 @@ The local Luanti reference commit is
 
 - v7 finishes terrain, biomes, caves, ores, dungeons, decorations and native
   lighting before the mapgen-environment Lua callback;
+- v7 constructs its current central-chunk heightmap after base terrain and
+  before biome replacement, caves, ores, dungeons and decorations;
+- `get_mapgen_object("heightmap")` returns a fresh dense array whose index
+  order is X fastest inside Z: for the 80 by 80 central chunk,
+  `i = (z-minp.z)*80 + (x-minp.x) + 1`;
+- a heightmap entry is the highest walkable base-terrain node inside the
+  current central Y slice, or `-MAX_MAP_GENERATION_LIMIT = -31007` when none
+  exists;
+- the pinned `get_mapgen_edges(31007, 5)` formula and its engine unit test both
+  yield central owner edges `-30912` and `30927` on every axis;
 - that callback receives the live mapgen VoxelManip and central `minp`/`maxp`
   before the final engine blit;
 - a callback error cancels generation rather than accepting a deliberately
@@ -157,15 +164,20 @@ R5_STATUS_SCHEMA                  grug_wp40_simple_map_r5_status_v1
 R5_PLANNER_SOURCE_SCHEMA          grug_wp40_r5_planner_source_v1
 R5_PLAN_SCHEMA                    grug_wp40_r5_column_run_plan_v1
 R5_CONTENT_CONTRACT_SCHEMA        grug_wp40_r5_content_contract_v1
+R5_MAPGEN_CONTEXT_SCHEMA          grug_wp40_r5_mapgen_context_v1
 R5_MANIFEST_SCHEMA                grug_wp40_r5_mapgen_manifest_v1
 R5_ARTIFACT_SCHEMA                grug_wp40_simple_map_r5_artifact_v1
 project_water_level               1
+mapgen_limit                      31007
 chunksize                         5
 max_central_axis_nodes            80
 max_central_columns               6400
-broad_content_y_min               -37
-ordinary_shell_down               16
-ordinary_shell_up                 16
+central_owner_y_min               -30912
+central_owner_y_max               30927
+authored_floor                    -37
+native_heightmap_entries          6400
+native_heightmap_sentinel         -31007
+native_heightmap_order            x_fast_z_outer
 functional_headroom_nodes         4
 hydrology_bed_seal_layers         3
 hydrology_bank_seal_nodes         2
@@ -191,15 +203,24 @@ four-seed merge rejects a missing, duplicate, reordered or additional seed.
 setting `num_emerge_threads`, whose canonical decimal value must be exactly
 `1`. R5 validates this offline and never writes the setting.
 
-The 16-node values are the current shell candidate, not frozen authority. They
-describe one exact band below the R3 terrain/bed and above the higher of that
-terrain/bed or its non-nil R3 water surface, clipped at
-`broad_content_y_min`. Named interface envelopes may own the additional exact
-runs in Section 8; no generic operation may escape the selected shell. The R5
-contract freeze must select and bind the shell rule after the user decision;
-until then the implementation gate is closed.
+`mapgen_limit`, `chunksize` and the two central Y-owner edges are one bound
+tuple. Re-evaluating the pinned engine formula is a manifest/preflight gate;
+hardcoding the edge values without that equality proof rejects. The full
+central-slice roster is `minp.y = -32 + 80*k`,
+`maxp.y = 47 + 80*k` for integer `k = -386..386`, whose union is exactly
+`-30912..30927`. No central owner slice outside that roster is valid.
 
-Changing a schema, a bound, the shell, any mask, an opcode, a priority, a
+R3 `H` and its scalar ground/bed `T` are the sole final surface and operation
+authority. The native heightmap is never planner input and may not alter `T`, a
+mask, opcode, priority, run bound or canonical plan byte. B+ instead defines
+one global analytic broad-fill interval beginning at `authored_floor = -37`
+and one global analytic sky-clear interval ending at
+`central_owner_y_max = 30927`; Section 8 clips them to the current owner slice.
+The adapter alone uses the local pre-cave heightmap datum to preserve ordinary
+native cave air/liquid as specified in Section 10.3.
+
+Changing a schema, a bound, the B+ normalization/preservation rule, any mask,
+an opcode, a priority, a
 replace policy or the meaning of a result is a reviewed R5 contract change.
 
 ## 3. R4 lineage and acyclic supersession
@@ -704,11 +725,27 @@ All three counts are positive safe integers no greater than 80. In
 `engine_fixture` mode all three equal 80 and each axis satisfies
 `minp.axis = -32 + 80*k`, `maxp.axis = 47 + 80*k` for one integer `k` per
 axis. Equivalently, `maxp.axis == minp.axis + 79` and
-`(minp.axis + 32) % 80 == 0`. The exact emerged area is
+`(minp.axis + 32) % 80 == 0`. Every axis also lies within the pinned mapgen
+owner edges `-30912..30927`; the Y-axis integer is exactly `-386..386`.
+The exact emerged area is
 `emin = minp - {16,16,16}` and `emax = maxp + {16,16,16}`, hence 112 nodes
 per axis. Every small offline fixture uses the same exact 16-node expansion
-around its declared central bounds; no second fixture-halo shape exists. No plan
-or adapter rounds, recentres or infers a chunk from arbitrary bounds.
+around its declared central bounds; this is the engine VM halo, not a rewrite
+band or write entitlement, and no second fixture-halo shape exists. No plan or
+adapter rounds, recentres or infers a chunk from arbitrary bounds.
+
+A reduced x/z fixture is planner-only. Every nonempty plan passed to
+`adapter:apply`, in either call mode, has `x_count == z_count == 80` and exactly
+6,400 central columns so the current native heightmap seam is engine-shaped.
+An `offline_fixture` may reduce only positive `y_count <= 80`; an
+`engine_fixture` retains all three production dimensions and alignment rules.
+
+The planner derives each Section 8 global analytic interval from the R3 scalar
+tuple and intersects it directly with `minp.y..maxp.y` before appending a run.
+It never expands such an interval into a global Y array, stores one record per
+voxel, or enumerates the other 772 vertical owner slices. Consequently a broad
+interval spanning the complete mapgen height still contributes at most one
+short run to one opcode in the current 80-node slice.
 
 The plan object is a retained internal handle with:
 
@@ -778,7 +815,7 @@ a fixed scratch area:
 |---|---:|
 | hard foundation | 3 |
 | exactly one interface or path kind | 5 |
-| base terrain/shell | 3 |
+| base terrain normalization | 3 |
 | hydrology, seal and explicit water | 5 |
 | **Total** | **16** |
 
@@ -794,7 +831,12 @@ run_values cells <= 9 * 198400 = 1785600
 
 Candidates are resolved one column at a time; 102,400 candidate records are
 never retained together. Only the 16-run scratch and final flat run buffer
-coexist. A bound breach fails `plan_slice` before VM access.
+coexist. B+ changes global interval endpoints, not these per-slice bounds: one
+ordinary fill, surface and clear candidate still contributes at most one
+clipped run each, and removal of physical rewrite-band guards adds no
+candidate. Complete-layout evidence measures the actual peaks again; exceeding
+16/31 rejects rather than increasing either constant during implementation.
+A bound breach fails `plan_slice` before VM access.
 
 The stable-reference array is limited to 512 accepted source IDs. Construction
 sorts and interns them once. Query-time interning, concatenated IDs and a
@@ -847,13 +889,19 @@ is:
 - Lua's module/dependency tables that exist before `r5_module.new`;
 - injected R2/R3/R4 source/session, manifest, content-contract and VM-proxy
   tables owned by their respective layers;
+- the one engine-owned heightmap array returned by the injected mapgen context
+  on each nonempty adapter apply, counted separately and required to contain
+  exactly 6,400 entries;
 - the allocator factory's own one API table and one counter-state table per
   allocator, reported separately as bootstrap tables; and
 - a defensive table returned by an explicit `metrics()` or `status()` call,
   reported as a result-table allocation and forbidden while a planner/adapter
   hotpath is active.
 
-No other exception exists. In particular, a run, voxel, candidate, dirty entry,
+No other exception exists. `zero_hotpath_table_allocations` means zero
+R5-owned Lua table allocations; it does not misreport the single required
+engine-owned heightmap result table as project-owned. In particular, a run,
+voxel, candidate, dirty entry,
 CID resolution, coordinate, result code or callback invocation may not allocate
 a table. Static source gates reject table constructors in the transitive
 `plan_slice`/`apply` hotpaths except references to the preallocated tables.
@@ -893,7 +941,8 @@ plan_buffer_reuse_calls
 `plan_buffer_growth_events` and `plan_buffer_reuse_calls`.
 `adapter:metrics()` returns exactly `adapter_apply_table_allocations` plus the
 adapter/dirty/VM names from `classified_columns` through
-`vm_update_liquids_calls` in Section 14.4. Each merges scalar allocator
+`vm_update_liquids_calls` in Section 14.4, including the three separately
+listed heightmap metrics. Each merges scalar allocator
 snapshots by explicit field access, never by `pairs` or an open extension map.
 
 Acceptance requires:
@@ -945,7 +994,7 @@ Lower priority number wins:
 | 2 | fixed hard foundations | `FOUNDATION_FILL`, `FOUNDATION_SURFACE`, `FOUNDATION_CLEAR` |
 | 3 | interfaces and engineering | `BRIDGE_DECK`, `BRIDGE_SUPPORT`, `BRIDGE_CLEAR`, `FORD_BED`, `CAUSEWAY_FILL`, `CAUSEWAY_SURFACE`, `CAUSEWAY_CULVERT`, `TUNNEL_FLOOR`, `TUNNEL_LUMEN`, `TUNNEL_WALL`, `TUNNEL_ROOF`, `HYDROLOGY_BED_SEAL`, `HYDROLOGY_BANK_SEAL`, `CONTACT_FALL_CLEAR` |
 | 4 | typed paths | `PATH_FILL`, `PATH_SURFACE`, `PATH_CLEAR` |
-| 5 | base terrain/shell | `TERRAIN_FILL`, `TERRAIN_SURFACE`, `TERRAIN_CLEAR` |
+| 5 | base terrain normalization | `TERRAIN_FILL`, `TERRAIN_SURFACE`, `TERRAIN_CLEAR` |
 | 6 | explicit water | `ORDINARY_WATER`, `RIVER_WATER`, `RECEIVER_OPEN` |
 | 7 | biome surface material | reserved: `BIOME_TOP`, `BIOME_FILLER`, `BIOME_SHORE`, `BIOME_BED` |
 | 8 | resources | reserved: `RESOURCE_EXACT_HOST` |
@@ -1038,23 +1087,34 @@ validates every role and property before activation.
 
 The numeric policy vocabulary is `CUT_NATURAL`, `DEEP_EXACT_HOST`,
 `FILL_VOID`, `OPEN_ENGINEERED`, `SEAL_VOID`, `SURFACE_EXACT` and
-`WRITE_WATER`. The complete old-class matrix below uses `W` = write the
+`WRITE_WATER`. The total resolver first applies exactly one contextual row:
+
+| Scope | Old class | Valid heightmap condition | Result |
+|---|---|---|:---:|
+| ordinary P5 `TERRAIN_FILL` / `FILL_VOID` only | `AIR` or any `LIQUID` | non-sentinel `h` and `y <= h` | N |
+
+Every other scope/class/condition continues into the complete old-class matrix
+below. There is no second contextual row. This explicit first row is the B+
+local native-cave preservation rule; it is not a planner decision or an
+implicit policy exception.
+
+The matrix uses `W` = write the
 resolved target CID, `N` = successful content no-op, and `R` = reject the whole
 transaction before a setter:
 
 | Old class | `FILL_VOID` | `CUT_NATURAL` | `SURFACE_EXACT` | `SEAL_VOID` | `WRITE_WATER` | `OPEN_ENGINEERED` | `DEEP_EXACT_HOST` |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | `AIR` | W | N | W | W | W | N | N |
-| `FOREIGN` | R | R | R | R | R | R | N |
+| `FOREIGN` | R | R | R | R | R | R | R |
 | `IGNORE` | R | R | R | R | R | R | R |
 | `LIQUID` compatible | W | W | W | W | W | W | N |
 | `LIQUID` incompatible | R | R | R | R | R | R | N |
-| `NATIVE_ORE` | N | R | R | N | R | R | N |
+| `NATIVE_ORE` | N | W | W | N | W | W | N |
 | `NATURAL_HOST` | N | W | W | N | W | W | N |
 | `NATURAL_SURFACE` | N | W | W | N | W | W | N |
 | `NATURAL_VEGETATION` | W | W | W | R | W | W | N |
-| `UNKNOWN` | R | R | R | R | R | R | N |
-| `WP43_RESOURCE` | N | R | R | N | R | R | N |
+| `UNKNOWN` | R | R | R | R | R | R | R |
+| `WP43_RESOURCE` | N | W | W | N | W | W | N |
 | `WP43_STRATUM` | N | W | W | N | W | W | N |
 
 `DEEP_EXACT_HOST` is reserved and cannot occur in an R5 plan. Its R6 successor
@@ -1075,18 +1135,26 @@ Evaluation order is total:
 1. validate the role, policy, target kind, target CID properties and param2
    tuple;
 2. reject an old `IGNORE` CID;
-3. if old CID equals target CID, skip the old-class matrix as a successful
+3. classify the old CID and apply the sole contextual B+ row above;
+4. if that row did not return and old CID equals target CID, skip the old-class
+   matrix as a successful
    content no-op, then independently apply exact param2 if requested;
-4. otherwise classify the old CID, evaluate the one matrix cell and either
+5. otherwise evaluate the one matrix cell and either
    reject, retain it for `N`, or write for `W`; and
-5. apply param2 only when the resolved mode is exact and the transaction has
+6. apply param2 only when the resolved mode is exact and the transaction has
    not rejected. Preserve mode keeps the original byte even after a CID write.
 
 Thus equal CID never bypasses target validation or repairs param2 by accident.
 `FOREIGN`, `UNKNOWN` and `ignore` cannot reach equal-CID handling because no
-role may resolve to them. An unknown CID is `UNKNOWN`, not natural. Native ore
-and WP43 resources remain explicit supporting-solid no-ops only for fill/seal.
-Every `R` aborts the whole transaction.
+role may resolve to them. An unknown CID is `UNKNOWN`, not natural, and these
+three classes are unconditional transaction vetoes under every policy,
+including the reserved deep-host policy. Native ore and WP43 resources remain
+supporting-solid no-ops for fill/seal. They are explicitly replaceable only
+through `SURFACE_EXACT`, `CUT_NATURAL`, `WRITE_WATER` or
+`OPEN_ENGINEERED`: respectively the exact authored surface, authoritative sky
+clear, authored water, or an exact higher-priority authored opening. The same
+four policies already replace a registered WP43 stratum. Every `R` aborts the
+whole transaction.
 
 The content contract resolves each CID to exactly one class and supplies its
 liquid family, `floodable`, exact `paramtype_light` boolean,
@@ -1219,66 +1287,78 @@ already folds solid land grades, anchor platforms, causeways and fords into
 meaning.
 
 Let `surface_cap = max(T, C)` when C is non-nil and `surface_cap = T`
-otherwise. The ordinary shell is:
+otherwise. The source tuple is valid only when
+`authored_floor <= T <= surface_cap <= central_owner_y_max`; every non-nil
+height needed by a named operation must also be a safe integer within the
+central mapgen-owner edges. A required bound outside those edges is
+`fail_bound`; it is never clipped into a different operation.
+
+For inclusive interval `I = [a,b]`, define:
 
 ```text
-shell_low  = max(-37, T - 16)
-shell_high = surface_cap + 16
+clip_to_owner(I) = [max(a,minp.y), min(b,maxp.y)] when nonempty,
+                   otherwise absent
 ```
 
-Global runs are derived before clipping to the current vertical owner slice.
-Only the slice that owns the **global** `shell_low` validates the physical lower
-guard at `shell_low - 1`, and only the slice that owns the **global**
-`shell_high` validates the physical upper guard at `shell_high + 1`.
-At an intermediate vertical slice boundary, the planner derives the adjacent
-Y winner from the same absolute R2/R3 facts and full global run set. It requires
-the expected analytic continuation token (same global run, or the exact
-adjacent higher-priority run) and never inspects the materialized neighbor CID,
-param2, light or generated-state flag as a guard. Thus a previously committed
-neighbor cannot turn a later slice from pass to fail or vice versa.
-Every true outer guard must lie in the emerged area and be non-ignore; the
-algorithm never widens ownership to obtain it.
+Every global run is derived before this clipping. At an intermediate vertical
+slice boundary, the planner derives the adjacent Y winner from the same
+absolute R2/R3 facts and complete global run set. It requires the expected
+analytic continuation token (the same global run, its exact endpoint, or the
+exact adjacent higher-priority run) and never inspects a materialized neighbor
+CID, param2, light byte or generated-state flag. The first legal broad-write Y
+is exactly `authored_floor`; the last legal sky-clear Y is exactly
+`central_owner_y_max`. Those are authoritative endpoints, not physical guard
+locations, and no cell outside either endpoint is read or inferred.
 
-The lower guard must be a known supporting solid or a preserved solid
-ore/resource/stratum. Air or liquid proves that the requested fill exceeds
-the contracted shell and rejects. The upper guard must satisfy the final
-analytic model: normally air/removable vegetation, or an explicitly planned
-higher-priority named operation at that coordinate. A remaining unplanned
-solid or liquid proves that the requested cut exceeds the shell and rejects.
-Named bridge/tunnel operations use their exact guards below and do not relax
-this ordinary check.
+There is no lower/upper rewrite-band guard and no materialization-dependent
+bridge, tunnel or ordinary neighbor guard. Exact named-mask admissibility is
+proved analytically from R2/R3 tuples and run winners. Required VM context is
+limited to the current owner data used by replace policies and the Section 12
+lighting box/seed row; required analytic x/z collar samples remain subject to
+the declared halo. Any required context cell outside the emerged/mapgen bounds
+or equal to `CONTENT_IGNORE` fails closed under Sections 9, 11 and 12. The
+planner never widens ownership to obtain it.
 
 ### 8.2 Base terrain
 
-Every R5 surface column emits:
+Every R5 surface column derives these global runs and emits only their
+`clip_to_owner` result:
 
 ```text
-TERRAIN_FILL     shell_low .. T-1   STRATUM_AT_Y   FILL_VOID
+TERRAIN_FILL     authored_floor .. T-1  STRATUM_AT_Y  FILL_VOID
 TERRAIN_SURFACE  T .. T             STRATUM_AT_Y   SURFACE_EXACT
-TERRAIN_CLEAR    surface_cap+1 .. shell_high  AIR  CUT_NATURAL
+TERRAIN_CLEAR    surface_cap+1 .. central_owner_y_max  AIR  CUT_NATURAL
 ```
 
-The clear interval is omitted when empty. `SURFACE_EXACT` owns the exact
-solid-versus-void branches for the one surface node, so the plan still carries
-one run and one policy rather than duplicate candidates.
+An empty clipped interval is omitted. `TERRAIN_SURFACE` exists only in the
+slice owning `T`. `SURFACE_EXACT` owns the exact solid-versus-void branches for
+that one node, so the plan still carries one run and one policy rather than
+duplicate candidates. A slice stores only its at-most-80-node clipped runs; no
+per-column global array or record for another slice exists.
 
 Unchanged eligible solid nodes below `T` remain their native CID, including a
-registered stratum or native ore. Air, compatible surface liquid and natural
-vegetation holes inside the owned fill interval receive `STRATUM_AT_Y`.
-Consequently R5 seals only caves intersecting the exact shell and preserves
-every byte below it.
+registered stratum or native ore. Air, liquid and natural vegetation inside the
+owned fill interval are presented to ordinary `FILL_VOID`; the local-heightmap
+rule may preserve air/any liquid before the matrix, while a write attempt still
+requires the matrix's compatible-liquid cell. The adapter's Section 10.3 rule
+makes cave air/liquid at or below the native pre-cave height a successful byte-
+identical no-op and permits sky-side void/liquid above it to receive
+`STRATUM_AT_Y`. The planner and plan bytes do not contain or branch on that
+datum.
 
-Above `T`, only known natural terrain, vegetation and incidental surface
-liquid may be cut. Encountering native ore, a registered resource, foreign,
-unknown or `ignore` rejects rather than leaving a contradictory protrusion.
+At `T`, inside authored water above `T`, and above `surface_cap`, known
+project-native ore, WP43 resource and WP43 stratum classes are explicitly
+replaceable by the total Section 7.5 matrix so R3 height/water remains exact.
+Foreign, unknown or `ignore` always rejects rather than leaving a contradictory
+surface or protrusion.
 
 ### 8.3 Hard foundations
 
 When `hard_foundation` is true and `K == "anchor_platform"`, priority 2
-replaces the corresponding base runs over the same shell:
+replaces the corresponding base runs over the same B+ owner-slice interval:
 
 ```text
-FOUNDATION_FILL     shell_low .. T-1  FOUNDATION_CORE     FILL_VOID
+FOUNDATION_FILL     authored_floor .. T-1  FOUNDATION_CORE     FILL_VOID
 FOUNDATION_SURFACE  T .. T            FOUNDATION_SURFACE  SURFACE_EXACT
 FOUNDATION_CLEAR    T+1 .. T+4        AIR                 CUT_NATURAL
 ```
@@ -1296,7 +1376,7 @@ unchanged.
 For `K == "land_grade"`, and for a non-hard mutable `anchor_platform`:
 
 ```text
-PATH_FILL     shell_low .. T-1  PATH_CORE     FILL_VOID
+PATH_FILL     authored_floor .. T-1  PATH_CORE     FILL_VOID
 PATH_SURFACE  T .. T            PATH_SURFACE  SURFACE_EXACT
 PATH_CLEAR    T+1 .. T+4        AIR           CUT_NATURAL
 ```
@@ -1313,7 +1393,7 @@ For `K == "ford"`, non-nil `W` and `F == T` are required. R5 emits:
 FORD_BED  T .. T  FORD_SURFACE  SURFACE_EXACT
 ```
 
-P5 supplies the supporting fill and clear shell. P6 supplies named river
+P5 supplies the supporting fill and authoritative sky clear. P6 supplies named river
 water for `T+1..W`; R3 requires the exact centre pin `T == W-1` and may return
 the already-frozen graded approach elsewhere. No flat ford slab, new ramp or
 route-wide water exception is added.
@@ -1344,10 +1424,12 @@ at `C+1` and no `BRIDGE_CLEAR` below it; its lower clear interval is empty and
 omitted. R5 does not strengthen the already accepted derived threshold.
 
 P5 continues to own the bed and P6 continues to own water through `W`.
-The slice owning `F+4` additionally validates `F+5` as air/removable
-vegetation or another explicitly planned higher-priority result. An unplanned
-solid, liquid, unknown or ignore node there rejects instead of extending the
-bridge clearance.
+The planner additionally evaluates the absolute `F+5` winner from the same
+global run set and requires an analytic final AIR result there. The sample may
+belong to the next vertical owner slice; no VM CID, generated-state flag or
+committed neighbor byte is read. A solid analytic winner rejects instead of
+extending the bridge clearance. If `F+5` lies beyond the central mapgen-owner
+edge, planning fails closed.
 
 ### 8.7 Causeway and culvert
 
@@ -1357,7 +1439,7 @@ replace its core and surface over the exact causeway mask; the `PATH_CLEAR` run
 retains its schema-defined P4 priority:
 
 ```text
-P3 CAUSEWAY_FILL     shell_low .. T-1  CAUSEWAY_CORE     FILL_VOID
+P3 CAUSEWAY_FILL     authored_floor .. T-1  CAUSEWAY_CORE     FILL_VOID
 P3 CAUSEWAY_SURFACE  T .. T            CAUSEWAY_SURFACE  SURFACE_EXACT
 P4 PATH_CLEAR        T+1 .. T+4        AIR               CUT_NATURAL
 ```
@@ -1388,7 +1470,7 @@ The P3 engineering run wins over the overlapping P5 terrain fill. Ordinary P6
 water is absent because the causeway scalar has `T > W`; the culvert opcode is
 therefore the sole owner of its water role. On a culvert column,
 `CAUSEWAY_FILL` is restricted to `W+1..T-1`; on a non-culvert causeway column
-it retains the complete `shell_low..T-1` interval. The solid causeway remains
+it retains the complete `authored_floor..T-1` interval. The solid causeway remains
 from `W+1` through `T`. This is a deterministic closed radius-one lattice tube
 around the accepted continuous hydrology centreline; it requires no inferred
 flow direction or search. A named causeway with no such culvert column
@@ -1434,7 +1516,7 @@ wall mask; no diagonal collar, portal extension, cave flood fill or ornamental
 lining exists in R5.
 
 P5 still owns ordinary terrain around and above the tunnel. No operation
-touches below the floor except the ordinary shell if it independently owns
+touches below the floor except the B+ ordinary fill if it independently owns
 that Y.
 
 ### 8.9 Hydrology bed and bank seals
@@ -1452,8 +1534,8 @@ HYDROLOGY_BED_SEAL  B-2 .. B  HYDROLOGY_SEAL  SEAL_VOID
 ```
 
 Existing eligible solid nodes remain unchanged; only air or compatible liquid
-holes are sealed. The run must remain at or above `-37`; otherwise planning
-fails instead of silently clipping a named surface-water profile.
+holes are sealed. The run must remain at or above `authored_floor`; otherwise
+planning fails instead of silently clipping a named surface-water profile.
 
 Before candidates are appended, a bed/bank seal interval subtracts every
 already-defined P3 solid interface interval. The interface solid itself is an
@@ -1476,7 +1558,8 @@ seal_low  = minimum(sample_bed_y - 2)
 seal_high = min(T, maximum(sample_S))
 ```
 
-If `seal_low < -37`, planning fails under the global broad-content bound. If
+If `seal_low < authored_floor`, planning fails under the global broad-write
+bound. If
 `seal_low <= seal_high`, emit:
 
 ```text
@@ -1505,8 +1588,9 @@ other planned water:
 Every node in the interval is a source role. R5 authors no flowing-water
 column; `update_liquids` owns subsequent flow. Mainland/island land with nil
 water emits no water. Incidental native surface liquid outside an accepted
-water mask is removed only through P5 `TERRAIN_CLEAR` and its bounded shell.
-Native subsurface liquid below the shell is untouched.
+water mask is removed only through P5 `TERRAIN_CLEAR`. Ordinary native cave or
+flooded-cave liquid at or below the current slice's validated pre-cave
+heightmap datum is untouched by P5 fill.
 
 For an orthogonal contact face, R3 returns nil `W`, a nonzero face mask and
 upper/lower values. `lower_profile_depth` comes from the accepted lower reach
@@ -1516,14 +1600,15 @@ in the transition relation, never from nearest hydrology. Let the lower bed be
 ```text
 RIVER_WATER   lower_bed+1 .. lower_y-1  RIVER_WATER_SOURCE  WRITE_WATER
 RECEIVER_OPEN lower_y .. lower_y         AIR                 OPEN_ENGINEERED
-CONTACT_FALL_CLEAR lower_y+1 .. shell_high AIR               OPEN_ENGINEERED
+CONTACT_FALL_CLEAR lower_y+1 .. central_owner_y_max AIR       OPEN_ENGINEERED
 ```
 
 An empty water interval is omitted. `RECEIVER_OPEN` is exactly one voxel deep:
 it removes only the would-be top source at `lower_y`. The disjoint
-`CONTACT_FALL_CLEAR` opens the complete fall room above it through the selected
-ordinary `shell_high`; it never widens x/z ownership. No falling-water run is
-emitted.
+`CONTACT_FALL_CLEAR` opens the complete fall room above it through the upper
+mapgen owner edge, clipped independently into every owning vertical slice; it
+never widens x/z ownership or constructs a global voxel array. No falling-
+water run is emitted.
 
 Rapids and cardinal waterfalls are distinct. A rapid transition retains its
 ordinary non-nil R3 `W` and uses the ordinary named river-water rule
@@ -1543,8 +1628,7 @@ clipped to all three central axes before they enter the plan.
 
 The emerged `emin..emax` halo may be read only for:
 
-- the fixed shell guards;
-- content/light properties needed by the transaction; and
+- lighting context needed by the transaction; and
 - temporary lighting seeds that are restored before the final light buffer.
 
 The twelve-offset bank collar and four-neighbor tunnel collar query only the
@@ -1554,7 +1638,7 @@ outside the declared fixture/emerged halo, planning fails with `fail_halo`
 before VM data access.
 
 Content and param2 outside `minp..maxp` must be byte-identical before and after
-the adapter. No x/z shell cleanup, neighbor feature write or anchor-owner
+the adapter. No x/z cleanup, neighbor feature write or anchor-owner
 cross-chunk write is permitted.
 
 ### 9.2 Pull rendering
@@ -1567,7 +1651,9 @@ record has no special write authority.
 
 Vertical slices use the same absolute R2/R3 facts. They never persist a height
 observed from a prior chunk, inspect a neighbor-generated flag or use a native
-heightmap as authority.
+heightmap as authority. The planner derives global B+ intervals and clips only
+the current owner slice; the adapter fetches a heightmap only after plan bytes
+are complete and uses it solely for the local ordinary-P5 preservation test.
 
 ### 9.3 Order independence
 
@@ -1578,6 +1664,7 @@ full seed, W=1, manifest, absolute minp/maxp,
 accepted R2/R3 facts, accepted R4 private seam semantics
 ```
 
+Neither native heightmap nor any VM byte appears in this function domain.
 Native-buffer policies may preserve or reject current content but may not
 select alternative geometry. Acceptance compares complete central content,
 param2 and light digests after ascending, descending and deterministic random
@@ -1593,6 +1680,12 @@ cannot select a different mask, guard, winner or central result. A mismatch is
 a confluence failure and rejects R5; no preferred request order is documented
 as a workaround.
 
+For equal full seed, absolute x/z and vertical slice, a second fixture changes
+only the valid native heightmap array. Canonical plan bytes and plan digest must
+remain identical; only the adapter's permitted P5 void/liquid no-op/write
+outcome and the consequent dirty/light/liquid result may differ. A plan-byte or
+mask difference is a height-authority violation.
+
 ## 10. Mapgen manifest and native preservation
 
 ### 10.1 Exact offline manifest
@@ -1606,14 +1699,20 @@ schema                     grug_wp40_r5_mapgen_manifest_v1
 engine_commit              df04879066de6eb94ca43996822a6dfacc74feca
 mg_name                    v7
 water_level                1
+mapgen_limit               31007
 chunksize                  5
+central_owner_y_min        -30912
+central_owner_y_max        30927
+heightmap_entries          6400
+heightmap_sentinel         -31007
+heightmap_order            x_fast_z_outer
 emerge_threads             1
 engine_emerge_setting      num_emerge_threads
 mg_flags                   biomes,caves,decorations,dungeons,light,ores
 mgv7_spflags               caverns,mountains,ridges
 mgv7_dungeon_ymin          -31000
 mgv7_dungeon_ymax          -193
-broad_content_y_min        -37
+authored_floor             -37
 force_native_dungeon       false
 ```
 
@@ -1635,6 +1734,24 @@ headless-shaped fixtures inject these values; R5 does not change `game.conf`,
 world metadata or engine settings. R7 must enforce the same manifest before it
 registers the adapter.
 
+Manifest validation independently evaluates the pinned
+`get_mapgen_edges(mapgen_limit,chunksize)` integer formula from
+`reference_projects/luanti/src/mapgen/mapgen.cpp` and requires its Y pair to
+equal the two bound owner edges. The pinned engine unit-test witness in
+`src/unittest/test_mapgen.cpp` must bind the same pair. A source-pin, formula,
+constant or result mismatch is `fail_manifest`; R5 neither changes nor queries
+the live engine setting.
+
+The bound arithmetic is exact: `MAP_BLOCKSIZE = 16` gives effective block
+limit `floor(31007/16) = 1937`, node limits `-30992..31007`, central chunk
+`-32..47`, full central extent `-48..63`, and
+`floor(30944/80) = 386` complete chunks on each side. Therefore the returned
+owner edges are `-32 - 386*80 = -30912` and
+`47 + 386*80 = 30927`, exactly matching the pinned engine unit test. Separately,
+`MAX_MAP_GENERATION_LIMIT` is `31007`, so `findGroundLevel`'s no-ground return
+is exactly `-31007`; this derivation does not alter the independent v7 dungeon
+minimum `-31000` in the manifest.
+
 ### 10.2 Dungeon preservation
 
 Production has no node-name or content-class dungeon detector. The proof is
@@ -1649,7 +1766,8 @@ vertical and typed:
   `[-128,-17]`; and
 - the complete emerged ranges are disjoint by 48 nodes.
 
-No P2-P7 operation may have `y_min < -37`. Below -37, only the reserved R6
+No P2-P7 operation may have `y_min < authored_floor`. Below the authored floor,
+only the reserved R6
 `RESOURCE_EXACT_HOST` operation may ever exist, and its
 `DEEP_EXACT_HOST` policy cannot match dungeon, air, liquid, generic ore,
 resource, `ignore`, unknown or foreign content. `force_native_dungeon = true`
@@ -1660,39 +1778,85 @@ offline proof oracle. It unions the complete emerged VM area of every positive
 dungeon notification and rejects any audited target intersection. It is never
 queried by production and never narrows the global vertical proof.
 
-### 10.3 Cave, ore and stratum preservation
+### 10.3 Local native-heightmap preservation
 
-- Content below every owned run is byte-identical.
-- Cave air may be filled only by `FILL_VOID` or `SEAL_VOID` inside an exact P2,
-  P3, P4 or P5 run.
-- Cave air below the ordinary shell or outside a named interface/seal mask is
-  untouched.
-- Native ore and registered WP43 resources are never cut or redressed. A
-  solid ore may serve as an unchanged support/seal no-op; a requested cut
-  through it rejects the transaction.
-- Existing registered WP43 stratum hosts remain byte-identical outside exact
-  cut/water/interface runs. Inside a `CUT_NATURAL`, `OPEN_ENGINEERED`,
-  `WRITE_WATER` or `SURFACE_EXACT` run they are an explicitly replaceable
-  typed host; inside fill/seal runs they remain supporting-solid no-ops. R5
-  fixtures prove the class rule, not Production node names.
-- Unknown and foreign nodes are never guessed natural.
+The adapter obtains the current native mapgen heightmap through the exact
+Section 11 context seam once per nonempty apply. It validates one plain table
+with no metatable, exactly 6,400 numeric keys `1..6400`, no hole and no other
+key; validation uses raw access and iteration rather than `#`/`rawlen`. Index
 
-This qualifies cave/ore/stratum preservation by exact owned runs while keeping
-dungeon preservation unconditional.
+```text
+i = (z - minp.z) * 80 + (x - minp.x) + 1
+```
 
-The qualification above is still conditional on the unresolved shell decision
-in Section 2.4. Before contract freeze, the chosen shell rule must prove that
-every accepted R3 `T` can be materialized from native v7 without either an
-unbounded rewrite or an accidental preserved native surface that contradicts
-`T`. No implementation may begin by assuming the candidate 16-node reach is
-sufficient.
+binds absolute central column `(x,z)`: X changes fastest and Z is the outer
+engine loop. Each entry `h` must be exactly
+`heightmap_sentinel = -MAX_MAP_GENERATION_LIMIT = -31007` or an integer in
+`minp.y..maxp.y`. Nil, boolean, non-integer, NaN/infinity, an in-range hole, an
+out-of-range extra key or any other numeric value is `fail_native_heightmap`
+before `get_data` or any setter. The table is discarded from adapter state when
+`apply` returns or raises; it is never cached across slices or callbacks.
+
+This datum affects exactly one matrix entry site: ordinary priority-5
+`TERRAIN_FILL` with policy `FILL_VOID`, and only when the immutable old class is
+`AIR` or `LIQUID`. At/below `h`, the preservation no-op applies to every liquid
+family/kind/level; compatibility matters only when a write is attempted above
+`h` or under the sentinel case.
+
+- If `h == -31007`, eligible void/liquid in the owned clipped fill run is above
+  the native pre-cave terrain represented by this slice and proceeds through
+  the ordinary `FILL_VOID` matrix cell.
+- If `minp.y <= h <= maxp.y`, air/liquid proceeds through that matrix only for
+  `y > h`; an incompatible liquid there retains the matrix's transaction veto.
+- At `y <= h`, ordinary P5 air/liquid is a successful byte-identical
+  preservation no-op, including param2 and light input. In particular,
+  `h == maxp.y` preserves every ordinary P5 air/liquid voxel in the slice.
+
+The special no-op is evaluated after target/old-CID classification and
+`CONTENT_IGNORE` veto but before the ordinary `FILL_VOID` matrix result is
+recorded. It never applies to natural vegetation or a solid class. It never
+applies to P5 `TERRAIN_SURFACE`/`TERRAIN_CLEAR`, or to an exact P2, P3, P4 or P6
+foundation, path, interface, tunnel, seal or water operation even if that
+operation uses `FILL_VOID`, `SEAL_VOID`, `OPEN_ENGINEERED`, `SURFACE_EXACT`,
+`CUT_NATURAL` or `WRITE_WATER`. Those operations retain exactly the replacement
+rights in the total Section 7.5 matrix and may override cave preservation only
+inside their bound owned volumes.
+
+The heightmap never changes `T`, `surface_cap`, any mask, priority, opcode,
+target role, run endpoint, conflict result or plan byte. It is per-slice local
+preservation evidence, not a global native surface, geometry input, operation
+selector or planner input.
+
+### 10.4 Ore, resource and stratum preservation
+
+- No P2-P7 operation exists below `authored_floor`, and native dungeon
+  preservation remains unconditionally y-disjoint under Section 10.2.
+- Strictly below final authored surface `T`, a native ore, registered WP43
+  resource or registered WP43 stratum remains byte-identical unless an exact
+  higher-priority P2/P3/P4 authored operation owns that voxel. An ordinary P5
+  fill/seal sees the existing solid as a supporting no-op.
+- At exactly `T`, inside authored water above `T`, or above `surface_cap` in the
+  authoritative P5 sky-clear run, those three project-native solid classes are
+  explicitly replaceable through `SURFACE_EXACT`, `WRITE_WATER` or
+  `CUT_NATURAL`. Otherwise R3 height/water could not remain authoritative.
+- An exact P2/P3/P4 `SURFACE_EXACT`, `OPEN_ENGINEERED` or `CUT_NATURAL`
+  operation may likewise replace those classes only in its owned volume;
+  fill/seal remains a supporting-solid no-op.
+- `FOREIGN`, `UNKNOWN` and `CONTENT_IGNORE` are unconditional transaction
+  vetoes under every policy. Native/foreign provenance is never guessed from a
+  node name.
+
+These rules are complete and derive only from the total Section 7.5 matrix plus
+the one explicitly scoped ordinary-P5 heightmap no-op above. No adapter branch
+may add an implicit replacement or preservation exception outside them.
 
 ## 11. One VoxelManip transaction
 
 ### 11.1 Adapter API
 
 ```lua
-adapter_module.new(validated_manifest, content_contract, counting_allocator)
+adapter_module.new(validated_manifest, content_contract, mapgen_context,
+    counting_allocator)
     -> adapter
 
 adapter:apply(vm, minp, maxp, plan, plan_generation, call_mode) -> result_code
@@ -1723,7 +1887,8 @@ returns the corresponding interned constant. A fatal case raises an error whose
 prefix is the closed failure code `fail_status`, `fail_call_mode`,
 `fail_manifest`, `fail_plan`, `fail_bounds`, `fail_halo`, `fail_role`,
 `fail_target`, `fail_old_class`, `fail_replace_policy`,
-`fail_native_preservation`, `fail_content_ignore`, `fail_required_context`,
+`fail_native_preservation`, `fail_native_heightmap`, `fail_content_ignore`,
+`fail_required_context`,
 `fail_lighting_context`, `fail_vm_contract` or `fail_stale_plan`. Planner
 construction/planning separately uses `fail_source`, `fail_mask`, `fail_guard`,
 `fail_conflict`, `fail_bound` or the shared `fail_halo`. Evidence extracts only
@@ -1737,9 +1902,26 @@ Native callback `blockseed` is not an adapter input and cannot influence an
 authored plan; the canonical full seed closed over by R4/R5 construction
 remains the only authored random domain.
 
-Adapter construction validates and closes over the manifest, content contract
-and allocator. `apply` cannot substitute a different role/CID mapping for an
-existing adapter.
+Adapter construction validates and closes over the manifest, content contract,
+mapgen context and allocator. `apply` cannot substitute a different role/CID
+mapping or native-data source for an existing adapter. The context has the
+exact field allowlist/API:
+
+```text
+schema = grug_wp40_r5_mapgen_context_v1
+get_heightmap() -> current native heightmap table
+metrics() -> defensive scalar metrics table
+```
+
+R5 accepts only fixture contexts and contains no `core` reference or production
+context. The R7 callback must inject the reviewed Production context whose one
+`get_heightmap()` call invokes
+`core.get_mapgen_object("heightmap")` exactly once and returns that sole value.
+Nil or multiple-use access fails; the context may not expose biomemap,
+blockseed, settings or a second native-height query. Fixture context metrics
+report `heightmap_fetch_calls`, `heightmap_entries_validated` and
+`heightmap_external_table_allocations`; a successful nonempty apply requires
+exactly `1`, `6400`, `1` for that call.
 
 The adapter requires the listed callable VM methods and routes every call
 through an exact invocation allowlist. The engine object may expose other
@@ -1759,7 +1941,7 @@ update_liquids
 ```
 
 An empty plan returns `noop_empty_plan` after manifest/plan validation and
-without any buffer method call.
+without a heightmap fetch or any buffer method call.
 
 ### 11.2 Exact precommit order
 
@@ -1770,32 +1952,38 @@ For a nonempty plan:
    bounds, run canonicality, stable refs, opcodes, priorities, roles, policies
    and all content-contract CID/property tables;
 2. call `get_emerged_area()` exactly once and require it to equal the exact
-   Section 6.1 16-node expansion, with all required guard/lighting rows present;
-3. call `get_data(data_buffer)` exactly once into a retained full-size buffer;
-4. call `get_param2_data(param2_buffer)` exactly once. Old-CID classification,
+   Section 6.1 16-node expansion, with all required lighting context rows
+   present;
+3. call the context's `get_heightmap()` exactly once, validate the exact dense
+   6,400-entry order/domain from Section 10.3 and retain that returned table
+   only through this apply;
+4. call `get_data(data_buffer)` exactly once into a retained full-size buffer;
+5. call `get_param2_data(param2_buffer)` exactly once. Old-CID classification,
    including actual flowing-liquid level, always consumes the corresponding
    immutable param2 byte even when every planned target preserves param2;
-5. execute two bounded passes over the canonical disjoint resolved runs: first,
+6. execute two bounded passes over the canonical disjoint resolved runs: first,
    read only the immutable content/param2 buffers, validate every planned target
-   and required context cell, resolve targets and collect exact dirty sets;
+   and required context cell, apply the exact ordinary-P5 local heightmap rule,
+   resolve targets and collect exact dirty sets;
    then, after that pass can no longer fail, replay the same runs once and
    mutate only their central-owner entries in those retained buffers. The
    replay recomputes the already-validated scalar matrix cell from the still-
    original value at that not-yet-written voxel; it reads no context cell and
    stores no per-voxel decision object;
-6. if a light-relevant content change exists, construct and validate the
+7. if a light-relevant content change exists, construct and validate the
    complete light box/seed-run plan from Section 12.3, then call
    `get_light_data(light_original)` exactly once before any setter;
-7. if no content or param2 value changed, return `noop_equal_content` with no
-   setter, lighting or liquid call;
-8. call `set_data(data_buffer)` exactly once iff content changed;
-9. call `set_param2_data(param2_buffer)` exactly once iff param2 changed;
-10. perform the single light transaction in Section 12.3 iff light dirty;
-11. call `update_liquids()` exactly once iff liquid dirty, after the final
+8. if no content or param2 value changed, release the heightmap reference and
+   return `noop_equal_content` with no setter, lighting or liquid call;
+9. call `set_data(data_buffer)` exactly once iff content changed;
+10. call `set_param2_data(param2_buffer)` exactly once iff param2 changed;
+11. perform the single light transaction in Section 12.3 iff light dirty;
+12. call `update_liquids()` exactly once iff liquid dirty, after the final
     light setter; and
-12. return a closed scalar result code and update retained metrics.
+13. release the heightmap reference, return a closed scalar result code and
+    update retained metrics.
 
-All fatal validation precedes step 8. The adapter performs no second content
+All fatal validation precedes step 9. The adapter performs no second content
 read or content setter. It never calls a direct node API, schematic, ore or
 decoration generator.
 
@@ -1814,6 +2002,7 @@ Z-then-X order and is not reused as a voxel index.
 
 Evidence hashes separately bind:
 
+- the exact validated native heightmap input bytes in engine index order;
 - complete pre/post content;
 - central pre/post content;
 - read-only halo content;
@@ -1828,7 +2017,8 @@ double-apply fixture applies one nonempty plan to one mutable VM proxy, retains
 that proxy's committed buffers, then applies the same still-current plan and
 the same returned generation scalar again without resetting native input. The
 second call performs its required one
-`get_emerged_area`, one `get_data` and one `get_param2_data`, returns
+`get_emerged_area`, one native-heightmap fetch, one `get_data` and one
+`get_param2_data`, returns
 `noop_equal_content`, and performs zero content, param2, lighting or liquid
 setters/calls. Its complete buffers equal the first post-state byte for byte.
 Rebuilding a fresh VM for the second call is not the double-apply KAT.
@@ -1840,8 +2030,9 @@ Rebuilding a fresh VM for the second call is not the double-apply KAT.
 The content contract receives the engine's exact `CONTENT_IGNORE` value.
 
 - A planned target equal to `ignore` rejects the entire transaction.
-- A physical shell/bridge guard or light context/seed cell required for a
-  decision and equal to `ignore` rejects the entire transaction.
+- A current-owner replace-policy cell or light context/seed cell required for
+  a decision and equal to `ignore` rejects the entire transaction. Analytic
+  vertical continuation and bridge headroom read no VM cell.
 - Analytic tunnel/hydrology collar samples contain no CID and therefore cannot
   reinterpret `ignore`; their declared-halo bound is checked separately.
 - Unneeded `ignore` in a read-only emerged halo is allowed and remains
@@ -1892,7 +2083,7 @@ artifact records dirty column/voxel counts and bounding boxes by category.
 ### 12.3 Single light transaction
 
 For a nonempty light-dirty set, steps 1 through 4 execute during precommit
-step 6 in Section 11.2; steps 5 through 10 execute after the content/param2
+step 7 in Section 11.2; steps 5 through 10 execute after the content/param2
 setters:
 
 1. construct the central dirty voxel bounding box;
@@ -2066,14 +2257,16 @@ For `constant` rows, the exact key-to-type partition is:
 ```text
 ascii:
   R5_SCHEMA R5_STATUS_SCHEMA R5_PLANNER_SOURCE_SCHEMA R5_PLAN_SCHEMA
-  R5_CONTENT_CONTRACT_SCHEMA R5_MANIFEST_SCHEMA R5_ARTIFACT_SCHEMA
+  R5_CONTENT_CONTRACT_SCHEMA R5_MAPGEN_CONTEXT_SCHEMA R5_MANIFEST_SCHEMA
+  R5_ARTIFACT_SCHEMA native_heightmap_order
 boolean:
   force_native_dungeon
 seed:
   canonical_seed_1 canonical_seed_2 canonical_seed_3 canonical_seed_4
 integer:
-  project_water_level chunksize max_central_axis_nodes max_central_columns
-  broad_content_y_min ordinary_shell_down ordinary_shell_up
+  project_water_level mapgen_limit chunksize max_central_axis_nodes
+  max_central_columns central_owner_y_min central_owner_y_max authored_floor
+  native_heightmap_entries native_heightmap_sentinel
   functional_headroom_nodes hydrology_bed_seal_layers
   hydrology_bank_seal_nodes causeway_culvert_radius_squared
   max_candidate_runs_per_column max_resolved_runs_per_column run_stride
@@ -2081,7 +2274,7 @@ integer:
 ```
 
 The value is exactly the corresponding Section 2.4 literal. For `manifest`
-rows the partition is `ascii` for `schema`, `mg_name` and
+rows the partition is `ascii` for `schema`, `mg_name`, `heightmap_order` and
 `engine_emerge_setting`; `git40` for `engine_commit`; `token_set` for
 `mg_flags` and `mgv7_spflags`; `boolean` for `force_native_dungeon`; and
 `integer` for every remaining Section 10.1 field. The value is exactly the
@@ -2156,8 +2349,10 @@ production dependency closure (`canonical.lua`, `deterministic.lua`,
 `zones.lua`, `seed_corpus.lua`, `source/simple_map.lua` and `wp40/init.lua`);
 all R5 production modules and tools in Section 16 except the artifact/review;
 every Section 16 must-not-change production/configuration file inspected by the
-disabled/legacy-writer audit; this contract; the R2/R3/R4 artifacts and accepted
-R4 review read by preflight; and the runner.
+disabled/legacy-writer audit; the B+ authority bytes in
+`docs/design/world_zones.md`, `docs/research/wp40-engineering-brief.md` and this
+contract; the R2/R3/R4 artifacts and accepted R4 review read by preflight; and
+the runner.
 Set union is by exact repository-relative path and is sorted after percent
 encoding. A canonical set member missing from the checkout or an
 `input_sha256` path outside that set rejects. The artifact does not include
@@ -2186,6 +2381,10 @@ dirty_matrix
 vm_call_matrix
 light_matrix
 liquid_matrix
+mapgen_edge_formula
+native_heightmap_matrix
+plan_heightmap_invariance
+bplus_materialization
 owner_slice_matrix
 committed_neighbor_matrix
 order_ascending
@@ -2201,8 +2400,9 @@ The exact `count` keys are `opcode/<every closed R5 opcode>`,
 `mask/ford`, `mask/bridge_clear`, `mask/bridge_support`,
 `mask/bridge_deck`, `mask/causeway`, `mask/culvert`, `mask/tunnel_floor`,
 `mask/tunnel_lumen`, `mask/tunnel_wall`, `mask/tunnel_roof`,
-`mask/bed_seal`, `mask/bank_seal`, `mask/receiver_open` and
-`mask/contact_fall_clear`. Every key appears once with fixture ID `seed_0`; the
+`mask/bed_seal`, `mask/bank_seal`, `mask/receiver_open`,
+`mask/contact_fall_clear`, `mask/terrain_fill`, `mask/terrain_surface` and
+`mask/terrain_clear`. Every key appears once with fixture ID `seed_0`; the
 three reserved priorities must be zero.
 
 The exact `proof` keys, each required `true`, are:
@@ -2223,13 +2423,25 @@ zero_p7_p8_p9
 all_masks_closed
 same_priority_conflicts_reject
 foreign_unknown_ignore_reject
-native_ore_resource_preserved
-native_caves_bounded
+project_native_policy_total
+native_caves_locally_preserved
 native_dungeons_disjoint
 native_strata_typed
+mapgen_edges_equal
+native_heightmap_exact_once
+native_heightmap_domain_closed
+native_heightmap_plan_independent
+ordinary_native_cave_air_preserved
+ordinary_native_cave_liquid_preserved
+ordinary_sky_void_filled
+exact_masks_override_local_cave_preservation
+topmost_authored_ground_solid_exact
+authored_water_exact
+no_unplanned_project_native_above_surface_cap
+no_operation_below_authored_floor
 owner_content_param2_only
 halo_content_param2_unchanged
-vertical_guards_analytic
+vertical_continuation_analytic
 committed_neighbor_order_equal
 adapter_double_apply_equal
 light_halo_restored
@@ -2248,9 +2460,10 @@ emerge_threads_offline_validated
 | Fixture ID | Exact digest/proof keys owned |
 |---|---|
 | `historical_r4` | `r4_public_kat_bundle`; the four `public_r4_*` proofs |
-| `seed_0` | `planner_source_scalar`, `planner_source_relations`, `stable_refs`, `seed_0_plan`, `mask_population`; `logical_biome_passthrough`, `no_biome_share_input`, `one_horizontal_session`, `one_height_session`, `zero_p7_p8_p9`, `all_masks_closed`, `vertical_guards_analytic` |
+| `seed_0` | `planner_source_scalar`, `planner_source_relations`, `stable_refs`, `seed_0_plan`, `mask_population`; `logical_biome_passthrough`, `no_biome_share_input`, `one_horizontal_session`, `one_height_session`, `zero_p7_p8_p9`, `all_masks_closed`, `vertical_continuation_analytic` |
 | `worst_fixture` | `worst_fixture_plan`; `bounded_candidate_runs`, `bounded_resolved_runs`, `zero_hotpath_table_allocations` |
-| `matrix` | `candidate_shuffle`, `repeat_plan`, `replace_matrix`, `conflict_matrix`, `preservation`, `ignore_matrix`, `dirty_matrix`, `vm_call_matrix`, `light_matrix`, `liquid_matrix`, `adapter_double_apply`; `same_priority_conflicts_reject`, `foreign_unknown_ignore_reject`, `native_ore_resource_preserved`, `native_caves_bounded`, `native_strata_typed`, `adapter_double_apply_equal`, `canopy_seed_rule`, `liquid_queue_exact`, `one_vm_transaction` |
+| `matrix` | `candidate_shuffle`, `repeat_plan`, `replace_matrix`, `conflict_matrix`, `preservation`, `ignore_matrix`, `dirty_matrix`, `vm_call_matrix`, `light_matrix`, `liquid_matrix`, `adapter_double_apply`; `same_priority_conflicts_reject`, `foreign_unknown_ignore_reject`, `project_native_policy_total`, `native_strata_typed`, `adapter_double_apply_equal`, `canopy_seed_rule`, `liquid_queue_exact`, `one_vm_transaction` |
+| `native_heightmap` | `mapgen_edge_formula`, `native_heightmap_matrix`, `plan_heightmap_invariance`, `bplus_materialization`; `mapgen_edges_equal`, `native_heightmap_exact_once`, `native_heightmap_domain_closed`, `native_heightmap_plan_independent`, `native_caves_locally_preserved`, `ordinary_native_cave_air_preserved`, `ordinary_native_cave_liquid_preserved`, `ordinary_sky_void_filled`, `exact_masks_override_local_cave_preservation`, `topmost_authored_ground_solid_exact`, `authored_water_exact`, `no_unplanned_project_native_above_surface_cap`, `no_operation_below_authored_floor` |
 | `owner_order` | `owner_slice_matrix`, `committed_neighbor_matrix`, `order_ascending`, `order_descending`, `order_permuted`; `owner_content_param2_only`, `halo_content_param2_unchanged`, `committed_neighbor_order_equal`, `light_halo_restored` |
 | `dungeon` | `dungeon_oracle`; `native_dungeons_disjoint` |
 | `disabled` | `disabled_source_audit`; `callback_absent`, `global_publication_absent`, `settings_mutation_absent`, `legacy_writer_unchanged`, `emerge_threads_offline_validated` |
@@ -2274,14 +2487,17 @@ what those closed rows summarize; it does not authorize more row tags or keys:
 - zero P7/P8/P9 emission;
 - every exact mask population: foundations, paths, ford, bridge clear/support/
   deck, causeway and culvert, tunnel floor/lumen/wall/roof, bed/bank seals,
-  receiver opens and contact-fall clears;
+  receiver opens, contact-fall clears and B+ terrain fill/surface/clear;
 - candidate/resolved run peaks and all allocation metrics;
 - shuffled-candidate and repeated-plan canonical parity;
 - owner-slice and read-only-halo content/param2/light digests;
 - ascending/descending/permuted horizontal and vertical order digests;
 - content class and replace-policy outcome matrix;
 - exact dungeon vertical proof rows and finite-oracle nonintersection;
-- cave/ore/stratum/resource/foreign/unknown preservation fixtures;
+- mapgen-edge derivation and the exact 6,400-entry heightmap order/domain/call
+  count;
+- B+ cave/ore/stratum/resource/foreign/unknown preservation fixtures, including
+  plan-byte independence from the heightmap and final top/water/sky assertions;
 - ignore target/context/unneeded-halo fixtures;
 - no-op/content/param2/light/liquid dirty matrices and exact VM call counts;
 - sky-open, sealed-cave, water and chunk-top light fixtures;
@@ -2307,6 +2523,9 @@ retained_map_key_count
 stable_ref_count
 plan_slice_table_allocations
 adapter_apply_table_allocations
+heightmap_fetch_calls
+heightmap_entries_validated
+heightmap_external_table_allocations
 metrics_result_table_allocations
 peak_candidate_runs_per_column
 peak_resolved_runs_per_column
@@ -2341,8 +2560,13 @@ addition, `worst_fixture` has exactly one row for
 `adapter_apply_table_allocations`, `metrics_result_table_allocations`,
 `peak_candidate_runs_per_column`, `peak_resolved_runs_per_column`,
 `peak_resolved_runs_per_slice` and `peak_run_value_cells`; `matrix` has exactly
-one additional row for each `vm_*_calls` key. No other fixture/key pair is
-allowed.
+one additional row for each `vm_*_calls` key; and `native_heightmap` has exactly
+one additional row for `heightmap_fetch_calls`,
+`heightmap_entries_validated` and `heightmap_external_table_allocations`. The
+successful nonempty native-heightmap fixture binds these values to `1`, `6400`
+and `1`; failure fixtures bind their exact validated-prefix count in the
+`native_heightmap_matrix` digest rather than gaining metric rows. No other
+fixture/key pair is allowed.
 
 Elapsed time, CPU time, peak RSS, host, interpreter and full-buffer byte
 estimates are printed only in the runner log's explicitly unbound section, not
@@ -2368,8 +2592,11 @@ tools/wp40/run_simple_map_r5.sh
 ```
 
 The VM proxy presents exact engine-shaped method signatures, complete emerged
-buffers, `CONTENT_IGNORE` and injected content properties. It rejects any
-method not in Section 11.1 and records call order and count.
+buffers, `CONTENT_IGNORE` and injected content properties. Its paired mapgen-
+context proxy returns one plain exact-order heightmap table per nonempty apply
+and records fetch/allocation/entry-validation counts. The proxies reject any
+method outside Sections 10.3/11.1 and record exact cross-seam call order and
+count.
 
 ### 15.2 Full LuaJIT evidence
 
@@ -2383,11 +2610,12 @@ Long and exhaustive work runs only under LuaJIT. The authoritative R5 run:
    pass-through for every sampled column;
 4. scans all R3 functional/interface and transition footprints for exactly one
    closed R5 mask result;
-5. after the shell decision is frozen, proves the selected shell and the
-   sixteen/31 run bounds over the complete seed-zero relevant layout;
-6. runs the complete class/policy/conflict/ignore matrix;
-7. runs labeled native cave, ore, stratum, resource, unknown and foreign
-   substrate fixtures;
+5. proves the pinned mapgen-edge formula, B+ analytic interval endpoints,
+   `authored_floor`, complete central Y-slice roster and sixteen/31 per-slice
+   run bounds over the seed-zero relevant layout;
+6. runs the complete class/policy/conflict/ignore matrix, including project-
+   native solids below `T`, at `T`, in authored water and above `surface_cap`;
+7. runs the exact native-heightmap and B+ fixture matrix in Section 15.3;
 8. runs owner-slice and horizontal/vertical order populations from both
    pristine and already-committed neighbor halos;
 9. runs every dirty/light/liquid VM-call fixture;
@@ -2396,6 +2624,17 @@ Long and exhaustive work runs only under LuaJIT. The authoritative R5 run:
     exact second-apply no-op behavior;
 12. runs twice to byte-identical artifact bytes; and
 13. verifies immutable input hashes before and after all workers.
+
+The full layout lane does not multiply every horizontal column by all 773
+vertical slices. It scans accepted horizontal/R3 facts once, derives global
+interval endpoints and affected slice ordinals arithmetically, and constructs
+plans only for the deduplicated endpoint/event slices plus the closed multi-
+slice fixtures. The event set contains the slices owning `authored_floor`, `T`,
+`surface_cap`, every named-operation endpoint, the first sky-clear continuation
+and `central_owner_y_max`; the dedicated fixtures add a representative interior
+continuation. Canonical counts include the arithmetically derived clipped-run
+population, while plan digests cover the materialized event corpus. This is an
+exact proof of the per-slice formula without an unnecessary 773-fold VM fleet.
 
 The retired exact-T2 W/PCC/F1/F2/compiler/topology populations do not run.
 R5 validates the simple accepted geometry and its own bounded plan only.
@@ -2416,11 +2655,31 @@ multiple labeled assertions):
   presence or realized-area assertion;
 - every P2-P6 opcode and every replace policy;
 - same-priority conflict and cross-priority winner;
-- shell lower/upper guards and `-37` boundary;
+- `authored_floor = -37`, lower/upper mapgen owner edges and analytic
+  continuation without physical rewrite-band guards;
 - derived `C+2` and named `C+4` bridge support, culvert radius boundary,
   same-route tunnel portal exclusion, tunnel collar and roof;
 - bed/bank seal boundaries, rapid/cardinal-waterfall distinction, full contact-
   face fall clear and the exact one-source receiver omission;
+- native top at `T-17` and `T+17`, plus native top exactly on a vertical owner-
+  slice boundary;
+- heightmap sentinel `-31007`, an internal height, `h == maxp.y`, every invalid
+  value class, a hole, and an extra key;
+- ordinary native cave air and flooded-cave content at/below `h` preserved,
+  while sky-side void above `h` fills through `T`;
+- ore/resource/stratum retained strictly below `T`, replaced at `T`, replaced
+  inside authored water above `T`, and removed above `surface_cap`;
+- exact foundation/path/interface/tunnel/seal/water masks overriding local cave
+  preservation only inside their owned volumes;
+- multi-slice ascending, descending and deterministic shuffled generation,
+  including a native top on the boundary;
+- equal seed/x/z/slice plan bytes and digest under different valid native
+  heightmaps, with only the adapter preservation result allowed to differ;
+- final topmost authored ground solid exactly `T`, exact authored water, no
+  unplanned project-native solid above `surface_cap`, no P2-P7 operation below
+  `authored_floor`, and the disjoint dungeon oracle. A bridge deck or other
+  explicit higher-priority functional solid remains its separately bound R3
+  `F` result and is not misclassified as scalar ground;
 - ignore target, ignore required context and unneeded halo ignore;
 - no-op/content/param2/light/liquid call matrices, including opaque and
   sunlight-propagating canopy seeds;
@@ -2468,7 +2727,12 @@ none of those gates because it creates no implementation.
 
 ## 16. Deliverables and owned files
 
-The eventual R5 candidate may change only:
+The pre-implementation B+ decision commit is the one exact authority-bundle
+exception: it changes only `docs/design/world_zones.md`, this contract,
+`docs/research/wp40-engineering-brief.md` and
+`docs/research/wp40-simple-map-rebase-plan.md`. It creates no implementation,
+artifact, review or status claim. After that decision receives a clean
+independent contract review, R5 implementation/review work may change only:
 
 ```text
 docs/research/wp40-simple-map-r5-contract.md
@@ -2522,29 +2786,28 @@ The exact sequence is:
 
 1. verify the accepted R4 literals and derived four-seed KAT lineage in Section
    3 without changing historical R4 bytes;
-2. obtain the user's rewrite-shell decision and amend only the explicitly
-   candidate shell rule, its bounds/proofs/KATs and affected stop conditions;
-3. replay the resulting contract-only commits byte-for-byte onto a fresh R5
-   implementation branch whose ancestor is the accepted R4 commit, and verify
-   that no other pre-acceptance Production byte came with them;
-4. obtain the policy-required fresh independent contract review after that
+2. verify that the accepted R4 commit is an ancestor of the contract branch,
+   that both pre-existing R5 draft commits retain their object identities, and
+   that the B+ authority amendment is a later ordinary commit; no replay,
+   rebase, amend or historical-byte rewrite is permitted;
+3. obtain the policy-required fresh independent contract review of the B+
    decision, close its findings, and freeze the resulting R5 contract before
    implementation;
-5. implement the private seam, planner, manifest, adapter and tools in the R5
+4. implement the private seam, planner, manifest, adapter and tools in the R5
    worktree without changing public R4 bytes;
-6. pass the lineage preflight and exact historical/current public KAT parity;
-7. pass static gates, full LuaJIT evidence and targeted PUC digest parity;
-8. generate the canonical R5 artifact twice to byte-identical bytes;
-9. freeze the candidate diff, status snapshot and immutable evidence;
-10. obtain one fresh independent review selected under
+5. pass the lineage preflight and exact historical/current public KAT parity;
+6. pass static gates, full LuaJIT evidence and targeted PUC digest parity;
+7. generate the canonical R5 artifact twice to byte-identical bytes;
+8. freeze the candidate diff, status snapshot and immutable evidence;
+9. obtain one fresh independent review selected under
    `docs/process/agent-model-policy.md`, applying the complete checklist in
    `docs/process/wp-workflow.md` and `docs/research/luanti-lua.md`;
-11. fix every Critical, High or Medium finding; Critical/High fixes receive a
+10. fix every Critical, High or Medium finding; Critical/High fixes receive a
     focused fresh rereview, and Low findings are fixed or explicitly
     dispositioned under policy;
-12. only a clean final verdict may create the R5 review record and acceptance
+11. only a clean final verdict may create the R5 review record and acceptance
     closeout; and
-13. only then update the exact Section 16 closeout allowlist as one coherent
+12. only then update the exact Section 16 closeout allowlist as one coherent
     completion change.
 
 No review is performed by the drafting task that creates this document. The
@@ -2560,11 +2823,14 @@ The review checks at minimum:
 - exactly one horizontal and one height session;
 - no per-voxel operation objects, CSG or unbounded recovery;
 - sound 16/31 run bounds and measured allocation counters;
+- exact B+ owner-slice runs, mapgen-edge derivation, heightmap order/domain and
+  planner-byte independence from native content;
 - exact masks and same-priority conflict failure;
 - zero P7-P9 emission and fail-closed unmapped roles;
 - one VM content transaction and exact call order;
 - owner-only content/param2 plus restored halo light;
-- dungeon vertical separation and cave/ore/stratum preservation;
+- dungeon vertical separation, local ordinary-cave preservation and the total
+  ore/resource/stratum policy;
 - ignore, dirty, lighting and liquid correctness;
 - no callback, global, setting change or legacy-writer coexistence path; and
 - plain Lua 5.1 compatibility and compliant interpreter scheduling.
@@ -2600,10 +2866,11 @@ before VM access; reserved does not mean optional at runtime once emitted.
 R7 alone:
 
 - validates and enforces the exact production mapgen manifest, including
-  `num_emerge_threads = 1`;
+  `mapgen_limit = 31007`, `chunksize = 5`, their derived owner edges and
+  `num_emerge_threads = 1`, without changing a setting at R5;
 - removes or disables every legacy ocean/structure/healing writer path;
 - installs exactly one mapgen-environment callback/script for the consolidated
-  adapter;
+  adapter and supplies its reviewed one-call current-heightmap context;
 - supplies the accepted production content contract;
 - migrates geography consumers and publishes the selected R4 APIs; and
 - proves no repository/configuration path can enable both writer generations.
@@ -2628,9 +2895,8 @@ changes no world and does not mark that handoff complete.
 
 Implementation stops and returns to contract or design review if it would:
 
-- begin before every Section 3 accepted/derived lineage check passes, before
-  the user selects the rewrite-shell rule or while this contract still labels
-  that rule a candidate;
+- begin before every Section 3 accepted/derived lineage check and the fresh B+
+  independent contract review pass;
 - edit an accepted R2/R3 artifact input or result;
 - change a public R4 API field, KAT byte, disabled reason or loader behavior;
 - treat the historical R4 artifact's `zones.lua` hash as a current hash after
@@ -2647,9 +2913,16 @@ Implementation stops and returns to contract or design review if it would:
 - emit P7, P8 or P9 in R5, skip an unmapped role, or hardcode R6 nodes/CIDs;
 - write content or param2 outside the central owner slice;
 - persist temporary halo light or make geometry depend on chunk request order;
+- read native heightmap in the planner, use it as global height/geometry/
+  operation authority, fetch it other than exactly once per nonempty adapter
+  apply, or accept a noncanonical 6,400-entry value/order;
+- create a physical rewrite-band guard, materialized-neighbor vertical guard,
+  per-column global Y array or operation below `authored_floor`;
 - infer dungeon origin from content names, enable dungeon force placement, or
-  violate the `-37`/`-193` vertical proof;
-- replace ore/resource/foreign/unknown/ignore as ordinary terrain;
+  violate the `authored_floor = -37`/`-193` vertical proof;
+- replace supporting ore/resource/stratum below `T` through ordinary P5 fill,
+  fail to replace project-native content at/on/above the authored surface where
+  the total matrix requires it, or ever replace foreign/unknown/ignore;
 - use more than one content read/set transaction, a direct node writer,
   schematic, ore/deco generator or later healing pass;
 - register a callback/global, change settings/configuration or expose an R5

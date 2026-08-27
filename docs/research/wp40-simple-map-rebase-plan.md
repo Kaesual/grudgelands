@@ -90,8 +90,10 @@ The rebase keeps these player-visible and engine-correctness outcomes:
   variation;
 - a small globally queryable project-owned terrain-height field, with v7 as
   the native cave/ore/dungeon/stratum substrate rather than height authority;
-- preservation of caves, strata, ores and native dungeons under the authored
-  surface rewrite;
+- local preservation of ordinary native cave air/liquid at or below the
+  current owner slice's pre-cave v7 height, supporting ore/resource/stratum
+  solids below the final authored surface, and unconditionally y-disjoint
+  native dungeons under the authored surface rewrite;
 - one consolidated VoxelManip content transaction; and
 - stable deterministic public geography queries and consumer migration.
 
@@ -904,10 +906,19 @@ production callback is enabled yet; R5 remains a disabled planner stage.
 ### R5 — pure typed planner and disabled consolidated map adapter
 
 Implement the short typed operation priority and the single VoxelManip
-transaction against native v7 cave/ore/dungeon/stratum substrate. The new
-callback remains provably disabled. Native-preservation, owner-slice,
-mapchunk-order and dirty/light/liquid gates run without allowing it to coexist
-with a legacy writer in a production configuration.
+transaction against native v7 cave/ore/dungeon/stratum substrate. R3 `H`/`T`
+is the sole final surface and operation authority. Broad authored runs start at
+y = -37 and are clipped per vertical owner slice through the upper mapgen owner
+edge; no global per-column voxel array or physical rewrite-band guard exists.
+The planner is independent of native heightmap and VM content. The adapter may
+read the current slice's pre-cave native heightmap only to preserve ordinary
+cave air/liquid at or below that local datum; exact authored operations retain
+their owned replacement rights, project-native content at/on/above the final
+surface is replaceable where R3 height/water requires it, and deep dungeons
+remain y-disjoint. The new callback remains provably disabled. Native-
+preservation, owner-slice, mapchunk-order and dirty/light/liquid gates run
+without allowing it to coexist with a legacy writer in a production
+configuration.
 
 ### R6 — surface, resources and final varying-seed evidence
 
@@ -1003,8 +1014,8 @@ following:
 - using engine spawn levels or generated chunk-local v7 height as global `H`;
 - a second VoxelManip transaction;
 - enabling the new writer before the atomic legacy-writer/API cutover;
-- weakening native dungeon/cave/ore/stratum preservation without explicit user
-  approval; or
+- weakening the B+ local-cave, supporting-solid or unconditional dungeon
+  preservation rule without explicit user approval; or
 - inventing player-visible semantics not covered by the folded design.
 
 Source-data corrections and visual parameter edits are expected and are not

@@ -18,9 +18,11 @@ partition/topology compiler, its source authority, package plans, PCC/F1/F2
 gate and evidence runners are readable history only.
 
 WP40 remains fresh-world-only. Production uses native v7 with one emerge
-thread. Native v7 owns caves, ores, dungeons and strata; Grudgelands owns one
-fixed horizontal layout, one globally queryable surface-height field and one
-consolidated surface transaction.
+thread. Native v7 supplies the cave, ore, dungeon and stratum substrate;
+Grudgelands R3 owns the final surface and operations through one fixed
+horizontal layout and one globally queryable surface-height field, materialized
+by one consolidated surface transaction. The native heightmap is only a local
+adapter preservation datum, never global or planner authority.
 
 ## 1. Preserved and retired scope
 
@@ -224,7 +226,7 @@ The pure planner emits typed operations in this precedence:
 2. fixed hard foundations;
 3. bridge/tunnel/ford/causeway interfaces;
 4. typed paths;
-5. base terrain and shallow shell repair;
+5. base terrain owner-slice normalization;
 6. explicit water;
 7. biome surface material;
 8. resources; and
@@ -235,16 +237,32 @@ operation language, geometry repair or late anchor selection.
 
 ### 3.3 Native-content preservation
 
-Native v7 runs first. The consolidated adapter:
+Native v7 runs first. R3 `H`/`T` remains the sole final surface and operation
+authority. The pure planner never reads the native heightmap or VM content; it
+emits only short runs clipped to the current vertical owner slice for a global
+broad-write floor of y = -37 and the upper mapgen owner edge. The consolidated
+adapter:
 
-- preserves caves below its owned shallow shell;
-- preserves registered WP43 strata and ore veins;
-- does not overwrite dungeon nodes or foreign protected content;
+- reads the current slice's pre-cave native v7 heightmap only to distinguish
+  ordinary underground cave air/liquid at or below that local datum from
+  sky-side void above it;
+- preserves that ordinary cave air/liquid and retains supporting native ore,
+  WP43 resource and stratum solids strictly below the final authored surface;
+- allows exact foundation, path, interface, tunnel, seal and water operations
+  to replace only their owned volumes, and allows project-native ore/resource/
+  stratum replacement at `T`, in authored water above `T`, or above the final
+  authored surface cap where R3 height/water requires it;
+- treats foreign, unknown, unavailable and dungeon content as non-recoverable;
+  dungeon preservation is additionally guaranteed by unconditional vertical
+  disjointness below the y = -37 authored floor;
 - performs one content-id pass and one final lighting/liquid update; and
 - gives each central mapchunk deterministic write ownership with read-only
   halo data where needed.
 
-Mapchunk-order and owner-slice fixtures must remain byte-identical.
+Vertical continuation is analytic rather than materialized-neighbor-dependent.
+Mapchunk-order and owner-slice fixtures must remain byte-identical, and planner
+bytes must remain identical across different native heightmaps for equal
+seed/x/z/slice inputs.
 
 ### 3.4 Biomes, decorations and resources
 
