@@ -1,9 +1,8 @@
 # WP40 Simple Named-Zone World — Engineering Contract
 
-Status: **current WP40 engineering authority; fixed-layout V1e R2 was
-independently and visually accepted 2026-08-27. The R3 vertical contract and
-four-seed feasibility preflight are green; R3 implementation acceptance is
-next.**
+Status: **current WP40 engineering authority; fixed-layout V1e R2 remains the
+live horizontal authority. The pure R3 vertical implementation and canonical
+artifact were independently accepted 2026-08-27; R4 is next.**
 
 This contract implements the product rules in
 [world_zones.md](../design/world_zones.md). The independently reviewed

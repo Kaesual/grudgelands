@@ -1391,7 +1391,7 @@ return function(common)
 
 	local function check_column_rules(row, source, horizontal, hydro_by_id,
 			profile_by_id, counts, anchor_reference_by_id, landing_ids,
-			contact_faces)
+			contact_faces, corridor_transition_by_id, corridor_transition_checks)
 		local class = row.classification.water_class
 		local contact_face = contact_faces and
 			contact_faces[row.x .. ":" .. row.z] or nil
@@ -1403,6 +1403,52 @@ return function(common)
 				row.water ~= nil or row.lower ~= contact_face.lower_y or
 				row.progress ~= nil) then
 			fail("contact-face column differs from independently reconstructed authority")
+		end
+		if row.progress ~= nil then
+			local transition = corridor_transition_by_id and
+				corridor_transition_by_id[row.transition_id] or nil
+			local checks = corridor_transition_checks and
+				corridor_transition_checks[row.transition_id] or nil
+			if not transition or not checks or transition.kind ~= row.transition or
+					transition.upper_y ~= row.upper or
+					transition.lower_y ~= row.lower then
+				fail("corridor transition authority differs at " ..
+					tostring(row.transition_id))
+			end
+			checks.columns = checks.columns + 1
+			if row.transition == "rapid" then
+				local expected_water = common.round_half_away(
+					row.upper * Q + (row.lower - row.upper) * row.progress, Q)
+				if row.water ~= expected_water then
+					fail("rapid water surface differs at " .. row.x .. "," .. row.z)
+				end
+			elseif row.transition == "waterfall" then
+				if row.water ~= nil then
+					fail("cardinal waterfall has a water surface at " ..
+						row.x .. "," .. row.z)
+				end
+			else
+				fail("corridor transition kind differs at " ..
+					tostring(row.transition_id))
+			end
+
+			-- H is the final top solid. These three bounded functional kinds
+			-- intentionally replace a covered transition bed with their dry top;
+			-- the planned-water scalar-kind gates below independently require
+			-- row.ground == row.surface. No other kind may skip the bed identity.
+			local solid_override = row.kind == "causeway" or row.kind == "ford" or
+				row.kind == "anchor_platform"
+			if solid_override then
+				checks.solid_overrides = checks.solid_overrides + 1
+			else
+				local expected_bed = common.round_half_away(
+					transition.upper_bed * Q +
+						(transition.lower_bed - transition.upper_bed) * row.progress, Q)
+				if row.ground ~= expected_bed then
+					fail("corridor transition bed differs at " .. row.x .. "," .. row.z)
+				end
+				checks.beds = checks.beds + 1
+			end
 		end
 		counts[class] = (counts[class] or 0) + 1
 		if class == "land" then
@@ -2622,6 +2668,38 @@ return function(common)
 		}
 		local profile_by_id = maps_by_id(source.hydrology_profiles)
 		local hydro_by_id = maps_by_id(source.hydrology)
+		local interface_evidence_by_id = maps_by_id(evidence.interfaces)
+		local corridor_transition_by_id = {}
+		local corridor_transition_checks = {}
+		local corridor_transition_count = 0
+		for index = 1, #source.hydrology_interfaces do
+			local interface = source.hydrology_interfaces[index]
+			if interface.kind == "rapid" or
+					(interface.kind == "waterfall" and
+						interface.transition_scope_id == nil) then
+				local row = interface_evidence_by_id[interface.id]
+				local upper = hydro_by_id[interface.upper_id]
+				local lower = hydro_by_id[interface.lower_id]
+				local upper_profile = upper and profile_by_id[upper.profile_id] or nil
+				local lower_profile = lower and profile_by_id[lower.profile_id] or nil
+				local upper_y = common.WATER_LEVEL + interface.upper_level_offset
+				local lower_y = common.WATER_LEVEL + interface.lower_level_offset
+				if not row or not upper_profile or not lower_profile or
+						row.kind ~= interface.kind or row.upper_y ~= upper_y or
+						row.lower_y ~= lower_y or
+						row.upper_bed ~= upper_y - upper_profile.depth or
+						row.lower_bed ~= lower_y - lower_profile.depth then
+					fail("corridor transition evidence differs at " .. interface.id)
+				end
+				corridor_transition_by_id[interface.id] = row
+				corridor_transition_checks[interface.id] = {
+					columns = 0, beds = 0, solid_overrides = 0}
+				corridor_transition_count = corridor_transition_count + 1
+			end
+		end
+		if corridor_transition_count ~= 4 then
+			fail("corridor transition evidence population differs")
+		end
 		local anchor_reference_by_id = {}
 		for index = 1, #evidence.anchors do
 			anchor_reference_by_id[row_id(evidence.anchors[index])] =
@@ -2712,7 +2790,8 @@ return function(common)
 					check_column_rules(row, source, horizontal, hydro_by_id,
 						profile_by_id, metrics.class_counts, anchor_reference_by_id,
 						landing_ids, contact_face_authority and
-							contact_face_authority.face_by_coordinate)
+							contact_face_authority.face_by_coordinate,
+						corridor_transition_by_id, corridor_transition_checks)
 					local offset = x - warp.min_x + 1
 					local hydrology_id = row.classification.hydrology_id
 					check_contact(hydrology_id, x, z, left_hydrology, x - 1, z)
@@ -2836,8 +2915,15 @@ return function(common)
 				check_column_rules(row, source, horizontal, hydro_by_id,
 					profile_by_id, metrics.class_counts, anchor_reference_by_id,
 					landing_ids, contact_face_authority and
-						contact_face_authority.face_by_coordinate)
+						contact_face_authority.face_by_coordinate,
+					corridor_transition_by_id, corridor_transition_checks)
 				metrics.columns = metrics.columns + 1
+			end
+		end
+		for transition_id, checks in pairs(corridor_transition_checks) do
+			if checks.columns == 0 or checks.beds == 0 or
+					checks.beds + checks.solid_overrides ~= checks.columns then
+				fail("corridor transition checks are incomplete at " .. transition_id)
 			end
 		end
 		check_outside(session, horizontal, source, metrics.class_counts)

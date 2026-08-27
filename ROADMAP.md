@@ -129,7 +129,8 @@ the goal-level view.
   ingress corridors; V1e freezes all 100 anchors and 74 actual POI spurs and
   closes three contact-face waterfalls. The V1e visual gate, exhaustive R2
   layout freeze, route/water/core validation and housing-capacity evidence are
-  independently accepted; R3 implementation acceptance is next.
+  independently accepted. The pure R3 vertical implementation and canonical
+  artifact were independently accepted 2026-08-27; R4 is next.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:

@@ -41,9 +41,19 @@ WP40_R3_MODE=preflight tools/wp40/run_simple_map_r3.sh \
 ```
 
 reproduces the four-seed vertical-feasibility preflight. The script's default
-`full` mode instead writes an exhaustive R3 artifact; that remains unaccepted
-R3 work. Neither runner repairs routes, zones or water. The exact-T2 commands
-below are historical reproducers only.
+`full` mode instead writes the exhaustive R3 implementation-review candidate.
+Its canonical command and output path are:
+
+```sh
+WP40_R3_MODE=full tools/wp40/run_simple_map_r3.sh \
+  docs/research/wp40-simple-map-r3-artifact.tsv
+```
+
+That artifact and the pure R3 implementation were independently accepted on
+2026-08-27; the durable review is
+`docs/research/wp40-simple-map-r3-review.md`. Neither runner repairs routes,
+zones or water. R4 remains the next disabled integration stage. The exact-T2
+commands below are historical reproducers only.
 
 ## T0 material handoff
 

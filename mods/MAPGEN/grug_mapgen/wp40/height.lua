@@ -541,8 +541,11 @@ return function(dependencies)
 				signed_distance_q, record.collar * Q))
 		end
 
-		local function natural_height_at(x, z)
+		-- The optional id reports the actual composition branch for construction
+		-- evidence without allocating a per-query contributor record.
+		local function natural_height_at(x, z, audit_landmark_numeric_id)
 			local height = base_height_at(x, z)
+			local audited_landmark_applied = false
 			local _, _, owner = horizontal.classification_values_at(x, z)
 			local candidates = bucket_at(landmark_grid, x, z)
 			if candidates then
@@ -553,9 +556,15 @@ return function(dependencies)
 						if weight > 0 then
 							local replacement = raw_profile_height(record.replacement, x, z)
 							height = qlerp_integer(height, replacement, weight)
+							if record.numeric_id == audit_landmark_numeric_id then
+								audited_landmark_applied = true
+							end
 						end
 					end
 				end
+			end
+			if audit_landmark_numeric_id ~= nil then
+				return height, audited_landmark_applied
 			end
 			return height
 		end
@@ -1967,6 +1976,7 @@ return function(dependencies)
 			local cut_x, cut_z, fill_x, fill_z
 			local fitting_columns, collar_columns = 0, 0
 			local platform_columns = 0
+			local owner_escape_columns = 0
 			local platform_witness_x, platform_witness_z
 			local profile = fitting.profile
 			local envelope_half = profile.blend_width / 2
@@ -1982,6 +1992,12 @@ return function(dependencies)
 						if outside == 0 then fitting_columns = fitting_columns + 1
 						elseif outside < envelope_half - fitting_half then
 							collar_columns = collar_columns + 1 end
+					else
+						local _, _, functional_feature_id =
+							final_functional_values_at(x, z)
+						if functional_feature_id == fitting.id then
+							owner_escape_columns = owner_escape_columns + 1
+						end
 					end
 					if not fitting.is_capital and outside == 0 and
 							owner == fitting.zone_numeric_id and
@@ -2011,6 +2027,9 @@ return function(dependencies)
 					end
 				end
 			end
+			if owner_escape_columns ~= 0 then
+				fail("anchor fitting escaped its owner at " .. fitting.id)
+			end
 			local kind, surface_y, feature_id = final_functional_values_at(
 				fitting.center.x, fitting.center.z)
 			surface_y = surface_y or final_terrain_height_at(fitting.center.x,
@@ -2037,7 +2056,7 @@ return function(dependencies)
 				(profile.blend_width - profile.fitting_width) / 2
 			anchor_evidence[anchor_index].fitting_columns = fitting_columns
 			anchor_evidence[anchor_index].collar_columns = collar_columns
-			anchor_evidence[anchor_index].owner_escape_columns = 0
+			anchor_evidence[anchor_index].owner_escape_columns = owner_escape_columns
 			anchor_evidence[anchor_index].observed_max_cut = observed_max_cut
 			anchor_evidence[anchor_index].observed_max_cut_witness_x = cut_x
 			anchor_evidence[anchor_index].observed_max_cut_witness_z = cut_z
@@ -2136,12 +2155,18 @@ return function(dependencies)
 				tunnel_overlap_columns = operation.tunnel_overlap_columns,
 				classification_digest = operation.classification_digest}
 			tunnel_evidence[tunnel_index] = evidence
+			operation_counts.tunnel_named_operation_overlap_columns =
+				operation_counts.tunnel_named_operation_overlap_columns +
+				evidence.named_overlap_columns
 			operation_evidence[#operation_evidence + 1] = deep_copy(evidence)
 			operation_evidence[#operation_evidence].kind = "tunnel_floor"
 			operation_digest_rows[#operation_digest_rows + 1] = canonical.array({
 				text("tunnel"), text(evidence.interface_id), text(evidence.path_id),
 				signed(evidence.first_run), signed(evidence.last_run),
 				signed(evidence.floor_y), text(evidence.classification_digest)})
+		end
+		if operation_counts.tunnel_named_operation_overlap_columns ~= 0 then
+			fail("tunnel footprints overlap named water operations")
 		end
 		operation_counts.total = operation_counts.named +
 			operation_counts.derived_runs + operation_counts.tunnels
@@ -2156,8 +2181,6 @@ return function(dependencies)
 				signed(row.maximum_step), text(row.final_grade_digest)})
 		end
 		local route_digest = counted_digest(route_digest_rows)
-		local tunnel_named_operation_overlap_columns = 0
-
 		local primary_profile_evidence = {}
 		for profile_index = 1, #profiles do
 			local profile = profiles[profile_index]
@@ -2180,7 +2203,8 @@ return function(dependencies)
 		for landmark_index = 1, #landmarks do
 			local landmark = landmarks[landmark_index]
 			local applied_count, full_mask_count, collar_count = 0, 0, 0
-			local rejected_owner_count, observed_min, observed_max = 0
+			local rejected_owner_count, owner_escape_columns = 0, 0
+			local observed_min, observed_max
 			local min_x, min_z, max_x, max_z
 			for z = math.max(bounds.min_z,
 					landmark.center.z - landmark.radius_z - BASE_CELL),
@@ -2205,9 +2229,19 @@ return function(dependencies)
 							if not observed_max or replacement > observed_max then
 								observed_max, max_x, max_z = replacement, x, z
 							end
-						else rejected_owner_count = rejected_owner_count + 1 end
+						else
+							rejected_owner_count = rejected_owner_count + 1
+							local _, applied = natural_height_at(x, z,
+								landmark.numeric_id)
+							if applied then
+								owner_escape_columns = owner_escape_columns + 1
+							end
+						end
 					end
 				end
+			end
+			if owner_escape_columns ~= 0 then
+				fail("landmark mask escaped its owner at " .. landmark.id)
 			end
 			local evidence = landmark_evidence[landmark_index]
 			evidence.center_weight_q = landmark_weight(landmark,
@@ -2218,7 +2252,7 @@ return function(dependencies)
 			evidence.mask_columns = full_mask_count
 			evidence.collar_columns = collar_count
 			evidence.rejected_owner_count = rejected_owner_count
-			evidence.owner_escape_columns = 0
+			evidence.owner_escape_columns = owner_escape_columns
 			evidence.observed_min_y = observed_min
 			evidence.observed_min_witness_x = min_x
 			evidence.observed_min_witness_z = min_z
@@ -2285,8 +2319,6 @@ return function(dependencies)
 			route_digest = route_digest,
 			visible_surface_classification_digest =
 				visible_surface_classification_digest,
-			tunnel_named_operation_overlap_columns =
-				tunnel_named_operation_overlap_columns,
 			hydrology = hydrology_evidence,
 			interfaces = interface_evidence,
 			wet_reach_contact_pairs = 12,

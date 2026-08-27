@@ -1,9 +1,9 @@
 # WP40 simple-map R3 vertical contract
 
-**Status (2026-08-27): independently accepted implementation contract. V1e
-R2 is the live horizontal authority and its four-seed vertical-feasibility
-preflight is green. No R3 implementation, production artifact or Luanti
-runtime world is accepted yet.**
+**Status (2026-08-27): implementation and canonical vertical artifact
+independently accepted. V1e R2 remains the live horizontal authority. R3 is
+pure and engine-free; no Luanti runtime world, node writer or materialized
+terrain/water is accepted yet. R4 is next.**
 
 This contract turns geometry layout `wp40-simple-map-v1d`, with accepted
 source revision `wp40-simple-map-v1e`, into one small, deterministic vertical
@@ -692,9 +692,11 @@ change these results.
 
 ## 7. Required evidence and gates
 
-The R3 artifact is one canonical TSV whose body digest and complete file hash
-are recorded in the R3 review. It binds every executable input hash and at
-least:
+The sole canonical R3 artifact path is
+`docs/research/wp40-simple-map-r3-artifact.tsv`. The sole R3 implementation
+review path is `docs/research/wp40-simple-map-r3-review.md`. The artifact's
+body digest and complete-file hash are recorded in that review. The canonical
+artifact binds every executable input hash and at least:
 
 - the accepted R2 artifact body digest and complete-file hash, verified before
   the R3 run;
@@ -741,9 +743,9 @@ least:
 The accepted V1e R2 feasibility evidence is
 `docs/research/wp40-simple-map-v1e-r3-preflight.tsv`. Its canonical body
 digest is
-`de2e1d5a244785a3ca74e737e3848102f8b807d77043b058dc581a9f69d0898e`
+`86846f9dd86750ccff122b39ee6432c7b9f6fb5ee3ad17dcc7e39b2befe9da56`
 and its complete-file SHA-256 is
-`f3ccf699df1d67083730ccade57ea829fb8a618a1ee8e93890d41a1548d840e3`.
+`fa646da36904db78f1a51d886a65da8115b00c1850bf4fc2da2bf6cba2db16fb`.
 The four per-seed evidence digests, in the seed order below, are
 `dffe10e8413e5408aff3221d6e21ec2667ac6ffc6bbb517861e62496a1fced86`,
 `f977bfcdf561adc0faa2207a2892e45a5321aabb91947a464d1f6a6e2ebe80c1`,

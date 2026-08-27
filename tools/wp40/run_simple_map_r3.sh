@@ -76,6 +76,12 @@ lua_files=(
 if [[ "$mode" != selftest && -f "$height_file" ]]; then
 	lua_files+=("$height_file")
 fi
+sandbox_no_execute_files=()
+for file in "${lua_files[@]}"; do
+	if [[ "$file" != "$repo/tools/wp40/simple_map_r3_offline.lua" ]]; then
+		sandbox_no_execute_files+=("$file")
+	fi
+done
 
 "$luac_bin" -p "${lua_files[@]}"
 for file in "${lua_files[@]}"; do
@@ -88,7 +94,8 @@ if rg -n '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' "${lua_files[@]}" 
 	rg -n '\\u\{|\\x[0-9A-Fa-f]|\\z' "${lua_files[@]}" ||
 	rg -n 'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.' "${lua_files[@]}" ||
 	rg -n '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' "${lua_files[@]}" ||
-	rg -n '\brequire[[:space:]]*\(|io\.popen|os\.exit|\bminetest\.' "${lua_files[@]}"; then
+	rg -n '\brequire[[:space:]]*\(|io\.popen|os\.exit|\bminetest\.' "${lua_files[@]}" ||
+	rg -n 'os\.execute' "${sandbox_no_execute_files[@]}"; then
 	echo "run_simple_map_r3.sh: Lua 5.1 do-not-write sweep failed" >&2
 	exit 1
 fi

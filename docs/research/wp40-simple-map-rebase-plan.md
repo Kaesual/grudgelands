@@ -1,9 +1,9 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R2 are accepted. Fixed-layout V1e R2 was
-independently and visually accepted 2026-08-27 and is the live horizontal
-authority. V1d remains historical evidence at `d337160`; R3 implementation
-acceptance is next.
+**Status:** D1-D7 and R0-R3 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; the pure R3 vertical implementation and canonical
+artifact were independently accepted 2026-08-27. V1d remains historical
+evidence at `d337160`; R4 is next.
 
 **Ruling date:** 2026-08-25
 
@@ -846,14 +846,15 @@ the accepted SVG SHA-256 is
 `5816941d7bb7524a653b7cbe6b471f842be8bdc89db5e18f9fbf2017555e8fdc`.
 The review is recorded in
 [wp40-simple-map-v1e-r2-review.md](wp40-simple-map-v1e-r2-review.md). V1d is
-historical evidence at `d337160`; the green R3 preflight is feasibility
-evidence, not R3 implementation acceptance.
+historical evidence at `d337160`. The pure R3 vertical implementation and its
+canonical artifact were independently accepted on 2026-08-27; the review is
+recorded in [wp40-simple-map-r3-review.md](wp40-simple-map-r3-review.md).
 
 ### R3 — pure global height and final immutable payload
 
-The independently accepted implementation contract is
-[wp40-simple-map-r3-contract.md](wp40-simple-map-r3-contract.md). Write its
-engine-free implementation for
+The independently accepted implementation and canonical artifact follow
+[wp40-simple-map-r3-contract.md](wp40-simple-map-r3-contract.md). Its
+engine-free implementation provides
 the project-owned `H(full_seed, x, z)`. It uses precomputed broad/detail integer
 noise lattices, compact per-zone relief profiles, simple §8.4 landmark masks
 and a fixed grading priority for starts, capitals, paths and the fixed
