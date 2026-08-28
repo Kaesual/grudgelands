@@ -51,6 +51,14 @@ return function(dependencies)
 		planned_water = true,
 		coastal_shelf = true,
 	}
+	local FUNCTIONAL_KINDS = {
+		anchor_platform = true,
+		bridge_deck = true,
+		causeway = true,
+		ford = true,
+		land_grade = true,
+		tunnel_floor = true,
+	}
 
 	local function fail(message)
 		error("WP40 R4: " .. message, 0)
@@ -181,7 +189,8 @@ return function(dependencies)
 			fail("canonical/deterministic seam differs")
 		end
 		for _, name in ipairs({"compile_sparse_segments", "nearest_segment",
-				"compile_footprints", "footprint_candidates", "sparse_metrics"}) do
+				"nearest_segment_values", "compile_footprints",
+				"footprint_candidates", "sparse_metrics"}) do
 			if type(index128[name]) ~= "function" then
 				fail("sparse index seam missing: " .. name)
 			end
@@ -217,7 +226,8 @@ return function(dependencies)
 		sparse_schema = SPARSE_SCHEMA,
 	}
 
-	function module.new(full_seed_string, configured_water_level)
+	local function construct(full_seed_string, configured_water_level,
+			planner_source_requested)
 		if configured_water_level ~= WATER_LEVEL then
 			fail("configured water level differs from exact integer 1")
 		end
@@ -275,6 +285,9 @@ return function(dependencies)
 		local height = height_module.new(full_seed_string)
 		if type(height) ~= "table" or
 				type(height.terrain_height_at) ~= "function" or
+				type(height.water_surface_at) ~= "function" or
+				type(height.functional_surface_values_at) ~= "function" or
+				type(height.hydrology_transition_values_at) ~= "function" or
 				type(height.selected_anchor_3d_by_id) ~= "function" or
 				type(height.hard_protection_volumes) ~= "function" or
 				type(height.canonical_kat_digest) ~= "function" or
@@ -465,7 +478,8 @@ return function(dependencies)
 
 		local function classification_values(x, z, outside)
 			if outside then return "deep_ocean", nil, nil end
-			local water_class, macro_region, zone_numeric_id =
+			local water_class, macro_region, zone_numeric_id, bay_id,
+				classified_hydrology_id, channel_id, fixed, civic_water =
 				horizontal.classification_values_at(x, z)
 			if not WATER_CLASSES[water_class] then
 				fail("unknown horizontal water class")
@@ -477,7 +491,8 @@ return function(dependencies)
 			elseif zone_numeric_id ~= nil then
 				fail("ownerless water class carries a zone")
 			end
-			return water_class, macro_region, zone_numeric_id
+			return water_class, macro_region, zone_numeric_id, bay_id,
+				classified_hydrology_id, channel_id, fixed, civic_water
 		end
 
 		local function surface_level_from_classification(x, z, water_class,
@@ -618,6 +633,21 @@ return function(dependencies)
 			segments = route_segments,
 		}, SPARSE_SCHEMA)
 
+		local hydrology_profile_by_id = {}
+		for profile_index = 1, dense_count(source.hydrology_profiles,
+				"hydrology profiles") do
+			local profile = source.hydrology_profiles[profile_index]
+			if type(profile.id) ~= "string" or profile.id == "" or
+					hydrology_profile_by_id[profile.id] then
+				fail("hydrology profile identity differs")
+			end
+			local depth = integer(profile.depth, "hydrology profile depth")
+			if depth < 0 or profile.bed_seal_layers ~= 3 or
+					profile.bank_seal_nodes ~= 2 then
+				fail("hydrology profile planner fields differ")
+			end
+			hydrology_profile_by_id[profile.id] = profile
+		end
 		local hydrology_by_id, hydrology_segments = {}, {}
 		for reach_index = 1, #source.hydrology do
 			local reach = source.hydrology[reach_index]
@@ -625,7 +655,10 @@ return function(dependencies)
 					hydrology_by_id[reach.id] then
 				fail("hydrology identity differs")
 			end
-			hydrology_by_id[reach.id] = {id = reach.id, order = reach_index}
+			local profile = hydrology_profile_by_id[reach.profile_id]
+			if not profile then fail("hydrology profile reference differs") end
+			hydrology_by_id[reach.id] = {id = reach.id, order = reach_index,
+				profile_id = profile.id, profile_depth = profile.depth}
 			local points = reach.centreline
 			if dense_count(points, "hydrology points") < 2 then
 				fail("hydrology has fewer than two points")
@@ -660,6 +693,21 @@ return function(dependencies)
 			tie_break = "feature_order",
 			segments = hydrology_segments,
 		}, SPARSE_SCHEMA)
+		local hydrology_scalar_scratch
+		if planner_source_requested then
+			hydrology_scalar_scratch = {}
+			for segment_index = 1, #hydrology_segments do
+				hydrology_scalar_scratch[segment_index] = 0
+			end
+			hydrology_scalar_scratch._index128_compiled = hydrology_index
+			hydrology_scalar_scratch._index128_capacity = #hydrology_segments
+			hydrology_scalar_scratch._index128_generation = 0
+			hydrology_scalar_scratch._index128_best_index = 0
+			hydrology_scalar_scratch._index128_best_numerator = 0
+			hydrology_scalar_scratch._index128_best_denominator = 1
+			hydrology_scalar_scratch._index128_cells_scanned = 0
+			hydrology_scalar_scratch._index128_candidates_scanned = 0
+		end
 
 		local recipe_by_id, source_route_by_id = {}, {}
 		for recipe_index = 1, #source.hard_protection_recipes do
@@ -1259,8 +1307,165 @@ return function(dependencies)
 			}
 		end
 
+		local planner_source
+		if planner_source_requested then
+			planner_source = {
+				schema = "grug_wp40_r5_planner_source_v1",
+			}
+
+			function planner_source.column_values_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "planner column query")
+				local water_class, _, zone_numeric_id, _,
+					classified_hydrology_id = classification_values(x, z, outside)
+				local zone = zone_numeric_id and zone_by_numeric[zone_numeric_id] or nil
+				if zone_numeric_id ~= nil and not zone then
+					fail("planner column zone identity differs")
+				end
+				local zone_id = zone and zone.id or nil
+				local logical_biome_id = zone and
+					logical_biome_at(x, z, zone_numeric_id) or nil
+				local race_region_id = zone and zone.race_region or nil
+				local terrain_y = outside and -23 or
+					integer(height.terrain_height_at(x, z),
+						"planner R3 terrain height")
+				local water_y = height.water_surface_at(x, z)
+				if water_y ~= nil then
+					water_y = integer(water_y, "planner R3 water height")
+				end
+				local classified_profile_depth
+				if classified_hydrology_id ~= nil then
+					local hydrology = hydrology_by_id[classified_hydrology_id]
+					if not hydrology then
+						fail("planner classified hydrology identity differs")
+					end
+					classified_profile_depth = hydrology.profile_depth
+				end
+				local functional_kind, functional_y, functional_feature_id,
+					functional_interface_id =
+					height.functional_surface_values_at(x, z)
+				if functional_kind == nil then
+					if functional_y ~= nil or functional_feature_id ~= nil or
+							functional_interface_id ~= nil then
+						fail("planner nil functional tuple differs")
+					end
+				elseif not FUNCTIONAL_KINDS[functional_kind] then
+					fail("planner functional kind differs")
+				else
+					functional_y = integer(functional_y,
+						"planner functional height")
+					if type(functional_feature_id) ~= "string" or
+							functional_feature_id == "" then
+						fail("planner functional feature identity differs")
+					end
+					if functional_interface_id ~= nil and
+							(type(functional_interface_id) ~= "string" or
+							functional_interface_id == "") then
+						fail("planner functional interface identity differs")
+					end
+				end
+				local transition_kind, transition_interface_id,
+					transition_upper_y, transition_lower_y, transition_progress_q,
+					transition_face_mask =
+					height.hydrology_transition_values_at(x, z)
+				if transition_kind == nil then
+					if transition_interface_id ~= nil or transition_upper_y ~= nil or
+							transition_lower_y ~= nil or transition_progress_q ~= nil or
+							transition_face_mask ~= nil then
+						fail("planner nil transition tuple differs")
+					end
+				elseif transition_kind ~= "rapid" and
+						transition_kind ~= "waterfall" then
+					fail("planner transition kind differs")
+				else
+					if type(transition_interface_id) ~= "string" or
+							transition_interface_id == "" then
+						fail("planner transition interface identity differs")
+					end
+					transition_upper_y = integer(transition_upper_y,
+						"planner transition upper height")
+					transition_lower_y = integer(transition_lower_y,
+						"planner transition lower height")
+					if transition_face_mask ~= nil then
+						if transition_kind ~= "waterfall" or
+								transition_progress_q ~= nil then
+							fail("planner contact transition tuple differs")
+						end
+						transition_face_mask = integer(transition_face_mask,
+							"planner transition face mask")
+						if transition_face_mask < 1 or transition_face_mask > 15 then
+							fail("planner transition face mask differs")
+						end
+					else
+						transition_progress_q = integer(transition_progress_q,
+							"planner transition progress")
+						if transition_progress_q < 0 or
+								transition_progress_q > 65536 then
+							fail("planner transition progress differs")
+						end
+					end
+				end
+				local hard_foundation = hard_row_at(x, terrain_y, z) ~= nil
+				return water_class, zone_numeric_id, zone_id, logical_biome_id,
+					race_region_id, terrain_y, water_y, classified_hydrology_id,
+					classified_profile_depth, functional_kind, functional_y,
+					functional_feature_id, functional_interface_id, transition_kind,
+					transition_interface_id, transition_upper_y, transition_lower_y,
+					transition_progress_q, transition_face_mask, hard_foundation
+			end
+
+			function planner_source.hydrology_metric_values_at(x, z)
+				local outside
+				x, z, outside = normalize_xz(x, z, "planner hydrology metric query")
+				if outside then return nil, nil, nil, nil end
+				local feature_id, _, segment, numerator, denominator =
+					index128.nearest_segment_values(hydrology_index, x, z,
+						hydrology_scalar_scratch)
+				if feature_id == nil then return nil, nil, nil, nil end
+				if not hydrology_by_id[feature_id] then
+					fail("planner nearest hydrology identity differs")
+				end
+				integer(segment, "planner hydrology source segment")
+				integer(numerator, "planner hydrology distance numerator")
+				integer(denominator, "planner hydrology distance denominator")
+				if numerator < 0 or denominator <= 0 then
+					fail("planner hydrology distance ratio differs")
+				end
+				return feature_id, segment, numerator, denominator
+			end
+
+			function planner_source.metrics()
+				local height_metrics = height.metrics()
+				if type(height_metrics) ~= "table" or
+						type(height_metrics.query_lattice_constructions) ~= "number" then
+					fail("R3 height metrics differ")
+				end
+				return {
+					horizontal_session_count = 1,
+					height_session_count = 1,
+					planner_source_count = 1,
+					query_table_allocations = 0,
+					query_sha256_calls = query_sha256_calls,
+					query_lattice_constructions =
+						height_metrics.query_lattice_constructions,
+					query_feature_list_constructions = 0,
+					query_unindexed_catalog_scans = 0,
+				}
+			end
+		end
+
 		construction_complete = true
+		return session, planner_source
+	end
+
+	function module.new(full_seed_string, configured_water_level)
+		local session = construct(full_seed_string, configured_water_level, false)
 		return session
+	end
+
+	function module.new_with_planner_source(full_seed_string,
+			configured_water_level)
+		return construct(full_seed_string, configured_water_level, true)
 	end
 
 	return module

@@ -874,6 +874,7 @@ per-chunk source-table copy are forbidden.
 
 ```text
 allocator_factory.new(domain_id) -> allocator
+allocator_factory.new(domain_id, candidate_allocator) -> boolean
 allocator:new_array(label, maximum_logical_capacity) -> table
 allocator:new_map(label, maximum_key_count) -> table
 allocator:grow(array, label, old_logical_capacity, new_logical_capacity)
@@ -883,6 +884,15 @@ allocator:enter_hotpath(name)
 allocator:leave_hotpath(name)
 allocator:metrics() -> defensive scalar metrics table
 ```
+
+The two-argument form is the private, construction-only provenance check used
+by the planner and adapter factories. It returns true exactly when
+`candidate_allocator` was created by this same injected factory for the exact
+`domain_id`; it returns false for a copied API table, a foreign allocator or a
+different domain. The check consults only module-private factory state,
+allocates and mutates nothing, and exposes no additional raw field or method.
+All other factory arities fail. The one-argument construction form and the raw
+factory allowlist `{new}` remain unchanged.
 
 `domain_id`, `label` and hotpath names are fixed interned contract strings.
 Capacities/counts are nonnegative safe integers. Labels are unique in one
