@@ -192,8 +192,14 @@ return function(dependencies)
 		for index = 1, #source.island_routes do
 			add_candidate(source.island_routes[index].id, "island route ID")
 		end
+		for index = 1, #source.island_landings do
+			add_candidate(source.island_landings[index].id, "island landing ID")
+		end
 		for index = 1, #source.anchors do
 			add_candidate(source.anchors[index].id, "anchor ID")
+		end
+		for index = 1, #source.coastal_housing_cores do
+			add_candidate(source.coastal_housing_cores[index].id, "coastal core ID")
 		end
 		for index = 1, #source.hydrology do
 			add_candidate(source.hydrology[index].id, "hydrology ID")

@@ -533,7 +533,8 @@ return function(common)
 			end
 		end
 		for _, family in ipairs({source.routes, source.poi_spurs,
-				source.island_routes, source.anchors, source.hydrology}) do
+				source.island_routes, source.anchors, source.island_landings,
+				source.coastal_housing_cores, source.hydrology}) do
 			local count = dense_count(family, "stable-reference source family")
 			for index = 1, count do add(family[index].id, "stable-reference ID") end
 		end
@@ -6586,6 +6587,38 @@ return function(common)
 			"copy_false","foreign_false","wrong_domain_false")
 		local current_plan,current_generation=plan_at(loaded,
 			owner_position(-32,AUTHORED_FLOOR,-32),owner_position(47,AUTHORED_FLOOR,47))
+		local expected_refs=expected_stable_refs(loaded.source)
+		if not exact_equal(current_plan.stable_refs,expected_refs) then
+			fail("micro plan stable-reference union differs")
+		end
+		local stable_ordinal={}
+		for index=1,#current_plan.stable_refs do
+			stable_ordinal[current_plan.stable_refs[index]]=index
+		end
+		local grade_ref_rows,grade_ref_seen={},{}
+		local grade_ref_count=0
+		for _,family in ipairs({loaded.source.island_landings,
+				loaded.source.coastal_housing_cores}) do
+			if dense_count(family,"micro grade stable-reference family")~=4 then
+				fail("micro grade stable-reference family count differs")
+			end
+			for index=1,4 do
+				local id=family[index].id
+				local ordinal=stable_ordinal[id]
+				if type(id)~="string" or id=="" or grade_ref_seen[id] or
+						type(ordinal)~="number" then
+					fail("micro grade stable reference differs")
+				end
+				grade_ref_seen[id]=true
+				grade_ref_count=grade_ref_count+1
+				grade_ref_rows[#grade_ref_rows+1]=integer_ascii(#id,
+					"micro grade stable ID length")..":"..id.."\t"..
+					integer_ascii(ordinal,"micro grade stable ordinal").."\n"
+			end
+		end
+		if grade_ref_count~=8 then fail("micro grade stable-reference count differs") end
+		table.sort(grade_ref_rows)
+		local grade_ref_digest=canonical_rows(offline.raw_sha256,grade_ref_rows)
 		expect_error("fail_stale_plan",function()
 			loaded.adapter:apply(nil,owner_position(-32,AUTHORED_FLOOR,-32),
 				owner_position(47,AUTHORED_FLOOR,47),current_plan,current_generation-1,
@@ -6623,7 +6656,8 @@ return function(common)
 			fail("conditional target tuple population differs")
 		end
 		rows[#rows+1]=common.canonical_row("plan_provenance","fail_stale_plan",
-			"fail_foreign_identity","fail_missing_role")
+			"fail_foreign_identity","fail_missing_role","grade_stable_refs_8",
+			grade_ref_digest)
 		local final_planner_metrics=loaded.planner:metrics()
 		local final_adapter_metrics=loaded.adapter:metrics()
 		local planner_calls=final_planner_metrics.plan_buffer_reuse_calls-

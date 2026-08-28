@@ -952,9 +952,26 @@ candidate. Complete-layout evidence measures the actual peaks again; exceeding
 16/31 rejects rather than increasing either constant during implementation.
 A bound breach fails `plan_slice` before VM access.
 
-The stable-reference array is limited to 512 accepted source IDs. Construction
-sorts and interns them once. Query-time interning, concatenated IDs and a
-per-chunk source-table copy are forbidden.
+The exact construction-time stable-reference union is the unique set of:
+
+- every `source.routes[*].id`;
+- every `source.poi_spurs[*].id`;
+- every `source.island_routes[*].id`;
+- every `source.anchors[*].id`;
+- every `source.island_landings[*].id`;
+- every `source.coastal_housing_cores[*].id`;
+- every `source.hydrology[*].id`;
+- every `source.hydrology_interfaces[*].id` and every non-nil
+  `source.hydrology_interfaces[*].route_interface_id`; and
+- every `source.crossing_interfaces[*].id`.
+
+Construction deduplicates this exact union, sorts it lexicographically by ID
+bytes and interns it once before any plan may begin. The retained array is
+limited to 512 IDs. In particular, island-landing and coastal-housing-core IDs
+are valid `land_grade` `functional_feature_id` values and must already be
+interned when a planner-source column returns either one. An unknown or omitted
+functional feature fails construction or planning; query-time interning,
+concatenated IDs and a per-chunk source-table copy are forbidden.
 
 ### 6.3 Allocation and peak metrics
 
