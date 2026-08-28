@@ -533,11 +533,11 @@ emit_resource_summary() {
 			$1 != "r5_resource_v1" || NF != 4 ||
 			$2 !~ /^[0-9]+([.][0-9]+)?$/ || $3 !~ /^[0-9]+([.][0-9]+)?$/ ||
 			$4 !~ /^[0-9]+$/ { bad = 1; next }
-			{ count++; user += $2; system += $3; if ($4 > peak) peak = $4 }
+			{ count++; user += $2; system_total += $3; if ($4 > peak) peak = $4 }
 			END {
 				if (bad || count == 0) exit 1
 				printf "%d\t%.6f\t%.6f\t%.6f\t%d\n",
-					count, user, system, user + system, peak
+					count, user, system_total, user + system_total, peak
 			}' )"
 		IFS=$'\t' read -r process_count user_seconds system_seconds cpu_seconds \
 			peak_rss_kib <<<"$summary"
