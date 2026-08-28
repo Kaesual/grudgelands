@@ -1155,6 +1155,8 @@ local function planner_factory(allocator_factory)
 			local sample_count = 0
 			local first_hydro = 0
 			local all_same = true
+			local first_surface
+			local all_same_surface = true
 			local minimum_seal_y, maximum_water_y
 			local smallest_id
 			for dx = -2, 2 do
@@ -1167,6 +1169,8 @@ local function planner_factory(allocator_factory)
 							sample_count = sample_count + 1
 							if first_hydro == 0 then first_hydro = hydro_ordinal
 							elseif hydro_ordinal ~= first_hydro then all_same = false end
+							if first_surface == nil then first_surface = water_y
+							elseif water_y ~= first_surface then all_same_surface = false end
 							local seal_y = bed_y - 2
 							minimum_seal_y = minimum_seal_y and
 								math.min(minimum_seal_y, seal_y) or seal_y
@@ -1179,7 +1183,7 @@ local function planner_factory(allocator_factory)
 				end
 			end
 			return sample_count, first_hydro, all_same, minimum_seal_y,
-				maximum_water_y, smallest_id
+				maximum_water_y, smallest_id, all_same_surface
 		end
 
 		local function bank_relation_for(x, z, sample_count)
@@ -1210,9 +1214,6 @@ local function planner_factory(allocator_factory)
 						best_id = relation_id
 					end
 				end
-			end
-			if best_relation == 0 then
-				fail("fail_conflict", "bank samples lack one accepted relation")
 			end
 			return best_relation
 		end
@@ -1433,11 +1434,14 @@ local function planner_factory(allocator_factory)
 					wet_relation > 0 and interface_value(wet_relation, 1) or nil)
 			else
 				local sample_count, _, all_same, seal_low, sample_high,
-					smallest_id = scan_bank_samples(x, z)
+					smallest_id, all_same_surface = scan_bank_samples(x, z)
 				if sample_count > 0 then
 					local bank_relation = 0
 					if not all_same then
 						bank_relation = bank_relation_for(x, z, sample_count)
+						if bank_relation == 0 and not all_same_surface then
+							fail("fail_conflict", "bank samples lack one accepted relation")
+						end
 					end
 					local seal_high = math.min(terrain_y, sample_high)
 					if seal_low <= seal_high then

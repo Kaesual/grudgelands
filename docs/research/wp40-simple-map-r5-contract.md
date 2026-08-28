@@ -1728,9 +1728,14 @@ same-priority conflict by order.
 The bank collar is the exact Manhattan-distance-two dilation of the wet named
 hydrology footprint (`S` non-nil), excluding those wet columns. The planner
 samples the fixed twelve offsets with `abs(dx) + abs(dz)` in `1..2`. For a bank
-column, collect all wet samples. They are compatible only if they have one
-hydrology ID or all appear in one accepted confluence/transition relation in
-the construction lookup from Section 4.3. Otherwise planning fails. Define:
+column, collect all wet samples. One hydrology ID is directly compatible. For
+mixed IDs, the planner first searches the construction lookup from Section 4.3
+and selects the unsigned-ASCII-smallest accepted confluence/rapid/waterfall
+relation containing every sampled ID. This relation takes precedence even
+when every sampled `S` is equal. Only when no such relation exists does exact
+equality of every sampled `S` admit the accepted R2 level-contact fallback with
+a nil diagnostic interface ref. Mixed unequal-`S` samples without one accepted
+relation fail. Define:
 
 ```text
 seal_low  = minimum(sample_bed_y - 2)
@@ -1752,10 +1757,13 @@ compatible liquid and `NATURAL_VEGETATION` are replaced by the resolved
 hydrology-seal material. It never cuts or raises the scalar terrain surface.
 Compatible samples are aggregated before one candidate is appended; its
 diagnostic feature ref is the unsigned-ASCII-smallest contributing hydrology
-ID. The fixed subtraction above may split a seal into at most three intervals
-and is ordinary inclusive-interval clipping, not a CSG language. Incompatible
-role/identity overlap fails; foreign, unknown, `ignore` or incompatible liquid
-still rejects through the total matrix.
+ID. Its diagnostic interface ref is nil for a one-ID bank or the no-relation
+equal-`S` fallback, and is the selected accepted relation ID for every related
+mixed-ID bank regardless of level equality. The fixed subtraction above may
+split a seal into at most three intervals and is ordinary inclusive-interval
+clipping, not a CSG language. Incompatible role/identity overlap fails;
+foreign, unknown, `ignore` or incompatible liquid still rejects through the
+total matrix.
 
 ### 8.10 Ordinary and named water
 
@@ -3190,13 +3198,14 @@ required if and only if at least one resolved interval for that variant crosses
 a complete strict-interior owner slice; it
 selects the first such interior slice for the canonical-least occurrence.
 
-The ten fixed keys are exactly:
+The eleven fixed keys are exactly:
 
 ```text
 fixed/owner_min
 fixed/owner_max
 fixed/below_floor_owner
 fixed/authored_floor
+fixed/equal_surface_mixed_bank
 fixed/terrain_y
 fixed/surface_cap
 fixed/first_sky_clear
@@ -3213,7 +3222,7 @@ ascending; attached witness keys within one plan sort by unsigned-ASCII bytes.
 One receipt is either `run/<the nine exact Section 6.1 run scalars>` or the
 literal `absent`. `fixed/owner_min` selects `y = -30912` and
 `fixed/below_floor_owner` selects `y = -38` in owner slice `-112..-33`; both
-require `absent`. Every relation receipt and the other eight fixed receipts
+require `absent`. Every relation receipt and the other nine fixed receipts
 require the exact selected run. When a fixed peak column/owner slice contains
 more than one run, its receipt selects the run with the numerically lowest
 `y_min`; canonical plan order breaks no additional tie. `fixed/owner_max`
@@ -3230,6 +3239,18 @@ canonical tuple is exactly `x = -1916`, `z = -2071`, `T = 61`, `W = C = 19`,
 `functional_interface_id = nil`; its selected Y is therefore `43`. This
 receipt proves that the four emitted headroom nodes remain clear while the P5
 solid roof beginning at `F+5` remains valid.
+`fixed/equal_surface_mixed_bank` has the singleton eligible coordinate
+`x = -456`, `z = -1490` on the accepted seed-zero layout. Its fixed twelve-
+offset population has exactly three wet samples: two
+`hydro_whitebridge_main` samples and one `hydro_whitebridge_ford` sample. All
+three have `S = 17`; the main and ford profile depths are respectively `4`
+and `1`, so `seal_low = 11`, `seal_high = min(T,17)`, the diagnostic feature
+ref is `hydro_whitebridge_ford`, and the diagnostic interface ref is nil. The
+fixed P3 subtraction is applied before witness selection. The receipt requires
+the surviving resolved `HYDROLOGY_BANK_SEAL/SEAL_VOID` run with the numerically
+lowest `y_min`; no surviving run or an attached interface rejects. It never
+reports the unsubtracted `11..min(T,17)` interval as a resolved run unless its
+endpoints actually survive unchanged.
 `fixed/peak_candidate` and
 `fixed/peak_resolved` use the canonical first column/owner-slice attaining the
 independently derived per-owner-slice maximum, never an unclipped global
@@ -3237,7 +3258,7 @@ candidate total.
 
 Identical `(chunk_min_z, chunk_min_x, owner_min_y)` groups share one real
 `plan_slice`; no witness causes a duplicate call. There are at most
-`27 * 3 + 10 = 91` keys and therefore at most 91 deduplicated real
+`27 * 3 + 11 = 92` keys and therefore at most 92 deduplicated real
 `plan_slice` calls. Plan digests cover only this sorted materialized corpus;
 canonical counts remain the independent oracle's complete analytic
 population. All existing artifact keys, row cardinalities and fixture ownership
@@ -3288,8 +3309,15 @@ labeled assertions:
   tunnel collar and roof;
 - tunnel roof/wall and hydrology bed/bank seal rows proving known solid/ore/
   resource/stratum preservation, air/compatible-liquid/vegetation replacement
-  and matrix vetoes; plus rapid/cardinal-waterfall distinction, full contact-
-  face fall clear and the exact one-source receiver omission;
+  and matrix vetoes; the exact equal-`S` mixed bank at `x = -456`, `z = -1490`
+  with two `hydro_whitebridge_main` samples, one `hydro_whitebridge_ford`
+  sample, `S = 17`, depths `4/1`, `seal_low = 11`,
+  `seal_high = min(T,17)`, smallest feature `hydro_whitebridge_ford` and nil
+  interface, with its receipt selected only from the post-P3-subtraction
+  surviving bank-seal runs; plus an equal-`S` related bank that retains its
+  accepted relation, an unequal-`S` related bank and an unequal-`S` unrelated
+  rejection, rapid/cardinal-waterfall distinction, full contact-face fall clear
+  and the exact one-source receiver omission;
 - native top at `T-17` and `T+17`, plus native top exactly on a vertical owner-
   slice boundary;
 - heightmap sentinel `-31007`, an internal height, `h == maxp.y`, every invalid

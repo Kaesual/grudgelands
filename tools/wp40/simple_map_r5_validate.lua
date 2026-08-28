@@ -2692,7 +2692,12 @@ return function(common)
 		return {count=0,y_min={},y_max={},priority={},opcode={},role={},policy={},
 			feature={},interface={},endpoints={},resolved_count=0,
 			r_y_min={},r_y_max={},r_priority={},r_opcode={},r_role={},r_policy={},
-			r_feature={},r_interface={},roofed_bridge_headroom=false}
+			r_feature={},r_interface={},roofed_bridge_headroom=false,
+			equal_surface_bank=false,equal_surface_bank_samples=0,
+			equal_surface_bank_surface=0,equal_surface_bank_seal_low=0,
+			equal_surface_bank_seal_high=0,equal_surface_bank_feature=false,
+			equal_surface_bank_terrain=0,equal_surface_bank_main_samples=0,
+			equal_surface_bank_ford_samples=0}
 	end
 
 	local function seed_add_candidate(state,y_min,y_max,priority,opcode,role,
@@ -2970,6 +2975,7 @@ return function(common)
 	local function seed_build_candidates(state,authority,get,metric_at,x,z)
 		state.count=0
 		state.roofed_bridge_headroom=false
+		state.equal_surface_bank=false
 		local terrain,water_y,hydro_id,depth=get(6,x,z),get(7,x,z),get(8,x,z),get(9,x,z)
 		local kind,functional_y,feature,interface=get(10,x,z),get(11,x,z),
 			get(12,x,z),get(13,x,z)
@@ -3101,7 +3107,10 @@ return function(common)
 			seed_add_seal(state,wet_bed-2,wet_bed,OPCODE_ID.HYDROLOGY_BED_SEAL,
 				wet_id,wet_relation and wet_relation.row.id or nil)
 		else
-			local sample_count,first_id,all_same,seal_low,sample_high,smallest=0,nil,true,nil,nil,nil
+			local sample_count,first_id,all_same,seal_low,sample_high,smallest=
+				0,nil,true,nil,nil,nil
+			local first_surface,all_same_surface=nil,true
+			local whitebridge_main_samples,whitebridge_ford_samples=0,0
 			for dx=-2,2 do for dz=-2,2 do
 				local distance=math.abs(dx)+math.abs(dz)
 				if distance>=1 and distance<=2 then
@@ -3110,6 +3119,13 @@ return function(common)
 						sample_count=sample_count+1
 						if not first_id then first_id=sample_id
 						elseif first_id~=sample_id then all_same=false end
+						if first_surface==nil then first_surface=sample_surface
+						elseif first_surface~=sample_surface then all_same_surface=false end
+						if sample_id=="hydro_whitebridge_main" then
+							whitebridge_main_samples=whitebridge_main_samples+1
+						elseif sample_id=="hydro_whitebridge_ford" then
+							whitebridge_ford_samples=whitebridge_ford_samples+1
+						end
 						local sample_seal=sample_bed-2
 						seal_low=seal_low and math.min(seal_low,sample_seal) or sample_seal
 						sample_high=sample_high and math.max(sample_high,sample_surface) or sample_surface
@@ -3139,7 +3155,20 @@ return function(common)
 							end
 						end
 					end
-					if not bank_relation then fail("seed oracle bank relation absent") end
+					if not bank_relation then
+						if not all_same_surface then
+							fail("seed oracle bank relation absent")
+						end
+						state.equal_surface_bank=true
+						state.equal_surface_bank_samples=sample_count
+						state.equal_surface_bank_surface=first_surface
+						state.equal_surface_bank_seal_low=seal_low
+						state.equal_surface_bank_seal_high=math.min(terrain,sample_high)
+						state.equal_surface_bank_feature=smallest
+						state.equal_surface_bank_terrain=terrain
+						state.equal_surface_bank_main_samples=whitebridge_main_samples
+						state.equal_surface_bank_ford_samples=whitebridge_ford_samples
+					end
 				end
 				local seal_high=math.min(terrain,sample_high)
 				if seal_low<=seal_high then
@@ -3285,6 +3314,8 @@ return function(common)
 		local witnesses,continuation_required={},{}
 		local run_count,continuation_run_count=0,0
 		local peak_candidate,peak_resolved=0,0
+		local equal_surface_bank_fallback_count=0
+		local equal_surface_bank_survivor_count=0
 
 		local function witness_less(current,chunk_z,chunk_x,z,x,owner_y)
 			if current==nil then return true end
@@ -3396,6 +3427,52 @@ return function(common)
 					local terrain,clearance,surface_cap=seed_build_candidates(state,
 						authority,fact,metric_at,x,central_z)
 					seed_resolve_candidates(state)
+					if state.equal_surface_bank then
+						equal_surface_bank_fallback_count=
+							equal_surface_bank_fallback_count+1
+						if state.equal_surface_bank_samples==3 and
+								state.equal_surface_bank_surface==17 and
+								state.equal_surface_bank_seal_low==11 and
+								state.equal_surface_bank_feature==
+									"hydro_whitebridge_ford" and
+								state.equal_surface_bank_main_samples==2 and
+								state.equal_surface_bank_ford_samples==1 then
+							local selected_run
+							for run=1,state.resolved_count do
+								if state.r_opcode[run]==OPCODE_ID.HYDROLOGY_BANK_SEAL and
+										state.r_policy[run]==POLICY_TOKEN_ID.SEAL_VOID and
+										state.r_feature[run]==
+											state.equal_surface_bank_feature and
+										state.r_interface[run]==nil then
+									if selected_run==nil or state.r_y_min[run]<
+											state.r_y_min[selected_run] then
+										selected_run=run
+									end
+								end
+							end
+							if selected_run then
+								equal_surface_bank_survivor_count=
+									equal_surface_bank_survivor_count+1
+								local target_y=state.r_y_min[selected_run]
+								local old=witnesses["fixed/equal_surface_mixed_bank"]
+								select_witness("fixed/equal_surface_mixed_bank",x,central_z,
+									owner_chunk_min(target_y),target_y,selected_run)
+								local current=witnesses["fixed/equal_surface_mixed_bank"]
+								if current~=old then
+									current.bank_samples=state.equal_surface_bank_samples
+									current.bank_surface=state.equal_surface_bank_surface
+									current.bank_seal_low=state.equal_surface_bank_seal_low
+									current.bank_seal_high=state.equal_surface_bank_seal_high
+									current.bank_terrain=state.equal_surface_bank_terrain
+									current.bank_feature=state.equal_surface_bank_feature
+									current.bank_main_samples=
+										state.equal_surface_bank_main_samples
+									current.bank_ford_samples=
+										state.equal_surface_bank_ford_samples
+								end
+							end
+						end
+					end
 					if state.roofed_bridge_headroom~=false then
 						local headroom_y=state.roofed_bridge_headroom
 						local selected_run
@@ -3513,11 +3590,18 @@ return function(common)
 			integer_ascii(scalar_queries,"scalar query count"),
 			integer_ascii(metric_queries,"hydrology metric query count")},"\t").."\n"
 		for index=1,#metric_rows do scalar_rows[#scalar_rows+1]=metric_rows[index] end
+		scalar_rows[#scalar_rows+1]=table.concat({"equal_surface_bank_fallbacks",
+			integer_ascii(equal_surface_bank_fallback_count,
+				"equal-surface bank fallback count"),
+			integer_ascii(equal_surface_bank_survivor_count,
+				"equal-surface bank survivor count")},"\t").."\n"
 
 		local fixed_keys={"fixed/owner_min","fixed/owner_max",
-			"fixed/below_floor_owner","fixed/authored_floor","fixed/terrain_y",
-			"fixed/surface_cap","fixed/first_sky_clear","fixed/peak_candidate",
-			"fixed/peak_resolved","fixed/roofed_bridge_headroom"}
+			"fixed/below_floor_owner","fixed/authored_floor",
+			"fixed/equal_surface_mixed_bank","fixed/terrain_y",
+			"fixed/surface_cap","fixed/first_sky_clear",
+			"fixed/roofed_bridge_headroom","fixed/peak_candidate",
+			"fixed/peak_resolved"}
 		for index=1,#fixed_keys do
 			if not witnesses[fixed_keys[index]] then fail("seed oracle fixed witness absent") end
 		end
@@ -3530,6 +3614,33 @@ return function(common)
 					{40,43,3,OPCODE_ID.BRIDGE_CLEAR,ROLE_ID.AIR,
 						POLICY_TOKEN_ID.CUT_NATURAL,roofed_feature,0,0}) then
 			fail("seed oracle canonical roofed bridge witness differs")
+		end
+		local bank=witnesses["fixed/equal_surface_mixed_bank"]
+		local bank_feature=authority.stable_ordinal.hydro_whitebridge_ford
+		local main=authority.hydrology.hydro_whitebridge_main
+		local ford=authority.hydrology.hydro_whitebridge_ford
+		if equal_surface_bank_survivor_count~=1 then
+			fail("seed oracle equal-surface bank survivor count differs: "..
+				integer_ascii(equal_surface_bank_survivor_count,
+					"equal-surface bank survivor count"))
+		end
+		if equal_surface_bank_fallback_count<1 or
+				bank.x~=-456 or bank.z~=-1490 or bank.bank_samples~=3 or
+				bank.bank_surface~=17 or
+				bank.bank_main_samples~=2 or bank.bank_ford_samples~=1 or
+				bank.bank_seal_low~=11 or bank.bank_seal_high~=
+					math.min(bank.bank_terrain,17) or
+				bank.bank_feature~="hydro_whitebridge_ford" or
+				not main or main.depth~=4 or not ford or ford.depth~=1 or
+				type(bank_feature)~="number" or bank.expected[1]<11 or
+				bank.expected[2]>bank.bank_seal_high or
+				bank.target_y~=bank.expected[1] or bank.expected[3]~=3 or
+				bank.expected[4]~=OPCODE_ID.HYDROLOGY_BANK_SEAL or
+				bank.expected[5]~=ROLE_ID.HYDROLOGY_SEAL or
+				bank.expected[6]~=POLICY_TOKEN_ID.SEAL_VOID or
+				bank.expected[7]~=bank_feature or bank.expected[8]~=0 or
+				bank.expected[9]~=0 then
+			fail("seed oracle canonical equal-surface bank witness differs")
 		end
 		for relation_index=1,#OPERATION_RELATION do
 			local row=OPERATION_RELATION[relation_index]
@@ -3561,7 +3672,7 @@ return function(common)
 			end
 			group.witnesses[#group.witnesses+1]={key=key,value=witness}
 		end
-		if witness_count>91 or #groups>91 then fail("seed oracle witness bound exceeded") end
+		if witness_count>92 or #groups>92 then fail("seed oracle witness bound exceeded") end
 		table.sort(groups,function(left,right)
 			if left.chunk_z~=right.chunk_z then return left.chunk_z<right.chunk_z end
 			if left.chunk_x~=right.chunk_x then return left.chunk_x<right.chunk_x end
@@ -3616,7 +3727,7 @@ return function(common)
 				digest_hex(raw_sha256,checked.bytes),
 				table.concat(attachments,ATTACHMENT_SEPARATOR)},"\t").."\n"
 		end
-		if materialized_plan_calls~=#groups or materialized_plan_calls>91 then
+		if materialized_plan_calls~=#groups or materialized_plan_calls>92 then
 			fail("seed oracle plan-slice call population differs")
 		end
 		return {
@@ -5662,9 +5773,13 @@ return function(common)
 			saved={}
 			for run=plan.column_start[column],plan.column_start[column+1]-1 do
 				local base=(run-1)*RUN_STRIDE
+				local feature_ordinal=plan.run_values[base+7]
+				local interface_ordinal=plan.run_values[base+8]
 				saved[#saved+1]={plan.run_values[base+1],plan.run_values[base+2],
 					plan.run_values[base+4],plan.run_values[base+5],
-					plan.run_values[base+6]}
+					plan.run_values[base+6],
+					feature_ordinal>0 and plan.stable_refs[feature_ordinal] or nil,
+					interface_ordinal>0 and plan.stable_refs[interface_ordinal] or nil}
 			end
 			cache[key]=saved
 			return saved
@@ -5816,6 +5931,157 @@ return function(common)
 			fail("roofed derived bridge headroom geometry differs")
 		end
 		rows[#rows+1]="bridge\troofed_headroom\t-1916\t-2071\t40\t43\n"
+
+		local function relation_members(row)
+			local members={}
+			if row.kind=="rapid" or row.kind=="waterfall" then
+				members[row.upper_id]=true
+				members[row.lower_id]=true
+			elseif row.kind=="confluence" then
+				for index=1,#row.from_ids do members[row.from_ids[index]]=true end
+				members[row.outgoing_reach_id]=true
+			end
+			return members
+		end
+		local accepted_relations={}
+		for index=1,#loaded.source.hydrology_interfaces do
+			local row=loaded.source.hydrology_interfaces[index]
+			if row.kind=="confluence" or row.kind=="rapid" or
+					row.kind=="waterfall" then
+				accepted_relations[#accepted_relations+1]={row=row,
+					members=relation_members(row)}
+			end
+		end
+		local function resolve_bank_compatibility(ids,surfaces)
+			if #ids<1 or #ids~=#surfaces then
+				fail("micro bank compatibility fixture differs")
+			end
+			local first_id,first_surface=ids[1],surfaces[1]
+			local all_same_id,all_same_surface=true,true
+			for index=2,#ids do
+				if ids[index]~=first_id then all_same_id=false end
+				if surfaces[index]~=first_surface then all_same_surface=false end
+			end
+			if all_same_id then return nil,true,"one_id" end
+			local selected
+			for index=1,#accepted_relations do
+				local relation=accepted_relations[index]
+				local compatible=true
+				for member=1,#ids do
+					if not relation.members[ids[member]] then compatible=false end
+				end
+				if compatible and (selected==nil or
+						relation.row.id<selected.row.id) then selected=relation end
+			end
+			if selected then return selected.row.id,true,"accepted_relation" end
+			if all_same_surface then return nil,true,"equal_surface_fallback" end
+			return nil,false,"unequal_unrelated"
+		end
+		local related=accepted_relations[1]
+		if not related then fail("micro accepted bank relation roster is empty") end
+		local related_ids={}
+		for index=1,#loaded.source.hydrology do
+			local id=loaded.source.hydrology[index].id
+			if related.members[id] then related_ids[#related_ids+1]=id end
+		end
+		if #related_ids<2 then fail("micro accepted bank relation members differ") end
+		local equal_relation,equal_ok,equal_kind=resolve_bank_compatibility(
+			{related_ids[1],related_ids[2]},{17,17})
+		local unequal_relation,unequal_ok,unequal_kind=resolve_bank_compatibility(
+			{related_ids[1],related_ids[2]},{17,18})
+		if not equal_ok or not unequal_ok or type(equal_relation)~="string" or
+				unequal_relation~=equal_relation or
+				equal_kind~="accepted_relation" or unequal_kind~="accepted_relation" then
+			fail("micro accepted bank relation precedence differs")
+		end
+		local unrelated_left,unrelated_right
+		for left=1,#loaded.source.hydrology do
+			for right=left+1,#loaded.source.hydrology do
+				local left_id=loaded.source.hydrology[left].id
+				local right_id=loaded.source.hydrology[right].id
+				local _,compatible=resolve_bank_compatibility(
+					{left_id,right_id},{17,18})
+				if not compatible then
+					unrelated_left,unrelated_right=left_id,right_id
+					break
+				end
+			end
+			if unrelated_left then break end
+		end
+		if not unrelated_left then fail("micro unrelated bank pair is absent") end
+		local unrelated_relation,unrelated_ok,unrelated_kind=
+			resolve_bank_compatibility({unrelated_left,unrelated_right},{17,18})
+		if unrelated_relation~=nil or unrelated_ok or
+				unrelated_kind~="unequal_unrelated" then
+			fail("micro unequal unrelated bank did not reject")
+		end
+		rows[#rows+1]="bank_relation\tindependent_oracle_equal_related\t"..
+			equal_relation.."\n"
+		rows[#rows+1]="bank_relation\tindependent_oracle_unequal_related\t"..
+			unequal_relation.."\n"
+		rows[#rows+1]="bank_relation\tindependent_oracle_unequal_unrelated_reject\t"..
+			unrelated_left.."\t"..unrelated_right.."\n"
+
+		local bank_x,bank_z=-456,-1490
+		local bank_values=capture20(loaded.planner_source.column_values_at,
+			bank_x,bank_z)
+		if bank_values[8]~=nil or bank_values[14]=="waterfall" then
+			fail("equal-surface mixed bank centre is named wet")
+		end
+		local wet_samples,main_samples,ford_samples=0,0,0
+		local expected_wet={
+			["0:-2"]="hydro_whitebridge_main",
+			["1:-1"]="hydro_whitebridge_main",
+			["0:2"]="hydro_whitebridge_ford",
+		}
+		for dx=-2,2 do
+			for dz=-2,2 do
+				local distance=math.abs(dx)+math.abs(dz)
+				if distance>=1 and distance<=2 then
+					local values=capture20(loaded.planner_source.column_values_at,
+						bank_x+dx,bank_z+dz)
+					local expected=expected_wet[integer_ascii(dx,"bank sample dx")..":"..
+						integer_ascii(dz,"bank sample dz")]
+					if expected then
+						local expected_depth=expected=="hydro_whitebridge_main" and 4 or 1
+						if values[7]~=17 or values[8]~=expected or
+								values[9]~=expected_depth or values[14]=="waterfall" then
+							fail("equal-surface mixed bank wet sample differs")
+						end
+						wet_samples=wet_samples+1
+						if expected=="hydro_whitebridge_main" then
+							main_samples=main_samples+1
+						else ford_samples=ford_samples+1 end
+					elseif values[8]~=nil or
+							(values[14]=="waterfall" and values[19]~=nil) then
+						fail("equal-surface mixed bank dry sample differs")
+					end
+				end
+			end
+		end
+		local raw_high=math.min(bank_values[6],17)
+		local selected_bank_run
+		for _,run in ipairs(snapshot_runs(bank_x,bank_z,owner_chunk_min(11))) do
+			if run[3]==OPCODE_ID.HYDROLOGY_BANK_SEAL and
+					run[5]==POLICY_TOKEN_ID.SEAL_VOID and
+					run[6]=="hydro_whitebridge_ford" then
+				if run[7]~=nil or run[1]<11 or run[2]>raw_high then
+					fail("equal-surface mixed bank resolved seal differs")
+				end
+				if selected_bank_run==nil or run[1]<selected_bank_run[1] then
+					selected_bank_run=run
+				end
+			end
+		end
+		if wet_samples~=3 or main_samples~=2 or ford_samples~=1 or
+				raw_high<11 or selected_bank_run==nil or
+				selected_bank_run[4]~=ROLE_ID.HYDROLOGY_SEAL then
+			fail("equal-surface mixed bank production plan witness differs")
+		end
+		rows[#rows+1]="bank\tproduction_equal_surface_fallback\t-456\t-1490\t"..
+			integer_ascii(selected_bank_run[1],"bank resolved y min").."\t"..
+			integer_ascii(selected_bank_run[2],"bank resolved y max")..
+			"\thydro_whitebridge_ford\tnil_interface\n"
 
 		local causeway=crossing_by_kind.causeway
 		local culvert_point,nonculvert_point
