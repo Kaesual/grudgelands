@@ -3315,7 +3315,7 @@ return function(common)
 		local run_count,continuation_run_count=0,0
 		local peak_candidate,peak_resolved=0,0
 		local equal_surface_bank_fallback_count=0
-		local equal_surface_bank_survivor_count=0
+		local equal_surface_bank_signature_survivor_count=0
 		local surface_cap_gap_count=0
 		local surface_cap_gap
 
@@ -3462,23 +3462,31 @@ return function(common)
 					local terrain,clearance,surface_cap=seed_build_candidates(state,
 						authority,fact,metric_at,x,central_z)
 					seed_resolve_candidates(state)
+					local fixed_equal_surface_bank=x==-456 and central_z==-1490
 					if state.equal_surface_bank then
 						equal_surface_bank_fallback_count=
 							equal_surface_bank_fallback_count+1
-						if state.equal_surface_bank_samples==3 and
+						local signature=state.equal_surface_bank_samples==3 and
 								state.equal_surface_bank_surface==17 and
 								state.equal_surface_bank_seal_low==11 and
 								state.equal_surface_bank_feature==
 									"hydro_whitebridge_ford" and
 								state.equal_surface_bank_main_samples==2 and
-								state.equal_surface_bank_ford_samples==1 then
+								state.equal_surface_bank_ford_samples==1
+						if signature then
 							local selected_run
+							local previous_match_max
 							for run=1,state.resolved_count do
 								if state.r_opcode[run]==OPCODE_ID.HYDROLOGY_BANK_SEAL and
 										state.r_policy[run]==POLICY_TOKEN_ID.SEAL_VOID and
-										state.r_feature[run]==
-											state.equal_surface_bank_feature and
-										state.r_interface[run]==nil then
+									state.r_feature[run]==
+										state.equal_surface_bank_feature and
+									state.r_interface[run]==nil then
+									if previous_match_max~=nil and
+											state.r_y_min[run]<=previous_match_max then
+										fail("seed oracle fixed bank survivor overlaps")
+									end
+									previous_match_max=state.r_y_max[run]
 									if selected_run==nil or state.r_y_min[run]<
 											state.r_y_min[selected_run] then
 										selected_run=run
@@ -3486,27 +3494,34 @@ return function(common)
 								end
 							end
 							if selected_run then
-								equal_surface_bank_survivor_count=
-									equal_surface_bank_survivor_count+1
+								equal_surface_bank_signature_survivor_count=
+									equal_surface_bank_signature_survivor_count+1
+							end
+							if fixed_equal_surface_bank then
+								if not selected_run then
+									fail("seed oracle fixed bank survivor is absent")
+								end
 								local target_y=state.r_y_min[selected_run]
-								local old=witnesses["fixed/equal_surface_mixed_bank"]
 								select_witness("fixed/equal_surface_mixed_bank",x,central_z,
 									owner_chunk_min(target_y),target_y,selected_run)
 								local current=witnesses["fixed/equal_surface_mixed_bank"]
-								if current~=old then
-									current.bank_samples=state.equal_surface_bank_samples
-									current.bank_surface=state.equal_surface_bank_surface
-									current.bank_seal_low=state.equal_surface_bank_seal_low
-									current.bank_seal_high=state.equal_surface_bank_seal_high
-									current.bank_terrain=state.equal_surface_bank_terrain
-									current.bank_feature=state.equal_surface_bank_feature
-									current.bank_main_samples=
-										state.equal_surface_bank_main_samples
-									current.bank_ford_samples=
-										state.equal_surface_bank_ford_samples
-								end
+								current.bank_samples=state.equal_surface_bank_samples
+								current.bank_surface=state.equal_surface_bank_surface
+								current.bank_seal_low=state.equal_surface_bank_seal_low
+								current.bank_seal_high=state.equal_surface_bank_seal_high
+								current.bank_terrain=state.equal_surface_bank_terrain
+								current.bank_feature=state.equal_surface_bank_feature
+								current.bank_main_samples=
+									state.equal_surface_bank_main_samples
+								current.bank_ford_samples=
+									state.equal_surface_bank_ford_samples
 							end
 						end
+						if fixed_equal_surface_bank and not signature then
+							fail("seed oracle fixed bank sample facts differ")
+						end
+					elseif fixed_equal_surface_bank then
+						fail("seed oracle fixed bank fallback is absent")
 					end
 					if state.roofed_bridge_headroom~=false then
 						local headroom_y=state.roofed_bridge_headroom
@@ -3632,8 +3647,8 @@ return function(common)
 		scalar_rows[#scalar_rows+1]=table.concat({"equal_surface_bank_fallbacks",
 			integer_ascii(equal_surface_bank_fallback_count,
 				"equal-surface bank fallback count"),
-			integer_ascii(equal_surface_bank_survivor_count,
-				"equal-surface bank survivor count")},"\t").."\n"
+			integer_ascii(equal_surface_bank_signature_survivor_count,
+				"equal-surface bank signature survivor count")},"\t").."\n"
 		if surface_cap_gap_count<1 or not surface_cap_gap then
 			fail("seed oracle cardinal-waterfall surface-cap gap is absent")
 		end
@@ -3671,11 +3686,6 @@ return function(common)
 		local bank_feature=authority.stable_ordinal.hydro_whitebridge_ford
 		local main=authority.hydrology.hydro_whitebridge_main
 		local ford=authority.hydrology.hydro_whitebridge_ford
-		if equal_surface_bank_survivor_count~=1 then
-			fail("seed oracle equal-surface bank survivor count differs: "..
-				integer_ascii(equal_surface_bank_survivor_count,
-					"equal-surface bank survivor count"))
-		end
 		if equal_surface_bank_fallback_count<1 or
 				bank.x~=-456 or bank.z~=-1490 or bank.bank_samples~=3 or
 				bank.bank_surface~=17 or
