@@ -1727,15 +1727,15 @@ return function(common)
 			{"water",AUTHORED_FLOOR,AUTHORED_FLOOR+2,AUTHORED_FLOOR+1,
 				ordinary_water,1,0,0,"applied_clq"},
 			{"chunk_top",AUTHORED_FLOOR,AUTHORED_FLOOR+2,AUTHORED_FLOOR+2,
-				foundation_fill,0,15,31,"applied_cl"},
+				foundation_fill,0,15,31,"applied_clq"},
 			{"transparent_canopy",AUTHORED_FLOOR,AUTHORED_FLOOR+2,
 				AUTHORED_FLOOR+1,foundation_fill,14,15,1,"applied_cl",13},
 			{"opaque_canopy",AUTHORED_FLOOR,AUTHORED_FLOOR+2,AUTHORED_FLOOR+1,
 				foundation_fill,14,15,0,"applied_cl"},
 			{"ignore_above_water",0,2,2,foundation_fill,14,0,0,
-				"applied_cl",65535,15},
+				"applied_clq",65535,15},
 			{"ignore_at_water",-16,-14,-14,foundation_fill,14,0,0,
-				"applied_cl",65535,0},
+				"applied_clq",65535,0},
 		}
 		local rows={}
 		local plan,generation,plan_min_y,plan_max_y
@@ -1808,7 +1808,7 @@ return function(common)
 				integer_ascii(box_max_z,"calc max z")..",true"
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
-			if opcode==ordinary_water then trace[#trace+1]="update_liquids" end
+			if row[9]:sub(-1)=="q" then trace[#trace+1]="update_liquids" end
 			assert_exact_vm_calls(snapshot,trace,"light matrix "..row[1])
 			local cid,_,target_light=snapshot_cell(snapshot,minp,maxp,0,target_y,0)
 			local probe_light=target_light
