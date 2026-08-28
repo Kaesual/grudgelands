@@ -26,6 +26,7 @@ return function(common)
 	local WATCH_STABLE_REFS = 497
 	local RUN_STRIDE = 9
 	local LOOKUP_BASE = 513
+	local ATTACHMENT_SEPARATOR = string.char(124)
 
 	local FIXTURE_ORDER = {
 		"historical_r4", "seed_0", "worst_fixture", "matrix",
@@ -3547,7 +3548,8 @@ return function(common)
 				integer_ascii(group.chunk_z,"plan group chunk z"),
 				integer_ascii(group.chunk_x,"plan group chunk x"),
 				integer_ascii(group.owner_y,"plan group owner y"),
-				digest_hex(raw_sha256,checked.bytes),table.concat(attachments,"|")},"\t").."\n"
+				digest_hex(raw_sha256,checked.bytes),
+				table.concat(attachments,ATTACHMENT_SEPARATOR)},"\t").."\n"
 		end
 		if materialized_plan_calls~=#groups or materialized_plan_calls>90 then
 			fail("seed oracle plan-slice call population differs")
