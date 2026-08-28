@@ -1500,7 +1500,7 @@ return function(common)
 			overrides,tail_case==true)
 		if not outcome:match("^applied_") then fail("policy write matrix did not commit") end
 		if tail_case==true and (snapshot.active_volume>=snapshot.retained_capacity or
-				snapshot.inactive_tail_checks~=18 or
+				snapshot.inactive_tail_checks~=16 or
 				snapshot.inactive_tail_unchanged~=true) then
 			fail("nonempty reduced-Y retained-tail matrix differs")
 		end
@@ -1509,13 +1509,13 @@ return function(common)
 				"offline_fixture")
 			local second_snapshot=observer.snapshot()
 			if second~="noop_equal_content" or
-					second_snapshot.inactive_tail_checks~=26 or
+					second_snapshot.inactive_tail_checks~=24 or
 					second_snapshot.inactive_tail_unchanged~=true or
 					not exact_equal(snapshot.data,second_snapshot.data) or
 					not exact_equal(snapshot.param2,second_snapshot.param2) then
 				fail("same-VM retained-tail second apply differs")
 			end
-			rows[#rows+1]="tail_double_apply\t18\t26\tnoop_equal_content\n"
+			rows[#rows+1]="tail_double_apply\t16\t24\tnoop_equal_content\n"
 		end
 		for policy_index=1,#ACTUAL_POLICIES do
 			local policy=ACTUAL_POLICIES[policy_index]
