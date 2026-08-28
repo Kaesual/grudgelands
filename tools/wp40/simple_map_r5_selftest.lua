@@ -206,6 +206,7 @@ local vm, mapgen_context, observer = vm_module.new({
 	content_contract = content_contract,
 	water_level = 1,
 	ignore_cid = 65535,
+	verify_inactive_tail = false,
 })
 
 -- Record the two otherwise-private production allocators without weakening

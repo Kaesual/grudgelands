@@ -1,6 +1,64 @@
 -- Pure, disabled WP40 R5 VoxelManip adapter.
 
-return function(allocator_factory)
+local FIXTURE_MAX_SAFE = 9007199254740991
+
+local function replacement_outcome_core(policy_id, class_id, family_id,
+		liquid_kind, ordinary_family_id, river_family_id)
+	if class_id == 2 or class_id == 3 or class_id == 9 then
+		return 2
+	end
+	if policy_id == 2 then return 0 end
+	if class_id == 4 and
+			(not (family_id == ordinary_family_id or
+				family_id == river_family_id) or
+			(liquid_kind ~= 1 and liquid_kind ~= 2)) then
+		return 2
+	end
+	if policy_id == 3 then
+		if class_id == 1 or class_id == 4 or class_id == 8 then return 1 end
+		return 0
+	elseif policy_id == 1 then
+		if class_id == 1 then return 0 end
+		return 1
+	elseif policy_id == 6 or policy_id == 7 then
+		return 1
+	elseif policy_id == 5 then
+		if class_id == 1 or class_id == 4 or class_id == 8 then return 1 end
+		return 0
+	elseif policy_id == 4 then
+		if class_id == 1 then return 0 end
+		return 1
+	end
+	return 2
+end
+
+local function replacement_outcome_fixture(...)
+	if select("#", ...) ~= 6 then
+		error("fail_fixture: replacement fixture arity differs", 0)
+	end
+	local policy_id, class_id, family_id, liquid_kind,
+		ordinary_family_id, river_family_id = ...
+	if type(policy_id) ~= "number" or policy_id % 1 ~= 0 or
+			policy_id < 1 or policy_id > 7 or
+			type(class_id) ~= "number" or class_id % 1 ~= 0 or
+			class_id < 1 or class_id > 11 or
+			type(family_id) ~= "number" or family_id % 1 ~= 0 or
+			family_id < 0 or family_id > FIXTURE_MAX_SAFE or
+			type(liquid_kind) ~= "number" or liquid_kind % 1 ~= 0 or
+			liquid_kind < 0 or liquid_kind > 2 or
+			type(ordinary_family_id) ~= "number" or
+			ordinary_family_id % 1 ~= 0 or ordinary_family_id < 1 or
+			ordinary_family_id > FIXTURE_MAX_SAFE or
+			type(river_family_id) ~= "number" or river_family_id % 1 ~= 0 or
+			river_family_id < 1 or river_family_id > FIXTURE_MAX_SAFE or
+			(liquid_kind == 0) ~= (family_id == 0) then
+		error("fail_fixture: replacement fixture scalar domain differs", 0)
+	end
+	return replacement_outcome_core(policy_id, class_id, family_id, liquid_kind,
+		ordinary_family_id, river_family_id)
+end
+
+local function adapter_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
 	local CONTENT_SCHEMA = "grug_wp40_r5_content_contract_v1"
@@ -118,6 +176,9 @@ return function(allocator_factory)
 		[17] = 5, [18] = 5, [19] = 7, [20] = 1, [21] = 3,
 		[22] = 6, [23] = 4, [25] = 7, [26] = 1, [27] = 3,
 		[28] = 6, [29] = 6, [30] = 4, [31] = 5, [32] = 5,
+	}
+	local OP_POLICY_ALT = {
+		[5] = POLICY_CUT_NATURAL,
 	}
 
 	local FACE_DX = {-1, 1, 0, 0, 0, 0}
@@ -369,6 +430,7 @@ return function(allocator_factory)
 		M_VM_SET_PARAM2 = M_VM_SET_PARAM2,
 		M_VM_UPDATE_LIQUIDS = M_VM_UPDATE_LIQUIDS,
 		OP_POLICY = OP_POLICY,
+		OP_POLICY_ALT = OP_POLICY_ALT,
 		OP_PRIORITY = OP_PRIORITY,
 		OP_ROLE = OP_ROLE,
 		OUTCOME_NOOP = OUTCOME_NOOP,
@@ -624,38 +686,8 @@ return function(allocator_factory)
 
 		local function replacement_outcome(policy_id, class_id, family_id,
 				liquid_kind)
-			if class_id == K.CLASS_FOREIGN or class_id == K.CLASS_IGNORE or
-					class_id == K.CLASS_UNKNOWN then
-				return K.OUTCOME_REJECT
-		end
-			if policy_id == K.POLICY_DEEP_EXACT_HOST then return K.OUTCOME_NOOP end
-			if class_id == K.CLASS_LIQUID and
-					not compatible_liquid(family_id, liquid_kind) then
-				return K.OUTCOME_REJECT
-			end
-			if policy_id == K.POLICY_FILL_VOID then
-				if class_id == K.CLASS_AIR or class_id == K.CLASS_LIQUID or
-						class_id == K.CLASS_NATURAL_VEGETATION then
-					return K.OUTCOME_WRITE
-				end
-				return K.OUTCOME_NOOP
-			elseif policy_id == K.POLICY_CUT_NATURAL then
-				if class_id == K.CLASS_AIR then return K.OUTCOME_NOOP end
-				return K.OUTCOME_WRITE
-			elseif policy_id == K.POLICY_SURFACE_EXACT or
-					policy_id == K.POLICY_WRITE_WATER then
-				return K.OUTCOME_WRITE
-			elseif policy_id == K.POLICY_SEAL_VOID then
-				if class_id == K.CLASS_AIR or class_id == K.CLASS_LIQUID or
-						class_id == K.CLASS_NATURAL_VEGETATION then
-					return K.OUTCOME_WRITE
-				end
-				return K.OUTCOME_NOOP
-			elseif policy_id == K.POLICY_OPEN_ENGINEERED then
-				if class_id == K.CLASS_AIR then return K.OUTCOME_NOOP end
-				return K.OUTCOME_WRITE
-			end
-			return K.OUTCOME_REJECT
+			return replacement_outcome_core(policy_id, class_id, family_id,
+				liquid_kind, ordinary_family, river_family)
 		end
 
 		local function validate_plan_bounds(minp, maxp, plan, call_mode)
@@ -783,7 +815,8 @@ return function(allocator_factory)
 						fail("fail_plan", "run scalar domain differs")
 					end
 					if K.OP_PRIORITY[opcode] ~= priority or K.OP_ROLE[opcode] ~= role or
-							K.OP_POLICY[opcode] ~= policy then
+							(policy ~= K.OP_POLICY[opcode] and
+								policy ~= K.OP_POLICY_ALT[opcode]) then
 						fail("fail_plan", "opcode tuple differs")
 					end
 					if feature_ref < 0 or feature_ref > stable_ref_count or
@@ -858,10 +891,12 @@ return function(allocator_factory)
 			if class_id == K.CLASS_IGNORE then
 				fail("fail_content_ignore", "classified owner content is ignore")
 			end
-			local outcome
-			if opcode == 27 and policy == K.POLICY_FILL_VOID and
+			local preserved_by_heightmap = opcode == 27 and
+				policy == K.POLICY_FILL_VOID and
 					(class_id == K.CLASS_AIR or class_id == K.CLASS_LIQUID) and
-					heightmap_value ~= K.HEIGHTMAP_SENTINEL and y <= heightmap_value then
+					heightmap_value ~= K.HEIGHTMAP_SENTINEL and y <= heightmap_value
+			local outcome
+			if preserved_by_heightmap then
 				outcome = K.OUTCOME_NOOP
 			elseif old_cid == target_cid then
 				outcome = K.OUTCOME_NOOP
@@ -875,7 +910,7 @@ return function(allocator_factory)
 			local final_cid = outcome == K.OUTCOME_WRITE and target_cid or old_cid
 			local param2_mode = scratch[target + 3]
 			local final_param2 = old_param2
-			if param2_mode == K.PARAM2_EXACT then
+			if param2_mode == K.PARAM2_EXACT and not preserved_by_heightmap then
 				final_param2 = scratch[target + 4] - 1
 			end
 			local final_class, final_family, final_liquid_kind, final_liquid_level,
@@ -1357,7 +1392,18 @@ return function(allocator_factory)
 					box_max_x, box_max_y, box_max_z)
 				vm_call3(vm_calc_lighting, K.M_VM_CALC_LIGHTING, vm, call_min,
 					call_max, true)
-				vm_call1(vm_get_light_data, K.M_VM_GET_LIGHT, vm, light_final)
+				local returned_final_light = vm_call1(vm_get_light_data,
+					K.M_VM_GET_LIGHT, vm, light_final)
+				if not rawequal(returned_final_light, light_final) then
+					fail("fail_vm_contract", "get_light_data did not reuse buffer")
+				end
+				for index = 1, volume do
+					local value = light_final[index]
+					if type(value) ~= "number" or value % 1 ~= 0 or
+							value < 0 or value > 255 then
+						fail("fail_vm_contract", "light buffer scalar differs")
+					end
+				end
 				local owner_light_min_x = math.max(box_min_x, minp.x)
 				local owner_light_min_y = math.max(box_min_y, minp.y)
 				local owner_light_min_z = math.max(box_min_z, minp.z)
@@ -1461,3 +1507,5 @@ return function(allocator_factory)
 
 	return {new = new}
 end
+
+return adapter_factory, replacement_outcome_fixture

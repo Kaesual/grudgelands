@@ -231,6 +231,9 @@ return function(dependencies)
 		if configured_water_level ~= WATER_LEVEL then
 			fail("configured water level differs from exact integer 1")
 		end
+		local horizontal_session_count = 0
+		local height_session_count = 0
+		local planner_source_count = 0
 		local construction_complete = false
 		local construction_sha256_calls = 0
 		local query_sha256_calls = 0
@@ -271,6 +274,7 @@ return function(dependencies)
 				type(horizontal.housing_eligible_at) ~= "function" then
 			fail("horizontal session seam differs")
 		end
+		horizontal_session_count = horizontal_session_count + 1
 		local height_module = height_factory({
 			source = source,
 			canonical = canonical,
@@ -294,6 +298,7 @@ return function(dependencies)
 				type(height.metrics) ~= "function" then
 			fail("height session seam differs")
 		end
+		height_session_count = height_session_count + 1
 
 		local zone_by_id, zone_by_numeric, zone_records = {}, {}, {}
 		for zone_index = 1, #source.zones do
@@ -1441,9 +1446,9 @@ return function(dependencies)
 					fail("R3 height metrics differ")
 				end
 				return {
-					horizontal_session_count = 1,
-					height_session_count = 1,
-					planner_source_count = 1,
+					horizontal_session_count = horizontal_session_count,
+					height_session_count = height_session_count,
+					planner_source_count = planner_source_count,
 					query_table_allocations = 0,
 					query_sha256_calls = query_sha256_calls,
 					query_lattice_constructions =
@@ -1452,6 +1457,7 @@ return function(dependencies)
 					query_unindexed_catalog_scans = 0,
 				}
 			end
+			planner_source_count = planner_source_count + 1
 		end
 
 		construction_complete = true

@@ -1,6 +1,212 @@
 -- Pure, disabled WP40 R5 typed column/Y-run planner.
 
-return function(allocator_factory)
+local FIXTURE_MAX_SAFE = 9007199254740991
+local FIXTURE_OWNER_MIN = -30912
+local FIXTURE_OWNER_MAX = 30927
+local FIXTURE_MAX_CANDIDATES = 16
+local FIXTURE_MAX_RESOLVED = 31
+local FIXTURE_RUN_STRIDE = 9
+local OP_PRIORITY = {
+	[5]=3,[6]=3,[7]=3,[8]=3,[9]=3,[10]=3,[11]=3,[13]=3,
+	[14]=2,[15]=2,[16]=2,[17]=3,[18]=3,[19]=6,[20]=4,[21]=4,
+	[22]=4,[23]=6,[25]=6,[26]=5,[27]=5,[28]=5,[29]=3,[30]=3,
+	[31]=3,[32]=3,
+}
+local OP_ROLE = {
+	[5]=1,[6]=2,[7]=3,[8]=13,[9]=4,[10]=5,[11]=1,[13]=6,
+	[14]=1,[15]=7,[16]=8,[17]=9,[18]=9,[19]=10,[20]=1,[21]=11,
+	[22]=12,[23]=1,[25]=13,[26]=1,[27]=14,[28]=14,[29]=15,
+	[30]=1,[31]=16,[32]=16,
+}
+local OP_POLICY = {
+	[5]=4,[6]=6,[7]=5,[8]=7,[9]=3,[10]=6,[11]=4,[13]=6,
+	[14]=1,[15]=3,[16]=6,[17]=5,[18]=5,[19]=7,[20]=1,[21]=3,
+	[22]=6,[23]=4,[25]=7,[26]=1,[27]=3,[28]=6,[29]=6,[30]=4,
+	[31]=5,[32]=5,
+}
+local OP_POLICY_ALT = {[5]=1}
+
+local function core_semantic_equal(left_base, right_base, left_values,
+		right_values)
+	for offset = 3, FIXTURE_RUN_STRIDE do
+		if left_values[left_base + offset] ~= right_values[right_base + offset] then
+			return false
+		end
+	end
+	return true
+end
+
+local function resolve_candidates_core(candidate_values, candidate_count,
+		permutation, endpoints, output_values, output_first, output_count,
+		invalid_code, fail_core)
+	local endpoint_count = candidate_count * 2
+	for candidate_index = 1, candidate_count do
+		local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
+		endpoints[candidate_index * 2 - 1] = candidate_values[base + 1]
+		endpoints[candidate_index * 2] = candidate_values[base + 2] + 1
+	end
+	for index = 2, endpoint_count do
+		local value = endpoints[index]
+		local cursor = index - 1
+		while cursor >= 1 and endpoints[cursor] > value do
+			endpoints[cursor + 1] = endpoints[cursor]
+			cursor = cursor - 1
+		end
+		endpoints[cursor + 1] = value
+	end
+	local unique_count = 0
+	for index = 1, endpoint_count do
+		if unique_count == 0 or endpoints[index] ~= endpoints[unique_count] then
+			unique_count = unique_count + 1
+			endpoints[unique_count] = endpoints[index]
+		end
+	end
+	for endpoint_index = 1, unique_count - 1 do
+		local y_min = endpoints[endpoint_index]
+		local y_max = endpoints[endpoint_index + 1] - 1
+		local winner_base
+		local winner_priority
+		local priority_2_base, priority_3_base, priority_4_base
+		local priority_5_base, priority_6_base
+		for order_index = 1, candidate_count do
+			local candidate_index = permutation and permutation[order_index] or
+				order_index
+			local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
+			if candidate_values[base + 1] <= y_min and
+					candidate_values[base + 2] >= y_max then
+				local priority = candidate_values[base + 3]
+				local same_priority_base
+				if priority == 2 then
+					same_priority_base = priority_2_base
+					if priority_2_base == nil then priority_2_base = base end
+				elseif priority == 3 then
+					same_priority_base = priority_3_base
+					if priority_3_base == nil then priority_3_base = base end
+				elseif priority == 4 then
+					same_priority_base = priority_4_base
+					if priority_4_base == nil then priority_4_base = base end
+				elseif priority == 5 then
+					same_priority_base = priority_5_base
+					if priority_5_base == nil then priority_5_base = base end
+				elseif priority == 6 then
+					same_priority_base = priority_6_base
+					if priority_6_base == nil then priority_6_base = base end
+				else
+					fail_core(invalid_code, "candidate priority differs")
+				end
+				if same_priority_base ~= nil and
+						not core_semantic_equal(same_priority_base, base,
+							candidate_values, candidate_values) then
+					fail_core("fail_conflict",
+						"non-identical same-priority overlap")
+				end
+				if winner_priority == nil or priority < winner_priority then
+					winner_base, winner_priority = base, priority
+				end
+			end
+		end
+		if winner_base ~= nil then
+			if output_count >= output_first then
+				local previous_base = (output_count - 1) * FIXTURE_RUN_STRIDE
+				if output_values[previous_base + 2] + 1 == y_min and
+						core_semantic_equal(previous_base, winner_base,
+							output_values, candidate_values) then
+					output_values[previous_base + 2] = y_max
+					winner_base = nil
+				end
+			end
+			if winner_base ~= nil then
+				output_count = output_count + 1
+				if output_count - output_first + 1 > FIXTURE_MAX_RESOLVED then
+					fail_core("fail_bound", "resolved-run bound exceeded")
+				end
+				local output_base = (output_count - 1) * FIXTURE_RUN_STRIDE
+				output_values[output_base + 1] = y_min
+				output_values[output_base + 2] = y_max
+				for offset = 3, FIXTURE_RUN_STRIDE do
+					output_values[output_base + offset] =
+						candidate_values[winner_base + offset]
+				end
+			end
+		end
+	end
+	return output_count, output_count - output_first + 1
+end
+
+local function fixture_fail(code, message)
+	error(code .. ": " .. message, 0)
+end
+
+local function fixture_integer(value, label, minimum, maximum)
+	if type(value) ~= "number" or value ~= value or value == math.huge or
+			value == -math.huge or value % 1 ~= 0 or value < minimum or
+			value > maximum then
+		fixture_fail("fail_fixture", label .. " is not a bounded integer")
+	end
+	return value
+end
+
+local function fixture_dense(values, expected, label)
+	if type(values) ~= "table" or getmetatable(values) ~= nil then
+		fixture_fail("fail_fixture", label .. " is not a plain array")
+	end
+	local count = 0
+	for key in pairs(values) do
+		if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > expected then
+			fixture_fail("fail_fixture", label .. " has an out-of-range key")
+		end
+		count = count + 1
+	end
+	if count ~= expected then fixture_fail("fail_fixture", label .. " count differs") end
+	for index = 1, expected do
+		if rawget(values, index) == nil then
+			fixture_fail("fail_fixture", label .. " has a hole")
+		end
+	end
+end
+
+local function resolve_candidates_fixture(candidate_values, candidate_count,
+		permutation)
+	candidate_count = fixture_integer(candidate_count, "candidate count", 0,
+		FIXTURE_MAX_CANDIDATES)
+	fixture_dense(candidate_values, candidate_count * FIXTURE_RUN_STRIDE,
+		"candidate values")
+	fixture_dense(permutation, candidate_count, "candidate permutation")
+	local seen = {}
+	for candidate_index = 1, candidate_count do
+		local base = (candidate_index - 1) * FIXTURE_RUN_STRIDE
+		fixture_integer(candidate_values[base + 1], "candidate y_min",
+			FIXTURE_OWNER_MIN, FIXTURE_OWNER_MAX)
+		fixture_integer(candidate_values[base + 2], "candidate y_max",
+			candidate_values[base + 1], FIXTURE_OWNER_MAX)
+		fixture_integer(candidate_values[base + 3], "candidate priority", 2, 6)
+		local opcode = fixture_integer(candidate_values[base + 4],
+			"candidate opcode", 1, 32)
+		local role = fixture_integer(candidate_values[base + 5],
+			"candidate role", 1, 16)
+		local policy = fixture_integer(candidate_values[base + 6],
+			"candidate policy", 1, 7)
+		if OP_PRIORITY[opcode] ~= candidate_values[base + 3] or
+				OP_ROLE[opcode] ~= role or
+				(OP_POLICY[opcode] ~= policy and OP_POLICY_ALT[opcode] ~= policy) then
+			fixture_fail("fail_fixture", "candidate opcode tuple differs")
+		end
+		fixture_integer(candidate_values[base + 7], "candidate feature", 0, 512)
+		fixture_integer(candidate_values[base + 8], "candidate interface", 0, 512)
+		fixture_integer(candidate_values[base + 9], "candidate aux", 0, 0)
+		local ordinal = fixture_integer(permutation[candidate_index],
+			"candidate permutation ordinal", 1, candidate_count)
+		if seen[ordinal] then fixture_fail("fail_fixture", "permutation repeats") end
+		seen[ordinal] = true
+	end
+	local endpoints = {}
+	local output = {}
+	local output_count = resolve_candidates_core(candidate_values, candidate_count,
+		permutation, endpoints, output, 1, 0, "fail_fixture", fixture_fail)
+	return output, output_count
+end
+
+local function planner_factory(allocator_factory)
 	local MAX_SAFE = 9007199254740991
 	local SOURCE_SCHEMA = "grug_wp40_r5_planner_source_v1"
 	local PLAN_SCHEMA = "grug_wp40_r5_column_run_plan_v1"
@@ -277,8 +483,9 @@ return function(allocator_factory)
 
 		exact_raw_fields(counting_allocator, ALLOCATOR_FIELDS, "planner allocator",
 			"fail_source")
-		if allocator_factory_new(PLANNER_ALLOCATOR_DOMAIN,
-				counting_allocator) ~= true then
+		local provenance_ok, provenance = pcall(allocator_factory_new,
+			PLANNER_ALLOCATOR_DOMAIN, counting_allocator)
+		if not provenance_ok or provenance ~= true then
 			fail("fail_source", "planner allocator factory identity differs")
 		end
 		for name in pairs(ALLOCATOR_FIELDS) do
@@ -576,6 +783,13 @@ return function(allocator_factory)
 			safe_integer(y_max, "candidate y_max", -MAX_SAFE, MAX_SAFE,
 				"fail_bound")
 			if y_min > y_max then return end
+			if OP_PRIORITY[opcode] ~= priority or OP_ROLE[opcode] ~= role or
+					(OP_POLICY[opcode] ~= policy and OP_POLICY_ALT[opcode] ~= policy) then
+				fail("fail_source", "candidate opcode tuple differs")
+			end
+			if y_min < AUTHORED_FLOOR then
+				fail("fail_bound", "candidate crosses authored floor")
+			end
 			if y_min < OWNER_MIN or y_max > OWNER_MAX then
 				fail("fail_bound", "nonempty candidate crosses owner edges")
 			end
@@ -1274,89 +1488,17 @@ return function(allocator_factory)
 		local build_run_count = 0
 		local build_column_first = 1
 
-		local function semantic_equal(left_base, right_base, left_values,
-				right_values)
-			for offset = R_PRIORITY, R_AUX do
-				if left_values[left_base + offset] ~=
-						right_values[right_base + offset] then return false end
-			end
-			return true
-		end
-
-		local function append_resolved(y_min, y_max, winner_base)
-			if build_run_count >= build_column_first then
-				local previous_base = (build_run_count - 1) * RUN_STRIDE
-				if run_values[previous_base + R_Y_MAX] + 1 == y_min and
-						semantic_equal(previous_base, winner_base, run_values,
-							candidate_values) then
-					run_values[previous_base + R_Y_MAX] = y_max
-					return
-				end
-			end
-			build_run_count = build_run_count + 1
-			if build_run_count > MAX_RESOLVED or
-					build_run_count - build_column_first + 1 >
-						MAX_RESOLVED_PER_COLUMN then
-				fail("fail_bound", "resolved-run bound exceeded")
-			end
-			local output_base = (build_run_count - 1) * RUN_STRIDE
-			run_values[output_base + R_Y_MIN] = y_min
-			run_values[output_base + R_Y_MAX] = y_max
-			for offset = R_PRIORITY, R_AUX do
-				run_values[output_base + offset] = candidate_values[winner_base + offset]
-			end
-		end
-
 		local function resolve_column()
 			if candidate_count > metric_state[M_PEAK_CANDIDATES] then
 				metric_state[M_PEAK_CANDIDATES] = candidate_count
 			end
-			local endpoint_count = candidate_count * 2
-			for candidate_index = 1, candidate_count do
-				local base = (candidate_index - 1) * RUN_STRIDE
-				endpoints[candidate_index * 2 - 1] =
-					candidate_values[base + R_Y_MIN]
-				endpoints[candidate_index * 2] = candidate_values[base + R_Y_MAX] + 1
+			local resolved
+			build_run_count, resolved = resolve_candidates_core(candidate_values,
+				candidate_count, nil, endpoints, run_values, build_column_first,
+				build_run_count, "fail_source", fail)
+			if build_run_count > MAX_RESOLVED or resolved > MAX_RESOLVED_PER_COLUMN then
+				fail("fail_bound", "resolved-run bound exceeded")
 			end
-			for index = 2, endpoint_count do
-				local value = endpoints[index]
-				local cursor = index - 1
-				while cursor >= 1 and endpoints[cursor] > value do
-					endpoints[cursor + 1] = endpoints[cursor]
-					cursor = cursor - 1
-				end
-				endpoints[cursor + 1] = value
-			end
-			local unique_count = 0
-			for index = 1, endpoint_count do
-				if unique_count == 0 or endpoints[index] ~= endpoints[unique_count] then
-					unique_count = unique_count + 1
-					endpoints[unique_count] = endpoints[index]
-				end
-			end
-			for endpoint_index = 1, unique_count - 1 do
-				local y_min = endpoints[endpoint_index]
-				local y_max = endpoints[endpoint_index + 1] - 1
-				local winner_base
-				local winner_priority
-				for candidate_index = 1, candidate_count do
-					local base = (candidate_index - 1) * RUN_STRIDE
-					if candidate_values[base + R_Y_MIN] <= y_min and
-							candidate_values[base + R_Y_MAX] >= y_max then
-						local priority = candidate_values[base + R_PRIORITY]
-						if winner_priority == nil or priority < winner_priority then
-							winner_base, winner_priority = base, priority
-						elseif priority == winner_priority and
-								not semantic_equal(winner_base, base, candidate_values,
-									candidate_values) then
-							fail("fail_conflict", "non-identical same-priority overlap")
-						end
-					end
-				end
-				if winner_base ~= nil then append_resolved(y_min, y_max, winner_base) end
-			end
-			local resolved = build_run_count - build_column_first + 1
-			if resolved < 0 then resolved = 0 end
 			if resolved > metric_state[M_PEAK_RESOLVED_COLUMN] then
 				metric_state[M_PEAK_RESOLVED_COLUMN] = resolved
 			end
@@ -1469,3 +1611,5 @@ return function(allocator_factory)
 
 	return module
 end
+
+return planner_factory, resolve_candidates_fixture

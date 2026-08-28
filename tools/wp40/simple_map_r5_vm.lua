@@ -12,8 +12,10 @@ local getmetatable = getmetatable
 local setmetatable = setmetatable
 local pcall = pcall
 local error = error
+local select = select
 
 local CONTEXT_SCHEMA = "grug_wp40_r5_mapgen_context_v1"
+local RETAINED_BUFFER_CAPACITY = 112 * 112 * 112
 
 local SPEC_FIELDS = {
 	minp = true,
@@ -25,6 +27,19 @@ local SPEC_FIELDS = {
 	content_contract = true,
 	water_level = true,
 	ignore_cid = true,
+	verify_inactive_tail = true,
+}
+
+local PAIRED_SPEC_FIELDS = {
+	minp = true,
+	maxp = true,
+	data = true,
+	param2 = true,
+	light = true,
+	content_contract = true,
+	water_level = true,
+	ignore_cid = true,
+	verify_inactive_tail = true,
 }
 
 local VM_METHODS = {
@@ -125,8 +140,77 @@ local function pack_trace_value(value)
 	return tostring(value)
 end
 
-local function new(spec)
-	validate_exact_fields(spec, SPEC_FIELDS, "spec")
+local paired_context_by_token = setmetatable({}, {__mode = "k"})
+
+local function copy_unvalidated_heightmap(source)
+	local result = {}
+	for key, value in pairs(source) do
+		result[key] = value
+	end
+	return result
+end
+
+local function new_paired_context_fixture(...)
+	if select("#", ...) ~= 1 then
+		fail("paired context fixture arity differs")
+	end
+	local heightmap_source = ...
+	if type(heightmap_source) ~= "table" or
+			getmetatable(heightmap_source) ~= nil then
+		fail("paired heightmap source must be a plain table")
+	end
+	local function token()
+		fail("paired trace token has no public command")
+	end
+	local state = {
+		heightmap_source = heightmap_source,
+		generation = 0,
+		heightmap_fetch_calls = 0,
+		heightmap_external_table_allocations = 0,
+		metrics_result_table_allocations = 0,
+	}
+	local context = {schema = CONTEXT_SCHEMA}
+	function context.get_heightmap()
+		if type(state.record) ~= "function" then
+			fail("paired context is not bound to a VM")
+		end
+		state.record("get_heightmap")
+		state.heightmap_fetch_calls = state.heightmap_fetch_calls + 1
+		state.heightmap_external_table_allocations =
+			state.heightmap_external_table_allocations + 1
+		return copy_unvalidated_heightmap(state.heightmap_source)
+	end
+	function context.metrics()
+		state.metrics_result_table_allocations =
+			state.metrics_result_table_allocations + 1
+		return {
+			heightmap_fetch_calls = state.heightmap_fetch_calls,
+			heightmap_external_table_allocations =
+				state.heightmap_external_table_allocations,
+			metrics_result_table_allocations =
+				state.metrics_result_table_allocations,
+		}
+	end
+	state.context = context
+	paired_context_by_token[token] = state
+	return context, token
+end
+
+local function new(...)
+	local argument_count = select("#", ...)
+	if argument_count ~= 1 and argument_count ~= 2 then
+		fail("new arity differs")
+	end
+	local spec, trace_token = ...
+	local paired_state
+	if argument_count == 2 then
+		paired_state = paired_context_by_token[trace_token]
+		if not paired_state then
+			fail("paired trace token is not authentic")
+		end
+	end
+	validate_exact_fields(spec,
+		paired_state and PAIRED_SPEC_FIELDS or SPEC_FIELDS, "spec")
 	validate_position(spec.minp, "minp")
 	validate_position(spec.maxp, "maxp")
 
@@ -134,6 +218,7 @@ local function new(spec)
 	local maxp = copy_position(spec.maxp)
 	local water_level = spec.water_level
 	local ignore_cid = spec.ignore_cid
+	local verify_inactive_tail = spec.verify_inactive_tail
 	local x_count = maxp.x - minp.x + 1
 	local y_count = maxp.y - minp.y + 1
 	local z_count = maxp.z - minp.z + 1
@@ -153,12 +238,17 @@ local function new(spec)
 	validate_dense_array(spec.data, volume, is_cid, "data")
 	validate_dense_array(spec.param2, volume, is_byte, "param2")
 	validate_dense_array(spec.light, volume, is_byte, "light")
-	validate_dense_array(spec.heightmap, 6400, is_height, "heightmap")
+	if not paired_state then
+		validate_dense_array(spec.heightmap, 6400, is_height, "heightmap")
+	end
 	if not is_finite_integer(spec.water_level) then
 		fail("water_level must be an integer")
 	end
 	if not is_cid(spec.ignore_cid) then
 		fail("ignore_cid must be a content id")
+	end
+	if type(verify_inactive_tail) ~= "boolean" then
+		fail("verify_inactive_tail must be a boolean")
 	end
 	local content_contract = spec.content_contract
 	if type(content_contract) ~= "table" or
@@ -170,10 +260,21 @@ local function new(spec)
 	local data = copy_array(spec.data, volume)
 	local param2 = copy_array(spec.param2, volume)
 	local light = copy_array(spec.light, volume)
-	local heightmap_source = copy_array(spec.heightmap, 6400)
+	local heightmap_source = not paired_state and
+		copy_array(spec.heightmap, 6400) or nil
+	local paired_generation
+	if paired_state then
+		paired_state.generation = paired_state.generation + 1
+		paired_generation = paired_state.generation
+	end
 	local trace = {}
 	local trace_count = 0
 	local calls = {}
+	local retained_buffers = {}
+	local retained_buffer_index = {}
+	local retained_buffer_shape_checked = {}
+	local inactive_tail_checks = 0
+	local inactive_tail_unchanged = true
 	for method_index = 1, #VM_METHODS do
 		calls[VM_METHODS[method_index]] = 0
 	end
@@ -193,6 +294,9 @@ local function new(spec)
 	end
 
 	local function record(name, detail)
+		if paired_state and paired_state.generation ~= paired_generation then
+			fail("paired VM generation is stale")
+		end
 		calls[name] = calls[name] + 1
 		trace_count = trace_count + 1
 		if detail then
@@ -200,6 +304,52 @@ local function new(spec)
 		else
 			trace[trace_count] = name
 		end
+	end
+
+	local function retain_buffer(buffer, label)
+		if type(buffer) ~= "table" or getmetatable(buffer) ~= nil then
+			fail(label .. " requires a plain retained buffer")
+		end
+		if not retained_buffer_index[buffer] then
+			retained_buffers[#retained_buffers + 1] = buffer
+			retained_buffer_index[buffer] = #retained_buffers
+		end
+		return retained_buffer_index[buffer]
+	end
+
+	local function validate_retained_buffer(buffer, validator, label)
+		if not verify_inactive_tail then return end
+		local retained_index = retain_buffer(buffer, label)
+		if not retained_buffer_shape_checked[retained_index] then
+			local count = 0
+			for key, value in pairs(buffer) do
+				if not is_finite_integer(key) or key < 1 or
+						key > RETAINED_BUFFER_CAPACITY then
+					fail(label .. " has an out-of-capacity key")
+				end
+				if key <= volume then
+					if not validator(value) then
+						fail(label .. " has an invalid active value")
+					end
+				elseif value ~= 0 then
+					inactive_tail_unchanged = false
+					fail(label .. " changed its inactive tail")
+				end
+				count = count + 1
+			end
+			if count ~= RETAINED_BUFFER_CAPACITY then
+				fail(label .. " physical capacity differs")
+			end
+			retained_buffer_shape_checked[retained_index] = true
+		else
+			for index = volume + 1, RETAINED_BUFFER_CAPACITY do
+				if buffer[index] ~= 0 then
+					inactive_tail_unchanged = false
+					fail(label .. " changed its inactive tail")
+				end
+			end
+		end
+		inactive_tail_checks = inactive_tail_checks + 1
 	end
 
 	local function read_light_flags(cid, p2)
@@ -231,12 +381,16 @@ local function new(spec)
 
 	local function get_buffer(name, source, buffer)
 		record(name)
-		if type(buffer) ~= "table" then
-			fail(name .. " requires a retained buffer")
+		if type(buffer) ~= "table" or getmetatable(buffer) ~= nil then
+			fail(name .. " requires a plain retained buffer")
 		end
+		validate_retained_buffer(buffer,
+			name == "get_data" and is_cid or is_byte, name)
 		for index = 1, volume do
 			buffer[index] = source[index]
 		end
+		validate_retained_buffer(buffer,
+			name == "get_data" and is_cid or is_byte, name)
 		return buffer
 	end
 
@@ -254,9 +408,10 @@ local function new(spec)
 
 	local function set_buffer(name, target, source, validator)
 		record(name)
-		if type(source) ~= "table" then
-			fail(name .. " requires a buffer")
+		if type(source) ~= "table" or getmetatable(source) ~= nil then
+			fail(name .. " requires a plain retained buffer")
 		end
+		validate_retained_buffer(source, validator, name)
 		for index = 1, volume do
 			local value = source[index]
 			if not validator(value) then
@@ -264,6 +419,7 @@ local function new(spec)
 			end
 			target[index] = value
 		end
+		validate_retained_buffer(source, validator, name)
 	end
 
 	function vm.set_data(_, buffer)
@@ -289,6 +445,9 @@ local function new(spec)
 	end
 
 	function vm.set_lighting(_, value, p1, p2)
+		if paired_state and paired_state.generation ~= paired_generation then
+			fail("paired VM generation is stale")
+		end
 		if type(value) ~= "table" or not is_finite_integer(value.day) or
 				not is_finite_integer(value.night) or value.day < 0 or
 				value.day > 15 or value.night < 0 or value.night > 15 then
@@ -380,6 +539,9 @@ local function new(spec)
 	end
 
 	function vm.calc_lighting(_, p1, p2, propagate_shadow)
+		if paired_state and paired_state.generation ~= paired_generation then
+			fail("paired VM generation is stale")
+		end
 		validate_box(p1, p2, "calc_lighting box")
 		if type(propagate_shadow) ~= "boolean" then
 			fail("calc_lighting requires a boolean propagate_shadow")
@@ -469,29 +631,41 @@ local function new(spec)
 		__metatable = "grug_wp40_r5_vm_proxy_v1",
 	})
 
-	local context = {}
-	function context.get_heightmap()
-		record("get_heightmap")
-		context_heightmap_fetch_calls = context_heightmap_fetch_calls + 1
-		context_heightmap_external_table_allocations =
-			context_heightmap_external_table_allocations + 1
-		return copy_array(heightmap_source, 6400)
+	local context
+	if paired_state then
+		paired_state.record = record
+		context = paired_state.context
+	else
+		context = {}
+		function context.get_heightmap()
+			record("get_heightmap")
+			context_heightmap_fetch_calls = context_heightmap_fetch_calls + 1
+			context_heightmap_external_table_allocations =
+				context_heightmap_external_table_allocations + 1
+			return copy_array(heightmap_source, 6400)
+		end
+		function context.metrics()
+			context_metrics_result_table_allocations =
+				context_metrics_result_table_allocations + 1
+			return {
+				heightmap_fetch_calls = context_heightmap_fetch_calls,
+				heightmap_external_table_allocations =
+					context_heightmap_external_table_allocations,
+				metrics_result_table_allocations =
+					context_metrics_result_table_allocations,
+			}
+		end
+		context.schema = CONTEXT_SCHEMA
 	end
-	function context.metrics()
-		context_metrics_result_table_allocations =
-			context_metrics_result_table_allocations + 1
-		return {
-			heightmap_fetch_calls = context_heightmap_fetch_calls,
-			heightmap_external_table_allocations =
-				context_heightmap_external_table_allocations,
-			metrics_result_table_allocations =
-				context_metrics_result_table_allocations,
-		}
-	end
-	context.schema = CONTEXT_SCHEMA
 
 	local observer = {}
 	function observer.snapshot()
+		if verify_inactive_tail then
+			for index = 1, #retained_buffers do
+				validate_retained_buffer(retained_buffers[index], is_cid,
+					"retained buffer")
+			end
+		end
 		local trace_copy = {}
 		for index = 1, trace_count do
 			trace_copy[index] = trace[index]
@@ -501,6 +675,7 @@ local function new(spec)
 			local name = VM_METHODS[method_index]
 			call_copy[name] = calls[name]
 		end
+		call_copy.get_heightmap = calls.get_heightmap
 		return {
 			emin = copy_position(emin),
 			emax = copy_position(emax),
@@ -509,6 +684,10 @@ local function new(spec)
 			light = copy_array(light, volume),
 			trace = trace_copy,
 			calls = call_copy,
+			active_volume = volume,
+			retained_capacity = RETAINED_BUFFER_CAPACITY,
+			inactive_tail_checks = inactive_tail_checks,
+			inactive_tail_unchanged = inactive_tail_unchanged,
 		}
 	end
 	function observer.metrics()
@@ -530,4 +709,4 @@ local function new(spec)
 	return vm, context, observer
 end
 
-return {new = new}
+return {new = new}, new_paired_context_fixture

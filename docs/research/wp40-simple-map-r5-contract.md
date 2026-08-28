@@ -148,8 +148,11 @@ The local Luanti reference commit is
   before the final engine blit;
 - a callback error cancels generation rather than accepting a deliberately
   partial result;
-- `get_data`/`set_data` cover the complete emerged array, while
-  `CONTENT_IGNORE` is the Lua representation of no data and is not written;
+- `get_data`, `get_param2_data` and `get_light_data` overwrite exactly the
+  one-based active prefix `1..VoxelArea:getVolume()` of a supplied Lua table
+  and do not delete higher retained numeric keys; the corresponding setters
+  consume exactly that active prefix and ignore higher retained keys;
+- `CONTENT_IGNORE` is the Lua representation of no data and is not written;
 - `set_data` changes content but not param2 or light;
 - mapgen VoxelManip forbids explicit `read_from_map` and `write_to_map`;
 - `calc_lighting` propagates sunlight through the requested range and spreads
@@ -490,8 +493,8 @@ do not replace, annotate or reinterpret the public R4 disabled reason.
 ```lua
 local r5_module = dofile(directory .. "/r5.lua")({
     zones_factory = dofile(directory .. "/zones.lua"),
-    planner_factory = dofile(directory .. "/planner.lua"),
-    adapter_factory = dofile(directory .. "/map_adapter.lua"),
+    planner_factory = (dofile(directory .. "/planner.lua")),
+    adapter_factory = (dofile(directory .. "/map_adapter.lua")),
     manifest_module = dofile(directory .. "/mapgen_manifest.lua"),
     allocator_factory = dofile(directory .. "/counting_allocator.lua"),
     -- the same accepted dependencies used by the R4 factory
@@ -552,6 +555,91 @@ construction identity as the planner allocator's empty retained map
 planner and adapter. The identity has no readable semantic field, is never
 mutated and is not returned independently; its sole purpose is `rawequal`
 provenance validation of plan handles.
+
+### 4.4 Exact tool-only core witnesses
+
+`planner.lua` and `map_adapter.lua` each return two Lua values from their one
+`dofile`. Parentheses around either `dofile` in the production construction
+above deliberately select only its first value. Those first values and all
+constructed production APIs remain exactly the factories and APIs specified
+elsewhere in this contract. The second values are raw functions available only
+to the offline validator:
+
+```text
+planner_factory, resolve_candidates_fixture = dofile("planner.lua")
+adapter_factory, replacement_outcome_fixture = dofile("map_adapter.lua")
+
+resolve_candidates_fixture(candidate_values, candidate_count, permutation)
+    -> run_values, run_count
+
+replacement_outcome_fixture(policy_id, class_id, family_id, liquid_kind,
+    ordinary_family_id, river_family_id) -> outcome_id
+```
+
+`resolve_candidates_fixture` accepts one plain dense candidate array with
+exactly `candidate_count * 9` scalar cells in the Section 6.1 run stride,
+`0 <= candidate_count <= 16`, and one plain dense permutation containing each
+integer ordinal `1..candidate_count` exactly once. Every candidate has
+canonical inclusive Y bounds within the central-owner domain, the exact closed
+opcode-to-priority/role/policy-set relation below, stable-reference ordinals in `0..512`
+and `AUX_NONE = 0`. Malformed, relation-domain or out-of-owner input fails
+with the tool-only `fail_fixture` prefix; a non-identical same-priority
+overlap fails with the existing `fail_conflict` prefix; and more than 31
+resolved runs fails with the existing `fail_bound` prefix. The
+result is a fresh defensive plain dense array of exactly `run_count * 9`
+canonical resolved cells with `0 <= run_count <= 31`. The wrapper allocates
+exactly three transient tool-only tables: that returned output array, one
+bounded endpoint array and one permutation-seen table. None is retained,
+allocator-counted, created at module load or reachable from a Production
+hotpath. The wrapper is never called from `plan_slice`, the R5 constructor or
+an engine callback.
+
+The planner's production column resolver and this wrapper invoke the same
+private scalar candidate-resolution core. There is no copied validator
+resolver in the production module. The permutation changes only the order in
+which that core receives candidate ordinals; it cannot change canonical
+result bytes or turn a conflict into a winner. For every elementary interval,
+that core validates every covering candidate group independently by priority:
+all candidates within each priority group must be semantically identical even
+when a lower-number priority group will win. Only after all groups pass does
+the lowest numeric priority win. A conflicting pair, a conflicting triple
+hidden behind a valid lower-number winner and permutations of both cases bind
+this order-independent rejection.
+
+The planner has exactly one closed top-level `OP_PRIORITY`/`OP_ROLE`/
+`OP_POLICY`/`OP_POLICY_ALT` constant-map set shared by Production candidate
+collection and this fixture witness. Together they define a total relation
+from every P2-P6 opcode to exactly one priority, one target role and one closed
+policy set. `OP_POLICY` contains the primary policy. `OP_POLICY_ALT` contains
+exactly one entry: `BRIDGE_CLEAR -> CUT_NATURAL`, beside that opcode's primary
+`OPEN_ENGINEERED`; every other opcode has no alternate policy. This set
+replaces the former factory-local copies and is a normal immutable module
+dependency constructed before `r5_module.new`, under the same exclusion as
+the other immutable dependency constants. The second return creates, returns
+and publishes no module table and duplicates no relation map. The validator
+binds the complete relation and rejects a missing, additional or different
+alternate entry.
+
+`replacement_outcome_fixture` accepts policy ID `1..7`, content-class ID
+`1..11`, family ID `0..2^53-1`, liquid-kind ID `0..2` and two positive safe-
+integer water-family IDs, which may be equal. Liquid kind `none = 0` requires
+family zero; source/flowing `1|2` requires a positive family. It adds no
+separate class-to-liquid-kind coherence branch: the exact base matrix is
+class-driven, while semantic content-contract fixtures supply coherent rows.
+The function returns exactly `0 = preserve/no-op`, `1 = write` or `2 = reject`.
+It is the same private scalar base-matrix core called by `adapter:apply`; the
+ordinary-P5 heightmap override, already-equal CID handling, target validation
+and exact-param2 handling remain the adapter's surrounding transaction rules
+and are exercised through real adapter fixtures. The wrapper allocates
+nothing. Wrong arity or any scalar-domain violation fails with the exact
+tool-only `fail_fixture` prefix; diagnostic suffix text is not canonical.
+
+Neither second return creates or publishes a table, global, callback,
+registration, setting mutation or activation capability at module load. No
+Production constructor retains it, and neither function accepts a VM, source,
+planner, plan handle, content contract or mapgen context. A duplicated core,
+an offline-only semantic branch or a difference between the core used by the
+first and second returns rejects R5.
 
 ## 5. Private R4 planner-source seam
 
@@ -887,12 +975,13 @@ allocator:metrics() -> defensive scalar metrics table
 
 The two-argument form is the private, construction-only provenance check used
 by the planner and adapter factories. It returns true exactly when
-`candidate_allocator` was created by this same injected factory for the exact
-`domain_id`; it returns false for a copied API table, a foreign allocator or a
-different domain. The check consults only module-private factory state,
-allocates and mutates nothing, and exposes no additional raw field or method.
-All other factory arities fail. The one-argument construction form and the raw
-factory allowlist `{new}` remain unchanged.
+`candidate_allocator` was created by this same loaded allocator module for the
+exact `domain_id`; a factory table that delegates to that module is equivalent.
+It returns false for a copied API table, a foreign allocator or a different
+domain. The check consults only module-private factory state, allocates and
+mutates nothing, and exposes no additional raw field or method. All other
+factory arities fail. The one-argument construction form and the raw factory
+allowlist `{new}` remain unchanged.
 
 `domain_id`, `label` and hotpath names are fixed interned contract strings.
 Capacities/counts are nonnegative safe integers. Labels are unique in one
@@ -914,10 +1003,12 @@ private factory identity token.
 All retained relational-lookup/planner/adapter arrays, maps, reusable VM
 buffers, position tables, lighting value tables, plan handle and scratch tables
 are created through that API during `r5_module.new`. First-use retained growth
-is not allowed: production capacities are the closed Section 6.2 maxima, while
-an offline fixture declares its smaller maxima at construction. This makes the
-zero-allocation hotpath claim testable without relying on undocumented Lua
-table capacity.
+is not allowed. Physical capacities are always the closed production maxima in
+Sections 6.1, 6.2 and 11.3. A reduced offline fixture declares a smaller
+logical active emerged volume, not a smaller retained allocation: the engine-
+shaped proxy reads and writes only the exact active prefix, while the remaining declared
+capacity is an inactive retained tail. This makes the zero-allocation hotpath
+claim testable without relying on undocumented Lua table capacity.
 
 The exhaustive allowlist of table creations not charged as R5 retained tables
 is:
@@ -1069,13 +1160,31 @@ iteration order.
 
 ### 7.2 R5 emission boundary for families 7 through 9
 
-R5's planner must report all of these as exact zero:
+The canonical artifact contains these exact zero count rows, derived from the
+complete independent analytic population rather than from a Planner metric:
 
 ```text
-priority_7_emitted_runs = 0
-priority_8_emitted_runs = 0
-priority_9_emitted_runs = 0
+priority/7 = 0
+priority/8 = 0
+priority/9 = 0
 ```
+
+The reserved opcode count rows for `BIOME_TOP`, `BIOME_FILLER`, `BIOME_SHORE`,
+`BIOME_BED`, `RESOURCE_EXACT_HOST` and `DECORATION` are also exact zero from
+that same complete population. Production binds those zeros independently:
+the sole shared `OP_PRIORITY`/`OP_ROLE`/`OP_POLICY`/`OP_POLICY_ALT` maps contain
+exactly the 26 P2-P6 opcode IDs and their 27 primary-or-sole-alternate policy
+variants. The sole Production emitter is `add_candidate`; its exactly 28
+Production call sites all pass the shared-map tuple guard before any candidate-
+buffer write. Reserved opcode IDs `1`, `2`, `3`, `4`, `12` and `24` have no
+entry in those maps. The exact second-return resolver fixture must reject each
+of those six reserved P7-P9 opcode IDs and priorities 7, 8 and 9 each in an
+otherwise valid emitted tuple row. The Validator checks every run in every
+materialized plan handle against the closed P2-P6 priority/opcode domain.
+`zero_p7_p8_p9` is true only when the complete analytic zeros, closed Production
+emitter/fixture relation and every materialized-plan domain check all pass. It
+is not inferred from an unowned or nonexistent Planner counter, and it adds no
+metric or artifact row.
 
 The R5 content contract contains no production role mapping for those
 opcodes. If an R5 plan contains one, if a fixture omits its explicitly injected
@@ -1104,14 +1213,19 @@ For every elementary Y interval in one column:
 
 1. implicit priority-1 Preservation runs first in the adapter and may veto the
    selected write;
-2. the lowest numeric planned priority wins;
+2. covering planned candidates are partitioned by priority and every group is
+   validated before a winner is selected;
 3. two candidates at the same priority are identical only when opcode, target
    role, replace policy, feature ref, interface ref and aux are all equal;
 4. identical candidates coalesce; and
-5. any non-identical same-priority overlap is a construction error.
+5. any non-identical same-priority overlap is a construction error, including
+   one in a higher-number group hidden behind a valid lower-number group; then
+6. the lowest numeric validated planned priority wins.
 
 Stable IDs order diagnostics but never break a semantic conflict. There is no
-last-writer-wins rule, callback-order rule or arbitrary `force` bit.
+last-writer-wins rule, callback-order rule or arbitrary `force` bit. Candidate
+insertion/permutation order cannot change either the winner or whether any
+priority group rejects.
 
 ### 7.4 Semantic target roles
 
@@ -1859,6 +1973,73 @@ offline proof oracle. It unions the complete emerged VM area of every positive
 dungeon notification and rejects any audited target intersection. It is never
 queried by production and never narrows the global vertical proof.
 
+That corpus is frozen by the directory digest
+`256d0ff33ce6748b056287d5ca056e95893d313ae7bbca243eda07dd0f33c8c7`
+and these exact canonical authority inputs:
+
+```text
+tools/wp40/dungeon_probe/evidence/256d0ff33ce6748b056287d5ca056e95893d313ae7bbca243eda07dd0f33c8c7/raw.log
+  5af86febe5bd509121df2ce46b2714e8d0c400cf2f37f219645c284e93adc7a4
+tools/wp40/dungeon_probe/evidence/256d0ff33ce6748b056287d5ca056e95893d313ae7bbca243eda07dd0f33c8c7/summary.json
+  047f74d4ae891e5e62dc5389a494ac44a9a925c680ad3d53f0966bd68ce911f6
+```
+
+The offline loader may read those bytes only through the manifest-verifying
+Section 15.1 authority method. It does not execute or load either input.
+
+The dungeon oracle parses `summary.json` as one JSON object and consumes
+exactly these fields by exact key and JSON scalar type, never by substring:
+
+```text
+schema                    2
+status                    PASS
+json_validation           complete-jq
+manifest_digest           256d0ff33ce6748b056287d5ca056e95893d313ae7bbca243eda07dd0f33c8c7
+record_count              34
+requested_mapchunks       81
+complete_records          1
+emerge_errors             0
+positive_callbacks        31
+positive_count_is_golden  false
+mg_name                   v7
+chunksize                 5
+water_level               1
+mg_flags                  caves,dungeons,light,decorations,biomes,ores
+mgv7_spflags              mountains,ridges,nofloatlands,caverns
+mgv7_dungeon_ymin         -31000
+mgv7_dungeon_ymax         -193
+```
+
+`schema`, `record_count`, `requested_mapchunks`, `complete_records`,
+`emerge_errors`, `positive_callbacks`, `chunksize`, `water_level`,
+`mgv7_dungeon_ymin` and `mgv7_dungeon_ymax` are exact JSON integer numbers;
+`positive_count_is_golden` is the JSON boolean; every other consumed value is
+an exact JSON string. A duplicate consumed key, wrong type or missing consumed
+key rejects.
+
+Other summary fields remain byte-bound by the file SHA-256 but grant no R5
+semantic authority. The five scalar mapgen values `mg_name`, `chunksize`,
+`water_level`, `mgv7_dungeon_ymin` and `mgv7_dungeon_ymax` must compare exactly
+to the corresponding Section 10.1 validated-manifest values.
+
+For both flag strings the oracle splits on commas, trims ASCII whitespace from
+each token and rejects an empty or duplicate token. `mg_flags` compares as an
+order/whitespace-independent positive set exactly equal to the Section 10.1
+set. For `mgv7_spflags`, the only accepted engine-style negated token is exact
+`nofloatlands`; it normalizes to the significant absence of positive
+`floatlands`, and the simultaneous presence of `floatlands` rejects. Any other
+or additional `no...` token rejects. After removing that sole normalized
+negation, the positive set must equal the Section 10.1 set exactly; missing or
+extra positives reject.
+
+The raw log must contain exactly 34 `DUNGEON_PROBE_JSON` records: one
+`main_api`, one `mapgen_api`, exactly 31 positive `dungeon_event` records and
+one `complete` record. Both requested-mapchunk values equal 81, the complete
+count and event count equal their summary scalars, and the oracle unions every
+one of those 31 event emerged boxes before testing nonintersection. The false
+`positive_count_is_golden` value means 31 is provenance for this frozen corpus,
+not a Production claim that another engine run must reproduce that count.
+
 ### 10.3 Local native-heightmap preservation
 
 The adapter obtains the current native mapgen heightmap through the exact
@@ -1973,8 +2154,13 @@ prefix is the closed failure code `fail_status`, `fail_call_mode`,
 `fail_lighting_context`, `fail_vm_contract` or `fail_stale_plan`. Planner
 construction/planning separately uses `fail_source`, `fail_mask`, `fail_guard`,
 `fail_conflict`, `fail_bound` or the shared `fail_halo`. Evidence extracts only
-the prefix before the first ASCII colon. Missing, additional or differently
-spelled codes reject.
+the prefix before the first ASCII colon. The two Section 4.4 tool-only wrappers
+add exactly `fail_fixture`, and every wrapper-validation error they emit uses
+that prefix: Adapter arity/scalar-domain failures and Planner scalar,
+container, permutation and relation-domain failures. Shared-core conflicts and
+bounds retain `fail_conflict` and `fail_bound`. `fail_fixture` is not emitted
+by either Production constructor or hotpath. Missing, additional or
+differently spelled codes reject.
 
 `call_mode` is exactly `"offline_fixture"` or `"engine_fixture"` in R5. Any
 production/registered mode fails before VM access. R7 must add a separate
@@ -2076,16 +2262,36 @@ decoration generator.
 
 ### 11.3 Full buffers and ownership proof
 
-`get_data`, `set_data`, param2 and light arrays always have the complete
-emerged volume length. The adapter may modify retained Lua entries only for
-central owner voxels, except temporary light entries that Section 12 restores.
-For `ex = emax.x-emin.x+1`, `ey = emax.y-emin.y+1`, the exact one-based buffer
-index is
+`get_data`, `set_data`, param2 and light calls always use the complete active
+emerged volume. The four retained Lua buffers nevertheless keep their full
+production capacity. Let `C = 112*112*112` be that physical capacity, let
+`ex = emax.x-emin.x+1`, `ey = emax.y-emin.y+1` and
+`ez = emax.z-emin.z+1`, and let `N = ex*ey*ez` be the current active volume.
+Every buffer is dense on `1..C`, has no numeric key outside that range and
+exposes `1..N` as its exact active prefix. Production has `N = C`; a reduced
+offline fixture may have `N < C`. Its inactive tail `N+1..C` is retained only
+to prove capacity:
+the adapter never reads, classifies or modifies it, and the fixture binds that
+tail byte-identically before and after every call.
+
+At least one nonempty-plan `matrix` VM case has `y_count < 80` in
+`offline_fixture` mode, so its inactive tail is nonempty. The proxy retains
+each supplied full-buffer reference and requires every zero-initialized tail
+cell to remain zero before and after each `get_data`, `get_param2_data`,
+`get_light_data`, `set_data`, `set_param2_data` and `set_light_data` call and
+again after `adapter:apply` returns. Exact active volume, tail length and
+comparison results enter the existing `vm_call_matrix` digest and
+`one_vm_transaction` proof.
+
+The adapter may modify active retained entries only for central owner voxels,
+except temporary light entries that Section 12 restores. The exact one-based
+active buffer index is
 `((z-emin.z) * ex * ey) + ((y-emin.y) * ex) + (x-emin.x) + 1`:
-X is fastest, then Y, then Z, matching the pinned VoxelArea layout. All four
-full buffers must have length `ex*ey*(emax.z-emin.z+1)` with no holes or
-out-of-range numeric keys. Central dirty-column indexing remains Section 6.1's
-Z-then-X order and is not reused as a voxel index.
+X is fastest, then Y, then Z, matching the pinned VoxelArea layout. Central
+dirty-column indexing remains Section 6.1's Z-then-X order and is not reused as
+a voxel index. The existing `vm_call_matrix` digest and
+`one_vm_transaction` proof bind active-prefix exactness and inactive-tail
+immutability; this clarification adds no second artifact row.
 
 Evidence hashes separately bind:
 
@@ -2116,7 +2322,8 @@ Rebuilding a fresh VM for the second call is not the double-apply KAT.
 
 The content contract receives the engine's exact `CONTENT_IGNORE` value.
 
-- A planned target equal to `ignore` rejects the entire transaction.
+- A planned target equal to `ignore` fails target validation before
+  `get_emerged_area` with `fail_target`, as specified in Section 7.6.
 - A current-owner replace-policy/light-context/seed cell, or a non-seed halo
   light-context cell, required for a decision and equal to `ignore` rejects the
   entire transaction. An overtop candidate that lies in the read-only halo is
@@ -2130,8 +2337,9 @@ The content contract receives the engine's exact `CONTENT_IGNORE` value.
 - The adapter never converts `ignore` to air or treats it as unknown natural
   content.
 
-The failure occurs before `set_data` and is recorded as
-`fail_content_ignore`, without a coordinate-dependent recovery path.
+Every other failure in this subsection occurs before `set_data` and is
+recorded as `fail_content_ignore`, without a coordinate-dependent recovery
+path.
 
 ### 12.2 Dirty representation
 
@@ -2495,7 +2703,7 @@ every Section 16 must-not-change production/configuration file inspected by the
 disabled/legacy-writer audit; the B+ authority bytes in
 `docs/design/world_zones.md`, `docs/research/wp40-engineering-brief.md` and this
 contract; the R2/R3/R4 artifacts and accepted R4 review read by preflight; and
-the runner.
+the runner; and the two exact Section 10.2 dungeon-corpus authority inputs.
 Set union is by exact repository-relative path and is sorted after percent
 encoding. A canonical set member missing from the checkout or an
 `input_sha256` path outside that set rejects. The artifact does not include
@@ -2624,7 +2832,11 @@ validator compares it exactly. The following prose defines
 what those closed rows summarize; it does not authorize more row tags or keys:
 
 - all Section 2 schemas/constants and the complete manifest;
-- opcode/priority/role/policy numeric tables;
+- the total P2-P6 opcode-to-priority/role/closed-policy-set relation as one
+  canonical `candidate_shuffle` witness row per opcode, including exactly the
+  sole `BRIDGE_CLEAR -> {OPEN_ENGINEERED,CUT_NATURAL}` two-policy set and no
+  other alternate; the Validator derives and compares the Planner and Adapter
+  relations independently rather than copying either module's table;
 - stable-reference population and digest;
 - exact historical/current public R4 KAT parity;
 - exact public R4 field allowlist and disabled reason bytes;
@@ -2640,7 +2852,10 @@ what those closed rows summarize; it does not authorize more row tags or keys:
   deck, causeway and culvert, tunnel floor/lumen/wall/roof, bed/bank seals,
   receiver opens, contact-fall clears and B+ terrain fill/surface/clear;
 - candidate/resolved run peaks and all allocation metrics;
-- shuffled-candidate and repeated-plan canonical parity;
+- shuffled-candidate and repeated-plan canonical parity, including a
+  non-identical same-priority pair, a non-identical same-priority triple hidden
+  behind a valid lower-number winner, and deterministic rejection under every
+  exercised permutation;
 - owner-slice and read-only-halo content/param2 digests, plus deterministic
   per-initial-state seed-run/final-light digests without cross-state light
   equality;
@@ -2656,7 +2871,9 @@ what those closed rows summarize; it does not authorize more row tags or keys:
 - ignore target/context/unneeded-halo fixtures;
 - no-op/content/param2/light/liquid dirty matrices and exact VM call counts,
   including all six owner-local liquid faces, every owner boundary face and
-  zero non-lighting halo classification;
+  zero non-lighting halo classification, plus a reduced-Y active-prefix case
+  with a nonempty, zero-initialized inactive tail verified before and after
+  every buffer call and after adapter return;
 - sky-open, sealed-cave, water and chunk-top light fixtures, including the exact
   `CONTENT_IGNORE` overtop inequality and equality boundary;
 - source audits for no callback/global/registration/settings mutation; and
@@ -2727,8 +2944,8 @@ owns `heightmap_entries_validated`,
 `emerged_area_external_table_allocations`, `adapter_apply_table_allocations`
 and every counter from `classified_columns` through
 `vm_update_liquids_calls`. `metrics_result_table_allocations` is only the exact
-Section 6.3 terminal-snapshot sum. No metric has two owners or an implicit
-alias.
+Section 6.3 terminal-snapshot aggregate bound by this Section 14.4. No metric
+has two owners or an implicit alias.
 
 Every listed key has exactly one `metric` row with fixture `seed_0`. In
 addition, `worst_fixture` has exactly one row for
@@ -2776,11 +2993,131 @@ tools/wp40/run_simple_map_r5.sh
 ```
 
 The VM proxy presents exact engine-shaped method signatures, complete emerged
-buffers, `CONTENT_IGNORE` and injected content properties. Its paired mapgen-
-context proxy returns one plain exact-order heightmap table per nonempty apply
-and records fetch/external-allocation counts; adapter metrics own heightmap
-entry-validation counts. The proxies reject any method outside Sections
-10.3/11.1 and record exact cross-seam call order and count.
+buffers, `CONTENT_IGNORE` and injected content properties. The first `dofile`
+return of `simple_map_r5_vm.lua` remains the exact raw module table
+`{new = function}`. Its exact second, tool-only `dofile` return is:
+
+```text
+new_paired_context_fixture(heightmap_source)
+  -> mapgen_context, trace_token
+```
+
+`heightmap_source` is one plain Validator-owned mutable table. The fixture does
+not validate or copy its entries at construction: each real
+`mapgen_context.get_heightmap()` call makes the one defensive external table
+copy from its then-current keys and values, including deliberately malformed
+values, holes or extra keys which the Adapter itself must reject. The returned
+context retains the exact Section 11.1 three-field allowlist and owns only its
+documented fetch/external-allocation metrics. `trace_token` is an opaque
+function capability with no fields and no callable public command: only the
+VM module's private unexported authority may bind it. The Validator receives
+no trace append function and never receives the VM-owned live trace table.
+
+The exact VM constructor forms are:
+
+```text
+vm_module.new(spec) -> vm, mapgen_context, observer
+vm_module.new(paired_spec, trace_token) -> vm, mapgen_context, observer
+```
+
+The one-argument form and its exact ten-field `spec` remain unchanged. The
+two-argument form requires the same exact fields except that `heightmap` is
+absent; its heightmap authority is the source retained by the already-created
+paired context. It authenticates and binds the live token, returns that exact
+pre-created context by `rawequal`, and advances a private binding generation.
+Binding a later VM proxy to the same token makes every method of an older
+proxy reject before recording or buffer access; repeated applies to the
+currently bound same VM remain valid. The context's real heightmap fetch calls
+the current VM's private recorder, so each successful nonempty apply records
+the direct prefix `get_emerged_area`, `get_heightmap`, `get_data`,
+`get_param2_data` in that exact order. Empty-plan and pre-VM failure paths add
+no entry. Observer call counters remain VM-owned and context counters remain
+context-owned; neither aliases the Adapter's validation metrics.
+
+These paired fixtures reject any method outside Sections 10.3/11.1 and record
+exact cross-seam call order and count. Their request, context, private state,
+opaque token and defensive result tables are tool-only allocations made
+outside the two R5 counting allocators. They do not change or enter the exact
+Production construction/hotpath allocation totals in Sections 6.3 and 14.4.
+
+The offline-loader object contains exactly these ten callable fields:
+
+```text
+raw_sha256
+sha256_call_count
+preflight
+input_manifest
+verify_input_manifest
+read_bound_input
+read_current_input
+loaded
+load_public
+load_r5
+```
+
+`load_r5(full_seed_string, manifest_values, content_contract,
+mapgen_context_or_request)` keeps exactly four arguments. Its fourth argument
+is either the exact existing Section 11.1 context or this exact plain two-field
+tool request:
+
+```text
+schema = grug_wp40_r5_paired_context_request_v1
+heightmap = heightmap_source
+```
+
+For the request form, Offline captures the VM file's exact second `dofile`
+function, constructs the paired context/token before the one R5 construction,
+passes only the resulting real context to `r5_module.new`, and returns exactly
+`loaded_record, mapgen_context, trace_token`. For the ordinary context form it
+returns only `loaded_record` as before. The request object itself never reaches
+Production. The loader fails closed on a metatable, missing/additional field,
+non-table heightmap source, wrong VM second return, non-context result or
+non-function token.
+
+`read_bound_input(relative_path) -> byte_string` accepts only the two exact
+Section 10.2 paths and the nine exact Section 16 must-not-change paths. In both
+full and manifest-gated loader modes it first verifies the complete frozen
+current input manifest and contract digest, then requires the selected
+manifest digest and the freshly read current-file digest to equal the
+corresponding literal SHA-256 from Section 10.2 or Section 16. Any other path,
+missing file, digest difference or incomplete manifest rejects. The method
+performs only a binary read; it never calls `dofile`, `loadfile`, `load`,
+`require` or a shell parser on those bytes.
+
+`read_current_input(relative_path) -> byte_string` is the separate cyclic-
+manifest-safe current-source audit seam. It accepts only a plain safe
+repository-relative path present in the frozen canonical input-manifest
+roster. It immediately calls `verify_input_manifest()`, obtains the exact
+lowercase SHA-256 from `manifest.digests[relative_path]`, freshly reads the
+current file and requires its digest to equal that manifest value. A path
+outside the frozen roster, an encoded/unsafe path, missing or malformed digest,
+missing file or byte difference rejects. This method also performs only a
+binary read and never calls `dofile`, `loadfile`, `load`, `require` or a shell
+parser.
+
+Common exports defensive copies named `R5_MODIFIED_PARENT_PATHS`,
+`R5_PRODUCTION_PATHS`, `R5_TOOL_PATHS`, `R5_OFFLINE_METHODS`,
+`MUST_NOT_CHANGE_PATHS` and `MUST_NOT_CHANGE_SHA256`.
+`R5_MODIFIED_PARENT_PATHS` contains exactly
+`mods/MAPGEN/grug_mapgen/wp40/index128.lua` and
+`mods/MAPGEN/grug_mapgen/wp40/zones.lua`. `R5_OFFLINE_METHODS` contains the
+exact ten displayed callable names in displayed order; the Validator requires
+that exact plain loader-table keyset and every value callable. The digest map's
+exact keyset equals the duplicate-free must-not-change path array in both
+directions. Common deliberately does not pin any R5 current source, including
+itself: the disabled audit reads the exact set union of modified-parent,
+Production and tool rosters through `read_current_input`, while only the two
+dungeon inputs and nine immutable legacy/configuration inputs use
+`read_bound_input` and literal authority digests. This separation creates no
+self-hash cycle and no second canonical input roster.
+
+The exact first `load_r5` result allowlist gains only
+`planner_candidate_fixture` and `adapter_replacement_fixture`. They are the
+raw second `dofile` functions from Section 4.4. All existing return fields and
+the constructed production session/planner/adapter remain unchanged; no
+authority, context or token field is added to this return record. The paired
+form's two additional Lua return values are the exact tuple above and are not
+record fields.
 
 ### 15.2 Full LuaJIT evidence
 
@@ -2813,16 +3150,88 @@ Long and exhaustive work runs only under LuaJIT. The authoritative R5 run:
 12. runs twice to byte-identical artifact bytes; and
 13. verifies immutable input hashes before and after all workers.
 
-The full layout lane does not multiply every horizontal column by all 773
-vertical slices. It scans accepted horizontal/R3 facts once, derives global
-interval endpoints and affected slice ordinals arithmetically, and constructs
-plans only for the deduplicated endpoint/event slices plus the closed multi-
-slice fixtures. The event set contains the slices owning `authored_floor`, `T`,
-`surface_cap`, every named-operation endpoint, the first sky-clear continuation
-and `central_owner_y_max`; the dedicated fixtures add a representative interior
-continuation. Canonical counts include the arithmetically derived clipped-run
-population, while plan digests cover the materialized event corpus. This is an
-exact proof of the per-slice formula without an unnecessary 773-fold VM fleet.
+The full seed-zero layout lane has one canonical horizontal population. Let
+`owner_min(v) = -32 + 80 * floor((v + 32) / 80)`. For accepted `source.extent`,
+the relevant inclusive rectangle is exactly
+`x = owner_min(extent.min_x) - 80 .. owner_min(extent.max_x) + 159` and the
+same formula for Z. This is the complete owner-aligned covering rectangle plus
+one outer owner chunk on every side. Its source-scan rectangle is that
+rectangle dilated by exactly two columns on every side. The Validator
+traverses this one expanded rectangle in
+absolute Z then absolute X order. For each absolute `(x,z)` it calls
+`column_values_at(x,z)` exactly once. It calls
+`hydrology_metric_values_at(x,z)` at most once and only when the scalar tuple
+requires the Section 8.7 exact rational hydrology test. A per-owner-chunk
+rescan, overlapping collar scan or second scalar query for witness selection
+rejects.
+
+One rolling, independent scalar oracle consumes that scan and owns the full
+analytic clipped-run, opcode, priority and mask counts across every affected
+vertical owner slice. It derives intervals and their owner clipping directly
+from the accepted scalar tuples and Section 8 rules; it never obtains a count
+from a Planner plan, run buffer or materialized event population. The full
+analytic counts and the plan-digest population are therefore distinct evidence
+domains even though selected plan receipts must equal the oracle.
+
+The bounded materialized population uses exactly these internal witness keys,
+which are digest-preimage receipts and add no artifact row or key. Its relation
+key grammar is
+`relation/<OPCODE_TOKEN>/<POLICY_TOKEN>/<POSITION>`, with exact closed
+uppercase vocabulary tokens and `POSITION` exactly `start`, `end` or
+`continuation`. The closed relation population is the 26 emitted primary
+opcode/policy pairs plus the sole `BRIDGE_CLEAR/CUT_NATURAL` alternate, exactly
+27 variants. `start` and `end` are required for every analytically present
+variant. `start` selects the owner slice containing the first Y of the resolved
+interval and `end` selects the owner slice containing its last Y; each uses the
+canonical-least eligible occurrence under the tuple below. `continuation` is
+required if and only if at least one resolved interval for that variant crosses
+a complete strict-interior owner slice; it
+selects the first such interior slice for the canonical-least occurrence.
+
+The nine fixed keys are exactly:
+
+```text
+fixed/owner_min
+fixed/owner_max
+fixed/below_floor_owner
+fixed/authored_floor
+fixed/terrain_y
+fixed/surface_cap
+fixed/first_sky_clear
+fixed/peak_candidate
+fixed/peak_resolved
+```
+
+For every key, canonical-least selection compares the exact five signed safe-
+integer tuple `(chunk_min_z, chunk_min_x, absolute_column_z,
+absolute_column_x, owner_min_y)` numerically from left to right. Plan groups and
+their digest rows sort by `(chunk_min_z, chunk_min_x, owner_min_y)` numerically
+ascending; attached witness keys within one plan sort by unsigned-ASCII bytes.
+One receipt is either `run/<the nine exact Section 6.1 run scalars>` or the
+literal `absent`. `fixed/owner_min` selects `y = -30912` and
+`fixed/below_floor_owner` selects `y = -38` in owner slice `-112..-33`; both
+require `absent`. Every relation receipt and the other seven fixed receipts
+require the exact selected run. When a fixed peak column/owner slice contains
+more than one run, its receipt selects the run with the numerically lowest
+`y_min`; canonical plan order breaks no additional tie. `fixed/owner_max`
+selects `y = 30927`, and
+`fixed/authored_floor` selects `y = -37`. `fixed/terrain_y` selects `T` at its
+canonical-least eligible column. `fixed/surface_cap` and
+`fixed/first_sky_clear` select respectively `max(T,C)` and `max(T,C) + 1` at
+their canonical-least eligible columns, each of which requires `C ~= nil`.
+`fixed/peak_candidate` and
+`fixed/peak_resolved` use the canonical first column/owner-slice attaining the
+independently derived per-owner-slice maximum, never an unclipped global
+candidate total.
+
+Identical `(chunk_min_z, chunk_min_x, owner_min_y)` groups share one real
+`plan_slice`; no witness causes a duplicate call. There are at most
+`27 * 3 + 9 = 90` keys and therefore at most 90 deduplicated real
+`plan_slice` calls. Plan digests cover only this sorted materialized corpus;
+canonical counts remain the independent oracle's complete analytic
+population. All existing artifact keys, row cardinalities and fixture ownership
+remain unchanged. This is the exact proof of the per-slice formula without an
+unnecessary 773-fold plan-slice population.
 
 The retired exact-T2 W/PCC/F1/F2/compiler/topology populations do not run.
 R5 validates the simple accepted geometry and its own bounded plan only.
@@ -2853,8 +3262,12 @@ labeled assertions:
 - one route and one hydrology column comparing the private scalar nearest tuple
   with the corresponding public `nearest_segment` result, including feature
   id, raw segment ordinal and rational squared-distance numerator/denominator;
-- every P2-P6 opcode and every replace policy;
-- same-priority conflict and cross-priority winner;
+- every P2-P6 opcode and every replace policy through a real
+  Planner-to-Adapter KAT; for each opcode the Adapter must accept exactly the
+  Planner relation's priority, role and closed policy set, including both
+  `BRIDGE_CLEAR` policies and no other alternate policy;
+- same-priority conflicting pair, hidden conflicting triple and their
+  permutations, plus a conflict-free cross-priority winner;
 - `authored_floor = -37`, lower/upper mapgen owner edges and analytic
   continuation without physical rewrite-band guards;
 - derived `C+2` and named `C+4` bridge support, culvert radius boundary,
@@ -2894,9 +3307,38 @@ labeled assertions:
   committed-neighbor halo states, with cross-state equality limited to plan,
   outcome, central content and central param2 and exact per-state lighting;
 - a true same-VM adapter double apply;
-- stale plan generation, foreign construction identity and missing content
-  role; and
+- stale plan generation, foreign construction identity, foreign/copied/wrong-
+  domain allocator provenance and missing content role; and
 - exact seed-zero public R4 KAT and disabled-loader parity.
+
+The compact Micro constructs exactly one R5 session/planner/adapter tuple and
+therefore invokes `r5_module.new` exactly once. That construction uses one
+paired context request and the same authenticated context/token is rebound
+sequentially to every Micro VM; it is never replaced by a second context or a
+second R5 construction. The sole fixture content contract copies and retains
+exactly two immutable exception tuples at construction:
+
+```text
+missing:       target_role_id = 14 (STRATUM_AT_Y), y = 30927, aux = 0
+               -> nil
+target-ignore: target_role_id = 2 (BRIDGE_DECK), y = 30927, aux = 0
+               -> ignore_cid, target_kind = SOLID (1),
+                  param2_mode = PRESERVE (0), param2_value = nil
+```
+
+The Section 8.6 bridge headroom rule `F + 5 <= central_owner_y_max`
+structurally implies every real bridge-deck Y is at most `30922`; therefore the
+target-ignore tuple cannot collide with positive bridge evidence. Every
+positive Micro plan is required to exclude both exact exception tuples. One
+terminal missing-content-role KAT
+rewrites one real canonical `TERRAIN_FILL` run at the missing tuple. The other
+terminal negative KAT rewrites one real upper-owner canonical opcode-6
+`BRIDGE_DECK` run at the target-ignore tuple. Each supplies a real currently
+bound VM proxy, requires `fail_target` before `get_emerged_area`, and retains
+an empty observer trace. The contract's resolver fixture compares the six
+copied exception scalars and does not expose or consult a mutable toggle. A
+second `load_r5`, second `r5_module.new` or post-construction mutation of
+either exception semantics rejects the Micro.
 
 The same micro-KAT fixture runs exactly once under LuaJIT. Its complete
 newline-terminated canonical byte string and canonical digest must be
@@ -3011,6 +3453,34 @@ mods/MAPGEN/grug_mapgen/structures.lua
 game.conf
 ```
 
+Before these literals were admitted, every current file was verified byte-
+equal to both the accepted R4 commit
+`948689138c15c291544fe10927683da4183bfd8e` and the contractual R5 branch
+starting point `544f0aba5f7e96a783e1bc0de2d0d01fd9855778`. Their exact complete-file
+SHA-256 authority is:
+
+| Repository-relative path | SHA-256 |
+|---|---|
+| `mods/MAPGEN/grug_mapgen/wp40/init.lua` | `b3ac5bf31bcf52e5f1534b2521f7c3b1d18a9930fe6582cfddb8217e5c1c8951` |
+| `mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua` | `5d4e2726dabbb900e47e7a8bef2a225011e6b003f48de485f752cde88fc7c17f` |
+| `mods/MAPGEN/grug_mapgen/wp40/simple_map.lua` | `55e507a6e5b2d73bf23233d9ab5e515ad150dbce77c6dc6c158a6133f4e27dfc` |
+| `mods/MAPGEN/grug_mapgen/wp40/height.lua` | `f69fcd006af40f2f473d592c412508c3d7043403b15c07bfedcb311fe6faee97` |
+| `mods/MAPGEN/grug_mapgen/init.lua` | `4e89d6e5975f0f511e5107737c29694b8b6b19a44f50b69cc74ad7d0dbb95fd4` |
+| `mods/MAPGEN/grug_mapgen/ocean_mask.lua` | `39658372e8525265e1be6289f48c2b329325bc6744f5a2119c3f62edecc1ce61` |
+| `mods/MAPGEN/grug_mapgen/ocean_mask_mapgen.lua` | `15572acfe6bd26f331220bbcb037c678cceb0ba7318f350099316fd5f20df16d` |
+| `mods/MAPGEN/grug_mapgen/structures.lua` | `f02fef7b233a001ce5fec081d3a46c514aecbe990fe56f9ab8e0b19bb90c92de` |
+| `game.conf` | `1c778404a49e1ecf48cbcd3c0a05a4868586a5126ace081a09ba9089e2dfc0f6` |
+
+The disabled fixture first reads these nine files in the exact displayed path
+order through `read_bound_input` and requires each fresh complete-file digest
+to equal this table before calling `load_public`, `load_r5` or emitting any
+disabled-fixture digest/proof. It then reads every path in the exact defensive
+set union of the `R5_MODIFIED_PARENT_PATHS`, `R5_PRODUCTION_PATHS` and
+`R5_TOOL_PATHS` rosters through `read_current_input` for the static callback,
+global, settings and legacy-writer call-pattern audit.
+`legacy_writer_unchanged` is true only after both the nine literal comparisons
+and that current-source audit pass; manifest equality alone is not the proof.
+
 It also makes no R5 status edit to BACKLOG, ROADMAP or README before accepted
 review. A required implementation/evidence file outside the allowlist stops
 implementation and returns to contract amendment.
@@ -3086,7 +3556,8 @@ The review checks at minimum:
 - sound 16/31 run bounds and measured allocation counters;
 - exact B+ owner-slice runs, mapgen-edge derivation, heightmap order/domain and
   planner-byte independence from native content;
-- exact masks and same-priority conflict failure;
+- exact masks, the sole closed opcode-policy alternate and order-independent
+  same-priority conflict failure in every covering priority group;
 - zero P7-P9 emission and fail-closed unmapped roles;
 - one VM content transaction and exact call order;
 - owner-only content/param2 plus restored halo light;
