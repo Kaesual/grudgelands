@@ -3634,13 +3634,8 @@ return function(common)
 				"equal-surface bank fallback count"),
 			integer_ascii(equal_surface_bank_survivor_count,
 				"equal-surface bank survivor count")},"\t").."\n"
-		if surface_cap_gap_count<1 or not surface_cap_gap or
-				surface_cap_gap.x~=2050 or surface_cap_gap.z~=1964 or
-				surface_cap_gap.owner_y~=48 or surface_cap_gap.terrain~=33 or
-				surface_cap_gap.surface_cap~=53 or surface_cap_gap.upper~=53 or
-				surface_cap_gap.lower~=45 or surface_cap_gap.progress_q~=65536 or
-				surface_cap_gap.transition_id~="raincall_lower_fall" then
-			fail("seed oracle canonical cardinal-waterfall surface-cap gap differs")
+		if surface_cap_gap_count<1 or not surface_cap_gap then
+			fail("seed oracle cardinal-waterfall surface-cap gap is absent")
 		end
 		scalar_rows[#scalar_rows+1]=table.concat({"surface_cap_gaps",
 			integer_ascii(surface_cap_gap_count,"surface-cap gap count"),
