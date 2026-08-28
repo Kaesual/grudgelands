@@ -3704,20 +3704,32 @@ return function(common)
 				bank.expected[9]~=0 then
 			fail("seed oracle canonical equal-surface bank witness differs")
 		end
+		local relation_present_count=0
 		for relation_index=1,#OPERATION_RELATION do
 			local row=OPERATION_RELATION[relation_index]
 			for policy_index=4,#row do
 				local prefix="relation/"..row[1].."/"..row[policy_index].."/"
-				if not witnesses[prefix.."start"] or not witnesses[prefix.."end"] then
-					fail("seed oracle relation endpoint witness absent")
+				local start_present=witnesses[prefix.."start"]~=nil
+				local end_present=witnesses[prefix.."end"]~=nil
+				if start_present~=end_present then
+					fail("seed oracle relation endpoint witness is asymmetric")
 				end
 				local continuation_key=prefix.."continuation"
-				if (witnesses[continuation_key]~=nil)~=
-						(continuation_required[continuation_key]==true) then
+				local continuation_present=witnesses[continuation_key]~=nil
+				local continuation_expected=
+					continuation_required[continuation_key]==true
+				if continuation_present~=continuation_expected or
+						(continuation_present and not start_present) then
 					fail("seed oracle strict-interior continuation witness differs")
 				end
+				if start_present then relation_present_count=relation_present_count+1 end
 			end
 		end
+		if relation_present_count<1 or relation_present_count>27 then
+			fail("seed oracle present relation population differs")
+		end
+		scalar_rows[#scalar_rows+1]="relation_present\t"..
+			integer_ascii(relation_present_count,"present relation count").."\n"
 		local witness_count=0
 		local groups,group_by_key={},{}
 		for key,witness in pairs(witnesses) do
