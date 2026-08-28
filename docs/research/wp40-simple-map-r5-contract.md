@@ -3228,9 +3228,15 @@ more than one run, its receipt selects the run with the numerically lowest
 `y_min`; canonical plan order breaks no additional tie. `fixed/owner_max`
 selects `y = 30927`, and
 `fixed/authored_floor` selects `y = -37`. `fixed/terrain_y` selects `T` at its
-canonical-least eligible column. `fixed/surface_cap` and
-`fixed/first_sky_clear` select respectively `max(T,C)` and `max(T,C) + 1` at
-their canonical-least eligible columns, each of which requires `C ~= nil`.
+canonical-least eligible column. `fixed/surface_cap` selects `max(T,C)` at the
+canonical-least column for which `C ~= nil` and one resolved run covers `C`.
+A cardinal-waterfall tuple with `transition_kind = "waterfall"`, `W = nil`,
+integer `transition_progress_q` and nil `transition_face_mask` deliberately has
+no run at `C`; that column is ineligible for this key and is skipped rather than
+reported as a missing required receipt. The key itself remains required and its
+selected receipt is an exact run. `fixed/first_sky_clear` remains required and
+selects `max(T,C) + 1` at its canonical-least `C ~= nil` column, including the
+exact P5 clear run beginning at `C+1` when `C > T`.
 `fixed/roofed_bridge_headroom` selects the exact upper
 `BRIDGE_CLEAR/CUT_NATURAL` run at `F+4` for the canonical-least R3-derived
 unnamed bridge with `surface_cap >= F+5`. On the accepted seed-zero layout that
@@ -3316,8 +3322,12 @@ labeled assertions:
   interface, with its receipt selected only from the post-P3-subtraction
   surviving bank-seal runs; plus an equal-`S` related bank that retains its
   accepted relation, an unequal-`S` related bank and an unequal-`S` unrelated
-  rejection, rapid/cardinal-waterfall distinction, full contact-face fall clear
-  and the exact one-source receiver omission;
+  rejection, rapid/cardinal-waterfall distinction, including the real cardinal
+  gap at `x = 2050`, `z = 1964` with `T = 33`, `W = nil`, `C = 53`, transition
+  upper/lower values `53/45`, integer progress and nil face mask: no run covers
+  `y = 53`, while in owner slice `48..127` the exact
+  `TERRAIN_CLEAR/CUT_NATURAL/AIR` run begins at `54` and clips through `127`;
+  full contact-face fall clear and the exact one-source receiver omission;
 - native top at `T-17` and `T+17`, plus native top exactly on a vertical owner-
   slice boundary;
 - heightmap sentinel `-31007`, an internal height, `h == maxp.y`, every invalid

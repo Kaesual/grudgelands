@@ -3316,6 +3316,8 @@ return function(common)
 		local peak_candidate,peak_resolved=0,0
 		local equal_surface_bank_fallback_count=0
 		local equal_surface_bank_survivor_count=0
+		local surface_cap_gap_count=0
+		local surface_cap_gap
 
 		local function witness_less(current,chunk_z,chunk_x,z,x,owner_y)
 			if current==nil then return true end
@@ -3367,6 +3369,39 @@ return function(common)
 				end
 			end
 			fail("seed oracle fixed target lacks a resolved run")
+		end
+		local function select_surface_cap_witness(y,x,z,terrain,water_y,
+				transition_kind,transition_id,upper,lower,progress_q,face_mask)
+			local selected
+			for run=1,state.resolved_count do
+				if state.r_y_min[run]<=y and state.r_y_max[run]>=y then
+					if selected~=nil then
+						fail("seed oracle surface-cap target has overlapping runs")
+					end
+					selected=run
+				end
+			end
+			if selected~=nil then
+				select_witness("fixed/surface_cap",x,z,owner_chunk_min(y),y,selected)
+				return
+			end
+			if water_y~=nil or transition_kind~="waterfall" or
+					type(transition_id)~="string" or transition_id=="" or
+					type(upper)~="number" or upper~=math.floor(upper) or
+					type(lower)~="number" or lower~=math.floor(lower) or
+					type(progress_q)~="number" or progress_q~=math.floor(progress_q) or
+					progress_q<0 or progress_q>65536 or face_mask~=nil or
+					y~=math.max(terrain,upper,lower) then
+				fail("seed oracle fixed target lacks a resolved run")
+			end
+			surface_cap_gap_count=surface_cap_gap_count+1
+			local owner_y=owner_chunk_min(y)
+			local chunk_z,chunk_x=owner_chunk_min(z),owner_chunk_min(x)
+			if witness_less(surface_cap_gap,chunk_z,chunk_x,z,x,owner_y) then
+				surface_cap_gap={chunk_z=chunk_z,chunk_x=chunk_x,z=z,x=x,
+					owner_y=owner_y,terrain=terrain,surface_cap=y,upper=upper,
+					lower=lower,progress_q=progress_q,transition_id=transition_id}
+			end
 		end
 		local function metric_at(x,z)
 			metric_queries=metric_queries+1
@@ -3539,7 +3574,11 @@ return function(common)
 					select_fixed_witness("fixed/authored_floor",AUTHORED_FLOOR,x,central_z)
 					select_fixed_witness("fixed/terrain_y",terrain,x,central_z)
 					if clearance~=nil then
-						select_fixed_witness("fixed/surface_cap",surface_cap,x,central_z)
+						select_surface_cap_witness(surface_cap,x,central_z,terrain,
+							fact(7,x,central_z),fact(14,x,central_z),
+							fact(15,x,central_z),fact(16,x,central_z),
+							fact(17,x,central_z),fact(18,x,central_z),
+							fact(19,x,central_z))
 						select_fixed_witness("fixed/first_sky_clear",surface_cap+1,x,central_z)
 					end
 
@@ -3595,6 +3634,24 @@ return function(common)
 				"equal-surface bank fallback count"),
 			integer_ascii(equal_surface_bank_survivor_count,
 				"equal-surface bank survivor count")},"\t").."\n"
+		if surface_cap_gap_count<1 or not surface_cap_gap or
+				surface_cap_gap.x~=2050 or surface_cap_gap.z~=1964 or
+				surface_cap_gap.owner_y~=48 or surface_cap_gap.terrain~=33 or
+				surface_cap_gap.surface_cap~=53 or surface_cap_gap.upper~=53 or
+				surface_cap_gap.lower~=45 or surface_cap_gap.progress_q~=65536 or
+				surface_cap_gap.transition_id~="raincall_lower_fall" then
+			fail("seed oracle canonical cardinal-waterfall surface-cap gap differs")
+		end
+		scalar_rows[#scalar_rows+1]=table.concat({"surface_cap_gaps",
+			integer_ascii(surface_cap_gap_count,"surface-cap gap count"),
+			integer_ascii(surface_cap_gap.x,"surface-cap gap x"),
+			integer_ascii(surface_cap_gap.z,"surface-cap gap z"),
+			integer_ascii(surface_cap_gap.terrain,"surface-cap gap terrain"),
+			integer_ascii(surface_cap_gap.surface_cap,"surface-cap gap y"),
+			integer_ascii(surface_cap_gap.upper,"surface-cap gap upper"),
+			integer_ascii(surface_cap_gap.lower,"surface-cap gap lower"),
+			integer_ascii(surface_cap_gap.progress_q,"surface-cap gap progress"),
+			surface_cap_gap.transition_id},"\t").."\n"
 
 		local fixed_keys={"fixed/owner_min","fixed/owner_max",
 			"fixed/below_floor_owner","fixed/authored_floor",
@@ -5898,6 +5955,29 @@ return function(common)
 			fail("graded ford approach geometry differs")
 		end
 		rows[#rows+1]="ford\tgraded_approach\tT_equals_W\n"
+		local cardinal_gap_x,cardinal_gap_z=2050,1964
+		local cardinal_gap_values=capture20(
+			loaded.planner_source.column_values_at,cardinal_gap_x,cardinal_gap_z)
+		if cardinal_gap_values[6]~=33 or cardinal_gap_values[7]~=nil or
+				cardinal_gap_values[14]~="waterfall" or
+				cardinal_gap_values[15]~="raincall_lower_fall" or
+				cardinal_gap_values[16]~=53 or cardinal_gap_values[17]~=45 or
+				cardinal_gap_values[18]~=65536 or cardinal_gap_values[19]~=nil then
+			fail("cardinal-waterfall surface-cap tuple differs")
+		end
+		local cardinal_gap_runs=snapshot_runs(cardinal_gap_x,cardinal_gap_z,48)
+		local gap_covering,clear_run=0,0
+		for _,run in ipairs(cardinal_gap_runs) do
+			if run[1]<=53 and run[2]>=53 then gap_covering=gap_covering+1 end
+			if run[1]==54 and run[2]==127 and run[3]==26 and run[4]==1 and
+					run[5]==1 and run[6]==nil and run[7]==nil then
+				clear_run=clear_run+1
+			end
+		end
+		if gap_covering~=0 or clear_run~=1 then
+			fail("cardinal-waterfall surface-cap plan gap differs")
+		end
+		rows[#rows+1]="waterfall\tcardinal_surface_cap_gap\t53_absent_54_clear\n"
 		local derived_bridge
 		for _,bridge in ipairs(loaded.source.crossing_interfaces) do
 			if bridge.kind=="bridge" and not derived_bridge then
