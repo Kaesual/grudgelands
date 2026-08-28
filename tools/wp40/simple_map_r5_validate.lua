@@ -1552,7 +1552,8 @@ return function(common)
 		end
 
 		local dirty_cases={
-			{"content_only",2,7,OPCODE_ID.FOUNDATION_FILL,"applied_c",false},
+			{"content_only",2,ROLE_ID.FOUNDATION_SURFACE,
+				OPCODE_ID.FOUNDATION_SURFACE,"applied_c",false},
 			{"param2_only",107,0,OPCODE_ID.FOUNDATION_FILL,"applied_p",false},
 			{"light",0,7,OPCODE_ID.FOUNDATION_FILL,"applied_cl",false},
 			{"liquid_direct",7,7,OPCODE_ID.FOUNDATION_FILL,"applied_clq",true},
@@ -1578,7 +1579,10 @@ return function(common)
 		for index=1,#dirty_cases do
 			local x=-18+(index-1)*12
 			local cid,p2=snapshot_cell(dirty_state,minp,maxp,x,centre_y,8)
-			if cid~=107 or p2~=7 then fail("packed dirty final state differs") end
+			local role=OP_ROLE[dirty_cases[index][4]]
+			if cid~=100+role or p2~=role then
+				fail("packed dirty final state differs")
+			end
 		end
 		rows[#rows+1]="packed_dirty\t"..dirty_result.."\t"..
 			call_signature(dirty_state).."\n"
@@ -1635,8 +1639,10 @@ return function(common)
 		local cases={
 			{"noop_equal_water",OPCODE_ID.ORDINARY_WATER,110,10,
 				"noop_equal_content",110,10,{},0},
-			{"content_only",OPCODE_ID.FOUNDATION_FILL,2,7,
-				"applied_c",107,7,{"set_data"},0},
+			{"content_only",OPCODE_ID.FOUNDATION_SURFACE,2,
+				ROLE_ID.FOUNDATION_SURFACE,"applied_c",
+				100+ROLE_ID.FOUNDATION_SURFACE,ROLE_ID.FOUNDATION_SURFACE,
+				{"set_data"},0},
 			{"param2_only",OPCODE_ID.FOUNDATION_FILL,107,0,
 				"applied_p",107,7,{"set_param2_data"},0},
 			{"light_relevant",OPCODE_ID.FOUNDATION_FILL,0,7,"applied_cl",107,7,
@@ -1882,11 +1888,16 @@ return function(common)
 			if variant.policy==POLICY_ID.SEAL_VOID then old_cid=3 end
 			overrides[#overrides+1]={x=x,y=y,z=z,cid=old_cid,param2=role}
 		end
-		local dirty={{-20,2,7},{-8,107,0},{4,0,7},{16,7,7}}
+		local dirty={
+			{-20,2,ROLE_ID.FOUNDATION_SURFACE,OPCODE_ID.FOUNDATION_SURFACE},
+			{-8,107,0,OPCODE_ID.FOUNDATION_FILL},
+			{4,0,7,OPCODE_ID.FOUNDATION_FILL},
+			{16,7,7,OPCODE_ID.FOUNDATION_FILL},
+		}
 		for index=1,#dirty do
 			local row=dirty[index]
 			specs[#specs+1]={column=(24-minp.z)*80+(row[1]-minp.x)+1,
-				y_min=y,y_max=y,opcode=OPCODE_ID.FOUNDATION_FILL}
+				y_min=y,y_max=y,opcode=row[4]}
 			overrides[#overrides+1]={x=row[1],y=y,z=24,cid=row[2],param2=row[3]}
 		end
 		-- One high light-dirty target fixes light_max.y=17 and seed_y=18.
@@ -1930,8 +1941,12 @@ return function(common)
 			end
 		end
 		for index=1,#dirty do
-			local cid,p2=snapshot_cell(snapshot,minp,maxp,dirty[index][1],y,24)
-			if cid~=107 or p2~=7 then fail("relation dirty witness differs") end
+			local row=dirty[index]
+			local cid,p2=snapshot_cell(snapshot,minp,maxp,row[1],y,24)
+			local role=OP_ROLE[row[4]]
+			if cid~=100+role or p2~=role then
+				fail("relation dirty witness differs")
+			end
 		end
 		local transparent_cid,_,transparent_light=snapshot_cell(snapshot,minp,maxp,
 			-28,2,light_seed_z)
