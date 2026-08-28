@@ -2692,7 +2692,7 @@ return function(common)
 		return {count=0,y_min={},y_max={},priority={},opcode={},role={},policy={},
 			feature={},interface={},endpoints={},resolved_count=0,
 			r_y_min={},r_y_max={},r_priority={},r_opcode={},r_role={},r_policy={},
-			r_feature={},r_interface={}}
+			r_feature={},r_interface={},roofed_bridge_headroom=false}
 	end
 
 	local function seed_add_candidate(state,y_min,y_max,priority,opcode,role,
@@ -2969,6 +2969,7 @@ return function(common)
 
 	local function seed_build_candidates(state,authority,get,metric_at,x,z)
 		state.count=0
+		state.roofed_bridge_headroom=false
 		local terrain,water_y,hydro_id,depth=get(6,x,z),get(7,x,z),get(8,x,z),get(9,x,z)
 		local kind,functional_y,feature,interface=get(10,x,z),get(11,x,z),
 			get(12,x,z),get(13,x,z)
@@ -3030,8 +3031,11 @@ return function(common)
 			local named=interface~=nil
 			if named then seed_route_relation(authority,interface,"bridge",hydro_id,true) end
 			local required=named and 4 or 2
-			if functional_y<clearance+required or functional_y+5>OWNER_MAX or
-					functional_y+5<=surface_cap then fail("seed oracle bridge guard differs") end
+			if functional_y<clearance+required or functional_y+4>OWNER_MAX then
+				fail("seed oracle bridge guard differs")
+			end
+			local roofed_headroom=not named and surface_cap>=functional_y+5 and
+				functional_y+4 or false
 			seed_add_operation(state,math.max(terrain+1,clearance+1),functional_y-2,
 				OPCODE_ID.BRIDGE_CLEAR,feature,interface,
 				POLICY_TOKEN_ID.OPEN_ENGINEERED)
@@ -3041,6 +3045,7 @@ return function(common)
 				OPCODE_ID.BRIDGE_DECK,feature,interface)
 			seed_add_operation(state,functional_y+1,functional_y+4,
 				OPCODE_ID.BRIDGE_CLEAR,feature,interface,POLICY_TOKEN_ID.CUT_NATURAL)
+			state.roofed_bridge_headroom=roofed_headroom
 		elseif kind=="causeway" then
 			seed_add_operation(state,culvert and water_y+1 or AUTHORED_FLOOR,
 				terrain-1,OPCODE_ID.CAUSEWAY_FILL,feature,interface)
@@ -3391,6 +3396,40 @@ return function(common)
 					local terrain,clearance,surface_cap=seed_build_candidates(state,
 						authority,fact,metric_at,x,central_z)
 					seed_resolve_candidates(state)
+					if state.roofed_bridge_headroom~=false then
+						local headroom_y=state.roofed_bridge_headroom
+						local selected_run
+						for run=1,state.resolved_count do
+							if state.r_y_min[run]<=headroom_y and
+									state.r_y_max[run]>=headroom_y then
+								if selected_run~=nil then
+									fail("seed oracle roofed bridge winner overlaps")
+								end
+								selected_run=run
+							end
+						end
+						if selected_run==nil or
+								state.r_y_min[selected_run]~=headroom_y-3 or
+								state.r_y_max[selected_run]~=headroom_y or
+								state.r_priority[selected_run]~=3 or
+								state.r_opcode[selected_run]~=OPCODE_ID.BRIDGE_CLEAR or
+								state.r_role[selected_run]~=ROLE_ID.AIR or
+								state.r_policy[selected_run]~=
+									POLICY_TOKEN_ID.CUT_NATURAL or
+								state.r_interface[selected_run]~=nil then
+							fail("seed oracle roofed bridge headroom differs")
+						end
+						local old=witnesses["fixed/roofed_bridge_headroom"]
+						select_witness("fixed/roofed_bridge_headroom",x,central_z,
+							owner_chunk_min(headroom_y),headroom_y,selected_run)
+						local current=witnesses["fixed/roofed_bridge_headroom"]
+						if current~=old then
+							current.roofed_terrain=terrain
+							current.roofed_clearance=clearance
+							current.roofed_functional_y=headroom_y-4
+							current.roofed_surface_cap=surface_cap
+						end
+					end
 					local candidate_peak,candidate_slice=seed_interval_peak(state,false)
 					local resolved_peak,resolved_slice=seed_interval_peak(state,true)
 					if candidate_peak>peak_candidate then
@@ -3478,9 +3517,19 @@ return function(common)
 		local fixed_keys={"fixed/owner_min","fixed/owner_max",
 			"fixed/below_floor_owner","fixed/authored_floor","fixed/terrain_y",
 			"fixed/surface_cap","fixed/first_sky_clear","fixed/peak_candidate",
-			"fixed/peak_resolved"}
+			"fixed/peak_resolved","fixed/roofed_bridge_headroom"}
 		for index=1,#fixed_keys do
 			if not witnesses[fixed_keys[index]] then fail("seed oracle fixed witness absent") end
+		end
+		local roofed=witnesses["fixed/roofed_bridge_headroom"]
+		local roofed_feature=authority.stable_ordinal.poi_spur_025
+		if roofed.x~=-1916 or roofed.z~=-2071 or roofed.target_y~=43 or
+				roofed.roofed_terrain~=61 or roofed.roofed_clearance~=19 or
+				roofed.roofed_functional_y~=39 or roofed.roofed_surface_cap~=61 or
+				type(roofed_feature)~="number" or not exact_equal(roofed.expected,
+					{40,43,3,OPCODE_ID.BRIDGE_CLEAR,ROLE_ID.AIR,
+						POLICY_TOKEN_ID.CUT_NATURAL,roofed_feature,0,0}) then
+			fail("seed oracle canonical roofed bridge witness differs")
 		end
 		for relation_index=1,#OPERATION_RELATION do
 			local row=OPERATION_RELATION[relation_index]
@@ -3512,7 +3561,7 @@ return function(common)
 			end
 			group.witnesses[#group.witnesses+1]={key=key,value=witness}
 		end
-		if witness_count>90 or #groups>90 then fail("seed oracle witness bound exceeded") end
+		if witness_count>91 or #groups>91 then fail("seed oracle witness bound exceeded") end
 		table.sort(groups,function(left,right)
 			if left.chunk_z~=right.chunk_z then return left.chunk_z<right.chunk_z end
 			if left.chunk_x~=right.chunk_x then return left.chunk_x<right.chunk_x end
@@ -3567,7 +3616,7 @@ return function(common)
 				digest_hex(raw_sha256,checked.bytes),
 				table.concat(attachments,ATTACHMENT_SEPARATOR)},"\t").."\n"
 		end
-		if materialized_plan_calls~=#groups or materialized_plan_calls>90 then
+		if materialized_plan_calls~=#groups or materialized_plan_calls>91 then
 			fail("seed oracle plan-slice call population differs")
 		end
 		return {
@@ -5751,6 +5800,22 @@ return function(common)
 			end
 		end
 		rows[#rows+1]="bridge\tderived_C_plus_2\tnamed_C_plus_4\n"
+
+		local roofed_x,roofed_z=-1916,-2071
+		local roofed_values=capture20(loaded.planner_source.column_values_at,
+			roofed_x,roofed_z)
+		local roofed_clearance=clearance(roofed_values)
+		local roofed_cap=roofed_clearance and
+			math.max(roofed_values[6],roofed_clearance) or roofed_values[6]
+		if roofed_values[6]~=61 or roofed_values[7]~=19 or
+				roofed_clearance~=19 or roofed_values[10]~="bridge_deck" or
+				roofed_values[11]~=39 or roofed_values[12]~="poi_spur_025" or
+				roofed_values[13]~=nil or roofed_cap~=61 or roofed_cap<44 or
+				not has_exact(roofed_x,roofed_z,40,43,
+					OPCODE_ID.BRIDGE_CLEAR,POLICY_TOKEN_ID.CUT_NATURAL) then
+			fail("roofed derived bridge headroom geometry differs")
+		end
+		rows[#rows+1]="bridge\troofed_headroom\t-1916\t-2071\t40\t43\n"
 
 		local causeway=crossing_by_kind.causeway
 		local culvert_point,nonculvert_point

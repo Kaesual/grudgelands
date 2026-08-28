@@ -1598,13 +1598,14 @@ datum for named bridges. A derived `C+2` bridge has the exact one-node support
 at `C+1` and no `BRIDGE_CLEAR` below it; its lower clear interval is empty and
 omitted. R5 does not strengthen the already accepted derived threshold.
 
-P5 continues to own the bed and P6 continues to own water through `W`.
-The planner additionally evaluates the absolute `F+5` winner from the same
-global run set and requires an analytic final AIR result there. The sample may
-belong to the next vertical owner slice; no VM CID, generated-state flag or
-committed neighbor byte is read. A solid analytic winner rejects instead of
-extending the bridge clearance. If `F+5` lies beyond the central mapgen-owner
-edge, planning fails closed.
+P5 continues to own the bed and P6 continues to own water through `W`. The
+exact bridge headroom is the four emitted AIR nodes `F+1..F+4`: the planner
+requires `F+4 <= central_owner_y_max` and emits that complete interval as
+`BRIDGE_CLEAR/CUT_NATURAL`. It does not sample or constrain `F+5`. A solid P5
+winner at or above `F+5` is a valid roof and neither rejects nor reclassifies
+the R3 bridge nor extends its P3 clearance. The headroom bound reads no VM CID,
+generated-state flag or committed neighbor byte. If `F+4` lies beyond the
+central mapgen-owner edge, planning fails closed.
 
 ### 8.7 Causeway and culvert
 
@@ -2328,7 +2329,8 @@ The content contract receives the engine's exact `CONTENT_IGNORE` value.
   light-context cell, required for a decision and equal to `ignore` rejects the
   entire transaction. An overtop candidate that lies in the read-only halo is
   the sole lighting exception and follows the exact engine rule in Section
-  12.3. Analytic vertical continuation and bridge headroom read no VM cell.
+  12.3. Analytic vertical continuation and bridge headroom bounds read no VM
+  cell.
 - Analytic tunnel/hydrology collar samples contain no CID and therefore cannot
   reinterpret `ignore`; their declared-halo bound is checked separately.
 - Unneeded `ignore` in a read-only emerged halo is allowed and remains
@@ -3188,7 +3190,7 @@ required if and only if at least one resolved interval for that variant crosses
 a complete strict-interior owner slice; it
 selects the first such interior slice for the canonical-least occurrence.
 
-The nine fixed keys are exactly:
+The ten fixed keys are exactly:
 
 ```text
 fixed/owner_min
@@ -3198,6 +3200,7 @@ fixed/authored_floor
 fixed/terrain_y
 fixed/surface_cap
 fixed/first_sky_clear
+fixed/roofed_bridge_headroom
 fixed/peak_candidate
 fixed/peak_resolved
 ```
@@ -3210,7 +3213,7 @@ ascending; attached witness keys within one plan sort by unsigned-ASCII bytes.
 One receipt is either `run/<the nine exact Section 6.1 run scalars>` or the
 literal `absent`. `fixed/owner_min` selects `y = -30912` and
 `fixed/below_floor_owner` selects `y = -38` in owner slice `-112..-33`; both
-require `absent`. Every relation receipt and the other seven fixed receipts
+require `absent`. Every relation receipt and the other eight fixed receipts
 require the exact selected run. When a fixed peak column/owner slice contains
 more than one run, its receipt selects the run with the numerically lowest
 `y_min`; canonical plan order breaks no additional tie. `fixed/owner_max`
@@ -3219,6 +3222,14 @@ selects `y = 30927`, and
 canonical-least eligible column. `fixed/surface_cap` and
 `fixed/first_sky_clear` select respectively `max(T,C)` and `max(T,C) + 1` at
 their canonical-least eligible columns, each of which requires `C ~= nil`.
+`fixed/roofed_bridge_headroom` selects the exact upper
+`BRIDGE_CLEAR/CUT_NATURAL` run at `F+4` for the canonical-least R3-derived
+unnamed bridge with `surface_cap >= F+5`. On the accepted seed-zero layout that
+canonical tuple is exactly `x = -1916`, `z = -2071`, `T = 61`, `W = C = 19`,
+`K = bridge_deck`, `F = 39`, `functional_feature_id = poi_spur_025` and
+`functional_interface_id = nil`; its selected Y is therefore `43`. This
+receipt proves that the four emitted headroom nodes remain clear while the P5
+solid roof beginning at `F+5` remains valid.
 `fixed/peak_candidate` and
 `fixed/peak_resolved` use the canonical first column/owner-slice attaining the
 independently derived per-owner-slice maximum, never an unclipped global
@@ -3226,7 +3237,7 @@ candidate total.
 
 Identical `(chunk_min_z, chunk_min_x, owner_min_y)` groups share one real
 `plan_slice`; no witness causes a duplicate call. There are at most
-`27 * 3 + 9 = 90` keys and therefore at most 90 deduplicated real
+`27 * 3 + 10 = 91` keys and therefore at most 91 deduplicated real
 `plan_slice` calls. Plan digests cover only this sorted materialized corpus;
 canonical counts remain the independent oracle's complete analytic
 population. All existing artifact keys, row cardinalities and fixture ownership
@@ -3270,8 +3281,11 @@ labeled assertions:
   permutations, plus a conflict-free cross-priority winner;
 - `authored_floor = -37`, lower/upper mapgen owner edges and analytic
   continuation without physical rewrite-band guards;
-- derived `C+2` and named `C+4` bridge support, culvert radius boundary,
-  same-route tunnel portal exclusion, tunnel collar and roof;
+- derived `C+2` and named `C+4` bridge support; the exact accepted seed-zero
+  roofed derived-bridge plan at `x = -1916`, `z = -2071`, whose upper
+  `BRIDGE_CLEAR/CUT_NATURAL` run includes `F+4 = 43` while a P5 solid roof may
+  begin at `F+5`; culvert radius boundary, same-route tunnel portal exclusion,
+  tunnel collar and roof;
 - tunnel roof/wall and hydrology bed/bank seal rows proving known solid/ore/
   resource/stratum preservation, air/compatible-liquid/vegetation replacement
   and matrix vetoes; plus rapid/cardinal-waterfall distinction, full contact-
@@ -3326,8 +3340,8 @@ target-ignore: target_role_id = 2 (BRIDGE_DECK), y = 30927, aux = 0
                   param2_mode = PRESERVE (0), param2_value = nil
 ```
 
-The Section 8.6 bridge headroom rule `F + 5 <= central_owner_y_max`
-structurally implies every real bridge-deck Y is at most `30922`; therefore the
+The Section 8.6 bridge headroom rule `F + 4 <= central_owner_y_max`
+structurally implies every real bridge-deck Y is at most `30923`; therefore the
 target-ignore tuple cannot collide with positive bridge evidence. Every
 positive Micro plan is required to exclude both exact exception tuples. One
 terminal missing-content-role KAT

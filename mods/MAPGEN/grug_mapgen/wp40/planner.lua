@@ -1374,8 +1374,7 @@ local function planner_factory(allocator_factory)
 				if functional_y < clearance_y + required then
 					fail("fail_guard", "bridge clearance threshold differs")
 				end
-				if functional_y + 5 > OWNER_MAX or
-						functional_y + 5 <= surface_cap then
+				if functional_y + 4 > OWNER_MAX then
 					fail("fail_guard", "bridge analytic headroom differs")
 				end
 				add_candidate(math.max(terrain_y + 1, clearance_y + 1),
