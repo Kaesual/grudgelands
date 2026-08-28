@@ -1353,8 +1353,7 @@ local function planner_factory(allocator_factory)
 					ROLE_AIR, POLICY_CUT_NATURAL, functional_feature_id,
 					functional_interface_id)
 			elseif functional_kind == "ford" then
-				if water_y == nil or functional_y ~= terrain_y or
-						terrain_y ~= water_y - 1 then
+				if water_y == nil or functional_y ~= terrain_y then
 					fail("fail_mask", "ford scalar contract differs")
 				end
 				if functional_interface_id ~= nil then

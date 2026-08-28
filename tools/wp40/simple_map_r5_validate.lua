@@ -3024,7 +3024,7 @@ return function(common)
 			seed_add_operation(state,terrain+1,terrain+4,OPCODE_ID.PATH_CLEAR,
 				feature,interface)
 		elseif kind=="ford" then
-			if water_y==nil or functional_y~=terrain or terrain~=water_y-1 then
+			if water_y==nil or functional_y~=terrain then
 				fail("seed oracle ford tuple differs")
 			end
 			if interface~=nil then
@@ -5784,7 +5784,7 @@ return function(common)
 			cache[key]=saved
 			return saved
 		end
-		local function has_exact(x,z,y_min,y_max,opcode,policy)
+		local function has_exact(x,z,y_min,y_max,opcode,policy,role,feature,interface)
 			local first=owner_chunk_min(y_min)
 			local last=owner_chunk_min(y_max)
 			for slice=first,last,80 do
@@ -5793,7 +5793,10 @@ return function(common)
 				local found=0
 				for _,run in ipairs(snapshot_runs(x,z,slice)) do
 					if run[1]==expected_min and run[2]==expected_max and
-							run[3]==opcode and (policy==nil or run[5]==policy) then
+							run[3]==opcode and (policy==nil or run[5]==policy) and
+							(role==nil or run[4]==role) and
+							(feature==nil or run[6]==feature) and
+							(interface==nil or run[7]==interface) then
 						found=found+1
 					end
 				end
@@ -5882,6 +5885,19 @@ return function(common)
 			end
 			rows[#rows+1]="crossing\t"..kind.."\tclosed_geometry\n"
 		end
+		local graded_ford_x,graded_ford_z=-1128,250
+		local graded_ford_values=capture20(
+			loaded.planner_source.column_values_at,graded_ford_x,graded_ford_z)
+		if graded_ford_values[6]~=9 or graded_ford_values[7]~=9 or
+				graded_ford_values[10]~="ford" or graded_ford_values[11]~=9 or
+				graded_ford_values[12]~="route_050" or
+				graded_ford_values[13]~="broken_ford" or
+				graded_ford_values[6]==graded_ford_values[7]-1 or
+				not has_exact(graded_ford_x,graded_ford_z,9,9,13,6,6,
+					"route_050","broken_ford") then
+			fail("graded ford approach geometry differs")
+		end
+		rows[#rows+1]="ford\tgraded_approach\tT_equals_W\n"
 		local derived_bridge
 		for _,bridge in ipairs(loaded.source.crossing_interfaces) do
 			if bridge.kind=="bridge" and not derived_bridge then
