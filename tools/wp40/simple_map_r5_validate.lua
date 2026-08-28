@@ -1750,7 +1750,8 @@ return function(common)
 			local box_max_y=math.min(target_y+15,maxp.y+15)
 			local box_min_z,box_max_z=-15,15
 			local seed_y=box_max_y+1
-			local overrides={{x=0,y=target_y,z=0,cid=0,
+			local overrides={{x=0,y=target_y,z=0,
+				cid=opcode==ordinary_water and row[6] or 0,
 				param2=opcode==ordinary_water and ROLE_ID.ORDINARY_WATER_SOURCE or
 					ROLE_ID.FOUNDATION_CORE,light=0}}
 			if row[10]==13 then
