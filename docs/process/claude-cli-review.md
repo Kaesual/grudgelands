@@ -90,6 +90,21 @@ subagent rule in [wp-workflow.md](wp-workflow.md): it has its own OS process,
 JSONL stream, and explicit result parsing, so it must not block the coordinator
 context. In-session review and research subagents remain synchronous.
 
+Do not double-background Claude from a short-lived command-runner shell. The
+command-runner call itself must retain and expose the live foreground session;
+monitor that session until Claude exits. A JSONL stream without both a final
+`type="result"` record and an integer `exit.status` is incomplete and cannot be
+recovered as a review verdict; rerun the review instead of inferring one from
+partial output.
+
+Before any long acceptance runner that will eventually promote a file into a
+repository or sibling worktree, use the **same command-runner sandbox and
+permission profile as the real run** to create, close and remove a real
+`mktemp` file in the exact target directory. This probe must happen before the
+long LuaJIT work and before a final-only PUC process. Writability of the main
+repository, `/tmp` or another worktree does not prove that the target worktree
+is writable; a failed probe stops the run immediately.
+
 Retain the OS process id (PID) written to `claude.pid`. It is the Claude
 process PID, not a persisted Claude conversation or command-runner session id;
 `--no-session-persistence` intentionally prevents the former. Monitor all
