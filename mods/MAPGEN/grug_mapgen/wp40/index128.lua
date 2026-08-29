@@ -657,29 +657,6 @@ local function segment_tie_less(compiled, left, right)
 	return left.segment < right.segment
 end
 
-local function each_ring_cell(compiled, center_x, center_z, radius, callback)
-	local function visit(cx, cz)
-		if cx >= compiled.min_cx and cx <= compiled.max_cx and
-				cz >= compiled.min_cz and cz <= compiled.max_cz then
-			callback(cx, cz)
-		end
-	end
-	if radius == 0 then
-		visit(center_x, center_z)
-		return
-	end
-	local minimum_x, maximum_x = center_x - radius, center_x + radius
-	local minimum_z, maximum_z = center_z - radius, center_z + radius
-	for cx = minimum_x, maximum_x do
-		visit(cx, minimum_z)
-		visit(cx, maximum_z)
-	end
-	for cz = minimum_z + 1, maximum_z - 1 do
-		visit(minimum_x, cz)
-		visit(maximum_x, cz)
-	end
-end
-
 local function cell_distance_squared(x, z, cx, cz)
 	local min_x = safe_multiply(cx, CELL_SIZE, "cell minimum x")
 	local min_z = safe_multiply(cz, CELL_SIZE, "cell minimum z")
@@ -691,15 +668,185 @@ local function cell_distance_squared(x, z, cx, cz)
 	return safe_squared_sum(dx, dz, "cell distance squared")
 end
 
+local function scratch_integer(scratch, key, label, minimum, maximum)
+	return integer(rawget(scratch, key), label, minimum, maximum)
+end
+
+local function validate_nearest_scratch(compiled, scratch)
+	if type(scratch) ~= "table" or
+			not rawequal(rawget(scratch, "_index128_compiled"), compiled) then
+		fail("nearest scratch identity differs")
+	end
+	local capacity = dense_count(compiled.segments, "compiled sparse segments")
+	if scratch_integer(scratch, "_index128_capacity", "nearest scratch capacity",
+			1, MAX_SAFE) ~= capacity then
+		fail("nearest scratch capacity differs")
+	end
+	scratch_integer(scratch, "_index128_generation",
+		"nearest scratch generation", 0, MAX_SAFE)
+	for index = 1, capacity do
+		integer(rawget(scratch, index), "nearest scratch seen generation", 0,
+			MAX_SAFE)
+	end
+	return capacity
+end
+
+local function advance_nearest_generation(scratch, capacity)
+	local generation = rawget(scratch, "_index128_generation")
+	if generation == MAX_SAFE then
+		for index = 1, capacity do scratch[index] = 0 end
+		generation = 1
+	else
+		generation = generation + 1
+	end
+	scratch._index128_generation = generation
+	return generation
+end
+
+local function reset_nearest_state(scratch)
+	scratch._index128_best_index = 0
+	scratch._index128_best_numerator = 0
+	scratch._index128_best_denominator = 1
+	scratch._index128_cells_scanned = 0
+	scratch._index128_candidates_scanned = 0
+end
+
+local function scan_nearest_cell(compiled, x, z, cx, cz, scratch,
+		generation)
+	if cx < compiled.min_cx or cx > compiled.max_cx or
+			cz < compiled.min_cz or cz > compiled.max_cz then
+		return
+	end
+	scratch._index128_cells_scanned =
+		scratch._index128_cells_scanned + 1
+	local column = compiled.cells[cx]
+	local candidates = column and column[cz]
+	if not candidates then return end
+	for index = 1, #candidates do
+		local segment_index = candidates[index]
+		if scratch[segment_index] ~= generation then
+			scratch[segment_index] = generation
+			scratch._index128_candidates_scanned =
+				scratch._index128_candidates_scanned + 1
+			local segment = compiled.segments[segment_index]
+			local numerator, denominator = point_segment_distance(x, z, segment)
+			local best_index = scratch._index128_best_index
+			local comparison = best_index ~= 0 and rational_compare(numerator,
+				denominator, scratch._index128_best_numerator,
+				scratch._index128_best_denominator) or -1
+			if best_index == 0 or comparison < 0 or
+					(comparison == 0 and segment_tie_less(compiled, segment,
+						compiled.segments[best_index])) then
+				scratch._index128_best_index = segment_index
+				scratch._index128_best_numerator = numerator
+				scratch._index128_best_denominator = denominator
+			end
+		end
+	end
+end
+
+local function scan_nearest_ring(compiled, x, z, center_x, center_z, radius,
+		scratch, generation)
+	if radius == 0 then
+		scan_nearest_cell(compiled, x, z, center_x, center_z, scratch,
+			generation)
+		return
+	end
+	local minimum_x, maximum_x = center_x - radius, center_x + radius
+	local minimum_z, maximum_z = center_z - radius, center_z + radius
+	for cx = minimum_x, maximum_x do
+		scan_nearest_cell(compiled, x, z, cx, minimum_z, scratch, generation)
+		scan_nearest_cell(compiled, x, z, cx, maximum_z, scratch, generation)
+	end
+	for cz = minimum_z + 1, maximum_z - 1 do
+		scan_nearest_cell(compiled, x, z, minimum_x, cz, scratch, generation)
+		scan_nearest_cell(compiled, x, z, maximum_x, cz, scratch, generation)
+	end
+end
+
+local function consider_cell_lower_bound(compiled, x, z, cx, cz, minimum)
+	if cx < compiled.min_cx or cx > compiled.max_cx or
+			cz < compiled.min_cz or cz > compiled.max_cz then
+		return minimum
+	end
+	local distance = cell_distance_squared(x, z, cx, cz)
+	if minimum == nil or distance < minimum then return distance end
+	return minimum
+end
+
 local function next_ring_lower_bound(compiled, x, z, center_x, center_z,
 		radius)
+	local next_radius = radius + 1
+	local minimum_x, maximum_x = center_x - next_radius,
+		center_x + next_radius
+	local minimum_z, maximum_z = center_z - next_radius,
+		center_z + next_radius
 	local minimum
-	each_ring_cell(compiled, center_x, center_z, radius + 1,
-		function(cx, cz)
-			local distance = cell_distance_squared(x, z, cx, cz)
-			if minimum == nil or distance < minimum then minimum = distance end
-		end)
+	for cx = minimum_x, maximum_x do
+		minimum = consider_cell_lower_bound(compiled, x, z, cx, minimum_z,
+			minimum)
+		minimum = consider_cell_lower_bound(compiled, x, z, cx, maximum_z,
+			minimum)
+	end
+	for cz = minimum_z + 1, maximum_z - 1 do
+		minimum = consider_cell_lower_bound(compiled, x, z, minimum_x, cz,
+			minimum)
+		minimum = consider_cell_lower_bound(compiled, x, z, maximum_x, cz,
+			minimum)
+	end
 	return minimum
+end
+
+local function nearest_segment_core(compiled, x, z, scratch)
+	assert_sparse_kind(compiled, "sparse_segments")
+	integer(x, "nearest query x")
+	integer(z, "nearest query z")
+	if x < compiled.min_x or x > compiled.max_x or
+			z < compiled.min_z or z > compiled.max_z then
+		return nil, nil, nil, nil, nil, nil, nil, nil
+	end
+	local capacity = validate_nearest_scratch(compiled, scratch)
+	local generation = advance_nearest_generation(scratch, capacity)
+	reset_nearest_state(scratch)
+	local center_x, center_z = floor_div(x), floor_div(z)
+	local maximum_radius = math.max(center_x - compiled.min_cx,
+		compiled.max_cx - center_x, center_z - compiled.min_cz,
+		compiled.max_cz - center_z)
+	local radius = 0
+	while radius <= maximum_radius do
+		scan_nearest_ring(compiled, x, z, center_x, center_z, radius, scratch,
+			generation)
+		local lower_bound = next_ring_lower_bound(compiled, x, z,
+			center_x, center_z, radius)
+		local best_index = scratch._index128_best_index
+		if lower_bound == nil or (best_index ~= 0 and rational_compare(
+				lower_bound, 1, scratch._index128_best_numerator,
+				scratch._index128_best_denominator) > 0) then break end
+		radius = radius + 1
+	end
+	local best_index = scratch._index128_best_index
+	if best_index == 0 then return nil, nil, nil, nil, nil, nil, nil, nil end
+	local best = compiled.segments[best_index]
+	return best.feature_id, best.feature_order, best.segment,
+		scratch._index128_best_numerator,
+		scratch._index128_best_denominator, radius + 1,
+		scratch._index128_cells_scanned,
+		scratch._index128_candidates_scanned
+end
+
+local function new_nearest_scratch(compiled)
+	local scratch = {}
+	local capacity = dense_count(compiled.segments, "compiled sparse segments")
+	for index = 1, capacity do scratch[index] = 0 end
+	scratch._index128_compiled = compiled
+	scratch._index128_capacity = capacity
+	scratch._index128_generation = 0
+	reset_nearest_state(scratch)
+	return scratch
+end
+
+function index128.nearest_segment_values(compiled, x, z, scratch)
+	return nearest_segment_core(compiled, x, z, scratch)
 end
 
 function index128.nearest_segment(compiled, x, z)
@@ -708,51 +855,16 @@ function index128.nearest_segment(compiled, x, z)
 	integer(z, "nearest query z")
 	if x < compiled.min_x or x > compiled.max_x or
 			z < compiled.min_z or z > compiled.max_z then return nil end
-	local center_x, center_z = floor_div(x), floor_div(z)
-	local maximum_radius = math.max(center_x - compiled.min_cx,
-		compiled.max_cx - center_x, center_z - compiled.min_cz,
-		compiled.max_cz - center_z)
-	local seen = {}
-	local best, best_numerator, best_denominator
-	local radius, cells_scanned, candidates_scanned = 0, 0, 0
-	while radius <= maximum_radius do
-		each_ring_cell(compiled, center_x, center_z, radius, function(cx, cz)
-			cells_scanned = cells_scanned + 1
-			local column = compiled.cells[cx]
-			local candidates = column and column[cz]
-			if candidates then
-				for index = 1, #candidates do
-					local segment_index = candidates[index]
-					if not seen[segment_index] then
-						seen[segment_index] = true
-						candidates_scanned = candidates_scanned + 1
-						local segment = compiled.segments[segment_index]
-						local numerator, denominator =
-							point_segment_distance(x, z, segment)
-						local comparison = best and rational_compare(numerator,
-							denominator, best_numerator, best_denominator) or -1
-						if not best or comparison < 0 or
-								(comparison == 0 and
-									segment_tie_less(compiled, segment, best)) then
-							best, best_numerator, best_denominator = segment,
-								numerator, denominator
-						end
-					end
-				end
-			end
-		end)
-		local lower_bound = next_ring_lower_bound(compiled, x, z,
-			center_x, center_z, radius)
-		if lower_bound == nil or (best and rational_compare(lower_bound, 1,
-				best_numerator, best_denominator) > 0) then break end
-		radius = radius + 1
-	end
-	if not best then return nil end
-	return {feature_id = best.feature_id, feature_order = best.feature_order,
-		segment = best.segment, distance_numerator = best_numerator,
-		distance_denominator = best_denominator,
-		distance_squared = best_numerator / best_denominator,
-		rings_scanned = radius + 1, cells_scanned = cells_scanned,
+	local scratch = new_nearest_scratch(compiled)
+	local feature_id, feature_order, segment, numerator, denominator,
+		rings_scanned, cells_scanned, candidates_scanned =
+		nearest_segment_core(compiled, x, z, scratch)
+	if feature_id == nil then return nil end
+	return {feature_id = feature_id, feature_order = feature_order,
+		segment = segment, distance_numerator = numerator,
+		distance_denominator = denominator,
+		distance_squared = numerator / denominator,
+		rings_scanned = rings_scanned, cells_scanned = cells_scanned,
 		candidates_scanned = candidates_scanned}
 end
 

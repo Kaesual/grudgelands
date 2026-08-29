@@ -33,7 +33,7 @@ The prompt must also state that ignored coordinator/tool state — including
 and must not be searched or cited as repository content.
 
 ```bash
-repo_dir=/home/jan/projects/grudgelands
+repo_dir=/absolute/path/to/reviewed/worktree
 review_dir=/tmp/grudgelands-claude-review.UNIQUE
 claude_denied_tools=Bash,Write,Edit,MultiEdit,NotebookEdit,Task
 claude_denied_tools=$claude_denied_tools,WebFetch,WebSearch,SlashCommand
@@ -61,8 +61,12 @@ claude --help > "$review_dir/cli-help.txt" || exit 1
   review_status=$?
   printf '%s\n' "$review_status" > "$review_dir/exit.status"
   exit "$review_status"
-) &
+)
 ```
+
+Set `repo_dir` to the exact reviewed checkout or worktree. Never substitute a
+different main checkout merely because it shares the repository object store;
+the worktree bytes and uncommitted reviewed state are the review target.
 
 `--tools` bounds the available built-in tool set; `--allowedTools` only
 pre-approves listed tools and is not itself a restriction. The deny list is a
@@ -89,6 +93,21 @@ The external CLI process is the exception to the synchronous in-session
 subagent rule in [wp-workflow.md](wp-workflow.md): it has its own OS process,
 JSONL stream, and explicit result parsing, so it must not block the coordinator
 context. In-session review and research subagents remain synchronous.
+
+Do not double-background Claude from a short-lived command-runner shell. The
+command-runner call itself must retain and expose the live foreground session;
+monitor that session until Claude exits. A JSONL stream without both a final
+`type="result"` record and an integer `exit.status` is incomplete and cannot be
+recovered as a review verdict; rerun the review instead of inferring one from
+partial output.
+
+Before any long acceptance runner that will eventually promote a file into a
+repository or sibling worktree, use the **same command-runner sandbox and
+permission profile as the real run** to create, close and remove a real
+`mktemp` file in the exact target directory. This probe must happen before the
+long LuaJIT work and before a final-only PUC process. Writability of the main
+repository, `/tmp` or another worktree does not prove that the target worktree
+is writable; a failed probe stops the run immediately.
 
 Retain the OS process id (PID) written to `claude.pid`. It is the Claude
 process PID, not a persisted Claude conversation or command-runner session id;

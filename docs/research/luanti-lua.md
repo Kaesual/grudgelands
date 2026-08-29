@@ -7,12 +7,13 @@ commit `df04879`) unless a URL is given.
 **Planning note.** If you are briefing, scheduling or costing any task that
 *executes* Lua — harness runs, gates, KATs, scans, reproductions — read
 "Interpreter and test strategy" at the end of this file before writing the
-plan. It fixes which interpreter owns which layer (LuaJIT for the
-high-volume loop and exhaustive populations, PUC 5.1 for the static gates and
-targeted KATs). WP40's current simple-map R1-R8 sequence uses targeted PUC
-KATs with canonical LuaJIT parity; its fixed-layout and 32-seed populations
-run under LuaJIT. The former PCC/F1/F2 rule belongs only to the retired exact
-T2 evidence schema.
+plan. It fixes which interpreter owns which layer (LuaJIT for development and
+all high-volume/exhaustive work, PUC 5.1 for the static gates and one bounded
+final runtime micro-KAT). WP40 R1-R4 retain their historical targeted-PUC
+evidence. Beginning with R5, one final PUC process runs a compact fixture and
+compares its canonical digest with one LuaJIT run; fixed-layout and seed
+populations remain LuaJIT-only. The former PCC/F1/F2 rule belongs only to the
+retired exact-T2 evidence schema.
 
 ## What the version pin means (read this first)
 
@@ -336,10 +337,10 @@ LuaJIT a compatibility gate: it remains a superset of the language accepted by
 the fallback build.
 
 The operating principle, decided 2026-08-16 and updated for WP40's simple-map
-rebase on 2026-08-25: **plain PUC 5.1 runs where it is the language contract —
-the static `luac51`/grep gates, targeted conformance/KAT gates, or trivially
-short runtime. LuaJIT owns everything else, including exhaustive
-populations.** Consequently every
+rebase on 2026-08-25 and its R5 delivery on 2026-08-28: **plain PUC 5.1 owns
+the static `luac51`/grep gates on every Lua change and one compact executable
+micro-KAT on a package's frozen final bytes. LuaJIT owns development and every
+long, repeated or exhaustive run.** Consequently every
 new harness with non-trivial runtime must support interpreter selection (the
 `WP40_LUA_BIN` pattern) and must default to LuaJIT; an expensive runner
 hardwired to PUC is a defect, not a conservative choice.
@@ -354,28 +355,44 @@ Use these layers together, in this order:
 2. **Development and exhaustive checks:** run the complete applicable search,
    seed corpus, geometry scan or other expensive suite under LuaJIT whenever
    the harness supports selecting it.
-3. **Intermediate milestones:** run targeted representative KATs under the
-   vendored PUC Lua 5.1 and compare their canonical artifacts or digests
-   byte-for-byte with the LuaJIT results. Choose cases that exercise the
-   changed arithmetic, control flow and boundary conditions; do not replace
-   this with a second exhaustive serial run.
-4. **WP40 simple-map milestones:** R1-R8 use targeted PUC KATs selected for the
-   changed arithmetic/control flow and compare their canonical artifacts with
-   LuaJIT. Fixed-layout and 32-seed populations are LuaJIT work. The old
-   exact-T2 PCC/F1/F2/full-`W` rounds remain historical evidence and do not run
-   on the simple schema.
-5. **Review:** a reviewer does not automatically duplicate an identical long
-   PUC run. The reviewer checks the immutable input/output artifacts, logs,
-   interpreter evidence and hashes, and runs focused independent PUC KATs.
-   For WP40, missing evidence or a finding blocks the milestone and must be
-   closed with targeted PUC KATs and newly bound immutable evidence; it never
-   authorizes an exhaustive population under PUC.
-6. **Engine fallback:** a real fallback-engine runtime test remains a separate
+3. **Intermediate milestones:** use LuaJIT plus the mandatory static PUC parser
+   and source gates. Do not run PUC runtime at an intermediate checkpoint.
+   Re-running an unchanged accepted R1-R4 or other pre-existing package KAT
+   runner solely to reproduce immutable historical evidence is not an
+   intermediate gate and creates no new or current acceptance evidence.
+4. **Final executable conformance:** once the candidate Lua bytes are frozen,
+   run exactly one bounded PUC process over a compact fixture that loads every
+   changed production module and exercises the changed arithmetic, control
+   flow, canonical ordering and boundary conditions. Run that same fixture
+   once under LuaJIT and require a byte-identical canonical digest. If relevant
+   Lua bytes change afterward, the new final candidate earns one replacement
+   pair (one PUC and one LuaJIT run). An additional PUC runtime is justified
+   only by a concrete interpreter-specific finding or an explicitly identified
+   uncovered plain-5.1 risk; habit, seed count and reviewer duplication are not
+   justifications.
+5. **WP40 simple-map milestones:** R1-R4 retain the targeted PUC evidence with
+   which they were accepted. R5-R8 use the single final micro-KAT rule above.
+   Fixed-layout, seed populations and complete layout/VM evidence are LuaJIT
+   work. The old exact-T2 PCC/F1/F2/full-`W` rounds remain historical evidence
+   and do not run on the simple schema.
+   For R5-R8 this paragraph supersedes the older intermediate/targeted-PUC
+   scheduling wording in `docs/research/wp40-simple-map-rebase-plan.md` Section
+   8, `docs/research/wp40-engineering-brief.md` Sections 5 and 8 and
+   `docs/design/world_zones.md`. Those statements remain factual only for the
+   R1-R4 evidence accepted under the former schedule; no game-design or map
+   semantic rule is superseded.
+6. **Review:** a reviewer checks the immutable final micro-KAT input/output,
+   logs, interpreter evidence and hashes and does not duplicate the PUC run.
+   A missing gate, changed final byte or concrete interpreter-specific finding
+   blocks acceptance and requires the one final micro-KAT pair (one PUC and one
+   LuaJIT run) to be regenerated on the corrected bytes; it never authorizes a
+   PUC population or seed fleet.
+7. **Engine fallback:** a real fallback-engine runtime test remains a separate
    release/runtime gate. Neither standalone interpreter has Luanti's
    `builtin/`, sandbox or `core.*`, so offline equality cannot replace it.
 
 The vendored `tools/bin/lua51` and `tools/bin/luac51` therefore remain the
 plain-5.1 authority, but they are used deliberately: the parser and static
-checks on every change and representative executable conformance at
-milestones. LuaJIT owns the high-volume feedback loop and exhaustive
-populations, not the language contract.
+checks on every change and one compact executable conformance check on final
+bytes. LuaJIT owns the feedback loop and exhaustive populations, not the
+language contract.

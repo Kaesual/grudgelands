@@ -463,9 +463,22 @@ WP40 replaces it with the complete catalog and contracts below.
   bounded broad/detail lattices, the zone relief profiles, authored landmarks
   and deterministic grading. It never reads a generated chunk, engine spawn
   level or chunk-local v7 heightmap as global authority.
-- Native v7 remains the substrate for caves, ores, dungeons and strata. The
-  final surface pass preserves those products outside the shallow authored
-  shell and never runs a second competing terrain writer.
+- R3 `H` and its per-column ground/bed result `T` are the sole final surface
+  and operation authority. Native v7 remains the substrate for caves, ores,
+  dungeons and strata, but its heightmap never selects `T`, geometry, a mask,
+  an operation or a priority. The consolidated adapter may read that heightmap
+  only as a local pre-cave datum for the current owner slice: ordinary native
+  cave air and liquid at or below that datum survive, while sky-side void above
+  it may be normalized to `T`.
+- Broad authored writes never begin below y = -37. Exact foundation, path,
+  crossing, tunnel, seal and water operations may replace content only inside
+  their owned volumes. Project-native ore, resource and stratum content at the
+  final surface, in authored water above it or above the final authored surface
+  cap is replaceable where required to materialize R3 height/water; supporting
+  solids below the surface otherwise remain unchanged. Foreign, unknown and
+  unavailable content remains a transaction veto. Native dungeons stay
+  unconditionally disjoint below the authored range, and no second competing
+  terrain writer runs.
 - Every land zone declares exactly one primary relief profile:
 
   | Relief id | Elevation above water level |
@@ -959,10 +972,12 @@ asks for it.
 
 ### 13.1 Horizontal and vertical authority
 
-- WP40 uses native v7 only as the cave, ore, dungeon and stratum substrate.
-  One project-owned horizontal evaluator and one globally queryable
+- WP40 uses native v7 as the cave, ore, dungeon and stratum substrate. One
+  project-owned horizontal evaluator and R3's globally queryable
   `H(full_seed_string, x, z)` own the final surface, water, logical biome,
-  route and policy products.
+  route and policy products. The native heightmap is not planner input or
+  global height authority; the adapter may use it only for the local pre-cave
+  owner-slice preservation distinction fixed above.
 - The pure horizontal module exposes at least
   `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
   `water_class_at(x,z)`, `nearest_path_at(x,z,optional_kind)` and
@@ -975,8 +990,14 @@ asks for it.
 - Surface writing uses one short typed priority:
   native protected content, fixed hard foundations, named or derived crossing
   spans, paths, terrain repair, explicit water, biome surface, resources and
-  decorations. Caves, ores, dungeons and strata outside the shallow
-  authored shell survive the transaction.
+  decorations. R3 `T` is materialized across clipped vertical owner slices:
+  broad fills begin at y = -37, sky clearing ends at the upper mapgen owner
+  edge, and no global per-column voxel array is built. Ordinary native cave
+  air/liquid at or below the current slice's pre-cave v7 height survives;
+  exact authored operations may replace their owned volumes. Native solid
+  substrate below `T` otherwise survives, project-native content at/on/above
+  the authored surface is replaceable where R3 height/water requires it, and
+  deep dungeons remain vertically disjoint.
 - The new evaluator, compatibility adapters and consolidated VoxelManip
   callback remain disabled until one atomic production cutover removes both
   legacy WP18 geography writers. Two Grudgelands surface-writing pipelines are
@@ -1114,8 +1135,13 @@ numeric-truncated seed.
 
 ### 14.3 Mapgen, performance and rollout
 
-- The pure typed planner has one deterministic operation order and preserves
-  native caves, ores, dungeons and strata outside its owned shallow slices.
+- The pure typed planner has one deterministic operation order and is wholly
+  independent of the native heightmap and VM content. Each vertical owner
+  slice contains only clipped runs for the global y = -37-to-`T` fill and
+  authored-surface-to-upper-mapgen-edge clear; continuation across slices is
+  analytic. The adapter alone preserves ordinary native cave air/liquid at or
+  below the local pre-cave v7 height. Exact authored masks may override that
+  rule only inside their owned volumes; deep dungeons remain disjoint.
   Mapchunk order, owner-slice, content-ignore, lighting and liquid fixtures are
   deterministic.
 - The new public adapters and writer become live only in the atomic cutover

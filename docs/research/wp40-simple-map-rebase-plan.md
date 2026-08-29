@@ -1,9 +1,10 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R4 are accepted. Fixed-layout V1e R2 remains the live
-horizontal authority; the pure R3 vertical implementation and the first
-complete, still-disabled R4 geography/policy payload were independently
-accepted 2026-08-27. V1d remains historical evidence at `d337160`; R5 is next.
+**Status:** D1-D7 and R0-R5 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; the pure R3 vertical implementation and the complete,
+still-disabled R4 geography/policy and R5 planner/adapter payloads were
+independently accepted. V1d remains historical evidence at `d337160`; R6 is
+next.
 
 **Ruling date:** 2026-08-25
 
@@ -90,8 +91,10 @@ The rebase keeps these player-visible and engine-correctness outcomes:
   variation;
 - a small globally queryable project-owned terrain-height field, with v7 as
   the native cave/ore/dungeon/stratum substrate rather than height authority;
-- preservation of caves, strata, ores and native dungeons under the authored
-  surface rewrite;
+- local preservation of ordinary native cave air/liquid at or below the
+  current owner slice's pre-cave v7 height, supporting ore/resource/stratum
+  solids below the final authored surface, and unconditionally y-disjoint
+  native dungeons under the authored surface rewrite;
 - one consolidated VoxelManip content transaction; and
 - stable deterministic public geography queries and consumer migration.
 
@@ -898,16 +901,39 @@ The canonical artifact body/file SHA-256 is
 `23a05d2115fb6d3a1b286e09a17847793e23fc0a23817ade8ce8b812875d1b3c`.
 Its full run scanned all 49,980,561 columns twice in independent seven-shard
 fleets and passed representative PUC/LuaJIT parity. The durable review is
-[wp40-simple-map-r4-review.md](wp40-simple-map-r4-review.md). No adapter or
-production callback is enabled yet; R5 remains a disabled planner stage.
+[wp40-simple-map-r4-review.md](wp40-simple-map-r4-review.md). No production
+callback is enabled yet; R5 remains a disabled planner stage.
 
 ### R5 — pure typed planner and disabled consolidated map adapter
 
 Implement the short typed operation priority and the single VoxelManip
-transaction against native v7 cave/ore/dungeon/stratum substrate. The new
-callback remains provably disabled. Native-preservation, owner-slice,
-mapchunk-order and dirty/light/liquid gates run without allowing it to coexist
-with a legacy writer in a production configuration.
+transaction against native v7 cave/ore/dungeon/stratum substrate. R3 `H`/`T`
+is the sole final surface and operation authority. Broad authored runs start at
+y = -37 and are clipped per vertical owner slice through the upper mapgen owner
+edge; no global per-column voxel array or physical rewrite-band guard exists.
+The planner is independent of native heightmap and VM content. The adapter may
+read the current slice's pre-cave native heightmap only to preserve ordinary
+cave air/liquid at or below that local datum; exact authored operations retain
+their owned replacement rights, project-native content at/on/above the final
+surface is replaceable where R3 height/water requires it, and deep dungeons
+remain y-disjoint. The new callback remains provably disabled. Native-
+preservation, owner-slice, mapchunk-order and dirty/light/liquid gates run
+without allowing it to coexist with a legacy writer in a production
+configuration.
+
+The pure typed Planner, consolidated Adapter, disabled construction seam and
+canonical exhaustive artifact were independently accepted on 2026-08-29. The
+canonical artifact body/file SHA-256 is
+`a0e7241dabf71833c490d574cbbf4702cdd2c63289277bcc3f49255039a78e1b` /
+`0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0`;
+the immutable input-manifest SHA-256 is
+`8eaef1d05557655552d845f4a281bf65d0066ceda562eb7736b995c3c174237a`.
+The durable evidence and review are recorded in
+[wp40-simple-map-r5-review.md](wp40-simple-map-r5-review.md). R5 remains
+private and disabled: it registers no mapgen callback and writes no world.
+The engineering brief is itself an R5 artifact-bound input and therefore keeps
+its pre-acceptance status header byte-for-byte; this plan and the R5 review are
+the successor authority for the accepted-stage status and R6 handoff.
 
 ### R6 — surface, resources and final varying-seed evidence
 
@@ -1003,8 +1029,8 @@ following:
 - using engine spawn levels or generated chunk-local v7 height as global `H`;
 - a second VoxelManip transaction;
 - enabling the new writer before the atomic legacy-writer/API cutover;
-- weakening native dungeon/cave/ore/stratum preservation without explicit user
-  approval; or
+- weakening the B+ local-cave, supporting-solid or unconditional dungeon
+  preservation rule without explicit user approval; or
 - inventing player-visible semantics not covered by the folded design.
 
 Source-data corrections and visual parameter edits are expected and are not

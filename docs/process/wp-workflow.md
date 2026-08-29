@@ -60,16 +60,19 @@ budget, and stop conditions.
 4. **Self-check** before review: run the five grep sweeps from
    "Verifying a change" in `docs/research/luanti-lua.md` (they cover the
    do-not-write list; plain-Lua-5.1 fallback is a HARD requirement),
-   inspect `SETGLOBAL` for every changed mod file, and run representative
-   PUC-5.1 KATs with byte-identical canonical digest/artifact comparison at
-   intermediate milestones. For WP40's current simple-map R1-R8 sequence,
-   fixed-layout and 32-seed populations run under LuaJIT; PUC owns targeted
-   representative KATs with canonical parity. The retired exact-T2
-   full-`W`/PCC/F1/F2 suites are historical and do not run on the simple
-   schema. Schedule independent interpreter runs under the workstation-wide
-   parallel-execution cap in AGENTS.md; historical wider runs are evidence, not
-   current execution authorization. Also check the AGENTS performance rules
-   (globalstep throttling, inventory churn, 100-player target).
+   inspect `SETGLOBAL` for every changed mod file, and use LuaJIT for
+   intermediate executable checks. Run no PUC runtime at an intermediate
+   milestone. On frozen final bytes, run one compact
+   PUC-5.1 micro-KAT process and the same fixture once under LuaJIT, requiring
+   byte-identical canonical parity. WP40 R1-R4 retain their historical
+   targeted-PUC evidence; R5-R8 use this single-final-micro-KAT rule.
+   Fixed-layout, seed and full VM populations run only under LuaJIT. The retired
+   exact-T2 full-`W`/PCC/F1/F2 suites are historical and do not run on the
+   simple schema. Schedule independent interpreter runs under the workstation-
+   wide parallel-execution cap in AGENTS.md; historical wider runs are
+   evidence, not current execution authorization. Also check the AGENTS
+   performance rules (globalstep throttling, inventory churn, 100-player
+   target).
 5. **Mandatory code review**: under **Independent review** in
    [agent-model-policy.md](agent-model-policy.md), run at least one full
    independent strong-agent review of the WP diff using the checklist below.
@@ -83,13 +86,12 @@ budget, and stop conditions.
    across 2–3 independent strong agents (correctness / Lua+perf /
    design-adherence) and adversarially verify High findings. Findings are
    fixed on the branch; High/Critical fixes get a focused re-review. A
-   reviewer does not
-   automatically duplicate an identical long PUC suite: inspect immutable
-   artifacts, logs, interpreter evidence and hashes, then run targeted
-   independent PUC KATs. For every WP40 R1-R8 milestone, missing evidence or a
-   finding blocks the milestone and must be closed with targeted PUC KATs and
-   newly bound immutable evidence; it never authorizes an exhaustive
-   population under PUC.
+   reviewer does not duplicate the final PUC micro-KAT: inspect immutable
+   artifacts, logs, interpreter evidence and hashes. Missing evidence, changed
+   final Lua bytes or a concrete interpreter-specific finding blocks the
+   milestone and requires one regenerated final micro-KAT pair (one PUC and
+   one LuaJIT run) on the corrected bytes; it never authorizes an intermediate
+   PUC suite, seed fleet or exhaustive PUC population.
 6. **Docs**: BACKLOG row → ✅ with summary; ROADMAP checkboxes; new
    insights → AGENTS.md or docs/; design-doc deltas folded in. The durable
    completion record also carries the model and review calibration fields
