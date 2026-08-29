@@ -942,12 +942,26 @@ resources, and retain WP43 material/depth APIs. No catalog reopens zone, land
 or biome-selection authority. Produce the 32-representative-seed G1/G2,
 cultural-resource, regional-parity, practical opposing/deep/island-access and
 24-apex-slot ledgers. Export R2's fixed-layout housing portfolio, bounds and
-capacity result for WP24.
+capacity result for WP24. R6 also freezes the invisible cultural-opportunity
+slot API: every accepted slot owns the exact centred 5 by 5 by 9 reservation
+from `surface_y - 1` through `surface_y + 7`, without world mutation, movement,
+retry or fallback search. The accepted surface/decorations, exact six
+concentrated frontier zones, land-plus-planned-water resource eligibility and
+deposit-opportunity parity rule live in the design documents and the reviewed
+R6 contract rather than in implementation defaults.
+
+After R6 acceptance, WP33 registers every cultural source against that frozen
+slot API while the writer remains disabled. A registration outside the
+reservation fails closed. The lower-two-level replacement question is decided
+by WP33's own reviewed contract; it is not an R6 implementation choice.
 
 ### R7 — atomic production cutover and consumer migration
 
 In one reviewed cutover gate:
 
+- require the accepted WP33 cultural-source registrations before enabling the
+  writer, so no production/fresh-world interval can create permanently empty
+  reservations;
 - remove/disable the legacy `ocean_mask.lua` and `structures.lua` writer paths;
 - enable the single WP40 VoxelManip writer;
 - switch every covered geography adapter, including `difficulty_at` and
@@ -976,10 +990,16 @@ All Lua remains plain-5.1-compatible.
   `tools/wp40/*.lua` file separately runs the do-not-write searches because the
   repository sweeps do not cover tools; runners first prove `rg` is available.
 - Long full-layout raster/flood/path/anchor scans: LuaJIT.
-- Intermediate parity: small representative PUC 5.1 KATs with byte-identical
-  canonical digest/artifact comparison to LuaJIT.
+- Intermediate executable checks use LuaJIT only; no intermediate PUC runtime
+  is scheduled. After final Lua bytes freeze, exactly one compact representative
+  micro-KAT runs once under PUC 5.1 and once under LuaJIT, and their canonical
+  bytes and digest must be identical. A relevant final-byte change replaces
+  that pair rather than adding another PUC run.
 - Runtime-capable harnesses with nontrivial cost support `WP40_LUA_BIN` and
   default to LuaJIT.
+- Independent seed/shard workers run at idle scheduling priority, use immutable
+  inputs and separate outputs, and never exceed the workstation-wide
+  seven-process cap. One deterministic final step orders and combines them.
 - The old bounded T2-final PCC/F1/F2 gate is not run against an incompatible
   new schema merely for ceremony. R0 replaces it by name in `AGENTS.md`,
   `docs/process/wp-workflow.md`, `docs/research/luanti-lua.md` and every live
