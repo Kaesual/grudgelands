@@ -2989,6 +2989,19 @@ return function(common)
 		if terrain<AUTHORED_FLOOR or terrain>surface_cap or surface_cap>OWNER_MAX then
 			fail("seed oracle surface interval differs")
 		end
+		local contact_lower_hydro,contact_bed
+		if transition_kind=="waterfall" and face~=nil then
+			local contact_relation=seed_transition_relation(authority,transition_id,
+				"waterfall")
+			contact_lower_hydro=authority.hydrology[contact_relation.row.lower_id]
+			if not contact_lower_hydro then
+				fail("seed oracle contact-face lower hydrology differs")
+			end
+			contact_bed=lower-contact_lower_hydro.depth
+			if terrain~=contact_bed then
+				fail("seed oracle contact-face bed differs")
+			end
+		end
 		local culvert,culvert_bed=false,nil
 		if kind=="causeway" then
 			if functional_y~=terrain or clearance==nil or terrain<clearance+1 then
@@ -3074,35 +3087,6 @@ return function(common)
 				OPCODE_ID.TUNNEL_ROOF,feature,interface)
 		end
 
-		local tunnel_count,shared_feature,shared_interface,min_floor,max_floor=0,nil,nil,nil,nil
-		for direction=1,4 do
-			local dx,dz=0,0
-			if direction==1 then dx=-1 elseif direction==2 then dx=1
-			elseif direction==3 then dz=-1 else dz=1 end
-			local neighbour_kind=get(10,x+dx,z+dz)
-			if neighbour_kind=="tunnel_floor" then
-				local floor=get(11,x+dx,z+dz)
-				local neighbour_feature=get(12,x+dx,z+dz)
-				local neighbour_interface=get(13,x+dx,z+dz)
-				if type(neighbour_feature)~="string" or type(neighbour_interface)~="string" then
-					fail("seed oracle tunnel collar identity differs")
-				end
-				tunnel_count=tunnel_count+1
-				if not shared_feature then
-					shared_feature,shared_interface=neighbour_feature,neighbour_interface
-				elseif shared_feature~=neighbour_feature or shared_interface~=neighbour_interface then
-					fail("seed oracle tunnel collar samples disagree")
-				end
-				min_floor=min_floor and math.min(min_floor,floor) or floor
-				max_floor=max_floor and math.max(max_floor,floor) or floor
-			end
-		end
-		if tunnel_count>0 and kind~="tunnel_floor" and feature~=shared_feature then
-			if kind~=nil then fail("seed oracle tunnel collar overlaps functional surface") end
-			seed_add_operation(state,min_floor+1,max_floor+4,
-				OPCODE_ID.TUNNEL_WALL,shared_feature,shared_interface)
-		end
-
 		local wet_id,wet_surface,wet_bed,wet_relation=seed_named_wet(authority,get,x,z)
 		if wet_id then
 			seed_add_seal(state,wet_bed-2,wet_bed,OPCODE_ID.HYDROLOGY_BED_SEAL,
@@ -3181,15 +3165,12 @@ return function(common)
 		end
 
 		if transition_kind=="waterfall" and face~=nil then
-			local relation=seed_transition_relation(authority,transition_id,"waterfall")
-			local lower_hydro=authority.hydrology[relation.row.lower_id]
-			local bed=lower-lower_hydro.depth
-			seed_add_operation(state,bed+1,lower-1,OPCODE_ID.RIVER_WATER,
-				lower_hydro.id,transition_id)
+			seed_add_operation(state,contact_bed+1,lower-1,OPCODE_ID.RIVER_WATER,
+				contact_lower_hydro.id,transition_id)
 			seed_add_operation(state,lower,lower,OPCODE_ID.RECEIVER_OPEN,
-				lower_hydro.id,transition_id)
+				contact_lower_hydro.id,transition_id)
 			seed_add_operation(state,lower+1,OWNER_MAX,OPCODE_ID.CONTACT_FALL_CLEAR,
-				lower_hydro.id,transition_id)
+				contact_lower_hydro.id,transition_id)
 		elseif water_y~=nil and terrain<water_y then
 			if hydro_id~=nil then
 				local hydro=authority.hydrology[hydro_id]
@@ -4937,6 +4918,10 @@ return function(common)
 		if corpus.continuation_run_count<=0 or corpus.run_count<=corpus.plan_count then
 			fail("analytic clipped-run population did not exercise continuation")
 		end
+		if corpus.opcode_counts.TUNNEL_WALL~=0 or
+				(corpus.mask_counts.tunnel_wall or 0)~=0 then
+			fail("accepted-source tunnel-wall population differs")
+		end
 		local representative=representative_apply(loaded,offline.raw_sha256,true)
 		local stable_digest,relation_digest,stable_count=relation_oracle(
 			loaded.source,loaded.planner_source and (function()
@@ -5887,25 +5872,39 @@ return function(common)
 		end
 		local function clearance(values)
 			local result=values[7]
+			if result~=nil then return result end
 			if values[16]~=nil then result=result and math.max(result,values[16]) or values[16] end
 			if values[17]~=nil then result=result and math.max(result,values[17]) or values[17] end
 			return result
 		end
 
 		local anchor=loaded.source.anchors[1]
+		local anchor_route=loaded.source.routes[1]
+		if anchor.id~="anchor_001" or anchor_route.id~="route_001" or
+				anchor_route.zone_a~=anchor.zone_numeric_id or
+				anchor_route.centreline[1].x~=anchor.position.x or
+				anchor_route.centreline[1].z~=anchor.position.z then
+			fail("hard anchor-path source relation differs")
+		end
 		local anchor_values=capture20(loaded.planner_source.column_values_at,
 			anchor.position.x,anchor.position.z)
-		if anchor_values[10]~="anchor_platform" or
-				not (has_exact(anchor.position.x,anchor.position.z,AUTHORED_FLOOR,
-					anchor_values[6]-1,anchor_values[20] and 15 or 21) and
-				has_exact(anchor.position.x,anchor.position.z,anchor_values[6],
-					anchor_values[6],anchor_values[20] and 16 or 22) and
-				has_exact(anchor.position.x,anchor.position.z,anchor_values[6]+1,
-					anchor_values[6]+4,anchor_values[20] and 14 or 20)) then
-			fail("anchor/floor geometry witness differs")
+		local anchor_fill=has_exact(anchor.position.x,anchor.position.z,
+			AUTHORED_FLOOR,anchor_values[6]-1,OPCODE_ID.PATH_FILL,
+			POLICY_ID.FILL_VOID,ROLE_ID.PATH_CORE,anchor_route.id)
+		local anchor_surface=has_exact(anchor.position.x,anchor.position.z,
+			anchor_values[6],anchor_values[6],OPCODE_ID.PATH_SURFACE,
+			POLICY_ID.SURFACE_EXACT,ROLE_ID.PATH_SURFACE,anchor_route.id)
+		local anchor_clear=has_exact(anchor.position.x,anchor.position.z,
+			anchor_values[6]+1,anchor_values[6]+4,OPCODE_ID.PATH_CLEAR,
+			POLICY_ID.CUT_NATURAL,ROLE_ID.AIR,anchor_route.id)
+		if anchor_values[6]~=9 or anchor_values[10]~="land_grade" or
+				anchor_values[11]~=anchor_values[6] or
+				anchor_values[12]~=anchor_route.id or anchor_values[13]~=nil or
+				anchor_values[20]~=true or
+				not (anchor_fill and anchor_surface and anchor_clear) then
+			fail("hard anchor-path geometry witness differs")
 		end
-		rows[#rows+1]="anchor\t"..(anchor_values[20] and "foundation" or "path")..
-			"\tauthored_floor\n"
+		rows[#rows+1]="anchor\thard_path\tauthored_floor\n"
 
 		local crossing_by_kind={}
 		for index=1,#loaded.source.crossing_interfaces do
@@ -5940,10 +5939,13 @@ return function(common)
 					fail("ford-bed geometry differs")
 				end
 			elseif kind=="causeway" then
+				if values[7]==nil or values[9]==nil then
+					fail("causeway culvert geometry differs")
+				end
 				local id,_,numerator,denominator=
 					loaded.planner_source.hydrology_metric_values_at(x,z)
 				local bed=values[7]-values[9]
-				if values[7]==nil or values[9]==nil or f~=t or id~=values[8] or
+				if f~=t or id~=values[8] or
 						numerator>denominator or
 						not has_exact(x,z,bed+1,values[7],8,7) or
 						not has_exact(x,z,t,t,10,6) or
@@ -5996,30 +5998,39 @@ return function(common)
 			fail("cardinal-waterfall surface-cap plan gap differs")
 		end
 		rows[#rows+1]="waterfall\tcardinal_surface_cap_gap\t53_absent_54_clear\n"
-		local derived_bridge
-		for _,bridge in ipairs(loaded.source.crossing_interfaces) do
-			if bridge.kind=="bridge" and not derived_bridge then
-				for distance=1,96 do
-					for _,offset in ipairs({{distance,0},{-distance,0},{0,distance},
-						{0,-distance},{distance,distance},{distance,-distance},
-						{-distance,distance},{-distance,-distance}}) do
-						local x,z=bridge.position.x+offset[1],bridge.position.z+offset[2]
-						local values=capture20(loaded.planner_source.column_values_at,x,z)
-						local c=clearance(values)
-						if values[10]=="bridge_deck" and values[13]==nil and c~=nil and
-								values[11]==c+2 then
-							derived_bridge={x=x,z=z,values=values,clearance=c}
-							break
-						end
-					end
-					if derived_bridge then break end
-				end
+		local derived_bridge={x=1962,z=2130}
+		derived_bridge.values=capture20(loaded.planner_source.column_values_at,
+			derived_bridge.x,derived_bridge.z)
+		derived_bridge.clearance=clearance(derived_bridge.values)
+		local support_count,deck_count,upper_clear_count,lower_clear_count=0,0,0,0
+		for _,run in ipairs(snapshot_runs(derived_bridge.x,derived_bridge.z,48)) do
+			if run[1]==72 and run[2]==72 and
+					run[3]==OPCODE_ID.BRIDGE_SUPPORT and
+					run[4]==ROLE_ID.BRIDGE_SUPPORT and
+					run[5]==POLICY_ID.SEAL_VOID and run[6]=="route_016" and
+					run[7]==nil then
+				support_count=support_count+1
+			elseif run[1]==73 and run[2]==73 and
+					run[3]==OPCODE_ID.BRIDGE_DECK and run[4]==ROLE_ID.BRIDGE_DECK and
+					run[5]==POLICY_ID.SURFACE_EXACT and run[6]=="route_016" and
+					run[7]==nil then
+				deck_count=deck_count+1
+			elseif run[1]==74 and run[2]==77 and
+					run[3]==OPCODE_ID.BRIDGE_CLEAR and run[4]==ROLE_ID.AIR and
+					run[5]==POLICY_ID.CUT_NATURAL and run[6]=="route_016" and
+					run[7]==nil then
+				upper_clear_count=upper_clear_count+1
+			end
+			if run[3]==OPCODE_ID.BRIDGE_CLEAR and run[6]=="route_016" and
+					run[7]==nil and run[2]<=71 then
+				lower_clear_count=lower_clear_count+1
 			end
 		end
-		if not derived_bridge or not has_exact(derived_bridge.x,derived_bridge.z,
-				derived_bridge.clearance+1,derived_bridge.clearance+1,7,5) or
-				not has_exact(derived_bridge.x,derived_bridge.z,
-					derived_bridge.values[11],derived_bridge.values[11],6,6) then
+		if derived_bridge.values[10]~="bridge_deck" or
+				derived_bridge.values[12]~="route_016" or
+				derived_bridge.values[13]~=nil or derived_bridge.clearance~=71 or
+				derived_bridge.values[11]~=73 or support_count~=1 or deck_count~=1 or
+				upper_clear_count~=1 or lower_clear_count~=0 then
 			fail("derived bridge C+2 support geometry differs")
 		end
 		for _,run in ipairs(snapshot_runs(derived_bridge.x,derived_bridge.z,
@@ -6227,44 +6238,45 @@ return function(common)
 		rows[#rows+1]="culvert\tradius_one\tinside_and_outside\n"
 
 		local tunnel=crossing_by_kind.tunnel
-		local tunnel_radius=math.floor((tunnel.span or 96)/2)+(tunnel.portal_length or 16)+4
-		local lateral=math.floor((tunnel.width or 7)/2)+3
-		local collar,portal
-		for along=-tunnel_radius,tunnel_radius do
-			for side=-lateral,lateral do
-				local x,z
-				if tunnel.direction=="east" or tunnel.direction=="west" then
-					x,z=tunnel.position.x+along,tunnel.position.z+side
-				else x,z=tunnel.position.x+side,tunnel.position.z+along end
-				local current=capture20(loaded.planner_source.column_values_at,x,z)
-				if not (collar and portal) and current[10]~="tunnel_floor" then
-					local adjacent={capture20(loaded.planner_source.column_values_at,x-1,z),
-						capture20(loaded.planner_source.column_values_at,x+1,z),
-						capture20(loaded.planner_source.column_values_at,x,z-1),
-						capture20(loaded.planner_source.column_values_at,x,z+1)}
-					local neighbour
-					for _,sample in ipairs(adjacent) do
-						if sample[10]=="tunnel_floor" and sample[12]==tunnel.route_id then
-							neighbour=sample break
-						end
-					end
-					if neighbour then
-						local min_y=owner_chunk_min(neighbour[11]+1)
-						if current[12]==tunnel.route_id and not portal then
-							if has_opcode(x,z,min_y,32) then
-								fail("same-route tunnel portal received wall")
-							end
-							portal=true
-						elseif current[10]==nil and not collar and
-								has_opcode(x,z,min_y,32) then
-							collar=true
-						end
-					end
-				end
-			end
+		local portal_x,portal_z=-2011,-118
+		local portal_values=capture20(loaded.planner_source.column_values_at,
+			portal_x,portal_z)
+		local portal_neighbour=capture20(loaded.planner_source.column_values_at,
+			portal_x,portal_z+1)
+		local lateral_x,lateral_z=-2010,-118
+		local lateral_values=capture20(loaded.planner_source.column_values_at,
+			lateral_x,lateral_z)
+		local lateral_neighbour=capture20(loaded.planner_source.column_values_at,
+			lateral_x,lateral_z+1)
+		if tunnel.id~="gravesalt_tomb_tunnel" or tunnel.route_id~="route_043" or
+				portal_values[6]~=101 or portal_values[10]~="land_grade" or
+				portal_values[11]~=101 or portal_values[12]~=tunnel.route_id or
+				portal_values[13]~=nil or portal_neighbour[10]~="tunnel_floor" or
+				portal_neighbour[11]~=101 or portal_neighbour[12]~=tunnel.route_id or
+				portal_neighbour[13]~=tunnel.id or
+				has_opcode(portal_x,portal_z,48,OPCODE_ID.TUNNEL_WALL) or
+				not has_exact(portal_x,portal_z,101,101,OPCODE_ID.PATH_SURFACE,
+					POLICY_ID.SURFACE_EXACT,ROLE_ID.PATH_SURFACE,tunnel.route_id) or
+				not has_exact(portal_x,portal_z,102,105,OPCODE_ID.PATH_CLEAR,
+					POLICY_ID.CUT_NATURAL,ROLE_ID.AIR,tunnel.route_id) or
+				lateral_values[10]~="land_grade" or
+				lateral_values[11]~=lateral_values[6] or
+				lateral_values[12]~=tunnel.route_id or lateral_values[13]~=nil or
+				lateral_neighbour[10]~="tunnel_floor" or
+				lateral_neighbour[11]~=101 or
+				lateral_neighbour[12]~=tunnel.route_id or
+				lateral_neighbour[13]~=tunnel.id or
+				has_opcode(lateral_x,lateral_z,
+					owner_chunk_min(lateral_values[11]),OPCODE_ID.TUNNEL_WALL) or
+				not has_exact(lateral_x,lateral_z,lateral_values[11],lateral_values[11],
+					OPCODE_ID.PATH_SURFACE,POLICY_ID.SURFACE_EXACT,
+					ROLE_ID.PATH_SURFACE,tunnel.route_id) or
+				not has_exact(lateral_x,lateral_z,lateral_values[11]+1,
+					lateral_values[11]+4,OPCODE_ID.PATH_CLEAR,
+					POLICY_ID.CUT_NATURAL,ROLE_ID.AIR,tunnel.route_id) then
+			fail("tunnel corridor/portal zero-wall witness differs")
 		end
-		if not collar or not portal then fail("tunnel collar/portal witness differs") end
-		rows[#rows+1]="tunnel\tcardinal_collar\tsame_route_portal_excluded\n"
+		rows[#rows+1]="tunnel\tzero_real_walls\tportal_and_lateral_corridor\n"
 
 		local hydrology_by_id,profile_by_id={},{}
 		for index=1,#loaded.source.hydrology do
@@ -6304,24 +6316,39 @@ return function(common)
 				has_opcode(cardinal.position.x,cardinal.position.z,cardinal_y,25) then
 			fail("cardinal waterfall authored falling-water operation")
 		end
+		local contact_x,contact_z=-106,-1757
 		local contact_values=capture20(loaded.planner_source.column_values_at,
-			contact.position.x,contact.position.z)
-		if contact_values[14]~="waterfall" or contact_values[7]~=nil or
-				contact_values[18]~=nil or contact_values[19]==nil then
+			contact_x,contact_z)
+		if contact.id~="highcourt_goldmead_fall" or
+				contact.upper_id~="hydro_highcourt_fork_west" or
+				contact.lower_id~="hydro_goldmead_millriver" or
+				contact.transition_scope_id~="orthogonal_reach_contact_face_v1" or
+				contact_values[6]~=13 or contact_values[7]~=nil or
+				contact_values[8]~=contact.lower_id or contact_values[9]~=4 or
+				contact_values[14]~="waterfall" or contact_values[15]~=contact.id or
+				contact_values[16]~=35 or contact_values[17]~=17 or
+				contact_values[18]~=nil or contact_values[19]~=8 then
 			fail("contact waterfall scalar differs")
 		end
 		local lower=contact_values[17]
 		local lower_hydrology=hydrology_by_id[contact.lower_id]
 		local lower_profile=lower_hydrology and profile_by_id[lower_hydrology.profile_id]
-		if not lower_profile then fail("contact lower profile differs") end
+		if not lower_profile or lower_profile.id~="river" or lower_profile.depth~=4 then
+			fail("contact lower profile differs")
+		end
 		local bed=lower-lower_profile.depth
-		if not has_exact(contact.position.x,contact.position.z,bed+1,lower-1,25,7) or
-				not has_exact(contact.position.x,contact.position.z,lower,lower,23,4) then
+		if not has_exact(contact_x,contact_z,bed+1,lower-1,
+				OPCODE_ID.RIVER_WATER,POLICY_ID.WRITE_WATER,
+				ROLE_ID.RIVER_WATER_SOURCE,contact.lower_id,contact.id) or
+				not has_exact(contact_x,contact_z,lower,lower,
+					OPCODE_ID.RECEIVER_OPEN,POLICY_ID.OPEN_ENGINEERED,
+					ROLE_ID.AIR,contact.lower_id,contact.id) then
 			fail("contact receiver/source-omission geometry differs")
 		end
 		local contact_slice=owner_chunk_min(lower+1)
-		if not has_exact(contact.position.x,contact.position.z,lower+1,
-				contact_slice+79,11,4) then
+		if not has_exact(contact_x,contact_z,lower+1,contact_slice+79,
+				OPCODE_ID.CONTACT_FALL_CLEAR,POLICY_ID.OPEN_ENGINEERED,
+				ROLE_ID.AIR,contact.lower_id,contact.id) then
 			fail("contact fall-clear owner clipping differs")
 		end
 		rows[#rows+1]="transition\trapid\tcardinal_waterfall\tcontact_waterfall\n"

@@ -618,7 +618,10 @@ dependency constructed before `r5_module.new`, under the same exclusion as
 the other immutable dependency constants. The second return creates, returns
 and publishes no module table and duplicates no relation map. The validator
 binds the complete relation and rejects a missing, additional or different
-alternate entry.
+alternate entry. `TUNNEL_WALL` remains in this closed relation for the shared-
+core fixture and Adapter replacement matrix, but Section 8.8 proves its exact
+accepted Production population is zero; membership in the relation is not a
+claim that current Production emits that opcode.
 
 `replacement_outcome_fixture` accepts policy ID `1..7`, content-class ID
 `1..11`, family ID `0..2^53-1`, liquid-kind ID `0..2` and two positive safe-
@@ -1191,7 +1194,7 @@ The reserved opcode count rows for `BIOME_TOP`, `BIOME_FILLER`, `BIOME_SHORE`,
 that same complete population. Production binds those zeros independently:
 the sole shared `OP_PRIORITY`/`OP_ROLE`/`OP_POLICY`/`OP_POLICY_ALT` maps contain
 exactly the 26 P2-P6 opcode IDs and their 27 primary-or-sole-alternate policy
-variants. The sole Production emitter is `add_candidate`; its exactly 28
+variants. The sole Production emitter is `add_candidate`; its exactly 27
 Production call sites all pass the shared-map tuple guard before any candidate-
 buffer write. Reserved opcode IDs `1`, `2`, `3`, `4`, `12` and `24` have no
 entry in those maps. The exact second-return resolver fixture must reject each
@@ -1506,10 +1509,12 @@ There is no lower/upper rewrite-band guard and no materialization-dependent
 bridge, tunnel or ordinary neighbor guard. Exact named-mask admissibility is
 proved analytically from R2/R3 tuples and run winners. Required VM context is
 limited to the current owner data used by replace policies and the Section 12
-lighting box/seed row; required analytic x/z collar samples remain subject to
-the declared halo. Any required context cell outside the emerged/mapgen bounds
-or equal to `CONTENT_IGNORE` fails closed under Sections 9, 11 and 12. The
-planner never widens ownership to obtain it.
+lighting box/seed row. The exact Manhattan-distance-two analytic bank collar is
+structurally contained by the sole exact 16-node halo from Section 6.1. The
+Planner receives no halo parameter, performs no halo-bound decision and emits
+no `fail_halo`; it never widens ownership. Any required VM context cell outside
+the emerged/mapgen bounds or equal to `CONTENT_IGNORE` fails closed in the
+Adapter/VM transaction under Sections 9, 11 and 12.
 
 ### 8.2 Base terrain
 
@@ -1669,7 +1674,7 @@ around the accepted continuous hydrology centreline; it requires no inferred
 flow direction or search. A named causeway with no such culvert column
 anywhere in its complete accepted footprint is a validation failure.
 
-### 8.8 Tunnel floor, lumen, walls and roof
+### 8.8 Tunnel floor, lumen, zero side-wall population and roof
 
 For `K == "tunnel_floor"`, R3 leaves `T` unchanged and provides floor `F`.
 The exact 33-axis-node visible footprint is already represented by R3's
@@ -1681,32 +1686,39 @@ TUNNEL_LUMEN  F+1 .. F+4  AIR           OPEN_ENGINEERED
 TUNNEL_ROOF   F+5 .. F+5  TUNNEL_WALL   SEAL_VOID
 ```
 
-Every `TUNNEL_ROOF` and `TUNNEL_WALL` `SEAL_VOID` uses the total Section 7.5
-matrix: eligible known solid, native ore, registered resource and stratum
-remain unchanged; air, compatible liquid and `NATURAL_VEGETATION` are replaced
-by the resolved tunnel-wall seal material. Foreign, unknown, `ignore` or an
-incompatible liquid rejects the transaction.
+The real `TUNNEL_ROOF/SEAL_VOID` transaction and the fixture-only closed
+`TUNNEL_WALL/SEAL_VOID` relation both use the total Section 7.5 matrix:
+eligible known solid, native ore, registered resource and stratum remain
+unchanged; air, compatible liquid and `NATURAL_VEGETATION` are replaced by the
+resolved tunnel-wall seal material. Foreign, unknown, `ignore` or an
+incompatible liquid rejects the transaction. The latter matrix coverage does
+not assert a current Production `TUNNEL_WALL` run.
 
-The side-wall collar starts as the exact four-neighbor dilation of the tunnel
-footprint by one column. For one candidate collar column, collect its
-cardinally adjacent tunnel samples and require one shared interface ID **and**
-one shared `functional_feature_id` (the accepted route ID). Exclude every
-tunnel column. Also exclude a non-tunnel column whose
-`functional_feature_id` equals that same route ID: those are the route's own
-portal/approach columns and remain open under their P4/P5 mask. For every other
-retained collar column, let `Fmin` and `Fmax` be the adjacent tunnel samples'
-minimum and maximum floor values; emit:
+The source-correct side-wall population is exactly zero. Both accepted tunnel
+routes use the R3 secondary-route total `surface_width = 5` and
+`corridor_width = 12`, hence surface radius `2.5` and same-route corridor
+radius `6`. A column in the cardinal one-node dilation of a tunnel footprint
+is at most `2.5 + 1 = 3.5` nodes from that same route segment, strictly inside
+the radius-6 corridor. On the frozen accepted source every such dilation
+column remains land, so every non-tunnel dilation column is an R3 `land_grade`
+with the same `functional_feature_id`: at the longitudinal ends it is the
+route's surface portal, and laterally it is the route's blended corridor
+approach. This constructive geometric proof removes the dead four-neighbor
+tunnel query and candidate-emission path from Production: the Planner neither
+samples a tunnel collar nor attempts `TUNNEL_WALL` insertion. Consequently
+both `opcode/TUNNEL_WALL` and `mask/tunnel_wall` are exact zero counts.
 
-```text
-TUNNEL_WALL  Fmin+1 .. Fmax+4  TUNNEL_WALL  SEAL_VOID
-```
-
-If adjacent tunnel samples carry different interface or feature IDs, or if a
-retained collar overlaps a functional surface from another route/feature,
-planning fails. The excluded same-route portal is a required KAT and may never
-receive `TUNNEL_WALL`. This exact one-node cardinal collar is the complete side-
-wall mask; no diagonal collar, portal extension, cave flood fill or ornamental
-lining exists in R5.
+The compact real-source KAT binds both exclusions on the first accepted
+tunnel. The surface portal at `x = -2011`, `z = -118` projects to
+`route_043` run `593`; its cardinal neighbor at `x = -2011`, `z = -117` is
+the `gravesalt_tomb_tunnel` footprint at run `594`, floor `101`. The lateral
+column at `x = -2010`, `z = -118` is outside the route surface but inside the
+same `route_043` corridor; its neighbor at `x = -2010`, `z = -117` is the
+same tunnel footprint. Both non-tunnel columns are `land_grade` with
+`functional_feature_id = route_043`, nil functional interface and no
+`TUNNEL_WALL` run. Floor, lumen and roof remain positive real Production
+witnesses. There is no diagonal collar, portal extension, cave flood fill or
+ornamental lining in R5.
 
 P5 still owns ordinary terrain around and above the tunnel. No operation
 touches below the floor except the B+ ordinary fill if it independently owns
@@ -1803,7 +1815,9 @@ heightmap datum is untouched by P5 fill.
 For an orthogonal contact face, R3 returns nil `W`, a nonzero face mask and
 upper/lower values. `lower_profile_depth` comes from the accepted lower reach
 in the transition relation, never from nearest hydrology. Let the lower bed be
-`lower_y - lower_profile_depth`. Emit:
+`lower_y - lower_profile_depth`. The current column's exact `T` must equal that
+lower bed; any mismatch fails planning with `fail_mask` before any candidate is
+emitted for the column. Emit:
 
 ```text
 RIVER_WATER   lower_bed+1 .. lower_y-1  RIVER_WATER_SOURCE  WRITE_WATER
@@ -1839,11 +1853,12 @@ The emerged `emin..emax` halo may be read only for:
 - lighting context needed by the transaction; and
 - temporary lighting seeds that are restored before the final light buffer.
 
-The twelve-offset bank collar and four-neighbor tunnel collar query only the
-pure planner source at absolute x/z positions within the declared halo; they do
-not read a halo VM CID, param2 or light byte. If a required analytic sample lies
-outside the declared fixture/emerged halo, planning fails with `fail_halo`
-before VM data access.
+The twelve-offset bank collar queries only the pure planner source at absolute
+x/z positions. Its exact Manhattan-distance-two reach is structurally inside
+the sole exact 16-node halo; the Planner receives no halo parameter, needs no
+runtime halo-bound branch and emits no `fail_halo`. The collar does not read a
+halo VM CID, param2 or light byte. Section 8.8's tunnel zero-population proof
+adds no Production neighbor query.
 
 Content and param2 outside `minp..maxp` must be byte-identical before and after
 the adapter. No x/z cleanup, neighbor feature write or anchor-owner
@@ -2179,7 +2194,8 @@ prefix is the closed failure code `fail_status`, `fail_call_mode`,
 `fail_required_context`,
 `fail_lighting_context`, `fail_vm_contract` or `fail_stale_plan`. Planner
 construction/planning separately uses `fail_source`, `fail_mask`, `fail_guard`,
-`fail_conflict`, `fail_bound` or the shared `fail_halo`. Evidence extracts only
+`fail_conflict` or `fail_bound`. `fail_halo` is Adapter/VM-only. Evidence
+extracts only
 the prefix before the first ASCII colon. The two Section 4.4 tool-only wrappers
 add exactly `fail_fixture`, and every wrapper-validation error they emit uses
 that prefix: Adapter arity/scalar-domain failures and Planner scalar,
@@ -2356,7 +2372,7 @@ The content contract receives the engine's exact `CONTENT_IGNORE` value.
   the sole lighting exception and follows the exact engine rule in Section
   12.3. Analytic vertical continuation and bridge headroom bounds read no VM
   cell.
-- Analytic tunnel/hydrology collar samples contain no CID and therefore cannot
+- Analytic hydrology-collar samples contain no CID and therefore cannot
   reinterpret `ignore`; their declared-halo bound is checked separately.
 - Unneeded `ignore` in a read-only emerged halo is allowed and remains
   byte-identical.
@@ -2785,6 +2801,10 @@ particular, every opcode token in Section 7.1 receives exactly one count row,
 including `BIOME_TOP`, `BIOME_FILLER`, `BIOME_SHORE`, `BIOME_BED`,
 `RESOURCE_EXACT_HOST` and `DECORATION`; every one of those reserved P7-P9
 opcode counts and the three reserved priority counts must be zero.
+`opcode/TUNNEL_WALL` and `mask/tunnel_wall` are also exact zero, but remain
+ordinary P3 closed-vocabulary rows rather than reserved P7-P9 rows. Their zero
+is the accepted-source geometric proof in Section 8.8; their shared-core
+relation and replacement semantics remain covered by synthetic fixtures.
 
 The exact `proof` keys, each required `true`, are:
 
@@ -2876,8 +2896,9 @@ what those closed rows summarize; it does not authorize more row tags or keys:
 - canonical seed-zero plan digest and operation counts by opcode/priority;
 - zero P7/P8/P9 emission;
 - every exact mask population: foundations, paths, ford, bridge clear/support/
-  deck, causeway and culvert, tunnel floor/lumen/wall/roof, bed/bank seals,
-  receiver opens, contact-fall clears and B+ terrain fill/surface/clear;
+  deck, causeway and culvert, tunnel floor/lumen/roof, the exact-zero
+  `tunnel_wall` population, bed/bank seals, receiver opens, contact-fall clears
+  and B+ terrain fill/surface/clear;
 - candidate/resolved run peaks and all allocation metrics;
 - shuffled-candidate and repeated-plan canonical parity, including a
   non-identical same-priority pair, a non-identical same-priority triple hidden
@@ -2888,8 +2909,9 @@ what those closed rows summarize; it does not authorize more row tags or keys:
   equality;
 - ascending/descending/permuted horizontal and vertical order digests;
 - content class and replace-policy outcome matrix;
-- total seal outcomes for tunnel roof/wall and hydrology bed/bank operations,
-  including vegetation replacement;
+- total seal outcomes for real tunnel-roof and hydrology bed/bank operations,
+  plus the fixture-only closed `TUNNEL_WALL` replacement relation, including
+  vegetation replacement;
 - exact dungeon vertical proof rows and finite-oracle nonintersection;
 - mapgen-edge derivation and the exact 6,400-entry heightmap order/domain/call
   count;
@@ -3205,11 +3227,14 @@ which are digest-preimage receipts and add no artifact row or key. Its relation
 key grammar is
 `relation/<OPCODE_TOKEN>/<POLICY_TOKEN>/<POSITION>`, with exact closed
 uppercase vocabulary tokens and `POSITION` exactly `start`, `end` or
-`continuation`. The closed relation population is the 26 emitted primary
-opcode/policy pairs plus the sole `BRIDGE_CLEAR/CUT_NATURAL` alternate, exactly
-27 variants. `start` and `end` are required for every analytically present
-variant. `start` selects the owner slice containing the first Y of the resolved
-interval and `end` selects the owner slice containing its last Y; each uses the
+`continuation`. The closed shared-core relation population is the 26 P2-P6
+primary opcode/policy pairs plus the sole `BRIDGE_CLEAR/CUT_NATURAL`
+alternate, exactly 27 variants. It includes the fixture-covered,
+Production-zero `TUNNEL_WALL` relation and therefore is not an emitted-
+population claim. `start` and `end` are required for every analytically present
+variant; `TUNNEL_WALL` is absent from that current Production population.
+`start` selects the owner slice containing the first Y of the resolved interval
+and `end` selects the owner slice containing its last Y; each uses the
 canonical-least eligible occurrence under the tuple below. `continuation` is
 required if and only if at least one resolved interval for that variant crosses
 a complete strict-interior owner slice; it
@@ -3317,10 +3342,12 @@ labeled assertions:
 - one route and one hydrology column comparing the private scalar nearest tuple
   with the corresponding public `nearest_segment` result, including feature
   id, raw segment ordinal and rational squared-distance numerator/denominator;
-- every P2-P6 opcode and every replace policy through a real
-  Planner-to-Adapter KAT; for each opcode the Adapter must accept exactly the
-  Planner relation's priority, role and closed policy set, including both
-  `BRIDGE_CLEAR` policies and no other alternate policy;
+- every P2-P6 opcode and every replace policy through the shared-core synthetic
+  Planner-candidate fixture followed by the Adapter/replacement fixtures; for
+  each opcode the Adapter must accept exactly the Planner relation's priority,
+  role and closed policy set, including both `BRIDGE_CLEAR` policies and no
+  other alternate policy. This is fixture relation coverage, not a claim that
+  current Production emits `TUNNEL_WALL`;
 - same-priority conflicting pair, hidden conflicting triple and their
   permutations, plus a conflict-free cross-priority winner;
 - `authored_floor = -37`, lower/upper mapgen owner edges and analytic
@@ -3328,11 +3355,13 @@ labeled assertions:
 - derived `C+2` and named `C+4` bridge support; the exact accepted seed-zero
   roofed derived-bridge plan at `x = -1916`, `z = -2071`, whose upper
   `BRIDGE_CLEAR/CUT_NATURAL` run includes `F+4 = 43` while a P5 solid roof may
-  begin at `F+5`; culvert radius boundary, same-route tunnel portal exclusion,
-  tunnel collar and roof;
-- tunnel roof/wall and hydrology bed/bank seal rows proving known solid/ore/
-  resource/stratum preservation, air/compatible-liquid/vegetation replacement
-  and matrix vetoes; the exact equal-`S` mixed bank at `x = -456`, `z = -1490`
+  begin at `F+5`; culvert radius boundary, the exact same-route tunnel surface
+  portal and lateral same-route corridor witnesses from Section 8.8, both with
+  no `TUNNEL_WALL`, plus positive tunnel floor/lumen/roof;
+- real tunnel-roof and hydrology bed/bank seal rows, plus the synthetic
+  `TUNNEL_WALL` replacement row, proving known solid/ore/resource/stratum
+  preservation, air/compatible-liquid/vegetation replacement and matrix
+  vetoes; the exact equal-`S` mixed bank at `x = -456`, `z = -1490`
   with two `hydro_whitebridge_main` samples, one `hydro_whitebridge_ford`
   sample, `S = 17`, depths `4/1`, `seal_low = 11`,
   `seal_high = min(T,17)`, smallest feature `hydro_whitebridge_ford` and nil

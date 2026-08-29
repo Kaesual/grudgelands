@@ -1088,12 +1088,6 @@ local function planner_factory(allocator_factory)
 			end
 		end
 
-		local function functional_values_at(x, z)
-			local _, _, _, _, _, _, _, _, _, kind, functional_y, feature_id,
-				interface_id = tuple_at(x, z)
-			return kind, functional_y, feature_id, interface_id
-		end
-
 		local function metric_hydrology_at(x, z)
 			local id, segment, numerator, denominator =
 				hydrology_metric_values_at(x, z)
@@ -1218,45 +1212,6 @@ local function planner_factory(allocator_factory)
 			return best_relation
 		end
 
-		local function add_tunnel_collar(x, z, current_kind, current_feature_id)
-			local tunnel_count = 0
-			local shared_feature_id, shared_interface_id
-			local minimum_floor, maximum_floor
-			for direction = 1, 4 do
-				local dx, dz = 0, 0
-				if direction == 1 then dx = -1
-				elseif direction == 2 then dx = 1
-				elseif direction == 3 then dz = -1
-				else dz = 1 end
-				local kind, floor_y, feature_id, interface_id =
-					functional_values_at(x + dx, z + dz)
-				if kind == "tunnel_floor" then
-					if type(feature_id) ~= "string" or type(interface_id) ~= "string" then
-						fail("fail_mask", "tunnel sample identity is incomplete")
-					end
-					tunnel_count = tunnel_count + 1
-					if shared_feature_id == nil then
-						shared_feature_id, shared_interface_id = feature_id, interface_id
-					elseif shared_feature_id ~= feature_id or
-							shared_interface_id ~= interface_id then
-						fail("fail_conflict", "tunnel collar samples disagree")
-					end
-					minimum_floor = minimum_floor and math.min(minimum_floor, floor_y) or
-						floor_y
-					maximum_floor = maximum_floor and math.max(maximum_floor, floor_y) or
-						floor_y
-				end
-			end
-			if tunnel_count == 0 or current_kind == "tunnel_floor" then return end
-			if current_feature_id == shared_feature_id then return end
-			if current_kind ~= nil then
-				fail("fail_conflict", "tunnel collar overlaps another functional surface")
-			end
-			add_candidate(minimum_floor + 1, maximum_floor + 4, 3,
-				OP_TUNNEL_WALL, ROLE_TUNNEL_WALL, POLICY_SEAL_VOID,
-				shared_feature_id, shared_interface_id)
-		end
-
 		local function add_column_candidates(x, z)
 			-- Scalar locals keep the Lua 5.1 closure below its 60-upvalue ceiling.
 			local OP_BRIDGE_CLEAR, OP_BRIDGE_DECK, OP_BRIDGE_SUPPORT = 5, 6, 7
@@ -1302,6 +1257,18 @@ local function planner_factory(allocator_factory)
 			if terrain_y < AUTHORED_FLOOR or terrain_y > surface_cap or
 					surface_cap > OWNER_MAX then
 				fail("fail_bound", "column surface interval differs")
+			end
+			local contact_lower_hydro, contact_lower_bed
+			if transition_kind == "waterfall" and
+					transition_face_mask ~= nil then
+				local contact_relation_ordinal = transition_relation(transition_id,
+					"waterfall")
+				contact_lower_hydro = interface_value(contact_relation_ordinal, 5)
+				local contact_lower_depth = validate_wet_profile(contact_lower_hydro)
+				contact_lower_bed = transition_lower_y - contact_lower_depth
+				if terrain_y ~= contact_lower_bed then
+					fail("fail_mask", "contact-face bed differs")
+				end
 			end
 
 			local culvert = false
@@ -1422,8 +1389,6 @@ local function planner_factory(allocator_factory)
 					functional_feature_id, functional_interface_id)
 			end
 
-			add_tunnel_collar(x, z, functional_kind, functional_feature_id)
-
 			local wet_hydro, wet_surface, wet_bed, wet_relation = current_named_wet(
 				water_y, classified_id, classified_depth, transition_kind,
 				transition_id, transition_lower_y, transition_face_mask)
@@ -1454,19 +1419,15 @@ local function planner_factory(allocator_factory)
 
 			if transition_kind == "waterfall" and
 					transition_face_mask ~= nil then
-				local relation_ordinal = transition_relation(transition_id, "waterfall")
-				local lower_hydro = interface_value(relation_ordinal, 5)
-				local lower_depth = validate_wet_profile(lower_hydro)
-				local lower_bed = transition_lower_y - lower_depth
-				add_candidate(lower_bed + 1, transition_lower_y - 1, 6,
+				add_candidate(contact_lower_bed + 1, transition_lower_y - 1, 6,
 					OP_RIVER_WATER, ROLE_RIVER_WATER_SOURCE, POLICY_WRITE_WATER,
-					hydro_value(lower_hydro, 1), transition_id)
+					hydro_value(contact_lower_hydro, 1), transition_id)
 				add_candidate(transition_lower_y, transition_lower_y, 6,
 					OP_RECEIVER_OPEN, ROLE_AIR, POLICY_OPEN_ENGINEERED,
-					hydro_value(lower_hydro, 1), transition_id)
+					hydro_value(contact_lower_hydro, 1), transition_id)
 				add_candidate(transition_lower_y + 1, OWNER_MAX, 3,
 					OP_CONTACT_FALL_CLEAR, ROLE_AIR, POLICY_OPEN_ENGINEERED,
-					hydro_value(lower_hydro, 1), transition_id)
+					hydro_value(contact_lower_hydro, 1), transition_id)
 			elseif water_y ~= nil and terrain_y < water_y then
 				if classified_ordinal > 0 then
 					add_candidate(terrain_y + 1, water_y, 6, OP_RIVER_WATER,
