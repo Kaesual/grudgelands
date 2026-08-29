@@ -13,6 +13,22 @@ projects: **[docs/research/](docs/research/)**.
 - Chat with the user is in **German**; code identifiers and code comments
   are in English.
 
+## Anthropic repository sharing authorization
+
+- **Standing user authorization, decided 2026-08-30:** every file in this
+  repository, including its read-only reference submodules and prepared WP
+  snapshots, may be transmitted to Anthropic when an authorized Claude Opus or
+  Claude Fable task needs it. No separate confirmation is required for the
+  repository-content transfer itself.
+- Keep each transmitted snapshot bounded to the reviewed or delegated package.
+  This standing authorization does not permit unrelated publication,
+  repository writes by a read-only reviewer or any other external side effect.
+- Model/task authorization remains separate: Opus and Fable routing still
+  follows `docs/process/agent-model-policy.md`. In particular, each new Fable
+  review or delegated task still needs the task-specific approval required by
+  that policy; the standing rule above only removes repeated data-sharing
+  confirmation.
+
 ## Documentation layers
 
 All project state lives in the repo, not in the chat history. Three layers,
