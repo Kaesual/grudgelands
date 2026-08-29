@@ -1,9 +1,10 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R4 are accepted. Fixed-layout V1e R2 remains the live
-horizontal authority; the pure R3 vertical implementation and the first
-complete, still-disabled R4 geography/policy payload were independently
-accepted 2026-08-27. V1d remains historical evidence at `d337160`; R5 is next.
+**Status:** D1-D7 and R0-R5 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; the pure R3 vertical implementation and the complete,
+still-disabled R4 geography/policy and R5 planner/adapter payloads were
+independently accepted. V1d remains historical evidence at `d337160`; R6 is
+next.
 
 **Ruling date:** 2026-08-25
 
@@ -900,8 +901,8 @@ The canonical artifact body/file SHA-256 is
 `23a05d2115fb6d3a1b286e09a17847793e23fc0a23817ade8ce8b812875d1b3c`.
 Its full run scanned all 49,980,561 columns twice in independent seven-shard
 fleets and passed representative PUC/LuaJIT parity. The durable review is
-[wp40-simple-map-r4-review.md](wp40-simple-map-r4-review.md). No adapter or
-production callback is enabled yet; R5 remains a disabled planner stage.
+[wp40-simple-map-r4-review.md](wp40-simple-map-r4-review.md). No production
+callback is enabled yet; R5 remains a disabled planner stage.
 
 ### R5 — pure typed planner and disabled consolidated map adapter
 
@@ -919,6 +920,20 @@ remain y-disjoint. The new callback remains provably disabled. Native-
 preservation, owner-slice, mapchunk-order and dirty/light/liquid gates run
 without allowing it to coexist with a legacy writer in a production
 configuration.
+
+The pure typed Planner, consolidated Adapter, disabled construction seam and
+canonical exhaustive artifact were independently accepted on 2026-08-29. The
+canonical artifact body/file SHA-256 is
+`a0e7241dabf71833c490d574cbbf4702cdd2c63289277bcc3f49255039a78e1b` /
+`0ffd8cd5c0133645c330703b8e4ea581a21fe6e5891ddcd987236b26a7d07ca0`;
+the immutable input-manifest SHA-256 is
+`8eaef1d05557655552d845f4a281bf65d0066ceda562eb7736b995c3c174237a`.
+The durable evidence and review are recorded in
+[wp40-simple-map-r5-review.md](wp40-simple-map-r5-review.md). R5 remains
+private and disabled: it registers no mapgen callback and writes no world.
+The engineering brief is itself an R5 artifact-bound input and therefore keeps
+its pre-acceptance status header byte-for-byte; this plan and the R5 review are
+the successor authority for the accepted-stage status and R6 handoff.
 
 ### R6 — surface, resources and final varying-seed evidence
 

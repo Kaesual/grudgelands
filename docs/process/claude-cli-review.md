@@ -33,7 +33,7 @@ The prompt must also state that ignored coordinator/tool state — including
 and must not be searched or cited as repository content.
 
 ```bash
-repo_dir=/home/jan/projects/grudgelands
+repo_dir=/absolute/path/to/reviewed/worktree
 review_dir=/tmp/grudgelands-claude-review.UNIQUE
 claude_denied_tools=Bash,Write,Edit,MultiEdit,NotebookEdit,Task
 claude_denied_tools=$claude_denied_tools,WebFetch,WebSearch,SlashCommand
@@ -61,8 +61,12 @@ claude --help > "$review_dir/cli-help.txt" || exit 1
   review_status=$?
   printf '%s\n' "$review_status" > "$review_dir/exit.status"
   exit "$review_status"
-) &
+)
 ```
+
+Set `repo_dir` to the exact reviewed checkout or worktree. Never substitute a
+different main checkout merely because it shares the repository object store;
+the worktree bytes and uncommitted reviewed state are the review target.
 
 `--tools` bounds the available built-in tool set; `--allowedTools` only
 pre-approves listed tools and is not itself a restriction. The deny list is a

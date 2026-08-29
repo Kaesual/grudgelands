@@ -132,7 +132,9 @@ the goal-level view.
   layout freeze, route/water/core validation and housing-capacity evidence are
   independently accepted. The pure R3 vertical implementation and canonical
   artifact and the complete still-disabled R4 geography/policy payload were
-  independently accepted 2026-08-27; R5 is next.
+  independently accepted 2026-08-27. The pure typed R5 planner/adapter payload
+  and canonical artifact were independently accepted 2026-08-29; R5 remains
+  disabled and R6 is next.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:

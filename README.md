@@ -182,7 +182,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-27. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-29. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -214,8 +214,10 @@ protected capital ingress corridors. Exhaustive V1e R2 validation freezes all
 100 anchors, the 74 actual POI spurs, housing capacity and three exact
 contact-face waterfalls without moving their reaches. The pure R3 vertical
 implementation and canonical artifact and the complete R4 geography/policy
-payload were independently accepted on 2026-08-27; R5 is next. R4 remains
-deliberately disabled and does not yet materialize a Luanti world.
+payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
+consolidated Adapter and canonical exhaustive artifact were independently
+accepted on 2026-08-29; R5 remains deliberately disabled and R6 is next. No
+accepted R5 path registers a callback or materializes a Luanti world.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
