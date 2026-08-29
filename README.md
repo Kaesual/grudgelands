@@ -201,7 +201,9 @@ questions and PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
-[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
+[the PvP-death TODO](TODO-design-pvp-death.md), respectively. WP40 R6's
+bounded contract choices are tracked separately in
+[the R6 contract TODO](TODO-design-wp40-r6-contract.md).
 
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
@@ -217,7 +219,11 @@ implementation and canonical artifact and the complete R4 geography/policy
 payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
 consolidated Adapter and canonical exhaustive artifact were independently
 accepted on 2026-08-29; R5 remains deliberately disabled and R6 is next. No
-accepted R5 path registers a callback or materializes a Luanti world.
+accepted R5 path registers a callback or materializes a Luanti world. R6
+contract preparation is currently gated by the bounded choices in
+[TODO-design-wp40-r6-contract.md](TODO-design-wp40-r6-contract.md); no R6 code
+starts before those choices are folded into an independently reviewed
+successor contract.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
