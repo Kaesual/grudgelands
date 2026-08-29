@@ -52,6 +52,10 @@ child_scratches=()
 new_scratch_result=""
 new_async_pid=""
 promotion_tmp=""
+output=""
+output_dir=""
+output_base=""
+output_probe=""
 
 read_ready_leader() {
 	local ready_file="$1" leader line_count
@@ -158,10 +162,29 @@ cleanup() {
 		rm -rf -- "$scratch"
 	fi
 	if [[ -n "$promotion_tmp" ]]; then rm -f -- "$promotion_tmp"; fi
+	if [[ -n "$output_probe" ]]; then rm -f -- "$output_probe"; fi
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
+
+if [[ "$mode" == final ]]; then
+	output="${1:-}"
+	[[ -n "$output" ]] || {
+		echo "usage: WP40_R5_MODE=final tools/wp40/run_simple_map_r5.sh OUTPUT.tsv" >&2
+		exit 1
+	}
+	output_dir="$(cd "$(dirname -- "$output")" && pwd -P)"
+	output_base="$(basename -- "$output")"
+	output="$output_dir/$output_base"
+	[[ "$output" == "$repo/docs/research/wp40-simple-map-r5-artifact.tsv" ]] || {
+		echo "run_simple_map_r5.sh: final mode promotes only the canonical R5 artifact" >&2
+		exit 1
+	}
+	output_probe="$(mktemp "$output_dir/.${output_base}.wp40-r5-write-probe.XXXXXXXX")"
+	rm -f -- "$output_probe"
+	output_probe=""
+fi
 
 wait_tracked() {
 	local wait_pid="$1" leader_pid="${active_leaders[$1]:-}" status=0
@@ -635,19 +658,6 @@ if [[ "$mode" == full ]]; then
 	echo "WP40 simple-map R5 full LuaJIT evidence passed; staged output is untrusted"
 	exit 0
 fi
-
-output="${1:-}"
-[[ -n "$output" ]] || {
-	echo "usage: WP40_R5_MODE=final tools/wp40/run_simple_map_r5.sh OUTPUT.tsv" >&2
-	exit 1
-}
-output_dir="$(cd "$(dirname -- "$output")" && pwd -P)"
-output_base="$(basename -- "$output")"
-output="$output_dir/$output_base"
-[[ "$output" == "$repo/docs/research/wp40-simple-map-r5-artifact.tsv" ]] || {
-	echo "run_simple_map_r5.sh: final mode promotes only the canonical R5 artifact" >&2
-	exit 1
-}
 
 manifest_b="$scratch/input-manifest-b.tsv"
 historical_b="$scratch/fleet-b-historical_r4.tsv"

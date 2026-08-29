@@ -1671,8 +1671,24 @@ therefore the sole owner of its water role. On a culvert column,
 it retains the complete `authored_floor..T-1` interval. The solid causeway remains
 from `W+1` through `T`. This is a deterministic closed radius-one lattice tube
 around the accepted continuous hydrology centreline; it requires no inferred
-flow direction or search. A named causeway with no such culvert column
-anywhere in its complete accepted footprint is a validation failure.
+flow direction or search.
+
+The complete analytic Validator derives the exact named-causeway
+`route_interface_id` roster from the accepted hydrology-interface rows. For
+each roster member it separately counts the complete functional footprint,
+the columns satisfying the exact culvert predicate above and the resolved
+`CAUSEWAY_CULVERT` population. Every roster member must own at least one
+functional column, its eligible population must be a subset of that footprint,
+no resolved culvert may carry an unowned interface and the eligible and
+resolved counts must be exactly equal. Derived causeway columns with a nil
+functional interface are outside this named roster and remain non-culvert
+columns. A named causeway whose complete functional footprint has no radius-one
+eligible column is valid and retains the non-culvert `CAUSEWAY_FILL` interval
+throughout; a co-located nominal crossing position does not by itself create a
+culvert. The accepted `gravesalt_causeway_north` footprint is the constructive
+zero-eligible case. The sorted per-interface footprint/eligible/resolved counts
+enter the `planner_source_scalar` digest preimage without adding an Artifact
+key.
 
 ### 8.8 Tunnel floor, lumen, zero side-wall population and roof
 

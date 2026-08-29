@@ -2622,7 +2622,8 @@ return function(common)
 	end
 
 	local function seed_oracle_authority(source)
-		local authority={profiles={},hydrology={},interfaces={},route_interfaces={}}
+		local authority={profiles={},hydrology={},interfaces={},route_interfaces={},
+			causeway_interfaces={}}
 		for index=1,dense_count(source.hydrology_profiles,
 				"seed oracle hydrology profiles") do
 			local row=source.hydrology_profiles[index]
@@ -2657,6 +2658,10 @@ return function(common)
 				end
 				members[row.hydrology_id]=true
 				authority.route_interfaces[row.route_interface_id]=row
+				if row.kind=="causeway" then
+					authority.causeway_interfaces[#authority.causeway_interfaces+1]=
+						row.route_interface_id
+				end
 			elseif row.kind=="rapid" or row.kind=="waterfall" then
 				if not authority.hydrology[row.upper_id] or
 					not authority.hydrology[row.lower_id] or row.upper_id==row.lower_id then
@@ -2683,6 +2688,10 @@ return function(common)
 			else fail("seed oracle interface kind differs") end
 			authority.interfaces[row.id]={row=row,members=members}
 		end
+		table.sort(authority.causeway_interfaces)
+		if #authority.causeway_interfaces==0 then
+			fail("seed oracle causeway interface roster is empty")
+		end
 		local refs=expected_stable_refs(source)
 		authority.stable_ordinal={}
 		for index=1,#refs do authority.stable_ordinal[refs[index]]=index end
@@ -2694,6 +2703,7 @@ return function(common)
 			feature={},interface={},endpoints={},resolved_count=0,
 			r_y_min={},r_y_max={},r_priority={},r_opcode={},r_role={},r_policy={},
 			r_feature={},r_interface={},roofed_bridge_headroom=false,
+			causeway=false,causeway_interface=false,causeway_culvert_eligible=false,
 			equal_surface_bank=false,equal_surface_bank_samples=0,
 			equal_surface_bank_surface=0,equal_surface_bank_seal_low=0,
 			equal_surface_bank_seal_high=0,equal_surface_bank_feature=false,
@@ -2976,6 +2986,9 @@ return function(common)
 	local function seed_build_candidates(state,authority,get,metric_at,x,z)
 		state.count=0
 		state.roofed_bridge_headroom=false
+		state.causeway=false
+		state.causeway_interface=false
+		state.causeway_culvert_eligible=false
 		state.equal_surface_bank=false
 		local terrain,water_y,hydro_id,depth=get(6,x,z),get(7,x,z),get(8,x,z),get(9,x,z)
 		local kind,functional_y,feature,interface=get(10,x,z),get(11,x,z),
@@ -3004,6 +3017,8 @@ return function(common)
 		end
 		local culvert,culvert_bed=false,nil
 		if kind=="causeway" then
+			state.causeway=true
+			state.causeway_interface=interface or false
 			if functional_y~=terrain or clearance==nil or terrain<clearance+1 then
 				fail("seed oracle causeway tuple differs")
 			end
@@ -3018,6 +3033,7 @@ return function(common)
 					end
 					culvert_bed=water_y-depth
 					if culvert_bed>=water_y then fail("seed oracle culvert bed differs") end
+					state.causeway_culvert_eligible=true
 				end
 			end
 		end
@@ -3300,6 +3316,14 @@ return function(common)
 		local equal_surface_bank_signature_survivor_count=0
 		local surface_cap_gap_count=0
 		local surface_cap_gap
+		local causeway_footprint_counts,causeway_eligible_counts,
+			causeway_resolved_counts={},{},{}
+		for index=1,#authority.causeway_interfaces do
+			local interface=authority.causeway_interfaces[index]
+			causeway_footprint_counts[interface]=0
+			causeway_eligible_counts[interface]=0
+			causeway_resolved_counts[interface]=0
+		end
 
 		local function witness_less(current,chunk_z,chunk_x,z,x,owner_y)
 			if current==nil then return true end
@@ -3579,11 +3603,34 @@ return function(common)
 						select_fixed_witness("fixed/first_sky_clear",surface_cap+1,x,central_z)
 					end
 
+					if state.causeway and state.causeway_interface~=false then
+						local causeway_interface=state.causeway_interface
+						if causeway_footprint_counts[causeway_interface]==nil then
+							fail("seed oracle causeway footprint ownership differs")
+						end
+						causeway_footprint_counts[causeway_interface]=
+							causeway_footprint_counts[causeway_interface]+1
+						if state.causeway_culvert_eligible then
+							causeway_eligible_counts[causeway_interface]=
+								causeway_eligible_counts[causeway_interface]+1
+						end
+					end
+					local column_culvert_interface
 					for run=1,state.resolved_count do
 						local first_slice=owner_chunk_min(state.r_y_min[run])
 						local last_slice=owner_chunk_min(state.r_y_max[run])
 						local pieces=(last_slice-first_slice)/80+1
 						local opcode,priority=state.r_opcode[run],state.r_priority[run]
+						if opcode==OPCODE_ID.CAUSEWAY_CULVERT then
+							local culvert_interface=state.r_interface[run]
+							if causeway_resolved_counts[culvert_interface]==nil or
+									column_culvert_interface~=nil then
+								fail("seed oracle causeway culvert ownership differs")
+							end
+							column_culvert_interface=culvert_interface
+							causeway_resolved_counts[culvert_interface]=
+								causeway_resolved_counts[culvert_interface]+1
+						end
 						opcode_counts[OPCODES[opcode]]=opcode_counts[OPCODES[opcode]]+pieces
 						priority_counts[priority]=priority_counts[priority]+pieces
 						local mask=MASK_BY_OPCODE[opcode]
@@ -3626,6 +3673,21 @@ return function(common)
 			integer_ascii(scalar_queries,"scalar query count"),
 			integer_ascii(metric_queries,"hydrology metric query count")},"\t").."\n"
 		for index=1,#metric_rows do scalar_rows[#scalar_rows+1]=metric_rows[index] end
+		for index=1,#authority.causeway_interfaces do
+			local interface=authority.causeway_interfaces[index]
+			local footprint=causeway_footprint_counts[interface]
+			local eligible=causeway_eligible_counts[interface]
+			local resolved=causeway_resolved_counts[interface]
+			if footprint<1 or eligible>footprint or resolved~=eligible then
+				fail("named causeway culvert population differs: "..interface)
+			end
+			scalar_rows[#scalar_rows+1]=table.concat({"causeway_culvert",
+				canonical_scalar(interface),
+				integer_ascii(footprint,"causeway footprint column count"),
+				integer_ascii(eligible,"causeway eligible culvert column count"),
+				integer_ascii(resolved,"causeway resolved culvert column count")},
+				"\t").."\n"
+		end
 		scalar_rows[#scalar_rows+1]=table.concat({"equal_surface_bank_fallbacks",
 			integer_ascii(equal_surface_bank_fallback_count,
 				"equal-surface bank fallback count"),
