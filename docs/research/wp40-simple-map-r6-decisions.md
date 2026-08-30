@@ -40,7 +40,7 @@ This record is the current successor to that deliberately historical link.
   projection, exact rational decoration fills, deterministic parameters,
   ordering and explicit deferrals.
 - `docs/design/world_zones.md` §11 owns resource-bearing horizontal classes,
-  the all-resource deposit-opportunity ledger, strict six-race parity, the
+  the all-resource natural-vein ledger, strict six-race density parity, the
   cultural biome/zone roster, the 5×5×9 reservation and WP33-before-R7 order.
 - `docs/design/world.md` §2 R4 owns exactly 12 renewable sockets in each
   ordinary mining camp.
@@ -74,14 +74,18 @@ of it and fails closed if larger. Movement, retry, fallback search and a later
 healing writer remain forbidden. WP33, not R6, decides whether the realized
 feature may replace P7 top/filler output in the lower two levels.
 
-For resource parity over the fixed 32-seed corpus, race `r` has numerator
-`V_r + 384`, where `V_r` is its accepted natural veins and 384 is 12 ordinary
-camp sockets in each of 32 worlds. Its denominator `H_r` counts each exact
-eligible WP43 stratum-host position once in the admitted horizontal classes
-and counted tier/deep bands. The six exact rates are `(V_r + 384) / H_r`.
-If `hi` and `lo` are the extrema, the contract must compare their integer
-cross-products and require `20 * hi <= 21 * lo`; it may not use a mean-relative
-or floating-point tolerance. Apex sockets are not regional compensation.
+The independent R6 contract review exposed that adding a full-world camp
+constant to a bounded representative host census mixes populations. The
+2026-08-30 correction supersedes that combined formula without changing either
+approved quantity. For natural-resource parity over the fixed 32-seed corpus,
+race `r` has accepted census veins `V_r` and census host denominator `H_r`.
+The six exact sampled natural rates are `V_r / H_r`; if `hi` and `lo` are the
+extrema, the contract compares their integer cross-products and requires
+`20 * hi <= 21 * lo`. It may not use a mean-relative or floating-point
+tolerance. Ordinary camps are gated separately at exactly 12 sockets per race
+per seed, hence 384 per race across the corpus. Camp sockets are not added to
+the sampled numerator; apex sockets are shared bonuses and are not regional
+compensation.
 
 ## 4. Remaining contract gate
 

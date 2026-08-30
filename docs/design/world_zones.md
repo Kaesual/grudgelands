@@ -843,22 +843,23 @@ asks for it.
   `immutable_dragon_channel` admit no natural resource. Eligibility still
   requires the exact WP43 stratum host at y; water, bed material, routes,
   dungeons, foreign nodes and protected content are not hosts.
-- The six-race **strict 5%-over-lowest resource-parity ledger** counts every
-  natural resource eligible in the race-region column: all universal resources
-  plus that region's assigned G1 and G2. Its unit is one accepted natural vein
-  or one renewable ordinary-camp socket, called a *deposit opportunity*; placed
-  natural nodes remain a separate density/material-volume ledger. Across the
-  fixed 32-seed corpus, let `V_r` be race `r`'s accepted natural veins,
-  `H_r` its accessible host volume and `C_r = 32 * 12` its ordinary-camp
-  sockets. `H_r` counts each exact eligible WP43 stratum-host position once in
-  every admitted tier/deep band where at least one counted resource is
-  eligible, regardless of how many counted resources can use that position.
-  The exact regional rate is `(V_r + C_r) / H_r`.
-  If `lo` and `hi` are the lowest and highest of the six exact rational rates,
-  acceptance requires the strict pairwise-extrema rule
-  `20 * hi <= 21 * lo`; implementations compare cross-products and use no
-  floating-point tolerance. Apex-camp sockets are shared bonuses and are not
-  part of this regional ledger.
+- The six-race **strict 5%-over-lowest natural-resource-parity ledger** counts
+  every natural resource eligible in the race-region column: all universal
+  resources plus that region's assigned G1 and G2. Placed natural nodes remain
+  a separate density/material-volume ledger. Across the fixed 32-seed corpus
+  and the exact representative resource census, let `V_r` be race `r`'s
+  accepted natural veins and `H_r` its accessible host volume. `H_r` counts
+  each exact eligible WP43 stratum-host position once in every admitted
+  tier/deep band where at least one counted resource is eligible, regardless
+  of how many counted resources can use that position. The exact sampled
+  natural rate is `V_r / H_r`. If `lo` and `hi` are the lowest and highest of
+  the six exact rational rates, acceptance requires the strict
+  pairwise-extrema rule `20 * hi <= 21 * lo`; implementations compare
+  cross-products and use no floating-point tolerance.
+- Ordinary-camp equality is a separate gate: each race has exactly 12 sockets
+  per seed and therefore exactly 384 across the 32-seed corpus. Camp sockets
+  are never added to a sample-only natural-vein numerator. Apex-camp sockets
+  remain shared bonuses and are not part of either regional gate.
 - Every race region supplies its cultural material ordinarily at the surface
   for its own architecture, trade and quests and supplies one concentrated T4
   source in exactly one race-frontier zone. Foreign cultural material is
@@ -1168,11 +1169,11 @@ numeric-truncated seed.
   core has at most 12 nodes of natural relief. Housing capacity is reported
   from the fixed-layout canonical packing portfolio with an auditable upper
   bound.
-- The G1/G2, cultural-resource, regional-parity, practical
-  opposing/deep/island-access and 24-apex-slot ledgers pass over 32
-  representative content seeds. Native, enemy-contested, deep-cross-border,
-  apex-camp and trade access remain practical; all protected apex sockets are
-  reachable and diggable with their required tool.
+- The G1/G2, cultural-resource, natural-density parity, ordinary-camp
+  equality, practical opposing/deep/island-access and 24-apex-slot ledgers pass
+  over 32 representative content seeds. Native, enemy-contested,
+  deep-cross-border, apex-camp and trade access remain practical; all protected
+  apex sockets are reachable and diggable with their required tool.
 - Every `logical biome x zone` cell has a valid content result or an explicit
   civic/no-hostiles declaration. Wet named WP40 hydrology uses non-renewable
   `default:river_water_source`; oceans, bays and non-hydrology surface water

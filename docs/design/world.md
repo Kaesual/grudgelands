@@ -194,9 +194,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   - **Exactly 12 renewable regional-tier metal sockets per ordinary camp**, in
     the **tier of the camp's own region** (§2 R6 / `items_crafting.md` §3.0.1)
     — so a camp is where a player gets T3 stock without a −400 expedition,
-    and the camp's garrison is the price. The fixed count is also the
-    ordinary-camp term in `world_zones.md` §11's six-race resource-parity
-    ledger.
+    and the camp's garrison is the price. `world_zones.md` §11 gates this fixed
+    count as exact six-race ordinary-camp equality, separately from sampled
+    natural-resource density.
     - The two level-60 apex camps at the dragon endpoints are the fixed
       exception to the single regional-tier content rule: each has exactly
       **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and

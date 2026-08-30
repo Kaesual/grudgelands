@@ -940,15 +940,17 @@ the successor authority for the accepted-stage status and R6 handoff.
 Map frozen logical biome IDs to content, place deterministic decorations and
 resources, and retain WP43 material/depth APIs. No catalog reopens zone, land
 or biome-selection authority. Produce the 32-representative-seed G1/G2,
-cultural-resource, regional-parity, practical opposing/deep/island-access and
-24-apex-slot ledgers. Export R2's fixed-layout housing portfolio, bounds and
+cultural-resource, natural-density-parity, ordinary-camp-equality, practical
+opposing/deep/island-access and 24-apex-slot ledgers. Export R2's fixed-layout
+housing portfolio, bounds and
 capacity result for WP24. R6 also freezes the invisible cultural-opportunity
 slot API: every accepted slot owns the exact centred 5 by 5 by 9 reservation
 from `surface_y - 1` through `surface_y + 7`, without world mutation, movement,
 retry or fallback search. The accepted surface/decorations, exact six
-concentrated frontier zones, land-plus-planned-water resource eligibility and
-deposit-opportunity parity rule live in the design documents and the reviewed
-R6 contract rather than in implementation defaults.
+concentrated frontier zones, land-plus-planned-water resource eligibility,
+sampled natural-density parity rule and separate ordinary-camp equality live
+in the design documents and the reviewed R6 contract rather than in
+implementation defaults.
 
 After R6 acceptance, WP33 registers every cultural source against that frozen
 slot API while the writer remains disabled. A registration outside the
