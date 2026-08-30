@@ -1,10 +1,11 @@
 # WP40 Simple Map Rebase Plan
 
-**Status:** D1-D7 and R0-R5 are accepted. Fixed-layout V1e R2 remains the live
-horizontal authority; the pure R3 vertical implementation and the complete,
-still-disabled R4 geography/policy and R5 planner/adapter payloads were
-independently accepted. V1d remains historical evidence at `d337160`; R6 is
-next.
+**Status:** D1-D7 and R0-R6 are accepted. Fixed-layout V1e R2 remains the live
+horizontal authority; R3-R6 remain the accepted still-disabled vertical,
+geography/policy, planner/adapter and surface/resource evidence milestones.
+R6 was independently accepted on 2026-08-31 at `fb577ea`; V1d remains
+historical evidence at `d337160`. R7 is next and still requires the accepted
+WP33 cultural-source registrations before writer activation.
 
 **Ruling date:** 2026-08-25
 
@@ -956,6 +957,15 @@ After R6 acceptance, WP33 registers every cultural source against that frozen
 slot API while the writer remains disabled. A registration outside the
 reservation fails closed. The lower-two-level replacement question is decided
 by WP33's own reviewed contract; it is not an R6 implementation choice.
+
+R6 was independently accepted on 2026-08-31. Its complete 32-seed fleet,
+canonical 824,386-row artifact, durable run receipt and byte-identical
+LuaJIT/PUC 5.1 micro-KAT are recorded in the
+[artifact](wp40-simple-map-r6-artifact.tsv),
+[run receipt](wp40-simple-map-r6-run-receipt.tsv) and
+[review](wp40-simple-map-r6-review.md). The payload remains disabled and
+writes no world; acceptance therefore advances the sequence to R7 without
+activating a second mapgen path.
 
 ### R7 — atomic production cutover and consumer migration
 
