@@ -1,7 +1,8 @@
 # Named World Zones & PvP Geography
 
 Decided 2026-08-10; complete named-zone pass 2026-08-11; fixed simple-map
-rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27. This
+rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27; R6
+surface/resource decisions 2026-08-29. This
 document supersedes the old radial
 "safe core + war coast" surface layout in `world.md` and
 `biomes_mobs.md`. The shipped WP18/WP36 map still uses that old layout;
@@ -834,14 +835,59 @@ asks for it.
   multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
   ordinary T6 (4×), with initial targets of approximately one eligible ore per
   12,000/6,000/3,000 host nodes per species. All G2 requires a T4 pick to
-  harvest. The total expected natural vein count plus the one ordinary camp
-  budget is equal for all six race regions within **±5%**, normalized by
-  accessible host volume rather than number of zones.
+  harvest.
+- Natural-resource placement and its accessible-host denominator admit only
+  horizontal classes `land` and zone-owned `planned_water`. Rivers, lakes,
+  marsh channels, cenotes and the landward bay masks therefore retain their
+  underground geology. `coastal_shelf`, `deep_ocean` and
+  `immutable_dragon_channel` admit no natural resource. Eligibility still
+  requires the exact WP43 stratum host at y; water, bed material, routes,
+  dungeons, foreign nodes and protected content are not hosts.
+- The six-race **strict 5%-over-lowest natural-resource-parity ledger** counts
+  every natural resource eligible in the race-region column: all universal
+  resources plus that region's assigned G1 and G2. Placed natural nodes remain
+  a separate density/material-volume ledger. Across the fixed 32-seed corpus
+  and the exact representative resource census, let `V_r` be race `r`'s
+  accepted natural veins and `H_r` its accessible host volume. `H_r` counts
+  each exact eligible WP43 stratum-host position once in every admitted
+  tier/deep band where at least one counted resource is eligible, regardless
+  of how many counted resources can use that position. The exact sampled
+  natural rate is `V_r / H_r`. If `lo` and `hi` are the lowest and highest of
+  the six exact rational rates, acceptance requires the strict
+  pairwise-extrema rule `20 * hi <= 21 * lo`; implementations compare
+  cross-products and use no floating-point tolerance.
+- Ordinary-camp equality is a separate gate: each race has exactly 12 sockets
+  per seed and therefore exactly 384 across the 32-seed corpus. Camp sockets
+  are never added to a sample-only natural-vein numerator. Apex-camp sockets
+  remain shared bonuses and are not part of either regional gate.
 - Every race region supplies its cultural material ordinarily at the surface
-  for its own architecture, trade and quests, and supplies a concentrated T4
-  source in contested level-31+ land or its projected deep column. Foreign
-  cultural material is optional PvP-counter input and never a universal
-  progression requirement.
+  for its own architecture, trade and quests and supplies one concentrated T4
+  source in exactly one race-frontier zone. Foreign cultural material is
+  optional PvP-counter input and never a universal progression requirement.
+  Ordinary opportunity density is exactly one per 4,096 eligible logical-
+  biome columns; the listed concentrated zone uses one per 1,024. No
+  Battlegrounds zone receives the concentrated rate.
+
+  | Race | Cultural material | Eligible logical biomes | Concentrated T4 zone |
+  |---|---|---|---|
+  | Human | Sunwax | `grug_meadows`, `grug_deep_forest` | `elandor_ashenward_march` |
+  | Dwarf | Runeslate | `grug_pine_hills`, `grug_crags`, `grug_crags_snowy` | `elandor_stormvault_heights` |
+  | Elf | Moonresin | `grug_elf_forest`, `grug_deep_forest`, `grug_jungle_fringe` | `elandor_glassroot_wilds` |
+  | Undead | Gravesalt | `grug_blight`, `grug_bone_forest`, `grug_swamp`, `grug_beach` | `kragmar_blackwind_rise` |
+  | Orc | Red Ochre | `grug_savanna`, `grug_badlands` | `kragmar_bannerbreak_mesa` |
+  | Troll | Spirit Resin | `grug_jungle_edge`, `grug_deep_jungle`, `grug_swamp`, `grug_badlands_east` | `kragmar_thunderroot_wilds` |
+
+  R6 selects and records deterministic invisible opportunity slots; WP33
+  registers and realizes their visible source features through the same WP40
+  writer. Every slot reserves the centred 5 by 5 horizontal square from
+  `surface_y - 1` through `surface_y + 7`. A registration may occupy any
+  subset of that envelope; a larger footprint fails closed. Slots never move,
+  retry or search for fallback ground, and the envelope is collision space,
+  not a structure, yield promise or R6 world mutation. Whether a WP33 feature
+  may replace P7 top/filler output in the lower two levels belongs to WP33's
+  reviewed registration contract. WP33 registrations must be accepted against
+  the frozen R6 slot API before R7 activates the writer; no production world
+  is generated with permanently empty cultural reservations.
 - Both apex camps contain the same count of every one of the six gem species:
   exactly two renewable sockets per species per island.
   Endpoint deposits are a shared bonus and do not compensate a deficient home
@@ -1123,11 +1169,11 @@ numeric-truncated seed.
   core has at most 12 nodes of natural relief. Housing capacity is reported
   from the fixed-layout canonical packing portfolio with an auditable upper
   bound.
-- The G1/G2, cultural-resource, regional-parity, practical
-  opposing/deep/island-access and 24-apex-slot ledgers pass over 32
-  representative content seeds. Native, enemy-contested, deep-cross-border,
-  apex-camp and trade access remain practical; all protected apex sockets are
-  reachable and diggable with their required tool.
+- The G1/G2, cultural-resource, natural-density parity, ordinary-camp
+  equality, practical opposing/deep/island-access and 24-apex-slot ledgers pass
+  over 32 representative content seeds. Native, enemy-contested,
+  deep-cross-border, apex-camp and trade access remain practical; all protected
+  apex sockets are reachable and diggable with their required tool.
 - Every `logical biome x zone` cell has a valid content result or an explicit
   civic/no-hostiles declaration. Wet named WP40 hydrology uses non-renewable
   `default:river_water_source`; oceans, bays and non-hydrology surface water
@@ -1155,10 +1201,11 @@ numeric-truncated seed.
   and a documented derivation. One horizontal result is reused for a vertical
   column.
 - Lua source and tools pass plain Lua 5.1 syntax/static gates. Long full-layout
-  and 32-seed populations run under LuaJIT. Targeted representative PUC 5.1
-  KATs produce byte-identical canonical artifacts/digests. The retired exact
-  T2 PCC/F1/F2 and topology populations remain historical evidence, not gates
-  for the simple schema.
+  and 32-seed populations run under LuaJIT. After final Lua bytes freeze,
+  exactly one compact representative micro-KAT runs once under PUC 5.1 and
+  once under LuaJIT; their canonical bytes and digest must be identical. The
+  retired exact T2 PCC/F1/F2 and topology populations and the R1-R4 targeted
+  PUC schedule remain historical evidence, not gates for the simple schema.
 - WP40 is fresh-world-only. Headless generation, deterministic replay and the
   user's fresh-world GUI test complete release evidence. Migration of starts,
   respawns, outposts, camps, rares, patrols, mobs, gathering, waypoints, map,

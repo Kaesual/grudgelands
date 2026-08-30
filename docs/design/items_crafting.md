@@ -1194,10 +1194,11 @@ culture.
 | Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
 
 - Each culture has an ordinary home-region surface source sufficient for its
-  architecture, quests and trade, plus a higher-yield source in its contested
-  level-31+ zones or deep race-region column. The concentrated source requires
-  T4 harvesting; an ordinary surface source retains its natural axe/shovel/
-  hand-gathering behavior.
+  architecture, quests and trade, plus a higher-yield source in or beneath
+  exactly the one race-frontier zone listed for it in `world_zones.md` §11.
+  No Battlegrounds zone receives that concentrated rate. The concentrated
+  source requires T4 harvesting; an ordinary surface source retains its
+  natural axe/shovel/hand-gathering behavior.
 - A material is not forced into every cultural object: Gravewood furniture
   need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
   palette; Spirit Resin uses warm amber or toxic green.

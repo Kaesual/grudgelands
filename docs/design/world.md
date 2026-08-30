@@ -1,10 +1,10 @@
 # World Design
 
 Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
-redesign 2026-08-10). Implementation: WP2/WP18 are the currently shipped
-map, WP6 supplies guards/outposts, WP40 replaces the surface geography with
-the named-zone map, and WP13 then supplies structures and villages. The
-binding macro-map and PvP rules are in `world_zones.md`.
+redesign 2026-08-10; R6 camp quantity 2026-08-29). Implementation: WP2/WP18
+are the currently shipped map, WP6 supplies guards/outposts, WP40 replaces the
+surface geography with the named-zone map, and WP13 then supplies structures
+and villages. The binding macro-map and PvP rules are in `world_zones.md`.
 
 ## 0. Canonical names
 
@@ -191,10 +191,12 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   walls, tents, fences and dressing remain mutable and claim-excluded. In the
   MVP that exception is **exactly one structure kind: the mining camps** of
   §4.
-  - **10–15 renewable resource nodes per camp**, in the **tier of the
-    camp's own region** (§2 R6 / `items_crafting.md` §3.0.1) — so a camp
-    is where a player gets T3 stock without a −400 expedition, and the
-    camp's garrison is the price.
+  - **Exactly 12 renewable regional-tier metal sockets per ordinary camp**, in
+    the **tier of the camp's own region** (§2 R6 / `items_crafting.md` §3.0.1)
+    — so a camp is where a player gets T3 stock without a −400 expedition,
+    and the camp's garrison is the price. `world_zones.md` §11 gates this fixed
+    count as exact six-race ordinary-camp equality, separately from sampled
+    natural-resource density.
     - The two level-60 apex camps at the dragon endpoints are the fixed
       exception to the single regional-tier content rule: each has exactly
       **12 nodes, two each of Citrine, Garnet, Jade, Diamond, Sapphire and
@@ -436,8 +438,8 @@ zones. They enforce authored routes and make the zone's strategic role visible:
   and anyone permitted by the zone rule who fights past the garrison may mine
   it. Under R4 a **mining camp is the only place in
   the world where anything regrows at all**, precisely because its
-  small functional anchor and renewable sockets are indestructible: 10–15
-  renewable nodes in the region's own material tier on a 2–4 h respawn
+  small functional anchor and renewable sockets are indestructible: exactly
+  12 renewable regional-tier metal sockets on a 2–4 h respawn
   (numbers and rationale in §2 R4). Its ordinary walls, tents and dressing
   remain mutable under the local terrain policy.
   That is what makes such a camp a travel destination and a conflict

@@ -67,6 +67,8 @@ are hard-protected; roads, villages, outpost/camp shells and battlefield
 dressing remain mutable but claim-excluded. Planned mainland water stays part
 of its zone, an editable 80-node shelf follows the outer coast, deep ocean is
 immutable, and full-column dragon channels keep the offshore islands boat-only.
+Natural resources exist under land and zone-owned planned water; the six-race
+supply gate compares all-resource deposit opportunities by exact host volume.
 The still-open playable-boat behavior is isolated in
 [TODO-design-boats.md](TODO-design-boats.md).
 
@@ -182,7 +184,7 @@ Full milestone view: [ROADMAP.md](ROADMAP.md).
 
 ## Current State
 
-*Last updated: 2026-08-29. Derived from [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-08-31. Derived from [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md); those are the status sources of truth.*
 
 **Shipped (16 of 45 work packages):** WP0–WP4, WP6, WP7, WP15, WP18,
@@ -201,7 +203,9 @@ questions and PvP-death XP rule remain explicitly open in
 [the boat TODO](TODO-design-boats.md),
 [the crafting/mount TODO](TODO-design-crafting-rework.md),
 [the depth TODO](TODO-design-depth.md) and
-[the PvP-death TODO](TODO-design-pvp-death.md), respectively.
+[the PvP-death TODO](TODO-design-pvp-death.md), respectively. WP40 R6's
+surface/resource choices and implementation are accepted but deliberately
+disabled, so they are not visible in the game yet.
 
 **In progress:** WP40, the named-zone map foundation, has been under
 implementation since 2026-08-13 on branch `wp40-named-zone-world-foundation`.
@@ -216,14 +220,19 @@ contact-face waterfalls without moving their reaches. The pure R3 vertical
 implementation and canonical artifact and the complete R4 geography/policy
 payload were independently accepted on 2026-08-27. The pure typed R5 Planner,
 consolidated Adapter and canonical exhaustive artifact were independently
-accepted on 2026-08-29; R5 remains deliberately disabled and R6 is next. No
-accepted R5 path registers a callback or materializes a Luanti world.
+accepted on 2026-08-29. R6's frozen surface/resource catalogs, private
+cultural-slot API, complete 32-seed evidence fleet and canonical artifact were
+independently accepted on 2026-08-31. R0-R6 remain deliberately disabled: no
+accepted path registers the production callback or materializes a Luanti
+world. WP33 must now register the visible cultural sources against R6's frozen
+slot API before R7 activates the writer.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.
 The accepted R2 artifact owns fixed-layout and once-per-layout capacity
-evidence; 32-seed content/supply and later production mapchunk performance
-evidence remain merge gates.
+evidence; the accepted R6 artifact owns 32-seed content/supply/access
+evidence. Production mapchunk performance and runtime evidence remain R8
+gates.
 
 **Ready to start next:** WP26 and WP44 are the newly unblocked material and
 economy roots. WP37, WP11, WP14, WP20, WP21 and WP8 are also ready behind shipped

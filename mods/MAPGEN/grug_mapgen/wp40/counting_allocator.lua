@@ -4,6 +4,8 @@ local MAX_SAFE = 9007199254740991
 local MAX_MAP_KEYS = 512
 local PLANNER_DOMAIN = "grug_wp40_r5_planner_allocator_v1"
 local ADAPTER_DOMAIN = "grug_wp40_r5_adapter_allocator_v1"
+local R6_PLANNER_DOMAIN = "grug_wp40_r6_planner_allocator_v1"
+local R6_SETTLEMENT_DOMAIN = "grug_wp40_r6_settlement_allocator_v1"
 local allocator_states = setmetatable({}, {__mode = "k"})
 
 local function fail(message)
@@ -39,8 +41,11 @@ local function metadata_key(kind, label)
 end
 
 local function require_construction(state)
+	if state.hotpath_active ~= false then
+		state.hotpath_table_allocations = state.hotpath_table_allocations + 1
+		fail("hotpath is active")
+	end
 	if state.construction_sealed then fail("construction is sealed") end
-	if state.hotpath_active ~= false then fail("hotpath is active") end
 end
 
 local function register_object(state, object, label, kind, maximum)
@@ -187,7 +192,8 @@ function allocator_methods.metrics(allocator)
 end
 
 local function valid_domain(domain_id)
-	return domain_id == PLANNER_DOMAIN or domain_id == ADAPTER_DOMAIN
+	return domain_id == PLANNER_DOMAIN or domain_id == ADAPTER_DOMAIN or
+		domain_id == R6_PLANNER_DOMAIN or domain_id == R6_SETTLEMENT_DOMAIN
 end
 
 local function new_allocator(...)

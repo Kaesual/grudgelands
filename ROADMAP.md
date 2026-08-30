@@ -133,15 +133,19 @@ the goal-level view.
   independently accepted. The pure R3 vertical implementation and canonical
   artifact and the complete still-disabled R4 geography/policy payload were
   independently accepted 2026-08-27. The pure typed R5 planner/adapter payload
-  and canonical artifact were independently accepted 2026-08-29; R5 remains
-  disabled and R6 is next.
+  and canonical artifact were independently accepted 2026-08-29. R6's frozen
+  surface/resource catalogs, private cultural-slot API, complete 32-seed
+  evidence and canonical artifact were independently accepted 2026-08-31.
+  R0-R6 remain disabled; WP33 registrations are next before R7 may activate
+  the writer, and R8 retains the final release/runtime gates.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:
   [wp40-simple-map-rebase-plan.md](docs/research/wp40-simple-map-rebase-plan.md).
-  The accepted R2 artifact now owns fixed-layout route/housing validation and
-  once-per-layout capacity. The 32-seed content/supply audits and later
-  production mapchunk performance evidence remain implementation gates.
+  The accepted R2 artifact owns fixed-layout route/housing validation and
+  once-per-layout capacity; the accepted R6 artifact owns the 32-seed
+  content/supply/access evidence. Production mapchunk performance and runtime
+  evidence remain R8 gates.
 - [ ] **WP44 — Economy Rebase:** migrate the Common-price axis, 5% buy-back
   and Income Ledger against the final material ids; calibrate exact Claim
   Stone and mount costs.

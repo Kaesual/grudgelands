@@ -1,7 +1,8 @@
 # Biomes & Mobs — Catalog
 
 **Content catalog and current implementation contract** (authored 2026-08-06,
-WP6 outcomes folded in 2026-08-07/08). Sections 2–7 remain the source for
+WP6 outcomes folded in 2026-08-07/08; WP40 R6 surface projection added
+2026-08-29). Sections 2–7 remain the source for
 biome properties, mobs, gathering, woods and materials. The old ring geometry
 in §1 and the `core/inner/outer/coast/war_coast` spawn cells in §4 describe the
 shipped WP18/WP36 map only: `world_zones.md` superseded that surface placement
@@ -705,6 +706,62 @@ farming system are one later package.
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
 | grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
+
+### 2.1 WP40 surface and deterministic decoration projection
+
+The following table is the binding WP40 surface projection. It promotes the
+normalized preflight table's WP18 migration-baseline top/filler values and
+depths into target parameters, including its target-confirmed canopy-litter
+correction for both deep-jungle logical IDs. Shore and bed spans remain owned
+by the accepted R3/R5 vertical operations; the table chooses their material
+only.
+`grug_crags_snowy` alone adds `default:snow` as dust on an exposed dry top.
+Planned hydrology uses `default:river_water_source`; all other authored water
+uses `default:water_source`. A logical biome not in this complete table is a
+contract error rather than a fallback to an engine biome.
+
+| Logical biome | Top / depth | Filler / depth | Shore and bed | Deterministic R6 decorations (`fill_numerator/fill_denominator`) |
+|---|---|---|---|---|
+| `grug_meadows` | `default:dirt_with_grass` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/2000`; bush `1/250`; each grass 1–5 `3/50` |
+| `grug_pine_hills` | `default:dirt_with_coniferous_litter` / 1 | `default:dirt` / 3 | `default:gravel` | pine tree `1/250`; small pine `1/500`; pine bush `3/500`; blueberry bush `1/1000`; each fern 1–3 `1/50` |
+| `grug_crags` | `default:gravel` / 1 | `default:gravel` / 2 | `default:gravel` | snowy pine `1/500`, only at `surface_y >= 60` |
+| `grug_crags_snowy` | `default:snowblock` / 1 | `default:gravel` / 2 | `default:gravel` | none |
+| `grug_elf_forest` | `grug_nodes:dirt_with_silver_litter` / 1 | `default:dirt` / 3 | `default:sand` | silverwood via replaced aspen tree `1/200`; apple tree `1/500`; each grass 1–3 `1/50` |
+| `grug_deep_forest` | `grug_nodes:dirt_with_forest_litter` / 1 | `default:dirt` / 3 | `default:sand` | apple tree `3/250`; aspen tree `1/125`; fallen apple log `1/1000`; each fern 1–3 `1/50` |
+| `grug_swamp` | `grug_nodes:mud` / 1 | `grug_nodes:mud` / 2 | `grug_nodes:mud` | papyrus `1/50`, only at `surface_y = 1..4`, replacing template `default:dirt` with `grug_nodes:mud`; dry shrub `1/250` |
+| `grug_savanna` | `default:dry_dirt_with_dry_grass` / 1 | `default:dry_dirt` / 3 | `default:sand` | acacia tree `1/500`; acacia bush `1/250`; dry shrub `1/250`; each dry grass 1–5 `3/50` |
+| `grug_badlands` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_badlands_east` | `grug_nodes:mesa_clay` / 1 | `grug_nodes:mesa_clay` / 3 | `default:gravel` | large cactus `1/1000`; dry shrub `1/125` |
+| `grug_blight` | `grug_nodes:blight_dirt` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/2000`; dry shrub `3/200`; bone pile `1/500` |
+| `grug_bone_forest` | `grug_nodes:dirt_with_bone_litter` / 1 | `default:dirt` / 3 | `default:gravel` | gravewood `3/200`; bone pile `1/250` |
+| `grug_jungle_edge` | `default:dirt_with_rainforest_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/125`; junglegrass `1/25` |
+| `grug_deep_jungle` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
+| `grug_jungle_fringe` | `grug_nodes:dirt_with_canopy_litter` / 1 | `default:dirt` / 3 | `default:sand` | jungle tree `1/50`; emergent jungle tree `1/200`; junglegrass `1/20` |
+| `grug_beach` | `default:sand` / 1 | `default:sand` / 2 | `default:sand` | none |
+
+Every decoration root requires `surface_y >= 1`. Template schematics are
+centred in x/z and rotate by a domain-separated choice among 0/90/180/270
+degrees. The blueberry bush and fallen apple log use y offset +1; the log is
+centred only in x and replaces its unavailable brown mushroom with `air`. The
+emergent jungle tree uses y offset −4, is limited to `surface_y <= 32`, and all
+other template offsets are zero. Silverwood applies the accepted aspen-node
+replacement. Every dry shrub has exact `param2 = 4`; each gravewood trunk has
+hash-selected height 2–4. Simple variant ranges above mean one independently
+settled entry per named variant at the displayed fill.
+
+Candidate cells are globally anchored 16-column squares. Exact rational fills,
+full-seed domain-separated hashes, canonical candidate rank, quarter-turn
+rotation and the largest rotated-footprint neighbor halo replace engine
+randomness and the legacy emergent-tree `sidelen = 80`. Cultural reservations
+settle first, followed by emergent/other large templates, ordinary trees,
+simple multi-node trunks and ground cover. Wrong hosts, exclusions, clearance
+or collisions reject without movement, retry or fallback placement.
+
+R6 emits no placeholder for meadow flowers, Elf white flowers, Pine Hills
+boulders, Blight grey-grass tufts or optional Swamp willow/gravewood retint.
+It also does not add herbs, spices, crops, found-only foods, battlefield
+dressing or any other optional decoration; their owning packages remain
+unchanged.
 
 **Healing herbs** (Alchemist only, never farmable; both continents reach
 every tier — see §6): **gravemoss T1** (pine hills, blight),
