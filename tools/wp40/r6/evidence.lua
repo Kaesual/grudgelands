@@ -18,7 +18,6 @@ return function(loader)
 		"/docs/research/wp40-simple-map-r6-seed-corpus.tsv")
 	local frozen_roster = dofile(loader.repo ..
 		"/tools/wp40/r6/census_roster.lua")
-	local finalizer = dofile(loader.repo .. "/tools/wp40/r6/finalizer.lua")(loader)
 	local race_assignments = {}
 	do
 		local projection = fixtures.projection()
@@ -728,6 +727,8 @@ return function(loader)
 
 	function module.finalize_global_fragment(spec, worker_descriptors,
 			micro_descriptors, production_descriptor)
+		local finalizer = dofile(loader.repo ..
+			"/tools/wp40/r6/finalizer.lua")(loader)
 		return finalizer.finalize(spec, worker_descriptors, micro_descriptors,
 			production_descriptor)
 	end

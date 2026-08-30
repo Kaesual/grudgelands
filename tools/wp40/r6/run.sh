@@ -36,6 +36,7 @@ pilot_tmp=""
 run_receipt_tmp=""
 
 cleanup() {
+	local exit_status=$?
 	local pid
 	for pid in "${active_pids[@]}"; do
 		if [[ "$pid" =~ ^[0-9]+$ ]] && ps -p "$pid" >/dev/null 2>&1; then
@@ -46,9 +47,14 @@ cleanup() {
 	if [[ -n "$promotion_tmp" ]]; then rm -f -- "$promotion_tmp"; fi
 	if [[ -n "$pilot_tmp" ]]; then rm -f -- "$pilot_tmp"; fi
 	if [[ -n "$run_receipt_tmp" ]]; then rm -f -- "$run_receipt_tmp"; fi
-	case "$scratch" in
-		/tmp/grudgelands-wp40-r6.*) rm -rf -- "$scratch" ;;
-	esac
+	if [[ "$exit_status" -eq 0 ]]; then
+		case "$scratch" in
+			/tmp/grudgelands-wp40-r6.*) rm -rf -- "$scratch" ;;
+		esac
+	else
+		printf 'WP40 R6 runner: retained failed scratch at %s\n' "$scratch" >&2
+	fi
+	return "$exit_status"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -240,6 +246,11 @@ if [[ "$mode" == validate ]]; then
 	exit 0
 fi
 
+start_session luajit 0 "$scratch/finalizer-preflight" \
+	"$scratch/finalizer-preflight.log" "$scratch/finalizer-preflight.resource" \
+	finalizer-preflight "$repo"
+wait_sessions "$scratch/finalizer-preflight.log"
+
 assignment="$(assignment_sha)"
 
 if [[ "$mode" == pilot ]]; then
@@ -415,6 +426,9 @@ wait_sessions "$scratch/final-validate.log"
 	awk '{print "pilot_projection\t" $0}' "$projection_path"
 	printf 'artifact_file_sha256\t%s\n' "$artifact_sha"
 	printf 'static_gate_receipt_sha256\t%s\n' "$current_static"
+	awk '{print "finalizer_preflight\t" $0}' "$scratch/finalizer-preflight.log"
+	awk '{print "resource\tfinalizer_preflight\t" $0}' \
+		"$scratch/finalizer-preflight.resource"
 	printf 'global_fragment_sha256\t%s\n' "$global_digest"
 	for worker_id in 1 2 3 4 5 6 7; do
 		printf 'worker\t%s\t%s\t%s\t%s\n' "$worker_id" \

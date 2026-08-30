@@ -711,6 +711,8 @@ return function(loader)
 		end
 		local expected = {
 			analytic_bridge_predecessor = "1",
+			hard_route_exclusion_precedence = "1",
+			route_without_hard_precedence = "1",
 			["budget/deep_1500_1999_12000"] = "2/20480/12000/1/8480",
 			["budget/deep_2000_floor_24000"] = "1/12288/24000/0/12288",
 			["budget/ordinary_512"] = "8/4096/512/8/0",
@@ -1218,9 +1220,9 @@ return function(loader)
 		return rows, pass
 	end
 
-	local function validate_apex_authority(scan)
+	local function validate_apex_static_authority()
 		local anchors, hard_by_socket, hard_count = {}, {}, 0
-		local exclusion_by_source, exclusion_by_id = {}, {}
+		local exclusion_by_source, exclusion_by_id, exclusion_numeric_by_id = {}, {}, {}
 		for index = 1, #loader.source.anchors do
 			anchors[loader.source.anchors[index].id] = loader.source.anchors[index]
 		end
@@ -1236,7 +1238,11 @@ return function(loader)
 		end
 		for index = 1, #loader.source.claim_exclusions do
 			local exclusion = loader.source.claim_exclusions[index]
+			if exclusion_by_id[exclusion.id] then
+				fail("duplicate static exclusion identity")
+			end
 			exclusion_by_id[exclusion.id] = exclusion
+			exclusion_numeric_by_id[exclusion.id] = index
 			if exclusion.recipe_id == "exclude_active_core_v1" then
 				if exclusion_by_source[exclusion.source_id] then
 					fail("duplicate active-hard static exclusion")
@@ -1244,10 +1250,8 @@ return function(loader)
 				exclusion_by_source[exclusion.source_id] = exclusion
 			end
 		end
-		if #loader.source.apex_sockets ~= 24 or hard_count ~= 24 or
-				type(scan.apex_overlap_count) ~= "number" or
-				scan.apex_overlap_count ~= 0 then
-			fail("apex worker/static population differs")
+		if #loader.source.apex_sockets ~= 24 or hard_count ~= 24 then
+			fail("apex static population differs")
 		end
 		local evidence = loader.new_evidence("0")
 		local lines, seen, species = {}, {}, {}
@@ -1267,14 +1271,13 @@ return function(loader)
 			seen[socket.id] = true
 			local x, z = anchor.position.x + socket.offset.x,
 				anchor.position.z + socket.offset.z
-			local _, returned_exclusion_id =
+			local returned_numeric_id, returned_exclusion_id =
 				evidence.horizontal.static_exclusion_values_at(x, z)
+			local hard_foundation =
+				select(20, evidence.planner_source.column_values_at(x, z))
 			if not hard.center or hard.center.x ~= x or hard.center.z ~= z or
-					returned_exclusion_id ~= exclusion.id or
-					not exclusion_by_id[returned_exclusion_id] or
-					exclusion_by_id[returned_exclusion_id].recipe_id ~=
-						"exclude_active_core_v1" or
-					exclusion_by_id[returned_exclusion_id].source_id ~= hard.id then
+					hard_foundation ~= true or not exclusion_by_id[returned_exclusion_id] or
+					returned_numeric_id ~= exclusion_numeric_by_id[returned_exclusion_id] then
 				fail("apex socket is absent from static exclusion")
 			end
 			species[socket.species] = (species[socket.species] or 0) + 1
@@ -1282,7 +1285,7 @@ return function(loader)
 				socket.species, x, -700, z, hard.id, exclusion.id,
 				returned_exclusion_id,
 				"hard_apex_socket_column_v1",
-				"worker_overlap=" .. tostring(scan.apex_overlap_count)}, "\t") .. "\n"
+				"hard_foundation=true"}, "\t") .. "\n"
 		end
 		local species_count = 0
 		for _, count in pairs(species) do
@@ -1291,6 +1294,19 @@ return function(loader)
 		end
 		if species_count ~= 6 then fail("apex species population differs") end
 		table.sort(lines, common.less_bytes)
+		return lines
+	end
+
+	local function validate_apex_authority(scan)
+		if type(scan.apex_overlap_count) ~= "number" or
+				scan.apex_overlap_count ~= 0 then
+			fail("apex worker/static population differs")
+		end
+		local lines = validate_apex_static_authority()
+		for index = 1, #lines do
+			lines[index] = lines[index]:sub(1, -2) .. "\tworker_overlap=" ..
+				tostring(scan.apex_overlap_count) .. "\n"
+		end
 		return scan.apex_overlap_count, lines
 	end
 
@@ -1354,6 +1370,12 @@ return function(loader)
 		append(rows, census)
 		return {rows = rows, roster_digest = roster_digest,
 			digest = canonical_digest("static_preflight_v1", lines_for(rows))}
+	end
+
+	function module.apex_preflight()
+		local lines = validate_apex_static_authority()
+		return {schema = "grug_wp40_r6_apex_preflight_v1", population = #lines,
+			digest = canonical_digest("apex_preflight_v1", lines)}
 	end
 
 	function module.finalize(spec, worker_descriptors, micro_descriptors,

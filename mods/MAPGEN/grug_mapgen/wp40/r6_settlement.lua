@@ -186,6 +186,10 @@ local function settlement_factory()
 			if not id then return nil end
 			local reason = exclusion_reason_by_id[id]
 			if not reason then fail("fail_settlement", "exclusion identity differs") end
+			if reason == "route_or_water" and
+					select(20, planner_source.column_values_at(x, z)) then
+				return "fixed_or_protected"
+			end
 			return reason
 		end
 		local apex_columns = {}

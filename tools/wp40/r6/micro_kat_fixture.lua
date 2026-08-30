@@ -217,7 +217,10 @@ return function(repo)
 			recipe_id = "hard_apex_socket_column_v1", active = true,
 			center = {x = 10000 + index, z = 10000}}
 	end
-	local source = {claim_exclusions = {}, routes = {}, hard_protection = kat_hard,
+	local overlap_exclusion_id = "kat:route_hard_overlap"
+	local source = {claim_exclusions = {{id = overlap_exclusion_id,
+		recipe_id = "exclude_route_corridor_v1"}}, routes = {},
+		hard_protection = kat_hard,
 		anchors = {kat_anchor}, apex_sockets = kat_sockets,
 		hydrology_profiles = {}, hydrology = {}, hydrology_interfaces = {}}
 
@@ -259,18 +262,24 @@ return function(repo)
 	local surface_id = surfaces[1].id
 	local race = cultural[1].race
 	local fake_source = {schema = "grug_wp40_r5_planner_source_v1",
-		bridge_probe = false}
-	function fake_source.column_values_at(x)
+		bridge_probe = false, hard_route_probe = false}
+	function fake_source.column_values_at(x, z)
 		if fake_source.bridge_probe and x == 1 then
 			return "land", 1, "kat_zone", surface_id, race, 4, 1, nil, nil,
 				"bridge_deck", 6, "kat_bridge", nil, nil, nil, nil, nil, nil, nil,
 				false
 		end
 		return "land", 1, "kat_zone", surface_id, race, 4, nil, nil, nil,
-			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, false
+			nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+			fake_source.hard_route_probe == "hard" and x == 0 and z == 0
 	end
 	local horizontal = {}
-	function horizontal.static_exclusion_values_at() return nil end
+	function horizontal.static_exclusion_values_at(x, z)
+		if fake_source.hard_route_probe and x == 0 and z == 0 then
+			return 1, overlap_exclusion_id
+		end
+		return nil
+	end
 	local identity = {value = {}}
 	local tier1_cid = cid_by_name[projection.tiers[1].node]
 	local r5_adapter = {}
@@ -622,6 +631,29 @@ return function(repo)
 		"analytic P2-P6 predecessor bridge probe differs: " ..
 			table.concat(bridge_details, ","))
 	row("analytic_bridge_predecessor", bridge_probe.rejections[bridge_rejection])
+	fake_source.hard_route_probe = "hard"
+	local hard_route_probe = settlement_fixture.scan_horizontal_owner(-32, -32, {},
+		{{catalog = template_class2, parameter = 2, x = 0, y = 5, z = 0}})
+	fake_source.hard_route_probe = "route"
+	local route_only_probe = settlement_fixture.scan_horizontal_owner(-32, -32, {},
+		{{catalog = template_class2, parameter = 2, x = 0, y = 5, z = 0}})
+	fake_source.hard_route_probe = false
+	local hard_route_fixed = "decoration\0" .. decorations[template_class2].id ..
+		"\0fixed_or_protected"
+	local hard_route_secondary = "decoration\0" .. decorations[template_class2].id ..
+		"\0route_or_water"
+	check(hard_route_probe.decorations[decorations[template_class2].id].accepted == 0 and
+			hard_route_probe.rejections[hard_route_fixed] == 1 and
+			hard_route_probe.rejections[hard_route_secondary] == nil,
+		"hard-protection did not precede representative route exclusion")
+	check(route_only_probe.decorations[decorations[template_class2].id].accepted == 0 and
+			route_only_probe.rejections[hard_route_secondary] == 1 and
+			route_only_probe.rejections[hard_route_fixed] == nil,
+		"representative route exclusion was upgraded without hard-protection")
+	row("hard_route_exclusion_precedence",
+		hard_route_probe.rejections[hard_route_fixed])
+	row("route_without_hard_precedence",
+		route_only_probe.rejections[hard_route_secondary])
 	settlement, settlement_fixture = nil, nil
 	collectgarbage("collect")
 	local band_resources = clone(kat_resources)

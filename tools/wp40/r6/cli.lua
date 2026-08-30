@@ -70,6 +70,15 @@ elseif command == "roster-verify" then
 	local file = assert(io.open(arg[3], "wb"), "cannot create roster receipt")
 	assert(file:write(bytes)) assert(file:close())
 	io.write("r6_roster_receipt_v1\t", digest, "\t48\n")
+elseif command == "finalizer-preflight" then
+	if #arg ~= 2 then fail("usage: finalizer-preflight REPO") end
+	local loader = dofile(tool_dir .. "/offline.lua")(repo)
+	local finalizer = dofile(tool_dir .. "/finalizer.lua")(loader)
+	local static = finalizer.static_preflight()
+	local apex = finalizer.apex_preflight()
+	io.write("r6_finalizer_preflight_v1\t", static.digest, "\t",
+		tostring(#static.rows), "\t", static.roster_digest, "\t",
+		apex.digest, "\t", tostring(apex.population), "\n")
 elseif command == "production-kat" then
 	if #arg ~= 3 then fail("usage: production-kat REPO OUTPUT") end
 	local bytes = dofile(tool_dir .. "/production_kat.lua")(repo)
