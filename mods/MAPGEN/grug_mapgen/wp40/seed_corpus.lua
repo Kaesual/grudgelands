@@ -1,5 +1,4 @@
--- Fixed WP40 seed corpus foundation. Slots 28-32 intentionally remain
--- unresolved until T2 measurement and T9 production-seed selection.
+-- Fixed 32-seed WP40 R6 corpus. Full unsigned-64 values remain decimal text.
 
 local corpus = {}
 
@@ -12,7 +11,9 @@ corpus.fixed = {
 	"9219515541647461526", "7258015152932567000",
 	"9703954825944019383", "7072879937603433753",
 	"6987984790047262299", "8118839283201131377",
-	"14570731025329063210",
+	"14570731025329063210", "7821741934987559905",
+	"11399677047323745148", "16078439638612932302",
+	"14812808310873127952", "5945494226288913660",
 }
 
 corpus.sha_labels = {
@@ -23,23 +24,11 @@ corpus.sha_labels = {
 	{label = "grudgelands-wp40-seed-05", digest = "60fa4f248299865b0e9873dccd1969569ddb826bf015627e210ddcdaf653d7b0", first8 = "60fa4f248299865b", decimal = "6987984790047262299"},
 	{label = "grudgelands-wp40-seed-06", digest = "70abe95007b0c37179d4a08f776121f9035d8eae8941c0308c9f290a2ed8d43b", first8 = "70abe95007b0c371", decimal = "8118839283201131377"},
 	{label = "grudgelands-wp40-seed-07", digest = "ca35a2ab2280852a40bcaf678d998cb29c33a0b376499507d77acaad2bb0c9f8", first8 = "ca35a2ab2280852a", decimal = "14570731025329063210"},
-}
-
-corpus.pending = {
-	{
-		slots = "28-31",
-		status = "T2_MEASURED",
-		label = "grudgelands-wp40-extreme-NNNN",
-		decimal = "DO_NOT_INVENT",
-		rule = "Candidates 0000-4095 from SHA-256 label grudgelands-wp40-extreme-NNNN; select greatest/least coast then greatest/least non-coast normalized score, skip duplicates, numeric-decimal seed tie-break.",
-	},
-	{
-		slots = "32",
-		status = "T9_PRODUCTION",
-		label = "production-or-next-unique-seed-label",
-		decimal = "DO_NOT_INVENT",
-		rule = "Selected production seed after all audits; if already present use the next unique broad label starting at grudgelands-wp40-seed-08.",
-	},
+	{label = "grudgelands-wp40-seed-08", digest = "6c8c68d937b5c3e19c702ec9e7bb5aec707724b2fb3fdcf5d9b599cf348ead8c", first8 = "6c8c68d937b5c3e1", decimal = "7821741934987559905"},
+	{label = "grudgelands-wp40-seed-09", digest = "9e33c9e05fe7db7cd3abd4221dbef425166daf976892726e966729ae097ef52a", first8 = "9e33c9e05fe7db7c", decimal = "11399677047323745148"},
+	{label = "grudgelands-wp40-seed-10", digest = "df2217aa021576ce21b469543fc545c0f928452a761d96f4685e22f199d1adb4", first8 = "df2217aa021576ce", decimal = "16078439638612932302"},
+	{label = "grudgelands-wp40-seed-11", digest = "cd91aaad578bfc1000a27da563036c107c2b407c39eaad20c8bbeb8738e870b9", first8 = "cd91aaad578bfc10", decimal = "14812808310873127952"},
+	{label = "grudgelands-wp40-seed-12", digest = "5282a37f8c162cfc77aceded6208b7b2b108a506464e0b999cad3e89061d783a", first8 = "5282a37f8c162cfc", decimal = "5945494226288913660"},
 }
 
 function corpus.fixture_rows()
@@ -48,11 +37,6 @@ function corpus.fixture_rows()
 		local label = "literal"
 		if i > 20 then label = corpus.sha_labels[i - 20].label end
 		rows[i] = {tostring(i), "fixed", label, corpus.fixed[i]}
-	end
-	for i = 1, #corpus.pending do
-		local pending = corpus.pending[i]
-		rows[#rows + 1] = {pending.slots, pending.status, pending.label,
-			pending.decimal}
 	end
 	return rows
 end
@@ -113,7 +97,7 @@ corpus.extreme_candidate = extreme_candidate
 
 function corpus.verify(raw_sha256)
 	if type(raw_sha256) ~= "function" then error("WP40 corpus SHA missing", 0) end
-	if #corpus.fixed ~= 27 then error("WP40 fixed seed count changed", 0) end
+	if #corpus.fixed ~= 32 then error("WP40 fixed seed count changed", 0) end
 	for i = 1, #corpus.sha_labels do
 		local row = corpus.sha_labels[i]
 		local raw = raw_sha256(row.label)
