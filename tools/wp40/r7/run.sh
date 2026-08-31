@@ -59,7 +59,73 @@ trap 'exit 143' TERM
 
 lua_prefix=(-e '_G.wp40_ffi=require("ffi")')
 
+validate_seed_corpus() {
+	local corpus="$1"
+	[[ -f "$corpus" ]] || {
+		echo "WP40 R7 runner: frozen 32-seed corpus is absent" >&2
+		return 1
+	}
+	awk -F '\t' '
+		BEGIN {
+			header = "slot\tclass\tlabel\tsha256\tfirst_eight_hex\tseed_decimal_text"
+			failed = 0
+		}
+		NR == 1 {
+			if ($0 != header || NF != 6) {
+				print "WP40 R7 runner: frozen seed corpus header differs" > "/dev/stderr"
+				failed = 1
+			}
+			next
+		}
+		{
+			rows++
+			if (NF != 6) {
+				print "WP40 R7 runner: frozen seed corpus field count differs at line " NR > "/dev/stderr"
+				failed = 1
+			}
+			expected = sprintf("%d", rows)
+			if ("x" $1 != "x" expected) {
+				print "WP40 R7 runner: frozen seed corpus slot differs at line " NR > "/dev/stderr"
+				failed = 1
+			}
+		}
+		END {
+			if (NR != 33 || rows != 32) {
+				print "WP40 R7 runner: frozen seed corpus population differs" > "/dev/stderr"
+				failed = 1
+			}
+			exit failed
+		}
+	' "$corpus"
+}
+
+seed_corpus_validator_kat() {
+	local source="$repo/docs/research/wp40-simple-map-r6-seed-corpus.tsv"
+	local directory="$scratch/seed-corpus-validator-kat"
+	local fixture
+	mkdir -p -- "$directory"
+	validate_seed_corpus "$source" >/dev/null || {
+		echo "WP40 R7 runner: accepted seed corpus failed its validator KAT" >&2
+		return 1
+	}
+	awk 'NR == 1 {sub(/^slot/, "Slot")} {print}' "$source" >"$directory/header.tsv"
+	awk 'NR != 33 {print}' "$source" >"$directory/short.tsv"
+	awk -F '\t' 'BEGIN {OFS="\t"} NR == 17 {$1="15"} {print}' \
+		"$source" >"$directory/slot.tsv"
+	awk 'NR == 2 {$0=$0 "\textra"} {print}' "$source" >"$directory/field.tsv"
+	awk '{print} END {print "33\tliteral\tliteral\t-\t-\t33"}' \
+		"$source" >"$directory/long.tsv"
+	for fixture in header short slot field long; do
+		if validate_seed_corpus "$directory/$fixture.tsv" >/dev/null 2>&1; then
+			echo "WP40 R7 runner: seed corpus validator accepted $fixture fixture" >&2
+			return 1
+		fi
+	done
+	return 0
+}
+
 run_unit() {
+	seed_corpus_validator_kat
 	"$luac_bin" -p "$script_dir/contract.lua" \
 		"$script_dir/contract_kat.lua" "$script_dir/integration_adapter.lua" \
 		"$script_dir/runtime_adapter.lua" "$script_dir/adapter_cli.lua" \
@@ -325,13 +391,8 @@ integration_receipt="$durable_integration"
 integration_log="$durable_integration_log"
 
 seed_corpus="$repo/docs/research/wp40-simple-map-r6-seed-corpus.tsv"
-[[ -f "$seed_corpus" ]] || {
-	echo "WP40 R7 runner: frozen 32-seed corpus is absent" >&2
-	exit 1
-}
-seed_population="$(rg -n '^seed\t' "$seed_corpus" | awk 'END {print NR + 0}')"
-[[ "$seed_population" -eq 32 ]] || {
-	echo "WP40 R7 runner: frozen seed population differs" >&2
+validate_seed_corpus "$seed_corpus" || {
+	echo "WP40 R7 runner: frozen seed corpus validation failed" >&2
 	exit 1
 }
 
