@@ -704,7 +704,7 @@ farming system are one later package.
 | grug_jungle_edge | jungle_tree.mts (0.008) | jungle grass; wild bananas? → wild melon `[food]` (BASE-compatible); sunleaf `[spice T1]` | |
 | grug_deep_jungle / grug_jungle_fringe | jungle + emergent_jungle (0.025); papyrus lives in the adjacent swamp/shore band (v7 has no water above sea level, so the jungle cuboids at y ≥ 4 cannot host waterside papyrus) | vines/lianas (asset list); crimson lotus `[herb T3]`; wild cocoa `[food found-only]`; wild melon `[food]` | same flora, roster and target ground: `grug_nodes:dirt_with_canopy_litter`. The shipped WP36 fringe still uses rainforest litter only until WP40 replaces the legacy biome registrations. Existing decorations name both nodes during that migration |
 | grug_swamp | papyrus_on_dirt, dead bush; willow-ish gravewood retint optional | reeds, waterlilies; marshbloom `[spice T2]`; mushrooms `[food found-only]` | shallow water pools (mud floor) |
-| grug_beach | — | shells (deco); stormkelp on coast-zone beaches only `[spice T3]`; rock salt crust on coast-zone beaches `[food found-only]` | |
+| grug_beach | — | shells (deco); rock salt crust on coast-zone beaches `[food found-only]` | Stormkelp uses the cross-biome dry-shore predicate below, not a beach-only row. |
 | war-coast overlay | local band biome | battlefield decos: broken carts, bone piles, burnt patches (schematic decos) | no separate biome (decided); decoration set ships with WP13's schematic pass |
 
 ### 2.1 WP40 surface and deterministic decoration projection
@@ -816,8 +816,10 @@ jungle's 3.13 % on the Throng side (§1.3).
 **Spices** (gathered by everyone, used by both the Alchemist and
 Cooking — which costs no main slot — and farmable once farming ships):
 **sunleaf T1** (meadows, savanna, elf forest, jungle edge),
-**marshbloom T2** (swamp), **stormkelp T3** (coast-zone beaches). All
-three sit on grass, mud or sand — cultivable ground.
+**marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
+predicate in `world_zones.md` §11). Sunleaf and Marshbloom sit on workable
+grass/mud; Stormkelp's natural source may use any accepted P7 dry support in
+its four named high/endpoint zones and does not require `grug_beach` or sand.
 
 **Cooking supply, checked against the cooking tiers** (cooking keeps its
 own recipe book with T1–T6 groups, `items_crafting.md`; the tiers tie to
@@ -828,7 +830,7 @@ the region an ingredient comes from):
   plus meat and fish from anywhere.
 - **T6 needs ingredients from level 50+ ground, and the coast/outer
   rows do carry them**: **wild cocoa** in deep jungle / jungle fringe
-  (38–60), **stormkelp** and **rock salt** on the coast-zone beaches
+  (38–60), **stormkelp** on high/endpoint dry shores and **rock salt** on beaches
   (45–60), and the meat of the outer/coast families (bear, jungle ape,
   panther, crocodile), whose level comes from `mob_level_at` and is
   45–60 out there. Every one of them exists on both continents (§6), so

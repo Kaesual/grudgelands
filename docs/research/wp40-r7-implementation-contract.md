@@ -125,9 +125,11 @@ state may enable two writers or partially remove the old authority.
   closed native-input module.
 - Enable exactly one production mapgen script/callback after every manifest,
   content, node, CID, param2, template and NoiseParams check passes.
-- Publish one immutable `grug_zones` session and redirect terrain height,
-  difficulty, open-sea, spawn, protection, mob, Kraken, rare, gathering, map,
-  mount, housing and travel consumers to its stable queries and anchors.
+- Publish one immutable `grug_zones` session and redirect every existing
+  terrain-height, difficulty, open-sea, spawn, protection, mob, Kraken, rare
+  and gathering consumer to its stable queries and anchors. Publish the
+  contracted map/mount/housing/travel API for their future WPs; R7 does not
+  invent absent production mods or consumers.
 - Preserve `grug_core.surface_level_at(x,z)` as terrain-height compatibility;
   no compatibility helper may recompute old geometry or consult old platform
   state.

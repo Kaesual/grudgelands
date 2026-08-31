@@ -1194,7 +1194,7 @@ culture.
 | Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
 
 - Each culture has an ordinary home-region surface source sufficient for its
-  architecture, quests and trade, plus a concentrated source in or beneath
+  architecture, quests and trade, plus a concentrated surface source in
   exactly the one race-frontier zone listed for it in `world_zones.md` §11.
   No Battlegrounds zone receives that concentrated rate. The concentrated
   source requires T4 harvesting; an ordinary surface source retains its
