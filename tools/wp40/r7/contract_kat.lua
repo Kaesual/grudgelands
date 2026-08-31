@@ -93,6 +93,7 @@ local stage_b = {
 	seed_identity = "seed-1", production_r6_content_sha256 = digest_a,
 	accepted_r6_projection_sha256 = digest_b, name_map_population = 83,
 	cultural_name_map_population = 6, cultural_substitution_count = 9,
+	inherited_cultural_access_count = 12,
 	normalized_artifact_sha256 = digest_b, candidate_decisions_sha256 = digest_a,
 	accepted_candidate_decisions_sha256 = digest_a, equal = true,
 }
@@ -107,7 +108,21 @@ for _, name in ipairs(contract.integration_cases()) do cases[name] = true end
 local integration = {
 	schema = "grug_wp40_r7_integration_kat_receipt_v1",
 	r7_manifest_sha256 = digest_a, production_r6_content_sha256 = digest_b,
-	p9g_content_sha256 = digest_a, catalog_sha256 = digest_b, cases = cases,
+	p9g_content_sha256 = digest_a, catalog_sha256 = digest_b,
+	proof_scope = "full_owner_7_private_buffers_pre_replay",
+	private_tuple_count = 512000,
+	successor_tuple_sha256 = digest_a, direct_tuple_sha256 = digest_b,
+	accepted_tuple_sha256 = digest_a, successor_run_count = 11,
+	direct_run_count = 10, accepted_run_count = 10,
+	successor_run_sha256 = digest_a, direct_run_sha256 = digest_b,
+	accepted_run_sha256 = digest_a, successor_run_checksum_a = 1,
+	successor_run_checksum_b = 2, direct_run_checksum_a = 3,
+	direct_run_checksum_b = 4, accepted_run_checksum_a = 5,
+	accepted_run_checksum_b = 6, stage_a_tuple_sha256 = digest_b,
+	stage_a_run_sha256 = digest_b, stage_b_tuple_sha256 = digest_a,
+	stage_b_run_sha256 = digest_a, multi_y_band_count = 2,
+	multi_y_eligible = 12, multi_y_planned = 8, multi_y_accepted = 5,
+	cases = cases,
 }
 local integration_bytes = contract.integration_receipt_bytes(integration)
 assert(integration_bytes:find("case\tstage_b_projection\ttrue\n", 1, true))
@@ -118,10 +133,16 @@ expect_failure(function() contract.validate_integration_receipt(integration) end
 local pilot = {
 	schema = "grug_wp40_r7_pilot_result_v1", seed_slot = 17,
 	seed_identity = "seed-17", canonical_output_sha256 = digest_a,
+	canonical_output_bytes = 12345,
 	stage_a_sha256 = digest_b, stage_b_sha256 = digest_a,
 	p9g_delta_sha256 = digest_b,
 }
-assert(contract.pilot_result_bytes(pilot):find("seed_slot\t17\n", 1, true))
+local pilot_bytes = contract.pilot_result_bytes(pilot)
+assert(pilot_bytes:find("seed_slot\t17\n", 1, true))
+assert(pilot_bytes:find("canonical_output_bytes\t12345\n", 1, true))
+
+local runtime_adapter = dofile(repo .. "/tools/wp40/r7/runtime_adapter.lua")
+assert(runtime_adapter.finalizer_authority_kat(repo) == true)
 
 print("WP40 R7 evidence contract KAT PASS catalog=" .. catalog_digest ..
 	" populations=12/8/6 rejection_reasons=" .. #contract.rejection_reasons())

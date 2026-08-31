@@ -307,14 +307,6 @@ return function(repo)
 		shadow:set_data(data)
 		return "kat_r5_ready"
 	end
-	local settlement, settlement_fixture = settlement_factory.new({
-		full_seed_string = "0", r5_adapter = r5_adapter, content = content,
-		templates = templates, hash = hash, horizontal = horizontal,
-		planner_source = fake_source, construction_identity = identity,
-		cultural_registrations = {}, source = source,
-		counting_allocator = allocator_factory.new(
-			"grug_wp40_r6_settlement_allocator_v1")})
-
 	local stable_refs, stable_set = {}, {}
 	local function add_stable(value)
 		if not stable_set[value] then
@@ -326,6 +318,14 @@ return function(repo)
 	for index = 1, #cultural do add_stable(cultural[index].key) end
 	for index = 1, #decorations do add_stable(decorations[index].id) end
 	table.sort(stable_refs, hash.less_bytes)
+	local settlement, settlement_fixture = settlement_factory.new({
+		full_seed_string = "0", r5_adapter = r5_adapter, content = content,
+		templates = templates, hash = hash, horizontal = horizontal,
+		planner_source = fake_source, construction_identity = identity,
+		cultural_registrations = {}, source = source,
+		planner_stable_refs = stable_refs,
+		counting_allocator = allocator_factory.new(
+			"grug_wp40_r6_settlement_allocator_v1")})
 	local generation = 0
 	local function blank_plan(minp, maxp, with_predecessors)
 		generation = generation + 1
@@ -672,6 +672,7 @@ return function(repo)
 		templates = templates, hash = hash, horizontal = horizontal,
 		planner_source = fake_source, construction_identity = identity,
 		cultural_registrations = {}, source = source,
+		planner_stable_refs = stable_refs,
 		counting_allocator = allocator_factory.new(
 			"grug_wp40_r6_settlement_allocator_v1")})
 

@@ -261,11 +261,19 @@ environment.grug_zones = nil
 allowed, denial = cultural_runtime.decision({x = 1, y = 2, z = 3}, player,
 	gravesalt)
 check(not allowed and denial == "zone_authority_unavailable", "missing zones")
-environment.grug_zones = {id_at = function() return "ordinary_zone" end}
+local zone_calls, current_zone = 0, "ordinary_zone"
+environment.grug_zones = {id_at = function(x, z)
+	check(x == 1 and z == 3, "cultural zone query signature")
+	zone_calls = zone_calls + 1
+	return current_zone
+end}
 allowed, denial = cultural_runtime.decision({x = 1, y = 2, z = 3}, player,
 	gravesalt)
 check(allowed and denial == nil, "ordinary cultural harvest")
-environment.grug_zones.id_at = function() return gravesalt.concentrated_zone end
+allowed, denial = cultural_runtime.decision({y = 2}, player, gravesalt)
+check(not allowed and denial == "zone_authority_unavailable",
+	"malformed cultural position")
+current_zone = gravesalt.concentrated_zone
 player.wielded = stack({shovel = 1, grug_shovel_tier = 4})
 allowed, denial = cultural_runtime.decision({x = 1, y = 2, z = 3}, player,
 	gravesalt)
@@ -282,6 +290,7 @@ player.wielded = stack({pickaxe = 1, grug_pick_tier = 4})
 allowed, denial = cultural_runtime.decision({x = 1, y = 2, z = 3}, player,
 	gravesalt)
 check(allowed and denial == nil, "concentrated harvest")
+check(zone_calls == 5, "cultural zone query count")
 
 io.write("wp33_gathering_kat_v1\n")
 io.write("manifest_sha256\t", manifest.sha256, "\n")

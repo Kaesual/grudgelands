@@ -19,6 +19,46 @@ local function write_file(path, bytes)
 	assert(file:close())
 end
 
+local function copy_descriptor(path, descriptor, schema)
+	if type(descriptor) ~= "table" or type(descriptor.path) ~= "string" or
+			type(descriptor.sha256) ~= "string" or #descriptor.sha256 ~= 64 or
+			not descriptor.sha256:match("^[0-9a-f]+$") or
+			type(descriptor.bytes) ~= "number" or descriptor.bytes % 1 ~= 0 or
+			descriptor.bytes < 1 then
+		fail("finalizer " .. schema .. " descriptor differs")
+	end
+	local count = 0
+	for key in pairs(descriptor) do
+		if key ~= "path" and key ~= "sha256" and key ~= "bytes" then
+			fail("finalizer " .. schema .. " descriptor has unknown field")
+		end
+		count = count + 1
+	end
+	if count ~= 3 then fail("finalizer " .. schema .. " descriptor is incomplete") end
+	local source = assert(io.open(descriptor.path, "rb"), "cannot read finalizer output")
+	local header = source:read("*l")
+	if header ~= "schema\t" .. schema then
+		fail("finalizer " .. schema .. " schema differs")
+	end
+	assert(source:seek("set", 0))
+	local probe = io.open(path, "rb")
+	if probe then probe:close(); fail("finalizer destination already exists") end
+	local output = assert(io.open(path, "wb"), "cannot create finalizer destination")
+	local stream = dofile(repo .. "/tools/wp40/r6/sha256_stream.lua")(
+		assert(rawget(_G, "wp40_ffi"), "wp40_ffi injection required"))
+	local hasher, bytes = stream.new(), 0
+	while true do
+		local chunk = source:read(1024 * 1024)
+		if not chunk then break end
+		if chunk == "" then fail("finalizer source stream stalled") end
+		assert(output:write(chunk)); hasher.update(chunk); bytes = bytes + #chunk
+	end
+	assert(source:close()); assert(output:close())
+	if hasher.final_hex() ~= descriptor.sha256 or bytes ~= descriptor.bytes then
+		fail("finalizer " .. schema .. " descriptor binding differs")
+	end
+end
+
 if mode == "catalog" then
 	if arg[4] ~= nil then fail("catalog arguments differ") end
 	local snapshot = adapter.catalog_snapshot(repo)
@@ -65,18 +105,14 @@ elseif mode == "finalize" then
 	local result = adapter.finalize(repo, scratch, worker_paths)
 	if type(result) ~= "table" then fail("finalizer result is not a table") end
 	local outputs = {
-		{artifact, result.artifact_bytes, "grug_wp40_r7_artifact_v1"},
-		{stage_a, result.stage_a_bytes, "grug_wp40_r7_stage_a_aggregate_v1"},
-		{stage_b, result.stage_b_bytes, "grug_wp40_r7_stage_b_aggregate_v1"},
-		{p9g, result.p9g_bytes, "grug_wp40_r7_p9g_ledger_v1"},
-		{receipt, result.run_receipt_bytes, "grug_wp40_r7_run_receipt_v1"},
+		{artifact, result.artifact, "grug_wp40_r7_artifact_v1"},
+		{stage_a, result.stage_a, "grug_wp40_r7_stage_a_aggregate_v1"},
+		{stage_b, result.stage_b, "grug_wp40_r7_stage_b_aggregate_v1"},
+		{p9g, result.p9g, "grug_wp40_r7_p9g_ledger_v1"},
+		{receipt, result.run_receipt, "grug_wp40_r7_run_receipt_v1"},
 	}
 	for index = 1, #outputs do
-		local path, bytes, schema = outputs[index][1], outputs[index][2], outputs[index][3]
-		if type(bytes) ~= "string" or not bytes:find("^schema\t" .. schema .. "\n") then
-			fail("finalizer " .. schema .. " bytes differ")
-		end
-		write_file(path, bytes)
+		copy_descriptor(outputs[index][1], outputs[index][2], outputs[index][3])
 	end
 	print("WP40 R7 finalizer PASS workers=7")
 else

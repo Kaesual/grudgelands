@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 set +m
+export LC_ALL=C
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 repo="$(cd "$script_dir/../../.." && pwd -P)"
@@ -12,15 +13,15 @@ time_bin=/usr/bin/time
 cli="$script_dir/adapter_cli.lua"
 
 case "$mode" in
-	unit|static|integration|pilot|fleet) ;;
+unit|static|integration|freeze|pilot|fleet) ;;
 	*)
-		echo "usage: bash tools/wp40/r7/run.sh unit|static|integration|pilot|fleet ..." >&2
+		echo "usage: bash tools/wp40/r7/run.sh unit|static|integration|freeze|pilot|fleet ..." >&2
 		exit 2
 		;;
 esac
 
 for command_name in rg sha256sum chrt ionice setsid mktemp awk cmp mv rm ps \
-	kill sort bash mkdir dirname basename du chmod env cp; do
+	kill sort bash mkdir dirname basename du chmod env cp ln wc; do
 	command -v "$command_name" >/dev/null 2>&1 || {
 		echo "WP40 R7 runner: missing command $command_name" >&2
 		exit 1
@@ -61,19 +62,23 @@ lua_prefix=(-e '_G.wp40_ffi=require("ffi")')
 run_unit() {
 	"$luac_bin" -p "$script_dir/contract.lua" \
 		"$script_dir/contract_kat.lua" "$script_dir/integration_adapter.lua" \
-		"$script_dir/adapter_cli.lua" "$script_dir/native_inputs_kat.lua"
+		"$script_dir/runtime_adapter.lua" "$script_dir/adapter_cli.lua" \
+		"$script_dir/native_inputs_kat.lua" "$script_dir/wp33_gathering_kat.lua" \
+		"$script_dir/consumer_contract_kat.lua" "$script_dir/micro_kat.lua" \
+		"$script_dir/micro_kat_fixture.lua"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/contract_kat.lua" "$repo"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/native_inputs_kat.lua" "$repo"
+	"$lua_bin" "${lua_prefix[@]}" "$script_dir/wp33_gathering_kat.lua" "$repo"
+	"$lua_bin" "${lua_prefix[@]}" "$script_dir/consumer_contract_kat.lua" "$repo"
 }
 
 static_gates() {
-	local receipt="$1"
+	local receipt="$1" phase="$2"
+	[[ "$phase" == prefreeze || "$phase" == final ]] || return 2
 	local -a tool_lua production_lua all_lua
 	mapfile -t tool_lua < <(rg --files "$script_dir" | rg '[.]lua$' | sort)
-	mapfile -t production_lua < <(rg --files \
-		"$repo/mods/MAPGEN/grug_mapgen/wp40" "$repo/mods/ITEMS/grug_gathering" \
-		"$repo/mods/CORE/grug_core" "$repo/mods/PLAYER/grug_factions" \
-		"$repo/mods/ENTITIES/grug_mobs" | rg '[.]lua$' | sort)
+	mapfile -t production_lua < <(rg --files "$repo/mods" | \
+		rg '/grug_[^/]+/.*[.]lua$' | sort)
 	[[ "${#tool_lua[@]}" -gt 0 && "${#production_lua[@]}" -gt 0 ]] || {
 		echo "WP40 R7 runner: static Lua population is incomplete" >&2
 		return 1
@@ -103,17 +108,18 @@ static_gates() {
 		return 1
 	}
 	if rg -n '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' "${all_lua[@]}" ||
-			rg -n '\\u\{|\\x[0-9A-Fa-f]|\\z' "${all_lua[@]}" ||
+			rg -n '\\u\{|\\x[0-9A-Fa-f]|\\z' "${all_lua[@]}" | \
+				rg -v '^[^:]+:[0-9]+:[[:space:]]*--' ||
 			rg -n 'table\.(unpack|pack|move)|rawlen|coroutine\.isyieldable|math\.(type|tointeger)|utf8\.' "${all_lua[@]}" ||
-			rg -n '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' "${all_lua[@]}" ||
 			rg -n 'io\.popen|os\.(execute|exit)|\bminetest\.' "${all_lua[@]}" ||
 			rg -n '(^|[^[:alnum:]_.])require[[:space:]]*\(' "${production_lua[@]}" ||
 			rg -n '^[[:space:]]*(local[[:space:]]+[A-Za-z_][A-Za-z0-9_]*[[:space:]]*=[[:space:]]*)?require[[:space:]]*\(' "${tool_lua[@]}"; then
 		echo "WP40 R7 runner: Lua 5.1 source sweep failed" >&2
 		return 1
 	fi
-	bash -n "$script_dir/run.sh" "$script_dir/source_audit.sh"
-	bash "$script_dir/source_audit.sh" "$repo" "$receipt"
+	bash -n "$script_dir/run.sh" "$script_dir/source_audit.sh" \
+		"$script_dir/final_micro.sh"
+	bash "$script_dir/source_audit.sh" "$repo" "$receipt" "$phase"
 }
 
 run_catalog() {
@@ -186,10 +192,20 @@ if [[ "$mode" == unit ]]; then
 	exit 0
 fi
 
+docs="$repo/docs/research"
+durable_integration="$docs/wp40-r7-integration-receipt.tsv"
+durable_integration_log="$docs/wp40-r7-integration.log"
+durable_integration_binding="$docs/wp40-r7-integration-binding.tsv"
+durable_prefreeze="$docs/wp40-r7-source-audit-prefreeze.tsv"
+durable_micro="$docs/wp40-r7-micro-kat-receipt.tsv"
+durable_micro_output="$docs/wp40-r7-micro-kat-output.tsv"
+durable_micro_lj_log="$docs/wp40-r7-micro-kat-luajit.log"
+durable_micro_puc_log="$docs/wp40-r7-micro-kat-puc51.log"
+durable_static="$docs/wp40-r7-source-audit-receipt.tsv"
 static_receipt="$scratch/source-audit.tsv"
-static_gates "$static_receipt"
 if [[ "$mode" == static ]]; then
 	[[ "$#" -eq 0 ]] || { echo "usage: run.sh static" >&2; exit 2; }
+	static_gates "$static_receipt" prefreeze
 	cat "$static_receipt"
 	exit 0
 fi
@@ -199,15 +215,114 @@ catalog_log="$scratch/catalog.log"
 native_log="$scratch/native.log"
 integration_receipt="$scratch/integration.tsv"
 integration_log="$scratch/integration.log"
-run_catalog "$catalog_receipt" "$catalog_log"
-run_native "$native_log"
-run_integration "$integration_receipt" "$integration_log"
 if [[ "$mode" == integration ]]; then
 	[[ "$#" -eq 0 ]] || { echo "usage: run.sh integration" >&2; exit 2; }
+	[[ ! -e "$durable_integration" && ! -e "$durable_integration_log" &&
+		! -e "$durable_integration_binding" && ! -e "$durable_prefreeze" ]] || {
+		echo "WP40 R7 runner: durable integration evidence already exists" >&2
+		exit 1
+	}
+	static_gates "$static_receipt" prefreeze
+	run_catalog "$catalog_receipt" "$catalog_log"
+	run_native "$native_log"
+	run_integration "$integration_receipt" "$integration_log"
+	integration_post_audit="$scratch/source-audit-integration-post.tsv"
+	static_gates "$integration_post_audit" prefreeze
+	cmp -s "$static_receipt" "$integration_post_audit" || {
+		echo "WP40 R7 runner: code inputs changed during integration KAT" >&2
+		exit 1
+	}
+	integration_partial="$(mktemp "$docs/.wp40-r7-integration-receipt.partial.XXXXXXXX")"
+	integration_log_partial="$(mktemp "$docs/.wp40-r7-integration-log.partial.XXXXXXXX")"
+	prefreeze_partial="$(mktemp "$docs/.wp40-r7-prefreeze.partial.XXXXXXXX")"
+	binding_partial="$(mktemp "$docs/.wp40-r7-integration-binding.partial.XXXXXXXX")"
+	cp -- "$integration_receipt" "$integration_partial"
+	cp -- "$integration_log" "$integration_log_partial"
+	cp -- "$static_receipt" "$prefreeze_partial"
+	code_input_set_sha="$(awk -F '\t' '$1 == "code_input_set_sha256" {count++; result=$2}
+		END {if (count == 1) print result}' "$static_receipt")"
+	[[ "$code_input_set_sha" =~ ^[0-9a-f]{64}$ ]] || {
+		echo "WP40 R7 runner: prefreeze code input identity differs" >&2
+		exit 1
+	}
+	{
+		printf 'schema\tgrug_wp40_r7_integration_binding_v1\n'
+		printf 'code_input_set_sha256\t%s\n' "$code_input_set_sha"
+		printf 'prefreeze_source_audit_sha256\t%s\n' \
+			"$(sha256sum "$static_receipt" | awk '{print $1}')"
+		printf 'integration_receipt_sha256\t%s\n' \
+			"$(sha256sum "$integration_receipt" | awk '{print $1}')"
+		printf 'integration_log_sha256\t%s\n' \
+			"$(sha256sum "$integration_log" | awk '{print $1}')"
+	} >"$binding_partial"
+	mv -- "$integration_log_partial" "$durable_integration_log"
+	mv -- "$integration_partial" "$durable_integration"
+	mv -- "$prefreeze_partial" "$durable_prefreeze"
+	mv -- "$binding_partial" "$durable_integration_binding"
 	cat "$catalog_log" "$native_log" "$integration_log"
 	cat "$catalog_receipt" "$integration_receipt"
 	exit 0
 fi
+
+if [[ "$mode" == freeze ]]; then
+	[[ "$#" -eq 0 ]] || { echo "usage: run.sh freeze" >&2; exit 2; }
+	[[ -f "$durable_integration" && -f "$durable_integration_log" &&
+		-f "$durable_integration_binding" && -f "$durable_prefreeze" &&
+		! -e "$durable_micro" && ! -e "$durable_micro_output" &&
+		! -e "$durable_micro_lj_log" && ! -e "$durable_micro_puc_log" &&
+		! -e "$durable_static" ]] || {
+		echo "WP40 R7 runner: freeze boundary/evidence state differs" >&2
+		exit 1
+	}
+	static_gates "$static_receipt" prefreeze
+	cmp -s "$static_receipt" "$durable_prefreeze" || {
+		echo "WP40 R7 runner: code inputs changed after the integration freeze" >&2
+		exit 1
+	}
+	binding_value() {
+		local key="$1"
+		awk -F '\t' -v wanted="$key" '$1 == wanted {count++; result=$2}
+			END {if (count == 1) print result}' "$durable_integration_binding"
+	}
+	current_code_input_sha="$(awk -F '\t' '$1 == "code_input_set_sha256" {
+		count++; result=$2} END {if (count == 1) print result}' "$static_receipt")"
+	current_prefreeze_sha="$(sha256sum "$durable_prefreeze" | awk '{print $1}')"
+	current_integration_sha="$(sha256sum "$durable_integration" | awk '{print $1}')"
+	current_integration_log_sha="$(sha256sum "$durable_integration_log" | awk '{print $1}')"
+	[[ "$(binding_value schema)" == grug_wp40_r7_integration_binding_v1 &&
+		"$(binding_value code_input_set_sha256)" == "$current_code_input_sha" &&
+		"$(binding_value prefreeze_source_audit_sha256)" == "$current_prefreeze_sha" &&
+		"$(binding_value integration_receipt_sha256)" == "$current_integration_sha" &&
+		"$(binding_value integration_log_sha256)" == "$current_integration_log_sha" ]] || {
+		echo "WP40 R7 runner: integration/code binding changed before final micro" >&2
+		exit 1
+	}
+	bash "$script_dir/final_micro.sh" "$repo" "$durable_micro"
+	static_gates "$static_receipt" final
+	static_partial="$(mktemp "$docs/.wp40-r7-source-audit.partial.XXXXXXXX")"
+	cp -- "$static_receipt" "$static_partial"
+	mv -- "$static_partial" "$durable_static"
+	cat "$durable_micro" "$durable_static"
+	exit 0
+fi
+
+[[ -f "$durable_integration" && -f "$durable_integration_log" &&
+	-f "$durable_integration_binding" && -f "$durable_prefreeze" &&
+	-f "$durable_micro" && -f "$durable_micro_output" &&
+	-f "$durable_micro_lj_log" && -f "$durable_micro_puc_log" &&
+	-f "$durable_static" ]] || {
+	echo "WP40 R7 runner: pilot/fleet requires frozen integration, micro and final audit" >&2
+	exit 1
+}
+static_gates "$static_receipt" final
+cmp -s "$static_receipt" "$durable_static" || {
+	echo "WP40 R7 runner: final source audit changed after freeze" >&2
+	exit 1
+}
+run_catalog "$catalog_receipt" "$catalog_log"
+run_native "$native_log"
+integration_receipt="$durable_integration"
+integration_log="$durable_integration_log"
 
 seed_corpus="$repo/docs/research/wp40-simple-map-r6-seed-corpus.tsv"
 [[ -f "$seed_corpus" ]] || {
@@ -242,6 +357,13 @@ if [[ "$mode" == pilot ]]; then
 		-f 'r7_pilot_resource_v1\t%e\t%U\t%S\t%M' -o "$pilot_resource" \
 		chrt --idle 0 ionice -c3 "$lua_bin" "${lua_prefix[@]}" "$cli" pilot \
 		"$repo" "$pilot_result" "$scratch/pilot" 17 >"$pilot_log" 2>&1
+	pilot_post_static="$scratch/source-audit-pilot-post.tsv"
+	static_gates "$pilot_post_static" final
+	cmp -s "$static_receipt" "$pilot_post_static" &&
+		cmp -s "$durable_static" "$pilot_post_static" || {
+		echo "WP40 R7 runner: repository inputs changed during the pilot" >&2
+		exit 1
+	}
 	static_sha="$(sha256sum "$static_receipt" | awk '{print $1}')"
 	catalog_sha="$(sha256sum "$catalog_receipt" | awk '{print $1}')"
 	native_sha="$(sha256sum "$native_log" | awk '{print $1}')"
@@ -255,7 +377,15 @@ if [[ "$mode" == pilot ]]; then
 		exit 1
 	}
 	scratch_bytes="$(du -sb -- "$scratch" | awk '{print $1}')"
-	output_bytes="$(du -b -- "$pilot_result" | awk '{print $1}')"
+	receipt_output_bytes="$(du -b -- "$pilot_result" | awk '{print $1}')"
+	canonical_output_rows="$(awk -F '\t' '$1 == "canonical_output_bytes" {count++}
+		END {print count + 0}' "$pilot_result")"
+	output_bytes="$(awk -F '\t' '$1 == "canonical_output_bytes" {print $2}' \
+		"$pilot_result")"
+	[[ "$canonical_output_rows" -eq 1 && "$output_bytes" =~ ^[1-9][0-9]*$ ]] || {
+		echo "WP40 R7 runner: pilot canonical output byte measurement differs" >&2
+		exit 1
+	}
 	projected_wall="$(awk -v elapsed="$elapsed" 'BEGIN {printf "%.6f", elapsed * 5}')"
 	projected_rss="$(awk -v rss="$peak_rss" 'BEGIN {printf "%.0f", rss * 7}')"
 	projected_output="$((output_bytes * 32))"
@@ -282,6 +412,7 @@ if [[ "$mode" == pilot ]]; then
 		printf 'measured_system_seconds\t%s\n' "$system_time"
 		printf 'measured_peak_rss_kib\t%s\n' "$peak_rss"
 		printf 'measured_output_bytes\t%s\n' "$output_bytes"
+		printf 'measured_pilot_receipt_bytes\t%s\n' "$receipt_output_bytes"
 		printf 'measured_scratch_bytes\t%s\n' "$scratch_bytes"
 		printf 'fleet_width\t7\n'
 		printf 'fleet_seed_population\t32\n'
@@ -360,26 +491,64 @@ for worker_id in 1 2 3 4 5 6 7; do
 done
 
 post_static="$scratch/source-audit-post.tsv"
-static_gates "$post_static"
+static_gates "$post_static" final
 cmp -s "$static_receipt" "$post_static" || {
 	echo "WP40 R7 runner: repository inputs changed during the fleet" >&2
 	exit 1
 }
+cmp -s "$durable_static" "$post_static" || {
+	echo "WP40 R7 runner: post-fleet final audit differs from frozen audit" >&2
+	exit 1
+}
 
-artifact_tmp="$scratch/wp40-r7-artifact.tsv"
-stage_a_tmp="$scratch/wp40-r7-stage-a.tsv"
-stage_b_tmp="$scratch/wp40-r7-stage-b.tsv"
-p9g_tmp="$scratch/wp40-r7-p9g-ledger.tsv"
-receipt_tmp="$scratch/wp40-r7-run-receipt.tsv"
-finalizer_log="$scratch/finalizer.log"
 worker_paths=()
 for worker_id in 1 2 3 4 5 6 7; do
 	worker_paths+=("$scratch/worker-$worker_id.tsv")
 done
+reverse_worker_paths=()
+for worker_id in 7 6 5 4 3 2 1; do
+	reverse_worker_paths+=("$scratch/worker-$worker_id.tsv")
+done
+forward="$scratch/finalizer-forward"
+reverse="$scratch/finalizer-reverse"
+mkdir -p -- "$forward/internal" "$reverse/internal"
+artifact_tmp="$forward/wp40-r7-artifact.tsv"
+stage_a_tmp="$forward/wp40-r7-stage-a.tsv"
+stage_b_tmp="$forward/wp40-r7-stage-b.tsv"
+p9g_tmp="$forward/wp40-r7-p9g-ledger.tsv"
+receipt_tmp="$forward/wp40-r7-run-receipt.tsv"
+finalizer_log="$scratch/finalizer-forward.log"
 "$lua_bin" "${lua_prefix[@]}" "$cli" finalize "$repo" \
-	"$scratch/finalizer-unused" "$scratch/finalizer" "$artifact_tmp" \
+	"$forward/unused" "$forward/internal" "$artifact_tmp" \
 	"$stage_a_tmp" "$stage_b_tmp" "$p9g_tmp" \
 	"$receipt_tmp" "${worker_paths[@]}" >"$finalizer_log" 2>&1
+reverse_artifact="$reverse/wp40-r7-artifact.tsv"
+reverse_stage_a="$reverse/wp40-r7-stage-a.tsv"
+reverse_stage_b="$reverse/wp40-r7-stage-b.tsv"
+reverse_p9g="$reverse/wp40-r7-p9g-ledger.tsv"
+reverse_receipt="$reverse/wp40-r7-run-receipt.tsv"
+reverse_finalizer_log="$scratch/finalizer-reverse.log"
+"$lua_bin" "${lua_prefix[@]}" "$cli" finalize "$repo" \
+	"$reverse/unused" "$reverse/internal" "$reverse_artifact" \
+	"$reverse_stage_a" "$reverse_stage_b" "$reverse_p9g" \
+	"$reverse_receipt" "${reverse_worker_paths[@]}" >"$reverse_finalizer_log" 2>&1
+for pair in "$artifact_tmp:$reverse_artifact" "$stage_a_tmp:$reverse_stage_a" \
+		"$stage_b_tmp:$reverse_stage_b" "$p9g_tmp:$reverse_p9g" \
+		"$receipt_tmp:$reverse_receipt"; do
+	forward_file="${pair%%:*}" reverse_file="${pair#*:}"
+	cmp -s "$forward_file" "$reverse_file" || {
+		echo "WP40 R7 runner: reversed-worker canonical invariance failed" >&2
+		exit 1
+	}
+	done
+
+finalizer_post_static="$scratch/source-audit-finalizer-post.tsv"
+static_gates "$finalizer_post_static" final
+cmp -s "$static_receipt" "$finalizer_post_static" &&
+	cmp -s "$durable_static" "$finalizer_post_static" || {
+	echo "WP40 R7 runner: repository inputs changed during finalization" >&2
+	exit 1
+}
 
 docs="$repo/docs/research"
 artifact="$docs/wp40-r7-artifact.tsv"
@@ -390,6 +559,15 @@ run_receipt="$docs/wp40-r7-run-receipt.tsv"
 durable_projection="$docs/wp40-r7-pilot-projection.tsv"
 run_log="$docs/wp40-r7-run.log"
 promotion="$docs/wp40-r7-promotion-manifest.tsv"
+for frozen in "$durable_static" "$durable_micro" "$durable_micro_output" \
+		"$durable_micro_lj_log" "$durable_micro_puc_log" "$durable_integration" \
+		"$durable_integration_log" "$durable_integration_binding" \
+		"$durable_prefreeze"; do
+	[[ -f "$frozen" ]] || {
+		echo "WP40 R7 runner: frozen evidence disappeared: $frozen" >&2
+		exit 1
+	}
+done
 for target in "$artifact" "$stage_a" "$stage_b" "$p9g" "$run_receipt" \
 		"$durable_projection" "$run_log" "$promotion"; do
 	[[ ! -e "$target" ]] || {
@@ -404,7 +582,7 @@ run_log_tmp="$scratch/wp40-r7-run.log"
 	printf 'schema\tgrug_wp40_r7_run_log_v1\n'
 	for log in "$catalog_log" "$native_log" "$integration_log" \
 			"$scratch"/worker-*.log "$scratch"/worker-*.resource.tsv \
-			"$finalizer_log"; do
+			"$finalizer_log" "$reverse_finalizer_log"; do
 		label="$(basename "$log")"
 		printf 'file\t%s\t%s\n' "$label" "$(sha256sum "$log" | awk '{print $1}')"
 		awk -v value="$label" '{print "line\t" value "\t" $0}' "$log"
@@ -422,12 +600,43 @@ promotion_partial="$scratch/wp40-r7-promotion-manifest.tsv"
 	printf 'schema\tgrug_wp40_r7_promotion_manifest_v1\n'
 	printf 'approved_projection_sha256\t%s\n' "$approved_argument"
 	printf 'source_audit_sha256\t%s\n' "$(sha256sum "$static_receipt" | awk '{print $1}')"
+	printf 'gate\treversed_worker_canonical_invariance\ttrue\n'
+	for key in proof_scope_fleet accepted_r6_artifact_sha256 \
+			production_r6_content_sha256 p9g_content_sha256 p9g_delta_sha256; do
+		value="$(awk -F '\t' -v wanted="$key" '$1 == wanted {count++; result=$2}
+			END {if (count == 1) print result}' "$run_receipt")"
+		[[ -n "$value" ]] || {
+			echo "WP40 R7 runner: run receipt identity is absent: $key" >&2
+			exit 1
+		}
+		printf '%s\t%s\n' "$key" "$value"
+	done
 	for target in "$artifact" "$stage_a" "$stage_b" "$p9g" "$run_receipt" \
-			"$durable_projection" "$run_log"; do
+			"$durable_projection" "$run_log" "$durable_static" "$durable_micro" \
+			"$durable_micro_output" "$durable_micro_lj_log" "$durable_micro_puc_log" \
+			"$durable_integration" "$durable_integration_log" \
+			"$durable_integration_binding" "$durable_prefreeze"; do
 		printf 'file\t%s\t%s\n' "${target#"$repo/"}" \
 			"$(sha256sum "$target" | awk '{print $1}')"
 	done
 } >"$promotion_partial"
 mv -- "$promotion_partial" "$promotion"
+[[ "$(awk -F '\t' '$1 == "schema" {count++; value=$2}
+	END {if (count == 1) print value}' "$promotion")" == \
+	grug_wp40_r7_promotion_manifest_v1 &&
+	"$(awk -F '\t' '$1 == "gate" && $2 == "reversed_worker_canonical_invariance" &&
+		$3 == "true" {count++} END {print count + 0}' "$promotion")" -eq 1 &&
+	"$(awk -F '\t' '$1 == "file" {count++} END {print count + 0}' "$promotion")" -eq 16 ]] || {
+	echo "WP40 R7 runner: final promotion manifest closure differs" >&2
+	exit 1
+}
+while IFS=$'\t' read -r kind relative expected_sha extra; do
+	[[ "$kind" == file ]] || continue
+	[[ -z "$extra" && -f "$repo/$relative" &&
+		"$(sha256sum "$repo/$relative" | awk '{print $1}')" == "$expected_sha" ]] || {
+		echo "WP40 R7 runner: promoted evidence binding differs: $relative" >&2
+		exit 1
+	}
+done <"$promotion"
 printf 'r7_promotion_manifest_sha256\t%s\n' \
 	"$(sha256sum "$promotion" | awk '{print $1}')"

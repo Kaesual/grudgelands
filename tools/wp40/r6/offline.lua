@@ -69,6 +69,20 @@ return function(repo)
 			context = context, cultural_records = cultural_records}
 	end
 
+	function loader.new_capture(seed, heightmap, with_cultural)
+		local contract, cid_by_name, ref_by_name = fixtures.new_content_contract()
+		local cultural_records = with_cultural and
+			fixtures.cultural_records(r6_module) or {}
+		local context = fixtures.context(heightmap or new_heightmap(-31007))
+		local session, _, zones_session, settlement_fixture = r6_module.new_capture(seed, 1,
+			fixtures.r6_manifest(), contract, context, fixtures.projection(),
+			fixtures.template_source(), cultural_records)
+		return {session = session, content_contract = contract,
+			cid_by_name = cid_by_name, ref_by_name = ref_by_name,
+			context = context, cultural_records = cultural_records,
+			zones_session = zones_session, settlement_fixture = settlement_fixture}
+	end
+
 	function loader.new_internal(seed, heightmap, with_cultural, need_settlement)
 		local contract, cid_by_name, ref_by_name = fixtures.new_content_contract()
 		local context = fixtures.context(heightmap or new_heightmap(-31007))
@@ -131,7 +145,10 @@ return function(repo)
 	-- Lightweight exhaustive lane: it uses the production R6 candidate core but
 	-- does not construct R5's VM-sized planner/adapter buffers. It never calls
 	-- plan_slice or settlement and therefore cannot become a second world writer.
-	function loader.new_evidence(seed)
+	function loader.new_evidence(seed, with_cultural)
+		if with_cultural ~= nil and type(with_cultural) ~= "boolean" then
+			common.fail("evidence Cultural mode differs")
+		end
 		local contract, cid_by_name, ref_by_name = fixtures.new_content_contract()
 		local hash = hash_factory(raw_sha256)
 		local content = content_factory(fixtures.r6_manifest(), contract,
@@ -155,6 +172,14 @@ return function(repo)
 			horizontal = horizontal, content = content, templates = templates,
 			hash = hash, source = source, construction_identity = {value = false},
 			counting_allocator = planner_allocator})
+		local cultural_records = with_cultural and
+			fixtures.cultural_records(r6_module) or {}
+		for index = 1, #cultural_records do
+			for cell = 1, #cultural_records[index].cells do
+				cultural_records[index].cells[cell].content_ref =
+					assert(content.content_ref(cultural_records[index].cells[cell].node))
+			end
+		end
 		local settlement_allocator = allocator_factory.new(
 			"grug_wp40_r6_settlement_allocator_v1")
 		local settlement, settlement_fixture = settlement_factory.new_evidence({
@@ -162,14 +187,16 @@ return function(repo)
 				common.fail("evidence-only settlement cannot invoke the R5 adapter")
 			end}, content = content, templates = templates, hash = hash,
 			horizontal = horizontal, planner_source = planner_source,
-			construction_identity = {value = false}, cultural_registrations = {},
-			source = source, counting_allocator = settlement_allocator})
+			construction_identity = {value = false},
+			cultural_registrations = cultural_records, source = source,
+			counting_allocator = settlement_allocator,
+			planner_stable_refs = planner_fixture.stable_refs()})
 		return {planner = planner, planner_fixture = planner_fixture,
 			settlement = settlement, settlement_fixture = settlement_fixture,
 			planner_source = planner_source, horizontal = horizontal,
 			content = content, templates = templates, hash = hash,
 			content_contract = contract, cid_by_name = cid_by_name,
-			ref_by_name = ref_by_name}
+			ref_by_name = ref_by_name, cultural_records = cultural_records}
 	end
 
 	function loader.heightmap(value) return new_heightmap(value) end

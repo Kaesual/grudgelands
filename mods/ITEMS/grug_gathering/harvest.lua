@@ -60,7 +60,11 @@ return function(dependencies)
 		if type(zones) ~= "table" or type(zones.id_at) ~= "function" then
 			return nil
 		end
-		local ok, zone_id = pcall(zones.id_at, pos)
+		if type(pos) ~= "table" or type(pos.x) ~= "number" or
+				type(pos.z) ~= "number" then
+			return nil
+		end
+		local ok, zone_id = pcall(zones.id_at, pos.x, pos.z)
 		if not ok or type(zone_id) ~= "string" or zone_id == "" then return nil end
 		return zone_id
 	end

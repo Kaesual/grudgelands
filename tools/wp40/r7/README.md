@@ -17,12 +17,14 @@ map generation or duplicate any production placement rule.
   source hashes and defensive-copy behavior. Runtime work delegates to
   `runtime_adapter.lua`.
 
-`runtime_adapter.lua` is intentionally absent from this preparatory commit.
-The coordinator adds it under this directory only after the final production
-R7 session API exists. It must return normalized proof results and may call the
-integrated production fixtures; it must not reimplement P9G, R6 projection,
-protection or query semantics. Until it exists, integration, pilot and fleet
-commands fail closed before any worker starts.
+`runtime_adapter.lua` is the tool-only adapter over the integrated
+production-private evidence facade. The integration gate uses the real writer
+to capture a complete owner before replay and VM setters, including all seven
+private cell fields and the actual run projection. The 32-seed workers use the
+bounded affected-cell seven-tuple delta plus the immutable R6 aggregates; they
+do not claim 32 full private-buffer or Full-VM executions. The adapter calls
+production fixtures and does not reimplement P9G, R6 projection, protection or
+query semantics.
 
 The sole mapgen-environment script name expected by the source audit is
 `mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua`. This makes the one main loader
@@ -41,8 +43,9 @@ bash tools/wp40/r7/run.sh integration
 An isolated worktree without the local ignored `tools/bin/luac51` artifact can
 point at the already-built parser with `WP40_LUAC51_BIN=/absolute/path/luac51`.
 
-`unit` is usable before the production cutover. `static` requires the complete
-atomic cutover, and `integration` additionally requires `runtime_adapter.lua`.
+`unit` is usable without an engine process. `static` requires the complete
+atomic cutover, and `integration` additionally exercises the production-owned
+private evidence seams through the mocked VM.
 
 The pilot accepts exactly one new path below `/tmp`, measures one
 representative seed, writes a canonical projection and stops unconditionally:
@@ -68,7 +71,7 @@ rejects changed inputs. No PUC runtime is part of this runner; the one final
 PUC/LuaJIT micro-KAT pair is a later frozen-byte coordinator gate.
 
 On a successful fleet, the finalizer promotes the artifact, Stage-A aggregate,
-Stage-B aggregate, P9G ledger, run receipt, approved pilot projection and
-canonical combined log to `docs/research/`. The promotion manifest is written
-last and binds every durable file by SHA-256; acceptance evidence is never left
-only in `/tmp`.
+Stage-B aggregate, P9G ledger, run receipt, source-audit receipt, final
+micro-KAT receipt, approved pilot projection and canonical combined log to
+`docs/research/`. The promotion manifest is written last and binds every
+durable file by SHA-256; acceptance evidence is never left only in `/tmp`.

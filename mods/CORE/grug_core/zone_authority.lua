@@ -51,14 +51,8 @@ local EXPECTED_RARE_IDS = {
 	"dustwing",
 	"emerald_coil",
 	"ashmaw",
-	"bonerattle_south",
 	"bonerattle_north",
-}
-
-local EXPECTED_PATROL_OFFSETS = {
-	{x = -48, z = -24},
-	{x = 16, z = 40},
-	{x = 56, z = -16},
+	"bonerattle_south",
 }
 
 local authority
@@ -267,22 +261,29 @@ local function validate_rare_routes(session, rows)
 				water_class == "immutable_dragon_channel" then
 			fail("rare route anchor is not ordinary land for " .. row.id)
 		end
-		dense_array(row.patrol_offsets, #EXPECTED_PATROL_OFFSETS,
+		dense_array(row.patrol_offsets, 3,
 			"rare route offsets for " .. row.id)
 		local route = {}
 		for n = 1, #row.patrol_offsets do
 			local offset = row.patrol_offsets[n]
-			local expected_offset = EXPECTED_PATROL_OFFSETS[n]
 			exact_fields(offset, {x = true, z = true},
 				"rare route offset " .. row.id .. ":" .. n)
-			if type(offset) ~= "table" or offset.x ~= expected_offset.x or
-					offset.z ~= expected_offset.z then
+			if type(offset) ~= "table" then
 				fail("rare route offset differs for " .. row.id)
 			end
 			local x = anchor.x + integer(offset.x,
 				"rare route offset x for " .. row.id)
 			local z = anchor.z + integer(offset.z,
 				"rare route offset z for " .. row.id)
+			if math.abs(offset.x) > 80 or math.abs(offset.z) > 80 or
+					(offset.x == 0 and offset.z == 0) then
+				fail("rare route offset bound differs for " .. row.id)
+			end
+			for previous = 1, n - 1 do
+				if route[previous].x == x and route[previous].z == z then
+					fail("rare route contains a duplicate point for " .. row.id)
+				end
+			end
 			local y = session.terrain_height_at(x, z)
 			integer(y, "rare route height for " .. row.id)
 			route[n] = {x = x, y = y + 1, z = z}
@@ -296,6 +297,31 @@ local function validate_rare_routes(session, rows)
 		end
 	end
 	return result
+end
+
+local function consumer_payload_bytes(payload)
+	local bytes = {"schema\tgrug_wp40_r7_consumer_payload_v1\n"}
+	for index = 1, #payload.races do
+		local row = payload.races[index]
+		bytes[#bytes + 1] = table.concat({"race", row.race_id,
+			row.faction_id, row.start.zone_id, row.start.slot_id,
+			row.capital.zone_id, row.capital.slot_id}, "\t") .. "\n"
+	end
+	for index = 1, #payload.outposts do
+		local row = payload.outposts[index]
+		bytes[#bytes + 1] = table.concat({"outpost", row.race_id,
+			row.faction_id, row.anchor.zone_id, row.anchor.slot_id}, "\t") .. "\n"
+	end
+	for index = 1, #payload.rare_routes do
+		local row = payload.rare_routes[index]
+		local fields = {"rare", row.id, row.anchor.zone_id, row.anchor.slot_id}
+		for offset = 1, #row.patrol_offsets do
+			fields[#fields + 1] = tostring(row.patrol_offsets[offset].x)
+			fields[#fields + 1] = tostring(row.patrol_offsets[offset].z)
+		end
+		bytes[#bytes + 1] = table.concat(fields, "\t") .. "\n"
+	end
+	return table.concat(bytes)
 end
 
 local function public_registry(session)
@@ -315,7 +341,7 @@ local function public_registry(session)
 	})
 end
 
-function grug_core.install_zone_authority(session, payload)
+function grug_core.prepare_zone_authority(session, payload)
 	if authority then
 		fail("authority may be installed only once")
 	end
@@ -327,22 +353,33 @@ function grug_core.install_zone_authority(session, payload)
 			payload.schema ~= "grug_wp40_r7_consumer_payload_v1" then
 		fail("consumer payload schema differs")
 	end
-	exact_fields(payload, {schema = true, races = true, outposts = true,
-		rare_routes = true}, "consumer payload")
+	exact_fields(payload, {schema = true, sha256 = true, races = true,
+		outposts = true, rare_routes = true}, "consumer payload")
 
 	-- Build every private consumer table before publishing any authority.
 	local next_races = validate_races(session, payload.races)
 	local next_outposts = validate_outposts(session, payload.outposts)
 	local next_rare_routes = validate_rare_routes(session, payload.rare_routes)
+	if type(core.sha256) ~= "function" or type(payload.sha256) ~= "string" or
+			#payload.sha256 ~= 64 or
+			core.sha256(consumer_payload_bytes(payload)) ~= payload.sha256 then
+		fail("consumer payload digest differs")
+	end
 	local next_public = public_registry(session)
+	return function()
+		-- This closure contains assignments only. Every query, anchor, payload and
+		-- policy check completed before the production writer was registered.
+		race_anchors = next_races
+		outposts = next_outposts
+		rare_routes = next_rare_routes
+		authority = session
+		rawset(_G, "grug_zones", next_public)
+		return true
+	end
+end
 
-	race_anchors = next_races
-	outposts = next_outposts
-	rare_routes = next_rare_routes
-	authority = session
-	-- Publication is last. A validation failure leaves no grug_zones global.
-	rawset(_G, "grug_zones", next_public)
-	return true
+function grug_core.install_zone_authority(session, payload)
+	return grug_core.prepare_zone_authority(session, payload)()
 end
 
 function grug_core.zone_authority_installed()

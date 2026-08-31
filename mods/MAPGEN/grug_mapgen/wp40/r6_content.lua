@@ -415,7 +415,8 @@ return function(manifest_values, content_contract, wp43_projection)
 		content_names = true, content_cids = true, content_kind_masks = true,
 		resolve_r6 = true, classify = true, metrics = true}, "content contract",
 		"fail_content_manifest")
-	if content_contract.schema ~= "grug_wp40_r6_content_contract_v1" or
+	if (content_contract.schema ~= "grug_wp40_r6_content_contract_v1" and
+			content_contract.schema ~= "grug_wp40_r7_production_r6_content_v1") or
 			type(content_contract.r5) ~= "table" or
 			content_contract.r5.schema ~= "grug_wp40_r5_content_contract_v1" or
 			type(content_contract.resolve_r6) ~= "function" or

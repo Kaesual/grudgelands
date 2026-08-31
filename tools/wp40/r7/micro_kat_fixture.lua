@@ -6,6 +6,8 @@ return function(repo)
 	local raw_sha256 = common.new_sha256()
 	local wp40 = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
 	local rows = {}
+	local changed_order, changed_set, executed = {}, {}, {}
+	local saved_dofile = dofile
 
 	local function fail(message)
 		error("WP40 R7 micro KAT: " .. message, 0)
@@ -89,7 +91,487 @@ return function(repo)
 			"expected failure did not contain " .. fragment)
 	end
 
+	local function repo_relative(path)
+		local prefix = repo .. "/"
+		if type(path) == "string" and path:sub(1, #prefix) == prefix then
+			return path:sub(#prefix + 1)
+		end
+		return nil
+	end
+
+	local function mark_executed(path)
+		local relative = repo_relative(path)
+		if relative and changed_set[relative] then
+			executed[relative] = (executed[relative] or 0) + 1
+		end
+	end
+
+	local function tracking_dofile(path)
+		local function mark_return(...)
+			mark_executed(path)
+			return ...
+		end
+		return mark_return(saved_dofile(path))
+	end
+
+	-- Track successful top-level execution, including authentic transitive
+	-- dofile loads.  Compilation alone is deliberately not execution evidence.
+	rawset(_G, "dofile", tracking_dofile)
+
+	local changed_file = assert(io.open(repo ..
+		"/tools/wp40/r7/changed_production_lua.txt", "rb"))
+	local changed_count, changed_rows, previous = 0, {}, nil
+	for relative in changed_file:lines() do
+		check(relative ~= "" and (not previous or less_bytes(previous, relative)),
+			"changed production Lua roster order differs")
+		local chunk = assert(loadfile(repo .. "/" .. relative))
+		check(type(chunk) == "function", "changed production Lua did not compile")
+		changed_count = changed_count + 1
+		changed_order[changed_count] = relative
+		changed_set[relative] = true
+		changed_rows[#changed_rows + 1] = relative .. "\t" ..
+			hex_sha256(common.read_file(repo .. "/" .. relative)) .. "\n"
+		previous = relative
+	end
+	assert(changed_file:close())
+	check(changed_count == 65, "changed production Lua population differs")
+	row("source/changed_production_lua_count", changed_count)
+	row("source/changed_production_lua_sha256",
+		hex_sha256(table.concat(changed_rows)))
+
 	row("schema", "grug_wp40_r7_micro_kat_v1")
+
+	-- Drive the real r7_runtime factory and build control flow through exact
+	-- live-setting validation and the complete assembly/manifest/evidence-mode
+	-- sequence.  Its heavyweight collaborators are closed stubs here; the real
+	-- writer/successor transaction below exercises the material data path.
+	do
+	local runtime_calls = {constructor = 0, manifest_new = 0,
+		manifest_validate = 0, content = 0, payload = 0}
+	local runtime_session, runtime_writer, runtime_zones = {}, {}, {}
+	local runtime_successor_tail = {probe_reason = function() return "accepted" end}
+	local runtime_identity = {schema = "grug_wp40_r6_private_identity_v1",
+		template_records = {}, planner_fixture = {}, successor_tail = runtime_successor_tail}
+	local runtime_fixture_stub = {scan_horizontal_owner = function()
+		return {schema = "micro_scan"}
+	end}
+	local function runtime_constructor()
+		runtime_calls.constructor = runtime_calls.constructor + 1
+		return runtime_session, runtime_writer, runtime_zones,
+			runtime_fixture_stub, runtime_identity
+	end
+	local runtime_r6_module = {new = runtime_constructor,
+		new_capture = runtime_constructor, new_evidence = runtime_constructor}
+	local runtime_content_set = {
+		production = {schema = "grug_wp40_r7_production_r6_content_v1"},
+		p9g = {schema = "grug_wp40_r7_p9g_content_v1"},
+		production_digest = string.rep("1", 64),
+		production_semantic_digest = string.rep("2", 64),
+		p9g_digest = string.rep("3", 64), p9g_semantic_digest = string.rep("4", 64),
+		accepted_r6_rows = function() return {} end,
+	}
+	local runtime_manifest_module = {}
+	function runtime_manifest_module.new()
+		runtime_calls.manifest_new = runtime_calls.manifest_new + 1
+		return {schema = "micro_manifest", sha256 = string.rep("5", 64)}
+	end
+	function runtime_manifest_module.validate(value)
+		runtime_calls.manifest_validate = runtime_calls.manifest_validate + 1
+		check(value.schema == "micro_manifest", "runtime manifest seam differs")
+		return true
+	end
+	local runtime_r6_manifest = {schema = "micro_r6_manifest",
+		r5_manifest_values = {}}
+	local function runtime_stub_dofile(path)
+		if path:match("/source/catalog%.lua$") then return {} end
+		if path:match("/source/simple_map%.lua$") then return {} end
+		if path:match("/r6%.lua$") then
+			return function() return runtime_r6_module end
+		end
+		if path:match("/r7_content%.lua$") then
+			return function()
+				runtime_calls.content = runtime_calls.content + 1
+				return runtime_content_set
+			end
+		end
+		if path:match("/r7_consumer_payload%.lua$") then
+			return function()
+				runtime_calls.payload = runtime_calls.payload + 1
+				return {schema = "micro_payload", sha256 = string.rep("6", 64)}
+			end
+		end
+		if path:match("/r7_manifest%.lua$") then
+			return function() return runtime_manifest_module end
+		end
+		if path:match("/r7_p9g%.lua$") then
+			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
+		end
+		if path:match("/r7_r6_manifest%.lua$") then
+			return function() return runtime_r6_manifest end
+		end
+		if path:match("/r7_template_source%.lua$") then
+			return function() return {} end
+		end
+		return {}
+	end
+	local runtime_environment = setmetatable({dofile = runtime_stub_dofile},
+		{__index = _G})
+	local runtime_chunk = assert(loadfile(wp40 .. "/r7_runtime.lua"))
+	setfenv(runtime_chunk, runtime_environment)
+	local runtime_factory = runtime_chunk()
+	mark_executed(wp40 .. "/r7_runtime.lua")
+	local runtime_settings = {
+		mg_name = "v7", water_level = "1", mapgen_limit = "31007",
+		chunksize = "5", mgv7_dungeon_ymin = "-31000",
+		mgv7_dungeon_ymax = "-193",
+		mg_flags = "biomes,caves,decorations,dungeons,light,ores",
+		mgv7_spflags = "mountains,ridges,caverns,nofloatlands", seed = "0",
+	}
+	local runtime_core = {settings = {}}
+	function runtime_core.sha256(bytes, raw)
+		local digest = raw_sha256(bytes)
+		return raw and digest or hex_sha256(bytes)
+	end
+	function runtime_core.get_mapgen_setting(name) return runtime_settings[name] end
+	function runtime_core.settings.get(_, name)
+		return name == "num_emerge_threads" and "1" or nil
+	end
+	local runtime_catalog = {}
+	function runtime_catalog.cultural_registrations() return {} end
+	function runtime_catalog.manifest()
+		return {schema = "micro_gathering_manifest", sha256 = string.rep("7", 64)}
+	end
+	local runtime_module = runtime_factory(runtime_core, wp40,
+		repo .. "/mods/BASE/default/schematics", {}, runtime_catalog)
+	expect_failure(function()
+		runtime_module.build({}, nil, "invalid")
+	end, "evidence mode differs")
+	local runtime_built = runtime_module.build({schema = "micro_native"}, nil, true)
+	check(runtime_built.session == runtime_session and
+		runtime_built.writer == runtime_writer and
+		runtime_built.zones_session == runtime_zones and
+		type(runtime_built.evidence) == "table" and
+		runtime_calls.constructor == 2 and runtime_calls.content == 1 and
+		runtime_calls.payload == 1 and runtime_calls.manifest_new == 1 and
+		runtime_calls.manifest_validate == 1,
+		"bounded r7_runtime assembly control flow differs")
+	row("runtime/bounded_build", table.concat({runtime_calls.constructor,
+		runtime_calls.content, runtime_calls.payload, runtime_calls.manifest_new,
+		runtime_calls.manifest_validate}, "/"))
+	end
+
+	local function execute_in_environment(relative, environment)
+		local path = repo .. "/" .. relative
+		local chunk = assert(loadfile(path))
+		setfenv(chunk, environment)
+		local function mark_return(...)
+			mark_executed(path)
+			return ...
+		end
+		return mark_return(chunk())
+	end
+
+	-- Pure changed factories still execute as chunks even where their returned
+	-- closures are exercised elsewhere in this fixture.
+	for _, relative in ipairs({
+		"mods/MAPGEN/grug_mapgen/wp40/r6.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r6_content.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua", -- replaced below by full env run
+		"mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua",
+	}) do
+		if not relative:match("r7_mapgen%.lua$") then tracking_dofile(repo .. "/" .. relative) end
+	end
+
+	-- Core initializer: changed authority/protection are materially exercised
+	-- below; the remaining children are closed here so the changed top-level
+	-- initialization order itself is executable without a game runtime.
+	do
+	local core_init_environment = setmetatable({core = {
+		get_current_modname = function() return "grug_core" end,
+		get_modpath = function() return repo .. "/mods/CORE/grug_core" end,
+	}}, {__index = _G})
+	core_init_environment.dofile = function() return nil end
+	execute_in_environment("mods/CORE/grug_core/init.lua", core_init_environment)
+	check(type(core_init_environment.grug_core) == "table" and
+		core_init_environment.grug_core.opposing_faction("accord") == "throng",
+		"grug_core initializer projection differs")
+	end
+
+	-- The vendored default mapgen top-level must register aliases but, under the
+	-- exact v7 setting, must execute no legacy ore/deco registration branch.
+	do
+	local alias_count = 0
+	local default_environment = setmetatable({default = {}, minetest = {
+		register_alias = function() alias_count = alias_count + 1 end,
+		get_mapgen_setting = function(name)
+			return name == "mg_name" and "v7" or nil
+		end,
+	}}, {__index = _G})
+	execute_in_environment("mods/BASE/default/mapgen.lua", default_environment)
+	check(alias_count > 20, "default mapgen alias registration differs")
+	row("registration/default_alias_count", alias_count)
+	end
+
+	-- Load the complete changed mob roster through the authentic grug_mobs
+	-- initializer. Engine writes are replaced with closed registration sinks;
+	-- definitions and spawn rows are projected at their real registration seam.
+	do
+	local mob_defs, spawn_rows, arrow_rows, callback_count = {}, {}, {}, 0
+	local storage = {get_string = function() return "" end,
+		set_string = function() end, get_int = function() return 0 end,
+		set_int = function() end}
+	local mob_core = {registered_entities = {}, registered_nodes = {},
+		registered_items = {}, settings = {get_bool = function() return false end}}
+	function mob_core.get_current_modname() return "grug_mobs" end
+	function mob_core.get_modpath(name)
+		if name == "grug_mobs" then return repo .. "/mods/ENTITIES/grug_mobs" end
+		return repo .. "/mods/ENTITIES/" .. tostring(name)
+	end
+	function mob_core.get_mod_storage() return storage end
+	function mob_core.get_translator() return function(value) return value end end
+	function mob_core.get_timeofday() return 0.5 end
+	function mob_core.get_gametime() return 0 end
+	function mob_core.get_us_time() return 0 end
+	function mob_core.item_eat() return function() end end
+	function mob_core.register_craftitem(name, definition)
+		mob_core.registered_items[name] = definition
+	end
+	function mob_core.register_node(name, definition)
+		mob_core.registered_nodes[name] = definition
+	end
+	function mob_core.override_item(name, definition)
+		mob_core.registered_nodes[name] = definition
+	end
+	function mob_core.register_lbm() callback_count = callback_count + 1 end
+	function mob_core.register_globalstep() callback_count = callback_count + 1 end
+	function mob_core.register_on_leaveplayer() callback_count = callback_count + 1 end
+	function mob_core.register_on_shutdown() callback_count = callback_count + 1 end
+	function mob_core.register_on_mods_loaded() callback_count = callback_count + 1 end
+	function mob_core.register_on_joinplayer() callback_count = callback_count + 1 end
+	function mob_core.register_on_dignode() callback_count = callback_count + 1 end
+	function mob_core.register_entity(name, definition)
+		mob_core.registered_entities[name] = definition
+	end
+	function mob_core.after() end
+	function mob_core.chat_send_player() end
+	function mob_core.colorize(_, value) return value end
+	function mob_core.is_player() return false end
+	function mob_core.get_connected_players() return {} end
+	function mob_core.get_node() return {name = "air"} end
+	function mob_core.get_node_or_nil() return {name = "air"} end
+	function mob_core.get_objects_inside_radius() return {} end
+	function mob_core.find_nodes_in_area() return {} end
+	function mob_core.find_node_near() return nil end
+	function mob_core.add_particlespawner() end
+	function mob_core.sound_play() end
+	function mob_core.pos_to_string() return "(0,0,0)" end
+	function mob_core.log() end
+	local mobs_api = {}
+	function mobs_api.register_mob(_, name, definition)
+		mob_defs[#mob_defs + 1] = {name = name, definition = definition}
+		mob_core.registered_entities[name] = definition
+	end
+	function mobs_api.spawn(_, definition) spawn_rows[#spawn_rows + 1] = definition end
+	function mobs_api.register_arrow(_, name, definition)
+		arrow_rows[#arrow_rows + 1] = {name = name, definition = definition}
+	end
+	function mobs_api.add_mob() return nil end
+	function mobs_api.add_eatable() end
+	local mob_environment = setmetatable({core = mob_core, minetest = mob_core,
+		mobs = mobs_api, grug_core = {
+			zone_authority_installed = function() return true end,
+			get_player_faction = function() return "accord" end,
+			get_race_perk = function() return nil end,
+			rare_route = function()
+				return {{x = 0, z = 0}, {x = 1, z = 1}, {x = 2, z = 2}}
+			end,
+		}, grug_factions = {get_object_faction = function() return nil end},
+		grug_xp = {get_level = function() return 1 end, add_xp = function() end},
+		vector = {new = function(x, y, z) return {x = x, y = y, z = z} end,
+			distance = function() return 0 end},
+		ItemStack = function() return {} end,
+		PcgRandom = function() return {next = function() return 1 end} end,
+		default = {node_sound_gravel_defaults = function() return {} end},
+	}, {__index = _G})
+	function mob_environment.dofile(path)
+		local chunk = assert(loadfile(path))
+		setfenv(chunk, mob_environment)
+		local function mark_return(...)
+			mark_executed(path)
+			return ...
+		end
+		return mark_return(chunk())
+	end
+	execute_in_environment("mods/ENTITIES/grug_mobs/init.lua", mob_environment)
+	check(#mob_defs >= 35 and #spawn_rows >= 25 and #arrow_rows >= 2,
+		"mob definition/spawn registration projection differs")
+	local mob_projection = {}
+	for index = 1, #mob_defs do
+		local value = mob_defs[index]
+		mob_projection[#mob_projection + 1] = "mob\t" .. value.name .. "\t" ..
+			tostring(value.definition.type) .. "\t" .. tostring(value.definition.mesh) .. "\n"
+	end
+	for index = 1, #spawn_rows do
+		local value = spawn_rows[index]
+		mob_projection[#mob_projection + 1] = "spawn\t" .. tostring(value.name) ..
+			"\t" .. tostring(value.interval) .. "\t" .. tostring(value.chance) .. "\n"
+	end
+	table.sort(mob_projection, less_bytes)
+	row("registration/mob_projection_sha256", hex_sha256(table.concat(mob_projection)))
+	row("registration/mob_spawn_population",
+		table.concat({#mob_defs, #spawn_rows, #arrow_rows, callback_count}, "/"))
+	end
+
+	-- Gathering top-level ownership is separate from its real catalog/harvest/
+	-- node semantics above; closed children keep the initializer side-effect free.
+	do
+	local gathering_callbacks = 0
+	local gathering_environment = setmetatable({grug_materials = {}, core = {
+		get_current_modname = function() return "grug_gathering" end,
+		get_modpath = function() return repo .. "/mods/ITEMS/grug_gathering" end,
+		sha256 = function(bytes) return hex_sha256(bytes) end,
+		register_on_mods_loaded = function() gathering_callbacks = gathering_callbacks + 1 end,
+		register_on_leaveplayer = function() gathering_callbacks = gathering_callbacks + 1 end,
+		registered_items = {}, registered_nodes = {},
+	}}, {__index = _G})
+	gathering_environment.dofile = function(path)
+		if path:match("/catalog%.lua$") then return tracking_dofile(path) end
+		if path:match("/harvest%.lua$") then
+			return function() return {register_herb_authorizer = function() end,
+				clear_player = function() end} end
+		end
+		if path:match("/nodes%.lua$") then
+			return function()
+				local result = {}
+				for index = 1, 18 do result[index] = "micro:source_" .. index end
+				return result
+			end
+		end
+		error("unexpected gathering initializer dependency", 0)
+	end
+	execute_in_environment("mods/ITEMS/grug_gathering/init.lua", gathering_environment)
+	check(type(gathering_environment.grug_gathering) == "table" and
+		gathering_callbacks == 2, "gathering initializer projection differs")
+	end
+
+	-- Faction top-level APIs/callback registrations under a published authority.
+	do
+	local faction_callbacks = 0
+	local faction_core = {}
+	for _, name in ipairs({"register_on_joinplayer", "register_on_respawnplayer",
+			"register_on_punchplayer", "register_on_player_hpchange",
+			"register_on_leaveplayer", "register_on_player_receive_fields",
+			"register_chatcommand"}) do
+		faction_core[name] = function() faction_callbacks = faction_callbacks + 1 end
+	end
+	function faction_core.register_privilege() faction_callbacks = faction_callbacks + 1 end
+	function faction_core.get_player_by_name() return nil end
+	function faction_core.check_player_privs() return false end
+	function faction_core.show_formspec() end
+	function faction_core.close_formspec() end
+	function faction_core.after() end
+	function faction_core.chat_send_player() end
+	local faction_environment = setmetatable({core = faction_core,
+		grug_core = {zone_authority_installed = function() return true end,
+			factions = {accord = {name = "Accord"}, throng = {name = "Throng"}},
+			faction_ids = {"accord", "throng"},
+			start_position = function() return {x = 0, y = 1, z = 0} end},
+		grug_classes = {}, vector = {new = function(value) return value end}},
+		{__index = _G})
+	execute_in_environment("mods/PLAYER/grug_factions/init.lua", faction_environment)
+	check(type(faction_environment.grug_factions) == "table" and
+		type(faction_environment.grug_factions.get_faction) == "function" and
+		faction_callbacks >= 5, "faction registration projection differs")
+	end
+
+	-- Trader registrations and dispatcher callback are captured without objects.
+	do
+	local trader_defs, trader_steps = {}, 0
+	local trader_core = {registered_nodes = {}, registered_entities = {}}
+	function trader_core.register_globalstep() trader_steps = trader_steps + 1 end
+	function trader_core.get_connected_players() return {} end
+	function trader_core.get_objects_inside_radius() return {} end
+	function trader_core.get_node_or_nil() return nil end
+	function trader_core.log() end
+	function trader_core.pos_to_string() return "(0,0,0)" end
+	local trader_mobs = {}
+	function trader_mobs.register_mob(_, name, definition)
+		trader_defs[#trader_defs + 1] = name
+		trader_core.registered_entities[name] = definition
+	end
+	local trader_environment = setmetatable({core = trader_core, mobs = trader_mobs,
+		grug_traders = {RACE_DISCOUNT = 0.1, open = function() end},
+		grug_classes = {registered_races = {
+			human = {name = "Human", faction = "accord"},
+			dwarf = {name = "Dwarf", faction = "accord"},
+			elf = {name = "Elf", faction = "accord"},
+			orc = {name = "Orc", faction = "throng"},
+			troll = {name = "Troll", faction = "throng"},
+			undead = {name = "Undead", faction = "throng"}},
+			get_race = function() return "human" end},
+		grug_factions = {get_faction = function() return "accord" end,
+			display_name = function(value) return value end},
+		grug_mobs = {add_mob = function() return nil end},
+		grug_core = {faction_ids = {"accord", "throng"},
+			factions = {accord = {name = "Accord"}, throng = {name = "Throng"}},
+			capital_anchor = function(_, race)
+				return {x = race == "human" and 1 or 2, y = 1, z = 0}
+			end}}, {__index = _G})
+	execute_in_environment("mods/ENTITIES/grug_traders/vendors.lua", trader_environment)
+	check(#trader_defs == 8 and trader_steps == 1,
+		"trader registration projection differs")
+	table.sort(trader_defs, less_bytes)
+	row("registration/trader_projection_sha256",
+		hex_sha256(table.concat(trader_defs, "\n") .. "\n"))
+	end
+
+	-- Main initializer and emerge script load/register exactly one R7 lane under
+	-- closed runtime stubs; loader semantics are separately covered by unit KATs.
+	do
+	local mapgen_environment = setmetatable({core = {
+		get_current_modname = function() return "grug_mapgen" end,
+		get_modpath = function() return repo .. "/mods/MAPGEN/grug_mapgen" end,
+	}, grug_materials = {}, grug_gathering = {}, grug_core = {}}, {__index = _G})
+	mapgen_environment.dofile = function()
+		return function() return {schema = "micro_loader", writer_count = 1} end
+	end
+	execute_in_environment("mods/MAPGEN/grug_mapgen/init.lua", mapgen_environment)
+	check(mapgen_environment.grug_mapgen.wp40.writer_count == 1,
+		"mapgen initializer projection differs")
+	local generated_callback
+	local emerge_core = {}
+	function emerge_core.get_modpath(name)
+		if name == "default" then return repo .. "/mods/BASE/default" end
+		if name == "grug_gathering" then return repo .. "/mods/ITEMS/grug_gathering" end
+		return repo .. "/mods/MAPGEN/grug_mapgen"
+	end
+	function emerge_core.ipc_get()
+		return {schema = "grug_wp40_r7_ipc_v1", manifest_sha256 = string.rep("a", 64),
+			full_seed = "0", projection = {}}
+	end
+	function emerge_core.register_on_generated(callback) generated_callback = callback end
+	local emerge_environment = setmetatable({core = emerge_core}, {__index = _G})
+	emerge_environment.dofile = function(path)
+		if path:match("/r7_native%.lua$") then
+			return {validate_emerge = function() end, identities = function() return {} end}
+		end
+		if path:match("/catalog%.lua$") then return {} end
+		if path:match("/r7_runtime%.lua$") then
+			return function()
+				return {build = function()
+					return {full_seed = "0", session = {}, writer = {}}
+				end}
+			end
+		end
+		error("unexpected emerge dependency", 0)
+	end
+	execute_in_environment("mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua",
+		emerge_environment)
+	check(type(generated_callback) == "function",
+		"emerge callback registration projection differs")
+	end
 
 	-- Exercise the production native module, including all six setters/readbacks
 	-- and the closed six-row ore allowlist, with a plain-Lua engine seam.
@@ -283,7 +765,7 @@ return function(repo)
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
 		source_projection_sha256 =
-			"5a706e174d8499b255b78b2126e0dc1026c9388ba17c774aadd52958bcaea2f1",
+			"eca4015a075b8aa5cace19cdc57cb06370481fa8c30185bf1f88f72e3b5e1571",
 		production_enabled = true,
 	}
 	local manifest_field_order = {
@@ -351,10 +833,11 @@ return function(repo)
 	function zones_session.surface_mob_level_at() return 7 end
 	local content_wrapper = {}
 	function content_wrapper.content_contract() return content_set.production end
-	local successor = successor_config.new({full_seed_string = "0",
+	local successor_dependencies = {full_seed_string = "0",
 		hash = hash_seam, planner_source = {}, horizontal = {},
 		content = content_wrapper, source = {}, zones_session = zones_session,
-		construction_identity = {}})
+		construction_identity = {}}
+	local probe_successor = successor_config.new(successor_dependencies)
 
 	local minp, maxp = {x = -32, y = 0, z = -32},
 		{x = 47, y = 79, z = 47}
@@ -366,8 +849,6 @@ return function(repo)
 		min_x = minp.x, min_y = minp.y, min_z = minp.z,
 		max_x = maxp.x, max_y = maxp.y, max_z = maxp.z,
 		column_values = column_values, column_count = 6400}
-	successor:plan_slice(minp, maxp, plan, 1)
-
 	local production_ref = {}
 	for index = 1, #content_set.production.content_names do
 		production_ref[content_set.production.content_names[index]] = index
@@ -428,21 +909,6 @@ return function(repo)
 		return context
 	end
 
-	local transaction_context = new_context("fixture", nil)
-	local transaction_ledger = successor:settle(transaction_context)
-	local replay_ledger = successor:settle(new_context("replay_fixture", nil))
-	check(transaction_ledger.accepted == 1 and
-		#transaction_ledger.operations == 1,
-		"owner-slice successor transaction differs")
-	local transaction_graph, replay_graph = graph(transaction_ledger),
-		graph(replay_ledger)
-	check(transaction_graph == replay_graph,
-		"owner-slice successor replay differs " ..
-		hex_sha256(transaction_graph) .. "/" .. hex_sha256(replay_graph))
-	local metrics = successor:metrics()
-	check(metrics.plan_calls == 1 and metrics.settle_calls == 1 and
-		metrics.replay_calls == 1 and metrics.accepted == 1,
-		"owner-slice successor metrics differ")
 	local function probe_context(exclusion)
 		local context = new_context("fixture", exclusion)
 		return {inside_owner = context.inside_owner,
@@ -454,26 +920,23 @@ return function(repo)
 			housing_excluded_at = context.housing_excluded_at,
 			column_values_at = context.column_values_at}
 	end
-	local accepted_reason = successor:probe_reason(
+	local accepted_reason, accepted_evidence = probe_successor:probe_reason(
 		probe_context(nil), 1, 0, 6, 0)
-	local rejected_reason = successor:probe_reason(
+	local rejected_reason = probe_successor:probe_reason(
 		probe_context("fixed_or_protected"), 1, 0, 6, 0)
 	check(accepted_reason == "accepted" and rejected_reason == "fixed_or_protected",
 		"accepted/rejected P9G probes differ")
 	row("p9g/root_pair", accepted_reason .. "/" .. rejected_reason)
-	row("p9g/owner_replay_sha256", hex_sha256(transaction_graph))
-	row("p9g/owner_metrics", table.concat({metrics.plan_calls,
-		metrics.settle_calls, metrics.replay_calls, metrics.accepted}, "/"))
 
 	-- Bind both R6 projection receipts through the production evidence contract.
 	local evidence_contract = dofile(repo .. "/tools/wp40/r7/contract.lua")
-	local operation = transaction_ledger.operations[1]
-	check(operation.accepted == true and operation.prior_cid == air_cid and
+	local operation = accepted_evidence
+	check(operation.prior_cid == air_cid and
 		operation.prior_param2 == 0 and operation.prior_occupancy == 0 and
-		operation.prior_opcode == 0 and operation.final_opcode == 35,
+		operation.prior_opcode == 0,
 		"Stage-A removable P9G delta differs")
-	local direct_bytes = table.concat({"root", operation.root_x, operation.root_y,
-		operation.root_z, operation.prior_cid, operation.prior_param2,
+	local direct_bytes = table.concat({"root", 0, 6, 0,
+		operation.prior_cid, operation.prior_param2,
 		operation.prior_occupancy, operation.prior_opcode}, "/")
 	local direct_digest = hex_sha256(direct_bytes)
 	local stage_a = {
@@ -541,6 +1004,7 @@ return function(repo)
 		accepted_r6_projection_sha256 = accepted_digest,
 		name_map_population = 83, cultural_name_map_population = 6,
 		cultural_substitution_count = substitution_count,
+		inherited_cultural_access_count = 12,
 		normalized_artifact_sha256 = normalized_digest,
 		candidate_decisions_sha256 = normalized_digest,
 		accepted_candidate_decisions_sha256 = accepted_digest, equal = true,
@@ -655,11 +1119,16 @@ return function(repo)
 		return copy(anchors[zone_id .. "\0" .. slot_id])
 	end
 	function session.id_at(x, z)
-		if type(x) == "table" then x, z = x.x, x.z end
+		check(type(x) == "number" and type(z) == "number",
+			"zone id_at signature differs")
 		local anchor = position_anchor[x .. "/" .. z]
 		return anchor and anchor.zone_id or "micro_zone"
 	end
-	function session.biome_at() return "grug_meadows" end
+	function session.biome_at(x, z)
+		check(type(x) == "number" and type(z) == "number",
+			"zone biome_at signature differs")
+		return "grug_meadows"
+	end
 	function session.race_region_at() return "human" end
 	function session.faction_at(pos) return pos._faction or "accord" end
 	function session.territory_rule_at() return "shared_editable" end
@@ -689,7 +1158,7 @@ return function(repo)
 	local start = grug_core.start_position("accord", "human")
 	local rare = grug_core.rare_route("grimtusk")
 	check(start and start.y == 21 and rare and #rare == 3 and
-		grug_zones.biome_at(start) == "grug_meadows",
+		grug_zones.biome_at(start.x, start.z) == "grug_meadows",
 		"representative stable query/anchor differs")
 	check(protection_core.is_protected({hard = false}, "alice") == false and
 		protection_core.is_protected({hard = true}, "alice") == true and
@@ -726,6 +1195,190 @@ return function(repo)
 	expect_failure(function() harvest.register_herb_authorizer(function() end) end,
 		"already registered")
 	row("gathering/herb_authority", "closed/authorized/single_registration")
+
+	-- Execute the actual changed shared R6 writer with the real R7 successor at
+	-- its private tail seam.  The owner data is deliberately synthetic and
+	-- bounded: exhaustive 512k-buffer/runtime authenticity belongs to the
+	-- LuaJIT integration receipt, while this transaction is small enough for the
+	-- one final fallback-interpreter process.
+	function content_wrapper.surfaces()
+		return {{id = corn_biome, top = support_name, filler = support_name,
+			shore = support_name, bed = support_name, dust = support_name,
+			filler_depth = 1, top_ref = support_ref, filler_ref = support_ref,
+			shore_ref = support_ref, bed_ref = support_ref, dust_ref = 0}}
+	end
+	function content_wrapper.resources() return {} end
+	function content_wrapper.cultural() return {} end
+	function content_wrapper.decorations() return {} end
+	function content_wrapper.wp43_projection()
+		return {tiers = {{y_min = -31000, node = support_name}}, race_regions = {}}
+	end
+	function content_wrapper.content_ref(name) return production_ref[name] end
+	function content_wrapper.param2_kind() return "none" end
+	local successor = successor_config.new(successor_dependencies)
+
+	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
+	local settlement_factory = dofile(wp40 .. "/r6_settlement.lua")
+	local micro_allocator = {}
+	function micro_allocator.new_array() return {} end
+	function micro_allocator.new_map() return {} end
+	function micro_allocator.grow(_, values, _, old_size, new_size)
+		for index = old_size + 1, new_size do values[index] = 0 end
+	end
+	function micro_allocator.map_put(_, values, _, key, value)
+		values[key] = value
+	end
+	function micro_allocator.seal_construction() end
+	function micro_allocator.enter_hotpath() end
+	function micro_allocator.leave_hotpath() end
+	function micro_allocator.metrics()
+		return {hotpath_table_allocations = 0, construction_sealed = true}
+	end
+	local construction_identity = {value = {schema = "micro_identity"}}
+	local r5_adapter = {}
+	function r5_adapter.apply()
+		return "micro_r5_projection"
+	end
+	local settlement_horizontal = {}
+	function settlement_horizontal.static_exclusion_values_at() return nil end
+	function settlement_horizontal.housing_mask_id_at() return nil end
+	local planner_source = {}
+	function planner_source.column_values_at(x, z)
+		if x == 0 and z == 0 then
+			return "land", 1, corn_zone, corn_biome, "human", 5
+		end
+		return "land", 1, "micro_no_zone", corn_biome, "human", 0
+	end
+	local source_anchor = {id = "micro_apex", position = {x = 10000, z = 10000}}
+	local source = {claim_exclusions = {}, routes = {}, hard_protection = {},
+		anchors = {source_anchor}, apex_sockets = {}, hydrology_profiles = {},
+		hydrology = {}, hydrology_interfaces = {}}
+	for index = 1, 24 do
+		source.apex_sockets[index] = {id = "micro_socket_" .. index,
+			anchor_id = source_anchor.id, offset = {x = index, z = 0}}
+	end
+	local settlement, settlement_fixture = settlement_factory.new({
+		full_seed_string = "0", r5_adapter = r5_adapter, content = content_wrapper,
+		templates = {}, hash = settlement_hash, horizontal = settlement_horizontal,
+		planner_source = planner_source, construction_identity = construction_identity,
+		cultural_registrations = {}, source = source, successor_tail = successor,
+		counting_allocator = micro_allocator})
+
+	local owner_min, owner_max = {x = -32, y = 0, z = -32},
+		{x = 47, y = 79, z = 47}
+	local full_column_values = {}
+	for index = 1, 6400 * 12 do full_column_values[index] = 0 end
+	local full_active_column = ((0 - owner_min.z) * 80 + (0 - owner_min.x)) + 1
+	local column_base = (full_active_column - 1) * 12
+	full_column_values[column_base + 5] = 5
+	full_column_values[column_base + 7] = 1
+	full_column_values[column_base + 8] = support_ref
+	local column_start = {}
+	for index = 1, full_active_column do column_start[index] = 1 end
+	for index = full_active_column + 1, 6401 do column_start[index] = 2 end
+	local r5_run_values = {5, 5, 7, 28, 0, 0, 0, 0, 0}
+	local full_plan = {schema = "grug_wp40_r6_refinement_plan_v1",
+		construction_identity = construction_identity.value, generation = 1,
+		valid = true, min_x = owner_min.x, min_y = owner_min.y,
+		min_z = owner_min.z, max_x = owner_max.x, max_y = owner_max.y,
+		max_z = owner_max.z, r5_plan = {column_start = column_start,
+			run_values = r5_run_values}, r5_generation = 1,
+		column_values = full_column_values, column_count = 6400,
+		candidate_cell_values = {}, candidate_cell_count = 0,
+		candidate_values = {}, candidate_count = 0, stable_refs = {}}
+	successor:plan_slice(owner_min, owner_max, full_plan, 1)
+
+	local vm_module = dofile(repo .. "/tools/wp40/simple_map_r5_vm.lua")
+	local axis, volume = 112, 112 * 112 * 112
+	local function fixed_array(count, value)
+		local result = {}
+		for index = 1, count do result[index] = value end
+		return result
+	end
+	local function owner_vm()
+		local data = fixed_array(volume, air_cid)
+		return vm_module.new({minp = owner_min, maxp = owner_max,
+			data = data, param2 = fixed_array(volume, 0),
+			light = fixed_array(volume, 15), heightmap = fixed_array(6400, -31007),
+			content_contract = content_set.production, water_level = 1,
+			ignore_cid = content_set.production.ignore_cid,
+			verify_inactive_tail = false})
+	end
+	local vm, _, observer = owner_vm()
+	local applied = settlement:apply(vm, owner_min, owner_max, full_plan, 1,
+		"fixture")
+	local ledger = settlement_fixture.last_ledger()
+	local run_values, run_count = settlement_fixture.run_values()
+	check(type(applied) == "string" and applied:match("^applied_[cplq]+$") and
+		type(ledger) == "table" and type(ledger.p9g) == "table" and
+		ledger.p9g.accepted == 1 and run_count >= 2,
+		"shared R6/P9G transaction differs")
+	local accepted_root_y, p9g_run_count = ledger.p9g.operations[1].root_y, 0
+	for run = 1, run_count do
+		local base = (run - 1) * 9
+		if run_values[base + 4] == 35 then
+			p9g_run_count = p9g_run_count + 1
+			check(run_values[base + 3] == 10 and run_values[base + 6] == 11 and
+				run_values[base + 1] <= accepted_root_y and
+				accepted_root_y <= run_values[base + 2],
+				"P9G shared-run class/policy/root binding differs")
+		end
+	end
+	check(p9g_run_count == 1,
+		"P9G did not precede the one shared run derivation")
+	local first_calls = observer.metrics()
+	local light_seed_runs = settlement_fixture.last_light_seed_runs()
+	check(first_calls.vm_get_data_calls == 1 and
+		first_calls.vm_get_param2_calls == 1 and
+		first_calls.vm_get_light_calls == 2 and
+		first_calls.vm_set_data_calls == 1 and
+		first_calls.vm_set_param2_calls <= 1 and
+		light_seed_runs > 0 and
+		first_calls.vm_set_lighting_calls == light_seed_runs + 1 and
+		first_calls.vm_calc_lighting_calls == 1 and
+		first_calls.vm_set_light_data_calls <= 1 and
+		first_calls.vm_update_liquids_calls <= 1,
+		"shared writer fetch/conditional commit bounds differ " .. table.concat({
+			tostring(first_calls.vm_get_data_calls),
+			tostring(first_calls.vm_get_param2_calls),
+			tostring(first_calls.vm_get_light_calls),
+			tostring(first_calls.vm_set_data_calls),
+			tostring(first_calls.vm_set_param2_calls),
+			tostring(first_calls.vm_set_lighting_calls),
+			tostring(first_calls.vm_calc_lighting_calls),
+			tostring(first_calls.vm_set_light_data_calls),
+			tostring(first_calls.vm_update_liquids_calls)}, "/"))
+	local run_fields = {}
+	for index = 1, run_count * 9 do
+		run_fields[index] = string.format("%.0f", run_values[index])
+	end
+	local writer_metrics, successor_metrics = settlement:metrics(), successor:metrics()
+	check(writer_metrics.apply_calls == 1 and writer_metrics.replay_count == 1 and
+		successor_metrics.settle_calls == 1 and successor_metrics.replay_calls == 1,
+		"shared writer metrics differ")
+	row("production/owner_transaction", applied .. "/" .. tostring(run_count))
+	row("production/owner_run_sha256", hex_sha256(table.concat(run_fields, "\t")))
+	row("production/owner_ledger_sha256", hex_sha256(graph(ledger)))
+	row("production/commit_calls", table.concat({first_calls.vm_set_data_calls,
+		first_calls.vm_set_param2_calls, first_calls.vm_set_light_data_calls,
+		first_calls.vm_update_liquids_calls}, "/"))
+	row("production/replay_metrics", table.concat({writer_metrics.apply_calls,
+		writer_metrics.replay_count, successor_metrics.settle_calls,
+		successor_metrics.replay_calls}, "/"))
+
+	local missing = {}
+	for index = 1, #changed_order do
+		local relative = changed_order[index]
+		if not executed[relative] then missing[#missing + 1] = relative end
+	end
+	check(#missing == 0, "changed modules not executed: " .. table.concat(missing, ","))
+	row("source/executed_module_count", #changed_order)
+	row("source/executed_module_roster_sha256",
+		hex_sha256(table.concat(changed_order, "\n") .. "\n"))
+	for index = 1, #changed_order do
+		row("executed_module", changed_order[index])
+	end
+	rawset(_G, "dofile", saved_dofile)
 
 	return rows
 end

@@ -273,14 +273,58 @@ function module.validate_integration_receipt(receipt)
 	exact_keys(receipt, {
 		schema = true, r7_manifest_sha256 = true,
 		production_r6_content_sha256 = true, p9g_content_sha256 = true,
-		catalog_sha256 = true, cases = true,
+		catalog_sha256 = true, proof_scope = true, private_tuple_count = true,
+		successor_tuple_sha256 = true, direct_tuple_sha256 = true,
+		accepted_tuple_sha256 = true, successor_run_count = true,
+		direct_run_count = true, accepted_run_count = true,
+		successor_run_sha256 = true, direct_run_sha256 = true,
+		accepted_run_sha256 = true, successor_run_checksum_a = true,
+		successor_run_checksum_b = true, direct_run_checksum_a = true,
+		direct_run_checksum_b = true, accepted_run_checksum_a = true,
+		accepted_run_checksum_b = true, stage_a_tuple_sha256 = true,
+		stage_a_run_sha256 = true, stage_b_tuple_sha256 = true,
+		stage_b_run_sha256 = true, multi_y_band_count = true,
+		multi_y_eligible = true, multi_y_planned = true,
+		multi_y_accepted = true, cases = true,
 	}, "integration receipt")
 	if receipt.schema ~= "grug_wp40_r7_integration_kat_receipt_v1" then
 		fail("integration receipt schema differs")
 	end
 	for _, field in ipairs({"r7_manifest_sha256", "production_r6_content_sha256",
-			"p9g_content_sha256", "catalog_sha256"}) do
+			"p9g_content_sha256", "catalog_sha256", "successor_tuple_sha256",
+			"direct_tuple_sha256", "accepted_tuple_sha256", "successor_run_sha256",
+			"direct_run_sha256", "accepted_run_sha256", "stage_a_tuple_sha256",
+			"stage_a_run_sha256", "stage_b_tuple_sha256", "stage_b_run_sha256"}) do
 		sha256(receipt[field], "integration receipt " .. field)
+	end
+	if receipt.proof_scope ~= "full_owner_7_private_buffers_pre_replay" or
+			receipt.private_tuple_count ~= 512000 then
+		fail("integration private capture scope differs")
+	end
+	for _, field in ipairs({"successor_run_count", "direct_run_count",
+			"accepted_run_count"}) do
+		positive(receipt[field], "integration " .. field)
+	end
+	for _, field in ipairs({"successor_run_checksum_a", "successor_run_checksum_b",
+			"direct_run_checksum_a", "direct_run_checksum_b",
+			"accepted_run_checksum_a", "accepted_run_checksum_b"}) do
+		unsigned(receipt[field], "integration " .. field)
+	end
+	if receipt.stage_a_tuple_sha256 ~= receipt.direct_tuple_sha256 or
+			receipt.stage_a_run_sha256 ~= receipt.direct_run_sha256 or
+			receipt.stage_b_tuple_sha256 ~= receipt.accepted_tuple_sha256 or
+			receipt.stage_b_run_sha256 ~= receipt.accepted_run_sha256 then
+		fail("integration private Stage-A/B digest parity differs")
+	end
+	if positive(receipt.multi_y_band_count, "integration multi-y bands") < 2 then
+		fail("integration multi-y band population differs")
+	end
+	unsigned(receipt.multi_y_eligible, "integration multi-y eligible")
+	unsigned(receipt.multi_y_planned, "integration multi-y planned")
+	unsigned(receipt.multi_y_accepted, "integration multi-y accepted")
+	if receipt.multi_y_planned > receipt.multi_y_eligible or
+			receipt.multi_y_accepted > receipt.multi_y_planned then
+		fail("integration multi-y E/B/accepted bounds differ")
 	end
 	exact_keys(receipt.cases, (function()
 		local keys = {}
@@ -304,7 +348,20 @@ function module.integration_receipt_bytes(receipt)
 			receipt.production_r6_content_sha256 .. "\n",
 		"p9g_content_sha256\t" .. receipt.p9g_content_sha256 .. "\n",
 		"catalog_sha256\t" .. receipt.catalog_sha256 .. "\n",
+		"proof_scope\t" .. receipt.proof_scope .. "\n",
+		"private_tuple_count\t" .. tostring(receipt.private_tuple_count) .. "\n",
 	}
+	for _, field in ipairs({"successor_tuple_sha256", "direct_tuple_sha256",
+			"accepted_tuple_sha256", "successor_run_count", "direct_run_count",
+			"accepted_run_count", "successor_run_sha256", "direct_run_sha256",
+			"accepted_run_sha256", "successor_run_checksum_a",
+			"successor_run_checksum_b", "direct_run_checksum_a",
+			"direct_run_checksum_b", "accepted_run_checksum_a",
+			"accepted_run_checksum_b", "stage_a_tuple_sha256", "stage_a_run_sha256",
+			"stage_b_tuple_sha256", "stage_b_run_sha256", "multi_y_band_count",
+			"multi_y_eligible", "multi_y_planned", "multi_y_accepted"}) do
+		rows[#rows + 1] = field .. "\t" .. tostring(receipt[field]) .. "\n"
+	end
 	for index = 1, #INTEGRATION_CASES do
 		rows[#rows + 1] = "case\t" .. INTEGRATION_CASES[index] .. "\ttrue\n"
 	end
@@ -346,12 +403,33 @@ function module.validate_stage_a(receipt)
 	return copy(receipt)
 end
 
+function module.stage_a_bytes(receipt)
+	module.validate_stage_a(receipt)
+	return table.concat({
+		"schema\t", receipt.schema, "\n",
+		"seed_slot\t", tostring(receipt.seed_slot), "\n",
+		"seed_identity\t", receipt.seed_identity, "\n",
+		"production_r6_content_sha256\t", receipt.production_r6_content_sha256, "\n",
+		"p9g_content_sha256\t", receipt.p9g_content_sha256, "\n",
+		"p9g_delta_sha256\t", receipt.p9g_delta_sha256, "\n",
+		"operation_count\t", tostring(receipt.operation_count), "\n",
+		"accepted_count\t", tostring(receipt.accepted_count), "\n",
+		"rejected_count\t", tostring(receipt.rejected_count), "\n",
+		"restored_buffers_sha256\t", receipt.restored_buffers_sha256, "\n",
+		"direct_buffers_sha256\t", receipt.direct_buffers_sha256, "\n",
+		"restored_runs_sha256\t", receipt.restored_runs_sha256, "\n",
+		"direct_runs_sha256\t", receipt.direct_runs_sha256, "\n",
+		"equal\ttrue\n",
+	})
+end
+
 function module.validate_stage_b(receipt)
 	exact_keys(receipt, {
 		schema = true, seed_slot = true, seed_identity = true,
 		production_r6_content_sha256 = true, accepted_r6_projection_sha256 = true,
 		name_map_population = true, cultural_name_map_population = true,
-		cultural_substitution_count = true, normalized_artifact_sha256 = true,
+		cultural_substitution_count = true, inherited_cultural_access_count = true,
+		normalized_artifact_sha256 = true,
 		candidate_decisions_sha256 = true, accepted_candidate_decisions_sha256 = true,
 		equal = true,
 	}, "Stage-B receipt")
@@ -368,7 +446,8 @@ function module.validate_stage_b(receipt)
 		sha256(receipt[field], "Stage-B " .. field)
 	end
 	if receipt.name_map_population ~= 83 or
-			receipt.cultural_name_map_population ~= 6 then
+			receipt.cultural_name_map_population ~= 6 or
+			receipt.inherited_cultural_access_count ~= 12 then
 		fail("Stage-B total name map differs")
 	end
 	unsigned(receipt.cultural_substitution_count,
@@ -382,12 +461,37 @@ function module.validate_stage_b(receipt)
 	return copy(receipt)
 end
 
+function module.stage_b_bytes(receipt)
+	module.validate_stage_b(receipt)
+	return table.concat({
+		"schema\t", receipt.schema, "\n",
+		"seed_slot\t", tostring(receipt.seed_slot), "\n",
+		"seed_identity\t", receipt.seed_identity, "\n",
+		"production_r6_content_sha256\t", receipt.production_r6_content_sha256, "\n",
+		"accepted_r6_projection_sha256\t", receipt.accepted_r6_projection_sha256, "\n",
+		"name_map_population\t", tostring(receipt.name_map_population), "\n",
+		"cultural_name_map_population\t",
+			tostring(receipt.cultural_name_map_population), "\n",
+		"cultural_substitution_count\t",
+			tostring(receipt.cultural_substitution_count), "\n",
+		"inherited_cultural_access_count\t",
+			tostring(receipt.inherited_cultural_access_count), "\n",
+		"normalized_artifact_sha256\t", receipt.normalized_artifact_sha256, "\n",
+		"candidate_decisions_sha256\t", receipt.candidate_decisions_sha256, "\n",
+		"accepted_candidate_decisions_sha256\t",
+			receipt.accepted_candidate_decisions_sha256, "\n",
+		"equal\ttrue\n",
+	})
+end
+
 function module.validate_pilot_result(receipt)
-	exact_keys(receipt, {
+	local fields = {
 		schema = true, seed_slot = true, seed_identity = true,
 		canonical_output_sha256 = true, stage_a_sha256 = true,
 		stage_b_sha256 = true, p9g_delta_sha256 = true,
-	}, "pilot result")
+		canonical_output_bytes = true,
+	}
+	exact_keys(receipt, fields, "pilot result")
 	if receipt.schema ~= "grug_wp40_r7_pilot_result_v1" then
 		fail("pilot result schema differs")
 	end
@@ -399,20 +503,27 @@ function module.validate_pilot_result(receipt)
 			"stage_b_sha256", "p9g_delta_sha256"}) do
 		sha256(receipt[field], "pilot result " .. field)
 	end
+	positive(receipt.canonical_output_bytes, "pilot canonical output bytes")
 	return copy(receipt)
 end
 
 function module.pilot_result_bytes(receipt)
 	module.validate_pilot_result(receipt)
-	return table.concat({
+	local rows = {
 		"schema\t", receipt.schema, "\n",
 		"seed_slot\t", tostring(receipt.seed_slot), "\n",
 		"seed_identity\t", receipt.seed_identity, "\n",
 		"canonical_output_sha256\t", receipt.canonical_output_sha256, "\n",
+	}
+	rows[#rows + 1] = "canonical_output_bytes\t"
+	rows[#rows + 1] = tostring(receipt.canonical_output_bytes)
+	rows[#rows + 1] = "\n"
+	for _, value in ipairs({
 		"stage_a_sha256\t", receipt.stage_a_sha256, "\n",
 		"stage_b_sha256\t", receipt.stage_b_sha256, "\n",
 		"p9g_delta_sha256\t", receipt.p9g_delta_sha256, "\n",
-	})
+	}) do rows[#rows + 1] = value end
+	return table.concat(rows)
 end
 
 return module

@@ -123,12 +123,15 @@ return function(repo, seed_identity, content_only)
 			raw_sha256 = raw_sha256, core = core_api, catalog = catalog,
 			projection = projection, native_identities = native_identities,
 			cid_by_name = cid_by_name, name_by_cid = name_by_cid}
-	elseif content_only ~= nil and content_only ~= false then
+	elseif content_only ~= nil and content_only ~= false and
+			content_only ~= "production" then
 		fail("content-only mode differs")
 	end
 	local runtime = dofile(wp40 .. "/r7_runtime.lua")(core_api, wp40,
 		repo .. "/mods/BASE/default/schematics", projection, catalog)
-	local built = runtime.build(native_identities, nil, true)
+	local evidence_mode = true
+	if content_only == "production" then evidence_mode = nil end
+	local built = runtime.build(native_identities, nil, evidence_mode)
 
 	local module = {schema = "grug_wp40_r7_runtime_fixture_v1",
 		common = common, raw_sha256 = raw_sha256, core = core_api,

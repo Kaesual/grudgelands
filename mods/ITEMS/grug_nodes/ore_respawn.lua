@@ -35,25 +35,19 @@ local META_ORE = "grug_ore"
 local RESPAWN_MIN = 900
 local RESPAWN_MAX = 1800
 
--- The ores that respawn.
---
--- COUPLING: mods/MAPGEN/grug_mapgen/ores.lua owns every ore registration of
--- this game (default's own register_ores() is deliberately not called, see
--- the tail of mods/BASE/default/mapgen.lua). This list mirrors the
--- `scatter_ores` table there exactly. The blob ores from the same file
--- (default:clay, default:silver_sand, default:dirt, default:gravel) are left
--- out on purpose: they are terrain filler, not veins, and regrowing dirt or
--- gravel would fight the player's landscaping instead of keeping the world
--- stocked. `check_ore_list()` below re-verifies the coupling at load time,
--- so a future ore added in grug_mapgen shows up as a log warning instead of
--- silently never respawning.
+-- The ore-node identities that retain the shipped R4 respawn behavior.
+-- WP40 R7 places their natural deposits in its single VM transaction rather
+-- than through engine scatter registrations, so registration geometry is no
+-- longer a valid load-time coupling check. WP34 still owns the eventual
+-- depth-aware respawn revision; until then this closed material roster remains
+-- the authority for mined-node replacement only.
 --
 -- `grug_materials:abyssal_crystal_ore` is absent BY DESIGN, not by oversight:
--- no register_ore places it (grug_mapgen/ores.lua registers no scatter ore for
--- it), because it is a housing-isle depth-step payout, and world.md §5.4
+-- R7's natural-resource catalog does not place it, because it is a
+-- housing-isle depth-step payout, and world.md §5.4
 -- states that isle clusters explicitly do NOT respawn under R4 -- a mined-out
 -- step is what makes the next step worth buying. Listing it here would only
--- earn a startup warning from check_ore_list().
+-- enter this respawn roster.
 local respawning_ores = {}
 for _, key in ipairs(grug_materials.CURRENT_SCATTER_RESOURCES) do
 	local node = grug_materials.resource_node(key)
@@ -144,31 +138,15 @@ core.register_on_dignode(function(pos, oldnode, digger)
 end)
 
 --
--- Load-time coupling check (landmine rule: never trust a hardcoded node name)
+-- Load-time identity check (landmine rule: never trust a hardcoded node name)
 --
 
 local function check_ore_list()
-	local registered = {}
-	for _, def in pairs(core.registered_ores) do
-		if def.ore_type == "scatter" then
-			registered[def.ore] = true
-		end
-	end
 	for name in pairs(respawning_ores) do
 		if not core.registered_nodes[name] then
 			core.log("error", "[" .. MODNAME .. "] respawn list names " ..
 				name .. ", which is not a registered node -- veins of it " ..
 				"would respawn as an unknown node")
-		elseif not registered[name] then
-			core.log("warning", "[" .. MODNAME .. "] respawn list names " ..
-				name .. ", which no mod registers as a scatter ore anymore")
-		end
-	end
-	for name in pairs(registered) do
-		if not respawning_ores[name] then
-			core.log("warning", "[" .. MODNAME .. "] scatter ore " .. name ..
-				" is not in the R4 respawn list (ore_respawn.lua) -- veins " ..
-				"of it are gone for good once mined")
 		end
 	end
 end

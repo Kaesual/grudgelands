@@ -2489,8 +2489,8 @@ if mg_name == "v6" then
 	default.register_mgv6_ores()
 	default.register_mgv6_decorations()
 end
--- GRUG PATCH: for biome-based mapgens (game.conf forces v7) biomes, ores
--- and decorations are registered by grug_mapgen (faction territory layout),
--- so the upstream register_* calls are removed here. Calling them with our
--- biome set would be wrong anyway: ore/decoration defs whose biome names
--- don't resolve silently become world-wide. (See VENDOR.md.)
+-- GRUG PATCH: game.conf forces v7, while WP40 R7 owns the named-zone world
+-- through one VoxelManip transaction. It deliberately registers zero Lua
+-- biomes/decorations and only its six-record native ore allowlist, so the
+-- upstream register_* calls remain removed. Unresolved biome names would make
+-- the old ore/decoration definitions world-wide. (See VENDOR.md.)

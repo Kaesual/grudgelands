@@ -39,8 +39,8 @@ local function settlement_factory()
 					label .. " has unexpected field " .. tostring(key))
 			end
 		end
-		for key in pairs(allowed) do
-			if value[key] == nil then
+		for key, requirement in pairs(allowed) do
+			if requirement == true and value[key] == nil then
 				fail(code or "fail_settlement", label .. " is missing " .. key)
 			end
 		end
@@ -63,6 +63,162 @@ local function settlement_factory()
 		for key, child in pairs(value) do result[copy_map(key, active)] = copy_map(child, active) end
 		active[value] = nil
 		return result
+	end
+
+	local function canonical_less(left, right)
+		local count = math.min(#left, #right)
+		for index = 1, count do
+			local a, b = string.byte(left, index), string.byte(right, index)
+			if a ~= b then return a < b end
+		end
+		return #left < #right
+	end
+
+	local function canonical_scalar(value)
+		if type(value) == "string" then
+			if value:find("\0", 1, true) or value:find("\r", 1, true) or
+					value:find("\n", 1, true) then
+				fail("fail_ledger", "capture scalar is not length-safe")
+			end
+			return "s" .. tostring(#value) .. ":" .. value
+		elseif type(value) == "number" then
+			integer(value, "capture scalar", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+			return "n" .. string.format("%.0f", value) .. ";"
+		elseif type(value) == "boolean" then
+			return value and "b1;" or "b0;"
+		end
+		fail("fail_ledger", "capture scalar type differs")
+	end
+
+	local function canonical_graph(value, active)
+		if type(value) ~= "table" then return canonical_scalar(value) end
+		if getmetatable(value) ~= nil then
+			fail("fail_ledger", "capture graph has a metatable")
+		end
+		active = active or {}
+		if active[value] then fail("fail_ledger", "capture graph contains a cycle") end
+		active[value] = true
+		local count, key_count, is_array = #value, 0, true
+		for key in pairs(value) do
+			key_count = key_count + 1
+			if type(key) ~= "number" or key % 1 ~= 0 or key < 1 or key > count then
+				is_array = false
+			end
+		end
+		if key_count ~= count then is_array = false end
+		local output = {}
+		if is_array then
+			output[1] = "a" .. tostring(count) .. "["
+			for index = 1, count do
+				output[#output + 1] = canonical_graph(value[index], active)
+			end
+			output[#output + 1] = "]"
+		else
+			local entries = {}
+			for key, child in pairs(value) do
+				entries[#entries + 1] = canonical_graph(key, active) ..
+					canonical_graph(child, active)
+			end
+			table.sort(entries, canonical_less)
+			output[1] = "m" .. tostring(#entries) .. "{"
+			for index = 1, #entries do output[#output + 1] = entries[index] end
+			output[#output + 1] = "}"
+		end
+		active[value] = nil
+		return table.concat(output)
+	end
+
+	local function private_sha256(hash, bytes)
+		return hash.hex(hash.sha256_bytes(bytes))
+	end
+
+	local function capture_private_buffers(hash, bounds, index_at, buffers,
+			run_values, run_count, run_checksum_a, run_checksum_b, ledger)
+		local tuple_values, tuple_parts, tuple_rows = {}, {
+			"schema\tgrug_wp40_r7_private_tuple_tsv_v1\n",
+			"bounds\t" .. bounds.min_x .. "\t" .. bounds.min_y .. "\t" ..
+				bounds.min_z .. "\t" .. bounds.max_x .. "\t" .. bounds.max_y ..
+				"\t" .. bounds.max_z .. "\n",
+			"order\tz_outer_x_middle_y_inner\n",
+			"fields\tdata\tparam2\toccupancy\topcode\tfeature\tinterface\taux\n",
+		}, {}
+		local tuple_count = 0
+		for z = bounds.min_z, bounds.max_z do
+			for x = bounds.min_x, bounds.max_x do
+				for y = bounds.min_y, bounds.max_y do
+					local index = index_at(x, y, z)
+					local data, param2, occupied, opcode = buffers.data[index],
+						buffers.param2[index], buffers.occupancy[index], buffers.opcode[index]
+					local feature, interface, aux = buffers.feature[index],
+						buffers.interface[index], buffers.aux[index]
+					integer(data, "private tuple data", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+					integer(param2, "private tuple param2", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+					integer(occupied, "private tuple occupancy", -MAX_SAFE, MAX_SAFE,
+						"fail_ledger")
+					integer(opcode, "private tuple opcode", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+					integer(feature, "private tuple feature", -MAX_SAFE, MAX_SAFE,
+						"fail_ledger")
+					integer(interface, "private tuple interface", -MAX_SAFE, MAX_SAFE,
+						"fail_ledger")
+					integer(aux, "private tuple aux", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+					tuple_count = tuple_count + 1
+					local base = (tuple_count - 1) * 7
+					tuple_values[base + 1], tuple_values[base + 2] = data, param2
+					tuple_values[base + 3], tuple_values[base + 4] = occupied, opcode
+					tuple_values[base + 5], tuple_values[base + 6], tuple_values[base + 7] =
+						feature, interface, aux
+					tuple_rows[#tuple_rows + 1] = string.format(
+						"tuple\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\t%.0f\n",
+						data, param2, occupied, opcode, feature, interface, aux)
+					if #tuple_rows == 4096 then
+						tuple_parts[#tuple_parts + 1] = table.concat(tuple_rows)
+						tuple_rows = {}
+					end
+				end
+			end
+		end
+		if #tuple_rows > 0 then tuple_parts[#tuple_parts + 1] = table.concat(tuple_rows) end
+		local tuple_bytes = table.concat(tuple_parts)
+		local captured_runs = {}
+		local run_parts = {
+			"schema\tgrug_wp40_r7_private_run_tsv_v1\n",
+			"fields\tymin\tymax\tclass\topcode\tkind\tpolicy\tfeature\tinterface\taux\n",
+		}
+		for run = 1, run_count do
+			local base, fields = (run - 1) * RUN_STRIDE, {}
+			for field = 1, RUN_STRIDE do
+				local value = run_values[base + field]
+				integer(value, "private run", -MAX_SAFE, MAX_SAFE, "fail_ledger")
+				captured_runs[base + field] = value
+				fields[field] = string.format("%.0f", value)
+			end
+			run_parts[#run_parts + 1] = "run\t" .. table.concat(fields, "\t") .. "\n"
+		end
+		local run_bytes = table.concat(run_parts)
+		local captured_ledger = ledger and copy_map(ledger) or false
+		local ledger_bytes = captured_ledger and
+			("schema\tgrug_wp40_r7_private_ledger_graph_v1\nledger\t" ..
+				canonical_graph(captured_ledger) .. "\n") or
+			"schema\tgrug_wp40_r7_private_ledger_graph_v1\nnone\n"
+		return {
+			schema = "grug_wp40_r7_private_buffer_capture_v1",
+			min_x = bounds.min_x, min_y = bounds.min_y, min_z = bounds.min_z,
+			max_x = bounds.max_x, max_y = bounds.max_y, max_z = bounds.max_z,
+			tuple_order = "z_outer_x_middle_y_inner", tuple_stride = 7,
+			tuple_count = tuple_count, tuple_values = tuple_values,
+			tuple_sha256 = private_sha256(hash, tuple_bytes),
+			run_stride = RUN_STRIDE, run_count = run_count, run_values = captured_runs,
+			run_checksum_a = run_checksum_a, run_checksum_b = run_checksum_b,
+			run_sha256 = private_sha256(hash, run_bytes),
+			ledger = captured_ledger,
+			ledger_sha256 = private_sha256(hash, ledger_bytes),
+			metrics = {schema = "grug_wp40_r7_private_buffer_capture_metrics_v1",
+				tuple_count = tuple_count, tuple_scalar_count = #tuple_values,
+				tuple_encoded_bytes = #tuple_bytes, run_count = run_count,
+				run_scalar_count = #captured_runs, run_encoded_bytes = #run_bytes,
+				run_checksum_a = run_checksum_a, run_checksum_b = run_checksum_b,
+				ledger_encoded_bytes = #ledger_bytes},
+		}
 	end
 
 	local function equal_graph(left, right, active)
@@ -100,15 +256,22 @@ local function settlement_factory()
 		end
 	end
 
-	local function new(dependencies, evidence_only)
+	local function new(dependencies, evidence_only, capture_enabled)
 		if evidence_only ~= nil and evidence_only ~= true then
 			fail("fail_settlement", "evidence-only construction flag differs")
+		end
+		if capture_enabled ~= nil and capture_enabled ~= true then
+			fail("fail_settlement", "capture construction flag differs")
+		end
+		if evidence_only and capture_enabled then
+			fail("fail_settlement", "evidence construction modes overlap")
 		end
 		exact_fields(dependencies, {
 			full_seed_string = true, r5_adapter = true, content = true,
 			templates = true, hash = true, horizontal = true, planner_source = true,
 			construction_identity = true, cultural_registrations = true, source = true,
-			counting_allocator = true,
+			counting_allocator = true, successor_tail = "optional",
+			planner_stable_refs = "optional",
 		}, "settlement dependencies", "fail_settlement")
 		local full_seed = dependencies.full_seed_string
 		local r5_adapter = dependencies.r5_adapter
@@ -120,11 +283,15 @@ local function settlement_factory()
 		local cultural_registrations = dependencies.cultural_registrations
 		local source = dependencies.source
 		local allocator = dependencies.counting_allocator
+		local successor_tail = dependencies.successor_tail
+		local planner_stable_refs = dependencies.planner_stable_refs
 		if type(full_seed) ~= "string" or full_seed == "" or
 				type(r5_adapter) ~= "table" or type(r5_adapter.apply) ~= "function" or
 				type(content) ~= "table" or type(templates) ~= "table" or
 				type(hash) ~= "table" or type(horizontal) ~= "table" or
-				type(planner_source) ~= "table" or type(source) ~= "table" then
+				type(planner_source) ~= "table" or type(source) ~= "table" or
+				(successor_tail ~= nil and (type(successor_tail) ~= "table" or
+					type(successor_tail.settle) ~= "function")) then
 			fail("fail_settlement", "construction seams differ")
 		end
 		exact_fields(allocator, {new_array = true, new_map = true, grow = true,
@@ -172,6 +339,20 @@ local function settlement_factory()
 			cultural_registration[cultural_registrations[index].cultural_key] =
 				cultural_registrations[index]
 		end
+		local evidence_stable_ref = {}
+		if planner_stable_refs ~= nil then
+			if type(planner_stable_refs) ~= "table" or #planner_stable_refs < 1 then
+				fail("fail_settlement", "planner stable refs differ")
+			end
+			for index = 1, #planner_stable_refs do
+				local id = planner_stable_refs[index]
+				if type(id) ~= "string" or id == "" or evidence_stable_ref[id] or
+						(index > 1 and not hash.less_bytes(planner_stable_refs[index - 1], id)) then
+					fail("fail_settlement", "planner stable refs differ")
+				end
+				evidence_stable_ref[id] = index
+			end
+		end
 		local exclusion_reason_by_id = {}
 		for index = 1, #(source.claim_exclusions or {}) do
 			local row = source.claim_exclusions[index]
@@ -191,6 +372,10 @@ local function settlement_factory()
 				return "fixed_or_protected"
 			end
 			return reason
+		end
+		local function housing_excluded_at(x, z)
+			return type(horizontal.housing_mask_id_at) == "function" and
+				horizontal.housing_mask_id_at(x, z) ~= nil
 		end
 		local apex_columns = {}
 		do
@@ -316,7 +501,11 @@ local function settlement_factory()
 			seed_start = light_seed_start, seed_finish = light_seed_finish,
 			seed_z = light_seed_z, light_zero = light_zero, light_full = light_full,
 			call_min = call_min, call_max = call_max,
+			successor_tail = successor_tail,
 		}
+		if capture_enabled then
+			transaction_state.private_capture = {armed = false, value = false}
+		end
 		local run_values = retained_array("r6_settlement_run_values",
 			evidence_only and 1 or MAX_RUNS * RUN_STRIDE, 0)
 		local census_occupancy = retained_array("r6_settlement_census_occupancy", 4096, 0)
@@ -603,6 +792,43 @@ local function settlement_factory()
 			return tostring(x) .. "/" .. tostring(y) .. "/" .. tostring(z)
 		end
 
+		local function run_class_policy(opcode)
+			local class_id = opcode == 35 and 10 or (opcode == 24 and 8 or
+				((opcode == 12 or opcode == 34) and 9 or 7))
+			local policy = opcode == 35 and 11 or (opcode == 2 and 10 or
+				(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
+					(opcode == 24 and 2 or 6))))
+			return class_id, policy
+		end
+
+		local function evidence_run_rows(rows)
+			local result, index = {}, 1
+			while index <= #rows do
+				local first = rows[index]
+				if first[7] == 0 then
+					index = index + 1
+				else
+					local finish = index
+					while finish + 1 <= #rows do
+						local next_row = rows[finish + 1]
+						if next_row[1] ~= first[1] or next_row[3] ~= first[3] or
+								next_row[2] ~= rows[finish][2] + 1 or
+								next_row[7] ~= first[7] or next_row[8] ~= first[8] or
+								next_row[9] ~= first[9] or next_row[10] ~= first[10] then
+							break
+						end
+						finish = finish + 1
+					end
+					local class_id, policy = run_class_policy(first[7])
+					result[#result + 1] = {first[1], first[3], first[2],
+						rows[finish][2], class_id, first[7], 17, policy,
+						first[8], first[9], first[10]}
+					index = finish + 1
+				end
+			end
+			return result
+		end
+
 		local function primary_reason(flags, ordered)
 			for index = 1, #ordered do
 				if flags[ordered[index]] then return ordered[index] end
@@ -620,7 +846,45 @@ local function settlement_factory()
 			integer(owner_z, "evidence owner z", -30912, 30927, "fail_ledger")
 			local result = {cultural = {}, decorations = {}, rejections = {},
 				witnesses = {}, apex_overlaps = 0}
-			local occupied = {}
+			local occupied, occupied_positions, written = {}, {}, {}
+			local evidence_air_cid, air_kind, air_param2 =
+				contract.r5.resolve(1, 0, 0)
+			if air_kind ~= 0 or air_param2 ~= 0 or
+					evidence_air_cid == contract.ignore_cid then
+				fail("fail_content_manifest", "evidence air authority differs")
+			end
+			if successor_tail and next(evidence_stable_ref) == nil then
+				fail("fail_ledger", "successor evidence stable refs are absent")
+			end
+			local function evidence_write(x, y, z, content_ref, param2, opcode,
+					feature, interface, occupancy_value)
+				local cid = contract.content_cids[content_ref]
+				local key = occupied_key(x, y, z)
+				occupied_positions[key] = {x, y, z}
+				written[key] = {x, y, z, cid, param2,
+					occupancy_value, opcode, feature, interface,
+					(content_ref - 1) * 256 + param2}
+			end
+			local function evidence_rows(base_tuple)
+				local rows = {}
+				for key, position in pairs(occupied_positions) do
+					local row = written[key]
+					if row then
+						rows[#rows + 1] = copy_map(row)
+					else
+						local _, cid, _, opcode, aux = base_tuple(position[1],
+							position[2], position[3])
+						rows[#rows + 1] = {position[1], position[2], position[3],
+							cid, 0, occupied[key], opcode, 0, 0, aux}
+					end
+				end
+				table.sort(rows, function(left, right)
+					if left[3] ~= right[3] then return left[3] < right[3] end
+					if left[1] ~= right[1] then return left[1] < right[1] end
+					return left[2] < right[2]
+				end)
+				return rows
+			end
 			local function inside(x, y, z, oy)
 				return x >= owner_x and x <= owner_x + 79 and y >= oy and
 					y <= oy + 79 and z >= owner_z and z <= owner_z + 79 and
@@ -679,7 +943,27 @@ local function settlement_factory()
 								if overlaps_apex(x, y, z) then
 									result.apex_overlaps = result.apex_overlaps + 1
 								end
-								occupied[occupied_key(x, y, z)] = 1
+								local key = occupied_key(x, y, z)
+								occupied[key] = 1
+								occupied_positions[key] = {x, y, z}
+							end
+						end
+					end
+					local registration = cultural_registration[row.key]
+					if registration then
+						local feature = evidence_stable_ref[row.key]
+						if not feature then fail("fail_ledger", "cultural stable ref differs") end
+						for part = 1, #registration.cells do
+							local cell = registration.cells[part]
+							local x, y, z = candidate.x + cell.x,
+								candidate.y + cell.y, candidate.z + cell.z
+							local lower = cell.y == -1 or cell.y == 0
+							local exact_p7 = analytic_p7_material_ref(x, y, z) ~= nil
+							if not (lower and exact_p7 and
+									registration.lower_two_policy == "preserve_p7") then
+								evidence_write(x, y, z, cell.content_ref, cell.param2, 34,
+									feature, registration.template_or_simple_kind == "template" and
+										feature or 0, 1)
 							end
 						end
 					end
@@ -690,11 +974,15 @@ local function settlement_factory()
 				local _, _, _, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
 				local surface = surface_by_id[biome]
-				if not surface then return CLASS_UNKNOWN, 0, false end
+				if not surface then return CLASS_UNKNOWN, 0, false, 0, 0 end
 				local p7_ref = analytic_p7_material_ref(x, y, z)
 				if p7_ref then
 					local cid = contract.content_cids[p7_ref]
-					return classify(cid, 0, "fail_old_class"), cid, true
+					local wet = water_y ~= nil and water_y > terrain_y
+					local opcode = y < terrain_y and 2 or (wet and 1 or
+						(biome == "grug_beach" and 3 or 4))
+					return classify(cid, 0, "fail_old_class"), cid, true, opcode,
+						(p7_ref - 1) * 256
 				end
 				local wet = water_y ~= nil and water_y > terrain_y
 				local cid, r5_priority = analytic_r5_material_cid(x, y, z)
@@ -703,10 +991,11 @@ local function settlement_factory()
 							r5_priority == 5 and cid == r5_target_cid(1, y) and
 							analytic_p7_material_ref(x, terrain_y, z) ~= nil then
 						return CLASS_NATURAL_VEGETATION,
-							contract.content_cids[surface.dust_ref], false
+							contract.content_cids[surface.dust_ref], false, 33,
+							(surface.dust_ref - 1) * 256
 					end
 				end
-				return classify(cid, 0, "fail_old_class"), cid, false
+				return classify(cid, 0, "fail_old_class"), cid, false, 0, 0
 			end
 
 			for class = 1, 4 do
@@ -716,7 +1005,13 @@ local function settlement_factory()
 					if row.settlement_class == class then
 						local cells, min_fx, max_fx, min_fy, max_fy, min_fz, max_fz =
 							{}, 0, 0, 0, 0, 0, 0
+						local feature_ref = evidence_stable_ref[row.id]
+						if not feature_ref then
+							fail("fail_ledger", "decoration stable ref differs")
+						end
+						local interface_ref = 0
 						if row.kind == "template" then
+							interface_ref = feature_ref
 							local rotation_digest = hash.digest("decoration_rotation_v1",
 								full_seed, {row.id, candidate.x, candidate.y, candidate.z})
 							local rotation = math.floor(string.byte(rotation_digest, 1) / 64)
@@ -780,7 +1075,7 @@ local function settlement_factory()
 										if excluded then flags[excluded] = true end
 										local occupant = occupied[occupied_key(x, y, z)]
 										if occupant == 1 then flags.cultural_collision = true
-										elseif occupant == 3 then flags.decoration_collision = true end
+										elseif occupant == -1 then flags.decoration_collision = true end
 									end
 								end
 							end
@@ -821,7 +1116,9 @@ local function settlement_factory()
 										if overlaps_apex(x, y, z) then
 											result.apex_overlaps = result.apex_overlaps + 1
 										end
-										occupied[occupied_key(x, y, z)] = 3
+										local key = occupied_key(x, y, z)
+										occupied[key] = -1
+										occupied_positions[key] = {x, y, z}
 										aggregate.reserved = aggregate.reserved + 1
 									end
 								end
@@ -829,11 +1126,81 @@ local function settlement_factory()
 							for part = 1, #cells do
 								if cells[part].include then
 									aggregate.emitted = aggregate.emitted + 1
+									local cell = cells[part]
+									evidence_write(candidate.x + cell.x,
+										candidate.y + cell.y, candidate.z + cell.z,
+										cell.content_ref, cell.param2, 12, feature_ref,
+										interface_ref, -1)
 								end
 							end
 						end
 					end
 				end
+			end
+			result.direct_rows = evidence_rows(prospective)
+			result.direct_runs = evidence_run_rows(result.direct_rows)
+			if successor_tail then
+				if type(successor_tail.plan_evidence_owner) ~= "function" then
+					fail("fail_ledger", "successor evidence planner is absent")
+				end
+				local plan, generation = successor_tail:plan_evidence_owner(owner_x,
+					owner_x + 79, owner_z, owner_z + 79)
+				local context = {schema = "grug_wp40_r7_successor_context_v1",
+					plan = plan, generation = generation, call_mode = "evidence_fixture",
+					min_x = owner_x, min_y = -30912, min_z = owner_z,
+					max_x = owner_x + 79, max_y = 30927, max_z = owner_z + 79}
+				local function evidence_inside(x, y, z)
+					local surface_y = select(6, planner_source.column_values_at(x, z))
+					return inside(x, y, z, owner_minimum(surface_y + 1))
+				end
+				function context.inside_owner(x, y, z) return evidence_inside(x, y, z) end
+				function context.original_at(x, y, z)
+					return evidence_air_cid, 0
+				end
+				function context.settled_at(x, y, z)
+					local key = occupied_key(x, y, z)
+					local row = written[key]
+					if row then
+						return row[4], row[5], row[6], row[7], row[8], row[9], row[10]
+					end
+					local _, cid, _, opcode, aux = prospective(x, y, z)
+					return cid, 0, occupied[key] or 0, opcode, 0, 0, aux
+				end
+				function context.production_content(name)
+					local ref = content.content_ref(name)
+					return ref, ref and contract.content_cids[ref] or nil
+				end
+				function context.analytic_p7_ref(x, y, z)
+					return analytic_p7_material_ref(x, y, z)
+				end
+				function context.analytic_p7_tuple(x, y, z)
+					local ref = analytic_p7_material_ref(x, y, z)
+					if not ref then return -1, -1, -3, -1, -1, -1, -1 end
+					local _, _, _, biome, _, terrain_y, water_y =
+						planner_source.column_values_at(x, z)
+					local opcode = y < terrain_y and 2 or
+						((water_y ~= nil and water_y > terrain_y) and 1 or
+							(biome == "grug_beach" and 3 or 4))
+					return contract.content_cids[ref], 0, 0, opcode, 0, 0,
+						(ref - 1) * 256
+				end
+				function context.exclusion_at(x, z) return exclusion_reason(x, z) end
+				function context.housing_excluded_at(x, z)
+					return housing_excluded_at(x, z)
+				end
+				function context.column_values_at(x, z)
+					return planner_source.column_values_at(x, z)
+				end
+				function context.write_p9g(x, y, z, cid, param2, local_ref, feature)
+					local key = occupied_key(x, y, z)
+					occupied[key] = -2
+					occupied_positions[key] = {x, y, z}
+					written[key] = {x, y, z, cid, param2, -2, 35, feature, 0,
+						(#contract.content_names + local_ref - 1) * 256 + param2}
+				end
+				result.p9g = successor_tail:settle(context)
+				result.final_rows = evidence_rows(prospective)
+				result.final_runs = evidence_run_rows(result.final_rows)
 			end
 			return result
 		end
@@ -1094,15 +1461,22 @@ local function settlement_factory()
 		end
 		local helpers = {equal_graph = equal_graph,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
+			housing_excluded_at = housing_excluded_at,
+			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
-			resource_volume_excluded = resource_volume_excluded}
+			resource_volume_excluded = resource_volume_excluded,
+			run_class_policy = run_class_policy,
+			capture_private_buffers = capture_private_buffers}
 
 		local function apply_impl(vm, minp, maxp, plan, plan_generation, call_mode)
-			if call_mode ~= "fixture" and call_mode ~= "replay_fixture" then
+			if call_mode ~= "fixture" and call_mode ~= "production" and
+					call_mode ~= "replay_fixture" then
 				fail("fail_status", "R6 is disabled")
 			end
-			if call_mode == "fixture" then last_ledger, last_run_count = false, 0 end
+			if call_mode == "fixture" or call_mode == "production" then
+				last_ledger, last_run_count = false, 0
+			end
 			if type(plan) ~= "table" or
 					plan.schema ~= "grug_wp40_r6_refinement_plan_v1" or
 					not plan.valid or plan.generation ~= plan_generation or
@@ -1215,7 +1589,8 @@ local function settlement_factory()
 			function shadow.set_light_data() end
 			function shadow.update_liquids() end
 			local r5_result = r5_adapter:apply(shadow, minp, maxp, plan.r5_plan,
-				plan.r5_generation, "offline_fixture")
+				plan.r5_generation, call_mode == "production" and
+					"engine_fixture" or "offline_fixture")
 			if type(r5_result) ~= "string" then
 				fail("fail_settlement", "nested R5 result differs")
 			end
@@ -1750,6 +2125,86 @@ local function settlement_factory()
 				end
 			end
 
+			-- R7's only legal successor hook. It receives a deliberately narrow
+			-- closure surface over these private buffers, runs after the complete R6
+			-- P9 loop and before common run derivation/replay/commit, and cannot call
+			-- a VoxelManip setter. A missing tail preserves the accepted R6 path.
+			if transaction_state.successor_tail then
+				local successor_context = {
+					schema = "grug_wp40_r7_successor_context_v1",
+					plan = plan, generation = plan_generation, call_mode = call_mode,
+					min_x = min_x, min_y = min_y, min_z = min_z,
+					max_x = max_x, max_y = max_y, max_z = max_z,
+				}
+				function successor_context.inside_owner(x, y, z)
+					return inside_owner(x, y, z)
+				end
+				function successor_context.original_at(x, y, z)
+					local index = index_at(x, y, z)
+					return original_data[index], original_param2[index]
+				end
+				function successor_context.settled_at(x, y, z)
+					local index = index_at(x, y, z)
+					return final_data[index], final_param2[index], occupancy[index],
+						intent_opcode[index], intent_feature[index], intent_interface[index],
+						intent_aux[index]
+				end
+				function successor_context.production_content(name)
+					local ref = content.content_ref(name)
+					return ref, ref and contract.content_cids[ref] or nil
+				end
+				function successor_context.analytic_p7_ref(x, y, z)
+					return helpers.analytic_p7_material_ref(x, y, z)
+				end
+				function successor_context.analytic_p7_tuple(x, y, z)
+					local ref = helpers.analytic_p7_material_ref(x, y, z)
+					if not ref then return -1, -1, -3, -1, -1, -1, -1 end
+					local _, _, _, biome, _, terrain_y, water_y =
+						planner_source.column_values_at(x, z)
+					local opcode
+					if y < terrain_y then opcode = 2
+					elseif water_y ~= nil and water_y > terrain_y then opcode = 1
+					elseif biome == "grug_beach" then opcode = 3
+					else opcode = 4 end
+					return contract.content_cids[ref], 0, 0, opcode, 0, 0,
+						(ref - 1) * 256
+				end
+				function successor_context.exclusion_at(x, z)
+					return helpers.exclusion_reason(x, z)
+				end
+				function successor_context.housing_excluded_at(x, z)
+					return helpers.housing_excluded_at(x, z)
+				end
+				function successor_context.column_values_at(x, z)
+					return planner_source.column_values_at(x, z)
+				end
+				function successor_context.write_p9g(x, y, z, cid, param2,
+						local_ref, feature_ref)
+					if not inside_owner(x, y, z) then
+						fail("fail_settlement", "P9G write escaped central owner")
+					end
+					integer(cid, "P9G CID", 0, MAX_SAFE, "fail_content_manifest")
+					integer(param2, "P9G param2", 0, 255, "fail_content_manifest")
+					integer(local_ref, "P9G local ref", 1, 12, "fail_content_manifest")
+					integer(feature_ref, "P9G feature ref", 1, 12, "fail_content_manifest")
+					if cid == contract.ignore_cid then
+						fail("fail_content_manifest", "P9G target is ignore")
+					end
+					local index = index_at(x, y, z)
+					final_data[index], final_param2[index] = cid, param2
+					intent_opcode[index], intent_feature[index], intent_interface[index] =
+						35, feature_ref, 0
+					local successor_ref = #contract.content_names + local_ref
+					intent_aux[index] = (successor_ref - 1) * 256 + param2
+					occupancy[index] = -2
+				end
+				local p9g_ledger = transaction_state.successor_tail:settle(successor_context)
+				if type(p9g_ledger) ~= "table" then
+					fail("fail_ledger", "P9G ledger differs")
+				end
+				ledger.p9g = p9g_ledger
+			end
+
 			-- Canonical run derivation.  The second pass compares every scalar
 			-- against the first pass's retained run buffer instead of overwriting it;
 			-- exact run parity also proves the reconstructed data/param2 bytes.
@@ -1763,11 +2218,7 @@ local function settlement_factory()
 					fail("fail_bound", "successor run bound exceeded")
 				end
 				local base = (run_count - 1) * RUN_STRIDE
-				local class_id = opcode == 24 and 8 or
-					((opcode == 12 or opcode == 34) and 9 or 7)
-				local policy = opcode == 2 and 10 or
-					(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
-						(opcode == 24 and 2 or 6)))
+				local class_id, policy = helpers.run_class_policy(opcode)
 				if replaying then
 					if run_values[base + 1] ~= y_min or run_values[base + 2] ~= y_max or
 							run_values[base + 3] ~= class_id or
@@ -1830,6 +2281,21 @@ local function settlement_factory()
 			ledger.run_checksum_a, ledger.run_checksum_b = checksum_a, checksum_b
 			if not replaying and run_count > metrics_state.peak_successor_runs then
 				metrics_state.peak_successor_runs = run_count
+			end
+			local capture_state = transaction_state.private_capture
+			if capture_state and not replaying then
+				if not capture_state.armed or capture_state.value then
+					fail("fail_ledger", "private capture was not armed exactly once")
+				end
+				capture_state.armed = false
+				capture_state.value = helpers.capture_private_buffers(hash, {
+					min_x = min_x, min_y = min_y, min_z = min_z,
+					max_x = max_x, max_y = max_y, max_z = max_z,
+				}, index_at, {data = final_data, param2 = final_param2,
+					occupancy = occupancy, opcode = intent_opcode,
+					feature = intent_feature, interface = intent_interface,
+					aux = intent_aux}, run_values, run_count, checksum_a, checksum_b,
+					transaction_state.successor_tail and ledger or false)
 			end
 			last_ledger = ledger
 			last_run_count = run_count
@@ -2152,12 +2618,30 @@ local function settlement_factory()
 			return copy_map(scan_horizontal_owner(owner_x, owner_z,
 				cultural_candidates, decoration_candidates))
 		end
+		local capture_state = transaction_state.private_capture
+		if capture_state then
+			function fixture.arm_private_capture()
+				if capture_state.armed or capture_state.value then
+					fail("fail_ledger", "private capture is already armed or pending")
+				end
+				capture_state.armed = true
+			end
+			function fixture.take_private_capture()
+				if capture_state.armed or not capture_state.value then
+					fail("fail_ledger", "private capture is not ready")
+				end
+				local result = capture_state.value
+				capture_state.value = false
+				return result
+			end
+		end
 		allocator:seal_construction()
 		return settlement, fixture
 	end
 
-	return {new = function(dependencies) return new(dependencies, nil) end,
-		new_evidence = function(dependencies) return new(dependencies, true) end}
+	return {new = function(dependencies) return new(dependencies, nil, nil) end,
+		new_evidence = function(dependencies) return new(dependencies, true, nil) end,
+		new_capture = function(dependencies) return new(dependencies, nil, true) end}
 end
 
 return settlement_factory()

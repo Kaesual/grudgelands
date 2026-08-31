@@ -1,11 +1,19 @@
 local root = assert(arg[1], "repository root argument required")
+local common = dofile(root .. "/tools/wp40/r6/common.lua")
+local raw_sha256 = common.new_sha256()
 
 local function check(condition, message)
 	if not condition then error(message, 2) end
 end
 
 local previous_calls = 0
-core = {
+local saved_core, saved_grug_core, saved_grug_mobs = rawget(_G, "core"),
+	rawget(_G, "grug_core"), rawget(_G, "grug_mobs")
+rawset(_G, "core", {
+	sha256 = function(bytes, raw)
+		local digest = raw_sha256(bytes)
+		return raw and digest or common.hex(digest)
+	end,
 	is_protected = function(pos, name)
 		previous_calls = previous_calls + 1
 		return name == "legacy"
@@ -13,8 +21,8 @@ core = {
 	check_player_privs = function(name, wanted)
 		return name == "bypass" and wanted.protection_bypass == true
 	end,
-}
-grug_core = {
+})
+rawset(_G, "grug_core", {
 	get_player_faction = function(name)
 		if name == "alice" or name == "bypass" or name == "legacy" then
 			return "accord"
@@ -23,7 +31,7 @@ grug_core = {
 		end
 		return nil
 	end,
-}
+})
 
 dofile(root .. "/mods/CORE/grug_core/zone_authority.lua")
 dofile(root .. "/mods/CORE/grug_core/protection.lua")
@@ -110,14 +118,22 @@ local rare_rows = {
 	{"dustwing", "kragmar_bannerbreak_mesa", "rare_dustwing"},
 	{"emerald_coil", "front_stormscale_summit", "rare_emerald_coil"},
 	{"ashmaw", "kragmar_redtusk_savanna", "rare_ashmaw"},
-	{"bonerattle_south", "front_broken_causeway", "rare_captain_bonerattle"},
-	{"bonerattle_north", "front_shattered_line", "rare_captain_bonerattle"},
+	{"bonerattle_north", "front_broken_causeway", "rare_captain_bonerattle"},
+	{"bonerattle_south", "front_shattered_line", "rare_captain_bonerattle"},
 }
 for i = 1, #rare_rows do
 	local row = rare_rows[i]
 	payload.rare_routes[i] = {id = row[1], anchor = ref(row[2], row[3]),
 		patrol_offsets = offsets}
 end
+
+-- Use the production-owned, source-derived payload for the actual authority
+-- checks. The local rows above remain readable fixture documentation only.
+payload = dofile(root ..
+	"/mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua")(
+	dofile(root .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua"),
+	dofile(root .. "/mods/MAPGEN/grug_mapgen/wp40/source/catalog.lua"),
+	function(bytes) return core.sha256(bytes) end)
 
 local anchors, zone_at_point, faction_at_point = {}, {}, {}
 local anchor_ordinal = 0
@@ -266,7 +282,7 @@ check(core.is_protected({x = 0, y = 0, z = 0}, "legacy") == true,
 check(not pcall(grug_core.install_zone_authority, session, payload),
 	"second authority installation was accepted")
 
-grug_mobs = {}
+rawset(_G, "grug_mobs", {})
 dofile(root .. "/mods/ENTITIES/grug_mobs/spawn_policy.lua")
 -- User-ratified R7 rule: accepted node/biome whitelists own ordinary surface
 -- habitat. The dispatcher retains only independent direct-authority gates and
@@ -332,4 +348,7 @@ check(read_file("mods/ENTITIES/grug_mobs/bandit.lua"):find(
 	"grug_zones.surface_mob_level_at", 1, true) ~= nil,
 	"direct surface-level authority is absent")
 
+rawset(_G, "core", saved_core)
+rawset(_G, "grug_core", saved_grug_core)
+rawset(_G, "grug_mobs", saved_grug_mobs)
 io.write("R7_CONSUMER_KAT_V1\tPASS\n")

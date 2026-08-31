@@ -238,9 +238,10 @@ return function(dependencies)
 	local module = {}
 	function module.status() return STATUS end
 	function module.cultural_slot_api() return cultural_slot_api() end
-	function module.new(full_seed_string, configured_water_level, manifest_values,
+	local function new_impl(construction_mode, full_seed_string, configured_water_level,
+			manifest_values,
 			content_contract, mapgen_context, wp43_projection, template_source,
-			cultural_registrations)
+			cultural_registrations, successor_config)
 		if type(full_seed_string) ~= "string" or full_seed_string == "" then
 			fail("fail_hash", "full seed string differs")
 		end
@@ -298,7 +299,7 @@ return function(dependencies)
 			normalized_registrations[index] = checked
 		end
 
-		local _, planner_source, r5_planner, r5_adapter = r5_module.new(
+		local zones_session, planner_source, r5_planner, r5_adapter = r5_module.new(
 			full_seed_string, configured_water_level,
 			content_module.r5_manifest_values(), content_contract.r5, mapgen_context)
 		local horizontal_module = dependencies.horizontal_factory({
@@ -313,35 +314,125 @@ return function(dependencies)
 			"grug_wp40_r6_planner_allocator_v1")
 		local settlement_allocator = dependencies.allocator_factory.new(
 			"grug_wp40_r6_settlement_allocator_v1")
-		local planner = dependencies.planner_factory.new({
+		local evidence_only = construction_mode == "horizontal"
+		local capture_enabled = construction_mode == "capture"
+		if construction_mode ~= nil and not evidence_only and not capture_enabled then
+			fail("fail_status", "private construction mode differs")
+		end
+		local planner_constructor = evidence_only and
+			dependencies.planner_factory.new_evidence or dependencies.planner_factory.new
+		local planner, planner_fixture = planner_constructor({
 			full_seed_string = full_seed_string, planner_source = planner_source,
 			r5_planner = r5_planner, horizontal = horizontal,
 			content = content_module, templates = templates_module, hash = hash,
 			source = dependencies.source, construction_identity = identity_holder,
 			counting_allocator = planner_allocator,
 		})
-		local settlement = dependencies.settlement_factory.new({
+		local successor_tail
+		if successor_config ~= nil then
+			exact_fields(successor_config, {schema = true, new = true},
+				"successor configuration")
+			if successor_config.schema ~= "grug_wp40_r7_successor_config_v1" or
+					type(successor_config.new) ~= "function" then
+				fail("fail_status", "successor configuration differs")
+			end
+			successor_tail = successor_config.new({
+				full_seed_string = full_seed_string, hash = hash,
+				planner_source = planner_source, horizontal = horizontal,
+				zones_session = zones_session,
+				content = content_module, source = dependencies.source,
+				construction_identity = identity_holder,
+			})
+			if type(successor_tail) ~= "table" or
+					type(successor_tail.plan_slice) ~= "function" or
+					type(successor_tail.settle) ~= "function" or
+					type(successor_tail.metrics) ~= "function" then
+				fail("fail_status", "successor tail seam differs")
+			end
+		end
+		local settlement_dependencies = {
 			full_seed_string = full_seed_string, r5_adapter = r5_adapter,
 			content = content_module, templates = templates_module, hash = hash,
 			horizontal = horizontal, planner_source = planner_source,
 			construction_identity = identity_holder,
 			cultural_registrations = normalized_registrations,
 			source = dependencies.source, counting_allocator = settlement_allocator,
-		})
+			planner_stable_refs = planner_fixture.stable_refs(),
+		}
+		if successor_tail then settlement_dependencies.successor_tail = successor_tail end
+		local settlement_constructor
+		if evidence_only then
+			settlement_constructor = dependencies.settlement_factory.new_evidence
+		elseif capture_enabled then
+			settlement_constructor = dependencies.settlement_factory.new_capture
+		else
+			settlement_constructor = dependencies.settlement_factory.new
+		end
+		if type(settlement_constructor) ~= "function" then
+			fail("fail_status", "settlement construction mode is absent")
+		end
+		local settlement, settlement_fixture = settlement_constructor(settlement_dependencies)
+		local direct_evidence_fixture
+		if evidence_only and successor_tail then
+			local direct_allocator = dependencies.allocator_factory.new(
+				"grug_wp40_r6_settlement_allocator_v1")
+			local direct_dependencies = {
+				full_seed_string = full_seed_string, r5_adapter = r5_adapter,
+				content = content_module, templates = templates_module, hash = hash,
+				horizontal = horizontal, planner_source = planner_source,
+				construction_identity = identity_holder,
+				cultural_registrations = normalized_registrations,
+				source = dependencies.source, counting_allocator = direct_allocator,
+				planner_stable_refs = planner_fixture.stable_refs(),
+			}
+			local _
+			_, direct_evidence_fixture =
+				dependencies.settlement_factory.new_evidence(direct_dependencies)
+		end
 		local session = {}
 		function session.plan_slice(minp, maxp)
-			return planner:plan_slice(minp, maxp)
+			local plan, generation = planner:plan_slice(minp, maxp)
+			if successor_tail then
+				successor_tail:plan_slice(minp, maxp, plan, generation)
+			end
+			return plan, generation
 		end
 		function session.apply_fixture(vm, minp, maxp, plan, generation)
 			return settlement:apply(vm, minp, maxp, plan, generation, "fixture")
 		end
 		function session.metrics()
-			return {planner = planner:metrics(), settlement = settlement:metrics(),
+			local result = {planner = planner:metrics(), settlement = settlement:metrics(),
 				r5_planner = r5_planner:metrics(), r5_adapter = r5_adapter:metrics(),
 				content = content_contract.metrics()}
+			if successor_tail then result.p9g = successor_tail:metrics() end
+			return result
 		end
 		function session.status() return STATUS end
-		return session
+		local writer = {}
+		function writer.apply(vm, minp, maxp, plan, generation)
+			if not successor_tail then
+				fail("fail_status", "production writer lacks R7 successor authority")
+			end
+			return settlement:apply(vm, minp, maxp, plan, generation, "production")
+		end
+		-- The fourth result is a private evidence seam. It is deliberately not a
+		-- method on the frozen public session and is never published by the loader.
+		return session, writer, zones_session, settlement_fixture, {
+			schema = "grug_wp40_r6_private_identity_v1",
+			template_records = templates_module.records(),
+			planner_fixture = planner_fixture,
+			successor_tail = successor_tail,
+			direct_evidence_fixture = direct_evidence_fixture,
+		}
+	end
+	function module.new(...)
+		return new_impl(nil, ...)
+	end
+	function module.new_evidence(...)
+		return new_impl("horizontal", ...)
+	end
+	function module.new_capture(...)
+		return new_impl("capture", ...)
 	end
 	return module
 end
