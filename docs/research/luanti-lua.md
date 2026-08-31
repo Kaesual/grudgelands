@@ -282,8 +282,11 @@ own bundled PUC Lua 5.1.5** out of `reference_projects/luanti/lib/lua/src`
 ```sh
 find mods/*/grug_* -name '*.lua' | xargs tools/bin/luac51 -p   # syntax gate
 tools/bin/luac51 -l -p <file> | grep SETGLOBAL                 # global writes
-tools/bin/lua51 tools/biomecheck/dump_biomes.lua > biomes.csv  # stub tools
 ```
+
+The former `tools/biomecheck/dump_biomes.lua` invocation was retired with
+WP40 R7. It modeled the removed Lua-biome pipeline and is not a current
+compatibility or mapgen check.
 
 `luac51 -p` parses without emitting bytecode; `-l -p` lists opcodes, so
 `SETGLOBAL` is the plain-5.1 equivalent of `luajit -bl … | grep GSET` for

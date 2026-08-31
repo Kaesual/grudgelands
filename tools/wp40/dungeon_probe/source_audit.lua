@@ -48,9 +48,15 @@ local lua_mapgen = read("reference_projects/luanti/src/script/lua_api/l_mapgen.c
 local lua_vmanip = read("reference_projects/luanti/src/script/lua_api/l_vmanip.cpp")
 local dungeon = read("reference_projects/luanti/src/mapgen/dungeongen.cpp")
 local dungeon_h = read("reference_projects/luanti/src/mapgen/dungeongen.h")
+local biome_manager = read("reference_projects/luanti/src/mapgen/mg_biome.cpp")
 local lua_api = read("reference_projects/luanti/doc/lua_api.md")
-local biomes = read("mods/MAPGEN/grug_mapgen/biomes.lua")
-local mapgen_ores = read("mods/MAPGEN/grug_mapgen/ores.lua")
+local default_mapgen = read("mods/BASE/default/mapgen.lua")
+local mapgen_init = read("mods/MAPGEN/grug_mapgen/init.lua")
+local r7_loader = read("mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua")
+local r7_native = read("mods/MAPGEN/grug_mapgen/wp40/r7_native.lua")
+local r7_mapgen = read("mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua")
+local r7_runtime = read("mods/MAPGEN/grug_mapgen/wp40/r7_runtime.lua")
+local r7_content = read("mods/MAPGEN/grug_mapgen/wp40/r7_content.lua")
 local material_registry = read("mods/ITEMS/grug_materials/registry.lua")
 local material_init = read("mods/ITEMS/grug_materials/init.lua")
 local material_ores = read("mods/ITEMS/grug_materials/ores.lua")
@@ -134,19 +140,33 @@ require_text(mapgen, "PseudoRandom ps(blockseed + 70033);",
 require_text(mapgen, "dgen.generate(vm, blockseed, full_node_min, full_node_max);",
 	"DungeonGen receives the full emerged VoxelManip range")
 require_text(dungeon_h, "PseudoRandom random;", "DungeonGen owns C++ random state")
-require_text(biomes, 'node_dungeon = "default:cobble"',
-	"current biome dungeon wall registration")
-require_text(biomes, 'node_dungeon_alt = "default:mossycobble"',
-	"current biome alternate dungeon wall registration")
-require_text(biomes, 'node_dungeon_stair = "stairs:stair_cobble"',
-	"current biome dungeon stair registration")
-assert(count_text(biomes, "node_dungeon = dungeon_nodes.node_dungeon") == 5,
-	"not every current biome registration uses the audited dungeon wall")
-assert(count_text(biomes, "node_dungeon_alt = dungeon_nodes.node_dungeon_alt") == 5,
-	"not every current biome registration uses the audited alternate wall")
-assert(count_text(biomes,
-	"node_dungeon_stair = dungeon_nodes.node_dungeon_stair") == 5,
-	"not every current biome registration uses the audited dungeon stair")
+require_text(biome_manager, "Create default biome to be used in case none exist",
+	"BiomeManager installs the zero-Lua-biome fallback")
+require_text(mapgen, "else if (c_cobble != CONTENT_IGNORE)",
+	"dungeons fall back to the mapgen cobble alias")
+require_text(mapgen, "dp.c_wall     = c_cobble;",
+	"fallback dungeon wall is mapgen cobble")
+require_text(mapgen, "dp.c_alt_wall = CONTENT_IGNORE;",
+	"fallback dungeon alternate wall is disabled")
+require_text(mapgen, "dp.c_stair    = c_cobble;",
+	"fallback dungeon stair material is mapgen cobble")
+require_text(default_mapgen, 'minetest.register_alias("mapgen_cobble", "default:cobble")',
+	"game maps the dungeon fallback to default cobble")
+
+local active_mapgen_source = table.concat({mapgen_init, r7_loader, r7_native,
+	r7_mapgen, r7_runtime, r7_content}, "\n")
+assert(not active_mapgen_source:find("register_biome", 1, true),
+	"R7 active mapgen source contains a Lua biome registration")
+assert(not active_mapgen_source:find("register_decoration", 1, true),
+	"R7 active mapgen source contains an engine decoration registration")
+require_text(mapgen_init, "/wp40/r7_loader.lua",
+	"production init selects the atomic R7 loader")
+assert(not mapgen_init:find("biomes.lua", 1, true),
+	"production init still names the retired Lua biome loader")
+assert(not mapgen_init:find("ores.lua", 1, true),
+	"production init still names the retired legacy ore loader")
+require_text(r7_loader, "native.register_ores(native_token)",
+	"R7 loader registers only the validated native allowlist")
 
 require_text(constants_h, "#define MAP_BLOCKSIZE 16", "mapblock size is 16 nodes")
 require_text(emerge, "v3s16 chunk_offset = -chunksize / 2;",
@@ -220,11 +240,7 @@ local stratum_hosts = {
 	"grug_materials:emberrock",
 	"grug_materials:abyssal_rock",
 }
-local dungeon_nodes = {
-	"default:cobble",
-	"default:mossycobble",
-	"stairs:stair_cobble",
-}
+local dungeon_nodes = {"default:cobble"}
 local host_set = {}
 for i = 1, #stratum_hosts do
 	local name = stratum_hosts[i]
@@ -238,12 +254,26 @@ for i = 1, #dungeon_nodes do
 end
 require_text(material_init, "is_ground_content = true,",
 	"owned stratum nodes remain DungeonGen-compatible ground")
-require_text(mapgen_ores, "for i = 2, #grug_materials.TIERS do",
-	"all five owned strata are registered in native mapgen")
-require_text(mapgen_ores, 'ore_type = "stratum"',
-	"owned strata use the engine stratum registration")
-require_text(mapgen_ores, 'wherein = "default:stone"',
-	"owned strata replace only the tier-one final host")
+assert(count_text(r7_native, 'ore_type = "stratum", ore = ') == 5,
+	"R7 native allowlist does not contain exactly five stratum definitions")
+local native_strata = {
+	{"grug_materials:slate", -300, -101},
+	{"grug_materials:basalt", -500, -301},
+	{"grug_materials:granite", -700, -501},
+	{"grug_materials:emberrock", -1000, -701},
+	{"grug_materials:abyssal_rock", -31000, -1001},
+}
+for index = 1, #native_strata do
+	local row = native_strata[index]
+	require_text(r7_native, 'ore_type = "stratum", ore = "' .. row[1] .. '"',
+		"R7 native stratum " .. index)
+	require_text(r7_native,
+		"y_min = " .. row[2] .. ", y_max = " .. row[3],
+		"R7 native stratum bounds " .. index)
+end
+assert(count_text(r7_native,
+	'wherein = "default:stone", clust_scarcity = 1') == 5,
+	"R7 strata do not replace exactly the tier-one final host")
 require_text(material_ores,
 	"groups = {grug_natural = 1, grug_resource = resource.harvest_tier}",
 	"owned resource nodes carry the natural resource groups")
@@ -256,8 +286,9 @@ print("- Lua MapgenObject surface contains gennotify but no dungeon mask object"
 print("- Lua VoxelManip exposes content/node/param2/emerged area but no flag accessor")
 print("- DungeonGen uses private VM flags and emits room-center events")
 print("- DungeonGen owns its C++ PseudoRandom state")
-print("- Current shared dungeon node names cannot establish writer provenance")
+print("- R7 has zero Lua biomes; native dungeons use the default mapgen-cobble fallback")
 print("- chunksize=5 yields the pinned negative-coordinate owner lattice and one-block VM collar")
 print("- Dungeon eligibility compares the central slice to configured ymin/ymax, then writes the full VM")
 print("- Pinned default and pre-WP40 baseline dungeon limits are audited before the -193 contract")
-print("- Current explicit dungeon nodes are disjoint from all six exact WP43 stratum hosts")
+print("- The fallback dungeon node is disjoint from all six exact WP43 stratum hosts")
+print("- The R7 native allowlist contains exactly five ordered T2-T6 strata")

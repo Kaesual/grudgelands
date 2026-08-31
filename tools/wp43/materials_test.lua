@@ -618,10 +618,10 @@ core.register_craft({
 current_modname = "grug_materials"
 dofile(repo .. "/mods/ITEMS/grug_materials/init.lua")
 
--- Load the two current external consumers unchanged. The mapgen file also
--- gives ore_respawn's startup coupling audit the real scatter roster.
-current_modname = "grug_mapgen"
-dofile(repo .. "/mods/MAPGEN/grug_mapgen/ores.lua")
+-- Load the remaining runtime consumer unchanged. WP40 R7 retired the legacy
+-- mapgen ore loader: its native allowlist and private content resolver are
+-- audited below as source, because loading the complete atomic R7 cutover is
+-- outside this focused material-owner harness.
 current_modname = "grug_nodes"
 dofile(repo .. "/mods/ITEMS/grug_nodes/init.lua")
 current_modname = "grug_materials"
@@ -1091,8 +1091,9 @@ canonical_slab.on_place(ItemStack("grug_materials:slab_iron_block"),
 assert_equal(counts.item_place_nodes, 1, "canonical slab stacking")
 assert_equal(counts.stack_takes, 1, "canonical slab stacking consumption")
 
--- Fresh-load diagnostics must all run successfully, including the owner audit
--- and the real mapgen/respawn coupling audit.
+-- Fresh-load diagnostics must all run successfully, including the material
+-- owner audit. The R7 mapgen relationship is checked against its closed source
+-- seams below rather than by reviving the retired scatter registration path.
 for _, callback in ipairs(callbacks.mods_loaded) do
 	callback()
 end
@@ -1116,9 +1117,36 @@ local function read_file(path)
 	return contents
 end
 
-local mapgen_source = read_file("mods/MAPGEN/grug_mapgen/ores.lua")
-assert_contains(mapgen_source, "grug_materials.resource_node", "mapgen resource API")
-assert_contains(mapgen_source, "grug_materials.TIERS", "mapgen tier API")
+local function count_text(contents, needle)
+	local count = 0
+	local offset = 1
+	while true do
+		local at = contents:find(needle, offset, true)
+		if not at then return count end
+		count = count + 1
+		offset = at + #needle
+	end
+end
+
+local handoff_source = read_file("mods/MAPGEN/grug_mapgen/wp43_handoff.lua")
+assert_contains(handoff_source, "tiers = copy_graph(materials.TIERS)",
+	"R7 tier projection")
+assert_contains(handoff_source, "resources = copy_graph(materials.RESOURCES)",
+	"R7 resource projection")
+local content_source = read_file("mods/MAPGEN/grug_mapgen/wp40/r7_content.lua")
+assert_contains(content_source, "projection.tiers[index].node",
+	"R7 content tier projection")
+assert_contains(content_source, "projection.resources[index].natural_node",
+	"R7 content resource projection")
+local native_source = read_file("mods/MAPGEN/grug_mapgen/wp40/r7_native.lua")
+assert_equal(count_text(native_source, 'ore_type = "stratum", ore = '), 5,
+	"R7 native stratum definition count")
+for _, node in ipairs({"grug_materials:slate", "grug_materials:basalt",
+		"grug_materials:granite", "grug_materials:emberrock",
+		"grug_materials:abyssal_rock"}) do
+	assert_contains(native_source, 'ore_type = "stratum", ore = "' .. node .. '"',
+		"R7 native stratum " .. node)
+end
 local respawn_source = read_file("mods/ITEMS/grug_nodes/ore_respawn.lua")
 assert_contains(respawn_source, "grug_materials.CURRENT_SCATTER_RESOURCES",
 	"respawn roster API")
@@ -1135,7 +1163,9 @@ local production_files = {
 	"mods/ITEMS/grug_materials/overrides.lua",
 	"mods/ITEMS/grug_materials/migration.lua",
 	"mods/ITEMS/grug_materials/audit.lua",
-	"mods/MAPGEN/grug_mapgen/ores.lua",
+	"mods/MAPGEN/grug_mapgen/wp43_handoff.lua",
+	"mods/MAPGEN/grug_mapgen/wp40/r7_content.lua",
+	"mods/MAPGEN/grug_mapgen/wp40/r7_native.lua",
 	"mods/ITEMS/grug_nodes/ore_respawn.lua",
 	"mods/ITEMS/grug_nodes/init.lua",
 	"mods/ENTITIES/grug_mobs/golem.lua",
