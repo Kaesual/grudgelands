@@ -105,7 +105,7 @@ Every `new_p9g_source` row uses this complete placement record:
 | root | `(x, surface_y + 1, z)` |
 | immutable cells | one cell `(0, 0, 0)`, source node, `param2 = 0`, `force_place = false` |
 | footprint | min=max `(0, 0, 0)`; exactly 1 by 1 by 1 |
-| vertical gate | `surface_y >= 1`; the unique 3-D owner containing the root settles it; support may be the immediately lower cell in the neighboring vertical owner and is evaluated through the same analytic P7 authority, never by a second owner or VM-halo read |
+| vertical gate | `surface_y >= 1`; the unique 3-D owner containing the root settles it; in-owner support must have settled `intent_opcode` in `1..4` and `final_data` equal to the row host CID; only support in the immediately lower owner uses the analytic P7 authority, never a second owner or VM-halo read |
 | support | exact accepted P7 cell at `(x, surface_y, z)` matching the row predicate |
 | root predecessor | exact P7 air/clear output; `CONTENT_IGNORE`, liquid, foreign or unknown content rejects |
 | lower-two policy | `preserve_p7`; P9G writes neither `surface_y` nor `surface_y - 1` |
@@ -114,16 +114,26 @@ Every `new_p9g_source` row uses this complete placement record:
 | failure | one primary reason, no movement, retry, refill, partial write or fallback |
 | mutation | one new shadow-buffer intent only; no setter before the common final commit |
 
-P9G uses the accepted R6 decoration content-role bit `8`; it does not add a
-sixth bit. That bit is a write-capability class, not a feature or ledger
-identity: P9G still has its own closed successor opcode, class, policy and
-schema. Reusing the compatible placement capability keeps the accepted R6
-1..31 mask bound and every existing content row unchanged. The R7 successor
-content manifest adds only the twelve P9G target rows carrying bit 8 and
-authenticates its own digest alongside the accepted R6 predecessor-content
-digest. The removable-delta projection removes those twelve rows before
-requiring the accepted R6 content-family bytes. Cultural sources remain on bit
-16 and are not reclassified merely because both families live in
+P9G uses the accepted R6 decoration write-capability class `8`; it does not add
+a sixth bit. That value is permission to write the same compatible natural-
+vegetation target class, not a feature or ledger identity: P9G still has its
+own closed successor opcode, class, policy and schema. The accepted R6 content
+arrays and refs `1..N` remain completely frozen and are never merged with or
+resorted around `grug_gathering:*` names. Instead, the separate
+`grug_wp40_r7_p9g_content_v1` table contains exactly twelve ASCII-ordered P9G
+rows with local refs `1..12`; the successor run ref is exactly `N + p9g_ref`.
+A closed P9G-only resolver validates its node name, CID, `param2 = 0`, allowed
+natural-vegetation class and capability 8 before writing the shared private
+buffers. It cannot resolve an R6 ref, and the R6 resolver cannot resolve a P9G
+ref. The six R6 cultural nodes register first; the twelve P9G target nodes
+register only after every accepted R6 target-owner mod and therefore receive
+later engine CIDs without changing an existing name-to-CID row. Registration,
+fixture and manifest gates require every accepted R6 node name, CID, ref and
+mask byte to remain identical before accepting the P9G suffix. The R7 manifest
+authenticates this suffix digest alongside the accepted R6 predecessor-content
+digest. The removable-delta projection removes the suffix and all P9G runs
+without renumbering any R6 ref. Cultural sources remain on R6 capability 16
+and are not reclassified merely because both families live in
 `grug_gathering`.
 
 Primary rejection order is:
@@ -399,8 +409,9 @@ WP33 implementation and R7 activation require all of the following:
    high cooking sources (`wild_cocoa`, `rock_salt`) and all six cultural keys;
 7. byte-identical projection of every accepted R6 P2-P9 plan, intent and
    ledger after P9G rows are removed, plus a separately versioned P9G digest;
-   the projection also removes the twelve successor-content rows before
-   comparing the accepted R6 content-family bytes;
+   the projection also removes the separate twelve-row P9G content suffix and
+   P9G-only runs without renumbering an R6 ref before comparing the accepted
+   R6 content-family bytes;
 8. same-seed, shard-order, mapchunk-order, owner-clipping, repeated-run,
    `CONTENT_IGNORE`, light/liquid and single-setter fixtures;
 9. source audits proving zero WP33 `core.register_decoration`,
@@ -448,14 +459,18 @@ non-authoritative until explicitly accepted.
   identity but makes collision/seed variance more likely to remove practical
   supply.
 
-The recommended roster replaces Mournfen with `kragmar_ossuary_reach`, so all
-four Marshbloom zones are level 21-30 and the per-bracket paired-faction gate
-is satisfiable. Accepting this option explicitly amends the fixed four-zone
-Marshbloom list in `docs/design/world_zones.md`; the implementation may not
-make that authority change silently. Retaining Mournfen is a valid alternative
-only with an explicit design amendment that admits Marshbloom to its 11-20
-palette and defines how the otherwise one-sided 11-20 parity population is
-handled.
+The authoritative design currently fixes Marshbloom to the four `W` wetland-
+camp zones: `elandor_whitebridge_shire`, `elandor_lorindor`,
+`kragmar_mournfen` and `kragmar_whispering_reedlands`
+(`world_zones.md` Sections 8 and 11). The recommended roster replaces Mournfen
+with `kragmar_ossuary_reach`, so all four candidate zones are level 21-30 and
+the per-bracket paired-faction gate is satisfiable. Accepting this option
+explicitly amends that authoritative four-zone list; the implementation may
+not make the change silently. Retaining the current four-zone authority needs
+no roster or palette amendment, but it leaves the 11-20 bracket with a
+Throng-only Marshbloom source and therefore cannot meet the existing
+per-bracket parity gate without a separate user ruling that changes that gate
+or adds a paired Accord 11-20 source.
 
 ### D3 — Cultural tool-family assignment
 
@@ -510,9 +525,11 @@ implementation rather than guessed in code.
 Once Section 9 is accepted and folded into authority, WP33 may implement one
 new `grug_gathering` mod containing registrations, pure manifests and harvest
 behavior, plus the minimal reviewed `grug_materials` resolver extension. It
-must keep all placement disabled. R7 then consumes the immutable manifest in
-the single successor transaction, proves the delta and only then performs the
-atomic legacy cutover.
+must depend on every accepted R6 target-owner mod, register the six cultural
+source nodes before the twelve ASCII-ordered P9G target nodes, and keep all
+placement disabled. R7 then consumes the immutable manifest in the single
+successor transaction, proves the delta and only then performs the atomic
+legacy cutover.
 
 No open recipe, cooking magnitude, profession keystone, T5/T6 leather/cloth,
 Woodcarver grade, farming-growth or cultural-finishing question is decided by

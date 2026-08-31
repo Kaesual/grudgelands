@@ -96,15 +96,15 @@ accepted gravel blob and the current T2--T6 strata. T1 remains
 `default:stone` and has no redundant registration. Strata remain last so they
 replace only `default:stone` left after native caves and earlier ores.
 
-The gravel blob is the only retained blob because it is the one non-surface
-blob compatible with R7's closed native-stone substrate; R7 P7 is the sole
-surface authority and R6 P8 is the sole resource authority. Clay depends on
-the removed legacy sand-surface authority, silver sand is inherited
-non-required variation, and dirt would trigger the world-wide unresolved-biome
-trap. No authoritative design row requires clay or silver sand. Ratifying this
-allowlist also accepts that the vendored clay-lump/brick and silver-sandstone
-recipe families have no in-world source; that consequence must be carried to
-WP26/WP28 rather than hidden behind an inaccurate geology citation.
+Gravel is retained as the one accepted non-surface blob this lane chooses to
+preserve; R7 P7 is the sole surface authority and R6 P8 is the sole resource
+authority. Clay depends on the removed legacy sand-surface authority, silver
+sand is compatible with stone but remains inherited non-required variation,
+and dirt would trigger the world-wide unresolved-biome trap. No authoritative
+design row requires clay or silver sand. Ratifying this allowlist also accepts
+that the vendored clay-lump/brick and silver-sandstone recipe families have no
+in-world source; that consequence must be carried to WP26/WP28 rather than
+hidden behind an inaccurate geology citation.
 
 The normalized allowlist canonical bytes are ASCII, have no BOM or CR, use the
 rows and field order below, and end every row including the last with LF:
@@ -262,9 +262,9 @@ reinterpret the accepted R5 manifest. Its ordered identity consists of:
 5. `gathering_schema=grug_wp33_gathering_catalog_v1` and its one canonical
    digest over all 26 rows (12 `new_p9g_source`, 8 `reuse_r6_source`, 6
    `r6_cultural_slot`), the six R6-owned cultural registration digests,
-   `content_successor_schema=grug_wp40_r7_content_v1` and its digest over every
-   unchanged R6 content row plus the twelve P9G rows carrying the already-valid
-   decoration capability bit 8, and the P9G delta schema/digest; and
+   `p9g_content_schema=grug_wp40_r7_p9g_content_v1` and its digest over the
+   separate twelve-row P9G target table carrying the compatible decoration
+   capability 8, plus the P9G delta schema/digest; and
 6. `writer_schema=grug_wp40_r7_single_vm_writer_v1`,
    `p9g_order=after_r6_p9_before_run_derivation`,
    `p9g_overwrite=false`, and `production_enabled=true`.
@@ -337,10 +337,13 @@ The hook consumes the twelve-row `new_p9g_source` slice of the authenticated
 26-row WP33 catalog in canonical catalog and candidate order. Every source has
 one immutable cell at `(0,0,0)`, rooted at `(x, surface_y + 1, z)`, over the
 exact P7 support at `(x, surface_y, z)`. The unique 3-D owner containing the
-root settles it; the support may be the immediately lower cell in the adjacent
-vertical owner and is evaluated analytically without a VM-halo read or second
-owner settlement. The six R6 cultural records alone retain their existing
-support-rooted `(0,1,0)` convention. A candidate may accept only if:
+root settles it. If support is in that owner, validate the settled private
+buffers: its `intent_opcode` is in `1..4` and `final_data` is the row's exact
+host CID. Only when support is the immediately lower cell in the adjacent
+vertical owner does the same analytic P7 authority replace that buffer check;
+there is no VM-halo read or second-owner settlement. The six R6 cultural
+records alone retain their existing support-rooted `(0,1,0)` convention. A
+candidate may accept only if:
 
 - its root/cell is inside the owner slice and original content is not `ignore`;
 - the support is the exact allowed P7 content/param2 and remains unchanged;
@@ -358,15 +361,19 @@ same `final_data`, `final_param2` and intent buffers used by R6. No P2--P9
 candidate decision is recomputed after P9G.
 
 The P9G opcode/class/policy identifiers must be new closed constants outside
-the accepted R6 identity set, manifested and covered by run/replay parity.
-Content resolution deliberately uses the existing decoration capability bit
-8, which already fits the accepted 1..31 mask validator; a content-role bit is
-permission to write a target, not the feature/ledger identity. R7 still
-versions the successor content manifest, leaves every accepted R6 row/mask
-unchanged and adds only the twelve P9G target rows. The implementation may
-choose opcode/class numeric values only in the reviewed code contract. That
-numeric assignment is a technical implementation detail, not a player
-decision.
+the accepted R6 identity set, manifested and covered by run/replay parity. The
+reviewed successor change explicitly extends the opcode-to-class/policy
+derivation at the current `r6_settlement.lua:1766-1770` seam with P9G-only
+branches; every accepted R6 opcode must continue to derive the exact prior
+class and policy. Content resolution uses a separate closed P9G resolver and
+the compatible decoration capability 8. The accepted R6 content arrays and
+refs `1..N` remain byte-for-byte frozen; they are never merged with or
+resorted around P9G names. `grug_wp40_r7_p9g_content_v1` holds twelve
+ASCII-ordered local refs `1..12`, and P9G run aux uses successor ref
+`N + p9g_ref` under the existing `(ref - 1) * 256 + param2` encoding. Neither
+resolver accepts the other namespace. The implementation may choose
+opcode/class numeric values only in the reviewed code contract. That numeric
+assignment is a technical implementation detail, not a player decision.
 
 ### 4.1 Required R6 projection-delta proof
 
@@ -382,8 +389,8 @@ The projection function is closed:
 2. for each **accepted** P9G ledger row in canonical coordinate/source order,
    require the final cell still equals that row's P9G target and restore its
    recorded prior CID/param2 and prior intent/occupancy values;
-3. remove only P9G schema/ledger/metrics rows and the twelve successor-content
-   rows; and
+3. remove only P9G schema/ledger/metrics rows, P9G-only runs and the separate
+   twelve-row content suffix; never renumber or rederive an R6 ref/aux/run; and
 4. canonicalize with the accepted R6 encoder.
 
 The projected bytes and every accepted R6 P2--P9 ledger/digest must be
@@ -452,8 +459,12 @@ R7 does not invent absent production mods.
 `grug_factions` and `grug_mobs` must declare `grug_mapgen` as a required
 dependency before consuming installed adapters/anchors. Conversely,
 `grug_mapgen` must declare the new `grug_gathering` mod as a required dependency
-before authenticating its 26-row manifest; `grug_gathering` depends on
-`grug_materials`/`grug_core`, never on `grug_mapgen`. This graph is acyclic.
+before authenticating its 26-row manifest. `grug_gathering` requires
+`default`, `grug_core`, `grug_materials`, `grug_nodes` and `grug_trees`, which
+puts its six R6 cultural and then twelve P9G node registrations after every
+accepted R6 target-owner mod; it never depends on `grug_mapgen`. Adding the
+P9G suffix must leave every accepted R6 node-name/CID/ref/mask row unchanged.
+This graph is acyclic.
 The explicit consumer dependency is important because Kraken currently captures
 `grug_core.open_sea_at` into its mob definition at load time. Indirect
 best-effort load ordering is not accepted.
@@ -523,7 +534,9 @@ file. Minimum expectations are:
   `bulk_set_node` or VoxelManip write path; and
 - dependency audit proves all load-time consumers require `grug_mapgen`,
   `grug_mapgen` requires `grug_gathering` before reading its manifest, and the
-  mod graph is acyclic.
+  mod graph is acyclic; exact node-registration-order and manifest gates prove
+  that the twelve P9G targets receive later CIDs without changing any accepted
+  R6 node-name/CID/ref/mask row.
 
 Mechanical `rg` counts are necessary but not semantic proof. Review also parses
 the six literal NoiseParams, six native definitions, loaders and aliases to
