@@ -172,3 +172,104 @@ otherwise correct.
 - R8 still owns real-engine cave/ore/dungeon/stratum preservation,
   owner-slice/mapchunk behavior, lighting/liquids, performance/RSS and visual
   inspection. No offline result should be relabeled as that runtime evidence.
+
+## Focused re-review — 2026-08-31
+
+Correction commits reviewed:
+`f1376e40ced967d5786f64d6014a6b888eaf3717` (WP33) and
+`84dabb78ff453bc4a8638468e8fb50b55584057a` (R7).
+
+Focused verdict: **clean — 0 Critical / 0 High / 0 Medium / 0 Low**.
+
+The focused review rechecked the correction diffs against H1, M1, M2 and L1,
+then followed their claims back to the unchanged production and pinned-engine
+sources. All four findings are resolved. No production files were changed and
+no builds or tests were run.
+
+### Resolution of H1 — complete six-mutation manifest boundary
+
+**Resolved.** The R7 correction inventories exactly the six active production
+mutations and their complete current tables
+(`docs/research/wp40-r7-cutover-preflight.md:91-107`). Those rows match the two
+terrain calls at `mods/MAPGEN/grug_mapgen/init.lua:24-31`, the two climate calls
+at `:44-52` and the two blend calls at `:82-90`. A repository-wide source audit
+found no additional `set_mapgen_setting*`, `set_mapgen_params` or
+`set_noiseparams` call under `mods/`.
+
+The corrected contract makes every retained normalized NoiseParams table,
+including flags, and its digest part of the versioned R7 manifest. It requires
+exact readback before publication in the main environment and independent
+readback before session construction/callback registration in the mapgen
+environment (`docs/research/wp40-r7-cutover-preflight.md:119-130,227-240`). This
+is engine-feasible: `core.get_mapgen_setting_noiseparams` reads the active
+`MapSettingsManager` value and returns the normalized table
+(`reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:909-923`), including
+normalized flags and both persistence spellings
+(`reference_projects/luanti/src/script/common/c_content.cpp:2054-2098`), and the
+getter is registered in both environments
+(`reference_projects/luanti/src/script/lua_api/l_mapgen.cpp:2060-2078,2104-2119`).
+The zero-or-exact-allowlist settings gate is now explicit and repository-wide
+(`docs/research/wp40-r7-cutover-preflight.md:377-381,412-421`). The original
+failure scenario can no longer satisfy the corrected contract: an omitted,
+defaulted or drifted noise input causes manifest validation to abort before the
+writer is registered.
+
+### Resolution of M1 — central protection and old-platform authority gated
+
+**Resolved.** The consumer matrix now names both live protection paths, their
+old capital/platform dependencies and the ocean healer caller
+(`docs/research/wp40-r7-cutover-preflight.md:194`). The citations match
+`mods/CORE/grug_core/protection.lua:121,127,174,180,213` and
+`mods/MAPGEN/grug_mapgen/ocean_mask.lua:512`.
+
+The replacement is one reviewed stable-anchor protection policy, and the
+repository-wide gate covers the old capital/spawn/anchor providers, platform
+height APIs and storage key, protection entry points, platform constants and
+retry state (`docs/research/wp40-r7-cutover-preflight.md:404-419`). This is
+complete for reachable legacy authority: retaining either old protection body
+necessarily leaves gated references to `grug_core.capitals` and
+`get_camp_platform_y`; retaining the discovery, persistence, retry or repair
+flow necessarily leaves a gated public entry point, heightmap read, storage
+key or state symbol. Local helper names such as `stored_platform_y` are not
+individually enumerated, but they cannot preserve an active path after the
+required expected-count audit reaches zero outside the one policy/adapter.
+The earlier stale-volume/error scenario therefore cannot pass the corrected
+gate.
+
+### Resolution of M2 — cultural tool family remains honestly open
+
+**Resolved.** WP33 now preserves ordinary source-specific hand/axe/shovel
+behavior and explicitly forbids routing those sources through one tool family
+(`docs/research/wp33-gathering-cultural-preflight.md:313-321`). It leaves the
+concentrated-source family or families as an explicit user/design decision,
+requires the exact family assignment before the contract freezes, and permits
+a tier-neutral resolver only after that choice
+(`docs/research/wp33-gathering-cultural-preflight.md:323-335`). It also states
+that `grug_materials.pick_tier_for_stack` proves only the pick family, matching
+`mods/ITEMS/grug_materials/mining.lua:103-109`. No universal-pick player
+semantics remain in the recommendation.
+
+### Resolution of L1 — source locations corrected
+
+**Resolved.** The structures row now cites the callback, `set_data`, liquid,
+lighting and final write locations at
+`mods/MAPGEN/grug_mapgen/structures.lua:776,875,887,889-890`
+(`docs/research/wp40-r7-cutover-preflight.md:140`). The decoration row now
+covers both definition/helper blocks and their actual registration calls at
+`mods/MAPGEN/grug_mapgen/decorations.lua:78-101,104-120`
+(`docs/research/wp40-r7-cutover-preflight.md:168`). Both claims now lead a
+reviewer to the operations that must be removed.
+
+### Residual risks (not findings)
+
+- The final native biome/blob/stratum allowlist, P9G densities/zone rows and
+  concentrated cultural tool-family assignment remain deliberately open GO
+  decisions. The corrected preflights identify them as blockers rather than
+  choosing implementation defaults.
+- The six-noise retention/removal disposition and canonical manifest encoding
+  still have to be frozen in the reviewed R7 contract. The correction proves
+  the complete population and a feasible validation path; it does not claim
+  that the still-non-authoritative preflight has activated them.
+- The mechanical searches remain review gates, not semantic parsers. R7 must
+  preserve their exact outputs/counts and source-review any aliases or
+  allowlisted adapters as the corrected text requires.
