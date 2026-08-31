@@ -828,6 +828,54 @@ cultural_name_set = function(runtime_fixture)
 	return set
 end
 
+local function normalize_content_row(runtime_fixture, binding, cultural, source)
+	local row = {}
+	for field = 1, 10 do row[field] = source[field] end
+	local name = runtime_fixture.name_by_cid[source[4]]
+	if not name then fail("Direct-83 row CID has no registered name") end
+	local opcode = integer(source[7], 0, 35, "Direct-83 row opcode")
+	local param2 = integer(source[5], 0, 255, "Direct-83 row param2")
+	local aux = integer(source[10], 0, MAX_SAFE, "Direct-83 row aux")
+	if opcode == 0 then
+		if aux ~= 0 then fail("zero-intent Direct-83 row has nonzero aux") end
+		if name == "air" then
+			if source[4] ~= runtime_fixture.cid_by_name.air then
+				fail("Direct-83 air reservation CID differs")
+			end
+			return row, false
+		end
+		local target = binding.by_name[name]
+		if cultural[name] then
+			fail("Cultural target substitution escaped opcode 34")
+		elseif not target then
+			fail("zero-intent Direct-83 row has no accepted CID mapping: " .. name)
+		end
+		row[4], row[10] = target.cid, 0
+		return row, false
+	end
+
+	-- For an operation, aux is the production content authority.  Aux zero is
+	-- valid for production ref 1 with param2 zero, so opcode—not aux truthiness—
+	-- distinguishes it from a structural reservation.
+	local production_ref = math.floor(aux / 256) + 1
+	local aux_param2 = aux % 256
+	local production_names = runtime_fixture.built.content.production.content_names
+	local aux_name = production_names[production_ref]
+	if not aux_name then fail("Direct-83 operation aux ref is outside production content") end
+	if aux_name ~= name then fail("Direct-83 operation aux name/CID name differ") end
+	if aux_param2 ~= param2 then fail("Direct-83 operation aux/row param2 differ") end
+	local target, substituted = binding.by_name[aux_name], false
+	if cultural[aux_name] then
+		if opcode ~= 34 then fail("Cultural target substitution escaped opcode 34") end
+		target, substituted = assert(binding.by_name["grug_nodes:bone_pile"]), true
+	elseif not target then
+		fail("Direct-83 operation aux name has no accepted mapping: " .. aux_name)
+	end
+	row[4] = target.cid
+	row[10] = (target.ref - 1) * 256 + aux_param2
+	return row, substituted
+end
+
 local function normalize_rows(runtime_fixture, binding, rows)
 	local cultural = binding.cultural or cultural_name_set(runtime_fixture)
 	if not binding.total_map_checked then
@@ -849,35 +897,68 @@ local function normalize_rows(runtime_fixture, binding, rows)
 		end
 		binding.cultural, binding.total_map_checked = cultural, true
 	end
-	local bone = assert(binding.by_name["grug_nodes:bone_pile"])
 	local output, substitutions = {}, 0
 	for index = 1, #rows do
-		local source, row = rows[index], {}
-		for field = 1, 10 do row[field] = source[field] end
-		local name = runtime_fixture.name_by_cid[source[4]]
-		local target = name and binding.by_name[name]
-		if name == "air" then
-			if source[4] ~= runtime_fixture.cid_by_name.air or source[10] ~= 0 then
-				fail("Direct-83 air reservation tuple differs")
-			end
-			output[index] = row
-		elseif not target and name and cultural[name] then
-			if source[7] ~= 34 then
-				fail("Cultural target substitution escaped opcode 34")
-			end
-			target, substitutions = bone, substitutions + 1
-		elseif not target then
-			fail("Direct-83 row has no total accepted name mapping: cid=" ..
-				tostring(source[4]) .. " name=" .. tostring(name) .. " opcode=" ..
-				tostring(source[7]))
-		end
-		if target then
-			row[4] = target.cid
-			row[10] = (target.ref - 1) * 256 + row[5]
-			output[index] = row
-		end
+		local row, substituted = normalize_content_row(runtime_fixture, binding,
+			cultural, rows[index])
+		output[index] = row
+		if substituted then substitutions = substitutions + 1 end
 	end
 	return output, substitutions
+end
+
+function module.normalize_rows_kat()
+	local leaf = "default:acacia_bush_leaves"
+	local cultural_name = "grug_gathering:runeslate_source"
+	local runtime_fixture = {
+		cid_by_name = {air = 0},
+		name_by_cid = {[144] = "default:stone", [200] = leaf,
+			[201] = cultural_name},
+		built = {content = {production = {content_names = {leaf, cultural_name}}}},
+	}
+	local binding = {by_name = {
+		["default:stone"] = {ref = 45, cid = 1044},
+		[leaf] = {ref = 1, cid = 1000},
+		["grug_nodes:bone_pile"] = {ref = 5, cid = 1004},
+	}}
+	local cultural = {[cultural_name] = true}
+	local measured = {36, 84, -19, 144, 0, -1, 0, 0, 0, 0}
+	local normalized, substituted = normalize_content_row(runtime_fixture, binding,
+		cultural, measured)
+	if substituted or graph(normalized) ~= graph(
+			{36, 84, -19, 1044, 0, -1, 0, 0, 0, 0}) then
+		fail("measured zero-intent natural-CID normalization differs")
+	end
+	local ref_one = {1, 2, 3, 200, 0, -1, 12, 4, 0, 0}
+	local ref_one_normalized, ref_one_substituted = normalize_content_row(
+		runtime_fixture, binding, cultural, ref_one)
+	if ref_one_substituted or graph(ref_one_normalized) ~= graph(
+			{1, 2, 3, 1000, 0, -1, 12, 4, 0, 0}) then
+		fail("operation ref-1 zero-aux normalization differs")
+	end
+	local cultural_operation = {4, 5, 6, 201, 0, 1, 34, 7, 0, 256}
+	local cultural_normalized, cultural_substituted = normalize_content_row(
+		runtime_fixture, binding, cultural, cultural_operation)
+	if not cultural_substituted or graph(cultural_normalized) ~= graph(
+			{4, 5, 6, 1004, 0, 1, 34, 7, 0, 1024}) then
+		fail("Cultural operation normalization differs")
+	end
+	local function rejected(row, fragment)
+		local ok, message = pcall(normalize_content_row, runtime_fixture, binding,
+			cultural, row)
+		if ok or type(message) ~= "string" or not message:find(fragment, 1, true) then
+			fail("normalization negative KAT differs: " .. fragment)
+		end
+	end
+	rejected({36, 84, -19, 144, 0, -1, 0, 0, 0, 256},
+		"zero-intent Direct-83 row has nonzero aux")
+	rejected({1, 2, 3, 144, 0, -1, 12, 4, 0, 0},
+		"aux name/CID name differ")
+	rejected({1, 2, 3, 200, 1, -1, 12, 4, 0, 0},
+		"aux/row param2 differ")
+	rejected({4, 5, 6, 201, 0, 1, 12, 7, 0, 256},
+		"Cultural target substitution escaped opcode 34")
+	return true
 end
 
 local function normalize_runs(runtime_fixture, binding, runs)
