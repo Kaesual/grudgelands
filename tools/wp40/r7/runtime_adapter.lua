@@ -97,10 +97,9 @@ end
 
 local function scalar(value)
 	if type(value) == "string" then
-		if value:find("\0", 1, true) or value:find("\r", 1, true) or
-				value:find("\n", 1, true) then
-			fail("canonical scalar is not length-safe")
-		end
+		-- This is a length-prefixed graph encoding, not a line format.  R6's
+		-- production settlement maps deliberately use NUL-delimited composite
+		-- keys, and every byte is unambiguous once the exact length is encoded.
 		return "s" .. tostring(#value) .. ":" .. value
 	elseif type(value) == "number" then
 		integer(value, -MAX_SAFE, MAX_SAFE, "canonical number")
@@ -778,6 +777,31 @@ local function settlement_decisions(settlement, rows, runs)
 		decorations = settlement.decorations, rejections = settlement.rejections,
 		witnesses = settlement.witnesses, apex_overlaps = settlement.apex_overlaps,
 		direct_rows = rows, direct_runs = runs})
+end
+
+function module.canonical_graph_nul_kat()
+	-- Exact key forms emitted by r6_settlement.scan_horizontal_owner().  This
+	-- catches the integration failure before constructing a production runtime.
+	local aggregate_key = "runeslate\0ordinary"
+	local rejection_key = "cultural\0runeslate\0wrong_support"
+	local encoded = settlement_decisions({
+		cultural = {[aggregate_key] = {accepted = 1, reserved = 225}},
+		decorations = {}, rejections = {[rejection_key] = 1},
+		witnesses = {[aggregate_key] = {zone_id = "front_shattered_line",
+			x = -32, y = 23, z = -32}}, apex_overlaps = 0,
+	}, {{-32, 23, -32, 1000, 0, 1, 34, 1, 0, 0}},
+		{{-32, -32, 23, 23, 9, 34, 16, 10, 0}})
+	local aggregate_scalar = "s" .. tostring(#aggregate_key) .. ":" .. aggregate_key
+	local rejection_scalar = "s" .. tostring(#rejection_key) .. ":" .. rejection_key
+	if not encoded:find(aggregate_scalar, 1, true) or
+			not encoded:find(rejection_scalar, 1, true) then
+		fail("canonical graph lost a production NUL-delimited key")
+	end
+	local distinct = settlement_decisions({cultural = {}, decorations = {},
+		rejections = {[rejection_key .. "x"] = 1}, witnesses = {}, apex_overlaps = 0},
+		{}, {})
+	if encoded == distinct then fail("canonical graph key framing is ambiguous") end
+	return true
 end
 
 local function stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
