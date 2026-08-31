@@ -114,27 +114,33 @@ Every `new_p9g_source` row uses this complete placement record:
 | failure | one primary reason, no movement, retry, refill, partial write or fallback |
 | mutation | one new shadow-buffer intent only; no setter before the common final commit |
 
-P9G uses the accepted R6 decoration write-capability class `8`; it does not add
-a sixth bit. That value is permission to write the same compatible natural-
-vegetation target class, not a feature or ledger identity: P9G still has its
-own closed successor opcode, class, policy and schema. The accepted R6 content
-arrays and refs `1..N` remain completely frozen and are never merged with or
-resorted around `grug_gathering:*` names. Instead, the separate
+The accepted R6 evidence artifact remains immutable but is not mislabeled as
+the production content table: its 77 ASCII rows use the synthetic compatible
+target `grug_nodes:bone_pile` for all six Cultural fixtures. R7 first builds
+and authenticates `grug_wp40_r7_production_r6_content_v1`, exactly 83
+ASCII-ordered rows comprising those 77 names plus the six real Cultural source
+nodes. The six definitions keep R6 capability 16 and settle through the normal
+R6 resolver against this production table. Its refs intentionally differ after
+the inserted `grug_gathering:*` names; no raw byte identity with the 77-row
+evidence table is claimed.
+
+P9G then uses the compatible R6 decoration write-capability class `8`; it does
+not add a sixth bit. That value is permission to write the same compatible
+natural-vegetation target class, not a feature or ledger identity: P9G still
+has its own closed successor opcode, class, policy and schema. The separate
 `grug_wp40_r7_p9g_content_v1` table contains exactly twelve ASCII-ordered P9G
-rows with local refs `1..12`; the successor run ref is exactly `N + p9g_ref`.
-A closed P9G-only resolver validates its node name, CID, `param2 = 0`, allowed
-natural-vegetation class and capability 8 before writing the shared private
-buffers. It cannot resolve an R6 ref, and the R6 resolver cannot resolve a P9G
-ref. The six R6 cultural nodes register first; the twelve P9G target nodes
-register only after every accepted R6 target-owner mod and therefore receive
-later engine CIDs without changing an existing name-to-CID row. Registration,
-fixture and manifest gates require every accepted R6 node name, CID, ref and
-mask byte to remain identical before accepting the P9G suffix. The R7 manifest
-authenticates this suffix digest alongside the accepted R6 predecessor-content
-digest. The removable-delta projection removes the suffix and all P9G runs
-without renumbering any R6 ref. Cultural sources remain on R6 capability 16
-and are not reclassified merely because both families live in
-`grug_gathering`.
+rows with local refs `1..12`; with production count `N = 83`, its successor run
+ref is exactly `N + p9g_ref`. A closed P9G-only resolver validates its node
+name, CID, `param2 = 0`, allowed natural-vegetation class and capability 8
+before writing the shared private buffers. It cannot resolve a production-R6
+ref, and the R6 resolver cannot resolve a P9G ref.
+
+All existing target-owner mods load before `grug_gathering`, so registering the
+six Cultural and then twelve P9G nodes does not change an already registered
+engine CID. The production table's logical ref reordering is expected,
+manifested and covered by the normalization proof below. The R7 manifest
+authenticates the accepted 77-row evidence digest, the 83-row production-R6
+digest and the twelve-row P9G suffix digest separately.
 
 Primary rejection order is:
 
@@ -407,11 +413,15 @@ WP33 implementation and R7 activation require all of the following:
    `10 * B_hi * E_lo <= 11 * B_lo * E_hi`; no floating tolerance;
 6. nonzero accepted access for both factions at every herb/spice grade, both
    high cooking sources (`wild_cocoa`, `rock_salt`) and all six cultural keys;
-7. byte-identical projection of every accepted R6 P2-P9 plan, intent and
-   ledger after P9G rows are removed, plus a separately versioned P9G digest;
-   the projection also removes the separate twelve-row P9G content suffix and
-   P9G-only runs without renumbering an R6 ref before comparing the accepted
-   R6 content-family bytes;
+7. a closed two-stage proof: first remove the twelve-row P9G suffix and every
+   P9G operation/run to recover the authenticated 83-row production-R6 result
+   byte-for-byte; then normalize that result to the accepted 77-row evidence
+   namespace by node name, map each of the six real Cultural targets back to
+   the accepted `grug_nodes:bone_pile` fixture target/ref, rederive aux, runs,
+   checksums and affected registration/content evidence, and require the
+   accepted R6 artifact bytes plus identical P2-P9 candidate, occupancy,
+   rejection and placement decisions. This explicitly bounded content-target
+   normalization is not reported as raw predecessor byte identity;
 8. same-seed, shard-order, mapchunk-order, owner-clipping, repeated-run,
    `CONTENT_IGNORE`, light/liquid and single-setter fixtures;
 9. source audits proving zero WP33 `core.register_decoration`,

@@ -103,8 +103,9 @@ sand is compatible with stone but remains inherited non-required variation,
 and dirt would trigger the world-wide unresolved-biome trap. No authoritative
 design row requires clay or silver sand. Ratifying this allowlist also accepts
 that the vendored clay-lump/brick and silver-sandstone recipe families have no
-in-world source; that consequence must be carried to WP26/WP28 rather than
-hidden behind an inaccurate geology citation.
+in-world source; ratification must assign their removal or replacement to WP28
+rather than leave the consequence in research prose or expand WP26 beyond
+Universalbars.
 
 The normalized allowlist canonical bytes are ASCII, have no BOM or CR, use the
 rows and field order below, and end every row including the last with LF:
@@ -261,7 +262,11 @@ reinterpret the accepted R5 manifest. Its ordered identity consists of:
    digests without reinterpretation;
 5. `gathering_schema=grug_wp33_gathering_catalog_v1` and its one canonical
    digest over all 26 rows (12 `new_p9g_source`, 8 `reuse_r6_source`, 6
-   `r6_cultural_slot`), the six R6-owned cultural registration digests,
+   `r6_cultural_slot`),
+   `production_r6_content_schema=grug_wp40_r7_production_r6_content_v1` and its
+   digest over exactly 83 ASCII-ordered rows (the 77-row accepted evidence
+   population plus six real Cultural target nodes), the six real R6-validator
+   Cultural registration digests,
    `p9g_content_schema=grug_wp40_r7_p9g_content_v1` and its digest over the
    separate twelve-row P9G target table carrying the compatible decoration
    capability 8, plus the P9G delta schema/digest; and
@@ -360,45 +365,65 @@ records its own occupancy/opcode/feature identity and writes only through the
 same `final_data`, `final_param2` and intent buffers used by R6. No P2--P9
 candidate decision is recomputed after P9G.
 
+The accepted R6 evidence artifact's 77-row content table is immutable evidence,
+not the R7 production table: its six Cultural fixtures deliberately share
+`grug_nodes:bone_pile`. R7 authenticates a new 83-row, fully ASCII-ordered
+production-R6 table containing those 77 names plus the six real Cultural
+targets. Cultural continues through the ordinary R6 capability-16 resolver;
+the resulting production refs are allowed and expected to differ from the
+evidence refs. Section 4.1 proves the bounded normalization explicitly instead
+of asserting false raw byte identity.
+
 The P9G opcode/class/policy identifiers must be new closed constants outside
 the accepted R6 identity set, manifested and covered by run/replay parity. The
 reviewed successor change explicitly extends the opcode-to-class/policy
 derivation at the current `r6_settlement.lua:1766-1770` seam with P9G-only
-branches; every accepted R6 opcode must continue to derive the exact prior
-class and policy. Content resolution uses a separate closed P9G resolver and
-the compatible decoration capability 8. The accepted R6 content arrays and
-refs `1..N` remain byte-for-byte frozen; they are never merged with or
-resorted around P9G names. `grug_wp40_r7_p9g_content_v1` holds twelve
-ASCII-ordered local refs `1..12`, and P9G run aux uses successor ref
-`N + p9g_ref` under the existing `(ref - 1) * 256 + param2` encoding. Neither
-resolver accepts the other namespace. The implementation may choose
-opcode/class numeric values only in the reviewed code contract. That numeric
-assignment is a technical implementation detail, not a player decision.
+branches; every R6 opcode must continue to derive the exact prior class and
+policy. Content resolution uses a separate closed P9G resolver and the
+compatible decoration capability 8. `grug_wp40_r7_p9g_content_v1` holds twelve
+ASCII-ordered local refs `1..12`; with production-R6 count `N = 83`, P9G run
+aux uses successor ref `N + p9g_ref` under the existing
+`(ref - 1) * 256 + param2` encoding. Neither resolver accepts the other
+namespace. The implementation may choose opcode/class numeric values only in
+the reviewed code contract. That numeric assignment is a technical
+implementation detail, not a player decision.
 
-### 4.1 Required R6 projection-delta proof
+### 4.1 Required two-stage R6 normalization and P9G delta proof
 
-R6 evidence remains predecessor evidence; R7 must prove, not assume, that P9G
-is a removable delta. For every accepted R6 seed/fixture and every 32-seed R7
-population shard, retain a canonical P9G operation ledger containing source ID,
-root/cell, prior CID/param2, final CID/param2, occupancy/opcode and acceptance or
-one rejection reason.
+The accepted R6 artifact remains immutable predecessor evidence, but its
+synthetic 77-row content fixture must not be confused with R7's production
+content identity. Every accepted R6 seed/fixture and every 32-seed R7 shard
+therefore carries two closed projections.
 
-The projection function is closed:
+**Stage A -- removable P9G delta.** Retain a canonical P9G operation ledger
+containing source ID, root/cell, prior CID/param2, final CID/param2,
+occupancy/opcode and acceptance or one rejection reason. Begin with final R7
+private buffers before VM setters. For each accepted P9G row in canonical
+coordinate/source order, require the final cell still equals its target and
+restore recorded prior CID/param2 and prior intent/occupancy. Remove only P9G
+schema/ledger/metrics rows, P9G-only runs and the twelve-row suffix. The result
+must equal a direct run against the authenticated 83-row production-R6 table
+byte-for-byte; no production-R6 ref is renumbered or rederived in this stage.
 
-1. begin with the final R7 private buffers before VM setters;
-2. for each **accepted** P9G ledger row in canonical coordinate/source order,
-   require the final cell still equals that row's P9G target and restore its
-   recorded prior CID/param2 and prior intent/occupancy values;
-3. remove only P9G schema/ledger/metrics rows, P9G-only runs and the separate
-   twelve-row content suffix; never renumber or rederive an R6 ref/aux/run; and
-4. canonicalize with the accepted R6 encoder.
+**Stage B -- production-R6 to accepted-evidence normalization.** Use one
+manifested, total name map. Each of the 77 accepted names maps to its accepted
+evidence ref/CID/mask. Each of the six real Cultural target names maps only for
+its Cultural opcode/feature to the accepted fixture target
+`grug_nodes:bone_pile` (evidence ref 68, mask 24 and its evidence CID). Remove
+the six production-only content rows, remap every affected content ref/CID,
+rederive `aux`, canonical runs, checksums and affected Cultural registration/
+content evidence, and encode with the accepted R6 encoder. The result must
+match the immutable accepted R6 artifact while candidate coordinates,
+eligibility, budgets, acceptance/rejection reasons, occupancy, opcodes and all
+non-content P2-P9 decisions remain identical. The map cannot rewrite another
+opcode or hide an added/removed Cultural decision.
 
-The projected bytes and every accepted R6 P2--P9 ledger/digest must be
-byte-identical to a direct frozen-R6 run for the same immutable input. Projection
-must also assert that no two accepted P9G rows share a cell and that each prior
-value matches the direct R6 final value; an operation list cannot conceal an
-overwrite. A changed R6 byte is an R6 semantic revision and returns to R6
-contract/evidence review. Only a clean removable P9G delta may proceed as R7.
+Both stages assert unique accepted P9G cells and exact prior values. A mismatch
+outside the six manifested Cultural target substitutions or the removed P9G
+delta is an R6 semantic revision and returns to R6 contract/evidence review.
+Only clean Stage A and Stage B proofs may proceed as R7; neither is reported as
+raw byte identity between the 83-row production table and 77-row evidence
+fixture.
 
 ## 5. Atomic removal of legacy writers and registrations
 
@@ -463,7 +488,10 @@ before authenticating its 26-row manifest. `grug_gathering` requires
 `default`, `grug_core`, `grug_materials`, `grug_nodes` and `grug_trees`, which
 puts its six R6 cultural and then twelve P9G node registrations after every
 accepted R6 target-owner mod; it never depends on `grug_mapgen`. Adding the
-P9G suffix must leave every accepted R6 node-name/CID/ref/mask row unchanged.
+new nodes leaves every previously registered engine CID unchanged. The six
+Cultural names intentionally produce the separately authenticated 83-row
+production-R6 ref table; only the later P9G suffix leaves that production table
+unchanged.
 This graph is acyclic.
 The explicit consumer dependency is important because Kraken currently captures
 `grug_core.open_sea_at` into its mob definition at load time. Indirect
@@ -535,8 +563,9 @@ file. Minimum expectations are:
 - dependency audit proves all load-time consumers require `grug_mapgen`,
   `grug_mapgen` requires `grug_gathering` before reading its manifest, and the
   mod graph is acyclic; exact node-registration-order and manifest gates prove
-  that the twelve P9G targets receive later CIDs without changing any accepted
-  R6 node-name/CID/ref/mask row.
+  that all new targets receive later CIDs without changing a previously
+  registered CID, authenticate the expected 83-row production-R6 ref table,
+  and keep the twelve P9G rows outside it.
 
 Mechanical `rg` counts are necessary but not semantic proof. Review also parses
 the six literal NoiseParams, six native definitions, loaders and aliases to
@@ -564,21 +593,23 @@ LuaJIT owns development, exhaustive and population evidence:
    all six factions, boundary/vertical policy, bypass/empty name/prior handler,
    Kraken deep ocean and captured-load-order behavior;
 5. P9G tests cover every source, acceptance predicate and rejection reason,
-   non-overwrite/no-retry behavior, canonical order, replay parity and the
-   byte-identical R6 projection in section 4.1;
+   non-overwrite/no-retry behavior, canonical order, replay parity and both
+   closed projections in section 4.1;
 6. the accepted 32-seed corpus runs only the changed R7 P9G/resource-content
    population lane, reporting opportunities/accepted/rejections by source,
    biome, zone, tier and reason, paired-faction integer cross-product gates,
-   stable R6 bytes and a separate P9G delta digest; and
+   a byte-identical 83-row production-R6 Stage-A result, the normalized
+   accepted 77-row Stage-B artifact, and a separate P9G delta digest; and
 7. transaction metrics require one VM fetch/settlement, at most one each of the
    accepted conditional data/param2/liquid/light operations, zero second
-   callback/native decoration/healer, and unchanged R6 bounds except the
-   explicitly versioned P9G run/ledger capacity.
+   callback/native decoration/healer, unchanged settlement/VM bounds, and only
+   the explicitly versioned 83-row production-content plus P9G run/ledger
+   capacities.
 
 The accepted R2 fixed-layout and R6 32-seed artifacts remain immutable
-predecessor evidence. Do not rerun retired T2 full-W/PCC/F1/F2 suites. If P9G
-changes an R6 semantic byte, stop and reopen R6 rather than laundering the
-change through an R7 delta.
+predecessor evidence. Do not rerun retired T2 full-W/PCC/F1/F2 suites. A change
+outside the six closed Cultural target normalizations or P9G delta stops and
+reopens R6 rather than laundering the change through R7.
 
 ### 8.3 Process scheduling and final micro-KAT
 
@@ -598,7 +629,7 @@ rather than supplements, that final pair. PUC still owns parser/static gates.
 
 The micro-KAT covers at minimum: six-noise canonicalization, R7 full-manifest
 validation, one native allowlist digest, one accepted and one rejected P9G root,
-R6 projection, one owner-slice transaction/replay, representative stable
+both R6 projections, one owner-slice transaction/replay, representative stable
 queries/anchors and fail-closed protection/herb authorization. It is bounded
 representative parity evidence, not an exhaustive engine substitute.
 
@@ -615,6 +646,12 @@ any multi-node option would invalidate Section 4's one-cell successor record.
 The 12/8/6 classification and all six cultural registration digests remain
 authenticated parts of the accepted 26-row manifest, not a separate or
 silently mutable decision list.
+
+Ratification must also amend the WP28 `BACKLOG.md` row to own the deliberate
+removal or replacement of the now-unreachable vendored clay/brick and
+silver-sandstone recipe families. WP26 remains limited to Universalbars and is
+not named as a fallback owner. This durable WP28 assignment is a technical GO
+condition, not a license for R7 to invent replacement sources.
 
 Those are player-visible content/access choices and must not be filled in by
 the R7 implementer. Once their reviewed manifest is accepted, inserting its
