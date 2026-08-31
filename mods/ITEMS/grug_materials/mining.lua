@@ -108,6 +108,39 @@ function grug_materials.pick_tier_for_stack(stack)
 	return exact_tier(def and (def.groups or {}).grug_pick_tier)
 end
 
+local TOOL_FAMILY_GROUPS = {
+	pick = {membership = "pickaxe", tier = "grug_pick_tier"},
+	axe = {membership = "axe", tier = "grug_axe_tier"},
+	shovel = {membership = "shovel", tier = "grug_shovel_tier"},
+}
+
+-- Tier-neutral natural-source authority. WP29 owns attaching the axe/shovel
+-- tier groups to its final tool catalog; until then a matching family reports
+-- unavailable tier authority instead of borrowing the pick taxonomy.
+function grug_materials.tool_tier_for_stack(stack, family)
+	local groups = TOOL_FAMILY_GROUPS[family]
+	if not groups then
+		error("grug_materials: unknown tool family " .. tostring(family), 0)
+	end
+	if not stack or type(stack.is_empty) ~= "function" or stack:is_empty() or
+			type(stack.get_definition) ~= "function" then
+		return nil, "wrong_family"
+	end
+	local definition = stack:get_definition()
+	local item_groups = definition and definition.groups or {}
+	local membership = item_groups[groups.membership]
+	if type(membership) ~= "number" or membership ~= membership or
+			membership <= 0 then
+		return nil, "wrong_family"
+	end
+	local tier_value = item_groups[groups.tier]
+	local tier = type(tier_value) == "number" and exact_tier(tier_value) or nil
+	if not tier then
+		return nil, "tier_unavailable"
+	end
+	return tier, "ok"
+end
+
 function grug_materials.can_mine_natural_at(pick_tier, y)
 	pick_tier = exact_tier(pick_tier)
 	y = tonumber(y)
