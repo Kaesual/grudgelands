@@ -314,13 +314,25 @@ empty gathering boundary:
    says ordinary sources retain natural axe/shovel/hand behavior while the
    concentrated zone requires T4 harvesting
    (`docs/design/items_crafting.md:1185-1202`), but no exact tool-family and
-   failure-message seam is specified. Recommendation: retain one source node
-   per culture, determine the rate class from R7's exact named-zone authority
-   at the node position (no node metadata), and require
-   `grug_materials.pick_tier_for_stack(stack) >= 4` only in that row's one
-   concentrated zone. That is the sole shipped T4 tool seam
-   (`mods/ITEMS/grug_materials/mining.lua:103-109`); ordinary sources keep
-   presentation-appropriate hand/choppy/crumbly groups.
+   failure-message seam is specified. Retain one source node per culture and
+   determine the rate class from R7's exact named-zone authority at the node
+   position (no node metadata). Ordinary sources keep their source-specific
+   natural hand/axe/shovel semantics exactly as designed; WP33 must not route
+   them all through one tool family.
+
+   Concentrated-source tool families remain an explicit user/design decision,
+   not an implementation recommendation. Before the contract can freeze, it
+   must either assign the exact eligible family or families per cultural
+   source, or deliberately choose one common family for all six. If it chooses
+   source-specific families, use one reviewed, tier-neutral harvest resolver
+   taking the wielded stack and requested family and returning an exact tier or
+   `nil`; the source-specific transaction then requires tier 4. A missing or
+   malformed resolver fails closed. Existing
+   `grug_materials.pick_tier_for_stack` proves only the pick family
+   (`mods/ITEMS/grug_materials/mining.lua:103-109`) and must not be promoted to
+   universal cultural-harvest authority merely because no axe/shovel tier seam
+   exists yet. Exact eligible families, the sole resolver owner and matching
+   failure messages must be independently reviewed before implementation.
 5. Accept the Section 5 single-authorizer seam as a real WP33/WP10 contract.
    It needs no interim profession implementation and no invented player-meta
    key, but WP10 must be bound to the exact callback before herb harvesting can
