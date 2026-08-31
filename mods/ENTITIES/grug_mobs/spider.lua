@@ -13,10 +13,8 @@ local function spider_def(description, texture)
 		description = description,
 		type = "monster",
 		-- Underground is already in the list although T5 registers no cave
-		-- row: the zone vocabulary is per MOB, and T7's cave pass only adds
-		-- the mobs:spawn row on stone. Without the zone here that row would
-		-- be blocked by spawn_abm_check.
-		_grug_spawn_zones = {"outer", "coast", "underground"},
+		-- Surface habitat remains node/biome-owned after R7. The cave row has
+		-- its own max-height and stone/stratum whitelist.
 
 		reach = 2,
 		attack_type = "dogfight",

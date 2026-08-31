@@ -19,9 +19,9 @@ local raider = {
 	-- skeleton_archer.lua no _grug_spawn_check is needed: that family lives
 	-- in the outer ring AND on the war coast and therefore needs a per-ROW
 	-- rule; this one is war-coast-only.
-	_grug_spawn_zones = {"war_coast"},
+	_grug_spawn_domains = {"contested"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The war-coast cap of
-	-- grug_core.mob_level_at keeps this family at 20-30 — which is also why
+	-- grug_zones.mob_level_at keeps this family at 20-30 — which is also why
 	-- the two Captain Bonerattle rares (rares.lua) are ~L28.
 
 	reach = 2,

@@ -23,7 +23,6 @@
 local lynx = {
 	description = "Jungle Lynx",
 	type = "monster",
-	_grug_spawn_zones = {"inner", "outer"},
 	-- §3.1 "jungle_edge from L10": the settled inner jungle is where this
 	-- family starts, so the floor keeps it from ever being a L1 pushover.
 	_grug_min_level = 10,

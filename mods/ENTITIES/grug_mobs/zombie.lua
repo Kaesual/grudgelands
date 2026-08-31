@@ -6,10 +6,8 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	type = "monster",
 	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,
 	-- Giant Spider and Stone Golem below y -40 with the depth axis supplying
-	-- the level. _grug_spawn_zones is registered per mob NAME (init.lua), so
-	-- the cave row at the end of this file cannot add it per row — without
-	-- the zone here spawn_abm_check would reject every cave spawn.
-	_grug_spawn_zones = {"core", "inner", "war_coast", "underground"},
+	-- the level. Surface and cave habitat remain controlled by the accepted
+	-- node/biome and height whitelists; no retired surface ring is recreated.
 	-- HP/damage/XP and armor come from the level engine (levels.lua); the
 	-- floor keeps the zombie above the boar even in the safe core.
 	_grug_min_level = 3,
@@ -82,10 +80,7 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 --
 -- This row is also the NIGHT half of the core/inner filler (boar.lua's "role
 -- is not ring" note): the wild land tops below make every wild patch inside
--- core/inner and on the war coast a live night cell. _grug_spawn_zones
--- (core, inner, war_coast, underground) keeps that inside the settled rings
--- and the battlefield strip — the outer ring and the coasts, where those
--- biomes have their own night rosters, are unaffected.
+-- the accepted R7 palettes. No separate ring gate remains.
 mobs:spawn({
 	name = "grug_mobs:zombie",
 	nodes = {
@@ -120,8 +115,7 @@ mobs:spawn({
 -- identity", §4 light column "blight: any"): on grug_nodes:blight_dirt the
 -- zombie spawns around the clock, so NO light gate and NO day_toggle.
 -- Everything else is the same row — same aoc budget (mobs_redo counts the
--- cap per entity name, so both rows share it), same zone gating via
--- _grug_spawn_zones above (core, inner, war_coast).
+-- cap per entity name, so both rows share it), same node/biome authority.
 --
 -- The def's daylight burn would make a 24 h row pointless (spawn at noon,
 -- die at noon), so a blight zombie is exempted from it: mobs_redo reads
@@ -154,7 +148,7 @@ mobs:spawn({
 -- This block is the canonical comment for all three cave rows; spider.lua
 -- and golem.lua point back here.
 --
--- LEVEL: nothing to configure. grug_core.mob_level_at takes
+-- LEVEL: nothing to configure. grug_zones.mob_level_at takes
 -- max(surface field, 1 + floor(-y/20)) for every y < 0 (combat_stats.md §3
 -- "depth axis", grug_core/init.lua), so a zombie at y -400 comes out at L21
 -- and one at y -1200 at L60 — the same engine-owned path every surface mob
@@ -166,7 +160,7 @@ mobs:spawn({
 -- (api.lua:3573) and only THEN moves the spawn position one node up
 -- (api.lua:3616), and the min/max height comparison happens on that raised
 -- position (api.lua:3618). So max_height -40 admits node y <= -41, and
--- grug_core.zone_at returns "underground" for exactly y < -40 — every node
+-- spawn_policy.lua returns "underground" for exactly y < -40 — every node
 -- this row can match is inside the zone, and nothing is silently thrown away
 -- at the boundary.
 --

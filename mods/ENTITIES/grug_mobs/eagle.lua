@@ -34,7 +34,6 @@ local function eagle_def(description, texture)
 	return {
 		description = description,
 		type = "monster",
-		_grug_spawn_zones = {"outer", "coast"},
 		-- HP/damage/XP/armor: engine-owned (levels.lua).
 
 		reach = 2,

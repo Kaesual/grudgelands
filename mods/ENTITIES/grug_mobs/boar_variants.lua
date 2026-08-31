@@ -16,7 +16,6 @@ local function boar_def(description, texture)
 	local def = {
 		description = description,
 		type = "monster",
-		_grug_spawn_zones = {"core", "inner"},
 		-- HP/damage/XP and armor come from the level engine (levels.lua):
 		-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.
 

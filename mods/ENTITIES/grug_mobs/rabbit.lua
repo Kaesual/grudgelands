@@ -16,7 +16,6 @@ local function rabbit_def(description, texture, territory)
 		-- Never attacks, runs when hurt or approached (mobs_redo runaway).
 		passive = true,
 		runaway = true,
-		_grug_spawn_zones = {"core", "inner"},
 		-- CONTINENT GATE, same idiom and same reason as golem.lua's: the
 		-- split above is normally node-derivable (the six settled tops are
 		-- three per continent), but the core/inner filler below adds
@@ -28,7 +27,7 @@ local function rabbit_def(description, texture, territory)
 		-- and ANDed with the zone gate; it is pure arithmetic on x/z and runs
 		-- before the active-object scan (golem.lua documents the order).
 		_grug_spawn_check = function(pos)
-			return grug_core.territory_at(pos) == territory
+			return grug_zones.faction_at(pos) == territory
 		end,
 		-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 		-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.

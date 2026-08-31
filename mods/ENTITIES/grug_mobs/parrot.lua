@@ -23,7 +23,6 @@ local parrot = {
 	-- grug_jungle_edge is the Troll SETTLED biome (core + inner, §1.2), so
 	-- the ring gate is derived from that: core + inner, exactly like the
 	-- other settled critters (rabbit.lua). WP6/T10 calibrates the numbers.
-	_grug_spawn_zones = {"core", "inner"},
 	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
 	-- It also replaces the old "§3.1 puts the jungle_edge families from L10"

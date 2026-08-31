@@ -43,7 +43,7 @@
 --     generated banner is started by the LBM at the bottom (which for that
 --     reason must run at EVERY load, see there) instead of by on_construct;
 --   * the camp type is not chosen by the placer but by the TERRITORY the
---     banner stands in (grug_core.territory_at), so a post can never fly the
+--     banner stands in (grug_zones.faction_at), so a post can never fly the
 --     wrong faction's colours;
 --   * a guard camp with `patrol = true` designates ONE of its guards as the
 --     ambient patrol of world.md §4 (see assign_patrol below);
@@ -277,9 +277,8 @@ local function count_camp_mobs(pos, cfg)
 end
 
 -- A standable spot in the ring around the fire: air with air above it and
--- solid, non-liquid ground below. Searched locally (pos.y +-3) instead of via
--- grug_core.find_surface, which scans the absolute band y 120..-16 and would
--- happily answer with the mountain top above a hillside camp.
+-- solid, non-liquid ground below. Searched locally (pos.y +-3) because a camp
+-- refill must not substitute a different authored terrain level.
 local function free_spot_near(pos, radius)
 	for _ = 1, SPOT_TRIES do
 		local angle = math.random() * 2 * math.pi
@@ -307,16 +306,10 @@ end
 --
 -- The route is a PLAIN table field on the entity ({points = {{x, z}, {x, z}},
 -- wp = index}), so it persists in staticdata with the mob — never an
--- ObjectRef, never a function. Both endpoints come from
--- grug_core.outpost_anchors(): this post, and the adjacent outpost of the
--- same race band one ring further toward the strait. That shared anchor list
--- is the ONE source both mapgen and this file read, so a patrol always walks
--- the leg the world was laid out with. Where the target post PHYSICALLY
--- stands is a second question (retry candidates, see below); and a target
--- whose chunks were never generated, or whose candidates were all rejected,
--- means the patroller ambles to an empty spot and back — harmless, and not
--- worth suppressing the patrol for, since the target may still be built the
--- moment a player walks over there.
+-- ObjectRef, never a function. R7 authenticates all 24 outpost anchors, but
+-- the retired ring pairings do not project uniquely onto them. The private
+-- authority therefore supplies no target and this dispatch remains
+-- fail-closed until a future design owns an explicit relationship.
 --
 -- A banner that is not on an outpost anchor — the capital watch of world.md
 -- §3 — simply gets no route and every guard holds the platform.
@@ -331,10 +324,8 @@ local function assign_patrol(pos, meta, ent)
 	if not target then
 		return
 	end
-	-- The route runs between the BUILT positions, not the raw anchors: an
-	-- anchor whose own column was flooded is built at one of its retry
-	-- candidates (grug_core.outpost_candidates), up to 96 nodes away, and
-	-- outpost_position is the accessor that knows where that ended up.
+	-- A future explicit relationship will use the exact stable anchor
+	-- positions from the same validated payload.
 	local ax, az = grug_core.outpost_position(anchor)
 	local tx, tz = grug_core.outpost_position(target)
 	ent._grug_patrol_route = {
@@ -655,7 +646,7 @@ core.register_node("grug_mobs:camp_fire", {
 -- Assigns the forward-declared local at the top of the file (camp_cfg uses it
 -- as the meta-less fallback); NOT a global.
 function banner_camp_type(pos)
-	local territory = grug_core.territory_at(pos)
+	local territory = grug_zones.faction_at(pos)
 	if territory ~= "accord" and territory ~= "throng" then
 		-- Only reachable for a banner placed by hand in the ocean/strait: the
 		-- outpost anchors are all well inside a continent rectangle. Not an

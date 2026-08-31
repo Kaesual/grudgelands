@@ -20,7 +20,6 @@
 local ram = {
 	description = "Mountain Ram",
 	type = "animal",
-	_grug_spawn_zones = {"outer"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,

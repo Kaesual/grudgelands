@@ -4,11 +4,9 @@
 --
 -- END-TO-END FLOW of a guard post, so the pieces are findable from here:
 --
---   1. grug_mapgen/structures.lua builds a 7x7 pad with a
---      grug_nodes:guard_banner in its middle at every anchor of
---      grug_core.outpost_anchors() (and one banner on every race-capital
---      spawn platform, world.md §3 "elite guards"), then registers the
---      outpost as a protected POI (grug_core.add_poi).
+--   1. R7's single writer authors a guard banner at every stable outpost and
+--      capital anchor. The same authenticated authority owns their hard
+--      protection volumes.
 --   2. The banner arrives via VoxelManip, which fires NO node callbacks, so
 --      the LBM "grug_mobs:guard_banner_init" (camps.lua) starts its node
 --      timer. That LBM runs at EVERY mapblock activation, not once: a
@@ -21,7 +19,7 @@
 --      refills catch up when a dormant post reactivates) while a player is
 --      near.
 --   4. Each guard's LEVEL comes from the inverse guard field
---      (grug_core.guard_level_at via _grug_level_source = "guard",
+--      (grug_zones.guard_level_at via _grug_level_source = "guard",
 --      levels.lua) — ~36 at the war coast, ~47 in the inner ring, 60+ in the
 --      safe core.
 --   5. At level 60+ the guard promotes itself to tier "elite" below (the

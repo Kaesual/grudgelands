@@ -41,9 +41,6 @@ local PLAYER_RANGE = 120
 -- respawn. Raising this to 300 instead would mean scanning a 300 m sphere
 -- three times per pass per rare, for a window that already closes.
 local SCAN_RADIUS = 100
--- find_surface() returns the position it was GIVEN when it finds nothing
--- (grug_core/init.lua:388) — an impossible input y makes that detectable.
-local NO_SURFACE_Y = -1000
 local BROADCAST_COLOR = "#ffb733" -- amber (combat_stats §3)
 
 grug_mobs.registered_rares = {} -- id -> spec
@@ -68,11 +65,19 @@ end
 --   name = "Grimtusk",              -- nametag (plain field `description`)
 --   mob = "grug_mobs:boar",         -- an already registered mob name
 --   texture = {"a.png", "b.png"},   -- optional, one entry per model slot
---   route = {{x=..,z=..}, ...},     -- 2-3 patrol points, y resolved at spawn
+--   route is injected from the authenticated stable-anchor payload
 --   biome_hint = "the meadows",     -- used verbatim in the broadcast
 --   respawn_min = 7200, respawn_max = 14400,  -- seconds of game time
 -- }
 function grug_mobs.register_rare(id, spec)
+	if spec.route ~= nil then
+		error("[grug_mobs] rare " .. id .. " supplied a raw route")
+	end
+	local route = grug_core.rare_route(id)
+	if not route then
+		error("[grug_mobs] rare " .. id .. " has no stable R7 route")
+	end
+	spec.route = route
 	grug_mobs.registered_rares[id] = spec
 	state[id] = {
 		alive = storage:get_int("rare_alive:" .. id) == 1,
@@ -81,64 +86,22 @@ function grug_mobs.register_rare(id, spec)
 	}
 end
 
---
--- Position helpers
---
-
--- Surface position of a route point, or nil while the area is not loaded.
--- Cached per point once resolved: grug_core.find_surface scans y 120..-16
--- with get_node_or_nil, and terrain does not move.
-local surface_cache = {}
-
--- Is `p` still air standing on solid, non-liquid ground? Same predicate
--- grug_core.find_surface uses to pick a position in the first place.
--- Deliberately core.get_node and not get_node_or_nil: every caller of
--- route_pos below is already inside the "a player is within 120 m" gate, so
--- the column is loaded; an "ignore" from an unloaded block fails the test and
--- is treated like any other mismatch.
-local function surface_ok(p)
-	local here = core.get_node(p)
-	local below = core.get_node({x = p.x, y = p.y - 1, z = p.z})
-	return here.name == "air" and below.name ~= "air" and
-		below.name ~= "ignore" and
-		core.get_item_group(below.name, "liquid") == 0
-end
-
+-- The stable route is authoritative, but players may still obstruct one of
+-- its mutable patrol cells. Never search for a replacement coordinate: use
+-- the exact point only while it is loaded, air, and supported by solid land.
 local function route_pos(pt)
-	local key = pt.x .. "," .. pt.z
-	local y = surface_cache[key]
-	if y then
-		local cached = vector.new(pt.x, y, pt.z)
-		-- "Terrain does not move" is not true in a game where players dig.
-		-- A cached y whose column has since been mined out, flooded, built
-		-- over or covered by a tree would spawn the rare inside a wall or
-		-- floating in a shaft — and it would stay wrong forever, because
-		-- nothing else ever invalidates this table. Re-verify, and on a
-		-- mismatch drop the entry and skip this pass: the next one resolves
-		-- the column from scratch.
-		if surface_ok(cached) then
-			return cached
-		end
-		surface_cache[key] = nil
+	local here = core.get_node_or_nil(pt)
+	local below = core.get_node_or_nil({x = pt.x, y = pt.y - 1, z = pt.z})
+	if not here or not below or here.name ~= "air" or below.name == "air" or
+			below.name == "ignore" or
+			core.get_item_group(below.name, "liquid") ~= 0 then
 		return nil
 	end
-	local p = grug_core.find_surface({x = pt.x, y = NO_SURFACE_Y, z = pt.z})
-	if not p or p.y == NO_SURFACE_Y then
-		return nil
-	end
-	-- Sea level is y = 1, so all land is at y >= 1. A hit below that means
-	-- the surface column was not loaded and find_surface answered with a
-	-- cave floor instead — do not use it and above all do not cache it.
-	if p.y < 1 then
-		return nil
-	end
-	surface_cache[key] = p.y
-	return p
+	return pt
 end
 
 -- Horizontal player proximity to a route point. Horizontal on purpose: the
--- route points have no y until the surface is resolved, and a player 30
--- nodes underground still keeps the area loaded.
+-- stable route y does not affect whether a player keeps its mapblock loaded.
 local function player_near_xz(pt, range)
 	local players = core.get_connected_players()
 	for i = 1, #players do
@@ -168,14 +131,12 @@ end
 -- feature.
 local function find_existing(id, spec)
 	for i = 1, #spec.route do
-		local pos = route_pos(spec.route[i])
-		if pos then
-			local objs = core.get_objects_inside_radius(pos, SCAN_RADIUS)
-			for n = 1, #objs do
-				local ent = objs[n]:get_luaentity()
-				if ent and ent._grug_rare_id == id then
-					return ent
-				end
+		local pos = spec.route[i]
+		local objs = core.get_objects_inside_radius(pos, SCAN_RADIUS)
+		for n = 1, #objs do
+			local ent = objs[n]:get_luaentity()
+			if ent and ent._grug_rare_id == id then
+				return ent
 			end
 		end
 	end
@@ -190,10 +151,10 @@ end
 -- the faction whose continent the rare stands on; factionless players (a
 -- brand new character still on the spawn platform) get nothing, and neither
 -- does the enemy faction — a rare is a meeting point for your own side.
--- grug_core.territory_at returns the same ids as get_player_faction
+-- grug_zones.faction_at returns the same ids as get_player_faction
 -- ("accord"/"throng"), so the comparison is direct.
 local function broadcast(spec, pos)
-	local territory = grug_core.territory_at(pos)
+	local territory = grug_zones.faction_at(pos)
 	if territory ~= "accord" and territory ~= "throng" then
 		return
 	end
@@ -239,7 +200,7 @@ local function try_spawn(id, spec, now)
 	end
 	local pos = route_pos(pt)
 	if not pos then
-		return -- area not loaded yet
+		return
 	end
 	-- grug_mobs.add_mob, not mobs:add_mob: the wrapper applies the
 	-- collisionbox y-lift the ABM spawner does and add_mob does not (init.lua)
@@ -385,11 +346,17 @@ function grug_mobs.rare_tick(self, dtime)
 	grug_mobs.route_tick(self, dtime, spec.route, self, "_grug_rare_wp")
 end
 
+-- R7 authority note: registrations below own presentation and respawn
+-- metadata only. Their coordinates and levels come exclusively from the
+-- authenticated source anchor plus its exact patrol_offsets. Any remaining
+-- pre-R7 coordinate-analysis comments are historical rationale, never a
+-- runtime fallback or placement authority.
+
 --
 -- The two boar-based rares (biomes_mobs §3.3)
 --
 -- Both are ~L12, which is a property of WHERE they walk, not of a number in
--- this file: grug_core.mob_level_at is a radial field around the faction
+-- this file: grug_zones.mob_level_at is the stable named-zone/depth field
 -- seat at (0, +-900), plus a level-1 bubble within 240 nodes of each capital
 -- anchor (world.md §1, WP36). Level check for the route points below
 -- (level_at_n of the radial value, world.md §1 anchors):
@@ -410,7 +377,6 @@ end
 grug_mobs.register_rare("grimtusk", {
 	name = "Grimtusk",
 	mob = "grug_mobs:boar",
-	route = {{x = 250, z = -560}, {x = 340, z = -580}, {x = 180, z = -540}},
 	biome_hint = "the central meadows",
 	respawn_min = 7200, -- 2 h (biomes_mobs §3.3: respawn 2-4 h after kill)
 	respawn_max = 14400, -- 4 h
@@ -425,7 +391,6 @@ grug_mobs.register_rare("ashmaw", {
 	-- full per-slot list, not a bare string. levels.lua then reads this list
 	-- as the pristine base and layers the rare violet tint on top of it.
 	texture = {"grug_mobs_boar_plague.png", "grug_mobs_blank.png"},
-	route = {{x = 250, z = 560}, {x = 340, z = 580}, {x = 180, z = 540}},
 	biome_hint = "the savanna",
 	respawn_min = 7200,
 	respawn_max = 14400,
@@ -465,7 +430,6 @@ grug_mobs.register_rare("ashmaw", {
 grug_mobs.register_rare("old_whitefang", {
 	name = "Old Whitefang",
 	mob = "grug_mobs:wolf",
-	route = {{x = 200, z = -1400}, {x = 300, z = -1440}, {x = 150, z = -1425}},
 	biome_hint = "the deep forest",
 	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
 	respawn_max = 14400, -- 4 h
@@ -485,7 +449,6 @@ grug_mobs.register_rare("old_whitefang", {
 grug_mobs.register_rare("marrowclaw", {
 	name = "Marrowclaw",
 	mob = "grug_mobs:plaguehide_bear",
-	route = {{x = -1050, z = 1150}, {x = -1120, z = 1060}, {x = -980, z = 1230}},
 	biome_hint = "the bone forest",
 	respawn_min = 7200,
 	respawn_max = 14400,
@@ -503,7 +466,7 @@ grug_mobs.register_rare("marrowclaw", {
 --   L  = 45 + (n - 0.90)/0.10 * 15      for 0.90 < n <= 1.00
 --
 -- — plus the second segment above, which the two coast rares need.
--- Zone reminder (grug_core.zone_at): "coast" is |x| >= 1350 or |z| >= 1550;
+-- Historical coordinate notes below describe the retired pre-R7 placement;
 -- everything else with n > 0.55 is "outer". None of the twelve points below
 -- is inside the war-coast cap band (all have |z| > 600).
 --
@@ -533,7 +496,6 @@ grug_mobs.register_rare("marrowclaw", {
 grug_mobs.register_rare("korgans_bane", {
 	name = "Korgan's Bane",
 	mob = "grug_mobs:stone_golem",
-	route = {{x = -1270, z = -880}, {x = -1260, z = -760}, {x = -1290, z = -1000}},
 	biome_hint = "the high crags",
 	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
 	respawn_max = 14400, -- 4 h
@@ -572,7 +534,6 @@ grug_mobs.register_rare("korgans_bane", {
 grug_mobs.register_rare("silkfang", {
 	name = "Silkfang",
 	mob = "grug_mobs:jungle_spider",
-	route = {{x = 1356, z = -740}, {x = 1352, z = -1043}, {x = 1350, z = -1060}},
 	biome_hint = "the jungle fringe",
 	respawn_min = 7200,
 	respawn_max = 14400,
@@ -592,7 +553,6 @@ grug_mobs.register_rare("silkfang", {
 grug_mobs.register_rare("dustwing", {
 	name = "Dustwing",
 	mob = "grug_mobs:vulture",
-	route = {{x = 300, z = 1500}, {x = 400, z = 1500}, {x = 220, z = 1490}},
 	biome_hint = "the badlands",
 	respawn_min = 7200,
 	respawn_max = 14400,
@@ -613,7 +573,6 @@ grug_mobs.register_rare("dustwing", {
 grug_mobs.register_rare("emerald_coil", {
 	name = "Emerald Coil",
 	mob = "grug_mobs:serpent",
-	route = {{x = 1352, z = 976}, {x = 1355, z = 800}, {x = 1350, z = 1020}},
 	biome_hint = "the deep jungle",
 	respawn_min = 7200,
 	respawn_max = 14400,
@@ -649,7 +608,7 @@ grug_mobs.register_rare("emerald_coil", {
 --   x  680 -> dx 380 -> n 0.7166 -> L 34.5   |  the level is uniform
 --   x  805 -> dx 505 -> n 0.7696 -> L 37.5  /
 -- Zone check: |z| 268 is > CONTINENT_Z_MIN (100) and <= WAR_COAST_Z (300),
--- so grug_core.zone_at answers "war_coast" for all six; |x| stays well under
+-- the accepted source catalog now owns these stable rare-route anchors;
 -- 1350, so none of them slips into the "coast" band.
 --
 -- WHY |z| = 268 AND NOT NEARER THE WATER: the ocean mask insets the coastline
@@ -688,8 +647,7 @@ grug_mobs.register_rare("emerald_coil", {
 grug_mobs.register_rare("bonerattle_south", {
 	name = "Captain Bonerattle",
 	mob = "grug_mobs:skeleton_raider",
-	-- Accord is negative z (grug_core.territory_at).
-	route = {{x = 555, z = -268}, {x = 680, z = -268}, {x = 805, z = -268}},
+	-- The authenticated southern route belongs to the Accord.
 	biome_hint = "the war coast",
 	respawn_min = 7200, -- 2 h (§3.3: respawn 2-4 h after kill)
 	respawn_max = 14400, -- 4 h
@@ -704,7 +662,6 @@ grug_mobs.register_rare("bonerattle_south", {
 grug_mobs.register_rare("bonerattle_north", {
 	name = "Captain Bonerattle",
 	mob = "grug_mobs:skeleton_raider",
-	route = {{x = 285, z = 268}, {x = 410, z = 268}, {x = 535, z = 268}},
 	biome_hint = "the war coast",
 	respawn_min = 7200,
 	respawn_max = 14400,

@@ -18,7 +18,6 @@ local POISON_DAMAGE = 1 -- hp per tick
 local serpent = {
 	description = "Serpent",
 	type = "monster",
-	_grug_spawn_zones = {"outer", "coast"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 
 	reach = 2,

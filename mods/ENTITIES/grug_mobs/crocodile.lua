@@ -37,7 +37,6 @@ local crocodile = {
 	type = "monster",
 	-- §4 row zones: "outer". The swamp is a low-terrain pocket biome of the
 	-- outer ring (§1.2 row 13).
-	_grug_spawn_zones = {"outer"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The swamp sits in the
 	-- outer ring, so the field gives L25-45 (§1.2 "25-45").
 

@@ -12,7 +12,6 @@ local function wolf_def(description, texture)
 	return {
 		description = description,
 		type = "monster",
-		_grug_spawn_zones = {"inner", "outer"},
 		-- Level floor per §3.1 ("from L10"); everything derived from it is
 		-- engine-owned (levels.lua) — no hp/damage/xp/armor here.
 		_grug_min_level = 10,

@@ -1,24 +1,11 @@
 -- Kraken Guard: the deep-sea deterrent of the open sea (world.md §2b,
 -- biomes_mobs.md §3.1). Level 100 is HAND-SET — the one exception to the
--- level field (grug_core.mob_level_at returns nil on the open water
+-- level field (grug_zones.mob_level_at returns nil on the open water
 -- surface). It exists to make sea travel a bad idea, not as content:
 -- no drops, no XP, and it never leaves the open sea (leash below).
 
--- Slack before the leash bites: the Kraken may chase a swimmer this far
--- into the coastal ocean, then it lets go. Well short of the 1500-node
--- coastal band, so it can never reach a beach.
-local LEASH_SLACK = 200
--- Continent centre line (grug_core geometry): the open sea lies AWAY from it.
-local SEAT_Z = (grug_core.CONTINENT_Z_MIN + grug_core.CONTINENT_Z_MAX) / 2
-
--- Has the Kraken strayed more than LEASH_SLACK nodes into the coastal
--- ocean? Probes open_sea_at at a point pushed LEASH_SLACK nodes away from
--- the nearer continent centre, i.e. in the direction the open sea lies.
-local function strayed(pos)
-	local cz = pos.z >= 0 and SEAT_Z or -SEAT_Z
-	local out = vector.normalize(vector.new(pos.x, 0, pos.z - cz))
-	return not grug_core.open_sea_at(vector.new(
-		pos.x + out.x * LEASH_SLACK, pos.y, pos.z + out.z * LEASH_SLACK))
+local function in_deep_ocean(pos)
+	return grug_zones.water_class_at(pos.x, pos.z) == "deep_ocean"
 end
 
 grug_mobs.register_mob("grug_mobs:kraken", {
@@ -28,16 +15,15 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	-- A deterrent, not content: killing it must never be an XP or loot
 	-- farm at the world edge.
 	_grug_xp_reward = 0,
-	_grug_spawn_check = grug_core.open_sea_at,
-	-- Both generic aggro rules are off: the Kraken has its own leash (the
-	-- strayed() check below, 200 nodes of slack instead of 40 from a home
-	-- position — a spawn-point leash would make it useless as an open-sea
-	-- deterrent), and it must keep full swim speed while hunting, so the
+	_grug_spawn_check = in_deep_ocean,
+	-- Both generic aggro rules are off: the Kraken has its own stable
+	-- water-class leash below, and it must keep full swim speed while hunting,
+	-- so the
 	-- 25 m soft de-aggro would let any swimmer stroll away from it.
 	_grug_no_leash = true,
 	_grug_soft_deaggro = false,
 
-	-- The one hand-set level in the game: grug_core.mob_level_at returns
+	-- The one hand-set level in the game: grug_zones.mob_level_at returns
 	-- nil on the open water surface. The level engine derives the same
 	-- numbers the def used to spell out (515 HP, 42 damage) from it.
 	_grug_fixed_level = 100,
@@ -133,7 +119,7 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 		end
 		t.grug_leash_timer = 0
 		local pos = self.object:get_pos()
-		if pos and strayed(pos) then
+		if pos and not in_deep_ocean(pos) then
 			if self.attack then
 				self:stop_attack()
 			end

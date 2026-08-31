@@ -14,7 +14,6 @@
 local zebra = {
 	description = "Zebra",
 	type = "animal",
-	_grug_spawn_zones = {"inner", "outer"},
 	-- Stats engine-owned (levels.lua), normal tier.
 
 	walk_velocity = 1.5,

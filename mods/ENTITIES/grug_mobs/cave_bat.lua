@@ -22,7 +22,7 @@ local bat = {
 	type = "animal",
 	passive = true,
 	runaway = true,
-	_grug_spawn_zones = {"underground"},
+	_grug_spawn_domains = {"underground"},
 	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
 	-- HP/damage/XP/armor and fall_damage are engine-owned — the def must not
@@ -99,7 +99,7 @@ grug_mobs.register_mob("grug_mobs:cave_bat", bat)
 -- zombie.lua documents in full — read that comment before touching any of
 -- them. In short: `group:grug_stratum` is mandatory next to `default:stone`
 -- (WP25 replaced all rock below -100), max_height -40 is exactly the
--- boundary grug_core.zone_at calls `underground`, and `max_light 5` without
+-- boundary the stable spawn policy calls `underground`, and `max_light 5` without
 -- `day_toggle` means "dark, whatever the surface clock says" — which is why
 -- this row counts in the day AND the night column of the budget audit.
 mobs:spawn({

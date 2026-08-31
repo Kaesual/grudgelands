@@ -1,5 +1,9 @@
 grug_factions = {}
 
+if not grug_core.zone_authority_installed() then
+	error("[grug_factions] validated R7 zone authority was not installed")
+end
+
 local META_FACTION = "grug_factions:faction"
 local META_KIT = "grug_factions:kit_given"
 local FORMNAME = "grug_factions:select"
@@ -121,21 +125,20 @@ function grug_factions.set_faction(player, id)
 	return true
 end
 
--- Teleports (async, after emerge) to the capital of the player's own race
--- (world.md §3; the faction seat while no race is chosen yet). The platform
--- height is decided during generation of the capital chunks, so the spawn
--- position is re-read AFTER the emerge completes. The race is re-resolved
--- inside the callback as well: character creation picks the race right
--- after the faction, so a slow faction-seat emerge could otherwise finish
--- after the race-capital emerge and yank the fresh character back to the
--- seat. Re-resolving makes the LAST information win, whatever the order.
+-- Teleports (async, after emerge) to the stable starting-settlement anchor of
+-- the player's own race. There is deliberately no faction-seat fallback: the
+-- faction choice precedes the race choice, and the race selection callback
+-- calls this function again once that authoritative identity exists.
 function grug_factions.teleport_to_spawn(player)
 	local id = grug_factions.get_faction(player)
 	if not id then
-		return
+		return false
 	end
 	local name = player:get_player_name()
-	local spawn = grug_core.get_spawn_pos(id, grug_core.get_player_race(name))
+	local spawn = grug_core.start_position(id, grug_core.get_player_race(name))
+	if not spawn then
+		return false
+	end
 	core.emerge_area(
 		vector.offset(spawn, -16, -24, -16),
 		vector.offset(spawn, 16, 80, 16),
@@ -146,10 +149,13 @@ function grug_factions.teleport_to_spawn(player)
 			local p = core.get_player_by_name(name)
 			if p then
 				local race = grug_core.get_player_race(name)
-				p:set_pos(grug_core.find_surface(
-					grug_core.get_spawn_pos(id, race)))
+				local current = grug_core.start_position(id, race)
+				if current then
+					p:set_pos(current)
+				end
 			end
 		end)
+	return true
 end
 
 --
@@ -228,14 +234,18 @@ core.register_on_joinplayer(function(player)
 	end
 end)
 
--- Always respawn in the own race's capital.
+-- Always respawn at the own race's stable starting settlement.
 core.register_on_respawnplayer(function(player)
 	local id = grug_factions.get_faction(player)
 	if not id then
 		return
 	end
 	local race = grug_core.get_player_race(player:get_player_name())
-	player:set_pos(grug_core.get_spawn_pos(id, race))
+	local spawn = grug_core.start_position(id, race)
+	if not spawn then
+		return
+	end
+	player:set_pos(spawn)
 	grug_factions.teleport_to_spawn(player)
 	return true
 end)

@@ -14,7 +14,6 @@ local function bear_def(description, texture)
 	return {
 		description = description,
 		type = "monster",
-		_grug_spawn_zones = {"outer", "coast"},
 		-- Territorial: short leash instead of the default 40 nodes
 		-- (aggro.lua, combat_stats.md §4).
 		_grug_leash_range = 20,

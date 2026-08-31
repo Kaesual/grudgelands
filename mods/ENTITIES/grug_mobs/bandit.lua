@@ -27,7 +27,7 @@
 local bandit = {
 	description = "Bandit",
 	type = "monster",
-	-- No _grug_spawn_zones: that list only gates the spawn ABM
+	-- No _grug_spawn_domains: that list only gates the spawn ABM
 	-- (mobs:spawn_abm_check, init.lua) and this family has no ABM. Where
 	-- bandit camps may stand is a WP13 settlement-pass decision (§3.1:
 	-- inner+outer, both continents), enforced there, not here.
@@ -85,7 +85,7 @@ local bandit = {
 	-- LEVEL-DEPENDENT LOOT (§3.1: "linen cloth 1/1 x1-2 (inner camps) /
 	-- heavy cloth (outer camps)"). mobs_redo supports a `drops` FUNCTION and
 	-- calls it with the death position only (api.lua:696-699,
-	-- `drops = self.drops(pos)`), which is all we need — grug_core.zone_at
+	-- `drops = self.drops(pos)`), which is all we need — the stable level query
 	-- answers from the position.
 	--
 	-- ORDER MATTERS and it is the right way round: api.lua resolves the
@@ -101,15 +101,15 @@ local bandit = {
 	-- integer in player meta (economy.md §1) and there is deliberately no coin
 	-- item; a purse only turns into copper across a trader's counter.
 	drops = function(pos)
-		local zone = grug_core.zone_at(pos)
+		local level = grug_zones.surface_mob_level_at(pos.x, pos.z)
 		-- "inner camps" vs. "outer camps" of §3.1, read against the
-		-- _grug_spawn_zones vocabulary (§1.1): core/inner are the settled
+		-- Named-zone level contract: levels through 30 use settled cloth;
 		-- rings, everything further out (outer, coast, war_coast, strait,
 		-- underground) gets the heavy cloth of the wilderness camps. §6 backs
 		-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
 		-- outer bandit camps".
 		local cloth = "grug_mobs:heavy_cloth"
-		if zone == "core" or zone == "inner" then
+		if level and level <= 30 then
 			cloth = "grug_mobs:linen_cloth"
 		end
 		-- Static drop-list format (name/chance/min/max), because everything

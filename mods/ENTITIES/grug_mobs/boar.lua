@@ -4,7 +4,6 @@
 local boar = {
 	description = "Boar",
 	type = "monster",
-	_grug_spawn_zones = {"core", "inner"},
 	-- HP/damage/XP and armor come from the level engine (levels.lua):
 	-- core/inner ring means level 1-10, i.e. 20-65 HP, 2-6 damage.
 
@@ -116,8 +115,8 @@ grug_mobs.register_mob("grug_mobs:boar", boar)
 -- The fix is on the mob side (the zones are a radial field, the biomes are
 -- boxes — no cuboid edit can align them): the base Boar is the core/inner
 -- DAY filler and therefore carries the wild land tops as well. Its
--- _grug_spawn_zones = {core, inner} confines that to exactly the rings that
--- were dead; the outer/coast rosters of those biomes are untouched.
+-- R7 keeps the accepted node/biome whitelist as the surface habitat
+-- authority; the retired surface-ring gate is deliberately not recreated.
 -- rabbit.lua (critter), zombie.lua (night) and carrion_crow.lua /
 -- skeleton_raider.lua (war coast) carry the same filler for their slot.
 --

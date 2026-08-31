@@ -32,17 +32,16 @@ local skeleton = {
 	-- Zones: the bone forest sits in the outer ring, and the war coast is
 	-- the second home of the battlefield dead. The node whitelist alone
 	-- cannot separate the two spawn rows below — see the check.
-	_grug_spawn_zones = {"outer", "war_coast"},
 	-- §4 gives this family "bone litter, blight_dirt, settled tops (war
 	-- coast)": the settled tops are allowed ONLY on the war coast, while
-	-- bone litter and blight dirt are allowed in the outer ring as well.
-	-- _grug_spawn_zones is registered per mob NAME (init.lua), so it cannot
-	-- express a per-ROW zone list — this check does, by looking at the node
+	-- bone litter and blight dirt remain their own habitat everywhere their
+	-- accepted palettes place them. This check expresses the per-row rule by
+	-- looking at the node
 	-- the spawn ABM matched. mobs_redo calls spawn_abm_check with the ABM's
 	-- node position, BEFORE it moves the spawn position one node up
 	-- (api.lua:3573 vs 3616), so core.get_node(pos) is exactly that top node.
 	_grug_spawn_check = function(pos)
-		if grug_core.zone_at(pos) == "war_coast" then
+		if grug_zones.pvp_rule_at(pos) == "contested" then
 			return true -- war coast: every listed top node is fine
 		end
 		local node = core.get_node(pos).name
@@ -50,7 +49,7 @@ local skeleton = {
 			or node == "grug_nodes:blight_dirt"
 	end,
 	-- HP/damage/XP/armor: engine-owned (levels.lua). The war-coast cap of
-	-- grug_core.mob_level_at keeps the coastal ones at 20-30, the bone
+	-- grug_zones.mob_level_at keeps the coastal ones at 20-30, the bone
 	-- forest ones scale to 60.
 
 	reach = 2,

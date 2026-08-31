@@ -29,7 +29,6 @@ local gull = {
 	-- that hole is covered by the Boar/Rabbit filler (boar.lua), which is
 	-- zoned core+inner; `outer` is the piece nothing else reaches, and a
 	-- sand-only critter at aoc 2 is the cheapest thing that can fill it.
-	_grug_spawn_zones = {"strait", "war_coast", "coast", "outer"},
 	-- THE critter tier (levels.lua, biomes_mobs.md §3.0): level 1, 1 HP,
 	-- 10 XP flat, no fall damage, never elite or rare, never telegraphs.
 	-- This is also what settles the old level question in this file: the

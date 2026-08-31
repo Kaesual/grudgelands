@@ -17,7 +17,7 @@
 local mirefolk = {
 	description = "Mirefolk",
 	type = "monster",
-	-- No _grug_spawn_zones — no spawn ABM to gate (bandit.lua explains).
+	-- No _grug_spawn_domains — no spawn ABM to gate (bandit.lua explains).
 	-- HP/damage/XP/armor: engine-owned (levels.lua) from the camp position;
 	-- the swamp sits in the outer ring, so L25-45 (§1.2 row 13).
 

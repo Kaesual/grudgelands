@@ -18,7 +18,6 @@ local bog_ooze = {
 	description = "Bog Ooze",
 	type = "monster",
 	-- §4 row zones: "outer" (swamp pockets, §1.2 row 13 -> L25-45).
-	_grug_spawn_zones = {"outer"},
 	-- HP/damage/XP/armor: engine-owned (levels.lua).
 
 	reach = 2,
