@@ -120,12 +120,32 @@ local integration = {
 	direct_run_checksum_b = 4, accepted_run_checksum_a = 5,
 	accepted_run_checksum_b = 6, stage_a_tuple_sha256 = digest_b,
 	stage_a_run_sha256 = digest_b, stage_b_tuple_sha256 = digest_a,
-	stage_b_run_sha256 = digest_a, multi_y_band_count = 2,
-	multi_y_eligible = 12, multi_y_planned = 8, multi_y_accepted = 5,
+	stage_b_run_sha256 = digest_a, multi_y_owner_x = -32,
+	multi_y_owner_z = 48, multi_y_band_count = 3,
+	multi_y_bands = "-32,48,128",
+	multi_y_active_band_count = 2, multi_y_active_bands = "-32,48",
+	multi_y_operation_count = 5, multi_y_eligible = 12,
+	multi_y_planned = 5, multi_y_accepted = 4,
 	cases = cases,
 }
 local integration_bytes = contract.integration_receipt_bytes(integration)
 assert(integration_bytes:find("case\tstage_b_projection\ttrue\n", 1, true))
+assert(integration_bytes:find("multi_y_owner_x\t-32\n", 1, true))
+assert(integration_bytes:find("multi_y_owner_z\t48\n", 1, true))
+assert(integration_bytes:find("multi_y_bands\t-32,48,128\n", 1, true))
+assert(integration_bytes:find("multi_y_active_bands\t-32,48\n", 1, true))
+integration.multi_y_owner_z = -32
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration frozen multi-y discovery differs")
+integration.multi_y_owner_z = 48
+integration.multi_y_bands = "-32,48"
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration frozen multi-y discovery differs")
+integration.multi_y_bands = "-32,48,128"
+integration.multi_y_active_bands = "-32,128"
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration frozen multi-y discovery differs")
+integration.multi_y_active_bands = "-32,48"
 cases.replay_parity = false
 expect_failure(function() contract.validate_integration_receipt(integration) end,
 	"integration case did not pass")

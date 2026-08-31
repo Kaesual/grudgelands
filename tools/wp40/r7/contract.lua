@@ -283,7 +283,10 @@ function module.validate_integration_receipt(receipt)
 		direct_run_checksum_b = true, accepted_run_checksum_a = true,
 		accepted_run_checksum_b = true, stage_a_tuple_sha256 = true,
 		stage_a_run_sha256 = true, stage_b_tuple_sha256 = true,
-		stage_b_run_sha256 = true, multi_y_band_count = true,
+		stage_b_run_sha256 = true, multi_y_owner_x = true,
+		multi_y_owner_z = true, multi_y_band_count = true, multi_y_bands = true,
+		multi_y_active_band_count = true, multi_y_active_bands = true,
+		multi_y_operation_count = true,
 		multi_y_eligible = true, multi_y_planned = true,
 		multi_y_accepted = true, cases = true,
 	}, "integration receipt")
@@ -316,14 +319,21 @@ function module.validate_integration_receipt(receipt)
 			receipt.stage_b_run_sha256 ~= receipt.accepted_run_sha256 then
 		fail("integration private Stage-A/B digest parity differs")
 	end
-	if positive(receipt.multi_y_band_count, "integration multi-y bands") < 2 then
-		fail("integration multi-y band population differs")
+	if receipt.multi_y_owner_x ~= -32 or receipt.multi_y_owner_z ~= 48 or
+			receipt.multi_y_band_count ~= 3 or
+			text(receipt.multi_y_bands, "integration multi-y bands") ~=
+				"-32,48,128" or
+			receipt.multi_y_active_band_count ~= 2 or
+			text(receipt.multi_y_active_bands, "integration multi-y active bands") ~=
+				"-32,48" or receipt.multi_y_operation_count ~= 5 then
+		fail("integration frozen multi-y discovery differs")
 	end
 	unsigned(receipt.multi_y_eligible, "integration multi-y eligible")
 	unsigned(receipt.multi_y_planned, "integration multi-y planned")
 	unsigned(receipt.multi_y_accepted, "integration multi-y accepted")
-	if receipt.multi_y_planned > receipt.multi_y_eligible or
-			receipt.multi_y_accepted > receipt.multi_y_planned then
+	if receipt.multi_y_planned ~= receipt.multi_y_operation_count or
+			receipt.multi_y_accepted ~= 4 or
+			receipt.multi_y_planned > receipt.multi_y_eligible then
 		fail("integration multi-y E/B/accepted bounds differ")
 	end
 	exact_keys(receipt.cases, (function()
@@ -358,7 +368,10 @@ function module.integration_receipt_bytes(receipt)
 			"successor_run_checksum_b", "direct_run_checksum_a",
 			"direct_run_checksum_b", "accepted_run_checksum_a",
 			"accepted_run_checksum_b", "stage_a_tuple_sha256", "stage_a_run_sha256",
-			"stage_b_tuple_sha256", "stage_b_run_sha256", "multi_y_band_count",
+			"stage_b_tuple_sha256", "stage_b_run_sha256", "multi_y_owner_x",
+			"multi_y_owner_z", "multi_y_band_count", "multi_y_bands",
+			"multi_y_active_band_count",
+			"multi_y_active_bands", "multi_y_operation_count",
 			"multi_y_eligible", "multi_y_planned", "multi_y_accepted"}) do
 		rows[#rows + 1] = field .. "\t" .. tostring(receipt[field]) .. "\n"
 	end

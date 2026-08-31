@@ -6,6 +6,7 @@ local module = {schema = "grug_wp40_r7_runtime_adapter_v1"}
 
 local MAX_SAFE = 9007199254740991
 local INTEGRATION_OWNER_X, INTEGRATION_OWNER_Z = -32, -32
+local MULTI_Y_OWNER_X, MULTI_Y_OWNER_Z = -32, 48
 local OWNER_MIN_X, OWNER_MAX_X = -3792, 3728
 local OWNER_MIN_Z, OWNER_MAX_Z = -3392, 3328
 local ACCEPTED_R6_ARTIFACT_SHA256 =
@@ -1792,8 +1793,19 @@ local function sorted_operations(operations)
 	return operations
 end
 
-local function multi_y_owner_kat(repo, runtime_fixture, horizontal, heights,
-		first_capture)
+local function multi_y_owner_kat(repo, runtime_fixture, horizontal)
+	if horizontal.owner_x ~= MULTI_Y_OWNER_X or
+			horizontal.owner_z ~= MULTI_Y_OWNER_Z then
+		fail("multi-y KAT owner identity differs")
+	end
+	local heights = {}
+	for z = horizontal.owner_z, horizontal.owner_z + 79 do
+		for x = horizontal.owner_x, horizontal.owner_x + 79 do
+			heights[#heights + 1] =
+				runtime_fixture.built.zones_session.terrain_height_at(x, z)
+		end
+	end
+	if #heights ~= 6400 then fail("multi-y KAT height population differs") end
 	local bands, ordered_bands = {}, {}
 	for index = 1, #heights do
 		local band = owner_minimum(heights[index] + 1)
@@ -1804,13 +1816,22 @@ local function multi_y_owner_kat(repo, runtime_fixture, horizontal, heights,
 		fail("multi-y KAT owner surfaces do not span two vertical owners")
 	end
 	local horizontal_ledger = validate_ledger(horizontal.settlement.p9g)
-	local active_bands, active_count = {}, 0
+	local active_bands, ordered_active_bands, active_count = {}, {}, 0
 	for index = 1, #horizontal_ledger.operations do
 		local band = owner_minimum(horizontal_ledger.operations[index].root_y)
-		if not active_bands[band] then active_bands[band] = true; active_count = active_count + 1 end
+		if not active_bands[band] then
+			active_bands[band] = true
+			ordered_active_bands[#ordered_active_bands + 1] = band
+			active_count = active_count + 1
+		end
 	end
+	table.sort(ordered_active_bands)
 	if active_count < 2 then
 		fail("multi-y KAT lacks two active P9G vertical owners")
+	end
+	if #horizontal_ledger.operations ~= 5 or active_count ~= 2 or
+			ordered_active_bands[1] ~= -32 or ordered_active_bands[2] ~= 48 then
+		fail("multi-y KAT frozen discovery criteria differ")
 	end
 	local aggregate = {eligible = 0, planned = 0, accepted = 0,
 		rejections = {}, groups = {}, populations = {}, operations = {}, roots = {}}
@@ -1888,31 +1909,26 @@ local function multi_y_owner_kat(repo, runtime_fixture, horizontal, heights,
 		end
 	end
 
-	local first_band = first_capture.min_y
-	if not bands[first_band] then fail("full-VM capture band escaped surface bands") end
-	consume(first_capture, first_band)
 	for index = 1, #ordered_bands do
 		local band = ordered_bands[index]
-		if not consumed[band] then
-			local minp = {x = horizontal.owner_x, y = band, z = horizontal.owner_z}
-			local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
-			runtime_fixture.set_heightmap(heightmap_for_band(heights, minp.y, maxp.y))
-			local vm, _, observer = runtime_fixture.new_vm(minp, maxp)
-			local plan, generation = runtime_fixture.built.session.plan_slice(minp, maxp)
-			runtime_fixture.built.settlement_fixture.arm_private_capture()
-			local result = runtime_fixture.built.writer.apply(vm, minp, maxp,
-				plan, generation)
-			local capture = runtime_fixture.built.settlement_fixture.take_private_capture()
-			validate_vm_commit(result, observer.snapshot(),
-				"multi-y R7 production writer")
-			validate_private_capture(repo, capture, minp, maxp, true,
-				"multi-y R7 production writer")
-			fixture_runs_match_capture(runtime_fixture.built.settlement_fixture, capture,
-				"multi-y R7 production writer")
-			consume(capture, band)
-			capture = nil
-			collectgarbage("collect")
-		end
+		local minp = {x = horizontal.owner_x, y = band, z = horizontal.owner_z}
+		local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
+		runtime_fixture.set_heightmap(heightmap_for_band(heights, minp.y, maxp.y))
+		local vm, _, observer = runtime_fixture.new_vm(minp, maxp)
+		local plan, generation = runtime_fixture.built.session.plan_slice(minp, maxp)
+		runtime_fixture.built.settlement_fixture.arm_private_capture()
+		local result = runtime_fixture.built.writer.apply(vm, minp, maxp,
+			plan, generation)
+		local capture = runtime_fixture.built.settlement_fixture.take_private_capture()
+		validate_vm_commit(result, observer.snapshot(),
+			"multi-y R7 production writer")
+		validate_private_capture(repo, capture, minp, maxp, true,
+			"multi-y R7 production writer")
+		fixture_runs_match_capture(runtime_fixture.built.settlement_fixture, capture,
+			"multi-y R7 production writer")
+		consume(capture, band)
+		capture = nil
+		collectgarbage("collect")
 	end
 	for index = 1, #ordered_bands do
 		if not consumed[ordered_bands[index]] then fail("multi-y KAT missed a vertical owner") end
@@ -1947,12 +1963,17 @@ local function multi_y_owner_kat(repo, runtime_fixture, horizontal, heights,
 			graph(horizontal_ledger.operations) then
 		fail("multi-y KAT operation union differs")
 	end
-	return {band_count = #ordered_bands, eligible = aggregate.eligible,
-		planned = aggregate.planned, accepted = aggregate.accepted}
+	return {owner_x = horizontal.owner_x, owner_z = horizontal.owner_z,
+		band_count = #ordered_bands, bands = table.concat(ordered_bands, ","),
+		active_band_count = active_count,
+		active_bands = table.concat(ordered_active_bands, ","),
+		operation_count = #horizontal_ledger.operations,
+		eligible = aggregate.eligible, planned = aggregate.planned,
+		accepted = aggregate.accepted}
 end
 
 local function full_vm_integration(repo, runtime_fixture, successor, direct_scan,
-		accepted_scan, binding, seed)
+		accepted_scan, multi_y_horizontal, binding, seed)
 	local root_y
 	for index = 1, #successor.settlement.p9g.operations do
 		local operation = successor.settlement.p9g.operations[index]
@@ -2097,10 +2118,9 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		accepted_run_checksum_b = accepted_capture.run_checksum_b,
 	}
 	direct_snapshot, accepted_snapshot = nil, nil
-	direct_capture, accepted_capture = nil, nil
+	successor_capture, direct_capture, accepted_capture = nil, nil, nil
 	collectgarbage("collect")
-	local multi_y = multi_y_owner_kat(repo, runtime_fixture, successor, heights,
-		successor_capture)
+	local multi_y = multi_y_owner_kat(repo, runtime_fixture, multi_y_horizontal)
 	return {successor_result = successor_result, direct_result = direct_result,
 		accepted_result = accepted_result, restored_p9g = restored_count,
 		proof_scope = "full_owner_7_private_buffers_pre_replay",
@@ -2125,7 +2145,11 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		stage_b_tuple_sha256 = stage_b_capture.tuple_sha256,
 		stage_b_run_sha256 = stage_b_capture.run_sha256,
 		stage_b_substitutions = stage_b_capture.substitutions,
-		multi_y_band_count = multi_y.band_count,
+		multi_y_owner_x = multi_y.owner_x, multi_y_owner_z = multi_y.owner_z,
+		multi_y_band_count = multi_y.band_count, multi_y_bands = multi_y.bands,
+		multi_y_active_band_count = multi_y.active_band_count,
+		multi_y_active_bands = multi_y.active_bands,
+		multi_y_operation_count = multi_y.operation_count,
 		multi_y_eligible = multi_y.eligible, multi_y_planned = multi_y.planned,
 		multi_y_accepted = multi_y.accepted}
 end
@@ -2165,9 +2189,12 @@ function module.integration_kat(repo)
 		INTEGRATION_OWNER_X, INTEGRATION_OWNER_Z), INTEGRATION_OWNER_X,
 		INTEGRATION_OWNER_Z, true)
 	if graph(successor) ~= graph(replay) then fail("production owner replay differs") end
+	local multi_y_horizontal = validate_scan(built.evidence.scan_owner(
+		MULTI_Y_OWNER_X, MULTI_Y_OWNER_Z), MULTI_Y_OWNER_X,
+		MULTI_Y_OWNER_Z, true)
 	probe_rejections(runtime_fixture)
 	local full_vm = full_vm_integration(repo, runtime_fixture, successor, direct,
-		accepted, binding, seeds.fixed[1])
+		accepted, multi_y_horizontal, binding, seeds.fixed[1])
 
 	local catalog_manifest = runtime_fixture.catalog_manifest
 	if catalog_manifest.population.new_p9g_source ~= 12 or
@@ -2220,7 +2247,13 @@ function module.integration_kat(repo)
 		stage_a_run_sha256 = full_vm.stage_a_run_sha256,
 		stage_b_tuple_sha256 = full_vm.stage_b_tuple_sha256,
 		stage_b_run_sha256 = full_vm.stage_b_run_sha256,
+		multi_y_owner_x = full_vm.multi_y_owner_x,
+		multi_y_owner_z = full_vm.multi_y_owner_z,
 		multi_y_band_count = full_vm.multi_y_band_count,
+		multi_y_bands = full_vm.multi_y_bands,
+		multi_y_active_band_count = full_vm.multi_y_active_band_count,
+		multi_y_active_bands = full_vm.multi_y_active_bands,
+		multi_y_operation_count = full_vm.multi_y_operation_count,
 		multi_y_eligible = full_vm.multi_y_eligible,
 		multi_y_planned = full_vm.multi_y_planned,
 		multi_y_accepted = full_vm.multi_y_accepted,
