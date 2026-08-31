@@ -75,14 +75,59 @@ same reviewed commit:
    and compare every manifest field before registering its mapgen script. The
    frozen values include v7, water level 1, chunksize 5, mapgen limit 31007,
    one emerge thread and the exact flag sets
-   (`mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua:30`). `game.conf` already
-   restricts the game to v7 (`game.conf:6`), but that alone does not validate a
-   world's effective settings.
+   (`mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua:30`). The disposition of
+   all six active legacy v7 noise overrides in section 3.0 is part of this GO
+   decision, not an implementation default. Every retained override must be an
+   exact manifest input that is read back and validated independently in the
+   main and mapgen environments. `game.conf` already restricts the game to v7
+   (`game.conf:6`), but that alone does not validate a world's effective
+   settings.
 
 No partially satisfied state may register a callback, publish `grug_zones` or
 fall back to a legacy writer.
 
 ## 3. Exact current writer and registration inventory
+
+### 3.0 Active mapgen-setting mutations
+
+The settings prefix of `mods/MAPGEN/grug_mapgen/init.lua` is part of the
+atomic R7 loader boundary. A repository-wide audit at the stated baseline finds
+exactly six production mutations, all
+`core.set_mapgen_setting_noiseparams(..., true)` calls in that prefix, and no
+`core.set_mapgen_setting`, `core.set_mapgen_params` or `core.set_noiseparams`
+call elsewhere under `mods/`:
+
+| Setting | Exact current value | R7 GO recommendation |
+|---|---|---|
+| `mgv7_np_terrain_base` | offset 14, scale 70, spread 600/600/600, seed 82341, octaves 5, `persist` 0.6, lacunarity 2.0 (`mods/MAPGEN/grug_mapgen/init.lua:24`) | Retain exactly as an authenticated native-v7 input. |
+| `mgv7_np_terrain_alt` | offset 10, scale 25, spread 600/600/600, seed 5934, octaves 5, `persist` 0.6, lacunarity 2.0 (`mods/MAPGEN/grug_mapgen/init.lua:28`) | Retain exactly as an authenticated native-v7 input. |
+| `mg_biome_np_heat` | offset 50, scale 35, spread 1000/1000/1000, seed 5349, octaves 3, `persist` 0.5, lacunarity 2.0, flags `eased` (`mods/MAPGEN/grug_mapgen/init.lua:44`) | Retain exactly as an authenticated native-v7 input; it does not regain logical-biome authority. |
+| `mg_biome_np_humidity` | offset 50, scale 35, spread 1000/1000/1000, seed 842, octaves 3, `persist` 0.5, lacunarity 2.0, flags `eased` (`mods/MAPGEN/grug_mapgen/init.lua:49`) | Retain exactly under the same rule. |
+| `mg_biome_np_heat_blend` | offset 0, scale 4, spread 32/32/32, seed 13, octaves 2, `persist` 1.0, lacunarity 2.0, flags `eased` (`mods/MAPGEN/grug_mapgen/init.lua:82`) | Retain exactly under the same rule. |
+| `mg_biome_np_humidity_blend` | offset 0, scale 4, spread 32/32/32, seed 90003, octaves 2, `persist` 1.0, lacunarity 2.0, flags `eased` (`mods/MAPGEN/grug_mapgen/init.lua:87`) | Retain exactly under the same rule. |
+
+Retention is the recommended GO choice because these six values are the
+current production native-substrate baseline, the terrain pair affects the
+native heightmap/cave input that the adapter preserves locally, and removing
+the climate quartet would also change native biome/substrate selection before
+the R7 native-registration allowlist is proven. R7 must not combine its writer
+cutover with that separate native-input experiment. This recommendation does
+not decide the GO: removal remains valid only if the reviewed R7 contract names
+the removed rows, updates the accepted design where required and establishes
+the replacement native baseline for R8.
+
+If retained, the six normalized NoiseParams tables (including flags) and their
+canonical digest extend the versioned R7 mapgen manifest; the R5 manifest is
+not sufficient because it has no noise fields. Initialization must apply the
+reviewed values, read all six back through
+`core.get_mapgen_setting_noiseparams`, compare exact normalized tables and
+validate the resulting manifest before publishing or registering anything.
+The mapgen environment must independently read back the same six values and
+validate the same digest before it constructs a session or registers its
+callback. A mismatch aborts startup; it never selects engine defaults or a
+legacy writer. The mechanical gate in section 9 permits either zero setting
+mutations or only the exact contract-listed calls in one reviewed settings
+module.
 
 ### 3.1 Active geography writes
 
@@ -92,13 +137,14 @@ All four rows below are **currently verified** and must disappear together:
 |---|---|---|
 | Ocean mapgen writer | `ocean_mask.lua` publishes legacy rectangle IPC and registers `ocean_mask_mapgen.lua` (`mods/MAPGEN/grug_mapgen/ocean_mask.lua:46`); its mapgen-environment callback mutates the VM, updates liquids and lighting (`mods/MAPGEN/grug_mapgen/ocean_mask_mapgen.lua:515`, `:543`, `:547`, `:629`) | Remove loader, IPC key and callback; the one WP40 production mapgen script owns water/terrain in its single transaction. |
 | Ocean healing LBM | `grug_mapgen:ocean_mask_heal` runs on every load and performs air/water `bulk_set_node` writes (`mods/MAPGEN/grug_mapgen/ocean_mask.lua:577`, `:606`) | Remove. WP40 is fresh-world-only and cannot retain an old-geometry runtime healer. |
-| Structures callback | Main-environment `register_on_generated` builds capital platforms, outposts and bandit fires, then calls `set_data`, liquids, lighting and `write_to_map` (`mods/MAPGEN/grug_mapgen/structures.lua:776`, `:854`, `:875`, `:887`) | Remove callback. Migrate every still-required fixed feature to stable R4 anchors and the consolidated transaction; do not retain a main-environment second pass. |
+| Structures callback | Main-environment `register_on_generated` builds capital platforms, outposts and bandit fires, then calls `set_data`, updates liquids, recalculates lighting and calls `write_to_map` (`mods/MAPGEN/grug_mapgen/structures.lua:776`, `:875`, `:887`, `:889-890`) | Remove callback. Migrate every still-required fixed feature to stable R4 anchors and the consolidated transaction; do not retain a main-environment second pass. |
 | Capital repair | `grug_core.ensure_camp_platform_built` is overridden by `structures.lua`; it reads and writes a non-mapgen VoxelManip (`mods/MAPGEN/grug_mapgen/structures.lua:291`, `:336`, `:365`, `:387`) | Remove the repair implementation and its old persistence/emerge state machine. A final capital anchor/height is analytic and never repaired after generation. |
 
-`grug_mapgen/init.lua` currently loads old biomes, ores, decorations, ocean mask
-and structures after the disabled WP40 foundation
-(`mods/MAPGEN/grug_mapgen/init.lua:93`). That five-file transition sequence is
-the atomic edit boundary.
+`grug_mapgen/init.lua` currently applies the six settings mutations above and
+then loads the disabled WP40 foundation, old biomes, ores, decorations, ocean
+mask and structures (`mods/MAPGEN/grug_mapgen/init.lua:24`, `:93`). That whole
+loader prefix and module transition sequence, not only the five legacy
+`dofile` calls, is the atomic edit boundary.
 
 `grug_mobs.place_camp` uses `core.set_node` as an explicit runtime placement API
 (`mods/ENTITIES/grug_mobs/camps.lua:768`, `:804`), and its two LBMs initialize
@@ -119,7 +165,7 @@ set; the vendored patch delegates that ownership to `grug_mapgen`
 | Four native blob definitions | literal blob registrations at `mods/MAPGEN/grug_mapgen/ores.lua:39`, `:58`, `:77`, `:116` | Recommended retained-native candidates, subject to content-classification and R8 native-preservation fixtures. Name each retained row explicitly. |
 | WP43 scatter resources | generated scatter registrations at `mods/MAPGEN/grug_mapgen/ores.lua:217` | Remove all. R6 P8 is the sole resource placement authority. |
 | Five non-T1 strata | the T2-T6 loop at `mods/MAPGEN/grug_mapgen/ores.lua:233` | Retain as the required native WP43 substrate, unless R7 replaces them with byte-equivalent explicit registrations. T1 remains `default:stone` and has no registration. |
-| Legacy trees/ground cover | all `register_tree`/`register_plant` calls backed by `core.register_decoration` (`mods/MAPGEN/grug_mapgen/decorations.lua:83`, `:104`) | Remove all engine decoration registrations. R6 owns the closed 48-ID deterministic set (`docs/design/biomes_mobs.md:723`). |
+| Legacy trees/ground cover | all `register_tree`/`register_plant` definitions and their `core.register_decoration` calls (`mods/MAPGEN/grug_mapgen/decorations.lua:78-101`, `:104-120`) | Remove all engine decoration registrations. R6 owns the closed 48-ID deterministic set (`docs/design/biomes_mobs.md:723`). |
 
 **Recommended simplification:** create a small R7 native-substrate registration
 module instead of conditionally loading pieces of the old `biomes.lua` and
@@ -145,7 +191,7 @@ public surface is fixed by `docs/design/world_zones.md:1052`.
 | `grug_core.guard_level_at` | guard branch in `mods/ENTITIES/grug_mobs/levels.lua:412` | Direct adapter to `grug_zones.guard_level_at`. |
 | `grug_core.difficulty_at` | no productive caller beyond its definition (`mods/CORE/grug_core/init.lua:1200`) | Prefer deletion after a final all-repo audit; otherwise keep only the R4 compatibility formula (`mods/MAPGEN/grug_mapgen/wp40/zones.lua:1131`). |
 | `grug_core.open_sea_at` | Kraken leash/captured spawn check (`mods/ENTITIES/grug_mobs/kraken.lua:20`) and runtime probe | Replace with `water_class_at(x,z) == "deep_ocean"`; do not retain rectangle distance. |
-| Central protection | `grug_core/protection.lua`; callers delegate through `core.is_protected` | One policy path over `territory_rule_at`, player faction and hard volumes. Preserve bypass, empty-name and prior-handler delegation. Required boundary KATs are already enumerated at `docs/research/wp40-engineering-brief.md:323`. |
+| Central protection | `in_capital_zone` directly iterates `grug_core.capitals` and reads the old platform-height state before `core.is_protected` uses it (`mods/CORE/grug_core/protection.lua:121`, `:127`, `:213`); `grug_core.protected_zone_in_box` repeats the same legacy authority for whole boxes (`mods/CORE/grug_core/protection.lua:174`, `:180`), with the ocean healer as its current productive caller (`mods/MAPGEN/grug_mapgen/ocean_mask.lua:512`) | Replace both capital-volume calculations with one reviewed policy over stable final capital anchors/heights, `territory_rule_at`, player faction and hard volumes. Preserve bypass, empty-name and prior-handler delegation. Delete the old platform-height fallback/state; any compatibility name that remains may delegate only to this one policy. Required boundary KATs are already enumerated at `docs/research/wp40-engineering-brief.md:323`. |
 
 The compatibility table in R4 is private implementation support, not a second
 public registry (`mods/MAPGEN/grug_mapgen/wp40/zones.lua:1117`). R7 publishes
@@ -178,8 +224,12 @@ Recommended production order inside one reviewed R7 commit:
 
 1. Load all pure R4-R6 modules and accepted artifacts without publishing or
    registering a writer.
-2. Read the canonical full world seed and every effective mapgen setting; build
-   and validate the exact R5 manifest (`mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua:8`).
+2. Apply the reviewed zero-or-explicit-allowlist setting disposition, then read
+   the canonical full world seed and every effective mapgen setting. Build and
+   validate the versioned R7 manifest, including every retained normalized
+   NoiseParams table and digest; the current R5 manifest
+   (`mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua:8`) is only its scalar
+   predecessor.
 3. Build the live content/CID/param2/template/WP43 projection. Validate the six
    accepted WP33 cultural digests and the complete non-cultural gathering
    extension from section 7.
@@ -318,10 +368,17 @@ The R7 completion record should preserve the exact command output and expected
 counts. At minimum:
 
 ```sh
-# Legacy helpers: zero productive consumers outside the named adapter module.
+# Legacy helpers: repository-wide; every nonzero result must be an exact
+# contract-listed definition/delegation in the one named adapter/policy module.
 rg -n --glob '*.lua' \
   'grug_core\.(surface_level_at|territory_at|zone_at|mob_level_at|guard_level_at|difficulty_at|open_sea_at)\b' \
-  mods/ENTITIES mods/ITEMS mods/MAPGEN mods/PLAYER
+  mods
+
+# Mapgen-setting mutation: either zero, or exactly the reviewed allowlist in
+# one settings module. No alias/API variant may create an unmanifested input.
+rg -n --glob '*.lua' \
+  '(core|minetest)\.(set_mapgen_setting[[:alnum:]_]*|set_mapgen_params|set_noiseparams)\s*\(' \
+  mods
 
 # Old writers/loaders/healers: all zero.
 rg -n 'ocean_mask_mapgen\.lua|grug_mapgen:continent|grug_mapgen:ocean_mask_heal' \
@@ -344,16 +401,22 @@ rg -n 'core\.register_(biome|ore|decoration)\s*\(' \
 rg -n 'core\.(bulk_set_node|set_node)\s*\(|[[:alnum:]_]+:write_to_map\s*\(' \
   mods/MAPGEN/grug_mapgen --glob '*.lua'
 
-# Old coordinate providers/protection geometry: zero outside named adapters.
+# Old coordinate providers/protection geometry: repository-wide. Stable-anchor
+# adapters/policy are an explicit expected-count allowlist; legacy platform
+# discovery, persistence, retry, repair and fallback state are zero.
 rg -n --glob '*.lua' \
-  'grug_core\.(capitals|get_spawn_pos|outpost_anchors|bandit_camp_anchors)\b' \
-  mods/ENTITIES mods/ITEMS mods/MAPGEN mods/PLAYER
+  'grug_core\.(capitals|get_spawn_pos|outpost_anchors|bandit_camp_anchors|get_camp_platform_y|set_camp_platform_y|request_camp_platform|ensure_camp_platform_built|CAMP_(HALF|PLATFORM_Y|PLATFORM_MAX_Y|CLEAR_HEIGHT|PROBE_TOP|PROBE_BOTTOM|SAMPLE_RADIUS))\b|camp_platform_y:|platform_(pending|attempts|built|decided)\b|MAX_PLATFORM_ATTEMPTS\b|in_capital_zone\b|protected_zone_in_box\b' \
+  mods
 ```
 
-The raw registration search is not itself a pass: every nonzero line must match
-the R7 contract's explicit native-substrate allowlist. The callback search must
-distinguish the one mapgen script callback from prohibited main-environment
-callbacks. Add source-level assertions that WP33 contains zero writer/
+The raw registration, settings-mutation and adapter searches are not themselves
+a pass: every nonzero line must match the R7 contract's explicit expected-count
+allowlist. The settings allowlist also requires exact live main-environment and
+mapgen-environment readback validation; merely finding the expected setter
+calls is insufficient. The callback search must distinguish the one mapgen
+script callback from prohibited main-environment callbacks. The old-platform
+state terms have no allowlisted implementation after stable anchors become
+authority. Add source-level assertions that WP33 contains zero writer/
 decoration APIs and that all required accepted digests are embedded in or
 derived from the reviewed immutable manifests.
 
@@ -361,12 +424,17 @@ derived from the reviewed immutable manifests.
 
 R7 implementation can begin after the WP33 lane supplies its accepted exact
 manifest and resolves whether each gathering source is reused or new P9G
-placement. Before code, freeze two short R7 decisions:
+placement. Before code, freeze three short R7 decisions:
 
 1. the exact minimal native biome/blob/stratum registration allowlist; and
-2. the post-decoration P9G ordering and delta-evidence contract proposed here.
+2. the post-decoration P9G ordering and delta-evidence contract proposed here;
+   and
+3. remove or retain each of the six current v7 NoiseParams overrides. The
+   recommendation is to retain all six exact current values for the R7/R8
+   native baseline and add their normalized tables/digest to both environment
+   validations; removal is a separate reviewed native-baseline change.
 
 With those decisions accepted, the remaining work is implementation and
 verification rather than game design. Without them, activating R7 would either
-omit decided gathering content or force an implementer to invent a second
-placement pipeline.
+omit decided gathering content, leave native input unauthenticated or force an
+implementer to invent a second placement pipeline.
