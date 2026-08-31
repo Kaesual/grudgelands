@@ -282,6 +282,40 @@ local function difference_message(difference)
 		difference.actual_sha256 .. " expected_sha256=" .. difference.expected_sha256
 end
 
+local function integer_row_bytes(row, width, label)
+	if type(row) ~= "table" or #row ~= width then return label .. "=absent" end
+	local fields = {}
+	for index = 1, width do
+		integer(row[index], -MAX_SAFE, MAX_SAFE, label .. " field")
+		fields[index] = string.format("%.0f", row[index])
+	end
+	return label .. "=" .. table.concat(fields, ",")
+end
+
+local function stage_b_row_diagnostic(runtime_fixture, binding, path, source_rows,
+		normalized_rows, accepted_rows)
+	local index_text = path:match("^settlement%.direct_rows%[(%d+)%]")
+	if not index_text then return "" end
+	local index = tonumber(index_text)
+	if not index or index % 1 ~= 0 or index < 1 then return "" end
+	local source, normalized, accepted = source_rows[index], normalized_rows[index],
+		accepted_rows[index]
+	local source_name = source and runtime_fixture.name_by_cid[source[4]] or nil
+	local accepted_ref = normalized and normalized[10] ~= 0 and
+		math.floor(normalized[10] / 256) + 1 or 0
+	local accepted_content = accepted_ref ~= 0 and binding.rows[accepted_ref] or nil
+	return " row_fields=x,y,z,cid,param2,occupancy,opcode,feature,interface,aux " ..
+		integer_row_bytes(source, 10, "source_row") .. " " ..
+		integer_row_bytes(normalized, 10, "normalized_row") .. " " ..
+		integer_row_bytes(accepted, 10, "accepted_row") ..
+		" source_name=" .. diagnostic_string(source_name or "absent", 80) ..
+		" normalized_ref=" .. tostring(accepted_ref) ..
+		" accepted_name=" .. diagnostic_string(
+			accepted_content and accepted_content.name or "absent", 80) ..
+		" accepted_role_mask=" .. tostring(
+			accepted_content and accepted_content.mask or "absent")
+end
+
 local function sha_stream(repo)
 	local ffi = rawget(_G, "wp40_ffi")
 	if not ffi then fail("LuaJIT FFI injection is required") end
@@ -954,6 +988,26 @@ function module.first_difference_kat(repo)
 	return true
 end
 
+function module.stage_b_row_diagnostic_kat()
+	local source = {{-17, 8, 23, 144, 0, -1, 0, 0, 0, 0}}
+	local normalized = {{-17, 8, 23, 1044, 0, -1, 0, 0, 0, 11264}}
+	local accepted = {{-17, 8, 23, 1044, 0, -1, 0, 0, 0, 0}}
+	local runtime_fixture = {name_by_cid = {[144] = "default:stone"}}
+	local binding = {rows = {[45] = {name = "default:stone", mask = 1}}}
+	local message = stage_b_row_diagnostic(runtime_fixture, binding,
+		"settlement.direct_rows[1][10]", source, normalized, accepted)
+	if not message:find("source_row=-17,8,23,144,0,-1,0,0,0,0", 1, true) or
+			not message:find("normalized_row=-17,8,23,1044,0,-1,0,0,0,11264", 1,
+				true) or
+			not message:find("accepted_row=-17,8,23,1044,0,-1,0,0,0,0", 1, true) or
+			not message:find("source_name=default:stone normalized_ref=45 " ..
+				"accepted_name=default:stone accepted_role_mask=1", 1, true) or
+			#message > 720 then
+		fail("Stage-B bounded row diagnostic KAT differs")
+	end
+	return true
+end
+
 local function stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
 	local normalized, substitutions = normalize_rows(runtime_fixture, binding,
 		direct.settlement.direct_rows)
@@ -981,7 +1035,9 @@ local function stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
 			predecessor_settlement, "settlement")
 		if not difference then fail("Stage-B graph parity differs without a value diff") end
 		fail("Stage-B normalized placement decisions differ from accepted R6: " ..
-			difference_message(difference))
+			difference_message(difference) .. stage_b_row_diagnostic(runtime_fixture,
+				binding, difference.path, direct.settlement.direct_rows, normalized,
+				accepted.settlement.direct_rows))
 	end
 	return {bytes = production, accepted_bytes = predecessor,
 		substitutions = substitutions}
