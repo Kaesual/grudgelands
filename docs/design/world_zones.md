@@ -883,11 +883,12 @@ asks for it.
   `surface_y - 1` through `surface_y + 7`. A registration may occupy any
   subset of that envelope; a larger footprint fails closed. Slots never move,
   retry or search for fallback ground, and the envelope is collision space,
-  not a structure, yield promise or R6 world mutation. Whether a WP33 feature
-  may replace P7 top/filler output in the lower two levels belongs to WP33's
-  reviewed registration contract. WP33 registrations must be accepted against
-  the frozen R6 slot API before R7 activates the writer; no production world
-  is generated with permanently empty cultural reservations.
+  not a structure, yield promise or R6 world mutation. The ratified WP33
+  registration is exactly one source cell at `(0, 1, 0)` with
+  `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
+  WP33 registrations must be accepted against the frozen R6 slot API before R7
+  activates the writer; no production world is generated with permanently
+  empty cultural reservations.
 - Both apex camps contain the same count of every one of the six gem species:
   exactly two renewable sockets per species per island.
   Endpoint deposits are a shared bonus and do not compensate a deficient home
@@ -921,10 +922,50 @@ asks for it.
 - T1 gravemoss is supplied by Copperfell Foothills / Mournfen; T2 dragonweed
   by the Dwarf/forest side and Undead/Orc wilds; T3 crimson lotus only by the
   level-51–59 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
-  uses the four fixed wetland-source zones; stormkelp uses both endpoint coasts
+  uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
+  this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
+  to preserve paired level-21–30 supply. Stormkelp uses both endpoint coasts
   and both high coastal approaches.
 - Zone level controls gear tier. A visual biome patch never authorizes a mob,
   drop or gathering tier above the zone's content palette.
+
+The exact WP33 named-zone source sets are closed as follows. A source requires
+both membership in its set and its matching logical-biome/host predicate; a
+compatible biome patch outside these ids grants no source.
+
+| Source | Exact stable zone ids |
+|---|---|
+| Gravemoss | `elandor_copperfell_foothills`; `kragmar_mournfen` |
+| Dragonweed | `elandor_ashenward_march`; `elandor_frostbarrow_shelf`; `kragmar_bannerbreak_mesa`; `kragmar_ossuary_reach` |
+| Crimson Lotus | `front_skyglass_canopy`; `front_stormscale_summit` |
+| Sunleaf | `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
+| Marshbloom | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
+| Stormkelp | `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
+| Potato | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway` |
+| Corn | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_shattered_line`; `kragmar_bannerbreak_mesa`; `kragmar_redtusk_savanna`; `kragmar_speargrass_reach`; `kragmar_sunscar_flats` |
+| Melon | `elandor_glassroot_wilds`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_kapok_cradle`; `kragmar_raincall_basin`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
+| Mushroom | `elandor_ashenward_march`; `elandor_glassroot_wilds`; `elandor_lorindor`; `elandor_moonfall_wood`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `kragmar_blackwind_rise`; `kragmar_ossuary_reach`; `kragmar_thunderroot_wilds`; `kragmar_totemwater_reach`; `kragmar_whispering_reedlands` |
+| Wild Cocoa | `front_skyglass_canopy`; `front_stormscale_summit` |
+| Rock Salt | `front_gravesalt_escarpment`; `front_stormscale_summit`; `front_wyrmglass_crown` |
+
+The exact host rules are: Gravemoss uses Pine Hills coniferous litter in
+Copperfell or Blight dirt in Mournfen; Dragonweed uses Crags gravel in
+Frostbarrow, Deep Forest litter in Ashenward, Bone Forest litter in Ossuary or
+Badlands mesa clay in Bannerbreak; Crimson Lotus uses Canopy litter in
+Skyglass Jungle Fringe or Stormscale Deep Jungle; Sunleaf uses the owning
+zone's Meadows grass, Elf Forest silver litter, Savanna dry grass or Jungle
+Edge rainforest litter; Marshbloom uses Swamp mud; Potato uses Meadows grass;
+Corn uses Meadows grass or Savanna dry grass; Melon uses Jungle Edge
+rainforest litter or Deep Jungle/Jungle Fringe canopy litter; Mushroom uses
+Deep Forest litter, Bone Forest litter or Swamp mud; and Wild Cocoa uses Deep
+Jungle/Jungle Fringe canopy litter.
+
+Stormkelp and Rock Salt are shore predicates rather than engine beach
+decorations. Their root is dry land with exact accepted P7 support and at least
+one cardinal neighbor classified as planned water, coastal shelf, deep ocean
+or immutable dragon channel; diagonal contact is insufficient. Rock Salt also
+requires logical biome `grug_beach` on `default:sand`, while Stormkelp does not,
+so the Skyglass coastal approach remains reachable.
 
 ## 12. Capital and start envelopes
 
@@ -1024,6 +1065,13 @@ asks for it.
   route and policy products. The native heightmap is not planner input or
   global height authority; the adapter may use it only for the local pre-cave
   owner-slice preservation distinction fixed above.
+- At R7 cutover, native registration is closed at zero Lua biomes, one retained
+  gravel blob and the five T2--T6 strata, with zero engine decorations. The
+  legacy clay, silver-sand and dirt blobs, every scatter resource and every
+  engine decoration are absent. The six existing v7 terrain/climate
+  NoiseParams remain the exact authenticated native baseline in both main and
+  emerge environments; they are inputs to the authored evaluator, never a
+  competing biome authority.
 - The pure horizontal module exposes at least
   `macro_region_at(x,z)`, `land_at(x,z)`, `id_at(x,z)`,
   `water_class_at(x,z)`, `nearest_path_at(x,z,optional_kind)` and

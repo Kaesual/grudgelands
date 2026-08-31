@@ -1,7 +1,7 @@
 # WP33 Gathering and Cultural Surface Resources Preflight
 
-Status: implementation preflight; recommendations are non-authoritative until
-the WP33 contract is independently reviewed and accepted
+Status: historical implementation preflight; superseded by the ratified
+2026-08-31 contract in `wp33-gathering-contract-candidate.md`
 Date: 2026-08-31 (Europe/Berlin)
 Base: `d6002a289aa079fba4fe1d943a00dc50f777f30a`
 

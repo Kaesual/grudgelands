@@ -4,8 +4,9 @@
 horizontal authority; R3-R6 remain the accepted still-disabled vertical,
 geography/policy, planner/adapter and surface/resource evidence milestones.
 R6 was independently accepted on 2026-08-31 at `fb577ea`; V1d remains
-historical evidence at `d337160`. R7 is next and still requires the accepted
-WP33 cultural-source registrations before writer activation.
+historical evidence at `d337160`. R7 is next; its native/cutover contract and
+WP33 decisions D1--D6 were ratified on 2026-08-31, while the writer stays
+disabled until their registrations and evidence are implemented and accepted.
 
 **Ruling date:** 2026-08-25
 
@@ -969,6 +970,8 @@ activating a second mapgen path.
 
 ### R7 — atomic production cutover and consumer migration
 
+The ratified execution contract is
+[`wp40-r7-implementation-contract.md`](wp40-r7-implementation-contract.md).
 In one reviewed cutover gate:
 
 - require the accepted WP33 cultural-source registrations before enabling the

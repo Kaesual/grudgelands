@@ -763,6 +763,43 @@ It also does not add herbs, spices, crops, found-only foods, battlefield
 dressing or any other optional decoration; their owning packages remain
 unchanged.
 
+### 2.2 WP33 gathering-source contract (decided 2026-08-31)
+
+WP33 adds exactly twelve one-cell natural sources through WP40's `P9G` tail.
+P9G runs after R6 P9 in the same private buffers and single VoxelManip commit.
+It never overwrites, moves, retries or refills a rejected root. Every accepted
+source is a low hand-gathered node and drops exactly one stable raw item; the
+three healing herbs first pass the fail-closed Alchemist authorization below.
+The exact named-zone and host rosters are `world_zones.md` Section 11; density
+is over eligible root columns, not all map columns.
+
+| Source | Exact opportunity density | Classification | Farmable in WP32 |
+|---|---:|---|---|
+| Potato | 1/256 | universal food | yes |
+| Corn | 1/256 | universal food | yes |
+| Sunleaf | 1/384 | universal spice T1 | yes |
+| Mushroom | 1/384 | universal found-only food | no |
+| Gravemoss | 1/512 | healing herb T1 | no |
+| Marshbloom | 1/512 | universal spice T2 | yes |
+| Melon | 1/512 | universal food | yes |
+| Dragonweed | 1/768 | healing herb T2 | no |
+| Crimson Lotus | 1/1024 | healing herb T3 | no |
+| Stormkelp | 1/1024 | universal spice T3 | yes |
+| Wild Cocoa | 1/1024 | universal found-only food | no |
+| Rock Salt | 1/1024 | universal found-only food | no |
+
+The complete gathering population is closed at **26 identities**: these twelve
+new P9G sources, eight existing R6 sources (Apple, Blueberries, Oak, Mountain
+Pine, Silverwood, Spikethorn Acacia, Kapok and Gravewood), and the six R6
+cultural slots in `items_crafting.md` Section 4.1. A reused tree or bush is not
+placed a second time.
+
+`grug_gathering` owns exactly one registration seam for healing herbs. Before
+WP10 provides it, all three herbs are visible but cannot be removed or yield an
+item. Later only `grug_jobs` may register the authorizer and read profession or
+recipe-book state. Missing, throwing or malformed authorization fails closed;
+spices, foods and cultural sources never call this seam.
+
 **Healing herbs** (Alchemist only, never farmable; both continents reach
 every tier — see §6): **gravemoss T1** (pine hills, blight),
 **dragonweed T2** (crags, badlands, deep forest, bone forest),

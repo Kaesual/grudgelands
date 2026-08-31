@@ -119,6 +119,12 @@ Goldsmith owns Quartz, the six regional gems, Rough-to-Cut processing,
 Settings, both trinket slots and the exact natural-gem yield bonus. Mining,
 smelting and universal base-item crafting remain open to everyone.
 
+The gathering contract closes twelve one-cell herb, spice and food sources,
+eight reused tree/food sources and six cultural sources. Healing herbs fail
+closed to Alchemist authorization; ordinary plants drop one item, while
+concentrated cultural sources differ by opportunity density and require their
+ratified T4 pick, axe or shovel family.
+
 ### Economy
 
 [Currency](docs/design/economy.md) is one ledger integer displayed as
@@ -224,8 +230,9 @@ accepted on 2026-08-29. R6's frozen surface/resource catalogs, private
 cultural-slot API, complete 32-seed evidence fleet and canonical artifact were
 independently accepted on 2026-08-31. R0-R6 remain deliberately disabled: no
 accepted path registers the production callback or materializes a Luanti
-world. WP33 must now register the visible cultural sources against R6's frozen
-slot API before R7 activates the writer.
+world. R7's native/cutover contract and WP33 decisions D1-D6 are now ratified;
+their registrations, P9G successor and consumer cutover are next before the
+writer activates.
 The current [engineering contract](docs/research/wp40-engineering-brief.md)
 and [R0–R8 plan](docs/research/wp40-simple-map-rebase-plan.md) preserve the 38
 zones, routes, housing, policy and supply goals with a much smaller algorithm.

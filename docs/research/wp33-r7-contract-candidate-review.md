@@ -16,11 +16,10 @@ Reviewed files:
   SHA-256
   `7a357b64db4aae2fddf8cc3491ced4cad19815b4a15b09796d2cf5f330f901b8`.
 
-The candidates remain non-authoritative until the user ratifies WP33 decisions
-D1--D6 and the results are folded into design and backlog authority. This
-review establishes that the candidates are internally coherent and suitable
-to present for those decisions; it does not accept the decisions on the
-user's behalf and does not implement R7.
+The user ratified every recommended WP33 decision D1--D6 on 2026-08-31. The
+follow-on authoritative fold records those decisions in design and backlog;
+this review establishes that the detailed technical contracts presented for
+ratification were internally coherent. It does not implement R7.
 
 ## 1. Independence and method
 

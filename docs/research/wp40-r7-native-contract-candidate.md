@@ -1,6 +1,6 @@
 # WP40 R7 Native/Input/Cutover Contract Candidate
 
-Status: **implementation candidate, not accepted and not production-active**
+Status: **ratified technical contract input, not production-active**
 
 Baseline: `dd1e192b8efa7afe865b5628b937a83a283433f6`
 
@@ -20,8 +20,8 @@ The user has already decided three governing rules:
    the same private-buffer/VM commit; and
 3. keep the healing-herb authorizer fail-closed.
 
-No player-facing or game-design choice is invented below. Section 9 lists the
-real WP33 decisions that remain open outside this lane.
+No player-facing or game-design choice is invented below. The user ratified
+the WP33 decisions referenced by Section 9 on 2026-08-31.
 
 ## 1. Sources and engine facts
 
@@ -103,9 +103,9 @@ sand is compatible with stone but remains inherited non-required variation,
 and dirt would trigger the world-wide unresolved-biome trap. No authoritative
 design row requires clay or silver sand. Ratifying this allowlist also accepts
 that the vendored clay-lump/brick and silver-sandstone recipe families have no
-in-world source; ratification must assign their removal or replacement to WP28
-rather than leave the consequence in research prose or expand WP26 beyond
-Universalbars.
+in-world source; the ratified backlog fold assigns their removal or replacement
+to WP28 rather than leaving the consequence in research prose or expanding
+WP26 beyond Universalbars.
 
 The normalized allowlist canonical bytes are ASCII, have no BOM or CR, use the
 rows and field order below, and end every row including the last with LF:
@@ -633,29 +633,29 @@ both R6 projections, one owner-slice transaction/replay, representative stable
 queries/anchors and fail-closed protection/herb authorization. It is bounded
 representative parity evidence, not an exhaustive engine substitute.
 
-## 9. Honest open decisions and GO boundary
+## 9. Ratified decisions and GO boundary
 
 This native/input/cutover lane introduces **no new player/design decision**.
-Its technical choices are closed above. R7 implementation is nevertheless not
-GO until the parallel WP33 lane independently freezes and accepts every
-decision D1--D6 in `wp33-gathering-contract-candidate.md` Section 9. That exact
-set covers densities; all zone/biome/shore rosters; cultural tool families;
-concentrated yield; resolver ownership and its durable WP29 obligation; and
+Its technical choices are closed above. The user accepted every recommended
+decision D1--D6 in `wp33-gathering-contract-candidate.md` Section 9 on
+2026-08-31. That exact set covers densities; all zone/biome/shore rosters;
+cultural tool families; concentrated yield; resolver ownership and its durable
+WP29 obligation; and
 the ordinary P9G one-cell interaction/yield. D6 is a direct GO blocker because
 any multi-node option would invalidate Section 4's one-cell successor record.
 The 12/8/6 classification and all six cultural registration digests remain
 authenticated parts of the accepted 26-row manifest, not a separate or
 silently mutable decision list.
 
-Ratification must also amend the WP28 `BACKLOG.md` row to own the deliberate
+The ratified fold also amends the WP28 `BACKLOG.md` row to own the deliberate
 removal or replacement of the now-unreachable vendored clay/brick and
 silver-sandstone recipe families. WP26 remains limited to Universalbars and is
 not named as a fallback owner. This durable WP28 assignment is a technical GO
 condition, not a license for R7 to invent replacement sources.
 
-Those are player-visible content/access choices and must not be filled in by
-the R7 implementer. Once their reviewed manifest is accepted, inserting its
-exact bytes/digests into section 3.3 is mechanical. Numeric allocation of a new
+Those player-visible content/access choices are fixed and must not be changed
+by the R7 implementer. Inserting their reviewed manifest's exact bytes/digests
+into Section 3.3 is mechanical. Numeric allocation of a new
 P9G opcode/feature identity, module/file names consistent with this contract,
 and direct-adapter deletion where a final audit proves no caller are technical
 implementation decisions reviewed with the code.

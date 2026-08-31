@@ -1194,11 +1194,15 @@ culture.
 | Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
 
 - Each culture has an ordinary home-region surface source sufficient for its
-  architecture, quests and trade, plus a higher-yield source in or beneath
+  architecture, quests and trade, plus a concentrated source in or beneath
   exactly the one race-frontier zone listed for it in `world_zones.md` §11.
   No Battlegrounds zone receives that concentrated rate. The concentrated
   source requires T4 harvesting; an ordinary surface source retains its
   natural axe/shovel/hand-gathering behavior.
+- Ordinary opportunity density is exactly 1/4096 eligible logical-biome
+  columns; the concentrated zone uses 1/1024. Both forms drop exactly one
+  material per node: concentration is the fourfold opportunity density, never
+  a second per-node yield multiplier.
 - A material is not forced into every cultural object: Gravewood furniture
   need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
   palette; Spirit Resin uses warm amber or toxic green.
@@ -1210,6 +1214,25 @@ culture.
 - Signature woods remain universal `group:wood` inputs. Their distinct value
   is cultural builds, furniture and optional recipes, never mandatory tool
   progression.
+
+The concentrated harvesting families are exact:
+
+| Material | Required family at T4+ | Ordinary source behavior |
+|---|---|---|
+| Sunwax | axe | hand |
+| Runeslate | pick | hand |
+| Moonresin | axe | axe |
+| Red Ochre | shovel | shovel |
+| Spirit Resin | axe | axe |
+| Gravesalt | pick | shovel |
+
+`grug_materials` is the sole tool-family tier authority. Its public resolver
+`tool_tier_for_stack(stack, family)` accepts exactly `pick`, `axe` or `shovel`
+and reads the matching integer group `grug_pick_tier`, `grug_axe_tier` or
+`grug_shovel_tier` in 1..6. WP29 supplies those groups on the final tool
+catalog. Missing/malformed authority, the wrong family or a tier below four
+fails closed without removing the node, wearing the tool or granting a drop;
+WP33 creates no temporary T4 tool or duplicate tier taxonomy.
 
 ### 4.2 Cultural finishing
 

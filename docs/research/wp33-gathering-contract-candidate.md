@@ -1,9 +1,9 @@
 # WP33 / WP40 R7 Gathering Contract Candidate
 
-Status: **non-authoritative decision candidate**. Nothing in this document is
-binding until the coordinator presents the player-visible decisions in Section
-9, the user accepts them, the result is folded into the authoritative design
-and WP contracts, and an independent strong-agent review is clean.
+Status: **ratified technical contract input**. The user accepted every
+recommended decision D1--D6 on 2026-08-31. The player-visible rules are binding
+through the authoritative design and backlog; this document retains their full
+WP33/R7 schemas, predicates and evidence boundary.
 
 Date: 2026-08-31 (Europe/Berlin)  
 Candidate base: `dd1e192b8efa7afe865b5628b937a83a283433f6`
@@ -26,11 +26,10 @@ follows `docs/research/luanti-lua.md` “Interpreter and test strategy”, while
 package/review handling remains governed by `docs/process/wp-workflow.md` and
 `docs/process/agent-model-policy.md`.
 
-## 1. Already-approved architecture carried into this candidate
+## 1. Approved architecture carried into this contract
 
-The user's 2026-08-31 approval accepts the coordinator's recommended
-architecture, but not numbers or player semantics that had not yet been
-presented:
+The user's 2026-08-31 approvals accept the coordinator's recommended
+architecture and the exact player-visible decisions recorded in Section 9:
 
 - exactly one `P9G` gathering tail runs after accepted R6 P9 and before the
   existing canonical run derivation and single VoxelManip commit;
@@ -253,7 +252,7 @@ Family groups are exact: `grug_healing_herb = 1|2|3`,
 `grug_found_only_food = 1` on the final three food rows. No source is inferred
 from a name list.
 
-The densities are an initial supply proposal, not a claim that the values have
+The densities are the ratified initial supply contract, not a claim that the values have
 already passed a world census. T1/common foods are deliberately more frequent;
 T2 sources are intermediate; T3 and top cooking sources are `1/1024`. Section
 8 requires the realized 32-seed ledger before any activation.
@@ -325,7 +324,7 @@ node or a multiplied per-node drop. Ordinary and concentrated sources both
 drop exactly one material. The exact current zone at dig time selects the
 harvest rule; node metadata never stores a stale rate class.
 
-### 7.1 Tier-neutral tool resolver proposal
+### 7.1 Tier-neutral tool resolver contract
 
 The sole resolver owner is `grug_materials`, because that mod already owns the
 six material tiers and `grug_pick_tier`; `grug_gathering` must not create a
@@ -350,9 +349,9 @@ Contract:
   `pick_tier_for_stack`, but may not treat that pick-only API as axe or shovel
   authority.
 
-Ratification must also amend the WP29 `BACKLOG.md` row to own the exact
+The ratified fold also amends the WP29 `BACKLOG.md` row to own the exact
 `grug_axe_tier` and `grug_shovel_tier` groups in addition to its existing pick
-authority; R7 is not GO until that durable dependency is recorded. WP29 then
+authority; `BACKLOG.md` now records that durable dependency. WP29 then
 attaches the exact tier group to its final tool catalog. Until the relevant T4
 tool exists, that concentrated family is deliberately unharvestable; WP33 does
 not manufacture a temporary T4 tool. If the resolver is absent, throws,
@@ -439,15 +438,15 @@ supply. Changing a denominator after seeing that evidence creates a new
 candidate version and requires the complete P9G ledger again; it may not be an
 unrecorded calibration loop or a collision refill.
 
-## 9. Player-visible decisions still requiring explicit ratification
+## 9. Player-visible decisions ratified 2026-08-31
 
-The architecture at the start of this document is already approved. The
-following exact semantics are new in this candidate and therefore remain
-non-authoritative until explicitly accepted.
+The user accepted Option A, the recommendation, for every decision D1--D6.
+The alternatives remain below only as historical decision context and are not
+implementation choices.
 
 ### D1 — Exact P9G densities
 
-- **Option A (recommended):** accept Section 5's progression-shaped values:
+- **Accepted -- Option A:** Section 5's progression-shaped values:
   common food `1/256`, common spice/mushroom `1/384`, T1/T2 plants
   `1/512` or `1/768`, and T3/top sources `1/1024`, subject to the one recorded
   32-seed adequacy pass.
@@ -459,7 +458,7 @@ non-authoritative until explicitly accepted.
 
 ### D2 — Exact source-zone rosters
 
-- **Option A (recommended):** accept Sections 3-4, including the four-way
+- **Accepted -- Option A:** Sections 3-4, including the four-way
   Dragonweed pairing, high-only Wild Cocoa, beach-only Rock Salt and
   cardinal-water Stormkelp shore predicate.
 - Option B: authorize every biome-compatible zone. This is mechanically
@@ -469,11 +468,11 @@ non-authoritative until explicitly accepted.
   identity but makes collision/seed variance more likely to remove practical
   supply.
 
-The authoritative design currently fixes Marshbloom to the four `W` wetland-
+The prior authoritative design fixed Marshbloom to the four `W` wetland-
 camp zones: `elandor_whitebridge_shire`, `elandor_lorindor`,
 `kragmar_mournfen` and `kragmar_whispering_reedlands`
-(`world_zones.md` Sections 8 and 11). The recommended roster replaces Mournfen
-with `kragmar_ossuary_reach`, so all four candidate zones are level 21-30 and
+(`world_zones.md` Sections 8 and 11). The accepted roster replaces Mournfen
+with `kragmar_ossuary_reach`, so all four accepted zones are level 21-30 and
 the per-bracket paired-faction gate is satisfiable. Accepting this option
 explicitly amends that authoritative four-zone list; the implementation may
 not make the change silently. Retaining the current four-zone authority needs
@@ -484,7 +483,7 @@ or adds a paired Accord 11-20 source.
 
 ### D3 — Cultural tool-family assignment
 
-- **Option A (recommended):** accept Section 7: concentrated resins/wax use
+- **Accepted -- Option A:** Section 7: concentrated resins/wax use
   axe, Runeslate and Gravesalt use pick, and Red Ochre uses shovel. Ordinary
   sources retain hand/axe/shovel behavior by presentation.
 - Option B: one T4 pick for all six. This uses the current API but makes picks
@@ -494,7 +493,7 @@ or adds a paired Accord 11-20 source.
 
 ### D4 — What “concentrated” yields
 
-- **Option A (recommended):** one item per node in both classes; concentration
+- **Accepted -- Option A:** one item per node in both classes; concentration
   is exactly the already-decided fourfold opportunity density (`1/1024`
   versus `1/4096`).
 - Option B: multiply the concentrated per-node drop as well. This compounds
@@ -503,7 +502,7 @@ or adds a paired Accord 11-20 source.
 
 ### D5 — Tier-neutral resolver ownership
 
-- **Option A (recommended):** `grug_materials` owns the generic family/tier
+- **Accepted -- Option A:** `grug_materials` owns the generic family/tier
   resolver and WP29 supplies final family-tier groups. Missing T4 tools fail
   closed until WP29.
 - Option B: WP33 owns its own tool-tier tables. This creates a second material
@@ -513,7 +512,7 @@ or adds a paired Accord 11-20 source.
 
 ### D6 — Ordinary P9G source interaction and per-node yield
 
-- **Option A (recommended):** every successful herb, spice and new food source
+- **Accepted -- Option A:** every successful herb, spice and new food source
   is one hand-gathered low node and drops exactly one stable raw item. Access
   rules still intercept herbs before removal. Supply is tuned only by the
   frozen opportunity fractions, so one quantity axis owns calibration.
@@ -530,9 +529,9 @@ principle; Section 8 merely makes its return and failure vocabulary exact. If
 any of those exact returns/messages are rejected, they must be replaced before
 implementation rather than guessed in code.
 
-## 10. Implementation boundary after ratification
+## 10. Ratified implementation boundary
 
-Once Section 9 is accepted and folded into authority, WP33 may implement one
+With Section 9 accepted and folded into authority, WP33 may implement one
 new `grug_gathering` mod containing registrations, pure manifests and harvest
 behavior, plus the minimal reviewed `grug_materials` resolver extension. It
 must depend on every accepted R6 target-owner mod, register the six cultural
