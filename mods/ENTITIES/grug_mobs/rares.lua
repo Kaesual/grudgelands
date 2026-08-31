@@ -509,27 +509,19 @@ grug_mobs.register_rare("korgans_bane", {
 -- Exactly L50 at all three points, the §3.3 target, and all three are zone
 -- "coast" (|x| >= 1350).
 --
--- The route is UNCHANGED since 2026-08-08 and now actually lies in the biome
--- it broadcasts. It never did before: the three deep-forest registrations
--- reached x 1500 and their 60/75 climate point beat the fringe's 85/85
--- everywhere, so all three points came up deep forest for every seed tested
--- (measured 0 of 50). Capping the deep forest at x 1250 (grug_mapgen/
--- biomes.lua) makes x 1251..1500 the fringe's alone, so all three points are
--- now a CONTAINMENT guarantee, not a climate coin flip: exactly one eligible
--- registration, 50 of 50 seeds.
+-- R7's accepted named-zone catalog now owns these route anchors and their
+-- logical-biome identity. Historical pre-R7 context: competing engine-biome
+-- registrations once classified all three points as deep forest; the later
+-- cuboid cap made the route deterministic before that whole authority was
+-- retired by R7.
 --
 -- DEVIATION worth knowing: "coast" and "~L50" together pin |z| to roughly
 -- 740..1060. At |x| >= 1350 the field already sits at L47 where dz = 0, and
 -- the back-side scale 775 makes it climb fast — (1350, -1300) is L60, so a
 -- route further from the seat cannot be L50 no matter how it is shaped.
--- The x values are likewise the INNER edge of the coast band on purpose: the
--- ocean mask insets the shoreline by 0..150 nodes (grug_mapgen/geometry.lua
--- INSET_MAX; that file is where the mask geometry moved in WP36, unchanged),
--- so a route point at |x| 1450 would often be open water, where
--- route_pos returns nil and the rare never spawns. |x| ~1350 needs an inset
--- close to the clamp before it floods, and the first point sits ~300 nodes
--- away in z — the coast noise has spread 300, so the two ends of the route do
--- not share one noise lobe and cannot both be under water for the same reason.
+-- Historical pre-R7 context: the retired ocean-mask geometry made the inner
+-- coast edge the safer dry route. R7's named-zone land/water authority and
+-- accepted source catalog now own that guarantee instead.
 -- No `texture`: grug_mobs:jungle_spider already wears the jungle skin.
 grug_mobs.register_rare("silkfang", {
 	name = "Silkfang",
@@ -611,24 +603,11 @@ grug_mobs.register_rare("emerald_coil", {
 -- the accepted source catalog now owns these stable rare-route anchors;
 -- 1350, so none of them slips into the "coast" band.
 --
--- WHY |z| = 268 AND NOT NEARER THE WATER: the ocean mask insets the coastline
--- 0..150 nodes INTO the rectangle (grug_mapgen/geometry.lua INSET_MAX), so
--- the strait-facing shoreline wanders between |z| 100 and 250 and the dry
--- beach only starts ~30 nodes further in (§1.5). A route at |z| 150..250
--- would often be open water, where route_pos returns nil and the rare never
--- spawns at all. |z| 268 still yields exactly 28 (the cap only reaches 30 at
--- |z| 300) and sits behind the deepest possible inset.
---
--- WHY THESE EXACT x VALUES: the coast noise is WORLD-SEED INDEPENDENT —
--- LuaValueNoise::l_get_2d evaluates NoiseFractal2D with seed 0, so
--- coast_inset(x, z) is the same number in every world and the coastline can
--- be computed offline. All six columns were checked against the real mask
--- formula (continent_distance -> surface_cap(d - coast_inset)) and come out
--- ABOVE water level, together with their +-8 node neighbourhood; the ~10% of
--- the |z| 268 band that the mask floods is avoided by construction instead of
--- by luck. The two continents needed DIFFERENT x values because the noise is
--- not mirrored at z = 0 — this is the one rare pair that is not a geometric
--- mirror, and that is why.
+-- R7 AUTHORITY: the accepted named-zone source catalog owns these six stable,
+-- dry route anchors. The old ocean-mask/noise derivation was a pre-R7
+-- coordinate-selection aid, not a current land/water authority. The two
+-- continents retain different x values; this is the one rare pair that is
+-- not a geometric mirror, and that is why.
 --
 -- WHY THE ROUTE SPANS ONLY 250 NODES: it was written when the leash measured
 -- distance from `_grug_home` (the spawn point), where a rare that had ambled

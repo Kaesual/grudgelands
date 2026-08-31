@@ -38,7 +38,7 @@
 -- GUARD POSTS (WP6/T8) reuse the whole mechanism with a second anchor node,
 -- grug_nodes:guard_banner, and the camp types "guard_accord"/"guard_throng"
 -- at the bottom of this file. What differs:
---   * the banner is placed by MAPGEN (grug_mapgen/structures.lua) via a
+--   * the banner is placed by R7's single named-zone map writer via a
 --     VoxelManip, which fires no node callbacks at all — so the timer of a
 --     generated banner is started by the LBM at the bottom (which for that
 --     reason must run at EVERY load, see there) instead of by on_construct;
@@ -600,7 +600,7 @@ core.register_node("grug_mobs:camp_fire", {
 		fixed = {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5},
 	},
 	walkable = false,
-	is_ground_content = false, -- caves and the ocean mask must not eat a camp
+	is_ground_content = false, -- authored anchors are not native terrain content
 	light_source = 9, -- a camp fire is a landmark at night
 	-- cracky 3 = diggable with a pickaxe, not by hand: destroying a camp
 	-- should be a deliberate act. grug_camp = 1 is the dispatch group
@@ -697,11 +697,12 @@ core.override_item("grug_nodes:guard_banner", {
 	end,
 })
 
--- WHY THIS LBM EXISTS: grug_mapgen writes the outpost banners (and the
--- capital-watch banner on every spawn platform) straight into the mapchunk's
--- VoxelManip. A VM write is not set_node — it fires NO node callbacks at all,
--- so on_construct above never runs for a generated banner and its node timer
--- would never be armed. The LBM is the init path for exactly those nodes.
+-- WHY THIS LBM EXISTS: R7's named-zone writer writes the outpost banners (and
+-- the capital-watch banner on every spawn platform) straight into the
+-- mapchunk's VoxelManip. A VM write is not set_node — it fires NO node
+-- callbacks at all, so on_construct above never runs for a generated banner
+-- and its node timer would never be armed. The LBM is the init path for
+-- exactly those nodes.
 --
 -- WHY run_at_every_load = true, and why `false` was a total loss here:
 -- lua_api.md:10312-10316 spells the semantics out — a `false` LBM only runs on
@@ -730,8 +731,8 @@ core.register_lbm({
 	end,
 })
 
--- The same problem, the same fix, for the CAMP FIRE: grug_mapgen's structure
--- pass writes the deterministic bandit camps of world.md §4 straight into the
+-- The same problem, the same fix, for the CAMP FIRE: R7's named-zone writer
+-- writes the deterministic bandit camps of world.md §4 straight into the
 -- mapchunk's VoxelManip, which fires no node callbacks, so on_construct never
 -- runs for a generated fire and its node timer would never be armed (a camp
 -- that never spawns anybody). init_camp_fire does exactly what on_construct

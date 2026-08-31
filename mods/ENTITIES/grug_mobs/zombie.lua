@@ -70,9 +70,9 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	light_damage_max = 15,
 })
 
--- At night on the settled biome tops (whitelist matches biomes.lua — see the
--- boar note); zone-gated like the boar. Bare stone is gone from the list: no
--- land biome has a stone surface any more.
+-- At night on the accepted R7 settled surface nodes; named-zone-gated like
+-- the boar. Bare stone is absent because no authored land palette uses it as
+-- a surface.
 --
 -- §4 calibration row: interval 20 / chance 1600 / aoc 4, max light 5.
 -- FIVE settled tops, not six: grug_nodes:blight_dirt has its own 24 h row

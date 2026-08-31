@@ -90,11 +90,10 @@ grug_mobs.stalker(boar, {min_dist = 4, max_dist = 10, cooldown = 8,
 
 grug_mobs.register_mob("grug_mobs:boar", boar)
 
--- Spawns on the signature top nodes of the SETTLED biomes (biomes.lua,
--- docs/design/biomes_mobs.md §4: the whitelist IS the biome gating), so
--- every low-level area of both continents has day mobs. The zone gating
--- above keeps boars in the core and inner ring, out of the higher-level
--- outer ring and coasts.
+-- Spawns on the accepted R7 signature tops of the SETTLED logical biomes
+-- (docs/design/biomes_mobs.md §4: the whitelist is the habitat gate), so
+-- every low-level area of both continents has day mobs. The named-zone gate
+-- above keeps boars in the intended low-level zones.
 --
 -- FOUR tops, not six: the blight (Plague Boar) and the jungle edge (Jungle
 -- Boar) belong to the tint variants in boar_variants.lua now. §4 budgets one
