@@ -1,0 +1,31 @@
+schema	grug_wp40_r7_source_audit_receipt_v1
+phase	final
+gate	closed_noise_setters	true
+gate	closed_native_allowlist	true
+gate	one_loader_callback	true
+gate	zero_legacy_paths	true
+gate	zero_wp33_writer	true
+gate	one_shared_transaction	true
+gate	exact_game_mapgen_defaults	true
+gate	acyclic_mod_dependencies	true
+gate	final_micro_kat_parity	true
+count	noise_setters	6
+count	register_biome	0
+count	register_ore	6
+count	register_decoration	0
+count	register_mapgen_script	1
+count	register_on_generated	1
+count	vm_set_data	1
+count	vm_set_param2_data	1
+count	vm_update_liquids	1
+count	mapgen_default_settings	8
+count	changed_production_lua	65
+count	deleted_legacy_lua	7
+count	mod_dependency_nodes	22
+count	mod_dependency_edges	68
+micro_kat_receipt_sha256	bf947b5b02619dc8a347f24f94fcac39e0ab0d92f2548934a22f5ca3e774adee
+micro_kat_output_sha256	04dd77f0e7302e456017afd3ca37d9db77954098c3850aebb30606b6ca7b6511
+input_file_population	903
+code_input_file_population	895
+code_input_set_sha256	cb36c59cff756fb8008be3a4dcc3d48f52817cfa2dc74c61a78cdaae78e56d4a
+input_set_sha256	6d2da42d44f1cab6db1429dfa3f847a74010942233eea4165d4e1bdfd223d635
