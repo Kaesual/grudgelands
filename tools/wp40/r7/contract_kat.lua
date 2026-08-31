@@ -149,5 +149,36 @@ assert(runtime_adapter.first_difference_kat(repo) == true)
 assert(runtime_adapter.stage_b_row_diagnostic_kat() == true)
 assert(runtime_adapter.finalizer_authority_kat(repo) == true)
 
+-- Execute the real production-private capture encoder without widening its
+-- runtime API.  Lua 5.1 debug upvalues are used only by this offline tool KAT.
+local function named_upvalue(fn, wanted)
+	assert(type(fn) == "function")
+	for index = 1, 100 do
+		local name, value = debug.getupvalue(fn, index)
+		if not name then break end
+		if name == wanted then return value end
+	end
+	error("missing production capture upvalue " .. wanted, 0)
+end
+local settlement_factory = dofile(repo ..
+	"/mods/MAPGEN/grug_mapgen/wp40/r6_settlement.lua")
+local settlement_new = named_upvalue(settlement_factory.new_capture, "new")
+local capture_buffers = named_upvalue(settlement_new, "capture_private_buffers")
+local capture_graph = named_upvalue(capture_buffers, "canonical_graph")
+local aggregate_key = "runeslate\0ordinary"
+local rejection_key = "cultural\0runeslate\0wrong_support"
+local capture_encoded = capture_graph({
+	cultural = {[aggregate_key] = {accepted = 1, reserved = 225}},
+	rejections = {[rejection_key] = 1},
+})
+assert(capture_encoded:find("s" .. tostring(#aggregate_key) .. ":" .. aggregate_key,
+	1, true))
+assert(capture_encoded:find("s" .. tostring(#rejection_key) .. ":" .. rejection_key,
+	1, true))
+assert(capture_encoded ~= capture_graph({
+	cultural = {[aggregate_key .. "x"] = {accepted = 1, reserved = 225}},
+	rejections = {[rejection_key] = 1},
+}))
+
 print("WP40 R7 evidence contract KAT PASS catalog=" .. catalog_digest ..
 	" populations=12/8/6 rejection_reasons=" .. #contract.rejection_reasons())

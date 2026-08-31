@@ -76,10 +76,9 @@ local function settlement_factory()
 
 	local function canonical_scalar(value)
 		if type(value) == "string" then
-			if value:find("\0", 1, true) or value:find("\r", 1, true) or
-					value:find("\n", 1, true) then
-				fail("fail_ledger", "capture scalar is not length-safe")
-			end
+			-- This is a binary graph encoding, not a line format.  R6 ledger
+			-- maps deliberately use NUL-delimited composite keys; the decimal
+			-- byte length makes every string unambiguous without a byte blacklist.
 			return "s" .. tostring(#value) .. ":" .. value
 		elseif type(value) == "number" then
 			integer(value, "capture scalar", -MAX_SAFE, MAX_SAFE, "fail_ledger")
