@@ -524,6 +524,15 @@ local function validate_token(token, environment)
 	return true
 end
 
+local function validate_runtime_readback(environment)
+	if environment ~= "main" and environment ~= "emerge" then
+		fail("unknown validation environment")
+	end
+	local _, native_bytes = validated_native()
+	local noise_bytes = read_and_validate_noise()
+	return new_token(environment, noise_bytes, native_bytes)
+end
+
 function module.apply_and_validate_main()
 	validated_native()
 	if type(core) ~= "table" or
@@ -550,15 +559,22 @@ function module.apply_and_validate_main()
 		heat_blend, true)
 	core.set_mapgen_setting_noiseparams("mg_biome_np_humidity_blend",
 		humidity_blend, true)
-	local noise_bytes = read_and_validate_noise()
-	local _, native_bytes = validated_native()
-	return new_token("main", noise_bytes, native_bytes)
+	return validate_runtime_readback("main")
+end
+
+-- Pure runtime validation for a main environment whose setters were already
+-- applied. This performs no setting mutation, registration or publication.
+function module.validate_main_readback()
+	return validate_runtime_readback("main")
 end
 
 function module.validate_emerge()
-	local _, native_bytes = validated_native()
-	local noise_bytes = read_and_validate_noise()
-	return new_token("emerge", noise_bytes, native_bytes)
+	return validate_runtime_readback("emerge")
+end
+
+-- Shared pure dispatcher for loaders that keep environment identity explicit.
+function module.validate_runtime_readback(environment)
+	return validate_runtime_readback(environment)
 end
 
 function module.register_ores(token)

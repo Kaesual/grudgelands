@@ -158,6 +158,18 @@ assert(state.readbacks.mgv7_np_terrain_base.persist ==
 assert(state.callbacks == 0 and state.publications == 0 and #state.ores == 0,
 	"main validation registered or published content")
 
+local pure_setters_before = #state.setters
+native.validate_main_readback()
+native.validate_runtime_readback("emerge")
+assert(#state.setters == pure_setters_before and #state.reads == 18,
+	"pure runtime readback mutated settings or skipped a readback")
+expect_failure(function() native.validate_runtime_readback("other") end,
+	"unknown validation environment")
+assert(#state.setters == pure_setters_before and #state.reads == 18,
+	"invalid environment touched the runtime readback API")
+assert(state.callbacks == 0 and state.publications == 0 and #state.ores == 0,
+	"pure runtime readback registered or published content")
+
 local saved_noise_digest = main_token.noise_digest
 main_token.noise_digest = string.rep("0", 64)
 expect_failure(function() native.register_ores(main_token) end,
@@ -269,4 +281,4 @@ assert(#duplicate_state.ores == 0,
 
 rawset(_G, "core", saved_core)
 print("WP40 R7 native inputs KAT PASS noise=" .. identities.noise_digest ..
-	" native=" .. identities.native_digest .. " setters=6 reads=12 ores=6")
+	" native=" .. identities.native_digest .. " setters=6 reads=24 ores=6")
