@@ -105,7 +105,7 @@ Every `new_p9g_source` row uses this complete placement record:
 | root | `(x, surface_y + 1, z)` |
 | immutable cells | one cell `(0, 0, 0)`, source node, `param2 = 0`, `force_place = false` |
 | footprint | min=max `(0, 0, 0)`; exactly 1 by 1 by 1 |
-| vertical gate | `surface_y >= 1`; root and support must be in the same 80-node owner slice |
+| vertical gate | `surface_y >= 1`; the unique 3-D owner containing the root settles it; support may be the immediately lower cell in the neighboring vertical owner and is evaluated through the same analytic P7 authority, never by a second owner or VM-halo read |
 | support | exact accepted P7 cell at `(x, surface_y, z)` matching the row predicate |
 | root predecessor | exact P7 air/clear output; `CONTENT_IGNORE`, liquid, foreign or unknown content rejects |
 | lower-two policy | `preserve_p7`; P9G writes neither `surface_y` nor `surface_y - 1` |
@@ -114,10 +114,17 @@ Every `new_p9g_source` row uses this complete placement record:
 | failure | one primary reason, no movement, retry, refill, partial write or fallback |
 | mutation | one new shadow-buffer intent only; no setter before the common final commit |
 
-The R7 live content contract assigns `GATHERING_SOURCE = 32`, the next closed
-role bit after R6's surface/dust/resource/decoration/cultural bits
-`1/2/4/8/16`. Every P9G target node must carry bit 32 and no cultural source
-uses it merely because both families live in `grug_gathering`.
+P9G uses the accepted R6 decoration content-role bit `8`; it does not add a
+sixth bit. That bit is a write-capability class, not a feature or ledger
+identity: P9G still has its own closed successor opcode, class, policy and
+schema. Reusing the compatible placement capability keeps the accepted R6
+1..31 mask bound and every existing content row unchanged. The R7 successor
+content manifest adds only the twelve P9G target rows carrying bit 8 and
+authenticates its own digest alongside the accepted R6 predecessor-content
+digest. The removable-delta projection removes those twelve rows before
+requiring the accepted R6 content-family bytes. Cultural sources remain on bit
+16 and are not reclassified merely because both families live in
+`grug_gathering`.
 
 Primary rejection order is:
 
@@ -152,7 +159,7 @@ are explanatory only; the arrays are the candidate values.
 | `Z_DRAGONWEED` | `elandor_ashenward_march`; `elandor_frostbarrow_shelf`; `kragmar_bannerbreak_mesa`; `kragmar_ossuary_reach` |
 | `Z_CRIMSON_LOTUS` | `front_skyglass_canopy`; `front_stormscale_summit` |
 | `Z_SUNLEAF` | `elandor_goldmead_vale`; `elandor_starbough_vale`; `kragmar_raincall_basin`; `kragmar_redtusk_savanna` |
-| `Z_MARSHBLOOM` | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_mournfen`; `kragmar_whispering_reedlands` |
+| `Z_MARSHBLOOM` | `elandor_lorindor`; `elandor_whitebridge_shire`; `kragmar_ossuary_reach`; `kragmar_whispering_reedlands` |
 | `Z_STORMKELP` | `front_gravesalt_escarpment`; `front_skyglass_canopy`; `front_stormscale_summit`; `front_wyrmglass_crown` |
 | `Z_POTATO` | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway` |
 | `Z_CORN` | `elandor_ashenward_march`; `elandor_dawnmere_fields`; `elandor_goldmead_vale`; `elandor_whitebridge_shire`; `front_broken_causeway`; `front_shattered_line`; `kragmar_bannerbreak_mesa`; `kragmar_redtusk_savanna`; `kragmar_speargrass_reach`; `kragmar_sunscar_flats` |
@@ -245,7 +252,7 @@ families; it may not copy or resettle their templates.
 |---|---|---|---|---|
 | `wp33_apple_r6_reuse_v1` | Apple | `deep_forest_apple_tree`, `elf_forest_apple_tree`, `meadows_apple_tree` | tree templates containing `default:apple`; output `default:apple` | universal food, farmable later; retain existing apple interaction |
 | `wp33_blueberry_r6_reuse_v1` | Blueberries | `pine_hills_blueberry_bush` | `default:blueberry_bush_leaves_with_berries`; output `default:blueberries` | universal food, farmable later; retain existing berry interaction |
-| `wp33_oak_r6_reuse_v1` | Oak | `deep_forest_apple_tree`, `elf_forest_apple_tree`, `meadows_apple_tree` | `default:tree` / `default:wood` | signature wood; existing axe/drops/sapling behavior; never a WP32 crop |
+| `wp33_oak_r6_reuse_v1` | Oak | `deep_forest_apple_log`, `deep_forest_apple_tree`, `elf_forest_apple_tree`, `meadows_apple_tree` | `default:tree` / `default:wood` | signature wood; existing axe/drops/sapling behavior; never a WP32 crop |
 | `wp33_mountain_pine_r6_reuse_v1` | Mountain Pine | `crags_snowy_pine`, `pine_hills_pine_tree`, `pine_hills_small_pine_tree` | `default:pine_tree` / `default:pine_wood` | same rule |
 | `wp33_silverwood_r6_reuse_v1` | Silverwood | `elf_forest_silverwood` | `grug_trees:silverwood_tree` / `grug_trees:silverwood_wood` | same rule |
 | `wp33_spikethorn_acacia_r6_reuse_v1` | Spikethorn Acacia | `savanna_acacia_tree` | `default:acacia_tree` / `default:acacia_wood` | same rule |
@@ -327,10 +334,13 @@ Contract:
   `pick_tier_for_stack`, but may not treat that pick-only API as axe or shovel
   authority.
 
-WP29 must attach the exact tier group to its final tool catalog. Until the
-relevant T4 tool exists, that concentrated family is deliberately
-unharvestable; WP33 does not manufacture a temporary T4 tool. If the resolver
-is absent, throws, returns a non-integer or returns a tier outside 1..6,
+Ratification must also amend the WP29 `BACKLOG.md` row to own the exact
+`grug_axe_tier` and `grug_shovel_tier` groups in addition to its existing pick
+authority; R7 is not GO until that durable dependency is recorded. WP29 then
+attaches the exact tier group to its final tool catalog. Until the relevant T4
+tool exists, that concentrated family is deliberately unharvestable; WP33 does
+not manufacture a temporary T4 tool. If the resolver is absent, throws,
+returns a non-integer or returns a tier outside 1..6,
 `grug_gathering` fails the dig closed as `resolver_unavailable`. A wrong family
 is `wrong_tool_family`; a correct family below T4 is `tool_tier_too_low`.
 Every refusal leaves node, wield stack, wear, drop callbacks, quest credit and
@@ -389,6 +399,8 @@ WP33 implementation and R7 activation require all of the following:
    high cooking sources (`wild_cocoa`, `rock_salt`) and all six cultural keys;
 7. byte-identical projection of every accepted R6 P2-P9 plan, intent and
    ledger after P9G rows are removed, plus a separately versioned P9G digest;
+   the projection also removes the twelve successor-content rows before
+   comparing the accepted R6 content-family bytes;
 8. same-seed, shard-order, mapchunk-order, owner-clipping, repeated-run,
    `CONTENT_IGNORE`, light/liquid and single-setter fixtures;
 9. source audits proving zero WP33 `core.register_decoration`,
@@ -436,12 +448,14 @@ non-authoritative until explicitly accepted.
   identity but makes collision/seed variance more likely to remove practical
   supply.
 
-The recommended roster retains Mournfen as one of the four explicitly fixed
-Marshbloom wetland zones. That means a T2 spice can be seen in a level-11-20
-zone, but it is universally gathered and its use/book group remains separately
-gated. Replacing Mournfen would contradict the specific Section 11 roster; if
-the user wants strict 21+ visual availability instead, the alternative is to
-replace it with `kragmar_ossuary_reach` and amend the authoritative design.
+The recommended roster replaces Mournfen with `kragmar_ossuary_reach`, so all
+four Marshbloom zones are level 21-30 and the per-bracket paired-faction gate
+is satisfiable. Accepting this option explicitly amends the fixed four-zone
+Marshbloom list in `docs/design/world_zones.md`; the implementation may not
+make that authority change silently. Retaining Mournfen is a valid alternative
+only with an explicit design amendment that admits Marshbloom to its 11-20
+palette and defines how the otherwise one-sided 11-20 parity population is
+handled.
 
 ### D3 — Cultural tool-family assignment
 
