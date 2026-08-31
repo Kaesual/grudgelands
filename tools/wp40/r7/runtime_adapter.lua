@@ -159,6 +159,129 @@ local function sha256(repo, bytes)
 	return hex(raw_sha256(repo, bytes))
 end
 
+local function diagnostic_string(value, maximum)
+	local parts, used = {}, 0
+	for index = 1, #value do
+		local byte = string.byte(value, index)
+		local piece
+		if byte == 0 then piece = "\\0"
+		elseif byte == 9 then piece = "\\t"
+		elseif byte == 10 then piece = "\\n"
+		elseif byte == 13 then piece = "\\r"
+		elseif byte == 92 then piece = "\\\\"
+		elseif byte >= 32 and byte <= 126 then piece = string.char(byte)
+		else piece = string.format("\\x%02x", byte) end
+		if used + #piece > maximum then parts[#parts + 1] = "..." break end
+		parts[#parts + 1], used = piece, used + #piece
+	end
+	return table.concat(parts)
+end
+
+local function diagnostic_digest(repo, value)
+	if value == nil then return "absent" end
+	return sha256(repo, graph(value))
+end
+
+local function diagnostic_value(repo, value)
+	local kind = type(value)
+	if kind == "nil" then return "nil" end
+	if kind == "string" then
+		return "string(len=" .. tostring(#value) .. ",value=" ..
+			diagnostic_string(value, 64) .. ")"
+	end
+	if kind == "number" then return "number(" .. string.format("%.0f", value) .. ")" end
+	if kind == "boolean" then return value and "boolean(true)" or "boolean(false)" end
+	if kind == "table" then
+		local count = 0
+		for _ in pairs(value) do count = count + 1 end
+		return "table(fields=" .. tostring(count) .. ")"
+	end
+	return kind
+end
+
+local function diagnostic_key(repo, key)
+	if type(key) == "string" and key:match("^[A-Za-z_][A-Za-z0-9_]*$") then
+		return "." .. key
+	end
+	if type(key) == "number" then
+		return "[" .. string.format("%.0f", key) .. "]"
+	end
+	local encoded = graph(key)
+	return "[" .. diagnostic_string(encoded, 72) .. ";sha256=" ..
+		sha256(repo, encoded):sub(1, 16) .. "]"
+end
+
+local function first_difference(repo, actual, expected, path, active)
+	if rawequal(actual, expected) then return nil end
+	local actual_type, expected_type = type(actual), type(expected)
+	if actual_type ~= expected_type then
+		return {path = path, actual = diagnostic_value(repo, actual),
+			expected = diagnostic_value(repo, expected),
+			actual_sha256 = diagnostic_digest(repo, actual),
+			expected_sha256 = diagnostic_digest(repo, expected)}
+	end
+	if actual_type ~= "table" then
+		if actual ~= expected then
+			return {path = path, actual = diagnostic_value(repo, actual),
+				expected = diagnostic_value(repo, expected),
+				actual_sha256 = diagnostic_digest(repo, actual),
+				expected_sha256 = diagnostic_digest(repo, expected)}
+		end
+		return nil
+	end
+	if getmetatable(actual) ~= nil or getmetatable(expected) ~= nil then
+		fail("first-difference input has a metatable")
+	end
+	active = active or {}
+	if active[actual] or active[expected] then fail("first-difference input is cyclic") end
+	active[actual], active[expected] = true, true
+	local function keys(value)
+		local result = {}
+		for key in pairs(value) do
+			local encoded = graph(key)
+			result[#result + 1] = {key = key, encoded = encoded}
+		end
+		table.sort(result, function(left, right)
+			return less_bytes(left.encoded, right.encoded)
+		end)
+		return result
+	end
+	local actual_keys, expected_keys = keys(actual), keys(expected)
+	local ai, ei = 1, 1
+	while ai <= #actual_keys or ei <= #expected_keys do
+		local left, right = actual_keys[ai], expected_keys[ei]
+		if not left or (right and less_bytes(right.encoded, left.encoded)) then
+			local child_path = path .. diagnostic_key(repo, right.key)
+			active[actual], active[expected] = nil, nil
+			return {path = child_path, actual = "nil",
+				expected = diagnostic_value(repo, expected[right.key]),
+				actual_sha256 = "absent",
+				expected_sha256 = diagnostic_digest(repo, expected[right.key])}
+		elseif not right or less_bytes(left.encoded, right.encoded) then
+			local child_path = path .. diagnostic_key(repo, left.key)
+			active[actual], active[expected] = nil, nil
+			return {path = child_path, actual = diagnostic_value(repo, actual[left.key]),
+				expected = "nil", actual_sha256 = diagnostic_digest(repo, actual[left.key]),
+				expected_sha256 = "absent"}
+		end
+		local difference = first_difference(repo, actual[left.key], expected[right.key],
+			path .. diagnostic_key(repo, left.key), active)
+		if difference then
+			active[actual], active[expected] = nil, nil
+			return difference
+		end
+		ai, ei = ai + 1, ei + 1
+	end
+	active[actual], active[expected] = nil, nil
+	return nil
+end
+
+local function difference_message(difference)
+	return "path=" .. difference.path .. " actual=" .. difference.actual ..
+		" expected=" .. difference.expected .. " actual_sha256=" ..
+		difference.actual_sha256 .. " expected_sha256=" .. difference.expected_sha256
+end
+
 local function sha_stream(repo)
 	local ffi = rawget(_G, "wp40_ffi")
 	if not ffi then fail("LuaJIT FFI injection is required") end
@@ -772,11 +895,16 @@ local function accepted_owner_scan(repo, seed, owner_x, owner_z)
 	return scan_accepted_loaded(offline.new_evidence(seed, true), owner_x, owner_z)
 end
 
-local function settlement_decisions(settlement, rows, runs)
-	return graph({cultural = settlement.cultural,
+local function settlement_decision_value(settlement, rows, runs)
+	return {cultural = settlement.cultural,
 		decorations = settlement.decorations, rejections = settlement.rejections,
 		witnesses = settlement.witnesses, apex_overlaps = settlement.apex_overlaps,
-		direct_rows = rows, direct_runs = runs})
+		direct_rows = rows, direct_runs = runs}
+
+end
+
+local function settlement_decisions(settlement, rows, runs)
+	return graph(settlement_decision_value(settlement, rows, runs))
 end
 
 function module.canonical_graph_nul_kat()
@@ -804,6 +932,28 @@ function module.canonical_graph_nul_kat()
 	return true
 end
 
+function module.first_difference_kat(repo)
+	local aggregate_key = "runeslate\0ordinary"
+	local actual = {cultural = {[aggregate_key] = {accepted = 1, reserved = 225}},
+		direct_rows = {{-32, 23, -32, 1000, 0, 1, 34, 4, 0, 768}}}
+	local expected = {cultural = {[aggregate_key] = {accepted = 1, reserved = 225}},
+		direct_rows = {{-32, 23, -32, 1000, 0, 1, 34, 4, 0, 512}}}
+	local difference = first_difference(repo, actual, expected, "settlement")
+	if not difference or difference.path ~= "settlement.direct_rows[1][10]" or
+			difference.actual ~= "number(768)" or
+			difference.expected ~= "number(512)" or
+			#difference_message(difference) > 320 then
+		fail("bounded first-difference diagnostic KAT differs")
+	end
+	local missing = first_difference(repo, actual, {cultural = {},
+		direct_rows = actual.direct_rows}, "settlement")
+	if not missing or not missing.path:find("\\0", 1, true) or
+			#difference_message(missing) > 420 then
+		fail("NUL-key first-difference diagnostic KAT differs")
+	end
+	return true
+end
+
 local function stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
 	local normalized, substitutions = normalize_rows(runtime_fixture, binding,
 		direct.settlement.direct_rows)
@@ -816,16 +966,22 @@ local function stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
 	if graph(direct.candidates) ~= graph(accepted.candidates) then
 		fail("Stage-B planner candidate coordinates differ")
 	end
+	local production_settlement = settlement_decision_value(direct.settlement,
+		normalized, normalized_runs)
+	local predecessor_settlement = settlement_decision_value(accepted.settlement,
+		accepted.settlement.direct_rows, accepted.settlement.direct_runs)
 	local production = graph({groups = direct.groups, coverage = direct.coverage,
 		candidates = direct.candidates,
-		settlement = settlement_decisions(direct.settlement, normalized,
-			normalized_runs)})
+		settlement = graph(production_settlement)})
 	local predecessor = graph({groups = accepted.groups, coverage = accepted.coverage,
 		candidates = accepted.candidates,
-		settlement = settlement_decisions(accepted.settlement,
-			accepted.settlement.direct_rows, accepted.settlement.direct_runs)})
+		settlement = graph(predecessor_settlement)})
 	if production ~= predecessor then
-		fail("Stage-B normalized placement decisions differ from accepted R6")
+		local difference = first_difference(repo, production_settlement,
+			predecessor_settlement, "settlement")
+		if not difference then fail("Stage-B graph parity differs without a value diff") end
+		fail("Stage-B normalized placement decisions differ from accepted R6: " ..
+			difference_message(difference))
 	end
 	return {bytes = production, accepted_bytes = predecessor,
 		substitutions = substitutions}
