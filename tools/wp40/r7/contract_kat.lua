@@ -163,6 +163,7 @@ assert(pilot_bytes:find("canonical_output_bytes\t12345\n", 1, true))
 
 local runtime_adapter = dofile(repo .. "/tools/wp40/r7/runtime_adapter.lua")
 assert(runtime_adapter.canonical_graph_nul_kat() == true)
+assert(runtime_adapter.owner_column_count_kat() == true)
 assert(runtime_adapter.heightmap_projection_kat() == true)
 assert(runtime_adapter.normalize_rows_kat() == true)
 assert(runtime_adapter.first_difference_kat(repo) == true)

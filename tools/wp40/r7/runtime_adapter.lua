@@ -9,6 +9,8 @@ local INTEGRATION_OWNER_X, INTEGRATION_OWNER_Z = -32, -32
 local MULTI_Y_OWNER_X, MULTI_Y_OWNER_Z = -32, 48
 local OWNER_MIN_X, OWNER_MAX_X = -3792, 3728
 local OWNER_MIN_Z, OWNER_MAX_Z = -3392, 3328
+local QUERY_MIN_X, QUERY_MAX_X = -3740, 3740
+local QUERY_MIN_Z, QUERY_MAX_Z = -3340, 3340
 local ACCEPTED_R6_ARTIFACT_SHA256 =
 	"bb3e9674b768f7ef14fc0a703d0dc97022e9767d0c532b48cd5f1c0c741257b4"
 local P9G_REASONS = {
@@ -85,6 +87,62 @@ local function dense(value, label)
 	end
 	if seen ~= count then fail(label .. " dense population differs") end
 	return value
+end
+
+local function owner_column_count(owner_x, owner_z)
+	integer(owner_x, OWNER_MIN_X, OWNER_MAX_X, "owner column-count x")
+	integer(owner_z, OWNER_MIN_Z, OWNER_MAX_Z, "owner column-count z")
+	if (owner_x - OWNER_MIN_X) % 80 ~= 0 or
+			(owner_z - OWNER_MIN_Z) % 80 ~= 0 then
+		fail("owner column-count coordinate is not aligned")
+	end
+	local width = math.min(owner_x + 79, QUERY_MAX_X) -
+		math.max(owner_x, QUERY_MIN_X) + 1
+	local depth = math.min(owner_z + 79, QUERY_MAX_Z) -
+		math.max(owner_z, QUERY_MIN_Z) + 1
+	if width < 1 or width > 80 or depth < 1 or depth > 80 then
+		fail("owner column-count intersection is empty or oversized")
+	end
+	return width * depth
+end
+
+function module.owner_column_count_kat()
+	local exact = {
+		{OWNER_MIN_X, OWNER_MIN_Z, 784},
+		{OWNER_MAX_X, OWNER_MIN_Z, 364},
+		{OWNER_MIN_X, OWNER_MAX_Z, 364},
+		{OWNER_MAX_X, OWNER_MAX_Z, 169},
+		{OWNER_MIN_X, -32, 2240},
+		{-32, OWNER_MIN_Z, 2240},
+		{OWNER_MAX_X, -32, 1040},
+		{-32, OWNER_MAX_Z, 1040},
+		{-32, -32, 6400},
+	}
+	for index = 1, #exact do
+		if owner_column_count(exact[index][1], exact[index][2]) ~= exact[index][3] then
+			fail("owner column-count boundary KAT differs")
+		end
+	end
+	local population, total = 0, 0
+	for owner_z = OWNER_MIN_Z, OWNER_MAX_Z, 80 do
+		for owner_x = OWNER_MIN_X, OWNER_MAX_X, 80 do
+			population = population + 1
+			total = total + owner_column_count(owner_x, owner_z)
+		end
+	end
+	if population ~= 95 * 85 or total ~= 49980561 then
+		fail("owner column-count closed population KAT differs")
+	end
+	for _, coordinates in ipairs({
+		{OWNER_MIN_X + 1, OWNER_MIN_Z},
+		{OWNER_MIN_X, OWNER_MIN_Z - 80},
+		{OWNER_MAX_X + 80, OWNER_MAX_Z},
+	}) do
+		if pcall(owner_column_count, coordinates[1], coordinates[2]) then
+			fail("owner column-count KAT accepted off-grid/outside coordinates")
+		end
+	end
+	return true
 end
 
 local function less_bytes(left, right)
@@ -441,7 +499,7 @@ local function validate_scan(scan, owner_x, owner_z, successor)
 		"horizontal owner evidence")
 	if scan.schema ~= "grug_wp40_r7_horizontal_owner_evidence_v1" or
 			scan.owner_x ~= owner_x or scan.owner_z ~= owner_z or
-			scan.column_count ~= 6400 then
+			scan.column_count ~= owner_column_count(owner_x, owner_z) then
 		fail("horizontal owner evidence identity differs")
 	end
 	dense(scan.groups, "owner groups")
@@ -999,7 +1057,9 @@ local function scan_accepted_loaded(loaded, owner_x, owner_z)
 			for index = 1, #v do coverage[#coverage + 1] = v[index] end
 		end
 	end
-	if columns ~= 6400 then fail("accepted R6 owner column population differs") end
+	if columns ~= owner_column_count(owner_x, owner_z) then
+		fail("accepted R6 owner column population differs")
+	end
 	return {groups = groups, coverage = coverage,
 		candidates = {cultural = cultural, decorations = decorations},
 		settlement = loaded.settlement_fixture.scan_horizontal_owner(owner_x, owner_z,
