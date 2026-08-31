@@ -1221,6 +1221,54 @@ local function owner_minimum(value)
 	return -30912 + math.floor((value + 30912) / 80) * 80
 end
 
+local HEIGHTMAP_SENTINEL = -31007
+
+local function heightmap_for_band(raw, min_y, max_y)
+	dense(raw, "raw analytic heightmap")
+	if #raw ~= 6400 then fail("raw analytic heightmap population differs") end
+	integer(min_y, -31007, 31007, "heightmap owner minimum")
+	integer(max_y, -31007, 31007, "heightmap owner maximum")
+	if max_y ~= min_y + 79 or owner_minimum(min_y) ~= min_y then
+		fail("heightmap owner band differs")
+	end
+	local projected = {}
+	for index = 1, 6400 do
+		local value = integer(raw[index], -31007, 31007,
+			"raw analytic heightmap value")
+		if value >= min_y and value <= max_y then
+			projected[index] = value
+		else
+			projected[index] = HEIGHTMAP_SENTINEL
+		end
+	end
+	return projected
+end
+
+function module.heightmap_projection_kat()
+	local min_y, max_y = -32, 47
+	local raw = {}
+	for index = 1, 6400 do raw[index] = min_y + 7 end
+	raw[1], raw[2], raw[3], raw[4] = min_y - 1, min_y, max_y, max_y + 1
+	local before = graph(raw)
+	local projected = heightmap_for_band(raw, min_y, max_y)
+	if #projected ~= 6400 or projected[1] ~= HEIGHTMAP_SENTINEL or
+			projected[2] ~= min_y or projected[3] ~= max_y or
+			projected[4] ~= HEIGHTMAP_SENTINEL then
+		fail("heightmap projection boundary/order KAT differs")
+	end
+	for index = 5, 6400 do
+		if projected[index] ~= min_y + 7 then
+			fail("heightmap projection ordering KAT differs")
+		end
+	end
+	if graph(raw) ~= before then fail("heightmap projection mutated raw input") end
+	local short = {}
+	for index = 1, 6399 do short[index] = min_y end
+	local ok = pcall(heightmap_for_band, short, min_y, max_y)
+	if ok then fail("heightmap projection accepted a short input") end
+	return true
+end
+
 local function validate_vm_commit(result, snapshot, label)
 	if type(result) ~= "string" or not result:find("^applied_") then
 		fail(label .. " did not commit one transaction")
@@ -1848,6 +1896,7 @@ local function multi_y_owner_kat(repo, runtime_fixture, horizontal, heights,
 		if not consumed[band] then
 			local minp = {x = horizontal.owner_x, y = band, z = horizontal.owner_z}
 			local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
+			runtime_fixture.set_heightmap(heightmap_for_band(heights, minp.y, maxp.y))
 			local vm, _, observer = runtime_fixture.new_vm(minp, maxp)
 			local plan, generation = runtime_fixture.built.session.plan_slice(minp, maxp)
 			runtime_fixture.built.settlement_fixture.arm_private_capture()
@@ -1920,7 +1969,8 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		end
 	end
 	if #heights ~= 6400 then fail("full VM heightmap population differs") end
-	runtime_fixture.set_heightmap(heights)
+	local owner_heightmap = heightmap_for_band(heights, minp.y, maxp.y)
+	runtime_fixture.set_heightmap(owner_heightmap)
 	local successor_snapshot, successor_result, successor_capture
 	local before = runtime_fixture.built.session.metrics()
 	do
@@ -1996,7 +2046,7 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 	collectgarbage("collect")
 
 	local offline = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo)
-	local accepted_loaded = offline.new_capture(seed, heights, true)
+	local accepted_loaded = offline.new_capture(seed, owner_heightmap, true)
 	if type(accepted_loaded.settlement_fixture) ~= "table" then
 		fail("accepted R6 full-VM settlement fixture is absent")
 	end
@@ -2007,7 +2057,7 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		local data, param2, light = {}, {}, {}
 		for index = 1, volume do data[index], param2[index], light[index] = 0, 0, 0 end
 		local vm, _, observer = offline.vm_module.new({minp = minp, maxp = maxp,
-			data = data, param2 = param2, light = light, heightmap = heights,
+			data = data, param2 = param2, light = light, heightmap = owner_heightmap,
 			content_contract = accepted_loaded.content_contract, water_level = 1,
 			ignore_cid = accepted_loaded.content_contract.ignore_cid,
 			verify_inactive_tail = false})
