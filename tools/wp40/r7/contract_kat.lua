@@ -200,5 +200,82 @@ assert(capture_encoded ~= capture_graph({
 	rejections = {[rejection_key] = 1},
 }))
 
+-- Execute the actual CLI chunk with closed mocks so argument parsing is proven
+-- without starting a pilot, worker or runtime adapter.
+local function run_cli_fixture(arguments)
+	local calls, writes = {pilot = 0, worker = 0}, {}
+	local contract_mock = {}
+	function contract_mock.pilot_result_bytes()
+		return "schema\tmock_pilot_result_v1\n"
+	end
+	local adapter_mock = {}
+	function adapter_mock.pilot(actual_repo, scratch, seed_slot)
+		calls.pilot = calls.pilot + 1
+		calls.pilot_values = {actual_repo, scratch, seed_slot}
+		return {}
+	end
+	function adapter_mock.worker(actual_repo, scratch, first_slot, last_slot,
+			projection_sha256)
+		calls.worker = calls.worker + 1
+		calls.worker_values = {actual_repo, scratch, first_slot, last_slot,
+			projection_sha256}
+		return "schema\tgrug_wp40_r7_worker_receipt_v1\n"
+	end
+	local fake_io = {}
+	function fake_io.open(path, mode)
+		assert(mode == "wb")
+		return {
+			write = function(_, bytes) writes[path] = bytes; return true end,
+			close = function() return true end,
+		}
+	end
+	local chunk = assert(loadfile(repo .. "/tools/wp40/r7/adapter_cli.lua"))
+	setfenv(chunk, setmetatable({
+		arg = arguments, io = fake_io, print = function() end,
+		dofile = function(path)
+			if path == "/mock/tools/wp40/r7/contract.lua" then return contract_mock end
+			if path == "/mock/tools/wp40/r7/integration_adapter.lua" then
+				return adapter_mock
+			end
+			error("unexpected CLI fixture dofile " .. tostring(path), 0)
+		end,
+	}, {__index = _G}))
+	local ok, message = pcall(chunk)
+	return ok, message, calls, writes
+end
+
+local ok_cli, message_cli, calls_cli = run_cli_fixture({
+	"pilot", "/mock", "pilot.tsv", "scratch", "17",
+})
+assert(ok_cli, message_cli)
+assert(calls_cli.pilot == 1 and calls_cli.worker == 0 and
+	calls_cli.pilot_values[1] == "/mock" and
+	calls_cli.pilot_values[2] == "scratch" and
+	calls_cli.pilot_values[3] == 17)
+ok_cli, message_cli, calls_cli = run_cli_fixture({
+	"worker", "/mock", "worker.tsv", "scratch", "1", "5", string.rep("a", 64),
+})
+assert(ok_cli, message_cli)
+assert(calls_cli.pilot == 0 and calls_cli.worker == 1 and
+	calls_cli.worker_values[3] == 1 and calls_cli.worker_values[4] == 5)
+
+local function expect_cli_failure(arguments, fragment)
+	local ok, message, calls = run_cli_fixture(arguments)
+	assert(not ok and type(message) == "string" and
+		message:find(fragment, 1, true), "CLI failure fixture differed")
+	assert(calls.pilot == 0 and calls.worker == 0,
+		"CLI failure reached the runtime adapter")
+end
+expect_cli_failure({"pilot", "/mock", "out", "scratch"},
+	"pilot seed slot is not one canonical decimal slot")
+expect_cli_failure({"pilot", "/mock", "out", "scratch", "not-a-number"},
+	"pilot seed slot is not one canonical decimal slot")
+expect_cli_failure({"pilot", "/mock", "out", "scratch", "33"},
+	"pilot seed slot is outside the frozen 1..32 corpus")
+expect_cli_failure({"worker", "/mock", "out", "scratch", "1"},
+	"worker last slot is not one canonical decimal slot")
+expect_cli_failure({"worker", "/mock", "out", "scratch", "not-a-number", "5",
+	string.rep("a", 64)}, "worker first slot is not one canonical decimal slot")
+
 print("WP40 R7 evidence contract KAT PASS catalog=" .. catalog_digest ..
 	" populations=12/8/6 rejection_reasons=" .. #contract.rejection_reasons())

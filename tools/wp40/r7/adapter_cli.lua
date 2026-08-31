@@ -11,6 +11,18 @@ local function fail(message)
 	error("WP40 R7 adapter CLI: " .. message, 0)
 end
 
+local function slot_argument(index, label)
+	local raw = arg[index]
+	if type(raw) ~= "string" or not raw:match("^[1-9][0-9]*$") then
+		fail(label .. " is not one canonical decimal slot")
+	end
+	local value = tonumber(raw)
+	if type(value) ~= "number" or value % 1 ~= 0 or value < 1 or value > 32 then
+		fail(label .. " is outside the frozen 1..32 corpus")
+	end
+	return value
+end
+
 local function write_file(path, bytes)
 	if type(bytes) ~= "string" or bytes == "" then fail("output bytes are absent") end
 	local file, message = io.open(path, "wb")
@@ -73,15 +85,15 @@ elseif mode == "integration-kat" then
 	print("WP40 R7 integration KAT PASS manifest=" .. receipt.r7_manifest_sha256)
 elseif mode == "pilot" then
 	local scratch = assert(arg[4], "pilot scratch required")
-	local seed_slot = tonumber(assert(arg[5], "pilot seed slot required"))
+	local seed_slot = slot_argument(5, "pilot seed slot")
 	if arg[6] ~= nil then fail("pilot arguments differ") end
 	local receipt = adapter.pilot(repo, scratch, seed_slot)
 	write_file(output, contract.pilot_result_bytes(receipt))
 	print("WP40 R7 pilot PASS seed_slot=" .. tostring(seed_slot))
 elseif mode == "worker" then
 	local scratch = assert(arg[4], "worker scratch required")
-	local first_slot = tonumber(assert(arg[5], "first slot required"))
-	local last_slot = tonumber(assert(arg[6], "last slot required"))
+	local first_slot = slot_argument(5, "worker first slot")
+	local last_slot = slot_argument(6, "worker last slot")
 	local projection_sha256 = assert(arg[7], "projection SHA-256 required")
 	if arg[8] ~= nil then fail("worker arguments differ") end
 	local result = adapter.worker(repo, scratch, first_slot, last_slot,
