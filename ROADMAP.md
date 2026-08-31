@@ -136,8 +136,10 @@ the goal-level view.
   and canonical artifact were independently accepted 2026-08-29. R6's frozen
   surface/resource catalogs, private cultural-slot API, complete 32-seed
   evidence and canonical artifact were independently accepted 2026-08-31.
-  R0-R6 remain disabled; WP33 registrations are next before R7 may activate
-  the writer, and R8 retains the final release/runtime gates.
+  R0-R6 remain disabled. R7's native/cutover contract and WP33 decisions
+  D1-D6 were ratified 2026-08-31; their registrations, P9G successor and
+  consumer cutover are next before the writer activates. R8 retains the final
+  release/runtime gates.
   Current technical contract:
   [wp40-engineering-brief.md](docs/research/wp40-engineering-brief.md); current
   R0-R8 sequence:
