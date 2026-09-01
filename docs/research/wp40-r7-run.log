@@ -1,0 +1,43 @@
+schema	grug_wp40_r7_run_log_v1
+file	catalog.log	a99874a36491399873dc0764ef005d09abeda0774c8ac0a5fdc3dfa612e86ddb
+line	catalog.log	WP40 R7 catalog gate PASS sha256=d03533037c5a38cf62b85963a59b19efe9f48f770b5b6f3885f20f7b17f0af53 populations=12/8/6
+file	native.log	00e57b5b36d002ca18066d78845ea678eed9775801e1089101c6a33df82b831d
+line	native.log	WP40 R7 native inputs KAT PASS noise=5a1183a0db4dcbf7c2fce382e907660bfd26e53325d370f62a2d9e78c04d8738 native=d1fe4ac1c7cbe5525af65bde48cc4309870c01e4d474785f2cf0cda3d2639480 setters=6 reads=24 ores=6
+file	sample-assignment.log	a94e9d53f3e0f195b4a135010eacde0976b2e3f2416868674ac5727bed6366ac
+line	sample-assignment.log	WP40 R7 sample roster PASS seeds=32 owners=4096
+file	frontier-access-assignment.log	13aba86645b16630f0f4e628c4c68d668467faf2a3b39bcae2ef676d73f25ce0
+line	frontier-access-assignment.log	WP40 R7 frontier access roster PASS seeds=7 owners=3206
+file	wp40-r7-integration.log	356fbb8fa80067585d57fe63d6e468930fe695049e75cfa5f1811efcb2ae6389
+line	wp40-r7-integration.log	WP40 R7 integration KAT PASS manifest=640d2623274756d0b0b4bb0de682a72a92a6f8bc87e5e6eaf66fbce74266938a
+file	worker-1.log	5e9c024f73b7cc2be9f6ba4cb7f567ea67d7dcca24b27a96b83c91165ece23c1
+line	worker-1.log	WP40 R7 worker PASS slots=1-5
+file	worker-2.log	f80f595738b374fbee70402fd2e4ee287eb5bb962a883d55eaf054f609235755
+line	worker-2.log	WP40 R7 worker PASS slots=6-10
+file	worker-3.log	ca2c7cd49a5f71bb0ee7d19e03dfe6cbf3acc56d9e1d2a564dfebe6e2ac6f62e
+line	worker-3.log	WP40 R7 worker PASS slots=11-15
+file	worker-4.log	97e544139b5ac87c2f320c4644f6b9b4971df1b82da1581365e5de008fd4b5b0
+line	worker-4.log	WP40 R7 worker PASS slots=16-20
+file	worker-5.log	7226cbc0177eb133f43a9ec1045456113322e4683d1fc272eff110f4816ae8dd
+line	worker-5.log	WP40 R7 worker PASS slots=21-24
+file	worker-6.log	ea2d99a4dae65cb79196b3602babfefbac52d163d550285d0f35077ac416b965
+line	worker-6.log	WP40 R7 worker PASS slots=25-28
+file	worker-7.log	627140205a57b8fc87bc02a5a388308af00863ed7cfc4aa66793c0ca3d3f115c
+line	worker-7.log	WP40 R7 worker PASS slots=29-32
+file	worker-1.resource.tsv	ca5d5568a6c51f8c17136a536e4b019c29aa5f8c235fa0d26222e0734efde15d
+line	worker-1.resource.tsv	r7_worker_resource_v1	1	5992.45	5905.48	17.82	1783664
+file	worker-2.resource.tsv	a522cd00d5f6e075adeb68c818747f48304ed307f3b062b138dfc0f5b3a82180
+line	worker-2.resource.tsv	r7_worker_resource_v1	2	6000.82	5914.00	17.64	1583564
+file	worker-3.resource.tsv	65a0fb878c2a2596e8593b121d6a033a2f8e40db7a18942aca6d32887beadd3a
+line	worker-3.resource.tsv	r7_worker_resource_v1	3	6205.64	6116.80	17.93	1711100
+file	worker-4.resource.tsv	926f36a52230d402da83edd84f628e06a1a0ffae17c58a742e19c7bd16158c59
+line	worker-4.resource.tsv	r7_worker_resource_v1	4	6064.63	5976.17	17.83	1669492
+file	worker-5.resource.tsv	d6798da7daa87eb521c866c8e9dff7a358769f94fdbb8b0ca788168f1bb78cad
+line	worker-5.resource.tsv	r7_worker_resource_v1	5	5234.58	5162.69	14.50	1726024
+file	worker-6.resource.tsv	ef8531314a8a34e4a58b6c1c683c4d0eb72133d73eb5abedae027e3afbacfc31
+line	worker-6.resource.tsv	r7_worker_resource_v1	6	5232.51	5160.23	14.75	1602000
+file	worker-7.resource.tsv	d4d9d54580093db12b37312f67b6c5c16cae4c0a8e90f930c3a2f743ce745921
+line	worker-7.resource.tsv	r7_worker_resource_v1	7	5623.14	5543.41	16.10	1705436
+file	finalizer-forward.log	e6315aec030320cb3c41a47a2034aa9fccfd060b3e3b5dbdd2fa2f19ddf4076f
+line	finalizer-forward.log	WP40 R7 finalizer PASS workers=7
+file	finalizer-reverse.log	e6315aec030320cb3c41a47a2034aa9fccfd060b3e3b5dbdd2fa2f19ddf4076f
+line	finalizer-reverse.log	WP40 R7 finalizer PASS workers=7
