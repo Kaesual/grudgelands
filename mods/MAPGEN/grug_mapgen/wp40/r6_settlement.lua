@@ -368,9 +368,9 @@ local function settlement_factory()
 			if not reason then fail("fail_settlement", "exclusion identity differs") end
 			if reason == "route_or_water" and
 					select(20, planner_source.column_values_at(x, z)) then
-				return "fixed_or_protected"
+				return "fixed_or_protected", id
 			end
-			return reason
+			return reason, id
 		end
 		local function housing_excluded_at(x, z)
 			return type(horizontal.housing_mask_id_at) == "function" and

@@ -15,6 +15,34 @@ local SAMPLE_SCHEMA = "grug_wp40_r7_stratified_owner_sample_v1"
 local SAMPLE_OWNER_COUNT = 128
 local SAMPLE_LATTICE_COUNT = 104
 local SAMPLE_RISK_COUNT = 24
+local FRONTIER_ACCESS_SCHEMA = "grug_wp40_r7_frontier_access_roster_v1"
+local FRONTIER_ACCESS_OWNER_COUNT = 458
+local FRONTIER_ACCESS_COLUMN_COUNT = 2931200
+local FRONTIER_ACCESS_ENVELOPES = {
+	{"front_gravesalt_escarpment", -2500, -1200, -250, 250},
+	{"front_skyglass_canopy", 1200, 2500, -250, 250},
+	{"front_stormscale_summit", 2800, 3500, -400, 390},
+	{"front_wyrmglass_crown", -3500, -2800, -390, 380},
+}
+local FRONTIER_ACCESS_SOURCES = {
+	"wp33_crimson_lotus_source_v1",
+	"wp33_rock_salt_source_v1",
+	"wp33_stormkelp_source_v1",
+	"wp33_wild_cocoa_source_v1",
+}
+local FRONTIER_ACCESS_SOURCE_SET, FRONTIER_ACCESS_ZONE_SET = {}, {}
+for index = 1, #FRONTIER_ACCESS_SOURCES do
+	FRONTIER_ACCESS_SOURCE_SET[FRONTIER_ACCESS_SOURCES[index]] = true
+end
+for index = 1, #FRONTIER_ACCESS_ENVELOPES do
+	FRONTIER_ACCESS_ZONE_SET[FRONTIER_ACCESS_ENVELOPES[index][1]] = true
+end
+local MAIN_PAIRED_ACCESS_SOURCE_SET = {
+	wp33_dragonweed_source_v1 = true,
+	wp33_gravemoss_source_v1 = true,
+	wp33_marshbloom_source_v1 = true,
+	wp33_sunleaf_source_v1 = true,
+}
 local SAMPLE_RISK_OWNERS = {
 	{"cultural_dwarf_concentrated", -1712, -1152},
 	{"cultural_dwarf_ordinary", -2032, -2992},
@@ -387,6 +415,161 @@ function module.sample_assignment(repo)
 	return table.concat(output)
 end
 
+local function frontier_access_geometry(repo)
+	local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
+	if source.warp.maximum ~= 60 or source.holy_grounds.min_x ~= -2500 or
+			source.holy_grounds.max_x ~= 2500 or source.holy_grounds.min_z ~= -250 or
+			source.holy_grounds.max_z ~= 250 then
+		fail("frontier access source geometry differs")
+	end
+	local expected_zones = {
+		front_wyrmglass_crown = {33, "wyrmglass_island", -3150, 0},
+		front_gravesalt_escarpment = {34, "holy_grounds", -2000, 0},
+		front_broken_causeway = {35, "holy_grounds", -750, 0},
+		front_shattered_line = {36, "holy_grounds", 750, 0},
+		front_skyglass_canopy = {37, "holy_grounds", 2000, 0},
+		front_stormscale_summit = {38, "stormscale_island", 3150, 0},
+	}
+	local holy_count = 0
+	for index = 1, #source.zones do
+		local zone, expected = source.zones[index], expected_zones[source.zones[index].id]
+		if zone.macro_region == "holy_grounds" then holy_count = holy_count + 1 end
+		if expected then
+			if zone.numeric_id ~= expected[1] or zone.macro_region ~= expected[2] or
+					zone.hub.x ~= expected[3] or zone.hub.z ~= expected[4] or zone.bias ~= 0 then
+				fail("frontier access zone geometry differs")
+			end
+			expected_zones[zone.id] = false
+		elseif zone.macro_region == "holy_grounds" then
+			fail("frontier access holy-ground zone population differs")
+		end
+	end
+	if holy_count ~= 4 then fail("frontier access holy-ground zone count differs") end
+	for _, value in pairs(expected_zones) do
+		if value ~= false then fail("frontier access zone is absent") end
+	end
+	local island_bounds = {
+		island_wyrmglass = {"wyrmglass_island", 33, -3440, -2860, -330, 320},
+		island_stormscale = {"stormscale_island", 38, 2860, 3440, -340, 330},
+	}
+	if #source.islands ~= 2 then fail("frontier access island population differs") end
+	for index = 1, #source.islands do
+		local island, expected = source.islands[index], island_bounds[source.islands[index].id]
+		if not expected or island.region ~= expected[1] or
+				island.zone_numeric_id ~= expected[2] then
+			fail("frontier access island identity differs")
+		end
+		local min_x, max_x, min_z, max_z = math.huge, -math.huge,
+			math.huge, -math.huge
+		for point = 1, #island.polygon do
+			local value = island.polygon[point]
+			min_x, max_x = math.min(min_x, value.x), math.max(max_x, value.x)
+			min_z, max_z = math.min(min_z, value.z), math.max(max_z, value.z)
+		end
+		if min_x ~= expected[3] or max_x ~= expected[4] or
+				min_z ~= expected[5] or max_z ~= expected[6] then
+			fail("frontier access island geometry differs")
+		end
+		island_bounds[island.id] = false
+	end
+	for _, value in pairs(island_bounds) do
+		if value ~= false then fail("frontier access island is absent") end
+	end
+	return source
+end
+
+local function build_frontier_access_rows(repo)
+	frontier_access_geometry(repo)
+	local rows, columns = {}, 0
+	for owner_z = OWNER_MIN_Z, OWNER_MAX_Z, 80 do
+		for owner_x = OWNER_MIN_X, OWNER_MAX_X, 80 do
+			local envelope_id
+			for index = 1, #FRONTIER_ACCESS_ENVELOPES do
+				local envelope = FRONTIER_ACCESS_ENVELOPES[index]
+				if owner_x <= envelope[3] and owner_x + 79 >= envelope[2] and
+						owner_z <= envelope[5] and owner_z + 79 >= envelope[4] then
+					if envelope_id then fail("frontier access envelopes overlap") end
+					envelope_id = envelope[1]
+				end
+			end
+			if envelope_id then
+				local count = owner_column_count(owner_x, owner_z)
+				rows[#rows + 1] = {envelope_id = envelope_id, owner_x = owner_x,
+					owner_z = owner_z, columns = count, ordinal = #rows + 1}
+				columns = columns + count
+			end
+		end
+	end
+	if #rows ~= FRONTIER_ACCESS_OWNER_COUNT or
+			columns ~= FRONTIER_ACCESS_COLUMN_COUNT then
+		fail("frontier access closed owner/column population differs")
+	end
+	return rows, columns
+end
+
+local function frontier_access_owner_bytes(row, index)
+	return table.concat({"frontier_access_owner", tostring(index), row.envelope_id,
+		tostring(row.owner_x), tostring(row.owner_z), tostring(row.columns)}, "\t") .. "\n"
+end
+
+local function frontier_access_roster_bytes(rows)
+	local output = {"schema\t", FRONTIER_ACCESS_SCHEMA, "\n"}
+	for index = 1, #FRONTIER_ACCESS_ENVELOPES do
+		local row = FRONTIER_ACCESS_ENVELOPES[index]
+		output[#output + 1] = table.concat({"envelope", row[1], tostring(row[2]),
+			tostring(row[3]), tostring(row[4]), tostring(row[5])}, "\t") .. "\n"
+	end
+	for index = 1, #rows do
+		output[#output + 1] = frontier_access_owner_bytes(rows[index], index)
+	end
+	return table.concat(output)
+end
+
+local function frontier_access_roster(repo)
+	local rows, columns = build_frontier_access_rows(repo)
+	local bytes = frontier_access_roster_bytes(rows)
+	return {schema = FRONTIER_ACCESS_SCHEMA, rows = rows, columns = columns,
+		bytes = bytes, sha256 = sha256(repo, bytes)}
+end
+
+function module.frontier_access_roster_kat(repo)
+	local roster = frontier_access_roster(repo)
+	local counts, seen, previous_z, previous_x = {}, {}, nil, nil
+	for index = 1, #roster.rows do
+		local row = roster.rows[index]
+		local key = sample_owner_key(row.owner_x, row.owner_z)
+		if seen[key] or row.ordinal ~= index or row.columns ~= 6400 or
+				(previous_z and (row.owner_z < previous_z or
+					(row.owner_z == previous_z and row.owner_x <= previous_x))) then
+			fail("frontier access canonical owner KAT differs")
+		end
+		seen[key], counts[row.envelope_id] = true, (counts[row.envelope_id] or 0) + 1
+		previous_z, previous_x = row.owner_z, row.owner_x
+	end
+	if counts.front_gravesalt_escarpment ~= 119 or
+			counts.front_skyglass_canopy ~= 119 or
+			counts.front_stormscale_summit ~= 110 or
+			counts.front_wyrmglass_crown ~= 110 then
+		fail("frontier access envelope population KAT differs")
+	end
+	return true
+end
+
+function module.frontier_access_assignment(repo)
+	local roster = frontier_access_roster(repo)
+	return table.concat({
+		"schema\tgrug_wp40_r7_frontier_access_assignment_v1\n",
+		"frontier_access_schema\t", roster.schema, "\n",
+		"seed_population\t32\n",
+		"owner_population_per_seed\t", tostring(#roster.rows), "\n",
+		"case_population\t", tostring(32 * #roster.rows), "\n",
+		"column_population_per_seed\t", tostring(roster.columns), "\n",
+		"column_visit_population\t", tostring(32 * roster.columns), "\n",
+		"source_population\t4\nzone_population\t4\nsource_faction_gate_population\t8\n",
+		"roster_sha256\t", roster.sha256, "\n",
+	})
+end
+
 local function diagnostic_string(value, maximum)
 	local parts, used = {}, 0
 	for index = 1, #value do
@@ -637,8 +820,12 @@ local function same_tuple(row, operation, prefix)
 		row[10] == operation[prefix .. "aux"]
 end
 
-local function operation_bytes(operation)
+local function operation_bytes(operation, row_type)
 	exact_fields(operation, OPERATION_KEYS, "P9G operation")
+	row_type = row_type or "operation"
+	if row_type ~= "operation" and row_type ~= "frontier_access_operation" then
+		fail("P9G operation row type differs")
+	end
 	text(operation.source_id, "P9G source ID")
 	text(operation.zone_id, "P9G zone ID")
 	text(operation.biome, "P9G biome")
@@ -658,7 +845,7 @@ local function operation_bytes(operation)
 		end
 		values[index] = value
 	end
-	return "operation\t" .. table.concat(values, "\t") .. "\n"
+	return row_type .. "\t" .. table.concat(values, "\t") .. "\n"
 end
 
 local function validate_scan(scan, owner_x, owner_z, successor)
@@ -1412,6 +1599,13 @@ local function probe_rejections(runtime_fixture)
 			exclusion_at = function()
 				if mode == "fixed_or_protected" or mode == "route_or_water" then
 					return mode
+				elseif mode == "dry_wyrmglass_coast" then
+					return "route_or_water", "exclude:coast:island_wyrmglass"
+				elseif mode == "dry_stormscale_coast" or
+						mode == "wet_stormscale_coast" then
+					return "route_or_water", "exclude:coast:island_stormscale"
+				elseif mode == "unknown_coast" then
+					return "route_or_water", "exclude:coast:unknown"
 				end
 				return nil
 			end,
@@ -1419,7 +1613,8 @@ local function probe_rejections(runtime_fixture)
 			column_values_at = function(x, z)
 				local actual_zone = mode == "wrong_zone" and "not_a_zone" or zone
 				local biome = mode == "wrong_biome" and "not_a_biome" or host.biome
-				local water = "land"
+				local water = mode == "wet_stormscale_coast" and
+					"immutable_dragon_channel" or "land"
 				if index == shore_index and mode ~= "wrong_shore" and
 						(x ~= 10 or z ~= 10) then
 					water = row.shore_water_classes[1]
@@ -1444,6 +1639,20 @@ local function probe_rejections(runtime_fixture)
 	local accepted = evidence.probe_p9g_reason(context(ordinary_index, "accepted"),
 		ordinary_index, 10, 11, 10)
 	if accepted ~= "accepted" then fail("P9G accepted probe differs") end
+	for _, mode in ipairs({"dry_wyrmglass_coast", "dry_stormscale_coast"}) do
+		local island = evidence.probe_p9g_reason(context(ordinary_index, mode),
+			ordinary_index, 10, 11, 10)
+		if island ~= "accepted" then
+			fail("P9G dry island-coast probe differs for " .. mode)
+		end
+	end
+	for _, mode in ipairs({"wet_stormscale_coast", "unknown_coast"}) do
+		local blocked = evidence.probe_p9g_reason(context(ordinary_index, mode),
+			ordinary_index, 10, 11, 10)
+		if blocked ~= "route_or_water" then
+			fail("P9G island-coast fail-closed probe differs for " .. mode)
+		end
+	end
 	return true
 end
 
@@ -2698,7 +2907,39 @@ local function merge_p9g(aggregate, reasons, ledger)
 	end
 end
 
-local function p9g_aggregate_bytes(aggregate, reasons)
+local function merge_frontier_access(aggregate, reasons, ledger)
+	for index = 1, #ledger.populations do
+		local row = ledger.populations[index]
+		if FRONTIER_ACCESS_SOURCE_SET[row.source_id] then
+			if not FRONTIER_ACCESS_ZONE_SET[row.zone_id] then
+				fail("frontier access population escaped the closed zone set")
+			end
+			local key = table.concat({row.source_id, row.zone_id, row.biome,
+				row.faction, row.bracket}, "\0")
+			local target = aggregate.populations[key]
+			if not target then
+				target = {source_id = row.source_id, zone_id = row.zone_id,
+					biome = row.biome, faction = row.faction, bracket = row.bracket,
+					eligible = 0, budget = 0, accepted = 0, rejections = {}}
+				for reason = 1, #reasons do target.rejections[reasons[reason]] = 0 end
+				aggregate.populations[key] = target
+			end
+			target.eligible = target.eligible + row.eligible
+			target.budget = target.budget + row.budget
+			target.accepted = target.accepted + row.accepted
+			for reason = 1, #reasons do
+				local name = reasons[reason]
+				target.rejections[name] = target.rejections[name] + row.rejections[name]
+			end
+		end
+	end
+end
+
+local function p9g_aggregate_bytes(aggregate, reasons, row_type)
+	row_type = row_type or "population"
+	if row_type ~= "population" and row_type ~= "frontier_access_population" then
+		fail("P9G population row type differs")
+	end
 	local rows = {}
 	local population_keys = {}
 	for key in pairs(aggregate.populations) do population_keys[#population_keys + 1] = key end
@@ -2711,7 +2952,7 @@ local function p9g_aggregate_bytes(aggregate, reasons)
 			values[#values + 1] = row.rejections[reasons[reason]]
 		end
 		for field = 6, #values do values[field] = tostring(values[field]) end
-		rows[#rows + 1] = "population\t" .. table.concat(values, "\t") .. "\n"
+		rows[#rows + 1] = row_type .. "\t" .. table.concat(values, "\t") .. "\n"
 	end
 	return table.concat(rows)
 end
@@ -2731,9 +2972,10 @@ local function unopened_output(path)
 	return assert(io.open(path, "wb"), "cannot create seed output")
 end
 
--- The pragmatic seed encoder writes its complete sampled ledger incrementally.
--- Every selected owner still executes all three production-owned projections;
--- only the closed spatial population is reduced.
+-- The pragmatic seed encoder writes both ledgers incrementally. Every main-
+-- sample owner executes all three production-owned projections. The separate,
+-- preselected Frontier lane executes only authentic successor settlement and
+-- never contributes to Stage A/B, density or parity.
 function module.run_seed(repo, seed_slot, output_path)
 	integer(seed_slot, 1, 32, "seed slot")
 	local output = unopened_output(output_path)
@@ -2746,6 +2988,12 @@ function module.run_seed(repo, seed_slot, output_path)
 	local accepted_loaded = offline.new_evidence(seed, true)
 	local aggregate = new_horizontal_aggregate(offline)
 	local roster = sample_roster(repo, seed_slot)
+	local access_roster = frontier_access_roster(repo)
+	local access_owner_set = {}
+	for index = 1, #access_roster.rows do
+		local row = access_roster.rows[index]
+		access_owner_set[sample_owner_key(row.owner_x, row.owner_z)] = true
+	end
 	local stream = sha_stream(repo)
 	local output_hasher, output_bytes = stream.new(), 0
 	local function write(bytes)
@@ -2754,7 +3002,7 @@ function module.run_seed(repo, seed_slot, output_path)
 		output_hasher.update(bytes)
 		output_bytes = output_bytes + #bytes
 	end
-	write("schema\tgrug_wp40_r7_seed_evidence_v1\n")
+	write("schema\tgrug_wp40_r7_seed_evidence_v2\n")
 	write("seed_slot\t" .. tostring(seed_slot) .. "\n")
 	write("seed_identity\t" .. seed .. "\n")
 	write("sample_schema\t" .. roster.schema .. "\n")
@@ -2762,6 +3010,13 @@ function module.run_seed(repo, seed_slot, output_path)
 	write("sample_owner_count\t" .. tostring(#roster.rows) .. "\n")
 	write("sample_column_count\t" .. tostring(roster.columns) .. "\n")
 	for index = 1, #roster.rows do write(sample_owner_bytes(roster.rows[index], index)) end
+	write("frontier_access_schema\t" .. access_roster.schema .. "\n")
+	write("frontier_access_roster_sha256\t" .. access_roster.sha256 .. "\n")
+	write("frontier_access_owner_count\t" .. tostring(#access_roster.rows) .. "\n")
+	write("frontier_access_column_count\t" .. tostring(access_roster.columns) .. "\n")
+	for index = 1, #access_roster.rows do
+		write(frontier_access_owner_bytes(access_roster.rows[index], index))
+	end
 	local restored_buffers, direct_buffers = stream.new(), stream.new()
 	local restored_runs, direct_runs = stream.new(), stream.new()
 	local candidate, accepted_candidate = stream.new(), stream.new()
@@ -2772,11 +3027,14 @@ function module.run_seed(repo, seed_slot, output_path)
 	local p9g_aggregate = new_p9g_aggregate(reasons)
 	local operation_count, accepted_count, rejected_count = 0, 0, 0
 	local substitutions = 0
+	local successor_cache = {}
 	for owner_index = 1, #roster.rows do
 		local owner_x, owner_z = roster.rows[owner_index].owner_x,
 			roster.rows[owner_index].owner_z
 			local successor = validate_scan(runtime_fixture.built.evidence.scan_owner(
 				owner_x, owner_z), owner_x, owner_z, true)
+			local owner_key = sample_owner_key(owner_x, owner_z)
+			if access_owner_set[owner_key] then successor_cache[owner_key] = successor end
 			local direct = validate_scan(runtime_fixture.built.evidence.scan_direct_owner(
 				owner_x, owner_z), owner_x, owner_z, false)
 			local a = stage_a_owner(repo, runtime_fixture, successor, direct)
@@ -2836,6 +3094,33 @@ function module.run_seed(repo, seed_slot, output_path)
 		write(table.concat({"sample_coverage", fields[1], fields[2],
 			tostring(aggregate.coverage[coverage_keys[index]])}, "\t") .. "\n")
 	end
+	local frontier_aggregate = new_p9g_aggregate(reasons)
+	local frontier_operations, frontier_accepted, frontier_rejected = 0, 0, 0
+	for owner_index = 1, #access_roster.rows do
+		local row = access_roster.rows[owner_index]
+		local key = sample_owner_key(row.owner_x, row.owner_z)
+		local successor = successor_cache[key]
+		if not successor then
+			successor = validate_scan(runtime_fixture.built.evidence.scan_owner(
+				row.owner_x, row.owner_z), row.owner_x, row.owner_z, true)
+		end
+		local ledger = validate_ledger(successor.settlement.p9g)
+		for operation_index = 1, #ledger.operations do
+			local operation = ledger.operations[operation_index]
+			if FRONTIER_ACCESS_SOURCE_SET[operation.source_id] then
+				if not FRONTIER_ACCESS_ZONE_SET[operation.zone_id] then
+					fail("frontier access operation escaped the closed zone set")
+				end
+				write(operation_bytes(operation, "frontier_access_operation"))
+				frontier_operations = frontier_operations + 1
+				if operation.accepted then frontier_accepted = frontier_accepted + 1
+				else frontier_rejected = frontier_rejected + 1 end
+			end
+		end
+		merge_frontier_access(frontier_aggregate, reasons, ledger)
+	end
+	write(p9g_aggregate_bytes(frontier_aggregate, reasons,
+		"frontier_access_population"))
 	local stage_a_bytes, stage_b_bytes = contract.stage_a_bytes(stage_a),
 		contract.stage_b_bytes(stage_b)
 	assert(output:close())
@@ -2846,7 +3131,13 @@ function module.run_seed(repo, seed_slot, output_path)
 		bytes = output_bytes, stage_a_sha256 = sha256(repo, stage_a_bytes),
 		stage_b_sha256 = sha256(repo, stage_b_bytes),
 		sample_roster_sha256 = roster.sha256, sample_owner_count = #roster.rows,
-		sample_column_count = roster.columns}
+		sample_column_count = roster.columns,
+		frontier_access_roster_sha256 = access_roster.sha256,
+		frontier_access_owner_count = #access_roster.rows,
+		frontier_access_column_count = access_roster.columns,
+		frontier_access_operation_count = frontier_operations,
+		frontier_access_accepted_count = frontier_accepted,
+		frontier_access_rejected_count = frontier_rejected}
 end
 
 function module.pilot(repo, scratch, seed_slot)
@@ -2854,13 +3145,16 @@ function module.pilot(repo, scratch, seed_slot)
 	local result = module.run_seed(repo, seed_slot,
 		scratch .. "-seed-" .. string.format("%02d", seed_slot) .. ".tsv")
 	return {
-		schema = "grug_wp40_r7_pilot_result_v1", seed_slot = seed_slot,
+		schema = "grug_wp40_r7_pilot_result_v2", seed_slot = seed_slot,
 		seed_identity = result.seed_identity,
 		canonical_output_sha256 = result.sha256,
 		canonical_output_bytes = result.bytes,
 		stage_a_sha256 = result.stage_a_sha256,
 		stage_b_sha256 = result.stage_b_sha256,
 		p9g_delta_sha256 = result.stage_a.p9g_delta_sha256,
+		frontier_access_roster_sha256 = result.frontier_access_roster_sha256,
+		frontier_access_owner_count = result.frontier_access_owner_count,
+		frontier_access_column_count = result.frontier_access_column_count,
 	}
 end
 
@@ -2869,7 +3163,7 @@ function module.worker(repo, scratch, first_slot, last_slot, projection_sha256)
 	integer(first_slot, 1, 32, "worker first slot")
 	integer(last_slot, first_slot, 32, "worker last slot")
 	digest(projection_sha256, "approved projection digest")
-	local rows = {"schema\tgrug_wp40_r7_worker_receipt_v1\n",
+	local rows = {"schema\tgrug_wp40_r7_worker_receipt_v2\n",
 		"projection_sha256\t" .. projection_sha256 .. "\n",
 		"first_slot\t" .. tostring(first_slot) .. "\n",
 		"last_slot\t" .. tostring(last_slot) .. "\n"}
@@ -2882,7 +3176,11 @@ function module.worker(repo, scratch, first_slot, last_slot, projection_sha256)
 			result.accepted_r6_artifact_sha256, result.stage_a_sha256,
 			result.stage_b_sha256, result.stage_a.p9g_delta_sha256,
 			result.sample_roster_sha256, result.sample_owner_count,
-			result.sample_column_count}, "\t") .. "\n"
+			result.sample_column_count, result.frontier_access_roster_sha256,
+			result.frontier_access_owner_count, result.frontier_access_column_count,
+			result.frontier_access_operation_count,
+			result.frontier_access_accepted_count,
+			result.frontier_access_rejected_count}, "\t") .. "\n"
 		rows[#rows + 1] = "stage_a\t" .. tostring(slot) .. "\t" ..
 			hex(contract.stage_a_bytes(result.stage_a)) .. "\n"
 		rows[#rows + 1] = "stage_b\t" .. tostring(slot) .. "\t" ..
@@ -2937,7 +3235,7 @@ local function worker_descriptors(repo, path, contract, stream)
 	for line in bytes:gmatch("([^\n]+)\n") do
 		local fields = split_tabs(line)
 		if first then
-			if line ~= "schema\tgrug_wp40_r7_worker_receipt_v1" then
+			if line ~= "schema\tgrug_wp40_r7_worker_receipt_v2" then
 				fail("worker receipt schema differs")
 			end
 			first = false
@@ -2947,7 +3245,7 @@ local function worker_descriptors(repo, path, contract, stream)
 			first_slot = tonumber(fields[2])
 		elseif fields[1] == "last_slot" and #fields == 2 and not last_slot then
 			last_slot = tonumber(fields[2])
-		elseif fields[1] == "seed" and #fields == 14 then
+		elseif fields[1] == "seed" and #fields == 20 then
 			local slot = tonumber(fields[2])
 			if not slot or seeds[slot] then fail("worker seed descriptor differs") end
 			seeds[slot] = {slot = slot, identity = fields[3], path = fields[4],
@@ -2955,7 +3253,13 @@ local function worker_descriptors(repo, path, contract, stream)
 				accepted_r6_artifact_sha256 = fields[8], stage_a_sha256 = fields[9],
 				stage_b_sha256 = fields[10], p9g_delta_sha256 = fields[11],
 				sample_roster_sha256 = fields[12], sample_owner_count = tonumber(fields[13]),
-				sample_column_count = tonumber(fields[14])}
+				sample_column_count = tonumber(fields[14]),
+				frontier_access_roster_sha256 = fields[15],
+				frontier_access_owner_count = tonumber(fields[16]),
+				frontier_access_column_count = tonumber(fields[17]),
+				frontier_access_operation_count = tonumber(fields[18]),
+				frontier_access_accepted_count = tonumber(fields[19]),
+				frontier_access_rejected_count = tonumber(fields[20])}
 		elseif fields[1] == "stage_a" and #fields == 3 then
 			local slot = assert(tonumber(fields[2]))
 			if stage_a[slot] then fail("duplicate worker Stage-A row") end
@@ -2995,8 +3299,8 @@ local function worker_descriptors(repo, path, contract, stream)
 		digest(row.sha256, "seed file digest")
 		integer(row.bytes, 1, MAX_SAFE, "seed file bytes")
 		for _, field in ipairs({"manifest_sha256", "accepted_r6_artifact_sha256",
-			"stage_a_sha256", "stage_b_sha256", "p9g_delta_sha256",
-			"sample_roster_sha256"}) do
+				"stage_a_sha256", "stage_b_sha256", "p9g_delta_sha256",
+				"sample_roster_sha256", "frontier_access_roster_sha256"}) do
 			digest(row[field], "seed descriptor " .. field)
 		end
 		integer(row.sample_owner_count, SAMPLE_OWNER_COUNT, SAMPLE_OWNER_COUNT,
@@ -3006,6 +3310,22 @@ local function worker_descriptors(repo, path, contract, stream)
 		if row.sample_roster_sha256 ~= expected_roster.sha256 or
 				row.sample_column_count ~= expected_roster.columns then
 			fail("worker seed sample roster binding differs")
+		end
+		local expected_access = frontier_access_roster(repo)
+		integer(row.frontier_access_owner_count, FRONTIER_ACCESS_OWNER_COUNT,
+			FRONTIER_ACCESS_OWNER_COUNT, "seed frontier access owner count")
+		integer(row.frontier_access_column_count, FRONTIER_ACCESS_COLUMN_COUNT,
+			FRONTIER_ACCESS_COLUMN_COUNT, "seed frontier access column count")
+		for _, field in ipairs({"frontier_access_operation_count",
+				"frontier_access_accepted_count", "frontier_access_rejected_count"}) do
+			integer(row[field], 0, MAX_SAFE, "seed " .. field)
+		end
+		if row.frontier_access_roster_sha256 ~= expected_access.sha256 then
+			fail("worker seed frontier access roster binding differs")
+		end
+		if row.frontier_access_operation_count ~=
+				row.frontier_access_accepted_count + row.frontier_access_rejected_count then
+			fail("worker seed frontier access operation partition differs")
 		end
 		local actual_sha, actual_bytes = stream.file(row.path)
 		if actual_sha ~= row.sha256 or actual_bytes ~= row.bytes or
@@ -3142,11 +3462,6 @@ function module.finalize(repo, scratch, worker_paths)
 		end
 		zone_by_id[zone.id] = zone
 	end
-	local function expected_bracket(target)
-		integer(target, 1, 60, "zone difficulty target")
-		local minimum = math.floor((target - 1) / 10) * 10 + 1
-		return tostring(minimum) .. "-" .. tostring(minimum + 9)
-	end
 	local function source_semantics(source_id, zone_id, biome, faction, bracket)
 		local source, zone = source_by_id[source_id], zone_by_id[zone_id]
 		if not source or not zone then fail("P9G source/zone identity differs") end
@@ -3160,8 +3475,14 @@ function module.finalize(repo, scratch, worker_paths)
 				support = source.hosts[index].support break
 			end
 		end
-		if not zone_allowed or not support or faction ~= faction_by_race[zone.race_region] or
-				bracket ~= expected_bracket(zone.difficulty_target) then
+		-- Production derives the bracket from the smoothed positional
+		-- surface_mob_level_at(), not from the zone's authored target.  Keep the
+		-- finalizer independent of that calculation: validate the closed bracket
+		-- vocabulary here and reconcile every budgeted population against its
+		-- exact operation key below.
+		if not zone_allowed or not support or
+				faction ~= faction_by_race[zone.race_region] or
+				not P9G_BRACKETS[bracket] then
 			fail("P9G source/zone/biome/faction/bracket semantics differ")
 		end
 		return source, support
@@ -3175,11 +3496,23 @@ function module.finalize(repo, scratch, worker_paths)
 		access[id] = {accord = 0, throng = 0}
 		parity[id] = {}
 	end
+	local frontier_source_totals, frontier_access = {}, {}
+	for index = 1, #FRONTIER_ACCESS_SOURCES do
+		local id = FRONTIER_ACCESS_SOURCES[index]
+		if not source_by_id[id] then fail("frontier access source identity is absent") end
+		frontier_source_totals[id] = {eligible = 0, budget = 0, accepted = 0}
+		frontier_access[id] = {
+			accord = {eligible = 0, budget = 0, accepted = 0},
+			throng = {eligible = 0, budget = 0, accepted = 0},
+		}
+	end
+	local expected_access = frontier_access_roster(repo)
 
 	local artifact = new_final_output(scratch .. "/artifact.tsv", stream)
 	local stage_a = new_final_output(scratch .. "/stage-a.tsv", stream)
 	local stage_b = new_final_output(scratch .. "/stage-b.tsv", stream)
 	local p9g = new_final_output(scratch .. "/p9g.tsv", stream)
+	local frontier = new_final_output(scratch .. "/frontier-access.tsv", stream)
 	artifact.write("schema\tgrug_wp40_r7_artifact_v1\n")
 	artifact.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	artifact.write("projection_sha256\t" .. projection .. "\n")
@@ -3191,11 +3524,17 @@ function module.finalize(repo, scratch, worker_paths)
 	stage_b.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	p9g.write("schema\tgrug_wp40_r7_p9g_ledger_v1\n")
 	p9g.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
+	frontier.write("schema\tgrug_wp40_r7_frontier_access_ledger_v1\n")
+	frontier.write("acceptance_scope\t32_seed_static_frontier_successor_only\n")
+	frontier.write("roster_sha256\t" .. expected_access.sha256 .. "\n")
 
 	local production_content_sha, p9g_content_sha, p9g_delta_sha
 	local total_operations, total_accepted, total_rejected = 0, 0, 0
+	local total_frontier_operations, total_frontier_accepted,
+		total_frontier_rejected = 0, 0, 0
 	local total_sample_cases, total_sample_columns, total_sample_surface_columns =
 		0, 0, 0
+	local total_frontier_cases, total_frontier_columns = 0, 0
 	local sampled_coverage = {}
 	for slot = 1, 32 do
 		local descriptor = all[slot]
@@ -3231,16 +3570,24 @@ function module.finalize(repo, scratch, worker_paths)
 		local line_number, seed_slot, seed_identity = 0, nil, nil
 		local sample_schema, sample_roster_sha, sample_owner_population,
 			sample_column_population
+		local frontier_schema, frontier_roster_sha, frontier_owner_population,
+			frontier_column_population
 		local operations, accepted_count, rejected_count, population_count = 0, 0, 0, 0
+		local frontier_operations, frontier_accepted_count,
+			frontier_rejected_count, frontier_population_count = 0, 0, 0, 0
 		local sample_owner_rows, sample_coverage_rows, sample_coverage_columns = 0, 0, 0
+		local frontier_owner_rows = 0
 		local operations_by_population, populations_seen, accepted_roots = {}, {}, {}
+		local frontier_operations_by_population, frontier_populations_seen,
+			frontier_accepted_roots = {}, {}, {}
 		local previous_operation, previous_population, previous_coverage
+		local previous_frontier_operation, previous_frontier_population
 		local expected_sample = sample_roster(repo, slot)
 		for line in file:lines() do
 			line_number = line_number + 1
 			if line:find("\r", 1, true) then fail("seed evidence has CR bytes") end
 			if line_number == 1 then
-				if line ~= "schema\tgrug_wp40_r7_seed_evidence_v1" then
+				if line ~= "schema\tgrug_wp40_r7_seed_evidence_v2" then
 					fail("seed evidence schema differs")
 				end
 			elseif line:find("^seed_slot\t") then
@@ -3294,6 +3641,51 @@ function module.finalize(repo, scratch, worker_paths)
 							"seed sample owner columns") ~= expected.columns then
 					fail("seed sample owner roster differs")
 				end
+			elseif line:find("^frontier_access_schema\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or frontier_schema ~= nil then
+					fail("seed frontier access schema row differs")
+				end
+				frontier_schema = text(fields[2], "seed frontier access schema")
+			elseif line:find("^frontier_access_roster_sha256\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or frontier_roster_sha ~= nil then
+					fail("seed frontier access roster digest row differs")
+				end
+				frontier_roster_sha = digest(fields[2],
+					"seed frontier access roster digest")
+			elseif line:find("^frontier_access_owner_count\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or frontier_owner_population ~= nil then
+					fail("seed frontier access owner-count row differs")
+				end
+				frontier_owner_population = parsed_integer(fields[2],
+					FRONTIER_ACCESS_OWNER_COUNT, FRONTIER_ACCESS_OWNER_COUNT,
+					"seed frontier access owner count")
+			elseif line:find("^frontier_access_column_count\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or frontier_column_population ~= nil then
+					fail("seed frontier access column-count row differs")
+				end
+				frontier_column_population = parsed_integer(fields[2],
+					FRONTIER_ACCESS_COLUMN_COUNT, FRONTIER_ACCESS_COLUMN_COUNT,
+					"seed frontier access column count")
+			elseif line:find("^frontier_access_owner\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 6 then fail("seed frontier access owner row width differs") end
+				frontier_owner_rows = frontier_owner_rows + 1
+				local expected = expected_access.rows[frontier_owner_rows]
+				if parsed_integer(fields[2], 1, FRONTIER_ACCESS_OWNER_COUNT,
+						"seed frontier access owner ordinal") ~= frontier_owner_rows or
+						not expected or fields[3] ~= expected.envelope_id or
+						parsed_integer(fields[4], OWNER_MIN_X, OWNER_MAX_X,
+							"seed frontier access owner x") ~= expected.owner_x or
+						parsed_integer(fields[5], OWNER_MIN_Z, OWNER_MAX_Z,
+							"seed frontier access owner z") ~= expected.owner_z or
+						parsed_integer(fields[6], 1, 6400,
+							"seed frontier access owner columns") ~= expected.columns then
+					fail("seed frontier access owner roster differs")
+				end
 			elseif line:find("^operation\t") then
 				local fields = split_tabs(line)
 				if #fields ~= #OPERATION_FIELDS + 1 then fail("P9G operation TSV width differs") end
@@ -3306,8 +3698,7 @@ function module.finalize(repo, scratch, worker_paths)
 					not P9G_BRACKETS[bracket] then
 					fail("P9G operation population identity differs")
 				end
-				local source_definition, support_name = source_semantics(source_id, zone_id,
-					biome, faction, bracket)
+				local source_definition, support_name
 				digest(value("candidate_sha256"), "operation candidate digest")
 				for _, name in ipairs({"cell_x", "cell_z", "root_x", "root_y", "root_z",
 						"original_cid", "original_param2", "prior_cid", "prior_param2",
@@ -3335,6 +3726,8 @@ function module.finalize(repo, scratch, worker_paths)
 				local root_x = parsed_integer(value("root_x"), -31007, 31007, "operation root x")
 				local root_y = parsed_integer(value("root_y"), -31007, 31007, "operation root y")
 				local root_z = parsed_integer(value("root_z"), -31007, 31007, "operation root z")
+				source_definition, support_name = source_semantics(source_id, zone_id,
+					biome, faction, bracket)
 				local order = {owner_minimum(root_z), owner_minimum(root_x), root_z,
 					root_x, root_y, source_id}
 				if previous_operation then
@@ -3478,6 +3871,210 @@ function module.finalize(repo, scratch, worker_paths)
 				bracket_row[faction].budget = bracket_row[faction].budget + budget
 				population_count = population_count + 1
 				p9g.write("seed\t" .. tostring(slot) .. "\t" .. line .. "\n")
+			elseif line:find("^frontier_access_operation\t") then
+				local fields = split_tabs(line)
+				if #fields ~= #OPERATION_FIELDS + 1 then
+					fail("frontier access operation TSV width differs")
+				end
+				local function value(name) return fields[OPERATION_COLUMN[name]] end
+				local source_id = text(value("source_id"), "frontier access operation source")
+				local zone_id = text(value("zone_id"), "frontier access operation zone")
+				local biome = text(value("biome"), "frontier access operation biome")
+				local faction = text(value("faction"), "frontier access operation faction")
+				local bracket = text(value("bracket"), "frontier access operation bracket")
+				if not FRONTIER_ACCESS_SOURCE_SET[source_id] or
+						not FRONTIER_ACCESS_ZONE_SET[zone_id] or
+						(faction ~= "accord" and faction ~= "throng") or
+						not P9G_BRACKETS[bracket] then
+					fail("frontier access operation identity differs")
+				end
+				local source_definition, support_name = source_semantics(source_id,
+					zone_id, biome, faction, bracket)
+				digest(value("candidate_sha256"), "frontier access candidate digest")
+				for _, name in ipairs({"cell_x", "cell_z", "root_x", "root_y", "root_z",
+						"original_cid", "original_param2", "prior_cid", "prior_param2",
+						"prior_occupancy", "prior_opcode", "prior_feature", "prior_interface",
+						"prior_aux", "support_cid", "support_param2", "support_occupancy",
+						"support_opcode", "support_feature", "support_interface", "support_aux",
+						"final_cid", "final_param2", "final_occupancy", "final_opcode",
+						"final_feature", "final_interface", "final_aux"}) do
+					parsed_integer(value(name), -MAX_SAFE, MAX_SAFE,
+						"frontier access operation " .. name)
+				end
+				text(value("support_mode"), "frontier access operation support mode")
+				local accepted, reason = value("accepted"),
+					text(value("reason"), "frontier access operation reason")
+				if accepted ~= "true" and accepted ~= "false" then
+					fail("frontier access acceptance encoding differs")
+				end
+				local key = population_key(source_id, zone_id, biome, faction, bracket)
+				local target = frontier_operations_by_population[key]
+				if not target then
+					target = {budget = 0, accepted = 0, rejections = {}}
+					for index = 1, #P9G_REASONS do
+						target.rejections[P9G_REASONS[index]] = 0
+					end
+					frontier_operations_by_population[key] = target
+				end
+				target.budget = target.budget + 1
+				local root_x = parsed_integer(value("root_x"), -31007, 31007,
+					"frontier access root x")
+				local root_y = parsed_integer(value("root_y"), -31007, 31007,
+					"frontier access root y")
+				local root_z = parsed_integer(value("root_z"), -31007, 31007,
+					"frontier access root z")
+				local order = {owner_minimum(root_z), owner_minimum(root_x), root_z,
+					root_x, root_y, source_id}
+				if previous_frontier_operation then
+					local less = false
+					for field = 1, 5 do
+						if previous_frontier_operation[field] ~= order[field] then
+							less = previous_frontier_operation[field] < order[field]
+							break
+						end
+					end
+					if not less and previous_frontier_operation[1] == order[1] and
+							previous_frontier_operation[2] == order[2] and
+							previous_frontier_operation[3] == order[3] and
+							previous_frontier_operation[4] == order[4] and
+							previous_frontier_operation[5] == order[5] then
+						less = less_bytes(previous_frontier_operation[6], order[6])
+					end
+					if not less then
+						fail("frontier access operations are not canonical/unique")
+					end
+				end
+				previous_frontier_operation = order
+				if accepted == "true" then
+					local root = table.concat({root_x, root_y, root_z}, "/")
+					local final_cid = parsed_integer(value("final_cid"), 0, MAX_SAFE,
+						"frontier access final CID")
+					local final_feature = parsed_integer(value("final_feature"), 0, MAX_SAFE,
+						"frontier access final feature")
+					local final_interface = parsed_integer(value("final_interface"), 0,
+						MAX_SAFE, "frontier access final interface")
+					if reason ~= "accepted" or frontier_accepted_roots[root] or
+							final_cid ~= content_fixture.cid_by_name[source_definition.source_node] or
+							parsed_integer(value("final_param2"), 0, 255,
+								"frontier access final param2") ~= 0 or
+							parsed_integer(value("final_occupancy"), -MAX_SAFE, MAX_SAFE,
+								"frontier access final occupancy") ~= -2 or
+							parsed_integer(value("final_opcode"), 0, MAX_SAFE,
+								"frontier access final opcode") ~= 35 or
+							final_feature ~= source_index[source_id] or final_interface ~= 0 or
+							parsed_integer(value("final_aux"), 0, MAX_SAFE,
+								"frontier access final aux") ~= (82 + source_index[source_id]) * 256 then
+					fail("accepted frontier access final tuple/uniqueness differs")
+					end
+					local support_mode = value("support_mode")
+					if (support_mode ~= "settled_owner" and
+							support_mode ~= "analytic_lower_owner") or
+							parsed_integer(value("original_cid"), 0, MAX_SAFE,
+								"frontier access original CID") == content_fixture.cid_by_name.ignore or
+							parsed_integer(value("prior_cid"), 0, MAX_SAFE,
+								"frontier access prior CID") ~= content_fixture.cid_by_name.air or
+							parsed_integer(value("prior_param2"), 0, 255,
+								"frontier access prior param2") ~= 0 or
+							parsed_integer(value("prior_occupancy"), -MAX_SAFE, MAX_SAFE,
+								"frontier access prior occupancy") ~= 0 or
+							parsed_integer(value("prior_opcode"), -MAX_SAFE, MAX_SAFE,
+								"frontier access prior opcode") ~= 0 or
+							parsed_integer(value("prior_feature"), -MAX_SAFE, MAX_SAFE,
+								"frontier access prior feature") ~= 0 or
+							parsed_integer(value("prior_interface"), -MAX_SAFE, MAX_SAFE,
+								"frontier access prior interface") ~= 0 or
+							parsed_integer(value("prior_aux"), -MAX_SAFE, MAX_SAFE,
+								"frontier access prior aux") ~= 0 or
+							parsed_integer(value("support_cid"), 0, MAX_SAFE,
+								"frontier access support CID") ~=
+								content_fixture.cid_by_name[support_name] or
+							parsed_integer(value("support_param2"), 0, 255,
+								"frontier access support param2") ~= 0 or
+							parsed_integer(value("support_opcode"), 1, 4,
+								"frontier access support opcode") < 1 then
+						fail("accepted frontier access prior/support authority differs")
+					end
+					local identity = table.concat({final_cid, final_feature,
+						final_interface, value("final_aux")}, "/")
+					if source_final_tuple[source_id] and
+							source_final_tuple[source_id] ~= identity then
+						fail("accepted frontier source final tuple differs")
+					end
+					source_final_tuple[source_id] = identity
+					frontier_accepted_roots[root], target.accepted = true, target.accepted + 1
+					frontier_accepted_count = frontier_accepted_count + 1
+				else
+					if not reason_set[reason] then
+						fail("frontier access rejection reason differs")
+					end
+					for _, field in ipairs({"cid", "param2", "occupancy", "opcode",
+							"feature", "interface", "aux"}) do
+						if value("final_" .. field) ~= value("prior_" .. field) then
+							fail("rejected frontier access operation changed its prior tuple")
+						end
+					end
+					target.rejections[reason] = target.rejections[reason] + 1
+					frontier_rejected_count = frontier_rejected_count + 1
+				end
+				frontier_operations = frontier_operations + 1
+				frontier.write("seed\t" .. tostring(slot) .. "\t" .. line .. "\n")
+			elseif line:find("^frontier_access_population\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 9 + #P9G_REASONS then
+					fail("frontier access population TSV width differs")
+				end
+				local source_id = text(fields[2], "frontier access population source")
+				local zone_id = text(fields[3], "frontier access population zone")
+				local biome = text(fields[4], "frontier access population biome")
+				local faction = text(fields[5], "frontier access population faction")
+				local bracket = text(fields[6], "frontier access population bracket")
+				if not FRONTIER_ACCESS_SOURCE_SET[source_id] or
+						not FRONTIER_ACCESS_ZONE_SET[zone_id] or
+						(faction ~= "accord" and faction ~= "throng") or
+						not P9G_BRACKETS[bracket] then
+					fail("frontier access population identity differs")
+				end
+				source_semantics(source_id, zone_id, biome, faction, bracket)
+				local key = population_key(source_id, zone_id, biome, faction, bracket)
+				if frontier_populations_seen[key] or (previous_frontier_population and
+						not less_bytes(previous_frontier_population, key)) then
+					fail("frontier access populations are not canonical/unique")
+				end
+				frontier_populations_seen[key], previous_frontier_population = true, key
+				local eligible = parsed_integer(fields[7], 0, MAX_SAFE,
+					"frontier access population eligible")
+				local budget = parsed_integer(fields[8], 0, MAX_SAFE,
+					"frontier access population budget")
+				local accepted = parsed_integer(fields[9], 0, MAX_SAFE,
+					"frontier access population accepted")
+				local rejected, operation = 0, frontier_operations_by_population[key]
+				if not operation then
+					operation = {budget = 0, accepted = 0, rejections = {}}
+					for index = 1, #P9G_REASONS do
+						operation.rejections[P9G_REASONS[index]] = 0
+					end
+				end
+				for index = 1, #P9G_REASONS do
+					local count = parsed_integer(fields[9 + index], 0, MAX_SAFE,
+						"frontier access population rejection")
+					rejected = rejected + count
+					if count ~= operation.rejections[P9G_REASONS[index]] then
+						fail("frontier access population/operation rejection partition differs")
+					end
+				end
+				if budget > eligible or accepted + rejected ~= budget or
+						operation.budget ~= budget or operation.accepted ~= accepted then
+					fail("frontier access population E/B/accepted invariant differs")
+				end
+				frontier_operations_by_population[key] = nil
+				local totals, pair = frontier_source_totals[source_id],
+					frontier_access[source_id][faction]
+				totals.eligible, totals.budget, totals.accepted = totals.eligible + eligible,
+					totals.budget + budget, totals.accepted + accepted
+				pair.eligible, pair.budget, pair.accepted = pair.eligible + eligible,
+					pair.budget + budget, pair.accepted + accepted
+				frontier_population_count = frontier_population_count + 1
+				frontier.write("seed\t" .. tostring(slot) .. "\t" .. line .. "\n")
 			elseif line:find("^sample_coverage\t") then
 				local fields = split_tabs(line)
 				if #fields ~= 4 then fail("sample coverage TSV width differs") end
@@ -3486,7 +4083,7 @@ function module.finalize(repo, scratch, worker_paths)
 				local zone, allowed = zone_by_id[zone_id], false
 				if zone then
 					for index = 1, #zone.biomes do
-						if zone.biomes[index] == biome then allowed = true break end
+						if zone.biomes[index].id == biome then allowed = true break end
 					end
 				end
 				local count = parsed_integer(fields[4], 1, 49980561,
@@ -3509,6 +4106,9 @@ function module.finalize(repo, scratch, worker_paths)
 		for key in pairs(operations_by_population) do
 			fail("operation population is absent: " .. key)
 		end
+		for key in pairs(frontier_operations_by_population) do
+			fail("frontier access operation population is absent: " .. key)
+		end
 		if line_number < 4 or seed_slot ~= slot or seed_identity ~= descriptor.identity or
 				sample_schema ~= SAMPLE_SCHEMA or
 				sample_roster_sha ~= expected_sample.sha256 or
@@ -3523,15 +4123,35 @@ function module.finalize(repo, scratch, worker_paths)
 				accepted_count ~= a.accepted_count or rejected_count ~= a.rejected_count then
 			fail("seed P9G ledger population/Stage-A identity differs")
 		end
+		if frontier_schema ~= FRONTIER_ACCESS_SCHEMA or
+				frontier_roster_sha ~= expected_access.sha256 or
+				frontier_roster_sha ~= descriptor.frontier_access_roster_sha256 or
+				frontier_owner_population ~= FRONTIER_ACCESS_OWNER_COUNT or
+				frontier_owner_rows ~= FRONTIER_ACCESS_OWNER_COUNT or
+				frontier_owner_population ~= descriptor.frontier_access_owner_count or
+				frontier_column_population ~= FRONTIER_ACCESS_COLUMN_COUNT or
+				frontier_column_population ~= descriptor.frontier_access_column_count or
+				frontier_population_count < 1 or
+				frontier_operations ~= descriptor.frontier_access_operation_count or
+				frontier_accepted_count ~= descriptor.frontier_access_accepted_count or
+				frontier_rejected_count ~= descriptor.frontier_access_rejected_count or
+				frontier_operations ~= frontier_accepted_count + frontier_rejected_count then
+			fail("seed frontier access ledger/roster identity differs")
+		end
 		total_sample_cases = total_sample_cases + sample_owner_rows
 		total_sample_columns = total_sample_columns + sample_column_population
 		total_sample_surface_columns = total_sample_surface_columns +
 			sample_coverage_columns
 		total_operations, total_accepted, total_rejected = total_operations + operations,
 			total_accepted + accepted_count, total_rejected + rejected_count
+		total_frontier_cases = total_frontier_cases + frontier_owner_rows
+		total_frontier_columns = total_frontier_columns + frontier_column_population
+		total_frontier_operations = total_frontier_operations + frontier_operations
+		total_frontier_accepted = total_frontier_accepted + frontier_accepted_count
+		total_frontier_rejected = total_frontier_rejected + frontier_rejected_count
 	end
 
-	local nonzero_sources, access_gates, parity_gates = 0, 0, 0
+	local nonzero_sources, required_main_sources, access_gates, parity_gates = 0, 0, 0, 0
 	local parity_advisory_failures, parity_advisory_insufficient = 0, 0
 	local bracket_order = {"1-10", "11-20", "21-30", "31-40", "41-50", "51-60"}
 	local function safe_product(left, right, label)
@@ -3544,16 +4164,18 @@ function module.finalize(repo, scratch, worker_paths)
 	end
 	for index = 1, #source_rows do
 		local row, totals = source_rows[index], source_totals[source_rows[index].id]
-		if totals.eligible <= 0 or totals.budget <= 0 or totals.accepted <= 0 then
+		local complete = totals.eligible > 0 and totals.budget > 0 and totals.accepted > 0
+		if not FRONTIER_ACCESS_SOURCE_SET[row.id] and not complete then
 			fail("P9G source lacks nonzero E/B/accepted: " .. row.id)
 		end
-		nonzero_sources = nonzero_sources + 1
+		if complete then nonzero_sources = nonzero_sources + 1 end
+		if not FRONTIER_ACCESS_SOURCE_SET[row.id] then
+			required_main_sources = required_main_sources + 1
+		end
 		p9g.write(table.concat({"advisory", "source_totals", row.id,
 			tostring(totals.eligible), tostring(totals.budget),
 			tostring(totals.accepted)}, "\t") .. "\n")
-		local access_required = row.harvest_kind == "healing_herb" or
-			row.harvest_kind == "spice" or row.key == "wild_cocoa" or row.key == "rock_salt"
-		if access_required then
+		if MAIN_PAIRED_ACCESS_SOURCE_SET[row.id] then
 			for _, faction in ipairs({"accord", "throng"}) do
 				if access[row.id][faction] <= 0 then
 					fail("P9G required faction access is zero: " .. row.id .. "/" .. faction)
@@ -3589,22 +4211,48 @@ function module.finalize(repo, scratch, worker_paths)
 			end
 		end
 	end
+	local frontier_access_gates = 0
+	for index = 1, #FRONTIER_ACCESS_SOURCES do
+		local id, totals = FRONTIER_ACCESS_SOURCES[index],
+			frontier_source_totals[FRONTIER_ACCESS_SOURCES[index]]
+		if totals.eligible <= 0 or totals.budget <= 0 or totals.accepted <= 0 then
+			fail("frontier source lacks nonzero E/B/accepted: " .. id)
+		end
+		frontier.write(table.concat({"source_totals", id, tostring(totals.eligible),
+			tostring(totals.budget), tostring(totals.accepted)}, "\t") .. "\n")
+		for _, faction in ipairs({"accord", "throng"}) do
+			local pair = frontier_access[id][faction]
+			if pair.eligible <= 0 or pair.budget <= 0 or pair.accepted <= 0 then
+				fail("frontier source/faction lacks E/B/accepted: " .. id .. "/" .. faction)
+			end
+			frontier_access_gates = frontier_access_gates + 1
+			frontier.write(table.concat({"gate", id, faction,
+				tostring(pair.eligible), tostring(pair.budget), tostring(pair.accepted),
+				"pass"}, "\t") .. "\n")
+		end
+	end
 	local sampled_coverage_population = 0
 	for _ in pairs(sampled_coverage) do sampled_coverage_population =
 		sampled_coverage_population + 1 end
-	if nonzero_sources ~= 12 or total_operations ~= total_accepted + total_rejected or
+	if required_main_sources ~= 8 or nonzero_sources < 8 or
+			total_operations ~= total_accepted + total_rejected or
 			total_sample_cases ~= 32 * SAMPLE_OWNER_COUNT or
-			total_sample_columns ~= 32 * 795281 or sampled_coverage_population < 1 then
+			total_sample_columns ~= 32 * 795281 or sampled_coverage_population < 1 or
+			total_frontier_cases ~= 32 * FRONTIER_ACCESS_OWNER_COUNT or
+			total_frontier_columns ~= 32 * FRONTIER_ACCESS_COLUMN_COUNT or
+			total_frontier_operations ~= total_frontier_accepted +
+				total_frontier_rejected or frontier_access_gates ~= 8 then
 		fail("fleet P9G closed totals differ")
 	end
 
-	local artifact_result, stage_a_result, stage_b_result, p9g_result =
-		artifact.close(), stage_a.close(), stage_b.close(), p9g.close()
+	local artifact_result, stage_a_result, stage_b_result, p9g_result,
+		frontier_result = artifact.close(), stage_a.close(), stage_b.close(),
+		p9g.close(), frontier.close()
 	local receipt = new_final_output(scratch .. "/run-receipt.tsv", stream)
 	receipt.write(table.concat({
-		"schema\tgrug_wp40_r7_run_receipt_v1\n",
-		"proof_scope_fleet\t32_seed_stratified_4096_owner_affected_cell_7_tuple_delta\n",
-		"acceptance_scope\t32_seed_stratified_sample_not_exhaustive\n",
+		"schema\tgrug_wp40_r7_run_receipt_v2\n",
+		"proof_scope_fleet\t32_seed_stratified_4096_owner_main_plus_14656_owner_frontier_access\n",
+		"acceptance_scope\tmain_sample_plus_static_frontier_successor_lane_not_exhaustive\n",
 		"projection_sha256\t", projection, "\n",
 		"accepted_r6_artifact_sha256\t", ACCEPTED_R6_ARTIFACT_SHA256, "\n",
 		"production_r6_content_sha256\t", production_content_sha, "\n",
@@ -3630,15 +4278,31 @@ function module.finalize(repo, scratch, worker_paths)
 			tostring(parity_advisory_failures), "\n",
 		"p9g_parity_advisory_insufficient_count\t",
 			tostring(parity_advisory_insufficient), "\n",
+		"frontier_access_schema\t", FRONTIER_ACCESS_SCHEMA, "\n",
+		"frontier_access_roster_sha256\t", expected_access.sha256, "\n",
+		"frontier_access_owner_population_per_seed\t",
+			tostring(FRONTIER_ACCESS_OWNER_COUNT), "\n",
+		"frontier_access_case_population\t", tostring(total_frontier_cases), "\n",
+		"frontier_access_column_visit_population\t",
+			tostring(total_frontier_columns), "\n",
+		"frontier_access_zone_population\t4\n",
+		"frontier_access_source_population\t4\n",
+		"frontier_access_source_faction_gate_population\t",
+			tostring(frontier_access_gates), "\n",
+		"frontier_access_operation_count\t", tostring(total_frontier_operations), "\n",
+		"frontier_access_accepted_count\t", tostring(total_frontier_accepted), "\n",
+		"frontier_access_rejected_count\t", tostring(total_frontier_rejected), "\n",
 		"canonical_worker_order\tseed_slot\n",
 		"artifact_sha256\t", artifact_result.sha256, "\n",
 		"stage_a_sha256\t", stage_a_result.sha256, "\n",
 		"stage_b_sha256\t", stage_b_result.sha256, "\n",
 		"p9g_sha256\t", p9g_result.sha256, "\n",
+		"frontier_access_sha256\t", frontier_result.sha256, "\n",
 	}))
 	local receipt_result = receipt.close()
 	return {artifact = artifact_result, stage_a = stage_a_result,
-		stage_b = stage_b_result, p9g = p9g_result, run_receipt = receipt_result}
+		stage_b = stage_b_result, p9g = p9g_result,
+		frontier_access = frontier_result, run_receipt = receipt_result}
 end
 
 return module

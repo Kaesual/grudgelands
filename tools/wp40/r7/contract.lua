@@ -502,10 +502,11 @@ function module.validate_pilot_result(receipt)
 		schema = true, seed_slot = true, seed_identity = true,
 		canonical_output_sha256 = true, stage_a_sha256 = true,
 		stage_b_sha256 = true, p9g_delta_sha256 = true,
-		canonical_output_bytes = true,
+		canonical_output_bytes = true, frontier_access_roster_sha256 = true,
+		frontier_access_owner_count = true, frontier_access_column_count = true,
 	}
 	exact_keys(receipt, fields, "pilot result")
-	if receipt.schema ~= "grug_wp40_r7_pilot_result_v1" then
+	if receipt.schema ~= "grug_wp40_r7_pilot_result_v2" then
 		fail("pilot result schema differs")
 	end
 	if positive(receipt.seed_slot, "pilot seed slot") > 32 then
@@ -513,10 +514,15 @@ function module.validate_pilot_result(receipt)
 	end
 	text(receipt.seed_identity, "pilot seed identity")
 	for _, field in ipairs({"canonical_output_sha256", "stage_a_sha256",
-			"stage_b_sha256", "p9g_delta_sha256"}) do
+			"stage_b_sha256", "p9g_delta_sha256",
+			"frontier_access_roster_sha256"}) do
 		sha256(receipt[field], "pilot result " .. field)
 	end
 	positive(receipt.canonical_output_bytes, "pilot canonical output bytes")
+	if receipt.frontier_access_owner_count ~= 458 or
+			receipt.frontier_access_column_count ~= 2931200 then
+		fail("pilot frontier access population differs")
+	end
 	return copy(receipt)
 end
 
@@ -527,6 +533,12 @@ function module.pilot_result_bytes(receipt)
 		"seed_slot\t", tostring(receipt.seed_slot), "\n",
 		"seed_identity\t", receipt.seed_identity, "\n",
 		"canonical_output_sha256\t", receipt.canonical_output_sha256, "\n",
+		"frontier_access_roster_sha256\t",
+			receipt.frontier_access_roster_sha256, "\n",
+		"frontier_access_owner_count\t",
+			tostring(receipt.frontier_access_owner_count), "\n",
+		"frontier_access_column_count\t",
+			tostring(receipt.frontier_access_column_count), "\n",
 	}
 	rows[#rows + 1] = "canonical_output_bytes\t"
 	rows[#rows + 1] = tostring(receipt.canonical_output_bytes)

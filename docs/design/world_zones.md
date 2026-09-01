@@ -967,6 +967,14 @@ or immutable dragon channel; diagonal contact is insufficient. Rock Salt also
 requires logical biome `grug_beach` on `default:sand`, while Stormkelp does not,
 so the Skyglass coastal approach remains reachable.
 
+The claim-exclusion records `exclude:coast:island_wyrmglass` and
+`exclude:coast:island_stormscale` describe whole-island envelopes rather than
+occupied cells. For P9G gathering placement only, either record is therefore
+nonblocking when the candidate's authenticated water class is exactly `land`.
+All earlier anchor, route and authored-water exclusions keep priority, every
+other coast exclusion remains blocking, and support, clearance, occupancy and
+one-cell settlement checks are unchanged.
+
 ## 12. Capital and start envelopes
 
 - Every capital zone has a 512×512 fixed build envelope and a terrain blend

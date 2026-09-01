@@ -151,11 +151,12 @@ expect_failure(function() contract.validate_integration_receipt(integration) end
 	"integration case did not pass")
 
 local pilot = {
-	schema = "grug_wp40_r7_pilot_result_v1", seed_slot = 17,
+	schema = "grug_wp40_r7_pilot_result_v2", seed_slot = 17,
 	seed_identity = "seed-17", canonical_output_sha256 = digest_a,
 	canonical_output_bytes = 12345,
 	stage_a_sha256 = digest_b, stage_b_sha256 = digest_a,
-	p9g_delta_sha256 = digest_b,
+	p9g_delta_sha256 = digest_b, frontier_access_roster_sha256 = digest_a,
+	frontier_access_owner_count = 458, frontier_access_column_count = 2931200,
 }
 local pilot_bytes = contract.pilot_result_bytes(pilot)
 assert(pilot_bytes:find("seed_slot\t17\n", 1, true))
@@ -165,6 +166,7 @@ local runtime_adapter = dofile(repo .. "/tools/wp40/r7/runtime_adapter.lua")
 assert(runtime_adapter.canonical_graph_nul_kat() == true)
 assert(runtime_adapter.owner_column_count_kat() == true)
 assert(runtime_adapter.sample_roster_kat() == true)
+assert(runtime_adapter.frontier_access_roster_kat(repo) == true)
 local sample_assignment = runtime_adapter.sample_assignment(repo)
 assert(sample_assignment:find("schema\tgrug_wp40_r7_sample_assignment_v1\n", 1,
 	true) == 1)
@@ -172,6 +174,17 @@ assert(hex(raw_sha256(sample_assignment)) ==
 	"4d1e0e796941115cfdbc44031e9fbc08775d11adc52503834ac3805b6708092c")
 assert(select(2, sample_assignment:gsub("\nseed\t", "")) == 32)
 assert(sample_assignment:find("case_population\t4096\n", 1, true))
+local frontier_assignment = runtime_adapter.frontier_access_assignment(repo)
+assert(frontier_assignment:find(
+	"schema\tgrug_wp40_r7_frontier_access_assignment_v1\n", 1, true) == 1)
+assert(hex(raw_sha256(frontier_assignment)) ==
+	"ee53151082860fdee7dfb656d885c37a5e61ea3e52175523681988d1e57dfcee")
+assert(frontier_assignment:find("owner_population_per_seed\t458\n", 1, true))
+assert(frontier_assignment:find("case_population\t14656\n", 1, true))
+assert(frontier_assignment:find("column_visit_population\t93798400\n", 1, true))
+assert(frontier_assignment:find(
+	"roster_sha256\t6c52c5aa90b21ff21f5d5b695c5b50adcc2c329a5722362f37e82dde11718341\n",
+	1, true))
 assert(runtime_adapter.heightmap_projection_kat() == true)
 assert(runtime_adapter.normalize_rows_kat() == true)
 assert(runtime_adapter.first_difference_kat(repo) == true)
@@ -212,7 +225,7 @@ assert(capture_encoded ~= capture_graph({
 -- Execute the actual CLI chunk with closed mocks so argument parsing is proven
 -- without starting a pilot, worker or runtime adapter.
 local function run_cli_fixture(arguments)
-	local calls, writes = {sample = 0, pilot = 0, worker = 0}, {}
+	local calls, writes = {sample = 0, access = 0, pilot = 0, worker = 0}, {}
 	local contract_mock = {}
 	function contract_mock.pilot_result_bytes()
 		return "schema\tmock_pilot_result_v1\n"
@@ -222,6 +235,11 @@ local function run_cli_fixture(arguments)
 		calls.sample = calls.sample + 1
 		calls.sample_repo = actual_repo
 		return "schema\tmock_sample_assignment_v1\n"
+	end
+	function adapter_mock.frontier_access_assignment(actual_repo)
+		calls.access = calls.access + 1
+		calls.access_repo = actual_repo
+		return "schema\tmock_frontier_access_assignment_v1\n"
 	end
 	function adapter_mock.pilot(actual_repo, scratch, seed_slot)
 		calls.pilot = calls.pilot + 1
@@ -233,7 +251,7 @@ local function run_cli_fixture(arguments)
 		calls.worker = calls.worker + 1
 		calls.worker_values = {actual_repo, scratch, first_slot, last_slot,
 			projection_sha256}
-		return "schema\tgrug_wp40_r7_worker_receipt_v1\n"
+		return "schema\tgrug_wp40_r7_worker_receipt_v2\n"
 	end
 	local fake_io = {}
 	function fake_io.open(path, mode)
@@ -265,6 +283,14 @@ assert(ok_cli, message_cli)
 assert(calls_cli.sample == 1 and calls_cli.pilot == 0 and calls_cli.worker == 0 and
 	calls_cli.sample_repo == "/mock" and
 	writes_cli["sample.tsv"] == "schema\tmock_sample_assignment_v1\n")
+
+ok_cli, message_cli, calls_cli, writes_cli = run_cli_fixture({
+	"frontier-access-roster", "/mock", "access.tsv",
+})
+assert(ok_cli, message_cli)
+assert(calls_cli.access == 1 and calls_cli.sample == 0 and
+	calls_cli.access_repo == "/mock" and writes_cli["access.tsv"] ==
+		"schema\tmock_frontier_access_assignment_v1\n")
 
 ok_cli, message_cli, calls_cli = run_cli_fixture({
 	"pilot", "/mock", "pilot.tsv", "scratch", "17",

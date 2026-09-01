@@ -76,6 +76,11 @@ if mode == "sample-roster" then
 	local bytes = adapter.sample_assignment(repo)
 	write_file(output, bytes)
 	print("WP40 R7 sample roster PASS seeds=32 owners=4096")
+elseif mode == "frontier-access-roster" then
+	if arg[4] ~= nil then fail("frontier-access-roster arguments differ") end
+	local bytes = adapter.frontier_access_assignment(repo)
+	write_file(output, bytes)
+	print("WP40 R7 frontier access roster PASS seeds=32 owners=14656")
 elseif mode == "catalog" then
 	if arg[4] ~= nil then fail("catalog arguments differ") end
 	local snapshot = adapter.catalog_snapshot(repo)
@@ -104,7 +109,7 @@ elseif mode == "worker" then
 	local result = adapter.worker(repo, scratch, first_slot, last_slot,
 		projection_sha256)
 	if type(result) ~= "string" or
-			not result:find("^schema\tgrug_wp40_r7_worker_receipt_v1\n") then
+			not result:find("^schema\tgrug_wp40_r7_worker_receipt_v2\n") then
 		fail("runtime adapter returned an invalid worker receipt")
 	end
 	write_file(output, result)
@@ -115,9 +120,10 @@ elseif mode == "finalize" then
 	local stage_a = assert(arg[6], "Stage-A output required")
 	local stage_b = assert(arg[7], "Stage-B output required")
 	local p9g = assert(arg[8], "P9G output required")
-	local receipt = assert(arg[9], "run-receipt output required")
+	local frontier_access = assert(arg[9], "Frontier access output required")
+	local receipt = assert(arg[10], "run-receipt output required")
 	local worker_paths = {}
-	for index = 10, #arg do worker_paths[#worker_paths + 1] = arg[index] end
+	for index = 11, #arg do worker_paths[#worker_paths + 1] = arg[index] end
 	if #worker_paths ~= 7 then fail("finalizer requires exactly seven workers") end
 	local result = adapter.finalize(repo, scratch, worker_paths)
 	if type(result) ~= "table" then fail("finalizer result is not a table") end
@@ -126,7 +132,10 @@ elseif mode == "finalize" then
 		{stage_a, result.stage_a, "grug_wp40_r7_stage_a_aggregate_v1"},
 		{stage_b, result.stage_b, "grug_wp40_r7_stage_b_aggregate_v1"},
 		{p9g, result.p9g, "grug_wp40_r7_p9g_ledger_v1"},
-		{receipt, result.run_receipt, "grug_wp40_r7_run_receipt_v1"},
+		{frontier_access, result.frontier_access,
+			"grug_wp40_r7_frontier_access_ledger_v1"},
+		{receipt, result.run_receipt,
+			"grug_wp40_r7_run_receipt_v2"},
 	}
 	for index = 1, #outputs do
 		copy_descriptor(outputs[index][1], outputs[index][2], outputs[index][3])

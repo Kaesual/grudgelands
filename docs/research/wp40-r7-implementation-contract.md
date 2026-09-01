@@ -80,6 +80,18 @@ The exact zone and host sets are the closed tables in `world_zones.md` Section
 paired level-21--30 roster; Stormkelp uses cardinal dry-shore adjacency without
 requiring `grug_beach`; Rock Salt additionally requires beach/sand.
 
+P9G's coast handling has one closed correction for the dragon islands. If the
+already ordered static-exclusion query returns exactly
+`exclude:coast:island_wyrmglass` or
+`exclude:coast:island_stormscale`, P9G alone treats that result as nonblocking
+when authenticated `column_values_at(x, z)` has
+`water_class == "land"`. These two coast records are claim envelopes over their
+complete islands, not occupied cells. Every other coast result still rejects;
+earlier anchor, route and authored-water results retain priority; and fixed
+protection, housing, P7 support, predecessor, clearance, R6 occupancy,
+non-overwrite, no-retry and one-transaction gates are unchanged. No other
+consumer receives this exception.
+
 The six Cultural sources retain one item per node. Ordinary density is 1/4096
 and concentrated density 1/1024. Concentrated tool families are Gravesalt and
 Runeslate `pick`, Moonresin/Spirit Resin/Sunwax `axe`, and Red Ochre `shovel`,
@@ -144,6 +156,9 @@ state may enable two writers or partially remove the old authority.
 - Run the changed R7 resource/content delta over the frozen 32-seed corpus;
   preserve accepted R6 decisions under Stage B and record separate P9G supply,
   collision, parity and access ledgers.
+- Run the separately scoped static frontier-access roster through authentic R7
+  successor settlement only; keep its access ledger separate from the
+  three-projection sample and its Stage A/B and parity ledgers.
 - Promote canonical artifacts, run receipts, logs and hashes to
   `docs/research/`; no acceptance evidence may remain only under `/tmp`.
 
@@ -214,8 +229,10 @@ independent direct-83 settlement and independent accepted-77 authority.
 
 Crashes, invalid identities, nondeterminism, Stage A/B differences, illegal
 overwrite/overlap/retry, owner/protection errors, transaction/replay mismatch,
-missing P9G source E/B/acceptance, lost Cultural identity, required paired-
-faction access, and sample-roster gaps or duplicates remain hard blockers.
+missing E/B/acceptance for any of the eight non-frontier P9G sources in the
+main sample, lost Cultural identity, paired access owned by the main sample,
+sample-roster gaps or duplicates, and any failed frontier source-by-faction
+gate below remain hard blockers.
 Exact whole-world density, the global 10% parity inequality and proof of every
 query column become measured advisory results. Artifacts and completion prose
 must say `32-seed stratified sample`, never `full` or `exhaustive` fleet.
@@ -227,6 +244,44 @@ The existing Stage-B v1 field names remain byte-compatible: their normalized
 and accepted projection digests cover the selected owners, while the immutable
 accepted R6 artifact retains its separate SHA-256 identity. R7 does not claim
 that the sampled run regenerated the complete R6 aggregate artifact.
+
+The four sparse frontier sources receive a second, strictly separate evidence
+lane rather than post-outcome additions to the 128-owner sample. Its literal
+seed-independent roster is the complete 80-by-80-owner intersection with these
+four inclusive conservative land envelopes:
+
+| Scope | Inclusive envelope | Aligned owner origins | Owners/seed |
+|---|---|---|---:|
+| Gravesalt | `x=-2500..-1200`, `z=-250..250` | `x=-2512..-1232`, `z=-272..208`, step 80 | 119 |
+| Skyglass | `x=1200..2500`, `z=-250..250` | `x=1168..2448`, `z=-272..208`, step 80 | 119 |
+| Wyrmglass | `x=-3500..-2800`, `z=-390..380` | `x=-3552..-2832`, `z=-432..368`, step 80 | 110 |
+| Stormscale | `x=2800..3500`, `z=-400..390` | `x=2768..3488`, `z=-432..368`, step 80 | 110 |
+
+The disjoint union is exactly 458 full owners and 2,931,200 columns per seed:
+14,656 `(seed, owner)` cases and 93,798,400 columns over all 32 frozen seeds.
+The Holy Grounds bounds derive only from the fixed rectangle, unbiased frontier
+hubs and maximum 60-node warp; the island bounds are the two authored polygon
+bounding boxes expanded by the same warp maximum. Canonical order is owner z,
+then owner x. The literal roster and its SHA-256 freeze before the first
+successor outcome; no biome, candidate, eligible, budgeted, accepted, ledger or
+source-density result may select, remove or stop an owner.
+
+Each frontier owner runs authentic successor settlement, but not the independent
+direct-83 or accepted-77 projections. Across the complete lane, nonzero
+eligible, budgeted and accepted populations are hard gates for exactly eight
+pairs: Crimson Lotus/Accord, Crimson Lotus/Throng, Stormkelp/Accord,
+Stormkelp/Throng, Wild Cocoa/Accord, Wild Cocoa/Throng, Rock Salt/Accord and
+Rock Salt/Throng. The only in-scope zones are
+`front_gravesalt_escarpment`, `front_skyglass_canopy`,
+`front_stormscale_summit` and `front_wyrmglass_crown`. Zero rows are retained;
+all owners run for all seeds even after a pair passes; a failure cannot be
+repaired by changing the roster after observing outcomes.
+
+This frontier access ledger is never pooled into the 128-owner sample. The main
+sample and integration gate remain the sole owners of Stage A, Stage B, exact
+tuple parity and their existing transaction/replay claims. Density and faction
+parity remain measured on the main sample only and retain their pragmatic
+advisory status; the frontier lane makes no density or parity claim.
 
 The sample pilot retains the unconditional stop boundary and binds the exact
 assignment SHA-256, measured resources and projected fleet cost. The fleet may

@@ -41,6 +41,10 @@ The pragmatic sample does not replace or weaken these already required gates:
 - focused coverage of every P9G source and rejection reason, query and owner
   boundaries, protection, support, multi-y ownership, non-overwrite and
   no-refill behavior;
+- the closed P9G-only dry-island rule: exactly the Wyrmglass and Stormscale
+  coast-exclusion IDs may be nonblocking only when authenticated
+  `column_values_at(x, z)` reports `water_class == "land"`, while every earlier
+  exclusion and later settlement gate remains unchanged;
 - fail-closed behavior on invalid settings, identities, content, manifests and
   authority installation.
 
@@ -89,17 +93,57 @@ The sampled run fails R7 if any case shows:
 - an illegal overwrite, overlap, retry/refill, owner-routing error, protection
   violation or wrong final cell tuple;
 - more than one VM transaction, a replay difference or a mutable-input drift;
-- a missing eligible/budgeted/accepted population for any of the twelve P9G
-  sources across the complete 32-seed sample;
+- a missing eligible/budgeted/accepted population for any of the eight
+  non-frontier P9G sources across the complete 32-seed main sample;
 - loss of the already accepted six Cultural access identities;
-- absence of representative paired-faction access for the resource grades
-  that require it;
+- absence of representative paired-faction access owned by the main sample;
 - a gap, duplicate or unexpected case in the exact 4,096-case roster.
 
 Any hard failure is fixed and the affected frozen evidence chain is rerun. It
 is not deferred as a post-release balancing issue.
 
-### 3.3 Advisory, non-blocking results
+### 3.3 Separate frontier-access lane
+
+Crimson Lotus, Stormkelp, Wild Cocoa and Rock Salt are not repaired by swapping
+owners into the 128-owner main sample. They have one separately scoped,
+successor-only lane covering all 32 frozen seeds over this literal static
+roster:
+
+| Scope | Inclusive envelope | Aligned 80-by-80 owner origins | Owners/seed |
+|---|---|---|---:|
+| Gravesalt | `x=-2500..-1200`, `z=-250..250` | `x=-2512..-1232`, `z=-272..208`, step 80 | 119 |
+| Skyglass | `x=1200..2500`, `z=-250..250` | `x=1168..2448`, `z=-272..208`, step 80 | 119 |
+| Wyrmglass | `x=-3500..-2800`, `z=-390..380` | `x=-3552..-2832`, `z=-432..368`, step 80 | 110 |
+| Stormscale | `x=2800..3500`, `z=-400..390` | `x=2768..3488`, `z=-432..368`, step 80 | 110 |
+
+The disjoint roster has exactly 458 full owners and 2,931,200 columns per seed,
+or 14,656 `(seed, owner)` cases and 93,798,400 columns in total. The two Holy
+Grounds envelopes come from its fixed rectangle, the unbiased frontier hubs and
+the closed 60-node warp bound. The two island envelopes are their authored
+polygon bounding boxes expanded by that bound. This is deliberately
+conservative geometry, not a query for favorable placements.
+
+The roster is canonical in owner-z-then-owner-x order, identical for every
+seed, and frozen with its SHA-256 before the first successor outcome. Its
+construction and validation may not read a logical biome, candidate hash,
+eligible/budgeted/accepted count, operation ledger or source-density result.
+There is no early stop and every zero row remains in the artifact.
+
+The lane hard-gates `eligible > 0`, `budgeted > 0` and `accepted > 0` for
+exactly eight source-by-faction pairs: each of Crimson Lotus, Stormkelp, Wild
+Cocoa and Rock Salt for Accord and Throng. The four accepted geographic zone
+identities are exactly `front_gravesalt_escarpment`,
+`front_skyglass_canopy`, `front_stormscale_summit` and
+`front_wyrmglass_crown`. A failed pair reopens production policy or density; it
+never authorizes post-outcome owner selection.
+
+This lane does not execute or claim direct-83, accepted-77, Stage A, Stage B or
+tuple parity. It does not contribute to main-sample source population, density
+or faction-parity arithmetic. Those receipts remain owned by the unchanged
+three-projection sample and integration gate, and the two ledgers are never
+pooled.
+
+### 3.4 Advisory, non-blocking results
 
 Record these values but do not require exhaustive equality:
 
@@ -110,15 +154,16 @@ Record these values but do not require exhaustive equality:
 - absence of every possible local sparse patch, visual oddity or inconvenient
   resource cluster.
 
-Material sample imbalance, such as a source absent from one faction or a whole
-resource grade absent from the sample, remains a blocker under section 3.2.
-Smaller density and distribution deviations become explicit balancing notes
-or bug reports for later tuning.
+Material main-sample imbalance within its owned population remains a blocker
+under section 3.2; any zero E/B/A value in the eight frontier hard-gate pairs is
+a blocker under section 3.3. Smaller density and distribution deviations become
+explicit balancing notes or bug reports for later tuning.
 
 ## 4. Implementation constraints
 
-- Prefer adapting only the offline adapter, roster, runner and finalizer.
-  Production mapgen semantics must not change to make the sample pass.
+- Apart from the ratified two-ID dry-island coast correction, prefer adapting
+  only the offline adapter, rosters, runner and finalizer. Production mapgen
+  semantics must not otherwise change to make either evidence lane pass.
 - Retain the three authentic comparisons for every sampled owner: R7
   successor, independent direct-83 settlement, and independent accepted-77
   authority. Sampling reduces locations, not comparison strength.
@@ -138,24 +183,27 @@ or bug reports for later tuning.
 2. Implement and freeze the deterministic 128-owner-per-seed roster; verify
    boundary classes, deduplication, fill behavior, exact 4,096 population and
    permutation invariance with small KATs.
-3. Adapt worker/finalizer aggregation without weakening Stage A/B, tuple,
-   transaction, access or source-population checks.
-4. Run unit/static gates and the real integration gate. Replace the final
+3. Implement and freeze the static 458-owner frontier-access roster and its
+   successor-only ledger without reading placement outcomes.
+4. Adapt worker/finalizer aggregation without weakening Stage A/B, tuple,
+   transaction, access or source-population checks and without pooling the two
+   lanes.
+5. Run unit/static gates and the real integration gate. Replace the final
    micro pair only if its exact input roster changed.
-5. Run a short sampled pilot to measure actual wall time/RSS/output, stop at
-   its approval boundary and review the projection.
-6. Present the measured projection and its exact SHA-256 to the user at the
-   unconditional stop boundary. Launch the seven-worker sampled fleet only
-   after explicit approval of that projection and budget.
-7. Run an independent fresh GPT Sol 5.6 hard-lens review over code, immutable
+6. Run a short pilot covering both fleet lanes to measure actual wall
+   time/RSS/output, stop at its approval boundary and review the projection.
+7. Present the measured projection and its exact SHA-256 to the user at the
+   unconditional stop boundary. Launch the seven-worker fleets only after
+   explicit approval of that projection and budget.
+8. Run an independent fresh GPT Sol 5.6 hard-lens review over code, immutable
    receipts, hard-gate results and the explicitly bounded evidence claim.
-8. Commit the R7 completion record, update BACKLOG/ROADMAP/README as required,
+9. Commit the R7 completion record, update BACKLOG/ROADMAP/README as required,
    and delete this temporary plan in the same completion series.
 
-Target execution budget after implementation: approximately 30--60 minutes
-for the sampled fleet, with a few hours total for implementation, gates,
-review and documentation. Stop and reconsider the sample design if its
-measured pilot projects more than two hours of fleet wall time.
+The earlier 30--60 minute target applies only to the 128-owner main sample and
+is not silently reused for the added frontier lane. The combined pilot owns the
+new execution estimate and approval boundary. Stop and reconsider the evidence
+design if it projects more than the user-approved fleet budget.
 
 ## 6. R8 handoff
 

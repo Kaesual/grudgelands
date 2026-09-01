@@ -12,6 +12,10 @@ return function(catalog, p9g_content, raw_sha256)
 	}
 	local REASON_SET = {}
 	for index = 1, #REASONS do REASON_SET[REASONS[index]] = true end
+	local DRY_ISLAND_COAST = {
+		["exclude:coast:island_stormscale"] = true,
+		["exclude:coast:island_wyrmglass"] = true,
+	}
 
 	local function fail(message)
 		error("fail_p9g: " .. message, 0)
@@ -286,7 +290,16 @@ return function(catalog, p9g_content, raw_sha256)
 			value.prior_cid, value.prior_param2, value.prior_occupancy,
 				value.prior_opcode, value.prior_feature, value.prior_interface,
 				value.prior_aux = context.settled_at(x, y, z)
-			local exclusion = context.exclusion_at(x, z)
+			local exclusion, exclusion_id = context.exclusion_at(x, z)
+			-- The two island coast records are claim envelopes over the complete
+			-- island polygon, not occupied world cells.  Their physically dry P7
+			-- surface remains the ratified host for endpoint gathering sources.
+			-- Earlier anchor, route and water exclusions retain priority in the
+			-- source index; exact prior/support/occupancy checks remain below.
+			if exclusion == "route_or_water" and DRY_ISLAND_COAST[exclusion_id] and
+					context.column_values_at(x, z) == "land" then
+				exclusion = nil
+			end
 			if exclusion == "fixed_or_protected" or exclusion == "route_or_water" then
 				return exclusion, value
 			elseif context.housing_excluded_at(x, z) then

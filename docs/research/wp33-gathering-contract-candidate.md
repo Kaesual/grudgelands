@@ -108,10 +108,22 @@ Every `new_p9g_source` row uses this complete placement record:
 | support | exact accepted P7 cell at `(x, surface_y, z)` matching the row predicate |
 | root predecessor | exact P7 air/clear output; `CONTENT_IGNORE`, liquid, foreign or unknown content rejects |
 | lower-two policy | `preserve_p7`; P9G writes neither `surface_y` nor `surface_y - 1` |
-| exclusions | any fixed/hard-protected, route, authored-water, coast-exclusion, cultural reservation, P8 resource, P9 decoration or housing-exclusion occupancy rejects |
+| exclusions | any fixed/hard-protected, route, authored-water, cultural reservation, P8 resource, P9 decoration or housing-exclusion occupancy rejects; coast exclusions reject except for the two exact dry-island cases below |
 | collision | any nonzero accepted R6 occupancy or non-P7 final intent rejects |
 | failure | one primary reason, no movement, retry, refill, partial write or fallback |
 | mutation | one new shadow-buffer intent only; no setter before the common final commit |
+
+The coast exception is local to P9G settlement and closed to exactly
+`exclude:coast:island_wyrmglass` and
+`exclude:coast:island_stormscale`. P9G may treat one of those two exclusion
+results as nonblocking only when the same column's authenticated
+`column_values_at(x, z)` result has `water_class` exactly `land`. An anchor,
+route, authored-water or other
+earlier exclusion retains its existing priority, every other coast exclusion
+still rejects, and the exception does not alter claim or protection semantics
+for any other consumer. The root-predecessor, P7 support, housing, occupancy,
+clearance, one-cell, non-overwrite, no-retry and common-commit gates below the
+exclusion check remain unchanged.
 
 The accepted R6 evidence artifact remains immutable but is not mislabeled as
 the production content table: its 77 ASCII rows use the synthetic compatible
@@ -432,6 +444,53 @@ WP33 implementation and R7 activation require all of the following:
     executable micro-KAT, run once under PUC 5.1 and once under LuaJIT with a
     byte-identical canonical digest. No intermediate PUC runtime or PUC fleet
     is scheduled.
+
+### 8.3 Pragmatic frontier-access evidence amendment
+
+For R7 pragmatic acceptance, this subsection supersedes only the population
+scope and hard/advisory treatment in items 4--6 above. The main sample still
+records its complete twelve-source ledger; its density and faction-parity
+arithmetic are advisory, while the hard frontier access values move to the
+separate lane below. Every other evidence requirement remains binding.
+
+R7 keeps its 128-owner-per-seed three-projection stratified sample intact and
+adds one strictly separate successor-only frontier-access lane. The new lane
+uses no candidate, eligible, budgeted, accepted, biome, source-density or
+settlement result to choose an owner. Before its first successor result, its
+literal roster and SHA-256 are frozen from these four inclusive, static
+horizontal envelopes and the fixed 80-by-80 owner grid:
+
+- Gravesalt: `x = -2500..-1200`, `z = -250..250`, producing owner origins
+  `x = -2512..-1232` and `z = -272..208` in steps of 80: 119 owners;
+- Skyglass: `x = 1200..2500`, `z = -250..250`, producing owner origins
+  `x = 1168..2448` and `z = -272..208` in steps of 80: 119 owners;
+- Wyrmglass: `x = -3500..-2800`, `z = -390..380`, producing owner origins
+  `x = -3552..-2832` and `z = -432..368` in steps of 80: 110 owners; and
+- Stormscale: `x = 2800..3500`, `z = -400..390`, producing owner origins
+  `x = 2768..3488` and `z = -432..368` in steps of 80: 110 owners.
+
+The four ranges do not overlap. They therefore contain exactly 458 full owners
+and 2,931,200 columns per seed, or 14,656 `(seed, owner)` cases and 93,798,400
+visited columns over all 32 frozen seeds. The Holy Grounds envelopes follow the
+fixed rectangle, the four unbiased frontier hubs and the closed maximum
+60-node horizontal warp bound; the two island envelopes are their authored
+polygon bounding boxes expanded by that same bound. This deliberately
+conservative construction may include irrelevant columns but cannot discard a
+dry target-zone column based on a later outcome.
+
+This lane hard-gates nonzero eligible, budgeted and accepted populations for
+exactly eight source-by-faction pairs: Crimson Lotus, Stormkelp, Wild Cocoa and
+Rock Salt, each for Accord and Throng. Its four geographic zone identities are
+exactly `front_gravesalt_escarpment`, `front_skyglass_canopy`,
+`front_stormscale_summit` and `front_wyrmglass_crown`. Every owner is run for
+every seed even after a pair has passed, zero rows remain evidence, and a
+failure reopens placement or density rather than permitting owner reselection.
+
+The frontier lane does not own or contribute to Stage A, Stage B, tuple parity,
+the main sample's source populations, density, or faction-parity arithmetic.
+Those claims remain with the unchanged three-projection sample and integration
+gate; the two ledgers are validated and reported separately and are never
+pooled.
 
 The 32-seed ledger may reject the proposed denominators as insufficient
 supply. Changing a denominator after seeing that evidence creates a new

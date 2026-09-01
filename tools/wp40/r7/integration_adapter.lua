@@ -142,6 +142,14 @@ function module.sample_assignment(repo)
 	return adapter.sample_assignment(repo)
 end
 
+function module.frontier_access_assignment(repo)
+	local adapter = runtime_adapter(repo)
+	if type(adapter.frontier_access_assignment) ~= "function" then
+		fail("runtime adapter lacks frontier_access_assignment")
+	end
+	return adapter.frontier_access_assignment(repo)
+end
+
 function module.pilot(repo, scratch, seed_slot)
 	local adapter = runtime_adapter(repo)
 	if type(adapter.pilot) ~= "function" then fail("runtime adapter lacks pilot") end
