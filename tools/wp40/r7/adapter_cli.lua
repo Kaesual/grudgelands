@@ -80,7 +80,7 @@ elseif mode == "frontier-access-roster" then
 	if arg[4] ~= nil then fail("frontier-access-roster arguments differ") end
 	local bytes = adapter.frontier_access_assignment(repo)
 	write_file(output, bytes)
-	print("WP40 R7 frontier access roster PASS seeds=32 owners=14656")
+	print("WP40 R7 frontier access roster PASS seeds=7 owners=3206")
 elseif mode == "catalog" then
 	if arg[4] ~= nil then fail("catalog arguments differ") end
 	local snapshot = adapter.catalog_snapshot(repo)
@@ -109,7 +109,7 @@ elseif mode == "worker" then
 	local result = adapter.worker(repo, scratch, first_slot, last_slot,
 		projection_sha256)
 	if type(result) ~= "string" or
-			not result:find("^schema\tgrug_wp40_r7_worker_receipt_v2\n") then
+			not result:find("^schema\tgrug_wp40_r7_worker_receipt_v3\n") then
 		fail("runtime adapter returned an invalid worker receipt")
 	end
 	write_file(output, result)
@@ -133,9 +133,9 @@ elseif mode == "finalize" then
 		{stage_b, result.stage_b, "grug_wp40_r7_stage_b_aggregate_v1"},
 		{p9g, result.p9g, "grug_wp40_r7_p9g_ledger_v1"},
 		{frontier_access, result.frontier_access,
-			"grug_wp40_r7_frontier_access_ledger_v1"},
+			"grug_wp40_r7_frontier_access_ledger_v2"},
 		{receipt, result.run_receipt,
-			"grug_wp40_r7_run_receipt_v2"},
+			"grug_wp40_r7_run_receipt_v3"},
 	}
 	for index = 1, #outputs do
 		copy_descriptor(outputs[index][1], outputs[index][2], outputs[index][3])

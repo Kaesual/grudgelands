@@ -151,16 +151,34 @@ expect_failure(function() contract.validate_integration_receipt(integration) end
 	"integration case did not pass")
 
 local pilot = {
-	schema = "grug_wp40_r7_pilot_result_v2", seed_slot = 17,
+	schema = "grug_wp40_r7_pilot_result_v3", seed_slot = 17,
 	seed_identity = "seed-17", canonical_output_sha256 = digest_a,
 	canonical_output_bytes = 12345,
 	stage_a_sha256 = digest_b, stage_b_sha256 = digest_a,
 	p9g_delta_sha256 = digest_b, frontier_access_roster_sha256 = digest_a,
+	frontier_access_enabled = true,
 	frontier_access_owner_count = 458, frontier_access_column_count = 2931200,
 }
 local pilot_bytes = contract.pilot_result_bytes(pilot)
 assert(pilot_bytes:find("seed_slot\t17\n", 1, true))
 assert(pilot_bytes:find("canonical_output_bytes\t12345\n", 1, true))
+pilot.seed_slot = 18
+pilot.frontier_access_enabled = false
+pilot.frontier_access_owner_count = 0
+pilot.frontier_access_column_count = 0
+assert(contract.pilot_result_bytes(pilot):find(
+	"frontier_access_enabled\tfalse\n", 1, true))
+pilot.frontier_access_enabled = true
+pilot.frontier_access_owner_count = 458
+pilot.frontier_access_column_count = 2931200
+expect_failure(function() contract.validate_pilot_result(pilot) end,
+	"pilot frontier access slot selection differs")
+pilot.seed_slot = 17
+pilot.frontier_access_enabled = false
+pilot.frontier_access_owner_count = 0
+pilot.frontier_access_column_count = 0
+expect_failure(function() contract.validate_pilot_result(pilot) end,
+	"pilot frontier access slot selection differs")
 
 local runtime_adapter = dofile(repo .. "/tools/wp40/r7/runtime_adapter.lua")
 assert(runtime_adapter.canonical_graph_nul_kat() == true)
@@ -176,12 +194,14 @@ assert(select(2, sample_assignment:gsub("\nseed\t", "")) == 32)
 assert(sample_assignment:find("case_population\t4096\n", 1, true))
 local frontier_assignment = runtime_adapter.frontier_access_assignment(repo)
 assert(frontier_assignment:find(
-	"schema\tgrug_wp40_r7_frontier_access_assignment_v1\n", 1, true) == 1)
+	"schema\tgrug_wp40_r7_frontier_access_assignment_v2\n", 1, true) == 1)
 assert(hex(raw_sha256(frontier_assignment)) ==
-	"ee53151082860fdee7dfb656d885c37a5e61ea3e52175523681988d1e57dfcee")
+	"14101c68d563e329f694b1594402e1d1e688ab6b1b2237db17f6df984725511a")
+assert(frontier_assignment:find("seed_population\t7\n", 1, true))
+assert(frontier_assignment:find("seed_slots\t1,6,11,17,22,27,32\n", 1, true))
 assert(frontier_assignment:find("owner_population_per_seed\t458\n", 1, true))
-assert(frontier_assignment:find("case_population\t14656\n", 1, true))
-assert(frontier_assignment:find("column_visit_population\t93798400\n", 1, true))
+assert(frontier_assignment:find("case_population\t3206\n", 1, true))
+assert(frontier_assignment:find("column_visit_population\t20518400\n", 1, true))
 assert(frontier_assignment:find(
 	"roster_sha256\t6c52c5aa90b21ff21f5d5b695c5b50adcc2c329a5722362f37e82dde11718341\n",
 	1, true))
@@ -251,7 +271,7 @@ local function run_cli_fixture(arguments)
 		calls.worker = calls.worker + 1
 		calls.worker_values = {actual_repo, scratch, first_slot, last_slot,
 			projection_sha256}
-		return "schema\tgrug_wp40_r7_worker_receipt_v2\n"
+		return "schema\tgrug_wp40_r7_worker_receipt_v3\n"
 	end
 	local fake_io = {}
 	function fake_io.open(path, mode)

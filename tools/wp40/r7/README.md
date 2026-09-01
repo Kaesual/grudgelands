@@ -47,9 +47,9 @@ point at the already-built parser with `WP40_LUAC51_BIN=/absolute/path/luac51`.
 atomic cutover, and `integration` additionally exercises the production-owned
 private evidence seams through the mocked VM.
 
-The pilot accepts exactly one new path below `/tmp`, measures the frozen
-128-owner stratified sample for one representative seed, writes a canonical
-projection and stops unconditionally:
+The pilot accepts exactly one new path below `/tmp`. It concurrently measures
+the combined main-plus-access slot 17 and the main-only slot 18, writes a
+canonical maximum-worker projection and stops unconditionally:
 
 ```sh
 bash tools/wp40/r7/run.sh pilot /tmp/wp40-r7-pilot-projection.tsv
@@ -68,7 +68,11 @@ The fleet hard-caps itself at seven workstation-wide Lua processes and runs
 the closed 4,096-case population: all 32 seeds, each with the same 104 spatial
 lattice owners plus 24 fixed risk owners. Seven idle-priority LuaJIT workers
 own slots `1-5`, `6-10`, `11-15`, `16-20`, `21-24`, `25-28` and `29-32`, each
-with private scratch and a read-only projection copy. The finalizer verifies
+with private scratch and a read-only projection copy. Exactly one slot in each
+worker range (`1, 6, 11, 17, 22, 27, 32`) additionally runs the complete
+458-owner Frontier Access roster. Thus the main lane retains all 32 seeds while
+the separately labelled Access ledger owns seven seeds, 3,206 owner cases and
+20,518,400 column visits. The finalizer verifies
 the exact sample assignment and repeats the merge with reversed worker
 descriptors. It re-runs the source receipt after the workers and rejects
 changed inputs. This is a stratified release-safety sample, not exhaustive
@@ -86,7 +90,8 @@ owners; the immutable accepted R6 artifact SHA-256 remains a separate identity
 field. Neither name claims regeneration of the complete R6 artifact.
 
 On a successful fleet, the finalizer promotes the artifact, Stage-A aggregate,
-Stage-B aggregate, P9G ledger, run receipt, source-audit receipt, final
-micro-KAT receipt, approved pilot projection and canonical combined log to
-`docs/research/`. The promotion manifest is written last and binds every
-durable file by SHA-256; acceptance evidence is never left only in `/tmp`.
+Stage-B aggregate, main P9G ledger, separate Frontier Access ledger, run
+receipt, source-audit receipt, final micro-KAT receipt, approved pilot
+projection and canonical combined log to `docs/research/`. The promotion
+manifest is written last and binds every durable file by SHA-256; acceptance
+evidence is never left only in `/tmp`.

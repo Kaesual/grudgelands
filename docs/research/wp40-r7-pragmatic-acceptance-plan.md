@@ -106,8 +106,8 @@ is not deferred as a post-release balancing issue.
 
 Crimson Lotus, Stormkelp, Wild Cocoa and Rock Salt are not repaired by swapping
 owners into the 128-owner main sample. They have one separately scoped,
-successor-only lane covering all 32 frozen seeds over this literal static
-roster:
+successor-only lane covering the fixed frozen seed slots
+`1, 6, 11, 17, 22, 27, 32` over this literal static roster:
 
 | Scope | Inclusive envelope | Aligned 80-by-80 owner origins | Owners/seed |
 |---|---|---|---:|
@@ -116,15 +116,17 @@ roster:
 | Wyrmglass | `x=-3500..-2800`, `z=-390..380` | `x=-3552..-2832`, `z=-432..368`, step 80 | 110 |
 | Stormscale | `x=2800..3500`, `z=-400..390` | `x=2768..3488`, `z=-432..368`, step 80 | 110 |
 
-The disjoint roster has exactly 458 full owners and 2,931,200 columns per seed,
-or 14,656 `(seed, owner)` cases and 93,798,400 columns in total. The two Holy
+The disjoint roster has exactly 458 full owners and 2,931,200 columns per
+selected seed, or 3,206 `(seed, owner)` cases and 20,518,400 columns across the
+seven selected seeds. The two Holy
 Grounds envelopes come from its fixed rectangle, the unbiased frontier hubs and
 the closed 60-node warp bound. The two island envelopes are their authored
 polygon bounding boxes expanded by that bound. This is deliberately
 conservative geometry, not a query for favorable placements.
 
 The roster is canonical in owner-z-then-owner-x order, identical for every
-seed, and frozen with its SHA-256 before the first successor outcome. Its
+selected seed, and frozen with its SHA-256 before the first successor outcome.
+The seed slots are frozen in the same assignment receipt. Its
 construction and validation may not read a logical biome, candidate hash,
 eligible/budgeted/accepted count, operation ledger or source-density result.
 There is no early stop and every zero row remains in the artifact.
@@ -183,15 +185,17 @@ explicit balancing notes or bug reports for later tuning.
 2. Implement and freeze the deterministic 128-owner-per-seed roster; verify
    boundary classes, deduplication, fill behavior, exact 4,096 population and
    permutation invariance with small KATs.
-3. Implement and freeze the static 458-owner frontier-access roster and its
-   successor-only ledger without reading placement outcomes.
+3. Implement and freeze the static 458-owner frontier-access roster, the seven
+   fixed seed slots and their successor-only ledger without reading placement
+   outcomes.
 4. Adapt worker/finalizer aggregation without weakening Stage A/B, tuple,
    transaction, access or source-population checks and without pooling the two
    lanes.
 5. Run unit/static gates and the real integration gate. Replace the final
    micro pair only if its exact input roster changed.
-6. Run a short pilot covering both fleet lanes to measure actual wall
-   time/RSS/output, stop at its approval boundary and review the projection.
+6. Run the combined slot-17 and main-only slot-18 pilots concurrently to
+   measure actual wall time/RSS/output, stop at the approval boundary and
+   review the maximum-worker projection.
 7. Present the measured projection and its exact SHA-256 to the user at the
    unconditional stop boundary. Launch the seven-worker fleets only after
    explicit approval of that projection and budget.
@@ -204,6 +208,13 @@ The earlier 30--60 minute target applies only to the 128-owner main sample and
 is not silently reused for the added frontier lane. The combined pilot owns the
 new execution estimate and approval boundary. Stop and reconsider the evidence
 design if it projects more than the user-approved fleet budget.
+
+That stop occurred on 2026-09-01: the complete 32-seed Access proposal measured
+2,981.65 seconds for one combined seed and projected 14,908.25 seconds
+(4 h 08 min), projection SHA-256
+`30d6912f53983bf292081a2cb441fac81c1e4092dabe477263313be78db6d033`.
+The user approved the fixed seven-slot reduction above. The over-budget pilot
+is rationale only; it did not authorize or launch a fleet.
 
 ## 6. R8 handoff
 

@@ -18,6 +18,11 @@ local SAMPLE_RISK_COUNT = 24
 local FRONTIER_ACCESS_SCHEMA = "grug_wp40_r7_frontier_access_roster_v1"
 local FRONTIER_ACCESS_OWNER_COUNT = 458
 local FRONTIER_ACCESS_COLUMN_COUNT = 2931200
+local FRONTIER_ACCESS_SEED_SLOTS = {1, 6, 11, 17, 22, 27, 32}
+local FRONTIER_ACCESS_SEED_SET = {}
+for index = 1, #FRONTIER_ACCESS_SEED_SLOTS do
+	FRONTIER_ACCESS_SEED_SET[FRONTIER_ACCESS_SEED_SLOTS[index]] = true
+end
 local FRONTIER_ACCESS_ENVELOPES = {
 	{"front_gravesalt_escarpment", -2500, -1200, -250, 250},
 	{"front_skyglass_canopy", 1200, 2500, -250, 250},
@@ -558,13 +563,14 @@ end
 function module.frontier_access_assignment(repo)
 	local roster = frontier_access_roster(repo)
 	return table.concat({
-		"schema\tgrug_wp40_r7_frontier_access_assignment_v1\n",
+		"schema\tgrug_wp40_r7_frontier_access_assignment_v2\n",
 		"frontier_access_schema\t", roster.schema, "\n",
-		"seed_population\t32\n",
+		"seed_population\t7\n",
+		"seed_slots\t1,6,11,17,22,27,32\n",
 		"owner_population_per_seed\t", tostring(#roster.rows), "\n",
-		"case_population\t", tostring(32 * #roster.rows), "\n",
+		"case_population\t", tostring(7 * #roster.rows), "\n",
 		"column_population_per_seed\t", tostring(roster.columns), "\n",
-		"column_visit_population\t", tostring(32 * roster.columns), "\n",
+		"column_visit_population\t", tostring(7 * roster.columns), "\n",
 		"source_population\t4\nzone_population\t4\nsource_faction_gate_population\t8\n",
 		"roster_sha256\t", roster.sha256, "\n",
 	})
@@ -2978,6 +2984,7 @@ end
 -- never contributes to Stage A/B, density or parity.
 function module.run_seed(repo, seed_slot, output_path)
 	integer(seed_slot, 1, 32, "seed slot")
+	local frontier_access_enabled = FRONTIER_ACCESS_SEED_SET[seed_slot] == true
 	local output = unopened_output(output_path)
 	local contract = dofile(repo .. "/tools/wp40/r7/contract.lua")
 	local seeds = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
@@ -2990,9 +2997,11 @@ function module.run_seed(repo, seed_slot, output_path)
 	local roster = sample_roster(repo, seed_slot)
 	local access_roster = frontier_access_roster(repo)
 	local access_owner_set = {}
-	for index = 1, #access_roster.rows do
-		local row = access_roster.rows[index]
-		access_owner_set[sample_owner_key(row.owner_x, row.owner_z)] = true
+	if frontier_access_enabled then
+		for index = 1, #access_roster.rows do
+			local row = access_roster.rows[index]
+			access_owner_set[sample_owner_key(row.owner_x, row.owner_z)] = true
+		end
 	end
 	local stream = sha_stream(repo)
 	local output_hasher, output_bytes = stream.new(), 0
@@ -3002,7 +3011,7 @@ function module.run_seed(repo, seed_slot, output_path)
 		output_hasher.update(bytes)
 		output_bytes = output_bytes + #bytes
 	end
-	write("schema\tgrug_wp40_r7_seed_evidence_v2\n")
+	write("schema\tgrug_wp40_r7_seed_evidence_v3\n")
 	write("seed_slot\t" .. tostring(seed_slot) .. "\n")
 	write("seed_identity\t" .. seed .. "\n")
 	write("sample_schema\t" .. roster.schema .. "\n")
@@ -3012,10 +3021,15 @@ function module.run_seed(repo, seed_slot, output_path)
 	for index = 1, #roster.rows do write(sample_owner_bytes(roster.rows[index], index)) end
 	write("frontier_access_schema\t" .. access_roster.schema .. "\n")
 	write("frontier_access_roster_sha256\t" .. access_roster.sha256 .. "\n")
-	write("frontier_access_owner_count\t" .. tostring(#access_roster.rows) .. "\n")
-	write("frontier_access_column_count\t" .. tostring(access_roster.columns) .. "\n")
-	for index = 1, #access_roster.rows do
-		write(frontier_access_owner_bytes(access_roster.rows[index], index))
+	write("frontier_access_enabled\t" .. tostring(frontier_access_enabled) .. "\n")
+	write("frontier_access_owner_count\t" ..
+		tostring(frontier_access_enabled and #access_roster.rows or 0) .. "\n")
+	write("frontier_access_column_count\t" ..
+		tostring(frontier_access_enabled and access_roster.columns or 0) .. "\n")
+	if frontier_access_enabled then
+		for index = 1, #access_roster.rows do
+			write(frontier_access_owner_bytes(access_roster.rows[index], index))
+		end
 	end
 	local restored_buffers, direct_buffers = stream.new(), stream.new()
 	local restored_runs, direct_runs = stream.new(), stream.new()
@@ -3096,35 +3110,37 @@ function module.run_seed(repo, seed_slot, output_path)
 	end
 	local frontier_aggregate = new_p9g_aggregate(reasons)
 	local frontier_operations, frontier_accepted, frontier_rejected = 0, 0, 0
-	for owner_index = 1, #access_roster.rows do
-		local row = access_roster.rows[owner_index]
-		local key = sample_owner_key(row.owner_x, row.owner_z)
-		local successor = successor_cache[key]
-		if not successor then
-			successor = validate_scan(runtime_fixture.built.evidence.scan_owner(
-				row.owner_x, row.owner_z), row.owner_x, row.owner_z, true)
-		end
-		local ledger = validate_ledger(successor.settlement.p9g)
-		for operation_index = 1, #ledger.operations do
-			local operation = ledger.operations[operation_index]
-			if FRONTIER_ACCESS_SOURCE_SET[operation.source_id] then
-				if not FRONTIER_ACCESS_ZONE_SET[operation.zone_id] then
-					fail("frontier access operation escaped the closed zone set")
-				end
-				write(operation_bytes(operation, "frontier_access_operation"))
-				frontier_operations = frontier_operations + 1
-				if operation.accepted then frontier_accepted = frontier_accepted + 1
-				else frontier_rejected = frontier_rejected + 1 end
+	if frontier_access_enabled then
+		for owner_index = 1, #access_roster.rows do
+			local row = access_roster.rows[owner_index]
+			local key = sample_owner_key(row.owner_x, row.owner_z)
+			local successor = successor_cache[key]
+			if not successor then
+				successor = validate_scan(runtime_fixture.built.evidence.scan_owner(
+					row.owner_x, row.owner_z), row.owner_x, row.owner_z, true)
 			end
+			local ledger = validate_ledger(successor.settlement.p9g)
+			for operation_index = 1, #ledger.operations do
+				local operation = ledger.operations[operation_index]
+				if FRONTIER_ACCESS_SOURCE_SET[operation.source_id] then
+					if not FRONTIER_ACCESS_ZONE_SET[operation.zone_id] then
+						fail("frontier access operation escaped the closed zone set")
+					end
+					write(operation_bytes(operation, "frontier_access_operation"))
+					frontier_operations = frontier_operations + 1
+					if operation.accepted then frontier_accepted = frontier_accepted + 1
+					else frontier_rejected = frontier_rejected + 1 end
+				end
+			end
+			merge_frontier_access(frontier_aggregate, reasons, ledger)
 		end
-		merge_frontier_access(frontier_aggregate, reasons, ledger)
+		write(p9g_aggregate_bytes(frontier_aggregate, reasons,
+			"frontier_access_population"))
 	end
-	write(p9g_aggregate_bytes(frontier_aggregate, reasons,
-		"frontier_access_population"))
 	local stage_a_bytes, stage_b_bytes = contract.stage_a_bytes(stage_a),
 		contract.stage_b_bytes(stage_b)
 	assert(output:close())
-	return {schema = "grug_wp40_r7_seed_result_v1", seed_slot = seed_slot,
+	return {schema = "grug_wp40_r7_seed_result_v2", seed_slot = seed_slot,
 		seed_identity = seed, manifest_sha256 = runtime_fixture.built.manifest.sha256,
 		accepted_r6_artifact_sha256 = binding.sha256, stage_a = stage_a,
 		stage_b = stage_b, path = output_path, sha256 = output_hasher.final_hex(),
@@ -3133,8 +3149,9 @@ function module.run_seed(repo, seed_slot, output_path)
 		sample_roster_sha256 = roster.sha256, sample_owner_count = #roster.rows,
 		sample_column_count = roster.columns,
 		frontier_access_roster_sha256 = access_roster.sha256,
-		frontier_access_owner_count = #access_roster.rows,
-		frontier_access_column_count = access_roster.columns,
+		frontier_access_enabled = frontier_access_enabled,
+		frontier_access_owner_count = frontier_access_enabled and #access_roster.rows or 0,
+		frontier_access_column_count = frontier_access_enabled and access_roster.columns or 0,
 		frontier_access_operation_count = frontier_operations,
 		frontier_access_accepted_count = frontier_accepted,
 		frontier_access_rejected_count = frontier_rejected}
@@ -3145,7 +3162,7 @@ function module.pilot(repo, scratch, seed_slot)
 	local result = module.run_seed(repo, seed_slot,
 		scratch .. "-seed-" .. string.format("%02d", seed_slot) .. ".tsv")
 	return {
-		schema = "grug_wp40_r7_pilot_result_v2", seed_slot = seed_slot,
+		schema = "grug_wp40_r7_pilot_result_v3", seed_slot = seed_slot,
 		seed_identity = result.seed_identity,
 		canonical_output_sha256 = result.sha256,
 		canonical_output_bytes = result.bytes,
@@ -3153,6 +3170,7 @@ function module.pilot(repo, scratch, seed_slot)
 		stage_b_sha256 = result.stage_b_sha256,
 		p9g_delta_sha256 = result.stage_a.p9g_delta_sha256,
 		frontier_access_roster_sha256 = result.frontier_access_roster_sha256,
+		frontier_access_enabled = result.frontier_access_enabled,
 		frontier_access_owner_count = result.frontier_access_owner_count,
 		frontier_access_column_count = result.frontier_access_column_count,
 	}
@@ -3163,7 +3181,7 @@ function module.worker(repo, scratch, first_slot, last_slot, projection_sha256)
 	integer(first_slot, 1, 32, "worker first slot")
 	integer(last_slot, first_slot, 32, "worker last slot")
 	digest(projection_sha256, "approved projection digest")
-	local rows = {"schema\tgrug_wp40_r7_worker_receipt_v2\n",
+	local rows = {"schema\tgrug_wp40_r7_worker_receipt_v3\n",
 		"projection_sha256\t" .. projection_sha256 .. "\n",
 		"first_slot\t" .. tostring(first_slot) .. "\n",
 		"last_slot\t" .. tostring(last_slot) .. "\n"}
@@ -3177,7 +3195,8 @@ function module.worker(repo, scratch, first_slot, last_slot, projection_sha256)
 			result.stage_b_sha256, result.stage_a.p9g_delta_sha256,
 			result.sample_roster_sha256, result.sample_owner_count,
 			result.sample_column_count, result.frontier_access_roster_sha256,
-			result.frontier_access_owner_count, result.frontier_access_column_count,
+			tostring(result.frontier_access_enabled), result.frontier_access_owner_count,
+			result.frontier_access_column_count,
 			result.frontier_access_operation_count,
 			result.frontier_access_accepted_count,
 			result.frontier_access_rejected_count}, "\t") .. "\n"
@@ -3235,7 +3254,7 @@ local function worker_descriptors(repo, path, contract, stream)
 	for line in bytes:gmatch("([^\n]+)\n") do
 		local fields = split_tabs(line)
 		if first then
-			if line ~= "schema\tgrug_wp40_r7_worker_receipt_v2" then
+			if line ~= "schema\tgrug_wp40_r7_worker_receipt_v3" then
 				fail("worker receipt schema differs")
 			end
 			first = false
@@ -3245,7 +3264,7 @@ local function worker_descriptors(repo, path, contract, stream)
 			first_slot = tonumber(fields[2])
 		elseif fields[1] == "last_slot" and #fields == 2 and not last_slot then
 			last_slot = tonumber(fields[2])
-		elseif fields[1] == "seed" and #fields == 20 then
+		elseif fields[1] == "seed" and #fields == 21 then
 			local slot = tonumber(fields[2])
 			if not slot or seeds[slot] then fail("worker seed descriptor differs") end
 			seeds[slot] = {slot = slot, identity = fields[3], path = fields[4],
@@ -3255,11 +3274,13 @@ local function worker_descriptors(repo, path, contract, stream)
 				sample_roster_sha256 = fields[12], sample_owner_count = tonumber(fields[13]),
 				sample_column_count = tonumber(fields[14]),
 				frontier_access_roster_sha256 = fields[15],
-				frontier_access_owner_count = tonumber(fields[16]),
-				frontier_access_column_count = tonumber(fields[17]),
-				frontier_access_operation_count = tonumber(fields[18]),
-				frontier_access_accepted_count = tonumber(fields[19]),
-				frontier_access_rejected_count = tonumber(fields[20])}
+				frontier_access_enabled = fields[16] == "true",
+				frontier_access_enabled_text = fields[16],
+				frontier_access_owner_count = tonumber(fields[17]),
+				frontier_access_column_count = tonumber(fields[18]),
+				frontier_access_operation_count = tonumber(fields[19]),
+				frontier_access_accepted_count = tonumber(fields[20]),
+				frontier_access_rejected_count = tonumber(fields[21])}
 		elseif fields[1] == "stage_a" and #fields == 3 then
 			local slot = assert(tonumber(fields[2]))
 			if stage_a[slot] then fail("duplicate worker Stage-A row") end
@@ -3312,16 +3333,32 @@ local function worker_descriptors(repo, path, contract, stream)
 			fail("worker seed sample roster binding differs")
 		end
 		local expected_access = frontier_access_roster(repo)
-		integer(row.frontier_access_owner_count, FRONTIER_ACCESS_OWNER_COUNT,
-			FRONTIER_ACCESS_OWNER_COUNT, "seed frontier access owner count")
-		integer(row.frontier_access_column_count, FRONTIER_ACCESS_COLUMN_COUNT,
-			FRONTIER_ACCESS_COLUMN_COUNT, "seed frontier access column count")
+		local expected_access_enabled = FRONTIER_ACCESS_SEED_SET[slot] == true
+		if (row.frontier_access_enabled_text ~= "true" and
+				row.frontier_access_enabled_text ~= "false") or
+				row.frontier_access_enabled ~= expected_access_enabled then
+			fail("worker seed frontier access selection differs")
+		end
+		local expected_access_owners = expected_access_enabled and
+			FRONTIER_ACCESS_OWNER_COUNT or 0
+		local expected_access_columns = expected_access_enabled and
+			FRONTIER_ACCESS_COLUMN_COUNT or 0
+		integer(row.frontier_access_owner_count, expected_access_owners,
+			expected_access_owners, "seed frontier access owner count")
+		integer(row.frontier_access_column_count, expected_access_columns,
+			expected_access_columns, "seed frontier access column count")
 		for _, field in ipairs({"frontier_access_operation_count",
 				"frontier_access_accepted_count", "frontier_access_rejected_count"}) do
 			integer(row[field], 0, MAX_SAFE, "seed " .. field)
 		end
 		if row.frontier_access_roster_sha256 ~= expected_access.sha256 then
 			fail("worker seed frontier access roster binding differs")
+		end
+		if not expected_access_enabled and
+				(row.frontier_access_operation_count ~= 0 or
+				row.frontier_access_accepted_count ~= 0 or
+				row.frontier_access_rejected_count ~= 0) then
+			fail("worker main-only seed emitted frontier access evidence")
 		end
 		if row.frontier_access_operation_count ~=
 				row.frontier_access_accepted_count + row.frontier_access_rejected_count then
@@ -3524,8 +3561,13 @@ function module.finalize(repo, scratch, worker_paths)
 	stage_b.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	p9g.write("schema\tgrug_wp40_r7_p9g_ledger_v1\n")
 	p9g.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
-	frontier.write("schema\tgrug_wp40_r7_frontier_access_ledger_v1\n")
-	frontier.write("acceptance_scope\t32_seed_static_frontier_successor_only\n")
+	frontier.write("schema\tgrug_wp40_r7_frontier_access_ledger_v2\n")
+	frontier.write("acceptance_scope\t7_seed_stratified_static_frontier_successor_only\n")
+	frontier.write("seed_population\t7\n")
+	frontier.write("seed_slots\t1,6,11,17,22,27,32\n")
+	frontier.write("owner_population_per_seed\t458\n")
+	frontier.write("case_population\t3206\n")
+	frontier.write("column_visit_population\t20518400\n")
 	frontier.write("roster_sha256\t" .. expected_access.sha256 .. "\n")
 
 	local production_content_sha, p9g_content_sha, p9g_delta_sha
@@ -3570,7 +3612,9 @@ function module.finalize(repo, scratch, worker_paths)
 		local line_number, seed_slot, seed_identity = 0, nil, nil
 		local sample_schema, sample_roster_sha, sample_owner_population,
 			sample_column_population
-		local frontier_schema, frontier_roster_sha, frontier_owner_population,
+		local frontier_schema, frontier_roster_sha, frontier_enabled,
+			frontier_enabled_seen,
+			frontier_owner_population,
 			frontier_column_population
 		local operations, accepted_count, rejected_count, population_count = 0, 0, 0, 0
 		local frontier_operations, frontier_accepted_count,
@@ -3587,7 +3631,7 @@ function module.finalize(repo, scratch, worker_paths)
 			line_number = line_number + 1
 			if line:find("\r", 1, true) then fail("seed evidence has CR bytes") end
 			if line_number == 1 then
-				if line ~= "schema\tgrug_wp40_r7_seed_evidence_v2" then
+				if line ~= "schema\tgrug_wp40_r7_seed_evidence_v3" then
 					fail("seed evidence schema differs")
 				end
 			elseif line:find("^seed_slot\t") then
@@ -3654,22 +3698,27 @@ function module.finalize(repo, scratch, worker_paths)
 				end
 				frontier_roster_sha = digest(fields[2],
 					"seed frontier access roster digest")
+			elseif line:find("^frontier_access_enabled\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or frontier_enabled_seen or
+						(fields[2] ~= "true" and fields[2] ~= "false") then
+					fail("seed frontier access selection row differs")
+				end
+				frontier_enabled, frontier_enabled_seen = fields[2] == "true", true
 			elseif line:find("^frontier_access_owner_count\t") then
 				local fields = split_tabs(line)
 				if #fields ~= 2 or frontier_owner_population ~= nil then
 					fail("seed frontier access owner-count row differs")
 				end
-				frontier_owner_population = parsed_integer(fields[2],
-					FRONTIER_ACCESS_OWNER_COUNT, FRONTIER_ACCESS_OWNER_COUNT,
-					"seed frontier access owner count")
+				frontier_owner_population = parsed_integer(fields[2], 0,
+					FRONTIER_ACCESS_OWNER_COUNT, "seed frontier access owner count")
 			elseif line:find("^frontier_access_column_count\t") then
 				local fields = split_tabs(line)
 				if #fields ~= 2 or frontier_column_population ~= nil then
 					fail("seed frontier access column-count row differs")
 				end
-				frontier_column_population = parsed_integer(fields[2],
-					FRONTIER_ACCESS_COLUMN_COUNT, FRONTIER_ACCESS_COLUMN_COUNT,
-					"seed frontier access column count")
+				frontier_column_population = parsed_integer(fields[2], 0,
+					FRONTIER_ACCESS_COLUMN_COUNT, "seed frontier access column count")
 			elseif line:find("^frontier_access_owner\t") then
 				local fields = split_tabs(line)
 				if #fields ~= 6 then fail("seed frontier access owner row width differs") end
@@ -4123,15 +4172,24 @@ function module.finalize(repo, scratch, worker_paths)
 				accepted_count ~= a.accepted_count or rejected_count ~= a.rejected_count then
 			fail("seed P9G ledger population/Stage-A identity differs")
 		end
+		local expected_frontier_enabled = FRONTIER_ACCESS_SEED_SET[slot] == true
+		local expected_frontier_owners = expected_frontier_enabled and
+			FRONTIER_ACCESS_OWNER_COUNT or 0
+		local expected_frontier_columns = expected_frontier_enabled and
+			FRONTIER_ACCESS_COLUMN_COUNT or 0
 		if frontier_schema ~= FRONTIER_ACCESS_SCHEMA or
 				frontier_roster_sha ~= expected_access.sha256 or
 				frontier_roster_sha ~= descriptor.frontier_access_roster_sha256 or
-				frontier_owner_population ~= FRONTIER_ACCESS_OWNER_COUNT or
-				frontier_owner_rows ~= FRONTIER_ACCESS_OWNER_COUNT or
+				not frontier_enabled_seen or
+				frontier_enabled ~= expected_frontier_enabled or
+				frontier_enabled ~= descriptor.frontier_access_enabled or
+				frontier_owner_population ~= expected_frontier_owners or
+				frontier_owner_rows ~= expected_frontier_owners or
 				frontier_owner_population ~= descriptor.frontier_access_owner_count or
-				frontier_column_population ~= FRONTIER_ACCESS_COLUMN_COUNT or
+				frontier_column_population ~= expected_frontier_columns or
 				frontier_column_population ~= descriptor.frontier_access_column_count or
-				frontier_population_count < 1 or
+				(expected_frontier_enabled and frontier_population_count < 1) or
+				(not expected_frontier_enabled and frontier_population_count ~= 0) or
 				frontier_operations ~= descriptor.frontier_access_operation_count or
 				frontier_accepted_count ~= descriptor.frontier_access_accepted_count or
 				frontier_rejected_count ~= descriptor.frontier_access_rejected_count or
@@ -4238,8 +4296,8 @@ function module.finalize(repo, scratch, worker_paths)
 			total_operations ~= total_accepted + total_rejected or
 			total_sample_cases ~= 32 * SAMPLE_OWNER_COUNT or
 			total_sample_columns ~= 32 * 795281 or sampled_coverage_population < 1 or
-			total_frontier_cases ~= 32 * FRONTIER_ACCESS_OWNER_COUNT or
-			total_frontier_columns ~= 32 * FRONTIER_ACCESS_COLUMN_COUNT or
+			total_frontier_cases ~= 7 * FRONTIER_ACCESS_OWNER_COUNT or
+			total_frontier_columns ~= 7 * FRONTIER_ACCESS_COLUMN_COUNT or
 			total_frontier_operations ~= total_frontier_accepted +
 				total_frontier_rejected or frontier_access_gates ~= 8 then
 		fail("fleet P9G closed totals differ")
@@ -4250,9 +4308,9 @@ function module.finalize(repo, scratch, worker_paths)
 		p9g.close(), frontier.close()
 	local receipt = new_final_output(scratch .. "/run-receipt.tsv", stream)
 	receipt.write(table.concat({
-		"schema\tgrug_wp40_r7_run_receipt_v2\n",
-		"proof_scope_fleet\t32_seed_stratified_4096_owner_main_plus_14656_owner_frontier_access\n",
-		"acceptance_scope\tmain_sample_plus_static_frontier_successor_lane_not_exhaustive\n",
+		"schema\tgrug_wp40_r7_run_receipt_v3\n",
+		"proof_scope_fleet\t32_seed_stratified_4096_owner_main_plus_7_seed_3206_owner_frontier_access\n",
+		"acceptance_scope\t32_seed_main_plus_7_seed_static_frontier_successor_lane_not_exhaustive\n",
 		"projection_sha256\t", projection, "\n",
 		"accepted_r6_artifact_sha256\t", ACCEPTED_R6_ARTIFACT_SHA256, "\n",
 		"production_r6_content_sha256\t", production_content_sha, "\n",
@@ -4280,6 +4338,8 @@ function module.finalize(repo, scratch, worker_paths)
 			tostring(parity_advisory_insufficient), "\n",
 		"frontier_access_schema\t", FRONTIER_ACCESS_SCHEMA, "\n",
 		"frontier_access_roster_sha256\t", expected_access.sha256, "\n",
+		"frontier_access_seed_population\t7\n",
+		"frontier_access_seed_slots\t1,6,11,17,22,27,32\n",
 		"frontier_access_owner_population_per_seed\t",
 			tostring(FRONTIER_ACCESS_OWNER_COUNT), "\n",
 		"frontier_access_case_population\t", tostring(total_frontier_cases), "\n",

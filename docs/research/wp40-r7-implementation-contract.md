@@ -174,11 +174,13 @@ Independent workers use immutable inputs, separate scratch/output paths,
 idle scheduling and at most seven simultaneous Lua processes workstation-wide.
 A deterministic finalizer orders and checks every result.
 
-Before any long 32-seed fleet, run one representative LuaJIT pilot, record its
-input/roster hashes, elapsed time, peak RSS, output/scratch bytes and projected
-fleet cost, then stop unconditionally. The fleet starts only after the user
-approves that exact measured SHA-256 projection. An earlier R6 fleet approval
-does not silently approve a changed R7 projection.
+Before any long fleet, run the representative LuaJIT pilot set defined by the
+active acceptance amendment. For the current schedule this is the concurrent
+combined slot-17 and main-only slot-18 pair. Record their input/roster hashes,
+elapsed time, peak RSS, output/scratch bytes and projected maximum-worker cost,
+then stop unconditionally. The fleet starts only after the user approves that
+exact measured SHA-256 projection. An earlier R6 or superseded R7 fleet
+approval does not silently approve a changed projection.
 
 ## 6. Review and stop conditions
 
@@ -257,14 +259,17 @@ four inclusive conservative land envelopes:
 | Wyrmglass | `x=-3500..-2800`, `z=-390..380` | `x=-3552..-2832`, `z=-432..368`, step 80 | 110 |
 | Stormscale | `x=2800..3500`, `z=-400..390` | `x=2768..3488`, `z=-432..368`, step 80 | 110 |
 
-The disjoint union is exactly 458 full owners and 2,931,200 columns per seed:
-14,656 `(seed, owner)` cases and 93,798,400 columns over all 32 frozen seeds.
+The disjoint union is exactly 458 full owners and 2,931,200 columns per selected
+seed. The predeclared, evenly distributed frozen seed slots are exactly
+`1, 6, 11, 17, 22, 27, 32`, giving 3,206 `(seed, owner)` cases and 20,518,400
+columns. The 32-seed main sample is unchanged; only this separate access lane
+uses the seven-seed scope.
 The Holy Grounds bounds derive only from the fixed rectangle, unbiased frontier
 hubs and maximum 60-node warp; the island bounds are the two authored polygon
 bounding boxes expanded by the same warp maximum. Canonical order is owner z,
 then owner x. The literal roster and its SHA-256 freeze before the first
 successor outcome; no biome, candidate, eligible, budgeted, accepted, ledger or
-source-density result may select, remove or stop an owner.
+source-density result may select, remove or stop an owner or seed.
 
 Each frontier owner runs authentic successor settlement, but not the independent
 direct-83 or accepted-77 projections. Across the complete lane, nonzero
@@ -274,8 +279,9 @@ Stormkelp/Throng, Wild Cocoa/Accord, Wild Cocoa/Throng, Rock Salt/Accord and
 Rock Salt/Throng. The only in-scope zones are
 `front_gravesalt_escarpment`, `front_skyglass_canopy`,
 `front_stormscale_summit` and `front_wyrmglass_crown`. Zero rows are retained;
-all owners run for all seeds even after a pair passes; a failure cannot be
-repaired by changing the roster after observing outcomes.
+all owners run for all seven selected seeds even after a pair passes; a failure
+cannot be repaired by changing the roster or seed slots after observing
+outcomes.
 
 This frontier access ledger is never pooled into the 128-owner sample. The main
 sample and integration gate remain the sole owners of Stage A, Stage B, exact
@@ -283,8 +289,17 @@ tuple parity and their existing transaction/replay claims. Density and faction
 parity remain measured on the main sample only and retain their pragmatic
 advisory status; the frontier lane makes no density or parity claim.
 
-The sample pilot retains the unconditional stop boundary and binds the exact
-assignment SHA-256, measured resources and projected fleet cost. The fleet may
-start only after explicit approval of that projection. A projection above two
-hours of fleet wall time is a stop/reconsider result rather than an automatic
-launch.
+The pilot runs one combined representative slot (`17`) and one main-only slot
+(`18`) concurrently. Its projection binds both results, the exact assignments,
+measured resources and the maximum worker schedule of one access seed plus four
+main-only seeds. The fleet may start only after explicit approval of that exact
+projection SHA-256. A projection above two hours of fleet wall time is a
+stop/reconsider result rather than an automatic launch.
+
+This seven-seed amendment was approved on 2026-09-01 after the complete
+32-seed Access proposal stopped at its pilot boundary. That pilot measured
+2,981.65 seconds for one combined seed and projected 14,908.25 seconds
+(4 h 08 min) for the fleet; its projection SHA-256 was
+`30d6912f53983bf292081a2cb441fac81c1e4092dabe477263313be78db6d033`.
+The failed budget projection is decision rationale, not accepted fleet
+evidence. No 32-seed Access fleet was started from it.

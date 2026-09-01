@@ -470,20 +470,22 @@ horizontal envelopes and the fixed 80-by-80 owner grid:
   `x = 2768..3488` and `z = -432..368` in steps of 80: 110 owners.
 
 The four ranges do not overlap. They therefore contain exactly 458 full owners
-and 2,931,200 columns per seed, or 14,656 `(seed, owner)` cases and 93,798,400
-visited columns over all 32 frozen seeds. The Holy Grounds envelopes follow the
+and 2,931,200 columns per selected seed. R7 freezes the evenly distributed seed
+slots `1, 6, 11, 17, 22, 27, 32`, for 3,206 `(seed, owner)` cases and
+20,518,400 visited columns. The independent main sample continues to use all
+32 frozen seeds. The Holy Grounds envelopes follow the
 fixed rectangle, the four unbiased frontier hubs and the closed maximum
 60-node horizontal warp bound; the two island envelopes are their authored
 polygon bounding boxes expanded by that same bound. This deliberately
 conservative construction may include irrelevant columns but cannot discard a
 dry target-zone column based on a later outcome.
 
-This lane hard-gates nonzero eligible, budgeted and accepted populations for
+This seven-seed lane hard-gates nonzero eligible, budgeted and accepted populations for
 exactly eight source-by-faction pairs: Crimson Lotus, Stormkelp, Wild Cocoa and
 Rock Salt, each for Accord and Throng. Its four geographic zone identities are
 exactly `front_gravesalt_escarpment`, `front_skyglass_canopy`,
 `front_stormscale_summit` and `front_wyrmglass_crown`. Every owner is run for
-every seed even after a pair has passed, zero rows remain evidence, and a
+every selected seed even after a pair has passed, zero rows remain evidence, and a
 failure reopens placement or density rather than permitting owner reselection.
 
 The frontier lane does not own or contribute to Stage A, Stage B, tuple parity,

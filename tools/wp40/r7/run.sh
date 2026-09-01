@@ -250,25 +250,26 @@ run_frontier_access_roster() {
 	local output="$1" log="$2"
 	"$lua_bin" "${lua_prefix[@]}" "$cli" frontier-access-roster "$repo" "$output" \
 		>"$log" 2>&1
-	[[ "$(rg -n '^WP40 R7 frontier access roster PASS seeds=32 owners=14656$' \
+	[[ "$(rg -n '^WP40 R7 frontier access roster PASS seeds=7 owners=3206$' \
 			"$log" | awk 'END {print NR + 0}')" -eq 1 ]] || {
 		cat "$log"
 		echo "WP40 R7 runner: frontier access roster aggregation differs" >&2
 		return 1
 	}
 	awk -F '\t' '
-		NR == 1 {ok = ($0 == "schema\tgrug_wp40_r7_frontier_access_assignment_v1"); next}
+		NR == 1 {ok = ($0 == "schema\tgrug_wp40_r7_frontier_access_assignment_v2"); next}
 		$1 == "frontier_access_schema" {ok = ok && $2 == "grug_wp40_r7_frontier_access_roster_v1"; schema++}
-		$1 == "seed_population" {ok = ok && $2 == 32; seeds++}
+		$1 == "seed_population" {ok = ok && $2 == 7; seeds++}
+		$1 == "seed_slots" {ok = ok && $2 == "1,6,11,17,22,27,32"; slots++}
 		$1 == "owner_population_per_seed" {ok = ok && $2 == 458; owners++}
-		$1 == "case_population" {ok = ok && $2 == 14656; cases++}
+		$1 == "case_population" {ok = ok && $2 == 3206; cases++}
 		$1 == "column_population_per_seed" {ok = ok && $2 == 2931200; columns++}
-		$1 == "column_visit_population" {ok = ok && $2 == 93798400; visits++}
+		$1 == "column_visit_population" {ok = ok && $2 == 20518400; visits++}
 		$1 == "source_population" {ok = ok && $2 == 4; sources++}
 		$1 == "zone_population" {ok = ok && $2 == 4; zones++}
 		$1 == "source_faction_gate_population" {ok = ok && $2 == 8; gates++}
 		$1 == "roster_sha256" {ok = ok && length($2) == 64 && $2 !~ /[^0-9a-f]/; digest++}
-		END {exit !(ok && NR == 11 && schema == 1 && seeds == 1 && owners == 1 &&
+		END {exit !(ok && NR == 12 && schema == 1 && seeds == 1 && slots == 1 && owners == 1 &&
 			cases == 1 && columns == 1 && visits == 1 && sources == 1 && zones == 1 &&
 			gates == 1 && digest == 1)}
 	' "$output" || {
@@ -489,16 +490,41 @@ if [[ "$mode" == pilot ]]; then
 		echo "WP40 R7 runner: pilot output already exists" >&2
 		exit 1
 	}
-	pilot_result="$scratch/pilot-result.tsv"
-	pilot_log="$scratch/pilot.log"
-	pilot_resource="$scratch/pilot.resource.tsv"
+	combined_result="$scratch/pilot-combined-result.tsv"
+	combined_log="$scratch/pilot-combined.log"
+	combined_resource="$scratch/pilot-combined.resource.tsv"
+	main_result="$scratch/pilot-main-result.tsv"
+	main_log="$scratch/pilot-main.log"
+	main_resource="$scratch/pilot-main.resource.tsv"
+	process_snapshot="$(ps -eo comm=)"
+	visible_lua="$(awk '$1 == "luajit" || $1 == "lua51" {count++}
+		END {print count + 0}' <<<"$process_snapshot")"
+	[[ "$visible_lua" -le 5 ]] || {
+		echo "WP40 R7 runner: workstation-wide cap cannot admit two pilot processes" >&2
+		exit 1
+	}
 	setsid env LC_ALL=C "$time_bin" -q \
-		-f 'r7_pilot_resource_v1\t%e\t%U\t%S\t%M' -o "$pilot_resource" \
+		-f 'r7_pilot_combined_resource_v1\t%e\t%U\t%S\t%M' -o "$combined_resource" \
 		chrt --idle 0 ionice -c3 "$lua_bin" "${lua_prefix[@]}" "$cli" pilot \
-		"$repo" "$pilot_result" "$scratch/pilot" 17 >"$pilot_log" 2>&1
-	pilot_seed_output="$scratch/pilot-seed-17.tsv"
-	[[ -f "$pilot_seed_output" ]] || {
-		echo "WP40 R7 runner: pilot seed evidence is absent" >&2
+		"$repo" "$combined_result" "$scratch/pilot-combined" 17 \
+		>"$combined_log" 2>&1 &
+	active_pids+=("$!")
+	setsid env LC_ALL=C "$time_bin" -q \
+		-f 'r7_pilot_main_resource_v1\t%e\t%U\t%S\t%M' -o "$main_resource" \
+		chrt --idle 0 ionice -c3 "$lua_bin" "${lua_prefix[@]}" "$cli" pilot \
+		"$repo" "$main_result" "$scratch/pilot-main" 18 >"$main_log" 2>&1 &
+	active_pids+=("$!")
+	pilot_failed=0
+	for pid in "${active_pids[@]}"; do wait "$pid" || pilot_failed=1; done
+	active_pids=()
+	if [[ "$pilot_failed" -ne 0 ]]; then
+		cat "$combined_log" "$main_log"
+		exit 1
+	fi
+	combined_seed_output="$scratch/pilot-combined-seed-17.tsv"
+	main_seed_output="$scratch/pilot-main-seed-18.tsv"
+	[[ -f "$combined_seed_output" && -f "$main_seed_output" ]] || {
+		echo "WP40 R7 runner: dual pilot seed evidence is absent" >&2
 		exit 1
 	}
 	pilot_post_static="$scratch/source-audit-pilot-post.tsv"
@@ -515,58 +541,84 @@ if [[ "$mode" == pilot ]]; then
 	roster_sha="$(sha256sum "$seed_corpus" | awk '{print $1}')"
 	sample_assignment_sha="$(sha256sum "$sample_assignment" | awk '{print $1}')"
 	frontier_assignment_sha="$(sha256sum "$frontier_assignment" | awk '{print $1}')"
-	pilot_result_sha="$(sha256sum "$pilot_result" | awk '{print $1}')"
-	pilot_sample_roster_sha="$(awk -F '\t' '$1 == "sample_roster_sha256" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
-	pilot_sample_owner_count="$(awk -F '\t' '$1 == "sample_owner_count" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
-	pilot_sample_column_count="$(awk -F '\t' '$1 == "sample_column_count" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
-	expected_pilot_roster_sha="$(awk -F '\t' '$1 == "seed" && $2 == 17 {
+	combined_result_sha="$(sha256sum "$combined_result" | awk '{print $1}')"
+	main_result_sha="$(sha256sum "$main_result" | awk '{print $1}')"
+	pilot_value() {
+		local path="$1" key="$2"
+		awk -F '\t' -v wanted="$key" '$1 == wanted {count++; result=$2}
+			END {if (count == 1) print result}' "$path"
+	}
+	combined_sample_roster_sha="$(pilot_value "$combined_seed_output" sample_roster_sha256)"
+	main_sample_roster_sha="$(pilot_value "$main_seed_output" sample_roster_sha256)"
+	combined_sample_owner_count="$(pilot_value "$combined_seed_output" sample_owner_count)"
+	main_sample_owner_count="$(pilot_value "$main_seed_output" sample_owner_count)"
+	combined_sample_column_count="$(pilot_value "$combined_seed_output" sample_column_count)"
+	main_sample_column_count="$(pilot_value "$main_seed_output" sample_column_count)"
+	expected_combined_roster_sha="$(awk -F '\t' '$1 == "seed" && $2 == 17 {
 		count++; result=$3} END {if (count == 1) print result}' "$sample_assignment")"
-	[[ "$pilot_sample_roster_sha" =~ ^[0-9a-f]{64}$ &&
-		"$pilot_sample_roster_sha" == "$expected_pilot_roster_sha" &&
-		"$pilot_sample_owner_count" == 128 && "$pilot_sample_column_count" == 795281 ]] || {
-		echo "WP40 R7 runner: pilot sample identity differs" >&2
+	expected_main_roster_sha="$(awk -F '\t' '$1 == "seed" && $2 == 18 {
+		count++; result=$3} END {if (count == 1) print result}' "$sample_assignment")"
+	[[ "$combined_sample_roster_sha" =~ ^[0-9a-f]{64}$ &&
+		"$combined_sample_roster_sha" == "$expected_combined_roster_sha" &&
+		"$main_sample_roster_sha" == "$expected_main_roster_sha" &&
+		"$combined_sample_owner_count" == 128 && "$main_sample_owner_count" == 128 &&
+		"$combined_sample_column_count" == 795281 &&
+		"$main_sample_column_count" == 795281 ]] || {
+		echo "WP40 R7 runner: dual pilot sample identity differs" >&2
 		exit 1
 	}
-	pilot_frontier_roster_sha="$(awk -F '\t' '$1 == "frontier_access_roster_sha256" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
-	pilot_frontier_owner_count="$(awk -F '\t' '$1 == "frontier_access_owner_count" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
-	pilot_frontier_column_count="$(awk -F '\t' '$1 == "frontier_access_column_count" {
-		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
+	pilot_frontier_roster_sha="$(pilot_value "$combined_seed_output" frontier_access_roster_sha256)"
+	main_frontier_roster_sha="$(pilot_value "$main_seed_output" frontier_access_roster_sha256)"
+	pilot_frontier_enabled="$(pilot_value "$combined_seed_output" frontier_access_enabled)"
+	main_frontier_enabled="$(pilot_value "$main_seed_output" frontier_access_enabled)"
+	pilot_frontier_owner_count="$(pilot_value "$combined_seed_output" frontier_access_owner_count)"
+	main_frontier_owner_count="$(pilot_value "$main_seed_output" frontier_access_owner_count)"
+	pilot_frontier_column_count="$(pilot_value "$combined_seed_output" frontier_access_column_count)"
+	main_frontier_column_count="$(pilot_value "$main_seed_output" frontier_access_column_count)"
 	expected_frontier_roster_sha="$(awk -F '\t' '$1 == "roster_sha256" {
 		count++; result=$2} END {if (count == 1) print result}' "$frontier_assignment")"
 	[[ "$pilot_frontier_roster_sha" =~ ^[0-9a-f]{64}$ &&
 		"$pilot_frontier_roster_sha" == "$expected_frontier_roster_sha" &&
+		"$main_frontier_roster_sha" == "$expected_frontier_roster_sha" &&
+		"$pilot_frontier_enabled" == true && "$main_frontier_enabled" == false &&
 		"$pilot_frontier_owner_count" == 458 &&
-		"$pilot_frontier_column_count" == 2931200 ]] || {
+		"$pilot_frontier_column_count" == 2931200 &&
+		"$main_frontier_owner_count" == 0 && "$main_frontier_column_count" == 0 ]] || {
 		echo "WP40 R7 runner: pilot frontier access identity differs" >&2
 		exit 1
 	}
-	read -r resource_schema elapsed user_time system_time peak_rss < <(
-		awk -F '\t' 'NR == 1 {print $1, $2, $3, $4, $5}' "$pilot_resource")
-	[[ "$resource_schema" == r7_pilot_resource_v1 ]] || {
-		echo "WP40 R7 runner: pilot resource receipt differs" >&2
+	read -r combined_resource_schema combined_elapsed combined_user_time \
+		combined_system_time combined_peak_rss < <(
+		awk -F '\t' 'NR == 1 {print $1, $2, $3, $4, $5}' "$combined_resource")
+	read -r main_resource_schema main_elapsed main_user_time main_system_time \
+		main_peak_rss < <(
+		awk -F '\t' 'NR == 1 {print $1, $2, $3, $4, $5}' "$main_resource")
+	[[ "$combined_resource_schema" == r7_pilot_combined_resource_v1 &&
+		"$main_resource_schema" == r7_pilot_main_resource_v1 ]] || {
+		echo "WP40 R7 runner: dual pilot resource receipt differs" >&2
 		exit 1
 	}
 	scratch_bytes="$(du -sb -- "$scratch" | awk '{print $1}')"
-	receipt_output_bytes="$(du -b -- "$pilot_result" | awk '{print $1}')"
-	canonical_output_rows="$(awk -F '\t' '$1 == "canonical_output_bytes" {count++}
-		END {print count + 0}' "$pilot_result")"
-	output_bytes="$(awk -F '\t' '$1 == "canonical_output_bytes" {print $2}' \
-		"$pilot_result")"
-	[[ "$canonical_output_rows" -eq 1 && "$output_bytes" =~ ^[1-9][0-9]*$ ]] || {
-		echo "WP40 R7 runner: pilot canonical output byte measurement differs" >&2
+	combined_receipt_bytes="$(du -b -- "$combined_result" | awk '{print $1}')"
+	main_receipt_bytes="$(du -b -- "$main_result" | awk '{print $1}')"
+	combined_output_bytes="$(pilot_value "$combined_result" canonical_output_bytes)"
+	main_output_bytes="$(pilot_value "$main_result" canonical_output_bytes)"
+	[[ "$combined_output_bytes" =~ ^[1-9][0-9]*$ &&
+		"$main_output_bytes" =~ ^[1-9][0-9]*$ ]] || {
+		echo "WP40 R7 runner: dual pilot canonical output byte measurement differs" >&2
 		exit 1
 	}
-	projected_wall="$(awk -v elapsed="$elapsed" 'BEGIN {printf "%.6f", elapsed * 5}')"
+	projected_wall="$(awk -v combined="$combined_elapsed" -v main="$main_elapsed" \
+		'BEGIN {printf "%.6f", combined + 4 * main}')"
 	projected_budget_status="$(awk -v projected="$projected_wall" \
 		'BEGIN {print projected <= 7200 ? "within_two_hour_limit" : "over_two_hour_stop"}')"
-	projected_rss="$(awk -v rss="$peak_rss" 'BEGIN {printf "%.0f", rss * 7}')"
-	projected_output="$((output_bytes * 32))"
-	projected_scratch="$((scratch_bytes * 32))"
+	projected_rss="$(awk -v combined="$combined_peak_rss" -v main="$main_peak_rss" \
+		'BEGIN {rss = combined > main ? combined : main; printf "%.0f", rss * 7}')"
+	projected_output="$((combined_output_bytes * 7 + main_output_bytes * 25))"
+	# The fleet retains seed outputs, worker receipts/logs and two complete
+	# finalizer trees until canonical forward/reverse comparison. Four times the
+	# seed-output projection plus 10 MiB is a deliberately conservative bound.
+	projected_scratch="$((projected_output * 4 + 10485760))"
 	binding_file="$scratch/pilot-binding.tsv"
 	{
 		printf 'source_audit_sha256\t%s\n' "$static_sha"
@@ -578,46 +630,61 @@ if [[ "$mode" == pilot ]]; then
 		awk '{print "sample_assignment\t" $0}' "$sample_assignment"
 		printf 'frontier_access_assignment_sha256\t%s\n' "$frontier_assignment_sha"
 		awk '{print "frontier_access_assignment\t" $0}' "$frontier_assignment"
-		printf 'pilot_result_sha256\t%s\n' "$pilot_result_sha"
-		awk '{print "pilot_result\t" $0}' "$pilot_result"
+		printf 'combined_pilot_result_sha256\t%s\n' "$combined_result_sha"
+		awk '{print "combined_pilot_result\t" $0}' "$combined_result"
+		printf 'main_pilot_result_sha256\t%s\n' "$main_result_sha"
+		awk '{print "main_pilot_result\t" $0}' "$main_result"
 	} >"$binding_file"
 	assignment_sha="$(sha256sum "$binding_file" | awk '{print $1}')"
 	pilot_partial="$(mktemp "${pilot_output}.partial.XXXXXXXX")"
 	{
-		printf 'schema\tgrug_wp40_r7_pilot_projection_v2\n'
-		printf 'acceptance_scope\tmain_sample_plus_static_frontier_successor_lane_not_exhaustive\n'
+		printf 'schema\tgrug_wp40_r7_pilot_projection_v3\n'
+		printf 'acceptance_scope\t32_seed_main_plus_7_seed_static_frontier_successor_lane_not_exhaustive\n'
 		printf 'assignment_sha256\t%s\n' "$assignment_sha"
 		cat "$binding_file"
-		printf 'representative_seed_slot\t17\n'
+		printf 'combined_representative_seed_slot\t17\n'
+		printf 'main_representative_seed_slot\t18\n'
 		printf 'sample_schema\tgrug_wp40_r7_stratified_owner_sample_v1\n'
 		printf 'sample_owner_population_per_seed\t128\n'
 		printf 'sample_case_population\t4096\n'
 		printf 'sample_column_population_per_seed\t795281\n'
-		printf 'pilot_sample_roster_sha256\t%s\n' "$pilot_sample_roster_sha"
+		printf 'combined_pilot_sample_roster_sha256\t%s\n' \
+			"$combined_sample_roster_sha"
+		printf 'main_pilot_sample_roster_sha256\t%s\n' "$main_sample_roster_sha"
 		printf 'frontier_access_schema\tgrug_wp40_r7_frontier_access_roster_v1\n'
+		printf 'frontier_access_seed_population\t7\n'
+		printf 'frontier_access_seed_slots\t1,6,11,17,22,27,32\n'
 		printf 'frontier_access_owner_population_per_seed\t458\n'
-		printf 'frontier_access_case_population\t14656\n'
+		printf 'frontier_access_case_population\t3206\n'
 		printf 'frontier_access_column_population_per_seed\t2931200\n'
-		printf 'frontier_access_column_visit_population\t93798400\n'
+		printf 'frontier_access_column_visit_population\t20518400\n'
 		printf 'frontier_access_source_population\t4\n'
 		printf 'frontier_access_zone_population\t4\n'
 		printf 'frontier_access_source_faction_gate_population\t8\n'
-		printf 'pilot_frontier_access_roster_sha256\t%s\n' \
+		printf 'combined_pilot_frontier_access_roster_sha256\t%s\n' \
 			"$pilot_frontier_roster_sha"
-		printf 'measured_elapsed_seconds\t%s\n' "$elapsed"
-		printf 'measured_user_seconds\t%s\n' "$user_time"
-		printf 'measured_system_seconds\t%s\n' "$system_time"
-		printf 'measured_peak_rss_kib\t%s\n' "$peak_rss"
-		printf 'measured_output_bytes\t%s\n' "$output_bytes"
-		printf 'measured_pilot_receipt_bytes\t%s\n' "$receipt_output_bytes"
-		printf 'measured_scratch_bytes\t%s\n' "$scratch_bytes"
+		printf 'combined_measured_elapsed_seconds\t%s\n' "$combined_elapsed"
+		printf 'combined_measured_user_seconds\t%s\n' "$combined_user_time"
+		printf 'combined_measured_system_seconds\t%s\n' "$combined_system_time"
+		printf 'combined_measured_peak_rss_kib\t%s\n' "$combined_peak_rss"
+		printf 'combined_measured_output_bytes\t%s\n' "$combined_output_bytes"
+		printf 'combined_measured_pilot_receipt_bytes\t%s\n' "$combined_receipt_bytes"
+		printf 'main_measured_elapsed_seconds\t%s\n' "$main_elapsed"
+		printf 'main_measured_user_seconds\t%s\n' "$main_user_time"
+		printf 'main_measured_system_seconds\t%s\n' "$main_system_time"
+		printf 'main_measured_peak_rss_kib\t%s\n' "$main_peak_rss"
+		printf 'main_measured_output_bytes\t%s\n' "$main_output_bytes"
+		printf 'main_measured_pilot_receipt_bytes\t%s\n' "$main_receipt_bytes"
+		printf 'measured_total_scratch_bytes\t%s\n' "$scratch_bytes"
 		printf 'fleet_width\t7\n'
 		printf 'fleet_seed_population\t32\n'
+		printf 'fleet_worker_schedule\tone_access_seed_plus_three_or_four_main_only_seeds\n'
 		printf 'projected_fleet_wall_seconds\t%s\n' "$projected_wall"
 		printf 'projected_fleet_budget_limit_seconds\t7200\n'
 		printf 'projected_fleet_budget_status\t%s\n' "$projected_budget_status"
 		printf 'projected_fleet_peak_rss_kib\t%s\n' "$projected_rss"
 		printf 'projected_fleet_output_bytes\t%s\n' "$projected_output"
+		printf 'projected_fleet_scratch_model\t4_x_seed_outputs_plus_10_mib\n'
 		printf 'projected_fleet_scratch_bytes\t%s\n' "$projected_scratch"
 		printf 'stop_boundary\tunconditional_before_fleet\n'
 	} >"$pilot_partial"
@@ -646,12 +713,138 @@ actual_projection="$(sha256sum "$projection" | awk '{print $1}')"
 	echo "WP40 R7 runner: approved projection file bytes differ" >&2
 	exit 1
 }
-projected_wall_seconds="$(awk -F '\t' '$1 == "projected_fleet_wall_seconds" {
-	count++; value=$2} END {if (count == 1) print value}' "$projection")"
-projected_limit_seconds="$(awk -F '\t' '$1 == "projected_fleet_budget_limit_seconds" {
-	count++; value=$2} END {if (count == 1) print value}' "$projection")"
-projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
-	count++; value=$2} END {if (count == 1) print value}' "$projection")"
+projection_value() {
+	local key="$1"
+	awk -F '\t' -v wanted="$key" '$1 == wanted {count++; value=$2}
+		END {if (count == 1) print value}' "$projection"
+}
+receipt_value() {
+	local path="$1" key="$2"
+	awk -F '\t' -v wanted="$key" '$1 == wanted {count++; value=$2}
+		END {if (count == 1) print value}' "$path"
+}
+approved_binding="$scratch/approved-pilot-binding.tsv"
+awk -F '\t' '
+	$1 == "source_audit_sha256" {if (started) exit 1; started = 1}
+	$1 == "combined_representative_seed_slot" {ended = 1; exit}
+	started {print}
+	END {if (!started || !ended) exit 1}
+' "$projection" >"$approved_binding" || {
+	echo "WP40 R7 runner: approved pilot binding boundaries differ" >&2
+	exit 1
+}
+assignment_sha="$(projection_value assignment_sha256)"
+[[ "$assignment_sha" =~ ^[0-9a-f]{64}$ &&
+	"$(sha256sum "$approved_binding" | awk '{print $1}')" == "$assignment_sha" ]] || {
+	echo "WP40 R7 runner: approved pilot binding digest differs" >&2
+	exit 1
+}
+for lane in sample_assignment frontier_access_assignment; do
+	embedded="$scratch/approved-$lane.tsv"
+	awk -F '\t' -v prefix="$lane" '$1 == prefix {
+		sub(/^[^\t]*\t/, ""); print; rows++
+	} END {if (rows == 0) exit 1}' "$projection" >"$embedded" || {
+		echo "WP40 R7 runner: embedded $lane is absent" >&2
+		exit 1
+	}
+	destination="$sample_assignment"
+	[[ "$lane" == frontier_access_assignment ]] && destination="$frontier_assignment"
+	cmp -s "$embedded" "$destination" || {
+		echo "WP40 R7 runner: embedded $lane differs from frozen assignment" >&2
+		exit 1
+	}
+done
+for lane in combined main; do
+	embedded="$scratch/approved-$lane-pilot-result.tsv"
+	awk -F '\t' -v prefix="${lane}_pilot_result" '$1 == prefix {
+		sub(/^[^\t]*\t/, ""); print; rows++
+	} END {if (rows == 0) exit 1}' "$projection" >"$embedded" || {
+		echo "WP40 R7 runner: embedded $lane pilot result is absent" >&2
+		exit 1
+	}
+	expected_sha="$(projection_value "${lane}_pilot_result_sha256")"
+	[[ "$expected_sha" =~ ^[0-9a-f]{64}$ &&
+		"$(sha256sum "$embedded" | awk '{print $1}')" == "$expected_sha" ]] || {
+		echo "WP40 R7 runner: embedded $lane pilot result digest differs" >&2
+		exit 1
+	}
+done
+combined_pilot="$scratch/approved-combined-pilot-result.tsv"
+main_pilot="$scratch/approved-main-pilot-result.tsv"
+expected_frontier_roster_sha="$(awk -F '\t' '$1 == "roster_sha256" {
+	count++; value=$2} END {if (count == 1) print value}' "$frontier_assignment")"
+expected_combined_sample_sha="$(awk -F '\t' '$1 == "seed" && $2 == 17 {
+	count++; value=$3} END {if (count == 1) print value}' "$sample_assignment")"
+expected_main_sample_sha="$(awk -F '\t' '$1 == "seed" && $2 == 18 {
+	count++; value=$3} END {if (count == 1) print value}' "$sample_assignment")"
+expected_combined_seed_identity="$(awk -F '\t' '$1 == 17 {
+	count++; value=$6} END {if (count == 1) print value}' "$seed_corpus")"
+expected_main_seed_identity="$(awk -F '\t' '$1 == 18 {
+	count++; value=$6} END {if (count == 1) print value}' "$seed_corpus")"
+[[ "$(receipt_value "$combined_pilot" schema)" == grug_wp40_r7_pilot_result_v3 &&
+	"$(receipt_value "$main_pilot" schema)" == grug_wp40_r7_pilot_result_v3 &&
+	"$(receipt_value "$combined_pilot" seed_slot)" == 17 &&
+	"$(receipt_value "$main_pilot" seed_slot)" == 18 &&
+	"$(receipt_value "$combined_pilot" seed_identity)" == \
+		"$expected_combined_seed_identity" &&
+	"$(receipt_value "$main_pilot" seed_identity)" == "$expected_main_seed_identity" &&
+	"$(receipt_value "$combined_pilot" frontier_access_enabled)" == true &&
+	"$(receipt_value "$main_pilot" frontier_access_enabled)" == false &&
+	"$(receipt_value "$combined_pilot" frontier_access_roster_sha256)" == \
+		"$expected_frontier_roster_sha" &&
+	"$(receipt_value "$main_pilot" frontier_access_roster_sha256)" == \
+		"$expected_frontier_roster_sha" &&
+	"$(receipt_value "$combined_pilot" frontier_access_owner_count)" == 458 &&
+	"$(receipt_value "$combined_pilot" frontier_access_column_count)" == 2931200 &&
+	"$(receipt_value "$main_pilot" frontier_access_owner_count)" == 0 &&
+	"$(receipt_value "$main_pilot" frontier_access_column_count)" == 0 &&
+	"$(projection_value combined_pilot_sample_roster_sha256)" == \
+		"$expected_combined_sample_sha" &&
+	"$(projection_value main_pilot_sample_roster_sha256)" == \
+		"$expected_main_sample_sha" &&
+	"$(projection_value combined_pilot_frontier_access_roster_sha256)" == \
+		"$expected_frontier_roster_sha" ]] || {
+	echo "WP40 R7 runner: embedded dual pilot identity differs" >&2
+	exit 1
+}
+combined_elapsed="$(projection_value combined_measured_elapsed_seconds)"
+main_elapsed="$(projection_value main_measured_elapsed_seconds)"
+combined_peak_rss="$(projection_value combined_measured_peak_rss_kib)"
+main_peak_rss="$(projection_value main_measured_peak_rss_kib)"
+combined_output_bytes="$(projection_value combined_measured_output_bytes)"
+main_output_bytes="$(projection_value main_measured_output_bytes)"
+projected_wall_seconds="$(projection_value projected_fleet_wall_seconds)"
+projected_limit_seconds="$(projection_value projected_fleet_budget_limit_seconds)"
+projected_budget_status="$(projection_value projected_fleet_budget_status)"
+projected_rss="$(projection_value projected_fleet_peak_rss_kib)"
+projected_output="$(projection_value projected_fleet_output_bytes)"
+projected_scratch="$(projection_value projected_fleet_scratch_bytes)"
+[[ "$combined_elapsed" =~ ^(0|[1-9][0-9]*)(\.[0-9]+)?$ &&
+	"$main_elapsed" =~ ^(0|[1-9][0-9]*)(\.[0-9]+)?$ &&
+	"$combined_peak_rss" =~ ^[1-9][0-9]*$ && "$main_peak_rss" =~ ^[1-9][0-9]*$ &&
+	"$combined_output_bytes" =~ ^[1-9][0-9]*$ &&
+	"$main_output_bytes" =~ ^[1-9][0-9]*$ ]] || {
+	echo "WP40 R7 runner: dual pilot measured resource values differ" >&2
+	exit 1
+}
+[[ "$(receipt_value "$combined_pilot" canonical_output_bytes)" == \
+		"$combined_output_bytes" &&
+	"$(receipt_value "$main_pilot" canonical_output_bytes)" == "$main_output_bytes" ]] || {
+	echo "WP40 R7 runner: dual pilot output measurements differ" >&2
+	exit 1
+}
+recomputed_wall="$(awk -v combined="$combined_elapsed" -v main="$main_elapsed" \
+	'BEGIN {printf "%.6f", combined + 4 * main}')"
+recomputed_rss="$(awk -v combined="$combined_peak_rss" -v main="$main_peak_rss" \
+	'BEGIN {rss = combined > main ? combined : main; printf "%.0f", rss * 7}')"
+recomputed_output="$((combined_output_bytes * 7 + main_output_bytes * 25))"
+recomputed_scratch="$((recomputed_output * 4 + 10485760))"
+[[ "$projected_wall_seconds" == "$recomputed_wall" &&
+	"$projected_rss" == "$recomputed_rss" && "$projected_output" == "$recomputed_output" &&
+	"$projected_scratch" == "$recomputed_scratch" ]] || {
+	echo "WP40 R7 runner: projected fleet resource arithmetic differs" >&2
+	exit 1
+}
 [[ "$projected_wall_seconds" =~ ^(0|[1-9][0-9]*)(\.[0-9]+)?$ &&
 	"$projected_limit_seconds" =~ ^[1-9][0-9]*$ &&
 	"$projected_budget_status" == within_two_hour_limit ]] &&
@@ -661,11 +854,15 @@ projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
 	exit 1
 }
 	[[ "$(awk -F '\t' '$1 == "schema" {print $2}' "$projection")" == \
-		grug_wp40_r7_pilot_projection_v2 &&
+		grug_wp40_r7_pilot_projection_v3 &&
 		"$(awk -F '\t' '$1 == "acceptance_scope" {print $2}' "$projection")" == \
-		main_sample_plus_static_frontier_successor_lane_not_exhaustive &&
+		32_seed_main_plus_7_seed_static_frontier_successor_lane_not_exhaustive &&
+	"$(projection_value combined_representative_seed_slot)" == 17 &&
+	"$(projection_value main_representative_seed_slot)" == 18 &&
 	"$(awk -F '\t' '$1 == "fleet_width" {print $2}' "$projection")" == 7 &&
 	"$(awk -F '\t' '$1 == "fleet_seed_population" {print $2}' "$projection")" == 32 &&
+	"$(projection_value fleet_worker_schedule)" == \
+		one_access_seed_plus_three_or_four_main_only_seeds &&
 	"$(awk -F '\t' '$1 == "sample_schema" {print $2}' "$projection")" == \
 	grug_wp40_r7_stratified_owner_sample_v1 &&
 	"$(awk -F '\t' '$1 == "sample_owner_population_per_seed" {print $2}' \
@@ -675,14 +872,18 @@ projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
 			"$projection")" == 795281 &&
 		"$(awk -F '\t' '$1 == "frontier_access_schema" {print $2}' "$projection")" == \
 		grug_wp40_r7_frontier_access_roster_v1 &&
+		"$(awk -F '\t' '$1 == "frontier_access_seed_population" {print $2}' \
+			"$projection")" == 7 &&
+		"$(awk -F '\t' '$1 == "frontier_access_seed_slots" {print $2}' \
+			"$projection")" == "1,6,11,17,22,27,32" &&
 		"$(awk -F '\t' '$1 == "frontier_access_owner_population_per_seed" {print $2}' \
 			"$projection")" == 458 &&
 		"$(awk -F '\t' '$1 == "frontier_access_case_population" {print $2}' \
-			"$projection")" == 14656 &&
+			"$projection")" == 3206 &&
 		"$(awk -F '\t' '$1 == "frontier_access_column_population_per_seed" {print $2}' \
 			"$projection")" == 2931200 &&
 		"$(awk -F '\t' '$1 == "frontier_access_column_visit_population" {print $2}' \
-			"$projection")" == 93798400 &&
+			"$projection")" == 20518400 &&
 		"$(awk -F '\t' '$1 == "frontier_access_source_population" {print $2}' \
 			"$projection")" == 4 &&
 		"$(awk -F '\t' '$1 == "frontier_access_zone_population" {print $2}' \
@@ -690,6 +891,8 @@ projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
 		"$(awk -F '\t' '$1 == "frontier_access_source_faction_gate_population" {print $2}' \
 			"$projection")" == 8 &&
 	"$projected_limit_seconds" == 7200 &&
+	"$(projection_value projected_fleet_scratch_model)" == \
+		4_x_seed_outputs_plus_10_mib &&
 	"$(awk -F '\t' '$1 == "stop_boundary" {print $2}' "$projection")" == \
 	unconditional_before_fleet ]] || {
 	echo "WP40 R7 runner: projection schema/schedule differs" >&2
@@ -703,6 +906,8 @@ projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
 	"$(sha256sum "$native_log" | awk '{print $1}')" &&
 	"$(awk -F '\t' '$1 == "integration_kat_sha256" {print $2}' "$projection")" == \
 	"$(sha256sum "$integration_receipt" | awk '{print $1}')" &&
+		"$(projection_value seed_roster_sha256)" == \
+		"$(sha256sum "$seed_corpus" | awk '{print $1}')" &&
 		"$(awk -F '\t' '$1 == "sample_assignment_sha256" {print $2}' "$projection")" == \
 		"$(sha256sum "$sample_assignment" | awk '{print $1}')" &&
 		"$(awk -F '\t' '$1 == "frontier_access_assignment_sha256" {print $2}' \
