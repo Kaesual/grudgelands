@@ -64,6 +64,11 @@ input_rows="$scratch/input-rows-pre.tsv"
 write_input_rows "$input_rows"
 input_set_sha="$(sha256sum "$input_rows" | awk '{print $1}')"
 changed_roster_sha="$(sha256sum "$changed_roster" | awk '{print $1}')"
+executed_population="$(wc -l <"$changed_roster" | tr -d '[:space:]')"
+[[ "$executed_population" -eq 70 ]] || {
+	echo "WP40 R7 final micro: changed production population differs" >&2
+	exit 1
+}
 luajit_binary_sha="$(sha256sum "$lua_jit" | awk '{print $1}')"
 puc51_binary_sha="$(sha256sum "$lua_puc" | awk '{print $1}')"
 
@@ -117,7 +122,8 @@ cmp -s "$scratch/expected-luajit.log" "$scratch/luajit.log" &&
 executed_rows="$scratch/executed-modules.txt"
 awk -F '\t' '$1 == "executed_module" && NF == 2 {print $2}' \
 	"$scratch/luajit.tsv" | sort >"$executed_rows"
-[[ "$(awk -F '\t' '$1 == "source/executed_module_count" && $2 == "65" {
+[[ "$(awk -F '\t' -v population="$executed_population" \
+	'$1 == "source/executed_module_count" && $2 == population {
 	count++} END {print count + 0}' "$scratch/luajit.tsv")" -eq 1 &&
 	"$(awk -F '\t' -v sha="$changed_roster_sha" '$1 == "source/executed_module_roster_sha256" && $2 == sha {count++}
 	END {print count + 0}' "$scratch/luajit.tsv")" -eq 1 ]] &&
@@ -137,7 +143,7 @@ partial="$(mktemp "$durable_dir/.wp40-r7-micro-receipt.partial.XXXXXXXX")"
 	printf 'schema\tgrug_wp40_r7_micro_kat_receipt_v1\n'
 	printf 'input_set_sha256\t%s\n' "$input_set_sha"
 	printf 'input_population\t%s\n' "${#inputs[@]}"
-	printf 'executed_module_population\t65\n'
+	printf 'executed_module_population\t%s\n' "$executed_population"
 	printf 'executed_module_roster_sha256\t%s\n' "$changed_roster_sha"
 	printf 'luajit_binary_sha256\t%s\n' "$luajit_binary_sha"
 	printf 'puc51_binary_sha256\t%s\n' "$puc51_binary_sha"
