@@ -57,20 +57,20 @@ case roster across at most seven independent LuaJIT workers. Each worker gets
 private scratch output; a deterministic finalizer validates exact roster
 coverage and produces identical bytes when worker descriptors are reversed.
 
-The target composition per seed is:
+The frozen composition per seed is:
 
-1. up to 104 representative coverage owners, preferably one for every known
-   occurring zone/logical-biome stratum;
-2. 24 fixed risk owners covering map corners and clipped edges, ocean/coast and
-   channels, protection and routes, apex/cultural locations, housing-adjacent
-   ground, and surfaces spanning multiple vertical owners.
+1. 104 interior owners on a fixed 13-by-8 stratified spatial lattice;
+2. 24 distinct fixed risk owners: twelve accepted Cultural-witness owners,
+   four clipped map corners, the Stage-A/B and multi-y integration owners, two
+   apex owners, two route/water-interface owners and two coastal housing
+   owners. The broader connection channels remain covered by the already-
+   binding focused/integration gates rather than this sampled-owner roster.
 
 The roster constructor must be cheap. It may use already authenticated fixed
 geometry, durable R6 witnesses and bounded production-owned queries. It must
-not perform a hidden full-world scan merely to choose the sample. If exact
-per-seed discovery of all 104 strata would require such a scan, use a frozen
-stratified spatial lattice plus the 24 risk owners instead. Record the actual
-strata reached as measured coverage; do not fabricate missing labels.
+not perform a hidden full-world scan merely to choose the sample. The fixed
+lattice is therefore authoritative; record the zone/logical-biome strata it
+actually reaches as measured coverage and do not fabricate missing labels.
 
 Deduplicate owners canonically. If deduplication reduces a seed below 128,
 fill it with deterministic seed-keyed owners from the frozen 8,075-owner

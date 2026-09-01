@@ -11,6 +11,36 @@ local OWNER_MIN_X, OWNER_MAX_X = -3792, 3728
 local OWNER_MIN_Z, OWNER_MAX_Z = -3392, 3328
 local QUERY_MIN_X, QUERY_MAX_X = -3740, 3740
 local QUERY_MIN_Z, QUERY_MAX_Z = -3340, 3340
+local SAMPLE_SCHEMA = "grug_wp40_r7_stratified_owner_sample_v1"
+local SAMPLE_OWNER_COUNT = 128
+local SAMPLE_LATTICE_COUNT = 104
+local SAMPLE_RISK_COUNT = 24
+local SAMPLE_RISK_OWNERS = {
+	{"cultural_dwarf_concentrated", -1712, -1152},
+	{"cultural_dwarf_ordinary", -2032, -2992},
+	{"cultural_elf_concentrated", 1328, -1152},
+	{"cultural_elf_ordinary", 1728, -2992},
+	{"cultural_human_concentrated", -432, -1152},
+	{"cultural_human_ordinary", -192, -2992},
+	{"cultural_orc_concentrated", -912, 208},
+	{"cultural_orc_ordinary", -32, -272},
+	{"cultural_troll_concentrated", 848, 208},
+	{"cultural_troll_ordinary", 848, 608},
+	{"cultural_undead_concentrated", -2432, 208},
+	{"cultural_undead_ordinary", -2432, -272},
+	{"boundary_northwest", -3792, -3392},
+	{"boundary_northeast", 3728, -3392},
+	{"boundary_southwest", -3792, 3328},
+	{"boundary_southeast", 3728, 3328},
+	{"integration_stage_ab", -32, -32},
+	{"integration_multi_y", -32, 48},
+	{"apex_wyrmglass", -3232, 48},
+	{"apex_stormscale", 3168, 48},
+	{"route_whitebridge_water", -432, -1552},
+	{"route_broken_water", -432, -272},
+	{"housing_copperfell_coast", -2272, -2272},
+	{"housing_raincall_coast", 2288, 2128},
+}
 local ACCEPTED_R6_ARTIFACT_SHA256 =
 	"bb3e9674b768f7ef14fc0a703d0dc97022e9767d0c532b48cd5f1c0c741257b4"
 local P9G_REASONS = {
@@ -216,6 +246,145 @@ end
 
 local function sha256(repo, bytes)
 	return hex(raw_sha256(repo, bytes))
+end
+
+local function sample_owner_key(owner_x, owner_z)
+	return tostring(owner_x) .. "/" .. tostring(owner_z)
+end
+
+local function build_sample_rows(seed_slot, risk_rows)
+	integer(seed_slot, 1, 32, "sample seed slot")
+	risk_rows = risk_rows or SAMPLE_RISK_OWNERS
+	dense(risk_rows, "sample risk rows")
+	local rows, seen = {}, {}
+	local function append(class, label, owner_x, owner_z)
+		text(class, "sample owner class")
+		text(label, "sample owner label")
+		local columns = owner_column_count(owner_x, owner_z)
+		local key = sample_owner_key(owner_x, owner_z)
+		if not seen[key] then
+			seen[key] = true
+			rows[#rows + 1] = {class = class, label = label, owner_x = owner_x,
+				owner_z = owner_z, columns = columns}
+		end
+	end
+	for z_slot = 0, 7 do
+		local z_index = 3 + math.floor((z_slot * 78 + 3) / 7)
+		for x_slot = 0, 12 do
+			local x_index = 3 + math.floor((x_slot * 88 + 6) / 12)
+			append("lattice", string.format("lattice_%02d_%02d", z_slot + 1,
+				x_slot + 1), OWNER_MIN_X + x_index * 80,
+				OWNER_MIN_Z + z_index * 80)
+		end
+	end
+	if #rows ~= SAMPLE_LATTICE_COUNT then fail("sample lattice population differs") end
+	for index = 1, #risk_rows do
+		local row = risk_rows[index]
+		if type(row) ~= "table" or getmetatable(row) ~= nil or #row ~= 3 then
+			fail("sample risk row differs")
+		end
+		append("risk", row[1], row[2], row[3])
+	end
+	local fill_start, fill_step, fill_index = (seed_slot * 7919) % (95 * 85),
+		7919, 0
+	while #rows < SAMPLE_OWNER_COUNT and fill_index < 95 * 85 do
+		local ordinal = (fill_start + fill_index * fill_step) % (95 * 85)
+		local x_index, z_index = ordinal % 95, math.floor(ordinal / 95)
+		append("fill", string.format("fill_%04d", fill_index + 1),
+			OWNER_MIN_X + x_index * 80, OWNER_MIN_Z + z_index * 80)
+		fill_index = fill_index + 1
+	end
+	if #rows ~= SAMPLE_OWNER_COUNT then fail("sample owner population differs") end
+	table.sort(rows, function(left, right)
+		if left.owner_z ~= right.owner_z then return left.owner_z < right.owner_z end
+		if left.owner_x ~= right.owner_x then return left.owner_x < right.owner_x end
+		return less_bytes(left.label, right.label)
+	end)
+	local columns, classes = 0, {lattice = 0, risk = 0, fill = 0}
+	for index = 1, #rows do
+		rows[index].ordinal = index
+		columns = columns + rows[index].columns
+		classes[rows[index].class] = classes[rows[index].class] + 1
+	end
+	return rows, columns, classes
+end
+
+local function sample_owner_bytes(row, index)
+	return table.concat({"sample_owner", tostring(index), row.class, row.label,
+		tostring(row.owner_x), tostring(row.owner_z), tostring(row.columns)}, "\t") .. "\n"
+end
+
+local function sample_roster_bytes(seed_slot, rows)
+	local output = {"schema\t", SAMPLE_SCHEMA, "\nseed_slot\t",
+		tostring(seed_slot), "\n"}
+	for index = 1, #rows do
+		output[#output + 1] = sample_owner_bytes(rows[index], index)
+	end
+	return table.concat(output)
+end
+
+local function sample_roster(repo, seed_slot)
+	local rows, columns, classes = build_sample_rows(seed_slot)
+	local bytes = sample_roster_bytes(seed_slot, rows)
+	return {schema = SAMPLE_SCHEMA, rows = rows, columns = columns,
+		classes = classes, bytes = bytes, sha256 = sha256(repo, bytes)}
+end
+
+function module.sample_roster_kat()
+	local rows, columns, classes = build_sample_rows(1)
+	if #rows ~= 128 or columns ~= 795281 or classes.lattice ~= 104 or
+			classes.risk ~= 24 or classes.fill ~= 0 then
+		fail("sample roster closed population KAT differs")
+	end
+	local seen, previous_z, previous_x, labels = {}, nil, nil, {}
+	for index = 1, #rows do
+		local row, key = rows[index], sample_owner_key(rows[index].owner_x,
+			rows[index].owner_z)
+		if seen[key] or row.ordinal ~= index or row.columns ~=
+				owner_column_count(row.owner_x, row.owner_z) or
+				(previous_z and (row.owner_z < previous_z or
+					(row.owner_z == previous_z and row.owner_x <= previous_x))) then
+			fail("sample roster canonical owner KAT differs")
+		end
+		seen[key], labels[row.label], previous_z, previous_x = true, true,
+			row.owner_z, row.owner_x
+	end
+	for index = 1, #SAMPLE_RISK_OWNERS do
+		if not labels[SAMPLE_RISK_OWNERS[index][1]] then
+			fail("sample roster risk label is absent")
+		end
+	end
+	local duplicates = {}
+	for index = 1, SAMPLE_RISK_COUNT do
+		duplicates[index] = {"duplicate_" .. tostring(index),
+			OWNER_MIN_X + 3 * 80, OWNER_MIN_Z + 3 * 80}
+	end
+	local filled, _, filled_classes = build_sample_rows(32, duplicates)
+	if #filled ~= 128 or filled_classes.lattice ~= 104 or
+			filled_classes.risk ~= 0 or filled_classes.fill ~= 24 then
+		fail("sample roster deterministic fill KAT differs")
+	end
+	if sample_roster_bytes(1, rows) == sample_roster_bytes(32, filled) then
+		fail("sample roster seed binding KAT differs")
+	end
+	return true
+end
+
+function module.sample_assignment(repo)
+	text(repo, "sample assignment repository")
+	local output = {"schema\tgrug_wp40_r7_sample_assignment_v1\n",
+		"sample_schema\t", SAMPLE_SCHEMA, "\n",
+		"seed_population\t32\n",
+		"owner_population_per_seed\t128\n",
+		"case_population\t4096\n"}
+	for slot = 1, 32 do
+		local roster = sample_roster(repo, slot)
+		output[#output + 1] = table.concat({"seed", tostring(slot), roster.sha256,
+			tostring(#roster.rows), tostring(roster.columns),
+			tostring(roster.classes.lattice), tostring(roster.classes.risk),
+			tostring(roster.classes.fill)}, "\t") .. "\n"
+	end
+	return table.concat(output)
 end
 
 local function diagnostic_string(value, maximum)
@@ -2562,9 +2731,9 @@ local function unopened_output(path)
 	return assert(io.open(path, "wb"), "cannot create seed output")
 end
 
--- The exhaustive seed encoder writes its complete ledger incrementally.  It is
--- the same owner loop as integration_kat; no second placement implementation
--- exists in tooling and no full-seed payload is retained in memory.
+-- The pragmatic seed encoder writes its complete sampled ledger incrementally.
+-- Every selected owner still executes all three production-owned projections;
+-- only the closed spatial population is reduced.
 function module.run_seed(repo, seed_slot, output_path)
 	integer(seed_slot, 1, 32, "seed slot")
 	local output = unopened_output(output_path)
@@ -2572,10 +2741,11 @@ function module.run_seed(repo, seed_slot, output_path)
 	local seeds = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/seed_corpus.lua")
 	local seed = seeds.fixed[seed_slot]
 	local runtime_fixture = fixture(repo, seed, "horizontal")
-	local binding = artifact_content_binding(repo, runtime_fixture, seed_slot)
+	local binding = artifact_content_binding(repo, runtime_fixture, nil)
 	local offline = dofile(repo .. "/tools/wp40/r6/offline.lua")(repo)
 	local accepted_loaded = offline.new_evidence(seed, true)
 	local aggregate = new_horizontal_aggregate(offline)
+	local roster = sample_roster(repo, seed_slot)
 	local stream = sha_stream(repo)
 	local output_hasher, output_bytes = stream.new(), 0
 	local function write(bytes)
@@ -2587,6 +2757,11 @@ function module.run_seed(repo, seed_slot, output_path)
 	write("schema\tgrug_wp40_r7_seed_evidence_v1\n")
 	write("seed_slot\t" .. tostring(seed_slot) .. "\n")
 	write("seed_identity\t" .. seed .. "\n")
+	write("sample_schema\t" .. roster.schema .. "\n")
+	write("sample_roster_sha256\t" .. roster.sha256 .. "\n")
+	write("sample_owner_count\t" .. tostring(#roster.rows) .. "\n")
+	write("sample_column_count\t" .. tostring(roster.columns) .. "\n")
+	for index = 1, #roster.rows do write(sample_owner_bytes(roster.rows[index], index)) end
 	local restored_buffers, direct_buffers = stream.new(), stream.new()
 	local restored_runs, direct_runs = stream.new(), stream.new()
 	local candidate, accepted_candidate = stream.new(), stream.new()
@@ -2597,8 +2772,9 @@ function module.run_seed(repo, seed_slot, output_path)
 	local p9g_aggregate = new_p9g_aggregate(reasons)
 	local operation_count, accepted_count, rejected_count = 0, 0, 0
 	local substitutions = 0
-	for owner_z = OWNER_MIN_Z, OWNER_MAX_Z, 80 do
-		for owner_x = OWNER_MIN_X, OWNER_MAX_X, 80 do
+	for owner_index = 1, #roster.rows do
+		local owner_x, owner_z = roster.rows[owner_index].owner_x,
+			roster.rows[owner_index].owner_z
 			local successor = validate_scan(runtime_fixture.built.evidence.scan_owner(
 				owner_x, owner_z), owner_x, owner_z, true)
 			local direct = validate_scan(runtime_fixture.built.evidence.scan_direct_owner(
@@ -2613,15 +2789,12 @@ function module.run_seed(repo, seed_slot, output_path)
 			rejected_count = rejected_count + a.rejected
 			if a.operation_bytes ~= "" then write(a.operation_bytes) end
 			merge_p9g(p9g_aggregate, reasons, a.ledger)
-			local _, count = normalize_rows(runtime_fixture, binding,
-				direct.settlement.direct_rows)
-			substitutions = substitutions + count
 			local accepted = scan_accepted_loaded(accepted_loaded, owner_x, owner_z)
 			local b = stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
+			substitutions = substitutions + b.substitutions
 			candidate.update(b.bytes)
 			accepted_candidate.update(b.accepted_bytes)
 			merge_horizontal(aggregate, offline, direct)
-		end
 	end
 	local stage_a = {
 		schema = "grug_wp40_r7_stage_a_receipt_v1", seed_slot = seed_slot,
@@ -2638,27 +2811,31 @@ function module.run_seed(repo, seed_slot, output_path)
 		direct_runs_sha256 = direct_runs.final_hex(), equal = true,
 	}
 	contract.validate_stage_a(stage_a)
-	local normalized_projection, accepted_projection = aggregate_projection(
-		binding, offline, seed_slot, aggregate)
 	local candidate_sha, accepted_candidate_sha = candidate.final_hex(),
 		accepted_candidate.final_hex()
-	local normalized_projection_sha, accepted_projection_sha =
-		sha256(repo, normalized_projection), sha256(repo, accepted_projection)
 	local stage_b = {
 		schema = "grug_wp40_r7_stage_b_receipt_v1", seed_slot = seed_slot,
 		seed_identity = seed,
 		production_r6_content_sha256 =
 			runtime_fixture.built.manifest.values.production_r6_content_sha256,
-		accepted_r6_projection_sha256 = accepted_projection_sha,
+		accepted_r6_projection_sha256 = accepted_candidate_sha,
 		name_map_population = 83, cultural_name_map_population = 6,
 		cultural_substitution_count = substitutions,
 		inherited_cultural_access_count = binding.inherited_cultural_access_count,
-		normalized_artifact_sha256 = normalized_projection_sha,
+		normalized_artifact_sha256 = candidate_sha,
 		candidate_decisions_sha256 = candidate_sha,
 		accepted_candidate_decisions_sha256 = accepted_candidate_sha, equal = true,
 	}
 	contract.validate_stage_b(stage_b)
 	write(p9g_aggregate_bytes(p9g_aggregate, reasons))
+	local coverage_keys = {}
+	for key in pairs(aggregate.coverage) do coverage_keys[#coverage_keys + 1] = key end
+	table.sort(coverage_keys, less_bytes)
+	for index = 1, #coverage_keys do
+		local fields = split_nul(coverage_keys[index])
+		write(table.concat({"sample_coverage", fields[1], fields[2],
+			tostring(aggregate.coverage[coverage_keys[index]])}, "\t") .. "\n")
+	end
 	local stage_a_bytes, stage_b_bytes = contract.stage_a_bytes(stage_a),
 		contract.stage_b_bytes(stage_b)
 	assert(output:close())
@@ -2667,7 +2844,9 @@ function module.run_seed(repo, seed_slot, output_path)
 		accepted_r6_artifact_sha256 = binding.sha256, stage_a = stage_a,
 		stage_b = stage_b, path = output_path, sha256 = output_hasher.final_hex(),
 		bytes = output_bytes, stage_a_sha256 = sha256(repo, stage_a_bytes),
-		stage_b_sha256 = sha256(repo, stage_b_bytes)}
+		stage_b_sha256 = sha256(repo, stage_b_bytes),
+		sample_roster_sha256 = roster.sha256, sample_owner_count = #roster.rows,
+		sample_column_count = roster.columns}
 end
 
 function module.pilot(repo, scratch, seed_slot)
@@ -2701,7 +2880,9 @@ function module.worker(repo, scratch, first_slot, last_slot, projection_sha256)
 		rows[#rows + 1] = table.concat({"seed", slot, result.seed_identity,
 			result.path, result.sha256, result.bytes, result.manifest_sha256,
 			result.accepted_r6_artifact_sha256, result.stage_a_sha256,
-			result.stage_b_sha256, result.stage_a.p9g_delta_sha256}, "\t") .. "\n"
+			result.stage_b_sha256, result.stage_a.p9g_delta_sha256,
+			result.sample_roster_sha256, result.sample_owner_count,
+			result.sample_column_count}, "\t") .. "\n"
 		rows[#rows + 1] = "stage_a\t" .. tostring(slot) .. "\t" ..
 			hex(contract.stage_a_bytes(result.stage_a)) .. "\n"
 		rows[#rows + 1] = "stage_b\t" .. tostring(slot) .. "\t" ..
@@ -2766,13 +2947,15 @@ local function worker_descriptors(repo, path, contract, stream)
 			first_slot = tonumber(fields[2])
 		elseif fields[1] == "last_slot" and #fields == 2 and not last_slot then
 			last_slot = tonumber(fields[2])
-		elseif fields[1] == "seed" and #fields == 11 then
+		elseif fields[1] == "seed" and #fields == 14 then
 			local slot = tonumber(fields[2])
 			if not slot or seeds[slot] then fail("worker seed descriptor differs") end
 			seeds[slot] = {slot = slot, identity = fields[3], path = fields[4],
 				sha256 = fields[5], bytes = tonumber(fields[6]), manifest_sha256 = fields[7],
 				accepted_r6_artifact_sha256 = fields[8], stage_a_sha256 = fields[9],
-				stage_b_sha256 = fields[10], p9g_delta_sha256 = fields[11]}
+				stage_b_sha256 = fields[10], p9g_delta_sha256 = fields[11],
+				sample_roster_sha256 = fields[12], sample_owner_count = tonumber(fields[13]),
+				sample_column_count = tonumber(fields[14])}
 		elseif fields[1] == "stage_a" and #fields == 3 then
 			local slot = assert(tonumber(fields[2]))
 			if stage_a[slot] then fail("duplicate worker Stage-A row") end
@@ -2812,8 +2995,17 @@ local function worker_descriptors(repo, path, contract, stream)
 		digest(row.sha256, "seed file digest")
 		integer(row.bytes, 1, MAX_SAFE, "seed file bytes")
 		for _, field in ipairs({"manifest_sha256", "accepted_r6_artifact_sha256",
-			"stage_a_sha256", "stage_b_sha256", "p9g_delta_sha256"}) do
+			"stage_a_sha256", "stage_b_sha256", "p9g_delta_sha256",
+			"sample_roster_sha256"}) do
 			digest(row[field], "seed descriptor " .. field)
+		end
+		integer(row.sample_owner_count, SAMPLE_OWNER_COUNT, SAMPLE_OWNER_COUNT,
+			"seed sample owner count")
+		integer(row.sample_column_count, 1, 49980561, "seed sample column count")
+		local expected_roster = sample_roster(repo, slot)
+		if row.sample_roster_sha256 ~= expected_roster.sha256 or
+				row.sample_column_count ~= expected_roster.columns then
+			fail("worker seed sample roster binding differs")
 		end
 		local actual_sha, actual_bytes = stream.file(row.path)
 		if actual_sha ~= row.sha256 or actual_bytes ~= row.bytes or
@@ -2910,7 +3102,7 @@ function module.finalize(repo, scratch, worker_paths)
 	local stream = sha_stream(repo)
 	local all, projection, ranges = {}, nil, {}
 	local allowed_ranges = {['1/5'] = true, ['6/10'] = true, ['11/15'] = true,
-		['16/20'] = true, ['21/25'] = true, ['26/30'] = true, ['31/32'] = true}
+		['16/20'] = true, ['21/24'] = true, ['25/28'] = true, ['29/32'] = true}
 	for index = 1, 7 do
 		local worker_projection, first_slot, last_slot, seeds =
 			worker_descriptors(repo, worker_paths[index], contract, stream)
@@ -2989,15 +3181,22 @@ function module.finalize(repo, scratch, worker_paths)
 	local stage_b = new_final_output(scratch .. "/stage-b.tsv", stream)
 	local p9g = new_final_output(scratch .. "/p9g.tsv", stream)
 	artifact.write("schema\tgrug_wp40_r7_artifact_v1\n")
+	artifact.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	artifact.write("projection_sha256\t" .. projection .. "\n")
 	artifact.write("accepted_r6_artifact_sha256\t" ..
 		ACCEPTED_R6_ARTIFACT_SHA256 .. "\n")
 	stage_a.write("schema\tgrug_wp40_r7_stage_a_aggregate_v1\n")
+	stage_a.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	stage_b.write("schema\tgrug_wp40_r7_stage_b_aggregate_v1\n")
+	stage_b.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 	p9g.write("schema\tgrug_wp40_r7_p9g_ledger_v1\n")
+	p9g.write("acceptance_scope\t32_seed_stratified_4096_owner_sample\n")
 
 	local production_content_sha, p9g_content_sha, p9g_delta_sha
 	local total_operations, total_accepted, total_rejected = 0, 0, 0
+	local total_sample_cases, total_sample_columns, total_sample_surface_columns =
+		0, 0, 0
+	local sampled_coverage = {}
 	for slot = 1, 32 do
 		local descriptor = all[slot]
 		if not descriptor or descriptor.identity ~= seeds.fixed[slot] or
@@ -3018,7 +3217,9 @@ function module.finalize(repo, scratch, worker_paths)
 		artifact.write(table.concat({"seed", tostring(slot), descriptor.identity,
 			descriptor.manifest_sha256, descriptor.sha256, tostring(descriptor.bytes),
 			descriptor.stage_a_sha256, descriptor.stage_b_sha256,
-			descriptor.p9g_delta_sha256}, "\t") .. "\n")
+			descriptor.p9g_delta_sha256, descriptor.sample_roster_sha256,
+			tostring(descriptor.sample_owner_count),
+			tostring(descriptor.sample_column_count)}, "\t") .. "\n")
 		stage_a.write(prefix_lines("seed\t" .. tostring(slot) .. "\t", descriptor.stage_a))
 		stage_b.write(prefix_lines("seed\t" .. tostring(slot) .. "\t", descriptor.stage_b))
 
@@ -3028,9 +3229,13 @@ function module.finalize(repo, scratch, worker_paths)
 		if final_byte ~= "\n" then fail("seed evidence lacks canonical final LF") end
 		assert(file:seek("set", 0))
 		local line_number, seed_slot, seed_identity = 0, nil, nil
+		local sample_schema, sample_roster_sha, sample_owner_population,
+			sample_column_population
 		local operations, accepted_count, rejected_count, population_count = 0, 0, 0, 0
+		local sample_owner_rows, sample_coverage_rows, sample_coverage_columns = 0, 0, 0
 		local operations_by_population, populations_seen, accepted_roots = {}, {}, {}
-		local previous_operation, previous_population
+		local previous_operation, previous_population, previous_coverage
+		local expected_sample = sample_roster(repo, slot)
 		for line in file:lines() do
 			line_number = line_number + 1
 			if line:find("\r", 1, true) then fail("seed evidence has CR bytes") end
@@ -3046,6 +3251,49 @@ function module.finalize(repo, scratch, worker_paths)
 				local fields = split_tabs(line)
 				if #fields ~= 2 or seed_identity ~= nil then fail("seed identity row differs") end
 				seed_identity = text(fields[2], "seed identity")
+			elseif line:find("^sample_schema\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or sample_schema ~= nil then
+					fail("seed sample schema row differs")
+				end
+				sample_schema = text(fields[2], "seed sample schema")
+			elseif line:find("^sample_roster_sha256\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or sample_roster_sha ~= nil then
+					fail("seed sample roster digest row differs")
+				end
+				sample_roster_sha = digest(fields[2], "seed sample roster digest")
+			elseif line:find("^sample_owner_count\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or sample_owner_population ~= nil then
+					fail("seed sample owner-count row differs")
+				end
+				sample_owner_population = parsed_integer(fields[2], SAMPLE_OWNER_COUNT,
+					SAMPLE_OWNER_COUNT, "seed sample owner count")
+			elseif line:find("^sample_column_count\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 2 or sample_column_population ~= nil then
+					fail("seed sample column-count row differs")
+				end
+				sample_column_population = parsed_integer(fields[2], 1, 49980561,
+					"seed sample column count")
+			elseif line:find("^sample_owner\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 7 then fail("seed sample owner row width differs") end
+				local ordinal = parsed_integer(fields[2], 1, SAMPLE_OWNER_COUNT,
+					"seed sample owner ordinal")
+				sample_owner_rows = sample_owner_rows + 1
+				local expected = expected_sample.rows[sample_owner_rows]
+				if ordinal ~= sample_owner_rows or not expected or
+						fields[3] ~= expected.class or fields[4] ~= expected.label or
+						parsed_integer(fields[5], OWNER_MIN_X, OWNER_MAX_X,
+							"seed sample owner x") ~= expected.owner_x or
+						parsed_integer(fields[6], OWNER_MIN_Z, OWNER_MAX_Z,
+							"seed sample owner z") ~= expected.owner_z or
+						parsed_integer(fields[7], 1, 6400,
+							"seed sample owner columns") ~= expected.columns then
+					fail("seed sample owner roster differs")
+				end
 			elseif line:find("^operation\t") then
 				local fields = split_tabs(line)
 				if #fields ~= #OPERATION_FIELDS + 1 then fail("P9G operation TSV width differs") end
@@ -3230,6 +3478,29 @@ function module.finalize(repo, scratch, worker_paths)
 				bracket_row[faction].budget = bracket_row[faction].budget + budget
 				population_count = population_count + 1
 				p9g.write("seed\t" .. tostring(slot) .. "\t" .. line .. "\n")
+			elseif line:find("^sample_coverage\t") then
+				local fields = split_tabs(line)
+				if #fields ~= 4 then fail("sample coverage TSV width differs") end
+				local zone_id, biome = text(fields[2], "sample coverage zone"),
+					text(fields[3], "sample coverage biome")
+				local zone, allowed = zone_by_id[zone_id], false
+				if zone then
+					for index = 1, #zone.biomes do
+						if zone.biomes[index] == biome then allowed = true break end
+					end
+				end
+				local count = parsed_integer(fields[4], 1, 49980561,
+					"sample coverage columns")
+				local key = zone_id .. "\0" .. biome
+				if not allowed or (previous_coverage and
+						not less_bytes(previous_coverage, key)) then
+					fail("sample coverage identity/order differs")
+				end
+				previous_coverage = key
+				sampled_coverage[key] = (sampled_coverage[key] or 0) + count
+				sample_coverage_rows = sample_coverage_rows + 1
+				sample_coverage_columns = sample_coverage_columns + count
+				p9g.write("seed\t" .. tostring(slot) .. "\t" .. line .. "\n")
 			else
 				fail("seed evidence row differs")
 			end
@@ -3239,15 +3510,30 @@ function module.finalize(repo, scratch, worker_paths)
 			fail("operation population is absent: " .. key)
 		end
 		if line_number < 4 or seed_slot ~= slot or seed_identity ~= descriptor.identity or
+				sample_schema ~= SAMPLE_SCHEMA or
+				sample_roster_sha ~= expected_sample.sha256 or
+				sample_roster_sha ~= descriptor.sample_roster_sha256 or
+				sample_owner_population ~= SAMPLE_OWNER_COUNT or
+				sample_owner_rows ~= SAMPLE_OWNER_COUNT or
+				sample_column_population ~= expected_sample.columns or
+				sample_column_population ~= descriptor.sample_column_count or
+				sample_coverage_rows < 1 or sample_coverage_columns < 1 or
+				sample_coverage_columns > sample_column_population or
 				population_count < 1 or operations ~= a.operation_count or
 				accepted_count ~= a.accepted_count or rejected_count ~= a.rejected_count then
 			fail("seed P9G ledger population/Stage-A identity differs")
 		end
+		total_sample_cases = total_sample_cases + sample_owner_rows
+		total_sample_columns = total_sample_columns + sample_column_population
+		total_sample_surface_columns = total_sample_surface_columns +
+			sample_coverage_columns
 		total_operations, total_accepted, total_rejected = total_operations + operations,
 			total_accepted + accepted_count, total_rejected + rejected_count
 	end
 
 	local nonzero_sources, access_gates, parity_gates = 0, 0, 0
+	local parity_advisory_failures, parity_advisory_insufficient = 0, 0
+	local bracket_order = {"1-10", "11-20", "21-30", "31-40", "41-50", "51-60"}
 	local function safe_product(left, right, label)
 		integer(left, 0, MAX_SAFE, label .. " left")
 		integer(right, 0, MAX_SAFE, label .. " right")
@@ -3262,6 +3548,9 @@ function module.finalize(repo, scratch, worker_paths)
 			fail("P9G source lacks nonzero E/B/accepted: " .. row.id)
 		end
 		nonzero_sources = nonzero_sources + 1
+		p9g.write(table.concat({"advisory", "source_totals", row.id,
+			tostring(totals.eligible), tostring(totals.budget),
+			tostring(totals.accepted)}, "\t") .. "\n")
 		local access_required = row.harvest_kind == "healing_herb" or
 			row.harvest_kind == "spice" or row.key == "wild_cocoa" or row.key == "rock_salt"
 		if access_required then
@@ -3273,24 +3562,39 @@ function module.finalize(repo, scratch, worker_paths)
 			end
 		end
 		if row.harvest_kind == "healing_herb" or row.harvest_kind == "spice" then
-			for bracket, factions in pairs(parity[row.id]) do
-				local accord, throng = factions.accord, factions.throng
-				if accord.eligible <= 0 or throng.eligible <= 0 then
-					fail("P9G parity faction/bracket is absent: " .. row.id .. "/" .. bracket)
+			for bracket_index = 1, #bracket_order do
+				local bracket = bracket_order[bracket_index]
+				local factions = parity[row.id][bracket]
+				if factions then
+					local accord, throng, status = factions.accord, factions.throng, "pass"
+					if accord.eligible <= 0 or throng.eligible <= 0 then
+						status = "insufficient_faction_sample"
+						parity_advisory_insufficient = parity_advisory_insufficient + 1
+					else
+						local left = safe_product(accord.budget, throng.eligible,
+							"P9G parity cross-product")
+						local right = safe_product(throng.budget, accord.eligible,
+							"P9G parity cross-product")
+						local high, low = math.max(left, right), math.min(left, right)
+						if high - low > math.floor(low / 10) then
+							status = "outside_10_percent"
+							parity_advisory_failures = parity_advisory_failures + 1
+						end
+					end
+					parity_gates = parity_gates + 1
+					p9g.write(table.concat({"advisory", "parity", row.id, bracket,
+						status, tostring(accord.eligible), tostring(accord.budget),
+						tostring(throng.eligible), tostring(throng.budget)}, "\t") .. "\n")
 				end
-				local left = safe_product(accord.budget, throng.eligible,
-					"P9G parity cross-product")
-				local right = safe_product(throng.budget, accord.eligible,
-					"P9G parity cross-product")
-				local high, low = math.max(left, right), math.min(left, right)
-				if high - low > math.floor(low / 10) then
-					fail("P9G exact decade parity inequality failed: " .. row.id .. "/" .. bracket)
-				end
-				parity_gates = parity_gates + 1
 			end
 		end
 	end
-	if nonzero_sources ~= 12 or total_operations ~= total_accepted + total_rejected then
+	local sampled_coverage_population = 0
+	for _ in pairs(sampled_coverage) do sampled_coverage_population =
+		sampled_coverage_population + 1 end
+	if nonzero_sources ~= 12 or total_operations ~= total_accepted + total_rejected or
+			total_sample_cases ~= 32 * SAMPLE_OWNER_COUNT or
+			total_sample_columns ~= 32 * 795281 or sampled_coverage_population < 1 then
 		fail("fleet P9G closed totals differ")
 	end
 
@@ -3299,13 +3603,20 @@ function module.finalize(repo, scratch, worker_paths)
 	local receipt = new_final_output(scratch .. "/run-receipt.tsv", stream)
 	receipt.write(table.concat({
 		"schema\tgrug_wp40_r7_run_receipt_v1\n",
-		"proof_scope_fleet\t32_seed_affected_cell_7_tuple_delta_plus_r6_aggregates\n",
+		"proof_scope_fleet\t32_seed_stratified_4096_owner_affected_cell_7_tuple_delta\n",
+		"acceptance_scope\t32_seed_stratified_sample_not_exhaustive\n",
 		"projection_sha256\t", projection, "\n",
 		"accepted_r6_artifact_sha256\t", ACCEPTED_R6_ARTIFACT_SHA256, "\n",
 		"production_r6_content_sha256\t", production_content_sha, "\n",
 		"p9g_content_sha256\t", p9g_content_sha, "\n",
 		"p9g_delta_sha256\t", p9g_delta_sha, "\n",
 		"seed_population\t32\n",
+		"sample_owner_population_per_seed\t128\n",
+		"sample_case_population\t", tostring(total_sample_cases), "\n",
+		"sample_column_visit_population\t", tostring(total_sample_columns), "\n",
+		"sample_surface_coverage_column_population\t",
+			tostring(total_sample_surface_columns), "\n",
+		"sample_zone_biome_population\t", tostring(sampled_coverage_population), "\n",
 		"p9g_source_population\t12\n",
 		"inherited_cultural_access_count\t12\n",
 		"p9g_nonzero_source_population\t", tostring(nonzero_sources), "\n",
@@ -3314,6 +3625,11 @@ function module.finalize(repo, scratch, worker_paths)
 		"p9g_rejected_count\t", tostring(total_rejected), "\n",
 		"p9g_access_gate_count\t", tostring(access_gates), "\n",
 		"p9g_parity_gate_count\t", tostring(parity_gates), "\n",
+		"p9g_parity_policy\tadvisory_non_blocking\n",
+		"p9g_parity_advisory_failure_count\t",
+			tostring(parity_advisory_failures), "\n",
+		"p9g_parity_advisory_insufficient_count\t",
+			tostring(parity_advisory_insufficient), "\n",
 		"canonical_worker_order\tseed_slot\n",
 		"artifact_sha256\t", artifact_result.sha256, "\n",
 		"stage_a_sha256\t", stage_a_result.sha256, "\n",

@@ -134,6 +134,14 @@ function module.integration_kat(repo)
 	return adapter.integration_kat(repo)
 end
 
+function module.sample_assignment(repo)
+	local adapter = runtime_adapter(repo)
+	if type(adapter.sample_assignment) ~= "function" then
+		fail("runtime adapter lacks sample_assignment")
+	end
+	return adapter.sample_assignment(repo)
+end
+
 function module.pilot(repo, scratch, seed_slot)
 	local adapter = runtime_adapter(repo)
 	if type(adapter.pilot) ~= "function" then fail("runtime adapter lacks pilot") end

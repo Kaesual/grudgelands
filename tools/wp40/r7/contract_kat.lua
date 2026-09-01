@@ -164,6 +164,14 @@ assert(pilot_bytes:find("canonical_output_bytes\t12345\n", 1, true))
 local runtime_adapter = dofile(repo .. "/tools/wp40/r7/runtime_adapter.lua")
 assert(runtime_adapter.canonical_graph_nul_kat() == true)
 assert(runtime_adapter.owner_column_count_kat() == true)
+assert(runtime_adapter.sample_roster_kat() == true)
+local sample_assignment = runtime_adapter.sample_assignment(repo)
+assert(sample_assignment:find("schema\tgrug_wp40_r7_sample_assignment_v1\n", 1,
+	true) == 1)
+assert(hex(raw_sha256(sample_assignment)) ==
+	"4d1e0e796941115cfdbc44031e9fbc08775d11adc52503834ac3805b6708092c")
+assert(select(2, sample_assignment:gsub("\nseed\t", "")) == 32)
+assert(sample_assignment:find("case_population\t4096\n", 1, true))
 assert(runtime_adapter.heightmap_projection_kat() == true)
 assert(runtime_adapter.normalize_rows_kat() == true)
 assert(runtime_adapter.first_difference_kat(repo) == true)
@@ -204,12 +212,17 @@ assert(capture_encoded ~= capture_graph({
 -- Execute the actual CLI chunk with closed mocks so argument parsing is proven
 -- without starting a pilot, worker or runtime adapter.
 local function run_cli_fixture(arguments)
-	local calls, writes = {pilot = 0, worker = 0}, {}
+	local calls, writes = {sample = 0, pilot = 0, worker = 0}, {}
 	local contract_mock = {}
 	function contract_mock.pilot_result_bytes()
 		return "schema\tmock_pilot_result_v1\n"
 	end
 	local adapter_mock = {}
+	function adapter_mock.sample_assignment(actual_repo)
+		calls.sample = calls.sample + 1
+		calls.sample_repo = actual_repo
+		return "schema\tmock_sample_assignment_v1\n"
+	end
 	function adapter_mock.pilot(actual_repo, scratch, seed_slot)
 		calls.pilot = calls.pilot + 1
 		calls.pilot_values = {actual_repo, scratch, seed_slot}
@@ -245,7 +258,15 @@ local function run_cli_fixture(arguments)
 	return ok, message, calls, writes
 end
 
-local ok_cli, message_cli, calls_cli = run_cli_fixture({
+local ok_cli, message_cli, calls_cli, writes_cli = run_cli_fixture({
+	"sample-roster", "/mock", "sample.tsv",
+})
+assert(ok_cli, message_cli)
+assert(calls_cli.sample == 1 and calls_cli.pilot == 0 and calls_cli.worker == 0 and
+	calls_cli.sample_repo == "/mock" and
+	writes_cli["sample.tsv"] == "schema\tmock_sample_assignment_v1\n")
+
+ok_cli, message_cli, calls_cli = run_cli_fixture({
 	"pilot", "/mock", "pilot.tsv", "scratch", "17",
 })
 assert(ok_cli, message_cli)

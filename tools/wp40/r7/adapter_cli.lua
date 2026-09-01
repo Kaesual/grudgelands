@@ -71,7 +71,12 @@ local function copy_descriptor(path, descriptor, schema)
 	end
 end
 
-if mode == "catalog" then
+if mode == "sample-roster" then
+	if arg[4] ~= nil then fail("sample-roster arguments differ") end
+	local bytes = adapter.sample_assignment(repo)
+	write_file(output, bytes)
+	print("WP40 R7 sample roster PASS seeds=32 owners=4096")
+elseif mode == "catalog" then
 	if arg[4] ~= nil then fail("catalog arguments differ") end
 	local snapshot = adapter.catalog_snapshot(repo)
 	contract.validate_catalog(snapshot, adapter.raw_sha256)

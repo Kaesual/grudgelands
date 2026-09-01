@@ -193,3 +193,43 @@ strata, liquids, lighting, mapchunk order, one-writer behavior, representative
 content/access, visual quality, generation time and RSS, followed by the
 separate user-run fallback-engine/runtime checklist. R7 itself does not make a
 visual or runtime acceptance claim.
+
+## 8. Pragmatic acceptance amendment (2026-09-01)
+
+This section supersedes only the exhaustive spatial population in sections 5
+and 6. It does not weaken the production contract, final LuaJIT/PUC parity,
+source/configuration gates, real VM integration proof, Stage A/B equality,
+transaction/replay, non-overwrite, protection or fail-closed requirements.
+
+At the user's release-scope decision, the 32-seed R7 delta acceptance is a
+closed stratified sample rather than a scan of all 8,075 owners per seed. Each
+seed evaluates exactly 128 owners: 104 fixed interior owners on a 13-by-8
+spatial lattice and 24 fixed risk owners covering Cultural witnesses, clipped
+corners, Stage-A/B and multi-y owners, both apex sides, route/water interfaces
+and coastal housing. The broader connection channels remain protected by the
+already-binding focused/integration gates, not by a sampled-owner claim. The
+canonical 32-seed population is therefore
+4,096 `(seed, owner)` cases. Every selected owner still runs the R7 successor,
+independent direct-83 settlement and independent accepted-77 authority.
+
+Crashes, invalid identities, nondeterminism, Stage A/B differences, illegal
+overwrite/overlap/retry, owner/protection errors, transaction/replay mismatch,
+missing P9G source E/B/acceptance, lost Cultural identity, required paired-
+faction access, and sample-roster gaps or duplicates remain hard blockers.
+Exact whole-world density, the global 10% parity inequality and proof of every
+query column become measured advisory results. Artifacts and completion prose
+must say `32-seed stratified sample`, never `full` or `exhaustive` fleet.
+The sample receipt distinguishes all clipped query-column visits from the
+subset that emits a zone/logical-biome surface classification; water and
+other non-surface columns are not falsely counted as biome coverage.
+
+The existing Stage-B v1 field names remain byte-compatible: their normalized
+and accepted projection digests cover the selected owners, while the immutable
+accepted R6 artifact retains its separate SHA-256 identity. R7 does not claim
+that the sampled run regenerated the complete R6 aggregate artifact.
+
+The sample pilot retains the unconditional stop boundary and binds the exact
+assignment SHA-256, measured resources and projected fleet cost. The fleet may
+start only after explicit approval of that projection. A projection above two
+hours of fleet wall time is a stop/reconsider result rather than an automatic
+launch.

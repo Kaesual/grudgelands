@@ -47,8 +47,9 @@ point at the already-built parser with `WP40_LUAC51_BIN=/absolute/path/luac51`.
 atomic cutover, and `integration` additionally exercises the production-owned
 private evidence seams through the mocked VM.
 
-The pilot accepts exactly one new path below `/tmp`, measures one
-representative seed, writes a canonical projection and stops unconditionally:
+The pilot accepts exactly one new path below `/tmp`, measures the frozen
+128-owner stratified sample for one representative seed, writes a canonical
+projection and stops unconditionally:
 
 ```sh
 bash tools/wp40/r7/run.sh pilot /tmp/wp40-r7-pilot-projection.tsv
@@ -63,12 +64,26 @@ WP40_R7_APPROVED_PROJECTION_SHA256=<sha256> \
   /tmp/wp40-r7-pilot-projection.tsv <sha256>
 ```
 
-The fleet hard-caps itself at seven workstation-wide Lua processes, launches
-seven idle-priority LuaJIT workers over slots `1-5`, `6-10`, `11-15`, `16-20`,
-`21-25`, `26-30` and `31-32`, and gives each worker a private scratch tree and
-read-only projection copy. It re-runs the source receipt after the workers and
-rejects changed inputs. No PUC runtime is part of this runner; the one final
-PUC/LuaJIT micro-KAT pair is a later frozen-byte coordinator gate.
+The fleet hard-caps itself at seven workstation-wide Lua processes and runs
+the closed 4,096-case population: all 32 seeds, each with the same 104 spatial
+lattice owners plus 24 fixed risk owners. Seven idle-priority LuaJIT workers
+own slots `1-5`, `6-10`, `11-15`, `16-20`, `21-24`, `25-28` and `29-32`, each
+with private scratch and a read-only projection copy. The finalizer verifies
+the exact sample assignment and repeats the merge with reversed worker
+descriptors. It re-runs the source receipt after the workers and rejects
+changed inputs. This is a stratified release-safety sample, not exhaustive
+whole-world density evidence. Exact global density and 10% parity are retained
+as advisory results. `sample_column_visit_population` counts every clipped
+column visited by the exact owner roster; the separately recorded
+`sample_surface_coverage_column_population` counts only columns for which the
+production scan emits a zone/logical-biome surface classification (water and
+other non-surface columns are intentionally absent from that coverage table).
+
+The unchanged Stage-B v1 field names `normalized_artifact_sha256` and
+`accepted_r6_projection_sha256` are compatibility names. In sampled receipts
+they bind the normalized and accepted-77 projections of the exact sampled
+owners; the immutable accepted R6 artifact SHA-256 remains a separate identity
+field. Neither name claims regeneration of the complete R6 artifact.
 
 On a successful fleet, the finalizer promotes the artifact, Stage-A aggregate,
 Stage-B aggregate, P9G ledger, run receipt, source-audit receipt, final

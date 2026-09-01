@@ -173,6 +173,18 @@ static_gates() {
 		echo "WP40 R7 runner: grug_gathering global-table declaration differs" >&2
 		return 1
 	}
+	# Keep the mandated textual operator sweep even though comments and TSV
+	# string literals necessarily produce candidates in this codebase.  The
+	# plain-5.1 parser above is the authoritative classifier: after it succeeds,
+	# no candidate can be executable //, &, |, << or >> syntax.  Still fail on
+	# an rg execution error so a missing/broken sweep cannot silently pass.
+	local operator_sweep_status=0
+	rg -n '[^:/]//|[[:alnum:]_)"] *(&|\||<<|>>) *[[:alnum:]_("]' \
+		"${all_lua[@]}" >/dev/null || operator_sweep_status=$?
+	[[ "$operator_sweep_status" -le 1 ]] || {
+		echo "WP40 R7 runner: Lua 5.1 operator sweep could not run" >&2
+		return 1
+	}
 	if rg -n '(^|[^[:alnum:]_.:])goto[[:space:](]|::[A-Za-z_]+::' "${all_lua[@]}" ||
 			rg -n '\\u\{|\\x[0-9A-Fa-f]|\\z' "${all_lua[@]}" | \
 				rg -v '^[^:]+:[0-9]+:[[:space:]]*--' ||
@@ -201,6 +213,35 @@ run_native() {
 	[[ "$(rg -n '^WP40 R7 native inputs KAT PASS ' "$log" | awk 'END {print NR + 0}')" -eq 1 ]] || {
 		cat "$log"
 		echo "WP40 R7 runner: native KAT aggregation differs" >&2
+		return 1
+	}
+}
+
+run_sample_roster() {
+	local output="$1" log="$2"
+	"$lua_bin" "${lua_prefix[@]}" "$cli" sample-roster "$repo" "$output" \
+		>"$log" 2>&1
+	[[ "$(rg -n '^WP40 R7 sample roster PASS seeds=32 owners=4096$' "$log" | \
+		awk 'END {print NR + 0}')" -eq 1 ]] || {
+		cat "$log"
+		echo "WP40 R7 runner: sample roster aggregation differs" >&2
+		return 1
+	}
+	awk -F '\t' '
+		NR == 1 {ok = ($0 == "schema\tgrug_wp40_r7_sample_assignment_v1"); next}
+		NR == 2 {ok = ok && ($0 == "sample_schema\tgrug_wp40_r7_stratified_owner_sample_v1"); next}
+		NR == 3 {ok = ok && ($0 == "seed_population\t32"); next}
+		NR == 4 {ok = ok && ($0 == "owner_population_per_seed\t128"); next}
+		NR == 5 {ok = ok && ($0 == "case_population\t4096"); next}
+		NR >= 6 {
+			rows++
+			ok = ok && NF == 8 && $1 == "seed" && $2 == rows &&
+				length($3) == 64 && $3 !~ /[^0-9a-f]/ && $4 == 128 &&
+				$5 == 795281 && $6 == 104 && $7 == 24 && $8 == 0
+		}
+		END {exit !(ok && NR == 37 && rows == 32)}
+	' "$output" || {
+		echo "WP40 R7 runner: sample assignment receipt differs" >&2
 		return 1
 	}
 }
@@ -279,6 +320,8 @@ fi
 catalog_receipt="$scratch/catalog.tsv"
 catalog_log="$scratch/catalog.log"
 native_log="$scratch/native.log"
+sample_assignment="$scratch/sample-assignment.tsv"
+sample_assignment_log="$scratch/sample-assignment.log"
 integration_receipt="$scratch/integration.tsv"
 integration_log="$scratch/integration.log"
 if [[ "$mode" == integration ]]; then
@@ -387,6 +430,7 @@ cmp -s "$static_receipt" "$durable_static" || {
 }
 run_catalog "$catalog_receipt" "$catalog_log"
 run_native "$native_log"
+run_sample_roster "$sample_assignment" "$sample_assignment_log"
 integration_receipt="$durable_integration"
 integration_log="$durable_integration_log"
 
@@ -418,6 +462,11 @@ if [[ "$mode" == pilot ]]; then
 		-f 'r7_pilot_resource_v1\t%e\t%U\t%S\t%M' -o "$pilot_resource" \
 		chrt --idle 0 ionice -c3 "$lua_bin" "${lua_prefix[@]}" "$cli" pilot \
 		"$repo" "$pilot_result" "$scratch/pilot" 17 >"$pilot_log" 2>&1
+	pilot_seed_output="$scratch/pilot-seed-17.tsv"
+	[[ -f "$pilot_seed_output" ]] || {
+		echo "WP40 R7 runner: pilot seed evidence is absent" >&2
+		exit 1
+	}
 	pilot_post_static="$scratch/source-audit-pilot-post.tsv"
 	static_gates "$pilot_post_static" final
 	cmp -s "$static_receipt" "$pilot_post_static" &&
@@ -430,7 +479,22 @@ if [[ "$mode" == pilot ]]; then
 	native_sha="$(sha256sum "$native_log" | awk '{print $1}')"
 	integration_sha="$(sha256sum "$integration_receipt" | awk '{print $1}')"
 	roster_sha="$(sha256sum "$seed_corpus" | awk '{print $1}')"
+	sample_assignment_sha="$(sha256sum "$sample_assignment" | awk '{print $1}')"
 	pilot_result_sha="$(sha256sum "$pilot_result" | awk '{print $1}')"
+	pilot_sample_roster_sha="$(awk -F '\t' '$1 == "sample_roster_sha256" {
+		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
+	pilot_sample_owner_count="$(awk -F '\t' '$1 == "sample_owner_count" {
+		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
+	pilot_sample_column_count="$(awk -F '\t' '$1 == "sample_column_count" {
+		count++; result=$2} END {if (count == 1) print result}' "$pilot_seed_output")"
+	expected_pilot_roster_sha="$(awk -F '\t' '$1 == "seed" && $2 == 17 {
+		count++; result=$3} END {if (count == 1) print result}' "$sample_assignment")"
+	[[ "$pilot_sample_roster_sha" =~ ^[0-9a-f]{64}$ &&
+		"$pilot_sample_roster_sha" == "$expected_pilot_roster_sha" &&
+		"$pilot_sample_owner_count" == 128 && "$pilot_sample_column_count" == 795281 ]] || {
+		echo "WP40 R7 runner: pilot sample identity differs" >&2
+		exit 1
+	}
 	read -r resource_schema elapsed user_time system_time peak_rss < <(
 		awk -F '\t' 'NR == 1 {print $1, $2, $3, $4, $5}' "$pilot_resource")
 	[[ "$resource_schema" == r7_pilot_resource_v1 ]] || {
@@ -448,6 +512,8 @@ if [[ "$mode" == pilot ]]; then
 		exit 1
 	}
 	projected_wall="$(awk -v elapsed="$elapsed" 'BEGIN {printf "%.6f", elapsed * 5}')"
+	projected_budget_status="$(awk -v projected="$projected_wall" \
+		'BEGIN {print projected <= 7200 ? "within_two_hour_limit" : "over_two_hour_stop"}')"
 	projected_rss="$(awk -v rss="$peak_rss" 'BEGIN {printf "%.0f", rss * 7}')"
 	projected_output="$((output_bytes * 32))"
 	projected_scratch="$((scratch_bytes * 32))"
@@ -458,6 +524,8 @@ if [[ "$mode" == pilot ]]; then
 		printf 'native_kat_sha256\t%s\n' "$native_sha"
 		printf 'integration_kat_sha256\t%s\n' "$integration_sha"
 		printf 'seed_roster_sha256\t%s\n' "$roster_sha"
+		printf 'sample_assignment_sha256\t%s\n' "$sample_assignment_sha"
+		awk '{print "sample_assignment\t" $0}' "$sample_assignment"
 		printf 'pilot_result_sha256\t%s\n' "$pilot_result_sha"
 		awk '{print "pilot_result\t" $0}' "$pilot_result"
 	} >"$binding_file"
@@ -465,9 +533,15 @@ if [[ "$mode" == pilot ]]; then
 	pilot_partial="$(mktemp "${pilot_output}.partial.XXXXXXXX")"
 	{
 		printf 'schema\tgrug_wp40_r7_pilot_projection_v1\n'
+		printf 'acceptance_scope\t32_seed_stratified_sample_not_exhaustive\n'
 		printf 'assignment_sha256\t%s\n' "$assignment_sha"
 		cat "$binding_file"
 		printf 'representative_seed_slot\t17\n'
+		printf 'sample_schema\tgrug_wp40_r7_stratified_owner_sample_v1\n'
+		printf 'sample_owner_population_per_seed\t128\n'
+		printf 'sample_case_population\t4096\n'
+		printf 'sample_column_population_per_seed\t795281\n'
+		printf 'pilot_sample_roster_sha256\t%s\n' "$pilot_sample_roster_sha"
 		printf 'measured_elapsed_seconds\t%s\n' "$elapsed"
 		printf 'measured_user_seconds\t%s\n' "$user_time"
 		printf 'measured_system_seconds\t%s\n' "$system_time"
@@ -478,6 +552,8 @@ if [[ "$mode" == pilot ]]; then
 		printf 'fleet_width\t7\n'
 		printf 'fleet_seed_population\t32\n'
 		printf 'projected_fleet_wall_seconds\t%s\n' "$projected_wall"
+		printf 'projected_fleet_budget_limit_seconds\t7200\n'
+		printf 'projected_fleet_budget_status\t%s\n' "$projected_budget_status"
 		printf 'projected_fleet_peak_rss_kib\t%s\n' "$projected_rss"
 		printf 'projected_fleet_output_bytes\t%s\n' "$projected_output"
 		printf 'projected_fleet_scratch_bytes\t%s\n' "$projected_scratch"
@@ -508,10 +584,34 @@ actual_projection="$(sha256sum "$projection" | awk '{print $1}')"
 	echo "WP40 R7 runner: approved projection file bytes differ" >&2
 	exit 1
 }
+projected_wall_seconds="$(awk -F '\t' '$1 == "projected_fleet_wall_seconds" {
+	count++; value=$2} END {if (count == 1) print value}' "$projection")"
+projected_limit_seconds="$(awk -F '\t' '$1 == "projected_fleet_budget_limit_seconds" {
+	count++; value=$2} END {if (count == 1) print value}' "$projection")"
+projected_budget_status="$(awk -F '\t' '$1 == "projected_fleet_budget_status" {
+	count++; value=$2} END {if (count == 1) print value}' "$projection")"
+[[ "$projected_wall_seconds" =~ ^(0|[1-9][0-9]*)(\.[0-9]+)?$ &&
+	"$projected_limit_seconds" =~ ^[1-9][0-9]*$ &&
+	"$projected_budget_status" == within_two_hour_limit ]] &&
+	awk -v wall="$projected_wall_seconds" -v limit="$projected_limit_seconds" \
+		'BEGIN {exit !(wall >= 0 && wall <= limit)}' || {
+	echo "WP40 R7 runner: projection wall/budget arithmetic differs" >&2
+	exit 1
+}
 [[ "$(awk -F '\t' '$1 == "schema" {print $2}' "$projection")" == \
 	grug_wp40_r7_pilot_projection_v1 &&
+	"$(awk -F '\t' '$1 == "acceptance_scope" {print $2}' "$projection")" == \
+	32_seed_stratified_sample_not_exhaustive &&
 	"$(awk -F '\t' '$1 == "fleet_width" {print $2}' "$projection")" == 7 &&
 	"$(awk -F '\t' '$1 == "fleet_seed_population" {print $2}' "$projection")" == 32 &&
+	"$(awk -F '\t' '$1 == "sample_schema" {print $2}' "$projection")" == \
+	grug_wp40_r7_stratified_owner_sample_v1 &&
+	"$(awk -F '\t' '$1 == "sample_owner_population_per_seed" {print $2}' \
+		"$projection")" == 128 &&
+	"$(awk -F '\t' '$1 == "sample_case_population" {print $2}' "$projection")" == 4096 &&
+	"$(awk -F '\t' '$1 == "sample_column_population_per_seed" {print $2}' \
+		"$projection")" == 795281 &&
+	"$projected_limit_seconds" == 7200 &&
 	"$(awk -F '\t' '$1 == "stop_boundary" {print $2}' "$projection")" == \
 	unconditional_before_fleet ]] || {
 	echo "WP40 R7 runner: projection schema/schedule differs" >&2
@@ -524,7 +624,9 @@ actual_projection="$(sha256sum "$projection" | awk '{print $1}')"
 	"$(awk -F '\t' '$1 == "native_kat_sha256" {print $2}' "$projection")" == \
 	"$(sha256sum "$native_log" | awk '{print $1}')" &&
 	"$(awk -F '\t' '$1 == "integration_kat_sha256" {print $2}' "$projection")" == \
-	"$(sha256sum "$integration_receipt" | awk '{print $1}')" ]] || {
+	"$(sha256sum "$integration_receipt" | awk '{print $1}')" &&
+	"$(awk -F '\t' '$1 == "sample_assignment_sha256" {print $2}' "$projection")" == \
+	"$(sha256sum "$sample_assignment" | awk '{print $1}')" ]] || {
 	echo "WP40 R7 runner: source/evidence bytes changed after the approved pilot" >&2
 	exit 1
 }
@@ -536,8 +638,8 @@ for worker_id in 1 2 3 4 5 6 7; do
 	cp -- "$projection" "$scratch/worker-$worker_id/input/projection.tsv"
 	chmod 0444 "$scratch/worker-$worker_id/input/projection.tsv"
 done
-first_slots=(1 6 11 16 21 26 31)
-last_slots=(5 10 15 20 25 30 32)
+first_slots=(1 6 11 16 21 25 29)
+last_slots=(5 10 15 20 24 28 32)
 for index in 0 1 2 3 4 5 6; do
 	start_worker "$((index + 1))" "${first_slots[$index]}" "${last_slots[$index]}" \
 		"$approved_argument"
@@ -641,7 +743,8 @@ cp -- "$projection" "$projection_tmp"
 run_log_tmp="$scratch/wp40-r7-run.log"
 {
 	printf 'schema\tgrug_wp40_r7_run_log_v1\n'
-	for log in "$catalog_log" "$native_log" "$integration_log" \
+		for log in "$catalog_log" "$native_log" "$sample_assignment_log" \
+				"$integration_log" \
 			"$scratch"/worker-*.log "$scratch"/worker-*.resource.tsv \
 			"$finalizer_log" "$reverse_finalizer_log"; do
 		label="$(basename "$log")"
