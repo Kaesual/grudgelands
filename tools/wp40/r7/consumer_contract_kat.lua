@@ -362,15 +362,41 @@ local function mob_fixture(zone_id, biome_id, race_region, y)
 	return {x = x, y = y or 20, z = z}
 end
 
-local family_mobs = {
-	settled = "grug_mobs:boar",
-	forest = "grug_mobs:wolf",
-	mountain = "grug_mobs:crag_eagle",
-	savanna = "grug_mobs:zebra",
-	jungle_edge = "grug_mobs:parrot",
-	jungle = "grug_mobs:panther",
-	swamp = "grug_mobs:bog_ooze",
-	war = "grug_mobs:skeleton_raider",
+local mob_families = {
+	["grug_mobs:boar"] = {settled = true},
+	["grug_mobs:plague_boar"] = {settled = true},
+	["grug_mobs:jungle_boar"] = {settled = true},
+	["grug_mobs:rabbit"] = {settled = true},
+	["grug_mobs:hare"] = {settled = true},
+	["grug_mobs:zombie"] = {settled = true, war = true},
+	["grug_mobs:wolf"] = {forest = true},
+	["grug_mobs:blightfang_wolf"] = {forest = true},
+	["grug_mobs:bear"] = {forest = true},
+	["grug_mobs:plaguehide_bear"] = {forest = true},
+	["grug_mobs:stag"] = {forest = true},
+	["grug_mobs:gaunt_stag"] = {forest = true},
+	["grug_mobs:giant_spider"] = {forest = true},
+	["grug_mobs:pale_spider"] = {forest = true},
+	["grug_mobs:skeleton_archer"] = {forest = true, war = true},
+	["grug_mobs:bone_weevil"] = {forest = true},
+	["grug_mobs:crag_eagle"] = {mountain = true},
+	["grug_mobs:vulture"] = {mountain = true},
+	["grug_mobs:stone_golem"] = {mountain = true},
+	["grug_mobs:mesa_golem"] = {mountain = true},
+	["grug_mobs:mountain_ram"] = {mountain = true},
+	["grug_mobs:hyena"] = {mountain = true, savanna = true},
+	["grug_mobs:zebra"] = {savanna = true},
+	["grug_mobs:jungle_lynx"] = {jungle_edge = true, jungle = true},
+	["grug_mobs:panther"] = {jungle = true},
+	["grug_mobs:serpent"] = {jungle = true},
+	["grug_mobs:jungle_ape"] = {jungle = true},
+	["grug_mobs:jungle_spider"] = {jungle = true},
+	["grug_mobs:parrot"] = {jungle_edge = true},
+	["grug_mobs:crocodile"] = {swamp = true},
+	["grug_mobs:bog_ooze"] = {swamp = true},
+	["grug_mobs:bog_fowl"] = {swamp = true},
+	["grug_mobs:skeleton_raider"] = {war = true},
+	["grug_mobs:carrion_crow"] = {war = true},
 }
 local zone_families = {
 	elandor_hearthpine_vale = {settled = true},
@@ -412,19 +438,28 @@ local zone_families = {
 	front_skyglass_canopy = {jungle = true, war = true},
 	front_stormscale_summit = {jungle = true, war = true},
 }
-local zone_count, war_count = 0, 0
+local zone_count, war_count, mob_count = 0, 0, 0
+for _ in pairs(mob_families) do mob_count = mob_count + 1 end
 for zone_id, expected in pairs(zone_families) do
 	zone_count = zone_count + 1
 	if expected.war then war_count = war_count + 1 end
 	local pos = mob_fixture(zone_id)
-	for family, mob_name in pairs(family_mobs) do
-		check(grug_mobs.spawn_policy_allows(mob_name, pos) ==
-			(expected[family] == true), "named-zone mob family differs for " ..
-			zone_id .. ":" .. family)
+	for mob_name, families in pairs(mob_families) do
+		local allowed = zone_id == "elandor_lorindor" and
+			mob_name == "grug_mobs:stag"
+		if not allowed then
+			for family in pairs(families) do
+				if expected[family] then allowed = true; break end
+			end
+		end
+		check(grug_mobs.spawn_policy_allows(mob_name, pos) == allowed,
+			"named-zone mob mapping differs for " .. zone_id .. ":" ..
+			mob_name)
 	end
 end
 check(zone_count == 38, "named-zone mob-palette population differs")
 check(war_count == 8, "explicit war-palette population differs")
+check(mob_count == 34, "surface mob-palette population differs")
 
 local lorindor = mob_fixture("elandor_lorindor")
 check(grug_mobs.spawn_policy_allows("grug_mobs:stag", lorindor) and
