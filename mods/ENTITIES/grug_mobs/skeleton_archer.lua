@@ -41,8 +41,8 @@ local skeleton = {
 	-- node position, BEFORE it moves the spawn position one node up
 	-- (api.lua:3573 vs 3616), so core.get_node(pos) is exactly that top node.
 	_grug_spawn_check = function(pos)
-		if grug_zones.pvp_rule_at(pos) == "contested" then
-			return true -- war coast: every listed top node is fine
+		if grug_mobs.zone_spawn_palette_allows("war", pos) then
+			return true -- explicit war palette: every listed top node is fine
 		end
 		local node = core.get_node(pos).name
 		return node == "grug_nodes:dirt_with_bone_litter"

@@ -136,6 +136,7 @@ payload = dofile(root ..
 	function(bytes) return core.sha256(bytes) end)
 
 local anchors, zone_at_point, faction_at_point = {}, {}, {}
+local biome_at_point, race_region_at_point = {}, {}
 local anchor_ordinal = 0
 local function add_anchor(anchor_ref, faction_id, numeric_id)
 	local key = anchor_ref.zone_id .. "\0" .. anchor_ref.slot_id
@@ -182,8 +183,12 @@ function session.anchor(zone_id, slot_id)
 	return copy
 end
 function session.id_at(x, z) return zone_at_point[x .. "," .. z] end
-function session.biome_at(x, z) return "biome" end
-function session.race_region_at(x, z) return "region" end
+function session.biome_at(x, z)
+	return biome_at_point[x .. "," .. z] or "biome"
+end
+function session.race_region_at(x, z)
+	return race_region_at_point[x .. "," .. z] or "region"
+end
 function session.faction_at(pos) return faction_at_point[pos.x .. "," .. pos.z] end
 function session.territory_rule_at(pos)
 	return pos.protected and "hard_protected" or "accord_home"
@@ -256,8 +261,48 @@ check(grug_core.start_position("throng", "dwarf") == nil,
 local first_outpost = anchors["elandor_copperfell_foothills\0outpost_1"]
 local outpost = grug_core.outpost_at(first_outpost)
 check(outpost and outpost.race == "dwarf", "stable outpost lookup differs")
-check(grug_core.outpost_patrol_target(outpost) == nil,
-	"uncontracted outpost patrol relationship was invented")
+local patrol_target_slots = {2, 3, 4, 3}
+for i = 1, #payload.outposts do
+	local source_row = payload.outposts[i]
+	local source_anchor = anchors[source_row.anchor.zone_id .. "\0" ..
+		source_row.anchor.slot_id]
+	local source = grug_core.outpost_at(source_anchor)
+	local slot = (i - 1) % 4 + 1
+	local target_index = i - slot + patrol_target_slots[slot]
+	local target_row = payload.outposts[target_index]
+	local expected_anchor = anchors[target_row.anchor.zone_id .. "\0" ..
+		target_row.anchor.slot_id]
+	local target = grug_core.outpost_patrol_target(source)
+	check(target and target.id == expected_anchor.id and
+		target.race == source.race and target.faction == source.faction and
+		target.anchor.x == expected_anchor.x and
+		target.anchor.y == expected_anchor.y and
+		target.anchor.z == expected_anchor.z,
+		"stable outpost patrol relation differs at row " .. i)
+	local original_x = target.anchor.x
+	target.anchor.x = original_x + 1
+	check(grug_core.outpost_patrol_target(source).anchor.x == original_x,
+		"outpost patrol target was not defensively copied")
+end
+check(grug_core.outpost_patrol_target(nil) == nil and
+	grug_core.outpost_patrol_target({}) == nil,
+	"invalid outpost patrol input did not fail closed")
+local altered_outpost = grug_core.outpost_at(first_outpost)
+altered_outpost.id = "anchor_unknown"
+check(grug_core.outpost_patrol_target(altered_outpost) == nil,
+	"unknown outpost patrol identity did not fail closed")
+altered_outpost = grug_core.outpost_at(first_outpost)
+altered_outpost.race = "human"
+check(grug_core.outpost_patrol_target(altered_outpost) == nil,
+	"altered outpost patrol race did not fail closed")
+altered_outpost = grug_core.outpost_at(first_outpost)
+altered_outpost.faction = "throng"
+check(grug_core.outpost_patrol_target(altered_outpost) == nil,
+	"altered outpost patrol faction did not fail closed")
+altered_outpost = grug_core.outpost_at(first_outpost)
+altered_outpost.anchor.x = altered_outpost.anchor.x + 1
+check(grug_core.outpost_patrol_target(altered_outpost) == nil,
+	"altered outpost patrol position did not fail closed")
 outpost.anchor.x = 0
 check(grug_core.outpost_at(first_outpost).anchor.x == first_outpost.x,
 	"outpost authority was not defensively copied")
@@ -284,8 +329,8 @@ check(not pcall(grug_core.install_zone_authority, session, payload),
 
 rawset(_G, "grug_mobs", {})
 dofile(root .. "/mods/ENTITIES/grug_mobs/spawn_policy.lua")
--- User-ratified R7 rule: accepted node/biome whitelists own ordinary surface
--- habitat. The dispatcher retains only independent direct-authority gates and
+-- User-ratified R7 rule: named-zone content palettes and the accepted
+-- node/biome whitelists jointly own ordinary surface habitat. The dispatcher
 -- must not reconstruct core/inner/outer/coast buckets from mob levels.
 check(grug_mobs.spawn_domain_at({x = 1, y = 0, z = 0}) == nil and
 	grug_mobs.spawn_domain_at({x = 2, y = 0, z = 0}) == nil and
@@ -305,6 +350,126 @@ check(not pcall(grug_mobs.compile_spawn_domains,
 	{"peaceful_1_5"}, "retired_fixture"),
 	"retired surface-level domain was accepted")
 
+local mob_fixture_ordinal = 0
+local function mob_fixture(zone_id, biome_id, race_region, y)
+	mob_fixture_ordinal = mob_fixture_ordinal + 1
+	local x = 20000 + mob_fixture_ordinal
+	local z = 21000
+	local key = x .. "," .. z
+	zone_at_point[key] = zone_id
+	biome_at_point[key] = biome_id or "grug_meadows"
+	race_region_at_point[key] = race_region or "human"
+	return {x = x, y = y or 20, z = z}
+end
+
+local family_mobs = {
+	settled = "grug_mobs:boar",
+	forest = "grug_mobs:wolf",
+	mountain = "grug_mobs:crag_eagle",
+	savanna = "grug_mobs:zebra",
+	jungle_edge = "grug_mobs:parrot",
+	jungle = "grug_mobs:panther",
+	swamp = "grug_mobs:bog_ooze",
+	war = "grug_mobs:skeleton_raider",
+}
+local zone_families = {
+	elandor_hearthpine_vale = {settled = true},
+	elandor_copperfell_foothills = {settled = true},
+	elandor_dur_brannoc = {},
+	elandor_frostbarrow_shelf = {mountain = true},
+	elandor_stormvault_heights = {mountain = true},
+	elandor_dawnmere_fields = {settled = true},
+	elandor_goldmead_vale = {settled = true},
+	elandor_highcourt = {},
+	elandor_whitebridge_shire = {settled = true, forest = true},
+	elandor_ashenward_march = {forest = true, war = true},
+	elandor_silverleaf_glades = {settled = true},
+	elandor_starbough_vale = {settled = true},
+	elandor_lethariel = {},
+	elandor_lorindor = {},
+	elandor_moonfall_wood = {forest = true},
+	elandor_glassroot_wilds = {forest = true, jungle = true},
+	kragmar_stillgrave_hollow = {settled = true},
+	kragmar_mournfen = {settled = true, swamp = true},
+	kragmar_nhal_veyr = {},
+	kragmar_ossuary_reach = {forest = true},
+	kragmar_blackwind_rise = {forest = true},
+	kragmar_sunscar_flats = {settled = true},
+	kragmar_redtusk_savanna = {settled = true, savanna = true},
+	kragmar_gor_drazhak = {},
+	kragmar_speargrass_reach = {savanna = true, mountain = true},
+	kragmar_bannerbreak_mesa = {mountain = true, war = true},
+	kragmar_kapok_cradle = {settled = true, jungle_edge = true},
+	kragmar_raincall_basin = {settled = true, jungle_edge = true},
+	kragmar_kezamba = {},
+	kragmar_whispering_reedlands = {jungle_edge = true, swamp = true},
+	kragmar_totemwater_reach = {jungle_edge = true, swamp = true},
+	kragmar_thunderroot_wilds = {jungle = true},
+	front_wyrmglass_crown = {mountain = true, war = true},
+	front_gravesalt_escarpment = {forest = true, war = true},
+	front_broken_causeway = {war = true},
+	front_shattered_line = {mountain = true, war = true},
+	front_skyglass_canopy = {jungle = true, war = true},
+	front_stormscale_summit = {jungle = true, war = true},
+}
+local zone_count, war_count = 0, 0
+for zone_id, expected in pairs(zone_families) do
+	zone_count = zone_count + 1
+	if expected.war then war_count = war_count + 1 end
+	local pos = mob_fixture(zone_id)
+	for family, mob_name in pairs(family_mobs) do
+		check(grug_mobs.spawn_policy_allows(mob_name, pos) ==
+			(expected[family] == true), "named-zone mob family differs for " ..
+			zone_id .. ":" .. family)
+	end
+end
+check(zone_count == 38, "named-zone mob-palette population differs")
+check(war_count == 8, "explicit war-palette population differs")
+
+local lorindor = mob_fixture("elandor_lorindor")
+check(grug_mobs.spawn_policy_allows("grug_mobs:stag", lorindor) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:gaunt_stag", lorindor) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:wolf", lorindor) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:bear", lorindor),
+	"Lorindor's exact pale-stag palette differs")
+
+local beach = mob_fixture("elandor_dur_brannoc", "grug_beach")
+local inland = mob_fixture("front_wyrmglass_crown", "grug_crags", "dwarf")
+check(grug_mobs.spawn_policy_allows("grug_mobs:gull", beach) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:boar", beach) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:gull", inland),
+	"universal beach Gull authority differs")
+
+local cave_mobs = {
+	"grug_mobs:zombie", "grug_mobs:giant_spider",
+	"grug_mobs:stone_golem", "grug_mobs:mesa_golem",
+	"grug_mobs:cave_bat", "grug_mobs:cave_crawler",
+}
+local cave = mob_fixture("elandor_dur_brannoc", nil, "human", -41)
+for i = 1, #cave_mobs do
+	check(grug_mobs.spawn_policy_allows(cave_mobs[i], cave),
+		"cave roster rejected " .. cave_mobs[i])
+end
+local cave_boundary = mob_fixture("elandor_dur_brannoc", nil, "human", -40)
+check(not grug_mobs.spawn_policy_allows("grug_mobs:cave_bat", cave_boundary) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:wolf", cave) and
+	not grug_mobs.spawn_policy_allows("grug_mobs:unknown", cave),
+	"closed cave roster or strict y < -40 boundary differs")
+
+local race_factions = {
+	dwarf = "accord", human = "accord", elf = "accord",
+	undead = "throng", orc = "throng", troll = "throng",
+}
+for race_region, faction in pairs(race_factions) do
+	local pos = mob_fixture("front_wyrmglass_crown", nil, race_region)
+	check(grug_mobs.race_region_spawn_allows(faction, pos) and
+		not grug_mobs.race_region_spawn_allows(
+			faction == "accord" and "throng" or "accord", pos),
+		"race-region mob side differs for " .. race_region)
+end
+check(not grug_mobs.spawn_policy_allows("grug_mobs:unknown",
+	mob_fixture("unknown_zone")), "unknown surface mob/zone did not fail closed")
+
 local function read_file(relative)
 	local handle = assert(io.open(root .. "/" .. relative, "rb"))
 	local content = assert(handle:read("*a"))
@@ -314,7 +479,8 @@ end
 
 -- The accepted pre-R7 dispatcher had exactly 26 assignments covering its 27
 -- definitions. R7 removes every old bucket assignment from those same files;
--- only four independent direct gates remain (two contested and two depth).
+-- four direct narrowing gates remain (two contested and two depth) in addition
+-- to the common named-zone policy.
 local migrated_spawn_files = {
 	"bear.lua", "boar.lua", "boar_variants.lua", "bog_ooze.lua",
 	"carrion_crow.lua", "cave_bat.lua", "cave_crawler.lua", "crocodile.lua",
@@ -338,6 +504,9 @@ for i = 1, #migrated_spawn_files do
 	end
 end
 check(direct_gate_count == 4, "direct spawn-gate population differs")
+check(read_file("mods/ENTITIES/grug_mobs/skeleton_archer.lua"):find(
+	'grug_mobs.zone_spawn_palette_allows("war", pos)', 1, true),
+	"Skeleton Archer generic row does not use explicit war authority")
 check(read_file("mods/ENTITIES/grug_mobs/spawn_policy.lua"):find(
 	"grug_zones.pvp_rule_at", 1, true) ~= nil,
 	"direct PvP authority is absent")

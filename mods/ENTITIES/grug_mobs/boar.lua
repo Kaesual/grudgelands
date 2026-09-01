@@ -114,8 +114,8 @@ grug_mobs.register_mob("grug_mobs:boar", boar)
 -- The fix is on the mob side (the zones are a radial field, the biomes are
 -- boxes — no cuboid edit can align them): the base Boar is the core/inner
 -- DAY filler and therefore carries the wild land tops as well. Its
--- R7 keeps the accepted node/biome whitelist as the surface habitat
--- authority; the retired surface-ring gate is deliberately not recreated.
+-- R7 intersects the accepted node/biome whitelist with the owning named
+-- zone's explicit mob palette; the retired surface-ring gate is not recreated.
 -- rabbit.lua (critter), zombie.lua (night) and carrion_crow.lua /
 -- skeleton_raider.lua (war coast) carry the same filler for their slot.
 --

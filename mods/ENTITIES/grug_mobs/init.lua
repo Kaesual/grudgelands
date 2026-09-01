@@ -41,11 +41,12 @@ end
 --   def._grug_faction     — faction id; the mob never attacks its own faction
 --                          and is readable via grug_factions.get_object_faction
 --   def._grug_spawn_domains — list of direct stable-query domains from
---                          spawn_policy.lua; nil = anywhere
+--                          spawn_policy.lua; nil = no additional domain gate
 --   def._grug_spawn_check — function(pos) -> true if the mob may spawn there;
 --                          for gates the zone vocabulary cannot express (the
 --                          Kraken's open sea is a sub-area of zone "ocean").
---                          nil = no extra check. Zones and check are ANDed.
+--                          nil = no extra check. Policy, domains and check
+--                          are ANDed.
 --   def._grug_leash_range — per-def leash radius in nodes: how far this mob
 --                          may be DRAGGED from the point where the current
 --                          chase began (default grug_mobs.LEASH_RANGE = 40);
@@ -57,11 +58,12 @@ end
 --                          (GRUG PATCH in mobs/api.lua do_states)
 --
 
--- R7 cutover: the accepted node/biome whitelists are the only ordinary
--- surface-habitat authority. Historical ring names in per-family calibration
--- comments describe the retired WP18/WP36 population only; they are not
--- runtime gates. `_grug_spawn_domains` now permits direct contested/depth
--- policy only, never a reconstructed surface-level bucket.
+-- R7 cutover: ordinary surface habitat is the intersection of the existing
+-- node whitelist and spawn_policy.lua's closed named-zone mob palette.
+-- Historical ring names in per-family calibration comments describe the
+-- retired WP18/WP36 population only; they are not runtime gates.
+-- `_grug_spawn_domains` permits direct contested/depth policy only, never a
+-- reconstructed surface-level bucket.
 
 local spawn_domains = {} -- mob name -> set of allowed stable domains
 local spawn_checks = {} -- mob name -> function(pos) -> allowed?
@@ -119,9 +121,12 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 end
 
 -- mobs_redo's global hook for additional spawn checks (an empty stub
--- upstream; returning true BLOCKS the spawn). A mob with neither zones nor
--- a check spawns wherever its mobs:spawn() row allows.
+-- upstream; returning true BLOCKS the spawn). The closed common policy runs
+-- first; a per-mob domain and check may then narrow it further.
 function mobs:spawn_abm_check(pos, node, name)
+	if not grug_mobs.spawn_policy_allows(name, pos) then
+		return true
+	end
 	local domains = spawn_domains[name]
 	if domains and not grug_mobs.spawn_domains_allow(domains, pos) then
 		return true

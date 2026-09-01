@@ -117,8 +117,8 @@ mobs:spawn({
 	-- ALL land tops plus sand — the night counterpart of the Carrion Crow's
 	-- list, and for the same reason (read that file's note): the war coast
 	-- carries whatever the local band's voronoi produces, wild patches
-	-- included, and this family is war_coast-exclusive so the wider list
-	-- cannot reach any other cell.
+	-- included. The common named-zone `war` palette plus the contested-domain
+	-- check keeps the wider list out of every other named zone.
 	nodes = {
 		"default:dirt_with_grass", -- grug_meadows
 		"default:dirt_with_coniferous_litter", -- grug_pine_hills
@@ -133,7 +133,7 @@ mobs:spawn({
 		"default:gravel", -- grug_crags
 		"default:snowblock", -- grug_crags_snowy
 		"grug_nodes:mud", -- grug_swamp
-		"default:sand", -- the war-coast beach band (§1.5)
+		"default:sand", -- beach cells inside explicit war zones
 	},
 	max_light = 5,
 	day_toggle = false,

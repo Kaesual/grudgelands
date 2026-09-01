@@ -42,6 +42,11 @@ local EXPECTED_OUTPOST_RACES = {
 	"troll", "troll", "troll", "troll",
 }
 
+-- Each authenticated four-row race roster is ordered from its home end to
+-- its terminal frontier end. Preserve WP6's three-leg chain in that order:
+-- the first three posts walk forward, while the terminal post walks back.
+local OUTPOST_PATROL_TARGET_SLOT = {2, 3, 4, 3}
+
 local EXPECTED_RARE_IDS = {
 	"grimtusk",
 	"old_whitefang",
@@ -474,9 +479,30 @@ function grug_core.outpost_at(pos)
 end
 
 function grug_core.outpost_patrol_target(anchor)
-	-- No unique relationship exists between the retired four ring roles and
-	-- the four new named-zone outposts per race. Inventing one here would add
-	-- geography authority, so ambient patrol dispatch remains fail-closed.
+	if not authority or type(anchor) ~= "table" or
+			type(anchor.anchor) ~= "table" then
+		return nil
+	end
+	for i = 1, #outposts do
+		local row = outposts[i]
+		if anchor.id == row.id then
+			if anchor.faction ~= row.faction or anchor.race ~= row.race or
+					anchor.anchor.x ~= row.anchor.x or
+					anchor.anchor.y ~= row.anchor.y or
+					anchor.anchor.z ~= row.anchor.z then
+				return nil
+			end
+			local slot = (i - 1) % 4 + 1
+			local target_index = i - slot +
+				OUTPOST_PATROL_TARGET_SLOT[slot]
+			local target = outposts[target_index]
+			if not target or target.race ~= row.race or
+					target.faction ~= row.faction then
+				return nil
+			end
+			return copy_outpost(target)
+		end
+	end
 	return nil
 end
 

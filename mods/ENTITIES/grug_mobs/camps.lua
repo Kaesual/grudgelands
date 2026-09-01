@@ -306,10 +306,9 @@ end
 --
 -- The route is a PLAIN table field on the entity ({points = {{x, z}, {x, z}},
 -- wp = index}), so it persists in staticdata with the mob — never an
--- ObjectRef, never a function. R7 authenticates all 24 outpost anchors, but
--- the retired ring pairings do not project uniquely onto them. The private
--- authority therefore supplies no target and this dispatch remains
--- fail-closed until a future design owns an explicit relationship.
+-- ObjectRef, never a function. R7 authenticates all 24 outpost anchors and
+-- projects WP6's three-leg patrol chain onto each race's authored four-row
+-- home-to-frontier order: 1 -> 2 -> 3 -> 4, with 4 returning to 3.
 --
 -- A banner that is not on an outpost anchor — the capital watch of world.md
 -- §3 — simply gets no route and every guard holds the platform.
@@ -324,8 +323,7 @@ local function assign_patrol(pos, meta, ent)
 	if not target then
 		return
 	end
-	-- A future explicit relationship will use the exact stable anchor
-	-- positions from the same validated payload.
+	-- Both endpoints come from the same exact validated payload.
 	local ax, az = grug_core.outpost_position(anchor)
 	local tx, tz = grug_core.outpost_position(target)
 	ent._grug_patrol_route = {
