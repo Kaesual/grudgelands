@@ -75,7 +75,7 @@ if #missing ~= 0 or #unexpected ~= 0 then
 		table.concat(missing, ",") .. " unexpected=" ..
 		table.concat(unexpected, ","), 0)
 end
-if expected_count <= 65 then error("WP40 R7 micro-KAT input population differs", 0) end
+if expected_count <= 70 then error("WP40 R7 micro-KAT input population differs", 0) end
 local probe = io.open(output, "rb")
 if probe then probe:close(); error("WP40 R7 micro-KAT output exists", 0) end
 local file = assert(io.open(output, "wb"))

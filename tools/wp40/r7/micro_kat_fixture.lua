@@ -134,7 +134,7 @@ return function(repo)
 		previous = relative
 	end
 	assert(changed_file:close())
-	check(changed_count == 65, "changed production Lua population differs")
+	check(changed_count == 70, "changed production Lua population differs")
 	row("source/changed_production_lua_count", changed_count)
 	row("source/changed_production_lua_sha256",
 		hex_sha256(table.concat(changed_rows)))
@@ -149,7 +149,10 @@ return function(repo)
 	local runtime_calls = {constructor = 0, manifest_new = 0,
 		manifest_validate = 0, content = 0, payload = 0}
 	local runtime_session, runtime_writer, runtime_zones = {}, {}, {}
-	local runtime_successor_tail = {probe_reason = function() return "accepted" end}
+	local runtime_roster = {schema = "grug_wp40_r7_anchor_roster_v1",
+		sha256 = string.rep("8", 64), copy_rows = function() return {} end, rows = {}}
+	local runtime_successor_tail = {probe_reason = function() return "accepted" end,
+		anchor_roster = function() return runtime_roster end}
 	local runtime_identity = {schema = "grug_wp40_r6_private_identity_v1",
 		template_records = {}, planner_fixture = {}, successor_tail = runtime_successor_tail}
 	local runtime_fixture_stub = {scan_horizontal_owner = function()
@@ -168,6 +171,9 @@ return function(repo)
 		production_digest = string.rep("1", 64),
 		production_semantic_digest = string.rep("2", 64),
 		p9g_digest = string.rep("3", 64), p9g_semantic_digest = string.rep("4", 64),
+		anchors = {schema = "grug_wp40_r7_anchor_content_v1"},
+		anchor_digest = string.rep("9", 64),
+		anchor_semantic_digest = string.rep("a", 64),
 		accepted_r6_rows = function() return {} end,
 	}
 	local runtime_manifest_module = {}
@@ -205,6 +211,18 @@ return function(repo)
 		end
 		if path:match("/r7_p9g%.lua$") then
 			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
+		end
+		if path:match("/r7_anchor_roster%.lua$") then
+			return function() return runtime_roster end
+		end
+		if path:match("/r7_anchor_activation%.lua$") then
+			return function() return {schema = "micro_anchor_config"} end
+		end
+		if path:match("/r7_successor%.lua$") then
+			return function() return {schema = "grug_wp40_r7_successor_config_v1"} end
+		end
+		if path:match("/r7_zone_overlay%.lua$") then
+			return function(session) return session end
 		end
 		if path:match("/r7_r6_manifest%.lua$") then
 			return function() return runtime_r6_manifest end
@@ -276,10 +294,14 @@ return function(repo)
 	for _, relative in ipairs({
 		"mods/MAPGEN/grug_mapgen/wp40/r6.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r6_content.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_anchor_roster.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_loader.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_mapgen.lua", -- replaced below by full env run
+		"mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua",
 		"mods/MAPGEN/grug_mapgen/wp40/r7_template_source.lua",
+		"mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua",
 	}) do
 		if not relative:match("r7_mapgen%.lua$") then tracking_dofile(repo .. "/" .. relative) end
 	end
@@ -322,8 +344,11 @@ return function(repo)
 	local storage = {get_string = function() return "" end,
 		set_string = function() end, get_int = function() return 0 end,
 		set_int = function() end}
-	local mob_core = {registered_entities = {}, registered_nodes = {},
-		registered_items = {}, settings = {get_bool = function() return false end}}
+	local mob_core = {registered_entities = {},
+		registered_nodes = {["grug_nodes:camp_fire"] = {base = true},
+			["grug_nodes:guard_banner"] = {base = true}},
+		registered_items = {}, registered_aliases = {},
+		settings = {get_bool = function() return false end}}
 	function mob_core.get_current_modname() return "grug_mobs" end
 	function mob_core.get_modpath(name)
 		if name == "grug_mobs" then return repo .. "/mods/ENTITIES/grug_mobs" end
@@ -342,7 +367,11 @@ return function(repo)
 		mob_core.registered_nodes[name] = definition
 	end
 	function mob_core.override_item(name, definition)
-		mob_core.registered_nodes[name] = definition
+		local target = check(mob_core.registered_nodes[name], "mob override target differs")
+		for key, value in pairs(definition) do target[key] = value end
+	end
+	function mob_core.register_alias(name, target)
+		mob_core.registered_aliases[name] = target
 	end
 	function mob_core.register_lbm() callback_count = callback_count + 1 end
 	function mob_core.register_globalstep() callback_count = callback_count + 1 end
@@ -407,6 +436,12 @@ return function(repo)
 	execute_in_environment("mods/ENTITIES/grug_mobs/init.lua", mob_environment)
 	check(#mob_defs >= 35 and #spawn_rows >= 25 and #arrow_rows >= 2,
 		"mob definition/spawn registration projection differs")
+	check(mob_core.registered_aliases["grug_mobs:camp_fire"] ==
+		"grug_nodes:camp_fire" and
+		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_construct) ==
+			"function" and
+		type(mob_core.registered_nodes["grug_nodes:camp_fire"].on_timer) == "function",
+		"camp-fire ownership/behaviour seam differs")
 	local mob_projection = {}
 	for index = 1, #mob_defs do
 		local value = mob_defs[index]
@@ -655,10 +690,12 @@ return function(repo)
 	for index = 1, #p9g_rows do
 		semantic_names[#semantic_names + 1] = p9g_rows[index].source_node
 	end
+	semantic_names[#semantic_names + 1] = "grug_nodes:camp_fire"
+	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 		repo, catalog, semantic_names)
-	check(semantic_fixture.target_count == 101,
+	check(semantic_fixture.target_count == 103,
 		"semantic target population differs")
 
 	local material_environment = setmetatable({grug_materials = {},
@@ -690,6 +727,8 @@ return function(repo)
 	for index = 1, #accepted_rows do register(accepted_rows[index][1]) end
 	for index = 1, #cultural_rows do register(cultural_rows[index].source_node) end
 	for index = 1, #p9g_rows do register(p9g_rows[index].source_node) end
+	register("grug_nodes:camp_fire")
+	register("grug_nodes:guard_banner")
 	local content_core = {registered_nodes = definitions, CONTENT_AIR = 0,
 		CONTENT_IGNORE = 65535}
 	function content_core.get_content_id(name)
@@ -728,6 +767,17 @@ return function(repo)
 		successor_ref_max = 95, order = "after_r6_p9_before_run_derivation",
 		overwrite = false, catalog_sha256 = gathering_manifest.sha256}
 	local p9g_delta_digest = manifest_module.graph_digest_for_evidence(p9g_delta)
+	local anchor_roster_sha256 = string.rep("8", 64)
+	local anchor_delta = {schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
+		class = 12, policy = 12, successor_ref_min = 96,
+		successor_ref_max = 97, order = "after_p9g_before_run_derivation",
+		overwrite = false, roster_sha256 = anchor_roster_sha256,
+		root = "anchor_y_plus_one", support = "excluded_anchor_original_support_v1",
+		capital_count = 6, outpost_count = 24, bandit_count = 12,
+		functional_protection_schema =
+			"grug_wp40_r7_functional_anchor_protection_v1",
+		functional_columns = 36, functional_y_min = -700}
+	local anchor_delta_digest = manifest_module.graph_digest_for_evidence(anchor_delta)
 	local manifest_values = {
 		schema = "grug_wp40_r7_mapgen_manifest_v1", full_seed = "0",
 		r5_schema = "grug_wp40_r5_mapgen_manifest_v1",
@@ -761,6 +811,18 @@ return function(repo)
 		p9g_semantic_sha256 = content_set.p9g_semantic_digest,
 		p9g_delta_schema = p9g_delta.schema,
 		p9g_delta_sha256 = p9g_delta_digest,
+		anchor_content_schema = content_set.anchors.schema,
+		anchor_content_sha256 = content_set.anchor_digest,
+		anchor_semantic_sha256 = content_set.anchor_semantic_digest,
+		anchor_roster_schema = "grug_wp40_r7_anchor_roster_v1",
+		anchor_roster_sha256 = anchor_roster_sha256,
+		anchor_delta_schema = anchor_delta.schema,
+		anchor_delta_sha256 = anchor_delta_digest,
+		anchor_opcode = 36, anchor_class = 12, anchor_policy = 12,
+		anchor_order = anchor_delta.order, anchor_overwrite = false,
+		functional_anchor_protection_schema =
+			anchor_delta.functional_protection_schema,
+		functional_anchor_columns = 36, functional_anchor_y_min = -700,
 		writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 		p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 		p9g_order = p9g_delta.order, p9g_overwrite = false,
@@ -779,7 +841,12 @@ return function(repo)
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
 		"cultural_registration_sha256", "p9g_content_schema",
 		"p9g_content_sha256", "p9g_semantic_sha256", "p9g_delta_schema",
-		"p9g_delta_sha256", "writer_schema", "p9g_opcode", "p9g_class",
+		"p9g_delta_sha256", "anchor_content_schema", "anchor_content_sha256",
+		"anchor_semantic_sha256", "anchor_roster_schema", "anchor_roster_sha256",
+		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
+		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
+		"functional_anchor_protection_schema", "functional_anchor_columns",
+		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
 	}
@@ -801,6 +868,7 @@ return function(repo)
 		"receipt validation differs")
 	row("manifest/full_sha256", manifest.sha256)
 	row("manifest/p9g_delta_sha256", p9g_delta_digest)
+	row("manifest/anchor_delta_sha256", anchor_delta_digest)
 
 	-- Bind the real successor with the real catalog/content resolvers. Its SHA
 	-- seam is real for catalog authentication and deliberately compact for the
@@ -945,6 +1013,9 @@ return function(repo)
 		production_r6_content_sha256 = content_set.production_digest,
 		p9g_content_sha256 = content_set.p9g_digest,
 		p9g_delta_sha256 = p9g_delta_digest,
+		anchor_content_sha256 = content_set.anchor_digest,
+		anchor_roster_sha256 = anchor_roster_sha256,
+		anchor_delta_sha256 = anchor_delta_digest, anchor_write_count = 0,
 		operation_count = 2, accepted_count = 1, rejected_count = 1,
 		restored_buffers_sha256 = direct_digest,
 		direct_buffers_sha256 = direct_digest,
@@ -1215,7 +1286,16 @@ return function(repo)
 	end
 	function content_wrapper.content_ref(name) return production_ref[name] end
 	function content_wrapper.param2_kind() return "none" end
-	local successor = successor_config.new(successor_dependencies)
+	local empty_anchor_config = {new = function()
+		return {bind_plan = function() end,
+			settle = function()
+				return {schema = "grug_wp40_r7_anchor_ledger_v1",
+					roster_sha256 = anchor_roster_sha256, operations = {}, written = 0}
+			end, metrics = function() return {schema = "micro_anchor_metrics"} end,
+			roster = function() return {sha256 = anchor_roster_sha256} end}
+	end}
+	local successor = dofile(wp40 .. "/r7_successor.lua")(
+		successor_config, empty_anchor_config).new(successor_dependencies)
 
 	local settlement_hash = dofile(wp40 .. "/r6_hash.lua")(raw_sha256)
 	local settlement_factory = dofile(wp40 .. "/r6_settlement.lua")
@@ -1354,7 +1434,9 @@ return function(repo)
 	end
 	local writer_metrics, successor_metrics = settlement:metrics(), successor:metrics()
 	check(writer_metrics.apply_calls == 1 and writer_metrics.replay_count == 1 and
-		successor_metrics.settle_calls == 1 and successor_metrics.replay_calls == 1,
+		successor_metrics.p9g.settle_calls == 1 and
+		successor_metrics.p9g.replay_calls == 1 and
+		successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1",
 		"shared writer metrics differ")
 	row("production/owner_transaction", applied .. "/" .. tostring(run_count))
 	row("production/owner_run_sha256", hex_sha256(table.concat(run_fields, "\t")))
@@ -1363,8 +1445,8 @@ return function(repo)
 		first_calls.vm_set_param2_calls, first_calls.vm_set_light_data_calls,
 		first_calls.vm_update_liquids_calls}, "/"))
 	row("production/replay_metrics", table.concat({writer_metrics.apply_calls,
-		writer_metrics.replay_count, successor_metrics.settle_calls,
-		successor_metrics.replay_calls}, "/"))
+		writer_metrics.replay_count, successor_metrics.p9g.settle_calls,
+		successor_metrics.p9g.replay_calls}, "/"))
 
 	local missing = {}
 	for index = 1, #changed_order do

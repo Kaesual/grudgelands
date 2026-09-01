@@ -228,7 +228,8 @@ return function(repo, catalog, expected_names)
 				error("WP40 R7 node semantics fixture: missing production node " .. name, 0)
 			end
 			definitions[name] = {
-				groups = {grug_natural = (definition.groups or {}).grug_natural},
+				groups = {grug_natural = (definition.groups or {}).grug_natural,
+					grug_camp = (definition.groups or {}).grug_camp},
 				liquidtype = definition.liquidtype,
 				liquid_alternative_source = definition.liquid_alternative_source,
 				floodable = definition.floodable,
@@ -236,6 +237,9 @@ return function(repo, catalog, expected_names)
 				sunlight_propagates = definition.sunlight_propagates,
 				light_source = definition.light_source,
 				paramtype2 = definition.paramtype2,
+				walkable = definition.walkable,
+				is_ground_content = definition.is_ground_content,
+				drop = definition.drop,
 			}
 		end
 		return {schema = "grug_wp40_r7_node_semantics_fixture_v1",

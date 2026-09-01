@@ -2,6 +2,7 @@ mods/BASE/default/nodes.lua
 mods/CORE/grug_core/protection.lua
 mods/CORE/grug_core/zone_authority.lua
 mods/ENTITIES/grug_mobs/aggro.lua
+mods/ENTITIES/grug_mobs/camps.lua
 mods/ENTITIES/grug_mobs/items.lua
 mods/ENTITIES/grug_mobs/patrol.lua
 mods/ENTITIES/grug_mobs/target_frame.lua
@@ -24,12 +25,16 @@ mods/ITEMS/grug_trees/init.lua
 mods/MAPGEN/grug_mapgen/wp40/canonical.lua
 mods/MAPGEN/grug_mapgen/wp40/mapgen_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r6_hash.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_anchor_activation.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_anchor_roster.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_content.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_manifest.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_native.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_p9g.lua
 mods/MAPGEN/grug_mapgen/wp40/r7_r6_manifest.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_successor.lua
+mods/MAPGEN/grug_mapgen/wp40/r7_zone_overlay.lua
 reference_projects/luanti/builtin/game/item.lua
 reference_projects/luanti/builtin/game/register.lua
 tools/wp40/r6/common.lua

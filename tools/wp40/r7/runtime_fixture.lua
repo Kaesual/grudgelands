@@ -42,11 +42,13 @@ return function(repo, seed_identity, content_only)
 	for index = 1, #p9g_rows do
 		semantic_names[#semantic_names + 1] = p9g_rows[index].source_node
 	end
+	semantic_names[#semantic_names + 1] = "grug_nodes:camp_fire"
+	semantic_names[#semantic_names + 1] = "grug_nodes:guard_banner"
 	local semantic_fixture = dofile(repo ..
 		"/tools/wp40/r7/node_semantics_fixture.lua")(
 			repo, catalog, semantic_names)
 	if semantic_fixture.schema ~= "grug_wp40_r7_node_semantics_fixture_v1" or
-			semantic_fixture.target_count ~= 101 then
+			semantic_fixture.target_count ~= 103 then
 		fail("node-semantics fixture differs")
 	end
 
@@ -73,6 +75,9 @@ return function(repo, seed_identity, content_only)
 		local name = p9g_rows[index].source_node
 		register(name, semantic_fixture.definitions[name])
 	end
+	register("grug_nodes:camp_fire", semantic_fixture.definitions["grug_nodes:camp_fire"])
+	register("grug_nodes:guard_banner",
+		semantic_fixture.definitions["grug_nodes:guard_banner"])
 
 	local heightmap = {}
 	for index = 1, 6400 do heightmap[index] = -31007 end

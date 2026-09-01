@@ -854,6 +854,8 @@ local function operation_bytes(operation, row_type)
 	return row_type .. "\t" .. table.concat(values, "\t") .. "\n"
 end
 
+local validate_anchor_ledger
+
 local function validate_scan(scan, owner_x, owner_z, successor)
 	exact_fields(scan, {schema = true, owner_x = true, owner_z = true,
 		column_count = true, groups = true, coverage = true, candidates = true,
@@ -873,13 +875,18 @@ local function validate_scan(scan, owner_x, owner_z, successor)
 	local expected = {cultural = true, decorations = true, rejections = true,
 		witnesses = true, apex_overlaps = true, direct_rows = true,
 		direct_runs = true}
-	if successor then expected.p9g, expected.final_rows, expected.final_runs =
-		true, true, true end
+	if successor then
+		expected.p9g, expected.anchors, expected.final_rows, expected.final_runs =
+			true, true, true, true
+	end
 	exact_fields(scan.settlement, expected, "owner settlement")
 	validate_evidence_rows(scan.settlement.direct_rows, "owner direct rows")
 	production_run_bytes(scan.settlement.direct_runs)
-	if successor then validate_evidence_rows(scan.settlement.final_rows,
-		"owner final rows"); production_run_bytes(scan.settlement.final_runs) end
+	if successor then
+		validate_evidence_rows(scan.settlement.final_rows, "owner final rows")
+		production_run_bytes(scan.settlement.final_runs)
+		validate_anchor_ledger(scan.settlement.anchors)
+	end
 	if scan.settlement.apex_overlaps ~= 0 then fail("owner overlaps an apex socket") end
 	return scan
 end
@@ -1005,6 +1012,58 @@ local function validate_ledger(ledger)
 	return ledger
 end
 
+local ANCHOR_OPERATION_KEYS = {id = true, numeric_id = true, family = true,
+	content_ref = true, x = true, y = true, z = true, support_y = true,
+	prior_cid = true, prior_param2 = true, prior_occupancy = true,
+	prior_opcode = true, prior_feature = true, prior_interface = true,
+	prior_aux = true, final_cid = true, final_param2 = true,
+	final_occupancy = true, final_opcode = true, final_feature = true,
+	final_interface = true, final_aux = true}
+
+validate_anchor_ledger = function(ledger)
+	exact_fields(ledger, {schema = true, roster_sha256 = true, operations = true,
+		written = true}, "anchor ledger")
+	if ledger.schema ~= "grug_wp40_r7_anchor_ledger_v1" then
+		fail("anchor ledger schema differs")
+	end
+	digest(ledger.roster_sha256, "anchor roster digest")
+	dense(ledger.operations, "anchor operations")
+	integer(ledger.written, 0, 42, "anchor writes")
+	if ledger.written ~= #ledger.operations then
+		fail("anchor write population differs")
+	end
+	local seen = {}
+	for index = 1, #ledger.operations do
+		local row = exact_fields(ledger.operations[index], ANCHOR_OPERATION_KEYS,
+			"anchor operation")
+		integer(row.numeric_id, 7, 60, "anchor numeric ID")
+		if row.id ~= string.format("anchor_%03d", row.numeric_id) or seen[row.id] or
+				(row.family ~= "capital" and row.family ~= "outpost" and
+				row.family ~= "bandit") or row.content_ref ~=
+				(row.family == "bandit" and 1 or 2) or row.y ~= row.support_y + 1 then
+			fail("anchor operation identity differs")
+		end
+		seen[row.id] = true
+		for _, field in ipairs({"x", "y", "z", "support_y", "prior_cid",
+				"prior_param2", "prior_occupancy", "prior_opcode", "prior_feature",
+				"prior_interface", "prior_aux", "final_cid", "final_param2",
+				"final_occupancy", "final_opcode", "final_feature",
+				"final_interface", "final_aux"}) do
+			integer(row[field], -MAX_SAFE, MAX_SAFE, "anchor operation " .. field)
+		end
+		if row.prior_param2 ~= 0 or row.prior_occupancy ~= 0 or
+				row.prior_opcode ~= 0 or row.prior_feature ~= 0 or
+				row.prior_interface ~= 0 or row.prior_aux ~= 0 or
+				row.final_param2 ~= 0 or row.final_occupancy ~= -2 or
+				row.final_opcode ~= 36 or row.final_feature ~= row.numeric_id or
+				row.final_interface ~= 0 or
+				row.final_aux ~= (95 + row.content_ref - 1) * 256 then
+			fail("anchor operation tuple differs")
+		end
+	end
+	return ledger
+end
+
 local function copy_rows(rows)
 	local result = {}
 	for index = 1, #rows do
@@ -1027,6 +1086,7 @@ local function stage_a_owner(repo, fixture, successor, direct)
 		fail("successor Direct-83 projection differs from independent direct scan")
 	end
 	local ledger = validate_ledger(successor.settlement.p9g)
+	local anchor_ledger = validate_anchor_ledger(successor.settlement.anchors)
 	local final_by_key, direct_by_key = {}, {}
 	for index = 1, #successor.settlement.final_rows do
 		local row = successor.settlement.final_rows[index]
@@ -1041,6 +1101,36 @@ local function stage_a_owner(repo, fixture, successor, direct)
 	for index = 1, #restored do restored_by_key[row_key(restored[index])] = index end
 	local operation_lines, accepted, rejected = {}, 0, 0
 	local air_cid = fixture.cid_by_name.air
+	for index = 1, #anchor_ledger.operations do
+		local operation = anchor_ledger.operations[index]
+		local key = tostring(operation.x) .. "/" .. tostring(operation.y) .. "/" ..
+			tostring(operation.z)
+		local final_row, direct_row = final_by_key[key], direct_by_key[key]
+		if not final_row or final_row[4] ~= operation.final_cid or
+				final_row[5] ~= operation.final_param2 or
+				final_row[6] ~= operation.final_occupancy or
+				final_row[7] ~= operation.final_opcode or
+				final_row[8] ~= operation.final_feature or
+				final_row[9] ~= operation.final_interface or
+				final_row[10] ~= operation.final_aux then
+			fail("anchor final tuple differs")
+		end
+		if direct_row then
+			for field, key_name in ipairs({"prior_cid", "prior_param2",
+					"prior_occupancy", "prior_opcode", "prior_feature",
+					"prior_interface", "prior_aux"}) do
+				if direct_row[field + 3] ~= operation[key_name] then
+					fail("anchor prior tuple differs from direct row")
+				end
+			end
+			restored[restored_by_key[key]] = copy_rows({direct_row})[1]
+		else
+			if operation.prior_cid ~= air_cid then
+				fail("anchor prior tuple is not independent implicit air")
+			end
+			restored[restored_by_key[key]] = false
+		end
+	end
 	for index = 1, #ledger.operations do
 		local operation = ledger.operations[index]
 		operation_lines[index] = operation_bytes(operation)
@@ -1095,10 +1185,16 @@ local function stage_a_owner(repo, fixture, successor, direct)
 	end)
 	local restored_buffers, direct_buffers = evidence_row_bytes(compact),
 		evidence_row_bytes(direct.settlement.direct_rows)
-	local restored_run_rows, p9g_run_count = {}, 0
+	local restored_run_rows, p9g_run_count, anchor_run_count = {}, 0, 0
 	for index = 1, #successor.settlement.final_runs do
 		local row = successor.settlement.final_runs[index]
-		if row[6] == 35 then
+		if row[6] == 36 then
+			anchor_run_count = anchor_run_count + 1
+			if row[3] ~= row[4] or row[5] ~= 12 or row[7] ~= 17 or
+					row[8] ~= 12 or row[10] ~= 0 then
+				fail("anchor production run identity differs")
+			end
+		elseif row[6] == 35 then
 			p9g_run_count = p9g_run_count + 1
 			if row[3] ~= row[4] or row[5] ~= 10 or row[7] ~= 17 or
 					row[8] ~= 11 or row[10] ~= 0 then
@@ -1109,6 +1205,9 @@ local function stage_a_owner(repo, fixture, successor, direct)
 		end
 	end
 	if p9g_run_count ~= accepted then fail("P9G accepted/run population differs") end
+	if anchor_run_count ~= anchor_ledger.written then
+		fail("anchor write/run population differs")
+	end
 	local restored_runs = production_run_bytes(restored_run_rows)
 	local direct_runs = production_run_bytes(direct.settlement.direct_runs)
 	if restored_buffers ~= direct_buffers or restored_runs ~= direct_runs then
@@ -1116,7 +1215,8 @@ local function stage_a_owner(repo, fixture, successor, direct)
 	end
 	return {accepted = accepted, rejected = rejected,
 		operation_count = #ledger.operations, operation_bytes = table.concat(operation_lines),
-		ledger = ledger,
+		ledger = ledger, anchor_ledger = anchor_ledger,
+		anchor_written = anchor_ledger.written,
 		restored_buffers = restored_buffers, direct_buffers = direct_buffers,
 		restored_runs = restored_runs, direct_runs = direct_runs}
 end
@@ -1779,7 +1879,9 @@ local function actual_run_bytes(values, count, drop_opcode, normalize)
 				"actual settlement run field")
 		end
 		if normalize then row = normalize(row) end
-		if drop_opcode and row[4] == drop_opcode then
+		local should_drop = type(drop_opcode) == "table" and drop_opcode[row[4]] or
+			(drop_opcode ~= nil and row[4] == drop_opcode)
+		if should_drop then
 			dropped = dropped + 1
 		else
 			local fields = {}
@@ -1907,10 +2009,12 @@ local function validate_private_capture(repo, capture, minp, maxp, expect_ledger
 
 	local ledger_bytes
 	if expect_ledger then
-		if type(capture.ledger) ~= "table" or type(capture.ledger.p9g) ~= "table" then
+		if type(capture.ledger) ~= "table" or type(capture.ledger.p9g) ~= "table" or
+				type(capture.ledger.anchors) ~= "table" then
 			fail(label .. " private successor ledger is absent")
 		end
 		validate_ledger(capture.ledger.p9g)
+		validate_anchor_ledger(capture.ledger.anchors)
 		ledger_bytes = "schema\tgrug_wp40_r7_private_ledger_graph_v1\nledger\t" ..
 			graph(capture.ledger) .. "\n"
 	else
@@ -2052,6 +2156,24 @@ local function compare_stage_a_captures(repo, successor, direct)
 		fail("Stage-A private capture shape differs")
 	end
 	local ledger = validate_ledger(successor.ledger.p9g)
+	local anchors = validate_anchor_ledger(successor.ledger.anchors)
+	local anchor_by_base = {}
+	for index = 1, #anchors.operations do
+		local operation = anchors.operations[index]
+		local base = capture_tuple_base(successor, operation.x, operation.y, operation.z)
+		if base == nil or anchor_by_base[base] then
+			fail("anchor-delta capture root differs")
+		end
+		anchor_by_base[base] = operation
+		local finals = {operation.final_cid, operation.final_param2,
+			operation.final_occupancy, operation.final_opcode, operation.final_feature,
+			operation.final_interface, operation.final_aux}
+		for field = 1, 7 do
+			if successor.tuple_values[base + field] ~= finals[field] then
+				fail("anchor-delta private final tuple differs")
+			end
+		end
+	end
 	local accepted_by_base, accepted = {}, 0
 	for index = 1, #ledger.operations do
 		local operation = ledger.operations[index]
@@ -2077,23 +2199,31 @@ local function compare_stage_a_captures(repo, successor, direct)
 		"prior_opcode", "prior_feature", "prior_interface", "prior_aux"}
 	for tuple = 1, successor.tuple_count do
 		local base = (tuple - 1) * 7
-		local operation = accepted_by_base[base]
+		local operation, anchor = accepted_by_base[base], anchor_by_base[base]
+		if operation and anchor then fail("anchor/P9G root overlap differs") end
 		for field = 1, 7 do
-			local restored = operation and operation[prior_fields[field]] or
+			local restored = anchor and anchor[prior_fields[field]] or
+				(operation and operation[prior_fields[field]] or
 				successor.tuple_values[base + field]
+				)
 			if restored ~= direct.tuple_values[base + field] then
 				fail("Stage-A restored private tuple differs at tuple " ..
 					tostring(tuple) .. " field " .. tostring(field))
 			end
 		end
 	end
+	local anchor_stripped_runs, anchors_dropped = actual_run_bytes(successor.run_values,
+		successor.run_count, 36)
 	local restored_runs, dropped = actual_run_bytes(successor.run_values,
-		successor.run_count, 35)
+		successor.run_count, {[35] = true, [36] = true})
 	local direct_runs = actual_run_bytes(direct.run_values, direct.run_count)
-	if dropped ~= accepted or restored_runs ~= direct_runs then
+	if anchors_dropped ~= anchors.written or dropped ~= accepted + anchors.written or
+			restored_runs ~= direct_runs then
 		fail("Stage-A restored private production runs differ")
 	end
-	return {accepted = accepted, tuple_sha256 = direct.tuple_sha256,
+	return {accepted = accepted, anchors_written = anchors.written,
+		anchor_stripped_run_projection_sha256 = sha256(repo, anchor_stripped_runs),
+		tuple_sha256 = direct.tuple_sha256,
 		run_sha256 = direct.run_sha256,
 		restored_run_projection_sha256 = sha256(repo, restored_runs)}
 end
@@ -2483,6 +2613,19 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		direct_capture)
 
 	local restored_count = 0
+	local restored_anchors = 0
+	for index = 1, #successor_capture.ledger.anchors.operations do
+		local operation = successor_capture.ledger.anchors.operations[index]
+		local vm_index = snapshot_index(successor_snapshot, operation.x,
+			operation.y, operation.z)
+		if not vm_index or successor_snapshot.data[vm_index] ~= operation.final_cid or
+				successor_snapshot.param2[vm_index] ~= operation.final_param2 then
+			fail("full-VM anchor delta differs from production ledger")
+		end
+		successor_snapshot.data[vm_index] = operation.prior_cid
+		successor_snapshot.param2[vm_index] = operation.prior_param2
+		restored_anchors = restored_anchors + 1
+	end
 	for index = 1, #successor_capture.ledger.p9g.operations do
 		local operation = successor_capture.ledger.p9g.operations[index]
 		if operation.accepted then
@@ -2504,7 +2647,8 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 	end
 	compare_vm_arrays(successor_snapshot, direct_snapshot,
 		"Stage-A restored successor/direct83 VM")
-	if restored_count ~= stage_a_capture.accepted then
+	if restored_count ~= stage_a_capture.accepted or
+			restored_anchors ~= stage_a_capture.anchors_written then
 		fail("Stage-A private/VM restored population differs")
 	end
 	successor_snapshot = nil
@@ -2567,6 +2711,7 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 	local multi_y = multi_y_owner_kat(repo, runtime_fixture, multi_y_horizontal)
 	return {successor_result = successor_result, direct_result = direct_result,
 		accepted_result = accepted_result, restored_p9g = restored_count,
+		restored_anchors = restored_anchors,
 		proof_scope = "full_owner_7_private_buffers_pre_replay",
 		private_tuple_count = capture_proof.private_tuple_count,
 		successor_run_count = successor_run_count,
@@ -2586,6 +2731,8 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		accepted_run_checksum_b = capture_proof.accepted_run_checksum_b,
 		stage_a_tuple_sha256 = stage_a_capture.tuple_sha256,
 		stage_a_run_sha256 = stage_a_capture.run_sha256,
+		anchor_stripped_run_projection_sha256 =
+			stage_a_capture.anchor_stripped_run_projection_sha256,
 		stage_b_tuple_sha256 = stage_b_capture.tuple_sha256,
 		stage_b_run_sha256 = stage_b_capture.run_sha256,
 		stage_b_substitutions = stage_b_capture.substitutions,
@@ -2611,8 +2758,16 @@ function module.integration_kat(repo)
 		built.manifest.values.writer_schema ~= "grug_wp40_r7_single_vm_writer_v1" or
 		built.manifest.values.p9g_order ~= "after_r6_p9_before_run_derivation" or
 		built.manifest.values.p9g_overwrite ~= false or
+		built.manifest.values.anchor_order ~= "after_p9g_before_run_derivation" or
+		built.manifest.values.anchor_overwrite ~= false or
+		built.manifest.values.anchor_opcode ~= 36 or
+		built.manifest.values.functional_anchor_columns ~= 36 or
+		built.manifest.values.functional_anchor_y_min ~= -700 or
 		#built.content.production.content_names ~= 83 or
-		#built.content.p9g.content_names ~= 12 then
+		#built.content.p9g.content_names ~= 12 or
+		#built.content.anchors.content_names ~= 2 or
+		#built.anchor_roster.rows ~= 42 or
+		built.anchor_roster.sha256 ~= built.manifest.values.anchor_roster_sha256 then
 		fail("production runtime identity differs")
 	end
 	local binding = artifact_content_binding(repo, runtime_fixture)
@@ -2625,6 +2780,24 @@ function module.integration_kat(repo)
 	local stage_a = stage_a_owner(repo, runtime_fixture, successor, direct)
 	if stage_a.operation_count == 0 or stage_a.accepted == 0 then
 		fail("integration owner does not exercise P9G acceptance")
+	end
+	for _, roster_index in ipairs({1, 7, 31}) do
+		local anchor = built.anchor_roster.rows[roster_index]
+		local owner_x = -30912 + math.floor((anchor.x + 30912) / 80) * 80
+		local owner_z = -30912 + math.floor((anchor.z + 30912) / 80) * 80
+		local anchor_successor = validate_scan(built.evidence.scan_owner(owner_x,
+			owner_z), owner_x, owner_z, true)
+		local anchor_direct = validate_scan(built.evidence.scan_direct_owner(owner_x,
+			owner_z), owner_x, owner_z, false)
+		local anchor_stage = stage_a_owner(repo, runtime_fixture, anchor_successor,
+			anchor_direct)
+		local found = false
+		for index = 1, #anchor_stage.anchor_ledger.operations do
+			if anchor_stage.anchor_ledger.operations[index].id == anchor.id then found = true end
+		end
+		if not found or anchor_stage.anchor_written < 1 then
+			fail("representative anchor transaction is absent: " .. anchor.id)
+		end
 	end
 	local accepted = accepted_owner_scan(repo, seeds.fixed[1],
 		INTEGRATION_OWNER_X, INTEGRATION_OWNER_Z)
@@ -2655,6 +2828,24 @@ function module.integration_kat(repo)
 			fail("zones/query adapter lacks " .. name)
 		end
 	end
+	local functional = 0
+	for index = 1, #built.anchor_roster.rows do
+		local anchor = built.anchor_roster.rows[index]
+		local root = {x = anchor.x, y = anchor.y + 1, z = anchor.z}
+		if built.zones_session.territory_rule_at(root) ~= "hard_protected" then
+			fail("activation root is not protected: " .. anchor.id)
+		end
+		if anchor.family ~= "capital" then
+			functional = functional + 1
+			if built.zones_session.territory_rule_at(
+					{x = anchor.x, y = -700, z = anchor.z}) ~= "hard_protected" or
+					built.zones_session.compatibility.world_protected_for_faction(root,
+						"accord") ~= true then
+				fail("functional activation column protection differs: " .. anchor.id)
+			end
+		end
+	end
+	if functional ~= 36 then fail("functional activation population differs") end
 	if type(built.session.plan_slice) ~= "function" or
 			type(built.writer.apply) ~= "function" then
 		fail("single transaction API differs")
@@ -2669,6 +2860,9 @@ function module.integration_kat(repo)
 		r7_manifest_sha256 = built.manifest.sha256,
 		production_r6_content_sha256 = built.manifest.values.production_r6_content_sha256,
 		p9g_content_sha256 = built.manifest.values.p9g_content_sha256,
+		anchor_content_sha256 = built.manifest.values.anchor_content_sha256,
+		anchor_roster_sha256 = built.manifest.values.anchor_roster_sha256,
+		anchor_delta_sha256 = built.manifest.values.anchor_delta_sha256,
 		catalog_sha256 = catalog_manifest.sha256,
 		proof_scope = full_vm.proof_scope,
 		private_tuple_count = full_vm.private_tuple_count,
@@ -2689,6 +2883,8 @@ function module.integration_kat(repo)
 		accepted_run_checksum_b = full_vm.accepted_run_checksum_b,
 		stage_a_tuple_sha256 = full_vm.stage_a_tuple_sha256,
 		stage_a_run_sha256 = full_vm.stage_a_run_sha256,
+		anchor_stripped_run_projection_sha256 =
+			full_vm.anchor_stripped_run_projection_sha256,
 		stage_b_tuple_sha256 = full_vm.stage_b_tuple_sha256,
 		stage_b_run_sha256 = full_vm.stage_b_run_sha256,
 		multi_y_owner_x = full_vm.multi_y_owner_x,
@@ -3040,6 +3236,7 @@ function module.run_seed(repo, seed_slot, output_path)
 	end
 	local p9g_aggregate = new_p9g_aggregate(reasons)
 	local operation_count, accepted_count, rejected_count = 0, 0, 0
+	local anchor_write_count = 0
 	local substitutions = 0
 	local successor_cache = {}
 	for owner_index = 1, #roster.rows do
@@ -3059,6 +3256,7 @@ function module.run_seed(repo, seed_slot, output_path)
 			operation_count = operation_count + a.operation_count
 			accepted_count = accepted_count + a.accepted
 			rejected_count = rejected_count + a.rejected
+			anchor_write_count = anchor_write_count + a.anchor_written
 			if a.operation_bytes ~= "" then write(a.operation_bytes) end
 			merge_p9g(p9g_aggregate, reasons, a.ledger)
 			local accepted = scan_accepted_loaded(accepted_loaded, owner_x, owner_z)
@@ -3075,6 +3273,10 @@ function module.run_seed(repo, seed_slot, output_path)
 			runtime_fixture.built.manifest.values.production_r6_content_sha256,
 		p9g_content_sha256 = runtime_fixture.built.manifest.values.p9g_content_sha256,
 		p9g_delta_sha256 = runtime_fixture.built.manifest.values.p9g_delta_sha256,
+		anchor_content_sha256 = runtime_fixture.built.manifest.values.anchor_content_sha256,
+		anchor_roster_sha256 = runtime_fixture.built.manifest.values.anchor_roster_sha256,
+		anchor_delta_sha256 = runtime_fixture.built.manifest.values.anchor_delta_sha256,
+		anchor_write_count = anchor_write_count,
 		operation_count = operation_count, accepted_count = accepted_count,
 		rejected_count = rejected_count,
 		restored_buffers_sha256 = restored_buffers.final_hex(),

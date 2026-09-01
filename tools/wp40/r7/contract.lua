@@ -273,6 +273,8 @@ function module.validate_integration_receipt(receipt)
 	exact_keys(receipt, {
 		schema = true, r7_manifest_sha256 = true,
 		production_r6_content_sha256 = true, p9g_content_sha256 = true,
+		anchor_content_sha256 = true, anchor_roster_sha256 = true,
+		anchor_delta_sha256 = true,
 		catalog_sha256 = true, proof_scope = true, private_tuple_count = true,
 		successor_tuple_sha256 = true, direct_tuple_sha256 = true,
 		accepted_tuple_sha256 = true, successor_run_count = true,
@@ -282,7 +284,8 @@ function module.validate_integration_receipt(receipt)
 		successor_run_checksum_b = true, direct_run_checksum_a = true,
 		direct_run_checksum_b = true, accepted_run_checksum_a = true,
 		accepted_run_checksum_b = true, stage_a_tuple_sha256 = true,
-		stage_a_run_sha256 = true, stage_b_tuple_sha256 = true,
+		stage_a_run_sha256 = true, anchor_stripped_run_projection_sha256 = true,
+		stage_b_tuple_sha256 = true,
 		stage_b_run_sha256 = true, multi_y_owner_x = true,
 		multi_y_owner_z = true, multi_y_band_count = true, multi_y_bands = true,
 		multi_y_active_band_count = true, multi_y_active_bands = true,
@@ -294,10 +297,12 @@ function module.validate_integration_receipt(receipt)
 		fail("integration receipt schema differs")
 	end
 	for _, field in ipairs({"r7_manifest_sha256", "production_r6_content_sha256",
-			"p9g_content_sha256", "catalog_sha256", "successor_tuple_sha256",
+			"p9g_content_sha256", "anchor_content_sha256", "anchor_roster_sha256",
+			"anchor_delta_sha256", "catalog_sha256", "successor_tuple_sha256",
 			"direct_tuple_sha256", "accepted_tuple_sha256", "successor_run_sha256",
 			"direct_run_sha256", "accepted_run_sha256", "stage_a_tuple_sha256",
-			"stage_a_run_sha256", "stage_b_tuple_sha256", "stage_b_run_sha256"}) do
+			"stage_a_run_sha256", "anchor_stripped_run_projection_sha256",
+			"stage_b_tuple_sha256", "stage_b_run_sha256"}) do
 		sha256(receipt[field], "integration receipt " .. field)
 	end
 	if receipt.proof_scope ~= "full_owner_7_private_buffers_pre_replay" or
@@ -357,6 +362,9 @@ function module.integration_receipt_bytes(receipt)
 		"production_r6_content_sha256\t" ..
 			receipt.production_r6_content_sha256 .. "\n",
 		"p9g_content_sha256\t" .. receipt.p9g_content_sha256 .. "\n",
+		"anchor_content_sha256\t" .. receipt.anchor_content_sha256 .. "\n",
+		"anchor_roster_sha256\t" .. receipt.anchor_roster_sha256 .. "\n",
+		"anchor_delta_sha256\t" .. receipt.anchor_delta_sha256 .. "\n",
 		"catalog_sha256\t" .. receipt.catalog_sha256 .. "\n",
 		"proof_scope\t" .. receipt.proof_scope .. "\n",
 		"private_tuple_count\t" .. tostring(receipt.private_tuple_count) .. "\n",
@@ -368,6 +376,7 @@ function module.integration_receipt_bytes(receipt)
 			"successor_run_checksum_b", "direct_run_checksum_a",
 			"direct_run_checksum_b", "accepted_run_checksum_a",
 			"accepted_run_checksum_b", "stage_a_tuple_sha256", "stage_a_run_sha256",
+			"anchor_stripped_run_projection_sha256",
 			"stage_b_tuple_sha256", "stage_b_run_sha256", "multi_y_owner_x",
 			"multi_y_owner_z", "multi_y_band_count", "multi_y_bands",
 			"multi_y_active_band_count",
@@ -386,6 +395,8 @@ function module.validate_stage_a(receipt)
 		schema = true, seed_slot = true, seed_identity = true,
 		production_r6_content_sha256 = true, p9g_content_sha256 = true,
 		p9g_delta_sha256 = true, operation_count = true, accepted_count = true,
+		anchor_content_sha256 = true, anchor_roster_sha256 = true,
+		anchor_delta_sha256 = true, anchor_write_count = true,
 		rejected_count = true, restored_buffers_sha256 = true,
 		direct_buffers_sha256 = true, restored_runs_sha256 = true,
 		direct_runs_sha256 = true, equal = true,
@@ -398,11 +409,13 @@ function module.validate_stage_a(receipt)
 	end
 	text(receipt.seed_identity, "Stage-A seed identity")
 	for _, field in ipairs({"production_r6_content_sha256", "p9g_content_sha256",
-			"p9g_delta_sha256", "restored_buffers_sha256", "direct_buffers_sha256",
+			"p9g_delta_sha256", "anchor_content_sha256", "anchor_roster_sha256",
+			"anchor_delta_sha256", "restored_buffers_sha256", "direct_buffers_sha256",
 			"restored_runs_sha256", "direct_runs_sha256"}) do
 		sha256(receipt[field], "Stage-A " .. field)
 	end
 	unsigned(receipt.operation_count, "Stage-A operation count")
+	unsigned(receipt.anchor_write_count, "Stage-A anchor write count")
 	unsigned(receipt.accepted_count, "Stage-A accepted count")
 	unsigned(receipt.rejected_count, "Stage-A rejected count")
 	if receipt.accepted_count + receipt.rejected_count ~= receipt.operation_count then
@@ -425,6 +438,10 @@ function module.stage_a_bytes(receipt)
 		"production_r6_content_sha256\t", receipt.production_r6_content_sha256, "\n",
 		"p9g_content_sha256\t", receipt.p9g_content_sha256, "\n",
 		"p9g_delta_sha256\t", receipt.p9g_delta_sha256, "\n",
+		"anchor_content_sha256\t", receipt.anchor_content_sha256, "\n",
+		"anchor_roster_sha256\t", receipt.anchor_roster_sha256, "\n",
+		"anchor_delta_sha256\t", receipt.anchor_delta_sha256, "\n",
+		"anchor_write_count\t", tostring(receipt.anchor_write_count), "\n",
 		"operation_count\t", tostring(receipt.operation_count), "\n",
 		"accepted_count\t", tostring(receipt.accepted_count), "\n",
 		"rejected_count\t", tostring(receipt.rejected_count), "\n",

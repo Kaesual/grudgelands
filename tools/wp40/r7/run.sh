@@ -131,11 +131,12 @@ run_unit() {
 		"$script_dir/runtime_adapter.lua" "$script_dir/adapter_cli.lua" \
 		"$script_dir/native_inputs_kat.lua" "$script_dir/wp33_gathering_kat.lua" \
 		"$script_dir/consumer_contract_kat.lua" "$script_dir/micro_kat.lua" \
-		"$script_dir/micro_kat_fixture.lua"
+		"$script_dir/micro_kat_fixture.lua" "$script_dir/anchor_activation_kat.lua"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/contract_kat.lua" "$repo"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/native_inputs_kat.lua" "$repo"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/wp33_gathering_kat.lua" "$repo"
 	"$lua_bin" "${lua_prefix[@]}" "$script_dir/consumer_contract_kat.lua" "$repo"
+	"$lua_bin" "${lua_prefix[@]}" "$script_dir/anchor_activation_kat.lua" "$repo"
 }
 
 static_gates() {
