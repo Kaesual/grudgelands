@@ -112,6 +112,10 @@ local integration = {
 	r7_manifest_sha256 = digest_a, production_r6_content_sha256 = digest_b,
 	p9g_content_sha256 = digest_a, anchor_content_sha256 = digest_b,
 	anchor_roster_sha256 = digest_a, anchor_delta_sha256 = digest_b,
+	anchor_population = 42, anchor_vm_id = "anchor_049",
+	anchor_vm_owner_x = -1632, anchor_vm_owner_z = -2112,
+	anchor_vm_written = 1, anchor_vm_raw_support_cid = 0,
+	anchor_vm_settled_support_cid = 99, anchor_vm_stage_a_restored = true,
 	catalog_sha256 = digest_b,
 	proof_scope = "full_owner_7_private_buffers_pre_replay",
 	private_tuple_count = 512000,
@@ -135,10 +139,29 @@ local integration = {
 }
 local integration_bytes = contract.integration_receipt_bytes(integration)
 assert(integration_bytes:find("case\tstage_b_projection\ttrue\n", 1, true))
+assert(integration_bytes:find("case\tanchor_vm_production_path\ttrue\n", 1, true))
+assert(integration_bytes:find("anchor_vm_id\tanchor_049\n", 1, true))
 assert(integration_bytes:find("multi_y_owner_x\t-32\n", 1, true))
 assert(integration_bytes:find("multi_y_owner_z\t48\n", 1, true))
 assert(integration_bytes:find("multi_y_bands\t-32,48,128\n", 1, true))
 assert(integration_bytes:find("multi_y_active_bands\t-32,48\n", 1, true))
+integration.anchor_population = 41
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration anchor VM identity differs")
+integration.anchor_population = 42
+integration.anchor_vm_written = 2
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration anchor VM writes differ")
+integration.anchor_vm_written = 1
+integration.anchor_vm_stage_a_restored = false
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration anchor VM identity differs")
+integration.anchor_vm_stage_a_restored = true
+integration.anchor_vm_raw_support_cid = integration.anchor_vm_settled_support_cid
+expect_failure(function() contract.validate_integration_receipt(integration) end,
+	"integration anchor VM support was not prepared")
+integration.anchor_vm_raw_support_cid = 0
+integration.anchor_vm_settled_support_cid = 99
 integration.multi_y_owner_z = -32
 expect_failure(function() contract.validate_integration_receipt(integration) end,
 	"integration frozen multi-y discovery differs")

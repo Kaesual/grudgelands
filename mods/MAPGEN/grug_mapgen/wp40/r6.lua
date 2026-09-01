@@ -429,7 +429,7 @@ return function(dependencies)
 		return session, writer, zones_session, settlement_fixture, {
 			schema = "grug_wp40_r6_private_identity_v1",
 			template_records = templates_module.records(),
-			planner_fixture = planner_fixture,
+			planner_fixture = planner_fixture, planner_source = planner_source,
 			successor_tail = successor_tail,
 			direct_evidence_fixture = direct_evidence_fixture,
 		}

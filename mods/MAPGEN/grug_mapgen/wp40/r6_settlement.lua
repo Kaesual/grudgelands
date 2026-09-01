@@ -1157,10 +1157,6 @@ local function settlement_factory()
 				function context.original_at(x, y, z)
 					return evidence_air_cid, 0
 				end
-				function context.original_support_at(x, y, z)
-					local _, cid = prospective(x, y, z)
-					return cid, 0
-				end
 				function context.settled_at(x, y, z)
 					local key = occupied_key(x, y, z)
 					local row = written[key]
@@ -2156,10 +2152,6 @@ local function settlement_factory()
 					return inside_owner(x, y, z)
 				end
 				function successor_context.original_at(x, y, z)
-					local index = index_at(x, y, z)
-					return original_data[index], original_param2[index]
-				end
-				function successor_context.original_support_at(x, y, z)
 					local index = index_at(x, y, z)
 					return original_data[index], original_param2[index]
 				end

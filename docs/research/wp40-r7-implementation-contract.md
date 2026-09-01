@@ -66,12 +66,15 @@ without reopening the accepted R6 source projection:
    use the fire.
 
 Each activation root is exactly `(anchor.x, anchor.y + 1, anchor.z)` and its
-support is exactly `(anchor.x, anchor.y, anchor.z)`. R4's authenticated fixed
-anchor exclusions intentionally suppress analytic P7 at all 42 of these
-columns, including outposts and bandit camps as well as capitals. Support must
-therefore equal the unchanged original solid, non-liquid map input. Reopening
-P7 beneath those exclusions is outside this narrow correction. The root must
-still be air, and the suffix never overwrites.
+support is exactly `(anchor.x, anchor.y, anchor.z)`. Every roster row binds the
+R4 anchor to its authenticated R3 functional kind, height, feature ID and hard-
+foundation bit. R5 is therefore allowed to perform its existing pad/path
+surface and clearance work before activation. The suffix requires the immediate
+settled predecessor support after R6 P9/P9G to be solid, non-liquid and wholly
+unclaimed, and requires the settled root to be exact unclaimed air. It does not
+compare either cell with the raw native-v7 VM input and never overwrites the
+immediate predecessor's support or any nonempty/claimed root. Reopening R5/R6
+is outside this narrow correction.
 It uses opcode/class/policy 36/12/12 after P9G and before shared run derivation,
 replay and the one commit. It creates no platform, pad, clearing, shell or
 second writer. Capital roots use the current exact center; the historical

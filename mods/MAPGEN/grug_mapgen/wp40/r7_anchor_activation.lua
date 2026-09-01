@@ -14,12 +14,13 @@ return function(roster_factory, anchor_content)
 	function config.new(dependencies)
 		if type(dependencies) ~= "table" or type(dependencies.source) ~= "table" or
 				type(dependencies.zones_session) ~= "table" or
+				type(dependencies.planner_source) ~= "table" or
 				type(dependencies.raw_sha256) ~= "function" or
 				type(dependencies.content) ~= "table" then
 			fail("successor dependencies differ")
 		end
 		local roster = roster_factory(dependencies.source, dependencies.zones_session,
-			dependencies.raw_sha256)
+			dependencies.planner_source, dependencies.raw_sha256)
 		local production = dependencies.content.content_contract()
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)
 		if air_kind ~= 0 or air_param2 ~= 0 or air_cid == production.ignore_cid then
@@ -59,10 +60,16 @@ return function(roster_factory, anchor_content)
 					local row = roster.rows[index]
 					local root_y = row.y + 1
 					if context.inside_owner(row.x, root_y, row.z) then
-						local water_class, _, zone_id, _, _, terrain_y =
+						local water_class, _, zone_id, _, _, terrain_y, _, _, _,
+							functional_kind, functional_y, functional_feature_id, _, _, _, _,
+							_, _, _, hard_foundation =
 							context.column_values_at(row.x, row.z)
 						if (water_class ~= "land" and water_class ~= "planned_water") or
-								zone_id ~= row.zone_id or terrain_y ~= row.y then
+								zone_id ~= row.zone_id or terrain_y ~= row.y or
+								functional_kind ~= row.functional_kind or
+								functional_y ~= row.functional_y or
+								functional_feature_id ~= row.functional_feature_id or
+								hard_foundation ~= row.hard_foundation then
 							fail("anchor column authority differs at " .. row.id)
 						end
 						-- A root on the owner's lower Y edge may have its support in the
@@ -72,22 +79,18 @@ return function(roster_factory, anchor_content)
 						local support_cid, support_param2, support_occupancy, support_opcode,
 							support_feature, support_interface, support_aux =
 								context.settled_at(row.x, row.y, row.z)
-						local original_cid, original_param2 =
-							context.original_support_at(row.x, row.y, row.z)
 						local class_id, _, liquid_kind =
-							production.r5.classify(original_cid, original_param2)
+							production.r5.classify(support_cid, support_param2)
 						local solid = class_id == 2 or class_id == 6 or class_id == 7 or
 							class_id == 10 or class_id == 11
-						local support_ok = original_cid ~= air_cid and
-							original_cid ~= production.ignore_cid and
-							liquid_kind == 0 and solid and support_cid == original_cid and
-							support_param2 == original_param2 and support_occupancy == 0 and
+						local support_ok = support_cid ~= air_cid and
+							support_cid ~= production.ignore_cid and liquid_kind == 0 and solid and
+							support_occupancy == 0 and
 							support_opcode == 0 and support_feature == 0 and
 							support_interface == 0 and support_aux == 0
 						if not support_ok then
-							fail("anchor support differs at " .. row.id .. " original=" ..
-								table.concat({original_cid, original_param2}, "/") ..
-								" actual=" .. table.concat({support_cid,
+							fail("anchor settled support differs at " .. row.id .. " actual=" ..
+								table.concat({support_cid,
 									support_param2, support_occupancy, support_opcode,
 									support_feature, support_interface, support_aux}, "/"))
 						end
@@ -105,7 +108,13 @@ return function(roster_factory, anchor_content)
 						ledger.operations[#ledger.operations + 1] = {id = row.id,
 							numeric_id = row.numeric_id, family = row.family,
 							content_ref = row.content_ref, x = row.x, y = root_y, z = row.z,
-							support_y = row.y, prior_cid = prior_cid,
+							support_y = row.y, support_cid = support_cid,
+							support_param2 = support_param2,
+							support_occupancy = support_occupancy,
+							support_opcode = support_opcode,
+							support_feature = support_feature,
+							support_interface = support_interface,
+							support_aux = support_aux, prior_cid = prior_cid,
 							prior_param2 = prior_param2, prior_occupancy = prior_occupancy,
 							prior_opcode = prior_opcode, prior_feature = prior_feature,
 							prior_interface = prior_interface, prior_aux = prior_aux,

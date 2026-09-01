@@ -14,7 +14,11 @@ for index = 1, 42 do
 		numeric_id = numeric_id, zone_id = "zone_" .. numeric_id,
 		slot_id = family .. "_slot", family = family,
 		content_ref = family == "bandit" and 1 or 2,
-		x = numeric_id * 10, y = 100 + numeric_id, z = numeric_id * -20}
+		x = numeric_id * 10, y = 100 + numeric_id, z = numeric_id * -20,
+		functional_kind = family == "capital" and "anchor_platform" or "land_grade",
+		functional_y = 100 + numeric_id,
+		functional_feature_id = "feature_" .. string.format("%03d", numeric_id),
+		hard_foundation = family == "capital"}
 	rows[index], by_column[row.x .. "/" .. row.z] = row, row
 end
 local roster = {schema = "grug_wp40_r7_anchor_roster_v1",
@@ -32,6 +36,7 @@ function content.content_contract()
 		return 0, 0, 0, 0
 	end, classify = function(cid)
 		if cid == 88 then return 4, 1, 1 end
+		if cid == 77 then return 1, 0, 0 end
 		return 2, 0, 0
 	end}}
 end
@@ -39,7 +44,8 @@ end
 local config = dofile(wp40 .. "/r7_anchor_activation.lua")(
 	roster_factory, anchor_content)
 local tail = config.new({source = {}, zones_session = {},
-	raw_sha256 = function() return string.rep("x", 32) end, content = content})
+	planner_source = {}, raw_sha256 = function() return string.rep("x", 32) end,
+	content = content})
 local plan = {}
 tail:bind_plan({x = -10000, y = -10000, z = -10000},
 	{x = 10000, y = 10000, z = 10000}, plan, 7)
@@ -48,17 +54,9 @@ local context = {plan = plan, generation = 7, call_mode = "fixture"}
 function context.inside_owner() return true end
 function context.column_values_at(x, z)
 	local row = check(by_column[x .. "/" .. z], "unknown anchor column")
-	return "land", 0, row.zone_id, "biome", "race", row.y
-end
-function context.analytic_p7_tuple(x, y, z)
-	local row = check(by_column[x .. "/" .. z], "unknown support column")
-	check(y == row.y, "support y differs")
-	return -1, -1, -3, -1, -1, -1, -1
-end
-function context.original_support_at(x, y, z)
-	local row = check(by_column[x .. "/" .. z], "unknown original column")
-	check(y == row.y, "original support y differs")
-	return 66, 0
+	return "land", 0, row.zone_id, "biome", "race", row.y, nil, nil, nil,
+		row.functional_kind, row.functional_y, row.functional_feature_id, nil,
+		nil, nil, nil, nil, nil, nil, row.hard_foundation
 end
 function context.settled_at(x, y, z)
 	local row = check(by_column[x .. "/" .. z], "unknown settled column")
@@ -70,35 +68,66 @@ function context.write_anchor(x, y, z, cid, param2, ref, feature)
 	written[#written + 1] = {x, y, z, cid, param2, ref, feature}
 end
 
-local function rejected_support(family, original_cid, settled_cid)
+local function rejected_tuple(family, support_override, root_override, tuple_drift)
 	local candidate = config.new({source = {}, zones_session = {},
-		raw_sha256 = function() return string.rep("x", 32) end, content = content})
+		planner_source = {}, raw_sha256 = function() return string.rep("x", 32) end,
+		content = content})
 	candidate:bind_plan({x = -10000, y = -10000, z = -10000},
 		{x = 10000, y = 10000, z = 10000}, plan, 7)
 	local altered = {}
 	for key, value in pairs(context) do altered[key] = value end
-	function altered.original_support_at(x, y, z)
+	function altered.column_values_at(x, z)
+		local values = {context.column_values_at(x, z)}
 		local row = by_column[x .. "/" .. z]
-		if row and row.family == family then return original_cid, 0 end
-		return context.original_support_at(x, y, z)
+		if row and row.family == family and tuple_drift then
+			values[tuple_drift[1]] = tuple_drift[2]
+		end
+		return unpack(values, 1, 20)
 	end
 	function altered.settled_at(x, y, z)
 		local row = by_column[x .. "/" .. z]
 		if row and row.family == family and y == row.y then
-			return settled_cid, 0, 0, 0, 0, 0, 0
+			local values = {66, 0, 0, 0, 0, 0, 0}
+			if support_override then values[support_override[1]] = support_override[2] end
+			return unpack(values, 1, 7)
+		elseif row and row.family == family and y == row.y + 1 then
+			local values = {0, 0, 0, 0, 0, 0, 0}
+			if root_override then values[root_override[1]] = root_override[2] end
+			return unpack(values, 1, 7)
 		end
 		return context.settled_at(x, y, z)
 	end
 	return pcall(function() candidate:settle(altered) end)
 end
 for _, family in ipairs({"capital", "outpost", "bandit"}) do
-	check(not rejected_support(family, 88, 88),
-		"liquid " .. family .. " support was accepted")
-	check(not rejected_support(family, 66, 67),
-		"changed " .. family .. " support was accepted")
+	for _, support_case in ipairs({
+		{1, 0, "air"}, {1, 65535, "ignore"}, {1, 88, "liquid"},
+		{1, 77, "nonsolid"}, {3, 1, "occupancy"}, {4, 12, "opcode"},
+		{5, 1, "feature"}, {6, 1, "interface"}, {7, 1, "aux"},
+	}) do
+		check(not rejected_tuple(family, support_case), support_case[3] .. " " ..
+			family .. " support was accepted")
+	end
+	for _, root_case in ipairs({
+		{1, 66, "CID"}, {2, 1, "param2"}, {3, 1, "occupancy"},
+		{4, 1, "opcode"}, {5, 1, "feature"}, {6, 1, "interface"},
+		{7, 1, "aux"},
+	}) do
+		check(not rejected_tuple(family, nil, root_case), root_case[3] .. " " ..
+			family .. " root was accepted")
+	end
+	for _, drift in ipairs({
+		{10, "causeway", "kind"}, {11, 999, "height"},
+		{12, "other_feature", "feature"}, {20, family ~= "capital",
+			"foundation"},
+	}) do
+		check(not rejected_tuple(family, nil, nil, drift), drift[3] .. " " ..
+			family .. " planner drift was accepted")
+	end
 end
 local boundary = config.new({source = {}, zones_session = {},
-	raw_sha256 = function() return string.rep("x", 32) end, content = content})
+	planner_source = {}, raw_sha256 = function() return string.rep("x", 32) end,
+	content = content})
 boundary:bind_plan({x = -10000, y = -10000, z = -10000},
 	{x = 10000, y = 10000, z = 10000}, plan, 7)
 local boundary_context = {}
@@ -119,6 +148,7 @@ for index = 1, 42 do
 	local row, operation, write = rows[index], ledger.operations[index], written[index]
 	check(operation.id == row.id and operation.y == row.y + 1 and
 		operation.support_y == row.y and operation.final_opcode == 36 and
+		operation.support_cid == 66 and operation.support_occupancy == 0 and
 		operation.final_feature == row.numeric_id and
 		operation.final_aux == (95 + row.content_ref - 1) * 256 and
 		write[1] == row.x and write[2] == row.y + 1 and write[3] == row.z and

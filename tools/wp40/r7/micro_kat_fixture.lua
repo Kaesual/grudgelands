@@ -154,7 +154,8 @@ return function(repo)
 	local runtime_successor_tail = {probe_reason = function() return "accepted" end,
 		anchor_roster = function() return runtime_roster end}
 	local runtime_identity = {schema = "grug_wp40_r6_private_identity_v1",
-		template_records = {}, planner_fixture = {}, successor_tail = runtime_successor_tail}
+		template_records = {}, planner_fixture = {}, planner_source = {
+			column_values_at = function() end}, successor_tail = runtime_successor_tail}
 	local runtime_fixture_stub = {scan_horizontal_owner = function()
 		return {schema = "micro_scan"}
 	end}
@@ -772,7 +773,7 @@ return function(repo)
 		class = 12, policy = 12, successor_ref_min = 96,
 		successor_ref_max = 97, order = "after_p9g_before_run_derivation",
 		overwrite = false, roster_sha256 = anchor_roster_sha256,
-		root = "anchor_y_plus_one", support = "excluded_anchor_original_support_v1",
+		root = "anchor_y_plus_one", support = "settled_predecessor_support_v1",
 		capital_count = 6, outpost_count = 24, bandit_count = 12,
 		functional_protection_schema =
 			"grug_wp40_r7_functional_anchor_protection_v1",

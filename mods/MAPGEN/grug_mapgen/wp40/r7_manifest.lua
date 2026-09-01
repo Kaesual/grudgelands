@@ -214,11 +214,18 @@ return function(canonical, raw_sha256)
 			local family = index <= 6 and "capital" or
 				(index <= 30 and "outpost" or "bandit")
 			local ref = family == "bandit" and 1 or 2
+			local expected_feature = numeric <= 12 and
+				string.format("route_%03d", (numeric - 7) * 3 + 2) or
+				string.format("poi_spur_%03d", numeric)
 			if type(row) ~= "table" or row.numeric_id ~= numeric or
 					row.id ~= string.format("anchor_%03d", numeric) or
 					row.family ~= family or row.content_ref ~= ref or seen[row.id] or
 					type(row.x) ~= "number" or type(row.y) ~= "number" or
-					type(row.z) ~= "number" then
+					type(row.z) ~= "number" or
+					type(row.functional_kind) ~= "string" or
+					row.functional_kind == "" or row.functional_y ~= row.y or
+					row.functional_feature_id ~= expected_feature or
+					type(row.hard_foundation) ~= "boolean" then
 				fail("anchor roster row differs")
 			end
 			seen[row.id] = true
@@ -286,7 +293,7 @@ return function(canonical, raw_sha256)
 			successor_ref_max = 97, order = "after_p9g_before_run_derivation",
 			overwrite = false, roster_sha256 = inputs.anchor_roster_sha256,
 			root = "anchor_y_plus_one",
-			support = "excluded_anchor_original_support_v1",
+			support = "settled_predecessor_support_v1",
 			capital_count = 6, outpost_count = 24, bandit_count = 12,
 			functional_protection_schema =
 				"grug_wp40_r7_functional_anchor_protection_v1",

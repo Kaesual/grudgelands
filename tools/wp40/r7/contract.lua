@@ -48,6 +48,7 @@ local INTEGRATION_CASES = {
 	"gathering_closed_manifest",
 	"native_input_aggregation",
 	"one_callback_one_transaction",
+	"anchor_vm_production_path",
 	"owner_and_support_boundaries",
 	"p9g_all_rejections",
 	"p9g_all_sources",
@@ -275,6 +276,11 @@ function module.validate_integration_receipt(receipt)
 		production_r6_content_sha256 = true, p9g_content_sha256 = true,
 		anchor_content_sha256 = true, anchor_roster_sha256 = true,
 		anchor_delta_sha256 = true,
+		anchor_population = true, anchor_vm_id = true,
+		anchor_vm_owner_x = true, anchor_vm_owner_z = true,
+		anchor_vm_written = true, anchor_vm_raw_support_cid = true,
+		anchor_vm_settled_support_cid = true,
+		anchor_vm_stage_a_restored = true,
 		catalog_sha256 = true, proof_scope = true, private_tuple_count = true,
 		successor_tuple_sha256 = true, direct_tuple_sha256 = true,
 		accepted_tuple_sha256 = true, successor_run_count = true,
@@ -308,6 +314,19 @@ function module.validate_integration_receipt(receipt)
 	if receipt.proof_scope ~= "full_owner_7_private_buffers_pre_replay" or
 			receipt.private_tuple_count ~= 512000 then
 		fail("integration private capture scope differs")
+	end
+	if receipt.anchor_population ~= 42 or receipt.anchor_vm_id ~= "anchor_049" or
+			receipt.anchor_vm_owner_x ~= -1632 or receipt.anchor_vm_owner_z ~= -2112 or
+			receipt.anchor_vm_stage_a_restored ~= true then
+		fail("integration anchor VM identity differs")
+	end
+	if receipt.anchor_vm_written ~= 1 then fail("integration anchor VM writes differ") end
+	unsigned(receipt.anchor_vm_raw_support_cid,
+		"integration anchor VM raw support CID")
+	positive(receipt.anchor_vm_settled_support_cid,
+		"integration anchor VM settled support CID")
+	if receipt.anchor_vm_raw_support_cid == receipt.anchor_vm_settled_support_cid then
+		fail("integration anchor VM support was not prepared")
 	end
 	for _, field in ipairs({"successor_run_count", "direct_run_count",
 			"accepted_run_count"}) do
@@ -365,6 +384,16 @@ function module.integration_receipt_bytes(receipt)
 		"anchor_content_sha256\t" .. receipt.anchor_content_sha256 .. "\n",
 		"anchor_roster_sha256\t" .. receipt.anchor_roster_sha256 .. "\n",
 		"anchor_delta_sha256\t" .. receipt.anchor_delta_sha256 .. "\n",
+		"anchor_population\t" .. tostring(receipt.anchor_population) .. "\n",
+		"anchor_vm_id\t" .. receipt.anchor_vm_id .. "\n",
+		"anchor_vm_owner_x\t" .. tostring(receipt.anchor_vm_owner_x) .. "\n",
+		"anchor_vm_owner_z\t" .. tostring(receipt.anchor_vm_owner_z) .. "\n",
+		"anchor_vm_written\t" .. tostring(receipt.anchor_vm_written) .. "\n",
+		"anchor_vm_raw_support_cid\t" ..
+			tostring(receipt.anchor_vm_raw_support_cid) .. "\n",
+		"anchor_vm_settled_support_cid\t" ..
+			tostring(receipt.anchor_vm_settled_support_cid) .. "\n",
+		"anchor_vm_stage_a_restored\ttrue\n",
 		"catalog_sha256\t" .. receipt.catalog_sha256 .. "\n",
 		"proof_scope\t" .. receipt.proof_scope .. "\n",
 		"private_tuple_count\t" .. tostring(receipt.private_tuple_count) .. "\n",

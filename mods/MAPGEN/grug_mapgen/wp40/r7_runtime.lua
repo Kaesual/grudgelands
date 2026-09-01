@@ -173,7 +173,9 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			fail("production session assembly differs")
 		end
 		if type(r6_identity) ~= "table" or
-				r6_identity.schema ~= "grug_wp40_r6_private_identity_v1" then
+				r6_identity.schema ~= "grug_wp40_r6_private_identity_v1" or
+				type(r6_identity.planner_source) ~= "table" or
+				type(r6_identity.planner_source.column_values_at) ~= "function" then
 			fail("R6 private identity differs")
 		end
 		if type(r6_identity.successor_tail) ~= "table" or
@@ -182,7 +184,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		local anchor_roster = r6_identity.successor_tail:anchor_roster()
 		local independent_roster = r7_anchor_roster_factory(source, zones_session,
-			raw_sha256)
+			r6_identity.planner_source, raw_sha256)
 		if anchor_roster.sha256 ~= independent_roster.sha256 then
 			fail("R7 anchor roster reconstruction differs")
 		end

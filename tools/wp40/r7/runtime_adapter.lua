@@ -1014,6 +1014,9 @@ end
 
 local ANCHOR_OPERATION_KEYS = {id = true, numeric_id = true, family = true,
 	content_ref = true, x = true, y = true, z = true, support_y = true,
+	support_cid = true, support_param2 = true, support_occupancy = true,
+	support_opcode = true, support_feature = true, support_interface = true,
+	support_aux = true,
 	prior_cid = true, prior_param2 = true, prior_occupancy = true,
 	prior_opcode = true, prior_feature = true, prior_interface = true,
 	prior_aux = true, final_cid = true, final_param2 = true,
@@ -1044,14 +1047,19 @@ validate_anchor_ledger = function(ledger)
 			fail("anchor operation identity differs")
 		end
 		seen[row.id] = true
-		for _, field in ipairs({"x", "y", "z", "support_y", "prior_cid",
+		for _, field in ipairs({"x", "y", "z", "support_y", "support_cid",
+				"support_param2", "support_occupancy", "support_opcode",
+				"support_feature", "support_interface", "support_aux", "prior_cid",
 				"prior_param2", "prior_occupancy", "prior_opcode", "prior_feature",
 				"prior_interface", "prior_aux", "final_cid", "final_param2",
 				"final_occupancy", "final_opcode", "final_feature",
 				"final_interface", "final_aux"}) do
 			integer(row[field], -MAX_SAFE, MAX_SAFE, "anchor operation " .. field)
 		end
-		if row.prior_param2 ~= 0 or row.prior_occupancy ~= 0 or
+		if row.support_cid == 0 or row.support_param2 ~= 0 or
+				row.support_occupancy ~= 0 or row.support_opcode ~= 0 or
+				row.support_feature ~= 0 or row.support_interface ~= 0 or
+				row.support_aux ~= 0 or row.prior_param2 ~= 0 or row.prior_occupancy ~= 0 or
 				row.prior_opcode ~= 0 or row.prior_feature ~= 0 or
 				row.prior_interface ~= 0 or row.prior_aux ~= 0 or
 				row.final_param2 ~= 0 or row.final_occupancy ~= -2 or
@@ -1845,6 +1853,17 @@ end
 
 local function compare_vm_arrays(left, right, label)
 	for _, field in ipairs({"data", "param2", "light"}) do
+		if #left[field] ~= #right[field] then fail(label .. " " .. field .. " shape differs") end
+		for index = 1, #left[field] do
+			if left[field][index] ~= right[field][index] then
+				fail(label .. " " .. field .. " differs at VM index " .. tostring(index))
+			end
+		end
+	end
+end
+
+local function compare_vm_material_arrays(left, right, label)
+	for _, field in ipairs({"data", "param2"}) do
 		if #left[field] ~= #right[field] then fail(label .. " " .. field .. " shape differs") end
 		for index = 1, #left[field] do
 			if left[field][index] ~= right[field][index] then
@@ -2745,6 +2764,139 @@ local function full_vm_integration(repo, runtime_fixture, successor, direct_scan
 		multi_y_accepted = multi_y.accepted}
 end
 
+local function anchor_vm_integration(repo, runtime_fixture, anchor, successor,
+		direct_scan)
+	if type(anchor) ~= "table" or anchor.id ~= "anchor_049" or
+			anchor.numeric_id ~= 49 or anchor.family ~= "bandit" or
+			anchor.content_ref ~= 1 or successor.owner_x ~= -1632 or
+			successor.owner_z ~= -2112 or direct_scan.owner_x ~= successor.owner_x or
+			direct_scan.owner_z ~= successor.owner_z then
+		fail("anchor VM identity differs")
+	end
+	local minp = {x = successor.owner_x, y = owner_minimum(anchor.y + 1),
+		z = successor.owner_z}
+	local maxp = {x = minp.x + 79, y = minp.y + 79, z = minp.z + 79}
+	local heights = {}
+	for z = minp.z, maxp.z do
+		for x = minp.x, maxp.x do
+			heights[#heights + 1] =
+				runtime_fixture.built.zones_session.terrain_height_at(x, z)
+		end
+	end
+	if #heights ~= 6400 then fail("anchor VM heightmap population differs") end
+	runtime_fixture.set_heightmap(heightmap_for_band(heights, minp.y, maxp.y))
+
+	local successor_snapshot, successor_capture, raw_support_cid,
+		raw_support_param2, raw_root_cid, raw_root_param2
+	do
+		local vm, _, observer = runtime_fixture.new_vm(minp, maxp)
+		local raw_snapshot = observer.snapshot()
+		local support_index = snapshot_index(raw_snapshot, anchor.x, anchor.y, anchor.z)
+		local root_index = snapshot_index(raw_snapshot, anchor.x, anchor.y + 1, anchor.z)
+		if not support_index or not root_index then fail("anchor-owner raw index differs") end
+		raw_support_cid, raw_support_param2 = raw_snapshot.data[support_index],
+			raw_snapshot.param2[support_index]
+		raw_root_cid, raw_root_param2 = raw_snapshot.data[root_index],
+			raw_snapshot.param2[root_index]
+		raw_snapshot = nil
+		collectgarbage("collect")
+		local plan, generation = runtime_fixture.built.session.plan_slice(minp, maxp)
+		runtime_fixture.built.settlement_fixture.arm_private_capture()
+		local result = runtime_fixture.built.writer.apply(vm, minp, maxp,
+			plan, generation)
+		successor_capture =
+			runtime_fixture.built.settlement_fixture.take_private_capture()
+		successor_snapshot = observer.snapshot()
+		validate_vm_commit(result, successor_snapshot, "anchor-owner R7 writer")
+	end
+	validate_private_capture(repo, successor_capture, minp, maxp, true,
+		"anchor-owner R7 writer")
+	fixture_runs_match_capture(runtime_fixture.built.settlement_fixture,
+		successor_capture, "anchor-owner R7 writer")
+
+	local direct_snapshot, direct_capture
+	do
+		local vm, _, observer = runtime_fixture.new_vm(minp, maxp)
+		local plan, generation =
+			runtime_fixture.built.direct_session.plan_slice(minp, maxp)
+		runtime_fixture.built.direct_fixture.arm_private_capture()
+		local result = runtime_fixture.built.direct_session.apply_fixture(vm, minp,
+			maxp, plan, generation)
+		direct_capture = runtime_fixture.built.direct_fixture.take_private_capture()
+		direct_snapshot = observer.snapshot()
+		validate_vm_commit(result, direct_snapshot,
+			"anchor-owner independent Direct-83 writer")
+	end
+	validate_private_capture(repo, direct_capture, minp, maxp, false,
+		"anchor-owner independent Direct-83 writer")
+	fixture_runs_match_capture(runtime_fixture.built.direct_fixture, direct_capture,
+		"anchor-owner independent Direct-83 writer")
+	local stage_a = compare_stage_a_captures(repo, successor_capture, direct_capture)
+	local anchor_ledger = validate_anchor_ledger(successor_capture.ledger.anchors)
+	if anchor_ledger.written ~= 1 or stage_a.anchors_written ~= 1 then
+		fail("anchor-owner VM write population differs")
+	end
+	local operation = anchor_ledger.operations[1]
+	if operation.id ~= anchor.id or operation.x ~= anchor.x or
+			operation.y ~= anchor.y + 1 or operation.z ~= anchor.z then
+		fail("anchor-owner VM operation identity differs")
+	end
+	local support_index = snapshot_index(successor_snapshot, anchor.x, anchor.y,
+		anchor.z)
+	local root_index = snapshot_index(successor_snapshot, anchor.x, anchor.y + 1,
+		anchor.z)
+	if not support_index or not root_index or raw_support_cid ~= 0 or
+			raw_support_param2 ~= 0 or raw_root_cid ~= 0 or raw_root_param2 ~= 0 then
+		fail("anchor-owner raw VM predecessor differs")
+	end
+	if operation.support_cid == raw_support_cid or
+			operation.support_param2 ~= 0 or
+			successor_snapshot.data[support_index] ~= operation.support_cid or
+			successor_snapshot.param2[support_index] ~= operation.support_param2 or
+			successor_snapshot.data[root_index] ~= operation.final_cid or
+			successor_snapshot.param2[root_index] ~= operation.final_param2 then
+		fail("anchor-owner settled support/final root differs")
+	end
+
+	local restored_anchors, restored_p9g = 0, 0
+	for index = 1, #anchor_ledger.operations do
+		local row = anchor_ledger.operations[index]
+		local vm_index = snapshot_index(successor_snapshot, row.x, row.y, row.z)
+		if not vm_index or successor_snapshot.data[vm_index] ~= row.final_cid or
+				successor_snapshot.param2[vm_index] ~= row.final_param2 then
+			fail("anchor-owner final root differs before restoration")
+		end
+		successor_snapshot.data[vm_index] = row.prior_cid
+		successor_snapshot.param2[vm_index] = row.prior_param2
+		restored_anchors = restored_anchors + 1
+	end
+	local p9g = validate_ledger(successor_capture.ledger.p9g)
+	for index = 1, #p9g.operations do
+		local row = p9g.operations[index]
+		if row.accepted then
+			local vm_index = snapshot_index(successor_snapshot, row.root_x,
+				row.root_y, row.root_z)
+			if not vm_index or successor_snapshot.data[vm_index] ~= row.final_cid or
+					successor_snapshot.param2[vm_index] ~= row.final_param2 then
+				fail("anchor-owner P9G root differs before restoration")
+			end
+			successor_snapshot.data[vm_index] = row.prior_cid
+			successor_snapshot.param2[vm_index] = row.prior_param2
+			restored_p9g = restored_p9g + 1
+		end
+	end
+	compare_vm_material_arrays(successor_snapshot, direct_snapshot,
+		"anchor-owner Stage-A restored successor/direct83 VM")
+	if restored_anchors ~= stage_a.anchors_written or
+			restored_p9g ~= stage_a.accepted then
+		fail("anchor-owner restored population differs")
+	end
+	return {id = anchor.id, owner_x = successor.owner_x,
+		owner_z = successor.owner_z, written = anchor_ledger.written,
+		raw_support_cid = raw_support_cid,
+		settled_support_cid = operation.support_cid, stage_a_restored = true}
+end
+
 function module.integration_kat(repo)
 	text(repo, "repository path")
 	local contract = dofile(repo .. "/tools/wp40/r7/contract.lua")
@@ -2781,6 +2933,7 @@ function module.integration_kat(repo)
 	if stage_a.operation_count == 0 or stage_a.accepted == 0 then
 		fail("integration owner does not exercise P9G acceptance")
 	end
+	local anchor_vm_row, anchor_vm_successor, anchor_vm_direct
 	for _, roster_index in ipairs({1, 7, 31}) do
 		local anchor = built.anchor_roster.rows[roster_index]
 		local owner_x = -30912 + math.floor((anchor.x + 30912) / 80) * 80
@@ -2798,7 +2951,13 @@ function module.integration_kat(repo)
 		if not found or anchor_stage.anchor_written < 1 then
 			fail("representative anchor transaction is absent: " .. anchor.id)
 		end
+		if roster_index == 31 then
+			anchor_vm_row, anchor_vm_successor, anchor_vm_direct =
+				anchor, anchor_successor, anchor_direct
+		end
 	end
+	local anchor_vm = anchor_vm_integration(repo, runtime_fixture, anchor_vm_row,
+		anchor_vm_successor, anchor_vm_direct)
 	local accepted = accepted_owner_scan(repo, seeds.fixed[1],
 		INTEGRATION_OWNER_X, INTEGRATION_OWNER_Z)
 	local stage_b = stage_b_owner(repo, runtime_fixture, binding, direct, accepted)
@@ -2863,6 +3022,14 @@ function module.integration_kat(repo)
 		anchor_content_sha256 = built.manifest.values.anchor_content_sha256,
 		anchor_roster_sha256 = built.manifest.values.anchor_roster_sha256,
 		anchor_delta_sha256 = built.manifest.values.anchor_delta_sha256,
+		anchor_population = #built.anchor_roster.rows,
+		anchor_vm_id = anchor_vm.id,
+		anchor_vm_owner_x = anchor_vm.owner_x,
+		anchor_vm_owner_z = anchor_vm.owner_z,
+		anchor_vm_written = anchor_vm.written,
+		anchor_vm_raw_support_cid = anchor_vm.raw_support_cid,
+		anchor_vm_settled_support_cid = anchor_vm.settled_support_cid,
+		anchor_vm_stage_a_restored = anchor_vm.stage_a_restored,
 		catalog_sha256 = catalog_manifest.sha256,
 		proof_scope = full_vm.proof_scope,
 		private_tuple_count = full_vm.private_tuple_count,
