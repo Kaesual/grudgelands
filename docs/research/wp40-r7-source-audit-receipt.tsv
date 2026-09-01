@@ -1,5 +1,5 @@
-schema	grug_wp40_r7_source_audit_prefreeze_v1
-phase	prefreeze
+schema	grug_wp40_r7_source_audit_receipt_v1
+phase	final
 gate	closed_noise_setters	true
 gate	closed_native_allowlist	true
 gate	one_loader_callback	true
@@ -8,7 +8,7 @@ gate	zero_wp33_writer	true
 gate	one_shared_transaction	true
 gate	exact_game_mapgen_defaults	true
 gate	acyclic_mod_dependencies	true
-gate	final_micro_kat_parity	not_frozen
+gate	final_micro_kat_parity	true
 count	noise_setters	6
 count	register_biome	0
 count	register_ore	6
@@ -23,8 +23,9 @@ count	changed_production_lua	70
 count	deleted_legacy_lua	7
 count	mod_dependency_nodes	22
 count	mod_dependency_edges	68
-micro_kat_output_sha256	not_frozen
-input_file_population	900
+micro_kat_receipt_sha256	d04f98780508cda9040bc68c877a5d8417fea7fa686f95b60696827d7705fc4f
+micro_kat_output_sha256	439a337d2d41ef022066e5617a56414a864d45d8135cd9358a112a0063d07d79
+input_file_population	908
 code_input_file_population	900
 code_input_set_sha256	1f167301656cd3411ea5a41d0f87292c8b353af2faca69078d27260bf467be07
-input_set_sha256	1f167301656cd3411ea5a41d0f87292c8b353af2faca69078d27260bf467be07
+input_set_sha256	19caf3b9121a520239a30820b54c1fbbd606e18158ba9131c4b1c6ac0f4a053a
