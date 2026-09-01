@@ -103,6 +103,12 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		wp40_directory .. "/r7_consumer_payload.lua")
 	local r7_manifest_factory = dofile(wp40_directory .. "/r7_manifest.lua")
 	local r7_p9g_factory = dofile(wp40_directory .. "/r7_p9g.lua")
+	local r7_anchor_roster_factory = dofile(
+		wp40_directory .. "/r7_anchor_roster.lua")
+	local r7_anchor_activation_factory = dofile(
+		wp40_directory .. "/r7_anchor_activation.lua")
+	local r7_successor_factory = dofile(wp40_directory .. "/r7_successor.lua")
+	local r7_zone_overlay_factory = dofile(wp40_directory .. "/r7_zone_overlay.lua")
 	local r7_r6_manifest = dofile(wp40_directory .. "/r7_r6_manifest.lua")
 	local template_source_factory = dofile(wp40_directory .. "/r7_template_source.lua")
 	local fetch_mapgen_object = core_api.get_mapgen_object
@@ -146,7 +152,10 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				heightmap_external_table_allocations = heightmap_fetches,
 				metrics_result_table_allocations = 1}
 		end
-		local successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
+		local p9g_successor = r7_p9g_factory(catalog, content_set.p9g, raw_sha256)
+		local anchor_successor = r7_anchor_activation_factory(
+			r7_anchor_roster_factory, content_set.anchors)
+		local successor = r7_successor_factory(p9g_successor, anchor_successor)
 		local authored_source = dofile(wp40_directory .. "/source/catalog.lua")
 		local consumer_payload = consumer_payload_factory(source,
 			authored_source, sha256_hex)
@@ -167,6 +176,17 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				r6_identity.schema ~= "grug_wp40_r6_private_identity_v1" then
 			fail("R6 private identity differs")
 		end
+		if type(r6_identity.successor_tail) ~= "table" or
+				type(r6_identity.successor_tail.anchor_roster) ~= "function" then
+			fail("R7 anchor successor identity differs")
+		end
+		local anchor_roster = r6_identity.successor_tail:anchor_roster()
+		local independent_roster = r7_anchor_roster_factory(source, zones_session,
+			raw_sha256)
+		if anchor_roster.sha256 ~= independent_roster.sha256 then
+			fail("R7 anchor roster reconstruction differs")
+		end
+		local public_zones_session = r7_zone_overlay_factory(zones_session, anchor_roster)
 		local manifest = r7_manifest_module.new({full_seed = full_seed,
 			r5_manifest = r6_manifest.r5_manifest_values,
 			r5_manifest_module = r5_manifest_module, r6_manifest = r6_manifest,
@@ -180,6 +200,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			p9g_content = {schema = content_set.p9g.schema,
 				digest = content_set.p9g_digest,
 				semantic_digest = content_set.p9g_semantic_digest},
+			anchor_content = {schema = content_set.anchors.schema,
+				digest = content_set.anchor_digest,
+				semantic_digest = content_set.anchor_semantic_digest},
+			anchor_roster = anchor_roster.copy_rows(),
+			anchor_roster_sha256 = anchor_roster.sha256,
 			cultural_registrations = cultural,
 			decoded_templates = r6_identity.template_records,
 			consumer_payload = consumer_payload})
@@ -248,7 +273,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		end
 		return {schema = "grug_wp40_r7_runtime_v1", full_seed = full_seed,
 			manifest = manifest, session = session, writer = writer,
-			zones_session = zones_session, content = content_set,
+			zones_session = public_zones_session, content = content_set,
+			anchor_roster = anchor_roster,
 			consumer_payload = consumer_payload,
 			mapgen_context = mapgen_context,
 			settlement_fixture = settlement_fixture,

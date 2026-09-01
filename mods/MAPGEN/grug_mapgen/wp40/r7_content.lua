@@ -6,6 +6,7 @@ return function(core_api, projection, raw_sha256)
 	local MAX_SAFE = 9007199254740991
 	local PRODUCTION_SCHEMA = "grug_wp40_r7_production_r6_content_v1"
 	local P9G_SCHEMA = "grug_wp40_r7_p9g_content_v1"
+	local ANCHOR_SCHEMA = "grug_wp40_r7_anchor_content_v1"
 	local ACCEPTED_R6_ROWS = {
 		{"default:acacia_bush_leaves", 8},
 		{"default:acacia_bush_stem", 8},
@@ -106,6 +107,10 @@ return function(core_api, projection, raw_sha256)
 		"grug_gathering:stormkelp_source",
 		"grug_gathering:sunleaf_source",
 		"grug_gathering:wild_cocoa_source",
+	}
+	local ANCHOR_NAMES = {
+		"grug_nodes:camp_fire",
+		"grug_nodes:guard_banner",
 	}
 
 	local function fail(message)
@@ -238,7 +243,8 @@ return function(core_api, projection, raw_sha256)
 	class_by_cid[air_cid] = {1, 0, 0, true, true, true, true, 0, "none"}
 	class_by_cid[ignore_cid] = {3, 0, 0, false, false, false, false, 0, "none"}
 
-	local calls = {resolve = 0, classify = 0, metrics = 0, p9g_resolve = 0}
+	local calls = {resolve = 0, classify = 0, metrics = 0, p9g_resolve = 0,
+		anchor_resolve = 0}
 	local r5 = {schema = "grug_wp40_r5_content_contract_v1",
 		ignore_cid = ignore_cid, ordinary_water_family_id = 1,
 		river_water_family_id = 2}
@@ -321,6 +327,39 @@ return function(core_api, projection, raw_sha256)
 		return nil
 	end
 
+	local anchor_cids = {}
+	for index = 1, #ANCHOR_NAMES do
+		local name = ANCHOR_NAMES[index]
+		local def = rawget(core_api.registered_nodes, name)
+		if type(def) ~= "table" then fail("unregistered anchor target " .. name) end
+		local cid = core_api.get_content_id(name)
+		local class_id, _, liquid_kind, _, _, _, _, sunlight, light_source, paramtype2 =
+			classify(cid, 0)
+		local expected_light = index == 1 and 9 or 6
+		if class_id ~= 2 or liquid_kind ~= 0 or not sunlight or
+				light_source ~= expected_light or paramtype2 ~= "none" or
+				cid == ignore_cid or def.walkable ~= false or
+				def.is_ground_content ~= false or def.drop ~= "" or
+				type(def.groups) ~= "table" or def.groups.grug_camp ~= 1 then
+			fail("anchor target semantics differ: " .. name)
+		end
+		anchor_cids[index] = cid
+	end
+	local anchors = {schema = ANCHOR_SCHEMA, content_names = copy_array(ANCHOR_NAMES),
+		content_cids = anchor_cids}
+	function anchors.resolve_anchor(content_ref, param2)
+		calls.anchor_resolve = calls.anchor_resolve + 1
+		integer(content_ref, "anchor content ref", 1, 2)
+		if param2 ~= 0 then fail("anchor param2 differs") end
+		return anchor_cids[content_ref], 1, 1, 0, 32
+	end
+	function anchors.content_ref(name)
+		for index = 1, #ANCHOR_NAMES do
+			if ANCHOR_NAMES[index] == name then return index end
+		end
+		return nil
+	end
+
 	local function identity(schema, identity_names, identity_cids, identity_masks)
 		local parts = {frame(schema), frame(#identity_names)}
 		for index = 1, #identity_names do
@@ -356,6 +395,7 @@ return function(core_api, projection, raw_sha256)
 	return {
 		production = production,
 		p9g = p9g,
+		anchors = anchors,
 		accepted_r6_rows = function()
 			local copy = {}
 			for index = 1, #ACCEPTED_R6_ROWS do
@@ -365,9 +405,12 @@ return function(core_api, projection, raw_sha256)
 		end,
 		production_digest = identity(PRODUCTION_SCHEMA, names, cids, masks),
 		p9g_digest = identity(P9G_SCHEMA, P9G_NAMES, p9g_cids, nil),
+		anchor_digest = identity(ANCHOR_SCHEMA, ANCHOR_NAMES, anchor_cids, nil),
 		production_semantic_digest =
 			semantic_identity(PRODUCTION_SCHEMA, names, cids, masks),
 		p9g_semantic_digest =
 			semantic_identity(P9G_SCHEMA, P9G_NAMES, p9g_cids, nil),
+		anchor_semantic_digest =
+			semantic_identity(ANCHOR_SCHEMA, ANCHOR_NAMES, anchor_cids, nil),
 	}
 end

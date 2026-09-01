@@ -17,7 +17,7 @@
 -- FLOW, end to end:
 --   grug_mobs.place_camp(pos, "bandit")   (WP13's settlement pass, or a
 --       hand-placed node in creative -> on_construct defaults to "bandit")
---     -> node grug_mobs:camp_fire, meta _grug_camp_type = "bandit"
+--     -> node grug_nodes:camp_fire, meta _grug_camp_type = "bandit"
 --     -> node timer starts
 --   on_timer -> camp_tick(pos, elapsed):
 --       roll the camp's target size ONCE (meta _grug_camp_target, 3-5)
@@ -179,7 +179,7 @@ local SPOT_TRIES = 12
 grug_mobs.registered_camp_types = {}
 
 -- id -> {mob = "grug_mobs:bandit", count_min = 3, count_max = 5, radius = 12,
---        node = "grug_mobs:camp_fire", patrol = false,
+--        node = "grug_nodes:camp_fire", patrol = false,
 --        respawn_exact = nil, respawn_min = 120, respawn_max = 300}
 --   node          — the anchor node grug_mobs.place_camp uses for this type
 --                   (guard posts fly a banner, bandits sit around a fire)
@@ -193,7 +193,7 @@ function grug_mobs.register_camp_type(id, def)
 		count_min = def.count_min or 3,
 		count_max = def.count_max or 5,
 		radius = def.radius or 12,
-		node = def.node or "grug_mobs:camp_fire",
+		node = def.node or "grug_nodes:camp_fire",
 		patrol = def.patrol or false,
 		respawn_exact = def.respawn_exact,
 		respawn_min = def.respawn_min or RESPAWN_MIN,
@@ -205,6 +205,7 @@ end
 -- as a camp-type field) because place_camp has to recognise a guard post and
 -- let the TERRITORY pick its type — see there.
 local BANNER_NODE = "grug_nodes:guard_banner"
+local CAMP_FIRE_NODE = "grug_nodes:camp_fire"
 
 -- Forward declaration: camp_cfg (a helper, far above the guard-post section)
 -- needs the territory rule to type a banner whose meta went missing. The
@@ -573,56 +574,15 @@ local function init_camp_fire(pos)
 	meta:set_string("infotext", "Camp Fire")
 end
 
--- Deliberately family-agnostic ("camp fire", not "bandit fire"): the same
--- node anchors mirefolk pools and whatever WP13 adds later; the camp TYPE
--- lives in meta.
-core.register_node("grug_mobs:camp_fire", {
-	description = "Camp Fire",
-	drawtype = "nodebox",
-	tiles = {"grug_mobs_camp_fire.png"},
-	paramtype = "light",
-	sunlight_propagates = true,
-	-- Flat fire pit: ash bed plus two crossed logs. Walkable false so mobs
-	-- and players never get stuck on the camp anchor (§4 gives the camp no
-	-- collision role).
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, -0.5, -0.5, 0.5, -0.4, 0.5},
-			{-0.4, -0.4, -0.1, 0.4, -0.25, 0.1},
-			{-0.1, -0.4, -0.4, 0.1, -0.25, 0.4},
-		},
-	},
-	selection_box = {
-		type = "fixed",
-		fixed = {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5},
-	},
-	walkable = false,
-	is_ground_content = false, -- authored anchors are not native terrain content
-	light_source = 9, -- a camp fire is a landmark at night
-	-- cracky 3 = diggable with a pickaxe, not by hand: destroying a camp
-	-- should be a deliberate act. grug_camp = 1 is the dispatch group
-	-- (AGENTS.md: dispatch on groups, not on name lists) for WP13 and for
-	-- anything that later wants to find camps.
-	groups = {cracky = 3, grug_camp = 1},
-	sounds = default.node_sound_gravel_defaults(),
-	-- PORTABLE-SPAWNER EXPLOIT: this node IS a mob spawner (its timer
-	-- repopulates the camp forever). Dropping it would let a player mine a
-	-- bandit camp, carry it to a safe corner behind their own walls and farm
-	-- the drops on tap. Destroying a camp stays possible — it just yields
-	-- nothing but the destruction. Same rule on grug_nodes:guard_banner.
-	drop = "",
-
+-- grug_nodes owns both pure activation nodes so R7 can authenticate them before
+-- grug_mobs loads. This higher layer supplies their runtime behaviour. The old
+-- name is a compatibility alias only; fresh R7 worlds write CAMP_FIRE_NODE.
+core.register_alias("grug_mobs:camp_fire", CAMP_FIRE_NODE)
+core.override_item(CAMP_FIRE_NODE, {
 	on_construct = init_camp_fire,
-
-	-- Returning `true` would re-arm with the SAME timeout (mapblock.cpp
-	-- MapBlock::step: the engine calls setNodeTimer(timeout, 0) on a true
-	-- return), which is not what we want — the period shortens when a refill
-	-- is about to fall due. So we start the next timer ourselves and return
-	-- false. That order is safe: the elapsed timer has already been removed
-	-- from the block's list before the callback runs (nodetimer.cpp
-	-- NodeTimerList::step erases it), so the timer started here is the one
-	-- that survives.
+	-- Returning true would make the engine re-arm the elapsed timer with its
+	-- old timeout. Refill proximity changes the next period, so install that
+	-- freshly computed timeout ourselves and leave the expired timer stopped.
 	on_timer = function(pos, elapsed)
 		core.get_node_timer(pos):start(camp_tick(pos, elapsed))
 		return false
@@ -744,7 +704,7 @@ core.register_lbm({
 -- anybody.
 core.register_lbm({
 	name = "grug_mobs:camp_fire_init",
-	nodenames = {"grug_mobs:camp_fire"},
+	nodenames = {CAMP_FIRE_NODE},
 	run_at_every_load = true,
 	action = function(pos)
 		init_camp_fire(pos)

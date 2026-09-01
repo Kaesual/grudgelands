@@ -792,11 +792,12 @@ local function settlement_factory()
 		end
 
 		local function run_class_policy(opcode)
-			local class_id = opcode == 35 and 10 or (opcode == 24 and 8 or
-				((opcode == 12 or opcode == 34) and 9 or 7))
-			local policy = opcode == 35 and 11 or (opcode == 2 and 10 or
+			local class_id = opcode == 36 and 12 or (opcode == 35 and 10 or
+				(opcode == 24 and 8 or ((opcode == 12 or opcode == 34) and 9 or 7)))
+			local policy = opcode == 36 and 12 or (opcode == 35 and 11 or
+				(opcode == 2 and 10 or
 				(opcode == 34 and 9 or ((opcode == 12 or opcode == 33) and 8 or
-					(opcode == 24 and 2 or 6))))
+					(opcode == 24 and 2 or 6)))))
 			return class_id, policy
 		end
 
@@ -1156,6 +1157,10 @@ local function settlement_factory()
 				function context.original_at(x, y, z)
 					return evidence_air_cid, 0
 				end
+				function context.original_support_at(x, y, z)
+					local _, cid = prospective(x, y, z)
+					return cid, 0
+				end
 				function context.settled_at(x, y, z)
 					local key = occupied_key(x, y, z)
 					local row = written[key]
@@ -1197,7 +1202,19 @@ local function settlement_factory()
 					written[key] = {x, y, z, cid, param2, -2, 35, feature, 0,
 						(#contract.content_names + local_ref - 1) * 256 + param2}
 				end
-				result.p9g = successor_tail:settle(context)
+				function context.write_anchor(x, y, z, cid, param2, local_ref, feature)
+					local key = occupied_key(x, y, z)
+					occupied[key] = -2
+					occupied_positions[key] = {x, y, z}
+					written[key] = {x, y, z, cid, param2, -2, 36, feature, 0,
+						(#contract.content_names + 12 + local_ref - 1) * 256 + param2}
+				end
+				local successor_result = successor_tail:settle(context)
+				if type(successor_result) ~= "table" or
+						successor_result.schema ~= "grug_wp40_r7_successor_ledger_v1" then
+					fail("fail_ledger", "R7 successor ledger differs")
+				end
+				result.p9g, result.anchors = successor_result.p9g, successor_result.anchors
 				result.final_rows = evidence_rows(prospective)
 				result.final_runs = evidence_run_rows(result.final_rows)
 			end
@@ -2142,6 +2159,10 @@ local function settlement_factory()
 					local index = index_at(x, y, z)
 					return original_data[index], original_param2[index]
 				end
+				function successor_context.original_support_at(x, y, z)
+					local index = index_at(x, y, z)
+					return original_data[index], original_param2[index]
+				end
 				function successor_context.settled_at(x, y, z)
 					local index = index_at(x, y, z)
 					return final_data[index], final_param2[index], occupancy[index],
@@ -2197,11 +2218,34 @@ local function settlement_factory()
 					intent_aux[index] = (successor_ref - 1) * 256 + param2
 					occupancy[index] = -2
 				end
-				local p9g_ledger = transaction_state.successor_tail:settle(successor_context)
-				if type(p9g_ledger) ~= "table" then
-					fail("fail_ledger", "P9G ledger differs")
+				function successor_context.write_anchor(x, y, z, cid, param2,
+						local_ref, feature_ref)
+					if not inside_owner(x, y, z) then
+						fail("fail_settlement", "anchor write escaped central owner")
+					end
+					integer(cid, "anchor CID", 0, MAX_SAFE, "fail_content_manifest")
+					integer(param2, "anchor param2", 0, 255, "fail_content_manifest")
+					integer(local_ref, "anchor local ref", 1, 2, "fail_content_manifest")
+					integer(feature_ref, "anchor feature ref", 7, 60, "fail_content_manifest")
+					if cid == contract.ignore_cid then
+						fail("fail_content_manifest", "anchor target is ignore")
+					end
+					local index = index_at(x, y, z)
+					final_data[index], final_param2[index] = cid, param2
+					intent_opcode[index], intent_feature[index], intent_interface[index] =
+						36, feature_ref, 0
+					local successor_ref = #contract.content_names + 12 + local_ref
+					intent_aux[index] = (successor_ref - 1) * 256 + param2
+					occupancy[index] = -2
 				end
-				ledger.p9g = p9g_ledger
+				local successor_ledger = transaction_state.successor_tail:settle(successor_context)
+				if type(successor_ledger) ~= "table" or
+						successor_ledger.schema ~= "grug_wp40_r7_successor_ledger_v1" or
+						type(successor_ledger.p9g) ~= "table" or
+						type(successor_ledger.anchors) ~= "table" then
+					fail("fail_ledger", "R7 successor ledger differs")
+				end
+				ledger.p9g, ledger.anchors = successor_ledger.p9g, successor_ledger.anchors
 			end
 
 			-- Canonical run derivation.  The second pass compares every scalar

@@ -21,7 +21,12 @@ return function(canonical, raw_sha256)
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
 		"cultural_registration_sha256", "p9g_content_schema",
 		"p9g_content_sha256", "p9g_semantic_sha256", "p9g_delta_schema",
-		"p9g_delta_sha256", "writer_schema", "p9g_opcode", "p9g_class",
+		"p9g_delta_sha256", "anchor_content_schema", "anchor_content_sha256",
+		"anchor_semantic_sha256", "anchor_roster_schema", "anchor_roster_sha256",
+		"anchor_delta_schema", "anchor_delta_sha256", "anchor_opcode",
+		"anchor_class", "anchor_policy", "anchor_order", "anchor_overwrite",
+		"functional_anchor_protection_schema", "functional_anchor_columns",
+		"functional_anchor_y_min", "writer_schema", "p9g_opcode", "p9g_class",
 		"p9g_policy", "p9g_order", "p9g_overwrite", "source_projection_sha256",
 		"production_enabled",
 	}
@@ -143,6 +148,8 @@ return function(canonical, raw_sha256)
 			r6_manifest = true, wp43_projection = true, accepted_r6_rows = true,
 			native_identities = true, gathering_manifest = true,
 			production_content = true, p9g_content = true,
+			anchor_content = true, anchor_roster = true,
+			anchor_roster_sha256 = true,
 			cultural_registrations = true, decoded_templates = true,
 			consumer_payload = true,
 		}
@@ -186,6 +193,40 @@ return function(canonical, raw_sha256)
 				inputs.p9g_content.semantic_digest ~=
 				"450c35e94af32721768d3771454db89dbdb43099660b2118c178a3ca6b438d49" then
 			fail("frozen content semantics differ")
+		end
+		local anchors = inputs.anchor_content
+		if anchors.schema ~= "grug_wp40_r7_anchor_content_v1" or
+				type(anchors.digest) ~= "string" or #anchors.digest ~= 64 or
+				type(anchors.semantic_digest) ~= "string" or
+				#anchors.semantic_digest ~= 64 then
+			fail("anchor content identity differs")
+		end
+		if type(inputs.anchor_roster) ~= "table" or #inputs.anchor_roster ~= 42 or
+				type(inputs.anchor_roster_sha256) ~= "string" or
+				#inputs.anchor_roster_sha256 ~= 64 then
+			fail("anchor roster identity differs")
+		end
+		local family_counts, seen = {capital = 0, outpost = 0, bandit = 0}, {}
+		for index = 1, 42 do
+			local row = inputs.anchor_roster[index]
+			local numeric = (index <= 6 and index + 6) or
+				(index <= 30 and index + 18) or index + 18
+			local family = index <= 6 and "capital" or
+				(index <= 30 and "outpost" or "bandit")
+			local ref = family == "bandit" and 1 or 2
+			if type(row) ~= "table" or row.numeric_id ~= numeric or
+					row.id ~= string.format("anchor_%03d", numeric) or
+					row.family ~= family or row.content_ref ~= ref or seen[row.id] or
+					type(row.x) ~= "number" or type(row.y) ~= "number" or
+					type(row.z) ~= "number" then
+				fail("anchor roster row differs")
+			end
+			seen[row.id] = true
+			family_counts[family] = family_counts[family] + 1
+		end
+		if family_counts.capital ~= 6 or family_counts.outpost ~= 24 or
+				family_counts.bandit ~= 12 then
+			fail("anchor roster population differs")
 		end
 		local cultural = inputs.cultural_registrations
 		if #cultural ~= 6 then fail("cultural population differs") end
@@ -239,6 +280,18 @@ return function(canonical, raw_sha256)
 			successor_ref_max = 95, order = "after_r6_p9_before_run_derivation",
 			overwrite = false, catalog_sha256 = gathering.sha256,
 		}
+		local anchor_delta = {
+			schema = "grug_wp40_r7_anchor_delta_v1", opcode = 36,
+			class = 12, policy = 12, successor_ref_min = 96,
+			successor_ref_max = 97, order = "after_p9g_before_run_derivation",
+			overwrite = false, roster_sha256 = inputs.anchor_roster_sha256,
+			root = "anchor_y_plus_one",
+			support = "excluded_anchor_original_support_v1",
+			capital_count = 6, outpost_count = 24, bandit_count = 12,
+			functional_protection_schema =
+				"grug_wp40_r7_functional_anchor_protection_v1",
+			functional_columns = 36, functional_y_min = -700,
+		}
 		local values = {
 			schema = SCHEMA, full_seed = inputs.full_seed,
 			r5_schema = "grug_wp40_r5_mapgen_manifest_v1",
@@ -262,6 +315,18 @@ return function(canonical, raw_sha256)
 			p9g_semantic_sha256 = inputs.p9g_content.semantic_digest,
 			p9g_delta_schema = p9g_delta.schema,
 			p9g_delta_sha256 = graph_digest(p9g_delta),
+			anchor_content_schema = anchors.schema,
+			anchor_content_sha256 = anchors.digest,
+			anchor_semantic_sha256 = anchors.semantic_digest,
+			anchor_roster_schema = "grug_wp40_r7_anchor_roster_v1",
+			anchor_roster_sha256 = inputs.anchor_roster_sha256,
+			anchor_delta_schema = anchor_delta.schema,
+			anchor_delta_sha256 = graph_digest(anchor_delta),
+			anchor_opcode = 36, anchor_class = 12, anchor_policy = 12,
+			anchor_order = anchor_delta.order, anchor_overwrite = false,
+			functional_anchor_protection_schema =
+				anchor_delta.functional_protection_schema,
+			functional_anchor_columns = 36, functional_anchor_y_min = -700,
 			writer_schema = "grug_wp40_r7_single_vm_writer_v1",
 			p9g_opcode = 35, p9g_class = 10, p9g_policy = 11,
 			p9g_order = p9g_delta.order, p9g_overwrite = false,

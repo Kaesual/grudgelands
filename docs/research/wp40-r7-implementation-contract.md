@@ -29,8 +29,8 @@ cutover and adds WP33 gathering through the same transaction. The resulting
 system has:
 
 - one mapgen-environment callback and one VoxelManip transaction;
-- R6 P2--P9 followed by the reject-only P9G successor in the same private
-  buffers, run derivation, replay and commit;
+- R6 P2--P9 followed by the reject-only P9G successor and the fixed activation
+  suffix in the same private buffers, run derivation, replay and commit;
 - zero Lua biomes, exactly one retained native gravel blob, five retained
   strata and zero engine decorations;
 - one stable public `grug_zones` authority and one fail-closed protection
@@ -55,8 +55,39 @@ The implementation must keep these identities separate and authenticated:
 4. `grug_wp33_gathering_catalog_v1`, exactly 12 `new_p9g_source`, 8
    `reuse_r6_source` and 6 `r6_cultural_slot` records.
 
-Stage A removes the complete P9G delta from private buffers and proves equality
-with a direct authenticated 83-row production-R6 run. Stage B maps the 83-row
+The narrow activation correction ratified on 2026-09-01 adds two identities
+without reopening the accepted R6 source projection:
+
+5. `grug_wp40_r7_anchor_content_v1`, exactly the ASCII-ordered nodes
+   `grug_nodes:camp_fire` (local ref 1, successor ref 96) and
+   `grug_nodes:guard_banner` (local ref 2, successor ref 97); and
+6. `grug_wp40_r7_anchor_roster_v1`, exactly 42 stable R4 anchors: capitals
+   007--012 and outposts 025--048 use the banner, while bandit camps 049--060
+   use the fire.
+
+Each activation root is exactly `(anchor.x, anchor.y + 1, anchor.z)` and its
+support is exactly `(anchor.x, anchor.y, anchor.z)`. R4's authenticated fixed
+anchor exclusions intentionally suppress analytic P7 at all 42 of these
+columns, including outposts and bandit camps as well as capitals. Support must
+therefore equal the unchanged original solid, non-liquid map input. Reopening
+P7 beneath those exclusions is outside this narrow correction. The root must
+still be air, and the suffix never overwrites.
+It uses opcode/class/policy 36/12/12 after P9G and before shared run derivation,
+replay and the one commit. It creates no platform, pad, clearing, shell or
+second writer. Capital roots use the current exact center; the historical
+`+11,+11` offset belonged to the removed legacy platform and is retired.
+
+The 24 outpost and 12 bandit root columns are hard-protected at `y >= -700`.
+Their `y <= -701` cells remain governed by the predecessor authority. Capitals
+continue to rely on the existing R4 hard volumes. These are exactly 36 added
+columns and 42 mutable mapgen root cells; the protection overlay does not grant
+mapgen permission to change any neighboring cell. `grug_nodes:camp_fire` owns
+the lower-load-order node identity; `grug_mobs` attaches its timer/meta behavior
+and retains only the compatibility alias `grug_mobs:camp_fire`.
+
+The activation delta is independently removed first. Stage A then removes the
+complete P9G delta from private buffers and proves equality with a direct
+authenticated 83-row production-R6 run. Stage B maps the 83-row
 run by node name to the accepted 77-row evidence namespace, permits the six
 real-to-synthetic substitutions only on matching Cultural operations, then
 rederives refs, CIDs, aux values, runs, checksums and evidence. Any other
@@ -127,7 +158,10 @@ state may enable two writers or partially remove the old authority.
 - Build/authenticate the 83-row production-R6 resolver and the separate
   twelve-row P9G resolver; add P9G-only opcode, class, policy, ledger and
   metrics branches without changing any existing R6 opcode semantics.
-- Execute P9G after R6 P9 and before shared run derivation/replay/commit.
+- Build/authenticate the separate two-row activation resolver and exact 42-row
+  roster; append its opcode-36 delta after P9G in the same successor tail.
+- Execute P9G and then activation after R6 P9 and before shared run
+  derivation/replay/commit.
 
 ### R7-C -- atomic loader and consumer cutover
 
@@ -150,7 +184,9 @@ state may enable two writers or partially remove the old authority.
 
 - Prove closed manifest populations/digests, exact native registration counts,
   one loader/callback/writer/transaction and zero legacy paths.
-- Exercise every P9G source and rejection reason, both R6 projections,
+- Exercise every P9G source and rejection reason, all 42 activation roots,
+  both node identities, the exact 6/24/12 partition, root/support semantics,
+  independent opcode-36 removal, the 36-column protection boundary, both R6 projections,
   ownership/support boundaries, protection/query adapters, replay and
   fail-closed initialization.
 - Run the changed R7 resource/content delta over the frozen 32-seed corpus;

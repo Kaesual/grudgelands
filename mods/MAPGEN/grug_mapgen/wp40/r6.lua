@@ -338,6 +338,7 @@ return function(dependencies)
 			end
 			successor_tail = successor_config.new({
 				full_seed_string = full_seed_string, hash = hash,
+				raw_sha256 = dependencies.raw_sha256,
 				planner_source = planner_source, horizontal = horizontal,
 				zones_session = zones_session,
 				content = content_module, source = dependencies.source,
@@ -404,7 +405,15 @@ return function(dependencies)
 			local result = {planner = planner:metrics(), settlement = settlement:metrics(),
 				r5_planner = r5_planner:metrics(), r5_adapter = r5_adapter:metrics(),
 				content = content_contract.metrics()}
-			if successor_tail then result.p9g = successor_tail:metrics() end
+			if successor_tail then
+				local successor_metrics = successor_tail:metrics()
+				if successor_metrics.schema == "grug_wp40_r7_successor_metrics_v1" then
+					result.p9g, result.anchors = successor_metrics.p9g,
+						successor_metrics.anchors
+				else
+					result.p9g = successor_metrics
+				end
+			end
 			return result
 		end
 		function session.status() return STATUS end

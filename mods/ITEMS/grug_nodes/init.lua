@@ -147,8 +147,8 @@ core.register_node("grug_nodes:guard_banner", {
 	-- with a node timer that repopulates the post forever. If it dropped, a
 	-- player could mine an outpost banner and re-plant it wherever they like —
 	-- a private guard barracks, or an enemy-faction post carried onto friendly
-	-- soil. Razing a post stays possible, it just yields nothing. Same rule on
-	-- grug_mobs:camp_fire.
+	-- soil. A node removed through an authorized future path yields nothing.
+	-- The same drop rule applies to grug_nodes:camp_fire.
 	drop = "",
 	node_box = {
 		type = "fixed",
@@ -165,6 +165,38 @@ core.register_node("grug_nodes:guard_banner", {
 		fixed = {-2 / 16, -0.5, -2 / 16, 7 / 16, 0.5, 2 / 16},
 	},
 	sounds = default.node_sound_wood_defaults(),
+})
+
+-- Generic camp activation anchor. The pure node lives below grug_mapgen so
+-- R7 can authenticate its content ID while the mapgen runtime is assembled;
+-- grug_mobs attaches the timer/meta behaviour later with core.override_item.
+-- The texture remains in grug_mobs' media directory for now (Luanti's media
+-- namespace is game-wide), but the registered node identity is deliberately
+-- owned by this lower dependency.
+core.register_node("grug_nodes:camp_fire", {
+	description = "Camp Fire",
+	drawtype = "nodebox",
+	tiles = {"grug_mobs_camp_fire.png"},
+	paramtype = "light",
+	sunlight_propagates = true,
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.4, 0.5},
+			{-0.4, -0.4, -0.1, 0.4, -0.25, 0.1},
+			{-0.1, -0.4, -0.4, 0.1, -0.25, 0.4},
+		},
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5},
+	},
+	walkable = false,
+	is_ground_content = false,
+	light_source = 9,
+	groups = {cracky = 3, grug_camp = 1},
+	sounds = default.node_sound_gravel_defaults(),
+	drop = "",
 })
 
 -- Purely decorative bone heap for the blight/bone forest ground cover:
