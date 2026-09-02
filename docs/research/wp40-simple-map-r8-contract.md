@@ -2,8 +2,8 @@
 
 **Status:** The one-row G2 pilot completed both schedules and exposed a real
 surface-sunlight defect plus wall-clock liquid aging in the comparison harness.
-Their narrow corrections have green static/fixture verification and await
-focused independent review before a new sequential pilot.
+Their narrow corrections have green static/fixture verification and focused
+independent acceptance. A new sequential pilot is the next gate.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).

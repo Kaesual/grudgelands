@@ -5,7 +5,8 @@ production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
 defect plus wall-clock liquid aging in the comparison harness. Narrow fixes,
-green static/fixture verification and focused review precede the next pilot.
+green static/fixture verification and focused independent acceptance precede
+the next pilot.
 
 ## Attempt 1 -- diagnostic failure
 

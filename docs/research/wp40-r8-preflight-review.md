@@ -1,11 +1,11 @@
 # WP40 R8 Preflight Review
 
 **Status:** Attempt 7 completed both schedules and isolated the surface-light
-writer defect plus wall-clock liquid aging described below. Exact correction
-candidate `fa5f7365f7040d6350d330ede8e254684f53efcd` passed its technical
-lenses but was rejected 0 Critical / 0 High / 1 Medium / 1 Low for an unbounded
-timeout arithmetic input and this stale status text. Their narrow corrections
-await focused re-review before the next sequential pilot.
+writer defect plus wall-clock liquid aging described below. The first exact
+correction candidate was rejected 0 Critical / 0 High / 1 Medium / 1 Low; both
+findings were fixed, and exact candidate
+`2c08f756c899bcc90a60f441c2d05c68b5f7aae4` received focused independent
+acceptance. The next gate is a new sequential pilot.
 
 ## Scope and independence
 
@@ -323,7 +323,16 @@ while leaving `timeout + 30` positive. The Low finding was this document's
 obsolete top-level status. The correction caps the already internal fixed-run
 override at 86,400 seconds using a length check before numeric comparison;
 therefore both later additions are bounded and retain their required one-second
-ordering. Both findings require focused re-review before execution.
+ordering.
+
+The same independent reviewer then inspected exact correction commit
+`2c08f756c899bcc90a60f441c2d05c68b5f7aae4` and returned **ACCEPT: 0 Critical
+/ 0 High / 0 Medium / 0 Low**. The canonical positive-integer check precedes
+the length bound, the numeric comparison can see at most five digits, and both
+later additions are bounded to 86,430 and 86,431. Default pilot values remain
+host timeout 930 and periodic-liquid interval 931. Only validation and review
+status changed, so the earlier accepted light, halo, full-schedule snapshot,
+immediate-liquid and strict-comparison conclusions remain intact.
 
 ## Calibration so far
 
