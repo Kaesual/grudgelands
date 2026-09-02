@@ -3,8 +3,8 @@
 **Status:** The corrected one-row G2 pilot passes both schedules with exact
 order equality, direct surface sunlight, stable liquid bytes and clean
 shutdown. The owner-top correction has green static/fixture evidence and
-focused independent acceptance. The complete G3 corpus is the next engine
-gate.
+focused independent acceptance. The one final frozen-byte PUC/LuaJIT pair also
+passes byte-identically. The complete G3 corpus is the next engine gate.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).

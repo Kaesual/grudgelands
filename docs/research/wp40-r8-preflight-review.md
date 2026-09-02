@@ -1,12 +1,10 @@
 # WP40 R8 Preflight Review
 
-**Status:** Attempt 8 confirmed reversed-order liquid equality and isolated the
-remaining surface-light defect to a fresh vertical `CONTENT_IGNORE` halo above
-the owner. The narrower owner-top calculation correction has green static and
-fixture verification and exact commit
+**Status:** The corrected G2 pilot and the one final frozen-byte PUC/LuaJIT
+micro-KAT pair pass. The narrower owner-top calculation correction has green
+static and fixture verification, and exact commit
 `050ae36bed447c873f7df1ef43f04e73517d89bf` received focused independent
-acceptance. Its fresh sequential pilot passes every G2 gate; the complete G3
-corpus is next.
+acceptance. The complete G3 corpus is next.
 
 ## Scope and independence
 
@@ -418,6 +416,32 @@ including the deep liquid-bearing case. Capture
 is permanent under `tools/wp40/results/r8/`; its comparison SHA-256 is
 `88b33d4d378a8471b43450634aa6b976eaf8c6677d956e350a43f08e95597ceb`.
 This closes G2 and authorizes final-byte freeze plus the complete G3 corpus.
+
+## Frozen-byte interpreter gate
+
+No production or executable harness byte changed after the accepted G2
+candidate. The one required final compact PUC 5.1/LuaJIT micro-KAT pair ran on
+that frozen input set and produced byte-identical canonical output. Its
+[versioned evidence directory](wp40-r8-final-micro-evidence/) contains the
+receipt, canonical output and both interpreter logs.
+
+- Receipt SHA-256:
+  `2f8e04cca1f034194bf6c45ed1980a01020c0631e2886646557d34026e9b249a`
+- Canonical output SHA-256:
+  `3e4e7e3a7914b6c5c9cf2348c3ff8f7626989f14e82f43b38d55bc90fe95bcb6`
+- Input-set SHA-256/population:
+  `eb2ce545a3d8ad33d7e207cc1eb7cd40e9d1ea4354d632fb0ef149b95b4eb834`
+  / 100
+- Executed production-module population: 71
+- LuaJIT and PUC exit status: 0 / 0
+- `byte_identical`: true
+
+The retained filenames and receipt schema say R7 because R8 intentionally
+executes the inherited final production micro-KAT rather than creating a
+second semantic suite. The enclosing R8 evidence directory and input hashes
+bind this replacement pair to the corrected frozen bytes. No additional PUC
+runtime is authorized or required absent a concrete interpreter-specific
+finding.
 
 ## Calibration so far
 
