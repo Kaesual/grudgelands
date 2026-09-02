@@ -7,7 +7,7 @@ command -v rg >/dev/null 2>&1 || {
 	echo "WP40 R8: ripgrep (rg) is required" >&2
 	exit 2
 }
-for command_name in awk chrt find flatpak git ionice jq sha256sum tar timeout xargs; do
+for command_name in awk cat chrt find flatpak git ionice jq sha256sum tar timeout xargs; do
 	if ! command -v "$command_name" >/dev/null 2>&1; then
 		echo "WP40 R8: missing command $command_name" >&2
 		exit 2
@@ -36,17 +36,46 @@ fi
 corpus="${1:-${WP40_R8_CORPUS:-$default_corpus}}"
 if [[ "$corpus" != /* ]]; then corpus="$repo/$corpus"; fi
 [[ -f "$corpus" ]] || { echo "WP40 R8: corpus not found: $corpus" >&2; exit 2; }
-
-checkout_sha="${WP40_CHECKOUT_SHA:-$(git -C "$repo" rev-parse HEAD)}"
-git -C "$repo" cat-file -e "$checkout_sha^{commit}" || {
-	echo "WP40 R8: checkout is not a commit: $checkout_sha" >&2
+native_corpus="${WP40_R8_NATIVE_CORPUS:-}"
+if [[ -z "$native_corpus" ]]; then
+	native_default="$script_dir/native-witness-corpus.tsv"
+	if [[ "$mode" == "pilot" ]]; then
+		native_default="$script_dir/native-pilot-corpus.tsv"
+	fi
+	if [[ -f "$native_default" ]]; then native_corpus="$native_default"; fi
+fi
+if [[ "$mode" == "final" && -z "$native_corpus" ]]; then
+	echo "WP40 R8: final mode requires WP40_R8_NATIVE_CORPUS" >&2
 	exit 2
-}
+fi
+if [[ -n "$native_corpus" ]]; then
+	if [[ "$native_corpus" != /* ]]; then native_corpus="$repo/$native_corpus"; fi
+	[[ -f "$native_corpus" ]] || {
+		echo "WP40 R8: native witness corpus not found: $native_corpus" >&2
+		exit 2
+	}
+fi
+native_row_count="$(awk 'NF && $1 !~ /^#/ {count++} END {print count + 0}' \
+	"$native_corpus")"
+expected_native_rows=32
+if [[ "$mode" == "pilot" ]]; then expected_native_rows=5; fi
+if [[ "$native_row_count" != "$expected_native_rows" ]]; then
+	echo "WP40 R8: native corpus row count differs from frozen mode" >&2
+	exit 2
+fi
+
+checkout_input="${WP40_CHECKOUT_SHA:-HEAD}"
+checkout_sha="$(git -C "$repo" rev-parse --verify "${checkout_input}^{commit}")"
+if [[ ! "$checkout_sha" =~ ^[0-9a-f]{40}$ ]]; then
+	echo "WP40 R8: rev-parse did not return a canonical 40-hex commit" >&2
+	exit 2
+fi
 seed="${WP40_SEED:-0}"
 [[ "$seed" =~ ^-?[0-9]+$ ]] || {
 	echo "WP40 R8: WP40_SEED must be a decimal integer string" >&2
 	exit 2
 }
+seed_sha256="$(printf '%s' "$seed" | sha256sum | awk '{print $1}')"
 timeout_seconds="${WP40_R8_TIMEOUT:-900}"
 [[ "$timeout_seconds" =~ ^[1-9][0-9]*$ ]] || {
 	echo "WP40 R8: WP40_R8_TIMEOUT must be a positive integer" >&2
@@ -60,7 +89,9 @@ fi
 
 for relative_path in tools/wp40/r8/run.sh tools/wp40/r8/probe/init.lua \
 		tools/wp40/r8/probe/mod.conf tools/wp40/r8/seed-candidates.tsv \
-		tools/wp40/r8/pilot-corpus.tsv tools/wp40/r8/smoke-corpus.tsv; do
+		tools/wp40/r8/pilot-corpus.tsv tools/wp40/r8/smoke-corpus.tsv \
+		tools/wp40/r8/native-pilot-corpus.tsv \
+		tools/wp40/r8/native-witness-corpus.tsv; do
 	if ! git -C "$repo" cat-file -e "$checkout_sha:$relative_path"; then
 		echo "WP40 R8: selected commit lacks $relative_path" >&2
 		exit 2
@@ -74,8 +105,14 @@ done
 candidate_table="$script_dir/seed-candidates.tsv"
 offline_r7_manifest="$(awk -F '\t' -v seed="$seed" \
 	'NR > 1 && $2 == seed {print $7}' "$candidate_table")"
+promotion_status="$(awk -F '\t' -v seed="$seed" \
+	'NR > 1 && $2 == seed {print $14}' "$candidate_table")"
 if [[ ! "$offline_r7_manifest" =~ ^[0-9a-f]{64}$ ]]; then
 	echo "WP40 R8: seed is not one of the frozen candidates: $seed" >&2
+	exit 2
+fi
+if [[ "$promotion_status" != "automated_release_candidate" ]]; then
+	echo "WP40 R8: seed lacks a reviewed candidate-specific resource witness: $seed" >&2
 	exit 2
 fi
 
@@ -93,13 +130,18 @@ runner_digest="$({
 	sha256sum "$script_dir/probe/mod.conf" | awk '{print $1}'
 } | sha256sum | awk '{print $1}')"
 corpus_digest="$(sha256sum "$corpus" | awk '{print $1}')"
+native_corpus_digest=""
+if [[ -n "$native_corpus" ]]; then
+	native_corpus_digest="$(sha256sum "$native_corpus" | awk '{print $1}')"
+fi
 candidate_table_digest="$(sha256sum "$candidate_table" | awk '{print $1}')"
 capture_id="$({
-	printf '%s\n' "grug_wp40_r8_headless_smoke_v1" "$checkout_sha" \
+	printf '%s\n' "grug_wp40_r8_headless_smoke_v2" "$checkout_sha" \
 		"$mode" "$parallel_orders" "$seed" "$offline_r7_manifest" \
 		"$timeout_seconds" \
-		"$runner_digest" "$corpus_digest" "$candidate_table_digest" \
-		"$engine_digest"
+		"$runner_digest" "$corpus_digest" "$native_corpus_digest" \
+		"$candidate_table_digest" \
+		"$engine_digest" "$seed_sha256"
 } | sha256sum | awk '{print $1}')"
 results_root="${WP40_R8_RESULTS_ROOT:-$repo/tools/wp40/results/r8}"
 if [[ "$results_root" != /* ]]; then results_root="$repo/$results_root"; fi
@@ -112,15 +154,40 @@ fi
 mkdir "$result_dir" "$result_dir/forward" "$result_dir/reverse" \
 	"$result_dir/inputs"
 cp "$corpus" "$result_dir/corpus.tsv"
+if [[ -n "$native_corpus" ]]; then cp "$native_corpus" "$result_dir/native-witness-corpus.tsv"; fi
 cp "$script_dir/run.sh" "$result_dir/inputs/run.sh"
 cp "$script_dir/probe/init.lua" "$result_dir/inputs/probe-init.lua"
 cp "$script_dir/probe/mod.conf" "$result_dir/inputs/probe-mod.conf"
 cp "$candidate_table" "$result_dir/inputs/seed-candidates.tsv"
+if [[ -n "$native_corpus" ]]; then cp "$native_corpus" "$result_dir/inputs/native-witness-corpus.tsv"; fi
 printf '%s\n' "$flatpak_info_text" >"$result_dir/flatpak-info.txt"
 printf '%s\n' "$flatpak_version_text" >"$result_dir/flatpak-version.txt"
 
+capture_flatpak_identity() {
+	local prefix="$1"
+	flatpak info org.luanti.luanti >"$result_dir/${prefix}-deployment.txt"
+	flatpak run --command=luanti org.luanti.luanti --version \
+		>"$result_dir/${prefix}-version.txt"
+}
+identity_digest() {
+	local prefix="$1"
+	{
+		cat "$result_dir/${prefix}-deployment.txt"
+		cat "$result_dir/${prefix}-version.txt"
+	} | sha256sum | awk '{print $1}'
+}
 capture_root="$(mktemp -d -p /tmp grudgelands-wp40-r8.XXXXXXXX)"
+forward_pid=""
+reverse_pid=""
 cleanup() {
+	if [[ -n "$forward_pid" ]]; then
+		kill "$forward_pid" 2>/dev/null || true
+		wait "$forward_pid" 2>/dev/null || true
+	fi
+	if [[ -n "$reverse_pid" ]]; then
+		kill "$reverse_pid" 2>/dev/null || true
+		wait "$reverse_pid" 2>/dev/null || true
+	fi
 	if [[ "$capture_root" == /tmp/grudgelands-wp40-r8.* ]]; then
 		rm -rf -- "$capture_root"
 	fi
@@ -141,6 +208,8 @@ run_order() {
 	local server_log="$run_root/server.log"
 	local console_log="$run_root/console.log"
 	local host_timeout_seconds=$((timeout_seconds + 30))
+	local native_required=false
+	if [[ "$mode" == "final" ]]; then native_required=true; fi
 	mkdir -p "$game_dir" "$world_dir" "$xdg_data" "$xdg_config" "$xdg_cache"
 	git -C "$repo" archive "$checkout_sha" | tar -x -C "$game_dir"
 	mkdir -p "$game_dir/mods/grug_wp40_r8_probe"
@@ -183,6 +252,8 @@ deprecated_lua_api_handling = error
 debug_log_level = action
 grug_wp40_r8_output = $world_dir/events.jsonl
 grug_wp40_r8_corpus = $world_dir/corpus.tsv
+grug_wp40_r8_native_corpus = ${native_corpus:+$world_dir/native-witness-corpus.tsv}
+grug_wp40_r8_native_required = $native_required
 grug_wp40_r8_seed = $seed
 grug_wp40_r8_order = $order
 grug_wp40_r8_min_cases = $min_cases
@@ -191,6 +262,7 @@ grug_wp40_r8_timeout = $timeout_seconds
 secure.trusted_mods = grug_wp40_r8_probe
 EOF
 	cp "$result_dir/corpus.tsv" "$world_dir/corpus.tsv"
+	if [[ -n "$native_corpus" ]]; then cp "$result_dir/native-witness-corpus.tsv" "$world_dir/native-witness-corpus.tsv"; fi
 	set +e
 	/usr/bin/time -v -o "$run_root/time.txt" timeout --foreground \
 		--kill-after=10 "$host_timeout_seconds" chrt --idle 0 ionice -c3 \
@@ -241,6 +313,12 @@ EOF
 	}
 }
 
+capture_flatpak_identity flatpak-before-pair
+initial_flatpak_digest="$(identity_digest flatpak-before-pair)"
+if [[ "$initial_flatpak_digest" != "$engine_digest" ]]; then
+	echo "WP40 R8: Flatpak identity changed while preparing the capture" >&2
+	exit 1
+fi
 if [[ "$parallel_orders" == "1" ]]; then
 	run_order forward &
 	forward_pid=$!
@@ -248,7 +326,9 @@ if [[ "$parallel_orders" == "1" ]]; then
 	reverse_pid=$!
 	fleet_status=0
 	if ! wait "$forward_pid"; then fleet_status=1; fi
+	forward_pid=""
 	if ! wait "$reverse_pid"; then fleet_status=1; fi
+	reverse_pid=""
 	if [[ $fleet_status -ne 0 ]]; then
 		echo "WP40 R8: one or both parallel orders failed" >&2
 		exit 1
@@ -257,31 +337,62 @@ else
 	run_order forward
 	run_order reverse
 fi
+capture_flatpak_identity flatpak-after-pair
+final_flatpak_digest="$(identity_digest flatpak-after-pair)"
+if [[ "$final_flatpak_digest" != "$initial_flatpak_digest" ]]; then
+	echo "WP40 R8: Flatpak deployment/origin/version changed during the pair" >&2
+	exit 1
+fi
 
-jq -n --slurpfile forward "$result_dir/forward/events.jsonl" \
+jq -n --arg expected_seed "$seed" \
+	--arg expected_seed_sha256 "$seed_sha256" \
+	--slurpfile forward "$result_dir/forward/events.jsonl" \
 	--slurpfile reverse "$result_dir/reverse/events.jsonl" '
 	def cases: map(select(.event == "case")) | sort_by(.id) |
 		map({id, mapchunk, central_min, central_max, content_sha256,
 			param2_sha256, light_sha256, central_voxels, node_counts,
 			light_stats, semantic_checks, semantic_ok});
+	def native_census: map(select(.event == "native_census")) | sort_by(.id) |
+		map({id, mapchunk, central_min, central_max, content_sha256,
+			central_voxels, node_counts, native_census, semantic_checks,
+			semantic_ok});
 	def start: map(select(.event == "start"));
 	def complete: map(select(.event == "complete"));
 	def shutdown: map(select(.event == "shutdown"));
+	def emerge: map(select(.event == "emerge"));
 	def errors: map(select(.event == "emerge") | .actions |
 			((.cancelled // 0) + (.errored // 0)));
 	($forward | cases) as $f |
 	($reverse | cases) as $r |
+	($forward | native_census) as $fn |
+	($reverse | native_census) as $rn |
 	($forward | start) as $fst |
 	($reverse | start) as $rst |
 	($forward | complete) as $fc |
 	($reverse | complete) as $rc |
 	($forward | shutdown) as $fs |
 	($reverse | shutdown) as $rs |
+	($forward | emerge) as $fe |
+	($reverse | emerge) as $re |
 	{schema: "grug_wp40_r8_order_comparison_v1",
 	 forward_cases: $f, reverse_cases: $r,
+	 forward_native_census: $fn, reverse_native_census: $rn,
 	 equal: ($f == $r),
 	 semantic_ok: (all($f[]; .semantic_ok == true) and
-		all($r[]; .semantic_ok == true)),
+		all($r[]; .semantic_ok == true) and
+		all($fn[]; .semantic_ok == true) and
+		all($rn[]; .semantic_ok == true)),
+	 native_census_equal: ($fn == $rn),
+	 native_gate_equal: (($fc | length) == 1 and ($rc | length) == 1 and
+		$fc[0].native_gate == $rc[0].native_gate),
+	 start_engine_equal: (($fst | length) == 1 and ($rst | length) == 1 and
+		$fst[0].engine == $rst[0].engine and
+		$fst[0].lua_runtime == $rst[0].lua_runtime),
+	 start_seed_equal: (($fst | length) == 1 and ($rst | length) == 1 and
+		$fst[0].seed == $rst[0].seed and
+		$fst[0].seed == $expected_seed and
+		$fst[0].seed_sha256 == $rst[0].seed_sha256 and
+		$fst[0].seed_sha256 == $expected_seed_sha256),
 	 request_orders_reversed: (($fst | length) == 1 and ($rst | length) == 1 and
 		$fst[0].request_order == ($rst[0].request_order | reverse)),
 	 forward_start: (($fst | length) == 1 and
@@ -291,6 +402,7 @@ jq -n --slurpfile forward "$result_dir/forward/events.jsonl" \
 		$fst[0].production.enabled == true and
 		$fst[0].production.production_enabled == true and
 		$fst[0].production.writer_count == 1 and
+		$fst[0].production.full_seed == $expected_seed and
 		$fst[0].production.manifest_sha256 ==
 			$rst[0].production.manifest_sha256),
 	 reverse_start: (($rst | length) == 1 and
@@ -300,23 +412,37 @@ jq -n --slurpfile forward "$result_dir/forward/events.jsonl" \
 		$rst[0].production.enabled == true and
 		$rst[0].production.production_enabled == true and
 		$rst[0].production.writer_count == 1 and
+		$rst[0].production.full_seed == $expected_seed and
 		$rst[0].production.manifest_sha256 ==
 			$fst[0].production.manifest_sha256),
 	 forward_complete: (($fc | length) == 1 and
-		$fc[0].case_count == ($f | length) and
-		$fc[0].emerged_case_count == ($f | length) and
-		$fc[0].snapshot_count == ($f | length)),
+		$fc[0].request_count == ($fe | length) and
+		$fc[0].emerged_case_count == ($fe | length) and
+		$fc[0].feature_case_count == ($f | length) and
+		$fc[0].native_census_case_count == ($fn | length) and
+		$fc[0].snapshot_count == (($f | length) + ($fn | length))),
 	 reverse_complete: (($rc | length) == 1 and
-		$rc[0].case_count == ($r | length) and
-		$rc[0].emerged_case_count == ($r | length) and
-		$rc[0].snapshot_count == ($r | length)),
+		$rc[0].request_count == ($re | length) and
+		$rc[0].emerged_case_count == ($re | length) and
+		$rc[0].feature_case_count == ($r | length) and
+		$rc[0].native_census_case_count == ($rn | length) and
+		$rc[0].snapshot_count == (($r | length) + ($rn | length))),
+	 forward_native_gate: (($fc | length) == 1 and
+		$fc[0].native_gate.ok == true),
+	 reverse_native_gate: (($rc | length) == 1 and
+		$rc[0].native_gate.ok == true),
 	 forward_clean_shutdown: (($fs | length) == 1 and $fs[0].clean == true),
 	 reverse_clean_shutdown: (($rs | length) == 1 and $rs[0].clean == true),
 	 forward_emerge_errors: ($forward | errors | add // 0),
 	 reverse_emerge_errors: ($reverse | errors | add // 0)}' \
 	>"$result_dir/comparison.json"
 
-if ! jq -e '(.equal and .semantic_ok and .request_orders_reversed and
+if ! jq -e '(.equal and .semantic_ok and .native_census_equal and
+	.native_gate_equal and
+	.start_seed_equal and
+	.forward_native_gate and .reverse_native_gate and
+	.start_engine_equal and
+	.request_orders_reversed and
 	.forward_start and .reverse_start and
 	.forward_complete and .reverse_complete and
 	.forward_clean_shutdown and .reverse_clean_shutdown and
@@ -336,36 +462,48 @@ forward_elapsed="$(jq -s '[.[] | select(.event == "complete") | .elapsed_us][0] 
 reverse_elapsed="$(jq -s '[.[] | select(.event == "complete") | .elapsed_us][0] // null' "$result_dir/reverse/events.jsonl")"
 forward_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/forward/events.jsonl")"
 reverse_rss="$(jq -s '[.[] | select(.process.rss_peak_bytes != null) | .process.rss_peak_bytes] | max // null' "$result_dir/reverse/events.jsonl")"
-jq -n --arg schema "grug_wp40_r8_headless_smoke_v1" \
-	--arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
+jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 	--arg mode "$mode" --arg seed "$seed" --arg corpus_digest "$corpus_digest" \
+	--arg native_corpus_digest "$native_corpus_digest" \
+	--arg seed_sha256 "$seed_sha256" \
 	--arg parallel_orders "$parallel_orders" \
 	--arg runner_digest "$runner_digest" \
 	--arg candidate_table_digest "$candidate_table_digest" \
 	--arg offline_r7_manifest "$offline_r7_manifest" \
-	--arg engine_digest "$engine_digest" --arg timeout "$timeout_seconds" \
+	--arg engine_digest "$engine_digest" \
+	--arg final_engine_digest "$final_flatpak_digest" \
+	--arg timeout "$timeout_seconds" \
 	--argjson forward_start "$forward_start" \
 	--argjson reverse_start "$reverse_start" \
 	--argjson forward_elapsed "$forward_elapsed" \
 	--argjson reverse_elapsed "$reverse_elapsed" \
 	--argjson forward_rss "$forward_rss" \
 	--argjson reverse_rss "$reverse_rss" \
-	'{schema: $schema, status: ($mode + "_smoke_complete"),
+	'{schema: "grug_wp40_r8_headless_smoke_v2",
+	 status: ($mode + "_smoke_complete"),
 	 capture_id: $capture_id, mode: $mode,
 	 parallel_orders: ($parallel_orders == "1"),
 	 snapshot: {checkout_sha: $checkout_sha, source: "git archive",
 		game_snapshot_isolation: "fresh archive under per-order LUANTI_USER_PATH"},
 	 input_identity: {runner_sha256: $runner_digest,
 		candidate_table_sha256: $candidate_table_digest,
-		engine_sha256: $engine_digest,
+		engine_sha256_before: $engine_digest,
+		engine_sha256_after: $final_engine_digest,
 		offline_r7_manifest_sha256: $offline_r7_manifest,
 		runtime_manifest_note:
 			"offline mocked-engine provenance; actual runtime manifest is in startup"},
 	 settings: {mg_name: "v7", chunksize: 5, water_level: 1,
-		num_emerge_threads: 1, seed_decimal_string: $seed},
+		num_emerge_threads: 1, seed_decimal_string: $seed,
+		seed_string_sha256: $seed_sha256},
 	 corpus: {path: "corpus.tsv", digest: $corpus_digest,
-		rows: ($forward_start.case_count // null), schema: "id\\tx\\t(surface|y)\\tz",
+		rows: ($forward_start.feature_case_count // null),
+		schema: "id\\tx\\t(surface|y)\\tz",
 		coordinates: "each row is canonicalized to one 80-node mapchunk"},
+	 native_corpus: {path: "native-witness-corpus.tsv",
+		digest: $native_corpus_digest,
+		rows: ($forward_start.native_corpus_count // null),
+		schema: "id\\tx\\ty\\tz",
+		coordinates: "fixed event grid plus seven content-census slices"},
 	 orders: ["forward", "reverse"],
 	 startup: {forward: $forward_start, reverse: $reverse_start},
 	 measured: {forward_probe_elapsed_us: $forward_elapsed,
@@ -374,7 +512,8 @@ jq -n --arg schema "grug_wp40_r8_headless_smoke_v1" \
 		reverse_engine_peak_rss_bytes: $reverse_rss},
 	outputs: {comparison: "comparison.json",
 		per_order: "{forward,reverse}/{events.jsonl,server.log,console.log,time.txt,luanti.conf,world.mt,errors.log,exit-status}",
-		flatpak: ["flatpak-info.txt", "flatpak-version.txt"]},
+		flatpak: ["flatpak-info.txt", "flatpak-version.txt",
+			"flatpak-before-pair-*", "flatpak-after-pair-*"]},
 	 telemetry: {walltime: "GNU time -v raw file plus probe elapsed_us",
 		peak_rss: "GNU time launcher plus probe /proc VmHWM",
 		lights: "one digest over the engine packed light-data array"},

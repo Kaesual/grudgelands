@@ -10,6 +10,8 @@ end
 
 local output_path = core.settings:get("grug_wp40_r8_output")
 local corpus_path = core.settings:get("grug_wp40_r8_corpus")
+local native_corpus_path = core.settings:get("grug_wp40_r8_native_corpus")
+local native_required = core.settings:get("grug_wp40_r8_native_required") == "true"
 local expected_seed = core.settings:get("grug_wp40_r8_seed")
 local order_name = core.settings:get("grug_wp40_r8_order") or "forward"
 local min_cases = tonumber(core.settings:get("grug_wp40_r8_min_cases")) or 10
@@ -59,7 +61,7 @@ local function containing_chunk_origin(value)
 	return chunk_block * 16
 end
 
-local function read_corpus(path)
+local function read_corpus(path, native_rows)
 	local file = assert(io.open(path, "rb"))
 	local rows, seen, seen_ids = {}, {}, {}
 	for line in file:lines() do
@@ -77,7 +79,10 @@ local function read_corpus(path)
 			seen_ids[id] = true
 			x, z = assert(tonumber(x)), assert(tonumber(z))
 			local y, height_mode
-			if y_text == "surface" then
+			if native_rows and y_text == "surface" then
+				file:close()
+				fail("native witness corpus requires exact numeric y")
+			elseif y_text == "surface" then
 				if type(grug_zones) ~= "table" or
 						type(grug_zones.terrain_height_at) ~= "function" then
 					file:close()
@@ -111,29 +116,87 @@ local function read_corpus(path)
 				fail("corpus contains duplicate mapchunk " .. key)
 			end
 			seen[key] = true
+			local native_role
+			if native_rows then
+				if id:match("^native_owner_") then
+					native_role = "owner"
+				elseif id:match("^native_stratum_") or
+						id:match("^native_ore_") then
+					native_role = "census"
+				else
+					file:close()
+					fail("native row id must use native_owner_/native_stratum_/native_ore_")
+				end
+			end
 			rows[#rows + 1] = {id = id, origin = origin, key = key,
-				position = {x = x, y = y, z = z}, height_mode = height_mode}
+				position = {x = x, y = y, z = z}, height_mode = height_mode,
+				native_role = native_role}
 		end
 	end
 	assert(file:close())
-	if #rows < min_cases or #rows > max_cases then
+	if not native_rows and (#rows < min_cases or #rows > max_cases) then
 		fail("corpus row count is outside the selected run-mode bounds")
-	end
-	if order_name == "reverse" then
-		local reversed = {}
-		for i = #rows, 1, -1 do reversed[#reversed + 1] = rows[i] end
-		rows = reversed
 	end
 	return rows
 end
 
-local cases = read_corpus(corpus_path)
+local feature_cases = read_corpus(corpus_path, false)
+local native_rows = {}
+if native_corpus_path and native_corpus_path ~= "" then
+	native_rows = read_corpus(native_corpus_path, true)
+end
+if native_required and #native_rows == 0 then
+	fail("final mode requires a native witness corpus")
+end
+local request_cases, combined_keys, combined_ids = {}, {}, {}
+local native_scope_keys, native_scope_bounds = {}, {}
+for i = 1, #feature_cases do
+	local case = feature_cases[i]
+	request_cases[#request_cases + 1] = case
+	combined_keys[case.key] = true
+	combined_ids[case.id] = true
+end
+for i = 1, #native_rows do
+	local native = native_rows[i]
+	if combined_ids[native.id] then
+		fail("combined corpus contains duplicate id " .. native.id)
+	end
+	if combined_keys[native.key] then
+		fail("combined corpus contains duplicate mapchunk " .. native.key)
+	end
+	combined_ids[native.id] = true
+	combined_keys[native.key] = true
+	native_scope_keys[native.key] = true
+	native_scope_bounds[native.key] = {
+		minp = native.origin,
+		maxp = {x = native.origin.x + 79, y = native.origin.y + 79,
+			z = native.origin.z + 79},
+	}
+	request_cases[#request_cases + 1] = native
+end
+if order_name == "reverse" then
+	local reversed = {}
+	for i = #request_cases, 1, -1 do
+		reversed[#reversed + 1] = request_cases[i]
+	end
+	request_cases = reversed
+end
 local loaded_at = core.get_us_time()
 local current = 0
 local emerged_case_count = 0
 local snapshot_count = 0
 local finished = false
 local generated_count = 0
+local native_by_key = {}
+local native_census_totals = {native_ore = 0, strata = {}}
+local native_event_names = {"cave_begin", "cave_end", "large_cave_begin",
+	"large_cave_end", "dungeon"}
+local stratum_names = {"grug_materials:slate", "grug_materials:basalt",
+	"grug_materials:granite", "grug_materials:emberrock",
+	"grug_materials:abyssal_rock"}
+for i = 1, #stratum_names do
+	native_census_totals.strata[stratum_names[i]] = 0
+end
 local action_names = {
 	[core.EMERGE_GENERATED] = "generated",
 	[core.EMERGE_FROM_MEMORY] = "memory",
@@ -226,7 +289,63 @@ local function count_node(rows, expected_name)
 	return 0
 end
 
-local function snapshot_case(case)
+local function sort_native_events(events)
+	table.sort(events, function(a, b)
+		if a.kind ~= b.kind then return a.kind < b.kind end
+		if a.position.x ~= b.position.x then
+			return a.position.x < b.position.x
+		end
+		if a.position.y ~= b.position.y then
+			return a.position.y < b.position.y
+		end
+		if a.position.z ~= b.position.z then
+			return a.position.z < b.position.z
+		end
+		return a.source_mapchunk < b.source_mapchunk
+	end)
+end
+
+local function native_census(node_counts)
+	local census = {native_ore = count_node(node_counts, "default:gravel"),
+		strata = {}}
+	for i = 1, #stratum_names do
+		local name = stratum_names[i]
+		census.strata[name] = count_node(node_counts, name)
+	end
+	native_census_totals.native_ore = native_census_totals.native_ore + census.native_ore
+	for i = 1, #stratum_names do
+		local name = stratum_names[i]
+		native_census_totals.strata[name] =
+			(native_census_totals.strata[name] or 0) + census.strata[name]
+	end
+	return census
+end
+
+local function collect_native_events(minp)
+	local key = minp.x .. "," .. minp.y .. "," .. minp.z
+	if not native_scope_keys[key] then return end
+	local notify = core.get_mapgen_object("gennotify") or {}
+	local events = native_by_key[key] or {}
+	for i = 1, #native_event_names do
+		local kind = native_event_names[i]
+		local positions = notify[kind]
+		if type(positions) == "table" then
+			for j = 1, #positions do
+				local position = positions[j]
+				if type(position) == "table" and type(position.x) == "number" and
+					type(position.y) == "number" and type(position.z) == "number" then
+				events[#events + 1] = {kind = kind,
+					position = {x = position.x, y = position.y, z = position.z},
+					source_mapchunk = key}
+				end
+			end
+		end
+	end
+	sort_native_events(events)
+	native_by_key[key] = events
+end
+
+local function read_voxel_arrays(case, full)
 	local minp = case.origin
 	local maxp = {
 		x = minp.x + 79,
@@ -243,13 +362,26 @@ local function snapshot_case(case)
 			maxp.y > emerged_max.y or maxp.z > emerged_max.z then
 		fail("requested central mapchunk is outside emerged area")
 	end
-	local area = VoxelArea:new(emerged_min, emerged_max)
+	local area = VoxelArea:new({MinEdge = emerged_min, MaxEdge = emerged_max})
 	local content = vm:get_data()
-	local param2 = vm:get_param2_data()
-	local light = vm:get_light_data()
-	if #content == 0 or #param2 == 0 or #light == 0 then
+	if #content == 0 then
 		fail("voxel snapshot contains an empty array")
 	end
+	if not full then
+		return vm, area, minp, maxp, emerged_min, emerged_max, content
+	end
+	local param2 = vm:get_param2_data()
+	local light = vm:get_light_data()
+	if #param2 == 0 or #light == 0 then
+		fail("voxel snapshot contains an empty auxiliary array")
+	end
+	return vm, area, minp, maxp, emerged_min, emerged_max, content,
+		param2, light
+end
+
+local function snapshot_case(case)
+	local vm, area, minp, maxp, emerged_min, emerged_max, content,
+		param2, light = read_voxel_arrays(case, true)
 	local content_sha256, node_counts = digest_array(
 		content, area, minp, maxp, 4, "content")
 	local param2_sha256 = digest_array(param2, area, minp, maxp, 1)
@@ -264,18 +396,22 @@ local function snapshot_case(case)
 		no_ignore = count_node(node_counts, "ignore") == 0,
 		surface_has_daylight = case.height_mode ~= "surface" or
 			light_stats.day_max > 0,
-		expected_runtime_feature = true,
+		exact_source_witness = true,
 	}
 	if case.id == "human_capital" then
-		semantic_checks.expected_runtime_feature =
-			count_node(node_counts, "grug_nodes:guard_banner") > 0
-	elseif case.id == "wyrmglass_channel" or
-			case.id == "stormscale_channel" then
-		semantic_checks.expected_runtime_feature =
-			count_node(node_counts, "default:water_source") > 0
+		-- Source-bound anchor_008 root: accepted H=36, activation root y=37.
+		local node = core.get_node({x = 0, y = 37, z = -1500}).name
+		semantic_checks.exact_source_witness = node == "grug_nodes:guard_banner"
+	elseif case.id == "wyrmglass_channel" or case.id == "stormscale_channel" then
+		-- Source-bound channel center at z=0; exact water-level voxel y=1.
+		local x = case.id == "wyrmglass_channel" and -2675 or 2675
+		local node = core.get_node({x = x, y = 1, z = 0}).name
+		semantic_checks.exact_source_witness = node == "default:water_source"
 	elseif case.id == "deep_cross_border_resource" then
-		semantic_checks.expected_runtime_feature =
-			count_node(node_counts, "grug_materials:stone_with_ruby") > 0
+		-- Accepted deep cross-border ruby witness, retained as one exact voxel.
+		local node = core.get_node({x = -1691, y = -842, z = 191}).name
+		semantic_checks.exact_source_witness = node ==
+			"grug_materials:stone_with_ruby"
 	end
 	local semantic_ok = true
 	for _, passed in pairs(semantic_checks) do
@@ -305,6 +441,42 @@ local function snapshot_case(case)
 	return result
 end
 
+local function snapshot_native_census(case)
+	local vm, area, minp, maxp, emerged_min, emerged_max, content =
+		read_voxel_arrays(case, false)
+	local content_sha256, node_counts = digest_array(
+		content, area, minp, maxp, 4, "content")
+	local counted_voxels = 0
+	for i = 1, #node_counts do
+		counted_voxels = counted_voxels + node_counts[i].count
+	end
+	local census = native_census(node_counts)
+	local semantic_checks = {
+		complete_node_census = counted_voxels == 80 * 80 * 80,
+		no_ignore = count_node(node_counts, "ignore") == 0,
+	}
+	local result = {
+		event = "native_census",
+		id = case.id,
+		mapchunk = case.key,
+		requested_position = case.position,
+		central_min = minp,
+		central_max = maxp,
+		emerged_min = emerged_min,
+		emerged_max = emerged_max,
+		content_sha256 = content_sha256,
+		node_counts = node_counts,
+		native_census = census,
+		semantic_checks = semantic_checks,
+		semantic_ok = semantic_checks.complete_node_census and
+			semantic_checks.no_ignore,
+		central_voxels = 80 * 80 * 80,
+		process = process_metrics(),
+	}
+	vm:close()
+	return result
+end
+
 local run_next
 local snapshot_next
 local function emerge_done(_, action, calls_remaining, state)
@@ -322,8 +494,125 @@ local function emerge_done(_, action, calls_remaining, state)
 end
 
 local snapshot_cases = {}
-for i = 1, #cases do snapshot_cases[i] = cases[i] end
+for i = 1, #feature_cases do
+	snapshot_cases[#snapshot_cases + 1] = feature_cases[i]
+end
+local native_census_case_count = 0
+for i = 1, #native_rows do
+	if native_rows[i].native_role == "census" then
+		snapshot_cases[#snapshot_cases + 1] = native_rows[i]
+		native_census_case_count = native_census_case_count + 1
+	end
+end
 table.sort(snapshot_cases, function(a, b) return a.id < b.id end)
+
+local function point_in_source(event)
+	local bounds = native_scope_bounds[event.source_mapchunk]
+	local position = event.position
+	return bounds and position.x >= bounds.minp.x and
+		position.x <= bounds.maxp.x and position.y >= bounds.minp.y and
+		position.y <= bounds.maxp.y and position.z >= bounds.minp.z and
+		position.z <= bounds.maxp.z
+end
+
+local function node_name_at(position)
+	local vm = core.get_voxel_manip(position, position)
+	local emerged_min, emerged_max = vm:get_emerged_area()
+	local area = VoxelArea:new({MinEdge = emerged_min, MaxEdge = emerged_max})
+	local data = vm:get_data()
+	local cid = data[area:index(position.x, position.y, position.z)]
+	vm:close()
+	local name = cid and core.get_name_from_content_id(cid) or nil
+	return name or ""
+end
+
+local function air_near(position, radius)
+	local minp = {x = position.x - radius, y = position.y - radius,
+		z = position.z - radius}
+	local maxp = {x = position.x + radius, y = position.y + radius,
+		z = position.z + radius}
+	local vm = core.get_voxel_manip(minp, maxp)
+	local emerged_min, emerged_max = vm:get_emerged_area()
+	local area = VoxelArea:new({MinEdge = emerged_min, MaxEdge = emerged_max})
+	local data = vm:get_data()
+	local air_cid = core.get_content_id("air")
+	local count = 0
+	for z = minp.z, maxp.z do
+		for y = minp.y, maxp.y do
+			for x = minp.x, maxp.x do
+				if data[area:index(x, y, z)] == air_cid then
+					count = count + 1
+				end
+			end
+		end
+	end
+	vm:close()
+	return count
+end
+
+local function native_gate_result()
+	local counts = {cave_begin = 0, cave_end = 0, large_cave_begin = 0,
+		large_cave_end = 0, dungeon = 0}
+	local events = {}
+	for _, bucket in pairs(native_by_key) do
+		for i = 1, #bucket do
+			local event = bucket[i]
+			counts[event.kind] = counts[event.kind] + 1
+			events[#events + 1] = event
+		end
+	end
+	sort_native_events(events)
+	local dungeon_preserved, cave_air_witness = 0, 0
+	for i = 1, #events do
+		local event = events[i]
+		event.inside_source = point_in_source(event) and true or false
+		if event.kind == "dungeon" then
+			event.node = node_name_at(event.position)
+			event.below = node_name_at({x = event.position.x,
+				y = event.position.y - 1, z = event.position.z})
+			event.preserved_room = event.inside_source and event.node == "air" and
+				(event.below == "default:cobble" or
+					event.below == "default:mossycobble")
+			if event.preserved_room then dungeon_preserved = dungeon_preserved + 1 end
+		elseif event.kind == "cave_begin" or
+				event.kind == "large_cave_begin" then
+			event.nearby_air_count = event.inside_source and
+				air_near(event.position, 8) or 0
+			event.preserved_cave_air = event.nearby_air_count > 0
+			if event.preserved_cave_air then cave_air_witness = cave_air_witness + 1 end
+		end
+	end
+	local cave_pairs = counts.cave_begin == counts.cave_end and
+		counts.large_cave_begin == counts.large_cave_end and
+		counts.cave_begin + counts.large_cave_begin > 0
+	local all_strata = true
+	for i = 1, #stratum_names do
+		if native_census_totals.strata[stratum_names[i]] == 0 then
+			all_strata = false
+		end
+	end
+	local result = {
+		required = native_required,
+		native_ore_count = native_census_totals.native_ore,
+		strata = native_census_totals.strata,
+		event_counts = counts,
+		events = events,
+		dungeon_preserved_room_count = dungeon_preserved,
+		cave_air_witness_count = cave_air_witness,
+	}
+	result.dungeon_witness = not native_required or
+		(counts.dungeon > 0 and dungeon_preserved > 0)
+	result.cave_witness = not native_required or
+		(cave_pairs and cave_air_witness > 0)
+	result.cave_pairs = not native_required or cave_pairs
+	result.stratum_census = not native_required or all_strata
+	result.native_ore_census = not native_required or
+		native_census_totals.native_ore > 0
+	result.ok = result.dungeon_witness and result.cave_witness and
+		result.cave_pairs and result.stratum_census and
+		result.native_ore_census
+	return result
+end
 
 snapshot_next = function()
 	snapshot_count = snapshot_count + 1
@@ -332,17 +621,25 @@ snapshot_next = function()
 		finished = true
 		write_event({
 			event = "complete",
-			case_count = #cases,
+			request_count = #request_cases,
+			feature_case_count = #feature_cases,
 			emerged_case_count = emerged_case_count,
 			snapshot_count = #snapshot_cases,
+			native_census_case_count = native_census_case_count,
 			generated_callback_count = generated_count,
+			native_gate = native_gate_result(),
 			elapsed_us = core.get_us_time() - loaded_at,
 			process = process_metrics(),
 		})
 		core.request_shutdown("WP40 R8 probe complete", false, 0.1)
 		return
 	end
-	local snapshot = snapshot_case(case)
+	local snapshot
+	if case.native_role == "census" then
+		snapshot = snapshot_native_census(case)
+	else
+		snapshot = snapshot_case(case)
+	end
 	snapshot.order = order_name
 	write_event(snapshot)
 	core.after(0, snapshot_next)
@@ -350,7 +647,7 @@ end
 
 run_next = function()
 	current = current + 1
-	local case = cases[current]
+	local case = request_cases[current]
 	if not case then
 		core.after(0, snapshot_next)
 		return
@@ -370,8 +667,9 @@ run_next = function()
 end
 
 if type(core.register_on_generated) == "function" then
-	core.register_on_generated(function()
+	core.register_on_generated(function(minp)
 		generated_count = generated_count + 1
+		collect_native_events(minp)
 	end)
 end
 
@@ -407,15 +705,18 @@ core.register_on_mods_loaded(function()
 				hash = version.hash}
 		end)(),
 		seed = seed,
+		seed_sha256 = hex_digest(core.sha256(seed, true)),
 		mapgen = core.get_mapgen_setting("mg_name"),
 		chunksize = core.get_mapgen_setting("chunksize"),
 		water_level = core.get_mapgen_setting("water_level"),
 		num_emerge_threads = core.settings:get("num_emerge_threads"),
 		mapgen_flags = core.get_mapgen_setting("mg_flags"),
-		case_count = #cases,
+		request_count = #request_cases,
+		feature_case_count = #feature_cases,
+		native_corpus_count = #native_rows,
 		request_order = (function()
 			local ids = {}
-			for i = 1, #cases do ids[i] = cases[i].id end
+			for i = 1, #request_cases do ids[i] = request_cases[i].id end
 			return ids
 		end)(),
 		order = order_name,
@@ -440,3 +741,13 @@ core.register_on_mods_loaded(function()
 		end
 	end)
 end)
+
+-- This must be installed before the first emerge request; the main callback
+-- reads the resulting per-chunk native events through gennotify.
+core.set_gen_notify({
+	cave_begin = true,
+	cave_end = true,
+	large_cave_begin = true,
+	large_cave_end = true,
+	dungeon = true,
+})

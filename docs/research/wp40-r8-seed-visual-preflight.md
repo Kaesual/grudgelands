@@ -30,6 +30,15 @@ comfort. The three rows therefore remain equal visual candidates until the
 user's fresh-world inspection. The R7 seed-evidence byte sizes are recorded
 for traceability only; they are not a quality score.
 
+The automation boundary is intentionally asymmetric. Seed `0` is the only
+automatic release candidate because `deep_cross_border_resource` has the
+exact accepted Ruby root at
+`docs/research/wp40-simple-map-r6-artifact.tsv:14`. Seeds `1` and `42`
+remain GUI-only alternatives. Before either can enter an automated promotion
+run, that seed needs its own accepted resource-witness row, the corresponding
+corpus/table update, and a review; the Seed-0 root may not be borrowed as
+evidence for another seed.
+
 ## What is fixed and what can vary
 
 The source is `schema=grug_wp40_simple_map_source_v2`, layout
@@ -58,14 +67,55 @@ accepted pilot and targeted reference. The R8 plan explicitly names seed `0`
 as the SVG's documented preview seed. These statements establish provenance;
 they do not predict what the first GUI world will look like.
 
+## Deterministic native-witness corpus
+
+The feature smoke corpus remains exactly 15 rows in
+`tools/wp40/r8/smoke-corpus.tsv`. Native preservation is kept in the separate
+four-column `tools/wp40/r8/native-witness-corpus.tsv`, with the five-row
+`native-pilot-corpus.tsv` being its declared prefix. These files are
+inputs, not evidence that a particular row already contains a dungeon or cave.
+
+Rows `native_owner_y240_r00_c00` through `native_owner_y240_r04_c04` form a
+fixed 5 by 5 mapchunk grid. With `chunksize=5`, their requested x/z positions
+`-152,-72,8,88,168` resolve to central origins
+`-192,-112,-32,48,128`; requested `y=-240` resolves to central origin
+`-272`. Thus this is the upper dungeon-eligible owner slice, central
+`[-272,-193]` and full emerged `[-288,-177]`, with unique mapchunk IDs
+and no growing search radius. The five rows in `native-pilot-corpus.tsv`
+are exactly `native_owner_y240_r00_c00` through `...c04`; the pilot
+checks plumbing only and never turns a missing notification into a pass.
+
+The fixed supplemental rows are `native_stratum_slate` (`y=-240`),
+`native_stratum_basalt` (`-400`), `native_stratum_granite` (`-600`),
+`native_stratum_emberrock` (`-800`) and `native_stratum_abyssal`
+(`-1500`). Their authoritative registration envelopes are respectively
+`[-300,-101]`, `[-500,-301]`, `[-700,-501]`, `[-1000,-701]` and
+`[-31000,-1001]` in
+`docs/research/wp40-r7-native-contract-candidate.md:88-92`. The two
+`native_ore_census_upper`/`native_ore_census_deep` rows provide fixed
+aggregate census slices; they do not assert that random native ore occurs at
+either single coordinate.
+
+The real-engine generated callback must search this bounded grid for
+`cave_begin`/`cave_end`, `large_cave_begin`/`large_cave_end` and
+`dungeon` notifications. The release gate requires a real dungeon
+notification and a complete random-walk-cave notification pair from the grid,
+plus all five stratum families and at least one registered native-ore node in
+the aggregate census. It must not infer a cave from a v7 noise intersection or
+from the absence of a notification. The dungeon envelope is source-derived
+from `docs/research/wp40-simple-map-r5-contract.md:2012-2019`; the
+notification and node-count results still require the fresh engine run.
+
 ## GUI inspection route
 
-The route table contains 14 ordered checkpoints and deliberately combines
+The route table contains 15 ordered checkpoints and deliberately combines
 paired observations where doing so keeps the pass compact. It covers both
 faction-side starts and capitals, ordinary inland terrain, the faction/front
 boundary, the Battlegrounds, road and hydrology crossings, lake, coast/shelf/
 deep ocean, both immutable dragon channels, both island endpoints, a housing
-mask, and deep strata/cave/dungeon/resource witnesses.
+mask, and deep strata/cave/dungeon/resource witnesses. The final native-deep
+row is a bounded API/runtime observation, not an additional GUI teleport tour
+through all 25 native mapchunks.
 
 The source coordinates are exact x/z values. A row with multiple coordinate
 pairs is a paired comparison, not an implied continuous walking path. Surface
@@ -85,11 +135,14 @@ Where the current production API exposes the query, record the result for
 `grug_materials.tier_at`. Also check fixed
 anchor/socket identity, route class/corridor and boat landing identity, water
 precedence, the 101 by 101 housing footprint, and deep full-column channel
-protection. These checks are assertions against accepted source/API contracts;
-they do not require a new seed fleet.
+protection. For the native corpus, record the mapchunk envelope, sorted
+Gennotify positions and aggregate node census separately from the 15 feature
+rows. These checks are assertions against accepted source/API contracts; they
+do not require a new seed fleet.
 
-For the deep witness row, the two exact x/y/z records are
-`docs/research/wp40-simple-map-r6-artifact.tsv:14-15`. The automatable API checks can establish zone,
+For the deep resource witness row, the exact x/y/z record is
+`docs/research/wp40-simple-map-r6-artifact.tsv:14`; the companion native
+cross-border witness is row 15. The automatable API checks can establish zone,
 territory and depth tier. They cannot establish that a cave, dungeon, ore or
 stratum is present at an arbitrary sampled coordinate. The real world must be
 inspected for native v7 preservation, lighting/liquids and operation order, as
@@ -110,10 +163,15 @@ neither is represented by the offline R6/R7 artifact hashes.
 - The R7 writer is the single production authority and the cultural/P9G
   registrations are already part of its accepted cutover. No second writer or
   repair pass should be introduced during the visual pass.
+- The future runner must emerge the feature corpus union the native-witness
+  grid in declared and exact-reverse order, while keeping native Gennotify and
+  node-census evidence separate from the 15 feature digests. This data-only
+  correction does not claim that either native corpus has been run.
 - This preflight did not run Luanti, Flatpak, a seed fleet, a build, or a new
   validation gate, by design.
-- The only blocker to calling one candidate a winner is missing visual and
-  real-runtime evidence. If all three GUI passes are acceptable, selection is
-  a product choice; if one is visually preferable, record that judgement and
-  the inspected seed rather than retroactively treating the offline hashes as
-  a ranking metric.
+- A candidate winner still needs the native Gennotify/strata/ore gate and fresh
+  GUI/runtime evidence. Seed `0` alone is eligible for the first automated
+  promotion; Seeds `1` and `42` additionally require their own accepted
+  resource witness, corpus update and review. If all three GUI passes are
+  acceptable, selection is a product choice; record that judgement rather
+  than retroactively treating offline hashes as a ranking metric.

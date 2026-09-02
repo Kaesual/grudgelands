@@ -92,6 +92,10 @@ R8 implements a small release harness, not a general mapgen framework. It must:
   settings, corpus bytes and probe bytes before generation, then require the
   two fresh worlds to report one identical actual runtime manifest (the R7
   mocked-engine manifest remains provenance, not a false content-ID equality);
+- resolve every caller-supplied Git revision once to one full 40-hex commit ID,
+  archive only that immutable ID, and verify the Flatpak deployment identity
+  immediately before and after the pair as well as both engines' in-process
+  version records;
 - use production v7 settings and exactly one emerge thread;
 - request one corpus mapchunk at a time, wait for its complete emerge callback,
   and then request the next row, using the same externally declared corpus in a
@@ -136,6 +140,32 @@ depth. Coordinates are derived from accepted map sources or artifacts, never
 discovered by changing production geometry after seeing a runtime result. A
 deep automated case need not become a user teleport destination.
 
+Native preservation has a second, fixed four-column input rather than spending
+most of the 15 user-feature rows on probabilistic underground placement. Its
+small rectangular deep grid is frozen before the first engine run. Every final
+schedule emerges the union of the feature corpus and this native-witness grid,
+in declared order or the exact reverse. It hashes the feature corpus's
+canonical central mapchunks plus content-only hashes for the seven declared
+stratum/ore census slices; the event-only grid is not snapshotted. A
+main-environment generated callback requests
+`cave_begin`, `cave_end`, `large_cave_begin`, `large_cave_end` and `dungeon`
+notifications and records their sorted positions. The final gate requires a
+real dungeon notification and a complete random-walk-cave notification pair;
+v7 noise-intersection caves and caverns are deliberately not inferred from
+the absence of such notifications. The fixed deep feature slices separately
+require all production stratum families and the retained registered native
+gravel-blob node in their aggregate census. This is bounded release evidence, not a search
+whose radius grows until it passes.
+
+Feature witnesses are position-bound. The capital and channel checks use
+source-derived envelopes and meaningful minimum counts; the Seed-0 resource
+check reads the exact accepted root voxel, not merely another same-named node
+somewhere in its mapchunk. Seed `0` is therefore the only initially automated
+release candidate. Seeds `1` and `42` remain bounded GUI alternatives, but
+promoting either requires a candidate-specific accepted resource witness and
+a reviewed corpus update before its automated smoke. This prevents a Seed-0
+witness from accidentally accepting or rejecting another seed.
+
 ### 4.2 Order comparison
 
 The required schedules are one risk-prioritized order and its exact reverse.
@@ -154,6 +184,7 @@ is not waived by taking the more attractive schedule.
 ### G0 -- contract and source preflight
 
 - freeze the exact contract, seed-candidate roster, corpus and GUI itinerary;
+- freeze the bounded native-witness grid and its smaller pilot prefix;
 - independently review their scope, source provenance and non-overclaim;
 - verify the baseline, R7 manifest and production-settings identities; and
 - prove the harness cannot address the shared installed game or a non-scratch
@@ -176,9 +207,11 @@ with byte-identical canonical output, as required by the repository strategy.
 ### G2 -- resource pilot
 
 Run the same two-order machinery sequentially over the frozen three-case pilot
-prefix containing capital, channel-water and deep-resource cases. Record
-elapsed time and peak RSS before authorizing the complete pair and deciding
-whether its two worlds may run concurrently.
+prefix containing capital, channel-water and deep-resource cases plus the
+frozen native-pilot prefix. The pilot validates the notification plumbing and
+records any witnessed events, but does not require a random placement to occur
+inside that smaller prefix. Record elapsed time and peak RSS before authorizing
+the complete pair and deciding whether its two worlds may run concurrently.
 
 The complete two-schedule smoke proceeds only when the pilot projects:
 
@@ -203,9 +236,13 @@ gate requires:
 - one active WP40 generated callback/writer path;
 - byte-identical post-settle content, `param2` and light digests;
 - a complete readable node census with no `ignore`, nonzero surface daylight,
-  the capital marker, channel water and exact accepted ruby witness present;
-  native cave/dungeon/stratum/ore observations remain recorded rather than
-  requiring a random dungeon in the bounded corpus; and
+  the source-bound capital marker envelope, usable channel-water envelope and
+  exact accepted Seed-0 ruby root present;
+- all five registered native strata and at least one retained native
+  gravel-blob node in the aggregate deep-slice census;
+- at least one native dungeon event and a matched native random-walk-cave event
+  pair from the fixed native-witness grid, with the canonical native evidence
+  identical across request orders; and
 - durable wall-time and peak-RSS output.
 
 Generation timing and RSS are release outputs. Within the two-hour/no-host-
@@ -262,6 +299,9 @@ the full checklist in `docs/process/wp-workflow.md`.
 
 - A tools/docs-only correction reruns only affected harness fixtures or
   receipts; it does not regenerate R6/R7 production evidence.
+- A corpus or native-grid correction after a runtime observation retains the
+  failed record and receives review; the grid may not expand automatically
+  until a random event appears.
 - A production Lua correction runs the mandatory static gates and replaces
   R8's one final compact PUC 5.1/LuaJIT micro-KAT pair on frozen bytes.
 - A change to writer order, ownership, planner/content semantics, seed hashing

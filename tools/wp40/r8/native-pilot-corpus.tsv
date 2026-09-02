@@ -1,0 +1,10 @@
+# Fixed pilot prefix of native-witness-corpus.tsv; five rows, one grid row.
+# It exercises the same y=-240 owner slice but does not itself promise a
+# dungeon or random-walk-cave notification. The complete native grid remains
+# the release gate.
+# schema: id	x	y	z
+native_owner_y240_r00_c00	-152	-240	-152
+native_owner_y240_r00_c01	-72	-240	-152
+native_owner_y240_r00_c02	8	-240	-152
+native_owner_y240_r00_c03	88	-240	-152
+native_owner_y240_r00_c04	168	-240	-152

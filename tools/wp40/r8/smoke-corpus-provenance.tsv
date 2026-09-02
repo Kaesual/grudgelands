@@ -12,5 +12,5 @@ wyrmglass_channel	immutable channel	source/simple_map.lua:185	Centre of the Wyrm
 stormscale_channel	immutable channel	source/simple_map.lua:186	Centre of the Stormscale channel polygon
 wyrmglass_island	dragon island authored anchor	source/simple_map.lua:180,444	Wyrmglass dragon-anchor surface mapchunk
 stormscale_island	dragon island authored anchor	source/simple_map.lua:181,445	Stormscale dragon-anchor surface mapchunk
-native_deep_slice	native deep coexistence	r6-artifact.tsv:15 x/z; production dungeon interval -31000..-193	Native-only vertical slice without a guaranteed dungeon claim
-deep_cross_border_resource	deep resource and policy witness	wp40-simple-map-r6-artifact.tsv:14	Exact accepted ruby cross-border access witness
+native_deep_slice	native deep coexistence	wp40-simple-map-r6-artifact.tsv:15 x/z; R8 y=-240 owner slice central [-272,-193], full [-288,-177]; dungeon interval [-31000,-193]	Native substrate slice; native-witness grid owns the real dungeon/random-walk-cave Gennotify gate
+deep_cross_border_resource	deep resource and policy witness	wp40-simple-map-r6-artifact.tsv:14 exact x/y/z; accepted Seed-0 root only	Exact accepted Seed-0 Ruby cross-border access witness; other candidates require their own accepted resource row

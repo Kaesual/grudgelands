@@ -9,8 +9,10 @@ supply evidence, or the later visual gates.
 
 `tools/wp40/r8/run.sh [CORPUS.tsv]` defaults to the committed 15-row
 `tools/wp40/r8/smoke-corpus.tsv`. `WP40_R8_MODE=pilot` instead defaults to the
-committed three-row `pilot-corpus.tsv`; both modes run the same forward/reverse
-machinery. The runner can accept another reviewed tab-separated corpus with
+committed three-row `pilot-corpus.tsv`. Final mode unions its feature corpus
+with the fixed 32-row `native-witness-corpus.tsv`; pilot mode uses its exact
+five-row prefix. Both modes run the same forward/reverse machinery. The runner
+can accept another reviewed tab-separated feature corpus with
 10--15 unique rows in final mode or 2--3 in pilot mode, in this form:
 
 ```text
@@ -35,7 +37,10 @@ manifest was mocked-engine evidence and includes content identities, so the
 real engine's manifest is recorded rather than falsely required to equal it;
 the two fresh worlds must report the same actual runtime manifest. The capture
 identity also binds
-the Flatpak identity, runner/probe bytes, candidate table and corpus. It gives
+the Flatpak identity, runner/probe bytes, candidate table and both corpora. A
+caller revision is resolved once to one full 40-hex commit before either
+archive. The before/after Flatpak deployment and version bytes must match, as
+must both engines' in-process identity. It gives
 the Flatpak only the per-order temporary root and
 keeps the installed Luanti world and the user's normal XDG paths out of the
 run.
@@ -47,11 +52,14 @@ two Lua engine processes under the workstation-wide cap. Engine launches use
 `chrt --idle 0` and `ionice -c3` in either mode.
 
 After every requested mapchunk has emerged, the probe reads all central 80³
-mapchunks in one common ID order and records content-ID, param2 and packed-light
-SHA-256 digests plus the central/emerged bounds. It also retains a canonical
+feature mapchunks in one common ID order and records content-ID, param2 and
+packed-light SHA-256 digests plus the central/emerged bounds. It also retains a canonical
 node-name census and day/night-nibble extrema/counts, rejects `ignore`, requires
-daylight in surface slices, and checks the frozen capital-banner, channel-water
-and exact ruby-witness expectations. Emerge action counts and timings remain
+daylight in surface slices, and checks the exact Highcourt banner, channel-water
+and Seed-0 ruby-root expectations. Seven additional deep slices receive a
+content-only hash and canonical census. The 25 event-grid chunks are emerged
+but not snapshotted, keeping the native-event gate cheap. Emerge action counts
+and timings remain
 separate per request. The comparison is byte-oriented at the digest row level
 and also compares these readable summaries. The packed light array is the
 engine's public `VoxelManip:get_light_data()` representation; this runner does
@@ -61,7 +69,11 @@ Startup events record engine/version, seed, mapgen settings, Lua runtime and
 the live `grug_mapgen.wp40` status. The status' `production_enabled` and
 `writer_count` fields are the one-writer indicators available without adding a
 production writer or a second mapgen authority. A read-only probe callback
-count is recorded as a lifecycle diagnostic. Raw server/console logs, a
+requests native cave/dungeon generation notifications. Final mode requires
+matched random-walk-cave begin/end counts, inspected nearby cave air, at least
+one inspected surviving dungeon room, all five retained strata and the native
+gravel blob. The fixed grid does not grow after an unlucky result. Raw
+server/console logs, a
 targeted error scan, GNU `time -v` walltime/RSS output, probe `/proc` RSS and
 the final `register_on_shutdown` event remain separate immutable outputs.
 
@@ -71,13 +83,16 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    not use a dirty worktree as an implicit snapshot. Confirm that the selected
    game commit is the reviewed R7 production tree and that no existing world
    is passed as `--world`.
-2. Review the committed 15-row R8 corpus (or supply a replacement before
+2. Review the committed 15-row R8 feature corpus and fixed 32-row native
+   corpus (or supply replacements before
    freezing the candidate). It covers deep/no-op, ordinary
    inland, a named-zone or logical-biome boundary, coast/shelf/ocean,
    Battlegrounds/route or crossing, a capital/start blend, a structure slice,
    and a resource/stratum case where those coordinates exist in the current
    world contract. Keep it to 10--15 unique canonical mapchunks; this is a
-   smoke sample, not a topology population.
+   smoke sample, not a topology population. Seed 0 is the only initially
+   automatable release candidate because its exact resource root is accepted;
+   Seeds 1 and 42 remain GUI alternatives until each has a reviewed witness.
 3. Verify the host prerequisites: `flatpak`, the installed
    `org.luanti.luanti` app, `git`, `jq`, `rg`, `sha256sum`, `tar`, `timeout`,
    `chrt`, `ionice`, and GNU `/usr/bin/time`. The first real run must preserve the raw Flatpak
@@ -89,13 +104,14 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    `timeout`, cancelled/errored emerge action, nonzero process exit, error-log
    match or unclean shutdown blocks interpretation.
 5. Inspect `comparison.json` and require equal central content/param2/light
-   digest rows in both orders. Keep both order directories and
+   feature rows, content-only native census rows and canonical native-event
+   evidence in both orders. Keep both order directories and
    `checksums.sha256` together; do not combine them into a historical T2
    artifact or call this result exhaustive.
 
 ## Open bindings and deliberate limits
 
-- The committed R8 corpus is a proposed freeze input. The coordinator and
+- The committed R8 corpora are proposed freeze inputs. The coordinator and
   independent reviewer must check its coordinates against the accepted
   named-zone and resource vocabulary before the first engine pilot.
 - The runner has no visual export, lighting-convergence phase, database census,

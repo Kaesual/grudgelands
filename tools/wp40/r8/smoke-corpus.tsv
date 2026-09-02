@@ -1,3 +1,5 @@
+# Feature corpus only: exactly 15 bounded mapchunk cases; native preservation
+# uses the separate fixed native-witness-corpus.tsv union.
 # id	x	surface-or-y	z
 human_start	0	surface	-2550
 human_capital	0	surface	-1500
