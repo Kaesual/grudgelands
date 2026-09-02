@@ -82,6 +82,10 @@ timeout_seconds="${WP40_R8_TIMEOUT:-900}"
 	echo "WP40 R8: WP40_R8_TIMEOUT must be a positive integer" >&2
 	exit 2
 }
+if [[ ${#timeout_seconds} -gt 5 ]] || (( timeout_seconds > 86400 )); then
+	echo "WP40 R8: WP40_R8_TIMEOUT must not exceed 86400 seconds" >&2
+	exit 2
+fi
 liquid_update_seconds=$((timeout_seconds + 31))
 parallel_orders="${WP40_R8_PARALLEL:-0}"
 if [[ "$parallel_orders" != "0" && "$parallel_orders" != "1" ]]; then

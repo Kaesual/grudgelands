@@ -1,11 +1,11 @@
 # WP40 R8 Preflight Review
 
-**Status:** the initial contract/scaffold rejection and successive focused
-corrections are retained below. Exact candidate
-`f2599f8af974e66705981139c3b270c92e341643` was accepted for a sequential
-pilot; that pilot reached the first generated mapchunk and exposed a systematic
-fresh-engine halo blocker. Its narrow correction is under fixture validation
-before a focused independent review.
+**Status:** Attempt 7 completed both schedules and isolated the surface-light
+writer defect plus wall-clock liquid aging described below. Exact correction
+candidate `fa5f7365f7040d6350d330ede8e254684f53efcd` passed its technical
+lenses but was rejected 0 Critical / 0 High / 1 Medium / 1 Low for an unbounded
+timeout arithmetic input and this stale status text. Their narrow corrections
+await focused re-review before the next sequential pilot.
 
 ## Scope and independence
 
@@ -306,6 +306,24 @@ shadow-propagating at/below water level, and an opaque node inside the
 recalculated box prevents direct sunlight. The runner continues to take every
 snapshot only after the complete schedule while authenticating the deferred
 periodic-liquid setting in both engine startup records.
+
+## Surface/liquid correction review
+
+A fresh independent GPT-5.6 Sol context reviewed exact commit
+`fa5f7365f7040d6350d330ede8e254684f53efcd` read-only and returned **REJECT:
+0 Critical / 0 High / 1 Medium / 1 Low**. It confirmed the engine water
+boundary, in-box blocker and halo semantics; the exact 15/0 authored-air
+witness; complete-schedule snapshots; independent immediate and periodic
+liquid paths; and strict startup/comparison gates.
+
+The Medium finding was confined to harness input validation: the runner
+accepted an arbitrarily long decimal timeout before Bash signed arithmetic, so
+a crafted value could overflow `timeout + 31` to a negative `liquid_update`
+while leaving `timeout + 30` positive. The Low finding was this document's
+obsolete top-level status. The correction caps the already internal fixed-run
+override at 86,400 seconds using a length check before numeric comparison;
+therefore both later additions are bounded and retain their required one-second
+ordering. Both findings require focused re-review before execution.
 
 ## Calibration so far
 
