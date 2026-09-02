@@ -130,6 +130,13 @@ Current milestone status lives only in this R7 review, the simple-map rebase
 plan, BACKLOG, ROADMAP and README. A focused independent re-review of these two
 High fixes is mandatory before merge.
 
+The required focused re-review inspected exact correction commit
+`0a09e08acdd3b8887ed68edc2d0d6e52c67d86cd` and returned **ACCEPT**, with 0
+Critical / 0 High / 0 Medium / 0 Low. It independently reproduced both frozen
+SHA-256 values above, confirmed that the non-frozen successor authorities
+retain the current R7/WP33/R8 status without overclaim and found no unrelated
+regression. It ran no build, test or evidence process.
+
 ## Residual risk and R8 boundary
 
 R7's evidence is deliberately layered offline evidence, not an exhaustive
@@ -159,6 +166,8 @@ No existing WP18/WP36 world is a migration target; WP40 is fresh-world-only.
 - Post-final-review fix rounds: 0.
 - Authority-closeout review findings: 0 Critical / 2 High / 0 Medium / 0 Low.
 - Authority-closeout fix rounds: 1.
+- Focused authority-closeout re-review findings: 0 Critical / 0 High / 0
+  Medium / 0 Low.
 - Observed package elapsed wall time: `unknown` (multi-session package).
 - Accepted combined pilot wall time: 3,095.19 seconds; main-only pilot wall
   time: 621.31 seconds.
