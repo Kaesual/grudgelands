@@ -1,16 +1,11 @@
 id	risk_class	exact_provenance	expected_observation
-human_start	start blend and functional anchor	source/simple_map.lua:88,359	Dawnmere surface around the fixed human start
 human_capital	capital blend and functional anchor	source/simple_map.lua:90,365	Highcourt surface around the fixed human capital
 goldmead_inland_housing	ordinary inland and housing	source/simple_map.lua:89,339	Goldmead inland surface inside the declared housing polygon
 elandor_front_boundary	faction and Battlegrounds boundary	source/simple_map.lua:27,92	Elandor-side edge of the fixed holy-grounds rectangle
 broken_causeway_battleground	Battlegrounds landmark	source/simple_map.lua:117,691-692	Broken Causeway surface and authored battlefield dressing
-goldmead_highcourt_road	primary road	source/simple_map.lua:200,264-278	Goldmead-to-Highcourt primary-route vicinity
 whitebridge_crossing	road and river crossing	source/simple_map.lua:282,744	Fixed Whitebridge crossing and river vicinity
-lethariel_crownlake	capital and lake interaction	source/simple_map.lua:95,651,746	Lethariel surface at the declared Crownlake feature
 copperfell_shelf	coast and shelf transition	source/simple_map.lua:26,338,351,634	Outer Copperfell coastal-core vicinity and shelf transition
 wyrmglass_channel	immutable channel	source/simple_map.lua:185	Centre of the Wyrmglass channel polygon
-stormscale_channel	immutable channel	source/simple_map.lua:186	Centre of the Stormscale channel polygon
 wyrmglass_island	dragon island authored anchor	source/simple_map.lua:180,444	Wyrmglass dragon-anchor surface mapchunk
-stormscale_island	dragon island authored anchor	source/simple_map.lua:181,445	Stormscale dragon-anchor surface mapchunk
 native_deep_slice	native deep coexistence	wp40-simple-map-r6-artifact.tsv:15 x/z; R8 y=-240 owner slice central [-272,-193], full [-288,-177]; dungeon interval [-31000,-193]	Native substrate slice; native-witness grid owns the real dungeon/random-walk-cave Gennotify gate
 deep_cross_border_resource	deep resource and policy witness	wp40-simple-map-r6-artifact.tsv:14 exact x/y/z; accepted Seed-0 root only	Exact accepted Seed-0 Ruby cross-border access witness; other candidates require their own accepted resource row

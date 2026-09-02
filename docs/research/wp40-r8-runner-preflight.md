@@ -6,7 +6,7 @@ evidence, R2/R6 capacity and supply evidence, or the later visual gates.
 
 ## Contract
 
-`tools/wp40/r8/run.sh [CORPUS.tsv]` defaults to the committed 15-row
+`tools/wp40/r8/run.sh [CORPUS.tsv]` defaults to the committed 10-row
 `tools/wp40/r8/smoke-corpus.tsv`. `WP40_R8_MODE=pilot` instead defaults to the
 committed three-row `pilot-corpus.tsv`. Final mode unions its feature corpus
 with the fixed 32-row `native-witness-corpus.tsv`; pilot mode uses its exact
@@ -84,7 +84,7 @@ the final `register_on_shutdown` event remain separate immutable outputs.
    not use a dirty worktree as an implicit snapshot. Confirm that the selected
    game commit is the reviewed R7 production tree and that no existing world
    is passed as `--world`.
-2. Review the committed 15-row R8 feature corpus and fixed 32-row native
+2. Review the committed 10-row R8 feature corpus and fixed 32-row native
    corpus (or supply replacements before
    freezing the candidate). It covers deep/no-op, ordinary
    inland, a named-zone or logical-biome boundary, coast/shelf/ocean,

@@ -321,6 +321,19 @@ If the projection misses a bound, reduce redundant cases or serialize the two
 schedules and re-review that exact reduction. Do not weaken risk-class
 coverage or silently raise the wall-time bound.
 
+The accepted G2 pair took 12:29.78 and 12:24.78 for four requests per order,
+with peak in-process RSS below 3.87 GB on a 16-core, 58-GiB workstation. A
+linear projection of the original 15 feature plus 32 native requests slightly
+exceeds the two-hour wall bound. The final feature corpus is therefore reduced
+to the contract's lower bound of 10 risk-distinct rows while retaining all 32
+native rows and the unchanged 15-point GUI itinerary. Capital/start, inland,
+zone/front, Battlegrounds, road/water, coast/shelf, dragon channel/island and
+both deep risk classes remain represented. The two complete schedules may run
+concurrently: their observed combined peak-RSS projection stays well below
+physical memory and each engine retains one emerge thread and idle priority.
+This exact data-only reduction requires focused review before G3; it does not
+invalidate the accepted G2 pilot or frozen production-byte interpreter pair.
+
 ### G3 -- final automated smoke
 
 Run the complete corpus in both frozen orders on separate fresh worlds. The

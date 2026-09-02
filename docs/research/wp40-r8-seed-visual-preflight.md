@@ -69,8 +69,14 @@ they do not predict what the first GUI world will look like.
 
 ## Deterministic native-witness corpus
 
-The feature smoke corpus remains exactly 15 rows in
-`tools/wp40/r8/smoke-corpus.tsv`. Native preservation is kept in the separate
+The accepted G2 timing projection reduces the final feature smoke from 15 to
+exactly 10 rows in `tools/wp40/r8/smoke-corpus.tsv`, the lower bound already
+allowed by the R8 contract. The removed runtime rows are covered by retained
+risk-equivalent rows and remain in the unchanged 15-point GUI itinerary:
+Dawnmere start by Highcourt's capital/start and anchor gate; the Highcourt road
+by Whitebridge's road-and-water crossing; Crownlake by the retained inland,
+coast and hydrology cases; and the mirrored Stormscale channel/island by the
+Wyrmglass channel/island pair. Native preservation is kept in the separate
 four-column `tools/wp40/r8/native-witness-corpus.tsv`, with
 `native-pilot-corpus.tsv` as its one-row declared prefix after the measured
 pilot timeout. These files are
@@ -138,7 +144,7 @@ Where the current production API exposes the query, record the result for
 anchor/socket identity, route class/corridor and boat landing identity, water
 precedence, the 101 by 101 housing footprint, and deep full-column channel
 protection. For the native corpus, record the mapchunk envelope, sorted
-Gennotify positions and aggregate node census separately from the 15 feature
+Gennotify positions and aggregate node census separately from the 10 feature
 rows. These checks are assertions against accepted source/API contracts; they
 do not require a new seed fleet.
 
@@ -167,8 +173,9 @@ neither is represented by the offline R6/R7 artifact hashes.
   repair pass should be introduced during the visual pass.
 - The future runner must emerge the feature corpus union the native-witness
   grid in declared and exact-reverse order, while keeping native Gennotify and
-  node-census evidence separate from the 15 feature digests. This data-only
-  correction does not claim that either native corpus has been run.
+  node-census evidence separate from the 10 feature digests. The accepted G2
+  run covers the unchanged three-row pilot prefix; the final 10-plus-32 corpus
+  remains an open G3 gate.
 - This preflight did not run Luanti, Flatpak, a seed fleet, a build, or a new
   validation gate, by design.
 - A candidate winner still needs the native Gennotify/strata/ore gate and fresh
