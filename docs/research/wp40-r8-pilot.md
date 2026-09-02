@@ -1,14 +1,14 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** eight diagnostic attempts retained. Attempts 1--4 stopped during
+**Status:** nine attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
 read-only halo; Attempt 6 measured and removed redundant native pilot rows.
 Attempt 7 completed both schedules cleanly and isolated a real surface-light
 defect plus wall-clock liquid aging in the comparison harness. Attempt 8
 confirmed the liquid correction and reduced the remaining surface defect to a
-fresh vertical `CONTENT_IGNORE` halo above the owner. A narrower lighting fix,
-green static/fixture verification and focused independent acceptance are
-complete; a fresh sequential pilot is next.
+fresh vertical `CONTENT_IGNORE` halo above the owner. Attempt 9 confirms the
+narrower lighting correction, complete order equality and every G2 gate. The
+next engine gate is the complete G3 corpus.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -397,3 +397,47 @@ maximum. Deep boxes keep their original maximum and true propagation. Fixtures
 must distinguish the two call boxes, retain an in-owner opaque blocker and
 prove every ignored halo byte is restored. Attempt 8 itself carries no G2
 acceptance claim.
+
+## Attempt 9 -- G2 accepted
+
+- Date: 2026-09-02
+- Candidate: `050ae36bed447c873f7df1ef43f04e73517d89bf`
+- Review before execution: **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+- Mode: sequential, Seed `0`, forward order first; three feature requests plus
+  the reviewed one-row native prefix per order
+- Capture ID:
+  `73da938db983ef34147733882648f7e5523a8f4d649a8b6428f6209f7ab9e944`
+- Result: **PASS**; `equal = true`, `semantic_ok = true`, every startup,
+  native, order, completion and clean-shutdown gate true, both error counts
+  zero and both process exit statuses zero
+- Forward: 12:29.78 wall, 662,351,833 probe microseconds and
+  3,869,286,400-byte in-process peak RSS
+- Reverse: 12:24.78 wall, 661,244,269 probe microseconds and
+  3,787,358,208-byte in-process peak RSS
+- Comparison SHA-256:
+  `88b33d4d378a8471b43450634aa6b976eaf8c6677d956e350a43f08e95597ceb`
+- Manifest/checksum-list SHA-256:
+  `07a175cb56ecd99140ad906b1282e10f3ea03e56e38c9f01872f43509f08ccf5`,
+  `7a6badbcf10decb5dfe1e4f7a6928835c3823e521d6004545c4e657298efa701`
+- Forward console/server/events/time SHA-256:
+  `f76faa954fb5255bb2ca781fee29ff0dbbeba7eebdc416a8fabe96989085ca0e`,
+  `de7cf1aa0c8dea7556908b2dbd17330203eb24551b5734d967586bbdbf27dbe3`,
+  `e967d5e6825dcb6e5fac277726099467d60e3bde399f85ec376f531d0c224e4a`,
+  `fef1720fa3247faf1f29b5d9005b87502b160b95ed760ec5028de7a8df791117`
+- Reverse console/server/events/time SHA-256:
+  `6f3275cdc7b3db01160a3395ab4c59647b4ff6418897f5d1128681de2be98e4f`,
+  `ea2a80135d9cc62e187eccb3018c377546c8250a692c64006df739cdc058653e`,
+  `b7020bf9457d79c1f846eabf2ee5b53327d29436db92f10fb16a64d700a48741`,
+  `e1bc1bf77ac03bd4242669a07b98bf87e9c9c61de2712e504a51c65ffb20780f`
+
+The corrected surface results are byte-identical across order. The capital has
+70,916 authored-air voxels at direct day/night light 15/0 and light SHA-256
+`9e5c907fb45a6de6951b4296c5682357ef89be8e425443594e2af5c6a8545ebc`.
+Wyrmglass has 294,400 direct-sun air voxels, all 64 source-bound channel cells
+remain water sources, and light SHA-256
+`288c90e68a7f1901d1f5326c795d8cec6bba3e7ccc9504012a24a3eb1028a814`.
+The deep case retains identical content, light and raw `param2`, including the
+previously confirmed `param2` digest
+`8b94d3fc51180c3a1f27611b28e8825fdf0522ba20962b2fd5c4e6731f443c4f`.
+The pilot therefore accepts the owner-top and periodic-liquid corrections and
+closes G2. It does not claim the complete G3 feature/native corpus.

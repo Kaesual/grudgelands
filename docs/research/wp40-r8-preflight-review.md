@@ -5,7 +5,8 @@ remaining surface-light defect to a fresh vertical `CONTENT_IGNORE` halo above
 the owner. The narrower owner-top calculation correction has green static and
 fixture verification and exact commit
 `050ae36bed447c873f7df1ef43f04e73517d89bf` received focused independent
-acceptance. The next gate is a fresh sequential pilot.
+acceptance. Its fresh sequential pilot passes every G2 gate; the complete G3
+corpus is next.
 
 ## Scope and independence
 
@@ -400,6 +401,23 @@ R6; and the independent current-light fixtures cover the changed engine
 boundary. It found no Lua 5.1, global, performance, documentation or release
 gate regression. The exact commit is accepted for the next fresh engine pilot;
 the pilot and eventual frozen PUC/LuaJIT micro-KAT pair remain open gates.
+
+## Accepted G2 rerun
+
+The sequential pilot of exact reviewed commit
+`050ae36bed447c873f7df1ef43f04e73517d89bf` completed both orders in 12:29.78
+and 12:24.78 wall time with no engine error, clean shutdown and peak
+in-process RSS below 3.87 GB. Comparison, semantic, identity, reversal, native
+and completion gates all pass.
+
+The capital and Wyrmglass surface snapshots now contain respectively 70,916
+and 294,400 authored-air voxels with packed direct sunlight 15/0. Their exact
+light digests match across order. Content and `param2` also match throughout,
+including the deep liquid-bearing case. Capture
+`73da938db983ef34147733882648f7e5523a8f4d649a8b6428f6209f7ab9e944`
+is permanent under `tools/wp40/results/r8/`; its comparison SHA-256 is
+`88b33d4d378a8471b43450634aa6b976eaf8c6677d956e350a43f08e95597ceb`.
+This closes G2 and authorizes final-byte freeze plus the complete G3 corpus.
 
 ## Calibration so far
 

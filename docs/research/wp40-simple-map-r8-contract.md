@@ -1,10 +1,10 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** A corrected one-row G2 pilot completed both schedules, confirmed
-order-stable liquid bytes and isolated the remaining surface-light defect to a
-fresh vertical `CONTENT_IGNORE` halo. The narrower owner-top lighting
-correction has green static/fixture verification and focused independent
-acceptance. A fresh sequential pilot is the next gate.
+**Status:** The corrected one-row G2 pilot passes both schedules with exact
+order equality, direct surface sunlight, stable liquid bytes and clean
+shutdown. The owner-top correction has green static/fixture evidence and
+focused independent acceptance. The complete G3 corpus is the next engine
+gate.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
