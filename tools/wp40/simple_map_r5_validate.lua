@@ -6818,7 +6818,7 @@ return function(common)
 			integer_ascii(vm_transactions,"VM transactions"),
 			integer_ascii(apply_attempts,"apply attempts"),
 			integer_ascii(vm_fixtures,"VM fixtures"),"one_r5_construction",
-			"planner_calls_le_64","apply_attempts_le_64","vm_fixtures_le_48")
+			"planner_calls_le_64","apply_attempts_le_64","vm_fixtures_le_49")
 
 		-- Every family is linked to a constructed receipt above.  Witness IDs are
 		-- deliberately shared so this complete semantic KAT remains compact.

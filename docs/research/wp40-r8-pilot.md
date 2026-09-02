@@ -233,15 +233,15 @@ continue to cover committed halo input. A fresh independent review and a new
 sequential pilot are mandatory before any G2 claim.
 
 The strengthened intermediate LuaJIT micro-KAT passed with internal digest
-`44439bde61d18061ec6d25aeaec5042b97b34566e31310ee6d704762d4859762`
+`4663822a7adaf9112c7da73c5725e28330d1cc809dd546091d384dc331f02a5f`
 and output-file SHA-256
-`76de43efdf5c84029d49dc43e69a5cf851a447e3eba2b4f939266542f1825c5a`.
+`7c300628ca09d7541b8ddb2f0ab384059fb6838b5f661bd89232bebaa88e1215`.
 The production-shaped full owner-VM integration also passed. Its receipt is
 byte-identical to the already-retained projection integration receipt, SHA-256
 `1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`.
 Thus the fresh-halo fixture changes no accepted central content, `param2`,
 light, run, ledger, replay or manifest evidence. The prefreeze source audit
 passed with input-set SHA-256
-`5e940893f8b83cdecd716c4e6b30eb01f85d97e02c8ef412d7af462d2d3d3988`.
+`98fad808c48a32fcb87d06b2b8680dc2a0c7393ab59eeb34e9d94f607b9148ca`.
 The final PUC 5.1/LuaJIT pair remains deliberately deferred until successful
 real-engine G2/G3 execution freezes the eventual production bytes.

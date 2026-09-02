@@ -222,9 +222,9 @@ local banner_camp_type
 -- DEFAULT_TYPE alone: a guard banner that lost its meta (a /clearobjects-style
 -- accident, a hand-placed node whose on_construct was bypassed, an old world
 -- from before the init LBMs ran) would otherwise be read as a bandit camp and
--- spawn BANDITS inside a military outpost. Territory stays authoritative for a
--- banner here exactly as it is in place_camp and init_banner; only the camp
--- fire falls back to "bandit".
+-- spawn BANDITS inside a military outpost. Authenticated outpost/territory
+-- authority stays decisive for a banner exactly as it is in place_camp and
+-- init_banner; only the camp fire falls back to "bandit".
 local function camp_cfg(pos, meta)
 	local id = meta:get_string(META_TYPE)
 	if id == "" then
