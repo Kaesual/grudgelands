@@ -1,7 +1,9 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** the first diagnostic attempt stopped before generation; a fresh
-pilot on the corrected and reviewed candidate is pending.
+**Status:** two diagnostic attempts stopped before generation. The second
+correction exposed three further engine-vector boundary mismatches during
+pre-pilot review; a fresh pilot on the corrected and reviewed candidate is
+pending.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -66,3 +68,27 @@ An isolated pre-loader diagnostic confirmed
 the engine's userdata Settings object as well as the test seam's table, while
 still requiring a callable `get` method and the exact string value `1`. The
 final micro-KAT now models this boundary with a userdata proxy.
+
+## Pre-pilot review of the second correction
+
+The Settings correction was committed as
+`354a01a024f6e7f965657a7108adadf3f972a1ec`. A fresh independent review
+accepted that change itself, but rejected another pilot after proving three
+remaining real-engine shape mismatches:
+
+- `core.read_schematic()` returns `size` with the builtin
+  `vector.metatable`;
+- `register_on_generated` supplies `minp` and `maxp` with that metatable; and
+- `VoxelManip:get_emerged_area()` returns both positions with that metatable.
+
+The pure R6 planner/template/settlement boundaries intentionally reject
+arbitrary metatables. The narrow adapter correction therefore accepts only
+plain XYZ tables or the exact builtin vector metatable, checks an exact
+three-field shape and passes plain tables into the planner/template seams.
+The VM halo readback retains its exact coordinate, integer and bounds checks.
+The production values and placement policy are unchanged.
+
+No third engine attempt has been started. Static R7 gates and an intermediate
+LuaJIT micro-KAT pass with all three real vector shapes represented; the
+frozen final PUC 5.1/LuaJIT pair remains pending until the candidate is
+reviewed and committed.

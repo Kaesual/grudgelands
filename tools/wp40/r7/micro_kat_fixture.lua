@@ -591,7 +591,10 @@ return function(repo)
 			full_seed = "0", projection = {}}
 	end
 	function emerge_core.register_on_generated(callback) generated_callback = callback end
-	local emerge_environment = setmetatable({core = emerge_core}, {__index = _G})
+	local generated_observation = {}
+	local engine_callback_vector_metatable = {}
+	local emerge_environment = setmetatable({core = emerge_core,
+		vector = {metatable = engine_callback_vector_metatable}}, {__index = _G})
 	emerge_environment.dofile = function(path)
 		if path:match("/r7_native%.lua$") then
 			return {validate_emerge = function() end, identities = function() return {} end}
@@ -600,7 +603,16 @@ return function(repo)
 		if path:match("/r7_runtime%.lua$") then
 			return function()
 				return {build = function()
-					return {full_seed = "0", session = {}, writer = {}}
+					return {full_seed = "0", session = {
+						plan_slice = function(minp, maxp)
+							generated_observation.plan_min = minp
+							generated_observation.plan_max = maxp
+							return {}, 1
+						end}, writer = {apply = function(_, minp, maxp)
+							generated_observation.writer_min = minp
+							generated_observation.writer_max = maxp
+							return "applied_micro"
+						end}}
 				end}
 			end
 		end
@@ -610,6 +622,17 @@ return function(repo)
 		emerge_environment)
 	check(type(generated_callback) == "function",
 		"emerge callback registration projection differs")
+	generated_callback({},
+		setmetatable({x = -32, y = 0, z = -32}, engine_callback_vector_metatable),
+		setmetatable({x = 47, y = 79, z = 47}, engine_callback_vector_metatable), 0)
+	check(getmetatable(generated_observation.plan_min) == nil and
+		getmetatable(generated_observation.plan_max) == nil and
+		rawequal(generated_observation.plan_min,
+			generated_observation.writer_min) and
+		rawequal(generated_observation.plan_max,
+			generated_observation.writer_max),
+		"generated callback vector normalization differs")
+	row("mapgen/generated_vector_normalized", "true")
 	end
 
 	-- Exercise the production native module, including all six setters/readbacks
@@ -673,6 +696,39 @@ return function(repo)
 	local ore_names = {}
 	for index = 1, #native_state.ores do ore_names[index] = native_state.ores[index].name end
 	row("native/ore_order_sha256", hex_sha256(table.concat(ore_names, "\n") .. "\n"))
+
+	-- Exercise the real read_schematic size shape: Luanti pushes a builtin
+	-- vector, while the pure R6 template parser deliberately consumes plain
+	-- tables only.
+	do
+	local saved_vector = rawget(_G, "vector")
+	local engine_vector_metatable = {}
+	rawset(_G, "vector", {metatable = engine_vector_metatable})
+	local template_factory = dofile(wp40 .. "/r7_template_source.lua")
+	local function schematic(size_metatable)
+		return {
+			size = setmetatable({x = 1, y = 1, z = 1}, size_metatable),
+			yslice_prob = {{ypos = 0, prob = 254}},
+			data = {{name = "ignore", prob = 254, param2 = 0}},
+		}
+	end
+	local engine_source = template_factory({read_schematic = function()
+		return schematic(engine_vector_metatable)
+	end}, "/micro/schematics")
+	local normalized = engine_source.read("micro.mts")
+	check(getmetatable(normalized.size) == nil and normalized.size.x == 1 and
+		normalized.size.y == 1 and normalized.size.z == 1 and
+		normalized.data[1].name == "air" and
+		normalized.data[1].force_place == false,
+		"engine schematic vector normalization differs")
+	local foreign_source = template_factory({read_schematic = function()
+		return schematic({})
+	end}, "/micro/schematics")
+	expect_failure(function() foreign_source.read("micro.mts") end,
+		"engine size metatable differs")
+	rawset(_G, "vector", saved_vector)
+	row("template/engine_vector_normalized", "true")
+	end
 
 	-- Build the actual R7 content identities without loading or parsing an MTS.
 	-- The source parser only discovers the production module's closed target list;
@@ -1396,8 +1452,18 @@ return function(repo)
 			verify_inactive_tail = false})
 	end
 	local vm, _, observer = owner_vm()
+	local saved_transaction_vector = rawget(_G, "vector")
+	local transaction_vector_metatable = {}
+	local plain_get_emerged_area = vm.get_emerged_area
+	function vm.get_emerged_area(self)
+		local emerged_min, emerged_max = plain_get_emerged_area(self)
+		return setmetatable(emerged_min, transaction_vector_metatable),
+			setmetatable(emerged_max, transaction_vector_metatable)
+	end
+	rawset(_G, "vector", {metatable = transaction_vector_metatable})
 	local applied = settlement:apply(vm, owner_min, owner_max, full_plan, 1,
 		"fixture")
+	rawset(_G, "vector", saved_transaction_vector)
 	local ledger = settlement_fixture.last_ledger()
 	local run_values, run_count = settlement_fixture.run_values()
 	check(type(applied) == "string" and applied:match("^applied_[cplq]+$") and
@@ -1458,6 +1524,7 @@ return function(repo)
 	row("production/replay_metrics", table.concat({writer_metrics.apply_calls,
 		writer_metrics.replay_count, successor_metrics.p9g.settle_calls,
 		successor_metrics.p9g.replay_calls}, "/"))
+	row("production/emerged_vector_normalized", "true")
 
 	local missing = {}
 	for index = 1, #changed_order do

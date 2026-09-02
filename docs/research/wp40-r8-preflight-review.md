@@ -3,8 +3,8 @@
 **Status:** initial review rejected exact candidate
 `aa1188be9f1b217d8607d984f0ff359d441bff2f`; its focused correction at
 `a1dc04b89d6e54945fb3507bf92967c4d6c0a86c` was accepted for the sequential
-pilot. The first real-engine finding and subsequent review findings are fixed;
-one final focused re-review is pending before a fresh pilot.
+pilot. Two real-engine attempts then found pre-generation boundary mismatches.
+The latest correction is under focused review before a fresh pilot.
 
 ## Scope and independence
 
@@ -146,11 +146,36 @@ table or userdata, still requires the exact `get` method/value, and models the
 real boundary in the final micro-KAT fixture. It requires another focused
 review before the next pilot.
 
+## Review of the Settings correction and engine vectors
+
+A fresh independent GPT-5.6 Sol context reviewed exact commit
+`354a01a024f6e7f965657a7108adadf3f972a1ec` read-only. It accepted the
+Settings userdata correction but returned a composite **REJECT: 0 Critical /
+3 High / 0 Medium / 0 Low** after an immediate supplemental engine-shape
+hard-lens. The blockers were:
+
+1. `core.read_schematic()` returns `size` as a builtin vector while the pure
+   R6 template parser requires a plain table.
+2. `register_on_generated` supplies vector-shaped `minp`/`maxp` to the strict
+   planner boundary.
+3. `VoxelManip:get_emerged_area()` supplies two vectors to the strict
+   settlement boundary.
+
+The reviewer checked the pinned C++ and builtin Lua implementations and found
+no further analogous vector-shape blocker in the immediate R8 pilot path. The
+correction normalizes the exact builtin vector representation at all three
+boundaries while continuing to reject foreign metatables and unexpected
+fields. The final micro fixture exercises all three real shapes. This is an
+engine-adapter compatibility correction, not a placement-policy change, so
+the accepted R6/R7 semantic evidence remains valid. Static R7 gates and an
+intermediate LuaJIT micro-KAT pass; the replacement final PUC/LuaJIT pair is
+deferred until the corrected bytes pass focused review.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel
   implementation lanes.
 - Reviewing model: fresh independent GPT-5.6 Sol.
 - Initial findings: 1 Critical / 2 High / 3 Medium / 0 Low.
-- Review-fix rounds started: 4.
+- Review-fix rounds started: 5.
 - Observed elapsed wall time: pending package completion.

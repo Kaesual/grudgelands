@@ -48,10 +48,28 @@ local function settlement_factory()
 	end
 
 	local function position(value, label)
-		exact_fields(value, {x = true, y = true, z = true}, label, "fail_bounds")
-		return integer(value.x, label .. " x", -30912, 30927),
-			integer(value.y, label .. " y", -30912, 30927),
-			integer(value.z, label .. " z", -30912, 30927)
+		if type(value) ~= "table" then
+			fail("fail_bounds", label .. " is not a table")
+		end
+		local metatable = getmetatable(value)
+		if metatable ~= nil and (type(vector) ~= "table" or
+				metatable ~= vector.metatable) then
+			fail("fail_bounds", label .. " has an unexpected metatable")
+		end
+		local count = 0
+		for key in pairs(value) do
+			if key ~= "x" and key ~= "y" and key ~= "z" then
+				fail("fail_bounds", label .. " has an unexpected field")
+			end
+			count = count + 1
+		end
+		if count ~= 3 or rawget(value, "x") == nil or
+				rawget(value, "y") == nil or rawget(value, "z") == nil then
+			fail("fail_bounds", label .. " fields differ")
+		end
+		return integer(rawget(value, "x"), label .. " x", -30912, 30927),
+			integer(rawget(value, "y"), label .. " y", -30912, 30927),
+			integer(rawget(value, "z"), label .. " z", -30912, 30927)
 	end
 
 	local function copy_map(value, active)
@@ -1537,6 +1555,8 @@ local function settlement_factory()
 			end
 			local ok_area, emerged_min, emerged_max = pcall(vm.get_emerged_area, vm)
 			if not ok_area then fail("fail_vm_contract", "get_emerged_area failed") end
+			-- Luanti pushes get_emerged_area results as builtin vectors. Normalize
+			-- that exact engine representation before the plain R6 boundary.
 			local eminx, eminy, eminz = position(emerged_min, "emerged min")
 			local emaxx, emaxy, emaxz = position(emerged_max, "emerged max")
 			if eminx ~= min_x - 16 or eminy ~= min_y - 16 or eminz ~= min_z - 16 or
