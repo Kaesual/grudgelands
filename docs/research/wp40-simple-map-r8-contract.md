@@ -1,7 +1,8 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** The fresh-engine read-only-halo correction is fixture-validated and
-awaits focused independent review before a new sequential pilot.
+**Status:** The fresh-engine read-only-halo correction is independently
+accepted. The measured one-row G2 pilot reduction awaits focused independent
+review before a new sequential pilot.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
