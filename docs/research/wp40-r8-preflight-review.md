@@ -245,6 +245,68 @@ still exercises the identical notification path; the full 32-row G3 corpus is
 unchanged. This measured G2-only reduction requires focused independent review
 before rerun.
 
+## One-row pilot reduction review and Attempt-7 hard lenses
+
+A fresh independent GPT-5.6 Sol context reviewed exact commit
+`230925ada8bbb4c332d590f54d40811f9d379ad6` and returned **ACCEPT for a
+sequential pilot: 0 Critical / 0 High / 0 Medium / 0 Low**. It verified that
+the three feature cases retain the distinct capital, channel and deep-resource
+risk classes; the single native row is the exact first row of the unchanged
+32-row final corpus; and the notification, final census and complete-run gates
+were not weakened.
+
+Attempt 7 then completed both schedules and produced two focused read-only
+diagnoses from separate fresh GPT-5.6 Sol contexts:
+
+- The sunlight lens traced a real writer defect to v7's pre-callback light
+  pass and the inherited `propagate_shadow = true` call after WP40 replaces the
+  geometry. It recommends false only for light boxes ending above the fixed
+  water level, true below it, unchanged halo restoration, and a real packed
+  15/0 sunlight witness in authored air.
+- The mismatch lens showed that the sole order difference is raw `param2` in
+  a chunk containing 724 flowing-lava and 150 flowing-water nodes. The runner
+  snapshots the complete schedule after unequal aging under the default
+  one-second periodic liquid tick. It recommends setting the test-owned
+  periodic interval beyond the host timeout rather than snapshotting each case
+  early: immediate `finishBlockMake` processing remains authentic, while later
+  requests can still invalidate earlier chunks before the final comparison.
+
+Neither lens changed files or executed tests. Their correction set requires
+static/fixture evidence and a focused independent review of one exact commit
+before another real-engine pilot.
+
+## Surface/light-boundary correction verification
+
+The correction candidate passes the following pre-review evidence:
+
+- all changed Lua parses under the repository's PUC Lua 5.1 compiler; the
+  changed production files have no `SETGLOBAL`, the R8 probe has exactly its
+  declared `grug_wp40_r8_probe` global, and all five Lua/sandbox source sweeps
+  have no code finding;
+- the R7 unit and static suites pass, including the one-loader/one-callback/
+  one-writer audit over 900 inputs with source-set SHA-256
+  `618e0003b0291c5438551e345dc1776ec6ae18e51d477cb62c8c9244b0064e07`;
+- the full production-shaped R7 integration KAT passes and is byte-identical
+  to the durable R8 projection receipt, SHA-256
+  `1fc22c764be500726f6f777b0eabd7a03a2434e23895aad6132c7c7e1ca78010`;
+- the intermediate LuaJIT R7 micro-KAT passes with canonical output digest
+  `3c977dc6fe7d4b5f2300116176a44504e0a45991a493b765c3b920f1952414f7`;
+  this is development evidence, not the final frozen-byte PUC/LuaJIT pair; and
+- an isolated exact-R5 snapshot with only the corrected adapter and validator
+  overlaid passes its LuaJIT quick suite: input-manifest
+  `6091f17bba31ddc7ab5e57015153345e56b68674111bdba56ece7215afbdcdf6`,
+  matrix shard
+  `5011194db1b799ba8e80634b92e13c5199fda0ab28bbe74a1f045561d8b3878f`
+  and native-heightmap shard
+  `a446ad1283fc7fc99f51a3a5c2f089176c9d413e09b23b6ebc84effee5b06b4f`.
+
+The fixture explicitly distinguishes three boundaries: stale dark v7 overtop
+above water no longer owns the final sky decision, the same boundary remains
+shadow-propagating at/below water level, and an opaque node inside the
+recalculated box prevents direct sunlight. The runner continues to take every
+snapshot only after the complete schedule while authenticating the deferred
+periodic-liquid setting in both engine startup records.
+
 ## Calibration so far
 
 - Implementing/coordinating model: GPT-5.6 Sol with two bounded parallel

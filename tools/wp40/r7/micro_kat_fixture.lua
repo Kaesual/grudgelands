@@ -1489,6 +1489,7 @@ return function(repo)
 	end
 	local function owner_vm()
 		local data = fixed_array(volume, content_set.production.ignore_cid)
+		local light = fixed_array(volume, 15)
 		local emerged_min = {x = owner_min.x - 16, y = owner_min.y - 16,
 			z = owner_min.z - 16}
 		for z = owner_min.z, owner_max.z do
@@ -1498,12 +1499,13 @@ return function(repo)
 						((y - emerged_min.y) * axis) +
 						(x - emerged_min.x) + 1
 					data[index] = air_cid
+					light[index] = 0
 				end
 			end
 		end
 		return vm_module.new({minp = owner_min, maxp = owner_max,
 			data = data, param2 = fixed_array(volume, 0),
-			light = fixed_array(volume, 15), heightmap = fixed_array(6400, -31007),
+			light = light, heightmap = fixed_array(6400, -31007),
 			content_contract = content_set.production, water_level = 1,
 			ignore_cid = content_set.production.ignore_cid,
 			verify_inactive_tail = false})
@@ -1542,15 +1544,23 @@ return function(repo)
 		"P9G did not precede the one shared run derivation")
 	local first_calls = observer.metrics()
 	local first_snapshot = observer.snapshot()
+	local direct_sun_air_count = 0
 	for z = first_snapshot.emin.z, first_snapshot.emax.z do
 		for y = first_snapshot.emin.y, first_snapshot.emax.y do
 			for x = first_snapshot.emin.x, first_snapshot.emax.x do
+				local index = ((z - first_snapshot.emin.z) * axis * axis) +
+					((y - first_snapshot.emin.y) * axis) +
+					(x - first_snapshot.emin.x) + 1
+				if x >= owner_min.x and x <= owner_max.x and
+						y >= owner_min.y and y <= owner_max.y and
+						z >= owner_min.z and z <= owner_max.z and
+						first_snapshot.data[index] == air_cid and
+						first_snapshot.light[index] == 15 then
+					direct_sun_air_count = direct_sun_air_count + 1
+				end
 				if x < owner_min.x or x > owner_max.x or
 						y < owner_min.y or y > owner_max.y or
 						z < owner_min.z or z > owner_max.z then
-					local index = ((z - first_snapshot.emin.z) * axis * axis) +
-						((y - first_snapshot.emin.y) * axis) +
-						(x - first_snapshot.emin.x) + 1
 					check(first_snapshot.data[index] ==
 						content_set.production.ignore_cid and
 						first_snapshot.param2[index] == 0 and
@@ -1560,14 +1570,16 @@ return function(repo)
 			end
 		end
 	end
+	check(direct_sun_air_count > 0,
+		"surface transaction did not produce direct sunlight in authored air")
 	local light_seed_runs = settlement_fixture.last_light_seed_runs()
 	check(first_calls.vm_get_data_calls == 1 and
 		first_calls.vm_get_param2_calls == 1 and
 		first_calls.vm_get_light_calls == 2 and
 		first_calls.vm_set_data_calls == 1 and
 		first_calls.vm_set_param2_calls <= 1 and
-		light_seed_runs > 0 and
-		first_calls.vm_set_lighting_calls == light_seed_runs + 1 and
+		light_seed_runs == 0 and
+		first_calls.vm_set_lighting_calls == 1 and
 		first_calls.vm_calc_lighting_calls == 1 and
 		first_calls.vm_set_light_data_calls <= 1 and
 		first_calls.vm_update_liquids_calls <= 1,

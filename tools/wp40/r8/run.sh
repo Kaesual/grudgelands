@@ -82,6 +82,7 @@ timeout_seconds="${WP40_R8_TIMEOUT:-900}"
 	echo "WP40 R8: WP40_R8_TIMEOUT must be a positive integer" >&2
 	exit 2
 }
+liquid_update_seconds=$((timeout_seconds + 31))
 parallel_orders="${WP40_R8_PARALLEL:-0}"
 if [[ "$parallel_orders" != "0" && "$parallel_orders" != "1" ]]; then
 	echo "WP40 R8: WP40_R8_PARALLEL must be 0 or 1" >&2
@@ -265,6 +266,7 @@ mgv7_spflags = mountains,ridges,caverns,nofloatlands
 mgv7_dungeon_ymin = -31000
 mgv7_dungeon_ymax = -193
 num_emerge_threads = 1
+liquid_update = $liquid_update_seconds
 dedicated_server_step = 0.09
 max_block_generate_distance = 5
 max_block_send_distance = 5
@@ -380,6 +382,7 @@ fi
 
 jq -n --arg expected_seed "$seed" \
 	--arg expected_seed_sha256 "$seed_sha256" \
+	--arg expected_liquid_update "$liquid_update_seconds" \
 	--slurpfile forward "$result_dir/forward/events.jsonl" \
 	--slurpfile reverse "$result_dir/reverse/events.jsonl" '
 	def cases: map(select(.event == "case")) | sort_by(.id) |
@@ -433,6 +436,7 @@ jq -n --arg expected_seed "$seed" \
 		$fst[0].mapgen == "v7" and $fst[0].chunksize == "5" and
 		$fst[0].water_level == "1" and
 		$fst[0].num_emerge_threads == "1" and
+		$fst[0].liquid_update == $expected_liquid_update and
 		$fst[0].production.enabled == true and
 		$fst[0].production.production_enabled == true and
 		$fst[0].production.writer_count == 1 and
@@ -443,6 +447,7 @@ jq -n --arg expected_seed "$seed" \
 		$rst[0].mapgen == "v7" and $rst[0].chunksize == "5" and
 		$rst[0].water_level == "1" and
 		$rst[0].num_emerge_threads == "1" and
+		$rst[0].liquid_update == $expected_liquid_update and
 		$rst[0].production.enabled == true and
 		$rst[0].production.production_enabled == true and
 		$rst[0].production.writer_count == 1 and
@@ -507,6 +512,7 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 	--arg engine_digest "$engine_digest" \
 	--arg final_engine_digest "$final_flatpak_digest" \
 	--arg timeout "$timeout_seconds" \
+	--arg liquid_update "$liquid_update_seconds" \
 	--argjson forward_start "$forward_start" \
 	--argjson reverse_start "$reverse_start" \
 	--argjson forward_elapsed "$forward_elapsed" \
@@ -527,7 +533,9 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 		runtime_manifest_note:
 			"offline mocked-engine provenance; actual runtime manifest is in startup"},
 	 settings: {mg_name: "v7", chunksize: 5, water_level: 1,
-		num_emerge_threads: 1, seed_decimal_string: $seed,
+		num_emerge_threads: 1, liquid_update_seconds: ($liquid_update | tonumber),
+		liquid_capture_boundary: "mapgen plus immediate finishBlockMake; periodic server liquid transforms deferred beyond the host timeout",
+		seed_decimal_string: $seed,
 		seed_string_sha256: $seed_sha256},
 	 corpus: {path: "corpus.tsv", digest: $corpus_digest,
 		rows: ($forward_start.feature_case_count // null),
@@ -554,6 +562,7 @@ jq -n --arg capture_id "$capture_id" --arg checkout_sha "$checkout_sha" \
 	 limitations: [
 		"This is a focused smoke runner, not an exhaustive seed, capacity or visual gate.",
 		"The one-writer signal is the production status plus a read-only probe callback count; it is not a second writer audit.",
+		"Order equality covers the deterministic post-mapgen state before periodic wall-clock liquid simulation.",
 		"No historical T2/PCC/F1/F2 claim is reproduced."
 	 ]}' >"$result_dir/manifest.json"
 

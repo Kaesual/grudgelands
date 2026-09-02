@@ -1763,6 +1763,17 @@ return function(common)
 				end
 				overrides[#overrides+1]={x=2,y=seed_y,z=0,
 					cid=65535,param2=0,light=15}
+				-- A second open column has a non-ignore, dark overtop inherited
+				-- from the replaced v7 geometry. Above water it must not retain
+				-- shadow authority; at the water-level boundary it still does.
+				for yy=box_min_y,box_max_y do
+					overrides[#overrides+1]={x=4,y=yy,z=0,cid=0,param2=0,light=0}
+					overrides[#overrides+1]={x=6,y=yy,z=0,cid=0,param2=0,light=0}
+				end
+				-- Discarding stale overtop shadow must not discard real opaque
+				-- blockers that are part of the recalculated light box.
+				overrides[#overrides+1]={x=6,y=box_max_y,z=0,
+					cid=14,param2=0,light=0}
 			end
 			if plan==nil or plan_min_y~=row[2] or plan_max_y~=row[3] then
 				plan,generation=plan_at(loaded,minp,maxp)
@@ -1806,7 +1817,8 @@ return function(common)
 				integer_ascii(box_min_z,"calc min z")..","..
 				integer_ascii(box_max_x,"calc max x")..","..
 				integer_ascii(box_max_y,"calc max y")..","..
-				integer_ascii(box_max_z,"calc max z")..",true"
+				integer_ascii(box_max_z,"calc max z")..","..
+				tostring(box_max_y<=1)
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
 			if row[9]:sub(-1)=="q" then trace[#trace+1]="update_liquids" end
@@ -1818,6 +1830,17 @@ return function(common)
 				probe_cid,_,probe_light=snapshot_cell(snapshot,minp,maxp,2,target_y,0)
 				if probe_cid~=0 or probe_light~=row[11] then
 					fail("ignore-overtop light boundary differs")
+				end
+				local stale_cid,_,stale_light=snapshot_cell(snapshot,minp,maxp,
+					4,target_y,0)
+				local expected_stale_light=box_max_y>1 and 15 or 0
+				if stale_cid~=0 or stale_light~=expected_stale_light then
+					fail("stale v7 overtop sunlight authority differs")
+				end
+				local blocked_cid,_,blocked_light=snapshot_cell(snapshot,minp,maxp,
+					6,target_y,0)
+				if blocked_cid~=0 or blocked_light==15 then
+					fail("opaque in-box direct-sunlight blocker differs")
 				end
 			end
 			if outcome~=row[9] or cid~=(opcode==ordinary_water and
@@ -1904,7 +1927,7 @@ return function(common)
 		end
 		-- One high light-dirty target fixes light_max.y=17 and seed_y=18.
 		-- Three otherwise-open columns then distinguish an explicit transparent
-		-- seed, an opaque canopy non-seed and the engine-owned ignore-overtop seed.
+		-- seed, a real opaque in-box blocker and the engine-owned ignore-overtop seed.
 		local light_target_x,light_target_z=28,24
 		specs[#specs+1]={column=(light_target_z-minp.z)*80+
 			(light_target_x-minp.x)+1,y_min=2,y_max=2,
@@ -1922,6 +1945,10 @@ return function(common)
 			overrides[#overrides+1]={x=row[1],y=18,z=light_seed_z,
 				cid=row[2],param2=0,light=row[3]}
 		end
+		-- The surface pass ignores the inherited non-ignore overtop, but a node
+		-- inside the recalculated box remains authoritative and blocks sunlight.
+		overrides[#overrides+1]={x=0,y=17,z=light_seed_z,
+			cid=14,param2=0,light=0}
 		table.sort(specs,function(left,right) return left.column<right.column end)
 		local outcome,snapshot,delta,plan,generation,vm,observer=
 			apply_specs(loaded,minp,maxp,specs,1,0,15,overrides,true)
@@ -4681,8 +4708,10 @@ return function(common)
 				local overtop_cid=final_cid(overtop)
 				local overtop_light=light_values[overtop]
 				if overtop_light==nil then overtop_light=original_light(overtop) end
+				local propagate_shadow=light_max.y<=1
 				local seeded=overtop_cid==65535 and 1<light_max.y or
-					(overtop_cid~=65535 and overtop_light%16==15)
+					(overtop_cid~=65535 and
+						(not propagate_shadow or overtop_light%16==15))
 				if seeded then
 					for y=light_max.y,light_min.y,-1 do
 						local offset=index_of(x,y,z)
@@ -4730,7 +4759,8 @@ return function(common)
 				spread(x,y-1,z,incoming) spread(x,y+1,z,incoming)
 				spread(x,y,z-1,incoming) spread(x,y,z+1,incoming)
 			end
-			trace[#trace+1]=box_text("calc_lighting:",light_min,light_max,",true")
+			trace[#trace+1]=box_text("calc_lighting:",light_min,light_max,","..
+				tostring(light_max.y<=1))
 			trace[#trace+1]="get_light_data"
 			trace[#trace+1]="set_light_data"
 		end

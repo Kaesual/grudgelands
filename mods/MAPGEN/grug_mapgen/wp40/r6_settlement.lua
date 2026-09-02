@@ -2586,7 +2586,12 @@ local function settlement_factory()
 					box_min_x, box_min_y, box_min_z
 				light_call_max.x, light_call_max.y, light_call_max.z =
 					box_max_x, box_max_y, box_max_z
-				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max, true)
+				-- The fixed R7 runtime authenticates water_level=1. Above it, v7's
+				-- already-lit but subsequently replaced overtop geometry must not
+				-- retain shadow authority over the final authored surface.
+				local propagate_shadow = box_max_y <= 1
+				ok = pcall(vm.calc_lighting, vm, light_call_min, light_call_max,
+					propagate_shadow)
 				if not ok then fail("fail_vm_contract", "calc_lighting failed") end
 				local returned
 				ok, returned = pcall(vm.get_light_data, vm, transaction_state.final_light)

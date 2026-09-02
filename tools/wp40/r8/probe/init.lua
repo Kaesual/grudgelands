@@ -305,6 +305,24 @@ local function count_content_box(values, area, minp, maxp, expected_cid)
 	return count
 end
 
+local function count_direct_sun_air(content, light, area, minp, maxp, air_cid)
+	local count = 0
+	for z = minp.z, maxp.z do
+		for y = minp.y, maxp.y do
+			for x = minp.x, maxp.x do
+				local index = area:index(x, y, z)
+				-- Packed light byte 15 is day=15, night=0. Binding it to air keeps
+				-- a node light_source (such as the capital banner) from satisfying
+				-- the surface sunlight gate.
+				if content[index] == air_cid and light[index] == 15 then
+					count = count + 1
+				end
+			end
+		end
+	end
+	return count
+end
+
 local function sort_native_events(events)
 	table.sort(events, function(a, b)
 		if a.kind ~= b.kind then return a.kind < b.kind end
@@ -407,14 +425,16 @@ local function snapshot_case(case)
 	for i = 1, #node_counts do
 		counted_voxels = counted_voxels + node_counts[i].count
 	end
+	local direct_sun_air = count_direct_sun_air(content, light, area, minp,
+		maxp, core.get_content_id("air"))
 	local semantic_checks = {
 		complete_node_census = counted_voxels == 80 * 80 * 80,
 		no_ignore = count_node(node_counts, "ignore") == 0,
-		surface_has_daylight = case.height_mode ~= "surface" or
-			light_stats.day_max > 0,
+		surface_has_direct_sun = case.height_mode ~= "surface" or
+			direct_sun_air > 0,
 		exact_source_witness = true,
 	}
-	local semantic_evidence = {}
+	local semantic_evidence = {direct_sun_air_count = direct_sun_air}
 	if case.id == "human_capital" then
 		-- Source-bound anchor_008 root: accepted H=36, activation root y=37.
 		local node = core.get_node({x = 0, y = 37, z = -1500}).name
@@ -736,6 +756,7 @@ core.register_on_mods_loaded(function()
 		chunksize = core.get_mapgen_setting("chunksize"),
 		water_level = core.get_mapgen_setting("water_level"),
 		num_emerge_threads = core.settings:get("num_emerge_threads"),
+		liquid_update = core.settings:get("liquid_update"),
 		mapgen_flags = core.get_mapgen_setting("mg_flags"),
 		request_count = #request_cases,
 		feature_case_count = #feature_cases,

@@ -1,8 +1,9 @@
 # WP40 simple-map R8 release and runtime contract
 
-**Status:** The fresh-engine read-only-halo correction is independently
-accepted. The measured one-row G2 pilot reduction awaits focused independent
-review before a new sequential pilot.
+**Status:** The one-row G2 pilot completed both schedules and exposed a real
+surface-sunlight defect plus wall-clock liquid aging in the comparison harness.
+Their narrow corrections have green static/fixture verification and await
+focused independent review before a new sequential pilot.
 
 **Baseline:** `ac3ff3f17c0119b80c90f73db944a937d9159a2b` (the reviewed R7
 production cutover merged to `main`).
@@ -98,6 +99,10 @@ R8 implements a small release harness, not a general mapgen framework. It must:
   immediately before and after the pair as well as both engines' in-process
   version records;
 - use production v7 settings and exactly one emerge thread;
+- defer the disposable server's periodic liquid-update interval beyond its
+  fixed host timeout while retaining the immediate `finishBlockMake` liquid
+  transform, so the byte comparison observes deterministic post-mapgen state
+  rather than unequal minutes of later world simulation;
 - request one corpus mapchunk at a time, wait for its complete emerge callback,
   and then request the next row, using the same externally declared corpus in a
   risk-prioritized order and exact reverse order;
@@ -178,10 +183,15 @@ owner-slice, forward/reverse finalizer and offline operation-order evidence.
 Additional random, vertical or sparse-fill schedules are diagnostic only and
 need a concrete discrepancy before becoming blocking work.
 
-Content and `param2` differences are blocking. A light-bank difference is
-blocking unless the harness first demonstrates convergence under one fixed,
-reviewed settling procedure and the post-settle digests then match. A failure
-is not waived by taking the more attractive schedule.
+Content and `param2` differences are blocking. The comparison snapshots all
+cases only after the complete schedule, so a later request can still expose an
+earlier-chunk mutation. Flowing-liquid `param2` is compared byte-for-byte, but
+the test-owned server defers its periodic wall-clock liquid tick until after
+the host timeout; the immediate mapgen liquid transform remains active. A
+light-bank difference is blocking unless the harness first demonstrates
+convergence under one fixed, reviewed settling procedure and the post-settle
+digests then match. A failure is not waived by taking the more attractive
+schedule.
 
 ### 4.3 Fresh-engine read-only halo
 
@@ -207,6 +217,31 @@ rejection and keep the already-accepted materialized-neighbor order cases.
 This is an engine-shape compatibility correction, not a geometry, placement,
 seed, content-policy or ownership change. The historical byte-bound R5 and R6
 contracts remain unchanged as records of their original acceptance.
+
+### 4.4 Post-v7 surface sunlight authority
+
+The completed pilot showed that v7's light pass precedes the WP40 rewrite.
+Consequently, a non-ignore overtop cell can retain a dark decision made for
+temporary v7 geometry that the single R7 writer subsequently replaced. An
+explicit seed derived from that stale light cannot establish sunlight in the
+new authored surface.
+
+R8 narrowly supersedes the inherited lighting call rule in both the pure R5
+adapter and the consolidated R6/R7 writer:
+
+- when the bounded light box ends above the authenticated `water_level = 1`,
+  call `calc_lighting` with `propagate_shadow = false`;
+- at or below water level, retain `propagate_shadow = true`;
+- keep the existing light box, explicit seed derivation, owner-only light
+  commit and complete halo restoration unchanged; and
+- require a surface witness to contain authored air with packed light exactly
+  `15` (`day = 15`, `night = 0`), rather than accepting arbitrary emitted
+  light such as the capital's day/night-6 guard banner.
+
+This delegates the surface sky boundary to Luanti without inventing an
+analytic sky predicate. Opaque nodes inside the light box still stop sunlight;
+deep sealed regions retain shadow propagation. No content, `param2`, feature
+placement, seed or persistent halo byte changes ownership under this rule.
 
 ## 5. Gate sequence and run budget
 
@@ -284,8 +319,10 @@ gate requires:
 - no Lua error, assertion, manifest refusal, unknown-node failure or engine
   crash;
 - one active WP40 generated callback/writer path;
-- byte-identical post-settle content, `param2` and light digests;
-- a complete readable node census with no `ignore`, nonzero surface daylight,
+- byte-identical post-mapgen content, `param2` and light digests before the
+  first periodic wall-clock liquid update;
+- a complete readable node census with no `ignore`, direct sunlight in
+  authored surface air,
   the source-bound capital marker envelope, usable channel-water envelope and
   exact accepted Seed-0 ruby root present;
 - all five registered native strata and at least one retained native

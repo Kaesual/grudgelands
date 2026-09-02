@@ -1,10 +1,11 @@
 # WP40 R8 real-engine pilot record
 
-**Status:** six diagnostic attempts retained. Attempts 1--4 stopped during
+**Status:** seven diagnostic attempts retained. Attempts 1--4 stopped during
 production construction; Attempt 5 exposed and corrected the fresh-engine
-read-only halo. Attempt 6 generated five real mapchunks without a Lua or
-mapgen error, then hit the fixed forward timeout. Its measured one-row native
-pilot reduction awaits focused review before a fresh sequential pilot.
+read-only halo; Attempt 6 measured and removed redundant native pilot rows.
+Attempt 7 completed both schedules cleanly and isolated a real surface-light
+defect plus wall-clock liquid aging in the comparison harness. Narrow fixes,
+green static/fixture verification and focused review precede the next pilot.
 
 ## Attempt 1 -- diagnostic failure
 
@@ -281,3 +282,63 @@ risk class. From the observed timings, startup plus the three features and one
 native cell project to roughly 12--13 minutes per order, below the unchanged
 15-minute engine timeout plus 30-second host margin. The full 32-row G3 native
 corpus and its blocking event/census requirements are not reduced.
+
+## Attempt 7 -- complete pilot with two isolated findings
+
+- Date: 2026-09-02
+- Candidate: `230925ada8bbb4c332d590f54d40811f9d379ad6`
+- Review before execution: **ACCEPT, 0 Critical / 0 High / 0 Medium / 0 Low**
+- Mode: sequential, Seed `0`, forward order first; three feature requests plus
+  the reviewed one-row native prefix per order
+- Capture ID:
+  `d195544726546baff668b836f72e21c3f2bc8dce9807b9b10f3b624f86dcdbce`
+- Process result: both engines exited 0, both controlled shutdown records are
+  clean, both error logs are empty and all eight requests completed without an
+  errored or cancelled action
+- Forward: 12:04.26 wall, 641,157,033 probe microseconds and
+  3,755,995,136-byte in-process peak RSS
+- Reverse: 12:55.81 wall, 688,381,577 probe microseconds and
+  3,749,015,552-byte in-process peak RSS
+- Comparison SHA-256:
+  `b643d34ef470396ab7ac2cb18829eb3fc80daa2659e0957bfdf65d869b434087`
+- Forward console/server/events/time SHA-256:
+  `69a479ee3a643a212057fa95f49258777b34fb16afde4b1b8833494c5ba7d488`,
+  `09a91c0dcbab74f7ee43ac11fa800486b1b32a9fc2aa1fc7501b48c6c462cecc`,
+  `13429f4da8bfefac745ad27f7aa5a55d1da438faa1c525aa13ea841be003b755`,
+  `cfcc69bf78421b01c09f3cb732167bfb047f3708c466537e92f58036cbd8b19e`
+- Reverse console/server/events/time SHA-256:
+  `55773034d43d9a9b025faeb3ce94613285a871eaa454312c9df91f71aa3dd82b`,
+  `72950df0f5a08a47fc3e1502bbf16f2c3368a68ec84eb5df6a228efe02ecfac6`,
+  `15239413a57cc9f04ad02d4d7b45be80368a614f141c5bec9b2eba71b404d826`,
+  `f6ac27edf2093f5451eb96b373447c7fe85afb3ead1a08a22d3be49803445f09`
+
+Startup/engine/seed identity, exact order reversal, feature content, native
+census, light digests, source-bound content witnesses and all completed pilot
+plumbing agree. The one native row also observed the same large-cave begin/end
+notifications in both orders; those events remain non-required in G2.
+
+Two gates correctly prevent acceptance:
+
+1. The open Wyrmglass surface channel contains all 64 sampled water sources
+   but every packed light byte is zero. The capital's maximum day/night light
+   is only 6/6, emitted by its guard banner, so the former `day_max > 0` check
+   did not establish sunlight there either. Pinned engine tracing shows that
+   v7 lights temporary geometry before WP40 replaces it, while the inherited
+   `propagate_shadow = true` preserves that stale overtop shadow decision.
+2. Only the deep-resource raw `param2` digest differs. Its content includes
+   724 flowing-lava and 150 flowing-water nodes whose level/fall bits are
+   mutated by the periodic server liquid step. The complete schedule is
+   snapshotted afterward, so forward and reverse expose those nodes to
+   different minutes of world simulation even though content, light and
+   semantics agree.
+
+The smallest correction keeps the corpus and comparison strict. Surface light
+boxes use the engine's `propagate_shadow = false` boundary only when their top
+is above fixed water level 1; deeper boxes retain true, the existing box and
+owner/halo rules remain unchanged, and the runtime witness now requires
+authored air with packed day/night light 15/0. The disposable server also sets
+its periodic `liquid_update` interval to one second beyond the fixed host
+timeout. Immediate `finishBlockMake` liquid processing remains active and all
+cases are still snapshotted only after the full schedule, preserving the gate
+against later requests changing earlier chunks. A fresh reviewed pilot must
+confirm both corrections; Attempt 7 itself carries no G2 acceptance claim.
