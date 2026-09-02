@@ -112,6 +112,24 @@ Low**. The reviewer independently confirmed:
   and
 - all seventeen promotion-manifest bindings.
 
+## Authority closeout correction
+
+A second fresh independent Sol context reviewed the mechanical closeout commit
+`5421fc7d8c93ab60b4cc294b9f4742b8c71206cb` and returned **REJECT**, with 0
+Critical / 2 High / 0 Medium / 0 Low. Both findings concerned immutable
+provenance, not implementation behavior or an evidence result:
+
+1. `wp40-r7-implementation-contract.md` is an input to the frozen R7 source
+   audit and integration binding, so its pre-closeout bytes must remain exact.
+2. `wp40-engineering-brief.md` is byte-bound by the accepted R5 artifact and
+   must retain its historical frozen status header even when that header is no
+   longer the live milestone summary.
+
+The correction restores both files byte-for-byte to the reviewed parent.
+Current milestone status lives only in this R7 review, the simple-map rebase
+plan, BACKLOG, ROADMAP and README. A focused independent re-review of these two
+High fixes is mandatory before merge.
+
 ## Residual risk and R8 boundary
 
 R7's evidence is deliberately layered offline evidence, not an exhaustive
@@ -139,6 +157,8 @@ No existing WP18/WP36 world is a migration target; WP40 is fresh-world-only.
 - Blocking review-fix rounds: 1.
 - Final complete-review findings: 0 Critical / 0 High / 0 Medium / 0 Low.
 - Post-final-review fix rounds: 0.
+- Authority-closeout review findings: 0 Critical / 2 High / 0 Medium / 0 Low.
+- Authority-closeout fix rounds: 1.
 - Observed package elapsed wall time: `unknown` (multi-session package).
 - Accepted combined pilot wall time: 3,095.19 seconds; main-only pilot wall
   time: 621.31 seconds.
